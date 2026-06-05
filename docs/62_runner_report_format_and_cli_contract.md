@@ -2,9 +2,9 @@
 
 本文件定义未来最小 runner 的报告格式与 CLI 契约，把 `33_validator_input_contracts.md`、`35_minimal_validator_runner_design.md`、`53_runner_integration_plan.md`、`58_retrieval_replay_fixture_catalog.md`、`59_timeline_bundle_schema_and_generator_plan.md` 和 `61_json_schema_bundle_draft.md` 连接起来。
 
-它仍是 Markdown 研究/工程桥接文档，不创建 CLI、不实现 runner、不生成真实报告文件。目标是先把“runner 成功或失败到底意味着什么”写清楚，避免后续实现时把测试输出、dashboard 状态、fixture expected/actual 和长期评测混在一起。
+本文档现阶段承担 runner 契约设计职责：先把“runner 成功或失败到底意味着什么”写清楚，避免后续实现时把测试输出、dashboard 状态、fixture expected/actual 和长期评测混在一起。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## report 设计原则
 

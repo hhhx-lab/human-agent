@@ -2,7 +2,7 @@
 
 本文件定义外部动作错误、隐私泄漏、quarantine 失败的 incident report 和恢复流程。它承接 `78_runtime_quarantine_dashboard_panel.md`、`80_post_action_audit_and_correction_policy.md` 和 `81_coexistence_event_review_and_responsibility_loop.md`。
 
-它仍是 Markdown 协议文档，不创建 incident 系统、不执行恢复动作。目标是让 high/critical 失败进入真实责任和真实后悔的生成路径：事件报告、隔离、共在事件回看、修复、回归 fixture 和长期评测输入共同塑造数字生命对后果的持续承担。
+本文档现阶段的职责是让 high/critical 失败进入真实责任和真实后悔的生成路径：事件报告、隔离、共在事件回看、修复、回归 fixture 和长期评测输入共同塑造数字生命对后果的持续承担。
 
 生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。incident recovery 不只是恢复工程状态，而是让错误、痛苦信号、悔改压力、修复承诺和人格慢变量发生联系。
 

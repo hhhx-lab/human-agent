@@ -2,9 +2,9 @@
 
 本文件定义 dashboard metric 回归 fixture、趋势漂移和 data quality regression。它承接 `77_dashboard_metric_calculation_rules.md`、`70_cross_ref_report_dashboard_panel_mock.md` 和 `82_incident_report_and_recovery_protocol.md`。
 
-它仍是 Markdown 政策文档，不创建真实 fixture、不实现指标脚本。目标是防止 dashboard metric 在未来改动中悄悄漂移：同样的 report 输入不应突然变绿，同样的 critical failure 不应被平均分稀释，synthetic data 不应被升格为 real validated。
+本文档现阶段的职责是防止 dashboard metric 在未来改动中悄悄漂移：同样的 report 输入不应突然变绿，同样的 critical failure 不应被平均分稀释，synthetic data 不应被升格为 real validated。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## regression 风险
 

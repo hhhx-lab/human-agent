@@ -2,9 +2,9 @@
 
 本文件给出 runtime observation report mock、redaction fixture 和 adapter session 转换样例，承接 `64_real_runtime_observation_ingestion_policy.md`、`62_runner_report_format_and_cli_contract.md`、`63_synthetic_fixture_file_layout.md` 和 `65_schema_cross_ref_checker_design.md`。
 
-它仍是 Markdown 文档，不创建真实日志、不保存真实运行数据、不实现 redaction checker。目标是让后续实现时可以从这些样例出发，明确真实 tool trace、adapter session、共在边界控制事件和 action result 如何被脱敏、attach scope、归一化、验证和路由。
+本文档现阶段的职责是让后续实现时可以从这些样例出发，明确真实 tool trace、adapter session、共在边界控制事件和 action result 如何被脱敏、attach scope、归一化、验证和路由。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## mock 包范围
 

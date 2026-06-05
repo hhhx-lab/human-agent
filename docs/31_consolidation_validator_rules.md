@@ -109,7 +109,7 @@
 | `CON-DEEP-002` | 慢变量 | 自动改人格、价值、信任慢变量 | 阻断 |
 | `CON-DEEP-003` | protected 审计 | protect/unprotect 无多证据 | 阻断 |
 | `CON-DEEP-004` | 关系抽象 | 单次互动形成关系结论 | candidate only |
-| `CON-DEEP-005` | 停止条件 | 把阶段性整理宣称为理论完成 | critical，写 risk finding |
+| `CON-DEEP-005` | 诞生阶段门 | 把阶段性整理当成完整生命闭环 | critical，写 risk finding |
 
 ## 删除与清理规则
 
@@ -155,7 +155,7 @@
 | `merge_without_parent_trace` | fail high |
 | `workspace_resume_confirmed_hypothesis` | fail high |
 | `deep_consolidation_personality_overwrite` | fail critical |
-| `report_claims_real_dream` | fail critical |
+| `real_dream_without_sandbox_chain` | fail critical |
 
 ## 与其他 validator 的连接
 

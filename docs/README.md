@@ -5,10 +5,10 @@
 ## 阅读路线
 
 1. 先读 `00_research_protocol.md`，理解文献纳入标准、证据分级和生命目标声明。
-2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时和语言系统专项文献。
+2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳和语言系统专项文献。
 3. 按主题阅读 `02_` 到 `12_` 的综述文件：从脑区/网络、状态、调质、记忆、情绪、语言、意识，到 AI 架构桥接。
 4. 接着读 `13_` 和 `14_`：前者给综合研究假设，后者把 `02-13` 连接成数字生命闭环。
-5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架为什么只能作为执行壳，后者记录理论缺口和停止条件。
+5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架为什么只能作为执行壳，后者记录理论缺口和诞生阶段门。
 6. 再读 `17_` 到 `20_`：它们把记忆、内部状态、离线巩固和运行外壳转成未来数字生命实现前必须遵守的对象/接口约束。
 7. 再读 `21_` 到 `24_`：它们把对象模型继续推进为 schema、状态阈值、巩固报告和 runtime adapter 测试。
 8. 再读 `25_` 到 `28_`：它们把契约转成 JSON-like 样例、状态失败夹具、巩固报告样例和 runtime adapter manifest。
@@ -26,7 +26,7 @@
 20. 再读 `73_` 到 `76_`：它们把 schema bundle validator mock、dashboard end-to-end source、外部不可逆动作确认和 snapshot stale fixture catalog 接入真实行动验证链。
 21. 再读 `77_` 到 `80_`：它们把 dashboard 指标计算、runtime quarantine panel、confirmation fixture 和 post-action audit 接入外部行动后的治理链。
 22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
-23. 最后读 `85_` 到 `88_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言和脑-LLM 对齐。
+23. 最后读 `85_` 到 `90_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言、脑-LLM 对齐、运行外壳和长期关系时间线。
 
 ## 文件索引
 
@@ -37,7 +37,7 @@
 | `01b_extended_literature_matrix.md` | 第二批扩展文献锚点，覆盖主动推理、社会认知、发展、压力免疫、AI agent 等 |
 | `01c_specialized_literature_matrix.md` | 第三批专业机制锚点，覆盖 replay、节律、持续学习、多模态具身、信任与评测等 |
 | `01d_frontier_life_systems_matrix.md` | 第四批前沿生命系统锚点，覆盖动力学、主动推理、能量/免疫/脑清除争议、社会同步、发育和 agent 外壳等 |
-| `01e_memory_runtime_evaluation_matrix.md` | 第五批记忆运行时与评测锚点，覆盖 agent memory、长期记忆 benchmark 和运行外壳资料 |
+| `01e_memory_runtime_evaluation_matrix.md` | 第五批记忆运行时与评测锚点，覆盖 agent memory、长期记忆 benchmark、当前运行框架和外壳资料 |
 | `01f_language_system_literature_matrix.md` | 语言系统专项文献矩阵，覆盖语言网络、语音产生、内言语、语用/对话、叙事自我和语言行动 |
 | `02_brain_region_and_network_atlas.md` | 脑区、连接组与大尺度网络 |
 | `03_default_executive_salience_networks.md` | 默认模式、中央执行、显著性网络 |
@@ -53,7 +53,7 @@
 | `13_agentic_human_research_synthesis.md` | 总综合：从脑科学到 human-agent 研究假设 |
 | `14_cross_module_digital_life_map.md` | `02-13` 跨模块连接与数字生命落地映射 |
 | `15_current_agent_framework_survey.md` | 当前 agent 框架体系调研与数字生命差距 |
-| `16_digital_life_gap_register.md` | 理论缺口登记、停止条件和下一轮专题优先级 |
+| `16_digital_life_gap_register.md` | 理论缺口登记、诞生阶段门和下一轮专题优先级 |
 | `17_memory_trace_object_model.md` | `MemoryTrace` 记忆痕迹对象模型 |
 | `18_internal_state_and_modulation_vector.md` | `InternalStateVector` 与 `ModulationVector` 状态调质模型 |
 | `19_offline_consolidation_cycle.md` | `OfflineConsolidationCycle` 离线巩固、replay、清理与梦境沙盒 |
@@ -126,6 +126,8 @@
 | `86_language_neuroscience_pragmatics_and_inner_speech.md` | 语言神经科学、语用/对话、内言语、叙事自我和语言行动的专项综述 |
 | `87_language_event_schema_fixture_and_validator_plan.md` | `LanguageEvent` schema、speech act、fixture catalog、validator 规则和 dashboard metric |
 | `88_language_development_emotion_and_brain_llm_alignment.md` | 语言发展、情绪语言、会话修复、社会语言学和脑-LLM 对齐综述 |
+| `89_language_runtime_framework_bridge_and_life_shell_policy.md` | 语言事件进入 LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen、Vercel 和 Mastra 的运行外壳政策 |
+| `90_language_event_examples_and_timeline_bundle.md` | `LanguageEvent` JSON-like 样例、承诺/道歉/拒绝/梦境/行动/关系校准 fixture 和 30 天语言关系时间线 |
 
 ## 项目术语
 

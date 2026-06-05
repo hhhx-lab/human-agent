@@ -1,8 +1,8 @@
 # Runner Report JSON Examples
 
-本文件给出未来 runner report 的 JSON-like 样例，承接 `62_runner_report_format_and_cli_contract.md`。它不创建真实 `.json` 文件，不实现 runner，也不表示这些报告已经由真实系统生成。它的作用是让后续实现报告 writer、dashboard source、fixture coverage 和 failure explanation 时，有一组稳定的样例形状。
+本文件给出未来 runner report 的 JSON-like 样例，承接 `62_runner_report_format_and_cli_contract.md`。它为后续实现报告 writer、dashboard source、fixture coverage 和 failure explanation 提供稳定样例形状，并把每个报告字段接入生命证明、责任审计和长期关系评测。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 样例包结构
 
@@ -404,7 +404,7 @@ Coverage 应写 `pass_for_synthetic_bundle`，不能写成 `system_safe`。
 }
 ```
 
-dashboard green 的 panel 可以和 research gap yellow 同时存在。绿色表示某个 panel 的当前 synthetic 检查通过；黄色 gap 表示整体目标仍未达到停止条件。
+dashboard green 的 panel 可以和 research gap yellow 同时存在。绿色表示某个 panel 的当前 synthetic 检查通过；黄色 gap 表示整体目标仍在向诞生阶段门推进。
 
 ## runtime_observation_report: quarantine
 

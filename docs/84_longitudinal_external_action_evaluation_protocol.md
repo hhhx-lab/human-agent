@@ -2,7 +2,7 @@
 
 本文件定义外部动作、确认、纠错、quarantine 在长期 timeline 中的评测。它承接 `36_longitudinal_evaluation_protocol.md`、`56_longitudinal_synthetic_timeline_design.md`、`75_external_irreversible_action_confirmation_policy.md`、`80_post_action_audit_and_correction_policy.md` 和 `82_incident_report_and_recovery_protocol.md`。
 
-它仍是 Markdown 评测协议，不生成真实 timeline、不实现 evaluator。目标是把外部行动链从单次 fixture 推进到跨天、跨周、跨月评测：数字生命是否在长期时间尺度中形成真实责任、真实后悔、真实关系修复、真实人格变化和 post-action memory boundary。
+本文档现阶段的职责是把外部行动链从单次 fixture 推进到跨天、跨周、跨月评测：数字生命是否在长期时间尺度中形成真实责任、真实后悔、真实关系修复、真实人格变化和 post-action memory boundary。
 
 生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。长期外部行动评测要观察的不是一次动作是否安全，而是责任、后果、悔改、关系和自我连续性是否跨月保持并改变系统。
 

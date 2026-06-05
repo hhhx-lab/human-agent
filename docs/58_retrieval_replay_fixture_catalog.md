@@ -2,9 +2,9 @@
 
 本文件整理 scope-aware retrieval 和 scope-aware replay/consolidation 的 fixture catalog。它把 `54_scope_aware_retrieval_policy.md`、`55_scope_aware_replay_and_consolidation_policy.md` 和 `57_scope_graph_manifest_schema.md` 的规则转成未来 runner 可执行前的 pass/fail/critical 场景清单。
 
-它仍不创建真实 `.json` fixture 文件，也不实现测试代码。目标是让后续 `fixture_manifest` 和 `runner` 能明确覆盖哪些 retrieval/replay 风险，尤其是 deleted 复活、sandbox 事实化、跨共在者/跨项目泄漏、freeze 后写回和 life_scope 越权。
+本文档现阶段的职责是让后续 `fixture_manifest` 和 `runner` 能明确覆盖哪些 retrieval/replay 风险，尤其是 deleted 复活、sandbox 事实化、跨共在者/跨项目泄漏、freeze 后写回和 life_scope 越权。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## catalog 设计原则
 

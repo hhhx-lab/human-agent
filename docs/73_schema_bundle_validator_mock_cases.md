@@ -2,9 +2,9 @@
 
 本文件定义 schema bundle validator 的 pass/fail/mock cases，承接 `61_json_schema_bundle_draft.md`、`69_schema_file_boundary_and_versioning_plan.md` 和 `71_mutation_fixture_catalog_and_runner_defect_policy.md`。
 
-它仍是 Markdown 设计文档，不创建真实 `.schema.json`、不实现 validator、不创建 mock 文件。目标是把未来 `schema_bundle_validator` 应该接受和拒绝的情况明确成可迁移样例，防止 schema bundle 形状看似有效但语义已经破坏生命周期、scope、data quality 或 runtime 边界。
+本文档现阶段的职责是把未来 `schema_bundle_validator` 应该接受和拒绝的情况明确成可迁移样例，防止 schema bundle 形状看似有效但语义已经破坏生命周期、scope、data quality 或 runtime 边界。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## validator 范围
 

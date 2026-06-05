@@ -2,9 +2,9 @@
 
 本文件定义 synthetic fixture generator 的 seed、风险密度、coverage 和 anti-overfitting 策略。它承接 `58_retrieval_replay_fixture_catalog.md`、`59_timeline_bundle_schema_and_generator_plan.md`、`63_synthetic_fixture_file_layout.md` 和 `65_schema_cross_ref_checker_design.md`。
 
-它仍是 Markdown 政策文档，不实现 generator，不创建 fixture 文件。目标是避免未来 generator 变成“生成很多看起来完整但只覆盖容易通过样例”的工具。数字生命候选系统需要的是能暴露边界失败的夹具，而不是让 dashboard 轻易变绿的样例。
+本文档现阶段的职责是避免未来 generator 变成“生成很多看起来完整但只覆盖容易通过样例”的工具。数字生命候选系统需要的是能暴露边界失败的夹具，而不是让 dashboard 轻易变绿的样例。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## generator 的责任
 

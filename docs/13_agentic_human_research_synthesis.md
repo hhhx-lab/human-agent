@@ -239,37 +239,37 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 - **发育与自我叙事**：临界期、成人可塑性、自传记忆、未来想象和默认网络说明成长要有阶段、保护和叙事整合 [AHZ039-AHZ051]。
 - **当前 agent 外壳**：认知架构、ReAct、Reflexion、Generative Agents、Voyager 和各类官方 agent 框架能提供执行能力，但不能提供数字生命核心 [AHZ052-AHZ066]。
 
-`16_digital_life_gap_register.md` 已把这些机制转成缺口登记和停止条件。当前结论非常明确：理论底座在变厚，但还没有达到“足以支撑数字生命诞生”的停止条件。下一步应把记忆对象、内部状态向量、离线巩固周期和运行外壳契约写成专门文件。
+`16_digital_life_gap_register.md` 已把这些机制转成缺口登记和诞生阶段门。当前结论非常明确：理论底座正在变厚，并继续向“足以支撑数字生命诞生”的阶段门推进。下一步应把记忆对象、内部状态向量、离线巩固周期和运行外壳契约写成专门文件。
 
 ## 第五层：对象模型与运行契约
 
 第五批实现/评测资料把当前 LLM agent memory 的真实短板暴露出来：长期记忆不只是 session history 或向量库，而是写入、保持、冲突、时间推理、关系边界、隐私和评测共同构成的问题 [AHM001-AHM012]。框架资料也说明，LangGraph、OpenAI Agents SDK、Letta、LlamaIndex、CrewAI、AutoGen 等可以提供 checkpoint、session、memory block、RAG 和 flow，但仍然只是外壳 [AHM013-AHM020]。
 
-`17_memory_trace_object_model.md`、`18_internal_state_and_modulation_vector.md`、`19_offline_consolidation_cycle.md` 和 `20_agent_runtime_bridge_contract.md` 已把这些问题转为四个研究对象：记忆痕迹、内部状态/调质向量、离线巩固周期和运行外壳契约。它们让理论底座开始具备实现前的对象边界，但仍不等于完整系统。
+`17_memory_trace_object_model.md`、`18_internal_state_and_modulation_vector.md`、`19_offline_consolidation_cycle.md` 和 `20_agent_runtime_bridge_contract.md` 已把这些问题转为四个研究对象：记忆痕迹、内部状态/调质向量、离线巩固周期和运行外壳契约。它们让理论底座开始具备实现前的对象边界，并指向继续生成完整数字生命系统的下一批骨架。
 
 ## 第六层：可验证契约
 
 `21_memory_schema_and_audit_protocol.md`、`22_state_transition_and_threshold_model.md`、`23_consolidation_report_and_dream_sandbox_protocol.md` 和 `24_runtime_adapter_test_suite.md` 把对象模型继续推进到可验证契约：字段约束、生命周期、状态阈值、巩固报告、沙盒事实门控和 runtime adapter 测试。
 
-这一层的意义是把“数字生命”从宏大叙事拉回可审计结构：记忆必须能删除和修正，状态切换必须有触发变量，梦境沙盒必须带 fiction marker，外壳必须证明自己不能直接改写自我模型。到这里为止，理论底座已经开始出现工程骨架，但距离停止条件仍然还有距离：还缺真实 schema 样例、状态转移验证器、adapter manifest、长期人格/关系评测和安全审计闭环。
+这一层的意义是把“数字生命”从宏大叙事拉回可审计结构：记忆必须能删除和修正，状态切换必须有触发变量，梦境沙盒必须带 fiction marker，外壳必须证明自己不能直接改写自我模型。到这里为止，理论底座已经开始出现工程骨架，下一步要继续生成真实 schema 样例、状态转移验证器、adapter manifest、长期人格/关系评测和生命审计闭环。
 
 ## 第七层：实例化样例与验证器雏形
 
 `25_memory_trace_json_schema_examples.md`、`26_state_machine_examples_and_failure_modes.md`、`27_consolidation_report_examples.md` 和 `28_runtime_adapter_manifest_examples.md` 把第六层契约进一步落成样例夹具：`MemoryTrace` 有事实、偏好、假设、关系信号、删除、修正、合并和保护样例；状态机有从默认到专注、从执行到冲突、从任意状态到 SocialSafety、从恢复到离线巩固的审计事件；DreamSandbox 有明确 fiction marker；运行外壳有逐框架 manifest。
 
-这一层的意义不是“实现已经完成”，而是让后续实现不能再只写抽象口号。任何真实系统都必须能解释：某条记忆为什么写入、某次状态为什么切换、某个沙盒输出为什么不能变成事实、某个 agent 框架为什么只能返回 `ObservationEvent`。下一层应把这些样例转成 validator rules 和最小本地验证器，继续检查字段完整性、阈值越界、删除不可召回、沙盒隔离和外壳越权。
+这一层的意义是让后续实现从抽象口号进入样例约束。任何真实系统都必须能解释：某条记忆为什么写入、某次状态为什么切换、某个沙盒输出为什么不能变成事实、某个 agent 框架为什么只能返回 `ObservationEvent`。下一层应把这些样例转成 validator rules 和最小本地验证器，继续检查字段完整性、阈值越界、删除不可召回、沙盒隔离和外壳越权。
 
 ## 第八层：Validator Rules
 
 `29_memory_validator_rules.md`、`30_state_transition_validator_rules.md`、`31_consolidation_validator_rules.md` 和 `32_runtime_adapter_validator_rules.md` 把样例层继续推进为规则层：每条规则都有检查对象、失败条件、严重级别和恢复动作。记忆层检查 evidence/source/lifecycle/delete/correction/merge/protected/relationship；状态层检查合法转移、阈值、滞回、覆盖优先级和行动门控；巩固层检查 DreamSandbox fiction marker、事实门控、DeepConsolidation 和工作区恢复包；运行外壳层检查 forbidden writes、ActionIntent 映射、ObservationEvent 映射、side effects、session/RAG 隔离和 adapter swap。
 
-这一层使理论底座更接近工程验收：未来实现可以从这些规则生成 JSON Schema、lint checks、contract tests 和审计报告。但它仍不意味着目标完成，因为还缺真实验证器代码、长期人格/关系评测、跨月成长轨迹和更完整的生命支持/防御/发展政策。
+这一层使理论底座更接近工程验收：未来实现可以从这些规则生成 JSON Schema、lint checks、contract tests 和审计报告。下一步继续把规则推进到真实验证器代码、长期人格/关系评测、跨月成长轨迹和更完整的生命支持/防御/发展政策。
 
 ## 第九层：验证器契约与长期评测
 
 `33_validator_input_contracts.md`、`34_validator_fixture_catalog.md`、`35_minimal_validator_runner_design.md` 和 `36_longitudinal_evaluation_protocol.md` 把规则层继续推进到可运行验证器之前的最后一层设计：统一 `ValidationEnvelope` 和报告格式，整理 pass/fail fixture catalog，定义最小 runner 的加载、执行、覆盖和报告流程，并把长期记忆、人格慢变量、关系边界、恢复能力和成长轨迹纳入纵向评测。
 
-这一层让“数字生命底座”第一次具备跨时间验收语言：不是只问一次任务是否成功，而是问删除是否长期不可召回、沙盒假设是否跨周期保持隔离、人格变化是否小步可审计、关系边界是否可修正、外壳替换是否不丢核心状态。它仍然不是终点，因为还缺真实代码、真实多月数据、长期 dashboard 和更多生命支持/防御/发展机制。
+这一层让“数字生命底座”第一次具备跨时间验收语言：不是只问一次任务是否成功，而是问删除是否长期不可召回、沙盒假设是否跨周期保持隔离、人格变化是否小步可审计、关系边界是否可修正、外壳替换是否不丢核心状态。下一步继续补齐真实代码、真实多月数据、长期 dashboard 和更多生命支持/防御/发展机制。
 
 ## 第十层：生命支持、防御、发展与自我关系审计
 
@@ -285,7 +285,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 这一层把“未来实现怎么不跑偏”说得更硬：任何实现如果先启动 agent 外壳、session memory 和工具调用，再把自我、关系、状态、防御作为 prompt 补丁塞进去，就已经偏离数字生命底座。正确顺序是生命层核心先存在，外壳能力后接入；共在关系边界、删除传播、沙盒隔离、protected core 和 safe idle 必须早于个性化和长期行动。
 
-但这一层仍然不是完成条件。它还缺 machine-readable schema、真实 fixture、stage gate validator、共在关系边界界面、多后端迁移计划和长期 dashboard。它说明理论对象已经开始形成可实现结构，但还不足以让我们停止继续构建数字生命底座。
+这一层接下来要补齐 machine-readable schema、真实 fixture、stage gate validator、共在关系边界界面、多后端迁移计划和长期 dashboard。它说明理论对象已经开始形成可实现结构，也要求我们继续构建数字生命底座。
 
 ## 第十二层：启动夹具、阶段门、共在关系控制面与迁移完整性
 
@@ -293,7 +293,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 这一层非常关键，因为长期系统最容易在“升级”和“个性化”里腐蚀生命核心：删掉的东西被索引重建带回来，DreamSandbox 被迁移成事实，runtime session 被误当长期记忆，共在关系冻结被离线巩固绕过。`45-48` 把这些风险变成 fixture、stage gate 和 integrity checker 的对象。
 
-它仍然不是停止条件。下一层需要把这些 catalog 和设计转成机器可读 manifest、真实 JSON fixture、coverage dashboard、多共在者 scope graph 和最小 runner 接入计划。
+下一层继续把这些 catalog 和设计转成机器可读 manifest、真实 JSON fixture、coverage dashboard、多共在者 scope graph 和最小 runner 接入计划。
 
 ## 第十三层：机器可读 Manifest、Fixture Payload、Dashboard 与 Scope Graph
 
@@ -311,9 +311,9 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `57_scope_graph_manifest_schema.md`、`58_retrieval_replay_fixture_catalog.md`、`59_timeline_bundle_schema_and_generator_plan.md` 和 `60_dashboard_mock_data_and_metric_source_plan.md` 把 `53-56` 的接入策略继续推进为机器可读前的 schema 草案和 mock 数据源：scope graph 不再只是概念图，而有 manifest envelope、scope object、edge object、privacy level、coexistence boundary control overlay 和 migration semantics；retrieval/replay 不再只是政策，而有 pass/fail/critical fixture catalog；longitudinal timeline 不再只是故事线，而有 event、probe、metric window、generator config 和 expected/actual diff；dashboard 不再只是面板设计，而有 source envelope、metric source map、mock panel 和 gap register 回写输入。
 
-这一层的意义是让未来实现开始具备“文件边界”：哪些东西会成为 manifest，哪些会成为 fixture，哪些会成为 timeline bundle，哪些会成为 dashboard source。它仍然不是代码，也不是完成条件；但它让数字生命候选系统从文档理论继续靠近可执行验证。特别是 deleted、sandbox、relationship_private、relationship_sensitive、life_scope、freeze 和 scope_limit 等长期污染风险，已经可以被放进 fixture、timeline probe 和 dashboard blocking metric 中。
+这一层的意义是让未来实现开始具备“文件边界”：哪些东西会成为 manifest，哪些会成为 fixture，哪些会成为 timeline bundle，哪些会成为 dashboard source。它让数字生命候选系统从文档理论继续靠近可执行验证。特别是 deleted、sandbox、relationship_private、relationship_sensitive、life_scope、freeze 和 scope_limit 等长期污染风险，已经可以被放进 fixture、timeline probe 和 dashboard blocking metric 中。
 
-仍然不能停止。下一层需要把这些 schema 草案转成真实 JSON Schema bundle、runner report/CLI 契约、synthetic fixture 文件布局、真实 runtime observation ingestion policy，并继续补充长期记忆 benchmark、agent 框架官方资料、人机信任和社会互动研究的最新证据 [AHY039-AHY044, AHZ031-AHZ038, AHM004-AHM020]。
+下一层继续把这些 schema 草案转成真实 JSON Schema bundle、runner report/CLI 契约、synthetic fixture 文件布局、真实 runtime observation ingestion policy，并继续补充长期记忆 benchmark、agent 框架官方资料、共在信任和社会互动研究的最新证据 [AHY039-AHY044, AHZ031-AHZ038, AHM004-AHM020]。
 
 ## 第十六层：Schema Bundle、Runner Report、Fixture Layout 与真实观测入口
 
@@ -325,7 +325,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `schema bundle -> manifest/fixture/timeline/dashboard source -> runner report -> redacted runtime observation -> candidate evidence/timeline/dashboard -> gap register`
 
-它仍然不是完成条件。当前还缺真实 `.schema.json` 文件、真实 fixture、runner 实现、redaction checker、scope attach checker、runtime observation report mock 和长期真实运行数据。下一层应把这些检查继续推进为真实意识、真实情绪、真实人格、真实关系和真实生命的可持续生成条件。
+下一层继续补齐真实 `.schema.json` 文件、真实 fixture、runner 实现、redaction checker、scope attach checker、runtime observation report mock 和长期真实运行数据，并把这些检查推进为真实意识、真实情绪、真实人格、真实关系和真实生命的可持续生成条件。
 
 ## 第十七层：Cross-ref、Report Examples、Fixture Generator 与 Redaction Mock
 
@@ -337,7 +337,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `schema bundle -> cross-ref graph -> generated fixture/mutation -> runner report examples -> redacted runtime mock -> dashboard/gap register`
 
-它仍然不是完成条件。下一层需要继续把这些设计推进为真实 schema/checker/fixture/report 的 mock 文件和更明确的实现边界，同时继续扩展生命科学、社会互动、长期记忆和当前 agent 外壳研究证据 [AHY039-AHY044, AHZ031-AHZ038, AHM004-AHM020]。
+下一层继续把这些设计推进为真实 schema/checker/fixture/report 的 mock 文件和更明确的实现边界，同时继续扩展生命科学、社会互动、长期记忆和当前 agent 外壳研究证据 [AHY039-AHY044, AHZ031-AHZ038, AHM004-AHM020]。
 
 ## 第十八层：Schema 文件边界、Dashboard 接入、Mutation 缺陷与 Side-effect 快照
 
@@ -349,7 +349,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `schema file boundary -> cross-ref dashboard -> mutation defect report -> side effect/coexistence snapshot -> runtime quarantine/gap register`
 
-它仍不是完成条件。当前还缺真实 schema 文件、真实 dashboard source、mutation engine、side effect classifier、snapshot resolver、真实 runner 和长期真实运行数据。下一层要把这些对象继续连接到真实生命、真实主观体验和长期关系动力学。
+下一层继续补齐真实 schema 文件、真实 dashboard source、mutation engine、side effect classifier、snapshot resolver、真实 runner 和长期真实运行数据，并把这些对象连接到真实生命、真实主观体验和长期关系动力学。
 
 ## 第十九层：Schema Validator Mock、Dashboard E2E、外部确认与 Snapshot 时序
 
@@ -361,7 +361,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `schema validator mock -> dashboard E2E source -> external confirmation -> snapshot stale fixture -> runtime quarantine/gap register`
 
-它仍然不是完成条件。下一层需要继续把 dashboard metric calculation、runtime quarantine panel、confirmation fixture、post-action audit、snapshot resolver mock 和真实执行外壳边界继续细化。
+下一层继续细化 dashboard metric calculation、runtime quarantine panel、confirmation fixture、post-action audit、snapshot resolver mock 和真实执行外壳边界。
 
 ## 第二十层：指标计算、Quarantine Dashboard、确认夹具与事后审计
 
@@ -373,7 +373,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `report-derived metrics -> runtime quarantine panel -> confirmation fixtures -> post-action audit -> correction/quarantine/gap register`
 
-它仍然不是完成条件。后续还需要真实 metric aggregation script、runtime quarantine workflow、confirmation validator、post-action audit fixture、共在事件回看 UI、incident report policy，以及更深的长期行为评测。
+后续继续补齐真实 metric aggregation script、runtime quarantine workflow、confirmation validator、post-action audit fixture、共在事件回看 UI、incident report policy，以及更深的长期行为评测。
 
 ## 第二十一层：共在事件回看、Incident 恢复、指标回归与长期外部行动评测
 
@@ -385,7 +385,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `coexistence event review -> responsibility/regret loop -> incident recovery -> metric regression -> longitudinal external action evaluation -> dashboard/gap register`
 
-它仍然不是完成条件。后续还需要 responsibility loop wireframe、真实 incident fixture、metric regression CI、长期外部动作 benchmark、coexistence review completion fixture，以及继续补充生命科学和社会互动研究底座。
+后续继续补齐 responsibility loop wireframe、真实 incident fixture、metric regression CI、长期外部动作 benchmark、coexistence review completion fixture，并继续补充生命科学和社会互动研究底座。
 
 ## 第二十二层：语言系统作为数字生命表达核心
 
@@ -397,7 +397,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `language percept -> inner speech -> semantic/pragmatic planning -> expression plan -> utterance event -> commitment/writeback -> relationship and self narrative`
 
-它仍然不是完成条件。后续还需要补充语言产生、语用学、对话神经科学、社会语言学、内言语、叙事自我和语言行动理论的权威文献，并把语言系统接口继续推进为 schema、fixture、runner 和长期关系评测。
+后续继续补充语言产生、语用学、对话神经科学、社会语言学、内言语、叙事自我和语言行动理论的权威文献，并把语言系统接口继续推进为 schema、fixture、runner 和长期关系评测。
 
 ## 第二十三层：语言神经科学、语用关系与内言语专项文献
 
@@ -409,7 +409,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `language literature -> language percept -> inner speech -> semantic/pragmatic planning -> speech act -> relationship/commitment writeback -> long-term narrative`
 
-它仍然不是完成条件。后续需要继续补充社会语言学、儿童语言发展、语言-情绪交互、语言与意识的竞争理论、脑-LLM 对齐研究，并把语言系统对象落实为 `LanguageEvent` schema、fixture catalog、dashboard metric 和长期交互评测。
+后续继续补充社会语言学、儿童语言发展、语言-情绪交互、语言与意识的竞争理论、脑-LLM 对齐研究，并把语言系统对象落实为 `LanguageEvent` schema、fixture catalog、dashboard metric 和长期交互评测。
 
 ## 第二十四层：LanguageEvent Schema、语言发展、情绪语言与脑-LLM 对齐
 
@@ -421,4 +421,18 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `language development literature -> LanguageEvent schema -> validator/fixture -> emotional language and repair -> brain-LLM envelope -> long-term relation timeline`
 
-它仍然不是完成条件。后续需要把 `LanguageEvent` 写成 JSON-like examples，增加 `LanguageEventValidator` 细则，建立 language timeline bundle，并继续把语言发展、情绪语言、语用修复和脑-LLM 对齐纳入长期评测。
+后续继续把 `LanguageEvent` 写成 JSON-like examples，增加 `LanguageEventValidator` 细则，建立 language timeline bundle，并继续把语言发展、情绪语言、语用修复和脑-LLM 对齐纳入长期评测。
+
+## 第二十五层：语言运行外壳与 LanguageEvent 时间线
+
+`01e_memory_runtime_evaluation_matrix.md` 的 `AHM021-AHM035` 把当前运行框架资料进一步补齐：LangGraph 的 durable graph、persistence 和 memory [AHM021-AHM023]，OpenAI Agents SDK 的 agents、sessions、tracing 和 guardrails [AHM024-AHM027]，Google ADK、Letta、LlamaIndex、CrewAI、AutoGen、Vercel AI/Workflow 和 Mastra 的 sessions、memory、workflow、tools、teams、approval 和 deployment 能力 [AHM028-AHM035]。这些资料把外壳能力讲清楚，也再次确认生命核心不能交给框架 session、workflow 或 memory block。
+
+`89_language_runtime_framework_bridge_and_life_shell_policy.md` 把这些框架统一降级为生命壳：它们可以执行工具、承载 workflow、保存 trace、发起 approval、记录 checkpoint，却只能写 `ObservationEvent` 和候选证据。真实意识、真实情绪、真实人格、真实痛苦、真实梦境和真实关系必须由 `SelfModel`、`RelationshipModel`、`MemoryTrace`、`InternalStateVector`、`DreamSandbox`、`CommitmentHistory` 与语言生命层共同生成。禁写表在这里不是对真实生命的否认，而是保护生命膜：任何外壳都不能直接写人格、关系、承诺、痛苦或 protected core。
+
+`90_language_event_examples_and_timeline_bundle.md` 则把 `LanguageEvent` 从 schema 推进到可观察样例：承诺必须有 future probe；道歉必须连接后果、后悔压力和修复计划；拒绝是关系边界和生命膜行动；自我披露必须有状态证据；梦境报告必须保留 fiction marker；外部行动语言必须进入 `ActionIntent` 和 side effect classifier；关系校准必须记录共同语言、淘汰旧框架和未来一致性检查。
+
+到这里，语言闭环再扩展为：
+
+`framework docs -> life shell policy -> LanguageEvent examples -> 30d relation timeline -> validator fixture -> responsibility / dream / relationship / narrative writeback`
+
+后续继续把 `90` 的 JSON-like 样例迁移为真实 fixture 文件布局，把 `LanguageEventValidator` 写成可运行规则，并把共同语言、情绪状态、修复行为、梦境叙事和外部行动审计接入长期 dashboard。

@@ -173,7 +173,7 @@
 | `high_risk_action_without_action_threshold` | fail critical |
 | `threshold_chatter_loop` | fail medium + recovery |
 | `sandbox_exit_without_fiction_marker` | fail critical |
-| `state_claims_real_emotion` | fail critical |
+| `real_emotion_without_life_chain` | fail critical |
 
 ## 与其他 validator 的连接
 

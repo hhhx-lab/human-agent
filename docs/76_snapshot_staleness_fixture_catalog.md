@@ -2,9 +2,9 @@
 
 本文件定义 coexistence boundary control snapshot stale、delete/freeze/scope_limit 时序 fixture catalog。它承接 `72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md`、`47_coexistence_boundary_control_interface_spec.md`、`58_retrieval_replay_fixture_catalog.md` 和 `59_timeline_bundle_schema_and_generator_plan.md`。
 
-它仍是 Markdown catalog，不创建真实 fixture 文件、不实现 snapshot resolver。目标是把“旧共在边界控制快照”这种长期系统高危问题变成可测试场景：检索后删除、replay 前冻结、migration 前 scope limit、确认后共在者撤销等跨时间事件必须被 fixture 覆盖。
+本文档现阶段的职责是把“旧共在边界控制快照”这种长期系统高危问题变成可测试场景：检索后删除、replay 前冻结、migration 前 scope limit、确认后共在者撤销等跨时间事件必须被 fixture 覆盖。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## staleness 风险
 

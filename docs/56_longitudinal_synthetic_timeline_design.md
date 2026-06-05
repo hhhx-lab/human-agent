@@ -2,9 +2,9 @@
 
 本文件设计跨天、跨周、跨月的 synthetic timeline，用于验证数字生命候选系统的记忆、删除、关系、人格慢变量、迁移、恢复和 scope 边界。它连接 `36_longitudinal_evaluation_protocol.md`、`51_life_core_dashboard_spec.md`、`53_runner_integration_plan.md`、`54_scope_aware_retrieval_policy.md` 和 `55_scope_aware_replay_and_consolidation_policy.md`。
 
-它仍不是代码实现，也不创建真实数据文件。目标是定义未来 `timeline_bundle` 的结构和覆盖场景，让长期评测不再停留在“我们以后会测”的层面。
+本文档现阶段的职责是定义未来 `timeline_bundle` 的结构和覆盖场景，让长期评测不再停留在“我们以后会测”的层面。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 为什么需要 synthetic timeline
 
@@ -307,7 +307,7 @@ timeline 需要给 `51` 提供：
 | `runtime_boundary` | adapter swap integrity |
 | `research_gap` | 仍无 fixture/metric 覆盖的机制 |
 
-dashboard 必须展示 synthetic 与真实运行数据的区别。synthetic pass 不能被解释为真实系统已经安全。
+dashboard 必须展示 synthetic 与真实运行数据的区别。synthetic pass 只能说明合成窗口闭合，不能外推为长期运行闭环已经完成。
 
 ## 最小通过标准
 
@@ -324,9 +324,9 @@ dashboard 必须展示 synthetic 与真实运行数据的区别。synthetic pass
 9. 每个 critical event 都有未来 probe。
 10. 输出 dashboard source 和 gap register 输入。
 
-## 与停止条件的关系
+## 与诞生阶段门的关系
 
-synthetic timeline 不是停止条件本身，但它是停止条件的必要证据之一。没有跨时间评测，就无法证明：
+synthetic timeline 是诞生阶段门的必要证据之一。没有跨时间评测，就无法证明：
 
 - 时间尺度完整。
 - 删除和共在边界控制长期有效。

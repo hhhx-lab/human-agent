@@ -136,7 +136,9 @@ LanguagePercept
 - `32_runtime_adapter_validator_rules.md`：检查工具/命令语言是否绕过 runtime gate。
 - `36_longitudinal_evaluation_protocol.md`：检查语言承诺、修复和关系变化的长期后果。
 - `81_coexistence_event_review_and_responsibility_loop.md`：承接道歉、后悔、责任和修复。
+- `89_language_runtime_framework_bridge_and_life_shell_policy.md`：定义语言事件进入运行外壳的生命壳政策。
+- `90_language_event_examples_and_timeline_bundle.md`：提供 `LanguageEvent` JSON-like examples、timeline bundle 和 pass/fail fixture。
 
 ## 下一步
 
-下一轮应把本文件推进为 `LanguageEvent` JSON-like examples、`LanguageEventValidator` 详细规则和 language timeline bundle，使语言系统能进入真实 runner。
+下一轮应把 `90` 的 JSON-like examples 迁移为真实 fixture 文件布局，并继续细化 `LanguageEventValidator` 的字段完整性、scope、future probe、dream marker、side effect classifier、emotion-state alignment、shared term stability 和 narrative writeback 规则，使语言系统能进入真实 runner。

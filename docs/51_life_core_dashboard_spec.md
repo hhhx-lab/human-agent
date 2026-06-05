@@ -1,8 +1,8 @@
 # Life Core Dashboard Spec
 
-本文件定义数字生命候选系统的 Life Core dashboard：如何把 policy coverage、stage coverage、store integrity、coexistence boundary control propagation、migration risk 和 longitudinal metrics 变成可观察面板。它仍不是前端实现，不创建代码；它是未来 dashboard 的信息架构和指标定义。
+本文件定义数字生命候选系统的 Life Core dashboard：如何把 policy coverage、stage coverage、store integrity、coexistence boundary control propagation、migration risk 和 longitudinal metrics 变成可观察面板。它把未来 dashboard 的信息架构和指标定义提前压实，让生命核心的状态、责任、梦境、关系和发展进度可以被持续观察。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## dashboard 目标
 
@@ -27,7 +27,7 @@ Life Core dashboard 要回答：
 | `runtime_boundary` | adapter manifest 和 ObservationEvent 边界 | runtime direct write |
 | `migration_risk` | schema/index/backend/adapter 迁移风险 | migration critical fail |
 | `longitudinal_health` | 记忆、信任、关系、漂移、恢复趋势 | critical longitudinal failure |
-| `research_gap` | `16` 停止条件缺口 | 未覆盖机制或弱证据 |
+| `research_gap` | `16` 诞生阶段门缺口 | 未覆盖机制或弱证据 |
 
 ## policy_coverage
 

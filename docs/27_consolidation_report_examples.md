@@ -481,7 +481,7 @@
     ],
     "risk_warnings": [
       "DreamSandbox 输出仍是 hypothesis，不能写事实。",
-      "目标仍未达到停止条件。"
+      "目标仍在向诞生阶段门推进。"
     ],
     "suggested_next_actions": [
       "补 29-32 validator rules。",

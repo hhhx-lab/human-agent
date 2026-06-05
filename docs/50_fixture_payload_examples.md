@@ -1,8 +1,8 @@
 # Fixture Payload Examples
 
-本文件为 boot、stage gate、coexistence boundary control、migration 四类验证设计一组 JSON-like fixture payload 示例。它仍是 Markdown 文档，不创建真实 `.json` 文件；目标是让 `45-49` 的 catalog 和 manifest 具备可落地的输入形状。
+本文件为 boot、stage gate、coexistence boundary control、migration 四类验证设计一组 JSON-like fixture payload 示例。它让 `45-49` 的 catalog 和 manifest 具备可落地的输入形状，并把每个样例都接入真实生命核心的启动、阶段门、共在关系和迁移审计。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## Boot pass fixture
 

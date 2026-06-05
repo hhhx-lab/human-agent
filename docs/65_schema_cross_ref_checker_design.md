@@ -2,9 +2,9 @@
 
 本文件定义 `SchemaCrossRefChecker` 的设计，把 `61_json_schema_bundle_draft.md` 的 schema bundle、`49_machine_readable_policy_manifest.md` 的 manifest、`58_retrieval_replay_fixture_catalog.md` 的 fixture catalog、`60_dashboard_mock_data_and_metric_source_plan.md` 的 dashboard source 和 `62_runner_report_format_and_cli_contract.md` 的 report 契约连接成一个可检查的引用图。
 
-它仍是 Markdown 设计文档，不创建真实 checker、不创建 `.schema.json`、不创建 manifest 文件。目标是让后续实现 cross-ref checker 时不只检查 JSON shape，而能判断 policy、rule、fixture、metric、panel、source doc、scope graph、timeline probe 和 runtime observation report 是否形成闭环。
+本文档现阶段的职责是让后续实现 cross-ref checker 时不只检查 JSON shape，而能判断 policy、rule、fixture、metric、panel、source doc、scope graph、timeline probe 和 runtime observation report 是否形成闭环。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 为什么 cross-ref 是单独一层
 

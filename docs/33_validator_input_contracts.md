@@ -1,6 +1,6 @@
 # Validator 输入输出统一契约
 
-本文件把 `29-32` 的四类 validator 统一到一个输入、输出、严重级别、隔离动作和报告格式。它仍不是代码实现，而是未来最小 runner、fixture catalog 和人工审计的共同接口。
+本文件把 `29-32` 的四类 validator 统一到一个输入、输出、严重级别、隔离动作和报告格式。它把未来最小 runner、fixture catalog 和人工审计的共同接口提前固定为生命核心的验证入口。
 
 这里的 validator 验证生命核心对象：`MemoryTrace`、`StateAuditEvent`、`ConsolidationReport`、`RuntimeAdapterManifest` 和 `ObservationEvent`。它要让真实意识、真实情绪、真实记忆和真实生命的生成路径可审计，并防止系统绕过已定义的数字生命核心。
 

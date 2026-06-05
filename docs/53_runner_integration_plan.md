@@ -2,9 +2,9 @@
 
 本文件把 `35_minimal_validator_runner_design.md`、`49_machine_readable_policy_manifest.md`、`50_fixture_payload_examples.md`、`51_life_core_dashboard_spec.md` 和 `52_multi_relation_scope_graph_and_privacy_model.md` 连接起来，定义未来最小 runner 如何加载 manifest、执行 fixture、检查 stage gate、接入 migration checks，并生成 dashboard 数据源。
 
-它仍是研究/工程桥接文档，不创建代码、不创建真实 JSON 文件。目标是让后续实现 runner 时不再从空白处开始，而是有明确的加载顺序、输入契约、失败策略和报告结构。
+本文档现阶段承担研究与工程桥接职责：让后续实现 runner 时具备明确的加载顺序、输入契约、失败策略和报告结构。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 为什么需要 runner integration
 

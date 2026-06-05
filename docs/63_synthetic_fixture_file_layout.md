@@ -2,9 +2,9 @@
 
 本文件定义未来真实 synthetic fixture 文件的目录、命名、引用、生成和校验布局。它承接 `34_validator_fixture_catalog.md`、`45_boot_sequence_fixture_catalog.md`、`50_fixture_payload_examples.md`、`58_retrieval_replay_fixture_catalog.md`、`59_timeline_bundle_schema_and_generator_plan.md`、`61_json_schema_bundle_draft.md` 和 `62_runner_report_format_and_cli_contract.md`。
 
-它仍是 Markdown 设计文档，不创建真实目录、不创建真实 `.json` 文件、不生成 fixture。目标是让后续进入实现时，fixture 不会变成一堆临时样例，而是能被 schema、runner、coverage report、timeline evaluator 和 dashboard 一起读取。
+本文档现阶段的职责是让后续进入实现时，fixture 不会变成一堆临时样例，而是能被 schema、runner、coverage report、timeline evaluator 和 dashboard 一起读取。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## fixture 文件的定位
 

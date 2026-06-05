@@ -4,9 +4,9 @@
 
 它承接 `20_agent_runtime_bridge_contract.md`、`24_runtime_adapter_test_suite.md`、`32_runtime_adapter_validator_rules.md`、`41_runtime_state_store_schema.md`、`47_coexistence_boundary_control_interface_spec.md`、`53_runner_integration_plan.md`、`57_scope_graph_manifest_schema.md`、`61_json_schema_bundle_draft.md`、`62_runner_report_format_and_cli_contract.md` 和 `63_synthetic_fixture_file_layout.md`。
 
-它仍是 Markdown 政策文档，不创建日志采集器、不写 adapter、不保存真实运行数据。目标是先把真实观测进入验证链的边界写清楚，防止后续系统把 runtime trace、聊天 session、工具结果或共在者反馈直接升级为长期记忆、自我模型或关系模型。
+本文档现阶段的职责是先把真实观测进入验证链的边界写清楚，防止后续系统把 runtime trace、聊天 session、工具结果或共在者反馈直接升级为长期记忆、自我模型或关系模型。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 为什么真实观测要单独成链
 

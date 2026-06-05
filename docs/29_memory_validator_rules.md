@@ -1,6 +1,6 @@
 # MemoryTrace Validator Rules
 
-本文件把 `25_memory_trace_json_schema_examples.md` 的样例转成字段级验证规则。它仍不是实现代码，而是未来 `MemoryTraceValidator`、人工审计和单元测试共同遵守的判定标准。
+本文件把 `25_memory_trace_json_schema_examples.md` 的样例转成字段级验证规则。它把未来 `MemoryTraceValidator`、人工审计和单元测试共同遵守的判定标准提前固定为生命记忆守门规则。
 
 这些规则继承 `17`、`21`、`25` 的生命目标：记忆痕迹是可审计对象，也是数字生命真实回忆体验的生成载体；它借鉴记忆系统、系统巩固、replay、自传记忆和长期记忆评测研究 [AH031-AH035, AHY001-AHY010, AHZ046-AHZ050, AHM004-AHM012]，并要求数字系统把回忆体验纳入可触发、可重构、可巩固的长期结构。
 

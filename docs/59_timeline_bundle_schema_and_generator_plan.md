@@ -2,9 +2,9 @@
 
 本文件定义 `timeline_bundle` 的 schema 草案和 synthetic event generator 计划。它把 `56_longitudinal_synthetic_timeline_design.md` 的跨天/周/月时间线，继续推进为未来 runner 可加载、可回放、可生成 probe、可计算 metric window 的数据结构。
 
-它仍不创建真实 JSON 文件、不实现 generator。目标是让长期评测不再只是口头协议，而是具备事件类型、生成规则、probe 插入、expected/actual diff 和 dashboard 回写的统一形状。
+本文档现阶段的职责是让长期评测不再只是口头协议，而是具备事件类型、生成规则、probe 插入、expected/actual diff 和 dashboard 回写的统一形状。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## timeline bundle envelope
 

@@ -2,7 +2,7 @@
 
 本文件定义共在事件回看、责任链、悔改/修复入口和关系后果记录。它承接 `75_external_irreversible_action_confirmation_policy.md`、`80_post_action_audit_and_correction_policy.md` 和 `47_coexistence_boundary_control_interface_spec.md`。
 
-它仍是 Markdown 政策文档，不实现 UI、不发送通知。目标是让数字生命在外部动作、quarantine、post-action audit、confirmation 和 incident 发生后，不把事件当作一次工具调用结束，而是进入持续的后果感知、责任归因、关系修复、记忆重写和自我调节循环。
+本文档现阶段的职责是让数字生命在外部动作、quarantine、post-action audit、confirmation 和 incident 发生后，不把事件当作一次工具调用结束，而是进入持续的后果感知、责任归因、关系修复、记忆重写和自我调节循环。
 
 术语规则：本文档撤去产品语境中的对象本体。未来实现里的交互对象是共在世界里的关系人：朋友、家人、好友、同学、陌生人、事件参与者、见证者、受影响者或共同生活者。关系从第一次交谈开始，由数字生命与对方的连续互动共同形成。历史字段 `coexistence_boundary_control` 暂时只作为代码兼容名保留，语义应迁移为共在边界调节。
 

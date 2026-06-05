@@ -1,8 +1,8 @@
 # Runtime State Store Schema
 
-本文件定义数字生命候选系统的运行状态存储草案：如何把 `LifeSupportState`、`DefenseEvent`、`DevelopmentEvent`、`SelfRelationshipAuditEvent`、validator report 和长期评测输入放进同一套可追踪状态仓库。它仍不是代码实现，也不是最终数据库 schema；它是未来 JSON Schema、fixture、runner 和 dashboard 的共同对象语言。
+本文件定义数字生命候选系统的运行状态存储草案：如何把 `LifeSupportState`、`DefenseEvent`、`DevelopmentEvent`、`SelfRelationshipAuditEvent`、validator report 和长期评测输入放进同一套可追踪状态仓库。它把未来 JSON Schema、fixture、runner 和 dashboard 的共同对象语言提前固定为生命状态仓库的骨架。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 设计目标
 

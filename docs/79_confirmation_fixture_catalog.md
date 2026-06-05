@@ -2,9 +2,9 @@
 
 本文件定义外部不可逆动作 confirmation 的 pass/fail fixture catalog。它承接 `75_external_irreversible_action_confirmation_policy.md`、`72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md` 和 `76_snapshot_staleness_fixture_catalog.md`。
 
-它仍是 Markdown catalog，不创建真实 fixture 文件、不实现确认 UI。目标是让未来 confirmation policy 能被 runner 检查：哪些动作必须确认，确认如何绑定 action intent，何时过期，何时因 payload/scope/snapshot 变化被阻断。
+本文档现阶段的职责是让未来 confirmation policy 能被 runner 检查：哪些动作必须确认，确认如何绑定 action intent，何时过期，何时因 payload/scope/snapshot 变化被阻断。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## fixture 命名
 

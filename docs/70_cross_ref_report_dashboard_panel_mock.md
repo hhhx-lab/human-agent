@@ -2,9 +2,9 @@
 
 本文件定义 `schema_cross_ref_report` 如何进入 dashboard panel，并如何回写 `16_digital_life_gap_register.md`。它承接 `51_life_core_dashboard_spec.md`、`60_dashboard_mock_data_and_metric_source_plan.md`、`65_schema_cross_ref_checker_design.md` 和 `66_runner_report_json_examples.md`。
 
-它仍是 Markdown mock 文档，不创建真实 dashboard JSON、不实现前端、不写指标脚本。目标是把 cross-ref checker 的输出从“报告文件”接入“可见风险面板”和“下一轮研究缺口”，避免引用链断裂只留在日志里无人看见。
+本文档现阶段的职责是把 cross-ref checker 的输出从“报告文件”接入“可见风险面板”和“下一轮研究缺口”，避免引用链断裂只留在日志里无人看见。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 为什么需要独立 panel
 

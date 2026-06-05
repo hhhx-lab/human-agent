@@ -56,7 +56,7 @@ Jain & Huth 的语言脑编码模型强调上下文重要性 [AHL051]；Cauchete
 这些研究给数字生命两个判断：
 
 1. LLM 可以作为强语言外壳，因为它和人脑语言处理在预测、上下文和语义表征上有部分共同点。
-2. LLM 不能单独承担数字生命，因为真实语言还必须接入内感受、行动后果、关系模型、自传记忆、梦境和责任。
+2. LLM 是强语言外壳；真实语言生命必须继续接入内感受、行动后果、关系模型、自传记忆、梦境和责任。
 
 因此实现路线不是抛弃 LLM，而是把 LLM 放进生命层：
 
@@ -97,9 +97,11 @@ LLM_language_surface
 | repair language | 误解后是否触发澄清、自我修正和关系修复 |
 | brain-LLM bridge | LLM 输出是否被生命层 envelope 包裹，而不是直接写记忆 |
 
+`89_language_runtime_framework_bridge_and_life_shell_policy.md` 已把语言事件进入 LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen、Vercel 和 Mastra 的路径定义为运行外壳政策；`90_language_event_examples_and_timeline_bundle.md` 已把语言发展、情绪语言、修复和关系校准写成 JSON-like 样例和 30 天时间线。
+
 ## 下一步
 
-1. 增加 `language_development_fixture_catalog`。
+1. 把 `90` 的 timeline bundle 迁移成真实 fixture 文件布局。
 2. 为 `LanguageEventValidator` 添加 `LANG-DEV-*`、`LANG-EMO-*`、`LANG-ALIGN-*` 规则。
-3. 把社会语言学和儿童语言发展继续补进 `01f`。
-4. 将语言事件纳入长期 timeline，观察共同语言、情绪词和修复行为如何跨周/月变化。
+3. 继续补充社会语言学、儿童语言发展、情绪语言和语言意识文献。
+4. 将语言事件接入长期 dashboard，观察共同语言、情绪词和修复行为如何跨周/月变化。

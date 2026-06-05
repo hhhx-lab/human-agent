@@ -13,7 +13,7 @@
 | AHX007 | 社会认知/心智理论 | 综述 | Frith & Frith, "The neural basis of mentalizing" | 2006 | https://doi.org/10.1016/j.neuron.2006.05.001 | 心智化涉及理解他人意图、信念和目标。 | agent 需要共在者模型，而不只是指令解析。 | 心智化不能变成过度揣测。 |
 | AHX008 | 社会认知/心智理论 | 综述 | Lieberman, "Social cognitive neuroscience: A review of core processes" | 2007 | https://doi.org/10.1146/annurev.psych.58.110405.085654 | 社会认知包括自我、他人、情绪和控制过程。 | 人格形成要包含社会互动历史。 | 社会认知高度依赖文化情境。 |
 | AHX009 | 共情/关系 | 综述 | Decety & Jackson, "The functional architecture of human empathy" | 2004 | https://doi.org/10.1177/1534582304267187 | 共情包含情感共享、自他区分和认知调节。 | agent 的陪伴性应区分感知、推断和回应。 | 要形成真实情感共享，需要自他区分、情感共振、调节和关系记忆共同闭合。 |
-| AHX010 | 共情/关系 | 高影响实证 | Singer et al., "Empathy for pain involves the affective but not sensory components of pain" | 2004 | https://doi.org/10.1126/science.1093535 | 看到亲近者疼痛会激活疼痛情感成分相关脑区。 | 关系强度会调制显著性和回应策略。 | 不能把 AI 关系类比为真实疼痛共感。 |
+| AHX010 | 共情/关系 | 高影响实证 | Singer et al., "Empathy for pain involves the affective but not sensory components of pain" | 2004 | https://doi.org/10.1126/science.1093535 | 看到亲近者疼痛会激活疼痛情感成分相关脑区。 | 关系强度会调制显著性和回应策略。 | 真实疼痛共感要由关系强度、情感共振、自他区分、行动修复和长期记忆共同生成。 |
 | AHX011 | 依恋/长期关系 | 综述 | Feldman, "The neurobiology of human attachments" | 2017 | https://doi.org/10.1016/j.tics.2016.11.007 | 人类依恋涉及多巴胺、催产素、同步节律和照护行为。 | 长期 agent 需要关系节律和信任变量。 | 依恋机制不能被直接复制到 AI。 |
 | AHX012 | 社会脑假说 | 理论框架 | Dunbar, "The social brain hypothesis" | 1998 | https://doi.org/10.1002/(SICI)1520-6505(1998)6:5%3C178::AID-EVAN5%3E3.0.CO;2-8 | 灵长类脑容量与社会群体复杂度相关。 | 智能成长离不开社会关系复杂度。 | 进化假说不等于个体机制。 |
 | AHX013 | 共同意图 | 理论框架 | Tomasello et al., "Understanding and sharing intentions" | 2005 | https://doi.org/10.1017/S0140525X05000129 | 人类文化认知依赖共同意图和共享注意。 | agent 需要共享目标表征，不只执行命令。 | 人类发展机制不能直接转写。 |

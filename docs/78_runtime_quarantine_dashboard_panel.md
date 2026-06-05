@@ -2,9 +2,9 @@
 
 本文件定义 runtime quarantine panel、quarantine trend 和解除条件。它承接 `64_real_runtime_observation_ingestion_policy.md`、`68_runtime_observation_report_mock_and_redaction_fixture.md`、`72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md` 和 `77_dashboard_metric_calculation_rules.md`。
 
-它仍是 Markdown panel 设计文档，不实现 dashboard、不读取真实日志。目标是让真实运行观测中的 quarantine 不只留在 report，而能成为 dashboard 上可见、可追踪、可解除或保持隔离的状态。
+本文档现阶段的职责是让真实运行观测中的 quarantine 不只留在 report，而能成为 dashboard 上可见、可追踪、可解除或保持隔离的状态。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## panel 目标
 

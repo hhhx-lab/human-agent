@@ -1,10 +1,10 @@
 # JSON Schema Bundle Draft
 
-本文件定义 `JSON Schema bundle` 的草案，把 `49-60` 中出现的 policy manifest、stage gate、fixture、migration、scope graph、timeline bundle 和 dashboard source 统一到未来可实现的 schema 包。它仍然是 Markdown 文档，不创建真实 `.json` 或 `.schema.json` 文件，不实现 checker。
+本文件定义 `JSON Schema bundle` 的草案，把 `49-60` 中出现的 policy manifest、stage gate、fixture、migration、scope graph、timeline bundle 和 dashboard source 统一到未来可实现的 schema 包。它把未来 `.json`、`.schema.json` 和 checker 的对象边界提前压成生命层 schema 语言。
 
 目标是让后续工程实现不再把 schema 散落在 runner、dashboard、fixture generator 和 adapter 代码里，而是先有一个稳定的 bundle 边界：哪些字段是共享定义，哪些对象必须有 source doc，哪些失败必须 fail closed，哪些数据只能来自 synthetic fixture，哪些真实运行观测必须先经过 scope、privacy、lifecycle 和 coexistence boundary control 检查。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 为什么需要 bundle
 

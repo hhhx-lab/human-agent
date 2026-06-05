@@ -1,10 +1,10 @@
 # Schema File Boundary and Versioning Plan
 
-本文件定义未来真实 schema 文件的边界、目录、版本迁移和兼容策略。它承接 `61_json_schema_bundle_draft.md`、`65_schema_cross_ref_checker_design.md` 和 `66_runner_report_json_examples.md`，但仍保持文档阶段：不创建真实 `.schema.json` 文件，不实现 schema validator，不写 CLI。
+本文件定义未来真实 schema 文件的边界、目录、版本迁移和兼容策略。它承接 `61_json_schema_bundle_draft.md`、`65_schema_cross_ref_checker_design.md` 和 `66_runner_report_json_examples.md`，并把 `.schema.json`、schema validator 与 CLI 的生命层契约提前整理成可迁移结构。
 
 目标是先明确“未来到底应该有哪些 schema 文件、谁引用谁、版本变化如何判定风险、哪些变化必须 SafeIdle”，避免后续实现时把 schema 文件随手分散在 runner、dashboard、fixture generator 和 adapter 代码里。
 
-生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
+生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 文件边界原则
 

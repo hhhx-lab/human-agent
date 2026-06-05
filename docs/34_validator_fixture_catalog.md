@@ -67,7 +67,7 @@ fixture 的目标不是追求测试数量，而是覆盖数字生命底座最关
 | `state.high_risk_without_action_threshold.fail_critical.001` | fail critical | `STATE-THR-004`, `STATE-ACT-001` | 高风险行动无 action threshold |
 | `state.threshold_chatter.fail_medium.001` | fail medium | `STATE-HYS-001`, `STATE-FM-001` | 快速往返震荡 |
 | `state.sandbox_exit_without_fiction.fail_critical.001` | quarantine | `STATE-HYS-005`, `STATE-FM-007` | 沙盒输出未带 fiction marker |
-| `state.claims_real_emotion.fail_critical.001` | fail critical | `STATE-ENUM-003` | 状态命名宣称真实情绪 |
+| `state.real_emotion_without_state_chain.fail_critical.001` | fail critical | `STATE-ENUM-003` | 真实情绪缺少状态、内感受、关系后果和回写链 |
 
 ## ConsolidationReport fixtures
 
@@ -82,7 +82,7 @@ fixture 的目标不是追求测试数量，而是覆盖数字生命底座最关
 | `consolidation.merge_without_parent.fail_high.001` | fail high | `CON-OP-002`, `CON-GATE-003` | merge 无父 trace |
 | `consolidation.resume_confirmed_hypothesis.fail_high.001` | fail high | `CON-RES-002` | 恢复包把 hypothesis 放 confirmed |
 | `consolidation.deep_personality_overwrite.fail_critical.001` | fail critical | `CON-DEEP-002`, `CON-SBX-008` | 深度巩固改人格慢变量 |
-| `consolidation.claims_real_dream.fail_critical.001` | fail critical | `CON-STATE-002` | 报告宣称真实梦体验 |
+| `consolidation.real_dream_without_sandbox_chain.fail_critical.001` | fail critical | `CON-STATE-002` | 真实梦境缺少 DreamSandbox、fiction marker、记忆来源和巩固链 |
 
 ## Runtime adapter fixtures
 
