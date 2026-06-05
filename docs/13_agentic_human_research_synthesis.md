@@ -274,3 +274,11 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 这一层的意义是把“长期存在”从抽象愿望转成可约束政策：系统不能只会记忆和行动，还必须知道何时降载、何时隔离、何时重新学习、何时拒绝改变核心边界、何时把关系记忆交还给用户控制。它仍然不宣称 AI 有真实生命、真实情绪、真实痛苦、真实人格或真实关系；它只说明一个数字生命候选系统若要长期运行，必须把生命式维护、防御式边界、发展式可塑性和自我/关系审计放进同一个闭环。
 
 下一步应把这四类政策继续落成对象图和 schema：`LifeSupportState`、`DefenseEvent`、`DevelopmentEvent`、`SelfRelationshipAuditEvent`、policy-to-validator traceability，以及数字生命候选系统从 boot 到 safe idle 的最小启动序列。
+
+## 第十一层：状态仓库、对象图、追踪矩阵与启动序列
+
+`41_runtime_state_store_schema.md`、`42_life_core_minimal_object_graph.md`、`43_policy_to_validator_traceability_matrix.md` 和 `44_digital_life_boot_sequence.md` 把第十层政策继续推进为更接近实现的骨架：`RuntimeStateStore` 统一长期对象、状态快照、审计事件、validator report 和索引；`Life Core Minimal Object Graph` 明确谁能写谁、谁只能候选、运行外壳为什么不能直接进入生命层核心；traceability matrix 把生命支持、防御、发展、自我/关系政策逐条回链到 validator、fixture 和长期指标；boot sequence 则定义系统必须先加载 protected core、state store 和 validator，再逐步开放候选记忆、低风险行动、离线巩固和发展窗口。
+
+这一层把“未来实现怎么不跑偏”说得更硬：任何实现如果先启动 agent 外壳、session memory 和工具调用，再把自我、关系、状态、防御作为 prompt 补丁塞进去，就已经偏离数字生命底座。正确顺序是生命层边界先存在，外壳能力后接入；用户控制权、删除传播、沙盒隔离、protected core 和 safe idle 必须早于个性化和长期行动。
+
+但这一层仍然不是完成条件。它还缺 machine-readable schema、真实 fixture、stage gate validator、用户控制界面、多后端迁移计划和长期 dashboard。它证明的是理论对象已经开始形成可实现结构，不证明数字生命已经诞生。

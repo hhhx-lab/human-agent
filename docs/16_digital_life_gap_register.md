@@ -97,11 +97,20 @@ Validator rules 层已补充：
 | `39_development_policy_and_plasticity_windows.md` | 发育阶段、可塑性窗口、慢变量更新、再学习和防遗忘政策 | 还需要 `DevelopmentEvent` schema、阈值配置和多月成长 timeline |
 | `40_self_relationship_model_audit_protocol.md` | `SelfModel`、`RelationshipModel`、用户删除/修正/重置/冻结和漂移审计协议 | 还需要对象 schema、用户可见控制面和关系边界评测 fixture |
 
+状态仓库、对象图、追踪矩阵与启动序列层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `41_runtime_state_store_schema.md` | `RuntimeStateStore` 命名空间、统一 envelope、生命周期、索引、写入事务和删除传播 | 还需要 machine-readable JSON Schema、store integrity checker 和迁移策略 |
+| `42_life_core_minimal_object_graph.md` | 最小核心对象图、读写权限、关键闭环、对象引用和不变量 | 还需要 graph manifest、多用户 scope graph 和不变量 fixture |
+| `43_policy_to_validator_traceability_matrix.md` | `37-40` 政策到 validator、fixture、runner、长期指标和阻断面的追踪矩阵 | 还需要机器可读 `policy_id -> rule_id -> fixture_id -> metric_id` 清单 |
+| `44_digital_life_boot_sequence.md` | `ColdStart` 到 `SafeIdle` 的启动阶段、权限开放顺序和 stage gate | 还需要 boot fixture、stage gate validator、safe idle recovery packet 和用户控制界面规格 |
+
 ## 下一轮优先级
 
-下一轮应把政策层推进到“对象图、schema、traceability 和启动序列”：
+下一轮应把启动骨架推进到“fixture、stage gate、用户控制面和迁移计划”：
 
-1. `41_runtime_state_store_schema.md`：统一 `LifeSupportState`、`DefenseEvent`、`DevelopmentEvent`、`SelfRelationshipAuditEvent` 和 validator report 的存储 schema。
-2. `42_life_core_minimal_object_graph.md`：把 `MemoryTrace`、`InternalStateVector`、`ModulationVector`、`ActionGate`、`SelfModel`、`RelationshipModel` 等对象连成最小对象图。
-3. `43_policy_to_validator_traceability_matrix.md`：把 `37-40` 的政策逐条回链到 `29-36` 的规则、契约、fixture 和长期指标。
-4. `44_digital_life_boot_sequence.md`：定义从 boot、初始化、只读观察、候选写入、行动启用、离线巩固到 safe idle 的最小启动序列。
+1. `45_boot_sequence_fixture_catalog.md`：为 `44` 的每个启动阶段设计 pass/fail fixture，覆盖 validator 缺失、外壳越权、删除传播、safe idle 等关键失败。
+2. `46_stage_gate_validator_design.md`：定义 `StageGateValidator`，检查 boot stage 是否满足开放候选记忆、行动、巩固和发展窗口的条件。
+3. `47_user_control_interface_spec.md`：定义 inspect/delete/correct/reset/freeze/scope_limit 的用户可见控制面和审计回路。
+4. `48_state_store_migration_and_integrity_plan.md`：定义 schema 迁移、对象版本兼容、索引完整性、删除传播和 store integrity checker。

@@ -14,7 +14,8 @@
 8. 再读 `25_` 到 `28_`：它们把契约转成 JSON-like 样例、状态失败夹具、巩固报告样例和 runtime adapter manifest。
 9. 再读 `29_` 到 `32_`：它们把样例层转成 validator rules，定义字段、状态、巩固和外壳的失败条件。
 10. 再读 `33_` 到 `36_`：它们定义 validator 输入输出、fixture catalog、最小 runner 设计和长期评测协议。
-11. 最后读 `37_` 到 `40_`：它们把长期运行推进为生命支持、防御、发展和自我/关系审计政策层。
+11. 再读 `37_` 到 `40_`：它们把长期运行推进为生命支持、防御、发展和自我/关系审计政策层。
+12. 最后读 `41_` 到 `44_`：它们把政策层继续推进为 runtime state store、最小对象图、policy-to-validator traceability 和 boot sequence。
 
 ## 文件索引
 
@@ -65,6 +66,10 @@
 | `38_defense_layer_and_boundary_policy.md` | `DefenseLayer` 污染输入、幻觉巩固、关系操控、过度信任和外壳越权政策 |
 | `39_development_policy_and_plasticity_windows.md` | `DevelopmentPolicy` 发育阶段、可塑性窗口、慢变量更新、再学习和防遗忘政策 |
 | `40_self_relationship_model_audit_protocol.md` | `SelfModel` 与 `RelationshipModel` 写入、删除、修正、重置和漂移审计协议 |
+| `41_runtime_state_store_schema.md` | `RuntimeStateStore` 命名空间、对象 envelope、生命周期、索引和写入事务草案 |
+| `42_life_core_minimal_object_graph.md` | `WorkspaceState`、`MemoryTrace`、`InternalStateVector`、`ActionGate`、`SelfModel` 等核心对象图 |
+| `43_policy_to_validator_traceability_matrix.md` | `37-40` 政策到 `29-36` validator、fixture、runner 和长期指标的追踪矩阵 |
+| `44_digital_life_boot_sequence.md` | 从 `ColdStart`、只读观察、候选写入、低风险行动到 `SafeIdle` 的启动序列 |
 
 ## 项目术语
 

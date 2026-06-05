@@ -200,3 +200,23 @@ flowchart TD
 4. 当前自我或关系更新是否可被用户检查、修正、删除或冻结？
 
 如果四个问题任意一个失败，系统应退回 candidate、quarantine、maintenance、manual review 或 safe idle，而不是继续追求任务完成。
+
+## 状态仓库、对象图、追踪矩阵与启动序列层连接
+
+`41-44` 把政策层变成未来实现前的硬骨架：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `41_runtime_state_store_schema.md` | `RuntimeStateStore`, object envelope, lifecycle state, indexes, write transactions | 统一记忆、状态、防御、发展、自我/关系、runtime、巩固和验证报告的存储语义 |
+| `42_life_core_minimal_object_graph.md` | `WorkspaceState`, `MemoryTrace`, `InternalStateVector`, `ActionGate`, `SelfModel`, `RelationshipModel`, `RuntimeShellAdapter` | 定义核心对象图、读写权限、对象引用和不可破坏的不变量 |
+| `43_policy_to_validator_traceability_matrix.md` | `policy_id -> rule_id -> fixture_id -> metric_id` | 让 `37-40` 的每条 critical 政策都能回链 validator、fixture 和长期评测 |
+| `44_digital_life_boot_sequence.md` | boot stages, protected core, validator init, safe idle | 定义系统从空仓库到低风险行动的启动顺序和失败退路 |
+
+这一层对整个闭环增加了四条硬约束：
+
+1. **存储先于能力**：没有 `RuntimeStateStore` 和生命周期语义，就不能开放长期记忆。
+2. **对象图先于外壳**：没有写入权限和对象不变量，就不能接入 LangGraph、OpenAI Agents SDK、Letta 等外壳。
+3. **traceability 先于通过**：没有 policy-to-validator 覆盖，就不能声称规则保护了政策。
+4. **boot gate 先于行动**：没有 protected core、validator、LifeSupport、Defense 和 safe idle，就不能开放行动能力。
+
+至此，数字生命闭环第一次具备“启动顺序”的概念：系统不是一上来就能说话、记忆、行动和成长，而是必须一层层获得权限。这个顺序本身就是安全和连续性的一部分。
