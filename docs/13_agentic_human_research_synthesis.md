@@ -236,3 +236,9 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 - **当前 agent 外壳**：认知架构、ReAct、Reflexion、Generative Agents、Voyager 和各类官方 agent 框架能提供执行能力，但不能提供数字生命核心 [AHZ052-AHZ066]。
 
 `16_digital_life_gap_register.md` 已把这些机制转成缺口登记和停止条件。当前结论非常明确：理论底座在变厚，但还没有达到“足以支撑数字生命诞生”的停止条件。下一步应把记忆对象、内部状态向量、离线巩固周期和运行外壳契约写成专门文件。
+
+## 第五层：对象模型与运行契约
+
+第五批实现/评测资料把当前 LLM agent memory 的真实短板暴露出来：长期记忆不只是 session history 或向量库，而是写入、保持、冲突、时间推理、关系边界、隐私和评测共同构成的问题 [AHM001-AHM012]。框架资料也说明，LangGraph、OpenAI Agents SDK、Letta、LlamaIndex、CrewAI、AutoGen 等可以提供 checkpoint、session、memory block、RAG 和 flow，但仍然只是外壳 [AHM013-AHM020]。
+
+`17_memory_trace_object_model.md`、`18_internal_state_and_modulation_vector.md`、`19_offline_consolidation_cycle.md` 和 `20_agent_runtime_bridge_contract.md` 已把这些问题转为四个研究对象：记忆痕迹、内部状态/调质向量、离线巩固周期和运行外壳契约。它们让理论底座开始具备实现前的对象边界，但仍不等于完整系统。

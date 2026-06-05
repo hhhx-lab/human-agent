@@ -41,11 +41,22 @@
 - 安全边界还不够完整：尤其是幻觉巩固、人格漂移、依恋风险、过度信任、长期操控和自我叙事污染。
 - 数字生命必须有可评测的长期成长指标，而当前还只是提出指标方向。
 
+## 已补充专题
+
+本轮已把上一轮列出的四个专题写成独立文件：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `17_memory_trace_object_model.md` | 记忆对象、写入、检索、修正、遗忘、保护 | 还需要真实 schema、迁移策略和评测脚本 |
+| `18_internal_state_and_modulation_vector.md` | 内部状态、调质输出、时间尺度和调制规则 | 还需要状态转移方程和阈值学习机制 |
+| `19_offline_consolidation_cycle.md` | replay、清理、梦境沙盒、幻觉巩固防护 | 还需要周期调度器和巩固报告格式 |
+| `20_agent_runtime_bridge_contract.md` | 现有 agent 框架外壳接口和越界禁令 | 还需要每个框架的 adapter 映射和测试夹具 |
+
 ## 下一轮优先级
 
-下一轮不应继续均匀铺材料，而应集中写四个专题：
+下一轮应继续把对象模型推进到“可验证契约”：
 
-1. `17_memory_trace_object_model.md`：把情景、语义、程序、关系、价值、自我叙事整合成可审计记忆对象。
-2. `18_internal_state_and_modulation_vector.md`：把疲惫、唤醒、不确定性、压力、显著性、奖励、抑制写成统一状态向量。
-3. `19_offline_consolidation_cycle.md`：把睡眠、梦境、replay、清理、反事实模拟和长期巩固写成周期机制。
-4. `20_agent_runtime_bridge_contract.md`：把 LangGraph、OpenAI Agents SDK、ADK、Letta 等外壳接到生命层，而不让外壳成为核心。
+1. `21_memory_schema_and_audit_protocol.md`：为 `MemoryTrace` 写出字段约束、版本迁移、删除/修正协议和评测清单。
+2. `22_state_transition_and_threshold_model.md`：把 `InternalStateVector` 的状态变化写成可计算阈值和状态转移规则。
+3. `23_consolidation_report_and_dream_sandbox_protocol.md`：定义离线巩固报告、沙盒假设和事实写入门控。
+4. `24_runtime_adapter_test_suite.md`：为 LangGraph、OpenAI Agents SDK、Letta/LlamaIndex/CrewAI 等外壳定义统一 adapter 测试。

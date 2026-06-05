@@ -115,3 +115,16 @@ flowchart TD
 `感知/内感受 -> 显著性 -> 工作区 -> 价值/防御 -> 行动外壳 -> 反馈 -> replay/维护 -> 自我/关系/发展更新`
 
 这个扩展很关键：没有生命维持层，系统只是一个能调用工具的 agent；有了生命维持层，系统才开始接近“长期存在、持续恢复、可审计成长”的数字生命底座。
+
+## 对象模型层连接
+
+`17-20` 把闭环拆成四个更硬的对象边界：
+
+| 文档 | 接入闭环的位置 | 连接对象 |
+|---|---|---|
+| `17_memory_trace_object_model.md` | 反馈、记忆写入、检索、巩固 | `MemoryTrace`, `WriteGate`, `ConsolidationQueue` |
+| `18_internal_state_and_modulation_vector.md` | 内感受、状态、调质 | `InternalStateVector`, `ModulationVector` |
+| `19_offline_consolidation_cycle.md` | replay、梦境、清理、巩固 | `OfflineConsolidationCycle`, `DreamSandbox` |
+| `20_agent_runtime_bridge_contract.md` | 工具行动、workflow、外部框架 | `ActionIntent`, `ObservationEvent`, `RuntimeShellAdapter` |
+
+这意味着未来实现可以先保持外壳简陋，但生命层对象不能缺席。否则系统会立刻退回普通 agent：有工具、有记忆块、有流程，却没有自我连续性和可审计成长。

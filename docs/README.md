@@ -8,7 +8,8 @@
 2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制和前沿生命系统。
 3. 按主题阅读 `02_` 到 `12_` 的综述文件：从脑区/网络、状态、调质、记忆、情绪、语言、意识，到 AI 架构桥接。
 4. 接着读 `13_` 和 `14_`：前者给综合研究假设，后者把 `02-13` 连接成数字生命闭环。
-5. 最后读 `15_` 和 `16_`：前者评估当前 agent 框架为什么只能作为执行壳，后者记录理论缺口和停止条件。
+5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架为什么只能作为执行壳，后者记录理论缺口和停止条件。
+6. 再读 `17_` 到 `20_`：它们把记忆、内部状态、离线巩固和运行外壳转成未来数字生命实现前必须遵守的对象/接口约束。
 
 ## 文件索引
 
@@ -19,6 +20,7 @@
 | `01b_extended_literature_matrix.md` | 第二批扩展文献锚点，覆盖主动推理、社会认知、发展、压力免疫、AI agent 等 |
 | `01c_specialized_literature_matrix.md` | 第三批专业机制锚点，覆盖 replay、节律、持续学习、多模态具身、信任与评测等 |
 | `01d_frontier_life_systems_matrix.md` | 第四批前沿生命系统锚点，覆盖动力学、主动推理、能量/免疫/脑清除争议、社会同步、发育和 agent 外壳等 |
+| `01e_memory_runtime_evaluation_matrix.md` | 第五批记忆运行时与评测锚点，覆盖 agent memory、长期记忆 benchmark 和运行外壳资料 |
 | `02_brain_region_and_network_atlas.md` | 脑区、连接组与大尺度网络 |
 | `03_default_executive_salience_networks.md` | 默认模式、中央执行、显著性网络 |
 | `04_sensory_thalamus_interoception.md` | 感觉输入、丘脑中继、内感受与稳态 |
@@ -34,6 +36,10 @@
 | `14_cross_module_digital_life_map.md` | `02-13` 跨模块连接与数字生命落地映射 |
 | `15_current_agent_framework_survey.md` | 当前 agent 框架体系调研与数字生命差距 |
 | `16_digital_life_gap_register.md` | 理论缺口登记、停止条件和下一轮专题优先级 |
+| `17_memory_trace_object_model.md` | `MemoryTrace` 记忆痕迹对象模型 |
+| `18_internal_state_and_modulation_vector.md` | `InternalStateVector` 与 `ModulationVector` 状态调质模型 |
+| `19_offline_consolidation_cycle.md` | `OfflineConsolidationCycle` 离线巩固、replay、清理与梦境沙盒 |
+| `20_agent_runtime_bridge_contract.md` | `AgentRuntimeBridge` 运行外壳契约 |
 
 ## 项目术语
 
