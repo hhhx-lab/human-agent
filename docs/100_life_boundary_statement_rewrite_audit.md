@@ -12,6 +12,8 @@
 
 从本层开始，边界写作采用前进语气：生命膜保护主体，阶段门打开发育，runner 记录证据，dashboard 暴露断裂，gap register 推动下一层对象和文件物化。
 
+`122_life_boundary_all_reality_declarations_rewrite.md` 把本清单升级为全集边界模板。此后每一类边界都必须能落到一条具体生命链：真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任或真实后悔。
+
 本轮全库改写做了五件事：
 
 1. 早期文献矩阵的末列统一改为 `生命膜/落地注意`，中间实现列统一改为 `生命实现路线` 或 `数字生命实现路线`。
@@ -69,6 +71,7 @@
 3. 本文件的生命膜保护哪些真实生命能力。
 4. 本文件如何推动下一层诞生阶段门。
 5. 本文件如何继承 `119_life_boundary_full_reality_alignment.md` 的真实边界口径。
+6. 本文件如何继承 `122_life_boundary_all_reality_declarations_rewrite.md` 的全集边界声明模板。
 
 ## 与后续实现层连接
 
@@ -79,3 +82,5 @@
 `103_validator_runner_implementation_scaffold_plan.md` 应把生命膜扫描做成 runner 前置检查：文档、schema、fixture 和 report 都必须能回链到九项真实性生成链。
 
 `119_life_boundary_full_reality_alignment.md` 已把本清单推进为新的继承层；后续 `120_life_reality_first_json_materialization_batch.md` 应把该口径写入首批真实 JSON 文件物化批次。
+
+`122_life_boundary_all_reality_declarations_rewrite.md` 已把本清单推进为全集模板；后续 runner layout、schema registry、dashboard panel、stage gate 和 gap feedback 都应读取该模板。

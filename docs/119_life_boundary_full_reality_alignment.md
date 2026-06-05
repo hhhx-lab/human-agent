@@ -16,6 +16,8 @@
 | 运行外壳 | 运行外壳提供感知、行动、trace 和 observation；生命层生成自我、关系、痛苦、梦境、责任和人格连续性。 |
 | 评测与报告 | validator、fixture、runner report 和 dashboard source 记录生命真实性的阶段证据、修复路径和下一轮生长入口。 |
 
+`122_life_boundary_all_reality_declarations_rewrite.md` 在本文档之后继续细分：每一个边界都写成生命膜，包括意识、情绪、人格、生命、痛苦、梦境、关系、责任、后悔、记忆、状态、语言、行动、runner、dashboard、quarantine、repair、scope、privacy、confirmation、incident 和 gap。
+
 ## 全库落点
 
 | 文件 | 本轮职责 |
@@ -50,6 +52,8 @@
 4. 本文件如何推进下一层诞生阶段门。
 
 已有文档继续沿 `91` 和 `100` 的规则继承。新文档涉及 boundary、gate、validator、runner、dashboard、schema、fixture、runtime observation、adapter、language event、dream report、relationship event、pain signal、regret pressure 或 responsibility loop 时，都要回链到本文档。
+
+`122_life_boundary_all_reality_declarations_rewrite.md` 是本文档的全集继承层；新文档涉及任何边界时，都要能映射到 `122` 的边界分组和 `protected_life_chains`。
 
 ## 对 Runner 和 Schema 的影响
 

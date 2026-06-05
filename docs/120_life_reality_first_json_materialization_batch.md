@@ -484,10 +484,12 @@ gap feedback 必须推荐下一层文档和 artifact：
   "source_doc": "120_life_reality_first_json_materialization_batch.md",
   "recommended_next_docs": [
     "121_life_reality_materialized_json_validation_smoke_plan.md",
-    "122_life_reality_runner_repository_layout_and_module_map.md"
+    "122_life_boundary_all_reality_declarations_rewrite.md",
+    "123_life_reality_runner_repository_layout_and_module_map.md"
   ],
   "recommended_next_artifacts": [
     "life_reality_runner/reports/life_reality/materialization/run_001/materialized_json_validation_smoke_report.json",
+    "life_reality_runner/generation/life_boundary_all_reality_declaration_map.json",
     "life_reality_runner/generation/runner_repository_module_map.json"
   ]
 }
@@ -547,4 +549,4 @@ gap feedback 必须推荐下一层文档和 artifact：
 
 `121_life_reality_materialized_json_validation_smoke_plan.md` 已读取本层的 artifact list、manifest、schema skeleton、fixture seed、report rollup、CLI report、boundary alignment patch 和 dry-run report，定义首批真实 JSON 文件的 parse validation、schema validation、cross-file checker、dashboard rollup、stage gate 和 gap feedback smoke 命令。
 
-下一层 `122_life_reality_runner_repository_layout_and_module_map.md` 应把 `121` 的验证命令落到未来 runner 的目录结构、模块边界、schema registry、fixture roots、report writers 和测试入口。
+下一层 `122_life_boundary_all_reality_declarations_rewrite.md` 已把 `119` 的边界字段族继续推进为全集边界声明模板；随后 `123_life_reality_runner_repository_layout_and_module_map.md` 应把 `121` 的验证命令和 `122` 的边界声明 map 落到未来 runner 的目录结构、模块边界、schema registry、fixture roots、report writers 和测试入口。

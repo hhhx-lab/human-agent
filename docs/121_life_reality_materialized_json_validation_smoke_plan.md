@@ -337,8 +337,8 @@ life_reality_runner/reports/life_reality/materialization/run_001/materialized_js
   },
   "overall_stage_effect": "hold_for_evidence",
   "recommended_next_docs": [
-    "122_life_reality_runner_repository_layout_and_module_map.md",
-    "123_life_reality_minimal_json_file_seed_plan.md"
+    "122_life_boundary_all_reality_declarations_rewrite.md",
+    "123_life_reality_runner_repository_layout_and_module_map.md"
   ]
 }
 ```
@@ -410,6 +410,6 @@ life_reality_runner/reports/life_reality/materialization/run_001/materialized_js
 
 ## 与下一层连接
 
-`122_life_reality_runner_repository_layout_and_module_map.md` 应读取本层 command family、report paths、exit code、schema registry、artifact roots 和 LRGEN-246 到 260，把未来 runner 的代码目录、schema 目录、fixture 目录、report 目录、CLI module map、测试入口和最小命令实现顺序固定下来。
+`122_life_boundary_all_reality_declarations_rewrite.md` 已读取本层 boundary alignment、stage gate、gap feedback 和 smoke finding，把每一类边界声明继续改写成真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的全集生命膜模板。
 
-下一层要回答：这些 smoke 命令在仓库里由哪些模块承载，哪些 JSON schema 放在哪里，哪些 fixtures 先写，哪些 reports 先生成，哪些 checker 是 blocking-first，如何让首批物化文件从文档合同进入可执行 runner。
+下一层进入 `123_life_reality_runner_repository_layout_and_module_map.md`：这些 smoke 命令在仓库里由哪些模块承载，哪些 JSON schema 放在哪里，哪些 fixtures 先写，哪些 reports 先生成，哪些 checker 是 blocking-first，如何让首批物化文件和全集边界声明从文档合同进入可执行 runner。
