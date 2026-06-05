@@ -229,11 +229,12 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `104_schema_file_materialization_and_fixture_seed_plan.md` | 把 `98`、`99`、`101`、`102`、`103` 的 Markdown 合同推进为真实 `.schema.json` 文件清单、shared defs、component object schema、fixture manifest、pass/fail/critical/mutation/withheld/smoke seed 和 runner smoke test | 还需要 dashboard 面板、stage gate review、repair queue 和 gap register feedback 合同 |
 | `105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md` | 把 schema validation report、fixture load report、cross-ref report、runner report 和 `LifeRealityDashboardSource` 转成九个 panel、stage gate review、repair queue、withheld probe readiness、runtime quarantine 和 gap register feedback | 还需要把真实运行观测、语言事件、梦醒报告、关系事件和 tool trace 接入 `LifeRealitySchemaBundle` |
 | `106_runtime_observation_to_life_reality_bundle_bridge.md` | 把真实运行观测、tool trace、adapter session、语言事件、梦醒报告、关系事件、post-action audit 和共在边界控制事件接入 `LifeRealityObservationEnvelope`、component candidate、cross-chain candidate、ingestion report、dashboard source 和 stage gate review | 还需要把 `104`、`105`、`106` 拆成可执行 JSON 文件生成任务和 runner smoke command |
+| `107_life_reality_schema_file_generation_tasks.md` | 把 `104`、`105`、`106` 拆成 `LRGEN` 可执行队列，覆盖 shared defs、component schema、bundle schema、runtime ingestion schema、report/dashboard schema、fixture seeds、dashboard mocks、runner smoke、runtime ingestion smoke 和 generation explain | 还需要生成第一批 dashboard source、panel dependency report、repair queue、runtime quarantine 和 gap feedback mock 文件计划 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `107_life_reality_schema_file_generation_tasks.md`：把 `104` 的文件物化计划、`105` 的 dashboard source 合同和 `106` 的 runtime ingestion 桥拆成可执行任务清单、首批 JSON 文件顺序、runner smoke command、runtime ingestion smoke command 和 stage gate review mock。
-2. `108_life_reality_dashboard_source_mock_files.md`：生成第一批 dashboard source、panel dependency report、repair queue、runtime quarantine 和 gap register feedback mock 文件计划。
-3. `109_life_reality_runtime_observation_fixture_catalog.md`：把语言事件、梦醒报告、关系事件、tool trace、adapter session、post-action audit 和 side effect classifier 转成 runtime observation fixture catalog。
+1. `108_life_reality_dashboard_source_mock_files.md`：生成第一批 dashboard source、panel dependency report、stage gate review、repair queue、runtime quarantine 和 gap register feedback mock 文件计划。
+2. `109_life_reality_runtime_observation_fixture_catalog.md`：把语言事件、梦醒报告、关系事件、tool trace、adapter session、post-action audit 和 side effect classifier 转成 runtime observation fixture catalog。
+3. `110_life_reality_shared_defs_schema_materialization.md`：把 `LRGEN-001` 的 shared defs 真正拆成字段级 JSON Schema 内容、enum 说明、`$defs` 引用和 validator smoke cases。

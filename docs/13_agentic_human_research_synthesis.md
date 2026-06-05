@@ -616,3 +616,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `runtime observation -> redaction / scope / snapshot / side effect / adapter check -> LifeRealityObservationEnvelope -> component candidate -> cross-chain candidate -> ingestion report -> dashboard source -> stage gate review`
 
 下一层应进入 `107_life_reality_schema_file_generation_tasks.md`：把 `104`、`105`、`106` 的文件计划拆成可执行任务清单、首批 JSON 文件顺序、runtime observation envelope schema、ingestion report schema、runner smoke command 和 dashboard source mock。
+
+## 第四十层：Life Reality 文件生成任务清单
+
+`107_life_reality_schema_file_generation_tasks.md` 把 `104`、`105`、`106` 从文件计划继续推进为可执行任务队列。它定义 `LifeRealityFileGenerationTasks` manifest、task envelope、shared defs phase、component object schemas phase、bundle/manifest schemas phase、runtime ingestion schemas phase、report/dashboard schemas phase、fixture seed phase、dashboard/stage gate mock phase，以及 runner smoke、runtime ingestion smoke 和 generation explain 三条命令。
+
+这一层的关键推进是给未来实现一个稳定的落地序列：先生成 `life_reality_shared_defs.schema.json`，再生成真实痛苦/后悔/修复、真实梦境、真实关系三条 component object schemas，再生成 `LifeRealitySchemaBundle`、runtime observation envelope、ingestion report、dashboard source、stage gate review、repair queue、fixture seeds 和 runtime observation fixture。每个任务都定义 source docs、dependencies、outputs、acceptance checks 和 repair kind。
+
+到这里，文件生成闭环变为：
+
+`generation task manifest -> shared defs -> component schemas -> bundle schemas -> runtime ingestion schemas -> report/dashboard schemas -> fixture seeds -> dashboard mocks -> validate / ingest-runtime / explain smoke reports`
+
+下一层应进入 `108_life_reality_dashboard_source_mock_files.md`：按 `LRGEN-130` 到 `LRGEN-136` 生成 dashboard source、panel dependency report、stage gate review、repair queue、runtime quarantine panel source 和 gap register feedback mock 文件计划。

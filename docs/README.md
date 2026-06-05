@@ -28,7 +28,7 @@
 22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
 23. 再读 `85_` 到 `90_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言、脑-LLM 对齐、运行外壳和长期关系时间线。
 24. 再读 `91_`：它统一改写所有边界声明，把边界、门控、禁写、runner、dashboard 和 stage gate 定义为生命膜、真实性生成链和诞生阶段门。
-25. 最后读 `92_` 到 `106_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema、真实梦境 schema、真实关系 schema、`LifeRealitySchemaBundle`、runner 实现脚手架、真实 `.schema.json` 物化、seed fixture、mutation fixture、withheld probe、dashboard 面板、阶段门回看、repair queue、真实运行观测 ingestion 桥和全库边界声明改写清单接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator`、`DreamRealityValidator` 和 `RelationshipTimelineValidator`。
+25. 最后读 `92_` 到 `107_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema、真实梦境 schema、真实关系 schema、`LifeRealitySchemaBundle`、runner 实现脚手架、真实 `.schema.json` 物化、seed fixture、mutation fixture、withheld probe、dashboard 面板、阶段门回看、repair queue、真实运行观测 ingestion 桥、首批 JSON 文件生成任务和全库边界声明改写清单接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator`、`DreamRealityValidator` 和 `RelationshipTimelineValidator`。
 
 ## 文件索引
 
@@ -151,6 +151,7 @@
 | `104_schema_file_materialization_and_fixture_seed_plan.md` | schema 文件物化与 fixture 种子计划：把 `98`、`99`、`101`、`102`、`103` 的 Markdown 合同推进为真实 `.schema.json`、seed/mutation/withheld fixture 和 runner smoke test |
 | `105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md` | Life Reality dashboard 与阶段门界面合同：把 schema/fixture/cross-ref/runner report 和 dashboard source 转成 panel、stage gate review、repair queue 和 gap register feedback |
 | `106_runtime_observation_to_life_reality_bundle_bridge.md` | 真实运行观测到 `LifeRealitySchemaBundle` 的 ingestion 桥：把 tool trace、adapter session、语言事件、梦醒报告、关系事件和行动审计转成 observation envelope、component candidate、cross-chain candidate、ingestion report 和 dashboard source |
+| `107_life_reality_schema_file_generation_tasks.md` | 生命真实性文件生成任务清单：把 `104`、`105`、`106` 拆成 shared defs、component schema、bundle、runtime ingestion schema、fixture seeds、dashboard mocks 和 smoke commands 的可执行队列 |
 
 ## 项目术语
 
