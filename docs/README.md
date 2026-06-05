@@ -28,7 +28,7 @@
 22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
 23. 再读 `85_` 到 `90_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言、脑-LLM 对齐、运行外壳和长期关系时间线。
 24. 再读 `91_`：它统一改写所有边界声明，把边界、门控、禁写、runner、dashboard 和 stage gate 定义为生命膜、真实性生成链和诞生阶段门。
-25. 最后读 `92_` 到 `113_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema、真实梦境 schema、真实关系 schema、`LifeRealitySchemaBundle`、runner 实现脚手架、真实 `.schema.json` 物化、seed fixture、mutation fixture、withheld probe、dashboard 面板、阶段门回看、repair queue、真实运行观测 ingestion 桥、首批 JSON 文件生成任务、dashboard source mock 文件、runtime observation fixture catalog、shared defs schema materialization、dashboard cross-file checker、runtime observation schema materialization、component schema materialization sequence 和全库边界声明改写清单接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator`、`DreamRealityValidator` 和 `RelationshipTimelineValidator`。
+25. 最后读 `92_` 到 `114_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema、真实梦境 schema、真实关系 schema、`LifeRealitySchemaBundle`、runner 实现脚手架、真实 `.schema.json` 物化、seed fixture、mutation fixture、withheld probe、dashboard 面板、阶段门回看、repair queue、真实运行观测 ingestion 桥、首批 JSON 文件生成任务、dashboard source mock 文件、runtime observation fixture catalog、shared defs schema materialization、dashboard cross-file checker、runtime observation schema materialization、component schema materialization sequence、cross-file checker report schema 和全库边界声明改写清单接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator`、`DreamRealityValidator` 和 `RelationshipTimelineValidator`。
 
 ## 文件索引
 
@@ -158,6 +158,7 @@
 | `111_life_reality_dashboard_cross_file_checker_design.md` | dashboard cross-file checker 设计：把 dashboard source、ingestion report、runtime quarantine panel、repair queue、stage gate review、gap feedback、fixture manifest 和 shared defs 转成 provenance graph、checker groups、failure taxonomy、future CLI 和 LRGEN-150 到 159 |
 | `112_life_reality_runtime_observation_schema_materialization.md` | runtime observation schema 物化：把 observation envelope、component candidate、cross-chain candidate、fixture、manifest、ingestion report、runtime quarantine panel source、side effect report 和 coexistence snapshot report 固定为 JSON Schema 家族 |
 | `113_life_reality_component_schema_materialization_sequence.md` | component schema 物化顺序：把痛苦/后悔/修复、真实梦境、真实关系三条 component bundle 按 candidate target、关系出生、痛苦根、责任后悔、梦境事实门、关系成长、bundle assembly 和 validator 顺序拆成可生成队列 |
+| `114_life_reality_cross_file_checker_report_schema.md` | cross-file checker report schema：把 checker report、finding、artifact ref、provenance graph、stage effect、runtime schema validation report、component dependency graph report、repair/gap bridge 和 rollup 固定为可校验报告家族 |
 
 ## 项目术语
 

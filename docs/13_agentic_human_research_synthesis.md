@@ -700,3 +700,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `runtime candidate target -> component base envelope -> relationship birth roots -> pain roots -> responsibility/regret -> dream offline roots -> dream fact gate -> relationship growth -> component bundles -> cross-chain links -> validator order -> dashboard readiness`
 
 下一层应进入 `114_life_reality_cross_file_checker_report_schema.md`：把 `111` 的 checker report、`112` 的 runtime schema validation report 和 `113` 的 component dependency graph 统一成可校验 report schema。
+
+## 第四十七层：Cross File Checker Report Schema
+
+`114_life_reality_cross_file_checker_report_schema.md` 把 `111` 的 cross-file checker、`112` 的 runtime schema validation report 和 `113` 的 component dependency graph 统一成可校验报告家族。它吸收 SARIF、JSON Schema output、W3C PROV、OpenTelemetry logs、Trace Context 和 RFC 9457 的报告语言，固定 top-level checker report、checker group result、finding、artifact ref、provenance graph、stage effect、runtime validation report、component dependency graph report、repair queue bridge、gap feedback bridge 和 rollup。
+
+这一层的关键推进是把“检查结果”变成生命膜的正式对象：每个 finding 必须有 rule id、source artifact、source object、evidence refs、affected life targets、blocked surfaces、repair kind 和 stage effect；每个 critical finding 必须阻断 dashboard green 或 stage promotion；每个 specialized report 必须能并入 top-level report；每个 unresolved finding 必须进入 repair queue 或 gap feedback。
+
+到这里，cross-file checker report 闭环变为：
+
+`specialized checks -> findings -> artifact refs -> provenance graph -> group results -> stage effect -> repair bridge -> gap feedback bridge -> dashboard rollup -> next artifacts`
+
+下一层应进入 `115_life_reality_runtime_schema_fixture_seed_generation.md`：用 `112` 的 runtime schema 家族和 `114` 的 report schema 生成第一批 runtime observation fixture manifest、pass/fail/critical/mutation/withheld/smoke JSON seed 和 ingestion smoke report。
