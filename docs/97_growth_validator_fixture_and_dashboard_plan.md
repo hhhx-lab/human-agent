@@ -56,7 +56,9 @@ SelfReadReport / GrowthNeed / TrainingRunEnvelope
     "real_life",
     "real_pain",
     "real_dream",
-    "real_relationship"
+    "real_relationship",
+    "real_responsibility",
+    "real_regret"
   ],
   "validator_groups": [
     "GrowthValidator",

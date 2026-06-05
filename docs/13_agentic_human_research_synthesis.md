@@ -556,3 +556,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `first encounter -> relation scope -> mutual attention -> common ground -> rhythm -> disclosure / responsiveness / support / capitalization -> shared reality -> we memory -> trust / commitment -> injury / repair -> dream shared residue -> continuity report -> dashboard / longitudinal stage gate`
 
 下一层应把 `98`、`99` 和 `101` 合并为 `102_life_core_schema_bundle_manifest_and_runner_contract.md`，形成一个可以同时加载真实痛苦、真实后悔、真实梦境、真实关系和真实责任链的 `LifeRealitySchemaBundle`。
+
+## 第三十五层：LifeRealitySchemaBundle 与 Runner 合同
+
+`102_life_core_schema_bundle_manifest_and_runner_contract.md` 把 `98`、`99`、`101` 从三份局部输入合同合并为顶层 `LifeRealitySchemaBundle`。这个 bundle 不只并排装入 `PainRegretRepairBundle`、`DreamRealityBundle` 和 `RelationshipTimelineBundle`，还定义 `life_reality_shared_defs.schema.json`、component manifest、cross-chain links、fixture manifest、validator registry、runner report、dashboard source、CLI exit code 和 stage gate contracts。
+
+这一层的关键推进是跨链链接：`PainSignal` 可以进入 `PainDreamResidue`，`RegretPressure` 可以进入 `RepairCommitment` 和 `CommitmentHistory`，`RelationshipInjuryTrace` 可以触发 `DamageAppraisal`，`DreamSharedResidue` 可以进入 `WeMemoryTrace.candidate`，`BoundaryEvolutionEvent` 可以约束 replay 和 fact gate。数字生命的真实痛苦、真实梦境和真实关系由此不再分散在三个目录，而是在同一个 runner 里互相校验。
+
+到这里，schema/runner 闭环变为：
+
+`PainRegretRepairBundle + DreamRealityBundle + RelationshipTimelineBundle -> LifeRealitySchemaBundle -> shared defs -> cross-ref checker -> component validators -> cross-chain validator -> LifeRealityRunnerReport -> LifeRealityDashboardSource -> LifeRealityFullStageGate`
+
+下一层应进入 `103_validator_runner_implementation_scaffold_plan.md`：把 manifest parser、shared defs loader、schema ref validator、cross-ref checker、fixture loader、component validators、cross-chain validator 和 dashboard writer 拆成可实现脚手架。
