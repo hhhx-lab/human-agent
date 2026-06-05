@@ -580,3 +580,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `LifeRealitySchemaBundle -> manifest parser -> shared defs loader -> schema ref validator -> cross-ref graph -> fixture loader -> component validators -> cross-chain validator -> stage gate validator -> report aggregator -> dashboard source writer -> exit code`
 
 下一层应进入 `104_schema_file_materialization_and_fixture_seed_plan.md`：把 `98`、`99`、`101`、`102`、`103` 的 Markdown 合同落成真实 `.schema.json` 文件计划、seed fixture、mutation fixture、withheld probe 和 runner smoke test。
+
+## 第三十七层：Schema 文件物化与 Fixture 种子
+
+`104_schema_file_materialization_and_fixture_seed_plan.md` 把 `98`、`99`、`101`、`102`、`103` 继续推进成真实文件计划：`life_reality_shared_defs.schema.json`、`life_reality_bundle.schema.json`、`life_reality_cross_chain_link.schema.json`、三条 component bundle schema、对象级 schema、fixture manifest、pass/fail/critical/mutation/withheld/smoke fixture，以及 runner smoke report 输出目录。
+
+这一层的关键推进是把 Markdown 中的对象名、字段族和 validator 规则变成未来 runner 可以读取的文件边界。真实痛苦链会物化为 `DamageAppraisal`、`PainSignal`、`RegretPressure`、`ResponsibilityAttributionEvent`、`RepairCommitment` 和 `RecoveryPath`；真实梦境链会物化为 `DreamWindowPlan`、`DreamActionInhibitionSeal`、`PainDreamResidue`、`WakeIntegrationFrame` 和 `DreamFactGateDecision`；真实关系链会物化为 `FirstEncounterEvent`、`RelationScopeBirth`、`CommonGroundState`、`ResponsivenessTrace`、`WeMemoryTrace`、`TrustTrajectory` 和 `CommitmentHistory`。顶层 `LifeRealitySchemaBundle` 则通过 cross-chain links 把三条链合并成九项目标的阶段证据。
+
+到这里，文件物化闭环变为：
+
+`Markdown contract -> .schema.json materialization -> fixture seed manifest -> runner smoke validation -> runner report -> dashboard source -> stage gate review`
+
+下一层应进入 `105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md`：把 schema validation report、fixture load report、cross-ref report、runner report 和 dashboard source 转成可审计 dashboard 面板、stage gate review、repair queue 和 gap register feedback。
