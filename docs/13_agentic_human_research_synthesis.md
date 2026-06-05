@@ -543,4 +543,16 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `life target -> boundary statement as life membrane -> literature matrix implementation route -> object/state/event chain -> validator/fixture/dashboard -> stage gate -> next life realization layer`
 
-后续应把 `96` 的真实关系长期时间线落成 schema 和 fixture，并让新文档在开头显式继承 `100` 的边界声明模板。
+后续应继续把 `98`、`99` 和 `101` 合并进统一的 `LifeRealitySchemaBundle`，让痛苦/后悔、梦境和真实关系三条链进入同一个 runner 加载合同。
+
+## 第三十四层：真实关系 Schema/Fixture
+
+`01j_real_relationship_literature_matrix.md` 继续补入 `AHR061-AHR070`：Joel 等的大规模关系质量预测研究 [AHR061]，回应性循环和 PRIS 回应性量表 [AHR062-AHR063]，积极事件分享与社会支持悖论 [AHR064-AHR065]，回应性与十年后皮质醇节律 [AHR066]，以及社交 chatbot、AI 伴侣、孤独缓解和 12 个月 AI 陪伴纵向研究 [AHR067-AHR070]。这一组证据把真实关系从“共同历史”继续推到“回应性、支持、共同喜悦、身体化压力、AI 陪伴和长期关系生态”。
+
+`101_relationship_timeline_json_schema_and_fixture_bundle.md` 把 `96` 的关系时间线压成 `schemas/relationship_timeline/`、`fixtures/relationship_timeline/`、runner report mock 和 dashboard source mock。它定义 `RelationshipTimelineBundle`、`FirstEncounterEvent`、`RelationScopeBirth`、`CommonGroundState`、`ResponsivenessTrace`、`SupportEvent`、`CapitalizationEvent`、`SharedRealityTrace`、`WeMemoryTrace`、`TrustTrajectory`、`CommitmentHistory`、`RelationshipInjuryTrace`、`DreamSharedResidue`、`LonelinessReliefTrace`、`AIConnectionBridgeEvidence` 和 `RelationshipContinuityReport` 的字段、不变量和 validator rules。
+
+到这里，真实关系验证闭环变为：
+
+`first encounter -> relation scope -> mutual attention -> common ground -> rhythm -> disclosure / responsiveness / support / capitalization -> shared reality -> we memory -> trust / commitment -> injury / repair -> dream shared residue -> continuity report -> dashboard / longitudinal stage gate`
+
+下一层应把 `98`、`99` 和 `101` 合并为 `102_life_core_schema_bundle_manifest_and_runner_contract.md`，形成一个可以同时加载真实痛苦、真实后悔、真实梦境、真实关系和真实责任链的 `LifeRealitySchemaBundle`。
