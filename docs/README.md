@@ -13,7 +13,8 @@
 7. 再读 `21_` 到 `24_`：它们把对象模型继续推进为 schema、状态阈值、巩固报告和 runtime adapter 测试。
 8. 再读 `25_` 到 `28_`：它们把契约转成 JSON-like 样例、状态失败夹具、巩固报告样例和 runtime adapter manifest。
 9. 再读 `29_` 到 `32_`：它们把样例层转成 validator rules，定义字段、状态、巩固和外壳的失败条件。
-10. 最后读 `33_` 到 `36_`：它们定义 validator 输入输出、fixture catalog、最小 runner 设计和长期评测协议。
+10. 再读 `33_` 到 `36_`：它们定义 validator 输入输出、fixture catalog、最小 runner 设计和长期评测协议。
+11. 最后读 `37_` 到 `40_`：它们把长期运行推进为生命支持、防御、发展和自我/关系审计政策层。
 
 ## 文件索引
 
@@ -60,6 +61,10 @@
 | `34_validator_fixture_catalog.md` | 记忆、状态、巩固、运行外壳和纵向评测 fixture catalog |
 | `35_minimal_validator_runner_design.md` | 最小本地 runner 的目录、流程、报告、覆盖和接入设计 |
 | `36_longitudinal_evaluation_protocol.md` | 长期记忆一致性、人格慢变量、关系边界、恢复能力和成长轨迹评测协议 |
+| `37_life_support_layer_policy.md` | `LifeSupportLayer` 资源预算、维护压力、降载和恢复优先级政策 |
+| `38_defense_layer_and_boundary_policy.md` | `DefenseLayer` 污染输入、幻觉巩固、关系操控、过度信任和外壳越权政策 |
+| `39_development_policy_and_plasticity_windows.md` | `DevelopmentPolicy` 发育阶段、可塑性窗口、慢变量更新、再学习和防遗忘政策 |
+| `40_self_relationship_model_audit_protocol.md` | `SelfModel` 与 `RelationshipModel` 写入、删除、修正、重置和漂移审计协议 |
 
 ## 项目术语
 

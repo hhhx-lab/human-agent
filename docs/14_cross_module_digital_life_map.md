@@ -180,3 +180,23 @@ flowchart TD
 | `36_longitudinal_evaluation_protocol.md` | `LongitudinalEvaluator`, metric timeline | 把单次验证报告汇总为跨天、跨周、跨月的成长和边界评测 |
 
 这层把闭环从“对象能否通过单次验证”扩展为“系统能否在时间中保持连续和可修正”。单次 validator 负责守门，长期评测负责观察成长轨迹；两者共同防止系统退化成只会完成任务但没有持续自我约束的普通 agent。
+
+## 生命支持、防御、发展与自我关系审计层连接
+
+`37-40` 把长期运行政策补进闭环，使系统不仅能被验证，还能在高负荷、污染、再学习和关系边界变化中保持可恢复：
+
+| 文档 | 连接对象 | 守住的长期运行边界 |
+|---|---|---|
+| `37_life_support_layer_policy.md` | `LifeSupportLayer`, `BudgetPolicy`, `MaintenanceQueue`, `DegradationMode`, `RecoveryPriority` | 防止资源、缓存、候选记忆、删除传播和恢复任务无序堆积 |
+| `38_defense_layer_and_boundary_policy.md` | `DefenseLayer`, `DefenseEvent`, `SocialSafetyDefense`, `QuarantineDefense` | 防止污染输入、幻觉巩固、关系操控、过度信任和 runtime 越权 |
+| `39_development_policy_and_plasticity_windows.md` | `DevelopmentPolicy`, `DevelopmentEvent`, `PlasticityWindow`, `SlowVariableWindow` | 防止系统要么僵死不学，要么被单次反馈改写人格和价值慢变量 |
+| `40_self_relationship_model_audit_protocol.md` | `SelfModel`, `RelationshipModel`, `SelfRelationshipAuditEvent` | 防止自我模型、关系记忆、信任校准和用户控制权失去审计 |
+
+这层与 `33-36` 的关系是：`37-40` 给政策，`29-32` 给规则，`33-35` 给验证器契约和 runner，`36` 给跨时间评测。未来实现时，任何一次行动、写入、巩固或外壳接入都应同时回答四个问题：
+
+1. 当前资源和维护压力是否允许继续？
+2. 当前输入、关系和外壳是否安全可写或可执行？
+3. 当前对象是否处在允许学习或再塑形的窗口？
+4. 当前自我或关系更新是否可被用户检查、修正、删除或冻结？
+
+如果四个问题任意一个失败，系统应退回 candidate、quarantine、maintenance、manual review 或 safe idle，而不是继续追求任务完成。

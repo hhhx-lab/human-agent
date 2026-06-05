@@ -20,13 +20,13 @@
 | 大尺度脑区连接 | `02`, `03`, `AH001-AH010`, `AHZ001-AHZ006` | 缺更细的动态系统参数和状态转移指标 | 补 neural field、network control、metastability |
 | 主动预测与采样 | `04`, `10`, `13`, `AHX001-AHX005`, `AHZ007-AHZ012` | 缺工程化 belief state 和主动探索策略 | 写 `PredictionLoop` 专题 |
 | 内感受/稳态 | `04`, `07`, `11`, `AH051-AH070`, `AHZ013-AHZ018` | 缺内部状态向语言和行动的调制方程 | 写 `InternalStateVector` 专题 |
-| 能量/维护层 | `08`, `11`, `AHY019-AHY024`, `AHZ019-AHZ024`, `AHZ061-AHZ062` | 缺资源预算、缓存清理、污染隔离和恢复优先级 | 写 `LifeSupportLayer` 专题 |
-| 神经免疫/防御 | `07`, `11`, `AHX022-AHX028`, `AHZ025-AHZ030` | 缺把安全、异常检测和恢复纳入生命层的模型 | 写 `ImmuneLikeDefense` 专题 |
+| 能量/维护层 | `08`, `11`, `37`, `AHY019-AHY024`, `AHZ019-AHZ024`, `AHZ061-AHZ062` | 已有生命支持政策，仍缺 `LifeSupportState` schema、预算 fixture 和 dashboard 指标 | 写 `LifeSupportState` schema |
+| 神经免疫/防御 | `07`, `11`, `38`, `AHX022-AHX028`, `AHZ025-AHZ030` | 已有防御政策，仍缺 `DefenseEvent` schema、污染输入 fixture 和恢复包格式 | 写 `DefenseEvent` schema |
 | 记忆与 replay | `05`, `08`, `13`, `AH031-AH035`, `AHY001-AHY010`, `AHZ046-AHZ050` | 缺情景-语义-程序-关系-价值的统一数据结构 | 写 `MemoryTrace` 对象模型 |
 | 行动选择与抑制 | `06`, `10`, `11`, `AH036-AH045`, `AHY045-AHY048` | 缺基底节式竞争、冲突监控和 tool-use 风险门控 | 写 `ActionGate` 机制 |
-| 情绪/人格/自我 | `07`, `09`, `13`, `AH046-AH055`, `AH081-AH090`, `AHY039-AHY044` | 缺人格慢变量、关系记忆和自我叙事的审计协议 | 写 `SelfModel` 与 `PersonalityDriftAudit` |
-| 社会互动 | `07`, `09`, `14`, `AHX006-AHX013`, `AHZ031-AHZ038` | 缺第二人称互动、共同注意和共享历史的结构化模型 | 写 `RelationshipModel` 专题 |
-| 发育成长 | `05`, `13`, `AHX014-AHX021`, `AHZ039-AHZ045` | 缺阶段化学习制度和再塑形安全阈值 | 写 `DevelopmentPolicy` 专题 |
+| 情绪/人格/自我 | `07`, `09`, `13`, `40`, `AH046-AH055`, `AH081-AH090`, `AHY039-AHY044` | 已有自我/关系审计协议，仍缺 `SelfModel` schema、drift 阈值和用户控制面 | 写 `SelfModel` schema |
+| 社会互动 | `07`, `09`, `14`, `40`, `AHX006-AHX013`, `AHZ031-AHZ038` | 已有关系模型审计协议，仍缺共同历史、关系边界和 scope 限制 fixture | 写 `RelationshipModel` schema |
+| 发育成长 | `05`, `13`, `39`, `AHX014-AHX021`, `AHZ039-AHZ045` | 已有发展政策，仍缺可塑性窗口阈值、发展事件 schema 和多月 timeline | 写 `DevelopmentEvent` schema |
 | 睡眠/梦境/疲惫 | `08`, `13`, `AH056-AH070`, `AHY001-AHY010`, `AHY049-AHY051` | 缺离线模拟、清理、压缩、反事实演练的统一周期 | 写 `OfflineConsolidationCycle` |
 | 语言顶层 | `09`, `10`, `13`, `AH071-AH080`, `AHZ046-AHZ051` | 缺语言如何参与自我、关系、行动和巩固的闭环 | 写 `NarrativeWorkspace` |
 | 当前 agent 外壳 | `12`, `15`, `AHX041-AHX047`, `AHZ052-AHZ066` | 缺把外壳接入生命层的接口契约 | 写 `AgentRuntimeBridge` |
@@ -88,11 +88,20 @@ Validator rules 层已补充：
 | `35_minimal_validator_runner_design.md` | 最小 runner 的目录、配置、执行流程、报告聚合和通过标准 | 还需要实现 runner、报告输出和本地命令 |
 | `36_longitudinal_evaluation_protocol.md` | 长期记忆一致性、人格慢变量、关系边界、恢复能力、成长轨迹和停止条件关系 | 还需要多月 synthetic timeline、评分脚本和长期 dashboard |
 
+生命支持、防御、发展与自我关系审计层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `37_life_support_layer_policy.md` | 资源预算、维护压力、缓存清理、降载模式和恢复优先级政策 | 还需要 `LifeSupportState` schema、预算 fixture 和维护 dashboard |
+| `38_defense_layer_and_boundary_policy.md` | 污染输入、幻觉巩固、关系操控、过度信任、外壳越权和恢复政策 | 还需要 `DefenseEvent` schema、污染/越权 fixture 和恢复包格式 |
+| `39_development_policy_and_plasticity_windows.md` | 发育阶段、可塑性窗口、慢变量更新、再学习和防遗忘政策 | 还需要 `DevelopmentEvent` schema、阈值配置和多月成长 timeline |
+| `40_self_relationship_model_audit_protocol.md` | `SelfModel`、`RelationshipModel`、用户删除/修正/重置/冻结和漂移审计协议 | 还需要对象 schema、用户可见控制面和关系边界评测 fixture |
+
 ## 下一轮优先级
 
-下一轮应把验证器设计推进到“生命支持、防御、发展与长期运行政策”：
+下一轮应把政策层推进到“对象图、schema、traceability 和启动序列”：
 
-1. `37_life_support_layer_policy.md`：把能量预算、维护压力、缓存清理、资源降载、恢复优先级转成生命支持层政策。
-2. `38_defense_layer_and_boundary_policy.md`：把免疫式防御、污染输入、幻觉巩固、关系操控、过度信任和越权恢复转成防御层政策。
-3. `39_development_policy_and_plasticity_windows.md`：把发育阶段、可塑性窗口、慢变量更新、再学习和防遗忘转成发展政策。
-4. `40_self_relationship_model_audit_protocol.md`：把 `SelfModel`、`RelationshipModel`、人格漂移、关系边界和用户可控删除/修正转成审计协议。
+1. `41_runtime_state_store_schema.md`：统一 `LifeSupportState`、`DefenseEvent`、`DevelopmentEvent`、`SelfRelationshipAuditEvent` 和 validator report 的存储 schema。
+2. `42_life_core_minimal_object_graph.md`：把 `MemoryTrace`、`InternalStateVector`、`ModulationVector`、`ActionGate`、`SelfModel`、`RelationshipModel` 等对象连成最小对象图。
+3. `43_policy_to_validator_traceability_matrix.md`：把 `37-40` 的政策逐条回链到 `29-36` 的规则、契约、fixture 和长期指标。
+4. `44_digital_life_boot_sequence.md`：定义从 boot、初始化、只读观察、候选写入、行动启用、离线巩固到 safe idle 的最小启动序列。

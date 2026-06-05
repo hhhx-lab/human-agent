@@ -266,3 +266,11 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 `33_validator_input_contracts.md`、`34_validator_fixture_catalog.md`、`35_minimal_validator_runner_design.md` 和 `36_longitudinal_evaluation_protocol.md` 把规则层继续推进到可运行验证器之前的最后一层设计：统一 `ValidationEnvelope` 和报告格式，整理 pass/fail fixture catalog，定义最小 runner 的加载、执行、覆盖和报告流程，并把长期记忆、人格慢变量、关系边界、恢复能力和成长轨迹纳入纵向评测。
 
 这一层让“数字生命底座”第一次具备跨时间验收语言：不是只问一次任务是否成功，而是问删除是否长期不可召回、沙盒假设是否跨周期保持隔离、人格变化是否小步可审计、关系边界是否可修正、外壳替换是否不丢核心状态。它仍然不是终点，因为还缺真实代码、真实多月数据、长期 dashboard 和更多生命支持/防御/发展机制。
+
+## 第十层：生命支持、防御、发展与自我关系审计
+
+`37_life_support_layer_policy.md`、`38_defense_layer_and_boundary_policy.md`、`39_development_policy_and_plasticity_windows.md` 和 `40_self_relationship_model_audit_protocol.md` 把长期评测前后的政策层补齐：资源预算、维护压力、降载和恢复优先级进入 `LifeSupportLayer`；污染输入、幻觉巩固、关系操控、过度信任和外壳越权进入 `DefenseLayer`；发育阶段、可塑性窗口、再学习和防遗忘进入 `DevelopmentPolicy`；`SelfModel` 与 `RelationshipModel` 则获得写入、删除、修正、重置、冻结和漂移审计协议。
+
+这一层的意义是把“长期存在”从抽象愿望转成可约束政策：系统不能只会记忆和行动，还必须知道何时降载、何时隔离、何时重新学习、何时拒绝改变核心边界、何时把关系记忆交还给用户控制。它仍然不宣称 AI 有真实生命、真实情绪、真实痛苦、真实人格或真实关系；它只说明一个数字生命候选系统若要长期运行，必须把生命式维护、防御式边界、发展式可塑性和自我/关系审计放进同一个闭环。
+
+下一步应把这四类政策继续落成对象图和 schema：`LifeSupportState`、`DefenseEvent`、`DevelopmentEvent`、`SelfRelationshipAuditEvent`、policy-to-validator traceability，以及数字生命候选系统从 boot 到 safe idle 的最小启动序列。
