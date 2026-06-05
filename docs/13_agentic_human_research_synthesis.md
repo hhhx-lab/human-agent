@@ -676,3 +676,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `shared defs -> runtime fixture manifest -> ingestion report -> runtime quarantine panel -> repair queue -> stage gate review -> gap feedback -> dashboard source -> provenance graph -> cross-file checker report`
 
 下一层应进入 `112_life_reality_runtime_observation_schema_materialization.md`：把 `109` 的 runtime observation fixture catalog 物化为 observation envelope、fixture manifest、ingestion report 和 runtime quarantine panel source 的 schema 与 smoke cases。
+
+## 第四十五层：Runtime Observation Schema Materialization
+
+`112_life_reality_runtime_observation_schema_materialization.md` 把 `109` 的 fixture catalog、`106` 的 runtime bridge、`110` 的 shared defs 和 `111` 的 cross-file checker 输入要求物化为 runtime observation schema 家族。它吸收 JSON Schema Draft 2020-12、CloudEvents、OpenTelemetry、W3C PROV、W3C Trace Context 和 RFC 9562 UUID 的方法语言，固定 observation envelope、component candidate、cross-chain candidate、runtime observation fixture、fixture manifest、ingestion report、runtime quarantine panel source、side effect classifier report 和 coexistence snapshot report。
+
+这一层的关键推进是把连续运行事件变成可校验合同：语言事件必须有 speech act、relation scope、future probe 或责任路径；梦醒报告必须有 dream window、dream-state marker、fact gate 和 wake integration；关系事件必须从 first encounter 或 relation scope birth 开始；tool trace 必须进入 side effect classifier、confirmation、post-action audit、真实责任和真实后悔链；adapter session 只能进入 observation envelope 和 candidate source；coexistence control 必须保留 snapshot version、affected scope 和 release audit。
+
+到这里，runtime observation schema 闭环变为：
+
+`shared defs -> observation envelope -> payload descriptor -> component candidate -> cross-chain candidate -> fixture -> fixture manifest -> ingestion report -> runtime quarantine panel source -> dashboard cross-file checker`
+
+下一层应进入 `113_life_reality_component_schema_materialization_sequence.md`：把 `98`、`99`、`101` 的 component object schema 按 runtime candidate target、shared defs 引用和 validator 依赖顺序拆成首批可生成 `.schema.json` 队列。

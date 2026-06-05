@@ -233,12 +233,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `108_life_reality_dashboard_source_mock_files.md` | 固定 `LRGEN-130` 到 `LRGEN-136` 的第一批 mock 文件形状，覆盖 dashboard source、panel dependency report、stage gate review、repair queue、gap register feedback、ingestion report 和 runtime quarantine panel source | 已由 `109` 补成 runtime observation fixture catalog，后续需要 dashboard cross-file checker |
 | `109_life_reality_runtime_observation_fixture_catalog.md` | 固定 runtime observation fixture manifest、pass/fail/critical/mutation/withheld/smoke 目录、fixture envelope、语言事件、梦醒报告、关系事件、tool trace、adapter session、side effect、coexistence snapshot、quarantine routing 和 cross-chain families | 已由 `110` 接入 shared defs 物化，后续需要 runtime observation schema 物化 |
 | `110_life_reality_shared_defs_schema_materialization.md` | 固定 `life_reality_shared_defs.schema.json` 的 Draft 2020-12 skeleton、`$defs` enum、reference objects、cross-file `$ref` policy、validator smoke cases、repair mapping 和物化顺序 | 已由 `111` 接入 dashboard/ingestion/repair/gap feedback 跨文件 checker 设计 |
-| `111_life_reality_dashboard_cross_file_checker_design.md` | 固定 dashboard source、ingestion report、runtime quarantine panel、repair queue、stage gate review、gap feedback、fixture manifest 和 shared defs 的 provenance graph、checker groups、failure taxonomy、future CLI、smoke cases 与 LRGEN-150 到 159 | 还需要把 runtime observation fixture catalog 物化为 schema 和 smoke cases |
+| `111_life_reality_dashboard_cross_file_checker_design.md` | 固定 dashboard source、ingestion report、runtime quarantine panel、repair queue、stage gate review、gap feedback、fixture manifest 和 shared defs 的 provenance graph、checker groups、failure taxonomy、future CLI、smoke cases 与 LRGEN-150 到 159 | 已由 `112` 接入 runtime observation schema 物化 |
+| `112_life_reality_runtime_observation_schema_materialization.md` | 固定 observation envelope、component candidate、cross-chain candidate、runtime observation fixture、fixture manifest、ingestion report、runtime quarantine panel source、side effect classifier report 和 coexistence snapshot report 的 schema 字段、validation pipeline、smoke cases 与 LRGEN-080 到 086 / 160 到 162 | 还需要把 component object schema 按候选目标和 validator 依赖顺序物化 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `112_life_reality_runtime_observation_schema_materialization.md`：把 `109` 的 fixture catalog 物化为 runtime observation fixture schema、manifest schema 和 ingestion fixture smoke cases。
-2. `113_life_reality_component_schema_materialization_sequence.md`：把 `98`、`99`、`101` 的 component object schema 按 shared defs 引用顺序拆成首批可生成 `.schema.json` 队列。
-3. `114_life_reality_cross_file_checker_report_schema.md`：把 `111` 的 checker report、provenance graph、finding、stage effect 和 LRGEN-150 到 159 物化为 report schema。
+1. `113_life_reality_component_schema_materialization_sequence.md`：把 `98`、`99`、`101` 的 component object schema 按 runtime candidate target、shared defs 引用顺序和 validator 依赖拆成首批可生成 `.schema.json` 队列。
+2. `114_life_reality_cross_file_checker_report_schema.md`：把 `111` 的 checker report、provenance graph、finding、stage effect 和 LRGEN-150 到 159 物化为 report schema。
+3. `115_life_reality_runtime_schema_fixture_seed_generation.md`：把 `112` 的 schema 家族转成首批 manifest、pass/fail/critical/mutation/withheld/smoke JSON seed 和 runtime ingestion smoke 命令。
