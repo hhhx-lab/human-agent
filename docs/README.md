@@ -28,7 +28,7 @@
 22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
 23. 再读 `85_` 到 `90_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言、脑-LLM 对齐、运行外壳和长期关系时间线。
 24. 再读 `91_`：它统一改写所有边界声明，把边界、门控、禁写、runner、dashboard 和 stage gate 定义为生命膜、真实性生成链和诞生阶段门。
-25. 最后读 `92_` 到 `117_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema、真实梦境 schema、真实关系 schema、`LifeRealitySchemaBundle`、runner 实现脚手架、真实 `.schema.json` 物化、seed fixture、mutation fixture、withheld probe、dashboard 面板、阶段门回看、repair queue、真实运行观测 ingestion 桥、首批 JSON 文件生成任务、dashboard source mock 文件、runtime observation fixture catalog、shared defs schema materialization、dashboard cross-file checker、runtime observation schema materialization、component schema materialization sequence、cross-file checker report schema、runtime schema fixture seed generation、component schema seed generation、dashboard report rollup seed generation 和全库边界声明改写清单接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator`、`DreamRealityValidator` 和 `RelationshipTimelineValidator`。
+25. 最后读 `92_` 到 `118_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema、真实梦境 schema、真实关系 schema、`LifeRealitySchemaBundle`、runner 实现脚手架、真实 `.schema.json` 物化、seed fixture、mutation fixture、withheld probe、dashboard 面板、阶段门回看、repair queue、真实运行观测 ingestion 桥、首批 JSON 文件生成任务、dashboard source mock 文件、runtime observation fixture catalog、shared defs schema materialization、dashboard cross-file checker、runtime observation schema materialization、component schema materialization sequence、cross-file checker report schema、runtime schema fixture seed generation、component schema seed generation、dashboard report rollup seed generation、generation runner CLI contract 和全库边界声明改写清单接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator`、`DreamRealityValidator` 和 `RelationshipTimelineValidator`。
 
 ## 文件索引
 
@@ -162,6 +162,7 @@
 | `115_life_reality_runtime_schema_fixture_seed_generation.md` | runtime schema fixture seed generation：把 runtime observation schema、fixture catalog 和 report schema 转成 manifest、pass/fail/critical/mutation/withheld/smoke seed、validation report、ingestion smoke、quarantine panel 和 rollup 生成方案 |
 | `116_life_reality_component_schema_seed_generation.md` | component schema seed generation：把三条 component bundle 的对象 schema skeleton、bundle skeleton、dependency graph、dry-run report、cross-bundle refs、validator order 和 gap feedback 固定为首批生成方案 |
 | `117_life_reality_dashboard_report_rollup_seed_generation.md` | dashboard report rollup seed generation：把 runtime seed、component schema generation 和 cross-file checker reports 上卷为 dashboard patch、stage gate、repair/gap bridge、provenance graph 和 rollup dry-run |
+| `118_life_reality_generation_runner_cli_contract.md` | generation runner CLI contract：把 `generate-fixtures`、`generate-schemas`、`check-dashboard --emit-rollup`、`explain-generation` 和 `run-generation-pipeline` 固定为未来可执行入口 |
 
 ## 项目术语
 

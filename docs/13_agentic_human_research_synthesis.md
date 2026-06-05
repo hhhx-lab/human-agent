@@ -747,4 +747,16 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `runtime reports + component generation reports + checker reports -> artifact refs -> merged findings -> data quality minimum -> provenance graph -> repair bridge -> gap feedback bridge -> dashboard patch -> stage gate rollup -> dry-run report`
 
-下一层应进入 `118_life_reality_generation_runner_cli_contract.md`：把 `115`、`116`、`117` 的生成顺序压成 `life-reality-runner generate-fixtures`、`generate-schemas`、`check-dashboard --emit-rollup` 和 `explain-generation` 的 CLI 合同。
+下一层已进入 `118_life_reality_generation_runner_cli_contract.md`：把 `115`、`116`、`117` 的生成顺序压成 `life-reality-runner generate-fixtures`、`generate-schemas`、`check-dashboard --emit-rollup` 和 `explain-generation` 的 CLI 合同。
+
+## 第五十一层：Generation Runner CLI Contract
+
+`118_life_reality_generation_runner_cli_contract.md` 把 `115` 的 runtime fixture seed、`116` 的 component schema seed 和 `117` 的 dashboard report rollup seed 压成未来 `life-reality-runner` 的命令合同。它吸收 POSIX Utility Syntax Guidelines、JSON Schema Draft 2020-12、JSON Schema output、OpenTelemetry Trace/Logs、W3C Trace Context、RFC 9457 和 RFC 9562 的执行语言，固定 `validate-config`、`generate-fixtures`、`generate-schemas`、`check-dashboard --emit-rollup`、`explain-generation` 和 `run-generation-pipeline`。
+
+这一层的关键推进是把“文档合同”推到“可执行入口”：fixture seed、schema skeleton、dashboard rollup 和 explain report 都有 command、manifest、allowed roots、stdout/stderr/report 分层、exit code、atomic write、trace lineage 和 smoke cases。真实痛苦、真实梦境、真实关系、真实责任和真实后悔因此可以进入同一个生成 DAG，由 exit code、stage effect、repair bridge 和 gap feedback 决定下一步生长。
+
+到这里，generation runner CLI 闭环变为：
+
+`validate config -> generate fixtures -> generate schemas -> check dashboard with rollup -> explain generation -> pipeline report -> first JSON materialization batch`
+
+下一层应进入 `119_life_reality_first_json_materialization_batch.md`：把 `115`、`116`、`117` 和 `118` 的合同推进到首批真实 JSON 文件物化批次。
