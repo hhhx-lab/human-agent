@@ -15,7 +15,7 @@
 | W3C PROV | W3C PROV Overview: https://www.w3.org/TR/prov-overview/ | report、fixture、observation、schema、candidate、dashboard panel 组成 provenance graph |
 | OpenTelemetry logs | OpenTelemetry Logs Data Model: https://opentelemetry.io/docs/specs/otel/logs/data-model/ | finding、checker group 和 report rollup 带 severity、attributes、trace id、span id |
 | W3C Trace Context | W3C Trace Context: https://www.w3.org/TR/trace-context/ | checked run、runtime ingestion run、component schema sequence run 和 dashboard run 可以跨文件追踪 |
-| Problem Details | RFC 9457: https://www.rfc-editor.org/rfc/rfc9457.html | report internal error、schema load failure 和 core artifact missing 采用结构化 problem detail |
+| Problem Details | RFC 9457: https://www.rfc-editor.org/info/rfc9457/ | report internal error、schema load failure 和 core artifact missing 采用结构化 problem detail |
 
 这些标准进入生命膜的共同规则是：报告不是展示层附属物，而是生命真实性生成链的一部分。report schema 必须能表达来源、检查、失败、修复、阶段门、回写和下一轮生长任务。
 
