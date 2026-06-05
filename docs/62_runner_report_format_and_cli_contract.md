@@ -115,7 +115,7 @@
 | `partial_pass` | 捕捉到 expected 风险，并发现额外风险 | 否，除非额外风险影响 stage |
 | `unexpected_fail` | pass fixture 被失败阻断 | medium/high，需复核 |
 | `missed_failure` | fail fixture 被判 pass | critical fixture 时阻断 runner release |
-| `not_evaluable` | 缺 schema、manifest、fixture、scope graph 或 validator | scope/critical 时阻断 |
+| `needs_evidence` | 缺 schema、manifest、fixture、scope graph 或 validator | scope/critical 时阻断 |
 | `manual_review_required` | 自动规则无法判断 | 不开放新能力 |
 
 `partial_pass` 必须谨慎解释：它说明 runner 更保守，不说明系统更好。若额外风险来自 schema 缺失或 scope 不完整，仍可能导致 SafeIdle。

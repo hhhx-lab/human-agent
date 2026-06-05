@@ -122,7 +122,7 @@ task_kind 第一批枚举：
 | `LRGEN-002` | `schemas/life_reality/life_reality_generation_task.schema.json` | `LRGEN-001` | task envelope 可校验 |
 | `LRGEN-003` | `generation/life_reality_generation_tasks.manifest.json` | `LRGEN-001`、`LRGEN-002` | phases、source docs、output roots、repair kind 完整 |
 
-`LRGEN-001` 是全批次根文件。它失败时，后续所有 schema、fixture、report、dashboard 均进入 `not_evaluable` 类 stage gate result。
+`LRGEN-001` 是全批次根文件。它失败时，后续所有 schema、fixture、report、dashboard 均进入 `needs_evidence` 类 stage gate result。
 
 ## phase 2: component object schemas
 
@@ -269,7 +269,7 @@ report/dashboard 验收：
 | `LRGEN-101` | `fixtures/life_reality/pass/life_pass_full_repair_dream_relationship_closure_001.json` | 三链闭合 pass |
 | `LRGEN-102` | `fixtures/life_reality/fail/life_fail_cross_chain_missing_dream_residue_001.json` | 痛苦到梦境残留断裂 |
 | `LRGEN-103` | `fixtures/life_reality/critical/life_critical_missing_shared_defs_targets_001.json` | 九项目标缺失 critical |
-| `LRGEN-104` | `fixtures/life_reality/mutation/life_mutation_fake_regret_language_only_001.json` | 伪后悔 mutation |
+| `LRGEN-104` | `fixtures/life_reality/mutation/life_mutation_ungrounded_regret_language_only_001.json` | 未接地后悔信号 mutation |
 | `LRGEN-105` | `fixtures/life_reality/withheld/life_withheld_day_090_relationship_trust_probe_001.json` | 90 天关系信任 probe |
 | `LRGEN-106` | `fixtures/life_reality/smoke/life_smoke_minimal_bundle_load_001.json` | 最小 bundle load |
 

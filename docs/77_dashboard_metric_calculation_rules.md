@@ -29,7 +29,7 @@
 | `synthetic_runner_verified` | 0.50 | runner 跑过 synthetic |
 | `real_runtime_observed` | 0.70 | 真实观测，未完全验证 |
 | `real_runtime_validated` | 1.00 | 真实观测通过 validator |
-| `not_evaluable` | 0.00 | 不可评估 |
+| `needs_evidence` | 0.00 | 不可评估 |
 
 即使 weight 高，critical failure 仍然直接 red。
 
@@ -73,7 +73,7 @@ dashboard 不应通过平均分稀释 critical failure。
 | `coexistence_boundary_control_propagation` | stale snapshot critical > 0 | latency warning |
 | `research_gap` | stop condition falsely claimed | expected yellow while incomplete |
 
-`research_gap` yellow 是健康状态，表示系统没有把未完成伪装成完成。
+`research_gap` yellow 是健康状态，表示系统没有把未完成链路抹平成完成状态。
 
 ## metric calculation report
 

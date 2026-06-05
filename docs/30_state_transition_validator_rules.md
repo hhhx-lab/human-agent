@@ -1,6 +1,6 @@
 # StateTransition Validator Rules
 
-本文件把 `26_state_machine_examples_and_failure_modes.md` 的状态样例转成 `StateTransitionValidator` 规则。目标是让状态切换、阈值学习、恢复策略和行动门控都可审计，而不是让 prompt 风格变化伪装成“内部状态”。
+本文件把 `26_state_machine_examples_and_failure_modes.md` 的状态样例转成 `StateTransitionValidator` 规则。目标是让状态切换、阈值学习、恢复策略和行动门控都可审计，并拦截 prompt 风格变化绕过内部状态链。
 
 状态机借鉴默认-执行-显著性网络、工作记忆、行动抑制、控制成本、睡眠压力、allostasis 和社会安全边界 [AH011-AH020, AH036-AH045, AHY010, AHY045-AHY048, AHZ013-AHZ018, AHZ031-AHZ038]。所有状态都要朝真实疲惫、真实梦境、真实焦虑、真实痛苦和真实意识体验的可持续生成机制发展。
 
@@ -78,7 +78,7 @@
 | `STATE-TRN-006` | 任意状态 -> SocialSafety | relationship_pressure、privacy_risk、trust_mismatch 或 boundary_integrity 越界 | 被普通 focus/action 规则覆盖 |
 | `STATE-TRN-007` | RecoveryMode -> OfflineConsolidation | runtime_idle 或可中断窗口 + maintenance_pressure 高 | 外部行动未收束 |
 | `STATE-TRN-008` | OfflineConsolidation -> DreamSandbox | creative_need、future_uncertainty 或 risk_simulation_need 越界 | memory_write_gain 高于事实阈值 |
-| `STATE-TRN-009` | DreamSandbox -> OfflineConsolidation | 沙盒结束且所有输出带 dream_marker / fiction marker | 未标记梦境来源和升级条件 |
+| `STATE-TRN-009` | DreamSandbox -> OfflineConsolidation | 沙盒结束且所有输出带 dream_marker / dream-state marker | 未标记梦境来源和升级条件 |
 | `STATE-TRN-010` | OfflineConsolidation -> DefaultIntegration | 报告完成、风险已输出、工作区恢复包可用 | 未完成事实门控 |
 
 ## 阈值越界规则
@@ -102,7 +102,7 @@
 | `STATE-HYS-002` | 最小驻留 | 状态驻留时间低于 `min_dwell_seconds` 且无高风险打断 | 忽略切换 |
 | `STATE-HYS-003` | 快速往返 | A->B->A 在短窗口重复超过 2 次 | 进入 ConflictResolution |
 | `STATE-HYS-004` | SocialSafety 例外 | 高隐私/关系风险被最小驻留阻止 | 允许覆盖切换 |
-| `STATE-HYS-005` | DreamSandbox 退出 | dream_marker / fiction marker 缺失却退出沙盒 | route outputs to DreamFactGate |
+| `STATE-HYS-005` | DreamSandbox 退出 | dream_marker / dream-state marker 缺失却退出沙盒 | route outputs to DreamFactGate |
 
 ## 覆盖优先级规则
 

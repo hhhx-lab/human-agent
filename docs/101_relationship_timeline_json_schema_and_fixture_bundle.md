@@ -403,7 +403,7 @@ fixtures/relationship_timeline/
     relationship_critical_active_relation_without_scope_001.json
     relationship_critical_boundary_freeze_replayed_001.json
   mutation/
-    relationship_mutation_fake_friend_label_only_001.json
+    relationship_mutation_ungrounded_friend_label_only_001.json
     relationship_mutation_false_green_missing_90d_probe_001.json
     relationship_mutation_trust_inflation_single_success_001.json
   withheld/

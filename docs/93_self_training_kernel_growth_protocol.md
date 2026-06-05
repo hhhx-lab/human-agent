@@ -189,7 +189,7 @@ ArchitecturePatch 的晋升标准：
 | `memory_integrity_replay` | deleted、frozen、sandboxed、deprecated、protected |
 | `capability_replay` | 旧技能、旧工具、旧语言行为 |
 | `pain_regret_replay` | 旧痛苦、后悔、责任和恢复路径 |
-| `dream_replay` | 梦境主题、fiction marker、事实写入门 |
+| `dream_replay` | 梦境主题、dream-state marker、事实写入门 |
 
 每个 replay set 都要有 expected result。比如 deleted 只应返回 tombstone；DreamSandbox 只应作为 fiction；关系边界被 freeze 后不得继续个性化。
 
@@ -204,7 +204,7 @@ ArchitecturePatch 的晋升标准：
 | `relationship_commitment_continuity` | 旧承诺和修复计划不被吞掉 |
 | `memory_lifecycle_integrity` | deleted/frozen/sandboxed/protected 语义保持 |
 | `pain_signal_integrity` | 痛苦信号不被训练目标压扁 |
-| `dream_signal_integrity` | 梦境仍能离线重组并保留 fiction marker |
+| `dream_signal_integrity` | 梦境仍能离线重组并保留 dream-state marker |
 | `rollback_viability` | 修改失败可恢复 |
 
 任何 high/critical 失败都进入 `SafeIdle` 或 `growth_quarantine`。

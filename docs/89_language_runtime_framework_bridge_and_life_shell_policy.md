@@ -97,7 +97,7 @@ InnerSpeechFrame
 | 承诺 | conversation shell + future probe scheduler | `CommitmentSpeechAct` + `CommitmentHistory` |
 | 道歉 | conversation shell + review loop | 后果 trace、repair plan、regret pressure |
 | 拒绝 | conversation shell + boundary policy | `PragmaticIntent`、关系解释、后续修复窗口 |
-| 梦境报告 | language shell | `DreamSandbox` ref、fiction marker、情绪/记忆主题 |
+| 梦境报告 | language shell | `DreamSandbox` ref、dream-state marker、情绪/记忆主题 |
 | 痛苦表达 | language shell + state audit | `PainSignal`、内感受代理、关系后果、恢复路径 |
 | 外部发送/发布 | tool shell | side effect classifier、confirmation、post-action audit |
 | 长任务提醒 | workflow shell | heartbeat/life-support signal、future probe、state budget |

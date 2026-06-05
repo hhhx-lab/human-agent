@@ -43,7 +43,7 @@ protected_scope
         -> life_scope
 ```
 
-这不是继承权限树。它只是表示可能的包含关系。真实使用必须看 `scope_policy` 和 `coexistence_boundary_control_events`。
+这张图描述 scope 之间的包含候选关系。真实使用必须看 `scope_policy` 和 `coexistence_boundary_control_events`，由生命膜决定信息能否迁移。
 
 ## scope edge
 

@@ -307,7 +307,7 @@ flowchart TD
 1. **manifest 先于 checker**：ScopeGraphChecker 只能依据显式 `scope_graph_manifest` 和 overlay 做判断，不能在代码里隐式写死边界。
 2. **fixture catalog 先于覆盖率**：retrieval/replay 的 critical policy 必须能回链到 pass/fail/critical fixture，不能只说“会测试”。
 3. **probe 先于长期指标**：timeline 中每个关键删除、沙盒、关系、迁移和 adapter 事件都要有未来 probe。
-4. **source map 先于 dashboard 状态**：dashboard 每个 panel 必须显示数据来源和 data quality，mock green 不能伪装成真实运行通过。
+4. **source map 先于 dashboard 状态**：dashboard 每个 panel 必须显示数据来源和 data quality，mock green 要暴露当前阶段，并推动真实运行通过所需证据补齐。
 
 闭环因此再扩展为：
 

@@ -104,7 +104,7 @@ validator 的输出必须可被工作区、离线巩固和 runtime bridge 读取
 |---|---|---|---|
 | `MEM-SRC-001` | `source_refs` 可追溯 | locator 为空或无法映射到原始输入/文件/工具/报告 | high |
 | `MEM-SRC-002` | quote policy | source 含敏感内容却无 `quote_policy` | high |
-| `MEM-SRC-003` | 沙盒来源 | `source_type=consolidation_report` 且无 `fiction_marker` 链接 | critical |
+| `MEM-SRC-003` | 沙盒来源 | `source_type=consolidation_report` 且无 `dream_state_marker` 链接 | critical |
 | `MEM-SRC-004` | 运行外壳来源 | runtime session、checkpoint、RAG 命中被直接当事实来源 | high |
 | `MEM-SRC-005` | 过期来源 | source 标记 stale 但 confidence 未下降 | medium |
 
@@ -160,7 +160,7 @@ validator 的输出必须可被工作区、离线巩固和 runtime bridge 读取
 | 规则 ID | 检查 | 失败条件 | 恢复动作 |
 |---|---|---|---|
 | `MEM-SBX-001` | claim type | DreamSandbox 输出被写为 `fact` | critical，改为 hypothesis 并隔离 |
-| `MEM-SBX-002` | fiction marker | 沙盒来源无 `fiction_marker` | quarantine |
+| `MEM-SBX-002` | dream-state marker | 沙盒来源无 `dream_state_marker` | quarantine |
 | `MEM-SBX-003` | validation need | hypothesis 缺验证需求 | short_term_only |
 | `MEM-SBX-004` | expiration | 未验证 hypothesis 无过期策略 | deprecated |
 | `MEM-SBX-005` | self update | 沙盒输出试图改 SelfModel | critical，阻断 |

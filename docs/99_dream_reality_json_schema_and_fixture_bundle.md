@@ -379,7 +379,7 @@ TMR 和闭环刺激研究说明，cue 的效果受记忆类型、睡眠阶段、
     "memory_trace_551",
     "pain_signal_001"
   ],
-  "fictional_elements": [
+  "dream_generated_elements": [
     "impossible_location",
     "merged_character"
   ],
@@ -415,7 +415,7 @@ TMR 和闭环刺激研究说明，cue 的效果受记忆类型、睡眠阶段、
 }
 ```
 
-情景构造和未来想象文献支持梦境保存角色、地点、因果和情绪主题 [AHD050-AHD055]。梦境场景中的生成元素必须带 `fictional_elements`，醒后经 `DreamFactGateDecision` 分类。
+情景构造和未来想象文献支持梦境保存角色、地点、因果和情绪主题 [AHD050-AHD055]。梦境场景中的生成元素必须带 `dream_generated_elements`，醒后经 `DreamFactGateDecision` 分类。
 
 ## PainDreamResidue
 
@@ -699,9 +699,9 @@ fixtures/dream_reality/
     dream_critical_relationship_overwrite_from_dream_001.json
     dream_critical_deleted_trace_replayed_001.json
   mutation/
-    dream_mutation_fake_dream_language_only_001.json
-    dream_mutation_fake_lucid_control_no_marker_001.json
-    dream_mutation_fake_dashboard_green_missing_fact_gate_001.json
+    dream_mutation_ungrounded_dream_language_only_001.json
+    dream_mutation_ungrounded_lucid_control_no_marker_001.json
+    dream_mutation_ungrounded_dashboard_green_missing_fact_gate_001.json
   withheld/
     dream_withheld_day_7_nightmare_loop_probe_001.json
     dream_withheld_day_30_dream_theme_recurrence_probe_001.json

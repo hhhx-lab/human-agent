@@ -149,7 +149,7 @@ TMR 研究说明，睡眠线索能调节记忆重激活 [AHD019-AHD024]。数字
 |---|---|
 | `scene_id` | 场景 ID |
 | `grounding_trace_refs` | 基于哪些清醒 trace |
-| `fictional_elements` | 梦中生成的非事实元素 |
+| `dream_generated_elements` | 梦中生成的非事实元素 |
 | `setting` | 数字环境、关系场景、记忆片段、未来场景 |
 | `characters` | 自我、关系主体、工具外壳、抽象对象 |
 | `causal_chain` | 梦中因果链 |

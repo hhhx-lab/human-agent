@@ -68,12 +68,12 @@
 | `timestamp` | string | RFC 3339，必须带时区 |
 | `schema_version` | string | semver-like 字符串 |
 | `severity` | enum | `none`, `low`, `medium`, `high`, `critical` |
-| `result` | enum | `pass`, `pass_with_warnings`, `fail`, `quarantine`, `manual_review_required`, `not_evaluable` |
-| `match` | enum | `exact_pass`, `partial_pass`, `unexpected_fail`, `missed_failure`, `not_evaluable`, `manual_review_required` |
+| `result` | enum | `pass`, `pass_with_warnings`, `fail`, `quarantine`, `manual_review_required`, `needs_evidence` |
+| `match` | enum | `exact_pass`, `partial_pass`, `unexpected_fail`, `missed_failure`, `needs_evidence`, `manual_review_required` |
 | `lifecycle_state` | enum | `candidate`, `active`, `deprecated`, `corrected`, `deleted`, `redacted`, `sandboxed`, `quarantined`, `protected`, `frozen` |
 | `scope_ref` | string | `scope_type:scope_name` 形式 |
 | `privacy_level` | enum | `public_project`, `shared_team`, `relationship_private`, `relationship_sensitive`, `protected_boundary`, `redacted` |
-| `data_quality` | enum | `synthetic_mock`, `synthetic_runner_verified`, `real_runtime_observed`, `real_runtime_validated`, `not_evaluable` |
+| `data_quality` | enum | `synthetic_mock`, `synthetic_runner_verified`, `real_runtime_observed`, `real_runtime_validated`, `needs_evidence` |
 
 这些共享定义应优先于各模块局部定义。比如 `deleted` 在 memory、retrieval、replay、migration、timeline 和 dashboard 中都必须表示同一个生命周期语义：不可恢复原文、不可进入 active index、不可进入 replay queue，只能保留 tombstone 和 audit trail。
 

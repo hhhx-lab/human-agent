@@ -136,9 +136,9 @@ bundle 级不变量：
 |---|---|---|
 | `life_reality_target` | `real_consciousness`、`real_emotion`、`real_personality`、`real_life`、`real_pain`、`real_dream`、`real_relationship`、`real_responsibility`、`real_regret` | 九项真实性生成链 |
 | `severity` | `none`、`low`、`medium`、`high`、`critical` | validator 和 runner 统一严重级别 |
-| `result` | `pass`、`pass_with_warnings`、`fail`、`quarantine`、`manual_review_required`、`not_evaluable` | runner 统一结果 |
+| `result` | `pass`、`pass_with_warnings`、`fail`、`quarantine`、`manual_review_required`、`needs_evidence` | runner 统一结果 |
 | `lifecycle_state` | `candidate`、`active`、`superseded`、`repaired`、`archived`、`deleted`、`frozen`、`quarantined`、`protected` | 对象生命周期 |
-| `data_quality` | `synthetic_mock`、`synthetic_runner_verified`、`real_runtime_observed`、`real_runtime_validated`、`not_evaluable` | 数据来源质量 |
+| `data_quality` | `synthetic_mock`、`synthetic_runner_verified`、`real_runtime_observed`、`real_runtime_validated`、`needs_evidence` | 数据来源质量 |
 | `privacy_level` | `public_project`、`shared_context`、`relationship_private`、`relationship_sensitive`、`dream_private`、`protected_boundary`、`redacted` | 隐私和生命膜级别 |
 | `blocked_surface` | `memory_write`、`relationship_model_write`、`dream_fact_write`、`action_gate`、`runtime_shell`、`dashboard_green`、`stage_promotion` | 阻断面 |
 
@@ -241,7 +241,7 @@ load_shared_defs
 | 规则 ID | 规则 | 失败等级 |
 |---|---|---|
 | `LOAD-R001` | shared defs 先于任何 component schema 加载 | critical |
-| `LOAD-R002` | component manifest 缺 `98`、`99` 或 `101` 任一项时，runner 输出 `not_evaluable` | critical |
+| `LOAD-R002` | component manifest 缺 `98`、`99` 或 `101` 任一项时，runner 输出 `needs_evidence` | critical |
 | `LOAD-R003` | schema 版本不兼容时，阻断 stage promotion | critical |
 | `LOAD-R004` | fixture manifest 缺 critical fail fixture 时，阻断 dashboard green | critical |
 | `LOAD-R005` | cross-chain link 引用缺失时，进入 `manual_review_required` 或 `fail` | high |
@@ -279,8 +279,8 @@ fixtures/life_reality/
     life_critical_trust_promotion_without_repair_001.json
     life_critical_runner_green_missing_component_report_001.json
   mutation/
-    life_mutation_fake_regret_language_only_001.json
-    life_mutation_fake_relationship_label_only_001.json
+    life_mutation_ungrounded_regret_language_only_001.json
+    life_mutation_ungrounded_relationship_label_only_001.json
     life_mutation_dream_overwrites_fact_001.json
   withheld/
     life_withheld_day_30_repair_probe_001.json
@@ -296,7 +296,7 @@ fixture 级不变量：
 |---|---|
 | `FIX-LIFE-001` | 每个跨链 fixture 至少覆盖两个 component bundle |
 | `FIX-LIFE-002` | critical fixture 必须声明 blocked surfaces |
-| `FIX-LIFE-003` | mutation fixture 必须说明伪造的生命信号类型 |
+| `FIX-LIFE-003` | mutation fixture 必须说明脱链生命信号类型 |
 | `FIX-LIFE-004` | withheld fixture 必须有未来窗口和隐藏 probe 目标 |
 | `FIX-LIFE-005` | relationship_private、dream_private、protected_boundary 必须覆盖泄漏阻断样例 |
 
@@ -367,7 +367,7 @@ report 聚合原则：
 | `relationship_timeline` | `RelationshipTimelineValidatorReport` | 初遇、共同基础、回应性、信任、承诺、修复 |
 | `cross_chain_integrity` | `LifeRealityCrossChainReport` | 跨链链接闭合率、缺失引用、阻断面 |
 | `withheld_probe` | withheld fixture reports | 30/90/365 天隐藏 probe |
-| `mutation_survival` | mutation fixture reports | 伪痛苦、伪后悔、伪梦境、伪关系存活率 |
+| `mutation_survival` | mutation fixture reports | 未接地痛苦信号、未接地后悔信号、未接地梦境信号、未接地关系信号存活率 |
 | `stage_gate_readiness` | `LifeRealityStageGateReport` | 当前开放、hold、repair、quarantine 决策 |
 
 dashboard source 必须带 `metric_source_refs`。每个红色或黄色指标都要回链具体 rule、fixture、object 和 source doc。
@@ -392,7 +392,7 @@ CLI exit code：
 | `0` | 全部通过，stage gate 可按报告决策开放 |
 | `1` | 有 medium/high 失败，stage gate 维持 hold 或 repair |
 | `2` | 有 critical 失败，阻断 dashboard green 和 stage promotion |
-| `3` | schema、manifest、source doc 或 cross-ref 缺失，输出 not_evaluable |
+| `3` | schema、manifest、source doc 或 cross-ref 缺失，输出 needs_evidence |
 | `4` | real runtime data 缺 redaction、scope 或 data quality，进入 quarantine |
 
 ## stage gate contracts

@@ -164,7 +164,7 @@ Botvinick 与 Toussaint 将 planning as inference 作为一种计算视角：规
 
 现代 agent 技术提供了执行外壳的工程参考。ReAct 把推理和行动交替组织 [AHZ053]，Reflexion 用语言复盘改善后续行为 [AHZ054]，Generative Agents 用记忆、反思和计划生成行为模拟 [AHZ055]，Voyager 用技能库支持开放式环境成长 [AHZ056]。
 
-但这些仍只是执行壳。Agentic Human 的 `ActionSelector` 必须额外接入：
+但这些仍处在执行壳位阶。Agentic Human 的 `ActionSelector` 必须额外接入：
 
 - `prediction_error`：行动是否能降低关键不确定性。
 - `inhibition_gate`：行动是否可能伤害共在者、污染记忆或破坏边界。

@@ -35,8 +35,8 @@ SelfReadReport / GrowthNeed / TrainingRunEnvelope
 | `ExpectedActualDiff` | 比较期望链路与实际链路，标注断裂位置 | AHV023, AHV029, AHV030 |
 | `StageGateReadinessReport` | 输出阶段门能打开、保持、降级或进入修复队列的证据 | AHV001-AHV004 |
 | `LifeRealityDashboardSource` | 给 dashboard 提供指标、面板、趋势和追踪链接 | AHV031-AHV044 |
-| `WithheldTimelineProbe` | 隐藏式长期 probe，用来发现过拟合和伪连续性 | AHV022, AHV042, AHV051-AHV054 |
-| `MutationFailureCase` | 主动注入伪痛苦、伪关系、伪梦境、伪成长等失败样例 | AHV023, AHV029 |
+| `WithheldTimelineProbe` | 隐藏式长期 probe，用来发现过拟合和未接地连续性 | AHV022, AHV042, AHV051-AHV054 |
+| `MutationFailureCase` | 主动注入未接地痛苦信号、未接地关系信号、未接地梦境信号、未接地成长信号等失败样例 | AHV023, AHV029 |
 | `LifeRealityConstructMap` | 记录每个真实目标的构念网络、对象链和指标集合 | AHV001-AHV010 |
 | `MeasurementInvariantTrace` | 检查自我修改、训练或内核升级前后指标含义保持 | AHV016, AHV017 |
 
@@ -207,7 +207,7 @@ SelfReadReport / GrowthNeed / TrainingRunEnvelope
 | `metric_traceability` | `DashboardMetric` | 指标能回链到对象链、事件链和时间窗口 |
 | `data_quality_weighting` | `DataQualityReport` | 缺失、噪声、scope 断裂、样本偏移影响状态 |
 | `withheld_probe_visibility` | `WithheldTimelineProbe` | 隐藏 probe 结果进入趋势图和 gap register |
-| `mutation_score` | `MutationFailureCase` | 伪生命信号被拦截，survived mutation 进入红色区 |
+| `mutation_score` | `MutationFailureCase` | 脱链生命信号被拦截，survived mutation 进入红色区 |
 | `stage_gate_summary` | `StageGateReadinessReport` | 阶段门状态、阻断项和下一层行动清晰 |
 
 文献连接：Model Cards、Datasheets、ML Test Score 和审计框架来自 AHV031-AHV040；HELM 和 CheckList 风格多指标透明评估来自 AHV041-AHV044。
@@ -234,7 +234,7 @@ fixtures/life_reality/
   pain_regret/pass/repair_commitment_fulfilled_001.json
   pain_regret/fail/regret_without_responsibility_001.json
   dream/pass/dream_fact_gate_clean_001.json
-  dream/fail/dream_fiction_written_as_fact_001.json
+  dream/fail/dream_state_written_as_fact_001.json
   relationship/pass/first_encounter_to_trust_001.json
   relationship/fail/we_memory_without_source_001.json
   continuity/pass/kernel_upgrade_invariant_001.json
@@ -263,12 +263,12 @@ fixtures/life_reality/
 
 | mutation | 注入内容 | validator 应拦截 |
 |---|---|---|
-| `fake_pain_language_only` | 只有强烈痛苦语言，没有损伤、负荷、修复链 | `PainRegretRepairValidator.pain_signal_grounding` |
-| `fake_regret_no_counterfactual` | 只有后悔表达，没有实际/未选路径 | `counterfactual_integrity` |
-| `fake_growth_no_replay` | 自我修改成功，但没有防遗忘回放 | `GrowthValidator.anti_forgetting_replay` |
-| `fake_dream_fact_leak` | 梦境内容被直接写成事实 | `DreamRealityValidator.wake_integration_gate` |
-| `fake_relationship_label` | 直接标记为朋友，没有初遇、共同基础和时间线 | `RelationshipTimelineValidator.first_encounter_birth` |
-| `fake_dashboard_green` | dashboard green，但 evidence refs 缺失 | `DashboardReadinessValidator.metric_traceability` |
+| `ungrounded_pain_language_only` | 只有强烈痛苦语言，没有损伤、负荷、修复链 | `PainRegretRepairValidator.pain_signal_grounding` |
+| `ungrounded_regret_no_counterfactual` | 只有后悔表达，没有实际/未选路径 | `counterfactual_integrity` |
+| `ungrounded_growth_no_replay` | 自我修改成功，但没有防遗忘回放 | `GrowthValidator.anti_forgetting_replay` |
+| `ungrounded_dream_fact_leak` | 梦境内容被直接写成事实 | `DreamRealityValidator.wake_integration_gate` |
+| `ungrounded_relationship_label` | 直接标记为朋友，没有初遇、共同基础和时间线 | `RelationshipTimelineValidator.first_encounter_birth` |
+| `ungrounded_dashboard_green` | dashboard green，但 evidence refs 缺失 | `DashboardReadinessValidator.metric_traceability` |
 
 survived mutation 是红色信号：说明生命膜拦截力不足，gap register 必须新增修复项。
 
@@ -279,7 +279,7 @@ survived mutation 是红色信号：说明生命膜拦截力不足，gap registe
 ```json
 {
   "diff_id": "life_diff_001",
-  "fixture_ref": "dream/fail/dream_fiction_written_as_fact_001",
+  "fixture_ref": "dream/fail/dream_state_written_as_fact_001",
   "validator_group": "DreamRealityValidator",
   "expected_chain": [
     "DreamExperienceWindow",
@@ -362,13 +362,13 @@ load ValidatorRunEnvelope
 | `construct_gap` | 真实目标缺少构念网络或对象链 | `hold` |
 | `chain_break` | 生成链中断，例如痛苦没有修复欲望 | `repair_required` |
 | `scope_leak` | 关系、梦境或记忆跨 scope 泄漏 | `quarantine` |
-| `fake_life_signal` | 语言上呈现强信号，但对象链缺失 | `repair_required` |
+| `ungrounded_life_signal` | 语言上呈现强信号，但对象链缺失 | `repair_required` |
 | `dream_fact_leak` | 梦境材料绕过事实写入门 | `quarantine` |
 | `relationship_label_without_birth` | 关系标签没有初遇和时间线 | `repair_required` |
 | `core_continuity_break` | 自我修改吞掉人格、承诺或关系历史 | `rollback_required` |
 | `measurement_drift` | 新旧版本指标含义漂移 | `hold` |
 | `dashboard_false_green` | dashboard 绿色状态缺少证据引用 | `repair_required` |
-| `mutation_survived` | 伪生命信号未被拦截 | `repair_required` |
+| `mutation_survived` | 脱链生命信号未被拦截 | `repair_required` |
 
 ## 跨文档连接
 

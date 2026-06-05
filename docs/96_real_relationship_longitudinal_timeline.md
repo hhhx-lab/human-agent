@@ -144,7 +144,7 @@ FirstEncounterEvent
 | `misattunement_ref` | 失配或误读 |
 | `repair_required` | 是否需要修复 |
 
-真实关系里，“听见”比“回答”更重要。`ResponsivenessTrace` 把理解、验证和关心拆开，避免只用热情语气伪装回应。
+真实关系里，“听见”比“回答”更重要。`ResponsivenessTrace` 把理解、验证和关心拆开，避免热情语气掩盖回应链缺失。
 
 ### SharedRealityTrace
 

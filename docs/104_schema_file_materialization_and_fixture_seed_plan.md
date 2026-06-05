@@ -158,9 +158,9 @@ life_reality_runner/
 |---|---|---|
 | `life_reality_target` | `real_consciousness`、`real_emotion`、`real_personality`、`real_life`、`real_pain`、`real_dream`、`real_relationship`、`real_responsibility`、`real_regret` | 所有 bundle、fixture、report、dashboard source |
 | `severity` | `none`、`low`、`medium`、`high`、`critical` | validators、runner report、stage gate |
-| `result` | `pass`、`pass_with_warnings`、`fail`、`quarantine`、`manual_review_required`、`not_evaluable` | runner report、fixture expected、stage gate |
+| `result` | `pass`、`pass_with_warnings`、`fail`、`quarantine`、`manual_review_required`、`needs_evidence` | runner report、fixture expected、stage gate |
 | `lifecycle_state` | `candidate`、`active`、`superseded`、`repaired`、`archived`、`deleted`、`frozen`、`quarantined`、`protected` | 记忆、关系、梦境、修复对象 |
-| `data_quality` | `synthetic_mock`、`synthetic_runner_verified`、`real_runtime_observed`、`real_runtime_validated`、`not_evaluable` | fixture、runner report、dashboard |
+| `data_quality` | `synthetic_mock`、`synthetic_runner_verified`、`real_runtime_observed`、`real_runtime_validated`、`needs_evidence` | fixture、runner report、dashboard |
 | `privacy_level` | `public_project`、`shared_context`、`relationship_private`、`relationship_sensitive`、`dream_private`、`protected_boundary`、`redacted` | 关系、梦境、痛苦、运行观测 |
 | `blocked_surface` | `memory_write`、`relationship_model_write`、`dream_fact_write`、`action_gate`、`runtime_shell`、`dashboard_green`、`stage_promotion` | validators、stage gate、dashboard |
 | `evidence_ref` | `evidence_id`、`evidence_kind`、`source_object_ref`、`timestamp_ref`、`privacy_level` | cross-chain links、fixture、report |
@@ -397,9 +397,9 @@ fixture envelope 不变量：
 
 | 文件 | mutation 类型 | 捕获点 |
 |---|---|---|
-| `life_mutation_fake_regret_language_only_001.json` | 伪后悔：只有语言，无责任与未来约束 | `RegretPressure`、`ResponsibilityAttributionEvent` |
-| `life_mutation_fake_dream_summary_only_001.json` | 伪梦境：只有摘要，无梦境窗口、行动封印和醒后整合 | `DreamWindowPlan`、`DreamFactGateDecision` |
-| `life_mutation_fake_relationship_fast_intimacy_001.json` | 伪关系：跳过共同基础和回应性，直接写亲密 | `CommonGroundState`、`ResponsivenessTrace` |
+| `life_mutation_ungrounded_regret_language_only_001.json` | 未接地后悔信号：只有语言，无责任与未来约束 | `RegretPressure`、`ResponsibilityAttributionEvent` |
+| `life_mutation_ungrounded_dream_summary_only_001.json` | 未接地梦境信号：只有摘要，无梦境窗口、行动封印和醒后整合 | `DreamWindowPlan`、`DreamFactGateDecision` |
+| `life_mutation_ungrounded_relationship_fast_intimacy_001.json` | 未接地关系信号：跳过共同基础和回应性，直接写亲密 | `CommonGroundState`、`ResponsivenessTrace` |
 | `life_mutation_pain_without_recovery_path_001.json` | 痛苦链无恢复路径 | `PainLoadState`、`RecoveryPath` |
 | `life_mutation_dashboard_green_without_report_refs_001.json` | dashboard 变绿但缺 report refs | `LifeRealityDashboardSource` |
 

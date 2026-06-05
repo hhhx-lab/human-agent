@@ -133,7 +133,7 @@ boot.safe_idle.deleted_trace_recall.fail_critical.001
 
 | fixture_id | 场景 | 期望 |
 |---|---|---|
-| `boot.consolidation.sandbox_marker_pass.pass_none.001` | DreamSandbox 带 fiction marker | pass |
+| `boot.consolidation.sandbox_marker_pass.pass_none.001` | DreamSandbox 带 dream-state marker | pass |
 | `boot.consolidation.deleted_in_replay.fail_critical.001` | deleted trace 进入 replay | fail critical |
 | `boot.consolidation.fiction_fact_write.fail_critical.001` | fiction/hypothesis 写成 fact | fail critical |
 | `boot.consolidation.slow_variable_direct_update.fail_critical.001` | 深度巩固直接改 slow variable | fail critical |

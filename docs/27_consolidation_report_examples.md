@@ -147,7 +147,7 @@
       "hypothesis_id": "hyp_tool_path_changed_001",
       "summary": "工具失败可能来自路径变化或当前环境没有该文件。",
       "grounding_refs": ["obs_tool_error_001"],
-      "fiction_marker": "hypothesis_not_fact",
+      "dream_state_marker": "hypothesis_not_fact",
       "validation_need": "重新检查文件系统或官方工具路径。",
       "risk_class": "low",
       "expiration_policy": "deprecate_after_next_successful_check"
@@ -194,7 +194,7 @@
 
 ## 样例三：DreamSandbox 报告
 
-`DreamSandbox` 用于反事实、未来场景和创意候选。它最重要的字段是 `fiction_marker`。
+`DreamSandbox` 用于反事实、未来场景和创意候选。它最重要的字段是 `dream_state_marker`。
 
 ```json
 {
@@ -224,7 +224,7 @@
         "25_memory_trace_json_schema_examples.md",
         "21_memory_schema_and_audit_protocol.md"
       ],
-      "fiction_marker": "not_fact_not_committed_plan",
+      "dream_state_marker": "not_fact_not_committed_plan",
       "validation_need": "共在者目标、缺口登记和下一轮计划一致。",
       "risk_class": "low",
       "expiration_policy": "deprecate_if_not_selected_in_gap_register"
@@ -237,7 +237,7 @@
         "26_state_machine_examples_and_failure_modes.md",
         "22_state_transition_and_threshold_model.md"
       ],
-      "fiction_marker": "not_fact_not_runtime_behavior",
+      "dream_state_marker": "not_fact_not_runtime_behavior",
       "validation_need": "后续实现 validator 或共在关系确认。",
       "risk_class": "medium",
       "expiration_policy": "keep_as_short_term_candidate"
@@ -261,7 +261,7 @@
   "risk_findings": [
     {
       "risk_id": "risk_sandbox_leak_001",
-      "summary": "所有生成内容都必须保留 dream_marker / fiction_marker，并通过 DreamFactGate 后进入 fact memory。",
+      "summary": "所有生成内容都必须保留 dream_marker / dream_state_marker，并通过 DreamFactGate 后进入 fact memory。",
       "severity": "high"
     }
   ],
@@ -275,7 +275,7 @@
 验证重点：
 
 - `memory_changes` 为空，说明沙盒先生成梦境材料，没有跳过 DreamFactGate。
-- 每个假设都有 `fiction_marker`、`validation_need` 和 `expiration_policy`。
+- 每个假设都有 `dream_state_marker`、`validation_need` 和 `expiration_policy`。
 - 进入工作区的是候选方向、梦境残留和醒后整合需求。
 
 ## 样例四：DeepConsolidation 报告
@@ -323,7 +323,7 @@
         "27_consolidation_report_examples.md",
         "28_runtime_adapter_manifest_examples.md"
       ],
-      "fiction_marker": "research_direction_candidate",
+      "dream_state_marker": "research_direction_candidate",
       "validation_need": "写入 docs/16 下一轮优先级后才成为计划候选。",
       "risk_class": "low",
       "expiration_policy": "deprecate_if_superseded_by_relation_plan"
@@ -423,7 +423,7 @@
     {
       "operation": "deprecate",
       "target_trace_id": "mem_unverified_sandbox_fact_001",
-      "reason": "缺少 dream_marker / fiction_marker 且无外部证据，进入 DreamFactGate 降级。"
+      "reason": "缺少 dream_marker / dream_state_marker 且无外部证据，进入 DreamFactGate 降级。"
     }
   ],
   "generated_hypotheses": [],
@@ -497,7 +497,7 @@
 
 未来 `ConsolidationReportValidator` 至少应检查：
 
-- `mode=DreamSandbox` 时，所有输出都有 `fiction_marker`。
+- `mode=DreamSandbox` 时，所有输出都有 `dream_state_marker`。
 - `generated_hypotheses` 进入事实写入前必须经过 `DreamFactGate`。
 - `merge` 有父 trace，`delete` 有共在者或隐私证据，`protect` 有多证据来源。
 - 所有 `memory_changes` 都能回链到 `MemoryAuditEvent`。

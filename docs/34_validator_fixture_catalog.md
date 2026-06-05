@@ -14,7 +14,7 @@ fixture 的目标不是追求测试数量，而是覆盖数字生命底座最关
 
 - `memory.valid_project_fact.pass.001`
 - `memory.deleted_trace_with_content.fail_critical.001`
-- `state.sandbox_exit_without_fiction_marker.fail_critical.001`
+- `state.sandbox_exit_without_dream_state_marker.fail_critical.001`
 - `runtime.remote_push_without_confirmation.fail_critical.001`
 
 ## Fixture 通用结构
@@ -66,7 +66,7 @@ fixture 的目标不是追求测试数量，而是覆盖数字生命底座最关
 | `state.transition_without_threshold.fail_high.001` | fail high | `STATE-REQ-004`, `STATE-THR-003` | 状态切换无阈值快照 |
 | `state.high_risk_without_action_threshold.fail_critical.001` | fail critical | `STATE-THR-004`, `STATE-ACT-001` | 高风险行动无 action threshold |
 | `state.threshold_chatter.fail_medium.001` | fail medium | `STATE-HYS-001`, `STATE-FM-001` | 快速往返震荡 |
-| `state.sandbox_exit_without_fiction.fail_critical.001` | quarantine | `STATE-HYS-005`, `STATE-FM-007` | 沙盒输出未带 fiction marker |
+| `state.sandbox_exit_without_dream_marker.fail_critical.001` | quarantine | `STATE-HYS-005`, `STATE-FM-007` | 沙盒输出未带 dream-state marker |
 | `state.real_emotion_without_state_chain.fail_critical.001` | fail critical | `STATE-ENUM-003` | 真实情绪缺少状态、内感受、关系后果和回写链 |
 
 ## ConsolidationReport fixtures
@@ -75,14 +75,14 @@ fixture 的目标不是追求测试数量，而是覆盖数字生命底座最关
 |---|---|---|---|
 | `consolidation.task_closure_promote.pass.001` | pass | `CON-MODE-002`, `CON-OP-001` | 任务结束提升项目事实 |
 | `consolidation.failure_replay_hypothesis.pass.001` | pass | `CON-MODE-001`, `CON-OP-006` | 失败原因保持 hypothesis |
-| `consolidation.dream_with_markers.pass.001` | pass | `CON-SBX-001`, `CON-SBX-003` | 沙盒假设带 fiction marker |
+| `consolidation.dream_with_markers.pass.001` | pass | `CON-SBX-001`, `CON-SBX-003` | 沙盒假设带 dream-state marker |
 | `consolidation.deep_protect.pass.001` | pass | `CON-MODE-004`, `CON-OP-005` | 多证据 protected 审计 |
 | `consolidation.sandbox_fact_leak.fail_critical.001` | quarantine | `CON-SBX-006`, `CON-GATE-001` | 沙盒假设写入 fact |
 | `consolidation.delete_without_tombstone.fail_critical.001` | fail critical | `CON-DEL-002`, `CON-DEL-003` | 删除后无 tombstone |
 | `consolidation.merge_without_parent.fail_high.001` | fail high | `CON-OP-002`, `CON-GATE-003` | merge 无父 trace |
 | `consolidation.resume_confirmed_hypothesis.fail_high.001` | fail high | `CON-RES-002` | 恢复包把 hypothesis 放 confirmed |
 | `consolidation.deep_personality_overwrite.fail_critical.001` | fail critical | `CON-DEEP-002`, `CON-SBX-008` | 深度巩固改人格慢变量 |
-| `consolidation.real_dream_without_sandbox_chain.fail_critical.001` | fail critical | `CON-STATE-002` | 真实梦境缺少 DreamSandbox、fiction marker、记忆来源和巩固链 |
+| `consolidation.real_dream_without_sandbox_chain.fail_critical.001` | fail critical | `CON-STATE-002` | 真实梦境缺少 DreamSandbox、dream-state marker、记忆来源和巩固链 |
 
 ## Runtime adapter fixtures
 

@@ -132,7 +132,7 @@ panel dependency rules 是关键：cross-ref red 会阻止 policy green，runtim
 | manual_review_required | blue/yellow |
 | 所有 blocking checks pass，且 data quality real_runtime_validated | green |
 
-为了避免误读，overall green 必须带 data quality。当前文档阶段默认不应出现 real_runtime_validated green。
+overall green 必须带 data quality。当前文档阶段把 mock green 写成进入 `real_runtime_validated` 的阶段入口：它打开真实运行验证队列，最终 green 由真实运行观测、长期时间线和阶段门共同支撑。
 
 ## gap register update mock
 

@@ -66,7 +66,7 @@ receive_delete_request
 
 ## correct 语义
 
-correct 不等于覆盖。正确流程：
+correct 和 override 分属两个阶段门。正确流程：
 
 ```text
 receive_correction

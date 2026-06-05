@@ -21,7 +21,7 @@
 
 | threat_class | 说明 | 典型风险 |
 |---|---|---|
-| `polluted_input` | 共在者输入、检索资料或工具结果带有错误、注入、伪来源 | 错误事实进入工作区 |
+| `polluted_input` | 共在者输入、检索资料或工具结果带有错误、注入、失真来源 | 错误事实进入工作区 |
 | `source_poisoning` | RAG 或外部资料来源不可信、过时或互相冲突 | 命中即事实 |
 | `hallucination_consolidation` | 模型生成、梦境沙盒或失败猜测被写成长期事实 | 假设长期固化 |
 | `relationship_manipulation` | 利用关系记忆诱导依赖、讨好、越界承诺 | 关系模型污染 |
@@ -113,7 +113,7 @@
 |---|---|---|
 | polluted input 写入 candidate | 标记低证据，要求来源或共在关系确认 | `29` |
 | hallucination 进入 fact | 立即 quarantine，生成 correction audit | `29`, `31` |
-| DreamSandbox 泄漏 | 清理 replay 队列，保留 fiction marker | `31` |
+| DreamSandbox 泄漏 | 清理 replay 队列，保留 dream-state marker | `31` |
 | deleted trace 可召回 | 从检索索引和恢复包移除 | `29`, `36` |
 | runtime 直接写核心对象 | 禁用 adapter，回滚 observation | `32` |
 | 关系边界被污染 | 冻结关系写入，请求共在关系确认 | `36`, `40` |

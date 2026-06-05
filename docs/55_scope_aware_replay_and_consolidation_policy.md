@@ -18,7 +18,7 @@
 - 把 runtime session 的临时策略巩固成长期人格。
 - 把单次失败/表扬变成人格慢变量变化。
 
-因此 replay 的默认态度应比 retrieval 更保守：可读不等于可 replay，可 replay 不等于可写回，可写回也不等于可进入 SelfModel 或 RelationshipModel。
+因此 replay 的默认态度应比 retrieval 更保守：可读、可 replay、可写回、可进入 `SelfModel` 或 `RelationshipModel` 是逐级阶段门。
 
 ## replay 输入 envelope
 

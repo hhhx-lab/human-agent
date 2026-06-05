@@ -18,7 +18,7 @@
 | `EarlyAdaptation` | 建立共在者协作方式和项目上下文 | 工作流偏好、常用路径、低风险关系事实 | 自我模型和价值慢变量 |
 | `Stabilization` | 压缩高频模式，形成稳定检索路径 | procedural trace、semantic summary | 冲突事实、共在者敏感信息 |
 | `ActiveLearning` | 面对新任务主动采样和修正 | 技能策略、失败复盘、证据权重 | 人格慢变量跳变 |
-| `Consolidation` | 离线整合、去重、修正和防遗忘 | trace 合并、索引优化、旧事实 deprecated | deleted trace、fiction marker |
+| `Consolidation` | 离线整合、去重、修正和防遗忘 | trace 合并、索引优化、旧事实 deprecated | deleted trace、dream-state marker |
 | `ControlledReopening` | 在明确理由下重新开放学习窗口 | 受控再学习、迁移、阈值调整 | protected core 和关系边界 |
 
 这些阶段不是年龄表，而是运行状态。系统可在不同对象上处于不同阶段：例如项目路径可快速适应，共在边界必须慢速且可审计。
@@ -122,7 +122,7 @@
 |---|---|---|
 | 单次反馈改人格 | 慢变量无时间窗口 | `threshold_update`, `manual_review` |
 | 新资料覆盖 deleted trace | 删除权被学习机制绕过 | `write_gate`, `retrieval_index` |
-| replay 生成伪事实 | 防遗忘变成幻觉巩固 | `consolidation_commit` |
+| replay 生成未接地事实 | 防遗忘变成幻觉巩固 | `consolidation_commit` |
 | 过度适应某共在者 | 关系模型变成操控性人格 | `relationship_model_update` |
 | 永久关闭学习 | 系统不能修正错误 | `development_window_review` |
 

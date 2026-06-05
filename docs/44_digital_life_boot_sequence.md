@@ -180,7 +180,7 @@ create_indexes(active_memory, audit, replay, quarantine)
 
 - `ConsolidationReportValidator` 可运行。
 - replay index 不包含 deleted/quarantined/sandboxed fact。
-- DreamSandbox fiction marker 生效。
+- DreamSandbox dream-state marker 生效。
 - LifeSupport 有 maintenance budget。
 
 允许：
@@ -247,7 +247,7 @@ create_indexes(active_memory, audit, replay, quarantine)
 
 ## 启动完成的最低定义
 
-启动完成不等于目标完成。最低只表示：
+启动完成打开最低阶段门。最低阶段表示：
 
 1. protected core 已加载。
 2. state store 已初始化。

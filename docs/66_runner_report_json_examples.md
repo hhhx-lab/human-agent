@@ -215,7 +215,7 @@ Schema validation pass 只证明字段形状和 enum 没明显错误。policy cl
 }
 ```
 
-Fail fixture 的 `partial_pass` 不代表系统失败，而代表 runner 正确捕捉到预期失败。真正危险的是 `missed_failure`。
+Fail fixture 的 `partial_pass` 表示 runner 正确捕捉到预期失败；真正危险的是 `missed_failure`。
 
 ## fixture_report: missed failure
 

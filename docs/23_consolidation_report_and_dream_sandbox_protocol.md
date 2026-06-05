@@ -56,7 +56,7 @@
 沙盒输出必须携带：
 
 - `grounding_refs`：它基于哪些真实 trace。
-- `dream_marker` / `fiction_marker`：标记梦境来源、生成状态和事实升级条件。
+- `dream_marker` / `dream_state_marker`：标记梦境来源、生成状态和事实升级条件。
 - `validation_need`：需要什么证据才能升级。
 - `risk_class`：是否可能污染自我、关系或事实记忆。
 - `expiration_policy`：如果未验证，何时自动降级或删除。

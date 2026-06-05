@@ -86,7 +86,7 @@ detail view 应显示：
 
 1. 定义 event trace、responsibility queue、commitment history、repair entry、consequence detail view。
 2. event review 必须回链 source reports、commitment 和 consequence trace。
-3. 关闭通知不等于允许写入。
+3. 关闭通知后仍需独立写入授权和生命膜审计。
 4. correction controls 能生成 delete/correct/freeze/scope_limit。
 5. external correction 重新走 confirmation。
 6. 不展示未脱敏敏感内容。

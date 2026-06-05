@@ -37,7 +37,7 @@
 - **LangGraph**：durable execution 和 checkpoint 可以服务 `ReplayScheduler`、`GlobalWorkspace` 的运行恢复。
 - **OpenAI Agents SDK**：tracing 和 guardrails 可以服务可审计行动、handoff 和安全边界。
 - **Semantic Kernel / Microsoft Agent Framework**：plugin 模型适合作为外部工具系统。
-- **AutoGen**：多 agent conversation 可以借鉴为多子系统内部讨论，但不能等同脑区协作。
+- **AutoGen**：多 agent conversation 可以借鉴为多子系统内部讨论；进入脑区协作语言时还要接入状态、调质、记忆和生命膜。
 - **CrewAI**：flows/crews 的分离提示我们要区分流程控制和自治处理。
 - **LlamaIndex**：知识检索和 AgentWorkflow 可作为语义记忆/资料层。
 - **Google ADK**：workflow agents 和 tool ecosystem 适合作为部署与工具桥。

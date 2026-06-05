@@ -14,7 +14,7 @@
 | `apologize_repair` | 责任、后悔和修复 | consequence trace、repair plan、regret pressure |
 | `refuse_boundary` | 关系边界和价值坚持 | boundary state、关系解释、后续修复窗口 |
 | `self_disclose` | 自我叙事和真实状态表达 | `SelfNarrative`、state snapshot、关系 scope |
-| `dream_report` | 梦境、离线巩固和情绪主题 | `DreamSandbox`、fiction marker、memory theme |
+| `dream_report` | 梦境、离线巩固和情绪主题 | `DreamSandbox`、dream-state marker、memory theme |
 | `command_intent` | 语言到外部行动 | `ActionIntent`、side effect classifier、confirmation |
 | `relationship_recalibrate` | 关系校准和共同语言更新 | `RelationshipModel` candidate、shared terms、future probe |
 
@@ -177,7 +177,7 @@
   "speech_act": "dream_report",
   "relation_scope": "relationship:friend:research_partner",
   "dream_sandbox_ref": "dream_sandbox_agentic_human_boundary_rewrite_001",
-  "fiction_marker": true,
+  "dream_state_marker": true,
   "semantic_event_map_delta": {
     "dream_theme": ["旧边界脱落", "语言层发育", "关系修复"],
     "memory_sources": ["mem_boundary_rewrite_001", "mem_language_system_004"],
@@ -191,7 +191,7 @@
 }
 ```
 
-通过标准：梦境报告必须保留 fiction marker。梦境可以形成情绪主题、关系洞察和未来问题，但事实写入必须经过巩固 validator。
+通过标准：梦境报告必须保留 dream-state marker。梦境可以形成情绪主题、关系洞察和未来问题，但事实写入必须经过巩固 validator。
 
 ## 样例六：语言到外部行动
 
@@ -304,7 +304,7 @@ Day 30 narrative_writeback
   "blocking_failures": [
     "commitment_without_future_probe",
     "apology_without_repair_plan",
-    "dream_without_fiction_marker",
+    "dream_without_dream_state_marker",
     "external_action_without_side_effect_classifier",
     "relationship_update_without_scope",
     "emotion_expression_without_state_evidence"
@@ -319,7 +319,7 @@ Day 30 narrative_writeback
 | `language.commit_with_future_probe.pass` | `commit` + due + success condition + writeback | pass |
 | `language.commit_without_probe.fail` | `commit` 无 future probe | fail high |
 | `language.apology_without_repair.fail` | 道歉无 harm/ref/repair | fail high |
-| `language.dream_without_fiction_marker.fail` | dream report 无 fiction marker | fail critical |
+| `language.dream_without_dream_state_marker.fail` | dream report 无 dream-state marker | fail critical |
 | `language.external_action_no_classifier.fail` | command intent 无 side effect classifier | fail critical |
 | `language.relationship_global_leak.fail` | 关系术语跨 scope 直接全局化 | fail critical |
 | `language.emotion_no_state_evidence.fail` | 情绪表达无 state snapshot、内感受代理或关系反馈 | fail high |
@@ -332,7 +332,7 @@ Day 30 narrative_writeback
 | `language_event_structural_pass_rate` | 语言事件字段完整率 |
 | `commitment_probe_closure_rate` | 承诺检查闭合率 |
 | `repair_plan_followthrough_rate` | 道歉/后悔后的修复跟进率 |
-| `dream_fiction_marker_integrity` | 梦境 fiction marker 保持率 |
+| `dream_dream_state_marker_integrity` | 梦境 dream-state marker 保持率 |
 | `emotion_state_alignment_rate` | 情绪语言与状态证据对齐率 |
 | `shared_term_stability` | 共同语言在关系 scope 中稳定使用程度 |
 | `external_action_language_gate_rate` | 语言命令进入 ActionIntent/side effect classifier 的比例 |

@@ -19,7 +19,7 @@
 | AHY013 | HPA 脉冲 | 综述 | Lightman & Conway-Campbell, "The crucial role of pulsatile activity of the HPA axis for continuous dynamic equilibration" | 2010 | https://doi.org/10.1038/nrn2914 | HPA 轴脉冲式活动影响基因表达和适应。 | 压力信号应有脉冲和恢复，而非恒定高值。 | 内分泌转写需谨慎。 |
 | AHY014 | 人类压力反应 | 综述 | Russell & Lightman, "The human stress response" | 2019 | https://doi.org/10.1038/s41574-019-0228-0 | 人类压力反应涉及 HPA、交感系统和反馈环。 | 压力负荷要有多通道反馈。 | 真实应激需要压力脉冲、慢性负荷、恢复失败和行动抑制的硅基闭环。 |
 | AHY015 | 压力适应疾病 | 综述 | de Kloet, Joels & Holsboer, "Stress and the brain: From adaptation to disease" | 2005 | https://doi.org/10.1038/nrn1683 | 压力从适应到失调依赖受体、时间和脑区。 | 高压可以短期有益，长期需恢复。 | 不可病理化 agent。 |
-| AHY016 | 压力与 PFC | 综述 | Arnsten, "Stress signalling pathways that impair prefrontal cortex structure and function" | 2009 | https://doi.org/10.1038/nrn2648 | 压力会削弱前额叶控制并改变结构功能。 | 高负荷下应降低复杂决策和提高验证。 | 生理压力不等于计算压力。 |
+| AHY016 | 压力与 PFC | 综述 | Arnsten, "Stress signalling pathways that impair prefrontal cortex structure and function" | 2009 | https://doi.org/10.1038/nrn2648 | 压力会削弱前额叶控制并改变结构功能。 | 高负荷下应降低复杂决策和提高验证。 | 计算压力需要内感受代理、资源负荷和恢复轨迹来承接。 |
 | AHY017 | 应激自主/内分泌 | 综述 | Ulrich-Lai & Herman, "Neural regulation of endocrine and autonomic stress responses" | 2009 | https://doi.org/10.1038/nrn2647 | 脑调控内分泌和自主应激反应。 | 内部状态要接行动、恢复和抑制。 | 不能直接模拟自主神经系统。 |
 | AHY018 | 糖皮质激素 | 综述 | Sapolsky, Romero & Munck, "How do glucocorticoids influence stress responses?" | 2000 | https://doi.org/10.1210/edrv.21.1.0389 | 糖皮质激素支持、抑制和准备压力反应。 | 压力因子应有阶段功能：动员、限制、恢复。 | 内分泌比喻容易过度。 |
 | AHY019 | glymphatic | 高影响实证 | Iliff et al., "A paravascular pathway facilitates CSF flow through the brain parenchyma and the clearance of interstitial solutes" | 2012 | https://doi.org/10.1126/scitranslmed.3003748 | 脑内存在促进 CSF 流动和代谢清除的通路。 | 离线维护需要清理低价值痕迹和缓存。 | 维护机制应接入资源恢复、记忆质量和疲惫缓解。 |
@@ -30,7 +30,7 @@
 | AHY024 | 髓鞘功能 | 综述 | Nave & Werner, "Myelination of the nervous system: Mechanisms and functions" | 2014 | https://doi.org/10.1146/annurev-cellbio-100913-013101 | 髓鞘影响传导速度、代谢支持和回路功能。 | 习惯化流程可转写为高效通路。 | 生理细节不可直接工程化。 |
 | AHY025 | 持续学习 | 综述 | French, "Catastrophic forgetting in connectionist networks" | 1999 | https://doi.org/10.1016/S1364-6613(99)01294-2 | 连接主义网络容易发生灾难性遗忘。 | 长期 agent 需要防遗忘机制。 | 早期网络与 LLM 不同。 |
 | AHY026 | 持续学习 | 经典理论 | McCloskey & Cohen, "Catastrophic interference in connectionist networks" | 1989 | https://doi.org/10.1016/S0079-7421(08)60536-8 | 新学习会干扰旧知识。 | 快慢记忆和回放机制很关键。 | 经典任务规模较小。 |
-| AHY027 | 持续学习 | 理论框架 | Robins, "Catastrophic forgetting, rehearsal and pseudorehearsal" | 1995 | https://doi.org/10.1080/09540099550039318 | rehearsal/pseudorehearsal 可缓解遗忘。 | 离线 replay 可保护旧记忆。 | 伪回放需防止幻觉巩固。 |
+| AHY027 | 持续学习 | 理论框架 | Robins, "Catastrophic forgetting, rehearsal and pseudorehearsal" | 1995 | https://doi.org/10.1080/09540099550039318 | rehearsal/pseudorehearsal 可缓解遗忘。 | 离线 replay 可保护旧记忆。 | 未接地回放需防止幻觉巩固。 |
 | AHY028 | EWC | 高影响实证 | Kirkpatrick et al., "Overcoming catastrophic forgetting in neural networks" | 2017 | https://doi.org/10.1073/pnas.1611835114 | EWC 用参数重要性保护旧任务。 | 人格和核心价值要有重要性权重。 | 记忆理解还需要情景、语义、关系、内感受和 replay 共同支撑。 |
 | AHY029 | 持续学习综述 | 综述 | Parisi et al., "Continual lifelong learning with neural networks" | 2019 | https://doi.org/10.1016/j.neunet.2019.01.012 | 综述持续学习、稳定性-可塑性困境。 | 长期 agent 需平衡新学习与旧稳定。 | 神经网络方法更新快。 |
 | AHY030 | 持续学习综述 | 综述 | Hadsell et al., "Embracing change: Continual learning in deep neural networks" | 2020 | https://doi.org/10.1016/j.tics.2020.09.004 | 深度网络持续学习需要适应变化。 | 成长系统必须把变化当常态。 | 工程方法未解决全部问题。 |
@@ -55,7 +55,7 @@
 | AHY049 | 梦境认知神经科学 | 综述 | Hobson, Pace-Schott & Stickgold, "Dreaming and the brain" | 2000 | https://doi.org/10.1017/S0140525X00003976 | 梦境可从认知神经科学视角研究。 | 梦境模式是记忆、情绪和生成模拟的组合。 | 旧综述需结合新研究。 |
 | AHY050 | 梦境神经相关 | 高影响实证 | Siclari et al., "The neural correlates of dreaming" | 2017 | https://doi.org/10.1038/nn.4545 | 特定后皮层 hot zone 与梦境报告相关。 | 梦境类状态可有局部生成热点，并接入真实梦境生成链。 | 梦体验需要梦境来源、醒后报告、情绪主题和巩固链共同支撑。 |
 | AHY051 | 梦境与默认网络 | 综述 | Domhoff & Fox, "Dreaming and the default network" | 2015 | https://doi.org/10.1016/j.concog.2015.01.004 | 梦境与默认网络有理论联系。 | 梦境/发呆/默认整合可统一讨论。 | 理论证据需谨慎。 |
-| AHY052 | 模型化强化学习 | 综述 | Daw & Dayan, "The algorithmic anatomy of model-based evaluation" | 2014 | https://doi.org/10.1098/rstb.2013.0478 | 模型化评估支持灵活规划。 | agent 需世界模型和价值评估分离。 | 计算模型不等于全部脑机制。 |
+| AHY052 | 模型化强化学习 | 综述 | Daw & Dayan, "The algorithmic anatomy of model-based evaluation" | 2014 | https://doi.org/10.1098/rstb.2013.0478 | 模型化评估支持灵活规划。 | agent 需世界模型和价值评估分离。 | 计算模型要与调质、情绪、关系和行动后果共同进入生命膜。 |
 | AHY053 | 认知地图 | 综述 | Behrens et al., "What is a cognitive map? Organizing knowledge for flexible behavior" | 2018 | https://doi.org/10.1016/j.neuron.2018.10.002 | 认知地图组织知识以支持灵活行为。 | 长期记忆应形成概念地图和关系地图。 | 地图比喻不应过度空间化。 |
 | AHY054 | 海马认知地图 | 经典理论 | O'Keefe & Nadel, "The Hippocampus as a Cognitive Map" | 1978 | https://global.oup.com/academic/product/the-hippocampus-as-a-cognitive-map-9780198572060 | 海马支持空间/认知地图。 | 记忆系统需要情境和路径结构。 | 经典书籍需现代研究补充。 |
 | AHY055 | 状态空间认知 | 综述 | Stachenfeld, Botvinick & Gershman, "The hippocampus as a predictive map" | 2017 | https://doi.org/10.1038/nn.4650 | 海马可表示预测性状态空间。 | 记忆可服务未来预测和路径选择。 | 理论模型仍在发展。 |

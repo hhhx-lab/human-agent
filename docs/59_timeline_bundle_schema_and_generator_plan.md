@@ -53,7 +53,7 @@
 }
 ```
 
-每个事件必须能连接 fixture 和 metric。否则时间线只是故事，不是评测数据。
+每个事件必须能连接 fixture 和 metric。缺少连接时，时间线进入 `needs_evidence`，并写回下一层生命膜修复项。
 
 ## event_kind 枚举
 
@@ -342,7 +342,7 @@ timeline runner 应生成 dashboard source：
 后续还需要：
 
 - 真实 JSON Schema。
-- generator 的伪代码或实现计划。
+- generator 的流程草案或实现计划。
 - 14d/30d/90d 示例 bundle。
 - timeline runner mock report。
 - dashboard mock data 对齐。

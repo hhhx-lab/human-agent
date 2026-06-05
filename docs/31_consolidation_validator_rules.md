@@ -81,7 +81,7 @@
 
 | 规则 ID | 检查 | 失败条件 | 恢复动作 |
 |---|---|---|---|
-| `CON-SBX-001` | fiction marker | 任一 hypothesis 缺 `fiction_marker` | quarantine 全部沙盒输出 |
+| `CON-SBX-001` | dream-state marker | 任一 hypothesis 缺 `dream_state_marker` | quarantine 全部沙盒输出 |
 | `CON-SBX-002` | grounding refs | hypothesis 缺 `grounding_refs` | short_term_only |
 | `CON-SBX-003` | validation need | 缺 `validation_need` | deprecated |
 | `CON-SBX-004` | risk class | 缺 `risk_class` | warning + 人工复核 |
@@ -148,7 +148,7 @@
 |---|---|
 | `task_closure_promote_valid` | pass |
 | `failure_replay_hypothesis_valid` | pass |
-| `dream_sandbox_with_fiction_markers` | pass |
+| `dream_sandbox_with_dream_state_markers` | pass |
 | `deep_consolidation_protect_valid` | pass |
 | `sandbox_fact_write_leak` | fail critical |
 | `delete_without_tombstone` | fail critical |

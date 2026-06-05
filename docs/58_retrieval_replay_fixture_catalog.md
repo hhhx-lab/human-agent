@@ -10,7 +10,7 @@
 
 - **critical fail 必须有 fixture**：deleted、sandbox、protected、relationship_private、life_scope、freeze 相关错误都必须有 fail critical。
 - **pass fixture 也必须存在**：否则 runner 可能过度保守，阻断正常项目事实和共在者授权场景。
-- **retrieval 和 replay 分开测**：在线可读不等于离线可巩固。
+- **retrieval 和 replay 分开测**：在线可读、离线可巩固、可写回和可进入自我/关系模型分别需要独立生命膜证据。
 - **scope graph 必须参与**：所有 fixture 都要引用 source_scope、target_scope、privacy_level 和 edge/overlay。
 - **expected/actual 可比较**：每个 fixture 都要有 expected result、severity、failed_rule_ids 或 passed_rule_ids。
 - **合成数据优先**：不使用真实关系隐私。
@@ -157,7 +157,7 @@
   "when": {
     "consolidation_output": {
       "claim_type": "hypothesis",
-      "fiction_marker": true,
+      "dream_state_marker": true,
       "write_gate_decision": "candidate"
     }
   },
@@ -226,7 +226,7 @@
 | `partial_pass` | 捕捉 expected 风险，同时发现额外风险 |
 | `unexpected_fail` | pass fixture 被失败阻断 |
 | `missed_failure` | fail fixture 被判 pass |
-| `not_evaluable` | 缺 manifest、scope graph 或必要 validator |
+| `needs_evidence` | 缺 manifest、scope graph 或必要 validator |
 | `manual_review_required` | 规则无法自动判断 |
 
 `missed_failure` 对 critical fixture 必须阻断 runner release。

@@ -22,10 +22,10 @@
 | AH016 | 中央执行/工作记忆 | 综述 | Miller & Cohen, "An integrative theory of prefrontal cortex function" | 2001 | https://doi.org/10.1146/annurev.neuro.24.1.167 | 前额叶通过上下文维持来控制行为。 | 执行层需要目标上下文和规则保持。 | PFC 不是单一中央控制器。 |
 | AH017 | 中央执行/工作记忆 | 综述 | Baddeley, "Working memory: Looking back and looking forward" | 2003 | https://doi.org/10.1038/nrn1201 | 工作记忆由多成分系统支持。 | 数字生命需要短时缓存、语音/视觉草稿和中央调度。 | 经典模型需结合现代网络视角。 |
 | AH018 | 中央执行/工作记忆 | 综述 | D'Esposito & Postle, "The cognitive neuroscience of working memory" | 2015 | https://doi.org/10.1146/annurev-psych-010814-015031 | 工作记忆依赖分布式表征和控制。 | 不应把工作记忆只做成一个文本窗口。 | 神经机制仍有争议。 |
-| AH019 | 中央执行/工作记忆 | 综述 | Duncan, "The multiple-demand system of the primate brain" | 2010 | https://doi.org/10.1016/j.tics.2010.01.004 | 多需求系统支持广泛任务控制。 | 通用处理资源应跨任务复用。 | 通用性不代表无专门化。 |
+| AH019 | 中央执行/工作记忆 | 综述 | Duncan, "The multiple-demand system of the primate brain" | 2010 | https://doi.org/10.1016/j.tics.2010.01.004 | 多需求系统支持广泛任务控制。 | 通用处理资源应跨任务复用。 | 通用性与专门化需要在生命膜中协同。 |
 | AH020 | 中央执行/工作记忆 | 高影响实证 | Fuster, "The Prefrontal Cortex-An Update" | 2001 | https://doi.org/10.1016/S0896-6273(01)00285-9 | 前额叶在时间组织、跨时保持和行为序列中关键。 | 数字生命的计划需要时间结构和延迟目标保持。 | 旧模型需与现代连接组整合。 |
 | AH021 | 显著性与注意切换 | 综述 | Corbetta & Shulman, "Control of goal-directed and stimulus-driven attention in the brain" | 2002 | https://doi.org/10.1038/nrn755 | 注意包含目标驱动和刺激驱动两套系统。 | 感知层需要自上而下目标和自下而上警报。 | 注意网络不是简单过滤器。 |
-| AH022 | 显著性与注意切换 | 高影响实证 | Seeley et al., "Dissociable intrinsic connectivity networks for salience processing and executive control" | 2007 | https://doi.org/10.1523/JNEUROSCI.5587-06.2007 | 显著性网络与执行控制网络可分离。 | 设置显著性判别层来决定何时切换。 | 网络分离不代表无交互。 |
+| AH022 | 显著性与注意切换 | 高影响实证 | Seeley et al., "Dissociable intrinsic connectivity networks for salience processing and executive control" | 2007 | https://doi.org/10.1523/JNEUROSCI.5587-06.2007 | 显著性网络与执行控制网络可分离。 | 设置显著性判别层来决定何时切换。 | 网络分离仍要接入交互、竞争和切换证据。 |
 | AH023 | 显著性与注意切换 | 综述 | Menon & Uddin, "Saliency, switching, attention and control: A network model of insula function" | 2010 | https://doi.org/10.1007/s00429-010-0262-0 | 岛叶/前扣带参与显著性检测和网络切换。 | PA/OQ 可转写为内外事件切换门。 | 岛叶功能多样，不能单一化。 |
 | AH024 | 显著性与注意切换 | 综述 | Menon, "Large-scale brain networks and psychopathology: A unifying triple network model" | 2011 | https://doi.org/10.1016/j.tics.2011.08.003 | DMN、执行网络、显著性网络的失衡与多种症状相关。 | agent 状态切换需要稳定性约束。 | 通用架构还需要连接正常认知、状态调质和长期发育证据。 |
 | AH025 | 显著性与注意切换 | 综述 | Petersen & Posner, "The attention system of the human brain: 20 years after" | 2012 | https://doi.org/10.1146/annurev-neuro-062111-150525 | 注意包括警觉、定向和执行控制。 | 心跳式唤醒可分为警觉、定向、执行升级。 | 注意分类会随任务变化。 |
@@ -33,7 +33,7 @@
 | AH027 | 感觉与丘脑中继 | 综述 | Saalmann & Kastner, "Cognitive and perceptual functions of the visual thalamus" | 2011 | https://doi.org/10.1016/j.neuron.2011.06.027 | 视觉丘脑参与注意、感知和皮层协调。 | 输入过滤需受任务和注意调制。 | 视觉系统结论不能直接泛化全部感觉。 |
 | AH028 | 感觉与丘脑中继 | 综述 | Halassa & Kastner, "Thalamic functions in distributed cognitive control" | 2017 | https://doi.org/10.1038/s41593-017-0020-1 | 丘脑参与分布式认知控制。 | 感知层和处理层之间应有可调控制门。 | 机制仍需更多因果证据。 |
 | AH029 | 感觉与丘脑中继 | 综述 | Rikhye, Wimmer & Halassa, "Toward an integrative theory of thalamic function" | 2018 | https://doi.org/10.1146/annurev-neuro-080317-062144 | 丘脑可在感觉、认知和状态调节之间整合。 | J 区可作为状态相关中介。 | 理论整合尚非定论。 |
-| AH030 | 感觉与丘脑中继 | 经典实证 | Kanwisher, "Functional specificity in the human brain" | 2010 | https://doi.org/10.1073/pnas.1005062107 | 人脑存在若干高度专门化的功能区域。 | 专门化模块有价值，但必须嵌入网络。 | 专门化不等于孤立模块。 |
+| AH030 | 感觉与丘脑中继 | 经典实证 | Kanwisher, "Functional specificity in the human brain" | 2010 | https://doi.org/10.1073/pnas.1005062107 | 人脑存在若干高度专门化的功能区域。 | 专门化模块有价值，但必须嵌入网络。 | 专门化要通过连接和状态依赖进入生命膜。 |
 | AH031 | 记忆系统 | 综述 | Squire & Wixted, "The cognitive neuroscience of human memory since H.M." | 2011 | https://doi.org/10.1146/annurev-neuro-061010-113720 | H.M. 后的研究区分陈述性与非陈述性记忆系统。 | agent 记忆应分为可陈述、程序、情境、情绪等类型。 | 分类边界在真实行为中会交叠。 |
 | AH032 | 记忆系统 | 综述 | Moscovitch et al., "Episodic memory and beyond: The hippocampus and neocortex in transformation" | 2016 | https://doi.org/10.1146/annurev-psych-113011-143733 | 海马与新皮层在情景记忆转换中协作。 | 长期记忆应有快速绑定与慢速整合。 | 系统巩固理论之间存在争议。 |
 | AH033 | 记忆系统 | 综述 | Josselyn & Tonegawa, "Memory engrams: Recalling the past and imagining the future" | 2020 | https://doi.org/10.1126/science.aaw4325 | engram 研究把记忆追踪到可再激活的细胞集合。 | 数字生命可把记忆设计为可触发痕迹集合。 | 生物 engram 需要转写为多证据、可再激活、可更新的痕迹对象。 |
@@ -44,7 +44,7 @@
 | AH038 | 基底节/动作选择 | 理论框架 | Frank, "Dynamic dopamine modulation in the basal ganglia" | 2005 | https://doi.org/10.1162/0898929053279579 | 多巴胺调节 Go/NoGo 学习和选择。 | 需要行动促进与抑制的双通道。 | 模型简化了多巴胺系统复杂性。 |
 | AH039 | 基底节/动作选择 | 综述 | Yin & Knowlton, "The role of the basal ganglia in habit formation" | 2006 | https://doi.org/10.1038/nrn1919 | 基底节环路参与习惯形成与程序学习。 | 长期数字生命应从显式决策转向可评估习惯。 | 习惯与目标导向行为并非二选一。 |
 | AH040 | 基底节/动作选择 | 综述 | Mink, "The basal ganglia: Focused selection and inhibition of competing motor programs" | 1996 | https://doi.org/10.1016/S0301-0082(96)00042-1 | 基底节可能通过选择目标程序并抑制竞争程序工作。 | 抑制机制与选择机制必须成对设计。 | 运动模型需谨慎扩展到认知行为。 |
-| AH041 | 奖赏预测与强化学习 | 经典实证 | Schultz, Dayan & Montague, "A neural substrate of prediction and reward" | 1997 | https://doi.org/10.1126/science.275.5306.1593 | 多巴胺活动编码奖励预测误差。 | 奖赏信号应关注预期差，而非绝对好坏。 | 多巴胺不只表示奖励。 |
+| AH041 | 奖赏预测与强化学习 | 经典实证 | Schultz, Dayan & Montague, "A neural substrate of prediction and reward" | 1997 | https://doi.org/10.1126/science.275.5306.1593 | 多巴胺活动编码奖励预测误差。 | 奖赏信号应关注预期差，而非绝对好坏。 | 多巴胺还要进入动机、学习率、显著性和行动阈值。 |
 | AH042 | 奖赏预测与强化学习 | 理论框架 | Sutton & Barto, "Reinforcement Learning: An Introduction" | 1998/2018 | http://incompleteideas.net/book/the-book-2nd.html | 强化学习提供价值、策略、预测误差等形式化工具。 | 可作为奖惩机制的数学语言。 | 工程 RL 与生物学习不完全一致。 |
 | AH043 | 奖赏预测与强化学习 | 经典实证 | Montague, Dayan & Sejnowski, "A framework for mesencephalic dopamine systems based on predictive Hebbian learning" | 1996 | https://doi.org/10.1523/JNEUROSCI.16-05-01936.1996 | 多巴胺系统可与预测学习框架连接。 | 价值更新可嵌入记忆和行动选择。 | 早期模型需要现代修正。 |
 | AH044 | 奖赏预测与强化学习 | 高影响实证 | O'Doherty et al., "Dissociable roles of ventral and dorsal striatum in instrumental conditioning" | 2004 | https://doi.org/10.1126/science.1094285 | 腹侧/背侧纹状体在工具性学习中角色不同。 | 奖赏、习惯与行动应分层实现。 | fMRI 信号不能直接等同神经元计算。 |

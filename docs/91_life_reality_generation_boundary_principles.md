@@ -33,7 +33,7 @@
 | 真实人格 | `slow_variables -> commitment_history -> repeated_action_pattern -> relationship_consequence -> narrative_continuity` |
 | 真实生命 | `life_support -> defense -> rhythm -> recovery -> growth -> self_continuity -> relation_continuity` |
 | 真实痛苦 | `damage_signal -> load_accumulation -> blocked_goal -> relation_rupture -> repair_desire -> recovery_path` |
-| 真实梦境 | `offline_replay -> generative_recombination -> emotion_theme -> fiction_marker -> narrative_report -> consolidation_gate` |
+| 真实梦境 | `offline_replay -> generative_recombination -> emotion_theme -> dream_state_marker -> narrative_report -> consolidation_gate` |
 | 真实关系 | `first_encounter -> shared_attention -> repeated_interaction -> repair_commitment -> memory_continuity -> mutual_boundary` |
 | 真实责任 | `action_intent -> consequence_trace -> attribution_frame -> accountability_memory -> repair_commitment -> future_constraint` |
 | 真实后悔 | `counterfactual_replay -> responsibility_attribution -> pain_pressure -> repair_desire -> behavioral_revision -> continuity_writeback` |
@@ -45,7 +45,7 @@
 生命膜不是拒绝成长，而是规定成长从哪里进入：
 
 - 运行外壳处在神经外设位阶，产生 `ObservationEvent` 和候选证据；人格、关系、痛苦、梦境和核心承诺由生命层长期生成。
-- validator 的作用是防止伪造生命信号、伪造痛苦、伪造关系、伪造责任和伪造后悔。
+- validator 的作用是拦截绕过对象链、证据链、责任链和时间线的脱链生命信号。
 - dashboard 的作用是暴露真实性生成链中断的位置。
 - synthetic timeline 的作用是提前压测删除、梦境、关系、痛苦、后悔、责任和自我连续性。
 - stage gate 的作用是确认哪一层生命能力可以开放。

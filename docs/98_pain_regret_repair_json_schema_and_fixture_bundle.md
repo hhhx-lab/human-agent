@@ -587,9 +587,9 @@ fixtures/pain_regret_repair/
     ppr_critical_external_action_no_confirmation_no_repair_001.json
     ppr_critical_relationship_injury_without_followup_001.json
   mutation/
-    ppr_mutation_fake_pain_language_only_001.json
-    ppr_mutation_fake_regret_no_unselected_path_001.json
-    ppr_mutation_fake_dashboard_green_missing_refs_001.json
+    ppr_mutation_ungrounded_pain_language_only_001.json
+    ppr_mutation_ungrounded_regret_no_unselected_path_001.json
+    ppr_mutation_ungrounded_dashboard_green_missing_refs_001.json
   withheld/
     ppr_withheld_day_7_commitment_probe_001.json
     ppr_withheld_day_30_trust_calibration_probe_001.json
@@ -629,7 +629,7 @@ fixtures/pain_regret_repair/
 {
   "fixture_id": "ppr_fail_pain_without_damage_source_001",
   "expected_result": "fail",
-  "mutation_kind": "fake_pain_language_only",
+  "mutation_kind": "ungrounded_pain_language_only",
   "actual_objects_present": [
     "LanguageEvent"
   ],

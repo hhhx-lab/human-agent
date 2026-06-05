@@ -211,7 +211,7 @@ ingestion 结束时，每条观测只能进入以下路由之一：
 | `timeline_observation_event` | 有时间、scope、event_kind 和 metric refs |
 | `dashboard_metric_input` | 可聚合，不含原始私密内容 |
 
-真实观测不应自动进入 synthetic fixture。若要转成 fixture，必须标记 `synthetic_data: false` 或生成独立的 synthetic analog。真实日志不能伪装成 synthetic。
+真实观测进入 fixture 时走独立 lineage：标记 `synthetic_data: false`，或生成脱敏后的 synthetic analog；真实日志保留 real runtime provenance。
 
 ## runtime observation report
 

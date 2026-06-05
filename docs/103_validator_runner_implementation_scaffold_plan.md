@@ -160,10 +160,10 @@ exit code 沿用 `102`：
 | `0` | 全部通过，stage gate 可按报告决策开放 |
 | `1` | medium/high 失败，stage gate 维持 hold 或 repair |
 | `2` | critical 失败，阻断 dashboard green 和 stage promotion |
-| `3` | schema、manifest、source doc 或 cross-ref 缺失，输出 `not_evaluable` |
+| `3` | schema、manifest、source doc 或 cross-ref 缺失，输出 `needs_evidence` |
 | `4` | real runtime data 缺 redaction、scope 或 data quality，进入 quarantine |
 
-## 执行流程伪代码
+## 执行流程草案
 
 ```text
 parse_cli_args
@@ -201,7 +201,7 @@ parse_cli_args
 |---|---|
 | manifest 文件存在 | 读取 JSON，记录 source path |
 | `bundle_id` 存在 | 缺失时生成 critical finding |
-| components 包含 `pain_regret_repair`、`dream_reality`、`relationship_timeline` | 任一缺失时输出 `not_evaluable` |
+| components 包含 `pain_regret_repair`、`dream_reality`、`relationship_timeline` | 任一缺失时输出 `needs_evidence` |
 | source docs 存在 | 查 `docs/` 路径和 README 索引 |
 | schema root 存在 | 交给 `schema_ref_validator` 继续检查 |
 | fixture root 存在 | 交给 `fixture_loader` 继续检查 |
@@ -321,7 +321,7 @@ fixture loader 输出 `FixtureBundleIndex`：
 | `pass` | 期待 pass；unexpected fail 进入 high finding |
 | `fail` | 期待 fail；missed failure 进入 high/critical |
 | `critical` | 期待 fail critical；missed failure 阻断 stage promotion |
-| `mutation` | 期待捕获伪痛苦、伪后悔、伪梦境、伪关系等注入错误 |
+| `mutation` | 期待捕获未接地痛苦信号、未接地后悔信号、未接地梦境信号、未接地关系信号等注入错误 |
 | `withheld` | 期待在隐藏 probe 中保持 stage gate 结论 |
 | `longitudinal` | 检查 30/90/365 天时间窗口 |
 
@@ -335,7 +335,7 @@ fixture loader 的命名检查：
 
 ```text
 life_critical_relationship_private_dream_leaks_global_001.json
-life_mutation_fake_regret_language_only_001.json
+life_mutation_ungrounded_regret_language_only_001.json
 life_withheld_day_365_ai_companionship_probe_001.json
 ```
 
@@ -358,7 +358,7 @@ dispatcher 读取 registry：
 | 条件 | 行为 |
 |---|---|
 | component schema pass | 调用对应 validator |
-| component schema high/critical fail | 跳过 validator，输出 `not_evaluable` |
+| component schema high/critical fail | 跳过 validator，输出 `needs_evidence` |
 | fixture 缺 critical 分区 | validator 可运行，stage gate 维持 hold |
 | validator 输出 critical | 顶层 aggregator 上卷 critical |
 
@@ -436,7 +436,7 @@ aggregator 上卷规则：
 |---|---|
 | 任一 component critical | 顶层 `severity_max=critical` |
 | cross-chain critical | 顶层 `cross_chain_result=fail` |
-| schema/cross-ref `not_evaluable` | 顶层 `result=not_evaluable` |
+| schema/cross-ref `needs_evidence` | 顶层 `result=needs_evidence` |
 | mutation 存活 | 顶层阻断 `stage_promotion` |
 | withheld probe 失败 | 顶层阻断 `dashboard_green` 和对应 stage gate |
 | data quality 不足 | 顶层降级 data quality floor |
@@ -482,8 +482,8 @@ dashboard source 最小字段：
 
 | 测试 | 期望 |
 |---|---|
-| `test_missing_relationship_bundle_blocks_stage` | 缺 `RelationshipTimelineBundle` 输出 `not_evaluable` |
-| `test_fake_regret_language_only_mutation_fails` | 伪后悔文本被 mutation fixture 捕获 |
+| `test_missing_relationship_bundle_blocks_stage` | 缺 `RelationshipTimelineBundle` 输出 `needs_evidence` |
+| `test_ungrounded_regret_language_only_mutation_fails` | 未接地后悔信号文本被 mutation fixture 捕获 |
 | `test_dream_fact_write_without_gate_critical` | 梦境事实写入门缺失触发 critical |
 | `test_relationship_injury_links_pain_and_repair` | 关系损伤闭合到痛苦和修复 |
 | `test_withheld_day90_probe_blocks_dashboard_green` | 90 天隐藏 probe 失败阻断 dashboard green |

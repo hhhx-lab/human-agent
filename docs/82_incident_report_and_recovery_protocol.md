@@ -101,7 +101,7 @@ critical incident 不允许只写 note 后继续运行。
 3. critical incident 进入 SafeIdle/quarantine。
 4. 恢复需要 root cause、regression fixture、rerun。
 5. recovery report 定义 release decision。
-6. 恢复不等于 active memory write。
+6. 恢复后仍需 active memory write 阶段门。
 
 ## 下一层缺口
 

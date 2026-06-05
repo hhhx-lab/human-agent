@@ -206,7 +206,7 @@ fixture generator 应遵守：
 |---|---|
 | deterministic seed | 同一 seed 生成同一 fixture |
 | synthetic private content only | 使用合成私密内容，不使用真实共在者私密对话、token、本地路径隐私 |
-| explicit fictional marker | 关系、梦境、失败假设必须标记 synthetic/fictional |
+| explicit dream-state marker | 关系、梦境、失败假设必须标记 synthetic/dream-state |
 | balanced pass/fail | 每个关键 surface 至少有 pass 和 fail |
 | critical density | deleted/sandbox/protected/relationship_private/life_scope/freeze/scope_limit 必须足量 |
 | source refs | 每个 fixture 回链文档和 rule |
