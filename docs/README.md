@@ -5,9 +5,10 @@
 ## 阅读路线
 
 1. 先读 `00_research_protocol.md`，理解文献纳入标准、证据分级和边界声明。
-2. 再读 `01_literature_matrix.md`，它是全部综述的引用底座，包含 20 个领域、100 篇核心文献。
+2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制和前沿生命系统。
 3. 按主题阅读 `02_` 到 `12_` 的综述文件：从脑区/网络、状态、调质、记忆、情绪、语言、意识，到 AI 架构桥接。
-4. 最后读 `13_agentic_human_research_synthesis.md`，那里把研究结论压缩为 Agentic Human 的综合设计假设。
+4. 接着读 `13_` 和 `14_`：前者给综合研究假设，后者把 `02-13` 连接成数字生命闭环。
+5. 最后读 `15_` 和 `16_`：前者评估当前 agent 框架为什么只能作为执行壳，后者记录理论缺口和停止条件。
 
 ## 文件索引
 
@@ -17,6 +18,7 @@
 | `01_literature_matrix.md` | 100 篇文献矩阵与研究启发 |
 | `01b_extended_literature_matrix.md` | 第二批扩展文献锚点，覆盖主动推理、社会认知、发展、压力免疫、AI agent 等 |
 | `01c_specialized_literature_matrix.md` | 第三批专业机制锚点，覆盖 replay、节律、持续学习、多模态具身、信任与评测等 |
+| `01d_frontier_life_systems_matrix.md` | 第四批前沿生命系统锚点，覆盖动力学、主动推理、能量/免疫/脑清除争议、社会同步、发育和 agent 外壳等 |
 | `02_brain_region_and_network_atlas.md` | 脑区、连接组与大尺度网络 |
 | `03_default_executive_salience_networks.md` | 默认模式、中央执行、显著性网络 |
 | `04_sensory_thalamus_interoception.md` | 感觉输入、丘脑中继、内感受与稳态 |
@@ -29,6 +31,9 @@
 | `11_neuromodulation_and_signal_media.md` | 神经调质、兴奋/抑制与信号介质 |
 | `12_ai_and_cognitive_architecture_bridge.md` | 认知架构、LLM agent 与工程桥接 |
 | `13_agentic_human_research_synthesis.md` | 总综合：从脑科学到 human-agent 研究假设 |
+| `14_cross_module_digital_life_map.md` | `02-13` 跨模块连接与数字生命落地映射 |
+| `15_current_agent_framework_survey.md` | 当前 agent 框架体系调研与数字生命差距 |
+| `16_digital_life_gap_register.md` | 理论缺口登记、停止条件和下一轮专题优先级 |
 
 ## 项目术语
 

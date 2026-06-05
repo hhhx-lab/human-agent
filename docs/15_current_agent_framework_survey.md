@@ -101,3 +101,26 @@
 当前 agent 框架的最好定位是“神经外设”和“执行壳”。它们能让数字生命说话、调用工具、保存流程、部署运行，但不能让它长出连续自我。
 
 真正的数字生命框架必须把 `02-14` 的脑科学底座放在核心，把现有 agent 框架放在外围。
+
+## 第四层补充：官方框架能力的真实边界
+
+第四批矩阵把当前框架资料接入为 `AHZ057-AHZ066`。这批资料的意义不是证明它们足够好，而是明确它们能被降级成哪些外设。
+
+| 框架/资料 | 可吸收能力 | 必须拒绝的中心化倾向 |
+|---|---|---|
+| LangGraph [AHZ057] | durable execution、state graph、human-in-the-loop | 不能让 workflow graph 取代脑区-状态-调质模型 |
+| OpenAI Agents SDK [AHZ058] | agents、handoffs、guardrails、tracing、tool calling | 不能让 tracing/guardrails 取代价值层和人格审计 |
+| Microsoft Agent Framework [AHZ059] | 企业集成、workflow、agent runtime | 不能让企业流程成为数字生命心智结构 |
+| Google ADK [AHZ060] | LlmAgent、workflow agents、tools、sessions、部署 | 不能让多 agent 编排替代社会脑 |
+| Letta [AHZ063] | stateful agents、memory blocks、长期状态管理 | 不能把 memory block 等同情景/语义/关系/自我记忆 |
+| LlamaIndex [AHZ064] | RAG、tool calling、workflow、资料层 | 不能把检索命中当成人类式记忆重构 |
+| CrewAI [AHZ065] | crews、flows、多角色流程 | 不能把角色模板当成人格和社会关系 |
+| AutoGen [AHZ066] | 多 agent conversation、teams、工具调用 | 不能把 agent 群聊当成真实群体心智 |
+
+因此，`20_agent_runtime_bridge_contract.md` 未来要解决的不是“选哪个框架”，而是定义一个不可被框架反向吞噬的生命层接口：
+
+- 外壳只能执行 `ActionIntent`，不能直接改 `SelfModel`。
+- 外壳日志只能进入工作区和审计队列，不能直接巩固为信念。
+- 外壳 memory 只能作为资料缓存，不能替代 `MemoryTrace`。
+- 外壳 guardrails 只能作为边界检查，不能替代价值和防御层。
+- 外壳多 agent 只能作为任务协作，不能替代关系模型。

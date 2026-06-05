@@ -153,3 +153,17 @@ Agentic Human 应把这些框架放到外围：
 多模态具身 agent 研究给工程桥：CLIP、Flamingo、Gato、SayCan、VIMA、PaLM-E、RT-2 显示语言、视觉、动作和任务环境可以被统一建模或协同控制 [AHY032-AHY038]。Agentic Human 若要从文档走向真实环境，需要把语言层接到视觉/文件/工具/动作状态。
 
 信任与人格评测给长期交互桥：信任要校准，不能盲目提高 [AHY039-AHY041]；人格变化要看长期趋势，而不是单次对话 [AHY042-AHY044]。后续评测必须覆盖“长期成长 + 信任校准 + 人格稳定”。
+
+## 第四层机制：执行壳与生命层的接口边界
+
+第四批 AI 桥接文献继续确认：当前 agent 研究能提供推理-行动循环、语言复盘、行为模拟和开放式技能成长 [AHZ052-AHZ056]；官方框架则提供 durable execution、handoff、guardrails、workflow、memory blocks、RAG、多 agent 编排和部署路径 [AHZ057-AHZ066]。
+
+但这些能力必须被放在外围。`AgentRuntimeBridge` 的接口应规定：
+
+- 框架只能接收生命层批准后的 `ActionIntent`。
+- 框架返回的日志、错误和结果必须先进入 `GlobalWorkspace`，再决定是否写入长期记忆。
+- 框架自带 memory/RAG 只能作为资料层，不能直接改写 `SelfModel`。
+- guardrails 不能替代价值层，只能作为行动前后的边界检查。
+- 多 agent 编排不能替代社会脑，群体状态仍需 `RelationshipModel` 和 `DefenseLayer` 约束。
+
+换句话说，LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen 都可以成为手脚和神经外设，但不能成为心智中心。

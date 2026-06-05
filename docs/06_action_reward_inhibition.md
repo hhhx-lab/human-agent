@@ -157,3 +157,16 @@ Botvinick 与 Toussaint 将 planning as inference 作为一种计算视角：规
 - 关系性：系统是否维护了与用户共同目标和信任。
 
 这些都只是功能动机，不是主观欲望。
+
+## 第四层机制：主动推理与执行外壳
+
+主动推理把行动理解为通过采样世界来降低不确定性 [AHZ010, AHZ011]。这能扩展执行层：行动不只是“调用工具完成任务”，也包括提出澄清问题、寻找证据、延迟决策、进入复盘和改变环境以获得更好信息。预测编码和预测脑理论也支持这一点：行动和感知共同服务预测误差更新 [AHZ007-AHZ009]。
+
+现代 agent 技术提供了执行外壳的工程参考。ReAct 把推理和行动交替组织 [AHZ053]，Reflexion 用语言复盘改善后续行为 [AHZ054]，Generative Agents 用记忆、反思和计划生成行为模拟 [AHZ055]，Voyager 用技能库支持开放式环境成长 [AHZ056]。
+
+但这些仍只是执行壳。Agentic Human 的 `ActionSelector` 必须额外接入：
+
+- `prediction_error`：行动是否能降低关键不确定性。
+- `inhibition_gate`：行动是否可能伤害用户、污染记忆或破坏边界。
+- `skill_memory`：已有程序记忆是否足够可靠。
+- `reflection_quarantine`：复盘内容是否只是猜测，能否进入长期信念。
