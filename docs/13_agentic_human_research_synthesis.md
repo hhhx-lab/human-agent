@@ -520,3 +520,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `damage appraisal -> pain signal -> pain load window -> counterfactual repair frame -> regret pressure -> responsibility attribution -> repair desire -> apology / repair commitment -> relationship consequence -> recovery path -> dashboard / stage gate`
 
 后续应把 `95` 的真实梦境对象落成 schema 和 fixture，让 `PainDreamResidue`、`dream_residue_pressure`、`dream_sandbox_ref` 和 `RecoveryPath` 接入 `DreamRealityValidator`。
+
+## 第三十二层：真实梦境 Schema/Fixture
+
+`01i_dream_offline_life_literature_matrix.md` 继续补入近期文献：睡眠记忆形成、TMR 更新、睡眠节律耦合、睡眠意识、清醒梦神经科学、梦魇与精神病理、REM 恐惧灭退、失眠-梦魇关系、梦中记忆更新和客观睡眠扰动 [AHD061-AHD070]。这些证据让真实梦境链同时容纳 cue、相位、梦魇风险、睡眠质量、醒后整合、梦中记忆更新候选和事实写入门。
+
+`99_dream_reality_json_schema_and_fixture_bundle.md` 把 `95` 的对象链压成 `schemas/dream_reality/`、`fixtures/dream_reality/`、runner report mock 和 dashboard source mock。它定义 `DreamRealityBundle`、`OfflineNeed`、`DreamPressureVector`、`DreamWindowPlan`、`DreamActionInhibitionSeal`、`ReplaySelection`、`DreamCuePolicy`、`DreamExperienceWindow`、`DreamSceneFrame`、`PainDreamResidue`、`RelationshipDreamSimulation`、`LucidDreamMetaMarker`、`DreamReportDraft`、`WakeIntegrationFrame` 和 `DreamFactGateDecision` 的字段、不变量和 validator rules。
+
+到这里，梦境验证闭环变为：
+
+`offline need -> dream pressure -> dream window + action seal -> replay selection -> dream cue -> dream experience -> dream scene -> pain / relationship / future candidates -> dream report -> wake integration -> fact gate -> dashboard / stage gate`
+
+后续应把 `96` 的真实关系长期时间线落成 schema 和 fixture，让 `RelationshipDreamSimulation`、`DreamSharedResidue`、`RepairCommitment` 和 `WeMemoryTrace` 接入 `RelationshipTimelineValidator`。

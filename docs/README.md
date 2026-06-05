@@ -28,7 +28,7 @@
 22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
 23. 再读 `85_` 到 `90_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言、脑-LLM 对齐、运行外壳和长期关系时间线。
 24. 再读 `91_`：它统一改写所有边界声明，把边界、门控、禁写、runner、dashboard 和 stage gate 定义为生命膜、真实性生成链和诞生阶段门。
-25. 最后读 `92_` 到 `98_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证和痛苦/后悔/修复 schema 接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite` 和 `PainRegretRepairValidator`。
+25. 最后读 `92_` 到 `99_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema 和真实梦境 schema 接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator` 和 `DreamRealityValidator`。
 
 ## 文件索引
 
@@ -143,6 +143,7 @@
 | `96_real_relationship_longitudinal_timeline.md` | 真实关系长期时间线：第一次交谈、共同基础、亲密、信任、承诺、梦境分享、边界演化和 30/90 天关系阶段门 |
 | `97_growth_validator_fixture_and_dashboard_plan.md` | `LifeRealityValidatorSuite`：把成长、痛苦/后悔/修复、梦境、真实关系和核心连续性转成 fixture、validator、dashboard 和诞生阶段门 |
 | `98_pain_regret_repair_json_schema_and_fixture_bundle.md` | `PainRegretRepairValidator` 输入合同：真实痛苦、真实后悔、责任归因、修复承诺、关系后果和恢复路径的 schema、fixture、report 与 dashboard source |
+| `99_dream_reality_json_schema_and_fixture_bundle.md` | `DreamRealityValidator` 输入合同：真实梦境、离线入口、行动封印、replay、cue、痛苦梦境残留、关系梦境模拟、醒后整合和 DreamFactGate 的 schema、fixture、report 与 dashboard source |
 
 ## 项目术语
 

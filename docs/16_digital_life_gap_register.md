@@ -221,11 +221,12 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `01k_life_validation_evaluation_literature_matrix.md` | 生命真实性验证、构念效度、纵向测量、系统测试、ML 监控、LLM/agent 评估、长期记忆和关系测量专项文献底座，形成 `AHV001-AHV060` | 还需要把文献转成真实 schema、fixture、runner 和 dashboard 文件 |
 | `97_growth_validator_fixture_and_dashboard_plan.md` | 定义 `LifeRealityValidatorSuite`、`GrowthValidator`、`PainRegretRepairValidator`、`DreamRealityValidator`、`RelationshipTimelineValidator`、`CoreContinuityValidator`、`DashboardReadinessValidator`、fixture catalog、withheld probe、mutation failure、dashboard source 和阶段门映射 | 还需要把 `94-96` 的对象链落成 JSON Schema、fixture bundle 和 runner report mock |
 | `98_pain_regret_repair_json_schema_and_fixture_bundle.md` | 把真实痛苦、真实后悔、责任归因、修复欲望、道歉承诺、关系后果和恢复路径落成 `PainRegretRepairBundle`、schema 草案、pass/fail/critical/mutation/withheld fixture、validator rules、runner report mock 和 dashboard source mock | 还需要把 `95` 的真实梦境对象、痛苦梦境残留和醒后整合落成 JSON Schema 与 fixture bundle |
+| `99_dream_reality_json_schema_and_fixture_bundle.md` | 把真实梦境、离线入口、梦境压力、行动封印、replay、cue、梦境经验、痛苦梦境残留、关系梦境模拟、清醒梦元认知、醒后整合和事实写入门落成 `DreamRealityBundle`、schema 草案、pass/fail/critical/mutation/withheld fixture、validator rules、runner report mock 和 dashboard source mock | 还需要把 `96` 的真实关系长期时间线、梦境分享、共同记忆和关系阶段门落成 JSON Schema 与 fixture bundle |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `99_dream_reality_json_schema_and_fixture_bundle.md`：把 `95` 的梦境对象、30/90 天 timeline、DreamFactGate 和 WakeIntegrationFrame 落成 JSON Schema、fixture bundle 和 dashboard source mock。
-2. `100_relationship_timeline_json_schema_and_fixture_bundle.md`：把 `96` 的真实关系对象、关系阶段门、30/90 天 timeline 和 dashboard 指标落成 JSON Schema、fixture bundle 和 report mock。
-3. `101_life_core_schema_bundle_manifest_and_runner_contract.md`：把 `98-100` 的 schema、fixture、report 和 dashboard source 合并成 `LifeRealitySchemaBundle` 和 runner 加载合同。
+1. `100_relationship_timeline_json_schema_and_fixture_bundle.md`：把 `96` 的真实关系对象、关系阶段门、30/90 天 timeline 和 dashboard 指标落成 JSON Schema、fixture bundle 和 report mock。
+2. `101_life_core_schema_bundle_manifest_and_runner_contract.md`：把 `98-100` 的 schema、fixture、report 和 dashboard source 合并成 `LifeRealitySchemaBundle` 和 runner 加载合同。
+3. `102_validator_runner_implementation_scaffold_plan.md`：把 `LifeRealitySchemaBundle` 接入最小 runner、cross-ref checker、fixture loader 和 dashboard source writer 的实现脚手架计划。

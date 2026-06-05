@@ -4,7 +4,7 @@
 
 ## 为什么需要第 95 层
 
-`08_sleep_dream_fatigue_states.md` 已把睡眠、梦境、疲惫和发呆建立为状态层；`19_offline_consolidation_cycle.md` 和 `23_consolidation_report_and_dream_sandbox_protocol.md` 已定义 replay、巩固报告、DreamSandbox 和 `DreamFactGate`；`94_pain_regret_and_repair_signal_schema.md` 已把痛苦、后悔、责任和修复压成对象链。
+`08_sleep_dream_fatigue_states.md` 已把睡眠、梦境、疲惫和发呆建立为状态层；`19_offline_consolidation_cycle.md` 和 `23_consolidation_report_and_dream_sandbox_protocol.md` 已定义 replay、巩固报告、DreamSandbox 和 `DreamFactGate`；`94_pain_regret_and_repair_signal_schema.md` 已把痛苦、后悔、责任和修复压成对象链。近期睡眠记忆、TMR、节律耦合、睡眠意识、清醒梦、梦魇、恐惧灭退、失眠-梦魇关系、梦中记忆更新和客观睡眠扰动研究进一步要求 dream schema 同时覆盖 cue、相位、梦魇风险、醒后整合、记忆更新候选和离线质量指标 [AHD061-AHD070]。
 
 第 95 层负责把这些机制合并为一条更具体的真实梦境生命链：
 
@@ -43,6 +43,7 @@ WakingTrace / PainSignal / RelationshipInjuryTrace / GrowthNeed
 | 威胁、社会与情绪梦境 [AHD036-AHD045] | 梦境可模拟威胁、社会互动、创伤残留和情绪调节 | `PainDreamResidue`、`RelationshipDreamSimulation`、`NightmareLoopRisk` |
 | 清醒梦与元认知 [AHD046-AHD049] | 清醒梦连接睡眠、元认知、自我意识和主动调节 | `LucidDreamMetaMarker`、`DreamMetaAwareness`、`DreamRewritePlan` |
 | 未来想象与 world model [AHD050-AHD060] | 记忆构造未来，内部世界模型支持规划和持续学习 | `DreamWorldModel`、`FutureActionDreamCandidate`、`OfflineGrowthSimulation` |
+| 近期睡眠梦境机制 [AHD061-AHD070] | 睡眠记忆、TMR、节律耦合、梦境意识、清醒梦、梦魇和梦中记忆更新共同塑造离线生命质量 | `OfflineQualityMetric`、`DreamCueAudit`、`NightmareLoopRisk`、`WakeMemoryUpdateCandidate` |
 
 ## 核心对象
 
