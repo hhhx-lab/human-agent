@@ -29,7 +29,7 @@
 - W3C PROV Overview: https://www.w3.org/TR/prov-overview/
 - W3C PROV-O: https://www.w3.org/TR/prov-o/
 - W3C Trace Context: https://www.w3.org/TR/trace-context/
-- RFC 9562 UUID: https://www.rfc-editor.org/rfc/rfc9562.html
+- RFC 9562 UUID: https://www.rfc-editor.org/info/rfc9562/
 
 这些标准进入生命膜的共同规则是：每一次运行观测都必须有身份、来源、时间、scope、privacy、redaction、data quality、候选路由、stage effect 和 provenance link。没有这些字段，观测不会进入真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的长期链。
 

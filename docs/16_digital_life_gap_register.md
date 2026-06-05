@@ -237,12 +237,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `112_life_reality_runtime_observation_schema_materialization.md` | 固定 observation envelope、component candidate、cross-chain candidate、runtime observation fixture、fixture manifest、ingestion report、runtime quarantine panel source、side effect classifier report 和 coexistence snapshot report 的 schema 字段、validation pipeline、smoke cases 与 LRGEN-080 到 086 / 160 到 162 | 已由 `113` 接入 component object schema 物化顺序 |
 | `113_life_reality_component_schema_materialization_sequence.md` | 固定痛苦/后悔/修复、真实梦境、真实关系三条 component bundle 的 shared base、关系出生根对象、痛苦根、责任/后悔/修复、梦境离线入口、梦境事实门、关系成长、namespace policy、bundle assembly、validator order、smoke cases 与 LRGEN-170 到 179 | 已由 `114` 接入统一 report schema |
 | `114_life_reality_cross_file_checker_report_schema.md` | 固定 cross-file checker report、checker group result、finding、artifact ref、provenance graph、stage effect、runtime schema validation report、component dependency graph report、problem detail、repair/gap bridge、rollup、smoke cases 与 LRGEN-150 到 159 / 180 到 186 | 已由 `115` 接入 runtime schema fixture seed generation |
-| `115_life_reality_runtime_schema_fixture_seed_generation.md` | 固定 runtime fixture path normalization、seed batch manifest、runtime observation fixture manifest、pass/fail/critical/mutation/withheld/smoke seed family、runtime schema validation report、ingestion smoke report、runtime quarantine panel source、cross-file rollup 和 LRGEN-120 到 125 / 160 到 162 / 187 到 195 | 还需要按 component schema sequence 生成三条 component bundle 的首批 schema skeleton |
+| `115_life_reality_runtime_schema_fixture_seed_generation.md` | 固定 runtime fixture path normalization、seed batch manifest、runtime observation fixture manifest、pass/fail/critical/mutation/withheld/smoke seed family、runtime schema validation report、ingestion smoke report、runtime quarantine panel source、cross-file rollup 和 LRGEN-120 到 125 / 160 到 162 / 187 到 195 | 已由 `116` 接入 component schema seed generation |
+| `116_life_reality_component_schema_seed_generation.md` | 固定 shared base、痛苦/后悔/修复、真实梦境、真实关系三条 component bundle 的 schema skeleton、bundle skeleton、dependency graph、dry-run report、cross-bundle ref report、validator order report、gap feedback 和 LRGEN-196 到 206 | 还需要把 `114` 的 report schema 与 `116` 的 generation reports 合成 dashboard rollup JSON |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `116_life_reality_component_schema_seed_generation.md`：按 `113` 的 sequence 生成三条 component bundle 的首批 `.schema.json` skeleton、dependency graph 和 dry-run report。
-2. `117_life_reality_dashboard_report_rollup_seed_generation.md`：把 `114` 的 specialized reports、provenance graph、finding、repair bridge 和 gap feedback bridge 生成第一批 rollup JSON。
-3. `118_life_reality_generation_runner_cli_contract.md`：把 `115`、`116`、`117` 的生成顺序压成 `life-reality-runner generate-fixtures`、`generate-schemas`、`check-dashboard` 的 CLI 合同。
+1. `117_life_reality_dashboard_report_rollup_seed_generation.md`：把 `114` 的 specialized reports、provenance graph、finding、repair bridge、gap feedback bridge 和 `116` 的 component schema generation reports 生成第一批 rollup JSON。
+2. `118_life_reality_generation_runner_cli_contract.md`：把 `115`、`116`、`117` 的生成顺序压成 `life-reality-runner generate-fixtures`、`generate-schemas`、`check-dashboard` 的 CLI 合同。
+3. `119_life_reality_first_json_materialization_batch.md`：把 fixture seed、schema skeleton 和 dashboard rollup 从 Markdown 合同推进到首批真实 JSON 文件物化批次。
