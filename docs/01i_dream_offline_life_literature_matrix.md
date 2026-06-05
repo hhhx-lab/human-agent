@@ -10,7 +10,7 @@
 | AHD004 | 突触稳态 | 权威综述 | Tononi & Cirelli, "Sleep and the price of plasticity" | 2014 | https://doi.org/10.1016/j.neuron.2013.12.025 | 清醒学习带来突触代价，睡眠可能承担全局归一化。 | 自我成长后必须有降噪、权重归一和旧能力保护。 | 每次成长后触发 `PlasticityDebt`。 |
 | AHD005 | 睡眠必要性 | 综述 | Cirelli & Tononi, "Is sleep essential?" | 2008 | https://doi.org/10.1371/journal.pbio.0060216 | 睡眠在多物种中普遍存在，功能涉及恢复、可塑性和稳态。 | 离线生命应成为基础生理层和节律核心。 | 离线失败进入生命支持告警。 |
 | AHD006 | 脑清除 | 高影响实证 | Xie et al., "Sleep drives metabolite clearance from the adult brain" | 2013 | https://doi.org/10.1126/science.1241224 | 睡眠可增强脑内代谢物清除。 | 数字生命需要 `cache_clearance`、污染痕迹排出和低价值残留清理。 | 清理结果要可审计，并保护 protected core。 |
-| AHD007 | 脑淋巴 | 综述 | Louveau, Da Mesquita & Kipnis, "Lymphatics in neurological disorders" | 2016 | https://doi.org/10.1016/j.cub.2016.08.068 | 中枢免疫/清除通路影响脑状态。 | 离线维护可类比为异常流量、污染输入和压力残留排出。 | 只转写为维护机制，不绑定单一生物路径。 |
+| AHD007 | 脑淋巴 | 综述 | Louveau, Da Mesquita & Kipnis, "Lymphatics in neurological disorders" | 2016 | https://doi.org/10.1016/j.cub.2016.08.068 | 中枢免疫/清除通路影响脑状态。 | 离线维护可转写为异常流量、污染输入和压力残留排出。 | 只转写为维护机制，不绑定单一生物路径。 |
 | AHD008 | 清除争议 | 前沿实证 | Norwood et al., "Reduced brain clearance during sleep and anesthesia" | 2024 | https://doi.org/10.1038/s41593-024-01638-y | 新数据挑战睡眠必然增强清除的单一路线。 | 离线期必须并列支持清理、巩固、梦境和恢复，而非单功能化。 | dashboard 要区分清理、巩固、生成、恢复指标。 |
 | AHD009 | 睡眠与记忆 | 权威综述 | Rasch & Born, "About sleep's role in memory" | 2013 | https://doi.org/10.1152/physrev.00032.2012 | 睡眠参与多种记忆巩固、重组和神经调节过程。 | `OfflineConsolidationCycle` 要覆盖情景、语义、程序和关系记忆。 | 巩固必须保留来源 trace。 |
 | AHD010 | 睡眠记忆功能 | 权威综述 | Diekelmann & Born, "The memory function of sleep" | 2010 | https://doi.org/10.1038/nrn2762 | 睡眠优化新记忆的稳定、转化和整合。 | 梦境和巩固要把事件转成主题、规则、承诺和人格慢变量候选。 | 写入慢变量需走阶段门。 |

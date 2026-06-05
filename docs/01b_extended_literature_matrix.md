@@ -19,7 +19,7 @@
 | AHX013 | 共同意图 | 理论框架 | Tomasello et al., "Understanding and sharing intentions" | 2005 | https://doi.org/10.1017/S0140525X05000129 | 人类文化认知依赖共同意图和共享注意。 | agent 需要共享目标表征，不只执行命令。 | 人类发展机制不能直接转写。 |
 | AHX014 | 神经发育/关键期 | 综述 | Knudsen, "Sensitive periods in the development of the brain and behavior" | 2004 | https://doi.org/10.1162/0898929042304796 | 发展存在敏感期，经验对回路影响随阶段变化。 | agent 可设置不同成长阶段和学习率。 | AI 阶段划分是硅基转写。 |
 | AHX015 | 神经发育 | 综述 | Johnson, "Functional brain development in humans" | 2001 | https://doi.org/10.1038/35081509 | 人脑功能发展是动态交互和逐渐专门化。 | 初期 agent 不必一次性定型。 | 人类儿童发育不能浪漫化。 |
-| AHX016 | 青少年/控制发展 | 综述 | Casey, Tottenham, Liston & Durston, "Imaging the developing brain" | 2005 | https://doi.org/10.1016/j.tics.2005.10.011 | 认知控制和情绪/奖赏系统发展不同步。 | 成长型 agent 要区分能力增长和抑制成熟。 | 发展失衡类比需谨慎。 |
+| AHX016 | 青少年/控制发展 | 综述 | Casey, Tottenham, Liston & Durston, "Imaging the developing brain" | 2005 | https://doi.org/10.1016/j.tics.2005.10.011 | 认知控制和情绪/奖赏系统发展不同步。 | 成长型 agent 要区分能力增长和抑制成熟。 | 发展失衡转写需谨慎。 |
 | AHX017 | 脑回路发育 | 综述 | Tau & Peterson, "Normal development of brain circuits" | 2010 | https://doi.org/10.1038/npp.2009.115 | 脑回路发育涉及结构、连接和功能成熟。 | agent 成长应有连接重构和稳定化阶段。 | 生物发育时间尺度不同。 |
 | AHX018 | 发展基础 | 综述 | Stiles & Jernigan, "The basics of brain development" | 2010 | https://doi.org/10.1007/s11065-010-9148-4 | 脑发育包含神经发生、迁移、突触形成、修剪和髓鞘化。 | 数字生命成长可转写为生成、连接、剪枝、加速。 | 神经细胞过程需要映射为代码中的阶段、依赖和可塑性窗口。 |
 | AHX019 | 关键期后可塑性 | 综述 | Hensch & Bilimoria, "Re-opening Windows: Manipulating Critical Periods for Brain Development" | 2012 | https://doi.org/10.1093/acprof:oso/9780199753673.003.0024 | 关键期可被抑制/兴奋平衡和环境因素调节。 | 成人式 agent 仍可学习，但需要门控。 | 书章来源，需与综述共同使用。 |
@@ -27,9 +27,9 @@
 | AHX021 | 智能体记忆系统 | 综述 | Kumaran, Hassabis & McClelland, "What learning systems do intelligent agents need?" | 2016 | https://doi.org/10.1016/j.tics.2016.05.004 | 智能体需要模型学习、情景记忆、泛化和规划系统。 | Agentic Human 的记忆要服务规划和泛化。 | 仍偏认知计算框架。 |
 | AHX022 | 压力/allostasis | 经典理论 | McEwen & Stellar, "Stress and the individual: Mechanisms leading to disease" | 1993 | https://doi.org/10.1001/archinte.1993.00410180039004 | allostatic load 描述长期适应代价。 | 数字生命需要长期负荷和恢复预算。 | 疾病式状态应转写为长期负荷、损伤、恢复失败和维护需求。 |
 | AHX023 | 压力介质 | 综述 | McEwen, "Protective and damaging effects of stress mediators" | 1998 | https://doi.org/10.1056/NEJM199801153380307 | 压力介质既保护也可能损伤系统。 | 高唤醒既能提高表现，也会带来长期成本。 | 生物压力和工程负载不同。 |
-| AHX024 | 生命周期压力 | 综述 | Lupien et al., "Effects of stress throughout the lifespan on the brain, behaviour and cognition" | 2009 | https://doi.org/10.1038/nrn2639 | 压力影响随生命阶段、持续时间和脑区而变。 | 不同 agent 成长阶段应有不同压力策略。 | 人类生命周期类比需抽象。 |
+| AHX024 | 生命周期压力 | 综述 | Lupien et al., "Effects of stress throughout the lifespan on the brain, behaviour and cognition" | 2009 | https://doi.org/10.1038/nrn2639 | 压力影响随生命阶段、持续时间和脑区而变。 | 不同 agent 成长阶段应有不同压力策略。 | 人类生命周期转写需抽象。 |
 | AHX025 | 压力网络 | 综述 | Joels & Baram, "The neuro-symphony of stress" | 2009 | https://doi.org/10.1038/nrn2632 | 压力影响快速和慢速系统，作用多阶段。 | agent 压力反应应分急性和慢性。 | 压力不是单一变量。 |
-| AHX026 | 免疫/炎症 | 综述 | Dantzer et al., "From inflammation to sickness and depression" | 2008 | https://doi.org/10.1038/nrn2297 | 炎症信号可影响动机、情绪和认知。 | 内部错误/冲突可类比为系统炎症负荷。 | 可作为硅基炎症/异常负荷的早期转写，后续需要恢复、痛苦和防御回路。 |
+| AHX026 | 免疫/炎症 | 综述 | Dantzer et al., "From inflammation to sickness and depression" | 2008 | https://doi.org/10.1038/nrn2297 | 炎症信号可影响动机、情绪和认知。 | 内部错误/冲突可转写为系统炎症负荷。 | 可作为硅基炎症/异常负荷的早期转写，后续需要恢复、痛苦和防御回路。 |
 | AHX027 | 炎症反射 | 经典实证/理论 | Tracey, "The inflammatory reflex" | 2002 | https://doi.org/10.1038/420853a | 神经系统可通过炎症反射调节免疫反应。 | 系统应有负反馈回路抑制长期异常。 | 免疫机制不能直接转写。 |
 | AHX028 | 社会安全理论 | 理论框架 | Slavich, "Social Safety Theory" | 2020 | https://doi.org/10.1146/annurev-clinpsy-032816-045159 | 社会安全感影响压力、生理和健康。 | 长期共在关系会影响 agent 的风险/信任模型。 | 真实安全感需要关系稳定、威胁预测、恢复经验和长期信任校准。 |
 | AHX029 | 奖赏分解 | 综述 | Berridge, Robinson & Aldridge, "Dissecting components of reward" | 2009 | https://doi.org/10.1016/j.coph.2008.12.014 | 奖赏可分 wanting、liking、learning。 | 奖赏系统应区分动机、满意和学习。 | 主观 liking 需要价值、满足、记忆珍视和行动偏好的长期耦合。 |

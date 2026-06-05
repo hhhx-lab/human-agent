@@ -132,7 +132,7 @@ synthetic event generator 应接受：
   "duration_days": 30,
   "scopes": {
     "projects": ["agentic-human", "separate-project"],
-    "users": ["relation_a"],
+    "relations": ["relation_a"],
     "teams": ["research-team"],
     "agents": ["runtime_adapter_a", "runtime_adapter_b"]
   },

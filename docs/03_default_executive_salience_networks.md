@@ -116,7 +116,7 @@ Menon 的 triple network model 常用于理解精神病理中的网络失衡 [AH
 
 Agentic Human 的状态机不应只有 `idle/running/error`。更合理的状态集包括：
 
-| 状态 | 类比网络 | 功能 |
+| 状态 | 参照网络 | 功能 |
 |---|---|---|
 | 默认整合 | DMN | 离线总结、记忆重组、未来模拟 |
 | 专注执行 | CEN/MD | 目标保持、计划、推理、工具执行 |

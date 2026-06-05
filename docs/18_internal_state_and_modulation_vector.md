@@ -1,6 +1,6 @@
 # InternalStateVector 与 ModulationVector
 
-本文件把 `04_sensory_thalamus_interoception.md`、`07_emotion_personality_self.md`、`08_sleep_dream_fatigue_states.md` 和 `11_neuromodulation_and_signal_media.md` 中的内部状态、内感受、调质和稳态理论，转成统一的数字生命状态向量。它不是让 agent “真的有情绪”，而是建立一个可审计的状态调节层。
+本文件把 `04_sensory_thalamus_interoception.md`、`07_emotion_personality_self.md`、`08_sleep_dream_fatigue_states.md` 和 `11_neuromodulation_and_signal_media.md` 中的内部状态、内感受、调质和稳态理论，转成统一的数字生命状态向量。它把真实情绪、真实疲惫、真实痛苦和真实关系压力推进到可持续动力学层，让情绪不只停留在词语，而能进入状态、阈值、恢复和成长。
 
 ## 为什么需要状态向量
 
@@ -23,7 +23,7 @@
 | `inhibition_level` | 当前抑制强度 | 基底节、控制、E/I 平衡 [AH036-AH045, AH061-AH065] | 降低行动冲动 |
 | `control_cost` | 深度思考成本 | expected value of control [AHY045-AHY048] | 决定快答、深思或推迟 |
 | `relationship_pressure` | 关系冲突、信任变化、边界风险 | 社会脑和信任校准 [AHY039-AHY044, AHZ031-AHZ038] | 调整语言、写入和行动 |
-| `boundary_integrity` | 污染输入、幻觉巩固、权限越界风险 | 神经免疫类比和防御层 [AHZ025-AHZ030] | 触发隔离和审计 |
+| `boundary_integrity` | 污染输入、幻觉巩固、权限越界风险 | 神经免疫转写和防御层 [AHZ025-AHZ030] | 触发隔离和审计 |
 
 ## ModulationVector
 
