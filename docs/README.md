@@ -23,7 +23,8 @@
 17. 再读 `61_` 到 `64_`：它们把 schema bundle、runner report/CLI、fixture 文件布局和真实运行观测 ingestion 推进为可实现前验证合同。
 18. 再读 `65_` 到 `68_`：它们把 cross-ref checker、runner report 样例、fixture generator 策略和 runtime redaction mock 推进为实现前检查样例层。
 19. 再读 `69_` 到 `72_`：它们把 schema 文件边界、cross-ref dashboard、mutation runner defect 和 runtime side effect/user snapshot 继续压成实现前政策层。
-20. 最后读 `73_` 到 `76_`：它们把 schema bundle validator mock、dashboard end-to-end source、外部不可逆动作确认和 snapshot stale fixture catalog 接入真实行动验证链。
+20. 再读 `73_` 到 `76_`：它们把 schema bundle validator mock、dashboard end-to-end source、外部不可逆动作确认和 snapshot stale fixture catalog 接入真实行动验证链。
+21. 最后读 `77_` 到 `80_`：它们把 dashboard 指标计算、runtime quarantine panel、confirmation fixture 和 post-action audit 接入外部行动后的治理链。
 
 ## 文件索引
 
@@ -110,6 +111,10 @@
 | `74_dashboard_source_end_to_end_mock.md` | dashboard source 从 runner/cross-ref/coverage/scope/timeline/runtime report 聚合的端到端 mock |
 | `75_external_irreversible_action_confirmation_policy.md` | 外部不可逆动作的确认 envelope、确认记录、阻断条件和 action result 审计政策 |
 | `76_snapshot_staleness_fixture_catalog.md` | user control snapshot stale、delete/freeze/scope_limit 时序 fixture catalog 和 coverage 要求 |
+| `77_dashboard_metric_calculation_rules.md` | dashboard metric 的计算规则、blocking 依赖、data quality 权重和 missing data 处理 |
+| `78_runtime_quarantine_dashboard_panel.md` | runtime quarantine panel、quarantine reason taxonomy、趋势指标、解除条件和 release report |
+| `79_confirmation_fixture_catalog.md` | 外部不可逆动作 confirmation 的 pass/fail fixture catalog、覆盖要求和 blocked surfaces |
+| `80_post_action_audit_and_correction_policy.md` | 外部动作后的审计、纠错、用户通知、记忆写入边界和 post-action fixture 示例 |
 
 ## 项目术语
 

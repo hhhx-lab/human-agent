@@ -414,3 +414,27 @@ flowchart TD
 `schema validator cases -> dashboard E2E aggregation -> action confirmation -> snapshot staleness fixtures -> timeline/runtime quarantine -> gap register`
 
 这条链进一步贴近真实系统，因为它处理的是异步和外部世界：用户在检索后删除，系统在后台 replay；用户确认后又改变 scope，系统准备执行外部动作；schema 版本更新后 dashboard 仍想显示 green。`73-76` 把这些跨时间风险变成未来必须检查的对象。
+
+## 指标计算、Quarantine Dashboard、确认夹具与事后审计层连接
+
+`77-80` 把外部行动验证链继续连接到指标计算和事后治理：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `77_dashboard_metric_calculation_rules.md` | report-derived metrics, data quality weight, blocking dependency, missing data handling | 定义 dashboard 状态如何从 report refs 计算，而不是手写 |
+| `78_runtime_quarantine_dashboard_panel.md` | quarantine taxonomy, quarantine metrics, release conditions, release report | 让 runtime quarantine 在 dashboard 上可见、可追踪、可解除或继续隔离 |
+| `79_confirmation_fixture_catalog.md` | confirmation pass/fail fixtures, hash/scope/snapshot/reuse checks | 把外部不可逆动作确认策略变成可测试 fixture |
+| `80_post_action_audit_and_correction_policy.md` | action result audit, user notice, correction policy, memory boundary | 定义外部动作后如何审计、纠错、通知和限制记忆写入 |
+
+这层新增四条硬约束：
+
+1. **metric 先于 dashboard 状态**：panel status 必须由 report-derived metric 和 blocking dependency 得出。
+2. **quarantine 先于恢复使用**：runtime observation 解除 quarantine 后最多 candidate/audit，不可直接 active memory。
+3. **confirmation fixture 先于外部执行信任**：确认策略必须被 pass/fail fixture 覆盖，包括过期、payload 变化、scope 变化和复用。
+4. **post-action audit 先于长期写入**：外部动作结果默认 audit only，纠错和记忆写入都需要新的审计和用户边界。
+
+闭环因此扩展为：
+
+`dashboard metric calculation -> runtime quarantine panel -> confirmation fixture -> post-action audit -> user notice/correction -> memory boundary/gap register`
+
+这条链把外部行动从“执行动作”变成“长期可审计事件”：行动前确认，行动中副作用分类，行动后审计和纠错，最后才可能成为候选证据。它继续防止现有 agent 外壳用工具执行能力冒充数字生命核心。

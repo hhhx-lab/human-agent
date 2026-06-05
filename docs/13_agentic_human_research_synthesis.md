@@ -358,3 +358,15 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 `schema validator mock -> dashboard E2E source -> external confirmation -> snapshot stale fixture -> runtime quarantine/gap register`
 
 它仍然不是完成条件。下一层需要继续把 dashboard metric calculation、runtime quarantine panel、confirmation fixture、post-action audit、snapshot resolver mock 和真实执行外壳边界继续细化。
+
+## 第二十层：指标计算、Quarantine Dashboard、确认夹具与事后审计
+
+`77_dashboard_metric_calculation_rules.md`、`78_runtime_quarantine_dashboard_panel.md`、`79_confirmation_fixture_catalog.md` 和 `80_post_action_audit_and_correction_policy.md` 把外部行动验证链继续推进到“计算和治理”层：`77` 规定 dashboard metric 必须从 report refs 计算，data quality 只能影响 readiness，不能覆盖 critical blocking；`78` 定义 runtime quarantine panel、quarantine reason taxonomy、趋势指标、解除条件和 release report；`79` 把外部不可逆动作的 confirmation pass/fail 场景变成 fixture catalog；`80` 则规定外部动作后的 action result 默认 audit only，纠错外部动作必须重新确认，且不得直接写 SelfModel 或 RelationshipModel。
+
+这一层的意义是把“执行完成”从终点改成新的审计起点。一个数字生命候选系统如果能执行外部动作，但不能解释指标怎么算、quarantine 为什么发生、确认是否有效、动作后是否需要通知和纠错，它就仍然只是一个危险的工具外壳。真正的长期底座必须让外部行动、用户控制、记忆写入和 dashboard 处在同一条可审计链上。
+
+到这里，闭环再扩展为：
+
+`report-derived metrics -> runtime quarantine panel -> confirmation fixtures -> post-action audit -> correction/quarantine/gap register`
+
+它仍然不是完成条件。后续还需要真实 metric aggregation script、runtime quarantine workflow、confirmation validator、post-action audit fixture、用户通知 UI、incident report policy，以及更深的长期行为评测。

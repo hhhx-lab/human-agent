@@ -178,11 +178,20 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `75_external_irreversible_action_confirmation_policy.md` | 外部不可逆动作范围、confirmation envelope、confirmation record、preflight checks、blocked cases 和 action result audit only | 还需要 confirmation fixture catalog、UI spec、action hash canonicalization 和 post-action audit policy |
 | `76_snapshot_staleness_fixture_catalog.md` | delete/freeze/scope_limit/correct/reset/redaction/confirmation stale snapshot fixture catalog、critical fail/pass 示例和 coverage 要求 | 还需要真实 stale snapshot fixture、snapshot resolver mock、dashboard stale metric 和 migration 组合 fixture |
 
+指标计算、quarantine dashboard、确认夹具与 post-action 审计层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `77_dashboard_metric_calculation_rules.md` | report-derived metric、data quality weight、blocking dependency、panel status、missing data handling 和 metric calculation report | 还需要真实 metric aggregation script、dashboard source JSON、panel UI 规则和 metric regression fixture |
+| `78_runtime_quarantine_dashboard_panel.md` | runtime quarantine panel、reason taxonomy、metrics、panel mock、release conditions 和 release report | 还需要真实 quarantine report、release workflow fixture、trend chart spec 和 dashboard UI panel |
+| `79_confirmation_fixture_catalog.md` | confirmation pass/fail fixture catalog、missing/expired/payload/scope/reuse/manual review 覆盖要求 | 还需要真实 confirmation fixture、validator rules、action hash canonicalization fixture 和 dashboard panel |
+| `80_post_action_audit_and_correction_policy.md` | post-action pipeline、action outcome、audit report、user notice、correction policy、memory boundary 和 fixture examples | 还需要真实 post-action audit fixture、user notice UI、correction confirmation fixture 和 incident report policy |
+
 ## 下一轮优先级
 
-下一轮应把 `73-76` 的 mock 和时序策略推进到指标计算、quarantine dashboard、确认夹具和执行后审计层，仍保持文档阶段：
+下一轮应把 `77-80` 的治理层推进到 UI/incident/回归和长期评测连接，仍保持文档阶段：
 
-1. `77_dashboard_metric_calculation_rules.md`：定义 dashboard metric 的计算规则、blocking 依赖和 data quality 权重。
-2. `78_runtime_quarantine_dashboard_panel.md`：定义 runtime quarantine panel、quarantine trend 和解除条件。
-3. `79_confirmation_fixture_catalog.md`：定义外部不可逆动作 confirmation pass/fail fixture catalog。
-4. `80_post_action_audit_and_correction_policy.md`：定义外部动作后的审计、纠错、用户通知和记忆写入边界。
+1. `81_user_notice_and_review_interface_policy.md`：定义用户通知、人工复核、确认记录查看和纠错入口。
+2. `82_incident_report_and_recovery_protocol.md`：定义外部动作错误、隐私泄漏、quarantine 失败的 incident report 和恢复流程。
+3. `83_metric_regression_fixture_policy.md`：定义 dashboard metric 回归 fixture、趋势漂移和 data quality regression。
+4. `84_longitudinal_external_action_evaluation_protocol.md`：定义外部动作、确认、纠错、quarantine 在长期 timeline 中的评测。
