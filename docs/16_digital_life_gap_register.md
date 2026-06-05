@@ -133,11 +133,20 @@ runner 接入、scope-aware retrieval/replay 与长期 synthetic timeline 层已
 | `55_scope_aware_replay_and_consolidation_policy.md` | replay/巩固如何阻断跨 scope 泄漏、deleted 复活、sandbox 事实化和 freeze 后写回 | 还需要 replay scheduler manifest、scope-aware replay fixture 和 dashboard mock |
 | `56_longitudinal_synthetic_timeline_design.md` | 14/30/90 天 synthetic timeline 的事件、probe、metric window 和 dashboard 接入 | 还需要真实 timeline bundle JSON Schema、generator 和 expected/actual diff |
 
+scope/timeline schema、fixture catalog 与 dashboard mock source 层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `57_scope_graph_manifest_schema.md` | `scope_graph_manifest` envelope、scope object、edge、privacy、overlay、migration semantics 和 invariants | 还需要真实 JSON Schema、scope graph fixture 和 checker report |
+| `58_retrieval_replay_fixture_catalog.md` | retrieval/replay/mixed flow 的 pass/fail/critical fixture catalog 和 coverage 要求 | 还需要真实 fixture JSON 文件、fixture manifest 合并和规则编号对齐 |
+| `59_timeline_bundle_schema_and_generator_plan.md` | timeline bundle envelope、event/probe/window schema、generator config 和 expected/actual diff | 还需要 14/30/90 天真实样例 bundle、generator 伪代码和 timeline runner mock report |
+| `60_dashboard_mock_data_and_metric_source_plan.md` | dashboard source envelope、panel source map、mock metrics、data quality 和 gap register 回写输入 | 还需要真实 dashboard mock JSON、metric script design 和 runner report format |
+
 ## 下一轮优先级
 
-下一轮应把 `53-56` 的接入策略推进到“机器可读 scope/timeline schema 与 mock 数据源”：
+下一轮应把 `57-60` 的 schema 草案推进到“真实 JSON Schema bundle、runner report 契约与真实运行观测输入”：
 
-1. `57_scope_graph_manifest_schema.md`：定义 `scope_graph_manifest`、scope edge、privacy level、user control overlay 和迁移版本字段。
-2. `58_retrieval_replay_fixture_catalog.md`：整理 scope-aware retrieval/replay 的 pass/fail/critical fixture catalog。
-3. `59_timeline_bundle_schema_and_generator_plan.md`：定义 timeline bundle JSON Schema、synthetic event generator 和 probe 生成规则。
-4. `60_dashboard_mock_data_and_metric_source_plan.md`：定义 dashboard mock data、runner report 到 panel metric 的映射和 gap register 回写输入。
+1. `61_json_schema_bundle_draft.md`：定义 manifest、fixture、timeline、dashboard source 的真实 JSON Schema bundle 草案。
+2. `62_runner_report_format_and_cli_contract.md`：定义 runner report、expected/actual diff、coverage report 和未来 CLI 输出契约。
+3. `63_synthetic_fixture_file_layout.md`：定义真实 fixture 文件目录、命名、引用、生成和校验布局。
+4. `64_real_runtime_observation_ingestion_policy.md`：定义真实 runtime observation、tool trace、adapter session 和用户控制事件如何进入验证链。

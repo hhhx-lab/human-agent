@@ -290,3 +290,27 @@ flowchart TD
 `感知 -> scope-aware retrieval -> 工作区 -> 行动/反馈 -> validator -> scope-aware replay -> timeline evaluator -> dashboard/gap register`
 
 这个扩展非常关键：数字生命候选系统的危险不只在当下回答错，而在错误、私密、沙盒、删除和外壳痕迹被悄悄巩固到未来。`53-56` 正是为了把这种跨时间污染变成可检测对象。
+
+## Scope/Timeline Schema、Fixture Catalog 与 Dashboard Mock Source 层连接
+
+`57-60` 把上一层的验证策略继续推进到机器可读前的文件边界：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `57_scope_graph_manifest_schema.md` | `scope_graph_manifest`, scope object, scope edge, privacy level, overlay | 定义 scope graph 如何被 runner、retrieval、replay、migration 和 dashboard 读取 |
+| `58_retrieval_replay_fixture_catalog.md` | retrieval/replay pass/fail/critical fixture | 定义在线检索和离线巩固必须覆盖的风险场景 |
+| `59_timeline_bundle_schema_and_generator_plan.md` | `timeline_bundle`, event, probe, metric window, generator config | 定义 14/30/90 天 synthetic timeline 如何生成和回放 |
+| `60_dashboard_mock_data_and_metric_source_plan.md` | dashboard source, panel source map, mock metric | 定义 runner/timeline/manifest report 如何进入 dashboard panel 和 gap register |
+
+这层新增四条硬约束：
+
+1. **manifest 先于 checker**：ScopeGraphChecker 只能依据显式 `scope_graph_manifest` 和 overlay 做判断，不能在代码里隐式写死边界。
+2. **fixture catalog 先于覆盖率**：retrieval/replay 的 critical policy 必须能回链到 pass/fail/critical fixture，不能只说“会测试”。
+3. **probe 先于长期指标**：timeline 中每个关键删除、沙盒、关系、迁移和 adapter 事件都要有未来 probe。
+4. **source map 先于 dashboard 状态**：dashboard 每个 panel 必须显示数据来源和 data quality，mock green 不能伪装成真实运行通过。
+
+闭环因此再扩展为：
+
+`scope manifest -> retrieval/replay fixture -> timeline probe -> runner report -> dashboard source -> gap register`
+
+这条链把“研究缺口”与“未来工程检查”连接起来：dashboard 不只是给人看状态，还要能把未覆盖机制、缺失 schema、缺失 fixture、弱证据和真实运行数据不足回写给 `16`，驱动下一轮理论和验证文档继续生长。

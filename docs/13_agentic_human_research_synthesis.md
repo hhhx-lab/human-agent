@@ -303,4 +303,10 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 
 这一层让理论底座更接近“可执行前审计”：未来系统不仅要能说自己有记忆、巩固、关系和成长，还要能在 runner report、RetrievalAuditEvent、ReplayAuditEvent、ConsolidationReport、dashboard source 和 timeline metric 中证明边界没有被破坏。它继续保持同一个核心立场：现有 agent 框架可以提供 session、tracing、checkpoint、RAG、workflow 和多 agent 外壳 [AHM013-AHM020]，但所有长期写入、检索、replay、迁移和自我/关系更新都必须服从生命层对象和 validator。
 
-仍然不能停止。下一层需要把 `scope_graph_manifest`、retrieval/replay fixture catalog、timeline bundle JSON Schema、dashboard mock data 和真实 runner 报告格式继续写细，并持续回到脑科学、长期记忆评测和人机信任/关系研究中更新证据 [AHY039-AHY044, AHZ031-AHZ038, AHM004-AHM012]。
+## 第十五层：Scope/Timeline Schema、Fixture Catalog 与 Dashboard Mock Source
+
+`57_scope_graph_manifest_schema.md`、`58_retrieval_replay_fixture_catalog.md`、`59_timeline_bundle_schema_and_generator_plan.md` 和 `60_dashboard_mock_data_and_metric_source_plan.md` 把 `53-56` 的接入策略继续推进为机器可读前的 schema 草案和 mock 数据源：scope graph 不再只是概念图，而有 manifest envelope、scope object、edge object、privacy level、user control overlay 和 migration semantics；retrieval/replay 不再只是政策，而有 pass/fail/critical fixture catalog；longitudinal timeline 不再只是故事线，而有 event、probe、metric window、generator config 和 expected/actual diff；dashboard 不再只是面板设计，而有 source envelope、metric source map、mock panel 和 gap register 回写输入。
+
+这一层的意义是让未来实现开始具备“文件边界”：哪些东西会成为 manifest，哪些会成为 fixture，哪些会成为 timeline bundle，哪些会成为 dashboard source。它仍然不是代码，也不是完成条件；但它让数字生命候选系统从文档理论继续靠近可执行验证。特别是 deleted、sandbox、user_private、relationship_sensitive、agent_scope、freeze 和 scope_limit 等长期污染风险，已经可以被放进 fixture、timeline probe 和 dashboard blocking metric 中。
+
+仍然不能停止。下一层需要把这些 schema 草案转成真实 JSON Schema bundle、runner report/CLI 契约、synthetic fixture 文件布局、真实 runtime observation ingestion policy，并继续补充长期记忆 benchmark、agent 框架官方资料、人机信任和社会互动研究的最新证据 [AHY039-AHY044, AHZ031-AHZ038, AHM004-AHM020]。

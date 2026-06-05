@@ -18,7 +18,8 @@
 12. 再读 `41_` 到 `44_`：它们把政策层继续推进为 runtime state store、最小对象图、policy-to-validator traceability 和 boot sequence。
 13. 再读 `45_` 到 `48_`：它们把启动骨架推进为 boot fixture、stage gate validator、用户控制面和 state store 迁移完整性计划。
 14. 再读 `49_` 到 `52_`：它们把验证设计推进为机器可读 manifest、fixture payload、dashboard 和多用户 scope/privacy 模型。
-15. 最后读 `53_` 到 `56_`：它们把 runner 接入、scope-aware retrieval/replay 和长期 synthetic timeline 接到同一条验证链上。
+15. 再读 `53_` 到 `56_`：它们把 runner 接入、scope-aware retrieval/replay 和长期 synthetic timeline 接到同一条验证链上。
+16. 最后读 `57_` 到 `60_`：它们把 scope graph manifest、retrieval/replay fixture、timeline bundle 和 dashboard mock source 推进为机器可读前的 schema 草案。
 
 ## 文件索引
 
@@ -85,6 +86,10 @@
 | `54_scope_aware_retrieval_policy.md` | 检索时使用 scope graph、privacy level、用户控制、生命周期和状态调制的政策 |
 | `55_scope_aware_replay_and_consolidation_policy.md` | replay/巩固时防止跨用户、跨项目、跨 agent 泄漏和 deleted/sandboxed/frozen 复活的政策 |
 | `56_longitudinal_synthetic_timeline_design.md` | 跨天/周/月 synthetic timeline，用于验证记忆、删除、关系、慢变量、迁移和恢复趋势 |
+| `57_scope_graph_manifest_schema.md` | `scope_graph_manifest` 的 scope、edge、privacy、user control overlay 和 migration schema 草案 |
+| `58_retrieval_replay_fixture_catalog.md` | scope-aware retrieval/replay 的 pass/fail/critical fixture catalog |
+| `59_timeline_bundle_schema_and_generator_plan.md` | timeline bundle schema、synthetic event generator、probe 和 expected/actual diff 计划 |
+| `60_dashboard_mock_data_and_metric_source_plan.md` | dashboard mock data、metric source、panel 映射和 gap register 回写输入计划 |
 
 ## 项目术语
 
