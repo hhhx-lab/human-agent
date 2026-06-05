@@ -151,11 +151,20 @@ schema bundle、runner report、fixture layout 与真实观测入口层已补充
 | `63_synthetic_fixture_file_layout.md` | fixture 目录、文件命名、bundle、manifest、coverage、generator seed 和 redacted real runtime fixture 分区 | 还需要真实 fixture 文件、fixture generator、coverage checker 和 14/30/90 天 bundle |
 | `64_real_runtime_observation_ingestion_policy.md` | tool trace、adapter session、用户控制事件、scope attach、redaction、routing decision 和 runtime observation report 政策 | 还需要 runtime observation schema、redaction checker、scope attach checker、adapter conversion sample 和 observation report mock |
 
+cross-ref、report examples、fixture generator 与 redaction mock 层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `65_schema_cross_ref_checker_design.md` | typed reference graph、critical closure、scope/privacy closure、timeline closure 和 runtime observation closure 设计 | 还需要真实 checker、id parser、graph builder 和 cross-ref report schema |
+| `66_runner_report_json_examples.md` | runner pass/fail、schema、cross-ref、fixture partial/missed、coverage、scope、timeline、dashboard 和 runtime report 的 JSON-like 样例 | 还需要真实 report mock 文件、report schema 校验和 dashboard 读取样例 |
+| `67_fixture_generator_seed_and_coverage_policy.md` | seed policy、risk profile、coverage dimensions、fixture slot allocation、mutation tests 和 anti-overfitting 策略 | 还需要真实 generator config、mutation engine、withheld bundle 和回归测试设计 |
+| `68_runtime_observation_report_mock_and_redaction_fixture.md` | token redaction、deleted tombstone、tool trace、side effect、adapter direct write、freeze replay、redacted fixture export 和 timeline event 样例 | 还需要 redaction checker 规则、runtime observation schema、adapter conversion library、side effect classifier 和 snapshot resolver |
+
 ## 下一轮优先级
 
-下一轮应把 `61-64` 的可实现前合同推进到“真实 schema/checker/report/mock 的更细设计”，但仍不急于写代码：
+下一轮应把 `65-68` 的 checker/report/generator/mock 继续推进到更具体的实现前文件边界，仍保持文档阶段：
 
-1. `65_schema_cross_ref_checker_design.md`：定义 schema bundle 与 policy/rule/fixture/metric/panel 的 cross-ref checker 设计。
-2. `66_runner_report_json_examples.md`：给出 runner run、fixture、coverage、scope graph、timeline 和 dashboard source 的 JSON-like 报告样例。
-3. `67_fixture_generator_seed_and_coverage_policy.md`：定义 synthetic fixture generator 的 seed、风险密度、coverage 和 anti-overfitting 策略。
-4. `68_runtime_observation_report_mock_and_redaction_fixture.md`：给出 runtime observation report mock、redaction fixture 和 adapter session 转换样例。
+1. `69_schema_file_boundary_and_versioning_plan.md`：定义未来真实 schema 文件边界、版本迁移和兼容策略。
+2. `70_cross_ref_report_dashboard_panel_mock.md`：定义 cross-ref report 如何进入 dashboard panel 和 research gap 回写。
+3. `71_mutation_fixture_catalog_and_runner_defect_policy.md`：定义 mutation fixture catalog、runner defect 判定和 missed failure 处理政策。
+4. `72_runtime_side_effect_classifier_and_user_snapshot_policy.md`：定义 side effect classifier、user control snapshot resolver 和 runtime observation quarantine 细则。

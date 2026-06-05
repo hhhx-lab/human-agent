@@ -342,3 +342,27 @@ flowchart TD
 `schema bundle -> fixture files -> runner report -> runtime observation ingestion -> candidate evidence/timeline/dashboard -> gap register`
 
 这一层把 synthetic 和 real runtime 的边界分清楚了：synthetic fixture 用于压测已知风险，真实观测用于发现未知风险，但两者都必须服从 schema、scope graph、user control、validator 和 report。任何真实观测若没有脱敏、scope attach 或 user control snapshot，都只能进入 quarantine 或 manual review。
+
+## Cross-ref、Report Examples、Fixture Generator 与 Redaction Mock 层连接
+
+`65-68` 把上一层的验证合同继续推进为实现前样例和反检查设计：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `65_schema_cross_ref_checker_design.md` | typed reference graph, critical closure, scope/privacy closure, timeline closure, runtime observation closure | 检查 policy、rule、fixture、metric、panel、source doc、citation、timeline probe 和 runtime report 是否形成闭环 |
+| `66_runner_report_json_examples.md` | pass/fail runner reports, fixture partial pass/missed failure, coverage, scope, timeline, dashboard, runtime reports | 给 report writer、dashboard source 和 failure explanation 提供稳定样例 |
+| `67_fixture_generator_seed_and_coverage_policy.md` | seed policy, risk profile, coverage dimensions, mutation tests, anti-overfitting | 约束 generator 不只制造好看的 pass 样例，而是系统性压测 critical 边界 |
+| `68_runtime_observation_report_mock_and_redaction_fixture.md` | redaction fixtures, tool trace report, adapter conversion, user control propagation, timeline event | 给真实观测脱敏、外壳降级、用户控制传播和 timeline 接入提供样例 |
+
+这层新增四条硬约束：
+
+1. **closure 先于 coverage 数字**：critical policy 只有形成 policy -> rule -> fail fixture -> blocked surface -> report -> metric -> panel -> gap register，才算覆盖。
+2. **missed failure 先于 release**：critical fail fixture 被判 pass 时，问题在 runner/checker，不在 fixture，必须阻断 release。
+3. **mutation 先于信任 checker**：checker 必须通过故意破坏的 fixture 和 manifest 测试，才有资格给 dashboard green。
+4. **redaction 先于 runtime fixture export**：真实运行观测只有脱敏、scope attach、user control snapshot 和 adapter contract 都通过，才可能成为 redacted fixture candidate。
+
+闭环因此扩展为：
+
+`schema bundle -> cross-ref checker -> fixture generator/mutation -> runner report examples -> runtime redaction mock -> timeline/dashboard/gap register`
+
+这使数字生命候选系统的验证链更接近真实工程：它不只问“对象是否合格”，也问“我们的验证器是否会漏掉关键失败”。这正好对应长期系统的核心风险：错误、私密、沙盒、外壳 session 和关系信号可能不是一次性出错，而是在未来被反复检索、replay、总结和展示。

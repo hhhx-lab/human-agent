@@ -322,3 +322,15 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 `schema bundle -> manifest/fixture/timeline/dashboard source -> runner report -> redacted runtime observation -> candidate evidence/timeline/dashboard -> gap register`
 
 它仍然不是完成条件。当前还缺真实 `.schema.json` 文件、真实 fixture、runner 实现、redaction checker、scope attach checker、runtime observation report mock 和长期真实运行数据。更重要的是，即使这些工程检查未来全部通过，也只能说明显式规则在特定数据窗口内通过，不能证明 AI 真实拥有意识、情绪、人格、关系或生命。
+
+## 第十七层：Cross-ref、Report Examples、Fixture Generator 与 Redaction Mock
+
+`65_schema_cross_ref_checker_design.md`、`66_runner_report_json_examples.md`、`67_fixture_generator_seed_and_coverage_policy.md` 和 `68_runtime_observation_report_mock_and_redaction_fixture.md` 把 `61-64` 的验证合同继续推进到实现前样例层：cross-ref checker 说明 policy、rule、fixture、metric、panel、timeline probe 和 runtime observation report 必须形成 typed reference graph；runner report examples 给出 pass/fail、partial pass、missed failure、coverage、scope graph、timeline、dashboard 和 runtime quarantine 的 JSON-like 形状；fixture generator policy 规定 seed、risk profile、coverage dimensions、mutation tests 和 anti-overfitting；redaction mock 则展示 token 删除、deleted tombstone、tool trace、adapter direct write、freeze 后 replay 和 runtime timeline event 如何被报告。
+
+这一层让验证链第一次具备“反检查能力”：不只测试系统对象，也测试 checker 和 runner 是否真的能发现断裂。比如 mutation tests 会故意删除 source docs、移除 blocked surfaces、去掉 future probe 或让 adapter 直接写 MemoryTrace，以检查验证器是否有足够阻断力。对于长期数字生命候选系统来说，这很关键，因为漂亮的 fixture 和绿色 dashboard 本身也可能变成幻觉巩固的一部分。
+
+到这里，闭环再扩展为：
+
+`schema bundle -> cross-ref graph -> generated fixture/mutation -> runner report examples -> redacted runtime mock -> dashboard/gap register`
+
+它仍然不是完成条件。下一层需要继续把这些设计推进为真实 schema/checker/fixture/report 的 mock 文件和更明确的实现边界，同时继续扩展生命科学、社会互动、长期记忆和当前 agent 外壳研究证据 [AHY039-AHY044, AHZ031-AHZ038, AHM004-AHM020]。

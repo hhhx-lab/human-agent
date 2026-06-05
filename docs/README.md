@@ -20,7 +20,8 @@
 14. 再读 `49_` 到 `52_`：它们把验证设计推进为机器可读 manifest、fixture payload、dashboard 和多用户 scope/privacy 模型。
 15. 再读 `53_` 到 `56_`：它们把 runner 接入、scope-aware retrieval/replay 和长期 synthetic timeline 接到同一条验证链上。
 16. 再读 `57_` 到 `60_`：它们把 scope graph manifest、retrieval/replay fixture、timeline bundle 和 dashboard mock source 推进为机器可读前的 schema 草案。
-17. 最后读 `61_` 到 `64_`：它们把 schema bundle、runner report/CLI、fixture 文件布局和真实运行观测 ingestion 推进为可实现前验证合同。
+17. 再读 `61_` 到 `64_`：它们把 schema bundle、runner report/CLI、fixture 文件布局和真实运行观测 ingestion 推进为可实现前验证合同。
+18. 最后读 `65_` 到 `68_`：它们把 cross-ref checker、runner report 样例、fixture generator 策略和 runtime redaction mock 推进为实现前检查样例层。
 
 ## 文件索引
 
@@ -95,6 +96,10 @@
 | `62_runner_report_format_and_cli_contract.md` | runner report、expected/actual diff、coverage report、dashboard source 和未来 CLI 契约 |
 | `63_synthetic_fixture_file_layout.md` | synthetic fixture 的目录、命名、bundle、manifest、coverage 和真实观测脱敏夹具布局 |
 | `64_real_runtime_observation_ingestion_policy.md` | 真实 runtime observation、tool trace、adapter session 和用户控制事件进入验证链的政策 |
+| `65_schema_cross_ref_checker_design.md` | schema、policy、rule、fixture、metric、panel、timeline 和 runtime report 的 cross-ref checker 设计 |
+| `66_runner_report_json_examples.md` | runner run、schema、cross-ref、fixture、coverage、scope、timeline、dashboard 和 runtime report 的 JSON-like 样例 |
+| `67_fixture_generator_seed_and_coverage_policy.md` | synthetic fixture generator 的 seed、风险密度、coverage、mutation 和 anti-overfitting 策略 |
+| `68_runtime_observation_report_mock_and_redaction_fixture.md` | runtime observation report mock、redaction fixture、adapter session 转换和真实观测时间线样例 |
 
 ## 项目术语
 
