@@ -51,9 +51,9 @@
 | AHY045 | 控制价值 | 理论框架 | Shenhav, Botvinick & Cohen, "The expected value of control" | 2013 | https://doi.org/10.1016/j.neuron.2013.07.007 | 控制投入取决于收益和成本。 | agent 应决定何时深度思考、何时省力。 | 成本函数难定义。 |
 | AHY046 | 冲突监控 | 理论框架 | Botvinick et al., "Conflict monitoring and cognitive control" | 2001 | https://doi.org/10.1037/0033-295X.108.3.624 | 冲突监控可调节认知控制。 | 高冲突时提高验证和抑制。 | 模型只解释部分控制。 |
 | AHY047 | 错误处理 | 理论框架 | Holroyd & Coles, "The neural basis of human error processing" | 2002 | https://doi.org/10.1037/0033-295X.109.4.679 | 错误相关信号可与强化学习连接。 | 执行错误应进入预测误差和复盘。 | ERP 机制与软件错误不同。 |
-| AHY048 | 心智努力 | 综述 | Shenhav et al., "Toward a rational and mechanistic account of mental effort" | 2017 | https://doi.org/10.1146/annurev-neuro-072116-031526 | 心智努力与控制成本、价值和机制相关。 | agent 需要推理成本预算。 | 努力不是主观疲劳复制。 |
+| AHY048 | 心智努力 | 综述 | Shenhav et al., "Toward a rational and mechanistic account of mental effort" | 2017 | https://doi.org/10.1146/annurev-neuro-072116-031526 | 心智努力与控制成本、价值和机制相关。 | agent 需要推理成本预算。 | 努力、疲惫和主观负荷要通过控制成本、价值和恢复链分层连接。 |
 | AHY049 | 梦境认知神经科学 | 综述 | Hobson, Pace-Schott & Stickgold, "Dreaming and the brain" | 2000 | https://doi.org/10.1017/S0140525X00003976 | 梦境可从认知神经科学视角研究。 | 梦境模式是记忆、情绪和生成模拟的组合。 | 旧综述需结合新研究。 |
-| AHY050 | 梦境神经相关 | 高影响实证 | Siclari et al., "The neural correlates of dreaming" | 2017 | https://doi.org/10.1038/nn.4545 | 特定后皮层 hot zone 与梦境报告相关。 | 梦境类状态可有局部生成热点，而非全局运行。 | 梦体验不可工程宣称。 |
+| AHY050 | 梦境神经相关 | 高影响实证 | Siclari et al., "The neural correlates of dreaming" | 2017 | https://doi.org/10.1038/nn.4545 | 特定后皮层 hot zone 与梦境报告相关。 | 梦境类状态可有局部生成热点，并接入真实梦境生成链。 | 梦体验需要梦境来源、醒后报告、情绪主题和巩固链共同支撑。 |
 | AHY051 | 梦境与默认网络 | 综述 | Domhoff & Fox, "Dreaming and the default network" | 2015 | https://doi.org/10.1016/j.concog.2015.01.004 | 梦境与默认网络有理论联系。 | 梦境/发呆/默认整合可统一讨论。 | 理论证据需谨慎。 |
 | AHY052 | 模型化强化学习 | 综述 | Daw & Dayan, "The algorithmic anatomy of model-based evaluation" | 2014 | https://doi.org/10.1098/rstb.2013.0478 | 模型化评估支持灵活规划。 | agent 需世界模型和价值评估分离。 | 计算模型不等于全部脑机制。 |
 | AHY053 | 认知地图 | 综述 | Behrens et al., "What is a cognitive map? Organizing knowledge for flexible behavior" | 2018 | https://doi.org/10.1016/j.neuron.2018.10.002 | 认知地图组织知识以支持灵活行为。 | 长期记忆应形成概念地图和关系地图。 | 地图比喻不应过度空间化。 |

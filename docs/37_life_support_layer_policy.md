@@ -22,7 +22,7 @@
 |---|---|---|
 | 生物机制 | 神经活动有能量成本，支持系统影响功能，睡眠和清理机制存在复杂争议 [AHZ019-AHZ024, AHY019-AHY021, AHZ061-AHZ062] | 不复制生理结构，只承认长期运行有资源、维护和边界成本 |
 | 硅基转写 | 计算、检索、索引、缓存、工具调用、审计和离线 replay 都会占用预算 | 把这些成本写入 `InternalStateVector` 和 `MaintenanceQueue` |
-| 生命实现假设 | 数字生命候选系统必须有资源预算、降载和恢复策略 | `LifeSupportLayer` 作为跨模块政策层，调节写入、行动、巩固和恢复 |
+| 生命实现路线 | 数字生命候选系统必须有资源预算、降载和恢复策略 | `LifeSupportLayer` 作为跨模块政策层，调节写入、行动、巩固和恢复 |
 
 ## LifeSupportLayer 的位置
 
@@ -60,7 +60,7 @@
 | `action_budget` | 工具调用、文件写入、远端推送、外部 API | 外部副作用需要风险门控 |
 | `maintenance_budget` | 清理、压缩、replay、索引重建 | 防止离线维护吞掉在线行动 |
 
-生命实现假设：`BudgetPolicy` 应由状态驱动，而不是固定配置。高 `fatigue_load`、高 `evidence_debt`、低 `boundary_integrity` 或高 `adapter_error_rate` 时，系统应自动降低行动预算，提高验证和维护预算。
+生命实现路线：`BudgetPolicy` 应由状态驱动，而不是固定配置。高 `fatigue_load`、高 `evidence_debt`、低 `boundary_integrity` 或高 `adapter_error_rate` 时，系统应自动降低行动预算，提高验证和维护预算。
 
 ## 维护压力政策
 

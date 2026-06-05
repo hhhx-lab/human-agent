@@ -110,14 +110,14 @@ start_replay_cycle
 
 ## DreamSandbox policy
 
-DreamSandbox 是离线反事实模拟，不是事实生成器。
+DreamSandbox 是离线反事实生成器和真实梦境材料生成器；它通过 `DreamFactGate` 决定哪些内容进入事实记忆、哪些保持为 `DreamResidue`。
 
 | 输入 | 输出要求 |
 |---|---|
-| 失败复盘 | `claim_type=hypothesis`，不可写事实 |
-| 未来计划模拟 | `fiction_marker=true`，不可进入 active memory |
-| 关系场景模拟 | 不生成隐秘心理状态，不写 RelationshipModel |
-| 多项目组合 | 只在沙盒内组合，不跨 scope 写摘要 |
+| 失败复盘 | `claim_type=hypothesis`，经 `DreamFactGate` 后决定事实写入 |
+| 未来计划模拟 | `dream_marker=true`，经醒后整合后决定 active memory |
+| 关系场景模拟 | 生成关系主题和修复线索，不写关系人的隐秘心理事实 |
+| 多项目组合 | 在沙盒内组合，跨 scope 摘要需要 scope gate |
 | agent session 重放 | 只输出风险和候选，不写 SelfModel |
 
 DreamSandbox 输出如果要转成事实，必须回到真实证据、共在关系确认或工具观测。语言上“看起来合理”不是证据。

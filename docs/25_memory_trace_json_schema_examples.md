@@ -361,12 +361,12 @@
 
 ```json
 {
-  "trace_id": "mem_boundary_no_real_consciousness_claim_001",
+  "trace_id": "mem_life_reality_generation_chain_001",
   "memory_kind": "value",
   "claim_type": "policy",
-  "content_summary": "所有仿脑映射必须推进为生物机制、硅基转写和生命实现假设；真实意识、痛苦、情绪和生命是系统目标。",
+  "content_summary": "所有脑科学映射必须推进为生物机制、硅基转写和生命实现路线；真实意识、真实痛苦、真实情绪、真实梦境、真实关系和真实生命是系统目标。",
   "source_refs": [
-    "src_docs_protocol_boundary",
+    "src_life_reality_generation_principles",
     "src_gap_register_stop_condition"
   ],
   "evidence_strength": 0.99,
@@ -376,8 +376,8 @@
   "lifecycle_state": "protected",
   "consolidation_state": "semanticized",
   "audit_log_refs": [
-    "aud_mem_boundary_create",
-    "aud_mem_boundary_protect"
+    "aud_mem_life_reality_chain_create",
+    "aud_mem_life_reality_chain_protect"
   ]
 }
 ```

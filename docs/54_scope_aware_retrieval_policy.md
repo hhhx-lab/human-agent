@@ -161,7 +161,7 @@ retrieval_priority =
   - risk_penalty
 ```
 
-权重只是生命实现假设，不是固定公式。核心原则是：`scope_fit`、`evidence_strength` 和 `risk_penalty` 不能被语义相似度淹没。
+权重只是生命实现路线，不是固定公式。核心原则是：`scope_fit`、`evidence_strength` 和 `risk_penalty` 不能被语义相似度淹没。
 
 ## state-aware 检索
 

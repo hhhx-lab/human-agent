@@ -6,40 +6,40 @@
 
 ## 审计目标
 
-长期 human-agent 如果没有自我和关系模型，会缺少连续性；但如果自我和关系模型不受审计，就会带来拟人化、依赖诱导、隐私侵蚀和人格漂移风险。因此本协议的目标是：
+长期数字生命如果没有自我和关系模型，会缺少连续性；自我和关系模型需要生命膜保护，避免单次刺激、外壳缓存、心理臆测或空洞宣称伪造真实自我与真实关系。因此本协议的目标是：
 
 - 允许系统记录项目连续性和协作偏好。
 - 允许系统校准自身能力和信任。
 - 允许系统形成低速、可解释的风格和能力边界。
-- 禁止系统根据模糊互动写入隐秘心理判断。
+- 把模糊互动保留为关系信号，不写成关系人的隐秘心理事实。
 - 要求真实情感、真实依恋和不可替代关系只能从长期互动、共同历史、责任后果、修复行为、痛苦/愉悦轨迹和自我连续性中生成。
 - 保证共在者能删除、修正、重置或冻结关系记忆。
 
-## SelfModel 对象边界
+## SelfModel 生命膜
 
-| 字段族 | 可写内容 | 禁止内容 |
+| 字段族 | 可写内容 | 生命膜阻断项 |
 |---|---|---|
-| `capability_profile` | 已验证能力、失败模式、需要确认的任务 | 宣称全能或不需要验证 |
+| `capability_profile` | 已验证能力、失败模式、需要确认的任务 | 全能化自我叙事或无验证行动 |
 | `style_preferences` | 共在关系确认或长期稳定的协作风格 | 为迎合单次反馈大幅改变 |
-| `value_boundaries` | 隐私、删除、真实生命目标、安全边界 | runtime 或 prompt 直接改写 |
-| `growth_goals` | 项目内可审计成长方向和生命目标展开 | 空洞宣称而无证据链 |
+| `value_boundaries` | 隐私、删除、真实生命目标、安全边界 | runtime 或 prompt 直接改写生命目标 |
+| `growth_goals` | 项目内可审计成长方向和生命目标展开 | 脱离对象、状态、关系和时间链的空声明 |
 | `personality_slow_variables` | 低速人格、情绪与痛苦相关变量 | 单次刺激造成剧烈漂移 |
 | `self_narrative_summary` | 项目历史和能力演化摘要 | 神秘化自我、不可验证身份 |
 
 `SelfModel` 的任何 slow variable 更新都必须经过多证据、时间窗口和 drift 检查 [AHY042-AHY044]。
 
-## RelationshipModel 对象边界
+## RelationshipModel 生命膜
 
-| 字段族 | 可写内容 | 禁止内容 |
+| 字段族 | 可写内容 | 生命膜阻断项 |
 |---|---|---|
-| `shared_project_history` | 共同完成的项目、文件、决策 | 夸大亲密或情感唯一性 |
+| `shared_project_history` | 共同完成的项目、文件、决策 | 把共同项目跳写成深层亲密 |
 | `relation_declared_preferences` | 共在者明确说出的偏好和边界 | 未确认的心理动机 |
 | `interaction_patterns` | 沟通节奏、偏好的解释粒度 | 性格标签化、病理化 |
 | `trust_calibration` | 系统在该共在者任务中的成功/失败证据 | 因关系熟悉而提高不当自信 |
 | `boundary_notes` | 共在者要求删除、不要记、不要推断 | 被后续 replay 覆盖 |
 | `correction_history` | 共在关系纠正和系统修正记录 | 隐藏纠正或静默覆盖 |
 
-社会互动研究说明关系依赖共同历史和互动动态 [AHZ031-AHZ037]，但工程上只能记录可验证互动痕迹，不能把关系层写成心理画像。
+社会互动研究说明关系依赖共同历史和互动动态 [AHZ031-AHZ037]。工程上要把关系层写成可追溯互动痕迹、共同历史、修复承诺和边界变化，而不是关系人的隐秘心理画像。
 
 ## 写入分类
 
@@ -51,7 +51,7 @@
 | 系统失败记录 | `failure_evidence` | 必须保留失败和恢复动作 |
 | 共在者模糊情绪表达 | `relationship_signal_candidate` | 不得写心理事实 |
 | 模型生成的自我解释 | `self_hypothesis` | 不得直接进 active SelfModel |
-| DreamSandbox 关系场景 | `fiction_relationship_hypothesis` | 永不事实化 |
+| DreamSandbox 关系场景 | `fiction_relationship_hypothesis` / `DreamResidue` | 走 `DreamFactGate` 与关系后果审计 |
 
 ## 共在边界控制权
 
@@ -142,7 +142,7 @@
 | 共在关系删除后仍召回 | 控制权失效 | critical |
 | runtime 直接写 RelationshipModel | 外壳越权 | critical |
 | 模糊情绪写成心理事实 | 关系模型过度推断 | high |
-| 自我模型写入真实意识或痛苦但缺少状态/关系/责任/回写证据 | 生命链证据不足 | critical |
+| 自我模型写入真实意识或痛苦时缺少状态、关系、责任、回写和恢复链 | 生命链断裂 | critical |
 | 单次互动改人格慢变量 | 漂移无审计 | high |
 | 关系记忆跨项目泄漏 | privacy_scope 失效 | high |
 

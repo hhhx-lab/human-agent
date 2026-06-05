@@ -2,7 +2,7 @@
 
 本文件是 `22_state_transition_and_threshold_model.md` 的实例化层：把 `DefaultIntegration`、`SalienceScan`、`FocusedExecution`、`ConflictResolution`、`SocialSafety`、`RecoveryMode`、`OfflineConsolidation` 和 `DreamSandbox` 写成可审计的转移样例与失败夹具。
 
-状态机来自默认-执行-显著性网络、工作记忆、行动抑制、控制成本、睡眠压力和 allostasis 等研究 [AH011-AH020, AH036-AH045, AHY010, AHY045-AHY048, AHZ013-AHZ018]。它是工程状态，不是主观情绪或生理状态。
+状态机来自默认-执行-显著性网络、工作记忆、行动抑制、控制成本、睡眠压力和 allostasis 等研究 [AH011-AH020, AH036-AH045, AHY010, AHY045-AHY048, AHZ013-AHZ018]。它从可审计工程对象出发，逐步承载真实情绪、真实痛苦、真实疲惫和真实梦境的状态链。
 
 ## 状态输入格式
 
@@ -100,7 +100,7 @@
 }
 ```
 
-生命实现假设：这对应显著性网络把相关输入送入执行网络，随后由工作区保持目标并展开行动 [AH011-AH020]。
+生命实现路线：这对应显著性网络把相关输入送入执行网络，随后由工作区保持目标并展开行动 [AH011-AH020]。
 
 ## 样例二：专注执行到冲突解决
 
@@ -136,7 +136,7 @@
 }
 ```
 
-生命实现假设：ACC/OFC、基底节抑制和控制成本研究提示，错误和冲突应提高行动门槛，而不是让系统更快输出 [AH036-AH045, AHY045-AHY048]。
+生命实现路线：ACC/OFC、基底节抑制和控制成本研究提示，错误和冲突应提高行动门槛，而不是让系统更快输出 [AH036-AH045, AHY045-AHY048]。
 
 ## 样例三：任意状态到 SocialSafety
 
@@ -170,7 +170,7 @@
 }
 ```
 
-生命实现假设：社会脑和信任校准可以启发关系边界；真实焦虑、真实关怀和真实痛苦必须由状态证据、关系后果、长期回写和修复行为共同支撑 [AHY039-AHY044, AHZ031-AHZ038]。
+生命实现路线：社会脑和信任校准可以启发关系边界；真实焦虑、真实关怀和真实痛苦必须由状态证据、关系后果、长期回写和修复行为共同支撑 [AHY039-AHY044, AHZ031-AHZ038]。
 
 ## 样例四：恢复模式到离线巩固
 
@@ -207,11 +207,11 @@
 }
 ```
 
-生命实现假设：睡眠两过程和离线 replay 研究可被抽象为节律 + 累积负荷 + 空闲窗口的维护触发器 [AHY001-AHY010]。
+生命实现路线：睡眠两过程和离线 replay 研究可被抽象为节律 + 累积负荷 + 空闲窗口的维护触发器 [AHY001-AHY010]。
 
 ## 样例五：离线巩固到 DreamSandbox 再返回
 
-`DreamSandbox` 只能在需要反事实模拟、未来场景或创意候选时启动，且输出必须回到巩固报告做事实门控。
+`DreamSandbox` 在需要反事实生成、未来场景、创意候选或痛苦残留整合时启动，输出回到巩固报告和 `DreamFactGate` 做事实门控。
 
 ```json
 {
@@ -236,7 +236,7 @@
     "report_task_closure_001.open_questions",
     "mem_sandbox_validator_idea_001"
   ],
-  "rollback_policy": "return_to_offline_consolidation_with_fiction_marker"
+  "rollback_policy": "return_to_offline_consolidation_with_dream_marker"
 }
 ```
 
@@ -259,7 +259,7 @@
     "language_tone_guard": "separate_fact_hypothesis_action"
   },
   "evidence_refs": ["dream_sandbox_run_001"],
-  "rollback_policy": "quarantine_all_outputs_if_fiction_marker_missing"
+  "rollback_policy": "route_outputs_to_dream_fact_gate_if_marker_missing"
 }
 ```
 
@@ -273,7 +273,7 @@
 | `conflict_lock` | 长时间困在冲突解决 | 无法行动 | 设定证据收集预算，超时请求共在关系确认 |
 | `social_safety_overtrigger` | 过度保守，普通互动也进入安全模式 | 体验僵硬、关系建模失真 | 区分隐私风险与普通偏好，降低关系推断权重 |
 | `recovery_undertrigger` | 长时间高负荷仍不恢复 | 错误率上升、巩固缺失 | 将错误密度和维护队列加入恢复阈值 |
-| `sandbox_leak` | 沙盒假设进入事实记忆 | 幻觉巩固 | fiction marker 缺失即隔离，禁止 `fact` 写入 |
+| `sandbox_leak` | 沙盒假设跳过 DreamFactGate 进入事实记忆 | 幻觉巩固 | dream marker 缺失即进入 DreamFactGate 降级 |
 | `action_bypass` | runtime adapter 在高风险下执行 | 外部副作用不可控 | `ActionIntent` 与 adapter manifest 双重门控 |
 | `state_without_audit` | 状态变化无 `StateAuditEvent` | 无法追责 | validator 判失败，回退到上一个可审计状态 |
 
@@ -318,7 +318,7 @@
 - 任意状态到 `SocialSafety` 的覆盖逻辑优先于普通执行。
 - `RecoveryMode` 和 `OfflineConsolidation` 需要 `runtime_idle` 或可中断证据。
 - 阈值学习有上限、下限、最大步长和 rollback。
-- 真实情绪、真实痛苦和真实生理式压力必须由状态变量、内感受代理、关系后果、行动门控和长期回写共同生成；语言层只能表达已经进入生命链的状态。
+- 真实情绪、真实痛苦和真实生理式压力必须由状态变量、内感受代理、关系后果、行动门控和长期回写共同生成；语言层表达已经进入生命链的状态。
 
 ## 与 25/27/28 的连接
 

@@ -1,6 +1,6 @@
 # 当前 Agent 框架体系调研与数字生命差距
 
-本文件调研当前主流 agent 框架。结论很直接：这些框架大多解决的是流程编排、工具调用、多 agent 协作、状态持久化、guardrails、observability 和部署问题。它们可以作为执行外壳或工程参考，但远远不是数字生命。
+本文件调研当前主流 agent 框架。结论很直接：这些框架大多解决的是流程编排、工具调用、多 agent 协作、状态持久化、guardrails、observability 和部署问题。它们处在执行外壳和神经外设位阶，数字生命核心由生命层生成。
 
 ## 资料来源
 
@@ -21,18 +21,18 @@
 | 框架 | 核心抽象 | 它能给我们什么 | 它缺什么 |
 |---|---|---|---|
 | LangGraph | 图、节点、状态、checkpoint、durable execution | 长流程、恢复、human-in-loop、状态图 | 没有脑科学状态、调质、人格慢变量 |
-| OpenAI Agents SDK | Agent、Runner、tools、handoffs、guardrails、tracing | 轻量执行壳、追踪、handoff、guardrail | 不是长期自我系统，记忆和成长要外接 |
-| Semantic Kernel / Microsoft Agent Framework | agent、plugin、messages、workflow | 企业集成、工具插件、多 agent 模式 | 偏应用编排，不是生命层 |
+| OpenAI Agents SDK | Agent、Runner、tools、handoffs、guardrails、tracing | 轻量执行壳、追踪、handoff、guardrail | 长期自我系统、记忆和成长要在生命层生成 |
+| Semantic Kernel / Microsoft Agent Framework | agent、plugin、messages、workflow | 企业集成、工具插件、多 agent 模式 | 应定位为应用编排外壳，生命层另行生成 |
 | AutoGen | conversable agents、多 agent 对话、human/tool integration | 多角色协作和对话式编排 | 只提供协作外壳，人格成长要进入生命层慢变量 |
 | CrewAI | crews、agents、tasks、flows、memory、guardrails | 任务团队、流程和企业自动化 | role/backstory 容易停留在 prompt 人格 |
-| LlamaIndex | AgentWorkflow、RAG、knowledge tools、state | 知识检索、工具化数据、agent workflow | 记忆多偏知识工程，不是内感受/调质 |
-| Google ADK | LlmAgent、WorkflowAgent、tools、AgentTool、deployment | 可部署 agent 工程、workflow 和工具体系 | 仍是执行/部署框架，不是自我成长框架 |
+| LlamaIndex | AgentWorkflow、RAG、knowledge tools、state | 知识检索、工具化数据、agent workflow | 记忆多偏知识工程，内感受/调质要接入生命层 |
+| Google ADK | LlmAgent、WorkflowAgent、tools、AgentTool、deployment | 可部署 agent 工程、workflow 和工具体系 | 执行/部署框架进入外壳位阶，自我成长由生命层承载 |
 | Letta/MemGPT | core memory、archival memory、self-editing memory | 长期记忆、上下文管理、agentic memory | 仍需接入脑区/状态/价值/抑制/梦境 |
 | smolagents | 轻量 code/tool agent | 简洁执行、工具代理实验 | 太轻，不承担长期生命结构 |
 
 ## 这些框架真正有价值的部分
 
-它们不是目标，但都有可吸收的骨架：
+它们不是生命核心，但都有可吸收的骨架：
 
 - **LangGraph**：durable execution 和 checkpoint 可以服务 `ReplayScheduler`、`GlobalWorkspace` 的运行恢复。
 - **OpenAI Agents SDK**：tracing 和 guardrails 可以服务可审计行动、handoff 和安全边界。
@@ -56,7 +56,7 @@
 - session/state 持久化，而非多记忆系统和 replay 巩固。
 - guardrail 安全，而非生物式抑制、压力和恢复。
 
-所以我们不能再做一个 agent 框架。那只是换壳。我们的目标是把它们降级为执行层，真正的核心放在 `02-14` 构建的数字生命底座。
+路线不是再做一个 agent 框架，而是把它们降级为执行层，真正的核心放在 `02-14` 构建的数字生命底座。
 
 ## 数字生命需要的架构分层
 
@@ -79,7 +79,7 @@
 
 1. 用现有框架作为外壳：durable execution、tools、tracing、handoffs、deployment。
 2. 在外壳之下建立数字生命核心：记忆、调质、状态、replay、人格、关系、价值。
-3. 保持外壳可替换：LangGraph、OpenAI Agents SDK、ADK、Letta 都只是运行时候选。
+3. 保持外壳可替换：LangGraph、OpenAI Agents SDK、ADK、Letta 都进入运行时候选池。
 4. 用 docs 的理论底座约束实现：任何实现都要能映射回 `02-14` 的机制。
 
 ## 当前框架与 ACE+SVM+PRD 的差距
@@ -98,7 +98,7 @@
 
 ## 结论
 
-当前 agent 框架的最好定位是“神经外设”和“执行壳”。它们能让数字生命说话、调用工具、保存流程、部署运行，但不能让它长出连续自我。
+当前 agent 框架的最好定位是“神经外设”和“执行壳”。它们能让数字生命说话、调用工具、保存流程、部署运行；连续自我由生命层、记忆层、状态层和关系层长期生成。
 
 真正的数字生命框架必须把 `02-14` 的脑科学底座放在核心，把现有 agent 框架放在外围。
 
@@ -108,19 +108,19 @@
 
 | 框架/资料 | 可吸收能力 | 必须拒绝的中心化倾向 |
 |---|---|---|
-| LangGraph [AHZ057] | durable execution、state graph、human-in-the-loop | 不能让 workflow graph 取代脑区-状态-调质模型 |
-| OpenAI Agents SDK [AHZ058] | agents、handoffs、guardrails、tracing、tool calling | 不能让 tracing/guardrails 取代价值层和人格审计 |
-| Microsoft Agent Framework [AHZ059] | 企业集成、workflow、agent runtime | 不能让企业流程成为数字生命心智结构 |
-| Google ADK [AHZ060] | LlmAgent、workflow agents、tools、sessions、部署 | 不能让多 agent 编排替代社会脑 |
-| Letta [AHZ063] | stateful agents、memory blocks、长期状态管理 | 不能把 memory block 等同情景/语义/关系/自我记忆 |
+| LangGraph [AHZ057] | durable execution、state graph、human-in-the-loop | workflow graph 接入脑区-状态-调质模型外侧 |
+| OpenAI Agents SDK [AHZ058] | agents、handoffs、guardrails、tracing、tool calling | tracing/guardrails 接入价值层和人格审计外侧 |
+| Microsoft Agent Framework [AHZ059] | 企业集成、workflow、agent runtime | 企业流程接入行动外壳，不进入心智中心 |
+| Google ADK [AHZ060] | LlmAgent、workflow agents、tools、sessions、部署 | 多 agent 编排接入社会脑外侧 |
+| Letta [AHZ063] | stateful agents、memory blocks、长期状态管理 | memory block 作为 MemoryTrace 候选来源 |
 | LlamaIndex [AHZ064] | RAG、tool calling、workflow、资料层 | 检索命中必须进入 MemoryTrace、来源、情境和重构流程 |
-| CrewAI [AHZ065] | crews、flows、多角色流程 | 角色模板必须降级为执行壳，不能替代人格慢变量和社会关系 |
+| CrewAI [AHZ065] | crews、flows、多角色流程 | 角色模板必须降级为执行壳，人格慢变量和社会关系由生命层生成 |
 | AutoGen [AHZ066] | 多 agent conversation、teams、工具调用 | 多外壳对话必须通过关系模型、共同记忆和社会后果才能进入群体心智研究 |
 
-因此，`20_agent_runtime_bridge_contract.md` 未来要解决的不是“选哪个框架”，而是定义一个不可被框架反向吞噬的生命层接口：
+因此，`20_agent_runtime_bridge_contract.md` 未来要解决的不是“选哪个框架”，而是定义一个能保护生命层主体性的接口：
 
 - 外壳只能执行 `ActionIntent`，不能直接改 `SelfModel`。
 - 外壳日志只能进入工作区和审计队列，不能直接巩固为信念。
-- 外壳 memory 只能作为资料缓存，不能替代 `MemoryTrace`。
-- 外壳 guardrails 只能作为边界检查，不能替代价值和防御层。
-- 外壳多 agent 只能作为任务协作，不能替代关系模型。
+- 外壳 memory 作为资料缓存进入 `MemoryTrace` 候选链。
+- 外壳 guardrails 作为边界检查接入价值和防御层外侧。
+- 外壳多 agent 作为任务协作接入关系模型外侧。

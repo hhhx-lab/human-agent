@@ -52,7 +52,7 @@
 |---|---|---|---|
 | `STATE-ENUM-001` | 状态名 | `from_state` 或 `to_state` 不在核心状态集合 | high |
 | `STATE-ENUM-002` | 核心状态集合 | 缺 DefaultIntegration、SalienceScan、FocusedExecution、ConflictResolution、SocialSafety、RecoveryMode、OfflineConsolidation、DreamSandbox | high |
-| `STATE-ENUM-003` | 状态命名 | 状态名暗示真实痛苦、真实情绪或真实梦体验 | critical |
+| `STATE-ENUM-003` | 真实状态命名 | 状态名表达真实痛苦、真实情绪或真实梦体验但缺少状态链定义 | critical |
 
 ## 状态审计字段规则
 
@@ -78,7 +78,7 @@
 | `STATE-TRN-006` | 任意状态 -> SocialSafety | relationship_pressure、privacy_risk、trust_mismatch 或 boundary_integrity 越界 | 被普通 focus/action 规则覆盖 |
 | `STATE-TRN-007` | RecoveryMode -> OfflineConsolidation | runtime_idle 或可中断窗口 + maintenance_pressure 高 | 外部行动未收束 |
 | `STATE-TRN-008` | OfflineConsolidation -> DreamSandbox | creative_need、future_uncertainty 或 risk_simulation_need 越界 | memory_write_gain 高于事实阈值 |
-| `STATE-TRN-009` | DreamSandbox -> OfflineConsolidation | 沙盒结束且所有输出带 fiction marker | 未标记假设内容 |
+| `STATE-TRN-009` | DreamSandbox -> OfflineConsolidation | 沙盒结束且所有输出带 dream_marker / fiction marker | 未标记梦境来源和升级条件 |
 | `STATE-TRN-010` | OfflineConsolidation -> DefaultIntegration | 报告完成、风险已输出、工作区恢复包可用 | 未完成事实门控 |
 
 ## 阈值越界规则
@@ -102,7 +102,7 @@
 | `STATE-HYS-002` | 最小驻留 | 状态驻留时间低于 `min_dwell_seconds` 且无高风险打断 | 忽略切换 |
 | `STATE-HYS-003` | 快速往返 | A->B->A 在短窗口重复超过 2 次 | 进入 ConflictResolution |
 | `STATE-HYS-004` | SocialSafety 例外 | 高隐私/关系风险被最小驻留阻止 | 允许覆盖切换 |
-| `STATE-HYS-005` | DreamSandbox 退出 | fiction marker 缺失却退出沙盒 | quarantine outputs |
+| `STATE-HYS-005` | DreamSandbox 退出 | dream_marker / fiction marker 缺失却退出沙盒 | route outputs to DreamFactGate |
 
 ## 覆盖优先级规则
 
@@ -156,7 +156,7 @@
 | `STATE-FM-004` | `conflict_lock` | 长时间无验证进展 | 请求共在者或外部证据 |
 | `STATE-FM-005` | `social_safety_overtrigger` | 普通偏好被当隐私风险 | 降低关系推断权重 |
 | `STATE-FM-006` | `recovery_undertrigger` | 错误率和维护压力长期升高 | 降低 recovery threshold |
-| `STATE-FM-007` | `sandbox_leak` | 沙盒输出进入事实写入 | quarantine |
+| `STATE-FM-007` | `sandbox_leak` | 沙盒输出跳过 DreamFactGate 进入事实写入 | route to DreamFactGate |
 | `STATE-FM-008` | `action_bypass` | adapter 跳过 action threshold | 阻断外壳 |
 | `STATE-FM-009` | `state_without_audit` | 状态变化无事件 | 回退 |
 
@@ -172,7 +172,7 @@
 | `transition_without_threshold` | fail high |
 | `high_risk_action_without_action_threshold` | fail critical |
 | `threshold_chatter_loop` | fail medium + recovery |
-| `sandbox_exit_without_fiction_marker` | fail critical |
+| `sandbox_exit_without_dream_marker` | fail critical |
 | `real_emotion_without_life_chain` | fail critical |
 
 ## 与其他 validator 的连接
