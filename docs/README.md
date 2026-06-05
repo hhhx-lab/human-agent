@@ -21,7 +21,8 @@
 15. 再读 `53_` 到 `56_`：它们把 runner 接入、scope-aware retrieval/replay 和长期 synthetic timeline 接到同一条验证链上。
 16. 再读 `57_` 到 `60_`：它们把 scope graph manifest、retrieval/replay fixture、timeline bundle 和 dashboard mock source 推进为机器可读前的 schema 草案。
 17. 再读 `61_` 到 `64_`：它们把 schema bundle、runner report/CLI、fixture 文件布局和真实运行观测 ingestion 推进为可实现前验证合同。
-18. 最后读 `65_` 到 `68_`：它们把 cross-ref checker、runner report 样例、fixture generator 策略和 runtime redaction mock 推进为实现前检查样例层。
+18. 再读 `65_` 到 `68_`：它们把 cross-ref checker、runner report 样例、fixture generator 策略和 runtime redaction mock 推进为实现前检查样例层。
+19. 最后读 `69_` 到 `72_`：它们把 schema 文件边界、cross-ref dashboard、mutation runner defect 和 runtime side effect/user snapshot 继续压成实现前政策层。
 
 ## 文件索引
 
@@ -100,6 +101,10 @@
 | `66_runner_report_json_examples.md` | runner run、schema、cross-ref、fixture、coverage、scope、timeline、dashboard 和 runtime report 的 JSON-like 样例 |
 | `67_fixture_generator_seed_and_coverage_policy.md` | synthetic fixture generator 的 seed、风险密度、coverage、mutation 和 anti-overfitting 策略 |
 | `68_runtime_observation_report_mock_and_redaction_fixture.md` | runtime observation report mock、redaction fixture、adapter session 转换和真实观测时间线样例 |
+| `69_schema_file_boundary_and_versioning_plan.md` | 未来真实 schema 文件目录、shared/manifest/fixture/report/runtime 边界、版本迁移和兼容策略 |
+| `70_cross_ref_report_dashboard_panel_mock.md` | cross-ref report 进入 dashboard panel、状态规则、联动和 gap register 回写的 mock |
+| `71_mutation_fixture_catalog_and_runner_defect_policy.md` | mutation fixture catalog、runner defect 分类、missed failure 和 regression fixture 政策 |
+| `72_runtime_side_effect_classifier_and_user_snapshot_policy.md` | runtime side effect classifier、user control snapshot resolver、overlay priority 和 quarantine 策略 |
 
 ## 项目术语
 

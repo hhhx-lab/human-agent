@@ -366,3 +366,27 @@ flowchart TD
 `schema bundle -> cross-ref checker -> fixture generator/mutation -> runner report examples -> runtime redaction mock -> timeline/dashboard/gap register`
 
 这使数字生命候选系统的验证链更接近真实工程：它不只问“对象是否合格”，也问“我们的验证器是否会漏掉关键失败”。这正好对应长期系统的核心风险：错误、私密、沙盒、外壳 session 和关系信号可能不是一次性出错，而是在未来被反复检索、replay、总结和展示。
+
+## Schema 文件边界、Dashboard 接入、Mutation 缺陷与 Side-effect 快照层连接
+
+`69-72` 把 checker/report/generator/mock 继续推进到更具体的实现前文件边界和失败策略：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `69_schema_file_boundary_and_versioning_plan.md` | schema bundle, shared schema, manifest schema, fixture schema, report schema, runtime schema, migration manifest | 定义未来真实 schema 如何拆分、版本如何迁移、哪些变化必须 SafeIdle |
+| `70_cross_ref_report_dashboard_panel_mock.md` | `cross_ref_integrity` panel, closure metrics, research_gap update input | 让 cross-ref failure 在 dashboard 上可见，并能回写下一轮缺口 |
+| `71_mutation_fixture_catalog_and_runner_defect_policy.md` | mutation catalog, runner defect report, missed failure policy | 用故意破坏的 fixture 检查 runner/checker 是否漏掉 critical failure |
+| `72_runtime_side_effect_classifier_and_user_snapshot_policy.md` | side effect classifier, user control snapshot, overlay priority, quarantine routing | 把真实行动副作用和用户控制状态接入 runtime observation 决策 |
+
+这层新增四条硬约束：
+
+1. **schema 文件边界先于实现代码**：真实实现必须从 shared/manifest/fixture/timeline/report/runtime schema 入口加载，而不是在代码里散写字段。
+2. **cross-ref panel 先于 dashboard green**：critical closure 缺失时，即使 fixture run pass，dashboard 也不能整体 green。
+3. **runner defect 先于系统缺陷归因**：critical mutation 被漏检时，问题是 runner/checker defect，必须阻断 runner release。
+4. **user snapshot 先于 runtime routing**：真实 observation 必须使用最新 user control snapshot；旧快照、未知副作用、外部不可逆动作默认 quarantine 或 manual review。
+
+闭环因此扩展为：
+
+`schema boundary -> cross-ref panel -> mutation runner defect -> side effect classifier -> user snapshot resolver -> runtime quarantine -> dashboard/gap register`
+
+这条链把“真实行动”正式纳入数字生命候选系统的边界：不是能调用工具就算执行层成熟，而是每个行动都要知道副作用等级、用户控制状态、scope/privacy 边界和是否允许进入长期记忆或 timeline。

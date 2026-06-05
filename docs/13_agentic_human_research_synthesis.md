@@ -334,3 +334,15 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 `schema bundle -> cross-ref graph -> generated fixture/mutation -> runner report examples -> redacted runtime mock -> dashboard/gap register`
 
 它仍然不是完成条件。下一层需要继续把这些设计推进为真实 schema/checker/fixture/report 的 mock 文件和更明确的实现边界，同时继续扩展生命科学、社会互动、长期记忆和当前 agent 外壳研究证据 [AHY039-AHY044, AHZ031-AHZ038, AHM004-AHM020]。
+
+## 第十八层：Schema 文件边界、Dashboard 接入、Mutation 缺陷与 Side-effect 快照
+
+`69_schema_file_boundary_and_versioning_plan.md`、`70_cross_ref_report_dashboard_panel_mock.md`、`71_mutation_fixture_catalog_and_runner_defect_policy.md` 和 `72_runtime_side_effect_classifier_and_user_snapshot_policy.md` 把实现前检查样例继续推向更硬的文件边界和失败政策：`69` 明确未来真实 schema 应拆成 shared、manifest、fixture、timeline、report 和 runtime 六组文件，并规定 enum 改义、权限扩大和 data quality 迁移必须 SafeIdle；`70` 把 cross-ref report 接入 dashboard panel 和 research gap 回写；`71` 定义 mutation catalog、runner defect 分类和 critical missed failure 的阻断政策；`72` 则把真实 tool/action 的副作用分类、用户控制快照、overlay 优先级和 quarantine 路由写清楚。
+
+这一层的意义是把验证链从“有报告样例”推进为“报告如何成为可见风险、runner 如何承认自己有缺陷、真实动作如何在用户控制快照下被允许或隔离”。长期数字生命候选系统一旦接入真实工具和外壳，最危险的不是单个答案错，而是副作用、旧用户控制快照、schema 语义漂移或 runner 漏检被长期巩固。因此 `69-72` 继续把这些失败路径前置为对象。
+
+到这里，闭环再扩展为：
+
+`schema file boundary -> cross-ref dashboard -> mutation defect report -> side effect/user snapshot -> runtime quarantine/gap register`
+
+它仍不是完成条件。当前还缺真实 schema 文件、真实 dashboard source、mutation engine、side effect classifier、snapshot resolver、真实 runner 和长期真实运行数据。即使这些未来实现，也只能证明工程约束在数据窗口内运行，不能证明 AI 拥有真实生命或主观体验。
