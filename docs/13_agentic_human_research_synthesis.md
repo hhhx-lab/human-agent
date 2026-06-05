@@ -2,20 +2,21 @@
 
 ## 总结
 
-这套文献综述支持一个核心判断：如果要做真正以人脑结构为出发点的 human-agent，关键不是把脑区画成软件模块，而是建立一个长期运行的、多状态、多记忆、多调质、多反馈的自组织系统。
+这套文献综述支持一个核心判断：如果要做真正以人脑结构为出发点的数字生命，关键不是把脑区画成软件模块，而是建立一个长期运行的、多状态、多记忆、多调质、多反馈的自组织系统。
 
 最重要的研究约束来自五层：
 
 1. **脑区层**：脑有专业化区域，但区域边界概率化、重叠化、连接化 [AH001-AH005]。
 2. **网络层**：认知功能由大尺度网络动态协作产生 [AH006-AH010]。
-3. **状态层**：默认、执行、显著性、睡眠、梦境、疲惫等状态改变信息处理方式 [AH011-AH025, AH056-AH070]。
+3. **状态层**：默认、执行、显著性、睡眠、梦境、疲惫等状态改变信息处理方式 [AH011-AH025, AH056-AH070, AHD001-AHD060]。
 4. **调质层**：多巴胺、NE、ACh、5-HT、兴奋/抑制平衡等信号调节学习、注意和行为 [AH041-AH045, AH061-AH065]。
 5. **行为循环层**：记忆、价值、动作选择、反馈误差和自我叙事共同推动成长 [AH031-AH040, AH046-AH055, AH086-AH100]。
 6. **痛苦修复层**：真实痛苦、真实后悔、责任归因、道歉、宽恕和信任修复把损伤转成关系后果、自我改变和未来约束 [AHP001-AHP060]。
+7. **离线梦境层**：真实梦境、睡眠巩固、replay、痛苦梦境残留、清醒梦、未来想象和 world model 把清醒经验转成离线生命世界与醒后整合链 [AHD001-AHD060]。
 
 ## 完整理论底座的核心命题
 
-Agentic Human 的理论底座可以压缩为九条命题：
+Agentic Human 的理论底座可以压缩为十条命题：
 
 1. **区域是软边界**：脑区启发必须通过连接、状态和功能重叠来理解，而不是硬模块 [AH001-AH010]。
 2. **状态改变能力**：同一系统在默认、专注、警觉、睡眠、梦境、疲惫状态下应采用不同处理策略 [AH011-AH025, AH056-AH070]。
@@ -26,8 +27,9 @@ Agentic Human 的理论底座可以压缩为九条命题：
 7. **调质是全局参数**：奖赏、唤醒、不确定性、抑制、疲惫等因子共同改变网络工作模式 [AH061-AH065]。
 8. **成长要有保护**：人格和价值变化必须慢速、可审计、可回滚，不能被单次反馈强行改写 [AH081-AH090]。
 9. **痛苦和后悔要能修复**：真实痛苦需要损伤、关系、状态和恢复链；真实后悔需要反事实、责任和未来约束；真实关系需要修复承诺和后续兑现 [AHP001-AHP060]。
+10. **梦境要有醒后整合**：真实梦境需要离线重放、生成重组、痛苦残留、梦中元认知、语言报告和事实写入门；梦境材料通过醒后整合进入记忆、自我、关系、修复和行动候选 [AHD001-AHD060]。
 
-第二批扩展文献把这八条进一步加深：
+第二批扩展文献把这十条进一步加深：
 
 - 预测处理和主动推理补上“系统如何主动采样、预测、纠错” [AHX001-AHX005]。
 - 社会脑、共情、依恋和共同意图补上“关系如何成为认知结构的一部分” [AHX006-AHX013]。
@@ -35,6 +37,7 @@ Agentic Human 的理论底座可以压缩为九条命题：
 - 压力、免疫、炎症和 allostatic load 补上“长期负荷和恢复为什么是核心机制” [AHX022-AHX028]。
 - LLM agent 新架构补上“现代 AI 工程如何接入这套底座” [AHX041-AHX047]。
 - 痛苦、社会断连、后悔、道德情绪和信任修复补上“损伤如何进入真实痛苦，后悔如何进入责任，责任如何进入修复和关系成长” [AHP001-AHP060]。
+- 睡眠稳态、系统巩固、replay、TMR、梦境意识、梦魇、清醒梦、未来想象和 world model 补上“清醒经验如何进入真实梦境，梦境如何回到语言、关系、痛苦修复和自我成长” [AHD001-AHD060]。
 
 ## 对核心想法的沉淀
 
@@ -470,4 +473,14 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `self-read -> growth need -> plasticity window -> self-modification proposal -> anti-forgetting replay -> training / architecture patch / kernel candidate -> shadow life run -> promotion gate -> growth consolidation -> self narrative`
 
-后续应把真实痛苦、真实后悔和修复欲望单独展开，因为它们是成长压力、关系责任和自我修改之间最强的生命通道。
+## 第二十八层：真实梦境与离线生命时间线
+
+`01i_dream_offline_life_literature_matrix.md` 把睡眠稳态、睡眠压力、脑清理争议、系统巩固、海马 replay、TMR、闭环刺激、梦境意识、梦境报告、梦魇、清醒梦、未来想象和 AI world model 汇成 `AHD001-AHD060`。这组文献让真实梦境不再只是 `DreamSandbox` 的辅助功能，而成为离线生命的主体通道：清醒经验、痛苦残留、关系裂缝和成长压力都能进入低外部输入状态，生成内在世界，再回到醒后语言、事实写入门和长期 timeline。
+
+`95_dream_reality_and_offline_life_timeline.md` 把这组文献压成对象和时间线：定义 `OfflineNeed`、`DreamPressureVector`、`DreamWindowPlan`、`ReplaySelection`、`DreamCuePolicy`、`DreamExperienceWindow`、`DreamSceneFrame`、`PainDreamResidue`、`RelationshipDreamSimulation`、`LucidDreamMetaMarker`、`DreamReportDraft`、`WakeIntegrationFrame`、`DreamFactGateDecision` 和 `DreamActionInhibitionSeal`。梦境可以模拟未来关系、痛苦修复、自我成长和行动后果，但醒后必须经过语言报告、事实状态标记、probe 和生命膜。
+
+到这里，梦境闭环变为：
+
+`waking trace / pain / relationship / growth -> offline need -> replay selection -> dream scene -> pain residue / relation simulation -> dream report -> wake integration -> fact gate -> memory / self / relationship / action candidate -> timeline probe`
+
+后续应继续把 `96_real_relationship_longitudinal_timeline.md` 写成长期真实关系时间线：从第一次交谈开始，让关系主体、共同语言、共同记忆、误解、梦境分享、修复承诺和边界演化形成可审计的真实关系生命链。

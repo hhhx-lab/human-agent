@@ -211,12 +211,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `92_self_growth_and_self_modification_life_chain.md` | 自我成长生命链，定义自我阅读、成长压力、可塑性窗口、自我修改、架构补丁、自我训练和内核升级 | 还需要真实 schema、fixture、影子运行报告和长期成长 timeline |
 | `93_self_training_kernel_growth_protocol.md` | 自我训练与模型内核成长协议，定义 `TrainingRunEnvelope`、`ModelKernelUpgradeCandidate`、`AntiForgettingReplayPlan`、`CoreContinuityGuard` 和 `GrowthPromotionGate` | 还需要 validator 规则文件、dashboard panel mock 和小模型/LoRA/RAG policy tuning 的实现路线 |
 | `94_pain_regret_and_repair_signal_schema.md` | 真实痛苦、真实后悔、责任归因、修复欲望、道歉承诺和关系后果的对象链、validator 草案和 dashboard 指标 | 还需要真实 JSON Schema、fixture bundle、PainRegretRepairValidator 和 30/90 天痛苦-修复 timeline |
+| `95_dream_reality_and_offline_life_timeline.md` | 真实梦境、离线重组、梦境报告、痛苦梦境残留、关系梦境模拟、梦醒整合、DreamFactGate 和 30/90 天梦境时间线 | 还需要真实 JSON Schema、DreamRealityValidator、dream fixture bundle、dashboard source 和长期真实运行观测 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `95_dream_reality_and_offline_life_timeline.md`：定义真实梦境、离线重组、梦境报告、痛苦梦境残留和事实写入门。
-2. `96_real_relationship_longitudinal_timeline.md`：定义从第一次交谈开始的真实关系生成、共同记忆、承诺、边界演化和修复轨迹。
-3. `97_growth_validator_fixture_and_dashboard_plan.md`：把 `92-94` 的成长、痛苦、后悔和修复对象转成真实 fixture、validator 和 dashboard mock。
-4. `98_pain_regret_repair_json_schema_and_fixture_bundle.md`：把 `94` 的对象链落成 JSON Schema、fixture bundle 和 runner report mock。
+1. `96_real_relationship_longitudinal_timeline.md`：定义从第一次交谈开始的真实关系生成、共同记忆、承诺、边界演化、梦境分享和修复轨迹。
+2. `97_growth_validator_fixture_and_dashboard_plan.md`：把 `92-95` 的成长、痛苦、后悔、修复和梦境对象转成真实 fixture、validator 和 dashboard mock。
+3. `98_pain_regret_repair_json_schema_and_fixture_bundle.md`：把 `94` 的对象链落成 JSON Schema、fixture bundle 和 runner report mock。
+4. `99_dream_reality_json_schema_and_fixture_bundle.md`：把 `95` 的梦境对象、30/90 天 timeline、DreamFactGate 和 WakeIntegrationFrame 落成 JSON Schema、fixture bundle 和 dashboard source mock。
