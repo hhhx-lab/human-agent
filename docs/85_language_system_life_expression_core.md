@@ -243,4 +243,4 @@ inner_speech
 - `75` 和 `80` 给语言承诺、外部行动和事后审计的连接。
 - `81` 给责任、后悔、修复和关系后果的语言入口。
 
-`86_language_neuroscience_pragmatics_and_inner_speech.md` 已开始补充语言产生、语用学、对话神经科学、内言语、叙事自我和语言行动理论的权威文献。下一步应把 `AHL001-AHL040` 继续转成 schema、fixture、runner 指标和长期关系评测。
+`86_language_neuroscience_pragmatics_and_inner_speech.md` 已开始补充语言产生、语用学、对话神经科学、内言语、叙事自我和语言行动理论的权威文献；`87_language_event_schema_fixture_and_validator_plan.md` 已把语言系统推进为 `LanguageEvent` schema、fixture 和 validator；`88_language_development_emotion_and_brain_llm_alignment.md` 继续补充语言发展、情绪语言和脑-LLM 对齐。下一步应把这些对象继续转成 JSON-like examples、runner 指标和长期关系评测。

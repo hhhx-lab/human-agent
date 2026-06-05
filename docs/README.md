@@ -26,7 +26,7 @@
 20. 再读 `73_` 到 `76_`：它们把 schema bundle validator mock、dashboard end-to-end source、外部不可逆动作确认和 snapshot stale fixture catalog 接入真实行动验证链。
 21. 再读 `77_` 到 `80_`：它们把 dashboard 指标计算、runtime quarantine panel、confirmation fixture 和 post-action audit 接入外部行动后的治理链。
 22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
-23. 最后读 `85_` 和 `86_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事和新增语言神经科学文献。
+23. 最后读 `85_` 到 `88_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言和脑-LLM 对齐。
 
 ## 文件索引
 
@@ -124,6 +124,8 @@
 | `84_longitudinal_external_action_evaluation_protocol.md` | 外部动作、确认、纠错、quarantine、incident 在长期 timeline 中的评测协议 |
 | `85_language_system_life_expression_core.md` | 语言系统作为数字生命表达核心：内言语、语义地图、语用关系、承诺、工具行动和梦境叙事 |
 | `86_language_neuroscience_pragmatics_and_inner_speech.md` | 语言神经科学、语用/对话、内言语、叙事自我和语言行动的专项综述 |
+| `87_language_event_schema_fixture_and_validator_plan.md` | `LanguageEvent` schema、speech act、fixture catalog、validator 规则和 dashboard metric |
+| `88_language_development_emotion_and_brain_llm_alignment.md` | 语言发展、情绪语言、会话修复、社会语言学和脑-LLM 对齐综述 |
 
 ## 项目术语
 

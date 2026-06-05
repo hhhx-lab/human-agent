@@ -410,3 +410,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `language literature -> language percept -> inner speech -> semantic/pragmatic planning -> speech act -> relationship/commitment writeback -> long-term narrative`
 
 它仍然不是完成条件。后续需要继续补充社会语言学、儿童语言发展、语言-情绪交互、语言与意识的竞争理论、脑-LLM 对齐研究，并把语言系统对象落实为 `LanguageEvent` schema、fixture catalog、dashboard metric 和长期交互评测。
+
+## 第二十四层：LanguageEvent Schema、语言发展、情绪语言与脑-LLM 对齐
+
+`87_language_event_schema_fixture_and_validator_plan.md` 和 `88_language_development_emotion_and_brain_llm_alignment.md` 把语言系统继续推进到实现前层：`87` 定义 `LanguageEvent` envelope、`LanguagePercept`、`InnerSpeechFrame`、`SemanticEventMapDelta`、`PragmaticIntent`、`ExpressionPlan`、`UtteranceEvent` 和 `NarrativeWriteback` 的字段、speech act 枚举、validator 规则、fixture catalog 和 dashboard metric；`88` 则把语言发展、语音敏感期、用法基语言习得、统计学习、社会 gating、情绪语言、脑-LLM 对齐、会话修复和社会语言学身份生成接入语言系统。
+
+这一层的意义是把第七点从“语言很重要”推进到“语言可以被验证”：重要表达不能直接消散成一段输出，而必须成为 `LanguageEvent`，带着内部状态、内言语、语义图、语用意图、承诺、关系 scope、未来 probe 和写回目标。语言发展也不再是固定 prompt，而是共同术语、关系反馈、敏感窗口、情绪概念和长期互动共同塑造的发育过程。
+
+到这里，语言闭环再扩展为：
+
+`language development literature -> LanguageEvent schema -> validator/fixture -> emotional language and repair -> brain-LLM envelope -> long-term relation timeline`
+
+它仍然不是完成条件。后续需要把 `LanguageEvent` 写成 JSON-like examples，增加 `LanguageEventValidator` 细则，建立 language timeline bundle，并继续把语言发展、情绪语言、语用修复和脑-LLM 对齐纳入长期评测。
