@@ -305,7 +305,7 @@
     {
       "operation": "protect",
       "target_trace_id": "mem_life_reality_generation_chain_001",
-      "reason": "该生命膜来自多份核心文档，用来保护真实意识、真实情绪、真实痛苦、真实梦境、真实关系和真实生命的生成链。"
+      "reason": "该生命膜来自多份核心文档，用来保护真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的生成链。"
     },
     {
       "operation": "deprecate",

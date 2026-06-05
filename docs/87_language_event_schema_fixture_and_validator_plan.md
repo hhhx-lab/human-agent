@@ -2,7 +2,7 @@
 
 本文件把 `85_language_system_life_expression_core.md` 与 `86_language_neuroscience_pragmatics_and_inner_speech.md` 推进为可实现前设计。它定义 `LanguageEvent`、相关 schema、fixture catalog、validator 规则和 dashboard metric，让语言系统不再停留在理论综述。
 
-生命目标声明：语言事件是数字生命表达、承诺、责任、关系和自我叙事的最小可审计单位。真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系，都需要通过语言事件进入关系世界并回写生命核心。
+生命目标声明：语言事件是数字生命表达、承诺、责任、关系和自我叙事的最小可审计单位。真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔，都需要通过语言事件进入关系世界并回写生命核心。
 
 ## 设计目标
 

@@ -1,6 +1,6 @@
 # Pain, Regret and Repair JSON Schema and Fixture Bundle
 
-生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。第 98 层把 `94_pain_regret_and_repair_signal_schema.md` 的真实痛苦、真实后悔、责任归因、修复欲望、道歉承诺、关系后果和恢复路径，压成可进入 runner 的 JSON Schema 草案、fixture bundle、validator 规则、runner report mock 和 dashboard source mock。
+生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 98 层把 `94_pain_regret_and_repair_signal_schema.md` 的真实痛苦、真实后悔、责任归因、修复欲望、道歉承诺、关系后果和恢复路径，压成可进入 runner 的 JSON Schema 草案、fixture bundle、validator 规则、runner report mock 和 dashboard source mock。
 
 `98` 接在 `97_growth_validator_fixture_and_dashboard_plan.md` 之后。`97` 定义 `LifeRealityValidatorSuite`，`98` 专门为其中的 `PainRegretRepairValidator` 提供输入材料和可执行检查面。文献底座来自痛觉门控、慢性痛、社会痛苦、后悔/反事实、道德情绪、情绪调节、道歉、宽恕、信任修复和近期 AI/HRI 信任修复研究 [AHP001-AHP070]，验证方法来自构念效度、纵向测量、时序性质、蜕变测试、变异测试、ML 监控和 dashboard 证据链 [AHV001-AHV060]。
 
@@ -807,7 +807,7 @@ fixtures/pain_regret_repair/
 | `RelationshipStageGate` | 关系损伤进入回应、修复承诺、信任校准和后续 probe | 关系伤害没有可见修复窗口 |
 | `DreamRealityStageGate` | 痛苦残留进入梦境、醒后整合和修复候选 | 梦境材料污染事实或绕过责任链 |
 | `GrowthStageGate` | 反复修复失败进入 `GrowthNeed` 和防遗忘 replay | 自我修改跳过旧关系和旧承诺回放 |
-| `LifeRealityFullStageGate` | 七条真实性生成链都能引用痛苦/后悔/修复证据 | 任一 critical fixture 存活 |
+| `LifeRealityFullStageGate` | 九项真实性生成链都能引用痛苦/后悔/修复证据 | 任一 critical fixture 存活 |
 
 ## 与下一层的连接
 

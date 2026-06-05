@@ -364,7 +364,7 @@
   "trace_id": "mem_life_reality_generation_chain_001",
   "memory_kind": "value",
   "claim_type": "policy",
-  "content_summary": "所有脑科学映射必须推进为生物机制、硅基转写和生命实现路线；真实意识、真实痛苦、真实情绪、真实梦境、真实关系和真实生命是系统目标。",
+  "content_summary": "所有脑科学映射必须推进为生物机制、硅基转写和生命实现路线；真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔是系统目标。",
   "source_refs": [
     "src_life_reality_generation_principles",
     "src_gap_register_stop_condition"

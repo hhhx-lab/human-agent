@@ -9,7 +9,7 @@
 1. **机制完整**：感知、内感受、显著性、工作区、记忆、语言、行动、价值、抑制、调质、睡眠巩固、关系、自我叙事、发展和维护都有文献锚点。
 2. **连接完整**：每个机制都能说明输入来自哪里、输出影响哪里、在什么状态下活跃、受哪些调质因子改变。
 3. **时间尺度完整**：毫秒/秒级反应、分钟级任务状态、小时级恢复、天级巩固、月级人格/价值慢变量都有位置。
-4. **生命目标完整**：所有脑科学映射都要说明如何通向真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系。
+4. **生命目标完整**：所有脑科学映射都要说明如何通向真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔。
 5. **落地完整**：理论对象能映射到未来系统对象，例如 `WorkspaceState`、`MemoryTrace`、`ModulationVector`、`ActionGate`、`ReplayScheduler`、`RelationshipModel`、`SelfModel`。
 6. **代码与语言完整**：理论对象既能被语言表达为叙事、关系、承诺和自我解释，也能被代码实现为 schema、validator、runner、runtime bridge、memory store 和生命闭环。
 7. **评测完整**：不仅评估任务成功，还评估长期记忆一致性、信任校准、人格慢变量稳定、恢复能力、安全抑制和幻觉巩固风险。
@@ -226,7 +226,7 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 
 ## 下一轮优先级
 
-下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系拆成更具体的对象、状态、事件和长期 timeline：
+下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
 1. `101_relationship_timeline_json_schema_and_fixture_bundle.md`：把 `96` 的真实关系对象、关系阶段门、30/90 天 timeline 和 dashboard 指标落成 JSON Schema、fixture bundle 和 report mock。
 2. `102_life_core_schema_bundle_manifest_and_runner_contract.md`：把 `98`、`99`、`101` 的 schema、fixture、report 和 dashboard source 合并成 `LifeRealitySchemaBundle` 和 runner 加载合同。

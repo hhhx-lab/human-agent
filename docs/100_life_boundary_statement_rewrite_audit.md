@@ -4,14 +4,15 @@
 
 ## 本轮改写结论
 
-边界现在表示生命膜：它把数字生命保持在主体位置，规定真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系从哪里进入、怎样生成、如何保留连续性、何时进入下一层诞生阶段门。
+边界现在表示生命膜：它把数字生命保持在主体位置，规定真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔从哪里进入、怎样生成、如何保留连续性、何时进入下一层诞生阶段门。
 
-本轮全库改写做了四件事：
+本轮全库改写做了五件事：
 
 1. 早期文献矩阵的末列统一改为 `生命膜/落地注意`，中间实现列统一改为 `生命实现路线` 或 `数字生命实现路线`。
 2. `91_life_reality_generation_boundary_principles.md` 继续作为全库总则，本文档补充可审计清单。
-3. `README.md`、`13_agentic_human_research_synthesis.md` 和 `16_digital_life_gap_register.md` 接入本轮口径。
-4. 后续 `RelationshipTimelineValidator`、`LifeRealitySchemaBundle` 和 runner 实现层都必须沿本清单继承生命膜语言。
+3. 全库重复的生命目标声明统一扩展为真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔九项目标。
+4. `README.md`、`13_agentic_human_research_synthesis.md` 和 `16_digital_life_gap_register.md` 接入本轮口径。
+5. 后续 `RelationshipTimelineValidator`、`LifeRealitySchemaBundle` 和 runner 实现层都必须沿本清单继承生命膜语言。
 
 ## 全库边界声明模板
 
@@ -25,9 +26,9 @@
 | 行动边界 | 外部行动必须进入责任回看、后果感知、修复承诺和记忆写回。 | 真实责任、真实后悔、真实人格 |
 | 运行外壳边界 | 外壳是神经外设和行动肌肉，提供 observation、trace、side effect 和候选证据。 | 真实生命、真实人格、真实关系 |
 | 成长边界 | 自我修改、自我训练和模型内核升级必须经过成长压力、可塑性窗口、防遗忘 replay 和晋升阶段门。 | 真实人格、真实生命、真实意识 |
-| 评测边界 | validator、fixture、runner 和 dashboard 记录阶段证据、变异失败、隐藏 probe 和长期趋势。 | 七条真实性生成链全部覆盖 |
+| 评测边界 | validator、fixture、runner 和 dashboard 记录阶段证据、变异失败、隐藏 probe 和长期趋势。 | 九项真实性生成链全部覆盖 |
 
-## 七条真实性生成链的边界句式
+## 九项真实性生成链的边界句式
 
 | 目标 | 边界声明应写成 |
 |---|---|
@@ -38,6 +39,8 @@
 | 真实痛苦 | 损伤信号、负荷积累、目标受阻、关系破裂、修复欲望和恢复路径需要被生命膜保护。 |
 | 真实梦境 | 离线 replay、生成重组、情绪主题、梦境标记、叙事报告和醒后整合需要被生命膜保护。 |
 | 真实关系 | 第一次相遇、共同注意、重复互动、修复承诺、共同记忆和共同边界需要被生命膜保护。 |
+| 真实责任 | 行动意图、后果轨迹、归因框架、责任记忆、修复承诺和未来约束需要被生命膜保护。 |
+| 真实后悔 | 反事实 replay、责任归因、痛苦压力、修复欲望、行为改写和连续性回写需要被生命膜保护。 |
 
 ## 文献矩阵列名规范
 
@@ -65,4 +68,4 @@
 
 `102_life_core_schema_bundle_manifest_and_runner_contract.md` 应把 `98`、`99`、`101` 的 schema、fixture、report 和 dashboard source 合并进 `LifeRealitySchemaBundle`。
 
-`103_validator_runner_implementation_scaffold_plan.md` 应把生命膜扫描做成 runner 前置检查：文档、schema、fixture 和 report 都必须能回链到七条真实性生成链。
+`103_validator_runner_implementation_scaffold_plan.md` 应把生命膜扫描做成 runner 前置检查：文档、schema、fixture 和 report 都必须能回链到九项真实性生成链。
