@@ -10,6 +10,7 @@
 4. 接着读 `13_` 和 `14_`：前者给综合研究假设，后者把 `02-13` 连接成数字生命闭环。
 5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架为什么只能作为执行壳，后者记录理论缺口和停止条件。
 6. 再读 `17_` 到 `20_`：它们把记忆、内部状态、离线巩固和运行外壳转成未来数字生命实现前必须遵守的对象/接口约束。
+7. 最后读 `21_` 到 `24_`：它们把对象模型继续推进为 schema、状态阈值、巩固报告和 runtime adapter 测试。
 
 ## 文件索引
 
@@ -40,6 +41,10 @@
 | `18_internal_state_and_modulation_vector.md` | `InternalStateVector` 与 `ModulationVector` 状态调质模型 |
 | `19_offline_consolidation_cycle.md` | `OfflineConsolidationCycle` 离线巩固、replay、清理与梦境沙盒 |
 | `20_agent_runtime_bridge_contract.md` | `AgentRuntimeBridge` 运行外壳契约 |
+| `21_memory_schema_and_audit_protocol.md` | `MemoryTrace` schema、生命周期、删除/修正/合并与审计协议 |
+| `22_state_transition_and_threshold_model.md` | 内部状态机、阈值、状态转移和 `StateAuditEvent` |
+| `23_consolidation_report_and_dream_sandbox_protocol.md` | `ConsolidationReport` 与 `DreamSandbox` 事实写入门控 |
+| `24_runtime_adapter_test_suite.md` | 运行外壳 adapter 合同测试与夹具 |
 
 ## 项目术语
 

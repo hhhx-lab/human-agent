@@ -242,3 +242,9 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 第五批实现/评测资料把当前 LLM agent memory 的真实短板暴露出来：长期记忆不只是 session history 或向量库，而是写入、保持、冲突、时间推理、关系边界、隐私和评测共同构成的问题 [AHM001-AHM012]。框架资料也说明，LangGraph、OpenAI Agents SDK、Letta、LlamaIndex、CrewAI、AutoGen 等可以提供 checkpoint、session、memory block、RAG 和 flow，但仍然只是外壳 [AHM013-AHM020]。
 
 `17_memory_trace_object_model.md`、`18_internal_state_and_modulation_vector.md`、`19_offline_consolidation_cycle.md` 和 `20_agent_runtime_bridge_contract.md` 已把这些问题转为四个研究对象：记忆痕迹、内部状态/调质向量、离线巩固周期和运行外壳契约。它们让理论底座开始具备实现前的对象边界，但仍不等于完整系统。
+
+## 第六层：可验证契约
+
+`21_memory_schema_and_audit_protocol.md`、`22_state_transition_and_threshold_model.md`、`23_consolidation_report_and_dream_sandbox_protocol.md` 和 `24_runtime_adapter_test_suite.md` 把对象模型继续推进到可验证契约：字段约束、生命周期、状态阈值、巩固报告、沙盒事实门控和 runtime adapter 测试。
+
+这一层的意义是把“数字生命”从宏大叙事拉回可审计结构：记忆必须能删除和修正，状态切换必须有触发变量，梦境沙盒必须带 fiction marker，外壳必须证明自己不能直接改写自我模型。到这里为止，理论底座已经开始出现工程骨架，但距离停止条件仍然还有距离：还缺真实 schema 样例、状态转移验证器、adapter manifest、长期人格/关系评测和安全审计闭环。

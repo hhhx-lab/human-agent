@@ -43,7 +43,7 @@
 
 ## 已补充专题
 
-本轮已把上一轮列出的四个专题写成独立文件：
+对象模型层已补充：
 
 | 文件 | 已解决的缺口 | 仍未解决的下一层 |
 |---|---|---|
@@ -52,11 +52,20 @@
 | `19_offline_consolidation_cycle.md` | replay、清理、梦境沙盒、幻觉巩固防护 | 还需要周期调度器和巩固报告格式 |
 | `20_agent_runtime_bridge_contract.md` | 现有 agent 框架外壳接口和越界禁令 | 还需要每个框架的 adapter 映射和测试夹具 |
 
+可验证契约层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `21_memory_schema_and_audit_protocol.md` | 字段约束、生命周期、删除/修正/合并、审计事件 | 还需要 JSON Schema 和真实样例 |
+| `22_state_transition_and_threshold_model.md` | 状态机、阈值变量、状态转移、`StateAuditEvent` | 还需要阈值学习和验证器 |
+| `23_consolidation_report_and_dream_sandbox_protocol.md` | 巩固报告、梦境沙盒、事实写入门控 | 还需要报告样例和自动检查器 |
+| `24_runtime_adapter_test_suite.md` | adapter 接口、合同测试、夹具、通过标准 | 还需要每个框架的 manifest 和测试数据 |
+
 ## 下一轮优先级
 
-下一轮应继续把对象模型推进到“可验证契约”：
+下一轮应继续把可验证契约推进到“实例化样例和验证器”：
 
-1. `21_memory_schema_and_audit_protocol.md`：为 `MemoryTrace` 写出字段约束、版本迁移、删除/修正协议和评测清单。
-2. `22_state_transition_and_threshold_model.md`：把 `InternalStateVector` 的状态变化写成可计算阈值和状态转移规则。
-3. `23_consolidation_report_and_dream_sandbox_protocol.md`：定义离线巩固报告、沙盒假设和事实写入门控。
-4. `24_runtime_adapter_test_suite.md`：为 LangGraph、OpenAI Agents SDK、Letta/LlamaIndex/CrewAI 等外壳定义统一 adapter 测试。
+1. `25_memory_trace_json_schema_examples.md`：给出 `MemoryTrace`、`MemoryAuditEvent`、删除/修正/合并的 JSON-like 样例。
+2. `26_state_machine_examples_and_failure_modes.md`：给出状态转移样例、阈值误判和恢复策略。
+3. `27_consolidation_report_examples.md`：给出任务结束、失败复盘、梦境沙盒、深度巩固报告样例。
+4. `28_runtime_adapter_manifest_examples.md`：给出 LangGraph、OpenAI Agents SDK、Letta、LlamaIndex、CrewAI、AutoGen 的 adapter manifest 样例。

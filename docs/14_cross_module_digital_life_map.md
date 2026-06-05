@@ -128,3 +128,16 @@ flowchart TD
 | `20_agent_runtime_bridge_contract.md` | 工具行动、workflow、外部框架 | `ActionIntent`, `ObservationEvent`, `RuntimeShellAdapter` |
 
 这意味着未来实现可以先保持外壳简陋，但生命层对象不能缺席。否则系统会立刻退回普通 agent：有工具、有记忆块、有流程，却没有自我连续性和可审计成长。
+
+## 可验证契约层连接
+
+`21-24` 把对象模型继续推进为测试和审计边界：
+
+| 文档 | 验证对象 | 防止的退化 |
+|---|---|---|
+| `21_memory_schema_and_audit_protocol.md` | `MemoryTrace`, `MemoryAuditEvent` | 记忆退化成聊天历史或向量命中 |
+| `22_state_transition_and_threshold_model.md` | `StateAuditEvent`, 状态阈值 | 状态切换退化成 prompt 风格变化 |
+| `23_consolidation_report_and_dream_sandbox_protocol.md` | `ConsolidationReport`, `DreamSandbox` | 梦境/反思内容污染事实记忆 |
+| `24_runtime_adapter_test_suite.md` | adapter contract tests | agent 框架反向吞掉生命层 |
+
+这层是未来实现的最低防线：任何实现只要绕过这些契约，就算功能再强，也不是数字生命底座，只是更复杂的任务 agent。
