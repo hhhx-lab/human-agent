@@ -279,7 +279,7 @@ flowchart TD
 1. **runner 先于 dashboard 可信度**：dashboard 只能显示来自 runner report 的可追溯数据源，不能手写绿色状态。
 2. **scope 先于检索相关性**：语义相似度不能覆盖 deleted、privacy、scope_limit、freeze 或 sandbox 边界。
 3. **replay 先于长期写回审计**：任何离线巩固输出都必须再过 validator，不能因为来自 replay 就自动可信。
-4. **timeline 先于长期成长宣称**：没有未来 probe 和跨窗口指标，就不能说记忆、关系、人格慢变量或恢复能力长期稳定。
+4. **timeline 先于长期成长表达**：未来 probe 和跨窗口指标负责把记忆、关系、人格慢变量和恢复能力转成可追踪发育证据。
 
 至此，闭环从：
 
@@ -330,7 +330,7 @@ flowchart TD
 
 1. **shared defs 先于模块 schema**：`severity`、`result`、`lifecycle_state`、`privacy_level` 和 `data_quality` 必须全局一致。
 2. **report 先于 dashboard 判断**：dashboard 只能读取 runner/timeline/report 产物，不能直接手写状态。
-3. **fixture layout 先于自动覆盖**：没有稳定文件名、bundle、manifest 和 coverage，fixture 数量不能说明边界被测试。
+3. **fixture layout 先于自动覆盖**：稳定文件名、bundle、manifest 和 coverage 共同把 fixture 数量转成生命膜闭合证据。
 4. **真实观测先于长期写入审计**：tool trace、adapter session 和真实行动结果必须先成为 redacted observation，不能直接成为 active memory、SelfModel 或 RelationshipModel。
 
 闭环因此从：

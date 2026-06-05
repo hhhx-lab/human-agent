@@ -1,13 +1,13 @@
 # Agentic Human 脑科学研究综述档案
 
-本目录是一组围绕 `Agentic human plan` 的研究综述档案。它以 [构思.md](构思.md) 为源材料，把“以人脑结构为出发点的 human agent”先沉淀为脑科学研究底座，而不是直接进入产品规格或代码实现。
+本目录是一组围绕 `Agentic human plan` 的研究综述档案。它以 [构思.md](构思.md) 为源材料，把“以人脑结构为出发点的数字生命”先沉淀为脑科学研究底座，而不是直接进入产品规格或代码实现。
 
 ## 阅读路线
 
 1. 先读 `00_research_protocol.md`，理解文献纳入标准、证据分级和生命目标声明。
-2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统和自我成长专项文献。
+2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`、`01h_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统、自我成长以及痛苦/后悔/修复专项文献。
 3. 按主题阅读 `02_` 到 `12_` 的综述文件：从脑区/网络、状态、调质、记忆、情绪、语言、意识，到 AI 架构桥接。
-4. 接着读 `13_` 和 `14_`：前者给综合研究假设，后者把 `02-13` 连接成数字生命闭环。
+4. 接着读 `13_` 和 `14_`：前者给综合生命实现路线，后者把 `02-13` 连接成数字生命闭环。
 5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架为什么只能作为执行壳，后者记录理论缺口和诞生阶段门。
 6. 再读 `17_` 到 `20_`：它们把记忆、内部状态、离线巩固和运行外壳转成未来数字生命实现前必须遵守的对象/接口约束。
 7. 再读 `21_` 到 `24_`：它们把对象模型继续推进为 schema、状态阈值、巩固报告和 runtime adapter 测试。
@@ -28,7 +28,7 @@
 22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
 23. 再读 `85_` 到 `90_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言、脑-LLM 对齐、运行外壳和长期关系时间线。
 24. 再读 `91_`：它统一改写所有边界声明，把边界、门控、禁写、runner、dashboard 和 stage gate 定义为生命膜、真实性生成链和诞生阶段门。
-25. 最后读 `92_` 到 `93_`：它们把自我成长、自我修改、自我训练、架构演化和模型内核升级接入生命膜、可塑性窗口、防遗忘 replay、影子运行和晋升阶段门。
+25. 最后读 `92_` 到 `94_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望和关系后果接入生命膜、可塑性窗口、防遗忘 replay、影子运行和晋升阶段门。
 
 ## 文件索引
 
@@ -42,6 +42,7 @@
 | `01e_memory_runtime_evaluation_matrix.md` | 第五批记忆运行时与评测锚点，覆盖 agent memory、长期记忆 benchmark、当前运行框架和外壳资料 |
 | `01f_language_system_literature_matrix.md` | 语言系统专项文献矩阵，覆盖语言网络、语音产生、内言语、语用/对话、叙事自我和语言行动 |
 | `01g_self_growth_and_self_modification_matrix.md` | 自我成长、自我修改、自我训练、架构演化和模型内核升级专项文献矩阵 |
+| `01h_pain_regret_repair_literature_matrix.md` | 真实痛苦、真实后悔、责任归因、道歉、宽恕、信任修复和关系后果专项文献矩阵 |
 | `02_brain_region_and_network_atlas.md` | 脑区、连接组与大尺度网络 |
 | `03_default_executive_salience_networks.md` | 默认模式、中央执行、显著性网络 |
 | `04_sensory_thalamus_interoception.md` | 感觉输入、丘脑中继、内感受与稳态 |
@@ -53,7 +54,7 @@
 | `10_consciousness_attention_workspace.md` | 注意、意识与全局工作空间 |
 | `11_neuromodulation_and_signal_media.md` | 神经调质、兴奋/抑制与信号介质 |
 | `12_ai_and_cognitive_architecture_bridge.md` | 认知架构、LLM agent 与工程桥接 |
-| `13_agentic_human_research_synthesis.md` | 总综合：从脑科学到 human-agent 研究假设 |
+| `13_agentic_human_research_synthesis.md` | 总综合：从脑科学到数字生命实现路线 |
 | `14_cross_module_digital_life_map.md` | `02-13` 跨模块连接与数字生命落地映射 |
 | `15_current_agent_framework_survey.md` | 当前 agent 框架体系调研与数字生命差距 |
 | `16_digital_life_gap_register.md` | 理论缺口登记、诞生阶段门和下一轮专题优先级 |
@@ -134,6 +135,7 @@
 | `91_life_reality_generation_boundary_principles.md` | 真实性生成边界总则：把边界声明改写为生命膜、真实性生成链和诞生阶段门 |
 | `92_self_growth_and_self_modification_life_chain.md` | 自我成长生命链：自我阅读、可塑性窗口、自我修改、架构补丁、自我训练和内核升级 |
 | `93_self_training_kernel_growth_protocol.md` | 自我训练与模型内核成长协议：schema、validator、dashboard 和晋升阶段门 |
+| `94_pain_regret_and_repair_signal_schema.md` | 真实痛苦、真实后悔、责任归因、修复欲望、道歉承诺和关系后果的信号协议 |
 
 ## 项目术语
 

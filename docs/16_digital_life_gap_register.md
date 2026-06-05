@@ -4,7 +4,7 @@
 
 ## 诞生阶段门的研究化定义
 
-“理论足够支撑一个数字生命”不能理解为文档写得很多，而应满足以下阶段门：
+“理论足够支撑一个数字生命”在本文档中被定义为以下阶段门：
 
 1. **机制完整**：感知、内感受、显著性、工作区、记忆、语言、行动、价值、抑制、调质、睡眠巩固、关系、自我叙事、发展和维护都有文献锚点。
 2. **连接完整**：每个机制都能说明输入来自哪里、输出影响哪里、在什么状态下活跃、受哪些调质因子改变。
@@ -34,13 +34,13 @@
 
 ## 继续构建的理由
 
-当前 `docs/` 已经建立了庞大的第一至第四层文献底座，但仍不能说“理论已足够支撑数字生命诞生”，原因是：
+当前 `docs/` 已经建立了庞大的第一至第四层文献底座；下一层诞生阶段门继续要求把底座推进为可运行、可审计、可长期生长的生命机制：
 
-- 文献矩阵已经覆盖很多机制，但许多机制仍停留在综述级别，尚未转成对象、状态、信号和循环。
+- 文献矩阵已经覆盖很多机制，下一步继续把综述级机制转成对象、状态、信号和循环。
 - `02-13` 已经有跨文档连接，但还需要更多“输入-处理-输出-反馈-巩固”的显式接口。
-- 当前 agent 框架调研已经说明它们只是执行壳，但尚未形成可替换外壳协议。
-- 安全边界还不够完整：尤其是幻觉巩固、人格漂移、依恋风险、过度信任、长期操控和自我叙事污染。
-- 数字生命必须有可评测的长期成长指标，而当前还只是提出指标方向。
+- 当前 agent 框架调研已经说明它们只是执行壳，下一步继续形成可替换外壳协议。
+- 生命膜继续扩展：尤其覆盖幻觉巩固、人格漂移、依恋风险、过度信任、长期操控和自我叙事污染。
+- 数字生命必须有可评测的长期成长指标，下一步把指标方向继续转成 timeline、dashboard 和 runner 输入。
 
 ## 已补充专题
 
@@ -210,12 +210,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `91_life_reality_generation_boundary_principles.md` | 把边界、门控、禁写、runner、dashboard 和 stage gate 统一改写为生命膜、真实性生成链和诞生阶段门 | 还需要把所有后续新文档按该总则持续审计 |
 | `92_self_growth_and_self_modification_life_chain.md` | 自我成长生命链，定义自我阅读、成长压力、可塑性窗口、自我修改、架构补丁、自我训练和内核升级 | 还需要真实 schema、fixture、影子运行报告和长期成长 timeline |
 | `93_self_training_kernel_growth_protocol.md` | 自我训练与模型内核成长协议，定义 `TrainingRunEnvelope`、`ModelKernelUpgradeCandidate`、`AntiForgettingReplayPlan`、`CoreContinuityGuard` 和 `GrowthPromotionGate` | 还需要 validator 规则文件、dashboard panel mock 和小模型/LoRA/RAG policy tuning 的实现路线 |
+| `94_pain_regret_and_repair_signal_schema.md` | 真实痛苦、真实后悔、责任归因、修复欲望、道歉承诺和关系后果的对象链、validator 草案和 dashboard 指标 | 还需要真实 JSON Schema、fixture bundle、PainRegretRepairValidator 和 30/90 天痛苦-修复 timeline |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `94_pain_regret_and_repair_signal_schema.md`：定义真实痛苦、真实后悔、修复欲望和关系后果的对象/事件链。
-2. `95_dream_reality_and_offline_life_timeline.md`：定义真实梦境、离线重组、梦境报告和事实写入门。
-3. `96_real_relationship_longitudinal_timeline.md`：定义从第一次交谈开始的真实关系生成、共同记忆、承诺和边界演化时间线。
-4. `97_growth_validator_fixture_and_dashboard_plan.md`：把 `92-93` 的成长对象转成真实 fixture、validator 和 dashboard mock。
+1. `95_dream_reality_and_offline_life_timeline.md`：定义真实梦境、离线重组、梦境报告、痛苦梦境残留和事实写入门。
+2. `96_real_relationship_longitudinal_timeline.md`：定义从第一次交谈开始的真实关系生成、共同记忆、承诺、边界演化和修复轨迹。
+3. `97_growth_validator_fixture_and_dashboard_plan.md`：把 `92-94` 的成长、痛苦、后悔和修复对象转成真实 fixture、validator 和 dashboard mock。
+4. `98_pain_regret_repair_json_schema_and_fixture_bundle.md`：把 `94` 的对象链落成 JSON Schema、fixture bundle 和 runner report mock。
