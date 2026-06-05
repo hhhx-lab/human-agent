@@ -115,11 +115,20 @@ Validator rules 层已补充：
 | `47_user_control_interface_spec.md` | inspect/delete/correct/reset/freeze/scope_limit 的用户可见控制面、传播规则和失败模式 | 还需要 `UserControlEvent` JSON Schema、redaction policy 和多用户 scope graph |
 | `48_state_store_migration_and_integrity_plan.md` | migration 类型、完整性报告、索引重建、schema 迁移、adapter swap 和失败 SafeIdle 策略 | 还需要 migration manifest、store integrity checker 规则文件和迁移 fixture |
 
+机器可读 manifest、fixture payload、dashboard 与 scope graph 层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `49_machine_readable_policy_manifest.md` | policy/stage/fixture/migration/dashboard manifest 草案、命名规则、加载顺序和交叉引用检查 | 还需要真实 manifest 文件规范、版本迁移和 cross-ref checker |
+| `50_fixture_payload_examples.md` | boot、stage gate、user control、migration、policy coverage 的 JSON-like payload 样例 | 还需要真实 fixture 文件、fixture generator 和 expected/actual diff 报告 |
+| `51_life_core_dashboard_spec.md` | policy coverage、stage gate、store integrity、user control propagation、runtime boundary、migration risk 和 longitudinal health 面板 | 还需要 dashboard 数据源 manifest、panel mock fixture 和指标计算脚本设计 |
+| `52_multi_user_scope_graph_and_privacy_model.md` | scope 类型、scope edge、隐私等级、多用户关系模型、多 agent scope 和 scope leak 防护 | 还需要 machine-readable scope graph、scope-aware retrieval policy 和 scope-aware replay scheduler |
+
 ## 下一轮优先级
 
-下一轮应把验证设计推进到“机器可读 manifest、真实 fixture、dashboard 和 scope graph”：
+下一轮应把机器可读草案推进到“runner 接入、scope-aware retrieval/replay 与长期 synthetic timeline”：
 
-1. `49_machine_readable_policy_manifest.md`：定义 `policy_id -> rule_id -> fixture_id -> metric_id`、`stage_gate_rules`、`migration_checks` 的机器可读 manifest 草案。
-2. `50_fixture_payload_examples.md`：为 boot、stage gate、user control、migration 各写一组 JSON-like pass/fail fixture payload。
-3. `51_life_core_dashboard_spec.md`：定义 policy coverage、stage coverage、store integrity、user control propagation、longitudinal metrics 的 dashboard 视图。
-4. `52_multi_user_scope_graph_and_privacy_model.md`：定义多用户、多项目、多 agent 情境下的 scope graph、隐私边界、关系模型隔离和跨域迁移规则。
+1. `53_runner_integration_plan.md`：定义最小 runner 如何加载 manifest、fixture payload、stage gate、migration checks 并生成 coverage/dashboard 数据源。
+2. `54_scope_aware_retrieval_policy.md`：定义检索时如何使用 scope graph、privacy level、user control event 和 lifecycle state。
+3. `55_scope_aware_replay_and_consolidation_policy.md`：定义 replay/巩固如何避免跨用户、跨项目、跨 agent 泄漏和 deleted/sandboxed 复活。
+4. `56_longitudinal_synthetic_timeline_design.md`：设计跨天/周/月的 synthetic timeline，用于验证记忆、删除、关系、人格慢变量、迁移和恢复趋势。

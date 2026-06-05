@@ -242,3 +242,23 @@ flowchart TD
 4. state store 迁移必须保留 protected、deleted、sandboxed、quarantined、frozen 语义。
 
 任何一个条件不满足，都应进入 `SafeIdle`，而不是继续行动。
+
+## 机器可读 Manifest、Fixture Payload、Dashboard 与 Scope Graph 层连接
+
+`49-52` 把验证设计从文档清单推进为可被 runner、dashboard 和多用户系统读取的结构：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `49_machine_readable_policy_manifest.md` | `policy_manifest`, `stage_gate_rules`, `fixture_manifest`, `migration_checks`, `dashboard_manifest` | 定义未来机器可读清单的字段、加载顺序和交叉引用检查 |
+| `50_fixture_payload_examples.md` | boot/stage/user/migration/policy fixture payload | 给 pass/fail/critical fixture 提供可落地输入形状 |
+| `51_life_core_dashboard_spec.md` | dashboard panels, metrics, thresholds | 把 policy coverage、stage gate、store integrity、用户控制、迁移和长期健康可视化 |
+| `52_multi_user_scope_graph_and_privacy_model.md` | `ScopeGraph`, `ScopeAuditEvent`, privacy levels | 防止多用户、多项目、多 agent 下的记忆、关系和隐私泄漏 |
+
+这一层让闭环从“单体系统可验证”扩展到“多 scope 系统可审计”。未来的 `MemoryTrace`、`RelationshipModel`、`SelfModel`、`ReplayQueue` 和 `RuntimeShellAdapter` 都不能只问对象是否有效，还必须问它属于哪个 scope、能否跨 scope、是否需要用户确认、是否允许 replay、是否允许进入关系模型或自我模型。
+
+新增的关键约束是：
+
+1. critical policy 必须在 manifest 中有 rule、fixture、metric 和 dashboard panel。
+2. fixture 必须有真实 payload，而不是只有名字。
+3. dashboard 不能把绿色状态解释为数字生命诞生，只能解释为工程检查通过。
+4. scope graph 必须优先保护 user_private、relationship_sensitive、protected_boundary 和 redacted 对象。

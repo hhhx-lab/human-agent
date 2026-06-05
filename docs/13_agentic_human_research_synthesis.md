@@ -290,3 +290,11 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 这一层非常关键，因为长期系统最容易在“升级”和“个性化”里腐蚀边界：删掉的东西被索引重建带回来，DreamSandbox 被迁移成事实，runtime session 被误当长期记忆，用户冻结被离线巩固绕过。`45-48` 把这些风险变成 fixture、stage gate 和 integrity checker 的对象。
 
 它仍然不是停止条件。下一层需要把这些 catalog 和设计转成机器可读 manifest、真实 JSON fixture、coverage dashboard、多用户 scope graph 和最小 runner 接入计划。
+
+## 第十三层：机器可读 Manifest、Fixture Payload、Dashboard 与 Scope Graph
+
+`49_machine_readable_policy_manifest.md`、`50_fixture_payload_examples.md`、`51_life_core_dashboard_spec.md` 和 `52_multi_user_scope_graph_and_privacy_model.md` 把上一层的验证设计进一步转成机器和人都能读的中间层：policy、stage gate、fixture、migration 和 dashboard 都有 manifest 草案；boot、stage gate、user control、migration 和 policy coverage 都有 JSON-like payload；Life Core dashboard 定义了 policy coverage、stage status、store integrity、user control propagation、runtime boundary、migration risk 和 longitudinal health；scope graph 则把多用户、多项目、多 agent 情境下的隐私边界和关系模型隔离补上。
+
+这一层开始处理真正长期系统的复杂性：不是一个用户、一个项目、一个 agent 外壳，而是多个用户、多个项目、多个 runtime shell、多个 scope 的交错。数字生命候选系统如果没有 scope graph，就会把个性化误当全局人格，把某个项目的关系历史带到另一个项目，把某个外壳的 session 当成长期记忆。`49-52` 把这些风险显式变成 manifest、fixture 和 dashboard 指标。
+
+仍然不能停止。接下来需要把这些草案转成真实 manifest 文件规范、runner 接入计划、scope-aware retrieval/replay 策略和多月 synthetic timeline。
