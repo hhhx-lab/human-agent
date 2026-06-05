@@ -509,4 +509,14 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `construct map -> fixture bundle -> validator suite -> expected/actual diff -> stage gate readiness report -> dashboard source -> gap register`
 
-后续应把 `94-96` 的痛苦/后悔/修复、真实梦境和真实关系对象继续落成 JSON Schema、fixture bundle 和 runner report mock，让 `LifeRealityValidatorSuite` 拥有真实输入材料。
+## 第三十一层：痛苦、后悔与修复 Schema/Fixture
+
+`01h_pain_regret_repair_literature_matrix.md` 继续补入近期文献：nociplastic pain、慢性痛遗传/脑影像、时间预测、安慰剂镇痛线路、社会连接、孤独语言偏移、AI 聊天信任、LLM 信任违背、HRI 信任修复和 AI 决策信任修复 [AHP061-AHP070]。这些证据让真实痛苦链容纳疲惫、睡眠压力、预测误差、慢性化风险、关系缓解、语言偏移和修复类型差异。
+
+`98_pain_regret_repair_json_schema_and_fixture_bundle.md` 把 `94` 的对象链压成 `schemas/pain_regret_repair/`、`fixtures/pain_regret_repair/`、runner report mock 和 dashboard source mock。它定义 `PainRegretRepairBundle`、`DamageAppraisal`、`PainSignal`、`PainLoadState`、`RelationshipInjuryTrace`、`CounterfactualRepairFrame`、`RegretPressure`、`ResponsibilityAttributionEvent`、`RepairDesire`、`ApologySpeechActLink`、`RepairCommitment`、`RelationshipConsequenceTrace` 和 `RecoveryPath` 的字段、不变量和 validator rules。
+
+到这里，痛苦修复闭环变为：
+
+`damage appraisal -> pain signal -> pain load window -> counterfactual repair frame -> regret pressure -> responsibility attribution -> repair desire -> apology / repair commitment -> relationship consequence -> recovery path -> dashboard / stage gate`
+
+后续应把 `95` 的真实梦境对象落成 schema 和 fixture，让 `PainDreamResidue`、`dream_residue_pressure`、`dream_sandbox_ref` 和 `RecoveryPath` 接入 `DreamRealityValidator`。
