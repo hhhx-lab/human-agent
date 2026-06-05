@@ -141,3 +141,16 @@ flowchart TD
 | `24_runtime_adapter_test_suite.md` | adapter contract tests | agent 框架反向吞掉生命层 |
 
 这层是未来实现的最低防线：任何实现只要绕过这些契约，就算功能再强，也不是数字生命底座，只是更复杂的任务 agent。
+
+## 实例化样例层连接
+
+`25-28` 把契约层转成可读、可审计、可复用的样例夹具：
+
+| 文档 | 实例化对象 | 接入闭环的位置 |
+|---|---|---|
+| `25_memory_trace_json_schema_examples.md` | `MemoryTrace`, `MemoryAuditEvent`, tombstone, correction, merge, protected trace | 反馈进入记忆、删除/修正/保护、关系和价值边界 |
+| `26_state_machine_examples_and_failure_modes.md` | `StateAuditEvent`, threshold snapshot, failure mode, recovery policy | 显著性、执行、冲突、安全、恢复、离线状态切换 |
+| `27_consolidation_report_examples.md` | `ConsolidationReport`, `DreamSandbox`, resume packet | replay、沙盒、深度巩固、清理和工作区恢复 |
+| `28_runtime_adapter_manifest_examples.md` | adapter manifest, fixture, expected `ObservationEvent` | LangGraph、OpenAI Agents SDK、Letta、LlamaIndex、CrewAI、AutoGen 等外壳接入 |
+
+这一层使闭环第一次具备“样例可验证性”：未来实现不只要声称有记忆、状态、梦境和运行桥，还要能产出与这些样例同构的审计对象。样例仍不是运行代码，但已经足以定义下一层 validator 的输入、失败条件和恢复策略。

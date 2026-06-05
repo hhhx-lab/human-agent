@@ -61,11 +61,20 @@
 | `23_consolidation_report_and_dream_sandbox_protocol.md` | 巩固报告、梦境沙盒、事实写入门控 | 还需要报告样例和自动检查器 |
 | `24_runtime_adapter_test_suite.md` | adapter 接口、合同测试、夹具、通过标准 | 还需要每个框架的 manifest 和测试数据 |
 
+实例化样例层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `25_memory_trace_json_schema_examples.md` | `MemoryTrace`、审计事件、删除/修正/合并/保护的 JSON-like 样例 | 还需要字段级 validator rules 和真实 JSON Schema |
+| `26_state_machine_examples_and_failure_modes.md` | 状态转移、阈值误判、恢复策略和 `StateAuditEvent` 样例 | 还需要状态转移 validator rules、滞回规则和阈值学习检查 |
+| `27_consolidation_report_examples.md` | TaskClosure、失败复盘、DreamSandbox、DeepConsolidation 和清理报告样例 | 还需要报告 validator rules 和 sandbox leak 检查器 |
+| `28_runtime_adapter_manifest_examples.md` | 多个运行外壳 manifest、fixture 和 `ObservationEvent` 期望样例 | 还需要 manifest validator rules 与最小 adapter 验证器 |
+
 ## 下一轮优先级
 
-下一轮应继续把可验证契约推进到“实例化样例和验证器”：
+下一轮应把样例层推进到“validator rules 和最小验证器”：
 
-1. `25_memory_trace_json_schema_examples.md`：给出 `MemoryTrace`、`MemoryAuditEvent`、删除/修正/合并的 JSON-like 样例。
-2. `26_state_machine_examples_and_failure_modes.md`：给出状态转移样例、阈值误判和恢复策略。
-3. `27_consolidation_report_examples.md`：给出任务结束、失败复盘、梦境沙盒、深度巩固报告样例。
-4. `28_runtime_adapter_manifest_examples.md`：给出 LangGraph、OpenAI Agents SDK、Letta、LlamaIndex、CrewAI、AutoGen 的 adapter manifest 样例。
+1. `29_memory_validator_rules.md`：把 `25` 的样例转成字段完整性、证据强度、删除不可召回、修正/合并/保护的规则。
+2. `30_state_transition_validator_rules.md`：把 `26` 的状态转移和失败模式转成阈值越界、滞回、覆盖优先级和 rollback 检查。
+3. `31_consolidation_validator_rules.md`：把 `27` 的报告样例转成 DreamSandbox fiction marker、事实门控、工作区恢复摘要和深度巩固限制。
+4. `32_runtime_adapter_validator_rules.md`：把 `28` 的 manifest 转成外壳越权、side effects、session 隔离、RAG grounding 和 adapter swap 检查。

@@ -10,7 +10,8 @@
 4. 接着读 `13_` 和 `14_`：前者给综合研究假设，后者把 `02-13` 连接成数字生命闭环。
 5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架为什么只能作为执行壳，后者记录理论缺口和停止条件。
 6. 再读 `17_` 到 `20_`：它们把记忆、内部状态、离线巩固和运行外壳转成未来数字生命实现前必须遵守的对象/接口约束。
-7. 最后读 `21_` 到 `24_`：它们把对象模型继续推进为 schema、状态阈值、巩固报告和 runtime adapter 测试。
+7. 再读 `21_` 到 `24_`：它们把对象模型继续推进为 schema、状态阈值、巩固报告和 runtime adapter 测试。
+8. 最后读 `25_` 到 `28_`：它们把契约转成 JSON-like 样例、状态失败夹具、巩固报告样例和 runtime adapter manifest。
 
 ## 文件索引
 
@@ -45,6 +46,10 @@
 | `22_state_transition_and_threshold_model.md` | 内部状态机、阈值、状态转移和 `StateAuditEvent` |
 | `23_consolidation_report_and_dream_sandbox_protocol.md` | `ConsolidationReport` 与 `DreamSandbox` 事实写入门控 |
 | `24_runtime_adapter_test_suite.md` | 运行外壳 adapter 合同测试与夹具 |
+| `25_memory_trace_json_schema_examples.md` | `MemoryTrace`、审计事件、删除/修正/合并/保护的 JSON-like 样例 |
+| `26_state_machine_examples_and_failure_modes.md` | 状态转移、阈值误判、恢复策略和 `StateAuditEvent` 样例 |
+| `27_consolidation_report_examples.md` | `TaskClosure`、失败复盘、`DreamSandbox`、深度巩固和清理报告样例 |
+| `28_runtime_adapter_manifest_examples.md` | LangGraph、OpenAI Agents SDK、Letta、LlamaIndex、CrewAI、AutoGen 等外壳 manifest 样例 |
 
 ## 项目术语
 

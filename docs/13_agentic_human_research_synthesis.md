@@ -248,3 +248,9 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 `21_memory_schema_and_audit_protocol.md`、`22_state_transition_and_threshold_model.md`、`23_consolidation_report_and_dream_sandbox_protocol.md` 和 `24_runtime_adapter_test_suite.md` 把对象模型继续推进到可验证契约：字段约束、生命周期、状态阈值、巩固报告、沙盒事实门控和 runtime adapter 测试。
 
 这一层的意义是把“数字生命”从宏大叙事拉回可审计结构：记忆必须能删除和修正，状态切换必须有触发变量，梦境沙盒必须带 fiction marker，外壳必须证明自己不能直接改写自我模型。到这里为止，理论底座已经开始出现工程骨架，但距离停止条件仍然还有距离：还缺真实 schema 样例、状态转移验证器、adapter manifest、长期人格/关系评测和安全审计闭环。
+
+## 第七层：实例化样例与验证器雏形
+
+`25_memory_trace_json_schema_examples.md`、`26_state_machine_examples_and_failure_modes.md`、`27_consolidation_report_examples.md` 和 `28_runtime_adapter_manifest_examples.md` 把第六层契约进一步落成样例夹具：`MemoryTrace` 有事实、偏好、假设、关系信号、删除、修正、合并和保护样例；状态机有从默认到专注、从执行到冲突、从任意状态到 SocialSafety、从恢复到离线巩固的审计事件；DreamSandbox 有明确 fiction marker；运行外壳有逐框架 manifest。
+
+这一层的意义不是“实现已经完成”，而是让后续实现不能再只写抽象口号。任何真实系统都必须能解释：某条记忆为什么写入、某次状态为什么切换、某个沙盒输出为什么不能变成事实、某个 agent 框架为什么只能返回 `ObservationEvent`。下一层应把这些样例转成 validator rules 和最小本地验证器，继续检查字段完整性、阈值越界、删除不可召回、沙盒隔离和外壳越权。
