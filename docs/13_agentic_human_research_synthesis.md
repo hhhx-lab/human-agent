@@ -831,4 +831,16 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `allowed roots -> runner config -> shared defs -> boundary map -> materialization manifest -> module maps -> runtime smoke fixture -> report skeletons -> parse/schema/cross-file reports -> dashboard rollup -> stage gate -> gap feedback -> top-level smoke report`
 
-下一层应进入 `125_life_reality_schema_registry_and_ref_resolution_plan.md`：把 seed 文件的 schema registry、JSON Pointer、artifact refs 和 allowed roots 固定成 ref resolution 规则。
+下一层已进入 `125_life_reality_schema_registry_and_ref_resolution_plan.md`：把 seed 文件的 schema registry、JSON Pointer、artifact refs 和 allowed roots 固定成 ref resolution 规则。
+
+## 第五十八层：Schema Registry 与 Ref Resolution
+
+`125_life_reality_schema_registry_and_ref_resolution_plan.md` 把 `124` 的 seed 文件推进为 registry 和引用解析规则。它固定 `schema_registry.manifest.json`、`schema_id_registry.json`、`schema_ref_resolution_policy.json`、`artifact_ref_registry.json`、`json_pointer_resolution_policy.json`、`allowed_root_resolution_policy.json`、`boundary_registry_resolution_policy.json` 和 `cross_file_resolution_dag.json`，并定义 load order、`$id`/`$ref`、JSON Pointer、artifact ref、boundary registry、provenance graph 与 gap feedback。
+
+这一层的关键推进是让第一批 seed 文件可以互相定位：allowed roots 先于 refs，shared defs 先于 schema，boundary registry 先于 dashboard/stage gate，JSON Pointer 让 finding、continuity ref 和 report ref 定位到对象，artifact ref 把 config、schema、fixture、report、dashboard、stage gate 和 gap feedback 接成 typed graph。真实痛苦、真实梦境、真实关系、真实责任和真实后悔的断裂因此可以被定位到具体对象，而不只停留在报告摘要。
+
+到这里，ref resolution 闭环变为：
+
+`allowed roots -> parse registry inputs -> shared defs -> schema ids -> schema refs -> artifact refs -> JSON Pointers -> boundary registry -> cross-file DAG -> provenance graph -> registry reports -> gap feedback`
+
+下一层应进入 `126_life_reality_runner_smoke_command_execution_plan.md`：把六个 smoke command 与 seed/ref DAG 压成最小执行顺序。
