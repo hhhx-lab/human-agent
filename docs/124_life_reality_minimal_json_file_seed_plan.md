@@ -326,4 +326,6 @@
 
 `125_life_reality_schema_registry_and_ref_resolution_plan.md` 已把本文档的 schema seed、boundary map seed、artifact refs、JSON Pointer、allowed roots 和 report refs 固定为 schema registry、ref resolver、cross-file graph builder 和 no-ref-escape 规则。
 
-下一层进入 `126_life_reality_runner_smoke_command_execution_plan.md`：把 `121` 的六个 smoke command、`123` 的 module map、本文档的 seed 文件和 `125` 的 ref resolution DAG 推进为最小执行顺序、stdout/report/exit code 验收和失败样例。
+`126_life_reality_runner_smoke_command_execution_plan.md` 已把 `121` 的六个 smoke command、`123` 的 module map、本文档的 seed 文件和 `125` 的 ref resolution DAG 推进为最小执行顺序、stdout/report/exit code 验收和失败样例。
+
+下一层进入 `127_life_reality_first_seed_file_content_contract.md`：把本文档的 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同。

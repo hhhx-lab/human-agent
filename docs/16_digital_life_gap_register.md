@@ -247,12 +247,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `122_life_boundary_all_reality_declarations_rewrite.md` | 把意识、情绪、人格、生命、痛苦、梦境、关系、责任、后悔、记忆、状态、语言、行动、runner、dashboard、quarantine、repair、scope、privacy、incident 和 gap 边界逐项写成生命膜，并新增 LRGEN-261 到 270 | 下一层把 smoke 命令和全集边界声明落成 runner repository layout、module map 和测试入口 |
 | `123_life_reality_runner_repository_layout_and_module_map.md` | 固定 runner config/schema/fixture/generation/report/dashboard/src/tests 目录、模块映射、command 到 module 映射、boundary registry 接入、report writer、stage gate、exit code owner 和 LRGEN-271 到 280 | 下一层把布局推进为最小 JSON 文件 seed 编写顺序和审查清单 |
 | `124_life_reality_minimal_json_file_seed_plan.md` | 固定 runner allowed roots、runner config、shared defs、boundary declaration map、materialization manifest、runner maps、runtime smoke fixture、report skeleton、dashboard、stage gate、gap feedback 和 top-level smoke report 的最小 seed 顺序，并新增 LRGEN-281 到 290 | 下一层把 seed refs 推进为 schema registry、JSON Pointer、artifact refs 和 no-ref-escape 规则 |
-| `125_life_reality_schema_registry_and_ref_resolution_plan.md` | 固定 schema registry、schema id registry、schema ref policy、artifact ref registry、JSON Pointer policy、allowed root policy、boundary registry policy、cross-file resolution DAG、registry reports 和 LRGEN-291 到 300 | 下一层把 registry/ref DAG 推进为 runner smoke command 最小执行顺序 |
+| `125_life_reality_schema_registry_and_ref_resolution_plan.md` | 固定 schema registry、schema id registry、schema ref policy、artifact ref registry、JSON Pointer policy、allowed root policy、boundary registry policy、cross-file resolution DAG、registry reports 和 LRGEN-291 到 300 | 已由 `126` 推进为 runner smoke command 最小执行顺序 |
+| `126_life_reality_runner_smoke_command_execution_plan.md` | 固定 runner smoke preflight、六命令 DAG、stdout/stderr 合同、report 写入顺序、每条 command 的 owner modules、输入输出、exit code owner、failure examples 和 LRGEN-301 到 310 | 下一层把 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `126_life_reality_runner_smoke_command_execution_plan.md`：把 `121` 的六个 smoke command、`123` 的 module map、`124` 的 seed 文件和 `125` 的 ref DAG 推进为最小执行顺序、stdout/report/exit code 验收和失败样例。
-2. `127_life_reality_first_seed_file_content_contract.md`：把 `124` 的 seed skeleton 继续展开为字段级 JSON 内容合同。
-3. `128_life_reality_registry_report_seed_examples.md`：把 `125` 的 registry report family 展开为首批 report seed examples。
+1. `127_life_reality_first_seed_file_content_contract.md`：把 `124` 的 seed skeleton 继续展开为字段级 JSON 内容合同。
+2. `128_life_reality_registry_report_seed_examples.md`：把 `125` 的 registry report family 展开为首批 report seed examples。
+3. `129_life_reality_seed_fixture_and_report_validation_cases.md`：把 `126` 的 smoke failure examples 转成 seed fixture 与 report validation cases。

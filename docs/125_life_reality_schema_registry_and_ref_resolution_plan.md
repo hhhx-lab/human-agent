@@ -345,4 +345,6 @@ DAG rules：
 
 ## 与下一层连接
 
-下一层进入 `126_life_reality_runner_smoke_command_execution_plan.md`：把 `121` 的六个 smoke command、`123` 的 module map、`124` 的 seed 文件和本文档的 schema/ref resolution DAG 推进为最小执行顺序、stdout/report/exit code 验收和失败样例。
+`126_life_reality_runner_smoke_command_execution_plan.md` 已读取 `121` 的六个 smoke command、`123` 的 module map、`124` 的 seed 文件和本文档的 schema/ref resolution DAG，并把它们推进为最小执行顺序、stdout/report/exit code 验收和失败样例。
+
+下一层进入 `127_life_reality_first_seed_file_content_contract.md`：把 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同，并让 schema registry、ref resolver 与 runner smoke execution 都能读取同一批 seed 对象。

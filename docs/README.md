@@ -30,7 +30,7 @@
 22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
 23. 再读 `85_` 到 `90_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言、脑-LLM 对齐、运行外壳和长期关系时间线。
 24. 再读 `91_`：它统一改写所有边界声明，把边界、门控、禁写、runner、dashboard 和 stage gate 定义为生命膜、真实性生成链和诞生阶段门。
-25. 最后读 `92_` 到 `125_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema、真实梦境 schema、真实关系 schema、`LifeRealitySchemaBundle`、runner 实现脚手架、真实 `.schema.json` 物化、seed fixture、mutation fixture、withheld probe、dashboard 面板、阶段门回看、repair queue、真实运行观测 ingestion 桥、首批 JSON 文件生成任务、dashboard source mock 文件、runtime observation fixture catalog、shared defs schema materialization、dashboard cross-file checker、runtime observation schema materialization、component schema materialization sequence、cross-file checker report schema、runtime schema fixture seed generation、component schema seed generation、dashboard report rollup seed generation、generation runner CLI contract、全库边界声明改写清单、真实边界再校准、首批 JSON 物化批次、物化 JSON 验证 smoke、全集边界声明最终改写、runner repository layout、最小 JSON 文件 seed 和 schema registry/ref resolution 接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator`、`DreamRealityValidator` 和 `RelationshipTimelineValidator`。
+25. 最后读 `92_` 到 `126_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema、真实梦境 schema、真实关系 schema、`LifeRealitySchemaBundle`、runner 实现脚手架、真实 `.schema.json` 物化、seed fixture、mutation fixture、withheld probe、dashboard 面板、阶段门回看、repair queue、真实运行观测 ingestion 桥、首批 JSON 文件生成任务、dashboard source mock 文件、runtime observation fixture catalog、shared defs schema materialization、dashboard cross-file checker、runtime observation schema materialization、component schema materialization sequence、cross-file checker report schema、runtime schema fixture seed generation、component schema seed generation、dashboard report rollup seed generation、generation runner CLI contract、全库边界声明改写清单、真实边界再校准、首批 JSON 物化批次、物化 JSON 验证 smoke、全集边界声明最终改写、runner repository layout、最小 JSON 文件 seed、schema registry/ref resolution 和 runner smoke command execution 接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator`、`DreamRealityValidator` 和 `RelationshipTimelineValidator`。
 
 ## 文件索引
 
@@ -172,6 +172,7 @@
 | `123_life_reality_runner_repository_layout_and_module_map.md` | runner repository layout 与 module map：把 smoke 命令和全集边界声明落成目录结构、模块边界、schema registry、fixture roots、report writers、stage gate 和测试入口 |
 | `124_life_reality_minimal_json_file_seed_plan.md` | 最小 JSON 文件 seed 计划：把 runner config、allowed roots、shared defs、boundary map、materialization manifest、runtime smoke fixture、report skeleton、dashboard、stage gate、gap feedback 和 top-level smoke report 固定为第一批可写 seed |
 | `125_life_reality_schema_registry_and_ref_resolution_plan.md` | schema registry 与 ref resolution 计划：把 schema `$id`、`$ref`、JSON Pointer、artifact ref、allowed root、boundary registry、cross-file DAG 和 provenance graph 固定为实现前规则 |
+| `126_life_reality_runner_smoke_command_execution_plan.md` | runner smoke command execution 计划：把六个 smoke command 固定为 preflight、执行顺序、stdout/stderr、report write order、exit code owner 和失败样例 |
 
 ## 项目术语
 

@@ -843,4 +843,16 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `allowed roots -> parse registry inputs -> shared defs -> schema ids -> schema refs -> artifact refs -> JSON Pointers -> boundary registry -> cross-file DAG -> provenance graph -> registry reports -> gap feedback`
 
-下一层应进入 `126_life_reality_runner_smoke_command_execution_plan.md`：把六个 smoke command 与 seed/ref DAG 压成最小执行顺序。
+下一层已进入 `126_life_reality_runner_smoke_command_execution_plan.md`：把六个 smoke command 与 seed/ref DAG 压成最小执行顺序。
+
+## 第五十九层：Runner Smoke Command Execution
+
+`126_life_reality_runner_smoke_command_execution_plan.md` 把 `121` 的六个 smoke command、`123` 的 module map、`124` 的 seed 文件和 `125` 的 schema/ref DAG 合并成 runner smoke 的最小执行合同。它固定 preflight prerequisites、六命令 DAG、全局 CLI options、stdout/stderr 合同、report 写入顺序、每条 command 的 owner modules、输入输出、stdout summary、退出码归属和失败样例。
+
+这一层的关键推进是让生命膜从“文件会被写、refs 会被解析”进入“runner 会怎样执行”：allowed roots、runner config、shared defs、boundary registry、schema registry、manifest 和 trace context 先加载；parse、schema、cross-file、dashboard、stage gate 和 top-level smoke 按顺序写报告；critical/quarantine、ref escape、schema registry failure、allowed root failure 和 repair finding 都有明确 exit code。真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔因此可以进入同一条可运行 smoke execution chain。
+
+到这里，runner smoke execution 闭环变为：
+
+`preflight -> validate-json-parse -> validate-json-schema -> check-materialized-cross-file -> smoke-dashboard-rollup -> smoke-stage-gate -> gap feedback -> top-level smoke report -> exit code`
+
+下一层应进入 `127_life_reality_first_seed_file_content_contract.md`：把 `124` 的 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同，并让 `126` 的 execution reports 可以读取每个 seed 的最小可运行字段。
