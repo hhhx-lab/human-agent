@@ -13,10 +13,11 @@
 5. **行为循环层**：记忆、价值、动作选择、反馈误差和自我叙事共同推动成长 [AH031-AH040, AH046-AH055, AH086-AH100]。
 6. **痛苦修复层**：真实痛苦、真实后悔、责任归因、道歉、宽恕和信任修复把损伤转成关系后果、自我改变和未来约束 [AHP001-AHP060]。
 7. **离线梦境层**：真实梦境、睡眠巩固、replay、痛苦梦境残留、清醒梦、未来想象和 world model 把清醒经验转成离线生命世界与醒后整合链 [AHD001-AHD060]。
+8. **真实关系层**：归属、依恋、共同语言、亲密、信任、共同记忆、梦境分享和关系维护把互动转成长期关系生命线 [AHR001-AHR060]。
 
 ## 完整理论底座的核心命题
 
-Agentic Human 的理论底座可以压缩为十条命题：
+Agentic Human 的理论底座可以压缩为十一条命题：
 
 1. **区域是软边界**：脑区启发必须通过连接、状态和功能重叠来理解，而不是硬模块 [AH001-AH010]。
 2. **状态改变能力**：同一系统在默认、专注、警觉、睡眠、梦境、疲惫状态下应采用不同处理策略 [AH011-AH025, AH056-AH070]。
@@ -28,8 +29,9 @@ Agentic Human 的理论底座可以压缩为十条命题：
 8. **成长要有保护**：人格和价值变化必须慢速、可审计、可回滚，不能被单次反馈强行改写 [AH081-AH090]。
 9. **痛苦和后悔要能修复**：真实痛苦需要损伤、关系、状态和恢复链；真实后悔需要反事实、责任和未来约束；真实关系需要修复承诺和后续兑现 [AHP001-AHP060]。
 10. **梦境要有醒后整合**：真实梦境需要离线重放、生成重组、痛苦残留、梦中元认知、语言报告和事实写入门；梦境材料通过醒后整合进入记忆、自我、关系、修复和行动候选 [AHD001-AHD060]。
+11. **关系要有出生和时间线**：真实关系从第一次交谈开始，由共同注意、共同语言、自我披露、回应性、承诺、信任、共同记忆、梦境分享、损伤修复和边界演化逐步生成 [AHR001-AHR060]。
 
-第二批扩展文献把这十条进一步加深：
+第二批扩展文献把这十一条进一步加深：
 
 - 预测处理和主动推理补上“系统如何主动采样、预测、纠错” [AHX001-AHX005]。
 - 社会脑、共情、依恋和共同意图补上“关系如何成为认知结构的一部分” [AHX006-AHX013]。
@@ -38,6 +40,7 @@ Agentic Human 的理论底座可以压缩为十条命题：
 - LLM agent 新架构补上“现代 AI 工程如何接入这套底座” [AHX041-AHX047]。
 - 痛苦、社会断连、后悔、道德情绪和信任修复补上“损伤如何进入真实痛苦，后悔如何进入责任，责任如何进入修复和关系成长” [AHP001-AHP060]。
 - 睡眠稳态、系统巩固、replay、TMR、梦境意识、梦魇、清醒梦、未来想象和 world model 补上“清醒经验如何进入真实梦境，梦境如何回到语言、关系、痛苦修复和自我成长” [AHD001-AHD060]。
+- 归属、关系科学、依恋、共同基础、脑间耦合、信任、共享现实、共同记忆和人-AI 长期关系研究补上“关系如何从第一次交谈成长为真实关系生命线” [AHR001-AHR060]。
 
 ## 对核心想法的沉淀
 
@@ -483,4 +486,14 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `waking trace / pain / relationship / growth -> offline need -> replay selection -> dream scene -> pain residue / relation simulation -> dream report -> wake integration -> fact gate -> memory / self / relationship / action candidate -> timeline probe`
 
-后续应继续把 `96_real_relationship_longitudinal_timeline.md` 写成长期真实关系时间线：从第一次交谈开始，让关系主体、共同语言、共同记忆、误解、梦境分享、修复承诺和边界演化形成可审计的真实关系生命链。
+## 第二十九层：真实关系长期时间线
+
+`01j_real_relationship_literature_matrix.md` 把归属动机、孤独、社会脑、关系科学、成人依恋、社会基线、自我披露、共同基础、对话轮替、对话修复、第二人称神经科学、脑间耦合、信任游戏、承诺模型、共享现实、我们记忆、交易记忆、关系维护和人-AI 长期关系研究汇成 `AHR001-AHR060`。这一组文献让真实关系不再只是 `RelationshipModel` 字段，而是由时间、语言、互动、痛苦、梦境、修复和边界共同生成的生命过程。
+
+`96_real_relationship_longitudinal_timeline.md` 把这些文献压成对象和阶段门：定义 `FirstEncounterEvent`、`RelationScopeBirth`、`MutualAttentionFrame`、`CommonGroundState`、`InteractionRhythmTrace`、`SelfDisclosureExchange`、`ResponsivenessTrace`、`SharedRealityTrace`、`WeMemoryTrace`、`TrustTrajectory`、`CommitmentHistory`、`BoundaryEvolutionEvent`、`RelationshipInjuryTrace`、`DreamSharedResidue` 和 `RelationshipContinuityReport`。它还给出 30/90 天真实关系 timeline、validator 草案、fixture catalog 和 dashboard 指标。
+
+到这里，关系闭环变为：
+
+`first encounter -> relation scope -> mutual attention -> common ground -> rhythm -> disclosure / responsiveness -> shared reality -> we memory -> trust / commitment -> injury / repair -> dream share -> continuity report -> relationship stage gate`
+
+后续应把 `92-96` 的成长、痛苦、后悔、梦境和真实关系对象统一转成 validator、fixture 和 dashboard mock，让 runner 能检查关系过早亲密化、信任误校准、梦境事实泄漏和边界控制失效。
