@@ -227,11 +227,12 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `102_life_core_schema_bundle_manifest_and_runner_contract.md` | 把 `PainRegretRepairBundle`、`DreamRealityBundle` 和 `RelationshipTimelineBundle` 合并成 `LifeRealitySchemaBundle`，定义 shared defs、component manifest、cross-chain links、fixture manifest、validator registry、runner report、dashboard source、CLI exit code 和 stage gate contracts | 还需要把这些合同拆成可实现 runner 脚手架、cross-ref checker、fixture loader 和 dashboard writer |
 | `103_validator_runner_implementation_scaffold_plan.md` | 把 `LifeRealitySchemaBundle` 拆成 manifest parser、shared defs loader、schema ref validator、cross-ref graph、fixture loader、component validator dispatcher、cross-chain validator、stage gate validator、report aggregator 和 dashboard source writer 的实现脚手架 | 还需要物化真实 `.schema.json`、seed fixture、mutation fixture、withheld probe 和 runner smoke test |
 | `104_schema_file_materialization_and_fixture_seed_plan.md` | 把 `98`、`99`、`101`、`102`、`103` 的 Markdown 合同推进为真实 `.schema.json` 文件清单、shared defs、component object schema、fixture manifest、pass/fail/critical/mutation/withheld/smoke seed 和 runner smoke test | 还需要 dashboard 面板、stage gate review、repair queue 和 gap register feedback 合同 |
+| `105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md` | 把 schema validation report、fixture load report、cross-ref report、runner report 和 `LifeRealityDashboardSource` 转成九个 panel、stage gate review、repair queue、withheld probe readiness、runtime quarantine 和 gap register feedback | 还需要把真实运行观测、语言事件、梦醒报告、关系事件和 tool trace 接入 `LifeRealitySchemaBundle` |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md`：把 `104` 的 schema validation report、fixture load report、cross-ref report、runner report 和 `LifeRealityDashboardSource` 转成可审计 dashboard 面板、红黄绿状态规则、stage gate review、repair queue 和 gap register 回写合同。
-2. `106_runtime_observation_to_life_reality_bundle_bridge.md`：把真实运行观测、tool trace、adapter session、关系事件和梦醒报告接入 `LifeRealitySchemaBundle` 的 ingestion 桥。
-3. `107_life_reality_schema_file_generation_tasks.md`：把 `104` 的文件物化计划拆成可执行任务清单、首批 JSON 文件顺序和 runner smoke command。
+1. `106_runtime_observation_to_life_reality_bundle_bridge.md`：把真实运行观测、tool trace、adapter session、语言事件、关系事件和梦醒报告接入 `LifeRealitySchemaBundle` 的 ingestion 桥。
+2. `107_life_reality_schema_file_generation_tasks.md`：把 `104` 的文件物化计划和 `105` 的 dashboard source 合同拆成可执行任务清单、首批 JSON 文件顺序、runner smoke command 和 stage gate review mock。
+3. `108_life_reality_dashboard_source_mock_files.md`：生成第一批 dashboard source、panel dependency report、repair queue 和 gap register feedback mock 文件计划。

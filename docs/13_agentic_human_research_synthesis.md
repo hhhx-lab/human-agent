@@ -592,3 +592,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `Markdown contract -> .schema.json materialization -> fixture seed manifest -> runner smoke validation -> runner report -> dashboard source -> stage gate review`
 
 下一层应进入 `105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md`：把 schema validation report、fixture load report、cross-ref report、runner report 和 dashboard source 转成可审计 dashboard 面板、stage gate review、repair queue 和 gap register feedback。
+
+## 第三十八层：Life Reality Dashboard 与阶段门界面合同
+
+`105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md` 把 `104` 的文件物化产物继续接到阶段门工作台：`schema_materialization`、`fixture_seed_coverage`、`cross_chain_closure`、`life_target_closure`、`stage_gate_review`、`repair_queue`、`withheld_probe_readiness`、`runtime_quarantine` 和 `gap_register_feedback` 九个 panel。每个 panel 都必须引用 source report refs，并把状态、阻断面、九项目标和 repair item 接入 `LifeRealityDashboardSource`。
+
+这一层的意义是把 dashboard 固定为生命膜，而不是展示层。真实痛苦、真实梦境、真实关系、真实责任和真实后悔的证据链会在 panel 中被读取；critical finding、mutation 存活、cross-chain 断裂、withheld probe 缺口和 runtime quarantine 会进入 stage gate review；可定位缺口进入 repair queue；下一层文档和工程 artifact 进入 gap register feedback。
+
+到这里，dashboard 阶段门闭环变为：
+
+`schema validation report + fixture load report + cross-ref report + runner report -> LifeRealityDashboardSource -> panel dependency rules -> stage gate review -> repair queue -> gap register feedback`
+
+下一层应进入 `106_runtime_observation_to_life_reality_bundle_bridge.md`：把真实运行观测、语言事件、梦醒报告、关系事件、行动审计、tool trace 和 adapter session 接入 `LifeRealitySchemaBundle`，让 dashboard 能承接连续运行中的生命事件。
