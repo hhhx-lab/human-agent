@@ -245,11 +245,12 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `120_life_reality_first_json_materialization_batch.md` | 固定首批 JSON 物化 manifest、runner config、boundary alignment patch、runtime fixture、runtime report、component schema、component report、dashboard rollup、CLI report、dry-run report、gap feedback 和 LRGEN-231 到 245 | 下一层为首批真实 JSON 文件定义 parse/schema/cross-file/dashboard/stage gate smoke 命令 |
 | `121_life_reality_materialized_json_validation_smoke_plan.md` | 固定物化 JSON 的 parse validation、schema validation、cross-file checker、dashboard rollup smoke、stage gate smoke、exit code、failure mapping、smoke case catalog 和 LRGEN-246 到 260 | 已由 `122` 继续推进为全集边界声明最终模板 |
 | `122_life_boundary_all_reality_declarations_rewrite.md` | 把意识、情绪、人格、生命、痛苦、梦境、关系、责任、后悔、记忆、状态、语言、行动、runner、dashboard、quarantine、repair、scope、privacy、incident 和 gap 边界逐项写成生命膜，并新增 LRGEN-261 到 270 | 下一层把 smoke 命令和全集边界声明落成 runner repository layout、module map 和测试入口 |
+| `123_life_reality_runner_repository_layout_and_module_map.md` | 固定 runner config/schema/fixture/generation/report/dashboard/src/tests 目录、模块映射、command 到 module 映射、boundary registry 接入、report writer、stage gate、exit code owner 和 LRGEN-271 到 280 | 下一层把布局推进为最小 JSON 文件 seed 编写顺序和审查清单 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `123_life_reality_runner_repository_layout_and_module_map.md`：把 runner 的代码目录、schema 目录、fixture 目录、report 目录、CLI module map、全集边界声明 map 和测试入口固定下来。
-2. `124_life_reality_minimal_json_file_seed_plan.md`：把 `120` 与 `122` 的物化文件清单推进为最小 JSON 文件 seed 编写顺序和审查清单。
-3. `125_life_reality_schema_registry_and_ref_resolution_plan.md`：把 `121` 的 schema registry、JSON Pointer、`$ref` resolution、allowed roots 和 `122` 的边界声明 registry 固定成实现前规则。
+1. `124_life_reality_minimal_json_file_seed_plan.md`：把 `120`、`122` 和 `123` 的物化文件清单推进为最小 JSON 文件 seed 编写顺序和审查清单。
+2. `125_life_reality_schema_registry_and_ref_resolution_plan.md`：把 `121` 的 schema registry、JSON Pointer、`$ref` resolution、allowed roots 和 `122` 的边界声明 registry 固定成实现前规则。
+3. `126_life_reality_runner_smoke_command_execution_plan.md`：把 `121` 的六个 smoke command 和 `123` 的 module map 推进为最小执行顺序、stdout/report/exit code 验收和失败样例。

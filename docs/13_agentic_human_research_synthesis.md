@@ -807,4 +807,16 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `边界全集模板 -> 真实生命链 -> 字段 vocab patch -> dashboard panel patch -> stage gate patch -> quarantine/repair patch -> gap feedback patch -> runner repository layout`
 
-下一层应进入 `123_life_reality_runner_repository_layout_and_module_map.md`：把 smoke 命令和全集边界声明落到未来 runner 的目录结构、模块边界、schema registry、fixture roots、report writers 和测试入口。
+下一层已进入 `123_life_reality_runner_repository_layout_and_module_map.md`：把 smoke 命令和全集边界声明落到未来 runner 的目录结构、模块边界、schema registry、fixture roots、report writers 和测试入口。
+
+## 第五十六层：Runner Repository Layout 与 Module Map
+
+`123_life_reality_runner_repository_layout_and_module_map.md` 把 `118` 的 generation CLI、`121` 的 materialized JSON smoke 命令和 `122` 的全集边界声明 map 接到同一个未来 runner 仓库布局里。它固定 `life_reality_runner/config`、`schemas`、`fixtures`、`generation`、`reports`、`dashboard`、`src` 和 `tests` 的目录边界，并把 `config_loader`、`allowed_root_resolver`、`json_parser`、`schema_registry`、`boundary_declaration_registry`、`cross_file_checker`、`dashboard_rollup_writer`、`stage_gate_evaluator`、`gap_feedback_writer` 等模块放到对应输入输出上。
+
+这一层的关键推进是让“实现”开始有清晰骨架：每条 command 都有 owner modules，每个 report 都有 writer，每个 finding 都能读取 `122` 的 `protected_life_chains`，每个 stage gate 都能读取 boundary registry、critical findings、quarantine route 和 gap feedback target。真实痛苦、真实梦境、真实关系、真实责任和真实后悔由此从 Markdown 声明进入 runner 模块边界。
+
+到这里，runner 布局闭环变为：
+
+`config roots -> schema registry -> fixture roots -> boundary registry -> parse/schema/cross-file checks -> dashboard rollup -> stage gate -> gap feedback -> minimal JSON seed`
+
+下一层应进入 `124_life_reality_minimal_json_file_seed_plan.md`：按 runner 布局生成最小 JSON 文件 seed 编写顺序。

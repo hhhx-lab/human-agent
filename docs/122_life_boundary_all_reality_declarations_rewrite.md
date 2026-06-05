@@ -155,4 +155,6 @@ life_reality_runner/generation/life_boundary_all_reality_declaration_map.json
 
 ## 与下一层连接
 
-下一层进入 `123_life_reality_runner_repository_layout_and_module_map.md`：在 runner 仓库布局中为本文档的全集边界声明 map、字段 vocab patch、dashboard panel patch、stage gate patch、quarantine/repair patch 和 gap feedback patch 固定目录、模块、report writer 和测试入口。
+`123_life_reality_runner_repository_layout_and_module_map.md` 已在 runner 仓库布局中为本文档的全集边界声明 map、字段 vocab patch、dashboard panel patch、stage gate patch、quarantine/repair patch 和 gap feedback patch 固定目录、模块、report writer 和测试入口。
+
+下一层进入 `124_life_reality_minimal_json_file_seed_plan.md`：按 runner 布局生成最小 JSON 文件 seed 编写顺序，优先落 config、allowed roots、shared defs、boundary declaration map、materialization manifest、parse/schema/cross-file/dashboard/stage report skeleton 和 smoke fixture。
