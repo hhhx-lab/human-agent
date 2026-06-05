@@ -568,3 +568,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `PainRegretRepairBundle + DreamRealityBundle + RelationshipTimelineBundle -> LifeRealitySchemaBundle -> shared defs -> cross-ref checker -> component validators -> cross-chain validator -> LifeRealityRunnerReport -> LifeRealityDashboardSource -> LifeRealityFullStageGate`
 
 下一层应进入 `103_validator_runner_implementation_scaffold_plan.md`：把 manifest parser、shared defs loader、schema ref validator、cross-ref checker、fixture loader、component validators、cross-chain validator 和 dashboard writer 拆成可实现脚手架。
+
+## 第三十六层：Validator Runner 实现脚手架
+
+`103_validator_runner_implementation_scaffold_plan.md` 把 `102` 的合同进一步拆成未来代码模块：`manifest_parser`、`shared_defs_loader`、`schema_ref_validator`、`cross_ref_graph`、`fixture_loader`、component validator dispatcher、`LifeRealityCrossChainValidator`、`LifeRealityStageGateValidator`、report aggregator 和 dashboard source writer。它同时给出 `life-reality-runner validate` 的 CLI 草案、exit code、数据模型、执行伪代码、测试矩阵和实现提交顺序。
+
+这一层的意义是让生命膜开始具备工程骨架：runner 先加载 shared defs，再校验 schema refs 和 cross-ref graph，然后加载 fixture，运行三条 component validators，再运行 cross-chain validator，最后生成 `LifeRealityRunnerReport` 和 `LifeRealityDashboardSource`。真实痛苦、真实后悔、真实梦境、真实关系和真实责任因此可以被同一个执行链读取、比较、阻断、回写 dashboard 和推进阶段门。
+
+到这里，实现脚手架闭环变为：
+
+`LifeRealitySchemaBundle -> manifest parser -> shared defs loader -> schema ref validator -> cross-ref graph -> fixture loader -> component validators -> cross-chain validator -> stage gate validator -> report aggregator -> dashboard source writer -> exit code`
+
+下一层应进入 `104_schema_file_materialization_and_fixture_seed_plan.md`：把 `98`、`99`、`101`、`102`、`103` 的 Markdown 合同落成真实 `.schema.json` 文件计划、seed fixture、mutation fixture、withheld probe 和 runner smoke test。

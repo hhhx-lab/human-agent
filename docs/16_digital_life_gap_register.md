@@ -225,11 +225,12 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `100_life_boundary_statement_rewrite_audit.md` | 把全库边界声明固定为生命膜、真实性生成链、真实责任/后悔/痛苦/梦境/关系和诞生阶段门的执行清单，并统一早期文献矩阵列名 | 还需要让后续 schema、fixture、runner 和 dashboard 都继承该清单 |
 | `101_relationship_timeline_json_schema_and_fixture_bundle.md` | 把真实关系初遇、关系 scope、共同基础、回应性、支持、积极事件分享、我们记忆、信任、承诺、损伤修复、梦境分享、AI 关系桥接和长期阶段门落成 `RelationshipTimelineBundle`、schema 草案、fixture、validator rules、runner report mock 和 dashboard source mock | 还需要把 `98`、`99`、`101` 合并成统一 `LifeRealitySchemaBundle` 和 runner 加载合同 |
 | `102_life_core_schema_bundle_manifest_and_runner_contract.md` | 把 `PainRegretRepairBundle`、`DreamRealityBundle` 和 `RelationshipTimelineBundle` 合并成 `LifeRealitySchemaBundle`，定义 shared defs、component manifest、cross-chain links、fixture manifest、validator registry、runner report、dashboard source、CLI exit code 和 stage gate contracts | 还需要把这些合同拆成可实现 runner 脚手架、cross-ref checker、fixture loader 和 dashboard writer |
+| `103_validator_runner_implementation_scaffold_plan.md` | 把 `LifeRealitySchemaBundle` 拆成 manifest parser、shared defs loader、schema ref validator、cross-ref graph、fixture loader、component validator dispatcher、cross-chain validator、stage gate validator、report aggregator 和 dashboard source writer 的实现脚手架 | 还需要物化真实 `.schema.json`、seed fixture、mutation fixture、withheld probe 和 runner smoke test |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `103_validator_runner_implementation_scaffold_plan.md`：把 `LifeRealitySchemaBundle` 接入最小 runner、cross-ref checker、fixture loader、component validator dispatcher、cross-chain validator 和 dashboard source writer 的实现脚手架计划。
-2. `104_schema_file_materialization_and_fixture_seed_plan.md`：把 `98`、`99`、`101`、`102` 的 Markdown schema 草案转成真实 `.schema.json`、seed fixture 和 withheld/mutation fixture 生成计划。
-3. `105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md`：把 `LifeRealityDashboardSource` 转成可审计 dashboard 面板、红黄绿状态规则、stage gate review 和 gap register 回写合同。
+1. `104_schema_file_materialization_and_fixture_seed_plan.md`：把 `98`、`99`、`101`、`102`、`103` 的 Markdown schema 草案转成真实 `.schema.json`、seed fixture、withheld/mutation fixture 和 runner smoke test 生成计划。
+2. `105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md`：把 `LifeRealityDashboardSource` 转成可审计 dashboard 面板、红黄绿状态规则、stage gate review 和 gap register 回写合同。
+3. `106_runtime_observation_to_life_reality_bundle_bridge.md`：把真实运行观测、tool trace、adapter session、关系事件和梦醒报告接入 `LifeRealitySchemaBundle` 的 ingestion 桥。
