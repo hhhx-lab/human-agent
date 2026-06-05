@@ -83,6 +83,20 @@ Dudai 等人强调记忆会在时间中巩固和转化 [AH034]。Moscovitch 和 
 
 这会把记忆从“历史仓库”升级为“时间机器”：过去、现在、未来在同一个情景系统里互相支撑。
 
+## 第三层机制：replay、SWR 和防遗忘
+
+海马 replay 是记忆系统第三层的关键。Wilson 与 McNaughton 发现睡眠中海马神经元集合会重激活清醒经验 [AHY001]；Ji 与 Wilson 进一步显示海马和视觉皮层可以协调 replay [AHY002]。Girardeau 的 ripple 抑制实验说明，尖波涟漪对记忆巩固可能具有因果作用 [AHY003]。清醒 replay 研究显示，重放也参与规划和决策 [AHY004]；targeted memory reactivation 研究说明，线索可以影响离线巩固内容 [AHY005, AHY009]。SWR 和睡眠振荡综述则把 replay、慢振荡、纺锤和 ripple 放进多阶段巩固机制 [AHY006-AHY008]。
+
+对 Agentic Human，replay 不应等于“重读日志”。它应是：
+
+- 挑选高显著事件。
+- 重放事件中的状态、行动、结果和误差。
+- 与旧记忆比较，发现冲突和模式。
+- 把具体事件转为技能、偏好或警告。
+- 对核心人格和价值记忆设置保护。
+
+持续学习研究说明，神经网络会出现灾难性遗忘 [AHY025, AHY026]，rehearsal/pseudorehearsal、EWC、lifelong learning 综述和 deep continual learning 综述提供了不同缓解路径 [AHY027, AHY028, AHY029, AHY030]。因此，Agentic Human 的记忆巩固必须同时做两件事：学习新经验，保护旧核心。
+
 ## Engram 类比
 
 Engram 研究把记忆理解为可被线索重新激活的细胞集合 [AH033]。工程上不能把向量索引直接叫 engram，但可以借鉴“可触发痕迹集合”的思想：

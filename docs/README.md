@@ -16,6 +16,7 @@
 | `00_research_protocol.md` | 研究协议、权威性评分、边界声明 |
 | `01_literature_matrix.md` | 100 篇文献矩阵与研究启发 |
 | `01b_extended_literature_matrix.md` | 第二批扩展文献锚点，覆盖主动推理、社会认知、发展、压力免疫、AI agent 等 |
+| `01c_specialized_literature_matrix.md` | 第三批专业机制锚点，覆盖 replay、节律、持续学习、多模态具身、信任与评测等 |
 | `02_brain_region_and_network_atlas.md` | 脑区、连接组与大尺度网络 |
 | `03_default_executive_salience_networks.md` | 默认模式、中央执行、显著性网络 |
 | `04_sensory_thalamus_interoception.md` | 感觉输入、丘脑中继、内感受与稳态 |

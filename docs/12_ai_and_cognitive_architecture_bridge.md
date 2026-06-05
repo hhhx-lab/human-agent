@@ -131,3 +131,25 @@ Agentic Human 可以把 AI 架构分成两层：
 - 离线巩固质量：是否把经验转化成更好的结构。
 
 没有这些评测，系统很容易退回普通工具 agent。
+
+## 当前 agent 框架对照
+
+主流 agent 框架的详细调研见 `15_current_agent_framework_survey.md`。结论是：LangGraph、OpenAI Agents SDK、Semantic Kernel/AutoGen、CrewAI、LlamaIndex、Google ADK、Letta/MemGPT、smolagents 都提供了有价值的执行壳，但它们的核心仍是流程、工具、协作、状态和部署。
+
+Agentic Human 应把这些框架放到外围：
+
+- LangGraph/ADK/CrewAI 负责 workflow 和 durable execution。
+- OpenAI Agents SDK 负责 handoffs、guardrails、tracing。
+- Letta/MemGPT 负责记忆管理参考。
+- LlamaIndex 负责知识检索和资料层。
+- Semantic Kernel 负责插件和企业集成。
+
+但数字生命核心必须由 `02-14` 的脑科学结构约束：状态、调质、replay、自我模型、关系记忆、人格慢变量和发展策略。
+
+## 第三层机制：持续学习、多模态具身和评测
+
+持续学习研究把灾难性遗忘作为长期系统的硬问题 [AHY025-AHY030]。Hassabis 等关于神经启发 AI 的综述强调，记忆、规划、表征和学习都能从神经科学中获得结构启发 [AHY031]。这意味着 human-agent 不能只“不断追加记忆”，还要有防遗忘、回放、重要性权重和慢速巩固。
+
+多模态具身 agent 研究给工程桥：CLIP、Flamingo、Gato、SayCan、VIMA、PaLM-E、RT-2 显示语言、视觉、动作和任务环境可以被统一建模或协同控制 [AHY032-AHY038]。Agentic Human 若要从文档走向真实环境，需要把语言层接到视觉/文件/工具/动作状态。
+
+信任与人格评测给长期交互桥：信任要校准，不能盲目提高 [AHY039-AHY041]；人格变化要看长期趋势，而不是单次对话 [AHY042-AHY044]。后续评测必须覆盖“长期成长 + 信任校准 + 人格稳定”。
