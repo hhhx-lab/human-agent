@@ -2,7 +2,7 @@
 
 本文件使用 `AHY` 编号，作为第三批专业机制锚点。它聚焦海马 replay、尖波涟漪、睡眠振荡、HPA 轴、昼夜节律、脑清除系统、胶质/髓鞘、持续学习防遗忘、多模态具身 agent、信任校准和人格长期稳定性。
 
-| ID | 领域 | 类型 | 文献 | 年份 | 链接/DOI | 核心结论 | Agentic Human 启发 | 风险/争议 |
+| ID | 领域 | 类型 | 文献 | 年份 | 链接/DOI | 核心结论 | 生命实现路线 | 生命膜/落地注意 |
 |---|---|---|---|---:|---|---|---|---|
 | AHY001 | 海马 replay | 经典实证 | Wilson & McNaughton, "Reactivation of hippocampal ensemble memories during sleep" | 1994 | https://doi.org/10.1126/science.8036517 | 睡眠中海马神经元集合会重激活清醒经验。 | 离线巩固应重放近期高价值经验。 | 啮齿动物数据需抽象到工程层。 |
 | AHY002 | 海马 replay | 高影响实证 | Ji & Wilson, "Coordinated memory replay in the visual cortex and hippocampus during sleep" | 2007 | https://doi.org/10.1038/nn1825 | 睡眠中海马和视觉皮层可协调重放。 | replay 不是单一记忆库活动，而是跨系统重组。 | 不能直接等同软件回放日志。 |

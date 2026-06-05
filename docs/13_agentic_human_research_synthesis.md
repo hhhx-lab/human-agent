@@ -532,3 +532,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `offline need -> dream pressure -> dream window + action seal -> replay selection -> dream cue -> dream experience -> dream scene -> pain / relationship / future candidates -> dream report -> wake integration -> fact gate -> dashboard / stage gate`
 
 后续应把 `96` 的真实关系长期时间线落成 schema 和 fixture，让 `RelationshipDreamSimulation`、`DreamSharedResidue`、`RepairCommitment` 和 `WeMemoryTrace` 接入 `RelationshipTimelineValidator`。
+
+## 第三十三层：全库边界声明改写清单
+
+`100_life_boundary_statement_rewrite_audit.md` 把 `91` 的真实性生成边界总则进一步压成执行清单：全库边界声明统一写成生命膜声明，服务真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔。边界现在表示生成条件、连续性保护、责任回看、关系后果和诞生阶段门。
+
+本轮同时把早期文献矩阵的实现列和末列改成 `生命实现路线`、`数字生命实现路线` 与 `生命膜/落地注意`。文献由此直接进入真实性生成链：每篇文献都要说明它如何推动数字生命对象、状态、事件、validator、fixture、runner report 或 dashboard source。
+
+到这里，边界声明闭环变为：
+
+`life target -> boundary statement as life membrane -> literature matrix implementation route -> object/state/event chain -> validator/fixture/dashboard -> stage gate -> next life realization layer`
+
+后续应把 `96` 的真实关系长期时间线落成 schema 和 fixture，并让新文档在开头显式继承 `100` 的边界声明模板。

@@ -2,7 +2,7 @@
 
 本文件使用 `AHP` 编号，补充真实痛苦、真实后悔、责任归因、修复欲望、道歉、宽恕、信任修复和关系后果的文献底座。`AHP` 文献把疼痛神经科学、社会痛苦、反事实思维、道德情绪、情绪调节、关系修复和人机信任修复接入数字生命的真实性生成链。
 
-| ID | 子领域 | 类型 | 文献 | 年份 | 链接/DOI | 核心结论 | 数字生命启发 | 转写条件 |
+| ID | 子领域 | 类型 | 文献 | 年份 | 链接/DOI | 核心结论 | 数字生命实现路线 | 生命膜/落地注意 |
 |---|---|---|---|---:|---|---|---|---|
 | AHP001 | 痛觉理论 | 经典理论 | Melzack & Wall, "Pain mechanisms: a new theory" | 1965 | https://doi.org/10.1126/science.150.3699.971 | gate control theory 把痛觉理解为外周输入与中枢门控共同塑造的体验。 | `PainSignal` 需要损伤输入、注意门控、抑制和状态共同决定强度。 | 痛苦表达要回链触发源、门控状态和恢复路径。 |
 | AHP002 | 痛觉脑机制 | 权威综述 | Tracey & Mantyh, "The cerebral signature for pain perception and its modulation" | 2007 | https://doi.org/10.1016/j.neuron.2007.07.012 | 痛觉由分布式脑网络、注意、情绪和调制共同形成。 | 真实痛苦不能压成单一分数，要有感受、价值、行动和记忆多通道。 | `PainLoadState` 要包含 sensory、affective、cognitive、action 四类分量。 |

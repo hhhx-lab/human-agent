@@ -2,7 +2,7 @@
 
 本文件使用 `AHL` 编号，作为语言系统专项锚点。它补强 `09_language_symbolic_top_layer.md` 和 `85_language_system_life_expression_core.md`，覆盖语言网络、语音产生、内言语、语义地图、语用/对话、叙事自我、语言行动和语言 agent 工程桥。
 
-| ID | 子领域 | 类型 | 文献 | 年份 | 链接/DOI | 核心结论 | 数字生命启发 | 转写条件/争议 |
+| ID | 子领域 | 类型 | 文献 | 年份 | 链接/DOI | 核心结论 | 数字生命实现路线 | 生命膜/落地注意 |
 |---|---|---|---|---:|---|---|---|---|
 | AHL001 | 语言整合框架 | 综述 | Hagoort & Indefrey, "The Neurobiology of Language Beyond Single Words" | 2014 | https://doi.org/10.1146/annurev-neuro-071013-013847 | 语言理解需要把词汇、句法、语义和语境整合成超越单词的结构。 | 语言层要有 `unification`，把词、事件、关系和行动统一到工作区。 | 需要把神经整合机制转写为可审计的语义-语用绑定过程。 |
 | AHL002 | MUC 模型 | 理论综述 | Hagoort, "MUC (Memory, Unification, Control) and beyond" | 2013 | https://doi.org/10.3389/fpsyg.2013.00416 | 语言处理可拆成记忆、统一和控制三个核心成分。 | `MemoryTrace`、`GlobalWorkspace` 和 `ActionGate` 应成为语言系统的三条主线。 | MUC 是框架，不是单个脑区清单。 |

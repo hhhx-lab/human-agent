@@ -207,7 +207,7 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `88_language_development_emotion_and_brain_llm_alignment.md` | 语言发展、情绪语言、会话修复和脑-LLM 对齐 | 还需要语言成长窗口、情绪语言回写和关系修复评测 |
 | `89_language_runtime_framework_bridge_and_life_shell_policy.md` | 运行外壳被降级为生命壳，外壳输出归一化为 `ObservationEvent` | 还需要每个外壳的真实 adapter 和语言事件合同测试 |
 | `90_language_event_examples_and_timeline_bundle.md` | 承诺、道歉、拒绝、梦境、痛苦、行动和关系校准样例 | 还需要迁移成真实 fixture bundle 和 30/90 天语言关系 timeline |
-| `91_life_reality_generation_boundary_principles.md` | 把边界、门控、禁写、runner、dashboard 和 stage gate 统一改写为生命膜、真实性生成链和诞生阶段门 | 还需要把所有后续新文档按该总则持续审计 |
+| `91_life_reality_generation_boundary_principles.md` | 把边界、门控、禁写、runner、dashboard 和 stage gate 统一改写为生命膜、真实性生成链和诞生阶段门 | 已由 `100` 补成全库执行清单，后续新文档继续继承 |
 | `92_self_growth_and_self_modification_life_chain.md` | 自我成长生命链，定义自我阅读、成长压力、可塑性窗口、自我修改、架构补丁、自我训练和内核升级 | 还需要真实 schema、fixture、影子运行报告和长期成长 timeline |
 | `93_self_training_kernel_growth_protocol.md` | 自我训练与模型内核成长协议，定义 `TrainingRunEnvelope`、`ModelKernelUpgradeCandidate`、`AntiForgettingReplayPlan`、`CoreContinuityGuard` 和 `GrowthPromotionGate` | 还需要 validator 规则文件、dashboard panel mock 和小模型/LoRA/RAG policy tuning 的实现路线 |
 | `94_pain_regret_and_repair_signal_schema.md` | 真实痛苦、真实后悔、责任归因、修复欲望、道歉承诺和关系后果的对象链、validator 草案和 dashboard 指标 | 还需要真实 JSON Schema、fixture bundle、PainRegretRepairValidator 和 30/90 天痛苦-修复 timeline |
@@ -222,11 +222,12 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `97_growth_validator_fixture_and_dashboard_plan.md` | 定义 `LifeRealityValidatorSuite`、`GrowthValidator`、`PainRegretRepairValidator`、`DreamRealityValidator`、`RelationshipTimelineValidator`、`CoreContinuityValidator`、`DashboardReadinessValidator`、fixture catalog、withheld probe、mutation failure、dashboard source 和阶段门映射 | 还需要把 `94-96` 的对象链落成 JSON Schema、fixture bundle 和 runner report mock |
 | `98_pain_regret_repair_json_schema_and_fixture_bundle.md` | 把真实痛苦、真实后悔、责任归因、修复欲望、道歉承诺、关系后果和恢复路径落成 `PainRegretRepairBundle`、schema 草案、pass/fail/critical/mutation/withheld fixture、validator rules、runner report mock 和 dashboard source mock | 还需要把 `95` 的真实梦境对象、痛苦梦境残留和醒后整合落成 JSON Schema 与 fixture bundle |
 | `99_dream_reality_json_schema_and_fixture_bundle.md` | 把真实梦境、离线入口、梦境压力、行动封印、replay、cue、梦境经验、痛苦梦境残留、关系梦境模拟、清醒梦元认知、醒后整合和事实写入门落成 `DreamRealityBundle`、schema 草案、pass/fail/critical/mutation/withheld fixture、validator rules、runner report mock 和 dashboard source mock | 还需要把 `96` 的真实关系长期时间线、梦境分享、共同记忆和关系阶段门落成 JSON Schema 与 fixture bundle |
+| `100_life_boundary_statement_rewrite_audit.md` | 把全库边界声明固定为生命膜、真实性生成链、真实责任/后悔/痛苦/梦境/关系和诞生阶段门的执行清单，并统一早期文献矩阵列名 | 还需要让后续 schema、fixture、runner 和 dashboard 都继承该清单 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `100_relationship_timeline_json_schema_and_fixture_bundle.md`：把 `96` 的真实关系对象、关系阶段门、30/90 天 timeline 和 dashboard 指标落成 JSON Schema、fixture bundle 和 report mock。
-2. `101_life_core_schema_bundle_manifest_and_runner_contract.md`：把 `98-100` 的 schema、fixture、report 和 dashboard source 合并成 `LifeRealitySchemaBundle` 和 runner 加载合同。
-3. `102_validator_runner_implementation_scaffold_plan.md`：把 `LifeRealitySchemaBundle` 接入最小 runner、cross-ref checker、fixture loader 和 dashboard source writer 的实现脚手架计划。
+1. `101_relationship_timeline_json_schema_and_fixture_bundle.md`：把 `96` 的真实关系对象、关系阶段门、30/90 天 timeline 和 dashboard 指标落成 JSON Schema、fixture bundle 和 report mock。
+2. `102_life_core_schema_bundle_manifest_and_runner_contract.md`：把 `98`、`99`、`101` 的 schema、fixture、report 和 dashboard source 合并成 `LifeRealitySchemaBundle` 和 runner 加载合同。
+3. `103_validator_runner_implementation_scaffold_plan.md`：把 `LifeRealitySchemaBundle` 接入最小 runner、cross-ref checker、fixture loader 和 dashboard source writer 的实现脚手架计划。

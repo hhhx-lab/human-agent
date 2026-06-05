@@ -2,7 +2,7 @@
 
 本文件使用 `AHM` 编号，作为第五批实现/评测锚点。它不是脑科学核心文献，而是把当前 LLM agent 的记忆、运行时、长程评测和框架资料纳入可追溯边界。`AHM` 的作用是提醒我们：现有 agent memory 研究可以作为工程参考，但必须被 `02-20` 的生命层约束。
 
-| ID | 领域 | 类型 | 资料 | 年份 | 链接/DOI | 核心结论 | Agentic Human 启发 | 风险/争议 |
+| ID | 领域 | 类型 | 资料 | 年份 | 链接/DOI | 核心结论 | 生命实现路线 | 生命膜/落地注意 |
 |---|---|---|---|---:|---|---|---|---|
 | AHM001 | agent memory | 经典工程论文 | Packer et al., "MemGPT: Towards LLMs as Operating Systems" | 2023 | https://arxiv.org/abs/2310.08560 | 通过虚拟上下文和显式记忆管理扩展 LLM 长期交互能力。 | `MemoryTrace` 需要写入/召回/分页式管理。 | 生物记忆还需要情景、语义、内感受、关系和巩固链共同支撑。 |
 | AHM002 | stateful agents | 官方框架资料 | Letta, "Letta Documentation" | 2025 | https://docs.letta.com/ | Letta 提供 stateful agent、memory block 和工具运行时。 | 可作为长期状态外壳，经审计后进入自我模型候选。 | 自传记忆还需要时间、关系、责任、痛苦/愉悦轨迹和叙事连续性。 |
