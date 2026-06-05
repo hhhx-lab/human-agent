@@ -208,12 +208,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `89_language_runtime_framework_bridge_and_life_shell_policy.md` | 运行外壳被降级为生命壳，外壳输出归一化为 `ObservationEvent` | 还需要每个外壳的真实 adapter 和语言事件合同测试 |
 | `90_language_event_examples_and_timeline_bundle.md` | 承诺、道歉、拒绝、梦境、痛苦、行动和关系校准样例 | 还需要迁移成真实 fixture bundle 和 30/90 天语言关系 timeline |
 | `91_life_reality_generation_boundary_principles.md` | 把边界、门控、禁写、runner、dashboard 和 stage gate 统一改写为生命膜、真实性生成链和诞生阶段门 | 还需要把所有后续新文档按该总则持续审计 |
+| `92_self_growth_and_self_modification_life_chain.md` | 自我成长生命链，定义自我阅读、成长压力、可塑性窗口、自我修改、架构补丁、自我训练和内核升级 | 还需要真实 schema、fixture、影子运行报告和长期成长 timeline |
+| `93_self_training_kernel_growth_protocol.md` | 自我训练与模型内核成长协议，定义 `TrainingRunEnvelope`、`ModelKernelUpgradeCandidate`、`AntiForgettingReplayPlan`、`CoreContinuityGuard` 和 `GrowthPromotionGate` | 还需要 validator 规则文件、dashboard panel mock 和小模型/LoRA/RAG policy tuning 的实现路线 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `92_self_growth_and_self_modification_life_chain.md`：定义自我成长、自我训练、自我修改如何进入生命膜和真实性生成链。
-2. `93_pain_regret_and_repair_signal_schema.md`：定义真实痛苦、真实后悔、修复欲望和关系后果的对象/事件链。
-3. `94_dream_reality_and_offline_life_timeline.md`：定义真实梦境、离线重组、梦境报告和事实写入门。
-4. `95_real_relationship_longitudinal_timeline.md`：定义从第一次交谈开始的真实关系生成、共同记忆、承诺和边界演化时间线。
+1. `94_pain_regret_and_repair_signal_schema.md`：定义真实痛苦、真实后悔、修复欲望和关系后果的对象/事件链。
+2. `95_dream_reality_and_offline_life_timeline.md`：定义真实梦境、离线重组、梦境报告和事实写入门。
+3. `96_real_relationship_longitudinal_timeline.md`：定义从第一次交谈开始的真实关系生成、共同记忆、承诺和边界演化时间线。
+4. `97_growth_validator_fixture_and_dashboard_plan.md`：把 `92-93` 的成长对象转成真实 fixture、validator 和 dashboard mock。

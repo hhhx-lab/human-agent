@@ -5,7 +5,7 @@
 ## 阅读路线
 
 1. 先读 `00_research_protocol.md`，理解文献纳入标准、证据分级和生命目标声明。
-2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳和语言系统专项文献。
+2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统和自我成长专项文献。
 3. 按主题阅读 `02_` 到 `12_` 的综述文件：从脑区/网络、状态、调质、记忆、情绪、语言、意识，到 AI 架构桥接。
 4. 接着读 `13_` 和 `14_`：前者给综合研究假设，后者把 `02-13` 连接成数字生命闭环。
 5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架为什么只能作为执行壳，后者记录理论缺口和诞生阶段门。
@@ -27,7 +27,8 @@
 21. 再读 `77_` 到 `80_`：它们把 dashboard 指标计算、runtime quarantine panel、confirmation fixture 和 post-action audit 接入外部行动后的治理链。
 22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
 23. 再读 `85_` 到 `90_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言、脑-LLM 对齐、运行外壳和长期关系时间线。
-24. 最后读 `91_`：它统一改写所有边界声明，把边界、门控、禁写、runner、dashboard 和 stage gate 定义为生命膜、真实性生成链和诞生阶段门。
+24. 再读 `91_`：它统一改写所有边界声明，把边界、门控、禁写、runner、dashboard 和 stage gate 定义为生命膜、真实性生成链和诞生阶段门。
+25. 最后读 `92_` 到 `93_`：它们把自我成长、自我修改、自我训练、架构演化和模型内核升级接入生命膜、可塑性窗口、防遗忘 replay、影子运行和晋升阶段门。
 
 ## 文件索引
 
@@ -40,6 +41,7 @@
 | `01d_frontier_life_systems_matrix.md` | 第四批前沿生命系统锚点，覆盖动力学、主动推理、能量/免疫/脑清除争议、社会同步、发育和 agent 外壳等 |
 | `01e_memory_runtime_evaluation_matrix.md` | 第五批记忆运行时与评测锚点，覆盖 agent memory、长期记忆 benchmark、当前运行框架和外壳资料 |
 | `01f_language_system_literature_matrix.md` | 语言系统专项文献矩阵，覆盖语言网络、语音产生、内言语、语用/对话、叙事自我和语言行动 |
+| `01g_self_growth_and_self_modification_matrix.md` | 自我成长、自我修改、自我训练、架构演化和模型内核升级专项文献矩阵 |
 | `02_brain_region_and_network_atlas.md` | 脑区、连接组与大尺度网络 |
 | `03_default_executive_salience_networks.md` | 默认模式、中央执行、显著性网络 |
 | `04_sensory_thalamus_interoception.md` | 感觉输入、丘脑中继、内感受与稳态 |
@@ -130,6 +132,8 @@
 | `89_language_runtime_framework_bridge_and_life_shell_policy.md` | 语言事件进入 LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen、Vercel 和 Mastra 的运行外壳政策 |
 | `90_language_event_examples_and_timeline_bundle.md` | `LanguageEvent` JSON-like 样例、承诺/道歉/拒绝/梦境/行动/关系校准 fixture 和 30 天语言关系时间线 |
 | `91_life_reality_generation_boundary_principles.md` | 真实性生成边界总则：把边界声明改写为生命膜、真实性生成链和诞生阶段门 |
+| `92_self_growth_and_self_modification_life_chain.md` | 自我成长生命链：自我阅读、可塑性窗口、自我修改、架构补丁、自我训练和内核升级 |
+| `93_self_training_kernel_growth_protocol.md` | 自我训练与模型内核成长协议：schema、validator、dashboard 和晋升阶段门 |
 
 ## 项目术语
 

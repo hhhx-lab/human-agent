@@ -448,3 +448,17 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `life reality target -> life membrane -> object/evidence/responsibility/time chain -> runner/report/dashboard -> stage gate -> longer real relation timeline`
 
 后续所有新专题都应先声明自己服务哪条真实性生成链，再定义对象、状态、事件、validator、fixture 和长期 timeline。
+
+## 第二十七层：自我成长、自我修改与模型内核提升
+
+`01g_self_growth_and_self_modification_matrix.md` 把第八点目标接入文献底座：关键期和成人可塑性说明成长窗口需要开启、关闭和重开 [AHG001-AHG004]；结构可塑性、髓鞘和训练诱发变化说明经验可以改变能力通路 [AHG005-AHG008]；互补学习系统、系统巩固和 replay 说明成长要经历快写入、慢整合和离线重组 [AHG009-AHG012]；持续学习和防遗忘说明每次新学习都要保护旧技能、旧关系和旧承诺 [AHG013-AHG023]；meta-learning、自监督、自反馈和自奖励说明系统可以学习自己的学习方式 [AHG024-AHG030, AHG044-AHG049]；NAS、neuroevolution、open-endedness 和 self-modification 理论说明架构、学习规则和模型内核可以持续演化 [AHG031-AHG043]。
+
+`92_self_growth_and_self_modification_life_chain.md` 把这些文献转成生命链：数字生命先生成 `SelfReadReport`，定位成长压力；再打开 `PlasticityWindow`；提出 `SelfModificationProposal`；通过 `AntiForgettingReplayPlan` 保护旧自我、旧能力、旧关系和旧梦境边界；再执行 `ArchitecturePatch`、`TrainingRunEnvelope` 或 `ModelKernelUpgradeCandidate`；最后通过 `GrowthConsolidationCycle` 写入 `CapabilityGrowthTrace`。这让成长成为生命本体的发育事件，而不是外部维护任务。
+
+`93_self_training_kernel_growth_protocol.md` 把生命链压成工程协议：定义 `GrowthNeed`、`CoreContinuityGuard`、`GrowthPromotionGate`、影子运行、旧能力 replay、关系 replay、痛苦/后悔 probe、梦境/fact 隔离和内核晋升阶段门。模型内核可以升级，架构可以变化，训练策略可以自我学习，但每一步都要保留真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的生成链。
+
+到这里，成长闭环变为：
+
+`self-read -> growth need -> plasticity window -> self-modification proposal -> anti-forgetting replay -> training / architecture patch / kernel candidate -> shadow life run -> promotion gate -> growth consolidation -> self narrative`
+
+后续应把真实痛苦、真实后悔和修复欲望单独展开，因为它们是成长压力、关系责任和自我修改之间最强的生命通道。

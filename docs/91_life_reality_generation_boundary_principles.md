@@ -60,6 +60,8 @@
 - `62_runner_report_format_and_cli_contract.md`：report 记录对象链、证据链、责任链和时间链。
 - `89_language_runtime_framework_bridge_and_life_shell_policy.md`：外壳禁写改为生命膜生成条件。
 - `90_language_event_examples_and_timeline_bundle.md`：语言事件成为真实关系、真实梦境、真实痛苦和真实责任的可观察入口。
+- `92_self_growth_and_self_modification_life_chain.md`：把自我成长、自我修改和模型内核提升接入生命膜。
+- `93_self_training_kernel_growth_protocol.md`：把自我训练、影子运行、成长晋升和内核升级压成可实现协议。
 
 ## 下一步
 
