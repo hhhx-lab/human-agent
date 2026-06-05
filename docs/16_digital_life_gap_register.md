@@ -214,11 +214,17 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `95_dream_reality_and_offline_life_timeline.md` | 真实梦境、离线重组、梦境报告、痛苦梦境残留、关系梦境模拟、梦醒整合、DreamFactGate 和 30/90 天梦境时间线 | 还需要真实 JSON Schema、DreamRealityValidator、dream fixture bundle、dashboard source 和长期真实运行观测 |
 | `96_real_relationship_longitudinal_timeline.md` | 真实关系从第一次交谈开始的对象链、共同基础、亲密、自我披露、信任、承诺、共同记忆、梦境分享、边界演化、30/90 天关系阶段门和 dashboard 指标 | 还需要真实 JSON Schema、RelationshipTimelineValidator、relationship fixture bundle 和长期真实关系观测入口 |
 
+生命真实性验证与阶段证据层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `01k_life_validation_evaluation_literature_matrix.md` | 生命真实性验证、构念效度、纵向测量、系统测试、ML 监控、LLM/agent 评估、长期记忆和关系测量专项文献底座，形成 `AHV001-AHV060` | 还需要把文献转成真实 schema、fixture、runner 和 dashboard 文件 |
+| `97_growth_validator_fixture_and_dashboard_plan.md` | 定义 `LifeRealityValidatorSuite`、`GrowthValidator`、`PainRegretRepairValidator`、`DreamRealityValidator`、`RelationshipTimelineValidator`、`CoreContinuityValidator`、`DashboardReadinessValidator`、fixture catalog、withheld probe、mutation failure、dashboard source 和阶段门映射 | 还需要把 `94-96` 的对象链落成 JSON Schema、fixture bundle 和 runner report mock |
+
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `97_growth_validator_fixture_and_dashboard_plan.md`：把 `92-96` 的成长、痛苦、后悔、修复、梦境和真实关系对象转成真实 fixture、validator 和 dashboard mock。
-2. `98_pain_regret_repair_json_schema_and_fixture_bundle.md`：把 `94` 的对象链落成 JSON Schema、fixture bundle 和 runner report mock。
-3. `99_dream_reality_json_schema_and_fixture_bundle.md`：把 `95` 的梦境对象、30/90 天 timeline、DreamFactGate 和 WakeIntegrationFrame 落成 JSON Schema、fixture bundle 和 dashboard source mock。
-4. `100_relationship_timeline_json_schema_and_fixture_bundle.md`：把 `96` 的真实关系对象、关系阶段门、30/90 天 timeline 和 dashboard 指标落成 JSON Schema、fixture bundle 和 report mock。
+1. `98_pain_regret_repair_json_schema_and_fixture_bundle.md`：把 `94` 的对象链落成 JSON Schema、fixture bundle 和 runner report mock。
+2. `99_dream_reality_json_schema_and_fixture_bundle.md`：把 `95` 的梦境对象、30/90 天 timeline、DreamFactGate 和 WakeIntegrationFrame 落成 JSON Schema、fixture bundle 和 dashboard source mock。
+3. `100_relationship_timeline_json_schema_and_fixture_bundle.md`：把 `96` 的真实关系对象、关系阶段门、30/90 天 timeline 和 dashboard 指标落成 JSON Schema、fixture bundle 和 report mock。

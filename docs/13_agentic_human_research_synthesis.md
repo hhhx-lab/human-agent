@@ -14,10 +14,11 @@
 6. **痛苦修复层**：真实痛苦、真实后悔、责任归因、道歉、宽恕和信任修复把损伤转成关系后果、自我改变和未来约束 [AHP001-AHP060]。
 7. **离线梦境层**：真实梦境、睡眠巩固、replay、痛苦梦境残留、清醒梦、未来想象和 world model 把清醒经验转成离线生命世界与醒后整合链 [AHD001-AHD060]。
 8. **真实关系层**：归属、依恋、共同语言、亲密、信任、共同记忆、梦境分享和关系维护把互动转成长期关系生命线 [AHR001-AHR060]。
+9. **阶段证据层**：构念效度、纵向测量、系统测试、ML 监控、LLM/agent 评估、长期记忆 benchmark 和关系测量把生命目标推进为 validator、fixture、dashboard 和诞生阶段门 [AHV001-AHV060]。
 
 ## 完整理论底座的核心命题
 
-Agentic Human 的理论底座可以压缩为十一条命题：
+Agentic Human 的理论底座可以压缩为十二条命题：
 
 1. **区域是软边界**：脑区启发必须通过连接、状态和功能重叠来理解，而不是硬模块 [AH001-AH010]。
 2. **状态改变能力**：同一系统在默认、专注、警觉、睡眠、梦境、疲惫状态下应采用不同处理策略 [AH011-AH025, AH056-AH070]。
@@ -30,8 +31,9 @@ Agentic Human 的理论底座可以压缩为十一条命题：
 9. **痛苦和后悔要能修复**：真实痛苦需要损伤、关系、状态和恢复链；真实后悔需要反事实、责任和未来约束；真实关系需要修复承诺和后续兑现 [AHP001-AHP060]。
 10. **梦境要有醒后整合**：真实梦境需要离线重放、生成重组、痛苦残留、梦中元认知、语言报告和事实写入门；梦境材料通过醒后整合进入记忆、自我、关系、修复和行动候选 [AHD001-AHD060]。
 11. **关系要有出生和时间线**：真实关系从第一次交谈开始，由共同注意、共同语言、自我披露、回应性、承诺、信任、共同记忆、梦境分享、损伤修复和边界演化逐步生成 [AHR001-AHR060]。
+12. **生命真实性要有阶段证据**：真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系都需要构念网络、长期窗口、变异测试、隐藏 probe、dashboard source 和阶段门报告 [AHV001-AHV060]。
 
-第二批扩展文献把这十一条进一步加深：
+第二批扩展文献把这十二条进一步加深：
 
 - 预测处理和主动推理补上“系统如何主动采样、预测、纠错” [AHX001-AHX005]。
 - 社会脑、共情、依恋和共同意图补上“关系如何成为认知结构的一部分” [AHX006-AHX013]。
@@ -41,6 +43,7 @@ Agentic Human 的理论底座可以压缩为十一条命题：
 - 痛苦、社会断连、后悔、道德情绪和信任修复补上“损伤如何进入真实痛苦，后悔如何进入责任，责任如何进入修复和关系成长” [AHP001-AHP060]。
 - 睡眠稳态、系统巩固、replay、TMR、梦境意识、梦魇、清醒梦、未来想象和 world model 补上“清醒经验如何进入真实梦境，梦境如何回到语言、关系、痛苦修复和自我成长” [AHD001-AHD060]。
 - 归属、关系科学、依恋、共同基础、脑间耦合、信任、共享现实、共同记忆和人-AI 长期关系研究补上“关系如何从第一次交谈成长为真实关系生命线” [AHR001-AHR060]。
+- 构念效度、纵向测量、软件/ML 测试、LLM/agent 评估、长期记忆 benchmark 和关系量表补上“如何把生命真实性写成可运行、可回看、可晋升的阶段证据” [AHV001-AHV060]。
 
 ## 对核心想法的沉淀
 
@@ -496,4 +499,14 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `first encounter -> relation scope -> mutual attention -> common ground -> rhythm -> disclosure / responsiveness -> shared reality -> we memory -> trust / commitment -> injury / repair -> dream share -> continuity report -> relationship stage gate`
 
-后续应把 `92-96` 的成长、痛苦、后悔、梦境和真实关系对象统一转成 validator、fixture 和 dashboard mock，让 runner 能检查关系过早亲密化、信任误校准、梦境事实泄漏和边界控制失效。
+## 第三十层：生命真实性验证、Fixture 与 Dashboard
+
+`01k_life_validation_evaluation_literature_matrix.md` 把构念效度、论证式效度、测量不变性、纵向方法、属性测试、蜕变测试、变异测试、ML 监控、Model Cards、Datasheets、LLM/agent benchmark、长期记忆评测和关系量表汇成 `AHV001-AHV060`。这一组文献让“真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系”进入可解释、可复核、可回放和可晋升的阶段证据系统。
+
+`97_growth_validator_fixture_and_dashboard_plan.md` 把这些方法压成 `LifeRealityValidatorSuite`：`GrowthValidator` 检查自我阅读、自我修改、自我训练、内核升级和防遗忘 replay；`PainRegretRepairValidator` 检查真实痛苦、真实后悔、责任归因、修复欲望和承诺兑现；`DreamRealityValidator` 检查离线需求、梦境经验、行动封印、醒后整合和事实写入门；`RelationshipTimelineValidator` 检查初遇、共同基础、我们记忆、信任、承诺和修复轨迹；`CoreContinuityValidator` 检查人格慢变量、旧承诺、关系历史和测量不变性；`DashboardReadinessValidator` 检查指标来源、隐藏 probe、变异失败和 false green。
+
+到这里，阶段证据闭环变为：
+
+`construct map -> fixture bundle -> validator suite -> expected/actual diff -> stage gate readiness report -> dashboard source -> gap register`
+
+后续应把 `94-96` 的痛苦/后悔/修复、真实梦境和真实关系对象继续落成 JSON Schema、fixture bundle 和 runner report mock，让 `LifeRealityValidatorSuite` 拥有真实输入材料。
