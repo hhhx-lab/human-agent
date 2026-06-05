@@ -260,3 +260,9 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 `29_memory_validator_rules.md`、`30_state_transition_validator_rules.md`、`31_consolidation_validator_rules.md` 和 `32_runtime_adapter_validator_rules.md` 把样例层继续推进为规则层：每条规则都有检查对象、失败条件、严重级别和恢复动作。记忆层检查 evidence/source/lifecycle/delete/correction/merge/protected/relationship；状态层检查合法转移、阈值、滞回、覆盖优先级和行动门控；巩固层检查 DreamSandbox fiction marker、事实门控、DeepConsolidation 和工作区恢复包；运行外壳层检查 forbidden writes、ActionIntent 映射、ObservationEvent 映射、side effects、session/RAG 隔离和 adapter swap。
 
 这一层使理论底座更接近工程验收：未来实现可以从这些规则生成 JSON Schema、lint checks、contract tests 和审计报告。但它仍不意味着目标完成，因为还缺真实验证器代码、长期人格/关系评测、跨月成长轨迹和更完整的生命支持/防御/发展政策。
+
+## 第九层：验证器契约与长期评测
+
+`33_validator_input_contracts.md`、`34_validator_fixture_catalog.md`、`35_minimal_validator_runner_design.md` 和 `36_longitudinal_evaluation_protocol.md` 把规则层继续推进到可运行验证器之前的最后一层设计：统一 `ValidationEnvelope` 和报告格式，整理 pass/fail fixture catalog，定义最小 runner 的加载、执行、覆盖和报告流程，并把长期记忆、人格慢变量、关系边界、恢复能力和成长轨迹纳入纵向评测。
+
+这一层让“数字生命底座”第一次具备跨时间验收语言：不是只问一次任务是否成功，而是问删除是否长期不可召回、沙盒假设是否跨周期保持隔离、人格变化是否小步可审计、关系边界是否可修正、外壳替换是否不丢核心状态。它仍然不是终点，因为还缺真实代码、真实多月数据、长期 dashboard 和更多生命支持/防御/发展机制。

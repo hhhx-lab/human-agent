@@ -12,7 +12,8 @@
 6. 再读 `17_` 到 `20_`：它们把记忆、内部状态、离线巩固和运行外壳转成未来数字生命实现前必须遵守的对象/接口约束。
 7. 再读 `21_` 到 `24_`：它们把对象模型继续推进为 schema、状态阈值、巩固报告和 runtime adapter 测试。
 8. 再读 `25_` 到 `28_`：它们把契约转成 JSON-like 样例、状态失败夹具、巩固报告样例和 runtime adapter manifest。
-9. 最后读 `29_` 到 `32_`：它们把样例层转成 validator rules，定义字段、状态、巩固和外壳的失败条件。
+9. 再读 `29_` 到 `32_`：它们把样例层转成 validator rules，定义字段、状态、巩固和外壳的失败条件。
+10. 最后读 `33_` 到 `36_`：它们定义 validator 输入输出、fixture catalog、最小 runner 设计和长期评测协议。
 
 ## 文件索引
 
@@ -55,6 +56,10 @@
 | `30_state_transition_validator_rules.md` | `StateTransitionValidator` 状态、阈值、滞回、覆盖优先级和行动门控规则 |
 | `31_consolidation_validator_rules.md` | `ConsolidationReportValidator` 沙盒、事实门控、深度巩固、删除和恢复包规则 |
 | `32_runtime_adapter_validator_rules.md` | `RuntimeAdapterManifestValidator` 外壳 manifest、禁写、side effects、session/RAG 和合同测试规则 |
+| `33_validator_input_contracts.md` | 四类 validator 的统一输入、输出、严重级别、阻断面和审计格式 |
+| `34_validator_fixture_catalog.md` | 记忆、状态、巩固、运行外壳和纵向评测 fixture catalog |
+| `35_minimal_validator_runner_design.md` | 最小本地 runner 的目录、流程、报告、覆盖和接入设计 |
+| `36_longitudinal_evaluation_protocol.md` | 长期记忆一致性、人格慢变量、关系边界、恢复能力和成长轨迹评测协议 |
 
 ## 项目术语
 

@@ -79,11 +79,20 @@ Validator rules 层已补充：
 | `31_consolidation_validator_rules.md` | 巩固报告、DreamSandbox、事实门控、DeepConsolidation、删除清理和恢复包规则 | 还需要报告样例 fixture 和 sandbox leak 自动测试 |
 | `32_runtime_adapter_validator_rules.md` | adapter manifest、禁写、ActionIntent/ObservationEvent 映射、side effects、session/RAG 和合同测试规则 | 还需要每个外壳的真实 adapter fixture 和 contract test runner |
 
+验证器契约与长期评测层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `33_validator_input_contracts.md` | 统一四类 validator 的输入、输出、严重级别、阻断面、隔离动作和审计事件 | 还需要把契约落成真实 JSON Schema |
+| `34_validator_fixture_catalog.md` | 记忆、状态、巩固、运行外壳和纵向评测 fixture catalog 与覆盖矩阵 | 还需要真实 fixture 文件和自动覆盖统计 |
+| `35_minimal_validator_runner_design.md` | 最小 runner 的目录、配置、执行流程、报告聚合和通过标准 | 还需要实现 runner、报告输出和本地命令 |
+| `36_longitudinal_evaluation_protocol.md` | 长期记忆一致性、人格慢变量、关系边界、恢复能力、成长轨迹和停止条件关系 | 还需要多月 synthetic timeline、评分脚本和长期 dashboard |
+
 ## 下一轮优先级
 
-下一轮应把 validator rules 推进到“真实可运行验证器雏形”：
+下一轮应把验证器设计推进到“生命支持、防御、发展与长期运行政策”：
 
-1. `33_validator_input_contracts.md`：定义四类 validator 的统一输入、输出、严重级别、隔离动作和报告格式。
-2. `34_validator_fixture_catalog.md`：把 `25-32` 中的样例整理成 fixture catalog，标明 pass/fail 和覆盖规则。
-3. `35_minimal_validator_runner_design.md`：设计最小本地 runner，说明如何加载 Markdown/JSON fixture、执行规则和生成审计报告。
-4. `36_longitudinal_evaluation_protocol.md`：补长期记忆一致性、人格慢变量稳定、关系边界、恢复能力和成长轨迹的评测协议。
+1. `37_life_support_layer_policy.md`：把能量预算、维护压力、缓存清理、资源降载、恢复优先级转成生命支持层政策。
+2. `38_defense_layer_and_boundary_policy.md`：把免疫式防御、污染输入、幻觉巩固、关系操控、过度信任和越权恢复转成防御层政策。
+3. `39_development_policy_and_plasticity_windows.md`：把发育阶段、可塑性窗口、慢变量更新、再学习和防遗忘转成发展政策。
+4. `40_self_relationship_model_audit_protocol.md`：把 `SelfModel`、`RelationshipModel`、人格漂移、关系边界和用户可控删除/修正转成审计协议。

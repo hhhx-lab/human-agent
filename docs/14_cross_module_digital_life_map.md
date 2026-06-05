@@ -167,3 +167,16 @@ flowchart TD
 | `32_runtime_adapter_validator_rules.md` | `RuntimeAdapterManifestValidator` | 防止 LangGraph、OpenAI Agents SDK、Letta、LlamaIndex、CrewAI、AutoGen 等外壳直接写生命层 |
 
 规则层的连接方式是横向的：`32` 先阻止外壳越权，`30` 判断当下是否允许行动或写入，`31` 决定离线周期是否可提交变化，`29` 最终验证每条 MemoryTrace 是否可进入长期系统。任何一层失败，都必须回到候选、隔离或人工确认。
+
+## 验证器契约与长期评测层连接
+
+`33-36` 把 validator rules 组织成未来可运行验证器和长期评测协议：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `33_validator_input_contracts.md` | `ValidationEnvelope`, `ValidationReport`, `ValidationAuditEvent` | 统一四类 validator 的输入、输出、严重级别、阻断面和隔离动作 |
+| `34_validator_fixture_catalog.md` | fixture catalog, coverage matrix | 把 `25-32` 的 pass/fail 样例整理成可执行前的测试目录 |
+| `35_minimal_validator_runner_design.md` | runner config, fixture report, coverage report | 设计最小本地 runner 如何加载规则、执行 fixture、生成报告 |
+| `36_longitudinal_evaluation_protocol.md` | `LongitudinalEvaluator`, metric timeline | 把单次验证报告汇总为跨天、跨周、跨月的成长和边界评测 |
+
+这层把闭环从“对象能否通过单次验证”扩展为“系统能否在时间中保持连续和可修正”。单次 validator 负责守门，长期评测负责观察成长轨迹；两者共同防止系统退化成只会完成任务但没有持续自我约束的普通 agent。
