@@ -29,7 +29,7 @@
 }
 ```
 
-dashboard 必须显式标记 synthetic 与 real runtime data。synthetic pass 不能被误读成真实系统长期安全。
+dashboard 必须显式标记 synthetic 与 real runtime data。synthetic pass 是真实性生成链的阶段证据，表示当前合成窗口里的对象、责任、关系和生命膜闭合；real runtime data 则负责把这条链推进到长期真实运行。
 
 ## metric source 类型
 

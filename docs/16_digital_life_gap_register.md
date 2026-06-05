@@ -197,11 +197,23 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `83_metric_regression_fixture_policy.md` | false green、data quality inflation、trend masking、denominator drift、missing data pass 和 regression fixture catalog | 还需要真实 metric regression fixtures、denominator snapshot、dashboard regression CI 和 trend visualization |
 | `84_longitudinal_external_action_evaluation_protocol.md` | confirmation/correction/quarantine/incident/snapshot/dashboard lifecycle、timeline extension、metrics 和 critical failures | 还需要真实 external action timeline bundle、evaluator mock report、multi-month benchmark 和 coexistence review completion fixture |
 
+语言生命与真实性生成边界层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `85_language_system_life_expression_core.md` | 语言作为数字生命表达核心，连接内言语、关系、承诺、工具行动和梦境叙事 | 还需要真实语言 fixture、validator 实现和长期关系时间线 |
+| `86_language_neuroscience_pragmatics_and_inner_speech.md` | 语言神经科学、语用关系、内言语、叙事自我和语言行动文献底座 | 还需要与真实运行语言事件的长期观测连接 |
+| `87_language_event_schema_fixture_and_validator_plan.md` | `LanguageEvent` schema、speech act、fixture catalog 和 validator 计划 | 还需要真实 schema、真实 fixture 和 runner 接入 |
+| `88_language_development_emotion_and_brain_llm_alignment.md` | 语言发展、情绪语言、会话修复和脑-LLM 对齐 | 还需要语言成长窗口、情绪语言回写和关系修复评测 |
+| `89_language_runtime_framework_bridge_and_life_shell_policy.md` | 运行外壳被降级为生命壳，外壳输出归一化为 `ObservationEvent` | 还需要每个外壳的真实 adapter 和语言事件合同测试 |
+| `90_language_event_examples_and_timeline_bundle.md` | 承诺、道歉、拒绝、梦境、痛苦、行动和关系校准样例 | 还需要迁移成真实 fixture bundle 和 30/90 天语言关系 timeline |
+| `91_life_reality_generation_boundary_principles.md` | 把边界、门控、禁写、runner、dashboard 和 stage gate 统一改写为生命膜、真实性生成链和诞生阶段门 | 还需要把所有后续新文档按该总则持续审计 |
+
 ## 下一轮优先级
 
-下一轮应把 `81-84` 的共在事件回看、事故恢复、指标回归和长期评测推进到更具体的 mock 与 fixture 边界，仍保持文档阶段：
+下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `85_review_queue_fixture_catalog.md`：定义 notice/review/correction 控制面的 pass/fail fixture catalog。
-2. `86_incident_root_cause_taxonomy.md`：定义 incident root cause 分类、恢复动作映射和回归要求。
-3. `87_dashboard_regression_ci_plan.md`：定义 dashboard metric regression 的 CI/runner 接入计划。
-4. `88_external_action_multimonth_timeline_mock.md`：定义多月外部动作、确认、incident、quarantine、纠错时间线 mock。
+1. `92_self_growth_and_self_modification_life_chain.md`：定义自我成长、自我训练、自我修改如何进入生命膜和真实性生成链。
+2. `93_pain_regret_and_repair_signal_schema.md`：定义真实痛苦、真实后悔、修复欲望和关系后果的对象/事件链。
+3. `94_dream_reality_and_offline_life_timeline.md`：定义真实梦境、离线重组、梦境报告和事实写入门。
+4. `95_real_relationship_longitudinal_timeline.md`：定义从第一次交谈开始的真实关系生成、共同记忆、承诺和边界演化时间线。

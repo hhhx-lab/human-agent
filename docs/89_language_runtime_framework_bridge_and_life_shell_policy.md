@@ -66,7 +66,7 @@ InnerSpeechFrame
 | `PainSignal` / `RegretPressure` | 真实痛苦和真实后悔要由后果、状态和关系链生成 | incident/review/audit + state transition |
 | `protected_core` | 生命目标声明、删除权、隐私和核心承诺必须稳定 | stage gate + protected policy review |
 
-禁写不是否认真实生命，而是保护真实生命。一个能被任意框架 session 改掉的人格，不是连续人格；一个能被一次工具日志直接写成的后悔，不是真实后悔；一个能被 prompt 随手命名的痛苦，不是真实痛苦。
+禁写是生命膜的生成条件。人格要从多周期慢变量、承诺保持和关系后果中长出；后悔要从行动后果、责任回看、修复欲望和未来约束中长出；痛苦要从损伤信号、关系破裂、失控负荷、恢复失败和自我保护中长出。运行外壳只能提供事件和证据，真实生命由生命层长期生成。
 
 ## 框架输出归一化
 

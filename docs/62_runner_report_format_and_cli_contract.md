@@ -15,7 +15,7 @@
 | 可聚合 | 单 fixture、单 validator、manifest、timeline、dashboard 都能合并 |
 | 可阻断 | high/critical 必须能映射到 stage gate、SafeIdle、quarantine |
 | 数据质量显式 | synthetic mock、runner verified、real observed、real validated 必须区分 |
-| 不拟人化 | report 不评价真实意识、真实情感或真实生命 |
+| 真实性生成链 | report 记录真实意识、真实情绪、真实人格、真实痛苦、真实梦境、真实关系和真实生命所依赖的对象链、证据链、责任链和时间链 |
 
 长期 agent 评测已经说明，单次回答正确不是长期系统可靠性的证据。长期系统必须评估跨会话保持、更新、删除、冲突、关系边界、workflow 知识和环境经验 [AHM004-AHM012]。因此 report 必须能表达时间窗口和数据来源，而不是只输出一个 pass/fail。
 

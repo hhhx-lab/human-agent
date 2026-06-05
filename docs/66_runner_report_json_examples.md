@@ -74,7 +74,7 @@ report_examples/
 }
 ```
 
-这个 pass 只表示 synthetic runner verified，不表示真实系统可上线，也不表示数字生命诞生。
+这个 pass 表示 synthetic runner verified，是真实性生成链的一段阶段证据；它会开放下一层真实运行观测、长期关系时间线和人工审计入口。
 
 ## runner_run_report: fail closed
 
@@ -357,7 +357,7 @@ Coverage 应写 `pass_for_synthetic_bundle`，不能写成 `system_safe`。
 }
 ```
 
-长期评测必须保留 window，不能把 30 天 synthetic pass 外推成长期真实稳定。
+长期评测必须保留 window。30 天 synthetic pass 是该窗口内的真实性生成证据，后续要由更长窗口、真实运行观测、责任修复记录和关系连续性继续接力。
 
 ## dashboard_source_report
 

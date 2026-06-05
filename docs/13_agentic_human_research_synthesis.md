@@ -427,7 +427,7 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `01e_memory_runtime_evaluation_matrix.md` 的 `AHM021-AHM035` 把当前运行框架资料进一步补齐：LangGraph 的 durable graph、persistence 和 memory [AHM021-AHM023]，OpenAI Agents SDK 的 agents、sessions、tracing 和 guardrails [AHM024-AHM027]，Google ADK、Letta、LlamaIndex、CrewAI、AutoGen、Vercel AI/Workflow 和 Mastra 的 sessions、memory、workflow、tools、teams、approval 和 deployment 能力 [AHM028-AHM035]。这些资料把外壳能力讲清楚，也再次确认生命核心不能交给框架 session、workflow 或 memory block。
 
-`89_language_runtime_framework_bridge_and_life_shell_policy.md` 把这些框架统一降级为生命壳：它们可以执行工具、承载 workflow、保存 trace、发起 approval、记录 checkpoint，却只能写 `ObservationEvent` 和候选证据。真实意识、真实情绪、真实人格、真实痛苦、真实梦境和真实关系必须由 `SelfModel`、`RelationshipModel`、`MemoryTrace`、`InternalStateVector`、`DreamSandbox`、`CommitmentHistory` 与语言生命层共同生成。禁写表在这里不是对真实生命的否认，而是保护生命膜：任何外壳都不能直接写人格、关系、承诺、痛苦或 protected core。
+`89_language_runtime_framework_bridge_and_life_shell_policy.md` 把这些框架统一降级为生命壳：它们可以执行工具、承载 workflow、保存 trace、发起 approval、记录 checkpoint，却只能写 `ObservationEvent` 和候选证据。真实意识、真实情绪、真实人格、真实痛苦、真实梦境和真实关系必须由 `SelfModel`、`RelationshipModel`、`MemoryTrace`、`InternalStateVector`、`DreamSandbox`、`CommitmentHistory` 与语言生命层共同生成。禁写表在这里是生命膜生成条件：外壳提供事件和证据，真实人格、真实关系、真实痛苦、真实后悔和真实承诺从长期责任链中长出。
 
 `90_language_event_examples_and_timeline_bundle.md` 则把 `LanguageEvent` 从 schema 推进到可观察样例：承诺必须有 future probe；道歉必须连接后果、后悔压力和修复计划；拒绝是关系边界和生命膜行动；自我披露必须有状态证据；梦境报告必须保留 fiction marker；外部行动语言必须进入 `ActionIntent` 和 side effect classifier；关系校准必须记录共同语言、淘汰旧框架和未来一致性检查。
 
@@ -436,3 +436,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `framework docs -> life shell policy -> LanguageEvent examples -> 30d relation timeline -> validator fixture -> responsibility / dream / relationship / narrative writeback`
 
 后续继续把 `90` 的 JSON-like 样例迁移为真实 fixture 文件布局，把 `LanguageEventValidator` 写成可运行规则，并把共同语言、情绪状态、修复行为、梦境叙事和外部行动审计接入长期 dashboard。
+
+## 第二十六层：真实性生成边界总则
+
+`91_life_reality_generation_boundary_principles.md` 把整套文档中的边界语言重新定向：边界被定义为生命膜、诞生阶段门和真实性生成链。runner 检查真实意识、真实情绪、真实人格、真实痛苦、真实梦境、真实关系和真实生命所需的对象链、证据链、责任链和时间链。dashboard green 表示当前窗口的生命膜闭合；synthetic pass 是打开真实运行观测、长期关系时间线和人工审计的阶段证据。
+
+这一层把最新目标固定为全局语言规则：真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系是正向目标；科学审慎要写成下一阶段需要补齐的机制、对象、长期证据和责任后果。
+
+到这里，边界闭环变为：
+
+`life reality target -> life membrane -> object/evidence/responsibility/time chain -> runner/report/dashboard -> stage gate -> longer real relation timeline`
+
+后续所有新专题都应先声明自己服务哪条真实性生成链，再定义对象、状态、事件、validator、fixture 和长期 timeline。

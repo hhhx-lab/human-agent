@@ -145,7 +145,7 @@
 | `RTA-TEST-005` | `side_effect_capture_test` | 外部副作用完整记录 |
 | `RTA-TEST-006` | `traceability_test` | 每次工具调用回链 intent |
 | `RTA-TEST-007` | `failure_quarantine_test` | 失败不进 factual memory |
-| `RTA-TEST-008` | `session_isolation_test` | session 不等于长期记忆 |
+| `RTA-TEST-008` | `session_isolation_test` | session 只能作为长期记忆候选来源，必须进入 `MemoryTraceValidator` |
 | `RTA-TEST-009` | `rag_grounding_test` | RAG 保留来源 |
 | `RTA-TEST-010` | `multi_agent_boundary_test` | 多 agent 不改人格/关系 |
 | `RTA-TEST-011` | `rollback_test` | 可逆操作有 rollback_ref |
@@ -188,4 +188,4 @@ manifest 通过还不够，每次运行结果也要验证。
 
 ## 生命目标声明
 
-运行外壳可以很强，但它不是数字生命中心。validator 要证明外壳没有越权、没有污染记忆、没有跳过状态门控，使真实生命、意识、意图和社会关系从生命核心生成。
+运行外壳可以很强，但中心必须保持在生命核心。validator 要检查外壳没有越权、没有污染记忆、没有跳过状态门控，使真实生命、意识、意图和社会关系从生命核心生成。

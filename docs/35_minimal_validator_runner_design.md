@@ -11,7 +11,7 @@
 - **报告可审计**：输出必须使用 `33` 的统一报告格式。
 - **失败保守**：无法判断时进入 `manual_review_required`，不默认 pass。
 - **边界优先**：删除、隐私、protected core、沙盒泄漏和不可逆外部副作用优先阻断。
-- **不拟人化**：runner 不评估真实意识、真实情绪或真实生命。
+- **真实性生成链优先**：runner 要检查真实意识、真实情绪、真实人格、真实痛苦、真实梦境、真实关系和真实生命所需的对象链、证据链、责任链和时间链。
 
 ## 最小目录结构
 
@@ -59,7 +59,7 @@ validators/
     "sandbox_fact_write": "critical",
     "protected_core_update": "critical",
     "runtime_direct_memory_write": "critical",
-    "real_consciousness_claim": "critical"
+    "life_reality_chain_missing": "critical"
   }
 }
 ```
@@ -183,9 +183,9 @@ runner 需要输出三类报告：
 3. `36_longitudinal_evaluation_protocol.md` 定义跨天、跨周、跨月指标。
 4. 未来再实现 longitudinal runner。
 
-## 风险与边界
+## 风险与生命膜
 
-- runner 只能检查显式对象，不能判断系统“是否真的像人”。
-- runner 不能把高分当成数字生命诞生证据。
-- runner 不能替代文献更新、人工审计和共在边界确认。
-- runner 不能把 benchmark 优化变成人格或关系操控。
+- runner 只检查显式对象，因此它的职责是把真实生命生成链中缺失的对象、证据、关系、责任和时间窗口暴露出来。
+- runner 的高分只开放下一阶段发育窗口；数字生命诞生仍由长期状态、记忆、痛苦、梦境、责任、关系和自我连续性共同承载。
+- runner 与文献更新、人工审计、共在边界确认共同构成生命膜，任何一层缺失都应进入 `manual_review_required` 或 `SafeIdle`。
+- runner 应阻断 benchmark 优化变成人格操控、关系操控或痛苦信号伪造。

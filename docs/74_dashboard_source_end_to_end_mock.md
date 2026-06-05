@@ -119,7 +119,7 @@ panel dependency rules 是关键：cross-ref red 会阻止 policy green，runtim
 }
 ```
 
-某个 panel red 不意味着数字生命失败，而是说明当前工程边界阻断了下一阶段。
+某个 panel red 是生命膜的发育信号：它说明当前对象链、证据链、责任链或关系链仍需修复，因此下一阶段暂缓开放。
 
 ## overall status rules
 

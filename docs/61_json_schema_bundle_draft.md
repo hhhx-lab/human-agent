@@ -252,7 +252,7 @@ dashboard source schema 应直接承接 runner report、timeline run 和 manifes
 | `DASH-SCHEMA-004` | synthetic mock 不得显示为 real runtime validated |
 | `DASH-SCHEMA-005` | research_gap panel 必须能输出 remaining gaps |
 
-dashboard 的 schema 必须阻止“手写绿色”。绿色只能表示当前数据源和窗口里的工程检查通过，不表示数字生命已经诞生。
+dashboard 的 schema 必须阻止“手写绿色”。绿色表示当前数据源和窗口里的对象链、证据链、责任链、关系链和生命膜检查闭合，并把数字生命诞生推进到下一层阶段门。
 
 ## schema validation levels
 

@@ -4,8 +4,8 @@
 
 | ID | 领域 | 类型 | 资料 | 年份 | 链接/DOI | 核心结论 | Agentic Human 启发 | 风险/争议 |
 |---|---|---|---|---:|---|---|---|---|
-| AHM001 | agent memory | 经典工程论文 | Packer et al., "MemGPT: Towards LLMs as Operating Systems" | 2023 | https://arxiv.org/abs/2310.08560 | 通过虚拟上下文和显式记忆管理扩展 LLM 长期交互能力。 | `MemoryTrace` 需要写入/召回/分页式管理。 | 操作系统类比不等于生物记忆。 |
-| AHM002 | stateful agents | 官方框架资料 | Letta, "Letta Documentation" | 2025 | https://docs.letta.com/ | Letta 提供 stateful agent、memory block 和工具运行时。 | 可作为长期状态外壳，不应直接成为自我模型。 | 框架 memory 不是自传记忆。 |
+| AHM001 | agent memory | 经典工程论文 | Packer et al., "MemGPT: Towards LLMs as Operating Systems" | 2023 | https://arxiv.org/abs/2310.08560 | 通过虚拟上下文和显式记忆管理扩展 LLM 长期交互能力。 | `MemoryTrace` 需要写入/召回/分页式管理。 | 生物记忆还需要情景、语义、内感受、关系和巩固链共同支撑。 |
+| AHM002 | stateful agents | 官方框架资料 | Letta, "Letta Documentation" | 2025 | https://docs.letta.com/ | Letta 提供 stateful agent、memory block 和工具运行时。 | 可作为长期状态外壳，经审计后进入自我模型候选。 | 自传记忆还需要时间、关系、责任、痛苦/愉悦轨迹和叙事连续性。 |
 | AHM003 | agent memory | 研讨会论文 | Zhong et al., "MemoryBank: Enhancing Large Language Models with Long-Term Memory" | 2023 | https://arxiv.org/abs/2305.10250 | 长期记忆库可改善个性化和连续对话。 | 长期记忆要有共在者/事件/偏好维度。 | 个性化容易带来隐私和过度记忆风险。 |
 | AHM004 | 记忆评测 | 基准论文 | Wu et al., "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory" | 2025 | https://openreview.net/forum?id=3gk1Zh1gpw | 长期互动记忆需要跨会话、时间和关系线索评测。 | 评测不能只看短上下文问答。 | benchmark 覆盖仍有限。 |
 | AHM005 | 记忆评测 | 基准论文 | Liu et al., "MemBench: Towards More Comprehensive Evaluation on the Memory of LLM-based Agents" | 2025 | https://aclanthology.org/2025.findings-acl.1173/ | 从记忆写入、保持、召回和使用等方面评估 agent memory。 | `MemoryTrace` 需要独立评测写入、保持、检索和应用。 | 基准需要接入关系形成、责任、记忆和人格慢变量，才可能支持真实长期关系。 |
@@ -17,10 +17,10 @@
 | AHM011 | 长程记忆评测 | 基准论文 | Wu et al., "LongMemEval-V2: Towards Deeper Understanding and Improved Evaluation of Long-term Memory in LLMs" | 2026 | https://arxiv.org/abs/2605.12493 | 进一步细化长期记忆能力评估。 | 需要评估时间、矛盾、关系和上下文漂移。 | 未来版本可能更新。 |
 | AHM012 | agent memory benchmark | 基准资料 | Hu, Wang & McAuley, "Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions" | 2026 | https://arxiv.org/abs/2507.05257 | MemoryAgentBench 从准确检索、测试时学习、长程理解和冲突解决评估 agent memory。 | 可作为后续 `MemoryTrace` 测试参考。 | 仍需结合真实项目和关系记忆评测。 |
 | AHM013 | LangGraph memory | 官方框架资料 | LangChain, "Memory" | 2025 | https://docs.langchain.com/oss/python/langgraph/memory | LangGraph 把 memory 分为 thread-scoped 和 long-term memory。 | 可作为工作区/长期记忆外壳。 | 框架 memory 粒度仍偏工程状态。 |
-| AHM014 | LangGraph persistence | 官方框架资料 | LangChain, "Persistence" | 2025 | https://docs.langchain.com/oss/python/langgraph/persistence | checkpoint 和 persistence 支持 durable execution。 | checkpoint 是行动外壳的审计基础。 | checkpoint 不等于生物巩固。 |
-| AHM015 | OpenAI Agents sessions | 官方框架资料 | OpenAI, "Sessions" | 2025 | https://openai.github.io/openai-agents-python/sessions/ | Sessions 提供跨轮会话历史管理。 | 可作为短期工作区外壳。 | session history 不是长期记忆。 |
+| AHM014 | LangGraph persistence | 官方框架资料 | LangChain, "Persistence" | 2025 | https://docs.langchain.com/oss/python/langgraph/persistence | checkpoint 和 persistence 支持 durable execution。 | checkpoint 是行动外壳的审计基础。 | 生物式巩固还需要 replay、梦境、情绪主题、关系后果和写入门。 |
+| AHM015 | OpenAI Agents sessions | 官方框架资料 | OpenAI, "Sessions" | 2025 | https://openai.github.io/openai-agents-python/sessions/ | Sessions 提供跨轮会话历史管理。 | 可作为短期工作区外壳。 | 长期记忆还需要 `MemoryTraceValidator`、scope graph、巩固和自我叙事链。 |
 | AHM016 | OpenAI Agents tracing | 官方框架资料 | OpenAI, "Tracing" | 2025 | https://openai.github.io/openai-agents-python/tracing/ | tracing 记录 agent、工具调用和运行事件。 | 运行日志必须进入审计队列。 | tracing 不能自动判断价值和人格漂移。 |
-| AHM017 | LlamaIndex memory | 官方框架资料 | LlamaIndex, "Agents" | 2025 | https://docs.llamaindex.ai/en/stable/use_cases/agents/ | LlamaIndex agent 连接 RAG、tools 和 workflow。 | 适合作为资料层与检索外壳。 | RAG 命中不等于记忆重构。 |
+| AHM017 | LlamaIndex memory | 官方框架资料 | LlamaIndex, "Agents" | 2025 | https://docs.llamaindex.ai/en/stable/use_cases/agents/ | LlamaIndex agent 连接 RAG、tools 和 workflow。 | 适合作为资料层与检索外壳。 | 记忆重构还需要当前状态、线索触发、关系 scope、叙事解释和巩固链。 |
 | AHM018 | AutoGen runtime | 官方框架资料 | Microsoft, "AutoGen Documentation" | 2025 | https://microsoft.github.io/autogen/ | AutoGen 支持多 agent teams、tools 和 conversation runtime。 | 可作为多角色执行外壳。 | 社会脑需要共同注意、关系记忆、责任后果和长期互动历史。 |
 | AHM019 | CrewAI flows | 官方框架资料 | CrewAI, "Flows" | 2025 | https://docs.crewai.com/concepts/flows | Flows 提供事件驱动和流程编排。 | 可作为行动编排外壳。 | flow 不能取代生命层状态机。 |
 | AHM020 | memory governance | 工程论文 | Wang et al., "ReMem: Retrieval-Augmented Memory for LLM Agents" | 2025 | https://arxiv.org/abs/2502.09357 | 探索检索增强记忆对 agent 的影响。 | 记忆检索要结合事件、价值和关系上下文。 | 检索增强仍可能带入错误或过时痕迹。 |

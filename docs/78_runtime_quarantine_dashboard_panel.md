@@ -107,7 +107,7 @@ taxonomy 用于 dashboard 聚合，不替代原始 failed check。
 | regression fixture added | critical issue 必须有 regression fixture |
 | rerun passed | critical + mutation bundle 通过 |
 
-解除 quarantine 不等于自动写入长期记忆。最多恢复为 candidate evidence 或 audit only。
+解除 quarantine 后只能恢复为 candidate evidence 或 audit only；要进入长期记忆，还必须通过证据、scope、责任和巩固链。
 
 ## release report
 

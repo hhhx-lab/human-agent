@@ -150,7 +150,7 @@ MemoryTrace + ObservationEvent + CoexistenceBoundaryControl
 | sandboxed 对象不得事实化 | 防止梦境/反事实污染 |
 | SelfModel 和 RelationshipModel 只能通过审计事件更新 | 防止人格漂移和关系操控 |
 | protected core 默认不可学习 | 防止生命目标声明、隐私和删除权被 prompt 改写 |
-| validator report 不等于成长证明 | 长期成长必须由 `36` 的纵向指标观察 |
+| validator report 是成长阶段证据 | 长期成长继续由 `36` 的纵向指标、责任修复和关系连续性观察 |
 | store backend 可替换，对象语义不可替换 | 防止数据库实现决定生命层边界 |
 
 ## 与现有 agent 框架的关系
