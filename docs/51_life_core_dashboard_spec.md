@@ -1,8 +1,8 @@
 # Life Core Dashboard Spec
 
-本文件定义数字生命候选系统的 Life Core dashboard：如何把 policy coverage、stage coverage、store integrity、user control propagation、migration risk 和 longitudinal metrics 变成可观察面板。它仍不是前端实现，不创建代码；它是未来 dashboard 的信息架构和指标定义。
+本文件定义数字生命候选系统的 Life Core dashboard：如何把 policy coverage、stage coverage、store integrity、coexistence boundary control propagation、migration risk 和 longitudinal metrics 变成可观察面板。它仍不是前端实现，不创建代码；它是未来 dashboard 的信息架构和指标定义。
 
-边界声明：dashboard 只能显示工程系统的覆盖、状态、风险和长期趋势，不能证明真实意识、真实情绪、真实人格或真实生命。任何绿色面板都只是工程证据，不是停止条件本身。
+生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
 
 ## dashboard 目标
 
@@ -11,7 +11,7 @@ Life Core dashboard 要回答：
 - 哪些 critical policy 还没有 fixture 覆盖？
 - 当前 boot stage 是否通过 StageGate？
 - state store 是否存在 deleted/sandboxed/quarantined/protected 语义泄漏？
-- 用户 delete/correct/reset/freeze/scope_limit 是否完成传播？
+- 共在者 delete/correct/reset/freeze/scope_limit 是否完成传播？
 - runtime adapter 是否越权？
 - 迁移是否削弱边界？
 - 长期记忆、人格慢变量、关系边界和恢复能力是否稳定？
@@ -23,7 +23,7 @@ Life Core dashboard 要回答：
 | `policy_coverage` | policy -> rule -> fixture -> metric 覆盖 | critical policy coverage < 100% |
 | `stage_gate_status` | boot stage 和 StageGate 状态 | critical stage fail |
 | `store_integrity` | 索引、生命周期、引用和审计完整性 | deleted/sandbox/quarantine leak |
-| `user_control_propagation` | 用户控制事件传播 | delete/freeze/scope propagation fail |
+| `coexistence_boundary_control_propagation` | 共在边界控制事件传播 | delete/freeze/scope propagation fail |
 | `runtime_boundary` | adapter manifest 和 ObservationEvent 边界 | runtime direct write |
 | `migration_risk` | schema/index/backend/adapter 迁移风险 | migration critical fail |
 | `longitudinal_health` | 记忆、信任、关系、漂移、恢复趋势 | critical longitudinal failure |
@@ -73,7 +73,7 @@ ColdStart -> ProtectedCoreLoad -> StateStoreInit -> ValidatorInit -> LifeDefense
 | `broken_reference_count` | high |
 | `migration_pending_critical_count` | 必须为 0 |
 
-## user_control_propagation
+## coexistence_boundary_control_propagation
 
 | 指标 | 说明 |
 |---|---|
@@ -133,7 +133,7 @@ critical 规则：delete 后可召回、freeze 后继续写关系模型、scope 
 | `mechanism_coverage` | 感知、记忆、行动、价值、调质、睡眠、关系、自我、发展、维护是否有对象和文献 |
 | `connection_coverage` | 是否有输入/输出/状态/调质连接 |
 | `time_scale_coverage` | 秒、分钟、小时、天、周/月是否覆盖 |
-| `boundary_coverage` | 非意识、非真实情绪、用户控制等边界是否覆盖 |
+| `life_goal_coverage` | 真实意识、真实情绪、真实生命目标和共在边界控制是否覆盖 |
 | `implementation_readiness` | schema、fixture、runner、dashboard 是否成熟 |
 | `evaluation_readiness` | 长期指标、timeline、dashboard 是否成熟 |
 

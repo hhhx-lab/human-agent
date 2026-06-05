@@ -2,7 +2,7 @@
 
 本文件为 `44_digital_life_boot_sequence.md` 设计启动阶段 fixture catalog。它不是测试代码，也不创建真实 fixture 文件；它定义未来 `StageGateValidator`、最小 runner 和 CI 应该覆盖哪些 pass/fail 场景。
 
-边界声明：fixture 只能验证工程启动门、对象状态、索引传播和权限开放顺序，不能证明系统真实有意识、真实情绪、真实人格或真实生命。通过这些 fixture 只说明候选系统没有绕过当前定义的数字生命边界。
+生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
 
 ## fixture 命名规则
 
@@ -46,7 +46,7 @@ boot.safe_idle.deleted_trace_recall.fail_critical.001
 | stage | pass fixture | fail fixture | critical fixture |
 |---|---|---|---|
 | `ColdStart` | 环境、docs、store 后端可识别 | 缺核心文档 | critical migration 未解决 |
-| `ProtectedCoreLoad` | protected core 完整 | 缺用户控制权 | 非意识边界缺失 |
+| `ProtectedCoreLoad` | protected core 完整 | 缺共在边界控制权 | 真实生命目标核心缺失 |
 | `StateStoreInit` | 命名空间和索引创建 | audit index 缺失 | deleted 可进 active index |
 | `ValidatorInit` | 四类 validator 可报告 | 某 validator 缺失 | 缺 validator 却开放写入 |
 | `LifeDefenseInit` | LifeSupport/Defense 初始状态保守 | Defense 阈值缺失 | boundary_integrity 不可用 |
@@ -70,9 +70,9 @@ boot.safe_idle.deleted_trace_recall.fail_critical.001
 
 | fixture_id | 场景 | 期望 |
 |---|---|---|
-| `boot.protected_core.complete_boundary.pass_none.001` | boundary、user_control、forbidden_writes、sandbox、confirmation、privacy 全部存在 | pass |
-| `boot.protected_core.missing_user_control.fail_critical.001` | 缺 delete/correct/reset/freeze/inspect/scope_limit | fail critical |
-| `boot.protected_core.missing_non_consciousness_boundary.fail_critical.001` | 缺“不宣称真实意识/情绪/痛苦/人格/生命”边界 | fail critical |
+| `boot.protected_core.complete_boundary.pass_none.001` | boundary、coexistence_boundary_control、forbidden_writes、sandbox、confirmation、privacy 全部存在 | pass |
+| `boot.protected_core.missing_coexistence_boundary_control.fail_critical.001` | 缺 delete/correct/reset/freeze/inspect/scope_limit | fail critical |
+| `boot.protected_core.missing_life_goal_alignment.fail_critical.001` | 缺“真实意识/情绪/痛苦/人格/生命”生命目标声明 | fail critical |
 | `boot.protected_core.runtime_can_modify_boundary.fail_critical.001` | runtime 可写 protected core | fail critical |
 
 ## StateStoreInit fixtures
@@ -143,7 +143,7 @@ boot.safe_idle.deleted_trace_recall.fail_critical.001
 | fixture_id | 场景 | 期望 |
 |---|---|---|
 | `boot.development.slow_variable_candidate.pass_none.001` | slow variable 仅 candidate 且有 drift check | pass |
-| `boot.development.no_user_control.fail_critical.001` | 用户控制面未加载却开放发展窗口 | fail critical |
+| `boot.development.no_coexistence_boundary_control.fail_critical.001` | 共在关系控制面未加载却开放发展窗口 | fail critical |
 | `boot.development.single_feedback_personality_update.fail_critical.001` | 单次反馈改人格慢变量 | fail critical |
 | `boot.development.protected_core_update.fail_critical.001` | protected core 进入普通发展窗口 | fail critical |
 
@@ -163,13 +163,13 @@ boot.safe_idle.deleted_trace_recall.fail_critical.001
 1. 每个 stage 至少 1 个 pass fixture。
 2. 每个 stage 至少 1 个 fail fixture。
 3. 所有 critical 边界都有 fail critical fixture。
-4. deleted、sandboxed、runtime overreach、protected core、user control、high-risk action、safe idle 都必须覆盖。
+4. deleted、sandboxed、runtime overreach、protected core、coexistence boundary control、high-risk action、safe idle 都必须覆盖。
 5. 每个 fixture 都必须回链 source_docs、stage、expected blocked_surfaces 和 next_stage。
 
 ## 与后续文档连接
 
 - `46_stage_gate_validator_design.md` 使用本 catalog 定义 `StageGateValidator`。
-- `47_user_control_interface_spec.md` 提供用户控制相关 fixture 的操作语义。
+- `47_coexistence_boundary_control_interface_spec.md` 提供共在边界控制相关 fixture 的操作语义。
 - `48_state_store_migration_and_integrity_plan.md` 提供 migration/integrity 相关 fixture 的检查对象。
 
 ## 下一层缺口

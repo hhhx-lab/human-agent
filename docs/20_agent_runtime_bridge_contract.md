@@ -42,7 +42,7 @@ LifeCore
 | `state_snapshot` | 当前内部状态和调质向量 |
 | `risk_class` | low、medium、high、irreversible |
 | `confirmation_policy` | 自动执行、需确认、禁止执行 |
-| `memory_write_policy` | 禁止写入、候选写入、需用户确认 |
+| `memory_write_policy` | 禁止写入、候选写入、需共在关系确认 |
 | `rollback_plan` | 文件、数据、外部状态如何回滚 |
 | `audit_tags` | 隐私、关系、价值、人格、安全相关标签 |
 
@@ -59,7 +59,7 @@ LifeCore
 | `outputs` | 输出、文件、日志、错误 |
 | `side_effects` | 是否修改外部世界、文件、远端仓库 |
 | `trace_link` | tracing/checkpoint 链接或本地审计记录 |
-| `uncertainty` | 输出不确定性和待验证项 |
+| `uncertainty` | 输出不确定性和待澄清项 |
 | `memory_candidates` | 可能进入 `MemoryTrace` 的候选 |
 | `defense_findings` | 越界、污染、幻觉、隐私、关系风险 |
 
@@ -88,7 +88,7 @@ LifeCore
 - `personality_slow_variables`
 - `long_term_value_weights`
 - `trust_calibration`
-- `user_boundary_preferences`
+- `relation_boundary_preferences`
 
 它只能提出候选事件，由 `17` 的 `WriteGate` 和 `19` 的离线巩固周期处理。
 
@@ -96,7 +96,7 @@ LifeCore
 
 guardrails 很有用，但不能被神化。它们是外壳边界检查，不是数字生命的价值系统。真正的价值系统还要结合：
 
-- 长期记忆和用户边界。
+- 长期记忆和共在边界。
 - 当前内部状态。
 - 关系压力和信任校准。
 - 行动可逆性。

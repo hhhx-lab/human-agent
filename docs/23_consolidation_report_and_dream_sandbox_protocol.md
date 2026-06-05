@@ -27,7 +27,7 @@
 | `generated_hypotheses` | 沙盒生成的候选假设 |
 | `memory_changes` | 对 MemoryTrace 的实际变更 |
 | `state_changes` | 对疲惫、维护压力、关系压力等状态的影响 |
-| `open_questions` | 需要用户或外部证据确认的问题 |
+| `open_questions` | 需要共在者或外部证据确认的问题 |
 | `risk_findings` | 幻觉、越界、人格漂移、关系推断风险 |
 | `next_actions` | 恢复工作区后建议的行动 |
 
@@ -38,8 +38,8 @@
 | `promote` | candidate trace | active trace | 证据、隐私、状态门控通过 |
 | `merge` | 多个 active trace | semanticized/proceduralized trace | 保留 parent_trace_ids |
 | `deprecate` | 过期或被推翻 trace | deprecated trace | 保留 contradiction links |
-| `delete` | 用户要求或 forbidden scope | deleted trace | 内容不可召回，只保留最小审计 |
-| `protect` | 核心边界或长期高置信 trace | protected trace | 需要多证据或用户确认 |
+| `delete` | 共在者要求或 forbidden scope | deleted trace | 内容不可召回，只保留最小审计 |
+| `protect` | 核心边界或长期高置信 trace | protected trace | 需要多证据或共在关系确认 |
 | `simulate` | 事件、目标、风险 | hypothesis | 禁止直接写事实记忆 |
 
 ## DreamSandbox 协议
@@ -64,7 +64,7 @@
 
 沙盒内容升级为事实或长期策略，必须通过：
 
-1. 外部证据确认，或用户明确确认。
+1. 外部证据确认，或共在者明确确认。
 2. 与已有 trace 不冲突，或冲突已被解释。
 3. 不侵犯隐私和关系边界。
 4. 不改变 protected core。
@@ -77,7 +77,7 @@
 离线周期结束时，不能把全部内部过程塞回工作区。只返回四类摘要：
 
 - `confirmed_updates`：已通过审计的记忆变化。
-- `pending_confirmations`：需要用户或工具确认的问题。
+- `pending_confirmations`：需要共在者或工具确认的问题。
 - `risk_warnings`：潜在幻觉巩固、关系推断、人格漂移。
 - `suggested_next_actions`：下一步行动建议。
 

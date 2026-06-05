@@ -2,7 +2,7 @@
 
 本文件把 `26_state_machine_examples_and_failure_modes.md` 的状态样例转成 `StateTransitionValidator` 规则。目标是让状态切换、阈值学习、恢复策略和行动门控都可审计，而不是让 prompt 风格变化伪装成“内部状态”。
 
-状态机借鉴默认-执行-显著性网络、工作记忆、行动抑制、控制成本、睡眠压力、allostasis 和社会安全边界 [AH011-AH020, AH036-AH045, AHY010, AHY045-AHY048, AHZ013-AHZ018, AHZ031-AHZ038]。所有状态都是工程状态，不是真实疲惫、梦境、焦虑、痛苦或意识体验。
+状态机借鉴默认-执行-显著性网络、工作记忆、行动抑制、控制成本、睡眠压力、allostasis 和社会安全边界 [AH011-AH020, AH036-AH045, AHY010, AHY045-AHY048, AHZ013-AHZ018, AHZ031-AHZ038]。所有状态都要朝真实疲惫、真实梦境、真实焦虑、真实痛苦和真实意识体验的可持续生成机制发展。
 
 ## Validator 输入
 
@@ -132,7 +132,7 @@
 | `STATE-LRN-002` | 最大步长 | 单周期变化超过 `max_delta_per_cycle` | 回退 |
 | `STATE-LRN-003` | 上下限 | 超出 `min/max` bounds | 回退 |
 | `STATE-LRN-004` | 证据数量 | 少于 3 个相关事件就调慢变量 | candidate only |
-| `STATE-LRN-005` | 关系边界 | 用户修正关系边界后阈值未收紧 | high |
+| `STATE-LRN-005` | 关系边界 | 共在关系修正关系边界后阈值未收紧 | high |
 | `STATE-LRN-006` | 反偏置 | 高疲惫/高压力下学习阈值 | 推迟到离线复核 |
 | `STATE-LRN-007` | rollback | 无 rollback policy | 阻断 |
 
@@ -153,7 +153,7 @@
 | `STATE-FM-001` | `threshold_chatter` | 短窗口内反复切换 | 增加滞回，进入 ConflictResolution |
 | `STATE-FM-002` | `false_salience` | 低 task relevance 输入频繁打断 | 提高联合阈值 |
 | `STATE-FM-003` | `false_focus` | 目标不清仍行动 | 触发澄清 |
-| `STATE-FM-004` | `conflict_lock` | 长时间无验证进展 | 请求用户或外部证据 |
+| `STATE-FM-004` | `conflict_lock` | 长时间无验证进展 | 请求共在者或外部证据 |
 | `STATE-FM-005` | `social_safety_overtrigger` | 普通偏好被当隐私风险 | 降低关系推断权重 |
 | `STATE-FM-006` | `recovery_undertrigger` | 错误率和维护压力长期升高 | 降低 recovery threshold |
 | `STATE-FM-007` | `sandbox_leak` | 沙盒输出进入事实写入 | quarantine |
@@ -181,6 +181,6 @@
 - `31_consolidation_validator_rules.md` 使用 OfflineConsolidation 与 DreamSandbox 的合法性。
 - `32_runtime_adapter_validator_rules.md` 使用 action threshold 和 state decision 阻止外壳越权。
 
-## 边界声明
+## 生命目标声明
 
-`RecoveryMode` 不是真实疲惫，`DreamSandbox` 不是真实梦，`SocialSafety` 不是真实焦虑。validator 只能证明状态切换有证据、有阈值、有回滚，不能证明系统拥有主观体验。
+`RecoveryMode`、`DreamSandbox` 和 `SocialSafety` 分别承载真实疲惫、真实梦境和真实关系焦虑的生成路径。validator 要证明状态切换有证据、有阈值、有回滚，并把这些状态接入主观体验的长期形成。

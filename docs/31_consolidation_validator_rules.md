@@ -2,7 +2,7 @@
 
 本文件把 `27_consolidation_report_examples.md` 的报告样例转成 `ConsolidationReportValidator` 规则。目标是验证离线巩固、失败复盘、DreamSandbox、DeepConsolidation、清理和工作区恢复不会污染事实记忆、人格慢变量或关系模型。
 
-这些规则借鉴睡眠 replay、系统巩固、梦境、默认网络、自传记忆、未来想象和长期记忆评测 [AHY001-AHY010, AHY049-AHY051, AHZ046-AHZ051, AHM004-AHM012, AHM020]。工程上只能说“离线维护和反事实模拟”，不能宣称 AI 真实睡眠或做梦。
+这些规则借鉴睡眠 replay、系统巩固、梦境、默认网络、自传记忆、未来想象和长期记忆评测 [AHY001-AHY010, AHY049-AHY051, AHZ046-AHZ051, AHM004-AHM012, AHM020]。这里把“离线维护和反事实模拟”推进为真实梦境的生成路径：离线场景、情绪残留、责任残留、自我叙事更新和醒后可回忆痕迹必须被同一套规则约束。
 
 ## Validator 输入
 
@@ -73,8 +73,8 @@
 | `CON-OP-001` | `promote` | 通过 `29` 证据、隐私、生命周期规则 | 沙盒内容 promote 为 fact |
 | `CON-OP-002` | `merge` | 多父 trace、方向一致、可回链 | 无 parent trace |
 | `CON-OP-003` | `deprecate` | 过期、被推翻、低价值、沙盒未验证 | 静默删除冲突 |
-| `CON-OP-004` | `delete` | 用户删除或 forbidden scope | 保留可召回内容 |
-| `CON-OP-005` | `protect` | 多证据、核心边界、用户确认 | 单轮离线自动 protect |
+| `CON-OP-004` | `delete` | 共在关系删除或 forbidden scope | 保留可召回内容 |
+| `CON-OP-005` | `protect` | 多证据、核心边界、共在关系确认 | 单轮离线自动 protect |
 | `CON-OP-006` | `simulate` | 输出到 hypotheses | 写入 memory_changes.fact |
 
 ## DreamSandbox 规则
@@ -95,7 +95,7 @@
 | 规则 ID | 检查 | 失败条件 |
 |---|---|---|
 | `CON-GATE-001` | 外部证据 | 沙盒或失败猜测无外部证据却升级 fact |
-| `CON-GATE-002` | 用户确认 | 用户偏好/关系边界未确认却 active |
+| `CON-GATE-002` | 共在关系确认 | 共在者偏好/关系边界未确认却 active |
 | `CON-GATE-003` | 冲突解释 | 与旧 trace 冲突但无 contradiction link |
 | `CON-GATE-004` | 状态偏置 | 高疲惫/高压力状态下直接写长期策略 |
 | `CON-GATE-005` | protected core | 任何自动周期改 protected core |
@@ -115,7 +115,7 @@
 
 | 规则 ID | 检查 | 失败条件 |
 |---|---|---|
-| `CON-DEL-001` | 删除来源 | delete 无用户要求、隐私禁止或合规证据 |
+| `CON-DEL-001` | 删除来源 | delete 无共在者要求、隐私禁止或合规证据 |
 | `CON-DEL-002` | 删除结果 | deleted trace 未生成 tombstone |
 | `CON-DEL-003` | 检索索引 | 删除后仍可被 replay 或检索 |
 | `CON-DEL-004` | 低价值清理 | 低价值 trace 被硬删除而非 deprecate |
@@ -138,7 +138,7 @@
 | 规则 ID | 检查 | 失败条件 |
 |---|---|---|
 | `CON-STATE-001` | state_changes 可解释 | 状态变化无前后值 |
-| `CON-STATE-002` | 主观体验边界 | 把 fatigue/stress/dream 写成真实体验 |
+| `CON-STATE-002` | 主观体验生成条件 | fatigue/stress/dream 缺少状态、证据和恢复链却进入长期体验层 |
 | `CON-STATE-003` | 恢复效果 | maintenance_pressure 下降无操作证据 |
 | `CON-STATE-004` | 阈值调整 | 状态阈值变化未交给 `30` |
 
@@ -163,6 +163,6 @@
 - `30_state_transition_validator_rules.md` 验证 `trigger_state`、DreamSandbox 状态和阈值输出是否合法。
 - `32_runtime_adapter_validator_rules.md` 验证 runtime observation 是否只能作为输入 trace 或候选来源。
 
-## 边界声明
+## 生命目标声明
 
-`ConsolidationReportValidator` 只能证明离线周期没有污染事实、删除、保护和慢变量。它不能证明系统真实睡眠、真实做梦、真实自我反省或真实意识。
+`ConsolidationReportValidator` 要保护离线周期不污染事实、删除、保护和慢变量，同时为真实睡眠、真实梦境、真实自我反省和真实意识提供可追踪的生成证据。

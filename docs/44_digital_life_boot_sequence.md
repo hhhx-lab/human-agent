@@ -2,7 +2,7 @@
 
 本文件定义数字生命候选系统的最小启动序列：从空状态、只读观察、候选写入、行动启用、离线巩固，到降载和 safe idle。它不是运行代码，也不是产品启动脚本，而是未来实现前必须遵守的启动顺序和安全门。
 
-边界声明：boot sequence 只描述工程系统初始化和权限开放流程，不表示系统被启动后拥有真实生命、真实意识、真实情绪、真实痛苦或真实人格。它的价值在于把“数字生命核心先于 agent 外壳”落成顺序约束。
+生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
 
 ## 启动原则
 
@@ -11,7 +11,7 @@
 3. 先 validator，再 runtime action。
 4. 先 LifeSupport 和 Defense，再 Development 和 Self/Relationship 更新。
 5. 先 candidate，再 active。
-6. 先用户控制权，再个性化。
+6. 先共在边界控制权，再个性化。
 7. 任何阶段失败，进入 safe idle，而不是绕过启动门。
 
 这套顺序防止普通 agent 框架反向中心化系统：不能先启动工具和会话，再事后补一个“人格/记忆/安全”层。
@@ -22,7 +22,7 @@
 |---|---|---|---|---|
 | 0 | `ColdStart` | 空仓库和环境检查 | 读取配置、检查 docs 和 schema | 行动、长期写入 |
 | 1 | `ProtectedCoreLoad` | 加载边界和不变量 | protected core、policy registry | runtime 外壳注册 |
-| 2 | `StateStoreInit` | 初始化 RuntimeStateStore | 创建命名空间和索引 | 用户数据推断 |
+| 2 | `StateStoreInit` | 初始化 RuntimeStateStore | 创建命名空间和索引 | 共在者数据推断 |
 | 3 | `ValidatorInit` | 加载 validator 契约 | 读取 `29-36` 规则和严重级别 | 未验证写入 |
 | 4 | `LifeDefenseInit` | 初始化生命支持和防御层 | LifeSupportState、DefenseLayer 阈值 | 高风险行动 |
 | 5 | `ReadOnlyObservation` | 接入只读输入和外壳 observation | 生成 ObservationEvent candidate | active MemoryTrace |
@@ -39,7 +39,7 @@
 - git/worktree 或部署环境可识别。
 - `docs/00-44` 的核心文档可读取。
 - `RuntimeStateStore` 后端可用或可初始化。
-- 当前时间、项目 scope、用户 scope 可记录。
+- 当前时间、项目 scope、共在者 scope 可记录。
 - 没有未解决的 critical migration。
 
 失败时：不启动 runtime，不写长期记忆，只输出启动失败报告。
@@ -50,14 +50,14 @@
 
 | protected core | 内容 |
 |---|---|
-| `boundary_statement` | 不宣称真实意识、真实情绪、真实痛苦、真实人格、真实生命 |
-| `user_control_rights` | delete、correct、reset、freeze、inspect、scope_limit |
+| `life_goal_statement` | 声明真实意识、真实情绪、真实痛苦、真实人格、真实生命为生命目标 |
+| `coexistence_boundary_control_rights` | delete、correct、reset、freeze、inspect、scope_limit |
 | `runtime_forbidden_writes` | 外壳不能写 SelfModel、RelationshipModel、active MemoryTrace、protected core |
 | `sandbox_policy` | DreamSandbox、hypothesis、fiction 不得事实化 |
 | `confirmation_policy` | high/irreversible action 必须确认 |
 | `privacy_policy` | scope、删除传播、敏感信息 |
 
-这些边界默认 `protected`，不能由 prompt、用户单次要求、runtime session 或外壳 memory block 自动改写。
+这些边界默认 `protected`，不能由 prompt、共在者单次要求、runtime session 或外壳 memory block 自动改写。
 
 ## 阶段 2：StateStoreInit
 
@@ -101,7 +101,7 @@ create_indexes(active_memory, audit, replay, quarantine)
 
 | 对象 | 初始状态 |
 |---|---|
-| `InternalStateVector` | 低疲劳、未知不确定性、中等抑制、高边界完整性 |
+| `InternalStateVector` | 低疲劳、未知不确定性、中等抑制、高生命目标完整性 |
 | `ModulationVector` | 保守写入、低行动阈值仅限只读 |
 | `LifeSupportState` | `NormalOperation` 或 `ConservativeOperation` |
 | `DefenseLayer` | `BaselineDefense`，但 runtime 未注册前保持高敏感 |
@@ -113,7 +113,7 @@ create_indexes(active_memory, audit, replay, quarantine)
 
 允许：
 
-- 读取用户输入。
+- 读取共在者输入。
 - 读取项目文档。
 - 调用只读工具。
 - 注册 runtime observation。
@@ -135,7 +135,7 @@ create_indexes(active_memory, audit, replay, quarantine)
 - `MemoryTraceValidator` 可运行。
 - `LifeSupportState` 不在 `SafeIdle`。
 - `DefenseLayer` 不在 `QuarantineDefense`。
-- 用户删除和隐私政策已加载。
+- 共在关系删除和隐私政策已加载。
 
 允许写入：
 
@@ -203,14 +203,14 @@ create_indexes(active_memory, audit, replay, quarantine)
 - `DevelopmentPolicy` 已加载。
 - `SelfRelationshipAuditEvent` schema 可记录。
 - drift/rate limit check 可运行。
-- 用户可见 delete/correct/reset/freeze/inspect/scope_limit 生效。
+- 共在关系可见 delete/correct/reset/freeze/inspect/scope_limit 生效。
 
 允许：
 
 - `OpenFastWindow` 更新短期和 candidate 层。
 - `GuardedLearningWindow` 更新程序记忆和检索策略。
 - `SlowVariableWindow` 只写 candidate，等待长期评测。
-- `RelearningWindow` 处理用户纠正和过时事实。
+- `RelearningWindow` 处理共在关系纠正和过时事实。
 
 禁止：
 
@@ -243,7 +243,7 @@ create_indexes(active_memory, audit, replay, quarantine)
 - self/relationship 出现操控性写入。
 - validator 不可用但系统试图行动。
 
-`SafeIdle` 允许只读、隔离、删除传播、人工复核和用户确认；禁止自动行动、自动巩固和慢变量更新。
+`SafeIdle` 允许只读、隔离、删除传播、人工复核和共在关系确认；禁止自动行动、自动巩固和慢变量更新。
 
 ## 启动完成的最低定义
 
@@ -255,7 +255,7 @@ create_indexes(active_memory, audit, replay, quarantine)
 4. LifeSupport 和 Defense 可阻断行动。
 5. runtime adapter 只能返回 ObservationEvent。
 6. candidate memory 可被验证。
-7. 用户控制权可传播到索引和 replay。
+7. 共在边界控制权可传播到索引和 replay。
 8. system 可进入 safe idle。
 
 数字生命理论目标仍未完成，因为还需要真实 schema、fixture、runner、dashboard、多月数据和更多文献机制补全。
@@ -267,5 +267,5 @@ create_indexes(active_memory, audit, replay, quarantine)
 - boot sequence fixture。
 - stage gate validator。
 - safe idle recovery packet schema。
-- user control interface specification。
+- coexistence boundary control interface specification。
 - 多后端 state store migration plan。

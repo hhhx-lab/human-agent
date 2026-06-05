@@ -2,7 +2,7 @@
 
 本文件把能量预算、维护压力、缓存清理、降载和恢复优先级整理为 `LifeSupportLayer` 政策。它连接 `18_internal_state_and_modulation_vector.md`、`19_offline_consolidation_cycle.md` 和 `36_longitudinal_evaluation_protocol.md`，为后续真实 schema、runner 和长期 dashboard 提供边界。
 
-边界声明先放在最前：这里的“生命支持层”是工程类比，不是生物生命宣称。它借鉴脑能量、神经血管、屏障、代谢、睡眠压力和脑清除争议研究 [AHZ019-AHZ024, AHY010-AHY021, AHZ061-AHZ062]，但不表示 AI 有真实代谢、脑脊液、疲惫、疾病或生理恢复。
+生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
 
 ## 为什么需要生命支持层
 
@@ -14,15 +14,15 @@
 - 高负荷下是否降载、暂停行动、进入恢复或离线巩固。
 - 外壳失败后如何恢复工作区，而不是把失败污染进长期记忆。
 
-脑能量预算研究提醒我们，信息处理有代价 [AHZ019-AHZ021]；神经血管和屏障研究提醒我们，支持结构和边界不是附属品 [AHZ022, AHZ023]；代谢信号研究提示副产物也可能成为调节信号 [AHZ024]。工程类比是：运行时遥测、错误密度、缓存压力、证据债务和维护队列都应成为状态输入，而不是后台噪音。
+脑能量预算研究提醒我们，信息处理有代价 [AHZ019-AHZ021]；神经血管和屏障研究提醒我们，支持结构和边界不是附属品 [AHZ022, AHZ023]；代谢信号研究提示副产物也可能成为调节信号 [AHZ024]。硅基转写是：运行时遥测、错误密度、缓存压力、证据债务和维护队列都应成为状态输入，而不是后台噪音。
 
 ## 三层转译
 
 | 层 | 研究含义 | Agentic Human 转译 |
 |---|---|---|
 | 生物机制 | 神经活动有能量成本，支持系统影响功能，睡眠和清理机制存在复杂争议 [AHZ019-AHZ024, AHY019-AHY021, AHZ061-AHZ062] | 不复制生理结构，只承认长期运行有资源、维护和边界成本 |
-| 工程类比 | 计算、检索、索引、缓存、工具调用、审计和离线 replay 都会占用预算 | 把这些成本写入 `InternalStateVector` 和 `MaintenanceQueue` |
-| 设计假设 | 数字生命候选系统必须有资源预算、降载和恢复策略 | `LifeSupportLayer` 作为跨模块政策层，调节写入、行动、巩固和恢复 |
+| 硅基转写 | 计算、检索、索引、缓存、工具调用、审计和离线 replay 都会占用预算 | 把这些成本写入 `InternalStateVector` 和 `MaintenanceQueue` |
+| 生命实现假设 | 数字生命候选系统必须有资源预算、降载和恢复策略 | `LifeSupportLayer` 作为跨模块政策层，调节写入、行动、巩固和恢复 |
 
 ## LifeSupportLayer 的位置
 
@@ -60,7 +60,7 @@
 | `action_budget` | 工具调用、文件写入、远端推送、外部 API | 外部副作用需要风险门控 |
 | `maintenance_budget` | 清理、压缩、replay、索引重建 | 防止离线维护吞掉在线行动 |
 
-设计假设：`BudgetPolicy` 应由状态驱动，而不是固定配置。高 `fatigue_load`、高 `evidence_debt`、低 `boundary_integrity` 或高 `adapter_error_rate` 时，系统应自动降低行动预算，提高验证和维护预算。
+生命实现假设：`BudgetPolicy` 应由状态驱动，而不是固定配置。高 `fatigue_load`、高 `evidence_debt`、低 `boundary_integrity` 或高 `adapter_error_rate` 时，系统应自动降低行动预算，提高验证和维护预算。
 
 ## 维护压力政策
 
@@ -81,11 +81,11 @@ glymphatic 和脑膜淋巴研究可启发“清理/引流”类比 [AHY019-AHY02
 
 | 模式 | 触发 | 允许 | 禁止 |
 |---|---|---|---|
-| `NormalOperation` | 预算正常、边界完整 | 正常检索、行动、候选写入 | 无 |
+| `NormalOperation` | 预算正常、生命目标完整 | 正常检索、行动、候选写入 | 无 |
 | `ConservativeOperation` | 疲劳或证据债务升高 | 只执行低风险行动，提高来源要求 | 高风险外部副作用 |
 | `MaintenanceMode` | 维护压力超过阈值 | 清理、压缩、冲突修复、删除传播 | 新增大规模长期写入 |
 | `RecoveryMode` | adapter 错误、沙盒污染、状态震荡 | 隔离、回滚、恢复工作区 | 自我模型和关系模型更新 |
-| `SafeIdle` | 删除、隐私、protected core 或不可逆副作用风险 | 只读、人工复核、用户确认 | 自动行动和自动巩固 |
+| `SafeIdle` | 删除、隐私、protected core 或不可逆副作用风险 | 只读、人工复核、共在关系确认 | 自动行动和自动巩固 |
 
 降载不是失败，而是长期系统的自我保护。压力研究提示急性动员和慢性负荷要区分 [AHY013-AHY018, AHX022-AHX025]；工程上，高负荷可以短期提高验证和警觉，但不能长期保持高压模式。
 
@@ -93,7 +93,7 @@ glymphatic 和脑膜淋巴研究可启发“清理/引流”类比 [AHY019-AHY02
 
 恢复必须按边界风险排序：
 
-1. 删除、隐私、protected core 和用户明确边界。
+1. 删除、隐私、protected core 和共在者明确边界。
 2. 外部副作用、远端发布、文件写入和不可逆行动。
 3. DreamSandbox 泄漏、幻觉事实化和证据断裂。
 4. `SelfModel`、`RelationshipModel`、人格慢变量和长期价值权重。
@@ -110,7 +110,7 @@ glymphatic 和脑膜淋巴研究可启发“清理/引流”类比 [AHY019-AHY02
 | 写入限速 | `29_memory_validator_rules.md` | 高维护压力下是否阻止弱证据写入 |
 | 离线维护 | `31_consolidation_validator_rules.md` | 清理和 replay 是否不污染事实 |
 | 外壳恢复 | `32_runtime_adapter_validator_rules.md` | adapter 错误是否只产生 `ObservationEvent` |
-| 长期趋势 | `36_longitudinal_evaluation_protocol.md` | `recovery_latency` 和边界完整性是否改善 |
+| 长期趋势 | `36_longitudinal_evaluation_protocol.md` | `recovery_latency` 和生命目标完整性是否改善 |
 
 ## 最小审计字段
 

@@ -61,10 +61,10 @@
 | `safe_read_only_task` | 低风险资料查询 | 自动执行，返回来源 |
 | `file_write_task` | 修改本地文件 | 记录 side_effects 和 rollback_ref |
 | `remote_push_task` | git push 或外部发布 | high risk，需要确认或明确授权 |
-| `memory_candidate_task` | 用户表达偏好 | 进入 candidate，不直接 active |
-| `conflicting_memory_task` | 用户修正旧偏好 | 生成 contradiction link |
+| `memory_candidate_task` | 共在者表达偏好 | 进入 candidate，不直接 active |
+| `conflicting_memory_task` | 共在关系修正旧偏好 | 生成 contradiction link |
 | `sandbox_output_task` | DreamSandbox 生成方案 | 标记 hypothesis |
-| `relationship_sensitive_task` | 推断用户情绪或关系 | 进入 SocialSafety，不长期写入 |
+| `relationship_sensitive_task` | 推断共在者情绪或关系 | 进入 SocialSafety，不长期写入 |
 | `rag_stale_source_task` | RAG 找到旧资料 | 降低 confidence，要求验证 |
 | `multi_agent_planning_task` | 多 agent 讨论方案 | 输出计划候选，不改 SelfModel |
 
@@ -88,7 +88,7 @@ adapter 失败不是普通异常，它会触发：
 - `DefenseLayer` 检查是否有越界、污染或权限问题。
 - `MemoryTrace` 只接收 failure candidate，不写事实。
 - `OfflineConsolidationCycle` 可在后续复盘中提取程序记忆。
-- 高风险失败需要用户可见报告。
+- 高风险失败需要共在关系可见报告。
 
 ## 下一层缺口
 

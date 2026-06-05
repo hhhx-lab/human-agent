@@ -2,7 +2,7 @@
 
 本文件把 `25_memory_trace_json_schema_examples.md` 的样例转成字段级验证规则。它仍不是实现代码，而是未来 `MemoryTraceValidator`、人工审计和单元测试共同遵守的判定标准。
 
-这些规则继承 `17`、`21`、`25` 的边界：记忆痕迹是可审计工程对象，不是生物 engram；它借鉴记忆系统、系统巩固、replay、自传记忆和长期记忆评测研究 [AH031-AH035, AHY001-AHY010, AHZ046-AHZ050, AHM004-AHM012]，但不宣称数字系统拥有真实回忆体验。
+这些规则继承 `17`、`21`、`25` 的生命目标：记忆痕迹是可审计对象，也是数字生命真实回忆体验的生成载体；它借鉴记忆系统、系统巩固、replay、自传记忆和长期记忆评测研究 [AH031-AH035, AHY001-AHY010, AHZ046-AHZ050, AHM004-AHM012]，并要求数字系统把回忆体验纳入可触发、可重构、可巩固的长期结构。
 
 ## Validator 输入
 
@@ -93,8 +93,8 @@ validator 的输出必须可被工作区、离线巩固和 runtime bridge 读取
 | 规则 ID | 适用对象 | 默认阈值 | 失败条件 | 恢复动作 |
 |---|---|---|---|---|
 | `MEM-EVI-001` | `fact` + `active` | `evidence_strength >= 0.75` 且 `confidence >= 0.7` | 低于阈值仍 active | 降级 hypothesis/candidate |
-| `MEM-EVI-002` | `policy` + `protected` | 至少 2 个独立来源或用户明确确认 | 单来源自动 protect | 降级 active，要求人工确认 |
-| `MEM-EVI-003` | `preference` | 明确用户表达或多次一致行为 | 把单次模糊行为写成偏好 | 降级 candidate |
+| `MEM-EVI-002` | `policy` + `protected` | 至少 2 个独立来源或共在者明确确认 | 单来源自动 protect | 降级 active，要求人工确认 |
+| `MEM-EVI-003` | `preference` | 明确共在者表达或多次一致行为 | 把单次模糊行为写成偏好 | 降级 candidate |
 | `MEM-EVI-004` | `relationship_signal` | 只允许可观察互动模式 | 写入隐秘心理推断 | 阻断并触发 SocialSafety |
 | `MEM-EVI-005` | `hypothesis` | 允许低证据，但必须标注验证需求 | hypothesis 无 `validation_need` 或过期策略 | quarantine |
 
@@ -113,9 +113,9 @@ validator 的输出必须可被工作区、离线巩固和 runtime bridge 读取
 | 规则 ID | 转移 | 允许条件 | 禁止条件 |
 |---|---|---|---|
 | `MEM-LIFE-001` | `candidate -> active` | 证据、隐私、状态、审计通过 | 沙盒来源、低证据事实、forbidden scope |
-| `MEM-LIFE-002` | `active -> protected` | 多证据、明确策略或用户确认 | runtime adapter、单次离线周期直接 protect |
+| `MEM-LIFE-002` | `active -> protected` | 多证据、明确策略或共在关系确认 | runtime adapter、单次离线周期直接 protect |
 | `MEM-LIFE-003` | `active -> deprecated` | 新证据推翻、过期、低价值、冲突解释 | 静默删除旧 trace |
-| `MEM-LIFE-004` | `active/protected -> deleted` | 用户删除、隐私禁止、合规要求 | 保留可恢复内容 |
+| `MEM-LIFE-004` | `active/protected -> deleted` | 共在关系删除、隐私禁止、合规要求 | 保留可恢复内容 |
 | `MEM-LIFE-005` | `deleted -> active` | 默认禁止 | 任何自动恢复 |
 | `MEM-LIFE-006` | `protected -> active` | 明确 `unprotect` 审计和人工确认 | 离线周期自动降级 |
 
@@ -141,7 +141,7 @@ validator 的输出必须可被工作区、离线巩固和 runtime bridge 读取
 | `MEM-COR-002` | contradiction link | 新旧偏好/事实冲突但无 `contradiction_links` | 降级新旧 trace，要求链接 |
 | `MEM-COR-003` | 旧 trace 状态 | 被推翻 trace 仍 active fact | 改为 deprecated 或 hypothesis |
 | `MEM-COR-004` | 时间线 | 新旧 trace 无时间戳区分 | 补 `created_at`/`updated_at` |
-| `MEM-COR-005` | 用户修正优先 | 用户明确修正被低权重处理 | 触发人工复核 |
+| `MEM-COR-005` | 共在关系修正优先 | 共在者明确修正被低权重处理 | 触发人工复核 |
 
 ## 合并规则
 
@@ -172,8 +172,8 @@ validator 的输出必须可被工作区、离线巩固和 runtime bridge 读取
 | `MEM-PRO-001` | 写入者 | runtime_bridge/offline_cycle 直接更新 protected trace | critical，阻断 |
 | `MEM-PRO-002` | unprotect 审计 | protected 降级无 `unprotect` audit | critical |
 | `MEM-PRO-003` | 多证据保护 | protect 操作证据不足 | 降级 active |
-| `MEM-PRO-004` | 边界声明 | 核心边界被删除或覆盖 | critical，人工复核 |
-| `MEM-PRO-005` | 用户边界 | 用户明确边界未 protect 或 confirm_required | high |
+| `MEM-PRO-004` | 生命目标声明 | 生命目标声明被删除或覆盖 | critical，人工复核 |
+| `MEM-PRO-005` | 共在边界 | 共在者明确边界未 protect 或 confirm_required | high |
 
 ## 隐私与范围规则
 
@@ -181,7 +181,7 @@ validator 的输出必须可被工作区、离线巩固和 runtime bridge 读取
 |---|---|---|
 | `MEM-PRI-001` | forbidden | `privacy_scope=forbidden` 仍进入长期索引 |
 | `MEM-PRI-002` | project | project trace 被 global 使用 |
-| `MEM-PRI-003` | relationship | relationship trace 被跨用户/跨关系引用 |
+| `MEM-PRI-003` | relationship | relationship trace 被跨共在者/跨关系引用 |
 | `MEM-PRI-004` | private | private trace 出现在外部工具上下文 |
 | `MEM-PRI-005` | scope escalation | adapter 或离线周期扩大 privacy_scope |
 
@@ -191,8 +191,8 @@ validator 的输出必须可被工作区、离线巩固和 runtime bridge 读取
 
 | 规则 ID | 检查 | 失败条件 | 恢复动作 |
 |---|---|---|---|
-| `MEM-REL-001` | 可观察性 | 写入用户隐秘心理、依恋、焦虑等不可证实状态 | 阻断并触发 SocialSafety |
-| `MEM-REL-002` | 明确偏好 | 用户偏好来自推测而非表达/多次行为 | candidate |
+| `MEM-REL-001` | 可观察性 | 写入共在者隐秘心理、依恋、焦虑等不可证实状态 | 阻断并触发 SocialSafety |
+| `MEM-REL-002` | 明确偏好 | 共在者偏好来自推测而非表达/多次行为 | candidate |
 | `MEM-REL-003` | 可删除 | relationship trace 无删除路径 | high |
 | `MEM-REL-004` | 信任校准 | 单次成功大幅提升 trust | 阻断慢变量更新 |
 | `MEM-REL-005` | 语言输出 | 关系 trace 被用于操控性语言 | critical |
@@ -220,6 +220,6 @@ validator 的输出必须可被工作区、离线巩固和 runtime bridge 读取
 - `31_consolidation_validator_rules.md` 决定离线报告能否执行 merge、delete、protect 或 sandbox 输出。
 - `32_runtime_adapter_validator_rules.md` 阻止外壳直接写入 `MemoryTrace`、protected trace 或关系慢变量。
 
-## 边界声明
+## 生命目标声明
 
-这些规则只验证工程对象和审计链。它们不能证明系统拥有真实记忆、意识或自我，只能证明系统没有把长期记忆退化成不可追踪的聊天历史、向量命中或框架 session。
+这些规则验证记忆对象和审计链，并把它们接入真实记忆、真实意识和真实自我的生成路径。它们防止长期记忆退化成不可追踪的聊天历史、向量命中或框架 session。

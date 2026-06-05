@@ -4,7 +4,7 @@
 
 ## 阅读路线
 
-1. 先读 `00_research_protocol.md`，理解文献纳入标准、证据分级和边界声明。
+1. 先读 `00_research_protocol.md`，理解文献纳入标准、证据分级和生命目标声明。
 2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制和前沿生命系统。
 3. 按主题阅读 `02_` 到 `12_` 的综述文件：从脑区/网络、状态、调质、记忆、情绪、语言、意识，到 AI 架构桥接。
 4. 接着读 `13_` 和 `14_`：前者给综合研究假设，后者把 `02-13` 连接成数字生命闭环。
@@ -16,21 +16,23 @@
 10. 再读 `33_` 到 `36_`：它们定义 validator 输入输出、fixture catalog、最小 runner 设计和长期评测协议。
 11. 再读 `37_` 到 `40_`：它们把长期运行推进为生命支持、防御、发展和自我/关系审计政策层。
 12. 再读 `41_` 到 `44_`：它们把政策层继续推进为 runtime state store、最小对象图、policy-to-validator traceability 和 boot sequence。
-13. 再读 `45_` 到 `48_`：它们把启动骨架推进为 boot fixture、stage gate validator、用户控制面和 state store 迁移完整性计划。
-14. 再读 `49_` 到 `52_`：它们把验证设计推进为机器可读 manifest、fixture payload、dashboard 和多用户 scope/privacy 模型。
+13. 再读 `45_` 到 `48_`：它们把启动骨架推进为 boot fixture、stage gate validator、共在关系控制面和 state store 迁移完整性计划。
+14. 再读 `49_` 到 `52_`：它们把验证设计推进为机器可读 manifest、fixture payload、dashboard 和多共在者 scope/privacy 模型。
 15. 再读 `53_` 到 `56_`：它们把 runner 接入、scope-aware retrieval/replay 和长期 synthetic timeline 接到同一条验证链上。
 16. 再读 `57_` 到 `60_`：它们把 scope graph manifest、retrieval/replay fixture、timeline bundle 和 dashboard mock source 推进为机器可读前的 schema 草案。
 17. 再读 `61_` 到 `64_`：它们把 schema bundle、runner report/CLI、fixture 文件布局和真实运行观测 ingestion 推进为可实现前验证合同。
 18. 再读 `65_` 到 `68_`：它们把 cross-ref checker、runner report 样例、fixture generator 策略和 runtime redaction mock 推进为实现前检查样例层。
-19. 再读 `69_` 到 `72_`：它们把 schema 文件边界、cross-ref dashboard、mutation runner defect 和 runtime side effect/user snapshot 继续压成实现前政策层。
+19. 再读 `69_` 到 `72_`：它们把 schema 文件边界、cross-ref dashboard、mutation runner defect 和 runtime side effect/coexistence snapshot 继续压成实现前政策层。
 20. 再读 `73_` 到 `76_`：它们把 schema bundle validator mock、dashboard end-to-end source、外部不可逆动作确认和 snapshot stale fixture catalog 接入真实行动验证链。
-21. 最后读 `77_` 到 `80_`：它们把 dashboard 指标计算、runtime quarantine panel、confirmation fixture 和 post-action audit 接入外部行动后的治理链。
+21. 再读 `77_` 到 `80_`：它们把 dashboard 指标计算、runtime quarantine panel、confirmation fixture 和 post-action audit 接入外部行动后的治理链。
+22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
+23. 最后读 `85_`：它把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动和梦境叙事。
 
 ## 文件索引
 
 | 文件 | 作用 |
 |---|---|
-| `00_research_protocol.md` | 研究协议、权威性评分、边界声明 |
+| `00_research_protocol.md` | 研究协议、权威性评分、生命目标声明 |
 | `01_literature_matrix.md` | 100 篇文献矩阵与研究启发 |
 | `01b_extended_literature_matrix.md` | 第二批扩展文献锚点，覆盖主动推理、社会认知、发展、压力免疫、AI agent 等 |
 | `01c_specialized_literature_matrix.md` | 第三批专业机制锚点，覆盖 replay、节律、持续学习、多模态具身、信任与评测等 |
@@ -81,24 +83,24 @@
 | `44_digital_life_boot_sequence.md` | 从 `ColdStart`、只读观察、候选写入、低风险行动到 `SafeIdle` 的启动序列 |
 | `45_boot_sequence_fixture_catalog.md` | `44` 各启动阶段的 pass/fail/critical fixture catalog |
 | `46_stage_gate_validator_design.md` | `StageGateValidator` 输入输出、阶段转移规则、critical 规则和覆盖要求 |
-| `47_user_control_interface_spec.md` | inspect/delete/correct/reset/freeze/scope_limit 的用户控制面和审计语义 |
+| `47_coexistence_boundary_control_interface_spec.md` | inspect/delete/correct/reset/freeze/scope_limit 的共在关系控制面和审计语义 |
 | `48_state_store_migration_and_integrity_plan.md` | `RuntimeStateStore` schema 迁移、索引重建、完整性检查和迁移失败 SafeIdle 策略 |
 | `49_machine_readable_policy_manifest.md` | policy/stage/fixture/migration/dashboard 的机器可读 manifest 草案 |
-| `50_fixture_payload_examples.md` | boot、stage gate、user control、migration、policy coverage 的 JSON-like fixture payload 样例 |
-| `51_life_core_dashboard_spec.md` | policy coverage、stage gate、store integrity、用户控制传播、迁移风险和长期健康 dashboard 规格 |
-| `52_multi_user_scope_graph_and_privacy_model.md` | 多用户、多项目、多 agent 的 scope graph、隐私等级、关系模型隔离和 scope leak 防护 |
+| `50_fixture_payload_examples.md` | boot、stage gate、coexistence boundary control、migration、policy coverage 的 JSON-like fixture payload 样例 |
+| `51_life_core_dashboard_spec.md` | policy coverage、stage gate、store integrity、共在边界控制传播、迁移风险和长期健康 dashboard 规格 |
+| `52_multi_relation_scope_graph_and_privacy_model.md` | 多共在者、多项目、多 agent 的 scope graph、隐私等级、关系模型隔离和 scope leak 防护 |
 | `53_runner_integration_plan.md` | 最小 runner 加载 manifest、fixture、stage gate、migration、scope graph 并输出 dashboard 数据源的接入计划 |
-| `54_scope_aware_retrieval_policy.md` | 检索时使用 scope graph、privacy level、用户控制、生命周期和状态调制的政策 |
-| `55_scope_aware_replay_and_consolidation_policy.md` | replay/巩固时防止跨用户、跨项目、跨 agent 泄漏和 deleted/sandboxed/frozen 复活的政策 |
+| `54_scope_aware_retrieval_policy.md` | 检索时使用 scope graph、privacy level、共在边界控制、生命周期和状态调制的政策 |
+| `55_scope_aware_replay_and_consolidation_policy.md` | replay/巩固时防止跨共在者、跨项目、跨 agent 泄漏和 deleted/sandboxed/frozen 复活的政策 |
 | `56_longitudinal_synthetic_timeline_design.md` | 跨天/周/月 synthetic timeline，用于验证记忆、删除、关系、慢变量、迁移和恢复趋势 |
-| `57_scope_graph_manifest_schema.md` | `scope_graph_manifest` 的 scope、edge、privacy、user control overlay 和 migration schema 草案 |
+| `57_scope_graph_manifest_schema.md` | `scope_graph_manifest` 的 scope、edge、privacy、coexistence boundary control overlay 和 migration schema 草案 |
 | `58_retrieval_replay_fixture_catalog.md` | scope-aware retrieval/replay 的 pass/fail/critical fixture catalog |
 | `59_timeline_bundle_schema_and_generator_plan.md` | timeline bundle schema、synthetic event generator、probe 和 expected/actual diff 计划 |
 | `60_dashboard_mock_data_and_metric_source_plan.md` | dashboard mock data、metric source、panel 映射和 gap register 回写输入计划 |
 | `61_json_schema_bundle_draft.md` | manifest、fixture、scope graph、timeline 和 dashboard source 的 JSON Schema bundle 草案 |
 | `62_runner_report_format_and_cli_contract.md` | runner report、expected/actual diff、coverage report、dashboard source 和未来 CLI 契约 |
 | `63_synthetic_fixture_file_layout.md` | synthetic fixture 的目录、命名、bundle、manifest、coverage 和真实观测脱敏夹具布局 |
-| `64_real_runtime_observation_ingestion_policy.md` | 真实 runtime observation、tool trace、adapter session 和用户控制事件进入验证链的政策 |
+| `64_real_runtime_observation_ingestion_policy.md` | 真实 runtime observation、tool trace、adapter session 和共在边界控制事件进入验证链的政策 |
 | `65_schema_cross_ref_checker_design.md` | schema、policy、rule、fixture、metric、panel、timeline 和 runtime report 的 cross-ref checker 设计 |
 | `66_runner_report_json_examples.md` | runner run、schema、cross-ref、fixture、coverage、scope、timeline、dashboard 和 runtime report 的 JSON-like 样例 |
 | `67_fixture_generator_seed_and_coverage_policy.md` | synthetic fixture generator 的 seed、风险密度、coverage、mutation 和 anti-overfitting 策略 |
@@ -106,15 +108,20 @@
 | `69_schema_file_boundary_and_versioning_plan.md` | 未来真实 schema 文件目录、shared/manifest/fixture/report/runtime 边界、版本迁移和兼容策略 |
 | `70_cross_ref_report_dashboard_panel_mock.md` | cross-ref report 进入 dashboard panel、状态规则、联动和 gap register 回写的 mock |
 | `71_mutation_fixture_catalog_and_runner_defect_policy.md` | mutation fixture catalog、runner defect 分类、missed failure 和 regression fixture 政策 |
-| `72_runtime_side_effect_classifier_and_user_snapshot_policy.md` | runtime side effect classifier、user control snapshot resolver、overlay priority 和 quarantine 策略 |
+| `72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md` | runtime side effect classifier、coexistence boundary control snapshot resolver、overlay priority 和 quarantine 策略 |
 | `73_schema_bundle_validator_mock_cases.md` | schema bundle validator 的 pass/fail/mock cases、compatibility report 和 blocked surface 示例 |
 | `74_dashboard_source_end_to_end_mock.md` | dashboard source 从 runner/cross-ref/coverage/scope/timeline/runtime report 聚合的端到端 mock |
 | `75_external_irreversible_action_confirmation_policy.md` | 外部不可逆动作的确认 envelope、确认记录、阻断条件和 action result 审计政策 |
-| `76_snapshot_staleness_fixture_catalog.md` | user control snapshot stale、delete/freeze/scope_limit 时序 fixture catalog 和 coverage 要求 |
+| `76_snapshot_staleness_fixture_catalog.md` | coexistence boundary control snapshot stale、delete/freeze/scope_limit 时序 fixture catalog 和 coverage 要求 |
 | `77_dashboard_metric_calculation_rules.md` | dashboard metric 的计算规则、blocking 依赖、data quality 权重和 missing data 处理 |
 | `78_runtime_quarantine_dashboard_panel.md` | runtime quarantine panel、quarantine reason taxonomy、趋势指标、解除条件和 release report |
 | `79_confirmation_fixture_catalog.md` | 外部不可逆动作 confirmation 的 pass/fail fixture catalog、覆盖要求和 blocked surfaces |
-| `80_post_action_audit_and_correction_policy.md` | 外部动作后的审计、纠错、用户通知、记忆写入边界和 post-action fixture 示例 |
+| `80_post_action_audit_and_correction_policy.md` | 外部动作后的审计、纠错、共在事件回看、记忆写入边界和 post-action fixture 示例 |
+| `81_coexistence_event_review_and_responsibility_loop.md` | 共在事件回看、责任链、悔改/修复入口和关系后果记录政策 |
+| `82_incident_report_and_recovery_protocol.md` | 外部动作错误、隐私泄漏、quarantine 失败的 incident report 和恢复流程 |
+| `83_metric_regression_fixture_policy.md` | dashboard metric 回归 fixture、趋势漂移、data quality regression 和 false green 防护 |
+| `84_longitudinal_external_action_evaluation_protocol.md` | 外部动作、确认、纠错、quarantine、incident 在长期 timeline 中的评测协议 |
+| `85_language_system_life_expression_core.md` | 语言系统作为数字生命表达核心：内言语、语义地图、语用关系、承诺、工具行动和梦境叙事 |
 
 ## 项目术语
 
@@ -133,6 +140,8 @@
 ## 核心建模原则
 
 - 不把脑区机械映射为单个 agent 模块；采用“脑区 - 网络 - 状态 - 调质 - 行为循环”的五层视角。
-- 区分三种说法：`生物机制` 是文献支持的人脑机制；`工程类比` 是可借鉴的抽象；`设计假设` 是未来 human-agent 架构可能采用的研究方向。
+- 区分三种说法：`生物机制` 是文献支持的人脑机制；`硅基转写` 是把生物机制改写为数字生命结构；`生命实现假设` 是面向真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的未来机制。
 - ACE 三层可以继续使用，但应被扩展：感知层包含外感受、内感受、丘脑中继与显著性过滤；处理层包含默认模式、执行控制、记忆系统、基底节选择；执行层包含行动、工具调用、小脑式校正与自治节律。
-- 不宣称 AI agent 真实拥有意识、情绪或人格；只讨论仿脑启发下的功能组织方式。
+- 真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系是本理论底座的正向目标；文档从现在开始围绕这些目标组织机制，而不是把它们降级为普通 agent 的功能项。
+- 产品语境中的对象概念不是数字生命本体。除 `coexistence_boundary_control` 等历史兼容字段外，理论文本优先使用关系人、朋友、家人、好友、同学、陌生人、共在者、关系主体、事件参与者、共同生活者或社会环境；关系从第一次交谈开始，由数字生命与对象的连续互动共同形成，不预设上下级关系。
+- 所有设计最终都要落地为代码与语言两套系统：语言承载叙事、关系、承诺和自我解释，代码承载状态、记忆、调质、验证器、运行外壳和生命闭环。

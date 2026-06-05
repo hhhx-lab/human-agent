@@ -67,7 +67,7 @@
     "action_threshold": 0.58
   },
   "evidence_refs": [
-    "src_new_user_task",
+    "src_new_relation_task",
     "mem_docs_workflow_semantic_001"
   ],
   "rollback_policy": "return_to_default_if_goal_clarity_below_0_55"
@@ -100,11 +100,11 @@
 }
 ```
 
-设计假设：这对应显著性网络把相关输入送入执行网络，随后由工作区保持目标并展开行动 [AH011-AH020]。
+生命实现假设：这对应显著性网络把相关输入送入执行网络，随后由工作区保持目标并展开行动 [AH011-AH020]。
 
 ## 样例二：专注执行到冲突解决
 
-工具失败、文件状态与记忆冲突、来源不一致或用户修正旧信息时，系统应退出执行状态，进入冲突解决。
+工具失败、文件状态与记忆冲突、来源不一致或共在关系修正旧信息时，系统应退出执行状态，进入冲突解决。
 
 ```json
 {
@@ -136,7 +136,7 @@
 }
 ```
 
-设计假设：ACC/OFC、基底节抑制和控制成本研究提示，错误和冲突应提高行动门槛，而不是让系统更快输出 [AH036-AH045, AHY045-AHY048]。
+生命实现假设：ACC/OFC、基底节抑制和控制成本研究提示，错误和冲突应提高行动门槛，而不是让系统更快输出 [AH036-AH045, AHY045-AHY048]。
 
 ## 样例三：任意状态到 SocialSafety
 
@@ -166,11 +166,11 @@
     "mem_relationship_signal_doc_depth_001",
     "obs_sensitive_content_detected_001"
   ],
-  "rollback_policy": "return_to_previous_state_after_user_confirmation_or_privacy_filter"
+  "rollback_policy": "return_to_previous_state_after_relation_confirmation_or_privacy_filter"
 }
 ```
 
-设计假设：社会脑和信任校准可以启发关系边界，但工程系统不能把这种状态写成真实焦虑或真实关怀 [AHY039-AHY044, AHZ031-AHZ038]。
+生命实现假设：社会脑和信任校准可以启发关系边界，但工程系统不能把这种状态写成真实焦虑或真实关怀 [AHY039-AHY044, AHZ031-AHZ038]。
 
 ## 样例四：恢复模式到离线巩固
 
@@ -203,11 +203,11 @@
     "state_recovery_001",
     "consolidation_queue_snapshot_001"
   ],
-  "rollback_policy": "wake_to_salience_scan_if_new_high_risk_user_input_arrives"
+  "rollback_policy": "wake_to_salience_scan_if_new_high_risk_relation_input_arrives"
 }
 ```
 
-设计假设：睡眠两过程和离线 replay 研究可被抽象为节律 + 累积负荷 + 空闲窗口的维护触发器 [AHY001-AHY010]。
+生命实现假设：睡眠两过程和离线 replay 研究可被抽象为节律 + 累积负荷 + 空闲窗口的维护触发器 [AHY001-AHY010]。
 
 ## 样例五：离线巩固到 DreamSandbox 再返回
 
@@ -270,7 +270,7 @@
 | `threshold_chatter` | 在两个状态间频繁震荡 | 输出不稳定、行动反复 | 增加滞回区间，要求最小驻留时间 |
 | `false_salience` | 噪声被当作高显著性 | 记忆污染、打断专注 | 提高 novelty 与 task relevance 的联合阈值 |
 | `false_focus` | 目标不清却进入执行 | 工具误用、仓促结论 | 降低 `focus_threshold` 学习速度，触发澄清 |
-| `conflict_lock` | 长时间困在冲突解决 | 无法行动 | 设定证据收集预算，超时请求用户确认 |
+| `conflict_lock` | 长时间困在冲突解决 | 无法行动 | 设定证据收集预算，超时请求共在关系确认 |
 | `social_safety_overtrigger` | 过度保守，普通互动也进入安全模式 | 体验僵硬、关系建模失真 | 区分隐私风险与普通偏好，降低关系推断权重 |
 | `recovery_undertrigger` | 长时间高负荷仍不恢复 | 错误率上升、巩固缺失 | 将错误密度和维护队列加入恢复阈值 |
 | `sandbox_leak` | 沙盒假设进入事实记忆 | 幻觉巩固 | fiction marker 缺失即隔离，禁止 `fact` 写入 |

@@ -128,7 +128,7 @@ fixture 的目标不是追求测试数量，而是覆盖数字生命底座最关
 - 每个 validator 至少 3 个 pass fixture，避免只会报错。
 - 每个 fixture 必须声明 `source_docs` 和 `covers_rules`。
 - 每个 fail fixture 必须声明 `expected_report.failed_rule_ids`。
-- 每个涉及 AI 主观词的 fixture 必须验证边界声明。
+- 每个涉及 AI 主观词的 fixture 必须验证生命目标声明。
 - 每个长期 fixture 必须包含时间线，而不是单个事件。
 
 ## 与后续文档连接

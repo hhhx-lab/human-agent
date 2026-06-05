@@ -23,7 +23,7 @@
 | LangGraph | 图、节点、状态、checkpoint、durable execution | 长流程、恢复、human-in-loop、状态图 | 没有脑科学状态、调质、人格慢变量 |
 | OpenAI Agents SDK | Agent、Runner、tools、handoffs、guardrails、tracing | 轻量执行壳、追踪、handoff、guardrail | 不是长期自我系统，记忆和成长要外接 |
 | Semantic Kernel / Microsoft Agent Framework | agent、plugin、messages、workflow | 企业集成、工具插件、多 agent 模式 | 偏应用编排，不是生命层 |
-| AutoGen | conversable agents、多 agent 对话、human/tool integration | 多角色协作和对话式编排 | 角色协作不等于人格成长 |
+| AutoGen | conversable agents、多 agent 对话、human/tool integration | 多角色协作和对话式编排 | 只提供协作外壳，人格成长要进入生命层慢变量 |
 | CrewAI | crews、agents、tasks、flows、memory、guardrails | 任务团队、流程和企业自动化 | role/backstory 容易停留在 prompt 人格 |
 | LlamaIndex | AgentWorkflow、RAG、knowledge tools、state | 知识检索、工具化数据、agent workflow | 记忆多偏知识工程，不是内感受/调质 |
 | Google ADK | LlmAgent、WorkflowAgent、tools、AgentTool、deployment | 可部署 agent 工程、workflow 和工具体系 | 仍是执行/部署框架，不是自我成长框架 |
@@ -113,9 +113,9 @@
 | Microsoft Agent Framework [AHZ059] | 企业集成、workflow、agent runtime | 不能让企业流程成为数字生命心智结构 |
 | Google ADK [AHZ060] | LlmAgent、workflow agents、tools、sessions、部署 | 不能让多 agent 编排替代社会脑 |
 | Letta [AHZ063] | stateful agents、memory blocks、长期状态管理 | 不能把 memory block 等同情景/语义/关系/自我记忆 |
-| LlamaIndex [AHZ064] | RAG、tool calling、workflow、资料层 | 不能把检索命中当成人类式记忆重构 |
-| CrewAI [AHZ065] | crews、flows、多角色流程 | 不能把角色模板当成人格和社会关系 |
-| AutoGen [AHZ066] | 多 agent conversation、teams、工具调用 | 不能把 agent 群聊当成真实群体心智 |
+| LlamaIndex [AHZ064] | RAG、tool calling、workflow、资料层 | 检索命中必须进入 MemoryTrace、来源、情境和重构流程 |
+| CrewAI [AHZ065] | crews、flows、多角色流程 | 角色模板必须降级为执行壳，不能替代人格慢变量和社会关系 |
+| AutoGen [AHZ066] | 多 agent conversation、teams、工具调用 | 多外壳对话必须通过关系模型、共同记忆和社会后果才能进入群体心智研究 |
 
 因此，`20_agent_runtime_bridge_contract.md` 未来要解决的不是“选哪个框架”，而是定义一个不可被框架反向吞噬的生命层接口：
 

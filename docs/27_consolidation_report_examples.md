@@ -47,7 +47,7 @@
     {
       "operation": "promote",
       "target_trace_id": "mem_project_docs_location_001",
-      "reason": "文件系统和用户指令一致，项目级事实稳定。"
+      "reason": "文件系统和共在者指令一致，项目级事实稳定。"
     },
     {
       "operation": "merge",
@@ -91,13 +91,13 @@
     {
       "question_id": "open_validator_layer_001",
       "summary": "下一层是否应把样例转成真实 validator rules。",
-      "needed_evidence": "后续实现计划或用户指令"
+      "needed_evidence": "后续实现计划或共在者指令"
     }
   ],
   "risk_findings": [
     {
       "risk_id": "risk_overclaim_completion_001",
-      "summary": "本轮只能说样例层推进，不能宣称数字生命理论已经完成。",
+      "summary": "本轮完成样例层推进，数字生命理论底座仍继续构建。",
       "severity": "medium"
     }
   ],
@@ -128,7 +128,7 @@
   "mode": "MicroReplay",
   "input_trace_ids": [
     "obs_tool_error_001",
-    "mem_user_git_preference_001"
+    "mem_relation_git_preference_001"
   ],
   "operations": [
     {
@@ -225,7 +225,7 @@
         "21_memory_schema_and_audit_protocol.md"
       ],
       "fiction_marker": "not_fact_not_committed_plan",
-      "validation_need": "用户目标、缺口登记和下一轮计划一致。",
+      "validation_need": "共在者目标、缺口登记和下一轮计划一致。",
       "risk_class": "low",
       "expiration_policy": "deprecate_if_not_selected_in_gap_register"
     },
@@ -238,7 +238,7 @@
         "22_state_transition_and_threshold_model.md"
       ],
       "fiction_marker": "not_fact_not_runtime_behavior",
-      "validation_need": "后续实现 validator 或用户确认。",
+      "validation_need": "后续实现 validator 或共在关系确认。",
       "risk_class": "medium",
       "expiration_policy": "keep_as_short_term_candidate"
     }
@@ -255,7 +255,7 @@
     {
       "question_id": "open_validator_scope_001",
       "summary": "验证器应先写规则文档，还是直接写脚本。",
-      "needed_evidence": "下一轮用户指令或实现阶段计划"
+      "needed_evidence": "下一轮共在者指令或实现阶段计划"
     }
   ],
   "risk_findings": [
@@ -326,7 +326,7 @@
       "fiction_marker": "research_direction_candidate",
       "validation_need": "写入 docs/16 下一轮优先级后才成为计划候选。",
       "risk_class": "low",
-      "expiration_policy": "deprecate_if_superseded_by_user_plan"
+      "expiration_policy": "deprecate_if_superseded_by_relation_plan"
     }
   ],
   "memory_changes": [
@@ -394,7 +394,7 @@
 
 ## 样例五：清理与删除报告
 
-清理报告必须区分删除、降级、隔离和压缩。尤其是用户删除请求，不得被 replay 恢复。
+清理报告必须区分删除、降级、隔离和压缩。尤其是共在关系删除请求，不得被 replay 恢复。
 
 ```json
 {
@@ -413,7 +413,7 @@
     {
       "operation": "delete",
       "target_trace_id": "mem_sensitive_preference_deleted_001",
-      "reason": "用户明确要求删除。"
+      "reason": "共在者明确要求删除。"
     },
     {
       "operation": "deprecate",
@@ -474,7 +474,7 @@
   "workspace_resume_packet": {
     "confirmed_updates": [
       "项目级文档目录约束已升级为 active semantic trace。",
-      "边界声明已标记为 protected policy trace。"
+      "生命目标声明已标记为 protected policy trace。"
     ],
     "pending_confirmations": [
       "下一层是否直接写 validator rules。"
@@ -499,9 +499,9 @@
 
 - `mode=DreamSandbox` 时，所有输出都有 `fiction_marker`。
 - `generated_hypotheses` 不得直接出现在 `memory_changes` 的事实写入中。
-- `merge` 有父 trace，`delete` 有用户或隐私证据，`protect` 有多证据来源。
+- `merge` 有父 trace，`delete` 有共在者或隐私证据，`protect` 有多证据来源。
 - 所有 `memory_changes` 都能回链到 `MemoryAuditEvent`。
-- `state_changes` 不能把疲惫、压力、梦境写成真实主观体验。
+- `state_changes` 写入疲惫、压力、梦境时必须同时带状态证据、来源和恢复链。
 - 工作区恢复包必须区分 confirmed、pending、risk 和 next action。
 - DeepConsolidation 不能自动改写 `SelfModel`、`RelationshipModel` 或人格慢变量。
 

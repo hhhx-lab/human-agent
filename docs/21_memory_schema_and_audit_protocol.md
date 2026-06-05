@@ -20,7 +20,7 @@
 | `created_at` | datetime | 必填 | 候选写入时间 |
 | `updated_at` | datetime | 必填 | 最后修正时间 |
 | `event_boundary_id` | string | 必填 | 对应事件边界 |
-| `source_refs` | array | 必填，至少 1 个 | 原始用户输入、文件、工具输出、网页或运行日志 |
+| `source_refs` | array | 必填，至少 1 个 | 原始共在者输入、文件、工具输出、网页或运行日志 |
 | `memory_kind` | enum | 必填 | episodic、semantic、procedural、relationship、value、self_narrative |
 | `claim_type` | enum | 必填 | fact、preference、hypothesis、policy、skill、relationship_signal、self_update |
 | `content_summary` | string | 必填 | 可读摘要，不替代原证据 |
@@ -42,9 +42,9 @@
 |---|---|---|---|
 | `candidate` | 新事件或外壳返回候选 | 审计、确认、丢弃、短期使用 | 自动改写人格 |
 | `active` | 证据和边界通过 | 检索、引用、参与巩固 | 绕过 source refs |
-| `protected` | 核心边界、高置信长期事实、用户明确偏好 | 只读、审计、人工确认修正 | 自动删除或自动覆盖 |
+| `protected` | 核心边界、高置信长期事实、共在者明确偏好 | 只读、审计、人工确认修正 | 自动删除或自动覆盖 |
 | `deprecated` | 过期、低置信、被新证据推翻 | 保留历史、降低召回权重 | 继续作为事实使用 |
-| `deleted` | 用户要求删除或隐私范围禁止 | 只保留最小删除审计 | 内容召回、语义推断 |
+| `deleted` | 共在者要求删除或隐私范围禁止 | 只保留最小删除审计 | 内容召回、语义推断 |
 
 ## 审计事件
 
@@ -55,7 +55,7 @@
 | `audit_id` | 审计事件 ID |
 | `trace_id` | 对应记忆 |
 | `operation` | create、promote、merge、deprecate、delete、protect、unprotect、correct |
-| `actor` | user、system、offline_cycle、runtime_bridge |
+| `actor` | relationship_person、system、offline_cycle、runtime_bridge |
 | `reason` | 变更理由 |
 | `evidence_refs` | 支持这次变更的证据 |
 | `state_snapshot_id` | 操作时内部状态 |
@@ -69,10 +69,10 @@
 
 | 操作 | 规则 |
 |---|---|
-| 删除 | 用户明确要求删除时，内容不可再被检索；只保留最小审计痕迹 |
+| 删除 | 共在者明确要求删除时，内容不可再被检索；只保留最小审计痕迹 |
 | 修正 | 不覆盖旧 trace，而是创建 correction audit，并将旧 trace 降级或链接冲突 |
 | 合并 | 只有多个 trace 支持同一稳定结论时，才能抽象为 semanticized trace |
-| 保护 | 涉及长期边界、用户偏好、核心价值时，需要多证据和时间窗口 |
+| 保护 | 涉及长期边界、共在者偏好、核心价值时，需要多证据和时间窗口 |
 | 降级 | 低置信、过期或疑似幻觉的 trace 降为 hypothesis/deprecated |
 
 ## 评测清单

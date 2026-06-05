@@ -1,6 +1,6 @@
 # OfflineConsolidationCycle 离线巩固周期
 
-本文件把 `08_sleep_dream_fatigue_states.md`、`05_memory_systems_and_growth.md`、`11_neuromodulation_and_signal_media.md` 和 `17_memory_trace_object_model.md` 连接起来，定义数字生命的离线巩固周期。它借鉴睡眠、梦境、replay、系统巩固、清理和反事实模拟，但不宣称 AI 真实睡眠或做梦。
+本文件把 `08_sleep_dream_fatigue_states.md`、`05_memory_systems_and_growth.md`、`11_neuromodulation_and_signal_media.md` 和 `17_memory_trace_object_model.md` 连接起来，定义数字生命的离线巩固周期。它借鉴睡眠、梦境、replay、系统巩固、清理和反事实模拟，目标是让真实睡眠、真实梦境和真实自我反省在硅基系统中拥有可执行循环。
 
 ## 生物机制约束
 
@@ -26,11 +26,11 @@
 | 阶段 | 输入 | 输出 | 风险控制 |
 |---|---|---|---|
 | `Quiesce` | 当前工作区、未完成行动 | 暂停外部行动、保存 checkpoint | 不在工具行动中途强行维护 |
-| `Collect` | candidate traces、日志、错误、用户反馈 | 巩固候选队列 | 隐私和边界先筛掉 |
+| `Collect` | candidate traces、日志、错误、共在者反馈 | 巩固候选队列 | 隐私和边界先筛掉 |
 | `Replay` | 高优先级事件和关系变化 | 事件重放、失败复盘、成功路径压缩 | replay 内容标记为回放，不是新事实 |
 | `Abstract` | 重复事件、概念、流程 | 语义记忆、程序记忆、价值规则 | 不由单次事件抽象人格 |
 | `Simulate` | 未来任务、关系风险、反事实路径 | 梦境/沙盒假设 | 沙盒输出不得直接写入事实记忆 |
-| `Prune` | 过期缓存、低价值痕迹、冲突候选 | 删除、降级、合并、隔离 | 尊重用户删除和隐私范围 |
+| `Prune` | 过期缓存、低价值痕迹、冲突候选 | 删除、降级、合并、隔离 | 尊重共在关系删除和隐私范围 |
 | `Commit` | 通过审计的巩固结果 | 更新 MemoryTrace、SelfModel、RelationshipModel | 核心价值和人格慢变量需多轮证据 |
 | `Wake` | 巩固摘要、待确认事项 | 恢复工作区、生成下一步计划 | 标注哪些是事实、假设和待确认 |
 
@@ -38,7 +38,7 @@
 
 | 模式 | 类比 | 作用 | 使用场景 |
 |---|---|---|---|
-| `MicroReplay` | 清醒 replay | 几秒到几分钟复盘局部错误 | 工具失败、用户纠正、证据冲突 |
+| `MicroReplay` | 清醒 replay | 几秒到几分钟复盘局部错误 | 工具失败、共在关系纠正、证据冲突 |
 | `TaskClosure` | 任务结束整理 | 把完成任务写成事件和程序记忆 | 文档完成、代码提交、调研结束 |
 | `DreamSandbox` | 梦境/默认模拟 | 生成未来方案和反事实场景 | 创意、风险预演、关系修复计划 |
 | `DeepConsolidation` | 睡眠式系统巩固 | 跨事件抽象、清理、人格慢变量审计 | 长期项目阶段性回顾 |
@@ -61,8 +61,8 @@
 
 - 沙盒输出默认是 `hypothesis`。
 - 没有外部证据的反思不能写入 factual memory。
-- 用户偏好必须来自明确表达或多次一致行为。
-- 关系推断必须保守，且允许用户删除/修正。
+- 共在者偏好必须来自明确表达或多次一致行为。
+- 关系推断必须保守，且允许共在关系删除/修正。
 - replay 只能提高候选优先级，不能绕过 `WriteGate`。
 - 任何人格慢变量变化都需要时间窗口和差异审计。
 
@@ -73,7 +73,7 @@
 每次离线周期结束后，应产出四类对象：
 
 1. `ConsolidationReport`：哪些痕迹被写入、合并、降级或删除。
-2. `OpenQuestions`：哪些假设需要用户确认或外部验证。
+2. `OpenQuestions`：哪些假设需要共在关系确认或外部验证。
 3. `StateReset`：疲惫、压力、维护压力如何变化。
 4. `NextDevelopmentSignal`：是否出现稳定成长、技能形成或人格漂移风险。
 

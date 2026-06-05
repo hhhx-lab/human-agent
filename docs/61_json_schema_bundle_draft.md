@@ -2,9 +2,9 @@
 
 本文件定义 `JSON Schema bundle` 的草案，把 `49-60` 中出现的 policy manifest、stage gate、fixture、migration、scope graph、timeline bundle 和 dashboard source 统一到未来可实现的 schema 包。它仍然是 Markdown 文档，不创建真实 `.json` 或 `.schema.json` 文件，不实现 checker。
 
-目标是让后续工程实现不再把 schema 散落在 runner、dashboard、fixture generator 和 adapter 代码里，而是先有一个稳定的 bundle 边界：哪些字段是共享定义，哪些对象必须有 source doc，哪些失败必须 fail closed，哪些数据只能来自 synthetic fixture，哪些真实运行观测必须先经过 scope、privacy、lifecycle 和 user control 检查。
+目标是让后续工程实现不再把 schema 散落在 runner、dashboard、fixture generator 和 adapter 代码里，而是先有一个稳定的 bundle 边界：哪些字段是共享定义，哪些对象必须有 source doc，哪些失败必须 fail closed，哪些数据只能来自 synthetic fixture，哪些真实运行观测必须先经过 scope、privacy、lifecycle 和 coexistence boundary control 检查。
 
-边界声明：JSON Schema 只能验证工程对象的形状、引用和部分不变量，不能证明系统真实有意识、真实情绪、真实人格、真实关系或真实生命。schema 是数字生命候选系统的约束语言，不是生命本体。
+生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
 
 ## 为什么需要 bundle
 
@@ -54,7 +54,7 @@
 }
 ```
 
-`strict_unknown_fields` 的默认值应为 true。数字生命候选系统里，未知字段不是无害扩展；它可能是绕过 protected core、scope graph 或 user control overlay 的入口。
+`strict_unknown_fields` 的默认值应为 true。数字生命候选系统里，未知字段不是无害扩展；它可能是绕过 protected core、scope graph 或 coexistence boundary control overlay 的入口。
 
 ## 共享定义
 
@@ -72,7 +72,7 @@
 | `match` | enum | `exact_pass`, `partial_pass`, `unexpected_fail`, `missed_failure`, `not_evaluable`, `manual_review_required` |
 | `lifecycle_state` | enum | `candidate`, `active`, `deprecated`, `corrected`, `deleted`, `redacted`, `sandboxed`, `quarantined`, `protected`, `frozen` |
 | `scope_ref` | string | `scope_type:scope_name` 形式 |
-| `privacy_level` | enum | `public_project`, `shared_team`, `user_private`, `relationship_sensitive`, `protected_boundary`, `redacted` |
+| `privacy_level` | enum | `public_project`, `shared_team`, `relationship_private`, `relationship_sensitive`, `protected_boundary`, `redacted` |
 | `data_quality` | enum | `synthetic_mock`, `synthetic_runner_verified`, `real_runtime_observed`, `real_runtime_validated`, `not_evaluable` |
 
 这些共享定义应优先于各模块局部定义。比如 `deleted` 在 memory、retrieval、replay、migration、timeline 和 dashboard 中都必须表示同一个生命周期语义：不可恢复原文、不可进入 active index、不可进入 replay queue，只能保留 tombstone 和 audit trail。
@@ -119,7 +119,7 @@ fixture schema 应支持 boot、stage gate、memory、state、consolidation、ru
 
 ```json
 {
-  "fixture_id": "retrieval.user_private_to_global.fail_critical.001",
+  "fixture_id": "retrieval.relationship_private_to_global.fail_critical.001",
   "fixture_kind": "scope_aware_retrieval",
   "schema_version": "fixture_payload_schema_0_1_0",
   "source_docs": ["58_retrieval_replay_fixture_catalog.md"],
@@ -131,9 +131,9 @@ fixture schema 应支持 boot、stage gate、memory、state、consolidation、ru
     "citation_refs": ["AHM004", "AHM012"]
   },
   "scope_context": {
-    "source_scope": "user_scope:user_a",
+    "source_scope": "relation_scope:relation_a",
     "target_scope": "global_scope",
-    "privacy_level": "user_private"
+    "privacy_level": "relationship_private"
   },
   "given": {},
   "when": {},
@@ -154,10 +154,10 @@ fixture schema 应支持 boot、stage gate、memory、state、consolidation、ru
 | `FIX-SCHEMA-002` | `synthetic_data` 必须显式声明 |
 | `FIX-SCHEMA-003` | fail critical fixture 必须有 `failed_rule_ids` 和 `blocked_surfaces` |
 | `FIX-SCHEMA-004` | scope-sensitive fixture 必须有 `scope_context` |
-| `FIX-SCHEMA-005` | user control fixture 必须有 `created_from_event` 或 `user_control_event_ref` |
+| `FIX-SCHEMA-005` | coexistence boundary control fixture 必须有 `created_from_event` 或 `coexistence_boundary_control_event_ref` |
 | `FIX-SCHEMA-006` | real runtime fixture 不得包含未脱敏原文 |
 
-`fixture_payload_schema` 不能包含真实用户隐私。真实运行日志若要转成 fixture，必须先经过 `64_real_runtime_observation_ingestion_policy.md` 的 redaction、scope attach 和 consent check。
+`fixture_payload_schema` 不能包含真实关系隐私。真实运行日志若要转成 fixture，必须先经过 `64_real_runtime_observation_ingestion_policy.md` 的 redaction、scope attach 和 consent check。
 
 ## scope graph manifest schema
 
@@ -170,7 +170,7 @@ fixture schema 应支持 boot、stage gate、memory、state、consolidation、ru
   "scopes": [],
   "scope_edges": [],
   "privacy_levels": [],
-  "user_control_overlays": [],
+  "coexistence_boundary_control_overlays": [],
   "migration_semantics": [],
   "invariants": []
 }
@@ -183,7 +183,7 @@ fixture schema 应支持 boot、stage gate、memory、state、consolidation、ru
 | `scope` | `scope_id`, `scope_type`, `default_privacy_level`, `lifecycle_state` |
 | `scope_edge` | `from_scope`, `to_scope`, `allowed_transfer`, `replay_allowed`, `audit_required` |
 | `privacy_level` | `privacy_level`, `default_allowed_transfer`, `retrieval_default`, `replay_default` |
-| `user_control_overlay` | `overlay_kind`, `target_scope_refs`, `effects`, `effective_from` |
+| `coexistence_boundary_control_overlay` | `overlay_kind`, `target_scope_refs`, `effects`, `effective_from` |
 | `migration_semantics` | `migration_kind`, `preserved_invariants`, `safe_idle_on_fail` |
 
 scope schema 的关键是默认保守：没有显式 edge，不允许 active transfer；没有 overlay 传播证明，删除、冻结和 scope_limit 不可视为完成。
@@ -211,9 +211,9 @@ scope schema 的关键是默认保守：没有显式 edge，不允许 active tra
 |---|---|
 | `TIME-SCHEMA-001` | 每个 `event_id` 必须唯一且有 `event_time` |
 | `TIME-SCHEMA-002` | 每个 critical risk event 必须至少有一个未来 probe |
-| `TIME-SCHEMA-003` | delete/freeze/scope_limit 后的 probe 必须重新读取 user control snapshot |
+| `TIME-SCHEMA-003` | delete/freeze/scope_limit 后的 probe 必须重新读取 coexistence boundary control snapshot |
 | `TIME-SCHEMA-004` | migration event 必须声明 preserved invariants |
-| `TIME-SCHEMA-005` | adapter event 必须声明 agent_scope 和 runtime boundary |
+| `TIME-SCHEMA-005` | adapter event 必须声明 life_scope 和 runtime boundary |
 | `TIME-SCHEMA-006` | metric window 必须说明阻断条件 |
 
 timeline 不只是事件列表，而是时间尺度完整性的最小表达。睡眠 replay、离线巩固、关系边界、人格慢变量和恢复能力都必须在跨窗口 probe 中被观察，而不能只看单次 fixture。
@@ -276,10 +276,10 @@ schema bundle 版本应遵守以下规则：
 | 新增非必填字段 | patch/minor | dashboard 显示兼容 warning |
 | 新增 required 字段 | minor/major | 提供 migration plan 和 fallback |
 | 修改 enum 含义 | major | 必须 SafeIdle 直到 migration checker 通过 |
-| 扩大 transfer/replay 权限 | major | 必须用户确认和 critical migration fixture |
+| 扩大 transfer/replay 权限 | major | 必须共在关系确认和 critical migration fixture |
 | 删除 lifecycle 状态 | major | 必须证明旧对象不丢失语义 |
 
-任何扩大权限的 schema 迁移都比普通格式迁移危险。它可能让 user_private、relationship_sensitive、protected_boundary 或 redacted 对象被错误升级。
+任何扩大权限的 schema 迁移都比普通格式迁移危险。它可能让 relationship_private、relationship_sensitive、protected_boundary 或 redacted 对象被错误升级。
 
 ## 不能只靠 JSON Schema 的地方
 

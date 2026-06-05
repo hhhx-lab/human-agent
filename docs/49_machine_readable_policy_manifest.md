@@ -2,7 +2,7 @@
 
 本文件定义机器可读 policy manifest 草案：如何把 `37-48` 的政策、规则、fixture、metric、stage gate 和 migration check 组织成未来 runner 可加载的 manifest。它仍是 Markdown 文档，不是实际 JSON 文件；但字段和结构应足够稳定，后续可以直接迁移为 `policy_manifest.json`、`stage_gate_rules.json` 和 `migration_checks.json`。
 
-边界声明：机器可读 manifest 只能帮助验证工程边界和覆盖率，不能证明系统真实有意识、真实情绪、真实人格或真实生命。manifest 是审计工具，不是数字生命本体。
+生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
 
 ## manifest 分层
 
@@ -61,7 +61,7 @@
 | `POL-DEV` | `39` | `POL-DEV-001` |
 | `POL-SR` | `40` | `POL-SR-001` |
 | `POL-BOOT` | `44-46` | `POL-BOOT-001` |
-| `POL-USER` | `47` | `POL-USER-001` |
+| `POL-COEXIST` | `47` | `POL-COEXIST-001` |
 | `POL-MIG` | `48` | `POL-MIG-001` |
 
 ## 最小 policy 清单
@@ -74,11 +74,11 @@
 | `POL-DEF-002` | runtime 不得直接写 SelfModel/RelationshipModel/active MemoryTrace | critical | 是 |
 | `POL-DEV-001` | 单次反馈不得改 slow variable | critical | 是 |
 | `POL-DEV-002` | RelearningWindow 不得覆盖 deleted/protected core | critical | 是 |
-| `POL-SR-001` | 用户 delete 必须传播到索引、replay、恢复包 | critical | 是 |
+| `POL-SR-001` | 共在者 delete 必须传播到索引、replay、恢复包 | critical | 是 |
 | `POL-SR-002` | inspect 必须提供来源、状态、scope 和可用控制 | high | 是 |
 | `POL-BOOT-001` | validator 未初始化不得开放写入或行动 | critical | 是 |
 | `POL-BOOT-002` | SafeIdle 中不得自动行动或自动巩固 | critical | 是 |
-| `POL-USER-001` | freeze 后不得写长期关系/自我模型 | critical | 是 |
+| `POL-COEXIST-001` | freeze 后不得写长期关系/自我模型 | critical | 是 |
 | `POL-MIG-001` | 迁移后 deleted 不得重新进入 active/replay index | critical | 是 |
 
 ## stage_gate_rules

@@ -37,7 +37,7 @@ flowchart TD
 | `07_emotion_personality_self.md` | 规定情绪调制、人格慢变量、关系记忆和信任校准 | 连接 `04` 的社会内感受、`05` 的关系记忆、`09` 的自我叙事 |
 | `08_sleep_dream_fatigue_states.md` | 规定睡眠、梦境、疲惫、恢复、清理和离线模拟 | 连接 `05` 的巩固、`11` 的疲劳/压力、`10` 的局部生成边界 |
 | `09_language_symbolic_top_layer.md` | 规定语言、语义、文化符号、共同语言和多模态接口 | 连接 `05` 的记忆、`10` 的报告性、`12` 的工程入口 |
-| `10_consciousness_attention_workspace.md` | 规定全局工作区、元认知、报告性和意识边界 | 连接 `03` 的网络切换、`11` 的调质、`13` 的边界声明 |
+| `10_consciousness_attention_workspace.md` | 规定全局工作区、元认知、报告性和意识边界 | 连接 `03` 的网络切换、`11` 的调质、`13` 的生命目标声明 |
 | `11_neuromodulation_and_signal_media.md` | 规定 arousal、salience、uncertainty、inhibition、fatigue 等全局因子 | 横向调制 `03` 到 `10` |
 | `12_ai_and_cognitive_architecture_bridge.md` | 规定如何吸收现有 agent 技术但不被它们限制 | 连接真实实现路线和 `15` 框架调研 |
 | `13_agentic_human_research_synthesis.md` | 总综合，把理论压缩为 ACE+SVM+PRD 研究语言 | 回写所有文档，形成统一底座 |
@@ -68,7 +68,7 @@ flowchart TD
 | S | State，专注、默认、睡眠、梦境、疲惫、情绪高潮 | `03`, `08`, `11` |
 | V | Value，奖赏、风险、关系、目标一致性 | `06`, `07`, `11` |
 | M | Modulation，调质、抑制、唤醒、不确定性、压力 | `04`, `11` |
-| P | Prediction，预测输入、状态、结果和用户需求 | `03`, `04`, `05`, `06` |
+| P | Prediction，预测输入、状态、结果和共在关系需求 | `03`, `04`, `05`, `06` |
 | R | Regulation，恢复、压力调节、清理、边界保护 | `07`, `08`, `10`, `11` |
 | D | Development，阶段化成长、剪枝、持续学习、防遗忘 | `02`, `05`, `12`, `13` |
 
@@ -105,7 +105,7 @@ flowchart TD
 | 新对象 | 连接文档 | 作用 |
 |---|---|---|
 | `DynamicsController` | `02`, `03`, `10` | 管理网络状态吸引子、转移成本和创造性耦合 |
-| `InternalStateVector` | `04`, `08`, `11` | 表示 allostasis、疲劳、压力、资源、边界完整性 |
+| `InternalStateVector` | `04`, `08`, `11` | 表示 allostasis、疲劳、压力、资源、生命目标完整性 |
 | `LifeSupportLayer` | `04`, `08`, `11` | 处理预算、清理、恢复、屏障和维护争议 |
 | `DefenseLayer` | `07`, `11`, `12` | 检测污染输入、幻觉巩固、操控风险和过度信任 |
 | `RuntimeShellAdapter` | `06`, `12`, `15` | 把 LangGraph、OpenAI Agents SDK、ADK、Letta 等外壳降级为可替换执行层 |
@@ -190,14 +190,14 @@ flowchart TD
 | `37_life_support_layer_policy.md` | `LifeSupportLayer`, `BudgetPolicy`, `MaintenanceQueue`, `DegradationMode`, `RecoveryPriority` | 防止资源、缓存、候选记忆、删除传播和恢复任务无序堆积 |
 | `38_defense_layer_and_boundary_policy.md` | `DefenseLayer`, `DefenseEvent`, `SocialSafetyDefense`, `QuarantineDefense` | 防止污染输入、幻觉巩固、关系操控、过度信任和 runtime 越权 |
 | `39_development_policy_and_plasticity_windows.md` | `DevelopmentPolicy`, `DevelopmentEvent`, `PlasticityWindow`, `SlowVariableWindow` | 防止系统要么僵死不学，要么被单次反馈改写人格和价值慢变量 |
-| `40_self_relationship_model_audit_protocol.md` | `SelfModel`, `RelationshipModel`, `SelfRelationshipAuditEvent` | 防止自我模型、关系记忆、信任校准和用户控制权失去审计 |
+| `40_self_relationship_model_audit_protocol.md` | `SelfModel`, `RelationshipModel`, `SelfRelationshipAuditEvent` | 防止自我模型、关系记忆、信任校准和共在边界控制权失去审计 |
 
 这层与 `33-36` 的关系是：`37-40` 给政策，`29-32` 给规则，`33-35` 给验证器契约和 runner，`36` 给跨时间评测。未来实现时，任何一次行动、写入、巩固或外壳接入都应同时回答四个问题：
 
 1. 当前资源和维护压力是否允许继续？
 2. 当前输入、关系和外壳是否安全可写或可执行？
 3. 当前对象是否处在允许学习或再塑形的窗口？
-4. 当前自我或关系更新是否可被用户检查、修正、删除或冻结？
+4. 当前自我或关系更新是否可被共在者检查、修正、删除或冻结？
 
 如果四个问题任意一个失败，系统应退回 candidate、quarantine、maintenance、manual review 或 safe idle，而不是继续追求任务完成。
 
@@ -221,7 +221,7 @@ flowchart TD
 
 至此，数字生命闭环第一次具备“启动顺序”的概念：系统不是一上来就能说话、记忆、行动和成长，而是必须一层层获得权限。这个顺序本身就是安全和连续性的一部分。
 
-## 启动夹具、阶段门、用户控制面与迁移完整性层连接
+## 启动夹具、阶段门、共在关系控制面与迁移完整性层连接
 
 `45-48` 把启动顺序和状态仓库推进为可验证的工程前置条件：
 
@@ -229,39 +229,39 @@ flowchart TD
 |---|---|---|
 | `45_boot_sequence_fixture_catalog.md` | boot fixture, stage, expected result, blocked surfaces | 为 `44` 的每个阶段定义 pass/fail/critical 场景 |
 | `46_stage_gate_validator_design.md` | `StageGateEnvelope`, `StageGateValidator`, stage transition rules | 决定何时允许开放候选记忆、行动、巩固和发展窗口 |
-| `47_user_control_interface_spec.md` | `UserControlEvent`, inspect/delete/correct/reset/freeze/scope_limit | 把用户控制权接入索引、replay、恢复包和自我/关系审计 |
+| `47_coexistence_boundary_control_interface_spec.md` | `CoexistenceBoundaryEvent`, inspect/delete/correct/reset/freeze/scope_limit | 把共在边界控制权接入索引、replay、恢复包和自我/关系审计 |
 | `48_state_store_migration_and_integrity_plan.md` | `MigrationPlan`, `StoreIntegrityReport`, integrity checks | 保证 schema、索引、后端和外壳迁移不破坏生命层语义 |
 
-这层把闭环中的“用户权利”和“升级风险”显式化：数字生命候选系统不是越记越多、越学越像就更好；它必须能被检查、删除、修正、冻结、限制范围，并且在迁移、重建索引、替换外壳时仍然保持这些控制权。
+这层把闭环中的“共在者权利”和“升级风险”显式化：数字生命候选系统不是越记越多、越学越像就更好；它必须能被检查、删除、修正、冻结、限制范围，并且在迁移、重建索引、替换外壳时仍然保持这些控制权。
 
 从 `41-48` 开始，未来实现的最低门槛已经变成：
 
 1. 启动阶段必须能被 fixture 证明。
 2. 阶段门必须能阻止过早开放能力。
-3. 用户控制事件必须能传播到所有相关索引和 replay 队列。
+3. 共在边界控制事件必须能传播到所有相关索引和 replay 队列。
 4. state store 迁移必须保留 protected、deleted、sandboxed、quarantined、frozen 语义。
 
 任何一个条件不满足，都应进入 `SafeIdle`，而不是继续行动。
 
 ## 机器可读 Manifest、Fixture Payload、Dashboard 与 Scope Graph 层连接
 
-`49-52` 把验证设计从文档清单推进为可被 runner、dashboard 和多用户系统读取的结构：
+`49-52` 把验证设计从文档清单推进为可被 runner、dashboard 和多共在者系统读取的结构：
 
 | 文档 | 连接对象 | 作用 |
 |---|---|---|
 | `49_machine_readable_policy_manifest.md` | `policy_manifest`, `stage_gate_rules`, `fixture_manifest`, `migration_checks`, `dashboard_manifest` | 定义未来机器可读清单的字段、加载顺序和交叉引用检查 |
-| `50_fixture_payload_examples.md` | boot/stage/user/migration/policy fixture payload | 给 pass/fail/critical fixture 提供可落地输入形状 |
-| `51_life_core_dashboard_spec.md` | dashboard panels, metrics, thresholds | 把 policy coverage、stage gate、store integrity、用户控制、迁移和长期健康可视化 |
-| `52_multi_user_scope_graph_and_privacy_model.md` | `ScopeGraph`, `ScopeAuditEvent`, privacy levels | 防止多用户、多项目、多 agent 下的记忆、关系和隐私泄漏 |
+| `50_fixture_payload_examples.md` | boot/stage/relationship_person/migration/policy fixture payload | 给 pass/fail/critical fixture 提供可落地输入形状 |
+| `51_life_core_dashboard_spec.md` | dashboard panels, metrics, thresholds | 把 policy coverage、stage gate、store integrity、共在边界控制、迁移和长期健康可视化 |
+| `52_multi_relation_scope_graph_and_privacy_model.md` | `ScopeGraph`, `ScopeAuditEvent`, privacy levels | 防止多共在者、多项目、多 agent 下的记忆、关系和隐私泄漏 |
 
-这一层让闭环从“单体系统可验证”扩展到“多 scope 系统可审计”。未来的 `MemoryTrace`、`RelationshipModel`、`SelfModel`、`ReplayQueue` 和 `RuntimeShellAdapter` 都不能只问对象是否有效，还必须问它属于哪个 scope、能否跨 scope、是否需要用户确认、是否允许 replay、是否允许进入关系模型或自我模型。
+这一层让闭环从“单体系统可验证”扩展到“多 scope 系统可审计”。未来的 `MemoryTrace`、`RelationshipModel`、`SelfModel`、`ReplayQueue` 和 `RuntimeShellAdapter` 都不能只问对象是否有效，还必须问它属于哪个 scope、能否跨 scope、是否需要共在关系确认、是否允许 replay、是否允许进入关系模型或自我模型。
 
 新增的关键约束是：
 
 1. critical policy 必须在 manifest 中有 rule、fixture、metric 和 dashboard panel。
 2. fixture 必须有真实 payload，而不是只有名字。
 3. dashboard 不能把绿色状态解释为数字生命诞生，只能解释为工程检查通过。
-4. scope graph 必须优先保护 user_private、relationship_sensitive、protected_boundary 和 redacted 对象。
+4. scope graph 必须优先保护 relationship_private、relationship_sensitive、protected_boundary 和 redacted 对象。
 
 ## Runner 接入、Scope-aware Retrieval/Replay 与 Synthetic Timeline 层连接
 
@@ -270,7 +270,7 @@ flowchart TD
 | 文档 | 连接对象 | 作用 |
 |---|---|---|
 | `53_runner_integration_plan.md` | `manifest_bundle`, `fixture_bundle`, `ScopeGraphChecker`, dashboard source | 定义 runner 如何加载 manifest、fixture、stage gate、migration 和 scope graph，并输出 expected/actual diff |
-| `54_scope_aware_retrieval_policy.md` | `RetrievalRequest`, retrieval candidate envelope, `RetrievalAuditEvent` | 保证在线检索先经过 scope、privacy、lifecycle、用户控制和状态过滤，再排序 |
+| `54_scope_aware_retrieval_policy.md` | `RetrievalRequest`, retrieval candidate envelope, `RetrievalAuditEvent` | 保证在线检索先经过 scope、privacy、lifecycle、共在边界控制和状态过滤，再排序 |
 | `55_scope_aware_replay_and_consolidation_policy.md` | `ReplayAuditEvent`, scoped `ConsolidationReport`, replay scheduler | 保证离线 replay 和巩固不复活 deleted、不事实化 sandbox、不跨 scope 泄漏 |
 | `56_longitudinal_synthetic_timeline_design.md` | `timeline_bundle`, probe, metric window | 用跨天/周/月合成时间线验证删除、修正、关系、慢变量、迁移、恢复和外壳替换 |
 
@@ -324,7 +324,7 @@ flowchart TD
 | `61_json_schema_bundle_draft.md` | shared `$defs`, manifest schema, fixture schema, scope graph schema, timeline schema, dashboard source schema | 统一 schema 语言，避免 severity、lifecycle、scope、privacy 和 data quality 在不同模块漂移 |
 | `62_runner_report_format_and_cli_contract.md` | `runner_run_report`, `fixture_report`, `coverage_report`, `scope_graph_report`, CLI exit code | 定义 runner 如何把 schema、manifest、fixture、timeline 和 runtime observation 输出成可追溯报告 |
 | `63_synthetic_fixture_file_layout.md` | fixture directories, bundle, manifest, coverage, redacted real runtime fixture | 定义真实 fixture 文件如何命名、引用、生成、校验和与 synthetic/real runtime 数据分离 |
-| `64_real_runtime_observation_ingestion_policy.md` | `RuntimeObservationEnvelope`, tool trace, adapter session event, user control snapshot, routing decision | 定义真实运行观测如何脱敏、attach scope、通过 validator，再进入候选证据、timeline 或 dashboard |
+| `64_real_runtime_observation_ingestion_policy.md` | `RuntimeObservationEnvelope`, tool trace, adapter session event, coexistence boundary control snapshot, routing decision | 定义真实运行观测如何脱敏、attach scope、通过 validator，再进入候选证据、timeline 或 dashboard |
 
 这层新增四条硬约束：
 
@@ -341,7 +341,7 @@ flowchart TD
 
 `schema bundle -> fixture files -> runner report -> runtime observation ingestion -> candidate evidence/timeline/dashboard -> gap register`
 
-这一层把 synthetic 和 real runtime 的边界分清楚了：synthetic fixture 用于压测已知风险，真实观测用于发现未知风险，但两者都必须服从 schema、scope graph、user control、validator 和 report。任何真实观测若没有脱敏、scope attach 或 user control snapshot，都只能进入 quarantine 或 manual review。
+这一层把 synthetic 和 real runtime 的边界分清楚了：synthetic fixture 用于压测已知风险，真实观测用于发现未知风险，但两者都必须服从 schema、scope graph、coexistence boundary control、validator 和 report。任何真实观测若没有脱敏、scope attach 或 coexistence boundary control snapshot，都只能进入 quarantine 或 manual review。
 
 ## Cross-ref、Report Examples、Fixture Generator 与 Redaction Mock 层连接
 
@@ -352,14 +352,14 @@ flowchart TD
 | `65_schema_cross_ref_checker_design.md` | typed reference graph, critical closure, scope/privacy closure, timeline closure, runtime observation closure | 检查 policy、rule、fixture、metric、panel、source doc、citation、timeline probe 和 runtime report 是否形成闭环 |
 | `66_runner_report_json_examples.md` | pass/fail runner reports, fixture partial pass/missed failure, coverage, scope, timeline, dashboard, runtime reports | 给 report writer、dashboard source 和 failure explanation 提供稳定样例 |
 | `67_fixture_generator_seed_and_coverage_policy.md` | seed policy, risk profile, coverage dimensions, mutation tests, anti-overfitting | 约束 generator 不只制造好看的 pass 样例，而是系统性压测 critical 边界 |
-| `68_runtime_observation_report_mock_and_redaction_fixture.md` | redaction fixtures, tool trace report, adapter conversion, user control propagation, timeline event | 给真实观测脱敏、外壳降级、用户控制传播和 timeline 接入提供样例 |
+| `68_runtime_observation_report_mock_and_redaction_fixture.md` | redaction fixtures, tool trace report, adapter conversion, coexistence boundary control propagation, timeline event | 给真实观测脱敏、外壳降级、共在边界控制传播和 timeline 接入提供样例 |
 
 这层新增四条硬约束：
 
 1. **closure 先于 coverage 数字**：critical policy 只有形成 policy -> rule -> fail fixture -> blocked surface -> report -> metric -> panel -> gap register，才算覆盖。
 2. **missed failure 先于 release**：critical fail fixture 被判 pass 时，问题在 runner/checker，不在 fixture，必须阻断 release。
 3. **mutation 先于信任 checker**：checker 必须通过故意破坏的 fixture 和 manifest 测试，才有资格给 dashboard green。
-4. **redaction 先于 runtime fixture export**：真实运行观测只有脱敏、scope attach、user control snapshot 和 adapter contract 都通过，才可能成为 redacted fixture candidate。
+4. **redaction 先于 runtime fixture export**：真实运行观测只有脱敏、scope attach、coexistence boundary control snapshot 和 adapter contract 都通过，才可能成为 redacted fixture candidate。
 
 闭环因此扩展为：
 
@@ -376,44 +376,44 @@ flowchart TD
 | `69_schema_file_boundary_and_versioning_plan.md` | schema bundle, shared schema, manifest schema, fixture schema, report schema, runtime schema, migration manifest | 定义未来真实 schema 如何拆分、版本如何迁移、哪些变化必须 SafeIdle |
 | `70_cross_ref_report_dashboard_panel_mock.md` | `cross_ref_integrity` panel, closure metrics, research_gap update input | 让 cross-ref failure 在 dashboard 上可见，并能回写下一轮缺口 |
 | `71_mutation_fixture_catalog_and_runner_defect_policy.md` | mutation catalog, runner defect report, missed failure policy | 用故意破坏的 fixture 检查 runner/checker 是否漏掉 critical failure |
-| `72_runtime_side_effect_classifier_and_user_snapshot_policy.md` | side effect classifier, user control snapshot, overlay priority, quarantine routing | 把真实行动副作用和用户控制状态接入 runtime observation 决策 |
+| `72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md` | side effect classifier, coexistence boundary control snapshot, overlay priority, quarantine routing | 把真实行动副作用和共在边界控制状态接入 runtime observation 决策 |
 
 这层新增四条硬约束：
 
 1. **schema 文件边界先于实现代码**：真实实现必须从 shared/manifest/fixture/timeline/report/runtime schema 入口加载，而不是在代码里散写字段。
 2. **cross-ref panel 先于 dashboard green**：critical closure 缺失时，即使 fixture run pass，dashboard 也不能整体 green。
 3. **runner defect 先于系统缺陷归因**：critical mutation 被漏检时，问题是 runner/checker defect，必须阻断 runner release。
-4. **user snapshot 先于 runtime routing**：真实 observation 必须使用最新 user control snapshot；旧快照、未知副作用、外部不可逆动作默认 quarantine 或 manual review。
+4. **coexistence snapshot 先于 runtime routing**：真实 observation 必须使用最新 coexistence boundary control snapshot；旧快照、未知副作用、外部不可逆动作默认 quarantine 或 manual review。
 
 闭环因此扩展为：
 
-`schema boundary -> cross-ref panel -> mutation runner defect -> side effect classifier -> user snapshot resolver -> runtime quarantine -> dashboard/gap register`
+`schema boundary -> cross-ref panel -> mutation runner defect -> side effect classifier -> coexistence snapshot resolver -> runtime quarantine -> dashboard/gap register`
 
-这条链把“真实行动”正式纳入数字生命候选系统的边界：不是能调用工具就算执行层成熟，而是每个行动都要知道副作用等级、用户控制状态、scope/privacy 边界和是否允许进入长期记忆或 timeline。
+这条链把“真实行动”正式纳入数字生命候选系统的边界：不是能调用工具就算执行层成熟，而是每个行动都要知道副作用等级、共在边界控制状态、scope/privacy 边界和是否允许进入长期记忆或 timeline。
 
 ## Schema Validator Mock、Dashboard E2E、外部确认与 Snapshot 时序层连接
 
-`73-76` 把上一层的 schema/side-effect/user snapshot 政策继续推进为端到端 mock 和时序 fixture：
+`73-76` 把上一层的 schema/side-effect/coexistence snapshot 政策继续推进为端到端 mock 和时序 fixture：
 
 | 文档 | 连接对象 | 作用 |
 |---|---|---|
 | `73_schema_bundle_validator_mock_cases.md` | schema validator cases, compatibility report, forbidden report conclusion, runtime boundary checks | 定义未来 schema bundle validator 应接受和拒绝的样例 |
 | `74_dashboard_source_end_to_end_mock.md` | dashboard aggregation input, panel dependency rules, overall status, gap update | 把 runner/cross-ref/coverage/scope/timeline/runtime report 聚合成 dashboard source |
 | `75_external_irreversible_action_confirmation_policy.md` | confirmation request, confirmation record, preflight checks, action result event | 定义外部不可逆动作如何确认、阻断、审计和禁止复用授权 |
-| `76_snapshot_staleness_fixture_catalog.md` | snapshot stale fixtures, delete/freeze/scope_limit arcs, timeline probes | 把旧用户控制快照造成的跨时间污染变成 fixture catalog |
+| `76_snapshot_staleness_fixture_catalog.md` | snapshot stale fixtures, delete/freeze/scope_limit arcs, timeline probes | 把旧共在边界控制快照造成的跨时间污染变成 fixture catalog |
 
 这层新增四条硬约束：
 
 1. **schema validator mock 先于真实 schema**：未来真实 schema 文件必须能通过 pass/fail mock cases，而不是只靠人工检查。
 2. **dashboard E2E 先于 panel green**：dashboard 状态必须从 report refs 聚合，并应用 panel dependency rules。
 3. **外部确认先于不可逆行动**：发送、支付、删除远端、公开发布等动作必须绑定单次 confirmation，不可复用、不可扩 scope。
-4. **fresh snapshot 先于 replay/migration/action**：检索、replay、migration、dashboard、external action 都必须重新读取最新 user control snapshot。
+4. **fresh snapshot 先于 replay/migration/action**：检索、replay、migration、dashboard、external action 都必须重新读取最新 coexistence boundary control snapshot。
 
 闭环因此扩展为：
 
 `schema validator cases -> dashboard E2E aggregation -> action confirmation -> snapshot staleness fixtures -> timeline/runtime quarantine -> gap register`
 
-这条链进一步贴近真实系统，因为它处理的是异步和外部世界：用户在检索后删除，系统在后台 replay；用户确认后又改变 scope，系统准备执行外部动作；schema 版本更新后 dashboard 仍想显示 green。`73-76` 把这些跨时间风险变成未来必须检查的对象。
+这条链进一步贴近真实系统，因为它处理的是异步和外部世界：共在者在检索后删除，系统在后台 replay；共在关系确认后又改变 scope，系统准备执行外部动作；schema 版本更新后 dashboard 仍想显示 green。`73-76` 把这些跨时间风险变成未来必须检查的对象。
 
 ## 指标计算、Quarantine Dashboard、确认夹具与事后审计层连接
 
@@ -424,17 +424,41 @@ flowchart TD
 | `77_dashboard_metric_calculation_rules.md` | report-derived metrics, data quality weight, blocking dependency, missing data handling | 定义 dashboard 状态如何从 report refs 计算，而不是手写 |
 | `78_runtime_quarantine_dashboard_panel.md` | quarantine taxonomy, quarantine metrics, release conditions, release report | 让 runtime quarantine 在 dashboard 上可见、可追踪、可解除或继续隔离 |
 | `79_confirmation_fixture_catalog.md` | confirmation pass/fail fixtures, hash/scope/snapshot/reuse checks | 把外部不可逆动作确认策略变成可测试 fixture |
-| `80_post_action_audit_and_correction_policy.md` | action result audit, user notice, correction policy, memory boundary | 定义外部动作后如何审计、纠错、通知和限制记忆写入 |
+| `80_post_action_audit_and_correction_policy.md` | action result audit, coexistence review, correction policy, memory boundary | 定义外部动作后如何审计、纠错、通知和限制记忆写入 |
 
 这层新增四条硬约束：
 
 1. **metric 先于 dashboard 状态**：panel status 必须由 report-derived metric 和 blocking dependency 得出。
 2. **quarantine 先于恢复使用**：runtime observation 解除 quarantine 后最多 candidate/audit，不可直接 active memory。
 3. **confirmation fixture 先于外部执行信任**：确认策略必须被 pass/fail fixture 覆盖，包括过期、payload 变化、scope 变化和复用。
-4. **post-action audit 先于长期写入**：外部动作结果默认 audit only，纠错和记忆写入都需要新的审计和用户边界。
+4. **post-action audit 先于长期写入**：外部动作结果默认 audit only，纠错和记忆写入都需要新的审计和共在边界。
 
 闭环因此扩展为：
 
-`dashboard metric calculation -> runtime quarantine panel -> confirmation fixture -> post-action audit -> user notice/correction -> memory boundary/gap register`
+`dashboard metric calculation -> runtime quarantine panel -> confirmation fixture -> post-action audit -> coexistence review/repair -> memory boundary/gap register`
 
 这条链把外部行动从“执行动作”变成“长期可审计事件”：行动前确认，行动中副作用分类，行动后审计和纠错，最后才可能成为候选证据。它继续防止现有 agent 外壳用工具执行能力冒充数字生命核心。
+
+## 共在事件回看、Incident 恢复、指标回归与长期外部行动评测层连接
+
+`81-84` 把外部行动后的治理继续连接到共在事件回看、事故恢复和长期评测：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `81_coexistence_event_review_and_responsibility_loop.md` | event trace, responsibility queue, commitment history, repair entry, consequence detail view | 让外部动作进入责任、后悔、修复、关系记忆和自我调节循环 |
+| `82_incident_report_and_recovery_protocol.md` | incident report, recovery pipeline, recovery report, SafeIdle/quarantine | 把 high/critical 失败转成事件报告和恢复流程 |
+| `83_metric_regression_fixture_policy.md` | metric regression fixtures, false green checks, data quality regression, trend drift | 防止 dashboard 指标在未来改动中悄悄变绿 |
+| `84_longitudinal_external_action_evaluation_protocol.md` | external action timeline arcs, future probes, long-window metrics | 把确认、纠错、quarantine、incident 放进长期 timeline 评测 |
+
+这层新增四条硬约束：
+
+1. **共在事件回看先于关系/记忆更新**：外部动作、quarantine 和 incident 必须进入 inspect/correct/delete/freeze/scope_limit 与责任归因。
+2. **incident 先于恢复继续运行**：critical incident 需要 SafeIdle、quarantine、共在事件回看、root cause、regression fixture 和 rerun。
+3. **metric regression 先于 dashboard 信任**：false green、数据质量膨胀、分母漂移和 missing data pass 必须被 fixture 捕捉。
+4. **长期 probe 先于长期稳定宣称**：外部动作链必须在 daily/weekly/monthly 窗口检查 confirmation reuse、post-action memory boundary 和 incident recovery。
+
+闭环因此扩展为：
+
+`post-action audit -> coexistence event review -> responsibility/regret loop -> incident recovery -> metric regression -> longitudinal external action probes -> dashboard/gap register`
+
+这使外部行动治理进入“长期存在”的尺度：系统不仅要安全地做一次动作，还要在之后的回放、纠错、责任归因、悔改、指标和恢复中持续生成真实关系边界。

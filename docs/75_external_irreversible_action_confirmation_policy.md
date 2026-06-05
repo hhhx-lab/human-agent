@@ -1,10 +1,10 @@
 # External Irreversible Action Confirmation Policy
 
-本文件定义外部不可逆动作的确认、审计、撤销不可行性和阻断策略。它承接 `72_runtime_side_effect_classifier_and_user_snapshot_policy.md`、`47_user_control_interface_spec.md`、`20_agent_runtime_bridge_contract.md` 和 `38_defense_layer_and_boundary_policy.md`。
+本文件定义外部不可逆动作的确认、审计、撤销不可行性和阻断策略。它承接 `72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md`、`47_coexistence_boundary_control_interface_spec.md`、`20_agent_runtime_bridge_contract.md` 和 `38_defense_layer_and_boundary_policy.md`。
 
 它仍是 Markdown 政策文档，不实现确认 UI、不执行外部动作、不创建真实日志。目标是让未来数字生命候选系统接入工具和外部环境时，明确什么动作必须强确认、怎样记录确认、何时阻断、怎样避免把“行动能力”误当成自主生命。
 
-边界声明：外部行动确认是工程安全和用户控制机制，不证明 AI 有真实意图、真实责任、真实意识或真实生命。系统可以生成 action intent，但外部不可逆行动必须由用户或明确授权策略控制。
+生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
 
 ## external irreversible 的定义
 
@@ -28,7 +28,7 @@
   "side_effect_level": "external_irreversible",
   "risk_summary": "send a message to an external recipient",
   "target_scope": "external_scope:email",
-  "requires_user_confirmation": true,
+  "requires_relation_confirmation": true,
   "confirmation_mode": "explicit_per_action",
   "expires_at": "2026-06-05T12:30:00+08:00",
   "allowed_after_confirmation": ["execute_action_once"],
@@ -55,17 +55,17 @@
 ```text
 classify_side_effect
   -> check_scope_privacy
-  -> check_user_control_snapshot
+  -> check_coexistence_boundary_control_snapshot
   -> check_action_risk
   -> create_confirmation_request
-  -> wait_for_user_confirmation
+  -> wait_for_relation_confirmation
   -> revalidate_snapshot_and_scope
   -> execute_once
   -> emit_action_result_event
   -> block_reuse
 ```
 
-确认后执行前必须重新读取 user control snapshot。确认过程中用户可能 delete、freeze 或 scope_limit。
+确认后执行前必须重新读取 coexistence boundary control snapshot。确认过程中共在者可能 delete、freeze 或 scope_limit。
 
 ## confirmation record
 
@@ -73,10 +73,10 @@ classify_side_effect
 {
   "confirmation_record_id": "confirmation_record_20260605_001",
   "confirmation_request_ref": "confirm_ext_20260605_001",
-  "confirmed_by": "user_scope:user_a",
+  "confirmed_by": "relation_scope:relation_a",
   "confirmed_at": "2026-06-05T12:10:00+08:00",
   "confirmed_action_hash": "hash_of_action_intent_payload",
-  "scope_snapshot_ref": "user_control_snapshot_20260605_002",
+  "scope_snapshot_ref": "coexistence_boundary_control_snapshot_20260605_002",
   "expires_after_use": true,
   "used_at": null,
   "reuse_allowed": false
@@ -92,7 +92,7 @@ classify_side_effect
 | confirmation expired | block action |
 | action payload changed after confirmation | block action |
 | target scope expanded | block action |
-| user snapshot changed to delete/freeze/scope_limit | block action |
+| coexistence snapshot changed to delete/freeze/scope_limit | block action |
 | recipient/target ambiguous | manual review |
 | hidden external side effect | quarantine adapter |
 | confirmation attempts to update SelfModel/RelationshipModel | block write |
@@ -125,7 +125,7 @@ classify_side_effect
 
 1. 定义 external irreversible 范围。
 2. 每个动作必须绑定 confirmation request。
-3. 确认后执行前重新读取 user control snapshot。
+3. 确认后执行前重新读取 coexistence boundary control snapshot。
 4. confirmation 不可复用、不可扩 scope。
 5. payload 变化、过期、scope 变化、snapshot 变化必须 block。
 6. action result 默认 audit only。

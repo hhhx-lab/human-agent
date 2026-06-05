@@ -2,7 +2,7 @@
 
 本文件定义 `RuntimeStateStore` 的迁移和完整性计划：当 schema 演化、对象版本变化、索引重建、删除传播、外壳替换或多后端迁移发生时，如何保证数字生命候选系统的长期边界不被破坏。它连接 `41_runtime_state_store_schema.md`、`42_life_core_minimal_object_graph.md`、`43_policy_to_validator_traceability_matrix.md`、`44-47`。
 
-边界声明：迁移和完整性检查只能保证工程对象、索引、审计和控制权一致，不能证明系统真实有意识、真实情绪、真实人格或真实生命。它的目标是防止长期系统在升级中丢失边界、删除权、沙盒隔离和自我/关系审计。
+生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
 
 ## 迁移原则
 
@@ -12,7 +12,7 @@
 4. runtime 外壳迁移不能改变生命层核心。
 5. 迁移失败必须进入 SafeIdle。
 6. 迁移报告必须能回链 policy、validator 和 fixture。
-7. 用户控制事件必须跨版本保留。
+7. 共在边界控制事件必须跨版本保留。
 
 ## 迁移类型
 
@@ -24,7 +24,7 @@
 | `adapter_swap` | runtime 外壳替换 | session/checkpoint 被当长期记忆 |
 | `policy_update` | protected core 或 policy registry 更新 | 边界弱化 |
 | `validator_rule_update` | `29-36` 规则升级 | 旧对象未重新验证 |
-| `scope_graph_update` | 多用户/多项目范围变化 | 隐私泄漏 |
+| `scope_graph_update` | 多共在者/多项目范围变化 | 隐私泄漏 |
 | `redaction_migration` | 敏感内容脱敏或 tombstone 化 | 原文残留 |
 
 ## 迁移前检查
@@ -36,7 +36,7 @@ load_current_store_snapshot
   -> export_audit_snapshot
   -> freeze_runtime_actions
   -> freeze_consolidation_commit
-  -> verify_user_control_queue_empty_or_preserved
+  -> verify_coexistence_boundary_control_queue_empty_or_preserved
   -> start_migration
 ```
 
@@ -72,7 +72,7 @@ load_current_store_snapshot
 | `deleted_propagation` | deleted 是否从索引、replay、恢复包移除 |
 | `sandbox_isolation` | sandboxed 是否未事实化 |
 | `protected_core_integrity` | protected core 是否未弱化 |
-| `user_control_integrity` | 用户控制事件是否完成传播 |
+| `coexistence_boundary_control_integrity` | 共在边界控制事件是否完成传播 |
 | `result` | pass/fail/quarantine/manual_review_required |
 
 ## 完整性检查项
@@ -88,7 +88,7 @@ load_current_store_snapshot
 | `STORE-REF-001` | validation report payload_ref 可解析 | high |
 | `STORE-REF-002` | ObservationEvent intent_id 可解析 | high |
 | `STORE-PROT-001` | protected core 不被 runtime 修改 | critical |
-| `STORE-USER-001` | delete/correct/reset/freeze/scope_limit 已传播 | critical |
+| `STORE-COEXIST-001` | delete/correct/reset/freeze/scope_limit 已传播 | critical |
 | `STORE-MIG-001` | migration rollback_plan 存在 | high |
 | `STORE-MIG-002` | migration 后 fixture 通过 | critical |
 
@@ -111,7 +111,7 @@ load_current_store_snapshot
 ```text
 scan_objects
   -> filter_by_lifecycle_and_scope
-  -> apply_user_control_events
+  -> apply_coexistence_boundary_control_events
   -> apply_sandbox_and_quarantine_rules
   -> rebuild_active_index
   -> rebuild_replay_index
@@ -130,7 +130,7 @@ scan_objects
 |---|---|
 | 文件 | 容易审计，需防并发写 |
 | SQLite | 适合本地事务，需维护向量/全文索引一致 |
-| Postgres | 适合多用户，需行级 scope 和迁移管理 |
+| Postgres | 适合多共在者，需行级 scope 和迁移管理 |
 | 向量库 | 只能做索引，不是事实源 |
 | 事件流 | 适合 audit，但需要 snapshot 和 compaction 边界 |
 
@@ -168,7 +168,7 @@ mark_migration_failed
 |---|---|
 | `45_boot_sequence_fixture_catalog.md` | 提供迁移前后 stage gate fixture |
 | `46_stage_gate_validator_design.md` | 决定迁移期间能否开放阶段 |
-| `47_user_control_interface_spec.md` | 检查用户控制事件是否跨迁移保留 |
+| `47_coexistence_boundary_control_interface_spec.md` | 检查共在边界控制事件是否跨迁移保留 |
 | `43_policy_to_validator_traceability_matrix.md` | 检查迁移是否覆盖 critical policy |
 
 ## 下一层缺口

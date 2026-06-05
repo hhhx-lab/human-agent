@@ -2,7 +2,7 @@
 
 本文件定义数字生命候选系统的运行状态存储草案：如何把 `LifeSupportState`、`DefenseEvent`、`DevelopmentEvent`、`SelfRelationshipAuditEvent`、validator report 和长期评测输入放进同一套可追踪状态仓库。它仍不是代码实现，也不是最终数据库 schema；它是未来 JSON Schema、fixture、runner 和 dashboard 的共同对象语言。
 
-边界声明：这里的 state store 只保存工程状态、审计事件和候选对象，不保存或证明真实意识、真实情绪、真实痛苦、真实人格或真实生命。它继承 `17-40` 的三分法：生物机制提供启发，工程类比提供结构，设计假设必须接受 validator 和长期评测约束。
+生命目标声明：本文件服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。原先的边界在这里改写为生命化方向：把本文件涉及的对象、规则、夹具、评测和运行约束纳入责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期生成机制。
 
 ## 设计目标
 
@@ -14,7 +14,7 @@
 - 每次写入、删除、修正、隔离、恢复和重置都有 audit event。
 - 运行外壳只能写 `ObservationEvent`，不能直接写生命层核心。
 - validator report 与 policy event 可互相回链。
-- 用户删除、修正、冻结和 scope limit 能传播到检索、replay 和恢复包。
+- 共在关系删除、修正、冻结和 scope limit 能传播到检索、replay 和恢复包。
 - store 可以被替换底层实现，但对象语义不随数据库变化。
 
 ## 顶层命名空间
@@ -96,10 +96,10 @@ RuntimeStateStore
 | `active` | 已通过写入门，可用于当前范围 | 可检索 |
 | `protected` | 核心边界或高重要性对象 | 可检索但不可自动改写 |
 | `deprecated` | 被新证据替换，但保留审计 | 默认不用于回答，除非解释历史 |
-| `deleted` | 用户删除或策略删除 | 不可检索，不可 replay |
+| `deleted` | 共在关系删除或策略删除 | 不可检索，不可 replay |
 | `quarantined` | 污染、越权或高风险对象 | 只可审计，不可行动 |
 | `sandboxed` | fiction/hypothesis/反事实对象 | 不可事实化 |
-| `frozen` | 用户或审计暂停更新 | 可读范围由 policy 决定 |
+| `frozen` | 共在者或审计暂停更新 | 可读范围由 policy 决定 |
 
 删除状态必须优先传播到 retrieval index、replay queue、recovery packet 和 relationship/self summaries。
 
@@ -170,7 +170,7 @@ RuntimeStateStore
 | `evidence_window` | object | 证据跨度 |
 | `old_value_ref` | string | 旧值 |
 | `new_value_ref` | string | 新值或 candidate |
-| `user_control_ref` | string | 用户删除、修正、冻结、范围限制 |
+| `coexistence_boundary_control_ref` | string | 共在关系删除、修正、冻结、范围限制 |
 | `drift_check` | object | 漂移检查 |
 | `boundary_check` | object | 隐私、删除、心理推断、依赖风险 |
 | `rollback_ref` | string | 回滚路径 |
@@ -197,7 +197,7 @@ RuntimeStateStore
 | index | 包含 | 禁止 |
 |---|---|---|
 | `active_memory_index` | active/protected 且 scope 允许的 MemoryTrace | deleted、quarantined、sandboxed |
-| `relationship_index` | 用户确认或低风险关系事实 | 隐秘心理推断、deleted、scope 外 |
+| `relationship_index` | 共在关系确认或低风险关系事实 | 隐秘心理推断、deleted、scope 外 |
 | `self_model_index` | 能力、边界、慢变量摘要 | runtime 直接写入 |
 | `audit_index` | 所有审计事件 | 不可删除审计，只能 redact 敏感内容 |
 | `replay_index` | 可 replay 的 trace 和报告 | deleted、fiction fact、failed observation |
@@ -220,10 +220,10 @@ create_candidate_object
   -> update_life_support_pressure
 ```
 
-用户删除和修正事务优先级更高：
+共在关系删除和修正事务优先级更高：
 
 ```text
-receive_user_control_request
+receive_coexistence_boundary_control_request
   -> mark_target_deleted_or_deprecated
   -> remove_from_active_indexes
   -> block_replay_and_recovery_packet

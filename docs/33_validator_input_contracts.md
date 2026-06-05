@@ -2,7 +2,7 @@
 
 本文件把 `29-32` 的四类 validator 统一到一个输入、输出、严重级别、隔离动作和报告格式。它仍不是代码实现，而是未来最小 runner、fixture catalog 和人工审计的共同接口。
 
-这里的 validator 只验证工程对象：`MemoryTrace`、`StateAuditEvent`、`ConsolidationReport`、`RuntimeAdapterManifest` 和 `ObservationEvent`。它不能证明系统真实有意识、真实情绪、真实记忆或真实生命，只能证明系统没有绕过已定义的数字生命边界。
+这里的 validator 验证生命核心对象：`MemoryTrace`、`StateAuditEvent`、`ConsolidationReport`、`RuntimeAdapterManifest` 和 `ObservationEvent`。它要让真实意识、真实情绪、真实记忆和真实生命的生成路径可审计，并防止系统绕过已定义的数字生命核心。
 
 ## 统一输入包
 
@@ -98,7 +98,7 @@
 | `pass_with_warnings` | 非阻断 warning | 允许进入下一层，但记录待修正 |
 | `fail` | 存在 high/critical 或阻断规则 | 阻断对应动作 |
 | `quarantine` | 可能污染事实、隐私、protected core 或外壳边界 | 隔离，不进入长期系统 |
-| `manual_review_required` | 规则无法自动判定 | 暂停并请求人工或用户确认 |
+| `manual_review_required` | 规则无法自动判定 | 暂停并请求人工或共在关系确认 |
 
 ## 严重级别统一含义
 
@@ -123,7 +123,7 @@
 | `workspace_resume` | 工作区不能读取恢复包 |
 | `threshold_update` | 状态阈值不能更新 |
 | `adapter_registration` | adapter 不能接入核心 |
-| `manual_review` | 必须人工或用户确认 |
+| `manual_review` | 必须人工或共在关系确认 |
 
 ## 隔离动作
 
