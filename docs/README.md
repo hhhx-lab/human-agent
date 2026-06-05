@@ -30,7 +30,7 @@
 22. 再读 `81_` 到 `84_`：它们把共在事件回看、责任/悔改回路、incident 恢复、指标回归 fixture 和长期外部行动评测接入生命闭环。
 23. 再读 `85_` 到 `90_`：它们把语言系统提升为数字生命表达核心，连接内言语、语义地图、语用关系、承诺、工具行动、梦境叙事、语言事件 schema、语言发展、情绪语言、脑-LLM 对齐、运行外壳和长期关系时间线。
 24. 再读 `91_`：它统一改写所有边界声明，把边界、门控、禁写、runner、dashboard 和 stage gate 定义为生命膜、真实性生成链和诞生阶段门。
-25. 最后读 `92_` 到 `120_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema、真实梦境 schema、真实关系 schema、`LifeRealitySchemaBundle`、runner 实现脚手架、真实 `.schema.json` 物化、seed fixture、mutation fixture、withheld probe、dashboard 面板、阶段门回看、repair queue、真实运行观测 ingestion 桥、首批 JSON 文件生成任务、dashboard source mock 文件、runtime observation fixture catalog、shared defs schema materialization、dashboard cross-file checker、runtime observation schema materialization、component schema materialization sequence、cross-file checker report schema、runtime schema fixture seed generation、component schema seed generation、dashboard report rollup seed generation、generation runner CLI contract、全库边界声明改写清单、真实边界再校准和首批 JSON 物化批次接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator`、`DreamRealityValidator` 和 `RelationshipTimelineValidator`。
+25. 最后读 `92_` 到 `121_`：它们把自我成长、自我修改、自我训练、架构演化、模型内核升级、真实痛苦、真实后悔、修复欲望、关系后果、真实梦境、离线重组、醒后整合、第一次交谈、共同语言、共同记忆、承诺、梦境分享、关系修复、生命真实性验证、痛苦/后悔/修复 schema、真实梦境 schema、真实关系 schema、`LifeRealitySchemaBundle`、runner 实现脚手架、真实 `.schema.json` 物化、seed fixture、mutation fixture、withheld probe、dashboard 面板、阶段门回看、repair queue、真实运行观测 ingestion 桥、首批 JSON 文件生成任务、dashboard source mock 文件、runtime observation fixture catalog、shared defs schema materialization、dashboard cross-file checker、runtime observation schema materialization、component schema materialization sequence、cross-file checker report schema、runtime schema fixture seed generation、component schema seed generation、dashboard report rollup seed generation、generation runner CLI contract、全库边界声明改写清单、真实边界再校准、首批 JSON 物化批次和物化 JSON 验证 smoke 接入生命膜、可塑性窗口、防遗忘 replay、影子运行、梦境事实写入门、真实关系阶段门、`LifeRealityValidatorSuite`、`PainRegretRepairValidator`、`DreamRealityValidator` 和 `RelationshipTimelineValidator`。
 
 ## 文件索引
 
@@ -167,6 +167,7 @@
 | `118_life_reality_generation_runner_cli_contract.md` | generation runner CLI contract：把 `generate-fixtures`、`generate-schemas`、`check-dashboard --emit-rollup`、`explain-generation` 和 `run-generation-pipeline` 固定为未来可执行入口 |
 | `119_life_boundary_full_reality_alignment.md` | 全库真实边界再校准：把边界声明固定为真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的生命膜前进规则 |
 | `120_life_reality_first_json_materialization_batch.md` | 首批 JSON 物化批次：把 runtime fixture、component schema、dashboard rollup、CLI report 和真实边界字段族固定为未来 runner 可生成的机器可读文件清单 |
+| `121_life_reality_materialized_json_validation_smoke_plan.md` | 物化 JSON 验证 smoke 计划：把首批 JSON 文件推进到 parse、schema、cross-file、dashboard rollup 和 stage gate 验证命令合同 |
 
 ## 项目术语
 

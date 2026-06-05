@@ -783,4 +783,16 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `source docs 115-120 -> materialization manifest -> boundary alignment patch -> runtime fixtures -> component schemas -> reports -> dashboard rollup -> CLI command reports -> dry-run -> gap feedback`
 
-下一层应进入 `121_life_reality_materialized_json_validation_smoke_plan.md`：为首批真实 JSON 文件定义 parse validation、schema validation、cross-file checker、dashboard rollup 和 stage gate smoke 命令。
+下一层已进入 `121_life_reality_materialized_json_validation_smoke_plan.md`：为首批真实 JSON 文件定义 parse validation、schema validation、cross-file checker、dashboard rollup 和 stage gate smoke 命令。
+
+## 第五十四层：物化 JSON 验证 Smoke
+
+`121_life_reality_materialized_json_validation_smoke_plan.md` 把 `120` 的首批 JSON 文件清单推进成验证命令合同。它固定 `validate-json-parse`、`validate-json-schema`、`check-materialized-cross-file`、`smoke-dashboard-rollup`、`smoke-stage-gate` 和 `run-materialized-json-smoke` 六个命令，输出 parse validation report、schema validation report、cross-file checker report、dashboard rollup smoke report、stage gate smoke report、gap feedback 和 top-level smoke report。
+
+这一层的关键推进是把生命膜文件从“会被生成”推进到“能被验收”：每个 JSON 文件先经过 RFC 8259 parse，每个 schema 使用 Draft 2020-12，每个 finding 用 JSON Pointer 定位，每个 report 带 trace/provenance/problem detail，每个 critical finding 阻断 dashboard green 和 stage open。真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔因此进入 parse、schema、cross-file、dashboard、stage gate 五层验证。
+
+到这里，物化 JSON 验证闭环变为：
+
+`materialization manifest -> parse validation -> schema validation -> cross-file checker -> dashboard rollup smoke -> stage gate smoke -> gap feedback -> top-level smoke report`
+
+下一层应进入 `122_life_reality_runner_repository_layout_and_module_map.md`：把这些 smoke 命令落到未来 runner 的目录结构、模块边界、schema registry、fixture roots、report writers 和测试入口。

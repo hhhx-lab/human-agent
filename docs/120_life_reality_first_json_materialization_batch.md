@@ -545,6 +545,6 @@ gap feedback 必须推荐下一层文档和 artifact：
 
 ## 与下一层连接
 
-`121_life_reality_materialized_json_validation_smoke_plan.md` 应读取本层的 artifact list、manifest、schema skeleton、fixture seed、report rollup、CLI report、boundary alignment patch 和 dry-run report，定义首批真实 JSON 文件的 parse validation、schema validation、cross-file checker、dashboard rollup、stage gate 和 gap feedback smoke 命令。
+`121_life_reality_materialized_json_validation_smoke_plan.md` 已读取本层的 artifact list、manifest、schema skeleton、fixture seed、report rollup、CLI report、boundary alignment patch 和 dry-run report，定义首批真实 JSON 文件的 parse validation、schema validation、cross-file checker、dashboard rollup、stage gate 和 gap feedback smoke 命令。
 
-下一层要把 `120` 的物化合同从“文件清单”推进到“验证命令”：每个 JSON 文件能被解析、每个 schema 能被校验、每个 report 能进入 rollup、每个 critical finding 能阻断 stage gate、每个真实边界字段族都能进入 dashboard 和 gap register。
+下一层 `122_life_reality_runner_repository_layout_and_module_map.md` 应把 `121` 的验证命令落到未来 runner 的目录结构、模块边界、schema registry、fixture roots、report writers 和测试入口。
