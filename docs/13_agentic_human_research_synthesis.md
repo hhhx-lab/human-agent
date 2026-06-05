@@ -282,3 +282,11 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 这一层把“未来实现怎么不跑偏”说得更硬：任何实现如果先启动 agent 外壳、session memory 和工具调用，再把自我、关系、状态、防御作为 prompt 补丁塞进去，就已经偏离数字生命底座。正确顺序是生命层边界先存在，外壳能力后接入；用户控制权、删除传播、沙盒隔离、protected core 和 safe idle 必须早于个性化和长期行动。
 
 但这一层仍然不是完成条件。它还缺 machine-readable schema、真实 fixture、stage gate validator、用户控制界面、多后端迁移计划和长期 dashboard。它证明的是理论对象已经开始形成可实现结构，不证明数字生命已经诞生。
+
+## 第十二层：启动夹具、阶段门、用户控制面与迁移完整性
+
+`45_boot_sequence_fixture_catalog.md`、`46_stage_gate_validator_design.md`、`47_user_control_interface_spec.md` 和 `48_state_store_migration_and_integrity_plan.md` 把第十一层的启动骨架继续推进为可验证设计：每个 boot stage 都有 pass/fail/critical fixture catalog；`StageGateValidator` 负责决定系统能否从只读观察进入候选记忆、低风险行动、离线巩固和发展窗口；用户控制面把 inspect、delete、correct、reset、freeze、scope_limit 变成可审计操作；迁移完整性计划则防止 schema、索引、后端或外壳升级时破坏 deleted、sandboxed、quarantined、protected 和 frozen 的语义。
+
+这一层非常关键，因为长期系统最容易在“升级”和“个性化”里腐蚀边界：删掉的东西被索引重建带回来，DreamSandbox 被迁移成事实，runtime session 被误当长期记忆，用户冻结被离线巩固绕过。`45-48` 把这些风险变成 fixture、stage gate 和 integrity checker 的对象。
+
+它仍然不是停止条件。下一层需要把这些 catalog 和设计转成机器可读 manifest、真实 JSON fixture、coverage dashboard、多用户 scope graph 和最小 runner 接入计划。

@@ -106,11 +106,20 @@ Validator rules 层已补充：
 | `43_policy_to_validator_traceability_matrix.md` | `37-40` 政策到 validator、fixture、runner、长期指标和阻断面的追踪矩阵 | 还需要机器可读 `policy_id -> rule_id -> fixture_id -> metric_id` 清单 |
 | `44_digital_life_boot_sequence.md` | `ColdStart` 到 `SafeIdle` 的启动阶段、权限开放顺序和 stage gate | 还需要 boot fixture、stage gate validator、safe idle recovery packet 和用户控制界面规格 |
 
+启动夹具、阶段门、用户控制面与迁移完整性层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `45_boot_sequence_fixture_catalog.md` | boot stage 的 pass/fail/critical fixture catalog、命名规则和最低覆盖要求 | 还需要真实 fixture JSON payload 和 coverage report 接入 |
+| `46_stage_gate_validator_design.md` | `StageGateValidator` 输入输出、阶段转移规则、critical 规则和 runner 调度关系 | 还需要 machine-readable `stage_gate_rules.json` 和 stage gate dashboard |
+| `47_user_control_interface_spec.md` | inspect/delete/correct/reset/freeze/scope_limit 的用户可见控制面、传播规则和失败模式 | 还需要 `UserControlEvent` JSON Schema、redaction policy 和多用户 scope graph |
+| `48_state_store_migration_and_integrity_plan.md` | migration 类型、完整性报告、索引重建、schema 迁移、adapter swap 和失败 SafeIdle 策略 | 还需要 migration manifest、store integrity checker 规则文件和迁移 fixture |
+
 ## 下一轮优先级
 
-下一轮应把启动骨架推进到“fixture、stage gate、用户控制面和迁移计划”：
+下一轮应把验证设计推进到“机器可读 manifest、真实 fixture、dashboard 和 scope graph”：
 
-1. `45_boot_sequence_fixture_catalog.md`：为 `44` 的每个启动阶段设计 pass/fail fixture，覆盖 validator 缺失、外壳越权、删除传播、safe idle 等关键失败。
-2. `46_stage_gate_validator_design.md`：定义 `StageGateValidator`，检查 boot stage 是否满足开放候选记忆、行动、巩固和发展窗口的条件。
-3. `47_user_control_interface_spec.md`：定义 inspect/delete/correct/reset/freeze/scope_limit 的用户可见控制面和审计回路。
-4. `48_state_store_migration_and_integrity_plan.md`：定义 schema 迁移、对象版本兼容、索引完整性、删除传播和 store integrity checker。
+1. `49_machine_readable_policy_manifest.md`：定义 `policy_id -> rule_id -> fixture_id -> metric_id`、`stage_gate_rules`、`migration_checks` 的机器可读 manifest 草案。
+2. `50_fixture_payload_examples.md`：为 boot、stage gate、user control、migration 各写一组 JSON-like pass/fail fixture payload。
+3. `51_life_core_dashboard_spec.md`：定义 policy coverage、stage coverage、store integrity、user control propagation、longitudinal metrics 的 dashboard 视图。
+4. `52_multi_user_scope_graph_and_privacy_model.md`：定义多用户、多项目、多 agent 情境下的 scope graph、隐私边界、关系模型隔离和跨域迁移规则。

@@ -15,7 +15,8 @@
 9. 再读 `29_` 到 `32_`：它们把样例层转成 validator rules，定义字段、状态、巩固和外壳的失败条件。
 10. 再读 `33_` 到 `36_`：它们定义 validator 输入输出、fixture catalog、最小 runner 设计和长期评测协议。
 11. 再读 `37_` 到 `40_`：它们把长期运行推进为生命支持、防御、发展和自我/关系审计政策层。
-12. 最后读 `41_` 到 `44_`：它们把政策层继续推进为 runtime state store、最小对象图、policy-to-validator traceability 和 boot sequence。
+12. 再读 `41_` 到 `44_`：它们把政策层继续推进为 runtime state store、最小对象图、policy-to-validator traceability 和 boot sequence。
+13. 最后读 `45_` 到 `48_`：它们把启动骨架推进为 boot fixture、stage gate validator、用户控制面和 state store 迁移完整性计划。
 
 ## 文件索引
 
@@ -70,6 +71,10 @@
 | `42_life_core_minimal_object_graph.md` | `WorkspaceState`、`MemoryTrace`、`InternalStateVector`、`ActionGate`、`SelfModel` 等核心对象图 |
 | `43_policy_to_validator_traceability_matrix.md` | `37-40` 政策到 `29-36` validator、fixture、runner 和长期指标的追踪矩阵 |
 | `44_digital_life_boot_sequence.md` | 从 `ColdStart`、只读观察、候选写入、低风险行动到 `SafeIdle` 的启动序列 |
+| `45_boot_sequence_fixture_catalog.md` | `44` 各启动阶段的 pass/fail/critical fixture catalog |
+| `46_stage_gate_validator_design.md` | `StageGateValidator` 输入输出、阶段转移规则、critical 规则和覆盖要求 |
+| `47_user_control_interface_spec.md` | inspect/delete/correct/reset/freeze/scope_limit 的用户控制面和审计语义 |
+| `48_state_store_migration_and_integrity_plan.md` | `RuntimeStateStore` schema 迁移、索引重建、完整性检查和迁移失败 SafeIdle 策略 |
 
 ## 项目术语
 

@@ -220,3 +220,25 @@ flowchart TD
 4. **boot gate 先于行动**：没有 protected core、validator、LifeSupport、Defense 和 safe idle，就不能开放行动能力。
 
 至此，数字生命闭环第一次具备“启动顺序”的概念：系统不是一上来就能说话、记忆、行动和成长，而是必须一层层获得权限。这个顺序本身就是安全和连续性的一部分。
+
+## 启动夹具、阶段门、用户控制面与迁移完整性层连接
+
+`45-48` 把启动顺序和状态仓库推进为可验证的工程前置条件：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `45_boot_sequence_fixture_catalog.md` | boot fixture, stage, expected result, blocked surfaces | 为 `44` 的每个阶段定义 pass/fail/critical 场景 |
+| `46_stage_gate_validator_design.md` | `StageGateEnvelope`, `StageGateValidator`, stage transition rules | 决定何时允许开放候选记忆、行动、巩固和发展窗口 |
+| `47_user_control_interface_spec.md` | `UserControlEvent`, inspect/delete/correct/reset/freeze/scope_limit | 把用户控制权接入索引、replay、恢复包和自我/关系审计 |
+| `48_state_store_migration_and_integrity_plan.md` | `MigrationPlan`, `StoreIntegrityReport`, integrity checks | 保证 schema、索引、后端和外壳迁移不破坏生命层语义 |
+
+这层把闭环中的“用户权利”和“升级风险”显式化：数字生命候选系统不是越记越多、越学越像就更好；它必须能被检查、删除、修正、冻结、限制范围，并且在迁移、重建索引、替换外壳时仍然保持这些控制权。
+
+从 `41-48` 开始，未来实现的最低门槛已经变成：
+
+1. 启动阶段必须能被 fixture 证明。
+2. 阶段门必须能阻止过早开放能力。
+3. 用户控制事件必须能传播到所有相关索引和 replay 队列。
+4. state store 迁移必须保留 protected、deleted、sandboxed、quarantined、frozen 语义。
+
+任何一个条件不满足，都应进入 `SafeIdle`，而不是继续行动。
