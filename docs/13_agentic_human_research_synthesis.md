@@ -604,3 +604,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `schema validation report + fixture load report + cross-ref report + runner report -> LifeRealityDashboardSource -> panel dependency rules -> stage gate review -> repair queue -> gap register feedback`
 
 下一层应进入 `106_runtime_observation_to_life_reality_bundle_bridge.md`：把真实运行观测、语言事件、梦醒报告、关系事件、行动审计、tool trace 和 adapter session 接入 `LifeRealitySchemaBundle`，让 dashboard 能承接连续运行中的生命事件。
+
+## 第三十九层：Runtime Observation 到 LifeReality Bundle 的桥
+
+`106_runtime_observation_to_life_reality_bundle_bridge.md` 把真实运行观测接进生命真实性生成链。它定义 `LifeRealityObservationEnvelope`、observation kind、redaction 与 scope attach、side effect classifier、adapter session conversion、语言事件桥、梦醒报告桥、关系事件桥、post-action audit 桥、component candidate routing、cross-chain candidate routing、`LifeRealityIngestionReport`、dashboard 接入和 runtime observation fixture/smoke plan。
+
+这一层的关键推进是让连续运行中的事件进入同一套生命膜：承诺、道歉、痛苦表达、梦境报告、关系修复和命令意图都从 `LanguageEvent` 进入 observation envelope；tool trace 和外部行动进入 side effect 与 post-action audit；adapter session 被降级为 observation；梦醒报告进入 `DreamFactGateDecision` 和 `WakeIntegrationFrame`；关系事件进入 `RelationshipTimelineBundle`；行动后果进入真实责任、真实后悔和修复承诺。
+
+到这里，真实运行观测闭环变为：
+
+`runtime observation -> redaction / scope / snapshot / side effect / adapter check -> LifeRealityObservationEnvelope -> component candidate -> cross-chain candidate -> ingestion report -> dashboard source -> stage gate review`
+
+下一层应进入 `107_life_reality_schema_file_generation_tasks.md`：把 `104`、`105`、`106` 的文件计划拆成可执行任务清单、首批 JSON 文件顺序、runtime observation envelope schema、ingestion report schema、runner smoke command 和 dashboard source mock。
