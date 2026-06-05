@@ -231,12 +231,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `106_runtime_observation_to_life_reality_bundle_bridge.md` | 把真实运行观测、tool trace、adapter session、语言事件、梦醒报告、关系事件、post-action audit 和共在边界控制事件接入 `LifeRealityObservationEnvelope`、component candidate、cross-chain candidate、ingestion report、dashboard source 和 stage gate review | 已由 `107` 拆成可执行生成任务，后续需要 shared defs 和 runtime schema 物化 |
 | `107_life_reality_schema_file_generation_tasks.md` | 把 `104`、`105`、`106` 拆成 `LRGEN` 可执行队列，覆盖 shared defs、component schema、bundle schema、runtime ingestion schema、report/dashboard schema、fixture seeds、dashboard mocks、runner smoke、runtime ingestion smoke 和 generation explain | 已由 `108` 和 `109` 补成 dashboard mock 与 runtime observation fixture catalog，后续需要 JSON Schema 物化 |
 | `108_life_reality_dashboard_source_mock_files.md` | 固定 `LRGEN-130` 到 `LRGEN-136` 的第一批 mock 文件形状，覆盖 dashboard source、panel dependency report、stage gate review、repair queue、gap register feedback、ingestion report 和 runtime quarantine panel source | 已由 `109` 补成 runtime observation fixture catalog，后续需要 dashboard cross-file checker |
-| `109_life_reality_runtime_observation_fixture_catalog.md` | 固定 runtime observation fixture manifest、pass/fail/critical/mutation/withheld/smoke 目录、fixture envelope、语言事件、梦醒报告、关系事件、tool trace、adapter session、side effect、coexistence snapshot、quarantine routing 和 cross-chain families | 还需要把 `LRGEN-001` shared defs 物化为字段级 JSON Schema 与 `$defs` 引用 |
+| `109_life_reality_runtime_observation_fixture_catalog.md` | 固定 runtime observation fixture manifest、pass/fail/critical/mutation/withheld/smoke 目录、fixture envelope、语言事件、梦醒报告、关系事件、tool trace、adapter session、side effect、coexistence snapshot、quarantine routing 和 cross-chain families | 已由 `110` 接入 shared defs 物化，后续需要 runtime observation schema 物化 |
+| `110_life_reality_shared_defs_schema_materialization.md` | 固定 `life_reality_shared_defs.schema.json` 的 Draft 2020-12 skeleton、`$defs` enum、reference objects、cross-file `$ref` policy、validator smoke cases、repair mapping 和物化顺序 | 还需要把 dashboard/ingestion/repair/gap feedback 的跨文件 consistency 做成 checker 设计 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91` 的真实性生成边界总则推进，把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `110_life_reality_shared_defs_schema_materialization.md`：把 `LRGEN-001` 的 shared defs 真正拆成字段级 JSON Schema 内容、enum 说明、`$defs` 引用和 validator smoke cases。
-2. `111_life_reality_dashboard_cross_file_checker_design.md`：把 `108` 与 `109` 的 cross-file consistency 规则转成 dashboard source checker、run_id checker、panel count checker、quarantine count checker 和 repair queue checker 设计。
-3. `112_life_reality_runtime_observation_schema_materialization.md`：把 `109` 的 fixture catalog 物化为 runtime observation fixture schema、manifest schema 和 ingestion fixture smoke cases。
+1. `111_life_reality_dashboard_cross_file_checker_design.md`：把 `108` 与 `109` 的 cross-file consistency 规则转成 dashboard source checker、run_id checker、panel count checker、quarantine count checker 和 repair queue checker 设计。
+2. `112_life_reality_runtime_observation_schema_materialization.md`：把 `109` 的 fixture catalog 物化为 runtime observation fixture schema、manifest schema 和 ingestion fixture smoke cases。
+3. `113_life_reality_component_schema_materialization_sequence.md`：把 `98`、`99`、`101` 的 component object schema 按 shared defs 引用顺序拆成首批可生成 `.schema.json` 队列。
