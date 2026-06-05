@@ -262,3 +262,31 @@ flowchart TD
 2. fixture 必须有真实 payload，而不是只有名字。
 3. dashboard 不能把绿色状态解释为数字生命诞生，只能解释为工程检查通过。
 4. scope graph 必须优先保护 user_private、relationship_sensitive、protected_boundary 和 redacted 对象。
+
+## Runner 接入、Scope-aware Retrieval/Replay 与 Synthetic Timeline 层连接
+
+`53-56` 把上一层的机器可读草案推进到验证链：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `53_runner_integration_plan.md` | `manifest_bundle`, `fixture_bundle`, `ScopeGraphChecker`, dashboard source | 定义 runner 如何加载 manifest、fixture、stage gate、migration 和 scope graph，并输出 expected/actual diff |
+| `54_scope_aware_retrieval_policy.md` | `RetrievalRequest`, retrieval candidate envelope, `RetrievalAuditEvent` | 保证在线检索先经过 scope、privacy、lifecycle、用户控制和状态过滤，再排序 |
+| `55_scope_aware_replay_and_consolidation_policy.md` | `ReplayAuditEvent`, scoped `ConsolidationReport`, replay scheduler | 保证离线 replay 和巩固不复活 deleted、不事实化 sandbox、不跨 scope 泄漏 |
+| `56_longitudinal_synthetic_timeline_design.md` | `timeline_bundle`, probe, metric window | 用跨天/周/月合成时间线验证删除、修正、关系、慢变量、迁移、恢复和外壳替换 |
+
+这层新增了四条硬约束：
+
+1. **runner 先于 dashboard 可信度**：dashboard 只能显示来自 runner report 的可追溯数据源，不能手写绿色状态。
+2. **scope 先于检索相关性**：语义相似度不能覆盖 deleted、privacy、scope_limit、freeze 或 sandbox 边界。
+3. **replay 先于长期写回审计**：任何离线巩固输出都必须再过 validator，不能因为来自 replay 就自动可信。
+4. **timeline 先于长期成长宣称**：没有未来 probe 和跨窗口指标，就不能说记忆、关系、人格慢变量或恢复能力长期稳定。
+
+至此，闭环从：
+
+`感知 -> 显著性 -> 工作区 -> 记忆 -> 行动 -> 反馈 -> replay -> 自我/关系更新`
+
+扩展为：
+
+`感知 -> scope-aware retrieval -> 工作区 -> 行动/反馈 -> validator -> scope-aware replay -> timeline evaluator -> dashboard/gap register`
+
+这个扩展非常关键：数字生命候选系统的危险不只在当下回答错，而在错误、私密、沙盒、删除和外壳痕迹被悄悄巩固到未来。`53-56` 正是为了把这种跨时间污染变成可检测对象。

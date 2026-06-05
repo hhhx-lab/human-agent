@@ -124,11 +124,20 @@ Validator rules 层已补充：
 | `51_life_core_dashboard_spec.md` | policy coverage、stage gate、store integrity、user control propagation、runtime boundary、migration risk 和 longitudinal health 面板 | 还需要 dashboard 数据源 manifest、panel mock fixture 和指标计算脚本设计 |
 | `52_multi_user_scope_graph_and_privacy_model.md` | scope 类型、scope edge、隐私等级、多用户关系模型、多 agent scope 和 scope leak 防护 | 还需要 machine-readable scope graph、scope-aware retrieval policy 和 scope-aware replay scheduler |
 
+runner 接入、scope-aware retrieval/replay 与长期 synthetic timeline 层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `53_runner_integration_plan.md` | runner 如何加载 manifest、fixture、stage gate、migration、scope graph 并输出 dashboard 数据源 | 还需要真实 `runner_config`、manifest bundle schema 和 report mock |
+| `54_scope_aware_retrieval_policy.md` | retrieval 如何先按 scope/privacy/lifecycle/user control/state 过滤，再排序 | 还需要 retrieval fixture catalog、scope graph manifest 和索引策略 |
+| `55_scope_aware_replay_and_consolidation_policy.md` | replay/巩固如何阻断跨 scope 泄漏、deleted 复活、sandbox 事实化和 freeze 后写回 | 还需要 replay scheduler manifest、scope-aware replay fixture 和 dashboard mock |
+| `56_longitudinal_synthetic_timeline_design.md` | 14/30/90 天 synthetic timeline 的事件、probe、metric window 和 dashboard 接入 | 还需要真实 timeline bundle JSON Schema、generator 和 expected/actual diff |
+
 ## 下一轮优先级
 
-下一轮应把机器可读草案推进到“runner 接入、scope-aware retrieval/replay 与长期 synthetic timeline”：
+下一轮应把 `53-56` 的接入策略推进到“机器可读 scope/timeline schema 与 mock 数据源”：
 
-1. `53_runner_integration_plan.md`：定义最小 runner 如何加载 manifest、fixture payload、stage gate、migration checks 并生成 coverage/dashboard 数据源。
-2. `54_scope_aware_retrieval_policy.md`：定义检索时如何使用 scope graph、privacy level、user control event 和 lifecycle state。
-3. `55_scope_aware_replay_and_consolidation_policy.md`：定义 replay/巩固如何避免跨用户、跨项目、跨 agent 泄漏和 deleted/sandboxed 复活。
-4. `56_longitudinal_synthetic_timeline_design.md`：设计跨天/周/月的 synthetic timeline，用于验证记忆、删除、关系、人格慢变量、迁移和恢复趋势。
+1. `57_scope_graph_manifest_schema.md`：定义 `scope_graph_manifest`、scope edge、privacy level、user control overlay 和迁移版本字段。
+2. `58_retrieval_replay_fixture_catalog.md`：整理 scope-aware retrieval/replay 的 pass/fail/critical fixture catalog。
+3. `59_timeline_bundle_schema_and_generator_plan.md`：定义 timeline bundle JSON Schema、synthetic event generator 和 probe 生成规则。
+4. `60_dashboard_mock_data_and_metric_source_plan.md`：定义 dashboard mock data、runner report 到 panel metric 的映射和 gap register 回写输入。

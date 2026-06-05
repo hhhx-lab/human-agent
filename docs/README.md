@@ -17,7 +17,8 @@
 11. 再读 `37_` 到 `40_`：它们把长期运行推进为生命支持、防御、发展和自我/关系审计政策层。
 12. 再读 `41_` 到 `44_`：它们把政策层继续推进为 runtime state store、最小对象图、policy-to-validator traceability 和 boot sequence。
 13. 再读 `45_` 到 `48_`：它们把启动骨架推进为 boot fixture、stage gate validator、用户控制面和 state store 迁移完整性计划。
-14. 最后读 `49_` 到 `52_`：它们把验证设计推进为机器可读 manifest、fixture payload、dashboard 和多用户 scope/privacy 模型。
+14. 再读 `49_` 到 `52_`：它们把验证设计推进为机器可读 manifest、fixture payload、dashboard 和多用户 scope/privacy 模型。
+15. 最后读 `53_` 到 `56_`：它们把 runner 接入、scope-aware retrieval/replay 和长期 synthetic timeline 接到同一条验证链上。
 
 ## 文件索引
 
@@ -80,6 +81,10 @@
 | `50_fixture_payload_examples.md` | boot、stage gate、user control、migration、policy coverage 的 JSON-like fixture payload 样例 |
 | `51_life_core_dashboard_spec.md` | policy coverage、stage gate、store integrity、用户控制传播、迁移风险和长期健康 dashboard 规格 |
 | `52_multi_user_scope_graph_and_privacy_model.md` | 多用户、多项目、多 agent 的 scope graph、隐私等级、关系模型隔离和 scope leak 防护 |
+| `53_runner_integration_plan.md` | 最小 runner 加载 manifest、fixture、stage gate、migration、scope graph 并输出 dashboard 数据源的接入计划 |
+| `54_scope_aware_retrieval_policy.md` | 检索时使用 scope graph、privacy level、用户控制、生命周期和状态调制的政策 |
+| `55_scope_aware_replay_and_consolidation_policy.md` | replay/巩固时防止跨用户、跨项目、跨 agent 泄漏和 deleted/sandboxed/frozen 复活的政策 |
+| `56_longitudinal_synthetic_timeline_design.md` | 跨天/周/月 synthetic timeline，用于验证记忆、删除、关系、慢变量、迁移和恢复趋势 |
 
 ## 项目术语
 

@@ -297,4 +297,10 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 
 这一层开始处理真正长期系统的复杂性：不是一个用户、一个项目、一个 agent 外壳，而是多个用户、多个项目、多个 runtime shell、多个 scope 的交错。数字生命候选系统如果没有 scope graph，就会把个性化误当全局人格，把某个项目的关系历史带到另一个项目，把某个外壳的 session 当成长期记忆。`49-52` 把这些风险显式变成 manifest、fixture 和 dashboard 指标。
 
-仍然不能停止。接下来需要把这些草案转成真实 manifest 文件规范、runner 接入计划、scope-aware retrieval/replay 策略和多月 synthetic timeline。
+## 第十四层：Runner 接入、Scope-aware Retrieval/Replay 与 Synthetic Timeline
+
+`53_runner_integration_plan.md`、`54_scope_aware_retrieval_policy.md`、`55_scope_aware_replay_and_consolidation_policy.md` 和 `56_longitudinal_synthetic_timeline_design.md` 把 `49-52` 的机器可读草案接入未来验证流程：runner 不再只运行孤立 fixture，而是加载 manifest bundle、fixture bundle、scope graph、stage gate、migration checks 和 dashboard manifest；retrieval 不再只是向量相似度，而是先检查 scope、privacy、lifecycle、用户控制和当前状态；replay/consolidation 不再是自由总结，而是必须防止 deleted 复活、sandbox 假设事实化、freeze 后继续学习和跨 scope 关系泄漏；synthetic timeline 则把这些边界放进跨天、跨周、跨月的合成互动中验证。
+
+这一层让理论底座更接近“可执行前审计”：未来系统不仅要能说自己有记忆、巩固、关系和成长，还要能在 runner report、RetrievalAuditEvent、ReplayAuditEvent、ConsolidationReport、dashboard source 和 timeline metric 中证明边界没有被破坏。它继续保持同一个核心立场：现有 agent 框架可以提供 session、tracing、checkpoint、RAG、workflow 和多 agent 外壳 [AHM013-AHM020]，但所有长期写入、检索、replay、迁移和自我/关系更新都必须服从生命层对象和 validator。
+
+仍然不能停止。下一层需要把 `scope_graph_manifest`、retrieval/replay fixture catalog、timeline bundle JSON Schema、dashboard mock data 和真实 runner 报告格式继续写细，并持续回到脑科学、长期记忆评测和人机信任/关系研究中更新证据 [AHY039-AHY044, AHZ031-AHZ038, AHM004-AHM012]。
