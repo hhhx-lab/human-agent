@@ -630,7 +630,7 @@ trace rules：
 
 ## 与下一层连接
 
-`120_life_reality_first_json_materialization_batch.md` 应读取本层的 CLI contract，把 `115` 的 runtime fixture seed、`116` 的 component schema skeleton、`117` 的 dashboard report rollup seed 物化为首批真实 JSON 文件：
+`120_life_reality_first_json_materialization_batch.md` 应读取本层的 CLI contract 和 `119_life_boundary_full_reality_alignment.md`，把 `115` 的 runtime fixture seed、`116` 的 component schema skeleton、`117` 的 dashboard report rollup seed 与真实边界字段族物化为首批真实 JSON 文件：
 
 ```text
 life-reality-runner run-generation-pipeline

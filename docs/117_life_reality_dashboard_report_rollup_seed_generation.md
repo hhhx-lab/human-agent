@@ -509,7 +509,7 @@ gap feedback rules：
 | `LRRSG-GAP-002` | recommended artifacts root 合法 |
 | `LRRSG-GAP-003` | unresolved findings 必须进入 recommended docs 或 artifacts |
 | `LRRSG-GAP-004` | gap register update ref 指向 `16` |
-| `LRRSG-GAP-005` | `118` 承接 CLI 合同，`119` 承接真实 JSON 物化批次 |
+| `LRRSG-GAP-005` | `118` 承接 CLI 合同，`119` 承接真实边界再校准，`120` 承接真实 JSON 物化批次 |
 
 ## dashboard rollup source patch
 
