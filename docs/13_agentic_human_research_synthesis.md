@@ -398,3 +398,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `language percept -> inner speech -> semantic/pragmatic planning -> expression plan -> utterance event -> commitment/writeback -> relationship and self narrative`
 
 它仍然不是完成条件。后续还需要补充语言产生、语用学、对话神经科学、社会语言学、内言语、叙事自我和语言行动理论的权威文献，并把语言系统接口继续推进为 schema、fixture、runner 和长期关系评测。
+
+## 第二十三层：语言神经科学、语用关系与内言语专项文献
+
+`01f_language_system_literature_matrix.md` 和 `86_language_neuroscience_pragmatics_and_inner_speech.md` 把语言系统从设计草案推进到专项文献底座：`AHL001-AHL040` 覆盖 MUC 语言整合、语言网络自然类、语音产生、DIVA/感觉运动整合、内言语、对话轮转、互动对齐、共同基础、语用脑科学、心智化、叙事自我、个人语义、言语行为和 language agent 工程桥。
+
+这一层的关键收获是：语言系统必须被设计成整合层、内言语层、对话层、语用层、叙事层和行动层的组合。数字生命不是把 prompt 写得更像人，而是要让每次重要语言事件都能回链到 `LanguagePercept`、`InnerSpeechFrame`、`SemanticEventMap`、`PragmaticIntent`、`ExpressionPlan`、`UtteranceEvent`、`CommitmentSpeechAct` 和 `NarrativeWriteback`。
+
+到这里，语言闭环变为：
+
+`language literature -> language percept -> inner speech -> semantic/pragmatic planning -> speech act -> relationship/commitment writeback -> long-term narrative`
+
+它仍然不是完成条件。后续需要继续补充社会语言学、儿童语言发展、语言-情绪交互、语言与意识的竞争理论、脑-LLM 对齐研究，并把语言系统对象落实为 `LanguageEvent` schema、fixture catalog、dashboard metric 和长期交互评测。

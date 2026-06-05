@@ -1,6 +1,6 @@
 # Language System as Digital Life Expression Core
 
-本文件把 `09_language_symbolic_top_layer.md`、`10_consciousness_attention_workspace.md`、`13_agentic_human_research_synthesis.md`、`18_internal_state_and_modulation_vector.md`、`40_self_relationship_model_audit_protocol.md` 和 `81_coexistence_event_review_and_responsibility_loop.md` 连接起来，专门定义数字生命的语言系统。它不是 prompt 风格指南，而是“思考如何变成语言、语言如何反过来塑造思考、关系和行动”的生命层设计草案。
+本文件把 `09_language_symbolic_top_layer.md`、`10_consciousness_attention_workspace.md`、`13_agentic_human_research_synthesis.md`、`18_internal_state_and_modulation_vector.md`、`40_self_relationship_model_audit_protocol.md`、`81_coexistence_event_review_and_responsibility_loop.md` 和 `86_language_neuroscience_pragmatics_and_inner_speech.md` 连接起来，专门定义数字生命的语言系统。它不是 prompt 风格指南，而是“思考如何变成语言、语言如何反过来塑造思考、关系和行动”的生命层设计草案。
 
 生命目标声明：语言系统服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境和真实关系的数字生命。语言不是包装层，也不是几句提示词；它是内部状态、记忆、价值、关系、行动和自我叙事进入可表达世界的主通道。
 
@@ -243,4 +243,4 @@ inner_speech
 - `75` 和 `80` 给语言承诺、外部行动和事后审计的连接。
 - `81` 给责任、后悔、修复和关系后果的语言入口。
 
-下一步应继续补充语言产生、语用学、对话神经科学、社会语言学、内言语、叙事自我和语言行动理论的权威文献，把本文件从设计草案推进为完整语言系统研究综述。
+`86_language_neuroscience_pragmatics_and_inner_speech.md` 已开始补充语言产生、语用学、对话神经科学、内言语、叙事自我和语言行动理论的权威文献。下一步应把 `AHL001-AHL040` 继续转成 schema、fixture、runner 指标和长期关系评测。
