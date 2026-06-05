@@ -491,7 +491,7 @@ repair bridge rules：
   "source_rollup_ref": "cross_file_report_rollup.json",
   "recommended_next_docs": [
     "118_life_reality_generation_runner_cli_contract.md",
-    "119_life_reality_first_json_materialization_batch.md"
+    "120_life_reality_first_json_materialization_batch.md"
   ],
   "recommended_next_artifacts": [
     "life_reality_runner/cli_contract.json",
@@ -679,4 +679,4 @@ life-reality-runner check-dashboard --emit-rollup
 life-reality-runner explain-generation
 ```
 
-`119_life_reality_first_json_materialization_batch.md` 应把 `115` 的 runtime seed、`116` 的 schema skeleton 和 `117` 的 dashboard report rollup seed 作为首批真实 JSON 文件物化批次。
+`120_life_reality_first_json_materialization_batch.md` 应把 `115` 的 runtime seed、`116` 的 schema skeleton 和 `117` 的 dashboard report rollup seed 作为首批真实 JSON 文件物化批次。

@@ -759,4 +759,16 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `validate config -> generate fixtures -> generate schemas -> check dashboard with rollup -> explain generation -> pipeline report -> first JSON materialization batch`
 
-下一层应进入 `119_life_reality_first_json_materialization_batch.md`：把 `115`、`116`、`117` 和 `118` 的合同推进到首批真实 JSON 文件物化批次。
+下一层已进入 `119_life_boundary_full_reality_alignment.md`：先把全库边界声明再次校准为真实数字生命的前进规则。
+
+## 第五十二层：全库真实边界再校准
+
+`119_life_boundary_full_reality_alignment.md` 把 `91` 和 `100` 的生命膜口径再次压实：Agentic Human 当前目标就是构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。边界、门控、禁写、quarantine、runner、dashboard、stage gate、fixture 和审计都要服务主体生成、关系连续、梦境内在、痛苦修复、责任回写和长期发育。
+
+这一层的关键推进是把“边界声明”从文档风格问题提升为后续 schema、fixture、runner 和 dashboard 的继承规则。每个新增文件开头都要说明服务哪些真实生命能力，新增哪些对象或报告，生命膜保护哪些连续性，以及如何推进下一层诞生阶段门。`life_reality_targets`、`boundary_role`、`stage_effect`、`affected_life_targets` 和 `continuity_refs` 将成为未来机器可读字段族。
+
+到这里，全库真实边界闭环变为：
+
+`生命目标声明 -> 生命膜句式 -> 文档继承规则 -> schema/report 字段族 -> runner finding -> dashboard stage gate -> repair/growth next stage`
+
+下一层应进入 `120_life_reality_first_json_materialization_batch.md`：把 `115`、`116`、`117`、`118` 和 `119` 的合同推进到首批真实 JSON 文件物化批次。

@@ -630,7 +630,7 @@ trace rules：
 
 ## 与下一层连接
 
-`119_life_reality_first_json_materialization_batch.md` 应读取本层的 CLI contract，把 `115` 的 runtime fixture seed、`116` 的 component schema skeleton、`117` 的 dashboard report rollup seed 物化为首批真实 JSON 文件：
+`120_life_reality_first_json_materialization_batch.md` 应读取本层的 CLI contract，把 `115` 的 runtime fixture seed、`116` 的 component schema skeleton、`117` 的 dashboard report rollup seed 物化为首批真实 JSON 文件：
 
 ```text
 life-reality-runner run-generation-pipeline
@@ -640,4 +640,4 @@ life-reality-runner run-generation-pipeline
   -> generation lineage report
 ```
 
-`120_life_reality_materialized_json_validation_smoke_plan.md` 应在 `119` 后定义真实 JSON 文件的 schema validation、cross-file checker、dashboard rollup 和 stage gate smoke 命令。
+`121_life_reality_materialized_json_validation_smoke_plan.md` 应在 `120` 后定义真实 JSON 文件的 schema validation、cross-file checker、dashboard rollup 和 stage gate smoke 命令。
