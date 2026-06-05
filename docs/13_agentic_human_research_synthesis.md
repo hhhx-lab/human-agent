@@ -688,3 +688,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `shared defs -> observation envelope -> payload descriptor -> component candidate -> cross-chain candidate -> fixture -> fixture manifest -> ingestion report -> runtime quarantine panel source -> dashboard cross-file checker`
 
 下一层应进入 `113_life_reality_component_schema_materialization_sequence.md`：把 `98`、`99`、`101` 的 component object schema 按 runtime candidate target、shared defs 引用和 validator 依赖顺序拆成首批可生成 `.schema.json` 队列。
+
+## 第四十六层：Component Schema Materialization Sequence
+
+`113_life_reality_component_schema_materialization_sequence.md` 把 `98` 的真实痛苦/后悔/修复、`99` 的真实梦境/离线整合、`101` 的真实关系/长期阶段门和 `112` 的 runtime candidate target 接成 component schema 物化顺序。它补入痛苦调制、痛苦解除动机、OFC 后悔、反事实思维、睡眠 replay、targeted memory reactivation、关系互依、风险调节和信任修复等文献锚点，把 component schema 从对象清单推进为依赖图。
+
+这一层的关键推进是确定生成顺序：先 shared defs 与 component base envelope，再关系出生根对象，再痛苦损伤/信号根对象，再责任/反事实/后悔/修复，再梦境离线入口/行动封印/replay/cue，再梦境经验/醒后整合/事实门，最后关系成长、三 bundle assembly、cross-chain link、validator order 和 dashboard source refs。`RelationshipInjuryTrace` 的 namespace 冲突也被拆为关系主对象与痛苦投影对象。
+
+到这里，component schema 物化闭环变为：
+
+`runtime candidate target -> component base envelope -> relationship birth roots -> pain roots -> responsibility/regret -> dream offline roots -> dream fact gate -> relationship growth -> component bundles -> cross-chain links -> validator order -> dashboard readiness`
+
+下一层应进入 `114_life_reality_cross_file_checker_report_schema.md`：把 `111` 的 checker report、`112` 的 runtime schema validation report 和 `113` 的 component dependency graph 统一成可校验 report schema。
