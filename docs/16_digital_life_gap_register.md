@@ -70,11 +70,20 @@
 | `27_consolidation_report_examples.md` | TaskClosure、失败复盘、DreamSandbox、DeepConsolidation 和清理报告样例 | 还需要报告 validator rules 和 sandbox leak 检查器 |
 | `28_runtime_adapter_manifest_examples.md` | 多个运行外壳 manifest、fixture 和 `ObservationEvent` 期望样例 | 还需要 manifest validator rules 与最小 adapter 验证器 |
 
+Validator rules 层已补充：
+
+| 文件 | 已解决的缺口 | 仍未解决的下一层 |
+|---|---|---|
+| `29_memory_validator_rules.md` | 字段完整性、证据强度、来源、生命周期、删除、修正、合并、保护、隐私和关系规则 | 还需要真实 JSON Schema、lint 脚本和测试夹具文件 |
+| `30_state_transition_validator_rules.md` | 状态合法性、阈值越界、滞回、覆盖优先级、阈值学习和行动门控规则 | 还需要状态机配置文件、仿真序列和自动检查器 |
+| `31_consolidation_validator_rules.md` | 巩固报告、DreamSandbox、事实门控、DeepConsolidation、删除清理和恢复包规则 | 还需要报告样例 fixture 和 sandbox leak 自动测试 |
+| `32_runtime_adapter_validator_rules.md` | adapter manifest、禁写、ActionIntent/ObservationEvent 映射、side effects、session/RAG 和合同测试规则 | 还需要每个外壳的真实 adapter fixture 和 contract test runner |
+
 ## 下一轮优先级
 
-下一轮应把样例层推进到“validator rules 和最小验证器”：
+下一轮应把 validator rules 推进到“真实可运行验证器雏形”：
 
-1. `29_memory_validator_rules.md`：把 `25` 的样例转成字段完整性、证据强度、删除不可召回、修正/合并/保护的规则。
-2. `30_state_transition_validator_rules.md`：把 `26` 的状态转移和失败模式转成阈值越界、滞回、覆盖优先级和 rollback 检查。
-3. `31_consolidation_validator_rules.md`：把 `27` 的报告样例转成 DreamSandbox fiction marker、事实门控、工作区恢复摘要和深度巩固限制。
-4. `32_runtime_adapter_validator_rules.md`：把 `28` 的 manifest 转成外壳越权、side effects、session 隔离、RAG grounding 和 adapter swap 检查。
+1. `33_validator_input_contracts.md`：定义四类 validator 的统一输入、输出、严重级别、隔离动作和报告格式。
+2. `34_validator_fixture_catalog.md`：把 `25-32` 中的样例整理成 fixture catalog，标明 pass/fail 和覆盖规则。
+3. `35_minimal_validator_runner_design.md`：设计最小本地 runner，说明如何加载 Markdown/JSON fixture、执行规则和生成审计报告。
+4. `36_longitudinal_evaluation_protocol.md`：补长期记忆一致性、人格慢变量稳定、关系边界、恢复能力和成长轨迹的评测协议。

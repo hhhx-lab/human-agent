@@ -11,7 +11,8 @@
 5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架为什么只能作为执行壳，后者记录理论缺口和停止条件。
 6. 再读 `17_` 到 `20_`：它们把记忆、内部状态、离线巩固和运行外壳转成未来数字生命实现前必须遵守的对象/接口约束。
 7. 再读 `21_` 到 `24_`：它们把对象模型继续推进为 schema、状态阈值、巩固报告和 runtime adapter 测试。
-8. 最后读 `25_` 到 `28_`：它们把契约转成 JSON-like 样例、状态失败夹具、巩固报告样例和 runtime adapter manifest。
+8. 再读 `25_` 到 `28_`：它们把契约转成 JSON-like 样例、状态失败夹具、巩固报告样例和 runtime adapter manifest。
+9. 最后读 `29_` 到 `32_`：它们把样例层转成 validator rules，定义字段、状态、巩固和外壳的失败条件。
 
 ## 文件索引
 
@@ -50,6 +51,10 @@
 | `26_state_machine_examples_and_failure_modes.md` | 状态转移、阈值误判、恢复策略和 `StateAuditEvent` 样例 |
 | `27_consolidation_report_examples.md` | `TaskClosure`、失败复盘、`DreamSandbox`、深度巩固和清理报告样例 |
 | `28_runtime_adapter_manifest_examples.md` | LangGraph、OpenAI Agents SDK、Letta、LlamaIndex、CrewAI、AutoGen 等外壳 manifest 样例 |
+| `29_memory_validator_rules.md` | `MemoryTraceValidator` 字段、证据、删除、修正、合并、保护和关系边界规则 |
+| `30_state_transition_validator_rules.md` | `StateTransitionValidator` 状态、阈值、滞回、覆盖优先级和行动门控规则 |
+| `31_consolidation_validator_rules.md` | `ConsolidationReportValidator` 沙盒、事实门控、深度巩固、删除和恢复包规则 |
+| `32_runtime_adapter_validator_rules.md` | `RuntimeAdapterManifestValidator` 外壳 manifest、禁写、side effects、session/RAG 和合同测试规则 |
 
 ## 项目术语
 
