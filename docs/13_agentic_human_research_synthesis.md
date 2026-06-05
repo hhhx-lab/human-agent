@@ -310,3 +310,15 @@ Agentic Human 可以借鉴人脑组织原则，但不能因此宣称系统具有
 这一层的意义是让未来实现开始具备“文件边界”：哪些东西会成为 manifest，哪些会成为 fixture，哪些会成为 timeline bundle，哪些会成为 dashboard source。它仍然不是代码，也不是完成条件；但它让数字生命候选系统从文档理论继续靠近可执行验证。特别是 deleted、sandbox、user_private、relationship_sensitive、agent_scope、freeze 和 scope_limit 等长期污染风险，已经可以被放进 fixture、timeline probe 和 dashboard blocking metric 中。
 
 仍然不能停止。下一层需要把这些 schema 草案转成真实 JSON Schema bundle、runner report/CLI 契约、synthetic fixture 文件布局、真实 runtime observation ingestion policy，并继续补充长期记忆 benchmark、agent 框架官方资料、人机信任和社会互动研究的最新证据 [AHY039-AHY044, AHZ031-AHZ038, AHM004-AHM020]。
+
+## 第十六层：Schema Bundle、Runner Report、Fixture Layout 与真实观测入口
+
+`61_json_schema_bundle_draft.md`、`62_runner_report_format_and_cli_contract.md`、`63_synthetic_fixture_file_layout.md` 和 `64_real_runtime_observation_ingestion_policy.md` 把 `57-60` 的机器可读前草案进一步压成可实现前验证合同：schema bundle 统一 severity、result、lifecycle、scope、privacy 和 data quality；runner report 明确 expected/actual diff、coverage、scope graph、timeline 和 dashboard source 的输出边界；fixture file layout 规定真实 fixture 的目录、命名、bundle、manifest 和 coverage；real runtime ingestion policy 则规定 tool trace、adapter session、用户控制事件和真实行动结果必须先脱敏、attach scope、读取 user control snapshot、通过 validator，再进入候选证据、timeline 或 dashboard。
+
+这一层的意义是把“未来会验证”继续推进为“未来验证器应该如何读文件、如何输出报告、如何接收真实观测”。特别是 `64` 明确阻断了一个长期系统最容易犯的错误：把真实 runtime trace、agent framework session 或工具执行结果直接当成长期记忆、自我模型或关系模型。真实观测只能先成为 `RuntimeObservationEnvelope` 和 `ObservationEvent`，不能绕过生命层 write gate。
+
+到这里，闭环再扩展为：
+
+`schema bundle -> manifest/fixture/timeline/dashboard source -> runner report -> redacted runtime observation -> candidate evidence/timeline/dashboard -> gap register`
+
+它仍然不是完成条件。当前还缺真实 `.schema.json` 文件、真实 fixture、runner 实现、redaction checker、scope attach checker、runtime observation report mock 和长期真实运行数据。更重要的是，即使这些工程检查未来全部通过，也只能说明显式规则在特定数据窗口内通过，不能证明 AI 真实拥有意识、情绪、人格、关系或生命。

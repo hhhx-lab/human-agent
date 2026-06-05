@@ -314,3 +314,31 @@ flowchart TD
 `scope manifest -> retrieval/replay fixture -> timeline probe -> runner report -> dashboard source -> gap register`
 
 这条链把“研究缺口”与“未来工程检查”连接起来：dashboard 不只是给人看状态，还要能把未覆盖机制、缺失 schema、缺失 fixture、弱证据和真实运行数据不足回写给 `16`，驱动下一轮理论和验证文档继续生长。
+
+## Schema Bundle、Runner Report、Fixture Layout 与真实观测入口层连接
+
+`61-64` 把上一层的文件边界继续推进到未来实现可直接继承的验证合同：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `61_json_schema_bundle_draft.md` | shared `$defs`, manifest schema, fixture schema, scope graph schema, timeline schema, dashboard source schema | 统一 schema 语言，避免 severity、lifecycle、scope、privacy 和 data quality 在不同模块漂移 |
+| `62_runner_report_format_and_cli_contract.md` | `runner_run_report`, `fixture_report`, `coverage_report`, `scope_graph_report`, CLI exit code | 定义 runner 如何把 schema、manifest、fixture、timeline 和 runtime observation 输出成可追溯报告 |
+| `63_synthetic_fixture_file_layout.md` | fixture directories, bundle, manifest, coverage, redacted real runtime fixture | 定义真实 fixture 文件如何命名、引用、生成、校验和与 synthetic/real runtime 数据分离 |
+| `64_real_runtime_observation_ingestion_policy.md` | `RuntimeObservationEnvelope`, tool trace, adapter session event, user control snapshot, routing decision | 定义真实运行观测如何脱敏、attach scope、通过 validator，再进入候选证据、timeline 或 dashboard |
+
+这层新增四条硬约束：
+
+1. **shared defs 先于模块 schema**：`severity`、`result`、`lifecycle_state`、`privacy_level` 和 `data_quality` 必须全局一致。
+2. **report 先于 dashboard 判断**：dashboard 只能读取 runner/timeline/report 产物，不能直接手写状态。
+3. **fixture layout 先于自动覆盖**：没有稳定文件名、bundle、manifest 和 coverage，fixture 数量不能说明边界被测试。
+4. **真实观测先于长期写入审计**：tool trace、adapter session 和真实行动结果必须先成为 redacted observation，不能直接成为 active memory、SelfModel 或 RelationshipModel。
+
+闭环因此从：
+
+`scope manifest -> retrieval/replay fixture -> timeline probe -> runner report -> dashboard source -> gap register`
+
+扩展为：
+
+`schema bundle -> fixture files -> runner report -> runtime observation ingestion -> candidate evidence/timeline/dashboard -> gap register`
+
+这一层把 synthetic 和 real runtime 的边界分清楚了：synthetic fixture 用于压测已知风险，真实观测用于发现未知风险，但两者都必须服从 schema、scope graph、user control、validator 和 report。任何真实观测若没有脱敏、scope attach 或 user control snapshot，都只能进入 quarantine 或 manual review。

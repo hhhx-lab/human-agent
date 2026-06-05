@@ -19,7 +19,8 @@
 13. 再读 `45_` 到 `48_`：它们把启动骨架推进为 boot fixture、stage gate validator、用户控制面和 state store 迁移完整性计划。
 14. 再读 `49_` 到 `52_`：它们把验证设计推进为机器可读 manifest、fixture payload、dashboard 和多用户 scope/privacy 模型。
 15. 再读 `53_` 到 `56_`：它们把 runner 接入、scope-aware retrieval/replay 和长期 synthetic timeline 接到同一条验证链上。
-16. 最后读 `57_` 到 `60_`：它们把 scope graph manifest、retrieval/replay fixture、timeline bundle 和 dashboard mock source 推进为机器可读前的 schema 草案。
+16. 再读 `57_` 到 `60_`：它们把 scope graph manifest、retrieval/replay fixture、timeline bundle 和 dashboard mock source 推进为机器可读前的 schema 草案。
+17. 最后读 `61_` 到 `64_`：它们把 schema bundle、runner report/CLI、fixture 文件布局和真实运行观测 ingestion 推进为可实现前验证合同。
 
 ## 文件索引
 
@@ -90,6 +91,10 @@
 | `58_retrieval_replay_fixture_catalog.md` | scope-aware retrieval/replay 的 pass/fail/critical fixture catalog |
 | `59_timeline_bundle_schema_and_generator_plan.md` | timeline bundle schema、synthetic event generator、probe 和 expected/actual diff 计划 |
 | `60_dashboard_mock_data_and_metric_source_plan.md` | dashboard mock data、metric source、panel 映射和 gap register 回写输入计划 |
+| `61_json_schema_bundle_draft.md` | manifest、fixture、scope graph、timeline 和 dashboard source 的 JSON Schema bundle 草案 |
+| `62_runner_report_format_and_cli_contract.md` | runner report、expected/actual diff、coverage report、dashboard source 和未来 CLI 契约 |
+| `63_synthetic_fixture_file_layout.md` | synthetic fixture 的目录、命名、bundle、manifest、coverage 和真实观测脱敏夹具布局 |
+| `64_real_runtime_observation_ingestion_policy.md` | 真实 runtime observation、tool trace、adapter session 和用户控制事件进入验证链的政策 |
 
 ## 项目术语
 
