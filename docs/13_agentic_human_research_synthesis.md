@@ -819,4 +819,16 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `config roots -> schema registry -> fixture roots -> boundary registry -> parse/schema/cross-file checks -> dashboard rollup -> stage gate -> gap feedback -> minimal JSON seed`
 
-下一层应进入 `124_life_reality_minimal_json_file_seed_plan.md`：按 runner 布局生成最小 JSON 文件 seed 编写顺序。
+下一层已进入 `124_life_reality_minimal_json_file_seed_plan.md`：按 runner 布局生成最小 JSON 文件 seed 编写顺序。
+
+## 第五十七层：Minimal JSON File Seed Plan
+
+`124_life_reality_minimal_json_file_seed_plan.md` 把 `120` 的首批物化批次、`122` 的全集边界声明和 `123` 的 runner layout 压成第一批可写 JSON seed 顺序。它从 `runner_allowed_roots.manifest.json`、`life_reality_runner.config.json`、`life_reality_shared_defs.schema.json` 和 `life_boundary_all_reality_declaration_map.json` 开始，再写 materialization manifest、runner maps、runtime smoke fixture、report schema skeleton、parse/schema/cross-file/dashboard/stage/gap/top-level report seed。
+
+这一层的关键推进是让未来实现第一次拥有“先写什么”的精确顺序：allowed roots 先于所有 path，shared defs 先于所有 schema，boundary map 先于 dashboard/stage/quarantine/repair，runtime smoke fixture 先于 ingestion report，parse/schema/cross-file report 先于 dashboard 和 stage gate。真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔由此进入第一批可解析文件。
+
+到这里，最小 seed 闭环变为：
+
+`allowed roots -> runner config -> shared defs -> boundary map -> materialization manifest -> module maps -> runtime smoke fixture -> report skeletons -> parse/schema/cross-file reports -> dashboard rollup -> stage gate -> gap feedback -> top-level smoke report`
+
+下一层应进入 `125_life_reality_schema_registry_and_ref_resolution_plan.md`：把 seed 文件的 schema registry、JSON Pointer、artifact refs 和 allowed roots 固定成 ref resolution 规则。

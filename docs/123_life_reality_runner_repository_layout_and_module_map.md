@@ -304,4 +304,6 @@ tests/unit/test_problem_detail_writer.*
 
 ## 与下一层连接
 
-下一层进入 `124_life_reality_minimal_json_file_seed_plan.md`：按本文档的目录布局，生成最小 JSON 文件 seed 编写顺序，先落 config、allowed roots、shared defs、boundary declaration map、materialization manifest、parse/schema/cross-file/dashboard/stage report skeleton 和 smoke fixture。
+`124_life_reality_minimal_json_file_seed_plan.md` 已按本文档的目录布局生成最小 JSON 文件 seed 编写顺序，先落 config、allowed roots、shared defs、boundary declaration map、materialization manifest、parse/schema/cross-file/dashboard/stage report skeleton 和 smoke fixture。
+
+下一层进入 `125_life_reality_schema_registry_and_ref_resolution_plan.md`：把 `124` 的 seed 文件、schema refs、JSON Pointer、artifact refs、allowed roots 和 boundary registry 固定为可实现前的 ref resolution 规则。
