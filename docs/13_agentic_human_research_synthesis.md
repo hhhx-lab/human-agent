@@ -664,3 +664,15 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 `life_reality_shared_defs.schema.json -> enum completeness -> reference object schema -> smoke cases -> cross-ref checker -> schema_materialization panel -> stage gate review`
 
 下一层应进入 `111_life_reality_dashboard_cross_file_checker_design.md`：把 `108` 与 `109` 的 cross-file consistency 规则转成 dashboard source checker、ingestion report checker、quarantine count checker、repair queue checker 和 gap feedback checker。
+
+## 第四十四层：Life Reality Dashboard Cross File Checker
+
+`111_life_reality_dashboard_cross_file_checker_design.md` 把 `108`、`109` 和 `110` 的文件族接成跨文件 checker。它吸收 W3C PROV、OpenTelemetry、XES event log 和 JSON Schema output 的方法语言，把 shared defs、runtime fixture manifest、ingestion report、runtime quarantine panel、repair queue、panel dependency report、stage gate review、gap feedback 和 dashboard source 转成 provenance graph。
+
+这一层的关键推进是把 dashboard green、stage open、quarantine release 和 gap feedback 都变成可检查结论：checker 会验证文件存在、run link、source refs、九个 panel、九项目标、quarantine count、repair item、critical stage block、data quality rollup、runtime fixture coverage 和 gap feedback next artifacts。缺口不再停留在自然语言描述，而会进入 `LifeRealityCrossFileCheckerReport`、repair kind、blocked surface 和 LRGEN-150 到 LRGEN-159 的输出任务。
+
+到这里，dashboard cross-file checker 闭环变为：
+
+`shared defs -> runtime fixture manifest -> ingestion report -> runtime quarantine panel -> repair queue -> stage gate review -> gap feedback -> dashboard source -> provenance graph -> cross-file checker report`
+
+下一层应进入 `112_life_reality_runtime_observation_schema_materialization.md`：把 `109` 的 runtime observation fixture catalog 物化为 observation envelope、fixture manifest、ingestion report 和 runtime quarantine panel source 的 schema 与 smoke cases。
