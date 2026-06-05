@@ -22,7 +22,8 @@
 16. 再读 `57_` 到 `60_`：它们把 scope graph manifest、retrieval/replay fixture、timeline bundle 和 dashboard mock source 推进为机器可读前的 schema 草案。
 17. 再读 `61_` 到 `64_`：它们把 schema bundle、runner report/CLI、fixture 文件布局和真实运行观测 ingestion 推进为可实现前验证合同。
 18. 再读 `65_` 到 `68_`：它们把 cross-ref checker、runner report 样例、fixture generator 策略和 runtime redaction mock 推进为实现前检查样例层。
-19. 最后读 `69_` 到 `72_`：它们把 schema 文件边界、cross-ref dashboard、mutation runner defect 和 runtime side effect/user snapshot 继续压成实现前政策层。
+19. 再读 `69_` 到 `72_`：它们把 schema 文件边界、cross-ref dashboard、mutation runner defect 和 runtime side effect/user snapshot 继续压成实现前政策层。
+20. 最后读 `73_` 到 `76_`：它们把 schema bundle validator mock、dashboard end-to-end source、外部不可逆动作确认和 snapshot stale fixture catalog 接入真实行动验证链。
 
 ## 文件索引
 
@@ -105,6 +106,10 @@
 | `70_cross_ref_report_dashboard_panel_mock.md` | cross-ref report 进入 dashboard panel、状态规则、联动和 gap register 回写的 mock |
 | `71_mutation_fixture_catalog_and_runner_defect_policy.md` | mutation fixture catalog、runner defect 分类、missed failure 和 regression fixture 政策 |
 | `72_runtime_side_effect_classifier_and_user_snapshot_policy.md` | runtime side effect classifier、user control snapshot resolver、overlay priority 和 quarantine 策略 |
+| `73_schema_bundle_validator_mock_cases.md` | schema bundle validator 的 pass/fail/mock cases、compatibility report 和 blocked surface 示例 |
+| `74_dashboard_source_end_to_end_mock.md` | dashboard source 从 runner/cross-ref/coverage/scope/timeline/runtime report 聚合的端到端 mock |
+| `75_external_irreversible_action_confirmation_policy.md` | 外部不可逆动作的确认 envelope、确认记录、阻断条件和 action result 审计政策 |
+| `76_snapshot_staleness_fixture_catalog.md` | user control snapshot stale、delete/freeze/scope_limit 时序 fixture catalog 和 coverage 要求 |
 
 ## 项目术语
 

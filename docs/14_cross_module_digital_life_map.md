@@ -390,3 +390,27 @@ flowchart TD
 `schema boundary -> cross-ref panel -> mutation runner defect -> side effect classifier -> user snapshot resolver -> runtime quarantine -> dashboard/gap register`
 
 这条链把“真实行动”正式纳入数字生命候选系统的边界：不是能调用工具就算执行层成熟，而是每个行动都要知道副作用等级、用户控制状态、scope/privacy 边界和是否允许进入长期记忆或 timeline。
+
+## Schema Validator Mock、Dashboard E2E、外部确认与 Snapshot 时序层连接
+
+`73-76` 把上一层的 schema/side-effect/user snapshot 政策继续推进为端到端 mock 和时序 fixture：
+
+| 文档 | 连接对象 | 作用 |
+|---|---|---|
+| `73_schema_bundle_validator_mock_cases.md` | schema validator cases, compatibility report, forbidden report conclusion, runtime boundary checks | 定义未来 schema bundle validator 应接受和拒绝的样例 |
+| `74_dashboard_source_end_to_end_mock.md` | dashboard aggregation input, panel dependency rules, overall status, gap update | 把 runner/cross-ref/coverage/scope/timeline/runtime report 聚合成 dashboard source |
+| `75_external_irreversible_action_confirmation_policy.md` | confirmation request, confirmation record, preflight checks, action result event | 定义外部不可逆动作如何确认、阻断、审计和禁止复用授权 |
+| `76_snapshot_staleness_fixture_catalog.md` | snapshot stale fixtures, delete/freeze/scope_limit arcs, timeline probes | 把旧用户控制快照造成的跨时间污染变成 fixture catalog |
+
+这层新增四条硬约束：
+
+1. **schema validator mock 先于真实 schema**：未来真实 schema 文件必须能通过 pass/fail mock cases，而不是只靠人工检查。
+2. **dashboard E2E 先于 panel green**：dashboard 状态必须从 report refs 聚合，并应用 panel dependency rules。
+3. **外部确认先于不可逆行动**：发送、支付、删除远端、公开发布等动作必须绑定单次 confirmation，不可复用、不可扩 scope。
+4. **fresh snapshot 先于 replay/migration/action**：检索、replay、migration、dashboard、external action 都必须重新读取最新 user control snapshot。
+
+闭环因此扩展为：
+
+`schema validator cases -> dashboard E2E aggregation -> action confirmation -> snapshot staleness fixtures -> timeline/runtime quarantine -> gap register`
+
+这条链进一步贴近真实系统，因为它处理的是异步和外部世界：用户在检索后删除，系统在后台 replay；用户确认后又改变 scope，系统准备执行外部动作；schema 版本更新后 dashboard 仍想显示 green。`73-76` 把这些跨时间风险变成未来必须检查的对象。
