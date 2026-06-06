@@ -263,7 +263,7 @@ uv run life-reality-runner smoke-authority-rewrite-schema-stage-gate \
 
 ## 与下一层连接
 
-`149_life_reality_birth_readiness_fixture_schema_materialization_plan.md` 应承接 `146` 和本层：把 birth readiness fixture manifest、coverage matrix、expected report、dashboard source、stage gate review、authority schema refs 和 language action refs 推进为真实 schema 与 smoke cases。
+`149_life_reality_birth_readiness_fixture_schema_materialization_plan.md` 已承接 `146` 和本层：把 birth readiness fixture manifest、coverage matrix、expected report、dashboard source、stage gate review、authority schema refs 和 language action refs 推进为真实 schema 与 smoke cases。
 
 `150_life_reality_language_action_cross_file_checker_plan.md` 应承接 `147` 和本层：把 language action schema registry、authority rewrite cross-file edges、birth readiness refs、dashboard source 和 stage gate review 接入 cross-file checker。
 
