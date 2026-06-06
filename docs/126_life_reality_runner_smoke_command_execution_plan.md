@@ -619,4 +619,6 @@ priority rules：
 
 `127_life_reality_first_seed_file_content_contract.md` 已把 `124` 的 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同，并让本文档的 execution reports 可以读取每个 seed 的最小可运行字段。
 
-下一层进入 `128_life_reality_registry_report_seed_examples.md`：把 `125` 的 registry report family 展开为首批 report seed examples，并为本文档的 schema/ref execution failure 提供可读报告样例。
+`128_life_reality_registry_report_seed_examples.md` 已把 `125` 的 registry report family 展开为首批 report seed examples，并为本文档的 schema/ref execution failure 提供可读报告样例。
+
+下一层进入 `129_life_reality_seed_fixture_and_report_validation_cases.md`：把本文档的 smoke failure examples 与 registry report failures 转成可运行 validation cases。

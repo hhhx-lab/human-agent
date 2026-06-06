@@ -843,4 +843,6 @@ minimal command result：
 
 `127` 已把第一批 seed 从“文件清单”推进为“字段级内容合同”：allowed roots、runner config、shared defs、boundary map、materialization manifest、runner maps、runtime fixture、report schemas、parse/schema/cross-file/dashboard/stage/gap/top-level reports 都有 required fields、refs、stage effect 和 smoke reader。
 
-下一层进入 `128_life_reality_registry_report_seed_examples.md`：把 `125` 的 schema registry report family 展开为 registry load、schema id collision、schema ref resolution、artifact ref resolution、JSON Pointer resolution、allowed root resolution、boundary registry resolution、cross-file DAG 和 registry gap feedback 的首批 report seed examples。
+`128_life_reality_registry_report_seed_examples.md` 已把 `125` 的 schema registry report family 展开为 registry load、schema id collision、schema ref resolution、artifact ref resolution、JSON Pointer resolution、allowed root resolution、boundary registry resolution、cross-file DAG 和 registry gap feedback 的首批 report seed examples。
+
+下一层进入 `129_life_reality_seed_fixture_and_report_validation_cases.md`：把本文档的 seed content gaps 与 `128` 的 registry report failures 转成 seed fixture 与 report validation cases。

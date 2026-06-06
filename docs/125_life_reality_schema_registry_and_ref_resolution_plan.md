@@ -341,10 +341,14 @@ DAG rules：
 | `json_pointers_resolved` | schema、instance、finding、continuity pointer 可定位 |
 | `boundary_chains_mounted` | protected life chains 可被 stage gate 读取 |
 | `problem_details_emitted` | blocking failures 有 RFC 9457 problem detail |
-| `gap_feedback_points_next` | gap feedback 指向 `126_life_reality_runner_smoke_command_execution_plan.md` 与 `127_life_reality_first_seed_file_content_contract.md` |
+| `gap_feedback_points_next` | gap feedback 指向 `128_life_reality_registry_report_seed_examples.md` 与 `129_life_reality_seed_fixture_and_report_validation_cases.md` |
 
 ## 与下一层连接
 
 `126_life_reality_runner_smoke_command_execution_plan.md` 已读取 `121` 的六个 smoke command、`123` 的 module map、`124` 的 seed 文件和本文档的 schema/ref resolution DAG，并把它们推进为最小执行顺序、stdout/report/exit code 验收和失败样例。
 
-下一层进入 `127_life_reality_first_seed_file_content_contract.md`：把 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同，并让 schema registry、ref resolver 与 runner smoke execution 都能读取同一批 seed 对象。
+`127_life_reality_first_seed_file_content_contract.md` 已把 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同，让 schema registry、ref resolver 与 runner smoke execution 都能读取同一批 seed 对象。
+
+`128_life_reality_registry_report_seed_examples.md` 已把本文档的 registry report family 展开为首批 report seed examples。
+
+下一层进入 `129_life_reality_seed_fixture_and_report_validation_cases.md`：把 registry report failures 与 runner smoke failure examples 转成 seed fixture 和 report validation cases。

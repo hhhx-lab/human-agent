@@ -330,4 +330,6 @@
 
 `127_life_reality_first_seed_file_content_contract.md` 已把本文档的 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同。
 
-下一层进入 `128_life_reality_registry_report_seed_examples.md`：把 registry report family 展开为首批 report seed examples，并回读本文档的 seed file list。
+`128_life_reality_registry_report_seed_examples.md` 已把 registry report family 展开为首批 report seed examples，并回读本文档的 seed file list。
+
+下一层进入 `129_life_reality_seed_fixture_and_report_validation_cases.md`：把 seed file list、registry report failures 和 runner smoke failures 统一转成 validation cases。
