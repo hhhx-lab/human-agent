@@ -572,8 +572,8 @@ dashboard source 的最小 panel：
 
 ## 与下一层连接
 
-下一层进入 `132_life_reality_materialized_json_schema_bundle_write_order.md`：把本文档的 runner module、schema loader、ref resolver 和 report writer 需求反推到第一批 schema/report/fixture JSON 文件的写入顺序与依赖锁。
+下一层已进入 `132_life_reality_materialized_json_schema_bundle_write_order.md`：把本文档的 runner module、schema loader、ref resolver 和 report writer 需求反推到第一批 schema/report/fixture JSON 文件的写入顺序与依赖锁。
 
-`133_life_reality_first_json_writer_and_reporter_contract.md` 应继续把 `json_file_writer`、`report_writer`、`gap_feedback_writer`、atomic write、digest、problem detail 和 trace context 落成字段级合同。
+`133_life_reality_first_json_writer_and_reporter_contract.md` 应继续把 `json_file_writer`、`report_writer`、`gap_feedback_writer`、atomic write、canonical digest、problem detail 和 trace context 落成字段级合同。
 
-`134_life_reality_registry_runner_smoke_fixture_implementation_queue.md` 则应把 `129` 的 validation cases 和本文档的 CLI skeleton 拆成首批真实 fixture、expected report 和 smoke runner 实现任务。
+`134_life_reality_registry_runner_smoke_fixture_implementation_queue.md` 则应把 `129` 的 validation cases 和本文档的 CLI skeleton 拆成首批真实 fixture、expected report 和 smoke runner 实现任务。`135_life_reality_schema_dependency_graph_and_lockfile_plan.md` 应把 `132` 的 cross-file DAG 转成 machine-readable lockfile、graph export 和 regression baseline。
