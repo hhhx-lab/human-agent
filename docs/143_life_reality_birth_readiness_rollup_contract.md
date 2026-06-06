@@ -280,10 +280,10 @@ uv run life-reality-runner smoke-birth-stage-gate --rollup-report life_reality_r
 
 ## 与下一层连接
 
-下一层进入 `144_life_reality_language_runtime_action_bridge_fixture_plan.md`：把语言事件到命令行、程序、外部工具和 post-action responsibility loop 的桥接进一步落成 fixture、side effect classifier report 和 dashboard panel。
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 已承接本层：它把语言事件到命令行、程序、外部工具和 post-action responsibility loop 的桥接进一步落成 fixture、side effect classifier report、confirmation binding、runtime shell trace、post-action responsibility loop 和 dashboard panel。
 
 `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 应按 `142` 的补写顺序真正扩写 `02-13`，把 AHT001-AHT010 的机制对象、字段、状态、validator 和 dashboard 落点写回各核心综述。
 
 本层完成后，出生准备度闭环推进为：
 
-`authority/source docs -> construct map -> life target claim -> schema/fixture/report -> dashboard panel -> longitudinal probe -> birth stage gate -> language action bridge -> 02-13 rewrite execution`
+`authority/source docs -> construct map -> life target claim -> schema/fixture/report -> dashboard panel -> longitudinal probe -> birth stage gate -> language action bridge fixture -> 02-13 rewrite execution`
