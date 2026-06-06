@@ -284,12 +284,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `159_life_reality_first_code_artifact_smoke_plan.md` | 固定 `FirstCodeArtifactSmokePlan159`、首批代码 artifact 写入顺序、minimum fixture、CLI smoke、report/digest/stage/gap outputs、dashboard bridge、stage gate rules 和 git commit flow | 已由 `160` 接入 dashboard/stage gate bridge plan |
 | `160_life_reality_code_artifact_dashboard_stage_gate_bridge_plan.md` | 固定 `DashboardStageGateBridgePlan160`、dashboard source、panel/metric/alert family、stage gate review、gap feedback、archive handoff 和 smoke bridge commands | 已由 `161` 接入 code artifact archive cohesion execution plan |
 | `161_life_reality_code_artifact_archive_cohesion_execution_plan.md` | 固定 `ArchiveCohesionExecutionPlan161`、archive node/edge registry、life target carrier matrix、cohesion checker families、birth readiness archive gate、cohesion report 和 smoke commands | 已由 `162` 接入 first code artifact implementation queue |
-| `162_life_reality_first_code_artifact_implementation_queue.md` | 固定 `ImplementationQueue162`、12 个 implementation slices、target file set、command milestones、stage gate、commit strategy 和 gap routing | 下一层推进到首批真实 runner code generation batch |
+| `162_life_reality_first_code_artifact_implementation_queue.md` | 固定 `ImplementationQueue162`、12 个 implementation slices、target file set、command milestones、stage gate、commit strategy 和 gap routing | 已由 `163` 接入 first runner code generation batch |
+| `163_life_reality_first_runner_code_generation_batch.md` | 固定 `FirstRunnerCodeGenerationBatch163`、真实文件生成顺序、`pyproject.toml`、`.env.example`、`.gitignore`、`src/life_reality_runner`、minimum fixtures、command milestones、stage gate、cleanup rules 和 acceptance criteria | 下一层接入 code review、stage gate review、archive cohesion 和 commit/push protocol |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `163_life_reality_first_runner_code_generation_batch.md`：把首批实现队列推进到真实文件生成批次。
-2. `164_life_reality_first_runner_code_review_and_stage_gate_plan.md`：把首批生成代码接入 review、test、dashboard、archive cohesion 和出生准备度阶段门。
-3. `165_life_reality_first_runner_code_commit_and_push_protocol.md`：把首批真实代码提交推送、验证摘要和后续实现回路固定下来。
+1. `164_life_reality_first_runner_code_review_and_stage_gate_plan.md`：把首批生成代码接入 review、test、dashboard、archive cohesion 和出生准备度阶段门。
+2. `165_life_reality_first_runner_code_commit_and_push_protocol.md`：把首批真实代码提交推送、验证摘要和后续实现回路固定下来。
+3. `166_life_reality_first_runner_code_observation_feedback_loop.md`：把真实运行观测、report drift、stage gate finding 和 repair/growth route 接入下一轮代码生长。

@@ -308,11 +308,11 @@ uv run pytest
 3. 每个 command milestone 都有实现 slice。
 4. 每个 stage gate failure 都有 gap route。
 5. 每个真实生命目标都至少进入一个实现 slice。
-6. 后续 `163` 可以按本队列直接生成真实文件。
+6. `163` 已按本队列固定真实文件生成批次。
 
 ## 与下一层连接
 
-`163_life_reality_first_runner_code_generation_batch.md` 应承接本层：把 implementation queue 推进到真实文件生成批次，开始创建 `pyproject.toml`、`.env.example`、`src/`、`tests/` 和 minimum fixtures。
+`163_life_reality_first_runner_code_generation_batch.md` 已承接本层：把 implementation queue 推进到真实文件生成批次，固定 `pyproject.toml`、`.env.example`、`.gitignore`、`src/life_reality_runner`、`tests/`、minimum fixtures、command milestones、stage gate 和 cleanup rules。
 
 `164_life_reality_first_runner_code_review_and_stage_gate_plan.md` 应承接 `163`：把首批生成代码接入 review、test、dashboard、archive cohesion 和出生准备度阶段门。
 
