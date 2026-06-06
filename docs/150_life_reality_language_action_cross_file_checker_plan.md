@@ -285,10 +285,10 @@ uv run life-reality-runner smoke-language-action-cross-file-stage-gate \
 
 ## 与下一层连接
 
-`151_life_reality_authority_schema_cross_file_checker_plan.md` 应承接 `148`、`149` 和本层：把 authority schema registry、language action closure edges、birth readiness authority refs、gap feedback、lockfile regression 和 archive cohesion graph 接入 authority schema cross-file checker。
+`151_life_reality_authority_schema_cross_file_checker_plan.md` 已承接 `148`、`149` 和本层：把 authority schema registry、language action closure edges、birth readiness authority refs、gap feedback、lockfile regression 和 archive cohesion graph 接入 authority schema cross-file checker。
 
 `152_life_reality_birth_readiness_cross_file_checker_plan.md` 应承接 `149` 和本层：把 birth readiness fixture schema registry、language action closure report、authority schema closure report、coverage matrix、stage gate review 和 gap feedback 上卷为 birth readiness cross-file checker。
 
 本层完成后，语言行动跨文件检查链推进为：
 
-`language action schema registry -> authority rewrite edges -> birth readiness claims -> typed graph -> closure results -> findings -> dashboard source -> stage gate review -> gap feedback -> authority/birth cross-file checker`
+`language action schema registry -> authority rewrite edges -> birth readiness claims -> typed graph -> closure results -> findings -> dashboard source -> stage gate review -> gap feedback -> authority schema cross-file checker -> birth readiness cross-file checker`

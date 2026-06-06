@@ -252,8 +252,8 @@ uv run life-reality-runner smoke-birth-readiness-schema-stage-gate \
 
 `150_life_reality_language_action_cross_file_checker_plan.md` 已承接 `147`、`148` 和本层：把 language action schema registry、authority rewrite cross-file edges、birth readiness fixture schema、dashboard source 和 stage gate review 接入 cross-file checker、archive cohesion graph 和 birth readiness rollup。
 
-`151_life_reality_authority_schema_cross_file_checker_plan.md` 应承接 `148` 和本层：把 authority schema registry、birth readiness authority refs、cross-file edges、gap feedback 和 stage gate review 接入 archive cohesion graph 与 lockfile regression。
+`151_life_reality_authority_schema_cross_file_checker_plan.md` 已承接 `148` 和本层：把 authority schema registry、birth readiness authority refs、cross-file edges、gap feedback 和 stage gate review 接入 archive cohesion graph 与 lockfile regression。
 
 本层完成后，出生准备度 fixture schema 推进为：
 
-`birth readiness fixture catalog -> fixture schema registry -> target claim schema -> coverage matrix -> expected report -> dashboard source -> stage gate review -> gap feedback -> language action cross-file checker`
+`birth readiness fixture catalog -> fixture schema registry -> target claim schema -> coverage matrix -> expected report -> dashboard source -> stage gate review -> gap feedback -> language action cross-file checker -> authority schema cross-file checker`

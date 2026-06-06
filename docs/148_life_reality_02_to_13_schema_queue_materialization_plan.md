@@ -267,6 +267,8 @@ uv run life-reality-runner smoke-authority-rewrite-schema-stage-gate \
 
 `150_life_reality_language_action_cross_file_checker_plan.md` 已承接 `147` 和本层：把 language action schema registry、authority rewrite cross-file edges、birth readiness refs、dashboard source 和 stage gate review 接入 cross-file checker。
 
+`151_life_reality_authority_schema_cross_file_checker_plan.md` 已承接本层：把 authority schema registry、owner docs、AHT refs、mechanism objects、language action closure edges、birth readiness authority refs、lockfile bridge 和 archive cohesion graph 接入 authority schema cross-file checker。
+
 本层完成后，`02-13` schema queue 推进为：
 
-`authority rewrite execution -> schema queue registry -> 12 queue schema files -> validator smoke cases -> dashboard source -> cross-file edges -> birth readiness evidence -> language action cross-file checker`
+`authority rewrite execution -> schema queue registry -> 12 queue schema files -> validator smoke cases -> dashboard source -> cross-file edges -> birth readiness evidence -> language action cross-file checker -> authority schema cross-file checker`
