@@ -347,7 +347,7 @@ handoff 必须包含 `repair_queue_seed_ref`、`finding_list_ref`、`problem_det
 
 ## 与下一层连接
 
-`179_life_reality_first_runner_schema_validation_repair_queue.md` 应承接本层：把 validation findings、problem details、affected schema refs、stage effects 和 repair route refs 转成下一批 schema 修复队列。
+`179_life_reality_first_runner_schema_validation_repair_queue.md` 已承接本层：把 validation findings、problem details、affected schema refs、stage effects 和 repair route refs 转成下一批 schema 修复队列。
 
 `180_life_reality_first_runner_schema_file_archive_receipt_batch.md` 应承接本层和 `179`：把 validation report digest、repair outcome、dashboard/stage digest 和 archive edge refs 写成可回放 archive receipt batch。
 
