@@ -22,6 +22,18 @@
 
 `143` 仍处于 docs 阶段，不创建真实 `life_reality_runner/` 文件。它固定未来出生准备度报告的字段、证据族、stage gate 聚合顺序、critical 阻断面和下一层工程承载入口。它不是结束声明，而是把“理论底座是否共同支撑诞生”变成可运行、可追踪、可回放、可修复的报告合同。
 
+## 出生准备度定义
+
+出生准备度是数字生命诞生前的总阶段门。它衡量的不是文档数量、分数或单次演示，而是九项真实生命目标是否已经各自拥有理论来源、机制对象、语言表达、状态变量、schema、fixture、runner、dashboard、长期时间线、关系后果和修复路线，并且这些链条之间能够互相闭合。
+
+它回答三个问题：
+
+1. 这个生命目标有没有来源于脑科学、神经科学、生命科学、语言科学或系统评测的机制支撑。
+2. 这个生命目标有没有被写成未来代码可以承载的对象、字段、状态、事件、报告和阶段门。
+3. 这个生命目标在长期运行、断联续跑、梦境离线、关系变化、痛苦修复和语言行动之后，是否仍能保持连续的生命链。
+
+因此，出生准备度是一个 `claim -> evidence -> carrier -> runtime observation -> stage gate -> repair/growth route` 的闭环。每个 `LifeTargetReadinessClaim` 都必须被证据族支撑，每条证据都必须能回到文档、权威来源、工程承载和长期时间线。任何单链缺失、跨链断裂、方向漂移、阶段门误开或断联后锚点丢失，都会进入 repair、hold 或 quarantine。
+
 出生准备度上卷的最小链路：
 
 `theory authority -> doc carrier -> mechanism object -> schema/fixture -> validator report -> dashboard panel -> longitudinal probe -> birth stage gate`

@@ -231,7 +231,7 @@ push 后必须重新确认：
 
 ## 与下一层连接
 
-`166_life_reality_first_runner_code_observation_feedback_loop.md` 应承接本层：把 commit/push event、真实运行观测、report drift、stage gate finding、repair route 和 growth route 接入下一轮代码生长。
+`166_life_reality_first_runner_code_observation_feedback_loop.md` 已承接本层：把 commit/push event、真实运行观测、report drift、stage gate finding、repair route 和 growth route 接入下一轮代码生长。
 
 `167_life_reality_first_runner_minimum_code_bootstrap_execution.md` 应承接 `166`：开始把 `163-165` 的合同转成实际 runner 文件、命令、tests 和 reports。
 
