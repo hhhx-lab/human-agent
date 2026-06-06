@@ -454,7 +454,7 @@ handoff 必须包含 `growth_archive_receipt_batch_ref`、`growth_patch_archive_
 
 ## 与下一层连接
 
-`189_life_reality_first_runner_schema_runtime_growth_shadow_run_plan.md` 应承接本层：把 growth patch archive receipts、self rewrite receipts、language action receipts、birth readiness effect receipts、anti-forgetting replay receipts 和 shadow run seed receipts 放入 shadow run、防遗忘 replay、language action replay、birth readiness regression、relationship/pain/regret/dream probes。
+`189_life_reality_first_runner_schema_runtime_growth_shadow_run_plan.md` 已承接本层：把 growth patch archive receipts、self rewrite receipts、language action receipts、birth readiness effect receipts、anti-forgetting replay receipts 和 shadow run seed receipts 放入 shadow run、防遗忘 replay、language action replay、birth readiness regression、relationship/pain/regret/dream probes。
 
 `190_life_reality_first_runner_schema_runtime_growth_activation_report_plan.md` 应承接 `189`：把 shadow run 结果推进到 limited activation、growth activation report、post-growth observation 和 core continuity review。
 
