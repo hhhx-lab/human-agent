@@ -311,7 +311,7 @@ handoff 必须包含 `schema_write_report_ref`、`schema_write_receipts_ref`、`
 
 ## 与下一层连接
 
-`178_life_reality_first_runner_minimum_schema_file_validation_report.md` 应承接本层：读取 schema write report、write receipts、written files、expected digests、ref graph、dashboard/stage 和 problem details，生成首批 schema 文件 validation report。
+`178_life_reality_first_runner_minimum_schema_file_validation_report.md` 已承接本层：读取 schema write report、write receipts、written files、expected digests、ref graph、dashboard/stage 和 problem details，生成首批 schema 文件 validation report。
 
 `179_life_reality_first_runner_schema_validation_repair_queue.md` 应承接 `178`：把 validation report 中的 digest drift、edge break、schema id collision、target carrier gap、dashboard false green 和 missing schema node 转成修复队列。
 
