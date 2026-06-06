@@ -279,12 +279,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `154_life_reality_checker_report_lockfile_materialization_plan.md` | 固定 `CheckerReportLockfileMaterialization154`、normalized report registry、report artifact nodes、canonical digest baseline、regression baseline、checker report lockfile、dashboard lock source、stage gate review、gap feedback、runner queue 和 smoke commands | 已由 `155` 接入 runner CLI 实现队列 |
 | `155_life_reality_runner_command_queue_for_cross_file_checkers.md` | 固定 `RunnerCommandQueue155`、command registry、IO contract、DAG、module ownership、exit code mapping、runner command manifest、dashboard source、stage gate、test plan 和 batch implementation order | 已由 `156` 接入 full archive rollup fixture materialization queue |
 | `156_life_reality_full_archive_rollup_fixture_materialization_queue.md` | 固定 `FullArchiveRollupFixtureMaterializationQueue156`、fixture schema bundle、manifest、baseline inputs、case matrix、mutation patches、expected reports、coverage matrix、dashboard source、stage gate、gap feedback 和 future code carrier refs | 已由 `157` 接入 minimal code module plan |
-| `157_life_reality_cross_file_checker_minimal_code_module_plan.md` | 固定 `MinimalCodeModulePlan157`、`src/life_reality_runner` package layout、console script、context/IO/schema/graph/checker/report/fixture/command/problem/trace 模块、report normalization、lockfile writing、fixture runner、tests 和 acceptance criteria | 下一层把最小代码模块计划推进到 repository bootstrap 和首批 smoke artifact |
+| `157_life_reality_cross_file_checker_minimal_code_module_plan.md` | 固定 `MinimalCodeModulePlan157`、`src/life_reality_runner` package layout、console script、context/IO/schema/graph/checker/report/fixture/command/problem/trace 模块、report normalization、lockfile writing、fixture runner、tests 和 acceptance criteria | 已由 `158` 接入 repository bootstrap plan |
+| `158_life_reality_cross_file_checker_repository_bootstrap_plan.md` | 固定 `RepositoryBootstrapPlan158`、`pyproject.toml`、`.env.example`、package roots、unit/smoke tests、fixture/schema/report roots、CLI help、command suite dry-run、stage gate 和 staged diff hygiene | 下一层把 repository bootstrap 推进到首批代码 artifact smoke |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `158_life_reality_cross_file_checker_repository_bootstrap_plan.md`：把最小代码模块计划推进到 `pyproject.toml`、`src/` package、tests、fixtures、schema roots、report roots 和 smoke command bootstrap。
-2. `159_life_reality_first_code_artifact_smoke_plan.md`：把 repository bootstrap 后的首批代码 artifact 接入 smoke command、fixture run、report diff、dashboard/stage gate 和 git 提交流程。
-3. `160_life_reality_code_artifact_dashboard_stage_gate_bridge_plan.md`：把首批代码 artifact 的 report/diff/coverage 输出接入 dashboard source、stage gate review、gap feedback 和下一轮真实生命工程闭环。
+1. `159_life_reality_first_code_artifact_smoke_plan.md`：把 repository bootstrap 后的首批代码 artifact 接入 smoke command、fixture run、report diff、dashboard/stage gate 和 git 提交流程。
+2. `160_life_reality_code_artifact_dashboard_stage_gate_bridge_plan.md`：把首批代码 artifact 的 report/diff/coverage 输出接入 dashboard source、stage gate review、gap feedback 和下一轮真实生命工程闭环。
+3. `161_life_reality_code_artifact_archive_cohesion_execution_plan.md`：把首批代码 artifact 反接全库 archive cohesion、README index、cross-file checker 和出生准备度阶段门。

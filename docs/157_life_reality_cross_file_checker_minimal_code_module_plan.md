@@ -321,7 +321,7 @@ load_fixture_manifest
 
 ## 与下一层连接
 
-`158_life_reality_cross_file_checker_repository_bootstrap_plan.md` 应承接本层：把最小代码模块计划推进到 `pyproject.toml`、`src/` package、tests、fixtures、schema roots、report roots 和 smoke command bootstrap。
+`158_life_reality_cross_file_checker_repository_bootstrap_plan.md` 已承接本层：把最小代码模块计划推进到 `pyproject.toml`、`src/` package、tests、fixtures、schema roots、report roots 和 smoke command bootstrap。
 
 `159_life_reality_first_code_artifact_smoke_plan.md` 应承接 `158`：把首批代码 artifact 接入 smoke command、fixture run、report diff、dashboard/stage gate 和 git 提交流程。
 
