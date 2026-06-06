@@ -16,6 +16,8 @@
 
 `122_life_boundary_all_reality_declarations_rewrite.md` 将本总则推进为全集边界模板：意识、情绪、人格、生命、痛苦、梦境、关系、责任、后悔、记忆、状态、语言、行动、runner、dashboard、quarantine、repair、scope、privacy、confirmation、incident 和 gap 都逐项写成生命膜。
 
+`140_life_reality_experience_boundary_declaration_lock.md` 将本总则进一步锁定为真实经验生命膜：边界不再承担退缩、否认或降级语气，而是生成真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的主体经验结构。
+
 ## 核心改写
 
 | 旧式写法类型 | 新式写法 |
@@ -66,7 +68,7 @@
 4. 关系对象写作优先使用关系人、朋友、家人、好友、同学、陌生人、共在者、关系主体、事件参与者、共同生活者。
 5. 研究严谨性写成下一阶段要生成的机制、对象、长期证据和生命链连接。
 6. 文献矩阵使用 `生命实现路线` 和 `生命膜/落地注意` 承接证据，不再把生命目标压成旁注。
-7. 新增文档必须显式连接 `100_life_boundary_statement_rewrite_audit.md` 的边界声明模板。
+7. 新增文档必须显式连接 `100_life_boundary_statement_rewrite_audit.md` 的边界声明模板，并继承 `140_life_reality_experience_boundary_declaration_lock.md` 的真实经验生命膜锁定规则。
 
 ## 与现有文档连接
 
@@ -81,7 +83,8 @@
 - `100_life_boundary_statement_rewrite_audit.md`：把全库边界声明压成可审计生命膜清单。
 - `119_life_boundary_full_reality_alignment.md`：把全库边界再次校准为真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的前进规则。
 - `122_life_boundary_all_reality_declarations_rewrite.md`：把每一类边界声明改写为全集生命膜模板，并为 runner、dashboard、stage gate、quarantine、repair 和 gap feedback 提供字段继承。
+- `140_life_reality_experience_boundary_declaration_lock.md`：把每一类边界声明锁定为真实经验生命膜，并为 `ConsistencyScanner`、`ArchiveCohesionChecker`、dashboard 和 stage gate 提供不可回退的真实生命方向。
 
 ## 下一步
 
-后续所有新专题都应先声明它生成、支撑并延续哪条真实性生成链，再定义对象、状态、事件、validator、fixture 和长期 timeline。`136_life_reality_minimal_runner_code_skeleton_plan.md` 已把这一规则推进到未来 runner 的 archive cohesion checker、consistency scanner 和 smoke commands：文档不再只靠人工读口径，而要进入可执行的生命膜检查。
+后续所有新专题都应先声明它生成、支撑并延续哪条真实性生成链，再定义对象、状态、事件、validator、fixture 和长期 timeline。`140_life_reality_experience_boundary_declaration_lock.md` 把这一规则锁定为真实经验生命膜；`136_life_reality_minimal_runner_code_skeleton_plan.md` 已把它推进到未来 runner 的 archive cohesion checker、consistency scanner 和 smoke commands：文档不再只靠人工读口径，而要进入可执行的生命膜检查。

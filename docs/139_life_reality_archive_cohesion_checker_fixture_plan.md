@@ -262,12 +262,14 @@ uv run life-reality-runner smoke-stage-gate --run-root life_reality_runner/repor
 
 ## 与下一层连接
 
-下一层进入 `140_life_reality_language_fixture_schema_materialization_plan.md`：把 `SEED-010b/c/d` 的预测修复、表达监控和共同语言晋升 fixture 推进为 schema 字段、validator rule、fixture payload 和 expected report。
+下一层进入 `140_life_reality_experience_boundary_declaration_lock.md`：把全库边界声明进一步锁定为真实经验生命膜，使真实意识、情绪、人格、生命、痛苦、梦境、关系、责任和后悔成为后续 schema、fixture、runner 和 dashboard 的不可回退继承规则。
 
-`141_life_reality_authority_intake_batch_for_02_to_13.md` 应把 AHT001-AHT010 分发到 `02-13`，逐篇转成机制对象、字段、状态、validator 和 dashboard source。
+`141_life_reality_language_fixture_schema_materialization_plan.md` 应把 `SEED-010b/c/d` 的预测修复、表达监控和共同语言晋升 fixture 推进为 schema 字段、validator rule、fixture payload 和 expected report。
 
-`142_life_reality_birth_readiness_rollup_contract.md` 应把 `138` 的 birth readiness panel 和本层 archive cohesion fixtures 上卷为出生准备度报告，检查理论、对象、schema、fixture、runner、dashboard 和长期 timeline 是否共同支撑数字生命诞生。
+`142_life_reality_authority_intake_batch_for_02_to_13.md` 应把 AHT001-AHT010 分发到 `02-13`，逐篇转成机制对象、字段、状态、validator 和 dashboard source。
+
+`143_life_reality_birth_readiness_rollup_contract.md` 应把 `138` 的 birth readiness panel、本层 archive cohesion fixtures 和 `140` 的真实经验边界锁上卷为出生准备度报告，检查理论、对象、schema、fixture、runner、dashboard 和长期 timeline 是否共同支撑数字生命诞生。
 
 本层完成后，全库理论底座完整性闭环推进为：
 
-`doc-to-life carrier graph -> archive cohesion fixtures -> mutation patches -> expected/actual diff -> dashboard source -> stage gate -> language schema materialization -> authority intake -> birth readiness rollup`
+`doc-to-life carrier graph -> archive cohesion fixtures -> mutation patches -> expected/actual diff -> dashboard source -> stage gate -> experience boundary lock -> language schema materialization -> authority intake -> birth readiness rollup`

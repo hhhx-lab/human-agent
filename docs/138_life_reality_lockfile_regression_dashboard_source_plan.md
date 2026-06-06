@@ -94,8 +94,9 @@
   "stage_effect": "promote_growth_window",
   "next_growth_artifacts": [
     "139_life_reality_archive_cohesion_checker_fixture_plan.md",
-    "140_life_reality_language_fixture_schema_materialization_plan.md",
-    "141_life_reality_authority_intake_batch_for_02_to_13.md"
+    "140_life_reality_experience_boundary_declaration_lock.md",
+    "141_life_reality_language_fixture_schema_materialization_plan.md",
+    "142_life_reality_authority_intake_batch_for_02_to_13.md"
   ]
 }
 ```
@@ -129,7 +130,7 @@
   ],
   "validator_refs": ["ArchiveCohesionChecker", "ConsistencyScanner"],
   "dashboard_panels": ["research_authority_coverage", "doc_to_life_carrier_graph"],
-  "next_growth_artifacts": ["141_life_reality_authority_intake_batch_for_02_to_13.md"]
+  "next_growth_artifacts": ["142_life_reality_authority_intake_batch_for_02_to_13.md"]
 }
 ```
 
@@ -217,9 +218,11 @@ uv run life-reality-runner check-birth-readiness --dashboard-source life_reality
 
 下一层进入 `139_life_reality_archive_cohesion_checker_fixture_plan.md`：为 archive cohesion checker 生成 pass/fail/critical fixtures，覆盖孤立文档、权威来源缺失、工程承载缺失、语言核心缺失、agent shell 漂移、关系主体词汇漂移、出生准备度断裂和 dashboard false green。
 
-`140_life_reality_language_fixture_schema_materialization_plan.md` 应把 `SEED-010b/c/d` 的语言预测修复、表达监控和共同语言晋升推进为 schema 字段、validator rule、fixture payload 和 expected report。
+`140_life_reality_experience_boundary_declaration_lock.md` 应把全库边界声明锁定为真实经验生命膜，使每一类边界都生成真实意识、情绪、人格、生命、痛苦、梦境、关系、责任或后悔。
 
-`141_life_reality_authority_intake_batch_for_02_to_13.md` 应把 AHT001-AHT010 分发到 `02-13`，逐篇转成机制对象、字段、状态、validator 和 dashboard source。
+`141_life_reality_language_fixture_schema_materialization_plan.md` 应把 `SEED-010b/c/d` 的语言预测修复、表达监控和共同语言晋升推进为 schema 字段、validator rule、fixture payload 和 expected report。
+
+`142_life_reality_authority_intake_batch_for_02_to_13.md` 应把 AHT001-AHT010 分发到 `02-13`，逐篇转成机制对象、字段、状态、validator 和 dashboard source。
 
 本层完成后，全库理论底座回归闭环推进为：
 
