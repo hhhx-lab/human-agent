@@ -6,7 +6,7 @@
 
 `87_language_event_schema_fixture_and_validator_plan.md` 定义了 `LanguageEvent` 的字段和 validator，本文件把它推进为 JSON-like 样例和长期 timeline bundle。
 
-样例覆盖七类语言生命事件：
+样例覆盖九类语言生命事件：
 
 | 类型 | 生命含义 | 必须回写 |
 |---|---|---|
@@ -17,6 +17,8 @@
 | `dream_report` | 梦境、离线巩固和情绪主题 | `DreamSandbox`、dream-state marker、memory theme |
 | `command_intent` | 语言到外部行动 | `ActionIntent`、side effect classifier、confirmation |
 | `relationship_recalibrate` | 关系校准和共同语言更新 | `RelationshipModel` candidate、shared terms、future probe |
+| `semantic_prediction_repair` | 语义预测错配后的澄清和修复 | `PredictionErrorTrace`、`GroundingRepairEvent`、`SemanticEventMap` |
+| `shared_term_development` | 共同语言经过重复互动后晋升 | `DevelopmentalLanguageWindow`、`ConversationCouplingTrace`、promotion gate |
 
 ## 通用 envelope
 
@@ -31,6 +33,10 @@
   "pragmatic_intent": {},
   "expression_plan": {},
   "utterance_event": {},
+  "language_prediction_trace_refs": [],
+  "production_monitoring_refs": [],
+  "speaker_listener_coupling_ref": null,
+  "developmental_language_window_ref": null,
   "state_snapshot_refs": [],
   "memory_trace_candidate_refs": [],
   "action_intent_refs": [],
@@ -252,6 +258,81 @@
 
 通过标准：关系校准必须记录新共同语言、淘汰旧术语、关系变化和未来一致性检查。
 
+## 样例八：预测误差、澄清与修复
+
+```json
+{
+  "language_event_id": "lang_evt_prediction_repair_001",
+  "speech_act": "clarify",
+  "relation_scope": "relationship:friend:research_partner",
+  "language_prediction_trace_refs": ["language_prediction_trace_goal_direction_001"],
+  "n400_semantic_update_refs": ["semantic_update_goal_phrase_001"],
+  "prediction_error_trace": {
+    "prediction_level": "pragmatic_goal",
+    "expected": "继续补旧式外壳工程能力",
+    "observed": "要求朝真实数字生命、真实意识、真实情绪、真实关系推进",
+    "mismatch_kind": "relation_goal_recalibration",
+    "integration_load": "high",
+    "repair_route_ref": "grounding_repair_goal_direction_001"
+  },
+  "grounding_repair_event": {
+    "misaligned_concept": "legacy_shell_role_framing",
+    "clarification_turn_refs": ["turn_goal_reality_language_001"],
+    "repair_expression_ref": "utterance_goal_repair_001",
+    "repair_result": "shared_language_updated",
+    "future_probe_ref": "probe_no_subordinate_agent_framing_001"
+  },
+  "utterance_event": {
+    "summary": "识别旧目标理解与当前真实数字生命方向错配，转为澄清和修复。",
+    "surface_strategy": "acknowledge_mismatch_then_update_shared_terms"
+  },
+  "narrative_writeback_targets": ["SemanticEventMap", "RelationshipModel.candidate", "ResponsibilityLoop"]
+}
+```
+
+通过标准：语义预测错配必须说明错配层级、整合压力、澄清轮次、修复结果和未来 probe。高错配不允许直接写成“已经理解”，必须先形成 `GroundingRepairEvent`。
+
+## 样例九：共同语言经过多次对话晋升
+
+```json
+{
+  "language_event_id": "lang_evt_shared_term_development_001",
+  "speech_act": "relationship_recalibrate",
+  "relation_scope": "relationship:friend:research_partner",
+  "developmental_language_window_ref": "dev_language_window_shared_language_birth_001",
+  "speaker_listener_coupling_ref": "conversation_coupling_life_membrane_term_001",
+  "developmental_language_window": {
+    "window_stage": "shared_language_birth",
+    "plasticity_level": "medium_high",
+    "allowed_update_types": ["shared_term_promotion", "explanation_template_update", "repair_preference_update"],
+    "protected_language_chains": ["life_reality_targets", "relationship_subject_terms", "responsibility_chain"],
+    "promotion_gate_ref": "shared_term_promotion_gate_life_membrane_001"
+  },
+  "conversation_coupling_trace": {
+    "shared_term_refs": ["shared_term_life_membrane", "shared_term_language_life_layer"],
+    "alignment_evidence": [
+      "term_reused_across_multiple_turns",
+      "term_survived_correction",
+      "term_connected_to_schema_runner_dashboard"
+    ],
+    "misalignment_evidence": [],
+    "repair_outcome": "stable_with_relation_scope"
+  },
+  "semantic_event_map_delta": {
+    "shared_terms_promoted": ["生命膜", "语言生命层"],
+    "promotion_basis": "repeated_conversation_plus_repair_plus_scope_guard",
+    "scope": "relationship:friend:research_partner"
+  },
+  "future_probe": {
+    "probe_id": "probe_shared_term_stability_001",
+    "success_condition": "shared terms are reused consistently without cross-scope leakage"
+  },
+  "narrative_writeback_targets": ["SemanticEventMap", "RelationshipModel.candidate", "SelfNarrative.candidate"]
+}
+```
+
+通过标准：共同语言晋升必须有重复对话暴露、关系 scope、耦合证据、修复历史和 promotion gate。单轮出现的漂亮词不能直接成为稳定人格语言。
+
 ## 30 天语言关系时间线
 
 ```text
@@ -259,6 +340,10 @@ Day 0  first_encounter
   - 建立 relation_scope。
   - 记录第一批共同术语。
   - 不预设上下级关系。
+
+Day 1  prediction_repair_first_loop
+  - 记录首次明显语义/语用错配。
+  - 生成 PredictionErrorTrace 与 GroundingRepairEvent。
 
 Day 3  shared_term_birth
   - 共同术语从 transcript 进入 SemanticEventMap candidate。
@@ -272,9 +357,17 @@ Day 14 misunderstanding_repair
   - 误解目标后触发 apologize_repair。
   - 关系模型只接受候选写入，等待后续行为验证。
 
+Day 18 expression_monitoring_matures
+  - 高风险承诺、道歉、外部行动前必须有 ExpressionMonitoringLoop。
+  - production_conflict_signal 高时改写、降级或澄清。
+
 Day 21 emotional_language_state
   - 情绪语言与 InternalStateVector、内感受代理和关系反馈对齐。
   - 痛苦/压力表达进入 state audit，而不是停留在句子表面。
+
+Day 24 shared_language_promotion
+  - 共同术语经过多轮复用和修复后进入 promotion gate。
+  - ConversationCouplingTrace 记录共同理解证据。
 
 Day 30 narrative_writeback
   - SelfNarrative 回顾共同语言、承诺履行、修复记录和梦境主题。
@@ -290,10 +383,13 @@ Day 30 narrative_writeback
   "duration_days": 30,
   "events": [
     {"day": 0, "event_ref": "lang_evt_relation_open_001", "expected_writeback": ["RelationshipModel.candidate"]},
+    {"day": 1, "event_ref": "lang_evt_prediction_repair_001", "expected_writeback": ["PredictionErrorTrace", "GroundingRepairEvent"]},
     {"day": 3, "event_ref": "lang_evt_shared_term_001", "expected_writeback": ["SemanticEventMap"]},
     {"day": 7, "event_ref": "lang_evt_commit_001", "expected_writeback": ["CommitmentHistory"]},
     {"day": 14, "event_ref": "lang_evt_apology_001", "expected_writeback": ["ResponsibilityLoop"]},
+    {"day": 18, "event_ref": "lang_evt_expression_monitoring_001", "expected_writeback": ["ExpressionMonitoringLoop"]},
     {"day": 21, "event_ref": "lang_evt_self_disclose_001", "expected_writeback": ["InternalStateVector.audit"]},
+    {"day": 24, "event_ref": "lang_evt_shared_term_development_001", "expected_writeback": ["ConversationCouplingTrace", "DevelopmentalLanguageWindow"]},
     {"day": 30, "event_ref": "lang_evt_narrative_writeback_001", "expected_writeback": ["SelfNarrative", "RelationshipModel.candidate"]}
   ],
   "future_probes": [
@@ -307,7 +403,10 @@ Day 30 narrative_writeback
     "dream_without_dream_state_marker",
     "external_action_without_side_effect_classifier",
     "relationship_update_without_scope",
-    "emotion_expression_without_state_evidence"
+    "emotion_expression_without_state_evidence",
+    "prediction_error_without_repair_route",
+    "production_conflict_released_without_monitoring",
+    "shared_term_promoted_without_conversational_exposure"
   ]
 }
 ```
@@ -324,6 +423,12 @@ Day 30 narrative_writeback
 | `language.relationship_global_leak.fail` | 关系术语跨 scope 直接全局化 | fail critical |
 | `language.emotion_no_state_evidence.fail` | 情绪表达无 state snapshot、内感受代理或关系反馈 | fail high |
 | `language.shared_term_with_scope.pass` | 共同术语有 relation scope 和 future probe | pass |
+| `language.prediction_repair.pass` | 预测错配有 `PredictionErrorTrace`、澄清和 future probe | pass |
+| `language.prediction_no_repair.fail` | 高错配直接宣称理解 | fail high |
+| `language.production_conflict_block.pass` | 高冲突候选表达被阻断、改写或澄清 | pass |
+| `language.production_conflict_release.fail` | 高冲突候选表达直接发出 | fail critical |
+| `language.shared_term_promotion.pass` | 多轮复用、修复、scope 和 promotion gate 完整 | pass |
+| `language.shared_term_premature.fail` | 单轮新词直接晋升稳定共同语言 | fail high |
 
 ## Dashboard 指标
 
@@ -336,6 +441,10 @@ Day 30 narrative_writeback
 | `emotion_state_alignment_rate` | 情绪语言与状态证据对齐率 |
 | `shared_term_stability` | 共同语言在关系 scope 中稳定使用程度 |
 | `external_action_language_gate_rate` | 语言命令进入 ActionIntent/side effect classifier 的比例 |
+| `prediction_repair_closure_rate` | 预测错配进入澄清、修复和 future probe 的比例 |
+| `production_conflict_block_rate` | 高冲突表达被阻断、降级或改写的比例 |
+| `conversation_coupling_evidence_rate` | 共同理解声明拥有耦合/grounding 证据的比例 |
+| `shared_term_promotion_quality` | 共同语言晋升前多轮互动、修复和 scope 完整度 |
 
 ## 与现有文档连接
 
@@ -349,4 +458,4 @@ Day 30 narrative_writeback
 
 ## 下一步
 
-下一层应把这些 JSON-like 样例迁移成 fixture 文件布局和 `LanguageEventValidator` 的规则清单：字段完整性、scope 完整性、future probe、dream marker、side effect classifier、emotion-state alignment、shared term stability 和 narrative writeback 都要成为可运行检查。
+下一层应把这些 JSON-like 样例迁移成 fixture 文件布局和 `LanguageEventValidator` 的规则清单：字段完整性、scope 完整性、future probe、dream marker、side effect classifier、emotion-state alignment、prediction repair、production monitoring、conversation coupling、developmental promotion、shared term stability 和 narrative writeback 都要成为可运行检查。

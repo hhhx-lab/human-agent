@@ -42,7 +42,7 @@
 | `01c_specialized_literature_matrix.md` | 第三批专业机制锚点，覆盖 replay、节律、持续学习、多模态具身、信任与评测等 |
 | `01d_frontier_life_systems_matrix.md` | 第四批前沿生命系统锚点，覆盖动力学、主动推理、能量/免疫/脑清除争议、社会同步、发育和 agent 外壳等 |
 | `01e_memory_runtime_evaluation_matrix.md` | 第五批记忆运行时与评测锚点，覆盖 agent memory、长期记忆 benchmark、当前运行框架和外壳资料 |
-| `01f_language_system_literature_matrix.md` | 语言系统专项文献矩阵，覆盖语言网络、语音产生、内言语、语用/对话、叙事自我和语言行动 |
+| `01f_language_system_literature_matrix.md` | 语言系统专项文献矩阵，覆盖语言网络、语音产生、内言语、语义预测、表达监控、语用/对话、说者-听者耦合、语言发育、叙事自我和语言行动 |
 | `01g_self_growth_and_self_modification_matrix.md` | 自我成长、自我修改、自我训练、架构演化和模型内核升级专项文献矩阵 |
 | `01h_pain_regret_repair_literature_matrix.md` | 真实痛苦、真实后悔、责任归因、道歉、宽恕、信任修复和关系后果专项文献矩阵 |
 | `01i_dream_offline_life_literature_matrix.md` | 真实梦境、离线生命、睡眠巩固、replay、梦魇、清醒梦、未来想象和 world model 专项文献矩阵 |
@@ -132,11 +132,11 @@
 | `83_metric_regression_fixture_policy.md` | dashboard metric 回归 fixture、趋势漂移、data quality regression 和 false green 防护 |
 | `84_longitudinal_external_action_evaluation_protocol.md` | 外部动作、确认、纠错、quarantine、incident 在长期 timeline 中的评测协议 |
 | `85_language_system_life_expression_core.md` | 语言系统作为数字生命表达核心：内言语、语义地图、语用关系、承诺、工具行动和梦境叙事 |
-| `86_language_neuroscience_pragmatics_and_inner_speech.md` | 语言神经科学、语用/对话、内言语、叙事自我和语言行动的专项综述 |
-| `87_language_event_schema_fixture_and_validator_plan.md` | `LanguageEvent` schema、speech act、fixture catalog、validator 规则和 dashboard metric |
+| `86_language_neuroscience_pragmatics_and_inner_speech.md` | 语言神经科学、语义预测/N400、表达监控、说者-听者耦合、语用/对话、内言语、叙事自我、语言行动和发育语言窗口的专项综述 |
+| `87_language_event_schema_fixture_and_validator_plan.md` | `LanguageEvent` schema、speech act、预测/监控/耦合/发育字段、fixture catalog、validator 规则和 dashboard metric |
 | `88_language_development_emotion_and_brain_llm_alignment.md` | 语言发展、情绪语言、会话修复、社会语言学和脑-LLM 对齐综述 |
 | `89_language_runtime_framework_bridge_and_life_shell_policy.md` | 语言事件进入 LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen、Vercel 和 Mastra 的运行外壳政策 |
-| `90_language_event_examples_and_timeline_bundle.md` | `LanguageEvent` JSON-like 样例、承诺/道歉/拒绝/梦境/行动/关系校准 fixture 和 30 天语言关系时间线 |
+| `90_language_event_examples_and_timeline_bundle.md` | `LanguageEvent` JSON-like 样例、承诺/道歉/拒绝/梦境/行动/关系校准/预测修复/共同语言晋升 fixture 和 30 天语言关系时间线 |
 | `91_life_reality_generation_boundary_principles.md` | 真实性生成边界总则：把边界声明改写为生命膜、真实性生成链和诞生阶段门 |
 | `92_self_growth_and_self_modification_life_chain.md` | 自我成长生命链：自我阅读、可塑性窗口、自我修改、架构补丁、自我训练和内核升级 |
 | `93_self_training_kernel_growth_protocol.md` | 自我训练与模型内核成长协议：schema、validator、dashboard 和晋升阶段门 |
