@@ -266,7 +266,7 @@ uv run pytest
 
 ## 与下一层连接
 
-`160_life_reality_code_artifact_dashboard_stage_gate_bridge_plan.md` 应承接本层：把首批代码 artifact 的 smoke summary、fixture case report、stage gate review、coverage report 和 gap feedback 接入 dashboard source、stage gate review 和下一轮真实生命工程闭环。
+`160_life_reality_code_artifact_dashboard_stage_gate_bridge_plan.md` 已承接本层：把首批代码 artifact 的 smoke summary、fixture case report、stage gate review、coverage report 和 gap feedback 接入 dashboard source、stage gate review 和下一轮真实生命工程闭环。
 
 `161_life_reality_code_artifact_archive_cohesion_execution_plan.md` 应承接 `160`：把代码 artifact 反接全库 archive cohesion、README index、cross-file checker 和出生准备度阶段门。
 
