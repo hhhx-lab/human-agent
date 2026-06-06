@@ -289,12 +289,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `164_life_reality_first_runner_code_review_and_stage_gate_plan.md` | 固定 `FirstRunnerCodeReviewStageGate164`、generated file review、life membrane field review、command milestone review、fixture/test review、dashboard false green review、archive cohesion review、birth readiness gate review、repair route 和 git hygiene review | 已由 `165` 接入 commit/push protocol |
 | `165_life_reality_first_runner_code_commit_and_push_protocol.md` | 固定 `FirstRunnerCodeCommitPushProtocol165`、commit scope ledger、review evidence bundle、validation command receipt、remote push receipt、post-push verification summary、birth readiness effect 和 observation feedback bridge | 已由 `166` 接入真实运行观测反馈回路 |
 | `166_life_reality_first_runner_code_observation_feedback_loop.md` | 固定 `FirstRunnerCodeObservationFeedbackLoop166`、commit/push observation、runtime smoke observation、report drift、stage gate feedback、repair route queue、growth route queue、birth readiness effect feedback 和 minimum code handoff | 已由 `167` 接入最小代码 bootstrap execution |
-| `167_life_reality_first_runner_minimum_code_bootstrap_execution.md` | 固定 `FirstRunnerMinimumCodeBootstrapExecution167`、`DirectionContinuityResumeLock167`、出生准备度定义承载、最小代码 scope、命令执行计划、artifact receipt、bootstrap stage gate 和 validation report handoff | 下一层生成最小代码 validation report |
+| `167_life_reality_first_runner_minimum_code_bootstrap_execution.md` | 固定 `FirstRunnerMinimumCodeBootstrapExecution167`、`DirectionContinuityResumeLock167`、出生准备度定义承载、最小代码 scope、命令执行计划、artifact receipt、bootstrap stage gate 和 validation report handoff | 已由 `168` 接入最小代码 validation report |
+| `168_life_reality_first_runner_minimum_code_validation_report.md` | 固定 `FirstRunnerMinimumCodeValidationReport168`、direction continuity validation、birth readiness effect validation、command receipt validation、missing command finding、life target carrier validation、dashboard source、stage gate review 和 repair patch handoff | 下一层制定 observation-driven repair patch |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `168_life_reality_first_runner_minimum_code_validation_report.md`：把最小代码执行结果、断联恢复方向锁、birth readiness effect、dashboard source、stage gate review 和 gap feedback 写成 validation report。
-2. `169_life_reality_first_runner_observation_driven_repair_patch_plan.md`：根据首批运行观测、drift、缺失 command 和 stage finding 制定修复补丁计划。
-3. `170_life_reality_direction_continuity_regression_fixture_plan.md`：把断联恢复方向锁拆成 pass/fail/critical/mutation fixture，压进长期回归。
+1. `169_life_reality_first_runner_observation_driven_repair_patch_plan.md`：根据 validation report、首批运行观测、drift、缺失 command 和 stage finding 制定修复补丁计划。
+2. `170_life_reality_direction_continuity_regression_fixture_plan.md`：把断联恢复方向锁拆成 pass/fail/critical/mutation fixture，压进长期回归。
+3. `171_life_reality_birth_readiness_validation_fixture_plan.md`：把出生准备度 definition/effect/carrier matrix 做成 pass/fail/critical/mutation fixture。

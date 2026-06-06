@@ -162,7 +162,7 @@ uv run pytest
 
 ## 与下一层连接
 
-`168_life_reality_first_runner_minimum_code_validation_report.md` 应承接本层：把最小代码 bootstrap 的文件、命令、stage gate、direction lock、birth readiness effect 和 repair/growth route 写成 validation report。
+`168_life_reality_first_runner_minimum_code_validation_report.md` 已承接本层：把最小代码 bootstrap 的文件、命令、stage gate、direction lock、birth readiness effect 和 repair/growth route 写成 validation report。
 
 `169_life_reality_first_runner_observation_driven_repair_patch_plan.md` 应承接 `168`：根据最小代码执行结果、观测漂移、缺失 command 和 stage finding 制定修复补丁计划。
 
