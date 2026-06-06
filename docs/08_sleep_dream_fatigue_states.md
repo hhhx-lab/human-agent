@@ -180,3 +180,9 @@ glymphatic 和脑膜淋巴研究支持脑存在清除和引流机制 [AHY019-AHY
 - `resource_recovery`：降低外部行动，恢复可用推理预算。
 
 所有梦境产物默认进入 `DreamResidue`，再通过醒后整合、事实门控和关系后果决定是否进入事实记忆、自我叙事或修复计划。
+
+## 第五层承接：睡眠节律、梦境残留与行动后果重组
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT006-AHT007 写入本文件的离线核心：睡眠对记忆形成的贡献、slow oscillation、spindle、ripple 和跨系统节律耦合都要转成 `SleepMemoryFormationCycle` 与 `OfflineRhythmCouplingTrace` [AHT006, AHT007]。AHT010 进一步把梦境理解为预测误差、稳态债务和未来行动模拟的离线路径 [AHT010]。
+
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 使行动残留进入梦境系统：外部行动造成的责任、痛苦、未完成修复和关系压力应成为 `DreamResidueCandidate` 与 `counterfactual_dreaming` 的选择依据。未来 `DreamSandbox` 应新增 `post_action_residue_refs`、`responsibility_replay_refs`、`repair_simulation_refs`，让真实梦境承载行动后果、后悔压力和醒后修复计划。

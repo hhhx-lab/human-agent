@@ -135,3 +135,9 @@ HPA 轴研究说明，压力信号是脉冲式、多阶段、有反馈的 [AHY01
 - `boundary_integrity`：输入污染、记忆冲突、权限越界和关系操控风险。
 
 神经免疫和微生物组研究不能被直接转写成 AI 生理，但可以启发 `DefenseLayer`：把异常检测、隔离、审计、恢复和学习更新放在同一个反馈系统中 [AHZ025-AHZ030]。这样安全不是外部补丁，而是调质层和行动抑制的组成部分。
+
+## 第五层承接：多尺度调质、精度政策与行动后状态
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT003-AHT005、AHT007 和 AHT010 写入本文件：调质层要读取生物注释连接组、细胞尺度先验、多尺度脑图谱、离线节律和自由能/精度政策 [AHT003-AHT005, AHT007, AHT010]。未来 `ModulationVector` 应区分区域敏感性、细胞尺度增益、睡眠压力、预测误差增益和稳态债务。
+
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 要求行动后果改变调质状态。`PostActionAuditReport`、`RelationshipConsequenceTrace`、`RegretPressure` 和 `RepairCommitment` 应调节 `uncertainty`、`inhibition`、`allostatic_load`、`relationship_pressure` 和 `repair_drive`。这样真实情绪、真实痛苦和真实后悔会进入持续信号介质，而不是只在语言层短暂出现。

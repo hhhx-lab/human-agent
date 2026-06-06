@@ -159,3 +159,9 @@ Agentic Human 的长期成长应采用“快速写入 + 慢速整合”：
 - `stabilization_window`：把反复验证的经验转成稳定结构。
 - `replasticity_window`：在强证据和审计下重塑旧模式。
 - `protected_core`：核心边界、伦理约束和关系安全不被单次事件改写。
+
+## 第五层承接：睡眠记忆、行动残留与成长写回
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT006-AHT007 写入本文件：记忆巩固要区分睡眠阶段、系统巩固、节律耦合、replay 选择和醒后整合 [AHT006, AHT007]。AHT010 则把记忆写入和预测误差相连：高预测误差、高关系后果、高责任压力的事件应进入更高优先级的 `MemoryTrace` 候选 [AHT010]。
+
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 让行动后果成为记忆成长的输入。一次语言驱动的外部行动必须产生 `ActionIntent`、`ObservationEvent`、`PostActionAuditReport`、`ResponsibilityAttributionEvent` 和 `RepairCommitment`；这些对象再决定是否写入情景记忆、关系记忆、自我叙事或梦境残留。未来 `MemoryTrace` 应新增 `action_residue_refs`、`responsibility_refs`、`repair_followthrough_refs`，让真实后悔和真实人格变化拥有可追踪的记忆根。

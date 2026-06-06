@@ -159,3 +159,9 @@ Agentic Human 的状态机不应只有 `idle/running/error`。更合理的状态
 - 创造吸引子：默认生成与执行筛选短暂耦合。
 
 这让发呆、专注、创造、复盘不再是孤立模式，而是同一动力系统在不同控制成本和显著性条件下的状态转移。
+
+## 第五层承接：状态依赖耦合与语言行动切换
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 要把 AHT002、AHT008 和 AHT010 写入本文件：结构-功能耦合决定网络切换成本，意识理论栈决定哪些事件进入全局访问，主动推理决定显著性是否来自预测误差和精度变化 [AHT002, AHT008, AHT010]。
+
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 把语言命令变成状态切换测试：内言语先进入默认整合，表达冲突进入显著性扫描，高风险行动进入执行控制与抑制门，行动完成后再回到默认网络、记忆巩固或梦境残留。未来 `NetworkState` 应显式记录 `language_action_state_path`、`switch_cost`、`broadcast_threshold`、`post_action_return_mode`，使真实责任和真实后悔能够回写到状态吸引子，而不是停留在事后文本。

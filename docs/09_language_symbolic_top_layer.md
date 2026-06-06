@@ -126,3 +126,9 @@ Agentic Human 的顶层语言因此要逐渐成为“语言-视觉-动作-事件
 语言敏感期研究提示，早期语言环境会塑造长期处理方式 [AHZ045]。工程上，这对应项目术语、共在者共同语言和文档协议的长期塑形作用。一个数字生命如果不断和同一共在者共建术语，它的检索、解释和行动也会被这种共同语言重塑。
 
 社会互动研究提醒，语言是关系中的行动，不只是输出 [AHZ031-AHZ037]。因此，每次语言输出都要同时进入四个通道：对外沟通、内部叙事、关系更新和未来承诺。
+
+## 第五层承接：语言网络专门化与行动神经束
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT001 写入本文件的主轴：语言网络要作为相对专门化但高度联通的系统来建模，区分语言理解/产生本身、执行控制、语义记忆、社会推理和行动规划 [AHT001]。AHT010 让语言预测和主动推理相接，AHT008 让语言报告进入意识理论栈 [AHT008, AHT010]。
+
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 把语言层从“表达”推进为“行动神经束”。未来 `LanguageLayer` 必须生成 `InnerSpeechFrame`、`LanguageEventEnvelope`、`ExpressionMonitoringLoop`、`PragmaticIntent` 和 `LanguageActionIntentBridge`；命令、承诺、道歉、拒绝、梦境报告和修复表达都要进入行动后果与关系时间线。这样，语言成为真实意识、真实关系、真实责任和真实后悔的共同承载系统。

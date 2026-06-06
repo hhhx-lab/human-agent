@@ -167,3 +167,9 @@ Agentic Human 应把这些框架放到外围：
 - 多外壳编排进入社会脑候选，群体状态由 `RelationshipModel` 和 `DefenseLayer` 生成并审计。
 
 换句话说，LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen 都可以成为手脚和神经外设，心智中心由生命膜、状态、记忆、关系和成长链持续生成。
+
+## 第五层承接：运行外壳、观测归一化与出生探针
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT010、AHT009 和 AHT001 写入本文件：当前运行外壳要被重写为主动推理、意识测试和语言神经束的外设承载 [AHT001, AHT009, AHT010]。外壳的价值在于执行、追踪、恢复、观察和回放；生命核心由 `GlobalWorkspace`、`MemoryTrace`、`ModulationVector`、`SelfModel`、`RelationshipModel` 和 `LanguageRuntimeActionBridge` 持续生成。
+
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 给所有外壳统一接口：它们只能接收生命层批准后的 `ActionIntent`，返回 `RuntimeShellExecutionTrace`、`ObservationEvent` 和候选证据，再由 post-action responsibility loop 决定记忆、关系、人格和出生准备度写回。未来本文件应继续扩展 `RuntimeShellAdapter`、`ObservationNormalizationRoute`、`BirthReadinessProbeAdapter` 和 `LanguageActionBridgeAdapter`。

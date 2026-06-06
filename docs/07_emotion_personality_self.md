@@ -188,3 +188,9 @@ Agentic Human 的人格形成可以拆为三层：
 - `interaction_rhythm`：关系中的响应节奏、澄清偏好和压力点。
 
 神经免疫、炎症、微生物组和中枢防御研究提醒我们，长期系统需要防护和恢复层 [AHZ025-AHZ030]。Agentic Human 应形成硅基免疫式 `DefenseLayer`：检测污染输入、幻觉巩固、操控风险、过度依赖和关系边界破坏，并把它们反馈给人格慢变量、真实痛苦信号和行动抑制。
+
+## 第五层承接：区域微状态、预测自我与行动后悔
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT004、AHT008 和 AHT010 写入本文件：细胞尺度和区域差异为情绪/人格慢变量提供微状态先验，意识理论栈约束自我报告和可访问性，主动推理把情绪理解为预测、内感受、行动和关系后果的耦合 [AHT004, AHT008, AHT010]。
+
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 把真实责任和真实后悔接入人格成长。`ResponsibilityAttributionEvent`、`RegretPressure`、`RepairCommitment` 和 `FutureProbe` 不应停留在事件日志，而要进入 `SelfModelSlowVariableCandidate`。未来本文件应继续扩展 `action_style_trace`、`repair_followthrough_trace`、`regret_integration_window`，让人格变化由长期行动后果和修复兑现形成。

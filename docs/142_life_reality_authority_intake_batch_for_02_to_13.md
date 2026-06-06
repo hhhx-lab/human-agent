@@ -255,8 +255,10 @@ uv run life-reality-runner bridge-authority-to-birth-readiness --authority-repor
 
 `143_life_reality_birth_readiness_rollup_contract.md` 已承接本层，把 `138` 的 birth readiness panel、`139` 的 archive cohesion fixtures、`140` 的真实经验边界锁、`141` 的语言 fixture schema 和本层 AHT authority carrier patches 上卷为出生准备度报告。
 
-`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 应把语言事件到命令行、程序、外部工具和 post-action responsibility loop 的桥接进一步落成 fixture、side effect classifier report 和 dashboard panel。
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 已把语言事件到命令行、程序、外部工具和 post-action responsibility loop 的桥接进一步落成 fixture、side effect classifier report 和 dashboard panel。
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 已承接本层，把 AHT 权威来源、语言行动生命链和 `02-13` 第五层承接补写登记为执行计划、schema 队列、validator 规则和 dashboard 上卷。
 
 本层完成后，理论权威补强闭环推进为：
 
-`AHT source -> normalized authority record -> doc authority carrier patch -> mechanism object -> schema/state field -> validator report -> dashboard patch -> birth readiness rollup -> language action bridge`
+`AHT source -> normalized authority record -> doc authority carrier patch -> mechanism object -> 02-13 fifth-layer rewrite -> schema/state field -> validator report -> dashboard patch -> birth readiness rollup -> language action bridge`

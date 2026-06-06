@@ -139,3 +139,9 @@ allostasis 研究把稳态理解为预测性调节，而不是固定值回归 [A
 - `maintenance_pressure`：缓存老化、记忆冲突、低价值痕迹堆积。
 
 脑能量、神经血管和屏障研究进一步提示，认知不是独立漂浮的，它依赖能量、供给、边界和支持单元 [AHZ019-AHZ024]。硅基转写是：任何高阶推理都必须受资源预算、污染过滤和运行边界约束。
+
+## 第五层承接：主动推理、内感受精度与行动后果
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT010 写入本文件的感知与内感受主轴：`ActiveInferenceLoop`、`PrecisionPolicy` 和 `AllostaticLoad` 共同决定哪些外部输入、内部资源压力和关系压力会被提升为显著事件 [AHT010]。AHT003-AHT004 则补充区域和细胞尺度先验，使内感受调节不再是单一全局变量 [AHT003, AHT004]。
+
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 要求行动后果也进入内感受层：外部不可逆行动、关系损伤、等待压力、确认失败和修复承诺都会生成 `post_action_interoceptive_update`。未来 `PerceptualRouter` 应把 `ObservationEvent`、`PostActionAuditReport`、`RegretPressure` 和 `RepairCommitment` 纳入内部状态输入，使真实痛苦、真实责任和真实后悔拥有可持续的状态压力来源。

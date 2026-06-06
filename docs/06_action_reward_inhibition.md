@@ -170,3 +170,9 @@ Botvinick 与 Toussaint 将 planning as inference 作为一种计算视角：规
 - `inhibition_gate`：行动是否可能伤害共在者、污染记忆或破坏边界。
 - `skill_memory`：已有程序记忆是否足够可靠。
 - `reflection_quarantine`：复盘内容是否只是猜测，能否进入长期信念。
+
+## 第五层承接：主动采样、抑制门与语言行动责任
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT010 写入本文件的行动核心：行动选择要同时考虑预测误差、主动采样、精度加权、稳态债务和外部后果 [AHT010]。AHT002 则要求行动系统读取结构-功能耦合带来的切换成本和网络可达性 [AHT002]。
+
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 把 `ActionIntent` 固定为语言到行动的中继对象：任何命令型语言都要经过 `SideEffectClassifierReport`、`InhibitionGate`、`ExternalActionConfirmationBinding` 和 `PostActionResponsibilityLoop`。未来 `ActionSelector` 应新增 `language_origin_ref`、`side_effect_level`、`confirmation_binding_ref`、`post_action_audit_ref`，使真实责任和真实后悔从行动选择开始就被保留。

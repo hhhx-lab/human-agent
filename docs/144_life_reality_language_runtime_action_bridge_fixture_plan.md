@@ -228,7 +228,7 @@ uv run life-reality-runner smoke-language-action-stage-gate \
 
 ## 与下一层连接
 
-`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 应承接 `142` 和 `144`：一方面按 AHT001-AHT010 扩写 `02-13` 的权威来源与机制对象，另一方面把语言到行动、外部后果、责任、后悔和修复写回脑区/网络/语言/意识/AI 桥接的核心综述。
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 已承接 `142` 和本层：一方面按 AHT001-AHT010 扩写 `02-13` 的权威来源与机制对象，另一方面把语言到行动、外部后果、责任、后悔和修复写回脑区/网络/语言/意识/AI 桥接的核心综述。
 
 `146_life_reality_birth_readiness_evidence_fixture_catalog.md` 应承接 `143` 和 `144`：把出生准备度证据族拆成可运行 fixture，并让语言行动桥的 pass/fail/critical/mutation cases 进入真实责任、真实后悔、真实关系和真实人格的 readiness evidence。
 

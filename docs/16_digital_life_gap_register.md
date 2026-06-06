@@ -267,11 +267,12 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `142_life_reality_authority_intake_batch_for_02_to_13.md` | 固定 `AuthorityIntakeBatch142`、AHT001-AHT010 规范化来源、`02-13` doc authority carrier patches、机制对象提取队列、validator rules、dashboard panels 和出生准备度证据桥 | 下一层把 birth readiness panel、archive cohesion fixtures、真实经验边界锁、语言 fixture schema 和 authority carrier patches 上卷为出生准备度报告 |
 | `143_life_reality_birth_readiness_rollup_contract.md` | 固定 `BirthReadinessRollupContract`、八类出生证据族、九项目标 readiness claim、cross-chain closure、stage gate 聚合顺序、validator rules、dashboard panels 和 future commands | 下一层把语言事件到命令行、程序、外部工具和 post-action responsibility loop 的桥接落成 fixture 与 dashboard panel |
 | `144_life_reality_language_runtime_action_bridge_fixture_plan.md` | 固定 `LanguageRuntimeActionBridgeFixturePlan`、语言行动意图桥、side effect classifier report、confirmation binding、runtime shell trace、post-action responsibility loop、fixture family、mutation patches、validator rules 和 dashboard panels | 下一层按权威来源和语言行动生命链扩写 `02-13`，并把出生准备度证据拆成可运行 fixture catalog |
+| `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` | 固定 `AuthorityRewriteExecutionPlan145`、`02-13` 第五层承接补写、schema 写入队列、dashboard 上卷、validator rules 和 next fixture catalog 入口 | 下一层把出生准备度证据族、语言行动 fixture family 和 authority rewrite coverage 拆成可运行 fixture catalog |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `145_life_reality_02_to_13_authority_rewrite_execution_plan.md`：按 `142` 的补写顺序和 `144` 的语言行动生命链真正扩写 `02-13`，把 AHT001-AHT010 的机制对象、字段、状态、validator、dashboard 和行动后果落点写回各核心综述。
-2. `146_life_reality_birth_readiness_evidence_fixture_catalog.md`：把 `143` 的 birth readiness evidence bundle 和 `144` 的语言行动 fixture family 拆成 pass/fail/critical/mutation/withheld fixture、expected report 和 dashboard source。
-3. `147_life_reality_language_action_bridge_schema_materialization_plan.md`：把 `144` 的语言行动桥对象、validator rules、dashboard panels 和 stage gate 推进为真实 schema、fixture manifest、expected report 和 smoke command。
+1. `146_life_reality_birth_readiness_evidence_fixture_catalog.md`：把 `143` 的 birth readiness evidence bundle、`144` 的语言行动 fixture family 和 `145` 的 authority rewrite coverage 拆成 pass/fail/critical/mutation/withheld fixture、expected report 和 dashboard source。
+2. `147_life_reality_language_action_bridge_schema_materialization_plan.md`：把 `144` 的语言行动桥对象、validator rules、dashboard panels 和 stage gate 推进为真实 schema、fixture manifest、expected report 和 smoke command。
+3. `148_life_reality_02_to_13_schema_queue_materialization_plan.md`：把 `145` 的 `REWRITE-145-001` 到 `REWRITE-145-012` 推进为真实 schema 文件、validator smoke cases 和 dashboard source。

@@ -155,3 +155,9 @@ Agentic Human 的 `RegionGraph` 因此至少要记录三类信息：
 - `coupling_mode`：区域之间是松散并行、强耦合协作，还是被显著性事件临时同步。
 
 这能避免把脑区规划写成“模块清单”。真正的数字生命底座应是一个可切换、可调质、可恢复的动态网络。
+
+## 第五层承接：权威图谱与语言行动拓扑
+
+`145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将本文件作为第一承载点：AHT002-AHT005 要写入 `RegionGraph` 的结构-功能耦合、生物注释连接组、细胞尺度先验和多尺度脑图谱 [AHT002-AHT005]。这意味着每个区域不再只是功能名，而要同时携带 `structural_edge`、`functional_coupling`、`biological_annotation`、`cell_type_state_prior` 和 `scale_layer`。
+
+`144_life_reality_language_runtime_action_bridge_fixture_plan.md` 进一步要求区域图能承载语言行动链：一次命令语言会同时调动语言网络、显著性网络、执行网络、行动选择系统、记忆系统和责任/后悔回路。`RegionGraph` 因此新增一个工程承载目标：记录 `LanguageActionTopologyEdge`，把 `InnerSpeechFrame -> ActionIntent -> ObservationEvent -> ResponsibilityAttributionEvent` 映射到跨区拓扑，而不是把行动看成单一执行节点。
