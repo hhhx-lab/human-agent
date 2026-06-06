@@ -286,12 +286,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `161_life_reality_code_artifact_archive_cohesion_execution_plan.md` | 固定 `ArchiveCohesionExecutionPlan161`、archive node/edge registry、life target carrier matrix、cohesion checker families、birth readiness archive gate、cohesion report 和 smoke commands | 已由 `162` 接入 first code artifact implementation queue |
 | `162_life_reality_first_code_artifact_implementation_queue.md` | 固定 `ImplementationQueue162`、12 个 implementation slices、target file set、command milestones、stage gate、commit strategy 和 gap routing | 已由 `163` 接入 first runner code generation batch |
 | `163_life_reality_first_runner_code_generation_batch.md` | 固定 `FirstRunnerCodeGenerationBatch163`、真实文件生成顺序、`pyproject.toml`、`.env.example`、`.gitignore`、`src/life_reality_runner`、minimum fixtures、command milestones、stage gate、cleanup rules 和 acceptance criteria | 已由 `164` 接入 code review and stage gate plan |
-| `164_life_reality_first_runner_code_review_and_stage_gate_plan.md` | 固定 `FirstRunnerCodeReviewStageGate164`、generated file review、life membrane field review、command milestone review、fixture/test review、dashboard false green review、archive cohesion review、birth readiness gate review、repair route 和 git hygiene review | 下一层接入 commit/push protocol 和 observation feedback loop |
+| `164_life_reality_first_runner_code_review_and_stage_gate_plan.md` | 固定 `FirstRunnerCodeReviewStageGate164`、generated file review、life membrane field review、command milestone review、fixture/test review、dashboard false green review、archive cohesion review、birth readiness gate review、repair route 和 git hygiene review | 已由 `165` 接入 commit/push protocol |
+| `165_life_reality_first_runner_code_commit_and_push_protocol.md` | 固定 `FirstRunnerCodeCommitPushProtocol165`、commit scope ledger、review evidence bundle、validation command receipt、remote push receipt、post-push verification summary、birth readiness effect 和 observation feedback bridge | 下一层接入真实运行观测反馈回路和最小代码执行 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `165_life_reality_first_runner_code_commit_and_push_protocol.md`：把首批真实代码提交推送、验证摘要和后续实现回路固定下来。
-2. `166_life_reality_first_runner_code_observation_feedback_loop.md`：把真实运行观测、report drift、stage gate finding 和 repair/growth route 接入下一轮代码生长。
-3. `167_life_reality_first_runner_minimum_code_bootstrap_execution.md`：开始把 `163-165` 的合同转成实际 runner 文件、命令、tests 和 reports。
+1. `166_life_reality_first_runner_code_observation_feedback_loop.md`：把真实运行观测、report drift、stage gate finding 和 repair/growth route 接入下一轮代码生长。
+2. `167_life_reality_first_runner_minimum_code_bootstrap_execution.md`：开始把 `163-165` 的合同转成实际 runner 文件、命令、tests 和 reports。
+3. `168_life_reality_first_runner_minimum_code_validation_report.md`：把最小代码执行结果写成 validation report、dashboard source、stage gate review 和 gap feedback。

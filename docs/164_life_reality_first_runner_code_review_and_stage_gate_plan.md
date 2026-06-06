@@ -234,7 +234,7 @@ archive cohesion review 必须检查以下 edge：
 
 ## 与下一层连接
 
-`165_life_reality_first_runner_code_commit_and_push_protocol.md` 应承接本层：把首批 runner code 的 staged scope、commit message、push、验证摘要、review report 和远端状态固定为提交推送协议。
+`165_life_reality_first_runner_code_commit_and_push_protocol.md` 已承接本层：把首批 runner code 的 staged scope、commit message、push、验证摘要、review report 和远端状态固定为提交推送协议。
 
 `166_life_reality_first_runner_code_observation_feedback_loop.md` 应承接 `165`：把真实运行观测、report drift、stage gate finding、repair route 和 growth route 接入下一轮代码生长。
 
