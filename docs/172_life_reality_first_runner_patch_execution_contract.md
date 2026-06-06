@@ -345,7 +345,7 @@ uv run pytest tests/smoke/test_patch_execution_contract.py
 
 `174_life_reality_birth_readiness_fixture_schema_materialization.md` 已承接 `171`、`173` 和本层：把 readiness fixture manifest、target claim、evidence family、carrier matrix、cross-chain closure、false open guard 和 patch unit ids 推进为 schema 物化计划。
 
-`175_life_reality_first_runner_patch_execution_smoke_queue.md` 应承接本层：把 patch execution contract 转成 smoke manifest、future command queue、expected reports、dashboard source、stage review 和 archive receipt。
+`175_life_reality_first_runner_patch_execution_smoke_queue.md` 已承接本层、`173` 和 `174`：把 patch execution contract、direction schema bundle、birth readiness schema bundle、future command queue、expected reports、dashboard source、stage review 和 archive receipt 转成 smoke manifest。
 
 本层完成后，首批 runner 补丁执行链推进为：
 

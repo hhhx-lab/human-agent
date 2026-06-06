@@ -413,7 +413,7 @@ smoke report 必须进入 `PatchExecutionReport172` 和 `175` 的 smoke queue。
 
 ## 与下一层连接
 
-`175_life_reality_first_runner_patch_execution_smoke_queue.md` 应承接 `172`、`173` 和本层：把 patch execution contract、direction schema bundle、birth readiness schema bundle、future commands、expected reports、dashboard source、stage review 和 archive receipt 转成 smoke manifest。
+`175_life_reality_first_runner_patch_execution_smoke_queue.md` 已承接 `172`、`173` 和本层：把 patch execution contract、direction schema bundle、birth readiness schema bundle、future commands、expected reports、dashboard source、stage review 和 archive receipt 转成 smoke manifest。
 
 `176_life_reality_first_runner_schema_archive_lockfile_plan.md` 应承接 `173`、本层和 `175`：把 direction/birth readiness schema bundle、patch execution report、smoke receipt 和 archive edge 写成首批 schema archive lockfile。
 
