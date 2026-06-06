@@ -424,8 +424,8 @@ gap feedback 规则：
 
 ## 与下一层连接
 
-下一层进入 `134_life_reality_registry_runner_smoke_fixture_implementation_queue.md`：把本文档的 writer/reporter 合同与 `129` 的 validation cases 拆成真实 fixture、mutated input、expected report、actual report、diff、case run report 和 smoke runner 实现任务。
+下一层已进入 `134_life_reality_registry_runner_smoke_fixture_implementation_queue.md`：把本文档的 writer/reporter 合同与 `129` 的 validation cases 拆成真实 fixture、mutated input、expected report、actual report、diff、case run report 和 smoke runner 实现任务。
 
 `135_life_reality_schema_dependency_graph_and_lockfile_plan.md` 应继续把 artifact record、ref edge、lock state 和 canonical digest 写成 machine-readable lockfile 与 graph export。
 
-`136_life_reality_minimal_runner_code_skeleton_plan.md` 应在 `133-135` 之后再进入代码骨架计划，定义 package layout、CLI module、writer module、report module、tests 和 smoke commands。
+`136_life_reality_minimal_runner_code_skeleton_plan.md` 应在 `133-135` 之后再进入代码骨架计划，定义 package layout、CLI module、writer module、report module、tests 和 smoke commands。`137_life_reality_first_fixture_materialization_checklist.md` 应继续把 `134` 的队列推进为第一批真实 fixture 物化清单。
