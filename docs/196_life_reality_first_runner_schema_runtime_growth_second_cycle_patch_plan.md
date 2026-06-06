@@ -506,7 +506,7 @@ handoff 必须包含 `second_cycle_patch_plan_ref`、`replay_shadow_seed_plan_re
 
 ## 与下一层连接
 
-`197_life_reality_first_runner_schema_runtime_growth_second_cycle_archive_plan.md` 应承接本层：把 second cycle patch receipts、patch unit refs、expected diffs、dashboard/stage refs、digest refs、rollback/repair refs 和 archive preconditions 写回 archive。
+`197_life_reality_first_runner_schema_runtime_growth_second_cycle_archive_plan.md` 已承接本层：把 second cycle patch receipts、patch unit refs、expected diffs、dashboard/stage refs、digest refs、rollback/repair refs 和 archive preconditions 写回 archive。
 
 `198_life_reality_first_runner_schema_runtime_growth_cycle_closure_validation_plan.md` 应承接 `197` 和本层：验证第二轮 archive 是否重新接回 observation、direction continuity、birth readiness、life target carrier、language relationship chain、dream pain recovery chain 和 self growth chain。
 
