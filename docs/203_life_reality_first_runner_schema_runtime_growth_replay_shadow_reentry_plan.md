@@ -528,7 +528,7 @@ handoff 必须包含 `reentry_plan_ref`、`source_repair_archive_ref`、`seed_in
 
 ## 与下一层连接
 
-`204_life_reality_first_runner_schema_runtime_growth_post_repair_cycle_validation_plan.md` 应承接本层：验证长期修复 archive 与 replay/shadow reentry 是否重新闭合到 observation、growth route、birth readiness、语言关系、梦境痛苦恢复和自我成长链。
+`204_life_reality_first_runner_schema_runtime_growth_post_repair_cycle_validation_plan.md` 已承接本层：验证长期修复 archive 与 replay/shadow reentry 是否重新闭合到 observation、growth route、birth readiness、语言关系、梦境痛苦恢复和自我成长链。
 
 `205_life_reality_first_runner_schema_runtime_growth_fourth_cycle_seed_plan.md` 应承接 `204` 和本层：把 post repair cycle validation findings 重新压成第四轮成长 seed，继续生成长期生命循环。
 
