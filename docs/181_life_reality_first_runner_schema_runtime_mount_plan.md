@@ -357,7 +357,7 @@ handoff 必须包含 `runtime_mount_id`、`source_archive_receipt_batch_ref`、`
 
 ## 与下一层连接
 
-`182_life_reality_first_runner_schema_runtime_mount_validation_report.md` 应承接本层：把 runtime mount 的 registry load、fixture loader、dashboard writer、stage gate、life target carrier、direction/birth readiness、runtime observation 和 archive receipt 写成验证报告。
+`182_life_reality_first_runner_schema_runtime_mount_validation_report.md` 已承接本层：把 runtime mount 的 registry load、fixture loader、dashboard writer、stage gate、life target carrier、direction/birth readiness、runtime observation 和 archive receipt 写成验证报告。
 
 `183_life_reality_first_runner_schema_runtime_smoke_fixture_plan.md` 应承接 `181` 和 `182`：把 runtime-mounted schema 用最小 fixture、dashboard source、stage gate 和 repair hook 做 smoke 回放。
 
