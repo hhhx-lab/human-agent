@@ -275,12 +275,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `150_life_reality_language_action_cross_file_checker_plan.md` | 固定 `LanguageActionCrossFileChecker150`、typed graph、node/edge family、closure results、cross-file findings、dashboard source、stage gate review、gap feedback、fixture family 和 smoke commands | 已由 `151` 接入 authority schema cross-file checker |
 | `151_life_reality_authority_schema_cross_file_checker_plan.md` | 固定 `AuthoritySchemaCrossFileChecker151`、authority provenance graph、mechanism grounding、closure results、lockfile bridge、archive cohesion graph、dashboard source、stage gate review、gap feedback、fixture family 和 smoke commands | 已由 `152` 接入 birth readiness cross-file checker |
 | `152_life_reality_birth_readiness_cross_file_checker_plan.md` | 固定 `BirthReadinessCrossFileChecker152`、九项目标 readiness graph、target closure、cross-chain closure、longitudinal probe、false green guard、dashboard source、stage gate review、gap feedback、fixture family 和 smoke commands | 已由 `153` 接入 full archive cross-file checker rollup |
-| `153_life_reality_full_archive_cross_file_checker_rollup_plan.md` | 固定 `FullArchiveCrossFileCheckerRollup153`、doc archive nodes、checker report rollup、life target archive readiness、archive consistency result、false green guard、dashboard source、stage gate review、gap feedback、runner queue 和 smoke commands | 下一层把 `150-153` checker reports 固定为 lockfile、digest baseline 和 runner command 物化队列 |
+| `153_life_reality_full_archive_cross_file_checker_rollup_plan.md` | 固定 `FullArchiveCrossFileCheckerRollup153`、doc archive nodes、checker report rollup、life target archive readiness、archive consistency result、false green guard、dashboard source、stage gate review、gap feedback、runner queue 和 smoke commands | 已由 `154` 接入 checker report lockfile materialization |
+| `154_life_reality_checker_report_lockfile_materialization_plan.md` | 固定 `CheckerReportLockfileMaterialization154`、normalized report registry、report artifact nodes、canonical digest baseline、regression baseline、checker report lockfile、dashboard lock source、stage gate review、gap feedback、runner queue 和 smoke commands | 下一层把 `150-154` 的 checker/lockfile/dashboard 合同推进为 runner CLI 实现队列 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `154_life_reality_checker_report_lockfile_materialization_plan.md`：把 language action、authority schema、birth readiness 和 full archive rollup 四类 checker report 固定为 lockfile、digest baseline、dashboard source 和 runner command 的物化队列。
-2. `155_life_reality_runner_command_queue_for_cross_file_checkers.md`：把 `150-154` 的 checker/lockfile/dashboard 合同推进为未来 runner CLI、fixture roots、report roots 和 smoke command 实现队列。
-3. `156_life_reality_full_archive_rollup_fixture_materialization_queue.md`：把 `153` 的 full archive rollup pass/fail/critical/mutation/withheld/smoke fixture family 推进为首批可写入 JSON fixture 队列。
+1. `155_life_reality_runner_command_queue_for_cross_file_checkers.md`：把 `150-154` 的 checker/lockfile/dashboard 合同推进为未来 runner CLI、fixture roots、report roots 和 smoke command 实现队列。
+2. `156_life_reality_full_archive_rollup_fixture_materialization_queue.md`：把 `153` 的 full archive rollup 与 `154` 的 checker report lockfile pass/fail/critical/mutation/smoke fixture family 推进为首批可写入 JSON fixture 队列。
+3. `157_life_reality_cross_file_checker_minimal_code_module_plan.md`：把 runner command queue 继续压成最小 Python module、CLI command、schema loader、report normalizer、lockfile writer 和 tests。

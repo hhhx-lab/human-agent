@@ -343,9 +343,11 @@ uv run life-reality-runner smoke-full-archive-rollup-stage-gate \
 
 ## 与下一层连接
 
-`154_life_reality_checker_report_lockfile_materialization_plan.md` 应承接本层：把 language action、authority schema、birth readiness 和 full archive rollup 四类 checker report 固定为 lockfile、digest baseline、dashboard source 和 runner command 的物化队列。
+`154_life_reality_checker_report_lockfile_materialization_plan.md` 已承接本层：把 language action、authority schema、birth readiness 和 full archive rollup 四类 checker report 固定为 lockfile、digest baseline、dashboard source 和 runner command 的物化队列。
 
-`155_life_reality_runner_command_queue_for_cross_file_checkers.md` 应承接本层：把 `150-154` 的 checker/lockfile/dashboard 合同推进为未来 runner CLI、fixture roots、report roots、schema roots 和 smoke command 实现队列。
+`155_life_reality_runner_command_queue_for_cross_file_checkers.md` 应承接本层和 `154`：把 `150-154` 的 checker/lockfile/dashboard 合同推进为未来 runner CLI、fixture roots、report roots、schema roots 和 smoke command 实现队列。
+
+`156_life_reality_full_archive_rollup_fixture_materialization_queue.md` 应承接本层和 `154`：把 full archive rollup 与 checker report lockfile 的 pass/fail/critical/mutation/smoke fixture family 推进为首批可写入 JSON fixture 队列。
 
 本层完成后，全库跨文件检查上卷链推进为：
 
