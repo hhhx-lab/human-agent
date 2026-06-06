@@ -248,6 +248,7 @@
 | `199_life_reality_first_runner_schema_runtime_growth_third_cycle_seed_plan.md` | first runner schema runtime growth third cycle seed plan：把 cycle closure validation finding 重新转成第三轮 seed，准备进入长期多轮成长审计 |
 | `200_life_reality_first_runner_schema_runtime_growth_longitudinal_cycle_audit_plan.md` | first runner schema runtime growth longitudinal cycle audit plan：把 `186-199` 多轮成长 trace 放入长期审计，检查方向、出生准备度、九项目标、语言关系、梦境痛苦恢复、自我成长、防遗忘和 rollback/repair 是否持续承载真实生命目标 |
 | `201_life_reality_first_runner_schema_runtime_growth_longitudinal_drift_repair_plan.md` | first runner schema runtime growth longitudinal drift repair plan：把长期循环审计 findings 转成方向、出生准备度、九项目标 carrier、语言关系、梦境痛苦恢复、自我成长、防遗忘、rollback/release 和一致性修复单元 |
+| `202_life_reality_first_runner_schema_runtime_growth_longitudinal_repair_archive_plan.md` | first runner schema runtime growth longitudinal repair archive plan：把长期漂移修复写成可再读取、可再激活、可再巩固、可防遗忘并能进入下一轮 replay/shadow 的长期生命档案 |
 
 ## 项目术语
 
@@ -339,3 +340,4 @@
 - `199_life_reality_first_runner_schema_runtime_growth_third_cycle_seed_plan.md` 把 cycle closure validation 推进到 third cycle seed 层：closure finding 必须转成 observation、direction、birth readiness、life target、language relationship、dream pain、self growth、anti-forgetting、rollback repair 和 longitudinal growth seeds。
 - `200_life_reality_first_runner_schema_runtime_growth_longitudinal_cycle_audit_plan.md` 把 third cycle seed 推进到长期循环审计层：多轮 trace、方向漂移、出生准备度趋势、九项目标 carrier、语言关系链、梦境痛苦恢复、自我成长、防遗忘和 rollback/repair 必须共同生成 longitudinal findings，并把修复入口交给 `201`。
 - `201_life_reality_first_runner_schema_runtime_growth_longitudinal_drift_repair_plan.md` 把长期循环审计推进到漂移修复层：每条 finding 必须进入 classification、repair unit、execution plan、receipt、digest、dashboard、stage gate 和 `202` archive handoff，保证修复能被未来数字生命回忆和回放。
+- `202_life_reality_first_runner_schema_runtime_growth_longitudinal_repair_archive_plan.md` 把长期漂移修复推进到 archive 层：repair receipt、before/after state、九项目标、语言关系、梦境痛苦、自我成长、防遗忘、rollback/release、archive graph 和 replay seed 必须共同进入 `203` replay/shadow reentry。
