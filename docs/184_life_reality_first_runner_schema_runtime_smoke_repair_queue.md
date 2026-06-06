@@ -401,7 +401,7 @@ handoff 必须包含 `runtime_smoke_repair_queue_ref`、`smoke_finding_refs`、`
 
 ## 与下一层连接
 
-`185_life_reality_first_runner_schema_runtime_smoke_archive_receipt_batch.md` 应承接本层：把 runtime smoke results、repair receipts、digest refs、dashboard/stage refs 和 archive edges 写成下一批 archive receipt。
+`185_life_reality_first_runner_schema_runtime_smoke_archive_receipt_batch.md` 已承接本层：把 runtime smoke results、repair receipts、digest refs、dashboard/stage refs 和 archive edges 写成下一批 archive receipt。
 
 `186_life_reality_first_runner_schema_runtime_smoke_observation_feedback_loop.md` 应承接 `185` 和本层：把 smoke/repair/archive 结果接回 runtime observation、direction continuity、birth readiness effect 和 growth route。
 
