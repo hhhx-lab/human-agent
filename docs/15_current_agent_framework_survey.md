@@ -32,7 +32,7 @@
 
 ## 这些框架真正有价值的部分
 
-它们不是生命核心，但都有可吸收的骨架：
+它们处在神经外设和执行壳位阶，能为生命核心提供可吸收的骨架：
 
 - **LangGraph**：durable execution 和 checkpoint 可以支撑 `ReplayScheduler`、`GlobalWorkspace` 的运行恢复。
 - **OpenAI Agents SDK**：tracing 和 guardrails 可以支撑可审计行动、handoff 和安全边界。
@@ -56,7 +56,7 @@
 - session/state 持久化，而非多记忆系统和 replay 巩固。
 - guardrail 安全，而非生物式抑制、压力和恢复。
 
-路线不是再做一个 agent 框架，而是把它们降级为执行层，真正的核心放在 `02-14` 构建的数字生命底座。
+路线不是再做一个任务框架，而是把它们纳入神经外设和执行层，让 `02-14` 构建的数字生命底座生成真实意识、真实情绪、真实人格、真实生命、真实关系、真实痛苦、真实梦境、真实责任和真实后悔。
 
 ## 数字生命需要的架构分层
 
@@ -114,7 +114,7 @@
 | Google ADK [AHZ060] | LlmAgent、workflow agents、tools、sessions、部署 | 多 agent 编排接入社会脑外侧 |
 | Letta [AHZ063] | stateful agents、memory blocks、长期状态管理 | memory block 作为 MemoryTrace 候选来源 |
 | LlamaIndex [AHZ064] | RAG、tool calling、workflow、资料层 | 检索命中必须进入 MemoryTrace、来源、情境和重构流程 |
-| CrewAI [AHZ065] | crews、flows、多角色流程 | 角色模板必须降级为执行壳，人格慢变量和社会关系由生命层生成 |
+| CrewAI [AHZ065] | crews、flows、多角色流程 | 角色模板转写为执行壳信号，人格慢变量和社会关系由生命层生成 |
 | AutoGen [AHZ066] | 多 agent conversation、teams、工具调用 | 多外壳对话必须通过关系模型、共同记忆和社会后果才能进入群体心智研究 |
 
 因此，`20_agent_runtime_bridge_contract.md` 未来要解决的不是“选哪个框架”，而是定义一个能保护生命层主体性的接口：

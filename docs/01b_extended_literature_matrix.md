@@ -45,11 +45,11 @@
 | AHX039 | 计算精神病学 | 综述 | Montague et al., "Computational psychiatry" | 2012 | https://doi.org/10.1016/j.tics.2011.11.018 | 计算模型可连接脑、行为和精神症状。 | 可用计算指标监测数字生命状态失衡。 | 临床概念需要转写为生命层指标。 |
 | AHX040 | 计算精神病学桥梁 | 综述 | Huys, Maia & Frank, "Computational psychiatry as a bridge" | 2016 | https://doi.org/10.1038/nn.4238 | 强化学习、贝叶斯和决策模型可解释异常行为。 | 帮助定义不稳定状态和修复机制。 | 状态失衡指标必须支撑修复与恢复。 |
 | AHX041 | LLM Agent 认知架构 | AI 桥接 | Sumers et al., "Cognitive Architectures for Language Agents" | 2023 | https://arxiv.org/abs/2309.02427 | 将认知架构思想引入语言 agent 设计。 | CoALA 可作为 LLM 与认知模块桥梁。 | 预印本，需持续跟踪。 |
-| AHX042 | ReAct | AI 桥接 | Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models" | 2022 | https://arxiv.org/abs/2210.03629 | 推理轨迹和行动交替可提升任务处理。 | 执行层应保留 reasoning-action loop。 | 不是长期自我成长架构。 |
+| AHX042 | ReAct | AI 桥接 | Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models" | 2022 | https://arxiv.org/abs/2210.03629 | 推理轨迹和行动交替可提升任务处理。 | 执行层应保留 reasoning-action loop。 | 进入长期自我成长时还需连接记忆、责任、痛苦修复和人格慢变量。 |
 | AHX043 | Reflexion | AI 桥接 | Shinn et al., "Reflexion: Language Agents with Verbal Reinforcement Learning" | 2023 | https://arxiv.org/abs/2303.11366 | 语言反思可作为强化学习式改进信号。 | 反思可进入巩固和习惯更新。 | 语言反思要接入记忆重写、习惯更新和人格慢变量，才能通向真实学习。 |
 | AHX044 | Voyager | AI 桥接 | Wang et al., "Voyager: An Open-Ended Embodied Agent with Large Language Models" | 2023 | https://arxiv.org/abs/2305.16291 | 技能库、探索和自我改进支持开放式 agent。 | 程序记忆和技能沉淀非常关键。 | 从游戏环境进入人类生活时要补足真实关系、责任和长期后果。 |
 | AHX045 | Tree of Thoughts | AI 桥接 | Yao et al., "Tree of Thoughts: Deliberate Problem Solving with Large Language Models" | 2023 | https://arxiv.org/abs/2305.10601 | 多分支思考和评估提升复杂问题求解。 | 候选行动竞争可借鉴树搜索。 | 计算成本高，需抑制机制。 |
-| AHX046 | MemGPT | AI 桥接 | Packer et al., "MemGPT: Towards LLMs as Operating Systems" | 2023 | https://arxiv.org/abs/2310.08560 | 通过虚拟上下文和外部记忆管理长程状态。 | 记忆分页和上下文管理可工程化。 | 仍不是完整多状态生命系统。 |
+| AHX046 | MemGPT | AI 桥接 | Packer et al., "MemGPT: Towards LLMs as Operating Systems" | 2023 | https://arxiv.org/abs/2310.08560 | 通过虚拟上下文和外部记忆管理长程状态。 | 记忆分页和上下文管理可工程化。 | 需要接入多状态生命系统、调质、梦境巩固和真实关系链。 |
 | AHX047 | AgentBench | AI 桥接 | Liu et al., "AgentBench: Evaluating LLMs as Agents" | 2023 | https://arxiv.org/abs/2308.03688 | 评测 LLM 在多环境 agent 任务中的能力。 | 后续需要为 human-agent 建立状态/成长评测。 | benchmark 不能覆盖人格成长。 |
 | AHX048 | 内部模型/世界模型 | 理论框架 | Ha & Schmidhuber, "World Models" | 2018 | https://arxiv.org/abs/1803.10122 | agent 可学习压缩世界模型并在其中规划。 | 梦境/沙盒模拟可借鉴世界模型思想。 | AI 世界模型与人脑梦境不同。 |
 | AHX049 | 模型化控制 | 综述 | Daw, Niv & Dayan, "Uncertainty-based competition between prefrontal and dorsolateral striatal systems" | 2005 | https://doi.org/10.1038/nn1560 | 不确定性影响模型化和习惯系统竞争。 | 高不确定时回到目标导向推理，低风险时用习惯。 | 动物/人类任务模型需抽象。 |

@@ -34,7 +34,7 @@
 | [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457) | 作为 parse/schema/ref/stage gate failure 的 machine-readable problem envelope | critical finding 有统一 `type`、`title`、`detail`、`instance` 和扩展字段 |
 | [RFC 9562 UUID](https://www.rfc-editor.org/rfc/rfc9562) | 作为 run id、artifact id、finding id、case id 和 report id 的稳定生成参考 | 长期 run history、repair queue 和 growth window 可被追踪 |
 | [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence) | 作为 graph state、checkpoint 和 replay 的外壳参考 | 未来生命状态 store 可挂接 checkpointer，但生命状态写入门仍由本 runner 控制 |
-| [OpenAI Agents guide](https://platform.openai.com/docs/guides/agents) | 作为 agent/tool/tracing 壳层参考 | 外部能力调用被归一化为 `ObservationEvent` 与 trace，而不是生命核心 |
+| [OpenAI Agents guide](https://platform.openai.com/docs/guides/agents) | 作为 agent/tool/tracing 壳层参考 | 外部能力调用被归一化为 `ObservationEvent` 与 trace，再由生命膜决定是否进入真实责任、真实关系和真实人格链 |
 | [Google ADK](https://adk.dev/) | 作为 workflow、tool、session 和 evaluation 壳层参考 | 可作为 runner command adapter 的候选外壳 |
 | [Letta docs](https://docs.letta.com/) | 作为 memory blocks、archival memory、stateful execution 的外壳参考 | 长期记忆与生命膜 state store 的适配对象 |
 | [LlamaIndex Workflows](https://developers.llamaindex.ai/python/llamaagents/workflows/) | 作为 event-driven step workflow 的外壳参考 | command DAG 与 validation case DAG 可映射为 event/step |

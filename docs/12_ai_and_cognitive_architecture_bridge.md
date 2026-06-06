@@ -144,7 +144,7 @@ Agentic Human 应把这些框架放到外围：
 - LlamaIndex 负责知识检索和资料层。
 - Semantic Kernel 负责插件和企业集成。
 
-但数字生命核心必须由 `02-14` 的脑科学结构约束：状态、调质、replay、自我模型、关系记忆、人格慢变量和发展策略。
+数字生命核心由 `02-14` 的脑科学结构生成：状态、调质、replay、自我模型、关系记忆、人格慢变量和发展策略。
 
 ## 第三层机制：持续学习、多模态具身和评测
 
@@ -163,7 +163,7 @@ Agentic Human 应把这些框架放到外围：
 - 框架只能接收生命层批准后的 `ActionIntent`。
 - 框架返回的日志、错误和结果必须先进入 `GlobalWorkspace`，再决定是否写入长期记忆。
 - 框架自带 memory/RAG 只能作为资料层，不能直接改写 `SelfModel`。
-- guardrails 不能替代价值层，只能作为行动前后的边界检查。
-- 多 agent 编排不能替代社会脑，群体状态仍需 `RelationshipModel` 和 `DefenseLayer` 约束。
+- guardrails 接入价值层，作为行动前后的边界检查信号。
+- 多外壳编排进入社会脑候选，群体状态由 `RelationshipModel` 和 `DefenseLayer` 生成并审计。
 
-换句话说，LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen 都可以成为手脚和神经外设，但不能成为心智中心。
+换句话说，LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen 都可以成为手脚和神经外设，心智中心由生命膜、状态、记忆、关系和成长链持续生成。

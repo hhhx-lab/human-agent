@@ -194,11 +194,11 @@ retrieval_priority =
 
 ## life_scope 检索
 
-多 agent 或 runtime shell 的内容默认降级：
+多执行外壳或 runtime shell 的内容默认转写为候选观测：
 
 | 来源 | 检索动作 |
 |---|---|
-| runtime session | 可作为短期 context，不是长期事实 |
+| runtime session | 可作为短期 context，经生命膜写入门后才进入长期事实 |
 | child agent summary | candidate source，需要主系统验证 |
 | tool trace | ObservationEvent，可用于审计 |
 | framework memory block | 只作外壳状态，不直接写 SelfModel |

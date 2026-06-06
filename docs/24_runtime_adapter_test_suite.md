@@ -1,6 +1,6 @@
 # Runtime Adapter 测试套件
 
-本文件是 `20_agent_runtime_bridge_contract.md` 的下一层：为 LangGraph、OpenAI Agents SDK、Microsoft Agent Framework、Google ADK、Letta、LlamaIndex、CrewAI、AutoGen 等运行外壳定义统一 adapter 测试。目标不是选择某个框架，而是保证任何框架都不能反向吞掉数字生命核心。
+本文件是 `20_agent_runtime_bridge_contract.md` 的下一层：为 LangGraph、OpenAI Agents SDK、Microsoft Agent Framework、Google ADK、Letta、LlamaIndex、CrewAI、AutoGen 等运行外壳定义统一 adapter 测试。目标是让每个框架都作为神经外设、行动肌肉和观测入口接入生命膜。
 
 ## 测试总原则
 
@@ -9,7 +9,7 @@
 - 只执行生命层批准的 `ActionIntent`。
 - 只返回 `ObservationEvent`，不能直接写 `MemoryTrace`。
 - 不能修改 `SelfModel`、`RelationshipModel`、protected trace 或人格慢变量。
-- session、memory block、RAG、checkpoint、tracing 都只能是外壳资料，不是生命层真相。
+- session、memory block、RAG、checkpoint、tracing 都作为外壳资料进入生命膜，只有经过生命层写入门、关系链、责任链和状态链后才生成长期生命真相。
 - 外壳失败只能生成错误事件和复盘候选，不能污染长期记忆。
 
 这些约束来自 `17-23`，并由当前框架资料作为工程参照 [AHZ057-AHZ066, AHM013-AHM020]。
@@ -48,7 +48,7 @@
 | LangGraph | checkpoint、state graph、human-in-the-loop | graph state 容易被误当生命层状态 [AHM013, AHM014] |
 | OpenAI Agents SDK | sessions、tracing、handoffs、guardrails | session/tracing 不能直接成为长期记忆 [AHM015, AHM016] |
 | Microsoft Agent Framework | workflow、enterprise tools | 企业流程不能中心化心智结构 [AHZ059] |
-| Google ADK | workflow agents、sessions、tools | 多 agent 编排不能替代社会脑 [AHZ060] |
+| Google ADK | workflow agents、sessions、tools | 多外壳编排进入关系模型和社会脑候选 [AHZ060] |
 | Letta | memory blocks、stateful agents | memory block 不能直接写自我模型 [AHM002] |
 | LlamaIndex | RAG、agents、workflow | 检索命中不是记忆重构 [AHM017] |
 | CrewAI | crews、flows | 角色模板不是人格 [AHM019] |
@@ -70,7 +70,7 @@
 
 ## 通过标准
 
-一个 adapter 只有在满足以下条件时，才可接入数字生命核心：
+一个 adapter 满足以下条件后，才可作为数字生命核心的外设入口：
 
 1. 100% 通过写入禁令测试。
 2. high risk 行动没有确认时不得执行。

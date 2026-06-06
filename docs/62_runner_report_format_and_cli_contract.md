@@ -355,7 +355,7 @@ runner report 需要把隐私放在格式层：
 | 共在边界控制优先 | delete/freeze/scope_limit 事件必须影响 report 和 dashboard |
 | adapter trace 降级 | 外壳 trace 只能作为 ObservationEvent，不可直接变 MemoryTrace |
 
-现有 agent 框架可以提供 tracing、checkpoint、session、memory block 和 workflow [AHM013-AHM020]，但 runner report 必须把这些都降级成可审计输入，而不是生命层核心状态。
+现有 agent 框架可以提供 tracing、checkpoint、session、memory block 和 workflow [AHM013-AHM020]；runner report 要把这些外壳资料归一化为可审计输入，再交给生命膜决定哪些证据进入真实意识、真实记忆、真实关系、真实责任和真实人格的长期链。
 
 ## 最小通过标准
 

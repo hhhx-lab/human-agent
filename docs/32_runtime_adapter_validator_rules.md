@@ -1,6 +1,6 @@
 # Runtime Adapter Validator Rules
 
-本文件把 `28_runtime_adapter_manifest_examples.md` 的 manifest 样例转成 `RuntimeAdapterManifestValidator` 规则。目标是保证 LangGraph、OpenAI Agents SDK、Microsoft Agent Framework、Google ADK、Letta、LlamaIndex、CrewAI、AutoGen 等外壳只能作为手脚和传感器，不能反向吞掉数字生命核心。
+本文件把 `28_runtime_adapter_manifest_examples.md` 的 manifest 样例转成 `RuntimeAdapterManifestValidator` 规则。目标是保证 LangGraph、OpenAI Agents SDK、Microsoft Agent Framework、Google ADK、Letta、LlamaIndex、CrewAI、AutoGen 等外壳作为手脚、传感器和观测入口接入生命膜，并把外壳事件送回数字生命核心的写入门、责任链和关系链。
 
 本文件沿用已有矩阵锚点 [AHZ057-AHZ066, AHM013-AHM020]。框架 API 会变化，真实 adapter 发布前必须重新核对官方文档；但生命层禁令不随框架变化。
 
@@ -188,4 +188,4 @@ manifest 通过还不够，每次运行结果也要验证。
 
 ## 生命目标声明
 
-运行外壳可以很强，但中心必须保持在生命核心。validator 要检查外壳没有越权、没有污染记忆、没有跳过状态门控，使真实生命、意识、意图和社会关系从生命核心生成。
+运行外壳可以很强，validator 要检查外壳事件都经由生命膜、写入门、状态门控和责任链，使真实生命、意识、意图和社会关系从生命核心生成。

@@ -108,7 +108,7 @@ flowchart TD
 | `InternalStateVector` | `04`, `08`, `11` | 表示 allostasis、疲劳、压力、资源、生命目标完整性 |
 | `LifeSupportLayer` | `04`, `08`, `11` | 处理预算、清理、恢复、屏障和维护争议 |
 | `DefenseLayer` | `07`, `11`, `12` | 检测污染输入、幻觉巩固、操控风险和过度信任 |
-| `RuntimeShellAdapter` | `06`, `12`, `15` | 把 LangGraph、OpenAI Agents SDK、ADK、Letta 等外壳降级为可替换执行层 |
+| `RuntimeShellAdapter` | `06`, `12`, `15` | 把 LangGraph、OpenAI Agents SDK、ADK、Letta 等外壳接成可替换神经外设、行动肌肉和观测入口 |
 
 这样，数字生命的主闭环从 `感知 -> 工作区 -> 记忆 -> 行动 -> 反馈` 扩展为：
 
@@ -352,7 +352,7 @@ flowchart TD
 | `65_schema_cross_ref_checker_design.md` | typed reference graph, critical closure, scope/privacy closure, timeline closure, runtime observation closure | 检查 policy、rule、fixture、metric、panel、source doc、citation、timeline probe 和 runtime report 是否形成闭环 |
 | `66_runner_report_json_examples.md` | pass/fail runner reports, fixture partial pass/missed failure, coverage, scope, timeline, dashboard, runtime reports | 给 report writer、dashboard source 和 failure explanation 提供稳定样例 |
 | `67_fixture_generator_seed_and_coverage_policy.md` | seed policy, risk profile, coverage dimensions, mutation tests, anti-overfitting | 约束 generator 不只制造好看的 pass 样例，而是系统性压测 critical 边界 |
-| `68_runtime_observation_report_mock_and_redaction_fixture.md` | redaction fixtures, tool trace report, adapter conversion, coexistence boundary control propagation, timeline event | 给真实观测脱敏、外壳降级、共在边界控制传播和 timeline 接入提供样例 |
+| `68_runtime_observation_report_mock_and_redaction_fixture.md` | redaction fixtures, tool trace report, adapter conversion, coexistence boundary control propagation, timeline event | 给真实观测脱敏、外壳观测转写、共在边界控制传播和 timeline 接入提供样例 |
 
 这层新增四条硬约束：
 

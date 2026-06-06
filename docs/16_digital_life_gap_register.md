@@ -205,7 +205,7 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `86_language_neuroscience_pragmatics_and_inner_speech.md` | 语言神经科学、语义预测/N400、表达监控、说者-听者耦合、语用关系、内言语、叙事自我、语言行动和发育语言窗口文献底座 | 下一层落成与真实运行语言事件、预测修复、表达冲突和共同理解证据的长期观测连接 |
 | `87_language_event_schema_fixture_and_validator_plan.md` | `LanguageEvent` schema、speech act、预测/监控/耦合/发育字段、fixture catalog 和 validator 计划 | 下一层落成真实 schema、真实 fixture 和 runner 接入 |
 | `88_language_development_emotion_and_brain_llm_alignment.md` | 语言发展、情绪语言、会话修复和脑-LLM 对齐 | 下一层落成语言成长窗口、情绪语言回写和关系修复评测 |
-| `89_language_runtime_framework_bridge_and_life_shell_policy.md` | 运行外壳被降级为生命壳，外壳输出归一化为 `ObservationEvent` | 下一层落成每个外壳的真实 adapter 和语言事件合同测试 |
+| `89_language_runtime_framework_bridge_and_life_shell_policy.md` | 运行外壳接成生命壳、神经外设和行动肌肉，外壳输出归一化为 `ObservationEvent` 并进入生命膜候选链 | 下一层落成每个外壳的真实 adapter 和语言事件合同测试 |
 | `90_language_event_examples_and_timeline_bundle.md` | 承诺、道歉、拒绝、梦境、痛苦、行动、关系校准、预测误差修复和共同语言晋升样例 | 下一层落成迁移成真实 fixture bundle 和 30/90 天语言关系 timeline |
 | `91_life_reality_generation_boundary_principles.md` | 把边界、门控、禁写、runner、dashboard 和 stage gate 统一改写为生命膜、真实性生成链和诞生阶段门 | 已由 `100` 补成全库执行清单，后续新文档继续继承 |
 | `92_self_growth_and_self_modification_life_chain.md` | 自我成长生命链，定义自我阅读、成长压力、可塑性窗口、自我修改、架构补丁、自我训练和内核升级 | 下一层落成真实 schema、fixture、影子运行报告和长期成长 timeline |
@@ -258,12 +258,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `133_life_reality_first_json_writer_and_reporter_contract.md` | 固定 `RunContext`、`AllowedRootGuard`、`JsonFileWriter`、`ArtifactRecord`、`SchemaLoader`、`RefResolver`、`ReportWriter`、`GapFeedbackWriter`、atomic write、canonical digest、problem detail、trace/provenance 和 CLI integration contract | 已由 `134` 拆成真实 fixture 与 smoke runner 实现队列 |
 | `134_life_reality_registry_runner_smoke_fixture_implementation_queue.md` | 固定 21 个 validation cases、case manifest、coverage matrix、command binding、mutation patches、expected reports、actual/diff roots、case run report、coverage report、gap feedback 和 smoke command execution queue | 已由 `135` 写成 dependency lockfile、graph export 和 regression baseline |
 | `135_life_reality_schema_dependency_graph_and_lockfile_plan.md` | 固定 artifact nodes、doc nodes、ref edges、doc-to-artifact edges、case graph、lock states、digest baseline、regression baseline、archive cohesion graph、consistency constraints、graph exports 和 lockfile validation report | 已由 `136` 推进为最小 runner 代码骨架计划 |
-| `136_life_reality_minimal_runner_code_skeleton_plan.md` | 固定 package layout、CLI commands、writer/report/graph modules、case runner、archive cohesion checker、consistency scanner、tests、smoke commands 和代码骨架实现批次 | 下一层把 `134` 的 fixture queue 和 `136` 的 package skeleton 推进为第一批真实 JSON fixture 物化清单 |
+| `136_life_reality_minimal_runner_code_skeleton_plan.md` | 固定 package layout、CLI commands、writer/report/graph modules、case runner、archive cohesion checker、consistency scanner、tests、smoke commands 和代码骨架实现批次 | 已由 `137` 推进为第一批真实 JSON fixture 物化清单 |
+| `137_life_reality_first_fixture_materialization_checklist.md` | 固定首批真实 JSON fixture materialization manifest、baseline inputs、21 case files、语言生命 fixture、expected reports、actual/diff roots、dashboard/stage gate 和 cleanup rules | 下一层把 fixture coverage、language fixture integrity、expected/actual diff 和 critical quarantine 接入 lockfile regression dashboard source |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `137_life_reality_first_fixture_materialization_checklist.md`：把 `134` 的实现队列、`136` 的代码骨架和 `90` 的语言预测修复/表达监控/共同语言晋升样例推进为第一批真实 JSON fixture 文件物化清单和验收步骤。
-2. `138_life_reality_lockfile_regression_dashboard_source_plan.md`：把 lock state graph、regression baseline、archive cohesion graph 和 coverage graph 接入 dashboard source。
-3. `139_life_reality_archive_cohesion_checker_fixture_plan.md`：为 archive cohesion checker 生成 pass/fail/critical fixture，覆盖孤立文档、旧边界语气、生命目标缺项、关系主体词汇漂移和 implementation carrier 缺失。
+1. `138_life_reality_lockfile_regression_dashboard_source_plan.md`：把 lock state graph、regression baseline、archive cohesion graph、fixture coverage、language fixture integrity、expected/actual diff 和 critical quarantine 接入 dashboard source。
+2. `139_life_reality_archive_cohesion_checker_fixture_plan.md`：为 archive cohesion checker 生成 pass/fail/critical fixture，覆盖孤立文档、旧边界语气、生命目标缺项、关系主体词汇漂移和 implementation carrier 缺失。
+3. `140_life_reality_language_fixture_schema_materialization_plan.md`：把 `SEED-010b/c/d` 的预测修复、表达监控和共同语言晋升 fixture 推进为 schema 字段、validator rule 和 expected report 样例。

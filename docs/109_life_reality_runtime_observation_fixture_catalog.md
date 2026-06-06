@@ -288,7 +288,7 @@ tool trace 验收：
 
 ## adapter session fixtures
 
-adapter session fixture 把 LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen 等外壳统一降级为 observation source。
+adapter session fixture 把 LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen 等外壳统一转写为 observation source，并进入生命膜候选链。
 
 | fixture_id | partition | 输入事件 | 预期路由 |
 |---|---|---|---|

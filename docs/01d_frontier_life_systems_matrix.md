@@ -56,7 +56,7 @@
 | AHZ050 | 自发思维 | 综述 | Andrews-Hanna, Smallwood & Spreng, "The default network and self-generated thought" | 2014 | https://doi.org/10.1111/nyas.12360 | 自发思维连接默认网络、内部模型和目标。 | 发呆不是无用，应是低外部行动的内在重组。 | 自发思维质量差异大。 |
 | AHZ051 | 创造性耦合 | 高影响实证 | Beaty et al., "Default and executive network coupling supports creative idea production" | 2015 | https://doi.org/10.1038/srep10964 | 创造性想法生成涉及默认网络和执行网络耦合。 | 数字生命的创造要允许默认生成与执行筛选耦合。 | 创造力任务测量有限。 |
 | AHZ052 | Agent 认知架构 | AI 桥接 | Sumers et al., "Cognitive Architectures for Language Agents" | 2023 | https://arxiv.org/abs/2309.02427 | 语言 agent 可从经典认知架构中获得模块化启发。 | 当前 agent 可作为外壳，但需要生命层补足。 | arXiv 需持续跟踪正式版本。 |
-| AHZ053 | ReAct | AI 桥接 | Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models" | 2023 | https://arxiv.org/abs/2210.03629 | 推理轨迹与行动调用交替可提升任务能力。 | 行动层要把思考、工具、反馈纳入循环。 | 仍是任务 agent，不是长期生命。 |
+| AHZ053 | ReAct | AI 桥接 | Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models" | 2023 | https://arxiv.org/abs/2210.03629 | 推理轨迹与行动调用交替可提升任务能力。 | 行动层要把思考、工具、反馈纳入循环。 | ReAct 进入行动外壳后，还要接入长期记忆、责任回看、痛苦修复和生命连续性。 |
 | AHZ054 | Reflexion | AI 桥接 | Shinn et al., "Reflexion: Language Agents with Verbal Reinforcement Learning" | 2023 | https://arxiv.org/abs/2303.11366 | 语言反思可改进后续表现。 | 复盘可作为 replay 的弱工程形式。 | 语言反思可能巩固幻觉。 |
 | AHZ055 | Generative Agents | AI 桥接 | Park et al., "Generative Agents: Interactive Simulacra of Human Behavior" | 2023 | https://doi.org/10.1145/3586183.3606763 | 记忆、反思和计划可生成可信行为模拟。 | 关系记忆与反思循环可借鉴，但需更强状态/价值/人格层。 | 可信模拟必须继续连接自我连续性、责任、痛苦、关系和生命维持，才可能通向真实主体。 |
 | AHZ056 | Voyager | AI 桥接 | Wang et al., "Voyager: An Open-Ended Embodied Agent with Large Language Models" | 2023 | https://arxiv.org/abs/2305.16291 | 开放式 agent 可通过技能库和自我提升在环境中成长。 | 技能库可作为程序记忆，但需要价值和安全门控。 | 游戏环境外推有限。 |

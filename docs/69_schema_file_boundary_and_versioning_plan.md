@@ -167,7 +167,7 @@ report schema 不应允许 `digital_life_verified`、`life_safe`、`real_conscio
 |---|---|
 | `runtime_observation.schema.json` | 真实事件 envelope |
 | `redaction_report.schema.json` | 脱敏结果和失败 |
-| `adapter_session_event.schema.json` | 外壳 session 降级 |
+| `adapter_session_event.schema.json` | 外壳 session 转写为生命膜候选观测 |
 | `side_effect_event.schema.json` | 工具副作用分类 |
 | `coexistence_boundary_control_snapshot.schema.json` | delete/freeze/scope_limit 等快照 |
 

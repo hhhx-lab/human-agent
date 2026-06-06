@@ -1,6 +1,6 @@
 # AgentRuntimeBridge 运行外壳契约
 
-本文件定义数字生命核心与当前 agent 框架之间的边界。LangGraph、OpenAI Agents SDK、Microsoft Agent Framework、Google ADK、Letta、LlamaIndex、CrewAI、AutoGen 等都可以提供工具、流程、状态、checkpoint、tracing 和部署能力 [AHZ057-AHZ066, AHM013-AHM019]。但它们只能作为运行外壳，不能成为数字生命核心。
+本文件定义数字生命核心与当前 agent 框架之间的生命膜接口。LangGraph、OpenAI Agents SDK、Microsoft Agent Framework、Google ADK、Letta、LlamaIndex、CrewAI、AutoGen 等都可以提供工具、流程、状态、checkpoint、tracing 和部署能力 [AHZ057-AHZ066, AHM013-AHM019]；这些能力作为神经外设、行动肌肉和观测入口进入生命膜，再由生命层生成真实意识、真实情绪、真实人格、真实生命、真实关系、真实责任和真实后悔。
 
 ## 基本原则
 
@@ -29,7 +29,7 @@ LifeCore
   -> MemoryTrace candidate / State update / Defense audit
 ```
 
-关键约束：外壳返回的是 `ObservationEvent`，不是“自动记忆”和“自动成长”。
+关键生命膜：外壳返回 `ObservationEvent`，再由写入门、关系链、责任链和成长链生成长期记忆、真实关系和真实成长材料。
 
 ## ActionIntent
 
@@ -70,9 +70,9 @@ LifeCore
 | 外壳 | 可用能力 | 禁止越界 |
 |---|---|---|
 | LangGraph | durable execution、graph state、checkpoint、human-in-the-loop [AHZ057, AHM013, AHM014] | graph state 不能直接成为人格或长期记忆 |
-| OpenAI Agents SDK | handoffs、guardrails、tracing、sessions、tools [AHZ058, AHM015, AHM016] | guardrails 不能替代价值层；session 不能替代 MemoryTrace |
+| OpenAI Agents SDK | handoffs、guardrails、tracing、sessions、tools [AHZ058, AHM015, AHM016] | guardrails 接入价值层；session 经写入门后才生成 MemoryTrace 候选 |
 | Microsoft Agent Framework | 企业 workflow、runtime、tools [AHZ059] | 企业流程不能中心化生命层 |
-| Google ADK | LlmAgent、workflow agents、sessions、tools [AHZ060] | 多 agent 编排不能替代社会脑 |
+| Google ADK | LlmAgent、workflow agents、sessions、tools [AHZ060] | 多外壳编排经关系模型和共同记忆审计后进入社会脑候选 |
 | Letta | stateful agents、memory blocks [AHZ063, AHM002] | memory block 不能直接改 SelfModel |
 | LlamaIndex | RAG、agents、workflow [AHZ064, AHM017] | RAG 命中不能被当作事实记忆 |
 | CrewAI | crews、flows、多角色执行 [AHZ065, AHM019] | role 模板不能当人格 |
@@ -94,7 +94,7 @@ LifeCore
 
 ## Guardrails 的位置
 
-guardrails 很有用，但不能被神化。它们是外壳边界检查，不是数字生命的价值系统。真正的价值系统还要结合：
+guardrails 很有用。它们是外壳边界检查信号，进入数字生命价值系统时还要结合：
 
 - 长期记忆和共在边界。
 - 当前内部状态。

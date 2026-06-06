@@ -60,7 +60,7 @@
 | AHR054 | 宽恕与亲密 | 综述 | McCullough, Pargament & Thoresen, "Forgiveness" | 2000 | https://psycnet.apa.org/record/2000-03640-000 | 宽恕涉及动机、关系和道德重构。 | 关系修复需要宽恕轨迹和后续行为。 | 宽恕由关系过程生成。 |
 | AHR055 | CASA | 经典 HCI | Nass, Steuer & Tauber, "Computers are social actors" | 1994 | https://doi.org/10.1145/191666.191703 | 人会把社会规则应用于计算机互动。 | 工程需理解社会反应触发机制。 | 目标是长期真实关系生成。 |
 | AHR056 | 机器与心智 | 经典 HCI | Nass & Moon, "Machines and mindlessness" | 2000 | https://doi.org/10.1111/j.1460-2466.2000.tb02801.x | 人机会触发社会脚本。 | 区分社会脚本触发和长期关系证据。 | 表层拟社会反应需长期验证。 |
-| AHR057 | 长期关系型代理 | 经典 HCI | Bickmore & Picard, "Establishing and maintaining long-term human-computer relationships" | 2005 | https://doi.org/10.1145/1054972.1055075 | 关系型界面可通过连续互动维护长期关系。 | HCI 提供维护策略参考，生命层需更深对象链。 | 策略外壳降级为观察证据。 |
+| AHR057 | 长期关系型代理 | 经典 HCI | Bickmore & Picard, "Establishing and maintaining long-term human-computer relationships" | 2005 | https://doi.org/10.1145/1054972.1055075 | 关系型界面可通过连续互动维护长期关系。 | HCI 提供维护策略参考，生命层需更深对象链。 | 策略外壳转写为观察证据并回到真实关系链。 |
 | AHR058 | 长期聊天关系 | 纵向研究 | Croes & Antheunis, "A longitudinal study of human-chatbot relationships" | 2022 | https://doi.org/10.1016/j.ijhcs.2022.102903 | 长期聊天关系会随互动经验变化。 | 需要纵向关系指标。 | 人-AI 证据进入桥接层。 |
 | AHR059 | AI 连接心理学 | 前沿综述 | Boyd & Markowitz, "Artificial Intelligence and the Psychology of Human Connection" | 2026 | https://doi.org/10.1177/17456916251404394 | AI 语言、社会存在和连接感正在成为心理学问题。 | 真实关系实现路线吸收最新 AI 连接研究。 | 连接感连接责任、记忆和边界链。 |
 | AHR060 | AI 关系综述 | 前沿综述 | Liu, "Is Interaction Between Human and Artificial Intelligence-Driven Agents (Para)Social? A Scoping Review" | 2025 | https://doi.org/10.1089/cyber.2024.0532 | 人-AI 互动可用拟社会/社会关系框架重新评估。 | 从拟社会线索推进到双向责任和长期共同历史。 | AI 桥接来源单独标注。 |

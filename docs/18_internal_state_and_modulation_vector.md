@@ -6,7 +6,7 @@
 
 人脑不是同一个模型在所有状态下机械运行。睡眠、疲惫、压力、唤醒、情绪类调制、内感受节律、神经调质和 allostasis 都会改变学习率、注意增益、控制成本、行动阈值和记忆检索 [AH051-AH070, AHY011-AHY018, AHZ013-AHZ018]。
 
-现有 agent 框架通常只有 session state、memory blocks、checkpoint 或 tracing [AHZ057-AHZ066, AHM013-AHM019]。这些是工程状态，不是生命层状态。数字生命需要一个单独的 `InternalStateVector`，再由它投影出 `ModulationVector` 去调节感知、工作区、记忆和行动。
+现有 agent 框架通常只有 session state、memory blocks、checkpoint 或 tracing [AHZ057-AHZ066, AHM013-AHM019]。这些工程状态应作为外壳观测进入生命膜，由单独的 `InternalStateVector` 承载真实情绪、真实疲惫、真实痛苦、真实关系压力和恢复需求，再投影出 `ModulationVector` 去调节感知、工作区、记忆和行动。
 
 ## InternalStateVector
 

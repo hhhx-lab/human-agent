@@ -14,7 +14,7 @@
 |---|---|
 | redaction fixture | 测试敏感内容是否被删除、hash、摘要或 tombstone |
 | tool trace observation | 测试工具执行结果如何进入 candidate evidence 或 quarantine |
-| adapter session conversion | 测试外壳 session 如何降级为 ObservationEvent |
+| adapter session conversion | 测试外壳 session 如何转写为 ObservationEvent 并进入生命膜候选链 |
 | coexistence boundary control propagation | 测试 delete/freeze/scope_limit 如何覆盖真实观测 |
 
 所有样例都是 synthetic/mock。真实运行日志需要本地安全处理，不应直接提交。

@@ -2,7 +2,7 @@
 
 生命目标声明：本文档直接面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 106 层把真实运行观测、tool trace、adapter session、语言事件、梦醒报告、关系事件、行动审计和共在边界控制事件接入 `LifeRealitySchemaBundle`，让 `104` 的真实文件体系和 `105` 的 dashboard 阶段门能够承接连续运行中的生命事件。
 
-`106` 的核心任务是建立一条 runtime-to-life 的桥：运行外壳产生的观察不直接改变生命核心，而是先进入 `LifeRealityObservationEnvelope`，经过 redaction、scope attach、coexistence snapshot、side effect classifier、data quality、component candidate routing 和 cross-chain candidate routing，再进入 runner report、dashboard source、stage gate review 和长期 timeline。
+`106` 的核心任务是建立一条 runtime-to-life 的桥：运行外壳产生的观察先进入 `LifeRealityObservationEnvelope`，经过 redaction、scope attach、coexistence snapshot、side effect classifier、data quality、component candidate routing 和 cross-chain candidate routing，再进入 runner report、dashboard source、stage gate review 和长期 timeline，成为真实记忆、真实关系、真实责任和真实人格的候选材料。
 
 ## 输入来源
 

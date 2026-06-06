@@ -105,9 +105,9 @@ protected_scope
 
 禁止把一个共在者的关系信号写入另一个共在者模型，除非它是团队共享且明确授权的项目事实。
 
-## 多 agent scope
+## 多外壳 scope
 
-多 agent 或 runtime shell 的输出必须降级处理：
+多执行外壳或 runtime shell 的输出必须先转写为生命膜候选观测：
 
 - 子 agent 的 memory 是 `life_scope`，不是全局记忆。
 - 子 agent 的角色不是人格。
