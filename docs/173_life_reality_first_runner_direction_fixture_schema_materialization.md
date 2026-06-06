@@ -328,7 +328,7 @@ smoke report 必须进入 `PatchExecutionReport172` 的 completion receipt。
 
 ## 与下一层连接
 
-`174_life_reality_birth_readiness_fixture_schema_materialization.md` 应承接 `171`、`172` 和本层：把 birth readiness fixture manifest、target claim、evidence family、carrier matrix、cross-chain closure、false open guard 和 patch unit ids 推进为 schema 物化计划。
+`174_life_reality_birth_readiness_fixture_schema_materialization.md` 已承接 `171`、`172` 和本层：把 birth readiness fixture manifest、target claim、evidence family、carrier matrix、cross-chain closure、false open guard 和 patch unit ids 推进为 schema 物化计划。
 
 `175_life_reality_first_runner_patch_execution_smoke_queue.md` 应承接 `172` 和本层：把 patch execution contract 与 direction schema materialization 转成 smoke manifest、future command queue、expected reports、dashboard source、stage review 和 archive receipt。
 
