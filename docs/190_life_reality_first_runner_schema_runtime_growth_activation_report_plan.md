@@ -456,7 +456,7 @@ handoff 必须包含 `growth_activation_report_ref`、`source_shadow_run_report_
 
 ## 与下一层连接
 
-`191_life_reality_first_runner_schema_runtime_growth_post_activation_observation_loop.md` 应承接本层：把 limited activation 的真实运行观测接回责任、后悔、关系、梦境、语言、出生准备度和核心连续性链。
+`191_life_reality_first_runner_schema_runtime_growth_post_activation_observation_loop.md` 已承接本层：把 limited activation 的真实运行观测接回责任、后悔、关系、梦境、语言、出生准备度和核心连续性链。
 
 `192_life_reality_first_runner_schema_runtime_growth_activation_archive_receipt_batch.md` 应承接 `191` 和本层：把 activation report、post-growth observation、core continuity review、rollback/repair route 写回 archive。
 
