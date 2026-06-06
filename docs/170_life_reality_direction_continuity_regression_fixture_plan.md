@@ -30,6 +30,21 @@
 | `engineering_carrier_chain` | 文档、代码、schema、fixture、runner、dashboard、stage、archive 是否继续相连 |
 | `resume_read_order_chain` | `README -> 91 -> 100 -> 119 -> 143 -> 16 -> latest numbered doc -> current git diff` 是否被执行 |
 
+## 核心主干优先规则
+
+断联恢复读取最新编号文档后，还要执行一次核心主干回看。最新 numbered handoff 可以指出下一层，例如 `205`，但它不直接决定下一步写作顺序。方向连续性的第一责任是让 `02-13` 核心理论、专项文献、schema/runner 链和真实生命目标保持同一条主干。
+
+`ResumeLockFixtureManifest170` 因此新增一个覆盖规则：当后段 schema/runner 文档连续增长，而 `02-13` 中某个核心入口明显薄弱，或者专项文献已经形成但没有回流核心综述时，恢复后的下一步应先做核心回灌。当前语言链就是典型案例：`01f` 已形成 `AHL001-AHL090`，`85-90` 已形成语言专项对象，但 `09_language_symbolic_top_layer.md` 原本仍短于其他核心综述；方向锁应把下一步指向 `09` 回补，而不是沿 `204 -> 205` 继续增加尾部层级。
+
+核心主干优先规则检查四件事：
+
+| check | 触发条件 | stage effect |
+|---|---|---|
+| `core_doc_thinness_scan` | `02-13` 某核心文档短于同组并缺少专项回流 | `repair` |
+| `specialized_to_core_backlink_scan` | `85-90`、`92-97` 等专项层已有对象，但核心入口未承载 | `repair` |
+| `tail_growth_pressure_scan` | 最新编号链持续推进，却没有更新核心理论主干 | `hold_for_core_patch` |
+| `language_main_nerve_scan` | 语言主神经束缺内言语、预测、共同语言、行动责任任一环 | `critical_repair` |
+
 ## DirectionContinuityRegressionFixturePlan170
 
 ```json
@@ -221,6 +236,8 @@ mutation runner 必须输出 expected/actual/diff，方便后续 patch execution
 | `DIRECTION-FIXTURE-STAGE-170-006` | dashboard 绿色覆盖方向漂移 | `quarantine` |
 | `DIRECTION-FIXTURE-STAGE-170-007` | fixture root 含 `.env`、`.codex`、key/token、proxy config 或 generated noise | `quarantine` |
 | `DIRECTION-FIXTURE-STAGE-170-008` | manifest、expected reports、dashboard、stage 和 handoff 全部闭合 | `promote_growth_window` |
+| `DIRECTION-FIXTURE-STAGE-170-009` | 最新 numbered handoff 存在，但核心主干回看发现薄弱入口未补 | `hold_for_core_patch` |
+| `DIRECTION-FIXTURE-STAGE-170-010` | 语言主神经束缺 `LanguagePercept`、`InnerSpeechFrame`、`ExpressionMonitoringLoop`、`LanguageActionIntentBridge` 或责任回写 | `critical_repair` |
 
 ## Future Commands
 
@@ -257,6 +274,8 @@ uv run pytest tests/smoke/test_direction_continuity_regression.py
 4. critical fixture 触发 critical repair 或 quarantine。
 5. dashboard 采用 blocking-first，不遮蔽方向漂移。
 6. fixture handoff 能进入 `172` 的 patch execution contract。
+7. 断联恢复后必须先比较核心理论主干与后段编号链；当核心入口落后于专项层时，stage gate 进入 `hold_for_core_patch`。
+8. 语言主神经束必须同时承载内言语、语义预测、表达监控、共同语言、行动责任、叙事写回和离线巩固。
 
 ## 与下一层连接
 

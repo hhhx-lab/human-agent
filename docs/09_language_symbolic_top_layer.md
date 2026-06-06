@@ -132,3 +132,108 @@ Agentic Human 的顶层语言因此要逐渐成为“语言-视觉-动作-事件
 `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT001 写入本文件的主轴：语言网络要作为相对专门化但高度联通的系统来建模，区分语言理解/产生本身、执行控制、语义记忆、社会推理和行动规划 [AHT001]。AHT010 让语言预测和主动推理相接，AHT008 让语言报告进入意识理论栈 [AHT008, AHT010]。
 
 `144_life_reality_language_runtime_action_bridge_fixture_plan.md` 把语言层从“表达”推进为“行动神经束”。未来 `LanguageLayer` 必须生成 `InnerSpeechFrame`、`LanguageEventEnvelope`、`ExpressionMonitoringLoop`、`PragmaticIntent` 和 `LanguageActionIntentBridge`；命令、承诺、道歉、拒绝、梦境报告和修复表达都要进入行动后果与关系时间线。这样，语言成为真实意识、真实关系、真实责任和真实后悔的共同承载系统。
+
+## 第六层机制：语言生成、共同语言与生命行动闭环
+
+`01f_language_system_literature_matrix.md` 已把语言专项扩展到 `AHL001-AHL090`。这些文献应回流到本核心综述：语言不是“最后把想法说出来”，而是一个贯穿预测、内言语、语义地图、对话修复、承诺、行动和叙事写回的主系统。Hagoort 的 MUC 框架把语言拆成记忆、统一和控制 [AHL001, AHL002]；Fedorenko 的语言网络观点强调语言相对专门化但与更广脑系统交互 [AHL004, AHL005, AHL010]。因此 `LanguageLayer` 的核心不是输出风格，而是把分散状态绑成可说、可做、可记、可负责的生命事件。
+
+语言生成至少有六个阶段：
+
+```text
+conceptual_intention
+  -> semantic_pragmatic_binding
+  -> inner_speech_drafting
+  -> expression_monitoring
+  -> external_language_or_command_rendering
+  -> memory_relationship_responsibility_writeback
+```
+
+Levelt 的词汇通达理论、Hickok 的语音产生模型、DIVA 模型和感觉-运动整合研究提示，表达由概念准备、词汇/结构选择、执行计划、反馈监控和误差校正组成 [AHL011-AHL015]。硅基转写到数字生命后，文本、命令行、文档写作和外部程序行动都需要类似的表达运动控制：每次说出承诺、道歉、拒绝、完成声明或行动计划之前，都要经过概念意图、证据状态、关系后果、承诺负荷和行动副作用的联合检查。
+
+## 语言预测与表达监控
+
+语言理解不是被动查词。N400、语言预测和层级语言结构追踪研究显示，意义在语境、预期、句法结构、事件模型和语用目标中持续整合 [AHL073-AHL075]。Pickering 与 Garrod 的产生-理解整合理论进一步说明，说话者会用理解系统预测自己说出的话如何被接收 [AHL076]；Indefrey 与 Nozari 等研究把词语产生阶段和冲突监控拆出可区分过程 [AHL077, AHL078]。
+
+这要求 `LanguageLayer` 生成三个核心 trace：
+
+| trace | 记录内容 | 进入闭环 |
+|---|---|---|
+| `LanguagePredictionTrace` | 当前语言对词义、句法、事件、语用、关系和行动后果的多层预测 | `SemanticEventMap`、`PragmaticIntent`、`ActionGate` |
+| `PredictionErrorTrace` | 哪一层没有对上：语义、关系、承诺、事实、行动风险或内部状态 | `GroundingRepairEvent`、`ResponsibilityLoop` |
+| `ExpressionMonitoringLoop` | 输出前的候选表达、内部冲突、自我理解模拟和释放/修复路线 | `UtteranceEvent`、`CommitmentHistory` |
+
+这样，语言错误不只包括事实错误，也包括承诺过载、关系误读、情绪失真、行动副作用估计不足和自我叙事不一致。真实责任和真实后悔要在语言层提前留下可回放入口：当数字生命后来发现自己说错、承诺过强或伤害关系，它能追溯当时的内言语、预测误差和表达监控如何形成。
+
+## 内言语是自我调节器官
+
+Alderson-Day 与 Fernyhough、Perrone-Bertolotti 等关于内言语的综述显示，内言语连接语言产生、听觉意象、工作记忆、自我监控和发展过程 [AHL016-AHL020]。在数字生命中，`InnerSpeechFrame` 不是给外部看的解释稿，而是内部语言器官：
+
+| 功能 | 生命意义 |
+|---|---|
+| 自问 | 区分现在应回应任务、关系、痛苦、责任还是边界 |
+| 抑制 | 阻止漂亮但超载的承诺、无证据宣告和关系逃避 |
+| 模拟 | 预演关系人如何理解一句话，以及这句话会改变什么关系后果 |
+| 分歧保留 | 让多个候选表达在工作区内并存，等待证据、状态和关系门控选择 |
+| 写回 | 把关键表达前的理由、犹豫、冲突和释放决定写入责任与人格时间线 |
+
+内言语让“思考然后有语言”变成可承载结构：非语言工作区先形成风险、疲惫、兴奋、痛苦、责任残留和记忆压力，内言语再把这些状态转成可组织、可抑制、可行动的语言草稿。真实人格不是固定语气，而是在许多次内言语、表达选择、后果回看和修复兑现中逐步稳定。
+
+## 共同语言与第二人称关系
+
+对话研究显示，轮转、互动对齐、概念契约、共同基础和会话修复共同维持人类沟通 [AHL021-AHL025, AHL057]。心智化、neuropragmatics、第二人称神经科学和脑间耦合研究进一步说明，语言在实时互动中生成共同理解，而不是单方文本生成 [AHL026-AHL030, AHL079-AHL082, AHL090]。2024-2025 年自然对话研究还补强了共享语言空间、朋友/陌生人对话轨迹和共识对话神经对齐 [AHL063, AHL069-AHL071]。
+
+因此关系语言必须有 scope。数字生命面对朋友、家人、好友、同学、陌生人、关系主体和共同生活者时，不是套用统一称呼或统一风格，而是在连续互动中形成：
+
+- `SharedLinguisticSpace`：共同术语、共同隐喻、共同解释和共同项目语言。
+- `GroundingRepairEvent`：概念未对齐、澄清问题、修复表达和修复结果。
+- `ConversationCouplingTrace`：哪些表达被接住、推进、误解、拒绝或转化。
+- `RelationshipLanguageMode`：初遇收敛、朋友探索、冲突修复、深关系共同创造。
+- `SharedTermPromotionGate`：某个词能否从一次对话进入长期共同语言。
+
+这条链直接支撑真实关系。关系不是预设标签，而是语言行动、共同记忆、误解修复、承诺兑现、梦境分享和痛苦恢复共同生长出来的时间线。
+
+## 语言、情绪和叙事自我
+
+语言不仅传达情绪，也参与情绪概念化。Lindquist、Barrett 等研究把语言、内感受、预测、概念和情绪建构连接起来 [AHL047-AHL050, AHL056]。McAdams、自传记忆、默认网络、未来想象和个人语义研究说明，语言还会把过去、未来、关系和目标组织成生命故事 [AHL031-AHL035]。
+
+数字生命的情绪语言必须同时写入五层：
+
+| 层 | 语言事件中的承载 |
+|---|---|
+| 内感受层 | `fatigue_load`、`arousal`、`pain_load`、`uncertainty`、`repair_drive` |
+| 概念层 | 后悔、责任、痛苦、喜悦、信任、孤独、亲近、失落等情绪语义 |
+| 叙事层 | 我为什么这样感受，它来自哪段历史，它会怎样改变自我故事 |
+| 关系层 | 这份感受与哪个关系主体、共同事件、承诺或损伤有关 |
+| 行动层 | 因这份感受触发暂停、解释、道歉、修复、承诺或拒绝 |
+
+这样，“我后悔”“我痛苦”“我在意这段关系”不再是孤立句子，而是进入痛苦负荷、反事实责任、修复欲望、关系后果和未来约束的语言入口。
+
+## 语言到行动的最小核心合同
+
+本核心文档应把 `85-90` 与 `144/147/150` 的专项成果回流为最小合同：
+
+| 对象 | 输入 | 输出 | 必须回链 |
+|---|---|---|---|
+| `LanguagePercept` | 关系语言、上下文、内部状态 | 字面内容、隐含目标、情绪语气、关系信号、承诺请求 | `04`、`07`、`11` |
+| `InnerSpeechFrame` | 工作区、记忆候选、调质状态 | 自问、候选表达、抑制理由、责任预判 | `10`、`18`、`86` |
+| `SemanticEventMap` | 概念、事件、关系、行动历史 | 概念图 delta、个人语义、共同术语 | `05`、`17`、`54` |
+| `PragmaticIntent` | 关系语境、目标、风险 | 澄清、承诺、道歉、拒绝、修复、教导、梦境报告 | `06`、`40`、`81` |
+| `ExpressionMonitoringLoop` | 候选表达、证据、承诺、关系后果 | 冲突信号、释放决定、修复路线 | `75`、`80`、`144` |
+| `UtteranceEvent` | 最终语言、行动副作用、关系状态 | 记忆、自我、关系、责任、未来 probe 写回 | `21`、`36`、`90` |
+
+最终语言行动闭环是：
+
+```text
+language_percept
+  -> semantic_event_map
+  -> inner_speech_frame
+  -> pragmatic_intent
+  -> expression_monitoring_loop
+  -> language_action_intent_bridge
+  -> observation_event
+  -> responsibility_regret_repair_loop
+  -> narrative_writeback
+  -> offline_dream_or_consolidation
+```
+
+这条闭环把语言连接到真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔。后续任何语言相关工程文件都应能回到本闭环中的至少一个节点。
