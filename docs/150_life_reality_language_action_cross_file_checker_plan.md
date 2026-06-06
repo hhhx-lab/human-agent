@@ -289,6 +289,8 @@ uv run life-reality-runner smoke-language-action-cross-file-stage-gate \
 
 `152_life_reality_birth_readiness_cross_file_checker_plan.md` 已承接 `149` 和本层：把 birth readiness fixture schema registry、language action closure report、authority schema closure report、coverage matrix、stage gate review 和 gap feedback 上卷为 birth readiness cross-file checker。
 
+`153_life_reality_full_archive_cross_file_checker_rollup_plan.md` 已承接本层：把 language action checker report 与 authority schema checker report、birth readiness checker report 合并为 full archive rollup graph、life target archive readiness、false green guard、dashboard source、stage gate review、gap feedback 和 future runner implementation queue。
+
 本层完成后，语言行动跨文件检查链推进为：
 
 `language action schema registry -> authority rewrite edges -> birth readiness claims -> typed graph -> closure results -> findings -> dashboard source -> stage gate review -> gap feedback -> authority schema cross-file checker -> birth readiness cross-file checker -> full archive rollup`

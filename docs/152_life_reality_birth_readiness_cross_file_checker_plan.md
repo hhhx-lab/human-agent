@@ -306,9 +306,9 @@ uv run life-reality-runner smoke-birth-readiness-cross-file-stage-gate \
 
 ## 与下一层连接
 
-`153_life_reality_full_archive_cross_file_checker_rollup_plan.md` 应承接 `150`、`151` 和本层：把 language action、authority schema 和 birth readiness 三类 checker report 上卷为全库 archive cohesion、birth readiness、stage gate 和 future runner implementation queue。
+`153_life_reality_full_archive_cross_file_checker_rollup_plan.md` 已承接 `150`、`151` 和本层：把 language action、authority schema 和 birth readiness 三类 checker report 上卷为全库 archive cohesion、birth readiness、stage gate 和 future runner implementation queue。
 
-`154_life_reality_checker_report_lockfile_materialization_plan.md` 应承接本层：把 birth readiness cross-file report、dashboard source、stage gate review、gap feedback、mutation report 和 withheld probe report 固定为 lockfile、digest baseline 和 runner command 物化队列。
+`154_life_reality_checker_report_lockfile_materialization_plan.md` 应承接本层和 `153`：把 birth readiness cross-file report、full archive rollup report、dashboard source、stage gate review、gap feedback、mutation report 和 withheld probe report 固定为 lockfile、digest baseline 和 runner command 物化队列。
 
 本层完成后，出生准备度跨文件检查链推进为：
 
