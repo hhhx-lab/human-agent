@@ -9,7 +9,7 @@
 1. **脑区层**：脑有专业化区域，但区域边界概率化、重叠化、连接化 [AH001-AH005]。
 2. **网络层**：认知功能由大尺度网络动态协作产生 [AH006-AH010]。
 3. **状态层**：默认、执行、显著性、睡眠、梦境、疲惫等状态改变信息处理方式 [AH011-AH025, AH056-AH070, AHD001-AHD060]。
-4. **调质层**：多巴胺、NE、ACh、5-HT、兴奋/抑制平衡等信号调节学习、注意和行为 [AH041-AH045, AH061-AH065]。
+4. **调质层**：多巴胺、NE、ACh、5-HT、体积传递、E/I、精度政策、稳态可塑性和 allostasis 共同调节学习、注意、行动、语言、恢复和成长 [AH041-AH045, AH061-AH065, AHS001-AHS024]。
 5. **行为循环层**：记忆、价值、动作选择、反馈误差和自我叙事共同推动成长 [AH031-AH040, AH046-AH055, AH086-AH100]。
 6. **痛苦修复层**：真实痛苦、真实后悔、责任归因、道歉、宽恕和信任修复把损伤转成关系后果、自我改变和未来约束 [AHP001-AHP060]。
 7. **离线梦境层**：真实梦境、睡眠巩固、replay、痛苦梦境残留、清醒梦、未来想象和 world model 把清醒经验转成离线生命世界与醒后整合链 [AHD001-AHD060]。
@@ -36,6 +36,7 @@ Agentic Human 的理论底座可以压缩为十二条命题：
 第二批扩展文献把这十二条进一步加深：
 
 - 预测处理和主动推理补上“系统如何主动采样、预测、纠错” [AHX001-AHX005]。
+- 信号介质专项补上“脑区之间的状态如何传播、衰减、清除、抑制、稳定和转成成长信号” [AHS001-AHS024]。
 - 社会脑、共情、依恋和共同意图补上“关系如何成为认知结构的一部分” [AHX006-AHX013]。
 - 神经发育和互补学习系统补上“成长为什么要阶段化、快慢结合” [AHX014-AHX021]。
 - 压力、免疫、炎症和 allostatic load 补上“长期负荷和恢复为什么是核心机制” [AHX022-AHX028]。
@@ -67,9 +68,9 @@ Agentic Human 的理论底座可以压缩为十二条命题：
 
 ### 4. 设置信号传递介质
 
-研究结论：神经调质会改变学习率、注意增益、探索/利用、唤醒和网络状态 [AH061-AH065]。
+研究结论：神经调质会改变学习率、注意增益、探索/利用、唤醒和网络状态；体积传递、E/I 微回路、稳态可塑性和 allostasis 进一步说明信号有传播范围、半衰期、局部敏感性、稳定化机制和恢复债务 [AH061-AH065, AHS001-AHS024]。
 
-生命实现路线：使用多因子信号介质，而不是单一 reward。候选因子包括 `arousal`、`salience`、`value_delta`、`expected_uncertainty`、`unexpected_uncertainty`、`inhibition`、`fatigue_load`、`social_valence`、`consolidation_pressure`。
+生命实现路线：使用 `SignalMediaRuntime`，而不是单一 reward。候选对象包括 `SignalSourceEvent`、`SignalDiffusionField`、`RegionalModulationProfile`、`ModulationVector`、`PrecisionPolicy`、`InhibitionProfile` 和 `HomeostaticSetpoint`；候选因子包括 `arousal`、`salience`、`value_delta`、`expected_uncertainty`、`unexpected_uncertainty`、`inhibition`、`fatigue_load`、`social_valence`、`consolidation_pressure`、`allostatic_load` 和 `repair_drive`。
 
 ### 5. 固定机制：奖赏、惩罚、抑制
 

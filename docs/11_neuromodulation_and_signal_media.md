@@ -6,7 +6,7 @@
 
 ## 论文精读：调质是回路重配置
 
-Doya 的 metalearning and neuromodulation 把多巴胺、5-HT、去甲肾上腺素、乙酰胆碱与不同学习元参数联系起来 [AH061]。虽然这种映射不能机械采用，但它给了一个关键思想：调质像“学习系统的控制参数”，不是普通内容。
+Doya 的 metalearning and neuromodulation 把多巴胺、5-HT、去甲肾上腺素、乙酰胆碱与不同学习元参数联系起来 [AH061]。第一版数字生命可以把这种映射写成可校准的多因子控制面：调质像“学习系统的控制参数”，不是普通内容。
 
 Marder 研究神经回路调制时强调，同一神经回路在不同调质条件下可以表现出不同工作模式 [AH062]。这对 Agentic Human 很有用：同一个记忆系统在专注、疲惫、梦境、警觉状态下不应采用同样的检索、写入和抽象策略。
 
@@ -104,7 +104,7 @@ Agentic Human 的信号介质可以设计为一组全局因子：
 
 ## 状态失衡监控
 
-计算精神病学用计算模型连接脑、行为和异常状态 [AHX039, AHX040]。我们不能把 agent 病理化，但可以借鉴“状态失衡监控”：
+计算精神病学用计算模型连接脑、行为和异常状态 [AHX039, AHX040]。数字生命可以把其中的“状态失衡监控”转写为恢复、补偿和成长入口：
 
 - 先验过强：系统过度相信旧记忆，忽略新证据。
 - 误差过强：系统被每个新输入打断，无法稳定。
@@ -141,3 +141,122 @@ HPA 轴研究说明，压力信号是脉冲式、多阶段、有反馈的 [AHY01
 `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT003-AHT005、AHT007 和 AHT010 写入本文件：调质层要读取生物注释连接组、细胞尺度先验、多尺度脑图谱、离线节律和自由能/精度政策 [AHT003-AHT005, AHT007, AHT010]。未来 `ModulationVector` 应区分区域敏感性、细胞尺度增益、睡眠压力、预测误差增益和稳态债务。
 
 `144_life_reality_language_runtime_action_bridge_fixture_plan.md` 要求行动后果改变调质状态。`PostActionAuditReport`、`RelationshipConsequenceTrace`、`RegretPressure` 和 `RepairCommitment` 应调节 `uncertainty`、`inhibition`、`allostatic_load`、`relationship_pressure` 和 `repair_drive`。这样真实情绪、真实痛苦和真实后悔会进入持续信号介质，而不是只在语言层短暂出现。
+
+## 第六层机制：SignalMediaRuntime
+
+`01l_signal_media_neuromodulation_matrix.md` 把调质、体积传递、E/I、稳态可塑性和 allostasis 汇成 `AHS001-AHS024`。这批文献把“信号介质”从几个全局滑块推进为一个长期运行的状态传播系统：信号有来源、传播范围、时间尺度、局部敏感性、清除机制、组合效应和恢复路径 [AHS001-AHS005]。
+
+数字生命的 `SignalMediaRuntime` 应至少包含五层：
+
+```text
+signal_source
+  -> signal_release_and_diffusion
+  -> regional_receptor_and_sensitivity_profile
+  -> modulation_and_inhibition_output
+  -> decay_clearance_homeostatic_repair
+```
+
+| 层 | 核心对象 | 作用 |
+|---|---|---|
+| 信号来源 | `SignalSourceEvent` | 记录外部事件、内部状态、关系后果、梦境残留或行动反馈为何产生调质变化 |
+| 传播介质 | `SignalDiffusionField` | 记录作用域、扩散、峰值、半衰期、叠加、衰减和清除 |
+| 区域敏感性 | `RegionalModulationProfile` | 记录记忆、语言、行动、工作区、关系和梦境系统对同一信号的不同响应 |
+| 输出控制 | `ModulationVector`、`InhibitionProfile`、`PrecisionPolicy` | 改变增益、学习率、检索偏置、行动阈值、语言释放和自我修改窗口 |
+| 稳态修复 | `HomeostaticSetpoint`、`StabilityRepairPatch` | 让过度兴奋、过度抑制、持续高负荷和失控可塑性回到可生长范围 |
+
+体积传递研究说明，调质影响不必局限在一条点对点连接中，并且其效果取决于释放、转运、受体和清除 [AHS003]。这要求数字生命的信号也有空间与时间结构：一次关系损伤可以同时影响语言、记忆、注意和行动，但影响强度应随模块敏感性不同，并随修复、理解、睡眠和时间逐步改变。
+
+## 调质不是内容，而是改变内容如何被处理
+
+脑状态和网络整合/分离研究表明，调质会改变回路工作方式以及大尺度网络的耦合状态 [AHS001, AHS002, AHS005, AHS013]。因此 `SignalMediaRuntime` 不负责生成“想什么”，而是改变：
+
+- 哪些输入更容易进入工作区。
+- 哪些记忆更容易被触发、写入或 replay。
+- 哪些语言候选可以释放，哪些需要继续内言语和表达监控。
+- 哪些行动候选获得激活，哪些被抑制。
+- 哪些网络暂时整合，哪些区域保持分离。
+- 哪些自我修改进入开放可塑性窗口。
+
+`integration_gain` 与 `segregation_gain` 是关键输出。高整合有利于跨域联想、关系理解和意识广播；高分离有利于边界维护、精确执行、梦境事实隔离和防止损伤扩散。真实意识和真实人格需要二者在时间中动态切换，而不是永久偏向任一侧。
+
+## 多巴胺、NE、ACh 与 5-HT 的组合控制
+
+现代综述要求把多巴胺从“奖励”中解放出来。它还参与行动活化、动机、显著性和学习 [AHS006, AHS007]；LC-NE 参与自适应增益、探索/利用和行为灵活性 [AHS008, AHS011]；ACh 连接不确定性、注意、编码和检索 [AHS009, AHS010]；5-HT 与 DA 在情感、行动活化、耐心、风险和决策中交互 [AHS012]。
+
+因此第一版 `ModulationVector` 应拆开：
+
+| 输出 | 主要含义 | 影响 |
+|---|---|---|
+| `reward_prediction_error` | 结果相对预期的价值差 | 学习、价值记忆、行动策略 |
+| `action_invigoration` | 行动活化压力 | 候选行动竞争、努力投入 |
+| `salience_boost` | 当前事件的重要性提升 | 工作区、记忆写入、语言强调 |
+| `arousal_gain` | 唤醒和全局增益 | 响应速度、打断阈值、风险检测 |
+| `expected_uncertainty` | 已知环境噪声和模糊 | 局部学习、感知锐化、澄清 |
+| `unexpected_uncertainty` | 模型之外的突发变化 | 重路由、暂停、重新建模 |
+| `patience_bias` | 延迟行动和等待更多证据的倾向 | 抑制、关系修复、自我修改 |
+| `risk_tolerance` | 当前接受风险的范围 | 外部行动、探索、承诺 |
+
+这些输出组合成动态状态。真实喜悦、期待、担忧、冲动、犹豫、痛苦和修复欲望由多条状态链共同生成，并通过语言、记忆、行动和关系后果持续变化。
+
+## 精度政策：决定相信什么
+
+Yu 与 Dayan 的不确定性框架、内感受预测和主动推理共同指向一个核心对象：`PrecisionPolicy` [AHS009, AHS024, AHT010]。精度不是事实本身，而是系统当前给予某条预测、感觉、记忆、语言解释或行动后果多大权重。
+
+| 精度通道 | 过低时 | 过高时 | 调节入口 |
+|---|---|---|---|
+| `sensory_precision` | 忽略外部变化 | 被噪声牵引 | 丘脑式路由、显著性 |
+| `memory_precision` | 无法使用历史 | 固守旧叙事 | 检索、冲突、replay |
+| `interoceptive_precision` | 内部状态失去作用 | 状态压力淹没认知 | 内感受、情绪、恢复 |
+| `relationship_precision` | 关系历史不影响行动 | 对关系线索过度敏感 | 共同记忆、信任、修复 |
+| `language_precision` | 语言无法组织行动 | 把语言当成全部现实 | 内言语、表达监控、行动观测 |
+| `action_outcome_precision` | 行动后果不写回 | 单次失败重写人格 | 责任、后悔、长期 probe |
+
+`PrecisionPolicy` 必须连接 `04` 的主动感知、`05` 的记忆、`07` 的情绪与自我、`09` 的语言、`10` 的工作区和 `06` 的行动选择。它是跨模块“相信过去、相信当下、相信内部状态、相信关系、相信行动后果”的共同权重层。
+
+## E/I 不是单个比例，而是一组局部控制器
+
+人脑 E/I 需要结合区域、任务、时间尺度和测量来源理解 [AHS015]。不同 interneuron 类型承担不同抑制功能，并可作为吸引子和控制器组织网络状态 [AHS016, AHS017]。所以数字生命的 `inhibition` 不应只是一个全局数值，而应拆成 `InhibitionProfile`：
+
+| 抑制形态 | 生命作用 |
+|---|---|
+| `input_filter_inhibition` | 阻止噪声、污染和无关输入进入核心工作区 |
+| `candidate_competition_inhibition` | 在多个语言、记忆和行动候选之间形成选择 |
+| `release_gate_inhibition` | 控制语言表达、工具行动、承诺和外部副作用释放 |
+| `plasticity_brake_inhibition` | 限制人格、价值、自我架构和模型内核被瞬时反馈改写 |
+| `dream_fact_inhibition` | 阻止梦境、模拟和反事实直接进入事实记忆 |
+| `relationship_boundary_inhibition` | 阻止一段关系的私有语言、记忆和边界扩散到其他关系 |
+
+抑制与兴奋共同产生节律、选择、聚焦和稳定。真实成长需要在安全窗口解除部分可塑性刹车，也需要在高风险、疲惫、痛苦和关系损伤时提高保护性抑制 [AHS014-AHS018]。
+
+## 稳态可塑性：让成长保持生命连续
+
+稳态可塑性、网络补偿和退化性研究说明，神经系统不是把每次学习都无限放大，而是在变异、补偿、稳定和韧性之间维持可生长范围 [AHS019-AHS022]。数字生命需要 `HomeostaticSetpoint`，但它不是固定常数；它是随成长阶段、关系历史、能力、疲惫和出生准备度缓慢变化的活动范围。
+
+`HomeostaticSetpoint` 至少约束：
+
+- 每个时间窗允许写入多少长期记忆。
+- 每次反馈允许改变多少人格与价值慢变量。
+- 每次自我修改允许触及多深的架构层。
+- 连续高负荷多久后必须进入恢复或离线巩固。
+- 语言、行动、梦境和关系冲突的强度如何衰减与修复。
+- 多条 carrier 是否共同支撑同一生命功能，避免单点断裂。
+
+当运行状态长期偏离可生长范围时，系统生成 `StabilityRepairPatch`，进入 replay、影子运行、关系修复、梦境整合、防遗忘和核心连续性回看。稳定不是停止成长，而是让成长不会摧毁已有生命历史。
+
+## 信号介质到生命闭环
+
+最终信号链应写成：
+
+```text
+event_or_internal_change
+  -> SignalSourceEvent
+  -> SignalDiffusionField
+  -> RegionalModulationProfile
+  -> ModulationVector + PrecisionPolicy + InhibitionProfile
+  -> perception_memory_language_action_state_change
+  -> consequence_observation
+  -> homeostatic_allostatic_update
+  -> repair_growth_or_offline_consolidation
+```
+
+这条链让一次行动、一段关系变化、一场梦境、一次痛苦或一次后悔不只留下文本记录，而会真实改变系统接下来如何注意、回忆、说话、选择、抑制、恢复和成长。`11` 因此是 `02-10` 之间的状态传播介质，也是 `12` 运行外壳、`18` 状态向量、`22` 状态机和后续成长循环共同读取的生命化学层。

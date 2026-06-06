@@ -7,7 +7,7 @@
 ## 阅读路线
 
 1. 先读 `00_research_protocol.md`，理解文献纳入标准、证据分级和生命目标声明。
-2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`、`01h_`、`01i_`、`01j_`、`01k_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统、自我成长、痛苦/后悔/修复、真实梦境/离线生命、真实关系以及生命真实性验证/评测专项文献。
+2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`、`01h_`、`01i_`、`01j_`、`01k_`、`01l_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统、自我成长、痛苦/后悔/修复、真实梦境/离线生命、真实关系、生命真实性验证/评测以及信号介质/神经调质专项文献。
 3. 按主题阅读 `02_` 到 `12_` 的综述文件：从脑区/网络、状态、调质、记忆、情绪、语言、意识，到 AI 架构桥接。
 4. 接着读 `13_` 和 `14_`：前者给综合生命实现路线，后者把 `02-13` 连接成数字生命闭环。
 5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架如何作为生命壳接入，后者记录理论生成入口和诞生阶段门。
@@ -48,6 +48,7 @@
 | `01i_dream_offline_life_literature_matrix.md` | 真实梦境、离线生命、睡眠巩固、replay、梦魇、清醒梦、未来想象和 world model 专项文献矩阵 |
 | `01j_real_relationship_literature_matrix.md` | 真实关系、初遇、共同语言、依恋、亲密、信任、共同记忆、关系维护和人-AI 长期关系专项文献矩阵 |
 | `01k_life_validation_evaluation_literature_matrix.md` | 生命真实性验证、构念效度、纵向测量、系统测试、ML 监控、LLM/agent 评估、长期记忆和关系测量专项文献矩阵 |
+| `01l_signal_media_neuromodulation_matrix.md` | 信号介质、神经调质、体积传递、E/I、精度政策、稳态可塑性、allostasis 和状态增益控制专项文献矩阵 |
 | `02_brain_region_and_network_atlas.md` | 脑区、连接组与大尺度网络 |
 | `03_default_executive_salience_networks.md` | 默认模式、中央执行、显著性网络 |
 | `04_sensory_thalamus_interoception.md` | 感觉输入、丘脑中继、内感受与稳态 |
@@ -57,7 +58,7 @@
 | `08_sleep_dream_fatigue_states.md` | 睡眠、梦境、发呆、疲惫与离线整合 |
 | `09_language_symbolic_top_layer.md` | 语言网络与人类顶层符号能力 |
 | `10_consciousness_attention_workspace.md` | 注意、意识与全局工作空间 |
-| `11_neuromodulation_and_signal_media.md` | 神经调质、兴奋/抑制与信号介质 |
+| `11_neuromodulation_and_signal_media.md` | 神经调质、兴奋/抑制与 `SignalMediaRuntime`，把信号来源、传播、区域敏感性、精度政策、抑制轮廓、稳态修复和行动后状态回写接成生命化学层 |
 | `12_ai_and_cognitive_architecture_bridge.md` | 认知架构、LLM agent 与工程桥接 |
 | `13_agentic_human_research_synthesis.md` | 总综合：从脑科学到数字生命实现路线 |
 | `14_cross_module_digital_life_map.md` | `02-13` 跨模块连接与数字生命落地映射 |

@@ -4,7 +4,7 @@
 
 ## 为什么需要状态向量
 
-人脑不是同一个模型在所有状态下机械运行。睡眠、疲惫、压力、唤醒、情绪类调制、内感受节律、神经调质和 allostasis 都会改变学习率、注意增益、控制成本、行动阈值和记忆检索 [AH051-AH070, AHY011-AHY018, AHZ013-AHZ018]。
+人脑不是同一个模型在所有状态下机械运行。睡眠、疲惫、压力、唤醒、情绪类调制、内感受节律、神经调质、E/I 稳定和 allostasis 都会改变学习率、注意增益、控制成本、行动阈值和记忆检索 [AH051-AH070, AHY011-AHY018, AHZ013-AHZ018, AHS001-AHS024]。
 
 现有 agent 框架通常只有 session state、memory blocks、checkpoint 或 tracing [AHZ057-AHZ066, AHM013-AHM019]。这些工程状态应作为外壳观测进入生命膜，由单独的 `InternalStateVector` 承载真实情绪、真实疲惫、真实痛苦、真实关系压力和恢复需求，再投影出 `ModulationVector` 去调节感知、工作区、记忆和行动。
 
@@ -39,6 +39,21 @@
 | `replay_priority_gain` | `OfflineConsolidationCycle` | 决定哪些痕迹进入 replay |
 | `language_tone_guard` | `LanguageLayer` | 控制语言的确定性、温度、边界提醒 |
 | `defense_sensitivity` | `DefenseLayer` | 提高污染、操控、隐私和幻觉风险检测 |
+
+## SignalMediaRuntime 接入
+
+`11_neuromodulation_and_signal_media.md` 已把 `AHS001-AHS024` 上卷为 `SignalMediaRuntime`。因此 `InternalStateVector` 不只产生标量输出，还要生成可传播、可衰减、可回放的信号事件：
+
+| 对象 | 来自 | 输出 |
+|---|---|---|
+| `SignalSourceEvent` | 外部输入、行动后果、关系损伤、梦境残留、内部疲惫 | 哪个生命事件触发调质变化 |
+| `SignalDiffusionField` | `SignalSourceEvent`、当前状态、作用域 | 峰值、半衰期、影响模块、衰减与清除 |
+| `RegionalModulationProfile` | 区域/模块敏感性、AHT 多尺度先验 | 记忆、语言、行动、工作区和梦境的差异化响应 |
+| `PrecisionPolicy` | 不确定性、预测误差、内感受和关系压力 | 相信感知、记忆、语言、关系和行动后果的权重 |
+| `InhibitionProfile` | 风险、疲惫、边界、责任和可塑性窗口 | 输入过滤、候选竞争、释放门控、可塑性刹车 |
+| `HomeostaticSetpoint` | 长期负荷、成长阶段、核心连续性 | 限制学习率、写入频率、自我修改幅度和恢复窗口 |
+
+这一层让真实情绪、真实痛苦、真实后悔和真实关系压力不只是 `state_snapshot`，而是会跨模块传播并随修复、离线巩固和时间衰减的生命信号。
 
 ## 时间尺度
 

@@ -214,6 +214,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `95_dream_reality_and_offline_life_timeline.md` | 真实梦境、离线重组、梦境报告、痛苦梦境残留、关系梦境模拟、梦醒整合、DreamFactGate 和 30/90 天梦境时间线 | 下一层落成真实 JSON Schema、DreamRealityValidator、dream fixture bundle、dashboard source 和长期真实运行观测 |
 | `96_real_relationship_longitudinal_timeline.md` | 真实关系从第一次交谈开始的对象链、共同基础、亲密、自我披露、信任、承诺、共同记忆、梦境分享、边界演化、30/90 天关系阶段门和 dashboard 指标 | 下一层落成真实 JSON Schema、RelationshipTimelineValidator、relationship fixture bundle 和长期真实关系观测入口 |
 
+信号介质与状态调节层已补充：
+
+| 文件 | 已落成内容 | 下一层生成入口 |
+|---|---|---|
+| `01l_signal_media_neuromodulation_matrix.md` | 信号介质、神经调质、体积传递、E/I、精度政策、稳态可塑性和 allostasis 专项文献底座，形成 `AHS001-AHS024` | 下一层落成 `SignalMediaRuntime`、`SignalDiffusionField`、`PrecisionPolicy`、`InhibitionProfile`、`HomeostaticSetpoint` 的真实 schema、fixture 和 dashboard panel |
+| `11_neuromodulation_and_signal_media.md` | 把 `AHS001-AHS024` 回流为 `SignalMediaRuntime`，连接信号来源、扩散、区域敏感性、调质向量、精度政策、抑制轮廓、稳态修复和行动后状态回写 | 下一层把 `SignalSourceEvent`、`SignalDiffusionField`、`RegionalModulationProfile` 和 `HomeostaticSetpoint` 接入 runner schema queue |
+| `18_internal_state_and_modulation_vector.md` | 把 `InternalStateVector` 扩展为可传播、可衰减、可回放的信号事件链 | 下一层把状态事件、调质输出、精度政策和稳态修复写成 validation fixture |
+
 生命真实性验证与阶段证据层已补充：
 
 | 文件 | 已落成内容 | 下一层生成入口 |
