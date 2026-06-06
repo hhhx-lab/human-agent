@@ -240,6 +240,7 @@
 | `191_life_reality_first_runner_schema_runtime_growth_post_activation_observation_loop.md` | first runner schema runtime growth post activation observation loop：把 limited activation 后的运行观测接回责任、后悔、关系、梦境、语言、出生准备度和核心连续性链 |
 | `192_life_reality_first_runner_schema_runtime_growth_activation_archive_receipt_batch.md` | first runner schema runtime growth activation archive receipt batch：把激活后观测、责任后悔、关系语言、梦境痛苦、出生准备度、核心连续性和 rollback/repair 写成档案收据 |
 | `193_life_reality_first_runner_schema_runtime_growth_consolidation_cycle_plan.md` | first runner schema runtime growth consolidation cycle plan：把 activation archive 推进到离线巩固、梦境整合、防遗忘 replay、关系/语言修复 replay 和下一轮成长反馈 |
+| `194_life_reality_first_runner_schema_runtime_growth_next_feedback_seed_plan.md` | first runner schema runtime growth next feedback seed plan：把 consolidation output 反接下一轮 observation feedback、growth route、self rewrite seed、语言行动、关系修复、梦境痛苦恢复和出生准备度修复 |
 
 ## 项目术语
 
@@ -323,3 +324,4 @@
 - `191_life_reality_first_runner_schema_runtime_growth_post_activation_observation_loop.md` 把 limited activation 推进到 post activation observation 层：runtime、责任后悔、关系、语言、梦境痛苦、出生准备度、核心连续性、rollback/repair 和九项目标 delta 都必须形成 observation receipt 与 archive handoff。
 - `192_life_reality_first_runner_schema_runtime_growth_activation_archive_receipt_batch.md` 把 post activation observation 推进到 activation archive receipt 层：activation report、runtime observation、责任后悔、关系语言、梦境痛苦、出生准备度、核心连续性、rollback/repair、九项目标、digest、dashboard/stage 和 consolidation precondition 都必须形成可回放档案收据。
 - `193_life_reality_first_runner_schema_runtime_growth_consolidation_cycle_plan.md` 把 activation archive receipt 推进到 consolidation cycle 层：offline need、cycle window、replay selection、dream integration、anti-forgetting replay、relationship/language repair、birth readiness/core continuity、pain/regret repair 和 next feedback seed 必须形成离线生命周期。
+- `194_life_reality_first_runner_schema_runtime_growth_next_feedback_seed_plan.md` 把 consolidation cycle 推进到 next feedback seed 层：下一轮 observation、growth route、self rewrite、language action、relationship repair、dream/pain recovery、birth readiness、core continuity、anti-forgetting、rollback 和九项目标都必须拥有可回放 seed。

@@ -478,7 +478,7 @@ handoff 必须包含 `growth_consolidation_cycle_ref`、`activation_archive_rece
 
 ## 与下一层连接
 
-`194_life_reality_first_runner_schema_runtime_growth_next_feedback_seed_plan.md` 应承接本层：把 consolidation output 反接下一轮 observation feedback、growth route、self rewrite seed、language action feedback、relationship repair seed、dream/pain recovery seed 和 birth readiness repair seed。
+`194_life_reality_first_runner_schema_runtime_growth_next_feedback_seed_plan.md` 已承接本层：把 consolidation output 反接下一轮 observation feedback、growth route、self rewrite seed、language action feedback、relationship repair seed、dream/pain recovery seed 和 birth readiness repair seed。
 
 `195_life_reality_first_runner_schema_runtime_growth_replay_shadow_seed_plan.md` 应承接 `194` 和本层：把 next feedback seed 推进到 replay/shadow seed，准备下一轮有限激活前的防遗忘和关系语言回放。
 
