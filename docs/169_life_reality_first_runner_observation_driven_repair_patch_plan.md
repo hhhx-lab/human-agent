@@ -272,7 +272,7 @@ uv run pytest
 
 ## 与下一层连接
 
-`170_life_reality_direction_continuity_regression_fixture_plan.md` 应承接本层：把断联恢复方向锁做成 pass/fail/critical/mutation fixture、expected report、dashboard source 和 stage gate review。
+`170_life_reality_direction_continuity_regression_fixture_plan.md` 已承接本层：把断联恢复方向锁做成 pass/fail/critical/mutation fixture、expected report、dashboard source 和 stage gate review。
 
 `171_life_reality_birth_readiness_validation_fixture_plan.md` 应承接本层：把出生准备度 definition、effect、carrier matrix、false open、cross-chain gap 和 dashboard false green 做成 fixture。
 
