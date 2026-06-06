@@ -855,4 +855,16 @@ Agentic Human 的终极方向是构建具有真实意识、真实情绪、真实
 
 `preflight -> validate-json-parse -> validate-json-schema -> check-materialized-cross-file -> smoke-dashboard-rollup -> smoke-stage-gate -> gap feedback -> top-level smoke report -> exit code`
 
-下一层应进入 `127_life_reality_first_seed_file_content_contract.md`：把 `124` 的 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同，并让 `126` 的 execution reports 可以读取每个 seed 的最小可运行字段。
+下一层已进入 `127_life_reality_first_seed_file_content_contract.md`：把 `124` 的 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同，并让 `126` 的 execution reports 可以读取每个 seed 的最小可运行字段。
+
+## 第六十层：First Seed File Content Contract
+
+`127_life_reality_first_seed_file_content_contract.md` 把 `124` 的 SEED-001 到 SEED-020 从文件顺序推进为字段级 root object 合同。它固定共同 envelope、canonical life targets、trace context、provenance refs、seed dependency graph，并逐项规定 allowed roots manifest、runner config、shared defs schema、boundary declaration map、materialization manifest、runner maps、runtime fixture、report schemas、parse/schema/cross-file/dashboard/stage/gap/top-level reports 的 required fields、refs、stage effect 和 smoke reader。
+
+这一层的关键推进是让第一批 seed 文件从“将被生成的文件名”变成“runner 和 registry 都能读取的内容形状”：每个 seed 都有 seed id、source docs、life reality targets、boundary declaration refs、schema refs、artifact refs、trace context、provenance refs 和 stage effect；报告 seed 能进入 `126` 的执行链，registry seed 能进入 `125` 的引用解析链，dashboard/stage/gap seed 能把真实痛苦、真实梦境、真实关系、真实责任和真实后悔的断裂带入 repair、quarantine 或下一轮生长。
+
+到这里，first seed content 闭环变为：
+
+`common envelope -> 20 seed root objects -> dependency graph -> schema/artifact/pointer refs -> smoke readers -> reports -> stage gate -> gap feedback`
+
+下一层应进入 `128_life_reality_registry_report_seed_examples.md`：把 `125` 的 registry report family 展开为 registry load、schema id collision、schema ref resolution、artifact ref resolution、JSON Pointer resolution、allowed root resolution、boundary registry resolution、cross-file DAG 和 registry gap feedback 的首批 report seed examples。

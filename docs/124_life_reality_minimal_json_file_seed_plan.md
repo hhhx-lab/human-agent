@@ -328,4 +328,6 @@
 
 `126_life_reality_runner_smoke_command_execution_plan.md` 已把 `121` 的六个 smoke command、`123` 的 module map、本文档的 seed 文件和 `125` 的 ref resolution DAG 推进为最小执行顺序、stdout/report/exit code 验收和失败样例。
 
-下一层进入 `127_life_reality_first_seed_file_content_contract.md`：把本文档的 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同。
+`127_life_reality_first_seed_file_content_contract.md` 已把本文档的 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同。
+
+下一层进入 `128_life_reality_registry_report_seed_examples.md`：把 registry report family 展开为首批 report seed examples，并回读本文档的 seed file list。
