@@ -470,7 +470,7 @@ handoff 必须包含 `growth_feedback_patch_plan_ref`、`observation_feedback_in
 
 ## 与下一层连接
 
-`188_life_reality_first_runner_schema_runtime_growth_archive_receipt_batch.md` 应承接本层：把 growth feedback patch、self rewrite receipts、language action receipts、readiness effect receipts、anti-forgetting replay refs 和 dashboard/stage refs 写回 archive。
+`188_life_reality_first_runner_schema_runtime_growth_archive_receipt_batch.md` 已承接本层：把 growth feedback patch、self rewrite receipts、language action receipts、readiness effect receipts、anti-forgetting replay refs 和 dashboard/stage refs 写回 archive。
 
 `189_life_reality_first_runner_schema_runtime_growth_shadow_run_plan.md` 应承接本层和 `188`：把 growth patch 放入 shadow run、防遗忘 replay、language action replay、birth readiness regression、relationship/pain/regret/dream probes。
 
