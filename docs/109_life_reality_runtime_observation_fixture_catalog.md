@@ -1,6 +1,6 @@
 # Life Reality Runtime Observation Fixture Catalog
 
-生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 109 层把 `106_runtime_observation_to_life_reality_bundle_bridge.md`、`107_life_reality_schema_file_generation_tasks.md` 和 `108_life_reality_dashboard_source_mock_files.md` 中的 runtime observation 计划拆成第一批 fixture catalog，让连续运行中的语言、梦境、关系、行动、外壳、快照和隔离事件能够进入 `LifeRealitySchemaBundle`。
+生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 109 层把 `106_runtime_observation_to_life_reality_bundle_bridge.md`、`107_life_reality_schema_file_generation_tasks.md` 和 `108_life_reality_dashboard_source_mock_files.md` 中的 runtime observation 计划拆成第一批 fixture catalog，让连续运行中的语言、梦境、关系、行动、外壳、快照和隔离事件能够进入 `LifeRealitySchemaBundle`。
 
 `109` 的目标是固定 runtime observation fixture 的目录、命名、最小 payload、预期 report、component candidate、cross-chain candidate、quarantine routing 和 dashboard 接入。它仍是 Markdown 计划，但已经接近未来 `life-reality-runner ingest-runtime` 可以读取的 fixture manifest。
 

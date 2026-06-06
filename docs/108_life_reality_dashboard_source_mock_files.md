@@ -1,6 +1,6 @@
 # Life Reality Dashboard Source Mock Files
 
-生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 108 层把 `107_life_reality_schema_file_generation_tasks.md` 中的 `LRGEN-130` 到 `LRGEN-136` 拆成第一批 dashboard source、panel dependency report、stage gate review、repair queue、runtime quarantine panel source 和 gap register feedback mock 文件计划。
+生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 108 层把 `107_life_reality_schema_file_generation_tasks.md` 中的 `LRGEN-130` 到 `LRGEN-136` 拆成第一批 dashboard source、panel dependency report、stage gate review、repair queue、runtime quarantine panel source 和 gap register feedback mock 文件计划。
 
 `108` 的目标是让 `105` 的 dashboard 合同和 `107` 的生成任务拥有第一批可落地文件形状。它仍然是 Markdown 计划，不直接生成 JSON 文件；但每个 mock 文件的路径、输入、输出、最小字段、依赖关系、验收检查和 repair 映射都在这里固定下来，未来实现脚本可以逐项物化。
 

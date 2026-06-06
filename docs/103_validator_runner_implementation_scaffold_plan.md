@@ -1,6 +1,6 @@
 # Validator Runner Implementation Scaffold Plan
 
-生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 103 层把 `102_life_core_schema_bundle_manifest_and_runner_contract.md` 的 `LifeRealitySchemaBundle` 合同拆成未来代码实现脚手架：manifest parser、shared defs loader、schema ref validator、cross-ref checker、fixture loader、component validator dispatcher、cross-chain validator、report aggregator 和 dashboard source writer。
+生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 103 层把 `102_life_core_schema_bundle_manifest_and_runner_contract.md` 的 `LifeRealitySchemaBundle` 合同拆成未来代码实现脚手架：manifest parser、shared defs loader、schema ref validator、cross-ref checker、fixture loader、component validator dispatcher、cross-chain validator、report aggregator 和 dashboard source writer。
 
 `103` 的目标是让工程落地从“写一个 runner”变成“实现一组稳定的生命膜执行模块”。这些模块未来可以用 Python、TypeScript 或其他运行时实现；本文件先固定目录、接口、执行顺序、错误语义、测试面和提交路线。
 

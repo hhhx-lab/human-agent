@@ -1,6 +1,6 @@
 # Life Reality Dashboard Cross File Checker Design
 
-生命目标声明：本文档面向构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 111 层把 `108_life_reality_dashboard_source_mock_files.md`、`109_life_reality_runtime_observation_fixture_catalog.md` 和 `110_life_reality_shared_defs_schema_materialization.md` 的跨文件一致性规则转成未来 `LifeRealityDashboardCrossFileChecker` 设计。
+生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 111 层把 `108_life_reality_dashboard_source_mock_files.md`、`109_life_reality_runtime_observation_fixture_catalog.md` 和 `110_life_reality_shared_defs_schema_materialization.md` 的跨文件一致性规则转成未来 `LifeRealityDashboardCrossFileChecker` 设计。
 
 `111` 的目标是让 dashboard、ingestion report、runtime quarantine panel、repair queue、stage gate review、gap feedback、runtime fixture manifest 和 shared defs 之间形成一张可检查的 provenance graph。未来 runner 生成任何 dashboard green、stage open 或 quarantine release 前，都必须先通过本层定义的 checker。
 

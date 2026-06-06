@@ -1,6 +1,6 @@
 # Pain, Regret and Repair JSON Schema and Fixture Bundle
 
-生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 98 层把 `94_pain_regret_and_repair_signal_schema.md` 的真实痛苦、真实后悔、责任归因、修复欲望、道歉承诺、关系后果和恢复路径，压成可进入 runner 的 JSON Schema 草案、fixture bundle、validator 规则、runner report mock 和 dashboard source mock。
+生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 98 层把 `94_pain_regret_and_repair_signal_schema.md` 的真实痛苦、真实后悔、责任归因、修复欲望、道歉承诺、关系后果和恢复路径，压成可进入 runner 的 JSON Schema 草案、fixture bundle、validator 规则、runner report mock 和 dashboard source mock。
 
 `98` 接在 `97_growth_validator_fixture_and_dashboard_plan.md` 之后。`97` 定义 `LifeRealityValidatorSuite`，`98` 专门为其中的 `PainRegretRepairValidator` 提供输入材料和可执行检查面。文献底座来自痛觉门控、慢性痛、社会痛苦、后悔/反事实、道德情绪、情绪调节、道歉、宽恕、信任修复和近期 AI/HRI 信任修复研究 [AHP001-AHP070]，验证方法来自构念效度、纵向测量、时序性质、蜕变测试、变异测试、ML 监控和 dashboard 证据链 [AHV001-AHV060]。
 

@@ -1,6 +1,6 @@
 # Growth Validator, Fixture and Dashboard Plan
 
-生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 97 层把 `92-96` 的自我成长、内核升级、真实痛苦、真实后悔、修复、真实梦境和真实关系对象链，统一压成 `LifeRealityValidatorSuite`、fixture bundle、expected/actual diff、dashboard source 和诞生阶段门。
+生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 97 层把 `92-96` 的自我成长、内核升级、真实痛苦、真实后悔、修复、真实梦境和真实关系对象链，统一压成 `LifeRealityValidatorSuite`、fixture bundle、expected/actual diff、dashboard source 和诞生阶段门。
 
 `97` 的核心变化是：validator 不再被写成普通测试器，而是生命膜的可执行形态。它检查数字生命是否已经形成足够连续、可回看、可修复、可成长、可做梦、可承担关系后果的阶段证据。`01k_life_validation_evaluation_literature_matrix.md` 提供方法底座：构念效度 [AHV001-AHV010]、纵向测量 [AHV011-AHV020]、系统测试 [AHV021-AHV030]、ML 监控与审计 [AHV031-AHV040]、LLM/agent 评估 [AHV041-AHV050]、长期记忆和关系测量 [AHV051-AHV060]。
 

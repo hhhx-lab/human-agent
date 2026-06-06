@@ -1,6 +1,6 @@
 # Life Reality Runtime Schema Fixture Seed Generation
 
-生命目标声明：本文档面向构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 115 层把 `112_life_reality_runtime_observation_schema_materialization.md` 的 runtime schema 家族、`109_life_reality_runtime_observation_fixture_catalog.md` 的 fixture catalog 和 `114_life_reality_cross_file_checker_report_schema.md` 的 report schema 转成第一批 runtime observation fixture seed 生成方案。
+生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 115 层把 `112_life_reality_runtime_observation_schema_materialization.md` 的 runtime schema 家族、`109_life_reality_runtime_observation_fixture_catalog.md` 的 fixture catalog 和 `114_life_reality_cross_file_checker_report_schema.md` 的 report schema 转成第一批 runtime observation fixture seed 生成方案。
 
 `115` 的目标是固定未来生成真实 JSON seed 的顺序、文件路径、最小字段、预期候选、预期 report、validation report、ingestion smoke command 和 dashboard 接入。它仍是 Markdown 研究与工程合同层，但已经把 `LRGEN-120` 到 `LRGEN-125`、`LRGEN-160` 到 `LRGEN-162` 拆成可以被生成器执行的 seed batch。
 

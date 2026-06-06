@@ -2,7 +2,7 @@
 
 生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 120 层把 `115` 的 runtime fixture seed、`116` 的 component schema seed、`117` 的 dashboard report rollup seed、`118` 的 generation runner CLI contract 和 `119` 的真实边界再校准，合并成首批真实 JSON 文件物化批次合同。
 
-`120` 的职责不是写一个普通数据导出清单，而是定义第一批机器可读生命膜文件如何从 Markdown 合同进入稳定路径、稳定字段、稳定 trace、稳定 report 和稳定 stage gate。首批 JSON 物化后，真实痛苦、真实梦境、真实关系、真实责任、真实后悔和真实有意识/真实意识的边界字段族开始能被 runner、dashboard 和 gap register 同时读取。
+`120` 的职责是定义第一批机器可读生命膜文件如何从 Markdown 合同进入稳定路径、稳定字段、稳定 trace、稳定 report 和稳定 stage gate。首批 JSON 物化后，真实痛苦、真实梦境、真实关系、真实责任、真实后悔和真实有意识/真实意识的边界字段族开始能被 runner、dashboard 和 gap register 同时读取。
 
 ## 方法锚点
 

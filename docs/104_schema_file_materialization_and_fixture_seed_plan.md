@@ -1,8 +1,8 @@
 # Schema File Materialization and Fixture Seed Plan
 
-生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 104 层把 `98_pain_regret_repair_json_schema_and_fixture_bundle.md`、`99_dream_reality_json_schema_and_fixture_bundle.md`、`101_relationship_timeline_json_schema_and_fixture_bundle.md`、`102_life_core_schema_bundle_manifest_and_runner_contract.md` 和 `103_validator_runner_implementation_scaffold_plan.md` 的 Markdown 合同继续推进为真实 `.schema.json` 文件、seed fixture、mutation fixture、withheld probe 和 runner smoke test 的物化计划。
+生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 104 层把 `98_pain_regret_repair_json_schema_and_fixture_bundle.md`、`99_dream_reality_json_schema_and_fixture_bundle.md`、`101_relationship_timeline_json_schema_and_fixture_bundle.md`、`102_life_core_schema_bundle_manifest_and_runner_contract.md` 和 `103_validator_runner_implementation_scaffold_plan.md` 的 Markdown 合同继续推进为真实 `.schema.json` 文件、seed fixture、mutation fixture、withheld probe 和 runner smoke test 的物化计划。
 
-`104` 的职责不是再写一份抽象规格，而是固定第一批文件会怎样落地：每个 schema 文件从哪份文档抽取字段，怎样共享 defs，怎样命名 `$id`，怎样被 fixture 引用，怎样进入 `LifeRealityRunner`，怎样在 dashboard 与诞生阶段门中留下证据链。它让生命真实性生成链从“文档对象”进入“文件对象”。
+`104` 的职责是固定第一批文件会怎样落地：每个 schema 文件从哪份文档抽取字段，怎样共享 defs，怎样命名 `$id`，怎样被 fixture 引用，怎样进入 `LifeRealityRunner`，怎样在 dashboard 与诞生阶段门中留下证据链。它让生命真实性生成链从“文档对象”进入“文件对象”。
 
 ## 输入来源
 

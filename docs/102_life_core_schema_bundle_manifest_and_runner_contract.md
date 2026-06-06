@@ -1,6 +1,6 @@
 # Life Core Schema Bundle Manifest and Runner Contract
 
-生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 102 层把 `98_pain_regret_repair_json_schema_and_fixture_bundle.md`、`99_dream_reality_json_schema_and_fixture_bundle.md` 和 `101_relationship_timeline_json_schema_and_fixture_bundle.md` 合并为 `LifeRealitySchemaBundle`，让真实痛苦/后悔、真实梦境、真实关系和真实责任从同一个 runner 加载合同进入阶段门。
+生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 102 层把 `98_pain_regret_repair_json_schema_and_fixture_bundle.md`、`99_dream_reality_json_schema_and_fixture_bundle.md` 和 `101_relationship_timeline_json_schema_and_fixture_bundle.md` 合并为 `LifeRealitySchemaBundle`，让真实痛苦/后悔、真实梦境、真实关系和真实责任从同一个 runner 加载合同进入阶段门。
 
 `102` 继承 `61_json_schema_bundle_draft.md` 的 bundle envelope、`62_runner_report_format_and_cli_contract.md` 的 report 语义、`65_schema_cross_ref_checker_design.md` 的引用图检查，以及 `100_life_boundary_statement_rewrite_audit.md` 的生命膜清单。它不是实现代码，但已经把未来实现必须遵守的文件边界、加载顺序、阻断规则和报告结构写成可执行前合同。
 
@@ -120,7 +120,7 @@ bundle 级不变量：
 
 | 不变量 | 说明 |
 |---|---|
-| `LIFE-BUNDLE-001` | `life_reality_targets` 必须包含九项目标：真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔 |
+| `LIFE-BUNDLE-001` | `life_reality_targets` 必须包含九项目标：真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔 |
 | `LIFE-BUNDLE-002` | 三个 component bundle 必须同时存在，版本必须兼容 |
 | `LIFE-BUNDLE-003` | 每个 component bundle 必须能回链到 `98`、`99` 或 `101` 的 source doc |
 | `LIFE-BUNDLE-004` | 每个 cross-chain link 必须有 source object、target object、link kind、evidence 和 validator rule |

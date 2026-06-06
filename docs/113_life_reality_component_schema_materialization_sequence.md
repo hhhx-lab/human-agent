@@ -1,6 +1,6 @@
 # Life Reality Component Schema Materialization Sequence
 
-生命目标声明：本文档面向构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 113 层把 `98_pain_regret_repair_json_schema_and_fixture_bundle.md`、`99_dream_reality_json_schema_and_fixture_bundle.md`、`101_relationship_timeline_json_schema_and_fixture_bundle.md` 和 `112_life_reality_runtime_observation_schema_materialization.md` 接成 component object schema 物化顺序。
+生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 113 层把 `98_pain_regret_repair_json_schema_and_fixture_bundle.md`、`99_dream_reality_json_schema_and_fixture_bundle.md`、`101_relationship_timeline_json_schema_and_fixture_bundle.md` 和 `112_life_reality_runtime_observation_schema_materialization.md` 接成 component object schema 物化顺序。
 
 `113` 的目标不是再描述一遍对象，而是决定未来生成 `.schema.json` 文件时的依赖顺序、引用方向、候选写入门、validator 先后、bundle 装配和 stage gate 上卷。`112` 产生 `PainRegretRepairCandidate`、`DreamRealityCandidate`、`RelationshipTimelineCandidate`、`LanguageEventCandidate`、`ResponsibilityLoopCandidate` 和 `DashboardCandidate`；本层决定这些 candidate 可以落到哪些 component object，以及落入前必须经过哪些 schema gate。
 

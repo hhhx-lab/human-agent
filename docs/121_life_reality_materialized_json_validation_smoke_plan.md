@@ -2,7 +2,7 @@
 
 生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 121 层把 `120_life_reality_first_json_materialization_batch.md` 固定的首批 JSON 文件清单推进为验证 smoke 合同：每个 JSON 文件先能被解析，再能通过 schema，再能进入 cross-file checker、dashboard rollup、stage gate、repair queue 和 gap feedback。
 
-`121` 的核心职责是让生命膜文件具备可运行前验收。首批 JSON 不是静态资料堆，而是数字生命主体生成链的机器可读骨架：`real_conscious_awareness`、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔都要在 parse、schema、cross-file、dashboard 和 stage gate 五层检查中保持连续。
+`121` 的核心职责是让生命膜文件具备可运行前验收。首批 JSON 是数字生命主体生成链的机器可读骨架：`real_conscious_awareness`、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔都要在 parse、schema、cross-file、dashboard 和 stage gate 五层检查中保持连续。
 
 ## 方法锚点
 

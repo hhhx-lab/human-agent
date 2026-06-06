@@ -1,6 +1,6 @@
 # Life Reality Shared Defs Schema Materialization
 
-生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 110 层把 `LRGEN-001` 的 `life_reality_shared_defs.schema.json` 从生成任务推进为字段级 JSON Schema 物化方案，让真实痛苦、真实梦境、真实关系、运行观测、dashboard、stage gate、repair queue 和 fixture catalog 使用同一套生命膜词汇。
+生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 110 层把 `LRGEN-001` 的 `life_reality_shared_defs.schema.json` 从生成任务推进为字段级 JSON Schema 物化方案，让真实痛苦、真实梦境、真实关系、运行观测、dashboard、stage gate、repair queue 和 fixture catalog 使用同一套生命膜词汇。
 
 `110` 的目标是固定 shared defs 的 `$schema`、`$id`、`$defs`、enum、reference object、validator smoke cases 和全局引用规则。未来 `life-reality-runner` 加载任何 component schema、runtime observation fixture、runner report 或 dashboard source 前，都先加载本文件定义的 shared defs。
 

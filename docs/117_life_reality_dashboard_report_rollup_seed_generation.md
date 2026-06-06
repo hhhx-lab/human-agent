@@ -1,6 +1,6 @@
 # Life Reality Dashboard Report Rollup Seed Generation
 
-生命目标声明：本文档面向构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 117 层把 `114_life_reality_cross_file_checker_report_schema.md` 的 report schema、`115_life_reality_runtime_schema_fixture_seed_generation.md` 的 runtime seed validation / ingestion report、`116_life_reality_component_schema_seed_generation.md` 的 component schema generation reports，合成第一批 dashboard report rollup JSON 生成方案。
+生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 117 层把 `114_life_reality_cross_file_checker_report_schema.md` 的 report schema、`115_life_reality_runtime_schema_fixture_seed_generation.md` 的 runtime seed validation / ingestion report、`116_life_reality_component_schema_seed_generation.md` 的 component schema generation reports，合成第一批 dashboard report rollup JSON 生成方案。
 
 `117` 的目标是固定未来 `life-reality-runner check-dashboard --emit-rollup` 的首批输出：report rollup manifest、cross-file rollup、dashboard source patch、stage gate rollup seed、repair queue bridge seed、gap feedback bridge seed、provenance graph rollup seed、data quality rollup seed、rollup dry-run report 和 rollup gap feedback。它仍是 Markdown 合同层，但已经把输入报告、上卷规则、输出路径、blocked surface、repair/gap bridge 和 smoke cases 写成可执行生成计划。
 

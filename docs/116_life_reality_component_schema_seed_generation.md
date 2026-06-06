@@ -1,6 +1,6 @@
 # Life Reality Component Schema Seed Generation
 
-生命目标声明：本文档面向构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 116 层把 `113_life_reality_component_schema_materialization_sequence.md` 的 component schema sequence、`98_pain_regret_repair_json_schema_and_fixture_bundle.md` 的痛苦/后悔/修复对象、`99_dream_reality_json_schema_and_fixture_bundle.md` 的梦境对象、`101_relationship_timeline_json_schema_and_fixture_bundle.md` 的关系对象和 `114_life_reality_cross_file_checker_report_schema.md` 的 report schema，转成首批 `.schema.json` skeleton 生成方案。
+生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 116 层把 `113_life_reality_component_schema_materialization_sequence.md` 的 component schema sequence、`98_pain_regret_repair_json_schema_and_fixture_bundle.md` 的痛苦/后悔/修复对象、`99_dream_reality_json_schema_and_fixture_bundle.md` 的梦境对象、`101_relationship_timeline_json_schema_and_fixture_bundle.md` 的关系对象和 `114_life_reality_cross_file_checker_report_schema.md` 的 report schema，转成首批 `.schema.json` skeleton 生成方案。
 
 `116` 的目标是固定未来 `life-reality-runner generate-schemas` 的第一批输出：共用 component base、三条 component bundle 的对象 schema skeleton、bundle schema skeleton、dependency graph、sequence dry-run report、cross-bundle ref report、validator order report 和 gap feedback。它仍是 Markdown 合同层，但已经把每个 schema 文件的路径、共用字段、`$ref` 策略、依赖顺序、失败上卷和报告输出写成可执行生成计划。
 

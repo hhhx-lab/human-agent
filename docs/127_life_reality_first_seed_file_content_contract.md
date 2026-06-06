@@ -2,7 +2,7 @@
 
 生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 127 层把 `124_life_reality_minimal_json_file_seed_plan.md` 的 SEED-001 到 SEED-020 展开为字段级 JSON 内容合同，并让 `125_life_reality_schema_registry_and_ref_resolution_plan.md` 的 registry/ref resolver 与 `126_life_reality_runner_smoke_command_execution_plan.md` 的 runner smoke execution 都能读取同一批 seed 对象。
 
-`127` 的核心职责是固定第一批 seed 文件的 root object。这里不直接物化 `life_reality_runner/` 下的 JSON 文件，而是先规定每个 seed 必须具备哪些字段、引用哪些文档、由哪个模块读取、被哪条 smoke command 验收，以及哪些字段承载真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的生命膜连续性。
+`127` 的核心职责是固定第一批 seed 文件的 root object。这里不直接物化 `life_reality_runner/` 下的 JSON 文件，而是先规定每个 seed 必须具备哪些字段、引用哪些文档、由哪个模块读取、被哪条 smoke command 验收，以及哪些字段承载真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的生命膜连续性。
 
 ## 方法锚点
 

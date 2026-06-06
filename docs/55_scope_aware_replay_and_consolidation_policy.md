@@ -4,7 +4,7 @@
 
 它连接 `08_sleep_dream_fatigue_states.md`、`19_offline_consolidation_cycle.md`、`23_consolidation_report_and_dream_sandbox_protocol.md`、`31_consolidation_validator_rules.md`、`47_coexistence_boundary_control_interface_spec.md`、`52_multi_relation_scope_graph_and_privacy_model.md` 和 `54_scope_aware_retrieval_policy.md`。
 
-生命目标声明：本文件直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
+生命目标声明：本文件直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 为什么 replay 比 retrieval 更危险
 

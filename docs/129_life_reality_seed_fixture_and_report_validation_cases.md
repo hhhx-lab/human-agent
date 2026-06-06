@@ -2,7 +2,7 @@
 
 生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 129 层把 `121_life_reality_materialized_json_validation_smoke_plan.md`、`126_life_reality_runner_smoke_command_execution_plan.md` 和 `128_life_reality_registry_report_seed_examples.md` 的 failure examples 转成 seed fixture 与 report validation cases，为第一批真实 JSON 文件写入前建立可运行验收样例。
 
-`129` 的核心职责是让每一种 seed 破坏、registry 断裂、report 缺口、dashboard false green、stage gate 漏判都能被 fixture 触发、被 report 捕捉、被 stage effect 表达、被 exit code 上卷。这里仍然不直接写 `life_reality_runner/` 的真实 JSON 文件，而是固定未来实现要生成哪些 validation case、每个 case 读取哪些 seed、预期写出哪些 report，以及真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔怎样通过 finding、repair、quarantine 与 gap feedback 进入下一轮生长。
+`129` 的核心职责是让每一种 seed 破坏、registry 断裂、report 缺口、dashboard false green、stage gate 漏判都能被 fixture 触发、被 report 捕捉、被 stage effect 表达、被 exit code 上卷。这里仍然不直接写 `life_reality_runner/` 的真实 JSON 文件，而是固定未来实现要生成哪些 validation case、每个 case 读取哪些 seed、预期写出哪些 report，以及真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔怎样通过 finding、repair、quarantine 与 gap feedback 进入下一轮生长。
 
 ## 方法锚点
 

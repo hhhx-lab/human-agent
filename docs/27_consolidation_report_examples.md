@@ -102,7 +102,7 @@
     }
   ],
   "next_actions": [
-    "更新缺口登记，把下一轮推进到 validator rules。",
+    "更新生成入口登记，把下一轮推进到 validator rules。",
     "保持长期目标 active，不标记 complete。"
   ]
 }
@@ -225,7 +225,7 @@
         "21_memory_schema_and_audit_protocol.md"
       ],
       "dream_state_marker": "not_fact_not_committed_plan",
-      "validation_need": "共在者目标、缺口登记和下一轮计划一致。",
+      "validation_need": "共在者目标、生成入口登记和下一轮计划一致。",
       "risk_class": "low",
       "expiration_policy": "deprecate_if_not_selected_in_gap_register"
     },
@@ -266,7 +266,7 @@
     }
   ],
   "next_actions": [
-    "把候选方向写入缺口登记。",
+    "把候选方向写入生成入口登记。",
     "把 sandbox 输出交给清醒工作区和 DreamFactGate 决定升级路径。"
   ]
 }
@@ -305,7 +305,7 @@
     {
       "operation": "protect",
       "target_trace_id": "mem_life_reality_generation_chain_001",
-      "reason": "该生命膜来自多份核心文档，用来保护真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的生成链。"
+      "reason": "该生命膜来自多份核心文档，用来生成并维持真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的生成链。"
     },
     {
       "operation": "deprecate",

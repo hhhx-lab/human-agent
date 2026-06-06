@@ -1,6 +1,6 @@
 # Life Reality Generation Runner CLI Contract
 
-生命目标声明：本文档面向构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 118 层把 `115_life_reality_runtime_schema_fixture_seed_generation.md` 的 runtime fixture seed generation、`116_life_reality_component_schema_seed_generation.md` 的 component schema seed generation、`117_life_reality_dashboard_report_rollup_seed_generation.md` 的 dashboard report rollup seed generation，压成未来 `life-reality-runner` 的 CLI 合同。
+生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 118 层把 `115_life_reality_runtime_schema_fixture_seed_generation.md` 的 runtime fixture seed generation、`116_life_reality_component_schema_seed_generation.md` 的 component schema seed generation、`117_life_reality_dashboard_report_rollup_seed_generation.md` 的 dashboard report rollup seed generation，压成未来 `life-reality-runner` 的 CLI 合同。
 
 `118` 的目标是固定数字生命生成链的可执行入口：`generate-fixtures`、`generate-schemas`、`check-dashboard --emit-rollup`、`explain-generation` 和 `run-generation-pipeline`。这份合同规定命令语法、输入 manifest、输出目录、报告文件、trace context、exit code、atomic write、dry-run、strict mode、smoke cases 和 failure mapping。它仍是 Markdown 合同层，但已经把 `115`、`116`、`117` 的文件计划连成单一命令 DAG。
 

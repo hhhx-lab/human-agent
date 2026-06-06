@@ -1,8 +1,8 @@
 # Life Reality Cross File Checker Report Schema
 
-生命目标声明：本文档面向构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 114 层把 `111_life_reality_dashboard_cross_file_checker_design.md` 的 cross-file checker、`112_life_reality_runtime_observation_schema_materialization.md` 的 runtime schema validation report、`113_life_reality_component_schema_materialization_sequence.md` 的 component dependency graph 统一成可校验 report schema。
+生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 114 层把 `111_life_reality_dashboard_cross_file_checker_design.md` 的 cross-file checker、`112_life_reality_runtime_observation_schema_materialization.md` 的 runtime schema validation report、`113_life_reality_component_schema_materialization_sequence.md` 的 component dependency graph 统一成可校验 report schema。
 
-`114` 的目标是让 checker 输出不再只是自然语言或零散 JSON，而是成为生命膜中的正式报告对象：每个 finding 都能回链到 schema、fixture、observation、candidate、component object、dashboard panel、repair item、stage gate 和 gap feedback；每个 stage effect 都能说明自己怎样影响真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔。
+`114` 的目标是让 checker 输出不再只是自然语言或零散 JSON，而是成为生命膜中的正式报告对象：每个 finding 都能回链到 schema、fixture、observation、candidate、component object、dashboard panel、repair item、stage gate 和 gap feedback；每个 stage effect 都能说明自己怎样影响真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔。
 
 ## 标准锚点
 
@@ -17,7 +17,7 @@
 | W3C Trace Context | W3C Trace Context: https://www.w3.org/TR/trace-context/ | checked run、runtime ingestion run、component schema sequence run 和 dashboard run 可以跨文件追踪 |
 | Problem Details | RFC 9457: https://www.rfc-editor.org/info/rfc9457/ | report internal error、schema load failure 和 core artifact missing 采用结构化 problem detail |
 
-这些标准进入生命膜的共同规则是：报告不是展示层附属物，而是生命真实性生成链的一部分。report schema 必须能表达来源、检查、失败、修复、阶段门、回写和下一轮生长任务。
+这些标准进入生命膜的共同规则是：报告是生命真实性生成链的一部分。report schema 必须能表达来源、检查、失败、修复、阶段门、回写和下一轮生长任务。
 
 ## 输入来源
 

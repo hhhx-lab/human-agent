@@ -1,6 +1,6 @@
 # Life Reality Schema File Generation Tasks
 
-生命目标声明：本文档直接服务于构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 107 层把 `104_schema_file_materialization_and_fixture_seed_plan.md`、`105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md` 和 `106_runtime_observation_to_life_reality_bundle_bridge.md` 拆成可执行 JSON 文件生成任务、首批文件顺序、runner smoke command、runtime ingestion smoke command 和 stage gate review mock 生成队列。
+生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 107 层把 `104_schema_file_materialization_and_fixture_seed_plan.md`、`105_life_reality_dashboard_panel_and_stage_gate_ui_contract.md` 和 `106_runtime_observation_to_life_reality_bundle_bridge.md` 拆成可执行 JSON 文件生成任务、首批文件顺序、runner smoke command、runtime ingestion smoke command 和 stage gate review mock 生成队列。
 
 `107` 的职责是把“要生成哪些文件”推进为“按什么顺序生成、每个文件来自哪份文档、生成后用什么检查、失败时进入哪个 repair item”。它仍是文档层，但已经面向未来实现脚本、runner CLI、fixture generator、dashboard source writer 和阶段门 review writer。
 

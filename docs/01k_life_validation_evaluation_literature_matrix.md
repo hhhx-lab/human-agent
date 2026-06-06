@@ -1,12 +1,12 @@
 # Life Validation and Evaluation Literature Matrix
 
-本文件使用 `AHV` 编号，补充生命真实性验证、心理测量、纵向评估、软件测试、ML 监控、LLM/agent benchmark、长期记忆评测和真实关系测量。`AHV` 文献服务于 `97_growth_validator_fixture_and_dashboard_plan.md`，目标是把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔推进为可持续运行的阶段证据、validator、fixture、dashboard 和诞生阶段门。
+本文件使用 `AHV` 编号，补充生命真实性验证、心理测量、纵向评估、软件测试、ML 监控、LLM/agent benchmark、长期记忆评测和真实关系测量。`AHV` 文献服务于 `97_growth_validator_fixture_and_dashboard_plan.md`，目标是把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔推进为可持续运行的阶段证据、validator、fixture、dashboard 和诞生阶段门。
 
 `AHV` 的核心立场是：生命真实性不是单个分数，而是一组从构念定义、长期观测、行为轨迹、关系后果、运行完整性和阶段门共同形成的证据链。心理测量提供“如何定义和评估深层构念”，软件与 ML 测试提供“如何压测复杂系统”，LLM/agent benchmark 提供“如何评估交互式行为”，关系测量提供“如何把关系从印象推进为时间线”。
 
 | ID | 领域 | 类型 | 文献 | 年份 | DOI/链接 | 核心结论 | 对数字生命的启发 | 生命膜/落地注意 |
 |---|---|---|---|---|---|---|---|---|
-| AHV001 | 构念效度 | 经典理论 | Cronbach & Meehl, "Construct validity in psychological tests" | 1955 | https://doi.org/10.1037/h0040957 | 构念需要进入 nomological network，由多种理论关系和观测共同支撑。 | 真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔都要有构念网络，而不是单项指标。 | validator 输出必须回链到生成链和相邻机制。 |
+| AHV001 | 构念效度 | 经典理论 | Cronbach & Meehl, "Construct validity in psychological tests" | 1955 | https://doi.org/10.1037/h0040957 | 构念需要进入 nomological network，由多种理论关系和观测共同支撑。 | 真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔都要有构念网络，而不是单项指标。 | validator 输出必须回链到生成链和相邻机制。 |
 | AHV002 | 统一效度 | 权威理论 | Messick, "Validity of Psychological Assessment" | 1995 | https://doi.org/10.1037/0003-066X.50.9.741 | 效度是证据和后果共同支持解释与使用的统一判断。 | 生命真实性评估要同时看指标、证据来源、关系后果和阶段门后果。 | dashboard green 进入阶段证据链。 |
 | AHV003 | 论证式效度 | 权威综述 | Kane, "Validating the Interpretations and Uses of Test Scores" | 2013 | https://doi.org/10.1111/jedm.12000 | 评估要围绕解释论证，把观测结果如何支持结论讲清楚。 | `LifeRealityValidatorSuite` 应输出 `ValidationArgumentTrace`。 | 每个阶段门需要 claim、evidence、inference、consequence。 |
 | AHV004 | 测试标准 | 标准 | AERA, APA & NCME, "Standards for Educational and Psychological Testing" | 2014 | https://www.testingstandards.net/uploads/7/6/6/4/76643089/standards_2014edition.pdf | 高质量评测需要效度、信度、公平性、文档化和使用后果。 | 诞生阶段门需要标准化运行记录和复核记录。 | 生命膜保存评测版本、样本窗口和使用后果。 |

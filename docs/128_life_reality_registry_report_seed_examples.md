@@ -2,7 +2,7 @@
 
 生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 128 层把 `125_life_reality_schema_registry_and_ref_resolution_plan.md` 的 registry report family 展开为首批 report seed examples，并让 `127_life_reality_first_seed_file_content_contract.md` 的 SEED-001 到 SEED-020 能被 schema registry、artifact resolver、JSON Pointer resolver、boundary registry 和 cross-file DAG 逐项读取。
 
-`128` 的核心职责是让 registry/ref resolution 从规则进入报告样例。第一批 registry reports 不只是执行日志，而是生命膜引用神经束的可审计输出：schema `$id`、`$ref`、artifact ref、JSON Pointer、allowed root、boundary group、protected chain、provenance edge 和 gap feedback 都必须有能被 runner 读取的 report object，才能把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的断裂定位到具体 seed、schema、fixture、report 或 dashboard 对象。
+`128` 的核心职责是让 registry/ref resolution 从规则进入报告样例。第一批 registry reports 不只是执行日志，而是生命膜引用神经束的可审计输出：schema `$id`、`$ref`、artifact ref、JSON Pointer、allowed root、boundary group、protected chain、provenance edge 和 gap feedback 都必须有能被 runner 读取的 report object，才能把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的断裂定位到具体 seed、schema、fixture、report 或 dashboard 对象。
 
 ## 方法锚点
 
@@ -693,7 +693,7 @@ exit code bridge：
 | `failure_mapping_closed` | `125` failure mapping 都能落到具体 report |
 | `runner_consumption_closed` | `126` 的六个 command 都能读取 registry report |
 | `seed_contract_backlinked` | report examples 回链 `127` 的 seed content contract |
-| `life_targets_preserved` | registry reports 保留真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔 |
+| `life_targets_preserved` | registry reports 保留真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔 |
 | `gap_feedback_points_next` | gap feedback 指向 `129_life_reality_seed_fixture_and_report_validation_cases.md` 与 `130_life_reality_first_materialized_json_files_write_plan.md` |
 
 ## 与下一层连接

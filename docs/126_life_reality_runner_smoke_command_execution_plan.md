@@ -2,7 +2,7 @@
 
 生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 126 层把 `121_life_reality_materialized_json_validation_smoke_plan.md` 的六个 smoke command、`123_life_reality_runner_repository_layout_and_module_map.md` 的 module map、`124_life_reality_minimal_json_file_seed_plan.md` 的 seed 文件顺序和 `125_life_reality_schema_registry_and_ref_resolution_plan.md` 的 schema/ref DAG 推进为最小执行顺序、stdout/report/exit code 合同和失败样例。
 
-`126` 的核心职责是让未来 runner 的第一次 smoke execution 有确定入口。它把 parse、schema、cross-file、dashboard、stage gate 和 top-level smoke 串成一条可审计执行链：每一步都读取生命膜字段、写入报告、传播 trace、标出 affected life targets，并把真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的断裂送入 repair、quarantine、hold 或 promote growth window。
+`126` 的核心职责是让未来 runner 的第一次 smoke execution 有确定入口。它把 parse、schema、cross-file、dashboard、stage gate 和 top-level smoke 串成一条可审计执行链：每一步都读取生命膜字段、写入报告、传播 trace、标出 affected life targets，并把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的断裂送入 repair、quarantine、hold 或 promote growth window。
 
 ## 方法锚点
 
@@ -611,7 +611,7 @@ priority rules：
 | `exit_code_owner_closed` | exit code 0-5 有 owning modules |
 | `boundary_before_stage` | boundary registry 与 protected chains 先于 dashboard/stage 读取 |
 | `gap_feedback_points_next` | gap feedback 指向 `127_life_reality_first_seed_file_content_contract.md` 与 `128_life_reality_registry_report_seed_examples.md` |
-| `life_targets_preserved` | 全链保留真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔 |
+| `life_targets_preserved` | 全链保留真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔 |
 
 ## 与下一层连接
 

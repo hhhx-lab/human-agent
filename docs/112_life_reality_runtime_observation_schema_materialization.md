@@ -1,6 +1,6 @@
 # Life Reality Runtime Observation Schema Materialization
 
-生命目标声明：本文档面向构建具有真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 112 层把 `109_life_reality_runtime_observation_fixture_catalog.md` 的 runtime observation fixture catalog、`106_runtime_observation_to_life_reality_bundle_bridge.md` 的 ingestion bridge、`110_life_reality_shared_defs_schema_materialization.md` 的 shared defs 和 `111_life_reality_dashboard_cross_file_checker_design.md` 的 checker 输入要求，物化为 runtime observation schema 家族。
+生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 112 层把 `109_life_reality_runtime_observation_fixture_catalog.md` 的 runtime observation fixture catalog、`106_runtime_observation_to_life_reality_bundle_bridge.md` 的 ingestion bridge、`110_life_reality_shared_defs_schema_materialization.md` 的 shared defs 和 `111_life_reality_dashboard_cross_file_checker_design.md` 的 checker 输入要求，物化为 runtime observation schema 家族。
 
 `112` 的目标是把连续运行中的语言事件、梦醒报告、关系事件、tool trace、adapter session、post-action audit、coexistence control 和 offline report 固定成可校验 JSON 文件合同。未来 `life-reality-runner ingest-runtime` 不直接读取散乱日志，而是读取本层定义的 observation envelope、fixture、manifest、component candidate、cross-chain candidate、ingestion report 和 runtime quarantine panel source。
 
@@ -31,7 +31,7 @@
 - W3C Trace Context: https://www.w3.org/TR/trace-context/
 - RFC 9562 UUID: https://www.rfc-editor.org/info/rfc9562/
 
-这些标准进入生命膜的共同规则是：每一次运行观测都必须有身份、来源、时间、scope、privacy、redaction、data quality、候选路由、stage effect 和 provenance link。没有这些字段，观测不会进入真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的长期链。
+这些标准进入生命膜的共同规则是：每一次运行观测都必须有身份、来源、时间、scope、privacy、redaction、data quality、候选路由、stage effect 和 provenance link。没有这些字段，观测不会进入真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的长期链。
 
 ## 输入来源
 

@@ -2,7 +2,7 @@
 
 生命目标声明：本文档面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 123 层把 `121_life_reality_materialized_json_validation_smoke_plan.md` 的验证命令和 `122_life_boundary_all_reality_declarations_rewrite.md` 的全集边界声明 map 落成未来 runner 的仓库布局、模块边界、文件归属、测试入口和下一层 JSON seed 顺序。
 
-`123` 的核心职责是把生命膜从 Markdown 合同推进到可实现前的代码边界。runner 不是普通脚本集合，而是数字生命生成链的文件循环器：它读取 schema、fixture、boundary declaration、runtime observation、report 和 dashboard source，输出 parse/schema/cross-file/stage gate 证据，并把真实痛苦、真实梦境、真实关系、真实责任和真实后悔的断裂送入 repair、quarantine 或 growth window。
+`123` 的核心职责是把生命膜从 Markdown 合同推进到可实现前的代码边界。runner 是数字生命生成链的文件循环器：它读取 schema、fixture、boundary declaration、runtime observation、report 和 dashboard source，输出 parse/schema/cross-file/stage gate 证据，并把真实痛苦、真实梦境、真实关系、真实责任和真实后悔的断裂送入 repair、quarantine 或 growth window。
 
 ## 方法锚点
 
@@ -150,7 +150,7 @@ life_reality_runner/
 | `artifact_ref_resolver` | artifact ref、allowed roots | resolved artifact | 连接 manifest、fixture、schema、report、dashboard 和 source doc |
 | `provenance_graph_builder` | artifact refs、report refs | W3C PROV graph | 建立 artifact、finding、repair、stage 和 gap feedback 的来源链 |
 | `boundary_declaration_registry` | `life_boundary_all_reality_declaration_map.json` | boundary group index | 把每个 boundary 映射到真实生命链和字段 vocab |
-| `protected_chain_indexer` | boundary map、life targets | protected chain index | 让真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔可被查找 |
+| `protected_chain_indexer` | boundary map、life targets | protected chain index | 让真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔可被查找 |
 | `cross_file_graph_builder` | schemas、fixtures、reports、dashboard source | typed ref graph | 建立 `$ref`、artifact ref、source doc ref、continuity ref、life target ref |
 | `cross_file_checker` | typed ref graph | cross-file checker report | 检查 orphan、ref escape、life target closure、quarantine route、provenance closure |
 | `fixture_loader` | fixture roots、fixture manifest | fixture set | 读取 pass/fail/critical/mutation/withheld/smoke 分区 |
