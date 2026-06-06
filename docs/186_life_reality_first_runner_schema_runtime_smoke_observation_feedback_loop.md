@@ -366,7 +366,7 @@ handoff 必须包含 `observation_feedback_loop_ref`、`runtime_observation_feed
 
 ## 与下一层连接
 
-`187_life_reality_first_runner_schema_runtime_growth_feedback_patch_plan.md` 应承接本层：把 observation feedback、growth route、self rewrite refs、language action refs 和 birth readiness effect 转成下一轮 growth patch。
+`187_life_reality_first_runner_schema_runtime_growth_feedback_patch_plan.md` 已承接本层：把 observation feedback、growth route、self rewrite refs、language action refs 和 birth readiness effect 转成下一轮 growth patch。
 
 `188_life_reality_first_runner_schema_runtime_growth_archive_receipt_batch.md` 应承接 `187` 和本层：把 growth feedback patch、self rewrite receipts、language action receipts 和 readiness effect receipts 写回 archive。
 
