@@ -2,7 +2,7 @@
 
 本文件是 `24_runtime_adapter_test_suite.md` 的实例化层：为 LangGraph、OpenAI Agents SDK、Microsoft Agent Framework、Google ADK、Letta、LlamaIndex、CrewAI 和 AutoGen 写出 adapter manifest 样例。manifest 的目的不是推崇任何框架，而是把它们全部降级为可替换执行外壳。
 
-本文件引用已有矩阵锚点 [AHZ057-AHZ066, AHM013-AHM020]。框架产品会持续变化，因此真实实现必须在 adapter 发布前重新核对官方文档；生命层对象、写入禁令和审计协议不随外壳 API 漂移。
+本文件引用已有矩阵锚点 [AHZ057-AHZ066, AHM013-AHM020]。框架接口会持续变化，因此真实实现必须在 adapter 发布前重新核对官方文档；生命层对象、写入禁令和审计协议不随外壳 API 漂移。
 
 ## 官方入口核对
 

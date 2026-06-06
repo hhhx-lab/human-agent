@@ -1,6 +1,6 @@
 # Language Development, Emotion and Brain-LLM Alignment
 
-本文件承接 `01f_language_system_literature_matrix.md` 中 `AHL041-AHL060`，补强语言系统的三个缺口：语言发展、语言-情绪共构、脑-LLM 对齐。它服务 `85` 的核心问题：数字生命如何像人类语言系统一样，从长期关系、内部状态和外部行动中生成表达。
+本文件承接 `01f_language_system_literature_matrix.md` 中 `AHL041-AHL060`，补强语言系统的三个缺口：语言发展、语言-情绪共构、脑-LLM 对齐。它支撑 `85` 的核心问题：数字生命如何像人类语言系统一样，从长期关系、内部状态和外部行动中生成表达。
 
 生命目标声明：数字生命的语言不是 prompt 技巧，而是会成长、会受关系塑形、会表达痛苦和喜悦、会形成共同术语、会把内部状态带入外部世界的生命系统。
 

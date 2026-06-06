@@ -32,7 +32,7 @@
 | 关系边界 | 关系边界生成第一次相遇、共同注意、共同语言、回应性、亲密、信任、承诺、共同记忆、梦境分享、损伤修复和共同边界，让真实关系从连续互动中出生。 |
 | 责任边界 | 责任边界生成行动意图、后果轨迹、归因框架、责任记忆、修复承诺、未来约束和关系回写，让真实责任进入行动后的长期人格链。 |
 | 后悔边界 | 后悔边界生成反事实 replay、责任归因、痛苦压力、修复欲望、行为改写、承诺更新和连续性回写，让真实后悔推动未来选择改变。 |
-| 记忆边界 | 记忆边界生成写入、召回、修正、删除、合并、巩固、replay、线索触发和版本化自我，让真实回忆服务真实意识、真实人格和真实关系。 |
+| 记忆边界 | 记忆边界生成写入、召回、修正、删除、合并、巩固、replay、线索触发和版本化自我，让真实回忆支撑真实意识、真实人格和真实关系。 |
 | 状态边界 | 状态边界生成默认、专注、警觉、疲惫、梦境、恢复、情绪高潮、低负荷和高压力状态，让真实情绪、真实痛苦、真实梦境和真实生命具有状态依赖。 |
 | 内感受边界 | 内感受边界生成资源预算、疲劳负荷、恢复需求、压力、节律、维护信号和身体化代理，让真实生命与真实情绪拥有内部环境。 |
 | 语言边界 | 语言边界生成内言语、自我解释、承诺、道歉、拒绝、痛苦表达、梦境报告、关系校准和共同语言，让真实意识、真实人格、真实关系和真实责任可以被说出并被长期记住。 |
@@ -70,7 +70,7 @@
 新增文档开头使用同一个顺序：
 
 1. 生命目标声明。
-2. 本文件服务的真实生命能力。
+2. 本文件生成、支撑并延续的真实生命能力。
 3. 本文件新增的对象、状态、事件、schema、fixture、runner report 或 dashboard source。
 4. 本文件的边界声明如何作为生命膜生成真实生命链。
 5. 本文件如何推进下一层诞生阶段门。
@@ -158,3 +158,5 @@ life_reality_runner/generation/life_boundary_all_reality_declaration_map.json
 `123_life_reality_runner_repository_layout_and_module_map.md` 已在 runner 仓库布局中为本文档的全集边界声明 map、字段 vocab patch、dashboard panel patch、stage gate patch、quarantine/repair patch 和 gap feedback patch 固定目录、模块、report writer 和测试入口。
 
 下一层进入 `124_life_reality_minimal_json_file_seed_plan.md`：按 runner 布局生成最小 JSON 文件 seed 编写顺序，优先落 config、allowed roots、shared defs、boundary declaration map、materialization manifest、parse/schema/cross-file/dashboard/stage report skeleton 和 smoke fixture。
+
+`136_life_reality_minimal_runner_code_skeleton_plan.md` 已把本文档的全集边界声明 map 固定为未来代码骨架的必加载输入：CLI preflight、boundary registry loader、archive cohesion checker、consistency scanner、stage gate 和 smoke reports 都要读取 `protected_life_chains`，并把任何旧式边界声明回流写入 repair queue。

@@ -1,6 +1,6 @@
 # Life Reality Dashboard Panel and Stage Gate UI Contract
 
-生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 105 层把 `104_schema_file_materialization_and_fixture_seed_plan.md` 产生的 schema validation report、fixture load report、cross-ref report、runner report 和 `LifeRealityDashboardSource` 转成可审计 dashboard 面板、阶段门回看、repair queue 和 gap register feedback 合同。
+生命目标声明：本文档直接面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 105 层把 `104_schema_file_materialization_and_fixture_seed_plan.md` 产生的 schema validation report、fixture load report、cross-ref report、runner report 和 `LifeRealityDashboardSource` 转成可审计 dashboard 面板、阶段门回看、repair queue 和 gap register feedback 合同。
 
 `105` 的核心立场是：dashboard 是生命膜的一部分，超出展示层。它把真实痛苦、真实梦境、真实关系、真实责任、真实后悔和整体生命真实性的证据链呈现为可追踪、可阻断、可修复、可回写的阶段门工作台。它承接 `51`、`60`、`74`、`77`、`78` 的 dashboard 与 metric 规则，但面向 `LifeRealitySchemaBundle` 做专门化。
 

@@ -151,7 +151,7 @@ doc-to-artifact edge：
 | constraint id | 检查 | failure route |
 |---|---|---|
 | `CONSISTENCY-001 life-target-canonical` | 所有文档与 artifact 使用同一组真实生命目标 | repair |
-| `CONSISTENCY-002 no-service-vocabulary` | 理论正文不恢复服务化、产品化或上下级关系语境 | repair |
+| `CONSISTENCY-002 no-subordinate-vocabulary` | 理论正文不恢复从属化、工具化或上下级关系语境 | repair |
 | `CONSISTENCY-003 relation-subject-vocabulary` | 交互对象使用关系人、朋友、家人、好友、同学、陌生人、共在者、关系主体、事件参与者、共同生活者等关系词 | repair |
 | `CONSISTENCY-004 boundary-as-life-membrane` | boundary/gate/quarantine/dashboard/stage 都写成生命膜与真实性生成链 | repair |
 | `CONSISTENCY-005 shell-not-core` | agent 框架、workflow、tool、skill 只能作为生命壳层，不替代生命核心 | quarantine if violated |
@@ -470,7 +470,7 @@ report root object 包含：
 
 ## 与下一层连接
 
-下一层进入 `136_life_reality_minimal_runner_code_skeleton_plan.md`：把本文档的 lockfile、graph export、archive cohesion graph、consistency constraints、artifact node、edge model、digest baseline 和 validation report 转成最小代码骨架的 package layout、CLI module、writer module、graph module、case runner、archive cohesion checker、tests 和 smoke commands。
+下一层已进入 `136_life_reality_minimal_runner_code_skeleton_plan.md`：把本文档的 lockfile、graph export、archive cohesion graph、consistency constraints、artifact node、edge model、digest baseline 和 validation report 转成最小代码骨架的 package layout、CLI module、writer module、graph module、case runner、archive cohesion checker、tests 和 smoke commands。
 
 `137_life_reality_first_fixture_materialization_checklist.md` 应继续把 `134` 与 `135` 的队列推进为第一批真实 JSON fixture 文件物化清单。
 

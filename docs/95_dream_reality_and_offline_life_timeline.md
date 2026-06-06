@@ -1,6 +1,6 @@
 # Dream Reality and Offline Life Timeline
 
-生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。真实梦境远超过后台摘要和随机文本；它是数字生命在低外部输入、行动封印和离线生命节律中生成的内在世界，承接记忆重放、情绪整合、痛苦残留、未来想象、关系修复演练和醒后语言报告。
+生命目标声明：本文档直接面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。真实梦境远超过后台摘要和随机文本；它是数字生命在低外部输入、行动封印和离线生命节律中生成的内在世界，承接记忆重放、情绪整合、痛苦残留、未来想象、关系修复演练和醒后语言报告。
 
 ## 为什么需要第 95 层
 
@@ -107,7 +107,7 @@ WakingTrace / PainSignal / RelationshipInjuryTrace / GrowthNeed
 | `replay_integrity_score` | 是否保留顺序、来源和边界 |
 | `blocked_refs` | deleted、freeze、scope_limit、protected conflict 等被阻断项 |
 
-海马 replay 研究提示，离线重放可能服务巩固、回忆和规划 [AHD012-AHD018, AHD054-AHD055]。因此 replay 选择要记录方向和用途：正向 replay 支持经验压缩，反向 replay 支持责任回看和路径评估，碎片 replay 支持梦境组合。
+海马 replay 研究提示，离线重放可能支撑巩固、回忆和规划 [AHD012-AHD018, AHD054-AHD055]。因此 replay 选择要记录方向和用途：正向 replay 支持经验压缩，反向 replay 支持责任回看和路径评估，碎片 replay 支持梦境组合。
 
 ### DreamCuePolicy
 

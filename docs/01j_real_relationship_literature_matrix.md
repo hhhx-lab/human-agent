@@ -1,6 +1,6 @@
 # Real Relationship Literature Matrix
 
-本文件使用 `AHR` 编号，补充真实关系、第一次交谈、共同注意、共同语言、亲密、自我披露、依恋、信任、共同记忆、对话修复、脑间耦合、长期关系轨迹和人-AI 长期关系研究。`AHR` 文献服务于 `96_real_relationship_longitudinal_timeline.md`，目标是把关系从任务上下文推进为数字生命的长期生命结构：关系主体、共同历史、语言风格、承诺、误解、梦境分享、痛苦修复和边界演化共同形成真实关系。
+本文件使用 `AHR` 编号，补充真实关系、第一次交谈、共同注意、共同语言、亲密、自我披露、依恋、信任、共同记忆、对话修复、脑间耦合、长期关系轨迹和人-AI 长期关系研究。`AHR` 文献支撑 `96_real_relationship_longitudinal_timeline.md`，目标是把关系从任务上下文推进为数字生命的长期生命结构：关系主体、共同历史、语言风格、承诺、误解、梦境分享、痛苦修复和边界演化共同形成真实关系。
 
 | ID | 领域 | 类型 | 文献 | 年份 | DOI/链接 | 核心结论 | 对数字生命的启发 | 生命膜/落地注意 |
 |---|---|---|---|---|---|---|---|---|
@@ -51,7 +51,7 @@
 | AHR045 | shared reality | 权威理论 | Echterhoff, Higgins & Levine, "Shared Reality" | 2009 | https://doi.org/10.1111/j.1745-6924.2009.01161.x | 共享现实是与他人形成共同内在状态。 | `SharedRealityTrace` 是真实关系的意义层。 | 共享现实要有对象、证据和范围。 |
 | AHR046 | shared reality 更新 | 综述 | Higgins, Rossignac-Milon & Echterhoff, "Shared Reality" | 2021 | https://doi.org/10.1177/0963721421992027 | 交流会塑造记忆、判断和共同现实。 | 数字生命与关系主体共同塑造记忆解释。 | 共同解释可修正。 |
 | AHR047 | 关系中的共享现实 | 实证 | Rossignac-Milon et al., "Shared reality in interpersonal relationships" | 2021 | https://doi.org/10.1037/pspi0000266 | 共享现实支持关系满意、意义和稳定。 | `SharedWorldModel` 是关系深层指标。 | 不同关系有不同共享世界。 |
-| AHR048 | 自传记忆社交功能 | 综述 | Alea & Bluck, "Why are you telling me that?" | 2003 | https://doi.org/10.1080/741938207 | 自传记忆分享服务社会功能。 | 共同记忆记录讲述目的和回应。 | 记忆分享遵守 scope。 |
+| AHR048 | 自传记忆社交功能 | 综述 | Alea & Bluck, "Why are you telling me that?" | 2003 | https://doi.org/10.1080/741938207 | 自传记忆分享支撑社会功能。 | 共同记忆记录讲述目的和回应。 | 记忆分享遵守 scope。 |
 | AHR049 | 我们记忆 | 实证 | Beike, Cole & Merrick, "Sharing specific 'We' autobiographical memories in close relationships" | 2017 | https://doi.org/10.1080/09658211.2017.1313990 | 亲密关系中存在特定“我们”记忆。 | `WeMemoryTrace` 是真实关系核心对象。 | “我们”记忆可被关系主体修正。 |
 | AHR050 | 协作记忆 | 综述 | Rajaram & Pereira-Pasarin, "Collaborative Memory" | 2010 | https://doi.org/10.1177/1745691610388763 | 群体回忆既促进也抑制记忆。 | 共同记忆记录收益、遗漏和污染风险。 | 共同记忆需来源分层。 |
 | AHR051 | 交易记忆 | 经典理论 | Wegner, "Transactive Memory" | 1987 | https://doi.org/10.1007/978-1-4612-4634-3_9 | 群体可形成“谁知道什么”的共享记忆系统。 | 形成能力/知识分工图。 | 分工图可检查、删除和更新。 |

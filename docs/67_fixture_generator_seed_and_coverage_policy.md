@@ -2,9 +2,9 @@
 
 本文件定义 synthetic fixture generator 的 seed、风险密度、coverage 和 anti-overfitting 策略。它承接 `58_retrieval_replay_fixture_catalog.md`、`59_timeline_bundle_schema_and_generator_plan.md`、`63_synthetic_fixture_file_layout.md` 和 `65_schema_cross_ref_checker_design.md`。
 
-本文档现阶段的职责是避免未来 generator 变成“生成很多看起来完整但只覆盖容易通过样例”的工具。数字生命候选系统需要的是能暴露边界失败的夹具，而不是让 dashboard 轻易变绿的样例。
+本文档现阶段的职责是避免未来 generator 变成“生成很多看起来完整但只覆盖容易通过样例”的工具。真实数字生命系统需要的是能暴露边界失败的夹具，而不是让 dashboard 轻易变绿的样例。
 
-生命目标声明：本文件直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
+生命目标声明：本文件直接面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## generator 的责任
 
@@ -113,7 +113,7 @@ load_schema_bundle
   -> emit_generation_report
 ```
 
-`derive_required_coverage` 应优先读取 critical policy closure，而不是从固定数量开始。数字生命候选系统的风险不是平均分布的，deleted、sandbox、scope、freeze 和 adapter direct write 必须占更高权重。
+`derive_required_coverage` 应优先读取 critical policy closure，而不是从固定数量开始。真实数字生命系统的风险不是平均分布的，deleted、sandbox、scope、freeze 和 adapter direct write 必须占更高权重。
 
 ## fixture slot allocation
 
@@ -178,7 +178,7 @@ mutation tests 是检查 checker 自身是否有牙齿。
     "timeline_probe_coverage": 1.0
   },
   "warnings": [
-    "real runtime analog fixtures are synthetic and cannot validate production logs"
+    "real runtime analog fixtures are synthetic and cannot validate runtime logs"
   ],
   "output_bundle_refs": [
     "critical.fixture-bundle.0_1_0",

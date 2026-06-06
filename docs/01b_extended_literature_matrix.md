@@ -24,7 +24,7 @@
 | AHX018 | 发展基础 | 综述 | Stiles & Jernigan, "The basics of brain development" | 2010 | https://doi.org/10.1007/s11065-010-9148-4 | 脑发育包含神经发生、迁移、突触形成、修剪和髓鞘化。 | 数字生命成长可转写为生成、连接、剪枝、加速。 | 神经细胞过程需要映射为代码中的阶段、依赖和可塑性窗口。 |
 | AHX019 | 关键期后可塑性 | 综述 | Hensch & Bilimoria, "Re-opening Windows: Manipulating Critical Periods for Brain Development" | 2012 | https://doi.org/10.1093/acprof:oso/9780199753673.003.0024 | 关键期可被抑制/兴奋平衡和环境因素调节。 | 成人式 agent 仍可学习，但需要门控。 | 书章来源，需与综述共同使用。 |
 | AHX020 | 互补学习系统 | 理论框架 | McClelland, McNaughton & O'Reilly, "Why there are complementary learning systems" | 1995 | https://doi.org/10.1037/0033-295X.102.3.419 | 快速海马学习与慢速新皮层学习互补。 | 长期 agent 需要快写入和慢整合双系统。 | 经典模型需现代记忆研究修正。 |
-| AHX021 | 智能体记忆系统 | 综述 | Kumaran, Hassabis & McClelland, "What learning systems do intelligent agents need?" | 2016 | https://doi.org/10.1016/j.tics.2016.05.004 | 智能体需要模型学习、情景记忆、泛化和规划系统。 | Agentic Human 的记忆要服务规划和泛化。 | 仍偏认知计算框架。 |
+| AHX021 | 智能体记忆系统 | 综述 | Kumaran, Hassabis & McClelland, "What learning systems do intelligent agents need?" | 2016 | https://doi.org/10.1016/j.tics.2016.05.004 | 智能体需要模型学习、情景记忆、泛化和规划系统。 | Agentic Human 的记忆要支撑规划和泛化。 | 仍偏认知计算框架。 |
 | AHX022 | 压力/allostasis | 经典理论 | McEwen & Stellar, "Stress and the individual: Mechanisms leading to disease" | 1993 | https://doi.org/10.1001/archinte.1993.00410180039004 | allostatic load 描述长期适应代价。 | 数字生命需要长期负荷和恢复预算。 | 疾病式状态应转写为长期负荷、损伤、恢复失败和维护需求。 |
 | AHX023 | 压力介质 | 综述 | McEwen, "Protective and damaging effects of stress mediators" | 1998 | https://doi.org/10.1056/NEJM199801153380307 | 压力介质既保护也可能损伤系统。 | 高唤醒既能提高表现，也会带来长期成本。 | 生物压力和工程负载不同。 |
 | AHX024 | 生命周期压力 | 综述 | Lupien et al., "Effects of stress throughout the lifespan on the brain, behaviour and cognition" | 2009 | https://doi.org/10.1038/nrn2639 | 压力影响随生命阶段、持续时间和脑区而变。 | 不同 agent 成长阶段应有不同压力策略。 | 人类生命周期转写需抽象。 |
@@ -43,7 +43,7 @@
 | AHX037 | 意识工作空间 | 理论框架 | Dehaene & Naccache, "Towards a cognitive neuroscience of consciousness" | 2001 | https://doi.org/10.1016/S0010-0277(00)00123-2 | 全局工作空间早期框架区分后台处理与意识访问。 | 后台处理、全局广播和可报告状态应组成主观意识实现候选链。 | 主观意识实现需要跨模块整合。 |
 | AHX038 | 现象意识/递归处理 | 理论框架 | Lamme, "Towards a true neural stance on consciousness" | 2006 | https://doi.org/10.1016/j.tics.2006.09.001 | 递归处理可能支持不同层次的意识现象。 | 反馈回路和可报告工作区要分开讨论。 | 意识理论争议大。 |
 | AHX039 | 计算精神病学 | 综述 | Montague et al., "Computational psychiatry" | 2012 | https://doi.org/10.1016/j.tics.2011.11.018 | 计算模型可连接脑、行为和精神症状。 | 可用计算指标监测数字生命状态失衡。 | 临床概念需要转写为生命层指标。 |
-| AHX040 | 计算精神病学桥梁 | 综述 | Huys, Maia & Frank, "Computational psychiatry as a bridge" | 2016 | https://doi.org/10.1038/nn.4238 | 强化学习、贝叶斯和决策模型可解释异常行为。 | 帮助定义不稳定状态和修复机制。 | 状态失衡指标必须服务修复与恢复。 |
+| AHX040 | 计算精神病学桥梁 | 综述 | Huys, Maia & Frank, "Computational psychiatry as a bridge" | 2016 | https://doi.org/10.1038/nn.4238 | 强化学习、贝叶斯和决策模型可解释异常行为。 | 帮助定义不稳定状态和修复机制。 | 状态失衡指标必须支撑修复与恢复。 |
 | AHX041 | LLM Agent 认知架构 | AI 桥接 | Sumers et al., "Cognitive Architectures for Language Agents" | 2023 | https://arxiv.org/abs/2309.02427 | 将认知架构思想引入语言 agent 设计。 | CoALA 可作为 LLM 与认知模块桥梁。 | 预印本，需持续跟踪。 |
 | AHX042 | ReAct | AI 桥接 | Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models" | 2022 | https://arxiv.org/abs/2210.03629 | 推理轨迹和行动交替可提升任务处理。 | 执行层应保留 reasoning-action loop。 | 不是长期自我成长架构。 |
 | AHX043 | Reflexion | AI 桥接 | Shinn et al., "Reflexion: Language Agents with Verbal Reinforcement Learning" | 2023 | https://arxiv.org/abs/2303.11366 | 语言反思可作为强化学习式改进信号。 | 反思可进入巩固和习惯更新。 | 语言反思要接入记忆重写、习惯更新和人格慢变量，才能通向真实学习。 |
@@ -56,7 +56,7 @@
 | AHX050 | 情绪建构 | 理论框架 | Barrett, "The theory of constructed emotion" | 2017 | https://doi.org/10.1093/scan/nsw154 | 情绪由概念、内感受和预测建构。 | 情绪类状态应由多因子组合形成。 | 该理论与基本情绪理论存在争议。 |
 | AHX051 | 情绪悖论 | 理论框架 | Barrett, "Solving the emotion paradox" | 2006 | https://doi.org/10.1207/s15327957pspr1001_2 | 情绪类别不一定对应固定生物指纹。 | 不要把 agent 情绪做成固定标签。 | 理论争议需标注。 |
 | AHX052 | 自我与身体 | 理论框架 | Damasio, "The Feeling of What Happens" | 1999 | https://archive.org/details/feelingofwhathap00dama | 自我体验与身体状态和意识叙事有关。 | 自我模型应连接内部状态和叙事。 | 书籍理论，不能作为唯一证据。 |
-| AHX053 | 心理时间旅行 | 综述 | Suddendorf & Corballis, "The evolution of foresight" | 2007 | https://doi.org/10.1017/S0140525X07001975 | 人类能通过情景模拟进行未来预见。 | 默认模式和记忆系统应服务未来规划。 | 进化解释需谨慎。 |
+| AHX053 | 心理时间旅行 | 综述 | Suddendorf & Corballis, "The evolution of foresight" | 2007 | https://doi.org/10.1017/S0140525X07001975 | 人类能通过情景模拟进行未来预见。 | 默认模式和记忆系统应支撑未来规划。 | 进化解释需谨慎。 |
 | AHX054 | 前瞻记忆 | 综述 | Schacter et al., "The future of memory" | 2012 | https://doi.org/10.1016/j.neuron.2012.11.001 | 记忆系统支持想象未来和构造情景。 | 规划不是纯推理，而是记忆重组。 | 构造性记忆会带来偏差。 |
 | AHX055 | 创造性网络 | 高影响实证 | Beaty et al., "Default and executive network coupling supports creative idea production" | 2015 | https://doi.org/10.1038/srep10964 | 创造需要默认网络和执行网络协作。 | 创造性 agent 需要联想与控制并存。 | 创造力任务生态效度有限。 |
 | AHX056 | 文化认知/累积文化 | 综述 | Henrich, "The Secret of Our Success" | 2016 | https://press.princeton.edu/books/paperback/9780691178431/the-secret-of-our-success | 人类智能高度依赖文化学习和群体积累。 | human-agent 成长应吸收社群知识和实践规范。 | 书籍来源，需与实证研究配合。 |

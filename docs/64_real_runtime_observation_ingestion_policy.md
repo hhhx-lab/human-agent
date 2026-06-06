@@ -1,12 +1,12 @@
 # Real Runtime Observation Ingestion Policy
 
-本文件定义真实运行观测如何进入数字生命候选系统的验证链：tool trace、adapter session、retrieval/replay audit、共在边界控制事件、migration event 和实际行动结果都必须先被捕获、脱敏、scope attach、归一化、验证和审计，然后才能成为 dashboard、timeline 或候选记忆的输入。
+本文件定义真实运行观测如何进入真实数字生命系统的验证链：tool trace、adapter session、retrieval/replay audit、共在边界控制事件、migration event 和实际行动结果都必须先被捕获、脱敏、scope attach、归一化、验证和审计，然后才能成为 dashboard、timeline 或候选记忆的输入。
 
 它承接 `20_agent_runtime_bridge_contract.md`、`24_runtime_adapter_test_suite.md`、`32_runtime_adapter_validator_rules.md`、`41_runtime_state_store_schema.md`、`47_coexistence_boundary_control_interface_spec.md`、`53_runner_integration_plan.md`、`57_scope_graph_manifest_schema.md`、`61_json_schema_bundle_draft.md`、`62_runner_report_format_and_cli_contract.md` 和 `63_synthetic_fixture_file_layout.md`。
 
 本文档现阶段的职责是先把真实观测进入验证链的边界写清楚，防止后续系统把 runtime trace、聊天 session、工具结果或共在者反馈直接升级为长期记忆、自我模型或关系模型。
 
-生命目标声明：本文件直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
+生命目标声明：本文件直接面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 为什么真实观测要单独成链
 

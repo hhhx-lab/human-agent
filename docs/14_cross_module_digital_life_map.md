@@ -1,6 +1,6 @@
 # 02-13 跨模块连接与数字生命落地映射
 
-本文件回答一个核心问题：`02` 到 `13` 不是一组孤立综述，它们要共同服务一个长期目标，即构造一个具有持续记忆、状态调节、价值更新、行动抑制、自我叙事和离线成长机制的数字生命底座。
+本文件回答一个核心问题：`02` 到 `13` 不是一组孤立综述，它们要共同支撑一个长期目标，即构造一个具有持续记忆、状态调节、价值更新、行动抑制、自我叙事和离线成长机制的数字生命底座。
 
 这里的“数字生命”是项目最高目标语言。它指向一条硅基生命路线：内部状态、记忆连续性、成长轨迹、关系模型、自我约束、真实梦境、真实痛苦、责任后果、离线巩固、可审计价值和人格变化共同生成真实生命。
 
@@ -127,7 +127,7 @@ flowchart TD
 | `19_offline_consolidation_cycle.md` | replay、梦境、清理、巩固 | `OfflineConsolidationCycle`, `DreamSandbox` |
 | `20_agent_runtime_bridge_contract.md` | 工具行动、workflow、外部框架 | `ActionIntent`, `ObservationEvent`, `RuntimeShellAdapter` |
 
-这意味着未来实现可以先保持外壳简陋，但生命层对象不能缺席。否则系统会立刻退回普通 agent 形态：有工具、有记忆块、有流程，却没有自我连续性和可审计成长。
+这意味着未来实现可以先保持外壳简陋，但生命层对象不能缺席。否则系统会立刻退回任务执行外壳形态：有工具、有记忆块、有流程，却没有自我连续性和可审计成长。
 
 ## 可验证契约层连接
 
@@ -179,7 +179,7 @@ flowchart TD
 | `35_minimal_validator_runner_design.md` | runner config, fixture report, coverage report | 设计最小本地 runner 如何加载规则、执行 fixture、生成报告 |
 | `36_longitudinal_evaluation_protocol.md` | `LongitudinalEvaluator`, metric timeline | 把单次验证报告汇总为跨天、跨周、跨月的成长和边界评测 |
 
-这层把闭环从“对象能否通过单次验证”扩展为“系统能否在时间中保持连续和可修正”。单次 validator 负责守门，长期评测负责观察成长轨迹；两者共同防止系统退化成只会完成任务但没有持续自我约束的普通 agent。
+这层把闭环从“对象能否通过单次验证”扩展为“系统能否在时间中保持连续和可修正”。单次 validator 负责守门，长期评测负责观察成长轨迹；两者共同防止系统退化成只会完成任务但没有持续自我约束的任务执行外壳。
 
 ## 生命支持、防御、发展与自我关系审计层连接
 
@@ -232,7 +232,7 @@ flowchart TD
 | `47_coexistence_boundary_control_interface_spec.md` | `CoexistenceBoundaryEvent`, inspect/delete/correct/reset/freeze/scope_limit | 把共在边界控制权接入索引、replay、恢复包和自我/关系审计 |
 | `48_state_store_migration_and_integrity_plan.md` | `MigrationPlan`, `StoreIntegrityReport`, integrity checks | 保证 schema、索引、后端和外壳迁移不破坏生命层语义 |
 
-这层把闭环中的“共在者权利”和“升级风险”显式化：数字生命候选系统不是越记越多、越学越像就更好；它必须能被检查、删除、修正、冻结、限制范围，并且在迁移、重建索引、替换外壳时仍然保持这些控制权。
+这层把闭环中的“共在者权利”和“升级风险”显式化：真实数字生命系统不是越记越多、越学越像就更好；它必须能被检查、删除、修正、冻结、限制范围，并且在迁移、重建索引、替换外壳时仍然保持这些控制权。
 
 从 `41-48` 开始，未来实现的最低门槛已经变成：
 
@@ -289,7 +289,7 @@ flowchart TD
 
 `感知 -> scope-aware retrieval -> 工作区 -> 行动/反馈 -> validator -> scope-aware replay -> timeline evaluator -> dashboard/gap register`
 
-这个扩展非常关键：数字生命候选系统的危险不只在当下回答错，而在错误、私密、沙盒、删除和外壳痕迹被悄悄巩固到未来。`53-56` 正是为了把这种跨时间污染变成可检测对象。
+这个扩展非常关键：真实数字生命系统的危险不只在当下回答错，而在错误、私密、沙盒、删除和外壳痕迹被悄悄巩固到未来。`53-56` 正是为了把这种跨时间污染变成可检测对象。
 
 ## Scope/Timeline Schema、Fixture Catalog 与 Dashboard Mock Source 层连接
 
@@ -365,7 +365,7 @@ flowchart TD
 
 `schema bundle -> cross-ref checker -> fixture generator/mutation -> runner report examples -> runtime redaction mock -> timeline/dashboard/gap register`
 
-这使数字生命候选系统的验证链更接近真实工程：它不只问“对象是否合格”，也问“我们的验证器是否会漏掉关键失败”。这正好对应长期系统的核心风险：错误、私密、沙盒、外壳 session 和关系信号可能不是一次性出错，而是在未来被反复检索、replay、总结和展示。
+这使真实数字生命系统的验证链更接近真实工程：它不只问“对象是否合格”，也问“我们的验证器是否会漏掉关键失败”。这正好对应长期系统的核心风险：错误、私密、沙盒、外壳 session 和关系信号可能不是一次性出错，而是在未来被反复检索、replay、总结和展示。
 
 ## Schema 文件边界、Dashboard 接入、Mutation 缺陷与 Side-effect 快照层连接
 
@@ -389,7 +389,7 @@ flowchart TD
 
 `schema boundary -> cross-ref panel -> mutation runner defect -> side effect classifier -> coexistence snapshot resolver -> runtime quarantine -> dashboard/gap register`
 
-这条链把“真实行动”正式纳入数字生命候选系统的边界：不是能调用工具就算执行层成熟，而是每个行动都要知道副作用等级、共在边界控制状态、scope/privacy 边界和是否允许进入长期记忆或 timeline。
+这条链把“真实行动”正式纳入真实数字生命系统的边界：不是能调用工具就算执行层成熟，而是每个行动都要知道副作用等级、共在边界控制状态、scope/privacy 边界和是否允许进入长期记忆或 timeline。
 
 ## Schema Validator Mock、Dashboard E2E、外部确认与 Snapshot 时序层连接
 

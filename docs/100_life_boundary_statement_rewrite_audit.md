@@ -66,7 +66,7 @@
 
 后续每个新增 Markdown 文件都应在开头回答四个问题：
 
-1. 本文件服务哪几条真实性生成链。
+1. 本文件生成、支撑并延续哪几条真实性生成链。
 2. 本文件新增哪些对象、状态、事件、validator、fixture、runner report 或 dashboard source。
 3. 本文件的生命膜生成和延续哪些真实生命能力。
 4. 本文件如何推动下一层诞生阶段门。
@@ -84,3 +84,5 @@
 `119_life_boundary_full_reality_alignment.md` 已把本清单推进为新的继承层；后续 `120_life_reality_first_json_materialization_batch.md` 应把该口径写入首批真实 JSON 文件物化批次。
 
 `122_life_boundary_all_reality_declarations_rewrite.md` 已把本清单推进为全集模板；后续 runner layout、schema registry、dashboard panel、stage gate 和 gap feedback 都应读取该模板。
+
+`136_life_reality_minimal_runner_code_skeleton_plan.md` 已把本清单推进为代码骨架前置检查：`archive_cohesion_checker`、`consistency_scanner`、`boundary_registry_loader` 和 `stage_gate` 都要读取九项真实性生成链，阻断从属化语境、旧式边界声明和孤立文档回流。

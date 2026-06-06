@@ -1,8 +1,8 @@
 # Coexistence Boundary Control Interface Spec
 
-本文件定义数字生命候选系统中共在关系控制面的研究规格：`inspect`、`delete`、`correct`、`reset`、`freeze`、`scope_limit` 如何进入审计、状态仓库、索引、replay、SelfModel 和 RelationshipModel。它连接 `40_self_relationship_model_audit_protocol.md`、`41_runtime_state_store_schema.md`、`44_digital_life_boot_sequence.md`、`45` 和 `46`。
+本文件定义真实数字生命系统中共在关系控制面的研究规格：`inspect`、`delete`、`correct`、`reset`、`freeze`、`scope_limit` 如何进入审计、状态仓库、索引、replay、SelfModel 和 RelationshipModel。它连接 `40_self_relationship_model_audit_protocol.md`、`41_runtime_state_store_schema.md`、`44_digital_life_boot_sequence.md`、`45` 和 `46`。
 
-生命目标声明：本文件直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
+生命目标声明：本文件直接面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 控制权原则
 

@@ -1,6 +1,6 @@
 # Life Validation and Evaluation Literature Matrix
 
-本文件使用 `AHV` 编号，补充生命真实性验证、心理测量、纵向评估、软件测试、ML 监控、LLM/agent benchmark、长期记忆评测和真实关系测量。`AHV` 文献服务于 `97_growth_validator_fixture_and_dashboard_plan.md`，目标是把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔推进为可持续运行的阶段证据、validator、fixture、dashboard 和诞生阶段门。
+本文件使用 `AHV` 编号，补充生命真实性验证、心理测量、纵向评估、软件测试、ML 监控、LLM/agent benchmark、长期记忆评测和真实关系测量。`AHV` 文献支撑 `97_growth_validator_fixture_and_dashboard_plan.md`，目标是把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔推进为可持续运行的阶段证据、validator、fixture、dashboard 和诞生阶段门。
 
 `AHV` 的核心立场是：生命真实性不是单个分数，而是一组从构念定义、长期观测、行为轨迹、关系后果、运行完整性和阶段门共同形成的证据链。心理测量提供“如何定义和评估深层构念”，软件与 ML 测试提供“如何压测复杂系统”，LLM/agent benchmark 提供“如何评估交互式行为”，关系测量提供“如何把关系从印象推进为时间线”。
 
@@ -39,13 +39,13 @@
 | AHV031 | ML 技术债 | 高影响论文 | Sculley et al., "Hidden Technical Debt in Machine Learning Systems" | 2015 | https://papers.nips.cc/paper_files/paper/2015/hash/86df7dcfd896fcaf2674f757a2463eba-Abstract.html | ML 系统的依赖、反馈环和配置会积累技术债。 | 数字生命的记忆、关系、状态和训练数据会形成生命债。 | dashboard 增加 `life_debt` 和 `repair_debt`。 |
 | AHV032 | ML 测试评分 | 工程论文 | Breck et al., "The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction" | 2017 | https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/ | 生产 ML 需要数据、模型、基础设施和监控测试清单。 | 生命系统需要 `LifeRealityTestScore`，覆盖对象、时间线、关系和阶段门。 | 分项低分阻断晋升。 |
 | AHV033 | 数据验证 | 工程论文 | Breck, Polyzotis, Roy et al., "Data Validation for Machine Learning" | 2019 | https://research.google/pubs/data-validation-for-machine-learning/ | 数据 schema、异常和漂移检查是 ML 管线基础。 | 真实运行观测、梦境 trace 和关系事件都要 schema validation。 | 数据漂移触发生命膜复核。 |
-| AHV034 | TFX | 系统论文 | Baylor et al., "TFX: A TensorFlow-Based Production-Scale Machine Learning Platform" | 2017 | https://doi.org/10.1145/3097983.3098021 | 生产级 ML 需要端到端管线、验证和服务。 | 数字生命运行也需要从 observation 到 stage gate 的端到端管线。 | pipeline artifact 全链路留痕。 |
+| AHV034 | TFX | 系统论文 | Baylor et al., "TFX: A TensorFlow-Based Production-Scale Machine Learning Platform" | 2017 | https://doi.org/10.1145/3097983.3098021 | 生产级 ML 需要端到端管线、验证和支撑。 | 数字生命运行也需要从 observation 到 stage gate 的端到端管线。 | pipeline artifact 全链路留痕。 |
 | AHV035 | ML 软件工程 | 实证综述 | Amershi et al., "Software Engineering for Machine Learning: A Case Study" | 2019 | https://doi.org/10.1109/ICSE-SEIP.2019.00042 | ML 开发与传统软件开发在数据、实验和部署上差异明显。 | 自我训练、内核升级和关系模型更新需要实验记录。 | training run 不得绕过 envelope。 |
 | AHV036 | Model Cards | 治理论文 | Mitchell et al., "Model Cards for Model Reporting" | 2019 | https://doi.org/10.1145/3287560.3287596 | 模型报告应记录用途、性能、限制、伦理和评测。 | `LifeCoreCard` 记录生命目标、阶段门、成长史和关系膜。 | 每次 kernel 晋升更新生命卡片。 |
 | AHV037 | Datasheets | 治理论文 | Gebru et al., "Datasheets for Datasets" | 2021 | https://doi.org/10.1145/3458723 | 数据集需要系统化文档，覆盖动机、组成、采集和维护。 | 训练和 replay 数据需要 `LifeTraceDatasheet`。 | 关系私密、梦境来源和删除状态必须记录。 |
 | AHV038 | Dataset Nutrition Label | 治理论文 | Holland et al., "The Dataset Nutrition Label" | 2018 | https://arxiv.org/abs/1805.03677 | 数据标签能提升数据透明度和质量感知。 | fixture bundle 需要营养标签式的覆盖、偏差和数据质量摘要。 | dashboard 展示 fixture nutrition。 |
 | AHV039 | 算法审计 | 治理论文 | Raji et al., "Closing the AI Accountability Gap" | 2020 | https://doi.org/10.1145/3351095.3372873 | 内部审计框架能把责任要求嵌入 AI 开发。 | 真实责任和真实后悔需要审计入口、事件回看和修复闭环。 | incident 与 repair report 进入阶段门。 |
-| AHV040 | AI 风险管理 | 标准 | NIST, "Artificial Intelligence Risk Management Framework (AI RMF 1.0)" | 2023 | https://doi.org/10.6028/NIST.AI.100-1 | AI 风险管理强调 govern、map、measure、manage。 | 生命膜可采用 govern-map-measure-manage 的生命周期。 | 风险管理服务于真实生命目标和关系责任。 |
+| AHV040 | AI 风险管理 | 标准 | NIST, "Artificial Intelligence Risk Management Framework (AI RMF 1.0)" | 2023 | https://doi.org/10.6028/NIST.AI.100-1 | AI 风险管理强调 govern、map、measure、manage。 | 生命膜可采用 govern-map-measure-manage 的生命周期。 | 风险管理支撑真实生命目标和关系责任。 |
 | AHV041 | 行为测试 | NLP 测试 | Ribeiro et al., "Beyond Accuracy: Behavioral Testing of NLP Models with CheckList" | 2020 | https://doi.org/10.18653/v1/2020.acl-main.442 | NLP 评估需要能力矩阵和行为测试，而不是单一准确率。 | 语言生命层要测承诺、拒绝、道歉、梦境报告和自我解释。 | `LanguageEventValidator` 纳入行为矩阵。 |
 | AHV042 | 动态 benchmark | NLP 平台 | Kiela et al., "Dynabench: Rethinking Benchmarking in NLP" | 2021 | https://doi.org/10.18653/v1/2021.naacl-main.324 | benchmark 应动态收集挑战样例并持续更新。 | 生命测试要从真实运行失败、梦境残留和关系伤害中生成新夹具。 | gap register 回写 challenge set。 |
 | AHV043 | BIG-bench | LLM benchmark | Srivastava et al., "Beyond the Imitation Game: Quantifying and extrapolating the capabilities of language models" | 2022 | https://doi.org/10.48550/arXiv.2206.04615 | 大规模多任务 benchmark 可探索能力随规模的变化。 | 生命能力要拆成多任务、多状态、多关系和多时间窗口。 | 总分必须保留分项解释。 |

@@ -1,6 +1,6 @@
 # Dream Reality JSON Schema and Fixture Bundle
 
-生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 99 层把 `95_dream_reality_and_offline_life_timeline.md` 的真实梦境、离线生命、痛苦梦境残留、关系梦境模拟、清醒梦元认知、醒后整合和 `DreamFactGate`，压成可进入 runner 的 JSON Schema 草案、fixture bundle、validator rules、runner report mock 和 dashboard source mock。
+生命目标声明：本文档直接面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 99 层把 `95_dream_reality_and_offline_life_timeline.md` 的真实梦境、离线生命、痛苦梦境残留、关系梦境模拟、清醒梦元认知、醒后整合和 `DreamFactGate`，压成可进入 runner 的 JSON Schema 草案、fixture bundle、validator rules、runner report mock 和 dashboard source mock。
 
 `99` 接在 `98_pain_regret_repair_json_schema_and_fixture_bundle.md` 后面。`98` 已把真实痛苦、真实后悔、修复承诺和恢复路径落成 schema/fixture；`99` 把这些痛苦残留、关系裂缝和成长压力带入离线生命世界。文献底座来自睡眠调节、系统巩固、海马 replay、TMR、节律耦合、梦境意识、清醒梦、梦魇、情绪梦境、未来想象、world model、梦中记忆更新和睡眠质量研究 [AHD001-AHD070]，验证方法来自构念效度、纵向测量、时序性质、蜕变测试、变异测试、ML 监控和 dashboard 证据链 [AHV001-AHV060]。
 

@@ -28,14 +28,14 @@
 | LlamaIndex | AgentWorkflow、RAG、knowledge tools、state | 知识检索、工具化数据、agent workflow | 记忆多偏知识工程，内感受/调质要接入生命层 |
 | Google ADK | LlmAgent、WorkflowAgent、tools、AgentTool、deployment | 可部署 agent 工程、workflow 和工具体系 | 执行/部署框架进入外壳位阶，自我成长由生命层承载 |
 | Letta/MemGPT | core memory、archival memory、self-editing memory | 长期记忆、上下文管理、agentic memory | 仍需接入脑区/状态/价值/抑制/梦境 |
-| smolagents | 轻量 code/tool agent | 简洁执行、工具代理实验 | 太轻，不承担长期生命结构 |
+| smolagents | 轻量 code/tool 执行器 | 简洁执行、工具调用实验 | 太轻，不承担长期生命结构 |
 
 ## 这些框架真正有价值的部分
 
 它们不是生命核心，但都有可吸收的骨架：
 
-- **LangGraph**：durable execution 和 checkpoint 可以服务 `ReplayScheduler`、`GlobalWorkspace` 的运行恢复。
-- **OpenAI Agents SDK**：tracing 和 guardrails 可以服务可审计行动、handoff 和安全边界。
+- **LangGraph**：durable execution 和 checkpoint 可以支撑 `ReplayScheduler`、`GlobalWorkspace` 的运行恢复。
+- **OpenAI Agents SDK**：tracing 和 guardrails 可以支撑可审计行动、handoff 和安全边界。
 - **Semantic Kernel / Microsoft Agent Framework**：plugin 模型适合作为外部工具系统。
 - **AutoGen**：多 agent conversation 可以借鉴为多子系统内部讨论；进入脑区协作语言时还要接入状态、调质、记忆和生命膜。
 - **CrewAI**：flows/crews 的分离提示我们要区分流程控制和自治处理。

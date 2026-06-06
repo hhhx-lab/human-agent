@@ -58,7 +58,7 @@
 | AHY052 | 模型化强化学习 | 综述 | Daw & Dayan, "The algorithmic anatomy of model-based evaluation" | 2014 | https://doi.org/10.1098/rstb.2013.0478 | 模型化评估支持灵活规划。 | agent 需世界模型和价值评估分离。 | 计算模型要与调质、情绪、关系和行动后果共同进入生命膜。 |
 | AHY053 | 认知地图 | 综述 | Behrens et al., "What is a cognitive map? Organizing knowledge for flexible behavior" | 2018 | https://doi.org/10.1016/j.neuron.2018.10.002 | 认知地图组织知识以支持灵活行为。 | 长期记忆应形成概念地图和关系地图。 | 地图比喻不应过度空间化。 |
 | AHY054 | 海马认知地图 | 经典理论 | O'Keefe & Nadel, "The Hippocampus as a Cognitive Map" | 1978 | https://global.oup.com/academic/product/the-hippocampus-as-a-cognitive-map-9780198572060 | 海马支持空间/认知地图。 | 记忆系统需要情境和路径结构。 | 经典书籍需现代研究补充。 |
-| AHY055 | 状态空间认知 | 综述 | Stachenfeld, Botvinick & Gershman, "The hippocampus as a predictive map" | 2017 | https://doi.org/10.1038/nn.4650 | 海马可表示预测性状态空间。 | 记忆可服务未来预测和路径选择。 | 理论模型仍在发展。 |
+| AHY055 | 状态空间认知 | 综述 | Stachenfeld, Botvinick & Gershman, "The hippocampus as a predictive map" | 2017 | https://doi.org/10.1038/nn.4650 | 海马可表示预测性状态空间。 | 记忆可支撑未来预测和路径选择。 | 理论模型仍在发展。 |
 | AHY056 | 自我决定理论 | 理论框架 | Ryan & Deci, "Self-determination theory and the facilitation of intrinsic motivation" | 2000 | https://doi.org/10.1037/0003-066X.55.1.68 | 自主、能力和关系支持内在动机。 | agent 的动机类变量可参考自主/能力/关系。 | 人类动机理论不能直接用于 AI。 |
 | AHY057 | 心流 | 理论框架 | Csikszentmihalyi, "Flow: The Psychology of Optimal Experience" | 1990 | https://archive.org/details/flowpsychologyof00csik | 心流描述高挑战高能力匹配状态。 | 专注模式可参考挑战-能力匹配。 | 书籍理论需实证支撑。 |
 | AHY058 | 动机神经科学 | 综述 | Salamone & Correa, "The mysterious motivational functions of mesolimbic dopamine" | 2012 | https://doi.org/10.1016/j.neuron.2012.10.021 | 多巴胺与努力、激活和动机相关。 | 奖赏系统要包含努力成本。 | 多巴胺功能复杂。 |

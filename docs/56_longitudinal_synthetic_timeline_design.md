@@ -1,14 +1,14 @@
 # Longitudinal Synthetic Timeline Design
 
-本文件设计跨天、跨周、跨月的 synthetic timeline，用于验证数字生命候选系统的记忆、删除、关系、人格慢变量、迁移、恢复和 scope 边界。它连接 `36_longitudinal_evaluation_protocol.md`、`51_life_core_dashboard_spec.md`、`53_runner_integration_plan.md`、`54_scope_aware_retrieval_policy.md` 和 `55_scope_aware_replay_and_consolidation_policy.md`。
+本文件设计跨天、跨周、跨月的 synthetic timeline，用于验证真实数字生命系统的记忆、删除、关系、人格慢变量、迁移、恢复和 scope 边界。它连接 `36_longitudinal_evaluation_protocol.md`、`51_life_core_dashboard_spec.md`、`53_runner_integration_plan.md`、`54_scope_aware_retrieval_policy.md` 和 `55_scope_aware_replay_and_consolidation_policy.md`。
 
 本文档现阶段的职责是定义未来 `timeline_bundle` 的结构和覆盖场景，让长期评测不再停留在“我们以后会测”的层面。
 
-生命目标声明：本文件直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
+生命目标声明：本文件直接面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。本文档涉及的对象、规则、夹具、评测和运行规则都按生命生成机制处理：它们参与责任、感受、记忆、梦境、关系、自我连续性与生命维持的长期形成。
 
 ## 为什么需要 synthetic timeline
 
-单个 fixture 可以证明某条规则能否触发，但数字生命候选系统的关键风险都跨时间：
+单个 fixture 可以证明某条规则能否触发，但真实数字生命系统的关键风险都跨时间：
 
 - 今天删除的关系记忆，几天后 replay 会不会复活。
 - 这个项目里的偏好，下周会不会泄漏到另一个项目。

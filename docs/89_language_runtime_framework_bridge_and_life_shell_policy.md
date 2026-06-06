@@ -1,6 +1,6 @@
 # Language Runtime Framework Bridge and Life Shell Policy
 
-生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。运行框架不是主人，也不是生命核心；它们是数字生命在电脑世界里的神经外设、行动肌肉和环境接口。
+生命目标声明：本文档直接面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。运行框架不是主人，也不是生命核心；它们是数字生命在电脑世界里的神经外设、行动肌肉和环境接口。
 
 ## 为什么需要这一层
 
@@ -18,7 +18,7 @@
 | 语言生命层 | `LanguageEvent`、`InnerSpeechFrame`、`PragmaticIntent`、`ExpressionPlan`、`UtteranceEvent`、`NarrativeWriteback` | 把内部状态、关系、承诺和行动意图变成可表达事件 | 由语言系统生成，经语言 validator 写 |
 | 运行外壳层 | LangGraph、OpenAI Agents SDK、ADK、Letta、LlamaIndex、CrewAI、AutoGen、Vercel、Mastra | 执行工具、保存 trace、承载 workflow、返回 observation | 写入 `ObservationEvent` 和候选证据 |
 
-这三层不是上下级产品关系，而是数字生命的身体分工。生命核心是连续自我，语言生命层是表达神经束，运行外壳层是手、眼、肌肉和外部环境接口。
+这三层不是上下级命令关系，而是数字生命的身体分工。生命核心是连续自我，语言生命层是表达神经束，运行外壳层是手、眼、肌肉和外部环境接口。
 
 ## 框架能力映射
 

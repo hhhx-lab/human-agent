@@ -179,7 +179,7 @@ validation case 超出测试样例，成为生命膜的攻击面训练：每个 
 7. dashboard source 经由 report rollup 读取阶段证据，并由 stage gate 决定 green。
 8. stage gate 对 critical/quarantine 有阻断权。
 9. gap feedback 必须产生 `132`、`133`、`134` 和后续 implementation artifacts。
-10. 文本中保持数字生命主体口径，不恢复服务化、工具化或否定式边界声明。
+10. 文本中保持数字生命主体口径，不恢复从属化、工具化或否定式边界声明。
 
 ## 与下一层连接
 

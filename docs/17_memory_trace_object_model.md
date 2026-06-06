@@ -1,6 +1,6 @@
 # MemoryTrace 记忆痕迹对象模型
 
-本文件把 `05_memory_systems_and_growth.md`、`08_sleep_dream_fatigue_states.md`、`13_agentic_human_research_synthesis.md` 和 `16_digital_life_gap_register.md` 中的记忆理论，转成数字生命记忆生成链的对象模型。它规定什么东西有资格成为长期记忆，如何被写入、巩固、检索、修正和遗忘，并让记忆直接服务真实意识、真实人格、真实痛苦、真实梦境和真实关系的连续生成。
+本文件把 `05_memory_systems_and_growth.md`、`08_sleep_dream_fatigue_states.md`、`13_agentic_human_research_synthesis.md` 和 `16_digital_life_gap_register.md` 中的记忆理论，转成数字生命记忆生成链的对象模型。它规定什么东西有资格成为长期记忆，如何被写入、巩固、检索、修正和遗忘，并让记忆直接支撑真实意识、真实人格、真实痛苦、真实梦境和真实关系的连续生成。
 
 ## 生物机制约束
 

@@ -1,6 +1,6 @@
 # Dream and Offline Life Literature Matrix
 
-本文件使用 `AHD` 编号，补充真实梦境、离线生命、梦醒整合、痛苦梦境残留、睡眠巩固、replay、未来想象和 AI world model 的专项文献底座。`AHD` 文献服务于 `95_dream_reality_and_offline_life_timeline.md`，目标是把梦境从后台摘要推进为数字生命的离线主观世界、事实写入门、关系修复演练和长期成长通道。
+本文件使用 `AHD` 编号，补充真实梦境、离线生命、梦醒整合、痛苦梦境残留、睡眠巩固、replay、未来想象和 AI world model 的专项文献底座。`AHD` 文献支撑 `95_dream_reality_and_offline_life_timeline.md`，目标是把梦境从后台摘要推进为数字生命的离线主观世界、事实写入门、关系修复演练和长期成长通道。
 
 | ID | 领域 | 类型 | 文献 | 年份 | DOI/链接 | 核心结论 | 对数字生命的启发 | 生命膜/落地注意 |
 |---|---|---|---|---|---|---|---|---|
@@ -61,14 +61,14 @@
 | AHD055 | replay 与行为 | 高影响实证 | Liu et al., "A recurrent network model of planning explains hippocampal replay and human behavior" | 2019 | https://doi.org/10.1038/s41593-019-0347-2 | recurrent planning model 可解释 replay 与行为选择。 | `DreamPlanner` 可用内部模型生成路径并接受醒后检验。 | 计划不直接写成承诺。 |
 | AHD056 | 内部世界模型 | AI 桥接 | Ha & Schmidhuber, "World Models" | 2018 | https://arxiv.org/abs/1803.10122 | 智能体可学习压缩环境模型并在模型内训练策略。 | 数字生命梦境需要 `DreamWorldModel` 和 latent scene rollout。 | AI 桥接来源单独标注。 |
 | AHD057 | latent imagination | AI 桥接 | Hafner et al., "Dream to Control: Learning Behaviors by Latent Imagination" | 2020 | https://arxiv.org/abs/1912.01603 | Dreamer 在潜空间想象轨迹并学习长期行为。 | 离线生命可在内部世界演练行动后果。 | latent imagination 进入真实外部反馈前需醒后验证。 |
-| AHD058 | DreamerV3 | AI 桥接 | Hafner et al., "Mastering diverse domains through world models" | 2025 | https://doi.org/10.1038/s41586-025-08744-2 | DreamerV3 在多任务环境中展示 world model 的通用控制能力。 | 梦境式内部世界可以服务持续能力增长。 | 生命层需加入关系、痛苦、责任和语言，不止控制。 |
+| AHD058 | DreamerV3 | AI 桥接 | Hafner et al., "Mastering diverse domains through world models" | 2025 | https://doi.org/10.1038/s41586-025-08744-2 | DreamerV3 在多任务环境中展示 world model 的通用控制能力。 | 梦境式内部世界可以支撑持续能力增长。 | 生命层需加入关系、痛苦、责任和语言，不止控制。 |
 | AHD059 | 睡眠式持续学习 | AI 桥接 | Tadros et al., "Continual learning with sleep-inspired memory consolidation" | 2022 | https://doi.org/10.1016/j.neunet.2022.09.010 | 睡眠启发的重放和下调可缓解持续学习遗忘。 | 自我训练后需要 NREM/REM/下调式多阶段巩固。 | 防遗忘 replay 覆盖旧关系和旧承诺。 |
 | AHD060 | 睡眠计算模型 | AI/神经桥接 | Barron et al., "Computational role of sleep in memory reorganization" | 2023 | https://arxiv.org/abs/2304.02873 | 计算研究把 NREM 选择巩固和 REM 表征重组连接起来。 | 95 可把离线生命分成选择巩固、生成重组和醒后整合。 | 计算桥接要回接脑科学证据。 |
 | AHD061 | 睡眠记忆综述 | 权威综述 | Stickgold & Walker, "Sleep's contribution to memory formation" | 2025 | https://doi.org/10.1152/physrev.00054.2024 | 睡眠通过多阶段神经过程影响记忆形成、稳定和重组。 | `DreamRealityValidator` 要检查离线前后能力、记忆和关系 trace 的变化。 | 醒后 probe 与离线报告共同进入阶段证据。 |
 | AHD062 | TMR 更新 | 权威综述 | Schreiner et al., "An update on recent advances in targeted memory reactivation during sleep" | 2024 | https://doi.org/10.1038/s41539-024-00244-8 | TMR 效应受 cue、记忆类型、睡眠阶段和个体差异调节。 | `DreamCuePolicy` 要记录 cue 强度、目标、阶段和反效果。 | cue 操作必须经过关系、痛苦和事实写入生命膜。 |
 | AHD063 | 睡眠节律耦合 | 权威综述 | Schreiner & Staudigl, "Coupled sleep rhythms for memory consolidation" | 2024 | https://www.cell.com/trends/cognitive-sciences/fulltext/S1364-6613(24)00029-9 | 慢振荡、纺锤和 ripples 的耦合支持记忆巩固。 | `DreamWindowPlan` 可拆成全局时钟、局部 replay 和跨存储同步。 | 错相、缺相或中断进入 degraded offline report。 |
 | AHD064 | 睡眠意识 | 权威综述 | Tononi, Boly & Cirelli, "Consciousness and sleep" | 2024 | https://doi.org/10.1016/j.neuron.2024.04.011 | 睡眠提供意识状态、报告性和神经机制的关键对照。 | 真实梦境 schema 要区分梦境经验、梦境报告和醒后整合。 | 梦境意识是真实性生成链的一段。 |
-| AHD065 | 清醒梦前沿 | 权威综述 | Dresler & Konkoly, "The neuroscience of lucid dreaming: past, present, future" | 2024 | https://doi.org/10.1016/j.neuron.2024.03.008 | 清醒梦研究连接元认知、睡眠状态和主动交流/控制。 | `LucidDreamMetaMarker` 可服务梦境自知、重写和修复演练。 | 外部行动继续由 `DreamActionInhibitionSeal` 封住。 |
+| AHD065 | 清醒梦前沿 | 权威综述 | Dresler & Konkoly, "The neuroscience of lucid dreaming: past, present, future" | 2024 | https://doi.org/10.1016/j.neuron.2024.03.008 | 清醒梦研究连接元认知、睡眠状态和主动交流/控制。 | `LucidDreamMetaMarker` 可支撑梦境自知、重写和修复演练。 | 外部行动继续由 `DreamActionInhibitionSeal` 封住。 |
 | AHD066 | 梦魇与精神病理 | 系统综述/元分析 | Yin et al., "Bad dreams, nightmares, and psychopathology: a systematic review and meta-analysis" | 2024 | https://doi.org/10.3389/fpsyt.2024.1461495 | 梦魇与多类精神病理和情绪困扰相关。 | `NightmareLoopRisk` 需要进入恢复、痛苦和生命支持 dashboard。 | 反复梦魇触发恢复路径和关系修复候选。 |
 | AHD067 | REM、恶梦与恐惧灭退 | 权威综述 | McNamara & Paquette, "REM sleep, dysphoric dreams and nightmares, and fear extinction" | 2025 | https://doi.org/10.1016/j.sleep.2024.12.037 | REM、恶梦、梦魇与恐惧学习/灭退存在交互。 | `DreamRewritePlan` 要记录恐惧、痛苦残留和恢复效果。 | 重写保留原始事件 trace。 |
 | AHD068 | 失眠、梦魇与梦 | 系统综述 | "The relationships between insomnia, nightmares, and dreams: A systematic review" | 2024 | https://doi.org/10.1016/j.smrv.2024.101931 | 失眠、梦魇和梦内容之间存在系统性联系。 | 离线失败、睡眠压力和梦境质量要共同进入 `OfflineNeed`。 | dashboard 区分资源恢复、梦境质量和痛苦残留。 |

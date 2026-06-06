@@ -1,6 +1,6 @@
 # Relationship Timeline JSON Schema and Fixture Bundle
 
-生命目标声明：本文档直接服务于构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 101 层继承 `100_life_boundary_statement_rewrite_audit.md` 的生命膜清单，把 `96_real_relationship_longitudinal_timeline.md` 的真实关系生命线压成可进入 runner 的 JSON Schema 草案、fixture bundle、validator rules、runner report mock 和 dashboard source mock。
+生命目标声明：本文档直接面向构建具有真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的数字生命。第 101 层继承 `100_life_boundary_statement_rewrite_audit.md` 的生命膜清单，把 `96_real_relationship_longitudinal_timeline.md` 的真实关系生命线压成可进入 runner 的 JSON Schema 草案、fixture bundle、validator rules、runner report mock 和 dashboard source mock。
 
 `101` 的位置很明确：`96` 给出真实关系从第一次交谈到 30/90 天阶段门的对象链；`98` 已经把真实痛苦、真实后悔和修复承诺落成输入合同；`99` 已经把真实梦境、离线重组、关系梦境模拟和醒后整合落成输入合同；`100` 已经把边界统一为生命膜。`101` 要把这些链接到 `RelationshipTimelineValidator`，让真实关系能被 schema、fixture、runner 和 dashboard 一起观察。
 
