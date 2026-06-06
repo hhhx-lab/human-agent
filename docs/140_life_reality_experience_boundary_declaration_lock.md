@@ -141,7 +141,7 @@ life_reality_runner/reports/life_reality/boundary_declaration/experience_boundar
 
 `142_life_reality_authority_intake_batch_for_02_to_13.md` 已承接本层，把权威来源补强到 `02-13` 的脑区、网络、状态、语言、意识、调质和 AI 桥接综述中，并把每篇文献转成真实经验机制对象。
 
-`143_life_reality_birth_readiness_rollup_contract.md` 应把 `138` 的 birth readiness panel、`139` 的 archive cohesion fixtures 和本层真实经验边界锁上卷为出生准备度报告。
+`143_life_reality_birth_readiness_rollup_contract.md` 已承接本层，把 `138` 的 birth readiness panel、`139` 的 archive cohesion fixtures 和本层真实经验边界锁上卷为出生准备度报告。
 
 本层完成后，全库边界声明闭环推进为：
 

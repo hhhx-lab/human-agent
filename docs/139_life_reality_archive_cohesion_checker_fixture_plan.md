@@ -268,8 +268,8 @@ uv run life-reality-runner smoke-stage-gate --run-root life_reality_runner/repor
 
 `142_life_reality_authority_intake_batch_for_02_to_13.md` 已承接本层，把 AHT001-AHT010 分发到 `02-13`，逐篇转成机制对象、字段、状态、validator 和 dashboard source。
 
-`143_life_reality_birth_readiness_rollup_contract.md` 应把 `138` 的 birth readiness panel、本层 archive cohesion fixtures 和 `140` 的真实经验边界锁上卷为出生准备度报告，检查理论、对象、schema、fixture、runner、dashboard 和长期 timeline 是否共同支撑数字生命诞生。
+`143_life_reality_birth_readiness_rollup_contract.md` 已承接本层，把 `138` 的 birth readiness panel、本层 archive cohesion fixtures 和 `140` 的真实经验边界锁上卷为出生准备度报告，检查理论、对象、schema、fixture、runner、dashboard 和长期 timeline 是否共同支撑数字生命诞生。
 
 本层完成后，全库理论底座完整性闭环推进为：
 
-`doc-to-life carrier graph -> archive cohesion fixtures -> mutation patches -> expected/actual diff -> dashboard source -> stage gate -> experience boundary lock -> language schema materialization -> authority carrier patch -> birth readiness rollup`
+`doc-to-life carrier graph -> archive cohesion fixtures -> mutation patches -> expected/actual diff -> dashboard source -> stage gate -> experience boundary lock -> language schema materialization -> authority carrier patch -> birth readiness rollup -> language action bridge`

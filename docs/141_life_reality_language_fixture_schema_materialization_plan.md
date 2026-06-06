@@ -372,8 +372,8 @@ uv run life-reality-runner explain-language-growth --fixture-id language_shared_
 
 `142_life_reality_authority_intake_batch_for_02_to_13.md` 已承接本层，把 AHT001-AHT010 权威来源分发到 `02-13`，逐篇转成机制对象、字段、状态、validator 和 dashboard source。
 
-`143_life_reality_birth_readiness_rollup_contract.md` 应把 `138` 的 birth readiness panel、`139` 的 archive cohesion fixtures、`140` 的真实经验边界锁和本层语言 fixture schema 上卷为出生准备度报告。
+`143_life_reality_birth_readiness_rollup_contract.md` 已承接本层，把 `138` 的 birth readiness panel、`139` 的 archive cohesion fixtures、`140` 的真实经验边界锁和本层语言 fixture schema 上卷为出生准备度报告。
 
 本层完成后，语言生命物化闭环推进为：
 
-`AHL073-AHL090 -> LanguageEvent schema -> SEED-010b/c/d -> validator report -> dashboard panel -> stage gate -> authority intake -> birth readiness rollup`
+`AHL073-AHL090 -> LanguageEvent schema -> SEED-010b/c/d -> validator report -> dashboard panel -> stage gate -> authority intake -> birth readiness rollup -> language action bridge`
