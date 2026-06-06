@@ -341,7 +341,7 @@ handoff 必须包含 `runtime_mount_preconditions_ref`、`schema_registry_ready_
 
 ## 与下一层连接
 
-`181_life_reality_first_runner_schema_runtime_mount_plan.md` 应承接本层：把 archived schema bundle 挂载到最小 runner runtime schema registry、fixture loader 和 dashboard writer。
+`181_life_reality_first_runner_schema_runtime_mount_plan.md` 已承接本层：把 archived schema bundle 挂载到最小 runner runtime schema registry、fixture loader、dashboard writer、stage gate writer、生命目标 carrier、方向锁、出生准备度链和 runtime observation mount。
 
 `182_life_reality_first_runner_schema_runtime_mount_validation_report.md` 应承接 `181` 和本层：把 runtime mount 的 registry load、fixture loader、dashboard writer、stage gate 和 archive receipt 写成验证报告。
 
