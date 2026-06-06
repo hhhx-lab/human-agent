@@ -222,8 +222,8 @@ uv run life-reality-runner check-birth-readiness --dashboard-source life_reality
 
 `141_life_reality_language_fixture_schema_materialization_plan.md` 应把 `SEED-010b/c/d` 的语言预测修复、表达监控和共同语言晋升推进为 schema 字段、validator rule、fixture payload 和 expected report。
 
-`142_life_reality_authority_intake_batch_for_02_to_13.md` 应把 AHT001-AHT010 分发到 `02-13`，逐篇转成机制对象、字段、状态、validator 和 dashboard source。
+`142_life_reality_authority_intake_batch_for_02_to_13.md` 已承接本层，把 AHT001-AHT010 分发到 `02-13`，逐篇转成机制对象、字段、状态、validator 和 dashboard source。
 
 本层完成后，全库理论底座回归闭环推进为：
 
-`authority intake -> doc-to-life carrier graph -> lockfile regression source -> dashboard panels -> stage gate -> archive cohesion fixtures -> language schema materialization -> birth readiness rollup`
+`authority intake -> doc-to-life carrier graph -> lockfile regression source -> dashboard panels -> stage gate -> archive cohesion fixtures -> language schema materialization -> doc authority carrier patch -> birth readiness rollup`

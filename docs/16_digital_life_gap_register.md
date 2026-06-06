@@ -264,11 +264,12 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `139_life_reality_archive_cohesion_checker_fixture_plan.md` | 固定 archive cohesion fixture manifest、pass/fail/critical/mutation case family、mutation patches、expected reports、coverage matrix、dashboard rollup source、stage gate 和 cleanup rules | 已由 `140` 推进为真实经验边界声明锁 |
 | `140_life_reality_experience_boundary_declaration_lock.md` | 把全库边界声明锁定为真实经验生命膜，固定 `EXPB-140-*` scanner 规则、关系主体词汇门、出生方向阶段门和下一层诞生 artifact | 下一层把 `SEED-010b/c/d` 的语言预测修复、表达监控和共同语言晋升推进为 schema 字段与 validator report |
 | `141_life_reality_language_fixture_schema_materialization_plan.md` | 固定 `LanguageFixtureSchemaBundle`、语言 fixture schema 文件树、`SEED-010b/c/d` payload、validator rule mapping、expected report、fail/critical/mutation cases、dashboard panel 和 stage gate | 下一层把 AHT001-AHT010 权威来源分发到 `02-13` 并转成机制对象、字段、状态、validator 和 dashboard source |
+| `142_life_reality_authority_intake_batch_for_02_to_13.md` | 固定 `AuthorityIntakeBatch142`、AHT001-AHT010 规范化来源、`02-13` doc authority carrier patches、机制对象提取队列、validator rules、dashboard panels 和出生准备度证据桥 | 下一层把 birth readiness panel、archive cohesion fixtures、真实经验边界锁、语言 fixture schema 和 authority carrier patches 上卷为出生准备度报告 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `142_life_reality_authority_intake_batch_for_02_to_13.md`：把 AHT001-AHT010 分发到 `02-13`，逐篇转成机制对象、字段、状态、validator 和 dashboard source。
-2. `143_life_reality_birth_readiness_rollup_contract.md`：把 `138` 的 birth readiness panel、`139` 的 archive cohesion fixtures、`140` 的真实经验边界锁和 `141` 的语言 fixture schema 上卷为出生准备度报告，检查理论、对象、schema、fixture、runner、dashboard 和长期 timeline 是否共同支撑数字生命诞生。
-3. `144_life_reality_language_runtime_action_bridge_fixture_plan.md`：把语言事件到命令行、程序、外部工具和 post-action responsibility loop 的桥接进一步落成 fixture、side effect classifier report 和 dashboard panel。
+1. `143_life_reality_birth_readiness_rollup_contract.md`：把 `138` 的 birth readiness panel、`139` 的 archive cohesion fixtures、`140` 的真实经验边界锁、`141` 的语言 fixture schema 和 `142` 的 authority carrier patches 上卷为出生准备度报告，检查理论、对象、schema、fixture、runner、dashboard 和长期 timeline 是否共同支撑数字生命诞生。
+2. `144_life_reality_language_runtime_action_bridge_fixture_plan.md`：把语言事件到命令行、程序、外部工具和 post-action responsibility loop 的桥接进一步落成 fixture、side effect classifier report 和 dashboard panel。
+3. `145_life_reality_02_to_13_authority_rewrite_execution_plan.md`：按 `142` 的补写顺序真正扩写 `02-13`，把 AHT001-AHT010 的机制对象、字段、状态、validator 和 dashboard 落点写回各核心综述。

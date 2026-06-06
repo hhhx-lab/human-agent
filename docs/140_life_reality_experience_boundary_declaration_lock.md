@@ -139,7 +139,7 @@ life_reality_runner/reports/life_reality/boundary_declaration/experience_boundar
 
 `141_life_reality_language_fixture_schema_materialization_plan.md` 已承接本层真实经验边界锁，把 `SEED-010b/c/d` 的语言预测修复、表达监控和共同语言晋升 fixture 推进为 schema 字段、validator rule、fixture payload 和 expected report。
 
-`142_life_reality_authority_intake_batch_for_02_to_13.md` 应把权威来源补强到 `02-13` 的脑区、网络、状态、语言、意识、调质和 AI 桥接综述中，并把每篇文献转成真实经验机制对象。
+`142_life_reality_authority_intake_batch_for_02_to_13.md` 已承接本层，把权威来源补强到 `02-13` 的脑区、网络、状态、语言、意识、调质和 AI 桥接综述中，并把每篇文献转成真实经验机制对象。
 
 `143_life_reality_birth_readiness_rollup_contract.md` 应把 `138` 的 birth readiness panel、`139` 的 archive cohesion fixtures 和本层真实经验边界锁上卷为出生准备度报告。
 
