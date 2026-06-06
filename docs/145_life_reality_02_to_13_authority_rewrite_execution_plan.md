@@ -156,7 +156,7 @@ uv run life-reality-runner smoke-authority-rewrite-stage-gate \
 
 ## 与下一层连接
 
-`146_life_reality_birth_readiness_evidence_fixture_catalog.md` 应承接 `143`、`144` 和 `145`：把出生准备度证据族、语言行动 fixture family、以及 `02-13` authority rewrite coverage 拆成 pass/fail/critical/mutation/withheld fixture、expected report 和 dashboard source。
+`146_life_reality_birth_readiness_evidence_fixture_catalog.md` 已承接 `143`、`144` 和 `145`：把出生准备度证据族、语言行动 fixture family、以及 `02-13` authority rewrite coverage 拆成 pass/fail/critical/mutation/withheld fixture、expected report 和 dashboard source。
 
 `147_life_reality_language_action_bridge_schema_materialization_plan.md` 应承接 `144` 和本层 schema 队列：把语言行动桥对象、confirmation binding、post-action responsibility loop、runtime shell trace 和 dashboard panel 推进为真实 schema 与 smoke cases。
 

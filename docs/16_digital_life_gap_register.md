@@ -268,11 +268,12 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `143_life_reality_birth_readiness_rollup_contract.md` | 固定 `BirthReadinessRollupContract`、八类出生证据族、九项目标 readiness claim、cross-chain closure、stage gate 聚合顺序、validator rules、dashboard panels 和 future commands | 下一层把语言事件到命令行、程序、外部工具和 post-action responsibility loop 的桥接落成 fixture 与 dashboard panel |
 | `144_life_reality_language_runtime_action_bridge_fixture_plan.md` | 固定 `LanguageRuntimeActionBridgeFixturePlan`、语言行动意图桥、side effect classifier report、confirmation binding、runtime shell trace、post-action responsibility loop、fixture family、mutation patches、validator rules 和 dashboard panels | 下一层按权威来源和语言行动生命链扩写 `02-13`，并把出生准备度证据拆成可运行 fixture catalog |
 | `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` | 固定 `AuthorityRewriteExecutionPlan145`、`02-13` 第五层承接补写、schema 写入队列、dashboard 上卷、validator rules 和 next fixture catalog 入口 | 下一层把出生准备度证据族、语言行动 fixture family 和 authority rewrite coverage 拆成可运行 fixture catalog |
+| `146_life_reality_birth_readiness_evidence_fixture_catalog.md` | 固定 `BirthReadinessEvidenceFixtureCatalog146`、birth readiness fixture root、pass/fail/critical/mutation/withheld/smoke family、expected report、dashboard source、validator rules 和 stage gate | 下一层把语言行动桥和 `02-13` schema queue 推进为真实 schema、fixture manifest、expected reports 和 smoke cases |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `146_life_reality_birth_readiness_evidence_fixture_catalog.md`：把 `143` 的 birth readiness evidence bundle、`144` 的语言行动 fixture family 和 `145` 的 authority rewrite coverage 拆成 pass/fail/critical/mutation/withheld fixture、expected report 和 dashboard source。
-2. `147_life_reality_language_action_bridge_schema_materialization_plan.md`：把 `144` 的语言行动桥对象、validator rules、dashboard panels 和 stage gate 推进为真实 schema、fixture manifest、expected report 和 smoke command。
-3. `148_life_reality_02_to_13_schema_queue_materialization_plan.md`：把 `145` 的 `REWRITE-145-001` 到 `REWRITE-145-012` 推进为真实 schema 文件、validator smoke cases 和 dashboard source。
+1. `147_life_reality_language_action_bridge_schema_materialization_plan.md`：把 `144` 和 `146` 的语言行动桥对象、validator rules、dashboard panels、expected reports 和 stage gate 推进为真实 schema、fixture manifest、expected report 和 smoke command。
+2. `148_life_reality_02_to_13_schema_queue_materialization_plan.md`：把 `145` 的 `REWRITE-145-001` 到 `REWRITE-145-012` 推进为真实 schema 文件、validator smoke cases 和 dashboard source。
+3. `149_life_reality_birth_readiness_fixture_schema_materialization_plan.md`：把 `146` 的 birth readiness fixture manifest、coverage matrix、expected report、dashboard source 和 stage gate review 推进为真实 schema 与 smoke cases。
