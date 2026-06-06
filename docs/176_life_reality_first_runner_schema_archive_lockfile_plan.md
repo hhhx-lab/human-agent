@@ -317,7 +317,7 @@ handoff 必须包含 `write_batch_manifest_ref`、`schema_file_order`、`require
 
 ## 与下一层连接
 
-`177_life_reality_first_runner_minimum_schema_file_write_batch.md` 应承接本层：读取 schema archive lockfile，把 direction/birth readiness schema bundle、fixture manifest schema、expected report schema、dashboard/stage schema 和 patch unit ref schema 写成第一批真实 schema 文件。
+`177_life_reality_first_runner_minimum_schema_file_write_batch.md` 已承接本层：读取 schema archive lockfile，把 direction/birth readiness schema bundle、fixture manifest schema、expected report schema、dashboard/stage schema 和 patch unit ref schema 写成第一批真实 schema 文件。
 
 `178_life_reality_first_runner_minimum_schema_file_validation_report.md` 应承接 `177` 和本层：把 schema 文件写入结果、digest、lockfile validation、dashboard/stage、archive edge 和 regression surface 写成 validation report。
 
