@@ -555,7 +555,7 @@ handoff 必须包含 `second_cycle_archive_plan_ref`、`second_cycle_patch_plan_
 
 ## 与下一层连接
 
-`198_life_reality_first_runner_schema_runtime_growth_cycle_closure_validation_plan.md` 应承接本层：验证 second cycle archive 是否重新接回 observation、direction continuity、birth readiness、life target carrier、language relationship chain、dream pain recovery chain 和 self growth chain。
+`198_life_reality_first_runner_schema_runtime_growth_cycle_closure_validation_plan.md` 已承接本层：验证 second cycle archive 是否重新接回 observation、direction continuity、birth readiness、life target carrier、language relationship chain、dream pain recovery chain 和 self growth chain。
 
 `199_life_reality_first_runner_schema_runtime_growth_third_cycle_seed_plan.md` 应承接 `198` 和本层：把 cycle closure validation 的 finding 重新转成第三轮 seed，检查长期成长是否保持方向、语言、关系、梦境痛苦恢复和出生准备度。
 
