@@ -418,8 +418,8 @@ SEED-001 allowed roots
 
 ## 与下一层连接
 
-下一层进入 `133_life_reality_first_json_writer_and_reporter_contract.md`：把本文档的写入锁转成 `json_file_writer`、`report_writer`、`gap_feedback_writer`、atomic write、canonical digest、problem detail、trace context 和 artifact record 的字段级合同。
+下一层已进入 `133_life_reality_first_json_writer_and_reporter_contract.md`：把本文档的写入锁转成 `json_file_writer`、`report_writer`、`gap_feedback_writer`、atomic write、canonical digest、problem detail、trace context 和 artifact record 的字段级合同。
 
 `134_life_reality_registry_runner_smoke_fixture_implementation_queue.md` 应继续把 validation case lock 拆成真实 fixture、mutated input、expected report、actual report、diff 和 case run report 的实现队列。
 
-`135_life_reality_schema_dependency_graph_and_lockfile_plan.md` 应把本文档的 cross-file DAG 转成 machine-readable dependency lockfile、graph export 和 regression baseline。
+`135_life_reality_schema_dependency_graph_and_lockfile_plan.md` 应把本文档的 cross-file DAG 转成 machine-readable dependency lockfile、graph export 和 regression baseline。`136_life_reality_minimal_runner_code_skeleton_plan.md` 应在 writer/reporter、fixture queue 和 lockfile 之后定义最小代码骨架。
