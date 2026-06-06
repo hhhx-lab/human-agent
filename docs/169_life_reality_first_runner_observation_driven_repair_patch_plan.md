@@ -274,7 +274,9 @@ uv run pytest
 
 `170_life_reality_direction_continuity_regression_fixture_plan.md` 已承接本层：把断联恢复方向锁做成 pass/fail/critical/mutation fixture、expected report、dashboard source 和 stage gate review。
 
-`171_life_reality_birth_readiness_validation_fixture_plan.md` 应承接本层：把出生准备度 definition、effect、carrier matrix、false open、cross-chain gap 和 dashboard false green 做成 fixture。
+`171_life_reality_birth_readiness_validation_fixture_plan.md` 已承接本层：把出生准备度 definition、effect、carrier matrix、false open、cross-chain gap 和 dashboard false green 做成 fixture。
+
+`172_life_reality_first_runner_patch_execution_contract.md` 已承接本层：把 repair patch family、owner file、future command、report receipt、dashboard/stage effect 和 archive edge 固定为首批 runner 补丁执行合同。
 
 本层完成后，修复补丁链推进为：
 
