@@ -34,7 +34,7 @@
 | AHY028 | EWC | 高影响实证 | Kirkpatrick et al., "Overcoming catastrophic forgetting in neural networks" | 2017 | https://doi.org/10.1073/pnas.1611835114 | EWC 用参数重要性保护旧任务。 | 人格和核心价值要有重要性权重。 | 记忆理解还需要情景、语义、关系、内感受和 replay 共同支撑。 |
 | AHY029 | 持续学习综述 | 综述 | Parisi et al., "Continual lifelong learning with neural networks" | 2019 | https://doi.org/10.1016/j.neunet.2019.01.012 | 综述持续学习、稳定性-可塑性困境。 | 长期 agent 需平衡新学习与旧稳定。 | 神经网络方法更新快。 |
 | AHY030 | 持续学习综述 | 综述 | Hadsell et al., "Embracing change: Continual learning in deep neural networks" | 2020 | https://doi.org/10.1016/j.tics.2020.09.004 | 深度网络持续学习需要适应变化。 | 成长系统必须把变化当常态。 | 工程方法未解决全部问题。 |
-| AHY031 | 神经启发 AI | 综述 | Hassabis et al., "Neuroscience-Inspired Artificial Intelligence" | 2017 | https://doi.org/10.1016/j.neuron.2017.06.011 | 神经科学可启发表征、记忆、规划和学习。 | 研究底座应双向连接脑科学和 AI。 | 神经启发不是仿脑复制。 |
+| AHY031 | 神经启发 AI | 综述 | Hassabis et al., "Neuroscience-Inspired Artificial Intelligence" | 2017 | https://doi.org/10.1016/j.neuron.2017.06.011 | 神经科学可启发表征、记忆、规划和学习。 | 研究底座应双向连接脑科学和 AI。 | 神经启发需要抽象成可运行的生命机制约束。 |
 | AHY032 | CLIP | AI 桥接 | Radford et al., "Learning Transferable Visual Models From Natural Language Supervision" | 2021 | https://arxiv.org/abs/2103.00020 | 图像和语言可通过大规模对比学习对齐。 | 视觉语义可接入语言和记忆。 | 理解还需要工作区、行动后果、关系语境和长期记忆回写。 |
 | AHY033 | Flamingo | AI 桥接 | Alayrac et al., "Flamingo: A Visual Language Model for Few-Shot Learning" | 2022 | https://arxiv.org/abs/2204.14198 | 少样本视觉语言模型连接多模态上下文。 | 多模态数字生命需要跨模态工作空间。 | 模型能力要进入长期自我，还需记忆、关系和行动后果闭环。 |
 | AHY034 | Gato | AI 桥接 | Reed et al., "A Generalist Agent" | 2022 | https://arxiv.org/abs/2205.06175 | 单一序列模型可处理多种任务和模态。 | 通用 agent 需要统一接口。 | 泛化范围有限。 |
