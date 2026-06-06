@@ -292,12 +292,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `167_life_reality_first_runner_minimum_code_bootstrap_execution.md` | 固定 `FirstRunnerMinimumCodeBootstrapExecution167`、`DirectionContinuityResumeLock167`、出生准备度定义承载、最小代码 scope、命令执行计划、artifact receipt、bootstrap stage gate 和 validation report handoff | 已由 `168` 接入最小代码 validation report |
 | `168_life_reality_first_runner_minimum_code_validation_report.md` | 固定 `FirstRunnerMinimumCodeValidationReport168`、direction continuity validation、birth readiness effect validation、command receipt validation、missing command finding、life target carrier validation、dashboard source、stage gate review 和 repair patch handoff | 已由 `169` 制定 observation-driven repair patch |
 | `169_life_reality_first_runner_observation_driven_repair_patch_plan.md` | 固定 `ObservationDrivenRepairPatchPlan169`、finding intake、missing command repair、direction continuity repair、life target carrier repair、dashboard false green repair、birth readiness effect repair、stage gate repair 和 regression fixture handoff | 已由 `170` 生成方向连续性 regression fixture |
-| `170_life_reality_direction_continuity_regression_fixture_plan.md` | 固定 `DirectionContinuityRegressionFixturePlan170`、resume lock fixture manifest、pass/fail/critical/mutation/smoke partitions、expected report、dashboard source、stage gate review 和 patch execution handoff | 下一层生成出生准备度 validation fixture |
+| `170_life_reality_direction_continuity_regression_fixture_plan.md` | 固定 `DirectionContinuityRegressionFixturePlan170`、resume lock fixture manifest、pass/fail/critical/mutation/smoke partitions、expected report、dashboard source、stage gate review 和 patch execution handoff | 已由 `171` 生成出生准备度 validation fixture |
+| `171_life_reality_birth_readiness_validation_fixture_plan.md` | 固定 `BirthReadinessValidationFixturePlan171`、birth readiness fixture manifest、definition pass fixture、carrier fail fixture、false open critical fixture、mutation fixture、expected report、dashboard source、stage gate review 和 patch execution handoff | 下一层生成首批代码补丁执行合同 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `171_life_reality_birth_readiness_validation_fixture_plan.md`：把出生准备度 definition/effect/carrier matrix 做成 pass/fail/critical/mutation fixture。
-2. `172_life_reality_first_runner_patch_execution_contract.md`：把 `169` 的 patch families 和 `170` 的 fixture findings 转成首批代码补丁执行合同。
-3. `173_life_reality_first_runner_direction_fixture_schema_materialization.md`：把 direction continuity fixture manifest、expected report、dashboard 和 stage review 推进为 schema 物化计划。
+1. `172_life_reality_first_runner_patch_execution_contract.md`：把 `169` 的 patch families、`170` 的 direction fixture findings 和 `171` 的 birth readiness findings 转成首批代码补丁执行合同。
+2. `173_life_reality_first_runner_direction_fixture_schema_materialization.md`：把 direction continuity fixture manifest、expected report、dashboard 和 stage review 推进为 schema 物化计划。
+3. `174_life_reality_birth_readiness_fixture_schema_materialization.md`：把 birth readiness validation fixture manifest、expected report、dashboard 和 stage review 推进为 schema 物化计划。

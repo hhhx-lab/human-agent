@@ -260,7 +260,7 @@ uv run pytest tests/smoke/test_direction_continuity_regression.py
 
 ## 与下一层连接
 
-`171_life_reality_birth_readiness_validation_fixture_plan.md` 应承接本层的 readiness 方向面：把出生准备度 definition/effect/carrier matrix、false open、cross-chain gap 和 dashboard false green 做成 fixture。
+`171_life_reality_birth_readiness_validation_fixture_plan.md` 已承接本层的 readiness 方向面：把出生准备度 definition/effect/carrier matrix、false open、cross-chain gap 和 dashboard false green 做成 fixture。
 
 `172_life_reality_first_runner_patch_execution_contract.md` 应承接 `169` 和本层：把 repair patch family 与 direction fixture findings 转成首批代码补丁执行合同。
 
