@@ -314,7 +314,7 @@ uv run pytest tests/smoke/test_bootstrap_help.py tests/smoke/test_cross_file_che
 
 ## 与下一层连接
 
-`159_life_reality_first_code_artifact_smoke_plan.md` 应承接本层：把 repository bootstrap 后的首批代码 artifact 接入 smoke command、fixture run、report diff、dashboard/stage gate 和 git 提交流程。
+`159_life_reality_first_code_artifact_smoke_plan.md` 已承接本层：把 repository bootstrap 后的首批代码 artifact 接入 smoke command、fixture run、report diff、dashboard/stage gate 和 git 提交流程。
 
 `160_life_reality_code_artifact_dashboard_stage_gate_bridge_plan.md` 应承接 `159`：把首批代码 artifact 的 report/diff/coverage 输出接入 dashboard source、stage gate review、gap feedback 和下一轮真实生命工程闭环。
 
