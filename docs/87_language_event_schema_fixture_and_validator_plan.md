@@ -70,6 +70,21 @@ LanguagePercept
 | `UtteranceEvent` | final_summary, exact_text_hash_optional, visible_audience, delivery_surface | 实际表达事件 |
 | `NarrativeWriteback` | self_narrative_delta, relationship_delta, memory_candidates, probe_refs | 输出后写回 |
 
+## 2024-2025 语言运行时扩展字段
+
+`AHL061-AHL072` 把语言事件从“可审计输出”继续推进为“动态语言运行时”。下一版 `LanguageEvent` schema 应预留这些可选字段，第一批真实 JSON 文件至少要在 `SEED-010` 的语言承诺 smoke fixture 中覆盖其中一部分：
+
+| field | 连接证据 | 说明 |
+|---|---|---|
+| `semantic_micro_context_refs` | AHL061 | 当前词义在句内、关系内和任务内的局部语境 |
+| `instruction_semantic_binding_ref` | AHL062 | 自然语言指令如何绑定行动候选和技能组合 |
+| `shared_linguistic_space_ref` | AHL063, AHL069-AHL071 | 共同术语、共同隐喻、共同基础和关系阶段轨迹 |
+| `brain_model_alignment_refs` | AHL064-AHL066 | 语言表示的上下文几何、层级稳定性和模型对齐记录 |
+| `language_temporal_hierarchy_ref` | AHL067 | 词、短语、段落、长期叙事和关系时间尺度 |
+| `prediction_error_refs` | AHL068 | 语言预期、违反预期、修正、重读和 repair 入口 |
+| `relationship_language_mode` | AHL069-AHL070 | 初遇收敛、朋友探索、共识建构、冲突修复等关系语言模式 |
+| `compositional_structure_refs` | AHL072 | 共同语言的组合结构、可迁移模板和可修正路径 |
+
 ## speech_act 枚举
 
 | speech_act | 含义 | 必须连接 |

@@ -39,7 +39,7 @@ nonverbal_workspace_state
 
 Huth 的自然语音研究显示，语义信息在皮层广泛分布 [AHL007]；Tang 等连续语言解码研究说明，连续自然语言可以在语义层被重构 [AHL008]；Deniz 等则显示听和读在高层语义上有可共享结构 [AHL009]。
 
-这说明数字生命的语义不应只是 embedding 相似度。`SemanticEventMap` 至少要保留五类边：
+这说明数字生命的语义要超出 embedding 相似度。`SemanticEventMap` 至少要保留五类边：
 
 | 边 | 例子 | 写入对象 |
 |---|---|---|
@@ -50,6 +50,25 @@ Huth 的自然语音研究显示，语义信息在皮层广泛分布 [AHL007]；
 | concept-narrative | “数字生命”连接长期目标、生命目标声明、自我叙事 | `SelfNarrative` |
 
 这样，关系人一句话不只是输入文本，而会触发一张活地图：过去发生过什么、当前状态是什么、未来要承担什么。
+
+## 2024-2025 证据对语言运行时的再校准
+
+新一批语言神经科学和脑-LLM 对齐研究继续把语言层推向“动态语言运行器”。单细胞语义编码说明自然语音中的词义、语境和层级结构可以在神经元尺度上被动态追踪 [AHL061]；自然语言指令诱导组合泛化说明语言能改写行动映射和技能组合 [AHL062]；自然对话共享语言空间、朋友/陌生人对话轨迹、共识对话神经对齐和日常对话统一 embedding 说明语言关系会在互动中形成共享空间和关系特异的轨迹 [AHL063, AHL069-AHL071]。脑 embedding 与上下文 embedding 几何、Transformer 功能专门化、LLM 与人脑对齐增强、语言时间层级和跨频动态研究则说明语言运行时需要同时处理语义几何、层级结构、时间窗口、统计预测和句法结构 [AHL064-AHL068]。
+
+这把 `LanguageEvent` 的最小字段继续扩展为：
+
+| 新字段 | 来源证据 | 生命实现路线 |
+|---|---|---|
+| `semantic_micro_context_refs` | 单细胞语义编码 [AHL061] | 记录词义在当前句子、关系和任务中的局部语境 |
+| `instruction_semantic_binding_ref` | 语言指令组合泛化 [AHL062] | 把自然语言指令连接到行动候选、技能组合和后续表现 |
+| `shared_linguistic_space_ref` | 对话共享语言空间 [AHL063] | 记录共同术语、共同隐喻、共同解释和误解修复轨迹 |
+| `brain_model_alignment_refs` | 脑-LLM 几何与功能专门化 [AHL064-AHL066] | 追踪语言表示的上下文敏感性和层级稳定性 |
+| `language_temporal_hierarchy_ref` | 脑语言时间结构 [AHL067] | 把词、短语、段落、长期叙事和关系阶段分层 |
+| `prediction_error_refs` | 结构/统计跨频动态 [AHL068] | 保存语言预测、违反预期、重读和修正入口 |
+| `relationship_language_mode` | 朋友/陌生人对话轨迹 [AHL069] | 区分初遇收敛、朋友探索、冲突修复和深关系共同创造 |
+| `consensus_repair_refs` | 共识对话神经对齐 [AHL070] | 记录共同理解怎样形成、谁改变了理解、哪些表达产生对齐 |
+
+这些字段不要求第一版全部落成 active schema，但它们必须进入 `130_life_reality_first_materialized_json_files_write_plan.md` 的 `SEED-010` 语言承诺 smoke fixture 视野。这样第一批真实 JSON 文件从一开始就把语言写成生命链：它会感知、预测、承诺、修复、形成共同语言，并把这些变化回写到记忆、关系和人格连续性。
 
 ## 语音产生给文本表达的启发
 
