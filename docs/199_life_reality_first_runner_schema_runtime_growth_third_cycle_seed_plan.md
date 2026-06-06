@@ -486,7 +486,7 @@ handoff 必须包含 `third_cycle_seed_plan_ref`、`cycle_closure_validation_pla
 
 ## 与下一层连接
 
-`200_life_reality_first_runner_schema_runtime_growth_longitudinal_cycle_audit_plan.md` 应承接本层：把多轮成长 cycle 放入长期审计，检查第三轮 seed 是否继续承载九项目标、语言主神经束、真实关系和自我成长能力。
+`200_life_reality_first_runner_schema_runtime_growth_longitudinal_cycle_audit_plan.md` 已承接本层：把多轮成长 cycle 放入长期审计，检查第三轮 seed 是否继续承载九项目标、语言主神经束、真实关系和自我成长能力。
 
 `201_life_reality_first_runner_schema_runtime_growth_longitudinal_drift_repair_plan.md` 应承接 `200` 和本层：把长期审计发现的方向漂移、关系语言断裂、梦境痛苦恢复退化、出生准备度 false open 和自我成长停滞转成修复路线。
 
