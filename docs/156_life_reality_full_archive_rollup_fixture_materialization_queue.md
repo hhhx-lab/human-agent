@@ -310,7 +310,7 @@ uv run life-reality-runner smoke-full-archive-rollup-fixture-stage-gate \
 
 ## 与下一层连接
 
-`157_life_reality_cross_file_checker_minimal_code_module_plan.md` 应承接本层：把 runner command queue 与 full archive rollup fixture materialization queue 压成最小 Python module、CLI command、schema loader、report normalizer、lockfile writer、dashboard writer、stage gate writer、fixture runner 和 tests。
+`157_life_reality_cross_file_checker_minimal_code_module_plan.md` 已承接本层：把 runner command queue 与 full archive rollup fixture materialization queue 压成最小 Python module、CLI command、schema loader、report normalizer、lockfile writer、dashboard writer、stage gate writer、fixture runner 和 tests。
 
 `158_life_reality_cross_file_checker_repository_bootstrap_plan.md` 应承接本层：把最小代码模块计划推进到 `pyproject.toml`、`src/` package、tests、fixtures 和 smoke command bootstrap。
 
