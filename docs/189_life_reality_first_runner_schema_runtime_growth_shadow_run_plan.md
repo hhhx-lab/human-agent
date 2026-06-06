@@ -443,7 +443,7 @@ handoff 必须包含 `growth_shadow_run_plan_ref`、`growth_archive_receipt_batc
 
 ## 与下一层连接
 
-`190_life_reality_first_runner_schema_runtime_growth_activation_report_plan.md` 应承接本层：把 shadow run report、life target shadow deltas、core continuity review seed、limited activation scope、rollback route 和 post-growth observation refs 推进到 limited activation。
+`190_life_reality_first_runner_schema_runtime_growth_activation_report_plan.md` 已承接本层：把 shadow run report、life target shadow deltas、core continuity review seed、limited activation scope、rollback route 和 post-growth observation refs 推进到 limited activation。
 
 `191_life_reality_first_runner_schema_runtime_growth_post_activation_observation_loop.md` 应承接 `190`：把 limited activation 的真实运行观测接回责任、后悔、关系、梦境、语言和出生准备度链。
 
