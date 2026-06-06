@@ -621,4 +621,6 @@ priority rules：
 
 `128_life_reality_registry_report_seed_examples.md` 已把 `125` 的 registry report family 展开为首批 report seed examples，并为本文档的 schema/ref execution failure 提供可读报告样例。
 
-下一层进入 `129_life_reality_seed_fixture_and_report_validation_cases.md`：把本文档的 smoke failure examples 与 registry report failures 转成可运行 validation cases。
+`129_life_reality_seed_fixture_and_report_validation_cases.md` 已把本文档的 smoke failure examples 与 registry report failures 转成可运行 validation cases。
+
+下一层进入 `130_life_reality_first_materialized_json_files_write_plan.md`：把 command execution、registry reports、seed content 和 validation cases 推进为第一批真实 JSON 文件写入计划。

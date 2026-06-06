@@ -332,4 +332,6 @@
 
 `128_life_reality_registry_report_seed_examples.md` 已把 registry report family 展开为首批 report seed examples，并回读本文档的 seed file list。
 
-下一层进入 `129_life_reality_seed_fixture_and_report_validation_cases.md`：把 seed file list、registry report failures 和 runner smoke failures 统一转成 validation cases。
+`129_life_reality_seed_fixture_and_report_validation_cases.md` 已把 seed file list、registry report failures 和 runner smoke failures 统一转成 validation cases。
+
+下一层进入 `130_life_reality_first_materialized_json_files_write_plan.md`：把 seed file list、字段合同和 validation cases 推进为第一批真实 JSON 文件写入计划。

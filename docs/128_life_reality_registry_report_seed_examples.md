@@ -700,4 +700,6 @@ exit code bridge：
 
 `128` 已把 registry report family 从“报告列表”推进为“首批 report seed examples”：每个 report 都有 path、owner、required fields、最小样例、failure mapping、runner consumption 和 stage effect。
 
-下一层进入 `129_life_reality_seed_fixture_and_report_validation_cases.md`：把 `126` 的 smoke failure examples 和本文档的 registry report failures 转成 seed fixture 与 report validation cases，为第一批真实 JSON 文件写入前建立可运行验收样例。
+`129_life_reality_seed_fixture_and_report_validation_cases.md` 已把 `126` 的 smoke failure examples 和本文档的 registry report failures 转成 seed fixture 与 report validation cases，为第一批真实 JSON 文件写入前建立可运行验收样例。
+
+下一层进入 `130_life_reality_first_materialized_json_files_write_plan.md`：把本文档的 registry report examples 与 validation cases 合并成真实 JSON 文件写入计划。

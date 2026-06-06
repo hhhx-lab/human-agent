@@ -845,4 +845,6 @@ minimal command result：
 
 `128_life_reality_registry_report_seed_examples.md` 已把 `125` 的 schema registry report family 展开为 registry load、schema id collision、schema ref resolution、artifact ref resolution、JSON Pointer resolution、allowed root resolution、boundary registry resolution、cross-file DAG 和 registry gap feedback 的首批 report seed examples。
 
-下一层进入 `129_life_reality_seed_fixture_and_report_validation_cases.md`：把本文档的 seed content gaps 与 `128` 的 registry report failures 转成 seed fixture 与 report validation cases。
+`129_life_reality_seed_fixture_and_report_validation_cases.md` 已把本文档的 seed content gaps 与 `128` 的 registry report failures 转成 seed fixture 与 report validation cases。
+
+下一层进入 `130_life_reality_first_materialized_json_files_write_plan.md`：把本文档的字段级 seed content 合同推进为第一批真实 JSON 文件写入计划。
