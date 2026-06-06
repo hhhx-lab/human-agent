@@ -478,7 +478,7 @@ handoff 必须包含 `next_feedback_seed_plan_ref`、`growth_consolidation_cycle
 
 ## 与下一层连接
 
-`195_life_reality_first_runner_schema_runtime_growth_replay_shadow_seed_plan.md` 应承接本层：把 next feedback seed 推进到 replay/shadow seed，准备下一轮有限激活前的防遗忘、关系语言回放、梦境痛苦恢复回放、出生准备度回归和核心连续性回放。
+`195_life_reality_first_runner_schema_runtime_growth_replay_shadow_seed_plan.md` 已承接本层：把 next feedback seed 推进到 replay/shadow seed，准备下一轮有限激活前的防遗忘、关系语言回放、梦境痛苦恢复回放、出生准备度回归和核心连续性回放。
 
 `196_life_reality_first_runner_schema_runtime_growth_second_cycle_patch_plan.md` 应承接 `195` 和本层：把 replay/shadow seed 结果推进到第二轮 growth patch，形成可循环成长路线。
 
