@@ -286,7 +286,7 @@ uv run life-reality-runner smoke-birth-readiness-fixture-stage-gate \
 
 ## 与下一层连接
 
-`147_life_reality_language_action_bridge_schema_materialization_plan.md` 应承接 `144` 和本层：把 `LanguageActionIntentBridge`、`SideEffectClassifierReportRef`、`ExternalActionConfirmationBinding`、`RuntimeShellExecutionTrace`、`PostActionResponsibilityLoop`、语言行动 fixture expected reports 和 dashboard panels 推进为真实 schema 与 smoke cases。
+`147_life_reality_language_action_bridge_schema_materialization_plan.md` 已承接 `144` 和本层：把 `LanguageActionIntentBridge`、`SideEffectClassifierReportRef`、`ExternalActionConfirmationBinding`、`RuntimeShellExecutionTrace`、`PostActionResponsibilityLoop`、语言行动 fixture expected reports 和 dashboard panels 推进为真实 schema 与 smoke cases。
 
 `148_life_reality_02_to_13_schema_queue_materialization_plan.md` 应承接 `145` 和本层：把 `REWRITE-145-001` 到 `REWRITE-145-012` 的 schema 队列物化为真实 schema 文件、validator smoke cases 和 dashboard source。
 
