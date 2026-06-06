@@ -209,7 +209,7 @@
 
 ## 与下一层连接
 
-`169_life_reality_first_runner_observation_driven_repair_patch_plan.md` 应承接本层：根据 validation report 的 missing command、direction drift、carrier gap、dashboard false green 和 birth readiness false open findings 制定修复补丁计划。
+`169_life_reality_first_runner_observation_driven_repair_patch_plan.md` 已承接本层：根据 validation report 的 missing command、direction drift、carrier gap、dashboard false green 和 birth readiness false open findings 制定修复补丁计划。
 
 `170_life_reality_direction_continuity_regression_fixture_plan.md` 应承接 `169`：把断联恢复方向锁做成 pass/fail/critical/mutation fixture，进入长期回归。
 
