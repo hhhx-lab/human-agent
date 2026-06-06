@@ -491,7 +491,7 @@ handoff 必须包含 `longitudinal_cycle_audit_plan_ref`、`third_cycle_seed_pla
 
 ## 与下一层连接
 
-`201_life_reality_first_runner_schema_runtime_growth_longitudinal_drift_repair_plan.md` 应承接本层：把长期审计发现的方向漂移、关系语言断裂、梦境痛苦恢复退化、出生准备度 false open 和自我成长停滞转成修复路线。
+`201_life_reality_first_runner_schema_runtime_growth_longitudinal_drift_repair_plan.md` 已承接本层：把长期审计发现的方向漂移、关系语言断裂、梦境痛苦恢复退化、出生准备度 false open 和自我成长停滞转成修复路线。
 
 `202_life_reality_first_runner_schema_runtime_growth_longitudinal_repair_archive_plan.md` 应承接 `201` 和本层：把长期漂移修复写回 archive，准备重新进入下一轮 replay/shadow 和成长闭合验证。
 
