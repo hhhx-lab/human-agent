@@ -282,12 +282,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `157_life_reality_cross_file_checker_minimal_code_module_plan.md` | 固定 `MinimalCodeModulePlan157`、`src/life_reality_runner` package layout、console script、context/IO/schema/graph/checker/report/fixture/command/problem/trace 模块、report normalization、lockfile writing、fixture runner、tests 和 acceptance criteria | 已由 `158` 接入 repository bootstrap plan |
 | `158_life_reality_cross_file_checker_repository_bootstrap_plan.md` | 固定 `RepositoryBootstrapPlan158`、`pyproject.toml`、`.env.example`、package roots、unit/smoke tests、fixture/schema/report roots、CLI help、command suite dry-run、stage gate 和 staged diff hygiene | 已由 `159` 接入 first code artifact smoke plan |
 | `159_life_reality_first_code_artifact_smoke_plan.md` | 固定 `FirstCodeArtifactSmokePlan159`、首批代码 artifact 写入顺序、minimum fixture、CLI smoke、report/digest/stage/gap outputs、dashboard bridge、stage gate rules 和 git commit flow | 已由 `160` 接入 dashboard/stage gate bridge plan |
-| `160_life_reality_code_artifact_dashboard_stage_gate_bridge_plan.md` | 固定 `DashboardStageGateBridgePlan160`、dashboard source、panel/metric/alert family、stage gate review、gap feedback、archive handoff 和 smoke bridge commands | 下一层把代码 artifact、dashboard、stage 和 gap 反接全库 archive cohesion |
+| `160_life_reality_code_artifact_dashboard_stage_gate_bridge_plan.md` | 固定 `DashboardStageGateBridgePlan160`、dashboard source、panel/metric/alert family、stage gate review、gap feedback、archive handoff 和 smoke bridge commands | 已由 `161` 接入 code artifact archive cohesion execution plan |
+| `161_life_reality_code_artifact_archive_cohesion_execution_plan.md` | 固定 `ArchiveCohesionExecutionPlan161`、archive node/edge registry、life target carrier matrix、cohesion checker families、birth readiness archive gate、cohesion report 和 smoke commands | 下一层把 `158-161` 压成首批真实代码实现队列 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `161_life_reality_code_artifact_archive_cohesion_execution_plan.md`：把首批代码 artifact 反接全库 archive cohesion、README index、cross-file checker 和出生准备度阶段门。
-2. `162_life_reality_first_code_artifact_implementation_queue.md`：把 `158-161` 的计划压成首批真实代码实现队列。
-3. `163_life_reality_first_runner_code_generation_batch.md`：把首批实现队列推进到真实文件生成批次。
+1. `162_life_reality_first_code_artifact_implementation_queue.md`：把 `158-161` 的计划压成首批真实代码实现队列。
+2. `163_life_reality_first_runner_code_generation_batch.md`：把首批实现队列推进到真实文件生成批次。
+3. `164_life_reality_first_runner_code_review_and_stage_gate_plan.md`：把首批生成代码接入 review、test、dashboard、archive cohesion 和出生准备度阶段门。

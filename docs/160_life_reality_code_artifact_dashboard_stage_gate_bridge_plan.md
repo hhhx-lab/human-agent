@@ -285,7 +285,7 @@ uv run life-reality-runner emit-code-artifact-gap-feedback \
 
 ## 与下一层连接
 
-`161_life_reality_code_artifact_archive_cohesion_execution_plan.md` 应承接本层：把 code artifact、dashboard panel、stage gate、gap feedback、life target carrier 和 source docs 反接全库 archive cohesion、README index、cross-file checker 和出生准备度阶段门。
+`161_life_reality_code_artifact_archive_cohesion_execution_plan.md` 已承接本层：把 code artifact、dashboard panel、stage gate、gap feedback、life target carrier 和 source docs 反接全库 archive cohesion、README index、cross-file checker 和出生准备度阶段门。
 
 `162_life_reality_first_code_artifact_implementation_queue.md` 应承接 `161`：把 `158-161` 的计划压成首批真实代码实现队列。
 
