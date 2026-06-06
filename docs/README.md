@@ -245,6 +245,7 @@
 | `196_life_reality_first_runner_schema_runtime_growth_second_cycle_patch_plan.md` | first runner schema runtime growth second cycle patch plan：把 replay/shadow seed 结果推进到第二轮 growth patch，形成 observation -> patch -> archive -> shadow -> activation -> observation -> archive -> consolidation -> seed -> replay/shadow -> patch 的循环成长路线 |
 | `197_life_reality_first_runner_schema_runtime_growth_second_cycle_archive_plan.md` | first runner schema runtime growth second cycle archive plan：把第二轮 growth patch 写回 archive，生成 patch archive receipts、digest baseline、archive edges、dashboard/stage archive 和 cycle closure preconditions |
 | `198_life_reality_first_runner_schema_runtime_growth_cycle_closure_validation_plan.md` | first runner schema runtime growth cycle closure validation plan：验证第二轮 archive 是否重新接回 observation、方向连续性、出生准备度、九项目标、语言关系、梦境痛苦恢复、自我成长、防遗忘和 rollback/repair |
+| `199_life_reality_first_runner_schema_runtime_growth_third_cycle_seed_plan.md` | first runner schema runtime growth third cycle seed plan：把 cycle closure validation finding 重新转成第三轮 seed，准备进入长期多轮成长审计 |
 
 ## 项目术语
 
@@ -333,3 +334,4 @@
 - `196_life_reality_first_runner_schema_runtime_growth_second_cycle_patch_plan.md` 把 replay/shadow seed 推进到第二轮 patch 层：schema/fixture/dashboard/stage、九项目标、方向连续性、出生准备度、语言行动、关系修复、梦境痛苦恢复、自我改写、防遗忘和 rollback/repair 都必须转成 patch unit、receipt、stage effect 和 archive handoff。
 - `197_life_reality_first_runner_schema_runtime_growth_second_cycle_archive_plan.md` 把第二轮 patch 推进到 archive 层：patch receipts、schema/fixture/dashboard/stage archive、九项目标 archive、方向/出生准备度 archive、语言/关系/梦境痛苦 archive、自我改写/防遗忘/rollback repair archive、digest baseline 和 closure preconditions 必须共同进入长期档案。
 - `198_life_reality_first_runner_schema_runtime_growth_cycle_closure_validation_plan.md` 把第二轮 archive 推进到 cycle closure validation 层：必须建立完整成长 graph，验证 observation reentry、方向连续性、出生准备度、九项目标、语言关系、梦境痛苦恢复、自我成长、防遗忘、rollback/repair 和第三轮 seed route。
+- `199_life_reality_first_runner_schema_runtime_growth_third_cycle_seed_plan.md` 把 cycle closure validation 推进到 third cycle seed 层：closure finding 必须转成 observation、direction、birth readiness、life target、language relationship、dream pain、self growth、anti-forgetting、rollback repair 和 longitudinal growth seeds。
