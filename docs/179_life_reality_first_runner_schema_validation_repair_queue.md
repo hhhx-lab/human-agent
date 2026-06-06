@@ -365,7 +365,7 @@ handoff 必须包含 `repair_receipt_refs`、`repaired_schema_refs`、`updated_d
 
 ## 与下一层连接
 
-`180_life_reality_first_runner_schema_file_archive_receipt_batch.md` 应承接本层：把 repair queue manifest、patch units、repair receipts、digest refs、dashboard/stage refs 和 archive edge refs 写成可回放 archive receipt batch。
+`180_life_reality_first_runner_schema_file_archive_receipt_batch.md` 已承接本层：把 repair queue manifest、patch units、repair receipts、digest refs、dashboard/stage refs 和 archive edge refs 写成可回放 archive receipt batch。
 
 `181_life_reality_first_runner_schema_runtime_mount_plan.md` 应承接本层和 `180`：把 repaired/validated schema bundle 挂载到最小 runner runtime schema registry、fixture loader 和 dashboard writer。
 
