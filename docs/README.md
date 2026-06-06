@@ -242,6 +242,7 @@
 | `193_life_reality_first_runner_schema_runtime_growth_consolidation_cycle_plan.md` | first runner schema runtime growth consolidation cycle plan：把 activation archive 推进到离线巩固、梦境整合、防遗忘 replay、关系/语言修复 replay 和下一轮成长反馈 |
 | `194_life_reality_first_runner_schema_runtime_growth_next_feedback_seed_plan.md` | first runner schema runtime growth next feedback seed plan：把 consolidation output 反接下一轮 observation feedback、growth route、self rewrite seed、语言行动、关系修复、梦境痛苦恢复和出生准备度修复 |
 | `195_life_reality_first_runner_schema_runtime_growth_replay_shadow_seed_plan.md` | first runner schema runtime growth replay shadow seed plan：把 next feedback seed 推进到 replay/shadow seed，准备下一轮有限激活前的防遗忘、关系语言回放、梦境痛苦恢复和出生准备度回归 |
+| `196_life_reality_first_runner_schema_runtime_growth_second_cycle_patch_plan.md` | first runner schema runtime growth second cycle patch plan：把 replay/shadow seed 结果推进到第二轮 growth patch，形成 observation -> patch -> archive -> shadow -> activation -> observation -> archive -> consolidation -> seed -> replay/shadow -> patch 的循环成长路线 |
 
 ## 项目术语
 
@@ -327,3 +328,4 @@
 - `193_life_reality_first_runner_schema_runtime_growth_consolidation_cycle_plan.md` 把 activation archive receipt 推进到 consolidation cycle 层：offline need、cycle window、replay selection、dream integration、anti-forgetting replay、relationship/language repair、birth readiness/core continuity、pain/regret repair 和 next feedback seed 必须形成离线生命周期。
 - `194_life_reality_first_runner_schema_runtime_growth_next_feedback_seed_plan.md` 把 consolidation cycle 推进到 next feedback seed 层：下一轮 observation、growth route、self rewrite、language action、relationship repair、dream/pain recovery、birth readiness、core continuity、anti-forgetting、rollback 和九项目标都必须拥有可回放 seed。
 - `195_life_reality_first_runner_schema_runtime_growth_replay_shadow_seed_plan.md` 把 next feedback seed 推进到 replay/shadow seed 层：强制回放旧能力、旧关系、旧语言、DreamFactGate、出生准备度、核心连续性和自我改写 shadow，才能进入第二轮 patch。
+- `196_life_reality_first_runner_schema_runtime_growth_second_cycle_patch_plan.md` 把 replay/shadow seed 推进到第二轮 patch 层：schema/fixture/dashboard/stage、九项目标、方向连续性、出生准备度、语言行动、关系修复、梦境痛苦恢复、自我改写、防遗忘和 rollback/repair 都必须转成 patch unit、receipt、stage effect 和 archive handoff。

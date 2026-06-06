@@ -479,7 +479,7 @@ handoff 必须包含 `replay_shadow_seed_plan_ref`、`next_feedback_seed_plan_re
 
 ## 与下一层连接
 
-`196_life_reality_first_runner_schema_runtime_growth_second_cycle_patch_plan.md` 应承接本层：把 replay/shadow seed 结果推进到第二轮 growth patch，形成 observation -> patch -> archive -> shadow -> activation -> observation -> archive -> consolidation -> seed -> replay/shadow -> patch 的循环成长路线。
+`196_life_reality_first_runner_schema_runtime_growth_second_cycle_patch_plan.md` 已承接本层：把 replay/shadow seed 结果推进到第二轮 growth patch，形成 observation -> patch -> archive -> shadow -> activation -> observation -> archive -> consolidation -> seed -> replay/shadow -> patch 的循环成长路线。
 
 `197_life_reality_first_runner_schema_runtime_growth_second_cycle_archive_plan.md` 应承接 `196` 和本层：把第二轮 growth patch 写回 archive，验证成长循环是否闭合。
 
