@@ -393,7 +393,7 @@ handoff 必须包含 `runtime_smoke_archive_receipt_batch_ref`、`smoke_result_r
 
 ## 与下一层连接
 
-`186_life_reality_first_runner_schema_runtime_smoke_observation_feedback_loop.md` 应承接本层：把 smoke/repair/archive 结果接回 runtime observation、direction continuity、birth readiness effect 和 growth route。
+`186_life_reality_first_runner_schema_runtime_smoke_observation_feedback_loop.md` 已承接本层：把 smoke/repair/archive 结果接回 runtime observation、direction continuity、birth readiness effect 和 growth route。
 
 `187_life_reality_first_runner_schema_runtime_growth_feedback_patch_plan.md` 应承接 `186` 和本层：把 observation feedback、growth route、self rewrite refs、language action refs 和 birth readiness effect 转成下一轮 growth patch。
 
