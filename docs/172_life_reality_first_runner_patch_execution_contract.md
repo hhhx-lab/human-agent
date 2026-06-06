@@ -341,7 +341,7 @@ uv run pytest tests/smoke/test_patch_execution_contract.py
 
 ## 与下一层连接
 
-`173_life_reality_first_runner_direction_fixture_schema_materialization.md` 应承接 `170` 和本层：把 direction fixture manifest、anchor chain、expected report、dashboard source、stage gate 和 patch unit ids 推进为 schema 物化计划。
+`173_life_reality_first_runner_direction_fixture_schema_materialization.md` 已承接 `170` 和本层：把 direction fixture manifest、anchor chain、expected report、dashboard source、stage gate 和 patch unit ids 推进为 schema 物化计划。
 
 `174_life_reality_birth_readiness_fixture_schema_materialization.md` 应承接 `171` 和本层：把 readiness fixture manifest、target claim、evidence family、carrier matrix、cross-chain closure、false open guard 和 patch unit ids 推进为 schema 物化计划。
 

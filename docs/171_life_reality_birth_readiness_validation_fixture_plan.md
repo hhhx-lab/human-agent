@@ -277,7 +277,7 @@ uv run pytest tests/smoke/test_birth_readiness_validation_fixtures.py
 
 `172_life_reality_first_runner_patch_execution_contract.md` 已承接 `169`、`170` 和本层：把 repair patch family、direction continuity fixture findings 和 birth readiness validation findings 转成首批代码补丁执行合同。
 
-`173_life_reality_first_runner_direction_fixture_schema_materialization.md` 应承接 `170` 和本层：把 direction continuity 与 birth readiness fixture manifest、expected report、dashboard source 和 stage review 推进为 schema 物化计划。
+`173_life_reality_first_runner_direction_fixture_schema_materialization.md` 已承接 `170` 和 `172`：把 direction continuity fixture manifest、anchor chain、expected report、dashboard source、stage review 和 patch unit ids 推进为 schema 物化计划，并为 `174` 的 birth readiness schema 提供 direction handoff。
 
 本层完成后，出生准备度验证 fixture 链推进为：
 
