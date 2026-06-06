@@ -263,7 +263,7 @@ tests 覆盖 context、root guard、JSON writer、digest、problem detail、fixt
 
 ## 与下一层连接
 
-`164_life_reality_first_runner_code_review_and_stage_gate_plan.md` 应承接本层：把首批生成代码接入 code review、unit/smoke/fixture tests、dashboard/stage gate、archive cohesion 和出生准备度阶段门。
+`164_life_reality_first_runner_code_review_and_stage_gate_plan.md` 已承接本层：把首批生成代码接入 code review、unit/smoke/fixture tests、dashboard/stage gate、archive cohesion 和出生准备度阶段门。
 
 `165_life_reality_first_runner_code_commit_and_push_protocol.md` 应承接 `164`：把首批 runner code 的 staged scope、commit message、push、验证摘要和后续工程回路固定下来。
 
