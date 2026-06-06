@@ -405,7 +405,7 @@ handoff 必须包含 `runtime_smoke_fixture_manifest_ref`、`smoke_case_refs`、
 
 ## 与下一层连接
 
-`184_life_reality_first_runner_schema_runtime_smoke_repair_queue.md` 应承接本层：把 runtime smoke findings、dashboard false green、stage finding、carrier gap、direction gap 和 birth readiness gap 转成 repair queue。
+`184_life_reality_first_runner_schema_runtime_smoke_repair_queue.md` 已承接本层：把 runtime smoke findings、dashboard false green、stage finding、carrier gap、direction gap 和 birth readiness gap 转成 repair queue。
 
 `185_life_reality_first_runner_schema_runtime_smoke_archive_receipt_batch.md` 应承接 `184` 和本层：把 runtime smoke results、repair receipts、digest refs、dashboard/stage refs 和 archive edges 写成下一批 archive receipt。
 
