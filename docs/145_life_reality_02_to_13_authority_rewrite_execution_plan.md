@@ -160,6 +160,8 @@ uv run life-reality-runner smoke-authority-rewrite-stage-gate \
 
 `147_life_reality_language_action_bridge_schema_materialization_plan.md` 已承接 `144` 和本层 schema 队列：把语言行动桥对象、confirmation binding、post-action responsibility loop、runtime shell trace 和 dashboard panel 推进为真实 schema 与 smoke cases。
 
+`148_life_reality_02_to_13_schema_queue_materialization_plan.md` 已承接本层：把 `REWRITE-145-001` 到 `REWRITE-145-012` 推进为 12 个 queue schema、shared defs、validator smoke cases、dashboard source、cross-file edges 和 birth readiness refs。
+
 本层完成后，理论底座补写闭环推进为：
 
 `AHT authority -> 02-13 fifth-layer rewrite -> mechanism object -> language action life chain -> schema queue -> validator/dashboard -> birth readiness fixture catalog`

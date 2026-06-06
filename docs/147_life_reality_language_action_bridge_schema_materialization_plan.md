@@ -256,7 +256,7 @@ uv run life-reality-runner smoke-language-action-bridge-stage-gate \
 
 ## 与下一层连接
 
-`148_life_reality_02_to_13_schema_queue_materialization_plan.md` 应承接 `145` 和本层：把 `REWRITE-145-001` 到 `REWRITE-145-012` 的 schema 队列推进为真实 schema 文件、validator smoke cases、dashboard source 和 cross-file checker 输入。
+`148_life_reality_02_to_13_schema_queue_materialization_plan.md` 已承接 `145` 和本层：把 `REWRITE-145-001` 到 `REWRITE-145-012` 的 schema 队列推进为真实 schema 文件、validator smoke cases、dashboard source 和 cross-file checker 输入。
 
 `149_life_reality_birth_readiness_fixture_schema_materialization_plan.md` 应承接 `146` 和本层：把 birth readiness fixture manifest、coverage matrix、expected report、dashboard source、stage gate review 和语言行动 refs 推进为真实 schema 与 smoke cases。
 
