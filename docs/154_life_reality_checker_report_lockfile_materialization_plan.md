@@ -420,9 +420,11 @@ uv run life-reality-runner smoke-checker-report-lock-stage-gate \
 
 ## 与下一层连接
 
-`155_life_reality_runner_command_queue_for_cross_file_checkers.md` 应承接本层：把 `150-154` 的 checker/lockfile/dashboard 合同推进为未来 runner CLI、fixture roots、report roots、schema roots、lockfile roots 和 smoke command 实现队列。
+`155_life_reality_runner_command_queue_for_cross_file_checkers.md` 已承接本层：把 `150-154` 的 checker/lockfile/dashboard 合同推进为未来 runner CLI、fixture roots、report roots、schema roots、lockfile roots 和 smoke command 实现队列。
 
-`156_life_reality_full_archive_rollup_fixture_materialization_queue.md` 应承接本层：把 full archive rollup 与 checker report lockfile 的 pass/fail/critical/mutation/smoke fixture family 推进为首批可写入 JSON fixture 队列。
+`156_life_reality_full_archive_rollup_fixture_materialization_queue.md` 应承接本层和 `155`：把 full archive rollup、checker report lockfile 与 runner command queue 的 pass/fail/critical/mutation/smoke fixture family 推进为首批可写入 JSON fixture 队列。
+
+`157_life_reality_cross_file_checker_minimal_code_module_plan.md` 应承接本层和 `155`：把 report normalizer、lockfile writer、digest baseline、regression checker、dashboard writer、stage gate writer 和 tests 压成最小 Python module 实现计划。
 
 本层完成后，checker report lockfile 物化链推进为：
 
