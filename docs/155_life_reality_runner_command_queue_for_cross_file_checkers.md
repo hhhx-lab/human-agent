@@ -415,9 +415,11 @@ uv run life-reality-runner run-cross-file-checker-command-suite \
 
 ## 与下一层连接
 
-`156_life_reality_full_archive_rollup_fixture_materialization_queue.md` 应承接本层：把 runner command queue 的 pass/fail/critical/mutation/smoke fixture family 推进为首批可写入 JSON fixture 队列。
+`156_life_reality_full_archive_rollup_fixture_materialization_queue.md` 已承接本层：把 runner command queue 的 pass/fail/critical/mutation/smoke fixture family 推进为首批可写入 JSON fixture 队列。
 
-`157_life_reality_cross_file_checker_minimal_code_module_plan.md` 应承接本层：把 command queue 继续压成最小 Python module、CLI command、schema loader、report normalizer、lockfile writer、dashboard writer、stage gate writer 和 tests。
+`157_life_reality_cross_file_checker_minimal_code_module_plan.md` 应承接本层和 `156`：把 command queue 与 fixture materialization queue 继续压成最小 Python module、CLI command、schema loader、report normalizer、lockfile writer、dashboard writer、stage gate writer、fixture runner 和 tests。
+
+`158_life_reality_cross_file_checker_repository_bootstrap_plan.md` 应承接 `157`：把最小代码模块计划推进到 `pyproject.toml`、`src/` package、tests、fixtures 和 smoke command bootstrap。
 
 本层完成后，runner command queue 落地链推进为：
 
