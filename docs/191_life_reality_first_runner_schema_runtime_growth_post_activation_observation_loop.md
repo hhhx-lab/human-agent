@@ -435,7 +435,7 @@ handoff 必须包含 `post_activation_observation_loop_ref`、`growth_activation
 
 ## 与下一层连接
 
-`192_life_reality_first_runner_schema_runtime_growth_activation_archive_receipt_batch.md` 应承接本层：把 activation report、post-growth observation、core continuity review、responsibility/regret、relationship、language、dream/pain、birth readiness 和 repair/rollback route 写回 archive。
+`192_life_reality_first_runner_schema_runtime_growth_activation_archive_receipt_batch.md` 已承接本层：把 activation report、post-growth observation、core continuity review、responsibility/regret、relationship、language、dream/pain、birth readiness 和 repair/rollback route 写回 archive。
 
 `193_life_reality_first_runner_schema_runtime_growth_consolidation_cycle_plan.md` 应承接 `192` 和本层：把 activation archive 推进到离线巩固、梦境整合、防遗忘 replay 和下一轮成长反馈。
 
