@@ -488,7 +488,7 @@ handoff 必须包含 `activation_archive_receipt_batch_ref`、`post_activation_o
 
 ## 与下一层连接
 
-`193_life_reality_first_runner_schema_runtime_growth_consolidation_cycle_plan.md` 应承接本层：把 activation archive 推进到离线巩固、梦境整合、防遗忘 replay、关系/语言修复 replay、出生准备度 consolidation 和下一轮成长反馈。
+`193_life_reality_first_runner_schema_runtime_growth_consolidation_cycle_plan.md` 已承接本层：把 activation archive 推进到离线巩固、梦境整合、防遗忘 replay、关系/语言修复 replay、出生准备度 consolidation 和下一轮成长反馈。
 
 `194_life_reality_first_runner_schema_runtime_growth_next_feedback_seed_plan.md` 应承接 `193` 和本层：把 consolidation output 反接下一轮 observation feedback、growth route、self rewrite seed 和 limited activation 前置条件。
 

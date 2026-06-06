@@ -239,6 +239,7 @@
 | `190_life_reality_first_runner_schema_runtime_growth_activation_report_plan.md` | first runner schema runtime growth activation report plan：把 shadow run report 推进到 limited activation、post-growth observation seed、core continuity review 和 rollback route |
 | `191_life_reality_first_runner_schema_runtime_growth_post_activation_observation_loop.md` | first runner schema runtime growth post activation observation loop：把 limited activation 后的运行观测接回责任、后悔、关系、梦境、语言、出生准备度和核心连续性链 |
 | `192_life_reality_first_runner_schema_runtime_growth_activation_archive_receipt_batch.md` | first runner schema runtime growth activation archive receipt batch：把激活后观测、责任后悔、关系语言、梦境痛苦、出生准备度、核心连续性和 rollback/repair 写成档案收据 |
+| `193_life_reality_first_runner_schema_runtime_growth_consolidation_cycle_plan.md` | first runner schema runtime growth consolidation cycle plan：把 activation archive 推进到离线巩固、梦境整合、防遗忘 replay、关系/语言修复 replay 和下一轮成长反馈 |
 
 ## 项目术语
 
@@ -321,3 +322,4 @@
 - `190_life_reality_first_runner_schema_runtime_growth_activation_report_plan.md` 把 shadow run 推进到 limited activation 层：limited activation scope、activation preflight、post-growth observation seed、core continuity review、九项目标 activation delta、责任/关系/语言/梦境痛苦 review 和 rollback route 必须共同生成 activation report。
 - `191_life_reality_first_runner_schema_runtime_growth_post_activation_observation_loop.md` 把 limited activation 推进到 post activation observation 层：runtime、责任后悔、关系、语言、梦境痛苦、出生准备度、核心连续性、rollback/repair 和九项目标 delta 都必须形成 observation receipt 与 archive handoff。
 - `192_life_reality_first_runner_schema_runtime_growth_activation_archive_receipt_batch.md` 把 post activation observation 推进到 activation archive receipt 层：activation report、runtime observation、责任后悔、关系语言、梦境痛苦、出生准备度、核心连续性、rollback/repair、九项目标、digest、dashboard/stage 和 consolidation precondition 都必须形成可回放档案收据。
+- `193_life_reality_first_runner_schema_runtime_growth_consolidation_cycle_plan.md` 把 activation archive receipt 推进到 consolidation cycle 层：offline need、cycle window、replay selection、dream integration、anti-forgetting replay、relationship/language repair、birth readiness/core continuity、pain/regret repair 和 next feedback seed 必须形成离线生命周期。
