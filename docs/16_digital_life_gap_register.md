@@ -256,12 +256,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `131_life_reality_registry_runner_minimal_implementation_plan.md` | 固定最小 runner 的目录创建策略、JSON writer、schema loader、ref resolver、report writer、validation case loader、CLI skeleton、first smoke execution loop、外壳接入位阶和 stage gate 推进规则 | 已由 `132` 反推为 schema/report/fixture JSON 写入顺序和依赖锁 |
 | `132_life_reality_materialized_json_schema_bundle_write_order.md` | 固定 allowed root、config、shared schema、boundary、manifest/map、fixture、report schema、report instance、registry review、validation case、dashboard、stage gate、gap feedback 和 top-level smoke 的写入锁与 cross-file DAG | 已由 `133` 推进为 JSON writer/reporter 字段级合同 |
 | `133_life_reality_first_json_writer_and_reporter_contract.md` | 固定 `RunContext`、`AllowedRootGuard`、`JsonFileWriter`、`ArtifactRecord`、`SchemaLoader`、`RefResolver`、`ReportWriter`、`GapFeedbackWriter`、atomic write、canonical digest、problem detail、trace/provenance 和 CLI integration contract | 已由 `134` 拆成真实 fixture 与 smoke runner 实现队列 |
-| `134_life_reality_registry_runner_smoke_fixture_implementation_queue.md` | 固定 21 个 validation cases、case manifest、coverage matrix、command binding、mutation patches、expected reports、actual/diff roots、case run report、coverage report、gap feedback 和 smoke command execution queue | 下一层把 fixture queue 写成 dependency lockfile、graph export 和 regression baseline |
+| `134_life_reality_registry_runner_smoke_fixture_implementation_queue.md` | 固定 21 个 validation cases、case manifest、coverage matrix、command binding、mutation patches、expected reports、actual/diff roots、case run report、coverage report、gap feedback 和 smoke command execution queue | 已由 `135` 写成 dependency lockfile、graph export 和 regression baseline |
+| `135_life_reality_schema_dependency_graph_and_lockfile_plan.md` | 固定 artifact nodes、doc nodes、ref edges、doc-to-artifact edges、case graph、lock states、digest baseline、regression baseline、archive cohesion graph、consistency constraints、graph exports 和 lockfile validation report | 下一层把 lockfile 和 archive cohesion checker 推进为最小 runner 代码骨架计划 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `135_life_reality_schema_dependency_graph_and_lockfile_plan.md`：把 schema/ref/artifact/pointer/boundary 依赖、cross-file DAG、lock state 和 regression baseline 写成 machine-readable lockfile 计划。
-2. `136_life_reality_minimal_runner_code_skeleton_plan.md`：在 `133-135` 之后定义 package layout、CLI module、writer module、report module、tests 和 smoke commands 的最小代码骨架计划。
-3. `137_life_reality_first_fixture_materialization_checklist.md`：把 `134` 的实现队列推进为第一批真实 JSON fixture 文件物化清单和验收步骤。
+1. `136_life_reality_minimal_runner_code_skeleton_plan.md`：在 `133-135` 之后定义 package layout、CLI module、writer module、report module、graph module、archive cohesion checker、tests 和 smoke commands 的最小代码骨架计划。
+2. `137_life_reality_first_fixture_materialization_checklist.md`：把 `134` 的实现队列推进为第一批真实 JSON fixture 文件物化清单和验收步骤。
+3. `138_life_reality_lockfile_regression_dashboard_source_plan.md`：把 lock state graph、regression baseline、archive cohesion graph 和 coverage graph 接入 dashboard source。

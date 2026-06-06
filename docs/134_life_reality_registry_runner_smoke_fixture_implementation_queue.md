@@ -422,8 +422,8 @@ gap finding 转换规则：
 
 ## 与下一层连接
 
-下一层进入 `135_life_reality_schema_dependency_graph_and_lockfile_plan.md`：把本文档的 case files、mutation patches、expected reports、actual reports、diff reports、artifact records、ref edges、coverage matrix 和 canonical digest 写成 machine-readable dependency lockfile、graph export 和 regression baseline。
+下一层已进入 `135_life_reality_schema_dependency_graph_and_lockfile_plan.md`：把本文档的 case files、mutation patches、expected reports、actual reports、diff reports、artifact records、ref edges、coverage matrix 和 canonical digest 写成 machine-readable dependency lockfile、graph export 和 regression baseline。
 
-`136_life_reality_minimal_runner_code_skeleton_plan.md` 应在 `135` 之后定义 package layout、CLI module、writer module、report module、fixture loader、case runner、tests 和 smoke commands。
+`136_life_reality_minimal_runner_code_skeleton_plan.md` 应在 `135` 之后定义 package layout、CLI module、writer module、report module、fixture loader、case runner、archive cohesion checker、tests 和 smoke commands。
 
-`137_life_reality_first_fixture_materialization_checklist.md` 应继续把本文档队列推进为第一批真实 JSON fixture 文件物化清单。
+`137_life_reality_first_fixture_materialization_checklist.md` 应继续把本文档队列推进为第一批真实 JSON fixture 文件物化清单。`138_life_reality_lockfile_regression_dashboard_source_plan.md` 应把 lock state、coverage、archive cohesion 和 regression baseline 接入 dashboard source。
