@@ -252,12 +252,13 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `127_life_reality_first_seed_file_content_contract.md` | 固定 first seed common envelope、canonical life targets、trace/provenance refs、seed dependency graph、20 个 seed root object 的 required fields、smoke reader、failure mapping 和 LRGEN-311 到 320 | 已由 `128` 推进为 registry report seed examples |
 | `128_life_reality_registry_report_seed_examples.md` | 固定 10 个 registry report seed examples、共同 report envelope、report write order、schema/ref/artifact/pointer/root/boundary/DAG/problem/gap 样例、runner consumption、failure mapping 和 LRGEN-321 到 330 | 已由 `129` 推进为 seed fixture 与 report validation cases |
 | `129_life_reality_seed_fixture_and_report_validation_cases.md` | 固定 materialization validation fixture 目录、pass/fail/critical/mutation 分区、21 个 case matrix、expected reports、expected findings、diff contract、coverage matrix、`run-seed-validation-cases` CLI 和 LRGEN-331 到 340 | 已由 `130` 推进为第一批真实 JSON 文件写入计划 |
-| `130_life_reality_first_materialized_json_files_write_plan.md` | 固定第一批真实 JSON 文件的写入顺序、文件族、path/root object/owner module/reader command、batch gate、生命膜字段要求、语言承诺 smoke fixture、registry review 和 validation case mount | 下一层把写入计划推进为 registry runner 最小实现计划 |
+| `130_life_reality_first_materialized_json_files_write_plan.md` | 固定第一批真实 JSON 文件的写入顺序、文件族、path/root object/owner module/reader command、batch gate、生命膜字段要求、语言承诺 smoke fixture、registry review 和 validation case mount | 已由 `131` 推进为 registry runner 最小实现计划 |
+| `131_life_reality_registry_runner_minimal_implementation_plan.md` | 固定最小 runner 的目录创建策略、JSON writer、schema loader、ref resolver、report writer、validation case loader、CLI skeleton、first smoke execution loop、外壳接入位阶和 stage gate 推进规则 | 下一层把 runner 需求反推为 schema/report/fixture JSON 文件写入顺序和依赖锁 |
 
 ## 下一轮优先级
 
 下一轮应继续沿 `91`、`100` 和 `119` 的真实性生成边界总则推进，把真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔拆成更具体的对象、状态、事件和长期 timeline：
 
-1. `131_life_reality_registry_runner_minimal_implementation_plan.md`：把 registry report seeds、runner smoke execution、batch gate 和 validation case mount 推进为最小实现计划。
-2. `132_life_reality_materialized_json_schema_bundle_write_order.md`：把第一批 schema/report/fixture JSON 文件拆成可写入顺序和依赖锁。
-3. `133_life_reality_first_json_writer_and_reporter_contract.md`：定义 JSON writer、schema loader、ref resolver、report writer 和 gap feedback writer 的最小合同。
+1. `132_life_reality_materialized_json_schema_bundle_write_order.md`：把第一批 schema/report/fixture JSON 文件拆成可写入顺序和依赖锁。
+2. `133_life_reality_first_json_writer_and_reporter_contract.md`：定义 JSON writer、schema loader、ref resolver、report writer、gap feedback writer、atomic write、digest 和 trace context 的字段级合同。
+3. `134_life_reality_registry_runner_smoke_fixture_implementation_queue.md`：把 validation cases、CLI skeleton、registry reports 和 expected/actual diff 拆成首批真实 fixture、expected report 和 smoke runner 实现任务。
