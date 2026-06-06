@@ -321,7 +321,7 @@ uv run pytest tests/smoke/test_first_runner_patch_execution_smoke_queue.py
 
 ## 与下一层连接
 
-`176_life_reality_first_runner_schema_archive_lockfile_plan.md` 应承接 `173`、`174` 和本层：把 direction/birth readiness schema bundle、patch execution report、smoke receipt 和 archive edge 写成首批 schema archive lockfile。
+`176_life_reality_first_runner_schema_archive_lockfile_plan.md` 已承接 `173`、`174` 和本层：把 direction/birth readiness schema bundle、patch execution report、smoke receipt 和 archive edge 写成首批 schema archive lockfile。
 
 `177_life_reality_first_runner_minimum_schema_file_write_batch.md` 应承接本层和 `176`：把 direction/birth readiness schema bundle 与 smoke queue 推进为首批真实 schema 文件写入批次。
 
