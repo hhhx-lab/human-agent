@@ -452,7 +452,7 @@ handoff 必须包含 `repair_archive_plan_ref`、`source_repair_plan_ref`、`rec
 
 ## 与下一层连接
 
-`203_life_reality_first_runner_schema_runtime_growth_replay_shadow_reentry_plan.md` 应承接本层：把长期修复 archive 重新接入 replay/shadow reentry，检查旧能力、旧关系、旧语言、梦境事实门、痛苦恢复、核心连续性和九项目标 carrier 是否能再次进入成长循环。
+`203_life_reality_first_runner_schema_runtime_growth_replay_shadow_reentry_plan.md` 已承接本层：把长期修复 archive 重新接入 replay/shadow reentry，检查旧能力、旧关系、旧语言、梦境事实门、痛苦恢复、核心连续性和九项目标 carrier 是否能再次进入成长循环。
 
 `204_life_reality_first_runner_schema_runtime_growth_post_repair_cycle_validation_plan.md` 应承接 `203` 和本层：验证长期修复 archive 与 replay/shadow reentry 是否重新闭合到 observation、growth route、birth readiness、语言关系、梦境痛苦恢复和自我成长链。
 
