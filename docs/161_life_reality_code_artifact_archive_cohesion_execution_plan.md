@@ -305,7 +305,7 @@ uv run life-reality-runner emit-code-artifact-archive-gap-feedback \
 
 ## 与下一层连接
 
-`162_life_reality_first_code_artifact_implementation_queue.md` 应承接本层：把 `158-161` 的 repository bootstrap、first code smoke、dashboard/stage bridge 和 archive cohesion execution 压成首批真实代码实现队列。
+`162_life_reality_first_code_artifact_implementation_queue.md` 已承接本层：把 `158-161` 的 repository bootstrap、first code smoke、dashboard/stage bridge 和 archive cohesion execution 压成首批真实代码实现队列。
 
 `163_life_reality_first_runner_code_generation_batch.md` 应承接 `162`：把实现队列推进到真实文件生成批次。
 
