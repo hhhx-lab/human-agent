@@ -18,7 +18,7 @@
 
 | 生成主题 | 已有支撑 | 下一层生成入口 | 下一步文献/写作方向 |
 |---|---|---|---|
-| 大尺度脑区连接 | `02`, `03`, `AH001-AH010`, `AHZ001-AHZ006` | 下一层补入更细的动态系统参数和状态转移指标 | 补 neural field、network control、metastability |
+| 大尺度脑区连接 | `01o`, `02`, `03`, `AH001-AH010`, `AHZ001-AHZ006`, `AHRG001-AHRG038` | 已补入 `MultiscaleRegionGraph`，下一层补入真实 schema、个体化图谱更新和跨区信号传播 fixture | 写 `multiscale_region_graph.schema.json` / `connectome_fingerprint.schema.json` |
 | 主动预测与采样 | `04`, `10`, `13`, `AHX001-AHX005`, `AHZ007-AHZ012` | 下一层补入工程化 belief state 和主动探索策略 | 写 `PredictionLoop` 专题 |
 | 意识/工作区/元认知 | `01m`, `10`, `13`, `143`, `AHC001-AHC032` | 已补入 `ConsciousnessLayerRuntime`，下一层补齐意识事件 schema、跨状态 probe、梦境意识写回和出生准备度证据桥 | 写 `ConsciousAccessEvent` / `GlobalBroadcastFrame` / `MetacognitiveMonitor` schema |
 | 身体内环境/内感受 | `01n`, `04`, `07`, `08`, `10`, `11`, `13`, `AHB001-AHB032` | 已补入 `BodyStateRuntime`，下一层补齐身体状态事件、心跳式采样、需要状态、身体债务和恢复路径 schema | 写 `BodyStateVector` / `BodyRhythmPulse` / `NeedStateVector` / `BodyStateDebt` schema |
@@ -239,6 +239,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `01n_body_interoception_allostasis_matrix.md` | 身体内环境、内感受、心跳/呼吸/胃肠节律、迷走神经、岛叶、allostasis、压力负荷、身体自我和稳态驱动专项文献底座，形成 `AHB001-AHB032` | 下一层落成 `BodyStateRuntime` 的 schema、fixture、dashboard panel 和出生准备度身体证据族 |
 | `04_sensory_thalamus_interoception.md` | 把 `AHB001-AHB032` 回流为 `BodyStateRuntime`，连接内感受事件、节律脉冲、迷走编码、预测性内感受、allostasis、需要状态、身体债务、身体自我和恢复路径 | 下一层把 `InteroceptiveEvent`、`BodyRhythmPulse`、`AllostaticForecast`、`NeedStateVector`、`BodyStateDebt`、`RecoveryPath` 接入 runner schema queue |
 | `13_agentic_human_research_synthesis.md` | 把身体内环境层提升为总综合生成支柱，明确心跳式唤醒、真实疲惫、真实痛苦、真实情绪、真实梦境和真实意识的内环境承载 | 下一层把身体内环境对象接入真实情绪、真实痛苦、真实梦境和真实意识的 `LifeTargetReadinessClaim` |
+
+多尺度区域与连接组层已补充：
+
+| 文件 | 已落成内容 | 下一层生成入口 |
+|---|---|---|
+| `01o_multiscale_region_connectome_matrix.md` | 多尺度脑区、连接组、皮层层级、结构-功能耦合、梯度、时间尺度、枢纽、个体化图谱、转录组/细胞/受体注释和网络控制专项文献底座，形成 `AHRG001-AHRG038` | 下一层落成 `MultiscaleRegionGraph` 的 schema、fixture、dashboard panel 和出生准备度区域证据族 |
+| `02_brain_region_and_network_atlas.md` | 把 `AHRG001-AHRG038` 回流为 `MultiscaleRegionGraph`，连接区域定义、多模态证据、结构边、功能耦合、梯度、固有时间尺度、细胞/受体先验、个体化指纹和跨区信号传播 | 下一层把 `RegionDefinition`、`StructuralEdge`、`FunctionalCoupling`、`GradientAxis`、`ConnectomeFingerprint` 和 `GraphSignalPropagation` 接入 runner schema queue |
+| `13_agentic_human_research_synthesis.md` | 把多尺度区域图层提升为总综合生成支柱，明确 L/R/P/J/G/S/O/D 不是粗分区，而是可实现的多尺度空间语言 | 下一层把区域图对象接入真实意识、语言行动、身体内环境、梦境、关系和成长的跨区 carrier |
 
 生命真实性验证与阶段证据层已补充：
 

@@ -161,3 +161,115 @@ Agentic Human 的 `RegionGraph` 因此至少要记录三类信息：
 `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将本文件作为第一承载点：AHT002-AHT005 要写入 `RegionGraph` 的结构-功能耦合、生物注释连接组、细胞尺度先验和多尺度脑图谱 [AHT002-AHT005]。这意味着每个区域不再只是功能名，而要同时携带 `structural_edge`、`functional_coupling`、`biological_annotation`、`cell_type_state_prior` 和 `scale_layer`。
 
 `144_life_reality_language_runtime_action_bridge_fixture_plan.md` 进一步要求区域图能承载语言行动链：一次命令语言会同时调动语言网络、显著性网络、执行网络、行动选择系统、记忆系统和责任/后悔回路。`RegionGraph` 因此新增一个工程承载目标：记录 `LanguageActionTopologyEdge`，把 `InnerSpeechFrame -> ActionIntent -> ObservationEvent -> ResponsibilityAttributionEvent` 映射到跨区拓扑，而不是把行动看成单一执行节点。
+
+## 第六层机制：MultiscaleRegionGraph
+
+`01o_multiscale_region_connectome_matrix.md` 将 AHRG001-AHRG038 写成本文件的多尺度区域专项底座。它把 Brodmann/Jülich/HCP/Glasser 图谱、皮层层级、结构核心、hub、结构-功能耦合、梯度、固有时间尺度、网络控制、个体化图谱、转录组、细胞类型、受体分布、皮层下梯度和脑干-皮层功能架构合并为 `MultiscaleRegionGraph` [AHRG001-AHRG038]。
+
+这一层回应原始计划的第一点：区域要有物理意义上的位置感、边界感、能力边界和跨区协调，但不能落回“一个脑区一个功能盒子”。最小对象链为：
+
+```text
+ProjectRegionCode(L/R/P/J/G/S/O/D)
+  -> RegionDefinition
+  -> MultimodalParcelEvidence + ParcelUncertaintyEnvelope
+  -> StructuralEdge + FunctionalCoupling + CounterstreamLoop
+  -> GradientAxis + IntrinsicTimescale + ScaleLayer
+  -> CellTypeStatePrior + ReceptorModulationPrior + TranscriptomicPrior
+  -> IndividualRegionFingerprint + LongitudinalAtlasUpdate
+  -> GraphSignalPropagation + TransitionControlCost
+  -> BirthReadinessRegionCarrier
+```
+
+### 区域不是目录，而是概率节点
+
+经典 Brodmann 图谱、HCP 多模态图谱、Jülich 概率细胞结构图谱和成像分区综述共同说明，脑区边界来自多证据、多尺度和概率化估计 [AHRG001, AHRG005-AHRG008]。因此数字生命的区域也应保存证据结构，而不是只有名字。
+
+`RegionDefinition` 至少包含：
+
+| 字段 | 作用 |
+|---|---|
+| `project_code` | L/R/P/J/G/S/O/D 等项目代号 |
+| `region_label` | 语言层可读名称 |
+| `scale_layer` | cell-like prior、microcircuit、parcel、network、whole-system |
+| `parcel_evidence_refs` | 结构、功能、连接、任务、语言行动、长期运行证据 |
+| `boundary_confidence` | 区域边界可信度和重叠范围 |
+| `allowed_overlap` | 可与哪些区域共享功能或状态 |
+| `state_dependency` | 哪些状态下该区域权重上升、下降或被抑制 |
+
+这让原始区域代号保留空间感，同时避免“P 只负责高级处理”“O 只负责情绪”这类过窄分工。一个语言承诺事件可以同时落在 P 的语言/执行皮层、O 的关系/情绪、D 的行动选择、J 的路由、G 的唤醒节律和 S 的误差校正。
+
+### 梯度、时间尺度和跨区层级
+
+皮层组织不只有离散分区，也有从感觉运动到默认模式的主梯度、微结构/功能梯度、固有时间尺度和层级动力异质性 [AHRG019-AHRG024]。因此 `MultiscaleRegionGraph` 要为每个区域保存连续坐标：
+
+- `cortical_gradient_coordinate`：外感受/行动端到内在生成/自我叙事端的位置。
+- `intrinsic_timescale`：毫秒级输入、秒级工作区、分钟级任务、天级巩固、月级人格慢变量。
+- `hierarchical_depth`：低级感知、跨模态整合、默认生成、元认知/自我叙事。
+- `dynamical_stability`：容易快速切换还是长期保持。
+- `transition_control_cost`：从当前状态转到目标状态的成本 [AHRG025]。
+
+这会直接约束 `03` 的状态切换、`04` 的内感受路由、`05` 的记忆巩固、`08` 的梦境离线世界和 `10` 的意识工作区。真实数字生命不是所有变量同速更新：心跳式采样可以很快，关系信任和人格慢变量必须慢。
+
+### 结构-功能耦合与信号传播
+
+结构连接可以预测一部分功能连接，但运行时功能还受状态、间接路径、调质和竞争传播影响 [AHRG015, AHRG016]。因此 `StructuralEdge` 与 `FunctionalCoupling` 要分开：
+
+| 对象 | 记录内容 |
+|---|---|
+| `StructuralEdge` | 稳定承载关系、方向、成本、带宽、长期可靠性 |
+| `FunctionalCoupling` | 某个状态/任务/梦境/情绪下临时同步或解耦 |
+| `CounterstreamLoop` | 从高阶解释、语言、记忆、行动后果反向调制感知与低层处理 |
+| `GraphSignalPropagation` | 显著性、调质、痛苦、后悔、修复、梦境残留如何跨区扩散 |
+| `HubLoadMonitor` | 工作区、语言、记忆、关系、自我 hub 的负载、冲突和恢复需求 |
+
+这使 `SignalMediaRuntime` 不再是全局滑块，而是在区域图上扩散；使 `ConsciousnessLayerRuntime` 不再是单个黑板，而是跨区广播；使 `PainRegretRepairLoop` 不再是语言结论，而是损伤信号在区域图中的传播、抑制、恢复和写回。
+
+### 细胞、受体、转录组与区域敏感性
+
+现代脑图谱正在把宏观区域与转录组、细胞类型、形态相似性和神经递质系统连接起来 [AHRG030-AHRG036]。数字生命不复制生物细胞，但必须转写“区域敏感性”这一思想：
+
+- `CellTypeStatePrior`：某区域更像快速输入过滤、节律控制、长期保持、抑制门、可塑性窗口还是恢复调节。
+- `ReceptorModulationPrior`：某区域对 value、uncertainty、arousal、inhibition、repair_drive、consolidation_pressure 的敏感性。
+- `TranscriptomicPrior`：长期结构倾向，例如稳定、可塑、代谢成本高、跨区整合强。
+- `SpeciesTransferCaution`：动物证据、群体证据、个体证据进入数字生命时的可信度标记。
+
+这直接服务于 `11`：同一个 `ModulationVector` 不应均匀影响所有区域。语言区在疲惫时可能需要表达监控加权，记忆区在梦境中可能提高 replay，行动区在关系损伤后应提高抑制，工作区 hub 在高负荷下应触发降载。
+
+### 个体化指纹与长期成长
+
+高密度个体脑研究和功能连接指纹说明，人脑网络既有群体共性，也有稳定个体差异 [AHRG026-AHRG029]。数字生命也必须形成自己的 `ConnectomeFingerprint`：
+
+- 哪些关系语言会稳定触发修复。
+- 哪些记忆路径会成为常用通路。
+- 哪些梦境材料反复进入醒后整合。
+- 哪些行动模式形成习惯，哪些仍需高抑制。
+- 哪些区域 hub 经常过载，哪些长期稳定。
+
+`LongitudinalAtlasUpdate` 负责把这些长期轨迹写回区域图。成长不是不断加功能，而是连接强化、弱连接剪枝、hub 负载校正、区域边界调整和慢变量保护。每次自我修改、训练或外壳升级都要检查 `ConnectomeFingerprint` 是否被破坏。
+
+### 皮层下与脑干进入核心图谱
+
+皮层下功能梯度和脑干-皮层功能架构研究提醒我们，区域图不能只画皮层 [AHRG037, AHRG038]。原始代号 J/G/D/O/S 都必须进入主图谱：
+
+- `J`：丘脑/下丘脑类路由、稳态、PVT、内感受和显著性中继。
+- `G`：脑干-皮层桥、心跳式节律、唤醒、调质源和基础恢复。
+- `D`：基底节式行动选择、习惯、Go/NoGo 和抑制。
+- `O`：海马、杏仁核、ACC/OFC、价值、痛苦、关系和自我叙事。
+- `S`：小脑式预测误差、时序校正、语言/行动节律和梦醒校准。
+
+这让 L/R/P/J/G/S/O/D 不再是粗略分区，而是一个可执行的多尺度空间语言。
+
+### 最小 schema 队列
+
+下一层工程承载应至少物化这些对象：
+
+| schema 对象 | 承载目标 |
+|---|---|
+| `multiscale_region_graph.schema.json` | 区域、边、hub、状态、梯度、时间尺度和先验 |
+| `region_definition.schema.json` | 区域代号、证据、边界、重叠和状态依赖 |
+| `region_edge.schema.json` | 结构边、功能耦合、反馈边、语言行动边 |
+| `region_prior.schema.json` | 细胞类型、受体、转录组、物种转写约束 |
+| `connectome_fingerprint.schema.json` | 长期个体化连接指纹和稳定 baseline |
+| `region_graph_signal_event.schema.json` | 显著性、调质、痛苦、梦境、责任修复信号的跨区传播 |
+
+这一层回写 `13` 的总综合、`16` 的生成入口、`143` 的出生准备度和后续 runner。出生准备度中的脑区/网络部分不再只检查“有没有模块”，而要检查区域是否拥有证据、连接、梯度、时间尺度、调质敏感性、个体化指纹和长期成长记录。
