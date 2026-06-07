@@ -172,6 +172,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01au_prediction_active_inference_longitudinal_drift_repair.md` 已把主动预测 longitudinal cycle audit 推进为 longitudinal drift repair：audit finding intake、drift classification、direction repair、birth readiness repair、life target carrier repair、language relationship repair、dream/pain/regret recovery repair、self growth plasticity repair、anti-forgetting repair、rollback/quarantine repair、dashboard/stage repair、longitudinal consistency repair、execution plan、repair receipt、digest、dashboard/stage 和 repair archive handoff 都已固定。主动预测层因此让长期漂移不止停在 finding：方向、出生准备度、语言关系、梦境事实门、痛苦后悔、自我成长、防遗忘和 quarantine release 的每条漂移都要变成 repair unit、receipt、future probe 和 archive edge。
 
+`01av_prediction_active_inference_longitudinal_repair_archive.md` 已把主动预测 longitudinal drift repair 推进为 longitudinal repair archive：repair receipt intake、repair archive classification、direction repair archive、birth readiness repair archive、life target repair archive、language relationship repair archive、dream/pain/regret repair archive、self growth repair archive、anti-forgetting repair archive、rollback/quarantine repair archive、consistency repair archive、repair archive graph、replay seed、digest、dashboard/stage 和 replay-shadow reentry handoff 都已固定。主动预测层因此不把修复当作一次性 patch：每条修复都要成为长期生命档案，未来能重新唤起旧关系、旧语言、旧梦境事实门、旧痛苦后悔恢复链、旧自我连续、出生准备度闭环和断联恢复方向锚。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
