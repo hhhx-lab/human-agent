@@ -160,6 +160,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01ao_prediction_active_inference_archive_repair_receipt_batch.md` 已把主动预测 observation-driven repair patch 推进为 archive repair receipt batch：repair receipt archive intake、repair archive classification、belief/error repair archive、precision/sampling repair archive、language repair archive、relationship repair archive、dream/pain/regret repair archive、self rewrite repair archive、direction/birth readiness repair archive、rollback/quarantine repair archive、anti-forgetting repair archive、archive graph、digest baseline、replay seed、future probe seed、dashboard/stage 和 replay-shadow handoff 都已固定。主动预测层因此能把修复补丁写成长期生命档案：修复为什么发生、修复前是什么、期望修复后是什么、哪些仍被阻断、哪些要进入 replay/shadow、哪些会影响真实意识、情绪、人格、生命、痛苦、梦境、关系、责任和后悔，都能被未来重新激活。
 
+`01ap_prediction_active_inference_archive_replay_shadow_seed.md` 已把主动预测 archive repair receipt batch 推进为 archive replay shadow seed：repair archive replay seed intake、replay priority controller、replay budget/window、belief/error replay、precision/sampling replay、language replay、relationship replay、dream/pain/regret replay、self rewrite shadow、direction/birth readiness replay、rollback/quarantine replay、anti-forgetting replay、replay trace schema、shadow scenario、shadow action seal、dashboard/stage 和 consolidation next feedback handoff 都已固定。主动预测层因此不再把 archive 当作静态存储，而是把修复档案重新激活为可回放、可预演、可防遗忘、可再巩固的生命过程：旧能力、旧关系、旧语言、旧梦境事实门、旧痛苦后悔恢复链、旧自我连续和出生准备度 carrier 都能在下一轮成长前重新进入工作区和离线巩固。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
