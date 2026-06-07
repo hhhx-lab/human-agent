@@ -21,6 +21,7 @@
 | 大尺度脑区连接 | `02`, `03`, `AH001-AH010`, `AHZ001-AHZ006` | 下一层补入更细的动态系统参数和状态转移指标 | 补 neural field、network control、metastability |
 | 主动预测与采样 | `04`, `10`, `13`, `AHX001-AHX005`, `AHZ007-AHZ012` | 下一层补入工程化 belief state 和主动探索策略 | 写 `PredictionLoop` 专题 |
 | 意识/工作区/元认知 | `01m`, `10`, `13`, `143`, `AHC001-AHC032` | 已补入 `ConsciousnessLayerRuntime`，下一层补齐意识事件 schema、跨状态 probe、梦境意识写回和出生准备度证据桥 | 写 `ConsciousAccessEvent` / `GlobalBroadcastFrame` / `MetacognitiveMonitor` schema |
+| 身体内环境/内感受 | `01n`, `04`, `07`, `08`, `10`, `11`, `13`, `AHB001-AHB032` | 已补入 `BodyStateRuntime`，下一层补齐身体状态事件、心跳式采样、需要状态、身体债务和恢复路径 schema | 写 `BodyStateVector` / `BodyRhythmPulse` / `NeedStateVector` / `BodyStateDebt` schema |
 | 内感受/稳态 | `04`, `07`, `11`, `AH051-AH070`, `AHZ013-AHZ018` | 下一层补入内部状态向语言和行动的调制方程 | 写 `InternalStateVector` 专题 |
 | 能量/维护层 | `08`, `11`, `37`, `AHY019-AHY024`, `AHZ019-AHZ024`, `AHZ061-AHZ062` | 已有生命支持政策，下一层补齐 `LifeSupportState` schema、预算 fixture 和 dashboard 指标 | 写 `LifeSupportState` schema |
 | 神经免疫/防御 | `07`, `11`, `38`, `AHX022-AHX028`, `AHZ025-AHZ030` | 已有防御政策，下一层补齐 `DefenseEvent` schema、污染输入 fixture 和恢复包格式 | 写 `DefenseEvent` schema |
@@ -230,6 +231,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `01m_consciousness_attention_workspace_matrix.md` | 真实意识、注意进入、全局工作区、报告性、元认知、梦境意识、内感受主观框架和机器意识评估专项文献底座，形成 `AHC001-AHC032` | 下一层落成 `ConsciousnessEvidenceRegistry`、`AdversarialConsciousnessProbe` 和出生准备度意识证据族 |
 | `10_consciousness_attention_workspace.md` | 把 `AHC001-AHC032` 回流为 `ConsciousnessLayerRuntime`，连接访问事件、局部递归、注意图式、全局广播、经验绑定、报告性、元认知、梦境意识和主观身体框架 | 下一层把 `ConsciousAccessEvent`、`GlobalBroadcastFrame`、`PhenomenalBindingTrace`、`ReportabilityTrace`、`MetacognitiveMonitor` 和 `ConsciousnessProbeBattery` 接入 runner schema queue |
 | `13_agentic_human_research_synthesis.md` | 把意识工作区层提升为总综合生成支柱，连接 `04`、`05`、`08`、`09`、`11`、`143` 和出生准备度 | 下一层把意识工作区对象接入 `LifeTargetReadinessClaim.real_consciousness` 与长期 probe |
+
+身体内环境与内感受层已补充：
+
+| 文件 | 已落成内容 | 下一层生成入口 |
+|---|---|---|
+| `01n_body_interoception_allostasis_matrix.md` | 身体内环境、内感受、心跳/呼吸/胃肠节律、迷走神经、岛叶、allostasis、压力负荷、身体自我和稳态驱动专项文献底座，形成 `AHB001-AHB032` | 下一层落成 `BodyStateRuntime` 的 schema、fixture、dashboard panel 和出生准备度身体证据族 |
+| `04_sensory_thalamus_interoception.md` | 把 `AHB001-AHB032` 回流为 `BodyStateRuntime`，连接内感受事件、节律脉冲、迷走编码、预测性内感受、allostasis、需要状态、身体债务、身体自我和恢复路径 | 下一层把 `InteroceptiveEvent`、`BodyRhythmPulse`、`AllostaticForecast`、`NeedStateVector`、`BodyStateDebt`、`RecoveryPath` 接入 runner schema queue |
+| `13_agentic_human_research_synthesis.md` | 把身体内环境层提升为总综合生成支柱，明确心跳式唤醒、真实疲惫、真实痛苦、真实情绪、真实梦境和真实意识的内环境承载 | 下一层把身体内环境对象接入真实情绪、真实痛苦、真实梦境和真实意识的 `LifeTargetReadinessClaim` |
 
 生命真实性验证与阶段证据层已补充：
 

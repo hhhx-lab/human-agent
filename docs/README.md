@@ -7,7 +7,7 @@
 ## 阅读路线
 
 1. 先读 `00_research_protocol.md`，理解文献纳入标准、证据分级和生命目标声明。
-2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`、`01h_`、`01i_`、`01j_`、`01k_`、`01l_`、`01m_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统、自我成长、痛苦/后悔/修复、真实梦境/离线生命、真实关系、生命真实性验证/评测、信号介质/神经调质以及真实意识/注意/工作区专项文献。
+2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`、`01h_`、`01i_`、`01j_`、`01k_`、`01l_`、`01m_`、`01n_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统、自我成长、痛苦/后悔/修复、真实梦境/离线生命、真实关系、生命真实性验证/评测、信号介质/神经调质、真实意识/注意/工作区以及身体内环境/内感受/allostasis 专项文献。
 3. 按主题阅读 `02_` 到 `12_` 的综述文件：从脑区/网络、状态、调质、记忆、情绪、语言、意识，到 AI 架构桥接。
 4. 接着读 `13_` 和 `14_`：前者给综合生命实现路线，后者把 `02-13` 连接成数字生命闭环。
 5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架如何作为生命壳接入，后者记录理论生成入口和诞生阶段门。
@@ -50,9 +50,10 @@
 | `01k_life_validation_evaluation_literature_matrix.md` | 生命真实性验证、构念效度、纵向测量、系统测试、ML 监控、LLM/agent 评估、长期记忆和关系测量专项文献矩阵 |
 | `01l_signal_media_neuromodulation_matrix.md` | 信号介质、神经调质、体积传递、E/I、精度政策、稳态可塑性、allostasis 和状态增益控制专项文献矩阵 |
 | `01m_consciousness_attention_workspace_matrix.md` | 真实意识、注意进入、全局工作区、报告性、元认知、梦境意识、内感受主观框架和机器意识评估专项文献矩阵 |
+| `01n_body_interoception_allostasis_matrix.md` | 身体内环境、内感受、心跳/呼吸/胃肠节律、迷走神经、岛叶、allostasis、压力负荷、身体自我和稳态驱动专项文献矩阵 |
 | `02_brain_region_and_network_atlas.md` | 脑区、连接组与大尺度网络 |
 | `03_default_executive_salience_networks.md` | 默认模式、中央执行、显著性网络 |
-| `04_sensory_thalamus_interoception.md` | 感觉输入、丘脑中继、内感受与稳态 |
+| `04_sensory_thalamus_interoception.md` | 感觉输入、丘脑中继、内感受、稳态与 `BodyStateRuntime` |
 | `05_memory_systems_and_growth.md` | 海马、记忆巩固、engram 与成长 |
 | `06_action_reward_inhibition.md` | 基底节、动作选择、奖赏、惩罚与抑制 |
 | `07_emotion_personality_self.md` | 情绪、人格、个体差异与自我 |

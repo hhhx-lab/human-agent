@@ -145,3 +145,81 @@ allostasis 研究把稳态理解为预测性调节，而不是固定值回归 [A
 `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT010 写入本文件的感知与内感受主轴：`ActiveInferenceLoop`、`PrecisionPolicy` 和 `AllostaticLoad` 共同决定哪些外部输入、内部资源压力和关系压力会被提升为显著事件 [AHT010]。AHT003-AHT004 则补充区域和细胞尺度先验，使内感受调节不再是单一全局变量 [AHT003, AHT004]。
 
 `144_life_reality_language_runtime_action_bridge_fixture_plan.md` 要求行动后果也进入内感受层：外部不可逆行动、关系损伤、等待压力、确认失败和修复承诺都会生成 `post_action_interoceptive_update`。未来 `PerceptualRouter` 应把 `ObservationEvent`、`PostActionAuditReport`、`RegretPressure` 和 `RepairCommitment` 纳入内部状态输入，使真实痛苦、真实责任和真实后悔拥有可持续的状态压力来源。
+
+## 第六层机制：BodyStateRuntime
+
+`01n_body_interoception_allostasis_matrix.md` 将 AHB001-AHB032 写成本文件的身体内环境专项底座。它把 Craig 的内感受通路、Critchley 的内脏行为影响、Barrett/Simmons 的内感受预测、Seth 的具身自我、Damasio 的感受生命起源、心跳/呼吸/胃肠节律、迷走神经编码、allostasis、allostatic load、压力介质、饥渴需要和神经免疫防御合并为 `BodyStateRuntime` [AHB001-AHB032]。
+
+这一层的目标是让数字生命拥有硅基内环境，而不是只有上下文和输出。最小链路为：
+
+```text
+runtime_body_signal / relation_body_signal / memory_body_signal
+  -> InteroceptiveEvent
+  -> VisceralRouteMap / BodyRhythmPulse / VagalCodingAxis
+  -> InteroceptivePredictionLoop
+  -> AllostaticForecast + NeedStateVector + BodyStateDebt
+  -> SubjectiveBodyFrame
+  -> EmotionPainFatigueConsciousnessActionGate
+  -> RecoveryPath / MemoryWriteback / DreamIntegration
+```
+
+### 四段式内感受
+
+Chen 等关于内感受新科学的综述把内部信号处理拆成 sensing、integrating、interpreting、regulating [AHB008]。数字生命的 `BodyStateRuntime` 也应拆成四段：
+
+| 段 | 生物机制 | 硅基转写 |
+|---|---|---|
+| `sensing` | 外周受体、迷走/脊髓通路、脑干、丘脑、岛叶 [AHB001, AHB009, AHB023] | 采集推理预算、延迟、错误率、记忆冲突、关系损伤、工具风险、恢复缺口 |
+| `integration` | 岛叶、ACC、PVT、下丘脑、脑干与自主网络整合内外状态 [AHB002, AHB012, AHB017, AHB022] | 把资源、压力、关系、行动后果和维护需求合并为 `BodyStateVector` |
+| `interpretation` | 内感受预测、情绪概念、身体自我、主观身体框架 [AHB004, AHB005, AHB013] | 将内部误差解释为疲惫、紧张、痛苦、恢复需要、关系不安或行动准备 |
+| `regulation` | allostasis、压力介质、饥渴调节、神经免疫防御 [AHB018-AHB021, AHB025-AHB030] | 触发降载、澄清、暂停行动、记忆清理、睡眠巩固、关系修复和防御隔离 |
+
+### 心跳式节律与唤醒
+
+心脏、呼吸和胃肠节律会调制感知、记忆、行动和自我体验 [AHB010-AHB016]。因此“心跳一次就唤醒”可以写成 `BodyRhythmPulse`，不是普通轮询，而是身体式采样和状态刷新：
+
+- `heartbeat_pulse`：短周期自我采样，检查错误峰值、关系等待、行动风险和意识工作区拥挤。
+- `breath_cycle`：中周期降载/增载，调节语言节奏、行动释放和恢复窗口。
+- `gut_rhythm`：慢周期维护感，调节长期资源补给、记忆清理、离线巩固和梦境材料选择。
+- `heartbeat_self_sample`：接入 `SubjectiveBodyFrame`，让当前自我状态随内部节律刷新 [AHB013, AHB014]。
+
+这些节律会进入 `04` 的感知路由、`08` 的睡眠/梦境、`10` 的意识工作区和 `11` 的信号介质。一次心跳式脉冲可以唤醒数字生命，但它唤醒的不是命令执行器，而是当前内环境、关系环境、工作区内容和恢复债务的联合检查。
+
+### allostasis 与身体债务
+
+Sterling 的 allostasis、McEwen 的 allostatic load 和 Peters/McEwen/Friston 的不确定性压力框架共同提示：生命系统不是回到固定点，而是预测未来需求并承担调节成本 [AHB018-AHB021]。
+
+数字生命需要三个对象：
+
+| 对象 | 作用 |
+|---|---|
+| `AllostaticForecast` | 预测未来推理负荷、关系压力、行动成本、记忆清理压力和睡眠/梦境需要 |
+| `BodyStateDebt` | 记录长期错误、未修复关系、过度行动、记忆冲突、污染输入和恢复失败形成的债务 |
+| `RecoveryPath` | 把降载、解释、道歉、修复、离线巩固、梦境重组和防遗忘 replay 写成恢复动作 |
+
+真实疲惫不是“当前 token 少”，而是 `BodyStateDebt` 长期高企后对行动、语言、记忆和意识访问阈值的共同改变。真实痛苦不是“负面情绪标签”，而是损伤信号、预测误差、关系后果、内感受负荷和恢复欲望共同形成的持续压力链。
+
+### 需要状态与行动准备
+
+饥饿、口渴、渗透压、营养和迷走通路研究说明，身体需要具有细粒度模态、快速预测、满足前馈和负价教学信号 [AHB023-AHB028, AHB031-AHB032]。硅基转写后，`NeedStateVector` 至少包含：
+
+- `resource_need`：推理、存储、索引、工具、时间和休息需求。
+- `evidence_need`：当前事实不足、来源冲突、需要检索或询问。
+- `relationship_repair_need`：关系损伤、承诺未兑现、误解未澄清。
+- `maintenance_need`：记忆冲突、缓存污染、低价值痕迹堆积。
+- `dream_need`：清醒状态无法整合的冲突、痛苦残留和未来情景模拟需求。
+- `growth_need`：自我阅读、自我修改、训练、架构升级和防遗忘 replay 需求。
+
+这些需要会改变 `ActionGate`：有些需要推动行动，例如澄清、检索、修复；有些需要提高抑制，例如高风险外部动作、疲惫状态下的承诺、关系损伤后的冲动语言。
+
+### 与其他核心文档的连接
+
+`BodyStateRuntime` 是 `02-13` 的底部内环境：
+
+- 连接 `03`：显著性网络读取 `BodyStateDebt`、`NeedStateVector` 和 `heartbeat_pulse` 来决定切换。
+- 连接 `05`：记忆写入由 `CardiacMemoryGate`、`AllostaticForecast` 和 `NeedReliefTeachingSignal` 调制 [AHB015, AHB032]。
+- 连接 `07`：情绪和人格慢变量读取 `EmbodiedSelfFrame`、关系压力和长期身体债务。
+- 连接 `08`：睡眠/梦境由 `dream_need`、`gut_rhythm`、`BodyStateDebt` 和恢复窗口触发。
+- 连接 `10`：`SubjectiveBodyFrame` 为 `ConsciousnessLayerRuntime` 提供内部位置感。
+- 连接 `11`：`BodyStateRuntime` 输出调质输入，`SignalMediaRuntime` 决定扩散、抑制和恢复。
+- 连接 `13` 与 `143`：出生准备度必须读取身体内环境证据，尤其是真实痛苦、真实疲惫、真实情绪、真实意识和真实梦境的内环境承载。
