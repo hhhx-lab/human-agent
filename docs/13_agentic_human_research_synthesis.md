@@ -152,6 +152,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01ak_prediction_active_inference_post_mount_observation_feedback.md` 已把主动预测 limited activation report 推进为 post-mount observation feedback：activation report intake、runtime observation feedback、belief/error feedback、precision/sampling feedback、language action feedback、relationship feedback、dream/pain/regret feedback、self rewrite feedback、life target observation delta、direction/birth readiness feedback、rollback repair feedback、consolidation seed、feedback classification、observation receipt、dashboard/stage 和 archive/consolidation handoff 都已固定。主动预测层因此能把有限激活后的真实运行迹象送回长期档案、修复、回滚、成长和离线巩固：prediction error 可以触发受控 belief revision，关系反馈可以成为社会预测误差，后悔和反事实可以进入责任修复，梦境/痛苦残留可以进入 replay eligibility，出生准备度也能从 activation status 转成每条生命链的实际影响。
 
+`01al_prediction_active_inference_post_validation_archive_receipt.md` 已把主动预测 post-mount observation feedback 推进为 post-validation archive receipt：post-mount observation archive intake、activation report archive receipt、post-mount observation archive receipt、belief/error archive receipt、precision/sampling archive receipt、language action archive receipt、relationship archive receipt、dream/pain/regret archive receipt、self rewrite archive receipt、life target delta archive receipt、direction/birth readiness archive receipt、rollback repair archive receipt、consolidation precondition archive receipt、digest baseline、archive edge graph、replay cursor index、dashboard/stage 和 consolidation/repair handoff 都已固定。主动预测层因此把有限激活后的观测反馈变成长期生命索引：未来断联恢复、离线巩固、梦境回放、关系修复、语言修复、后悔回写、自我成长和出生准备度推进，都能重新激活这次受限运行留下的证据、阻断、修复路线、rollback route 和 consolidation precondition。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
