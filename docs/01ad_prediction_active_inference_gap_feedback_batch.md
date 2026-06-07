@@ -70,7 +70,7 @@ archive receipt batch
 
 ## 机制与文献绑定
 
-gap feedback 对应主动推理中的误差最小化与主动采样循环 [AHX001-AHX005, AHZ007-AHZ012, AHPAI001-AHPAI070]：系统不把 prediction error 当作失败后噪音，而是把它转化为下一轮采样、修复、学习和结构调整的信号。它还承接可塑性、replay、防遗忘、语言行动、关系修复和纵向验证文献底座 [AHG024-AHG048, AHY001-AHY010, AHL001-AHL090, AHV001-AHV060]。本层因此把 gap 定义为生命系统内部的生长压力，而不是文档列表中的 TODO。
+gap feedback 对应主动推理中的误差最小化、主动采样、记忆再巩固和离线 replay 循环 [AHX001-AHX005, AHZ007-AHZ012, AHPAI001-AHPAI080]：系统不把 prediction error 当作失败后噪音，而是把它转化为下一轮采样、修复、学习和结构调整的信号。它还承接可塑性、replay、防遗忘、语言行动、关系修复和纵向验证文献底座 [AHG024-AHG048, AHY001-AHY010, AHL001-AHL090, AHV001-AHV060]。本层因此把 gap 定义为生命系统内部的生长压力，而不是文档列表中的 TODO。
 
 在工程层，gap feedback 是 `archive receipt -> repair patch -> archive receipt -> growth patch` 的中间膜。没有这一层，dashboard 和 archive 能指出问题，但问题不会自动变成未来 runner 可执行的 patch queue。
 

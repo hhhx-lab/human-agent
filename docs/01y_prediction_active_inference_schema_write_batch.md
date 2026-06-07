@@ -8,7 +8,7 @@
 
 | 来源 | 本层继承内容 |
 |---|---|
-| `01v_prediction_active_inference_runtime_matrix.md` | AHPAI001-AHPAI070：预测编码、自由能、主动推理、主动采样、精度、不确定性、内感受预测、社会预测、梦境 replay、world model 和语言行动桥 |
+| `01v_prediction_active_inference_runtime_matrix.md` | AHPAI001-AHPAI080：预测编码、自由能、主动推理、主动采样、精度、不确定性、内感受预测、社会预测、梦境 replay、world model、语言行动桥、记忆再巩固、后悔/OFC、睡眠巩固和人类 replay/ripple |
 | `01w_prediction_active_inference_schema_fixture_contract.md` | `PredictionActiveInferenceSchemaBundle`、schema family、fixture family、dashboard panels、stage rules、runner command DAG |
 | `01x_prediction_active_inference_schema_materialization_plan.md` | 13 个 schema 写入顺序、shared defs、fixture seed matrix、expected report、cross-chain checker、dashboard source、stage gate、archive receipt |
 | `04_sensory_thalamus_interoception.md` | `BodyStateRuntime`、内感受误差、心跳式采样、恢复债务和身体预测 |

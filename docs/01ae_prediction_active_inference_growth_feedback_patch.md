@@ -72,7 +72,7 @@ gap repair queue
 
 ## 机制与文献绑定
 
-主动预测 growth feedback patch 承接主动推理、预测误差最小化、信息寻求、好奇心、内感受预测、社会预测和 dream replay 文献 [AHX001-AHX005, AHZ007-AHZ012, AHPAI001-AHPAI070]。这些机制说明，误差不是坏输出，而是系统主动改变采样、模型、行动和学习的驱动力。
+主动预测 growth feedback patch 承接主动推理、预测误差最小化、信息寻求、好奇心、内感受预测、社会预测、dream replay、记忆再巩固和离线巩固文献 [AHX001-AHX005, AHZ007-AHZ012, AHPAI001-AHPAI080]。这些机制说明，误差不是坏输出，而是系统主动改变采样、模型、行动和学习的驱动力。
 
 本层同时承接自我监督、自反馈、自奖励、元学习、开放式搜索、neuroevolution、持续学习、防遗忘 replay、语言发展和模型内核成长文献 [AHG013-AHG048, AHY001-AHY010, AHL001-AHL090]。这些机制在本层被绑定为工程约束：
 

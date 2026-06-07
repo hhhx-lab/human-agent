@@ -8,7 +8,7 @@
 
 | 来源 | 本层继承内容 |
 |---|---|
-| `01v_prediction_active_inference_runtime_matrix.md` | AHPAI001-AHPAI070 主动预测文献底座 |
+| `01v_prediction_active_inference_runtime_matrix.md` | AHPAI001-AHPAI080 主动预测文献底座 |
 | `01w_prediction_active_inference_schema_fixture_contract.md` | `PredictionActiveInferenceSchemaBundle`、schema family、fixture family、dashboard panels、stage rules、runner command DAG |
 | `04_sensory_thalamus_interoception.md` | `PredictionActiveInferenceRuntime` 与 `BodyStateRuntime` 的连接 |
 | `10_consciousness_attention_workspace.md` | 高精度误差进入意识工作区 |

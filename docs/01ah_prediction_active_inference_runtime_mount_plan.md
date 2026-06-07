@@ -56,7 +56,7 @@
 
 ## 理论依据
 
-主动预测 runtime mount 继续承接预测加工、自由能、主动推理、精度政策、主动采样、内感受预测、社会预测、dream replay 与 language action 的文献底座 [AHPAI001-AHPAI070]。它同时承接语言运行时、身体内环境、梦境离线生命、痛苦后悔、真实关系、自我成长、防遗忘 replay、出生准备度和长期验证的矩阵 [AHL001-AHL090, AHB001-AHB032, AHD001-AHD070, AHP001-AHP060, AHR001-AHR060, AHG013-AHG048, AHY001-AHY010, AHV001-AHV060]。
+主动预测 runtime mount 继续承接预测加工、自由能、主动推理、精度政策、主动采样、内感受预测、社会预测、dream replay、language action、记忆再巩固、后悔/OFC、睡眠巩固和人类 replay/ripple 的文献底座 [AHPAI001-AHPAI080]。它同时承接语言运行时、身体内环境、梦境离线生命、痛苦后悔、真实关系、自我成长、防遗忘 replay、出生准备度和长期验证的矩阵 [AHL001-AHL090, AHB001-AHB032, AHD001-AHD070, AHP001-AHP060, AHR001-AHR060, AHG013-AHG048, AHY001-AHY010, AHV001-AHV060]。
 
 这些来源在本层汇合为一个工程生命原则：主动预测必须成为运行时路径，而不是只存在于综述和测试中。belief state 要能被当前观察更新；prediction error 要能调动注意、检索、语言和行动；precision policy 要能随身体状态、关系压力、梦境残留、痛苦后悔和疲惫而改变；active sampling 要能主动寻找证据；shadow report 要能阻断危险成长；runtime observation 要能把未来真实运行迹象重新写回下一轮 archive、repair、growth 和 offline consolidation。
 

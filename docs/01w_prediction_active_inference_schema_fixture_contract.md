@@ -8,7 +8,7 @@
 
 | 来源 | 进入本合同的内容 |
 |---|---|
-| `01v_prediction_active_inference_runtime_matrix.md` | AHPAI001-AHPAI070：预测编码、自由能、主动推理、主动采样、不确定性、内感受预测、社会预测、梦境 replay 和 world model |
+| `01v_prediction_active_inference_runtime_matrix.md` | AHPAI001-AHPAI080：预测编码、自由能、主动推理、主动采样、不确定性、内感受预测、社会预测、梦境 replay、world model、记忆再巩固、后悔/OFC、睡眠巩固和人类 replay/ripple |
 | `04_sensory_thalamus_interoception.md` | `PredictionActiveInferenceRuntime`、`BeliefStateFrame`、`PredictionErrorField`、`PrecisionPolicy`、`ExpectedFreeEnergyEstimate`、`EpistemicActionCandidate`、`ActiveSamplingPlan`、`BeliefRevisionEvent`、`DirectionBeliefStateFrame` |
 | `10_consciousness_attention_workspace.md` | 高精度误差进入意识工作区、全局广播、报告性和元认知 |
 | `11_neuromodulation_and_signal_media.md` | 精度政策、不确定性调质、抑制、恢复和全局增益 |

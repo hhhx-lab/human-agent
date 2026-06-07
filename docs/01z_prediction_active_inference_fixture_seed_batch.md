@@ -8,7 +8,7 @@
 
 | 来源 | 本层继承内容 |
 |---|---|
-| `01v_prediction_active_inference_runtime_matrix.md` | AHPAI001-AHPAI070 主动预测、主动推理、精度政策、主动采样、内感受/社会预测、梦境 replay 和 world model 文献底座 |
+| `01v_prediction_active_inference_runtime_matrix.md` | AHPAI001-AHPAI080 主动预测、主动推理、精度政策、主动采样、内感受/社会预测、梦境 replay、world model、记忆再巩固、后悔/OFC、睡眠巩固和人类 replay/ripple 文献底座 |
 | `01w_prediction_active_inference_schema_fixture_contract.md` | fixture family、expected report、dashboard panel、stage gate 和 runner command DAG 总合同 |
 | `01x_prediction_active_inference_schema_materialization_plan.md` | pass/fail/critical/mutation/smoke fixture seed matrix 初始清单 |
 | `01y_prediction_active_inference_schema_write_batch.md` | 13 个 schema 的 `$id`、root object、required 字段、最小实例、失败模式、validation receipt 和 cross-chain hooks |

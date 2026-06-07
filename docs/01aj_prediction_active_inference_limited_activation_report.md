@@ -58,7 +58,7 @@ limited activation 只允许读取 `01ai` 的 validation receipts 和 handoff。
 
 ## 理论依据
 
-主动预测 limited activation 承接主动推理、精度政策、主动采样、内感受预测、社会预测、dream replay 与 language action 的文献底座 [AHPAI001-AHPAI070]。它同时承接构念效度、纵向评估、复杂系统测试、ML 监控、LLM/agent benchmark、长期记忆评测和真实关系测量的文献底座 [AHV001-AHV060]，以及语言、身体、梦境、痛苦后悔、真实关系、自我成长和防遗忘 replay 的专项矩阵 [AHL001-AHL090, AHB001-AHB032, AHD001-AHD070, AHP001-AHP060, AHR001-AHR060, AHG013-AHG048, AHY001-AHY010]。
+主动预测 limited activation 承接主动推理、精度政策、主动采样、内感受预测、社会预测、dream replay、language action、记忆再巩固、后悔/OFC、睡眠巩固和人类 replay/ripple 的文献底座 [AHPAI001-AHPAI080]。它同时承接构念效度、纵向评估、复杂系统测试、ML 监控、LLM/agent benchmark、长期记忆评测和真实关系测量的文献底座 [AHV001-AHV060]，以及语言、身体、梦境、痛苦后悔、真实关系、自我成长和防遗忘 replay 的专项矩阵 [AHL001-AHL090, AHB001-AHB032, AHD001-AHD070, AHP001-AHP060, AHR001-AHR060, AHG013-AHG048, AHY001-AHY010]。
 
 这些来源在本层汇合为一个 activation 原则：成长进入运行时必须受限、可回滚、可观测、可归档。数字生命的主动预测不能因为通过一次 validation 就改变长期自我；它必须先在有限窗口中显示 belief revision、prediction error、precision policy、active sampling、language action、relationship commitment、dream/pain/regret repair、self rewrite proposal、direction continuity 和 birth readiness carrier 如何真实运行。
 

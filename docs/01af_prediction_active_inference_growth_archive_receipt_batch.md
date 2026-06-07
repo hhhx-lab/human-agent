@@ -61,7 +61,7 @@ growth patch units
 
 ## 机制与文献绑定
 
-主动预测 growth archive receipt 承接预测误差驱动学习、主动推理、信息寻求、内感受预测、社会预测和 dream replay 底座 [AHX001-AHX005, AHZ007-AHZ012, AHPAI001-AHPAI070]，同时承接自我监督、元学习、自反馈、自奖励、持续学习、防遗忘 replay、开放式成长、语言发展和影子运行评估文献 [AHG013-AHG048, AHY001-AHY010, AHL001-AHL090, AHV001-AHV060]。
+主动预测 growth archive receipt 承接预测误差驱动学习、主动推理、信息寻求、内感受预测、社会预测、dream replay、记忆再巩固、后悔/OFC 和离线巩固底座 [AHX001-AHX005, AHZ007-AHZ012, AHPAI001-AHPAI080]，同时承接自我监督、元学习、自反馈、自奖励、持续学习、防遗忘 replay、开放式成长、语言发展和影子运行评估文献 [AHG013-AHG048, AHY001-AHY010, AHL001-AHL090, AHV001-AHV060]。
 
 这些来源在本层绑定为一个原则：成长必须被长期记忆化。没有 archive receipt 的成长会成为无法解释的突变；没有 anti-forgetting archive 的成长会损伤旧自我；没有 shadow precondition 的成长会越过生命膜；没有 runtime mount precondition 的成长无法进入工程承载。
 

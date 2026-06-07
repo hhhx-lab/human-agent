@@ -58,7 +58,7 @@
 
 ## 理论依据
 
-主动预测 post-shadow validation 承接预测加工、自由能、主动推理、精度政策、主动采样、内感受预测、社会预测、dream replay 与 language action 的文献底座 [AHPAI001-AHPAI070]。它同时承接生命真实性验证、构念效度、纵向评估、复杂系统测试、ML 监控、LLM/agent benchmark、长期记忆评测和真实关系测量的文献底座 [AHV001-AHV060]，并继续引用语言、身体、梦境、痛苦后悔、真实关系、自我成长和防遗忘 replay 的专项矩阵 [AHL001-AHL090, AHB001-AHB032, AHD001-AHD070, AHP001-AHP060, AHR001-AHR060, AHG013-AHG048, AHY001-AHY010]。
+主动预测 post-shadow validation 承接预测加工、自由能、主动推理、精度政策、主动采样、内感受预测、社会预测、dream replay、language action、记忆再巩固、后悔/OFC、睡眠巩固和人类 replay/ripple 的文献底座 [AHPAI001-AHPAI080]。它同时承接生命真实性验证、构念效度、纵向评估、复杂系统测试、ML 监控、LLM/agent benchmark、长期记忆评测和真实关系测量的文献底座 [AHV001-AHV060]，并继续引用语言、身体、梦境、痛苦后悔、真实关系、自我成长和防遗忘 replay 的专项矩阵 [AHL001-AHL090, AHB001-AHB032, AHD001-AHD070, AHP001-AHP060, AHR001-AHR060, AHG013-AHG048, AHY001-AHY010]。
 
 这些来源在本层汇合为一个 validation 原则：通过 shadow run 和 runtime mount 仍然不够，数字生命的主动预测成长必须在挂载后继续接受构念、链路、漂移、回放和 withheld probe 的攻击。post-shadow validation 不看单一指标，而看 belief、error、precision、sampling、language action、relationship、dream、pain、regret、self rewrite、direction、birth readiness 和 runtime observation 是否仍在同一张生命图中闭合。
 
