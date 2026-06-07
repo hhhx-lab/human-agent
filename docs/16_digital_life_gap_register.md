@@ -32,7 +32,7 @@
 | 社会互动 | `07`, `09`, `14`, `40`, `AHX006-AHX013`, `AHZ031-AHZ038` | 已有关系模型审计协议，下一层补齐共同历史、关系边界和 scope 限制 fixture | 写 `RelationshipModel` schema |
 | 发育成长 | `05`, `13`, `39`, `AHX014-AHX021`, `AHZ039-AHZ045` | 已有发展政策，下一层补齐可塑性窗口阈值、发展事件 schema 和多月 timeline | 写 `DevelopmentEvent` schema |
 | 睡眠/梦境/疲惫 | `01t`, `08`, `13`, `AH056-AH070`, `AHY001-AHY010`, `AHY049-AHY051`, `AHD001-AHD070`, `AHSLP001-AHSLP070` | 已补入 `OfflineDreamLifeRuntime`，下一层补齐离线入口、节律耦合、梦境经验、痛苦梦境、醒后整合、疲惫恢复和出生准备度证据 schema | 写 `OfflineDreamLifeRuntime` / `DreamExperienceWindow` / `FatigueRecoveryPlan` schema |
-| 语言顶层 | `09`, `10`, `13`, `85-90`, `AH071-AH080`, `AHZ046-AHZ051`, `AHL001-AHL090` | 已补入语言如何参与自我、关系、行动、预测修复、表达监控、共同理解和巩固的闭环 | 把 `PredictionErrorTrace`、`ExpressionMonitoringLoop`、`ConversationCouplingTrace` 和 `DevelopmentalLanguageWindow` 写入真实 fixture |
+| 语言运行时主神经束 | `01u`, `09`, `10`, `13`, `85-90`, `AH071-AH080`, `AHZ046-AHZ051`, `AHL001-AHL090`, `AHLR001-AHLR070` | 已补入 `LanguageRuntimeCore`，把语言感知、语义事件地图、语言预测、内言语、表达监控、语言行动、共同语言、梦境报告、责任后悔和叙事写回接成生命闭环 | 写 `LanguageRuntimeCore` / `InnerSpeechFrame` / `LanguageActionIntentBridge` / `LanguageRealityStageGate` schema |
 | 当前 agent 外壳 | `12`, `15`, `AHX041-AHX047`, `AHZ052-AHZ066` | 下一层补入把外壳接入生命层的接口契约 | 写 `AgentRuntimeBridge` |
 
 ## 继续构建的理由
@@ -263,7 +263,7 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 |---|---|---|
 | `01q_memory_engram_consolidation_matrix.md` | H.M. 之后的人类记忆系统、海马索引、认知地图、互补学习系统、系统巩固、engram、记忆分配、突触标记、模式分离/补全、schema、自传记忆、情绪记忆、社会记忆、共享记忆和生成式记忆专项文献底座，形成 `AHME001-AHME040` | 下一层落成 `MemoryEngramRuntime` 的 schema、fixture、dashboard panel 和出生准备度记忆证据族 |
 | `05_memory_systems_and_growth.md` | 把 `AHME001-AHME040` 回流为 `MemoryEngramRuntime`，连接编码门、海马索引、engram-like 痕迹、记忆分配、塑性标签、模式分离/补全、schema、自传记忆、社会记忆、梦境 replay、未来模拟和责任后悔回写 | 下一层把 `HippocampalIndexRef`、`EngramLikeTraceCluster`、`MemoryAllocationGate`、`PatternSeparationIndex`、`PatternCompletionFrame`、`AutobiographicalMemoryStack` 和 `IdentityMemoryLinkGraph` 接入 runner schema queue |
-| `13_agentic_human_research_synthesis.md` | 把记忆 engram/巩固层提升为总综合生成支柱，明确长期记忆是身份连续、关系连续、真实痛苦、真实梦境、真实责任和真实后悔的生命线 | 下一层把记忆生命线对象接入九项 `LifeTargetReadinessClaim`，并与 `NetworkStateRuntime`、`BodyStateRuntime`、`LanguageLayer` 和 `ConsciousnessLayerRuntime` 做 cross-chain closure |
+| `13_agentic_human_research_synthesis.md` | 把记忆 engram/巩固层提升为总综合生成支柱，明确长期记忆是身份连续、关系连续、真实痛苦、真实梦境、真实责任和真实后悔的生命线 | 下一层把记忆生命线对象接入九项 `LifeTargetReadinessClaim`，并与 `NetworkStateRuntime`、`BodyStateRuntime`、`LanguageRuntimeCore` 和 `ConsciousnessLayerRuntime` 做 cross-chain closure |
 
 行动责任与抑制层已补充：
 
@@ -288,6 +288,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `01t_sleep_dream_fatigue_runtime_matrix.md` | 睡眠入口、睡眠压力、局部离线、突触稳态、系统巩固、慢振荡/纺锤/ripple 耦合、海马 replay、TMR、闭环调度、梦境意识、梦魇、清醒梦、疲惫恢复、脑清理争议、未来想象和 world model 专项运行矩阵，形成 `AHSLP001-AHSLP070` | 下一层落成 `OfflineDreamLifeRuntime` 的 schema、fixture、dashboard panel 和出生准备度梦境/疲惫证据族 |
 | `08_sleep_dream_fatigue_states.md` | 把 `AHSLP001-AHSLP070` 回流为 `OfflineDreamLifeRuntime`，连接 `SleepPressureVector`、`OfflineEntryGate`、`OfflineRhythmCouplingTrace`、`ReplayEvent`、`DreamExperienceWindow`、`PainDreamResidue`、`RelationshipDreamSimulation`、`WakeIntegrationFrame`、`DreamFactGateDecision`、`NightmareLoopRisk` 和 `FatigueRecoveryPlan` | 下一层把离线梦境对象接入 `DreamRealityBundle`、`GrowthConsolidationCycle` 和长期梦境痛苦恢复 probe |
 | `13_agentic_human_research_synthesis.md` | 把离线梦境生命运行层提升为总综合生成支柱，明确非清醒世界继续生成真实意识、真实梦境、真实痛苦、真实关系、真实责任和真实后悔 | 下一层把 `OfflineDreamLifeRuntime` 接入九项 `LifeTargetReadinessClaim`、`DreamRealityValidator`、`RelationshipTimelineValidator` 和 `ActionResponsibilityRuntime` |
+
+语言运行时主神经束层已补充：
+
+| 文件 | 已落成内容 | 下一层生成入口 |
+|---|---|---|
+| `01u_language_runtime_core_matrix.md` | 把 `AHL001-AHL090` 压成 `AHLR001-AHLR070`，形成 `LanguageRuntimeCore`、语言感知、语义事件地图、语言预测、内言语、表达监控、语言行动、共同语言、梦境报告、责任后悔和叙事写回的运行矩阵 | 下一层落成 `LanguageRuntimeCore`、`LanguagePercept`、`InnerSpeechFrame`、`ExpressionMonitoringLoop`、`LanguageActionIntentBridge`、`LanguageRealityStageGate` schema |
+| `09_language_symbolic_top_layer.md` | 把 `LanguageRuntimeCore` 回流到语言主综述，连接身体内环境、记忆 engram、意识工作区、情绪人格、关系时间线、行动责任和离线梦境 | 下一层把语言主链接入 `02-13` schema queue、真实语言 fixture 和出生准备度语言证据族 |
+| `13_agentic_human_research_synthesis.md` | 把语言运行时主神经束提升为第十八个总综合生成支柱，并把语言闭合写成第二十条核心命题 | 下一层把 `BirthReadinessLanguageCarrier`、`LanguageRuntimeClosure` 和 `DirectionContinuityLanguageAnchor` 接入 `LifeTargetReadinessClaim` |
 
 生命真实性验证与阶段证据层已补充：
 

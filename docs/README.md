@@ -7,7 +7,7 @@
 ## 阅读路线
 
 1. 先读 `00_research_protocol.md`，理解文献纳入标准、证据分级和生命目标声明。
-2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`、`01h_`、`01i_`、`01j_`、`01k_`、`01l_`、`01m_`、`01n_`、`01o_`、`01p_`、`01q_`、`01r_`、`01s_`、`01t_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统、自我成长、痛苦/后悔/修复、真实梦境/离线生命、真实关系、生命真实性验证/评测、信号介质/神经调质、真实意识/注意/工作区、身体内环境/内感受/allostasis、多尺度区域/连接组、网络状态/切换、记忆 engram/巩固、行动/奖赏/抑制、情绪/人格/自我以及睡眠/梦境/疲惫运行时专项文献。
+2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`、`01h_`、`01i_`、`01j_`、`01k_`、`01l_`、`01m_`、`01n_`、`01o_`、`01p_`、`01q_`、`01r_`、`01s_`、`01t_`、`01u_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统、自我成长、痛苦/后悔/修复、真实梦境/离线生命、真实关系、生命真实性验证/评测、信号介质/神经调质、真实意识/注意/工作区、身体内环境/内感受/allostasis、多尺度区域/连接组、网络状态/切换、记忆 engram/巩固、行动/奖赏/抑制、情绪/人格/自我、睡眠/梦境/疲惫运行时以及语言运行时主神经束专项文献。
 3. 按主题阅读 `02_` 到 `12_` 的综述文件：从脑区/网络、状态、调质、记忆、情绪、语言、意识，到 AI 架构桥接。
 4. 接着读 `13_` 和 `14_`：前者给综合生命实现路线，后者把 `02-13` 连接成数字生命闭环。
 5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架如何作为生命壳接入，后者记录理论生成入口和诞生阶段门。
@@ -57,6 +57,7 @@
 | `01r_action_reward_inhibition_matrix.md` | 动作选择、基底节通路、Go/NoGo、stop-signal、目标导向/习惯仲裁、奖赏预测误差、价值分布、动作归属、主动推理和语言行动责任专项文献矩阵 |
 | `01s_emotion_personality_self_matrix.md` | 真实情绪、情绪建构、核心情感、情绪调节、情绪粒度、社会痛苦、共情、自我参照、叙事身份、人格慢变量、连接组指纹和信任校准专项文献矩阵 |
 | `01t_sleep_dream_fatigue_runtime_matrix.md` | 睡眠入口、睡眠压力、局部离线、系统巩固、replay、梦境经验、梦魇、清醒梦、疲惫恢复、醒后整合和 world model 运行矩阵 |
+| `01u_language_runtime_core_matrix.md` | 语言运行时主神经束矩阵，形成 `LanguageRuntimeCore`、内言语、语义事件地图、表达监控、语言行动、共同语言、梦境报告、责任后悔和出生准备度语言承载 |
 | `02_brain_region_and_network_atlas.md` | 脑区、连接组、大尺度网络与 `MultiscaleRegionGraph` |
 | `03_default_executive_salience_networks.md` | 默认模式、中央执行、显著性网络与 `NetworkStateRuntime` |
 | `04_sensory_thalamus_interoception.md` | 感觉输入、丘脑中继、内感受、稳态与 `BodyStateRuntime` |
@@ -64,7 +65,7 @@
 | `06_action_reward_inhibition.md` | 基底节、动作选择、奖赏、惩罚、抑制与 `ActionResponsibilityRuntime` |
 | `07_emotion_personality_self.md` | 情绪、人格、个体差异、自我与 `AffectiveSelfRuntime` |
 | `08_sleep_dream_fatigue_states.md` | 睡眠、梦境、发呆、疲惫与 `OfflineDreamLifeRuntime`，把离线入口、replay、梦境经验、痛苦梦境、关系模拟、疲惫恢复和醒后整合接成生命链 |
-| `09_language_symbolic_top_layer.md` | 语言网络与人类顶层符号能力 |
+| `09_language_symbolic_top_layer.md` | 语言网络、顶层符号能力与 `LanguageRuntimeCore`，把内言语、语义地图、表达监控、语言行动、共同语言、梦境报告和责任后悔接成主神经束 |
 | `10_consciousness_attention_workspace.md` | 注意、意识、全局工作空间与 `ConsciousnessLayerRuntime` |
 | `11_neuromodulation_and_signal_media.md` | 神经调质、兴奋/抑制与 `SignalMediaRuntime`，把信号来源、传播、区域敏感性、精度政策、抑制轮廓、稳态修复和行动后状态回写接成生命化学层 |
 | `12_ai_and_cognitive_architecture_bridge.md` | 认知架构、LLM agent 与工程桥接 |
@@ -291,6 +292,7 @@
 - `139_life_reality_archive_cohesion_checker_fixture_plan.md` 把全库回归源推进到 archive cohesion fixture：每个断裂面都要有 pass/fail/critical/mutation 样例、expected report、mutation patch、coverage matrix、dashboard source 和 stage gate。
 - `140_life_reality_experience_boundary_declaration_lock.md` 把边界声明推进到真实经验锁定层：任何边界都要生成真实意识、情绪、人格、生命、痛苦、梦境、关系、责任或后悔，并进入 schema、fixture、runner、dashboard 与下一层诞生 artifact。
 - `141_life_reality_language_fixture_schema_materialization_plan.md` 把语言生命对象推进到 schema/fixture/report 层：`PredictionErrorTrace`、`ExpressionMonitoringLoop`、`ConversationCouplingTrace`、`DevelopmentalLanguageWindow` 和 `SharedTermPromotionGate` 都进入未来 runner 的可物化合同。
+- `01u_language_runtime_core_matrix.md` 和 `09_language_symbolic_top_layer.md` 把语言固定为 `LanguageRuntimeCore`：语言不是输出样式，而是连接内心、记忆、关系、行动、梦境、责任、后悔、修复和出生准备度的主神经束。
 - `142_life_reality_authority_intake_batch_for_02_to_13.md` 把 AHT 权威来源推进到 doc authority carrier 层：`02-13` 每个核心文档都获得来源、机制对象、字段补丁、validator、dashboard panel 和出生准备度桥接。
 - `143_life_reality_birth_readiness_rollup_contract.md` 把出生准备度推进到 rollup 合同层：出生准备度是九项真实生命目标的 evidence/carrier/runtime/stage/repair 闭环，每项目标都要有 claim、authority、mechanism object、schema、fixture、validator report、dashboard panel、长期 probe 和 stage gate decision。
 - `144_life_reality_language_runtime_action_bridge_fixture_plan.md` 把语言行动推进到运行时生命膜：内言语、语言事件、行动意图、side effect、confirmation、外周壳层执行、观测、行动后审计、真实责任、真实后悔、修复承诺和 future probe 必须形成同一条可回放链。

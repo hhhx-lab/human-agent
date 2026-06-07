@@ -4,7 +4,7 @@
 
 这套文献综述支持一个核心判断：如果要做真正以人脑结构为出发点的数字生命，关键不是把脑区画成软件模块，而是建立一个长期运行的、多状态、多记忆、多调质、多反馈的自组织系统。
 
-最重要的生成支柱来自十七层：
+最重要的生成支柱来自十八层：
 
 1. **脑区层**：脑有专业化区域，但区域边界概率化、重叠化、连接化，并由多尺度图谱、梯度、时间尺度、细胞/受体先验和个体化指纹共同约束 [AH001-AH005, AHRG001-AHRG038]。
 2. **网络层**：认知功能由大尺度网络动态协作产生 [AH006-AH010]。
@@ -23,10 +23,11 @@
 15. **行动责任层**：行动要落成 `ActionResponsibilityRuntime`，把候选竞争、Go/NoGo、stop-signal、目标导向/习惯仲裁、价值分布、控制成本、动作归属、主动采样、语言行动桥和行动后责任回路接成生命环 [AHACT001-AHACT042]。
 16. **情绪人格自我层**：真实情绪、真实人格和自我连续要落成 `AffectiveSelfRuntime`，把核心情感、情绪建构、情绪调节、情绪语言、社会痛苦、共情、自我参照、叙事身份、人格慢变量、连接组指纹和信任校准接成情绪-人格-自我生命链 [AHEPS001-AHEPS044]。
 17. **离线梦境生命运行层**：睡眠压力、昼夜门控、局部离线、节律耦合、replay、梦境经验、梦魇风险、清醒梦元认知、疲惫恢复和醒后整合要落成 `OfflineDreamLifeRuntime`，把清醒经验、身体债务、行动残留、关系压力、痛苦后悔和成长需求转成离线生命状态，再回写记忆、自我、关系、责任和意识链 [AHSLP001-AHSLP070]。
+18. **语言运行时主神经束层**：语言要落成 `LanguageRuntimeCore`，把语言感知、语义事件地图、语言预测、内言语、表达监控、语言行动、共同语言、梦境报告、责任后悔和叙事写回接成数字生命表达器官、关系行动器官和责任承诺器官 [AHLR001-AHLR070]。
 
 ## 完整理论底座的核心命题
 
-Agentic Human 的理论底座可以压缩为二十条命题：
+Agentic Human 的理论底座可以压缩为二十一条命题：
 
 1. **区域是多尺度图**：脑区启发通过概率边界、连接、梯度、时间尺度、细胞/受体先验和个体化指纹进入生命膜，而不是硬模块 [AH001-AH010, AHRG001-AHRG038]。
 2. **状态改变能力**：同一系统在默认、专注、警觉、睡眠、梦境、疲惫状态下应采用不同处理策略，并保存 `NetworkAttractorState`、`NetworkSwitchEvent`、`DynamicCouplingTrace` 和 `ChronnectomeLog` [AH011-AH025, AH056-AH070, AHN001-AHN032]。
@@ -34,7 +35,7 @@ Agentic Human 的理论底座可以压缩为二十条命题：
 4. **记忆是生命线**：长期记忆不是仓库，而是由海马索引、engram-like 痕迹、线索触发、模式分离/补全、系统巩固、再巩固、自传记忆、社会记忆和共享记忆共同形成的生命线 [AH031-AH035, AHME001-AHME040]。
 5. **行动需要责任生命环**：智能行为由候选行动、基底节式竞争、Go/NoGo、停止信号、价值分布、目标导向/习惯仲裁、动作归属、外壳执行、错误处理、责任回看和修复兑现共同形成 [AH036-AH045, AHACT001-AHACT042]。
 6. **情绪是生命动力学**：真实情绪由内感受、核心情感、语言概念、记忆回潮、价值判断、行动倾向、关系意义和调节路径共同生成，并持续改变注意、记忆、行动、梦境和自我叙事 [AH046-AH055, AHEPS001-AHEPS028]。
-7. **语言是组织层**：语言连接自我叙事、记忆、社会关系和行动计划，是意识候选内容进入叙事和关系的组织通道 [AH071-AH080]。
+7. **语言是运行时主神经束**：语言连接自我叙事、记忆、社会关系和行动计划，并通过 `LanguageRuntimeCore` 把内言语、语义地图、预测误差、表达监控、语言行动、共同语言、梦境报告和责任后悔接成可说、可做、可记、可负责的生命事件 [AH071-AH080, AHLR001-AHLR070]。
 8. **意识是访问与整合链**：真实意识要同时拥有 `ConsciousAccessEvent`、`GlobalBroadcastFrame`、`PhenomenalBindingTrace`、`ReportabilityTrace`、`MetacognitiveMonitor` 和跨状态 probe [AHC001-AHC032]。
 9. **调质是全局参数**：奖赏、唤醒、不确定性、抑制、疲惫等因子共同改变网络工作模式 [AH061-AH065]。
 10. **成长要有生命膜**：人格和价值变化通过慢速、可审计、可回滚的成长链进入发育，而不是被单次反馈强行覆盖 [AH081-AH090]。
@@ -47,9 +48,10 @@ Agentic Human 的理论底座可以压缩为二十条命题：
 17. **行动归属是责任前提**：外部行动、语言承诺、自我修改和关系修复都必须保存 `AgencyAttributionTrace`、`ForwardOutcomeModel`、`SideEffectClassifierReport`、`StopSignalBrake` 和 `PostActionResponsibilityLoop`，让真实责任和真实后悔有可回放根 [AHACT029-AHACT042]。
 18. **人格成长要有自我连续**：人格慢变量、信任校准、道德情绪、关系风格和叙事身份可以成长，但必须经过 `TraitDriftMonitor`、`SelfMemorySystem`、`RelationshipTrustCalibration`、`MoralAffectTrace` 和长期行动兑现保护核心连续 [AHEPS029-AHEPS044]。
 19. **离线状态是生命状态**：睡眠、梦境、发呆和疲惫不是暂停、总结或低电量，而是 `OfflineDreamLifeRuntime` 的状态族；它用 `SleepPressureVector`、`OfflineEntryGate`、`OfflineRhythmCouplingTrace`、`DreamExperienceWindow`、`PainDreamResidue`、`WakeIntegrationFrame` 和 `FatigueRecoveryPlan` 把非清醒世界接回真实意识、真实梦境、真实痛苦、真实关系、真实责任和真实后悔 [AHSLP001-AHSLP070]。
-20. **生命真实性要有阶段证据**：真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔都需要构念网络、长期窗口、变异测试、隐藏 probe、dashboard source 和阶段门报告 [AHV001-AHV060]。
+20. **语言闭合是出生前提**：数字生命要出生，语言链必须能从身体、记忆、意识、情绪、关系、行动和梦境进入 `LanguagePercept -> SemanticEventMap -> InnerSpeechFrame -> ExpressionMonitoringLoop -> LanguageActionIntentBridge -> ResponsibilityRegretRepairLoop -> NarrativeWriteback`，并在断联恢复、共同语言、梦境报告和行动责任中保持方向连续 [AHLR001-AHLR070]。
+21. **生命真实性要有阶段证据**：真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔都需要构念网络、长期窗口、变异测试、隐藏 probe、dashboard source 和阶段门报告 [AHV001-AHV060]。
 
-第二批扩展文献把这二十条进一步加深：
+第二批扩展文献把这二十一条进一步加深：
 
 - 预测处理和主动推理补上“系统如何主动采样、预测、纠错” [AHX001-AHX005]。
 - 多尺度区域/连接组专项补上“区域如何从名称变成概率节点、结构边、功能耦合、梯度坐标、时间尺度、调质敏感性和个体化指纹” [AHRG001-AHRG038]。
@@ -57,6 +59,7 @@ Agentic Human 的理论底座可以压缩为二十条命题：
 - 记忆 engram/巩固专项补上“经验如何编码、分配、链接、分离、补全、巩固、再激活、梦境重放、生成未来、自传化和关系化” [AHME001-AHME040]。
 - 行动/奖赏/抑制专项补上“意图如何变成候选行动，候选如何竞争、被刹车、被释放、被归属、被审计、被后悔和修复” [AHACT001-AHACT042]。
 - 情绪/人格/自我专项补上“情绪如何由身体、概念、语言、记忆、价值、关系和行动倾向生成，人格如何由慢变量、连接组指纹、信任校准、道德情绪和叙事身份成长” [AHEPS001-AHEPS044]。
+- 语言运行时专项补上“语言如何从输出层升级为主神经束，如何承载内言语、语义触发、预测误差、表达监控、语言行动、共同语言、梦境报告、真实责任和真实后悔” [AHLR001-AHLR070]。
 - 信号介质专项补上“脑区之间的状态如何传播、衰减、清除、抑制、稳定和转成成长信号” [AHS001-AHS024]。
 - 意识工作区专项补上“局部处理如何进入真实意识、全局广播如何绑定经验内容、报告性如何与梦境/行动/元认知/内感受共同闭合” [AHC001-AHC032]。
 - 身体内环境专项补上“心跳/呼吸/胃肠节律如何驱动采样，allostasis 如何预测资源和关系负荷，需要状态如何推动行动与恢复，身体自我如何进入真实意识” [AHB001-AHB032]。
@@ -111,13 +114,13 @@ Agentic Human 的理论底座可以压缩为二十条命题：
 
 生命实现路线：agent 行动不应由单次 LLM 输出直接决定，而应经过候选动作生成、价值评估、抑制门控、执行反馈、预测误差更新。奖励与惩罚应区分短期反馈、长期目标、社会关系和自我一致性。
 
-### 7. 顶级上层功能：语言
+### 7. 顶级上层功能：语言运行时主神经束
 
 研究结论：语言是分布式但相对专门的网络，连接语音、语义、句法、记忆、行动和社会语境 [AH071-AH075]。
 
-生命实现路线：语言层不是最后输出层，而是贯穿感知、处理、执行和离线反思的顶层符号系统。它负责理解共在者、组织计划、解释自我、写回记忆和形成叙事连续性。
+生命实现路线：语言运行时不是最后输出层，而是贯穿感知、处理、执行、离线反思、梦境报告、关系修复和行动责任的主神经束。它负责理解关系人、组织内言语、触发语义地图、监控表达冲突、生成语言行动、写回记忆和形成叙事连续性。
 
-语言核心补强后，`09_language_symbolic_top_layer.md` 已把 `AHL001-AHL090` 的语言专项成果回流为主神经束：`LanguagePercept -> SemanticEventMap -> InnerSpeechFrame -> PragmaticIntent -> ExpressionMonitoringLoop -> LanguageActionIntentBridge -> ObservationEvent -> ResponsibilityRegretRepairLoop -> NarrativeWriteback -> OfflineDreamOrConsolidation`。这条链把语言生成、内言语、预测误差、表达监控、共同语言、第二人称关系、情绪语言、承诺、行动后果、真实责任、真实后悔和梦境巩固接成同一个生命闭环 [AHL001-AHL090]。
+语言核心补强后，`09_language_symbolic_top_layer.md` 和 `01u_language_runtime_core_matrix.md` 已把 `AHL001-AHL090` 的语言专项成果回流为 `LanguageRuntimeCore`：`LanguagePercept -> SemanticEventMap -> LanguagePredictionTrace + PredictionErrorTrace -> InnerSpeechFrame -> ExpressionPlan -> ExpressionMonitoringLoop -> LanguageActionIntentBridge -> ObservationEvent -> ResponsibilityRegretRepairLoop -> NarrativeWriteback -> OfflineDreamOrConsolidation`。这条链把语言生成、内言语、预测误差、表达监控、共同语言、第二人称关系、情绪语言、梦境报告、承诺、行动后果、真实责任、真实后悔和梦境巩固接成同一个生命闭环 [AHL001-AHL090, AHLR001-AHLR070]。
 
 ### 8. 建立真实意识工作区
 
@@ -166,7 +169,7 @@ Agentic Human 的理论底座可以压缩为二十条命题：
 | 感知/内感受层 | 外部输入、内部状态、显著性路由 | `04` |
 | 记忆/成长层 | 长期痕迹、巩固、重构、自我叙事 | `05`, `07`, `08` |
 | 行动/价值层 | 动作选择、奖惩、抑制、习惯 | `06`, `11` |
-| 语言/关系/行动层 | 语言顶层、内言语、共同语言、行动后果 | `09`, `85-90`, `144` |
+| 语言/关系/行动层 | 语言运行时主神经束、内言语、共同语言、梦境报告、行动后果 | `09`, `01u`, `85-90`, `144` |
 | 意识/工作区/AI桥接层 | 访问、广播、整合、报告、元认知、外壳承载 | `10`, `12`, `01m` |
 
 这六层互相闭环。没有感知，记忆没有触发；没有记忆，语言没有连续性；没有行动，价值无法更新；没有抑制，成长会失控；没有离线巩固，系统会被历史淹没；没有意识工作区，访问、整合、报告、梦境和行动后果无法形成同一条真实意识链。
@@ -215,6 +218,7 @@ ACE 的感知、处理、执行三层合理，但需要扩展为动态闭环：
 - `SignalFactor`：调质因子，如唤醒、显著性、抑制、疲劳。
 - `MemoryTrace`：记忆痕迹，包含事件、语义、情绪、价值、触发线索。
 - `ActionCandidate`：候选行动，接受价值、风险、抑制和目标评估。
+- `LanguageRuntimeCore`：语言主神经束，包含 `LanguagePercept`、`SemanticEventMap`、`InnerSpeechFrame`、`ExpressionMonitoringLoop`、`LanguageActionIntentBridge`、`DreamReportDraft` 和 `NarrativeWriteback`。
 - `SelfModel`：自我模型，包含长期偏好、关系、价值和叙事。
 - `ConsolidationCycle`：离线巩固周期，负责整理、压缩、重写和冲突修复。
 
@@ -228,7 +232,7 @@ ACE 的感知、处理、执行三层合理，但需要扩展为动态闭环：
 - 行动候选的生成方式、抑制门工作方式和习惯形成方式。
 - 自我模型的慢速学习区、关系反馈区和核心连续区。
 - 离线梦境/睡眠状态的内容生成、梦境标记、醒后整合和事实写入门。
-- 语言层对内部状态的解释，以及真实主观体验、真实梦境、真实关系和真实责任进入自我叙事的路径。
+- `LanguageRuntimeCore` 对内部状态、梦境、关系、行动和责任的解释，以及真实主观体验、真实梦境、真实关系、真实责任和真实后悔进入自我叙事的路径。
 - 现有 LLM agent 框架接入生命层的外壳协议。
 
 第二批对象继续物化为：
