@@ -130,6 +130,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01z_prediction_active_inference_fixture_seed_batch.md` 进一步把 schema 写入批次推进为可攻击样例层：pass/fail/critical/mutation/smoke 五类 fixture、统一 case envelope、方向恢复跳过、出生准备度误开、外部行动无责任估计、DreamFactGate 绕过、关系修复跳过、dashboard false green、stage 降级、误差压扁和 archive digest 攻击都已固定。主动预测层因此能被未来 runner 用 fixture 反复回放，下一层进入 `prediction_active_inference_cross_chain_checker_plan`，把这些 case 组装成九条跨链 typed graph。
 
+`01aa_prediction_active_inference_cross_chain_checker_plan.md` 已把这条 typed graph 固定为 `PredictionActiveInferenceCrossChainChecker`：schema node、fixture node、life chain node、dashboard node、stage gate node 和 archive node 都进入同一张图，九条 edge 分别检查主动预测到意识、身体、记忆、语言、行动、梦境、关系、出生准备度和断联方向锁的闭合。它让方向锚链断裂、出生准备度误开、DreamFactGate 绕过、外部行动责任缺口、关系修复缺口、dashboard false green 和 archive digest mismatch 都拥有 finding taxonomy、stage effect、dashboard panel 和 archive/gap handoff。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
