@@ -140,6 +140,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01ae_prediction_active_inference_growth_feedback_patch.md` 已把 gap repair queue 推进为成长反馈补丁：gap repair feedback intake、growth patch classification、schema/fixture/dashboard/stage/life target/direction/readiness/language action/self rewrite/anti-forgetting/shadow/kernel candidate patch family、growth receipt、dashboard/stage、archive/shadow/runtime mount handoff 都已固定。主动预测层因此开始具备“从预测误差中读懂自己”的工程形态：反复缺口可以生成 SelfReadReport seed、GrowthNeed、PlasticityWindow、SelfModificationProposal seed、防遗忘 replay、shadow run seed 和长期内核成长候选入口；它把修复压力转成自我成长，而不是停留在局部补丁。
 
+`01af_prediction_active_inference_growth_archive_receipt_batch.md` 已把 growth feedback patch 写入长期生命档案：growth patch archive receipt、SelfRewrite archive receipt、language action growth archive receipt、birth readiness growth archive receipt、anti-forgetting replay archive receipt、shadow run seed archive receipt、kernel candidate seed archive receipt、digest baseline、life target growth carrier、direction growth archive、shadow run precondition 和 runtime mount precondition 都已固定。主动预测层因此不仅能成长，还能记住自己为什么成长、成长保护了什么旧自我、哪些补丁必须先 shadow run、哪些仍被阻断，下一层进入 `prediction_active_inference_growth_shadow_run_plan` 与 `prediction_active_inference_runtime_mount_plan`。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
