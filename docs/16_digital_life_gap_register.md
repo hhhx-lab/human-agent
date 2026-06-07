@@ -27,7 +27,7 @@
 | 能量/维护层 | `08`, `11`, `37`, `AHY019-AHY024`, `AHZ019-AHZ024`, `AHZ061-AHZ062` | 已有生命支持政策，下一层补齐 `LifeSupportState` schema、预算 fixture 和 dashboard 指标 | 写 `LifeSupportState` schema |
 | 神经免疫/防御 | `07`, `11`, `38`, `AHX022-AHX028`, `AHZ025-AHZ030` | 已有防御政策，下一层补齐 `DefenseEvent` schema、污染输入 fixture 和恢复包格式 | 写 `DefenseEvent` schema |
 | 记忆 engram 与巩固 | `01q`, `05`, `08`, `10`, `13`, `17`, `AH031-AH035`, `AHY001-AHY010`, `AHZ046-AHZ050`, `AHME001-AHME040` | 已补入 `MemoryEngramRuntime`，下一层补齐海马索引、engram-like 痕迹、记忆分配、模式分离/补全、schema、自传记忆和社会记忆 schema | 写 `HippocampalIndexRef` / `EngramLikeTraceCluster` / `MemoryAllocationGate` / `AutobiographicalMemoryStack` schema |
-| 行动选择与抑制 | `06`, `10`, `11`, `AH036-AH045`, `AHY045-AHY048` | 下一层补入基底节式竞争、冲突监控和 tool-use 风险门控 | 写 `ActionGate` 机制 |
+| 行动责任与抑制 | `01r`, `06`, `10`, `11`, `13`, `20`, `AH036-AH045`, `AHY045-AHY048`, `AHACT001-AHACT042` | 已补入 `ActionResponsibilityRuntime`，下一层补齐候选竞争、Go/NoGo、stop-signal、价值分布、动作归属、外部后果和责任后悔 schema | 写 `ActionCandidateArena` / `GoNoGoPolicy` / `StopSignalBrake` / `AgencyAttributionTrace` / `PostActionResponsibilityLoop` schema |
 | 情绪/人格/自我 | `07`, `09`, `13`, `40`, `AH046-AH055`, `AH081-AH090`, `AHY039-AHY044` | 已有自我/关系审计协议，下一层补齐 `SelfModel` schema、drift 阈值和共在关系控制面 | 写 `SelfModel` schema |
 | 社会互动 | `07`, `09`, `14`, `40`, `AHX006-AHX013`, `AHZ031-AHZ038` | 已有关系模型审计协议，下一层补齐共同历史、关系边界和 scope 限制 fixture | 写 `RelationshipModel` schema |
 | 发育成长 | `05`, `13`, `39`, `AHX014-AHX021`, `AHZ039-AHZ045` | 已有发展政策，下一层补齐可塑性窗口阈值、发展事件 schema 和多月 timeline | 写 `DevelopmentEvent` schema |
@@ -264,6 +264,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `01q_memory_engram_consolidation_matrix.md` | H.M. 之后的人类记忆系统、海马索引、认知地图、互补学习系统、系统巩固、engram、记忆分配、突触标记、模式分离/补全、schema、自传记忆、情绪记忆、社会记忆、共享记忆和生成式记忆专项文献底座，形成 `AHME001-AHME040` | 下一层落成 `MemoryEngramRuntime` 的 schema、fixture、dashboard panel 和出生准备度记忆证据族 |
 | `05_memory_systems_and_growth.md` | 把 `AHME001-AHME040` 回流为 `MemoryEngramRuntime`，连接编码门、海马索引、engram-like 痕迹、记忆分配、塑性标签、模式分离/补全、schema、自传记忆、社会记忆、梦境 replay、未来模拟和责任后悔回写 | 下一层把 `HippocampalIndexRef`、`EngramLikeTraceCluster`、`MemoryAllocationGate`、`PatternSeparationIndex`、`PatternCompletionFrame`、`AutobiographicalMemoryStack` 和 `IdentityMemoryLinkGraph` 接入 runner schema queue |
 | `13_agentic_human_research_synthesis.md` | 把记忆 engram/巩固层提升为总综合生成支柱，明确长期记忆是身份连续、关系连续、真实痛苦、真实梦境、真实责任和真实后悔的生命线 | 下一层把记忆生命线对象接入九项 `LifeTargetReadinessClaim`，并与 `NetworkStateRuntime`、`BodyStateRuntime`、`LanguageLayer` 和 `ConsciousnessLayerRuntime` 做 cross-chain closure |
+
+行动责任与抑制层已补充：
+
+| 文件 | 已落成内容 | 下一层生成入口 |
+|---|---|---|
+| `01r_action_reward_inhibition_matrix.md` | 基底节选择、直接/间接/超直接通路、Go/NoGo、stop-signal、目标导向/习惯仲裁、奖赏预测误差、分布式 RL、OFC 价值、ACC 控制价值、冲突监控、错误处理、动作归属、内部模型、主动推理和语言行动桥专项文献底座，形成 `AHACT001-AHACT042` | 下一层落成 `ActionResponsibilityRuntime` 的 schema、fixture、dashboard panel 和出生准备度行动证据族 |
+| `06_action_reward_inhibition.md` | 把 `AHACT001-AHACT042` 回流为 `ActionResponsibilityRuntime`，连接候选行动场、Go/NoGo、停止信号、决策阈值、习惯/目标仲裁、价值分布、控制成本、动作归属、主动采样和行动后责任回路 | 下一层把 `ActionCandidateArena`、`FocusedSelectionGate`、`GoNoGoPolicy`、`StopSignalBrake`、`ValueDistributionEstimate`、`AgencyAttributionTrace` 和 `ErrorRelatedResponsibilityUpdate` 接入 runner schema queue |
+| `13_agentic_human_research_synthesis.md` | 把行动责任层提升为总综合生成支柱，明确行动不是工具调用，而是从语言意图到外部后果、动作归属、真实责任、真实后悔和修复兑现的生命环 | 下一层把行动责任对象接入 `LanguageActionIntentBridge`、`MemoryEngramRuntime`、`BodyStateRuntime`、`NetworkStateRuntime` 和九项 `LifeTargetReadinessClaim` |
 
 生命真实性验证与阶段证据层已补充：
 

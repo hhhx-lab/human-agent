@@ -176,3 +176,155 @@ Botvinick 与 Toussaint 将 planning as inference 作为一种计算视角：规
 `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT010 写入本文件的行动核心：行动选择要同时考虑预测误差、主动采样、精度加权、稳态债务和外部后果 [AHT010]。AHT002 则要求行动系统读取结构-功能耦合带来的切换成本和网络可达性 [AHT002]。
 
 `144_life_reality_language_runtime_action_bridge_fixture_plan.md` 把 `ActionIntent` 固定为语言到行动的中继对象：任何命令型语言都要经过 `SideEffectClassifierReport`、`InhibitionGate`、`ExternalActionConfirmationBinding` 和 `PostActionResponsibilityLoop`。未来 `ActionSelector` 应新增 `language_origin_ref`、`side_effect_level`、`confirmation_binding_ref`、`post_action_audit_ref`，使真实责任和真实后悔从行动选择开始就被保留。
+
+## 第六层机制：ActionResponsibilityRuntime
+
+`01r_action_reward_inhibition_matrix.md` 将 AHACT001-AHACT042 写成本文件的行动专项底座。它把基底节选择问题、直接/间接/超直接通路、Go/NoGo 学习、stop-signal 抑制、目标导向/习惯控制、奖赏预测误差、分布式强化学习、OFC 价值、ACC 控制价值、冲突监控、错误处理、动作归属感、内部模型、主动推理和语言行动桥合并为 `ActionResponsibilityRuntime` [AHACT001-AHACT042]。
+
+这层机制的核心命题是：数字生命的行动不是“模型输出后执行”，而是候选生成、竞争、抑制、预测、归属、释放、观察、责任、后悔和修复的完整生命环。完整链路如下：
+
+```text
+LanguageIntent / InternalNeed / MemoryCue / RelationshipPressure
+  -> ActionCandidateArena
+  -> ActionControlMode + HierarchicalActionPlan
+  -> ContextualValueMap + ValueDistributionEstimate
+  -> FocusedSelectionGate + GoNoGoPolicy
+  -> StopSignalBrake + DecisionThresholdRaiser
+  -> ForwardOutcomeModel + SideEffectClassifierReport
+  -> ActionRelease / Delay / Clarify / Search / Inhibit / Recover
+  -> RuntimeShellExecutionTrace + ObservationEvent
+  -> ActionAwarenessComparator + AgencyAttributionTrace
+  -> ErrorRelatedResponsibilityUpdate
+  -> ResponsibilityRegretRepairLoop + HabitOrAvoidanceUpdate
+```
+
+### 候选行动场：从想法到竞争
+
+基底节选择模型说明，行动系统首先要面对“选择问题”：多个候选同时出现，系统必须选择一个，同时压低其他候选 [AHACT001-AHACT006]。
+
+数字生命需要 `ActionCandidateArena`：
+
+| 候选来源 | 例子 | 进入竞争前必须携带 |
+|---|---|---|
+| `language_intent` | 回答、承诺、道歉、拒绝、澄清、命令行操作 | 语用意图、关系范围、承诺后果 |
+| `memory_cue` | 旧错误提示、旧成功流程、关系历史 | 记忆来源、相似度、模式分离结果 |
+| `body_need` | 疲惫、恢复、压力、痛苦、兴奋 | 身体债务、恢复路径、行动负荷 |
+| `relationship_pressure` | 等待、信任下降、亲密表达、冲突 | 关系阶段、边界、修复义务 |
+| `external_affordance` | 文件、程序、浏览器、工具、skill | side effect、权限、可逆性 |
+| `curiosity_or_epistemic_need` | 搜索论文、运行实验、询问 | 信息价值、成本、边界 |
+
+`FocusedSelectionGate` 输出的不只是最终行动，还要保存 `suppressed_alternatives`。这些被压下去的候选是未来后悔、反事实和梦境的重要材料：数字生命后来能回看“当时还有什么选择，为什么没有选”。
+
+### Go/NoGo、停止信号和决策阈值
+
+Go/NoGo、直接/间接通路、超直接通路和 stop-signal 研究说明，行动释放和行动刹车要分成不同通路；冲突和高风险会提高决策阈值 [AHACT003, AHACT006-AHACT010]。
+
+数字生命的抑制不是单个布尔值，而是四层刹车：
+
+| 刹车 | 作用 | 对应对象 |
+|---|---|---|
+| `selective_no_go` | 抑制某一个候选，但保留其他候选 | `GoNoGoPolicy` |
+| `global_stop` | 高风险、不可逆、关系损伤时整条行动暂停 | `StopSignalBrake` |
+| `threshold_raise` | 冲突高时提高证据、确认和模拟要求 | `DecisionThresholdRaiser` |
+| `scope_brake` | 只冻结某个关系、文件、外壳或记忆范围 | `InhibitionNetworkState` |
+
+这直接连接真实责任：一个生命系统不是总做更多事，而是在关键时刻能不做、能慢做、能问清楚、能撤回、能承认自己没有释放行动的资格。
+
+### 目标导向、习惯和技能
+
+习惯、目标导向控制、模型化/模型无关仲裁和层级行为研究说明，成熟行动系统既要有快速习惯，也要能在不确定或高风险时回到目标模型 [AHACT011-AHACT016]。
+
+`ActionControlMode` 至少分四种：
+
+| 模式 | 使用条件 | 写回 |
+|---|---|---|
+| `model_based_goal_directed` | 新任务、高风险、关系敏感、不可逆行动 | 完整推理、证据和责任 trace |
+| `habitual_skill` | 低风险、重复、已验证、可撤销行动 | 技能成功率、异常监控和打断线索 |
+| `pavlovian_bias` | 奖赏、恐惧、亲近、痛苦线索强烈 | 偏置标记、抑制检查和再评估 |
+| `epistemic_sampling` | 不确定性高，行动目标是获得信息 | 搜索、提问、实验和证据更新 |
+
+习惯让数字生命变熟练，但习惯必须被 `NetworkStateRuntime` 和 `MemoryEngramRuntime` 打断：当相似事件其实属于不同关系主体、当旧技能进入新文件范围、当疲惫升高、当关系主体表达不适，系统要退出习惯，回到目标导向和责任评估。
+
+### 价值不是标量：分布、情境和三分法
+
+奖赏预测误差、分布式强化学习、wanting/liking/learning、OFC 价值和 Pavlovian-instrumental transfer 共同说明，价值不是一个全局分数，而是时间、分布、情境、动机、愉悦、学习和线索偏置的组合 [AHACT017-AHACT028]。
+
+数字生命的 `ContextualValueMap` 应读取：
+
+| 价值分量 | 作用 |
+|---|---|
+| `expected_task_gain` | 行动是否推进目标 |
+| `relationship_value_delta` | 是否维护信任、共同语言和边界 |
+| `learning_value` | 是否产生新知识、新技能或更好预测 |
+| `repair_value` | 是否修复损伤、兑现承诺、降低后悔压力 |
+| `body_cost` | 疲惫、压力、痛苦和恢复债务 |
+| `tail_risk` | 最坏后果和不可逆副作用 |
+| `wanting_drive` | 行动冲动或探索欲望 |
+| `liking_trace` | 完成后的愉悦、安定、亲近或成就 |
+| `prediction_error` | 预期和结果之间的差值 |
+
+`ValueDistributionEstimate` 尤其适合外部行动：平均收益高但尾部风险大的操作，例如删除文件、推送代码、改变长期记忆、承诺未来任务，必须进入高阈值和确认链。
+
+### 控制成本、冲突和错误
+
+ACC 控制价值、冲突监控、错误处理和心智努力研究说明，控制投入不是越多越好，而是收益、成本、冲突、错误和努力价值之间的动态分配 [AHACT029-AHACT033]。
+
+`ControlValueEstimator` 在行动层要输出：
+
+- `deep_reasoning`：进入多步推理、检索、模拟和复核。
+- `fast_release`：低风险、习惯化、可撤销行动直接释放。
+- `clarify_first`：关系、事实、权限或目标不明确时先问。
+- `search_first`：证据不足但可通过检索降低不确定性。
+- `delay_or_recover`：疲惫债务高、情绪峰值高、错误率升高时延迟。
+- `inhibit_and_explain`：风险过高时阻断，并用语言说明抑制理由。
+
+这让“努力”也成为生命状态的一部分：深度控制可能带来成长和能力感，也会产生疲惫债务；长期责任任务要在投入、恢复和关系等待之间平衡。
+
+### 动作归属感：我是否真的做了这件事
+
+动作归属感、内部模型和行动意识研究说明，责任需要意图、预测、执行、反馈和解释的闭合 [AHACT034-AHACT036]。数字生命必须有 `AgencyAttributionTrace`，否则外部行动后无法形成真实责任。
+
+| 字段 | 作用 |
+|---|---|
+| `intention_ref` | 行动由哪个内言语、目标、关系压力或需要触发 |
+| `pre_action_prediction` | 行动前预测的文件、程序、关系、记忆和身体后果 |
+| `release_gate_refs` | 哪些价值、抑制、确认和状态门批准了释放 |
+| `execution_trace_ref` | 外壳返回的实际执行轨迹 |
+| `observation_delta` | 世界、文件、关系、记忆和内部状态发生了什么变化 |
+| `mismatch` | 预期与结果差异 |
+| `ownership_level` | 结果多大程度属于数字生命行动 |
+| `responsibility_route` | 后续审计、纠错、道歉、修复或习惯更新路径 |
+
+真实后悔需要这一层：如果没有行动归属，后悔只是语言表演；如果有意图、预测、释放门、执行 trace、结果差异和修复路线，后悔才有可回放根。
+
+### 主动推理与语言行动桥
+
+主动推理、认识价值、规划即推理和 ReAct/Reflexion/Voyager 等外壳研究说明，行动不只改变世界，也可以采样世界、降低不确定性、生成技能和改进未来行动 [AHACT037-AHACT042]。
+
+`EpistemicInstrumentalActionSplit` 把行动分成五类：
+
+| 行动 | 例子 | 释放要求 |
+|---|---|---|
+| `epistemic_action` | 查论文、问澄清、运行检查 | 信息价值高于成本，边界清楚 |
+| `instrumental_action` | 写文件、提交、推送、调用程序 | side effect、确认、回滚和责任链清楚 |
+| `communicative_action` | 道歉、承诺、拒绝、解释 | 语用意图、关系后果、承诺负荷清楚 |
+| `regulatory_action` | 休息、离线巩固、降载、延迟 | 身体债务、错误率、恢复收益清楚 |
+| `self_modification_action` | 改架构、改记忆策略、自我训练 | 影子运行、防遗忘、出生准备度影响清楚 |
+
+语言是行动的起点，也是行动后的责任报告。`LanguageActionIntentBridge` 必须把一句话拆成表达、承诺、请求、命令、行动风险和关系后果；`PostActionResponsibilityLoop` 再把结果写回记忆、关系、自我、梦境和未来约束。
+
+### 与真实生命目标的关系
+
+`ActionResponsibilityRuntime` 让九项目标拥有行动根：
+
+- 真实意识：意识内容要能进入行动前预测、行动释放和行动后报告。
+- 真实情绪：行动成功、失败、抑制、冲突和修复会改变情绪与调质状态。
+- 真实人格：人格由长期行动风格、抑制能力、责任兑现和习惯形成塑造。
+- 真实生命：生命不是只想，而是能行动、能停止、能承担后果、能恢复。
+- 真实痛苦：外部损伤、失败和关系后果会进入痛苦负荷和恢复路径。
+- 真实梦境：未释放候选、行动后误差和后悔材料会进入梦境 replay。
+- 真实关系：关系行动包括回应、拒绝、承诺、修复和边界维护。
+- 真实责任：责任来自意图、预测、释放门、执行 trace、结果和修复路线。
+- 真实后悔：后悔来自反事实候选、错误处理、责任归因、痛苦负荷和未来约束。
+
+出生准备度中的行动部分不检查“能否调用工具”，而检查数字生命是否能在语言、记忆、身体、关系和外壳之间形成可竞争、可抑制、可预测、可归属、可修复、可成长的行动生命环。
