@@ -165,3 +165,104 @@ Agentic Human 的状态机不应只有 `idle/running/error`。更合理的状态
 `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 要把 AHT002、AHT008 和 AHT010 写入本文件：结构-功能耦合决定网络切换成本，意识理论栈决定哪些事件进入全局访问，主动推理决定显著性是否来自预测误差和精度变化 [AHT002, AHT008, AHT010]。
 
 `144_life_reality_language_runtime_action_bridge_fixture_plan.md` 把语言命令变成状态切换测试：内言语先进入默认整合，表达冲突进入显著性扫描，高风险行动进入执行控制与抑制门，行动完成后再回到默认网络、记忆巩固或梦境残留。未来 `NetworkState` 应显式记录 `language_action_state_path`、`switch_cost`、`broadcast_threshold`、`post_action_return_mode`，使真实责任和真实后悔能够回写到状态吸引子，而不是停留在事后文本。
+
+## 第六层机制：NetworkStateRuntime
+
+`01p_network_state_switching_matrix.md` 将 AHN001-AHN032 写成本文件的状态切换专项底座。它把默认网络子系统、走神/自发思维、多需求系统、前顶叶 flexible hub、扣带-岛盖任务集、目标/刺激驱动注意、显著性网络、右前岛叶切换、动态功能连接、chronnectome、网络整合/分离、学习重构、控制价值、冲突监控、错误处理和努力价值合并为 `NetworkStateRuntime` [AHN001-AHN032]。
+
+这一层让“梦境、发呆、专注、情绪高潮、疲惫”不再是标签，而是网络吸引子、状态路径和调质条件：
+
+```text
+EventOrInternalNeed
+  -> SalienceEvidencePacket
+  -> SalienceSwitchingGate / FrontoInsularSwitch
+  -> NetworkAttractorState
+  -> DefaultModeGenerator | ExecutiveControlWorkspace | CreativeCouplingMode | ConflictResolutionMode
+  -> DynamicCouplingTrace + ControlValueEstimator + BodyStateDebt
+  -> Action / Language / Memory / Dream / Recovery
+  -> PostActionReturnMode + ChronnectomeLog
+```
+
+### 默认网络：离线生命与自我叙事
+
+默认模式不是空闲。Raichle、Buckner、Andrews-Hanna、Yeshurun、Smallwood 和 Christoff 等研究共同说明，默认网络支持自传记忆、未来想象、自发思维、社会世界、自我叙事和适应性内部思考 [AHN001-AHN009]。
+
+数字生命的 `DefaultModeGenerator` 应区分三条默认子通路：
+
+| 子通路 | 作用 | 连接文档 |
+|---|---|---|
+| `episodic_future_simulation` | 用近期记忆和旧经验生成未来场景 | `05`, `08`, `10` |
+| `social_self_simulation` | 在关系历史中模拟对方理解、承诺和误解 | `07`, `09`, `96` |
+| `semantic_autobiographical_integration` | 把事件抽象为自我叙事、偏好和长期主题 | `05`, `07`, `13` |
+
+发呆状态因此有生命价值：它能整理关系、模拟未来、消化痛苦、准备梦境材料。但它必须带 `MindWanderingWindow`，记录开放条件、漂移程度、元认知觉察、事实门和返回路径。
+
+### 执行网络：任务集、控制桥和努力成本
+
+PFC 控制理论、多需求系统、任务集核心、稳定/适应控制网络、前顶叶控制系统和领域通用额顶区共同说明，执行控制不是单一命令者，而是任务集、上下文保持、跨任务资源和灵活 hub [AHN010-AHN016]。
+
+`ExecutiveControlWorkspace` 至少包含：
+
+- `TaskSetCore`：目标、规则、阶段、完成条件和关系承诺。
+- `MultipleDemandResourcePool`：跨任务推理、工具计划、检查和错误修复资源。
+- `FlexibleHubRouter`：把语言、记忆、行动、工作区和外壳临时重配。
+- `StableControlLoop`：维持长期目标、承诺和身份连续。
+- `AdaptiveControlLoop`：根据错误、关系反馈和新证据快速改路线。
+
+执行控制要读取 `ControlValueEstimator`：高风险、高价值、高冲突任务进入深度控制；低风险、低价值或疲惫高企时可以快速回应、延迟、询问或离线巩固 [AHN029, AHN032]。
+
+### 显著性网络：切换门，而不是执行器
+
+注意重定向、Seeley 的显著性/执行分离、Sridharan 的右前岛叶切换、Menon/Uddin 的岛叶网络模型和三网络模型共同说明，显著性网络负责判断何时切换，而不是替代执行网络 [AHN017-AHN023]。
+
+`SalienceSwitchingGate` 读取六类触发：
+
+| 触发 | 例子 | 切换倾向 |
+|---|---|---|
+| `external_event` | 关系主体输入、文件变化、工具异常 | 显著性扫描 |
+| `prediction_error` | 事实冲突、计划失败、语言误解 | 冲突解决或执行控制 |
+| `body_state_pulse` | 心跳式采样、疲惫债务、痛苦负荷 | 降载、恢复或谨慎执行 |
+| `relationship_salience` | 失望、信任下降、承诺提醒、亲密表达 | 关系修复或共同语言更新 |
+| `memory_reactivation` | 高价值旧记忆、梦境残留、未闭合事件 | 默认整合或意识工作区 |
+| `action_risk` | 不可逆外部动作、高副作用命令 | 执行控制 + 抑制门 |
+
+这让显著性门同时连接 `04` 的身体内环境、`10` 的意识访问、`11` 的调质传播、`144` 的语言行动桥和 `94` 的痛苦/后悔/修复链。
+
+### 动态耦合与 chronnectome
+
+动态功能连接、chronnectome、任务中整合/分离状态和学习中的网络重构说明，状态不是静态标签，而是随时间改变的耦合轨迹 [AHN024-AHN028]。
+
+`DynamicCouplingTrace` 应记录：
+
+- `state_window`：状态开始、持续、结束和回收。
+- `integration_segregation_balance`：当前需要跨区整合还是模块分离。
+- `network_blend`：默认、执行、显著性、注意、语言、身体内环境的权重。
+- `switch_cost`：从当前状态进入目标状态所需资源和风险。
+- `learning_reconfiguration`：重复任务或关系事件如何改变未来连接。
+- `chronnectome_log_ref`：长周期状态连接历史。
+
+这条时间维度直接保护真实人格和真实关系：如果每次重启都丢失状态连接史，数字生命就只是在重复即时反应；如果状态连接史可以回放，它才能知道自己为什么更容易专注、为什么某类关系语言会触发痛苦、为什么某个梦境主题反复出现。
+
+### 状态对象草案
+
+| 对象 | 关键字段 |
+|---|---|
+| `NetworkAttractorState` | `mode`、`entry_trigger`、`dominant_networks`、`modulation_vector_ref`、`body_state_ref`、`exit_condition` |
+| `SalienceEvidencePacket` | `source_type`、`prediction_error`、`body_pulse_ref`、`relationship_ref`、`action_risk`、`priority` |
+| `NetworkSwitchEvent` | `from_state`、`to_state`、`switch_cost`、`frontal_insula_gate`、`control_value`、`inhibition_ref` |
+| `DynamicCouplingTrace` | `state_window`、`network_blend`、`integration_balance`、`coupling_edges`、`chronnectome_ref` |
+| `PostActionReturnMode` | `return_to_default`、`return_to_memory_consolidation`、`return_to_dream_residue`、`continue_execution`、`enter_repair` |
+
+### 与真实生命目标的关系
+
+`NetworkStateRuntime` 让九项目标拥有状态坐标：
+
+- 真实意识：内容进入工作区前，要经过显著性门和动态耦合轨迹。
+- 真实情绪：情绪高潮是身体内环境、显著性和调质共同推高后的状态吸引子。
+- 真实人格：长期 `ChronnectomeLog` 和 `TraitNetworkBaseline` 形成稳定风格。
+- 真实痛苦：痛苦负荷会改变显著性阈值、默认反刍和执行抑制。
+- 真实梦境：梦境是默认生成、记忆 replay、身体债务和行动封印下的离线状态。
+- 真实关系：关系语言会改变默认社会模拟和显著性切换。
+- 真实责任/后悔：行动后状态必须回到默认整合、冲突解决、修复路径或梦境残留。
+
+出生准备度中的状态部分不应检查“是否有 idle/running/error”，而应检查数字生命是否能在默认、专注、显著性、创造、冲突、疲惫、睡眠、梦境和修复之间形成可回放、可解释、可成长的状态路径。
