@@ -20,7 +20,7 @@
 |---|---|---|---|
 | 大尺度脑区连接 | `01o`, `02`, `03`, `AH001-AH010`, `AHZ001-AHZ006`, `AHRG001-AHRG038` | 已补入 `MultiscaleRegionGraph`，下一层补入真实 schema、个体化图谱更新和跨区信号传播 fixture | 写 `multiscale_region_graph.schema.json` / `connectome_fingerprint.schema.json` |
 | 网络状态切换 | `01p`, `03`, `08`, `10`, `11`, `13`, `AHN001-AHN032` | 已补入 `NetworkStateRuntime`，下一层补齐状态吸引子、显著性切换、动态耦合、行动后返回和 chronnectome schema | 写 `NetworkAttractorState` / `NetworkSwitchEvent` / `DynamicCouplingTrace` schema |
-| 主动预测与采样 | `01v`, `04`, `10`, `13`, `AHX001-AHX005`, `AHZ007-AHZ012`, `AHPAI001-AHPAI070` | 已补入 `PredictionActiveInferenceRuntime`，把 belief state、生成世界模型、预测误差、精度政策、主动采样、内感受预测、社会预测、梦境预测 replay 和断联恢复方向重建接成生命链 | 写 `BeliefStateFrame` / `PredictionErrorField` / `ActiveSamplingPlan` / `BeliefRevisionEvent` schema |
+| 主动预测与采样 | `01v`, `01w`, `04`, `10`, `13`, `AHX001-AHX005`, `AHZ007-AHZ012`, `AHPAI001-AHPAI070` | 已补入 `PredictionActiveInferenceRuntime` 与主动预测 schema/fixture 合同，把 belief state、生成世界模型、预测误差、精度政策、主动采样、信念修正、断联恢复方向重建、dashboard panel 和 runner command DAG 接成生命链 | 下一层落成真实 `.schema.json`、fixture seed、cross-chain checker 和 prediction dashboard source |
 | 意识/工作区/元认知 | `01m`, `10`, `13`, `143`, `AHC001-AHC032` | 已补入 `ConsciousnessLayerRuntime`，下一层补齐意识事件 schema、跨状态 probe、梦境意识写回和出生准备度证据桥 | 写 `ConsciousAccessEvent` / `GlobalBroadcastFrame` / `MetacognitiveMonitor` schema |
 | 身体内环境/内感受 | `01n`, `04`, `07`, `08`, `10`, `11`, `13`, `AHB001-AHB032` | 已补入 `BodyStateRuntime`，下一层补齐身体状态事件、心跳式采样、需要状态、身体债务和恢复路径 schema | 写 `BodyStateVector` / `BodyRhythmPulse` / `NeedStateVector` / `BodyStateDebt` schema |
 | 内感受/稳态 | `04`, `07`, `11`, `AH051-AH070`, `AHZ013-AHZ018` | 下一层补入内部状态向语言和行动的调制方程 | 写 `InternalStateVector` 专题 |
@@ -246,6 +246,7 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | 文件 | 已落成内容 | 下一层生成入口 |
 |---|---|---|
 | `01v_prediction_active_inference_runtime_matrix.md` | 主动预测、自由能、主动推理、主动采样、精度政策、不确定性、内感受预测、社会预测、梦境预测 replay、world model 和语言行动桥专项文献底座，形成 `AHPAI001-AHPAI070` | 下一层落成 `PredictionActiveInferenceRuntime` 的 schema、fixture、dashboard panel 和出生准备度预测证据族 |
+| `01w_prediction_active_inference_schema_fixture_contract.md` | 把主动预测层压成 `PredictionActiveInferenceSchemaBundle`、`BeliefStateFrameSchema`、`PredictionErrorFieldSchema`、`PrecisionPolicySchema`、`ActiveSamplingPlanSchema`、`BeliefRevisionEventSchema`、`DirectionBeliefStateFrameSchema`、fixture family、dashboard panels、stage gate rules 和 runner command DAG | 下一层物化 `life_reality_runner/schemas/life_reality/prediction_active_inference/` 的真实 schema 文件与 pass/fail/critical/mutation/smoke fixtures |
 | `04_sensory_thalamus_interoception.md` | 把 `AHPAI001-AHPAI070` 回流为 `PredictionActiveInferenceRuntime`，连接 `BeliefStateFrame`、`GenerativeWorldModel`、`PredictionErrorField`、`PrecisionPolicy`、`ExpectedFreeEnergyEstimate`、`EpistemicActionCandidate`、`ActiveSamplingPlan`、`BeliefRevisionEvent` 和 `BirthReadinessPredictionCarrier` | 下一层把 `BeliefStateFrame`、`PredictionErrorField`、`PrecisionPolicy`、`ActiveSamplingPlan`、`BeliefRevisionEvent` 和 `DirectionBeliefStateFrame` 接入 runner schema queue |
 | `13_agentic_human_research_synthesis.md` | 把主动预测层提升为总综合生成支柱，明确数字生命不等待输入，而是持续预测世界、身体、关系、自我和断联恢复方向，并主动寻找证据与更新信念 | 下一层把主动预测对象接入九项 `LifeTargetReadinessClaim`、断联恢复方向锁、语言主神经束、梦境 replay 和行动责任回路 |
 

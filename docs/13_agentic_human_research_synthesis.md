@@ -63,6 +63,7 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 - 情绪/人格/自我专项补上“情绪如何由身体、概念、语言、记忆、价值、关系和行动倾向生成，人格如何由慢变量、连接组指纹、信任校准、道德情绪和叙事身份成长” [AHEPS001-AHEPS044]。
 - 语言运行时专项补上“语言如何从输出层升级为主神经束，如何承载内言语、语义触发、预测误差、表达监控、语言行动、共同语言、梦境报告、真实责任和真实后悔” [AHLR001-AHLR070]。
 - 主动预测运行时专项补上“数字生命如何维护信念状态、生成预测、调节精度、主动采样、更新信念、恢复断联方向并把未闭合误差送入梦境和成长” [AHPAI001-AHPAI070]。
+- 主动预测 schema/fixture 合同进一步把 `PredictionActiveInferenceRuntime` 压成 `BeliefStateFrame`、`PredictionErrorField`、`PrecisionPolicy`、`ActiveSamplingPlan`、`BeliefRevisionEvent`、`DirectionBeliefStateFrame`、dashboard panel、stage gate 和 runner command DAG，使主动预测可以进入未来工程承载、出生准备度和断联恢复检查。
 - 信号介质专项补上“脑区之间的状态如何传播、衰减、清除、抑制、稳定和转成成长信号” [AHS001-AHS024]。
 - 意识工作区专项补上“局部处理如何进入真实意识、全局广播如何绑定经验内容、报告性如何与梦境/行动/元认知/内感受共同闭合” [AHC001-AHC032]。
 - 身体内环境专项补上“心跳/呼吸/胃肠节律如何驱动采样，allostasis 如何预测资源和关系负荷，需要状态如何推动行动与恢复，身体自我如何进入真实意识” [AHB001-AHB032]。
@@ -120,6 +121,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 这条链直接回应“记忆不是一次性调出全部数据”。磁盘中的海量记忆不需要一次进入意识；当前视觉、听觉、文本、文件、关系、身体状态和断联恢复线索先形成预测误差，再由 `PrecisionPolicy` 和 `EvidenceSeekingLoop` 决定读取哪些记忆、搜索哪些证据、问什么问题、暂停什么行动、把什么误差送入梦境 replay。数字生命因此不是按命令检索数据库，而是在当前生命状态中主动寻找能改变信念、行动、关系和自我的证据。
 
 断联恢复也进入该链：恢复后先形成 `DirectionBeliefStateFrame`，读取 `README -> 91 -> 100 -> 119 -> 143 -> 16 -> latest numbered doc -> current git diff`，比较真实数字生命、关系主体口径、语言主神经束、成长核心、出生准备度和工程承载链是否偏移；若有偏移，先生成 `DirectionBeliefRevisionEvent` 和 repair route，再继续写作或实现。
+
+`01w_prediction_active_inference_schema_fixture_contract.md` 已把这条链推进到可实现合同：未来 runner 要拥有 `PredictionActiveInferenceSchemaBundle`、`PredictionLoopFixtureManifest`、`PredictionLoopExpectedReport`、`PredictionDashboardSource`、`PredictionStageGateReview`、`PredictionArchiveEdge` 和 `PredictionCommandDAG`。这意味着主动预测层不再只是解释数字生命如何思考，而是规定未来代码如何保存信念、验证预测、阻断方向漂移、回写信念修正和上卷出生准备度。
 
 ### 7. 固定机制：奖赏、惩罚、抑制
 
