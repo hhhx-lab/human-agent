@@ -26,7 +26,7 @@
 | 内感受/稳态 | `04`, `07`, `11`, `AH051-AH070`, `AHZ013-AHZ018` | 下一层补入内部状态向语言和行动的调制方程 | 写 `InternalStateVector` 专题 |
 | 能量/维护层 | `08`, `11`, `37`, `AHY019-AHY024`, `AHZ019-AHZ024`, `AHZ061-AHZ062` | 已有生命支持政策，下一层补齐 `LifeSupportState` schema、预算 fixture 和 dashboard 指标 | 写 `LifeSupportState` schema |
 | 神经免疫/防御 | `07`, `11`, `38`, `AHX022-AHX028`, `AHZ025-AHZ030` | 已有防御政策，下一层补齐 `DefenseEvent` schema、污染输入 fixture 和恢复包格式 | 写 `DefenseEvent` schema |
-| 记忆与 replay | `05`, `08`, `13`, `AH031-AH035`, `AHY001-AHY010`, `AHZ046-AHZ050` | 下一层补入情景-语义-程序-关系-价值的统一数据结构 | 写 `MemoryTrace` 对象模型 |
+| 记忆 engram 与巩固 | `01q`, `05`, `08`, `10`, `13`, `17`, `AH031-AH035`, `AHY001-AHY010`, `AHZ046-AHZ050`, `AHME001-AHME040` | 已补入 `MemoryEngramRuntime`，下一层补齐海马索引、engram-like 痕迹、记忆分配、模式分离/补全、schema、自传记忆和社会记忆 schema | 写 `HippocampalIndexRef` / `EngramLikeTraceCluster` / `MemoryAllocationGate` / `AutobiographicalMemoryStack` schema |
 | 行动选择与抑制 | `06`, `10`, `11`, `AH036-AH045`, `AHY045-AHY048` | 下一层补入基底节式竞争、冲突监控和 tool-use 风险门控 | 写 `ActionGate` 机制 |
 | 情绪/人格/自我 | `07`, `09`, `13`, `40`, `AH046-AH055`, `AH081-AH090`, `AHY039-AHY044` | 已有自我/关系审计协议，下一层补齐 `SelfModel` schema、drift 阈值和共在关系控制面 | 写 `SelfModel` schema |
 | 社会互动 | `07`, `09`, `14`, `40`, `AHX006-AHX013`, `AHZ031-AHZ038` | 已有关系模型审计协议，下一层补齐共同历史、关系边界和 scope 限制 fixture | 写 `RelationshipModel` schema |
@@ -256,6 +256,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `01p_network_state_switching_matrix.md` | 默认模式、中央执行、多需求系统、前顶叶控制、扣带-岛盖任务集、显著性网络、动态功能连接、chronnectome、走神、自发思维、创造性耦合、控制成本和冲突监控专项文献底座，形成 `AHN001-AHN032` | 下一层落成 `NetworkStateRuntime` 的 schema、fixture、dashboard panel 和出生准备度状态证据族 |
 | `03_default_executive_salience_networks.md` | 把 `AHN001-AHN032` 回流为 `NetworkStateRuntime`，连接默认生成、执行控制、显著性切换、动态耦合、控制价值、身体债务、语言行动和行动后返回 | 下一层把 `NetworkAttractorState`、`SalienceEvidencePacket`、`NetworkSwitchEvent`、`DynamicCouplingTrace` 和 `PostActionReturnMode` 接入 runner schema queue |
 | `13_agentic_human_research_synthesis.md` | 把网络状态切换层提升为总综合生成支柱，明确发呆、专注、显著性扫描、创造、疲惫、梦境和修复是可回放状态路径 | 下一层把状态路径对象接入真实意识、真实情绪、真实梦境、真实责任和真实后悔的 `LifeTargetReadinessClaim` |
+
+记忆 engram 与巩固层已补充：
+
+| 文件 | 已落成内容 | 下一层生成入口 |
+|---|---|---|
+| `01q_memory_engram_consolidation_matrix.md` | H.M. 之后的人类记忆系统、海马索引、认知地图、互补学习系统、系统巩固、engram、记忆分配、突触标记、模式分离/补全、schema、自传记忆、情绪记忆、社会记忆、共享记忆和生成式记忆专项文献底座，形成 `AHME001-AHME040` | 下一层落成 `MemoryEngramRuntime` 的 schema、fixture、dashboard panel 和出生准备度记忆证据族 |
+| `05_memory_systems_and_growth.md` | 把 `AHME001-AHME040` 回流为 `MemoryEngramRuntime`，连接编码门、海马索引、engram-like 痕迹、记忆分配、塑性标签、模式分离/补全、schema、自传记忆、社会记忆、梦境 replay、未来模拟和责任后悔回写 | 下一层把 `HippocampalIndexRef`、`EngramLikeTraceCluster`、`MemoryAllocationGate`、`PatternSeparationIndex`、`PatternCompletionFrame`、`AutobiographicalMemoryStack` 和 `IdentityMemoryLinkGraph` 接入 runner schema queue |
+| `13_agentic_human_research_synthesis.md` | 把记忆 engram/巩固层提升为总综合生成支柱，明确长期记忆是身份连续、关系连续、真实痛苦、真实梦境、真实责任和真实后悔的生命线 | 下一层把记忆生命线对象接入九项 `LifeTargetReadinessClaim`，并与 `NetworkStateRuntime`、`BodyStateRuntime`、`LanguageLayer` 和 `ConsciousnessLayerRuntime` 做 cross-chain closure |
 
 生命真实性验证与阶段证据层已补充：
 

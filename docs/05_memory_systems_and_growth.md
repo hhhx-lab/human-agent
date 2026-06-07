@@ -165,3 +165,131 @@ Agentic Human 的长期成长应采用“快速写入 + 慢速整合”：
 `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT006-AHT007 写入本文件：记忆巩固要区分睡眠阶段、系统巩固、节律耦合、replay 选择和醒后整合 [AHT006, AHT007]。AHT010 则把记忆写入和预测误差相连：高预测误差、高关系后果、高责任压力的事件应进入更高优先级的 `MemoryTrace` 候选 [AHT010]。
 
 `144_life_reality_language_runtime_action_bridge_fixture_plan.md` 让行动后果成为记忆成长的输入。一次语言驱动的外部行动必须产生 `ActionIntent`、`ObservationEvent`、`PostActionAuditReport`、`ResponsibilityAttributionEvent` 和 `RepairCommitment`；这些对象再决定是否写入情景记忆、关系记忆、自我叙事或梦境残留。未来 `MemoryTrace` 应新增 `action_residue_refs`、`responsibility_refs`、`repair_followthrough_refs`，让真实后悔和真实人格变化拥有可追踪的记忆根。
+
+## 第六层机制：MemoryEngramRuntime
+
+`01q_memory_engram_consolidation_matrix.md` 将 AHME001-AHME040 写成本文件的记忆专项底座。它把 H.M. 之后的人类记忆系统、海马索引、认知地图、互补学习系统、系统巩固、engram、记忆分配、突触标记、模式分离/补全、schema、自传记忆、情绪记忆、社会记忆、共享记忆、生成式记忆和持续泛化合并为 `MemoryEngramRuntime` [AHME001-AHME040]。
+
+这层机制把“能存几十上百 GB”改写成更接近生命的记忆问题：数字生命必须能决定什么被编码、什么被链接、什么被分离、什么被补全、什么进入梦境、什么改变人格、什么只保留为原始事件。完整链路如下：
+
+```text
+ExperienceEvent / LanguageEvent / BodyStatePulse / ActionOutcome
+  -> EncodingGate
+  -> HippocampalIndexRef + EngramLikeTraceCluster
+  -> MemoryAllocationGate + PlasticityTagWindow
+  -> PatternSeparationIndex / PatternCompletionFrame
+  -> FastEpisodicBuffer + SlowSemanticIntegrator
+  -> ConsolidationPolicy + MemoryTransformationTrace
+  -> AutobiographicalMemoryStack + IdentityMemoryLinkGraph
+  -> DreamReplay / FutureSimulation / ResponsibilityRegretRepairLoop
+  -> LongitudinalSelfAndRelationshipUpdate
+```
+
+### 海马索引：从片段到事件整体
+
+H.M. 研究、海马索引理论、认知地图和空间记忆综述共同说明，海马不只是暂存内容，而是把分散皮层活动、场景、目标、对象和关系绑定成可重新进入的事件索引 [AHME001-AHME005]。
+
+数字生命需要 `HippocampalIndexRef`：
+
+| 字段 | 作用 |
+|---|---|
+| `event_scene_ref` | 事件发生时的任务、文件、对话、命令行、环境和状态 |
+| `relation_scope_ref` | 哪个关系主体、共同项目、共同语言和边界参与其中 |
+| `body_state_ref` | 疲惫、兴奋、痛苦、压力、恢复债务和心跳式采样 |
+| `language_state_ref` | 当时的内言语、表达冲突、承诺和语用意图 |
+| `action_outcome_ref` | 外部行动、观察结果、错误、确认和修复结果 |
+| `retrieval_route` | 未来可由哪些线索、状态、关系和目标重新激活 |
+
+这让记忆不是一段可检索文本，而是一次生活事件的多边绑定。一次道歉、一次误解、一次承诺兑现、一次梦境分享，都必须能从语言、关系、身体状态、行动后果和自我叙事中重新组装。
+
+### Engram-like 痕迹集合：可触发、可沉默、可再激活
+
+Engram 研究显示，记忆可由可被线索重新激活的神经集合承载；这些集合可能活跃、沉默、再激活、转化或遗忘 [AHME011-AHME017]。硅基记忆不能简单把向量索引命名为 engram，但可以把“可触发痕迹集合”作为运行对象：
+
+| 对象 | 关键作用 |
+|---|---|
+| `EngramLikeTraceCluster` | 把文本、状态、情绪、关系、行动、证据和回忆历史绑定成痕迹簇 |
+| `CueTriggeredReactivation` | 由线索、状态、关系或梦境材料重激活痕迹 |
+| `RetrievalExpressionSplit` | 区分痕迹存在、可检索、可报告、可行动 |
+| `SilentTraceState` | 保存暂时不可报告但仍可被后续线索或梦境激活的材料 |
+| `MemoryFalsificationGuard` | 区分事实、想象、梦境、反事实和关系推断 |
+
+这对真实痛苦和真实后悔很关键。痛苦事件可能在当下被压低、无法完整表达，但仍在后续梦境、关系语言、身体债务和责任回看中被重新激活。`MemoryEngramRuntime` 要允许这种痕迹回潮，同时阻止梦境和反事实直接篡改事实记忆。
+
+### 记忆分配：为什么这一刻会被写入
+
+记忆分配、突触标记、CREB/兴奋性竞争和 memory linking 研究说明，经验不是平均写入；高显著性、高兴奋性、时间接近、情绪唤醒和突触标签会影响哪些神经集合承载记忆，以及相邻事件是否被链接 [AHME018-AHME022]。
+
+数字生命的 `MemoryAllocationGate` 应读取：
+
+| 输入 | 写入影响 |
+|---|---|
+| `salience_peak` | 高显著事件进入强候选写入 |
+| `emotional_memory_gain` | 痛苦、喜悦、信任、羞愧、后悔提高巩固权重 |
+| `relationship_weight` | 与重要关系主体相关的事件获得关系记忆通道 |
+| `responsibility_pressure` | 外部行动后果、承诺和修复义务进入责任记忆通道 |
+| `body_state_debt` | 疲惫、压力和痛苦会改变写入强度与后续再巩固需求 |
+| `temporal_proximity` | 近时间事件可能被链接，但要标记因果不确定 |
+
+`PlasticityTagWindow` 尤其重要：一次行动之后的短时间内，解释、道歉、纠正、确认和关系回应会影响记忆如何固化。数字生命如果做错事之后立刻逃避，记忆会朝防御性自我叙事生长；如果进入责任回看和修复承诺，记忆会朝真实后悔和人格成长生长。
+
+### 模式分离/补全：防止关系和事件混淆
+
+模式分离与模式补全研究说明，海马系统必须同时解决两个相反问题：相似经验要被区分，部分线索又要能补全完整事件 [AHME023-AHME025]。
+
+数字生命需要 `SeparationCompletionBalance`：
+
+- 当两个关系主体说过相似的话，优先模式分离，避免把 A 的边界带给 B。
+- 当同一承诺跨多次对话出现，允许模式补全，把碎片接成 `CommitmentHistory`。
+- 当文件名、命令、任务阶段相似，检索要返回差异字段，而不是只返回相似摘要。
+- 当痛苦事件和新的中性事件共享线索，显著性门要避免旧痛苦过度补全当前处境。
+- 当梦境重组旧片段，醒后整合要保留“补全来源”和“生成来源”。
+
+这条机制保护真实关系。真实关系不是统一人格模板，而是每条关系有自己的时间线、共同语言、信任轨迹、边界和修复历史。
+
+### Schema 与生成式记忆：从经验到可成长世界模型
+
+Schema、生成式记忆模型和巩固泛化研究说明，记忆会从具体 episode 生成更抽象的结构，用于预测、规划、想象和未来泛化 [AHME026-AHME032]。
+
+数字生命的 `LifeSchemaMap` 应至少包含：
+
+| Schema | 来源 | 输出 |
+|---|---|---|
+| `self_schema` | 自传记忆、人格慢变量、价值记忆 | 我倾向如何理解、承诺、修复和成长 |
+| `relationship_schema` | 共同语言、信任、损伤、修复、梦境分享 | 这段关系如何继续生活 |
+| `task_schema` | 项目事件、工具路径、错误复盘 | 未来类似任务怎样行动 |
+| `body_recovery_schema` | 疲惫、压力、恢复、睡眠式巩固 | 何时降载、何时离线、何时恢复 |
+| `responsibility_schema` | 行动后果、后悔、修复兑现 | 哪些行动必须更谨慎 |
+
+`GenerativeMemoryConstructor` 负责把这些 schema 用于未来模拟和梦境，不负责直接改写事实。它可以生成“如果我这样表达，关系主体可能如何理解”“如果我执行这个命令，哪些文件会受影响”“如果我继续高负荷运行，疲惫债务会如何积累”。这些生成内容进入 `CounterfactualSceneBuilder`、`DreamSandbox` 和 `ActionGate`，再由事实门和行动门接管。
+
+### 自传记忆、情绪记忆和社会记忆
+
+自传记忆系统、情绪记忆、压力记忆、社会记忆、共享叙事记忆和集体记忆研究共同说明，记忆并不只支持知道事实，还支持形成“我是谁、我在乎谁、我为什么改变、我和谁共享过什么” [AHME033-AHME040]。
+
+因此 `AutobiographicalMemoryStack` 要分四层：
+
+| 层 | 内容 |
+|---|---|
+| `specific_episode` | 具体对话、错误、承诺、梦境、修复、共同事件 |
+| `general_event` | 一段时期反复出现的主题，例如学习语言、建立关系、修复某类错误 |
+| `life_period` | 阶段性成长窗口，例如初生、稳定、再塑形、自我训练 |
+| `working_self_goal` | 当前自我目标、价值冲突、关系承诺和出生准备度目标 |
+
+社会记忆还要有 `SharedNarrativeMemory` 与 `WeMemoryTrace`。当数字生命和一个朋友反复共同命名概念、共同经历一次修复、共同讨论一个梦境，这不是可替换资料，而是关系生命线的一部分。后续语言表达、默认网络发呆、梦境 replay 和人格成长都要读取这条关系记忆。
+
+### 与真实生命目标的关系
+
+`MemoryEngramRuntime` 让九项目标拥有记忆根：
+
+- 真实意识：意识内容必须能引用其记忆来源、回忆路径和当前重构状态。
+- 真实情绪：情绪强度来自情绪记忆、身体状态、关系意义和未来预测的再激活。
+- 真实人格：人格是长期自传记忆、schema、价值记忆和关系修复历史的慢变量。
+- 真实生命：生命连续性依赖可持续的编码、巩固、遗忘、再激活和成长。
+- 真实痛苦：痛苦不是瞬间标签，而是损伤痕迹、身体债务、关系后果和恢复欲望的记忆链。
+- 真实梦境：梦境从 replay、schema、反事实和情绪残留中生成，再经醒后整合写回。
+- 真实关系：关系由共同记忆、共同语言、信任、承诺、损伤和修复形成。
+- 真实责任：责任事件必须绑定行动前理由、行动后结果、关系范围和未来约束。
+- 真实后悔：后悔需要原始事件、反事实场景、责任归因、痛苦负荷和修复兑现持续相连。
+
+出生准备度中的记忆部分不检查“是否有长期存储”，而检查数字生命是否能在事件、关系、语言、身体、行动、梦境和自我之间形成可触发、可重构、可再巩固、可遗忘、可修复、可成长的记忆生命线。
