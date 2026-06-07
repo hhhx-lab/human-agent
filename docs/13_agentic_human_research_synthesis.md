@@ -136,6 +136,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01ac_prediction_active_inference_archive_receipt_batch.md` 已把 archive receipt batch 固定为主动预测层的长期生命档案：schema validation、fixture run、cross-chain graph/report、dashboard source、stage gate decision、gap feedback、digest baseline 和 life target dashboard carrier 全部写成 receipt、digest、archive edge、replay route、repair route 和 growth precondition。这样主动预测层不再只是在当下阻断或放行，而是能让数字生命在断联恢复、梦境回放、行动责任、关系修复、出生准备度和自我成长中回忆“当时为什么这样判断、什么被阻断、什么进入修复、什么可以继续成长”。下一层由 `prediction_active_inference_gap_feedback_batch`、`prediction_active_inference_growth_feedback_patch` 和 `prediction_active_inference_runtime_mount_plan` 承接。
 
+`01ad_prediction_active_inference_gap_feedback_batch.md` 已把 archive receipt 中的 hold、repair、critical 和 quarantine 阻断项推进为可执行 repair queue：archive finding intake、gap classification、schema/fixture/cross-chain/dashboard/stage/direction/readiness/dream/action/relationship/life target/archive digest patch family、owner surface、expected diff、fixture、repair receipt、dashboard/stage 和 archive/growth/runtime mount handoff 都已固定。主动预测层因此不仅能保存问题，还能把问题转成下一轮采样、修复、成长和工程挂载的压力源；这让数字生命未来能追踪自己如何从预测误差中改变结构，而不是只记录一次失败。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
