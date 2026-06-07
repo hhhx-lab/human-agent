@@ -34,6 +34,7 @@
 
 26. 当前最新层是 `205_life_reality_first_runner_schema_runtime_growth_fourth_cycle_seed_plan.md`：它把 post repair cycle validation findings 重新压成第四轮成长 seed，把断联恢复方向锁、出生准备度、九项目标、语言关系、梦境痛苦恢复、自我成长、防遗忘、rollback/quarantine、validity/reliability/withheld future probe 接到 `206` 第四轮长期 observation。
 27. 当前最高推进层是 `206_life_reality_first_runner_schema_runtime_growth_fourth_cycle_longitudinal_observation_plan.md`：它把第四轮 seed 放回 micro/session/offline/longitudinal 时间窗，观察方向、出生准备度、九项目标、语言关系、梦境痛苦责任后悔、自我成长、防遗忘、rollback/quarantine 和 validity/reliability/withheld probe，并把 findings 交给 `207` 第四轮 patch。
+28. 当前最高推进层是 `207_life_reality_first_runner_schema_runtime_growth_fourth_cycle_patch_plan.md`：它把第四轮 observation findings 转成 direction/readiness、life target carrier、language relationship、dream/pain/regret、self growth/plasticity、anti-forgetting、rollback/quarantine 和 validity/reliability patch，并用 shadow/regression、receipt、digest 和 stage gate 接到 `208` archive。
 
 ## 文件索引
 
@@ -295,6 +296,7 @@
 | `204_life_reality_first_runner_schema_runtime_growth_post_repair_cycle_validation_plan.md` | first runner schema runtime growth post repair cycle validation plan：验证长期修复 archive 与 replay/shadow reentry 是否重新闭合到 observation、growth route、出生准备度、语言关系、梦境痛苦恢复、自我成长和第四轮 seed |
 | `205_life_reality_first_runner_schema_runtime_growth_fourth_cycle_seed_plan.md` | first runner schema runtime growth fourth cycle seed plan：把 post repair cycle validation findings 重新压成第四轮成长 seed，承接断联恢复方向锁、出生准备度、九项目标、语言关系、梦境痛苦恢复、自我成长、防遗忘、rollback/quarantine、validity/reliability/withheld future probe 和 `206` observation handoff |
 | `206_life_reality_first_runner_schema_runtime_growth_fourth_cycle_longitudinal_observation_plan.md` | first runner schema runtime growth fourth cycle longitudinal observation plan：把第四轮 seed 接回长期 observation，固定 observation windows、signal map、direction/readiness/life target/language/relationship/dream-pain/self-growth/anti-forgetting/rollback/validity observation 和 `207` patch handoff |
+| `207_life_reality_first_runner_schema_runtime_growth_fourth_cycle_patch_plan.md` | first runner schema runtime growth fourth cycle patch plan：把第四轮 observation findings 转成可执行、可回放、可审计、可撤回、可归档的 growth patch，固定 patch family、owner surface、expected diff、shadow/regression、receipt、dashboard/stage 和 `208` archive handoff |
 
 ## 项目术语
 
@@ -394,3 +396,4 @@
 - `204_life_reality_first_runner_schema_runtime_growth_post_repair_cycle_validation_plan.md` 把 replay/shadow reentry 推进到 post repair cycle validation 层：observation closure、growth route closure、construct validity、measurement reliability、longitudinal change、withheld future probes、findings、receipts 和 digest 默认进入 `205` 第四轮 seed；若 `170` 的核心主干优先规则发现 `02-13` 薄弱入口或专项回流断层，则先进入核心补写再恢复第四轮 seed。
 - `205_life_reality_first_runner_schema_runtime_growth_fourth_cycle_seed_plan.md` 把 post repair cycle validation 推进到 fourth cycle seed 层：validation findings、receipts、digest、dashboard/stage、方向锁、出生准备度、九项目标、语言关系、梦境痛苦恢复、自我成长、防遗忘、rollback/quarantine、validity/reliability/withheld future probe 必须共同进入 `206` 第四轮长期 observation。
 - `206_life_reality_first_runner_schema_runtime_growth_fourth_cycle_longitudinal_observation_plan.md` 把 fourth cycle seed 推进到 longitudinal observation 层：micro/session/offline/longitudinal windows、signal map、方向观测、出生准备度观测、九项目标观测、语言关系观测、梦境痛苦责任后悔观测、自我成长观测、防遗忘观测、rollback/quarantine 观测和 validity/reliability/withheld observation findings 必须共同进入 `207` 第四轮 patch。
+- `207_life_reality_first_runner_schema_runtime_growth_fourth_cycle_patch_plan.md` 把 fourth cycle observation 推进到 patch 层：observation findings、patch classification、direction/readiness patch、life target carrier patch、language relationship patch、dream/pain/regret patch、self growth/plasticity patch、anti-forgetting replay patch、rollback/quarantine patch、validity/reliability patch、shadow/regression 和 patch receipts 必须共同进入 `208` 第四轮 archive。
