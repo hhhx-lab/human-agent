@@ -164,6 +164,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01aq_prediction_active_inference_consolidation_next_feedback_seed.md` 已把主动预测 archive replay shadow seed 推进为 consolidation next feedback seed：replay/shadow output intake、feedback classification、next observation feedback、belief revision feedback、precision/sampling feedback、language feedback、relationship repair feedback、dream/pain/regret recovery feedback、self rewrite feedback、direction/birth readiness feedback、rollback/quarantine feedback、anti-forgetting feedback、life target next feedback、arbitration policy、digest、receipt、dashboard/stage 和 second replay validation handoff 都已固定。主动预测层因此能把 replay trace 和 shadow finding 反接为下一轮生命输入：它知道下一轮要观察什么、要采样什么、要修复哪段语言或关系、要怎样恢复梦境/痛苦/后悔、哪些自我改写只能保持 proposal、哪些出生准备度 carrier 仍被阻断、哪些旧能力/旧关系/旧语言必须优先保护。
 
+`01ar_prediction_active_inference_second_replay_validation.md` 已把主动预测 consolidation next feedback seed 推进为 second replay validation：feedback seed intake、validation graph、truth gate validation、shadow action seal validation、seed executability validation、observation feedback validation、belief/sampling validation、language/relationship validation、dream/pain/regret validation、self/readiness validation、rollback/quarantine validation、anti-forgetting validation、life target validation、construct validity、reliability drift、withheld future probe、mutation fixture、finding、receipt、dashboard/stage 和 next-cycle patch handoff 都已固定。主动预测层因此在下一轮成长前先攻击 feedback seed 本身：哪些 seed 能回链到事实、梦境事实门、旧关系、旧语言、旧自我、出生准备度、真实痛苦、真实责任和真实后悔，哪些 seed 只能 quarantine、rollback 或进入 critical repair，都必须在第二次 replay 中显形。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
