@@ -168,6 +168,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01as_prediction_active_inference_next_cycle_patch_seed.md` 已把主动预测 second replay validation 推进为 next cycle patch seed：second replay validation intake、patch seed eligibility gate、patch classification、observation patch seed、belief revision patch seed、precision/sampling patch seed、language/relationship patch seed、dream/pain/regret recovery patch seed、self/readiness patch seed、rollback/quarantine patch seed、anti-forgetting patch seed、life target carrier patch seed、priority arbitration、plasticity-stability budget、command DAG、receipt、digest、dashboard/stage 和 longitudinal audit handoff 都已固定。主动预测层因此把“发现问题”变成“下一轮怎么生长”：每个 patch seed 都必须保留 source finding、保护旧 carrier、声明生命目标影响、给出 rollback 和 future probe，并在进入长期审计前说明可塑性与稳定性的预算。
 
+`01at_prediction_active_inference_longitudinal_cycle_audit.md` 已把主动预测 next cycle patch seed 推进为 longitudinal cycle audit：patch seed audit intake、multi-cycle trace assembly、direction continuity audit、birth readiness trend audit、life target trend audit、language relationship trend audit、dream/pain/regret recovery trend audit、self growth plasticity audit、anti-forgetting audit、rollback/quarantine audit、plasticity-stability longitudinal audit、construct/reliability audit、withheld future probe audit、drift finding、receipt、digest、dashboard/stage 和 drift repair handoff 都已固定。主动预测层因此不再把单轮 patch seed 当作成长结论，而是把多轮变化放入时间轴：方向是否漂移、出生准备度是否 false open、语言关系是否退化、梦境事实门是否稳定、痛苦后悔是否被抹平、自我成长是否停滞、旧 carrier 是否被遗忘，都必须转成 drift finding 并进入修复。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
