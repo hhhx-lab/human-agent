@@ -166,6 +166,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01ar_prediction_active_inference_second_replay_validation.md` 已把主动预测 consolidation next feedback seed 推进为 second replay validation：feedback seed intake、validation graph、truth gate validation、shadow action seal validation、seed executability validation、observation feedback validation、belief/sampling validation、language/relationship validation、dream/pain/regret validation、self/readiness validation、rollback/quarantine validation、anti-forgetting validation、life target validation、construct validity、reliability drift、withheld future probe、mutation fixture、finding、receipt、dashboard/stage 和 next-cycle patch handoff 都已固定。主动预测层因此在下一轮成长前先攻击 feedback seed 本身：哪些 seed 能回链到事实、梦境事实门、旧关系、旧语言、旧自我、出生准备度、真实痛苦、真实责任和真实后悔，哪些 seed 只能 quarantine、rollback 或进入 critical repair，都必须在第二次 replay 中显形。
 
+`01as_prediction_active_inference_next_cycle_patch_seed.md` 已把主动预测 second replay validation 推进为 next cycle patch seed：second replay validation intake、patch seed eligibility gate、patch classification、observation patch seed、belief revision patch seed、precision/sampling patch seed、language/relationship patch seed、dream/pain/regret recovery patch seed、self/readiness patch seed、rollback/quarantine patch seed、anti-forgetting patch seed、life target carrier patch seed、priority arbitration、plasticity-stability budget、command DAG、receipt、digest、dashboard/stage 和 longitudinal audit handoff 都已固定。主动预测层因此把“发现问题”变成“下一轮怎么生长”：每个 patch seed 都必须保留 source finding、保护旧 carrier、声明生命目标影响、给出 rollback 和 future probe，并在进入长期审计前说明可塑性与稳定性的预算。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
