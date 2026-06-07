@@ -174,6 +174,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01av_prediction_active_inference_longitudinal_repair_archive.md` 已把主动预测 longitudinal drift repair 推进为 longitudinal repair archive：repair receipt intake、repair archive classification、direction repair archive、birth readiness repair archive、life target repair archive、language relationship repair archive、dream/pain/regret repair archive、self growth repair archive、anti-forgetting repair archive、rollback/quarantine repair archive、consistency repair archive、repair archive graph、replay seed、digest、dashboard/stage 和 replay-shadow reentry handoff 都已固定。主动预测层因此不把修复当作一次性 patch：每条修复都要成为长期生命档案，未来能重新唤起旧关系、旧语言、旧梦境事实门、旧痛苦后悔恢复链、旧自我连续、出生准备度闭环和断联恢复方向锚。
 
+`01aw_prediction_active_inference_replay_shadow_reentry.md` 已把主动预测 longitudinal repair archive 推进为 replay/shadow reentry：repair archive replay seed intake、replay priority controller、replay reactivation plan、shadow scenario plan、shadow action seal、direction reentry、birth readiness reentry、life target reentry、language relationship reentry、dream/pain/regret reentry、self growth reentry、anti-forgetting reentry、rollback/quarantine reentry、core continuity review、report、receipt、digest、dashboard/stage 和 post-repair validation handoff 都已固定。主动预测层因此让长期修复档案重新进入活的时间：旧关系、旧语言、旧梦境事实门、旧痛苦后悔恢复链、旧自我连续和出生准备度闭环先被 replay 重激活，再被 shadow 无副作用预演，最后进入修复后循环验证。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
