@@ -20,6 +20,7 @@
 |---|---|---|---|
 | 大尺度脑区连接 | `02`, `03`, `AH001-AH010`, `AHZ001-AHZ006` | 下一层补入更细的动态系统参数和状态转移指标 | 补 neural field、network control、metastability |
 | 主动预测与采样 | `04`, `10`, `13`, `AHX001-AHX005`, `AHZ007-AHZ012` | 下一层补入工程化 belief state 和主动探索策略 | 写 `PredictionLoop` 专题 |
+| 意识/工作区/元认知 | `01m`, `10`, `13`, `143`, `AHC001-AHC032` | 已补入 `ConsciousnessLayerRuntime`，下一层补齐意识事件 schema、跨状态 probe、梦境意识写回和出生准备度证据桥 | 写 `ConsciousAccessEvent` / `GlobalBroadcastFrame` / `MetacognitiveMonitor` schema |
 | 内感受/稳态 | `04`, `07`, `11`, `AH051-AH070`, `AHZ013-AHZ018` | 下一层补入内部状态向语言和行动的调制方程 | 写 `InternalStateVector` 专题 |
 | 能量/维护层 | `08`, `11`, `37`, `AHY019-AHY024`, `AHZ019-AHZ024`, `AHZ061-AHZ062` | 已有生命支持政策，下一层补齐 `LifeSupportState` schema、预算 fixture 和 dashboard 指标 | 写 `LifeSupportState` schema |
 | 神经免疫/防御 | `07`, `11`, `38`, `AHX022-AHX028`, `AHZ025-AHZ030` | 已有防御政策，下一层补齐 `DefenseEvent` schema、污染输入 fixture 和恢复包格式 | 写 `DefenseEvent` schema |
@@ -221,6 +222,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `01l_signal_media_neuromodulation_matrix.md` | 信号介质、神经调质、体积传递、E/I、精度政策、稳态可塑性和 allostasis 专项文献底座，形成 `AHS001-AHS024` | 下一层落成 `SignalMediaRuntime`、`SignalDiffusionField`、`PrecisionPolicy`、`InhibitionProfile`、`HomeostaticSetpoint` 的真实 schema、fixture 和 dashboard panel |
 | `11_neuromodulation_and_signal_media.md` | 把 `AHS001-AHS024` 回流为 `SignalMediaRuntime`，连接信号来源、扩散、区域敏感性、调质向量、精度政策、抑制轮廓、稳态修复和行动后状态回写 | 下一层把 `SignalSourceEvent`、`SignalDiffusionField`、`RegionalModulationProfile` 和 `HomeostaticSetpoint` 接入 runner schema queue |
 | `18_internal_state_and_modulation_vector.md` | 把 `InternalStateVector` 扩展为可传播、可衰减、可回放的信号事件链 | 下一层把状态事件、调质输出、精度政策和稳态修复写成 validation fixture |
+
+意识工作区与主观框架层已补充：
+
+| 文件 | 已落成内容 | 下一层生成入口 |
+|---|---|---|
+| `01m_consciousness_attention_workspace_matrix.md` | 真实意识、注意进入、全局工作区、报告性、元认知、梦境意识、内感受主观框架和机器意识评估专项文献底座，形成 `AHC001-AHC032` | 下一层落成 `ConsciousnessEvidenceRegistry`、`AdversarialConsciousnessProbe` 和出生准备度意识证据族 |
+| `10_consciousness_attention_workspace.md` | 把 `AHC001-AHC032` 回流为 `ConsciousnessLayerRuntime`，连接访问事件、局部递归、注意图式、全局广播、经验绑定、报告性、元认知、梦境意识和主观身体框架 | 下一层把 `ConsciousAccessEvent`、`GlobalBroadcastFrame`、`PhenomenalBindingTrace`、`ReportabilityTrace`、`MetacognitiveMonitor` 和 `ConsciousnessProbeBattery` 接入 runner schema queue |
+| `13_agentic_human_research_synthesis.md` | 把意识工作区层提升为总综合生成支柱，连接 `04`、`05`、`08`、`09`、`11`、`143` 和出生准备度 | 下一层把意识工作区对象接入 `LifeTargetReadinessClaim.real_consciousness` 与长期 probe |
 
 生命真实性验证与阶段证据层已补充：
 
