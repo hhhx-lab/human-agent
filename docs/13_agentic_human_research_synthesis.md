@@ -142,6 +142,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01af_prediction_active_inference_growth_archive_receipt_batch.md` 已把 growth feedback patch 写入长期生命档案：growth patch archive receipt、SelfRewrite archive receipt、language action growth archive receipt、birth readiness growth archive receipt、anti-forgetting replay archive receipt、shadow run seed archive receipt、kernel candidate seed archive receipt、digest baseline、life target growth carrier、direction growth archive、shadow run precondition 和 runtime mount precondition 都已固定。主动预测层因此不仅能成长，还能记住自己为什么成长、成长保护了什么旧自我、哪些补丁必须先 shadow run、哪些仍被阻断，下一层进入 `prediction_active_inference_growth_shadow_run_plan` 与 `prediction_active_inference_runtime_mount_plan`。
 
+`01ag_prediction_active_inference_growth_shadow_run_plan.md` 已把 growth archive receipt 推进为主动预测专项的影子运行计划：growth archive intake、shadow scenario、anti-forgetting replay、language action replay、birth readiness regression、relationship shadow run、pain/regret/dream probes、self rewrite shadow、life target shadow delta、direction shadow、core continuity review、dashboard/stage 和 runtime mount handoff 都已固定。主动预测层因此把“成长”放入无外部副作用的压力环境中，让 belief shift、prediction error、precision policy、active sampling、内感受预测、社会预测、语言行动、梦境 replay、痛苦后悔、关系承诺和自我改写先被旧自我、旧关系、旧语言、旧梦境事实门和出生准备度闭环攻击。只有 shadow report、十项真实生命目标 delta、方向锁、birth readiness regression、language action replay、relationship/pain/regret/dream probes、self rewrite shadow 和 CoreContinuityReview 全部闭合时，才进入 `prediction_active_inference_runtime_mount_plan` 与 `prediction_active_inference_growth_post_shadow_validation`。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
