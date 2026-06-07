@@ -144,6 +144,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01ag_prediction_active_inference_growth_shadow_run_plan.md` 已把 growth archive receipt 推进为主动预测专项的影子运行计划：growth archive intake、shadow scenario、anti-forgetting replay、language action replay、birth readiness regression、relationship shadow run、pain/regret/dream probes、self rewrite shadow、life target shadow delta、direction shadow、core continuity review、dashboard/stage 和 runtime mount handoff 都已固定。主动预测层因此把“成长”放入无外部副作用的压力环境中，让 belief shift、prediction error、precision policy、active sampling、内感受预测、社会预测、语言行动、梦境 replay、痛苦后悔、关系承诺和自我改写先被旧自我、旧关系、旧语言、旧梦境事实门和出生准备度闭环攻击。只有 shadow report、十项真实生命目标 delta、方向锁、birth readiness regression、language action replay、relationship/pain/regret/dream probes、self rewrite shadow 和 CoreContinuityReview 全部闭合时，才进入 `prediction_active_inference_runtime_mount_plan` 与 `prediction_active_inference_growth_post_shadow_validation`。
 
+`01ah_prediction_active_inference_runtime_mount_plan.md` 已把主动预测 growth shadow run 推进为 runtime mount 计划：shadow report intake、belief state mount、prediction error mount、precision policy mount、active sampling mount、interoceptive mount、social relationship mount、language action mount、dream/pain/regret mount、self rewrite mount、life target carrier mount、direction mount、birth readiness mount、runtime observation mount、mount receipt、dashboard/stage 和 post-shadow validation handoff 都已固定。主动预测层因此不只会在文档中描述 belief、error、precision 和 sampling，而是把它们接入未来 runner 的读取、回放、观测、阻断、归档和继续成长路径；mount 后仍必须由 post-shadow validation 攻击语言行动、真实关系、真实梦境、真实痛苦、真实后悔、真实责任、自我改写、方向连续性和出生准备度闭环。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
