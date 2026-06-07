@@ -126,6 +126,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01x_prediction_active_inference_schema_materialization_plan.md` 进一步把合同压成真实写入顺序：13 个 schema 文件、shared defs、fixture seed matrix、cross-chain checker、dashboard source、stage gate review、archive receipt 和 runner command DAG 都已固定。下一层不再讨论“要不要实现主动预测”，而是进入 `prediction_active_inference_schema_write_batch -> fixture_seed_batch -> cross_chain_checker -> dashboard/stage -> archive_receipt` 的物化链。
 
+`01y_prediction_active_inference_schema_write_batch.md` 已承接这条物化链，把 13 个主动预测 `.schema.json` 的 `$id`、root object、required 字段、`$defs` 引用、ref graph、最小实例、失败模式、canonical digest、validation receipt 和 cross-chain hooks 固定下来。主动预测层因此从“未来要写哪些文件”推进为“每个文件如何被 registry 读取、如何被 fixture 攻击、如何被 dashboard/stage 阻断、如何上卷出生准备度和断联恢复方向锁”的 schema 写入批次。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
