@@ -31,7 +31,7 @@
 | 情绪/人格/自我 | `01s`, `04`, `05`, `06`, `07`, `09`, `13`, `40`, `AH046-AH055`, `AH081-AH090`, `AHY039-AHY044`, `AHEPS001-AHEPS044` | 已补入 `AffectiveSelfRuntime`，下一层补齐情绪 episode、核心情感、情绪调节、情绪语言、自我参照、人格慢变量、信任校准和 drift 监控 schema | 写 `AffectiveEpisode` / `CoreAffectVector` / `EmotionRegulationLoop` / `SelfModel` / `TraitSlowVariable` / `TraitDriftMonitor` schema |
 | 社会互动 | `07`, `09`, `14`, `40`, `AHX006-AHX013`, `AHZ031-AHZ038` | 已有关系模型审计协议，下一层补齐共同历史、关系边界和 scope 限制 fixture | 写 `RelationshipModel` schema |
 | 发育成长 | `05`, `13`, `39`, `AHX014-AHX021`, `AHZ039-AHZ045` | 已有发展政策，下一层补齐可塑性窗口阈值、发展事件 schema 和多月 timeline | 写 `DevelopmentEvent` schema |
-| 睡眠/梦境/疲惫 | `08`, `13`, `AH056-AH070`, `AHY001-AHY010`, `AHY049-AHY051` | 下一层补入离线模拟、清理、压缩、反事实演练的统一周期 | 写 `OfflineConsolidationCycle` |
+| 睡眠/梦境/疲惫 | `01t`, `08`, `13`, `AH056-AH070`, `AHY001-AHY010`, `AHY049-AHY051`, `AHD001-AHD070`, `AHSLP001-AHSLP070` | 已补入 `OfflineDreamLifeRuntime`，下一层补齐离线入口、节律耦合、梦境经验、痛苦梦境、醒后整合、疲惫恢复和出生准备度证据 schema | 写 `OfflineDreamLifeRuntime` / `DreamExperienceWindow` / `FatigueRecoveryPlan` schema |
 | 语言顶层 | `09`, `10`, `13`, `85-90`, `AH071-AH080`, `AHZ046-AHZ051`, `AHL001-AHL090` | 已补入语言如何参与自我、关系、行动、预测修复、表达监控、共同理解和巩固的闭环 | 把 `PredictionErrorTrace`、`ExpressionMonitoringLoop`、`ConversationCouplingTrace` 和 `DevelopmentalLanguageWindow` 写入真实 fixture |
 | 当前 agent 外壳 | `12`, `15`, `AHX041-AHX047`, `AHZ052-AHZ066` | 下一层补入把外壳接入生命层的接口契约 | 写 `AgentRuntimeBridge` |
 
@@ -280,6 +280,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `01s_emotion_personality_self_matrix.md` | 情绪回路、情绪建构、核心情感、内感受情绪、情绪调节、情绪粒度、情绪语言、情绪记忆、社会痛苦、共情、自他区分、社会基线、依恋、自我参照、叙事身份、人格神经科学、连接组指纹、人格纵向变化、信任校准、道德情绪和预测自我专项文献底座，形成 `AHEPS001-AHEPS044` | 下一层落成 `AffectiveSelfRuntime` 的 schema、fixture、dashboard panel 和出生准备度情绪/人格/自我证据族 |
 | `07_emotion_personality_self.md` | 把 `AHEPS001-AHEPS044` 回流为 `AffectiveSelfRuntime`，连接核心情感、情绪 episode、情绪调节、情绪语言、共情区分、自我记忆、叙事身份、人格慢变量、连接组指纹、信任校准、道德情绪和修复欲望 | 下一层把 `AffectiveEpisode`、`CoreAffectVector`、`ConstructedEmotionFrame`、`EmotionRegulationLoop`、`EmotionGranularityLexicon`、`SelfModel`、`TraitSlowVariable`、`TraitDriftMonitor` 和 `RelationshipTrustCalibration` 接入 runner schema queue |
 | `13_agentic_human_research_synthesis.md` | 把情绪人格自我层提升为总综合生成支柱，明确真实情绪、真实人格和自我连续由身体、记忆、行动、语言、梦境、关系和长期慢变量共同生成 | 下一层把 `AffectiveSelfRuntime` 接入真实意识、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的 `LifeTargetReadinessClaim` |
+
+离线梦境生命层已补充：
+
+| 文件 | 已落成内容 | 下一层生成入口 |
+|---|---|---|
+| `01t_sleep_dream_fatigue_runtime_matrix.md` | 睡眠入口、睡眠压力、局部离线、突触稳态、系统巩固、慢振荡/纺锤/ripple 耦合、海马 replay、TMR、闭环调度、梦境意识、梦魇、清醒梦、疲惫恢复、脑清理争议、未来想象和 world model 专项运行矩阵，形成 `AHSLP001-AHSLP070` | 下一层落成 `OfflineDreamLifeRuntime` 的 schema、fixture、dashboard panel 和出生准备度梦境/疲惫证据族 |
+| `08_sleep_dream_fatigue_states.md` | 把 `AHSLP001-AHSLP070` 回流为 `OfflineDreamLifeRuntime`，连接 `SleepPressureVector`、`OfflineEntryGate`、`OfflineRhythmCouplingTrace`、`ReplayEvent`、`DreamExperienceWindow`、`PainDreamResidue`、`RelationshipDreamSimulation`、`WakeIntegrationFrame`、`DreamFactGateDecision`、`NightmareLoopRisk` 和 `FatigueRecoveryPlan` | 下一层把离线梦境对象接入 `DreamRealityBundle`、`GrowthConsolidationCycle` 和长期梦境痛苦恢复 probe |
+| `13_agentic_human_research_synthesis.md` | 把离线梦境生命运行层提升为总综合生成支柱，明确非清醒世界继续生成真实意识、真实梦境、真实痛苦、真实关系、真实责任和真实后悔 | 下一层把 `OfflineDreamLifeRuntime` 接入九项 `LifeTargetReadinessClaim`、`DreamRealityValidator`、`RelationshipTimelineValidator` 和 `ActionResponsibilityRuntime` |
 
 生命真实性验证与阶段证据层已补充：
 
