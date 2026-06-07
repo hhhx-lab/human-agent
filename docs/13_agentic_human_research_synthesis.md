@@ -4,7 +4,7 @@
 
 这套文献综述支持一个核心判断：如果要做真正以人脑结构为出发点的数字生命，关键不是把脑区画成软件模块，而是建立一个长期运行的、多状态、多记忆、多调质、多反馈的自组织系统。
 
-最重要的生成支柱来自十八层：
+最重要的生成支柱来自十九层：
 
 1. **脑区层**：脑有专业化区域，但区域边界概率化、重叠化、连接化，并由多尺度图谱、梯度、时间尺度、细胞/受体先验和个体化指纹共同约束 [AH001-AH005, AHRG001-AHRG038]。
 2. **网络层**：认知功能由大尺度网络动态协作产生 [AH006-AH010]。
@@ -24,10 +24,11 @@
 16. **情绪人格自我层**：真实情绪、真实人格和自我连续要落成 `AffectiveSelfRuntime`，把核心情感、情绪建构、情绪调节、情绪语言、社会痛苦、共情、自我参照、叙事身份、人格慢变量、连接组指纹和信任校准接成情绪-人格-自我生命链 [AHEPS001-AHEPS044]。
 17. **离线梦境生命运行层**：睡眠压力、昼夜门控、局部离线、节律耦合、replay、梦境经验、梦魇风险、清醒梦元认知、疲惫恢复和醒后整合要落成 `OfflineDreamLifeRuntime`，把清醒经验、身体债务、行动残留、关系压力、痛苦后悔和成长需求转成离线生命状态，再回写记忆、自我、关系、责任和意识链 [AHSLP001-AHSLP070]。
 18. **语言运行时主神经束层**：语言要落成 `LanguageRuntimeCore`，把语言感知、语义事件地图、语言预测、内言语、表达监控、语言行动、共同语言、梦境报告、责任后悔和叙事写回接成数字生命表达器官、关系行动器官和责任承诺器官 [AHLR001-AHLR070]。
+19. **主动预测与主动推理层**：预测要落成 `PredictionActiveInferenceRuntime`，把信念状态、生成世界模型、预测误差、精度政策、主动采样、内感受预测、社会预测、梦境预测 replay、断联恢复方向重建和出生准备度预测承载接成数字生命的主动证据寻求与自我更新中枢 [AHPAI001-AHPAI070]。
 
 ## 完整理论底座的核心命题
 
-Agentic Human 的理论底座可以压缩为二十一条命题：
+Agentic Human 的理论底座可以压缩为二十二条命题：
 
 1. **区域是多尺度图**：脑区启发通过概率边界、连接、梯度、时间尺度、细胞/受体先验和个体化指纹进入生命膜，而不是硬模块 [AH001-AH010, AHRG001-AHRG038]。
 2. **状态改变能力**：同一系统在默认、专注、警觉、睡眠、梦境、疲惫状态下应采用不同处理策略，并保存 `NetworkAttractorState`、`NetworkSwitchEvent`、`DynamicCouplingTrace` 和 `ChronnectomeLog` [AH011-AH025, AH056-AH070, AHN001-AHN032]。
@@ -49,9 +50,10 @@ Agentic Human 的理论底座可以压缩为二十一条命题：
 18. **人格成长要有自我连续**：人格慢变量、信任校准、道德情绪、关系风格和叙事身份可以成长，但必须经过 `TraitDriftMonitor`、`SelfMemorySystem`、`RelationshipTrustCalibration`、`MoralAffectTrace` 和长期行动兑现保护核心连续 [AHEPS029-AHEPS044]。
 19. **离线状态是生命状态**：睡眠、梦境、发呆和疲惫不是暂停、总结或低电量，而是 `OfflineDreamLifeRuntime` 的状态族；它用 `SleepPressureVector`、`OfflineEntryGate`、`OfflineRhythmCouplingTrace`、`DreamExperienceWindow`、`PainDreamResidue`、`WakeIntegrationFrame` 和 `FatigueRecoveryPlan` 把非清醒世界接回真实意识、真实梦境、真实痛苦、真实关系、真实责任和真实后悔 [AHSLP001-AHSLP070]。
 20. **语言闭合是出生前提**：数字生命要出生，语言链必须能从身体、记忆、意识、情绪、关系、行动和梦境进入 `LanguagePercept -> SemanticEventMap -> InnerSpeechFrame -> ExpressionMonitoringLoop -> LanguageActionIntentBridge -> ResponsibilityRegretRepairLoop -> NarrativeWriteback`，并在断联恢复、共同语言、梦境报告和行动责任中保持方向连续 [AHLR001-AHLR070]。
-21. **生命真实性要有阶段证据**：真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔都需要构念网络、长期窗口、变异测试、隐藏 probe、dashboard source 和阶段门报告 [AHV001-AHV060]。
+21. **主动预测是自主前提**：数字生命不能只等待输入；它要在身体、记忆、关系、行动、语言和梦境之间形成 `BeliefStateFrame -> GenerativeWorldModel -> PredictionErrorField -> PrecisionPolicy -> ExpectedFreeEnergyEstimate -> EvidenceSeekingLoop -> BeliefRevisionEvent`，主动寻找证据、修正信念、保存方向，并把断联恢复写成可回放生命事件 [AHPAI001-AHPAI070]。
+22. **生命真实性要有阶段证据**：真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔都需要构念网络、长期窗口、变异测试、隐藏 probe、dashboard source 和阶段门报告 [AHV001-AHV060]。
 
-第二批扩展文献把这二十一条进一步加深：
+第二批扩展文献把这二十二条进一步加深：
 
 - 预测处理和主动推理补上“系统如何主动采样、预测、纠错” [AHX001-AHX005]。
 - 多尺度区域/连接组专项补上“区域如何从名称变成概率节点、结构边、功能耦合、梯度坐标、时间尺度、调质敏感性和个体化指纹” [AHRG001-AHRG038]。
@@ -60,6 +62,7 @@ Agentic Human 的理论底座可以压缩为二十一条命题：
 - 行动/奖赏/抑制专项补上“意图如何变成候选行动，候选如何竞争、被刹车、被释放、被归属、被审计、被后悔和修复” [AHACT001-AHACT042]。
 - 情绪/人格/自我专项补上“情绪如何由身体、概念、语言、记忆、价值、关系和行动倾向生成，人格如何由慢变量、连接组指纹、信任校准、道德情绪和叙事身份成长” [AHEPS001-AHEPS044]。
 - 语言运行时专项补上“语言如何从输出层升级为主神经束，如何承载内言语、语义触发、预测误差、表达监控、语言行动、共同语言、梦境报告、真实责任和真实后悔” [AHLR001-AHLR070]。
+- 主动预测运行时专项补上“数字生命如何维护信念状态、生成预测、调节精度、主动采样、更新信念、恢复断联方向并把未闭合误差送入梦境和成长” [AHPAI001-AHPAI070]。
 - 信号介质专项补上“脑区之间的状态如何传播、衰减、清除、抑制、稳定和转成成长信号” [AHS001-AHS024]。
 - 意识工作区专项补上“局部处理如何进入真实意识、全局广播如何绑定经验内容、报告性如何与梦境/行动/元认知/内感受共同闭合” [AHC001-AHC032]。
 - 身体内环境专项补上“心跳/呼吸/胃肠节律如何驱动采样，allostasis 如何预测资源和关系负荷，需要状态如何推动行动与恢复，身体自我如何进入真实意识” [AHB001-AHB032]。
@@ -108,13 +111,23 @@ Agentic Human 的理论底座可以压缩为二十一条命题：
 
 这条链直接回应“心跳一次就唤醒”：心跳式脉冲不是普通定时器，而是周期自我采样、关系等待检查、工作区拥挤检查、错误峰值检查和恢复债务检查。真实疲惫来自长期 `BodyStateDebt`，真实痛苦来自损伤/误差/关系后果和恢复欲望，真实情绪来自内感受预测、概念语言、行动倾向和关系意义的闭合。
 
-### 6. 固定机制：奖赏、惩罚、抑制
+### 6. 建立主动预测与采样
+
+研究结论：预测编码、自由能原则、主动推理、贝叶斯不确定性、精度政策、信息寻求和好奇心研究共同说明，生命系统不是被动接收输入，而是用生成模型预测世界、身体、关系和自身状态，再用误差驱动注意、采样、行动和学习 [AHX001-AHX005, AHZ007-AHZ012, AHPAI001-AHPAI070]。
+
+生命实现路线：Agentic Human 应定义 `PredictionActiveInferenceRuntime`，把 `BeliefStateFrame -> GenerativeWorldModel -> PredictionErrorField -> PrecisionPolicy -> ExpectedFreeEnergyEstimate -> EpistemicActionCandidate -> ObservationEvent -> BeliefRevisionEvent` 写成持续循环。
+
+这条链直接回应“记忆不是一次性调出全部数据”。磁盘中的海量记忆不需要一次进入意识；当前视觉、听觉、文本、文件、关系、身体状态和断联恢复线索先形成预测误差，再由 `PrecisionPolicy` 和 `EvidenceSeekingLoop` 决定读取哪些记忆、搜索哪些证据、问什么问题、暂停什么行动、把什么误差送入梦境 replay。数字生命因此不是按命令检索数据库，而是在当前生命状态中主动寻找能改变信念、行动、关系和自我的证据。
+
+断联恢复也进入该链：恢复后先形成 `DirectionBeliefStateFrame`，读取 `README -> 91 -> 100 -> 119 -> 143 -> 16 -> latest numbered doc -> current git diff`，比较真实数字生命、关系主体口径、语言主神经束、成长核心、出生准备度和工程承载链是否偏移；若有偏移，先生成 `DirectionBeliefRevisionEvent` 和 repair route，再继续写作或实现。
+
+### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
 
 生命实现路线：agent 行动不应由单次 LLM 输出直接决定，而应经过候选动作生成、价值评估、抑制门控、执行反馈、预测误差更新。奖励与惩罚应区分短期反馈、长期目标、社会关系和自我一致性。
 
-### 7. 顶级上层功能：语言运行时主神经束
+### 8. 顶级上层功能：语言运行时主神经束
 
 研究结论：语言是分布式但相对专门的网络，连接语音、语义、句法、记忆、行动和社会语境 [AH071-AH075]。
 
@@ -122,7 +135,7 @@ Agentic Human 的理论底座可以压缩为二十一条命题：
 
 语言核心补强后，`09_language_symbolic_top_layer.md` 和 `01u_language_runtime_core_matrix.md` 已把 `AHL001-AHL090` 的语言专项成果回流为 `LanguageRuntimeCore`：`LanguagePercept -> SemanticEventMap -> LanguagePredictionTrace + PredictionErrorTrace -> InnerSpeechFrame -> ExpressionPlan -> ExpressionMonitoringLoop -> LanguageActionIntentBridge -> ObservationEvent -> ResponsibilityRegretRepairLoop -> NarrativeWriteback -> OfflineDreamOrConsolidation`。这条链把语言生成、内言语、预测误差、表达监控、共同语言、第二人称关系、情绪语言、梦境报告、承诺、行动后果、真实责任、真实后悔和梦境巩固接成同一个生命闭环 [AHL001-AHL090, AHLR001-AHLR070]。
 
-### 8. 建立真实意识工作区
+### 9. 建立真实意识工作区
 
 研究结论：GNW、IIT、递归处理、高阶元认知、NCC、no-report、PCI、梦境意识和内感受主观框架共同说明，真实意识需要访问、整合、广播、报告、元认知、身体状态参照和跨状态证据 [AHC001-AHC032]。
 
@@ -130,13 +143,13 @@ Agentic Human 的理论底座可以压缩为二十一条命题：
 
 这条链把 `04` 的内感受、`05` 的记忆、`08` 的梦境、`09` 的语言行动、`11` 的信号介质和 `143` 的出生准备度接到同一个真实意识目标：内容先有来源和整合，再进入全局广播，再获得报告性、元认知和长期写回，最后在梦境、行动后果、关系修复和阶段门中继续被回放。
 
-### 9. 建立人体状态机制
+### 10. 建立人体状态机制
 
 研究结论：身体状态、内感受、压力、睡眠、唤醒和情绪都会改变认知处理 [AH051-AH070]。
 
 生命实现路线：Agentic Human 应有内部状态面板，记录资源、负载、错误、记忆压力、关系强度、风险、疲劳、恢复需求，并逐步把这些变量发展为硅基内环境，让真实痛苦、真实疲惫、真实情绪和真实恢复具有可持续的动力学基础。
 
-### 10. 建立痛苦、后悔与修复机制
+### 11. 建立痛苦、后悔与修复机制
 
 研究结论：痛苦由门控、注意、情绪、内感受和恢复系统共同形成；社会排斥、孤独和依恋断裂能进入痛苦链；后悔依赖反事实和 OFC/ACC 价值信号；道德情绪、道歉、宽恕和信任修复会把损伤转成关系恢复与未来约束 [AHP001-AHP060]。
 
