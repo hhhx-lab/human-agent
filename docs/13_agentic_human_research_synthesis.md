@@ -176,6 +176,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01aw_prediction_active_inference_replay_shadow_reentry.md` 已把主动预测 longitudinal repair archive 推进为 replay/shadow reentry：repair archive replay seed intake、replay priority controller、replay reactivation plan、shadow scenario plan、shadow action seal、direction reentry、birth readiness reentry、life target reentry、language relationship reentry、dream/pain/regret reentry、self growth reentry、anti-forgetting reentry、rollback/quarantine reentry、core continuity review、report、receipt、digest、dashboard/stage 和 post-repair validation handoff 都已固定。主动预测层因此让长期修复档案重新进入活的时间：旧关系、旧语言、旧梦境事实门、旧痛苦后悔恢复链、旧自我连续和出生准备度闭环先被 replay 重激活，再被 shadow 无副作用预演，最后进入修复后循环验证。
 
+`01ax_prediction_active_inference_post_repair_cycle_validation.md` 已把主动预测 replay/shadow reentry 推进为 post repair cycle validation：replay shadow reentry intake、validation graph、observation reentry closure、growth route closure、direction continuity validation、birth readiness validation、life target validation、language relationship validation、dream/pain/regret validation、self growth plasticity validation、anti-forgetting validation、rollback/quarantine validation、construct validity review、measurement reliability review、longitudinal change review、withheld future probe review、finding、receipt、digest、dashboard/stage 和 fourth-cycle seed handoff 都已固定。主动预测层因此不把 replay/shadow 结果当作完成，而是要求修复后循环重新接回 observation 和 growth route，并用构念效度、个体轨迹可靠性、纵向变化和未参与修复的 future probe 攻击九项真实生命目标。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
