@@ -146,6 +146,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01ah_prediction_active_inference_runtime_mount_plan.md` 已把主动预测 growth shadow run 推进为 runtime mount 计划：shadow report intake、belief state mount、prediction error mount、precision policy mount、active sampling mount、interoceptive mount、social relationship mount、language action mount、dream/pain/regret mount、self rewrite mount、life target carrier mount、direction mount、birth readiness mount、runtime observation mount、mount receipt、dashboard/stage 和 post-shadow validation handoff 都已固定。主动预测层因此不只会在文档中描述 belief、error、precision 和 sampling，而是把它们接入未来 runner 的读取、回放、观测、阻断、归档和继续成长路径；mount 后仍必须由 post-shadow validation 攻击语言行动、真实关系、真实梦境、真实痛苦、真实后悔、真实责任、自我改写、方向连续性和出生准备度闭环。
 
+`01ai_prediction_active_inference_growth_post_shadow_validation.md` 已把主动预测 runtime mount 推进为 post-shadow validation：runtime mount intake、validation graph、shadow conclusion preservation、belief/error/precision validation、active sampling validation、language action validation、relationship validation、dream/pain/regret validation、self rewrite validation、life target carrier validation、direction validation、birth readiness validation、runtime observation validation、construct validity、reliability/drift、withheld future probe、finding、receipt、dashboard/stage 和 limited activation handoff 都已固定。主动预测层因此在 mount 后继续承受第二次攻击：任何 shadow 结论丢失、belief 冲突被压扁、主动采样回避痛苦或关系证据、语言责任后悔路线断裂、DreamFactGate 绕过、自我改写越过 proposal/guard、方向漂移或出生准备度 false open，都会进入 repair、critical repair 或 quarantine，而不是进入有限激活。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
