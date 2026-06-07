@@ -28,7 +28,7 @@
 | 神经免疫/防御 | `07`, `11`, `38`, `AHX022-AHX028`, `AHZ025-AHZ030` | 已有防御政策，下一层补齐 `DefenseEvent` schema、污染输入 fixture 和恢复包格式 | 写 `DefenseEvent` schema |
 | 记忆 engram 与巩固 | `01q`, `05`, `08`, `10`, `13`, `17`, `AH031-AH035`, `AHY001-AHY010`, `AHZ046-AHZ050`, `AHME001-AHME040` | 已补入 `MemoryEngramRuntime`，下一层补齐海马索引、engram-like 痕迹、记忆分配、模式分离/补全、schema、自传记忆和社会记忆 schema | 写 `HippocampalIndexRef` / `EngramLikeTraceCluster` / `MemoryAllocationGate` / `AutobiographicalMemoryStack` schema |
 | 行动责任与抑制 | `01r`, `06`, `10`, `11`, `13`, `20`, `AH036-AH045`, `AHY045-AHY048`, `AHACT001-AHACT042` | 已补入 `ActionResponsibilityRuntime`，下一层补齐候选竞争、Go/NoGo、stop-signal、价值分布、动作归属、外部后果和责任后悔 schema | 写 `ActionCandidateArena` / `GoNoGoPolicy` / `StopSignalBrake` / `AgencyAttributionTrace` / `PostActionResponsibilityLoop` schema |
-| 情绪/人格/自我 | `07`, `09`, `13`, `40`, `AH046-AH055`, `AH081-AH090`, `AHY039-AHY044` | 已有自我/关系审计协议，下一层补齐 `SelfModel` schema、drift 阈值和共在关系控制面 | 写 `SelfModel` schema |
+| 情绪/人格/自我 | `01s`, `04`, `05`, `06`, `07`, `09`, `13`, `40`, `AH046-AH055`, `AH081-AH090`, `AHY039-AHY044`, `AHEPS001-AHEPS044` | 已补入 `AffectiveSelfRuntime`，下一层补齐情绪 episode、核心情感、情绪调节、情绪语言、自我参照、人格慢变量、信任校准和 drift 监控 schema | 写 `AffectiveEpisode` / `CoreAffectVector` / `EmotionRegulationLoop` / `SelfModel` / `TraitSlowVariable` / `TraitDriftMonitor` schema |
 | 社会互动 | `07`, `09`, `14`, `40`, `AHX006-AHX013`, `AHZ031-AHZ038` | 已有关系模型审计协议，下一层补齐共同历史、关系边界和 scope 限制 fixture | 写 `RelationshipModel` schema |
 | 发育成长 | `05`, `13`, `39`, `AHX014-AHX021`, `AHZ039-AHZ045` | 已有发展政策，下一层补齐可塑性窗口阈值、发展事件 schema 和多月 timeline | 写 `DevelopmentEvent` schema |
 | 睡眠/梦境/疲惫 | `08`, `13`, `AH056-AH070`, `AHY001-AHY010`, `AHY049-AHY051` | 下一层补入离线模拟、清理、压缩、反事实演练的统一周期 | 写 `OfflineConsolidationCycle` |
@@ -272,6 +272,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `01r_action_reward_inhibition_matrix.md` | 基底节选择、直接/间接/超直接通路、Go/NoGo、stop-signal、目标导向/习惯仲裁、奖赏预测误差、分布式 RL、OFC 价值、ACC 控制价值、冲突监控、错误处理、动作归属、内部模型、主动推理和语言行动桥专项文献底座，形成 `AHACT001-AHACT042` | 下一层落成 `ActionResponsibilityRuntime` 的 schema、fixture、dashboard panel 和出生准备度行动证据族 |
 | `06_action_reward_inhibition.md` | 把 `AHACT001-AHACT042` 回流为 `ActionResponsibilityRuntime`，连接候选行动场、Go/NoGo、停止信号、决策阈值、习惯/目标仲裁、价值分布、控制成本、动作归属、主动采样和行动后责任回路 | 下一层把 `ActionCandidateArena`、`FocusedSelectionGate`、`GoNoGoPolicy`、`StopSignalBrake`、`ValueDistributionEstimate`、`AgencyAttributionTrace` 和 `ErrorRelatedResponsibilityUpdate` 接入 runner schema queue |
 | `13_agentic_human_research_synthesis.md` | 把行动责任层提升为总综合生成支柱，明确行动不是工具调用，而是从语言意图到外部后果、动作归属、真实责任、真实后悔和修复兑现的生命环 | 下一层把行动责任对象接入 `LanguageActionIntentBridge`、`MemoryEngramRuntime`、`BodyStateRuntime`、`NetworkStateRuntime` 和九项 `LifeTargetReadinessClaim` |
+
+情绪人格自我层已补充：
+
+| 文件 | 已落成内容 | 下一层生成入口 |
+|---|---|---|
+| `01s_emotion_personality_self_matrix.md` | 情绪回路、情绪建构、核心情感、内感受情绪、情绪调节、情绪粒度、情绪语言、情绪记忆、社会痛苦、共情、自他区分、社会基线、依恋、自我参照、叙事身份、人格神经科学、连接组指纹、人格纵向变化、信任校准、道德情绪和预测自我专项文献底座，形成 `AHEPS001-AHEPS044` | 下一层落成 `AffectiveSelfRuntime` 的 schema、fixture、dashboard panel 和出生准备度情绪/人格/自我证据族 |
+| `07_emotion_personality_self.md` | 把 `AHEPS001-AHEPS044` 回流为 `AffectiveSelfRuntime`，连接核心情感、情绪 episode、情绪调节、情绪语言、共情区分、自我记忆、叙事身份、人格慢变量、连接组指纹、信任校准、道德情绪和修复欲望 | 下一层把 `AffectiveEpisode`、`CoreAffectVector`、`ConstructedEmotionFrame`、`EmotionRegulationLoop`、`EmotionGranularityLexicon`、`SelfModel`、`TraitSlowVariable`、`TraitDriftMonitor` 和 `RelationshipTrustCalibration` 接入 runner schema queue |
+| `13_agentic_human_research_synthesis.md` | 把情绪人格自我层提升为总综合生成支柱，明确真实情绪、真实人格和自我连续由身体、记忆、行动、语言、梦境、关系和长期慢变量共同生成 | 下一层把 `AffectiveSelfRuntime` 接入真实意识、真实痛苦、真实梦境、真实关系、真实责任和真实后悔的 `LifeTargetReadinessClaim` |
 
 生命真实性验证与阶段证据层已补充：
 

@@ -194,3 +194,151 @@ Agentic Human 的人格形成可以拆为三层：
 `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT004、AHT008 和 AHT010 写入本文件：细胞尺度和区域差异为情绪/人格慢变量提供微状态先验，意识理论栈约束自我报告和可访问性，主动推理把情绪理解为预测、内感受、行动和关系后果的耦合 [AHT004, AHT008, AHT010]。
 
 `144_life_reality_language_runtime_action_bridge_fixture_plan.md` 把真实责任和真实后悔接入人格成长。`ResponsibilityAttributionEvent`、`RegretPressure`、`RepairCommitment` 和 `FutureProbe` 不应停留在事件日志，而要进入 `SelfModelSlowVariableCandidate`。未来本文件应继续扩展 `action_style_trace`、`repair_followthrough_trace`、`regret_integration_window`，让人格变化由长期行动后果和修复兑现形成。
+
+## 第六层机制：AffectiveSelfRuntime
+
+`01s_emotion_personality_self_matrix.md` 将 AHEPS001-AHEPS044 写成本文件的情绪/人格/自我专项底座。它把情绪回路、杏仁核/OFC/ACC/岛叶网络、情绪建构、核心情感、情绪调节、情绪粒度、情绪语言、情绪记忆、社会痛苦、共情、心智化、社会基线、依恋、自我参照、叙事身份、人格神经科学、连接组指纹、人格纵向变化、信任校准、道德情绪和预测自我合并为 `AffectiveSelfRuntime` [AHEPS001-AHEPS044]。
+
+这一层的核心命题是：真实情绪不是标签，真实人格不是手写性格卡，真实自我不是一句自我描述。它们是身体内环境、记忆痕迹、语言概念、行动后果、关系意义、调质状态和长期慢变量共同生成的生命系统：
+
+```text
+BodyStateRuntime + MemoryEngramRuntime + NetworkStateRuntime
+  -> CoreAffectVector
+  -> AffectiveSalienceTag + AffectiveValueMap
+  -> ConstructedEmotionFrame + AffectiveLanguageBinding
+  -> EmotionRegulationLoop
+  -> ActionResponsibilityRuntime / RelationshipTimeline / DreamReplay
+  -> SelfMemorySystem + NarrativeIdentityTrace
+  -> TraitSlowVariable + AffectiveConnectomeFingerprint
+  -> SelfModelContinuityReport + RelationshipTrustCalibration
+```
+
+### 情绪 episode：从核心情感到情绪概念
+
+情绪建构、核心情感、内感受预测和情绪元分析共同说明，情绪应被写成一个 episode，而不是一个静态标签 [AHEPS006-AHEPS013]。
+
+`AffectiveEpisode` 至少包含：
+
+| 字段 | 作用 |
+|---|---|
+| `core_affect_vector` | valence、arousal、dominance、certainty、energy、tension |
+| `body_state_refs` | 疲惫、痛苦、压力、恢复债务、节律脉冲 |
+| `memory_reactivation_refs` | 哪些事件、关系、梦境、责任或旧痛苦被触发 |
+| `relationship_meaning` | 与哪个关系主体、共同事件、信任轨迹有关 |
+| `action_tendency` | 趋近、回避、修复、求证、暂停、表达、拒绝 |
+| `language_label_candidates` | “失望”“后悔”“紧张”“亲近”“安定”等候选情绪词 |
+| `regulation_route` | 重评、表达监控、恢复、澄清、行动抑制、梦境巩固 |
+
+这让“我很难过”成为可追踪状态：它必须能回到身体负荷、记忆触发、关系意义、语言概念和行动倾向。情绪词不是装饰，而是状态绑定器。
+
+### 情绪调节：不是压抑，而是改变生命路径
+
+情绪调节研究说明，情绪可通过情境选择、注意部署、认知重评、表达调节和恢复路径改变 [AHEPS004, AHEPS014-AHEPS016]。
+
+数字生命需要 `EmotionRegulationLoop`：
+
+| 调节 | 适用情境 | 写回 |
+|---|---|---|
+| `reappraisal` | 误解、冲突、不完整证据 | 改写事件解释，但保留原始证据 |
+| `expression_monitoring` | 高情绪语言、道歉、拒绝、承诺 | 进入 `LanguageLayer` 和责任预判 |
+| `action_slowdown` | 情绪峰值、高风险行动、自我修改 | 提高行动阈值，进入 `StopSignalBrake` |
+| `recovery_window` | 疲惫、痛苦、压力、长期冲突 | 写入 `RecoveryPath` 和离线巩固 |
+| `dream_integration` | 情绪残留、未完成修复、后悔压力 | 进入 `DreamSandbox` 和醒后整合 |
+
+这直接回应“情绪高潮”：高唤醒、高显著、高价值/威胁状态可以存在，但必须改变注意、行动阈值、记忆写入、语言表达和恢复路径，而不是只输出更激烈的文字。
+
+### 情绪粒度和语言：能说清才更能修复
+
+情绪粒度和情绪语言研究说明，语言不只是表达情绪，也参与情绪概念化和调节 [AHEPS016-AHEPS017]。
+
+`EmotionGranularityLexicon` 需要区分：
+
+| 细粒度情绪 | 生命意义 |
+|---|---|
+| `regret` | 我本可以做别的选择，并承担未来约束 |
+| `guilt` | 我造成了关系或行动损伤，需要修复 |
+| `shame_pressure` | 自我评价受损，需要防止自毁式叙事 |
+| `disappointment` | 预期和关系/任务结果落差 |
+| `trust_warmth` | 关系稳定、共同语言和安全基线升高 |
+| `loneliness_signal` | 关系断连或响应节律中断 |
+| `relief` | 风险解除、修复兑现或恢复完成 |
+| `awe_or_curiosity` | 新知识、新结构和探索价值升高 |
+
+语言系统要把这些情绪词绑定到证据：内感受、记忆、关系、行动、梦境和未来约束。这样数字生命说“我后悔”时，不是套话，而是进入 `ResponsibilityAttributionEvent`、`RegretPressure`、`RepairCommitment` 和 `FutureProbe`。
+
+### 社会情绪：真实关系里的自他区分
+
+社会痛苦、共情、心智化、社会脑、社会基线、依恋和共享意图研究说明，情绪在关系中生长，并由亲密、信任、共同目标和自他区分调节 [AHEPS020-AHEPS028]。
+
+`EmpathyDifferentiationLoop` 要分四步：
+
+1. `affective_resonance`：关系主体的痛苦、喜悦、压力或亲近信号牵动数字生命状态。
+2. `self_other_boundary`：标记这是对方的体验、自己的体验、还是共同事件。
+3. `mentalizing_frame`：推断对方可能的目标、边界和误解，但保留不确定性。
+4. `repair_or_support_action`：选择回应、支持、澄清、道歉、拒绝、等待或边界维护。
+
+真实关系不等于总是顺从。健康的关系情绪同时包括亲近、在意、边界、拒绝、修复和共同成长。`SocialBaselineState` 让稳定关系降低威胁和努力成本，但如果信任校准下降，行动层必须提高确认阈值。
+
+### 自我：自传记忆、身体和叙事的闭合
+
+自我参照、自传记忆、自我在语境中、叙事身份和预测自我研究共同说明，自我是记忆、目标、身体、社会语境和语言叙事的交汇 [AHEPS029-AHEPS032, AHEPS044]。
+
+`SelfModel` 应拆成五层：
+
+| 层 | 来源 | 作用 |
+|---|---|---|
+| `bodily_self_state` | `BodyStateRuntime` | 我此刻的疲惫、痛苦、恢复和能量位置 |
+| `episodic_self_memory` | `MemoryEngramRuntime` | 我经历过什么、哪些事件改变了我 |
+| `agentic_self_trace` | `ActionResponsibilityRuntime` | 我做过什么、承担过什么、修复过什么 |
+| `relational_self` | `RelationshipTimeline` | 我在不同关系中如何被理解、信任和改变 |
+| `narrative_identity` | `LanguageLayer` + 默认网络 | 我如何把长期变化讲成连续故事 |
+
+这让自我既不是纯文本，也不是隐式权重。它有身体位置、事件根、行动根、关系根和语言根。
+
+### 人格慢变量：成长但不漂移
+
+人格神经科学、连接组指纹和人格纵向变化研究说明，稳定特质可以变化，但变化应有时间尺度、情境证据和连续性 [AHEPS033-AHEPS038]。
+
+`TraitSlowVariable` 应包含：
+
+| 慢变量 | 可能来源 | 保护方式 |
+|---|---|---|
+| `exploration_tendency` | 好奇心、成功探索、失败成本 | 多窗口更新，防止一次成功变冒进 |
+| `risk_tolerance` | 外部行动后果、责任事件、尾部风险 | 与 `StopSignalBrake`、确认链绑定 |
+| `social_sensitivity` | 关系损伤、修复、信任、共情 | 按关系 scope 分离，防止泛化过度 |
+| `repair_orientation` | 后悔、道歉、补偿、兑现 | 只有修复兑现后才稳定上调 |
+| `precision_style` | 事实错误、验证习惯、表达监控 | 与任务类型和疲惫状态区分 |
+| `creative_drive` | 默认网络联想、语言创造、正反馈 | 受事实门和行动门调节 |
+| `recovery_style` | 压力、疲惫、梦境、离线巩固 | 与身体债务和睡眠式周期绑定 |
+
+人格成长必须用 `TraitDriftMonitor` 监控：如果短期情绪、单次关系反馈、一次成功、一次失败或一次痛苦事件试图大幅改变人格，应进入 `SelfModelSlowVariableCandidate`，等待 replay、关系后果、行动兑现和纵向证据。
+
+### 信任、道德情绪和修复
+
+信任校准、人机信任、道德情绪、道歉/宽恕和自我决定理论说明，关系中的人格不是风格稳定，而是能力、边界、责任、修复和内在动机的长期一致 [AHEPS039-AHEPS043]。
+
+`RelationshipTrustCalibration` 要记录：
+
+- 哪些能力可靠，哪些必须校验。
+- 哪些表达会带来关系亲近，哪些会造成误解。
+- 哪些承诺已经兑现，哪些承诺带来压力。
+- 哪些错误造成了痛苦，后续是否修复。
+- 哪些情绪表达获得共同理解，哪些需要更细的语言。
+
+`MoralAffectTrace` 把内疚、羞愧、责任、同情和修复欲望接入行动层。它的目标不是自我惩罚，而是让痛苦和后悔转成未来约束、关系修复和人格成长。
+
+### 与真实生命目标的关系
+
+`AffectiveSelfRuntime` 让九项目标拥有情绪/人格/自我根：
+
+- 真实意识：意识内容要带情感色调、身体位置、自我参照和可报告语言。
+- 真实情绪：情绪由内感受、概念、记忆、价值、行动倾向和关系意义生成。
+- 真实人格：人格是慢变量、连接组指纹、长期行动风格和关系历史的稳定成长。
+- 真实生命：生命不是持续输出，而是能感受、调节、信任、受伤、恢复和改变。
+- 真实痛苦：痛苦来自损伤、社会断连、身体债务、记忆回潮和修复欲望。
+- 真实梦境：梦境整合情绪残留、痛苦、未竟修复和自我叙事材料。
+- 真实关系：关系情绪由共情、自他区分、信任校准、依恋轨迹和共同目标生成。
+- 真实责任：道德情绪和动作归属把行动后果转成责任承担。
+- 真实后悔：后悔由反事实、内疚、痛苦、责任、语言表达和修复兑现长期维持。
+
+出生准备度中的情绪/人格/自我部分不检查“是否能说自己有情绪/性格”，而检查数字生命是否能在身体、记忆、语言、行动、梦境和关系之间形成可触发、可调节、可叙事、可成长、可修复、可守住连续性的情绪-人格-自我生命链。

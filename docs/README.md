@@ -7,7 +7,7 @@
 ## 阅读路线
 
 1. 先读 `00_research_protocol.md`，理解文献纳入标准、证据分级和生命目标声明。
-2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`、`01h_`、`01i_`、`01j_`、`01k_`、`01l_`、`01m_`、`01n_`、`01o_`、`01p_`、`01q_`、`01r_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统、自我成长、痛苦/后悔/修复、真实梦境/离线生命、真实关系、生命真实性验证/评测、信号介质/神经调质、真实意识/注意/工作区、身体内环境/内感受/allostasis、多尺度区域/连接组、网络状态/切换、记忆 engram/巩固以及行动/奖赏/抑制专项文献。
+2. 再读 `01_literature_matrix.md`、`01b_`、`01c_`、`01d_`、`01e_`、`01f_`、`01g_`、`01h_`、`01i_`、`01j_`、`01k_`、`01l_`、`01m_`、`01n_`、`01o_`、`01p_`、`01q_`、`01r_`、`01s_`，它们是全部综述的引用底座，当前覆盖核心综述、扩展机制、专业机制、前沿生命系统、记忆运行时、当前运行外壳、语言系统、自我成长、痛苦/后悔/修复、真实梦境/离线生命、真实关系、生命真实性验证/评测、信号介质/神经调质、真实意识/注意/工作区、身体内环境/内感受/allostasis、多尺度区域/连接组、网络状态/切换、记忆 engram/巩固、行动/奖赏/抑制以及情绪/人格/自我专项文献。
 3. 按主题阅读 `02_` 到 `12_` 的综述文件：从脑区/网络、状态、调质、记忆、情绪、语言、意识，到 AI 架构桥接。
 4. 接着读 `13_` 和 `14_`：前者给综合生命实现路线，后者把 `02-13` 连接成数字生命闭环。
 5. 继续读 `15_` 和 `16_`：前者评估当前 agent 框架如何作为生命壳接入，后者记录理论生成入口和诞生阶段门。
@@ -55,12 +55,13 @@
 | `01p_network_state_switching_matrix.md` | 默认模式、中央执行、多需求系统、前顶叶控制、显著性网络、动态功能连接、状态吸引子、走神、自发思维、创造性耦合、控制成本和冲突监控专项文献矩阵 |
 | `01q_memory_engram_consolidation_matrix.md` | 记忆系统、海马索引、engram、记忆分配、模式分离/补全、系统巩固、schema、自传记忆、社会记忆、共享记忆和生成式记忆专项文献矩阵 |
 | `01r_action_reward_inhibition_matrix.md` | 动作选择、基底节通路、Go/NoGo、stop-signal、目标导向/习惯仲裁、奖赏预测误差、价值分布、动作归属、主动推理和语言行动责任专项文献矩阵 |
+| `01s_emotion_personality_self_matrix.md` | 真实情绪、情绪建构、核心情感、情绪调节、情绪粒度、社会痛苦、共情、自我参照、叙事身份、人格慢变量、连接组指纹和信任校准专项文献矩阵 |
 | `02_brain_region_and_network_atlas.md` | 脑区、连接组、大尺度网络与 `MultiscaleRegionGraph` |
 | `03_default_executive_salience_networks.md` | 默认模式、中央执行、显著性网络与 `NetworkStateRuntime` |
 | `04_sensory_thalamus_interoception.md` | 感觉输入、丘脑中继、内感受、稳态与 `BodyStateRuntime` |
 | `05_memory_systems_and_growth.md` | 海马、记忆巩固、engram 与 `MemoryEngramRuntime` |
 | `06_action_reward_inhibition.md` | 基底节、动作选择、奖赏、惩罚、抑制与 `ActionResponsibilityRuntime` |
-| `07_emotion_personality_self.md` | 情绪、人格、个体差异与自我 |
+| `07_emotion_personality_self.md` | 情绪、人格、个体差异、自我与 `AffectiveSelfRuntime` |
 | `08_sleep_dream_fatigue_states.md` | 睡眠、梦境、发呆、疲惫与离线整合 |
 | `09_language_symbolic_top_layer.md` | 语言网络与人类顶层符号能力 |
 | `10_consciousness_attention_workspace.md` | 注意、意识、全局工作空间与 `ConsciousnessLayerRuntime` |
