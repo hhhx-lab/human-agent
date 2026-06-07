@@ -158,6 +158,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01an_prediction_active_inference_observation_driven_repair_patch.md` 已把主动预测 activation consolidation seed 推进为 observation-driven repair patch：consolidation repair finding intake、repair classification、belief/error repair、precision/sampling repair、language repair、relationship repair、dream/pain/regret repair、self rewrite repair、direction/birth readiness repair、rollback/quarantine repair、anti-forgetting repair、repair patch execution order、regression fixture seed、repair receipt、dashboard/stage 和 archive/replay-shadow handoff 都已固定。主动预测层因此能把离线巩固中保留下来的阻断转成下一轮可执行修复：DreamFactGate blocked write、CoreContinuity violation、birth readiness false open、关系 scope 缺口、语言责任路线缺口、痛苦后悔恢复缺口、rollback/quarantine release 缺口和防遗忘缺口，都拥有 patch family、before/after state、fixture 攻击、stage effect 和长期归档路线。
 
+`01ao_prediction_active_inference_archive_repair_receipt_batch.md` 已把主动预测 observation-driven repair patch 推进为 archive repair receipt batch：repair receipt archive intake、repair archive classification、belief/error repair archive、precision/sampling repair archive、language repair archive、relationship repair archive、dream/pain/regret repair archive、self rewrite repair archive、direction/birth readiness repair archive、rollback/quarantine repair archive、anti-forgetting repair archive、archive graph、digest baseline、replay seed、future probe seed、dashboard/stage 和 replay-shadow handoff 都已固定。主动预测层因此能把修复补丁写成长期生命档案：修复为什么发生、修复前是什么、期望修复后是什么、哪些仍被阻断、哪些要进入 replay/shadow、哪些会影响真实意识、情绪、人格、生命、痛苦、梦境、关系、责任和后悔，都能被未来重新激活。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
