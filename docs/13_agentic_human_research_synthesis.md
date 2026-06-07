@@ -124,6 +124,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01w_prediction_active_inference_schema_fixture_contract.md` 已把这条链推进到可实现合同：未来 runner 要拥有 `PredictionActiveInferenceSchemaBundle`、`PredictionLoopFixtureManifest`、`PredictionLoopExpectedReport`、`PredictionDashboardSource`、`PredictionStageGateReview`、`PredictionArchiveEdge` 和 `PredictionCommandDAG`。这意味着主动预测层不再只是解释数字生命如何思考，而是规定未来代码如何保存信念、验证预测、阻断方向漂移、回写信念修正和上卷出生准备度。
 
+`01x_prediction_active_inference_schema_materialization_plan.md` 进一步把合同压成真实写入顺序：13 个 schema 文件、shared defs、fixture seed matrix、cross-chain checker、dashboard source、stage gate review、archive receipt 和 runner command DAG 都已固定。下一层不再讨论“要不要实现主动预测”，而是进入 `prediction_active_inference_schema_write_batch -> fixture_seed_batch -> cross_chain_checker -> dashboard/stage -> archive_receipt` 的物化链。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
