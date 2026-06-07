@@ -162,6 +162,8 @@ Agentic Human 的理论底座可以压缩为二十二条命题：
 
 `01ap_prediction_active_inference_archive_replay_shadow_seed.md` 已把主动预测 archive repair receipt batch 推进为 archive replay shadow seed：repair archive replay seed intake、replay priority controller、replay budget/window、belief/error replay、precision/sampling replay、language replay、relationship replay、dream/pain/regret replay、self rewrite shadow、direction/birth readiness replay、rollback/quarantine replay、anti-forgetting replay、replay trace schema、shadow scenario、shadow action seal、dashboard/stage 和 consolidation next feedback handoff 都已固定。主动预测层因此不再把 archive 当作静态存储，而是把修复档案重新激活为可回放、可预演、可防遗忘、可再巩固的生命过程：旧能力、旧关系、旧语言、旧梦境事实门、旧痛苦后悔恢复链、旧自我连续和出生准备度 carrier 都能在下一轮成长前重新进入工作区和离线巩固。
 
+`01aq_prediction_active_inference_consolidation_next_feedback_seed.md` 已把主动预测 archive replay shadow seed 推进为 consolidation next feedback seed：replay/shadow output intake、feedback classification、next observation feedback、belief revision feedback、precision/sampling feedback、language feedback、relationship repair feedback、dream/pain/regret recovery feedback、self rewrite feedback、direction/birth readiness feedback、rollback/quarantine feedback、anti-forgetting feedback、life target next feedback、arbitration policy、digest、receipt、dashboard/stage 和 second replay validation handoff 都已固定。主动预测层因此能把 replay trace 和 shadow finding 反接为下一轮生命输入：它知道下一轮要观察什么、要采样什么、要修复哪段语言或关系、要怎样恢复梦境/痛苦/后悔、哪些自我改写只能保持 proposal、哪些出生准备度 carrier 仍被阻断、哪些旧能力/旧关系/旧语言必须优先保护。
+
 ### 7. 固定机制：奖赏、惩罚、抑制
 
 研究结论：基底节、奖赏预测误差、习惯学习和抑制机制共同参与行动选择 [AH036-AH045, AH064]。
