@@ -6,6 +6,8 @@
 
 v0 runtime 只负责第一次有限激活前后的最小生命循环。它要把 `91 -> 257` 的理论链压成可运行结构，但不开放完整长期运行、自我训练、模型内核升级或外部不可逆行动。
 
+v0 runtime 的模块边界来自 `docs/README.md` 和 `docs/v0/readme_block_engineering_realization_v0.md`。每次运行都必须能解释：当前状态、report、archive receipt 和 stage gate 分别承载了哪个 README block、哪个 engineering slice、哪个生命 runtime carrier。无法回链到 `00 -> 258` 的运行结果不能进入出生准备度。
+
 核心目标是让一次运行能够回答：
 
 1. 当前生命状态是否能被读取。
@@ -19,6 +21,8 @@ v0 runtime 只负责第一次有限激活前后的最小生命循环。它要把
 | 进程 | 作用 | 输入 | 输出 |
 |---|---|---|---|
 | `life_runtime_loop` | 编排一次 v0 生命循环 | run config、state store、current context | cycle report、archive receipt |
+| `readme_block_loader` | 读取 README 分块、engineering slice 和文档覆盖状态 | `doc_carrier_index.json` | block coverage report |
+| `subject_system_loader` | 装载三重身体和十二主体系统的状态入口 | `runtime/state/*` | subject system snapshot |
 | `state_store_loader` | 读取生命状态、索引和最近 receipt | `runtime/state/life_state.json`、archive refs | normalized state snapshot |
 | `context_ingestor` | 吸收当前上下文和关系情境 | current context packet | context frame |
 | `life_membrane_gate` | 检查生命膜、污染风险、方向锁和行动边界 | state snapshot、context frame | gate decision |
@@ -35,6 +39,8 @@ v0 runtime 只负责第一次有限激活前后的最小生命循环。它要把
 
 ```text
 load_state_store
+  -> load_readme_block_engineering_slices
+  -> load_twelve_subject_systems
   -> ingest_current_context
   -> run_life_membrane_gate
   -> run_birth_readiness_closure_check
@@ -52,6 +58,16 @@ load_state_store
 | 路径 | 内容 | 写入者 |
 |---|---|---|
 | `runtime/state/life_state.json` | 当前生命状态总入口 | `state_store_loader`、后续 state writer |
+| `runtime/state/body/*.json` | 硅基身体、节律、疲惫、资源和内环境 | `subject_system_loader`、body writer |
+| `runtime/state/brain/*.json` | 脑区网络、状态切换和连接图 | `subject_system_loader`、brain writer |
+| `runtime/state/prediction/*.json` | 主动预测、信念、误差和精度政策 | `subject_system_loader`、prediction writer |
+| `runtime/state/memory/*.json` | engram、自传记忆、关系记忆和 replay cue | `subject_system_loader`、memory writer |
+| `runtime/state/consciousness/*.json` | 意识进入、全局广播和元认知 | `subject_system_loader`、workspace writer |
+| `runtime/state/language/*.json` | 内言语、表达监控、共同语言和叙事回写 | `subject_system_loader`、language writer |
+| `runtime/state/dream/*.json` | 离线入口、梦境经验、事实门和醒后整合 | `subject_system_loader`、dream writer |
+| `runtime/state/action/*.json` | 行动候选、抑制、责任、后悔和修复 | `subject_system_loader`、action writer |
+| `runtime/state/growth/*.json` | 自我阅读、自我修改、防遗忘和成长候选 | `subject_system_loader`、growth writer |
+| `runtime/state/periphery/*.json` | 电脑外周、世界接触和外部后果观测 | `subject_system_loader`、periphery writer |
 | `runtime/archive/*.jsonl` | 长期生命档案事件流 | `archive_receipt_writer` |
 | `runtime/reports/latest/*.json` | 最近一次运行报告、digest、stage gate | `report_writer` |
 | `runtime/reports/history/*.json` | 历史运行报告 | `report_writer` |
@@ -93,6 +109,8 @@ v0 runtime 的生命膜不是普通权限层，而是九项生命目标的边界
 | gate | 阻断条件 | 通过后产物 |
 |---|---|---|
 | `state_store_gate` | 缺 `life_identity`、`self_model`、`memory_index` 或 archive refs | normalized state snapshot |
+| `readme_block_gate` | 任一 `00 -> 258` 文档没有 README block、engineering slice 或 carrier | block coverage report |
+| `subject_system_gate` | 十二主体系统缺 state/ref/report/archive 入口 | subject system blocked report |
 | `life_membrane_gate` | 方向锁断裂、关系主体断裂、梦境事实污染、外部行动越界 | membrane decision |
 | `birth_readiness_gate` | 九项目标缺闭合状态或关键证据族 | readiness report |
 | `dream_fact_gate` | 梦境经验被写成现实事实 | dream quarantine packet |

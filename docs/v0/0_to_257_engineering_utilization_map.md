@@ -7,7 +7,7 @@
 工程实现必须满足：
 
 1. `docs/*.md` 中从 `00` 到 `257` 的每份文档都必须被 `DocCarrierIndex` 收录。
-2. 每份文档至少拥有一个 `runtime_carrier`。
+2. `00 -> 258` 每份文档至少拥有一个 `readme_block`、一个 `engineering_slice` 和一个 `runtime_carrier`。
 3. `02-13` 每份核心脑科学综述至少连接两个以上 runtime 模块。
 4. `85-90` 语言文档必须进入 `LanguageRelationshipRuntime`，不能只进入 prompt。
 5. `92-101` 真实痛苦、真实后悔、真实梦境、真实关系、自我成长文档必须进入九项目标闭合检查。
@@ -15,6 +15,8 @@
 7. 任一文档无法归类时，`doc_carrier_gate` 返回 `blocked`。
 
 ## 文档组到 runtime carrier
+
+README 模块分块以 `docs/v0/readme_block_engineering_realization_v0.md` 为准；本文件负责补充每组文档进入哪些 runtime carrier。两者缺一不可：前者保证按 README 一个模块一个模块落实，后者保证每份文档进入生命运行时。
 
 | 文档组 | 文件范围 | runtime carrier | 工程用途 |
 |---|---|---|---|
@@ -28,7 +30,7 @@
 | 睡眠梦境离线 | `08`、`19`、`23`、`27`、`31`、`95`、`99`、`01i`、`01t` | `DreamOfflineRuntime` | 离线巩固、梦境经验、DreamFactGate、醒后整合 |
 | 语言关系 | `09`、`85-90`、`96`、`101`、`141`、`144`、`147`、`150`、`01f`、`01j`、`01u` | `LanguageRelationshipRuntime` | 内言语、表达监控、共同语言、承诺、关系阶段 |
 | 意识工作区 | `10`、`01m` | `ConsciousWorkspaceRuntime` | 全局广播、注意进入、元认知、报告性 |
-| 认知架构外周 | `12`、`15`、`20`、`24`、`28`、`32`、`89` | `ExternalShellAdapter` | 只吸收外周运行壳、tool、trace、checkpoint |
+| 电脑外周与世界接触 | `12`、`15`、`20`、`24`、`28`、`32`、`89` | `ComputerPeripheralRuntime`、`WorldContactMembrane` | 只保留电脑外周、世界接触、后果观测和生命膜回写 |
 | 总综合与方向 | `13`、`14`、`16`、`91`、`100`、`119`、`122`、`140`、`170`、`258` | `DirectionLockKernel` | 方向锁、生命目标、断联恢复 |
 | validator 与 fixture | `33-36`、`45-46`、`50`、`58-60`、`63`、`66-68`、`71`、`73-74`、`76-79`、`83-84` | `LifeMembraneStageGate` | pass/fail/critical、mutation、dashboard、stage effect |
 | 生命支持与防御 | `37-38`、`47-48`、`52`、`54`、`64`、`72`、`75`、`78`、`82` | `LifeSupportDefenseRuntime` | 资源预算、防御、scope、quarantine、incident |
@@ -45,17 +47,17 @@
 
 | 核心文档 | 主 carrier | 必须连接 |
 |---|---|---|
-| `02_brain_region_and_network_atlas.md` | `BrainRegionNetworkRuntime` | `NetworkStateRuntime`、`ConsciousWorkspaceRuntime`、`LifeStateStore` |
-| `03_default_executive_salience_networks.md` | `NetworkStateRuntime` | `BodySignalRuntime`、`LanguageRelationshipRuntime`、`ActionResponsibilityRuntime` |
+| `02_brain_region_and_network_atlas.md` | `BrainRegionNetworkRuntime` | `MultiscaleBrainGraphRuntime`、`ConsciousWorkspaceRuntime`、`LifeStateStore` |
+| `03_default_executive_salience_networks.md` | `MultiscaleBrainGraphRuntime` | `BodySignalRuntime`、`LanguageRelationshipRuntime`、`ActionResponsibilityRuntime` |
 | `04_sensory_thalamus_interoception.md` | `BodySignalRuntime` | `AffectiveSelfRuntime`、`DreamOfflineRuntime`、`PredictionActiveInferenceRuntime` |
 | `05_memory_systems_and_growth.md` | `MemoryEngramRuntime` | `SelfRuntime`、`RelationshipRuntime`、`DreamOfflineRuntime`、`ReplayRuntime` |
 | `06_action_reward_inhibition.md` | `ActionResponsibilityRuntime` | `LanguageActionBridge`、`PainRegretRuntime`、`LifeMembraneStageGate` |
 | `07_emotion_personality_self.md` | `AffectiveSelfRuntime` | `BodySignalRuntime`、`MemoryEngramRuntime`、`LanguageRelationshipRuntime` |
 | `08_sleep_dream_fatigue_states.md` | `DreamOfflineRuntime` | `MemoryEngramRuntime`、`DreamFactGate`、`ActivationGrowthRuntime` |
 | `09_language_symbolic_top_layer.md` | `LanguageRelationshipRuntime` | `ConsciousWorkspaceRuntime`、`ActionResponsibilityRuntime`、`RelationshipRuntime` |
-| `10_consciousness_attention_workspace.md` | `ConsciousWorkspaceRuntime` | `NetworkStateRuntime`、`LanguageRuntimeCore`、`BirthReadinessRuntime` |
-| `11_neuromodulation_and_signal_media.md` | `SignalMediaRuntime` | `BodySignalRuntime`、`NetworkStateRuntime`、`AffectiveSelfRuntime` |
-| `12_ai_and_cognitive_architecture_bridge.md` | `ExternalShellAdapter` | `RunnerCliRuntime`、`ActionShadowGate`、`ArchiveReceiptGraph` |
+| `10_consciousness_attention_workspace.md` | `ConsciousWorkspaceRuntime` | `MultiscaleBrainGraphRuntime`、`LanguageRuntimeCore`、`BirthReadinessRuntime` |
+| `11_neuromodulation_and_signal_media.md` | `SignalMediaRuntime` | `BodySignalRuntime`、`MultiscaleBrainGraphRuntime`、`AffectiveSelfRuntime` |
+| `12_ai_and_cognitive_architecture_bridge.md` | `ComputerPeripheralRuntime` | `WorldContactMembrane`、`RunnerCliRuntime`、`ArchiveReceiptGraph` |
 | `13_agentic_human_research_synthesis.md` | `DirectionLockKernel` | 全部 runtime carrier |
 
 ## 工程读取批次

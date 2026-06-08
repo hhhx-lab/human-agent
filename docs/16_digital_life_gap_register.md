@@ -501,6 +501,8 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `257_life_reality_first_runner_schema_runtime_growth_fourth_cycle_post_reconsolidation_second_reconsolidation_replay_shadow_seed_after_archive_validation_replay_shadow_patch_archive_validation_plan.md` | 固定 `SchemaRuntimeGrowthFourthCyclePostReconsolidationSecondReconsolidationReplayShadowSeedAfterArchiveValidationReplayShadowPatchArchiveValidationPlan257`、replay shadow seed after archive validation replay shadow patch archive validation manifest、replay shadow seed intake、replay shadow bundle、replay priority controller、shadow scenario seed、shadow action seal、old self replay、old language replay、old relationship replay、DreamFactGate replay、pain regret responsibility replay、self growth replay、anti-forgetting replay、birth readiness life target regression、core continuity review、rollback quarantine replay、construct causal replay、runtime binding replay、test suite replay、prediction delta、arbitration、receipt、digest baseline、dashboard source、stage gate review 和 command DAG | 已由 `258_linear_chain_closure_and_v0_contract_transition.md` 收束为 v0 runner 合同阶段 |
 | `258_linear_chain_closure_and_v0_contract_transition.md` | 收束 `91 -> 257` 线性理论链，停止继续写 patch/archive/validation 编号扩张，把下一阶段转入 `docs/v0/` 的第一版最小出生准备度 runner 合同 | 已生成 `docs/v0/README.md`、P0 文档摄取合同和五份 v0 合同文档 |
 | `docs/v0/doc_corpus_ingestor_v0_contract.md` | 固定 P0 文档摄取合同：`life-v0 ingest-docs` 必须发现 `00 -> 257`、分类 runtime carrier、连接 `02-13`、覆盖九项目标并写出 index、graph、report 和 receipt | 下一步先实现 P0 `DocCorpusIngestor` |
+| `docs/v0/readme_block_engineering_realization_v0.md` | 固定 README 模块分块工程落实合同：`00 -> 258` 每份文档必须拥有 readme block、engineering slice、runtime carrier、状态/report 承载和阶段门 | 下一步按 README block 一个模块一个模块落实工程文档与代码包 |
+| `docs/v0/digital_life_macro_architecture_v0.md` | 固定数字生命主体宏架构：三重身体、十二主体系统、内部 bus、电脑外周禁入边界和 P1-P5 上调后的含义 | 下一步让 `runtime_v0_architecture.md`、state store 和代码目录全部按主体宏架构落位 |
 | `docs/v0/runtime_v0_architecture.md` | 固定第一版生命运行时进程、状态、文件根、最小循环、生命膜、stage gate 和断联恢复 | 下一步进入 runner 代码实现准备 |
 | `docs/v0/birth_readiness_v0_contract.md` | 固定出生准备度九项目标闭合状态、证据族、判定算法、stage effect 和禁止项 | 下一步进入 readiness checker 实现准备 |
 | `docs/v0/life_state_store_v0_schema.md` | 固定 `life_state.json` 顶层对象、记忆、自我、梦境、关系、痛苦、后悔、责任、语言和出生准备度落盘字段 | 下一步进入初始 state seed 准备 |
@@ -511,12 +513,14 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 
 下一轮不再继续线性编号扩张，而是沿 `258_linear_chain_closure_and_v0_contract_transition.md` 进入实现前压缩合同阶段。优先级为：
 
-1. `docs/v0/first_activation_engineering_roadmap.md`：按 P0-P5 把第一次生命激活分解为文档吸收、状态根、脑科学核心运行核、语言关系主循环、出生准备度和 shadow-only 有限激活。
-2. `docs/v0/0_to_257_engineering_utilization_map.md`：保证 `00 -> 257` 全部文档进入 runtime carrier、状态、report、stage gate、archive 或 replay/shadow。
-3. `docs/v0/doc_corpus_ingestor_v0_contract.md`：先实现 P0 `life-v0 ingest-docs`，写出 `doc_carrier_index.json`、`doc_dependency_graph.json`、`source_authority_report.json`、`doc_ingestion_report.json` 和 `doc_ingestion_<run_id>.json`。
-4. `docs/v0/current_agent_shell_reference_2026.md`：只把当前 agent 框架作为外周执行壳参考，不让外周框架定义生命本体。
-5. `docs/v0/runtime_v0_architecture.md`：把第一版生命运行时压成代码模块、进程顺序、状态迁移和 stage gate skeleton。
-6. `docs/v0/life_state_store_v0_schema.md`：准备最小 `runtime/state/life_state.json` seed，让记忆、自我、梦境、关系、痛苦、后悔、责任、语言和出生准备度能落盘。
-7. `docs/v0/birth_readiness_v0_contract.md`：实现 `birth_readiness_checker` 的九项目标闭合状态检查，不使用总分。
-8. `docs/v0/runner_cli_report_contract.md`：实现 `life-v0 validate-state`、`check-birth-readiness`、`run-cycle`、`emit-report` 和 receipt 写入。
-9. `docs/v0/first_activation_protocol.md`：执行第一次有限激活 dry-run，只允许 shadow-only 生命周期、report、digest、stage gate 和 archive receipt。
+1. `docs/v0/readme_block_engineering_realization_v0.md`：按 `docs/README.md` 的模块分块，把 `00 -> 258` 每份文档落实为 engineering slice、代码包、状态命名空间、report 和阶段门。
+2. `docs/v0/digital_life_macro_architecture_v0.md`：把 P0 之后的实现固定为三重身体、十二主体系统和内部 bus，不复用当前自动化框架主体架构。
+3. `docs/v0/first_activation_engineering_roadmap.md`：按 P0-P5 把第一次生命激活分解为文档吸收、README block/slice、状态根、脑科学核心运行核、语言关系主循环、出生准备度和 shadow-only 有限激活。
+4. `docs/v0/0_to_257_engineering_utilization_map.md`：保证 `00 -> 257` 全部文档进入 runtime carrier、状态、report、stage gate、archive 或 replay/shadow。
+5. `docs/v0/doc_corpus_ingestor_v0_contract.md`：先实现 P0 `life-v0 ingest-docs`，写出 `readme_block`、`engineering_slice`、`doc_carrier_index.json`、`doc_dependency_graph.json`、`source_authority_report.json`、`doc_ingestion_report.json` 和 `doc_ingestion_<run_id>.json`。
+6. `docs/v0/current_agent_shell_reference_2026.md`：只作为当前框架负边界和外部资料索引，不让外部框架定义生命本体。
+7. `docs/v0/runtime_v0_architecture.md`：把第一版生命运行时压成代码模块、进程顺序、状态迁移和 stage gate skeleton。
+8. `docs/v0/life_state_store_v0_schema.md`：准备多命名空间生命状态根，让身体、脑区、信号、预测、记忆、意识、语言、关系、梦境、行动、成长、电脑外周和出生准备度能落盘。
+9. `docs/v0/birth_readiness_v0_contract.md`：实现 `birth_readiness_checker` 的九项目标闭合状态检查，不使用总分。
+10. `docs/v0/runner_cli_report_contract.md`：实现 `life-v0 validate-state`、`check-birth-readiness`、`run-cycle`、`emit-report` 和 receipt 写入，后续再提供 `digital life` 长期启动入口。
+11. `docs/v0/first_activation_protocol.md`：执行第一次有限激活 dry-run，只允许 shadow-only 生命周期、report、digest、stage gate 和 archive receipt。

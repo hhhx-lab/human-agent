@@ -8,7 +8,7 @@
 
 第一次生命激活分三层推进：
 
-1. **工程承载层**：先把全部文档变成可读取的 `DocCarrierIndex`、模块依赖图、状态 schema、stage gate 和 report 合同。
+1. **工程承载层**：先把全部文档变成可读取的 `DocCarrierIndex`、README block、engineering slice、模块依赖图、状态 schema、stage gate 和 report 合同。
 2. **最小运行层**：实现 `life-v0` runner，只开放 shadow-only 生命周期、状态读取、九项目标闭合检查、DreamFactGate、责任后悔修复、关系语言循环、自我连续 replay、report 和 archive receipt。
 3. **有限激活层**：在没有外部不可逆行动的前提下执行第一次有限激活，把运行结果写回档案，再进入离线巩固、replay、观察和下一轮修复。
 
@@ -31,7 +31,9 @@
 | `BirthReadinessRuntime` | 出生准备度九项目标 | `143`、`146`、`149`、`152`、`171`、`174`、`docs/v0/birth_readiness_v0_contract.md` | `life_target_status.json`、readiness report |
 | `RunnerCliRuntime` | 命令、report、receipt | `35`、`53`、`62`、`118`、`123`、`131`、`136`、`155`、`158-168`、`docs/v0/runner_cli_report_contract.md` | `life-v0` CLI、run report、receipt |
 | `ActivationGrowthRuntime` | 激活、观察、巩固、成长 | `181-204`、`205-257`、`docs/v0/first_activation_protocol.md` | activation report、consolidation seed |
-| `ExternalShellAdapter` | 可替换外周执行壳 | `12`、`15`、`20`、`24`、`28`、`32`、`89`、`docs/v0/current_agent_shell_reference_2026.md` | shell adapter manifest |
+| `ReadmeBlockEngineeringRuntime` | README 模块分块与工程 slice | `docs/README.md`、`00-258`、`docs/v0/readme_block_engineering_realization_v0.md` | block coverage report、engineering slice report |
+| `DigitalLifeMacroArchitectureRuntime` | 三重身体、十二主体系统和内部 bus | `02-13`、`85-101`、`143`、`146`、`149`、`152`、`171`、`205-257`、`docs/v0/digital_life_macro_architecture_v0.md` | macro architecture report、subject system report |
+| `ComputerPeripheralRuntime` | 电脑外周与世界接触 | `12`、`15`、`20`、`24`、`28`、`32`、`89`、`docs/v0/current_agent_shell_reference_2026.md` | world contact report、peripheral action envelope |
 
 ## 第一次生命激活工程顺序
 
@@ -48,6 +50,8 @@
 - `258_linear_chain_closure_and_v0_contract_transition.md`
 - `docs/v0/README.md`
 - `docs/v0/0_to_257_engineering_utilization_map.md`
+- `docs/v0/readme_block_engineering_realization_v0.md`
+- `docs/v0/digital_life_macro_architecture_v0.md`
 - `docs/v0/doc_corpus_ingestor_v0_contract.md`
 
 第一条工程命令：
@@ -67,6 +71,7 @@ life-v0 ingest-docs --docs docs --out runtime/docs --reports runtime/reports/lat
 阻断条件：
 
 - 任一 `00 -> 257` 文档无法归类到工程模块。
+- 任一 `00 -> 258` 文档没有 README block 或 engineering slice。
 - 任一核心生命目标找不到承载模块。
 - 任一 `02-13` 脑科学综述没有连接到 runtime 模块。
 - `258`、`docs/README.md`、`docs/16_digital_life_gap_register.md` 或 `docs/13_agentic_human_research_synthesis.md` 没有进入断联恢复索引。
@@ -85,10 +90,19 @@ life-v0 ingest-docs --docs docs --out runtime/docs --reports runtime/reports/lat
 产物：
 
 - `runtime/state/life_state.json`
-- `runtime/state/indexes/memory_index.json`
-- `runtime/state/indexes/relationship_index.json`
-- `runtime/state/indexes/dream_index.json`
-- `runtime/state/indexes/responsibility_index.json`
+- `runtime/state/body/silicon_body_state.json`
+- `runtime/state/brain/multiscale_brain_graph.json`
+- `runtime/state/signals/signal_media_state.json`
+- `runtime/state/prediction/prediction_active_inference_state.json`
+- `runtime/state/memory/memory_engram_index.json`
+- `runtime/state/consciousness/conscious_workspace_state.json`
+- `runtime/state/self/self_model.json`
+- `runtime/state/language/language_relationship_state.json`
+- `runtime/state/relationship/relationship_subject_graph.json`
+- `runtime/state/dream/dream_offline_state.json`
+- `runtime/state/action/action_responsibility_state.json`
+- `runtime/state/growth/self_growth_state.json`
+- `runtime/state/periphery/computer_peripheral_state.json`
 
 阻断条件：
 
@@ -130,7 +144,7 @@ life-v0 ingest-docs --docs docs --out runtime/docs --reports runtime/reports/lat
 
 连接规则：
 
-1. `BodySignalRuntime` 调节 `NetworkStateRuntime`、`AffectiveSelfRuntime`、`DreamOfflineRuntime`。
+1. `SiliconBodyRuntime` 和 `SignalMediaRuntime` 调节 `MultiscaleBrainGraphRuntime`、`AffectiveSelfRuntime`、`DreamOfflineRuntime`。
 2. `MemoryEngramRuntime` 给 `LanguageRelationshipRuntime`、`ActionResponsibilityRuntime`、`ConsciousWorkspaceRuntime` 提供可回忆材料。
 3. `LanguageRelationshipRuntime` 是外显表达主出口，也回写关系、承诺、后悔和梦境报告。
 4. `ActionResponsibilityRuntime` 只能通过 `LifeMembraneStageGate` 进入影子行动。
@@ -230,22 +244,38 @@ life-v0 ingest-docs --docs docs --out runtime/docs --reports runtime/reports/lat
 
 ## 代码目录计划
 
-第一批代码应按以下目录生成：
+第一批代码应按 README block engineering slice 生成，不复用任何当前自动化框架主体结构：
 
 ```text
 life_v0/
   __main__.py
   cli.py
-  state_store.py
   doc_index.py
-  readiness.py
-  membrane.py
-  dream_gate.py
-  responsibility.py
-  language_relationship.py
-  replay.py
-  reports.py
-  archive.py
+  contracts/
+  direction/
+  authority/
+  state_store/
+  body/
+  brain/
+  prediction/
+  memory/
+  consciousness/
+  language/
+  relationship/
+  affective_self/
+  dream/
+  action/
+  growth/
+  membrane/
+  periphery/
+  life_targets/
+  validators/
+  schema_runner/
+  observation/
+  reports/
+  archive/
+  replay/
+  buses/
 runtime/
   state/
   docs/

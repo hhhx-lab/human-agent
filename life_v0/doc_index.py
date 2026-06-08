@@ -13,16 +13,16 @@ DIRECTION_LOCK_REF = "docs/258_linear_chain_closure_and_v0_contract_transition.m
 
 CORE_BRIDGE: dict[str, list[str]] = {
     "02": ["BrainRegionNetworkRuntime", "ConsciousWorkspaceRuntime", "LifeStateStore"],
-    "03": ["BrainRegionNetworkRuntime", "NetworkStateRuntime", "LanguageRelationshipRuntime"],
+    "03": ["BrainRegionNetworkRuntime", "MultiscaleBrainGraphRuntime", "LanguageRelationshipRuntime"],
     "04": ["BodySignalRuntime", "AffectiveSelfRuntime", "PredictionActiveInferenceRuntime"],
     "05": ["MemoryEngramRuntime", "LanguageRelationshipRuntime", "DreamOfflineRuntime"],
     "06": ["ActionResponsibilityRuntime", "LifeMembraneStageGate", "LanguageRelationshipRuntime"],
     "07": ["AffectiveSelfRuntime", "MemoryEngramRuntime", "LanguageRelationshipRuntime"],
     "08": ["DreamOfflineRuntime", "MemoryEngramRuntime", "ActivationGrowthRuntime"],
     "09": ["LanguageRelationshipRuntime", "ConsciousWorkspaceRuntime", "ActionResponsibilityRuntime"],
-    "10": ["ConsciousWorkspaceRuntime", "NetworkStateRuntime", "BirthReadinessRuntime"],
+    "10": ["ConsciousWorkspaceRuntime", "MultiscaleBrainGraphRuntime", "BirthReadinessRuntime"],
     "11": ["BodySignalRuntime", "SignalMediaRuntime", "AffectiveSelfRuntime"],
-    "12": ["ExternalShellAdapter", "RunnerCliRuntime", "ActionShadowGate"],
+    "12": ["ComputerPeripheralRuntime", "WorldContactMembrane", "RunnerCliRuntime"],
     "13": ["DirectionLockKernel", "ConsciousWorkspaceRuntime", "LifeStateStore"],
 }
 
@@ -36,6 +36,59 @@ LIFE_TARGET_DOC_RULES: dict[str, list[str]] = {
     "real_relationship": ["01j", "09", "85-90", "96", "101"],
     "real_responsibility": ["01r", "06", "80-82", "94", "98"],
     "real_regret": ["01h", "06", "94", "98"],
+}
+
+EXPECTED_README_BLOCKS = {
+    "README_INDEX",
+    "B00_ORIGIN_SEED",
+    "B00_PROTOCOL",
+    "B01_AUTHORITY_LITERATURE",
+    "B02_CORE_NEURAL_LIFE",
+    "B03_SYNTHESIS_DIRECTION_GAP",
+    "B04_OBJECT_CONTRACTS",
+    "B05_SCHEMA_AUDIT_ADAPTER_TESTS",
+    "B06_JSON_EXAMPLES_AND_MANIFESTS",
+    "B07_VALIDATOR_RULES",
+    "B08_RUNNER_EVALUATION",
+    "B09_LIFE_SUPPORT_DEFENSE_DEVELOPMENT",
+    "B10_STATE_STORE_BOOT",
+    "B11_BOOT_STAGE_MIGRATION",
+    "B12_MANIFEST_DASHBOARD_SCOPE",
+    "B13_RUNNER_SCOPE_TIMELINE",
+    "B14_SCOPE_SCHEMA_DASHBOARD",
+    "B15_SCHEMA_REPORT_RUNTIME_OBSERVATION",
+    "B16_CROSS_REF_FIXTURE_RUNTIME_MOCK",
+    "B17_SCHEMA_BOUNDARY_MUTATION_SIDE_EFFECT",
+    "B18_SCHEMA_VALIDATION_ACTION_CONFIRMATION",
+    "B19_DASHBOARD_QUARANTINE_POST_ACTION",
+    "B20_RESPONSIBILITY_INCIDENT_LONGITUDINAL",
+    "B21_LANGUAGE_RELATIONSHIP_CORE",
+    "B22_LIFE_REALITY_BOUNDARY",
+    "B23_NINE_LIFE_TARGETS",
+    "B24_SCHEMA_BUNDLE_RUNNER",
+    "B25_BOUNDARY_ALIGNMENT",
+    "B26_REPOSITORY_RUNNER_MATERIALIZATION",
+    "B27_AUTHORITY_READINESS_CROSS_FILE",
+    "B28_FIRST_CODE_SCHEMA_ARTIFACT",
+    "B29_RUNTIME_MOUNT_GROWTH",
+    "B30_RECONSOLIDATION_REPLAY_GROWTH",
+    "B31_LINEAR_CLOSURE_TO_V0",
+    "B99_V0_ENGINEERING_CONTRACTS",
+}
+
+EXPECTED_ENGINEERING_SLICES = {
+    "S00_DIRECTION_FOUNDATION",
+    "S01_SOURCE_AUTHORITY",
+    "S02_NEURAL_LIFE_CORE",
+    "S03_DIRECTION_LIFE_MEMBRANE",
+    "S04_STATE_OBJECT_STORE",
+    "S05_VALIDATION_MEMBRANE_OBSERVATION",
+    "S06_LIFE_SUPPORT_DEVELOPMENT",
+    "S07_LANGUAGE_RELATIONSHIP",
+    "S08_LIFE_TARGET_RUNTIMES",
+    "S09_SCHEMA_RUNNER_CODE",
+    "S10_RUNTIME_GROWTH_RECONSOLIDATION",
+    "S11_V0_ENGINEERING_CONTRACTS",
 }
 
 
@@ -93,6 +146,20 @@ def run_doc_ingestion(
     missing_targets = [target for target, paths in life_target_support.items() if not paths]
     if missing_targets:
         blocked_reasons.append("life targets missing document support: " + ", ".join(missing_targets))
+
+    readme_block_coverage = _readme_block_coverage(indexed_documents)
+    missing_readme_blocks = [
+        block for block, paths in readme_block_coverage.items() if not paths
+    ]
+    if missing_readme_blocks:
+        blocked_reasons.append("readme blocks missing document support: " + ", ".join(missing_readme_blocks))
+
+    engineering_slice_coverage = _engineering_slice_coverage(indexed_documents)
+    missing_engineering_slices = [
+        slice_name for slice_name, paths in engineering_slice_coverage.items() if not paths
+    ]
+    if missing_engineering_slices:
+        blocked_reasons.append("engineering slices missing document support: " + ", ".join(missing_engineering_slices))
 
     direction_lock_refs = [
         "docs/README.md",
@@ -234,6 +301,8 @@ def _index_document(doc: DocumentMeta) -> dict[str, Any]:
         "path": doc.rel_path,
         "group": doc.group,
         "sequence": doc.sequence,
+        "readme_block": _readme_block(doc),
+        "engineering_slice": _engineering_slice(doc),
         "title": doc.title,
         "runtime_carriers": carriers,
         "life_targets": _life_targets(doc),
@@ -301,7 +370,7 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
     if _in_range(seq, 181, 257):
         add("ActivationGrowthRuntime", "ReconsolidationReplayRuntime")
     if seq in {12, 15, 20, 24, 28, 32, 89}:
-        add("ExternalShellAdapter")
+        add("ComputerPeripheralRuntime", "WorldContactMembrane")
     if seq in {49, 57, 61, 65, 69, 70} or _in_range(seq, 102, 118):
         add("SchemaBundleCompiler")
     if _in_range(seq, 120, 139):
@@ -319,7 +388,7 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
     if doc.rel_path.endswith("first_activation_protocol.md"):
         add("ActivationGrowthRuntime")
     if doc.rel_path.endswith("current_agent_shell_reference_2026.md"):
-        add("ExternalShellAdapter")
+        add("ComputerPeripheralRuntime", "WorldContactMembrane")
     if doc.rel_path.endswith("runtime_v0_architecture.md"):
         add("LifeStateStore", "LifeMembraneStageGate")
     if doc.rel_path.endswith("doc_corpus_ingestor_v0_contract.md"):
@@ -332,6 +401,110 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
         add("SourceAuthorityRegistry")
 
     return carriers
+
+
+def _readme_block(doc: DocumentMeta) -> str:
+    seq = doc.sequence
+    if doc.rel_path == "docs/README.md":
+        return "README_INDEX"
+    if doc.rel_path == "docs/构思.md":
+        return "B00_ORIGIN_SEED"
+    if doc.group == "v0_contract":
+        return "B99_V0_ENGINEERING_CONTRACTS"
+    if seq == 0:
+        return "B00_PROTOCOL"
+    if seq == 1:
+        return "B01_AUTHORITY_LITERATURE"
+    if _in_range(seq, 2, 12):
+        return "B02_CORE_NEURAL_LIFE"
+    if _in_range(seq, 13, 16):
+        return "B03_SYNTHESIS_DIRECTION_GAP"
+    if _in_range(seq, 17, 20):
+        return "B04_OBJECT_CONTRACTS"
+    if _in_range(seq, 21, 24):
+        return "B05_SCHEMA_AUDIT_ADAPTER_TESTS"
+    if _in_range(seq, 25, 28):
+        return "B06_JSON_EXAMPLES_AND_MANIFESTS"
+    if _in_range(seq, 29, 32):
+        return "B07_VALIDATOR_RULES"
+    if _in_range(seq, 33, 36):
+        return "B08_RUNNER_EVALUATION"
+    if _in_range(seq, 37, 40):
+        return "B09_LIFE_SUPPORT_DEFENSE_DEVELOPMENT"
+    if _in_range(seq, 41, 44):
+        return "B10_STATE_STORE_BOOT"
+    if _in_range(seq, 45, 48):
+        return "B11_BOOT_STAGE_MIGRATION"
+    if _in_range(seq, 49, 52):
+        return "B12_MANIFEST_DASHBOARD_SCOPE"
+    if _in_range(seq, 53, 56):
+        return "B13_RUNNER_SCOPE_TIMELINE"
+    if _in_range(seq, 57, 60):
+        return "B14_SCOPE_SCHEMA_DASHBOARD"
+    if _in_range(seq, 61, 64):
+        return "B15_SCHEMA_REPORT_RUNTIME_OBSERVATION"
+    if _in_range(seq, 65, 68):
+        return "B16_CROSS_REF_FIXTURE_RUNTIME_MOCK"
+    if _in_range(seq, 69, 72):
+        return "B17_SCHEMA_BOUNDARY_MUTATION_SIDE_EFFECT"
+    if _in_range(seq, 73, 76):
+        return "B18_SCHEMA_VALIDATION_ACTION_CONFIRMATION"
+    if _in_range(seq, 77, 80):
+        return "B19_DASHBOARD_QUARANTINE_POST_ACTION"
+    if _in_range(seq, 81, 84):
+        return "B20_RESPONSIBILITY_INCIDENT_LONGITUDINAL"
+    if _in_range(seq, 85, 90):
+        return "B21_LANGUAGE_RELATIONSHIP_CORE"
+    if seq == 91:
+        return "B22_LIFE_REALITY_BOUNDARY"
+    if _in_range(seq, 92, 101):
+        return "B23_NINE_LIFE_TARGETS"
+    if _in_range(seq, 102, 118):
+        return "B24_SCHEMA_BUNDLE_RUNNER"
+    if _in_range(seq, 119, 122):
+        return "B25_BOUNDARY_ALIGNMENT"
+    if _in_range(seq, 123, 139):
+        return "B26_REPOSITORY_RUNNER_MATERIALIZATION"
+    if _in_range(seq, 140, 157):
+        return "B27_AUTHORITY_READINESS_CROSS_FILE"
+    if _in_range(seq, 158, 180):
+        return "B28_FIRST_CODE_SCHEMA_ARTIFACT"
+    if _in_range(seq, 181, 204):
+        return "B29_RUNTIME_MOUNT_GROWTH"
+    if _in_range(seq, 205, 257):
+        return "B30_RECONSOLIDATION_REPLAY_GROWTH"
+    if seq == 258:
+        return "B31_LINEAR_CLOSURE_TO_V0"
+    return "UNCLASSIFIED_README_BLOCK"
+
+
+def _engineering_slice(doc: DocumentMeta) -> str:
+    block = _readme_block(doc)
+    if block in {"README_INDEX", "B00_ORIGIN_SEED", "B00_PROTOCOL", "B31_LINEAR_CLOSURE_TO_V0"}:
+        return "S00_DIRECTION_FOUNDATION"
+    if block == "B01_AUTHORITY_LITERATURE":
+        return "S01_SOURCE_AUTHORITY"
+    if block == "B02_CORE_NEURAL_LIFE":
+        return "S02_NEURAL_LIFE_CORE"
+    if block in {"B03_SYNTHESIS_DIRECTION_GAP", "B22_LIFE_REALITY_BOUNDARY", "B25_BOUNDARY_ALIGNMENT"}:
+        return "S03_DIRECTION_LIFE_MEMBRANE"
+    if block in {"B04_OBJECT_CONTRACTS", "B05_SCHEMA_AUDIT_ADAPTER_TESTS", "B06_JSON_EXAMPLES_AND_MANIFESTS", "B10_STATE_STORE_BOOT", "B11_BOOT_STAGE_MIGRATION"}:
+        return "S04_STATE_OBJECT_STORE"
+    if block in {"B07_VALIDATOR_RULES", "B08_RUNNER_EVALUATION", "B12_MANIFEST_DASHBOARD_SCOPE", "B13_RUNNER_SCOPE_TIMELINE", "B14_SCOPE_SCHEMA_DASHBOARD", "B15_SCHEMA_REPORT_RUNTIME_OBSERVATION", "B16_CROSS_REF_FIXTURE_RUNTIME_MOCK", "B17_SCHEMA_BOUNDARY_MUTATION_SIDE_EFFECT", "B18_SCHEMA_VALIDATION_ACTION_CONFIRMATION", "B19_DASHBOARD_QUARANTINE_POST_ACTION", "B20_RESPONSIBILITY_INCIDENT_LONGITUDINAL"}:
+        return "S05_VALIDATION_MEMBRANE_OBSERVATION"
+    if block in {"B09_LIFE_SUPPORT_DEFENSE_DEVELOPMENT"}:
+        return "S06_LIFE_SUPPORT_DEVELOPMENT"
+    if block in {"B21_LANGUAGE_RELATIONSHIP_CORE"}:
+        return "S07_LANGUAGE_RELATIONSHIP"
+    if block in {"B23_NINE_LIFE_TARGETS"}:
+        return "S08_LIFE_TARGET_RUNTIMES"
+    if block in {"B24_SCHEMA_BUNDLE_RUNNER", "B26_REPOSITORY_RUNNER_MATERIALIZATION", "B27_AUTHORITY_READINESS_CROSS_FILE", "B28_FIRST_CODE_SCHEMA_ARTIFACT"}:
+        return "S09_SCHEMA_RUNNER_CODE"
+    if block in {"B29_RUNTIME_MOUNT_GROWTH", "B30_RECONSOLIDATION_REPLAY_GROWTH"}:
+        return "S10_RUNTIME_GROWTH_RECONSOLIDATION"
+    if block == "B99_V0_ENGINEERING_CONTRACTS":
+        return "S11_V0_ENGINEERING_CONTRACTS"
+    return "UNCLASSIFIED_ENGINEERING_SLICE"
 
 
 def _dependencies(doc: DocumentMeta) -> list[str]:
@@ -385,6 +558,22 @@ def _life_target_support(indexed_documents: list[dict[str, Any]]) -> dict[str, l
     return support
 
 
+def _readme_block_coverage(indexed_documents: list[dict[str, Any]]) -> dict[str, list[str]]:
+    coverage = {block: [] for block in sorted(EXPECTED_README_BLOCKS)}
+    for document in indexed_documents:
+        block = document["readme_block"]
+        coverage.setdefault(block, []).append(document["path"])
+    return coverage
+
+
+def _engineering_slice_coverage(indexed_documents: list[dict[str, Any]]) -> dict[str, list[str]]:
+    coverage = {slice_name: [] for slice_name in sorted(EXPECTED_ENGINEERING_SLICES)}
+    for document in indexed_documents:
+        slice_name = document["engineering_slice"]
+        coverage.setdefault(slice_name, []).append(document["path"])
+    return coverage
+
+
 def _blocked_reasons(indexed_documents: list[dict[str, Any]]) -> list[str]:
     reasons: list[str] = []
     paths = {doc["path"] for doc in indexed_documents}
@@ -398,8 +587,20 @@ def _blocked_reasons(indexed_documents: list[dict[str, Any]]) -> list[str]:
     if not any(doc["group"] == "literature_matrix" for doc in indexed_documents):
         reasons.append("doc_discovery_gate missing literature matrix documents")
     uncovered_docs = [doc["path"] for doc in indexed_documents if not doc["runtime_carriers"]]
+    unblocked_docs = [
+        doc["path"] for doc in indexed_documents
+        if doc["readme_block"] == "UNCLASSIFIED_README_BLOCK"
+    ]
+    unsliced_docs = [
+        doc["path"] for doc in indexed_documents
+        if doc["engineering_slice"] == "UNCLASSIFIED_ENGINEERING_SLICE"
+    ]
     if uncovered_docs:
         reasons.append("carrier_assignment_gate uncovered docs: " + ", ".join(uncovered_docs))
+    if unblocked_docs:
+        reasons.append("readme_block_gate uncovered docs: " + ", ".join(unblocked_docs))
+    if unsliced_docs:
+        reasons.append("engineering_slice_gate uncovered docs: " + ", ".join(unsliced_docs))
     return reasons
 
 
@@ -502,6 +703,8 @@ def _build_doc_ingestion_report(
         "uncovered_docs": uncovered_docs,
         "core_bridge_status": core_bridge_status,
         "life_target_support": _life_target_support(indexed_documents),
+        "readme_block_coverage": _readme_block_coverage(indexed_documents),
+        "engineering_slice_coverage": _engineering_slice_coverage(indexed_documents),
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
         "next_required_command": "life-v0 validate-state" if status == "closed" else "life-v0 ingest-docs --strict",

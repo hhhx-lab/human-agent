@@ -51,6 +51,23 @@ class DocCorpusIngestorTests(unittest.TestCase):
             doc = next(item for item in index["documents"] if item["sequence"] == sequence)
             self.assertGreaterEqual(len(doc["runtime_carriers"]), 2, doc["path"])
 
+        for doc in index["documents"]:
+            self.assertNotEqual(doc["readme_block"], "UNCLASSIFIED_README_BLOCK", doc["path"])
+            self.assertNotEqual(doc["engineering_slice"], "UNCLASSIFIED_ENGINEERING_SLICE", doc["path"])
+
+        self.assertEqual(
+            paths["docs/02_brain_region_and_network_atlas.md"]["readme_block"],
+            "B02_CORE_NEURAL_LIFE",
+        )
+        self.assertEqual(
+            paths["docs/258_linear_chain_closure_and_v0_contract_transition.md"]["engineering_slice"],
+            "S00_DIRECTION_FOUNDATION",
+        )
+        self.assertEqual(
+            paths["docs/v0/readme_block_engineering_realization_v0.md"]["engineering_slice"],
+            "S11_V0_ENGINEERING_CONTRACTS",
+        )
+
         life_targets = {target for doc in index["documents"] for target in doc["life_targets"]}
         self.assertEqual(
             {
@@ -83,6 +100,10 @@ class DocCorpusIngestorTests(unittest.TestCase):
         self.assertEqual(report["status"], "closed")
         self.assertEqual(report["stage_effect"], "allow_p1")
         self.assertEqual(report["blocked_reasons"], [])
+        self.assertIn("B02_CORE_NEURAL_LIFE", report["readme_block_coverage"])
+        self.assertIn("S02_NEURAL_LIFE_CORE", report["engineering_slice_coverage"])
+        self.assertTrue(all(report["readme_block_coverage"].values()))
+        self.assertTrue(all(report["engineering_slice_coverage"].values()))
 
         self.assertEqual(receipt["schema_version"], "doc_ingestion_receipt_v0")
         self.assertEqual(receipt["run_id"], "test-doc-ingest")

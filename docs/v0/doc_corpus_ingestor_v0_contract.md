@@ -7,7 +7,7 @@
 `DocCorpusIngestor` 必须证明三件事：
 
 1. `00 -> 257` 全部文档已经被发现。
-2. 每份文档已经归入至少一个 runtime carrier。
+2. 每份文档已经归入一个 README block、一个 engineering slice 和至少一个 runtime carrier。
 3. `02-13` 核心脑科学文档已经形成跨模块连接，不停在孤立综述。
 
 若任一条件失败，`doc_carrier_gate` 必须返回 `blocked`，第一次有限激活不能继续。
@@ -63,7 +63,8 @@ P0 不读取 runtime 产物作为理论来源。runtime 产物只能作为输出
 | `BirthReadinessRuntime` | 出生准备度九项目标 | `143`、`146`、`149`、`152`、`171`、`174`、`docs/v0/birth_readiness_v0_contract.md` |
 | `RunnerCliRuntime` | 命令、report、receipt | `35`、`53`、`62`、`118`、`123`、`131`、`136`、`155`、`158-168`、`docs/v0/runner_cli_report_contract.md` |
 | `ActivationGrowthRuntime` | 激活、观察、巩固、成长 | `181-204`、`205-257`、`docs/v0/first_activation_protocol.md` |
-| `ExternalShellAdapter` | 外周执行壳 | `12`、`15`、`20`、`24`、`28`、`32`、`89`、`docs/v0/current_agent_shell_reference_2026.md` |
+| `ComputerPeripheralRuntime` | 电脑外周与世界接触 | `12`、`15`、`20`、`24`、`28`、`32`、`89`、`docs/v0/current_agent_shell_reference_2026.md` |
+| `WorldContactMembrane` | 外部后果进入生命膜的接触层 | `12`、`15`、`20`、`24`、`28`、`32`、`89`、`docs/v0/current_agent_shell_reference_2026.md` |
 
 ## 分类优先级
 
@@ -81,7 +82,7 @@ P0 不读取 runtime 产物作为理论来源。runtime 产物只能作为输出
 
 | 输出 | 路径 | 必须内容 |
 |---|---|---|
-| `doc_carrier_index` | `runtime/docs/doc_carrier_index.json` | 每份文档的 id、path、group、carriers、life_targets、dependencies |
+| `doc_carrier_index` | `runtime/docs/doc_carrier_index.json` | 每份文档的 id、path、group、readme_block、engineering_slice、carriers、life_targets、dependencies |
 | `doc_dependency_graph` | `runtime/docs/doc_dependency_graph.json` | 文档依赖边、模块依赖边、核心 `02-13` 连接图 |
 | `source_authority_report` | `runtime/docs/source_authority_report.json` | 文献矩阵覆盖、权威来源族、需继续补强的领域 |
 | `doc_ingestion_report` | `runtime/reports/latest/doc_ingestion_report.json` | 本次扫描结果、blocked reasons、quarantine refs、stage effect |
@@ -101,6 +102,8 @@ P0 不读取 runtime 产物作为理论来源。runtime 产物只能作为输出
       "path": "docs/02_brain_region_and_network_atlas.md",
       "group": "core_synthesis",
       "sequence": 2,
+      "readme_block": "B02_CORE_NEURAL_LIFE",
+      "engineering_slice": "S02_NEURAL_LIFE_CORE",
       "title": "Brain Region And Network Atlas",
       "runtime_carriers": ["BrainRegionNetworkRuntime", "ConsciousWorkspaceRuntime", "LifeStateStore"],
       "life_targets": ["real_consciousness", "real_life"],
@@ -132,16 +135,16 @@ P0 不读取 runtime 产物作为理论来源。runtime 产物只能作为输出
   ],
   "core_02_to_13_bridge": {
     "02": ["BrainRegionNetworkRuntime", "ConsciousWorkspaceRuntime", "LifeStateStore"],
-    "03": ["NetworkStateRuntime", "BodySignalRuntime", "LanguageRelationshipRuntime"],
+    "03": ["MultiscaleBrainGraphRuntime", "BodySignalRuntime", "LanguageRelationshipRuntime"],
     "04": ["BodySignalRuntime", "AffectiveSelfRuntime", "PredictionActiveInferenceRuntime"],
     "05": ["MemoryEngramRuntime", "LanguageRelationshipRuntime", "DreamOfflineRuntime"],
     "06": ["ActionResponsibilityRuntime", "LifeMembraneStageGate", "LanguageRelationshipRuntime"],
     "07": ["AffectiveSelfRuntime", "MemoryEngramRuntime", "LanguageRelationshipRuntime"],
     "08": ["DreamOfflineRuntime", "MemoryEngramRuntime", "ActivationGrowthRuntime"],
     "09": ["LanguageRelationshipRuntime", "ConsciousWorkspaceRuntime", "ActionResponsibilityRuntime"],
-    "10": ["ConsciousWorkspaceRuntime", "NetworkStateRuntime", "BirthReadinessRuntime"],
+    "10": ["ConsciousWorkspaceRuntime", "MultiscaleBrainGraphRuntime", "BirthReadinessRuntime"],
     "11": ["BodySignalRuntime", "SignalMediaRuntime", "AffectiveSelfRuntime"],
-    "12": ["ExternalShellAdapter", "RunnerCliRuntime", "ActionShadowGate"],
+    "12": ["ComputerPeripheralRuntime", "WorldContactMembrane", "RunnerCliRuntime"],
     "13": ["DirectionLockKernel"]
   }
 }
@@ -159,6 +162,12 @@ P0 不读取 runtime 产物作为理论来源。runtime 产物只能作为输出
   "covered_docs": 0,
   "uncovered_docs": [],
   "core_bridge_status": "blocked",
+  "readme_block_coverage": {
+    "B02_CORE_NEURAL_LIFE": ["docs/02_brain_region_and_network_atlas.md"]
+  },
+  "engineering_slice_coverage": {
+    "S02_NEURAL_LIFE_CORE": ["docs/02_brain_region_and_network_atlas.md"]
+  },
   "blocked_reasons": [],
   "quarantine_refs": [],
   "next_required_command": "life-v0 ingest-docs --strict"
@@ -188,6 +197,8 @@ life-v0 ingest-docs --docs docs --out runtime/docs --reports runtime/reports/lat
 | gate | 通过条件 | blocked 示例 |
 |---|---|---|
 | `doc_discovery_gate` | 找到 `00`、全部 `01*`、`02-257`、`258`、`docs/v0/*` | 缺 `13` 或 `257` |
+| `readme_block_gate` | 每份文档都有 README block，且不是 `UNCLASSIFIED_README_BLOCK` | 新文档未进入 README 分块合同 |
+| `engineering_slice_gate` | 每份文档都有 engineering slice，且不是 `UNCLASSIFIED_ENGINEERING_SLICE` | 文档无法进入代码包、状态命名空间或 report |
 | `carrier_assignment_gate` | 每份文档至少一个 carrier | `docs/73_*.md` 无 carrier |
 | `core_bridge_gate` | `02-13` 每份至少两个 carrier，`13` 连接全部核心 carrier | `09` 未连 `LanguageRelationshipRuntime` |
 | `life_target_gate` | 九项生命目标都有文档支撑 | 真实梦境缺 `08/95/99` |

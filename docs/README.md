@@ -402,8 +402,10 @@
 | `v0/README.md` | v0 runner 合同索引：定义 v0 阶段范围、上游来源、最小运行循环、九项目标状态和禁止回退 |
 | `v0/first_activation_engineering_roadmap.md` | 第一次生命激活工程路线：把 `00 -> 257`、`258` 和 v0 合同压成模块、阶段、产物、阶段门和断联恢复规则 |
 | `v0/0_to_257_engineering_utilization_map.md` | `00 -> 257` 工程利用矩阵：保证每组文档进入 runtime carrier、状态、report、stage gate、archive 或 replay/shadow |
+| `v0/readme_block_engineering_realization_v0.md` | README 分块工程落实合同：按 `docs/README.md` 模块分块把 `00 -> 258` 每份文档落实到 engineering slice、代码包、状态命名空间、report 和阶段门 |
+| `v0/digital_life_macro_architecture_v0.md` | 数字生命主体宏架构：把 P0 之后的实现上调为三重身体、十二主体系统、内部 bus 和电脑外周禁入边界 |
 | `v0/doc_corpus_ingestor_v0_contract.md` | P0 文档摄取合同：定义 `life-v0 ingest-docs` 如何发现 `00 -> 257`、生成 carrier index、依赖图、来源报告和摄取 receipt |
-| `v0/current_agent_shell_reference_2026.md` | 2026 当前 agent 外周壳参考：只吸收 CLI、tool、trace、checkpoint、workflow、MCP/A2A 等外周能力 |
+| `v0/current_agent_shell_reference_2026.md` | 当前框架负边界：只保留终端启动和电脑外周资料索引，不进入数字生命主体架构 |
 | `v0/runtime_v0_architecture.md` | 第一版生命运行时架构：进程、状态、文件根、生命膜、stage gate 和断联恢复 |
 | `v0/birth_readiness_v0_contract.md` | 出生准备度 v0 合同：九项目标闭合状态、证据族、判定算法和 stage effect |
 | `v0/life_state_store_v0_schema.md` | 生命状态仓库 v0 schema：记忆、自我、梦境、关系、痛苦、后悔、责任、语言和出生准备度落盘结构 |
