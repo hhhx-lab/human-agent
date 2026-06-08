@@ -16,7 +16,7 @@
 
 | 模块 | 生命位置 | 主要读取文档 | 第一批工程产物 |
 |---|---|---|---|
-| `DocCorpusIngestor` | 理论摄取与方向记忆 | `00`、全部 `01*`、`142`、`145`、`151`、`258`、`docs/v0/*` | `doc_carrier_index.json`、source authority report |
+| `DocCorpusIngestor` | 理论摄取与方向记忆 | `00`、全部 `01*`、`02-13`、`142`、`145`、`151`、`258`、`docs/v0/doc_corpus_ingestor_v0_contract.md`、`docs/v0/*` | `doc_carrier_index.json`、`doc_dependency_graph.json`、source authority report、doc ingestion receipt |
 | `DirectionLockKernel` | 方向锁与断联恢复 | `13`、`14`、`16`、`91`、`100`、`119`、`122`、`140`、`170`、`258` | `direction_lock.json`、resume lock report |
 | `BrainRegionNetworkRuntime` | 脑区、连接组、大尺度网络 | `01o`、`01p`、`02`、`03`、`10`、`11`、`13`、`14` | `network_state.json`、brain region graph |
 | `BodySignalRuntime` | 内感受、稳态、信号介质 | `01l`、`01n`、`01v`、`04`、`11`、`18`、`37` | `body_state_vector.json`、signal media frame |
@@ -47,6 +47,14 @@
 - `14-16` 跨模块地图、当前框架差距与生成入口
 - `258_linear_chain_closure_and_v0_contract_transition.md`
 - `docs/v0/README.md`
+- `docs/v0/0_to_257_engineering_utilization_map.md`
+- `docs/v0/doc_corpus_ingestor_v0_contract.md`
+
+第一条工程命令：
+
+```text
+life-v0 ingest-docs --docs docs --out runtime/docs --reports runtime/reports/latest --receipts runtime/receipts --strict
+```
 
 产物：
 
@@ -54,12 +62,14 @@
 - `runtime/docs/doc_dependency_graph.json`
 - `runtime/docs/source_authority_report.json`
 - `runtime/reports/latest/doc_ingestion_report.json`
+- `runtime/receipts/doc_ingestion_<run_id>.json`
 
 阻断条件：
 
 - 任一 `00 -> 257` 文档无法归类到工程模块。
 - 任一核心生命目标找不到承载模块。
 - 任一 `02-13` 脑科学综述没有连接到 runtime 模块。
+- `258`、`docs/README.md`、`docs/16_digital_life_gap_register.md` 或 `docs/13_agentic_human_research_synthesis.md` 没有进入断联恢复索引。
 
 ### P1：生命状态根落盘
 
