@@ -51,6 +51,7 @@
 - `258_linear_chain_closure_and_v0_contract_transition.md`
 - `docs/v0/README.md`
 - `docs/v0/v0_implementation_index.md`
+- `docs/v0/v0_module_execution_catalog.md`
 - `docs/v0/0_to_257_engineering_utilization_map.md`
 - `docs/v0/readme_block_engineering_realization_v0.md`
 - `docs/v0/digital_life_macro_architecture_v0.md`
@@ -406,9 +407,10 @@ tests/
 2. `docs/16_digital_life_gap_register.md`
 3. `docs/258_linear_chain_closure_and_v0_contract_transition.md`
 4. `docs/v0/first_activation_engineering_roadmap.md`
-5. `docs/v0/0_to_257_engineering_utilization_map.md`
-6. 最新 `runtime/reports/latest/digest.json`
-7. 最新 git state
+5. `docs/v0/v0_module_execution_catalog.md`
+6. `docs/v0/0_to_257_engineering_utilization_map.md`
+7. 最新 `runtime/reports/latest/digest.json`
+8. 最新 git state
 
 若 runtime 还不存在，则从 P0 开始。若 runtime 已存在，则从最新 digest 指向的 gate 继续。
 

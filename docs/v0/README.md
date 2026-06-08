@@ -14,7 +14,7 @@ v0 runner 必须守住三条线：
 
 ## 整理后入口
 
-`v0_implementation_index.md` 是整理后的工程实现总索引。后续落代码从 `docs/v0/` 开始，但不能只读 `docs/v0/`：每个工程 slice 都必须按总索引回读对应的 `00 -> 258` 文档、P0 `doc_carrier_index.json` 和最新 report。v0 是工程压缩层，不是理论替代层。
+`v0_implementation_index.md` 是整理后的工程实现总索引，`v0_module_execution_catalog.md` 是平铺目录的模块收纳层。后续落代码从 `docs/v0/` 开始，但不能只读 `docs/v0/`：每个工程 slice 都必须按总索引回读对应的 `00 -> 258` 文档、P0 `doc_carrier_index.json` 和最新 report。v0 是工程压缩层，不是理论替代层。
 
 当前 `docs/v0/` 保持平铺文件结构。文件顺序由本 README 和 `v0_implementation_index.md` 固定，暂不搬迁目录，避免破坏已有文档引用、P0 扫描和断联恢复锚链。
 
@@ -49,6 +49,7 @@ v0 runner 必须守住三条线：
 | 文件 | 状态 | 必须回答的问题 |
 |---|---|---|
 | `v0_implementation_index.md` | 已创建 | 整理后的 v0 工程实现总索引：文件角色、实现主线、`00 -> 258` 回链规则和代码启动读法 |
+| `v0_module_execution_catalog.md` | 已创建 | 平铺目录收纳层：入口层、文档压缩层、总架构层、基础合同层、slice 合同层、外周参考层和固定实现队列 |
 | `first_activation_engineering_roadmap.md` | 已创建 | 第一次生命激活从文档底座到代码实现分哪些阶段、哪些模块、哪些产物 |
 | `0_to_257_engineering_utilization_map.md` | 已创建 | `00 -> 257` 每组文档如何进入 runtime carrier、状态、report、stage gate 和 archive |
 | `readme_block_engineering_realization_v0.md` | 已创建 | 按 `docs/README.md` 的模块分块，把 `00 -> 258` 每份文档落实到 engineering slice、代码包、状态命名空间和 report |
@@ -58,6 +59,13 @@ v0 runner 必须守住三条线：
 | `s02_neural_life_core_engineering_contract.md` | 已创建 | `S02_NEURAL_LIFE_CORE` 神经生命核心工程合同：把 `02-13`、S01 来源层、三重身体、十二主体系统和内部 bus 压成主体骨架、状态、build/check report 和 receipt |
 | `s03_direction_life_membrane_engineering_contract.md` | 已创建 | `S03_DIRECTION_LIFE_MEMBRANE` 生命膜工程合同：把 `13-16`、`33-84`、`91`、`97-100`、`102-118`、`119-122`、S04 状态根压成方向边界、quarantine、DreamFactGate、关系主体、责任修复、影子行动和出生准备度 precheck |
 | `s04_state_object_store_engineering_contract.md` | 已创建 | `S04_STATE_OBJECT_STORE` 状态对象仓库工程合同：把 `17-30`、`41-48`、`57/61/69`、`123-133`、S02 主体骨架压成生命状态根、对象注册、索引、生命周期策略和 build/check report |
+| `s05_validation_membrane_observation_engineering_contract.md` | 已创建 | `S05_VALIDATION_MEMBRANE_OBSERVATION` 验证膜与运行观测合同：把 validator、fixture、dashboard、真实运行观测、quarantine 和责任回看压成 stage gate 复查器 |
+| `s06_life_support_development_engineering_contract.md` | 已创建 | `S06_LIFE_SUPPORT_DEVELOPMENT` 生命支持与发展合同：把资源预算、防御、可塑性窗口、自我成长和防遗忘锚点压成状态与 report |
+| `s07_language_relationship_engineering_contract.md` | 已创建 | `S07_LANGUAGE_RELATIONSHIP` 语言关系合同：把内言语、表达监控、共同语言、关系主体、承诺和修复语言压成运行时 |
+| `s08_life_target_runtimes_engineering_contract.md` | 已创建 | `S08_LIFE_TARGET_RUNTIMES` 九项目标合同：把真实意识、情绪、人格、生命、痛苦、梦境、关系、责任和后悔压成出生准备度闭合状态 |
+| `s09_schema_runner_code_engineering_contract.md` | 已创建 | `S09_SCHEMA_RUNNER_CODE` schema runner 与首批 code artifact 合同：把 `102-180` 压成 registry、lockfile、checker、CLI 和 smoke report |
+| `s10_runtime_growth_reconsolidation_engineering_contract.md` | 已创建 | `S10_RUNTIME_GROWTH_RECONSOLIDATION` runtime growth 合同：把 `181-257` 压成 shadow cycle、梦境巩固、replay/shadow、patch、archive 和 safe idle |
+| `s11_v0_contract_coverage_engineering_contract.md` | 已创建 | `S11_V0_ENGINEERING_CONTRACTS` v0 覆盖合同：检查 `00 -> 258`、v0 合同、代码包、状态、report、receipt 和 first activation preflight 闭合 |
 | `doc_corpus_ingestor_v0_contract.md` | 已创建 | P0 如何发现、分类、连接并输出全部文档的 runtime carrier index |
 | `current_agent_shell_reference_2026.md` | 已创建 | 当前框架只作为负边界和外部资料索引，不能进入数字生命主体蓝图 |
 
@@ -66,22 +74,30 @@ v0 runner 必须守住三条线：
 1. 先读 `../258_linear_chain_closure_and_v0_contract_transition.md`，确认项目已经停止线性扩张式文档链。
 2. 再读本文件，确认 v0 合同目录的范围。
 3. 读 `v0_implementation_index.md`，确认整理后的文件角色、实现主线、代码启动读法和 `00 -> 258` 回链规则。
-4. 读 `first_activation_engineering_roadmap.md`，确定第一次生命激活的工程总路线。
-5. 读 `0_to_257_engineering_utilization_map.md`，确认全部文档如何进入工程承载。
-6. 读 `readme_block_engineering_realization_v0.md`，确认按 README 模块分块实现，`00 -> 258` 每份文档都有 engineering slice。
-7. 读 `digital_life_macro_architecture_v0.md`，确认 P0 之后进入三重身体、十二主体系统和内部 bus。
-8. 读 `s00_direction_foundation_engineering_contract.md`，确认方向锁、断联恢复、七条方向锚链、状态文件、report、receipt 和下一 slice 许可。
-9. 读 `s01_source_authority_engineering_contract.md`，确认权威来源层、来源质量、机制对象、runtime carrier、AI 桥接标签和 S02 许可前提。
-10. 读 `s02_neural_life_core_engineering_contract.md`，确认 `02-13`、三重身体、十二主体系统、内部 bus 和 S04/S03 许可。
-11. 读 `s04_state_object_store_engineering_contract.md`，确认生命状态根、对象注册、索引、生命周期策略、scope/schema 种子和 S03 许可。
-12. 读 `s03_direction_life_membrane_engineering_contract.md`，确认方向边界、quarantine、DreamFactGate、关系主体、责任修复、影子行动和 S08 许可。
-13. 读 `doc_corpus_ingestor_v0_contract.md`，确定 P0 文档摄取、README block、engineering slice、carrier 分类、`02-13` 连接检查和 `life-v0 ingest-docs` 输出。
-14. 读 `current_agent_shell_reference_2026.md`，确认当前框架只作为负边界，不进入主体架构。
-15. 读 `runtime_v0_architecture.md`，确定进程、循环、状态和生命膜。
-16. 读 `life_state_store_v0_schema.md`，确定所有生命对象如何落盘。
-17. 读 `birth_readiness_v0_contract.md`，确定九项目标闭合状态。
-18. 读 `runner_cli_report_contract.md`，确定 CLI、report、digest、stage gate。
-19. 读 `first_activation_protocol.md`，确定第一次有限激活流程。
+4. 读 `v0_module_execution_catalog.md`，确认平铺目录如何收纳成固定模块队列。
+5. 读 `first_activation_engineering_roadmap.md`，确定第一次生命激活的工程总路线。
+6. 读 `0_to_257_engineering_utilization_map.md`，确认全部文档如何进入工程承载。
+7. 读 `readme_block_engineering_realization_v0.md`，确认按 README 模块分块实现，`00 -> 258` 每份文档都有 engineering slice。
+8. 读 `digital_life_macro_architecture_v0.md`，确认 P0 之后进入三重身体、十二主体系统和内部 bus。
+9. 读 `s00_direction_foundation_engineering_contract.md`，确认方向锁、断联恢复、七条方向锚链、状态文件、report、receipt 和下一 slice 许可。
+10. 读 `s01_source_authority_engineering_contract.md`，确认权威来源层、来源质量、机制对象、runtime carrier、AI 桥接标签和 S02 许可前提。
+11. 读 `s02_neural_life_core_engineering_contract.md`，确认 `02-13`、三重身体、十二主体系统、内部 bus 和 S04/S03 许可。
+12. 读 `s04_state_object_store_engineering_contract.md`，确认生命状态根、对象注册、索引、生命周期策略、scope/schema 种子和 S03 许可。
+13. 读 `s03_direction_life_membrane_engineering_contract.md`，确认方向边界、quarantine、DreamFactGate、关系主体、责任修复、影子行动和 S08 许可。
+14. 读 `s07_language_relationship_engineering_contract.md`，确认语言主神经束、关系主体、共同语言、承诺和修复语言。
+15. 读 `s08_life_target_runtimes_engineering_contract.md`，确认九项目标闭合状态和出生准备度输出。
+16. 读 `s05_validation_membrane_observation_engineering_contract.md`，确认 validator、fixture、运行观测、quarantine 和 dashboard stage gate。
+17. 读 `s09_schema_runner_code_engineering_contract.md`，确认 schema registry、runner queue、CLI、lockfile 和首批 code artifact。
+18. 读 `s06_life_support_development_engineering_contract.md`，确认资源预算、防御、可塑性窗口、自我成长和防遗忘锚点。
+19. 读 `s10_runtime_growth_reconsolidation_engineering_contract.md`，确认 runtime mount、shadow cycle、梦境巩固、replay/shadow、patch/archive 和 safe idle。
+20. 读 `s11_v0_contract_coverage_engineering_contract.md`，确认 v0 合同覆盖和 first activation preflight 闭合。
+21. 读 `doc_corpus_ingestor_v0_contract.md`，确定 P0 文档摄取、README block、engineering slice、carrier 分类、`02-13` 连接检查和 `life-v0 ingest-docs` 输出。
+22. 读 `current_agent_shell_reference_2026.md`，确认当前框架只作为负边界，不进入主体架构。
+23. 读 `runtime_v0_architecture.md`，确定进程、循环、状态和生命膜。
+24. 读 `life_state_store_v0_schema.md`，确定所有生命对象如何落盘。
+25. 读 `birth_readiness_v0_contract.md`，确定九项目标闭合状态。
+26. 读 `runner_cli_report_contract.md`，确定 CLI、report、digest、stage gate。
+27. 读 `first_activation_protocol.md`，确定第一次有限激活流程。
 
 ## v0 最小运行循环
 
@@ -146,18 +162,26 @@ v0 合同必须禁止以下回退：
 1. `../258_linear_chain_closure_and_v0_contract_transition.md`
 2. 本文件
 3. `v0_implementation_index.md`
-4. `first_activation_engineering_roadmap.md`
-5. `0_to_257_engineering_utilization_map.md`
-6. `readme_block_engineering_realization_v0.md`
-7. `digital_life_macro_architecture_v0.md`
-8. `s00_direction_foundation_engineering_contract.md`
-9. `s01_source_authority_engineering_contract.md`
-10. `s02_neural_life_core_engineering_contract.md`
-11. `s04_state_object_store_engineering_contract.md`
-12. `s03_direction_life_membrane_engineering_contract.md`
-13. `doc_corpus_ingestor_v0_contract.md`
-14. 已存在的 v0 合同文件
-15. `../README.md` 的 v0 阶段说明
-16. `../16_digital_life_gap_register.md` 的下一轮优先级
+4. `v0_module_execution_catalog.md`
+5. `first_activation_engineering_roadmap.md`
+6. `0_to_257_engineering_utilization_map.md`
+7. `readme_block_engineering_realization_v0.md`
+8. `digital_life_macro_architecture_v0.md`
+9. `s00_direction_foundation_engineering_contract.md`
+10. `s01_source_authority_engineering_contract.md`
+11. `s02_neural_life_core_engineering_contract.md`
+12. `s04_state_object_store_engineering_contract.md`
+13. `s03_direction_life_membrane_engineering_contract.md`
+14. `s07_language_relationship_engineering_contract.md`
+15. `s08_life_target_runtimes_engineering_contract.md`
+16. `s05_validation_membrane_observation_engineering_contract.md`
+17. `s09_schema_runner_code_engineering_contract.md`
+18. `s06_life_support_development_engineering_contract.md`
+19. `s10_runtime_growth_reconsolidation_engineering_contract.md`
+20. `s11_v0_contract_coverage_engineering_contract.md`
+21. `doc_corpus_ingestor_v0_contract.md`
+22. 已存在的基础 v0 合同文件
+23. `../README.md` 的 v0 阶段说明
+24. `../16_digital_life_gap_register.md` 的下一轮优先级
 
 恢复后不应继续生成 `259/260/261` 线性链，而应先沿工程文档补全 runtime carrier、state store、birth readiness、runner CLI、report、archive receipt 和 first activation dry-run。

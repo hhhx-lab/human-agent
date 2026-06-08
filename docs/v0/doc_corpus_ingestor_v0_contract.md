@@ -63,6 +63,7 @@ P0 不读取 runtime 产物作为理论来源。runtime 产物只能作为输出
 | `BirthReadinessRuntime` | 出生准备度九项目标 | `143`、`146`、`149`、`152`、`171`、`174`、`docs/v0/birth_readiness_v0_contract.md` |
 | `RunnerCliRuntime` | 命令、report、receipt | `35`、`53`、`62`、`118`、`123`、`131`、`136`、`155`、`158-168`、`docs/v0/runner_cli_report_contract.md` |
 | `ActivationGrowthRuntime` | 激活、观察、巩固、成长 | `181-204`、`205-257`、`docs/v0/first_activation_protocol.md` |
+| `V0ContractCoverageRuntime` | v0 合同覆盖与第一次有限激活 preflight | `258`、`docs/v0/*` |
 | `ComputerPeripheralRuntime` | 电脑外周与世界接触 | `12`、`15`、`20`、`24`、`28`、`32`、`89`、`docs/v0/current_agent_shell_reference_2026.md` |
 | `WorldContactMembrane` | 外部后果进入生命膜的接触层 | `12`、`15`、`20`、`24`、`28`、`32`、`89`、`docs/v0/current_agent_shell_reference_2026.md` |
 
@@ -227,7 +228,7 @@ P0 实现完成后必须能回答：
 2. 哪些文档进入 `LanguageRelationshipRuntime`。
 3. `02-13` 是否全部连接到 runtime carrier。
 4. 九项生命目标分别由哪些文档支撑。
-5. 哪些文档只被推断分类，需要后续补强。
+5. 哪些文档只被推断分类，需要进入分类强化队列。
 6. 断联恢复时应该先读哪些文档。
 7. 下一步 P1 需要哪些输出作为输入。
 

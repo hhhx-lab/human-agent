@@ -66,6 +66,26 @@
 | `S10_RUNTIME_GROWTH_RECONSOLIDATION` | `life_v0/growth/`、`dream/`、`archive/`、`replay/` | `runtime/state/growth/`、`dream/`、`archive/`、`replay/` | `growth_reconsolidation_report.json` |
 | `S11_V0_ENGINEERING_CONTRACTS` | `life_v0/contracts/` | `runtime/state/contracts/` | `v0_contract_coverage_report.json` |
 
+## Engineering Slice 合同锚点
+
+每个 slice 现在都有明确合同文件。后续落代码时，不允许只读本分块表，必须读取对应合同和合同列出的 `00 -> 258` 来源文档。
+
+| slice | 合同文件 | 直接前置 |
+|---|---|---|
+| `P0_DOC_CORPUS_INGESTION` | `doc_corpus_ingestor_v0_contract.md` | `docs/README.md`、`00 -> 258`、`docs/v0/*` |
+| `S00_DIRECTION_FOUNDATION` | `s00_direction_foundation_engineering_contract.md` | P0 doc carrier index |
+| `S01_SOURCE_AUTHORITY` | `s01_source_authority_engineering_contract.md` | S00 方向锁 |
+| `S02_NEURAL_LIFE_CORE` | `s02_neural_life_core_engineering_contract.md` | S01 权威来源层 |
+| `S04_STATE_OBJECT_STORE` | `s04_state_object_store_engineering_contract.md` | S02 主体骨架 |
+| `S03_DIRECTION_LIFE_MEMBRANE` | `s03_direction_life_membrane_engineering_contract.md` | S04 状态根、S00 方向锁、S02 主体骨架 |
+| `S07_LANGUAGE_RELATIONSHIP` | `s07_language_relationship_engineering_contract.md` | S03 生命膜、S04 状态根、S02 主体骨架 |
+| `S08_LIFE_TARGET_RUNTIMES` | `s08_life_target_runtimes_engineering_contract.md` | S03 生命膜、S07 语言关系、S04 状态根 |
+| `S05_VALIDATION_MEMBRANE_OBSERVATION` | `s05_validation_membrane_observation_engineering_contract.md` | S08 九项目标、S03 生命膜 |
+| `S09_SCHEMA_RUNNER_CODE` | `s09_schema_runner_code_engineering_contract.md` | S05 验证膜、S08 出生准备度 |
+| `S06_LIFE_SUPPORT_DEVELOPMENT` | `s06_life_support_development_engineering_contract.md` | S05 验证膜、S09 schema runner、S04 状态根 |
+| `S10_RUNTIME_GROWTH_RECONSOLIDATION` | `s10_runtime_growth_reconsolidation_engineering_contract.md` | S06 生命支持、S09 schema runner、S08 出生准备度 |
+| `S11_V0_ENGINEERING_CONTRACTS` | `s11_v0_contract_coverage_engineering_contract.md` | P0-S10 report、receipt、state、代码包 |
+
 ## S00 第一块工程合同
 
 `S00_DIRECTION_FOUNDATION` 已由 `docs/v0/s00_direction_foundation_engineering_contract.md` 单独落实。它把 `构思.md`、`00`、`docs/README.md`、`13`、`16`、`258`、v0 README、本文档、主体宏架构和 P0 输出压成：

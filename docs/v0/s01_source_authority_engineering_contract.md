@@ -11,7 +11,7 @@
 3. 每个脑科学主干文档 `02-13` 是否能回链到对应权威来源。
 4. 每个权威来源是否进入至少一个机制对象、runtime carrier、状态字段、report 或 stage gate。
 5. AI/cognitive architecture/LLM agent 来源是否被清楚标注为 AI 桥接资料，不替代脑科学主体来源。
-6. 后续补充新论文时，是否能进入 gap queue、authority receipt、文档回写和出生准备度证据族。
+6. 新增论文进入时，是否能进入 gap queue、authority receipt、文档回写和出生准备度证据族。
 
 S01 不直接实现脑区网络、语言、梦境、痛苦或行动责任。它为这些 runtime 提供来源、机制对象和证据桥。没有 S01 的来源登记，S02-S10 不允许把机制写入生命状态。
 
