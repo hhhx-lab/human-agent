@@ -78,6 +78,11 @@ life-v0 check-state-store --state runtime/state --reports runtime/reports/latest
 life-v0 build-life-membrane --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --neural-core runtime/state/neural_life_core --state runtime/state --out runtime/state/membrane --reports runtime/reports/latest --receipts runtime/receipts --strict
 life-v0 check-life-membrane --membrane runtime/state/membrane --state runtime/state --reports runtime/reports/latest --strict
 life-v0 check-birth-readiness --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --neural-core runtime/state/neural_life_core --state runtime/state --membrane runtime/state/membrane --out runtime/state/life_targets --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 run-validation-membrane --docs docs --doc-index runtime/docs/doc_carrier_index.json --state runtime/state --membrane runtime/state/membrane --life-targets runtime/state/life_targets --validation runtime/state/validation --observation runtime/state/observation --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 check-validation-membrane --state runtime/state --validation runtime/state/validation --observation runtime/state/observation --reports runtime/reports/latest --strict
+life-v0 build-schema-runner --docs docs --doc-index runtime/docs/doc_carrier_index.json --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 check-schema-runner --state runtime/state/schema_runner --reports runtime/reports/latest --strict
+life-v0 run-schema-smoke --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
 ```
 
 ## 第一版实现主线
@@ -143,11 +148,11 @@ v0 落代码时，每个模块必须保留四条回链：
 | `s02_neural_life_core_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/neural_core/` |
 | `s03_direction_life_membrane_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/membrane/` |
 | `s04_state_object_store_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/state_store/` |
-| `s05_validation_membrane_observation_engineering_contract.md` | `slice_contract_ready` | 已有 `life_v0/validators/`、`run-validation-membrane` 与 `check-validation-membrane`；下一工程推进点为 S09 |
+| `s05_validation_membrane_observation_engineering_contract.md` | `slice_contract_ready` | 已有 `life_v0/validators/`、`run-validation-membrane` 与 `check-validation-membrane`；S05 已交给 S09 |
 | `s06_life_support_development_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/body/`、`life_v0/growth/`、`life_v0/defense/` |
 | `s07_language_relationship_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/language/`、`life_v0/relationship/` |
 | `s08_life_target_runtimes_engineering_contract.md` | `slice_contract_ready` | 已有 `life_v0/life_targets/` 与 `check-birth-readiness`，继续保持与测试同步；S08 已交给 S05 |
-| `s09_schema_runner_code_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/schema_runner/` 和 CLI/report smoke |
+| `s09_schema_runner_code_engineering_contract.md` | `slice_contract_ready` | 已有 `life_v0/schema_runner/`、`build-schema-runner`、`check-schema-runner` 与 `run-schema-smoke`；下一工程推进点为 S06 |
 | `s10_runtime_growth_reconsolidation_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/growth/`、`life_v0/dream/`、`life_v0/archive/`、`life_v0/replay/` |
 | `s11_v0_contract_coverage_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/contracts/` 覆盖检查 |
 | `digital_life_macro_architecture_v0.md` | `contract_ready` | S02 合同必须从这里承接 |

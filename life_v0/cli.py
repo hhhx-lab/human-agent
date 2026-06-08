@@ -10,6 +10,7 @@ from .doc_index import run_doc_ingestion
 from .life_targets import run_birth_readiness
 from .membrane import run_check_life_membrane, run_life_membrane
 from .neural_core import run_check_neural_life_core, run_neural_life_core
+from .schema_runner import run_check_schema_runner, run_schema_runner, run_schema_smoke
 from .state_store import run_check_state_store, run_state_store
 from .validators import run_check_validation_membrane, run_validation_membrane
 
@@ -161,6 +162,36 @@ def build_parser() -> argparse.ArgumentParser:
     validation_check.add_argument("--observation", default="runtime/state/observation")
     validation_check.add_argument("--reports", default="runtime/reports/latest")
     validation_check.add_argument("--strict", action="store_true")
+
+    schema_runner = subparsers.add_parser(
+        "build-schema-runner",
+        help="Build the S09 schema runner code layer after S05 validation membrane.",
+    )
+    schema_runner.add_argument("--docs", default="docs")
+    schema_runner.add_argument("--doc-index", default="runtime/docs/doc_carrier_index.json")
+    schema_runner.add_argument("--state", default="runtime/state")
+    schema_runner.add_argument("--reports", default="runtime/reports/latest")
+    schema_runner.add_argument("--receipts", default="runtime/receipts")
+    schema_runner.add_argument("--run-id", default=None)
+    schema_runner.add_argument("--strict", action="store_true")
+
+    schema_runner_check = subparsers.add_parser(
+        "check-schema-runner",
+        help="Check the S09 schema runner state and stage gates.",
+    )
+    schema_runner_check.add_argument("--state", default="runtime/state/schema_runner")
+    schema_runner_check.add_argument("--reports", default="runtime/reports/latest")
+    schema_runner_check.add_argument("--strict", action="store_true")
+
+    schema_smoke = subparsers.add_parser(
+        "run-schema-smoke",
+        help="Run the S09 schema runner smoke chain after schema runner build.",
+    )
+    schema_smoke.add_argument("--state", default="runtime/state")
+    schema_smoke.add_argument("--reports", default="runtime/reports/latest")
+    schema_smoke.add_argument("--receipts", default="runtime/receipts")
+    schema_smoke.add_argument("--run-id", default=None)
+    schema_smoke.add_argument("--strict", action="store_true")
 
     return parser
 
@@ -320,6 +351,39 @@ def main(argv: list[str] | None = None) -> int:
             validation_dir=Path(args.validation),
             observation_dir=Path(args.observation),
             reports_dir=Path(args.reports),
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "build-schema-runner":
+        result = run_schema_runner(
+            docs_dir=Path(args.docs),
+            doc_index_path=Path(args.doc_index),
+            state_dir=Path(args.state),
+            reports_dir=Path(args.reports),
+            receipts_dir=Path(args.receipts),
+            run_id=args.run_id,
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "check-schema-runner":
+        result = run_check_schema_runner(
+            state_dir=Path(args.state),
+            reports_dir=Path(args.reports),
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "run-schema-smoke":
+        result = run_schema_smoke(
+            state_dir=Path(args.state),
+            reports_dir=Path(args.reports),
+            receipts_dir=Path(args.receipts),
+            run_id=args.run_id,
             strict=args.strict,
         )
         print(json.dumps(result.report, ensure_ascii=False, indent=2))

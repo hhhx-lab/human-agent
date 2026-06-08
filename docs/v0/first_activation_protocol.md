@@ -83,6 +83,9 @@ life-v0 build-life-membrane --docs docs --doc-index runtime/docs/doc_carrier_ind
 life-v0 check-life-membrane --membrane runtime/state/membrane --state runtime/state --reports runtime/reports/latest --strict
 life-v0 check-birth-readiness --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --neural-core runtime/state/neural_life_core --state runtime/state --membrane runtime/state/membrane --out runtime/state/life_targets --reports runtime/reports/latest --receipts runtime/receipts --strict
 life-v0 run-validation-membrane --docs docs --doc-index runtime/docs/doc_carrier_index.json --state runtime/state --membrane runtime/state/membrane --life-targets runtime/state/life_targets --validation runtime/state/validation --observation runtime/state/observation --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 build-schema-runner --docs docs --doc-index runtime/docs/doc_carrier_index.json --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 check-schema-runner --state runtime/state/schema_runner --reports runtime/reports/latest --strict
+life-v0 run-schema-smoke --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
 life-v0 run-cycle --state runtime/state --out runtime/reports/latest --shadow-only
 life-v0 write-archive-receipt --out runtime/reports/latest --receipts runtime/receipts
 life-v0 emit-report --out runtime/reports/latest

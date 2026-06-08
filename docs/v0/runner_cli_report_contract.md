@@ -26,6 +26,9 @@ life-v0 <command> [options]
 | `life-v0 check-birth-readiness` | S08 九项目标闭合状态和出生准备度 rollup | `runtime/state/life_targets/*`、`birth_readiness_report.json` |
 | `life-v0 run-validation-membrane` | S05 验证膜与运行观测 | `validation_membrane_report.json` |
 | `life-v0 check-validation-membrane` | S05 验证膜复查 | `validation_membrane_check_report.json` |
+| `life-v0 build-schema-runner` | S09 schema registry、lockfile、queue 与首批 code artifact | `runtime/state/schema_runner/*`、`schema_runner_report.json` |
+| `life-v0 check-schema-runner` | S09 schema runner 复查 | `schema_runner_check_report.json` |
+| `life-v0 run-schema-smoke` | S09 schema runner smoke 链 | `schema_smoke_report.json` |
 | `life-v0 run-cycle` | 执行一次有限生命循环 | run report、digest、stage gate、receipt |
 | `life-v0 emit-report` | 重新聚合最近一次 report 和 digest | report bundle |
 | `life-v0 write-archive-receipt` | 写入 archive receipt 并回链 | receipt |
@@ -103,6 +106,30 @@ life-v0 check-birth-readiness --docs docs --doc-index runtime/docs/doc_carrier_i
   "archive_receipt_ref": "runtime/receipts/birth_readiness_br-v0-0001.json",
   "next_allowed_slices": ["S05_VALIDATION_MEMBRANE_OBSERVATION"],
   "next_required_command": "life-v0 run-validation-membrane --strict"
+}
+```
+
+## `build-schema-runner`
+
+```text
+life-v0 build-schema-runner --docs docs --doc-index runtime/docs/doc_carrier_index.json --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
+```
+
+输出：
+
+```json
+{
+  "schema_version": "s09_schema_runner_code_report_v0",
+  "run_id": "schema-v0-0001",
+  "engineering_slice_ref": "S09_SCHEMA_RUNNER_CODE",
+  "status": "closed",
+  "stage_effect": "allow_next_slice",
+  "blocked_reasons": [],
+  "next_allowed_slices": [
+    "S06_LIFE_SUPPORT_DEVELOPMENT",
+    "S10_RUNTIME_GROWTH_RECONSOLIDATION"
+  ],
+  "next_required_command": "life-v0 build-life-support --strict"
 }
 ```
 
