@@ -8,6 +8,7 @@ from .authority import run_source_authority
 from .direction import run_direction_lock
 from .doc_index import run_doc_ingestion
 from .neural_core import run_check_neural_life_core, run_neural_life_core
+from .state_store import run_check_state_store, run_state_store
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -71,6 +72,27 @@ def build_parser() -> argparse.ArgumentParser:
     neural_core_check.add_argument("--reports", default="runtime/reports/latest")
     neural_core_check.add_argument("--strict", action="store_true")
 
+    state_store = subparsers.add_parser(
+        "build-state-store",
+        help="Build the S04 life state object store after S02 neural life core.",
+    )
+    state_store.add_argument("--docs", default="docs")
+    state_store.add_argument("--doc-index", default="runtime/docs/doc_carrier_index.json")
+    state_store.add_argument("--neural-core", default="runtime/state/neural_life_core")
+    state_store.add_argument("--out", default="runtime/state")
+    state_store.add_argument("--reports", default="runtime/reports/latest")
+    state_store.add_argument("--receipts", default="runtime/receipts")
+    state_store.add_argument("--run-id", default=None)
+    state_store.add_argument("--strict", action="store_true")
+
+    state_store_check = subparsers.add_parser(
+        "check-state-store",
+        help="Check the S04 life state object store state and stage gates.",
+    )
+    state_store_check.add_argument("--state", default="runtime/state")
+    state_store_check.add_argument("--reports", default="runtime/reports/latest")
+    state_store_check.add_argument("--strict", action="store_true")
+
     return parser
 
 
@@ -133,6 +155,29 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "check-neural-life-core":
         result = run_check_neural_life_core(
+            state_dir=Path(args.state),
+            reports_dir=Path(args.reports),
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "build-state-store":
+        result = run_state_store(
+            docs_dir=Path(args.docs),
+            doc_index_path=Path(args.doc_index),
+            neural_core_state_dir=Path(args.neural_core),
+            out_dir=Path(args.out),
+            reports_dir=Path(args.reports),
+            receipts_dir=Path(args.receipts),
+            run_id=args.run_id,
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "check-state-store":
+        result = run_check_state_store(
             state_dir=Path(args.state),
             reports_dir=Path(args.reports),
             strict=args.strict,

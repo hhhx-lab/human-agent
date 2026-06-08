@@ -416,6 +416,18 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
             "ComputerPeripheralRuntime",
             "ActivationGrowthRuntime",
         )
+    if doc.rel_path.endswith("s04_state_object_store_engineering_contract.md"):
+        add(
+            "LifeStateStore",
+            "MemoryEngramRuntime",
+            "AffectiveSelfRuntime",
+            "DreamOfflineRuntime",
+            "ActionResponsibilityRuntime",
+            "LanguageRelationshipRuntime",
+            "ComputerPeripheralRuntime",
+            "RunnerCliRuntime",
+            "SchemaBundleCompiler",
+        )
     if doc.rel_path == "docs/README.md" or seq in {13, 14, 16, 91, 100, 119, 122, 140, 170, 258}:
         add("DirectionLockKernel")
     if seq in {142, 145, 151}:
@@ -590,6 +602,48 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/v0/s01_source_authority_engineering_contract.md",
             "docs/v0/readme_block_engineering_realization_v0.md",
         ]
+    if doc.rel_path.endswith("s04_state_object_store_engineering_contract.md"):
+        return [
+            "docs/17_memory_trace_object_model.md",
+            "docs/18_internal_state_and_modulation_vector.md",
+            "docs/19_offline_consolidation_cycle.md",
+            "docs/20_agent_runtime_bridge_contract.md",
+            "docs/21_memory_schema_and_audit_protocol.md",
+            "docs/22_state_transition_and_threshold_model.md",
+            "docs/23_consolidation_report_and_dream_sandbox_protocol.md",
+            "docs/24_runtime_adapter_test_suite.md",
+            "docs/25_memory_trace_json_schema_examples.md",
+            "docs/26_state_machine_examples_and_failure_modes.md",
+            "docs/27_consolidation_report_examples.md",
+            "docs/28_runtime_adapter_manifest_examples.md",
+            "docs/29_memory_validator_rules.md",
+            "docs/30_state_transition_validator_rules.md",
+            "docs/41_runtime_state_store_schema.md",
+            "docs/42_life_core_minimal_object_graph.md",
+            "docs/43_policy_to_validator_traceability_matrix.md",
+            "docs/44_digital_life_boot_sequence.md",
+            "docs/45_boot_sequence_fixture_catalog.md",
+            "docs/46_stage_gate_validator_design.md",
+            "docs/47_coexistence_boundary_control_interface_spec.md",
+            "docs/48_state_store_migration_and_integrity_plan.md",
+            "docs/57_scope_graph_manifest_schema.md",
+            "docs/61_json_schema_bundle_draft.md",
+            "docs/69_schema_file_boundary_and_versioning_plan.md",
+            "docs/123_life_reality_runner_repository_layout_and_module_map.md",
+            "docs/124_life_reality_minimal_json_file_seed_plan.md",
+            "docs/125_life_reality_schema_registry_and_ref_resolution_plan.md",
+            "docs/126_life_reality_runner_smoke_command_execution_plan.md",
+            "docs/127_life_reality_first_seed_file_content_contract.md",
+            "docs/128_life_reality_registry_report_seed_examples.md",
+            "docs/129_life_reality_seed_fixture_and_report_validation_cases.md",
+            "docs/130_life_reality_first_materialized_json_files_write_plan.md",
+            "docs/131_life_reality_registry_runner_minimal_implementation_plan.md",
+            "docs/132_life_reality_materialized_json_schema_bundle_write_order.md",
+            "docs/133_life_reality_first_json_writer_and_reporter_contract.md",
+            "docs/v0/life_state_store_v0_schema.md",
+            "docs/v0/s02_neural_life_core_engineering_contract.md",
+            "docs/v0/readme_block_engineering_realization_v0.md",
+        ]
     if doc.rel_path.endswith("v0_implementation_index.md"):
         return [
             DIRECTION_LOCK_REF,
@@ -599,6 +653,8 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/v0/0_to_257_engineering_utilization_map.md",
             "docs/v0/s00_direction_foundation_engineering_contract.md",
             "docs/v0/s01_source_authority_engineering_contract.md",
+            "docs/v0/s02_neural_life_core_engineering_contract.md",
+            "docs/v0/s04_state_object_store_engineering_contract.md",
         ]
     if doc.group == "v0_contract":
         return [DIRECTION_LOCK_REF, "docs/v0/README.md"]
