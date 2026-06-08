@@ -442,6 +442,50 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
             "RunnerCliRuntime",
             "SchemaBundleCompiler",
         )
+    if doc.rel_path.endswith("s05_validation_membrane_observation_engineering_contract.md"):
+        add(
+            "LifeMembraneStageGate",
+            "RuntimeObservationIngestor",
+            "SchemaBundleCompiler",
+            "ActionResponsibilityRuntime",
+        )
+    if doc.rel_path.endswith("s06_life_support_development_engineering_contract.md"):
+        add(
+            "LifeSupportDefenseRuntime",
+            "ActivationGrowthRuntime",
+            "AffectiveSelfRuntime",
+            "DreamOfflineRuntime",
+        )
+    if doc.rel_path.endswith("s07_language_relationship_engineering_contract.md"):
+        add(
+            "LanguageRelationshipRuntime",
+            "ActionResponsibilityRuntime",
+            "DreamOfflineRuntime",
+        )
+    if doc.rel_path.endswith("s08_life_target_runtimes_engineering_contract.md"):
+        add(
+            "LifeTargetBundleRuntime",
+            "BirthReadinessRuntime",
+            "LifeMembraneStageGate",
+        )
+    if doc.rel_path.endswith("s09_schema_runner_code_engineering_contract.md"):
+        add(
+            "SchemaBundleCompiler",
+            "RunnerRepositoryKernel",
+            "FirstRunnerCodeKernel",
+            "RunnerCliRuntime",
+        )
+    if doc.rel_path.endswith("s10_runtime_growth_reconsolidation_engineering_contract.md"):
+        add(
+            "ActivationGrowthRuntime",
+            "ReconsolidationReplayRuntime",
+            "DreamOfflineRuntime",
+            "ActionResponsibilityRuntime",
+        )
+    if doc.rel_path.endswith("s11_v0_contract_coverage_engineering_contract.md"):
+        add("V0ContractCoverageRuntime", "DocCorpusIngestor")
+    if doc.rel_path.endswith("v0_module_execution_catalog.md"):
+        add("V0ContractCoverageRuntime", "DocCorpusIngestor", "DirectionLockKernel")
     if doc.rel_path == "docs/README.md" or seq in {13, 14, 16, 91, 100, 119, 122, 140, 170, 258}:
         add("DirectionLockKernel")
     if seq in {142, 145, 151}:

@@ -77,6 +77,7 @@ life-v0 build-state-store --docs docs --doc-index runtime/docs/doc_carrier_index
 life-v0 check-state-store --state runtime/state --reports runtime/reports/latest --strict
 life-v0 build-life-membrane --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --neural-core runtime/state/neural_life_core --state runtime/state --out runtime/state/membrane --reports runtime/reports/latest --receipts runtime/receipts --strict
 life-v0 check-life-membrane --membrane runtime/state/membrane --state runtime/state --reports runtime/reports/latest --strict
+life-v0 check-birth-readiness --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --neural-core runtime/state/neural_life_core --state runtime/state --membrane runtime/state/membrane --out runtime/state/life_targets --reports runtime/reports/latest --receipts runtime/receipts --strict
 ```
 
 ## 第一版实现主线
@@ -145,7 +146,7 @@ v0 落代码时，每个模块必须保留四条回链：
 | `s05_validation_membrane_observation_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/validators/`、`life_v0/observation/`、`life_v0/reports/` |
 | `s06_life_support_development_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/body/`、`life_v0/growth/`、`life_v0/defense/` |
 | `s07_language_relationship_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/language/`、`life_v0/relationship/` |
-| `s08_life_target_runtimes_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/life_targets/` 与 `check-birth-readiness` |
+| `s08_life_target_runtimes_engineering_contract.md` | `slice_contract_ready` | 已有 `life_v0/life_targets/` 与 `check-birth-readiness`，继续保持与测试同步；下一工程推进点为 S05 |
 | `s09_schema_runner_code_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/schema_runner/` 和 CLI/report smoke |
 | `s10_runtime_growth_reconsolidation_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/growth/`、`life_v0/dream/`、`life_v0/archive/`、`life_v0/replay/` |
 | `s11_v0_contract_coverage_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/contracts/` 覆盖检查 |

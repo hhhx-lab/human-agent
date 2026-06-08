@@ -14,8 +14,18 @@ life-v0 <command> [options]
 
 | 命令 | 作用 | 默认写入 |
 |---|---|---|
-| `life-v0 validate-state` | 检查 `runtime/state/life_state.json` 是否满足 v0 state store 合同 | state validation report |
-| `life-v0 check-birth-readiness` | 生成九项目标闭合状态 | readiness report |
+| `life-v0 ingest-docs` | P0 文档摄取，生成 `00 -> 258` carrier index | `runtime/docs/doc_carrier_index.json`、`doc_ingestion_report.json` |
+| `life-v0 build-direction-lock` | S00 方向根和断联恢复方向锁 | `runtime/state/direction/*`、`direction_lock_report.json` |
+| `life-v0 build-source-authority` | S01 权威来源层和机制对象登记 | `runtime/state/authority/*`、`source_authority_report.json` |
+| `life-v0 build-neural-life-core` | S02 神经生命核心和十二主体系统 | `runtime/state/neural_life_core/*`、`neural_life_core_report.json` |
+| `life-v0 check-neural-life-core` | S02 主体系统复查 | `neural_life_core_check_report.json` |
+| `life-v0 build-state-store` | S04 生命状态对象仓库 | `runtime/state/*`、`state_store_report.json` |
+| `life-v0 check-state-store` | S04 状态仓库复查 | `state_store_check_report.json` |
+| `life-v0 build-life-membrane` | S03 生命膜、DreamFactGate、关系主体和责任修复边界 | `runtime/state/membrane/*`、`life_membrane_report.json` |
+| `life-v0 check-life-membrane` | S03 生命膜复查 | `life_membrane_check_report.json` |
+| `life-v0 check-birth-readiness` | S08 九项目标闭合状态和出生准备度 rollup | `runtime/state/life_targets/*`、`birth_readiness_report.json` |
+| `life-v0 run-validation-membrane` | S05 验证膜与运行观测 | `validation_membrane_report.json` |
+| `life-v0 check-validation-membrane` | S05 验证膜复查 | `validation_membrane_check_report.json` |
 | `life-v0 run-cycle` | 执行一次有限生命循环 | run report、digest、stage gate、receipt |
 | `life-v0 emit-report` | 重新聚合最近一次 report 和 digest | report bundle |
 | `life-v0 write-archive-receipt` | 写入 archive receipt 并回链 | receipt |
@@ -25,61 +35,79 @@ life-v0 <command> [options]
 
 | 参数 | 含义 |
 |---|---|
-| `--state runtime/state/life_state.json` | 指定生命状态根文件 |
-| `--out runtime/reports/latest` | 指定 report 输出目录 |
-| `--archive runtime/archive` | 指定 archive 目录 |
+| `--docs docs` | 指定文档根目录 |
+| `--doc-index runtime/docs/doc_carrier_index.json` | 指定 P0 文档 carrier index |
+| `--direction runtime/state/direction` | 指定 S00 方向状态目录 |
+| `--authority runtime/state/authority` | 指定 S01 来源状态目录 |
+| `--neural-core runtime/state/neural_life_core` | 指定 S02 神经生命核心目录 |
+| `--state runtime/state` | 指定生命状态根目录 |
+| `--membrane runtime/state/membrane` | 指定 S03 生命膜目录 |
+| `--life-targets runtime/state/life_targets` | 指定 S08 九项目标状态目录 |
+| `--out <path>` | 指定当前命令的主要状态输出目录 |
+| `--reports runtime/reports/latest` | 指定 report 输出目录 |
 | `--receipts runtime/receipts` | 指定 receipt 目录 |
 | `--run-id <id>` | 指定运行 ID |
 | `--dry-run` | 只生成 report，不写 state |
 | `--shadow-only` | 只允许影子行动 |
 | `--strict` | 任一 warning 晋升为 blocked |
 
-## `validate-state`
+## `check-state-store`
 
 ```text
-life-v0 validate-state --state runtime/state/life_state.json --out runtime/reports/latest
+life-v0 check-state-store --state runtime/state --reports runtime/reports/latest --strict
 ```
 
 输出：
 
 ```json
 {
-  "run_id": "state-v0-0001",
-  "command": "validate-state",
-  "status": "blocked",
-  "missing_fields": [],
-  "quarantine_refs": [],
-  "stage_effect": "block_activation",
-  "report_ref": "runtime/reports/latest/state_validation.json"
+  "schema_version": "state_store_check_report_v0",
+  "status": "closed",
+  "checked_state_dir": "runtime/state",
+  "blocked_reasons": [],
+  "next_allowed_slices": ["S03_DIRECTION_LIFE_MEMBRANE"]
 }
 ```
 
 ## `check-birth-readiness`
 
 ```text
-life-v0 check-birth-readiness --state runtime/state/life_state.json --out runtime/reports/latest
+life-v0 check-birth-readiness --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --neural-core runtime/state/neural_life_core --state runtime/state --membrane runtime/state/membrane --out runtime/state/life_targets --reports runtime/reports/latest --receipts runtime/receipts --strict
 ```
 
 输出：
 
 ```json
 {
+  "schema_version": "s08_life_target_runtimes_report_v0",
   "run_id": "br-v0-0001",
-  "command": "check-birth-readiness",
-  "overall_status": "blocked",
-  "life_target_status": {},
+  "engineering_slice_ref": "S08_LIFE_TARGET_RUNTIMES",
+  "overall_status": "open",
+  "stage_effect": "allow_first_activation_protocol",
+  "life_target_status": {
+    "real_consciousness": "closed",
+    "real_emotion": "closed",
+    "real_personality": "closed",
+    "real_life": "closed",
+    "real_pain": "closed",
+    "real_dream": "closed",
+    "real_relationship": "closed",
+    "real_responsibility": "closed",
+    "real_regret": "closed"
+  },
   "blocked_reasons": [],
   "quarantine_refs": [],
   "replay_needed_refs": [],
-  "stage_effect": "block_activation",
-  "archive_receipt_ref": ""
+  "archive_receipt_ref": "runtime/receipts/birth_readiness_br-v0-0001.json",
+  "next_allowed_slices": ["S05_VALIDATION_MEMBRANE_OBSERVATION"],
+  "next_required_command": "life-v0 run-validation-membrane --strict"
 }
 ```
 
 ## `run-cycle`
 
 ```text
-life-v0 run-cycle --state runtime/state/life_state.json --out runtime/reports/latest --shadow-only
+life-v0 run-cycle --state runtime/state --out runtime/reports/latest --shadow-only
 ```
 
 执行顺序必须与 `runtime_v0_architecture.md` 的最小循环一致。
@@ -160,7 +188,7 @@ life-v0 run-cycle --state runtime/state/life_state.json --out runtime/reports/la
   "receipt_id": "receipt-v0-0001",
   "run_id": "cycle-v0-0001",
   "command": "run-cycle",
-  "state_ref": "runtime/state/life_state.json",
+  "state_ref": "runtime/state",
   "report_refs": [],
   "archive_refs": [],
   "stage_effect": "block_activation",

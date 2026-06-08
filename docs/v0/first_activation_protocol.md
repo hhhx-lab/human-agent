@@ -72,9 +72,18 @@
 ## 激活命令顺序
 
 ```text
-life-v0 validate-state --state runtime/state/life_state.json --out runtime/reports/latest
-life-v0 check-birth-readiness --state runtime/state/life_state.json --out runtime/reports/latest
-life-v0 run-cycle --state runtime/state/life_state.json --out runtime/reports/latest --shadow-only
+life-v0 ingest-docs --docs docs --out runtime/docs --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 build-direction-lock --docs docs --doc-index runtime/docs/doc_carrier_index.json --out runtime/state/direction --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 build-source-authority --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --out runtime/state/authority --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 build-neural-life-core --docs docs --doc-index runtime/docs/doc_carrier_index.json --authority runtime/state/authority --out runtime/state/neural_life_core --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 check-neural-life-core --state runtime/state/neural_life_core --reports runtime/reports/latest --strict
+life-v0 build-state-store --docs docs --doc-index runtime/docs/doc_carrier_index.json --neural-core runtime/state/neural_life_core --out runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 check-state-store --state runtime/state --reports runtime/reports/latest --strict
+life-v0 build-life-membrane --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --neural-core runtime/state/neural_life_core --state runtime/state --out runtime/state/membrane --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 check-life-membrane --membrane runtime/state/membrane --state runtime/state --reports runtime/reports/latest --strict
+life-v0 check-birth-readiness --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --neural-core runtime/state/neural_life_core --state runtime/state --membrane runtime/state/membrane --out runtime/state/life_targets --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 run-validation-membrane --docs docs --doc-index runtime/docs/doc_carrier_index.json --state runtime/state --membrane runtime/state/membrane --life-targets runtime/state/life_targets --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 run-cycle --state runtime/state --out runtime/reports/latest --shadow-only
 life-v0 write-archive-receipt --out runtime/reports/latest --receipts runtime/receipts
 life-v0 emit-report --out runtime/reports/latest
 ```

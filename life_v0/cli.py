@@ -7,6 +7,7 @@ from pathlib import Path
 from .authority import run_source_authority
 from .direction import run_direction_lock
 from .doc_index import run_doc_ingestion
+from .life_targets import run_birth_readiness
 from .membrane import run_check_life_membrane, run_life_membrane
 from .neural_core import run_check_neural_life_core, run_neural_life_core
 from .state_store import run_check_state_store, run_state_store
@@ -117,6 +118,22 @@ def build_parser() -> argparse.ArgumentParser:
     membrane_check.add_argument("--state", default="runtime/state")
     membrane_check.add_argument("--reports", default="runtime/reports/latest")
     membrane_check.add_argument("--strict", action="store_true")
+
+    birth_readiness = subparsers.add_parser(
+        "check-birth-readiness",
+        help="Build the S08 life target status and birth readiness rollup after S03 life membrane.",
+    )
+    birth_readiness.add_argument("--docs", default="docs")
+    birth_readiness.add_argument("--doc-index", default="runtime/docs/doc_carrier_index.json")
+    birth_readiness.add_argument("--direction", default="runtime/state/direction")
+    birth_readiness.add_argument("--neural-core", default="runtime/state/neural_life_core")
+    birth_readiness.add_argument("--state", default="runtime/state")
+    birth_readiness.add_argument("--membrane", default="runtime/state/membrane")
+    birth_readiness.add_argument("--out", default="runtime/state/life_targets")
+    birth_readiness.add_argument("--reports", default="runtime/reports/latest")
+    birth_readiness.add_argument("--receipts", default="runtime/receipts")
+    birth_readiness.add_argument("--run-id", default=None)
+    birth_readiness.add_argument("--strict", action="store_true")
 
     return parser
 
@@ -231,6 +248,23 @@ def main(argv: list[str] | None = None) -> int:
             membrane_dir=Path(args.membrane),
             state_dir=Path(args.state),
             reports_dir=Path(args.reports),
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "check-birth-readiness":
+        result = run_birth_readiness(
+            docs_dir=Path(args.docs),
+            doc_index_path=Path(args.doc_index),
+            direction_state_dir=Path(args.direction),
+            neural_core_state_dir=Path(args.neural_core),
+            state_dir=Path(args.state),
+            membrane_dir=Path(args.membrane),
+            out_dir=Path(args.out),
+            reports_dir=Path(args.reports),
+            receipts_dir=Path(args.receipts),
+            run_id=args.run_id,
             strict=args.strict,
         )
         print(json.dumps(result.report, ensure_ascii=False, indent=2))

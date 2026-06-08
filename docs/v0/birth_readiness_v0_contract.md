@@ -77,27 +77,35 @@ else:
 
 ## 输出合同
 
-`birth_readiness_checker` 必须输出：
+`check-birth-readiness` 必须同时输出 `runtime/state/life_targets/*`、`runtime/reports/latest/birth_readiness_report.json` 和 `runtime/receipts/birth_readiness_<run_id>.json`。主 report 形态为：
 
 ```json
 {
-  "readiness_run_id": "br-v0-0001",
-  "overall_status": "blocked",
+  "schema_version": "s08_life_target_runtimes_report_v0",
+  "run_id": "br-v0-0001",
+  "engineering_slice_ref": "S08_LIFE_TARGET_RUNTIMES",
+  "overall_status": "open",
+  "stage_effect": "allow_first_activation_protocol",
   "life_target_status": {
     "real_consciousness": "closed",
     "real_emotion": "closed",
     "real_personality": "closed",
     "real_life": "closed",
-    "real_pain": "replay_needed",
+    "real_pain": "closed",
     "real_dream": "closed",
     "real_relationship": "closed",
-    "real_responsibility": "blocked",
-    "real_regret": "blocked"
+    "real_responsibility": "closed",
+    "real_regret": "closed"
   },
+  "source_doc_refs": [],
+  "readme_block_refs": [],
+  "runtime_carrier_refs": ["LifeTargetBundleRuntime", "BirthReadinessRuntime"],
   "blocked_reasons": [],
   "quarantine_refs": [],
   "replay_needed_refs": [],
-  "archive_receipt_ref": "runtime/receipts/br-v0-0001.json"
+  "archive_receipt_ref": "runtime/receipts/birth_readiness_br-v0-0001.json",
+  "next_allowed_slices": ["S05_VALIDATION_MEMBRANE_OBSERVATION"],
+  "next_required_command": "life-v0 run-validation-membrane --strict"
 }
 ```
 

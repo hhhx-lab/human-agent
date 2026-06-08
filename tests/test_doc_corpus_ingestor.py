@@ -49,6 +49,14 @@ class DocCorpusIngestorTests(unittest.TestCase):
         self.assertIn("docs/v0/v0_implementation_index.md", paths)
         self.assertIn("docs/v0/s00_direction_foundation_engineering_contract.md", paths)
         self.assertIn("docs/v0/s01_source_authority_engineering_contract.md", paths)
+        self.assertIn("docs/v0/s05_validation_membrane_observation_engineering_contract.md", paths)
+        self.assertIn("docs/v0/s06_life_support_development_engineering_contract.md", paths)
+        self.assertIn("docs/v0/s07_language_relationship_engineering_contract.md", paths)
+        self.assertIn("docs/v0/s08_life_target_runtimes_engineering_contract.md", paths)
+        self.assertIn("docs/v0/s09_schema_runner_code_engineering_contract.md", paths)
+        self.assertIn("docs/v0/s10_runtime_growth_reconsolidation_engineering_contract.md", paths)
+        self.assertIn("docs/v0/s11_v0_contract_coverage_engineering_contract.md", paths)
+        self.assertIn("docs/v0/v0_module_execution_catalog.md", paths)
 
         for sequence in range(2, 14):
             doc = next(item for item in index["documents"] if item["sequence"] == sequence)
@@ -97,6 +105,38 @@ class DocCorpusIngestorTests(unittest.TestCase):
         self.assertIn(
             "docs/01_literature_matrix.md",
             paths["docs/v0/s01_source_authority_engineering_contract.md"]["dependencies"],
+        )
+        self.assertIn(
+            "LifeMembraneStageGate",
+            paths["docs/v0/s05_validation_membrane_observation_engineering_contract.md"]["runtime_carriers"],
+        )
+        self.assertIn(
+            "LifeSupportDefenseRuntime",
+            paths["docs/v0/s06_life_support_development_engineering_contract.md"]["runtime_carriers"],
+        )
+        self.assertIn(
+            "LanguageRelationshipRuntime",
+            paths["docs/v0/s07_language_relationship_engineering_contract.md"]["runtime_carriers"],
+        )
+        self.assertIn(
+            "BirthReadinessRuntime",
+            paths["docs/v0/s08_life_target_runtimes_engineering_contract.md"]["runtime_carriers"],
+        )
+        self.assertIn(
+            "RunnerRepositoryKernel",
+            paths["docs/v0/s09_schema_runner_code_engineering_contract.md"]["runtime_carriers"],
+        )
+        self.assertIn(
+            "ReconsolidationReplayRuntime",
+            paths["docs/v0/s10_runtime_growth_reconsolidation_engineering_contract.md"]["runtime_carriers"],
+        )
+        self.assertIn(
+            "V0ContractCoverageRuntime",
+            paths["docs/v0/s11_v0_contract_coverage_engineering_contract.md"]["runtime_carriers"],
+        )
+        self.assertIn(
+            "V0ContractCoverageRuntime",
+            paths["docs/v0/v0_module_execution_catalog.md"]["runtime_carriers"],
         )
 
         life_targets = {target for doc in index["documents"] for target in doc["life_targets"]}
