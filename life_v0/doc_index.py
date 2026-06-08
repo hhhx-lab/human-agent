@@ -395,6 +395,8 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
         add("DocCorpusIngestor", "DirectionLockKernel")
     if doc.rel_path.endswith("0_to_257_engineering_utilization_map.md"):
         add("DocCorpusIngestor", "DirectionLockKernel")
+    if doc.rel_path.endswith("s00_direction_foundation_engineering_contract.md"):
+        add("DirectionLockKernel")
     if doc.rel_path == "docs/README.md" or seq in {13, 14, 16, 91, 100, 119, 122, 140, 170, 258}:
         add("DirectionLockKernel")
     if seq in {142, 145, 151}:
@@ -525,6 +527,19 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             13: ["docs/14_cross_module_digital_life_map.md", DIRECTION_LOCK_REF],
         }
         return deps.get(seq, [])
+    if doc.rel_path.endswith("s00_direction_foundation_engineering_contract.md"):
+        return [
+            "docs/构思.md",
+            "docs/00_research_protocol.md",
+            "docs/README.md",
+            "docs/13_agentic_human_research_synthesis.md",
+            "docs/16_digital_life_gap_register.md",
+            DIRECTION_LOCK_REF,
+            "docs/v0/README.md",
+            "docs/v0/readme_block_engineering_realization_v0.md",
+            "docs/v0/digital_life_macro_architecture_v0.md",
+            "docs/v0/doc_corpus_ingestor_v0_contract.md",
+        ]
     if doc.group == "v0_contract":
         return [DIRECTION_LOCK_REF, "docs/v0/README.md"]
     if doc.group in {"schema_runner", "activation_growth"}:

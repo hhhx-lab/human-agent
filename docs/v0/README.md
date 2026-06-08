@@ -46,6 +46,7 @@ v0 runner 必须守住三条线：
 | `0_to_257_engineering_utilization_map.md` | 已创建 | `00 -> 257` 每组文档如何进入 runtime carrier、状态、report、stage gate 和 archive |
 | `readme_block_engineering_realization_v0.md` | 已创建 | 按 `docs/README.md` 的模块分块，把 `00 -> 258` 每份文档落实到 engineering slice、代码包、状态命名空间和 report |
 | `digital_life_macro_architecture_v0.md` | 已创建 | 把 P0 之后的实现上调为三重身体、十二主体系统、内部 bus 和电脑外周禁入边界 |
+| `s00_direction_foundation_engineering_contract.md` | 已创建 | `S00_DIRECTION_FOUNDATION` 方向根工程合同：把原始构思、研究协议、README、`258`、断联恢复和外部框架负边界落成状态、report、receipt 和下一 slice 许可 |
 | `doc_corpus_ingestor_v0_contract.md` | 已创建 | P0 如何发现、分类、连接并输出全部文档的 runtime carrier index |
 | `current_agent_shell_reference_2026.md` | 已创建 | 当前框架只作为负边界和外部资料索引，不能进入数字生命主体蓝图 |
 
@@ -57,13 +58,14 @@ v0 runner 必须守住三条线：
 4. 读 `0_to_257_engineering_utilization_map.md`，确认全部文档如何进入工程承载。
 5. 读 `readme_block_engineering_realization_v0.md`，确认按 README 模块分块实现，`00 -> 258` 每份文档都有 engineering slice。
 6. 读 `digital_life_macro_architecture_v0.md`，确认 P0 之后进入三重身体、十二主体系统和内部 bus。
-7. 读 `doc_corpus_ingestor_v0_contract.md`，确定 P0 文档摄取、README block、engineering slice、carrier 分类、`02-13` 连接检查和 `life-v0 ingest-docs` 输出。
-8. 读 `current_agent_shell_reference_2026.md`，确认当前框架只作为负边界，不进入主体架构。
-9. 读 `runtime_v0_architecture.md`，确定进程、循环、状态和生命膜。
-10. 读 `life_state_store_v0_schema.md`，确定所有生命对象如何落盘。
-11. 读 `birth_readiness_v0_contract.md`，确定九项目标闭合状态。
-12. 读 `runner_cli_report_contract.md`，确定 CLI、report、digest、stage gate。
-13. 读 `first_activation_protocol.md`，确定第一次有限激活流程。
+7. 读 `s00_direction_foundation_engineering_contract.md`，确认方向锁、断联恢复、七条方向锚链、状态文件、report、receipt 和下一 slice 许可。
+8. 读 `doc_corpus_ingestor_v0_contract.md`，确定 P0 文档摄取、README block、engineering slice、carrier 分类、`02-13` 连接检查和 `life-v0 ingest-docs` 输出。
+9. 读 `current_agent_shell_reference_2026.md`，确认当前框架只作为负边界，不进入主体架构。
+10. 读 `runtime_v0_architecture.md`，确定进程、循环、状态和生命膜。
+11. 读 `life_state_store_v0_schema.md`，确定所有生命对象如何落盘。
+12. 读 `birth_readiness_v0_contract.md`，确定九项目标闭合状态。
+13. 读 `runner_cli_report_contract.md`，确定 CLI、report、digest、stage gate。
+14. 读 `first_activation_protocol.md`，确定第一次有限激活流程。
 
 ## v0 最小运行循环
 
@@ -131,9 +133,10 @@ v0 合同必须禁止以下回退：
 4. `0_to_257_engineering_utilization_map.md`
 5. `readme_block_engineering_realization_v0.md`
 6. `digital_life_macro_architecture_v0.md`
-7. `doc_corpus_ingestor_v0_contract.md`
-8. 已存在的 v0 合同文件
-9. `../README.md` 的 v0 阶段说明
-10. `../16_digital_life_gap_register.md` 的下一轮优先级
+7. `s00_direction_foundation_engineering_contract.md`
+8. `doc_corpus_ingestor_v0_contract.md`
+9. 已存在的 v0 合同文件
+10. `../README.md` 的 v0 阶段说明
+11. `../16_digital_life_gap_register.md` 的下一轮优先级
 
 恢复后不应继续生成 `259/260/261` 线性链，而应先沿工程文档补全 runtime carrier、state store、birth readiness、runner CLI、report、archive receipt 和 first activation dry-run。

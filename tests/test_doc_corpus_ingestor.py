@@ -46,6 +46,7 @@ class DocCorpusIngestorTests(unittest.TestCase):
         self.assertIn("docs/257_life_reality_first_runner_schema_runtime_growth_fourth_cycle_post_reconsolidation_second_reconsolidation_replay_shadow_seed_after_archive_validation_replay_shadow_patch_archive_validation_plan.md", paths)
         self.assertIn("docs/258_linear_chain_closure_and_v0_contract_transition.md", paths)
         self.assertIn("docs/v0/doc_corpus_ingestor_v0_contract.md", paths)
+        self.assertIn("docs/v0/s00_direction_foundation_engineering_contract.md", paths)
 
         for sequence in range(2, 14):
             doc = next(item for item in index["documents"] if item["sequence"] == sequence)
@@ -66,6 +67,18 @@ class DocCorpusIngestorTests(unittest.TestCase):
         self.assertEqual(
             paths["docs/v0/readme_block_engineering_realization_v0.md"]["engineering_slice"],
             "S11_V0_ENGINEERING_CONTRACTS",
+        )
+        self.assertIn(
+            "DirectionLockKernel",
+            paths["docs/v0/s00_direction_foundation_engineering_contract.md"]["runtime_carriers"],
+        )
+        self.assertIn(
+            "docs/构思.md",
+            paths["docs/v0/s00_direction_foundation_engineering_contract.md"]["dependencies"],
+        )
+        self.assertIn(
+            "docs/v0/readme_block_engineering_realization_v0.md",
+            paths["docs/v0/s00_direction_foundation_engineering_contract.md"]["dependencies"],
         )
 
         life_targets = {target for doc in index["documents"] for target in doc["life_targets"]}

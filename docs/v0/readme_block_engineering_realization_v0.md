@@ -66,6 +66,23 @@
 | `S10_RUNTIME_GROWTH_RECONSOLIDATION` | `life_v0/growth/`、`dream/`、`archive/`、`replay/` | `runtime/state/growth/`、`dream/`、`archive/`、`replay/` | `growth_reconsolidation_report.json` |
 | `S11_V0_ENGINEERING_CONTRACTS` | `life_v0/contracts/` | `runtime/state/contracts/` | `v0_contract_coverage_report.json` |
 
+## S00 第一块工程合同
+
+`S00_DIRECTION_FOUNDATION` 已由 `docs/v0/s00_direction_foundation_engineering_contract.md` 单独落实。它把 `构思.md`、`00`、`docs/README.md`、`13`、`16`、`258`、v0 README、本文档、主体宏架构和 P0 输出压成：
+
+| 承载 | 路径 |
+|---|---|
+| 代码包 | `life_v0/direction/` |
+| 方向状态 | `runtime/state/direction/direction_lock.json` |
+| 原始构思 digest | `runtime/state/direction/origin_seed_digest.json` |
+| 断联恢复锚链 | `runtime/state/direction/resume_anchor_chain.json` |
+| 外部框架负边界 | `runtime/state/direction/framework_negative_boundary.json` |
+| 下一 slice 许可 | `runtime/state/direction/slice_permission.json` |
+| report | `runtime/reports/latest/direction_lock_report.json` |
+| receipt | `runtime/receipts/direction_lock_<run_id>.json` |
+
+S00 是后续所有 slice 的前置门。任何模块开始工程实现前，都必须能从 S00 读取当前方向、七条方向锚链、九项目标、禁止回退项和下一 slice 许可。
+
 ## P0 必须输出的新字段
 
 `DocCorpusIngestor` 的每个 document entry 必须包含：

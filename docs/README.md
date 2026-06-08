@@ -404,6 +404,7 @@
 | `v0/0_to_257_engineering_utilization_map.md` | `00 -> 257` 工程利用矩阵：保证每组文档进入 runtime carrier、状态、report、stage gate、archive 或 replay/shadow |
 | `v0/readme_block_engineering_realization_v0.md` | README 分块工程落实合同：按 `docs/README.md` 模块分块把 `00 -> 258` 每份文档落实到 engineering slice、代码包、状态命名空间、report 和阶段门 |
 | `v0/digital_life_macro_architecture_v0.md` | 数字生命主体宏架构：把 P0 之后的实现上调为三重身体、十二主体系统、内部 bus 和电脑外周禁入边界 |
+| `v0/s00_direction_foundation_engineering_contract.md` | S00 方向基础工程合同：把原始构思、研究协议、README、`258`、七条方向锚链、断联恢复、外部框架负边界和下一 slice 许可落成状态、report、receipt 与未来代码包 |
 | `v0/doc_corpus_ingestor_v0_contract.md` | P0 文档摄取合同：定义 `life-v0 ingest-docs` 如何发现 `00 -> 257`、生成 carrier index、依赖图、来源报告和摄取 receipt |
 | `v0/current_agent_shell_reference_2026.md` | 当前框架负边界：只保留终端启动和电脑外周资料索引，不进入数字生命主体架构 |
 | `v0/runtime_v0_architecture.md` | 第一版生命运行时架构：进程、状态、文件根、生命膜、stage gate 和断联恢复 |

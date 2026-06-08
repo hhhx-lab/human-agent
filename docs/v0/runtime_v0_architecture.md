@@ -138,8 +138,10 @@ v0 runtime 不执行：
 1. `docs/258_linear_chain_closure_and_v0_contract_transition.md`
 2. `docs/v0/README.md`
 3. `docs/v0/runtime_v0_architecture.md`
-4. `runtime/receipts/latest.json`
-5. `runtime/reports/latest/stage_gate.json`
-6. 最新 git state
+4. `docs/v0/s00_direction_foundation_engineering_contract.md`
+5. `runtime/reports/latest/direction_lock_report.json`
+6. `runtime/receipts/latest.json`
+7. `runtime/reports/latest/stage_gate.json`
+8. 最新 git state
 
 若恢复后发现上次停在 `blocked`、`quarantine` 或 `replay_needed`，下一次运行必须先处理该状态，不能直接进入 `limited_cycle`。
