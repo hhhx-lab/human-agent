@@ -395,8 +395,12 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
         add("DocCorpusIngestor", "DirectionLockKernel")
     if doc.rel_path.endswith("0_to_257_engineering_utilization_map.md"):
         add("DocCorpusIngestor", "DirectionLockKernel")
+    if doc.rel_path.endswith("v0_implementation_index.md"):
+        add("DocCorpusIngestor", "DirectionLockKernel")
     if doc.rel_path.endswith("s00_direction_foundation_engineering_contract.md"):
         add("DirectionLockKernel")
+    if doc.rel_path.endswith("s01_source_authority_engineering_contract.md"):
+        add("SourceAuthorityRegistry", "DirectionLockKernel")
     if doc.rel_path == "docs/README.md" or seq in {13, 14, 16, 91, 100, 119, 122, 140, 170, 258}:
         add("DirectionLockKernel")
     if seq in {142, 145, 151}:
@@ -539,6 +543,29 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/v0/readme_block_engineering_realization_v0.md",
             "docs/v0/digital_life_macro_architecture_v0.md",
             "docs/v0/doc_corpus_ingestor_v0_contract.md",
+        ]
+    if doc.rel_path.endswith("s01_source_authority_engineering_contract.md"):
+        return [
+            "docs/00_research_protocol.md",
+            "docs/01_literature_matrix.md",
+            "docs/142_life_reality_authority_intake_batch_for_02_to_13.md",
+            "docs/145_life_reality_02_to_13_authority_rewrite_execution_plan.md",
+            "docs/151_life_reality_authority_schema_cross_file_checker_plan.md",
+            DIRECTION_LOCK_REF,
+            "docs/v0/README.md",
+            "docs/v0/v0_implementation_index.md",
+            "docs/v0/s00_direction_foundation_engineering_contract.md",
+            "docs/v0/readme_block_engineering_realization_v0.md",
+        ]
+    if doc.rel_path.endswith("v0_implementation_index.md"):
+        return [
+            DIRECTION_LOCK_REF,
+            "docs/v0/README.md",
+            "docs/v0/first_activation_engineering_roadmap.md",
+            "docs/v0/readme_block_engineering_realization_v0.md",
+            "docs/v0/0_to_257_engineering_utilization_map.md",
+            "docs/v0/s00_direction_foundation_engineering_contract.md",
+            "docs/v0/s01_source_authority_engineering_contract.md",
         ]
     if doc.group == "v0_contract":
         return [DIRECTION_LOCK_REF, "docs/v0/README.md"]

@@ -83,6 +83,24 @@
 
 S00 是后续所有 slice 的前置门。任何模块开始工程实现前，都必须能从 S00 读取当前方向、七条方向锚链、九项目标、禁止回退项和下一 slice 许可。
 
+## S01 第二块工程合同
+
+`S01_SOURCE_AUTHORITY` 已由 `docs/v0/s01_source_authority_engineering_contract.md` 单独落实。它把 `00`、全部 `01*`、`142`、`145`、`151`、`258`、S00 方向锁和 P0 输出压成：
+
+| 承载 | 路径 |
+|---|---|
+| 代码包 | `life_v0/authority/` |
+| 来源登记 | `runtime/state/authority/authority_registry.json` |
+| 来源质量政策 | `runtime/state/authority/source_quality_policy.json` |
+| 文献矩阵索引 | `runtime/state/authority/literature_matrix_index.json` |
+| 机制证据图 | `runtime/state/authority/mechanism_evidence_map.json` |
+| `02-13` authority patch | `runtime/state/authority/doc_authority_carrier_patch_index.json` |
+| 来源缺口队列 | `runtime/state/authority/authority_gap_queue.json` |
+| report | `runtime/reports/latest/source_authority_report.json` |
+| receipt | `runtime/receipts/source_authority_<run_id>.json` |
+
+S01 是后续所有生命 runtime 的来源门。任何脑科学机制、生命科学机制、神经网络机制或 AI 桥接机制进入状态字段前，都必须能从 S01 读到 source id、quality class、mechanism object、runtime carrier 和 life target evidence。
+
 ## P0 必须输出的新字段
 
 `DocCorpusIngestor` 的每个 document entry 必须包含：

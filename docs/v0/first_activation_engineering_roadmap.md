@@ -18,6 +18,7 @@
 |---|---|---|---|
 | `DocCorpusIngestor` | 理论摄取与方向记忆 | `00`、全部 `01*`、`02-13`、`142`、`145`、`151`、`258`、`docs/v0/doc_corpus_ingestor_v0_contract.md`、`docs/v0/*` | `doc_carrier_index.json`、`doc_dependency_graph.json`、source authority report、doc ingestion receipt |
 | `DirectionLockKernel` | 方向锁与断联恢复 | `构思.md`、`00`、`13`、`14`、`16`、`91`、`100`、`119`、`122`、`140`、`170`、`258`、`docs/v0/s00_direction_foundation_engineering_contract.md` | `direction_lock.json`、`resume_anchor_chain.json`、`slice_permission.json`、direction lock report、direction receipt |
+| `SourceAuthorityRegistry` | 权威来源层与机制证据 | `00`、全部 `01*`、`142`、`145`、`151`、`258`、`docs/v0/v0_implementation_index.md`、`docs/v0/s01_source_authority_engineering_contract.md` | `authority_registry.json`、`mechanism_evidence_map.json`、`doc_authority_carrier_patch_index.json`、source authority report、authority receipt |
 | `BrainRegionNetworkRuntime` | 脑区、连接组、大尺度网络 | `01o`、`01p`、`02`、`03`、`10`、`11`、`13`、`14` | `network_state.json`、brain region graph |
 | `BodySignalRuntime` | 内感受、稳态、信号介质 | `01l`、`01n`、`01v`、`04`、`11`、`18`、`37` | `body_state_vector.json`、signal media frame |
 | `MemoryEngramRuntime` | 记忆、engram、巩固 | `01q`、`05`、`17`、`21`、`25`、`29`、`41`、`55` | `memory_index.json`、replay cue bundle |
@@ -49,6 +50,7 @@
 - `14-16` 跨模块地图、当前框架差距与生成入口
 - `258_linear_chain_closure_and_v0_contract_transition.md`
 - `docs/v0/README.md`
+- `docs/v0/v0_implementation_index.md`
 - `docs/v0/0_to_257_engineering_utilization_map.md`
 - `docs/v0/readme_block_engineering_realization_v0.md`
 - `docs/v0/digital_life_macro_architecture_v0.md`
@@ -124,6 +126,52 @@ life-v0 build-direction-lock --docs docs --doc-index runtime/docs/doc_carrier_in
 - 关系口径退回外部从属角色。
 - OpenClaw、Hermes、Claude Code、Codex 等外部框架资料进入主体架构。
 - 断联恢复读取顺序不能回到同一 engineering slice。
+
+### P0.6：S01 权威来源层
+
+目标：让 `01*` 文献矩阵和 `142/145/151` 权威补写链变成可运行的来源登记、机制对象和证据桥。
+
+必须读取：
+
+- `docs/00_research_protocol.md`
+- `docs/01_literature_matrix.md`
+- 全部 `docs/01*.md`
+- `docs/142_life_reality_authority_intake_batch_for_02_to_13.md`
+- `docs/145_life_reality_02_to_13_authority_rewrite_execution_plan.md`
+- `docs/151_life_reality_authority_schema_cross_file_checker_plan.md`
+- `docs/258_linear_chain_closure_and_v0_contract_transition.md`
+- `docs/v0/v0_implementation_index.md`
+- `docs/v0/s00_direction_foundation_engineering_contract.md`
+- `docs/v0/s01_source_authority_engineering_contract.md`
+- `runtime/state/direction/direction_lock.json`
+- `runtime/docs/doc_carrier_index.json`
+
+未来工程命令：
+
+```text
+life-v0 build-source-authority --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --out runtime/state/authority --reports runtime/reports/latest --receipts runtime/receipts --strict
+```
+
+产物：
+
+- `runtime/state/authority/authority_registry.json`
+- `runtime/state/authority/source_quality_policy.json`
+- `runtime/state/authority/literature_matrix_index.json`
+- `runtime/state/authority/authority_family_index.json`
+- `runtime/state/authority/mechanism_evidence_map.json`
+- `runtime/state/authority/doc_authority_carrier_patch_index.json`
+- `runtime/state/authority/authority_gap_queue.json`
+- `runtime/reports/latest/source_authority_report.json`
+- `runtime/reports/latest/source_authority_digest.json`
+- `runtime/receipts/source_authority_<run_id>.json`
+
+阻断条件：
+
+- `01`、`01b-01ax` 任一文献矩阵未进入 registry。
+- 来源缺质量等级、证据类型、年份或 DOI/链接。
+- 来源只停在引用层，没有机制对象、runtime carrier 或生命目标证据族。
+- `02-13` 核心文档缺 authority carrier patch。
+- AI 桥接资料进入主体架构。
 
 ### P1：生命状态根落盘
 

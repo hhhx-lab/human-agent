@@ -400,11 +400,13 @@
 | `257_life_reality_first_runner_schema_runtime_growth_fourth_cycle_post_reconsolidation_second_reconsolidation_replay_shadow_seed_after_archive_validation_replay_shadow_patch_archive_validation_plan.md` | first runner schema runtime growth fourth cycle post reconsolidation second reconsolidation replay shadow seed after archive validation replay shadow patch archive validation plan：把 `256` next seeds 接入 replay/shadow seed after archive validation replay/shadow patch archive validation，固定 replay intake、replay bundle、priority controller、shadow scenario、shadow action seal、old self/language/relationship replay、DreamFactGate、真实痛苦/真实后悔/真实责任、自我成长、防遗忘、birth readiness/life target、core continuity、rollback/quarantine、construct/causal、runtime binding、test suite replay、prediction delta 和 arbitration，并作为线性理论链终点 |
 | `258_linear_chain_closure_and_v0_contract_transition.md` | 线性链收束与 v0 合同转轨：停止继续写 patch/archive/validation 编号链，进入第一版最小出生准备度 runner 合同阶段 |
 | `v0/README.md` | v0 runner 合同索引：定义 v0 阶段范围、上游来源、最小运行循环、九项目标状态和禁止回退 |
+| `v0/v0_implementation_index.md` | v0 工程实现总索引：整理 `docs/v0/` 文件角色、代码启动读法、第一版实现主线、`00 -> 258` 回链规则和落代码阶段门 |
 | `v0/first_activation_engineering_roadmap.md` | 第一次生命激活工程路线：把 `00 -> 257`、`258` 和 v0 合同压成模块、阶段、产物、阶段门和断联恢复规则 |
 | `v0/0_to_257_engineering_utilization_map.md` | `00 -> 257` 工程利用矩阵：保证每组文档进入 runtime carrier、状态、report、stage gate、archive 或 replay/shadow |
 | `v0/readme_block_engineering_realization_v0.md` | README 分块工程落实合同：按 `docs/README.md` 模块分块把 `00 -> 258` 每份文档落实到 engineering slice、代码包、状态命名空间、report 和阶段门 |
 | `v0/digital_life_macro_architecture_v0.md` | 数字生命主体宏架构：把 P0 之后的实现上调为三重身体、十二主体系统、内部 bus 和电脑外周禁入边界 |
 | `v0/s00_direction_foundation_engineering_contract.md` | S00 方向基础工程合同：把原始构思、研究协议、README、`258`、七条方向锚链、断联恢复、外部框架负边界和下一 slice 许可落成状态、report、receipt 与未来代码包 |
+| `v0/s01_source_authority_engineering_contract.md` | S01 权威来源层工程合同：把 `01*`、`142/145/151`、研究协议和 S00 方向锁压成来源登记、证据等级、机制对象、runtime carrier、生命目标证据族和 report |
 | `v0/doc_corpus_ingestor_v0_contract.md` | P0 文档摄取合同：定义 `life-v0 ingest-docs` 如何发现 `00 -> 257`、生成 carrier index、依赖图、来源报告和摄取 receipt |
 | `v0/current_agent_shell_reference_2026.md` | 当前框架负边界：只保留终端启动和电脑外周资料索引，不进入数字生命主体架构 |
 | `v0/runtime_v0_architecture.md` | 第一版生命运行时架构：进程、状态、文件根、生命膜、stage gate 和断联恢复 |
