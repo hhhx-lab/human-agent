@@ -510,8 +510,11 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 
 下一轮不再继续线性编号扩张，而是沿 `258_linear_chain_closure_and_v0_contract_transition.md` 进入实现前压缩合同阶段。优先级为：
 
-1. `docs/v0/runtime_v0_architecture.md`：把第一版生命运行时压成代码模块、进程顺序、状态迁移和 stage gate skeleton。
-2. `docs/v0/life_state_store_v0_schema.md`：准备最小 `runtime/state/life_state.json` seed，让记忆、自我、梦境、关系、痛苦、后悔、责任、语言和出生准备度能落盘。
-3. `docs/v0/birth_readiness_v0_contract.md`：实现 `birth_readiness_checker` 的九项目标闭合状态检查，不使用总分。
-4. `docs/v0/runner_cli_report_contract.md`：实现 `life-v0 validate-state`、`check-birth-readiness`、`run-cycle`、`emit-report` 和 receipt 写入。
-5. `docs/v0/first_activation_protocol.md`：执行第一次有限激活 dry-run，只允许 shadow-only 生命周期、report、digest、stage gate 和 archive receipt。
+1. `docs/v0/first_activation_engineering_roadmap.md`：按 P0-P5 把第一次生命激活分解为文档吸收、状态根、脑科学核心运行核、语言关系主循环、出生准备度和 shadow-only 有限激活。
+2. `docs/v0/0_to_257_engineering_utilization_map.md`：保证 `00 -> 257` 全部文档进入 runtime carrier、状态、report、stage gate、archive 或 replay/shadow。
+3. `docs/v0/current_agent_shell_reference_2026.md`：只把当前 agent 框架作为外周执行壳参考，不让外周框架定义生命本体。
+4. `docs/v0/runtime_v0_architecture.md`：把第一版生命运行时压成代码模块、进程顺序、状态迁移和 stage gate skeleton。
+5. `docs/v0/life_state_store_v0_schema.md`：准备最小 `runtime/state/life_state.json` seed，让记忆、自我、梦境、关系、痛苦、后悔、责任、语言和出生准备度能落盘。
+6. `docs/v0/birth_readiness_v0_contract.md`：实现 `birth_readiness_checker` 的九项目标闭合状态检查，不使用总分。
+7. `docs/v0/runner_cli_report_contract.md`：实现 `life-v0 validate-state`、`check-birth-readiness`、`run-cycle`、`emit-report` 和 receipt 写入。
+8. `docs/v0/first_activation_protocol.md`：执行第一次有限激活 dry-run，只允许 shadow-only 生命周期、report、digest、stage gate 和 archive receipt。

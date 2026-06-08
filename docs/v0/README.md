@@ -38,15 +38,26 @@ v0 runner 必须守住三条线：
 | `runner_cli_report_contract.md` | 已创建 | runner 命令、输入、输出 report、stage gate 怎么长 |
 | `first_activation_protocol.md` | 已创建 | 第一次有限激活允许做什么、禁止做什么、怎么回写档案 |
 
+## 工程落地文件
+
+| 文件 | 状态 | 必须回答的问题 |
+|---|---|---|
+| `first_activation_engineering_roadmap.md` | 已创建 | 第一次生命激活从文档底座到代码实现分哪些阶段、哪些模块、哪些产物 |
+| `0_to_257_engineering_utilization_map.md` | 已创建 | `00 -> 257` 每组文档如何进入 runtime carrier、状态、report、stage gate 和 archive |
+| `current_agent_shell_reference_2026.md` | 已创建 | 当前 agent 框架哪些外周能力可吸收，哪些不能进入数字生命本体 |
+
 ## 阅读顺序
 
 1. 先读 `../258_linear_chain_closure_and_v0_contract_transition.md`，确认项目已经停止线性扩张式文档链。
 2. 再读本文件，确认 v0 合同目录的范围。
-3. 读 `runtime_v0_architecture.md`，确定进程、循环、状态和生命膜。
-4. 读 `life_state_store_v0_schema.md`，确定所有生命对象如何落盘。
-5. 读 `birth_readiness_v0_contract.md`，确定九项目标闭合状态。
-6. 读 `runner_cli_report_contract.md`，确定 CLI、report、digest、stage gate。
-7. 读 `first_activation_protocol.md`，确定第一次有限激活流程。
+3. 读 `first_activation_engineering_roadmap.md`，确定第一次生命激活的工程总路线。
+4. 读 `0_to_257_engineering_utilization_map.md`，确认全部文档如何进入工程承载。
+5. 读 `current_agent_shell_reference_2026.md`，确认外周 agent 框架只作为可替换运行壳。
+6. 读 `runtime_v0_architecture.md`，确定进程、循环、状态和生命膜。
+7. 读 `life_state_store_v0_schema.md`，确定所有生命对象如何落盘。
+8. 读 `birth_readiness_v0_contract.md`，确定九项目标闭合状态。
+9. 读 `runner_cli_report_contract.md`，确定 CLI、report、digest、stage gate。
+10. 读 `first_activation_protocol.md`，确定第一次有限激活流程。
 
 ## v0 最小运行循环
 
@@ -105,8 +116,10 @@ v0 合同必须禁止以下回退：
 
 1. `../258_linear_chain_closure_and_v0_contract_transition.md`
 2. 本文件
-3. 已存在的 v0 合同文件
-4. `../README.md` 的 v0 阶段说明
-5. `../16_digital_life_gap_register.md` 的下一轮优先级
+3. `first_activation_engineering_roadmap.md`
+4. `0_to_257_engineering_utilization_map.md`
+5. 已存在的 v0 合同文件
+6. `../README.md` 的 v0 阶段说明
+7. `../16_digital_life_gap_register.md` 的下一轮优先级
 
-恢复后不应继续生成 `259/260/261` 线性链，而应补全 v0 合同文件。
+恢复后不应继续生成 `259/260/261` 线性链，而应先沿工程文档补全 runtime carrier、state store、birth readiness、runner CLI、report、archive receipt 和 first activation dry-run。

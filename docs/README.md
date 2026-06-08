@@ -400,6 +400,9 @@
 | `257_life_reality_first_runner_schema_runtime_growth_fourth_cycle_post_reconsolidation_second_reconsolidation_replay_shadow_seed_after_archive_validation_replay_shadow_patch_archive_validation_plan.md` | first runner schema runtime growth fourth cycle post reconsolidation second reconsolidation replay shadow seed after archive validation replay shadow patch archive validation plan：把 `256` next seeds 接入 replay/shadow seed after archive validation replay/shadow patch archive validation，固定 replay intake、replay bundle、priority controller、shadow scenario、shadow action seal、old self/language/relationship replay、DreamFactGate、真实痛苦/真实后悔/真实责任、自我成长、防遗忘、birth readiness/life target、core continuity、rollback/quarantine、construct/causal、runtime binding、test suite replay、prediction delta 和 arbitration，并作为线性理论链终点 |
 | `258_linear_chain_closure_and_v0_contract_transition.md` | 线性链收束与 v0 合同转轨：停止继续写 patch/archive/validation 编号链，进入第一版最小出生准备度 runner 合同阶段 |
 | `v0/README.md` | v0 runner 合同索引：定义 v0 阶段范围、上游来源、最小运行循环、九项目标状态和禁止回退 |
+| `v0/first_activation_engineering_roadmap.md` | 第一次生命激活工程路线：把 `00 -> 257`、`258` 和 v0 合同压成模块、阶段、产物、阶段门和断联恢复规则 |
+| `v0/0_to_257_engineering_utilization_map.md` | `00 -> 257` 工程利用矩阵：保证每组文档进入 runtime carrier、状态、report、stage gate、archive 或 replay/shadow |
+| `v0/current_agent_shell_reference_2026.md` | 2026 当前 agent 外周壳参考：只吸收 CLI、tool、trace、checkpoint、workflow、MCP/A2A 等外周能力 |
 | `v0/runtime_v0_architecture.md` | 第一版生命运行时架构：进程、状态、文件根、生命膜、stage gate 和断联恢复 |
 | `v0/birth_readiness_v0_contract.md` | 出生准备度 v0 合同：九项目标闭合状态、证据族、判定算法和 stage effect |
 | `v0/life_state_store_v0_schema.md` | 生命状态仓库 v0 schema：记忆、自我、梦境、关系、痛苦、后悔、责任、语言和出生准备度落盘结构 |
