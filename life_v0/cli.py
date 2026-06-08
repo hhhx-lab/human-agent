@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
+from .authority import run_source_authority
 from .direction import run_direction_lock
 from .doc_index import run_doc_ingestion
 
@@ -35,6 +36,19 @@ def build_parser() -> argparse.ArgumentParser:
     direction.add_argument("--run-id", default=None)
     direction.add_argument("--strict", action="store_true")
 
+    authority = subparsers.add_parser(
+        "build-source-authority",
+        help="Build the S01 source authority registry after S00 direction lock.",
+    )
+    authority.add_argument("--docs", default="docs")
+    authority.add_argument("--doc-index", default="runtime/docs/doc_carrier_index.json")
+    authority.add_argument("--direction", default="runtime/state/direction")
+    authority.add_argument("--out", default="runtime/state/authority")
+    authority.add_argument("--reports", default="runtime/reports/latest")
+    authority.add_argument("--receipts", default="runtime/receipts")
+    authority.add_argument("--run-id", default=None)
+    authority.add_argument("--strict", action="store_true")
+
     return parser
 
 
@@ -58,6 +72,20 @@ def main(argv: list[str] | None = None) -> int:
         result = run_direction_lock(
             docs_dir=Path(args.docs),
             doc_index_path=Path(args.doc_index),
+            out_dir=Path(args.out),
+            reports_dir=Path(args.reports),
+            receipts_dir=Path(args.receipts),
+            run_id=args.run_id,
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "build-source-authority":
+        result = run_source_authority(
+            docs_dir=Path(args.docs),
+            doc_index_path=Path(args.doc_index),
+            direction_state_dir=Path(args.direction),
             out_dir=Path(args.out),
             reports_dir=Path(args.reports),
             receipts_dir=Path(args.receipts),
