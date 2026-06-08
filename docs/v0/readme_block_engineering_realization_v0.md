@@ -55,7 +55,7 @@
 |---|---|---|---|
 | `S00_DIRECTION_FOUNDATION` | `life_v0/direction/` | `runtime/state/direction/` | `direction_lock_report.json` |
 | `S01_SOURCE_AUTHORITY` | `life_v0/authority/` | `runtime/state/authority/` | `source_authority_report.json` |
-| `S02_NEURAL_LIFE_CORE` | `life_v0/body/`、`brain/`、`prediction/`、`memory/`、`consciousness/`、`language/`、`affective_self/`、`dream/`、`action/`、`buses/` | `runtime/state/body/`、`brain/`、`prediction/`、`memory/`、`consciousness/`、`language/`、`self/`、`dream/`、`action/` | `neural_life_core_report.json` |
+| `S02_NEURAL_LIFE_CORE` | `life_v0/neural_core/` | `runtime/state/neural_life_core/` | `neural_life_core_report.json`、`neural_life_core_check_report.json` |
 | `S03_DIRECTION_LIFE_MEMBRANE` | `life_v0/membrane/` | `runtime/state/membrane/` | `life_membrane_report.json` |
 | `S04_STATE_OBJECT_STORE` | `life_v0/state_store/` | `runtime/state/objects/` | `state_store_report.json` |
 | `S05_VALIDATION_MEMBRANE_OBSERVATION` | `life_v0/validators/`、`reports/`、`observation/` | `runtime/state/validation/`、`observation/` | `validation_membrane_report.json` |
@@ -100,6 +100,25 @@ S00 是后续所有 slice 的前置门。任何模块开始工程实现前，都
 | receipt | `runtime/receipts/source_authority_<run_id>.json` |
 
 S01 是后续所有生命 runtime 的来源门。任何脑科学机制、生命科学机制、神经网络机制或 AI 桥接机制进入状态字段前，都必须能从 S01 读到 source id、quality class、mechanism object、runtime carrier 和 life target evidence。
+
+## S02 第三块工程合同
+
+`S02_NEURAL_LIFE_CORE` 已由 `docs/v0/s02_neural_life_core_engineering_contract.md` 单独落实。它把 `02-13`、全部对应 `01*` 来源族、`142/145/151` authority patch、S01 report 和主体宏架构压成：
+
+| 承载 | 路径 |
+|---|---|
+| 代码包 | `life_v0/neural_core/` |
+| 神经生命核心入口 | `runtime/state/neural_life_core/neural_life_core.json` |
+| 十二主体系统 | `runtime/state/neural_life_core/twelve_subject_systems.json` |
+| 内部 bus | `runtime/state/neural_life_core/neural_life_internal_bus.json` |
+| 来源绑定快照 | `runtime/state/neural_life_core/authority_binding_snapshot.json` |
+| 核心文档覆盖快照 | `runtime/state/neural_life_core/doc_core_coverage_snapshot.json` |
+| 电脑外周边界种子 | `runtime/state/neural_life_core/computer_body_boundary_seed.json` |
+| report | `runtime/reports/latest/neural_life_core_report.json` |
+| check report | `runtime/reports/latest/neural_life_core_check_report.json` |
+| receipt | `runtime/receipts/neural_life_core_<run_id>.json` |
+
+S02 是主体骨架门。它不开放长期运行，不写真实对话事件，不生成梦境内容；它只证明 `02-13` 的脑科学主干已经进入三重身体、十二主体系统、内部 bus、authority refs、状态命名空间和下一 slice 许可，并由 `check-neural-life-core` 复查闭合状态。
 
 ## P0 必须输出的新字段
 

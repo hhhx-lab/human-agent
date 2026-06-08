@@ -401,6 +401,21 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
         add("DirectionLockKernel")
     if doc.rel_path.endswith("s01_source_authority_engineering_contract.md"):
         add("SourceAuthorityRegistry", "DirectionLockKernel")
+    if doc.rel_path.endswith("s02_neural_life_core_engineering_contract.md"):
+        add(
+            "BrainRegionNetworkRuntime",
+            "BodySignalRuntime",
+            "SignalMediaRuntime",
+            "PredictionActiveInferenceRuntime",
+            "MemoryEngramRuntime",
+            "ConsciousWorkspaceRuntime",
+            "LanguageRelationshipRuntime",
+            "AffectiveSelfRuntime",
+            "DreamOfflineRuntime",
+            "ActionResponsibilityRuntime",
+            "ComputerPeripheralRuntime",
+            "ActivationGrowthRuntime",
+        )
     if doc.rel_path == "docs/README.md" or seq in {13, 14, 16, 91, 100, 119, 122, 140, 170, 258}:
         add("DirectionLockKernel")
     if seq in {142, 145, 151}:
@@ -555,6 +570,24 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/v0/README.md",
             "docs/v0/v0_implementation_index.md",
             "docs/v0/s00_direction_foundation_engineering_contract.md",
+            "docs/v0/readme_block_engineering_realization_v0.md",
+        ]
+    if doc.rel_path.endswith("s02_neural_life_core_engineering_contract.md"):
+        return [
+            "docs/02_brain_region_and_network_atlas.md",
+            "docs/03_default_executive_salience_networks.md",
+            "docs/04_sensory_thalamus_interoception.md",
+            "docs/05_memory_systems_and_growth.md",
+            "docs/06_action_reward_inhibition.md",
+            "docs/07_emotion_personality_self.md",
+            "docs/08_sleep_dream_fatigue_states.md",
+            "docs/09_language_symbolic_top_layer.md",
+            "docs/10_consciousness_attention_workspace.md",
+            "docs/11_neuromodulation_and_signal_media.md",
+            "docs/12_ai_and_cognitive_architecture_bridge.md",
+            "docs/13_agentic_human_research_synthesis.md",
+            "docs/v0/digital_life_macro_architecture_v0.md",
+            "docs/v0/s01_source_authority_engineering_contract.md",
             "docs/v0/readme_block_engineering_realization_v0.md",
         ]
     if doc.rel_path.endswith("v0_implementation_index.md"):

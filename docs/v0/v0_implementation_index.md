@@ -26,6 +26,7 @@
 | P0 合同 | `doc_corpus_ingestor_v0_contract.md` | 文档摄取、carrier index、依赖图 | 已有 `life_v0/doc_index.py` 的实现依据 |
 | Slice 合同 | `s00_direction_foundation_engineering_contract.md` | S00 方向锁和断联恢复 | 后续所有模块的前置方向门 |
 | Slice 合同 | `s01_source_authority_engineering_contract.md` | S01 权威来源层 | 后续所有机制的证据登记层 |
+| Slice 合同 | `s02_neural_life_core_engineering_contract.md` | S02 神经生命核心 | 把 `02-13`、S01 来源、三重身体、十二主体系统和内部 bus 压成主体骨架 |
 | 基础合同 | `runtime_v0_architecture.md` | 第一版运行时进程、状态、stage gate | 编排第一次有限生命循环 |
 | 基础合同 | `life_state_store_v0_schema.md` | 生命状态根和各命名空间 | 写状态文件和 schema seed |
 | 基础合同 | `birth_readiness_v0_contract.md` | 九项目标闭合状态 | 写出生准备度 checker |
@@ -53,10 +54,13 @@ docs/v0/README.md
 life-v0 ingest-docs --docs docs --out runtime/docs --reports runtime/reports/latest --receipts runtime/receipts --strict
 ```
 
-如果方向锁代码已经落地，则 P0 后必须继续运行 S00：
+如果 P0-S02 代码已经落地，则 P0 后必须继续运行 S00、S01、S02 build 和 S02 check：
 
 ```text
 life-v0 build-direction-lock --docs docs --doc-index runtime/docs/doc_carrier_index.json --out runtime/state/direction --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 build-source-authority --docs docs --doc-index runtime/docs/doc_carrier_index.json --direction runtime/state/direction --out runtime/state/authority --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 build-neural-life-core --docs docs --doc-index runtime/docs/doc_carrier_index.json --authority runtime/state/authority --out runtime/state/neural_life_core --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 check-neural-life-core --state runtime/state/neural_life_core --reports runtime/reports/latest --strict
 ```
 
 ## 第一版实现主线
@@ -66,7 +70,7 @@ life-v0 build-direction-lock --docs docs --doc-index runtime/docs/doc_carrier_in
 | 0 | `P0_DOC_CORPUS_INGESTION` | `doc_corpus_ingestor_v0_contract.md` | `00`、全部 `01*`、`02-13`、`142`、`145`、`151`、`258`、`docs/README.md`、`构思.md` | `life_v0/doc_index.py` | `doc_ingestion_report.json` |
 | 1 | `S00_DIRECTION_FOUNDATION` | `s00_direction_foundation_engineering_contract.md` | `构思.md`、`00`、`13`、`16`、`91`、`100`、`119`、`122`、`140`、`170`、`258` | `life_v0/direction/` | `direction_lock_report.json` |
 | 2 | `S01_SOURCE_AUTHORITY` | `s01_source_authority_engineering_contract.md` | `00`、`01`、`01b-01ax`、`142`、`145`、`151`、`258` | `life_v0/authority/` | `source_authority_report.json` |
-| 3 | `S02_NEURAL_LIFE_CORE` | 下一份 `s02_*` 合同承接 | `02-13`、全部对应 `01*`、`85-101`、`143/146/149/152/171` | `life_v0/body/`、`brain/`、`prediction/`、`memory/`、`consciousness/`、`language/`、`affective_self/`、`dream/`、`action/`、`buses/` | `neural_life_core_report.json` |
+| 3 | `S02_NEURAL_LIFE_CORE` | `s02_neural_life_core_engineering_contract.md` | `02-13`、全部对应 `01*`、`85-101`、`143/146/149/152/171` | `life_v0/neural_core/` | `neural_life_core_report.json`、`neural_life_core_check_report.json` |
 | 4 | `S04_STATE_OBJECT_STORE` | `life_state_store_v0_schema.md` 先承接，后续补 `s04_*` | `17-30`、`41-48`、`57`、`61`、`69`、`123-133` | `life_v0/state_store/` | `state_store_report.json` |
 | 5 | `S03_DIRECTION_LIFE_MEMBRANE` | `runtime_v0_architecture.md` 与 `birth_readiness_v0_contract.md` 先承接，后续补 `s03_*` | `13-16`、`33-84`、`91`、`97-100`、`119-122` | `life_v0/membrane/` | `life_membrane_report.json` |
 | 6 | `S07_LANGUAGE_RELATIONSHIP` | 下一份 `s07_*` 合同承接 | `01f`、`01j`、`01u`、`09`、`85-90`、`96`、`101`、`141`、`144`、`147`、`150` | `life_v0/language/`、`relationship/` | `language_relationship_report.json` |
@@ -118,6 +122,7 @@ v0 落代码时，每个模块必须保留四条回链：
 | `doc_corpus_ingestor_v0_contract.md` | `contract_ready` | 已有 P0 代码，继续保持与测试同步 |
 | `s00_direction_foundation_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/direction/` |
 | `s01_source_authority_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/authority/` |
+| `s02_neural_life_core_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/neural_core/` |
 | `digital_life_macro_architecture_v0.md` | `contract_ready` | S02 合同必须从这里承接 |
 | `runtime_v0_architecture.md` | `base_contract_ready` | 被 S03/S05/S09/S10 复用 |
 | `life_state_store_v0_schema.md` | `base_contract_ready` | 被 S04 复用 |
