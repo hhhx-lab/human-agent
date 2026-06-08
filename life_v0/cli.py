@@ -11,6 +11,7 @@ from .life_targets import run_birth_readiness
 from .membrane import run_check_life_membrane, run_life_membrane
 from .neural_core import run_check_neural_life_core, run_neural_life_core
 from .state_store import run_check_state_store, run_state_store
+from .validators import run_check_validation_membrane, run_validation_membrane
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -134,6 +135,32 @@ def build_parser() -> argparse.ArgumentParser:
     birth_readiness.add_argument("--receipts", default="runtime/receipts")
     birth_readiness.add_argument("--run-id", default=None)
     birth_readiness.add_argument("--strict", action="store_true")
+
+    validation = subparsers.add_parser(
+        "run-validation-membrane",
+        help="Build the S05 validation membrane observation layer after S08 birth readiness.",
+    )
+    validation.add_argument("--docs", default="docs")
+    validation.add_argument("--doc-index", default="runtime/docs/doc_carrier_index.json")
+    validation.add_argument("--state", default="runtime/state")
+    validation.add_argument("--membrane", default="runtime/state/membrane")
+    validation.add_argument("--life-targets", default="runtime/state/life_targets")
+    validation.add_argument("--validation", default="runtime/state/validation")
+    validation.add_argument("--observation", default="runtime/state/observation")
+    validation.add_argument("--reports", default="runtime/reports/latest")
+    validation.add_argument("--receipts", default="runtime/receipts")
+    validation.add_argument("--run-id", default=None)
+    validation.add_argument("--strict", action="store_true")
+
+    validation_check = subparsers.add_parser(
+        "check-validation-membrane",
+        help="Check the S05 validation membrane observation state and stage gates.",
+    )
+    validation_check.add_argument("--state", default="runtime/state")
+    validation_check.add_argument("--validation", default="runtime/state/validation")
+    validation_check.add_argument("--observation", default="runtime/state/observation")
+    validation_check.add_argument("--reports", default="runtime/reports/latest")
+    validation_check.add_argument("--strict", action="store_true")
 
     return parser
 
@@ -265,6 +292,34 @@ def main(argv: list[str] | None = None) -> int:
             reports_dir=Path(args.reports),
             receipts_dir=Path(args.receipts),
             run_id=args.run_id,
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "run-validation-membrane":
+        result = run_validation_membrane(
+            docs_dir=Path(args.docs),
+            doc_index_path=Path(args.doc_index),
+            state_dir=Path(args.state),
+            membrane_dir=Path(args.membrane),
+            life_targets_dir=Path(args.life_targets),
+            validation_dir=Path(args.validation),
+            observation_dir=Path(args.observation),
+            reports_dir=Path(args.reports),
+            receipts_dir=Path(args.receipts),
+            run_id=args.run_id,
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "check-validation-membrane":
+        result = run_check_validation_membrane(
+            state_dir=Path(args.state),
+            validation_dir=Path(args.validation),
+            observation_dir=Path(args.observation),
+            reports_dir=Path(args.reports),
             strict=args.strict,
         )
         print(json.dumps(result.report, ensure_ascii=False, indent=2))

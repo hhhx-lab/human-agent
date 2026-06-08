@@ -43,6 +43,8 @@ life-v0 <command> [options]
 | `--state runtime/state` | 指定生命状态根目录 |
 | `--membrane runtime/state/membrane` | 指定 S03 生命膜目录 |
 | `--life-targets runtime/state/life_targets` | 指定 S08 九项目标状态目录 |
+| `--validation runtime/state/validation` | 指定 S05 验证膜状态目录 |
+| `--observation runtime/state/observation` | 指定 S05 运行观测状态目录 |
 | `--out <path>` | 指定当前命令的主要状态输出目录 |
 | `--reports runtime/reports/latest` | 指定 report 输出目录 |
 | `--receipts runtime/receipts` | 指定 receipt 目录 |

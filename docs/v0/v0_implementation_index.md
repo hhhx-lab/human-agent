@@ -143,10 +143,10 @@ v0 落代码时，每个模块必须保留四条回链：
 | `s02_neural_life_core_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/neural_core/` |
 | `s03_direction_life_membrane_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/membrane/` |
 | `s04_state_object_store_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/state_store/` |
-| `s05_validation_membrane_observation_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/validators/`、`life_v0/observation/`、`life_v0/reports/` |
+| `s05_validation_membrane_observation_engineering_contract.md` | `slice_contract_ready` | 已有 `life_v0/validators/`、`run-validation-membrane` 与 `check-validation-membrane`；下一工程推进点为 S09 |
 | `s06_life_support_development_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/body/`、`life_v0/growth/`、`life_v0/defense/` |
 | `s07_language_relationship_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/language/`、`life_v0/relationship/` |
-| `s08_life_target_runtimes_engineering_contract.md` | `slice_contract_ready` | 已有 `life_v0/life_targets/` 与 `check-birth-readiness`，继续保持与测试同步；下一工程推进点为 S05 |
+| `s08_life_target_runtimes_engineering_contract.md` | `slice_contract_ready` | 已有 `life_v0/life_targets/` 与 `check-birth-readiness`，继续保持与测试同步；S08 已交给 S05 |
 | `s09_schema_runner_code_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/schema_runner/` 和 CLI/report smoke |
 | `s10_runtime_growth_reconsolidation_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/growth/`、`life_v0/dream/`、`life_v0/archive/`、`life_v0/replay/` |
 | `s11_v0_contract_coverage_engineering_contract.md` | `slice_contract_ready` | 下一步实现 `life_v0/contracts/` 覆盖检查 |

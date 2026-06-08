@@ -50,8 +50,8 @@ S05 接在 S03 生命膜与 S08 九项目标之后，用来复查“状态、证
 ## 命令合同
 
 ```text
-life-v0 run-validation-membrane --docs docs --doc-index runtime/docs/doc_carrier_index.json --state runtime/state --membrane runtime/state/membrane --life-targets runtime/state/life_targets --reports runtime/reports/latest --receipts runtime/receipts --strict
-life-v0 check-validation-membrane --state runtime/state --reports runtime/reports/latest --strict
+life-v0 run-validation-membrane --docs docs --doc-index runtime/docs/doc_carrier_index.json --state runtime/state --membrane runtime/state/membrane --life-targets runtime/state/life_targets --validation runtime/state/validation --observation runtime/state/observation --reports runtime/reports/latest --receipts runtime/receipts --strict
+life-v0 check-validation-membrane --state runtime/state --validation runtime/state/validation --observation runtime/state/observation --reports runtime/reports/latest --strict
 ```
 
 ## 阶段门
@@ -71,14 +71,16 @@ life-v0 check-validation-membrane --state runtime/state --reports runtime/report
 {
   "schema_version": "s05_validation_membrane_observation_report_v0",
   "engineering_slice_ref": "S05_VALIDATION_MEMBRANE_OBSERVATION",
-  "status": "blocked",
+  "status": "closed",
+  "stage_effect": "allow_next_slice",
   "source_doc_refs": [],
   "readme_block_refs": ["B07_VALIDATOR_RULES", "B08_RUNNER_EVALUATION"],
-  "runtime_carrier_refs": ["LifeMembraneStageGate", "RuntimeObservationIngestor"],
+  "runtime_carrier_refs": ["LifeMembraneStageGate", "RuntimeObservationIngestor", "SchemaBundleCompiler", "ActionResponsibilityRuntime"],
   "blocked_reasons": [],
   "quarantine_refs": [],
   "finding_refs": [],
-  "next_allowed_slices": ["S09_SCHEMA_RUNNER_CODE"]
+  "next_allowed_slices": ["S09_SCHEMA_RUNNER_CODE"],
+  "next_required_command": "life-v0 build-schema-runner --strict"
 }
 ```
 
