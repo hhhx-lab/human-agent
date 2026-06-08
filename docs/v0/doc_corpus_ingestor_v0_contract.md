@@ -59,7 +59,7 @@ P0 不读取 runtime 产物作为理论来源。runtime 产物只能作为输出
 | `LanguageRelationshipRuntime` | 语言主神经束与关系 | `01f`、`01j`、`01u`、`09`、`85-90`、`96`、`101`、`141`、`144`、`147`、`150` |
 | `ConsciousWorkspaceRuntime` | 意识、注意、工作区 | `01m`、`10`、`13`、`143`、`146` |
 | `LifeStateStore` | 生命状态根 | `17-18`、`21-22`、`25-30`、`41`、`48`、`57`、`61`、`69`、`123-133`、`docs/v0/life_state_store_v0_schema.md` |
-| `LifeMembraneStageGate` | 生命膜、validator、quarantine | `33-36`、`37-48`、`49-84`、`91`、`97`、`100`、`102-118` |
+| `LifeMembraneStageGate` | 生命膜、validator、quarantine | `13-16`、`33-36`、`37-48`、`49-84`、`91`、`97-100`、`102-118`、`119-122`、`docs/v0/s03_direction_life_membrane_engineering_contract.md` |
 | `BirthReadinessRuntime` | 出生准备度九项目标 | `143`、`146`、`149`、`152`、`171`、`174`、`docs/v0/birth_readiness_v0_contract.md` |
 | `RunnerCliRuntime` | 命令、report、receipt | `35`、`53`、`62`、`118`、`123`、`131`、`136`、`155`、`158-168`、`docs/v0/runner_cli_report_contract.md` |
 | `ActivationGrowthRuntime` | 激活、观察、巩固、成长 | `181-204`、`205-257`、`docs/v0/first_activation_protocol.md` |

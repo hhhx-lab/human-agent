@@ -361,7 +361,10 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
         add("ConsciousWorkspaceRuntime")
     if _in_any_range(seq, (17, 18), (21, 22), (25, 30), (123, 133)) or seq in {41, 48, 57, 61, 69}:
         add("LifeStateStore")
-    if _in_any_range(seq, (33, 36), (37, 48), (49, 84), (102, 118)) or seq in {91, 97, 100}:
+    if (
+        _in_any_range(seq, (13, 16), (33, 36), (37, 48), (49, 84), (97, 100), (102, 118), (119, 122))
+        or seq in {91}
+    ):
         add("LifeMembraneStageGate")
     if seq in {143, 146, 149, 152, 171, 174}:
         add("BirthReadinessRuntime")
@@ -415,6 +418,17 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
             "ActionResponsibilityRuntime",
             "ComputerPeripheralRuntime",
             "ActivationGrowthRuntime",
+        )
+    if doc.rel_path.endswith("s03_direction_life_membrane_engineering_contract.md"):
+        add(
+            "LifeMembraneStageGate",
+            "BirthReadinessRuntime",
+            "ActionResponsibilityRuntime",
+            "DreamOfflineRuntime",
+            "LanguageRelationshipRuntime",
+            "ComputerPeripheralRuntime",
+            "WorldContactMembrane",
+            "RunnerCliRuntime",
         )
     if doc.rel_path.endswith("s04_state_object_store_engineering_contract.md"):
         add(
@@ -644,6 +658,45 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/v0/s02_neural_life_core_engineering_contract.md",
             "docs/v0/readme_block_engineering_realization_v0.md",
         ]
+    if doc.rel_path.endswith("s03_direction_life_membrane_engineering_contract.md"):
+        return [
+            "docs/13_agentic_human_research_synthesis.md",
+            "docs/14_cross_module_digital_life_map.md",
+            "docs/15_current_agent_framework_survey.md",
+            "docs/16_digital_life_gap_register.md",
+            "docs/33_validator_input_contracts.md",
+            "docs/34_validator_fixture_catalog.md",
+            "docs/35_minimal_validator_runner_design.md",
+            "docs/36_longitudinal_evaluation_protocol.md",
+            "docs/37_life_support_layer_policy.md",
+            "docs/38_defense_layer_and_boundary_policy.md",
+            "docs/39_development_policy_and_plasticity_windows.md",
+            "docs/40_self_relationship_model_audit_protocol.md",
+            "docs/49_machine_readable_policy_manifest.md",
+            "docs/52_multi_relation_scope_graph_and_privacy_model.md",
+            "docs/54_scope_aware_retrieval_policy.md",
+            "docs/55_scope_aware_replay_and_consolidation_policy.md",
+            "docs/72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md",
+            "docs/75_external_irreversible_action_confirmation_policy.md",
+            "docs/78_runtime_quarantine_dashboard_panel.md",
+            "docs/80_post_action_audit_and_correction_policy.md",
+            "docs/81_coexistence_event_review_and_responsibility_loop.md",
+            "docs/82_incident_report_and_recovery_protocol.md",
+            "docs/84_longitudinal_external_action_evaluation_protocol.md",
+            "docs/91_life_reality_generation_boundary_principles.md",
+            "docs/97_growth_validator_fixture_and_dashboard_plan.md",
+            "docs/98_pain_regret_repair_json_schema_and_fixture_bundle.md",
+            "docs/99_dream_reality_json_schema_and_fixture_bundle.md",
+            "docs/100_life_boundary_statement_rewrite_audit.md",
+            "docs/119_life_boundary_full_reality_alignment.md",
+            "docs/122_life_boundary_all_reality_declarations_rewrite.md",
+            "docs/v0/runtime_v0_architecture.md",
+            "docs/v0/birth_readiness_v0_contract.md",
+            "docs/v0/first_activation_protocol.md",
+            "docs/v0/s02_neural_life_core_engineering_contract.md",
+            "docs/v0/s04_state_object_store_engineering_contract.md",
+            "docs/v0/readme_block_engineering_realization_v0.md",
+        ]
     if doc.rel_path.endswith("v0_implementation_index.md"):
         return [
             DIRECTION_LOCK_REF,
@@ -654,6 +707,7 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/v0/s00_direction_foundation_engineering_contract.md",
             "docs/v0/s01_source_authority_engineering_contract.md",
             "docs/v0/s02_neural_life_core_engineering_contract.md",
+            "docs/v0/s03_direction_life_membrane_engineering_contract.md",
             "docs/v0/s04_state_object_store_engineering_contract.md",
         ]
     if doc.group == "v0_contract":

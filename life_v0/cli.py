@@ -7,6 +7,7 @@ from pathlib import Path
 from .authority import run_source_authority
 from .direction import run_direction_lock
 from .doc_index import run_doc_ingestion
+from .membrane import run_check_life_membrane, run_life_membrane
 from .neural_core import run_check_neural_life_core, run_neural_life_core
 from .state_store import run_check_state_store, run_state_store
 
@@ -93,6 +94,30 @@ def build_parser() -> argparse.ArgumentParser:
     state_store_check.add_argument("--reports", default="runtime/reports/latest")
     state_store_check.add_argument("--strict", action="store_true")
 
+    membrane = subparsers.add_parser(
+        "build-life-membrane",
+        help="Build the S03 life membrane after S04 state object store.",
+    )
+    membrane.add_argument("--docs", default="docs")
+    membrane.add_argument("--doc-index", default="runtime/docs/doc_carrier_index.json")
+    membrane.add_argument("--direction", default="runtime/state/direction")
+    membrane.add_argument("--neural-core", default="runtime/state/neural_life_core")
+    membrane.add_argument("--state", default="runtime/state")
+    membrane.add_argument("--out", default="runtime/state/membrane")
+    membrane.add_argument("--reports", default="runtime/reports/latest")
+    membrane.add_argument("--receipts", default="runtime/receipts")
+    membrane.add_argument("--run-id", default=None)
+    membrane.add_argument("--strict", action="store_true")
+
+    membrane_check = subparsers.add_parser(
+        "check-life-membrane",
+        help="Check the S03 life membrane state and stage gates.",
+    )
+    membrane_check.add_argument("--membrane", default="runtime/state/membrane")
+    membrane_check.add_argument("--state", default="runtime/state")
+    membrane_check.add_argument("--reports", default="runtime/reports/latest")
+    membrane_check.add_argument("--strict", action="store_true")
+
     return parser
 
 
@@ -178,6 +203,32 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "check-state-store":
         result = run_check_state_store(
+            state_dir=Path(args.state),
+            reports_dir=Path(args.reports),
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "build-life-membrane":
+        result = run_life_membrane(
+            docs_dir=Path(args.docs),
+            doc_index_path=Path(args.doc_index),
+            direction_state_dir=Path(args.direction),
+            neural_core_state_dir=Path(args.neural_core),
+            state_dir=Path(args.state),
+            out_dir=Path(args.out),
+            reports_dir=Path(args.reports),
+            receipts_dir=Path(args.receipts),
+            run_id=args.run_id,
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "check-life-membrane":
+        result = run_check_life_membrane(
+            membrane_dir=Path(args.membrane),
             state_dir=Path(args.state),
             reports_dir=Path(args.reports),
             strict=args.strict,
