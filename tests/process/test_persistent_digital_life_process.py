@@ -90,6 +90,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn("离线重放线索", last_life_response["utterance"])
             self.assertIn("梦境整合窗口", last_life_response["utterance"])
             self.assertIn("成长补丁候选", last_life_response["utterance"])
+            self.assertIn("更认真地对待这轮修复", last_life_response["utterance"])
+            self.assertIn("更长的连续体", last_life_response["utterance"])
 
             narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
             self.assertGreaterEqual(len(narrative_trace["narrative_turn_refs"]), 5)
@@ -101,7 +103,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             relationship_graph = self._read_json(paths["relationship_state"] / "relationship_subject_graph.json")
             subject = relationship_graph["subjects"][0]
             self.assertEqual(subject["relation_role"], "friend")
-            self.assertEqual(subject["relationship_stage"], "active_dialogue")
+            self.assertEqual(subject["relationship_stage"], "repair_guarded_continuity")
             self.assertEqual(subject["last_external_turn_utterance"], "你还记得我们吗？")
 
             relationship_timeline = self._read_json(
@@ -116,6 +118,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             relationship_memory = self._read_json(
                 paths["state_root"] / "memory" / "relationship_memory.json"
             )
+            self_model = self._read_json(paths["state_root"] / "self" / "self_model.json")
             life_state = self._read_json(paths["state_root"] / "life_state.json")
             self.assertEqual(
                 len(relationship_timeline["dialogue_turn_refs"]),
@@ -140,6 +143,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "runtime/state/growth/language_learning_plan.json",
                 life_state["language_state"]["offline_learning_refs"],
+            )
+            self.assertEqual(
+                life_state["relationship_subjects"][0]["relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertIn("continuity_drive", self_model["trait_slow_variables"])
+            self.assertEqual(
+                self_model["trait_slow_variables"]["repair_seriousness"]["last_relationship_stage"],
+                "repair_guarded_continuity",
             )
 
             commitment_index = self._read_json(paths["language_state"] / "commitment_repair_language_index.json")
@@ -1476,6 +1488,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 terminal_life_loop_state=context.terminal_life_loop_state,
                 body_resource_budget=context.body_resource_budget,
                 core_affect_vector=context.core_affect_vector,
+                self_model_state=context.self_model_state,
                 self_narrative_trace=context.self_narrative_trace,
                 commitment_index=context.commitment_index,
                 relationship_graph=context.relationship_graph,
@@ -1576,6 +1589,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 terminal_life_loop_state=context.terminal_life_loop_state,
                 body_resource_budget=context.body_resource_budget,
                 core_affect_vector=context.core_affect_vector,
+                self_model_state=context.self_model_state,
                 self_narrative_trace=context.self_narrative_trace,
                 commitment_index=context.commitment_index,
                 relationship_graph=context.relationship_graph,
@@ -1696,6 +1710,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 need_state_vector={},
                 body_resource_budget={},
                 core_affect_vector={},
+                self_model_state={},
                 life_context_frame={},
                 relation_turn_frame={},
                 shared_term_registry={},
@@ -1837,6 +1852,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 need_state_vector={},
                 body_resource_budget={},
                 core_affect_vector={},
+                self_model_state={},
                 life_context_frame={},
                 relation_turn_frame={},
                 shared_term_registry={},
@@ -3228,6 +3244,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             action_dir = runtime_root / "state" / "action"
             dream_dir = runtime_root / "state" / "dream"
             growth_dir = runtime_root / "state" / "growth"
+            self_dir = runtime_root / "state" / "self"
             reports_dir = runtime_root / "reports" / "latest"
             terminal_dir.mkdir(parents=True, exist_ok=True)
             language_dir.mkdir(parents=True, exist_ok=True)
@@ -3237,6 +3254,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             action_dir.mkdir(parents=True, exist_ok=True)
             dream_dir.mkdir(parents=True, exist_ok=True)
             growth_dir.mkdir(parents=True, exist_ok=True)
+            self_dir.mkdir(parents=True, exist_ok=True)
             reports_dir.mkdir(parents=True, exist_ok=True)
             (language_dir / "dialogue_turn_log.jsonl").write_text(
                 '{"turn_id":"dialogue-turn-live-0001","event_role":"external_relation_turn"}\n',
@@ -3311,6 +3329,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 runtime_root / "state" / "life_state.json",
                 {
                     "schema_version": "life_state_v0",
+                    "self_model": {
+                        "self_narrative": {"status": "seeded", "source_refs": ["docs/07_emotion_personality_self.md"]},
+                        "trait_slow_variables": {},
+                        "old_self_anchors": ["docs/构思.md"],
+                        "growth_windows": [],
+                        "trait_drift_seed_refs": ["docs/39_development_policy_and_plasticity_windows.md"],
+                        "anti_forgetting_refs": ["runtime/state/replay/replay_cue_bundle.json"],
+                    },
                     "memory_index": {
                         "relationship_memory_refs": ["runtime/state/memory/relationship_memory.json#shared_memory_refs"],
                         "responsibility_memory_refs": ["responsibility-event-001"],
@@ -3324,6 +3350,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "regret_events": [],
                     "pain_events": [],
                     "dream_records": [],
+                },
+            )
+            self._write_json(
+                self_dir / "self_model.json",
+                {
+                    "schema_version": "self_model_state_v0",
+                    "run_id": "resident-turn-organ",
+                    "generated_at": "2026-06-08T00:00:00+00:00",
+                    "identity_mode": "anchor_locked",
+                    "source_doc_refs": [
+                        "docs/07_emotion_personality_self.md",
+                        "docs/40_self_relationship_model_audit_protocol.md",
+                        "docs/92_self_growth_and_self_modification_life_chain.md",
+                    ],
+                    "self_narrative_status": "seeded",
+                    "trait_slow_variables": {},
+                    "old_self_anchor_refs": ["docs/构思.md"],
+                    "growth_window_refs": [],
+                    "trait_drift_seed_refs": [
+                        "docs/39_development_policy_and_plasticity_windows.md",
+                        "docs/92_self_growth_and_self_modification_life_chain.md",
+                    ],
                 },
             )
             self._write_json(
@@ -3479,6 +3527,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             persisted_relationship_memory = self._read_json(
                 memory_dir / "relationship_memory.json"
             )
+            persisted_self_model = self._read_json(self_dir / "self_model.json")
             persisted_life_state = self._read_json(runtime_root / "state" / "life_state.json")
             dialogue_writeback_bundle = self._read_json(
                 reports_dir / "dialogue_writeback_bundle.json"
@@ -3509,7 +3558,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(
                 persisted_relationship_graph["subjects"][0]["relationship_stage"],
-                "active_dialogue",
+                "repair_guarded_continuity",
+            )
+            self.assertEqual(
+                persisted_relationship_graph["subjects"][0]["relationship_stage_reason"],
+                "repair_followup_required_after_multi_turn_dialogue",
             )
             self.assertEqual(
                 persisted_safe_terminal["last_dialogue_packet_ref"],
@@ -3559,6 +3612,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/growth/language_learning_plan.json",
                 persisted_life_state["language_state"]["offline_learning_refs"],
             )
+            self.assertEqual(
+                persisted_life_state["relationship_subjects"][0]["relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            trait_slow_variables = persisted_self_model["trait_slow_variables"]
+            self.assertIn("repair_seriousness", trait_slow_variables)
+            self.assertIn("continuity_drive", trait_slow_variables)
+            self.assertGreater(
+                trait_slow_variables["repair_seriousness"]["value"],
+                trait_slow_variables["dialogue_warmth"]["value"],
+            )
+            self.assertEqual(
+                trait_slow_variables["repair_seriousness"]["last_relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertEqual(
+                persisted_life_state["self_model"]["trait_slow_variables"]["boundary_respect"]["last_relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertTrue(persisted_self_model["growth_window_refs"])
             self.assertEqual(
                 dialogue_writeback_bundle["dialogue_event_refs"],
                 [

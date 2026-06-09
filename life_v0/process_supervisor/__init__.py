@@ -102,6 +102,7 @@ def run_digital_life_process(
     need_state_vector = supervision.need_state_vector
     body_resource_budget = supervision.body_resource_budget
     core_affect_vector = supervision.core_affect_vector
+    self_model_state = supervision.self_model_state
     safe_terminal_loop = supervision.safe_terminal_loop
     terminal_life_loop_state = supervision.terminal_life_loop_state
     life_context_frame = supervision.life_context_frame
@@ -158,6 +159,7 @@ def run_digital_life_process(
         need_state_vector=need_state_vector,
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
+        self_model_state=self_model_state,
         life_context_frame=life_context_frame,
         relation_turn_frame=relation_turn_frame,
         shared_term_registry=shared_term_registry,

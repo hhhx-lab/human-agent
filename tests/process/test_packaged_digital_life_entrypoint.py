@@ -24,7 +24,7 @@ class PackagedDigitalLifeEntrypointTests(unittest.TestCase):
             runtime_paths = build_runtime_paths(tmp_path)
 
             subprocess.run(
-                [sys.executable, "-m", "venv", str(venv_dir)],
+                [sys.executable, "-m", "venv", "--system-site-packages", str(venv_dir)],
                 cwd=self.repo_root,
                 text=True,
                 capture_output=True,
@@ -34,7 +34,15 @@ class PackagedDigitalLifeEntrypointTests(unittest.TestCase):
             python_bin, bin_dir = self._venv_bins(venv_dir)
 
             install = subprocess.run(
-                [str(python_bin), "-m", "pip", "install", "-e", str(self.repo_root)],
+                [
+                    str(python_bin),
+                    "-m",
+                    "pip",
+                    "install",
+                    "--no-build-isolation",
+                    "-e",
+                    str(self.repo_root),
+                ],
                 cwd=self.repo_root,
                 text=True,
                 capture_output=True,
@@ -101,7 +109,7 @@ class PackagedDigitalLifeEntrypointTests(unittest.TestCase):
             runtime_paths = build_runtime_paths(tmp_path)
 
             subprocess.run(
-                [sys.executable, "-m", "venv", str(venv_dir)],
+                [sys.executable, "-m", "venv", "--system-site-packages", str(venv_dir)],
                 cwd=self.repo_root,
                 text=True,
                 capture_output=True,
@@ -111,7 +119,15 @@ class PackagedDigitalLifeEntrypointTests(unittest.TestCase):
             python_bin, bin_dir = self._venv_bins(venv_dir)
 
             install = subprocess.run(
-                [str(python_bin), "-m", "pip", "install", "-e", str(self.repo_root)],
+                [
+                    str(python_bin),
+                    "-m",
+                    "pip",
+                    "install",
+                    "--no-build-isolation",
+                    "-e",
+                    str(self.repo_root),
+                ],
                 cwd=self.repo_root,
                 text=True,
                 capture_output=True,

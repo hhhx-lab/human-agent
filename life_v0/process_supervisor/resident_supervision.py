@@ -36,6 +36,7 @@ class ResidentSupervisionContext:
     need_state_vector: dict[str, Any]
     body_resource_budget: dict[str, Any]
     core_affect_vector: dict[str, Any]
+    self_model_state: dict[str, Any]
     safe_terminal_loop: dict[str, Any]
     terminal_life_loop_state: dict[str, Any]
     life_context_frame: dict[str, Any]
@@ -131,6 +132,7 @@ def bootstrap_resident_supervision(
     need_state_vector = read_json_if_exists(body_dir / "need_state_vector.json")
     body_resource_budget = read_json_if_exists(body_dir / "body_resource_budget.json")
     core_affect_vector = read_json_if_exists(body_dir / "core_affect_vector.json")
+    self_model_state = read_json_if_exists(state_dir / "self" / "self_model.json")
     life_context_frame = read_json_if_exists(terminal_dir / "life_context_frame.json")
     relation_turn_frame = read_json_if_exists(terminal_dir / "relation_turn_frame.json")
     shared_term_registry = read_json(language_dir / "shared_term_registry.json")
@@ -254,6 +256,7 @@ def bootstrap_resident_supervision(
     )
     life_state = project_responsibility_language_continuity(
         life_state=life_state,
+        self_model_state=self_model_state,
         commitment_truth_state=commitment_truth_state,
         responsibility_ledger=responsibility_ledger,
         relationship_memory=relationship_memory,
@@ -393,6 +396,7 @@ def bootstrap_resident_supervision(
         need_state_vector=need_state_vector,
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
+        self_model_state=self_model_state,
         safe_terminal_loop=safe_terminal_loop,
         terminal_life_loop_state=terminal_life_loop_state,
         life_context_frame=life_context_frame,

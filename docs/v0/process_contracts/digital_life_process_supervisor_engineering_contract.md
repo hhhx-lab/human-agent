@@ -30,7 +30,7 @@ life-v0 "digital life"
 当前仍然还没有的是：
 
 1. 更高频的 heartbeat 节律、后台继续存在和更厚的 idle 策略。
-2. 更高阶的关系/语言/责任器官联动写回与跨进程持续治理；但最小层的 Queue E 联动已经不再缺席，`responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 已经正式进入 waiting heartbeat、dialogue events、response surface、resident governance、process report 与 process receipt。
+2. 更高阶的关系/语言/责任器官联动写回与跨进程持续治理；但最小层的 Queue E 联动已经不再缺席，`responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 已经正式进入 waiting heartbeat、dialogue events、response surface、resident governance、process report 与 process receipt，而且同会话内的关系阶段演化与自我慢变量写回已经开始真实发生。
 3. 全局长期运行层、后台继续存在与更强的安装后常驻治理。
 4. 真正高阶的 resident supervision。
 
@@ -105,6 +105,7 @@ life-v0 "digital life"
 - `life_v0/process_supervisor/dialogue_events.py`
 - `life_v0/process_supervisor/response_surface.py`
 - `life_v0/process_supervisor/resident_supervision.py`
+- `life_v0/process_supervisor/continuity_evolution.py`
 - `life_v0/process_supervisor/idle_refresh_loop.py`
 - `life_v0/process_supervisor/live_turn_cycle.py`
 - `life_v0/process_supervisor/process_session_loop.py`
@@ -123,6 +124,7 @@ life-v0 "digital life"
 8. 继续把离线对象压进 waiting state 与下一轮表达。
 9. 把 `body_resource_budget.json` 与 `core_affect_vector.json` 装载进 resident supervision 上下文，使疲惫级别、修复驱力与情绪张力能够真实调制常驻过程的生命表达，而不是停在 S06 状态柜里。
 10. 把 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 显式装载进 resident supervision / live turn / waiting governance / closeout，使 Queue E 不只停在语言器官侧，而是正式进入常驻生命过程。
+11. 把回合尾部的关系阶段演化与 `self_model.trait_slow_variables` 写回统一收进 `continuity_evolution.py`，并由 `process_session_loop.py` 在下一轮重新装载，避免同一常驻生命过程继续拿旧的关系状态说话。
 
 ## 最小行为合同
 
@@ -145,7 +147,7 @@ repo-local 最小常驻终端入口固定为：
   -> write external_relation_turn event
   -> generate digital_life_turn response
   -> write digital_life_turn event
-  -> update self_narrative / relationship / commitment / terminal loop state
+  -> update self_narrative / relationship / commitment / self_model / terminal loop state
   -> return restored_waiting_for_external_turn
   -> repeat until /exit
 ```
@@ -174,7 +176,7 @@ IdleContinuityFrame
 3. 再记录“看到了什么外部回合”；
 4. 再把身体预算、疲惫、修复驱力、情绪张力与责任压力一起带进回应生成；
 5. 再记录“这次如何回应”；
-6. 再把结果回写到长期连续体与 replay 线索；
+6. 再把结果回写到长期连续体、关系阶段、自我慢变量与 replay 线索；
 7. 最后再重新回到等待态。
 
 如果 process supervisor 只有 stdin 读写，没有 `IdleContinuityFrame -> DialogueWritebackBundle -> ReplayCueBundle` 这条链，它仍然只是终端壳，而不是生命进程。

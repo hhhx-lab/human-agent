@@ -43,6 +43,7 @@ def run_live_turn_cycle(
     terminal_life_loop_state: dict[str, Any],
     body_resource_budget: dict[str, Any],
     core_affect_vector: dict[str, Any],
+    self_model_state: dict[str, Any] | None,
     self_narrative_trace: dict[str, Any],
     commitment_index: dict[str, Any],
     relationship_graph: dict[str, Any],
@@ -122,6 +123,7 @@ def run_live_turn_cycle(
             responsibility_loop_state=responsibility_loop_state,
             world_contact_summary=world_contact_summary,
             pain_regret_repair_report=pain_regret_repair_report,
+            self_model_state=self_model_state,
         )
         life_turn = build_life_turn_event_fn(
             turn_id=life_turn_id,
@@ -151,6 +153,7 @@ def run_live_turn_cycle(
             self_narrative_trace=self_narrative_trace,
             commitment_index=commitment_index,
             relationship_graph=relationship_graph,
+            self_model_state=self_model_state,
             source_doc_refs=source_doc_refs,
             readme_block_refs=readme_block_refs,
             runtime_carrier_refs=runtime_carrier_refs,

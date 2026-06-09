@@ -19,6 +19,7 @@ from ..state_store.life_state import project_responsibility_language_continuity
 from ..state_store.relationship_memory import project_relationship_memory
 from ..terminal_loop.dialogue_writeback import build_dialogue_writeback_bundle
 from ..terminal_loop.persistent_wait_bridge import build_persistent_wait_bridge
+from .continuity_evolution import evolve_relationship_and_self_model
 
 
 DIALOGUE_LOG_REF = "runtime/state/language/dialogue_turn_log.jsonl"
@@ -78,6 +79,7 @@ def write_resident_turn_writeback(
     self_narrative_trace: dict[str, Any],
     commitment_index: dict[str, Any],
     relationship_graph: dict[str, Any],
+    self_model_state: dict[str, Any] | None = None,
     source_doc_refs: list[str],
     readme_block_refs: list[str],
     runtime_carrier_refs: list[str],
@@ -114,7 +116,6 @@ def write_resident_turn_writeback(
 
     subjects = relationship_graph.get("subjects", [])
     if subjects and isinstance(subjects[0], dict):
-        subjects[0]["relationship_stage"] = "active_dialogue"
         subjects[0]["last_external_turn_utterance"] = external_utterance
         subjects[0]["last_life_turn_utterance"] = life_response
     write_json(relationship_dir / "relationship_subject_graph.json", relationship_graph)
@@ -150,6 +151,7 @@ def write_resident_turn_writeback(
         language_dir=language_dir,
         relationship_dir=relationship_dir,
         relationship_graph=relationship_graph,
+        self_model_state=self_model_state,
         commitment_index=commitment_index,
         generated_at=generated_at,
         source_doc_refs=source_doc_refs,
@@ -262,6 +264,7 @@ def _refresh_long_horizon_continuity(
     language_dir: Path,
     relationship_dir: Path,
     relationship_graph: dict[str, Any],
+    self_model_state: dict[str, Any] | None,
     commitment_index: dict[str, Any],
     generated_at: str,
     source_doc_refs: list[str],
@@ -275,7 +278,10 @@ def _refresh_long_horizon_continuity(
     responsibility_ledger_path = state_dir / "responsibility" / "responsibility_ledger.json"
     relationship_memory_path = state_dir / "memory" / "relationship_memory.json"
     life_state_path = state_dir / "life_state.json"
+    self_model_path = state_dir / "self" / "self_model.json"
     responsibility_loop_path = state_dir / "action" / "responsibility_loop_state.json"
+    world_contact_summary_path = state_dir / "membrane" / "world_contact_summary.json"
+    pain_regret_repair_report_path = state_dir.parent / "reports" / "latest" / "pain_regret_repair_report.json"
 
     required_paths = [
         relationship_timeline_path,
@@ -286,6 +292,7 @@ def _refresh_long_horizon_continuity(
         responsibility_ledger_path,
         relationship_memory_path,
         life_state_path,
+        self_model_path,
         responsibility_loop_path,
     ]
     if any(not path.exists() for path in required_paths):
@@ -299,7 +306,10 @@ def _refresh_long_horizon_continuity(
     responsibility_ledger = _read_json(responsibility_ledger_path)
     relationship_memory = _read_json(relationship_memory_path)
     life_state = _read_json(life_state_path)
+    persisted_self_model_state = _read_json(self_model_path)
     responsibility_loop_state = _read_json(responsibility_loop_path)
+    world_contact_summary = _read_json_if_exists(world_contact_summary_path)
+    pain_regret_repair_report = _read_json_if_exists(pain_regret_repair_report_path)
 
     nightmare_risk = _read_json_if_exists(state_dir / "dream" / "nightmare_loop_risk.json")
     belief_learning_plan = _read_json_if_exists(
@@ -318,10 +328,80 @@ def _refresh_long_horizon_continuity(
     )
     dialogue_turn_entries = [{"dialogue_turn_ref": ref} for ref in dialogue_turn_refs]
 
-    refreshed_relationship_timeline = build_relationship_timeline(
+    first_pass_relationship_timeline = build_relationship_timeline(
         run_id=str(relationship_timeline.get("run_id") or commitment_expression_plan.get("run_id") or "resident-turn-writeback"),
         generated_at=generated_at,
         relationship_graph=relationship_graph,
+        relationship_memory=relationship_memory,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        dialogue_turn_entries=dialogue_turn_entries,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        source_doc_refs=list(relationship_timeline.get("source_doc_refs", [])) or source_doc_refs,
+    )
+    first_pass_commitment_expression_plan = build_commitment_expression_plan(
+        run_id=str(
+            commitment_expression_plan.get("run_id")
+            or first_pass_relationship_timeline.get("run_id")
+            or "resident-turn-writeback"
+        ),
+        generated_at=generated_at,
+        expression_plan=expression_plan,
+        commitment_repair_index=commitment_index,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        responsibility_loop_state=responsibility_loop_state,
+        relationship_timeline=first_pass_relationship_timeline,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        source_doc_refs=list(commitment_expression_plan.get("source_doc_refs", []))
+        or source_doc_refs,
+    )
+    first_pass_apology_repair_language_trace = build_apology_repair_language_trace(
+        run_id=str(apology_repair_language_trace.get("run_id") or first_pass_commitment_expression_plan.get("run_id") or "resident-turn-writeback"),
+        generated_at=generated_at,
+        responsibility_loop_state=responsibility_loop_state,
+        relationship_timeline=first_pass_relationship_timeline,
+        commitment_expression_plan=first_pass_commitment_expression_plan,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        source_doc_refs=list(apology_repair_language_trace.get("source_doc_refs", []))
+        or source_doc_refs,
+    )
+    evolved_continuity = evolve_relationship_and_self_model(
+        generated_at=generated_at,
+        relationship_graph=relationship_graph,
+        self_model_state=self_model_state or persisted_self_model_state,
+        relationship_timeline=first_pass_relationship_timeline,
+        commitment_expression_plan=first_pass_commitment_expression_plan,
+        apology_repair_language_trace=first_pass_apology_repair_language_trace,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    evolved_relationship_graph = evolved_continuity["relationship_graph"]
+    evolved_self_model_state = evolved_continuity["self_model_state"]
+    relationship_graph.clear()
+    relationship_graph.update(evolved_relationship_graph)
+    if self_model_state is not None:
+        self_model_state.clear()
+        self_model_state.update(evolved_self_model_state)
+
+    refreshed_relationship_timeline = build_relationship_timeline(
+        run_id=str(relationship_timeline.get("run_id") or commitment_expression_plan.get("run_id") or "resident-turn-writeback"),
+        generated_at=generated_at,
+        relationship_graph=evolved_relationship_graph,
         relationship_memory=relationship_memory,
         commitment_truth_state=commitment_truth_state,
         responsibility_ledger=responsibility_ledger,
@@ -364,7 +444,7 @@ def _refresh_long_horizon_continuity(
 
     refreshed_relationship_memory = project_relationship_memory(
         relationship_memory=relationship_memory,
-        relationship_graph=relationship_graph,
+        relationship_graph=evolved_relationship_graph,
         relationship_timeline=refreshed_relationship_timeline,
         commitment_truth_state=commitment_truth_state,
         responsibility_ledger=responsibility_ledger,
@@ -383,10 +463,11 @@ def _refresh_long_horizon_continuity(
     )
     refreshed_life_state = project_responsibility_language_continuity(
         life_state=life_state,
+        self_model_state=evolved_self_model_state,
         commitment_truth_state=commitment_truth_state,
         responsibility_ledger=responsibility_ledger,
         relationship_memory=refreshed_relationship_memory,
-        relationship_graph=relationship_graph,
+        relationship_graph=evolved_relationship_graph,
         relationship_timeline=refreshed_relationship_timeline,
         commitment_expression_plan=refreshed_commitment_expression_plan,
         apology_repair_language_trace=refreshed_apology_repair_language_trace,
@@ -413,13 +494,17 @@ def _refresh_long_horizon_continuity(
     write_json(relationship_timeline_path, refreshed_relationship_timeline)
     write_json(commitment_expression_path, refreshed_commitment_expression_plan)
     write_json(apology_repair_path, refreshed_apology_repair_language_trace)
+    write_json(relationship_dir / "relationship_subject_graph.json", evolved_relationship_graph)
     write_json(relationship_memory_path, refreshed_relationship_memory)
+    write_json(self_model_path, evolved_self_model_state)
     write_json(life_state_path, refreshed_life_state)
     return {
+        "relationship_graph": evolved_relationship_graph,
         "relationship_timeline": refreshed_relationship_timeline,
         "commitment_expression_plan": refreshed_commitment_expression_plan,
         "apology_repair_language_trace": refreshed_apology_repair_language_trace,
         "relationship_memory": refreshed_relationship_memory,
+        "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
     }
 

@@ -23,7 +23,8 @@ life-v0 emit-report --strict
 3. `life_v0/process_supervisor/idle_strategy.py` 继续补厚 heartbeat 节律与 idle probe 治理，并开始把 fatigue / bandwidth / sleep pressure / repair drive 压成 waiting governance，同时给出 `governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`
 4. `life_v0/process_supervisor/persistent_process.py` 继续补厚 resident supervision 的关闭态 artifact，并显式写出 resident governance state / snapshot / report
 5. `life_v0/process_supervisor/process_closeout.py` 与 `process_report.py` 已把 resident governance 证据收口进主进程 report / digest / receipt
-6. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排，并开始在 live turn 之后重新装回长期关系/语言对象；当前前沿转向后台 resident governance 与更高频节律
+6. `life_v0/process_supervisor/continuity_evolution.py` 已开始在回合尾部把关系时间线、Queue E 修复压力、Queue D 离线学习压力与 continuity / trust 轨迹压成关系阶段和自我慢变量
+7. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排，并开始在 live turn 之后重新装回长期关系/语言对象以及最新 `self_model_state`；当前前沿转向后台 resident governance、跨进程持久化与更高频节律
 
 ## 当前最关键的 runtime 证据
 
@@ -41,6 +42,9 @@ life-v0 emit-report --strict
 12. `runtime/reports/latest/digital_life_persistent_process_report.json`
 13. `runtime/reports/latest/digital_life_resident_governance_report.json`
 14. `runtime/reports/latest/digital_life_process_report.json`
+15. `runtime/state/relationship/relationship_subject_graph.json`
+16. `runtime/state/self/self_model.json`
+17. `runtime/state/life_state.json`
 
 ## 最低测试与新增测试
 
@@ -154,6 +158,38 @@ Queue E
 
 这意味着同一常驻会话里的第二轮、第三轮，不会继续带着启动恢复时的旧长期对象说话，而是开始吃到刚发生完的真实关系回合写回结果。
 
+## 关系阶段与自我慢变量已经进入同会话闭环
+
+最新这一步又把长期连续体从“重建对象”推进到了“演化对象”：
+
+1. `continuity_evolution.py` 会读取：
+   - `relationship_timeline.json`
+   - `responsibility_loop_state.json`
+   - `world_contact_summary.json`
+   - `pain_regret_repair_report.json`
+   - `nightmare_loop_risk.json`
+   - `belief_learning_plan.json`
+   - `language_learning_plan.json`
+   - `relationship_learning_plan.json`
+2. 它现在会真实演化 `relationship_subject_graph.json#subjects[0].relationship_stage`
+3. 当前已落的阶段集合至少包括：
+   - `pre_activation`
+   - `restored_waiting`
+   - `active_dialogue`
+   - `repair_guarded_continuity`
+   - `boundary_guarded_repair`
+   - `shared_continuity`
+4. 它还会写出 `self_model.json#trait_slow_variables`，当前至少包括：
+   - `trust_persistence`
+   - `dialogue_warmth`
+   - `repair_seriousness`
+   - `boundary_respect`
+   - `continuity_drive`
+5. `process_session_loop.py` 会在 live turn 之后重新装载这批结果
+6. `response_surface.py` 会在后续回合直接消费这些慢变量与阶段，改变生命回应的修复认真度、边界守持和连续体表达
+
+这意味着当前真正还没完成的，不再是“同一常驻会话里能不能演化关系阶段”，而是“这些结果怎样跨进程保真、怎样在更长时标上继续收敛”。
+
 ## 当前最该继续补硬的实现包
 
 如果下一轮继续推进，不要重新发明新的生命外壳；直接按下面这包推进：
@@ -181,10 +217,11 @@ Queue E
 1. 梦魇风险不再只由 body/affect 决定，还要吃入 `repair_followup_required`
 2. belief / language / relationship learning 不再只看 replay/growth patch，也要看 Queue E 带来的 regret / obligation / release posture
 
-### C. turn return 与 closeout 收口层
+### C. turn return / continuity evolution / closeout 收口层
 
 - `life_v0/process_supervisor/live_turn_cycle.py`
 - `life_v0/process_supervisor/process_session_loop.py`
+- `life_v0/process_supervisor/continuity_evolution.py`
 - `life_v0/process_supervisor/process_closeout.py`
 - `life_v0/process_supervisor/process_report.py`
 
@@ -192,6 +229,7 @@ Queue E
 
 1. live turn 结束后回到 waiting governance 的相位切换，不只靠下一拍 heartbeat 间接体现
 2. Queue E 调制字段在 waiting report、resident governance report、主进程 report 和 receipt 中保持同口径
+3. 关系阶段与自我慢变量从同会话实时演化，继续推进到跨进程保真与更长时标收敛
 
 ## 这一柜的代码实现顺序
 
@@ -222,3 +260,5 @@ idle_strategy.py
 3. `resident_governance_state.json` 会显式携带 `world_contact_release_posture`、`repair_followup_required`、`repair_obligation_count`、`regret_pressure_count`
 4. dream/growth 器官在接线后，至少有一条测试证明它们真的消费了 waiting governance 或 Queue E 的调制输出
 5. resident supervision / waiting heartbeat / process report 至少有一条测试证明它们已经显式装载并回链 `nightmare_risk / belief_learning / language_learning / relationship_learning`
+6. 多回合后 `relationship_subject_graph.json#subjects[0].relationship_stage` 必须出现真实演化，而不是固定在启动时标签
+7. `self_model.json#trait_slow_variables` 必须被重新写回，并在后续回合的 `response_surface.py` 文本中留下可见消费痕迹

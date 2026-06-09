@@ -39,6 +39,7 @@ def run_process_session_loop(
     need_state_vector: dict[str, Any],
     body_resource_budget: dict[str, Any],
     core_affect_vector: dict[str, Any],
+    self_model_state: dict[str, Any] | None,
     life_context_frame: dict[str, Any],
     relation_turn_frame: dict[str, Any],
     shared_term_registry: dict[str, Any],
@@ -176,6 +177,7 @@ def run_process_session_loop(
             terminal_life_loop_state=terminal_life_loop_state,
             body_resource_budget=body_resource_budget,
             core_affect_vector=core_affect_vector,
+            self_model_state=self_model_state,
             self_narrative_trace=self_narrative_trace,
             commitment_index=commitment_index,
             relationship_graph=relationship_graph,
@@ -236,9 +238,12 @@ def run_process_session_loop(
             language_dir / "apology_repair_language_trace.json",
             apology_repair_language_trace,
         )
+        self_model_state = _read_json_if_exists(
+            terminal_dir.parent / "self" / "self_model.json",
+            self_model_state or {},
+        )
 
         emit_output(live_turn_cycle.emitted_output)
-
 
 def _read_json_if_exists(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
     if not path.exists():

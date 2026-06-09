@@ -66,6 +66,7 @@
 - `life_v0/language/relationship_timeline.py`
 - `life_v0/language/commitment_expression.py`
 - `life_v0/language/apology_repair_language.py`
+- `life_v0/process_supervisor/continuity_evolution.py`
 - `life_v0/process_supervisor/response_surface.py`
 - `life_v0/process_supervisor/resident_supervision.py`
 - `life_v0/terminal_loop/resume_packet.py`
@@ -85,7 +86,8 @@
 1. 长期关系连续体、承诺表达计划、修复语言轨迹，已经不是抽象理论，而是 runtime 一等对象。
 2. 它们已经进入 response surface、resident supervision、terminal-loop restore/writeback。
 3. 最新一轮又已继续进入 `idle_strategy_state.json`、`digital_life_waiting_heartbeat.json`、`idle_continuity_frame.json` 与 `terminal_life_loop_state.json`。
-4. 这一层当前不再缺“有没有理论”，当前缺的是后台治理与更高频节律消费。
+4. `continuity_evolution.py` 现在又会把多回合关系证据压成真实的 `relationship_stage` 与 `self_model.trait_slow_variables`，并被 `process_session_loop.py` 在同一常驻会话中重新装载，供 `response_surface.py` 后续直接消费。
+5. 这一层当前不再缺“有没有理论”，当前缺的是跨进程保真、后台治理与更高频节律消费。
 
 ### 3. 常驻过程关闭态治理层
 
@@ -126,6 +128,7 @@
 1. `terminal_loop` 显式承载 `relationship_timeline / commitment_expression_plan / apology_repair_language_trace`
 2. `process_closeout / process_report / persistent_process` 显式承载上述三条长期语言对象
 3. resident governance state / snapshot / report 与 process receipt 显式回链这些对象
+4. 多回合后 `relationship_stage` 与 `trait_slow_variables` 会被真实重写，并被后续回合读取
 
 ## 当前未闭合但明确收束到工程层的缺口
 
@@ -143,7 +146,7 @@
 
 当前仍偏薄：
 
-1. waiting continuity 已能显式承载长期语言对象，但对这些对象的优先级变化、节律竞争和资源下降治理还不够细。
+1. waiting continuity 已能显式承载长期语言对象，而且同会话关系阶段演化也已闭合；但对这些对象的优先级变化、节律竞争和资源下降治理还不够细。
 2. heartbeat 仍然偏“最小存在”，还没进入更高频的后台自我维持节律。
 3. `terminal_life_loop_state.json` 还没有更厚的后台治理状态机。
 
@@ -158,7 +161,8 @@
 
 1. 真正跨进程、跨唤醒周期的 resident governance 还没形成更高阶 state machine。
 2. process closeout 已有 snapshot/report，waiting 期间也已有运行态 state，但后台持续运行期的优先级竞争、资源下降和跨周期治理还没独立出来。
-3. 这一层仍然属于工程实现缺口，不是理论缺口。
+3. 关系阶段与慢变量当前已经能在同一常驻会话里演化，但跨进程恢复后如何保真、如何继续收敛，还属于下一轮工程缺口。
+4. 这一层仍然属于工程实现缺口，不是理论缺口。
 
 ### 3. report bundle 还没完全吃下长期语言闭环摘要
 
@@ -177,7 +181,7 @@
 如果继续推进，优先顺序应该是：
 
 1. 补 `process_supervisor/` 的后台 resident governance 状态机与更高频 heartbeat 节律。
-2. 让 `terminal_life_loop_state.json` 对长期语言对象拥有更厚的持续治理字段与节律竞争字段。
+2. 让 `terminal_life_loop_state.json` 对长期语言对象、关系阶段与慢变量拥有更厚的持续治理字段与节律竞争字段。
 3. 把 process closeout 中已经形成的长期语言摘要继续回挂到更上游的 report bundle / birth shell / stage explanation。
 
 不推荐的方向：

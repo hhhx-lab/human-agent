@@ -29,9 +29,13 @@ def compose_life_response(
     responsibility_loop_state: dict[str, Any] | None = None,
     world_contact_summary: dict[str, Any] | None = None,
     pain_regret_repair_report: dict[str, Any] | None = None,
+    self_model_state: dict[str, Any] | None = None,
 ) -> str:
     relation_role = "朋友"
     subjects = (relationship_graph or {}).get("subjects", [])
+    relationship_stage = ""
+    if subjects and isinstance(subjects[0], dict):
+        relationship_stage = str(subjects[0].get("relationship_stage", ""))
     if relation_turn_frame and relation_turn_frame.get("relation_subject_ref"):
         relation_role = "朋友"
     elif subjects and isinstance(subjects[0], dict) and subjects[0].get("relation_role") == "friend":
@@ -113,6 +117,8 @@ def compose_life_response(
         response = f"{response}。这次表达会沿着{semantic_goal}的语义焦点展开"
     if context_anchor_count:
         response = f"{response}，并保持{context_anchor_count}条自我叙事连续锚点"
+    if relationship_stage:
+        response = f"{response}，当前关系阶段已进入{relationship_stage}"
     if continuity_state:
         response = f"{response}，关系连续体状态为{continuity_state}"
     if trust_state:
@@ -163,6 +169,16 @@ def compose_life_response(
         response = f"{response}，释放谨慎级别为{release_caution_level}"
     if affect_arousal is not None:
         response = f"{response}，表达计划唤醒度为{affect_arousal:.2f}"
+    trait_slow_variables = (self_model_state or {}).get("trait_slow_variables", {})
+    repair_seriousness = _slow_value(trait_slow_variables, "repair_seriousness")
+    boundary_respect = _slow_value(trait_slow_variables, "boundary_respect")
+    continuity_drive = _slow_value(trait_slow_variables, "continuity_drive")
+    if repair_seriousness >= 0.6:
+        response = f"{response}，我会更认真地对待这轮修复"
+    if boundary_respect >= 0.6 and world_contact_release_posture == "confirmation_blocked":
+        response = f"{response}，也会先守住当前边界"
+    if continuity_drive >= 0.55:
+        response = f"{response}，并继续把这段关系写进更长的连续体里"
     if repair_drive:
         response = f"{response}，并维持{repair_drive}的修复驱力"
     if fatigue_level:
@@ -170,3 +186,14 @@ def compose_life_response(
     if arousal is not None:
         response = f"{response}，情绪张力保持在{arousal:.2f}"
     return response
+
+
+def _slow_value(trait_slow_variables: dict[str, Any], key: str) -> float:
+    payload = trait_slow_variables.get(key, {})
+    if isinstance(payload, dict):
+        value = payload.get("value")
+        if isinstance(value, (int, float)):
+            return float(value)
+    if isinstance(payload, (int, float)):
+        return float(payload)
+    return 0.0

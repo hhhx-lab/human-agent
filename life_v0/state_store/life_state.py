@@ -4,6 +4,7 @@ import json
 from typing import Any
 
 from life_v0.direction import LIFE_TARGETS
+from life_v0.state_store.self_model import project_self_model_projection
 
 
 SOURCE_DOC_REFS = [
@@ -38,18 +39,11 @@ def build_life_state_projection(
     relationship_ref = "runtime/state/memory/relationship_memory.json#shared_memory_refs"
     engram_ref = "runtime/state/memory/engram_index.json"
 
-    self_model = {
-        "self_narrative": {
-            "status": self_model_state.get("self_narrative_status", "seeded"),
-            "source_refs": list(self_model_state.get("source_doc_refs", [])) or ["docs/07_emotion_personality_self.md"],
-        },
-        "trait_slow_variables": dict(self_model_state.get("trait_slow_variables", {})),
-        "old_self_anchors": list(self_model_state.get("old_self_anchor_refs", []))
-        or ["docs/构思.md", "docs/258_linear_chain_closure_and_v0_contract_transition.md"],
-        "growth_windows": list(self_model_state.get("growth_window_refs", [])),
-        "trait_drift_seed_refs": list(self_model_state.get("trait_drift_seed_refs", [])),
-        "anti_forgetting_refs": replay_refs or list((engram_index or {}).get("anti_forgetting_anchor_refs", [])),
-    }
+    self_model = project_self_model_projection(
+        self_model_state=self_model_state,
+        anti_forgetting_refs=replay_refs
+        or list((engram_index or {}).get("anti_forgetting_anchor_refs", [])),
+    )
     memory_index = {
         "autobiographical_memory_refs": list((engram_index or {}).get("autobiographical_memory_refs", []))
         or [autobiographical_ref],
@@ -137,6 +131,7 @@ def build_life_state_projection(
 def project_responsibility_language_continuity(
     *,
     life_state: dict[str, Any],
+    self_model_state: dict[str, Any] | None = None,
     commitment_truth_state: dict[str, Any] | None = None,
     responsibility_ledger: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
@@ -300,6 +295,12 @@ def project_responsibility_language_continuity(
                     "integration_status": "pending_relation_reentry",
                 }
             )
+    if self_model_state is not None:
+        updated["self_model"] = project_self_model_projection(
+            self_model_state=self_model_state,
+            anti_forgetting_refs=list(memory_index.get("replay_cues", []))
+            or list(updated.get("self_model", {}).get("anti_forgetting_refs", [])),
+        )
     return updated
 
 

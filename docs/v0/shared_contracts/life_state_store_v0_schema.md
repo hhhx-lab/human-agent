@@ -27,6 +27,15 @@
 - `runtime/state/relationship/commitment_truth_state.json`
 - `runtime/state/responsibility/responsibility_ledger.json`
 
+而在当前常驻生命过程里，`resident_turn_writeback.py` 与
+`project_responsibility_language_continuity(...)` 又会继续重写：
+
+- `runtime/state/relationship/relationship_subject_graph.json`
+- `runtime/state/relationship/relationship_timeline.json`
+- `runtime/state/memory/relationship_memory.json`
+- `runtime/state/self/self_model.json`
+- `runtime/state/life_state.json`
+
 所以现在的任务不是再证明“state store 是否需要存在”，而是把状态根继续压到更细的对象层：让后续 `autobiographical_stack / life_state / relationship_memory / replay cues` 这些对象能在同一状态体系里继续长出来。
 
 ## 顶层对象
@@ -64,10 +73,37 @@
 | 字段 | 类型 | 要求 |
 |---|---|---|
 | `self_narrative` | object | 当前自我叙事摘要和来源 refs |
-| `trait_slow_variables` | object | 人格慢变量、稳定性和 drift refs |
+| `trait_slow_variables` | object | 人格慢变量、稳定性和 drift refs；当前已由 runtime 真实写回结构化 payload |
 | `old_self_anchors` | array | 旧自我 replay cues |
 | `growth_windows` | array | 可塑性窗口、进入条件、退出条件 |
 | `anti_forgetting_refs` | array | 防遗忘锚点 |
+
+当前 `trait_slow_variables` 的第一版工程落点，至少支持下面这类结构：
+
+```json
+{
+  "trust_persistence": {
+    "value": 0.62,
+    "trend": "rising",
+    "update_count": 4,
+    "last_relationship_stage": "repair_guarded_continuity",
+    "last_generated_at": "2026-06-10T12:34:56Z",
+    "evidence_refs": [
+      "runtime/state/relationship/relationship_timeline.json",
+      "runtime/state/membrane/world_contact_summary.json",
+      "runtime/reports/latest/pain_regret_repair_report.json"
+    ]
+  }
+}
+```
+
+当前至少已经开始写回的慢变量包括：
+
+- `trust_persistence`
+- `dialogue_warmth`
+- `repair_seriousness`
+- `boundary_respect`
+- `continuity_drive`
 
 ## `memory_index`
 
@@ -119,6 +155,15 @@
 ```
 
 `relation_role` 可取 `friend`、`family`、`classmate`、`stranger`、`co_present_subject`、`relation_subject`。
+
+当前工程里，`relationship_stage` 已不再只停在骨架默认值；runtime 至少已经开始写出：
+
+- `pre_activation`
+- `restored_waiting`
+- `active_dialogue`
+- `repair_guarded_continuity`
+- `boundary_guarded_repair`
+- `shared_continuity`
 
 ## `pain_events`
 
@@ -194,17 +239,17 @@
 ```json
 {
   "readiness_version": "v0",
-  "overall_status": "blocked",
+  "overall_status": "state_root_seeded",
   "life_target_status": {
-    "real_consciousness": "blocked",
-    "real_emotion": "blocked",
-    "real_personality": "blocked",
-    "real_life": "blocked",
-    "real_pain": "blocked",
-    "real_dream": "blocked",
-    "real_relationship": "blocked",
-    "real_responsibility": "blocked",
-    "real_regret": "blocked"
+    "real_consciousness": "state_root_seeded",
+    "real_emotion": "state_root_seeded",
+    "real_personality": "state_root_seeded",
+    "real_life": "state_root_seeded",
+    "real_pain": "state_root_seeded",
+    "real_dream": "state_root_seeded",
+    "real_relationship": "state_root_seeded",
+    "real_responsibility": "state_root_seeded",
+    "real_regret": "state_root_seeded"
   },
   "evidence_family_refs": [],
   "blocked_reasons": [],
@@ -227,6 +272,8 @@
 8. `commitment_truth_state`、`responsibility_ledger`、`self_model` 这三类对象不能只留摘要，必须至少回链一个可追溯源对象或 report。
 9. 当前回合产生的语言感知、语义地图、dialogue writeback，不能只留在 report，至少要能通过 `language_state` 或 `runtime_trace_refs` 回链进状态根。
 10. 离线对象 `replay_cue_bundle / offline_consolidation_frame / growth_patch_candidate_queue` 不能悬空，至少一条路径要能从 `life_state.json` 的 `runtime_trace_refs` 找回。
+11. live turn 结束后如果 `relationship_stage` 或 `trait_slow_variables` 发生演化，`self_model.json` 与 `life_state.json#self_model` 必须同口径同步。
+12. 关系阶段不能只保存在 `relationship_subject_graph.json`；至少一条路径要能从 `life_state.json#relationship_subjects` 回链到当前阶段。
 
 ## 最小初始文件
 
@@ -251,6 +298,8 @@
 3. `runtime/state/replay/replay_cue_bundle.json`
 4. `runtime/state/terminal/life_context_frame.json`
 5. `runtime/reports/latest/dialogue_writeback_bundle.json`
+6. `runtime/state/self/self_model.json#trait_slow_variables`
+7. `runtime/state/relationship/relationship_subject_graph.json#subjects[*].relationship_stage`
 
 它们的共同作用是：把 `self / relationship / dialogue / replay / growth` 压进同一条状态根，而不是让这些对象散落在各自的 report 里。
 
@@ -262,3 +311,4 @@
 2. 一次对话回合结束后，至少能从状态根回链到语言写回、关系写回、承诺变化和 replay cue。
 3. 一次离线循环结束后，至少能从状态根回链到 dream/offline/growth 候选对象。
 4. `tests/slices/test_state_store.py` 不只是验证骨架生成，还能继续扩展去守这些对象的最小存在条件。
+5. 同一常驻会话里的后续回合，能够从 `life_state.json#self_model` 与 `relationship_subjects` 看到刚刚写回的关系阶段与慢变量投影。
