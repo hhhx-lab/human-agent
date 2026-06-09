@@ -24,6 +24,8 @@ def build_run_manifest(
     input_report_refs: list[str],
     output_refs: list[str],
     input_hashes: dict[str, str],
+    package_local_gate_refs: list[str],
+    closure_status_refs: list[str],
 ) -> dict[str, Any]:
     return {
         "schema_version": "schema_runner_run_manifest_v0",
@@ -41,6 +43,8 @@ def build_run_manifest(
         "input_report_refs": input_report_refs,
         "input_hashes": input_hashes,
         "output_refs": output_refs,
+        "package_local_gate_refs": package_local_gate_refs,
+        "closure_status_refs": closure_status_refs,
         "receipt_ref": f"runtime/receipts/schema_runner_{run_id}.json",
         "source_doc_refs": sorted(set(source_doc_refs + SOURCE_DOC_REFS)),
     }
@@ -58,6 +62,8 @@ def check_run_manifest(state: dict[str, Any]) -> list[str]:
         "input_report_refs",
         "input_hashes",
         "output_refs",
+        "package_local_gate_refs",
+        "closure_status_refs",
         "receipt_ref",
         "source_doc_refs",
     ]:

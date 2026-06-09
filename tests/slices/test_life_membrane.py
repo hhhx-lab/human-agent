@@ -136,6 +136,7 @@ class LifeMembraneTests(unittest.TestCase):
             action_intent_queue = self._read_json(membrane_state / "action_intent_queue.json")
             observation_truth_gate = self._read_json(membrane_state / "observation_truth_gate.json")
             confirmation_binding = self._read_json(membrane_state / "confirmation_binding.json")
+            world_contact_summary = self._read_json(membrane_state / "world_contact_summary.json")
             precheck = self._read_json(membrane_state / "birth_readiness_precheck.json")
             coverage = self._read_json(membrane_state / "membrane_doc_coverage_snapshot.json")
             preflight = self._read_json(membrane_state / "first_activation_preflight_seed.json")
@@ -145,6 +146,7 @@ class LifeMembraneTests(unittest.TestCase):
             world_contact = self._read_json(state_root / "action" / "world_contact_gate_state.json")
             side_effect_review = self._read_json(state_root / "action" / "side_effect_review.json")
             responsibility_loop = self._read_json(state_root / "action" / "responsibility_loop_state.json")
+            pain_regret_repair_report = self._read_json(reports / "pain_regret_repair_report.json")
             report = self._read_json(reports / "life_membrane_report.json")
             check_report = self._read_json(reports / "life_membrane_check_report.json")
             digest = self._read_json(reports / "life_membrane_digest.json")
@@ -225,6 +227,22 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertEqual(confirmation_binding["confirmation_status"], "not_required")
         self.assertTrue(confirmation_binding["confirmation_routes"])
 
+        self.assertEqual(world_contact_summary["schema_version"], "world_contact_summary_v0")
+        self.assertEqual(
+            world_contact_summary["action_intent_queue_ref"],
+            "runtime/state/membrane/action_intent_queue.json",
+        )
+        self.assertEqual(
+            world_contact_summary["world_contact_gate_ref"],
+            "runtime/state/action/world_contact_gate_state.json",
+        )
+        self.assertEqual(
+            world_contact_summary["confirmation_binding_ref"],
+            "runtime/state/membrane/confirmation_binding.json",
+        )
+        self.assertEqual(world_contact_summary["release_posture"], "shadow_only_guarded")
+        self.assertTrue(world_contact_summary["next_guard_refs"])
+
         self.assertEqual(precheck["schema_version"], "birth_readiness_precheck_v0")
         self.assertEqual(set(precheck["life_target_status"]), set(LIFE_TARGETS))
         self.assertTrue(all(status == "membrane_closed" for status in precheck["life_target_status"].values()))
@@ -238,6 +256,8 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertIn("state_root_check", preflight["preflight_checks"])
         self.assertIn("runtime/state/membrane/action_intent_queue.json", manifest["state_refs"])
         self.assertIn("runtime/state/membrane/confirmation_binding.json", manifest["state_refs"])
+        self.assertIn("runtime/state/membrane/world_contact_summary.json", manifest["state_refs"])
+        self.assertIn("runtime/reports/latest/pain_regret_repair_report.json", manifest["report_refs"])
 
         self.assertEqual(action_candidate_set["schema_version"], "action_candidate_set_v0")
         self.assertTrue(action_candidate_set["candidate_actions"])
@@ -309,6 +329,18 @@ class LifeMembraneTests(unittest.TestCase):
             responsibility_loop["relationship_writeback_refs"],
         )
 
+        self.assertEqual(pain_regret_repair_report["schema_version"], "pain_regret_repair_report_v0")
+        self.assertEqual(
+            pain_regret_repair_report["world_contact_summary_ref"],
+            "runtime/state/membrane/world_contact_summary.json",
+        )
+        self.assertEqual(
+            pain_regret_repair_report["responsibility_loop_ref"],
+            "runtime/state/action/responsibility_loop_state.json",
+        )
+        self.assertTrue(pain_regret_repair_report["regret_pressure_refs"])
+        self.assertTrue(pain_regret_repair_report["repair_obligation_refs"])
+
         self.assertEqual(manifest["schema_version"], "life_membrane_manifest_v0")
         self.assertIn("runtime/state/membrane/life_membrane.json", manifest["state_refs"])
         self.assertIn("runtime/state/action/action_candidate_set.json", manifest["state_refs"])
@@ -323,6 +355,8 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertEqual(report["next_required_command"], "life-v0 check-birth-readiness --strict")
         self.assertIn("LifeMembraneStageGate", report["runtime_carrier_refs"])
         self.assertIn("runtime/state/action/responsibility_loop_state.json", report["state_refs"])
+        self.assertIn("runtime/state/membrane/world_contact_summary.json", report["state_refs"])
+        self.assertIn("runtime/reports/latest/pain_regret_repair_report.json", report["report_refs"])
 
         self.assertEqual(check_report["schema_version"], "life_membrane_check_report_v0")
         self.assertEqual(check_report["status"], "closed")

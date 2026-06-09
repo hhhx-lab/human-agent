@@ -143,9 +143,14 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(cross_file_logic["schema_version"], "cross_file_logic_v0")
         self.assertEqual(cross_file_logic["status"], "closed")
         self.assertTrue(cross_file_logic["cross_file_findings"])
+        self.assertIn("runtime/state/membrane/action_intent_queue.json", cross_file_logic["state_refs"])
+        self.assertIn("runtime/state/membrane/confirmation_binding.json", cross_file_logic["state_refs"])
         self.assertIn("runtime/state/action/responsibility_loop_state.json", cross_file_logic["state_refs"])
         self.assertIn("runtime/state/validation/observation_truth_review.json", cross_file_logic["state_refs"])
+        self.assertIn("runtime/state/validation/validation_rollup.json", cross_file_logic["state_refs"])
         self.assertTrue(cross_file_logic["repair_priority_refs"])
+        self.assertIn("validation_rollup_gate", cross_file_logic["package_local_gate_refs"])
+        self.assertIn("runtime/state/membrane/action_intent_queue.json", cross_file_logic["closure_status_refs"])
         self.assertIn(
             "runtime/state/relationship/commitment_truth_state.json#repair_required_refs",
             cross_file_logic["bridge_refs"],
@@ -197,6 +202,9 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/action/responsibility_loop_state.json", run_manifest["input_state_refs"])
         self.assertIn("runtime/state/validation/world_contact_validation.json", run_manifest["input_state_refs"])
         self.assertIn("runtime/state/validation/prediction_trace_validation.json", run_manifest["input_state_refs"])
+        self.assertIn("runtime/state/validation/validation_rollup.json", run_manifest["input_state_refs"])
+        self.assertIn("validation_rollup_gate", run_manifest["package_local_gate_refs"])
+        self.assertIn("runtime/state/membrane/action_intent_queue.json", run_manifest["closure_status_refs"])
 
         self.assertEqual(stage_gate["schema_version"], "schema_runner_stage_gate_v0")
         self.assertEqual(stage_gate["decision"], "closed")
@@ -217,6 +225,14 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/schema_runner/comparison_trace.json", report["artifact_refs"])
         self.assertIn("runtime/state/schema_runner/evidence_ranking.json", report["artifact_refs"])
         self.assertIn("runtime/state/schema_runner/run_manifest.json", report["artifact_refs"])
+        self.assertIn(
+            "runtime/state/schema_runner/cross_file_logic.json#closure_status_refs",
+            report["closure_refs"],
+        )
+        self.assertIn(
+            "runtime/state/schema_runner/run_manifest.json#closure_status_refs",
+            report["closure_refs"],
+        )
         self.assertEqual(report["next_allowed_slices"], ["S06_LIFE_SUPPORT_DEVELOPMENT", "S10_RUNTIME_GROWTH_RECONSOLIDATION"])
         self.assertEqual(report["next_required_command"], "life-v0 build-life-support --strict")
 

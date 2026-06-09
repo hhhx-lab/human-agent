@@ -77,6 +77,7 @@ class ValidationMembraneTests(unittest.TestCase):
             world_contact_validation = self._read_json(paths["validation_state"] / "world_contact_validation.json")
             prediction_trace_validation = self._read_json(paths["validation_state"] / "prediction_trace_validation.json")
             boundary_audit = self._read_json(paths["validation_state"] / "boundary_audit_state.json")
+            validation_rollup = self._read_json(paths["validation_state"] / "validation_rollup.json")
             stage_gate = self._read_json(paths["validation_state"] / "validation_stage_gate.json")
             report = self._read_json(paths["reports"] / "validation_membrane_report.json")
             world_contact_report = self._read_json(paths["reports"] / "world_contact_audit_report.json")
@@ -150,6 +151,13 @@ class ValidationMembraneTests(unittest.TestCase):
         )
         self.assertEqual(prediction_trace_validation["missing_prediction_links"], [])
 
+        self.assertEqual(validation_rollup["schema_version"], "validation_rollup_v0")
+        self.assertEqual(validation_rollup["overall_status"], "closed")
+        self.assertEqual(validation_rollup["blocked_gates"], [])
+        self.assertEqual(validation_rollup["guarded_gates"], [])
+        self.assertTrue(validation_rollup["next_stage_ready"])
+        self.assertIn("runtime/state/validation/world_contact_validation.json", validation_rollup["state_refs"])
+
         self.assertEqual(boundary_audit["schema_version"], "boundary_audit_state_v0")
         self.assertEqual(boundary_audit["life_membrane_ref"], "runtime/state/membrane/life_membrane.json")
         self.assertEqual(
@@ -173,6 +181,7 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertIn("runtime/state/validation/observation_truth_review.json", report["state_refs"])
         self.assertIn("runtime/state/validation/world_contact_validation.json", report["state_refs"])
         self.assertIn("runtime/state/validation/prediction_trace_validation.json", report["state_refs"])
+        self.assertIn("runtime/state/validation/validation_rollup.json", report["state_refs"])
         self.assertIn("runtime/state/validation/boundary_audit_state.json", report["state_refs"])
         self.assertEqual(report["next_allowed_slices"], ["S09_SCHEMA_RUNNER_CODE"])
         self.assertEqual(report["next_required_command"], "life-v0 build-schema-runner --strict")

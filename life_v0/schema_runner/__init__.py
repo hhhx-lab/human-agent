@@ -147,7 +147,16 @@ def run_schema_runner(
     cross_file_logic = build_cross_file_logic(
         run_id=run_id,
         generated_at=generated_at,
+        action_intent_queue=action_intent_queue,
+        confirmation_binding=confirmation_binding,
         observation_truth_review=observation_truth_review,
+        world_contact_validation=world_contact_validation,
+        prediction_trace_validation=prediction_trace_validation,
+        validation_rollup=_load_json(
+            state_dir / "validation" / "validation_rollup.json",
+            blocked_reasons,
+            "validation_rollup_gate",
+        ),
         boundary_audit=boundary_audit,
         responsibility_loop=responsibility_loop,
         consistency_logic=consistency_logic,
@@ -186,6 +195,7 @@ def run_schema_runner(
             "runtime/state/validation/observation_truth_review.json",
             "runtime/state/validation/world_contact_validation.json",
             "runtime/state/validation/prediction_trace_validation.json",
+            "runtime/state/validation/validation_rollup.json",
             "runtime/state/validation/boundary_audit_state.json",
         ],
         input_report_refs=[
@@ -195,6 +205,8 @@ def run_schema_runner(
         ],
         output_refs=[_runtime_ref(path) for path in output_refs],
         input_hashes=input_hashes,
+        package_local_gate_refs=list(cross_file_logic.get("package_local_gate_refs", [])),
+        closure_status_refs=list(cross_file_logic.get("closure_status_refs", [])),
     )
     artifact_manifest = _build_artifact_manifest(run_id, generated_at, status)
     stage_gate = _build_stage_gate(run_id, generated_at, status, stage_effect, blocked_reasons)
@@ -598,6 +610,10 @@ def _build_artifact_manifest(run_id: str, generated_at: str, status: str) -> dic
             "runtime/state/schema_runner/evidence_ranking.json",
             "runtime/state/schema_runner/run_manifest.json",
         ],
+        "closure_refs": [
+            "runtime/state/schema_runner/cross_file_logic.json#closure_status_refs",
+            "runtime/state/schema_runner/run_manifest.json#closure_status_refs",
+        ],
         "test_refs": [
             "tests/slices/test_schema_runner.py",
         ],
@@ -674,6 +690,10 @@ def _build_report(
             "runtime/state/schema_runner/comparison_trace.json",
             "runtime/state/schema_runner/evidence_ranking.json",
             "runtime/state/schema_runner/run_manifest.json",
+        ],
+        "closure_refs": [
+            "runtime/state/schema_runner/cross_file_logic.json#closure_status_refs",
+            "runtime/state/schema_runner/run_manifest.json#closure_status_refs",
         ],
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
@@ -799,6 +819,12 @@ def _check_artifact_manifest(artifact_manifest: dict[str, Any]) -> list[str]:
     ]:
         if ref not in artifact_manifest.get("artifact_refs", []):
             reasons.append(f"code_artifact_gate missing {ref}")
+    for ref in [
+        "runtime/state/schema_runner/cross_file_logic.json#closure_status_refs",
+        "runtime/state/schema_runner/run_manifest.json#closure_status_refs",
+    ]:
+        if ref not in artifact_manifest.get("closure_refs", []):
+            reasons.append(f"code_artifact_gate missing {ref}")
     return reasons
 
 
@@ -827,6 +853,12 @@ def _check_build_report(report: dict[str, Any]) -> list[str]:
     ]:
         if ref not in report.get("artifact_refs", []):
             reasons.append(f"build_report_gate missing {ref}")
+    for ref in [
+        "runtime/state/schema_runner/cross_file_logic.json#closure_status_refs",
+        "runtime/state/schema_runner/run_manifest.json#closure_status_refs",
+    ]:
+        if ref not in report.get("closure_refs", []):
+            reasons.append(f"build_report_gate missing {ref}")
     return reasons
 
 
@@ -853,6 +885,7 @@ def _build_input_hashes(
         state_dir / "validation" / "observation_truth_review.json",
         state_dir / "validation" / "world_contact_validation.json",
         state_dir / "validation" / "prediction_trace_validation.json",
+        state_dir / "validation" / "validation_rollup.json",
         state_dir / "validation" / "boundary_audit_state.json",
         reports_dir / "birth_readiness_report.json",
         reports_dir / "validation_membrane_report.json",

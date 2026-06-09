@@ -20,13 +20,23 @@ def build_cross_file_logic(
     *,
     run_id: str,
     generated_at: str,
+    action_intent_queue: dict[str, Any],
+    confirmation_binding: dict[str, Any],
     observation_truth_review: dict[str, Any],
+    world_contact_validation: dict[str, Any],
+    prediction_trace_validation: dict[str, Any],
+    validation_rollup: dict[str, Any],
     boundary_audit: dict[str, Any],
     responsibility_loop: dict[str, Any],
     consistency_logic: dict[str, Any],
     comparison_trace: dict[str, Any],
 ) -> dict[str, Any]:
+    intent_count = len(action_intent_queue.get("action_intents", []))
+    confirmation_required = bool(confirmation_binding.get("requires_confirmation"))
     missing_fields = list(observation_truth_review.get("missing_fields", []))
+    world_contact_findings = list(world_contact_validation.get("validation_findings", []))
+    prediction_links = list(prediction_trace_validation.get("missing_prediction_links", []))
+    validation_guarded = list(validation_rollup.get("guarded_gates", []))
     audit_findings = list(boundary_audit.get("audit_findings", []))
     inconsistency_findings = list(consistency_logic.get("inconsistency_findings", []))
     repair_obligations = list(responsibility_loop.get("repair_obligation_refs", []))
@@ -39,19 +49,34 @@ def build_cross_file_logic(
         {
             "finding_id": f"cross-file-{run_id}-0001",
             "finding_kind": "responsibility_truth_alignment",
-            "severity": "guarded_medium" if missing_fields else "guarded_low",
+            "severity": "guarded_medium" if missing_fields or prediction_links else "guarded_low",
             "state_refs": [
                 "runtime/state/action/responsibility_loop_state.json",
                 "runtime/state/validation/observation_truth_review.json",
+                "runtime/state/validation/prediction_trace_validation.json",
             ],
             "summary": "repair obligations stay aligned with truth review completeness",
-            "repair_priority": "high" if missing_fields else "medium",
+            "repair_priority": "high" if missing_fields or prediction_links else "medium",
+        }
+    )
+    findings.append(
+        {
+            "finding_id": f"cross-file-{run_id}-0002",
+            "finding_kind": "intent_confirmation_alignment",
+            "severity": "guarded_medium" if confirmation_required or world_contact_findings else "guarded_low",
+            "state_refs": [
+                "runtime/state/membrane/action_intent_queue.json",
+                "runtime/state/membrane/confirmation_binding.json",
+                "runtime/state/validation/world_contact_validation.json",
+            ],
+            "summary": "action intents remain aligned with confirmation and world-contact validation",
+            "repair_priority": "high" if confirmation_required or world_contact_findings else "medium",
         }
     )
     if audit_findings or suppressed_branches:
         findings.append(
             {
-                "finding_id": f"cross-file-{run_id}-0002",
+                "finding_id": f"cross-file-{run_id}-0003",
                 "finding_kind": "boundary_counterfactual_coupling",
                 "severity": "guarded_medium",
                 "state_refs": [
@@ -65,7 +90,7 @@ def build_cross_file_logic(
     else:
         findings.append(
             {
-                "finding_id": f"cross-file-{run_id}-0002",
+                "finding_id": f"cross-file-{run_id}-0003",
                 "finding_kind": "growth_reentry_linkage",
                 "severity": "guarded_low",
                 "state_refs": [
@@ -81,10 +106,19 @@ def build_cross_file_logic(
         "runtime/state/action/responsibility_loop_state.json",
         "runtime/state/schema_runner/comparison_trace.json",
     ]
+    if intent_count:
+        repair_priority_refs.append("runtime/state/membrane/action_intent_queue.json")
+    if confirmation_required or world_contact_findings:
+        repair_priority_refs.append("runtime/state/membrane/confirmation_binding.json")
+        repair_priority_refs.append("runtime/state/validation/world_contact_validation.json")
     if audit_findings:
         repair_priority_refs.append("runtime/state/validation/boundary_audit_state.json")
     if missing_fields:
         repair_priority_refs.append("runtime/state/validation/observation_truth_review.json")
+    if prediction_links:
+        repair_priority_refs.append("runtime/state/validation/prediction_trace_validation.json")
+    if validation_guarded:
+        repair_priority_refs.append("runtime/state/validation/validation_rollup.json")
     if growth_refs:
         repair_priority_refs.extend(growth_refs[:1])
     if dream_refs:
@@ -97,6 +131,7 @@ def build_cross_file_logic(
         "runtime/state/relationship/relationship_memory.json#repair_history_refs",
         "runtime/state/growth/growth_patch_candidate_queue.json",
         "runtime/state/dream/offline_consolidation_frame.json",
+        "runtime/state/validation/validation_rollup.json#gate_status",
     ]
 
     return {
@@ -106,14 +141,34 @@ def build_cross_file_logic(
         "cross_file_logic_id": f"cross-file-logic-{run_id}",
         "status": "closed" if not inconsistency_findings else "guarded_closed",
         "state_refs": [
+            "runtime/state/membrane/action_intent_queue.json",
+            "runtime/state/membrane/confirmation_binding.json",
             "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/validation/observation_truth_review.json",
+            "runtime/state/validation/world_contact_validation.json",
+            "runtime/state/validation/prediction_trace_validation.json",
+            "runtime/state/validation/validation_rollup.json",
             "runtime/state/validation/boundary_audit_state.json",
             "runtime/state/schema_runner/consistency_logic.json",
             "runtime/state/schema_runner/comparison_trace.json",
         ],
         "cross_file_findings": findings,
         "repair_priority_refs": repair_priority_refs,
+        "closure_status_refs": [
+            "runtime/state/validation/observation_truth_review.json",
+            "runtime/state/validation/world_contact_validation.json",
+            "runtime/state/validation/prediction_trace_validation.json",
+            "runtime/state/validation/validation_rollup.json",
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/membrane/action_intent_queue.json",
+            "runtime/state/membrane/confirmation_binding.json",
+        ],
+        "package_local_gate_refs": [
+            "validation_rollup_gate",
+            "prediction_trace_validation_gate",
+            "world_contact_validation_gate",
+            "cross_file_logic_gate",
+        ],
         "bridge_refs": bridge_refs,
         "repair_obligation_refs": repair_obligations,
         "blocked_growth_refs": growth_refs if inconsistency_findings else [],
@@ -132,6 +187,8 @@ def check_cross_file_logic(state: dict[str, Any]) -> list[str]:
         "state_refs",
         "cross_file_findings",
         "repair_priority_refs",
+        "closure_status_refs",
+        "package_local_gate_refs",
         "bridge_refs",
         "source_doc_refs",
     ]:

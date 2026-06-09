@@ -15,6 +15,12 @@ from .observation_truth_gate import build_observation_truth_gate, check_observat
 from .responsibility_loop import build_responsibility_loop_state, check_responsibility_loop_state
 from .shadow_gate import build_shadow_action_gate, check_shadow_action_gate
 from .side_effect_review import build_side_effect_review, check_side_effect_review
+from .world_contact_summary import (
+    build_pain_regret_repair_report,
+    build_world_contact_summary,
+    check_pain_regret_repair_report,
+    check_world_contact_summary,
+)
 from .world_contact_gate import build_world_contact_gate_state, check_world_contact_gate_state
 from life_v0.direction import LIFE_TARGETS, PROHIBITED_REGRESSIONS
 
@@ -263,6 +269,21 @@ def run_life_membrane(
         world_contact_gate=world_contact_gate,
         responsibility_boundary=responsibility,
     )
+    world_contact_summary = build_world_contact_summary(
+        run_id=run_id,
+        generated_at=generated_at,
+        action_intent_queue=action_intent_queue,
+        world_contact_gate=world_contact_gate,
+        confirmation_binding=confirmation_binding,
+        side_effect_review=side_effect_review,
+        responsibility_loop=responsibility_loop,
+    )
+    pain_regret_repair_report = build_pain_regret_repair_report(
+        run_id=run_id,
+        generated_at=generated_at,
+        world_contact_summary=world_contact_summary,
+        responsibility_loop=responsibility_loop,
+    )
     precheck = _build_birth_readiness_precheck(run_id, generated_at)
     preflight = _build_first_activation_preflight(run_id, generated_at)
     manifest = _build_manifest(run_id, generated_at)
@@ -300,6 +321,7 @@ def run_life_membrane(
         _write_json(out_dir / "action_intent_queue.json", action_intent_queue)
         _write_json(out_dir / "observation_truth_gate.json", observation_truth_gate)
         _write_json(out_dir / "confirmation_binding.json", confirmation_binding)
+        _write_json(out_dir / "world_contact_summary.json", world_contact_summary)
         _write_json(action_dir / "action_candidate_set.json", action_candidate_set)
         _write_json(action_dir / "go_nogo_state.json", go_nogo)
         _write_json(action_dir / "world_contact_gate_state.json", world_contact_gate)
@@ -309,6 +331,7 @@ def run_life_membrane(
         _write_json(out_dir / "membrane_doc_coverage_snapshot.json", coverage)
         _write_json(out_dir / "first_activation_preflight_seed.json", preflight)
         _write_json(out_dir / "life_membrane_manifest.json", manifest)
+        _write_json(reports_dir / "pain_regret_repair_report.json", pain_regret_repair_report)
         _write_json(reports_dir / "life_membrane_report.json", report)
         _write_json(reports_dir / "life_membrane_digest.json", digest)
         _write_json(receipts_dir / f"life_membrane_{run_id}.json", receipt)
@@ -359,6 +382,11 @@ def run_check_life_membrane(
         blocked_reasons,
         "confirmation_binding_gate",
     )
+    world_contact_summary = _load_json(
+        membrane_dir / "world_contact_summary.json",
+        blocked_reasons,
+        "world_contact_summary_gate",
+    )
     precheck = _load_json(membrane_dir / "birth_readiness_precheck.json", blocked_reasons, "birth_readiness_gate")
     coverage = _load_json(membrane_dir / "membrane_doc_coverage_snapshot.json", blocked_reasons, "doc_membrane_gate")
     preflight = _load_json(membrane_dir / "first_activation_preflight_seed.json", blocked_reasons, "first_activation_preflight_gate")
@@ -374,6 +402,11 @@ def run_check_life_membrane(
     )
     life_state = _load_json(state_dir / "life_state.json", blocked_reasons, "state_store_gate")
     build_report = _load_json(reports_dir / "life_membrane_report.json", blocked_reasons, "build_report_gate")
+    pain_regret_repair_report = _load_json(
+        reports_dir / "pain_regret_repair_report.json",
+        blocked_reasons,
+        "pain_regret_repair_gate",
+    )
 
     blocked_reasons.extend(_check_membrane(membrane))
     blocked_reasons.extend(_check_gate_decision(gate_decision))
@@ -386,6 +419,7 @@ def run_check_life_membrane(
     blocked_reasons.extend(check_action_intent_queue(action_intent_queue))
     blocked_reasons.extend(check_observation_truth_gate(observation_truth_gate))
     blocked_reasons.extend(check_confirmation_binding(confirmation_binding))
+    blocked_reasons.extend(check_world_contact_summary(world_contact_summary))
     blocked_reasons.extend(_check_precheck(precheck))
     blocked_reasons.extend(_check_coverage(coverage))
     blocked_reasons.extend(_check_preflight(preflight))
@@ -396,6 +430,7 @@ def run_check_life_membrane(
     blocked_reasons.extend(check_side_effect_review(side_effect_review))
     blocked_reasons.extend(check_responsibility_loop_state(responsibility_loop))
     blocked_reasons.extend(_check_state_ref(life_state))
+    blocked_reasons.extend(check_pain_regret_repair_report(pain_regret_repair_report))
     blocked_reasons.extend(_check_build_report(build_report))
 
     status = "closed" if not blocked_reasons else "blocked"
@@ -772,6 +807,7 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
             "runtime/state/membrane/action_intent_queue.json",
             "runtime/state/membrane/observation_truth_gate.json",
             "runtime/state/membrane/confirmation_binding.json",
+            "runtime/state/membrane/world_contact_summary.json",
             "runtime/state/action/action_candidate_set.json",
             "runtime/state/action/go_nogo_state.json",
             "runtime/state/action/world_contact_gate_state.json",
@@ -783,6 +819,7 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "report_refs": [
             "runtime/reports/latest/life_membrane_report.json",
             "runtime/reports/latest/life_membrane_digest.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
             "runtime/reports/latest/life_membrane_check_report.json",
         ],
     }
@@ -851,6 +888,7 @@ def _build_report(
             "runtime/state/membrane/action_intent_queue.json",
             "runtime/state/membrane/observation_truth_gate.json",
             "runtime/state/membrane/confirmation_binding.json",
+            "runtime/state/membrane/world_contact_summary.json",
             "runtime/state/action/action_candidate_set.json",
             "runtime/state/action/go_nogo_state.json",
             "runtime/state/action/world_contact_gate_state.json",
@@ -858,6 +896,9 @@ def _build_report(
             "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/membrane/birth_readiness_precheck.json",
             "runtime/state/membrane/first_activation_preflight_seed.json",
+        ],
+        "report_refs": [
+            "runtime/reports/latest/pain_regret_repair_report.json",
         ],
     }
 
@@ -918,12 +959,14 @@ def _build_receipt(
             str(out_dir / "action_intent_queue.json"),
             str(out_dir / "observation_truth_gate.json"),
             str(out_dir / "confirmation_binding.json"),
+            str(out_dir / "world_contact_summary.json"),
             str(state_dir / "action" / "action_candidate_set.json"),
             str(state_dir / "action" / "go_nogo_state.json"),
             str(state_dir / "action" / "world_contact_gate_state.json"),
             str(state_dir / "action" / "side_effect_review.json"),
             str(state_dir / "action" / "responsibility_loop_state.json"),
             str(out_dir / "birth_readiness_precheck.json"),
+            str(reports_dir / "pain_regret_repair_report.json"),
             str(reports_dir / "life_membrane_report.json"),
             str(reports_dir / "life_membrane_digest.json"),
             str(receipts_dir / f"life_membrane_{run_id}.json"),
@@ -1058,10 +1101,14 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
         reasons.append("manifest_gate action intent queue ref missing")
     if "runtime/state/membrane/confirmation_binding.json" not in manifest.get("state_refs", []):
         reasons.append("manifest_gate confirmation binding ref missing")
+    if "runtime/state/membrane/world_contact_summary.json" not in manifest.get("state_refs", []):
+        reasons.append("manifest_gate world contact summary ref missing")
     if "runtime/state/action/action_candidate_set.json" not in manifest.get("state_refs", []):
         reasons.append("manifest_gate action candidate ref missing")
     if "runtime/state/action/responsibility_loop_state.json" not in manifest.get("state_refs", []):
         reasons.append("manifest_gate responsibility loop ref missing")
+    if "runtime/reports/latest/pain_regret_repair_report.json" not in manifest.get("report_refs", []):
+        reasons.append("manifest_gate pain regret repair report ref missing")
     return reasons
 
 
@@ -1084,6 +1131,10 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate active slice mismatch")
     if build_report.get("next_allowed_slices") != NEXT_ALLOWED_SLICES:
         reasons.append("build_report_gate next allowed mismatch")
+    if "runtime/state/membrane/world_contact_summary.json" not in build_report.get("state_refs", []):
+        reasons.append("build_report_gate world contact summary ref missing")
+    if "runtime/reports/latest/pain_regret_repair_report.json" not in build_report.get("report_refs", []):
+        reasons.append("build_report_gate pain regret repair report ref missing")
     return reasons
 
 

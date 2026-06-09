@@ -335,12 +335,14 @@ Queue E 第二波当前已经真实落下：
 
 ```text
 life_v0/membrane/shadow_gate.py
+  -> life_v0/membrane/world_contact_summary.py
+  -> life_v0/validators/validation_rollup.py
   -> life_v0/schema_runner/evidence_ranker.py
   -> life_v0/schema_runner/cross_file_logic.py
   -> life_v0/schema_runner/run_manifest.py
 ```
 
-所以这意味着：当前默认工程入口已经不是“链尾与最小常驻生命进程”，也不是“继续补 C/F”。当前真正的默认工程入口，是把身体-梦境-成长链与行为-验证-逻辑链补成稳定对象体系，并继续补厚 `responsibility_loop` 与 Queue B 的常驻存在器官。语言、链尾和 process supervisor 不会消失，但它们现在是建立在 D/E 之后继续补厚。
+所以这意味着：当前默认工程入口已经不是“链尾与最小常驻生命进程”，也不是“继续补 C/F”。当前真正的默认工程入口，是把身体-梦境-成长链与行为-验证-逻辑链补成稳定对象体系，并继续补厚 `responsibility_loop.py`、archive/report/process 的跨层写回，以及 Queue B 的后台 resident governance。语言、链尾和 process supervisor 不会消失，但它们现在是建立在 D/E 之后继续补厚。
 
 ## 从当前仓库状态到第一次完整生命激活的六段硬顺序
 

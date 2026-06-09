@@ -66,7 +66,7 @@ Python 3 作为主体语言
 | 目标 | 先补硬身体/梦境/成长与行为/验证/逻辑这两条中轴 |
 | 必读 | `18_queue_d_body_dream_growth_implementation_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md`、`06`、`08`、`09` playbooks |
 | 主包 | `body/`、`dream/`、`growth/`、`membrane/`、`validators/`、`schema_runner/` |
-| 当前前沿 | Queue D 扩展器官已落下 `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py`；Queue E 第二波中的 `shadow_gate.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落地，当前继续补厚 `responsibility_loop.py`，并准备转入 Queue B 第二波 |
+| 当前前沿 | Queue D 扩展器官已落下 `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py`；Queue E 第二波中的 `shadow_gate.py`、`world_contact_summary.py`、`validation_rollup.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落地并补上局部闭包，当前继续补厚 `responsibility_loop.py` 与跨层写回，同时把 Queue B 的后台 resident governance 与更高频 heartbeat 节律提上前台 |
 | 最低测试 | `tests/slices/test_life_support.py`、`tests/bridges/test_runtime_growth.py`、`tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
 | 完成定义 | 身体信号、梦境离线链、成长补丁、行为候选、责任回路、反事实比较都不再压在重型 `__init__.py` 里，并且有独立 state/report 证据 |
 

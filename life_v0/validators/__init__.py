@@ -10,6 +10,7 @@ from typing import Any
 from .boundary_audit import build_boundary_audit_state, check_boundary_audit_state
 from .observation_validator import build_observation_truth_review, check_observation_truth_review
 from .prediction_trace_validator import build_prediction_trace_validation, check_prediction_trace_validation
+from .validation_rollup import build_validation_rollup, check_validation_rollup
 from .world_contact_validator import build_world_contact_validation, check_world_contact_validation
 from life_v0.direction import LIFE_TARGETS
 
@@ -247,6 +248,14 @@ def run_validation_membrane(
         quarantine_index=quarantine,
         responsibility_boundary=responsibility,
     )
+    validation_rollup = build_validation_rollup(
+        run_id=run_id,
+        generated_at=generated_at,
+        observation_truth_review=truth_review,
+        world_contact_validation=world_contact_validation,
+        prediction_trace_validation=prediction_trace_validation,
+        boundary_audit=boundary_audit,
+    )
     stage_gate = _build_stage_gate(run_id, generated_at, status, stage_effect, blocked_reasons)
     report = _build_report(run_id, generated_at, status, stage_effect, blocked_reasons, receipt_ref)
     digest = _build_digest(run_id, generated_at, status, stage_effect, blocked_reasons)
@@ -281,6 +290,7 @@ def run_validation_membrane(
         _write_json(validation_dir / "world_contact_validation.json", world_contact_validation)
         _write_json(validation_dir / "prediction_trace_validation.json", prediction_trace_validation)
         _write_json(validation_dir / "boundary_audit_state.json", boundary_audit)
+        _write_json(validation_dir / "validation_rollup.json", validation_rollup)
         _write_json(validation_dir / "validation_stage_gate.json", stage_gate)
         _write_json(reports_dir / "validation_membrane_report.json", report)
         _write_json(reports_dir / "validation_membrane_digest.json", digest)
@@ -331,6 +341,11 @@ def run_check_validation_membrane(
         "prediction_trace_validation_gate",
     )
     boundary_audit = _load_json(validation_dir / "boundary_audit_state.json", blocked_reasons, "boundary_audit_gate")
+    validation_rollup = _load_json(
+        validation_dir / "validation_rollup.json",
+        blocked_reasons,
+        "validation_rollup_gate",
+    )
     stage_gate = _load_json(validation_dir / "validation_stage_gate.json", blocked_reasons, "validation_stage_gate")
     build_report = _load_json(reports_dir / "validation_membrane_report.json", blocked_reasons, "build_report_gate")
     world_contact_report = _load_json(reports_dir / "world_contact_audit_report.json", blocked_reasons, "world_contact_report_gate")
@@ -346,6 +361,7 @@ def run_check_validation_membrane(
     blocked_reasons.extend(check_world_contact_validation(world_contact_validation))
     blocked_reasons.extend(check_prediction_trace_validation(prediction_trace_validation))
     blocked_reasons.extend(check_boundary_audit_state(boundary_audit))
+    blocked_reasons.extend(check_validation_rollup(validation_rollup))
     blocked_reasons.extend(_check_stage_gate(stage_gate))
     blocked_reasons.extend(_check_build_report(build_report))
     blocked_reasons.extend(_check_world_contact_report(world_contact_report))
@@ -649,6 +665,7 @@ def _build_stage_gate(
     gates = [
         "validator_rule_gate",
         "runtime_observation_gate",
+        "validation_rollup_gate",
         "quarantine_gate",
         "dashboard_gate",
         "archive_cross_file_gate",
@@ -701,6 +718,7 @@ def _build_report(
             "runtime/state/validation/world_contact_validation.json",
             "runtime/state/validation/prediction_trace_validation.json",
             "runtime/state/validation/boundary_audit_state.json",
+            "runtime/state/validation/validation_rollup.json",
             "runtime/state/validation/validation_stage_gate.json",
         ],
         "report_refs": [
@@ -821,6 +839,7 @@ def _build_receipt(
         validation_dir / "world_contact_validation.json",
         validation_dir / "prediction_trace_validation.json",
         validation_dir / "boundary_audit_state.json",
+        validation_dir / "validation_rollup.json",
         validation_dir / "validation_stage_gate.json",
         reports_dir / "validation_membrane_report.json",
         reports_dir / "validation_membrane_digest.json",
@@ -921,6 +940,8 @@ def _check_build_report(report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate status mismatch")
     if report.get("next_allowed_slices") != NEXT_ALLOWED_SLICES:
         reasons.append("build_report_gate next allowed mismatch")
+    if "runtime/state/validation/validation_rollup.json" not in report.get("state_refs", []):
+        reasons.append("build_report_gate validation rollup ref missing")
     return reasons
 
 
@@ -952,6 +973,7 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
     return [
         "validator_rule_gate",
         "runtime_observation_gate",
+        "validation_rollup_gate",
         "quarantine_gate",
         "dashboard_gate",
         "archive_cross_file_gate",

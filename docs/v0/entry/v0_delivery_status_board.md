@@ -272,8 +272,12 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 - `life_v0/membrane/action_intent_bridge.py`
 - `life_v0/membrane/observation_truth_gate.py`
 - `life_v0/membrane/confirmation_binding.py`
+- `life_v0/membrane/world_contact_summary.py`
 - `life_v0/validators/world_contact_validator.py`
 - `life_v0/validators/prediction_trace_validator.py`
+- `life_v0/validators/validation_rollup.py`
+- `life_v0/schema_runner/cross_file_logic.py`
+- `life_v0/schema_runner/run_manifest.py`
 
 并且已经接回：
 
@@ -283,10 +287,15 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 - `runtime/state/membrane/action_intent_queue.json`
 - `runtime/state/membrane/observation_truth_gate.json`
 - `runtime/state/membrane/confirmation_binding.json`
+- `runtime/state/membrane/world_contact_summary.json`
 - `runtime/state/validation/world_contact_validation.json`
 - `runtime/state/validation/prediction_trace_validation.json`
+- `runtime/state/validation/validation_rollup.json`
+- `runtime/reports/latest/pain_regret_repair_report.json`
+- `runtime/state/schema_runner/cross_file_logic.json`
+- `runtime/state/schema_runner/run_manifest.json`
 
-所以当前 Queue E 也不再只是“下一个要做什么”的合同描述，而是已经开始真实写对象链。下一轮如果继续补 Queue E，默认入口转向 `world_contact_summary.py`、validator rollup 和 stronger run manifest / cross-file closure。
+所以当前 Queue E 也不再只是“下一个要做什么”的合同描述，而是已经把行为摘要、验证收口和 schema runner 局部闭包写成了真实对象链。当前如果继续补 Queue E，默认入口不再是 `world_contact_summary.py` 或 validator rollup 本身，而是转向 `responsibility_loop.py` 的更厚跨层写回，以及把这批 package-local gates 继续接进 archive / reporting / process supervisor 的长期连续体。
 
 ## 当前链尾开工包
 
