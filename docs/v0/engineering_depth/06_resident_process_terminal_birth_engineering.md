@@ -23,7 +23,7 @@ life-v0 emit-report --strict
 3. `life_v0/process_supervisor/idle_strategy.py` 继续补厚 heartbeat 节律与 idle probe 治理，并开始把 fatigue / bandwidth / sleep pressure / repair drive 压成 waiting governance，同时给出 `governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`
 4. `life_v0/process_supervisor/persistent_process.py` 继续补厚 resident supervision 的关闭态 artifact，并显式写出 resident governance state / snapshot / report
 5. `life_v0/process_supervisor/process_closeout.py` 与 `process_report.py` 已把 resident governance 证据收口进主进程 report / digest / receipt
-6. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排；当前前沿转向后台 resident governance 与更高频节律
+6. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排，并开始在 live turn 之后重新装回长期关系/语言对象；当前前沿转向后台 resident governance 与更高频节律
 
 ## 当前最关键的 runtime 证据
 
@@ -140,6 +140,19 @@ Queue E
 5. `runtime/state/life_state.json`
 
 这意味着 repair pacing、commitment tempo、apology move order、dream memory projection 与 relationship continuity 已经开始吃到 Queue D 的离线结果，而不是只在 report 文本里表达“有离线学习压力”。
+
+最新这一步又把这条链继续推进到 live turn 的回合尾部：
+
+1. `resident_turn_writeback.py` 现在不再只写 `dialogue_turn_log.jsonl`、`self_narrative_language_trace.json` 和 bundle
+2. 它会在回合结束后立刻重建：
+   - `relationship_timeline.json`
+   - `commitment_expression_plan.json`
+   - `apology_repair_language_trace.json`
+   - `relationship_memory.json`
+   - `life_state.json`
+3. `process_session_loop.py` 会把这批新对象重新装回下一轮上下文
+
+这意味着同一常驻会话里的第二轮、第三轮，不会继续带着启动恢复时的旧长期对象说话，而是开始吃到刚发生完的真实关系回合写回结果。
 
 ## 当前最该继续补硬的实现包
 

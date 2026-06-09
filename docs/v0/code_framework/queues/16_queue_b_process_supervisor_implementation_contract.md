@@ -443,6 +443,7 @@ def run_live_turn_cycle(
 4. 调用 `resident_turn_writeback.py` 完成回合级写回与 waiting return
 5. 若回合处理中抛出异常，则调用 `incident_recovery.py` 完成 recovery path
 6. 把这轮回合的 completed / incident delta、最后 turn refs 和终端状态统一返回给主进程
+7. live turn 的回合级写回不能只停在日志和 bundle；必须让长期关系/语言对象在回合结束后继续重建，供下一轮直接使用
 
 ### 第一轮最低字段
 
@@ -492,6 +493,7 @@ def run_process_session_loop(
 4. 保持最后一轮 external/life turn 与 incident/recovery refs
 5. 管理 incident recovered 后继续等待、显式退出后统一返回
 6. 把每轮输出通过上层注入的 emit hook 发回终端
+7. 每次 live turn 返回后，要把重写后的 `relationship_timeline / commitment_expression_plan / apology_repair_language_trace` 重新装回 session 上下文，避免同一常驻进程后续回合继续拿旧对象说话
 
 ### 第一轮最低字段
 
@@ -583,7 +585,7 @@ Queue B 第一轮至少更新：
 
 ## life_state 回写边界
 
-Queue B 第一轮允许写回轻量连续体 ref，不允许 process supervisor 越权改写长期事实。
+Queue B 当前允许写回轻量连续体 ref，以及由既有 S07/S04 合同定义好的长期对象投影重建；但不允许 process supervisor 越权生成未受理论约束的新事实。
 
 允许写回：
 
@@ -591,6 +593,10 @@ Queue B 第一轮允许写回轻量连续体 ref，不允许 process supervisor 
 - commitment idle presence refs
 - relationship idle presence refs
 - dialogue turn refs
+- `relationship_timeline.json` 的回合后重投影
+- `commitment_expression_plan.json` 的回合后重投影
+- `apology_repair_language_trace.json` 的回合后重投影
+- `relationship_memory.json` 与 `life_state.json` 中受这些对象牵引的连续体 ref 写回
 
 不允许直接写回：
 
@@ -622,6 +628,7 @@ Queue B 第一轮允许写回轻量连续体 ref，不允许 process supervisor 
 8. waiting heartbeat 与 closeout 会共用 `resident_governance_state.json`，分别写出运行相位与关闭相位
 9. Queue E 的 waiting cadence 调制会真实改变 `heartbeat_interval_ms`
 10. Queue D 的 `nightmare_risk / belief_learning / language_learning / relationship_learning` 在已经生成后，必须重新进入 waiting governance，而不是停在离线状态柜
+11. live turn 结束后，`relationship_timeline.json / commitment_expression_plan.json / apology_repair_language_trace.json / relationship_memory.json / life_state.json` 必须被重新写回，而不是维持启动时的旧版本
 
 #### `tests/process/test_digital_entrypoint.py`
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, TextIO
@@ -223,5 +224,26 @@ def run_process_session_loop(
             last_incident_report_ref = live_turn_cycle.last_incident_report_ref
         if live_turn_cycle.last_recovery_report_ref is not None:
             last_recovery_report_ref = live_turn_cycle.last_recovery_report_ref
+        relationship_timeline = _read_json_if_exists(
+            relationship_dir / "relationship_timeline.json",
+            relationship_timeline,
+        )
+        commitment_expression_plan = _read_json_if_exists(
+            language_dir / "commitment_expression_plan.json",
+            commitment_expression_plan,
+        )
+        apology_repair_language_trace = _read_json_if_exists(
+            language_dir / "apology_repair_language_trace.json",
+            apology_repair_language_trace,
+        )
 
         emit_output(live_turn_cycle.emitted_output)
+
+
+def _read_json_if_exists(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
+    if not path.exists():
+        return fallback
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return fallback

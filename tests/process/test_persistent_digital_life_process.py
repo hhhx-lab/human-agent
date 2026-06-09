@@ -104,6 +104,44 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(subject["relationship_stage"], "active_dialogue")
             self.assertEqual(subject["last_external_turn_utterance"], "你还记得我们吗？")
 
+            relationship_timeline = self._read_json(
+                paths["relationship_state"] / "relationship_timeline.json"
+            )
+            commitment_expression_plan = self._read_json(
+                paths["language_state"] / "commitment_expression_plan.json"
+            )
+            apology_repair_language_trace = self._read_json(
+                paths["language_state"] / "apology_repair_language_trace.json"
+            )
+            relationship_memory = self._read_json(
+                paths["state_root"] / "memory" / "relationship_memory.json"
+            )
+            life_state = self._read_json(paths["state_root"] / "life_state.json")
+            self.assertEqual(
+                len(relationship_timeline["dialogue_turn_refs"]),
+                len(dialogue_lines),
+            )
+            self.assertEqual(
+                relationship_timeline["relationship_continuity_reports"][0]["continuity_state"],
+                "offline_learning_repairing_continuity",
+            )
+            self.assertIn(
+                "runtime/state/dream/nightmare_loop_risk.json",
+                commitment_expression_plan["offline_learning_ref_set"],
+            )
+            self.assertIn(
+                "runtime/state/growth/relationship_learning_plan.json",
+                apology_repair_language_trace["offline_learning_ref_set"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/resumed_external_dialogue_packet.json",
+                relationship_memory["last_contact_refs"],
+            )
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                life_state["language_state"]["offline_learning_refs"],
+            )
+
             commitment_index = self._read_json(paths["language_state"] / "commitment_repair_language_index.json")
             dialogue_writeback_bundle = self._read_json(paths["reports"] / "dialogue_writeback_bundle.json")
             self.assertIn("dialogue-turn-live-0005", commitment_index["recent_dialogue_turn_refs"][-1])
@@ -3185,14 +3223,160 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             terminal_dir = runtime_root / "state" / "terminal"
             language_dir = runtime_root / "state" / "language"
             relationship_dir = runtime_root / "state" / "relationship"
+            memory_dir = runtime_root / "state" / "memory"
+            responsibility_dir = runtime_root / "state" / "responsibility"
+            action_dir = runtime_root / "state" / "action"
+            dream_dir = runtime_root / "state" / "dream"
+            growth_dir = runtime_root / "state" / "growth"
             reports_dir = runtime_root / "reports" / "latest"
             terminal_dir.mkdir(parents=True, exist_ok=True)
             language_dir.mkdir(parents=True, exist_ok=True)
             relationship_dir.mkdir(parents=True, exist_ok=True)
+            memory_dir.mkdir(parents=True, exist_ok=True)
+            responsibility_dir.mkdir(parents=True, exist_ok=True)
+            action_dir.mkdir(parents=True, exist_ok=True)
+            dream_dir.mkdir(parents=True, exist_ok=True)
+            growth_dir.mkdir(parents=True, exist_ok=True)
             reports_dir.mkdir(parents=True, exist_ok=True)
             (language_dir / "dialogue_turn_log.jsonl").write_text(
                 '{"turn_id":"dialogue-turn-live-0001","event_role":"external_relation_turn"}\n',
                 encoding="utf-8",
+            )
+            self._write_json(
+                language_dir / "expression_plan.json",
+                {
+                    "semantic_goal": "repair_commitment_shared_language",
+                    "delay_or_release_decision": "delay_for_clarification",
+                    "repair_pressure": 3,
+                    "responsibility_pressure": 3,
+                },
+            )
+            self._write_json(
+                language_dir / "commitment_expression_plan.json",
+                {
+                    "schema_version": "commitment_expression_plan_v0",
+                    "run_id": "resident-turn-organ",
+                    "generated_at": "2026-06-08T00:00:00+00:00",
+                    "source_doc_refs": ["docs/96_real_relationship_longitudinal_timeline.md"],
+                },
+            )
+            self._write_json(
+                language_dir / "apology_repair_language_trace.json",
+                {
+                    "schema_version": "apology_repair_language_trace_v0",
+                    "run_id": "resident-turn-organ",
+                    "generated_at": "2026-06-08T00:00:00+00:00",
+                    "source_doc_refs": ["docs/94_pain_regret_and_repair_signal_schema.md"],
+                },
+            )
+            self._write_json(
+                relationship_dir / "relationship_timeline.json",
+                {
+                    "schema_version": "relationship_timeline_v0",
+                    "run_id": "resident-turn-organ",
+                    "generated_at": "2026-06-08T00:00:00+00:00",
+                    "source_doc_refs": ["docs/101_relationship_timeline_json_schema_and_fixture_bundle.md"],
+                    "relationship_continuity_reports": [{"continuity_state": "active_dialogue"}],
+                    "relationship_injury_traces": [{"relationship_injury_id": "injury-001"}],
+                },
+            )
+            self._write_json(
+                relationship_dir / "commitment_truth_state.json",
+                {
+                    "schema_version": "commitment_truth_state_v0",
+                    "open_commitment_refs": ["commitment-ref-01"],
+                    "repair_required_refs": ["repair-001"],
+                    "responsibility_event_refs": ["responsibility-event-001"],
+                },
+            )
+            self._write_json(
+                responsibility_dir / "responsibility_ledger.json",
+                {
+                    "schema_version": "responsibility_ledger_v0",
+                    "responsibility_event_refs": ["responsibility-event-001"],
+                    "repair_obligations": ["repair-001"],
+                },
+            )
+            self._write_json(
+                memory_dir / "relationship_memory.json",
+                {
+                    "schema_version": "relationship_memory_v0",
+                    "shared_memory_refs": ["shared-memory-001"],
+                    "repair_history_refs": ["repair-history-001"],
+                    "last_contact_refs": ["runtime/state/language/inner_speech_frame.json"],
+                    "timeline_refs": ["runtime/state/relationship/relationship_timeline.json"],
+                },
+            )
+            self._write_json(
+                runtime_root / "state" / "life_state.json",
+                {
+                    "schema_version": "life_state_v0",
+                    "memory_index": {
+                        "relationship_memory_refs": ["runtime/state/memory/relationship_memory.json#shared_memory_refs"],
+                        "responsibility_memory_refs": ["responsibility-event-001"],
+                        "replay_cues": ["runtime/state/replay/replay_cue_bundle.json"],
+                        "dream_memory_refs": [],
+                    },
+                    "language_state": {},
+                    "relationship_subjects": [{"relationship_id": "rel-v0-0001"}],
+                    "runtime_trace_refs": [],
+                    "responsibility_bindings": [],
+                    "regret_events": [],
+                    "pain_events": [],
+                    "dream_records": [],
+                },
+            )
+            self._write_json(
+                action_dir / "responsibility_loop_state.json",
+                {
+                    "schema_version": "responsibility_loop_state_v0",
+                    "repair_obligation_refs": ["repair-001"],
+                    "responsibility_attribution_events": [{"responsibility_event_id": "responsibility-event-001"}],
+                    "regret_pressure_candidates": [
+                        {
+                            "regret_pressure_id": "regret-001",
+                            "pain_signal_refs": ["runtime/state/body/core_affect_vector.json#pain"],
+                        }
+                    ],
+                    "counterfactual_repair_frames": [{"counterfactual_id": "counterfactual-001"}],
+                },
+            )
+            self._write_json(
+                dream_dir / "nightmare_loop_risk.json",
+                {
+                    "schema_version": "nightmare_loop_risk_v0",
+                    "risk_status": "elevated",
+                    "rewrite_required": True,
+                    "queue_e_priority_band": "repair_guarded",
+                    "repair_followup_required": True,
+                },
+            )
+            self._write_json(
+                growth_dir / "belief_learning_plan.json",
+                {
+                    "schema_version": "belief_learning_plan_v0",
+                    "belief_targets": ["repair_accountability_belief_revision"],
+                    "repair_followup_required": True,
+                },
+            )
+            self._write_json(
+                growth_dir / "language_learning_plan.json",
+                {
+                    "schema_version": "language_learning_plan_v0",
+                    "language_targets": ["apology_repair_expression_refinement"],
+                    "repair_followup_required": True,
+                },
+            )
+            self._write_json(
+                growth_dir / "relationship_learning_plan.json",
+                {
+                    "schema_version": "relationship_learning_plan_v0",
+                    "relationship_targets": [
+                        "repair_reentry_timing_adjustment",
+                        "relationship_pacing_adjustment",
+                    ],
+                    "repair_followup_required": True,
+                },
             )
 
             safe_terminal_loop = {
@@ -3283,6 +3467,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             persisted_relationship_graph = self._read_json(
                 relationship_dir / "relationship_subject_graph.json"
             )
+            persisted_relationship_timeline = self._read_json(
+                relationship_dir / "relationship_timeline.json"
+            )
+            persisted_commitment_expression_plan = self._read_json(
+                language_dir / "commitment_expression_plan.json"
+            )
+            persisted_apology_repair_language_trace = self._read_json(
+                language_dir / "apology_repair_language_trace.json"
+            )
+            persisted_relationship_memory = self._read_json(
+                memory_dir / "relationship_memory.json"
+            )
+            persisted_life_state = self._read_json(runtime_root / "state" / "life_state.json")
             dialogue_writeback_bundle = self._read_json(
                 reports_dir / "dialogue_writeback_bundle.json"
             )
@@ -3323,6 +3520,46 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "resumed_external_dialogue_loop",
             )
             self.assertEqual(
+                persisted_relationship_timeline["dialogue_turn_refs"],
+                [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-1",
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-2",
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+                ],
+            )
+            self.assertEqual(
+                persisted_relationship_timeline["relationship_continuity_reports"][0]["continuity_state"],
+                "offline_learning_repairing_continuity",
+            )
+            self.assertEqual(
+                persisted_commitment_expression_plan["delay_or_release_decision"],
+                "hold_for_nightmare_rewrite_integration",
+            )
+            self.assertIn(
+                "paced_reentry",
+                persisted_commitment_expression_plan["act_type_order"],
+            )
+            self.assertEqual(
+                persisted_apology_repair_language_trace["repair_window_mode"],
+                "nightmare_rewrite_first",
+            )
+            self.assertIn(
+                "runtime/state/growth/relationship_learning_plan.json",
+                persisted_relationship_memory["offline_learning_refs"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/resumed_external_dialogue_packet.json",
+                persisted_relationship_memory["last_contact_refs"],
+            )
+            self.assertIn(
+                "runtime/state/dream/nightmare_loop_risk.json",
+                persisted_life_state["memory_index"]["dream_memory_refs"],
+            )
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                persisted_life_state["language_state"]["offline_learning_refs"],
+            )
+            self.assertEqual(
                 dialogue_writeback_bundle["dialogue_event_refs"],
                 [
                     "runtime/state/language/dialogue_turn_log.jsonl#line-2",
@@ -3331,6 +3568,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 "runtime/state/memory/relationship_memory.json#shared_memory_refs",
+                dialogue_writeback_bundle["relationship_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/relationship_memory.json#offline_learning_refs",
                 dialogue_writeback_bundle["relationship_writeback_refs"],
             )
             self.assertIn(
@@ -3347,6 +3588,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 "runtime/state/life_state.json#responsibility_bindings",
+                dialogue_writeback_bundle["life_state_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/life_state.json#language_state.offline_learning_refs",
                 dialogue_writeback_bundle["life_state_writeback_refs"],
             )
             self.assertIn(
