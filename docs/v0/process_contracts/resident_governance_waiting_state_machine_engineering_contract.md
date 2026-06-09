@@ -73,7 +73,7 @@ resident_governance_state.json
 1. 常驻生命过程已经恢复并停在等待态。
 2. heartbeat 正在刷新 waiting continuity。
 3. 当前长期语言连续体对象已经进入治理视野。
-4. 当前治理不是关闭态，也不是历史快照，而是运行中的 foreground terminal residency。
+4. 当前治理不是关闭态，也不是历史快照，而是运行中的 foreground terminal residency；但它现在必须允许显式装载上一轮关闭态留下的后台连续体 carryover。
 
 ### 2. `process_closed_waiting_relaunch`
 
@@ -84,9 +84,10 @@ resident_governance_state.json
 对应语义：
 
 1. 本次常驻进程已结束。
-2. resident governance 已从运行态切到关闭态。
+2. resident governance 已从运行态切到关闭态，并把治理模式切成 `background_resident_continuity`。
 3. 下一次生命恢复需要重新装载 closeout 后留下的治理证据。
 4. 关闭态不能覆盖运行期 heartbeat 事实，但必须把其最后的治理关注与长期语言对象引用收口下来。
+5. 这份关闭态现在不再只是 process 结束时的静态快照，而是下一次生命恢复会重新装载的后台连续体来源。
 
 ### 3. `live_turn_waiting_handoff`
 
@@ -100,6 +101,29 @@ resident_governance_state.json
 2. 常驻生命过程已经回到 waiting mode，但下一拍 heartbeat 还没有刷新，所以需要显式写出“回合后交接中的 resident governance”。
 3. 当前 resident governance 不能再只靠上一拍 `waiting_heartbeat_active` 间接代表，而要显式承认长期关系对象、Queue E 修复后果和这次回合留下的交接痕迹已经进入等待态治理。
 4. 这个相位不是关闭态，也不是下一拍 heartbeat 的替代物；它只负责把 live turn 结束和下一拍 waiting heartbeat 之间的空白段补成可追踪证据。
+
+## 后台连续体 carryover
+
+当前这一轮又新增一条硬约束：
+
+1. `persistent_process.py` / `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json` 写出的关闭态治理，不再只算 closeout 归档。
+2. `background_continuity.py` 现在会把这批关闭态 artifact 重新解释成下一次唤醒前可消费的后台连续体 profile。
+3. `heartbeat.py` 会在新的 waiting heartbeat 写入前重新装载这份 profile，并把它压进：
+   - `idle_strategy_state.json`
+   - `idle_continuity_frame.json`
+   - `resident_governance_state.json`
+4. 因此 resident governance 当前已经不是“只有前台 terminal residency”，而是“前台等待态 + 后台关闭态余波”共同组成的跨进程连续体。
+
+当前最小 background carryover 字段至少包括：
+
+- `background_continuity_mode`
+- `background_carryover_pressure_level`
+- `background_carryover_attention_target`
+- `background_carryover_priority_profile`
+- `background_continuity_ref_set`
+- `background_resident_governance_snapshot_ref`
+- `background_resident_governance_report_ref`
+- `background_persistent_process_report_ref`
 
 ## 状态迁移
 

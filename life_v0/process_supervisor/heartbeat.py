@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Callable
 
+from .background_continuity import load_background_continuity_profile
 from .continuity_writeback import build_idle_continuity_frame, record_idle_continuity
 from .idle_strategy import (
     IDLE_STRATEGY_STATE_REF,
@@ -75,6 +76,10 @@ def write_waiting_heartbeat(
         ]
         if ref
     ]
+    background_continuity_profile = load_background_continuity_profile(
+        terminal_dir=terminal_dir,
+        reports_dir=reports_dir,
+    )
     idle_strategy = decide_idle_strategy(
         run_id=run_id,
         generated_at=generated_at,
@@ -107,6 +112,7 @@ def write_waiting_heartbeat(
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,
         growth_patch_candidate_count=growth_patch_candidate_count,
+        background_continuity_profile=background_continuity_profile,
         source_doc_refs=source_doc_refs,
         readme_block_refs=readme_block_refs,
         runtime_carrier_refs=runtime_carrier_refs,
@@ -223,6 +229,10 @@ def write_waiting_heartbeat(
         repair_followup_required=repair_followup_required,
         offline_learning_pressure_level=idle_strategy.get("offline_learning_pressure_level"),
         offline_learning_attention_target=idle_strategy.get("offline_learning_attention_target"),
+        background_continuity_mode=idle_strategy.get("background_continuity_mode"),
+        background_carryover_pressure_level=idle_strategy.get("background_carryover_pressure_level"),
+        background_carryover_attention_target=idle_strategy.get("background_carryover_attention_target"),
+        background_continuity_ref_set=idle_strategy.get("background_continuity_ref_set"),
     )
     write_json(terminal_dir / "idle_continuity_frame.json", idle_continuity_frame)
     resident_governance_state = {

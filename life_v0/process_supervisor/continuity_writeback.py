@@ -33,6 +33,10 @@ def build_idle_continuity_frame(
     repair_followup_required: bool = False,
     offline_learning_pressure_level: str | None = None,
     offline_learning_attention_target: str | None = None,
+    background_continuity_mode: str | None = None,
+    background_carryover_pressure_level: str | None = None,
+    background_carryover_attention_target: str | None = None,
+    background_continuity_ref_set: list[str] | None = None,
 ) -> dict[str, Any]:
     replay_seed_refs = ["runtime/state/life_state.json#memory_index.replay_cues"]
     if replay_cue_bundle_ref:
@@ -106,6 +110,14 @@ def build_idle_continuity_frame(
         payload["offline_learning_pressure_level"] = offline_learning_pressure_level
     if offline_learning_attention_target:
         payload["offline_learning_attention_target"] = offline_learning_attention_target
+    if background_continuity_mode:
+        payload["background_continuity_mode"] = background_continuity_mode
+    if background_carryover_pressure_level:
+        payload["background_carryover_pressure_level"] = background_carryover_pressure_level
+    if background_carryover_attention_target:
+        payload["background_carryover_attention_target"] = background_carryover_attention_target
+    if background_continuity_ref_set:
+        payload["background_continuity_ref_set"] = list(background_continuity_ref_set)
     return payload
 
 

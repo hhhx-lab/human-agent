@@ -68,7 +68,7 @@ def write_persistent_process_artifacts(
         "run_id": run_id,
         "generated_at": generated_at,
         "status": "closed",
-        "governance_mode": "foreground_terminal_residency",
+        "governance_mode": "background_resident_continuity",
         "waiting_mode": waiting_mode,
         "heartbeat_counter": heartbeat_counter,
         "completed_dialogue_turns": completed_turns,
@@ -84,6 +84,7 @@ def write_persistent_process_artifacts(
         "commitment_expression_plan_ref": commitment_expression_plan_ref,
         "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
+        "background_continuity_mode": "closed_process_carryover",
     }
     if membrane_guard_refs:
         resident_governance_snapshot["membrane_guard_refs"] = membrane_guard_refs
@@ -93,7 +94,7 @@ def write_persistent_process_artifacts(
         "run_id": run_id,
         "generated_at": generated_at,
         "status": "closed",
-        "governance_mode": "foreground_terminal_residency",
+        "governance_mode": "background_resident_continuity",
         "governance_phase": "process_closed_waiting_relaunch",
         "waiting_mode": waiting_mode,
         "heartbeat_counter": heartbeat_counter,
@@ -121,6 +122,12 @@ def write_persistent_process_artifacts(
             if ref
         ],
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
+        "background_continuity_mode": "closed_process_carryover",
+        "background_continuity_ref_set": [
+            RESIDENT_GOVERNANCE_SNAPSHOT_REF,
+            RESIDENT_GOVERNANCE_REPORT_REF,
+            PERSISTENT_PROCESS_REPORT_REF,
+        ],
     }
     if responsibility_loop_state_ref:
         resident_governance_state["responsibility_loop_state_ref"] = responsibility_loop_state_ref
@@ -136,7 +143,7 @@ def write_persistent_process_artifacts(
         "run_id": run_id,
         "generated_at": generated_at,
         "status": "closed",
-        "governance_mode": "foreground_terminal_residency",
+        "governance_mode": "background_resident_continuity",
         "waiting_mode": waiting_mode,
         "heartbeat_counter": heartbeat_counter,
         "completed_dialogue_turns": completed_turns,
@@ -153,6 +160,7 @@ def write_persistent_process_artifacts(
         "commitment_expression_plan_ref": commitment_expression_plan_ref,
         "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
+        "background_continuity_mode": "closed_process_carryover",
     }
     if responsibility_loop_state_ref:
         state["responsibility_loop_state_ref"] = responsibility_loop_state_ref
@@ -168,7 +176,7 @@ def write_persistent_process_artifacts(
         "run_id": run_id,
         "generated_at": generated_at,
         "status": "closed",
-        "governance_mode": "foreground_terminal_residency",
+        "governance_mode": "background_resident_continuity",
         "persistent_process_state_ref": PERSISTENT_PROCESS_STATE_REF,
         "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
         "resident_governance_report_ref": RESIDENT_GOVERNANCE_REPORT_REF,
@@ -189,6 +197,7 @@ def write_persistent_process_artifacts(
         "source_doc_refs": source_doc_refs,
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
+        "background_continuity_mode": "closed_process_carryover",
     }
     if responsibility_loop_state_ref:
         report["responsibility_loop_state_ref"] = responsibility_loop_state_ref
@@ -204,7 +213,7 @@ def write_persistent_process_artifacts(
         "run_id": run_id,
         "generated_at": generated_at,
         "status": "closed",
-        "governance_mode": "foreground_terminal_residency",
+        "governance_mode": "background_resident_continuity",
         "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
         "resident_governance_snapshot_ref": RESIDENT_GOVERNANCE_SNAPSHOT_REF,
         "persistent_process_state_ref": PERSISTENT_PROCESS_STATE_REF,
@@ -223,6 +232,12 @@ def write_persistent_process_artifacts(
         "source_doc_refs": source_doc_refs,
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
+        "background_continuity_mode": "closed_process_carryover",
+        "background_continuity_ref_set": [
+            RESIDENT_GOVERNANCE_SNAPSHOT_REF,
+            RESIDENT_GOVERNANCE_REPORT_REF,
+            PERSISTENT_PROCESS_REPORT_REF,
+        ],
     }
     if responsibility_loop_state_ref:
         resident_governance_report["responsibility_loop_state_ref"] = responsibility_loop_state_ref

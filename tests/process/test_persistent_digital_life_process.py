@@ -1302,6 +1302,86 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         )
         self.assertEqual(idle_strategy["heartbeat_interval_ms"], 58)
 
+    def test_idle_strategy_reloads_background_continuity_carryover(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-background-carryover",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "inactive",
+                "cognitive_bandwidth": "steady_open",
+                "sleep_pressure": "low",
+            },
+            replay_cue_bundle={},
+            offline_consolidation_frame={},
+            growth_patch_candidate_queue={},
+            responsibility_loop_state={},
+            world_contact_summary={},
+            pain_regret_repair_report={},
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_pressure_level": "present",
+                "background_carryover_attention_target": "commitment_expression_plan",
+                "background_carryover_priority_profile": {
+                    "relationship_timeline": "baseline",
+                    "commitment_expression_plan": "elevated",
+                },
+                "background_continuity_ref_set": [
+                    "runtime/state/terminal/resident_governance_snapshot.json",
+                    "runtime/reports/latest/digital_life_resident_governance_report.json",
+                ],
+                "background_resident_governance_snapshot_ref": "runtime/state/terminal/resident_governance_snapshot.json",
+                "background_resident_governance_report_ref": "runtime/reports/latest/digital_life_resident_governance_report.json",
+                "background_persistent_process_report_ref": "runtime/reports/latest/digital_life_persistent_process_report.json",
+                "background_waiting_mode": "restored_waiting_for_external_turn",
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(idle_strategy["background_continuity_mode"], "closed_process_carryover")
+        self.assertEqual(idle_strategy["background_carryover_pressure_level"], "present")
+        self.assertEqual(
+            idle_strategy["background_carryover_attention_target"],
+            "commitment_expression_plan",
+        )
+        self.assertEqual(
+            idle_strategy["background_resident_governance_snapshot_ref"],
+            "runtime/state/terminal/resident_governance_snapshot.json",
+        )
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "refresh_waiting_heartbeat_with_background_continuity_hold",
+        )
+        self.assertEqual(idle_strategy["heartbeat_interval_ms"], 56)
+        self.assertEqual(
+            idle_strategy["governance_attention_target"],
+            "commitment_expression_plan",
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_reason"],
+            "background_continuity_carryover_requires_hold",
+        )
+        self.assertEqual(
+            idle_strategy["governance_cadence_profile"],
+            "background_continuity_refresh",
+        )
+
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
         from life_v0.process_supervisor.resident_supervision import (
             bootstrap_resident_supervision,
@@ -1442,6 +1522,83 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 relationship_graph["subjects"][0]["last_continuity_event_kind"],
                 "relaunch_recovery_normalization",
+            )
+
+    def test_resident_supervision_reloads_background_continuity_from_previous_process_closeout(self):
+        from life_v0.process_supervisor.resident_supervision import (
+            bootstrap_resident_supervision,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            self._bootstrap(paths)
+
+            completed = subprocess.run(
+                [
+                    str(self.repo_root / "digital"),
+                    "life",
+                    "--state",
+                    str(paths["state_root"]),
+                    "--reports",
+                    str(paths["reports"]),
+                    "--receipts",
+                    str(paths["receipts"]),
+                    "--run-id",
+                    "background-carryover-seed",
+                    "--strict",
+                ],
+                cwd=self.repo_root,
+                text=True,
+                input="/exit\n",
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+
+            result = bootstrap_resident_supervision(
+                state_dir=paths["state_root"],
+                reports_dir=paths["reports"],
+                receipts_dir=paths["receipts"],
+                run_id="background-carryover-relaunch",
+                generated_at="2026-06-10T00:00:00+00:00",
+                strict=True,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                read_json=self._read_json,
+                read_json_if_exists=lambda path: self._read_json(path) if path.exists() else {},
+                write_json=self._write_json,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+            )
+
+            self.assertEqual(result.exit_code, 0)
+            idle_strategy = self._read_json(paths["terminal_state"] / "idle_strategy_state.json")
+            resident_governance_state = self._read_json(
+                paths["terminal_state"] / "resident_governance_state.json"
+            )
+            idle_continuity = self._read_json(paths["terminal_state"] / "idle_continuity_frame.json")
+
+            self.assertEqual(idle_strategy["background_continuity_mode"], "closed_process_carryover")
+            self.assertEqual(
+                idle_strategy["background_resident_governance_snapshot_ref"],
+                "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
+                idle_strategy["background_resident_governance_report_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+            )
+            self.assertEqual(
+                resident_governance_state["background_continuity_mode"],
+                "closed_process_carryover",
+            )
+            self.assertTrue(
+                resident_governance_state["background_continuity_ref_set"],
+            )
+            self.assertEqual(
+                idle_continuity["background_continuity_mode"],
+                "closed_process_carryover",
             )
 
     def test_live_turn_cycle_organ_writes_response_and_returns_to_waiting_state(self):
@@ -2772,8 +2929,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(report["run_id"], "persistent-process-organ")
             self.assertEqual(state["heartbeat_counter"], 3)
             self.assertEqual(report["heartbeat_counter"], 3)
-            self.assertEqual(state["governance_mode"], "foreground_terminal_residency")
-            self.assertEqual(report["governance_mode"], "foreground_terminal_residency")
+            self.assertEqual(state["governance_mode"], "background_resident_continuity")
+            self.assertEqual(report["governance_mode"], "background_resident_continuity")
             self.assertEqual(state["waiting_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(report["waiting_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(
@@ -2830,7 +2987,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(
                 resident_governance_snapshot["governance_mode"],
-                "foreground_terminal_residency",
+                "background_resident_continuity",
             )
             self.assertEqual(
                 resident_governance_state["schema_version"],
@@ -2839,6 +2996,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_state["governance_phase"],
                 "process_closed_waiting_relaunch",
+            )
+            self.assertEqual(
+                resident_governance_state["governance_mode"],
+                "background_resident_continuity",
+            )
+            self.assertEqual(
+                resident_governance_state["background_continuity_mode"],
+                "closed_process_carryover",
             )
             self.assertEqual(
                 resident_governance_state["resident_governance_snapshot_ref"],
@@ -2851,6 +3016,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_report["resident_governance_state_ref"],
                 "runtime/state/terminal/resident_governance_state.json",
+            )
+            self.assertEqual(
+                resident_governance_report["governance_mode"],
+                "background_resident_continuity",
             )
             self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 70)
             self.assertEqual(resident_governance_state["offline_pressure_level"], "present")
