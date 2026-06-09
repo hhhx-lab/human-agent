@@ -25,6 +25,7 @@ from .offline_learning_signals import (
     NIGHTMARE_RISK_REF,
     RELATIONSHIP_LEARNING_PLAN_REF,
 )
+from .background_continuity import load_background_continuity_profile
 from .continuity_evolution import evolve_relationship_and_self_model
 from .relaunch_recovery import detect_and_normalize_interrupted_previous_state
 from ..shell_command import run_digital_life_shell_command
@@ -184,6 +185,10 @@ def bootstrap_resident_supervision(
     pain_regret_repair_report = read_json_if_exists(
         reports_dir / "pain_regret_repair_report.json"
     )
+    background_continuity_profile = load_background_continuity_profile(
+        terminal_dir=terminal_dir,
+        reports_dir=reports_dir,
+    )
 
     replay_cue_bundle_ref = _ref_if_present(
         payload=replay_cue_bundle,
@@ -309,6 +314,7 @@ def bootstrap_resident_supervision(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        background_continuity_profile=background_continuity_profile,
         nightmare_risk_ref=nightmare_risk_ref,
         belief_learning_plan_ref=belief_learning_plan_ref,
         language_learning_plan_ref=language_learning_plan_ref,
@@ -511,6 +517,7 @@ def _refresh_bootstrap_long_horizon_continuity(
     belief_learning_plan: dict[str, Any],
     language_learning_plan: dict[str, Any],
     relationship_learning_plan: dict[str, Any],
+    background_continuity_profile: dict[str, Any],
     nightmare_risk_ref: str | None,
     belief_learning_plan_ref: str | None,
     language_learning_plan_ref: str | None,
@@ -589,6 +596,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        background_continuity_profile=background_continuity_profile,
     )
     evolved_relationship_graph = evolved_continuity["relationship_graph"]
     evolved_self_model_state = evolved_continuity["self_model_state"]

@@ -1691,6 +1691,265 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background-carryover-seed",
             )
 
+    def test_continuity_evolution_projects_background_lineage_into_stage_and_slow_variables(self):
+        from life_v0.process_supervisor.continuity_evolution import (
+            evolve_relationship_and_self_model,
+        )
+
+        baseline = evolve_relationship_and_self_model(
+            generated_at="2026-06-10T00:00:00+00:00",
+            relationship_graph={
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relation_role": "friend",
+                        "relationship_stage": "restored_waiting",
+                    }
+                ]
+            },
+            self_model_state={"trait_slow_variables": {}, "growth_window_refs": []},
+            relationship_timeline={
+                "dialogue_turn_refs": ["runtime/state/language/dialogue_turn_log.jsonl#line-1"],
+                "relationship_continuity_reports": [
+                    {"continuity_state": "active_repairing_continuity"}
+                ],
+                "trust_trajectories": [{"current_trust_state": "calibrated_medium"}],
+            },
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+        )
+        projected = evolve_relationship_and_self_model(
+            generated_at="2026-06-10T00:00:00+00:00",
+            relationship_graph={
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relation_role": "friend",
+                        "relationship_stage": "restored_waiting",
+                    }
+                ]
+            },
+            self_model_state={"trait_slow_variables": {}, "growth_window_refs": []},
+            relationship_timeline={
+                "dialogue_turn_refs": ["runtime/state/language/dialogue_turn_log.jsonl#line-1"],
+                "relationship_continuity_reports": [
+                    {"continuity_state": "active_repairing_continuity"}
+                ],
+                "trust_trajectories": [{"current_trust_state": "calibrated_medium"}],
+            },
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_pressure_level": "elevated",
+                "background_carryover_generation": 3,
+                "background_continuity_ref_set": [
+                    "runtime/state/terminal/resident_governance_snapshot.json",
+                    "runtime/reports/latest/digital_life_resident_governance_report.json",
+                ],
+                "background_carryover_source_ref_set": [
+                    "runtime/archive/process/background-lineage-parent.json"
+                ],
+            },
+        )
+
+        baseline_subject = baseline["relationship_graph"]["subjects"][0]
+        projected_subject = projected["relationship_graph"]["subjects"][0]
+        self.assertEqual(baseline_subject["relationship_stage"], "restored_waiting")
+        self.assertEqual(
+            projected_subject["relationship_stage"],
+            "background_continuity_waiting",
+        )
+        self.assertEqual(
+            projected_subject["relationship_stage_reason"],
+            "persistent_background_continuity_lineage_preserved_before_dialogue",
+        )
+        self.assertIn(
+            "runtime/state/terminal/resident_governance_snapshot.json",
+            projected_subject["relationship_stage_evidence_refs"],
+        )
+        self.assertGreater(
+            projected["self_model_state"]["trait_slow_variables"]["continuity_drive"]["value"],
+            baseline["self_model_state"]["trait_slow_variables"]["continuity_drive"]["value"],
+        )
+        self.assertIn(
+            "runtime/reports/latest/digital_life_resident_governance_report.json",
+            projected["self_model_state"]["trait_slow_variables"]["continuity_drive"]["evidence_refs"],
+        )
+        self.assertIn(
+            "runtime/archive/process/background-lineage-parent.json",
+            projected["self_model_state"]["growth_window_refs"],
+        )
+
+    def test_resident_supervision_projects_background_lineage_into_bootstrap_relationship_state(self):
+        from life_v0.process_supervisor.resident_supervision import (
+            bootstrap_resident_supervision,
+        )
+        from life_v0.shell_command import DigitalLifeShellResult
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            self._bootstrap(paths)
+
+            (paths["language_state"] / "dialogue_turn_log.jsonl").write_text(
+                "",
+                encoding="utf-8",
+            )
+            self._write_json(
+                paths["relationship_state"] / "relationship_subject_graph.json",
+                {
+                    "subjects": [
+                        {
+                            "relationship_id": "rel-v0-0001",
+                            "relation_role": "friend",
+                            "relationship_stage": "restored_waiting",
+                        }
+                    ]
+                },
+            )
+            self._write_json(
+                paths["terminal_state"] / "session_envelope.json",
+                {
+                    "schema_version": "session_envelope_v0",
+                    "run_id": "background-lineage-relaunch",
+                    "status": "closed",
+                },
+            )
+            self._write_json(
+                paths["terminal_state"] / "safe_terminal_loop_state.json",
+                {
+                    "schema_version": "safe_terminal_loop_state_v0",
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "blocked_actions": ["external_irreversible_action"],
+                    "heartbeat_counter": 2,
+                },
+            )
+            self._write_json(
+                paths["terminal_state"] / "terminal_life_loop_state.json",
+                {
+                    "schema_version": "terminal_life_loop_state_v0",
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "last_turn_status": "closed",
+                    "heartbeat_counter": 2,
+                },
+            )
+            self._write_json(
+                paths["terminal_state"] / "resident_governance_snapshot.json",
+                {
+                    "schema_version": "resident_governance_snapshot_v0",
+                    "run_id": "background-lineage-parent",
+                    "waiting_mode": "process_closed_waiting_relaunch",
+                    "governance_attention_target": "relationship_timeline",
+                    "long_horizon_priority_profile": {
+                        "relationship_timeline": "persistent_background"
+                    },
+                    "completed_dialogue_turns": 4,
+                    "background_carryover_generation": 3,
+                    "background_carryover_source_ref_set": [
+                        "runtime/archive/process/background-lineage-parent.json"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["reports"] / "digital_life_resident_governance_report.json",
+                {
+                    "schema_version": "digital_life_resident_governance_report_v0",
+                    "run_id": "background-lineage-parent",
+                    "completed_dialogue_turns": 4,
+                    "background_carryover_generation": 3,
+                    "background_carryover_source_ref_set": [
+                        "runtime/archive/process/background-lineage-parent.json"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["reports"] / "digital_life_persistent_process_report.json",
+                {
+                    "schema_version": "digital_life_persistent_process_report_v0",
+                    "run_id": "background-lineage-parent",
+                    "completed_dialogue_turns": 4,
+                    "background_carryover_generation": 3,
+                    "background_carryover_source_ref_set": [
+                        "runtime/archive/process/background-lineage-parent.json"
+                    ],
+                },
+            )
+
+            with patch(
+                "life_v0.process_supervisor.resident_supervision.run_digital_life_shell_command"
+            ) as mock_shell_restore:
+                mock_shell_restore.return_value = DigitalLifeShellResult(
+                    exit_code=0,
+                    report={
+                        "schema_version": "digital_life_shell_report_v0",
+                        "status": "closed",
+                    },
+                )
+                result = bootstrap_resident_supervision(
+                    state_dir=paths["state_root"],
+                    reports_dir=paths["reports"],
+                    receipts_dir=paths["receipts"],
+                    run_id="background-lineage-relaunch",
+                    generated_at="2026-06-10T00:00:00+00:00",
+                    strict=True,
+                    source_doc_refs=[
+                        "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                    ],
+                    readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                    runtime_carrier_refs=["RunnerCliRuntime"],
+                    read_json=self._read_json,
+                    read_json_if_exists=lambda path: self._read_json(path) if path.exists() else {},
+                    write_json=self._write_json,
+                    now_iso=lambda: "2026-06-10T00:00:00+00:00",
+                )
+
+            self.assertEqual(result.exit_code, 0)
+            assert result.context is not None
+            self.assertEqual(
+                result.context.relationship_graph["subjects"][0]["relationship_stage"],
+                "background_continuity_waiting",
+            )
+            self.assertEqual(
+                result.context.relationship_graph["subjects"][0]["relationship_stage_reason"],
+                "persistent_background_continuity_lineage_preserved_before_dialogue",
+            )
+            self.assertEqual(
+                result.context.self_model_state["last_trait_evolution_reason"],
+                "persistent_background_continuity_lineage_preserved_before_dialogue",
+            )
+
+            persisted_relationship_graph = self._read_json(
+                paths["relationship_state"] / "relationship_subject_graph.json"
+            )
+            persisted_self_model = self._read_json(
+                paths["state_root"] / "self" / "self_model.json"
+            )
+            persisted_life_state = self._read_json(paths["state_root"] / "life_state.json")
+            self.assertEqual(
+                persisted_relationship_graph["subjects"][0]["relationship_stage"],
+                "background_continuity_waiting",
+            )
+            self.assertEqual(
+                persisted_life_state["relationship_subjects"][0]["relationship_stage"],
+                "background_continuity_waiting",
+            )
+            self.assertIn(
+                "runtime/state/terminal/resident_governance_snapshot.json",
+                persisted_self_model["growth_window_refs"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+                persisted_self_model["trait_slow_variables"]["continuity_drive"]["evidence_refs"],
+            )
+            self.assertIn(
+                "runtime/archive/process/background-lineage-parent.json",
+                persisted_self_model["trait_slow_variables"]["trust_persistence"]["evidence_refs"],
+            )
+            self.assertEqual(
+                persisted_self_model["trait_slow_variables"]["continuity_drive"]["last_relationship_stage"],
+                "background_continuity_waiting",
+            )
+
     def test_live_turn_cycle_organ_writes_response_and_returns_to_waiting_state(self):
         from life_v0.process_supervisor.live_turn_cycle import run_live_turn_cycle
         from life_v0.process_supervisor.resident_supervision import (

@@ -114,6 +114,7 @@ resident_governance_state.json
    - `resident_governance_state.json`
 4. 因此 resident governance 当前已经不是“只有前台 terminal residency”，而是“前台等待态 + 后台关闭态余波”共同组成的跨进程连续体。
 5. 这份后台连续体现在又不再只是一次性 carryover，而是开始带有最小 lineage：`background_carryover_generation`、`background_carryover_parent_run_id` 与 `background_carryover_source_ref_set`。
+6. 现在这份 lineage 又继续进入 `resident_supervision.py` 的 bootstrap continuity refresh：当 `background_carryover_generation >= 2` 时，在第一拍 waiting heartbeat 落盘前，`relationship_subject_graph.json#subjects[0].relationship_stage` 就必须先进入 `background_continuity_waiting`，并把关闭态 resident governance refs / source refs 压进 `self_model.json#trait_slow_variables[*].evidence_refs`。
 
 当前最小 background carryover 字段至少包括：
 

@@ -33,6 +33,7 @@ def evolve_relationship_and_self_model(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    background_continuity_profile: dict[str, Any] | None = None,
 ) -> dict[str, dict[str, Any]]:
     responsibility_loop_state = responsibility_loop_state or {}
     world_contact_summary = world_contact_summary or {}
@@ -41,6 +42,7 @@ def evolve_relationship_and_self_model(
     belief_learning_plan = belief_learning_plan or {}
     language_learning_plan = language_learning_plan or {}
     relationship_learning_plan = relationship_learning_plan or {}
+    background_continuity_profile = background_continuity_profile or {}
 
     updated_relationship_graph = json.loads(json.dumps(relationship_graph))
     updated_self_model_state = json.loads(json.dumps(self_model_state))
@@ -73,7 +75,9 @@ def evolve_relationship_and_self_model(
         trust_state=trust_state,
         queue_e_signal_profile=queue_e_signal_profile,
         offline_learning_profile=offline_learning_profile,
+        background_continuity_profile=background_continuity_profile,
     )
+    background_evidence_refs = _background_evidence_refs(background_continuity_profile)
     subject["relationship_stage"] = next_stage
     subject["relationship_stage_reason"] = stage_reason
     subject["relationship_stage_turn_count"] = dialogue_turn_count
@@ -88,6 +92,7 @@ def evolve_relationship_and_self_model(
             LANGUAGE_LEARNING_PLAN_REF if language_learning_plan else "",
             RELATIONSHIP_LEARNING_PLAN_REF if relationship_learning_plan else "",
         ]
+        + background_evidence_refs
     )
 
     updated_self_model_state["trait_slow_variables"] = _evolve_trait_slow_variables(
@@ -101,6 +106,7 @@ def evolve_relationship_and_self_model(
         offline_learning_profile=offline_learning_profile,
         commitment_expression_plan=commitment_expression_plan,
         apology_repair_language_trace=apology_repair_language_trace,
+        background_continuity_profile=background_continuity_profile,
     )
     updated_self_model_state["growth_window_refs"] = _dedupe(
         list(updated_self_model_state.get("growth_window_refs", []))
@@ -111,6 +117,7 @@ def evolve_relationship_and_self_model(
             LANGUAGE_LEARNING_PLAN_REF if language_learning_plan else "",
             BELIEF_LEARNING_PLAN_REF if belief_learning_plan else "",
         ]
+        + background_evidence_refs
     )
     updated_self_model_state["last_relationship_stage"] = next_stage
     updated_self_model_state["last_trait_evolution_generated_at"] = generated_at
@@ -129,6 +136,7 @@ def _derive_relationship_stage(
     trust_state: str,
     queue_e_signal_profile: dict[str, Any],
     offline_learning_profile: dict[str, Any],
+    background_continuity_profile: dict[str, Any],
 ) -> tuple[str, str]:
     repair_followup_required = bool(queue_e_signal_profile.get("repair_followup_required"))
     world_contact_release_posture = str(
@@ -137,6 +145,12 @@ def _derive_relationship_stage(
     queue_e_priority_band = str(queue_e_signal_profile.get("queue_e_priority_band", "baseline"))
     offline_pressure_level = str(
         offline_learning_profile.get("offline_learning_pressure_level", "quiet")
+    )
+    background_continuity_mode = str(
+        background_continuity_profile.get("background_continuity_mode", "")
+    )
+    background_carryover_generation = _int_or_zero(
+        background_continuity_profile.get("background_carryover_generation")
     )
 
     if (
@@ -160,6 +174,19 @@ def _derive_relationship_stage(
         )
     if dialogue_turn_count >= 2:
         return ("active_dialogue", "dialogue_turns_accumulated")
+    if (
+        background_continuity_mode == "closed_process_carryover"
+        and background_carryover_generation >= 2
+        and current_stage in {
+            "pre_activation",
+            "restored_waiting",
+            "background_continuity_waiting",
+        }
+    ):
+        return (
+            "background_continuity_waiting",
+            "persistent_background_continuity_lineage_preserved_before_dialogue",
+        )
     if current_stage == "restored_waiting":
         return ("restored_waiting", "restored_waiting_preserved_before_dialogue")
     if trust_state:
@@ -179,6 +206,7 @@ def _evolve_trait_slow_variables(
     offline_learning_profile: dict[str, Any],
     commitment_expression_plan: dict[str, Any],
     apology_repair_language_trace: dict[str, Any],
+    background_continuity_profile: dict[str, Any],
 ) -> dict[str, Any]:
     turn_scale = min(dialogue_turn_count / 6.0, 1.0)
     repair_scale = 1.0 if queue_e_signal_profile.get("repair_followup_required") else 0.0
@@ -192,6 +220,12 @@ def _evolve_trait_slow_variables(
     continuity_bonus = 0.10 if "continuity" in continuity_state else 0.0
     repair_obligation_count = int(queue_e_signal_profile.get("repair_obligation_count", 0))
     regret_pressure_count = int(queue_e_signal_profile.get("regret_pressure_count", 0))
+    background_generation_scale = _background_generation_scale(
+        _int_or_zero(background_continuity_profile.get("background_carryover_generation"))
+    )
+    background_pressure_scale = _background_pressure_scale(
+        str(background_continuity_profile.get("background_carryover_pressure_level", "light"))
+    )
     evidence_refs = _dedupe(
         [
             RELATIONSHIP_TIMELINE_REF,
@@ -201,6 +235,7 @@ def _evolve_trait_slow_variables(
             commitment_expression_plan and "runtime/state/language/commitment_expression_plan.json",
             apology_repair_language_trace and "runtime/state/language/apology_repair_language_trace.json",
         ]
+        + _background_evidence_refs(background_continuity_profile)
     )
 
     target_values = {
@@ -211,6 +246,8 @@ def _evolve_trait_slow_variables(
             + trust_bonus
             + 0.05 * continuity_bonus
             - 0.06 * boundary_scale
+            + 0.04 * background_generation_scale
+            + 0.03 * background_pressure_scale
         ),
         "dialogue_warmth": _clamp(
             0.24
@@ -218,6 +255,7 @@ def _evolve_trait_slow_variables(
             + 0.05 * (1.0 - repair_scale)
             - 0.08 * boundary_scale
             + 0.04 * continuity_bonus
+            + 0.02 * background_generation_scale
         ),
         "repair_seriousness": _clamp(
             0.28
@@ -225,12 +263,14 @@ def _evolve_trait_slow_variables(
             + 0.08 * min(repair_obligation_count, 3)
             + 0.06 * min(regret_pressure_count, 3)
             + 0.08 * offline_scale
+            + 0.04 * background_pressure_scale
         ),
         "boundary_respect": _clamp(
             0.26
             + 0.18 * boundary_scale
             + 0.10 * repair_scale
             + 0.06 * offline_scale
+            + 0.03 * background_generation_scale
         ),
         "continuity_drive": _clamp(
             0.24
@@ -238,6 +278,8 @@ def _evolve_trait_slow_variables(
             + 0.08 * offline_scale
             + continuity_bonus
             + 0.06 * repair_scale
+            + 0.08 * background_generation_scale
+            + 0.05 * background_pressure_scale
         ),
     }
 
@@ -295,6 +337,32 @@ def _offline_scale(offline_learning_pressure_level: str) -> float:
     return mapping.get(offline_learning_pressure_level, 0.0)
 
 
+def _background_generation_scale(background_carryover_generation: int) -> float:
+    if background_carryover_generation >= 3:
+        return 1.0
+    if background_carryover_generation == 2:
+        return 0.6
+    if background_carryover_generation == 1:
+        return 0.2
+    return 0.0
+
+
+def _background_pressure_scale(background_carryover_pressure_level: str) -> float:
+    mapping = {
+        "light": 0.0,
+        "present": 0.35,
+        "elevated": 0.6,
+    }
+    return mapping.get(background_carryover_pressure_level, 0.0)
+
+
+def _background_evidence_refs(background_continuity_profile: dict[str, Any]) -> list[str]:
+    return _dedupe(
+        list(background_continuity_profile.get("background_continuity_ref_set", []))
+        + list(background_continuity_profile.get("background_carryover_source_ref_set", []))
+    )
+
+
 def _extract_previous_value(previous_payload: Any) -> float | None:
     if isinstance(previous_payload, dict):
         value = previous_payload.get("value")
@@ -312,6 +380,13 @@ def _extract_update_count(previous_payload: Any) -> int:
         if isinstance(count, int):
             return count
     return 0
+
+
+def _int_or_zero(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
 
 
 def _trend(previous_value: float | None, current_value: float) -> str:

@@ -128,6 +128,7 @@ life-v0 "digital life"
 10. 把 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 显式装载进 resident supervision / live turn / waiting governance / closeout，使 Queue E 不只停在语言器官侧，而是正式进入常驻生命过程。
 11. 把回合尾部的关系阶段演化与 `self_model.trait_slow_variables` 写回统一收进 `continuity_evolution.py`，并由 `process_session_loop.py` 在下一轮重新装载，避免同一常驻生命过程继续拿旧的关系状态说话。
 12. 把 bootstrap / relaunch 之后的长期连续体刷新统一收进 `resident_supervision.py`，使 `relationship_timeline.json`、`commitment_expression_plan.json`、`apology_repair_language_trace.json`、`relationship_memory.json`、`self_model.json` 与 `life_state.json` 会在第一拍 waiting heartbeat 之前先被重建一次，避免跨进程恢复后继续沿用过时的关系阶段和慢变量。
+13. `resident_supervision.py` 在做这次 bootstrap continuity refresh 时，还必须把 `background_continuity.py` 读出的 lineage 一并喂进 `continuity_evolution.py`；当 `background_carryover_generation >= 2` 时，关系阶段要先进入 `background_continuity_waiting`，`trait_slow_variables` 也要显式带上关闭态 resident governance refs / source refs，不能只让后台 lineage 停留在 cadence 调度层。
 
 ## 最小行为合同
 

@@ -175,6 +175,7 @@ Queue E
 3. 当前已落的阶段集合至少包括：
    - `pre_activation`
    - `restored_waiting`
+   - `background_continuity_waiting`
    - `active_dialogue`
    - `repair_guarded_continuity`
    - `boundary_guarded_repair`
@@ -186,6 +187,7 @@ Queue E
    - `boundary_respect`
    - `continuity_drive`
 5. `resident_supervision.py` 现在也会在 restore shell 之后、第一拍 waiting heartbeat 之前，先用历史 dialogue turn 和离线学习对象重建这批结果并落盘
+6. 当 bootstrap 还同时读到 `background_carryover_generation >= 2` 的关闭态 lineage 时，这次重建会继续把关系阶段推到 `background_continuity_waiting`，并把关闭态 resident governance refs / source refs 压进慢变量 evidence
 6. `process_session_loop.py` 会在 live turn 之后重新装载这批结果
 7. `response_surface.py` 会在后续回合直接消费这些慢变量与阶段，改变生命回应的修复认真度、边界守持和连续体表达
 

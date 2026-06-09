@@ -105,6 +105,11 @@
 - `boundary_respect`
 - `continuity_drive`
 
+当前这组慢变量又多了一条跨进程硬约束：当 `resident_supervision.py` 在 bootstrap 阶段发现
+`background_carryover_generation >= 2` 的后台连续体 lineage 时，它必须在第一拍 waiting heartbeat
+之前就把关闭态 lineage 压进 `trait_slow_variables[*].evidence_refs` 与 `growth_window_refs`，而不能只把这批
+artifact 留在 `idle_strategy_state.json` 或 `resident_governance_state.json` 里。
+
 ## `memory_index`
 
 | 字段 | 类型 | 要求 |
@@ -160,10 +165,15 @@
 
 - `pre_activation`
 - `restored_waiting`
+- `background_continuity_waiting`
 - `active_dialogue`
 - `repair_guarded_continuity`
 - `boundary_guarded_repair`
 - `shared_continuity`
+
+其中 `background_continuity_waiting` 表示：当前生命过程还没进入新的 live turn，但多次关闭态唤醒 lineage
+已经在 bootstrap continuity refresh 阶段被重新压回关系连续体；此时关系阶段不能继续伪装成单纯的
+`restored_waiting`，而要显式承认“跨次唤醒的后台连续体已经进入当前关系状态”。
 
 ## `pain_events`
 

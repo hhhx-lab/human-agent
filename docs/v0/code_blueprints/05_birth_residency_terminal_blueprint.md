@@ -144,7 +144,11 @@ event -> response -> writeback -> incident recovery 生命周期继续从 `__ini
 `idle_continuity_frame.json` 与 `terminal_life_loop_state.json`，让 waiting continuity 本身也显式
 承载长期关系/承诺/修复语言对象；同时又新增 `resident_governance_state.json`，把运行中的 waiting
 governance 与关闭态 `resident_governance_snapshot/report` 分开，并开始显式写出
-`governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`。当前
+`governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`。现在又继续把
+这份 background lineage 接进 `resident_supervision.py` 的 continuity refresh，因此多次唤醒时，在第一拍
+waiting heartbeat 之前，`relationship_subject_graph.json#subjects[0].relationship_stage` 会先进入
+`background_continuity_waiting`，`self_model.json#trait_slow_variables` 也会显式挂上关闭态 resident
+governance refs 与 lineage source refs。当前
 `__init__.py` 基本只剩启动、接线和 closeout 外壳；后续重点转向更高阶的后台 resident governance、真正跨进程长期保真与更高频 heartbeat 节律。
 
 ## 最低验证面
