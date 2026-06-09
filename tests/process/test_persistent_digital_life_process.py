@@ -209,6 +209,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             heartbeat_packet = self._read_json(paths["reports"] / "digital_life_waiting_heartbeat.json")
             idle_continuity = self._read_json(paths["terminal_state"] / "idle_continuity_frame.json")
             idle_strategy = self._read_json(paths["terminal_state"] / "idle_strategy_state.json")
+            resident_governance_state = self._read_json(
+                paths["terminal_state"] / "resident_governance_state.json"
+            )
             self.assertEqual(heartbeat_packet["schema_version"], "digital_life_waiting_heartbeat_v0")
             self.assertEqual(heartbeat_packet["run_id"], "persistent-heartbeat")
             self.assertEqual(heartbeat_packet["heartbeat_counter"], 1)
@@ -286,6 +289,56 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/language/apology_repair_language_trace.json",
                 ],
             )
+            self.assertEqual(
+                resident_governance_state["schema_version"],
+                "resident_governance_state_v0",
+            )
+            self.assertEqual(
+                resident_governance_state["governance_phase"],
+                "process_closed_waiting_relaunch",
+            )
+            self.assertEqual(
+                resident_governance_state["heartbeat_counter"],
+                1,
+            )
+            self.assertEqual(
+                resident_governance_state["status"],
+                "closed",
+            )
+            self.assertEqual(
+                resident_governance_state["idle_strategy_ref"],
+                "runtime/state/terminal/idle_strategy_state.json",
+            )
+            self.assertEqual(
+                resident_governance_state["last_heartbeat_packet_ref"],
+                "runtime/reports/latest/digital_life_waiting_heartbeat.json",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_governance_snapshot_ref"],
+                "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
+                resident_governance_state["relationship_timeline_ref"],
+                "runtime/state/relationship/relationship_timeline.json",
+            )
+            self.assertEqual(
+                resident_governance_state["commitment_expression_plan_ref"],
+                "runtime/state/language/commitment_expression_plan.json",
+            )
+            self.assertEqual(
+                resident_governance_state["apology_repair_language_trace_ref"],
+                "runtime/state/language/apology_repair_language_trace.json",
+            )
+            self.assertEqual(
+                resident_governance_state["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
+            self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 70)
+            self.assertEqual(resident_governance_state["offline_pressure_level"], "elevated")
 
             process_report = self._read_json(paths["reports"] / "digital_life_process_report.json")
             self.assertEqual(process_report["completed_dialogue_turns"], 0)
@@ -413,6 +466,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             process_digest = self._read_json(paths["reports"] / "digital_life_process_digest.json")
             idle_continuity = self._read_json(paths["terminal_state"] / "idle_continuity_frame.json")
             idle_strategy = self._read_json(paths["terminal_state"] / "idle_strategy_state.json")
+            resident_governance_state = self._read_json(
+                paths["terminal_state"] / "resident_governance_state.json"
+            )
             narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
             commitment_index = self._read_json(paths["language_state"] / "commitment_repair_language_index.json")
             relationship_graph = self._read_json(paths["relationship_state"] / "relationship_subject_graph.json")
@@ -525,6 +581,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/language/apology_repair_language_trace.json",
                 ],
             )
+            self.assertEqual(
+                resident_governance_state["governance_phase"],
+                "process_closed_waiting_relaunch",
+            )
+            self.assertEqual(resident_governance_state["heartbeat_counter"], 3)
+            self.assertEqual(resident_governance_state["status"], "closed")
+            self.assertEqual(
+                resident_governance_state["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
+            self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 70)
+            self.assertEqual(resident_governance_state["offline_pressure_level"], "elevated")
             self.assertEqual(narrative_trace["idle_continuity_counter"], 3)
             self.assertEqual(len(narrative_trace["idle_continuity_refs"]), 3)
             self.assertEqual(
@@ -638,6 +710,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
             heartbeat_packet = self._read_json(paths["reports"] / "digital_life_waiting_heartbeat.json")
             idle_continuity = self._read_json(paths["terminal_state"] / "idle_continuity_frame.json")
+            resident_governance_state = self._read_json(
+                paths["terminal_state"] / "resident_governance_state.json"
+            )
 
             self.assertEqual(result.heartbeat_counter, 2)
             self.assertEqual(result.external_utterance, "你好")
@@ -665,6 +740,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(
                 idle_continuity["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
+            self.assertEqual(
+                resident_governance_state["governance_phase"],
+                "waiting_heartbeat_active",
+            )
+            self.assertEqual(resident_governance_state["heartbeat_counter"], 2)
+            self.assertEqual(
+                resident_governance_state["long_horizon_language_refs"],
                 [
                     "runtime/state/relationship/relationship_timeline.json",
                     "runtime/state/language/commitment_expression_plan.json",
@@ -1814,6 +1902,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             resident_governance_snapshot = self._read_json(
                 terminal_dir / "resident_governance_snapshot.json"
             )
+            resident_governance_state = self._read_json(
+                terminal_dir / "resident_governance_state.json"
+            )
             resident_governance_report = self._read_json(
                 reports_dir / "digital_life_resident_governance_report.json"
             )
@@ -2002,6 +2093,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             resident_governance_snapshot = self._read_json(
                 terminal_dir / "resident_governance_snapshot.json"
             )
+            resident_governance_state = self._read_json(
+                terminal_dir / "resident_governance_state.json"
+            )
             resident_governance_report = self._read_json(
                 reports_dir / "digital_life_resident_governance_report.json"
             )
@@ -2052,6 +2146,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_snapshot["governance_mode"],
                 "foreground_terminal_residency",
             )
+            self.assertEqual(
+                resident_governance_state["schema_version"],
+                "resident_governance_state_v0",
+            )
+            self.assertEqual(
+                resident_governance_state["governance_phase"],
+                "process_closed_waiting_relaunch",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_governance_snapshot_ref"],
+                "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_governance_report_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+            )
+            self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 70)
+            self.assertEqual(resident_governance_state["offline_pressure_level"], "present")
             self.assertEqual(
                 resident_governance_snapshot["idle_continuity_ref"],
                 "runtime/state/terminal/idle_continuity_frame.json",

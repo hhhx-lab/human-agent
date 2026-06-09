@@ -9,6 +9,11 @@ from .idle_strategy import (
     decide_idle_strategy,
     extract_idle_governance_fields,
 )
+from .persistent_process import (
+    RESIDENT_GOVERNANCE_REPORT_REF,
+    RESIDENT_GOVERNANCE_SNAPSHOT_REF,
+    RESIDENT_GOVERNANCE_STATE_REF,
+)
 
 
 def write_waiting_heartbeat(
@@ -143,6 +148,30 @@ def write_waiting_heartbeat(
         growth_patch_candidate_count=growth_patch_candidate_count,
     )
     write_json(terminal_dir / "idle_continuity_frame.json", idle_continuity_frame)
+    resident_governance_state = {
+        "schema_version": "resident_governance_state_v0",
+        "run_id": run_id,
+        "generated_at": now_iso(),
+        "status": "active",
+        "governance_mode": "foreground_terminal_residency",
+        "governance_phase": "waiting_heartbeat_active",
+        "waiting_mode": waiting_mode,
+        "heartbeat_counter": heartbeat_counter,
+        "idle_strategy_ref": IDLE_STRATEGY_STATE_REF,
+        "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
+        "resident_governance_snapshot_ref": RESIDENT_GOVERNANCE_SNAPSHOT_REF,
+        "resident_governance_report_ref": RESIDENT_GOVERNANCE_REPORT_REF,
+        "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
+        "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
+        "last_heartbeat_packet_ref": heartbeat_report_ref,
+        "relationship_timeline_ref": idle_strategy.get("relationship_timeline_ref"),
+        "commitment_expression_plan_ref": idle_strategy.get("commitment_expression_plan_ref"),
+        "apology_repair_language_trace_ref": idle_strategy.get("apology_repair_language_trace_ref"),
+        "long_horizon_language_refs": list(idle_strategy.get("long_horizon_language_refs", [])),
+        "next_required_action": "await_next_external_relation_turn",
+    }
+    resident_governance_state.update(extract_idle_governance_fields(idle_strategy))
+    write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     idle_strategy["idle_continuity_ref"] = "runtime/state/terminal/idle_continuity_frame.json"
     write_json(terminal_dir / "idle_strategy_state.json", idle_strategy)
     write_json(reports_dir / "digital_life_waiting_heartbeat.json", heartbeat_packet)

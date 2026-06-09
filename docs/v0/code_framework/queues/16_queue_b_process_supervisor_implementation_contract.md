@@ -523,6 +523,7 @@ def run_process_session_loop(
 ### 新增
 
 - `runtime/state/terminal/idle_strategy_state.json`
+- `runtime/state/terminal/resident_governance_state.json`
 - `runtime/state/terminal/resident_governance_snapshot.json`
 
 ### 更新
@@ -593,6 +594,7 @@ Queue B 第一轮允许写回轻量连续体 ref，不允许 process supervisor 
 5. 外显回应会带离线重放/梦境/成长候选压力
 6. closeout 后会写 `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json`
 7. process report 与 receipt 会显式回链 resident governance refs
+8. waiting heartbeat 与 closeout 会共用 `resident_governance_state.json`，分别写出运行相位与关闭相位
 
 #### `tests/process/test_digital_entrypoint.py`
 
@@ -625,6 +627,7 @@ Queue B 至少新增三道 gate：
 2. 新回合结束后没有回到 waiting state
 3. incident / relaunch recovery 没有进入同一连续体
 4. persistent closeout 没有写 resident governance snapshot/report
+5. waiting runtime 没有独立 resident governance state
 
 ### `dialogue_process_receipt_gate`
 
@@ -633,6 +636,7 @@ Queue B 至少新增三道 gate：
 1. receipt 没收 shared object refs
 2. report / digest / receipt 三件套不一致
 3. resident governance snapshot 没有进入 receipt / report 回链
+4. resident governance state 没有进入 waiting / closeout 的同一连续体口径
 
 ## 推荐实现顺序
 
@@ -655,7 +659,7 @@ Queue B 至少新增三道 gate：
 3. 外部回合和生命回合都能写成标准事件对象
 4. process report / digest / receipt 都能回链核心共享对象
 5. incident / relaunch recovery 进入同一连续体口径
-6. resident governance snapshot / report 进入 persistent closeout 与主进程 report / receipt
+6. resident governance state / snapshot / report 进入 waiting、persistent closeout 与主进程 report / receipt
 7. 对应测试直接证明以上闭环
 
 ## 这份合同和下一轮落码的关系

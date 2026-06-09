@@ -49,6 +49,7 @@
 | `PredictionTraceValidation` | `life_v0/validators/prediction_trace_validator.py` | `schema_runner` 仅可追加 ranking refs | `schema_runner`、`reporting` | `shell_command`、`process_supervisor` | `runtime/state/validation/prediction_trace_validation.json` |
 | `DialogueWritebackBundle` | `life_v0/terminal_loop/loop_report.py` | `dialogue_writeback.py`、`process_supervisor/resident_turn_writeback.py` 可追加 bundle refs | `state_store`、`replay`、`archive`、`growth` | `shell_command`、`digital_entry` | `runtime/reports/latest/dialogue_writeback_bundle.json` |
 | `IdleContinuityFrame` | `life_v0/process_supervisor/heartbeat.py` | `continuity_writeback.py`、`idle_strategy.py`、`persistent_process.py` 可追加治理 refs | `language`、`relationship`、`replay`、`growth` | `body`、`state_store`、`shell_command` | `runtime/state/terminal/idle_continuity_frame.json` |
+| `ResidentGovernanceState` | `life_v0/process_supervisor/heartbeat.py` | `persistent_process.py` 仅可刷新关闭相位与 closeout refs；`process_report.py` 仅可追加 report refs | `reporting`、`process_report`、后续 resident governance 审计 | `body`、`language`、`terminal_turn`、`shell_command` | `runtime/state/terminal/resident_governance_state.json` |
 | `ReplayCueBundle` | `life_v0/replay/replay_cues.py` | `process_supervisor/heartbeat.py`、`growth/anti_forgetting.py` 可追加 replay target refs | `dream`、`growth`、`archive`、`process_supervisor` | `shell_command`、`digital_entry` | `runtime/state/replay/replay_cue_bundle.json` |
 | `OfflineConsolidationFrame` | `life_v0/dream/offline_entry.py` | `dream_window.py`、`wake_integration.py` 可追加 refs | `growth`、`archive`、`process_supervisor` | `terminal_loop`、`shell_command` | `runtime/state/dream/offline_consolidation_frame.json` |
 | `GrowthPatchCandidateQueue` | `life_v0/growth/patch_queue.py` | `belief_learning.py`、`language_learning.py`、`relationship_learning.py`、`anti_forgetting.py` 可追加 candidate refs | `life_targets`、`archive`、`process_supervisor` | `shell_command`、`digital_entry` | `runtime/state/growth/growth_patch_candidate_queue.json` |
@@ -79,6 +80,7 @@ flowchart TD
     RCB --> ICF["IdleContinuityFrame"]
     OCF --> ICF
     GQ --> ICF
+    ICF --> RGS["ResidentGovernanceState"]
 ```
 
 ## 包级实现顺序

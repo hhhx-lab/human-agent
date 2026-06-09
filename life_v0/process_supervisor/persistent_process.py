@@ -9,6 +9,7 @@ from .idle_strategy import extract_idle_governance_fields
 
 PERSISTENT_PROCESS_STATE_REF = "runtime/state/terminal/persistent_process_state.json"
 PERSISTENT_PROCESS_REPORT_REF = "runtime/reports/latest/digital_life_persistent_process_report.json"
+RESIDENT_GOVERNANCE_STATE_REF = "runtime/state/terminal/resident_governance_state.json"
 RESIDENT_GOVERNANCE_SNAPSHOT_REF = "runtime/state/terminal/resident_governance_snapshot.json"
 RESIDENT_GOVERNANCE_REPORT_REF = "runtime/reports/latest/digital_life_resident_governance_report.json"
 
@@ -72,6 +73,41 @@ def write_persistent_process_artifacts(
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
     }
     resident_governance_snapshot.update(idle_governance)
+    resident_governance_state = {
+        "schema_version": "resident_governance_state_v0",
+        "run_id": run_id,
+        "generated_at": generated_at,
+        "status": "closed",
+        "governance_mode": "foreground_terminal_residency",
+        "governance_phase": "process_closed_waiting_relaunch",
+        "waiting_mode": waiting_mode,
+        "heartbeat_counter": heartbeat_counter,
+        "completed_dialogue_turns": completed_turns,
+        "incident_count": incident_count,
+        "relaunch_recovery_count": relaunch_recovery_count,
+        "idle_strategy_ref": idle_strategy_ref,
+        "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
+        "resident_governance_snapshot_ref": RESIDENT_GOVERNANCE_SNAPSHOT_REF,
+        "resident_governance_report_ref": RESIDENT_GOVERNANCE_REPORT_REF,
+        "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
+        "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
+        "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
+        "last_dialogue_packet_ref": last_dialogue_packet_ref,
+        "relationship_timeline_ref": relationship_timeline_ref,
+        "commitment_expression_plan_ref": commitment_expression_plan_ref,
+        "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
+        "long_horizon_language_refs": [
+            ref
+            for ref in [
+                relationship_timeline_ref,
+                commitment_expression_plan_ref,
+                apology_repair_language_trace_ref,
+            ]
+            if ref
+        ],
+        "next_required_action": "await_process_relaunch_or_new_terminal_wake",
+    }
+    resident_governance_state.update(idle_governance)
     state = {
         "schema_version": "persistent_process_state_v0",
         "run_id": run_id,
@@ -148,6 +184,7 @@ def write_persistent_process_artifacts(
     }
     resident_governance_report.update(idle_governance)
 
+    write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     write_json(terminal_dir / "resident_governance_snapshot.json", resident_governance_snapshot)
     write_json(terminal_dir / "persistent_process_state.json", state)
     write_json(reports_dir / "digital_life_resident_governance_report.json", resident_governance_report)

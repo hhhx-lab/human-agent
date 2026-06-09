@@ -98,6 +98,7 @@
 新增或补厚的 runtime / report / receipt 事实：
 
 - `runtime/state/terminal/resident_governance_snapshot.json`
+- `runtime/state/terminal/resident_governance_state.json`
 - `runtime/state/terminal/persistent_process_state.json`
 - `runtime/reports/latest/digital_life_resident_governance_report.json`
 - `runtime/reports/latest/digital_life_persistent_process_report.json`
@@ -107,9 +108,9 @@
 
 当前判断：
 
-1. 长期关系语言对象已经继续接入 process closeout / process report / resident governance snapshot。
-2. 常驻过程的关闭态不再只知道“最后一个对话包”，而是开始知道长期语言连续体对象本身。
-3. 这一层说明 `terminal-loop -> process closeout` 的生命连续体已经更厚一层，不再只停在回合壳层。
+1. 长期关系语言对象已经继续接入 process closeout / process report / resident governance state / resident governance snapshot。
+2. 常驻过程现在不只保留关闭态治理快照，也开始把 waiting 期间的治理状态独立成 `resident_governance_state.json`。
+3. 这一层说明 `terminal-loop -> waiting governance -> process closeout` 的生命连续体已经更厚一层，不再只停在回合壳层。
 
 ### 4. 测试闭合面
 
@@ -124,7 +125,7 @@
 
 1. `terminal_loop` 显式承载 `relationship_timeline / commitment_expression_plan / apology_repair_language_trace`
 2. `process_closeout / process_report / persistent_process` 显式承载上述三条长期语言对象
-3. resident governance snapshot/report 与 process receipt 显式回链这些对象
+3. resident governance state / snapshot / report 与 process receipt 显式回链这些对象
 
 ## 当前未闭合但明确收束到工程层的缺口
 
@@ -134,7 +135,7 @@
 
 - waiting heartbeat
 - idle strategy
-- resident governance snapshot/report
+- resident governance state / snapshot / report
 - `relationship_timeline_ref`
 - `commitment_expression_plan_ref`
 - `apology_repair_language_trace_ref`
@@ -146,16 +147,17 @@
 2. heartbeat 仍然偏“最小存在”，还没进入更高频的后台自我维持节律。
 3. `terminal_life_loop_state.json` 还没有更厚的后台治理状态机。
 
-### 2. 后台 resident governance 还只是 foreground closeout
+### 2. 后台 resident governance 已开始对象化，但还没形成真正跨周期治理层
 
 当前已闭合：
 
 - foreground terminal residency 的关闭态治理
+- waiting heartbeat 期间的 `resident_governance_state.json`
 
 当前仍偏薄：
 
-1. 真正跨进程、跨唤醒周期的 resident governance 还没对象化。
-2. process closeout 已有 snapshot/report，但后台持续运行期的治理状态机还没独立出来。
+1. 真正跨进程、跨唤醒周期的 resident governance 还没形成更高阶 state machine。
+2. process closeout 已有 snapshot/report，waiting 期间也已有运行态 state，但后台持续运行期的优先级竞争、资源下降和跨周期治理还没独立出来。
 3. 这一层仍然属于工程实现缺口，不是理论缺口。
 
 ### 3. report bundle 还没完全吃下长期语言闭环摘要

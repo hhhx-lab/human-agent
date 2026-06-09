@@ -66,7 +66,7 @@ Python 3 作为主体语言
 | 目标 | 先补硬身体/梦境/成长与行为/验证/逻辑这两条中轴 |
 | 必读 | `18_queue_d_body_dream_growth_implementation_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md`、`06`、`08`、`09` playbooks |
 | 主包 | `body/`、`dream/`、`growth/`、`membrane/`、`validators/`、`schema_runner/` |
-| 当前前沿 | Queue D 扩展器官已落下 `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py`；Queue E 第二波中的 `shadow_gate.py`、`world_contact_summary.py`、`validation_rollup.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落地并补上局部闭包，当前继续补厚 `responsibility_loop.py` 与跨层写回；Queue B 这边则已把 resident governance snapshot / report 接进 persistent closeout，下一刀继续转向等待态里的后台 resident governance 与更高频 heartbeat 节律 |
+| 当前前沿 | Queue D 扩展器官已落下 `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py`；Queue E 第二波中的 `shadow_gate.py`、`world_contact_summary.py`、`validation_rollup.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落地并补上局部闭包，当前继续补厚 `responsibility_loop.py` 与跨层写回；Queue B 这边则已把 resident governance 运行态 `state` 与关闭态 `snapshot / report` 一起接进 waiting / closeout 主链，下一刀继续转向等待态里的后台 resident governance 与更高频 heartbeat 节律 |
 | 最低测试 | `tests/slices/test_life_support.py`、`tests/bridges/test_runtime_growth.py`、`tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
 | 完成定义 | 身体信号、梦境离线链、成长补丁、行为候选、责任回路、反事实比较都不再压在重型 `__init__.py` 里，并且有独立 state/report 证据 |
 
@@ -80,7 +80,7 @@ Python 3 作为主体语言
 | 已落核心器官 | `idle_strategy.py`、`resident_supervision.py`、`live_turn_cycle.py`、`process_session_loop.py`、`persistent_process.py` |
 | 已落关键文件 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` |
 | 最低测试 | `tests/process/test_persistent_digital_life_process.py`、`tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_terminal_life_loop.py` |
-| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链，下一步转向让 process / terminal 更深消费这批对象 |
+| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链，下一步转向让 process / terminal 更深消费这批对象 |
 
 ### Stage 4: Queue C / Queue F 维护性深化
 
