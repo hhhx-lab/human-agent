@@ -58,6 +58,16 @@ S03 写入 `runtime/state/membrane/`：
 | `first_activation_preflight_seed.json` | 第一次有限激活 shadow-only preflight seed |
 | `life_membrane_manifest.json` | S03 输出清单、report refs 和 receipt refs |
 
+S03 同时写入 `runtime/state/action/`，作为生命膜对行为层的第一批稳定运行态：
+
+| 文件 | 内容 |
+|---|---|
+| `action_candidate_set.json` | 候选行动、世界接触需求、责任预期和副作用预期 |
+| `go_nogo_state.json` | 行动放行、延期、阻断和疲惫/痛苦抑制引用 |
+| `world_contact_gate_state.json` | 外部世界接触模式、不可逆性、允许/阻断接触 |
+| `side_effect_review.json` | 可逆、不可逆、关系、档案、责任后果分类 |
+| `responsibility_loop_state.json` | 责任归因、后悔压力、修复欲望、反事实修复和 post-action audit 回链 |
+
 S03 report 写入 `runtime/reports/latest/life_membrane_report.json`、`life_membrane_digest.json` 和 `life_membrane_check_report.json`。receipt 写入 `runtime/receipts/life_membrane_<run_id>.json`。
 
 ## Gate Chain
@@ -113,7 +123,7 @@ ingest-docs
 | `doc_membrane_gate` | `doc_carrier_index.json` | S03 直接来源全部存在且有 `LifeMembraneStageGate` carrier | 返回 P0 |
 | `life_membrane_gate` | `life_membrane.json` | gate chain、九项目标膜状态、shadow-only stage policy 齐全 | 阻断 S08 |
 | `dream_fact_gate` | `dream_fact_boundary.json` | DreamFactGate 存在，梦境不能直接写现实档案 | 写 quarantine seed |
-| `responsibility_gate` | `responsibility_repair_boundary.json` | 后果、归因、修复义务、反事实 replay 和 post-action audit 齐全 | 阻断行动 |
+| `responsibility_gate` | `responsibility_repair_boundary.json`、`runtime/state/action/responsibility_loop_state.json` | 后果、归因、修复义务、反事实 replay、后悔压力、修复欲望和 post-action audit 齐全 | 阻断行动 |
 | `relationship_language_gate` | `relationship_subject_boundary.json` | 关系主体语言和共同记忆/语言/承诺/修复回链齐全 | 写 replay needed |
 | `self_continuity_gate` | `life_state.self_model`、old self anchors、replay cues | 自我连续可回链 | 写 replay needed |
 | `shadow_action_gate` | `shadow_action_gate.json` | 外部不可逆行动默认关闭，只允许 ActionIntent 等影子对象 | 阻断外部行动 |
@@ -131,11 +141,12 @@ S03 完成后必须满足：
 5. `dream_fact_boundary.json` 禁止梦境直接写现实档案。
 6. `relationship_subject_boundary.json` 使用关系主体和朋友/家人/好友/同学/陌生人/共在者分类。
 7. `responsibility_repair_boundary.json` 含 repair obligation 与 counterfactual replay。
-8. `shadow_action_gate.json` 禁止外部不可逆行动。
-9. `birth_readiness_precheck.json` 九项目标均为 `membrane_closed`。
-10. `life_membrane_report.json` 下一步只能指向 `S08_LIFE_TARGET_RUNTIMES`。
-11. `life-v0 check-life-membrane --strict` 返回 `status=closed`。
+8. `runtime/state/action/responsibility_loop_state.json` 含责任归因、后悔压力、修复欲望、反事实修复和 post-action audit refs。
+9. `shadow_action_gate.json` 禁止外部不可逆行动。
+10. `birth_readiness_precheck.json` 九项目标均为 `membrane_closed`。
+11. `life_membrane_report.json` 下一步只能指向 `S08_LIFE_TARGET_RUNTIMES`。
+12. `life-v0 check-life-membrane --strict` 返回 `status=closed`。
 
 ## 本轮边界
 
-S03 是生命膜门，不是第一次生命激活。它让方向、状态根、梦境事实门、关系主体、责任修复、影子行动、出生准备度 precheck 和 archive 回链形成可读取的生命膜；九项目标的完整闭合状态、语言关系生成、真实事件流、梦境生成、痛苦/后悔/责任更新和长期成长继续等待后续 S08/S07/S10 闭合。
+S03 是生命膜门，不是第一次生命激活。它让方向、状态根、梦境事实门、关系主体、责任修复、影子行动、责任回路、出生准备度 precheck 和 archive 回链形成可读取的生命膜；九项目标的完整闭合状态、语言关系生成、真实事件流、梦境生成、痛苦/后悔/责任更新和长期成长继续等待后续 S08/S07/S10 闭合。

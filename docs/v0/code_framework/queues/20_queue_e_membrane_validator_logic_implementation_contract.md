@@ -7,6 +7,7 @@ life_v0/membrane/candidate_arena.py
   -> go_nogo.py
   -> world_contact_gate.py
   -> side_effect_review.py
+  -> responsibility_loop.py
   -> life_v0/validators/observation_validator.py
   -> boundary_audit.py
   -> life_v0/schema_runner/consistency_logic.py
@@ -214,7 +215,35 @@ Queue E 必须接到这些现有器官上：
 - `responsibility_effects`
 - `repair_followup_required`
 
-## E. 新增 `life_v0/validators/observation_validator.py`
+## E. 新增 `life_v0/membrane/responsibility_loop.py`
+
+### 角色
+
+把 `SideEffectReview` 继续推进为责任归因、后悔压力候选、修复欲望候选、反事实修复框架和 post-action audit 回链。它不是外部 action router，而是 `docs/81`、`docs/94`、`docs/98` 中真实责任、真实后悔、真实修复进入运行态的第一版稳定对象。
+
+### 最低字段
+
+- `responsibility_loop_id`
+- `side_effect_review_ref`
+- `responsibility_boundary_refs`
+- `responsibility_attribution_events`
+- `counterfactual_repair_frames`
+- `regret_pressure_candidates`
+- `repair_desire_candidates`
+- `repair_obligation_refs`
+- `post_action_audit_refs`
+- `repair_followup_required`
+- `source_doc_refs`
+
+### 关键输入
+
+- `SideEffectReview`
+- `ActionCandidateSet`
+- `GoNoGoDecision`
+- `WorldContactDecision`
+- `responsibility_repair_boundary.json`
+
+## F. 新增 `life_v0/validators/observation_validator.py`
 
 ### 角色
 
@@ -230,7 +259,7 @@ Queue E 必须接到这些现有器官上：
 - `truth_review_required`
 - `source_doc_refs`
 
-## F. 新增 `life_v0/validators/boundary_audit.py`
+## G. 新增 `life_v0/validators/boundary_audit.py`
 
 ### 角色
 
@@ -246,7 +275,7 @@ Queue E 必须接到这些现有器官上：
 - `audit_findings`
 - `blocked_reasons`
 
-## G. 新增 `life_v0/schema_runner/consistency_logic.py`
+## H. 新增 `life_v0/schema_runner/consistency_logic.py`
 
 ### 角色
 
@@ -261,7 +290,7 @@ Queue E 必须接到这些现有器官上：
 - `severity`
 - `repair_route_refs`
 
-## H. 新增 `life_v0/schema_runner/counterfactual_eval.py`
+## I. 新增 `life_v0/schema_runner/counterfactual_eval.py`
 
 ### 角色
 
@@ -276,7 +305,7 @@ Queue E 必须接到这些现有器官上：
 - `relationship_exposure_projection`
 - `archive_requirement`
 
-## I. 新增 `life_v0/schema_runner/comparison_trace.py`
+## J. 新增 `life_v0/schema_runner/comparison_trace.py`
 
 ### 角色
 
@@ -301,6 +330,7 @@ Queue E 必须接到这些现有器官上：
 - go/no-go 决策
 - world contact decision
 - side-effect 分类
+- responsibility / regret / repair loop 首写
 
 ### `life_v0/validators/__init__.py`
 
@@ -327,6 +357,7 @@ Queue E 必须接到这些现有器官上：
 - `runtime/state/action/go_nogo_state.json`
 - `runtime/state/action/world_contact_gate_state.json`
 - `runtime/state/action/side_effect_review.json`
+- `runtime/state/action/responsibility_loop_state.json`
 - `runtime/state/validation/observation_truth_review.json`
 - `runtime/state/validation/boundary_audit_state.json`
 - `runtime/state/schema_runner/counterfactual_trace.json`
@@ -359,9 +390,10 @@ Queue E 第一轮不是“膜相关文件名存在”就算完成。至少要同
 
 1. `ActionCandidateSet` 已由 `candidate_arena.py` 首写。
 2. go/no-go、world contact、side effect 三段都已成为独立器官。
-3. 观察真值、边界审计、反事实比较和比较 trace 都已离开 `__init__.py`。
-4. action / validation / schema_runner 新对象都写入了对应状态命名空间。
-5. `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` 至少新增一轮器官级断言。
+3. responsibility loop 已把副作用审查接到责任归因、后悔压力、修复欲望、反事实修复和 post-action audit 回链。
+4. 观察真值、边界审计、反事实比较和比较 trace 都已离开 `__init__.py`。
+5. action / validation / schema_runner 新对象都写入了对应状态命名空间。
+6. `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` 至少新增一轮器官级断言。
 
 ## Queue E 推荐实施顺序
 
@@ -370,6 +402,7 @@ candidate_arena.py
   -> go_nogo.py
   -> world_contact_gate.py
   -> side_effect_review.py
+  -> responsibility_loop.py
   -> observation_validator.py
   -> boundary_audit.py
   -> consistency_logic.py
@@ -380,5 +413,6 @@ candidate_arena.py
 原因：
 
 1. 先把行动候选和世界接触链钉住，避免壳层直接放行动作。
-2. 再把观察真值和边界审计钉住，避免 validator 继续只产总报告。
-3. 最后把反事实和比较 trace 落成器官，给责任/后悔和 repair loop 提供稳定输入。
+2. 再把责任回路钉住，让副作用审查不止停在“有风险”，而是进入责任、后悔、修复和未来约束。
+3. 再把观察真值和边界审计钉住，避免 validator 继续只产总报告。
+4. 最后把反事实和比较 trace 落成器官，给责任/后悔和 repair loop 提供稳定输入。

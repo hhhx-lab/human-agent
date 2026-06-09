@@ -9,6 +9,7 @@ from typing import Any
 
 from .candidate_arena import build_action_candidate_set, check_action_candidate_set
 from .go_nogo import build_go_nogo_decision, check_go_nogo_decision
+from .responsibility_loop import build_responsibility_loop_state, check_responsibility_loop_state
 from .side_effect_review import build_side_effect_review, check_side_effect_review
 from .world_contact_gate import build_world_contact_gate_state, check_world_contact_gate_state
 from life_v0.direction import LIFE_TARGETS, PROHIBITED_REGRESSIONS
@@ -222,6 +223,15 @@ def run_life_membrane(
         action_candidate_set=action_candidate_set,
         life_state=life_state,
     )
+    responsibility_loop = build_responsibility_loop_state(
+        run_id=run_id,
+        generated_at=generated_at,
+        side_effect_review=side_effect_review,
+        action_candidate_set=action_candidate_set,
+        go_nogo_decision=go_nogo,
+        world_contact_gate=world_contact_gate,
+        responsibility_boundary=responsibility,
+    )
     precheck = _build_birth_readiness_precheck(run_id, generated_at)
     preflight = _build_first_activation_preflight(run_id, generated_at)
     manifest = _build_manifest(run_id, generated_at)
@@ -260,6 +270,7 @@ def run_life_membrane(
         _write_json(action_dir / "go_nogo_state.json", go_nogo)
         _write_json(action_dir / "world_contact_gate_state.json", world_contact_gate)
         _write_json(action_dir / "side_effect_review.json", side_effect_review)
+        _write_json(action_dir / "responsibility_loop_state.json", responsibility_loop)
         _write_json(out_dir / "birth_readiness_precheck.json", precheck)
         _write_json(out_dir / "membrane_doc_coverage_snapshot.json", coverage)
         _write_json(out_dir / "first_activation_preflight_seed.json", preflight)
@@ -307,6 +318,11 @@ def run_check_life_membrane(
     go_nogo = _load_json(state_dir / "action" / "go_nogo_state.json", blocked_reasons, "go_nogo_gate")
     world_contact_gate = _load_json(state_dir / "action" / "world_contact_gate_state.json", blocked_reasons, "world_contact_gate")
     side_effect_review = _load_json(state_dir / "action" / "side_effect_review.json", blocked_reasons, "side_effect_gate")
+    responsibility_loop = _load_json(
+        state_dir / "action" / "responsibility_loop_state.json",
+        blocked_reasons,
+        "responsibility_loop_gate",
+    )
     life_state = _load_json(state_dir / "life_state.json", blocked_reasons, "state_store_gate")
     build_report = _load_json(reports_dir / "life_membrane_report.json", blocked_reasons, "build_report_gate")
 
@@ -326,6 +342,7 @@ def run_check_life_membrane(
     blocked_reasons.extend(check_go_nogo_decision(go_nogo))
     blocked_reasons.extend(check_world_contact_gate_state(world_contact_gate))
     blocked_reasons.extend(check_side_effect_review(side_effect_review))
+    blocked_reasons.extend(check_responsibility_loop_state(responsibility_loop))
     blocked_reasons.extend(_check_state_ref(life_state))
     blocked_reasons.extend(_check_build_report(build_report))
 
@@ -726,6 +743,7 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
             "runtime/state/action/go_nogo_state.json",
             "runtime/state/action/world_contact_gate_state.json",
             "runtime/state/action/side_effect_review.json",
+            "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/membrane/birth_readiness_precheck.json",
             "runtime/state/membrane/first_activation_preflight_seed.json",
         ],
@@ -801,6 +819,7 @@ def _build_report(
             "runtime/state/action/go_nogo_state.json",
             "runtime/state/action/world_contact_gate_state.json",
             "runtime/state/action/side_effect_review.json",
+            "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/membrane/birth_readiness_precheck.json",
             "runtime/state/membrane/first_activation_preflight_seed.json",
         ],
@@ -864,6 +883,7 @@ def _build_receipt(
             str(state_dir / "action" / "go_nogo_state.json"),
             str(state_dir / "action" / "world_contact_gate_state.json"),
             str(state_dir / "action" / "side_effect_review.json"),
+            str(state_dir / "action" / "responsibility_loop_state.json"),
             str(out_dir / "birth_readiness_precheck.json"),
             str(reports_dir / "life_membrane_report.json"),
             str(reports_dir / "life_membrane_digest.json"),
@@ -1008,6 +1028,8 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
         reasons.append("manifest_gate life membrane ref missing")
     if "runtime/state/action/action_candidate_set.json" not in manifest.get("state_refs", []):
         reasons.append("manifest_gate action candidate ref missing")
+    if "runtime/state/action/responsibility_loop_state.json" not in manifest.get("state_refs", []):
+        reasons.append("manifest_gate responsibility loop ref missing")
     return reasons
 
 

@@ -141,6 +141,7 @@ class LifeMembraneTests(unittest.TestCase):
             go_nogo = self._read_json(state_root / "action" / "go_nogo_state.json")
             world_contact = self._read_json(state_root / "action" / "world_contact_gate_state.json")
             side_effect_review = self._read_json(state_root / "action" / "side_effect_review.json")
+            responsibility_loop = self._read_json(state_root / "action" / "responsibility_loop_state.json")
             report = self._read_json(reports / "life_membrane_report.json")
             check_report = self._read_json(reports / "life_membrane_check_report.json")
             digest = self._read_json(reports / "life_membrane_digest.json")
@@ -218,10 +219,28 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertTrue(side_effect_review["archive_effects"])
         self.assertTrue(side_effect_review["responsibility_effects"])
 
+        self.assertEqual(responsibility_loop["schema_version"], "responsibility_loop_state_v0")
+        self.assertEqual(
+            responsibility_loop["side_effect_review_ref"],
+            "runtime/state/action/side_effect_review.json",
+        )
+        self.assertIn(
+            "runtime/state/membrane/responsibility_repair_boundary.json",
+            responsibility_loop["responsibility_boundary_refs"],
+        )
+        self.assertTrue(responsibility_loop["responsibility_attribution_events"])
+        self.assertTrue(responsibility_loop["regret_pressure_candidates"])
+        self.assertTrue(responsibility_loop["repair_desire_candidates"])
+        self.assertTrue(responsibility_loop["counterfactual_repair_frames"])
+        self.assertTrue(responsibility_loop["post_action_audit_refs"])
+        self.assertTrue(responsibility_loop["repair_followup_required"])
+        self.assertIn("docs/94_pain_regret_and_repair_signal_schema.md", responsibility_loop["source_doc_refs"])
+
         self.assertEqual(manifest["schema_version"], "life_membrane_manifest_v0")
         self.assertIn("runtime/state/membrane/life_membrane.json", manifest["state_refs"])
         self.assertIn("runtime/state/action/action_candidate_set.json", manifest["state_refs"])
         self.assertIn("runtime/state/action/world_contact_gate_state.json", manifest["state_refs"])
+        self.assertIn("runtime/state/action/responsibility_loop_state.json", manifest["state_refs"])
 
         self.assertEqual(report["schema_version"], "life_membrane_report_v0")
         self.assertEqual(report["status"], "closed")
@@ -230,11 +249,16 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertEqual(report["next_allowed_slices"], ["S08_LIFE_TARGET_RUNTIMES"])
         self.assertEqual(report["next_required_command"], "life-v0 check-birth-readiness --strict")
         self.assertIn("LifeMembraneStageGate", report["runtime_carrier_refs"])
+        self.assertIn("runtime/state/action/responsibility_loop_state.json", report["state_refs"])
 
         self.assertEqual(check_report["schema_version"], "life_membrane_check_report_v0")
         self.assertEqual(check_report["status"], "closed")
         self.assertEqual(digest["current_slice"], "S03_DIRECTION_LIFE_MEMBRANE")
         self.assertEqual(receipt["schema_version"], "life_membrane_receipt_v0")
+        self.assertTrue(
+            any("responsibility_loop_state.json" in ref for ref in receipt["output_refs"]),
+            receipt["output_refs"],
+        )
 
     def test_cli_build_life_membrane_returns_zero_and_writes_check_report(self):
         with tempfile.TemporaryDirectory() as tmp:
