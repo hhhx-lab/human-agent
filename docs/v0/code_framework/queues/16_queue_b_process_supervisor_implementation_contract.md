@@ -316,6 +316,60 @@ process report / shared object receipt 已开始显式回链：
 - `offline_consolidation_frame_ref`
 - `growth_patch_candidate_queue_ref`
 
+## G. 新增 `life_v0/process_supervisor/resident_supervision.py`
+
+### 角色
+
+把 restore shell 成功之后、真正进入常驻治理之前的启动链显式化。
+
+### 第一轮建议接口
+
+```python
+@dataclass(frozen=True)
+class ResidentSupervisionContext:
+    ...
+
+
+def bootstrap_resident_supervision(
+    *,
+    state_dir: Path,
+    reports_dir: Path,
+    receipts_dir: Path,
+    run_id: str,
+    generated_at: str,
+    strict: bool,
+    ...
+) -> ResidentSupervisionBootstrapResult:
+    ...
+```
+
+### 必须承担的功能
+
+1. 调用 `digital_life_shell_command` 完成 restore shell
+2. 装载 terminal / language / relationship / replay / dream / growth 当前状态
+3. 检测上一次是否停在活跃回合中断态，并在必要时完成 relaunch normalization
+4. 把 relaunch continuity 回写到 narrative / commitment / relationship
+5. 写第一拍 `digital_life_waiting_heartbeat.json`
+6. 把 waiting heartbeat 后的共享对象链返回给主进程
+
+### 第一轮最低字段
+
+- `safe_terminal_loop`
+- `terminal_life_loop_state`
+- `life_context_frame`
+- `relation_turn_frame`
+- `shared_term_registry`
+- `self_narrative_trace`
+- `commitment_index`
+- `expression_plan`
+- `relationship_graph`
+- `replay_cue_bundle_ref`
+- `offline_consolidation_frame_ref`
+- `growth_patch_candidate_queue_ref`
+- `relaunch_recovery_count`
+- `last_relaunch_recovery_report_ref`
+- `heartbeat_counter`
+
 ## Queue B 对现有器官的改动合同
 
 ### `life_v0/process_supervisor/__init__.py`
@@ -325,10 +379,11 @@ process report / shared object receipt 已开始显式回链：
 
 - process closeout decision
 - idle refresh loop 调度
+- resident supervision bootstrap
 
 下一步继续外移：
 
-- 更厚的 resident supervision 治理
+- live turn lifecycle 汇总
 
 ### `life_v0/digital_entry.py`
 

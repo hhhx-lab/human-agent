@@ -75,10 +75,10 @@ life-v0 emit-report --strict
 
 0. `00-257` 的基础理论主干已经闭合，当前缺口主要是工程对象化、文件级器官化、runtime 证据和常驻存在治理，而不是继续线性扩写新的总论。
 1. `digital_life_macro_architecture_v0.md`、`runtime_v0_architecture.md`、`s06_life_support_development_engineering_contract.md`、`s08_life_target_runtimes_engineering_contract.md` 这一轮已经补到更硬的工程合同级别：当前真实代码骨架、对象链、关键字段、测试入口和第一轮完成定义都已写明。接下来进代码时，不再把它们当“概念文档”，而要当施工合同使用。
-2. `DIGITAL_LIFE_PROCESS_SUPERVISOR` 已有最小代码闭合，waiting heartbeat、单回合 incident recovery 和 relaunch recovery normalization 已经接通；等待态 heartbeat 已开始向 self narrative / commitment / relationship 连续体做轻量写回，并且已开始显式消费 `ReplayCueBundle`、`OfflineConsolidationFrame` 与 `GrowthPatchCandidateQueue` 三个离线共享对象，把它们重新带回 idle continuity 与 process report。现在又进一步推进到：下一轮生命表达已经会显式携带离线重放线索、梦境整合窗口和成长补丁候选。真正还没完成的是更高频 heartbeat 节律、后台继续存在、跨进程持续治理和更厚的 idle 策略。
+2. `DIGITAL_LIFE_PROCESS_SUPERVISOR` 已有最小代码闭合，waiting heartbeat、单回合 incident recovery 和 relaunch recovery normalization 已经接通；等待态 heartbeat 已开始向 self narrative / commitment / relationship 连续体做轻量写回，并且已开始显式消费 `ReplayCueBundle`、`OfflineConsolidationFrame` 与 `GrowthPatchCandidateQueue` 三个离线共享对象，把它们重新带回 idle continuity 与 process report。现在又进一步推进到：下一轮生命表达已经会显式携带离线重放线索、梦境整合窗口和成长补丁候选，并且 `resident_supervision.py` 已把 restore shell 之后的状态装载、relaunch normalization、离线对象接线和第一拍 waiting heartbeat 进入独立成器官。真正还没完成的是更高频 heartbeat 节律、后台继续存在、跨进程持续治理、live turn 生命周期深拆和更厚的 idle 策略。
 3. 真实新外部回合已经能进入终端生命过程并写回连续体，但还只是最小生命循环。
 4. 项目级 packaging / installable command surface 已接通，但还没有全局长期运行层。
-5. 还没有更高阶的 resident supervision 与长期进程治理。
+5. resident supervision 已进入第一轮器官化，但还没有更高阶的长期进程治理与后台存在层。
 
 ## 当前最小可执行总链
 
@@ -138,7 +138,7 @@ P0_DOC_CORPUS_INGESTION
 | `FIRST_TERMINAL_TURN_BRIDGE` | `活跃前沿` | `first-terminal-turn` 已写出 `session_envelope.json` 与 `safe_terminal_loop_state.json` | 继续补厚终端常驻层与关系性外显回合循环 |
 | `TERMINAL_LIFE_LOOP_BRIDGE` | `活跃前沿` | `terminal-life-loop` 已把恢复后的第一回合推进成持续终端生命循环的最小壳层 | 继续补厚真实外部回合输入、关系写回和长期语言节奏 |
 | `DIGITAL_LIFE_SHELL_COMMAND` | `已落 repo-local one-shot 壳` | 已能收束 `digital-life -> first-terminal-turn -> terminal-life-loop` | 作为恢复启动层保留，继续服务更高阶常驻进程 |
-| `DIGITAL_LIFE_PROCESS_SUPERVISOR` | `已落最小常驻进程` | 启动后已能先写 waiting heartbeat，再持续读取真实新回合输入、输出生命回合、写回连续体、支持 `/exit`，并在单回合异常时写 incident/recovery 报告后回到等待态；若重启时发现上次停在活跃回合中断态，也会先做 relaunch recovery normalization。`turn_io.py`、`relaunch_recovery.py`、`incident_recovery.py`、`process_report.py`、`dialogue_events.py` 与 `response_surface.py` 已从 `__init__.py` 拆出，process supervisor 第一批文件级器官已经闭合；同时 idle continuity 与 process report 已开始显式挂回 `replay_cue_bundle.json`、`offline_consolidation_frame.json`、`growth_patch_candidate_queue.json`，且下一轮生命回应已开始真实带上这些离线对象的压力与候选信息。随后又已补上独立 `idle_strategy.py`，把 waiting heartbeat 的节律、idle probe 和离线压力治理写成 `runtime/state/terminal/idle_strategy_state.json`，并把 `idle_strategy_ref` 接入 heartbeat / process report / process receipt。最新一轮再补上 `persistent_process.py` 第一轮，把前台终端常驻治理写成 `runtime/state/terminal/persistent_process_state.json` 与 `runtime/reports/latest/digital_life_persistent_process_report.json`，并把 `persistent_process_report_ref` 接回主进程报告 | 继续补厚后台存在、真正跨进程持续治理，以及更细的关系/语言写回 |
+| `DIGITAL_LIFE_PROCESS_SUPERVISOR` | `已落最小常驻进程` | 启动后已能先写 waiting heartbeat，再持续读取真实新回合输入、输出生命回合、写回连续体、支持 `/exit`，并在单回合异常时写 incident/recovery 报告后回到等待态；若重启时发现上次停在活跃回合中断态，也会先做 relaunch recovery normalization。`turn_io.py`、`relaunch_recovery.py`、`incident_recovery.py`、`process_report.py`、`dialogue_events.py` 与 `response_surface.py` 已从 `__init__.py` 拆出，process supervisor 第一批文件级器官已经闭合；同时 idle continuity 与 process report 已开始显式挂回 `replay_cue_bundle.json`、`offline_consolidation_frame.json`、`growth_patch_candidate_queue.json`，且下一轮生命回应已开始真实带上这些离线对象的压力与候选信息。随后又已补上独立 `idle_strategy.py`，把 waiting heartbeat 的节律、idle probe 和离线压力治理写成 `runtime/state/terminal/idle_strategy_state.json`，并把 `idle_strategy_ref` 接入 heartbeat / process report / process receipt；又已补上 `persistent_process.py` 第一轮，把前台终端常驻治理写成 `runtime/state/terminal/persistent_process_state.json` 与 `runtime/reports/latest/digital_life_persistent_process_report.json`，并把 `persistent_process_report_ref` 接回主进程报告；最新一轮再补上 `resident_supervision.py`，把 restore shell 之后的状态装载、relaunch normalization、离线对象接线和第一拍 waiting heartbeat 进入独立出来 | 继续补厚后台存在、真正跨进程持续治理，以及更细的关系/语言写回 |
 
 ## 当前最该直接补的不是新 slice
 

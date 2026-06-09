@@ -16,10 +16,12 @@ life-v0 emit-report --strict
   -> ./digital life --strict
 ```
 
-## 当前最关键的下一轮文件
+## 当前最关键的器官文件
 
-1. `life_v0/process_supervisor/idle_strategy.py` 后续补厚 heartbeat 治理
-2. `life_v0/process_supervisor/persistent_process.py` 后续补厚 resident supervision
+1. `life_v0/process_supervisor/resident_supervision.py` 已接住 restore shell 之后的常驻治理启动链
+2. `life_v0/process_supervisor/idle_strategy.py` 继续补厚 heartbeat 节律与 idle probe 治理
+3. `life_v0/process_supervisor/persistent_process.py` 继续补厚 resident supervision 的关闭态 artifact
+4. 下一前沿转向 `life_v0/process_supervisor/live_turn_cycle.py`
 
 ## 当前最关键的 runtime 证据
 
@@ -49,11 +51,12 @@ life-v0 emit-report --strict
 8. `tests/process/test_digital_entrypoint.py`
 9. `tests/process/test_persistent_digital_life_process.py`
 
-下一轮应新增：
+下一轮应新增或补厚：
 
 1. `tests/process/test_idle_strategy.py`
 2. `tests/process/test_persistent_process_state.py`
 3. `tests/process/test_relaunch_continuity.py`
+4. `tests/process/test_live_turn_cycle.py`
 
 当前实际已经由 `tests/process/test_persistent_digital_life_process.py` 吸收了
 `idle_strategy.py` 与 `persistent_process.py` 的第一轮红绿覆盖；后续是否拆独立测试文件，

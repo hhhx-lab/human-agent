@@ -101,22 +101,26 @@ run_report.json
 9. `runtime/reports/latest/digital_life_process_recovery_report.json`
 10. `runtime/reports/latest/digital_life_process_relaunch_recovery_report.json`
 
-## 下一轮关键文件
+## 当前关键文件
 
-1. `life_v0/process_supervisor/persistent_process.py` 后续补厚 resident supervision
+1. `life_v0/process_supervisor/resident_supervision.py` 负责恢复后常驻治理启动链
+2. `life_v0/process_supervisor/persistent_process.py` 继续承接关闭态 resident governance artifact
 
 ### 文件级职责
 
 | 文件 | 作用 | 必须消费 | 必须写出 |
 |---|---|---|---|
 | `idle_strategy.py` | 定义等待态 heartbeat 节律、空闲探针、离线对象消费策略 | `IdleContinuityFrame`、`ReplayCueBundle`、`OfflineConsolidationFrame`、`GrowthPatchCandidateQueue` | `runtime/state/terminal/idle_strategy_state.json` |
+| `resident_supervision.py` | 接住 restore shell 之后的状态装载、relaunch normalization、初次 waiting heartbeat 进入 | shell report、terminal state、language/relationship continuity、offline shared objects | 首轮 `digital_life_waiting_heartbeat.json`、更新后的 terminal/language/relationship state |
 | `persistent_process.py` | 把最小常驻进程补成明确的持续治理器官 | shell report、terminal loop state、incident/relaunch reports、idle strategy | `runtime/state/terminal/persistent_process_state.json`、`runtime/reports/latest/digital_life_persistent_process_report.json` |
 
 当前 `idle_strategy.py` 第一轮已经落地，waiting heartbeat 和 process report 已显式挂上
 `idle_strategy_ref`。最新一轮又已补上 `persistent_process.py` 第一轮，把前台终端常驻治理写成
 `persistent_process_state.json` 和 `digital_life_persistent_process_report.json`，并把
-`persistent_process_report_ref` 接进 `digital_life_process_report.json`。后续重点转向更厚的
-resident supervision，而不是继续把 orchestration 压回 `__init__.py`。
+`persistent_process_report_ref` 接进 `digital_life_process_report.json`。这一轮又已把
+`resident_supervision.py` 接上，负责 restore shell 之后的状态装载、relaunch normalization、
+离线对象接线和第一拍 waiting heartbeat 进入。后续重点转向 `live_turn_cycle.py`，把真实新回合的
+event -> response -> writeback -> incident recovery 生命周期继续从 `__init__.py` 剥出来。
 
 ## 最低验证面
 

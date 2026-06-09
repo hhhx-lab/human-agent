@@ -192,9 +192,9 @@
 | 生命职责 | 第一回合恢复、持续回合、等待态、常驻存在、incident/relaunch recovery |
 | 必回读理论 | `20`、`81-82`、`86`、`89-90`、`96`、`101`、`181-257` |
 | 必回读 v0 | `first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md`、`16_queue_b_process_supervisor_implementation_contract.md` |
-| 已落器官 | `restore_context.py`、`context_accumulation.py`、`turn_transition.py`、`turn_packet.py`、`conversation_carryover.py`、`dialogue_turn.py`、`loop_state.py`、`resume_packet.py`、`dialogue_writeback.py`、`loop_report.py`、`persistent_wait_bridge.py`、`heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`idle_strategy.py`、`idle_refresh_loop.py`、`persistent_process.py`、`process_report.py`、`resident_turn_writeback.py`、`process_closeout.py` |
-| 仍压在入口的职责 | 异常/重启后的更厚等待治理、后台长期 resident supervision 编排 |
-| 下一轮优先拆分 | `-（resident supervision 已继续推进；idle_refresh_loop.py 已落；下一前沿转向 process_supervisor/resident_supervision.py）` |
+| 已落器官 | `restore_context.py`、`context_accumulation.py`、`turn_transition.py`、`turn_packet.py`、`conversation_carryover.py`、`dialogue_turn.py`、`loop_state.py`、`resume_packet.py`、`dialogue_writeback.py`、`loop_report.py`、`persistent_wait_bridge.py`、`heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`idle_strategy.py`、`resident_supervision.py`、`idle_refresh_loop.py`、`persistent_process.py`、`process_report.py`、`resident_turn_writeback.py`、`process_closeout.py` |
+| 仍压在入口的职责 | live turn response lifecycle 汇总、后台长期 resident governance 编排 |
+| 下一轮优先拆分 | `-（resident supervision 已继续推进；idle_refresh_loop.py 与 resident_supervision.py 已落；下一前沿转向 process_supervisor/live_turn_cycle.py）` |
 | runtime 产物 | `session_envelope.json`、`context_accumulation_window.json`、`turn_transition_trace.json`、`terminal_life_loop_state.json`、`digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` |
 | 测试 / gate | `tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py`、`tests/process/test_digital_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py` |
 

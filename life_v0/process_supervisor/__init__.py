@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import sys
 from dataclasses import dataclass
@@ -9,18 +8,13 @@ from pathlib import Path
 from typing import Any, TextIO
 
 from .dialogue_events import build_external_turn_event, build_life_turn_event
-from .heartbeat import write_waiting_heartbeat
 from .idle_refresh_loop import wait_for_next_external_relation_turn
 from .idle_strategy import IDLE_STRATEGY_STATE_REF
-from .incident_recovery import (
-    record_recovery_continuity,
-    recover_from_dialogue_turn_exception,
-)
+from .incident_recovery import recover_from_dialogue_turn_exception
 from .process_closeout import close_digital_life_process
 from .resident_turn_writeback import write_resident_turn_writeback
-from .relaunch_recovery import detect_and_normalize_interrupted_previous_state
+from .resident_supervision import bootstrap_resident_supervision
 from .response_surface import compose_life_response
-from ..shell_command import run_digital_life_shell_command
 
 
 SOURCE_DOC_REFS = [
@@ -80,116 +74,53 @@ def run_digital_life_process(
     input_stream = input_stream or sys.stdin
     output_stream = output_stream or sys.stdout
 
-    terminal_dir = state_dir / "terminal"
-    previous_safe_terminal_loop = _read_json_if_exists(terminal_dir / "safe_terminal_loop_state.json")
-    previous_terminal_life_loop_state = _read_json_if_exists(terminal_dir / "terminal_life_loop_state.json")
-
-    shell_result = run_digital_life_shell_command(
+    resident_supervision = bootstrap_resident_supervision(
         state_dir=state_dir,
         reports_dir=reports_dir,
         receipts_dir=receipts_dir,
-        run_id=f"{run_id}-restore",
+        run_id=run_id,
+        generated_at=generated_at,
         strict=strict,
-    )
-    if shell_result.exit_code != 0:
-        return DigitalLifeProcessResult(exit_code=shell_result.exit_code, report=shell_result.report)
-
-    language_dir = state_dir / "language"
-    relationship_dir = state_dir / "relationship"
-
-    _read_json(terminal_dir / "session_envelope.json")
-    safe_terminal_loop = _read_json(terminal_dir / "safe_terminal_loop_state.json")
-    terminal_life_loop_state = _read_json(terminal_dir / "terminal_life_loop_state.json")
-    life_context_frame = _read_json_if_exists(terminal_dir / "life_context_frame.json")
-    relation_turn_frame = _read_json_if_exists(terminal_dir / "relation_turn_frame.json")
-    shared_term_registry = _read_json(language_dir / "shared_term_registry.json")
-    self_narrative_trace = _read_json(language_dir / "self_narrative_language_trace.json")
-    commitment_index = _read_json(language_dir / "commitment_repair_language_index.json")
-    expression_plan = _read_json_if_exists(language_dir / "expression_plan.json")
-    relationship_graph = _read_json(relationship_dir / "relationship_subject_graph.json")
-    replay_cue_bundle = _read_json_if_exists(state_dir / "replay" / "replay_cue_bundle.json")
-    offline_consolidation_frame = _read_json_if_exists(state_dir / "dream" / "offline_consolidation_frame.json")
-    growth_patch_candidate_queue = _read_json_if_exists(state_dir / "growth" / "growth_patch_candidate_queue.json")
-    replay_cue_bundle_ref = (
-        "runtime/state/replay/replay_cue_bundle.json" if replay_cue_bundle else None
-    )
-    offline_consolidation_frame_ref = (
-        "runtime/state/dream/offline_consolidation_frame.json" if offline_consolidation_frame else None
-    )
-    growth_patch_candidate_queue_ref = (
-        "runtime/state/growth/growth_patch_candidate_queue.json" if growth_patch_candidate_queue else None
-    )
-    growth_patch_candidate_ids = [
-        candidate.get("growth_patch_candidate_id")
-        for candidate in growth_patch_candidate_queue.get("candidates", [])
-        if isinstance(candidate, dict) and candidate.get("growth_patch_candidate_id")
-    ]
-    replay_residue_ref_count = len(replay_cue_bundle.get("turn_residue_refs", []))
-    dream_window_ref_count = len(offline_consolidation_frame.get("dream_window_refs", []))
-    growth_patch_candidate_count = len(growth_patch_candidate_queue.get("candidates", []))
-
-    relaunch_recovery_count = 0
-    last_relaunch_recovery_report_ref: str | None = None
-    relaunch_recovery_report = detect_and_normalize_interrupted_previous_state(
-        run_id=run_id,
-        generated_at=generated_at,
-        reports_dir=reports_dir,
-        previous_safe_terminal_loop=previous_safe_terminal_loop,
-        previous_terminal_life_loop_state=previous_terminal_life_loop_state,
-        safe_terminal_loop=safe_terminal_loop,
-        terminal_life_loop_state=terminal_life_loop_state,
-        write_json=_write_json,
-    )
-    if relaunch_recovery_report is not None:
-        relaunch_recovery_count = 1
-        last_relaunch_recovery_report_ref = "runtime/reports/latest/digital_life_process_relaunch_recovery_report.json"
-        safe_terminal_loop["last_relaunch_recovery_report_ref"] = last_relaunch_recovery_report_ref
-        terminal_life_loop_state["last_relaunch_recovery_report_ref"] = last_relaunch_recovery_report_ref
-        record_recovery_continuity(
-            self_narrative_trace=self_narrative_trace,
-            commitment_index=commitment_index,
-            relationship_graph=relationship_graph,
-            event_kind="relaunch_recovery_normalization",
-            report_ref=last_relaunch_recovery_report_ref,
-            details={
-                "previous_safe_terminal_mode": relaunch_recovery_report.get("previous_safe_terminal_mode"),
-                "previous_terminal_loop_mode": relaunch_recovery_report.get("previous_terminal_loop_mode"),
-                "normalized_mode": relaunch_recovery_report.get("normalized_mode"),
-            },
-        )
-        _write_json(language_dir / "self_narrative_language_trace.json", self_narrative_trace)
-        _write_json(language_dir / "commitment_repair_language_index.json", commitment_index)
-        _write_json(relationship_dir / "relationship_subject_graph.json", relationship_graph)
-
-    reports_dir.mkdir(parents=True, exist_ok=True)
-    heartbeat_counter = write_waiting_heartbeat(
-        run_id=run_id,
-        generated_at=generated_at,
-        terminal_dir=terminal_dir,
-        reports_dir=reports_dir,
-        language_dir=language_dir,
-        relationship_dir=relationship_dir,
-        safe_terminal_loop=safe_terminal_loop,
-        terminal_life_loop_state=terminal_life_loop_state,
-        self_narrative_trace=self_narrative_trace,
-        commitment_index=commitment_index,
-        relationship_graph=relationship_graph,
         source_doc_refs=SOURCE_DOC_REFS,
         readme_block_refs=READ_ME_BLOCK_REFS,
         runtime_carrier_refs=RUNTIME_CARRIER_REFS,
-        replay_cue_bundle=replay_cue_bundle,
-        offline_consolidation_frame=offline_consolidation_frame,
-        growth_patch_candidate_queue=growth_patch_candidate_queue,
-        replay_cue_bundle_ref=replay_cue_bundle_ref,
-        offline_consolidation_frame_ref=offline_consolidation_frame_ref,
-        growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
-        growth_patch_candidate_ids=growth_patch_candidate_ids,
-        replay_residue_ref_count=replay_residue_ref_count,
-        dream_window_ref_count=dream_window_ref_count,
-        growth_patch_candidate_count=growth_patch_candidate_count,
-        now_iso=_now_iso,
+        read_json=_read_json,
+        read_json_if_exists=_read_json_if_exists,
         write_json=_write_json,
+        now_iso=_now_iso,
     )
+    if resident_supervision.exit_code != 0 or resident_supervision.context is None:
+        return DigitalLifeProcessResult(
+            exit_code=resident_supervision.exit_code,
+            report=resident_supervision.report,
+        )
+
+    supervision = resident_supervision.context
+    terminal_dir = supervision.terminal_dir
+    language_dir = supervision.language_dir
+    relationship_dir = supervision.relationship_dir
+    safe_terminal_loop = supervision.safe_terminal_loop
+    terminal_life_loop_state = supervision.terminal_life_loop_state
+    life_context_frame = supervision.life_context_frame
+    relation_turn_frame = supervision.relation_turn_frame
+    shared_term_registry = supervision.shared_term_registry
+    self_narrative_trace = supervision.self_narrative_trace
+    commitment_index = supervision.commitment_index
+    expression_plan = supervision.expression_plan
+    relationship_graph = supervision.relationship_graph
+    replay_cue_bundle = supervision.replay_cue_bundle
+    offline_consolidation_frame = supervision.offline_consolidation_frame
+    growth_patch_candidate_queue = supervision.growth_patch_candidate_queue
+    replay_cue_bundle_ref = supervision.replay_cue_bundle_ref
+    offline_consolidation_frame_ref = supervision.offline_consolidation_frame_ref
+    growth_patch_candidate_queue_ref = supervision.growth_patch_candidate_queue_ref
+    growth_patch_candidate_ids = supervision.growth_patch_candidate_ids
+    replay_residue_ref_count = supervision.replay_residue_ref_count
+    dream_window_ref_count = supervision.dream_window_ref_count
+    growth_patch_candidate_count = supervision.growth_patch_candidate_count
+    relaunch_recovery_count = supervision.relaunch_recovery_count
+    last_relaunch_recovery_report_ref = supervision.last_relaunch_recovery_report_ref
+    heartbeat_counter = supervision.heartbeat_counter
 
     _print_line(output_stream, "当前生命回合已恢复。输入新的关系性回合，使用 /exit 结束本次生命进程。")
 

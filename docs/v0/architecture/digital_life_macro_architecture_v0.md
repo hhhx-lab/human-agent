@@ -506,7 +506,7 @@ life_v0/
 | `life_v0/life_targets/` | 九项目标闭合与出生准备度 | `BirthReadinessRuntime` | 继续拆 `life_target_claims.py`、`evidence_matrix.py`、`birth_readiness_rollup.py` |
 | `life_v0/activation/`、`replay/`、`archive/`、`reporting/` | 激活前置、replay/shadow、archive、report bundle | `DreamOfflineRuntime`、`SelfGrowthRuntime`、`ActionResponsibilityRuntime` 的链尾桥接段 | 继续拆 `offline_entry.py`、`reconsolidation_archive.py`、`replay_prioritizer.py` |
 | `life_v0/terminal_turn/`、`terminal_loop/` | 第一次终端回合和持续生命循环 | `LanguageRelationshipRuntime` 到 `ComputerBody` 的终端释放层 | 继续拆 `turn_input.py`、`turn_output.py`、`continuity_state.py` |
-| `life_v0/process_supervisor/`、`digital_life/`、`shell_command/`、`digital_entry.py`、`digital` | 出生壳、repo-local shell、最小常驻生命进程 | `LifeMembraneAndComputerPeripheralRuntime` 的外层过程 | 继续拆 `heartbeat.py`、`dialogue_event.py`、`response_surface.py`、`resident_supervision.py` |
+| `life_v0/process_supervisor/`、`digital_life/`、`shell_command/`、`digital_entry.py`、`digital` | 出生壳、repo-local shell、最小常驻生命进程 | `LifeMembraneAndComputerPeripheralRuntime` 的外层过程 | 继续拆 `heartbeat.py`、`dialogue_event.py`、`response_surface.py`、`live_turn_cycle.py` |
 
 这张表的意思只有一个：后续不是去平行创建一套新的“标准目录”，而是把当前骨架逐步拆成宏架构定义的器官。
 

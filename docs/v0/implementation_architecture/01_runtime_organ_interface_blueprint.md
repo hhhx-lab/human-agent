@@ -162,12 +162,12 @@
 |---|---|
 | 理论文档 | `20`、`44-46`、`81-84`、`89-90`、`96`、`101`、`181-257` |
 | 主包 | `life_v0/process_supervisor/`、`life_v0/shell_command/`、`life_v0/digital_life/`、`life_v0/digital_entry.py` |
-| 当前文件 | `heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`idle_strategy.py`、`idle_refresh_loop.py`、`resident_turn_writeback.py`、`persistent_process.py`、`process_report.py`、`process_closeout.py` |
+| 当前文件 | `heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`idle_strategy.py`、`resident_supervision.py`、`idle_refresh_loop.py`、`resident_turn_writeback.py`、`persistent_process.py`、`process_report.py`、`process_closeout.py` |
 | 主要输入 | `IdleContinuityFrame`、`session_envelope.json`、`terminal_life_loop_state.json`、growth/dream cues |
 | 主要输出 | waiting heartbeat、idle strategy state、persistent process state、persistent process report、process report、incident/relaunch recovery、长期连续体写回 |
 | 必写 runtime | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/persistent_process_state.json`、`digital_life_persistent_process_report.json`、`digital_life_process_report.json`、`digital_life_process_digest.json` |
 | 必守测试 | `tests/process/test_digital_life_shell_command.py`、`tests/process/test_digital_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py` |
-| 下一步 | `idle_strategy.py`、`persistent_process.py`、`resident_turn_writeback.py`、`process_closeout.py` 与 `idle_refresh_loop.py` 已把 waiting / live turn / bundle writeback / closeout / idle probe 接进同一条常驻连续体；下一步继续拆出更厚的 `resident_supervision.py` |
+| 下一步 | `idle_strategy.py`、`resident_supervision.py`、`persistent_process.py`、`resident_turn_writeback.py`、`process_closeout.py` 与 `idle_refresh_loop.py` 已把 restore / waiting / live turn / bundle writeback / closeout / idle probe 接进同一条常驻连续体；下一步继续拆出更厚的 `live_turn_cycle.py` |
 
 ## 当前最容易跑偏的三件事
 

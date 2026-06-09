@@ -445,6 +445,112 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(idle_continuity["heartbeat_counter"], 2)
             self.assertEqual(idle_continuity["event_kind"], "waiting_heartbeat_refresh")
 
+    def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
+        from life_v0.process_supervisor.resident_supervision import (
+            bootstrap_resident_supervision,
+        )
+        from life_v0.shell_command import run_digital_life_shell_command
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            self._bootstrap(paths)
+
+            seed_result = run_digital_life_shell_command(
+                state_dir=paths["state_root"],
+                reports_dir=paths["reports"],
+                receipts_dir=paths["receipts"],
+                run_id="resident-supervision-seed",
+                strict=True,
+            )
+            self.assertEqual(seed_result.exit_code, 0)
+
+            stale_safe_terminal = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
+            stale_terminal_loop = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
+            stale_safe_terminal["current_mode"] = "resumed_external_dialogue_loop"
+            stale_safe_terminal["last_completed_turn_mode"] = "resumed_external_dialogue_loop"
+            stale_terminal_loop["current_mode"] = "resumed_external_dialogue_loop"
+            stale_terminal_loop["last_turn_status"] = "open"
+            stale_terminal_loop["last_turn_mode"] = "resumed_external_dialogue_loop"
+            stale_terminal_loop["next_required_action"] = "continue_interrupted_relation_turn"
+            self._write_json(paths["terminal_state"] / "safe_terminal_loop_state.json", stale_safe_terminal)
+            self._write_json(paths["terminal_state"] / "terminal_life_loop_state.json", stale_terminal_loop)
+
+            result = bootstrap_resident_supervision(
+                state_dir=paths["state_root"],
+                reports_dir=paths["reports"],
+                receipts_dir=paths["receipts"],
+                run_id="resident-supervision-organ",
+                generated_at="2026-06-10T00:00:00+00:00",
+                strict=True,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                read_json=self._read_json,
+                read_json_if_exists=lambda path: self._read_json(path) if path.exists() else {},
+                write_json=self._write_json,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+            )
+
+            self.assertEqual(result.exit_code, 0)
+            self.assertIsNotNone(result.context)
+            assert result.context is not None
+
+            context = result.context
+            heartbeat_packet = self._read_json(paths["reports"] / "digital_life_waiting_heartbeat.json")
+            safe_terminal_loop = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
+            terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
+            narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
+            commitment_index = self._read_json(paths["language_state"] / "commitment_repair_language_index.json")
+            relationship_graph = self._read_json(paths["relationship_state"] / "relationship_subject_graph.json")
+
+            self.assertEqual(context.heartbeat_counter, 1)
+            self.assertEqual(context.relaunch_recovery_count, 1)
+            self.assertEqual(
+                context.last_relaunch_recovery_report_ref,
+                "runtime/reports/latest/digital_life_process_relaunch_recovery_report.json",
+            )
+            self.assertEqual(
+                context.replay_cue_bundle_ref,
+                "runtime/state/replay/replay_cue_bundle.json",
+            )
+            self.assertEqual(
+                context.offline_consolidation_frame_ref,
+                "runtime/state/dream/offline_consolidation_frame.json",
+            )
+            self.assertEqual(
+                context.growth_patch_candidate_queue_ref,
+                "runtime/state/growth/growth_patch_candidate_queue.json",
+            )
+            self.assertTrue(context.growth_patch_candidate_ids)
+            self.assertGreater(context.replay_residue_ref_count, 0)
+            self.assertGreater(context.dream_window_ref_count, 0)
+            self.assertGreater(context.growth_patch_candidate_count, 0)
+            self.assertEqual(heartbeat_packet["heartbeat_counter"], 1)
+            self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
+            self.assertEqual(terminal_loop_state["current_mode"], "restored_waiting_for_external_turn")
+            self.assertEqual(
+                safe_terminal_loop["last_relaunch_recovery_report_ref"],
+                "runtime/reports/latest/digital_life_process_relaunch_recovery_report.json",
+            )
+            self.assertEqual(
+                terminal_loop_state["last_relaunch_recovery_report_ref"],
+                "runtime/reports/latest/digital_life_process_relaunch_recovery_report.json",
+            )
+            self.assertEqual(
+                narrative_trace["last_recovery_event"]["event_kind"],
+                "relaunch_recovery_normalization",
+            )
+            self.assertEqual(
+                commitment_index["last_recovery_event_kind"],
+                "relaunch_recovery_normalization",
+            )
+            self.assertEqual(
+                relationship_graph["subjects"][0]["last_continuity_event_kind"],
+                "relaunch_recovery_normalization",
+            )
+
     def test_turn_io_poll_input_line_uses_custom_poll_hook_before_fileno(self):
         from life_v0.process_supervisor.turn_io import poll_input_line
 

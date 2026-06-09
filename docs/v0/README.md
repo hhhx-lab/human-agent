@@ -239,10 +239,10 @@ life-v0 "digital life"
 
 当前真正的缺口已经不是“有没有 `digital life` 入口”，而是：
 
-1. repo-local 最小常驻终端生命进程虽然已经接通，但还没有更高阶的 resident supervision。
+1. repo-local 最小常驻终端生命进程虽然已经接通，`resident_supervision.py` 也已落第一轮，但更高阶的 resident supervision 与后台长期治理仍未闭合。
 2. 真实外部回合输入与逐回合写回已经接通最小版本，但还需要继续补厚语言节奏、关系演化和更多生命器官联动。
 3. 已经具备项目级 installable command surface，但还没有全局长期运行层与更高阶 resident supervision。
-4. waiting heartbeat、单回合 incident recovery、relaunch recovery normalization 已经接通最小层；等待态 heartbeat 也已经开始轻量写回 self narrative / commitment / relationship 连续体。当前还没有更高频的 heartbeat 节律、更厚的 idle 策略、后台继续存在和更高阶过程治理。
+4. waiting heartbeat、单回合 incident recovery、relaunch recovery normalization 已经接通最小层；等待态 heartbeat 也已经开始轻量写回 self narrative / commitment / relationship 连续体。这一轮又已补上 `resident_supervision.py`，把 restore shell 之后的状态装载、relaunch normalization、离线对象接线和第一拍 waiting heartbeat 进入独立成器官。当前仍待推进的是更高频的 heartbeat 节律、更厚的 idle 策略、后台继续存在、live turn 生命周期深拆和更高阶过程治理。
 
 ## V0 的三类工程对象
 

@@ -442,8 +442,9 @@ turn residue
 1. `terminal_loop/persistent_wait_bridge.py` 负责 one-shot loop 的 waiting handoff
 2. `process_supervisor/resident_turn_writeback.py` 负责 live relation turn 的 bundle writeback、waiting return 和 resumed packet
 3. `process_supervisor/process_closeout.py` 负责 persistent process artifact 与主 process report 的统一 closeout
-4. `process_supervisor/idle_refresh_loop.py` 负责 idle heartbeat refresh、stdin probe 和 exit/next-turn 判定
-5. 下一轮前沿转向 `resident_supervision.py`
+4. `process_supervisor/resident_supervision.py` 负责 restore shell 之后的状态装载、relaunch normalization 和第一拍 waiting heartbeat 进入
+5. `process_supervisor/idle_refresh_loop.py` 负责 idle heartbeat refresh、stdin probe 和 exit/next-turn 判定
+6. 下一轮前沿转向 `live_turn_cycle.py`
 
 ## 完成定义
 
