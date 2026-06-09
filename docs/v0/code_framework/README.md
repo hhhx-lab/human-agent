@@ -11,6 +11,13 @@
 
 如果读完这柜之后，下一步已经是“真的要写代码，而不是继续补矩阵”，就接着进入：
 
+- `docs/v0/code_architecture/README.md`
+- `docs/v0/code_architecture/01_life_code_stack_and_package_layers.md`
+- `docs/v0/code_architecture/02_runtime_object_bus_and_flow_contract.md`
+- `docs/v0/code_architecture/03_build_order_and_definition_of_done.md`
+- `docs/v0/code_architecture/04_language_as_primary_expression_system.md`
+- `docs/v0/code_architecture/05_module_reading_and_execution_map.md`
+- `docs/v0/code_architecture/06_theory_gap_closure_register.md`
 - `docs/v0/implementation_architecture/README.md`
 - `docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md`
 - `docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md`
@@ -19,7 +26,7 @@
 - `docs/v0/implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md`
 - `docs/v0/implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md`
 
-也就是说，`code_framework/` 解决“要建什么”，`implementation_architecture/` 解决“真实一回合怎么流、每个器官怎么接、每个模块怎么留痕”，`implementation_architecture/code_organs/` 继续解决“下一轮先拆哪个包、哪组重型入口先下刀”。
+也就是说，`code_framework/` 解决“要建什么”，`code_architecture/` 解决“整棵代码树怎样分层、怎样耦合、怎样分阶段收束”，`implementation_architecture/` 解决“真实一回合怎么流、每个器官怎么接、每个模块怎么留痕”，`implementation_architecture/code_organs/` 继续解决“下一轮先拆哪个包、哪组重型入口先下刀”。
 
 ## 这柜文档怎么读
 

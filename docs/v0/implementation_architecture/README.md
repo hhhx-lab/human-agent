@@ -8,7 +8,7 @@
 2. 每个器官的接口、输入输出和共享对象怎样被钉死。
 3. 后续每一个新代码模块怎样保持 `00-258 -> v0 合同 -> code -> runtime -> test` 一一映射。
 
-它不重写 `code_framework/`，也不替代 `slice_contracts/`。它是 `code_framework` 和真正代码实现之间的压缩层；其中 `code_organs/` 子柜专门负责把 `life_v0/` 顶层包继续压成逐包器官拆分图和重型入口重构波次。
+它不重写 `code_framework/`，也不替代 `slice_contracts/`。它是 `code_framework` 与 `code_architecture/` 继续压到真实代码实现之间的最后一层；其中 `code_organs/` 子柜专门负责把 `life_v0/` 顶层包继续压成逐包器官拆分图和重型入口重构波次。
 
 ## 什么时候打开
 
@@ -36,8 +36,12 @@
 2. `docs/v0/entry/v0_implementation_index.md`
 3. `docs/v0/entry/v0_delivery_status_board.md`
 4. `docs/v0/code_framework/README.md`
-5. `docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md`
-6. 本柜 `01 -> 03`
-7. `code_organs/01 -> 02`
+5. `docs/v0/code_architecture/README.md`
+6. `docs/v0/code_architecture/01_life_code_stack_and_package_layers.md`
+7. `docs/v0/code_architecture/02_runtime_object_bus_and_flow_contract.md`
+8. `docs/v0/code_architecture/03_build_order_and_definition_of_done.md`
+9. `docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md`
+10. 本柜 `01 -> 03`
+11. `code_organs/01 -> 02`
 
 如果读完这一柜仍然无法回答“这次新增文件到底首写哪个共享对象、写出哪份 state/report/receipt、由哪个测试守住”，就不要开写代码。

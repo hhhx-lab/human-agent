@@ -71,6 +71,13 @@ docs/v0/code_framework/README.md
   -> docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md
   -> docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md
   -> docs/v0/code_framework/queues/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md
+  -> docs/v0/code_architecture/README.md
+  -> docs/v0/code_architecture/01_life_code_stack_and_package_layers.md
+  -> docs/v0/code_architecture/02_runtime_object_bus_and_flow_contract.md
+  -> docs/v0/code_architecture/03_build_order_and_definition_of_done.md
+  -> docs/v0/code_architecture/04_language_as_primary_expression_system.md
+  -> docs/v0/code_architecture/05_module_reading_and_execution_map.md
+  -> docs/v0/code_architecture/06_theory_gap_closure_register.md
   -> docs/v0/implementation_architecture/README.md
   -> docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md
   -> docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md

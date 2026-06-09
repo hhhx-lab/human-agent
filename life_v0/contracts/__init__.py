@@ -113,6 +113,69 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/shared_contracts/first_activation_protocol.md",
         ],
     },
+    "docs/v0/code_architecture/README.md": {
+        "role": "code_architecture_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/README.md",
+            "docs/v0/code_framework/README.md",
+        ],
+    },
+    "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md": {
+        "role": "life_code_stack_package_layers",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/architecture/digital_life_macro_architecture_v0.md",
+            "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
+        ],
+    },
+    "docs/v0/code_architecture/02_runtime_object_bus_and_flow_contract.md": {
+        "role": "runtime_object_bus_flow_contract",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md",
+            "docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md",
+        ],
+    },
+    "docs/v0/code_architecture/03_build_order_and_definition_of_done.md": {
+        "role": "build_order_definition_of_done",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md",
+            "docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md",
+        ],
+    },
+    "docs/v0/code_architecture/04_language_as_primary_expression_system.md": {
+        "role": "language_primary_expression_system",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md",
+            "docs/v0/code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md",
+        ],
+    },
+    "docs/v0/code_architecture/05_module_reading_and_execution_map.md": {
+        "role": "module_reading_execution_map",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/entry/v0_module_execution_catalog.md",
+            "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md",
+        ],
+    },
+    "docs/v0/code_architecture/06_theory_gap_closure_register.md": {
+        "role": "theory_gap_closure_register",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md",
+            "docs/v0/mapping/0_to_257_engineering_utilization_map.md",
+        ],
+    },
     "docs/v0/implementation_architecture/README.md": {
         "role": "implementation_architecture_index",
         "slice": ACTIVE_SLICE,

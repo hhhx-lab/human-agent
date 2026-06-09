@@ -87,6 +87,31 @@ class V0ContractCoverageTests(unittest.TestCase):
         self.assertIn("docs/v0/code_framework/delivery/README.md", contract_index["files"])
         self.assertIn("docs/v0/code_framework/queues/README.md", contract_index["files"])
         self.assertIn("docs/v0/code_framework/assembly/README.md", contract_index["files"])
+        self.assertIn("docs/v0/code_architecture/README.md", contract_index["files"])
+        self.assertIn(
+            "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/code_architecture/02_runtime_object_bus_and_flow_contract.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/code_architecture/03_build_order_and_definition_of_done.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/code_architecture/04_language_as_primary_expression_system.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/code_architecture/05_module_reading_and_execution_map.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/code_architecture/06_theory_gap_closure_register.md",
+            contract_index["files"],
+        )
         self.assertIn(
             "docs/v0/code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md",
             contract_index["files"],

@@ -19,4 +19,5 @@
 
 - 不要把单个 slice 的字段变化写到这里。
 - 不要把 Queue 级别的文件拆分计划写到这里，那些属于 `code_framework/`。
+- 不要把整棵代码树的分层、对象总线、阶段顺序和完成定义写到这里，那些属于 `code_architecture/`。
 - 不要把 shell 或常驻进程细节写到这里，那些属于 `process_contracts/`。
