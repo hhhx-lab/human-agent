@@ -1516,6 +1516,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             safe_terminal_loop = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
             terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
             dialogue_writeback_bundle = self._read_json(paths["reports"] / "dialogue_writeback_bundle.json")
+            resident_governance_state = self._read_json(
+                paths["terminal_state"] / "resident_governance_state.json"
+            )
 
             self.assertEqual(result.turn_counter, 3)
             self.assertEqual(result.completed_turns_delta, 1)
@@ -1534,6 +1537,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
+            self.assertEqual(
+                resident_governance_state["governance_phase"],
+                "live_turn_waiting_handoff",
+            )
+            self.assertEqual(
+                resident_governance_state["next_required_action"],
+                "refresh_waiting_heartbeat_before_next_external_turn",
+            )
+            self.assertEqual(
+                resident_governance_state["dialogue_writeback_bundle_ref"],
+                "runtime/reports/latest/dialogue_writeback_bundle.json",
+            )
+            self.assertEqual(
+                resident_governance_state["last_dialogue_packet_ref"],
+                "runtime/reports/latest/resumed_external_dialogue_packet.json",
+            )
+            self.assertEqual(
+                resident_governance_state["last_external_turn_ref"],
+                "runtime/state/language/dialogue_turn_log.jsonl#line-2",
+            )
+            self.assertEqual(
+                resident_governance_state["last_life_turn_ref"],
+                "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+            )
             self.assertEqual(
                 dialogue_writeback_bundle["dialogue_event_refs"],
                 [

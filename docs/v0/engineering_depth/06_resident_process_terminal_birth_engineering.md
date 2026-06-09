@@ -228,7 +228,7 @@ Queue E
 
 目标：
 
-1. live turn 结束后回到 waiting governance 的相位切换，不只靠下一拍 heartbeat 间接体现
+1. live turn 结束后回到 waiting governance 的相位切换，不只靠下一拍 heartbeat 间接体现。当前这一步已经由 `resident_governance_handoff.py` 第一轮显式落盘成 `resident_governance_state.json(governance_phase=live_turn_waiting_handoff)`。
 2. Queue E 调制字段在 waiting report、resident governance report、主进程 report 和 receipt 中保持同口径
 3. 关系阶段与自我慢变量从同会话实时演化，继续推进到跨进程保真与更长时标收敛
 

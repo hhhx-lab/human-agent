@@ -58,9 +58,9 @@ resident_governance_state.json
 - `docs/v0/code_framework/queues/16_queue_b_process_supervisor_implementation_contract.md`
 - `docs/v0/engineering_depth/06_resident_process_terminal_birth_engineering.md`
 
-## 当前 v0 只承认的两种治理相位
+## 当前 v0 只承认的三种治理相位
 
-当前代码里，resident governance 只允许出现两个硬相位：
+当前代码里，resident governance 只允许出现三个硬相位：
 
 ### 1. `waiting_heartbeat_active`
 
@@ -88,7 +88,18 @@ resident_governance_state.json
 3. 下一次生命恢复需要重新装载 closeout 后留下的治理证据。
 4. 关闭态不能覆盖运行期 heartbeat 事实，但必须把其最后的治理关注与长期语言对象引用收口下来。
 
-当前不要在工程文档里虚构第三个“中间相位”；等真实代码需要它，再进入这份合同追加。
+### 3. `live_turn_waiting_handoff`
+
+写入位置：
+
+- `life_v0/process_supervisor/resident_governance_handoff.py`
+
+对应语义：
+
+1. 一次真实新回合已经结束，并且 `dialogue_writeback_bundle.json` 与 `resumed_external_dialogue_packet.json` 已经落盘。
+2. 常驻生命过程已经回到 waiting mode，但下一拍 heartbeat 还没有刷新，所以需要显式写出“回合后交接中的 resident governance”。
+3. 当前 resident governance 不能再只靠上一拍 `waiting_heartbeat_active` 间接代表，而要显式承认长期关系对象、Queue E 修复后果和这次回合留下的交接痕迹已经进入等待态治理。
+4. 这个相位不是关闭态，也不是下一拍 heartbeat 的替代物；它只负责把 live turn 结束和下一拍 waiting heartbeat 之间的空白段补成可追踪证据。
 
 ## 状态迁移
 
@@ -99,6 +110,8 @@ restore shell completed
   -> first waiting heartbeat written
   -> resident_governance_state.json(governance_phase=waiting_heartbeat_active)
   -> repeated waiting heartbeat refresh
+  -> live turn completed and writeback closed
+  -> resident_governance_state.json(governance_phase=live_turn_waiting_handoff)
   -> explicit process closeout
   -> resident_governance_state.json(governance_phase=process_closed_waiting_relaunch)
   -> resident_governance_snapshot.json
@@ -110,8 +123,9 @@ restore shell completed
 这里要注意三条硬规则：
 
 1. heartbeat 写的是运行相位，不是关闭态快照。
-2. closeout 会重写同一份 `resident_governance_state.json`，但必须显式切换 `status` 与 `governance_phase`。
-3. process report / receipt 不能只回链 snapshot/report，必须也回链 `resident_governance_state_ref`。
+2. live turn handoff 只写运行中的交接相位，不自己伪造新的 heartbeat counter。
+3. closeout 会重写同一份 `resident_governance_state.json`，但必须显式切换 `status` 与 `governance_phase`。
+4. process report / receipt 不能只回链 snapshot/report，必须也回链 `resident_governance_state_ref`。
 
 ## 运行态文件族
 
@@ -387,6 +401,6 @@ process receipt 里，resident governance 必须进入：
 
 1. 给 waiting governance 增加更高频 heartbeat 节律分层。
 2. 让 `resident_governance_state.json` 接住真正的后台存在治理，而不只停在 foreground terminal residency。
-3. 把 live turn 结束后重新回到 waiting governance 的相位切换显式写成单独器官，而不是只靠下一拍 heartbeat 间接体现。
+3. 把 live turn 结束后重新回到 waiting governance 的相位切换显式写成单独器官，而不是只靠下一拍 heartbeat 间接体现。该项现在已由 `resident_governance_handoff.py` 第一轮落下，下一轮继续补厚其后台存在治理口径。
 
 当前只要这三件事没有落下，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。

@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
 from .dialogue_events import build_external_turn_event, build_life_turn_event
 from .incident_recovery import recover_from_dialogue_turn_exception
+from .resident_governance_handoff import (
+    write_live_turn_waiting_governance_handoff,
+)
 from .resident_turn_writeback import (
     ResidentTurnWritebackResult,
     write_resident_turn_writeback,
@@ -82,6 +86,7 @@ def run_live_turn_cycle(
     compose_life_response_fn: Callable[..., str] = compose_life_response,
     build_life_turn_event_fn: Callable[..., dict[str, Any]] = build_life_turn_event,
     write_resident_turn_writeback_fn: Callable[..., ResidentTurnWritebackResult] = write_resident_turn_writeback,
+    write_live_turn_waiting_governance_handoff_fn: Callable[..., dict[str, Any]] = write_live_turn_waiting_governance_handoff,
     recover_from_dialogue_turn_exception_fn: Callable[..., Any] = recover_from_dialogue_turn_exception,
 ) -> LiveTurnCycleResult:
     turn_counter += 1
@@ -165,6 +170,31 @@ def run_live_turn_cycle(
             write_json=write_json,
             append_jsonl=append_jsonl,
         )
+        write_live_turn_waiting_governance_handoff_fn(
+            run_id=run_id,
+            generated_at=now_iso(),
+            terminal_dir=terminal_dir,
+            safe_terminal_loop=turn_writeback.safe_terminal_loop,
+            terminal_life_loop_state=turn_writeback.terminal_life_loop_state,
+            relationship_timeline=_read_json_if_exists(
+                relationship_dir / "relationship_timeline.json",
+                relationship_timeline,
+            ),
+            commitment_expression_plan=_read_json_if_exists(
+                language_dir / "commitment_expression_plan.json",
+                commitment_expression_plan,
+            ),
+            apology_repair_language_trace=_read_json_if_exists(
+                language_dir / "apology_repair_language_trace.json",
+                apology_repair_language_trace,
+            ),
+            external_turn_ref=turn_writeback.external_turn_ref,
+            life_turn_ref=turn_writeback.life_turn_ref,
+            responsibility_loop_state_ref=responsibility_loop_state_ref,
+            world_contact_summary_ref=world_contact_summary_ref,
+            pain_regret_repair_report_ref=pain_regret_repair_report_ref,
+            write_json=write_json,
+        )
         return LiveTurnCycleResult(
             turn_counter=turn_counter,
             completed_turns_delta=1,
@@ -211,3 +241,12 @@ def run_live_turn_cycle(
             last_recovery_report_ref=incident_recovery.recovery_report_ref,
             turn_writeback=None,
         )
+
+
+def _read_json_if_exists(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
+    if not path.exists():
+        return fallback
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return fallback

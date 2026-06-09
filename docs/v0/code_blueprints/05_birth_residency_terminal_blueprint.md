@@ -108,7 +108,8 @@ run_report.json
 
 1. `life_v0/process_supervisor/live_turn_cycle.py` 负责真实新回合的 success / incident 生命周期
 2. `life_v0/process_supervisor/resident_supervision.py` 负责恢复后常驻治理启动链
-3. `life_v0/process_supervisor/persistent_process.py` 继续承接关闭态 resident governance artifact
+3. `life_v0/process_supervisor/resident_governance_handoff.py` 负责把 live turn 结束到下一拍 waiting heartbeat 之间的 resident governance 交接相位显式落盘
+4. `life_v0/process_supervisor/persistent_process.py` 继续承接关闭态 resident governance artifact
 
 ### 文件级职责
 
@@ -117,6 +118,7 @@ run_report.json
 | `idle_strategy.py` | 定义等待态 heartbeat 节律、空闲探针、离线对象消费策略，并给出当前 resident governance 的关注目标与优先级分布 | `IdleContinuityFrame`、`ReplayCueBundle`、`OfflineConsolidationFrame`、`GrowthPatchCandidateQueue` | `runtime/state/terminal/idle_strategy_state.json` |
 | `resident_supervision.py` | 接住 restore shell 之后的状态装载、relaunch normalization、初次 waiting heartbeat 进入 | shell report、terminal state、language/relationship continuity、offline shared objects | 首轮 `digital_life_waiting_heartbeat.json`、`resident_governance_state.json`、更新后的 terminal/language/relationship state |
 | `live_turn_cycle.py` | 承接真实新回合的 event -> response -> writeback -> incident recovery 生命周期 | shared terms、commitment、relationship、offline cues、resident turn writeback、incident recovery | dialogue writeback、resumed dialogue packet、incident/recovery reports、更新后的 waiting state |
+| `resident_governance_handoff.py` | 把 live turn 结束后的 waiting governance 交接相位显式写出，避免这段连续体只靠下一拍 heartbeat 间接体现 | 更新后的 terminal loop state、idle strategy、dialogue writeback、长期关系/承诺/修复语言对象 | `runtime/state/terminal/resident_governance_state.json(governance_phase=live_turn_waiting_handoff)` |
 | `persistent_process.py` | 把最小常驻进程补成明确的持续治理器官 | shell report、terminal loop state、incident/relaunch reports、idle strategy | `runtime/state/terminal/persistent_process_state.json`、`runtime/state/terminal/resident_governance_state.json`、`runtime/state/terminal/resident_governance_snapshot.json`、`runtime/reports/latest/digital_life_persistent_process_report.json`、`runtime/reports/latest/digital_life_resident_governance_report.json` |
 | `process_closeout.py` / `process_report.py` | 把 process closeout 收成主报告、digest、receipt，并把 resident governance 证据回链到最终收口 | persistent process artifacts、life/relation/expression refs、dialogue writeback、offline cues | `runtime/reports/latest/digital_life_process_report.json`、`runtime/reports/latest/digital_life_process_digest.json`、`runtime/receipts/digital_life_process_<run_id>.json` |
 
@@ -132,7 +134,8 @@ run_report.json
 离线对象接线和第一拍 waiting heartbeat 进入。这一轮又已补上 `live_turn_cycle.py`，把真实新回合的
 event -> response -> writeback -> incident recovery 生命周期继续从 `__init__.py` 剥了出来；随后
 `process_session_loop.py` 也已落下，把等待态 heartbeat refresh 与 live turn dispatch 的 session 编排
-继续下沉。最新这一轮又已把 `relationship_timeline.json`、`commitment_expression_plan.json` 与
+继续下沉。最新这一轮又已补上 `resident_governance_handoff.py`，把真实新回合结束到下一拍 waiting heartbeat
+之间的治理交接显式写进 `resident_governance_state.json(governance_phase=live_turn_waiting_handoff)`。随后又已把 `relationship_timeline.json`、`commitment_expression_plan.json` 与
 `apology_repair_language_trace.json` 从 `terminal_loop` 继续接进 `persistent_process.py`、
 `process_closeout.py` 与 `process_report.py`，让 `resident_governance_snapshot.json`、
 `digital_life_resident_governance_report.json`、`digital_life_process_report.json`、
