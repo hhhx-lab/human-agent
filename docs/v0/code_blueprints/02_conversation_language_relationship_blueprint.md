@@ -45,7 +45,7 @@
 | `life_v0/language/` | `dialogue_log.py` | 对话事件时间线记录 |
 | `life_v0/language/` | `narrative_trace.py` | 自我叙事连续体 |
 | `life_v0/language/` | `dream_gate.py`、`action_shadow.py` | 梦境残留与行动阴影如何进入表达 |
-| `life_v0/terminal_turn/` | `context_accumulation.py`、`turn_transition.py` | 第一次恢复回合如何积累上下文、切换状态 |
+| `life_v0/terminal_turn/` | `restore_context.py`、`context_accumulation.py`、`turn_transition.py` | 第一次恢复回合如何恢复上下文、积累上下文、切换状态 |
 | `life_v0/terminal_loop/` | `loop_state.py`、`resume_packet.py`、`dialogue_writeback.py` | 持续回合如何等待、恢复和写回 |
 | `life_v0/process_supervisor/` | `dialogue_events.py`、`response_surface.py`、`continuity_writeback.py` | 等待态与真实外部回合怎样接语言连续体 |
 
@@ -112,4 +112,3 @@
 3. 能把离线梦境、重放线索和成长候选带入下一次生命回应。
 4. 能把每轮对话写回关系连续体，而不是只写日志。
 5. 能在等待态维持最小自我叙事、关系图和承诺索引。
-

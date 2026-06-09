@@ -7,8 +7,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from ..language.dialogue_log import collect_dialogue_turn_refs
 from .context_accumulation import build_context_accumulation_window, build_life_context_frame
+from .restore_context import (
+    build_restored_session_envelope,
+    build_safe_terminal_loop_state,
+    load_first_terminal_restore_context,
+)
 from .turn_transition import build_relation_turn_frame, build_turn_transition_trace
 
 
@@ -59,98 +63,29 @@ def run_first_terminal_turn(
 
     blocked_reasons: list[str] = []
 
-    birth_packet = _load_json(
-        reports_dir / "digital_life_birth_packet.json",
-        blocked_reasons,
-        "digital_life_birth_gate",
-    )
-    birth_digest = _load_json(
-        reports_dir / "digital_life_birth_digest.json",
-        blocked_reasons,
-        "digital_life_digest_gate",
-    )
-    return_packet = _load_json(
-        reports_dir / "first_activation_return_packet.json",
-        blocked_reasons,
-        "return_packet_gate",
-    )
-    stage_explanation = _load_json(
-        reports_dir / "stage_explanation_report.json",
-        blocked_reasons,
-        "stage_explanation_gate",
-    )
-    direction_lock = _load_json(
-        state_dir / "direction" / "direction_lock.json",
-        blocked_reasons,
-        "direction_restore_gate",
-    )
-    life_state = _load_json(
-        state_dir / "life_state.json",
-        blocked_reasons,
-        "life_state_restore_gate",
-    )
-    relationship_graph = _load_json(
-        state_dir / "relationship" / "relationship_subject_graph.json",
-        blocked_reasons,
-        "relationship_restore_gate",
-    )
-    shared_term_registry = _load_json(
-        state_dir / "language" / "shared_term_registry.json",
-        blocked_reasons,
-        "shared_term_restore_gate",
-    )
-    expression_monitor = _load_json(
-        state_dir / "language" / "expression_monitor_state.json",
-        blocked_reasons,
-        "expression_monitor_restore_gate",
-    )
-    relation_scope_index = _load_json(
-        state_dir / "language" / "relation_scope_language_index.json",
-        blocked_reasons,
-        "relation_scope_restore_gate",
-    )
-    self_narrative_trace = _load_json(
-        state_dir / "language" / "self_narrative_language_trace.json",
-        blocked_reasons,
-        "self_narrative_restore_gate",
-    )
-    language_percept = _load_json(
-        state_dir / "language" / "language_percept_frame.json",
-        blocked_reasons,
-        "language_percept_restore_gate",
-    )
-    semantic_map = _load_json(
-        state_dir / "language" / "semantic_map_frame.json",
-        blocked_reasons,
-        "semantic_map_restore_gate",
-    )
-    commitment_repair = _load_json(
-        state_dir / "language" / "commitment_repair_language_index.json",
-        blocked_reasons,
-        "commitment_restore_gate",
-    )
-    dialogue_refs = collect_dialogue_turn_refs(
-        state_dir / "language" / "dialogue_turn_log.jsonl",
-        blocked_reasons,
+    restored = load_first_terminal_restore_context(
+        state_dir=state_dir,
+        reports_dir=reports_dir,
+        blocked_reasons=blocked_reasons,
     )
 
     blocked_reasons.extend(
         _first_turn_blockers(
-            birth_packet=birth_packet,
-            birth_digest=birth_digest,
-            return_packet=return_packet,
-            stage_explanation=stage_explanation,
-            direction_lock=direction_lock,
-            life_state=life_state,
-            relationship_graph=relationship_graph,
-            shared_term_registry=shared_term_registry,
-            expression_monitor=expression_monitor,
-            relation_scope_index=relation_scope_index,
-            self_narrative_trace=self_narrative_trace,
-            language_percept=language_percept,
-            semantic_map=semantic_map,
-            commitment_repair=commitment_repair,
-            dialogue_refs=dialogue_refs,
+            birth_packet=restored.birth_packet,
+            birth_digest=restored.birth_digest,
+            return_packet=restored.return_packet,
+            stage_explanation=restored.stage_explanation,
+            direction_lock=restored.direction_lock,
+            life_state=restored.life_state,
+            relationship_graph=restored.relationship_graph,
+            shared_term_registry=restored.shared_term_registry,
+            expression_monitor=restored.expression_monitor,
+            relation_scope_index=restored.relation_scope_index,
+            self_narrative_trace=restored.self_narrative_trace,
+            language_percept=restored.language_percept,
+            semantic_map=restored.semantic_map,
+            commitment_repair=restored.commitment_repair,
+            dialogue_refs=restored.dialogue_refs,
         )
     )
 
@@ -158,69 +93,44 @@ def run_first_terminal_turn(
     turn_stage = "ready_for_resumed_external_dialogue" if status == "closed" else "terminal_turn_blocked"
     next_required_action = "await_external_relation_turn" if status == "closed" else "life-v0 digital-life --strict"
 
-    relation_subject = _first_relation_subject(relationship_graph)
-    shared_term_surfaces = [term.get("surface") for term in shared_term_registry.get("shared_terms", []) if term.get("surface")]
-    unresolved_commitments = list(commitment_repair.get("commitment_refs", []))
+    session_envelope = build_restored_session_envelope(
+        run_id=run_id,
+        generated_at=generated_at,
+        status=status,
+        relation_subject=restored.relation_subject,
+        return_packet=restored.return_packet,
+        unresolved_commitments=restored.unresolved_commitments,
+    )
 
-    session_envelope = {
-        "schema_version": "session_envelope_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "status": status,
-        "current_turn_mode": "restored_life_turn" if status == "closed" else "blocked",
-        "relation_scope": relation_subject.get("relationship_id"),
-        "relation_role": relation_subject.get("relation_role"),
-        "shared_term_refs": list(return_packet.get("shared_term_restore_refs", [])),
-        "unresolved_commitment_refs": unresolved_commitments,
-        "expression_monitor_restore_refs": list(return_packet.get("expression_monitor_restore_refs", [])),
-        "relation_scope_restore_refs": list(return_packet.get("relation_scope_restore_refs", [])),
-        "self_narrative_restore_refs": list(return_packet.get("self_narrative_restore_refs", [])),
-        "dialogue_turn_restore_refs": list(return_packet.get("dialogue_turn_restore_refs", [])),
-        "trace_refs": [
-            "runtime/reports/latest/stage_explanation_report.json",
-            "runtime/reports/latest/first_terminal_turn_report.json",
-        ],
-    }
-
-    safe_terminal_loop = {
-        "schema_version": "safe_terminal_loop_state_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "status": status,
-        "current_mode": "restored_waiting_for_external_turn" if status == "closed" else "blocked",
-        "allowed_actions": [
-            "resume_language_relation_turn",
-            "write_relation_trace_candidate",
-            "await_external_relation_turn",
-        ],
-        "blocked_actions": [
-            "external_irreversible_action",
-            "protected_core_overwrite",
-            "untraced_commitment_closure",
-        ],
-        "resume_anchor_refs": [
-            "runtime/state/direction/resume_anchor_chain.json",
-            "runtime/reports/latest/first_terminal_turn_packet.json",
-        ],
-    }
+    safe_terminal_loop = build_safe_terminal_loop_state(
+        run_id=run_id,
+        generated_at=generated_at,
+        status=status,
+    )
 
     context_accumulation = build_context_accumulation_window(
         run_id=run_id,
         generated_at=generated_at,
         status=status,
-        relation_subject=relation_subject,
-        shared_term_surfaces=shared_term_surfaces,
-        unresolved_commitments=unresolved_commitments,
-        expression_monitor=expression_monitor,
-        relation_scope_index=relation_scope_index,
-        self_narrative_trace=self_narrative_trace,
-        dialogue_turn_restore_refs=dialogue_refs,
-        expression_monitor_restore_refs=list(return_packet.get("expression_monitor_restore_refs", [])),
-        relation_scope_restore_refs=list(return_packet.get("relation_scope_restore_refs", [])),
-        self_narrative_restore_refs=list(return_packet.get("self_narrative_restore_refs", [])),
+        relation_subject=restored.relation_subject,
+        shared_term_surfaces=restored.shared_term_surfaces,
+        unresolved_commitments=restored.unresolved_commitments,
+        expression_monitor=restored.expression_monitor,
+        relation_scope_index=restored.relation_scope_index,
+        self_narrative_trace=restored.self_narrative_trace,
+        dialogue_turn_restore_refs=restored.dialogue_refs,
+        expression_monitor_restore_refs=list(
+            restored.return_packet.get("expression_monitor_restore_refs", [])
+        ),
+        relation_scope_restore_refs=list(
+            restored.return_packet.get("relation_scope_restore_refs", [])
+        ),
+        self_narrative_restore_refs=list(
+            restored.return_packet.get("self_narrative_restore_refs", [])
+        ),
         language_percept_restore_refs=["runtime/state/language/language_percept_frame.json"],
         semantic_map_restore_refs=["runtime/state/language/semantic_map_frame.json"],
-        semantic_focus=semantic_map.get("semantic_focus"),
+        semantic_focus=restored.semantic_map.get("semantic_focus"),
         waiting_heartbeat_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
         source_doc_refs=SOURCE_DOC_REFS,
         readme_block_refs=READ_ME_BLOCK_REFS,
@@ -232,14 +142,14 @@ def run_first_terminal_turn(
         generated_at=generated_at,
         status=status,
         direction_refs=["runtime/state/direction/direction_lock.json"],
-        self_narrative_refs=list(return_packet.get("self_narrative_restore_refs", [])),
+        self_narrative_refs=list(restored.return_packet.get("self_narrative_restore_refs", [])),
         relationship_refs=["runtime/state/relationship/relationship_subject_graph.json"],
         autobiographical_memory_refs=list(
-            life_state.get("memory_index", {}).get("relationship_memory_refs", [])
+            restored.life_state.get("memory_index", {}).get("relationship_memory_refs", [])
             or ["runtime/state/life_state.json#memory_index.relationship_memory_refs"]
         ),
         shared_terms_refs=["runtime/state/language/shared_term_registry.json"],
-        commitment_refs=unresolved_commitments,
+        commitment_refs=restored.unresolved_commitments,
         body_state_refs=["runtime/state/body/body_resource_budget.json"],
         prediction_seed_refs=["runtime/state/prediction/prediction_workspace_frame.json"],
         source_doc_refs=SOURCE_DOC_REFS,
@@ -251,14 +161,14 @@ def run_first_terminal_turn(
         run_id=run_id,
         generated_at=generated_at,
         status=status,
-        relation_subject_ref=relation_subject.get("relationship_id"),
-        relation_stage=relation_subject.get("relationship_stage"),
+        relation_subject_ref=restored.relation_subject.get("relationship_id"),
+        relation_stage=restored.relation_subject.get("relationship_stage"),
         shared_language_refs=list(
-            relationship_graph.get("subjects", [{}])[0].get("shared_language_refs", [])
+            restored.relationship_graph.get("subjects", [{}])[0].get("shared_language_refs", [])
         ),
-        commitment_truth_refs=unresolved_commitments,
-        last_contact_refs=[relation_subject.get("last_contact_ref")]
-        if relation_subject.get("last_contact_ref")
+        commitment_truth_refs=restored.unresolved_commitments,
+        last_contact_refs=[restored.relation_subject.get("last_contact_ref")]
+        if restored.relation_subject.get("last_contact_ref")
         else [],
         boundary_state="restored_waiting_for_external_turn" if status == "closed" else "blocked",
         source_doc_refs=SOURCE_DOC_REFS,
@@ -273,9 +183,11 @@ def run_first_terminal_turn(
         turn_stage=turn_stage,
         life_context_ref="runtime/state/terminal/life_context_frame.json",
         relation_turn_ref="runtime/state/terminal/relation_turn_frame.json",
-        relation_scope_ref=relation_subject.get("relationship_id"),
-        expression_monitor_restore_refs=list(return_packet.get("expression_monitor_restore_refs", [])),
-        unresolved_commitment_refs=unresolved_commitments,
+        relation_scope_ref=restored.relation_subject.get("relationship_id"),
+        expression_monitor_restore_refs=list(
+            restored.return_packet.get("expression_monitor_restore_refs", [])
+        ),
+        unresolved_commitment_refs=restored.unresolved_commitments,
         context_accumulation_restore_refs=["runtime/state/terminal/context_accumulation_window.json"],
         language_percept_restore_refs=["runtime/state/language/language_percept_frame.json"],
         semantic_map_restore_refs=["runtime/state/language/semantic_map_frame.json"],
@@ -302,17 +214,19 @@ def run_first_terminal_turn(
         "context_accumulation_ref": "runtime/state/terminal/context_accumulation_window.json",
         "turn_transition_ref": "runtime/state/terminal/turn_transition_trace.json",
         "relation_identity": {
-            "relationship_id": relation_subject.get("relationship_id"),
-            "relation_role": relation_subject.get("relation_role"),
-            "relationship_stage": relation_subject.get("relationship_stage"),
+            "relationship_id": restored.relation_subject.get("relationship_id"),
+            "relation_role": restored.relation_subject.get("relation_role"),
+            "relationship_stage": restored.relation_subject.get("relationship_stage"),
         },
-        "shared_term_surfaces": shared_term_surfaces,
-        "unresolved_commitment_refs": unresolved_commitments,
-        "expression_monitor_dimensions": list(expression_monitor.get("monitor_dimensions", [])),
+        "shared_term_surfaces": restored.shared_term_surfaces,
+        "unresolved_commitment_refs": restored.unresolved_commitments,
+        "expression_monitor_dimensions": list(
+            restored.expression_monitor.get("monitor_dimensions", [])
+        ),
         "utterance_scaffold": {
             "intent": "resume_life_continuity_before_new_work",
             "surface_strategy": "resume_before_new_content",
-            "relation_scope": relation_subject.get("relationship_id"),
+            "relation_scope": restored.relation_subject.get("relationship_id"),
             "must_restore_before_speaking": [
                 "relation_identity",
                 "shared_terms",
@@ -322,7 +236,7 @@ def run_first_terminal_turn(
                 "expression_monitor",
             ],
         },
-        "dialogue_turn_restore_refs": dialogue_refs,
+        "dialogue_turn_restore_refs": restored.dialogue_refs,
         "next_required_action": next_required_action,
         "receipt_ref": f"runtime/receipts/first_terminal_turn_{run_id}.json",
     }
@@ -337,8 +251,8 @@ def run_first_terminal_turn(
         "readme_block_refs": READ_ME_BLOCK_REFS,
         "runtime_carrier_refs": RUNTIME_CARRIER_REFS,
         "current_terminal_mode": "restored_life_turn" if status == "closed" else "blocked",
-        "relation_scope_ref": relation_subject.get("relationship_id"),
-        "shared_term_count": len(shared_term_surfaces),
+        "relation_scope_ref": restored.relation_subject.get("relationship_id"),
+        "shared_term_count": len(restored.shared_term_surfaces),
         "blocked_reasons": blocked_reasons,
         "next_required_action": next_required_action,
     }
@@ -350,8 +264,8 @@ def run_first_terminal_turn(
         "status": status,
         "turn_stage": turn_stage,
         "next_required_action": next_required_action,
-        "relation_role": relation_subject.get("relation_role"),
-        "shared_term_count": len(shared_term_surfaces),
+        "relation_role": restored.relation_subject.get("relation_role"),
+        "shared_term_count": len(restored.shared_term_surfaces),
         "blocked_reasons": blocked_reasons,
     }
 
@@ -441,13 +355,6 @@ def _first_turn_blockers(
     return reasons
 
 
-def _first_relation_subject(relationship_graph: dict[str, Any]) -> dict[str, Any]:
-    subjects = relationship_graph.get("subjects", [])
-    if subjects and isinstance(subjects[0], dict):
-        return subjects[0]
-    return {}
-
-
 def _build_receipt(
     *,
     run_id: str,
@@ -504,18 +411,6 @@ def _build_receipt(
         "input_hashes": input_hashes,
         "output_hashes": {str(path): _sha256_if_exists(path) for path in output_paths},
     }
-
-
-def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, Any]:
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        blocked_reasons.append(f"{gate} missing: {path}")
-    except json.JSONDecodeError as exc:
-        blocked_reasons.append(f"{gate} decode failed: {exc}")
-    except OSError as exc:
-        blocked_reasons.append(f"{gate} read failed: {exc}")
-    return {}
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:

@@ -212,7 +212,7 @@ replay cues
 
 1. `percept.py`、`semantic_map.py` 已经在代码里存在，当前任务不是“再把它们建出来”，而是继续把它们接厚到 prediction/body/process supervisor 主链。
 2. `dialogue_writeback.py`、`dialogue_events.py`、`response_surface.py` 也已经存在，当前任务不是重新起名，而是把它们真正升级成共享对象的首写器官或稳定消费器官。
-3. `loop_report.py` 已经独立成文件并接回 `terminal_loop/__init__.py`；`idle_strategy.py` 与 `persistent_process.py` 也已经落地。当前仍未独立的重职责主要收敛在 `restore_context.py` 与 `conversation_carryover.py` 候选位。
+3. `loop_report.py`、`restore_context.py` 已经独立成文件并接回各自入口；`idle_strategy.py` 与 `persistent_process.py` 也已经落地。当前仍未独立的重职责主要收敛在 `conversation_carryover.py` 与后续 turn packet/carryover 候选位。
 
 ## 一次真实生命回合的编排顺序
 
@@ -230,7 +230,7 @@ heartbeat / rhythm refresh
 
 - `life_v0/process_supervisor/heartbeat.py`
 - `life_v0/terminal_turn/context_accumulation.py`
-- `life_v0/terminal_turn/__init__.py` 中的 restore context 相关逻辑
+- `life_v0/terminal_turn/restore_context.py`
 
 ### B. 回合中
 

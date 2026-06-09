@@ -43,7 +43,7 @@
 
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
-| `LifeContextFrame` | `direction/` + `terminal_turn/context_accumulation.py` | `language`、`terminal_loop`、`process_supervisor` | 已有部分承载；待补 `restore_context.py` | `session_envelope.json`、`context_accumulation_window.json` |
+| `LifeContextFrame` | `direction/` + `terminal_turn/restore_context.py` | `language`、`terminal_loop`、`process_supervisor` | 已有第一轮；继续补厚 continuity refs 与 body/prediction anchors | `session_envelope.json`、`context_accumulation_window.json` |
 | `RelationTurnFrame` | `language/relationship_graph.py` + `terminal_turn/turn_transition.py` | `terminal_loop`、`state_store`、`process_supervisor` | 已有第一轮；待补 `relationship_timeline.py` | `runtime/state/relationship/*`、`turn_transition_trace.json` |
 | `ExpressionPlan` | `language/expression_monitor.py` | `membrane`、`terminal_loop`、`process_supervisor/response_surface.py` | 已存在；继续接责任回路和身体压力 | `expression_plan.json`、`language_relationship_report.json` |
 | `DialogueWritebackBundle` | `terminal_loop/dialogue_writeback.py` + `terminal_loop/loop_report.py` | `state_store`、`replay`、`archive`、`process_supervisor` | 已存在；已接 `loop_report.py`，继续补厚 writeback continuity | `dialogue_writeback_bundle.json`、relationship / language receipts |
