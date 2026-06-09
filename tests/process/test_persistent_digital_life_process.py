@@ -2429,11 +2429,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 write_json=self._write_json,
             )
 
+            governance_explanation = self._read_json(
+                reports_dir / "digital_life_resident_governance_explanation.json"
+            )
             report = self._read_json(reports_dir / "digital_life_process_report.json")
             digest = self._read_json(reports_dir / "digital_life_process_digest.json")
             receipt = self._read_json(receipts_dir / "digital_life_process_process-report-organ.json")
 
             self.assertEqual(result.report["run_id"], "process-report-organ")
+            self.assertEqual(
+                governance_explanation["schema_version"],
+                "digital_life_resident_governance_explanation_v0",
+            )
+            self.assertEqual(
+                governance_explanation["dominant_driver_family"],
+                "replay_growth_reconsolidation",
+            )
+            self.assertEqual(
+                governance_explanation["next_wake_expectation"],
+                "refresh_replay_growth_hold_before_accepting_external_turn",
+            )
+            self.assertEqual(
+                governance_explanation["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
             self.assertEqual(report["completed_dialogue_turns"], 2)
             self.assertEqual(report["incident_count"], 1)
             self.assertEqual(report["relaunch_recovery_count"], 1)
@@ -2459,6 +2478,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 report["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
+                report["resident_governance_explanation_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
             )
             self.assertEqual(
                 report["responsibility_loop_state_ref"],
@@ -2517,6 +2540,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(digest["last_external_turn_utterance"], "你还记得我们吗？")
             self.assertEqual(
+                digest["resident_governance_driver_family"],
+                "replay_growth_reconsolidation",
+            )
+            self.assertEqual(
+                digest["resident_governance_next_wake_expectation"],
+                "refresh_replay_growth_hold_before_accepting_external_turn",
+            )
+            self.assertEqual(digest["resident_governance_lineage_depth"], 0)
+            self.assertEqual(
                 digest["offline_growth_cycle_refs"],
                 [
                     "runtime/state/replay/replay_cue_bundle.json",
@@ -2546,6 +2578,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(receipt["receipt_id"], "digital_life_process_process-report-organ")
             self.assertEqual(receipt["stage_effect"], "persistent_dialogue_process_closed")
+            self.assertIn(
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                receipt["report_refs"],
+            )
             self.assertIn(
                 "runtime/state/terminal/idle_strategy_state.json",
                 receipt["shared_object_refs"],
@@ -2613,6 +2649,82 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 str(reports_dir / "digital_life_process_report.json"),
                 receipt["output_hashes"],
+            )
+            self.assertIn(
+                str(reports_dir / "digital_life_resident_governance_explanation.json"),
+                receipt["output_hashes"],
+            )
+
+    def test_resident_governance_explanation_organ_writes_lineage_story(self):
+        from life_v0.process_supervisor.governance_explanation import (
+            write_resident_governance_explanation,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            reports_dir = Path(tmp) / "runtime" / "reports" / "latest"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+
+            result = write_resident_governance_explanation(
+                run_id="governance-explain-organ",
+                generated_at="2026-06-10T00:00:00+00:00",
+                reports_dir=reports_dir,
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state={
+                    "schema_version": "idle_strategy_state_v0",
+                    "heartbeat_interval_ms": 52,
+                    "next_idle_action": "refresh_waiting_heartbeat_with_persistent_background_continuity_hold",
+                    "governance_attention_target": "commitment_expression_plan",
+                    "governance_attention_reason": "background_continuity_lineage_requires_persistent_hold",
+                    "governance_cadence_profile": "persistent_background_continuity_refresh",
+                    "background_continuity_mode": "closed_process_carryover",
+                    "background_carryover_pressure_level": "present",
+                    "background_carryover_attention_target": "commitment_expression_plan",
+                    "background_carryover_generation": 3,
+                    "background_carryover_parent_run_id": "background-lineage-seed",
+                    "background_carryover_source_ref_set": [
+                        "runtime/archive/background-lineage-seed.json"
+                    ],
+                },
+                persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
+                resident_governance_report_ref="runtime/reports/latest/digital_life_resident_governance_report.json",
+                resident_governance_state_ref="runtime/state/terminal/resident_governance_state.json",
+                resident_governance_snapshot_ref="runtime/state/terminal/resident_governance_snapshot.json",
+                completed_turns=4,
+                incident_count=1,
+                relaunch_recovery_count=2,
+                exit_reason="explicit_exit",
+                write_json=self._write_json,
+            )
+
+            report = self._read_json(
+                reports_dir / "digital_life_resident_governance_explanation.json"
+            )
+
+            self.assertEqual(
+                result.report["schema_version"],
+                "digital_life_resident_governance_explanation_v0",
+            )
+            self.assertEqual(
+                report["dominant_driver_family"],
+                "persistent_background_continuity",
+            )
+            self.assertEqual(
+                report["next_wake_expectation"],
+                "resume_background_lineage_before_accepting_external_turn",
+            )
+            self.assertEqual(report["background_carryover_generation"], 3)
+            self.assertEqual(
+                report["background_carryover_parent_run_id"],
+                "background-lineage-seed",
+            )
+            self.assertEqual(
+                report["background_carryover_source_ref_set"],
+                ["runtime/archive/background-lineage-seed.json"],
+            )
+            self.assertTrue(report["continuity_story"])
+            self.assertIn(
+                "generation 3",
+                report["continuity_story"][2],
             )
 
     def test_process_closeout_organ_writes_persistent_artifacts_and_report_bundle(self):

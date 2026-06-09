@@ -5,6 +5,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from .governance_explanation import (
+    RESIDENT_GOVERNANCE_EXPLANATION_REF,
+    write_resident_governance_explanation,
+)
 from .idle_strategy import extract_idle_governance_fields
 
 
@@ -70,6 +74,22 @@ def write_process_report_bundle(
         ]
         if ref
     ]
+    governance_explanation = write_resident_governance_explanation(
+        run_id=run_id,
+        generated_at=generated_at,
+        reports_dir=reports_dir,
+        idle_strategy_ref=idle_strategy_ref,
+        idle_strategy_state=idle_strategy_state,
+        persistent_process_report_ref=persistent_process_report_ref,
+        resident_governance_report_ref=resident_governance_report_ref,
+        resident_governance_state_ref=resident_governance_state_ref,
+        resident_governance_snapshot_ref=resident_governance_snapshot_ref,
+        completed_turns=completed_turns,
+        incident_count=incident_count,
+        relaunch_recovery_count=relaunch_recovery_count,
+        exit_reason=exit_reason,
+        write_json=write_json,
+    )
     report = {
         "schema_version": "digital_life_process_report_v0",
         "run_id": run_id,
@@ -96,6 +116,7 @@ def write_process_report_bundle(
         "resident_governance_report_ref": resident_governance_report_ref,
         "resident_governance_state_ref": resident_governance_state_ref,
         "resident_governance_snapshot_ref": resident_governance_snapshot_ref,
+        "resident_governance_explanation_ref": RESIDENT_GOVERNANCE_EXPLANATION_REF,
         "life_context_frame_ref": life_context_frame_ref,
         "relation_turn_frame_ref": relation_turn_frame_ref,
         "expression_plan_ref": expression_plan_ref,
@@ -134,6 +155,16 @@ def write_process_report_bundle(
         "exit_reason": exit_reason,
         "last_external_turn_utterance": None if last_external_turn is None else last_external_turn["utterance"],
         "dialogue_writeback_bundle_ref": dialogue_writeback_bundle_ref,
+        "resident_governance_explanation_ref": RESIDENT_GOVERNANCE_EXPLANATION_REF,
+        "resident_governance_driver_family": governance_explanation.report[
+            "dominant_driver_family"
+        ],
+        "resident_governance_next_wake_expectation": governance_explanation.report[
+            "next_wake_expectation"
+        ],
+        "resident_governance_lineage_depth": governance_explanation.report[
+            "background_carryover_generation"
+        ],
         "long_horizon_language_refs": [
             ref
             for ref in [
@@ -168,6 +199,7 @@ def write_process_report_bundle(
         idle_strategy_ref=idle_strategy_ref,
         resident_governance_state_ref=resident_governance_state_ref,
         resident_governance_snapshot_ref=resident_governance_snapshot_ref,
+        resident_governance_explanation_ref=RESIDENT_GOVERNANCE_EXPLANATION_REF,
         life_context_frame_ref=life_context_frame_ref,
         relation_turn_frame_ref=relation_turn_frame_ref,
         expression_plan_ref=expression_plan_ref,
@@ -206,6 +238,7 @@ def build_process_receipt(
     idle_strategy_ref: str | None,
     resident_governance_state_ref: str | None,
     resident_governance_snapshot_ref: str | None,
+    resident_governance_explanation_ref: str | None,
     life_context_frame_ref: str | None,
     relation_turn_frame_ref: str | None,
     expression_plan_ref: str | None,
@@ -258,6 +291,7 @@ def build_process_receipt(
             input_hashes[str(path)] = sha256(path)
 
     output_paths = [
+        reports_dir / "digital_life_resident_governance_explanation.json",
         reports_dir / "digital_life_process_report.json",
         reports_dir / "digital_life_process_digest.json",
         receipts_dir / f"digital_life_process_{run_id}.json",
@@ -268,6 +302,7 @@ def build_process_receipt(
         "run_id": run_id,
         "command": "digital life",
         "report_refs": [
+            "runtime/reports/latest/digital_life_resident_governance_explanation.json",
             "runtime/reports/latest/digital_life_process_report.json",
             "runtime/reports/latest/digital_life_process_digest.json",
         ],
@@ -277,6 +312,7 @@ def build_process_receipt(
                 idle_strategy_ref,
                 resident_governance_state_ref,
                 resident_governance_snapshot_ref,
+                resident_governance_explanation_ref,
                 life_context_frame_ref,
                 relation_turn_frame_ref,
                 expression_plan_ref,

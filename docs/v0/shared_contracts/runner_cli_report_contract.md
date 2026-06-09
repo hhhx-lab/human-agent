@@ -661,6 +661,7 @@ life-v0 "digital life"
 10. `terminal_life_loop_state.json`
 11. `digital_life_shell_report.json`
 12. `digital_life_process_report.json`
+13. `digital_life_resident_governance_explanation.json`
 
 当前现实里，one-shot restore shell、repo-local 最小常驻生命进程和项目级 installable command surface 都已经存在；waiting heartbeat、单回合异常恢复和 relaunch recovery 也已经接通最小层。真正仍待推进的是更高频的 heartbeat 节律、后台继续存在和更高阶的长期命令面治理。
 

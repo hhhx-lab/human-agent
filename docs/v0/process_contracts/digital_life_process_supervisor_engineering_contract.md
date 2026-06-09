@@ -88,6 +88,7 @@ life-v0 "digital life"
 | 终端入口 | `life_v0/digital_entry.py`、`digital` |
 | 状态命名空间 | `runtime/state/terminal/`、`runtime/state/language/`、`runtime/state/relationship/` |
 | report | `runtime/reports/latest/digital_life_process_report.json` |
+| governance explanation | `runtime/reports/latest/digital_life_resident_governance_explanation.json` |
 | digest | `runtime/reports/latest/digital_life_process_digest.json` |
 | waiting heartbeat | `runtime/reports/latest/digital_life_waiting_heartbeat.json` |
 | receipt | `runtime/receipts/digital_life_process_<run_id>.json` |
@@ -102,6 +103,7 @@ life-v0 "digital life"
 - `life_v0/process_supervisor/relaunch_recovery.py`
 - `life_v0/process_supervisor/incident_recovery.py`
 - `life_v0/process_supervisor/process_report.py`
+- `life_v0/process_supervisor/governance_explanation.py`
 - `life_v0/process_supervisor/dialogue_events.py`
 - `life_v0/process_supervisor/response_surface.py`
 - `life_v0/process_supervisor/resident_supervision.py`
@@ -344,6 +346,7 @@ IdleContinuityFrame
 | `digital_life_process_incident_report.json` | 单回合异常 incident 报告 |
 | `digital_life_process_recovery_report.json` | 单回合异常恢复报告 |
 | `digital_life_process_report.json` | 当前终端生命进程报告 |
+| `digital_life_resident_governance_explanation.json` | 当前关闭态 resident governance 的解释报告 |
 | `digital_life_process_digest.json` | 当前终端生命进程摘要 |
 | `digital_life_process_<run_id>.json` | 当前终端生命进程 receipt |
 
@@ -381,4 +384,5 @@ IdleContinuityFrame
 5. 通过显式退出语义结束进程时，不破坏当前生命连续体状态。
 6. `digital_life_process_report.json` 与 `idle_continuity_frame.json` 能回链到 `replay_cue_bundle.json`、`offline_consolidation_frame.json`、`growth_patch_candidate_queue.json`，证明常驻过程已经真正吃进离线链对象。
 7. waiting heartbeat / idle strategy / process report 已显式回链 `body_rhythm_pulse.json` 与 `need_state_vector.json`，并根据疲惫负载、认知带宽与 sleep pressure 调整 `heartbeat_interval_ms`、`next_idle_action` 与 `body_waiting_posture`。
-8. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步，以及身体节律调制 waiting governance 这几类行为。
+8. closeout 后必须额外写出 `digital_life_resident_governance_explanation.json`，把当前 cadence、governance driver、background continuity lineage depth 与下一次唤醒预期显式解释出来，而不是只把这些信息埋在 state/report 字段里。
+9. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance，以及 resident governance explanation 的 lineage 解释面。

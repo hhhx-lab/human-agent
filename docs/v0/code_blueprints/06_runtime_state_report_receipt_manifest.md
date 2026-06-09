@@ -76,6 +76,7 @@ receipt 写到哪，
 8. `terminal_life_loop_report.json`
 9. `digital_life_shell_report.json`
 10. `digital_life_process_report.json`
+11. `digital_life_resident_governance_explanation.json`
 
 ### digest 家族
 
@@ -111,4 +112,3 @@ receipt 写到哪，
 2. 影响哪个 latest report。
 3. 产生哪个 receipt 家族。
 4. 被哪个 stage gate 或 test 验证。
-
