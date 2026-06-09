@@ -145,6 +145,35 @@ class V0ContractCoverageTests(unittest.TestCase):
             "docs/v0/implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md",
             contract_index["files"],
         )
+        self.assertIn("docs/v0/engineering_depth/README.md", contract_index["files"])
+        self.assertIn(
+            "docs/v0/engineering_depth/01_full_life_layer_implementation_deep_spec.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/engineering_depth/02_state_object_runtime_evidence_map.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/engineering_depth/03_language_relationship_longitudinal_engineering.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/engineering_depth/04_body_affect_dream_growth_engineering.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/engineering_depth/05_prediction_membrane_action_engineering.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/engineering_depth/06_resident_process_terminal_birth_engineering.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/engineering_depth/07_theory_to_code_trace_matrix.md",
+            contract_index["files"],
+        )
         self.assertIn("docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md", contract_index["files"])
         self.assertIn("docs/v0/slice_contracts/s11_v0_contract_coverage_engineering_contract.md", contract_index["files"])
 

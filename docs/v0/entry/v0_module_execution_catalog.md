@@ -85,6 +85,14 @@ docs/v0/code_framework/README.md
   -> docs/v0/implementation_architecture/code_organs/README.md
   -> docs/v0/implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md
   -> docs/v0/implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md
+  -> docs/v0/engineering_depth/README.md
+  -> docs/v0/engineering_depth/01_full_life_layer_implementation_deep_spec.md
+  -> docs/v0/engineering_depth/02_state_object_runtime_evidence_map.md
+  -> docs/v0/engineering_depth/03_language_relationship_longitudinal_engineering.md
+  -> docs/v0/engineering_depth/04_body_affect_dream_growth_engineering.md
+  -> docs/v0/engineering_depth/05_prediction_membrane_action_engineering.md
+  -> docs/v0/engineering_depth/06_resident_process_terminal_birth_engineering.md
+  -> docs/v0/engineering_depth/07_theory_to_code_trace_matrix.md
 ```
 
 ## 三步开工法

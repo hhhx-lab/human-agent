@@ -692,6 +692,78 @@ V0_DOC_FILE_RULES.update(
                 "docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md",
             ],
         },
+        "docs/v0/engineering_depth/README.md": {
+            "role": "engineering_depth_index",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/README.md",
+                "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
+            ],
+        },
+        "docs/v0/engineering_depth/01_full_life_layer_implementation_deep_spec.md": {
+            "role": "full_life_layer_implementation_deep_spec",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/foundation/01_life_layer_implementation_blueprint.md",
+                "docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md",
+            ],
+        },
+        "docs/v0/engineering_depth/02_state_object_runtime_evidence_map.md": {
+            "role": "state_object_runtime_evidence_map",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md",
+                "docs/v0/shared_contracts/life_state_store_v0_schema.md",
+            ],
+        },
+        "docs/v0/engineering_depth/03_language_relationship_longitudinal_engineering.md": {
+            "role": "language_relationship_longitudinal_engineering",
+            "slice": "S07_LANGUAGE_RELATIONSHIP",
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md",
+                "docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md",
+            ],
+        },
+        "docs/v0/engineering_depth/04_body_affect_dream_growth_engineering.md": {
+            "role": "body_affect_dream_growth_engineering",
+            "slice": "S06_LIFE_SUPPORT_DEVELOPMENT",
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md",
+                "docs/v0/slice_contracts/s06_life_support_development_engineering_contract.md",
+            ],
+        },
+        "docs/v0/engineering_depth/05_prediction_membrane_action_engineering.md": {
+            "role": "prediction_membrane_action_engineering",
+            "slice": "S05_VALIDATION_MEMBRANE_OBSERVATION",
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md",
+                "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
+            ],
+        },
+        "docs/v0/engineering_depth/06_resident_process_terminal_birth_engineering.md": {
+            "role": "resident_process_terminal_birth_engineering",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md",
+                "docs/v0/process_contracts/terminal_life_loop_engineering_contract.md",
+            ],
+        },
+        "docs/v0/engineering_depth/07_theory_to_code_trace_matrix.md": {
+            "role": "theory_to_code_trace_matrix",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md",
+                "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
+            ],
+        },
     }
 )
 
