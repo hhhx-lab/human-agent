@@ -121,4 +121,5 @@
    - `runtime/state/relationship/relationship_timeline.json`
    - `runtime/state/language/commitment_expression_plan.json`
    - `runtime/state/language/apology_repair_language_trace.json`
-4. 下一步前沿转向让 `terminal_life_loop_state / process report / terminal closeout bundle` 继续把这批长期语言对象压进更完整的生命回合闭环摘要
+4. `process report / terminal closeout bundle / resident governance snapshot` 现在也已继续显式回链这批长期语言对象
+5. 下一步前沿转向让 `terminal_life_loop_state` waiting continuity、后台 resident governance 和 heartbeat 节律继续围绕这批对象补厚

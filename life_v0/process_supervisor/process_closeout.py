@@ -17,6 +17,9 @@ from .process_report import ProcessReportBundleResult, write_process_report_bund
 LIFE_CONTEXT_FRAME_REF = "runtime/state/terminal/life_context_frame.json"
 RELATION_TURN_FRAME_REF = "runtime/state/terminal/relation_turn_frame.json"
 EXPRESSION_PLAN_REF = "runtime/state/language/expression_plan.json"
+RELATIONSHIP_TIMELINE_REF = "runtime/state/relationship/relationship_timeline.json"
+COMMITMENT_EXPRESSION_PLAN_REF = "runtime/state/language/commitment_expression_plan.json"
+APOLOGY_REPAIR_LANGUAGE_TRACE_REF = "runtime/state/language/apology_repair_language_trace.json"
 DIALOGUE_WRITEBACK_BUNDLE_REF = "runtime/reports/latest/dialogue_writeback_bundle.json"
 
 
@@ -54,6 +57,9 @@ def close_digital_life_process(
     life_context_frame: dict[str, Any],
     relation_turn_frame: dict[str, Any],
     expression_plan: dict[str, Any],
+    relationship_timeline: dict[str, Any],
+    commitment_expression_plan: dict[str, Any],
+    apology_repair_language_trace: dict[str, Any],
     replay_cue_bundle_ref: str | None,
     offline_consolidation_frame_ref: str | None,
     growth_patch_candidate_queue_ref: str | None,
@@ -76,6 +82,18 @@ def close_digital_life_process(
         source_doc_refs=source_doc_refs,
         readme_block_refs=readme_block_refs,
         runtime_carrier_refs=runtime_carrier_refs,
+        relationship_timeline_ref=_ref_if_present(
+            payload=relationship_timeline,
+            ref=RELATIONSHIP_TIMELINE_REF,
+        ),
+        commitment_expression_plan_ref=_ref_if_present(
+            payload=commitment_expression_plan,
+            ref=COMMITMENT_EXPRESSION_PLAN_REF,
+        ),
+        apology_repair_language_trace_ref=_ref_if_present(
+            payload=apology_repair_language_trace,
+            ref=APOLOGY_REPAIR_LANGUAGE_TRACE_REF,
+        ),
         write_json=write_json,
     )
 
@@ -114,6 +132,18 @@ def close_digital_life_process(
         expression_plan_ref=_ref_if_present(
             payload=expression_plan,
             ref=EXPRESSION_PLAN_REF,
+        ),
+        relationship_timeline_ref=_ref_if_present(
+            payload=relationship_timeline,
+            ref=RELATIONSHIP_TIMELINE_REF,
+        ),
+        commitment_expression_plan_ref=_ref_if_present(
+            payload=commitment_expression_plan,
+            ref=COMMITMENT_EXPRESSION_PLAN_REF,
+        ),
+        apology_repair_language_trace_ref=_ref_if_present(
+            payload=apology_repair_language_trace,
+            ref=APOLOGY_REPAIR_LANGUAGE_TRACE_REF,
         ),
         dialogue_writeback_bundle_ref=_report_ref_if_exists(
             path=reports_dir / "dialogue_writeback_bundle.json",

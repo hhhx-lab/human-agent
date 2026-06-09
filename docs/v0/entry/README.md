@@ -6,6 +6,10 @@
 2. 当前前沿：`v0_delivery_status_board.md`
 3. 本轮开工包：`v0_module_execution_catalog.md`
 
+另外有一份“当前理论到 runtime 覆盖快照”：
+
+4. `v0_theory_to_runtime_coverage_snapshot_2026-06-10.md`
+
 进入 `docs/v0/` 后，如果你现在的目标是“先搞清楚从哪里开工”，就先读这一柜，不要先扎进 `slice_contracts/` 或 `code_framework/`。
 
 ## 建议顺序
@@ -13,6 +17,7 @@
 1. `v0_implementation_index.md`
 2. `v0_delivery_status_board.md`
 3. `v0_module_execution_catalog.md`
+4. `v0_theory_to_runtime_coverage_snapshot_2026-06-10.md`（当你需要快速判断“现在缺的是理论还是工程对象化”时）
 
 这三份的分工固定如下：
 

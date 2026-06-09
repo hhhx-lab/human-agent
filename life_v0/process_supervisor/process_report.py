@@ -43,6 +43,9 @@ def write_process_report_bundle(
     life_context_frame_ref: str | None,
     relation_turn_frame_ref: str | None,
     expression_plan_ref: str | None,
+    relationship_timeline_ref: str | None,
+    commitment_expression_plan_ref: str | None,
+    apology_repair_language_trace_ref: str | None,
     dialogue_writeback_bundle_ref: str | None,
     replay_cue_bundle_ref: str | None,
     offline_consolidation_frame_ref: str | None,
@@ -78,6 +81,9 @@ def write_process_report_bundle(
         "life_context_frame_ref": life_context_frame_ref,
         "relation_turn_frame_ref": relation_turn_frame_ref,
         "expression_plan_ref": expression_plan_ref,
+        "relationship_timeline_ref": relationship_timeline_ref,
+        "commitment_expression_plan_ref": commitment_expression_plan_ref,
+        "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "dialogue_writeback_bundle_ref": dialogue_writeback_bundle_ref,
         "replay_cue_bundle_ref": replay_cue_bundle_ref,
         "offline_consolidation_frame_ref": offline_consolidation_frame_ref,
@@ -98,6 +104,15 @@ def write_process_report_bundle(
         "exit_reason": exit_reason,
         "last_external_turn_utterance": None if last_external_turn is None else last_external_turn["utterance"],
         "dialogue_writeback_bundle_ref": dialogue_writeback_bundle_ref,
+        "long_horizon_language_refs": [
+            ref
+            for ref in [
+                relationship_timeline_ref,
+                commitment_expression_plan_ref,
+                apology_repair_language_trace_ref,
+            ]
+            if ref
+        ],
         "offline_growth_cycle_refs": [
             ref
             for ref in [
@@ -119,6 +134,9 @@ def write_process_report_bundle(
         life_context_frame_ref=life_context_frame_ref,
         relation_turn_frame_ref=relation_turn_frame_ref,
         expression_plan_ref=expression_plan_ref,
+        relationship_timeline_ref=relationship_timeline_ref,
+        commitment_expression_plan_ref=commitment_expression_plan_ref,
+        apology_repair_language_trace_ref=apology_repair_language_trace_ref,
         dialogue_writeback_bundle_ref=dialogue_writeback_bundle_ref,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
@@ -146,6 +164,9 @@ def build_process_receipt(
     life_context_frame_ref: str | None,
     relation_turn_frame_ref: str | None,
     expression_plan_ref: str | None,
+    relationship_timeline_ref: str | None,
+    commitment_expression_plan_ref: str | None,
+    apology_repair_language_trace_ref: str | None,
     dialogue_writeback_bundle_ref: str | None,
     replay_cue_bundle_ref: str | None,
     offline_consolidation_frame_ref: str | None,
@@ -198,6 +219,9 @@ def build_process_receipt(
                 life_context_frame_ref,
                 relation_turn_frame_ref,
                 expression_plan_ref,
+                relationship_timeline_ref,
+                commitment_expression_plan_ref,
+                apology_repair_language_trace_ref,
                 dialogue_writeback_bundle_ref,
                 replay_cue_bundle_ref,
                 offline_consolidation_frame_ref,

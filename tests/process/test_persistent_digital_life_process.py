@@ -1402,6 +1402,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 life_context_frame_ref="runtime/state/terminal/life_context_frame.json",
                 relation_turn_frame_ref="runtime/state/terminal/relation_turn_frame.json",
                 expression_plan_ref="runtime/state/language/expression_plan.json",
+                relationship_timeline_ref="runtime/state/relationship/relationship_timeline.json",
+                commitment_expression_plan_ref="runtime/state/language/commitment_expression_plan.json",
+                apology_repair_language_trace_ref="runtime/state/language/apology_repair_language_trace.json",
                 dialogue_writeback_bundle_ref="runtime/reports/latest/dialogue_writeback_bundle.json",
                 replay_cue_bundle_ref="runtime/state/replay/replay_cue_bundle.json",
                 offline_consolidation_frame_ref="runtime/state/dream/offline_consolidation_frame.json",
@@ -1440,6 +1443,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(report["offline_pressure_level"], "present")
             self.assertEqual(report["relaunch_caution_level"], "guarded")
             self.assertEqual(
+                report["relationship_timeline_ref"],
+                "runtime/state/relationship/relationship_timeline.json",
+            )
+            self.assertEqual(
+                report["commitment_expression_plan_ref"],
+                "runtime/state/language/commitment_expression_plan.json",
+            )
+            self.assertEqual(
+                report["apology_repair_language_trace_ref"],
+                "runtime/state/language/apology_repair_language_trace.json",
+            )
+            self.assertEqual(
                 report["offline_consolidation_frame_ref"],
                 "runtime/state/dream/offline_consolidation_frame.json",
             )
@@ -1456,6 +1471,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/growth/growth_patch_candidate_queue.json",
                 ],
             )
+            self.assertEqual(
+                digest["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
             self.assertEqual(receipt["receipt_id"], "digital_life_process_process-report-organ")
             self.assertEqual(receipt["stage_effect"], "persistent_dialogue_process_closed")
             self.assertIn(
@@ -1468,6 +1491,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 "runtime/state/terminal/resident_governance_snapshot.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/relationship/relationship_timeline.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/language/commitment_expression_plan.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/language/apology_repair_language_trace.json",
                 receipt["shared_object_refs"],
             )
             self.assertIn(
@@ -1530,7 +1565,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self._write_json(language_dir / "expression_plan.json", {"semantic_goal": "repair_commitment_shared_language"})
             self._write_json(language_dir / "self_narrative_language_trace.json", {"schema_version": "self_narrative_language_trace_v0"})
             self._write_json(language_dir / "commitment_repair_language_index.json", {"schema_version": "commitment_repair_language_index_v0"})
+            self._write_json(
+                language_dir / "commitment_expression_plan.json",
+                {
+                    "schema_version": "commitment_expression_plan_v0",
+                    "language_act_candidates": [{"act_type": "followup_commitment"}],
+                },
+            )
+            self._write_json(
+                language_dir / "apology_repair_language_trace.json",
+                {
+                    "schema_version": "apology_repair_language_trace_v0",
+                    "repair_language_moves": [{"move_type": "take_responsibility"}],
+                },
+            )
             self._write_json(relationship_dir / "relationship_subject_graph.json", {"subjects": []})
+            self._write_json(
+                relationship_dir / "relationship_timeline.json",
+                {
+                    "schema_version": "relationship_timeline_v0",
+                    "relationship_continuity_reports": [{"continuity_state": "active_dialogue"}],
+                },
+            )
             self._write_json(replay_dir / "replay_cue_bundle.json", {"schema_version": "replay_cue_bundle_v0"})
             self._write_json(dream_dir / "offline_consolidation_frame.json", {"schema_version": "offline_consolidation_frame_v0"})
             self._write_json(
@@ -1572,6 +1628,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 life_context_frame={"context_anchor_count": 2},
                 relation_turn_frame={"relation_subject_ref": "rel-v0-0001"},
                 expression_plan={"semantic_goal": "repair_commitment_shared_language"},
+                relationship_timeline={"relationship_continuity_reports": [{"continuity_state": "active_dialogue"}]},
+                commitment_expression_plan={"language_act_candidates": [{"act_type": "followup_commitment"}]},
+                apology_repair_language_trace={"repair_language_moves": [{"move_type": "take_responsibility"}]},
                 replay_cue_bundle_ref="runtime/state/replay/replay_cue_bundle.json",
                 offline_consolidation_frame_ref="runtime/state/dream/offline_consolidation_frame.json",
                 growth_patch_candidate_queue_ref="runtime/state/growth/growth_patch_candidate_queue.json",
@@ -1605,6 +1664,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(process_report["life_context_frame_ref"], "runtime/state/terminal/life_context_frame.json")
             self.assertEqual(process_report["relation_turn_frame_ref"], "runtime/state/terminal/relation_turn_frame.json")
             self.assertEqual(process_report["expression_plan_ref"], "runtime/state/language/expression_plan.json")
+            self.assertEqual(
+                process_report["relationship_timeline_ref"],
+                "runtime/state/relationship/relationship_timeline.json",
+            )
+            self.assertEqual(
+                process_report["commitment_expression_plan_ref"],
+                "runtime/state/language/commitment_expression_plan.json",
+            )
+            self.assertEqual(
+                process_report["apology_repair_language_trace_ref"],
+                "runtime/state/language/apology_repair_language_trace.json",
+            )
             self.assertEqual(process_report["dialogue_writeback_bundle_ref"], "runtime/reports/latest/dialogue_writeback_bundle.json")
             self.assertEqual(
                 process_report["resident_governance_report_ref"],
@@ -1615,6 +1686,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/resident_governance_snapshot.json",
             )
             self.assertEqual(process_digest["heartbeat_counter"], 4)
+            self.assertEqual(
+                process_digest["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
             self.assertEqual(
                 resident_governance_snapshot["schema_version"],
                 "resident_governance_snapshot_v0",
@@ -1630,6 +1709,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_report["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["relationship_timeline_ref"],
+                "runtime/state/relationship/relationship_timeline.json",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["commitment_expression_plan_ref"],
+                "runtime/state/language/commitment_expression_plan.json",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["apology_repair_language_trace_ref"],
+                "runtime/state/language/apology_repair_language_trace.json",
+            )
+            self.assertEqual(
+                resident_governance_report["relationship_timeline_ref"],
+                "runtime/state/relationship/relationship_timeline.json",
+            )
+            self.assertEqual(
+                resident_governance_report["commitment_expression_plan_ref"],
+                "runtime/state/language/commitment_expression_plan.json",
+            )
+            self.assertEqual(
+                resident_governance_report["apology_repair_language_trace_ref"],
+                "runtime/state/language/apology_repair_language_trace.json",
             )
             self.assertEqual(resident_governance_snapshot["heartbeat_interval_ms"], 90)
             self.assertEqual(resident_governance_snapshot["offline_pressure_level"], "light")
@@ -1647,6 +1750,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 "runtime/state/terminal/resident_governance_snapshot.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/relationship/relationship_timeline.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/language/commitment_expression_plan.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/language/apology_repair_language_trace.json",
                 process_receipt["shared_object_refs"],
             )
 
@@ -1704,6 +1819,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 source_doc_refs=["docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"],
                 readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
                 runtime_carrier_refs=["RunnerCliRuntime"],
+                relationship_timeline_ref="runtime/state/relationship/relationship_timeline.json",
+                commitment_expression_plan_ref="runtime/state/language/commitment_expression_plan.json",
+                apology_repair_language_trace_ref="runtime/state/language/apology_repair_language_trace.json",
                 write_json=self._write_json,
             )
 
@@ -1775,6 +1893,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_report["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
+                state["relationship_timeline_ref"],
+                "runtime/state/relationship/relationship_timeline.json",
+            )
+            self.assertEqual(
+                report["commitment_expression_plan_ref"],
+                "runtime/state/language/commitment_expression_plan.json",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["apology_repair_language_trace_ref"],
+                "runtime/state/language/apology_repair_language_trace.json",
             )
 
     def test_dialogue_events_organ_builds_external_and_life_turn_events(self):

@@ -130,8 +130,13 @@ run_report.json
 离线对象接线和第一拍 waiting heartbeat 进入。这一轮又已补上 `live_turn_cycle.py`，把真实新回合的
 event -> response -> writeback -> incident recovery 生命周期继续从 `__init__.py` 剥了出来；随后
 `process_session_loop.py` 也已落下，把等待态 heartbeat refresh 与 live turn dispatch 的 session 编排
-继续下沉。当前 `__init__.py` 基本只剩启动、接线和 closeout 外壳；后续重点转向后台 resident governance
-与更高频 heartbeat 节律。
+继续下沉。最新这一轮又已把 `relationship_timeline.json`、`commitment_expression_plan.json` 与
+`apology_repair_language_trace.json` 从 `terminal_loop` 继续接进 `persistent_process.py`、
+`process_closeout.py` 与 `process_report.py`，让 `resident_governance_snapshot.json`、
+`digital_life_resident_governance_report.json`、`digital_life_process_report.json`、
+`digital_life_process_digest.json` 与 process receipt 显式回链长期语言连续体对象。当前
+`__init__.py` 基本只剩启动、接线和 closeout 外壳；后续重点转向后台 resident governance 与更高频
+heartbeat 节律。
 
 ## 最低验证面
 

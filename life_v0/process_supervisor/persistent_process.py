@@ -39,6 +39,9 @@ def write_persistent_process_artifacts(
     source_doc_refs: list[str],
     readme_block_refs: list[str],
     runtime_carrier_refs: list[str],
+    relationship_timeline_ref: str | None,
+    commitment_expression_plan_ref: str | None,
+    apology_repair_language_trace_ref: str | None,
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> PersistentProcessArtifactsResult:
     terminal_dir = state_dir / "terminal"
@@ -63,6 +66,9 @@ def write_persistent_process_artifacts(
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
+        "relationship_timeline_ref": relationship_timeline_ref,
+        "commitment_expression_plan_ref": commitment_expression_plan_ref,
+        "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
     }
     resident_governance_snapshot.update(idle_governance)
@@ -83,6 +89,9 @@ def write_persistent_process_artifacts(
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
+        "relationship_timeline_ref": relationship_timeline_ref,
+        "commitment_expression_plan_ref": commitment_expression_plan_ref,
+        "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
     }
     state.update(idle_governance)
@@ -105,6 +114,9 @@ def write_persistent_process_artifacts(
         "idle_strategy_ref": idle_strategy_ref,
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
+        "relationship_timeline_ref": relationship_timeline_ref,
+        "commitment_expression_plan_ref": commitment_expression_plan_ref,
+        "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "source_doc_refs": source_doc_refs,
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
@@ -127,6 +139,9 @@ def write_persistent_process_artifacts(
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
+        "relationship_timeline_ref": relationship_timeline_ref,
+        "commitment_expression_plan_ref": commitment_expression_plan_ref,
+        "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "source_doc_refs": source_doc_refs,
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
