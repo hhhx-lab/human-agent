@@ -162,12 +162,12 @@
 |---|---|
 | 理论文档 | `20`、`44-46`、`81-84`、`89-90`、`96`、`101`、`181-257` |
 | 主包 | `life_v0/process_supervisor/`、`life_v0/shell_command/`、`life_v0/digital_life/`、`life_v0/digital_entry.py` |
-| 当前文件 | `heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`process_report.py` |
+| 当前文件 | `heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`persistent_process.py`、`process_report.py` |
 | 主要输入 | `IdleContinuityFrame`、`session_envelope.json`、`terminal_life_loop_state.json`、growth/dream cues |
-| 主要输出 | waiting heartbeat、idle strategy state、process report、incident/relaunch recovery、长期连续体写回 |
-| 必写 runtime | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`digital_life_process_report.json`、`digital_life_process_digest.json` |
+| 主要输出 | waiting heartbeat、idle strategy state、persistent process state、persistent process report、process report、incident/relaunch recovery、长期连续体写回 |
+| 必写 runtime | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/persistent_process_state.json`、`digital_life_persistent_process_report.json`、`digital_life_process_report.json`、`digital_life_process_digest.json` |
 | 必守测试 | `tests/process/test_digital_life_shell_command.py`、`tests/process/test_digital_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py` |
-| 下一步 | `idle_strategy.py` 第一轮已落；继续补 `persistent_process.py`，把等待态从“最小可用”补成“真正长期存在” |
+| 下一步 | `idle_strategy.py` 与 `persistent_process.py` 第一轮已落；继续把等待态从“最小可用”补成“真正长期存在”，并进一步拆出更厚的 resident supervision / conversation carryover / loop report |
 
 ## 当前最容易跑偏的三件事
 

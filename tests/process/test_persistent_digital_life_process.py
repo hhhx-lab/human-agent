@@ -200,6 +200,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/idle_strategy_state.json",
             )
             self.assertEqual(
+                process_report["persistent_process_report_ref"],
+                "runtime/reports/latest/digital_life_persistent_process_report.json",
+            )
+            self.assertEqual(
                 idle_continuity["replay_cue_bundle_ref"],
                 "runtime/state/replay/replay_cue_bundle.json",
             )
@@ -279,6 +283,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 process_report["idle_strategy_ref"],
                 "runtime/state/terminal/idle_strategy_state.json",
+            )
+            self.assertEqual(
+                process_report["persistent_process_report_ref"],
+                "runtime/reports/latest/digital_life_persistent_process_report.json",
             )
             self.assertEqual(idle_continuity["schema_version"], "idle_continuity_frame_v0")
             self.assertEqual(idle_continuity["status"], "closed")
@@ -494,6 +502,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 last_external_turn={"utterance": "你还记得我们吗？"},
                 last_life_turn={"utterance": "我当然记得。"},
                 idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
                 life_context_frame_ref="runtime/state/terminal/life_context_frame.json",
                 relation_turn_frame_ref="runtime/state/terminal/relation_turn_frame.json",
                 expression_plan_ref="runtime/state/language/expression_plan.json",
@@ -557,6 +566,82 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 str(reports_dir / "digital_life_process_report.json"),
                 receipt["output_hashes"],
+            )
+
+    def test_persistent_process_organ_writes_state_and_report(self):
+        from life_v0.process_supervisor.persistent_process import write_persistent_process_artifacts
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state_dir = runtime_root / "state"
+            terminal_dir = state_dir / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+
+            self._write_json(
+                terminal_dir / "safe_terminal_loop_state.json",
+                {
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "heartbeat_counter": 3,
+                },
+            )
+            self._write_json(
+                terminal_dir / "terminal_life_loop_state.json",
+                {
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "last_turn_status": "closed",
+                    "next_required_action": "await_next_external_relation_turn",
+                },
+            )
+
+            result = write_persistent_process_artifacts(
+                run_id="persistent-process-organ",
+                generated_at="2026-06-09T00:00:00+00:00",
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                heartbeat_counter=3,
+                completed_turns=1,
+                incident_count=1,
+                relaunch_recovery_count=1,
+                waiting_mode="restored_waiting_for_external_turn",
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
+                last_dialogue_packet_ref="runtime/reports/latest/resumed_external_dialogue_packet.json",
+                source_doc_refs=["docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                write_json=self._write_json,
+            )
+
+            state = self._read_json(terminal_dir / "persistent_process_state.json")
+            report = self._read_json(reports_dir / "digital_life_persistent_process_report.json")
+
+            self.assertEqual(result.state["schema_version"], "persistent_process_state_v0")
+            self.assertEqual(result.report["schema_version"], "digital_life_persistent_process_report_v0")
+            self.assertEqual(state["run_id"], "persistent-process-organ")
+            self.assertEqual(report["run_id"], "persistent-process-organ")
+            self.assertEqual(state["heartbeat_counter"], 3)
+            self.assertEqual(report["heartbeat_counter"], 3)
+            self.assertEqual(state["governance_mode"], "foreground_terminal_residency")
+            self.assertEqual(report["governance_mode"], "foreground_terminal_residency")
+            self.assertEqual(state["waiting_mode"], "restored_waiting_for_external_turn")
+            self.assertEqual(report["waiting_mode"], "restored_waiting_for_external_turn")
+            self.assertEqual(
+                state["idle_strategy_ref"],
+                "runtime/state/terminal/idle_strategy_state.json",
+            )
+            self.assertEqual(
+                report["persistent_process_state_ref"],
+                "runtime/state/terminal/persistent_process_state.json",
+            )
+            self.assertEqual(
+                report["safe_terminal_loop_state_ref"],
+                "runtime/state/terminal/safe_terminal_loop_state.json",
+            )
+            self.assertEqual(
+                report["terminal_life_loop_state_ref"],
+                "runtime/state/terminal/terminal_life_loop_state.json",
             )
 
     def test_dialogue_events_organ_builds_external_and_life_turn_events(self):

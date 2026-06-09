@@ -16,6 +16,10 @@ from .incident_recovery import (
     record_recovery_continuity,
     recover_from_dialogue_turn_exception,
 )
+from .persistent_process import (
+    PERSISTENT_PROCESS_REPORT_REF,
+    write_persistent_process_artifacts,
+)
 from .process_report import write_process_report_bundle
 from .relaunch_recovery import detect_and_normalize_interrupted_previous_state
 from .response_surface import compose_life_response
@@ -367,6 +371,25 @@ def run_digital_life_process(
             _print_line(output_stream, "生命回合处理出现异常，已执行异常恢复并回到等待态。")
             continue
 
+    persistent_process_artifacts = write_persistent_process_artifacts(
+        run_id=run_id,
+        generated_at=generated_at,
+        state_dir=state_dir,
+        reports_dir=reports_dir,
+        heartbeat_counter=heartbeat_counter,
+        completed_turns=completed_turns,
+        incident_count=incident_count,
+        relaunch_recovery_count=relaunch_recovery_count,
+        waiting_mode=terminal_life_loop_state.get("current_mode", "restored_waiting_for_external_turn"),
+        idle_strategy_ref=IDLE_STRATEGY_STATE_REF,
+        last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
+        last_dialogue_packet_ref=safe_terminal_loop.get("last_dialogue_packet_ref"),
+        source_doc_refs=SOURCE_DOC_REFS,
+        readme_block_refs=READ_ME_BLOCK_REFS,
+        runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+        write_json=_write_json,
+    )
+
     report_bundle = write_process_report_bundle(
         run_id=run_id,
         generated_at=generated_at,
@@ -387,6 +410,7 @@ def run_digital_life_process(
         last_external_turn=last_external_turn,
         last_life_turn=last_life_turn,
         idle_strategy_ref=IDLE_STRATEGY_STATE_REF,
+        persistent_process_report_ref=PERSISTENT_PROCESS_REPORT_REF,
         life_context_frame_ref=(
             "runtime/state/terminal/life_context_frame.json" if life_context_frame else None
         ),

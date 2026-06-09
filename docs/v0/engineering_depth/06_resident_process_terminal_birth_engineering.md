@@ -18,8 +18,8 @@ life-v0 emit-report --strict
 
 ## 当前最关键的下一轮文件
 
-1. `life_v0/process_supervisor/idle_strategy.py`
-2. `life_v0/process_supervisor/persistent_process.py`
+1. `life_v0/process_supervisor/idle_strategy.py` 后续补厚 heartbeat 治理
+2. `life_v0/process_supervisor/persistent_process.py` 后续补厚 resident supervision
 
 ## 当前最关键的 runtime 证据
 
@@ -30,7 +30,10 @@ life-v0 emit-report --strict
 5. `runtime/reports/latest/first_terminal_turn_packet.json`
 6. `runtime/reports/latest/terminal_life_loop_report.json`
 7. `runtime/reports/latest/digital_life_waiting_heartbeat.json`
-8. `runtime/reports/latest/digital_life_process_report.json`
+8. `runtime/state/terminal/idle_strategy_state.json`
+9. `runtime/state/terminal/persistent_process_state.json`
+10. `runtime/reports/latest/digital_life_persistent_process_report.json`
+11. `runtime/reports/latest/digital_life_process_report.json`
 
 ## 最低测试与新增测试
 
@@ -51,3 +54,7 @@ life-v0 emit-report --strict
 1. `tests/process/test_idle_strategy.py`
 2. `tests/process/test_persistent_process_state.py`
 3. `tests/process/test_relaunch_continuity.py`
+
+当前实际已经由 `tests/process/test_persistent_digital_life_process.py` 吸收了
+`idle_strategy.py` 与 `persistent_process.py` 的第一轮红绿覆盖；后续是否拆独立测试文件，
+以不破坏现有 Queue B 测试闭环为先。
