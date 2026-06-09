@@ -147,7 +147,21 @@ digital life
 7. `terminal_life_loop_state.json`
 8. `resumed_external_dialogue_packet.json`
 
-其中前四项属于语言/关系连续，后四项属于终端短期生命循环壳层。后四项不得反向写成长期人格事实。
+并且 `dialogue_writeback_bundle.json` 当前不能只停在“有关系图和 commitment refs”。它至少还要显式带上：
+
+1. `runtime/state/memory/relationship_memory.json#shared_memory_refs`
+2. `runtime/state/memory/relationship_memory.json#repair_history_refs`
+3. `runtime/state/relationship/commitment_truth_state.json#open_commitment_refs`
+4. `runtime/state/relationship/commitment_truth_state.json#repair_required_refs`
+5. `runtime/state/responsibility/responsibility_ledger.json#responsibility_events`
+6. `runtime/state/responsibility/responsibility_ledger.json#repair_obligations`
+7. `runtime/state/life_state.json#responsibility_bindings`
+8. `runtime/state/life_state.json#regret_events`
+9. `runtime/state/life_state.json#pain_events`
+10. `runtime/state/life_state.json#memory_index.relationship_memory_refs`
+11. `runtime/state/life_state.json#memory_index.responsibility_memory_refs`
+
+其中前六项属于语言/关系/责任连续，后五项属于长期生命状态根回链。后五项不得被 terminal loop 反向改写成新的主体真值；它们在这里的职责是显式交接长期写回目标，而不是让壳层篡改主体层。
 
 ## 完成定义
 

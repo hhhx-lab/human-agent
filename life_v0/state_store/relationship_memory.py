@@ -44,3 +44,61 @@ def build_relationship_memory(
         or ["runtime/state/responsibility/responsibility_ledger.json#responsibility_events"],
         "source_doc_refs": SOURCE_DOC_REFS,
     }
+
+
+def project_relationship_memory(
+    *,
+    relationship_memory: dict[str, Any],
+    relationship_graph: dict[str, Any] | None = None,
+    commitment_truth_state: dict[str, Any] | None = None,
+    responsibility_ledger: dict[str, Any] | None = None,
+    commitment_repair_index: dict[str, Any] | None = None,
+    last_contact_refs: list[str] | None = None,
+) -> dict[str, Any]:
+    relationship_graph = relationship_graph or {}
+    commitment_truth_state = commitment_truth_state or {}
+    responsibility_ledger = responsibility_ledger or {}
+    commitment_repair_index = commitment_repair_index or {}
+    updated = {
+        **relationship_memory,
+        "subject_refs": list(relationship_memory.get("subject_refs", [])),
+        "shared_memory_refs": list(relationship_memory.get("shared_memory_refs", [])),
+        "repair_history_refs": list(relationship_memory.get("repair_history_refs", [])),
+        "last_contact_refs": list(relationship_memory.get("last_contact_refs", [])),
+        "responsibility_event_refs": list(relationship_memory.get("responsibility_event_refs", [])),
+    }
+
+    subject_refs = [
+        f"runtime/state/relationship/relationship_subject_graph.json#{subject.get('relationship_id')}"
+        for subject in relationship_graph.get("subjects", [])
+        if isinstance(subject, dict) and subject.get("relationship_id")
+    ]
+    if subject_refs:
+        updated["subject_refs"] = _dedupe(subject_refs)
+
+    updated["shared_memory_refs"] = _dedupe(
+        updated["shared_memory_refs"]
+        + ["runtime/state/language/language_relationship_state.json#shared_language_refs"]
+        + list(commitment_truth_state.get("open_commitment_refs", []))
+    )
+    updated["repair_history_refs"] = _dedupe(
+        updated["repair_history_refs"]
+        + list(commitment_truth_state.get("repair_required_refs", []))
+        + list(commitment_repair_index.get("regret_trace_refs", []))
+        + list(commitment_repair_index.get("repair_language_refs", []))
+    )
+    updated["last_contact_refs"] = _dedupe(
+        (last_contact_refs or []) + updated["last_contact_refs"]
+    )
+    updated["responsibility_event_refs"] = _dedupe(
+        updated["responsibility_event_refs"] + list(responsibility_ledger.get("responsibility_event_refs", []))
+    )
+    return updated
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result

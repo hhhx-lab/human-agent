@@ -325,7 +325,7 @@ class LifeMembraneTests(unittest.TestCase):
             responsibility_loop["language_writeback_refs"],
         )
         self.assertIn(
-            "runtime/state/relationship/relationship_memory.json#repair_history_refs",
+            "runtime/state/memory/relationship_memory.json#repair_history_refs",
             responsibility_loop["relationship_writeback_refs"],
         )
 

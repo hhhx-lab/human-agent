@@ -128,7 +128,7 @@ def build_cross_file_logic(
         "runtime/state/language/commitment_repair_language_index.json",
         "runtime/state/relationship/commitment_truth_state.json#repair_required_refs",
         "runtime/state/responsibility/responsibility_ledger.json#repair_obligations",
-        "runtime/state/relationship/relationship_memory.json#repair_history_refs",
+        "runtime/state/memory/relationship_memory.json#repair_history_refs",
         "runtime/state/growth/growth_patch_candidate_queue.json",
         "runtime/state/dream/offline_consolidation_frame.json",
         "runtime/state/validation/validation_rollup.json#gate_status",

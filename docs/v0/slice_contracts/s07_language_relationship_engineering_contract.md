@@ -174,6 +174,8 @@ LanguagePerceptFrame
 - `self_narrative_writeback_refs`
 - `relationship_writeback_refs`
 - `commitment_writeback_refs`
+- `responsibility_writeback_refs`
+- `life_state_writeback_refs`
 - `replay_cue_refs`
 - `terminal_state_refs`
 

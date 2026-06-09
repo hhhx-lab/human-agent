@@ -155,9 +155,26 @@ def run_terminal_life_loop(
         dialogue_event_refs=dialogue_turn_refs,
         self_narrative_writeback_refs=list(self_narrative_trace.get("narrative_turn_refs", [])),
         relationship_writeback_refs=[
-            "runtime/state/relationship/relationship_subject_graph.json"
+            "runtime/state/relationship/relationship_subject_graph.json",
+            "runtime/state/memory/relationship_memory.json#shared_memory_refs",
+            "runtime/state/memory/relationship_memory.json#repair_history_refs",
         ],
-        commitment_writeback_refs=commitment_refs,
+        commitment_writeback_refs=commitment_refs
+        + [
+            "runtime/state/relationship/commitment_truth_state.json#open_commitment_refs",
+            "runtime/state/relationship/commitment_truth_state.json#repair_required_refs",
+        ],
+        responsibility_writeback_refs=[
+            "runtime/state/responsibility/responsibility_ledger.json#responsibility_events",
+            "runtime/state/responsibility/responsibility_ledger.json#repair_obligations",
+        ],
+        life_state_writeback_refs=[
+            "runtime/state/life_state.json#responsibility_bindings",
+            "runtime/state/life_state.json#regret_events",
+            "runtime/state/life_state.json#pain_events",
+            "runtime/state/life_state.json#memory_index.relationship_memory_refs",
+            "runtime/state/life_state.json#memory_index.responsibility_memory_refs",
+        ],
         replay_cue_refs=[
             "runtime/state/life_state.json#memory_index.replay_cues"
         ],

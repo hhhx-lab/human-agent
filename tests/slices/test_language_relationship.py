@@ -91,6 +91,9 @@ class LanguageRelationshipTests(unittest.TestCase):
             shared_term_registry = self._read_json(paths["language_state"] / "shared_term_registry.json")
             relation_scope_index = self._read_json(paths["language_state"] / "relation_scope_language_index.json")
             self_narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
+            commitment_truth_state = self._read_json(paths["relationship_state"] / "commitment_truth_state.json")
+            responsibility_ledger = self._read_json(paths["state_root"] / "responsibility" / "responsibility_ledger.json")
+            relationship_memory = self._read_json(paths["state_root"] / "memory" / "relationship_memory.json")
             dialogue_log_path = paths["language_state"] / "dialogue_turn_log.jsonl"
             dialogue_lines = dialogue_log_path.read_text(encoding="utf-8").strip().splitlines()
             report = self._read_json(paths["reports"] / "language_relationship_report.json")
@@ -167,6 +170,28 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertTrue(repair_language["repair_obligation_refs"])
         self.assertTrue(repair_language["regret_trace_refs"])
         self.assertTrue(repair_language["responsibility_trace_refs"])
+
+        self.assertEqual(commitment_truth_state["schema_version"], "commitment_truth_state_v0")
+        self.assertTrue(commitment_truth_state["open_commitment_refs"])
+        self.assertTrue(commitment_truth_state["repair_required_refs"])
+        self.assertTrue(commitment_truth_state["responsibility_event_refs"])
+        self.assertTrue(
+            set(repair_language["repair_obligation_refs"]).issubset(
+                set(commitment_truth_state["repair_required_refs"])
+            )
+        )
+
+        self.assertEqual(responsibility_ledger["schema_version"], "responsibility_ledger_v0")
+        self.assertTrue(responsibility_ledger["responsibility_event_refs"])
+        self.assertTrue(responsibility_ledger["repair_obligations"])
+
+        self.assertEqual(relationship_memory["schema_version"], "relationship_memory_v0")
+        self.assertTrue(relationship_memory["repair_history_refs"])
+        self.assertTrue(relationship_memory["responsibility_event_refs"])
+        self.assertIn(
+            "runtime/state/language/dialogue_turn_log.jsonl",
+            relationship_memory["last_contact_refs"],
+        )
 
         self.assertEqual(dream_language_gate["schema_version"], "dream_report_language_gate_v0")
         self.assertEqual(dream_language_gate["dream_fact_gate"], "closed")
@@ -280,8 +305,15 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertTrue(life_state["language_state"]["dialogue_turn_log_refs"])
         self.assertTrue(life_state["language_state"]["language_percept_refs"])
         self.assertTrue(life_state["language_state"]["semantic_map_refs"])
+        self.assertTrue(life_state["responsibility_bindings"])
+        self.assertTrue(life_state["regret_events"])
+        self.assertTrue(life_state["pain_events"])
         self.assertIn("runtime/state/prediction/prediction_workspace_frame.json", life_state["runtime_trace_refs"])
+        self.assertIn("runtime/state/relationship/commitment_truth_state.json", life_state["runtime_trace_refs"])
+        self.assertIn("runtime/state/responsibility/responsibility_ledger.json", life_state["runtime_trace_refs"])
+        self.assertIn("runtime/state/memory/relationship_memory.json", life_state["runtime_trace_refs"])
         self.assertTrue(life_state["relationship_subjects"])
+        self.assertTrue(life_state["relationship_subjects"][0]["repair_obligation_refs"])
 
     def test_cli_build_language_relationship_returns_zero_and_writes_report(self):
         with tempfile.TemporaryDirectory() as tmp:

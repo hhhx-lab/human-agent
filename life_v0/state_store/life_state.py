@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from life_v0.direction import LIFE_TARGETS
@@ -131,6 +132,85 @@ def build_life_state_projection(
         "archive_refs": _dedupe(list(archive_refs or []) + [f"runtime/receipts/state_store_{run_id}.json"]),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
+
+
+def project_responsibility_language_continuity(
+    *,
+    life_state: dict[str, Any],
+    commitment_truth_state: dict[str, Any] | None = None,
+    responsibility_ledger: dict[str, Any] | None = None,
+    relationship_memory: dict[str, Any] | None = None,
+    relationship_graph: dict[str, Any] | None = None,
+    responsibility_loop_state: dict[str, Any] | None = None,
+    commitment_repair_index: dict[str, Any] | None = None,
+    additional_runtime_trace_refs: list[str] | None = None,
+) -> dict[str, Any]:
+    commitment_truth_state = commitment_truth_state or {}
+    responsibility_ledger = responsibility_ledger or {}
+    relationship_memory = relationship_memory or {}
+    relationship_graph = relationship_graph or {}
+    responsibility_loop_state = responsibility_loop_state or {}
+    commitment_repair_index = commitment_repair_index or {}
+
+    updated = json.loads(json.dumps(life_state))
+    updated["responsibility_bindings"] = _dedupe(
+        list(updated.get("responsibility_bindings", []))
+        + list(commitment_truth_state.get("responsibility_event_refs", []))
+        + list(responsibility_ledger.get("responsibility_event_refs", []))
+    )
+    updated["regret_events"] = _dedupe(
+        list(updated.get("regret_events", [])) + list(commitment_repair_index.get("regret_trace_refs", []))
+    )
+
+    pain_refs: list[str] = []
+    for item in responsibility_loop_state.get("regret_pressure_candidates", []):
+        if isinstance(item, dict):
+            pain_refs.extend(item.get("pain_signal_refs", []))
+    updated["pain_events"] = _dedupe(list(updated.get("pain_events", [])) + pain_refs)
+
+    memory_index = updated.setdefault("memory_index", {})
+    memory_index["relationship_memory_refs"] = _dedupe(
+        list(memory_index.get("relationship_memory_refs", [])) + list(relationship_memory.get("shared_memory_refs", []))
+    )
+    memory_index["responsibility_memory_refs"] = _dedupe(
+        list(memory_index.get("responsibility_memory_refs", []))
+        + list(commitment_truth_state.get("responsibility_event_refs", []))
+        + list(responsibility_ledger.get("responsibility_event_refs", []))
+    )
+
+    relationship_subjects = updated.setdefault("relationship_subjects", [])
+    if relationship_subjects:
+        relationship_subject = relationship_subjects[0]
+        graph_subject = next(
+            (subject for subject in relationship_graph.get("subjects", []) if isinstance(subject, dict)),
+            {},
+        )
+        relationship_subject["shared_memory_refs"] = _dedupe(
+            list(relationship_memory.get("shared_memory_refs", [])) or list(relationship_subject.get("shared_memory_refs", []))
+        )
+        relationship_subject["commitment_refs"] = _dedupe(
+            list(commitment_truth_state.get("open_commitment_refs", [])) or list(relationship_subject.get("commitment_refs", []))
+        )
+        relationship_subject["repair_obligation_refs"] = _dedupe(
+            list(responsibility_ledger.get("repair_obligations", [])) or list(relationship_subject.get("repair_obligation_refs", []))
+        )
+        relationship_subject["last_contact_ref"] = (
+            list(relationship_memory.get("last_contact_refs", []))[:1]
+            or [relationship_subject.get("last_contact_ref")]
+        )[0]
+        if graph_subject.get("relationship_stage"):
+            relationship_subject["relationship_stage"] = graph_subject["relationship_stage"]
+
+    updated["runtime_trace_refs"] = _dedupe(
+        list(updated.get("runtime_trace_refs", []))
+        + list(additional_runtime_trace_refs or [])
+        + [
+            "runtime/state/relationship/commitment_truth_state.json",
+            "runtime/state/responsibility/responsibility_ledger.json",
+            "runtime/state/memory/relationship_memory.json",
+        ]
+    )
+    return updated
 
 
 def _build_language_state_projection(language_state_projection: dict[str, Any] | None) -> dict[str, list[str]]:

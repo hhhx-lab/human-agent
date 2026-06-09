@@ -12,6 +12,17 @@ DIALOGUE_LOG_REF = "runtime/state/language/dialogue_turn_log.jsonl"
 SAFE_TERMINAL_LOOP_REF = "runtime/state/terminal/safe_terminal_loop_state.json"
 TERMINAL_LIFE_LOOP_REF = "runtime/state/terminal/terminal_life_loop_state.json"
 RELATIONSHIP_GRAPH_REF = "runtime/state/relationship/relationship_subject_graph.json"
+RELATIONSHIP_MEMORY_REF = "runtime/state/memory/relationship_memory.json#shared_memory_refs"
+RELATIONSHIP_REPAIR_HISTORY_REF = "runtime/state/memory/relationship_memory.json#repair_history_refs"
+COMMITMENT_TRUTH_OPEN_REF = "runtime/state/relationship/commitment_truth_state.json#open_commitment_refs"
+COMMITMENT_TRUTH_REPAIR_REF = "runtime/state/relationship/commitment_truth_state.json#repair_required_refs"
+RESPONSIBILITY_EVENT_REF = "runtime/state/responsibility/responsibility_ledger.json#responsibility_events"
+RESPONSIBILITY_OBLIGATION_REF = "runtime/state/responsibility/responsibility_ledger.json#repair_obligations"
+LIFE_STATE_RESPONSIBILITY_REF = "runtime/state/life_state.json#responsibility_bindings"
+LIFE_STATE_REGRET_REF = "runtime/state/life_state.json#regret_events"
+LIFE_STATE_PAIN_REF = "runtime/state/life_state.json#pain_events"
+LIFE_STATE_RELATIONSHIP_MEMORY_REF = "runtime/state/life_state.json#memory_index.relationship_memory_refs"
+LIFE_STATE_RESPONSIBILITY_MEMORY_REF = "runtime/state/life_state.json#memory_index.responsibility_memory_refs"
 DIALOGUE_WRITEBACK_BUNDLE_REF = "runtime/reports/latest/dialogue_writeback_bundle.json"
 RESUMED_DIALOGUE_PACKET_REF = "runtime/reports/latest/resumed_external_dialogue_packet.json"
 
@@ -119,8 +130,27 @@ def write_resident_turn_writeback(
         status="closed",
         dialogue_event_refs=[external_turn_ref, life_turn_ref],
         self_narrative_writeback_refs=[external_turn_ref, life_turn_ref],
-        relationship_writeback_refs=[RELATIONSHIP_GRAPH_REF],
-        commitment_writeback_refs=list(commitment_index.get("commitment_refs", [])),
+        relationship_writeback_refs=[
+            RELATIONSHIP_GRAPH_REF,
+            RELATIONSHIP_MEMORY_REF,
+            RELATIONSHIP_REPAIR_HISTORY_REF,
+        ],
+        commitment_writeback_refs=list(commitment_index.get("commitment_refs", []))
+        + [
+            COMMITMENT_TRUTH_OPEN_REF,
+            COMMITMENT_TRUTH_REPAIR_REF,
+        ],
+        responsibility_writeback_refs=[
+            RESPONSIBILITY_EVENT_REF,
+            RESPONSIBILITY_OBLIGATION_REF,
+        ],
+        life_state_writeback_refs=[
+            LIFE_STATE_RESPONSIBILITY_REF,
+            LIFE_STATE_REGRET_REF,
+            LIFE_STATE_PAIN_REF,
+            LIFE_STATE_RELATIONSHIP_MEMORY_REF,
+            LIFE_STATE_RESPONSIBILITY_MEMORY_REF,
+        ],
         replay_cue_refs=replay_cue_refs,
         terminal_state_refs=[SAFE_TERMINAL_LOOP_REF, TERMINAL_LIFE_LOOP_REF],
         source_doc_refs=source_doc_refs,

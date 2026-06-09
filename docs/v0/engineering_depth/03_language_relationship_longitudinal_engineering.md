@@ -88,6 +88,24 @@ life_v0/process_supervisor/response_surface.py
 
 这意味着 S07 现在已经有了第一轮 `S06 -> S07` 工程接线：身体疲惫、修复驱力和核心唤醒张力会先进入表达计划，再进入常驻生命过程的响应面，而不是由 Queue B 私下另读一份身体状态。
 
+同时，S07 现在也已经有了第一轮 `Queue E -> S07 -> S04` 的责任写回接线：
+
+- `runtime/state/action/responsibility_loop_state.json`
+  -> `runtime/state/language/commitment_repair_language_index.json`
+  -> `runtime/state/relationship/commitment_truth_state.json`
+  -> `runtime/state/responsibility/responsibility_ledger.json`
+  -> `runtime/state/memory/relationship_memory.json`
+  -> `runtime/state/life_state.json`
+
+并且这批长期状态根不再停在 state 柜里。`terminal_loop` 与 `process_supervisor` 当前已经把它们继续带进 `dialogue_writeback_bundle.json` 的：
+
+- `relationship_writeback_refs`
+- `commitment_writeback_refs`
+- `responsibility_writeback_refs`
+- `life_state_writeback_refs`
+
+这意味着语言层现在已经不是“听见责任，再说几句修复话术”，而是把责任、后悔、修复与关系记忆真正送入长期连续体和链尾交接单。
+
 ## 最低测试与后续新增测试
 
 当前最低测试：

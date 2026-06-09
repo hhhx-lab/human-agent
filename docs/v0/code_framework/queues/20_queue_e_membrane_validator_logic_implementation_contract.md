@@ -243,6 +243,23 @@ Queue E 必须接到这些现有器官上：
 - `WorldContactDecision`
 - `responsibility_repair_boundary.json`
 
+### 当前已落的第一轮跨层写回
+
+这一层现在已经不再只停在 `runtime/state/action/responsibility_loop_state.json`。
+
+经 `life_v0/language/__init__.py` 的责任-语言投影后，`responsibility_loop.py` 当前已经真实写回并校验：
+
+- `runtime/state/relationship/commitment_truth_state.json`
+- `runtime/state/responsibility/responsibility_ledger.json`
+- `runtime/state/memory/relationship_memory.json`
+- `runtime/state/life_state.json`
+
+并且这些写回目标又继续被 terminal/process 链尾显式带入：
+
+- `runtime/reports/latest/dialogue_writeback_bundle.json`
+
+所以 Queue E 当前阶段的工程口径，已经从“生成责任对象”推进到“责任对象进入长期连续体并具备链尾交接能力”。
+
 ## F. 新增 `life_v0/validators/observation_validator.py`
 
 ### 角色
@@ -399,8 +416,9 @@ Queue E 第一轮不是“膜相关文件名存在”就算完成。至少要同
 2. go/no-go、world contact、side effect 三段都已成为独立器官。
 3. responsibility loop 已把副作用审查接到责任归因、后悔压力、修复欲望、反事实修复和 post-action audit 回链。
 4. 观察真值、边界审计、反事实比较和比较 trace 都已离开 `__init__.py`。
-5. action / validation / schema_runner 新对象都写入了对应状态命名空间。
-6. `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` 至少新增一轮器官级断言。
+5. `ResponsibilityLoopState` 至少有一条真实跨层写回链进入 `commitment_truth_state.json`、`responsibility_ledger.json`、`relationship_memory.json` 与 `life_state.json`。
+6. action / validation / schema_runner 新对象都写入了对应状态命名空间。
+7. `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` 至少新增一轮器官级断言。
 
 ## Queue E 推荐实施顺序
 

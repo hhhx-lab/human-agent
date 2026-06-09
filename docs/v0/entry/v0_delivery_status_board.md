@@ -130,7 +130,7 @@ P0_DOC_CORPUS_INGESTION
 
 | 模块 | 状态 | 已有闭合 | 下一步重点 |
 |---|---|---|---|
-| `S07_LANGUAGE_RELATIONSHIP` | `活跃补厚位` | 已能写内言语、表达监控、共同语言、关系主体图和承诺修复索引；当前 `language_state.py`、`dream_gate.py`、`action_shadow.py`、`relation_scope.py`、`percept.py`、`semantic_map.py` 已拆出并进一步接进 `context_accumulation_window.json`、`turn_transition_trace.json`、`resumed_external_dialogue_packet.json`、`limited_context_frame.json` 和 `replay_shadow_*` 相关对象；同时，`build-language-relationship` 现在会真实重写 `runtime/state/prediction/prediction_workspace_frame.json`，把 `language_percept_refs`、`semantic_map_refs`、`semantic_ambiguity_refs` 与 `semantic_prediction_focus` 从 S07 主链直接 handoff 到 prediction workspace；最新几轮又已先后把 `runtime/state/action/responsibility_loop_state.json` 经 `commitment_repair_language_index.json` 接入 `expression_plan.json`，并把 `runtime/state/body/body_resource_budget.json` 与 `runtime/state/body/core_affect_vector.json` 在存在时压进 `expression_plan.json`，让责任归因、后悔压力、修复义务、疲惫压力和核心唤醒张力一起进入语言表达压力面。S07 第一轮核心语言器官化、第二轮终端/激活/回放接厚、第三轮 `body / prediction` 接线与第四轮责任回路接线已闭合 | 继续补厚关系长期演化、语言事件时间线，以及更外层语言感知器官 |
+| `S07_LANGUAGE_RELATIONSHIP` | `活跃补厚位` | 已能写内言语、表达监控、共同语言、关系主体图和承诺修复索引；当前 `language_state.py`、`dream_gate.py`、`action_shadow.py`、`relation_scope.py`、`percept.py`、`semantic_map.py` 已拆出并进一步接进 `context_accumulation_window.json`、`turn_transition_trace.json`、`resumed_external_dialogue_packet.json`、`limited_context_frame.json` 和 `replay_shadow_*` 相关对象；同时，`build-language-relationship` 现在会真实重写 `runtime/state/prediction/prediction_workspace_frame.json`，把 `language_percept_refs`、`semantic_map_refs`、`semantic_ambiguity_refs` 与 `semantic_prediction_focus` 从 S07 主链直接 handoff 到 prediction workspace；最新几轮又已先后把 `runtime/state/action/responsibility_loop_state.json` 经 `commitment_repair_language_index.json` 接入 `expression_plan.json`，并把 `runtime/state/body/body_resource_budget.json` 与 `runtime/state/body/core_affect_vector.json` 在存在时压进 `expression_plan.json`，让责任归因、后悔压力、修复义务、疲惫压力和核心唤醒张力一起进入语言表达压力面。现在又进一步把 `commitment_truth_state.json`、`responsibility_ledger.json`、`relationship_memory.json` 与 `life_state.json` 从 S07 直接做了投影写回，并让 `dialogue_writeback_bundle.json` 在 terminal/process 链尾显式携带这些长期写回目标。S07 第一轮核心语言器官化、第二轮终端/激活/回放接厚、第三轮 `body / prediction` 接线与第四轮责任回路接线已闭合 | 继续补厚关系长期演化、语言事件时间线，以及更外层语言感知器官 |
 | `S10_RUNTIME_GROWTH_RECONSOLIDATION` | `活跃前沿` | `run-cycle`、`run-replay-shadow`、`write-growth-archive` 已接通 | 补厚 archive 解释链和链尾 handoff |
 | `S11_V0_ENGINEERING_CONTRACTS` | `活跃前沿` | `check-v0-contracts` 已接通 | 保持 v0 文档、代码、report、receipt 的同步 |
 | `REPORT_BUNDLE_BRIDGE` | `活跃前沿` | `emit-report` 已写出 `report_bundle.json` 与 `first_activation_return_packet.json` | 继续补厚 terminal birth restore bundle |
@@ -295,7 +295,7 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 - `runtime/state/schema_runner/cross_file_logic.json`
 - `runtime/state/schema_runner/run_manifest.json`
 
-所以当前 Queue E 也不再只是“下一个要做什么”的合同描述，而是已经把行为摘要、验证收口和 schema runner 局部闭包写成了真实对象链。当前如果继续补 Queue E，默认入口不再是 `world_contact_summary.py` 或 validator rollup 本身，而是转向 `responsibility_loop.py` 的更厚跨层写回，以及把这批 package-local gates 继续接进 archive / reporting / process supervisor 的长期连续体。
+所以当前 Queue E 也不再只是“下一个要做什么”的合同描述，而是已经把行为摘要、验证收口和 schema runner 局部闭包写成了真实对象链。最新一轮又把 `responsibility_loop_state.json` 通过 S07 真实投影回 `commitment_truth_state.json`、`responsibility_ledger.json`、`relationship_memory.json` 和 `life_state.json`，并继续接进 `dialogue_writeback_bundle.json` 的长期交接单。当前如果继续补 Queue E，默认入口不再是 `world_contact_summary.py` 或 validator rollup 本身，而是转向更厚的关系时间线、repair 表达器官，以及把这批 package-local gates 继续接进 archive / reporting / process supervisor 的长期连续体。
 
 ## 当前链尾开工包
 

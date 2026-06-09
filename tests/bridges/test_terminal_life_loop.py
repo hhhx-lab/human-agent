@@ -146,6 +146,20 @@ class TerminalLifeLoopTests(unittest.TestCase):
         self.assertTrue(dialogue_writeback["self_narrative_writeback_refs"])
         self.assertTrue(dialogue_writeback["relationship_writeback_refs"])
         self.assertTrue(dialogue_writeback["commitment_writeback_refs"])
+        self.assertTrue(dialogue_writeback["responsibility_writeback_refs"])
+        self.assertTrue(dialogue_writeback["life_state_writeback_refs"])
+        self.assertIn(
+            "runtime/state/memory/relationship_memory.json#repair_history_refs",
+            dialogue_writeback["relationship_writeback_refs"],
+        )
+        self.assertIn(
+            "runtime/state/responsibility/responsibility_ledger.json#repair_obligations",
+            dialogue_writeback["responsibility_writeback_refs"],
+        )
+        self.assertIn(
+            "runtime/state/life_state.json#memory_index.responsibility_memory_refs",
+            dialogue_writeback["life_state_writeback_refs"],
+        )
         self.assertTrue(dialogue_writeback["replay_cue_refs"])
         self.assertTrue(dialogue_writeback["terminal_state_refs"])
 

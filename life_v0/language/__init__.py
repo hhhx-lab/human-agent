@@ -21,6 +21,12 @@ from .relationship_graph import build_relationship_subject_graph
 from .semantic_map import build_semantic_map_frame
 from .shared_terms import build_shared_term_registry
 from life_v0.neural_core.prediction_workspace import build_prediction_workspace_frame
+from life_v0.state_store.commitment_truth import (
+    project_commitment_truth_state,
+    project_responsibility_ledger,
+)
+from life_v0.state_store.life_state import project_responsibility_language_continuity
+from life_v0.state_store.relationship_memory import project_relationship_memory
 
 
 ACTIVE_SLICE = "S07_LANGUAGE_RELATIONSHIP"
@@ -92,6 +98,21 @@ def run_build_language_relationship(
     subject_systems = _load_json(neural_core_state_dir / "twelve_subject_systems.json", blocked_reasons, "subject_binding_gate")
     internal_bus = _load_json(neural_core_state_dir / "neural_life_internal_bus.json", blocked_reasons, "inner_language_bus_gate")
     life_state = _load_json(state_dir / "life_state.json", blocked_reasons, "life_state_root_gate")
+    commitment_truth_state = _load_json(
+        state_dir / "relationship" / "commitment_truth_state.json",
+        blocked_reasons,
+        "commitment_truth_projection_gate",
+    )
+    responsibility_ledger = _load_json(
+        state_dir / "responsibility" / "responsibility_ledger.json",
+        blocked_reasons,
+        "responsibility_ledger_projection_gate",
+    )
+    relationship_memory = _load_json(
+        state_dir / "memory" / "relationship_memory.json",
+        blocked_reasons,
+        "relationship_memory_gate",
+    )
     relationship_boundary = _load_json(membrane_dir / "relationship_subject_boundary.json", blocked_reasons, "relationship_subject_gate")
     responsibility_boundary = _load_json(membrane_dir / "responsibility_repair_boundary.json", blocked_reasons, "repair_language_gate")
     responsibility_loop = _load_json(
@@ -174,6 +195,26 @@ def run_build_language_relationship(
         core_affect_vector=core_affect_vector,
     )
     dialogue_turn_entries = _build_dialogue_turn_log_entries(run_id, generated_at)
+    updated_commitment_truth = project_commitment_truth_state(
+        commitment_truth_state=commitment_truth_state,
+        responsibility_loop_state=responsibility_loop,
+        commitment_repair_index=repair_language,
+    )
+    updated_responsibility_ledger = project_responsibility_ledger(
+        responsibility_ledger=responsibility_ledger,
+        responsibility_loop_state=responsibility_loop,
+    )
+    updated_relationship_memory = project_relationship_memory(
+        relationship_memory=relationship_memory,
+        relationship_graph=relationship_graph,
+        commitment_truth_state=updated_commitment_truth,
+        responsibility_ledger=updated_responsibility_ledger,
+        commitment_repair_index=repair_language,
+        last_contact_refs=[
+            "runtime/state/language/dialogue_turn_log.jsonl",
+            "runtime/state/language/inner_speech_frame.json",
+        ],
+    )
 
     state_refs = [
         "runtime/state/language/inner_speech_frame.json",
@@ -190,6 +231,9 @@ def run_build_language_relationship(
         "runtime/state/language/language_percept_frame.json",
         "runtime/state/language/semantic_map_frame.json",
         "runtime/state/relationship/relationship_subject_graph.json",
+        "runtime/state/relationship/commitment_truth_state.json",
+        "runtime/state/responsibility/responsibility_ledger.json",
+        "runtime/state/memory/relationship_memory.json",
     ]
     receipt_ref = f"runtime/receipts/language_relationship_{run_id}.json"
 
@@ -208,6 +252,20 @@ def run_build_language_relationship(
         language_percept_ref="runtime/state/language/language_percept_frame.json",
         semantic_map_ref="runtime/state/language/semantic_map_frame.json",
         relationship_subjects=relationship_graph["subjects"],
+    )
+    updated_life_state = project_responsibility_language_continuity(
+        life_state=updated_life_state,
+        commitment_truth_state=updated_commitment_truth,
+        responsibility_ledger=updated_responsibility_ledger,
+        relationship_memory=updated_relationship_memory,
+        relationship_graph=relationship_graph,
+        responsibility_loop_state=responsibility_loop,
+        commitment_repair_index=repair_language,
+        additional_runtime_trace_refs=[
+            "runtime/state/relationship/commitment_truth_state.json",
+            "runtime/state/responsibility/responsibility_ledger.json",
+            "runtime/state/memory/relationship_memory.json",
+        ],
     )
     prediction_workspace = build_prediction_workspace_frame(
         run_id=run_id,
@@ -277,6 +335,9 @@ def run_build_language_relationship(
         _write_json(language_dir / "semantic_map_frame.json", semantic_map)
         _append_jsonl(language_dir / "dialogue_turn_log.jsonl", dialogue_turn_entries)
         _write_json(prediction_dir / "prediction_workspace_frame.json", prediction_workspace)
+        _write_json(state_dir / "relationship" / "commitment_truth_state.json", updated_commitment_truth)
+        _write_json(state_dir / "responsibility" / "responsibility_ledger.json", updated_responsibility_ledger)
+        _write_json(state_dir / "memory" / "relationship_memory.json", updated_relationship_memory)
         _write_json(state_dir / "life_state.json", updated_life_state)
         _write_json(reports_dir / "language_relationship_report.json", report)
         _write_json(reports_dir / "language_relationship_digest.json", digest)
@@ -311,6 +372,21 @@ def run_check_language_relationship(
     language_percept = _load_json(state_dir / "language" / "language_percept_frame.json", blocked_reasons, "language_percept_gate")
     semantic_map = _load_json(state_dir / "language" / "semantic_map_frame.json", blocked_reasons, "semantic_map_gate")
     relationship_graph = _load_json(state_dir / "relationship" / "relationship_subject_graph.json", blocked_reasons, "relationship_subject_gate")
+    commitment_truth_state = _load_json(
+        state_dir / "relationship" / "commitment_truth_state.json",
+        blocked_reasons,
+        "commitment_truth_projection_gate",
+    )
+    responsibility_ledger = _load_json(
+        state_dir / "responsibility" / "responsibility_ledger.json",
+        blocked_reasons,
+        "responsibility_ledger_projection_gate",
+    )
+    relationship_memory = _load_json(
+        state_dir / "memory" / "relationship_memory.json",
+        blocked_reasons,
+        "relationship_memory_gate",
+    )
     repair_language = _load_json(state_dir / "language" / "commitment_repair_language_index.json", blocked_reasons, "repair_language_gate")
     dream_language_gate = _load_json(state_dir / "language" / "dream_report_language_gate.json", blocked_reasons, "dream_language_gate")
     shadow_bridge = _load_json(state_dir / "language" / "language_action_bridge_shadow.json", blocked_reasons, "shadow_action_gate")
@@ -329,6 +405,9 @@ def run_check_language_relationship(
     blocked_reasons.extend(_check_language_percept(language_percept))
     blocked_reasons.extend(_check_semantic_map(semantic_map))
     blocked_reasons.extend(_check_relationship_graph(relationship_graph, relationship_boundary))
+    blocked_reasons.extend(_check_commitment_truth_projection(commitment_truth_state, repair_language))
+    blocked_reasons.extend(_check_responsibility_ledger_projection(responsibility_ledger))
+    blocked_reasons.extend(_check_relationship_memory_projection(relationship_memory))
     blocked_reasons.extend(_check_repair_language(repair_language))
     blocked_reasons.extend(_check_dream_report_gate(dream_language_gate))
     blocked_reasons.extend(_check_shadow_bridge(shadow_bridge))
@@ -937,6 +1016,52 @@ def _check_relationship_graph(
     blocked_language = set(relationship_boundary.get("blocked_language", []))
     if {"subordinate_object", "service_object"} - blocked_language:
         reasons.append("relationship_subject_gate blocked language mismatch")
+    return reasons
+
+
+def _check_commitment_truth_projection(
+    commitment_truth_state: dict[str, Any],
+    repair_language: dict[str, Any],
+) -> list[str]:
+    reasons: list[str] = []
+    if commitment_truth_state.get("schema_version") != "commitment_truth_state_v0":
+        reasons.append("commitment_truth_projection_gate schema mismatch")
+        return reasons
+    if not commitment_truth_state.get("open_commitment_refs"):
+        reasons.append("commitment_truth_projection_gate commitment refs missing")
+    if not commitment_truth_state.get("repair_required_refs"):
+        reasons.append("commitment_truth_projection_gate repair refs missing")
+    if not commitment_truth_state.get("responsibility_event_refs"):
+        reasons.append("commitment_truth_projection_gate responsibility refs missing")
+    repair_required_refs = set(commitment_truth_state.get("repair_required_refs", []))
+    if set(repair_language.get("repair_obligation_refs", [])) - repair_required_refs:
+        reasons.append("commitment_truth_projection_gate repair obligations not projected")
+    return reasons
+
+
+def _check_responsibility_ledger_projection(responsibility_ledger: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if responsibility_ledger.get("schema_version") != "responsibility_ledger_v0":
+        reasons.append("responsibility_ledger_projection_gate schema mismatch")
+        return reasons
+    if not responsibility_ledger.get("responsibility_event_refs"):
+        reasons.append("responsibility_ledger_projection_gate responsibility refs missing")
+    if not responsibility_ledger.get("repair_obligations"):
+        reasons.append("responsibility_ledger_projection_gate repair obligations missing")
+    return reasons
+
+
+def _check_relationship_memory_projection(relationship_memory: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if relationship_memory.get("schema_version") != "relationship_memory_v0":
+        reasons.append("relationship_memory_gate schema mismatch")
+        return reasons
+    if not relationship_memory.get("repair_history_refs"):
+        reasons.append("relationship_memory_gate repair history refs missing")
+    if not relationship_memory.get("responsibility_event_refs"):
+        reasons.append("relationship_memory_gate responsibility event refs missing")
+    if not relationship_memory.get("last_contact_refs"):
+        reasons.append("relationship_memory_gate last contact refs missing")
     return reasons
 
 

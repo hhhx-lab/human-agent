@@ -119,6 +119,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 dialogue_writeback_bundle["relationship_writeback_refs"],
             )
             self.assertIn(
+                "runtime/state/memory/relationship_memory.json#repair_history_refs",
+                dialogue_writeback_bundle["relationship_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/relationship/commitment_truth_state.json#repair_required_refs",
+                dialogue_writeback_bundle["commitment_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/responsibility/responsibility_ledger.json#repair_obligations",
+                dialogue_writeback_bundle["responsibility_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/life_state.json#memory_index.responsibility_memory_refs",
+                dialogue_writeback_bundle["life_state_writeback_refs"],
+            )
+            self.assertIn(
                 "runtime/state/replay/replay_cue_bundle.json",
                 dialogue_writeback_bundle["replay_cue_refs"],
             )
@@ -2101,6 +2117,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/language/dialogue_turn_log.jsonl#line-2",
                     "runtime/state/language/dialogue_turn_log.jsonl#line-3",
                 ],
+            )
+            self.assertIn(
+                "runtime/state/memory/relationship_memory.json#shared_memory_refs",
+                dialogue_writeback_bundle["relationship_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/relationship/commitment_truth_state.json#open_commitment_refs",
+                dialogue_writeback_bundle["commitment_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/responsibility/responsibility_ledger.json#responsibility_events",
+                dialogue_writeback_bundle["responsibility_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/life_state.json#responsibility_bindings",
+                dialogue_writeback_bundle["life_state_writeback_refs"],
             )
             self.assertIn(
                 "runtime/state/replay/replay_cue_bundle.json",

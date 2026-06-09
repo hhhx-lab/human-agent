@@ -146,7 +146,7 @@ def build_responsibility_loop_state(
         "runtime/state/language/expression_plan.json",
     ]
     relationship_writeback_refs = [
-        "runtime/state/relationship/relationship_memory.json#repair_history_refs",
+        "runtime/state/memory/relationship_memory.json#repair_history_refs",
         "runtime/state/relationship/relationship_subject_graph.json#repair_obligation_refs",
     ]
 
