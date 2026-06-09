@@ -212,7 +212,7 @@ replay cues
 
 1. `percept.py`、`semantic_map.py` 已经在代码里存在，当前任务不是“再把它们建出来”，而是继续把它们接厚到 prediction/body/process supervisor 主链。
 2. `dialogue_writeback.py`、`dialogue_events.py`、`response_surface.py` 也已经存在，当前任务不是重新起名，而是把它们真正升级成共享对象的首写器官或稳定消费器官。
-3. `loop_report.py`、`restore_context.py`、`turn_packet.py` 与 `conversation_carryover.py` 已经独立成文件并接回各自入口；`idle_strategy.py` 与 `persistent_process.py` 也已经落地。当前仍未独立的重职责主要收敛在 `dialogue_turn.py` 与 terminal-loop / resident-supervision 侧的更厚 continuity bridge。
+3. `loop_report.py`、`restore_context.py`、`turn_packet.py`、`conversation_carryover.py` 与 `dialogue_turn.py` 已经独立成文件并接回各自入口；`idle_strategy.py` 与 `persistent_process.py` 也已经落地。当前仍未独立的重职责主要收敛在 terminal-loop / resident-supervision 侧的更厚 continuity bridge。
 
 ## 一次真实生命回合的编排顺序
 

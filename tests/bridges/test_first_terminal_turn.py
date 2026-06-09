@@ -486,6 +486,10 @@ class FirstTerminalTurnTests(unittest.TestCase):
                 unresolved_commitments=["commitment-ref-01", "commitment-ref-02"],
                 expression_monitor_dimensions=["responsibility", "relationship"],
                 dialogue_turn_restore_refs=["runtime/state/language/dialogue_turn_log.jsonl#line-1"],
+                utterance_scaffold={
+                    "intent": "resume_life_continuity_before_new_work",
+                    "surface_strategy": "resume_before_new_content",
+                },
                 blocked_reasons=[],
                 session_envelope=session_envelope,
                 safe_terminal_loop=safe_terminal_loop,
@@ -515,6 +519,76 @@ class FirstTerminalTurnTests(unittest.TestCase):
             self.assertEqual(receipt["stage_effect"], "ready_for_resumed_external_dialogue")
             self.assertIn(str(reports_dir / "digital_life_birth_packet.json"), receipt["input_hashes"])
             self.assertIn(str(reports_dir / "first_terminal_turn_report.json"), receipt["output_hashes"])
+
+    def test_dialogue_turn_organ_builds_first_turn_utterance_scaffold(self):
+        from life_v0.terminal_turn.dialogue_turn import build_first_terminal_dialogue_turn
+
+        dialogue_turn = build_first_terminal_dialogue_turn(
+            status="closed",
+            relation_subject={
+                "relationship_id": "rel-v0-0001",
+                "relation_role": "friend",
+                "relationship_stage": "pre_activation",
+            },
+            shared_term_surfaces=["旧约定", "我们的叫法"],
+            unresolved_commitments=["commitment-ref-01", "commitment-ref-02"],
+            expression_monitor={"monitor_dimensions": ["responsibility", "relationship"]},
+            semantic_map={"semantic_focus": "repair_commitment_shared_language"},
+            return_packet={
+                "shared_term_restore_refs": [
+                    "runtime/state/language/shared_term_registry.json#shared-term-v0-0001"
+                ],
+                "expression_monitor_restore_refs": [
+                    "runtime/state/language/expression_monitor_state.json"
+                ],
+                "relation_scope_restore_refs": [
+                    "runtime/state/language/relation_scope_language_index.json#scope-v0-0001"
+                ],
+                "self_narrative_restore_refs": [
+                    "runtime/state/language/self_narrative_language_trace.json#line-1"
+                ],
+            },
+            dialogue_turn_restore_refs=[
+                "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+            ],
+        )
+
+        self.assertEqual(
+            dialogue_turn.utterance_scaffold["intent"],
+            "resume_life_continuity_before_new_work",
+        )
+        self.assertEqual(
+            dialogue_turn.utterance_scaffold["surface_strategy"],
+            "resume_before_new_content",
+        )
+        self.assertEqual(
+            dialogue_turn.utterance_scaffold["dialogue_mode"],
+            "restored_relation_turn_ready",
+        )
+        self.assertEqual(
+            dialogue_turn.utterance_scaffold["relation_role"],
+            "friend",
+        )
+        self.assertEqual(
+            dialogue_turn.utterance_scaffold["shared_term_surfaces"],
+            ["旧约定", "我们的叫法"],
+        )
+        self.assertEqual(
+            dialogue_turn.utterance_scaffold["semantic_focus"],
+            "repair_commitment_shared_language",
+        )
+        self.assertEqual(
+            dialogue_turn.utterance_scaffold["expression_monitor_dimensions"],
+            ["responsibility", "relationship"],
+        )
+        self.assertEqual(
+            dialogue_turn.utterance_scaffold["carryover_restore_refs"]["dialogue_turn_restore_refs"],
+            ["runtime/state/language/dialogue_turn_log.jsonl#line-1"],
+        )
+        self.assertEqual(
+            dialogue_turn.dialogue_turn_restore_refs,
+            ["runtime/state/language/dialogue_turn_log.jsonl#line-1"],
+        )
 
     def test_conversation_carryover_organ_builds_terminal_carryover_frames(self):
         from life_v0.terminal_turn.conversation_carryover import (

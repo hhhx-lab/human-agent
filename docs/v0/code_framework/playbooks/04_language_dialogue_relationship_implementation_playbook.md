@@ -89,7 +89,7 @@
 | `turn_transition.py` | 维护 `turn_transition_trace.json` 与恢复因果链 |
 | `turn_packet.py` | 统一写 `first_terminal_turn_packet.json`、digest、receipt |
 | `conversation_carryover.py` | 已承接恢复后旧回合压力、共同语言和未闭合承诺的跨回合续接装配 |
-| `dialogue_turn.py` | 下一轮应承接真正的首回合对话推进与 utterance surface 装配 |
+| `dialogue_turn.py` | 已承接首回合 utterance scaffold 与恢复后第一句话的释放约束 |
 
 ### C. `life_v0/terminal_loop/`
 
@@ -182,8 +182,8 @@
 
 1. 先把 `life_v0/language/__init__.py` 拆成 `dialogue_log.py`、`shared_terms.py`、`commitment_repair.py`、`narrative_trace.py`
 2. 再拆 `inner_speech.py`、`expression_monitor.py`、`relationship_graph.py`
-3. 再拆 `terminal_turn/context_accumulation.py`、`turn_transition.py`，并补 `turn_packet.py`、`conversation_carryover.py`
-4. 再拆 `terminal_loop/loop_state.py`、`resume_packet.py`
+3. 再拆 `terminal_turn/context_accumulation.py`、`turn_transition.py`，并补 `turn_packet.py`、`conversation_carryover.py`、`dialogue_turn.py`
+4. 再拆 `terminal_loop/loop_state.py`、`resume_packet.py`，随后转向 `persistent_wait_bridge.py`
 5. 最后拆 `process_supervisor/heartbeat.py`、`incident_recovery.py`、`relaunch_recovery.py`
 
 原因很简单：如果先写 process 壳，再回来补语言器官，壳会重新反向定义生命层。

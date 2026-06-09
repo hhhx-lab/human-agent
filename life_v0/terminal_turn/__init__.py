@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .conversation_carryover import build_first_terminal_turn_carryover
+from .dialogue_turn import build_first_terminal_dialogue_turn
 from .restore_context import (
     build_restored_session_envelope,
     build_safe_terminal_loop_state,
@@ -117,6 +118,16 @@ def run_first_terminal_turn(
         readme_block_refs=READ_ME_BLOCK_REFS,
         runtime_carrier_refs=RUNTIME_CARRIER_REFS,
     )
+    dialogue_turn = build_first_terminal_dialogue_turn(
+        status=status,
+        relation_subject=restored.relation_subject,
+        shared_term_surfaces=restored.shared_term_surfaces,
+        unresolved_commitments=restored.unresolved_commitments,
+        expression_monitor=restored.expression_monitor,
+        semantic_map=restored.semantic_map,
+        return_packet=restored.return_packet,
+        dialogue_turn_restore_refs=restored.dialogue_refs,
+    )
 
     try:
         bundle = write_first_terminal_turn_bundle(
@@ -137,7 +148,8 @@ def run_first_terminal_turn(
             expression_monitor_dimensions=list(
                 restored.expression_monitor.get("monitor_dimensions", [])
             ),
-            dialogue_turn_restore_refs=restored.dialogue_refs,
+            dialogue_turn_restore_refs=dialogue_turn.dialogue_turn_restore_refs,
+            utterance_scaffold=dialogue_turn.utterance_scaffold,
             blocked_reasons=blocked_reasons,
             session_envelope=session_envelope,
             safe_terminal_loop=safe_terminal_loop,
