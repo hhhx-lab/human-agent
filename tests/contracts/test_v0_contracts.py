@@ -94,6 +94,12 @@ class V0ContractCoverageTests(unittest.TestCase):
         self.assertIn("docs/v0/README.md", contract_index["files"])
         self.assertIn("docs/v0/entry/README.md", contract_index["files"])
         self.assertIn("docs/v0/mapping/README.md", contract_index["files"])
+        self.assertIn("docs/v0/architecture/README.md", contract_index["files"])
+        self.assertIn("docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md", contract_index["files"])
+        self.assertIn("docs/v0/process_contracts/README.md", contract_index["files"])
+        self.assertIn("docs/v0/references/README.md", contract_index["files"])
+        self.assertIn("docs/v0/shared_contracts/README.md", contract_index["files"])
+        self.assertIn("docs/v0/slice_contracts/README.md", contract_index["files"])
         self.assertIn("docs/v0/code_framework/README.md", contract_index["files"])
         self.assertIn("docs/v0/code_framework/foundation/README.md", contract_index["files"])
         self.assertIn("docs/v0/code_framework/playbooks/README.md", contract_index["files"])
@@ -101,6 +107,14 @@ class V0ContractCoverageTests(unittest.TestCase):
         self.assertIn("docs/v0/code_framework/queues/README.md", contract_index["files"])
         self.assertIn("docs/v0/code_framework/assembly/README.md", contract_index["files"])
         self.assertIn("docs/v0/code_architecture/README.md", contract_index["files"])
+        self.assertIn("docs/v0/code_blueprints/README.md", contract_index["files"])
+        self.assertIn("docs/v0/code_blueprints/01_full_system_code_blueprint.md", contract_index["files"])
+        self.assertIn("docs/v0/code_blueprints/02_conversation_language_relationship_blueprint.md", contract_index["files"])
+        self.assertIn("docs/v0/code_blueprints/03_body_affect_dream_growth_blueprint.md", contract_index["files"])
+        self.assertIn("docs/v0/code_blueprints/04_prediction_membrane_validation_blueprint.md", contract_index["files"])
+        self.assertIn("docs/v0/code_blueprints/05_birth_residency_terminal_blueprint.md", contract_index["files"])
+        self.assertIn("docs/v0/code_blueprints/06_runtime_state_report_receipt_manifest.md", contract_index["files"])
+        self.assertIn("docs/v0/code_blueprints/07_theory_to_package_trace_contract.md", contract_index["files"])
         self.assertIn(
             "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md",
             contract_index["files"],

@@ -49,6 +49,15 @@ docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md
 ```text
 docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md
   ->
+docs/v0/code_blueprints/README.md
+  -> docs/v0/code_blueprints/01_full_system_code_blueprint.md
+  -> docs/v0/code_blueprints/02_conversation_language_relationship_blueprint.md
+  -> docs/v0/code_blueprints/03_body_affect_dream_growth_blueprint.md
+  -> docs/v0/code_blueprints/04_prediction_membrane_validation_blueprint.md
+  -> docs/v0/code_blueprints/05_birth_residency_terminal_blueprint.md
+  -> docs/v0/code_blueprints/06_runtime_state_report_receipt_manifest.md
+  -> docs/v0/code_blueprints/07_theory_to_package_trace_contract.md
+  ->
 docs/v0/code_framework/README.md
   -> docs/v0/code_framework/foundation/01_life_layer_implementation_blueprint.md
   -> docs/v0/code_framework/foundation/02_brain_region_to_code_package_mapping.md

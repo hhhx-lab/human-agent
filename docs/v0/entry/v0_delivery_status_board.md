@@ -166,6 +166,14 @@ growth_archive_report.json
 
 当前文档前沿也有几个明确补厚位：
 
+0. `docs/v0/code_blueprints/README.md`
+1. `docs/v0/code_blueprints/01_full_system_code_blueprint.md`
+2. `docs/v0/code_blueprints/02_conversation_language_relationship_blueprint.md`
+3. `docs/v0/code_blueprints/03_body_affect_dream_growth_blueprint.md`
+4. `docs/v0/code_blueprints/04_prediction_membrane_validation_blueprint.md`
+5. `docs/v0/code_blueprints/05_birth_residency_terminal_blueprint.md`
+6. `docs/v0/code_blueprints/06_runtime_state_report_receipt_manifest.md`
+7. `docs/v0/code_blueprints/07_theory_to_package_trace_contract.md`
 1. `docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
 2. `docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`
 3. `docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md`

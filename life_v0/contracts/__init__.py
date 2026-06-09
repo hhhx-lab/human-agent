@@ -95,6 +95,15 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/architecture/runtime_v0_architecture.md",
         ],
     },
+    "docs/v0/architecture/README.md": {
+        "role": "architecture_cabinet_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/README.md",
+            "docs/v0/architecture/digital_life_macro_architecture_v0.md",
+        ],
+    },
     "docs/v0/architecture/digital_life_macro_architecture_v0.md": {
         "role": "macro_architecture",
         "slice": "S02_NEURAL_LIFE_CORE",
@@ -113,6 +122,15 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/shared_contracts/first_activation_protocol.md",
         ],
     },
+    "docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md": {
+        "role": "theory_closure_engineering_readiness_audit",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/16_digital_life_gap_register.md",
+            "docs/258_linear_chain_closure_and_v0_contract_transition.md",
+        ],
+    },
     "docs/v0/code_architecture/README.md": {
         "role": "code_architecture_index",
         "slice": ACTIVE_SLICE,
@@ -120,6 +138,78 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
         "source_refs": [
             "docs/v0/README.md",
             "docs/v0/code_framework/README.md",
+        ],
+    },
+    "docs/v0/code_blueprints/README.md": {
+        "role": "code_blueprints_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_framework/README.md",
+            "docs/v0/code_architecture/README.md",
+        ],
+    },
+    "docs/v0/code_blueprints/01_full_system_code_blueprint.md": {
+        "role": "full_system_code_blueprint",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
+            "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md",
+        ],
+    },
+    "docs/v0/code_blueprints/02_conversation_language_relationship_blueprint.md": {
+        "role": "conversation_language_relationship_blueprint",
+        "slice": "S07_LANGUAGE_RELATIONSHIP",
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md",
+            "docs/v0/engineering_depth/03_language_relationship_longitudinal_engineering.md",
+        ],
+    },
+    "docs/v0/code_blueprints/03_body_affect_dream_growth_blueprint.md": {
+        "role": "body_affect_dream_growth_blueprint",
+        "slice": "S06_LIFE_SUPPORT_DEVELOPMENT",
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/slice_contracts/s06_life_support_development_engineering_contract.md",
+            "docs/v0/engineering_depth/04_body_affect_dream_growth_engineering.md",
+        ],
+    },
+    "docs/v0/code_blueprints/04_prediction_membrane_validation_blueprint.md": {
+        "role": "prediction_membrane_validation_blueprint",
+        "slice": "S05_VALIDATION_MEMBRANE_OBSERVATION",
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
+            "docs/v0/engineering_depth/05_prediction_membrane_action_engineering.md",
+        ],
+    },
+    "docs/v0/code_blueprints/05_birth_residency_terminal_blueprint.md": {
+        "role": "birth_residency_terminal_blueprint",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md",
+            "docs/v0/engineering_depth/06_resident_process_terminal_birth_engineering.md",
+        ],
+    },
+    "docs/v0/code_blueprints/06_runtime_state_report_receipt_manifest.md": {
+        "role": "runtime_state_report_receipt_manifest",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/architecture/runtime_v0_architecture.md",
+            "docs/v0/shared_contracts/runner_cli_report_contract.md",
+        ],
+    },
+    "docs/v0/code_blueprints/07_theory_to_package_trace_contract.md": {
+        "role": "theory_to_package_trace_contract",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/mapping/0_to_257_engineering_utilization_map.md",
+            "docs/v0/engineering_depth/07_theory_to_code_trace_matrix.md",
         ],
     },
     "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md": {
@@ -248,6 +338,15 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/41_runtime_state_store_schema.md",
         ],
     },
+    "docs/v0/shared_contracts/README.md": {
+        "role": "shared_contracts_cabinet_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/README.md",
+            "docs/v0/shared_contracts/life_state_store_v0_schema.md",
+        ],
+    },
     "docs/v0/shared_contracts/birth_readiness_v0_contract.md": {
         "role": "birth_readiness_contract",
         "slice": "S08_LIFE_TARGET_RUNTIMES",
@@ -321,6 +420,15 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/90_language_event_examples_and_timeline_bundle.md",
             "docs/v0/process_contracts/digital_life_shell_command_engineering_contract.md",
             "docs/v0/process_contracts/terminal_life_loop_engineering_contract.md",
+        ],
+    },
+    "docs/v0/process_contracts/README.md": {
+        "role": "process_contracts_cabinet_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/README.md",
+            "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md",
         ],
     },
     "docs/v0/slice_contracts/doc_corpus_ingestor_v0_contract.md": {
@@ -441,6 +549,15 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/README.md",
         ],
     },
+    "docs/v0/slice_contracts/README.md": {
+        "role": "slice_contracts_cabinet_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/README.md",
+            "docs/v0/slice_contracts/s11_v0_contract_coverage_engineering_contract.md",
+        ],
+    },
     "docs/v0/references/current_agent_shell_reference_2026.md": {
         "role": "external_agent_reference",
         "slice": "S09_SCHEMA_RUNNER_CODE",
@@ -448,6 +565,15 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
         "source_refs": [
             "docs/15_current_agent_framework_survey.md",
             "docs/12_ai_and_cognitive_architecture_bridge.md",
+        ],
+    },
+    "docs/v0/references/README.md": {
+        "role": "references_cabinet_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/README.md",
+            "docs/v0/references/current_agent_shell_reference_2026.md",
         ],
     },
 }

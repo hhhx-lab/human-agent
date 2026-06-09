@@ -31,6 +31,8 @@
 `code_architecture/` 更偏“整棵树怎样建得不散、不漂、不回退成普通 agent”。
 `implementation_architecture/` 更偏“某一条回合流和某一个器官接口怎样落成代码”。
 
+如果当前不是要细看某一柜，而是要先用一套总装配图直接开写，先打开 `docs/v0/code_blueprints/README.md` 和 `docs/v0/code_blueprints/01_full_system_code_blueprint.md`，再回到这一柜取分层、对象总线和完成定义。
+
 ## 柜内文件
 
 | 文件 | 作用 |
