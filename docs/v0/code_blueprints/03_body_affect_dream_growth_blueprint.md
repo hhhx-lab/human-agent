@@ -143,6 +143,12 @@
 2. 等待态是否触发噩梦残留缓解
 3. 等待态是否触发关系修复准备
 
+这一段现在已经有了第一轮身体化落点：
+
+1. `runtime/state/body/body_rhythm_pulse.json` 与 `runtime/state/body/need_state_vector.json` 已经在 `process_supervisor/resident_supervision.py` 装载；
+2. `process_supervisor/idle_strategy.py` 会把它们压成 `body_waiting_posture`、`body_governance_flags`、`body_rhythm_ref` 与 `need_state_ref`；
+3. waiting heartbeat 的 `heartbeat_interval_ms` 与 `next_idle_action` 已经开始受 fatigue / bandwidth / sleep pressure / repair drive 调制。
+
 ## 最低验证面
 
 1. `tests/slices/test_life_support.py`
@@ -158,6 +164,6 @@
 1. 身体节律真实影响等待态 heartbeat 和离线入口。
 2. 情绪底盘真实影响语言、责任和梦境。
 3. 梦境真实留下 residue，并影响下一轮关系表达。
+4. 身体需要状态真实调制 waiting governance，而不是只停在 S06 状态柜里。
 4. 成长真实产生 patch candidate，而不是只写总结。
 5. 防遗忘真实保护旧自我、旧语言、旧关系和旧责任。
-

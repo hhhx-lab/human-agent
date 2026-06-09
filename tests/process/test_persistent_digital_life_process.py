@@ -181,22 +181,35 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 heartbeat_packet["idle_strategy_ref"],
                 "runtime/state/terminal/idle_strategy_state.json",
             )
-            self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 50)
+            self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 70)
             self.assertEqual(
                 heartbeat_packet["idle_probe_mode"],
                 "stdin_poll_with_background_continuity_refresh",
             )
             self.assertEqual(heartbeat_packet["offline_pressure_level"], "elevated")
             self.assertEqual(heartbeat_packet["relaunch_caution_level"], "baseline")
+            self.assertEqual(heartbeat_packet["body_waiting_posture"], "guarded_attentive")
             self.assertEqual(
                 heartbeat_packet["next_idle_action"],
-                "refresh_waiting_heartbeat_or_accept_external_turn",
+                "refresh_waiting_heartbeat_with_repair_readiness_hold",
             )
             self.assertEqual(idle_strategy["schema_version"], "idle_strategy_state_v0")
             self.assertEqual(idle_strategy["run_id"], "persistent-heartbeat")
             self.assertIn("strategy_id", idle_strategy)
             self.assertEqual(idle_strategy["idle_probe_mode"], "stdin_poll_with_background_continuity_refresh")
-            self.assertEqual(idle_strategy["next_idle_action"], "refresh_waiting_heartbeat_or_accept_external_turn")
+            self.assertEqual(idle_strategy["next_idle_action"], "refresh_waiting_heartbeat_with_repair_readiness_hold")
+            self.assertEqual(idle_strategy["body_waiting_posture"], "guarded_attentive")
+            self.assertEqual(
+                idle_strategy["body_rhythm_ref"],
+                "runtime/state/body/body_rhythm_pulse.json",
+            )
+            self.assertEqual(
+                idle_strategy["need_state_ref"],
+                "runtime/state/body/need_state_vector.json",
+            )
+            self.assertIn("body_rhythm_present", idle_strategy["body_governance_flags"])
+            self.assertIn("need_state_present", idle_strategy["body_governance_flags"])
+            self.assertIn("fatigue_regulates_heartbeat", idle_strategy["body_governance_flags"])
 
             process_report = self._read_json(paths["reports"] / "digital_life_process_report.json")
             self.assertEqual(process_report["completed_dialogue_turns"], 0)
@@ -250,6 +263,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 process_report["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
             )
+            self.assertEqual(process_report["body_waiting_posture"], "guarded_attentive")
             self.assertEqual(
                 idle_continuity["replay_cue_bundle_ref"],
                 "runtime/state/replay/replay_cue_bundle.json",
@@ -356,33 +370,36 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertGreater(idle_continuity["dream_window_ref_count"], 0)
             self.assertGreater(idle_continuity["growth_patch_candidate_count"], 0)
             self.assertEqual(idle_strategy["schema_version"], "idle_strategy_state_v0")
-            self.assertEqual(idle_strategy["heartbeat_interval_ms"], 50)
+            self.assertEqual(idle_strategy["heartbeat_interval_ms"], 70)
             self.assertEqual(idle_strategy["idle_probe_mode"], "stdin_poll_with_background_continuity_refresh")
             self.assertEqual(idle_strategy["offline_pressure_level"], "elevated")
             self.assertEqual(idle_strategy["relaunch_caution_level"], "baseline")
-            self.assertEqual(idle_strategy["next_idle_action"], "refresh_waiting_heartbeat_or_accept_external_turn")
-            self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 50)
+            self.assertEqual(idle_strategy["next_idle_action"], "refresh_waiting_heartbeat_with_repair_readiness_hold")
+            self.assertEqual(idle_strategy["body_waiting_posture"], "guarded_attentive")
+            self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 70)
             self.assertEqual(
                 heartbeat_packet["idle_probe_mode"],
                 "stdin_poll_with_background_continuity_refresh",
             )
             self.assertEqual(heartbeat_packet["offline_pressure_level"], "elevated")
             self.assertEqual(heartbeat_packet["relaunch_caution_level"], "baseline")
+            self.assertEqual(heartbeat_packet["body_waiting_posture"], "guarded_attentive")
             self.assertEqual(
                 heartbeat_packet["next_idle_action"],
-                "refresh_waiting_heartbeat_or_accept_external_turn",
+                "refresh_waiting_heartbeat_with_repair_readiness_hold",
             )
             self.assertEqual(process_report["waiting_mode"], "restored_waiting_for_external_turn")
-            self.assertEqual(process_report["heartbeat_interval_ms"], 50)
+            self.assertEqual(process_report["heartbeat_interval_ms"], 70)
             self.assertEqual(
                 process_report["idle_probe_mode"],
                 "stdin_poll_with_background_continuity_refresh",
             )
             self.assertEqual(process_report["offline_pressure_level"], "elevated")
             self.assertEqual(process_report["relaunch_caution_level"], "baseline")
+            self.assertEqual(process_report["body_waiting_posture"], "guarded_attentive")
             self.assertEqual(
                 process_report["next_idle_action"],
-                "refresh_waiting_heartbeat_or_accept_external_turn",
+                "refresh_waiting_heartbeat_with_repair_readiness_hold",
             )
             self.assertEqual(
                 idle_strategy["idle_continuity_ref"],
@@ -562,6 +579,62 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
             self.assertEqual(result.exit_reason, "explicit_exit")
             self.assertEqual(input_stream.timeouts, [0.125])
+
+    def test_idle_strategy_uses_body_rhythm_and_need_state_to_regulate_waiting_governance(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-body-governance",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "active",
+                "cognitive_bandwidth": "narrow_guarded",
+                "sleep_pressure": "offline_ready",
+            },
+            replay_cue_bundle={"turn_residue_refs": ["runtime/state/replay/replay-cue-001"]},
+            offline_consolidation_frame={"dream_window_refs": ["runtime/state/dream/dream-window-001"]},
+            growth_patch_candidate_queue={"candidates": [{"growth_patch_candidate_id": "growth-patch-001"}]},
+            replay_cue_bundle_ref="runtime/state/replay/replay_cue_bundle.json",
+            offline_consolidation_frame_ref="runtime/state/dream/offline_consolidation_frame.json",
+            growth_patch_candidate_queue_ref="runtime/state/growth/growth_patch_candidate_queue.json",
+            growth_patch_candidate_ids=["growth-patch-001"],
+            replay_residue_ref_count=1,
+            dream_window_ref_count=1,
+            growth_patch_candidate_count=1,
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(idle_strategy["heartbeat_interval_ms"], 120)
+        self.assertEqual(idle_strategy["offline_pressure_level"], "elevated")
+        self.assertEqual(idle_strategy["body_waiting_posture"], "low_bandwidth_guarded")
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "downshift_probe_and_preserve_recovery_bandwidth",
+        )
+        self.assertEqual(
+            idle_strategy["body_rhythm_ref"],
+            "runtime/state/body/body_rhythm_pulse.json",
+        )
+        self.assertEqual(
+            idle_strategy["need_state_ref"],
+            "runtime/state/body/need_state_vector.json",
+        )
+        self.assertIn("body_rhythm_present", idle_strategy["body_governance_flags"])
+        self.assertIn("need_state_present", idle_strategy["body_governance_flags"])
+        self.assertIn("sleep_pressure_present", idle_strategy["body_governance_flags"])
+        self.assertIn("cognitive_bandwidth_narrowed", idle_strategy["body_governance_flags"])
 
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
         from life_v0.process_supervisor.resident_supervision import (
@@ -920,6 +993,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 reports_dir=runtime_root / "reports" / "latest",
                 safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
                 terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+                body_rhythm_pulse={},
+                need_state_vector={},
                 body_resource_budget={},
                 core_affect_vector={},
                 life_context_frame={},
@@ -1056,6 +1131,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 reports_dir=runtime_root / "reports" / "latest",
                 safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
                 terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+                body_rhythm_pulse={},
+                need_state_vector={},
                 body_resource_budget={},
                 core_affect_vector={},
                 life_context_frame={},
@@ -1849,6 +1926,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIsNotNone(result.context)
             assert result.context is not None
             self.assertEqual(
+                result.context.body_rhythm_pulse["schema_version"],
+                "body_rhythm_pulse_v0",
+            )
+            self.assertEqual(
+                result.context.need_state_vector["schema_version"],
+                "need_state_vector_v0",
+            )
+            self.assertEqual(
                 result.context.body_resource_budget["schema_version"],
                 "body_resource_budget_v0",
             )
@@ -1859,6 +1944,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 result.context.body_resource_budget["fatigue_state"]["level"],
                 "managed_low_noise",
+            )
+            self.assertEqual(
+                result.context.need_state_vector["sleep_pressure"],
+                "managed_pre_dream",
             )
             self.assertIn("repair_drive", result.context.core_affect_vector)
 

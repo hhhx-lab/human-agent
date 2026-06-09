@@ -23,8 +23,8 @@
 
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
-| `BodyRhythmPulse` | `life_v0/body/rhythm.py` | `neural_core`、`dream`、`process_supervisor/heartbeat.py` | 已存在；已接入 `idle_strategy.py` 第一轮，继续补厚到更高频节律治理 | `runtime/state/body/*`、`digital_life_waiting_heartbeat.json` |
-| `NeedStateVector` | `life_v0/body/need_state.py` | `neural_core`、`language`、`membrane`、`growth` | 已存在；继续接入 `prediction_error.py`、`expression_monitor.py` | `body_resource_budget.json`、`runtime/state/body/*` |
+| `BodyRhythmPulse` | `life_v0/body/rhythm.py` | `neural_core`、`dream`、`process_supervisor/heartbeat.py` | 已存在；已接入 `idle_strategy.py` 与 `resident_supervision.py` 第一轮，继续补厚到更高频节律治理 | `runtime/state/body/*`、`digital_life_waiting_heartbeat.json`、`idle_strategy_state.json` |
+| `NeedStateVector` | `life_v0/body/need_state.py` | `neural_core`、`language`、`membrane`、`growth`、`process_supervisor/idle_strategy.py` | 已存在；已接入 waiting governance 第一轮，继续接入 `prediction_error.py`、`expression_monitor.py` | `body_resource_budget.json`、`runtime/state/body/*`、`idle_strategy_state.json` |
 | `CoreAffectVector` | `life_v0/body/core_affect.py` | `language`、`dream`、`membrane`、`growth` | 已存在；继续接入 `regret_signal.py`、`relationship_timeline.py` | `core_affect_vector.json`、`emotion_episode_log.json` |
 
 这条总线保证“心跳、疲惫、情绪峰值、恢复压力”不是提示词，而是所有高层回合的底部时钟。

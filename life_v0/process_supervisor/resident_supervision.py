@@ -15,6 +15,8 @@ class ResidentSupervisionContext:
     terminal_dir: Path
     language_dir: Path
     relationship_dir: Path
+    body_rhythm_pulse: dict[str, Any]
+    need_state_vector: dict[str, Any]
     body_resource_budget: dict[str, Any]
     core_affect_vector: dict[str, Any]
     safe_terminal_loop: dict[str, Any]
@@ -91,6 +93,8 @@ def bootstrap_resident_supervision(
     read_json(terminal_dir / "session_envelope.json")
     safe_terminal_loop = read_json(terminal_dir / "safe_terminal_loop_state.json")
     terminal_life_loop_state = read_json(terminal_dir / "terminal_life_loop_state.json")
+    body_rhythm_pulse = read_json_if_exists(body_dir / "body_rhythm_pulse.json")
+    need_state_vector = read_json_if_exists(body_dir / "need_state_vector.json")
     body_resource_budget = read_json_if_exists(body_dir / "body_resource_budget.json")
     core_affect_vector = read_json_if_exists(body_dir / "core_affect_vector.json")
     life_context_frame = read_json_if_exists(terminal_dir / "life_context_frame.json")
@@ -180,6 +184,8 @@ def bootstrap_resident_supervision(
         relationship_dir=relationship_dir,
         safe_terminal_loop=safe_terminal_loop,
         terminal_life_loop_state=terminal_life_loop_state,
+        body_rhythm_pulse=body_rhythm_pulse,
+        need_state_vector=need_state_vector,
         self_narrative_trace=self_narrative_trace,
         commitment_index=commitment_index,
         relationship_graph=relationship_graph,
@@ -204,6 +210,8 @@ def bootstrap_resident_supervision(
         terminal_dir=terminal_dir,
         language_dir=language_dir,
         relationship_dir=relationship_dir,
+        body_rhythm_pulse=body_rhythm_pulse,
+        need_state_vector=need_state_vector,
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
         safe_terminal_loop=safe_terminal_loop,

@@ -343,8 +343,12 @@ IdleContinuityFrame
 2. 再把回合事件与外显面补硬；
 3. 最后统一到进程级 report / digest / receipt。
 
-当前这一步已经继续向前推进到：`resident_supervision.py` 与 `response_surface.py` 开始显式消费
-`body_resource_budget.json` 和 `core_affect_vector.json`，使 S06 的身体/情绪底盘进入常驻生命过程上下文。
+当前这一步已经继续向前推进到：
+
+1. `resident_supervision.py` 已开始显式装载 `body_rhythm_pulse.json`、`need_state_vector.json`、`body_resource_budget.json` 与 `core_affect_vector.json`；
+2. 第一拍 waiting heartbeat 不再只吃 terminal / replay / growth 对象，而会把身体节律与需要状态一起送入 `idle_strategy.py`；
+3. `response_surface.py` 继续显式消费 `body_resource_budget.json` 和 `core_affect_vector.json`，使 S06 的身体/情绪底盘进入常驻生命过程上下文；
+4. waiting governance 现在会真实写出 `body_waiting_posture`、`body_governance_flags`、`body_rhythm_ref` 与 `need_state_ref`，让等待态节律、修复保持和降载策略受身体状态调制。
 
 ## 完成定义
 
@@ -356,4 +360,5 @@ IdleContinuityFrame
 4. `dialogue_turn_log.jsonl`、`self_narrative_language_trace.json`、`relationship_subject_graph.json`、`commitment_repair_language_index.json` 都发生回合级写回。
 5. 通过显式退出语义结束进程时，不破坏当前生命连续体状态。
 6. `digital_life_process_report.json` 与 `idle_continuity_frame.json` 能回链到 `replay_cue_bundle.json`、`offline_consolidation_frame.json`、`growth_patch_candidate_queue.json`，证明常驻过程已经真正吃进离线链对象。
-7. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复和离线对象回链这五类行为。
+7. waiting heartbeat / idle strategy / process report 已显式回链 `body_rhythm_pulse.json` 与 `need_state_vector.json`，并根据疲惫负载、认知带宽与 sleep pressure 调整 `heartbeat_interval_ms`、`next_idle_action` 与 `body_waiting_posture`。
+8. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链，以及身体节律调制 waiting governance 这六类行为。

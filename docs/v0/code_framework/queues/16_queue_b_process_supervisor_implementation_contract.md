@@ -274,6 +274,8 @@ def decide_idle_strategy(
     safe_terminal_loop: dict[str, Any],
     terminal_life_loop_state: dict[str, Any],
     idle_continuity_frame: dict[str, Any] | None,
+    body_rhythm_pulse: dict[str, Any] | None = None,
+    need_state_vector: dict[str, Any] | None = None,
     replay_cue_bundle: dict[str, Any] | None,
     offline_consolidation_frame: dict[str, Any] | None,
     growth_patch_candidate_queue: dict[str, Any] | None,
@@ -289,6 +291,10 @@ def decide_idle_strategy(
 - `offline_pressure_level`
 - `relaunch_caution_level`
 - `next_idle_action`
+- `body_waiting_posture`
+- `body_governance_flags`
+- `body_rhythm_ref`
+- `need_state_ref`
 
 ### 当前已落第一轮
 
@@ -311,10 +317,20 @@ process report / shared object receipt 已开始显式回链：
 - `offline_pressure_level`
 - `relaunch_caution_level`
 - `next_idle_action`
+- `body_waiting_posture`
+- `body_governance_flags`
+- `body_rhythm_ref`
+- `need_state_ref`
 - `idle_continuity_ref`
 - `replay_cue_bundle_ref`
 - `offline_consolidation_frame_ref`
 - `growth_patch_candidate_queue_ref`
+
+并且第一轮已经不是纯离线压力治理，而是开始显式吃入身体节律与需要状态：
+
+1. `body_rhythm_pulse["fatigue_load"]` 会调制 waiting heartbeat 节律；
+2. `need_state_vector["cognitive_bandwidth"]` 与 `need_state_vector["sleep_pressure"]` 会决定 `body_waiting_posture`；
+3. `need_state_vector["repair_drive"]` 会参与 `next_idle_action`，把等待态从单纯轮询推进到修复保持。
 
 ## G. 新增 `life_v0/process_supervisor/resident_supervision.py`
 
@@ -347,6 +363,7 @@ def bootstrap_resident_supervision(
 
 1. 调用 `digital_life_shell_command` 完成 restore shell
 2. 装载 terminal / language / relationship / replay / dream / growth 当前状态
+3. 装载 `body_rhythm_pulse.json`、`need_state_vector.json`、`body_resource_budget.json` 与 `core_affect_vector.json`
 3. 检测上一次是否停在活跃回合中断态，并在必要时完成 relaunch normalization
 4. 把 relaunch continuity 回写到 narrative / commitment / relationship
 5. 写第一拍 `digital_life_waiting_heartbeat.json`
@@ -356,6 +373,8 @@ def bootstrap_resident_supervision(
 
 - `safe_terminal_loop`
 - `terminal_life_loop_state`
+- `body_rhythm_pulse`
+- `need_state_vector`
 - `life_context_frame`
 - `relation_turn_frame`
 - `shared_term_registry`
@@ -369,6 +388,12 @@ def bootstrap_resident_supervision(
 - `relaunch_recovery_count`
 - `last_relaunch_recovery_report_ref`
 - `heartbeat_counter`
+
+当前 resident supervision 第一轮已经不只是 restore shell 启动器官，还承担：
+
+1. 把身体节律与需要状态接入第一拍 waiting governance；
+2. 确保 `idle_strategy_state.json`、waiting heartbeat 与主进程 report 在 bootstrap 时就带上身体侧 ref；
+3. 让后续 `process_session_loop.py` 拿到统一的身体/情绪/离线共享对象上下文，而不是在 while-loop 内重复散读状态文件。
 
 ## H. 新增 `life_v0/process_supervisor/live_turn_cycle.py`
 

@@ -69,13 +69,16 @@ life_v0/growth/
 
 1. `runtime/state/body/body_resource_budget.json` 会被 `process_supervisor/resident_supervision.py` 装载进常驻过程上下文。
 2. `runtime/state/body/core_affect_vector.json` 会被 `process_supervisor/resident_supervision.py` 一并装载。
-3. `process_supervisor/response_surface.py` 现在会真实消费这两个对象，把疲惫级别、修复驱力和情绪张力写进生命回应文本。
+3. `runtime/state/body/body_rhythm_pulse.json` 与 `runtime/state/body/need_state_vector.json` 现在也会被 `process_supervisor/resident_supervision.py` 装载进常驻过程上下文。
+4. `process_supervisor/idle_strategy.py` 现在会真实消费 `body_rhythm_pulse.json` 与 `need_state_vector.json`，把疲惫负载、认知带宽、sleep pressure 与 repair drive 压进 waiting governance。
+5. `process_supervisor/response_surface.py` 继续真实消费 `body_resource_budget.json` 与 `core_affect_vector.json`，把疲惫级别、修复驱力和情绪张力写进生命回应文本。
 
 当前真实工程链已经变成：
 
 ```text
 S06 body/affect
   -> resident supervision context
+  -> idle strategy / waiting governance
   -> response surface
   -> digital life turn
 ```
@@ -89,6 +92,12 @@ S06 body/affect
 3. `tests/bridges/test_replay_shadow.py`
 4. `tests/bridges/test_growth_archive.py`
 5. `tests/process/test_persistent_digital_life_process.py`
+
+其中 `tests/process/test_persistent_digital_life_process.py` 这一轮已经直接守住：
+
+1. `body_rhythm_pulse.json` 与 `need_state_vector.json` 在 resident supervision bootstrap 时被装载；
+2. waiting heartbeat / idle strategy / process report 会回写 `body_waiting_posture`；
+3. `heartbeat_interval_ms` 与 `next_idle_action` 会随 fatigue / bandwidth / sleep pressure / repair drive 变化。
 
 下一轮应新增：
 
