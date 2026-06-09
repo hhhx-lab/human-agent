@@ -134,7 +134,10 @@ event -> response -> writeback -> incident recovery 生命周期继续从 `__ini
 `apology_repair_language_trace.json` 从 `terminal_loop` 继续接进 `persistent_process.py`、
 `process_closeout.py` 与 `process_report.py`，让 `resident_governance_snapshot.json`、
 `digital_life_resident_governance_report.json`、`digital_life_process_report.json`、
-`digital_life_process_digest.json` 与 process receipt 显式回链长期语言连续体对象。当前
+`digital_life_process_digest.json` 与 process receipt 显式回链长期语言连续体对象；最新这一轮又把
+这批长期语言对象继续接进 `idle_strategy_state.json`、`digital_life_waiting_heartbeat.json`、
+`idle_continuity_frame.json` 与 `terminal_life_loop_state.json`，让 waiting continuity 本身也显式
+承载长期关系/承诺/修复语言对象。当前
 `__init__.py` 基本只剩启动、接线和 closeout 外壳；后续重点转向后台 resident governance 与更高频
 heartbeat 节律。
 

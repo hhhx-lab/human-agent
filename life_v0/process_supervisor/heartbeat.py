@@ -21,6 +21,9 @@ def write_waiting_heartbeat(
     relationship_dir: Path,
     safe_terminal_loop: dict[str, Any],
     terminal_life_loop_state: dict[str, Any],
+    relationship_timeline: dict[str, Any] | None = None,
+    commitment_expression_plan: dict[str, Any] | None = None,
+    apology_repair_language_trace: dict[str, Any] | None = None,
     body_rhythm_pulse: dict[str, Any] | None = None,
     need_state_vector: dict[str, Any] | None = None,
     self_narrative_trace: dict[str, Any],
@@ -50,6 +53,9 @@ def write_waiting_heartbeat(
         safe_terminal_loop=safe_terminal_loop,
         terminal_life_loop_state=terminal_life_loop_state,
         idle_continuity_frame=None,
+        relationship_timeline=relationship_timeline,
+        commitment_expression_plan=commitment_expression_plan,
+        apology_repair_language_trace=apology_repair_language_trace,
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
         replay_cue_bundle=replay_cue_bundle,
@@ -96,6 +102,14 @@ def write_waiting_heartbeat(
     terminal_life_loop_state["last_heartbeat_packet_ref"] = heartbeat_report_ref
     terminal_life_loop_state["next_required_action"] = "await_next_external_relation_turn"
     terminal_life_loop_state["idle_strategy_ref"] = IDLE_STRATEGY_STATE_REF
+    for field in (
+        "relationship_timeline_ref",
+        "commitment_expression_plan_ref",
+        "apology_repair_language_trace_ref",
+        "long_horizon_language_refs",
+    ):
+        if field in idle_strategy:
+            terminal_life_loop_state[field] = idle_strategy[field]
     write_json(terminal_dir / "terminal_life_loop_state.json", terminal_life_loop_state)
 
     record_idle_continuity(
@@ -117,6 +131,9 @@ def write_waiting_heartbeat(
         source_doc_refs=source_doc_refs,
         readme_block_refs=readme_block_refs,
         runtime_carrier_refs=runtime_carrier_refs,
+        relationship_timeline_ref=idle_strategy.get("relationship_timeline_ref"),
+        commitment_expression_plan_ref=idle_strategy.get("commitment_expression_plan_ref"),
+        apology_repair_language_trace_ref=idle_strategy.get("apology_repair_language_trace_ref"),
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,

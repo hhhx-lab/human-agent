@@ -5,6 +5,9 @@ from typing import Any
 
 IDLE_STRATEGY_STATE_REF = "runtime/state/terminal/idle_strategy_state.json"
 IDLE_CONTINUITY_FRAME_REF = "runtime/state/terminal/idle_continuity_frame.json"
+RELATIONSHIP_TIMELINE_REF = "runtime/state/relationship/relationship_timeline.json"
+COMMITMENT_EXPRESSION_PLAN_REF = "runtime/state/language/commitment_expression_plan.json"
+APOLOGY_REPAIR_LANGUAGE_TRACE_REF = "runtime/state/language/apology_repair_language_trace.json"
 IDLE_GOVERNANCE_FIELD_NAMES = (
     "heartbeat_interval_ms",
     "idle_probe_mode",
@@ -16,6 +19,10 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "body_governance_flags",
     "body_rhythm_ref",
     "need_state_ref",
+    "relationship_timeline_ref",
+    "commitment_expression_plan_ref",
+    "apology_repair_language_trace_ref",
+    "long_horizon_language_refs",
 )
 
 
@@ -36,6 +43,9 @@ def decide_idle_strategy(
     safe_terminal_loop: dict[str, Any],
     terminal_life_loop_state: dict[str, Any],
     idle_continuity_frame: dict[str, Any] | None,
+    relationship_timeline: dict[str, Any] | None = None,
+    commitment_expression_plan: dict[str, Any] | None = None,
+    apology_repair_language_trace: dict[str, Any] | None = None,
     body_rhythm_pulse: dict[str, Any] | None = None,
     need_state_vector: dict[str, Any] | None = None,
     replay_cue_bundle: dict[str, Any] | None,
@@ -87,6 +97,23 @@ def decide_idle_strategy(
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
     )
+    relationship_timeline_ref = _ref_if_present(
+        payload=relationship_timeline,
+        ref=RELATIONSHIP_TIMELINE_REF,
+    )
+    commitment_expression_plan_ref = _ref_if_present(
+        payload=commitment_expression_plan,
+        ref=COMMITMENT_EXPRESSION_PLAN_REF,
+    )
+    apology_repair_language_trace_ref = _ref_if_present(
+        payload=apology_repair_language_trace,
+        ref=APOLOGY_REPAIR_LANGUAGE_TRACE_REF,
+    )
+    long_horizon_refs = _long_horizon_language_refs(
+        relationship_timeline_ref=relationship_timeline_ref,
+        commitment_expression_plan_ref=commitment_expression_plan_ref,
+        apology_repair_language_trace_ref=apology_repair_language_trace_ref,
+    )
 
     return {
         "schema_version": "idle_strategy_state_v0",
@@ -112,6 +139,10 @@ def decide_idle_strategy(
         "need_state_ref": (
             "runtime/state/body/need_state_vector.json" if need_state_vector else None
         ),
+        "relationship_timeline_ref": relationship_timeline_ref,
+        "commitment_expression_plan_ref": commitment_expression_plan_ref,
+        "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
+        "long_horizon_language_refs": long_horizon_refs,
         "idle_continuity_ref": IDLE_CONTINUITY_FRAME_REF,
         "replay_cue_bundle_ref": replay_cue_bundle_ref if replay_cue_bundle else None,
         "offline_consolidation_frame_ref": (
@@ -274,3 +305,26 @@ def _int_or_zero(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _ref_if_present(*, payload: dict[str, Any] | None, ref: str) -> str | None:
+    if not payload:
+        return None
+    return ref
+
+
+def _long_horizon_language_refs(
+    *,
+    relationship_timeline_ref: str | None,
+    commitment_expression_plan_ref: str | None,
+    apology_repair_language_trace_ref: str | None,
+) -> list[str]:
+    return [
+        ref
+        for ref in [
+            relationship_timeline_ref,
+            commitment_expression_plan_ref,
+            apology_repair_language_trace_ref,
+        ]
+        if ref
+    ]

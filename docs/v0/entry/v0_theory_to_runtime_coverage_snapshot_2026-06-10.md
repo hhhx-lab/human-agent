@@ -84,7 +84,8 @@
 
 1. 长期关系连续体、承诺表达计划、修复语言轨迹，已经不是抽象理论，而是 runtime 一等对象。
 2. 它们已经进入 response surface、resident supervision、terminal-loop restore/writeback。
-3. 这一层当前不再缺“有没有理论”，当前缺的是更厚的 waiting continuity 和后台治理消费。
+3. 最新一轮又已继续进入 `idle_strategy_state.json`、`digital_life_waiting_heartbeat.json`、`idle_continuity_frame.json` 与 `terminal_life_loop_state.json`。
+4. 这一层当前不再缺“有没有理论”，当前缺的是后台治理与更高频节律消费。
 
 ### 3. 常驻过程关闭态治理层
 
@@ -127,19 +128,23 @@
 
 ## 当前未闭合但明确收束到工程层的缺口
 
-### 1. waiting continuity 还不够厚
+### 1. waiting continuity 已从最小存在推进到显式长期语言承载，但节律治理仍偏薄
 
 当前已闭合：
 
 - waiting heartbeat
 - idle strategy
 - resident governance snapshot/report
+- `relationship_timeline_ref`
+- `commitment_expression_plan_ref`
+- `apology_repair_language_trace_ref`
+- `long_horizon_language_refs`
 
 当前仍偏薄：
 
-1. `terminal_life_loop_state.json` 对长期语言对象的持续治理还偏浅。
-2. waiting continuity 对关系时间线、承诺表达计划、修复语言轨迹的节律消费还不够细。
-3. heartbeat 仍然偏“最小存在”，还没进入更高频的后台自我维持节律。
+1. waiting continuity 已能显式承载长期语言对象，但对这些对象的优先级变化、节律竞争和资源下降治理还不够细。
+2. heartbeat 仍然偏“最小存在”，还没进入更高频的后台自我维持节律。
+3. `terminal_life_loop_state.json` 还没有更厚的后台治理状态机。
 
 ### 2. 后台 resident governance 还只是 foreground closeout
 
@@ -169,8 +174,8 @@
 
 如果继续推进，优先顺序应该是：
 
-1. 补 `process_supervisor/` 的 waiting continuity 与后台 resident governance 状态机。
-2. 让 `terminal_life_loop_state.json` 对长期语言对象拥有更厚的持续治理字段。
+1. 补 `process_supervisor/` 的后台 resident governance 状态机与更高频 heartbeat 节律。
+2. 让 `terminal_life_loop_state.json` 对长期语言对象拥有更厚的持续治理字段与节律竞争字段。
 3. 把 process closeout 中已经形成的长期语言摘要继续回挂到更上游的 report bundle / birth shell / stage explanation。
 
 不推荐的方向：

@@ -12,6 +12,9 @@ def build_idle_continuity_frame(
     source_doc_refs: list[str],
     readme_block_refs: list[str],
     runtime_carrier_refs: list[str],
+    relationship_timeline_ref: str | None = None,
+    commitment_expression_plan_ref: str | None = None,
+    apology_repair_language_trace_ref: str | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
     growth_patch_candidate_queue_ref: str | None = None,
@@ -40,6 +43,18 @@ def build_idle_continuity_frame(
         "self_narrative_ref": "runtime/state/language/self_narrative_language_trace.json",
         "commitment_index_ref": "runtime/state/language/commitment_repair_language_index.json",
         "relationship_graph_ref": "runtime/state/relationship/relationship_subject_graph.json",
+        "relationship_timeline_ref": relationship_timeline_ref,
+        "commitment_expression_plan_ref": commitment_expression_plan_ref,
+        "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
+        "long_horizon_language_refs": [
+            ref
+            for ref in [
+                relationship_timeline_ref,
+                commitment_expression_plan_ref,
+                apology_repair_language_trace_ref,
+            ]
+            if ref
+        ],
         "replay_cue_bundle_ref": replay_cue_bundle_ref,
         "offline_consolidation_frame_ref": offline_consolidation_frame_ref,
         "growth_patch_candidate_queue_ref": growth_patch_candidate_queue_ref,

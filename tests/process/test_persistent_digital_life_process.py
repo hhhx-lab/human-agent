@@ -185,6 +185,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(terminal_loop_state["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["heartbeat_counter"], 1)
             self.assertEqual(terminal_loop_state["next_required_action"], "await_next_external_relation_turn")
+            self.assertEqual(
+                terminal_loop_state["relationship_timeline_ref"],
+                "runtime/state/relationship/relationship_timeline.json",
+            )
+            self.assertEqual(
+                terminal_loop_state["commitment_expression_plan_ref"],
+                "runtime/state/language/commitment_expression_plan.json",
+            )
+            self.assertEqual(
+                terminal_loop_state["apology_repair_language_trace_ref"],
+                "runtime/state/language/apology_repair_language_trace.json",
+            )
+            self.assertEqual(
+                terminal_loop_state["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
 
             heartbeat_packet = self._read_json(paths["reports"] / "digital_life_waiting_heartbeat.json")
             idle_continuity = self._read_json(paths["terminal_state"] / "idle_continuity_frame.json")
@@ -209,6 +229,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 heartbeat_packet["next_idle_action"],
                 "refresh_waiting_heartbeat_with_repair_readiness_hold",
             )
+            self.assertEqual(
+                heartbeat_packet["relationship_timeline_ref"],
+                "runtime/state/relationship/relationship_timeline.json",
+            )
+            self.assertEqual(
+                heartbeat_packet["commitment_expression_plan_ref"],
+                "runtime/state/language/commitment_expression_plan.json",
+            )
+            self.assertEqual(
+                heartbeat_packet["apology_repair_language_trace_ref"],
+                "runtime/state/language/apology_repair_language_trace.json",
+            )
+            self.assertEqual(
+                heartbeat_packet["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
             self.assertEqual(idle_strategy["schema_version"], "idle_strategy_state_v0")
             self.assertEqual(idle_strategy["run_id"], "persistent-heartbeat")
             self.assertIn("strategy_id", idle_strategy)
@@ -226,6 +266,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn("body_rhythm_present", idle_strategy["body_governance_flags"])
             self.assertIn("need_state_present", idle_strategy["body_governance_flags"])
             self.assertIn("fatigue_regulates_heartbeat", idle_strategy["body_governance_flags"])
+            self.assertEqual(
+                idle_strategy["relationship_timeline_ref"],
+                "runtime/state/relationship/relationship_timeline.json",
+            )
+            self.assertEqual(
+                idle_strategy["commitment_expression_plan_ref"],
+                "runtime/state/language/commitment_expression_plan.json",
+            )
+            self.assertEqual(
+                idle_strategy["apology_repair_language_trace_ref"],
+                "runtime/state/language/apology_repair_language_trace.json",
+            )
+            self.assertEqual(
+                idle_strategy["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
 
             process_report = self._read_json(paths["reports"] / "digital_life_process_report.json")
             self.assertEqual(process_report["completed_dialogue_turns"], 0)
@@ -299,6 +359,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "runtime/state/replay/replay_cue_bundle.json",
                 idle_continuity["replay_seed_refs"],
+            )
+            self.assertEqual(
+                idle_continuity["relationship_timeline_ref"],
+                "runtime/state/relationship/relationship_timeline.json",
+            )
+            self.assertEqual(
+                idle_continuity["commitment_expression_plan_ref"],
+                "runtime/state/language/commitment_expression_plan.json",
+            )
+            self.assertEqual(
+                idle_continuity["apology_repair_language_trace_ref"],
+                "runtime/state/language/apology_repair_language_trace.json",
+            )
+            self.assertEqual(
+                idle_continuity["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
             )
 
     def test_digital_life_process_refreshes_waiting_heartbeat_while_idle(self):
@@ -421,6 +501,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 idle_strategy["idle_continuity_ref"],
                 "runtime/state/terminal/idle_continuity_frame.json",
             )
+            self.assertEqual(
+                idle_strategy["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
+            self.assertEqual(
+                heartbeat_packet["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
+            self.assertEqual(
+                idle_continuity["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
             self.assertEqual(narrative_trace["idle_continuity_counter"], 3)
             self.assertEqual(len(narrative_trace["idle_continuity_refs"]), 3)
             self.assertEqual(
@@ -469,7 +573,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
             narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
             commitment_index = self._read_json(paths["language_state"] / "commitment_repair_language_index.json")
+            commitment_expression_plan = self._read_json(
+                paths["language_state"] / "commitment_expression_plan.json"
+            )
+            apology_repair_language_trace = self._read_json(
+                paths["language_state"] / "apology_repair_language_trace.json"
+            )
             relationship_graph = self._read_json(paths["relationship_state"] / "relationship_subject_graph.json")
+            relationship_timeline = self._read_json(
+                paths["relationship_state"] / "relationship_timeline.json"
+            )
             replay_cue_bundle = self._read_json(paths["state_root"] / "replay" / "replay_cue_bundle.json")
             offline_consolidation_frame = self._read_json(
                 paths["state_root"] / "dream" / "offline_consolidation_frame.json"
@@ -495,6 +608,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 relationship_dir=paths["relationship_state"],
                 safe_terminal_loop=safe_terminal_loop,
                 terminal_life_loop_state=terminal_loop_state,
+                relationship_timeline=relationship_timeline,
+                commitment_expression_plan=commitment_expression_plan,
+                apology_repair_language_trace=apology_repair_language_trace,
                 self_narrative_trace=narrative_trace,
                 commitment_index=commitment_index,
                 relationship_graph=relationship_graph,
@@ -531,6 +647,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(heartbeat_packet["heartbeat_counter"], 2)
             self.assertEqual(idle_continuity["heartbeat_counter"], 2)
             self.assertEqual(idle_continuity["event_kind"], "waiting_heartbeat_refresh")
+            self.assertEqual(
+                terminal_loop_state["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
+            self.assertEqual(
+                heartbeat_packet["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
+            self.assertEqual(
+                idle_continuity["long_horizon_language_refs"],
+                [
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
+            )
 
     def test_idle_refresh_loop_uses_idle_strategy_interval_as_poll_timeout(self):
         from life_v0.process_supervisor.idle_refresh_loop import (
@@ -605,6 +745,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
             terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
             idle_continuity_frame=None,
+            relationship_timeline={
+                "schema_version": "relationship_timeline_v0",
+                "relationship_continuity_reports": [{"continuity_state": "active_dialogue"}],
+            },
+            commitment_expression_plan={
+                "schema_version": "commitment_expression_plan_v0",
+                "language_act_candidates": [{"act_type": "followup_commitment"}],
+            },
+            apology_repair_language_trace={
+                "schema_version": "apology_repair_language_trace_v0",
+                "repair_language_moves": [{"move_type": "take_responsibility"}],
+            },
             body_rhythm_pulse={
                 "schema_version": "body_rhythm_pulse_v0",
                 "fatigue_load": "managed_low_noise",
@@ -651,6 +803,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("need_state_present", idle_strategy["body_governance_flags"])
         self.assertIn("sleep_pressure_present", idle_strategy["body_governance_flags"])
         self.assertIn("cognitive_bandwidth_narrowed", idle_strategy["body_governance_flags"])
+        self.assertEqual(
+            idle_strategy["relationship_timeline_ref"],
+            "runtime/state/relationship/relationship_timeline.json",
+        )
+        self.assertEqual(
+            idle_strategy["commitment_expression_plan_ref"],
+            "runtime/state/language/commitment_expression_plan.json",
+        )
+        self.assertEqual(
+            idle_strategy["apology_repair_language_trace_ref"],
+            "runtime/state/language/apology_repair_language_trace.json",
+        )
+        self.assertEqual(
+            idle_strategy["long_horizon_language_refs"],
+            [
+                "runtime/state/relationship/relationship_timeline.json",
+                "runtime/state/language/commitment_expression_plan.json",
+                "runtime/state/language/apology_repair_language_trace.json",
+            ],
+        )
 
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
         from life_v0.process_supervisor.resident_supervision import (

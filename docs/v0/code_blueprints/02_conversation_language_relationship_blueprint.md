@@ -122,4 +122,9 @@
    - `runtime/state/language/commitment_expression_plan.json`
    - `runtime/state/language/apology_repair_language_trace.json`
 4. `process report / terminal closeout bundle / resident governance snapshot` 现在也已继续显式回链这批长期语言对象
-5. 下一步前沿转向让 `terminal_life_loop_state` waiting continuity、后台 resident governance 和 heartbeat 节律继续围绕这批对象补厚
+5. 最新一轮又已把 waiting continuity 主链补齐，让这批对象显式进入：
+   - `idle_strategy_state.json`
+   - `digital_life_waiting_heartbeat.json`
+   - `idle_continuity_frame.json`
+   - `terminal_life_loop_state.json`
+6. 下一步前沿转向后台 resident governance 和 heartbeat 节律继续围绕这批对象补厚
