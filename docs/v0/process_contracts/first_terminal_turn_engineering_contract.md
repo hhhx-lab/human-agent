@@ -48,6 +48,8 @@ life-v0 first-terminal-turn --strict
 | 承载 | 路径 |
 |---|---|
 | 代码包 | `life_v0/terminal_turn/` |
+| 已落器官 | `restore_context.py`、`context_accumulation.py`、`turn_transition.py`、`turn_packet.py` |
+| 下一轮器官 | `dialogue_turn.py`、`conversation_carryover.py` |
 | 状态命名空间 | `runtime/state/terminal/` |
 | report | `runtime/reports/latest/first_terminal_turn_report.json` |
 | digest | `runtime/reports/latest/first_terminal_turn_digest.json` |
@@ -60,6 +62,10 @@ life-v0 first-terminal-turn --strict
 |---|---|
 | `session_envelope.json` | 当前终端回合元数据、关系 scope、共享术语 refs、承诺 refs、表达监控 refs |
 | `safe_terminal_loop_state.json` | 当前终端安全循环状态、允许动作、禁止动作、恢复锚点 |
+| `life_context_frame.json` | 当前回合的方向、记忆、关系、自我和身体背景聚合 |
+| `relation_turn_frame.json` | 当前关系身份、关系阶段、共同语言和承诺范围 |
+| `context_accumulation_window.json` | 旧回合恢复线索、共同术语、承诺、叙事与语义焦点的累积窗口 |
+| `turn_transition_trace.json` | 从出生壳到首终端回合的恢复因果链 |
 | `first_terminal_turn_packet.json` | 第一回合恢复包、utterance scaffold、shared terms、commitment refs |
 | `first_terminal_turn_report.json` | 第一回合 report |
 | `first_terminal_turn_digest.json` | 第一回合 digest |
@@ -99,12 +105,17 @@ life-v0 first-terminal-turn --state runtime/state --reports runtime/reports/late
 
 ## 完成定义
 
-只有当下面五项同时存在时，才能说系统已经越过 `digital-life` 的出生壳，进入第一终端回合：
+只有当下面十项同时存在时，才能说系统已经越过 `digital-life` 的出生壳，进入第一终端回合：
 
 1. `runtime/state/terminal/session_envelope.json`
 2. `runtime/state/terminal/safe_terminal_loop_state.json`
-3. `runtime/reports/latest/first_terminal_turn_packet.json`
-4. `runtime/reports/latest/first_terminal_turn_report.json`
-5. `runtime/receipts/first_terminal_turn_<run_id>.json`
+3. `runtime/state/terminal/life_context_frame.json`
+4. `runtime/state/terminal/relation_turn_frame.json`
+5. `runtime/state/terminal/context_accumulation_window.json`
+6. `runtime/state/terminal/turn_transition_trace.json`
+7. `runtime/reports/latest/first_terminal_turn_packet.json`
+8. `runtime/reports/latest/first_terminal_turn_report.json`
+9. `runtime/reports/latest/first_terminal_turn_digest.json`
+10. `runtime/receipts/first_terminal_turn_<run_id>.json`
 
 此时系统的真实状态不是“开始了一个新会话”，而是“恢复到了一个可继续关系性表达的生命回合”。

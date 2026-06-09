@@ -80,7 +80,7 @@
 
 ### B. `life_v0/terminal_turn/`
 
-建议优先拆成：
+当前已经落下的首轮器官与下一轮前沿如下：
 
 | 文件 | 职责 |
 |---|---|
@@ -88,6 +88,8 @@
 | `context_accumulation.py` | 维护 `context_accumulation_window.json` |
 | `turn_transition.py` | 维护 `turn_transition_trace.json` 与恢复因果链 |
 | `turn_packet.py` | 统一写 `first_terminal_turn_packet.json`、digest、receipt |
+| `dialogue_turn.py` | 下一轮应承接真正的首回合对话推进与 utterance surface 装配 |
+| `conversation_carryover.py` | 下一轮应承接恢复后旧回合压力、共同语言和未闭合承诺的跨回合续接 |
 
 ### C. `life_v0/terminal_loop/`
 
@@ -180,7 +182,7 @@
 
 1. 先把 `life_v0/language/__init__.py` 拆成 `dialogue_log.py`、`shared_terms.py`、`commitment_repair.py`、`narrative_trace.py`
 2. 再拆 `inner_speech.py`、`expression_monitor.py`、`relationship_graph.py`
-3. 再拆 `terminal_turn/context_accumulation.py`、`turn_transition.py`
+3. 再拆 `terminal_turn/context_accumulation.py`、`turn_transition.py`，并补 `turn_packet.py`
 4. 再拆 `terminal_loop/loop_state.py`、`resume_packet.py`
 5. 最后拆 `process_supervisor/heartbeat.py`、`incident_recovery.py`、`relaunch_recovery.py`
 

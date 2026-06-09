@@ -350,6 +350,172 @@ class FirstTerminalTurnTests(unittest.TestCase):
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertIn("external_irreversible_action", safe_terminal_loop["blocked_actions"])
 
+    def test_turn_packet_organ_writes_packet_report_digest_and_receipt(self):
+        from life_v0.terminal_turn.turn_packet import write_first_terminal_turn_bundle
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state_dir = runtime_root / "state"
+            terminal_dir = state_dir / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            receipts_dir = runtime_root / "receipts"
+            language_dir = state_dir / "language"
+            relationship_dir = state_dir / "relationship"
+            direction_dir = state_dir / "direction"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            receipts_dir.mkdir(parents=True, exist_ok=True)
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            language_dir.mkdir(parents=True, exist_ok=True)
+            relationship_dir.mkdir(parents=True, exist_ok=True)
+            direction_dir.mkdir(parents=True, exist_ok=True)
+
+            self._write_json(
+                reports_dir / "digital_life_birth_packet.json",
+                {
+                    "schema_version": "digital_life_birth_packet_v0",
+                    "status": "closed",
+                    "birth_stage": "ready_for_first_terminal_turn",
+                },
+            )
+            self._write_json(
+                reports_dir / "digital_life_birth_digest.json",
+                {
+                    "next_required_action": "enter_first_terminal_turn",
+                },
+            )
+            self._write_json(
+                reports_dir / "first_activation_return_packet.json",
+                {
+                    "schema_version": "first_activation_return_packet_v0",
+                    "status": "closed",
+                    "self_narrative_restore_refs": [
+                        "runtime/state/language/self_narrative_language_trace.json#line-1"
+                    ],
+                },
+            )
+            self._write_json(
+                reports_dir / "stage_explanation_report.json",
+                {
+                    "decision": "ready_for_terminal_birth_restore",
+                },
+            )
+            self._write_json(direction_dir / "direction_lock.json", {"direction_statement": "build_real_digital_life"})
+            self._write_json(
+                state_dir / "life_state.json",
+                {
+                    "schema_version": "life_state_v0",
+                },
+            )
+            self._write_json(
+                relationship_dir / "relationship_subject_graph.json",
+                {
+                    "subjects": [
+                        {"relationship_id": "rel-v0-0001", "relation_role": "friend", "relationship_stage": "active_dialogue"}
+                    ]
+                },
+            )
+            self._write_json(language_dir / "shared_term_registry.json", {"shared_terms": [{"surface": "旧约定"}]})
+            self._write_json(language_dir / "expression_monitor_state.json", {"schema_version": "expression_monitor_state_v0"})
+            self._write_json(
+                language_dir / "relation_scope_language_index.json",
+                {"relation_scopes": [{"scope_id": "scope-v0-0001", "scope_label": "friendship_continuity", "scope_ref": "runtime/state/language/relation_scope_language_index.json#scope-v0-0001"}]},
+            )
+            self._write_json(
+                language_dir / "self_narrative_language_trace.json",
+                {"narrative_turn_refs": ["runtime/state/language/self_narrative_language_trace.json#line-1"]},
+            )
+            self._write_json(language_dir / "language_percept_frame.json", {"schema_version": "language_percept_frame_v0"})
+            self._write_json(
+                language_dir / "semantic_map_frame.json",
+                {"schema_version": "semantic_map_frame_v0", "semantic_focus": "repair_commitment_shared_language"},
+            )
+            self._write_json(
+                language_dir / "commitment_repair_language_index.json",
+                {"commitment_refs": ["commitment-ref-01", "commitment-ref-02"]},
+            )
+            (language_dir / "dialogue_turn_log.jsonl").write_text(
+                '{"turn_id":"dialogue-turn-v0-0001"}\n',
+                encoding="utf-8",
+            )
+
+            session_envelope = {
+                "schema_version": "session_envelope_v0",
+                "current_turn_mode": "restored_life_turn",
+                "relation_role": "friend",
+            }
+            safe_terminal_loop = {
+                "schema_version": "safe_terminal_loop_state_v0",
+                "current_mode": "restored_waiting_for_external_turn",
+                "blocked_actions": ["external_irreversible_action"],
+            }
+            context_accumulation = {
+                "schema_version": "context_accumulation_window_v0",
+                "status": "closed",
+            }
+            life_context = {
+                "schema_version": "life_context_frame_v0",
+                "status": "closed",
+            }
+            relation_turn = {
+                "schema_version": "relation_turn_frame_v0",
+                "status": "closed",
+            }
+            turn_transition = {
+                "schema_version": "turn_transition_trace_v0",
+                "status": "closed",
+            }
+
+            result = write_first_terminal_turn_bundle(
+                run_id="turn-packet-organ",
+                generated_at="2026-06-09T00:00:00+00:00",
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                receipts_dir=receipts_dir,
+                source_doc_refs=["docs/v0/process_contracts/first_terminal_turn_engineering_contract.md"],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                status="closed",
+                turn_stage="ready_for_resumed_external_dialogue",
+                next_required_action="await_external_relation_turn",
+                relation_subject={
+                    "relationship_id": "rel-v0-0001",
+                    "relation_role": "friend",
+                    "relationship_stage": "active_dialogue",
+                },
+                shared_term_surfaces=["旧约定"],
+                unresolved_commitments=["commitment-ref-01", "commitment-ref-02"],
+                expression_monitor_dimensions=["responsibility", "relationship"],
+                dialogue_turn_restore_refs=["runtime/state/language/dialogue_turn_log.jsonl#line-1"],
+                blocked_reasons=[],
+                session_envelope=session_envelope,
+                safe_terminal_loop=safe_terminal_loop,
+                life_context=life_context,
+                relation_turn=relation_turn,
+                context_accumulation=context_accumulation,
+                turn_transition=turn_transition,
+                write_json=self._write_json,
+            )
+
+            packet = self._read_json(reports_dir / "first_terminal_turn_packet.json")
+            report = self._read_json(reports_dir / "first_terminal_turn_report.json")
+            digest = self._read_json(reports_dir / "first_terminal_turn_digest.json")
+            receipt = self._read_json(receipts_dir / "first_terminal_turn_turn-packet-organ.json")
+
+            self.assertEqual(result.report["run_id"], "turn-packet-organ")
+            self.assertEqual(result.digest["run_id"], "turn-packet-organ")
+            self.assertEqual(result.receipt["receipt_id"], "first_terminal_turn_turn-packet-organ")
+            self.assertEqual(packet["schema_version"], "first_terminal_turn_packet_v0")
+            self.assertEqual(packet["turn_stage"], "ready_for_resumed_external_dialogue")
+            self.assertEqual(packet["relation_identity"]["relation_role"], "friend")
+            self.assertEqual(report["schema_version"], "first_terminal_turn_report_v0")
+            self.assertEqual(report["current_terminal_mode"], "restored_life_turn")
+            self.assertEqual(digest["schema_version"], "first_terminal_turn_digest_v0")
+            self.assertEqual(digest["shared_term_count"], 1)
+            self.assertEqual(receipt["schema_version"], "first_terminal_turn_receipt_v0")
+            self.assertEqual(receipt["stage_effect"], "ready_for_resumed_external_dialogue")
+            self.assertIn(str(reports_dir / "digital_life_birth_packet.json"), receipt["input_hashes"])
+            self.assertIn(str(reports_dir / "first_terminal_turn_report.json"), receipt["output_hashes"])
+
     def _runtime_paths(self, tmp_path: Path) -> dict[str, Path]:
         state_root = tmp_path / "runtime" / "state"
         runtime_root = tmp_path / "runtime"

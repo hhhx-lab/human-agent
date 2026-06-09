@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -13,6 +12,7 @@ from .restore_context import (
     build_safe_terminal_loop_state,
     load_first_terminal_restore_context,
 )
+from .turn_packet import write_first_terminal_turn_bundle
 from .turn_transition import build_relation_turn_frame, build_turn_transition_trace
 
 
@@ -59,7 +59,6 @@ def run_first_terminal_turn(
     state_dir = state_dir.resolve()
     reports_dir = reports_dir.resolve()
     receipts_dir = receipts_dir.resolve()
-    terminal_dir = state_dir / "terminal"
 
     blocked_reasons: list[str] = []
 
@@ -198,107 +197,56 @@ def run_first_terminal_turn(
         runtime_carrier_refs=RUNTIME_CARRIER_REFS,
     )
 
-    packet = {
-        "schema_version": "first_terminal_turn_packet_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "status": status,
-        "turn_stage": turn_stage,
-        "source_doc_refs": SOURCE_DOC_REFS,
-        "readme_block_refs": READ_ME_BLOCK_REFS,
-        "runtime_carrier_refs": RUNTIME_CARRIER_REFS,
-        "session_envelope_ref": "runtime/state/terminal/session_envelope.json",
-        "safe_terminal_loop_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
-        "life_context_ref": "runtime/state/terminal/life_context_frame.json",
-        "relation_turn_ref": "runtime/state/terminal/relation_turn_frame.json",
-        "context_accumulation_ref": "runtime/state/terminal/context_accumulation_window.json",
-        "turn_transition_ref": "runtime/state/terminal/turn_transition_trace.json",
-        "relation_identity": {
-            "relationship_id": restored.relation_subject.get("relationship_id"),
-            "relation_role": restored.relation_subject.get("relation_role"),
-            "relationship_stage": restored.relation_subject.get("relationship_stage"),
-        },
-        "shared_term_surfaces": restored.shared_term_surfaces,
-        "unresolved_commitment_refs": restored.unresolved_commitments,
-        "expression_monitor_dimensions": list(
-            restored.expression_monitor.get("monitor_dimensions", [])
-        ),
-        "utterance_scaffold": {
-            "intent": "resume_life_continuity_before_new_work",
-            "surface_strategy": "resume_before_new_content",
-            "relation_scope": restored.relation_subject.get("relationship_id"),
-            "must_restore_before_speaking": [
-                "relation_identity",
-                "shared_terms",
-                "unresolved_commitments",
-                "language_percept",
-                "semantic_map",
-                "expression_monitor",
-            ],
-        },
-        "dialogue_turn_restore_refs": restored.dialogue_refs,
-        "next_required_action": next_required_action,
-        "receipt_ref": f"runtime/receipts/first_terminal_turn_{run_id}.json",
-    }
-
-    report = {
-        "schema_version": "first_terminal_turn_report_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "status": status,
-        "engineering_slice_ref": "FIRST_TERMINAL_TURN",
-        "source_doc_refs": SOURCE_DOC_REFS,
-        "readme_block_refs": READ_ME_BLOCK_REFS,
-        "runtime_carrier_refs": RUNTIME_CARRIER_REFS,
-        "current_terminal_mode": "restored_life_turn" if status == "closed" else "blocked",
-        "relation_scope_ref": restored.relation_subject.get("relationship_id"),
-        "shared_term_count": len(restored.shared_term_surfaces),
-        "blocked_reasons": blocked_reasons,
-        "next_required_action": next_required_action,
-    }
-
-    digest = {
-        "schema_version": "first_terminal_turn_digest_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "status": status,
-        "turn_stage": turn_stage,
-        "next_required_action": next_required_action,
-        "relation_role": restored.relation_subject.get("relation_role"),
-        "shared_term_count": len(restored.shared_term_surfaces),
-        "blocked_reasons": blocked_reasons,
-    }
-
-    receipt = _build_receipt(
-        run_id=run_id,
-        generated_at=generated_at,
-        state_dir=state_dir,
-        reports_dir=reports_dir,
-        receipts_dir=receipts_dir,
-    )
-
     try:
-        terminal_dir.mkdir(parents=True, exist_ok=True)
-        reports_dir.mkdir(parents=True, exist_ok=True)
-        receipts_dir.mkdir(parents=True, exist_ok=True)
-        _write_json(terminal_dir / "session_envelope.json", session_envelope)
-        _write_json(terminal_dir / "safe_terminal_loop_state.json", safe_terminal_loop)
-        _write_json(terminal_dir / "life_context_frame.json", life_context)
-        _write_json(terminal_dir / "relation_turn_frame.json", relation_turn)
-        _write_json(terminal_dir / "context_accumulation_window.json", context_accumulation)
-        _write_json(terminal_dir / "turn_transition_trace.json", turn_transition)
-        _write_json(reports_dir / "first_terminal_turn_packet.json", packet)
-        _write_json(reports_dir / "first_terminal_turn_report.json", report)
-        _write_json(reports_dir / "first_terminal_turn_digest.json", digest)
-        _write_json(receipts_dir / f"first_terminal_turn_{run_id}.json", receipt)
+        bundle = write_first_terminal_turn_bundle(
+            run_id=run_id,
+            generated_at=generated_at,
+            state_dir=state_dir,
+            reports_dir=reports_dir,
+            receipts_dir=receipts_dir,
+            source_doc_refs=SOURCE_DOC_REFS,
+            readme_block_refs=READ_ME_BLOCK_REFS,
+            runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+            status=status,
+            turn_stage=turn_stage,
+            next_required_action=next_required_action,
+            relation_subject=restored.relation_subject,
+            shared_term_surfaces=restored.shared_term_surfaces,
+            unresolved_commitments=restored.unresolved_commitments,
+            expression_monitor_dimensions=list(
+                restored.expression_monitor.get("monitor_dimensions", [])
+            ),
+            dialogue_turn_restore_refs=restored.dialogue_refs,
+            blocked_reasons=blocked_reasons,
+            session_envelope=session_envelope,
+            safe_terminal_loop=safe_terminal_loop,
+            life_context=life_context,
+            relation_turn=relation_turn,
+            context_accumulation=context_accumulation,
+            turn_transition=turn_transition,
+            write_json=_write_json,
+        )
     except OSError as exc:
-        report["status"] = "blocked"
-        report["blocked_reasons"].append(f"output_write_gate failed: {exc}")
-        return FirstTerminalTurnResult(exit_code=4, report=report)
+        blocked_report = {
+            "schema_version": "first_terminal_turn_report_v0",
+            "run_id": run_id,
+            "generated_at": generated_at,
+            "status": "blocked",
+            "engineering_slice_ref": "FIRST_TERMINAL_TURN",
+            "source_doc_refs": SOURCE_DOC_REFS,
+            "readme_block_refs": READ_ME_BLOCK_REFS,
+            "runtime_carrier_refs": RUNTIME_CARRIER_REFS,
+            "current_terminal_mode": "blocked",
+            "relation_scope_ref": restored.relation_subject.get("relationship_id"),
+            "shared_term_count": len(restored.shared_term_surfaces),
+            "blocked_reasons": [*blocked_reasons, f"output_write_gate failed: {exc}"],
+            "next_required_action": next_required_action,
+        }
+        return FirstTerminalTurnResult(exit_code=4, report=blocked_report)
 
     if status == "closed":
-        return FirstTerminalTurnResult(exit_code=0, report=report)
-    return FirstTerminalTurnResult(exit_code=1 if strict else 0, report=report)
+        return FirstTerminalTurnResult(exit_code=0, report=bundle.report)
+    return FirstTerminalTurnResult(exit_code=1 if strict else 0, report=bundle.report)
 
 
 def _first_turn_blockers(
@@ -355,76 +303,8 @@ def _first_turn_blockers(
     return reasons
 
 
-def _build_receipt(
-    *,
-    run_id: str,
-    generated_at: str,
-    state_dir: Path,
-    reports_dir: Path,
-    receipts_dir: Path,
-) -> dict[str, Any]:
-    input_hashes: dict[str, str] = {}
-    for path in [
-        reports_dir / "digital_life_birth_packet.json",
-        reports_dir / "digital_life_birth_digest.json",
-        reports_dir / "first_activation_return_packet.json",
-        reports_dir / "stage_explanation_report.json",
-        state_dir / "direction" / "direction_lock.json",
-        state_dir / "life_state.json",
-        state_dir / "relationship" / "relationship_subject_graph.json",
-        state_dir / "language" / "shared_term_registry.json",
-        state_dir / "language" / "expression_monitor_state.json",
-        state_dir / "language" / "relation_scope_language_index.json",
-        state_dir / "language" / "self_narrative_language_trace.json",
-        state_dir / "language" / "language_percept_frame.json",
-        state_dir / "language" / "semantic_map_frame.json",
-        state_dir / "language" / "commitment_repair_language_index.json",
-        state_dir / "language" / "dialogue_turn_log.jsonl",
-    ]:
-        if path.exists():
-            input_hashes[str(path)] = _sha256(path)
-
-    output_paths = [
-        state_dir / "terminal" / "session_envelope.json",
-        state_dir / "terminal" / "safe_terminal_loop_state.json",
-        state_dir / "terminal" / "life_context_frame.json",
-        state_dir / "terminal" / "relation_turn_frame.json",
-        state_dir / "terminal" / "context_accumulation_window.json",
-        state_dir / "terminal" / "turn_transition_trace.json",
-        reports_dir / "first_terminal_turn_packet.json",
-        reports_dir / "first_terminal_turn_report.json",
-        reports_dir / "first_terminal_turn_digest.json",
-        receipts_dir / f"first_terminal_turn_{run_id}.json",
-    ]
-    return {
-        "schema_version": "first_terminal_turn_receipt_v0",
-        "receipt_id": f"first_terminal_turn_{run_id}",
-        "run_id": run_id,
-        "command": "first-terminal-turn",
-        "report_refs": [
-            "runtime/reports/latest/first_terminal_turn_packet.json",
-            "runtime/reports/latest/first_terminal_turn_report.json",
-            "runtime/reports/latest/first_terminal_turn_digest.json",
-        ],
-        "stage_effect": "ready_for_resumed_external_dialogue",
-        "created_at": generated_at,
-        "input_hashes": input_hashes,
-        "output_hashes": {str(path): _sha256_if_exists(path) for path in output_paths},
-    }
-
-
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def _sha256_if_exists(path: Path) -> str | None:
-    if not path.exists():
-        return None
-    return _sha256(path)
 
 
 def _default_run_id(prefix: str) -> str:
