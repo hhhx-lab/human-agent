@@ -126,9 +126,9 @@
 | 生命职责 | 候选行动、go/no-go、责任回路、观察真值、validator、反事实比较 |
 | 必回读理论 | `06`、`20`、`22`、`29-36`、`49-84`、`94`、`98`、`102-118`、`01r`、`01v-01ax` |
 | 必回读 v0 | `s03_direction_life_membrane_engineering_contract.md`、`s05_validation_membrane_observation_engineering_contract.md`、`s09_schema_runner_code_engineering_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md` |
-| 已落器官 | `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`、`observation_validator.py`、`boundary_audit.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py` |
-| 仍压在入口的职责 | responsibility loop 装配、shadow gate、evidence rank、world contact summary、cross-file logic |
-| 下一轮优先拆分 | `shadow_gate.py`、`responsibility_loop.py`、`evidence_ranker.py`、`cross_file_logic.py` |
+| 已落器官 | `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`、`shadow_gate.py`、`observation_validator.py`、`boundary_audit.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py`、`evidence_ranker.py` |
+| 仍压在入口的职责 | responsibility loop 装配、world contact summary、cross-file logic、run manifest 汇总 |
+| 下一轮优先拆分 | `responsibility_loop.py` 补厚、`cross_file_logic.py`、`run_manifest.py`、`idle_strategy.py` |
 | runtime 产物 | `runtime/state/membrane/*`、`runtime/state/action/*`、`runtime/state/validation/*`、`runtime/state/schema_runner/*` |
 | 测试 / gate | `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
 

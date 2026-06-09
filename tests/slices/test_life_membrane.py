@@ -180,8 +180,12 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertIn("counterfactual_replay", responsibility["required_links"])
 
         self.assertEqual(shadow_action["schema_version"], "shadow_action_gate_v0")
+        self.assertEqual(shadow_action["shadow_action_gate_id"], "shadow-action-gate-membrane-test")
         self.assertFalse(shadow_action["external_irreversible_action_allowed"])
+        self.assertTrue(shadow_action["shadow_only"])
         self.assertIn("ActionIntent", shadow_action["allowed_shadow_objects"])
+        self.assertIn("runtime/state/action/go_nogo_state.json", shadow_action["go_nogo_ref"])
+        self.assertTrue(shadow_action["confirmation_routes"])
 
         self.assertEqual(precheck["schema_version"], "birth_readiness_precheck_v0")
         self.assertEqual(set(precheck["life_target_status"]), set(LIFE_TARGETS))

@@ -80,18 +80,18 @@ ObservationEvent / PredictionWorkspaceFrame / ExpressionPlan
 - `docs/22_state_transition_and_threshold_model.md`
 - `docs/29_memory_validator_rules.md`
 - `docs/30_state_transition_validator_rules.md`
-- `docs/33_validator_input_registry.md`
+- `docs/33_validator_input_contracts.md`
 - `docs/34_validator_fixture_catalog.md`
-- `docs/35_minimal_life_reality_runner_design.md`
-- `docs/36_longitudinal_life_evaluation_bundle.md`
+- `docs/35_minimal_validator_runner_design.md`
+- `docs/36_longitudinal_evaluation_protocol.md`
 - `docs/49_machine_readable_policy_manifest.md`
-- `docs/50_fixture_payload_bundle.md`
-- `docs/51_dashboard_metric_panel_design.md`
-- `docs/52_scope_and_privacy_policy.md`
-- `docs/53_runner_integration_contract.md`
-- `docs/54_scope_aware_retrieval_and_replay.md`
-- `docs/55_synthetic_timeline_and_replay_policy.md`
-- `docs/56_runtime_adapter_report_contract.md`
+- `docs/50_fixture_payload_examples.md`
+- `docs/51_life_core_dashboard_spec.md`
+- `docs/52_multi_relation_scope_graph_and_privacy_model.md`
+- `docs/53_runner_integration_plan.md`
+- `docs/54_scope_aware_retrieval_policy.md`
+- `docs/55_scope_aware_replay_and_consolidation_policy.md`
+- `docs/56_longitudinal_synthetic_timeline_design.md`
 - `docs/102-118` 对应 schema/runner/dashboard/report 文档
 - `docs/153-157` 对应 cross-file checker 文档
 

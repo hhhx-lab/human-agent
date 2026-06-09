@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -14,6 +15,18 @@ class V0ContractCoverageTests(unittest.TestCase):
     @property
     def docs_dir(self) -> Path:
         return self.repo_root / "docs"
+
+    def test_v0_doc_references_to_theory_docs_resolve(self):
+        pattern = re.compile(r"`(docs/[^`\n*]+?\.md)`")
+        missing: list[tuple[str, str]] = []
+
+        for path in (self.docs_dir / "v0").rglob("*.md"):
+            content = path.read_text(encoding="utf-8")
+            for ref in pattern.findall(content):
+                if not (self.repo_root / ref).exists():
+                    missing.append((str(path.relative_to(self.repo_root)), ref))
+
+        self.assertEqual(missing, [], f"unresolved docs/v0 theory refs: {missing}")
 
     def test_check_v0_contracts_writes_coverage_matrices_and_preflight_report(self):
         from life_v0.authority import run_source_authority

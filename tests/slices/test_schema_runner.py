@@ -82,6 +82,7 @@ class SchemaRunnerTests(unittest.TestCase):
             consistency_logic = self._read_json(paths["schema_runner_state"] / "consistency_logic.json")
             counterfactual_trace = self._read_json(paths["schema_runner_state"] / "counterfactual_trace.json")
             comparison_trace = self._read_json(paths["schema_runner_state"] / "comparison_trace.json")
+            evidence_ranking = self._read_json(paths["schema_runner_state"] / "evidence_ranking.json")
             responsibility_loop = self._read_json(paths["state_root"] / "action" / "responsibility_loop_state.json")
             stage_gate = self._read_json(paths["schema_runner_state"] / "schema_runner_stage_gate.json")
             report = self._read_json(paths["reports"] / "schema_runner_report.json")
@@ -159,6 +160,12 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/action/responsibility_loop_state.json", comparison_trace["justification_refs"])
         self.assertIn("runtime/state/action/responsibility_loop_state.json", comparison_trace["writeback_targets"])
 
+        self.assertEqual(evidence_ranking["schema_version"], "evidence_ranking_v0")
+        self.assertGreaterEqual(evidence_ranking["evidence_density_score"], 0.0)
+        self.assertTrue(evidence_ranking["ranked_evidence"])
+        self.assertIn("runtime/state/schema_runner/comparison_trace.json", evidence_ranking["state_refs"])
+        self.assertTrue(evidence_ranking["priority_budget"])
+
         self.assertEqual(stage_gate["schema_version"], "schema_runner_stage_gate_v0")
         self.assertEqual(stage_gate["decision"], "closed")
         self.assertEqual(stage_gate["gate_status"]["responsibility_logic_gate"], "closed")
@@ -175,6 +182,7 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/schema_runner/consistency_logic.json", report["artifact_refs"])
         self.assertIn("runtime/state/schema_runner/counterfactual_trace.json", report["artifact_refs"])
         self.assertIn("runtime/state/schema_runner/comparison_trace.json", report["artifact_refs"])
+        self.assertIn("runtime/state/schema_runner/evidence_ranking.json", report["artifact_refs"])
         self.assertEqual(report["next_allowed_slices"], ["S06_LIFE_SUPPORT_DEVELOPMENT", "S10_RUNTIME_GROWTH_RECONSOLIDATION"])
         self.assertEqual(report["next_required_command"], "life-v0 build-life-support --strict")
 

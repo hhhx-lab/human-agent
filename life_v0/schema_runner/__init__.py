@@ -10,6 +10,7 @@ from typing import Any
 from .comparison_trace import build_comparison_trace, check_comparison_trace
 from .consistency_logic import build_consistency_logic, check_consistency_logic
 from .counterfactual_eval import build_counterfactual_trace, check_counterfactual_trace
+from .evidence_ranker import build_evidence_ranking, check_evidence_ranking
 
 ACTIVE_SLICE = "S09_SCHEMA_RUNNER_CODE"
 NEXT_ALLOWED_SLICES = ["S06_LIFE_SUPPORT_DEVELOPMENT", "S10_RUNTIME_GROWTH_RECONSOLIDATION"]
@@ -121,6 +122,15 @@ def run_schema_runner(
         counterfactual_trace=counterfactual_trace,
         consistency_logic=consistency_logic,
     )
+    evidence_ranking = build_evidence_ranking(
+        run_id=run_id,
+        generated_at=generated_at,
+        observation_truth_review=observation_truth_review,
+        boundary_audit=boundary_audit,
+        consistency_logic=consistency_logic,
+        counterfactual_trace=counterfactual_trace,
+        comparison_trace=comparison_trace,
+    )
     artifact_manifest = _build_artifact_manifest(run_id, generated_at, status)
     stage_gate = _build_stage_gate(run_id, generated_at, status, stage_effect, blocked_reasons)
     report = _build_report(run_id, generated_at, status, stage_effect, source_docs, blocked_reasons, receipt_ref)
@@ -150,6 +160,7 @@ def run_schema_runner(
         _write_json(out_dir / "consistency_logic.json", consistency_logic)
         _write_json(out_dir / "counterfactual_trace.json", counterfactual_trace)
         _write_json(out_dir / "comparison_trace.json", comparison_trace)
+        _write_json(out_dir / "evidence_ranking.json", evidence_ranking)
         _write_json(out_dir / "schema_runner_stage_gate.json", stage_gate)
         _write_json(reports_dir / "schema_runner_report.json", report)
         _write_json(reports_dir / "schema_runner_digest.json", digest)
@@ -184,6 +195,7 @@ def run_check_schema_runner(
     consistency_logic = _load_json(state_dir / "consistency_logic.json", blocked_reasons, "consistency_logic_gate")
     counterfactual_trace = _load_json(state_dir / "counterfactual_trace.json", blocked_reasons, "counterfactual_gate")
     comparison_trace = _load_json(state_dir / "comparison_trace.json", blocked_reasons, "comparison_trace_gate")
+    evidence_ranking = _load_json(state_dir / "evidence_ranking.json", blocked_reasons, "evidence_ranking_gate")
     stage_gate = _load_json(state_dir / "schema_runner_stage_gate.json", blocked_reasons, "next_slice_gate")
     build_report = _load_json(reports_dir / "schema_runner_report.json", blocked_reasons, "build_report_gate")
 
@@ -195,6 +207,7 @@ def run_check_schema_runner(
     blocked_reasons.extend(check_consistency_logic(consistency_logic))
     blocked_reasons.extend(check_counterfactual_trace(counterfactual_trace))
     blocked_reasons.extend(check_comparison_trace(comparison_trace))
+    blocked_reasons.extend(check_evidence_ranking(evidence_ranking))
     blocked_reasons.extend(_check_stage_gate(stage_gate))
     blocked_reasons.extend(_check_build_report(build_report))
 
@@ -406,6 +419,7 @@ def _build_dependency_lockfile(run_id: str, generated_at: str, source_docs: list
         {"artifact_ref": "runtime/state/schema_runner/runner_command_queue.json", "artifact_kind": "runner_command_queue"},
         {"artifact_ref": "runtime/state/schema_runner/cross_file_checker_manifest.json", "artifact_kind": "checker_manifest"},
         {"artifact_ref": "runtime/state/schema_runner/first_code_artifact_manifest.json", "artifact_kind": "code_artifact_manifest"},
+        {"artifact_ref": "runtime/state/schema_runner/evidence_ranking.json", "artifact_kind": "evidence_ranking"},
     ]
     doc_nodes = [{"doc_path": path, "future_runtime_carrier": _carrier_hint(path)} for path in source_docs]
     ref_edges = [
@@ -502,6 +516,7 @@ def _build_artifact_manifest(run_id: str, generated_at: str, status: str) -> dic
             "runtime/state/schema_runner/consistency_logic.json",
             "runtime/state/schema_runner/counterfactual_trace.json",
             "runtime/state/schema_runner/comparison_trace.json",
+            "runtime/state/schema_runner/evidence_ranking.json",
         ],
         "test_refs": [
             "tests/slices/test_schema_runner.py",
@@ -576,6 +591,7 @@ def _build_report(
             "runtime/state/schema_runner/consistency_logic.json",
             "runtime/state/schema_runner/counterfactual_trace.json",
             "runtime/state/schema_runner/comparison_trace.json",
+            "runtime/state/schema_runner/evidence_ranking.json",
         ],
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
@@ -641,6 +657,7 @@ def _build_receipt(
         out_dir / "consistency_logic.json",
         out_dir / "counterfactual_trace.json",
         out_dir / "comparison_trace.json",
+        out_dir / "evidence_ranking.json",
         out_dir / "schema_runner_stage_gate.json",
         reports_dir / "schema_runner_report.json",
         reports_dir / "schema_runner_digest.json",

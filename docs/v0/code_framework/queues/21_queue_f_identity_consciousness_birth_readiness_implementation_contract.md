@@ -87,10 +87,10 @@ identity_root / direction_lock / continuity_refs
 - `docs/101_relationship_timeline_json_schema_and_fixture_bundle.md`
 - `docs/143_life_reality_birth_readiness_rollup_contract.md`
 - `docs/146_life_reality_birth_readiness_evidence_fixture_catalog.md`
-- `docs/149_life_reality_schema_materialization_bundle.md`
-- `docs/152_life_reality_report_rollup_contract.md`
+- `docs/149_life_reality_birth_readiness_fixture_schema_materialization_plan.md`
+- `docs/152_life_reality_birth_readiness_cross_file_checker_plan.md`
 - `docs/171_life_reality_birth_readiness_validation_fixture_plan.md`
-- `docs/174_first_activation_protocol_and_return_packet_contract.md`
+- `docs/174_life_reality_birth_readiness_fixture_schema_materialization.md`
 
 ## 必读 v0 文档
 

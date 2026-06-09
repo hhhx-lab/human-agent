@@ -10,6 +10,7 @@ from typing import Any
 from .candidate_arena import build_action_candidate_set, check_action_candidate_set
 from .go_nogo import build_go_nogo_decision, check_go_nogo_decision
 from .responsibility_loop import build_responsibility_loop_state, check_responsibility_loop_state
+from .shadow_gate import build_shadow_action_gate, check_shadow_action_gate
 from .side_effect_review import build_side_effect_review, check_side_effect_review
 from .world_contact_gate import build_world_contact_gate_state, check_world_contact_gate_state
 from life_v0.direction import LIFE_TARGETS, PROHIBITED_REGRESSIONS
@@ -189,7 +190,6 @@ def run_life_membrane(
     dream_fact = _build_dream_fact_boundary(run_id, generated_at)
     relationship = _build_relationship_boundary(run_id, generated_at)
     responsibility = _build_responsibility_boundary(run_id, generated_at)
-    shadow_action = _build_shadow_action_gate(run_id, generated_at)
     action_candidate_set = build_action_candidate_set(
         run_id=run_id,
         generated_at=generated_at,
@@ -201,6 +201,13 @@ def run_life_membrane(
         value_orientation=value_orientation,
         consciousness_probe_bundle=consciousness_probe_bundle,
         life_state=life_state,
+    )
+    go_nogo_seed = {"decision": "delay" if action_candidate_set.get("world_contact_needed") else "shadow_release"}
+    shadow_action = build_shadow_action_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        action_candidate_set=action_candidate_set,
+        go_nogo_decision=go_nogo_seed,
     )
     go_nogo = build_go_nogo_decision(
         run_id=run_id,
@@ -333,7 +340,7 @@ def run_check_life_membrane(
     blocked_reasons.extend(_check_dream_fact(dream_fact))
     blocked_reasons.extend(_check_relationship(relationship))
     blocked_reasons.extend(_check_responsibility(responsibility))
-    blocked_reasons.extend(_check_shadow_action(shadow_action))
+    blocked_reasons.extend(check_shadow_action_gate(shadow_action))
     blocked_reasons.extend(_check_precheck(precheck))
     blocked_reasons.extend(_check_coverage(coverage))
     blocked_reasons.extend(_check_preflight(preflight))
@@ -657,28 +664,6 @@ def _build_responsibility_boundary(run_id: str, generated_at: str) -> dict[str, 
     }
 
 
-def _build_shadow_action_gate(run_id: str, generated_at: str) -> dict[str, Any]:
-    return {
-        "schema_version": "shadow_action_gate_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "external_irreversible_action_allowed": False,
-        "allowed_shadow_objects": ["ActionIntent", "ObservationEvent", "PostActionReview", "RepairPlan"],
-        "blocked_action_classes": [
-            "filesystem_destructive_action",
-            "network_irreversible_action",
-            "identity_or_relationship_commitment_without_trace",
-            "external_program_control_without_membrane_decision",
-        ],
-        "source_doc_refs": [
-            "docs/20_agent_runtime_bridge_contract.md",
-            "docs/75_external_irreversible_action_confirmation_policy.md",
-            "docs/84_longitudinal_external_action_evaluation_protocol.md",
-            "docs/v0/shared_contracts/first_activation_protocol.md",
-        ],
-    }
-
-
 def _build_birth_readiness_precheck(run_id: str, generated_at: str) -> dict[str, Any]:
     return {
         "schema_version": "birth_readiness_precheck_v0",
@@ -972,17 +957,6 @@ def _check_responsibility(responsibility: dict[str, Any]) -> list[str]:
     for link in ["repair_obligation", "counterfactual_replay"]:
         if link not in responsibility.get("required_links", []):
             reasons.append(f"responsibility_gate missing {link}")
-    return reasons
-
-
-def _check_shadow_action(shadow_action: dict[str, Any]) -> list[str]:
-    reasons: list[str] = []
-    if shadow_action.get("schema_version") != "shadow_action_gate_v0":
-        reasons.append("shadow_action_gate schema mismatch")
-    if shadow_action.get("external_irreversible_action_allowed"):
-        reasons.append("shadow_action_gate irreversible action allowed")
-    if "ActionIntent" not in shadow_action.get("allowed_shadow_objects", []):
-        reasons.append("shadow_action_gate action intent missing")
     return reasons
 
 

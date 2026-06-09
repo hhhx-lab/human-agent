@@ -156,9 +156,9 @@ life_v0/
 当前真正仍未落地、并且最该继续补的是：
 
 ```text
-Queue E 第二波
-  life_v0/membrane/shadow_gate.py
-  life_v0/schema_runner/evidence_ranker.py
+Queue E 第二波后续
+  life_v0/validators/cross_file_logic.py
+  life_v0/schema_runner/run_manifest.py
 
 Queue B 第二波
   life_v0/process_supervisor/idle_strategy.py
@@ -217,9 +217,9 @@ Queue F 已落第一轮器官
 
 ### Stage 2: Queue E 第二波
 
-1. `life_v0/membrane/shadow_gate.py`
-2. 补厚 `life_v0/membrane/responsibility_loop.py`
-3. `life_v0/schema_runner/evidence_ranker.py`
+1. 补厚 `life_v0/membrane/responsibility_loop.py`
+2. `life_v0/validators/cross_file_logic.py`
+3. `life_v0/schema_runner/run_manifest.py`
 4. 补厚 `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`
 5. 补厚 `observation_validator.py`、`boundary_audit.py`、`comparison_trace.py`
 

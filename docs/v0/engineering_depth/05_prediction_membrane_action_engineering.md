@@ -27,8 +27,8 @@ Observation / Language Percept / Body Signal
 2. `life_v0/neural_core/belief_state.py`
 3. `life_v0/neural_core/prediction_error.py`
 4. `life_v0/neural_core/active_sampling.py`
-5. `life_v0/membrane/shadow_gate.py`
-6. `life_v0/schema_runner/evidence_ranker.py`
+5. `life_v0/validators/cross_file_logic.py`
+6. `life_v0/schema_runner/run_manifest.py`
 
 ## 当前最关键的 runtime 证据
 
@@ -50,7 +50,7 @@ Observation / Language Percept / Body Signal
 
 下一轮应新增：
 
-1. `tests/slices/test_shadow_gate.py`
-2. `tests/slices/test_evidence_ranker.py`
-3. `tests/slices/test_prediction_error_field.py`
-4. `tests/slices/test_active_sampling_plan.py`
+1. `tests/slices/test_prediction_error_field.py`
+2. `tests/slices/test_active_sampling_plan.py`
+3. `tests/slices/test_cross_file_logic.py`
+4. `tests/process/test_idle_strategy.py`
