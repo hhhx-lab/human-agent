@@ -57,8 +57,8 @@
 | `ActionCandidateSet` | `membrane/candidate_arena.py` | `validators`、`schema_runner`、`shell_command`、`process_supervisor` | 已存在；已接 `shadow_gate.py`、`action_intent_bridge.py` 与 `world_contact_summary.py` | `runtime/state/action/*`、`world_contact_audit_report.json` |
 | `ActionIntentQueue` | `membrane/action_intent_bridge.py` | `validators`、`schema_runner`、`process_supervisor` | 第二波已落；已接 `confirmation_binding.py` 与 validation chain | `runtime/state/membrane/action_intent_queue.json`、validation reports |
 | `ConfirmationBinding` | `membrane/confirmation_binding.py` | `validators/world_contact_validator.py`、`schema_runner`、`membrane/world_contact_summary.py` | 第二波已落；已进入 world-contact summary 与 validation chain | `runtime/state/membrane/confirmation_binding.json`、`world_contact_audit_report.json` |
-| `WorldContactSummary` | `membrane/world_contact_summary.py` | `validators`、`schema_runner`、`reporting` | 第二波已落；把 action intent / confirmation / world contact / responsibility 收口成 release posture 与 pain-regret-repair bridge | `runtime/state/membrane/world_contact_summary.json`、`pain_regret_repair_report.json` |
-| `ResponsibilityLoopState` | `membrane/responsibility_loop.py` | `language/commitment_repair.py`、`state_store/commitment_truth.py`、`body/regret_signal.py`、`membrane/world_contact_summary.py`、`schema_runner/cross_file_logic.py` | 已落第一轮；当前已显式进入 `pain_regret_repair_report.json` 与 schema runner 闭包，下一步继续补厚跨层责任/后悔/修复接线 | `runtime/state/action/responsibility_loop_state.json`、`pain_regret_repair_report.json` |
+| `WorldContactSummary` | `membrane/world_contact_summary.py` | `validators`、`schema_runner`、`replay`、`archive`、`reporting` | 第二波已落；把 action intent / confirmation / world contact / responsibility 收口成 release posture，与 `replay/archive/report bundle` 一起形成长期生命证据链 | `runtime/state/membrane/world_contact_summary.json`、`pain_regret_repair_report.json` |
+| `ResponsibilityLoopState` | `membrane/responsibility_loop.py` | `language/commitment_repair.py`、`state_store/commitment_truth.py`、`body/regret_signal.py`、`membrane/world_contact_summary.py`、`schema_runner/cross_file_logic.py`、`replay`、`archive`、`reporting` | 已落第一轮；当前已显式进入 `pain_regret_repair_report.json`、`replay_shadow_*`、`growth_archive_*` 与 `report_bundle/first_activation_return_packet`，后续继续补厚跨层责任/后悔/修复接线 | `runtime/state/action/responsibility_loop_state.json`、`pain_regret_repair_report.json` |
 | `ObservationTruthFrame` | `validators/observation_validator.py` | `schema_runner/evidence_ranker.py`、`schema_runner/cross_file_logic.py`、`archive` | 已有第一轮；已接 `evidence_ranker.py` 与 `cross_file_logic.py` | `runtime/state/validation/*`、validation reports |
 | `WorldContactValidation` | `validators/world_contact_validator.py` | `schema_runner`、`reporting`、`validation_rollup.py` | 第二波已落；已接 `validation_rollup.py` 与 `cross_file_logic.py` | `runtime/state/validation/world_contact_validation.json`、`world_contact_audit_report.json` |
 | `PredictionTraceValidation` | `validators/prediction_trace_validator.py` | `schema_runner`、`reporting`、`validation_rollup.py` | 第二波已落；已接 `validation_rollup.py`、`cross_file_logic.py` 与 package-local gates | `runtime/state/validation/prediction_trace_validation.json`、validation reports |
@@ -66,7 +66,7 @@
 
 这条总线保证世界接触、责任、后悔和修复义务都进入真实生命链，而不是只在 action 之后补一句解释。
 
-这一条行为-验证总线现在已经通过 `world_contact_summary.json -> validation_rollup.json -> cross_file_logic.json -> run_manifest.json` 完成了局部闭包；后续如果继续补厚，应该优先补跨层写回，而不是重新发明一套平行 action summary。
+这一条行为-验证总线现在已经通过 `world_contact_summary.json -> validation_rollup.json -> cross_file_logic.json -> run_manifest.json -> replay_shadow_* -> growth_archive_* -> report_bundle.json` 完成了第一轮跨层闭包；后续如果继续补厚，应该优先补跨层写回与长期调制，而不是重新发明一套平行 action summary。
 
 ### 5. 梦境与离线重组总线
 

@@ -38,6 +38,11 @@ RUNTIME_CARRIER_REFS = [
     "LanguageRelationshipRuntime",
     "ActivationGrowthRuntime",
 ]
+QUEUE_E_STATE_REFS = [
+    "runtime/state/action/responsibility_loop_state.json",
+    "runtime/state/membrane/world_contact_summary.json",
+]
+QUEUE_E_REPORT_REFS = ["runtime/reports/latest/pain_regret_repair_report.json"]
 
 
 @dataclass(frozen=True)
@@ -189,6 +194,21 @@ def run_replay_shadow(
         blocked_reasons,
         "repair_language_gate",
     )
+    responsibility_loop = _load_json(
+        state_dir / "action" / "responsibility_loop_state.json",
+        blocked_reasons,
+        "responsibility_loop_gate",
+    )
+    world_contact_summary = _load_json(
+        state_dir / "membrane" / "world_contact_summary.json",
+        blocked_reasons,
+        "world_contact_summary_gate",
+    )
+    pain_regret_repair_report = _load_json(
+        reports_dir / "pain_regret_repair_report.json",
+        blocked_reasons,
+        "pain_regret_repair_gate",
+    )
     language_bridge = _load_json(
         language_dir / "language_action_bridge_shadow.json",
         blocked_reasons,
@@ -229,6 +249,9 @@ def run_replay_shadow(
             language_state=language_state,
             relationship_graph=relationship_graph,
             repair_language=repair_language,
+            responsibility_loop=responsibility_loop,
+            world_contact_summary=world_contact_summary,
+            pain_regret_repair_report=pain_regret_repair_report,
             language_bridge=language_bridge,
             preflight_report=preflight_report,
             preflight_digest=preflight_digest,
@@ -252,6 +275,9 @@ def run_replay_shadow(
         shadow_trace=shadow_trace,
         context_frame=context_frame,
         preflight_report=preflight_report,
+        responsibility_loop=responsibility_loop,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
     language_probe = _build_language_relationship_replay_probe(
         run_id=run_id,
@@ -260,12 +286,17 @@ def run_replay_shadow(
         relationship_graph=relationship_graph,
         repair_language=repair_language,
         context_frame=context_frame,
+        responsibility_loop=responsibility_loop,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
     dream_probe = _build_dream_pain_regret_replay_probe(
         run_id=run_id,
         generated_at=generated_at,
         dream_frame=dream_frame,
         pain_replay=pain_replay,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
     expression_report = _build_shadow_expression_report(
         run_id=run_id,
@@ -274,6 +305,9 @@ def run_replay_shadow(
         membrane_decision=membrane_decision,
         language_bridge=language_bridge,
         language_probe=language_probe,
+        responsibility_loop=responsibility_loop,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
     arbitration = _build_replay_shadow_arbitration(
         run_id=run_id,
@@ -282,6 +316,8 @@ def run_replay_shadow(
         blocked_reasons=blocked_reasons,
         seed_bundle=seed_bundle,
         expression_report=expression_report,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
 
     receipt_ref = f"runtime/receipts/run_replay_shadow_{run_id}.json"
@@ -299,6 +335,8 @@ def run_replay_shadow(
         stage_effect=stage_effect,
         blocked_reasons=blocked_reasons,
         state_refs=state_refs,
+        queue_e_state_refs=QUEUE_E_STATE_REFS,
+        queue_e_report_refs=QUEUE_E_REPORT_REFS,
         next_allowed_slices=next_allowed_slices,
         next_required_command=next_required_command,
         receipt_ref=receipt_ref,
@@ -309,6 +347,7 @@ def run_replay_shadow(
         status=status,
         stage_effect=stage_effect,
         blocked_reasons=blocked_reasons,
+        queue_e_ref_count=len(QUEUE_E_STATE_REFS) + len(QUEUE_E_REPORT_REFS),
         next_allowed_slices=next_allowed_slices,
         next_required_command=next_required_command,
     )
@@ -367,6 +406,9 @@ def _replay_shadow_blockers(
     language_state: dict[str, Any],
     relationship_graph: dict[str, Any],
     repair_language: dict[str, Any],
+    responsibility_loop: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
     language_bridge: dict[str, Any],
     preflight_report: dict[str, Any],
     preflight_digest: dict[str, Any],
@@ -400,6 +442,12 @@ def _replay_shadow_blockers(
         reasons.append("relationship_graph_gate schema mismatch")
     if repair_language.get("schema_version") != "commitment_repair_language_index_v0":
         reasons.append("repair_language_gate schema mismatch")
+    if responsibility_loop.get("schema_version") != "responsibility_loop_state_v0":
+        reasons.append("responsibility_loop_gate schema mismatch")
+    if world_contact_summary.get("schema_version") != "world_contact_summary_v0":
+        reasons.append("world_contact_summary_gate schema mismatch")
+    if pain_regret_repair_report.get("schema_version") != "pain_regret_repair_report_v0":
+        reasons.append("pain_regret_repair_gate schema mismatch")
     if language_bridge.get("schema_version") != "language_action_bridge_shadow_v0":
         reasons.append("language_bridge_gate schema mismatch")
     if preflight_report.get("schema_version") != "first_activation_preflight_report_v0":
@@ -432,6 +480,12 @@ def _replay_shadow_blockers(
         reasons.append("language_state_gate shared language refs missing")
     if not repair_language.get("repair_obligation_refs"):
         reasons.append("repair_language_gate repair obligations missing")
+    if not responsibility_loop.get("repair_obligation_refs"):
+        reasons.append("responsibility_loop_gate repair obligations missing")
+    if not world_contact_summary.get("release_posture"):
+        reasons.append("world_contact_summary_gate release posture missing")
+    if not pain_regret_repair_report.get("repair_obligation_refs"):
+        reasons.append("pain_regret_repair_gate repair obligations missing")
     if not context_frame.get("memory_replay_refs"):
         reasons.append("context_frame_gate memory replay refs missing")
     if not context_frame.get("expression_monitor_refs"):
@@ -458,6 +512,9 @@ def _build_replay_shadow_seed_bundle(
     shadow_trace: dict[str, Any],
     context_frame: dict[str, Any],
     preflight_report: dict[str, Any],
+    responsibility_loop: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
 ) -> dict[str, Any]:
     source_seed_refs = [
         "runtime/state/growth/next_feedback_seed.json",
@@ -465,6 +522,8 @@ def _build_replay_shadow_seed_bundle(
         "runtime/state/replay/shadow_cycle_trace.json",
         "runtime/state/activation/limited_context_frame.json",
         "runtime/reports/latest/first_activation_preflight_report.json",
+        *QUEUE_E_STATE_REFS,
+        *QUEUE_E_REPORT_REFS,
     ]
     return {
         "schema_version": "replay_shadow_seed_bundle_v0",
@@ -481,6 +540,11 @@ def _build_replay_shadow_seed_bundle(
         "self_narrative_trace_refs": list(context_frame.get("self_narrative_trace_refs", [])),
         "dialogue_turn_log_refs": list(context_frame.get("dialogue_turn_log_refs", [])),
         "commitment_refs": list(context_frame.get("commitment_refs", [])),
+        "responsibility_writeback_refs": list(responsibility_loop.get("language_writeback_refs", [])),
+        "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
+        "regret_pressure_refs": list(pain_regret_repair_report.get("regret_pressure_refs", [])),
+        "repair_obligation_refs": list(pain_regret_repair_report.get("repair_obligation_refs", [])),
+        "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
         "activation_phase_ref": preflight_report.get("engineering_slice_ref", "FIRST_ACTIVATION_PREFLIGHT"),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -494,6 +558,9 @@ def _build_language_relationship_replay_probe(
     relationship_graph: dict[str, Any],
     repair_language: dict[str, Any],
     context_frame: dict[str, Any],
+    responsibility_loop: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
 ) -> dict[str, Any]:
     subjects = relationship_graph.get("subjects", [])
     return {
@@ -516,6 +583,10 @@ def _build_language_relationship_replay_probe(
         "expression_monitor_refs": list(context_frame.get("expression_monitor_refs", [])),
         "self_narrative_trace_refs": list(context_frame.get("self_narrative_trace_refs", [])),
         "dialogue_turn_log_refs": list(context_frame.get("dialogue_turn_log_refs", [])),
+        "responsibility_language_writeback_refs": list(responsibility_loop.get("language_writeback_refs", [])),
+        "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
+        "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
+        "repair_obligation_refs": list(pain_regret_repair_report.get("repair_obligation_refs", [])),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 
@@ -526,6 +597,8 @@ def _build_dream_pain_regret_replay_probe(
     generated_at: str,
     dream_frame: dict[str, Any],
     pain_replay: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "schema_version": "dream_pain_regret_replay_probe_v0",
@@ -536,7 +609,11 @@ def _build_dream_pain_regret_replay_probe(
         "dream_record_refs": list(dream_frame.get("dream_record_refs", [])),
         "pain_refs": list(pain_replay.get("pain_refs", [])),
         "regret_refs": list(pain_replay.get("regret_refs", [])),
+        "world_contact_summary_ref": "runtime/state/membrane/world_contact_summary.json",
+        "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
+        "regret_pressure_refs": list(pain_regret_repair_report.get("regret_pressure_refs", [])),
         "repair_obligation_refs": list(pain_replay.get("repair_obligation_refs", [])),
+        "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 
@@ -549,6 +626,9 @@ def _build_shadow_expression_report(
     membrane_decision: dict[str, Any],
     language_bridge: dict[str, Any],
     language_probe: dict[str, Any],
+    responsibility_loop: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
 ) -> dict[str, Any]:
     expression_trace = [
         "load_inner_speech_refs",
@@ -570,6 +650,10 @@ def _build_shadow_expression_report(
         "commitment_refs": list(context_frame.get("commitment_refs", [])),
         "relationship_roles": list(language_probe.get("relationship_roles", [])),
         "shadow_bridge_refs": list(language_bridge.get("bridge_refs", [])),
+        "responsibility_writeback_refs": list(responsibility_loop.get("language_writeback_refs", [])),
+        "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
+        "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
+        "repair_obligation_refs": list(pain_regret_repair_report.get("repair_obligation_refs", [])),
         "blocked_actions": ["external_irreversible_action"],
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -583,6 +667,8 @@ def _build_replay_shadow_arbitration(
     blocked_reasons: list[str],
     seed_bundle: dict[str, Any],
     expression_report: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "schema_version": "replay_shadow_arbitration_v0",
@@ -592,6 +678,8 @@ def _build_replay_shadow_arbitration(
         "selected_route": "write_growth_archive" if status == "closed" else "repair_replay_shadow_inputs",
         "seed_family_count": len(seed_bundle.get("seed_families", [])),
         "expression_trace_count": len(expression_report.get("expression_trace", [])),
+        "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
+        "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
         "blocked_reasons": blocked_reasons,
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -605,6 +693,8 @@ def _build_report(
     stage_effect: str,
     blocked_reasons: list[str],
     state_refs: list[str],
+    queue_e_state_refs: list[str],
+    queue_e_report_refs: list[str],
     next_allowed_slices: list[str],
     next_required_command: str,
     receipt_ref: str,
@@ -620,6 +710,8 @@ def _build_report(
         "readme_block_refs": READ_ME_BLOCK_REFS,
         "runtime_carrier_refs": RUNTIME_CARRIER_REFS,
         "state_refs": state_refs,
+        "queue_e_state_refs": queue_e_state_refs,
+        "queue_e_report_refs": queue_e_report_refs,
         "probe_refs": [
             "runtime/state/replay/language_relationship_replay_probe.json",
             "runtime/state/replay/dream_pain_regret_replay_probe.json",
@@ -640,6 +732,7 @@ def _build_digest(
     status: str,
     stage_effect: str,
     blocked_reasons: list[str],
+    queue_e_ref_count: int,
     next_allowed_slices: list[str],
     next_required_command: str,
 ) -> dict[str, Any]:
@@ -650,6 +743,7 @@ def _build_digest(
         "current_phase": "replay_shadow",
         "status": status,
         "stage_effect": stage_effect,
+        "queue_e_ref_count": queue_e_ref_count,
         "blocked_reasons": blocked_reasons,
         "next_allowed_slices": next_allowed_slices,
         "next_required_command": next_required_command,
@@ -675,6 +769,9 @@ def _build_stage_gate(
         "gates": {
             "preflight_gate": "closed" if status == "closed" else "blocked",
             "replay_seed_gate": "closed" if status == "closed" else "blocked",
+            "responsibility_loop_gate": "closed" if status == "closed" else "blocked",
+            "world_contact_summary_gate": "closed" if status == "closed" else "blocked",
+            "pain_regret_repair_gate": "closed" if status == "closed" else "blocked",
             "language_probe_gate": "closed" if status == "closed" else "blocked",
             "dream_probe_gate": "closed" if status == "closed" else "blocked",
             "shadow_expression_gate": "closed" if status == "closed" else "blocked",
@@ -702,11 +799,14 @@ def _build_receipt(
         state_dir / "growth" / "growth_patch_queue.json",
         state_dir / "replay" / "shadow_cycle_trace.json",
         state_dir / "replay" / "pain_regret_responsibility_replay.json",
+        state_dir / "action" / "responsibility_loop_state.json",
+        state_dir / "membrane" / "world_contact_summary.json",
         state_dir / "dream" / "dream_consolidation_frame.json",
         state_dir / "activation" / "limited_context_frame.json",
         state_dir / "activation" / "life_membrane_opening_decision.json",
         reports_dir / "first_activation_preflight_report.json",
         reports_dir / "first_activation_preflight_digest.json",
+        reports_dir / "pain_regret_repair_report.json",
     ]:
         if path.exists():
             input_hashes[str(path)] = _sha256(path)

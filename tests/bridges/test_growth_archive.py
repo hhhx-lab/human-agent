@@ -88,18 +88,31 @@ class GrowthArchiveTests(unittest.TestCase):
         self.assertTrue(batch["growth_patch_receipt_refs"])
         self.assertTrue(batch["language_action_archive_receipt_refs"])
         self.assertTrue(batch["shadow_run_seed_archive_receipt_refs"])
+        self.assertTrue(batch["responsibility_archive_receipt_refs"])
+        self.assertEqual(batch["world_contact_release_posture"], "shadow_only_guarded")
+        self.assertTrue(batch["repair_followup_required"])
+        self.assertTrue(batch["repair_obligation_refs"])
 
         self.assertEqual(preconditions["schema_version"], "shadow_run_preconditions_v0")
         self.assertEqual(preconditions["status"], "closed")
         self.assertTrue(preconditions["preconditions_ready"])
+        self.assertIn("runtime/state/action/responsibility_loop_state.json", preconditions["required_refs"])
+        self.assertIn("runtime/reports/latest/pain_regret_repair_report.json", preconditions["required_refs"])
 
         self.assertEqual(handoff["schema_version"], "growth_archive_to_shadow_handoff_v0")
         self.assertEqual(handoff["status"], "closed")
         self.assertTrue(handoff["shadow_run_handoff_ready"])
+        self.assertTrue(handoff["responsibility_archive_receipt_refs"])
+        self.assertEqual(handoff["world_contact_release_posture"], "shadow_only_guarded")
+        self.assertTrue(handoff["repair_followup_required"])
 
         self.assertEqual(archive_graph["schema_version"], "reconsolidation_archive_graph_v0")
         self.assertEqual(archive_graph["status"], "closed")
         self.assertTrue(archive_graph["archive_edges"])
+        self.assertIn(
+            {"source": "pain_regret_repair_report", "target": "growth_archive_report", "edge_kind": "repair_to_archive"},
+            archive_graph["archive_edges"],
+        )
 
         self.assertEqual(report["schema_version"], "growth_archive_report_v0")
         self.assertEqual(report["engineering_slice_ref"], "S10_RUNTIME_GROWTH_RECONSOLIDATION")
@@ -107,14 +120,18 @@ class GrowthArchiveTests(unittest.TestCase):
         self.assertEqual(report["stage_effect"], "archive_written")
         self.assertEqual(report["next_required_command"], "life-v0 emit-report --strict")
         self.assertIn("B30_RECONSOLIDATION_REPLAY_GROWTH", report["readme_block_refs"])
+        self.assertEqual(report["queue_e_state_refs"][0], "runtime/state/action/responsibility_loop_state.json")
+        self.assertEqual(report["queue_e_report_refs"], ["runtime/reports/latest/pain_regret_repair_report.json"])
 
         self.assertEqual(digest["schema_version"], "growth_archive_digest_v0")
         self.assertEqual(digest["current_phase"], "growth_archive")
         self.assertEqual(digest["status"], "closed")
+        self.assertEqual(digest["queue_e_ref_count"], 3)
 
         self.assertEqual(stage_gate["schema_version"], "growth_archive_stage_gate_v0")
         self.assertEqual(stage_gate["decision"], "closed")
         self.assertEqual(stage_gate["next_required_command"], "life-v0 emit-report --strict")
+        self.assertEqual(stage_gate["gates"]["responsibility_archive_gate"], "closed")
 
         self.assertEqual(receipt["schema_version"], "write_growth_archive_receipt_v0")
         self.assertEqual(receipt["command"], "write-growth-archive")

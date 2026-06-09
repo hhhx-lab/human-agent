@@ -30,6 +30,11 @@ RUNTIME_CARRIER_REFS = [
     "V0ContractCoverageRuntime",
     "ActivationPreflightRuntime",
 ]
+QUEUE_E_STATE_REFS = [
+    "runtime/state/action/responsibility_loop_state.json",
+    "runtime/state/membrane/world_contact_summary.json",
+]
+QUEUE_E_REPORT_REFS = ["runtime/reports/latest/pain_regret_repair_report.json"]
 
 NEXT_REQUIRED_COMMAND = "life-v0 explain-stage --strict"
 
@@ -100,11 +105,34 @@ def run_emit_report(
         blocked_reasons,
         "repair_language_gate",
     )
+    responsibility_loop = _load_json(
+        state_dir / "action" / "responsibility_loop_state.json",
+        blocked_reasons,
+        "responsibility_loop_gate",
+    )
+    world_contact_summary = _load_json(
+        state_dir / "membrane" / "world_contact_summary.json",
+        blocked_reasons,
+        "world_contact_summary_gate",
+    )
+    pain_regret_repair_report = _load_json(
+        reports_dir / "pain_regret_repair_report.json",
+        blocked_reasons,
+        "pain_regret_repair_gate",
+    )
 
     dialogue_log_path = state_dir / "language" / "dialogue_turn_log.jsonl"
     dialogue_turn_refs = _collect_dialogue_turn_refs(dialogue_log_path, blocked_reasons)
 
-    blocked_reasons.extend(_input_blockers(report_inputs, handoff))
+    blocked_reasons.extend(
+        _input_blockers(
+            report_inputs,
+            handoff,
+            responsibility_loop=responsibility_loop,
+            world_contact_summary=world_contact_summary,
+            pain_regret_repair_report=pain_regret_repair_report,
+        )
+    )
     blocked_reasons.extend(
         _language_restore_blockers(
             shared_term_registry=shared_term_registry,
@@ -127,6 +155,7 @@ def run_emit_report(
         "runtime/reports/latest/first_activation_preflight_report.json",
         "runtime/reports/latest/replay_shadow_report.json",
         "runtime/reports/latest/replay_shadow_stage_gate.json",
+        "runtime/reports/latest/pain_regret_repair_report.json",
         "runtime/reports/latest/growth_archive_report.json",
         "runtime/reports/latest/growth_archive_stage_gate.json",
     ]
@@ -148,6 +177,10 @@ def run_emit_report(
         report_refs=report_refs,
         digest_refs=digest_refs,
         stage_gate_refs=stage_gate_refs,
+        queue_e_state_refs=QUEUE_E_STATE_REFS,
+        queue_e_report_refs=QUEUE_E_REPORT_REFS,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         receipt_ref=receipt_ref,
     )
     bundle_digest = _build_report_bundle_digest(
@@ -156,6 +189,7 @@ def run_emit_report(
         status=status,
         blocked_reasons=blocked_reasons,
         report_refs=report_refs,
+        queue_e_ref_count=len(QUEUE_E_STATE_REFS) + len(QUEUE_E_REPORT_REFS),
     )
     return_packet = _build_first_activation_return_packet(
         run_id=run_id,
@@ -167,6 +201,9 @@ def run_emit_report(
         expression_monitor=expression_monitor,
         repair_language=repair_language,
         dialogue_turn_refs=dialogue_turn_refs,
+        responsibility_loop=responsibility_loop,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
     latest_stage_ref = _build_latest_stage_explanation_ref(
         run_id=run_id,
@@ -200,7 +237,14 @@ def run_emit_report(
     return EmitReportResult(exit_code=1 if strict else 0, report=bundle)
 
 
-def _input_blockers(report_inputs: dict[str, dict[str, Any]], handoff: dict[str, Any]) -> list[str]:
+def _input_blockers(
+    report_inputs: dict[str, dict[str, Any]],
+    handoff: dict[str, Any],
+    *,
+    responsibility_loop: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
+) -> list[str]:
     reasons: list[str] = []
     if report_inputs["run_report"].get("status") != "safe_idle":
         reasons.append("run_report_gate status is not safe_idle")
@@ -222,6 +266,16 @@ def _input_blockers(report_inputs: dict[str, dict[str, Any]], handoff: dict[str,
         reasons.append("archive_stage_gate_gate next command mismatch")
     if not handoff.get("shadow_run_handoff_ready"):
         reasons.append("growth_archive_handoff_gate shadow run handoff not ready")
+    if responsibility_loop.get("schema_version") != "responsibility_loop_state_v0":
+        reasons.append("responsibility_loop_gate schema mismatch")
+    if world_contact_summary.get("schema_version") != "world_contact_summary_v0":
+        reasons.append("world_contact_summary_gate schema mismatch")
+    if pain_regret_repair_report.get("schema_version") != "pain_regret_repair_report_v0":
+        reasons.append("pain_regret_repair_gate schema mismatch")
+    if not world_contact_summary.get("release_posture"):
+        reasons.append("world_contact_summary_gate release posture missing")
+    if not pain_regret_repair_report.get("repair_obligation_refs"):
+        reasons.append("pain_regret_repair_gate repair obligations missing")
     return reasons
 
 
@@ -265,6 +319,10 @@ def _build_report_bundle(
     report_refs: list[str],
     digest_refs: list[str],
     stage_gate_refs: list[str],
+    queue_e_state_refs: list[str],
+    queue_e_report_refs: list[str],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
     receipt_ref: str,
 ) -> dict[str, Any]:
     return {
@@ -279,6 +337,10 @@ def _build_report_bundle(
         "report_refs": report_refs,
         "digest_refs": digest_refs,
         "stage_gate_refs": stage_gate_refs,
+        "queue_e_state_refs": queue_e_state_refs,
+        "queue_e_report_refs": queue_e_report_refs,
+        "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
+        "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
         "blocked_reasons": blocked_reasons,
         "next_required_command": NEXT_REQUIRED_COMMAND,
         "receipt_ref": receipt_ref,
@@ -292,6 +354,7 @@ def _build_report_bundle_digest(
     status: str,
     blocked_reasons: list[str],
     report_refs: list[str],
+    queue_e_ref_count: int,
 ) -> dict[str, Any]:
     return {
         "schema_version": "report_bundle_digest_v0",
@@ -300,6 +363,7 @@ def _build_report_bundle_digest(
         "status": status,
         "blocked_reasons": blocked_reasons,
         "report_count": len(report_refs),
+        "queue_e_ref_count": queue_e_ref_count,
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }
 
@@ -315,6 +379,9 @@ def _build_first_activation_return_packet(
     expression_monitor: dict[str, Any],
     repair_language: dict[str, Any],
     dialogue_turn_refs: list[str],
+    responsibility_loop: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "schema_version": "first_activation_return_packet_v0",
@@ -330,6 +397,14 @@ def _build_first_activation_return_packet(
         "relation_scope_restore_refs": ["runtime/state/language/relation_scope_language_index.json#relation-scope-v0-0001"] if relation_scope_index.get("relation_scopes") else [],
         "self_narrative_restore_refs": list(self_narrative_trace.get("narrative_turn_refs", [])),
         "dialogue_turn_restore_refs": dialogue_turn_refs,
+        "responsibility_restore_refs": ["runtime/state/action/responsibility_loop_state.json"],
+        "world_contact_restore_refs": ["runtime/state/membrane/world_contact_summary.json"],
+        "pain_regret_restore_refs": QUEUE_E_REPORT_REFS,
+        "regret_pressure_restore_refs": list(pain_regret_repair_report.get("regret_pressure_refs", [])),
+        "repair_obligation_restore_refs": list(pain_regret_repair_report.get("repair_obligation_refs", [])),
+        "responsibility_language_restore_refs": list(responsibility_loop.get("language_writeback_refs", [])),
+        "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
+        "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
         "report_bundle_ref": "runtime/reports/latest/report_bundle.json",
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }
@@ -375,10 +450,13 @@ def _build_receipt(
         reports_dir / "growth_archive_digest.json",
         reports_dir / "growth_archive_stage_gate.json",
         state_dir / "archive" / "growth_archive_to_shadow_handoff.json",
+        state_dir / "action" / "responsibility_loop_state.json",
+        state_dir / "membrane" / "world_contact_summary.json",
         state_dir / "language" / "shared_term_registry.json",
         state_dir / "language" / "relation_scope_language_index.json",
         state_dir / "language" / "self_narrative_language_trace.json",
         state_dir / "language" / "expression_monitor_state.json",
+        reports_dir / "pain_regret_repair_report.json",
     ]:
         if path.exists():
             input_hashes[str(path)] = _sha256(path)

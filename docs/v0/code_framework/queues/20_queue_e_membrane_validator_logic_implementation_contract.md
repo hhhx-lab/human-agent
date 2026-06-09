@@ -430,6 +430,12 @@ Queue E 必须接到这些现有器官上：
 
 形成更厚的行为-验证-逻辑到长期生命连续体的回链。
 
+当前这条回链的第一轮已经补上：
+
+- `replay/__init__.py` 现在显式装载 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json`，并把它们压进 `replay_shadow_seed_bundle.json`、`language_relationship_replay_probe.json`、`dream_pain_regret_replay_probe.json`、`shadow_expression_report.json`、`replay_shadow_report.json`。
+- `archive/__init__.py` 现在显式把这组三件对象带进 `growth_archive_receipt_batch.json`、`growth_archive_to_shadow_handoff.json`、`growth_archive_report.json` 与 archive receipt/event。
+- `reporting/__init__.py` 现在显式把这组三件对象带进 `report_bundle.json`、`report_bundle_digest.json` 与 `first_activation_return_packet.json`。
+
 ## Queue E 对现有器官的改动合同
 
 ### `life_v0/membrane/__init__.py`
@@ -514,9 +520,9 @@ Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判
 
 当前真正还没完成的是：
 
-1. `ResponsibilityLoopState` 的 repair / regret / obligation 对 Queue B、Queue A 和 growth/archive 的持续消费。
-2. `world_contact_summary.json` 与 `pain_regret_repair_report.json` 对 report bundle、process report 和 resident waiting governance 的更深回挂。
-3. `cross_file_logic.json`、`evidence_ranking.json`、`run_manifest.json` 对 archive / reporting / process closeout 的闭包消费。
+1. `ResponsibilityLoopState` 的 repair / regret / obligation 对 Queue B、Queue A 和 growth/archive/process 的持续调制还需要更深的策略层消费，而不只是 refs carry-through。
+2. `world_contact_summary.json` 与 `pain_regret_repair_report.json` 虽然已经进入 report bundle、process report 和 resident waiting governance，但还需要继续反向调制 dream / growth / language 的长期权重。
+3. `cross_file_logic.json`、`evidence_ranking.json`、`run_manifest.json` 对 archive / reporting / process closeout 的闭包消费还可以继续压深。
 4. Queue E 对 `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` 这些更深的 prediction 器官的正式接线。
 
 ## Queue E 当前推荐实施顺序

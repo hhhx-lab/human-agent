@@ -30,6 +30,11 @@ NEXT_REQUIRED_COMMAND = "life-v0 emit-report --strict"
 NEXT_ALLOWED_SLICES = ["S10_RUNTIME_GROWTH_RECONSOLIDATION", "S11_V0_ENGINEERING_CONTRACTS"]
 READ_ME_BLOCK_REFS = ["B29_RUNTIME_MOUNT_GROWTH", "B30_RECONSOLIDATION_REPLAY_GROWTH"]
 RUNTIME_CARRIER_REFS = ["ActivationGrowthRuntime", "ReconsolidationReplayRuntime"]
+QUEUE_E_STATE_REFS = [
+    "runtime/state/action/responsibility_loop_state.json",
+    "runtime/state/membrane/world_contact_summary.json",
+]
+QUEUE_E_REPORT_REFS = ["runtime/reports/latest/pain_regret_repair_report.json"]
 
 
 @dataclass(frozen=True)
@@ -48,6 +53,9 @@ def build_reconsolidation_archive_graph(
     archive_edges = [
         {"source": "runtime_mount_state", "target": "run_report", "edge_kind": "mount_to_report"},
         {"source": "shadow_cycle_trace", "target": "run_report", "edge_kind": "trace_to_report"},
+        {"source": "responsibility_loop_state", "target": "growth_archive_report", "edge_kind": "responsibility_to_archive"},
+        {"source": "world_contact_summary", "target": "growth_archive_report", "edge_kind": "world_contact_to_archive"},
+        {"source": "pain_regret_repair_report", "target": "growth_archive_report", "edge_kind": "repair_to_archive"},
         {"source": "dream_consolidation_frame", "target": "growth_reconsolidation_report", "edge_kind": "dream_to_growth"},
         {"source": "pain_regret_responsibility_replay", "target": "growth_reconsolidation_report", "edge_kind": "replay_to_growth"},
         {"source": "growth_patch_queue", "target": "digest", "edge_kind": "queue_to_digest"},
@@ -150,6 +158,21 @@ def run_write_growth_archive(
         blocked_reasons,
         "replay_stage_gate_gate",
     )
+    responsibility_loop = _load_json(
+        state_dir / "action" / "responsibility_loop_state.json",
+        blocked_reasons,
+        "responsibility_loop_gate",
+    )
+    world_contact_summary = _load_json(
+        state_dir / "membrane" / "world_contact_summary.json",
+        blocked_reasons,
+        "world_contact_summary_gate",
+    )
+    pain_regret_repair_report = _load_json(
+        reports_dir / "pain_regret_repair_report.json",
+        blocked_reasons,
+        "pain_regret_repair_gate",
+    )
 
     blocked_reasons.extend(
         _archive_blockers(
@@ -167,6 +190,9 @@ def run_write_growth_archive(
             replay_report=replay_report,
             replay_digest=replay_digest,
             replay_stage_gate=replay_stage_gate,
+            responsibility_loop=responsibility_loop,
+            world_contact_summary=world_contact_summary,
+            pain_regret_repair_report=pain_regret_repair_report,
         )
     )
 
@@ -183,6 +209,9 @@ def run_write_growth_archive(
         replay_seed_bundle=replay_seed_bundle,
         language_probe=language_probe,
         replay_report=replay_report,
+        responsibility_loop=responsibility_loop,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
     shadow_preconditions = _build_shadow_run_preconditions(
         run_id=run_id,
@@ -197,12 +226,15 @@ def run_write_growth_archive(
         archive_batch=archive_batch,
         shadow_preconditions=shadow_preconditions,
         replay_report=replay_report,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
 
     report_refs = [
         "runtime/reports/latest/run_report.json",
         "runtime/reports/latest/growth_reconsolidation_report.json",
         "runtime/reports/latest/replay_shadow_report.json",
+        "runtime/reports/latest/pain_regret_repair_report.json",
         "runtime/reports/latest/growth_archive_report.json",
         "runtime/reports/latest/growth_archive_digest.json",
         "runtime/reports/latest/growth_archive_stage_gate.json",
@@ -227,6 +259,8 @@ def run_write_growth_archive(
         stage_effect=stage_effect,
         blocked_reasons=blocked_reasons,
         state_refs=state_refs,
+        queue_e_state_refs=QUEUE_E_STATE_REFS,
+        queue_e_report_refs=QUEUE_E_REPORT_REFS,
         next_allowed_slices=next_allowed_slices,
         next_required_command=next_required_command,
         receipt_ref=receipt_ref,
@@ -237,6 +271,7 @@ def run_write_growth_archive(
         status=status,
         stage_effect=stage_effect,
         blocked_reasons=blocked_reasons,
+        queue_e_ref_count=len(QUEUE_E_STATE_REFS) + len(QUEUE_E_REPORT_REFS),
         next_allowed_slices=next_allowed_slices,
         next_required_command=next_required_command,
     )
@@ -318,6 +353,9 @@ def _archive_blockers(
     replay_report: dict[str, Any],
     replay_digest: dict[str, Any],
     replay_stage_gate: dict[str, Any],
+    responsibility_loop: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
 ) -> list[str]:
     reasons: list[str] = []
     if life_state.get("schema_version") != "life_state_v0":
@@ -358,6 +396,12 @@ def _archive_blockers(
         reasons.append("replay_stage_gate_gate schema mismatch")
     if replay_stage_gate.get("decision") != "closed":
         reasons.append("replay_stage_gate_gate decision is not closed")
+    if responsibility_loop.get("schema_version") != "responsibility_loop_state_v0":
+        reasons.append("responsibility_loop_gate schema mismatch")
+    if world_contact_summary.get("schema_version") != "world_contact_summary_v0":
+        reasons.append("world_contact_summary_gate schema mismatch")
+    if pain_regret_repair_report.get("schema_version") != "pain_regret_repair_report_v0":
+        reasons.append("pain_regret_repair_gate schema mismatch")
     if not replay_seed_bundle.get("source_seed_refs"):
         reasons.append("replay_seed_bundle_gate source seed refs missing")
     if not growth_patch_queue.get("queued_patch_families"):
@@ -368,6 +412,12 @@ def _archive_blockers(
         reasons.append("dream_probe_gate dream fact gate is not closed")
     if not shadow_expression.get("expression_trace"):
         reasons.append("shadow_expression_gate expression trace missing")
+    if not responsibility_loop.get("repair_obligation_refs"):
+        reasons.append("responsibility_loop_gate repair obligations missing")
+    if not world_contact_summary.get("release_posture"):
+        reasons.append("world_contact_summary_gate release posture missing")
+    if not pain_regret_repair_report.get("repair_obligation_refs"):
+        reasons.append("pain_regret_repair_gate repair obligations missing")
     return reasons
 
 
@@ -380,6 +430,9 @@ def _build_growth_archive_receipt_batch(
     replay_seed_bundle: dict[str, Any],
     language_probe: dict[str, Any],
     replay_report: dict[str, Any],
+    responsibility_loop: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "schema_version": "growth_archive_receipt_batch_v0",
@@ -404,6 +457,10 @@ def _build_growth_archive_receipt_batch(
             "runtime/state/replay/replay_shadow_seed_bundle.json",
             "runtime/state/replay/shadow_expression_report.json",
         ],
+        "responsibility_archive_receipt_refs": [
+            *QUEUE_E_STATE_REFS,
+            *QUEUE_E_REPORT_REFS,
+        ],
         "life_target_growth_carrier_receipt_refs": [
             "runtime/reports/latest/life_target_status.json",
             "runtime/reports/latest/replay_shadow_report.json",
@@ -424,6 +481,9 @@ def _build_growth_archive_receipt_batch(
         "shadow_run_handoff_ref": "runtime/state/archive/growth_archive_to_shadow_handoff.json",
         "queued_patch_families": list(growth_patch_queue.get("queued_patch_families", [])),
         "seed_families": list(next_feedback_seed.get("seed_families", [])),
+        "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
+        "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
+        "repair_obligation_refs": list(responsibility_loop.get("repair_obligation_refs", [])),
         "report_ref": replay_report.get("engineering_slice_ref", ACTIVE_SLICE),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -441,6 +501,7 @@ def _build_shadow_run_preconditions(
         replay_arbitration.get("selected_route") == "write_growth_archive"
         and replay_stage_gate.get("decision") == "closed"
         and bool(archive_batch.get("shadow_run_seed_archive_receipt_refs"))
+        and bool(archive_batch.get("responsibility_archive_receipt_refs"))
     )
     return {
         "schema_version": "shadow_run_preconditions_v0",
@@ -452,6 +513,8 @@ def _build_shadow_run_preconditions(
             "runtime/state/archive/growth_archive_receipt_batch.json",
             "runtime/reports/latest/replay_shadow_stage_gate.json",
             "runtime/state/replay/replay_shadow_arbitration.json",
+            *QUEUE_E_STATE_REFS,
+            *QUEUE_E_REPORT_REFS,
         ],
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -464,6 +527,8 @@ def _build_growth_archive_to_shadow_handoff(
     archive_batch: dict[str, Any],
     shadow_preconditions: dict[str, Any],
     replay_report: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "schema_version": "growth_archive_to_shadow_handoff_v0",
@@ -474,6 +539,7 @@ def _build_growth_archive_to_shadow_handoff(
         "growth_archive_receipt_batch_ref": "runtime/state/archive/growth_archive_receipt_batch.json",
         "shadow_run_precondition_refs": ["runtime/state/archive/shadow_run_preconditions.json"],
         "shadow_run_seed_archive_receipt_refs": list(archive_batch.get("shadow_run_seed_archive_receipt_refs", [])),
+        "responsibility_archive_receipt_refs": list(archive_batch.get("responsibility_archive_receipt_refs", [])),
         "language_action_archive_receipt_refs": list(archive_batch.get("language_action_archive_receipt_refs", [])),
         "birth_readiness_effect_archive_receipt_refs": list(
             archive_batch.get("birth_readiness_effect_archive_receipt_refs", [])
@@ -481,6 +547,8 @@ def _build_growth_archive_to_shadow_handoff(
         "anti_forgetting_replay_archive_receipt_refs": list(
             archive_batch.get("anti_forgetting_replay_archive_receipt_refs", [])
         ),
+        "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
+        "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
         "report_ref": replay_report.get("schema_version", "replay_shadow_report_v0"),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -494,6 +562,8 @@ def _build_report(
     stage_effect: str,
     blocked_reasons: list[str],
     state_refs: list[str],
+    queue_e_state_refs: list[str],
+    queue_e_report_refs: list[str],
     next_allowed_slices: list[str],
     next_required_command: str,
     receipt_ref: str,
@@ -509,6 +579,8 @@ def _build_report(
         "readme_block_refs": READ_ME_BLOCK_REFS,
         "runtime_carrier_refs": RUNTIME_CARRIER_REFS,
         "state_refs": state_refs,
+        "queue_e_state_refs": queue_e_state_refs,
+        "queue_e_report_refs": queue_e_report_refs,
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
         "next_allowed_slices": next_allowed_slices,
@@ -524,6 +596,7 @@ def _build_digest(
     status: str,
     stage_effect: str,
     blocked_reasons: list[str],
+    queue_e_ref_count: int,
     next_allowed_slices: list[str],
     next_required_command: str,
 ) -> dict[str, Any]:
@@ -534,6 +607,7 @@ def _build_digest(
         "current_phase": "growth_archive",
         "status": status,
         "stage_effect": stage_effect,
+        "queue_e_ref_count": queue_e_ref_count,
         "blocked_reasons": blocked_reasons,
         "next_allowed_slices": next_allowed_slices,
         "next_required_command": next_required_command,
@@ -558,6 +632,7 @@ def _build_stage_gate(
         "stage_effect": stage_effect,
         "gates": {
             "archive_receipt_gate": "closed" if status == "closed" else "blocked",
+            "responsibility_archive_gate": "closed" if status == "closed" else "blocked",
             "shadow_precondition_gate": "closed" if status == "closed" else "blocked",
             "handoff_gate": "closed" if status == "closed" else "blocked",
             "state_writeback_gate": "closed" if status == "closed" else "blocked",
@@ -588,6 +663,7 @@ def _build_archive_events(
                 "growth_patch": len(archive_batch.get("growth_patch_receipt_refs", [])),
                 "language_action": len(archive_batch.get("language_action_archive_receipt_refs", [])),
                 "anti_forgetting": len(archive_batch.get("anti_forgetting_replay_archive_receipt_refs", [])),
+                "responsibility": len(archive_batch.get("responsibility_archive_receipt_refs", [])),
             },
             "preconditions_ready": bool(shadow_preconditions.get("preconditions_ready")),
             "shadow_run_handoff_ready": bool(shadow_handoff.get("shadow_run_handoff_ready")),
@@ -628,9 +704,12 @@ def _build_receipt(
         state_dir / "replay" / "language_relationship_replay_probe.json",
         state_dir / "replay" / "dream_pain_regret_replay_probe.json",
         state_dir / "replay" / "shadow_expression_report.json",
+        state_dir / "action" / "responsibility_loop_state.json",
+        state_dir / "membrane" / "world_contact_summary.json",
         reports_dir / "replay_shadow_report.json",
         reports_dir / "replay_shadow_digest.json",
         reports_dir / "replay_shadow_stage_gate.json",
+        reports_dir / "pain_regret_repair_report.json",
     ]:
         if path.exists():
             input_hashes[str(path)] = _sha256(path)
