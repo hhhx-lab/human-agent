@@ -91,17 +91,17 @@ run_report.json
 ### 常驻过程
 
 1. `runtime/state/terminal/idle_continuity_frame.json`
-2. `runtime/reports/latest/digital_life_waiting_heartbeat.json`
-3. `runtime/reports/latest/digital_life_process_report.json`
-4. `runtime/reports/latest/digital_life_process_digest.json`
-5. `runtime/reports/latest/digital_life_process_incident_report.json`
-6. `runtime/reports/latest/digital_life_process_recovery_report.json`
-7. `runtime/reports/latest/digital_life_process_relaunch_recovery_report.json`
+2. `runtime/state/terminal/idle_strategy_state.json`
+3. `runtime/reports/latest/digital_life_waiting_heartbeat.json`
+4. `runtime/reports/latest/digital_life_process_report.json`
+5. `runtime/reports/latest/digital_life_process_digest.json`
+6. `runtime/reports/latest/digital_life_process_incident_report.json`
+7. `runtime/reports/latest/digital_life_process_recovery_report.json`
+8. `runtime/reports/latest/digital_life_process_relaunch_recovery_report.json`
 
 ## 下一轮关键文件
 
-1. `life_v0/process_supervisor/idle_strategy.py`
-2. `life_v0/process_supervisor/persistent_process.py`
+1. `life_v0/process_supervisor/persistent_process.py`
 
 ### 文件级职责
 
@@ -109,6 +109,9 @@ run_report.json
 |---|---|---|---|
 | `idle_strategy.py` | 定义等待态 heartbeat 节律、空闲探针、离线对象消费策略 | `IdleContinuityFrame`、`ReplayCueBundle`、`OfflineConsolidationFrame`、`GrowthPatchCandidateQueue` | `runtime/state/terminal/idle_strategy_state.json` |
 | `persistent_process.py` | 把最小常驻进程补成明确的持续治理器官 | shell report、terminal loop state、incident/relaunch reports | `runtime/reports/latest/digital_life_persistent_process_report.json` |
+
+当前 `idle_strategy.py` 第一轮已经落地，waiting heartbeat 和 process report 已显式挂上
+`idle_strategy_ref`，后续重点转向 `persistent_process.py` 与更厚的 resident supervision。
 
 ## 最低验证面
 
@@ -129,4 +132,3 @@ run_report.json
 3. waiting heartbeat 不是空转，而是真实消费离线对象链。
 4. 异常恢复和重启恢复不是 shell 技巧，而是连续体治理。
 5. 新外部回合能进入、输出、写回、等待下一轮，不丢关系连续体。
-

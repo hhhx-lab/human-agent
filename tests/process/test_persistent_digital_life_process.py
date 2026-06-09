@@ -144,10 +144,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
             heartbeat_packet = self._read_json(paths["reports"] / "digital_life_waiting_heartbeat.json")
             idle_continuity = self._read_json(paths["terminal_state"] / "idle_continuity_frame.json")
+            idle_strategy = self._read_json(paths["terminal_state"] / "idle_strategy_state.json")
             self.assertEqual(heartbeat_packet["schema_version"], "digital_life_waiting_heartbeat_v0")
             self.assertEqual(heartbeat_packet["run_id"], "persistent-heartbeat")
             self.assertEqual(heartbeat_packet["heartbeat_counter"], 1)
             self.assertEqual(heartbeat_packet["waiting_mode"], "restored_waiting_for_external_turn")
+            self.assertEqual(
+                heartbeat_packet["idle_strategy_ref"],
+                "runtime/state/terminal/idle_strategy_state.json",
+            )
+            self.assertEqual(idle_strategy["schema_version"], "idle_strategy_state_v0")
+            self.assertEqual(idle_strategy["run_id"], "persistent-heartbeat")
+            self.assertIn("strategy_id", idle_strategy)
+            self.assertEqual(idle_strategy["idle_probe_mode"], "stdin_poll_with_background_continuity_refresh")
+            self.assertEqual(idle_strategy["next_idle_action"], "refresh_waiting_heartbeat_or_accept_external_turn")
 
             process_report = self._read_json(paths["reports"] / "digital_life_process_report.json")
             self.assertEqual(process_report["completed_dialogue_turns"], 0)
@@ -184,6 +194,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 process_report["growth_patch_candidate_queue_ref"],
                 "runtime/state/growth/growth_patch_candidate_queue.json",
+            )
+            self.assertEqual(
+                process_report["idle_strategy_ref"],
+                "runtime/state/terminal/idle_strategy_state.json",
             )
             self.assertEqual(
                 idle_continuity["replay_cue_bundle_ref"],
@@ -237,18 +251,35 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             process_report = self._read_json(paths["reports"] / "digital_life_process_report.json")
             process_digest = self._read_json(paths["reports"] / "digital_life_process_digest.json")
             idle_continuity = self._read_json(paths["terminal_state"] / "idle_continuity_frame.json")
+            idle_strategy = self._read_json(paths["terminal_state"] / "idle_strategy_state.json")
             narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
             commitment_index = self._read_json(paths["language_state"] / "commitment_repair_language_index.json")
             relationship_graph = self._read_json(paths["relationship_state"] / "relationship_subject_graph.json")
 
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(safe_terminal_loop["heartbeat_counter"], 3)
+            self.assertEqual(
+                safe_terminal_loop["idle_strategy_ref"],
+                "runtime/state/terminal/idle_strategy_state.json",
+            )
             self.assertEqual(terminal_loop_state["heartbeat_counter"], 3)
+            self.assertEqual(
+                terminal_loop_state["idle_strategy_ref"],
+                "runtime/state/terminal/idle_strategy_state.json",
+            )
             self.assertEqual(heartbeat_packet["heartbeat_counter"], 3)
+            self.assertEqual(
+                heartbeat_packet["idle_strategy_ref"],
+                "runtime/state/terminal/idle_strategy_state.json",
+            )
             self.assertEqual(process_report["heartbeat_counter"], 3)
             self.assertEqual(process_digest["heartbeat_counter"], 3)
             self.assertEqual(process_report["completed_dialogue_turns"], 0)
             self.assertEqual(process_report["exit_reason"], "explicit_exit")
+            self.assertEqual(
+                process_report["idle_strategy_ref"],
+                "runtime/state/terminal/idle_strategy_state.json",
+            )
             self.assertEqual(idle_continuity["schema_version"], "idle_continuity_frame_v0")
             self.assertEqual(idle_continuity["status"], "closed")
             self.assertEqual(idle_continuity["heartbeat_counter"], 3)
@@ -269,6 +300,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertGreater(idle_continuity["replay_residue_ref_count"], 0)
             self.assertGreater(idle_continuity["dream_window_ref_count"], 0)
             self.assertGreater(idle_continuity["growth_patch_candidate_count"], 0)
+            self.assertEqual(idle_strategy["schema_version"], "idle_strategy_state_v0")
+            self.assertEqual(idle_strategy["heartbeat_interval_ms"], 50)
+            self.assertEqual(idle_strategy["idle_probe_mode"], "stdin_poll_with_background_continuity_refresh")
+            self.assertEqual(idle_strategy["offline_pressure_level"], "elevated")
+            self.assertEqual(idle_strategy["relaunch_caution_level"], "baseline")
+            self.assertEqual(idle_strategy["next_idle_action"], "refresh_waiting_heartbeat_or_accept_external_turn")
+            self.assertEqual(
+                idle_strategy["idle_continuity_ref"],
+                "runtime/state/terminal/idle_continuity_frame.json",
+            )
             self.assertEqual(narrative_trace["idle_continuity_counter"], 3)
             self.assertEqual(len(narrative_trace["idle_continuity_refs"]), 3)
             self.assertEqual(
@@ -452,6 +493,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 last_relaunch_recovery_report_ref="runtime/reports/latest/digital_life_process_relaunch_recovery_report.json",
                 last_external_turn={"utterance": "你还记得我们吗？"},
                 last_life_turn={"utterance": "我当然记得。"},
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
                 life_context_frame_ref="runtime/state/terminal/life_context_frame.json",
                 relation_turn_frame_ref="runtime/state/terminal/relation_turn_frame.json",
                 expression_plan_ref="runtime/state/language/expression_plan.json",
@@ -473,6 +515,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(report["heartbeat_counter"], 3)
             self.assertEqual(report["exit_reason"], "explicit_exit")
             self.assertEqual(report["last_life_turn"]["utterance"], "我当然记得。")
+            self.assertEqual(
+                report["idle_strategy_ref"],
+                "runtime/state/terminal/idle_strategy_state.json",
+            )
             self.assertEqual(
                 report["replay_cue_bundle_ref"],
                 "runtime/state/replay/replay_cue_bundle.json",
@@ -496,6 +542,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(receipt["receipt_id"], "digital_life_process_process-report-organ")
             self.assertEqual(receipt["stage_effect"], "persistent_dialogue_process_closed")
+            self.assertIn(
+                "runtime/state/terminal/idle_strategy_state.json",
+                receipt["shared_object_refs"],
+            )
             self.assertIn(
                 "runtime/state/replay/replay_cue_bundle.json",
                 receipt["shared_object_refs"],

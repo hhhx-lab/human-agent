@@ -11,6 +11,7 @@ from typing import Any, TextIO
 from .continuity_writeback import record_idle_continuity
 from .dialogue_events import build_external_turn_event, build_life_turn_event
 from .heartbeat import write_waiting_heartbeat
+from .idle_strategy import IDLE_STRATEGY_STATE_REF
 from .incident_recovery import (
     record_recovery_continuity,
     recover_from_dialogue_turn_exception,
@@ -176,6 +177,9 @@ def run_digital_life_process(
         source_doc_refs=SOURCE_DOC_REFS,
         readme_block_refs=READ_ME_BLOCK_REFS,
         runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+        replay_cue_bundle=replay_cue_bundle,
+        offline_consolidation_frame=offline_consolidation_frame,
+        growth_patch_candidate_queue=growth_patch_candidate_queue,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
@@ -215,6 +219,9 @@ def run_digital_life_process(
                 source_doc_refs=SOURCE_DOC_REFS,
                 readme_block_refs=READ_ME_BLOCK_REFS,
                 runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+                replay_cue_bundle=replay_cue_bundle,
+                offline_consolidation_frame=offline_consolidation_frame,
+                growth_patch_candidate_queue=growth_patch_candidate_queue,
                 replay_cue_bundle_ref=replay_cue_bundle_ref,
                 offline_consolidation_frame_ref=offline_consolidation_frame_ref,
                 growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
@@ -379,6 +386,7 @@ def run_digital_life_process(
         last_relaunch_recovery_report_ref=last_relaunch_recovery_report_ref,
         last_external_turn=last_external_turn,
         last_life_turn=last_life_turn,
+        idle_strategy_ref=IDLE_STRATEGY_STATE_REF,
         life_context_frame_ref=(
             "runtime/state/terminal/life_context_frame.json" if life_context_frame else None
         ),

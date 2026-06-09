@@ -33,6 +33,7 @@ def write_process_report_bundle(
     last_relaunch_recovery_report_ref: str | None,
     last_external_turn: dict[str, Any] | None,
     last_life_turn: dict[str, Any] | None,
+    idle_strategy_ref: str | None,
     life_context_frame_ref: str | None,
     relation_turn_frame_ref: str | None,
     expression_plan_ref: str | None,
@@ -63,6 +64,7 @@ def write_process_report_bundle(
         "exit_reason": exit_reason,
         "last_external_turn": last_external_turn,
         "last_life_turn": last_life_turn,
+        "idle_strategy_ref": idle_strategy_ref,
         "life_context_frame_ref": life_context_frame_ref,
         "relation_turn_frame_ref": relation_turn_frame_ref,
         "expression_plan_ref": expression_plan_ref,
@@ -101,6 +103,7 @@ def write_process_report_bundle(
         state_dir=state_dir,
         reports_dir=reports_dir,
         receipts_dir=receipts_dir,
+        idle_strategy_ref=idle_strategy_ref,
         life_context_frame_ref=life_context_frame_ref,
         relation_turn_frame_ref=relation_turn_frame_ref,
         expression_plan_ref=expression_plan_ref,
@@ -126,6 +129,7 @@ def build_process_receipt(
     state_dir: Path,
     reports_dir: Path,
     receipts_dir: Path,
+    idle_strategy_ref: str | None,
     life_context_frame_ref: str | None,
     relation_turn_frame_ref: str | None,
     expression_plan_ref: str | None,
@@ -175,6 +179,7 @@ def build_process_receipt(
         "shared_object_refs": [
             ref
             for ref in [
+                idle_strategy_ref,
                 life_context_frame_ref,
                 relation_turn_frame_ref,
                 expression_plan_ref,

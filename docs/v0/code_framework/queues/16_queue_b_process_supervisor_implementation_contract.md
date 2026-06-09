@@ -124,6 +124,7 @@ heartbeat packet 至少要有：
 - `generated_at`
 - `heartbeat_counter`
 - `waiting_mode`
+- `idle_strategy_ref`
 - `idle_continuity_ref`
 - `next_required_action`
 
@@ -285,6 +286,32 @@ def decide_idle_strategy(
 - `offline_pressure_level`
 - `relaunch_caution_level`
 - `next_idle_action`
+
+### 当前已落第一轮
+
+当前 Queue B 已经补上第一版 `idle_strategy.py`，并且 waiting heartbeat /
+process report / shared object receipt 已开始显式回链：
+
+- `runtime/state/terminal/idle_strategy_state.json`
+- `runtime/reports/latest/digital_life_waiting_heartbeat.json#idle_strategy_ref`
+- `runtime/reports/latest/digital_life_process_report.json#idle_strategy_ref`
+- `runtime/receipts/digital_life_process_<run_id>.json#shared_object_refs`
+
+第一轮已落字段包括：
+
+- `schema_version`
+- `run_id`
+- `strategy_id`
+- `heartbeat_counter`
+- `heartbeat_interval_ms`
+- `idle_probe_mode`
+- `offline_pressure_level`
+- `relaunch_caution_level`
+- `next_idle_action`
+- `idle_continuity_ref`
+- `replay_cue_bundle_ref`
+- `offline_consolidation_frame_ref`
+- `growth_patch_candidate_queue_ref`
 
 ## Queue B 对现有器官的改动合同
 
