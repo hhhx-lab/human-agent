@@ -444,7 +444,8 @@ turn residue
 3. `process_supervisor/process_closeout.py` 负责 persistent process artifact 与主 process report 的统一 closeout
 4. `process_supervisor/resident_supervision.py` 负责 restore shell 之后的状态装载、relaunch normalization 和第一拍 waiting heartbeat 进入
 5. `process_supervisor/idle_refresh_loop.py` 负责 idle heartbeat refresh、stdin probe 和 exit/next-turn 判定
-6. 下一轮前沿转向 `live_turn_cycle.py`
+6. `process_supervisor/live_turn_cycle.py` 负责真实新回合的 event -> response -> writeback -> incident recovery 生命周期
+7. 下一轮前沿转向 `process_session_loop.py`
 
 ## 完成定义
 

@@ -551,6 +551,188 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "relaunch_recovery_normalization",
             )
 
+    def test_live_turn_cycle_organ_writes_response_and_returns_to_waiting_state(self):
+        from life_v0.process_supervisor.live_turn_cycle import run_live_turn_cycle
+        from life_v0.process_supervisor.resident_supervision import (
+            bootstrap_resident_supervision,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            self._bootstrap(paths)
+
+            supervision = bootstrap_resident_supervision(
+                state_dir=paths["state_root"],
+                reports_dir=paths["reports"],
+                receipts_dir=paths["receipts"],
+                run_id="live-turn-cycle-organ",
+                generated_at="2026-06-10T00:00:00+00:00",
+                strict=True,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                read_json=self._read_json,
+                read_json_if_exists=lambda path: self._read_json(path) if path.exists() else {},
+                write_json=self._write_json,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+            )
+            self.assertEqual(supervision.exit_code, 0)
+            assert supervision.context is not None
+            context = supervision.context
+
+            result = run_live_turn_cycle(
+                run_id="live-turn-cycle-organ",
+                incident_count=0,
+                turn_counter=1,
+                external_utterance="你还记得我们吗？",
+                terminal_dir=context.terminal_dir,
+                language_dir=context.language_dir,
+                relationship_dir=context.relationship_dir,
+                reports_dir=paths["reports"],
+                safe_terminal_loop=context.safe_terminal_loop,
+                terminal_life_loop_state=context.terminal_life_loop_state,
+                self_narrative_trace=context.self_narrative_trace,
+                commitment_index=context.commitment_index,
+                relationship_graph=context.relationship_graph,
+                shared_term_registry=context.shared_term_registry,
+                relation_turn_frame=context.relation_turn_frame,
+                expression_plan=context.expression_plan,
+                life_context_frame=context.life_context_frame,
+                replay_cue_bundle=context.replay_cue_bundle,
+                offline_consolidation_frame=context.offline_consolidation_frame,
+                growth_patch_candidate_queue=context.growth_patch_candidate_queue,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                replay_cue_bundle_ref=context.replay_cue_bundle_ref,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+                write_json=self._write_json,
+                append_jsonl=self._append_jsonl,
+            )
+
+            safe_terminal_loop = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
+            terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
+            dialogue_writeback_bundle = self._read_json(paths["reports"] / "dialogue_writeback_bundle.json")
+
+            self.assertEqual(result.turn_counter, 3)
+            self.assertEqual(result.completed_turns_delta, 1)
+            self.assertEqual(result.incident_count_delta, 0)
+            self.assertEqual(result.cycle_status, "completed")
+            self.assertIn("生命回合输出:", result.emitted_output)
+            self.assertIsNotNone(result.last_external_turn)
+            self.assertIsNotNone(result.last_life_turn)
+            self.assertEqual(
+                result.last_external_turn["event_role"],
+                "external_relation_turn",
+            )
+            self.assertEqual(
+                result.last_life_turn["event_role"],
+                "digital_life_turn",
+            )
+            self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
+            self.assertEqual(terminal_loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
+            self.assertEqual(
+                dialogue_writeback_bundle["dialogue_event_refs"],
+                [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-2",
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+                ],
+            )
+
+    def test_live_turn_cycle_organ_recovers_from_response_exception(self):
+        from life_v0.process_supervisor.live_turn_cycle import run_live_turn_cycle
+        from life_v0.process_supervisor.resident_supervision import (
+            bootstrap_resident_supervision,
+        )
+
+        def raise_compose_error(**_: object) -> str:
+            raise RuntimeError("simulated-live-turn-cycle-failure")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            self._bootstrap(paths)
+
+            supervision = bootstrap_resident_supervision(
+                state_dir=paths["state_root"],
+                reports_dir=paths["reports"],
+                receipts_dir=paths["receipts"],
+                run_id="live-turn-cycle-incident",
+                generated_at="2026-06-10T00:00:00+00:00",
+                strict=True,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                read_json=self._read_json,
+                read_json_if_exists=lambda path: self._read_json(path) if path.exists() else {},
+                write_json=self._write_json,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+            )
+            self.assertEqual(supervision.exit_code, 0)
+            assert supervision.context is not None
+            context = supervision.context
+
+            result = run_live_turn_cycle(
+                run_id="live-turn-cycle-incident",
+                incident_count=0,
+                turn_counter=1,
+                external_utterance="这次回合会触发一次异常",
+                terminal_dir=context.terminal_dir,
+                language_dir=context.language_dir,
+                relationship_dir=context.relationship_dir,
+                reports_dir=paths["reports"],
+                safe_terminal_loop=context.safe_terminal_loop,
+                terminal_life_loop_state=context.terminal_life_loop_state,
+                self_narrative_trace=context.self_narrative_trace,
+                commitment_index=context.commitment_index,
+                relationship_graph=context.relationship_graph,
+                shared_term_registry=context.shared_term_registry,
+                relation_turn_frame=context.relation_turn_frame,
+                expression_plan=context.expression_plan,
+                life_context_frame=context.life_context_frame,
+                replay_cue_bundle=context.replay_cue_bundle,
+                offline_consolidation_frame=context.offline_consolidation_frame,
+                growth_patch_candidate_queue=context.growth_patch_candidate_queue,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                replay_cue_bundle_ref=context.replay_cue_bundle_ref,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+                write_json=self._write_json,
+                append_jsonl=self._append_jsonl,
+                compose_life_response_fn=raise_compose_error,
+            )
+
+            safe_terminal_loop = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
+            terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
+            incident_report = self._read_json(paths["reports"] / "digital_life_process_incident_report.json")
+            recovery_report = self._read_json(paths["reports"] / "digital_life_process_recovery_report.json")
+
+            self.assertEqual(result.turn_counter, 3)
+            self.assertEqual(result.completed_turns_delta, 0)
+            self.assertEqual(result.incident_count_delta, 1)
+            self.assertEqual(result.cycle_status, "incident_recovered")
+            self.assertIn("异常恢复", result.emitted_output)
+            self.assertEqual(
+                result.last_incident_report_ref,
+                "runtime/reports/latest/digital_life_process_incident_report.json",
+            )
+            self.assertEqual(
+                result.last_recovery_report_ref,
+                "runtime/reports/latest/digital_life_process_recovery_report.json",
+            )
+            self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
+            self.assertEqual(terminal_loop_state["last_turn_status"], "incident_recovered")
+            self.assertEqual(incident_report["error_type"], "RuntimeError")
+            self.assertEqual(recovery_report["result"], "recovered_to_waiting_state")
+
     def test_turn_io_poll_input_line_uses_custom_poll_hook_before_fileno(self):
         from life_v0.process_supervisor.turn_io import poll_input_line
 

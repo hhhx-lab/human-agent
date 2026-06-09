@@ -111,6 +111,7 @@
 | `heartbeat.py` | waiting heartbeat、idle continuity 写回 |
 | `resident_supervision.py` | 把 restore shell 之后的状态装载、relaunch normalization 和第一拍 waiting heartbeat 进入独立成器官 |
 | `idle_refresh_loop.py` | 把空闲等待时的 heartbeat refresh、stdin probe 和 exit/next-turn 判定独立成器官 |
+| `live_turn_cycle.py` | 把真实新回合的 event -> response -> writeback -> incident recovery 生命周期独立成器官 |
 | `resident_turn_writeback.py` | 把真实新回合收成 dialogue writeback bundle、waiting return 和 resumed packet |
 | `process_closeout.py` | 把常驻进程的 persistent artifact、process report、digest、receipt 统一收口 |
 | `turn_io.py` | stdin 读取与回合驱动 |
@@ -188,7 +189,7 @@
 2. 再拆 `inner_speech.py`、`expression_monitor.py`、`relationship_graph.py`
 3. 再拆 `terminal_turn/context_accumulation.py`、`turn_transition.py`，并补 `turn_packet.py`、`conversation_carryover.py`、`dialogue_turn.py`
 4. `terminal_loop/loop_state.py`、`resume_packet.py`、`persistent_wait_bridge.py` 的首轮 waiting-state handoff 已落，下一步把 continuity bridge 接进 `process_supervisor/`
-5. `resident_supervision.py` 与 `idle_refresh_loop.py` 已独立后，最后继续深拆 `process_supervisor/live_turn_cycle.py`，把真实新回合生命周期从入口里剥出来
+5. `resident_supervision.py`、`idle_refresh_loop.py` 与 `live_turn_cycle.py` 已独立后，最后继续深拆 `process_supervisor/process_session_loop.py`，把等待态 refresh 和新回合 dispatch 的 session 编排从入口里剥出来
 
 原因很简单：如果先写 process 壳，再回来补语言器官，壳会重新反向定义生命层。
 

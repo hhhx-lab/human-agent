@@ -370,6 +370,54 @@ def bootstrap_resident_supervision(
 - `last_relaunch_recovery_report_ref`
 - `heartbeat_counter`
 
+## H. 新增 `life_v0/process_supervisor/live_turn_cycle.py`
+
+### 角色
+
+把一条真实新回合的 success path 和 incident recovery path 从主入口抽成单一生命周期器官。
+
+### 第一轮建议接口
+
+```python
+@dataclass(frozen=True)
+class LiveTurnCycleResult:
+    ...
+
+
+def run_live_turn_cycle(
+    *,
+    run_id: str,
+    incident_count: int,
+    turn_counter: int,
+    external_utterance: str,
+    ...
+) -> LiveTurnCycleResult:
+    ...
+```
+
+### 必须承担的功能
+
+1. 生成 external turn event
+2. 生成 response surface
+3. 生成 digital life turn event
+4. 调用 `resident_turn_writeback.py` 完成回合级写回与 waiting return
+5. 若回合处理中抛出异常，则调用 `incident_recovery.py` 完成 recovery path
+6. 把这轮回合的 completed / incident delta、最后 turn refs 和终端状态统一返回给主进程
+
+### 第一轮最低字段
+
+- `turn_counter`
+- `completed_turns_delta`
+- `incident_count_delta`
+- `cycle_status`
+- `emitted_output`
+- `safe_terminal_loop`
+- `terminal_life_loop_state`
+- `last_external_turn`
+- `last_life_turn`
+- `last_incident_report_ref`
+- `last_recovery_report_ref`
+
 ## Queue B 对现有器官的改动合同
 
 ### `life_v0/process_supervisor/__init__.py`
@@ -383,7 +431,7 @@ def bootstrap_resident_supervision(
 
 下一步继续外移：
 
-- live turn lifecycle 汇总
+- process session loop 编排
 
 ### `life_v0/digital_entry.py`
 

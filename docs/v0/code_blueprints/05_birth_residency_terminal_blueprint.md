@@ -103,8 +103,9 @@ run_report.json
 
 ## 当前关键文件
 
-1. `life_v0/process_supervisor/resident_supervision.py` 负责恢复后常驻治理启动链
-2. `life_v0/process_supervisor/persistent_process.py` 继续承接关闭态 resident governance artifact
+1. `life_v0/process_supervisor/live_turn_cycle.py` 负责真实新回合的 success / incident 生命周期
+2. `life_v0/process_supervisor/resident_supervision.py` 负责恢复后常驻治理启动链
+3. `life_v0/process_supervisor/persistent_process.py` 继续承接关闭态 resident governance artifact
 
 ### 文件级职责
 
@@ -112,6 +113,7 @@ run_report.json
 |---|---|---|---|
 | `idle_strategy.py` | 定义等待态 heartbeat 节律、空闲探针、离线对象消费策略 | `IdleContinuityFrame`、`ReplayCueBundle`、`OfflineConsolidationFrame`、`GrowthPatchCandidateQueue` | `runtime/state/terminal/idle_strategy_state.json` |
 | `resident_supervision.py` | 接住 restore shell 之后的状态装载、relaunch normalization、初次 waiting heartbeat 进入 | shell report、terminal state、language/relationship continuity、offline shared objects | 首轮 `digital_life_waiting_heartbeat.json`、更新后的 terminal/language/relationship state |
+| `live_turn_cycle.py` | 承接真实新回合的 event -> response -> writeback -> incident recovery 生命周期 | shared terms、commitment、relationship、offline cues、resident turn writeback、incident recovery | dialogue writeback、resumed dialogue packet、incident/recovery reports、更新后的 waiting state |
 | `persistent_process.py` | 把最小常驻进程补成明确的持续治理器官 | shell report、terminal loop state、incident/relaunch reports、idle strategy | `runtime/state/terminal/persistent_process_state.json`、`runtime/reports/latest/digital_life_persistent_process_report.json` |
 
 当前 `idle_strategy.py` 第一轮已经落地，waiting heartbeat 和 process report 已显式挂上
@@ -119,8 +121,9 @@ run_report.json
 `persistent_process_state.json` 和 `digital_life_persistent_process_report.json`，并把
 `persistent_process_report_ref` 接进 `digital_life_process_report.json`。这一轮又已把
 `resident_supervision.py` 接上，负责 restore shell 之后的状态装载、relaunch normalization、
-离线对象接线和第一拍 waiting heartbeat 进入。后续重点转向 `live_turn_cycle.py`，把真实新回合的
-event -> response -> writeback -> incident recovery 生命周期继续从 `__init__.py` 剥出来。
+离线对象接线和第一拍 waiting heartbeat 进入。这一轮又已补上 `live_turn_cycle.py`，把真实新回合的
+event -> response -> writeback -> incident recovery 生命周期继续从 `__init__.py` 剥了出来。后续重点
+转向 `process_session_loop.py`，把等待态 heartbeat refresh 与 live turn dispatch 的 session 编排继续下沉。
 
 ## 最低验证面
 

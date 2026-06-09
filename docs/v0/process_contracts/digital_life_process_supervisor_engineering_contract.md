@@ -101,6 +101,7 @@ life-v0 "digital life"
 - `life_v0/process_supervisor/response_surface.py`
 - `life_v0/process_supervisor/resident_supervision.py`
 - `life_v0/process_supervisor/idle_refresh_loop.py`
+- `life_v0/process_supervisor/live_turn_cycle.py`
 - `life_v0/process_supervisor/resident_turn_writeback.py`
 - `life_v0/process_supervisor/process_closeout.py`
 
@@ -109,7 +110,7 @@ life-v0 "digital life"
 1. 把这些器官之间共享的对象链钉死；
 2. 让等待态、真实新回合、异常恢复、跨重启恢复都走同一条连续体；
 3. 把 restore shell 之后的状态装载、relaunch normalization、离线对象接线和第一拍 waiting heartbeat 进入抽到 `resident_supervision.py`。
-4. 让真实新回合在 process supervisor 内部直接收成 `DialogueWritebackBundle + resumed_external_dialogue_packet + waiting return`；
+4. 把真实新回合在 process supervisor 内部直接收成 `DialogueWritebackBundle + resumed_external_dialogue_packet + waiting return`，并将 success / incident 两条路径统一抽到 `live_turn_cycle.py`；
 5. 把 idle heartbeat refresh、stdin probe 与 exit/next-turn 判定从主入口抽到 `idle_refresh_loop.py`。
 6. 把常驻进程的 `persistent_process + process_report + receipt` closeout 决策也接回同一条对象链。
 7. 继续把离线对象压进 waiting state 与下一轮表达。

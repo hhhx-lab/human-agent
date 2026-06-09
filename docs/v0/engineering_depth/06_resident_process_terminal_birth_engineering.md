@@ -18,10 +18,11 @@ life-v0 emit-report --strict
 
 ## 当前最关键的器官文件
 
-1. `life_v0/process_supervisor/resident_supervision.py` 已接住 restore shell 之后的常驻治理启动链
-2. `life_v0/process_supervisor/idle_strategy.py` 继续补厚 heartbeat 节律与 idle probe 治理
-3. `life_v0/process_supervisor/persistent_process.py` 继续补厚 resident supervision 的关闭态 artifact
-4. 下一前沿转向 `life_v0/process_supervisor/live_turn_cycle.py`
+1. `life_v0/process_supervisor/live_turn_cycle.py` 已接住真实新回合的 success / incident 生命周期
+2. `life_v0/process_supervisor/resident_supervision.py` 已接住 restore shell 之后的常驻治理启动链
+3. `life_v0/process_supervisor/idle_strategy.py` 继续补厚 heartbeat 节律与 idle probe 治理
+4. `life_v0/process_supervisor/persistent_process.py` 继续补厚 resident supervision 的关闭态 artifact
+5. 下一前沿转向 `life_v0/process_supervisor/process_session_loop.py`
 
 ## 当前最关键的 runtime 证据
 
@@ -57,7 +58,8 @@ life-v0 emit-report --strict
 2. `tests/process/test_persistent_process_state.py`
 3. `tests/process/test_relaunch_continuity.py`
 4. `tests/process/test_live_turn_cycle.py`
+5. `tests/process/test_process_session_loop.py`
 
 当前实际已经由 `tests/process/test_persistent_digital_life_process.py` 吸收了
-`idle_strategy.py` 与 `persistent_process.py` 的第一轮红绿覆盖；后续是否拆独立测试文件，
-以不破坏现有 Queue B 测试闭环为先。
+`idle_strategy.py`、`persistent_process.py`、`resident_supervision.py` 与 `live_turn_cycle.py`
+的第一轮红绿覆盖；后续是否拆独立测试文件，以不破坏现有 Queue B 测试闭环为先。

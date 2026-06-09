@@ -10,9 +10,8 @@ from typing import Any, TextIO
 from .dialogue_events import build_external_turn_event, build_life_turn_event
 from .idle_refresh_loop import wait_for_next_external_relation_turn
 from .idle_strategy import IDLE_STRATEGY_STATE_REF
-from .incident_recovery import recover_from_dialogue_turn_exception
+from .live_turn_cycle import run_live_turn_cycle
 from .process_closeout import close_digital_life_process
-from .resident_turn_writeback import write_resident_turn_writeback
 from .resident_supervision import bootstrap_resident_supervision
 from .response_surface import compose_life_response
 
@@ -171,92 +170,54 @@ def run_digital_life_process(
         if external_utterance is None:
             continue
 
-        turn_counter += 1
-        external_turn_id = f"dialogue-turn-live-{turn_counter:04d}"
-        external_turn = _build_external_turn_event(
-            turn_id=external_turn_id,
-            generated_at=_now_iso(),
-            utterance=external_utterance,
-            shared_term_registry=shared_term_registry,
+        live_turn_cycle = run_live_turn_cycle(
+            run_id=run_id,
+            incident_count=incident_count,
+            turn_counter=turn_counter,
+            external_utterance=external_utterance,
+            terminal_dir=terminal_dir,
+            language_dir=language_dir,
+            relationship_dir=relationship_dir,
+            reports_dir=reports_dir,
+            safe_terminal_loop=safe_terminal_loop,
+            terminal_life_loop_state=terminal_life_loop_state,
+            self_narrative_trace=self_narrative_trace,
             commitment_index=commitment_index,
+            relationship_graph=relationship_graph,
+            shared_term_registry=shared_term_registry,
+            relation_turn_frame=relation_turn_frame,
+            expression_plan=expression_plan,
+            life_context_frame=life_context_frame,
+            replay_cue_bundle=replay_cue_bundle,
+            offline_consolidation_frame=offline_consolidation_frame,
+            growth_patch_candidate_queue=growth_patch_candidate_queue,
+            source_doc_refs=SOURCE_DOC_REFS,
+            readme_block_refs=READ_ME_BLOCK_REFS,
+            runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+            replay_cue_bundle_ref=replay_cue_bundle_ref,
+            now_iso=_now_iso,
+            write_json=_write_json,
+            append_jsonl=_append_jsonl,
+            build_external_turn_event_fn=_build_external_turn_event,
+            compose_life_response_fn=_compose_life_response,
+            build_life_turn_event_fn=_build_life_turn_event,
         )
-        try:
-            turn_counter += 1
-            life_turn_id = f"dialogue-turn-live-{turn_counter:04d}"
-            life_response = _compose_life_response(
-                external_utterance=external_utterance,
-                relationship_graph=relationship_graph,
-                shared_term_registry=shared_term_registry,
-                commitment_index=commitment_index,
-                relation_turn_frame=relation_turn_frame,
-                expression_plan=expression_plan,
-                life_context_frame=life_context_frame,
-                replay_cue_bundle=replay_cue_bundle,
-                offline_consolidation_frame=offline_consolidation_frame,
-                growth_patch_candidate_queue=growth_patch_candidate_queue,
-            )
-            life_turn = _build_life_turn_event(
-                turn_id=life_turn_id,
-                generated_at=_now_iso(),
-                utterance=life_response,
-                shared_term_registry=shared_term_registry,
-                commitment_index=commitment_index,
-            )
-            turn_writeback = write_resident_turn_writeback(
-                run_id=run_id,
-                terminal_dir=terminal_dir,
-                language_dir=language_dir,
-                relationship_dir=relationship_dir,
-                reports_dir=reports_dir,
-                turn_counter=turn_counter,
-                external_turn_id=external_turn_id,
-                life_turn_id=life_turn_id,
-                external_turn=external_turn,
-                life_turn=life_turn,
-                external_utterance=external_utterance,
-                life_response=life_response,
-                safe_terminal_loop=safe_terminal_loop,
-                terminal_life_loop_state=terminal_life_loop_state,
-                self_narrative_trace=self_narrative_trace,
-                commitment_index=commitment_index,
-                relationship_graph=relationship_graph,
-                source_doc_refs=SOURCE_DOC_REFS,
-                readme_block_refs=READ_ME_BLOCK_REFS,
-                runtime_carrier_refs=RUNTIME_CARRIER_REFS,
-                replay_cue_bundle_ref=replay_cue_bundle_ref,
-                now_iso=_now_iso,
-                write_json=_write_json,
-                append_jsonl=_append_jsonl,
-            )
-            safe_terminal_loop = turn_writeback.safe_terminal_loop
-            terminal_life_loop_state = turn_writeback.terminal_life_loop_state
-            last_external_turn = turn_writeback.last_external_turn
-            last_life_turn = turn_writeback.last_life_turn
-            completed_turns += 1
+        turn_counter = live_turn_cycle.turn_counter
+        completed_turns += live_turn_cycle.completed_turns_delta
+        incident_count += live_turn_cycle.incident_count_delta
+        safe_terminal_loop = live_turn_cycle.safe_terminal_loop
+        terminal_life_loop_state = live_turn_cycle.terminal_life_loop_state
+        if live_turn_cycle.last_external_turn is not None:
+            last_external_turn = live_turn_cycle.last_external_turn
+        if live_turn_cycle.last_life_turn is not None:
+            last_life_turn = live_turn_cycle.last_life_turn
+        if live_turn_cycle.last_incident_report_ref is not None:
+            last_incident_report_ref = live_turn_cycle.last_incident_report_ref
+        if live_turn_cycle.last_recovery_report_ref is not None:
+            last_recovery_report_ref = live_turn_cycle.last_recovery_report_ref
 
-            _print_line(output_stream, f"生命回合输出: {life_response}")
-        except Exception as exc:
-            incident_count += 1
-            incident_recovery = recover_from_dialogue_turn_exception(
-                run_id=run_id,
-                incident_count=incident_count,
-                external_utterance=external_utterance,
-                exc=exc,
-                reports_dir=reports_dir,
-                terminal_dir=terminal_dir,
-                language_dir=language_dir,
-                relationship_dir=relationship_dir,
-                safe_terminal_loop=safe_terminal_loop,
-                terminal_life_loop_state=terminal_life_loop_state,
-                self_narrative_trace=self_narrative_trace,
-                commitment_index=commitment_index,
-                relationship_graph=relationship_graph,
-                write_json=_write_json,
-                now_iso=_now_iso,
-            )
-            last_incident_report_ref = incident_recovery.incident_report_ref
-            last_recovery_report_ref = incident_recovery.recovery_report_ref
-            _print_line(output_stream, "生命回合处理出现异常，已执行异常恢复并回到等待态。")
+        _print_line(output_stream, live_turn_cycle.emitted_output)
+        if live_turn_cycle.cycle_status == "incident_recovered":
             continue
 
     closeout = close_digital_life_process(
