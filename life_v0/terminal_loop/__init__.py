@@ -9,6 +9,7 @@ from typing import Any
 from .loop_state import build_terminal_life_loop_state
 from .dialogue_writeback import build_dialogue_writeback_bundle
 from .loop_report import write_terminal_life_loop_bundle
+from .persistent_wait_bridge import build_persistent_wait_bridge
 from .resume_packet import build_resumed_external_dialogue_packet
 
 
@@ -189,15 +190,12 @@ def run_terminal_life_loop(
         next_required_action=next_required_action,
     )
 
-    updated_safe_terminal_loop = {
-        **safe_terminal_loop,
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "status": status,
-        "current_mode": "restored_waiting_for_external_turn" if status == "closed" else "blocked",
-        "last_completed_turn_mode": "resumed_external_dialogue_loop" if status == "closed" else "blocked",
-        "last_dialogue_packet_ref": "runtime/reports/latest/resumed_external_dialogue_packet.json",
-    }
+    updated_safe_terminal_loop = build_persistent_wait_bridge(
+        run_id=run_id,
+        generated_at=generated_at,
+        status=status,
+        safe_terminal_loop=safe_terminal_loop,
+    )
 
     try:
         report_bundle = write_terminal_life_loop_bundle(

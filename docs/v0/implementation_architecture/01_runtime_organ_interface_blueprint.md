@@ -84,12 +84,12 @@
 |---|---|
 | 理论文档 | `09`、`85-90`、`96`、`101`、`141`、`144`、`147`、`150`、`01f`、`01j`、`01u` |
 | 主包 | `life_v0/language/`、`life_v0/terminal_turn/`、`life_v0/terminal_loop/` |
-| 当前文件 | `percept.py`、`semantic_map.py`、`inner_speech.py`、`expression_monitor.py`、`shared_terms.py`、`relationship_graph.py`、`commitment_repair.py`、`dialogue_log.py`、`narrative_trace.py`、`relation_scope.py`、`dream_gate.py`、`action_shadow.py`、`context_accumulation.py`、`turn_transition.py`、`turn_packet.py`、`conversation_carryover.py`、`dialogue_turn.py`、`dialogue_writeback.py` |
+| 当前文件 | `percept.py`、`semantic_map.py`、`inner_speech.py`、`expression_monitor.py`、`shared_terms.py`、`relationship_graph.py`、`commitment_repair.py`、`dialogue_log.py`、`narrative_trace.py`、`relation_scope.py`、`dream_gate.py`、`action_shadow.py`、`context_accumulation.py`、`turn_transition.py`、`turn_packet.py`、`conversation_carryover.py`、`dialogue_turn.py`、`dialogue_writeback.py`、`persistent_wait_bridge.py` |
 | 主要输入 | `LifeContextFrame`、`RelationTurnFrame`、`PredictionWorkspaceFrame`、`CoreAffectVector` |
 | 主要输出 | `RelationTurnFrame`、`ExpressionPlan`、language/relationship state、session envelope |
 | 必写 runtime | `runtime/state/language/*`、`runtime/state/relationship/*`、`session_envelope.json`、`context_accumulation_window.json`、`turn_transition_trace.json` |
 | 必守测试 | `tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py` |
-| 下一步 | terminal-turn 首轮核心器官已经闭合；下一步转向 `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` 与 terminal-loop continuity bridge，把恢复后的首回合继续接进长期关系语言释放 |
+| 下一步 | terminal-turn 与 terminal-loop 的首轮核心器官已经闭合；下一步转向 `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py`，并把更厚的 loop continuity / resident supervision 接进 `process_supervisor/` |
 
 ### 5. 记忆、自传与关系真值层
 

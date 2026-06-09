@@ -58,6 +58,14 @@ life-v0 terminal-life-loop --state runtime/state --reports runtime/reports/lates
 | packet | `runtime/reports/latest/terminal_life_loop_packet.json` |
 | receipt | `runtime/receipts/terminal_life_loop_<run_id>.json` |
 
+## 当前器官落点
+
+- `loop_state.py`：终端生命循环状态对象。
+- `resume_packet.py`：恢复后外显回合 packet。
+- `dialogue_writeback.py`：对话回写 bundle。
+- `persistent_wait_bridge.py`：把本回合结束后的 `safe_terminal_loop_state` 交回受约束的等待态。
+- `loop_report.py`：packet / report / digest / receipt 汇总写出。
+
 ## 输出文件
 
 | 文件 | 内容 |

@@ -123,7 +123,7 @@ flowchart TD
 
 | 项 | 规定 |
 |---|---|
-| 责任模块 | `life_v0/terminal_loop/`、`life_v0/process_supervisor/process_report.py`、`life_v0/reporting/` |
+| 责任模块 | `life_v0/terminal_loop/persistent_wait_bridge.py`、`life_v0/terminal_loop/loop_report.py`、`life_v0/process_supervisor/process_report.py`、`life_v0/reporting/` |
 | 主要输入 | `DialogueWritebackBundle`、更新后的 state refs |
 | 主要输出 | run report、digest、stage gate、receipt |
 | 关键 gate | `strict_cli_gate`、`report_bundle_gate` |

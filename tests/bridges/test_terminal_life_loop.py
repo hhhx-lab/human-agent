@@ -152,6 +152,62 @@ class TerminalLifeLoopTests(unittest.TestCase):
         self.assertEqual(receipt["schema_version"], "terminal_life_loop_receipt_v0")
         self.assertEqual(receipt["command"], "terminal-life-loop")
 
+    def test_persistent_wait_bridge_updates_wait_handoff_without_dropping_guards(self):
+        from life_v0.terminal_loop.persistent_wait_bridge import build_persistent_wait_bridge
+
+        safe_terminal_loop = {
+            "schema_version": "safe_terminal_loop_state_v0",
+            "current_mode": "restored_waiting_for_external_turn",
+            "allowed_actions": [
+                "resume_language_relation_turn",
+                "write_relation_trace_candidate",
+            ],
+            "blocked_actions": ["external_irreversible_action"],
+            "resume_anchor_refs": [
+                "runtime/state/direction/resume_anchor_chain.json",
+                "runtime/reports/latest/first_terminal_turn_packet.json",
+            ],
+        }
+
+        closed_bridge = build_persistent_wait_bridge(
+            run_id="loop-wait-bridge",
+            generated_at="2026-06-09T00:00:00+00:00",
+            status="closed",
+            safe_terminal_loop=safe_terminal_loop,
+        )
+        blocked_bridge = build_persistent_wait_bridge(
+            run_id="loop-wait-bridge-blocked",
+            generated_at="2026-06-09T00:00:01+00:00",
+            status="blocked",
+            safe_terminal_loop=safe_terminal_loop,
+        )
+
+        self.assertNotIn("run_id", safe_terminal_loop)
+        self.assertEqual(closed_bridge["run_id"], "loop-wait-bridge")
+        self.assertEqual(closed_bridge["current_mode"], "restored_waiting_for_external_turn")
+        self.assertEqual(
+            closed_bridge["last_completed_turn_mode"], "resumed_external_dialogue_loop"
+        )
+        self.assertEqual(
+            closed_bridge["last_dialogue_packet_ref"],
+            "runtime/reports/latest/resumed_external_dialogue_packet.json",
+        )
+        self.assertEqual(
+            closed_bridge["blocked_actions"], ["external_irreversible_action"]
+        )
+        self.assertEqual(
+            closed_bridge["resume_anchor_refs"],
+            [
+                "runtime/state/direction/resume_anchor_chain.json",
+                "runtime/reports/latest/first_terminal_turn_packet.json",
+            ],
+        )
+
+        self.assertEqual(blocked_bridge["run_id"], "loop-wait-bridge-blocked")
+        self.assertEqual(blocked_bridge["status"], "blocked")
+        self.assertEqual(blocked_bridge["current_mode"], "blocked")
+        self.assertEqual(blocked_bridge["last_completed_turn_mode"], "blocked")
+
     def test_loop_report_organ_writes_packet_report_digest_and_receipt(self):
         from life_v0.terminal_loop.loop_report import write_terminal_life_loop_bundle
 
