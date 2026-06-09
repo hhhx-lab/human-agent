@@ -23,6 +23,7 @@ def build_evidence_ranking(
     consistency_logic: dict[str, Any],
     counterfactual_trace: dict[str, Any],
     comparison_trace: dict[str, Any],
+    cross_file_logic: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     missing_fields = list(observation_truth_review.get("missing_fields", []))
     audit_findings = list(boundary_audit.get("audit_findings", []))
@@ -43,6 +44,8 @@ def build_evidence_ranking(
         confirmation_backlog.append("suppressed_branches_need_archive_review")
     if audit_findings:
         confirmation_backlog.append("boundary_findings_need_confirmation")
+    if (cross_file_logic or {}).get("blocked_growth_refs"):
+        confirmation_backlog.append("growth_reentry_needs_cross_file_repair")
 
     ranked_evidence = [
         {
@@ -83,6 +86,7 @@ def build_evidence_ranking(
             "runtime/state/validation/observation_truth_review.json",
             "runtime/state/validation/boundary_audit_state.json",
             "runtime/state/schema_runner/consistency_logic.json",
+            "runtime/state/schema_runner/cross_file_logic.json",
             "runtime/state/schema_runner/counterfactual_trace.json",
             "runtime/state/schema_runner/comparison_trace.json",
         ],

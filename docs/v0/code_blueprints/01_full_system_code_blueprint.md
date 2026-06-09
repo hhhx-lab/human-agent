@@ -78,8 +78,8 @@ DocCorpusIngestor
 
 ### Queue E 第二波
 
-1. `life_v0/schema_runner/cross_file_logic.py`
-2. `life_v0/schema_runner/run_manifest.py`
+1. `life_v0/schema_runner/cross_file_logic.py` 已落
+2. `life_v0/schema_runner/run_manifest.py` 已落
 3. `life_v0/membrane/responsibility_loop.py` 持续补厚
 
 ### Queue B 第二波
@@ -103,4 +103,3 @@ DocCorpusIngestor
 4. 这一层最低由哪些测试证明。
 
 答不出来，就先回 `docs/v0/code_blueprints/07_theory_to_package_trace_contract.md` 和对应合同。
-

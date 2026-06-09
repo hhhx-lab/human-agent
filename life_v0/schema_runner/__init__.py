@@ -10,7 +10,9 @@ from typing import Any
 from .comparison_trace import build_comparison_trace, check_comparison_trace
 from .consistency_logic import build_consistency_logic, check_consistency_logic
 from .counterfactual_eval import build_counterfactual_trace, check_counterfactual_trace
+from .cross_file_logic import build_cross_file_logic, check_cross_file_logic
 from .evidence_ranker import build_evidence_ranking, check_evidence_ranking
+from .run_manifest import build_run_manifest, check_run_manifest
 
 ACTIVE_SLICE = "S09_SCHEMA_RUNNER_CODE"
 NEXT_ALLOWED_SLICES = ["S06_LIFE_SUPPORT_DEVELOPMENT", "S10_RUNTIME_GROWTH_RECONSOLIDATION"]
@@ -122,6 +124,15 @@ def run_schema_runner(
         counterfactual_trace=counterfactual_trace,
         consistency_logic=consistency_logic,
     )
+    cross_file_logic = build_cross_file_logic(
+        run_id=run_id,
+        generated_at=generated_at,
+        observation_truth_review=observation_truth_review,
+        boundary_audit=boundary_audit,
+        responsibility_loop=responsibility_loop,
+        consistency_logic=consistency_logic,
+        comparison_trace=comparison_trace,
+    )
     evidence_ranking = build_evidence_ranking(
         run_id=run_id,
         generated_at=generated_at,
@@ -130,6 +141,36 @@ def run_schema_runner(
         consistency_logic=consistency_logic,
         counterfactual_trace=counterfactual_trace,
         comparison_trace=comparison_trace,
+        cross_file_logic=cross_file_logic,
+    )
+    output_refs = _schema_runner_output_refs(out_dir, reports_dir, receipts_dir, run_id)
+    input_hashes = _build_input_hashes(
+        docs_dir=docs_dir,
+        doc_index_path=doc_index_path,
+        state_dir=state_dir,
+        reports_dir=reports_dir,
+        source_docs=source_docs,
+    )
+    run_manifest = build_run_manifest(
+        run_id=run_id,
+        generated_at=generated_at,
+        run_status=status,
+        stage_effect=stage_effect,
+        source_doc_refs=source_docs,
+        input_state_refs=[
+            "runtime/state/life_state.json",
+            "runtime/state/action/action_candidate_set.json",
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/validation/observation_truth_review.json",
+            "runtime/state/validation/boundary_audit_state.json",
+        ],
+        input_report_refs=[
+            "runtime/reports/latest/birth_readiness_report.json",
+            "runtime/reports/latest/validation_membrane_report.json",
+            "runtime/reports/latest/validation_membrane_check_report.json",
+        ],
+        output_refs=[_runtime_ref(path) for path in output_refs],
+        input_hashes=input_hashes,
     )
     artifact_manifest = _build_artifact_manifest(run_id, generated_at, status)
     stage_gate = _build_stage_gate(run_id, generated_at, status, stage_effect, blocked_reasons)
@@ -146,6 +187,7 @@ def run_schema_runner(
         receipts_dir=receipts_dir,
         stage_effect=stage_effect,
         source_docs=source_docs,
+        input_hashes=input_hashes,
     )
 
     try:
@@ -158,9 +200,11 @@ def run_schema_runner(
         _write_json(out_dir / "cross_file_checker_manifest.json", checker_manifest)
         _write_json(out_dir / "first_code_artifact_manifest.json", artifact_manifest)
         _write_json(out_dir / "consistency_logic.json", consistency_logic)
+        _write_json(out_dir / "cross_file_logic.json", cross_file_logic)
         _write_json(out_dir / "counterfactual_trace.json", counterfactual_trace)
         _write_json(out_dir / "comparison_trace.json", comparison_trace)
         _write_json(out_dir / "evidence_ranking.json", evidence_ranking)
+        _write_json(out_dir / "run_manifest.json", run_manifest)
         _write_json(out_dir / "schema_runner_stage_gate.json", stage_gate)
         _write_json(reports_dir / "schema_runner_report.json", report)
         _write_json(reports_dir / "schema_runner_digest.json", digest)
@@ -193,9 +237,11 @@ def run_check_schema_runner(
     checker_manifest = _load_json(state_dir / "cross_file_checker_manifest.json", blocked_reasons, "checker_manifest_gate")
     artifact_manifest = _load_json(state_dir / "first_code_artifact_manifest.json", blocked_reasons, "code_artifact_gate")
     consistency_logic = _load_json(state_dir / "consistency_logic.json", blocked_reasons, "consistency_logic_gate")
+    cross_file_logic = _load_json(state_dir / "cross_file_logic.json", blocked_reasons, "cross_file_logic_gate")
     counterfactual_trace = _load_json(state_dir / "counterfactual_trace.json", blocked_reasons, "counterfactual_gate")
     comparison_trace = _load_json(state_dir / "comparison_trace.json", blocked_reasons, "comparison_trace_gate")
     evidence_ranking = _load_json(state_dir / "evidence_ranking.json", blocked_reasons, "evidence_ranking_gate")
+    run_manifest = _load_json(state_dir / "run_manifest.json", blocked_reasons, "run_manifest_gate")
     stage_gate = _load_json(state_dir / "schema_runner_stage_gate.json", blocked_reasons, "next_slice_gate")
     build_report = _load_json(reports_dir / "schema_runner_report.json", blocked_reasons, "build_report_gate")
 
@@ -205,9 +251,11 @@ def run_check_schema_runner(
     blocked_reasons.extend(_check_checker_manifest(checker_manifest))
     blocked_reasons.extend(_check_artifact_manifest(artifact_manifest))
     blocked_reasons.extend(check_consistency_logic(consistency_logic))
+    blocked_reasons.extend(check_cross_file_logic(cross_file_logic))
     blocked_reasons.extend(check_counterfactual_trace(counterfactual_trace))
     blocked_reasons.extend(check_comparison_trace(comparison_trace))
     blocked_reasons.extend(check_evidence_ranking(evidence_ranking))
+    blocked_reasons.extend(check_run_manifest(run_manifest))
     blocked_reasons.extend(_check_stage_gate(stage_gate))
     blocked_reasons.extend(_check_build_report(build_report))
 
@@ -259,12 +307,16 @@ def run_schema_smoke(
     registry = _load_json(schema_state_dir / "schema_registry.json", blocked_reasons, "schema_bundle_gate")
     lockfile = _load_json(schema_state_dir / "schema_dependency_lockfile.json", blocked_reasons, "registry_gate")
     command_queue = _load_json(schema_state_dir / "runner_command_queue.json", blocked_reasons, "command_queue_gate")
+    cross_file_logic = _load_json(schema_state_dir / "cross_file_logic.json", blocked_reasons, "cross_file_logic_gate")
+    run_manifest = _load_json(schema_state_dir / "run_manifest.json", blocked_reasons, "run_manifest_gate")
     stage_gate = _load_json(schema_state_dir / "schema_runner_stage_gate.json", blocked_reasons, "next_slice_gate")
     build_report = _load_json(reports_dir / "schema_runner_report.json", blocked_reasons, "build_report_gate")
 
     blocked_reasons.extend(_check_registry(registry))
     blocked_reasons.extend(_check_lockfile(lockfile))
     blocked_reasons.extend(_check_command_queue(command_queue))
+    blocked_reasons.extend(check_cross_file_logic(cross_file_logic))
+    blocked_reasons.extend(check_run_manifest(run_manifest))
     blocked_reasons.extend(_check_stage_gate(stage_gate))
     blocked_reasons.extend(_check_build_report(build_report))
 
@@ -419,7 +471,9 @@ def _build_dependency_lockfile(run_id: str, generated_at: str, source_docs: list
         {"artifact_ref": "runtime/state/schema_runner/runner_command_queue.json", "artifact_kind": "runner_command_queue"},
         {"artifact_ref": "runtime/state/schema_runner/cross_file_checker_manifest.json", "artifact_kind": "checker_manifest"},
         {"artifact_ref": "runtime/state/schema_runner/first_code_artifact_manifest.json", "artifact_kind": "code_artifact_manifest"},
+        {"artifact_ref": "runtime/state/schema_runner/cross_file_logic.json", "artifact_kind": "cross_file_logic"},
         {"artifact_ref": "runtime/state/schema_runner/evidence_ranking.json", "artifact_kind": "evidence_ranking"},
+        {"artifact_ref": "runtime/state/schema_runner/run_manifest.json", "artifact_kind": "run_manifest"},
     ]
     doc_nodes = [{"doc_path": path, "future_runtime_carrier": _carrier_hint(path)} for path in source_docs]
     ref_edges = [
@@ -514,9 +568,11 @@ def _build_artifact_manifest(run_id: str, generated_at: str, status: str) -> dic
             "runtime/state/schema_runner/schema_registry.json",
             "runtime/state/schema_runner/runner_command_queue.json",
             "runtime/state/schema_runner/consistency_logic.json",
+            "runtime/state/schema_runner/cross_file_logic.json",
             "runtime/state/schema_runner/counterfactual_trace.json",
             "runtime/state/schema_runner/comparison_trace.json",
             "runtime/state/schema_runner/evidence_ranking.json",
+            "runtime/state/schema_runner/run_manifest.json",
         ],
         "test_refs": [
             "tests/slices/test_schema_runner.py",
@@ -589,9 +645,11 @@ def _build_report(
             "runtime/state/schema_runner/cross_file_checker_manifest.json",
             "runtime/state/schema_runner/first_code_artifact_manifest.json",
             "runtime/state/schema_runner/consistency_logic.json",
+            "runtime/state/schema_runner/cross_file_logic.json",
             "runtime/state/schema_runner/counterfactual_trace.json",
             "runtime/state/schema_runner/comparison_trace.json",
             "runtime/state/schema_runner/evidence_ranking.json",
+            "runtime/state/schema_runner/run_manifest.json",
         ],
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
@@ -633,36 +691,9 @@ def _build_receipt(
     receipts_dir: Path,
     stage_effect: str,
     source_docs: list[str],
+    input_hashes: dict[str, str],
 ) -> dict[str, Any]:
-    input_hashes = {
-        ref: _sha256(docs_dir.parent / ref)
-        for ref in source_docs
-        if (docs_dir.parent / ref).exists()
-    }
-    for path in [
-        doc_index_path,
-        state_dir / "life_state.json",
-        reports_dir / "birth_readiness_report.json",
-        reports_dir / "validation_membrane_report.json",
-        state_dir / "action" / "responsibility_loop_state.json",
-    ]:
-        if path.exists():
-            input_hashes[str(path)] = _sha256(path)
-    output_refs = [
-        out_dir / "schema_registry.json",
-        out_dir / "schema_dependency_lockfile.json",
-        out_dir / "runner_command_queue.json",
-        out_dir / "cross_file_checker_manifest.json",
-        out_dir / "first_code_artifact_manifest.json",
-        out_dir / "consistency_logic.json",
-        out_dir / "counterfactual_trace.json",
-        out_dir / "comparison_trace.json",
-        out_dir / "evidence_ranking.json",
-        out_dir / "schema_runner_stage_gate.json",
-        reports_dir / "schema_runner_report.json",
-        reports_dir / "schema_runner_digest.json",
-        receipts_dir / f"schema_runner_{run_id}.json",
-    ]
+    output_refs = _schema_runner_output_refs(out_dir, reports_dir, receipts_dir, run_id)
     return {
         "schema_version": "schema_runner_receipt_v0",
         "receipt_id": f"schema_runner_{run_id}",
@@ -738,6 +769,12 @@ def _check_artifact_manifest(artifact_manifest: dict[str, Any]) -> list[str]:
         reasons.append("code_artifact_gate schema_runner root missing")
     if "tests/slices/test_schema_runner.py" not in artifact_manifest.get("test_refs", []):
         reasons.append("code_artifact_gate schema runner tests missing")
+    for ref in [
+        "runtime/state/schema_runner/cross_file_logic.json",
+        "runtime/state/schema_runner/run_manifest.json",
+    ]:
+        if ref not in artifact_manifest.get("artifact_refs", []):
+            reasons.append(f"code_artifact_gate missing {ref}")
     return reasons
 
 
@@ -760,7 +797,69 @@ def _check_build_report(report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate status mismatch")
     if report.get("next_allowed_slices") != NEXT_ALLOWED_SLICES:
         reasons.append("build_report_gate next allowed mismatch")
+    for ref in [
+        "runtime/state/schema_runner/cross_file_logic.json",
+        "runtime/state/schema_runner/run_manifest.json",
+    ]:
+        if ref not in report.get("artifact_refs", []):
+            reasons.append(f"build_report_gate missing {ref}")
     return reasons
+
+
+def _build_input_hashes(
+    *,
+    docs_dir: Path,
+    doc_index_path: Path,
+    state_dir: Path,
+    reports_dir: Path,
+    source_docs: list[str],
+) -> dict[str, str]:
+    input_hashes = {
+        ref: _sha256(docs_dir.parent / ref)
+        for ref in source_docs
+        if (docs_dir.parent / ref).exists()
+    }
+    for path in [
+        doc_index_path,
+        state_dir / "life_state.json",
+        state_dir / "action" / "action_candidate_set.json",
+        state_dir / "action" / "responsibility_loop_state.json",
+        state_dir / "validation" / "observation_truth_review.json",
+        state_dir / "validation" / "boundary_audit_state.json",
+        reports_dir / "birth_readiness_report.json",
+        reports_dir / "validation_membrane_report.json",
+        reports_dir / "validation_membrane_check_report.json",
+    ]:
+        if path.exists():
+            input_hashes[str(path)] = _sha256(path)
+    return input_hashes
+
+
+def _schema_runner_output_refs(out_dir: Path, reports_dir: Path, receipts_dir: Path, run_id: str) -> list[Path]:
+    return [
+        out_dir / "schema_registry.json",
+        out_dir / "schema_dependency_lockfile.json",
+        out_dir / "runner_command_queue.json",
+        out_dir / "cross_file_checker_manifest.json",
+        out_dir / "first_code_artifact_manifest.json",
+        out_dir / "consistency_logic.json",
+        out_dir / "cross_file_logic.json",
+        out_dir / "counterfactual_trace.json",
+        out_dir / "comparison_trace.json",
+        out_dir / "evidence_ranking.json",
+        out_dir / "run_manifest.json",
+        out_dir / "schema_runner_stage_gate.json",
+        reports_dir / "schema_runner_report.json",
+        reports_dir / "schema_runner_digest.json",
+        receipts_dir / f"schema_runner_{run_id}.json",
+    ]
+
+
+def _runtime_ref(path: Path) -> str:
+    parts = path.parts
+    if "runtime" in parts:
+        return "/".join(parts[parts.index("runtime"):])
+    return str(path)
 
 
 def _carrier_hint(path: str) -> str:

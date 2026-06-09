@@ -27,7 +27,7 @@ Observation / Language Percept / Body Signal
 2. `life_v0/neural_core/belief_state.py`
 3. `life_v0/neural_core/prediction_error.py`
 4. `life_v0/neural_core/active_sampling.py`
-5. `life_v0/validators/cross_file_logic.py`
+5. `life_v0/schema_runner/cross_file_logic.py`
 6. `life_v0/schema_runner/run_manifest.py`
 
 ## 当前最关键的 runtime 证据

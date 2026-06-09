@@ -115,7 +115,7 @@
 | 主要输出 | `ActionCandidateSet`、membrane reports、validation reports、schema runner reports |
 | 必写 runtime | `runtime/state/membrane/*`、`runtime/state/action/*`、`runtime/state/validation/*`、`runtime/state/schema_runner/*` |
 | 必守测试 | `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
-| 下一步 | Queue E 第二波中的 `shadow_gate.py`、`evidence_ranker.py` 已落地；继续把 `responsibility_loop.py` 补厚成稳定责任回路，并新增 `cross_file_logic.py`、`idle_strategy.py` |
+| 下一步 | Queue E 第二波中的 `shadow_gate.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落地；继续把 `responsibility_loop.py` 补厚成稳定责任回路，并新增 `idle_strategy.py` |
 
 ### 7. 梦境、离线生命与醒后整合层
 

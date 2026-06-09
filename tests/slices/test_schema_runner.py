@@ -80,9 +80,11 @@ class SchemaRunnerTests(unittest.TestCase):
             checker_manifest = self._read_json(paths["schema_runner_state"] / "cross_file_checker_manifest.json")
             artifact_manifest = self._read_json(paths["schema_runner_state"] / "first_code_artifact_manifest.json")
             consistency_logic = self._read_json(paths["schema_runner_state"] / "consistency_logic.json")
+            cross_file_logic = self._read_json(paths["schema_runner_state"] / "cross_file_logic.json")
             counterfactual_trace = self._read_json(paths["schema_runner_state"] / "counterfactual_trace.json")
             comparison_trace = self._read_json(paths["schema_runner_state"] / "comparison_trace.json")
             evidence_ranking = self._read_json(paths["schema_runner_state"] / "evidence_ranking.json")
+            run_manifest = self._read_json(paths["schema_runner_state"] / "run_manifest.json")
             responsibility_loop = self._read_json(paths["state_root"] / "action" / "responsibility_loop_state.json")
             stage_gate = self._read_json(paths["schema_runner_state"] / "schema_runner_stage_gate.json")
             report = self._read_json(paths["reports"] / "schema_runner_report.json")
@@ -126,8 +128,10 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("tests/slices/test_schema_runner.py", artifact_manifest["test_refs"])
         self.assertIn("runtime/reports/latest/schema_smoke_report.json", artifact_manifest["smoke_report_refs"])
         self.assertIn("runtime/state/schema_runner/consistency_logic.json", artifact_manifest["artifact_refs"])
+        self.assertIn("runtime/state/schema_runner/cross_file_logic.json", artifact_manifest["artifact_refs"])
         self.assertIn("runtime/state/schema_runner/counterfactual_trace.json", artifact_manifest["artifact_refs"])
         self.assertIn("runtime/state/schema_runner/comparison_trace.json", artifact_manifest["artifact_refs"])
+        self.assertIn("runtime/state/schema_runner/run_manifest.json", artifact_manifest["artifact_refs"])
 
         self.assertEqual(consistency_logic["schema_version"], "consistency_logic_v0")
         self.assertTrue(consistency_logic["comparison_axes"])
@@ -135,6 +139,13 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/action/responsibility_loop_state.json", consistency_logic["state_refs"])
         self.assertIn("responsibility_loop_to_counterfactual_repair", consistency_logic["comparison_axes"])
         self.assertIn("runtime/state/action/responsibility_loop_state.json", consistency_logic["repair_route_refs"])
+
+        self.assertEqual(cross_file_logic["schema_version"], "cross_file_logic_v0")
+        self.assertEqual(cross_file_logic["status"], "closed")
+        self.assertTrue(cross_file_logic["cross_file_findings"])
+        self.assertIn("runtime/state/action/responsibility_loop_state.json", cross_file_logic["state_refs"])
+        self.assertIn("runtime/state/validation/observation_truth_review.json", cross_file_logic["state_refs"])
+        self.assertTrue(cross_file_logic["repair_priority_refs"])
 
         self.assertEqual(counterfactual_trace["schema_version"], "counterfactual_trace_v0")
         self.assertTrue(counterfactual_trace["candidate_refs"])
@@ -164,7 +175,16 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertGreaterEqual(evidence_ranking["evidence_density_score"], 0.0)
         self.assertTrue(evidence_ranking["ranked_evidence"])
         self.assertIn("runtime/state/schema_runner/comparison_trace.json", evidence_ranking["state_refs"])
+        self.assertIn("runtime/state/schema_runner/cross_file_logic.json", evidence_ranking["state_refs"])
         self.assertTrue(evidence_ranking["priority_budget"])
+
+        self.assertEqual(run_manifest["schema_version"], "schema_runner_run_manifest_v0")
+        self.assertEqual(run_manifest["run_status"], "closed")
+        self.assertEqual(run_manifest["active_engineering_slice"], "S09_SCHEMA_RUNNER_CODE")
+        self.assertIn("build-schema-runner", run_manifest["command_sequence"])
+        self.assertIn("runtime/state/schema_runner/cross_file_logic.json", run_manifest["output_refs"])
+        self.assertIn("runtime/state/schema_runner/run_manifest.json", run_manifest["output_refs"])
+        self.assertIn("runtime/state/action/responsibility_loop_state.json", run_manifest["input_state_refs"])
 
         self.assertEqual(stage_gate["schema_version"], "schema_runner_stage_gate_v0")
         self.assertEqual(stage_gate["decision"], "closed")
@@ -180,9 +200,11 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("RunnerRepositoryKernel", report["runtime_carrier_refs"])
         self.assertIn("FirstRunnerCodeKernel", report["runtime_carrier_refs"])
         self.assertIn("runtime/state/schema_runner/consistency_logic.json", report["artifact_refs"])
+        self.assertIn("runtime/state/schema_runner/cross_file_logic.json", report["artifact_refs"])
         self.assertIn("runtime/state/schema_runner/counterfactual_trace.json", report["artifact_refs"])
         self.assertIn("runtime/state/schema_runner/comparison_trace.json", report["artifact_refs"])
         self.assertIn("runtime/state/schema_runner/evidence_ranking.json", report["artifact_refs"])
+        self.assertIn("runtime/state/schema_runner/run_manifest.json", report["artifact_refs"])
         self.assertEqual(report["next_allowed_slices"], ["S06_LIFE_SUPPORT_DEVELOPMENT", "S10_RUNTIME_GROWTH_RECONSOLIDATION"])
         self.assertEqual(report["next_required_command"], "life-v0 build-life-support --strict")
 
@@ -195,6 +217,8 @@ class SchemaRunnerTests(unittest.TestCase):
             any(key.endswith("responsibility_loop_state.json") for key in receipt["input_hashes"]),
             receipt["input_hashes"],
         )
+        self.assertIn(str((paths["schema_runner_state"] / "cross_file_logic.json").resolve()), receipt["output_refs"])
+        self.assertIn(str((paths["schema_runner_state"] / "run_manifest.json").resolve()), receipt["output_refs"])
 
     def test_cli_build_schema_runner_and_smoke_return_zero(self):
         with tempfile.TemporaryDirectory() as tmp:
