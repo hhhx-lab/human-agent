@@ -113,6 +113,7 @@ resident_governance_state.json
    - `idle_continuity_frame.json`
    - `resident_governance_state.json`
 4. 因此 resident governance 当前已经不是“只有前台 terminal residency”，而是“前台等待态 + 后台关闭态余波”共同组成的跨进程连续体。
+5. 这份后台连续体现在又不再只是一次性 carryover，而是开始带有最小 lineage：`background_carryover_generation`、`background_carryover_parent_run_id` 与 `background_carryover_source_ref_set`。
 
 当前最小 background carryover 字段至少包括：
 
@@ -120,6 +121,9 @@ resident_governance_state.json
 - `background_carryover_pressure_level`
 - `background_carryover_attention_target`
 - `background_carryover_priority_profile`
+- `background_carryover_generation`
+- `background_carryover_parent_run_id`
+- `background_carryover_source_ref_set`
 - `background_continuity_ref_set`
 - `background_resident_governance_snapshot_ref`
 - `background_resident_governance_report_ref`
@@ -150,6 +154,7 @@ restore shell completed
 2. live turn handoff 只写运行中的交接相位，不自己伪造新的 heartbeat counter。
 3. closeout 会重写同一份 `resident_governance_state.json`，但必须显式切换 `status` 与 `governance_phase`。
 4. process report / receipt 不能只回链 snapshot/report，必须也回链 `resident_governance_state_ref`。
+5. 同一次 closeout 写出的 `background_continuity_ref_set` 必须指向当前关闭态 artifact，而不是把上一轮 carryover 的 ref set 原样覆盖回来；上一轮来源应单独进入 `background_carryover_source_ref_set`。
 
 ## 运行态文件族
 
@@ -423,8 +428,8 @@ process receipt 里，resident governance 必须进入：
 
 在这份合同下，下一轮最值得继续推进的不是再发明新对象，而是：
 
-1. 给 waiting governance 增加更高频 heartbeat 节律分层。
-2. 让 `resident_governance_state.json` 接住真正的后台存在治理，而不只停在 foreground terminal residency。
+1. 给 waiting governance 增加更细的后台连续体节律分层，尤其是显式消费 `background_carryover_generation` 带来的 cadence 差异。
+2. 让 `resident_governance_state.json` 接住真正跨多次唤醒的后台存在治理，而不只停在 foreground terminal residency。
 3. 把 live turn 结束后重新回到 waiting governance 的相位切换显式写成单独器官，而不是只靠下一拍 heartbeat 间接体现。该项现在已由 `resident_governance_handoff.py` 第一轮落下，下一轮继续补厚其后台存在治理口径。
 
 当前只要这三件事没有落下，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。

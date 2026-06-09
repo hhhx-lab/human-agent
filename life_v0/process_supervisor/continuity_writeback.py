@@ -36,6 +36,9 @@ def build_idle_continuity_frame(
     background_continuity_mode: str | None = None,
     background_carryover_pressure_level: str | None = None,
     background_carryover_attention_target: str | None = None,
+    background_carryover_generation: int | None = None,
+    background_carryover_parent_run_id: str | None = None,
+    background_carryover_source_ref_set: list[str] | None = None,
     background_continuity_ref_set: list[str] | None = None,
 ) -> dict[str, Any]:
     replay_seed_refs = ["runtime/state/life_state.json#memory_index.replay_cues"]
@@ -116,6 +119,12 @@ def build_idle_continuity_frame(
         payload["background_carryover_pressure_level"] = background_carryover_pressure_level
     if background_carryover_attention_target:
         payload["background_carryover_attention_target"] = background_carryover_attention_target
+    if background_carryover_generation is not None:
+        payload["background_carryover_generation"] = int(background_carryover_generation)
+    if background_carryover_parent_run_id:
+        payload["background_carryover_parent_run_id"] = background_carryover_parent_run_id
+    if background_carryover_source_ref_set:
+        payload["background_carryover_source_ref_set"] = list(background_carryover_source_ref_set)
     if background_continuity_ref_set:
         payload["background_continuity_ref_set"] = list(background_continuity_ref_set)
     return payload

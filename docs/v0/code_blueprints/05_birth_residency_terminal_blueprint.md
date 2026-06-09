@@ -135,7 +135,7 @@ run_report.json
 event -> response -> writeback -> incident recovery 生命周期继续从 `__init__.py` 剥了出来；随后
 `process_session_loop.py` 也已落下，把等待态 heartbeat refresh 与 live turn dispatch 的 session 编排
 继续下沉。最新这一轮又已补上 `resident_governance_handoff.py`，把真实新回合结束到下一拍 waiting heartbeat
-之间的治理交接显式写进 `resident_governance_state.json(governance_phase=live_turn_waiting_handoff)`。随后又新增 `background_continuity.py`，让上一轮 closeout 留下的 `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json` / `digital_life_persistent_process_report.json` 会在下一次 waiting heartbeat 之前被重新装载成后台连续体 profile，再继续压回 `idle_strategy_state.json`、`idle_continuity_frame.json` 与新的 `resident_governance_state.json`。随后又已把 `relationship_timeline.json`、`commitment_expression_plan.json` 与
+之间的治理交接显式写进 `resident_governance_state.json(governance_phase=live_turn_waiting_handoff)`。随后又新增 `background_continuity.py`，让上一轮 closeout 留下的 `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json` / `digital_life_persistent_process_report.json` 会在下一次 waiting heartbeat 之前被重新装载成后台连续体 profile，再继续压回 `idle_strategy_state.json`、`idle_continuity_frame.json` 与新的 `resident_governance_state.json`。现在又继续把这条链补成最小 lineage：closeout 会写出 `background_carryover_generation`、`background_carryover_parent_run_id` 与 `background_carryover_source_ref_set`，而下一次唤醒则会根据 lineage 深度把 cadence 从单次 carryover refresh 抬到 persistent background continuity refresh。随后又已把 `relationship_timeline.json`、`commitment_expression_plan.json` 与
 `apology_repair_language_trace.json` 从 `terminal_loop` 继续接进 `persistent_process.py`、
 `process_closeout.py` 与 `process_report.py`，让 `resident_governance_snapshot.json`、
 `digital_life_resident_governance_report.json`、`digital_life_process_report.json`、

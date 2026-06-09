@@ -53,6 +53,18 @@ def write_persistent_process_artifacts(
     terminal_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
+    current_background_ref_set = [
+        RESIDENT_GOVERNANCE_SNAPSHOT_REF,
+        RESIDENT_GOVERNANCE_REPORT_REF,
+        PERSISTENT_PROCESS_REPORT_REF,
+    ]
+    background_source_ref_set = [
+        str(ref)
+        for ref in idle_governance.get("background_continuity_ref_set", [])
+        if ref
+    ]
+    background_parent_run_id = idle_governance.get("background_carryover_parent_run_id")
+    background_carryover_generation = _next_background_carryover_generation(idle_governance)
     membrane_guard_refs = [
         ref
         for ref in [
@@ -85,10 +97,20 @@ def write_persistent_process_artifacts(
         "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
         "background_continuity_mode": "closed_process_carryover",
+        "background_continuity_ref_set": list(current_background_ref_set),
+        "background_carryover_generation": background_carryover_generation,
     }
+    if background_source_ref_set:
+        resident_governance_snapshot["background_carryover_source_ref_set"] = list(
+            background_source_ref_set
+        )
+    if background_parent_run_id:
+        resident_governance_snapshot["background_carryover_parent_run_id"] = str(
+            background_parent_run_id
+        )
     if membrane_guard_refs:
         resident_governance_snapshot["membrane_guard_refs"] = membrane_guard_refs
-    resident_governance_snapshot.update(idle_governance)
+    resident_governance_snapshot.update(_idle_governance_without_background_lineage(idle_governance))
     resident_governance_state = {
         "schema_version": "resident_governance_state_v0",
         "run_id": run_id,
@@ -123,12 +145,17 @@ def write_persistent_process_artifacts(
         ],
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
         "background_continuity_mode": "closed_process_carryover",
-        "background_continuity_ref_set": [
-            RESIDENT_GOVERNANCE_SNAPSHOT_REF,
-            RESIDENT_GOVERNANCE_REPORT_REF,
-            PERSISTENT_PROCESS_REPORT_REF,
-        ],
+        "background_continuity_ref_set": list(current_background_ref_set),
+        "background_carryover_generation": background_carryover_generation,
     }
+    if background_source_ref_set:
+        resident_governance_state["background_carryover_source_ref_set"] = list(
+            background_source_ref_set
+        )
+    if background_parent_run_id:
+        resident_governance_state["background_carryover_parent_run_id"] = str(
+            background_parent_run_id
+        )
     if responsibility_loop_state_ref:
         resident_governance_state["responsibility_loop_state_ref"] = responsibility_loop_state_ref
     if world_contact_summary_ref:
@@ -137,7 +164,7 @@ def write_persistent_process_artifacts(
         resident_governance_state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         resident_governance_state["membrane_guard_refs"] = membrane_guard_refs
-    resident_governance_state.update(idle_governance)
+    resident_governance_state.update(_idle_governance_without_background_lineage(idle_governance))
     state = {
         "schema_version": "persistent_process_state_v0",
         "run_id": run_id,
@@ -161,7 +188,13 @@ def write_persistent_process_artifacts(
         "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
         "background_continuity_mode": "closed_process_carryover",
+        "background_continuity_ref_set": list(current_background_ref_set),
+        "background_carryover_generation": background_carryover_generation,
     }
+    if background_source_ref_set:
+        state["background_carryover_source_ref_set"] = list(background_source_ref_set)
+    if background_parent_run_id:
+        state["background_carryover_parent_run_id"] = str(background_parent_run_id)
     if responsibility_loop_state_ref:
         state["responsibility_loop_state_ref"] = responsibility_loop_state_ref
     if world_contact_summary_ref:
@@ -170,7 +203,7 @@ def write_persistent_process_artifacts(
         state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         state["membrane_guard_refs"] = membrane_guard_refs
-    state.update(idle_governance)
+    state.update(_idle_governance_without_background_lineage(idle_governance))
     report = {
         "schema_version": "digital_life_persistent_process_report_v0",
         "run_id": run_id,
@@ -198,7 +231,13 @@ def write_persistent_process_artifacts(
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
         "background_continuity_mode": "closed_process_carryover",
+        "background_continuity_ref_set": list(current_background_ref_set),
+        "background_carryover_generation": background_carryover_generation,
     }
+    if background_source_ref_set:
+        report["background_carryover_source_ref_set"] = list(background_source_ref_set)
+    if background_parent_run_id:
+        report["background_carryover_parent_run_id"] = str(background_parent_run_id)
     if responsibility_loop_state_ref:
         report["responsibility_loop_state_ref"] = responsibility_loop_state_ref
     if world_contact_summary_ref:
@@ -207,7 +246,7 @@ def write_persistent_process_artifacts(
         report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         report["membrane_guard_refs"] = membrane_guard_refs
-    report.update(idle_governance)
+    report.update(_idle_governance_without_background_lineage(idle_governance))
     resident_governance_report = {
         "schema_version": "digital_life_resident_governance_report_v0",
         "run_id": run_id,
@@ -233,12 +272,17 @@ def write_persistent_process_artifacts(
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
         "background_continuity_mode": "closed_process_carryover",
-        "background_continuity_ref_set": [
-            RESIDENT_GOVERNANCE_SNAPSHOT_REF,
-            RESIDENT_GOVERNANCE_REPORT_REF,
-            PERSISTENT_PROCESS_REPORT_REF,
-        ],
+        "background_continuity_ref_set": list(current_background_ref_set),
+        "background_carryover_generation": background_carryover_generation,
     }
+    if background_source_ref_set:
+        resident_governance_report["background_carryover_source_ref_set"] = list(
+            background_source_ref_set
+        )
+    if background_parent_run_id:
+        resident_governance_report["background_carryover_parent_run_id"] = str(
+            background_parent_run_id
+        )
     if responsibility_loop_state_ref:
         resident_governance_report["responsibility_loop_state_ref"] = responsibility_loop_state_ref
     if world_contact_summary_ref:
@@ -247,7 +291,7 @@ def write_persistent_process_artifacts(
         resident_governance_report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         resident_governance_report["membrane_guard_refs"] = membrane_guard_refs
-    resident_governance_report.update(idle_governance)
+    resident_governance_report.update(_idle_governance_without_background_lineage(idle_governance))
 
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     write_json(terminal_dir / "resident_governance_snapshot.json", resident_governance_snapshot)
@@ -261,3 +305,36 @@ def write_persistent_process_artifacts(
         resident_governance_snapshot=resident_governance_snapshot,
         resident_governance_report=resident_governance_report,
     )
+
+
+def _next_background_carryover_generation(idle_governance: dict[str, Any]) -> int:
+    if idle_governance.get("background_continuity_mode"):
+        current_generation = _int_or_default(
+            idle_governance.get("background_carryover_generation"),
+            default=1,
+        )
+        return max(current_generation + 1, 2)
+    return 1
+
+
+def _idle_governance_without_background_lineage(
+    idle_governance: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        key: value
+        for key, value in idle_governance.items()
+        if key
+        not in {
+            "background_continuity_ref_set",
+            "background_carryover_generation",
+            "background_carryover_source_ref_set",
+            "background_carryover_parent_run_id",
+        }
+    }
+
+
+def _int_or_default(value: Any, *, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default

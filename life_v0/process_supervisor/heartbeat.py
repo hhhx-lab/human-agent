@@ -232,6 +232,9 @@ def write_waiting_heartbeat(
         background_continuity_mode=idle_strategy.get("background_continuity_mode"),
         background_carryover_pressure_level=idle_strategy.get("background_carryover_pressure_level"),
         background_carryover_attention_target=idle_strategy.get("background_carryover_attention_target"),
+        background_carryover_generation=idle_strategy.get("background_carryover_generation"),
+        background_carryover_parent_run_id=idle_strategy.get("background_carryover_parent_run_id"),
+        background_carryover_source_ref_set=idle_strategy.get("background_carryover_source_ref_set"),
         background_continuity_ref_set=idle_strategy.get("background_continuity_ref_set"),
     )
     write_json(terminal_dir / "idle_continuity_frame.json", idle_continuity_frame)

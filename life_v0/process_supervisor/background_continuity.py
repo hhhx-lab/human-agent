@@ -75,11 +75,29 @@ def load_background_continuity_profile(
         ]
         if payload
     ]
+    carryover_generation = max(
+        _int_or_zero(snapshot.get("background_carryover_generation")),
+        _int_or_zero(resident_governance_report.get("background_carryover_generation")),
+        _int_or_zero(persistent_process_report.get("background_carryover_generation")),
+    )
+    if carryover_generation <= 0:
+        carryover_generation = 1
+    source_ref_set = _list_or_empty(
+        snapshot.get("background_carryover_source_ref_set")
+        or resident_governance_report.get("background_carryover_source_ref_set")
+        or persistent_process_report.get("background_carryover_source_ref_set")
+    )
+    parent_run_id = (
+        snapshot.get("run_id")
+        or resident_governance_report.get("run_id")
+        or persistent_process_report.get("run_id")
+    )
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
         "background_carryover_attention_target": attention_target,
         "background_carryover_priority_profile": priority_profile,
+        "background_carryover_generation": carryover_generation,
         "background_continuity_ref_set": ref_set,
         "background_waiting_mode": (
             snapshot.get("waiting_mode")
@@ -87,6 +105,10 @@ def load_background_continuity_profile(
             or persistent_process_report.get("waiting_mode")
         ),
     }
+    if source_ref_set:
+        profile["background_carryover_source_ref_set"] = source_ref_set
+    if parent_run_id:
+        profile["background_carryover_parent_run_id"] = str(parent_run_id)
     if snapshot:
         profile["background_resident_governance_snapshot_ref"] = (
             BACKGROUND_RESIDENT_GOVERNANCE_SNAPSHOT_REF
@@ -116,3 +138,9 @@ def _int_or_zero(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _list_or_empty(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]

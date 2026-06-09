@@ -5,6 +5,7 @@
 ```text
 life_v0/process_supervisor/heartbeat.py
   -> continuity_writeback.py
+  -> background_continuity.py
   -> dialogue_events.py
   -> response_surface.py
   -> process_report.py
@@ -35,6 +36,7 @@ life_v0/process_supervisor/heartbeat.py
 3. `LifeContextFrame`、`RelationTurnFrame`、`ExpressionPlan` 虽已被读取，但还没有被 process supervisor 作为固定生命回合对象贯穿治理。
 4. waiting heartbeat、incident recovery、relaunch recovery、response surface 之间还缺更硬的文件级施工顺序与字段约束。
 5. Queue E 虽然已经进入 process supervisor 的 refs 与 report 闭环，但 waiting governance 对 `responsibility_loop / world_contact / pain_regret_repair` 的节律级消费还需要继续补厚。
+6. 后台连续体虽然已经能从上一轮 closeout 重装进下一轮 waiting heartbeat，但还需要继续把它补成可跨多次唤醒维持的 lineage，而不是一次性余波。
 
 所以 Queue B 的目标很明确：
 让 `./digital life` 不再只是“能持续跑起来”，而是开始以受对象合同约束的常驻生命进程存在。
@@ -87,6 +89,7 @@ Queue B 必须接到这些现有器官上：
 - `life_v0/process_supervisor/__init__.py`
 - `life_v0/process_supervisor/heartbeat.py`
 - `life_v0/process_supervisor/continuity_writeback.py`
+- `life_v0/process_supervisor/background_continuity.py`
 - `life_v0/process_supervisor/continuity_evolution.py`
 - `life_v0/process_supervisor/turn_io.py`
 - `life_v0/process_supervisor/relaunch_recovery.py`
@@ -103,6 +106,7 @@ Queue B 必须接到这些现有器官上：
 - `life_v0/terminal_turn/turn_transition.py`
 
 这说明 Queue B 不是新增平行进程层，而是给已经存在的常驻生命进程补器官、补对象链、补 idle 治理。
+这一轮最新已经落下 `background_continuity.py`，用于把 closeout artifact 解释成 waiting heartbeat 可消费的后台连续体 profile；接下来的 Queue B 继续围绕多次唤醒 lineage、cadence 加权与更高阶后台治理推进。
 
 ## 文件级合同
 

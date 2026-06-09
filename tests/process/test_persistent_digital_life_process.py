@@ -1338,10 +1338,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "relationship_timeline": "baseline",
                     "commitment_expression_plan": "elevated",
                 },
+                "background_carryover_generation": 1,
                 "background_continuity_ref_set": [
                     "runtime/state/terminal/resident_governance_snapshot.json",
                     "runtime/reports/latest/digital_life_resident_governance_report.json",
                 ],
+                "background_carryover_parent_run_id": "background-carryover-seed",
                 "background_resident_governance_snapshot_ref": "runtime/state/terminal/resident_governance_snapshot.json",
                 "background_resident_governance_report_ref": "runtime/reports/latest/digital_life_resident_governance_report.json",
                 "background_persistent_process_report_ref": "runtime/reports/latest/digital_life_persistent_process_report.json",
@@ -1356,6 +1358,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
         self.assertEqual(idle_strategy["background_continuity_mode"], "closed_process_carryover")
         self.assertEqual(idle_strategy["background_carryover_pressure_level"], "present")
+        self.assertEqual(idle_strategy["background_carryover_generation"], 1)
+        self.assertEqual(
+            idle_strategy["background_carryover_parent_run_id"],
+            "background-carryover-seed",
+        )
         self.assertEqual(
             idle_strategy["background_carryover_attention_target"],
             "commitment_expression_plan",
@@ -1380,6 +1387,79 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             idle_strategy["governance_cadence_profile"],
             "background_continuity_refresh",
+        )
+
+    def test_idle_strategy_escalates_persistent_background_continuity_lineage(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-background-lineage",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "inactive",
+                "cognitive_bandwidth": "steady_open",
+                "sleep_pressure": "low",
+            },
+            replay_cue_bundle={},
+            offline_consolidation_frame={},
+            growth_patch_candidate_queue={},
+            responsibility_loop_state={},
+            world_contact_summary={},
+            pain_regret_repair_report={},
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_pressure_level": "present",
+                "background_carryover_attention_target": "commitment_expression_plan",
+                "background_carryover_generation": 2,
+                "background_carryover_parent_run_id": "background-carryover-seed",
+                "background_continuity_ref_set": [
+                    "runtime/state/terminal/resident_governance_snapshot.json",
+                    "runtime/reports/latest/digital_life_resident_governance_report.json",
+                    "runtime/reports/latest/digital_life_persistent_process_report.json",
+                ],
+                "background_carryover_source_ref_set": [
+                    "runtime/archive/background-carryover-seed/resident_governance_snapshot.json"
+                ],
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(idle_strategy["background_carryover_generation"], 2)
+        self.assertEqual(
+            idle_strategy["background_carryover_parent_run_id"],
+            "background-carryover-seed",
+        )
+        self.assertEqual(
+            idle_strategy["background_carryover_source_ref_set"],
+            ["runtime/archive/background-carryover-seed/resident_governance_snapshot.json"],
+        )
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "refresh_waiting_heartbeat_with_persistent_background_continuity_hold",
+        )
+        self.assertEqual(idle_strategy["heartbeat_interval_ms"], 54)
+        self.assertEqual(
+            idle_strategy["governance_attention_reason"],
+            "background_continuity_lineage_requires_persistent_hold",
+        )
+        self.assertEqual(
+            idle_strategy["governance_cadence_profile"],
+            "persistent_background_continuity_refresh",
         )
 
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
@@ -1581,6 +1661,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             idle_continuity = self._read_json(paths["terminal_state"] / "idle_continuity_frame.json")
 
             self.assertEqual(idle_strategy["background_continuity_mode"], "closed_process_carryover")
+            self.assertEqual(idle_strategy["background_carryover_generation"], 1)
+            self.assertEqual(
+                idle_strategy["background_carryover_parent_run_id"],
+                "background-carryover-seed",
+            )
             self.assertEqual(
                 idle_strategy["background_resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
@@ -1599,6 +1684,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 idle_continuity["background_continuity_mode"],
                 "closed_process_carryover",
+            )
+            self.assertEqual(idle_continuity["background_carryover_generation"], 1)
+            self.assertEqual(
+                idle_continuity["background_carryover_parent_run_id"],
+                "background-carryover-seed",
             )
 
     def test_live_turn_cycle_organ_writes_response_and_returns_to_waiting_state(self):
@@ -3005,6 +3095,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_state["background_continuity_mode"],
                 "closed_process_carryover",
             )
+            self.assertEqual(resident_governance_state["background_carryover_generation"], 1)
+            self.assertNotIn("background_carryover_parent_run_id", resident_governance_state)
+            self.assertEqual(
+                resident_governance_state["background_continuity_ref_set"],
+                [
+                    "runtime/state/terminal/resident_governance_snapshot.json",
+                    "runtime/reports/latest/digital_life_resident_governance_report.json",
+                    "runtime/reports/latest/digital_life_persistent_process_report.json",
+                ],
+            )
             self.assertEqual(
                 resident_governance_state["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
@@ -3042,6 +3142,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_snapshot["governance_attention_target"],
                 "commitment_expression_plan",
             )
+            self.assertEqual(resident_governance_snapshot["background_carryover_generation"], 1)
+            self.assertNotIn("background_carryover_parent_run_id", resident_governance_snapshot)
             self.assertEqual(report["heartbeat_interval_ms"], 70)
             self.assertEqual(report["offline_pressure_level"], "present")
             self.assertEqual(report["relaunch_caution_level"], "heightened")
@@ -3049,9 +3151,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 report["governance_attention_target"],
                 "commitment_expression_plan",
             )
+            self.assertEqual(report["background_carryover_generation"], 1)
+            self.assertNotIn("background_carryover_parent_run_id", report)
             self.assertEqual(
                 resident_governance_report["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
+                resident_governance_report["background_continuity_ref_set"],
+                [
+                    "runtime/state/terminal/resident_governance_snapshot.json",
+                    "runtime/reports/latest/digital_life_resident_governance_report.json",
+                    "runtime/reports/latest/digital_life_persistent_process_report.json",
+                ],
             )
             self.assertEqual(
                 state["relationship_timeline_ref"],
@@ -3065,6 +3177,92 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_snapshot["apology_repair_language_trace_ref"],
                 "runtime/state/language/apology_repair_language_trace.json",
             )
+            self.assertNotIn("background_carryover_source_ref_set", state)
+            self.assertNotIn("background_carryover_source_ref_set", report)
+
+    def test_persistent_process_increments_background_carryover_generation_on_closeout(self):
+        from life_v0.process_supervisor.persistent_process import write_persistent_process_artifacts
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state_dir = runtime_root / "state"
+            terminal_dir = state_dir / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+
+            previous_ref_set = [
+                "runtime/state/terminal/resident_governance_snapshot.json",
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+                "runtime/reports/latest/digital_life_persistent_process_report.json",
+            ]
+            idle_strategy_state = {
+                "schema_version": "idle_strategy_state_v0",
+                "heartbeat_interval_ms": 54,
+                "idle_probe_mode": "stdin_poll_with_background_continuity_refresh",
+                "offline_pressure_level": "quiet",
+                "relaunch_caution_level": "heightened",
+                "next_idle_action": "refresh_waiting_heartbeat_with_persistent_background_continuity_hold",
+                "waiting_mode": "restored_waiting_for_external_turn",
+                "governance_attention_target": "commitment_expression_plan",
+                "governance_attention_reason": "background_continuity_lineage_requires_persistent_hold",
+                "governance_cadence_profile": "persistent_background_continuity_refresh",
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_pressure_level": "present",
+                "background_carryover_attention_target": "commitment_expression_plan",
+                "background_carryover_generation": 1,
+                "background_carryover_parent_run_id": "background-carryover-seed",
+                "background_continuity_ref_set": list(previous_ref_set),
+                "background_carryover_source_ref_set": [
+                    "runtime/archive/older-carryover-snapshot.json"
+                ],
+            }
+
+            result = write_persistent_process_artifacts(
+                run_id="persistent-process-lineage",
+                generated_at="2026-06-10T00:00:00+00:00",
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                heartbeat_counter=2,
+                completed_turns=0,
+                incident_count=0,
+                relaunch_recovery_count=1,
+                waiting_mode="restored_waiting_for_external_turn",
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state=idle_strategy_state,
+                last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
+                last_dialogue_packet_ref=None,
+                source_doc_refs=["docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                relationship_timeline_ref=None,
+                commitment_expression_plan_ref=None,
+                apology_repair_language_trace_ref=None,
+                write_json=self._write_json,
+            )
+
+            current_ref_set = [
+                "runtime/state/terminal/resident_governance_snapshot.json",
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+                "runtime/reports/latest/digital_life_persistent_process_report.json",
+            ]
+            for artifact in (
+                result.state,
+                result.report,
+                result.resident_governance_state,
+                result.resident_governance_snapshot,
+                result.resident_governance_report,
+            ):
+                self.assertEqual(artifact["background_carryover_generation"], 2)
+                self.assertEqual(artifact["background_continuity_ref_set"], current_ref_set)
+                self.assertEqual(
+                    artifact["background_carryover_parent_run_id"],
+                    "background-carryover-seed",
+                )
+                self.assertEqual(
+                    artifact["background_carryover_source_ref_set"],
+                    previous_ref_set,
+                )
 
     def test_dialogue_events_organ_builds_external_and_life_turn_events(self):
         from life_v0.process_supervisor.dialogue_events import (

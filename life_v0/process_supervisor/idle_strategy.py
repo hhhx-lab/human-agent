@@ -47,6 +47,9 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_carryover_pressure_level",
     "background_carryover_attention_target",
     "background_carryover_priority_profile",
+    "background_carryover_generation",
+    "background_carryover_parent_run_id",
+    "background_carryover_source_ref_set",
     "background_continuity_ref_set",
     "background_resident_governance_snapshot_ref",
     "background_resident_governance_report_ref",
@@ -147,6 +150,9 @@ def decide_idle_strategy(
         background_carryover_pressure_level=background_continuity_profile.get(
             "background_carryover_pressure_level"
         ),
+        background_carryover_generation=_int_or_zero(
+            background_continuity_profile.get("background_carryover_generation")
+        ),
     )
     next_idle_action = _next_idle_action(
         body_waiting_posture=body_waiting_posture,
@@ -157,6 +163,9 @@ def decide_idle_strategy(
         offline_learning_pressure_level=offline_learning_profile["offline_learning_pressure_level"],
         background_carryover_pressure_level=background_continuity_profile.get(
             "background_carryover_pressure_level"
+        ),
+        background_carryover_generation=_int_or_zero(
+            background_continuity_profile.get("background_carryover_generation")
         ),
     )
     relaunch_caution_level = _relaunch_caution_level(
@@ -203,6 +212,9 @@ def decide_idle_strategy(
         queue_e_priority_band=queue_e_priority_band,
         background_carryover_attention_target=background_continuity_profile.get(
             "background_carryover_attention_target"
+        ),
+        background_carryover_generation=_int_or_zero(
+            background_continuity_profile.get("background_carryover_generation")
         ),
     )
 
@@ -346,6 +358,7 @@ def _heartbeat_interval_ms(
     queue_e_priority_band: str,
     offline_learning_pressure_level: str,
     background_carryover_pressure_level: str | None,
+    background_carryover_generation: int,
 ) -> int:
     fatigue_load = str((body_rhythm_pulse or {}).get("fatigue_load", "")).lower()
     cognitive_bandwidth = str((need_state_vector or {}).get("cognitive_bandwidth", "")).lower()
@@ -361,6 +374,18 @@ def _heartbeat_interval_ms(
         return 55
     if offline_learning_pressure_level == "urgent":
         return 58
+    if (
+        background_carryover_generation >= 3
+        and background_carryover_pressure_level in {"present", "elevated"}
+        and offline_pressure_level == "quiet"
+    ):
+        return 52
+    if (
+        background_carryover_generation >= 2
+        and background_carryover_pressure_level == "present"
+        and offline_pressure_level == "quiet"
+    ):
+        return 54
     if background_carryover_pressure_level == "elevated" and offline_pressure_level == "quiet":
         return 54
     if background_carryover_pressure_level == "present" and offline_pressure_level == "quiet":
@@ -381,6 +406,7 @@ def _next_idle_action(
     queue_e_priority_band: str,
     offline_learning_pressure_level: str,
     background_carryover_pressure_level: str | None,
+    background_carryover_generation: int,
 ) -> str:
     repair_drive = str((need_state_vector or {}).get("repair_drive", "")).lower()
     if body_waiting_posture == "low_bandwidth_guarded":
@@ -391,6 +417,12 @@ def _next_idle_action(
         return "refresh_waiting_heartbeat_with_repair_readiness_hold"
     if offline_learning_pressure_level == "urgent":
         return "refresh_waiting_heartbeat_with_offline_learning_hold"
+    if (
+        background_carryover_generation >= 2
+        and background_carryover_pressure_level in {"present", "elevated"}
+        and offline_pressure_level == "quiet"
+    ):
+        return "refresh_waiting_heartbeat_with_persistent_background_continuity_hold"
     if background_carryover_pressure_level in {"present", "elevated"} and offline_pressure_level == "quiet":
         return "refresh_waiting_heartbeat_with_background_continuity_hold"
     if repair_drive == "active" and offline_pressure_level in {"elevated", "present"}:
@@ -412,6 +444,7 @@ def _resident_governance_language_priority(
     regret_pressure_count: int,
     queue_e_priority_band: str,
     background_carryover_attention_target: str | None,
+    background_carryover_generation: int,
 ) -> tuple[str, str, str, dict[str, str]]:
     repair_drive = str((need_state_vector or {}).get("repair_drive", "")).lower()
     priority_profile: dict[str, str] = {}
@@ -458,7 +491,10 @@ def _resident_governance_language_priority(
         reason = "baseline_relation_presence_maintenance"
     elif background_carryover_attention_target:
         target = background_carryover_attention_target
-        reason = "background_continuity_carryover_requires_hold"
+        if background_carryover_generation >= 2:
+            reason = "background_continuity_lineage_requires_persistent_hold"
+        else:
+            reason = "background_continuity_carryover_requires_hold"
     else:
         target = "waiting_presence_maintenance"
         reason = "no_long_horizon_language_refs"
@@ -473,7 +509,10 @@ def _resident_governance_language_priority(
                 else "repair_weighted_resident_hold"
             )
     elif target == background_carryover_attention_target and background_carryover_attention_target:
-        cadence_profile = "background_continuity_refresh"
+        if background_carryover_generation >= 2:
+            cadence_profile = "persistent_background_continuity_refresh"
+        else:
+            cadence_profile = "background_continuity_refresh"
     elif target == "commitment_expression_plan":
         cadence_profile = "commitment_continuity_refresh"
     elif target == "relationship_timeline":
