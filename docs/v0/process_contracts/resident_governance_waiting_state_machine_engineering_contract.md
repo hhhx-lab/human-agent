@@ -40,6 +40,12 @@ resident_governance_state.json
 
 它们在这里不是“顺手带一下的 refs”，而是 waiting 节律、修复保持、世界接触释放姿态和长期语言优先级的直接调制输入。
 
+当前这一轮又进一步补上一条回写硬约束：
+
+1. Queue E 已经先进入 `replay_cue_bundle.json` 与 `nightmare_risk / belief_learning / language_learning / relationship_learning`。
+2. resident governance 现在不能只看 `replay_cue_bundle / offline_consolidation / growth_patch_candidate_queue` 这种中间层对象。
+3. 它还必须把这些 dream / growth 的离线结果重新装载回来，形成真正的 `offline result -> waiting governance` 反向闭环。
+
 ## 必读来源
 
 - `docs/20_agent_runtime_bridge_contract.md`
@@ -171,6 +177,14 @@ restore shell completed
 - `repair_obligation_count`
 - `regret_pressure_count`
 - `queue_e_priority_band`
+- `nightmare_risk_ref`
+- `belief_learning_plan_ref`
+- `language_learning_plan_ref`
+- `relationship_learning_plan_ref`
+- `offline_learning_pressure_level`
+- `offline_learning_attention_target`
+- `offline_learning_priority_profile`
+- `offline_learning_ref_set`
 
 ### `resident_governance_snapshot.json`
 
@@ -289,6 +303,38 @@ process receipt 里，resident governance 必须进入：
 
 1. waiting governance 回到关系维持或普通 presence refresh
 2. Queue E refs 仍被保留在 state/report/receipt 中，供后续 replay/archive/growth/dream 消费
+
+## Queue D 反向回写矩阵
+
+当前 waiting governance 还必须承认：Queue D 已经不再只是“离线写出去的结果柜”，它会反过来调制 resident governance。
+
+### 当 `nightmare_risk` 为 `elevated`
+
+当前至少要成立：
+
+1. `offline_learning_pressure_level` 不能再是 `quiet`
+2. `offline_learning_attention_target` 应显式落在 `nightmare_risk` 或对应的 learning plan 上
+3. `nightmare_risk_ref` 必须进入 `idle_strategy_state.json`、`digital_life_waiting_heartbeat.json`、`idle_continuity_frame.json`、`resident_governance_state.json`
+
+### 当 learning plan 已经带有 repair / confirmation pressure
+
+当前至少要成立：
+
+1. `belief_learning_plan_ref`
+2. `language_learning_plan_ref`
+3. `relationship_learning_plan_ref`
+
+这三者不只是 receipt carry-through，而要进入 waiting governance 的显式字段。
+
+### 当 Queue E repair hold 与 Queue D offline urgency 同时存在
+
+优先级固定成：
+
+1. `locked_repair_urgent`
+2. `repair_guarded`
+3. `offline_learning_pressure_level=urgent`
+
+也就是说，Queue D 可以继续推高 waiting governance 的注意力和引用面，但不能覆盖已经成立的 Queue E repair lock。
 
 ## 下一轮直接落码入口
 

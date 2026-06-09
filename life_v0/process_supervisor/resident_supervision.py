@@ -6,6 +6,12 @@ from typing import Any, Callable
 
 from .heartbeat import write_waiting_heartbeat
 from .incident_recovery import record_recovery_continuity
+from .offline_learning_signals import (
+    BELIEF_LEARNING_PLAN_REF,
+    LANGUAGE_LEARNING_PLAN_REF,
+    NIGHTMARE_RISK_REF,
+    RELATIONSHIP_LEARNING_PLAN_REF,
+)
 from .relaunch_recovery import detect_and_normalize_interrupted_previous_state
 from ..shell_command import run_digital_life_shell_command
 
@@ -34,12 +40,20 @@ class ResidentSupervisionContext:
     replay_cue_bundle: dict[str, Any]
     offline_consolidation_frame: dict[str, Any]
     growth_patch_candidate_queue: dict[str, Any]
+    nightmare_risk: dict[str, Any]
+    belief_learning_plan: dict[str, Any]
+    language_learning_plan: dict[str, Any]
+    relationship_learning_plan: dict[str, Any]
     responsibility_loop_state: dict[str, Any]
     world_contact_summary: dict[str, Any]
     pain_regret_repair_report: dict[str, Any]
     replay_cue_bundle_ref: str | None
     offline_consolidation_frame_ref: str | None
     growth_patch_candidate_queue_ref: str | None
+    nightmare_risk_ref: str | None
+    belief_learning_plan_ref: str | None
+    language_learning_plan_ref: str | None
+    relationship_learning_plan_ref: str | None
     responsibility_loop_state_ref: str | None
     world_contact_summary_ref: str | None
     pain_regret_repair_report_ref: str | None
@@ -129,6 +143,16 @@ def bootstrap_resident_supervision(
     growth_patch_candidate_queue = read_json_if_exists(
         state_dir / "growth" / "growth_patch_candidate_queue.json"
     )
+    nightmare_risk = read_json_if_exists(state_dir / "dream" / "nightmare_loop_risk.json")
+    belief_learning_plan = read_json_if_exists(
+        state_dir / "growth" / "belief_learning_plan.json"
+    )
+    language_learning_plan = read_json_if_exists(
+        state_dir / "growth" / "language_learning_plan.json"
+    )
+    relationship_learning_plan = read_json_if_exists(
+        state_dir / "growth" / "relationship_learning_plan.json"
+    )
     pain_regret_repair_report = read_json_if_exists(
         reports_dir / "pain_regret_repair_report.json"
     )
@@ -144,6 +168,22 @@ def bootstrap_resident_supervision(
     growth_patch_candidate_queue_ref = _ref_if_present(
         payload=growth_patch_candidate_queue,
         ref="runtime/state/growth/growth_patch_candidate_queue.json",
+    )
+    nightmare_risk_ref = _ref_if_present(
+        payload=nightmare_risk,
+        ref=NIGHTMARE_RISK_REF,
+    )
+    belief_learning_plan_ref = _ref_if_present(
+        payload=belief_learning_plan,
+        ref=BELIEF_LEARNING_PLAN_REF,
+    )
+    language_learning_plan_ref = _ref_if_present(
+        payload=language_learning_plan,
+        ref=LANGUAGE_LEARNING_PLAN_REF,
+    )
+    relationship_learning_plan_ref = _ref_if_present(
+        payload=relationship_learning_plan,
+        ref=RELATIONSHIP_LEARNING_PLAN_REF,
     )
     responsibility_loop_state_ref = _ref_if_present(
         payload=responsibility_loop_state,
@@ -231,9 +271,17 @@ def bootstrap_resident_supervision(
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
+        nightmare_risk_ref=nightmare_risk_ref,
+        belief_learning_plan_ref=belief_learning_plan_ref,
+        language_learning_plan_ref=language_learning_plan_ref,
+        relationship_learning_plan_ref=relationship_learning_plan_ref,
         growth_patch_candidate_ids=growth_patch_candidate_ids,
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,
@@ -274,9 +322,17 @@ def bootstrap_resident_supervision(
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
+        nightmare_risk_ref=nightmare_risk_ref,
+        belief_learning_plan_ref=belief_learning_plan_ref,
+        language_learning_plan_ref=language_learning_plan_ref,
+        relationship_learning_plan_ref=relationship_learning_plan_ref,
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,

@@ -18,6 +18,10 @@ def build_idle_continuity_frame(
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
     growth_patch_candidate_queue_ref: str | None = None,
+    nightmare_risk_ref: str | None = None,
+    belief_learning_plan_ref: str | None = None,
+    language_learning_plan_ref: str | None = None,
+    relationship_learning_plan_ref: str | None = None,
     growth_patch_candidate_ids: list[str] | None = None,
     replay_residue_ref_count: int = 0,
     dream_window_ref_count: int = 0,
@@ -27,6 +31,8 @@ def build_idle_continuity_frame(
     pain_regret_repair_report_ref: str | None = None,
     world_contact_release_posture: str | None = None,
     repair_followup_required: bool = False,
+    offline_learning_pressure_level: str | None = None,
+    offline_learning_attention_target: str | None = None,
 ) -> dict[str, Any]:
     replay_seed_refs = ["runtime/state/life_state.json#memory_index.replay_cues"]
     if replay_cue_bundle_ref:
@@ -72,6 +78,10 @@ def build_idle_continuity_frame(
         "replay_cue_bundle_ref": replay_cue_bundle_ref,
         "offline_consolidation_frame_ref": offline_consolidation_frame_ref,
         "growth_patch_candidate_queue_ref": growth_patch_candidate_queue_ref,
+        "nightmare_risk_ref": nightmare_risk_ref,
+        "belief_learning_plan_ref": belief_learning_plan_ref,
+        "language_learning_plan_ref": language_learning_plan_ref,
+        "relationship_learning_plan_ref": relationship_learning_plan_ref,
         "growth_patch_candidate_ids": list(growth_patch_candidate_ids or []),
         "replay_residue_ref_count": replay_residue_ref_count,
         "dream_window_ref_count": dream_window_ref_count,
@@ -92,6 +102,10 @@ def build_idle_continuity_frame(
         payload["world_contact_release_posture"] = world_contact_release_posture
     if repair_followup_required:
         payload["repair_followup_required"] = True
+    if offline_learning_pressure_level:
+        payload["offline_learning_pressure_level"] = offline_learning_pressure_level
+    if offline_learning_attention_target:
+        payload["offline_learning_attention_target"] = offline_learning_attention_target
     return payload
 
 

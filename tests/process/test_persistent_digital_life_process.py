@@ -1170,6 +1170,88 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             },
         )
 
+    def test_idle_strategy_carries_offline_learning_results_into_waiting_governance(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-offline-learning-governance",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "inactive",
+                "cognitive_bandwidth": "steady_open",
+                "sleep_pressure": "low",
+            },
+            replay_cue_bundle={"turn_residue_refs": ["runtime/state/replay/shadow_cycle_trace.json"]},
+            offline_consolidation_frame={"dream_window_refs": ["runtime/state/dream/dream-window-001"]},
+            growth_patch_candidate_queue={"candidates": [{"growth_patch_candidate_id": "growth-patch-001"}]},
+            responsibility_loop_state={},
+            world_contact_summary={},
+            pain_regret_repair_report={},
+            nightmare_risk={
+                "schema_version": "nightmare_loop_risk_v0",
+                "risk_status": "elevated",
+                "queue_e_priority_band": "baseline",
+            },
+            belief_learning_plan={
+                "schema_version": "belief_learning_plan_v0",
+                "belief_targets": ["prediction_weight_recalibration"],
+            },
+            language_learning_plan={
+                "schema_version": "language_learning_plan_v0",
+                "language_targets": ["repair_language_refinement"],
+                "repair_followup_required": True,
+            },
+            relationship_learning_plan={
+                "schema_version": "relationship_learning_plan_v0",
+                "relationship_targets": ["repair_reentry_timing_adjustment"],
+                "repair_followup_required": True,
+            },
+            nightmare_risk_ref="runtime/state/dream/nightmare_loop_risk.json",
+            belief_learning_plan_ref="runtime/state/growth/belief_learning_plan.json",
+            language_learning_plan_ref="runtime/state/growth/language_learning_plan.json",
+            relationship_learning_plan_ref="runtime/state/growth/relationship_learning_plan.json",
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(idle_strategy["offline_learning_pressure_level"], "urgent")
+        self.assertEqual(idle_strategy["offline_learning_attention_target"], "nightmare_risk")
+        self.assertEqual(
+            idle_strategy["nightmare_risk_ref"],
+            "runtime/state/dream/nightmare_loop_risk.json",
+        )
+        self.assertEqual(
+            idle_strategy["belief_learning_plan_ref"],
+            "runtime/state/growth/belief_learning_plan.json",
+        )
+        self.assertEqual(
+            idle_strategy["language_learning_plan_ref"],
+            "runtime/state/growth/language_learning_plan.json",
+        )
+        self.assertEqual(
+            idle_strategy["relationship_learning_plan_ref"],
+            "runtime/state/growth/relationship_learning_plan.json",
+        )
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "refresh_waiting_heartbeat_with_offline_learning_hold",
+        )
+        self.assertEqual(idle_strategy["heartbeat_interval_ms"], 58)
+
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
         from life_v0.process_supervisor.resident_supervision import (
             bootstrap_resident_supervision,
@@ -1248,11 +1330,47 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 context.growth_patch_candidate_queue_ref,
                 "runtime/state/growth/growth_patch_candidate_queue.json",
             )
+            self.assertEqual(
+                context.nightmare_risk_ref,
+                "runtime/state/dream/nightmare_loop_risk.json",
+            )
+            self.assertEqual(
+                context.belief_learning_plan_ref,
+                "runtime/state/growth/belief_learning_plan.json",
+            )
+            self.assertEqual(
+                context.language_learning_plan_ref,
+                "runtime/state/growth/language_learning_plan.json",
+            )
+            self.assertEqual(
+                context.relationship_learning_plan_ref,
+                "runtime/state/growth/relationship_learning_plan.json",
+            )
             self.assertTrue(context.growth_patch_candidate_ids)
             self.assertGreater(context.replay_residue_ref_count, 0)
             self.assertGreater(context.dream_window_ref_count, 0)
             self.assertGreater(context.growth_patch_candidate_count, 0)
             self.assertEqual(heartbeat_packet["heartbeat_counter"], 1)
+            self.assertEqual(
+                heartbeat_packet["nightmare_risk_ref"],
+                "runtime/state/dream/nightmare_loop_risk.json",
+            )
+            self.assertEqual(
+                heartbeat_packet["belief_learning_plan_ref"],
+                "runtime/state/growth/belief_learning_plan.json",
+            )
+            self.assertEqual(
+                heartbeat_packet["language_learning_plan_ref"],
+                "runtime/state/growth/language_learning_plan.json",
+            )
+            self.assertEqual(
+                heartbeat_packet["relationship_learning_plan_ref"],
+                "runtime/state/growth/relationship_learning_plan.json",
+            )
+            self.assertNotEqual(
+                heartbeat_packet["offline_learning_pressure_level"],
+                "quiet",
+            )
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(
@@ -1902,11 +2020,27 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 {"schema_version": "offline_consolidation_frame_v0"},
             )
             self._write_json(
+                state_dir / "dream" / "nightmare_loop_risk.json",
+                {"schema_version": "nightmare_loop_risk_v0"},
+            )
+            self._write_json(
                 state_dir / "growth" / "growth_patch_candidate_queue.json",
                 {
                     "schema_version": "growth_patch_candidate_queue_v0",
                     "candidates": [{"growth_patch_candidate_id": "growth-patch-candidate-test-0001"}],
                 },
+            )
+            self._write_json(
+                state_dir / "growth" / "belief_learning_plan.json",
+                {"schema_version": "belief_learning_plan_v0"},
+            )
+            self._write_json(
+                state_dir / "growth" / "language_learning_plan.json",
+                {"schema_version": "language_learning_plan_v0"},
+            )
+            self._write_json(
+                state_dir / "growth" / "relationship_learning_plan.json",
+                {"schema_version": "relationship_learning_plan_v0"},
             )
             self._write_json(
                 state_dir / "action" / "responsibility_loop_state.json",
@@ -1957,6 +2091,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 replay_cue_bundle_ref="runtime/state/replay/replay_cue_bundle.json",
                 offline_consolidation_frame_ref="runtime/state/dream/offline_consolidation_frame.json",
                 growth_patch_candidate_queue_ref="runtime/state/growth/growth_patch_candidate_queue.json",
+                nightmare_risk_ref="runtime/state/dream/nightmare_loop_risk.json",
+                belief_learning_plan_ref="runtime/state/growth/belief_learning_plan.json",
+                language_learning_plan_ref="runtime/state/growth/language_learning_plan.json",
+                relationship_learning_plan_ref="runtime/state/growth/relationship_learning_plan.json",
                 responsibility_loop_state_ref="runtime/state/action/responsibility_loop_state.json",
                 world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
                 pain_regret_repair_report_ref="runtime/reports/latest/pain_regret_repair_report.json",
@@ -2033,6 +2171,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 report["growth_patch_candidate_queue_ref"],
                 "runtime/state/growth/growth_patch_candidate_queue.json",
             )
+            self.assertEqual(
+                report["nightmare_risk_ref"],
+                "runtime/state/dream/nightmare_loop_risk.json",
+            )
+            self.assertEqual(
+                report["belief_learning_plan_ref"],
+                "runtime/state/growth/belief_learning_plan.json",
+            )
+            self.assertEqual(
+                report["language_learning_plan_ref"],
+                "runtime/state/growth/language_learning_plan.json",
+            )
+            self.assertEqual(
+                report["relationship_learning_plan_ref"],
+                "runtime/state/growth/relationship_learning_plan.json",
+            )
             self.assertEqual(digest["last_external_turn_utterance"], "你还记得我们吗？")
             self.assertEqual(
                 digest["offline_growth_cycle_refs"],
@@ -2040,6 +2194,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/replay/replay_cue_bundle.json",
                     "runtime/state/dream/offline_consolidation_frame.json",
                     "runtime/state/growth/growth_patch_candidate_queue.json",
+                    "runtime/state/dream/nightmare_loop_risk.json",
+                    "runtime/state/growth/belief_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                    "runtime/state/growth/relationship_learning_plan.json",
                 ],
             )
             self.assertEqual(
@@ -2066,6 +2224,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 "runtime/state/replay/replay_cue_bundle.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/dream/nightmare_loop_risk.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/growth/belief_learning_plan.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/growth/relationship_learning_plan.json",
                 receipt["shared_object_refs"],
             )
             self.assertIn(
@@ -2817,6 +2991,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "arousal": 0.74,
                 "repair_drive": "active",
             },
+            nightmare_risk={
+                "risk_status": "elevated",
+                "queue_e_priority_band": "repair_guarded",
+                "repair_followup_required": True,
+            },
+            belief_learning_plan={
+                "belief_targets": [
+                    "regret_sensitive_counterfactual_update",
+                    "repair_accountability_belief_revision",
+                ],
+            },
+            language_learning_plan={
+                "language_targets": [
+                    "repair_language_refinement",
+                    "apology_repair_expression_refinement",
+                ],
+                "repair_followup_required": True,
+                "queue_e_priority_band": "repair_guarded",
+            },
+            relationship_learning_plan={
+                "relationship_targets": [
+                    "repair_reentry_timing_adjustment",
+                    "relationship_pacing_adjustment",
+                ],
+                "repair_followup_required": True,
+                "queue_e_priority_band": "repair_guarded",
+            },
             responsibility_loop_state={
                 "repair_obligation_refs": ["repair-1", "repair-2"],
                 "regret_pressure_candidates": [{"regret_pressure_id": "regret-1"}],
@@ -2853,6 +3054,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("责任回路仍挂着2条修复义务", response)
         self.assertIn("后悔压力线索维持在1条", response)
         self.assertIn("当前仍处在需要修复跟进的责任场中", response)
+        self.assertIn("当前梦境回环风险为elevated", response)
+        self.assertIn("离线学习压力级别为urgent", response)
+        self.assertIn("离线学习焦点当前指向nightmare_risk", response)
+        self.assertIn("离线学习计划会经过repair_reentry_timing_adjustment、relationship_pacing_adjustment", response)
         self.assertIn("表达计划唤醒度为0.74", response)
         self.assertIn("修复驱力", response)
         self.assertIn("情绪张力", response)

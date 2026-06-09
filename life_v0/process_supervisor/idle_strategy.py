@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from life_v0.membrane.queue_e_signals import derive_queue_e_signal_profile
+from .offline_learning_signals import derive_offline_learning_profile
 
 
 IDLE_STRATEGY_STATE_REF = "runtime/state/terminal/idle_strategy_state.json"
@@ -34,6 +35,14 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "repair_obligation_count",
     "regret_pressure_count",
     "queue_e_priority_band",
+    "nightmare_risk_ref",
+    "belief_learning_plan_ref",
+    "language_learning_plan_ref",
+    "relationship_learning_plan_ref",
+    "offline_learning_pressure_level",
+    "offline_learning_attention_target",
+    "offline_learning_priority_profile",
+    "offline_learning_ref_set",
 )
 
 
@@ -65,9 +74,17 @@ def decide_idle_strategy(
     responsibility_loop_state: dict[str, Any] | None = None,
     world_contact_summary: dict[str, Any] | None = None,
     pain_regret_repair_report: dict[str, Any] | None = None,
+    nightmare_risk: dict[str, Any] | None = None,
+    belief_learning_plan: dict[str, Any] | None = None,
+    language_learning_plan: dict[str, Any] | None = None,
+    relationship_learning_plan: dict[str, Any] | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
     growth_patch_candidate_queue_ref: str | None = None,
+    nightmare_risk_ref: str | None = None,
+    belief_learning_plan_ref: str | None = None,
+    language_learning_plan_ref: str | None = None,
+    relationship_learning_plan_ref: str | None = None,
     growth_patch_candidate_ids: list[str] | None = None,
     replay_residue_ref_count: int = 0,
     dream_window_ref_count: int = 0,
@@ -104,11 +121,18 @@ def decide_idle_strategy(
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
     )
+    offline_learning_profile = derive_offline_learning_profile(
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
     heartbeat_interval_ms = _heartbeat_interval_ms(
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
         offline_pressure_level=offline_pressure_level,
         queue_e_priority_band=queue_e_priority_band,
+        offline_learning_pressure_level=offline_learning_profile["offline_learning_pressure_level"],
     )
     next_idle_action = _next_idle_action(
         body_waiting_posture=body_waiting_posture,
@@ -116,6 +140,7 @@ def decide_idle_strategy(
         need_state_vector=need_state_vector,
         repair_followup_required=repair_followup_required,
         queue_e_priority_band=queue_e_priority_band,
+        offline_learning_pressure_level=offline_learning_profile["offline_learning_pressure_level"],
     )
     relaunch_caution_level = _relaunch_caution_level(
         safe_terminal_loop=safe_terminal_loop,
@@ -198,6 +223,16 @@ def decide_idle_strategy(
         "repair_obligation_count": repair_obligation_count,
         "regret_pressure_count": regret_pressure_count,
         "queue_e_priority_band": queue_e_priority_band,
+        "nightmare_risk_ref": nightmare_risk_ref if nightmare_risk else None,
+        "belief_learning_plan_ref": belief_learning_plan_ref if belief_learning_plan else None,
+        "language_learning_plan_ref": language_learning_plan_ref if language_learning_plan else None,
+        "relationship_learning_plan_ref": (
+            relationship_learning_plan_ref if relationship_learning_plan else None
+        ),
+        "offline_learning_pressure_level": offline_learning_profile["offline_learning_pressure_level"],
+        "offline_learning_attention_target": offline_learning_profile["offline_learning_attention_target"],
+        "offline_learning_priority_profile": offline_learning_profile["offline_learning_priority_profile"],
+        "offline_learning_ref_set": offline_learning_profile["offline_learning_ref_set"],
         "idle_continuity_ref": IDLE_CONTINUITY_FRAME_REF,
         "replay_cue_bundle_ref": replay_cue_bundle_ref if replay_cue_bundle else None,
         "offline_consolidation_frame_ref": (
@@ -281,6 +316,7 @@ def _heartbeat_interval_ms(
     need_state_vector: dict[str, Any] | None,
     offline_pressure_level: str,
     queue_e_priority_band: str,
+    offline_learning_pressure_level: str,
 ) -> int:
     fatigue_load = str((body_rhythm_pulse or {}).get("fatigue_load", "")).lower()
     cognitive_bandwidth = str((need_state_vector or {}).get("cognitive_bandwidth", "")).lower()
@@ -294,6 +330,8 @@ def _heartbeat_interval_ms(
         return 45
     if queue_e_priority_band == "repair_guarded":
         return 55
+    if offline_learning_pressure_level == "urgent":
+        return 58
     if offline_pressure_level == "elevated":
         return 70
     if offline_pressure_level == "present":
@@ -308,6 +346,7 @@ def _next_idle_action(
     need_state_vector: dict[str, Any] | None,
     repair_followup_required: bool,
     queue_e_priority_band: str,
+    offline_learning_pressure_level: str,
 ) -> str:
     repair_drive = str((need_state_vector or {}).get("repair_drive", "")).lower()
     if body_waiting_posture == "low_bandwidth_guarded":
@@ -316,6 +355,8 @@ def _next_idle_action(
         return "maintain_confirmation_block_and_refresh_repair_priority"
     if repair_followup_required and queue_e_priority_band == "repair_guarded":
         return "refresh_waiting_heartbeat_with_repair_readiness_hold"
+    if offline_learning_pressure_level == "urgent":
+        return "refresh_waiting_heartbeat_with_offline_learning_hold"
     if repair_drive == "active" and offline_pressure_level in {"elevated", "present"}:
         return "refresh_waiting_heartbeat_with_repair_readiness_hold"
     return "refresh_waiting_heartbeat_or_accept_external_turn"

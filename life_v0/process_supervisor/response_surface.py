@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .offline_learning_signals import derive_offline_learning_profile
+
 
 def compose_life_response(
     *,
@@ -18,6 +20,10 @@ def compose_life_response(
     replay_cue_bundle: dict[str, Any] | None = None,
     offline_consolidation_frame: dict[str, Any] | None = None,
     growth_patch_candidate_queue: dict[str, Any] | None = None,
+    nightmare_risk: dict[str, Any] | None = None,
+    belief_learning_plan: dict[str, Any] | None = None,
+    language_learning_plan: dict[str, Any] | None = None,
+    relationship_learning_plan: dict[str, Any] | None = None,
     body_resource_budget: dict[str, Any] | None = None,
     core_affect_vector: dict[str, Any] | None = None,
     responsibility_loop_state: dict[str, Any] | None = None,
@@ -83,6 +89,18 @@ def compose_life_response(
         for move in repair_move_order
         if move in {"take_responsibility", "followup_commitment"}
     ]
+    offline_learning_profile = derive_offline_learning_profile(
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    nightmare_risk_status = (nightmare_risk or {}).get("risk_status")
+    offline_learning_targets = list((relationship_learning_plan or {}).get("relationship_targets", []))[:2]
+    if not offline_learning_targets:
+        offline_learning_targets = list((language_learning_plan or {}).get("language_targets", []))[:2]
+    if not offline_learning_targets:
+        offline_learning_targets = list((belief_learning_plan or {}).get("belief_targets", []))[:2]
     has_offline_influence = bool(
         offline_influence_refs or replay_cue_count or dream_window_count or growth_candidate_count
     )
@@ -107,6 +125,20 @@ def compose_life_response(
         response = f"{response}，后悔压力线索维持在{regret_pressure_count}条"
     if repair_followup_required:
         response = f"{response}，当前仍处在需要修复跟进的责任场中"
+    if nightmare_risk_status:
+        response = f"{response}，当前梦境回环风险为{nightmare_risk_status}"
+    if offline_learning_profile["offline_learning_pressure_level"] != "quiet":
+        response = (
+            f"{response}，离线学习压力级别为"
+            f"{offline_learning_profile['offline_learning_pressure_level']}"
+        )
+    if offline_learning_profile["offline_learning_attention_target"] != "baseline_offline_learning_maintenance":
+        response = (
+            f"{response}，离线学习焦点当前指向"
+            f"{offline_learning_profile['offline_learning_attention_target']}"
+        )
+    if offline_learning_targets:
+        response = f"{response}，离线学习计划会经过{'、'.join(offline_learning_targets)}"
     if has_offline_influence:
         response = f"{response}，当前带着离线表达压力"
     if replay_cue_count:

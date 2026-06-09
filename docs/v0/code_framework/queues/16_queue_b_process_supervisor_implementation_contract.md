@@ -621,6 +621,7 @@ Queue B 第一轮允许写回轻量连续体 ref，不允许 process supervisor 
 7. process report 与 receipt 会显式回链 resident governance refs
 8. waiting heartbeat 与 closeout 会共用 `resident_governance_state.json`，分别写出运行相位与关闭相位
 9. Queue E 的 waiting cadence 调制会真实改变 `heartbeat_interval_ms`
+10. Queue D 的 `nightmare_risk / belief_learning / language_learning / relationship_learning` 在已经生成后，必须重新进入 waiting governance，而不是停在离线状态柜
 
 #### `tests/process/test_digital_entrypoint.py`
 
@@ -687,6 +688,20 @@ Queue B 至少新增三道 gate：
 5. incident / relaunch recovery 进入同一连续体口径
 6. resident governance state / snapshot / report 进入 waiting、persistent closeout 与主进程 report / receipt
 7. Queue E 的 release posture / repair followup / obligation pressure 已经能真实调制 waiting cadence 与下一拍动作
+8. resident supervision / waiting heartbeat / process closeout 现在又进一步显式装载：
+   - `runtime/state/dream/nightmare_loop_risk.json`
+   - `runtime/state/growth/belief_learning_plan.json`
+   - `runtime/state/growth/language_learning_plan.json`
+   - `runtime/state/growth/relationship_learning_plan.json`
+9. `idle_strategy_state.json` 现在必须额外显式写出：
+   - `nightmare_risk_ref`
+   - `belief_learning_plan_ref`
+   - `language_learning_plan_ref`
+   - `relationship_learning_plan_ref`
+   - `offline_learning_pressure_level`
+   - `offline_learning_attention_target`
+   - `offline_learning_priority_profile`
+10. `response_surface.py` 现在不能只带 replay / dream window / growth patch 候选数量，也要把 dream/growth 已形成的离线学习压力真实转成语言表面
 8. 对应测试直接证明以上闭环
 
 ## 这份合同和下一轮落码的关系

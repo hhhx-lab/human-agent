@@ -93,6 +93,44 @@ life-v0 emit-report --strict
 4. `regret_pressure_count`
 5. `queue_e_priority_band`
 
+## Queue D 结果反写回 waiting governance
+
+最新这一轮又把 Queue D 的离线结果重新带回常驻生命治理：
+
+1. `runtime/state/dream/nightmare_loop_risk.json`
+2. `runtime/state/growth/belief_learning_plan.json`
+3. `runtime/state/growth/language_learning_plan.json`
+4. `runtime/state/growth/relationship_learning_plan.json`
+
+它们现在已经进入：
+
+- `resident_supervision.py`
+- `idle_strategy.py`
+- `heartbeat.py`
+- `continuity_writeback.py`
+- `response_surface.py`
+- `process_report.py`
+
+当前新增的关键 waiting 字段包括：
+
+1. `nightmare_risk_ref`
+2. `belief_learning_plan_ref`
+3. `language_learning_plan_ref`
+4. `relationship_learning_plan_ref`
+5. `offline_learning_pressure_level`
+6. `offline_learning_attention_target`
+7. `offline_learning_priority_profile`
+
+这意味着 process supervisor 当前第一次出现了真正的双向离线闭环：
+
+```text
+Queue E
+  -> replay_cue_bundle
+  -> nightmare_risk / belief_learning / language_learning / relationship_learning
+  -> resident_supervision
+  -> idle_strategy / waiting heartbeat / response surface
+```
+
 ## 当前最该继续补硬的实现包
 
 如果下一轮继续推进，不要重新发明新的生命外壳；直接按下面这包推进：
@@ -160,3 +198,4 @@ idle_strategy.py
 2. `shadow_only_guarded + repair_followup_required` 会保留 repair-weighted waiting governance
 3. `resident_governance_state.json` 会显式携带 `world_contact_release_posture`、`repair_followup_required`、`repair_obligation_count`、`regret_pressure_count`
 4. dream/growth 器官在接线后，至少有一条测试证明它们真的消费了 waiting governance 或 Queue E 的调制输出
+5. resident supervision / waiting heartbeat / process report 至少有一条测试证明它们已经显式装载并回链 `nightmare_risk / belief_learning / language_learning / relationship_learning`
