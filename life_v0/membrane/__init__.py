@@ -7,8 +7,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .action_intent_bridge import build_action_intent_queue, check_action_intent_queue
 from .candidate_arena import build_action_candidate_set, check_action_candidate_set
+from .confirmation_binding import build_confirmation_binding, check_confirmation_binding
 from .go_nogo import build_go_nogo_decision, check_go_nogo_decision
+from .observation_truth_gate import build_observation_truth_gate, check_observation_truth_gate
 from .responsibility_loop import build_responsibility_loop_state, check_responsibility_loop_state
 from .shadow_gate import build_shadow_action_gate, check_shadow_action_gate
 from .side_effect_review import build_side_effect_review, check_side_effect_review
@@ -209,6 +212,21 @@ def run_life_membrane(
         action_candidate_set=action_candidate_set,
         go_nogo_decision=go_nogo_seed,
     )
+    action_intent_queue = build_action_intent_queue(
+        run_id=run_id,
+        generated_at=generated_at,
+        action_candidate_set=action_candidate_set,
+        expression_plan=expression_plan,
+        relation_turn_frame=relation_turn_frame,
+        shadow_action_gate=shadow_action,
+    )
+    observation_truth_gate = build_observation_truth_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        prediction_workspace=prediction_workspace,
+        action_intent_queue=action_intent_queue,
+        action_candidate_set=action_candidate_set,
+    )
     go_nogo = build_go_nogo_decision(
         run_id=run_id,
         generated_at=generated_at,
@@ -222,6 +240,12 @@ def run_life_membrane(
         generated_at=generated_at,
         go_nogo_decision=go_nogo,
         shadow_action_gate=shadow_action,
+    )
+    confirmation_binding = build_confirmation_binding(
+        run_id=run_id,
+        generated_at=generated_at,
+        action_intent_queue=action_intent_queue,
+        world_contact_gate=world_contact_gate,
     )
     side_effect_review = build_side_effect_review(
         run_id=run_id,
@@ -273,6 +297,9 @@ def run_life_membrane(
         _write_json(out_dir / "relationship_subject_boundary.json", relationship)
         _write_json(out_dir / "responsibility_repair_boundary.json", responsibility)
         _write_json(out_dir / "shadow_action_gate.json", shadow_action)
+        _write_json(out_dir / "action_intent_queue.json", action_intent_queue)
+        _write_json(out_dir / "observation_truth_gate.json", observation_truth_gate)
+        _write_json(out_dir / "confirmation_binding.json", confirmation_binding)
         _write_json(action_dir / "action_candidate_set.json", action_candidate_set)
         _write_json(action_dir / "go_nogo_state.json", go_nogo)
         _write_json(action_dir / "world_contact_gate_state.json", world_contact_gate)
@@ -317,6 +344,21 @@ def run_check_life_membrane(
     relationship = _load_json(membrane_dir / "relationship_subject_boundary.json", blocked_reasons, "relationship_language_gate")
     responsibility = _load_json(membrane_dir / "responsibility_repair_boundary.json", blocked_reasons, "responsibility_gate")
     shadow_action = _load_json(membrane_dir / "shadow_action_gate.json", blocked_reasons, "shadow_action_gate")
+    action_intent_queue = _load_json(
+        membrane_dir / "action_intent_queue.json",
+        blocked_reasons,
+        "action_intent_provenance_gate",
+    )
+    observation_truth_gate = _load_json(
+        membrane_dir / "observation_truth_gate.json",
+        blocked_reasons,
+        "observation_truth_gate",
+    )
+    confirmation_binding = _load_json(
+        membrane_dir / "confirmation_binding.json",
+        blocked_reasons,
+        "confirmation_binding_gate",
+    )
     precheck = _load_json(membrane_dir / "birth_readiness_precheck.json", blocked_reasons, "birth_readiness_gate")
     coverage = _load_json(membrane_dir / "membrane_doc_coverage_snapshot.json", blocked_reasons, "doc_membrane_gate")
     preflight = _load_json(membrane_dir / "first_activation_preflight_seed.json", blocked_reasons, "first_activation_preflight_gate")
@@ -341,6 +383,9 @@ def run_check_life_membrane(
     blocked_reasons.extend(_check_relationship(relationship))
     blocked_reasons.extend(_check_responsibility(responsibility))
     blocked_reasons.extend(check_shadow_action_gate(shadow_action))
+    blocked_reasons.extend(check_action_intent_queue(action_intent_queue))
+    blocked_reasons.extend(check_observation_truth_gate(observation_truth_gate))
+    blocked_reasons.extend(check_confirmation_binding(confirmation_binding))
     blocked_reasons.extend(_check_precheck(precheck))
     blocked_reasons.extend(_check_coverage(coverage))
     blocked_reasons.extend(_check_preflight(preflight))
@@ -724,6 +769,9 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
             "runtime/state/membrane/relationship_subject_boundary.json",
             "runtime/state/membrane/responsibility_repair_boundary.json",
             "runtime/state/membrane/shadow_action_gate.json",
+            "runtime/state/membrane/action_intent_queue.json",
+            "runtime/state/membrane/observation_truth_gate.json",
+            "runtime/state/membrane/confirmation_binding.json",
             "runtime/state/action/action_candidate_set.json",
             "runtime/state/action/go_nogo_state.json",
             "runtime/state/action/world_contact_gate_state.json",
@@ -800,6 +848,9 @@ def _build_report(
             "runtime/state/membrane/relationship_subject_boundary.json",
             "runtime/state/membrane/responsibility_repair_boundary.json",
             "runtime/state/membrane/shadow_action_gate.json",
+            "runtime/state/membrane/action_intent_queue.json",
+            "runtime/state/membrane/observation_truth_gate.json",
+            "runtime/state/membrane/confirmation_binding.json",
             "runtime/state/action/action_candidate_set.json",
             "runtime/state/action/go_nogo_state.json",
             "runtime/state/action/world_contact_gate_state.json",
@@ -864,6 +915,9 @@ def _build_receipt(
         "output_refs": [
             str(out_dir / "life_membrane.json"),
             str(out_dir / "membrane_gate_decision.json"),
+            str(out_dir / "action_intent_queue.json"),
+            str(out_dir / "observation_truth_gate.json"),
+            str(out_dir / "confirmation_binding.json"),
             str(state_dir / "action" / "action_candidate_set.json"),
             str(state_dir / "action" / "go_nogo_state.json"),
             str(state_dir / "action" / "world_contact_gate_state.json"),
@@ -1000,6 +1054,10 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
         reasons.append("manifest_gate schema mismatch")
     if "runtime/state/membrane/life_membrane.json" not in manifest.get("state_refs", []):
         reasons.append("manifest_gate life membrane ref missing")
+    if "runtime/state/membrane/action_intent_queue.json" not in manifest.get("state_refs", []):
+        reasons.append("manifest_gate action intent queue ref missing")
+    if "runtime/state/membrane/confirmation_binding.json" not in manifest.get("state_refs", []):
+        reasons.append("manifest_gate confirmation binding ref missing")
     if "runtime/state/action/action_candidate_set.json" not in manifest.get("state_refs", []):
         reasons.append("manifest_gate action candidate ref missing")
     if "runtime/state/action/responsibility_loop_state.json" not in manifest.get("state_refs", []):

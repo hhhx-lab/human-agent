@@ -267,6 +267,27 @@ Queue D 的第二波现在也已经真实落下：
 2. `Queue F` 第一轮也已经闭合，不再是当前默认入口。
 3. 当前真正的主体前沿已经转入 `Queue D -> Queue E`。
 
+Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
+
+- `life_v0/membrane/action_intent_bridge.py`
+- `life_v0/membrane/observation_truth_gate.py`
+- `life_v0/membrane/confirmation_binding.py`
+- `life_v0/validators/world_contact_validator.py`
+- `life_v0/validators/prediction_trace_validator.py`
+
+并且已经接回：
+
+- `life_v0/membrane/__init__.py`
+- `life_v0/validators/__init__.py`
+- `life_v0/schema_runner/__init__.py`
+- `runtime/state/membrane/action_intent_queue.json`
+- `runtime/state/membrane/observation_truth_gate.json`
+- `runtime/state/membrane/confirmation_binding.json`
+- `runtime/state/validation/world_contact_validation.json`
+- `runtime/state/validation/prediction_trace_validation.json`
+
+所以当前 Queue E 也不再只是“下一个要做什么”的合同描述，而是已经开始真实写对象链。下一轮如果继续补 Queue E，默认入口转向 `world_contact_summary.py`、validator rollup 和 stronger run manifest / cross-file closure。
+
 ## 当前链尾开工包
 
 当前如果就是继续链尾，先打开这组：

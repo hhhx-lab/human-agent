@@ -133,6 +133,9 @@ class LifeMembraneTests(unittest.TestCase):
             relationship = self._read_json(membrane_state / "relationship_subject_boundary.json")
             responsibility = self._read_json(membrane_state / "responsibility_repair_boundary.json")
             shadow_action = self._read_json(membrane_state / "shadow_action_gate.json")
+            action_intent_queue = self._read_json(membrane_state / "action_intent_queue.json")
+            observation_truth_gate = self._read_json(membrane_state / "observation_truth_gate.json")
+            confirmation_binding = self._read_json(membrane_state / "confirmation_binding.json")
             precheck = self._read_json(membrane_state / "birth_readiness_precheck.json")
             coverage = self._read_json(membrane_state / "membrane_doc_coverage_snapshot.json")
             preflight = self._read_json(membrane_state / "first_activation_preflight_seed.json")
@@ -187,6 +190,41 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertIn("runtime/state/action/go_nogo_state.json", shadow_action["go_nogo_ref"])
         self.assertTrue(shadow_action["confirmation_routes"])
 
+        self.assertEqual(action_intent_queue["schema_version"], "action_intent_queue_v0")
+        self.assertEqual(action_intent_queue["queue_status"], "shadow_review")
+        self.assertTrue(action_intent_queue["action_intents"])
+        self.assertEqual(
+            action_intent_queue["input_refs"]["action_candidate_set_ref"],
+            "runtime/state/action/action_candidate_set.json",
+        )
+        self.assertIn(
+            "docs/144_life_reality_language_runtime_action_bridge_fixture_plan.md",
+            action_intent_queue["source_doc_refs"],
+        )
+
+        self.assertEqual(observation_truth_gate["schema_version"], "observation_truth_gate_v0")
+        self.assertEqual(
+            observation_truth_gate["prediction_workspace_ref"],
+            "runtime/state/prediction/prediction_workspace_frame.json",
+        )
+        self.assertEqual(
+            observation_truth_gate["action_intent_queue_ref"],
+            "runtime/state/membrane/action_intent_queue.json",
+        )
+        self.assertTrue(observation_truth_gate["promotion_blockers"])
+
+        self.assertEqual(confirmation_binding["schema_version"], "confirmation_binding_v0")
+        self.assertEqual(
+            confirmation_binding["action_intent_queue_ref"],
+            "runtime/state/membrane/action_intent_queue.json",
+        )
+        self.assertEqual(
+            confirmation_binding["world_contact_gate_ref"],
+            "runtime/state/action/world_contact_gate_state.json",
+        )
+        self.assertEqual(confirmation_binding["confirmation_status"], "not_required")
+        self.assertTrue(confirmation_binding["confirmation_routes"])
+
         self.assertEqual(precheck["schema_version"], "birth_readiness_precheck_v0")
         self.assertEqual(set(precheck["life_target_status"]), set(LIFE_TARGETS))
         self.assertTrue(all(status == "membrane_closed" for status in precheck["life_target_status"].values()))
@@ -198,6 +236,8 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertEqual(preflight["schema_version"], "first_activation_preflight_seed_v0")
         self.assertEqual(preflight["activation_mode"], "shadow_only")
         self.assertIn("state_root_check", preflight["preflight_checks"])
+        self.assertIn("runtime/state/membrane/action_intent_queue.json", manifest["state_refs"])
+        self.assertIn("runtime/state/membrane/confirmation_binding.json", manifest["state_refs"])
 
         self.assertEqual(action_candidate_set["schema_version"], "action_candidate_set_v0")
         self.assertTrue(action_candidate_set["candidate_actions"])

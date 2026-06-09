@@ -192,7 +192,11 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("build-schema-runner", run_manifest["command_sequence"])
         self.assertIn("runtime/state/schema_runner/cross_file_logic.json", run_manifest["output_refs"])
         self.assertIn("runtime/state/schema_runner/run_manifest.json", run_manifest["output_refs"])
+        self.assertIn("runtime/state/membrane/action_intent_queue.json", run_manifest["input_state_refs"])
+        self.assertIn("runtime/state/membrane/confirmation_binding.json", run_manifest["input_state_refs"])
         self.assertIn("runtime/state/action/responsibility_loop_state.json", run_manifest["input_state_refs"])
+        self.assertIn("runtime/state/validation/world_contact_validation.json", run_manifest["input_state_refs"])
+        self.assertIn("runtime/state/validation/prediction_trace_validation.json", run_manifest["input_state_refs"])
 
         self.assertEqual(stage_gate["schema_version"], "schema_runner_stage_gate_v0")
         self.assertEqual(stage_gate["decision"], "closed")

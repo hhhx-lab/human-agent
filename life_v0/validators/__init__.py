@@ -9,6 +9,8 @@ from typing import Any
 
 from .boundary_audit import build_boundary_audit_state, check_boundary_audit_state
 from .observation_validator import build_observation_truth_review, check_observation_truth_review
+from .prediction_trace_validator import build_prediction_trace_validation, check_prediction_trace_validation
+from .world_contact_validator import build_world_contact_validation, check_world_contact_validation
 from life_v0.direction import LIFE_TARGETS
 
 
@@ -172,6 +174,21 @@ def run_validation_membrane(
     relationship = _load_json(membrane_dir / "relationship_subject_boundary.json", blocked_reasons, "relationship_language_gate")
     responsibility = _load_json(membrane_dir / "responsibility_repair_boundary.json", blocked_reasons, "responsibility_gate")
     shadow_action = _load_json(membrane_dir / "shadow_action_gate.json", blocked_reasons, "shadow_action_gate")
+    action_intent_queue = _load_json(
+        membrane_dir / "action_intent_queue.json",
+        blocked_reasons,
+        "action_intent_provenance_gate",
+    )
+    observation_truth_gate = _load_json(
+        membrane_dir / "observation_truth_gate.json",
+        blocked_reasons,
+        "observation_truth_gate",
+    )
+    confirmation_binding = _load_json(
+        membrane_dir / "confirmation_binding.json",
+        blocked_reasons,
+        "confirmation_binding_gate",
+    )
     action_candidate_set = _load_json(state_dir / "action" / "action_candidate_set.json", blocked_reasons, "action_candidate_gate")
     world_contact_gate = _load_json(state_dir / "action" / "world_contact_gate_state.json", blocked_reasons, "world_contact_gate")
     side_effect_review = _load_json(state_dir / "action" / "side_effect_review.json", blocked_reasons, "side_effect_gate")
@@ -199,12 +216,28 @@ def run_validation_membrane(
     quarantine = _build_quarantine_index(run_id, generated_at, status, blocked_reasons)
     dashboard = _build_dashboard_source(run_id, generated_at, status, blocked_reasons)
     findings = _build_cross_file_finding_index(run_id, generated_at, status, blocked_reasons, receipt_ref)
+    prediction_workspace = _load_json_optional(state_dir / "prediction" / "prediction_workspace_frame.json")
     truth_review = build_observation_truth_review(
         run_id=run_id,
         generated_at=generated_at,
         observation_intake=observation,
-        prediction_workspace=_load_json_optional(state_dir / "prediction" / "prediction_workspace_frame.json"),
+        prediction_workspace=prediction_workspace,
         action_candidate_set=action_candidate_set,
+    )
+    world_contact_validation = build_world_contact_validation(
+        run_id=run_id,
+        generated_at=generated_at,
+        world_contact_gate=world_contact_gate,
+        confirmation_binding=confirmation_binding,
+        side_effect_review=side_effect_review,
+    )
+    prediction_trace_validation = build_prediction_trace_validation(
+        run_id=run_id,
+        generated_at=generated_at,
+        prediction_workspace=prediction_workspace,
+        action_intent_queue=action_intent_queue,
+        observation_truth_gate=observation_truth_gate,
+        observation_truth_review=truth_review,
     )
     boundary_audit = build_boundary_audit_state(
         run_id=run_id,
@@ -245,6 +278,8 @@ def run_validation_membrane(
         _write_json(validation_dir / "dashboard_metric_source.json", dashboard)
         _write_json(validation_dir / "cross_file_finding_index.json", findings)
         _write_json(validation_dir / "observation_truth_review.json", truth_review)
+        _write_json(validation_dir / "world_contact_validation.json", world_contact_validation)
+        _write_json(validation_dir / "prediction_trace_validation.json", prediction_trace_validation)
         _write_json(validation_dir / "boundary_audit_state.json", boundary_audit)
         _write_json(validation_dir / "validation_stage_gate.json", stage_gate)
         _write_json(reports_dir / "validation_membrane_report.json", report)
@@ -285,6 +320,16 @@ def run_check_validation_membrane(
     dashboard = _load_json(validation_dir / "dashboard_metric_source.json", blocked_reasons, "dashboard_gate")
     findings = _load_json(validation_dir / "cross_file_finding_index.json", blocked_reasons, "archive_cross_file_gate")
     truth_review = _load_json(validation_dir / "observation_truth_review.json", blocked_reasons, "observation_truth_gate")
+    world_contact_validation = _load_json(
+        validation_dir / "world_contact_validation.json",
+        blocked_reasons,
+        "world_contact_validation_gate",
+    )
+    prediction_trace_validation = _load_json(
+        validation_dir / "prediction_trace_validation.json",
+        blocked_reasons,
+        "prediction_trace_validation_gate",
+    )
     boundary_audit = _load_json(validation_dir / "boundary_audit_state.json", blocked_reasons, "boundary_audit_gate")
     stage_gate = _load_json(validation_dir / "validation_stage_gate.json", blocked_reasons, "validation_stage_gate")
     build_report = _load_json(reports_dir / "validation_membrane_report.json", blocked_reasons, "build_report_gate")
@@ -298,6 +343,8 @@ def run_check_validation_membrane(
     blocked_reasons.extend(_check_dashboard(dashboard))
     blocked_reasons.extend(_check_findings(findings))
     blocked_reasons.extend(check_observation_truth_review(truth_review))
+    blocked_reasons.extend(check_world_contact_validation(world_contact_validation))
+    blocked_reasons.extend(check_prediction_trace_validation(prediction_trace_validation))
     blocked_reasons.extend(check_boundary_audit_state(boundary_audit))
     blocked_reasons.extend(_check_stage_gate(stage_gate))
     blocked_reasons.extend(_check_build_report(build_report))
@@ -651,6 +698,8 @@ def _build_report(
             "runtime/state/validation/dashboard_metric_source.json",
             "runtime/state/validation/cross_file_finding_index.json",
             "runtime/state/validation/observation_truth_review.json",
+            "runtime/state/validation/world_contact_validation.json",
+            "runtime/state/validation/prediction_trace_validation.json",
             "runtime/state/validation/boundary_audit_state.json",
             "runtime/state/validation/validation_stage_gate.json",
         ],
@@ -769,6 +818,8 @@ def _build_receipt(
         validation_dir / "dashboard_metric_source.json",
         validation_dir / "cross_file_finding_index.json",
         validation_dir / "observation_truth_review.json",
+        validation_dir / "world_contact_validation.json",
+        validation_dir / "prediction_trace_validation.json",
         validation_dir / "boundary_audit_state.json",
         validation_dir / "validation_stage_gate.json",
         reports_dir / "validation_membrane_report.json",

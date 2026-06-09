@@ -41,7 +41,12 @@
 | `RelationTurnFrame` | `life_v0/terminal_turn/turn_transition.py` | `language/relationship_graph.py` 可提供输入但不直接改 turn frame 真值 | `terminal_loop`、`process_supervisor`、`state_store` | `shell_command`、`digital_entry` | `runtime/state/terminal/relation_turn_frame.json` |
 | `ExpressionPlan` | `life_v0/language/expression_monitor.py` | `inner_speech.py` 可提供输入 refs；`commitment_repair.py` 可追加 repair pressure refs | `membrane`、`terminal_loop`、`process_supervisor` | `shell_command`、`process_supervisor` 不可直接生成最终表达计划 | `runtime/state/language/expression_plan.json` |
 | `ActionCandidateSet` | `life_v0/membrane/candidate_arena.py` | `go_nogo.py`、`side_effect_review.py` 可追加判定字段 | `validators`、`schema_runner`、`shell_command` | `terminal_loop`、`process_supervisor` | `runtime/state/action/action_candidate_set.json` |
+| `ActionIntentQueue` | `life_v0/membrane/action_intent_bridge.py` | `confirmation_binding.py`、`observation_truth_gate.py` 仅可追加消费 refs，不可改意图真值 | `validators`、`schema_runner`、`process_supervisor` | `shell_command`、`terminal_loop` | `runtime/state/membrane/action_intent_queue.json` |
+| `ObservationTruthGate` | `life_v0/membrane/observation_truth_gate.py` | 无 | `validators`、`schema_runner` | `shell_command`、`process_supervisor`、`terminal_loop` | `runtime/state/membrane/observation_truth_gate.json` |
+| `ConfirmationBinding` | `life_v0/membrane/confirmation_binding.py` | `validators/world_contact_validator.py` 仅可追加验证结论 refs | `validators`、`schema_runner`、`shell_command` | `process_supervisor`、`terminal_loop` | `runtime/state/membrane/confirmation_binding.json` |
 | `ResponsibilityLoopState` | `life_v0/membrane/responsibility_loop.py` | `language/commitment_repair.py`、`state_store/commitment_truth.py` 仅可追加回链 refs | `schema_runner`、`dream`、`growth` | `shell_command`、`process_supervisor` | `runtime/state/action/responsibility_loop_state.json` |
+| `WorldContactValidation` | `life_v0/validators/world_contact_validator.py` | `schema_runner` 仅可追加 report refs | `schema_runner`、`reporting` | `shell_command`、`process_supervisor` | `runtime/state/validation/world_contact_validation.json` |
+| `PredictionTraceValidation` | `life_v0/validators/prediction_trace_validator.py` | `schema_runner` 仅可追加 ranking refs | `schema_runner`、`reporting` | `shell_command`、`process_supervisor` | `runtime/state/validation/prediction_trace_validation.json` |
 | `DialogueWritebackBundle` | `life_v0/terminal_loop/loop_report.py` | `dialogue_writeback.py`、`process_supervisor/resident_turn_writeback.py` 可追加 bundle refs | `state_store`、`replay`、`archive`、`growth` | `shell_command`、`digital_entry` | `runtime/reports/latest/dialogue_writeback_bundle.json` |
 | `IdleContinuityFrame` | `life_v0/process_supervisor/heartbeat.py` | `continuity_writeback.py`、`idle_strategy.py`、`persistent_process.py` 可追加治理 refs | `language`、`relationship`、`replay`、`growth` | `body`、`state_store`、`shell_command` | `runtime/state/terminal/idle_continuity_frame.json` |
 | `ReplayCueBundle` | `life_v0/replay/replay_cues.py` | `process_supervisor/heartbeat.py`、`growth/anti_forgetting.py` 可追加 replay target refs | `dream`、`growth`、`archive`、`process_supervisor` | `shell_command`、`digital_entry` | `runtime/state/replay/replay_cue_bundle.json` |
@@ -60,7 +65,12 @@ flowchart TD
     PW --> EP
     RT --> EP
     EP --> AC["ActionCandidateSet"]
+    AC --> AI["ActionIntentQueue"]
+    AI --> OT["ObservationTruthGate"]
+    AI --> CB["ConfirmationBinding"]
     AC --> RL["ResponsibilityLoopState"]
+    CB --> WCV["WorldContactValidation"]
+    OT --> PTV["PredictionTraceValidation"]
     EP --> DWB["DialogueWritebackBundle"]
     RL --> DWB
     DWB --> RCB["ReplayCueBundle"]

@@ -74,12 +74,32 @@ def run_schema_runner(
     validation_check = _load_json(reports_dir / "validation_membrane_check_report.json", blocked_reasons, "validation_membrane_check_gate")
     life_state = _load_json(state_dir / "life_state.json", blocked_reasons, "state_store_gate")
     validation_stage = _load_json(state_dir / "validation" / "validation_stage_gate.json", blocked_reasons, "validation_stage_gate")
+    action_intent_queue = _load_json(
+        state_dir / "membrane" / "action_intent_queue.json",
+        blocked_reasons,
+        "action_intent_provenance_gate",
+    )
+    confirmation_binding = _load_json(
+        state_dir / "membrane" / "confirmation_binding.json",
+        blocked_reasons,
+        "confirmation_binding_gate",
+    )
     action_candidate_set = _load_json(state_dir / "action" / "action_candidate_set.json", blocked_reasons, "action_candidate_gate")
     world_contact_gate = _load_json(state_dir / "action" / "world_contact_gate_state.json", blocked_reasons, "world_contact_gate")
     observation_truth_review = _load_json(
         state_dir / "validation" / "observation_truth_review.json",
         blocked_reasons,
         "observation_truth_gate",
+    )
+    world_contact_validation = _load_json(
+        state_dir / "validation" / "world_contact_validation.json",
+        blocked_reasons,
+        "world_contact_validation_gate",
+    )
+    prediction_trace_validation = _load_json(
+        state_dir / "validation" / "prediction_trace_validation.json",
+        blocked_reasons,
+        "prediction_trace_validation_gate",
     )
     boundary_audit = _load_json(state_dir / "validation" / "boundary_audit_state.json", blocked_reasons, "boundary_audit_gate")
     side_effect_review = _load_json(state_dir / "action" / "side_effect_review.json", blocked_reasons, "side_effect_gate")
@@ -159,9 +179,13 @@ def run_schema_runner(
         source_doc_refs=source_docs,
         input_state_refs=[
             "runtime/state/life_state.json",
+            "runtime/state/membrane/action_intent_queue.json",
+            "runtime/state/membrane/confirmation_binding.json",
             "runtime/state/action/action_candidate_set.json",
             "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/validation/observation_truth_review.json",
+            "runtime/state/validation/world_contact_validation.json",
+            "runtime/state/validation/prediction_trace_validation.json",
             "runtime/state/validation/boundary_audit_state.json",
         ],
         input_report_refs=[
@@ -822,9 +846,13 @@ def _build_input_hashes(
     for path in [
         doc_index_path,
         state_dir / "life_state.json",
+        state_dir / "membrane" / "action_intent_queue.json",
+        state_dir / "membrane" / "confirmation_binding.json",
         state_dir / "action" / "action_candidate_set.json",
         state_dir / "action" / "responsibility_loop_state.json",
         state_dir / "validation" / "observation_truth_review.json",
+        state_dir / "validation" / "world_contact_validation.json",
+        state_dir / "validation" / "prediction_trace_validation.json",
         state_dir / "validation" / "boundary_audit_state.json",
         reports_dir / "birth_readiness_report.json",
         reports_dir / "validation_membrane_report.json",

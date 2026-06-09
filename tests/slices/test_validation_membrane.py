@@ -74,6 +74,8 @@ class ValidationMembraneTests(unittest.TestCase):
             dashboard = self._read_json(paths["validation_state"] / "dashboard_metric_source.json")
             findings = self._read_json(paths["validation_state"] / "cross_file_finding_index.json")
             truth_review = self._read_json(paths["validation_state"] / "observation_truth_review.json")
+            world_contact_validation = self._read_json(paths["validation_state"] / "world_contact_validation.json")
+            prediction_trace_validation = self._read_json(paths["validation_state"] / "prediction_trace_validation.json")
             boundary_audit = self._read_json(paths["validation_state"] / "boundary_audit_state.json")
             stage_gate = self._read_json(paths["validation_state"] / "validation_stage_gate.json")
             report = self._read_json(paths["reports"] / "validation_membrane_report.json")
@@ -132,6 +134,22 @@ class ValidationMembraneTests(unittest.TestCase):
         )
         self.assertEqual(truth_review["missing_fields"], [])
 
+        self.assertEqual(world_contact_validation["schema_version"], "world_contact_validation_v0")
+        self.assertEqual(world_contact_validation["status"], "closed")
+        self.assertEqual(
+            world_contact_validation["confirmation_binding_ref"],
+            "runtime/state/membrane/confirmation_binding.json",
+        )
+        self.assertEqual(world_contact_validation["validation_findings"], [])
+
+        self.assertEqual(prediction_trace_validation["schema_version"], "prediction_trace_validation_v0")
+        self.assertEqual(prediction_trace_validation["status"], "closed")
+        self.assertEqual(
+            prediction_trace_validation["action_intent_queue_ref"],
+            "runtime/state/membrane/action_intent_queue.json",
+        )
+        self.assertEqual(prediction_trace_validation["missing_prediction_links"], [])
+
         self.assertEqual(boundary_audit["schema_version"], "boundary_audit_state_v0")
         self.assertEqual(boundary_audit["life_membrane_ref"], "runtime/state/membrane/life_membrane.json")
         self.assertEqual(
@@ -153,6 +171,8 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertIn("RuntimeObservationIngestor", report["runtime_carrier_refs"])
         self.assertIn("ActionResponsibilityRuntime", report["runtime_carrier_refs"])
         self.assertIn("runtime/state/validation/observation_truth_review.json", report["state_refs"])
+        self.assertIn("runtime/state/validation/world_contact_validation.json", report["state_refs"])
+        self.assertIn("runtime/state/validation/prediction_trace_validation.json", report["state_refs"])
         self.assertIn("runtime/state/validation/boundary_audit_state.json", report["state_refs"])
         self.assertEqual(report["next_allowed_slices"], ["S09_SCHEMA_RUNNER_CODE"])
         self.assertEqual(report["next_required_command"], "life-v0 build-schema-runner --strict")
