@@ -15,8 +15,11 @@
 - `docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md`
 - `docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md`
 - `docs/v0/implementation_architecture/03_module_authoring_traceability_protocol.md`
+- `docs/v0/implementation_architecture/code_organs/README.md`
+- `docs/v0/implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md`
+- `docs/v0/implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md`
 
-也就是说，`code_framework/` 解决“要建什么”，`implementation_architecture/` 解决“真实一回合怎么流、每个器官怎么接、每个模块怎么留痕”。
+也就是说，`code_framework/` 解决“要建什么”，`implementation_architecture/` 解决“真实一回合怎么流、每个器官怎么接、每个模块怎么留痕”，`implementation_architecture/code_organs/` 继续解决“下一轮先拆哪个包、哪组重型入口先下刀”。
 
 ## 这柜文档怎么读
 

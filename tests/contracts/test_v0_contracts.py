@@ -108,6 +108,18 @@ class V0ContractCoverageTests(unittest.TestCase):
             "docs/v0/implementation_architecture/03_module_authoring_traceability_protocol.md",
             contract_index["files"],
         )
+        self.assertIn(
+            "docs/v0/implementation_architecture/code_organs/README.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md",
+            contract_index["files"],
+        )
         self.assertIn("docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md", contract_index["files"])
         self.assertIn("docs/v0/slice_contracts/s11_v0_contract_coverage_engineering_contract.md", contract_index["files"])
 

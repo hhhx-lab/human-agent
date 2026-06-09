@@ -8,7 +8,7 @@
 2. 每个器官的接口、输入输出和共享对象怎样被钉死。
 3. 后续每一个新代码模块怎样保持 `00-258 -> v0 合同 -> code -> runtime -> test` 一一映射。
 
-它不重写 `code_framework/`，也不替代 `slice_contracts/`。它是 `code_framework` 和真正代码实现之间的压缩层。
+它不重写 `code_framework/`，也不替代 `slice_contracts/`。它是 `code_framework` 和真正代码实现之间的压缩层；其中 `code_organs/` 子柜专门负责把 `life_v0/` 顶层包继续压成逐包器官拆分图和重型入口重构波次。
 
 ## 什么时候打开
 
@@ -24,6 +24,9 @@
 | `01_runtime_organ_interface_blueprint.md` | 每个生命器官组的接口、共享对象、runtime 产物、测试与落码顺序 |
 | `02_turn_and_cycle_lifecycle_contract.md` | 单次外部回合、离线梦境/成长循环、常驻等待态怎样逐阶段流动 |
 | `03_module_authoring_traceability_protocol.md` | 后续每个新模块怎样写、怎样测、怎样回链文档和运行证据 |
+| `code_organs/README.md` | 逐包器官装配柜为什么存在、什么时候进入逐包拆分 |
+| `code_organs/01_life_v0_package_organ_split_map.md` | 整棵 `life_v0/` 的逐包器官拆分总图、理论回链、runtime 产物和测试面 |
+| `code_organs/02_heavy_init_refactor_wave_contract.md` | 当前仍然过重的 `__init__.py` 按波次怎样拆、每波最低测试和文档同步要求 |
 
 ## 使用顺序
 
@@ -35,5 +38,6 @@
 4. `docs/v0/code_framework/README.md`
 5. `docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md`
 6. 本柜 `01 -> 03`
+7. `code_organs/01 -> 02`
 
 如果读完这一柜仍然无法回答“这次新增文件到底首写哪个共享对象、写出哪份 state/report/receipt、由哪个测试守住”，就不要开写代码。

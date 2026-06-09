@@ -149,6 +149,33 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
         ],
     },
+    "docs/v0/implementation_architecture/code_organs/README.md": {
+        "role": "code_organs_cabinet_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/implementation_architecture/README.md",
+            "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
+        ],
+    },
+    "docs/v0/implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md": {
+        "role": "life_v0_package_organ_split_map",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
+            "docs/v0/code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md",
+        ],
+    },
+    "docs/v0/implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md": {
+        "role": "heavy_init_refactor_wave_contract",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md",
+            "docs/v0/code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md",
+        ],
+    },
     "docs/v0/shared_contracts/life_state_store_v0_schema.md": {
         "role": "life_state_schema",
         "slice": "S04_STATE_OBJECT_STORE",
