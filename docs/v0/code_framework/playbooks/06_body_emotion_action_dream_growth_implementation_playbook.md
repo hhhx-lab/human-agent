@@ -90,9 +90,11 @@
 |---|---|
 | `candidate_arena.py` | 候选行动竞争场 |
 | `go_nogo.py` | 行动抑制与解除抑制 |
+| `world_contact_gate.py` | 世界接触许可与不可逆动作门 |
+| `side_effect_review.py` | 外部接触后果审查 |
 | `shadow_gate.py` | 影子行动门 |
 | `responsibility_loop.py` | 责任、后悔、修复回路 |
-| `side_effect_classifier.py` | 后果等级分类 |
+| `world_contact_summary.py` | world contact 与 pain/regret/repair 汇总桥 |
 
 ### D. `life_v0/dream/`
 

@@ -112,12 +112,12 @@
 |---|---|
 | 理论文档 | `06`、`20`、`29-36`、`64`、`72`、`75`、`80-84`、`94`、`98`、`01r`、`01v-01ax` |
 | 主包 | `life_v0/membrane/`、`life_v0/validators/`、`life_v0/schema_runner/` |
-| 当前文件 | `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`、`observation_validator.py`、`boundary_audit.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py` |
+| 当前文件 | `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`、`responsibility_loop.py`、`action_intent_bridge.py`、`observation_truth_gate.py`、`confirmation_binding.py`、`world_contact_summary.py`、`observation_validator.py`、`world_contact_validator.py`、`prediction_trace_validator.py`、`boundary_audit.py`、`validation_rollup.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py`、`cross_file_logic.py`、`evidence_ranker.py`、`run_manifest.py` |
 | 主要输入 | `PredictionWorkspaceFrame`、`ExpressionPlan`、`NeedStateVector`、observation reports |
 | 主要输出 | `ActionCandidateSet`、membrane reports、validation reports、schema runner reports |
 | 必写 runtime | `runtime/state/membrane/*`、`runtime/state/action/*`、`runtime/state/validation/*`、`runtime/state/schema_runner/*` |
 | 必守测试 | `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
-| 下一步 | Queue E 第二波中的 `shadow_gate.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落地；继续把 `responsibility_loop.py` 补厚成稳定责任回路，并新增 `idle_strategy.py` |
+| 下一步 | Queue E 第一轮与第二波文件器官都已落地；当前前沿转向把 `responsibility_loop.py`、`world_contact_summary.py`、`cross_file_logic.py`、`run_manifest.py` 更深接进 Queue B 的 waiting governance、Queue A 的长期语言连续体，以及 reporting / archive / growth 的闭环消费 |
 
 ### 7. 梦境、离线生命与醒后整合层
 

@@ -37,10 +37,10 @@ life_v0/membrane/candidate_arena.py
 
 但现在的真实缺口不是“没有生命膜”，而是：
 
-1. 缺明确的 `ActionCandidateSet` 首写器官，候选行动还没有稳定离开 `membrane/__init__.py`。
-2. 缺明确的 `GoNoGoDecision`、`WorldContactDecision` 和 `SideEffectReview` 文件级施工面。
-3. validator 与 schema runner 已有最小闭合，但还没有把观察真值、反事实比较、跨文件一致性拆成稳定器官文件。
-4. `./digital life` 和外周命令面还需要依赖一个更厚的行为-验证-逻辑链，才能避免重新滑回普通 agent 的 action router。
+1. `ActionCandidateSet`、`GoNoGoDecision`、`WorldContactDecision`、`SideEffectReview`、`ResponsibilityLoopState` 虽然都已经离开 `membrane/__init__.py`，但还需要继续补厚成更稳定的跨层行为约束链。
+2. validator 与 schema runner 的第一轮器官已经落下，但还需要把 `world_contact_validation`、`prediction_trace_validation`、`validation_rollup`、`cross_file_logic`、`run_manifest` 对 Queue B / Queue A / archive / reporting 的消费关系继续写硬。
+3. `./digital life` 和外周命令面还需要依赖一个更厚的行为-验证-逻辑链，才能避免重新滑回普通 agent 的 action router。
+4. 当前真正的工程前沿已经从“有没有这些文件”切到“这些文件产出的对象，能否稳定进入长期责任、关系修复、report/receipt 和常驻生命过程”。
 
 这里还要再钉死一条：Queue E 从这一轮开始，必须显式消费前面几波已经落下来的主体器官：
 
@@ -60,6 +60,46 @@ ObservationEvent / PredictionWorkspaceFrame / ExpressionPlan
   -> SideEffectReview
   -> ValidationFinding / CounterfactualTrace
 ```
+
+## 当前真实已落器官
+
+Queue E 当前不是空柜，已经有下面这些真实器官：
+
+### membrane 侧
+
+- `candidate_arena.py`
+- `go_nogo.py`
+- `world_contact_gate.py`
+- `side_effect_review.py`
+- `responsibility_loop.py`
+- `shadow_gate.py`
+- `action_intent_bridge.py`
+- `observation_truth_gate.py`
+- `confirmation_binding.py`
+- `world_contact_summary.py`
+
+### validator 侧
+
+- `observation_validator.py`
+- `world_contact_validator.py`
+- `prediction_trace_validator.py`
+- `boundary_audit.py`
+- `validation_rollup.py`
+
+### schema runner 侧
+
+- `consistency_logic.py`
+- `counterfactual_eval.py`
+- `comparison_trace.py`
+- `cross_file_logic.py`
+- `evidence_ranker.py`
+- `run_manifest.py`
+
+所以这份合同后面的文件级条目，不再把这些文件写成“未来某天需要新建”，而是把它们当作已落第一轮器官，继续写清：
+
+1. 它们现在各自负责什么；
+2. 它们之间怎样串成一条行为-验证-逻辑生命链；
+3. 下一轮真正该补的是哪一段跨层消费和长期写回。
 
 ## 必回读理论母体
 
@@ -137,7 +177,7 @@ Queue E 必须接到这些现有器官上：
 
 ## 文件级合同
 
-## A. 新增 `life_v0/membrane/candidate_arena.py`
+## A. `life_v0/membrane/candidate_arena.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -164,7 +204,7 @@ Queue E 必须接到这些现有器官上：
 - `ValueOrientation`
 - `ConsciousnessProbeBundle`
 
-## B. 新增 `life_v0/membrane/go_nogo.py`
+## B. `life_v0/membrane/go_nogo.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -181,7 +221,7 @@ Queue E 必须接到这些现有器官上：
 - `fatigue_inhibition_refs`
 - `source_doc_refs`
 
-## C. 新增 `life_v0/membrane/world_contact_gate.py`
+## C. `life_v0/membrane/world_contact_gate.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -198,7 +238,7 @@ Queue E 必须接到这些现有器官上：
 - `allowed_contacts`
 - `blocked_contacts`
 
-## D. 新增 `life_v0/membrane/side_effect_review.py`
+## D. `life_v0/membrane/side_effect_review.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -215,7 +255,7 @@ Queue E 必须接到这些现有器官上：
 - `responsibility_effects`
 - `repair_followup_required`
 
-## E. 新增 `life_v0/membrane/responsibility_loop.py`
+## E. `life_v0/membrane/responsibility_loop.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -260,7 +300,7 @@ Queue E 必须接到这些现有器官上：
 
 所以 Queue E 当前阶段的工程口径，已经从“生成责任对象”推进到“责任对象进入长期连续体并具备链尾交接能力”。
 
-## F. 新增 `life_v0/validators/observation_validator.py`
+## F. `life_v0/validators/observation_validator.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -276,7 +316,7 @@ Queue E 必须接到这些现有器官上：
 - `truth_review_required`
 - `source_doc_refs`
 
-## G. 新增 `life_v0/validators/boundary_audit.py`
+## G. `life_v0/validators/boundary_audit.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -292,7 +332,7 @@ Queue E 必须接到这些现有器官上：
 - `audit_findings`
 - `blocked_reasons`
 
-## H. 新增 `life_v0/schema_runner/consistency_logic.py`
+## H. `life_v0/schema_runner/consistency_logic.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -307,7 +347,7 @@ Queue E 必须接到这些现有器官上：
 - `severity`
 - `repair_route_refs`
 
-## I. 新增 `life_v0/schema_runner/counterfactual_eval.py`
+## I. `life_v0/schema_runner/counterfactual_eval.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -325,7 +365,7 @@ Queue E 必须接到这些现有器官上：
 - `repair_obligation_projection`
 - `regret_pressure_candidate_refs`
 
-## J. 新增 `life_v0/schema_runner/comparison_trace.py`
+## J. `life_v0/schema_runner/comparison_trace.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -344,6 +384,52 @@ Queue E 必须接到这些现有器官上：
 
 `comparison_trace.py` 的 `justification_refs` 与 `writeback_targets` 必须包含 `runtime/state/action/responsibility_loop_state.json`，使责任、后悔、修复不只停在 S03，而能进入 S09 的反事实比较和后续 S06/S10 成长/运行链。
 
+## K. Queue E 第二波已落桥接器官
+
+下面这些文件已经不是“待新增”，而是 Queue E 第二波真实已落、当前需要继续补硬的桥接器官：
+
+### `action_intent_bridge.py`
+
+把 `ActionCandidateSet`、`ExpressionPlan`、`RelationTurnFrame` 与 `ShadowActionGate` 压成 `action_intent_queue.json`，为 world contact、confirmation 和后续 terminal/process 消费建立桥。
+
+### `observation_truth_gate.py`
+
+把 `PredictionWorkspaceFrame`、`ActionIntentQueue` 与 `ActionCandidateSet` 压成观察真值门，阻止还没有真值根基的外部接触和解释提升。
+
+### `confirmation_binding.py`
+
+把 `ActionIntentQueue` 与 `WorldContactGate` 压成确认绑定对象，使不可逆或高责任外部接触不绕开确认路径。
+
+### `world_contact_summary.py`
+
+把 `ActionIntentQueue`、`WorldContactGate` 与 `ConfirmationBinding` 收成可被 report / repair / process 消费的 `world_contact_summary.json`，并继续写出 `pain_regret_repair_report.json`。
+
+### `world_contact_validator.py` / `prediction_trace_validator.py` / `validation_rollup.py`
+
+把 Queue E 的行为层对象推进成 validator 侧的闭环：
+
+1. world contact 是否越界；
+2. prediction -> intent -> observation 是否闭合；
+3. 整个 validation 膜是否允许进入下一 slice。
+
+### `cross_file_logic.py` / `evidence_ranker.py` / `run_manifest.py`
+
+把 Queue E / S09 的逻辑层继续推进为：
+
+1. 跨文件闭合状态与 repair priority；
+2. 证据排序与优先预算；
+3. schema runner 的运行 manifest 与 closure refs。
+
+这意味着 Queue E 当前真正的下一步，不再是“把这些文件建出来”，而是把它们继续接进：
+
+- `reporting/`
+- `process_supervisor/`
+- `life_targets/`
+- `growth/`
+- `archive/`
+
+形成更厚的行为-验证-逻辑到长期生命连续体的回链。
+
 ## Queue E 对现有器官的改动合同
 
 ### `life_v0/membrane/__init__.py`
@@ -358,14 +444,14 @@ Queue E 必须接到这些现有器官上：
 
 ### `life_v0/validators/__init__.py`
 
-第一轮允许继续输出完整 validation report，但必须开始显式分流：
+当前允许继续输出完整 validation report，但必须继续显式分流并补厚：
 
 - `observation_validator.py`
 - `boundary_audit.py`
 
 ### `life_v0/schema_runner/__init__.py`
 
-第一轮必须开始把：
+当前必须保持独立器官，并继续补厚：
 
 - `consistency_logic`
 - `counterfactual_eval`
@@ -408,9 +494,13 @@ Queue E 必须接到这些现有器官上：
 
 - `tests/process/test_persistent_digital_life_process.py`
 
-## Queue E 第一轮完成定义
+## Queue E 当前完成口径
 
-Queue E 第一轮不是“膜相关文件名存在”就算完成。至少要同时满足：
+Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判断。
+
+### 第一轮已达成的完成口径
+
+下面这些口径，当前已经应视为已达成：
 
 1. `ActionCandidateSet` 已由 `candidate_arena.py` 首写。
 2. go/no-go、world contact、side effect 三段都已成为独立器官。
@@ -420,24 +510,30 @@ Queue E 第一轮不是“膜相关文件名存在”就算完成。至少要同
 6. action / validation / schema_runner 新对象都写入了对应状态命名空间。
 7. `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` 至少新增一轮器官级断言。
 
-## Queue E 推荐实施顺序
+### 当前仍未完成的第二波补厚口径
+
+当前真正还没完成的是：
+
+1. `ResponsibilityLoopState` 的 repair / regret / obligation 对 Queue B、Queue A 和 growth/archive 的持续消费。
+2. `world_contact_summary.json` 与 `pain_regret_repair_report.json` 对 report bundle、process report 和 resident waiting governance 的更深回挂。
+3. `cross_file_logic.json`、`evidence_ranking.json`、`run_manifest.json` 对 archive / reporting / process closeout 的闭包消费。
+4. Queue E 对 `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` 这些更深的 prediction 器官的正式接线。
+
+## Queue E 当前推荐实施顺序
 
 ```text
-candidate_arena.py
-  -> go_nogo.py
-  -> world_contact_gate.py
-  -> side_effect_review.py
+candidate_arena.py / go_nogo.py / world_contact_gate.py / side_effect_review.py
   -> responsibility_loop.py
-  -> observation_validator.py
-  -> boundary_audit.py
-  -> consistency_logic.py
-  -> counterfactual_eval.py
-  -> comparison_trace.py
+  -> action_intent_bridge.py / observation_truth_gate.py / confirmation_binding.py / world_contact_summary.py
+  -> observation_validator.py / world_contact_validator.py / prediction_trace_validator.py / boundary_audit.py / validation_rollup.py
+  -> consistency_logic.py / counterfactual_eval.py / comparison_trace.py / cross_file_logic.py / evidence_ranker.py / run_manifest.py
+  -> reporting / life_targets / process_supervisor / growth / archive consumers
 ```
 
 原因：
 
-1. 先把行动候选和世界接触链钉住，避免壳层直接放行动作。
-2. 再把责任回路钉住，让副作用审查不止停在“有风险”，而是进入责任、后悔、修复和未来约束。
-3. 再把观察真值和边界审计钉住，避免 validator 继续只产总报告。
-4. 最后把反事实和比较 trace 落成器官，给责任/后悔和 repair loop 提供稳定输入。
+1. 第一段器官已经解决“有没有行为链”。
+2. 第二段器官已经解决“行为链怎样被 observation / confirmation / summary 接住”。
+3. 第三段器官已经解决“validator 怎样不只吐总报告，而是保留独立 state”。
+4. 第四段器官已经解决“逻辑比较怎样进入 schema runner state”。
+5. 当前最值得补的，是最后一段：让这些 state 真正反过来调制长期语言、常驻等待治理、成长和 archive。

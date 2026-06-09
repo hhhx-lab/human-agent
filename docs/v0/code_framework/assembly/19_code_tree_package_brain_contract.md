@@ -128,11 +128,11 @@ life_v0/
 | `neural_core/` | 主体图、网络态、信号介质、工作区、预测 | `real + thicken` | `prediction_workspace.py` | `brain_graph.py`、`network_state.py`、`signal_media.py`、`workspace.py`、`broadcast.py`、`metacognition.py`、`belief_state.py` | `02`、`03`、`10`、`11`、`18`、`22`、`30`、`143`、`146` | `SignalMediaFrame`、`PredictionWorkspaceFrame`、`LifeContextFrame`、`NeedStateVector` | `runtime/state/neural_life_core/neural_life_core.json`、`runtime/state/prediction/prediction_workspace_frame.json`、`neural_life_internal_bus.json` | `tests/slices/test_neural_life_core.py`、`twelve_system_gate`、`internal_bus_gate` |
 | `body/` | 节律、需要、预算、疲惫、情绪底盘 | `real + planned` | `__init__.py` | `rhythm.py`、`need_state.py`、`resource_budget.py`、`recovery.py`、`core_affect.py`、`emotion_episode.py`、`emotion_regulation.py`、`trait_drift.py` | `04`、`08`、`18`、`37-39`、`01g`、`01n`、`01s` | `BodyRhythmPulse`、`NeedStateVector`、`SignalMediaFrame` | `runtime/state/body/*`、`body_resource_budget.json`、`life_support_report.json` | `tests/slices/test_life_support.py`、`resource_budget_gate` |
 | `defense/` | 风险、quarantine、恢复保护 | `real + planned` | `__init__.py` | `threat_eval.py`、`recovery.py`、`quarantine_signal.py` | `33-38`、`45-84` | `ActionCandidateSet`、`SignalMediaFrame` | `runtime/state/defense/*`、defense receipts | `tests/slices/test_life_support.py`、`tests/slices/test_validation_membrane.py`、`quarantine_gate` |
-| `membrane/` | 生命膜、候选行动、抑制、责任与后悔回路 | `real + planned` | `__init__.py` | `candidate_arena.py`、`go_nogo.py`、`shadow_gate.py`、`responsibility_loop.py`、`side_effect_classifier.py` | `06`、`20`、`75`、`80-84`、`94`、`98`、`01r` | `ActionCandidateSet`、`ExpressionPlan`、`PredictionWorkspaceFrame` | `runtime/state/membrane/life_membrane.json`、`runtime/state/action/*`、`pain_regret_repair_report.json` | `tests/slices/test_life_membrane.py`、`shadow_action_gate`、`responsibility_loop_gate` |
+| `membrane/` | 生命膜、候选行动、抑制、责任与后悔回路 | `real + thicken` | `__init__.py` | `candidate_arena.py`、`go_nogo.py`、`shadow_gate.py`、`world_contact_gate.py`、`side_effect_review.py`、`responsibility_loop.py`、`action_intent_bridge.py`、`observation_truth_gate.py`、`confirmation_binding.py`、`world_contact_summary.py` | `06`、`20`、`75`、`80-84`、`94`、`98`、`01r` | `ActionCandidateSet`、`ExpressionPlan`、`PredictionWorkspaceFrame`、`NeedStateVector`、`CoreAffectVector` | `runtime/state/membrane/life_membrane.json`、`runtime/state/membrane/action_intent_queue.json`、`runtime/state/membrane/confirmation_binding.json`、`runtime/state/membrane/world_contact_summary.json`、`runtime/state/action/*`、`pain_regret_repair_report.json` | `tests/slices/test_life_membrane.py`、`tests/slices/test_shadow_gate.py`、`shadow_action_gate`、`responsibility_loop_gate` |
 | `language/` | 语言感知、语义图、内言语、表达监控、关系表达 | `real + thicken` | `percept.py`、`semantic_map.py`、`inner_speech.py`、`expression_monitor.py`、`language_state.py`、`relationship_graph.py`、`shared_terms.py`、`commitment_repair.py`、`dialogue_log.py`、`narrative_trace.py`、`dream_gate.py`、`action_shadow.py`、`relation_scope.py` | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` | `09`、`85-90`、`94`、`96`、`101`、`141`、`144`、`147`、`150`、`01f`、`01j`、`01u` | `LifeContextFrame`、`RelationTurnFrame`、`ExpressionPlan`、`PredictionWorkspaceFrame`、`ResponsibilityLoopState` | `runtime/state/language/*`、`runtime/state/relationship/*`、`language_relationship_report.json` | `tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`expression_monitor_gate`、`repair_language_gate`、`relationship_subject_gate` |
 | `life_targets/` | 九项生命目标运行时、出生准备度闭合 | `real + thicken` | `__init__.py` | `life_target_claims.py`、`evidence_matrix.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py`、`consciousness_probes.py` | `91-101`、`143`、`146`、`149`、`152`、`171`、`174` | `PredictionWorkspaceFrame`、`GrowthPatchCandidate` | `runtime/state/life_targets/*`、birth readiness receipts | `tests/slices/test_life_targets.py`、`life_target_state_gate`、`birth_readiness_gate` |
-| `validators/` | 验证膜、观察一致性、边界审计 | `real` | `__init__.py` | `observation_validator.py`、`boundary_audit.py` | `29-36`、`49-84`、`102-118`、`153-157` | `ActionCandidateSet`、`PredictionWorkspaceFrame` | `runtime/state/validation/*`、observation reports | `tests/slices/test_validation_membrane.py`、`validation_membrane_gate` |
-| `schema_runner/` | 结构化执行、跨合同检查、CLI 严格路径 | `real` | `__init__.py` | `run_manifest.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py`、`cross_file_logic.py` | `102-180`、`80-84`、`94`、`98` | `source_doc_refs` 族、`ResponsibilityLoopState` | `runtime/state/schema_runner/*`、runner reports | `tests/slices/test_schema_runner.py`、`checker_manifest_gate`、`responsibility_logic_gate` |
+| `validators/` | 验证膜、观察一致性、边界审计 | `real + thicken` | `__init__.py` | `observation_validator.py`、`world_contact_validator.py`、`prediction_trace_validator.py`、`boundary_audit.py`、`validation_rollup.py` | `29-36`、`49-84`、`102-118`、`153-157` | `ActionCandidateSet`、`PredictionWorkspaceFrame`、`WorldContactGateState` | `runtime/state/validation/*`、observation reports、world contact audit reports | `tests/slices/test_validation_membrane.py`、`validation_membrane_gate` |
+| `schema_runner/` | 结构化执行、跨合同检查、CLI 严格路径 | `real + thicken` | `__init__.py` | `run_manifest.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py`、`cross_file_logic.py`、`evidence_ranker.py` | `102-180`、`80-84`、`94`、`98` | `source_doc_refs` 族、`ResponsibilityLoopState`、`ValidationRollup` | `runtime/state/schema_runner/*`、runner reports | `tests/slices/test_schema_runner.py`、`tests/slices/test_evidence_ranker.py`、`checker_manifest_gate`、`responsibility_logic_gate` |
 | `dream/` | 梦境窗口、梦中事实门、醒后整合 | `real + thicken` | `__init__.py` | `offline_entry.py`、`dream_window.py`、`dream_fact_gate.py`、`wake_integration.py`、`nightmare_risk.py` | `08`、`19`、`23`、`27`、`31`、`95`、`99`、`01i`、`01t` | `ReplayCueBundle`、`OfflineConsolidationFrame`、`BodyRhythmPulse` | `runtime/state/dream/*`、`dream_consolidation_frame.json`、`offline_consolidation_frame.json`、`nightmare_loop_risk.json` | future `tests/test_dream_runtime.py`、`dream_fact_gate` |
 | `growth/` | 可塑性、自我修补、学习窗口、防遗忘 | `real + thicken` | `__init__.py` | `self_read.py`、`plasticity_window.py`、`patch_queue.py`、`learning_window.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py`、`anti_forgetting.py` | `39`、`92`、`93`、`97`、`181-257` | `GrowthPatchCandidate`、`OfflineConsolidationFrame`、`ReplayCueBundle` | `runtime/state/growth/*`、growth reports、archive receipts、`belief_learning_plan.json`、`language_learning_plan.json`、`relationship_learning_plan.json` | `tests/bridges/test_runtime_growth.py`、`growth_gate`、`anti_forgetting_gate` |
 | `replay/` | 重放线索、影子回放、再激活入口 | `real` | `__init__.py` | `replay_cues.py`、`shadow_replay.py` | `19`、`21`、`25`、`95`、`181-257` | `ReplayCueBundle`、`DialogueWritebackBundle` | `runtime/state/replay/*`、`replay_shadow_report.json` | `tests/bridges/test_replay_shadow.py`、`replay_shadow_gate` |
@@ -156,9 +156,11 @@ life_v0/
 当前真正仍未落地、并且最该继续补的是：
 
 ```text
-Queue E 第二波后续
-  life_v0/schema_runner/cross_file_logic.py
-  life_v0/schema_runner/run_manifest.py
+Queue E 当前前沿补厚
+  life_v0/membrane/responsibility_loop.py
+  life_v0/membrane/world_contact_summary.py
+  life_v0/process_supervisor/response_surface.py
+  life_v0/process_supervisor/heartbeat.py
 
 Queue B 第二波已落第一轮
   life_v0/process_supervisor/idle_strategy.py
@@ -220,10 +222,12 @@ Queue F 已落第一轮器官
 ### Stage 2: Queue E 第二波
 
 1. 补厚 `life_v0/membrane/responsibility_loop.py`
-2. `life_v0/schema_runner/cross_file_logic.py`
-3. `life_v0/schema_runner/run_manifest.py`
-4. 补厚 `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`
-5. 补厚 `observation_validator.py`、`boundary_audit.py`、`comparison_trace.py`
+2. 补厚 `life_v0/membrane/world_contact_summary.py`
+3. 补厚 `life_v0/schema_runner/cross_file_logic.py`
+4. 补厚 `life_v0/schema_runner/run_manifest.py`
+5. 补厚 `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`
+6. 补厚 `observation_validator.py`、`boundary_audit.py`、`comparison_trace.py`
+7. 把 Queue E 产物继续接进 `response_surface.py`、`heartbeat.py`、`persistent_process.py` 与 report/archive/growth 闭环
 
 ### Stage 3: Queue B 第二波
 
