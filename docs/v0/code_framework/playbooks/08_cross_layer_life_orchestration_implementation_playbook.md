@@ -212,7 +212,7 @@ replay cues
 
 1. `percept.py`、`semantic_map.py` 已经在代码里存在，当前任务不是“再把它们建出来”，而是继续把它们接厚到 prediction/body/process supervisor 主链。
 2. `dialogue_writeback.py`、`dialogue_events.py`、`response_surface.py` 也已经存在，当前任务不是重新起名，而是把它们真正升级成共享对象的首写器官或稳定消费器官。
-3. `restore_context.py`、`loop_report.py`、`idle_strategy.py` 目前还没有独立成文件，所以文档里提到它们时，含义是“后续如需继续拆分时的器官候选位”，不是说当前代码已经有这些文件。
+3. `restore_context.py`、`loop_report.py` 目前还没有独立成文件，所以文档里提到它们时，含义是“后续如需继续拆分时的器官候选位”。`idle_strategy.py` 与 `persistent_process.py` 已经在 Queue B 第二波中独立落地。
 
 ## 一次真实生命回合的编排顺序
 

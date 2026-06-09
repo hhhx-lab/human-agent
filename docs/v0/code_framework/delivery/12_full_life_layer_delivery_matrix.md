@@ -140,7 +140,7 @@ Queue B 第一轮拆分已经真实存在：
 7. `life_v0/process_supervisor/relaunch_recovery.py`
 8. `life_v0/process_supervisor/process_report.py`
 
-当前真正还没落地、并且最该继续新增的是：
+当前 Queue B 第二波最核心的两颗器官已经落下第一轮：
 
 1. `life_v0/process_supervisor/idle_strategy.py`
 2. `life_v0/process_supervisor/persistent_process.py`

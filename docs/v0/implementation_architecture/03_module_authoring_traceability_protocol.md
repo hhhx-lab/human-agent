@@ -157,6 +157,9 @@ def check_xxx(payload: dict[str, Any]) -> list[str]:
 - `life_v0/process_supervisor/idle_strategy.py`
 - `life_v0/process_supervisor/persistent_process.py`
 
+这两个器官已经落下第一轮；后续继续推进 Queue B 时，默认动作不是“先把文件建出来”，而是继续补厚它们与
+`heartbeat.py`、`continuity_writeback.py`、`response_surface.py`、`process_report.py` 的治理链。
+
 ### Queue A
 
 - `life_v0/language/relationship_timeline.py`

@@ -144,7 +144,7 @@ life_v0/
 | `terminal_turn/` | 第一回合恢复、上下文接续、关系回合起点 | `real + thicken` | `context_accumulation.py`、`turn_transition.py` | `restore_context.py`、`dialogue_turn.py`、`conversation_carryover.py` | `86`、`89`、`90`、`96`、`101` | `LifeContextFrame`、`RelationTurnFrame` | `first_terminal_turn_packet.json`、`session_envelope.json`、`context_accumulation_window.json`、`turn_transition_trace.json` | `tests/bridges/test_first_terminal_turn.py`、`context_accumulation_gate`、`turn_transition_gate` |
 | `terminal_loop/` | 等待态、回合循环、写回 bundle、持续存在桥 | `real + thicken` | `loop_state.py`、`resume_packet.py`、`dialogue_writeback.py` | `loop_report.py`、`persistent_process.py` | `89`、`90`、`96`、`101` | `DialogueWritebackBundle`、`RelationTurnFrame`、`ExpressionPlan` | `terminal_life_loop_packet.json`、`terminal_life_loop_report.json`、`terminal_life_loop_state.json`、`dialogue_writeback_bundle.json` | `tests/bridges/test_terminal_life_loop.py`、`terminal_life_loop_gate`、`dialogue_writeback_bundle_gate` |
 | `shell_command/` | repo-local one-shot restore shell | `real` | `__init__.py` | `restore_shell.py`、`shell_report.py` | `89`、`90`、`20` | `LifeContextFrame`、`RelationTurnFrame` | `digital_life_shell_packet.json`、`digital_life_shell_report.json`、`digital_life_shell_digest.json` | `tests/process/test_digital_life_shell_command.py`、`digital_life_shell_gate` |
-| `process_supervisor/` | 最小常驻生命进程、heartbeat、idle continuity、incident/relaunch recovery | `real + thicken` | `heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`process_report.py` | `idle_strategy.py` | `20`、`44-46`、`82`、`86`、`89`、`90`、`96`、`101` | `IdleContinuityFrame`、`DialogueWritebackBundle`、`LifeContextFrame`、`RelationTurnFrame`、`ExpressionPlan`、`ReplayCueBundle`、`OfflineConsolidationFrame`、`GrowthPatchCandidate` | `digital_life_waiting_heartbeat.json`、`digital_life_process_report.json`、`digital_life_process_digest.json`、incident/recovery reports | `tests/process/test_persistent_digital_life_process.py`、`waiting_heartbeat_gate`、`idle_continuity_gate`、`relaunch_recovery_gate` |
+| `process_supervisor/` | 最小常驻生命进程、heartbeat、idle continuity、incident/relaunch recovery | `real + thicken` | `heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`idle_strategy.py`、`persistent_process.py`、`process_report.py` | `conversation_carryover.py`、`loop_report.py`、更厚 resident supervision | `20`、`44-46`、`82`、`86`、`89`、`90`、`96`、`101` | `IdleContinuityFrame`、`DialogueWritebackBundle`、`LifeContextFrame`、`RelationTurnFrame`、`ExpressionPlan`、`ReplayCueBundle`、`OfflineConsolidationFrame`、`GrowthPatchCandidate` | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/persistent_process_state.json`、`digital_life_persistent_process_report.json`、`digital_life_process_report.json`、`digital_life_process_digest.json`、incident/recovery reports | `tests/process/test_persistent_digital_life_process.py`、`waiting_heartbeat_gate`、`idle_continuity_gate`、`relaunch_recovery_gate` |
 | `contracts/` | 合同覆盖、theory-to-code 回链、一致性守门 | `real` | `__init__.py` | `coverage_index.py`、`mapping_guard.py` | 全部 `00-258`、全部 `docs/v0/*` | `source_doc_refs` 族 | `v0_contract_coverage_report.json`、coverage receipts | `tests/contracts/test_v0_contracts.py`、`contract_coverage_gate` |
 | `doc_index.py` | 理论文档索引与工程回链入口 | `real` | `doc_index.py` | `doc_registry.py`、`carrier_index.py` | `构思.md`、全部 `00-258`、`README.md` | `source_doc_refs` 族 | `runtime/docs/doc_carrier_index.json` | `tests/slices/test_doc_corpus_ingestor.py`、`doc_carrier_gate` |
 | `cli.py` | 命令路由、严格模式、slice/bridge/process 命令面 | `real` | `cli.py` | `command_router.py`、`strict_mode.py` | `runner_cli_report_contract.md` 对应源文档群 | `source_doc_refs` 族 | CLI receipts、command reports | `tests/bridges/test_emit_report.py`、`tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py`、`strict_cli_gate` |
@@ -160,7 +160,7 @@ Queue E 第二波后续
   life_v0/schema_runner/cross_file_logic.py
   life_v0/schema_runner/run_manifest.py
 
-Queue B 第二波
+Queue B 第二波已落第一轮
   life_v0/process_supervisor/idle_strategy.py
   life_v0/process_supervisor/persistent_process.py
 
@@ -225,8 +225,8 @@ Queue F 已落第一轮器官
 
 ### Stage 3: Queue B 第二波
 
-1. `life_v0/process_supervisor/idle_strategy.py`
-2. `life_v0/process_supervisor/persistent_process.py`
+1. `life_v0/process_supervisor/idle_strategy.py` 已落第一轮，继续补厚节律与 idle probe 治理
+2. `life_v0/process_supervisor/persistent_process.py` 已落第一轮，继续补厚 resident supervision
 3. 补厚 `heartbeat.py`
 4. 补厚 `continuity_writeback.py`
 5. 补厚 `dialogue_events.py`

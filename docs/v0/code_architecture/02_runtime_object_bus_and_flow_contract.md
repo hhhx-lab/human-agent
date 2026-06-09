@@ -23,7 +23,7 @@
 
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
-| `BodyRhythmPulse` | `life_v0/body/rhythm.py` | `neural_core`、`dream`、`process_supervisor/heartbeat.py` | 已存在；继续接入 `idle_strategy.py` | `runtime/state/body/*`、`digital_life_waiting_heartbeat.json` |
+| `BodyRhythmPulse` | `life_v0/body/rhythm.py` | `neural_core`、`dream`、`process_supervisor/heartbeat.py` | 已存在；已接入 `idle_strategy.py` 第一轮，继续补厚到更高频节律治理 | `runtime/state/body/*`、`digital_life_waiting_heartbeat.json` |
 | `NeedStateVector` | `life_v0/body/need_state.py` | `neural_core`、`language`、`membrane`、`growth` | 已存在；继续接入 `prediction_error.py`、`expression_monitor.py` | `body_resource_budget.json`、`runtime/state/body/*` |
 | `CoreAffectVector` | `life_v0/body/core_affect.py` | `language`、`dream`、`membrane`、`growth` | 已存在；继续接入 `regret_signal.py`、`relationship_timeline.py` | `core_affect_vector.json`、`emotion_episode_log.json` |
 
@@ -64,7 +64,7 @@
 
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
-| `ReplayCueBundle` | `replay/replay_cues.py` | `dream`、`growth`、`process_supervisor` | 已存在；继续接 `idle_strategy.py` | `runtime/state/replay/*`、`replay_shadow_report.json` |
+| `ReplayCueBundle` | `replay/replay_cues.py` | `dream`、`growth`、`process_supervisor` | 已存在；已接 `idle_strategy.py` 与 `persistent_process.py` 第一轮，继续补厚 waiting governance | `runtime/state/replay/*`、`replay_shadow_report.json` |
 | `OfflineConsolidationFrame` | `dream/offline_entry.py` | `growth`、`archive`、`reporting` | 已存在；继续补 dream runtime test | `runtime/state/dream/offline_entry_gate.json`、`dream_consolidation_frame.json` |
 | `DreamFactGateDecision` | `dream/dream_fact_gate.py` | `state_store`、`archive`、`life_targets` | 已存在 | `dream_fact_gate_decision.json` |
 
@@ -84,7 +84,7 @@
 
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
-| `IdleContinuityFrame` | `process_supervisor/heartbeat.py` + `continuity_writeback.py` | `terminal_loop`、`replay`、`growth`、`language` | 已存在第一轮；待补 `idle_strategy.py` | `digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` |
+| `IdleContinuityFrame` | `process_supervisor/heartbeat.py` + `continuity_writeback.py` | `terminal_loop`、`replay`、`growth`、`language` | 已存在第一轮；已接 `idle_strategy.py` 与 `persistent_process.py`，继续补厚 resident supervision | `digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` |
 | `ProcessIncidentRecoveryFrame` | `process_supervisor/incident_recovery.py` | `process_report.py`、`relaunch_recovery.py` | 已存在 | `digital_life_process_incident_report.json` |
 | `RelaunchRecoveryFrame` | `process_supervisor/relaunch_recovery.py` | `turn_io.py`、`process_report.py` | 已存在 | `digital_life_process_relaunch_recovery_report.json` |
 

@@ -84,8 +84,8 @@ DocCorpusIngestor
 
 ### Queue B 第二波
 
-1. `life_v0/process_supervisor/idle_strategy.py`
-2. `life_v0/process_supervisor/persistent_process.py`
+1. `life_v0/process_supervisor/idle_strategy.py` 已落第一轮
+2. `life_v0/process_supervisor/persistent_process.py` 已落第一轮
 
 ### Queue A 第二波
 

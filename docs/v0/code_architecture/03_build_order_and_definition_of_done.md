@@ -77,7 +77,8 @@ Python 3 作为主体语言
 | 目标 | 在 D/E 站稳后，继续补厚等待态存在与长期关系语言 |
 | 必读 | `16_queue_b_process_supervisor_implementation_contract.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`04`、`07`、`08` playbooks |
 | 主包 | `process_supervisor/`、`language/`、`terminal_turn/`、`terminal_loop/` |
-| 关键待补文件 | `idle_strategy.py`、`persistent_process.py`、`relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` |
+| 已落核心器官 | `idle_strategy.py`、`persistent_process.py` |
+| 关键待补文件 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` |
 | 最低测试 | `tests/process/test_persistent_digital_life_process.py`、`tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_terminal_life_loop.py` |
 | 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，关系时间线与承诺表达进入长期语言链 |
 
