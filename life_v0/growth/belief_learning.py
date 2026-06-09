@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from life_v0.membrane.queue_e_signals import queue_e_signal_profile_from_replay_cue_bundle
+
 
 SOURCE_DOC_REFS = [
     "docs/39_development_policy_and_plasticity_windows.md",
@@ -19,9 +21,14 @@ def build_belief_learning_plan(
     replay_cue_bundle: dict[str, Any],
     self_read_report: dict[str, Any],
 ) -> dict[str, Any]:
+    queue_e_signal_profile = queue_e_signal_profile_from_replay_cue_bundle(replay_cue_bundle)
     belief_targets = ["prediction_weight_recalibration", "continuity_preserving_belief_revision"]
     if replay_cue_bundle.get("pain_regret_residue_refs"):
         belief_targets.append("regret_sensitive_counterfactual_update")
+    if queue_e_signal_profile["repair_followup_required"]:
+        belief_targets.append("repair_accountability_belief_revision")
+    if queue_e_signal_profile["queue_e_priority_band"] == "locked_repair_urgent":
+        belief_targets.append("confirmation_locked_contact_model_revision")
     return {
         "schema_version": "belief_learning_plan_v0",
         "run_id": run_id,
@@ -37,6 +44,11 @@ def build_belief_learning_plan(
             "runtime/state/life_state.json#self_model",
             "runtime/state/direction/direction_lock.json",
         ],
+        "world_contact_release_posture": queue_e_signal_profile["world_contact_release_posture"],
+        "repair_followup_required": queue_e_signal_profile["repair_followup_required"],
+        "repair_obligation_count": queue_e_signal_profile["repair_obligation_count"],
+        "regret_pressure_count": queue_e_signal_profile["regret_pressure_count"],
+        "queue_e_priority_band": queue_e_signal_profile["queue_e_priority_band"],
         "blocked_learning_modes": list(learning_window.get("blocked_learning_modes", [])),
         "source_doc_refs": SOURCE_DOC_REFS,
     }

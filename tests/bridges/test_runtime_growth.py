@@ -5,6 +5,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from life_v0.dream.nightmare_risk import build_nightmare_loop_risk
+from life_v0.growth.belief_learning import build_belief_learning_plan
+from life_v0.growth.language_learning import build_language_learning_plan
+from life_v0.growth.relationship_learning import build_relationship_learning_plan
+
 
 class RuntimeGrowthTests(unittest.TestCase):
     @property
@@ -122,6 +127,11 @@ class RuntimeGrowthTests(unittest.TestCase):
         self.assertTrue(replay_cue_bundle["pain_regret_residue_refs"])
         self.assertTrue(replay_cue_bundle["dream_entry_candidates"])
         self.assertTrue(replay_cue_bundle["anti_forgetting_targets"])
+        self.assertEqual(replay_cue_bundle["world_contact_release_posture"], "shadow_only_guarded")
+        self.assertTrue(replay_cue_bundle["repair_followup_required"])
+        self.assertEqual(replay_cue_bundle["queue_e_priority_band"], "repair_guarded")
+        self.assertGreaterEqual(replay_cue_bundle["repair_obligation_count"], 1)
+        self.assertGreaterEqual(replay_cue_bundle["regret_pressure_count"], 1)
 
         self.assertEqual(dream_frame["schema_version"], "dream_consolidation_frame_v0")
         self.assertEqual(dream_frame["dream_fact_gate"], "closed")
@@ -153,6 +163,10 @@ class RuntimeGrowthTests(unittest.TestCase):
         self.assertIn(nightmare_risk["risk_status"], {"guarded", "elevated"})
         self.assertTrue(nightmare_risk["source_residue_refs"])
         self.assertTrue(nightmare_risk["recovery_targets"])
+        self.assertEqual(nightmare_risk["world_contact_release_posture"], "shadow_only_guarded")
+        self.assertTrue(nightmare_risk["repair_followup_required"])
+        self.assertEqual(nightmare_risk["queue_e_priority_band"], "repair_guarded")
+        self.assertIn("guarded_repair_followup", nightmare_risk["loop_indicators"])
 
         self.assertEqual(pain_replay["schema_version"], "pain_regret_responsibility_replay_v0")
         self.assertEqual(pain_replay["status"], "closed")
@@ -194,18 +208,30 @@ class RuntimeGrowthTests(unittest.TestCase):
         self.assertEqual(belief_learning["window_status"], "guarded_pre_activation")
         self.assertTrue(belief_learning["belief_targets"])
         self.assertTrue(belief_learning["evidence_inputs"])
+        self.assertEqual(belief_learning["world_contact_release_posture"], "shadow_only_guarded")
+        self.assertTrue(belief_learning["repair_followup_required"])
+        self.assertEqual(belief_learning["queue_e_priority_band"], "repair_guarded")
+        self.assertIn("repair_accountability_belief_revision", belief_learning["belief_targets"])
 
         self.assertEqual(language_learning["schema_version"], "language_learning_plan_v0")
         self.assertEqual(language_learning["object_kind"], "LanguageLearningPlan")
         self.assertEqual(language_learning["window_status"], "guarded_pre_activation")
         self.assertTrue(language_learning["language_targets"])
         self.assertTrue(language_learning["continuity_inputs"])
+        self.assertEqual(language_learning["world_contact_release_posture"], "shadow_only_guarded")
+        self.assertTrue(language_learning["repair_followup_required"])
+        self.assertEqual(language_learning["queue_e_priority_band"], "repair_guarded")
+        self.assertIn("apology_repair_expression_refinement", language_learning["language_targets"])
 
         self.assertEqual(relationship_learning["schema_version"], "relationship_learning_plan_v0")
         self.assertEqual(relationship_learning["object_kind"], "RelationshipLearningPlan")
         self.assertEqual(relationship_learning["window_status"], "guarded_pre_activation")
         self.assertTrue(relationship_learning["relationship_targets"])
         self.assertTrue(relationship_learning["repair_inputs"])
+        self.assertEqual(relationship_learning["world_contact_release_posture"], "shadow_only_guarded")
+        self.assertTrue(relationship_learning["repair_followup_required"])
+        self.assertEqual(relationship_learning["queue_e_priority_band"], "repair_guarded")
+        self.assertIn("repair_reentry_timing_adjustment", relationship_learning["relationship_targets"])
 
         self.assertEqual(archive_graph["schema_version"], "reconsolidation_archive_graph_v0")
         self.assertEqual(archive_graph["status"], "closed")
@@ -241,6 +267,75 @@ class RuntimeGrowthTests(unittest.TestCase):
         self.assertEqual(replay_needed["schema_version"], "runtime_growth_replay_needed_v0")
         self.assertEqual(replay_needed["status"], "closed")
         self.assertEqual(receipt["schema_version"], "run_cycle_receipt_v0")
+
+    def test_queue_e_priority_band_modulates_dream_and_growth_learning_organs(self):
+        replay_cue_bundle = {
+            "relationship_residue_refs": ["runtime/state/relationship/relationship_memory.json#r1"],
+            "turn_residue_refs": ["runtime/state/replay/shadow_cycle_trace.json"],
+            "pain_regret_residue_refs": ["runtime/state/life_state.json#regret_events"],
+            "world_contact_release_posture": "confirmation_blocked",
+            "repair_followup_required": True,
+            "repair_obligation_refs": ["runtime/state/action/responsibility_loop_state.json#repair"],
+            "repair_obligation_count": 2,
+            "regret_pressure_refs": ["runtime/state/life_state.json#regret_events"],
+            "regret_pressure_count": 1,
+            "queue_e_priority_band": "locked_repair_urgent",
+        }
+        learning_window = {
+            "window_status": "guarded_pre_activation",
+            "blocked_learning_modes": ["self_training"],
+        }
+        self_read_report = {"growth_pressures": ["pain_recovery_gap"]}
+        dream_window = {
+            "pain_residue_refs": ["runtime/state/life_state.json#pain_events"],
+            "relationship_simulation_refs": ["runtime/state/relationship/relationship_memory.json#r1"],
+        }
+        pain_replay = {
+            "repair_obligation_refs": ["runtime/state/membrane/responsibility_repair_boundary.json"],
+        }
+        wake_integration = {
+            "relationship_repair_candidates": ["runtime/state/relationship/relationship_memory.json#repair"],
+        }
+
+        nightmare_risk = build_nightmare_loop_risk(
+            run_id="queue-e-growth",
+            generated_at="2026-06-10T00:00:00Z",
+            dream_window=dream_window,
+            pain_replay=pain_replay,
+            wake_integration=wake_integration,
+            replay_cue_bundle=replay_cue_bundle,
+        )
+        belief_learning = build_belief_learning_plan(
+            run_id="queue-e-growth",
+            generated_at="2026-06-10T00:00:00Z",
+            learning_window=learning_window,
+            replay_cue_bundle=replay_cue_bundle,
+            self_read_report=self_read_report,
+        )
+        language_learning = build_language_learning_plan(
+            run_id="queue-e-growth",
+            generated_at="2026-06-10T00:00:00Z",
+            learning_window=learning_window,
+            replay_cue_bundle=replay_cue_bundle,
+            self_read_report=self_read_report,
+        )
+        relationship_learning = build_relationship_learning_plan(
+            run_id="queue-e-growth",
+            generated_at="2026-06-10T00:00:00Z",
+            learning_window=learning_window,
+            replay_cue_bundle=replay_cue_bundle,
+            self_read_report=self_read_report,
+            wake_integration=wake_integration,
+        )
+
+        self.assertEqual(nightmare_risk["queue_e_priority_band"], "locked_repair_urgent")
+        self.assertIn("confirmation_blocked_repair_lock", nightmare_risk["loop_indicators"])
+        self.assertEqual(belief_learning["queue_e_priority_band"], "locked_repair_urgent")
+        self.assertIn("confirmation_locked_contact_model_revision", belief_learning["belief_targets"])
+        self.assertEqual(language_learning["queue_e_priority_band"], "locked_repair_urgent")
+        self.assertIn("confirmation_locked_expression_restraint", language_learning["language_targets"])
+        self.assertEqual(relationship_learning["queue_e_priority_band"], "locked_repair_urgent")
+        self.assertIn("contact_boundary_respect_rehearsal", relationship_learning["relationship_targets"])
 
     def _runtime_paths(self, tmp_path: Path) -> dict[str, Path]:
         state_root = tmp_path / "runtime" / "state"

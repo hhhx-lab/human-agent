@@ -94,8 +94,9 @@ Queue D 第二波器官现在已经真实落下：
 
 1. 第一波与第二波都已落地。
 2. 第三波第一批扩展器官已经落地：`nightmare_risk / belief_learning / language_learning / relationship_learning`。
-3. 下一轮默认转入 Queue E。
-4. Queue D 再次回切时，优先补这批扩展器官与 replay、dream、relationship、language 的更深联动，而不是重新回头拆第一波。
+3. 当前又进一步把 Queue E 的 `world contact / repair followup / regret pressure / priority band` 正式压进 `replay_cue_bundle.json`，并让这四个扩展器官开始显式消费这些字段。
+4. 这意味着 Queue D 与 Queue E 现在不再只是“前者做梦、后者验证”的顺序关系，而已经形成 `Queue E -> replay cue bundle -> nightmare / belief / language / relationship learning` 的离线生命调制链。
+5. 下一轮默认继续补深 Queue D 与 Queue E 的离线耦合，而不是回头重拆第一波器官。
 
 ## 必回读理论母体
 
@@ -156,6 +157,23 @@ Queue D 必须接到这些现有器官上：
 - `life_v0/archive/__init__.py`
 - `life_v0/process_supervisor/heartbeat.py`
 - `life_v0/process_supervisor/response_surface.py`
+- `life_v0/replay/__init__.py`
+
+当前再补一条新的硬约束：
+
+1. `life_v0/replay/__init__.py` 现在不只是 replay residue 汇总器，还承担 Queue E 离线信号桥的角色。
+2. `replay_cue_bundle.json` 现在必须显式携带：
+   - `world_contact_release_posture`
+   - `repair_followup_required`
+   - `repair_obligation_count`
+   - `regret_pressure_count`
+   - `queue_e_priority_band`
+3. `life_v0/dream/nightmare_risk.py`
+4. `life_v0/growth/belief_learning.py`
+5. `life_v0/growth/language_learning.py`
+6. `life_v0/growth/relationship_learning.py`
+
+上述四个器官现在都必须把 Queue E 信号视为离线生命真实输入，而不是只消费 pain residue / relationship residue 这种较浅的 replay 痕迹。
 
 这说明 Queue D 不是独立离线层，而是要把身体脉冲、离线梦境、成长补丁重新接回常驻生命回合。
 同时它还必须把情绪底盘和人格慢变量正式拖进这条链，否则梦境、成长和语言关系层都还会继续引用稀薄的“情绪标签”，而不是可回写的身体化 affect 对象。

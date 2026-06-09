@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from life_v0.membrane.queue_e_signals import derive_queue_e_signal_profile
+
 
 SOURCE_DOC_REFS = [
     "docs/05_memory_systems_and_growth.md",
@@ -115,7 +117,15 @@ def build_replay_cue_bundle(
     dream_frame: dict[str, Any],
     pain_replay: dict[str, Any],
     life_state: dict[str, Any],
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    queue_e_signal_profile = derive_queue_e_signal_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
     return {
         "schema_version": "replay_cue_bundle_v0",
         "run_id": run_id,
@@ -136,6 +146,13 @@ def build_replay_cue_bundle(
         ],
         "anti_forgetting_targets": list(shadow_trace.get("replay_refs", []))
         or list(life_state.get("memory_index", {}).get("replay_cues", [])),
+        "world_contact_release_posture": queue_e_signal_profile["world_contact_release_posture"],
+        "repair_followup_required": queue_e_signal_profile["repair_followup_required"],
+        "repair_obligation_refs": queue_e_signal_profile["repair_obligation_refs"],
+        "repair_obligation_count": queue_e_signal_profile["repair_obligation_count"],
+        "regret_pressure_refs": queue_e_signal_profile["regret_pressure_refs"],
+        "regret_pressure_count": queue_e_signal_profile["regret_pressure_count"],
+        "queue_e_priority_band": queue_e_signal_profile["queue_e_priority_band"],
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 

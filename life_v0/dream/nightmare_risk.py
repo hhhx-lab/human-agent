@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from life_v0.membrane.queue_e_signals import queue_e_signal_profile_from_replay_cue_bundle
+
 
 SOURCE_DOC_REFS = [
     "docs/08_sleep_dream_fatigue_states.md",
@@ -19,13 +21,28 @@ def build_nightmare_loop_risk(
     dream_window: dict[str, Any],
     pain_replay: dict[str, Any],
     wake_integration: dict[str, Any],
+    replay_cue_bundle: dict[str, Any],
 ) -> dict[str, Any]:
+    queue_e_signal_profile = queue_e_signal_profile_from_replay_cue_bundle(replay_cue_bundle)
     source_residue_refs = list(dream_window.get("pain_residue_refs", [])) + list(
         pain_replay.get("repair_obligation_refs", [])
     )
     relationship_candidates = list(wake_integration.get("relationship_repair_candidates", []))
-    risk_score = len(source_residue_refs) + len(relationship_candidates)
-    risk_status = "elevated" if risk_score >= 2 else "guarded"
+    risk_score = (
+        len(source_residue_refs)
+        + len(relationship_candidates)
+        + queue_e_signal_profile["repair_obligation_count"]
+        + queue_e_signal_profile["regret_pressure_count"]
+    )
+    risk_status = "elevated" if risk_score >= 2 or queue_e_signal_profile["repair_followup_required"] else "guarded"
+    loop_indicators = [
+        "pain_residue_reentry" if dream_window.get("pain_residue_refs") else "low_pain_residue",
+        "relationship_repair_pressure" if relationship_candidates else "low_relationship_pressure",
+    ]
+    if queue_e_signal_profile["queue_e_priority_band"] == "locked_repair_urgent":
+        loop_indicators.append("confirmation_blocked_repair_lock")
+    elif queue_e_signal_profile["repair_followup_required"]:
+        loop_indicators.append("guarded_repair_followup")
     return {
         "schema_version": "nightmare_loop_risk_v0",
         "run_id": run_id,
@@ -36,10 +53,7 @@ def build_nightmare_loop_risk(
         "risk_status": risk_status,
         "risk_score": risk_score,
         "source_residue_refs": source_residue_refs or ["runtime/state/life_state.json#pain_events"],
-        "loop_indicators": [
-            "pain_residue_reentry" if dream_window.get("pain_residue_refs") else "low_pain_residue",
-            "relationship_repair_pressure" if relationship_candidates else "low_relationship_pressure",
-        ],
+        "loop_indicators": loop_indicators,
         "recovery_targets": [
             "runtime/state/dream/wake_integration_frame.json",
             "runtime/state/growth/self_read_report.json",
@@ -47,6 +61,11 @@ def build_nightmare_loop_risk(
         ],
         "rewrite_required": risk_status == "elevated",
         "relationship_repair_candidates": relationship_candidates,
+        "world_contact_release_posture": queue_e_signal_profile["world_contact_release_posture"],
+        "repair_followup_required": queue_e_signal_profile["repair_followup_required"],
+        "repair_obligation_count": queue_e_signal_profile["repair_obligation_count"],
+        "regret_pressure_count": queue_e_signal_profile["regret_pressure_count"],
+        "queue_e_priority_band": queue_e_signal_profile["queue_e_priority_band"],
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 

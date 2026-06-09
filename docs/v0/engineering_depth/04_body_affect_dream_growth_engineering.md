@@ -83,6 +83,36 @@ S06 body/affect
   -> digital life turn
 ```
 
+## 本轮新增的 Queue E 离线接线
+
+这轮又把 Queue E 的责任/世界接触/痛苦修复压力真正接进了离线生命链：
+
+1. `life_v0/membrane/queue_e_signals.py` 新增为共享信号器官，统一导出：
+   - `world_contact_release_posture`
+   - `repair_followup_required`
+   - `repair_obligation_count`
+   - `regret_pressure_count`
+   - `queue_e_priority_band`
+2. `life_v0/replay/__init__.py` 现在会把这批字段正式写进 `runtime/state/replay/replay_cue_bundle.json`。
+3. `life_v0/dream/nightmare_risk.py` 不再只看 pain residue 和 relationship candidate，而会把 Queue E 的修复跟进与优先级带进 nightmare risk 判定。
+4. `life_v0/growth/belief_learning.py` 会把责任修复压力压进 belief revision 目标。
+5. `life_v0/growth/language_learning.py` 会把修复表达与确认锁定时的语言克制压进语言学习目标。
+6. `life_v0/growth/relationship_learning.py` 会把 repair re-entry 与接触边界尊重压进关系学习目标。
+
+所以这条链当前已经进一步变成：
+
+```text
+Queue E responsibility / repair / world contact
+  -> replay_cue_bundle
+  -> nightmare_risk
+  -> belief_learning
+  -> language_learning
+  -> relationship_learning
+  -> next offline growth pressure
+```
+
+这一步很关键，因为它意味着 Queue E 不再只是在线等待治理或 report 收尾的控制面，而开始进入梦境和成长器官，变成离线生命本身的一部分。
+
 ## 最低测试和下一轮测试
 
 当前最低测试：
@@ -98,6 +128,7 @@ S06 body/affect
 1. `body_rhythm_pulse.json` 与 `need_state_vector.json` 在 resident supervision bootstrap 时被装载；
 2. waiting heartbeat / idle strategy / process report 会回写 `body_waiting_posture`；
 3. `heartbeat_interval_ms` 与 `next_idle_action` 会随 fatigue / bandwidth / sleep pressure / repair drive 变化。
+4. `tests/bridges/test_runtime_growth.py` 现在又新增守护：Queue E priority band 必须真实调制 `nightmare_risk / belief_learning / language_learning / relationship_learning`。
 
 下一轮应新增：
 

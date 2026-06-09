@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from life_v0.membrane.queue_e_signals import derive_queue_e_signal_profile
+
 
 IDLE_STRATEGY_STATE_REF = "runtime/state/terminal/idle_strategy_state.json"
 IDLE_CONTINUITY_FRAME_REF = "runtime/state/terminal/idle_continuity_frame.json"
@@ -405,35 +407,17 @@ def _queue_e_idle_regulation(
     world_contact_summary: dict[str, Any] | None,
     pain_regret_repair_report: dict[str, Any] | None,
 ) -> tuple[str, bool, int, int, str]:
-    world_contact_release_posture = str(
-        (world_contact_summary or {}).get("release_posture", "shadow_only_guarded")
+    queue_e_signal_profile = derive_queue_e_signal_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
-    repair_followup_required = bool(
-        (pain_regret_repair_report or {}).get("repair_followup_required")
-        or (responsibility_loop_state or {}).get("repair_followup_required")
-    )
-    repair_obligation_count = max(
-        len((world_contact_summary or {}).get("repair_obligation_refs", [])),
-        len((pain_regret_repair_report or {}).get("repair_obligation_refs", [])),
-        len((responsibility_loop_state or {}).get("repair_obligation_refs", [])),
-    )
-    regret_pressure_count = max(
-        len((world_contact_summary or {}).get("regret_pressure_refs", [])),
-        len((pain_regret_repair_report or {}).get("regret_pressure_refs", [])),
-        len((responsibility_loop_state or {}).get("regret_pressure_candidates", [])),
-    )
-    if repair_followup_required and world_contact_release_posture == "confirmation_blocked":
-        queue_e_priority_band = "locked_repair_urgent"
-    elif repair_followup_required or repair_obligation_count > 0 or regret_pressure_count > 0:
-        queue_e_priority_band = "repair_guarded"
-    else:
-        queue_e_priority_band = "baseline"
     return (
-        world_contact_release_posture,
-        repair_followup_required,
-        repair_obligation_count,
-        regret_pressure_count,
-        queue_e_priority_band,
+        queue_e_signal_profile["world_contact_release_posture"],
+        queue_e_signal_profile["repair_followup_required"],
+        queue_e_signal_profile["repair_obligation_count"],
+        queue_e_signal_profile["regret_pressure_count"],
+        queue_e_signal_profile["queue_e_priority_band"],
     )
 
 

@@ -347,6 +347,21 @@ def run_cycle(
     dream_fact_boundary = _load_json(state_dir / "membrane" / "dream_fact_boundary.json", blocked_reasons, "dream_fact_gate")
     relationship_boundary = _load_json(state_dir / "membrane" / "relationship_subject_boundary.json", blocked_reasons, "relationship_language_gate")
     responsibility_boundary = _load_json(state_dir / "membrane" / "responsibility_repair_boundary.json", blocked_reasons, "responsibility_gate")
+    responsibility_loop_state = _load_json(
+        state_dir / "action" / "responsibility_loop_state.json",
+        blocked_reasons,
+        "responsibility_loop_gate",
+    )
+    world_contact_summary = _load_json(
+        state_dir / "membrane" / "world_contact_summary.json",
+        blocked_reasons,
+        "world_contact_summary_gate",
+    )
+    pain_regret_repair_report = _load_json(
+        reports_dir / "pain_regret_repair_report.json",
+        blocked_reasons,
+        "pain_regret_repair_gate",
+    )
 
     source_doc_refs = _collect_s10_source_docs(doc_index)
     blocked_reasons.extend(_s10_doc_blockers(doc_index, source_doc_refs))
@@ -399,6 +414,9 @@ def run_cycle(
         dream_frame=dream_frame,
         pain_replay=pain_replay,
         life_state=life_state,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
     offline_entry = build_offline_entry_gate(
         run_id=run_id,
@@ -466,6 +484,7 @@ def run_cycle(
         dream_window=dream_window,
         pain_replay=pain_replay,
         wake_integration=wake_integration,
+        replay_cue_bundle=replay_cue_bundle,
     )
     belief_learning = build_belief_learning_plan(
         run_id=run_id,
@@ -1093,9 +1112,12 @@ def _build_run_cycle_receipt(
         state_dir / "life_state.json",
         state_dir / "direction" / "direction_lock.json",
         state_dir / "growth" / "anti_forgetting_anchor_index.json",
+        state_dir / "action" / "responsibility_loop_state.json",
+        state_dir / "membrane" / "world_contact_summary.json",
         reports_dir / "birth_readiness_report.json",
         reports_dir / "schema_runner_report.json",
         reports_dir / "life_support_development_report.json",
+        reports_dir / "pain_regret_repair_report.json",
     ]:
         if path.exists():
             input_hashes[str(path)] = _sha256(path)
