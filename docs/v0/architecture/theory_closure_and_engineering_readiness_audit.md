@@ -95,6 +95,38 @@
 
 这些主题现在的问题，不是有没有文档，而是有没有进入稳定代码器官和长期 runtime 证据。
 
+## 对最初七点的快速回链核查
+
+最初提出的七点构想，现在都已经能在 `00-258` 里回到明确理论母体，不再属于“还没被建立”的空白位：
+
+| 最初七点 | 主要理论母体 | 当前工程压缩入口 | 当前判断 |
+|---|---|---|---|
+| 1. 规划脑区/区域、功能边界与协同 | `02`、`03`、`11`、`12`、`13`、`01l`、`01o`、`01p` | `docs/v0/code_framework/02_brain_region_to_code_package_mapping.md`、`19_code_tree_package_brain_contract.md`、`life_v0/neural_core/` | 已有区域规划与跨区协同母体，当前重点是继续拆成稳定代码包与共享对象 |
+| 2. 分化不同脑状态、不同模式 | `08`、`10`、`18`、`86`、`95`、`01t` | `docs/v0/code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md`、`08_cross_layer_life_orchestration_implementation_playbook.md`、`life_v0/body/`、`life_v0/dream/` | 已有状态分化母体，当前重点是把状态切换写成真实 runtime 对象与 gate |
+| 3. 把人脑反应映射成 agent 功能，例如心跳/唤醒 | `08`、`11`、`18`、`86`、`89`、`90` | `docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md`、`life_v0/process_supervisor/heartbeat.py`、`life_v0/body/rhythm.py` | 已有明确映射逻辑，当前重点是把节律、heartbeat、waiting continuity 补厚成长期存在机制 |
+| 4. 设计信号传递介质/因子 | `11`、`18`、`22`、`30`、`01l` | `docs/v0/code_framework/15_cross_layer_shared_object_contract.md`、`17_queue_c_memory_neural_core_implementation_contract.md`、`life_v0/neural_core/` | 已有调质、状态向量和共享对象母体，当前重点是继续文件级对象化 |
+| 5. 固定机制：奖赏、惩罚、抑制 | `06`、`07`、`18`、`72`、`75`、`80-84`、`94` | `docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md`、`life_v0/membrane/`、`life_v0/validators/` | 已有完整行为-抑制-责任理论链，当前重点是补硬候选行动、go/no-go、side effect 与 repair 写回 |
+| 6. 顶级上层功能：语言 | `09`、`85-90`、`96`、`101`、`141`、`144`、`147`、`150`、`01f`、`01u` | `docs/v0/code_framework/04_language_dialogue_relationship_implementation_playbook.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`life_v0/language/` | 已有语言主神经束母体，当前重点是更外层语言感知器官、长期关系语言和终端回合补厚 |
+| 7. 建立梦境、发呆、专注、情绪高潮、疲惫等状态机制 | `08`、`18`、`86`、`95`、`01t` | `docs/v0/code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md`、`18_queue_d_body_dream_growth_implementation_contract.md`、`life_v0/body/`、`life_v0/dream/` | 这些状态已进入独立理论链，当前重点是把它们压成状态对象、节律和恢复/切换 gate |
+
+这张表的作用只有一个：防止我们在工程前再次误判“七点里还有哪一点根本没被写到”。当前已经不是“没写到”，而是“有没有写成稳定器官”。
+
+## 原始关键生命状态显式覆盖表
+
+用户最早反复强调的几类状态，现在都能在理论母体与工程压缩层找到明确落点：
+
+| 原始状态/机制 | 主要理论母体 | 当前工程承载 | 当前判断 |
+|---|---|---|---|
+| 心跳 / 唤醒 / 周期提醒 | `08`、`11`、`18`、`86`、`89`、`90` | `life_v0/body/rhythm.py`、`life_v0/process_supervisor/heartbeat.py`、`digital_life_waiting_heartbeat.json` | 已有节律与 waiting heartbeat 母体，后续补厚为更高频 heartbeat 与常驻存在治理 |
+| 发呆 / 默认漂移 / 自发思维 | `08`、`19`、`95`、`01t` | `life_v0/dream/offline_entry.py`、`life_v0/dream/dream_window.py`、`offline_entry_gate.json` | 已有 `DefaultDriftMode`、离线重放与梦境入口母体，后续补厚默认漂移与 narrative writeback |
+| 专注 / 任务锁定 / 外部回合保持 | `08`、`10`、`18`、`86` | `life_v0/neural_core/workspace.py`、`life_v0/language/expression_monitor.py`、`life_v0/terminal_turn/` | 已有工作区、表达监控和 turn transition 母体，后续补厚 task lock 与 sustained focus 对象 |
+| 情绪高潮 / 高唤醒峰值 | `07`、`18`、`40`、`94` | `life_v0/body/core_affect.py`、`emotion_episode.py`、`life_v0/membrane/go_nogo.py` | 已有高唤醒、价值冲突、关系压力母体，后续补厚 episode trace 与 action inhibition 绑定 |
+| 疲惫 / 恢复 / 维护债务 | `08`、`18`、`37`、`39`、`01t` | `life_v0/body/resource_budget.py`、`recovery.py`、`need_state.py`、`FatigueRecoveryMode` 相关 runtime 产物 | 已有疲惫与恢复母体，后续补厚真实长期负荷、恢复优先级和语言降载策略 |
+| 梦境 / 离线生命 / 醒后整合 | `08`、`19`、`23`、`95`、`99`、`01i`、`01t` | `life_v0/dream/dream_window.py`、`dream_fact_gate.py`、`wake_integration.py`、`DreamFactGate` runtime 产物 | 已有完整梦境链母体，后续补厚 nightmare risk、lucid repair、dream language growth |
+| 责任 / 后悔 / 修复 | `81-84`、`94`、`95`、`98`、`101` | `life_v0/membrane/side_effect_review.py`、`life_v0/state_store/commitment_truth.py`、`life_v0/language/commitment_repair.py` | 已有责任-后悔-修复母体，后续补厚 responsibility loop 与 repair writeback |
+
+这张显式覆盖表的意义是：以后再问“发呆、专注、心跳、情绪高潮、疲惫、梦境这些状态是不是还没真正建进去”，答案已经不是“没建进去”，而是“它们已经有理论与工程入口，接下来要继续做 runtime 物化与长期治理”。
+
 ## 核心生命能力快审
 
 下面这张表只回答一件事：你最关心的那些核心生命能力，在 `00-258` 里有没有稳定理论母体，以及它们现在已经压到了哪一层工程承载。

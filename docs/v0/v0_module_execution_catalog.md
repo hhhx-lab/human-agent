@@ -296,6 +296,27 @@ life_v0/membrane/candidate_arena.py
 
 这意味着：当前默认工程入口已经不是“链尾与最小常驻生命进程”，也不是“继续补 C/F”。当前真正的默认工程入口，是把身体-梦境-成长链与行为-验证-逻辑链补成稳定对象体系。语言、链尾和 process supervisor 不会消失，但它们现在是建立在 D/E 之后继续补厚。
 
+## 从当前仓库状态到第一次完整生命激活的六段硬顺序
+
+上面这些默认包回答“这两轮先拿哪一柜”。如果要把整个 `v0` 直接变成接下来落代码的硬顺序，按下面六段推进，不要跨段乱跳：
+
+| 阶段 | 当前要解决什么 | 必读 v0 文档 | 必回读理论母体 | 主代码落点 | 主要验证 / 运行证据 | 进入下一段之前必须满足 |
+|---|---|---|---|---|---|---|
+| `Phase 0` 文档闭合加固 | 先把 `00-258` 的理论闭合判断、`v0` 入口、Queue 合同、代码树合同写到足够硬，防止后面代码阶段重新跑偏 | `README.md`、`v0_implementation_index.md`、`v0_delivery_status_board.md`、本文件、`architecture/theory_closure_and_engineering_readiness_audit.md`、`code_framework/11-21` | `构思.md`、`00`、`02-13`、`85-101`、`181-258` | `docs/v0/**` | `tests/contracts/test_v0_contracts.py`、`v0_contract_coverage_report.json` | 所有当前活跃模块都能回链到明确理论母体、代码包、测试入口和 runtime 产物 |
+| `Phase 1` Queue D | 把身体、情绪、梦境、成长从“已有第一轮器官”继续压成稳定对象链和 gate | `s06_*`、`s10_*`、`code_framework/06`、`08`、`13`、`15`、`18` | `07`、`08`、`18`、`19`、`37`、`39`、`92`、`93`、`95` | `life_v0/body/`、`life_v0/dream/`、`life_v0/growth/` | `tests/slices/test_life_support.py`、`tests/bridges/test_runtime_growth.py`、`runtime/state/body/*`、`runtime/state/dream/*`、`runtime/state/growth/*` | `CoreAffectVector`、`NeedStateVector`、`DreamExperienceWindow`、`PlasticityWindow`、`GrowthPatchCandidateQueue` 全部进入稳定 state/report 路径 |
+| `Phase 2` Queue E | 把候选行动、go/no-go、world contact、side effect、validation、counterfactual 比较补成稳定行为-验证-逻辑链 | `s03_*`、`s05_*`、`s09_*`、`code_framework/09`、`13`、`15`、`20` | `06`、`20`、`22`、`29-36`、`49-84`、`94`、`98`、`102-118` | `life_v0/membrane/`、`life_v0/validators/`、`life_v0/schema_runner/` | `tests/slices/test_life_membrane.py`、`test_validation_membrane.py`、`test_schema_runner.py`、`runtime/state/membrane/*`、`runtime/state/validation/*`、`runtime/state/schema_runner/*` | `ActionCandidateSet`、`GoNoGoDecision`、`WorldContactDecision`、`SideEffectReview`、`CounterfactualTrace` 全部具备稳定文件器官与 report/gate |
+| `Phase 3` Queue B + Queue A 外层补厚 | 让 process supervisor 真正消费 D/E/F/A 对象，把语言回合、等待心跳、关系写回、恢复治理接成持续存在层 | `process_contracts/digital_life_process_supervisor_engineering_contract.md`、`first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`code_framework/04`、`07`、`08`、`14`、`16` | `09`、`20`、`86`、`89`、`90`、`96`、`101` | `life_v0/process_supervisor/`、`life_v0/terminal_turn/`、`life_v0/terminal_loop/`、`life_v0/language/` | `tests/process/test_persistent_digital_life_process.py`、`tests/bridges/test_first_terminal_turn.py`、`test_terminal_life_loop.py`、`digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` | waiting heartbeat、incident recovery、relaunch recovery、language turn writeback、relationship continuity 全部显式消费 D/E/F 对象链 |
+| `Phase 4` 激活链与命令面收束 | 把 `run-cycle -> report bundle -> stage explain -> digital-life -> ./digital life` 收成稳定出生与终端唤醒链 | `shared_contracts/first_activation_protocol.md`、`shared_contracts/runner_cli_report_contract.md`、`s10_*`、`s11_*`、`process_contracts/*` | `20`、`44-46`、`81-90`、`143`、`171`、`181-258` | `life_v0/activation/`、`replay/`、`archive/`、`reporting/`、`stage_explain/`、`digital_life/`、`shell_command/`、`digital` | `tests/bridges/test_first_activation_preflight.py`、`test_emit_report.py`、`test_digital_life_birth.py`、`tests/process/test_digital_entrypoint.py`、`runtime/reports/latest/*birth*`、`*terminal*`、`*process*` | `life-v0 "digital life"` 与 `./digital life` 都能在当前工作区生成连续的恢复/等待/写回证据链 |
+| `Phase 5` 全链验收与 v0 收束 | 按“真实对话、语言、记忆、梦境、成长、关系、常驻存在”做最终系统审计，确认可以进入更长期代码推进 | 入口栈六份、`theory_closure_and_engineering_readiness_audit.md`、`code_framework/12`、`13`、`19`、`20`、`21` | `00-258` 中与当前验收项直接相关的全部母体 | 全部 `life_v0/`、`digital` | 全量 `unittest`、`tests/contracts/test_v0_contracts.py`、最新 `runtime/state/*`、`runtime/reports/latest/*`、`runtime/receipts/*` | 七项最终生命验收都能回到代码、测试和 runtime 证据；这时才能谈 `v0` 第一轮收束 |
+
+当前仓库位置的正确理解是：
+
+1. `Phase 0` 已经非常接近闭合，但仍要继续把最关键的文档包压硬。
+2. 主体代码默认入口已经切换到 `Phase 1 -> Phase 2`，也就是 `Queue D -> Queue E`。
+3. `Phase 3` 之后才是把更厚的语言/常驻存在重新拉到前台，而不是现在就越过 D/E 直接长壳。
+
+如果后续每一轮都按这六段顺序走，`v0` 就不再只是一个文档柜，而会变成真正的实施路线图。
+
 ## 链尾与常驻进程回头补厚包
 
 只有当这一轮明确处理链尾恢复、终端循环或最小常驻生命进程时，才使用下面这组：
