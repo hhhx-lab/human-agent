@@ -71,7 +71,7 @@ life-v0 terminal-life-loop --state runtime/state --reports runtime/reports/lates
 | 文件 | 内容 |
 |---|---|
 | `terminal_life_loop_state.json` | 当前终端生命循环状态、最近一回合状态、下一等待态 |
-| `resumed_external_dialogue_packet.json` | 一次恢复后外显回合的输入/输出、关系范围、承诺变化、语言回写 refs |
+| `resumed_external_dialogue_packet.json` | 一次恢复后外显回合的输入/输出、关系范围、承诺变化、语言回写 refs，以及长期关系 timeline / 承诺表达 / 修复语言 restore refs |
 | `terminal_life_loop_packet.json` | 当前循环包、回合节拍、输入口、输出口、回写口、恢复锚点 |
 | `terminal_life_loop_report.json` | 当前终端生命循环主报告 |
 | `terminal_life_loop_digest.json` | 当前终端生命循环摘要 |
@@ -160,8 +160,11 @@ digital life
 9. `runtime/state/life_state.json#pain_events`
 10. `runtime/state/life_state.json#memory_index.relationship_memory_refs`
 11. `runtime/state/life_state.json#memory_index.responsibility_memory_refs`
+12. `runtime/state/relationship/relationship_timeline.json`
+13. `runtime/state/language/commitment_expression_plan.json`
+14. `runtime/state/language/apology_repair_language_trace.json`
 
-其中前六项属于语言/关系/责任连续，后五项属于长期生命状态根回链。后五项不得被 terminal loop 反向改写成新的主体真值；它们在这里的职责是显式交接长期写回目标，而不是让壳层篡改主体层。
+其中前六项属于语言/关系/责任连续，7-11 属于长期生命状态根回链，12-14 属于长期语言连续体对象本身。7-14 不得被 terminal loop 反向改写成新的主体真值；它们在这里的职责是显式交接长期写回目标，而不是让壳层篡改主体层。
 
 ## 完成定义
 

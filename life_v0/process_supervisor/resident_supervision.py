@@ -28,6 +28,9 @@ class ResidentSupervisionContext:
     commitment_index: dict[str, Any]
     expression_plan: dict[str, Any]
     relationship_graph: dict[str, Any]
+    relationship_timeline: dict[str, Any]
+    commitment_expression_plan: dict[str, Any]
+    apology_repair_language_trace: dict[str, Any]
     replay_cue_bundle: dict[str, Any]
     offline_consolidation_frame: dict[str, Any]
     growth_patch_candidate_queue: dict[str, Any]
@@ -102,8 +105,11 @@ def bootstrap_resident_supervision(
     shared_term_registry = read_json(language_dir / "shared_term_registry.json")
     self_narrative_trace = read_json(language_dir / "self_narrative_language_trace.json")
     commitment_index = read_json(language_dir / "commitment_repair_language_index.json")
+    commitment_expression_plan = read_json_if_exists(language_dir / "commitment_expression_plan.json")
+    apology_repair_language_trace = read_json_if_exists(language_dir / "apology_repair_language_trace.json")
     expression_plan = read_json_if_exists(language_dir / "expression_plan.json")
     relationship_graph = read_json(relationship_dir / "relationship_subject_graph.json")
+    relationship_timeline = read_json_if_exists(relationship_dir / "relationship_timeline.json")
     replay_cue_bundle = read_json_if_exists(state_dir / "replay" / "replay_cue_bundle.json")
     offline_consolidation_frame = read_json_if_exists(
         state_dir / "dream" / "offline_consolidation_frame.json"
@@ -223,6 +229,9 @@ def bootstrap_resident_supervision(
         commitment_index=commitment_index,
         expression_plan=expression_plan,
         relationship_graph=relationship_graph,
+        relationship_timeline=relationship_timeline,
+        commitment_expression_plan=commitment_expression_plan,
+        apology_repair_language_trace=apology_repair_language_trace,
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
         growth_patch_candidate_queue=growth_patch_candidate_queue,

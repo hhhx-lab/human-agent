@@ -28,6 +28,7 @@ def write_terminal_life_loop_bundle(
     next_required_action: str,
     relation_subject: dict[str, Any],
     shared_term_surfaces: list[str],
+    long_horizon_writeback_targets: list[str],
     blocked_reasons: list[str],
     updated_safe_terminal_loop: dict[str, Any],
     loop_state: dict[str, Any],
@@ -55,7 +56,8 @@ def write_terminal_life_loop_bundle(
             "runtime/state/language/self_narrative_language_trace.json",
             "runtime/state/language/commitment_repair_language_index.json",
             "runtime/state/relationship/relationship_subject_graph.json",
-        ],
+        ]
+        + long_horizon_writeback_targets,
         "next_required_action": next_required_action,
         "receipt_ref": f"runtime/receipts/terminal_life_loop_{run_id}.json",
     }

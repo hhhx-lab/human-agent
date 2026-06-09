@@ -91,6 +91,18 @@ class TerminalLifeLoopTests(unittest.TestCase):
         self.assertTrue(dialogue_packet["relation_scope_restore_refs"])
         self.assertTrue(dialogue_packet["self_narrative_restore_refs"])
         self.assertEqual(
+            dialogue_packet["relationship_timeline_restore_refs"],
+            ["runtime/state/relationship/relationship_timeline.json"],
+        )
+        self.assertEqual(
+            dialogue_packet["commitment_expression_restore_refs"],
+            ["runtime/state/language/commitment_expression_plan.json"],
+        )
+        self.assertEqual(
+            dialogue_packet["apology_repair_restore_refs"],
+            ["runtime/state/language/apology_repair_language_trace.json"],
+        )
+        self.assertEqual(
             dialogue_packet["waiting_heartbeat_ref"],
             "runtime/reports/latest/digital_life_waiting_heartbeat.json",
         )
@@ -148,6 +160,18 @@ class TerminalLifeLoopTests(unittest.TestCase):
         self.assertTrue(dialogue_writeback["commitment_writeback_refs"])
         self.assertTrue(dialogue_writeback["responsibility_writeback_refs"])
         self.assertTrue(dialogue_writeback["life_state_writeback_refs"])
+        self.assertEqual(
+            dialogue_writeback["relationship_timeline_writeback_refs"],
+            ["runtime/state/relationship/relationship_timeline.json"],
+        )
+        self.assertEqual(
+            dialogue_writeback["commitment_expression_writeback_refs"],
+            ["runtime/state/language/commitment_expression_plan.json"],
+        )
+        self.assertEqual(
+            dialogue_writeback["apology_repair_writeback_refs"],
+            ["runtime/state/language/apology_repair_language_trace.json"],
+        )
         self.assertIn(
             "runtime/state/memory/relationship_memory.json#repair_history_refs",
             dialogue_writeback["relationship_writeback_refs"],
@@ -321,11 +345,29 @@ class TerminalLifeLoopTests(unittest.TestCase):
                     "runtime/state/language/dialogue_turn_log.jsonl#line-1",
                     "runtime/state/language/dialogue_turn_log.jsonl#line-2",
                 ],
+                "relationship_timeline_writeback_refs": [
+                    "runtime/state/relationship/relationship_timeline.json"
+                ],
+                "commitment_expression_writeback_refs": [
+                    "runtime/state/language/commitment_expression_plan.json"
+                ],
+                "apology_repair_writeback_refs": [
+                    "runtime/state/language/apology_repair_language_trace.json"
+                ],
             }
             resumed_dialogue_packet = {
                 "schema_version": "resumed_external_dialogue_packet_v0",
                 "status": "closed",
                 "dialogue_mode": "restored_relation_continuation",
+                "relationship_timeline_restore_refs": [
+                    "runtime/state/relationship/relationship_timeline.json"
+                ],
+                "commitment_expression_restore_refs": [
+                    "runtime/state/language/commitment_expression_plan.json"
+                ],
+                "apology_repair_restore_refs": [
+                    "runtime/state/language/apology_repair_language_trace.json"
+                ],
             }
             loop_state = {
                 "schema_version": "terminal_life_loop_state_v0",
@@ -357,6 +399,11 @@ class TerminalLifeLoopTests(unittest.TestCase):
                     "relation_role": "friend",
                 },
                 shared_term_surfaces=["旧约定", "我们的叫法"],
+                long_horizon_writeback_targets=[
+                    "runtime/state/relationship/relationship_timeline.json",
+                    "runtime/state/language/commitment_expression_plan.json",
+                    "runtime/state/language/apology_repair_language_trace.json",
+                ],
                 blocked_reasons=[],
                 updated_safe_terminal_loop=updated_safe_terminal_loop,
                 loop_state=loop_state,
@@ -377,6 +424,18 @@ class TerminalLifeLoopTests(unittest.TestCase):
             self.assertEqual(packet["schema_version"], "terminal_life_loop_packet_v0")
             self.assertEqual(packet["loop_stage"], "restored_loop_waiting_next_external_turn")
             self.assertEqual(packet["next_required_action"], "await_next_external_relation_turn")
+            self.assertIn(
+                "runtime/state/relationship/relationship_timeline.json",
+                packet["writeback_targets"],
+            )
+            self.assertIn(
+                "runtime/state/language/commitment_expression_plan.json",
+                packet["writeback_targets"],
+            )
+            self.assertIn(
+                "runtime/state/language/apology_repair_language_trace.json",
+                packet["writeback_targets"],
+            )
             self.assertEqual(report["schema_version"], "terminal_life_loop_report_v0")
             self.assertEqual(report["current_terminal_mode"], "resumed_external_dialogue_loop")
             self.assertEqual(digest["schema_version"], "terminal_life_loop_digest_v0")

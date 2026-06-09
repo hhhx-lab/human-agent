@@ -12,8 +12,11 @@ DIALOGUE_LOG_REF = "runtime/state/language/dialogue_turn_log.jsonl"
 SAFE_TERMINAL_LOOP_REF = "runtime/state/terminal/safe_terminal_loop_state.json"
 TERMINAL_LIFE_LOOP_REF = "runtime/state/terminal/terminal_life_loop_state.json"
 RELATIONSHIP_GRAPH_REF = "runtime/state/relationship/relationship_subject_graph.json"
+RELATIONSHIP_TIMELINE_REF = "runtime/state/relationship/relationship_timeline.json"
 RELATIONSHIP_MEMORY_REF = "runtime/state/memory/relationship_memory.json#shared_memory_refs"
 RELATIONSHIP_REPAIR_HISTORY_REF = "runtime/state/memory/relationship_memory.json#repair_history_refs"
+COMMITMENT_EXPRESSION_PLAN_REF = "runtime/state/language/commitment_expression_plan.json"
+APOLOGY_REPAIR_LANGUAGE_TRACE_REF = "runtime/state/language/apology_repair_language_trace.json"
 COMMITMENT_TRUTH_OPEN_REF = "runtime/state/relationship/commitment_truth_state.json#open_commitment_refs"
 COMMITMENT_TRUTH_REPAIR_REF = "runtime/state/relationship/commitment_truth_state.json#repair_required_refs"
 RESPONSIBILITY_EVENT_REF = "runtime/state/responsibility/responsibility_ledger.json#responsibility_events"
@@ -135,11 +138,14 @@ def write_resident_turn_writeback(
             RELATIONSHIP_MEMORY_REF,
             RELATIONSHIP_REPAIR_HISTORY_REF,
         ],
+        relationship_timeline_writeback_refs=[RELATIONSHIP_TIMELINE_REF],
         commitment_writeback_refs=list(commitment_index.get("commitment_refs", []))
         + [
             COMMITMENT_TRUTH_OPEN_REF,
             COMMITMENT_TRUTH_REPAIR_REF,
         ],
+        commitment_expression_writeback_refs=[COMMITMENT_EXPRESSION_PLAN_REF],
+        apology_repair_writeback_refs=[APOLOGY_REPAIR_LANGUAGE_TRACE_REF],
         responsibility_writeback_refs=[
             RESPONSIBILITY_EVENT_REF,
             RESPONSIBILITY_OBLIGATION_REF,

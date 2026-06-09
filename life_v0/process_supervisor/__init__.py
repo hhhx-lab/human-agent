@@ -111,6 +111,9 @@ def run_digital_life_process(
     commitment_index = supervision.commitment_index
     expression_plan = supervision.expression_plan
     relationship_graph = supervision.relationship_graph
+    relationship_timeline = supervision.relationship_timeline
+    commitment_expression_plan = supervision.commitment_expression_plan
+    apology_repair_language_trace = supervision.apology_repair_language_trace
     replay_cue_bundle = supervision.replay_cue_bundle
     offline_consolidation_frame = supervision.offline_consolidation_frame
     growth_patch_candidate_queue = supervision.growth_patch_candidate_queue
@@ -148,6 +151,9 @@ def run_digital_life_process(
         commitment_index=commitment_index,
         expression_plan=expression_plan,
         relationship_graph=relationship_graph,
+        relationship_timeline=relationship_timeline,
+        commitment_expression_plan=commitment_expression_plan,
+        apology_repair_language_trace=apology_repair_language_trace,
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
         growth_patch_candidate_queue=growth_patch_candidate_queue,

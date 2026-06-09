@@ -115,6 +115,10 @@
 
 ## 下一步前沿
 
-1. 让 `response_surface.py` 真实读取 `relationship_timeline.json`
-2. 让 `terminal_loop` 和 `resident supervision` 把 `commitment_expression_plan.json` 带入恢复包
-3. 让 `apology_repair_language_trace.json` 进入更厚的关系修复外显和回合节律
+1. `response_surface.py` 已开始真实读取 `relationship_timeline.json`
+2. `resident supervision` 已开始把 `commitment_expression_plan.json` 与 `apology_repair_language_trace.json` 带入常驻过程上下文
+3. `terminal_loop / dialogue_writeback / resumed packet` 现在也已显式携带这批长期语言对象：
+   - `runtime/state/relationship/relationship_timeline.json`
+   - `runtime/state/language/commitment_expression_plan.json`
+   - `runtime/state/language/apology_repair_language_trace.json`
+4. 下一步前沿转向让 `terminal_life_loop_state / process report / terminal closeout bundle` 继续把这批长期语言对象压进更完整的生命回合闭环摘要

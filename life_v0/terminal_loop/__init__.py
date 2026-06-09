@@ -38,6 +38,10 @@ RUNTIME_CARRIER_REFS = [
     "ActivationGrowthRuntime",
 ]
 
+RELATIONSHIP_TIMELINE_REF = "runtime/state/relationship/relationship_timeline.json"
+COMMITMENT_EXPRESSION_PLAN_REF = "runtime/state/language/commitment_expression_plan.json"
+APOLOGY_REPAIR_LANGUAGE_TRACE_REF = "runtime/state/language/apology_repair_language_trace.json"
+
 
 @dataclass(frozen=True)
 class TerminalLifeLoopResult:
@@ -102,10 +106,25 @@ def run_terminal_life_loop(
         blocked_reasons,
         "commitment_continuity_gate",
     )
+    commitment_expression_plan = _load_json(
+        state_dir / "language" / "commitment_expression_plan.json",
+        blocked_reasons,
+        "commitment_expression_restore_gate",
+    )
+    apology_repair_language_trace = _load_json(
+        state_dir / "language" / "apology_repair_language_trace.json",
+        blocked_reasons,
+        "apology_repair_restore_gate",
+    )
     self_narrative_trace = _load_json(
         state_dir / "language" / "self_narrative_language_trace.json",
         blocked_reasons,
         "turn_writeback_gate",
+    )
+    relationship_timeline = _load_json(
+        state_dir / "relationship" / "relationship_timeline.json",
+        blocked_reasons,
+        "relationship_timeline_restore_gate",
     )
     dialogue_turn_refs = _collect_dialogue_turn_refs(
         state_dir / "language" / "dialogue_turn_log.jsonl",
@@ -122,6 +141,9 @@ def run_terminal_life_loop(
             shared_term_registry=shared_term_registry,
             expression_monitor=expression_monitor,
             commitment_repair=commitment_repair,
+            relationship_timeline=relationship_timeline,
+            commitment_expression_plan=commitment_expression_plan,
+            apology_repair_language_trace=apology_repair_language_trace,
             self_narrative_trace=self_narrative_trace,
             dialogue_turn_refs=dialogue_turn_refs,
         )
@@ -147,6 +169,11 @@ def run_terminal_life_loop(
     ]
     commitment_refs = list(commitment_repair.get("commitment_refs", []))
     dialogue_writeback_bundle_ref = "runtime/reports/latest/dialogue_writeback_bundle.json"
+    long_horizon_writeback_targets = [
+        RELATIONSHIP_TIMELINE_REF,
+        COMMITMENT_EXPRESSION_PLAN_REF,
+        APOLOGY_REPAIR_LANGUAGE_TRACE_REF,
+    ]
 
     dialogue_writeback_bundle = build_dialogue_writeback_bundle(
         run_id=run_id,
@@ -159,11 +186,14 @@ def run_terminal_life_loop(
             "runtime/state/memory/relationship_memory.json#shared_memory_refs",
             "runtime/state/memory/relationship_memory.json#repair_history_refs",
         ],
+        relationship_timeline_writeback_refs=[RELATIONSHIP_TIMELINE_REF],
         commitment_writeback_refs=commitment_refs
         + [
             "runtime/state/relationship/commitment_truth_state.json#open_commitment_refs",
             "runtime/state/relationship/commitment_truth_state.json#repair_required_refs",
         ],
+        commitment_expression_writeback_refs=[COMMITMENT_EXPRESSION_PLAN_REF],
+        apology_repair_writeback_refs=[APOLOGY_REPAIR_LANGUAGE_TRACE_REF],
         responsibility_writeback_refs=[
             "runtime/state/responsibility/responsibility_ledger.json#responsibility_events",
             "runtime/state/responsibility/responsibility_ledger.json#repair_obligations",
@@ -194,6 +224,9 @@ def run_terminal_life_loop(
         relation_subject=relation_subject,
         shared_term_surfaces=shared_term_surfaces,
         commitment_refs=commitment_refs,
+        relationship_timeline_restore_refs=[RELATIONSHIP_TIMELINE_REF],
+        commitment_expression_restore_refs=[COMMITMENT_EXPRESSION_PLAN_REF],
+        apology_repair_restore_refs=[APOLOGY_REPAIR_LANGUAGE_TRACE_REF],
         session_envelope=session_envelope,
         dialogue_turn_restore_refs=dialogue_turn_refs,
         dialogue_writeback_bundle_ref=dialogue_writeback_bundle_ref,
@@ -229,6 +262,7 @@ def run_terminal_life_loop(
             next_required_action=next_required_action,
             relation_subject=relation_subject,
             shared_term_surfaces=shared_term_surfaces,
+            long_horizon_writeback_targets=long_horizon_writeback_targets,
             blocked_reasons=blocked_reasons,
             updated_safe_terminal_loop=updated_safe_terminal_loop,
             loop_state=loop_state,
@@ -270,6 +304,9 @@ def _loop_blockers(
     shared_term_registry: dict[str, Any],
     expression_monitor: dict[str, Any],
     commitment_repair: dict[str, Any],
+    relationship_timeline: dict[str, Any],
+    commitment_expression_plan: dict[str, Any],
+    apology_repair_language_trace: dict[str, Any],
     self_narrative_trace: dict[str, Any],
     dialogue_turn_refs: list[str],
 ) -> list[str]:
@@ -298,6 +335,18 @@ def _loop_blockers(
         reasons.append("expression_monitor_gate schema mismatch")
     if not commitment_repair.get("commitment_refs"):
         reasons.append("commitment_continuity_gate commitment refs missing")
+    if relationship_timeline.get("schema_version") != "relationship_timeline_v0":
+        reasons.append("relationship_timeline_restore_gate schema mismatch")
+    if not relationship_timeline.get("relationship_continuity_reports"):
+        reasons.append("relationship_timeline_restore_gate continuity reports missing")
+    if commitment_expression_plan.get("schema_version") != "commitment_expression_plan_v0":
+        reasons.append("commitment_expression_restore_gate schema mismatch")
+    if not commitment_expression_plan.get("language_act_candidates"):
+        reasons.append("commitment_expression_restore_gate language act candidates missing")
+    if apology_repair_language_trace.get("schema_version") != "apology_repair_language_trace_v0":
+        reasons.append("apology_repair_restore_gate schema mismatch")
+    if not apology_repair_language_trace.get("repair_language_moves"):
+        reasons.append("apology_repair_restore_gate repair language moves missing")
     if not self_narrative_trace.get("narrative_turn_refs"):
         reasons.append("turn_writeback_gate narrative refs missing")
     if not dialogue_turn_refs:

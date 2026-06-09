@@ -805,7 +805,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 self_narrative_trace=context.self_narrative_trace,
                 commitment_index=context.commitment_index,
                 relationship_graph=context.relationship_graph,
+                relationship_timeline=context.relationship_timeline,
                 shared_term_registry=context.shared_term_registry,
+                commitment_expression_plan=context.commitment_expression_plan,
+                apology_repair_language_trace=context.apology_repair_language_trace,
                 relation_turn_frame=context.relation_turn_frame,
                 expression_plan=context.expression_plan,
                 life_context_frame=context.life_context_frame,
@@ -902,7 +905,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 self_narrative_trace=context.self_narrative_trace,
                 commitment_index=context.commitment_index,
                 relationship_graph=context.relationship_graph,
+                relationship_timeline=context.relationship_timeline,
                 shared_term_registry=context.shared_term_registry,
+                commitment_expression_plan=context.commitment_expression_plan,
+                apology_repair_language_trace=context.apology_repair_language_trace,
                 relation_turn_frame=context.relation_turn_frame,
                 expression_plan=context.expression_plan,
                 life_context_frame=context.life_context_frame,
@@ -975,6 +981,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     kwargs["incident_count"],  # type: ignore[arg-type]
                     kwargs["turn_counter"],  # type: ignore[arg-type]
                     kwargs["external_utterance"],  # type: ignore[arg-type]
+                    bool(kwargs["relationship_timeline"]),  # type: ignore[arg-type]
+                    bool(kwargs["commitment_expression_plan"]),  # type: ignore[arg-type]
+                    bool(kwargs["apology_repair_language_trace"]),  # type: ignore[arg-type]
                 )
             )
             return LiveTurnCycleResult(
@@ -1020,6 +1029,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 commitment_index={},
                 expression_plan={},
                 relationship_graph={},
+                relationship_timeline={"schema_version": "relationship_timeline_v0"},
+                commitment_expression_plan={"schema_version": "commitment_expression_plan_v0"},
+                apology_repair_language_trace={"schema_version": "apology_repair_language_trace_v0"},
                 replay_cue_bundle={},
                 offline_consolidation_frame={},
                 growth_patch_candidate_queue={},
@@ -1044,7 +1056,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
 
         self.assertEqual(wait_heartbeat_inputs, [1, 2])
-        self.assertEqual(live_turn_inputs, [(0, 1, "你好")])
+        self.assertEqual(live_turn_inputs, [(0, 1, "你好", True, True, True)])
         self.assertEqual(emitted_outputs, ["生命回合输出: 你好，我记得。"])
         self.assertEqual(result.turn_counter, 3)
         self.assertEqual(result.completed_turns, 1)
@@ -1158,6 +1170,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 commitment_index={},
                 expression_plan={},
                 relationship_graph={},
+                relationship_timeline={"schema_version": "relationship_timeline_v0"},
+                commitment_expression_plan={"schema_version": "commitment_expression_plan_v0"},
+                apology_repair_language_trace={"schema_version": "apology_repair_language_trace_v0"},
                 replay_cue_bundle={},
                 offline_consolidation_frame={},
                 growth_patch_candidate_queue={},
@@ -1886,6 +1901,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "fatigue_state": {"level": "managed_low_noise"},
                 "maintenance_pressure": {"repair_drive": "active"},
             },
+            relationship_timeline={
+                "relationship_continuity_reports": [
+                    {"continuity_state": "active_repairing_continuity"}
+                ],
+                "trust_trajectories": [
+                    {"current_trust_state": "repairing"}
+                ],
+            },
+            commitment_expression_plan={
+                "language_act_candidates": [
+                    {"act_type": "clarify"},
+                    {"act_type": "apology"},
+                    {"act_type": "followup_commitment"},
+                ],
+                "act_type_order": ["clarify", "apology", "followup_commitment"],
+            },
+            apology_repair_language_trace={
+                "repair_language_moves": [
+                    {"move_type": "take_responsibility"},
+                    {"move_type": "followup_commitment"},
+                ],
+                "move_type_order": [
+                    "acknowledge_harm",
+                    "take_responsibility",
+                    "apology",
+                    "followup_commitment",
+                ],
+            },
             core_affect_vector={
                 "valence": -0.35,
                 "arousal": 0.74,
@@ -1906,6 +1949,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("表达疲惫压力为managed_low_noise", response)
         self.assertIn("表达节奏采用guarded_deliberate", response)
         self.assertIn("释放谨慎级别为elevated", response)
+        self.assertIn("关系连续体状态为active_repairing_continuity", response)
+        self.assertIn("当前信任状态为repairing", response)
+        self.assertIn("当前承诺表达序列会经过clarify、apology、followup_commitment", response)
+        self.assertIn("当前修复语言动作会经过take_responsibility、followup_commitment", response)
         self.assertIn("表达计划唤醒度为0.74", response)
         self.assertIn("修复驱力", response)
         self.assertIn("情绪张力", response)
@@ -1958,6 +2005,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "core_affect_vector_v0",
             )
             self.assertEqual(
+                result.context.relationship_timeline["schema_version"],
+                "relationship_timeline_v0",
+            )
+            self.assertEqual(
+                result.context.commitment_expression_plan["schema_version"],
+                "commitment_expression_plan_v0",
+            )
+            self.assertEqual(
+                result.context.apology_repair_language_trace["schema_version"],
+                "apology_repair_language_trace_v0",
+            )
+            self.assertEqual(
                 result.context.body_resource_budget["fatigue_state"]["level"],
                 "managed_low_noise",
             )
@@ -1966,6 +2025,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "managed_pre_dream",
             )
             self.assertIn("repair_drive", result.context.core_affect_vector)
+            self.assertTrue(result.context.relationship_timeline["relationship_continuity_reports"])
+            self.assertTrue(result.context.commitment_expression_plan["language_act_candidates"])
+            self.assertTrue(result.context.apology_repair_language_trace["repair_language_moves"])
 
     def test_resident_turn_writeback_organ_updates_turn_continuity_and_bundle(self):
         from life_v0.process_supervisor.resident_turn_writeback import (

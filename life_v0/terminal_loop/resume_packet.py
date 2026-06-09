@@ -11,6 +11,9 @@ def build_resumed_external_dialogue_packet(
     relation_subject: dict[str, Any],
     shared_term_surfaces: list[str],
     commitment_refs: list[str],
+    relationship_timeline_restore_refs: list[str],
+    commitment_expression_restore_refs: list[str],
+    apology_repair_restore_refs: list[str],
     session_envelope: dict[str, Any],
     dialogue_turn_restore_refs: list[str],
     dialogue_writeback_bundle_ref: str,
@@ -29,6 +32,9 @@ def build_resumed_external_dialogue_packet(
         },
         "shared_term_surfaces": shared_term_surfaces,
         "commitment_refs": commitment_refs,
+        "relationship_timeline_restore_refs": relationship_timeline_restore_refs,
+        "commitment_expression_restore_refs": commitment_expression_restore_refs,
+        "apology_repair_restore_refs": apology_repair_restore_refs,
         "expression_monitor_restore_refs": list(
             session_envelope.get("expression_monitor_restore_refs", [])
         ),

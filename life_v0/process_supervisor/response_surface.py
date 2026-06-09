@@ -7,8 +7,11 @@ def compose_life_response(
     *,
     external_utterance: str,
     relationship_graph: dict[str, Any] | None = None,
+    relationship_timeline: dict[str, Any] | None = None,
     shared_term_registry: dict[str, Any] | None = None,
     commitment_index: dict[str, Any] | None = None,
+    commitment_expression_plan: dict[str, Any] | None = None,
+    apology_repair_language_trace: dict[str, Any] | None = None,
     relation_turn_frame: dict[str, Any] | None = None,
     expression_plan: dict[str, Any] | None = None,
     life_context_frame: dict[str, Any] | None = None,
@@ -51,6 +54,21 @@ def compose_life_response(
     affect_arousal = (expression_plan or {}).get("affect_arousal")
     release_caution_level = (expression_plan or {}).get("release_caution_level")
     expression_tempo_mode = (expression_plan or {}).get("expression_tempo_mode")
+    continuity_reports = list((relationship_timeline or {}).get("relationship_continuity_reports", []))
+    trust_trajectories = list((relationship_timeline or {}).get("trust_trajectories", []))
+    continuity_state = ""
+    if continuity_reports and isinstance(continuity_reports[0], dict):
+        continuity_state = str(continuity_reports[0].get("continuity_state", ""))
+    trust_state = ""
+    if trust_trajectories and isinstance(trust_trajectories[0], dict):
+        trust_state = str(trust_trajectories[0].get("current_trust_state", ""))
+    commitment_act_order = list((commitment_expression_plan or {}).get("act_type_order", []))
+    repair_move_order = list((apology_repair_language_trace or {}).get("move_type_order", []))
+    condensed_repair_moves = [
+        move
+        for move in repair_move_order
+        if move in {"take_responsibility", "followup_commitment"}
+    ]
     has_offline_influence = bool(
         offline_influence_refs or replay_cue_count or dream_window_count or growth_candidate_count
     )
@@ -63,6 +81,10 @@ def compose_life_response(
         response = f"{response}。这次表达会沿着{semantic_goal}的语义焦点展开"
     if context_anchor_count:
         response = f"{response}，并保持{context_anchor_count}条自我叙事连续锚点"
+    if continuity_state:
+        response = f"{response}，关系连续体状态为{continuity_state}"
+    if trust_state:
+        response = f"{response}，当前信任状态为{trust_state}"
     if has_offline_influence:
         response = f"{response}，当前带着离线表达压力"
     if replay_cue_count:
@@ -73,6 +95,10 @@ def compose_life_response(
         response = f"{response}和{growth_candidate_count}个成长补丁候选"
     if body_signal_refs:
         response = f"{response}，表达层当前已接入身体信号"
+    if commitment_act_order:
+        response = f"{response}，当前承诺表达序列会经过{'、'.join(commitment_act_order)}"
+    if condensed_repair_moves:
+        response = f"{response}，当前修复语言动作会经过{'、'.join(condensed_repair_moves)}"
     if body_repair_drive:
         response = f"{response}，表达计划维持{body_repair_drive}的身体修复驱力"
     if fatigue_pressure:
