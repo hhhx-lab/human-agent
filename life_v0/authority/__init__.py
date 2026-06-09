@@ -472,7 +472,7 @@ def _classify_source(source: dict[str, Any], doc_path: Path) -> dict[str, Any]:
         life_targets = ["real_life", "real_relationship", "real_responsibility"]
         downstream_docs = [
             "docs/12_ai_and_cognitive_architecture_bridge.md",
-            "docs/v0/current_agent_shell_reference_2026.md",
+            "docs/v0/references/current_agent_shell_reference_2026.md",
         ]
 
     return {

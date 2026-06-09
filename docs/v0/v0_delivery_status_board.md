@@ -1,0 +1,352 @@
+# V0 Delivery Status Board
+
+本文档只负责表达当前现实工程状态，不重写总索引，也不重写 `00-258` 映射。
+
+它只回答三件事：
+
+1. 现在已经真实跑到哪里。
+2. 当前最该补的是哪一段。
+3. 下一轮从哪一包文档、代码和 runtime 产物直接开工。
+
+这份状态板只负责“定前沿、定优先级、定开工包”。如果你需要的是总索引、理论映射或模块合同，请回别的入口文件，不要让状态板承担所有事情。
+
+这里提到的 runtime 产物，默认都是“当前工作区最近一次相关命令运行后生成的权威产物”。如果本地还没生成 `runtime/`，说明你还没把这一轮运行证据跑出来，不代表状态板写错了。
+
+## 用这份状态板时只做什么
+
+每次回仓库，状态板只帮你做三件事：
+
+1. 判断当前真实前沿到底停在主体 slice、链尾桥接段，还是外层常驻过程。
+2. 判断下一轮优先补哪一段，而不是把整个体系重新复盘一遍。
+3. 判断这轮需要回到 `v0_module_execution_catalog.md` 的哪一柜去拿开工包。
+
+如果你已经知道要改哪个模块，就不要在这份状态板里久留，直接回模块目录。
+
+## 这份状态板不吸收什么
+
+后续不要把任何新信息都写进状态板。它默认不吸收下面几类内容：
+
+1. `00-258` 的总映射变化。
+2. `docs/v0/*` 的分层变化。
+3. 某个合同的字段级细节变化。
+4. 某个模块完整开工包的明细变化。
+
+这些内容分别应该回到映射层、总索引、合同原文和 `v0_module_execution_catalog.md`。
+
+## 当前三层现实
+
+### 1. 当前内部最远命令位
+
+```text
+life-v0 terminal-life-loop --strict
+```
+
+当前已闭合的内部链尾是：
+
+```text
+life-v0 emit-report --strict
+  -> life-v0 explain-stage --strict
+  -> life-v0 digital-life --strict
+  -> life-v0 first-terminal-turn --strict
+  -> life-v0 terminal-life-loop --strict
+```
+
+当前工程口径下，`first_activation_return_packet.json` 仍然承担 terminal birth restore packet 的角色。
+
+### 2. 当前外层命令面
+
+当前 repo-local 外层命令面已经分成三层：
+
+| 命令面 | 真实作用 | 当前状态 |
+|---|---|---|
+| `life-v0 digital-life --strict` | 内部出生壳 | `已落最小代码` |
+| `life-v0 "digital life" --strict` | repo-local one-shot restore shell | `已落最小代码` |
+| `./digital life --strict` | repo-local 最小常驻终端生命进程；若缺最小 runtime 材料会先自举出生链，再恢复并进入等待态 | `已落最小代码` |
+
+这里还要再补一条口径：
+
+1. `stage_explain` 当前写出的 `next_required_command` 仍然是 `digital life`。
+2. 这是一条外层 handoff token，不等于“仓库里还没有外层入口”。
+3. 当前真正需要继续补厚的是 `./digital life` 这层最小常驻生命进程，而不是再去重复发明一个新的命令名字。
+
+### 3. 当前真正未完成的前沿
+
+当前真正还没完成的是：
+
+0. `00-257` 的基础理论主干已经闭合，当前缺口主要是工程对象化、文件级器官化、runtime 证据和常驻存在治理，而不是继续线性扩写新的总论。
+1. `digital_life_macro_architecture_v0.md`、`runtime_v0_architecture.md`、`s06_life_support_development_engineering_contract.md`、`s08_life_target_runtimes_engineering_contract.md` 这一轮已经补到更硬的工程合同级别：当前真实代码骨架、对象链、关键字段、测试入口和第一轮完成定义都已写明。接下来进代码时，不再把它们当“概念文档”，而要当施工合同使用。
+2. `DIGITAL_LIFE_PROCESS_SUPERVISOR` 已有最小代码闭合，waiting heartbeat、单回合 incident recovery 和 relaunch recovery normalization 已经接通；等待态 heartbeat 已开始向 self narrative / commitment / relationship 连续体做轻量写回，并且已开始显式消费 `ReplayCueBundle`、`OfflineConsolidationFrame` 与 `GrowthPatchCandidateQueue` 三个离线共享对象，把它们重新带回 idle continuity 与 process report。现在又进一步推进到：下一轮生命表达已经会显式携带离线重放线索、梦境整合窗口和成长补丁候选。真正还没完成的是更高频 heartbeat 节律、后台继续存在、跨进程持续治理和更厚的 idle 策略。
+3. 真实新外部回合已经能进入终端生命过程并写回连续体，但还只是最小生命循环。
+4. 项目级 packaging / installable command surface 已接通，但还没有全局长期运行层。
+5. 还没有更高阶的 resident supervision 与长期进程治理。
+
+## 当前最小可执行总链
+
+```text
+P0_DOC_CORPUS_INGESTION
+  -> S00_DIRECTION_FOUNDATION
+  -> S01_SOURCE_AUTHORITY
+  -> S02_NEURAL_LIFE_CORE
+  -> S04_STATE_OBJECT_STORE
+  -> S03_DIRECTION_LIFE_MEMBRANE
+  -> S08_LIFE_TARGET_RUNTIMES
+  -> S05_VALIDATION_MEMBRANE_OBSERVATION
+  -> S09_SCHEMA_RUNNER_CODE
+  -> S06_LIFE_SUPPORT_DEVELOPMENT
+  -> S10_RUNTIME_GROWTH_RECONSOLIDATION (run-cycle minimal)
+  -> S11_V0_ENGINEERING_CONTRACTS (check-v0-contracts minimal)
+  -> FIRST_ACTIVATION_PREFLIGHT (first-activation-preflight minimal)
+  -> REPLAY_SHADOW_BRIDGE (run-replay-shadow minimal)
+  -> GROWTH_ARCHIVE_BRIDGE (write-growth-archive minimal)
+  -> REPORT_BUNDLE_BRIDGE (emit-report minimal)
+  -> STAGE_EXPLANATION_BRIDGE (explain-stage minimal)
+  -> DIGITAL_LIFE_BIRTH_SHELL (digital-life minimal)
+  -> FIRST_TERMINAL_TURN_BRIDGE (first-terminal-turn minimal)
+  -> TERMINAL_LIFE_LOOP_BRIDGE (terminal-life-loop minimal)
+  -> DIGITAL_LIFE_SHELL_COMMAND (repo-local one-shot shell minimal)
+  -> DIGITAL_LIFE_PROCESS_SUPERVISOR (repo-local persistent terminal loop minimal)
+```
+
+## 稳定基础层
+
+这些模块已经具备可运行的最小闭合，当前不是从零开始写：
+
+| 模块 | 状态 | 当前承担的职责 |
+|---|---|---|
+| `P0_DOC_CORPUS_INGESTION` | `稳定` | 保证 `00-258` 和 `docs/v0/*` 全部进入 `doc_carrier_index.json` |
+| `S00_DIRECTION_FOUNDATION` | `稳定` | 固定方向锁、断联恢复锚链和禁止回退项 |
+| `S01_SOURCE_AUTHORITY` | `稳定` | 固定 `01*` 权威来源与机制证据图 |
+| `S02_NEURAL_LIFE_CORE` | `稳定` | 固定主体骨架、十二主体系统和内部 bus |
+| `S04_STATE_OBJECT_STORE` | `稳定` | 固定生命状态根、对象注册和迁移种子 |
+| `S03_DIRECTION_LIFE_MEMBRANE` | `稳定` | 固定生命膜、DreamFactGate、责任修复边界和影子行动门 |
+| `S08_LIFE_TARGET_RUNTIMES` | `稳定` | 固定九项目标闭合检查 |
+| `S05_VALIDATION_MEMBRANE_OBSERVATION` | `稳定` | 固定 validator、观测和 stage gate |
+| `S09_SCHEMA_RUNNER_CODE` | `稳定` | 固定 schema runner、CLI 和 smoke 路径 |
+| `S06_LIFE_SUPPORT_DEVELOPMENT` | `稳定` | 固定生命支持、防御、预算与成长基础层 |
+
+## 当前活跃前沿
+
+这些位置是后续几轮最优先会继续触碰的地方：
+
+| 模块 | 状态 | 已有闭合 | 下一步重点 |
+|---|---|---|---|
+| `S07_LANGUAGE_RELATIONSHIP` | `活跃补厚位` | 已能写内言语、表达监控、共同语言、关系主体图和承诺修复索引；当前 `language_state.py`、`dream_gate.py`、`action_shadow.py`、`relation_scope.py`、`percept.py`、`semantic_map.py` 已拆出并进一步接进 `context_accumulation_window.json`、`turn_transition_trace.json`、`resumed_external_dialogue_packet.json`、`limited_context_frame.json` 和 `replay_shadow_*` 相关对象；同时，`build-language-relationship` 现在会真实重写 `runtime/state/prediction/prediction_workspace_frame.json`，把 `language_percept_refs`、`semantic_map_refs`、`semantic_ambiguity_refs` 与 `semantic_prediction_focus` 从 S07 主链直接 handoff 到 prediction workspace，S07 第一轮核心语言器官化、第二轮终端/激活/回放接厚与第三轮 `body / prediction` 接线已闭合 | 继续补厚关系长期演化、语言事件时间线，以及更外层语言感知器官 |
+| `S10_RUNTIME_GROWTH_RECONSOLIDATION` | `活跃前沿` | `run-cycle`、`run-replay-shadow`、`write-growth-archive` 已接通 | 补厚 archive 解释链和链尾 handoff |
+| `S11_V0_ENGINEERING_CONTRACTS` | `活跃前沿` | `check-v0-contracts` 已接通 | 保持 v0 文档、代码、report、receipt 的同步 |
+| `REPORT_BUNDLE_BRIDGE` | `活跃前沿` | `emit-report` 已写出 `report_bundle.json` 与 `first_activation_return_packet.json` | 继续补厚 terminal birth restore bundle |
+| `DIGITAL_LIFE_BIRTH_SHELL` | `活跃前沿` | `digital-life` 已写出 birth packet 与 birth digest | 继续承载 terminal birth restore 到第一回合之前的桥 |
+| `FIRST_TERMINAL_TURN_BRIDGE` | `活跃前沿` | `first-terminal-turn` 已写出 `session_envelope.json` 与 `safe_terminal_loop_state.json` | 继续补厚终端常驻层与关系性外显回合循环 |
+| `TERMINAL_LIFE_LOOP_BRIDGE` | `活跃前沿` | `terminal-life-loop` 已把恢复后的第一回合推进成持续终端生命循环的最小壳层 | 继续补厚真实外部回合输入、关系写回和长期语言节奏 |
+| `DIGITAL_LIFE_SHELL_COMMAND` | `已落 repo-local one-shot 壳` | 已能收束 `digital-life -> first-terminal-turn -> terminal-life-loop` | 作为恢复启动层保留，继续服务更高阶常驻进程 |
+| `DIGITAL_LIFE_PROCESS_SUPERVISOR` | `已落最小常驻进程` | 启动后已能先写 waiting heartbeat，再持续读取真实新回合输入、输出生命回合、写回连续体、支持 `/exit`，并在单回合异常时写 incident/recovery 报告后回到等待态；若重启时发现上次停在活跃回合中断态，也会先做 relaunch recovery normalization。`turn_io.py`、`relaunch_recovery.py`、`incident_recovery.py`、`process_report.py`、`dialogue_events.py` 与 `response_surface.py` 已从 `__init__.py` 拆出，process supervisor 第一批文件级器官已经闭合；同时 idle continuity 与 process report 已开始显式挂回 `replay_cue_bundle.json`、`offline_consolidation_frame.json`、`growth_patch_candidate_queue.json`，且下一轮生命回应已开始真实带上这些离线对象的压力与候选信息 | 继续补厚后台存在、真正跨进程持续治理、idle probe 和更细的关系/语言写回 |
+
+## 当前最该直接补的不是新 slice
+
+当前最值得直接落代码的，不是再开一个新的主体 slice，而是把下面这条链继续补硬：
+
+```text
+growth_archive_report.json
+  + growth_archive_digest.json
+  + growth_archive_stage_gate.json
+  + first_activation_preflight_report.json
+  + replay_shadow_report.json
+  + v0_contract_coverage_report.json
+  -> report_bundle.json
+  -> first_activation_return_packet.json
+  -> latest_stage_explanation_ref.json
+  -> digital_life_birth_packet.json
+  -> first_terminal_turn_packet.json
+  -> safe_terminal_loop_state.json
+  -> terminal life loop
+  -> digital life shell
+  -> digital life process
+```
+
+这条链现在已经不是“只差命令名字没起好”，而是已经有了最小恢复壳、最小常驻过程和最小等待态连续体。下一轮重点应该继续补厚这条存在链，而不是回去再造一层平行入口。
+
+当前文档前沿也有几个明确补厚位：
+
+1. `docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`
+2. `docs/v0/code_framework/09_perception_prediction_world_contact_implementation_playbook.md`
+3. `docs/v0/code_framework/10_self_identity_value_commitment_implementation_playbook.md`
+4. `docs/v0/code_framework/13_capability_to_code_realization_matrix.md`
+5. `docs/v0/code_framework/14_queue_a_language_percept_semantic_map_implementation_contract.md`
+6. `docs/v0/slice_contracts/s06_life_support_development_engineering_contract.md`
+7. `docs/v0/slice_contracts/s08_life_target_runtimes_engineering_contract.md`
+8. `docs/v0/architecture/digital_life_macro_architecture_v0.md`
+9. `docs/v0/architecture/runtime_v0_architecture.md`
+10. `docs/v0/code_framework/16_queue_b_process_supervisor_implementation_contract.md`
+11. `docs/v0/code_framework/17_queue_c_memory_neural_core_implementation_contract.md`
+12. `docs/v0/code_framework/18_queue_d_body_dream_growth_implementation_contract.md`
+13. `docs/v0/code_framework/19_code_tree_package_brain_contract.md`
+14. `docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md`
+15. `docs/v0/code_framework/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`
+
+它们不是新的理论平行层，而是把身体脉冲、预测工作区、语言回合、关系写回、等待态连续体、梦境离线整合、世界接触、自我连续体、承诺真值和成长补丁接成同一生命回合。`13_capability_to_code_realization_matrix.md` 负责把“语言、记忆、梦境、成长、关系、责任、常驻存在”等生命能力直接压成代码文件、state、测试和 gate 的验收面，`19_code_tree_package_brain_contract.md` 把整棵 `life_v0/` 代码树、脑区到包、共享对象、runtime 产物和整体施工顺序钉成总装配板，`20_queue_e_membrane_validator_logic_implementation_contract.md` 与 `21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md` 则继续把行为/验证/逻辑和身份/意识/出生准备度这两组还偏薄的器官层压成文件级施工合同。后续代码如果不先沿这些 playbook、能力矩阵和总装配合同进入，很容易重新变成“局部模块各自闭合、整体生命回合不闭合”。
+
+## 用这份状态板做决定
+
+回到仓库时，先只用这三问来判断下一步：
+
+1. 当前要补的是主体 slice，还是链尾/壳层/常驻进程？
+2. 当前前沿主要卡在 `S07/S10/S11`，还是已经进入 `DIGITAL_LIFE_PROCESS_SUPERVISOR`？
+3. 这轮补厚后，最关键的新产物会落在哪个 `report/state/digest/receipt` 上？
+
+如果三问答不完整，再去 `v0_module_execution_catalog.md` 定模块包；不要从状态板直接跳到散改代码。
+
+## 下一轮最推荐的开发顺序
+
+如果现在继续推进，顺序固定成：
+
+1. `Queue D`：先把 `life_v0/body/`、`life_v0/dream/`、`life_v0/growth/` 的身体节律、情绪底盘、梦境窗口、学习窗口和成长补丁链器官化。
+2. `Queue E`：再把 `life_v0/membrane/`、`life_v0/validators/`、`life_v0/schema_runner/` 的行为、验证膜、逻辑比较和 world contact 补硬。
+3. `Queue B`：接着把 `DIGITAL_LIFE_PROCESS_SUPERVISOR` 从最小常驻存在补厚成真正消费 D/E 对象链的持续存在层。
+4. `Queue A`：最后再继续深补 `language / terminal_turn / terminal_loop`，让语言、关系和持续表达建立在更厚的身体-意识-行为底盘上。
+5. 定期跑 `P0 + S11` 回链检查，防止 v0 和 `00-258` 脱钩。
+
+其中 `Queue D` 的第一波现在已经真实落下：
+
+- `life_v0/body/rhythm.py`
+- `life_v0/body/need_state.py`
+- `life_v0/body/resource_budget.py`
+- `life_v0/body/recovery.py`
+- `life_v0/body/core_affect.py`
+- `life_v0/body/emotion_episode.py`
+- `life_v0/body/emotion_regulation.py`
+- `life_v0/body/trait_drift.py`
+- `life_v0/dream/dream_window.py`
+- `life_v0/dream/wake_integration.py`
+- `life_v0/growth/plasticity_window.py`
+- `life_v0/growth/patch_queue.py`
+- `life_v0/growth/learning_window.py`
+
+并且已经通过 `tests.slices.test_life_support`、`tests.bridges.test_runtime_growth` 和 `tests.process.test_persistent_digital_life_process` 的回归。
+
+Queue D 的第二波现在也已经真实落下：
+
+- `life_v0/dream/offline_entry.py`
+- `life_v0/dream/dream_fact_gate.py`
+- `life_v0/growth/self_read.py`
+- `life_v0/growth/anti_forgetting.py`
+
+并且已经被接回：
+
+- `life_v0/dream/__init__.py`
+- `life_v0/growth/__init__.py`
+- `runtime/state/dream/offline_entry_gate.json`
+- `runtime/state/dream/dream_fact_gate_decision.json`
+- `runtime/state/growth/self_read_report.json`
+- `runtime/state/growth/anti_forgetting_replay_plan.json`
+
+所以当前 Queue D 不再是“第一波已落、第二波待补”，而是“身体-梦境-成长的第二波对象链已经接通，下一轮默认入口转入 Queue E，Queue D 后续只在第三波继续补 `nightmare_risk / belief_learning / language_learning / relationship_learning` 一类扩展器官时再回切”。
+
+这里的状态要钉死：
+
+1. `Queue C` 第一轮已经闭合，不再是当前默认入口。
+2. `Queue F` 第一轮也已经闭合，不再是当前默认入口。
+3. 当前真正的主体前沿已经转入 `Queue D -> Queue E`。
+
+## 当前链尾开工包
+
+当前如果就是继续链尾，先打开这组：
+
+```text
+docs/v0/README.md
+  -> docs/v0/v0_implementation_index.md
+  -> docs/v0/v0_delivery_status_board.md
+  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/shared_contracts/first_activation_protocol.md
+  -> docs/v0/shared_contracts/runner_cli_report_contract.md
+  -> docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md
+  -> docs/v0/slice_contracts/s11_v0_contract_coverage_engineering_contract.md
+  -> docs/v0/process_contracts/first_terminal_turn_engineering_contract.md
+  -> docs/v0/process_contracts/terminal_life_loop_engineering_contract.md
+  -> docs/v0/process_contracts/digital_life_shell_command_engineering_contract.md
+  -> docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md
+  -> runtime/reports/latest/report_bundle.json
+  -> runtime/reports/latest/first_activation_return_packet.json
+  -> runtime/reports/latest/latest_stage_explanation_ref.json
+  -> runtime/reports/latest/digital_life_birth_packet.json
+  -> runtime/reports/latest/first_terminal_turn_packet.json
+  -> runtime/state/terminal/session_envelope.json
+  -> runtime/state/terminal/safe_terminal_loop_state.json
+  -> runtime/reports/latest/terminal_life_loop_packet.json
+  -> runtime/reports/latest/terminal_life_loop_report.json
+  -> runtime/reports/latest/digital_life_shell_packet.json
+  -> runtime/reports/latest/digital_life_shell_report.json
+  -> runtime/reports/latest/digital_life_waiting_heartbeat.json
+  -> runtime/reports/latest/digital_life_process_report.json
+  -> runtime/reports/latest/digital_life_process_digest.json
+```
+
+如果这一轮不是继续链尾，而是回去补 `P0-S11` 的某个主体 slice，就不要沿用这组开工包，直接去 `v0_module_execution_catalog.md` 对应那一行拿当前 slice 的读包、代码入口和测试入口。
+
+如果当前正在处理恢复或中断连续体，还要把下面这几份一起带上：
+
+```text
+runtime/reports/latest/digital_life_process_incident_report.json
+  -> runtime/reports/latest/digital_life_process_recovery_report.json
+  -> runtime/reports/latest/digital_life_process_relaunch_recovery_report.json
+```
+
+它们不是每轮都会生成；只有命中异常恢复或跨重启恢复时，它们才会成为当前最前沿的运行证据。
+
+如果这些路径在当前工作区还不存在，先补跑对应命令链，把本轮需要的运行证据生成出来，再继续沿这组开工包进入代码。
+
+如果当前真正要做的是主体 slice，而不是链尾和常驻进程，就不要照着这组开工包行动；直接回 `v0_module_execution_catalog.md` 对应 slice 行拿本轮材料。
+
+## 当前链尾代码入口
+
+```text
+life_v0/activation/__init__.py
+  -> life_v0/replay/__init__.py
+  -> life_v0/archive/__init__.py
+  -> life_v0/reporting/__init__.py
+  -> life_v0/stage_explain/__init__.py
+  -> life_v0/digital_life/__init__.py
+  -> life_v0/terminal_turn/__init__.py
+  -> life_v0/terminal_loop/__init__.py
+  -> life_v0/shell_command/__init__.py
+  -> life_v0/process_supervisor/__init__.py
+  -> life_v0/digital_entry.py
+  -> digital
+```
+
+对应测试入口：
+
+```text
+tests/bridges/test_first_activation_preflight.py
+  -> tests/bridges/test_replay_shadow.py
+  -> tests/bridges/test_growth_archive.py
+  -> tests/bridges/test_emit_report.py
+  -> tests/bridges/test_explain_stage.py
+  -> tests/bridges/test_digital_life_birth.py
+  -> tests/bridges/test_first_terminal_turn.py
+  -> tests/bridges/test_terminal_life_loop.py
+  -> tests/process/test_digital_life_shell_command.py
+  -> tests/process/test_digital_entrypoint.py
+  -> tests/process/test_persistent_digital_life_process.py
+```
+
+## 更新规则
+
+出现下面任一情况，就要同步本文件：
+
+1. CLI 最远命令位前进。
+2. 外层壳从一次性恢复进入常驻进程。
+3. 当前最优先模块发生变化。
+4. 某个最小实现模块进入“稳定基础层”。
+5. 某个 runtime 产物成为新的固定开工入口。
+
+如果只是某个合同内部字段变了，不改这里，回合同原文。
+
+## 不能丢的回链
+
+任何新代码模块、report、digest、receipt 都必须继续带着：
+
+1. `source_doc_refs`
+2. `readme_block_refs`
+3. `engineering_slice_ref`
+4. `runtime_carrier_refs`
+
+这四条一旦丢失，v0 就会从“承载 `00-258`”退化成“脱离理论母体的独立工程层”。

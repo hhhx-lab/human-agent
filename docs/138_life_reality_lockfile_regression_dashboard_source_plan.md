@@ -23,7 +23,7 @@
 
 ## 权威来源刷新锚点
 
-下表是本层新增的 authority intake queue。它不取代已有 `01*` 文献矩阵，而是为后续补写 `02-13`、`85-90`、`92-137` 的理论细节提供最新优先级。每个来源都要在下一轮拆成对应文档的对象、字段、validator 和 dashboard source。
+下表是本层新增的 authority intake queue。它不取代已有 `01*` 文献矩阵，而是为后续把 `02-13`、`85-90`、`92-137` 已经写定的理论主干继续压成对象、字段、validator 和 dashboard source 提供最新优先级。每个来源都要在下一轮拆成对应文档的对象、字段、validator 和 dashboard source。
 
 | id | 领域 | 权威来源 | 年份 | 链接/DOI | 生命实现路线 | dashboard 落点 |
 |---|---|---|---|---|---|---|

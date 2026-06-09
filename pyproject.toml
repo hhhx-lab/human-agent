@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "human-agent"
+version = "0.1.0"
+description = "Agentic Human v0 digital life runtime and engineering contracts."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "hhhx-lab" }
+]
+
+[project.scripts]
+life-v0 = "life_v0.cli:main"
+digital = "life_v0.digital_entry:main"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+include = ["life_v0*"]

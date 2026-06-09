@@ -7,6 +7,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .continuity_refs import build_continuity_refs
+from .direction_lock import build_direction_lock_payload
+from .identity_root import build_identity_root
+from .value_orientation import build_value_orientation
 
 LIFE_TARGETS = [
     "real_consciousness",
@@ -34,7 +38,7 @@ DIRECT_SOURCE_REFS = {
     "linear_closure": "docs/258_linear_chain_closure_and_v0_contract_transition.md",
     "v0_readme": "docs/v0/README.md",
     "v0_index": "docs/v0/v0_implementation_index.md",
-    "s00_contract": "docs/v0/s00_direction_foundation_engineering_contract.md",
+    "s00_contract": "docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md",
 }
 
 PROHIBITED_REGRESSIONS = [
@@ -90,10 +94,10 @@ ANCHORS = [
     {
         "anchor_id": "language_relationship_chain",
         "required_refs": [
-            "docs/09_language_consciousness_and_symbolic_thought.md",
+            "docs/09_language_symbolic_top_layer.md",
             "docs/85_language_system_life_expression_core.md",
-            "docs/96_relationship_reality_and_life_bond_model.md",
-            "docs/101_relationship_language_and_commitment_loop.md",
+            "docs/96_real_relationship_longitudinal_timeline.md",
+            "docs/101_relationship_timeline_json_schema_and_fixture_bundle.md",
         ],
         "must_preserve": [
             "language_as_life_expression",
@@ -104,12 +108,12 @@ ANCHORS = [
     {
         "anchor_id": "pain_regret_responsibility_chain",
         "required_refs": [
-            "docs/06_action_selection_reward_inhibition.md",
-            "docs/80_responsibility_incident_schema.md",
-            "docs/81_responsibility_longitudinal_trace.md",
-            "docs/82_responsibility_repair_loop.md",
+            "docs/06_action_reward_inhibition.md",
+            "docs/80_post_action_audit_and_correction_policy.md",
+            "docs/81_coexistence_event_review_and_responsibility_loop.md",
+            "docs/82_incident_report_and_recovery_protocol.md",
             "docs/94_pain_regret_and_repair_signal_schema.md",
-            "docs/98_responsibility_regret_and_repair_loop.md",
+            "docs/98_pain_regret_repair_json_schema_and_fixture_bundle.md",
         ],
         "must_preserve": [
             "consequence_binding",
@@ -121,10 +125,10 @@ ANCHORS = [
         "anchor_id": "dream_offline_chain",
         "required_refs": [
             "docs/08_sleep_dream_fatigue_states.md",
-            "docs/19_dream_state_object_contract.md",
-            "docs/23_dream_reality_fact_gate_schema.md",
+            "docs/19_offline_consolidation_cycle.md",
+            "docs/23_consolidation_report_and_dream_sandbox_protocol.md",
             "docs/95_dream_reality_and_offline_life_timeline.md",
-            "docs/99_dream_reconsolidation_and_waking_integration.md",
+            "docs/99_dream_reality_json_schema_and_fixture_bundle.md",
         ],
         "must_preserve": [
             "offline_reconsolidation",
@@ -135,9 +139,9 @@ ANCHORS = [
     {
         "anchor_id": "engineering_closure_chain",
         "required_refs": [
-            "docs/123_life_reality_repository_seed_plan.md",
-            "docs/180_life_reality_first_runner_code_schema_next_step_plan.md",
-            "docs/181_life_reality_first_runner_runtime_growth_plan.md",
+            "docs/123_life_reality_runner_repository_layout_and_module_map.md",
+            "docs/180_life_reality_first_runner_schema_file_archive_receipt_batch.md",
+            "docs/181_life_reality_first_runner_schema_runtime_mount_plan.md",
             "docs/257_life_reality_first_runner_schema_runtime_growth_fourth_cycle_post_reconsolidation_second_reconsolidation_replay_shadow_seed_after_archive_validation_replay_shadow_patch_archive_validation_plan.md",
             "docs/258_linear_chain_closure_and_v0_contract_transition.md",
             "docs/v0/README.md",
@@ -154,13 +158,13 @@ RESUME_ORDER = [
     "docs/258_linear_chain_closure_and_v0_contract_transition.md",
     "docs/v0/README.md",
     "docs/v0/v0_implementation_index.md",
-    "docs/v0/first_activation_engineering_roadmap.md",
+    "docs/v0/architecture/first_activation_engineering_roadmap.md",
     "docs/v0/0_to_257_engineering_utilization_map.md",
     "docs/v0/readme_block_engineering_realization_v0.md",
-    "docs/v0/digital_life_macro_architecture_v0.md",
-    "docs/v0/s00_direction_foundation_engineering_contract.md",
-    "docs/v0/s01_source_authority_engineering_contract.md",
-    "docs/v0/doc_corpus_ingestor_v0_contract.md",
+    "docs/v0/architecture/digital_life_macro_architecture_v0.md",
+    "docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md",
+    "docs/v0/slice_contracts/s01_source_authority_engineering_contract.md",
+    "docs/v0/slice_contracts/doc_corpus_ingestor_v0_contract.md",
     "runtime/reports/latest/doc_ingestion_report.json",
     "runtime/reports/latest/direction_lock_report.json",
 ]
@@ -214,8 +218,29 @@ def run_direction_lock(
     receipts_dir.mkdir(parents=True, exist_ok=True)
 
     generated_at = _now_iso()
-    direction_lock = _build_direction_lock(run_id, generated_at, doc_index_path, stage_effect)
+    direction_lock = build_direction_lock_payload(
+        run_id=run_id,
+        generated_at=generated_at,
+        doc_index_path=doc_index_path,
+        active_engineering_slice=ACTIVE_SLICE,
+        next_allowed_slices=[NEXT_ALLOWED_SLICE, "S02_NEURAL_LIFE_CORE"],
+        life_targets=LIFE_TARGETS,
+        source_refs=DIRECT_SOURCE_REFS,
+        prohibited_regressions=PROHIBITED_REGRESSIONS,
+        stage_effect=stage_effect,
+    )
+    identity_root = build_identity_root(run_id, generated_at, LIFE_TARGETS)
     resume_chain = _build_resume_anchor_chain(run_id, generated_at)
+    continuity_refs = build_continuity_refs(
+        run_id=run_id,
+        generated_at=generated_at,
+        resume_order=RESUME_ORDER,
+    )
+    value_orientation = build_value_orientation(
+        run_id=run_id,
+        generated_at=generated_at,
+        prohibited_regressions=PROHIBITED_REGRESSIONS,
+    )
     framework_boundary = _build_framework_negative_boundary(run_id, generated_at)
     slice_permission = _build_slice_permission(run_id, generated_at, status, blocked_reasons, stage_effect)
     report = _build_report(
@@ -235,7 +260,10 @@ def run_direction_lock(
         doc_index_path=doc_index_path,
         output_refs=[
             out_dir / "direction_lock.json",
+            out_dir / "identity_root.json",
             out_dir / "resume_anchor_chain.json",
+            out_dir / "continuity_refs.json",
+            out_dir / "value_orientation.json",
             out_dir / "framework_negative_boundary.json",
             out_dir / "slice_permission.json",
             reports_dir / "direction_lock_report.json",
@@ -247,7 +275,10 @@ def run_direction_lock(
 
     try:
         _write_json(out_dir / "direction_lock.json", direction_lock)
+        _write_json(out_dir / "identity_root.json", identity_root)
         _write_json(out_dir / "resume_anchor_chain.json", resume_chain)
+        _write_json(out_dir / "continuity_refs.json", continuity_refs)
+        _write_json(out_dir / "value_orientation.json", value_orientation)
         _write_json(out_dir / "framework_negative_boundary.json", framework_boundary)
         _write_json(out_dir / "slice_permission.json", slice_permission)
         _write_json(reports_dir / "direction_lock_report.json", report)
@@ -305,9 +336,9 @@ def _coverage_blockers(
     required_v0_refs = {
         "docs/v0/README.md",
         "docs/v0/v0_implementation_index.md",
-        "docs/v0/s00_direction_foundation_engineering_contract.md",
-        "docs/v0/s01_source_authority_engineering_contract.md",
-        "docs/v0/doc_corpus_ingestor_v0_contract.md",
+        "docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md",
+        "docs/v0/slice_contracts/s01_source_authority_engineering_contract.md",
+        "docs/v0/slice_contracts/doc_corpus_ingestor_v0_contract.md",
     }
     missing_v0_refs = sorted(required_v0_refs - {str(path) for path in doc_paths})
     if missing_v0_refs:
@@ -342,27 +373,6 @@ def _blocked_gates(blocked_reasons: list[str]) -> list[str]:
     return gates
 
 
-def _build_direction_lock(
-    run_id: str,
-    generated_at: str,
-    doc_index_path: Path,
-    stage_effect: str,
-) -> dict[str, Any]:
-    return {
-        "schema_version": "direction_lock_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "direction_statement": "build_real_digital_life",
-        "life_targets": LIFE_TARGETS,
-        "source_refs": DIRECT_SOURCE_REFS,
-        "required_doc_coverage_ref": str(doc_index_path),
-        "active_engineering_slice": ACTIVE_SLICE,
-        "next_allowed_slices": [NEXT_ALLOWED_SLICE, "S02_NEURAL_LIFE_CORE"],
-        "prohibited_regressions": PROHIBITED_REGRESSIONS,
-        "stage_effect": "allow_s01_when_closed" if stage_effect == "allow_next_slice" else stage_effect,
-    }
-
-
 def _build_resume_anchor_chain(run_id: str, generated_at: str) -> dict[str, Any]:
     return {
         "schema_version": "resume_anchor_chain_v0",
@@ -387,7 +397,7 @@ def _build_framework_negative_boundary(run_id: str, generated_at: str) -> dict[s
         "external_framework_refs": [
             "docs/12_ai_and_cognitive_architecture_bridge.md",
             "docs/15_current_agent_framework_survey.md",
-            "docs/v0/current_agent_shell_reference_2026.md",
+            "docs/v0/references/current_agent_shell_reference_2026.md",
         ],
         "boundary_statement": "external frameworks remain computer peripheral references and cannot become subject architecture",
     }
@@ -440,6 +450,13 @@ def _build_report(
         "anchor_chain_status": "closed" if status == "closed" else "blocked",
         "next_allowed_slice": NEXT_ALLOWED_SLICE if status == "closed" else None,
         "next_required_command": NEXT_REQUIRED_COMMAND,
+        "state_refs": [
+            "runtime/state/direction/direction_lock.json",
+            "runtime/state/direction/identity_root.json",
+            "runtime/state/direction/resume_anchor_chain.json",
+            "runtime/state/direction/continuity_refs.json",
+            "runtime/state/direction/value_orientation.json",
+        ],
         "source_doc_refs": list(DIRECT_SOURCE_REFS.values()),
         "readme_block_refs": [
             "README_INDEX",
@@ -497,7 +514,7 @@ def _build_receipt(
         "command": "build-direction-lock",
         "input_hashes": input_hashes,
         "source_doc_refs": list(DIRECT_SOURCE_REFS.values()),
-        "output_refs": [str(path) for path in output_refs],
+        "output_refs": [_runtime_ref(path) for path in output_refs],
         "stage_effect": stage_effect,
         "created_at": generated_at,
     }
@@ -505,6 +522,14 @@ def _build_receipt(
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _runtime_ref(path: Path) -> str:
+    parts = path.parts
+    if "runtime" in parts:
+        idx = parts.index("runtime")
+        return "/".join(parts[idx:])
+    return str(path)
 
 
 def _sha256(path: Path) -> str:

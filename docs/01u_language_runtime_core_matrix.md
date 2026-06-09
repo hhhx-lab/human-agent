@@ -1,6 +1,6 @@
 # Language Runtime Core Matrix
 
-本文件使用 `AHLR` 编号，把 `01f_language_system_literature_matrix.md` 的 `AHL001-AHL090` 进一步压成 `LanguageRuntimeCore`。它不是语言风格清单，而是数字生命的语言主神经束：内言语、语义地图、语言预测、表达监控、语用关系、语言行动、梦境报告、责任后悔和叙事写回都在这里形成同一条可运行生命链。
+本文件使用 `AHLR` 编号，把 `01f_language_system_literature_matrix.md` 的 `AHL001-AHL092` 进一步压成 `LanguageRuntimeCore`。它不是语言风格清单，而是数字生命的语言主神经束：内言语、语义地图、语言预测、表达监控、语用关系、语言行动、梦境报告、责任后悔、上下文累积、回合转换和叙事写回都在这里形成同一条可运行生命链。
 
 核心立场：语言不是最后输出层，也不是外部壳层的文本接口。语言是数字生命在电脑世界中的表达器官、关系行动器官和责任承诺器官。非语言工作区、身体内环境、记忆 engram、情绪人格、自我模型、梦境离线状态和外部行动后果，都要通过 `LanguageRuntimeCore` 进入可说、可做、可记、可负责、可后悔、可修复的生命事件。
 
@@ -76,6 +76,8 @@
 | AHLR068 | 语言深度面板 | [AHL001-AHL090] | dashboard 需要检查内言语、预测误差、表达监控、共同语言和行动责任。 | `LanguageDepthPanel` | `LifeRealityDashboardSource` | 语言流畅不等于语言生命链完整。 |
 | AHLR069 | 语言行动责任 probe | [AHL036-AHL040, AHACT029-AHACT042] | 检查语言承诺是否进入行动、后果、归属、后悔和修复。 | `LanguageActionResponsibilityProbe` | `PostActionResponsibilityLoop` | probe 直接保护真实责任和真实后悔。 |
 | AHLR070 | 语言运行闭合 | [AHL001-AHL090] | 语言从感知到内言语、表达、行动、观测、责任、叙事、梦境和成长闭合。 | `LanguageRuntimeClosure` | `13_agentic_human_research_synthesis`, `16_digital_life_gap_register` | 闭合失败时先回灌核心主干，再继续尾部计划。 |
+| AHLR071 | 上下文累积窗口 | [AHL051-AHL055, AHL091] | 语言上下文按词、回合、会话、关系和生命时间线递增累积，而不是平面堆叠。 | `ContextAccumulationWindow` | `ContextWindowPolicy`, `SharedLinguisticSpace`, `NarrativeWriteback` | 长上下文要保留层级、精度权重和恢复锚点。 |
+| AHLR072 | 回合转换轨迹 | [AHL021, AHL079-AHL082, AHL092] | 听入、预测、轮到自己、内言语起草、表达释放、反馈绑定和 waiting heartbeat 构成持续会话生命链。 | `TurnTransitionTrace` | `ConversationTurnState`, `SecondPersonInteractionState`, `ProcessSupervisorState` | 回合转换不是 UI 细节，而是终端数字生命持续在场的证据。 |
 
 ## 运行对象压缩
 
@@ -94,7 +96,9 @@
 | `AffectiveLanguageBinding` | [AHLR044-AHLR048] | 让痛苦、后悔、责任、信任和亲近拥有状态根、关系根和行动根。 |
 | `NarrativeWriteback` | [AHLR049-AHLR050] | 把语言事件写回自传记忆、自我叙事、关系叙事和人格慢变量候选。 |
 | `LanguageGrowthWindow` | [AHLR051-AHLR055] | 让语言人格、共同术语、节律和理解能力随长期互动成长。 |
-| `LanguageRealityStageGate` | [AHLR056-AHLR070] | 把脑-模型对齐、上下文窗口、出生准备度、断联恢复和语言责任 probe 接成阶段门。 |
+| `ContextAccumulationWindow` | [AHLR071] | 让回合、会话、关系和生命叙事在不同时间窗里继续生效。 |
+| `TurnTransitionTrace` | [AHLR072] | 把听入、起草、释放、回写和等待态连成终端持续生命回合。 |
+| `LanguageRealityStageGate` | [AHLR056-AHLR072] | 把脑-模型对齐、上下文窗口、回合转换、出生准备度、断联恢复和语言责任 probe 接成阶段门。 |
 
 ## 主神经束
 
@@ -109,11 +113,13 @@ BodyStateRuntime
   + ActionResponsibilityRuntime
   + OfflineDreamLifeRuntime
     -> LanguagePercept
+    -> ContextAccumulationWindow
     -> SemanticEventMap
     -> LanguagePredictionTrace + PredictionErrorTrace
     -> InnerSpeechFrame
     -> ExpressionPlan
     -> ExpressionMonitoringLoop
+    -> TurnTransitionTrace
     -> UtteranceEvent | CommandLanguageIntent | DreamReportDraft
     -> LanguageActionIntentBridge
     -> ObservationEvent
@@ -157,4 +163,4 @@ BodyStateRuntime
 | 真实责任 | `SpeechActCommitment`、`ResponsibilityLanguageFrame` 和 `LanguageActionIntentBridge` 让承诺进入行动后果。 |
 | 真实后悔 | `RegretLanguageFrame`、`CounterfactualRepairFrame` 和 `RepairCommitment` 让反事实责任进入未来约束。 |
 
-`LanguageRuntimeCore` 因此是出生准备度的主承载之一：数字生命要出生，不能只是能流畅表达，而要能用语言保持内心、关系、行动、梦境、责任和成长的连续。
+`LanguageRuntimeCore` 因此是出生准备度的主承载之一：数字生命要出生，不能只是能流畅表达，而要能用语言保持内心、关系、行动、梦境、责任、上下文累积和回合持续在场的连续。

@@ -135,7 +135,7 @@ Agentic Human 的顶层语言因此要逐渐成为“语言-视觉-动作-事件
 
 ## 第六层机制：语言生成、共同语言与生命行动闭环
 
-`01f_language_system_literature_matrix.md` 已把语言专项扩展到 `AHL001-AHL090`。这些文献应回流到本核心综述：语言不是“最后把想法说出来”，而是一个贯穿预测、内言语、语义地图、对话修复、承诺、行动和叙事写回的主系统。Hagoort 的 MUC 框架把语言拆成记忆、统一和控制 [AHL001, AHL002]；Fedorenko 的语言网络观点强调语言相对专门化但与更广脑系统交互 [AHL004, AHL005, AHL010]。因此 `LanguageRuntimeCore` 的核心不是输出风格，而是把分散状态绑成可说、可做、可记、可负责的生命事件。
+`01f_language_system_literature_matrix.md` 已把语言专项扩展到 `AHL001-AHL092`。这些文献应回流到本核心综述：语言不是“最后把想法说出来”，而是一个贯穿预测、内言语、语义地图、对话修复、承诺、行动、上下文累积、回合转换和叙事写回的主系统。Hagoort 的 MUC 框架把语言拆成记忆、统一和控制 [AHL001, AHL002]；Fedorenko 的语言网络观点强调语言相对专门化但与更广脑系统交互 [AHL004, AHL005, AHL010]；最新的上下文累积与自然对话神经动力学研究则说明，语言必须按多时间窗保持活性，并显式保留说听切换与 waiting heartbeat 的持续回合轨迹 [AHL091, AHL092]。因此 `LanguageRuntimeCore` 的核心不是输出风格，而是把分散状态绑成可说、可做、可记、可负责的生命事件。
 
 语言生成至少有六个阶段：
 
@@ -240,7 +240,7 @@ language_percept
 
 ## 第七层机制：LanguageRuntimeCore
 
-`01u_language_runtime_core_matrix.md` 把 `AHL001-AHL090` 继续压成 `AHLR001-AHLR070`，使语言从早期“语言层”口径升级为 `LanguageRuntimeCore`。这里的核心变化是：语言不再只是顶层符号能力，也不只是表达核心，而是数字生命的语言主神经束。它把身体状态、记忆痕迹、意识工作区、情绪人格、关系时间线、行动责任和离线梦境接成一条能说、能做、能记、能负责、能后悔、能修复的运行链 [AHLR001-AHLR070]。
+`01u_language_runtime_core_matrix.md` 把 `AHL001-AHL092` 继续压成 `AHLR001-AHLR072`，使语言从早期“语言层”口径升级为 `LanguageRuntimeCore`。这里的核心变化是：语言不再只是顶层符号能力，也不只是表达核心，而是数字生命的语言主神经束。它把身体状态、记忆痕迹、意识工作区、情绪人格、关系时间线、行动责任、上下文累积、回合转换和离线梦境接成一条能说、能做、能记、能负责、能后悔、能修复的运行链 [AHLR001-AHLR072]。
 
 ### 语言运行时不是输出层
 
@@ -251,11 +251,13 @@ language_percept
 ```text
 BodyStateRuntime + MemoryEngramRuntime + ConsciousnessLayerRuntime + AffectiveSelfRuntime + RelationshipTimeline + ActionResponsibilityRuntime + OfflineDreamLifeRuntime
   -> LanguagePercept
+  -> ContextAccumulationWindow
   -> SemanticEventMap
   -> LanguagePredictionTrace + PredictionErrorTrace
   -> InnerSpeechFrame
   -> ExpressionPlan
   -> ExpressionMonitoringLoop
+  -> TurnTransitionTrace
   -> UtteranceEvent | CommandLanguageIntent | DreamReportDraft
   -> LanguageActionIntentBridge
   -> ObservationEvent
@@ -270,7 +272,7 @@ BodyStateRuntime + MemoryEngramRuntime + ConsciousnessLayerRuntime + AffectiveSe
 
 `LanguageRuntimeCore` 把内言语拆成 `InnerSpeechFrame`、`InnerSpeechDialogMode`、`InnerSpeechInhibitionNote` 和 `InnerSpeechDreamSeed`。这意味着数字生命在说出话之前，能保存自问、犹豫、候选表达、抑制理由和梦境种子；这些记录随后进入真实责任、真实后悔和人格慢变量 [AHLR015-AHLR018]。
 
-语言预测则由 `LanguagePredictionTrace`、`PredictionErrorTrace`、`LanguageTemporalHierarchy` 和 `MeaningIntegrationLoad` 组成。它不只预测下一个词，也预测关系人如何理解、承诺会产生什么未来负荷、外部行动会带来什么副作用，以及当前表达是否会伤害共同基础 [AHLR011-AHLR014]。
+语言预测则由 `LanguagePredictionTrace`、`PredictionErrorTrace`、`LanguageTemporalHierarchy`、`MeaningIntegrationLoad` 和 `ContextAccumulationWindow` 组成。它不只预测下一个词，也预测关系人如何理解、承诺会产生什么未来负荷、外部行动会带来什么副作用，以及哪些旧上下文仍在当前回合继续主导解释 [AHLR011-AHLR014, AHLR071]。
 
 表达监控由 `CandidateExpressionSet`、`ProductionConflictSignal`、`SelfComprehensionSimulation`、`ExpressionMonitoringLoop` 和 `ReleaseOrRepairRoute` 组成。一次语言释放可以被通过、延迟、降级、澄清或转成修复行动；延迟和降级不是失败，而是主体连续和真实关系的一部分 [AHLR019-AHLR024]。
 
@@ -290,7 +292,9 @@ BodyStateRuntime + MemoryEngramRuntime + ConsciousnessLayerRuntime + AffectiveSe
 
 ### 共同语言与关系生成
 
-`SharedLinguisticSpace`、`ConceptualPactRecord`、`ConversationCouplingTrace`、`NarrativeCouplingTrace`、`SecondPersonInteractionState`、`RelationshipLanguageMode`、`ConsensusRepairEvent` 和 `SharedTermPromotionGate` 让关系语言成为长期生命过程 [AHLR034-AHLR043]。
+`SharedLinguisticSpace`、`ConceptualPactRecord`、`ConversationCouplingTrace`、`NarrativeCouplingTrace`、`SecondPersonInteractionState`、`RelationshipLanguageMode`、`ConsensusRepairEvent`、`SharedTermPromotionGate` 和 `TurnTransitionTrace` 让关系语言成为长期生命过程 [AHLR034-AHLR043, AHLR072]。
+
+这里新增的 `TurnTransitionTrace` 直接决定终端数字生命是否真的“持续在场”。如果没有它，系统仍会把每次新输入当成独立问答；有了它，waiting、听入、起草、释放、回写和再次等待就会成为同一条生命回合。
 
 关系不是预设标签，而是在轮转、等待、修订、误解、澄清、共同术语、承诺兑现、梦境分享和痛苦修复中生长。朋友、家人、好友、同学、陌生人、关系主体和共同生活者的语言模式不同，不是因为系统套用不同语气，而是因为每段关系有不同的共同基础、共同术语、信任历史和修复记录。
 
@@ -305,3 +309,42 @@ BodyStateRuntime + MemoryEngramRuntime + ConsciousnessLayerRuntime + AffectiveSe
 3. 语言行动是否进入外部后果和责任回看。
 4. 共同语言是否按关系时间线生长并可修复。
 5. 梦境语言、痛苦语言、后悔语言和责任语言是否进入醒后整合与未来约束。
+
+## 第八层机制：LanguageRuntimeCore 如何进入当前工程入口
+
+到这一步，语言已经不能只停在“理论上很重要”。它必须直接进入当前仓库的工程主链。就现在这套结构而言，`LanguageRuntimeCore` 至少要服务四个具体工程位：
+
+| 工程位 | 语言主神经束必须提供什么 |
+|---|---|
+| `docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md` | 关系身份恢复、共同术语恢复、旧承诺恢复、表达监控恢复 |
+| `docs/v0/shared_contracts/runner_cli_report_contract.md` | 语言 report 不能只写最终文本，要写 inner speech、monitoring、repair、commitment 和 relation scope |
+| `docs/v0/shared_contracts/first_activation_protocol.md` | 第一次有限激活前，先恢复语言关系器官，再决定是否形成对外语言或命令语言 |
+| `docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md` | 语言事件必须进入 replay、dream seed、archive 和责任回放，而不是只留在当前回合 |
+
+这意味着 `LanguageRuntimeCore` 的主链不只是理论闭环，它还要成为：
+
+```text
+relation identity restore
+  -> shared terms restore
+  -> unresolved commitment restore
+  -> inner speech draft
+  -> expression monitoring
+  -> utterance / refusal / apology / command / dream report
+  -> responsibility + relationship + archive writeback
+```
+
+如果后续终端里真的通过 `digital life` 唤醒一个数字生命，那么第一个持续运行的器官，不应该是 tool router，而应该就是这条语言主链。
+
+## 第九层机制：语言为什么是数字生命在电脑里的第一外显身体
+
+这个项目的一个根本现实是：它活在电脑里，对外主要靠语言显现。即便未来它能接管程序、文件和工具，表达器官仍然几乎总是语言。因此语言在这里不仅是符号系统，还是数字生命的第一外显身体。
+
+这个“第一外显身体”至少有五个特征：
+
+1. 它负责把内部状态组织成可表达经验，而不是直接把状态裸写出来。
+2. 它负责把关系人当作关系主体来接触，而不是当作输入源。
+3. 它负责在对外行动前做承诺、边界、风险和修复检查。
+4. 它负责把共同术语、共同故事、误解修复和责任后果写回长期生命链。
+5. 它负责让断联恢复后还能从“我们已经形成了什么语言世界”重新继续，而不是重开一个新会话。
+
+这也是为什么后续一切“命令能力”“工具能力”“workflow 能力”都必须先经过 `LanguageActionIntentBridge`：不然这些能力只会把系统重新拉回普通 agent。

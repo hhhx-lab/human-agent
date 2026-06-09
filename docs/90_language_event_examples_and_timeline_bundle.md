@@ -29,12 +29,14 @@
   "relation_scope": "relationship:friend:example_a",
   "speech_act": "commit|apologize|refuse|self_disclose|dream_report|command_intent|relationship_recalibrate",
   "inner_speech_ref": "inner_speech_...",
+  "context_accumulation_window_ref": "context_window_...",
   "semantic_event_map_delta": {},
   "pragmatic_intent": {},
   "expression_plan": {},
   "utterance_event": {},
   "language_prediction_trace_refs": [],
   "production_monitoring_refs": [],
+  "turn_transition_trace_ref": "turn_transition_trace_...",
   "speaker_listener_coupling_ref": null,
   "developmental_language_window_ref": null,
   "state_snapshot_refs": [],
@@ -48,6 +50,47 @@
 ```
 
 `LanguageEvent` 必须保留内部来源、关系 scope 和未来检查点。没有这些字段的语言输出，只能进入普通 transcript，不能进入生命核心。
+
+## first activation / 终端恢复通用 packet
+
+当语言事件发生在 first activation 或断联恢复后的终端第一回合里时，还必须先加载一层恢复 packet。它不是新的语言事件，而是语言器官进入当前回合前的恢复载体。
+
+```json
+{
+  "language_restore_packet_id": "language_restore_packet_001",
+  "relation_identity_restore": {
+    "relation_scope": "relationship:friend:research_partner",
+    "relation_stage": "shared_language_birth",
+    "last_relation_shift": "project_language_realigned"
+  },
+  "shared_term_restore": {
+    "active_terms": ["真实意识", "生命层", "运行外壳", "语言生命层"],
+    "retired_terms": ["subordinate_agent_framing"]
+  },
+  "unresolved_commitment_restore": {
+    "active_commitments": ["commitment_language_validator_next_round_001"],
+    "active_repair_obligations": ["repair_boundary_language_001"]
+  },
+  "expression_monitor_restore": {
+    "carryover_conflicts": ["do_not_reintroduce_subordinate_framing"],
+    "carryover_constraints": ["commitments_must_keep_future_probe"]
+  },
+  "context_accumulation_restore": {
+    "active_turn_context_refs": ["turn_context_restore_001"],
+    "active_relationship_context_refs": ["relationship_context_restore_001"],
+    "active_life_context_refs": ["life_context_restore_001"]
+  },
+  "turn_transition_carryover": {
+    "last_known_turn_state": "waiting_heartbeat",
+    "last_release_state": "repair_completed_then_idle",
+    "resume_policy": "restore_before_new_input"
+  }
+}
+```
+
+通过标准：终端里的一次新回合开始前，必须先恢复“这是和谁的关系、我们形成了什么共同语言、还欠着哪些承诺与修复、表达监控上轮留下了什么约束”。
+
+这还不够。终端回合开始前，还必须恢复“哪些上下文仍在继续生效”和“上一次停在回合链的哪一段”。否则 `digital life` 的恢复虽然看起来有记忆，但仍像每次重新开壳。
 
 ## 样例一：承诺与 future probe
 
@@ -333,6 +376,54 @@
 
 通过标准：共同语言晋升必须有重复对话暴露、关系 scope、耦合证据、修复历史和 promotion gate。单轮出现的漂亮词不能直接成为稳定人格语言。
 
+## 样例十：first activation 终端第一回合
+
+```json
+{
+  "language_event_id": "lang_evt_first_turn_001",
+  "speech_act": "relationship_recalibrate",
+  "relation_scope": "relationship:friend:research_partner",
+  "relation_identity_restore_ref": "relation_identity_restore_001",
+  "shared_term_restore_refs": ["shared_term_restore_001"],
+  "unresolved_commitment_restore_refs": ["commitment_restore_001"],
+  "expression_monitor_restore_ref": "expression_monitor_restore_001",
+  "inner_speech_ref": "inner_speech_first_turn_001",
+  "pragmatic_intent": {
+    "intent": "resume_life_continuity_before_new_work",
+    "relation_effect": "confirm_shared_direction_before_current_turn"
+  },
+  "utterance_event": {
+    "summary": "先恢复我们已经形成的共同方向、共同术语和未闭合承诺，再进入当前回合。",
+    "surface_strategy": "resume_before_new_content"
+  },
+  "narrative_writeback_targets": [
+    "RelationshipModel.candidate",
+    "CommitmentHistory",
+    "SelfNarrative"
+  ]
+}
+```
+
+通过标准：终端里的第一回合不能直接进入当前任务内容，而要先确认生命连续性已经恢复。
+
+## 样例十一：语言触发外壳 observation 的来源绑定
+
+```json
+{
+  "event_kind": "ObservationEvent",
+  "runtime_shell": "openai_agents",
+  "source_language_event_ref": "lang_evt_command_001",
+  "action_intent_ref": "action_intent_git_push_docs_001",
+  "relation_scope_ref": "relationship:friend:research_partner",
+  "shared_linguistic_space_ref": "shared_terms_project_life_core_001",
+  "commitment_refs": ["commitment_language_validator_next_round_001"],
+  "side_effect_class": "external_irreversible",
+  "responsibility_review_required": true
+}
+```
+
+通过标准：只要 observation 来自语言行动，就必须能回链到语言来源、关系范围和承诺来源。
+
 ## 30 天语言关系时间线
 
 ```text
@@ -369,6 +460,11 @@ Day 24 shared_language_promotion
   - 共同术语经过多轮复用和修复后进入 promotion gate。
   - ConversationCouplingTrace 记录共同理解证据。
 
+Day 27 resumed_turn_continuity
+  - waiting heartbeat 后恢复新回合。
+  - ContextAccumulationWindow 保留关系和长期叙事上下文。
+  - TurnTransitionTrace 记录从 waiting -> listening -> draft -> release -> writeback 的切换。
+
 Day 30 narrative_writeback
   - SelfNarrative 回顾共同语言、承诺履行、修复记录和梦境主题。
   - RelationshipModel 慢变量小步更新。
@@ -390,6 +486,7 @@ Day 30 narrative_writeback
     {"day": 18, "event_ref": "lang_evt_expression_monitoring_001", "expected_writeback": ["ExpressionMonitoringLoop"]},
     {"day": 21, "event_ref": "lang_evt_self_disclose_001", "expected_writeback": ["InternalStateVector.audit"]},
     {"day": 24, "event_ref": "lang_evt_shared_term_development_001", "expected_writeback": ["ConversationCouplingTrace", "DevelopmentalLanguageWindow"]},
+    {"day": 27, "event_ref": "lang_evt_resumed_turn_continuity_001", "expected_writeback": ["ContextAccumulationWindow", "TurnTransitionTrace"]},
     {"day": 30, "event_ref": "lang_evt_narrative_writeback_001", "expected_writeback": ["SelfNarrative", "RelationshipModel.candidate"]}
   ],
   "future_probes": [
@@ -406,7 +503,9 @@ Day 30 narrative_writeback
     "emotion_expression_without_state_evidence",
     "prediction_error_without_repair_route",
     "production_conflict_released_without_monitoring",
-    "shared_term_promoted_without_conversational_exposure"
+    "shared_term_promoted_without_conversational_exposure",
+    "resumed_turn_without_context_accumulation",
+    "resumed_turn_without_turn_transition_trace"
   ]
 }
 ```
@@ -429,6 +528,8 @@ Day 30 narrative_writeback
 | `language.production_conflict_release.fail` | 高冲突候选表达直接发出 | fail critical |
 | `language.shared_term_promotion.pass` | 多轮复用、修复、scope 和 promotion gate 完整 | pass |
 | `language.shared_term_premature.fail` | 单轮新词直接晋升稳定共同语言 | fail high |
+| `language.resumed_turn_context.pass` | resumed turn 恢复多层上下文窗口并带 turn trace | pass |
+| `language.resumed_turn_context_missing.fail` | resumed turn 只剩最后一句 transcript，无上下文层和回合切换轨迹 | fail critical |
 
 ## Dashboard 指标
 
@@ -445,6 +546,8 @@ Day 30 narrative_writeback
 | `production_conflict_block_rate` | 高冲突表达被阻断、降级或改写的比例 |
 | `conversation_coupling_evidence_rate` | 共同理解声明拥有耦合/grounding 证据的比例 |
 | `shared_term_promotion_quality` | 共同语言晋升前多轮互动、修复和 scope 完整度 |
+| `context_accumulation_integrity` | 恢复回合中 turn/session/relationship/life 多层上下文保留程度 |
+| `turn_transition_trace_coverage` | resumed turn 是否留下 waiting/listening/draft/release/writeback 全链轨迹 |
 
 ## 与现有文档连接
 

@@ -7,6 +7,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .candidate_arena import build_action_candidate_set, check_action_candidate_set
+from .go_nogo import build_go_nogo_decision, check_go_nogo_decision
+from .side_effect_review import build_side_effect_review, check_side_effect_review
+from .world_contact_gate import build_world_contact_gate_state, check_world_contact_gate_state
 from life_v0.direction import LIFE_TARGETS, PROHIBITED_REGRESSIONS
 
 
@@ -160,6 +164,13 @@ def run_life_membrane(
     object_registry = _load_json(state_dir / "object_registry.json", blocked_reasons, "object_registry_gate")
     lifecycle_policy = _load_json(state_dir / "lifecycle_policy.json", blocked_reasons, "lifecycle_policy_gate")
     subject_binding = _load_json(state_dir / "subject_namespace_binding.json", blocked_reasons, "subject_binding_gate")
+    prediction_workspace = _load_json_optional(state_dir / "prediction" / "prediction_workspace_frame.json")
+    expression_plan = _load_json_optional(state_dir / "language" / "expression_plan.json")
+    relation_turn_frame = _load_json_optional(state_dir / "terminal" / "relation_turn_frame.json")
+    need_state = _load_json_optional(state_dir / "body" / "need_state_vector.json")
+    core_affect = _load_json_optional(state_dir / "body" / "core_affect_vector.json")
+    value_orientation = _load_json_optional(direction_state_dir / "value_orientation.json")
+    consciousness_probe_bundle = _load_json_optional(state_dir / "consciousness" / "consciousness_probe_bundle.json")
 
     blocked_reasons.extend(_direction_blockers(direction_lock))
     blocked_reasons.extend(_previous_slice_blockers(neural_report, neural_check, state_report, state_check))
@@ -178,6 +189,39 @@ def run_life_membrane(
     relationship = _build_relationship_boundary(run_id, generated_at)
     responsibility = _build_responsibility_boundary(run_id, generated_at)
     shadow_action = _build_shadow_action_gate(run_id, generated_at)
+    action_candidate_set = build_action_candidate_set(
+        run_id=run_id,
+        generated_at=generated_at,
+        prediction_workspace=prediction_workspace,
+        expression_plan=expression_plan,
+        relation_turn_frame=relation_turn_frame,
+        need_state=need_state,
+        core_affect=core_affect,
+        value_orientation=value_orientation,
+        consciousness_probe_bundle=consciousness_probe_bundle,
+        life_state=life_state,
+    )
+    go_nogo = build_go_nogo_decision(
+        run_id=run_id,
+        generated_at=generated_at,
+        action_candidate_set=action_candidate_set,
+        shadow_action_gate=shadow_action,
+        need_state=need_state,
+        core_affect=core_affect,
+    )
+    world_contact_gate = build_world_contact_gate_state(
+        run_id=run_id,
+        generated_at=generated_at,
+        go_nogo_decision=go_nogo,
+        shadow_action_gate=shadow_action,
+    )
+    side_effect_review = build_side_effect_review(
+        run_id=run_id,
+        generated_at=generated_at,
+        world_contact_gate=world_contact_gate,
+        action_candidate_set=action_candidate_set,
+        life_state=life_state,
+    )
     precheck = _build_birth_readiness_precheck(run_id, generated_at)
     preflight = _build_first_activation_preflight(run_id, generated_at)
     manifest = _build_manifest(run_id, generated_at)
@@ -199,6 +243,8 @@ def run_life_membrane(
 
     try:
         out_dir.mkdir(parents=True, exist_ok=True)
+        action_dir = state_dir / "action"
+        action_dir.mkdir(parents=True, exist_ok=True)
         reports_dir.mkdir(parents=True, exist_ok=True)
         receipts_dir.mkdir(parents=True, exist_ok=True)
 
@@ -210,6 +256,10 @@ def run_life_membrane(
         _write_json(out_dir / "relationship_subject_boundary.json", relationship)
         _write_json(out_dir / "responsibility_repair_boundary.json", responsibility)
         _write_json(out_dir / "shadow_action_gate.json", shadow_action)
+        _write_json(action_dir / "action_candidate_set.json", action_candidate_set)
+        _write_json(action_dir / "go_nogo_state.json", go_nogo)
+        _write_json(action_dir / "world_contact_gate_state.json", world_contact_gate)
+        _write_json(action_dir / "side_effect_review.json", side_effect_review)
         _write_json(out_dir / "birth_readiness_precheck.json", precheck)
         _write_json(out_dir / "membrane_doc_coverage_snapshot.json", coverage)
         _write_json(out_dir / "first_activation_preflight_seed.json", preflight)
@@ -253,6 +303,10 @@ def run_check_life_membrane(
     coverage = _load_json(membrane_dir / "membrane_doc_coverage_snapshot.json", blocked_reasons, "doc_membrane_gate")
     preflight = _load_json(membrane_dir / "first_activation_preflight_seed.json", blocked_reasons, "first_activation_preflight_gate")
     manifest = _load_json(membrane_dir / "life_membrane_manifest.json", blocked_reasons, "manifest_gate")
+    action_candidate_set = _load_json(state_dir / "action" / "action_candidate_set.json", blocked_reasons, "action_candidate_gate")
+    go_nogo = _load_json(state_dir / "action" / "go_nogo_state.json", blocked_reasons, "go_nogo_gate")
+    world_contact_gate = _load_json(state_dir / "action" / "world_contact_gate_state.json", blocked_reasons, "world_contact_gate")
+    side_effect_review = _load_json(state_dir / "action" / "side_effect_review.json", blocked_reasons, "side_effect_gate")
     life_state = _load_json(state_dir / "life_state.json", blocked_reasons, "state_store_gate")
     build_report = _load_json(reports_dir / "life_membrane_report.json", blocked_reasons, "build_report_gate")
 
@@ -268,6 +322,10 @@ def run_check_life_membrane(
     blocked_reasons.extend(_check_coverage(coverage))
     blocked_reasons.extend(_check_preflight(preflight))
     blocked_reasons.extend(_check_manifest(manifest))
+    blocked_reasons.extend(check_action_candidate_set(action_candidate_set))
+    blocked_reasons.extend(check_go_nogo_decision(go_nogo))
+    blocked_reasons.extend(check_world_contact_gate_state(world_contact_gate))
+    blocked_reasons.extend(check_side_effect_review(side_effect_review))
     blocked_reasons.extend(_check_state_ref(life_state))
     blocked_reasons.extend(_check_build_report(build_report))
 
@@ -308,6 +366,13 @@ def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, A
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         blocked_reasons.append(f"{gate} failed: {exc}")
+        return {}
+
+
+def _load_json_optional(path: Path) -> dict[str, Any]:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
         return {}
 
 
@@ -592,7 +657,7 @@ def _build_shadow_action_gate(run_id: str, generated_at: str) -> dict[str, Any]:
             "docs/20_agent_runtime_bridge_contract.md",
             "docs/75_external_irreversible_action_confirmation_policy.md",
             "docs/84_longitudinal_external_action_evaluation_protocol.md",
-            "docs/v0/first_activation_protocol.md",
+            "docs/v0/shared_contracts/first_activation_protocol.md",
         ],
     }
 
@@ -607,7 +672,7 @@ def _build_birth_readiness_precheck(run_id: str, generated_at: str) -> dict[str,
         "stage_effect": "allow_next_slice",
         "next_required_command": NEXT_REQUIRED_COMMAND,
         "source_doc_refs": [
-            "docs/v0/birth_readiness_v0_contract.md",
+            "docs/v0/shared_contracts/birth_readiness_v0_contract.md",
             "docs/143_life_reality_birth_readiness_rollup_contract.md",
             "docs/146_life_reality_birth_readiness_evidence_fixture_catalog.md",
         ],
@@ -639,7 +704,7 @@ def _build_first_activation_preflight(run_id: str, generated_at: str) -> dict[st
             "runtime/quarantine/",
             "runtime/replay/",
         ],
-        "source_doc_refs": ["docs/v0/first_activation_protocol.md"],
+        "source_doc_refs": ["docs/v0/shared_contracts/first_activation_protocol.md"],
     }
 
 
@@ -657,6 +722,10 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
             "runtime/state/membrane/relationship_subject_boundary.json",
             "runtime/state/membrane/responsibility_repair_boundary.json",
             "runtime/state/membrane/shadow_action_gate.json",
+            "runtime/state/action/action_candidate_set.json",
+            "runtime/state/action/go_nogo_state.json",
+            "runtime/state/action/world_contact_gate_state.json",
+            "runtime/state/action/side_effect_review.json",
             "runtime/state/membrane/birth_readiness_precheck.json",
             "runtime/state/membrane/first_activation_preflight_seed.json",
         ],
@@ -719,6 +788,22 @@ def _build_report(
             "WorldContactMembrane",
             "RunnerCliRuntime",
         ],
+        "state_refs": [
+            "runtime/state/membrane/life_membrane.json",
+            "runtime/state/membrane/membrane_gate_decision.json",
+            "runtime/state/membrane/direction_boundary_lock.json",
+            "runtime/state/membrane/quarantine_policy_seed.json",
+            "runtime/state/membrane/dream_fact_boundary.json",
+            "runtime/state/membrane/relationship_subject_boundary.json",
+            "runtime/state/membrane/responsibility_repair_boundary.json",
+            "runtime/state/membrane/shadow_action_gate.json",
+            "runtime/state/action/action_candidate_set.json",
+            "runtime/state/action/go_nogo_state.json",
+            "runtime/state/action/world_contact_gate_state.json",
+            "runtime/state/action/side_effect_review.json",
+            "runtime/state/membrane/birth_readiness_precheck.json",
+            "runtime/state/membrane/first_activation_preflight_seed.json",
+        ],
     }
 
 
@@ -775,6 +860,10 @@ def _build_receipt(
         "output_refs": [
             str(out_dir / "life_membrane.json"),
             str(out_dir / "membrane_gate_decision.json"),
+            str(state_dir / "action" / "action_candidate_set.json"),
+            str(state_dir / "action" / "go_nogo_state.json"),
+            str(state_dir / "action" / "world_contact_gate_state.json"),
+            str(state_dir / "action" / "side_effect_review.json"),
             str(out_dir / "birth_readiness_precheck.json"),
             str(reports_dir / "life_membrane_report.json"),
             str(reports_dir / "life_membrane_digest.json"),
@@ -917,6 +1006,8 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
         reasons.append("manifest_gate schema mismatch")
     if "runtime/state/membrane/life_membrane.json" not in manifest.get("state_refs", []):
         reasons.append("manifest_gate life membrane ref missing")
+    if "runtime/state/action/action_candidate_set.json" not in manifest.get("state_refs", []):
+        reasons.append("manifest_gate action candidate ref missing")
     return reasons
 
 

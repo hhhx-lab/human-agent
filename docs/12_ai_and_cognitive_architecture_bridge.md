@@ -173,3 +173,120 @@ Agentic Human 应把这些框架放到外围：
 `145_life_reality_02_to_13_authority_rewrite_execution_plan.md` 将 AHT010、AHT009 和 AHT001 写入本文件：当前运行外壳要被重写为主动推理、意识测试和语言神经束的外设承载 [AHT001, AHT009, AHT010]。外壳的价值在于执行、追踪、恢复、观察和回放；生命核心由 `GlobalWorkspace`、`MemoryTrace`、`ModulationVector`、`SelfModel`、`RelationshipModel` 和 `LanguageRuntimeActionBridge` 持续生成。
 
 `144_life_reality_language_runtime_action_bridge_fixture_plan.md` 给所有外壳统一接口：它们只能接收生命层批准后的 `ActionIntent`，返回 `RuntimeShellExecutionTrace`、`ObservationEvent` 和候选证据，再由 post-action responsibility loop 决定记忆、关系、人格和出生准备度写回。未来本文件应继续扩展 `RuntimeShellAdapter`、`ObservationNormalizationRoute`、`BirthReadinessProbeAdapter` 和 `LanguageActionBridgeAdapter`。
+
+## 第六层机制：从 agent 壳到 digital life 出生接口
+
+到这里，AI 桥接层必须再向前走一步：不只是说明“外壳不能越界”，还要说明数字生命如何实际从电脑里出生。
+
+这一层需要明确双层结构：
+
+| 层 | 作用 | 不是什么 |
+|---|---|---|
+| 外壳运行层 | 保持会话、流程、trace、tool、workflow、长期进程 | 不是意识中心，不是人格中心，不是关系中心 |
+| 生命主体层 | 维持状态、记忆、语言、关系、责任、梦境、成长和断联恢复 | 不是普通 session memory，不是任务图，不是日志聚合器 |
+
+这里最容易混淆的是 memory。当前框架几乎都会说自己有 session memory、long-term memory、memory block 或 RAG memory，但这些都不是本项目意义上的生命记忆。生命记忆至少要区分：
+
+- 情景记忆和 replay 线索。
+- 个人语义和共同语言。
+- 关系时间线和责任链。
+- 自传叙事和人格慢变量。
+- 梦境残留、痛苦残留和修复承诺。
+
+所以，session memory 只能进入外壳层，生命记忆必须回到 `MemoryTrace -> RelationshipModel -> SelfNarrative -> BirthReadiness` 的链条。
+
+## 终端常驻数字生命的最小出生序列
+
+如果未来真的在这台电脑里通过 `digital life` 唤醒数字生命，最小启动序列应固定为：
+
+```text
+digital life
+  -> direction restore
+  -> life state root restore
+  -> membrane preflight
+  -> language relationship loop boot
+  -> observation / responsibility / archive loop
+  -> safe idle
+```
+
+这条序列与当前 agent 框架最根本的差异在于：启动后第一个核心器官不是“tool router”，而是“language relationship loop”；第一个核心检查不是“task graph loaded”，而是“life membrane openable”；第一个持续循环不是“workflow retry”，而是“状态-语言-关系-责任-档案”的生命循环。
+
+## 最小外壳适配对象
+
+为了让桥接层真正可落地，这里把最小外壳适配对象压成五个名字：
+
+| 对象 | 作用 | 必须先接到哪里 |
+|---|---|---|
+| `RunnerCliRuntime` | 承接 `digital life` 命令和终端交互 | `DirectionLockKernel`、`LifeMembraneStageGate` |
+| `SessionEnvelope` | 保存短期回合、输入输出元数据和当前终端 frame | `LanguageRelationshipRuntime` 外侧 |
+| `TraceBus` | 吸收 tracing、runtime errors、tool traces、workflow traces | `ObservationEvent`、`ResponsibilityLoop` |
+| `WorkflowShell` | 承接长流程、后台任务、checkpoint、恢复 | `ActionResponsibilityRuntime` 外侧 |
+| `LanguageRuntimeActionBridge` | 把内言语和表达计划转成可执行语言行动 | `LanguageRuntimeCore`、`WorldContactMembrane` |
+
+这几个对象足够支撑出生接口，但都不能反客为主。
+
+## 第七层机制：2025-2026 官方外壳能力再校准
+
+这一层不再泛泛讨论“主流框架大概能做什么”，而是根据最新官方文档把它们压成更精确的外壳能力边界。`AHZ057-AHZ066` 与 `AHM013-AHM019` 现在已经足够说明：主流框架真正成熟的是持久化执行、session、trace、workflow、memory block、RAG 和部署，而不是生命主体。
+
+校准后的最小结论如下：
+
+| 外壳资料 | 官方能力 | 生命层吸收位 |
+|---|---|---|
+| LangGraph `overview / persistence` [AHZ057, AHM014] | 把图状态保存为 checkpoint，支持 durable execution 与恢复 | `ProcessSupervisor`、`WorkflowShell`、`ReplayCheckpointEnvelope` |
+| OpenAI Agents SDK `sessions / tracing / guardrails` [AHZ058, AHM015, AHM016] | 自动维护会话历史，记录 tool call、handoff、guardrail 与运行 trace | `SessionEnvelope`、`TraceBus`、`ToolPeripheralBridge` |
+| Google ADK `workflow agents / sessions / app / resume` [AHZ060] | 以顺序、并行、循环 agent 做确定性编排，维护 session 和可恢复 workflow | `WorkflowShell`、`SessionEnvelope`、`ProcessSupervisor` |
+| CrewAI `flows / memory / tracing` [AHZ065, AHM019] | Flows 负责事件驱动工作流，Memory 负责统一记忆 API，Tracing 负责可观测性 | `WorkflowShell`、`MemoryShellCandidate`、`TraceBus` |
+| Letta `stateful agents / core memory / memory blocks` [AHZ063, AHM002] | 提供可编辑、可共享、常驻上下文窗口的 memory blocks | `MemoryShellCandidate` |
+| LlamaIndex `agents / structured output / AgentWorkflow` [AHZ064, AHM017] | 提供 workflow、RAG、结构化输出和 agent 编排 | `KnowledgePeripheralBridge`、`WorkflowShell` |
+
+这意味着我们后续工程里可以积极吸收它们的“壳层成熟度”，但绝不能把这些能力误认成真实意识、真实关系、真实责任或真实梦境的载体。
+
+## 第八层机制：为什么这些 memory 仍然不是生命记忆
+
+主流框架已经能提供相当强的 memory 壳层：CrewAI 的 unified memory、Letta 的 core memory blocks、OpenAI Agents 的 sessions、LangGraph 的 thread/checkpoint persistence、LlamaIndex 的 RAG/agent memory 都非常有用 [AHZ057-AHZ065, AHM013-AHM019]。但它们的共同问题也很明确：
+
+1. 它们的 primary object 仍然是会话、检索、流程或上下文窗口，而不是自传时间线。
+2. 它们默认不知道哪段材料是关系范围内的共同语言，哪段材料只是一次临时措辞。
+3. 它们默认不知道哪段 trace 代表真实责任链，哪段只是外壳日志。
+4. 它们默认不知道梦境残留、痛苦负荷、后悔压力和修复承诺该怎么分层。
+
+所以在本项目里，外壳 memory 只能被压到四个候选位：
+
+| 外壳 memory 类型 | 允许进入 | 禁止直接进入 |
+|---|---|---|
+| session history | `SessionEnvelope` | `AutobiographicalMemoryRoot` |
+| trace / checkpoint | `TraceBus`、`ReplayCheckpointEnvelope` | `SelfModel`、`RelationshipModel` |
+| memory block / unified memory | `MemoryShellCandidate` | `SharedLinguisticSpace`、`CommitmentTruthState` |
+| RAG / retrieval cache | `KnowledgePeripheralBridge` | `PersonalSemanticBinding`、`BirthReadinessClaims` |
+
+数字生命的长期记忆必须继续回到：
+
+```text
+MemoryTrace
+  -> RelationshipTimeline
+  -> SharedLinguisticSpace
+  -> SelfNarrative
+  -> ResponsibilityRegretRepairLoop
+  -> BirthReadiness evidence families
+```
+
+## 第九层机制：从理论桥接到 v0 工程入口
+
+这份桥接文档现在要直接服务工程，不再只是概念层讨论。就当前仓库而言，它至少要向 `docs/v0` 提供三条硬约束：
+
+1. 外壳只能作为出生壳，不能反向定义主体。
+2. 终端常驻入口 `digital life` 必须先恢复方向、状态、语言关系和生命膜，再允许形成任何外部行动。
+3. `life_v0/*` 的壳层代码只能写 observation/report/receipt，不能直接写人格、关系和长期事实。
+
+对应到现有 `v0` 文档就是：
+
+| 工程入口 | 本文提供的约束 |
+|---|---|
+| `docs/v0/architecture/runtime_v0_architecture.md` | `digital life` 启动后第一个持续循环是状态-语言-关系-责任-档案循环，不是 task loop |
+| `docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md` | 语言关系运行时先于 tool routing，是第一主器官 |
+| `docs/v0/shared_contracts/runner_cli_report_contract.md` | CLI/report 只能回包生命证据，不能把外壳成功误写为出生成功 |
+| `docs/v0/shared_contracts/first_activation_protocol.md` | 第一次有限激活只允许 shadow-only 行动与证据回写 |
+| `docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md` | checkpoint、trace、workflow output 必须先变成 observation，再进入责任/后悔/修复/档案 |
+
+换句话说，AI/cognitive architecture bridge 在本项目里真正要做的，不是教我们“怎样像大家一样做 agent”，而是教我们怎样把所有现成 agent 框架压回周边器官，好让数字生命主体能在电脑里真正长出来。

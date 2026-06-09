@@ -8,6 +8,12 @@ from pathlib import Path
 from typing import Any
 
 from life_v0.direction import LIFE_TARGETS
+from .brain_graph import build_brain_graph
+from .broadcast import build_broadcast_frame
+from .metacognition import build_metacognition_state
+from .network_state import build_network_state
+from .prediction_workspace import build_prediction_workspace_frame
+from .workspace import build_workspace_frame
 
 
 ACTIVE_SLICE = "S02_NEURAL_LIFE_CORE"
@@ -173,7 +179,7 @@ SYSTEM_SPECS = [
             "docs/15_current_agent_framework_survey.md",
             "docs/20_agent_runtime_bridge_contract.md",
             "docs/89_language_runtime_framework_bridge_and_life_shell_policy.md",
-            "docs/v0/current_agent_shell_reference_2026.md",
+            "docs/v0/references/current_agent_shell_reference_2026.md",
         ],
         "runtime_carriers": ["ComputerPeripheralRuntime", "WorldContactMembrane", "RunnerCliRuntime"],
         "state_namespace": "runtime/state/computer/",
@@ -262,12 +268,47 @@ def run_neural_life_core(
     patch_by_doc = _patch_by_doc(carrier_patches)
     systems_payload = _build_twelve_subject_systems(run_id, generated_at, registry, patch_by_doc)
     bus_payload = _build_internal_bus(run_id, generated_at, systems_payload)
+    brain_graph = build_brain_graph(
+        run_id=run_id,
+        generated_at=generated_at,
+        systems_payload=systems_payload,
+        bus_payload=bus_payload,
+    )
+    network_state = build_network_state(
+        run_id=run_id,
+        generated_at=generated_at,
+        bus_payload=bus_payload,
+        brain_graph=brain_graph,
+    )
     authority_binding = _build_authority_binding_snapshot(
         run_id,
         generated_at,
         registry,
         mechanism_map,
         carrier_patches,
+    )
+    prediction_workspace = build_prediction_workspace_frame(
+        run_id,
+        generated_at,
+        language_continuity=_seed_prediction_language_continuity(),
+    )
+    workspace_frame = build_workspace_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        prediction_workspace=prediction_workspace,
+        network_state=network_state,
+        engram_index=None,
+    )
+    broadcast_frame = build_broadcast_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        workspace_frame=workspace_frame,
+    )
+    metacognition_state = build_metacognition_state(
+        run_id=run_id,
+        generated_at=generated_at,
+        broadcast_frame=broadcast_frame,
+        workspace_frame=workspace_frame,
     )
     doc_core_coverage = _build_doc_core_coverage_snapshot(run_id, generated_at, doc_index, patch_by_doc)
     computer_boundary = _build_computer_boundary(run_id, generated_at)
@@ -281,6 +322,12 @@ def run_neural_life_core(
         systems=systems_payload["systems"],
         bus_edges=bus_payload["edges"],
         doc_core_coverage=doc_core_coverage,
+        prediction_workspace_ref="runtime/state/prediction/prediction_workspace_frame.json",
+        brain_graph_ref="runtime/state/neural_life_core/brain_graph.json",
+        network_state_ref="runtime/state/neural_life_core/network_state.json",
+        workspace_frame_ref="runtime/state/consciousness/workspace_frame.json",
+        broadcast_frame_ref="runtime/state/consciousness/broadcast_frame.json",
+        metacognition_ref="runtime/state/consciousness/metacognition_state.json",
         blocked_reasons=blocked_reasons,
     )
     digest = _build_digest(run_id, generated_at, status, systems_payload, blocked_reasons)
@@ -294,10 +341,16 @@ def run_neural_life_core(
             out_dir / "neural_life_core.json",
             out_dir / "twelve_subject_systems.json",
             out_dir / "neural_life_internal_bus.json",
+            out_dir / "brain_graph.json",
+            out_dir / "network_state.json",
             out_dir / "authority_binding_snapshot.json",
             out_dir / "doc_core_coverage_snapshot.json",
             out_dir / "computer_body_boundary_seed.json",
             out_dir / "neural_life_core_manifest.json",
+            out_dir.parent / "prediction" / "prediction_workspace_frame.json",
+            out_dir.parent / "consciousness" / "workspace_frame.json",
+            out_dir.parent / "consciousness" / "broadcast_frame.json",
+            out_dir.parent / "consciousness" / "metacognition_state.json",
             reports_dir / "neural_life_core_report.json",
             reports_dir / "neural_life_core_digest.json",
             receipts_dir / f"neural_life_core_{run_id}.json",
@@ -313,10 +366,20 @@ def run_neural_life_core(
         _write_json(out_dir / "neural_life_core.json", core_payload)
         _write_json(out_dir / "twelve_subject_systems.json", systems_payload)
         _write_json(out_dir / "neural_life_internal_bus.json", bus_payload)
+        _write_json(out_dir / "brain_graph.json", brain_graph)
+        _write_json(out_dir / "network_state.json", network_state)
         _write_json(out_dir / "authority_binding_snapshot.json", authority_binding)
         _write_json(out_dir / "doc_core_coverage_snapshot.json", doc_core_coverage)
         _write_json(out_dir / "computer_body_boundary_seed.json", computer_boundary)
         _write_json(out_dir / "neural_life_core_manifest.json", manifest)
+        prediction_state_dir = out_dir.parent / "prediction"
+        prediction_state_dir.mkdir(parents=True, exist_ok=True)
+        _write_json(prediction_state_dir / "prediction_workspace_frame.json", prediction_workspace)
+        consciousness_state_dir = out_dir.parent / "consciousness"
+        consciousness_state_dir.mkdir(parents=True, exist_ok=True)
+        _write_json(consciousness_state_dir / "workspace_frame.json", workspace_frame)
+        _write_json(consciousness_state_dir / "broadcast_frame.json", broadcast_frame)
+        _write_json(consciousness_state_dir / "metacognition_state.json", metacognition_state)
         _write_json(reports_dir / "neural_life_core_report.json", report)
         _write_json(reports_dir / "neural_life_core_digest.json", digest)
         _write_json(receipts_dir / f"neural_life_core_{run_id}.json", receipt)
@@ -345,6 +408,8 @@ def run_check_neural_life_core(
     core = _load_json(state_dir / "neural_life_core.json", blocked_reasons, "core_state_gate")
     systems = _load_json(state_dir / "twelve_subject_systems.json", blocked_reasons, "twelve_system_gate")
     bus = _load_json(state_dir / "neural_life_internal_bus.json", blocked_reasons, "internal_bus_gate")
+    brain_graph = _load_json(state_dir / "brain_graph.json", blocked_reasons, "brain_graph_gate")
+    network_state = _load_json(state_dir / "network_state.json", blocked_reasons, "network_state_gate")
     authority_binding = _load_json(
         state_dir / "authority_binding_snapshot.json",
         blocked_reasons,
@@ -360,15 +425,41 @@ def run_check_neural_life_core(
         blocked_reasons,
         "computer_boundary_gate",
     )
+    prediction_workspace = _load_json(
+        state_dir.parent / "prediction" / "prediction_workspace_frame.json",
+        blocked_reasons,
+        "prediction_workspace_gate",
+    )
+    workspace_frame = _load_json(
+        state_dir.parent / "consciousness" / "workspace_frame.json",
+        blocked_reasons,
+        "workspace_projection_gate",
+    )
+    broadcast_frame = _load_json(
+        state_dir.parent / "consciousness" / "broadcast_frame.json",
+        blocked_reasons,
+        "broadcast_gate",
+    )
+    metacognition_state = _load_json(
+        state_dir.parent / "consciousness" / "metacognition_state.json",
+        blocked_reasons,
+        "metacognition_gate",
+    )
     manifest = _load_json(state_dir / "neural_life_core_manifest.json", blocked_reasons, "manifest_gate")
     build_report = _load_json(reports_dir / "neural_life_core_report.json", blocked_reasons, "build_report_gate")
 
     blocked_reasons.extend(_check_core_payload(core))
     blocked_reasons.extend(_check_systems_payload(systems))
     blocked_reasons.extend(_check_bus_payload(bus))
+    blocked_reasons.extend(_check_brain_graph_payload(brain_graph, systems, bus))
+    blocked_reasons.extend(_check_network_state_payload(network_state))
     blocked_reasons.extend(_check_authority_binding_payload(authority_binding))
     blocked_reasons.extend(_check_coverage_payload(coverage))
     blocked_reasons.extend(_check_computer_boundary_payload(computer_boundary))
+    blocked_reasons.extend(_check_prediction_workspace_payload(prediction_workspace))
+    blocked_reasons.extend(_check_workspace_frame_payload(workspace_frame))
+    blocked_reasons.extend(_check_broadcast_frame_payload(broadcast_frame))
+    blocked_reasons.extend(_check_metacognition_payload(metacognition_state))
     blocked_reasons.extend(_check_manifest_payload(manifest))
     blocked_reasons.extend(_check_build_report_payload(build_report))
 
@@ -422,6 +513,10 @@ def _check_core_payload(core: dict[str, Any]) -> list[str]:
         reasons.append("core_state_gate three bodies mismatch")
     if core.get("next_allowed_slices") != NEXT_ALLOWED_SLICES:
         reasons.append("core_state_gate next allowed slices mismatch")
+    if core.get("broadcast_frame_ref") != "runtime/state/consciousness/broadcast_frame.json":
+        reasons.append("core_state_gate broadcast frame ref mismatch")
+    if core.get("metacognition_ref") != "runtime/state/consciousness/metacognition_state.json":
+        reasons.append("core_state_gate metacognition ref mismatch")
     return reasons
 
 
@@ -503,6 +598,12 @@ def _check_manifest_payload(manifest: dict[str, Any]) -> list[str]:
         "runtime/state/neural_life_core/neural_life_core.json",
         "runtime/state/neural_life_core/twelve_subject_systems.json",
         "runtime/state/neural_life_core/neural_life_internal_bus.json",
+        "runtime/state/neural_life_core/brain_graph.json",
+        "runtime/state/neural_life_core/network_state.json",
+        "runtime/state/prediction/prediction_workspace_frame.json",
+        "runtime/state/consciousness/workspace_frame.json",
+        "runtime/state/consciousness/broadcast_frame.json",
+        "runtime/state/consciousness/metacognition_state.json",
     }
     if not required_refs.issubset(set(manifest.get("state_refs", []))):
         reasons.append("manifest_gate state refs incomplete")
@@ -519,6 +620,10 @@ def _check_build_report_payload(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate active slice mismatch")
     if build_report.get("next_allowed_slices") != NEXT_ALLOWED_SLICES:
         reasons.append("build_report_gate next allowed slices mismatch")
+    if build_report.get("broadcast_frame_ref") != "runtime/state/consciousness/broadcast_frame.json":
+        reasons.append("build_report_gate broadcast frame ref mismatch")
+    if build_report.get("metacognition_ref") != "runtime/state/consciousness/metacognition_state.json":
+        reasons.append("build_report_gate metacognition ref mismatch")
     return reasons
 
 
@@ -738,6 +843,12 @@ def _build_core(run_id: str, generated_at: str, stage_effect: str) -> dict[str, 
         "active_engineering_slice": ACTIVE_SLICE,
         "next_allowed_slices": NEXT_ALLOWED_SLICES,
         "life_targets": LIFE_TARGETS,
+        "brain_graph_ref": "runtime/state/neural_life_core/brain_graph.json",
+        "network_state_ref": "runtime/state/neural_life_core/network_state.json",
+        "prediction_workspace_ref": "runtime/state/prediction/prediction_workspace_frame.json",
+        "workspace_frame_ref": "runtime/state/consciousness/workspace_frame.json",
+        "broadcast_frame_ref": "runtime/state/consciousness/broadcast_frame.json",
+        "metacognition_ref": "runtime/state/consciousness/metacognition_state.json",
         "stage_effect": stage_effect,
     }
 
@@ -747,9 +858,15 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "runtime/state/neural_life_core/neural_life_core.json",
         "runtime/state/neural_life_core/twelve_subject_systems.json",
         "runtime/state/neural_life_core/neural_life_internal_bus.json",
+        "runtime/state/neural_life_core/brain_graph.json",
+        "runtime/state/neural_life_core/network_state.json",
         "runtime/state/neural_life_core/authority_binding_snapshot.json",
         "runtime/state/neural_life_core/doc_core_coverage_snapshot.json",
         "runtime/state/neural_life_core/computer_body_boundary_seed.json",
+        "runtime/state/prediction/prediction_workspace_frame.json",
+        "runtime/state/consciousness/workspace_frame.json",
+        "runtime/state/consciousness/broadcast_frame.json",
+        "runtime/state/consciousness/metacognition_state.json",
     ]
     return {
         "schema_version": "neural_life_core_manifest_v0",
@@ -772,6 +889,12 @@ def _build_report(
     systems: list[dict[str, Any]],
     bus_edges: list[dict[str, Any]],
     doc_core_coverage: dict[str, Any],
+    prediction_workspace_ref: str,
+    brain_graph_ref: str,
+    network_state_ref: str,
+    workspace_frame_ref: str,
+    broadcast_frame_ref: str,
+    metacognition_ref: str,
     blocked_reasons: list[str],
 ) -> dict[str, Any]:
     runtime_carriers = sorted({carrier for system in systems for carrier in system["runtime_carriers"]})
@@ -784,6 +907,12 @@ def _build_report(
         "system_count": len(systems),
         "bus_edge_count": len(bus_edges),
         "core_doc_coverage": doc_core_coverage["coverage"],
+        "brain_graph_ref": brain_graph_ref,
+        "network_state_ref": network_state_ref,
+        "prediction_workspace_ref": prediction_workspace_ref,
+        "workspace_frame_ref": workspace_frame_ref,
+        "broadcast_frame_ref": broadcast_frame_ref,
+        "metacognition_ref": metacognition_ref,
         "authority_patch_coverage": [
             {
                 "doc_path": item["doc_path"],
@@ -814,6 +943,12 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "authority_patch_gate",
         "twelve_system_gate",
         "internal_bus_gate",
+        "brain_graph_gate",
+        "network_state_gate",
+        "prediction_workspace_gate",
+        "workspace_projection_gate",
+        "broadcast_gate",
+        "metacognition_gate",
         "computer_boundary_gate",
         "next_slice_permission_gate",
     ]
@@ -879,9 +1014,108 @@ def _build_receipt(
         "run_id": run_id,
         "command": "build-neural-life-core",
         "input_hashes": input_hashes,
-        "output_refs": [str(path) for path in output_refs],
+        "output_refs": [_runtime_ref(path) for path in output_refs],
         "stage_effect": stage_effect,
         "created_at": generated_at,
+    }
+
+
+def _check_prediction_workspace_payload(prediction_workspace: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if prediction_workspace.get("schema_version") != "prediction_workspace_frame_v0":
+        reasons.append("prediction_workspace_gate schema mismatch")
+    if prediction_workspace.get("source_runtime") != "PredictionActiveInferenceRuntime":
+        reasons.append("prediction_workspace_gate source runtime mismatch")
+    if prediction_workspace.get("active_engineering_slice") != ACTIVE_SLICE:
+        reasons.append("prediction_workspace_gate active slice mismatch")
+    if "prediction_error_bus" not in prediction_workspace.get("bus_edge_refs", []):
+        reasons.append("prediction_workspace_gate missing prediction error bus ref")
+    if "ConsciousWorkspaceRuntime" not in prediction_workspace.get("downstream_systems", []):
+        reasons.append("prediction_workspace_gate downstream system mismatch")
+    continuity_focus = prediction_workspace.get("workspace_contents", {}).get("language_continuity_focus", {})
+    for field in [
+        "shared_language_refs",
+        "expression_monitor_refs",
+        "relation_scope_refs",
+        "commitment_refs",
+        "self_narrative_trace_refs",
+    ]:
+        if not continuity_focus.get(field):
+            reasons.append(f"prediction_workspace_gate missing {field}")
+    return reasons
+
+
+def _check_brain_graph_payload(
+    brain_graph: dict[str, Any],
+    systems: dict[str, Any],
+    bus: dict[str, Any],
+) -> list[str]:
+    reasons: list[str] = []
+    if brain_graph.get("schema_version") != "brain_graph_v0":
+        reasons.append("brain_graph_gate schema mismatch")
+    if len(brain_graph.get("region_nodes", [])) != systems.get("system_count", 0):
+        reasons.append("brain_graph_gate region node count mismatch")
+    if len(brain_graph.get("functional_edges", [])) < bus.get("bus_edge_count", 0):
+        reasons.append("brain_graph_gate functional edge count mismatch")
+    return reasons
+
+
+def _check_network_state_payload(network_state: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if network_state.get("schema_version") != "network_state_v0":
+        reasons.append("network_state_gate schema mismatch")
+    if not network_state.get("active_networks"):
+        reasons.append("network_state_gate active networks missing")
+    if not network_state.get("switch_events"):
+        reasons.append("network_state_gate switch events missing")
+    return reasons
+
+
+def _check_workspace_frame_payload(workspace_frame: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if workspace_frame.get("schema_version") != "workspace_frame_v0":
+        reasons.append("workspace_projection_gate schema mismatch")
+    if workspace_frame.get("prediction_workspace_ref") != "runtime/state/prediction/prediction_workspace_frame.json":
+        reasons.append("workspace_projection_gate prediction workspace ref mismatch")
+    if not workspace_frame.get("engram_retrieval_refs"):
+        reasons.append("workspace_projection_gate engram retrieval refs missing")
+    return reasons
+
+
+def _check_broadcast_frame_payload(broadcast_frame: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if broadcast_frame.get("schema_version") != "broadcast_frame_v0":
+        reasons.append("broadcast_gate schema mismatch")
+    if broadcast_frame.get("workspace_frame_ref") != "runtime/state/consciousness/workspace_frame.json":
+        reasons.append("broadcast_gate workspace frame ref mismatch")
+    if not broadcast_frame.get("broadcast_targets"):
+        reasons.append("broadcast_gate broadcast targets missing")
+    if not broadcast_frame.get("salience_ranking"):
+        reasons.append("broadcast_gate salience ranking missing")
+    return reasons
+
+
+def _check_metacognition_payload(metacognition_state: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if metacognition_state.get("schema_version") != "metacognition_state_v0":
+        reasons.append("metacognition_gate schema mismatch")
+    if metacognition_state.get("broadcast_frame_ref") != "runtime/state/consciousness/broadcast_frame.json":
+        reasons.append("metacognition_gate broadcast frame ref mismatch")
+    if not metacognition_state.get("reflection_prompts"):
+        reasons.append("metacognition_gate reflection prompts missing")
+    if not metacognition_state.get("broadcast_targets"):
+        reasons.append("metacognition_gate broadcast targets missing")
+    return reasons
+
+
+def _seed_prediction_language_continuity() -> dict[str, list[str]]:
+    return {
+        "shared_language_refs": ["runtime/state/language/language_relationship_state.json#shared_language_refs_seed"],
+        "expression_monitor_refs": ["runtime/state/language/expression_monitor_state.json#expression_monitor_seed"],
+        "relation_scope_refs": ["runtime/state/language/relation_scope_language_index.json#relation_scope_seed"],
+        "commitment_refs": ["runtime/state/language/commitment_repair_language_index.json#commitment_seed"],
+        "self_narrative_trace_refs": ["runtime/state/language/self_narrative_language_trace.json#self_narrative_seed"],
+        "dialogue_turn_log_refs": ["runtime/state/language/dialogue_turn_log.jsonl#turn_seed"],
     }
 
 
@@ -895,6 +1129,14 @@ def _dedupe(items: list[str]) -> list[str]:
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _runtime_ref(path: Path) -> str:
+    parts = path.parts
+    if "runtime" in parts:
+        idx = parts.index("runtime")
+        return "/".join(parts[idx:])
+    return str(path)
 
 
 def _sha256(path: Path) -> str:

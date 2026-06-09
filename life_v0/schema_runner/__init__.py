@@ -7,6 +7,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .comparison_trace import build_comparison_trace, check_comparison_trace
+from .consistency_logic import build_consistency_logic, check_consistency_logic
+from .counterfactual_eval import build_counterfactual_trace, check_counterfactual_trace
 
 ACTIVE_SLICE = "S09_SCHEMA_RUNNER_CODE"
 NEXT_ALLOWED_SLICES = ["S06_LIFE_SUPPORT_DEVELOPMENT", "S10_RUNTIME_GROWTH_RECONSOLIDATION"]
@@ -25,9 +28,9 @@ RUNTIME_CARRIERS = [
 ]
 
 EXTRA_SOURCE_DOCS = [
-    "docs/v0/runner_cli_report_contract.md",
-    "docs/v0/s05_validation_membrane_observation_engineering_contract.md",
-    "docs/v0/s09_schema_runner_code_engineering_contract.md",
+    "docs/v0/shared_contracts/runner_cli_report_contract.md",
+    "docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md",
+    "docs/v0/slice_contracts/s09_schema_runner_code_engineering_contract.md",
 ]
 
 
@@ -68,6 +71,15 @@ def run_schema_runner(
     validation_check = _load_json(reports_dir / "validation_membrane_check_report.json", blocked_reasons, "validation_membrane_check_gate")
     life_state = _load_json(state_dir / "life_state.json", blocked_reasons, "state_store_gate")
     validation_stage = _load_json(state_dir / "validation" / "validation_stage_gate.json", blocked_reasons, "validation_stage_gate")
+    action_candidate_set = _load_json(state_dir / "action" / "action_candidate_set.json", blocked_reasons, "action_candidate_gate")
+    world_contact_gate = _load_json(state_dir / "action" / "world_contact_gate_state.json", blocked_reasons, "world_contact_gate")
+    observation_truth_review = _load_json(
+        state_dir / "validation" / "observation_truth_review.json",
+        blocked_reasons,
+        "observation_truth_gate",
+    )
+    boundary_audit = _load_json(state_dir / "validation" / "boundary_audit_state.json", blocked_reasons, "boundary_audit_gate")
+    side_effect_review = _load_json(state_dir / "action" / "side_effect_review.json", blocked_reasons, "side_effect_gate")
 
     source_docs = _collect_s09_source_docs(doc_index)
     blocked_reasons.extend(_doc_blockers(doc_index, source_docs))
@@ -82,6 +94,26 @@ def run_schema_runner(
     lockfile = _build_dependency_lockfile(run_id, generated_at, source_docs, status)
     command_queue = _build_command_queue(run_id, generated_at, status)
     checker_manifest = _build_checker_manifest(run_id, generated_at, status)
+    consistency_logic = build_consistency_logic(
+        run_id=run_id,
+        generated_at=generated_at,
+        action_candidate_set=action_candidate_set,
+        observation_truth_review=observation_truth_review,
+        boundary_audit=boundary_audit,
+    )
+    counterfactual_trace = build_counterfactual_trace(
+        run_id=run_id,
+        generated_at=generated_at,
+        action_candidate_set=action_candidate_set,
+        world_contact_gate=world_contact_gate,
+        side_effect_review=side_effect_review,
+    )
+    comparison_trace = build_comparison_trace(
+        run_id=run_id,
+        generated_at=generated_at,
+        counterfactual_trace=counterfactual_trace,
+        consistency_logic=consistency_logic,
+    )
     artifact_manifest = _build_artifact_manifest(run_id, generated_at, status)
     stage_gate = _build_stage_gate(run_id, generated_at, status, stage_effect, blocked_reasons)
     report = _build_report(run_id, generated_at, status, stage_effect, source_docs, blocked_reasons, receipt_ref)
@@ -108,6 +140,9 @@ def run_schema_runner(
         _write_json(out_dir / "runner_command_queue.json", command_queue)
         _write_json(out_dir / "cross_file_checker_manifest.json", checker_manifest)
         _write_json(out_dir / "first_code_artifact_manifest.json", artifact_manifest)
+        _write_json(out_dir / "consistency_logic.json", consistency_logic)
+        _write_json(out_dir / "counterfactual_trace.json", counterfactual_trace)
+        _write_json(out_dir / "comparison_trace.json", comparison_trace)
         _write_json(out_dir / "schema_runner_stage_gate.json", stage_gate)
         _write_json(reports_dir / "schema_runner_report.json", report)
         _write_json(reports_dir / "schema_runner_digest.json", digest)
@@ -139,6 +174,9 @@ def run_check_schema_runner(
     command_queue = _load_json(state_dir / "runner_command_queue.json", blocked_reasons, "command_queue_gate")
     checker_manifest = _load_json(state_dir / "cross_file_checker_manifest.json", blocked_reasons, "checker_manifest_gate")
     artifact_manifest = _load_json(state_dir / "first_code_artifact_manifest.json", blocked_reasons, "code_artifact_gate")
+    consistency_logic = _load_json(state_dir / "consistency_logic.json", blocked_reasons, "consistency_logic_gate")
+    counterfactual_trace = _load_json(state_dir / "counterfactual_trace.json", blocked_reasons, "counterfactual_gate")
+    comparison_trace = _load_json(state_dir / "comparison_trace.json", blocked_reasons, "comparison_trace_gate")
     stage_gate = _load_json(state_dir / "schema_runner_stage_gate.json", blocked_reasons, "next_slice_gate")
     build_report = _load_json(reports_dir / "schema_runner_report.json", blocked_reasons, "build_report_gate")
 
@@ -147,6 +185,9 @@ def run_check_schema_runner(
     blocked_reasons.extend(_check_command_queue(command_queue))
     blocked_reasons.extend(_check_checker_manifest(checker_manifest))
     blocked_reasons.extend(_check_artifact_manifest(artifact_manifest))
+    blocked_reasons.extend(check_consistency_logic(consistency_logic))
+    blocked_reasons.extend(check_counterfactual_trace(counterfactual_trace))
+    blocked_reasons.extend(check_comparison_trace(comparison_trace))
     blocked_reasons.extend(_check_stage_gate(stage_gate))
     blocked_reasons.extend(_check_build_report(build_report))
 
@@ -451,9 +492,12 @@ def _build_artifact_manifest(run_id: str, generated_at: str, status: str) -> dic
             "life_v0/cli.py",
             "runtime/state/schema_runner/schema_registry.json",
             "runtime/state/schema_runner/runner_command_queue.json",
+            "runtime/state/schema_runner/consistency_logic.json",
+            "runtime/state/schema_runner/counterfactual_trace.json",
+            "runtime/state/schema_runner/comparison_trace.json",
         ],
         "test_refs": [
-            "tests/test_schema_runner.py",
+            "tests/slices/test_schema_runner.py",
         ],
         "smoke_report_refs": [
             "runtime/reports/latest/schema_smoke_report.json",
@@ -521,6 +565,9 @@ def _build_report(
             "runtime/state/schema_runner/runner_command_queue.json",
             "runtime/state/schema_runner/cross_file_checker_manifest.json",
             "runtime/state/schema_runner/first_code_artifact_manifest.json",
+            "runtime/state/schema_runner/consistency_logic.json",
+            "runtime/state/schema_runner/counterfactual_trace.json",
+            "runtime/state/schema_runner/comparison_trace.json",
         ],
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
@@ -582,6 +629,9 @@ def _build_receipt(
         out_dir / "runner_command_queue.json",
         out_dir / "cross_file_checker_manifest.json",
         out_dir / "first_code_artifact_manifest.json",
+        out_dir / "consistency_logic.json",
+        out_dir / "counterfactual_trace.json",
+        out_dir / "comparison_trace.json",
         out_dir / "schema_runner_stage_gate.json",
         reports_dir / "schema_runner_report.json",
         reports_dir / "schema_runner_digest.json",
@@ -660,7 +710,7 @@ def _check_artifact_manifest(artifact_manifest: dict[str, Any]) -> list[str]:
         reasons.append("code_artifact_gate status mismatch")
     if "life_v0/schema_runner/" not in artifact_manifest.get("code_roots", []):
         reasons.append("code_artifact_gate schema_runner root missing")
-    if "tests/test_schema_runner.py" not in artifact_manifest.get("test_refs", []):
+    if "tests/slices/test_schema_runner.py" not in artifact_manifest.get("test_refs", []):
         reasons.append("code_artifact_gate schema runner tests missing")
     return reasons
 

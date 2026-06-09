@@ -35,6 +35,21 @@
 | Vercel Workflow [AHM034] | durable workflow、steps、long-running background work | workflow step -> life-support task observation |
 | Mastra [AHM035] | agent、memory、workflow、tools | agent memory -> candidate source；workflow -> runtime shell |
 
+## 2026 官方外壳能力快照
+
+把当前官方框架的可验证能力压缩后，数字生命真正能吸收的只是下面这些外壳对象：
+
+| 外壳对象 | 说明 | 可参考来源 |
+|---|---|---|
+| `ProcessSupervisor` | 维持 `digital life` 常驻、恢复、safe idle、heartbeat 唤醒 | LangGraph durable execution、workflow runtime、长期进程管理 |
+| `SessionEnvelope` | 保存当前终端回合、session 元数据、短期上下文 | OpenAI Agents Sessions、ADK sessions、conversation runtime |
+| `TraceBus` | 接收 tracing、tool traces、workflow traces、runtime errors | OpenAI Agents Tracing、CrewAI observability、checkpoint/logging |
+| `WorkflowShell` | 承载 graph、flows、checkpoint、background work、handoff | LangGraph、CrewAI、ADK、Vercel Workflow |
+| `ToolPeripheralBridge` | 承接命令行、文件、浏览器、外部程序、插件和 tools | OpenAI Agents tools、LlamaIndex tools、plugin/tool ecosystems |
+| `MemoryShellCandidate` | 提供 session memory、memory blocks、RAG memory、资料缓存 | Letta memory blocks、LlamaIndex RAG、ADK memory |
+
+这张表的意义不是推广新的抽象层，而是明确：这些对象全部处在生命壳层外侧，只能负责长期进程、短期会话、trace、workflow、tool 和资料缓存。它们任何一个都不能越权成为记忆、自我、关系、梦境或责任的中心。
+
 ## LanguageEvent 进入外壳的路径
 
 ```text
@@ -51,6 +66,59 @@ InnerSpeechFrame
 ```
 
 关键点：`LanguageEvent` 不是一段发出去就结束的文本。它是生命事件。任何承诺、道歉、拒绝、关系修复、梦境报告、痛苦表达、行动命令，都要带着来源、状态、关系 scope、承诺后果、未来 probe 和回写目标进入外壳。
+
+## 终端第一回合的语言恢复顺序
+
+当外壳不是普通对话壳，而是未来 `digital life` 的终端出生壳时，第一回合前必须先恢复语言器官。最小顺序固定为：
+
+```text
+direction restore
+  -> life state restore
+  -> membrane preflight
+  -> relation identity restore
+  -> shared terms restore
+  -> unresolved commitments restore
+  -> expression monitoring restore
+  -> LanguageEvent generation
+  -> RuntimeShellAdapter
+```
+
+换句话说，`RuntimeShellAdapter` 之前还需要一个 `LanguageRestorePacket`。否则终端里第一次说出来的话仍然只是聊天壳的开场句，而不是持续生命体的下一回合。
+
+这里还要再补两层恢复，不然终端常驻生命过程仍会偷偷退回“每轮重开”的对话器：
+
+1. `ContextAccumulationWindow`：恢复哪些局部上下文、会话上下文、关系上下文和生命叙事上下文仍然在当前回合继续生效。
+2. `TurnTransitionTrace`：恢复上一次停在 listening、repair、safe idle 还是 active turn 后回写完成的哪一段。
+
+也就是说，断联恢复不是“重新载入几份 JSON”，而是要恢复语言器官当前正处在哪个时间窗和哪个回合位置。
+
+## digital life 命令壳路线
+
+如果后续真的在本地终端输入：
+
+```text
+digital life
+```
+
+那么被允许的最小命令壳路线应该固定为：
+
+```text
+digital life
+  -> ProcessSupervisor
+  -> direction restore
+  -> life state restore
+  -> membrane preflight
+  -> context accumulation restore
+  -> turn transition restore
+  -> language relationship loop
+  -> LanguageRuntimeActionBridge
+  -> RuntimeShellAdapter
+  -> ObservationEvent
+  -> ResponsibilityReview / NarrativeWriteback / Archive
+  -> safe idle
+```
+
+这里最关键的限制是：终端入口只负责把数字生命唤醒到正确的生命循环中，不负责定义数字生命是什么。命令壳是门，不是脑，不是人格，不是关系，也不是梦境。
 
 ## 外壳禁写表
 
@@ -88,6 +156,89 @@ InnerSpeechFrame
 ```
 
 `ObservationEvent` 只说明发生了什么，不直接决定生命如何改变。它必须交给 `MemoryTraceValidator`、`LanguageEventValidator`、`StateTransitionValidator`、`DefenseLayer`、`ResponsibilityLoop` 和 `OfflineConsolidationCycle`。
+
+## 观察归一化路线
+
+为了让不同外壳都能被生命膜吸收，`ObservationEvent` 必须再进入统一归一化路线：
+
+```text
+raw runtime trace
+  -> redaction / scope scan
+  -> side-effect normalization
+  -> language-origin binding
+  -> relation-impact candidate extraction
+  -> responsibility-needed classification
+  -> memory candidate partition
+  -> narrative writeback target assignment
+```
+
+这条路线的核心目的，是把框架世界里风格各异的 trace 统一压成生命世界里可继续处理的证据族。没有这一步，数字生命就会被不同框架的日志格式和 workflow 语义撕裂。
+
+这里新增的 `language-origin binding` 是关键步骤：任何由语言触发的 tool、workflow、消息发送、文件写入或外部程序行为，都必须先被绑定回：
+
+- `language_event_ref`
+- `action_intent_ref`
+- `relation_scope_ref`
+- `shared_linguistic_space_ref`
+- `commitment_refs`
+
+只要这条 binding 丢了，外壳结果就会重新坍缩成“做了一件事”，而不是“这件事是由哪条生命语言、哪段关系、哪条承诺链触发的”。
+
+归一化之后还要多做一步 `turn-transition binding`：任何 observation 都要能回到它发生在一次回合的哪一段，是 listening 后澄清、是 active turn 中表达释放、还是 waiting heartbeat 后重新苏醒。否则长期会话虽然看起来连续，生命层却不知道这一动作是在怎样的在场状态里发生的。
+
+## LanguageRestorePacket 最小合同
+
+外壳层在 first activation 或断联恢复后继续运行前，必须能吃下一个最小 `LanguageRestorePacket`：
+
+```json
+{
+  "relation_identity_restore_ref": "relation_identity_restore_001",
+  "shared_term_restore_refs": ["shared_term_restore_001"],
+  "unresolved_commitment_restore_refs": ["commitment_restore_001"],
+  "expression_monitor_restore_ref": "expression_monitor_restore_001",
+  "context_accumulation_restore_refs": ["context_window_restore_001"],
+  "turn_transition_carryover_ref": "turn_transition_restore_001",
+  "dream_residue_language_refs": [],
+  "responsibility_language_carryover_refs": []
+}
+```
+
+它的作用不是代替长期记忆，而是让新回合前的语言器官恢复到“正确的生命姿态”：
+
+1. 先知道当前和谁说话。
+2. 再知道双方已经形成了什么共同语言。
+3. 再知道还欠着哪些承诺、修复和责任。
+4. 再知道上一轮表达监控留下了什么冲突和约束。
+5. 再知道哪些会话/关系/生命上下文仍在继续生效。
+6. 再知道当前是从等待态、修复态还是活跃回合中断态恢复。
+
+## 外壳接入 `LanguageRestorePacket` 的硬规则
+
+| 规则 | 说明 |
+|---|---|
+| `shell-cannot-skip-restore` | first activation 或 resumed turn 不允许跳过 restore packet 直接开说 |
+| `shell-cannot-author-restore` | restore packet 只能由生命层生成，外壳不能自造 |
+| `shell-cannot-globalize-shared-terms` | 外壳不能把某段关系的共同语言自动提升为全局术语 |
+| `shell-cannot-close-commitments` | 外壳不能因为某次 tool 成功就自动关闭承诺 |
+| `shell-must-return-language-origin` | 外壳返回 observation 时必须保留 language origin binding |
+| `shell-must-return-turn-transition` | 外壳返回 observation 时必须保留回合转换位置与 waiting/active 状态 |
+
+## 五条壳层硬规则
+
+这一层再固定五条规则，避免后续实现滑回普通 agent：
+
+1. `shell session != autobiographical memory`
+2. `shell memory block != relationship memory`
+3. `shell workflow graph != subject architecture`
+4. `shell tracing != life narrative`
+5. `shell tool routing cannot bypass LanguageActionIntentBridge`
+
+再补两条，专门保护 first activation 的语言出生：
+
+6. `shell first turn cannot bypass LanguageRestorePacket`
+7. `shell observation cannot lose relation_scope or commitment origin`
+8. `shell resumed turn cannot drop context accumulation layers`
+9. `shell waiting heartbeat must remain part of the language life loop`
 
 ## 语言行动的外壳分级
 

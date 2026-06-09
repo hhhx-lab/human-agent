@@ -1,0 +1,95 @@
+from __future__ import annotations
+
+from typing import Any
+
+
+def build_life_context_frame(
+    *,
+    run_id: str,
+    generated_at: str,
+    status: str,
+    direction_refs: list[str],
+    self_narrative_refs: list[str],
+    relationship_refs: list[str],
+    autobiographical_memory_refs: list[str],
+    shared_terms_refs: list[str],
+    commitment_refs: list[str],
+    body_state_refs: list[str],
+    prediction_seed_refs: list[str],
+    source_doc_refs: list[str],
+    readme_block_refs: list[str],
+    runtime_carrier_refs: list[str],
+) -> dict[str, Any]:
+    return {
+        "schema_version": "life_context_frame_v0",
+        "run_id": run_id,
+        "generated_at": generated_at,
+        "status": status,
+        "life_context_id": f"life-context-{run_id}",
+        "direction_refs": direction_refs,
+        "self_narrative_refs": self_narrative_refs,
+        "relationship_refs": relationship_refs,
+        "autobiographical_memory_refs": autobiographical_memory_refs,
+        "shared_terms_refs": shared_terms_refs,
+        "commitment_refs": commitment_refs,
+        "body_state_refs": body_state_refs,
+        "prediction_seed_refs": prediction_seed_refs,
+        "source_doc_refs": source_doc_refs,
+        "readme_block_refs": readme_block_refs,
+        "runtime_carrier_refs": runtime_carrier_refs,
+    }
+
+
+def build_context_accumulation_window(
+    *,
+    run_id: str,
+    generated_at: str,
+    status: str,
+    relation_subject: dict[str, Any],
+    shared_term_surfaces: list[str],
+    unresolved_commitments: list[str],
+    expression_monitor: dict[str, Any],
+    relation_scope_index: dict[str, Any],
+    self_narrative_trace: dict[str, Any],
+    dialogue_turn_restore_refs: list[str],
+    expression_monitor_restore_refs: list[str],
+    relation_scope_restore_refs: list[str],
+    self_narrative_restore_refs: list[str],
+    language_percept_restore_refs: list[str],
+    semantic_map_restore_refs: list[str],
+    semantic_focus: str | None,
+    waiting_heartbeat_ref: str,
+    source_doc_refs: list[str],
+    readme_block_refs: list[str],
+    runtime_carrier_refs: list[str],
+) -> dict[str, Any]:
+    relation_scopes = relation_scope_index.get("relation_scopes", [])
+    current_relation_scope = relation_scopes[0] if relation_scopes and isinstance(relation_scopes[0], dict) else {}
+
+    return {
+        "schema_version": "context_accumulation_window_v0",
+        "run_id": run_id,
+        "generated_at": generated_at,
+        "status": status,
+        "current_relation_id": relation_subject.get("relationship_id"),
+        "current_relation_role": relation_subject.get("relation_role"),
+        "current_relationship_stage": relation_subject.get("relationship_stage"),
+        "shared_term_surfaces": shared_term_surfaces,
+        "unresolved_commitment_refs": unresolved_commitments,
+        "expression_monitor_dimensions": list(expression_monitor.get("monitor_dimensions", [])),
+        "expression_monitor_restore_refs": expression_monitor_restore_refs,
+        "relation_scope_refs": [scope.get("scope_ref") for scope in relation_scopes if scope.get("scope_ref")],
+        "relation_scope_restore_refs": relation_scope_restore_refs,
+        "active_scope_id": current_relation_scope.get("scope_id"),
+        "active_scope_label": current_relation_scope.get("scope_label"),
+        "narrative_turn_refs": list(self_narrative_trace.get("narrative_turn_refs", [])),
+        "self_narrative_restore_refs": self_narrative_restore_refs,
+        "language_percept_restore_refs": language_percept_restore_refs,
+        "semantic_map_restore_refs": semantic_map_restore_refs,
+        "semantic_focus": semantic_focus,
+        "dialogue_turn_restore_refs": dialogue_turn_restore_refs,
+        "waiting_heartbeat_ref": waiting_heartbeat_ref,
+        "source_doc_refs": source_doc_refs,
+        "readme_block_refs": readme_block_refs,
+        "runtime_carrier_refs": runtime_carrier_refs,
+    }

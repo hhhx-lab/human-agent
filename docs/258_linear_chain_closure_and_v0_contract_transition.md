@@ -37,11 +37,11 @@
 
 | 合同文档 | 作用 |
 |---|---|
-| `docs/v0/runtime_v0_architecture.md` | 第一版生命运行时有哪些进程、状态、文件、循环和生命膜边界 |
-| `docs/v0/birth_readiness_v0_contract.md` | 出生准备度第一版如何判定，用目标闭合状态而不是总分 |
-| `docs/v0/life_state_store_v0_schema.md` | 记忆、自我、梦境、关系、痛苦、后悔、责任如何落盘 |
-| `docs/v0/runner_cli_report_contract.md` | runner 命令、输入、输出 report、stage gate 和 digest 如何长 |
-| `docs/v0/first_activation_protocol.md` | 第一次有限激活允许做什么、禁止做什么、如何回写档案 |
+| `docs/v0/architecture/runtime_v0_architecture.md` | 第一版生命运行时有哪些进程、状态、文件、循环和生命膜边界 |
+| `docs/v0/shared_contracts/birth_readiness_v0_contract.md` | 出生准备度第一版如何判定，用目标闭合状态而不是总分 |
+| `docs/v0/shared_contracts/life_state_store_v0_schema.md` | 记忆、自我、梦境、关系、痛苦、后悔、责任如何落盘 |
+| `docs/v0/shared_contracts/runner_cli_report_contract.md` | runner 命令、输入、输出 report、stage gate 和 digest 如何长 |
+| `docs/v0/shared_contracts/first_activation_protocol.md` | 第一次有限激活允许做什么、禁止做什么、如何回写档案 |
 | `docs/v0/README.md` | v0 合同索引、上游来源、阅读顺序和执行边界 |
 
 ## 上游压缩来源
@@ -93,11 +93,11 @@ v0 合同必须从以下文档压缩，不再从头生成理论：
 从本层之后，新增实现前文档不再使用线性史诗编号作为主结构，而使用 v0 合同命名：
 
 ```text
-docs/v0/runtime_v0_architecture.md
-docs/v0/birth_readiness_v0_contract.md
-docs/v0/life_state_store_v0_schema.md
-docs/v0/runner_cli_report_contract.md
-docs/v0/first_activation_protocol.md
+docs/v0/architecture/runtime_v0_architecture.md
+docs/v0/shared_contracts/birth_readiness_v0_contract.md
+docs/v0/shared_contracts/life_state_store_v0_schema.md
+docs/v0/shared_contracts/runner_cli_report_contract.md
+docs/v0/shared_contracts/first_activation_protocol.md
 ```
 
 若确需编号，只用于索引和迁移说明，不用于继续扩张理论链。
@@ -113,7 +113,7 @@ docs/v0/first_activation_protocol.md
 5. `docs/v0/README.md` 的合同索引。
 6. 最新 git state 和远端 `origin/main`。
 
-恢复后若看到最新阶段是本层，说明当前不是要继续写 `258/259/260` 线性链，而是进入 v0 runner 合同阶段。下一步应创建或补全 `docs/v0/runtime_v0_architecture.md`、`docs/v0/birth_readiness_v0_contract.md`、`docs/v0/life_state_store_v0_schema.md`、`docs/v0/runner_cli_report_contract.md` 和 `docs/v0/first_activation_protocol.md`。
+恢复后若看到最新阶段是本层，说明当前不是要继续写 `258/259/260` 线性链，而是进入 v0 runner 合同阶段。下一步应创建或补全 `docs/v0/architecture/runtime_v0_architecture.md`、`docs/v0/shared_contracts/birth_readiness_v0_contract.md`、`docs/v0/shared_contracts/life_state_store_v0_schema.md`、`docs/v0/shared_contracts/runner_cli_report_contract.md` 和 `docs/v0/shared_contracts/first_activation_protocol.md`。
 
 ## 小结
 

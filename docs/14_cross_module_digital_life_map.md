@@ -462,3 +462,52 @@ flowchart TD
 `post-action audit -> coexistence event review -> responsibility/regret loop -> incident recovery -> metric regression -> longitudinal external action probes -> dashboard/gap register`
 
 这使外部行动治理进入“长期存在”的尺度：系统不仅要安全地做一次动作，还要在之后的回放、纠错、责任归因、悔改、指标和恢复中持续生成真实关系边界。
+
+## 进入 v0 代码框架的对位
+
+为了防止 `02-13` 在进入工程阶段后重新散掉，这里把核心生命运行时和当前 `life_v0/` 包对位一次：
+
+| 理论运行时 | 当前代码主承载 | 协同包 |
+|---|---|---|
+| `LanguageRelationshipRuntime` | `life_v0/language/` | `terminal_turn/`, `terminal_loop/`, `process_supervisor/` |
+| `MemoryEngramRuntime` | `life_v0/state_store/` | `replay/`, `growth/`, `archive/` |
+| `ConsciousWorkspaceRuntime` | `life_v0/neural_core/` | `life_targets/`, `reporting/` |
+| `PredictionActiveInferenceRuntime` | `life_v0/neural_core/` | `growth/`, `schema_runner/`, `validators/` |
+| `AffectiveSelfRuntime` | `life_v0/body/` | `growth/`, `language/`, `state_store/` |
+| `DreamOfflineRuntime` | `life_v0/dream/` | `growth/`, `archive/`, `replay/` |
+| `ActionResponsibilityRuntime` | `life_v0/membrane/` | `shell_command/`, `digital_life/`, `validators/` |
+| `LifeSupportLayer` | `life_v0/body/` | `defense/`, `growth/` |
+| `DefenseLayer` | `life_v0/defense/` | `membrane/`, `validators/` |
+| `AgentRuntimeBridge` | `life_v0/shell_command/`, `process_supervisor/` | `digital_entry.py`, `cli.py` |
+
+这张表的工程含义只有一个：后续任何一轮代码实现，都必须从理论运行时出发，再落到当前代码包，而不是从现成命令壳反向定义理论对象。
+
+## 下一层工程对位：共享对象先于跨层落码
+
+为了让上面的运行时对位不重新退化成“包之间临时传字典”，下一层工程实现必须继续先钉住跨层共享对象，再补各器官文件。
+
+最优先固定的共享对象包括：
+
+- `BodyRhythmPulse`
+- `NeedStateVector`
+- `SignalMediaFrame`
+- `LifeContextFrame`
+- `PredictionWorkspaceFrame`
+- `RelationTurnFrame`
+- `ExpressionPlan`
+- `ActionCandidateSet`
+- `DialogueWritebackBundle`
+- `IdleContinuityFrame`
+- `ReplayCueBundle`
+- `OfflineConsolidationFrame`
+- `GrowthPatchCandidate`
+
+这批对象的理论来源已经分散在 `04-11`、`17-20`、`81-96` 里，工程上则由
+`docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
+统一收口。后续只要某一轮代码涉及：
+
+1. 在线回合怎样从身体、预测、语言、关系、责任一路走到回应；
+2. 等待态怎样保持连续体而不是机械轮询；
+3. 回合残留怎样进入 replay、梦境、成长与 archive；
+
+就默认要先回这份共享对象合同，再落具体代码。

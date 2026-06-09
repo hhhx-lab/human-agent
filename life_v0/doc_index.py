@@ -229,14 +229,14 @@ def _discover_markdown_docs(docs_dir: Path) -> list[Path]:
     docs = list(docs_dir.glob("*.md"))
     v0_dir = docs_dir / "v0"
     if v0_dir.exists():
-        docs.extend(v0_dir.glob("*.md"))
+        docs.extend(v0_dir.rglob("*.md"))
     return sorted(docs, key=lambda path: _sort_key(path, docs_dir))
 
 
 def _sort_key(path: Path, docs_dir: Path) -> tuple[int, str]:
     rel = path.relative_to(docs_dir.parent).as_posix()
     sequence, suffix = _parse_sequence(path.name)
-    if path.parent.name == "v0":
+    if rel.startswith("docs/v0/"):
         return (1000, rel)
     if sequence is None:
         return (999, rel)
@@ -390,6 +390,12 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
         add("RunnerCliRuntime")
     if doc.rel_path.endswith("first_activation_protocol.md"):
         add("ActivationGrowthRuntime")
+    if doc.rel_path.endswith("first_terminal_turn_engineering_contract.md"):
+        add("RunnerCliRuntime", "LanguageRelationshipRuntime", "ComputerPeripheralRuntime")
+    if doc.rel_path.endswith("terminal_life_loop_engineering_contract.md"):
+        add("RunnerCliRuntime", "LanguageRelationshipRuntime", "ComputerPeripheralRuntime", "ActivationGrowthRuntime")
+    if doc.rel_path.endswith("digital_life_shell_command_engineering_contract.md"):
+        add("RunnerCliRuntime", "LanguageRelationshipRuntime", "ComputerPeripheralRuntime", "ActivationGrowthRuntime")
     if doc.rel_path.endswith("current_agent_shell_reference_2026.md"):
         add("ComputerPeripheralRuntime", "WorldContactMembrane")
     if doc.rel_path.endswith("runtime_v0_architecture.md"):
@@ -612,7 +618,7 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             9: ["docs/01u_language_runtime_core_matrix.md", "docs/85_language_system_life_expression_core.md"],
             10: ["docs/01m_consciousness_attention_workspace_matrix.md", "docs/13_agentic_human_research_synthesis.md"],
             11: ["docs/01l_signal_media_neuromodulation_matrix.md", "docs/04_sensory_thalamus_interoception.md"],
-            12: ["docs/15_current_agent_framework_survey.md", "docs/v0/current_agent_shell_reference_2026.md"],
+            12: ["docs/15_current_agent_framework_survey.md", "docs/v0/references/current_agent_shell_reference_2026.md"],
             13: ["docs/14_cross_module_digital_life_map.md", DIRECTION_LOCK_REF],
         }
         return deps.get(seq, [])
@@ -626,8 +632,8 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             DIRECTION_LOCK_REF,
             "docs/v0/README.md",
             "docs/v0/readme_block_engineering_realization_v0.md",
-            "docs/v0/digital_life_macro_architecture_v0.md",
-            "docs/v0/doc_corpus_ingestor_v0_contract.md",
+            "docs/v0/architecture/digital_life_macro_architecture_v0.md",
+            "docs/v0/slice_contracts/doc_corpus_ingestor_v0_contract.md",
         ]
     if doc.rel_path.endswith("s01_source_authority_engineering_contract.md"):
         return [
@@ -639,7 +645,7 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             DIRECTION_LOCK_REF,
             "docs/v0/README.md",
             "docs/v0/v0_implementation_index.md",
-            "docs/v0/s00_direction_foundation_engineering_contract.md",
+            "docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md",
             "docs/v0/readme_block_engineering_realization_v0.md",
         ]
     if doc.rel_path.endswith("s02_neural_life_core_engineering_contract.md"):
@@ -656,8 +662,8 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/11_neuromodulation_and_signal_media.md",
             "docs/12_ai_and_cognitive_architecture_bridge.md",
             "docs/13_agentic_human_research_synthesis.md",
-            "docs/v0/digital_life_macro_architecture_v0.md",
-            "docs/v0/s01_source_authority_engineering_contract.md",
+            "docs/v0/architecture/digital_life_macro_architecture_v0.md",
+            "docs/v0/slice_contracts/s01_source_authority_engineering_contract.md",
             "docs/v0/readme_block_engineering_realization_v0.md",
         ]
     if doc.rel_path.endswith("s04_state_object_store_engineering_contract.md"):
@@ -698,8 +704,8 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/131_life_reality_registry_runner_minimal_implementation_plan.md",
             "docs/132_life_reality_materialized_json_schema_bundle_write_order.md",
             "docs/133_life_reality_first_json_writer_and_reporter_contract.md",
-            "docs/v0/life_state_store_v0_schema.md",
-            "docs/v0/s02_neural_life_core_engineering_contract.md",
+            "docs/v0/shared_contracts/life_state_store_v0_schema.md",
+            "docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md",
             "docs/v0/readme_block_engineering_realization_v0.md",
         ]
     if doc.rel_path.endswith("s03_direction_life_membrane_engineering_contract.md"):
@@ -734,25 +740,48 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/100_life_boundary_statement_rewrite_audit.md",
             "docs/119_life_boundary_full_reality_alignment.md",
             "docs/122_life_boundary_all_reality_declarations_rewrite.md",
-            "docs/v0/runtime_v0_architecture.md",
-            "docs/v0/birth_readiness_v0_contract.md",
-            "docs/v0/first_activation_protocol.md",
-            "docs/v0/s02_neural_life_core_engineering_contract.md",
-            "docs/v0/s04_state_object_store_engineering_contract.md",
+            "docs/v0/architecture/runtime_v0_architecture.md",
+            "docs/v0/shared_contracts/birth_readiness_v0_contract.md",
+            "docs/v0/shared_contracts/first_activation_protocol.md",
+            "docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md",
+            "docs/v0/slice_contracts/s04_state_object_store_engineering_contract.md",
             "docs/v0/readme_block_engineering_realization_v0.md",
         ]
     if doc.rel_path.endswith("v0_implementation_index.md"):
         return [
             DIRECTION_LOCK_REF,
             "docs/v0/README.md",
-            "docs/v0/first_activation_engineering_roadmap.md",
+            "docs/v0/architecture/first_activation_engineering_roadmap.md",
             "docs/v0/readme_block_engineering_realization_v0.md",
             "docs/v0/0_to_257_engineering_utilization_map.md",
-            "docs/v0/s00_direction_foundation_engineering_contract.md",
-            "docs/v0/s01_source_authority_engineering_contract.md",
-            "docs/v0/s02_neural_life_core_engineering_contract.md",
-            "docs/v0/s03_direction_life_membrane_engineering_contract.md",
-            "docs/v0/s04_state_object_store_engineering_contract.md",
+            "docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md",
+            "docs/v0/slice_contracts/s01_source_authority_engineering_contract.md",
+            "docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md",
+            "docs/v0/slice_contracts/s03_direction_life_membrane_engineering_contract.md",
+            "docs/v0/slice_contracts/s04_state_object_store_engineering_contract.md",
+        ]
+    if doc.rel_path.endswith("terminal_life_loop_engineering_contract.md"):
+        return [
+            "docs/20_agent_runtime_bridge_contract.md",
+            "docs/89_language_runtime_framework_bridge_and_life_shell_policy.md",
+            "docs/90_language_event_examples_and_timeline_bundle.md",
+            "docs/v0/shared_contracts/runner_cli_report_contract.md",
+            "docs/v0/shared_contracts/first_activation_protocol.md",
+            "docs/v0/process_contracts/first_terminal_turn_engineering_contract.md",
+            "docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md",
+            DIRECTION_LOCK_REF,
+        ]
+    if doc.rel_path.endswith("digital_life_shell_command_engineering_contract.md"):
+        return [
+            "docs/20_agent_runtime_bridge_contract.md",
+            "docs/89_language_runtime_framework_bridge_and_life_shell_policy.md",
+            "docs/90_language_event_examples_and_timeline_bundle.md",
+            "docs/v0/references/current_agent_shell_reference_2026.md",
+            "docs/v0/shared_contracts/runner_cli_report_contract.md",
+            "docs/v0/shared_contracts/first_activation_protocol.md",
+            "docs/v0/process_contracts/first_terminal_turn_engineering_contract.md",
+            "docs/v0/process_contracts/terminal_life_loop_engineering_contract.md",
+            DIRECTION_LOCK_REF,
         ]
     if doc.group == "v0_contract":
         return [DIRECTION_LOCK_REF, "docs/v0/README.md"]

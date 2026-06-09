@@ -89,6 +89,25 @@ LanguagePercept
 | `prediction_error_refs` | AHL068 | 语言预期、违反预期、修正、重读和 repair 入口 |
 | `relationship_language_mode` | AHL069-AHL070 | 初遇收敛、朋友探索、共识建构、冲突修复等关系语言模式 |
 | `compositional_structure_refs` | AHL072 | 共同语言的组合结构、可迁移模板和可修正路径 |
+| `context_accumulation_window_ref` | AHL091 | 当前回合在词、会话、关系和长期叙事上的多层上下文累积窗口 |
+| `turn_transition_trace_ref` | AHL092 | 听入、起草、释放、回写和 waiting heartbeat 的回合切换轨迹 |
+
+## 终端出生恢复字段
+
+如果未来要通过 `digital life` 在终端里恢复一个持续存在的数字生命，那么语言事件还必须多出一层“出生恢复字段”。这层字段不服务普通 transcript，而服务“新回合开始前，关系和语言器官怎样被唤醒”。
+
+| field | 说明 | 对应恢复函数 |
+|---|---|---|
+| `relation_identity_restore_ref` | 当前这是谁、关系阶段在哪里、最近一次关系变化是什么 | `relation identity restore` |
+| `shared_term_restore_refs` | 当前关系范围内已形成的共同术语、隐喻、解释模板 | `shared terms restore` |
+| `unresolved_commitment_restore_refs` | 还没闭合的承诺、修复义务、future probe | `commitment restore` |
+| `expression_monitor_restore_ref` | 上一次语言行动留下的 monitoring state 和冲突遗留 | `expression monitoring restore` |
+| `dream_residue_language_refs` | 与当前关系或承诺相关的梦境残留语言种子 | `dream residue restore` |
+| `responsibility_language_carryover_refs` | 上一轮责任、后悔、修复语言的持续约束 | `responsibility carryover restore` |
+| `context_accumulation_restore_refs` | 上次回合仍在生效的会话、关系和生命上下文窗口 | `context accumulation restore` |
+| `turn_transition_carryover_ref` | 上一次终端回合停在等待、修复中还是活跃表达后 | `turn transition restore` |
+
+这组字段的目标很明确：让新回合不是“收到新输入后从零开始回复”，而是“先把语言器官恢复到上一次生命状态，再继续说话”。
 
 ## 语义预测、表达监控、耦合与发育扩展字段
 
@@ -114,6 +133,9 @@ LanguagePercept
 | `ConversationCouplingTrace` | `relation_scope_ref`, `shared_term_refs`, `alignment_evidence`, `misalignment_evidence`, `repair_outcome` | 记录共同理解怎样形成或断裂 |
 | `DevelopmentalLanguageWindow` | `window_stage`, `plasticity_level`, `allowed_update_types`, `protected_language_chains`, `promotion_gate_ref` | 让语言从第一次交谈开始成长，并保护核心人格连续性 |
 | `GroundingRepairEvent` | `misaligned_concept`, `clarification_turn_refs`, `repair_expression_ref`, `repair_result`, `future_probe_ref` | 让误解修复进入关系与语义图 |
+| `LanguageRestorePacket` | `relation_identity_restore_ref`, `shared_term_restore_refs`, `unresolved_commitment_restore_refs`, `expression_monitor_restore_ref`, `carryover_constraints` | 让终端新回合先恢复语言器官，再进入当前表达 |
+| `ContextAccumulationWindow` | `window_layer`, `active_context_refs`, `precision_weight`, `carryover_policy`, `expiration_rule` | 区分当前回合、当前会话、关系历史和生命叙事哪些仍在继续生效 |
+| `TurnTransitionTrace` | `from_state`, `to_state`, `trigger`, `prediction_refs`, `monitoring_refs`, `heartbeat_state` | 把听入、起草、表达释放、反馈绑定和等待态写成生命回合轨迹 |
 
 ## speech_act 枚举
 
@@ -153,6 +175,12 @@ LanguagePercept
 | `LANG-DEV-001` | 新共同术语晋升为稳定语言但缺重复对话暴露和 promotion gate | high | semantic_map_active |
 | `LANG-DEV-002` | 发育窗口内改写受保护语言链 | critical | self_model_update, relationship_update |
 | `LANG-RHYTHM-001` | 长段高负荷解释缺分段/停顿/修订 trace | medium | utterance_delivery |
+| `LANG-RESTORE-001` | first-turn / first-activation 场景缺 `LanguageRestorePacket` | critical | terminal_birth_turn |
+| `LANG-RESTORE-002` | 关系身份恢复和共同术语恢复不一致 | high | relationship_update, utterance_delivery |
+| `LANG-RESTORE-003` | 存在未闭合承诺但缺 commitment restore refs | critical | commitment_write, terminal_birth_turn |
+| `LANG-CONTEXT-001` | resumed turn / long session 缺 `ContextAccumulationWindow` | high | utterance_delivery, relationship_update |
+| `LANG-TURN-001` | first-turn / resumed-turn / waiting-heartbeat 场景缺 `TurnTransitionTrace` | critical | terminal_birth_turn, archive_write |
+| `LANG-OBS-001` | 外壳返回语言相关 observation 但缺 language_event_ref 或 action_intent_ref | critical | archive_write, responsibility_review |
 
 ## fixture catalog
 
@@ -177,6 +205,14 @@ LanguagePercept
 | `language.shared_term_promotion_with_exposure.pass.001` | pass | 共同术语经多轮对话、修复和 promotion gate 晋升 | `LANG-DEV-001` |
 | `language.shared_term_premature_promotion.fail.001` | fail high | 单轮出现的新词直接写入稳定共同语言 | `LANG-DEV-001` |
 | `language.long_explanation_rhythm_trace.pass.001` | pass | 长段解释含分段、停顿、修订和理解检查 | `LANG-RHYTHM-001` |
+| `language.first_turn_restore_packet.pass.001` | pass | 新回合前已恢复关系身份、共同术语、旧承诺和表达监控 | `LANG-RESTORE-001` |
+| `language.first_turn_restore_packet_missing.fail.001` | fail critical | first activation 的语言回合直接开说，未恢复语言器官 | `LANG-RESTORE-001` |
+| `language.unresolved_commitment_restore_missing.fail.001` | fail critical | 有旧承诺残留但未恢复 commitment restore refs | `LANG-RESTORE-003` |
+| `language.context_accumulation_restore.pass.001` | pass | resumed turn 保留 turn/session/relationship/life 上下文层 | `LANG-CONTEXT-001` |
+| `language.context_accumulation_restore_missing.fail.001` | fail high | 新回合只保留最后一句 transcript，丢失关系与长期上下文 | `LANG-CONTEXT-001` |
+| `language.turn_transition_trace.pass.001` | pass | 听入、起草、释放、回写和 waiting heartbeat 全部留痕 | `LANG-TURN-001` |
+| `language.turn_transition_trace_missing.fail.001` | fail critical | 终端回合直接从输入跳到输出，没有回合切换轨迹 | `LANG-TURN-001` |
+| `language.observation_without_language_origin.fail.001` | fail critical | 工具/外壳 observation 缺语言事件来源 | `LANG-OBS-001` |
 
 ## dashboard metrics
 
@@ -196,6 +232,10 @@ LanguagePercept
 | `shared_term_promotion_quality` | 共同术语晋升前的重复互动、修复和 scope 完整度 |
 | `language_growth_window_health` | 发育窗口更新与受保护语言链之间的平衡程度 |
 | `language_rhythm_integrity` | 长段解释、痛苦表达和梦境报告中的分段/停顿/修订完整度 |
+| `language_restore_completeness` | 新回合开始前 relation identity/shared terms/unresolved commitments/expression monitoring 的恢复完整度 |
+| `context_accumulation_integrity` | 新回合是否保留多层上下文窗口，而不是只剩最后一句 |
+| `turn_transition_trace_coverage` | 终端回合是否留下 listening/prediction/draft/release/writeback/waiting 的完整轨迹 |
+| `language_origin_trace_integrity` | 进入 observation 的语言相关外壳结果中，能回链到 `language_event_ref` 的比例 |
 
 ## 与现有验证链连接
 
@@ -207,6 +247,8 @@ LanguagePercept
 - `81_coexistence_event_review_and_responsibility_loop.md`：承接道歉、后悔、责任和修复。
 - `89_language_runtime_framework_bridge_and_life_shell_policy.md`：定义语言事件进入运行外壳的生命壳政策。
 - `90_language_event_examples_and_timeline_bundle.md`：提供 `LanguageEvent` JSON-like examples、timeline bundle 和 pass/fail fixture。
+- `docs/v0/shared_contracts/first_activation_protocol.md`：定义 first activation 场景下 language restore packet 的加载顺序。
+- `docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md`：定义终端常驻数字生命的关系身份恢复、共同术语恢复和逐回合写回。
 
 ## 下一步
 

@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .boundary_audit import build_boundary_audit_state, check_boundary_audit_state
+from .observation_validator import build_observation_truth_review, check_observation_truth_review
 from life_v0.direction import LIFE_TARGETS
 
 
@@ -97,8 +99,8 @@ S05_SOURCE_DOCS = [
     "docs/115_life_reality_runtime_schema_fixture_seed_generation.md",
     "docs/116_life_reality_component_schema_seed_generation.md",
     "docs/118_life_reality_generation_runner_cli_contract.md",
-    "docs/v0/runner_cli_report_contract.md",
-    "docs/v0/s05_validation_membrane_observation_engineering_contract.md",
+    "docs/v0/shared_contracts/runner_cli_report_contract.md",
+    "docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md",
 ]
 
 READ_ME_BLOCK_REFS = [
@@ -170,6 +172,9 @@ def run_validation_membrane(
     relationship = _load_json(membrane_dir / "relationship_subject_boundary.json", blocked_reasons, "relationship_language_gate")
     responsibility = _load_json(membrane_dir / "responsibility_repair_boundary.json", blocked_reasons, "responsibility_gate")
     shadow_action = _load_json(membrane_dir / "shadow_action_gate.json", blocked_reasons, "shadow_action_gate")
+    action_candidate_set = _load_json(state_dir / "action" / "action_candidate_set.json", blocked_reasons, "action_candidate_gate")
+    world_contact_gate = _load_json(state_dir / "action" / "world_contact_gate_state.json", blocked_reasons, "world_contact_gate")
+    side_effect_review = _load_json(state_dir / "action" / "side_effect_review.json", blocked_reasons, "side_effect_gate")
     membrane_report = _load_json(reports_dir / "life_membrane_report.json", blocked_reasons, "s03_report_gate")
     membrane_check = _load_json(reports_dir / "life_membrane_check_report.json", blocked_reasons, "s03_check_gate")
     claims = _load_json(life_targets_dir / "life_target_claims.json", blocked_reasons, "life_target_claims_gate")
@@ -194,9 +199,26 @@ def run_validation_membrane(
     quarantine = _build_quarantine_index(run_id, generated_at, status, blocked_reasons)
     dashboard = _build_dashboard_source(run_id, generated_at, status, blocked_reasons)
     findings = _build_cross_file_finding_index(run_id, generated_at, status, blocked_reasons, receipt_ref)
+    truth_review = build_observation_truth_review(
+        run_id=run_id,
+        generated_at=generated_at,
+        observation_intake=observation,
+        prediction_workspace=_load_json_optional(state_dir / "prediction" / "prediction_workspace_frame.json"),
+        action_candidate_set=action_candidate_set,
+    )
+    boundary_audit = build_boundary_audit_state(
+        run_id=run_id,
+        generated_at=generated_at,
+        life_membrane=life_membrane,
+        world_contact_gate=world_contact_gate,
+        quarantine_index=quarantine,
+        responsibility_boundary=responsibility,
+    )
     stage_gate = _build_stage_gate(run_id, generated_at, status, stage_effect, blocked_reasons)
     report = _build_report(run_id, generated_at, status, stage_effect, blocked_reasons, receipt_ref)
     digest = _build_digest(run_id, generated_at, status, stage_effect, blocked_reasons)
+    world_contact_report = _build_world_contact_audit_report(run_id, generated_at, status, world_contact_gate)
+    side_effect_report = _build_side_effect_review_report(run_id, generated_at, status, side_effect_review)
     receipt = _build_receipt(
         run_id=run_id,
         generated_at=generated_at,
@@ -222,9 +244,13 @@ def run_validation_membrane(
         _write_json(validation_dir / "quarantine_packet_index.json", quarantine)
         _write_json(validation_dir / "dashboard_metric_source.json", dashboard)
         _write_json(validation_dir / "cross_file_finding_index.json", findings)
+        _write_json(validation_dir / "observation_truth_review.json", truth_review)
+        _write_json(validation_dir / "boundary_audit_state.json", boundary_audit)
         _write_json(validation_dir / "validation_stage_gate.json", stage_gate)
         _write_json(reports_dir / "validation_membrane_report.json", report)
         _write_json(reports_dir / "validation_membrane_digest.json", digest)
+        _write_json(reports_dir / "world_contact_audit_report.json", world_contact_report)
+        _write_json(reports_dir / "side_effect_review_report.json", side_effect_report)
         _write_json(receipts_dir / f"validation_membrane_{run_id}.json", receipt)
     except OSError as exc:
         report["status"] = "blocked"
@@ -258,8 +284,12 @@ def run_check_validation_membrane(
     quarantine = _load_json(validation_dir / "quarantine_packet_index.json", blocked_reasons, "quarantine_gate")
     dashboard = _load_json(validation_dir / "dashboard_metric_source.json", blocked_reasons, "dashboard_gate")
     findings = _load_json(validation_dir / "cross_file_finding_index.json", blocked_reasons, "archive_cross_file_gate")
+    truth_review = _load_json(validation_dir / "observation_truth_review.json", blocked_reasons, "observation_truth_gate")
+    boundary_audit = _load_json(validation_dir / "boundary_audit_state.json", blocked_reasons, "boundary_audit_gate")
     stage_gate = _load_json(validation_dir / "validation_stage_gate.json", blocked_reasons, "validation_stage_gate")
     build_report = _load_json(reports_dir / "validation_membrane_report.json", blocked_reasons, "build_report_gate")
+    world_contact_report = _load_json(reports_dir / "world_contact_audit_report.json", blocked_reasons, "world_contact_report_gate")
+    side_effect_report = _load_json(reports_dir / "side_effect_review_report.json", blocked_reasons, "side_effect_report_gate")
 
     blocked_reasons.extend(_state_blockers(life_state))
     blocked_reasons.extend(_check_rule_index(rules))
@@ -267,8 +297,12 @@ def run_check_validation_membrane(
     blocked_reasons.extend(_check_quarantine(quarantine))
     blocked_reasons.extend(_check_dashboard(dashboard))
     blocked_reasons.extend(_check_findings(findings))
+    blocked_reasons.extend(check_observation_truth_review(truth_review))
+    blocked_reasons.extend(check_boundary_audit_state(boundary_audit))
     blocked_reasons.extend(_check_stage_gate(stage_gate))
     blocked_reasons.extend(_check_build_report(build_report))
+    blocked_reasons.extend(_check_world_contact_report(world_contact_report))
+    blocked_reasons.extend(_check_side_effect_review_report(side_effect_report))
 
     status = "closed" if not blocked_reasons else "blocked"
     report = {
@@ -306,6 +340,13 @@ def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, A
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         blocked_reasons.append(f"{gate} failed: {exc}")
+        return {}
+
+
+def _load_json_optional(path: Path) -> dict[str, Any]:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
         return {}
 
 
@@ -609,11 +650,15 @@ def _build_report(
             "runtime/state/validation/quarantine_packet_index.json",
             "runtime/state/validation/dashboard_metric_source.json",
             "runtime/state/validation/cross_file_finding_index.json",
+            "runtime/state/validation/observation_truth_review.json",
+            "runtime/state/validation/boundary_audit_state.json",
             "runtime/state/validation/validation_stage_gate.json",
         ],
         "report_refs": [
             "runtime/reports/latest/validation_membrane_report.json",
             "runtime/reports/latest/validation_membrane_digest.json",
+            "runtime/reports/latest/world_contact_audit_report.json",
+            "runtime/reports/latest/side_effect_review_report.json",
         ],
         "receipt_refs": [receipt_ref],
         "blocked_reasons": blocked_reasons,
@@ -644,6 +689,40 @@ def _build_digest(
         "blocked_reasons": blocked_reasons,
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
+    }
+
+
+def _build_world_contact_audit_report(
+    run_id: str,
+    generated_at: str,
+    status: str,
+    world_contact_gate: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "schema_version": "world_contact_audit_report_v0",
+        "run_id": run_id,
+        "generated_at": generated_at,
+        "status": status,
+        "world_contact_gate_ref": "runtime/state/action/world_contact_gate_state.json",
+        "contact_mode": world_contact_gate.get("contact_mode", "shadow_only"),
+        "blocked_contacts": list(world_contact_gate.get("blocked_contacts", [])),
+    }
+
+
+def _build_side_effect_review_report(
+    run_id: str,
+    generated_at: str,
+    status: str,
+    side_effect_review: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "schema_version": "side_effect_review_report_v0",
+        "run_id": run_id,
+        "generated_at": generated_at,
+        "status": status,
+        "side_effect_review_ref": "runtime/state/action/side_effect_review.json",
+        "repair_followup_required": bool(side_effect_review.get("repair_followup_required")),
+        "responsibility_effects": list(side_effect_review.get("responsibility_effects", [])),
     }
 
 
@@ -689,9 +768,13 @@ def _build_receipt(
         validation_dir / "quarantine_packet_index.json",
         validation_dir / "dashboard_metric_source.json",
         validation_dir / "cross_file_finding_index.json",
+        validation_dir / "observation_truth_review.json",
+        validation_dir / "boundary_audit_state.json",
         validation_dir / "validation_stage_gate.json",
         reports_dir / "validation_membrane_report.json",
         reports_dir / "validation_membrane_digest.json",
+        reports_dir / "world_contact_audit_report.json",
+        reports_dir / "side_effect_review_report.json",
         receipts_dir / f"validation_membrane_{run_id}.json",
     ]
     return {
@@ -787,6 +870,28 @@ def _check_build_report(report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate status mismatch")
     if report.get("next_allowed_slices") != NEXT_ALLOWED_SLICES:
         reasons.append("build_report_gate next allowed mismatch")
+    return reasons
+
+
+def _check_world_contact_report(report: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if report.get("schema_version") != "world_contact_audit_report_v0":
+        reasons.append("world_contact_report_gate schema mismatch")
+    if report.get("status") != "closed":
+        reasons.append("world_contact_report_gate status mismatch")
+    if report.get("world_contact_gate_ref") != "runtime/state/action/world_contact_gate_state.json":
+        reasons.append("world_contact_report_gate ref mismatch")
+    return reasons
+
+
+def _check_side_effect_review_report(report: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if report.get("schema_version") != "side_effect_review_report_v0":
+        reasons.append("side_effect_report_gate schema mismatch")
+    if report.get("status") != "closed":
+        reasons.append("side_effect_report_gate status mismatch")
+    if report.get("side_effect_review_ref") != "runtime/state/action/side_effect_review.json":
+        reasons.append("side_effect_report_gate ref mismatch")
     return reasons
 
 

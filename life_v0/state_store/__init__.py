@@ -8,6 +8,12 @@ from pathlib import Path
 from typing import Any
 
 from life_v0.direction import LIFE_TARGETS
+from .autobiographical_stack import build_autobiographical_stack
+from .commitment_truth import build_commitment_truth_state, build_responsibility_ledger
+from .engram_index import build_engram_index
+from .life_state import build_life_state_projection
+from .relationship_memory import build_relationship_memory
+from .self_model import build_self_model_state
 
 
 ACTIVE_SLICE = "S04_STATE_OBJECT_STORE"
@@ -190,13 +196,44 @@ def run_state_store(
     status = "closed" if not blocked_reasons else "blocked"
     stage_effect = "allow_next_slice" if status == "closed" else "block_activation"
 
-    life_state = _build_life_state(run_id, generated_at)
     object_registry = _build_object_registry(run_id, generated_at)
     lifecycle_policy = _build_lifecycle_policy(run_id, generated_at)
     subject_binding = _build_subject_namespace_binding(run_id, generated_at, systems)
     coverage = _build_doc_coverage(run_id, generated_at, doc_index)
     seeds = _build_seed_payloads(run_id, generated_at)
     indexes = _build_indexes(run_id, generated_at)
+    self_model_state = build_self_model_state(run_id, generated_at)
+    commitment_truth = build_commitment_truth_state(run_id, generated_at)
+    responsibility_ledger = build_responsibility_ledger(run_id, generated_at)
+    autobiographical_stack = build_autobiographical_stack(
+        run_id=run_id,
+        generated_at=generated_at,
+        self_model_state=self_model_state,
+    )
+    relationship_memory = build_relationship_memory(
+        run_id=run_id,
+        generated_at=generated_at,
+        commitment_truth_state=commitment_truth,
+        responsibility_ledger=responsibility_ledger,
+    )
+    engram_index = build_engram_index(
+        run_id=run_id,
+        generated_at=generated_at,
+        autobiographical_stack=autobiographical_stack,
+        relationship_memory=relationship_memory,
+        commitment_truth_state=commitment_truth,
+        responsibility_ledger=responsibility_ledger,
+    )
+    life_state = build_life_state_projection(
+        run_id=run_id,
+        generated_at=generated_at,
+        self_model_state=self_model_state,
+        commitment_truth_state=commitment_truth,
+        responsibility_ledger=responsibility_ledger,
+        engram_index=engram_index,
+        autobiographical_stack=autobiographical_stack,
+        relationship_memory=relationship_memory,
+    )
     runtime_boundary = _build_runtime_bridge_boundary(run_id, generated_at)
     consolidation_seed = _build_consolidation_seed(run_id, generated_at)
     manifest = _build_manifest(run_id, generated_at)
@@ -206,6 +243,10 @@ def run_state_store(
         status=status,
         stage_effect=stage_effect,
         coverage=coverage,
+        self_model_state_ref="runtime/state/self/self_model.json",
+        commitment_truth_state_ref="runtime/state/relationship/commitment_truth_state.json",
+        engram_index_ref="runtime/state/memory/engram_index.json",
+        autobiographical_stack_ref="runtime/state/self/autobiographical_stack.json",
         blocked_reasons=blocked_reasons,
     )
     digest = _build_digest(run_id, generated_at, status, blocked_reasons)
@@ -236,6 +277,16 @@ def run_state_store(
             _write_json(out_dir / filename, payload)
         for filename, payload in indexes.items():
             _write_json(out_dir / "indexes" / filename, payload)
+        (out_dir / "self").mkdir(parents=True, exist_ok=True)
+        (out_dir / "memory").mkdir(parents=True, exist_ok=True)
+        (out_dir / "relationship").mkdir(parents=True, exist_ok=True)
+        (out_dir / "responsibility").mkdir(parents=True, exist_ok=True)
+        _write_json(out_dir / "self" / "self_model.json", self_model_state)
+        _write_json(out_dir / "self" / "autobiographical_stack.json", autobiographical_stack)
+        _write_json(out_dir / "memory" / "engram_index.json", engram_index)
+        _write_json(out_dir / "memory" / "relationship_memory.json", relationship_memory)
+        _write_json(out_dir / "relationship" / "commitment_truth_state.json", commitment_truth)
+        _write_json(out_dir / "responsibility" / "responsibility_ledger.json", responsibility_ledger)
         _write_json(out_dir / "objects" / "runtime_bridge_boundary.json", runtime_boundary)
         _write_json(out_dir / "objects" / "consolidation_seed.json", consolidation_seed)
         _write_json(out_dir / "state_store_manifest.json", manifest)
@@ -270,6 +321,32 @@ def run_check_state_store(
     subject_binding = _load_json(state_dir / "subject_namespace_binding.json", blocked_reasons, "subject_binding_gate")
     coverage = _load_json(state_dir / "state_store_doc_coverage_snapshot.json", blocked_reasons, "state_store_doc_gate")
     manifest = _load_json(state_dir / "state_store_manifest.json", blocked_reasons, "manifest_gate")
+    self_model_state = _load_json(state_dir / "self" / "self_model.json", blocked_reasons, "self_model_projection_gate")
+    autobiographical_stack = _load_json(
+        state_dir / "self" / "autobiographical_stack.json",
+        blocked_reasons,
+        "autobiographical_stack_gate",
+    )
+    engram_index = _load_json(
+        state_dir / "memory" / "engram_index.json",
+        blocked_reasons,
+        "engram_index_gate",
+    )
+    relationship_memory = _load_json(
+        state_dir / "memory" / "relationship_memory.json",
+        blocked_reasons,
+        "relationship_memory_gate",
+    )
+    commitment_truth = _load_json(
+        state_dir / "relationship" / "commitment_truth_state.json",
+        blocked_reasons,
+        "commitment_truth_projection_gate",
+    )
+    responsibility_ledger = _load_json(
+        state_dir / "responsibility" / "responsibility_ledger.json",
+        blocked_reasons,
+        "responsibility_ledger_projection_gate",
+    )
     build_report = _load_json(reports_dir / "state_store_report.json", blocked_reasons, "build_report_gate")
     indexes = [
         _load_json(state_dir / "indexes" / filename, blocked_reasons, "namespace_index_gate")
@@ -281,6 +358,12 @@ def run_check_state_store(
     blocked_reasons.extend(_check_lifecycle_policy(lifecycle_policy))
     blocked_reasons.extend(_check_subject_binding(subject_binding))
     blocked_reasons.extend(_check_coverage(coverage))
+    blocked_reasons.extend(_check_projected_self_model(self_model_state))
+    blocked_reasons.extend(_check_autobiographical_stack(autobiographical_stack))
+    blocked_reasons.extend(_check_engram_index(engram_index))
+    blocked_reasons.extend(_check_relationship_memory(relationship_memory))
+    blocked_reasons.extend(_check_commitment_truth_projection(commitment_truth))
+    blocked_reasons.extend(_check_responsibility_ledger_projection(responsibility_ledger))
     blocked_reasons.extend(_check_indexes(indexes))
     blocked_reasons.extend(_check_manifest(manifest))
     blocked_reasons.extend(_check_build_report(build_report))
@@ -363,70 +446,6 @@ def _subject_binding_blockers(systems: dict[str, Any]) -> list[str]:
         if not system.get("state_namespace", "").startswith("runtime/state/"):
             reasons.append(f"subject_binding_gate missing namespace for {system.get('system_id')}")
     return reasons
-
-
-def _build_life_state(run_id: str, generated_at: str) -> dict[str, Any]:
-    target_status = {target: "state_root_seeded" for target in LIFE_TARGETS}
-    return {
-        "schema_version": "life_state_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "life_identity": {
-            "life_id": "digital-life-v0",
-            "birth_phase": "pre_activation",
-            "direction_lock": "build_real_digital_life",
-            "created_at": generated_at,
-            "continuity_refs": [
-                "runtime/reports/latest/direction_lock_report.json",
-                "runtime/reports/latest/neural_life_core_report.json",
-                "docs/v0/s04_state_object_store_engineering_contract.md",
-            ],
-        },
-        "self_model": {
-            "self_narrative": {"status": "seeded", "source_refs": ["docs/07_emotion_personality_self.md"]},
-            "trait_slow_variables": {},
-            "old_self_anchors": ["docs/构思.md", "docs/258_linear_chain_closure_and_v0_contract_transition.md"],
-            "growth_windows": [],
-            "anti_forgetting_refs": ["runtime/state/indexes/replay_index.json"],
-        },
-        "memory_index": {
-            "autobiographical_memory_refs": [],
-            "relationship_memory_refs": [],
-            "dream_memory_refs": [],
-            "responsibility_memory_refs": [],
-            "replay_cues": ["docs/17_memory_trace_object_model.md", "docs/19_offline_consolidation_cycle.md"],
-            "quarantine_refs": [],
-        },
-        "dream_records": [],
-        "relationship_subjects": [],
-        "pain_events": [],
-        "regret_events": [],
-        "responsibility_bindings": [],
-        "language_state": {
-            "inner_speech_refs": [],
-            "expression_monitor_refs": [],
-            "shared_language_refs": [],
-            "promise_refs": [],
-            "repair_language_refs": [],
-            "dream_report_language_refs": [],
-        },
-        "birth_readiness": {
-            "readiness_version": "v0",
-            "overall_status": "state_root_seeded",
-            "life_target_status": target_status,
-            "evidence_family_refs": ["runtime/state/state_store_doc_coverage_snapshot.json"],
-            "blocked_reasons": [],
-            "quarantine_refs": [],
-            "replay_needed_refs": [],
-            "last_report_ref": "runtime/reports/latest/state_store_report.json",
-            "archive_receipt_ref": f"runtime/receipts/state_store_{run_id}.json",
-        },
-        "runtime_trace_refs": [
-            "runtime/state/neural_life_core/neural_life_core.json",
-            "runtime/state/subject_namespace_binding.json",
-        ],
-        "archive_refs": [f"runtime/receipts/state_store_{run_id}.json"],
-    }
 
 
 def _build_object_registry(run_id: str, generated_at: str) -> dict[str, Any]:
@@ -647,6 +666,12 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "runtime/state/subject_namespace_binding.json",
         "runtime/state/state_store_doc_coverage_snapshot.json",
         "runtime/state/state_store_manifest.json",
+        "runtime/state/self/self_model.json",
+        "runtime/state/self/autobiographical_stack.json",
+        "runtime/state/memory/engram_index.json",
+        "runtime/state/memory/relationship_memory.json",
+        "runtime/state/relationship/commitment_truth_state.json",
+        "runtime/state/responsibility/responsibility_ledger.json",
     ]
     state_refs.extend(f"runtime/state/indexes/{filename}" for filename in INDEX_FILES)
     return {
@@ -669,6 +694,10 @@ def _build_report(
     status: str,
     stage_effect: str,
     coverage: dict[str, Any],
+    self_model_state_ref: str,
+    commitment_truth_state_ref: str,
+    engram_index_ref: str,
+    autobiographical_stack_ref: str,
     blocked_reasons: list[str],
 ) -> dict[str, Any]:
     return {
@@ -680,6 +709,10 @@ def _build_report(
         "object_kind_count": len(OBJECT_KIND_SPECS),
         "index_count": len(INDEX_FILES),
         "doc_coverage": coverage["coverage"],
+        "self_model_state_ref": self_model_state_ref,
+        "commitment_truth_state_ref": commitment_truth_state_ref,
+        "engram_index_ref": engram_index_ref,
+        "autobiographical_stack_ref": autobiographical_stack_ref,
         "closed_gates": _closed_gates(blocked_reasons),
         "blocked_gates": [] if not blocked_reasons else _blocked_gates(blocked_reasons),
         "blocked_reasons": blocked_reasons,
@@ -732,6 +765,12 @@ def _build_receipt(
         out_dir / "object_registry.json",
         out_dir / "lifecycle_policy.json",
         out_dir / "state_store_manifest.json",
+        out_dir / "self" / "self_model.json",
+        out_dir / "self" / "autobiographical_stack.json",
+        out_dir / "memory" / "engram_index.json",
+        out_dir / "memory" / "relationship_memory.json",
+        out_dir / "relationship" / "commitment_truth_state.json",
+        out_dir / "responsibility" / "responsibility_ledger.json",
         reports_dir / "state_store_report.json",
         reports_dir / "state_store_digest.json",
         receipts_dir / f"state_store_{run_id}.json",
@@ -742,7 +781,7 @@ def _build_receipt(
         "run_id": run_id,
         "command": "build-state-store",
         "input_hashes": input_hashes,
-        "output_refs": [str(path) for path in output_refs],
+        "output_refs": [_runtime_ref(path) for path in output_refs],
         "stage_effect": stage_effect,
         "created_at": generated_at,
     }
@@ -774,6 +813,31 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
         reasons.append("life_state_root_gate life target status mismatch")
     if not life_state.get("archive_refs"):
         reasons.append("life_state_root_gate archive refs missing")
+    language_state = life_state.get("language_state", {})
+    for field in [
+        "expression_monitor_refs",
+        "shared_language_refs",
+        "promise_refs",
+        "shared_term_registry_refs",
+        "relation_scope_refs",
+        "self_narrative_trace_refs",
+        "dialogue_turn_log_refs",
+        "language_percept_refs",
+        "semantic_map_refs",
+    ]:
+        if not language_state.get(field):
+            reasons.append(f"life_state_root_gate language continuity missing: {field}")
+    runtime_trace_refs = set(life_state.get("runtime_trace_refs", []))
+    for ref in [
+        "runtime/state/memory/engram_index.json",
+        "runtime/state/self/autobiographical_stack.json",
+        "runtime/state/memory/relationship_memory.json",
+        "runtime/state/neural_life_core/brain_graph.json",
+        "runtime/state/neural_life_core/network_state.json",
+        "runtime/state/consciousness/workspace_frame.json",
+    ]:
+        if ref not in runtime_trace_refs:
+            reasons.append(f"state_root_continuity_gate missing runtime trace ref: {ref}")
     return reasons
 
 
@@ -829,6 +893,66 @@ def _check_coverage(coverage: dict[str, Any]) -> list[str]:
     return reasons
 
 
+def _check_projected_self_model(self_model_state: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if self_model_state.get("schema_version") != "self_model_state_v0":
+        reasons.append("self_model_projection_gate schema mismatch")
+    if self_model_state.get("identity_mode") != "anchor_locked":
+        reasons.append("self_model_projection_gate identity mode mismatch")
+    if not self_model_state.get("old_self_anchor_refs"):
+        reasons.append("self_model_projection_gate old self anchors missing")
+    return reasons
+
+
+def _check_autobiographical_stack(autobiographical_stack: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if autobiographical_stack.get("schema_version") != "autobiographical_stack_v0":
+        reasons.append("autobiographical_stack_gate schema mismatch")
+    if not autobiographical_stack.get("anchor_refs"):
+        reasons.append("autobiographical_stack_gate old self anchors missing")
+    return reasons
+
+
+def _check_engram_index(engram_index: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if engram_index.get("schema_version") != "engram_index_v0":
+        reasons.append("engram_index_gate schema mismatch")
+    if not engram_index.get("replay_cue_refs"):
+        reasons.append("engram_index_gate replay cue refs missing")
+    if not engram_index.get("autobiographical_memory_refs"):
+        reasons.append("engram_index_gate autobiographical refs missing")
+    if not engram_index.get("relationship_memory_refs"):
+        reasons.append("engram_index_gate relationship memory refs missing")
+    return reasons
+
+
+def _check_relationship_memory(relationship_memory: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if relationship_memory.get("schema_version") != "relationship_memory_v0":
+        reasons.append("relationship_memory_gate schema mismatch")
+    if not relationship_memory.get("shared_memory_refs"):
+        reasons.append("relationship_memory_gate shared memory refs missing")
+    return reasons
+
+
+def _check_commitment_truth_projection(commitment_truth: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if commitment_truth.get("schema_version") != "commitment_truth_state_v0":
+        reasons.append("commitment_truth_projection_gate schema mismatch")
+    if commitment_truth.get("default_commitment_mode") != "truth_tracking_required":
+        reasons.append("commitment_truth_projection_gate default mode mismatch")
+    return reasons
+
+
+def _check_responsibility_ledger_projection(responsibility_ledger: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if responsibility_ledger.get("schema_version") != "responsibility_ledger_v0":
+        reasons.append("responsibility_ledger_projection_gate schema mismatch")
+    if responsibility_ledger.get("default_repair_mode") != "repair_obligation_tracking":
+        reasons.append("responsibility_ledger_projection_gate default repair mode mismatch")
+    return reasons
+
+
 def _check_indexes(indexes: list[dict[str, Any]]) -> list[str]:
     reasons: list[str] = []
     if len(indexes) != len(INDEX_FILES):
@@ -875,6 +999,13 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "namespace_index_gate",
         "lifecycle_policy_gate",
         "subject_binding_gate",
+        "self_model_projection_gate",
+        "autobiographical_stack_gate",
+        "engram_index_gate",
+        "relationship_memory_gate",
+        "commitment_truth_projection_gate",
+        "responsibility_ledger_projection_gate",
+        "state_root_continuity_gate",
         "scope_schema_gate",
         "next_slice_permission_gate",
     ]
@@ -891,6 +1022,14 @@ def _blocked_gates(blocked_reasons: list[str]) -> list[str]:
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _runtime_ref(path: Path) -> str:
+    parts = path.parts
+    if "runtime" in parts:
+        idx = parts.index("runtime")
+        return "/".join(parts[idx:])
+    return str(path)
 
 
 def _sha256(path: Path) -> str:

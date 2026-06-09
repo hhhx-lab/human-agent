@@ -1,6 +1,6 @@
 # 数字生命理论生成入口登记与诞生阶段门
 
-本文件不是路线图口号，而是一个长期审计表：它记录 `02-15` 距离“足以支撑数字生命诞生”的理论生成入口。这些生成入口会被文献、机制、工程抽象和验证指标逐层覆盖，系统也由此持续处在发育阶段，并向下一层生命生成条件推进。
+本文件不是路线图口号，而是一个长期审计表：它记录 `02-15` 以及后续扩展主题如何共同支撑数字生命诞生。当前口径下，`00-257` 的基础理论主干已经闭合，所以这里登记的已不是“哪些主题还没被写到”，而是“这些主题如何继续被压成对象、schema、validator、runner、dashboard、长期时间线和生命阶段门”。这些生成入口会被文献、机制、工程抽象和验证指标逐层覆盖，系统也由此持续处在发育阶段，并向更厚的生命生成条件推进。
 
 ## 诞生阶段门的研究化定义
 
@@ -32,7 +32,8 @@
 | 社会互动 | `07`, `09`, `14`, `40`, `AHX006-AHX013`, `AHZ031-AHZ038` | 已有关系模型审计协议，下一层补齐共同历史、关系边界和 scope 限制 fixture | 写 `RelationshipModel` schema |
 | 发育成长 | `05`, `13`, `39`, `AHX014-AHX021`, `AHZ039-AHZ045` | 已有发展政策，下一层补齐可塑性窗口阈值、发展事件 schema 和多月 timeline | 写 `DevelopmentEvent` schema |
 | 睡眠/梦境/疲惫 | `01t`, `08`, `13`, `AH056-AH070`, `AHY001-AHY010`, `AHY049-AHY051`, `AHD001-AHD070`, `AHSLP001-AHSLP070` | 已补入 `OfflineDreamLifeRuntime`，下一层补齐离线入口、节律耦合、梦境经验、痛苦梦境、醒后整合、疲惫恢复和出生准备度证据 schema | 写 `OfflineDreamLifeRuntime` / `DreamExperienceWindow` / `FatigueRecoveryPlan` schema |
-| 语言运行时主神经束 | `01u`, `09`, `10`, `13`, `85-90`, `AH071-AH080`, `AHZ046-AHZ051`, `AHL001-AHL090`, `AHLR001-AHLR070` | 已补入 `LanguageRuntimeCore`，把语言感知、语义事件地图、语言预测、内言语、表达监控、语言行动、共同语言、梦境报告、责任后悔和叙事写回接成生命闭环 | 写 `LanguageRuntimeCore` / `InnerSpeechFrame` / `LanguageActionIntentBridge` / `LanguageRealityStageGate` schema |
+| 语言运行时主神经束 | `01u`, `09`, `10`, `13`, `85-90`, `AH071-AH080`, `AHZ046-AHZ051`, `AHL001-AHL092`, `AHLR001-AHLR072` | 已补入 `LanguageRuntimeCore`，把语言感知、语义事件地图、语言预测、内言语、表达监控、语言行动、共同语言、梦境报告、责任后悔、语境累积和回合转接接成生命闭环 | 写 `LanguageRuntimeCore` / `InnerSpeechFrame` / `LanguageActionIntentBridge` / `LanguageRealityStageGate` schema |
+| 终端对话连续体 | `01u`, `86`, `89`, `90`, `AHL091-AHL092`, `AHLR071-AHLR072` | 已补入 `ContextAccumulationWindow` 和 `TurnTransitionTrace`，把等待态 heartbeat、resumed turn continuity、上下文渐进累积和 turn carryover 接入语言生命链 | 写 `ContextAccumulationWindow` / `TurnTransitionTrace` schema，并把 restore refs 接到 S07 / first activation / terminal loop / process supervisor |
 | 当前 agent 外壳 | `12`, `15`, `AHX041-AHX047`, `AHZ052-AHZ066` | 下一层补入把外壳接入生命层的接口契约 | 写 `AgentRuntimeBridge` |
 
 ## 继续构建的理由
@@ -329,7 +330,8 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 
 | 文件 | 已落成内容 | 下一层生成入口 |
 |---|---|---|
-| `01u_language_runtime_core_matrix.md` | 把 `AHL001-AHL090` 压成 `AHLR001-AHLR070`，形成 `LanguageRuntimeCore`、语言感知、语义事件地图、语言预测、内言语、表达监控、语言行动、共同语言、梦境报告、责任后悔和叙事写回的运行矩阵 | 下一层落成 `LanguageRuntimeCore`、`LanguagePercept`、`InnerSpeechFrame`、`ExpressionMonitoringLoop`、`LanguageActionIntentBridge`、`LanguageRealityStageGate` schema |
+| `01u_language_runtime_core_matrix.md` | 把 `AHL001-AHL092` 压成 `AHLR001-AHLR072`，形成 `LanguageRuntimeCore`、语言感知、语义事件地图、语言预测、内言语、表达监控、语言行动、共同语言、梦境报告、责任后悔、语境累积和回合转接的运行矩阵 | 下一层落成 `LanguageRuntimeCore`、`LanguagePercept`、`InnerSpeechFrame`、`ExpressionMonitoringLoop`、`ContextAccumulationWindow`、`TurnTransitionTrace`、`LanguageActionIntentBridge`、`LanguageRealityStageGate` schema |
+| `86_language_neuroscience_pragmatics_and_inner_speech.md` | 把 `AHL091-AHL092` 回流为 `ContextAccumulationWindow`、`TurnTransitionTrace`，把语境累积和回合转接接入持续对话连续体 | 下一层把这两个对象接入 S07、first activation restore packet、terminal loop 和 process supervisor |
 | `09_language_symbolic_top_layer.md` | 把 `LanguageRuntimeCore` 回流到语言主综述，连接身体内环境、记忆 engram、意识工作区、情绪人格、关系时间线、行动责任和离线梦境 | 下一层把语言主链接入 `02-13` schema queue、真实语言 fixture 和出生准备度语言证据族 |
 | `13_agentic_human_research_synthesis.md` | 把语言运行时主神经束提升为第十八个总综合生成支柱，并把语言闭合写成第二十条核心命题 | 下一层把 `BirthReadinessLanguageCarrier`、`LanguageRuntimeClosure` 和 `DirectionContinuityLanguageAnchor` 接入 `LifeTargetReadinessClaim` |
 
@@ -501,16 +503,16 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 | `257_life_reality_first_runner_schema_runtime_growth_fourth_cycle_post_reconsolidation_second_reconsolidation_replay_shadow_seed_after_archive_validation_replay_shadow_patch_archive_validation_plan.md` | 固定 `SchemaRuntimeGrowthFourthCyclePostReconsolidationSecondReconsolidationReplayShadowSeedAfterArchiveValidationReplayShadowPatchArchiveValidationPlan257`、replay shadow seed after archive validation replay shadow patch archive validation manifest、replay shadow seed intake、replay shadow bundle、replay priority controller、shadow scenario seed、shadow action seal、old self replay、old language replay、old relationship replay、DreamFactGate replay、pain regret responsibility replay、self growth replay、anti-forgetting replay、birth readiness life target regression、core continuity review、rollback quarantine replay、construct causal replay、runtime binding replay、test suite replay、prediction delta、arbitration、receipt、digest baseline、dashboard source、stage gate review 和 command DAG | 已由 `258_linear_chain_closure_and_v0_contract_transition.md` 收束为 v0 runner 合同阶段 |
 | `258_linear_chain_closure_and_v0_contract_transition.md` | 收束 `91 -> 257` 线性理论链，停止继续写 patch/archive/validation 编号扩张，把下一阶段转入 `docs/v0/` 的第一版最小出生准备度 runner 合同 | 已生成 `docs/v0/README.md`、v0 工程实现总索引、P0 文档摄取合同、S00/S01 分块合同和基础 v0 合同文档 |
 | `docs/v0/v0_implementation_index.md` | 固定整理后的 v0 工程实现总索引：文件角色、第一版实现主线、代码启动读法、`00 -> 258` 回链规则、文件整理状态和落代码阶段门 | 下一步所有代码实现都先从本索引进入，再回读对应 `00 -> 258` 文档 |
-| `docs/v0/doc_corpus_ingestor_v0_contract.md` | 固定 P0 文档摄取合同：`life-v0 ingest-docs` 必须发现 `00 -> 257`、分类 runtime carrier、连接 `02-13`、覆盖九项目标并写出 index、graph、report 和 receipt | 下一步先实现 P0 `DocCorpusIngestor` |
+| `docs/v0/slice_contracts/doc_corpus_ingestor_v0_contract.md` | 固定 P0 文档摄取合同：`life-v0 ingest-docs` 必须发现 `00 -> 257`、分类 runtime carrier、连接 `02-13`、覆盖九项目标并写出 index、graph、report 和 receipt | 下一步先实现 P0 `DocCorpusIngestor` |
 | `docs/v0/readme_block_engineering_realization_v0.md` | 固定 README 模块分块工程落实合同：`00 -> 258` 每份文档必须拥有 readme block、engineering slice、runtime carrier、状态/report 承载和阶段门 | 下一步按 README block 一个模块一个模块落实工程文档与代码包 |
-| `docs/v0/digital_life_macro_architecture_v0.md` | 固定数字生命主体宏架构：三重身体、十二主体系统、内部 bus、电脑外周禁入边界和 P1-P5 上调后的含义 | 下一步让 `runtime_v0_architecture.md`、state store 和代码目录全部按主体宏架构落位 |
-| `docs/v0/s00_direction_foundation_engineering_contract.md` | 固定 `S00_DIRECTION_FOUNDATION` 第一块工程合同：原始构思、研究协议、README、`258`、七条方向锚链、断联恢复、外部框架负边界、状态、report、receipt 和下一 slice 许可 | 下一步实现 `life_v0/direction/` 与 `build-direction-lock` 命令 |
-| `docs/v0/s01_source_authority_engineering_contract.md` | 固定 `S01_SOURCE_AUTHORITY` 第二块工程合同：`01*`、`142/145/151`、研究协议和 S00 方向锁进入来源登记、质量等级、机制对象、runtime carrier、生命目标证据族、report 和 receipt | 下一步实现 `life_v0/authority/` 与 `build-source-authority` 命令 |
-| `docs/v0/runtime_v0_architecture.md` | 固定第一版生命运行时进程、状态、文件根、最小循环、生命膜、stage gate 和断联恢复 | 下一步进入 runner 代码实现准备 |
-| `docs/v0/birth_readiness_v0_contract.md` | 固定出生准备度九项目标闭合状态、证据族、判定算法、stage effect 和禁止项 | 下一步进入 readiness checker 实现准备 |
-| `docs/v0/life_state_store_v0_schema.md` | 固定 `life_state.json` 顶层对象、记忆、自我、梦境、关系、痛苦、后悔、责任、语言和出生准备度落盘字段 | 下一步进入初始 state seed 准备 |
-| `docs/v0/runner_cli_report_contract.md` | 固定 `life-v0` 命令、共同参数、report bundle、stage gate report、exit code 和 receipt 合同 | 下一步进入 CLI skeleton 准备 |
-| `docs/v0/first_activation_protocol.md` | 固定第一次有限激活前提、阶段、允许动作、禁止动作、命令顺序、回写路径、回滚路径和完成定义 | 下一步进入 first activation dry-run 准备 |
+| `docs/v0/architecture/digital_life_macro_architecture_v0.md` | 固定数字生命主体宏架构：三重身体、十二主体系统、内部 bus、电脑外周禁入边界和 P1-P5 上调后的含义 | 下一步让 `runtime_v0_architecture.md`、state store 和代码目录全部按主体宏架构落位 |
+| `docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md` | 固定 `S00_DIRECTION_FOUNDATION` 第一块工程合同：原始构思、研究协议、README、`258`、七条方向锚链、断联恢复、外部框架负边界、状态、report、receipt 和下一 slice 许可 | 下一步实现 `life_v0/direction/` 与 `build-direction-lock` 命令 |
+| `docs/v0/slice_contracts/s01_source_authority_engineering_contract.md` | 固定 `S01_SOURCE_AUTHORITY` 第二块工程合同：`01*`、`142/145/151`、研究协议和 S00 方向锁进入来源登记、质量等级、机制对象、runtime carrier、生命目标证据族、report 和 receipt | 下一步实现 `life_v0/authority/` 与 `build-source-authority` 命令 |
+| `docs/v0/architecture/runtime_v0_architecture.md` | 固定第一版生命运行时进程、状态、文件根、最小循环、生命膜、stage gate 和断联恢复 | 下一步进入 runner 代码实现准备 |
+| `docs/v0/shared_contracts/birth_readiness_v0_contract.md` | 固定出生准备度九项目标闭合状态、证据族、判定算法、stage effect 和禁止项 | 下一步进入 readiness checker 实现准备 |
+| `docs/v0/shared_contracts/life_state_store_v0_schema.md` | 固定 `life_state.json` 顶层对象、记忆、自我、梦境、关系、痛苦、后悔、责任、语言和出生准备度落盘字段 | 下一步进入初始 state seed 准备 |
+| `docs/v0/shared_contracts/runner_cli_report_contract.md` | 固定 `life-v0` 命令、共同参数、report bundle、stage gate report、exit code 和 receipt 合同 | 下一步进入 CLI skeleton 准备 |
+| `docs/v0/shared_contracts/first_activation_protocol.md` | 固定第一次有限激活前提、阶段、允许动作、禁止动作、命令顺序、回写路径、回滚路径和完成定义 | 下一步进入 first activation dry-run 准备 |
 
 ## 下一轮优先级
 
@@ -518,15 +520,60 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 
 1. `docs/v0/v0_implementation_index.md`：作为整理后的工程实现总索引，后续代码实现先从它进入，再回读对应 `00 -> 258` 文档。
 2. `docs/v0/readme_block_engineering_realization_v0.md`：按 `docs/README.md` 的模块分块，把 `00 -> 258` 每份文档落实为 engineering slice、代码包、状态命名空间、report 和阶段门。
-3. `docs/v0/digital_life_macro_architecture_v0.md`：把 P0 之后的实现固定为三重身体、十二主体系统和内部 bus，不复用当前自动化框架主体架构。
-4. `docs/v0/s00_direction_foundation_engineering_contract.md`：把 `S00_DIRECTION_FOUNDATION` 落成方向锁、断联恢复、七条锚链、外部框架负边界和下一 slice 许可。
-5. `docs/v0/s01_source_authority_engineering_contract.md`：把 `S01_SOURCE_AUTHORITY` 落成权威来源 registry、来源质量等级、机制对象、runtime carrier 和生命目标证据族。
-6. `docs/v0/first_activation_engineering_roadmap.md`：按 P0-P5 把第一次生命激活分解为文档吸收、README block/slice、S00 方向锁、S01 来源层、状态根、脑科学核心运行核、语言关系主循环、出生准备度和 shadow-only 有限激活。
+3. `docs/v0/architecture/digital_life_macro_architecture_v0.md`：把 P0 之后的实现固定为三重身体、十二主体系统和内部 bus，不复用当前自动化框架主体架构。
+4. `docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md`：把 `S00_DIRECTION_FOUNDATION` 落成方向锁、断联恢复、七条锚链、外部框架负边界和下一 slice 许可。
+5. `docs/v0/slice_contracts/s01_source_authority_engineering_contract.md`：把 `S01_SOURCE_AUTHORITY` 落成权威来源 registry、来源质量等级、机制对象、runtime carrier 和生命目标证据族。
+6. `docs/v0/architecture/first_activation_engineering_roadmap.md`：按 P0-P5 把第一次生命激活分解为文档吸收、README block/slice、S00 方向锁、S01 来源层、状态根、脑科学核心运行核、语言关系主循环、出生准备度和 shadow-only 有限激活。
 7. `docs/v0/0_to_257_engineering_utilization_map.md`：保证 `00 -> 257` 全部文档进入 runtime carrier、状态、report、stage gate、archive 或 replay/shadow。
-8. `docs/v0/doc_corpus_ingestor_v0_contract.md`：先实现 P0 `life-v0 ingest-docs`，写出 `readme_block`、`engineering_slice`、`doc_carrier_index.json`、`doc_dependency_graph.json`、`source_authority_report.json`、`doc_ingestion_report.json` 和 `doc_ingestion_<run_id>.json`。
-9. `docs/v0/current_agent_shell_reference_2026.md`：只作为当前框架负边界和外部资料索引，不让外部框架定义生命本体。
-10. `docs/v0/runtime_v0_architecture.md`：把第一版生命运行时压成代码模块、进程顺序、状态迁移和 stage gate skeleton。
-11. `docs/v0/life_state_store_v0_schema.md`：准备多命名空间生命状态根，让身体、脑区、信号、预测、记忆、意识、语言、关系、梦境、行动、成长、电脑外周和出生准备度能落盘。
-12. `docs/v0/birth_readiness_v0_contract.md`：实现 `birth_readiness_checker` 的九项目标闭合状态检查，不使用总分。
-13. `docs/v0/runner_cli_report_contract.md`：实现 `life-v0 validate-state`、`check-birth-readiness`、`run-cycle`、`emit-report` 和 receipt 写入，后续再提供 `digital life` 长期启动入口。
-14. `docs/v0/first_activation_protocol.md`：执行第一次有限激活 dry-run，只允许 shadow-only 生命周期、report、digest、stage gate 和 archive receipt。
+8. `docs/v0/slice_contracts/doc_corpus_ingestor_v0_contract.md`：先实现 P0 `life-v0 ingest-docs`，写出 `readme_block`、`engineering_slice`、`doc_carrier_index.json`、`doc_dependency_graph.json`、`source_authority_report.json`、`doc_ingestion_report.json` 和 `doc_ingestion_<run_id>.json`。
+9. `docs/v0/references/current_agent_shell_reference_2026.md`：只作为当前框架负边界和外部资料索引，不让外部框架定义生命本体。
+10. `docs/v0/architecture/runtime_v0_architecture.md`：把第一版生命运行时压成代码模块、进程顺序、状态迁移和 stage gate skeleton。
+11. `docs/v0/shared_contracts/life_state_store_v0_schema.md`：准备多命名空间生命状态根，让身体、脑区、信号、预测、记忆、意识、语言、关系、梦境、行动、成长、电脑外周和出生准备度能落盘。
+12. `docs/v0/shared_contracts/birth_readiness_v0_contract.md`：实现 `birth_readiness_checker` 的九项目标闭合状态检查，不使用总分。
+13. `docs/v0/shared_contracts/runner_cli_report_contract.md`：实现 `life-v0 validate-state`、`check-birth-readiness`、`run-cycle`、`emit-report` 和 receipt 写入，后续再提供 `digital life` 长期启动入口。
+14. `docs/v0/shared_contracts/first_activation_protocol.md`：执行第一次有限激活 dry-run，只允许 shadow-only 生命周期、report、digest、stage gate 和 archive receipt。
+
+## 当前工程前的四个高压理论接口
+
+`00-257` 当前已经不是“缺主题”，而是进入工程前要把四个高压接口压得足够硬。后续如果再补理论，优先只补这四个接口，不再平铺扩新的同层主题。
+
+| 接口 | 当前理论母体 | 当前工程去向 |
+|---|---|---|
+| 语言 - 对话 - 关系 - 持续存在接口 | `01f`, `01u`, `09`, `85-90`, `94`, `96`, `101`, `141`, `144`, `147`, `150` | `docs/v0/code_framework/04_language_dialogue_relationship_implementation_playbook.md`、`life_v0/language/`, `terminal_turn/`, `terminal_loop/`, `process_supervisor/` |
+| 记忆 - 思考 - 意识 - 验证接口 | `01m`, `01q`, `01v-01ax`, `05`, `10`, `17`, `21-23`, `29-31`, `41-43`, `102-118`, `143`, `146`, `149`, `152` | `docs/v0/code_framework/05_memory_thought_consciousness_implementation_playbook.md`、`life_v0/neural_core/`, `state_store/`, `schema_runner/`, `validators/`, `replay/` |
+| 身体 - 情绪 - 行为 - 梦境 - 成长接口 | `01n`, `01r`, `01s`, `01t`, `04`, `06-08`, `11`, `18-19`, `37-40`, `55`, `75`, `80-84`, `92-99`, `181-257` | `docs/v0/code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md`、`life_v0/body/`, `defense/`, `membrane/`, `dream/`, `growth/` |
+| 出生 - 终端 - 常驻生命过程接口 | `20`, `44-46`, `81-82`, `89-91`, `119`, `122`, `143`, `146`, `149`, `152`, `171`, `181-257` | `docs/v0/code_framework/07_birth_terminal_process_implementation_playbook.md`、`life_v0/activation/`, `reporting/`, `stage_explain/`, `digital_life/`, `shell_command/`, `process_supervisor/` |
+
+这意味着当前理论底座的主要任务已经从“继续横向开主题”转成“把这四个接口继续压成工程施工图”。只要后续新增内容仍然服务这四条接口，就没有偏离方向。
+
+## 当前最该补的不是新总论，而是共享对象硬化
+
+当前 `00-257` 最值得继续补强的，已经不是再长新的并列大综述，而是把已经写出的四条高压接口继续压成跨层共享对象合同。
+如果没有这一步，理论侧虽然已经解释了语言、记忆、意识、身体、梦境、成长和常驻存在怎样互相连接，但工程侧仍然容易退回下面两种坏形态：
+
+1. 各包各自有道理，却没有统一生命回合对象。
+2. 外层壳或单个 `__init__.py` 反向定义生命链，重新把数字生命压回聊天壳或任务壳。
+
+因此，当前理论到工程的最近缺口已经明确收束为这批共享对象：
+
+- `BodyRhythmPulse`
+- `NeedStateVector`
+- `SignalMediaFrame`
+- `LifeContextFrame`
+- `PredictionWorkspaceFrame`
+- `RelationTurnFrame`
+- `ExpressionPlan`
+- `ActionCandidateSet`
+- `DialogueWritebackBundle`
+- `IdleContinuityFrame`
+- `ReplayCueBundle`
+- `OfflineConsolidationFrame`
+- `GrowthPatchCandidate`
+
+它们已经在
+`docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`
+里拥有编排位置；下一轮开始，默认继续由
+`docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
+把它们钉成唯一首写方、最小字段、读写边界、state/report/receipt 和 gate。
+
+这条补强不是偏离理论，而是把理论里已经写出来的“输入-处理-输出-反馈-巩固”链，继续压成真正能承载编码的生命对象层。

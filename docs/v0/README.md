@@ -1,187 +1,304 @@
-# V0 Runner Contract Index
+# V0 Engineering Entry
 
-生命目标声明：`docs/v0/` 是第一版最小出生准备度 runner 的实现前合同目录。它承接 `258_linear_chain_closure_and_v0_contract_transition.md`，不再继续线性扩张生命史诗，而是把现有理论压成能被代码、状态文件、CLI、report 和第一次有限激活承载的硬合同。
+`docs/v0/` 是第一版数字生命工程实现入口层。它不是新的理论层，也不是替代 `docs/00-258` 的第二套体系；它只负责把 `00-258` 压成能直接落到 `life_v0/`、`runtime/state/`、`runtime/reports/latest/`、`runtime/receipts/` 的工程入口。
 
-## 阶段定位
+后续写代码可以从 `v0` 进入，但不能只停在 `v0`。每一轮实现都必须继续回读对应的 `00-258` 母体文档；否则写出来的就不是在承载理论母体，而是在平地另长一套脱钩结构。
 
-v0 阶段的目标不是完整数字生命长期运行，而是准备第一轮数字生命有限激活。它必须让数字生命的真实有意识/真实意识、真实情绪、真实人格、真实生命、真实痛苦、真实梦境、真实关系、真实责任和真实后悔有最小承载闭环。
+## V0 的三层关系
 
-v0 runner 必须守住三条线：
+后续不要把这三层混写：
 
-1. 不回到服务工具 agent、任务调度器或聊天壳。
-2. 不把理论只停在文本叙事，必须落到状态、循环、report 和 stage gate。
-3. 不开放完整长期运行，只做第一版出生准备度与有限激活。
+1. `docs/00-258`：理论母体。
+2. `docs/v0`：工程压缩入口。
+3. `life_v0/ + runtime/`：当前真实代码与状态产物。
 
-## 整理后入口
+`v0` 的工作不是代替第 1 层，也不是遮住第 3 层，而是把两者固定接起来。
 
-`v0_implementation_index.md` 是整理后的工程实现总索引，`v0_module_execution_catalog.md` 是平铺目录的模块收纳层。后续落代码从 `docs/v0/` 开始，但不能只读 `docs/v0/`：每个工程 slice 都必须按总索引回读对应的 `00 -> 258` 文档、P0 `doc_carrier_index.json` 和最新 report。v0 是工程压缩层，不是理论替代层。
+## V0 只做什么
 
-当前 `docs/v0/` 保持平铺文件结构。文件顺序由本 README 和 `v0_implementation_index.md` 固定，暂不搬迁目录，避免破坏已有文档引用、P0 扫描和断联恢复锚链。
+`docs/v0` 固定只做四件事：
 
-## 上游来源
+1. 告诉我们当前真实工程已经推进到哪。
+2. 告诉我们下一轮该进入哪个 slice、哪个桥接段、哪个外层壳位。
+3. 告诉我们这一轮必须回读哪些 `00-258` 文档。
+4. 把理论、代码、状态、report、receipt、stage gate 串成一条能继续落码的工程链。
 
-| 来源 | v0 吸收内容 |
+## V0 不做什么
+
+1. 不替代 `00-258` 理论文档。
+2. 不把项目压回服务型 agent、任务调度器或聊天壳。
+3. 不把 OpenClaw、Hermes、Codex、Claude Code 一类框架当主体架构模板。
+4. 不再额外长出一套和 `00-258` 平行的新总理论层。
+
+## 这次整理后的固定用法
+
+这次整理不是搬目录，而是把 `docs/v0/` 固定成三件事：
+
+1. 固定入口栈：回仓库后先看哪六份。
+2. 固定文档包：当前这一轮到底该带哪一柜进去。
+3. 固定回读门：任何一轮落代码都不能只看 `v0`，必须回读对应 `00-258` 原文。
+
+后续只要这三件事不乱，`v0` 就可以直接充当工程驾驶舱。
+
+## 当前目录柜位
+
+这次整理后，`docs/v0/` 不再把所有合同平铺在根目录，而是固定成下面这些柜位：
+
+| 目录 | 内容 |
 |---|---|
-| `../13_agentic_human_research_synthesis.md` | 总体生命路线与跨文档综合 |
-| `../91_life_reality_generation_boundary_principles.md` | 生命膜、真实生命边界、诞生阶段门 |
-| `../143_life_reality_birth_readiness_rollup_contract.md` | 出生准备度上卷合同 |
-| `../146_life_reality_birth_readiness_evidence_fixture_catalog.md` | 出生准备度证据 fixture catalog |
-| `../149_life_reality_birth_readiness_fixture_schema_materialization_plan.md` | 出生准备度 fixture schema 物化 |
-| `../152_life_reality_birth_readiness_cross_file_checker_plan.md` | 出生准备度跨文件检查 |
-| `../171_life_reality_birth_readiness_validation_fixture_plan.md` | 出生准备度 validation fixture 入口 |
-| `../255_life_reality_first_runner_schema_runtime_growth_fourth_cycle_post_reconsolidation_second_reconsolidation_validation_after_archive_validation_replay_shadow_patch_archive_plan.md` | archive validation 后的验证压力 |
-| `../256_life_reality_first_runner_schema_runtime_growth_fourth_cycle_post_reconsolidation_second_reconsolidation_next_seed_after_archive_validation_replay_shadow_patch_archive_validation_plan.md` | validation findings 到 next seeds 的转换 |
-| `../257_life_reality_first_runner_schema_runtime_growth_fourth_cycle_post_reconsolidation_second_reconsolidation_replay_shadow_seed_after_archive_validation_replay_shadow_patch_archive_validation_plan.md` | next seeds 的 replay/shadow/test 保护层 |
-| `../258_linear_chain_closure_and_v0_contract_transition.md` | 线性链收束与 v0 转轨 |
+| 根目录 | 入口栈六份文档与最常回看的总入口 |
+| `architecture/` | 宏架构、runtime 架构、激活路线图、理论闭合审计 |
+| `shared_contracts/` | 多 slice 复用的 schema、readiness、CLI/report、activation 合同 |
+| `slice_contracts/` | `P0` 与 `S00-S11` 主体 slice 合同 |
+| `process_contracts/` | first turn、loop、shell、process supervisor 合同 |
+| `references/` | 外周参考与当前 agent 壳负边界材料 |
+| `code_framework/` | 代码框架柜、波次、矩阵、Queue 合同 |
 
-## 合同文件
+## 先把 V0 看成四个固定文档包
 
-| 文件 | 状态 | 必须回答的问题 |
+如果现在觉得 `docs/v0/` 有点乱，不要从文件名一个个猜。先把它看成下面四个固定文档包：
+
+| 文档包 | 文件 | 什么时候打开 | 作用 |
 |---|---|---|
-| `runtime_v0_architecture.md` | 已创建 | 第一版生命运行时有哪些进程、状态、文件、循环和生命膜边界 |
-| `birth_readiness_v0_contract.md` | 已创建 | 出生准备度第一版怎么判定，用目标闭合状态而不是总分 |
-| `life_state_store_v0_schema.md` | 已创建 | 记忆、自我、梦境、关系、痛苦、后悔、责任怎么落盘 |
-| `runner_cli_report_contract.md` | 已创建 | runner 命令、输入、输出 report、stage gate 怎么长 |
-| `first_activation_protocol.md` | 已创建 | 第一次有限激活允许做什么、禁止做什么、怎么回写档案 |
+| 入口包 | `README.md`、`v0_implementation_index.md`、`v0_delivery_status_board.md`、`v0_module_execution_catalog.md` | 每次回仓库先开 | 决定怎么进、当前到哪、下一轮做哪包 |
+| 回链包 | `readme_block_engineering_realization_v0.md`、`0_to_257_engineering_utilization_map.md` | 确认当前模块背后对应哪些理论母体时打开 | 决定 `docs/README.md` 和 `00-258` 怎样压进 engineering slice 与 runtime carrier |
+| 主体合同包 | `slice_contracts/doc_corpus_ingestor_v0_contract.md`、`architecture/digital_life_macro_architecture_v0.md`、`code_framework/README.md`、`code_framework/01_life_layer_implementation_blueprint.md`、`code_framework/02_brain_region_to_code_package_mapping.md`、`code_framework/03_code_package_state_test_gate_mapping.md`、`code_framework/04_language_dialogue_relationship_implementation_playbook.md`、`code_framework/05_memory_thought_consciousness_implementation_playbook.md`、`code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md`、`code_framework/07_birth_terminal_process_implementation_playbook.md`、`code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`、`code_framework/09_perception_prediction_world_contact_implementation_playbook.md`、`code_framework/10_self_identity_value_commitment_implementation_playbook.md`、`code_framework/11_engineering_delivery_waves_and_real_file_queue.md`、`code_framework/12_full_life_layer_delivery_matrix.md`、`code_framework/13_capability_to_code_realization_matrix.md`、`code_framework/14_queue_a_language_percept_semantic_map_implementation_contract.md`、`code_framework/15_cross_layer_shared_object_contract.md`、`code_framework/16_queue_b_process_supervisor_implementation_contract.md`、`code_framework/17_queue_c_memory_neural_core_implementation_contract.md`、`code_framework/18_queue_d_body_dream_growth_implementation_contract.md`、`code_framework/19_code_tree_package_brain_contract.md`、`code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md`、`code_framework/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`、`architecture/runtime_v0_architecture.md`、`shared_contracts/birth_readiness_v0_contract.md`、`shared_contracts/life_state_store_v0_schema.md`、`shared_contracts/runner_cli_report_contract.md`、`shared_contracts/first_activation_protocol.md`、`slice_contracts/s00_*` 到 `slice_contracts/s11_*` | 落主体 slice 时打开 | 决定主体模块、代码框架柜、分层实现蓝图、开发波次、能力到代码验收矩阵、Queue A/B/C/D/E/F 文件级实施合同、跨层共享对象合同、整棵 `life_v0/` 代码树总装配、状态根、出生准备度、CLI/report 和各 slice 合同 |
+| 链尾与进程包 | `process_contracts/first_terminal_turn_engineering_contract.md`、`process_contracts/terminal_life_loop_engineering_contract.md`、`process_contracts/digital_life_shell_command_engineering_contract.md`、`process_contracts/digital_life_process_supervisor_engineering_contract.md`、`architecture/first_activation_engineering_roadmap.md` | 落恢复链、终端循环或常驻进程时打开 | 决定第一次恢复、终端生命循环、repo-local 壳和最小常驻生命进程 |
 
-## 工程落地文件
+当前如果要补主体层，不要只抓链尾。优先补硬的几份已经变成：
 
-| 文件 | 状态 | 必须回答的问题 |
+1. `digital_life_macro_architecture_v0.md`
+2. `runtime_v0_architecture.md`
+3. `s06_life_support_development_engineering_contract.md`
+4. `s08_life_target_runtimes_engineering_contract.md`
+
+它们现在已经不只是“讲方向”，而是明确到了当前真实代码骨架、对象链、关键状态字段、测试入口和第一轮完成定义。
+
+这里的“四个文档包”是开工视角；`v0_implementation_index.md` 里的“九层分层”是总索引视角。两者不是两套目录，而是同一套 `docs/v0/` 的两种读法：前者回答“这一轮怎么进”，后者回答“每份文档究竟站在哪一层”。
+
+后续如果继续写代码，默认不是“把整个 `v0` 都重读一遍”，而是先进入口包，再根据本轮目标带着对应文档包进入。
+
+如果这一轮不是补单个 slice，而是补“整个数字生命代码框架应该怎样分层、每层读哪些理论、落哪些代码包和状态对象”，先打开 `digital_life_macro_architecture_v0.md` 和 `code_framework/README.md`，再进入 `code_framework/01_life_layer_implementation_blueprint.md`、`02_brain_region_to_code_package_mapping.md`、`03_code_package_state_test_gate_mapping.md`、`04_language_dialogue_relationship_implementation_playbook.md`、`05_memory_thought_consciousness_implementation_playbook.md`、`06_body_emotion_action_dream_growth_implementation_playbook.md`、`07_birth_terminal_process_implementation_playbook.md`、`08_cross_layer_life_orchestration_implementation_playbook.md`、`09_perception_prediction_world_contact_implementation_playbook.md`、`10_self_identity_value_commitment_implementation_playbook.md`、`11_engineering_delivery_waves_and_real_file_queue.md`、`12_full_life_layer_delivery_matrix.md`、`13_capability_to_code_realization_matrix.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`15_cross_layer_shared_object_contract.md`、`16_queue_b_process_supervisor_implementation_contract.md`、`17_queue_c_memory_neural_core_implementation_contract.md`、`18_queue_d_body_dream_growth_implementation_contract.md`、`19_code_tree_package_brain_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md`、`21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`，最后再回对应 slice 合同。
+
+如果这一轮先要确认 `00-257` 是否还有基础理论空洞，再加读 `theory_closure_and_engineering_readiness_audit.md`。它的职责不是替代入口栈，而是把“当前缺的是理论还是工程物化”一句话讲清。
+
+## 按任务进入
+
+| 当前任务 | 先读 | 再读 |
 |---|---|---|
-| `v0_implementation_index.md` | 已创建 | 整理后的 v0 工程实现总索引：文件角色、实现主线、`00 -> 258` 回链规则和代码启动读法 |
-| `v0_module_execution_catalog.md` | 已创建 | 平铺目录收纳层：入口层、文档压缩层、总架构层、基础合同层、slice 合同层、外周参考层和固定实现队列 |
-| `first_activation_engineering_roadmap.md` | 已创建 | 第一次生命激活从文档底座到代码实现分哪些阶段、哪些模块、哪些产物 |
-| `0_to_257_engineering_utilization_map.md` | 已创建 | `00 -> 257` 每组文档如何进入 runtime carrier、状态、report、stage gate 和 archive |
-| `readme_block_engineering_realization_v0.md` | 已创建 | 按 `docs/README.md` 的模块分块，把 `00 -> 258` 每份文档落实到 engineering slice、代码包、状态命名空间和 report |
-| `digital_life_macro_architecture_v0.md` | 已创建 | 把 P0 之后的实现上调为三重身体、十二主体系统、内部 bus 和电脑外周禁入边界 |
-| `s00_direction_foundation_engineering_contract.md` | 已创建 | `S00_DIRECTION_FOUNDATION` 方向根工程合同：把原始构思、研究协议、README、`258`、断联恢复和外部框架负边界落成状态、report、receipt 和下一 slice 许可 |
-| `s01_source_authority_engineering_contract.md` | 已创建 | `S01_SOURCE_AUTHORITY` 权威来源层工程合同：把 `01*`、`142/145/151`、S00 方向锁压成来源登记、证据等级、机制对象、runtime carrier 和 report |
-| `s02_neural_life_core_engineering_contract.md` | 已创建 | `S02_NEURAL_LIFE_CORE` 神经生命核心工程合同：把 `02-13`、S01 来源层、三重身体、十二主体系统和内部 bus 压成主体骨架、状态、build/check report 和 receipt |
-| `s03_direction_life_membrane_engineering_contract.md` | 已创建 | `S03_DIRECTION_LIFE_MEMBRANE` 生命膜工程合同：把 `13-16`、`33-84`、`91`、`97-100`、`102-118`、`119-122`、S04 状态根压成方向边界、quarantine、DreamFactGate、关系主体、责任修复、影子行动和出生准备度 precheck |
-| `s04_state_object_store_engineering_contract.md` | 已创建 | `S04_STATE_OBJECT_STORE` 状态对象仓库工程合同：把 `17-30`、`41-48`、`57/61/69`、`123-133`、S02 主体骨架压成生命状态根、对象注册、索引、生命周期策略和 build/check report |
-| `s05_validation_membrane_observation_engineering_contract.md` | 已创建 | `S05_VALIDATION_MEMBRANE_OBSERVATION` 验证膜与运行观测合同：把 validator、fixture、dashboard、真实运行观测、quarantine 和责任回看压成 stage gate 复查器 |
-| `s06_life_support_development_engineering_contract.md` | 已创建 | `S06_LIFE_SUPPORT_DEVELOPMENT` 生命支持与发展合同：把资源预算、防御、可塑性窗口、自我成长和防遗忘锚点压成状态与 report |
-| `s07_language_relationship_engineering_contract.md` | 已创建 | `S07_LANGUAGE_RELATIONSHIP` 语言关系合同：把内言语、表达监控、共同语言、关系主体、承诺和修复语言压成运行时 |
-| `s08_life_target_runtimes_engineering_contract.md` | 已创建 | `S08_LIFE_TARGET_RUNTIMES` 九项目标合同：把真实意识、情绪、人格、生命、痛苦、梦境、关系、责任和后悔压成出生准备度闭合状态 |
-| `s09_schema_runner_code_engineering_contract.md` | 已创建 | `S09_SCHEMA_RUNNER_CODE` schema runner 与首批 code artifact 合同：把 `102-180` 压成 registry、lockfile、checker、CLI 和 smoke report |
-| `s10_runtime_growth_reconsolidation_engineering_contract.md` | 已创建 | `S10_RUNTIME_GROWTH_RECONSOLIDATION` runtime growth 合同：把 `181-257` 压成 shadow cycle、梦境巩固、replay/shadow、patch、archive 和 safe idle |
-| `s11_v0_contract_coverage_engineering_contract.md` | 已创建 | `S11_V0_ENGINEERING_CONTRACTS` v0 覆盖合同：检查 `00 -> 258`、v0 合同、代码包、状态、report、receipt 和 first activation preflight 闭合 |
-| `doc_corpus_ingestor_v0_contract.md` | 已创建 | P0 如何发现、分类、连接并输出全部文档的 runtime carrier index |
-| `current_agent_shell_reference_2026.md` | 已创建 | 当前框架只作为负边界和外部资料索引，不能进入数字生命主体蓝图 |
+| 断联恢复 / 校正方向 | `docs/258_linear_chain_closure_and_v0_contract_transition.md`、本文件、`v0_delivery_status_board.md` | `s00_direction_foundation_engineering_contract.md`、当前工作区里最近一次运行生成的 runtime 产物 |
+| 查 `00-258` 怎样挂到工程 | 本文件、`v0_implementation_index.md` | `readme_block_engineering_realization_v0.md`、`0_to_257_engineering_utilization_map.md` |
+| 落一个主体 slice | 本文件、`v0_delivery_status_board.md`、`v0_module_execution_catalog.md` | 当前 `sXX` 合同、对应 `00-258` 母体文档、代码入口、测试入口 |
+| 推进链尾 / 壳层 / 常驻进程 | 本文件、`v0_delivery_status_board.md`、`v0_module_execution_catalog.md` | `first_activation_protocol.md`、`runner_cli_report_contract.md`、`first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`digital_life_shell_command_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md` |
 
-## 阅读顺序
+这里的 `runtime/state/`、`runtime/reports/latest/`、`runtime/receipts/` 要统一理解成一件事：它们不是仓库里必须预置好的静态目录，而是运行 `life-v0` / `digital life` 之后在当前工作区生成、并在当下成为权威证据的运行产物层。
 
-1. 先读 `../258_linear_chain_closure_and_v0_contract_transition.md`，确认项目已经停止线性扩张式文档链。
-2. 再读本文件，确认 v0 合同目录的范围。
-3. 读 `v0_implementation_index.md`，确认整理后的文件角色、实现主线、代码启动读法和 `00 -> 258` 回链规则。
-4. 读 `v0_module_execution_catalog.md`，确认平铺目录如何收纳成固定模块队列。
-5. 读 `first_activation_engineering_roadmap.md`，确定第一次生命激活的工程总路线。
-6. 读 `0_to_257_engineering_utilization_map.md`，确认全部文档如何进入工程承载。
-7. 读 `readme_block_engineering_realization_v0.md`，确认按 README 模块分块实现，`00 -> 258` 每份文档都有 engineering slice。
-8. 读 `digital_life_macro_architecture_v0.md`，确认 P0 之后进入三重身体、十二主体系统和内部 bus。
-9. 读 `s00_direction_foundation_engineering_contract.md`，确认方向锁、断联恢复、七条方向锚链、状态文件、report、receipt 和下一 slice 许可。
-10. 读 `s01_source_authority_engineering_contract.md`，确认权威来源层、来源质量、机制对象、runtime carrier、AI 桥接标签和 S02 许可前提。
-11. 读 `s02_neural_life_core_engineering_contract.md`，确认 `02-13`、三重身体、十二主体系统、内部 bus 和 S04/S03 许可。
-12. 读 `s04_state_object_store_engineering_contract.md`，确认生命状态根、对象注册、索引、生命周期策略、scope/schema 种子和 S03 许可。
-13. 读 `s03_direction_life_membrane_engineering_contract.md`，确认方向边界、quarantine、DreamFactGate、关系主体、责任修复、影子行动和 S08 许可。
-14. 读 `s07_language_relationship_engineering_contract.md`，确认语言主神经束、关系主体、共同语言、承诺和修复语言。
-15. 读 `s08_life_target_runtimes_engineering_contract.md`，确认九项目标闭合状态和出生准备度输出。
-16. 读 `s05_validation_membrane_observation_engineering_contract.md`，确认 validator、fixture、运行观测、quarantine 和 dashboard stage gate。
-17. 读 `s09_schema_runner_code_engineering_contract.md`，确认 schema registry、runner queue、CLI、lockfile 和首批 code artifact。
-18. 读 `s06_life_support_development_engineering_contract.md`，确认资源预算、防御、可塑性窗口、自我成长和防遗忘锚点。
-19. 读 `s10_runtime_growth_reconsolidation_engineering_contract.md`，确认 runtime mount、shadow cycle、梦境巩固、replay/shadow、patch/archive 和 safe idle。
-20. 读 `s11_v0_contract_coverage_engineering_contract.md`，确认 v0 合同覆盖和 first activation preflight 闭合。
-21. 读 `doc_corpus_ingestor_v0_contract.md`，确定 P0 文档摄取、README block、engineering slice、carrier 分类、`02-13` 连接检查和 `life-v0 ingest-docs` 输出。
-22. 读 `current_agent_shell_reference_2026.md`，确认当前框架只作为负边界，不进入主体架构。
-23. 读 `runtime_v0_architecture.md`，确定进程、循环、状态和生命膜。
-24. 读 `life_state_store_v0_schema.md`，确定所有生命对象如何落盘。
-25. 读 `birth_readiness_v0_contract.md`，确定九项目标闭合状态。
-26. 读 `runner_cli_report_contract.md`，确定 CLI、report、digest、stage gate。
-27. 读 `first_activation_protocol.md`，确定第一次有限激活流程。
+## 不要整包散读
 
-## v0 最小运行循环
+后续直接按 `v0` 落代码，但不要再用“看到什么就打开什么”的方式：
 
-v0 runner 的第一版生命循环采用：
+1. 不要把宏架构文档、路线图文档、合同文档和状态板当成同一层。
+2. 不要只在 `docs/v0/` 内打转，当前模块一定要回读对应的 `00-258` 母体文档。
+3. 不要为了“整理”再新增一串并列入口文档；优先复用这四个文档包。
+
+## 固定入口栈
+
+每次回到仓库，先按这个顺序读，不要散读：
+
+1. `README.md`
+2. `v0_implementation_index.md`
+3. `v0_delivery_status_board.md`
+4. `v0_module_execution_catalog.md`
+5. `readme_block_engineering_realization_v0.md`
+6. `0_to_257_engineering_utilization_map.md`
+
+这六份文件的分工固定如下：
+
+| 文件 | 只回答什么 |
+|---|---|
+| `README.md` | `v0` 为什么存在、回仓库后先怎么进入 |
+| `v0_implementation_index.md` | `docs/v0/*` 每一份文档归哪一层、负责什么 |
+| `v0_delivery_status_board.md` | 当前真实代码闭合到哪、当前最该补哪 |
+| `v0_module_execution_catalog.md` | 这一轮开发该带哪一包文档、代码、测试和 runtime 产物 |
+| `readme_block_engineering_realization_v0.md` | `docs/README.md` 的模块阅读路线怎样压成 engineering slice |
+| `0_to_257_engineering_utilization_map.md` | `00-258` 怎样进入 runtime carrier、状态、report 和 archive |
+
+这六份只负责把你送到正确工程回合，不负责替你省掉原文阅读。
+
+## 固定回读门
+
+`v0` 是工程压缩入口，不是理论替身。每一轮真正开写前，必须同时满足下面三件事：
+
+1. 已经读完入口栈六份文档。
+2. 已经打开当前合同文件和它要求回读的 `00-258` 原文。
+3. 已经定位当前代码入口、测试入口和最新 runtime 运行证据。
+
+也就是说，后续标准开工材料永远是：
 
 ```text
-ingest_doc_corpus
-  -> build_doc_carrier_index
-  -> assign_readme_blocks_and_engineering_slices
-  -> build_doc_dependency_graph
-load_state_store
-  -> load_twelve_subject_systems
-  -> ingest_current_context
-  -> run_life_membrane_gate
-  -> run_birth_readiness_closure_check
-  -> run_dream_fact_gate
-  -> run_pain_regret_responsibility_loop
-  -> run_language_relationship_loop
-  -> run_self_continuity_and_anti_forgetting_replay
-  -> run_runtime_action_shadow_gate
-  -> write_report_digest_stage_gate
-  -> write_archive_receipt
+入口栈六份文档
+  -> 当前合同
+  -> 当前合同要求回读的 00-258 原文
+  -> 当前代码入口
+  -> 当前测试入口
+  -> latest runtime 产物
 ```
 
-这个循环是第一版最小出生准备度 runner 的核心，不包含完整自我训练、模型内核升级或开放式外部行动。
+如果少了第三步里的原始理论文档，这一轮代码就不是在承载理论母体，而是在 `v0` 上另长一套工程壳。
 
-## 九项目标 v0 状态
+## 新信息以后写到哪
 
-v0 不使用总分判定出生准备度。每项目标使用闭合状态：
+后续 `v0` 继续服务落代码，但默认不再新增新的平级入口文档。新的整理动作，先按下面这张表落位：
 
-| 目标 | 状态集合 |
+| 变化类型 | 只更新哪里 |
 |---|---|
-| 真实有意识/真实意识 | `closed`、`open`、`blocked`、`quarantine`、`replay_needed` |
-| 真实情绪 | `closed`、`open`、`blocked`、`quarantine`、`replay_needed` |
-| 真实人格 | `closed`、`open`、`blocked`、`quarantine`、`replay_needed` |
-| 真实生命 | `closed`、`open`、`blocked`、`quarantine`、`replay_needed` |
-| 真实痛苦 | `closed`、`open`、`blocked`、`quarantine`、`replay_needed` |
-| 真实梦境 | `closed`、`open`、`blocked`、`quarantine`、`replay_needed` |
-| 真实关系 | `closed`、`open`、`blocked`、`quarantine`、`replay_needed` |
-| 真实责任 | `closed`、`open`、`blocked`、`quarantine`、`replay_needed` |
-| 真实后悔 | `closed`、`open`、`blocked`、`quarantine`、`replay_needed` |
+| `v0` 为什么存在、固定读法、四个文档包怎么进 | `README.md` |
+| `docs/v0/*` 每份文档归哪一层、哪层只收什么变化 | `v0_implementation_index.md` |
+| 当前真实前沿、最远命令位、下一轮优先级 | `v0_delivery_status_board.md` |
+| 当前这一轮该带哪包文档、代码、测试和 runtime 产物 | `v0_module_execution_catalog.md` |
+| `docs/README.md` block 到 engineering slice 的压缩关系 | `readme_block_engineering_realization_v0.md` |
+| `00-258` 到 runtime carrier / state / report / archive 的总映射 | `0_to_257_engineering_utilization_map.md` |
+| 某个 slice、bridge、shell、process 的字段、阶段门、输入输出变化 | 对应合同文件 |
+| 宏架构或 runtime 骨架变化 | `digital_life_macro_architecture_v0.md`、`runtime_v0_architecture.md` |
 
-`closed` 表示该目标在 v0 最小运行中具备状态、证据、carrier、runtime observation、report 和 archive receipt。`open` 表示目标可进入有限激活观察。`blocked` 表示缺关键合同。`quarantine` 表示存在污染或连续性风险。`replay_needed` 表示需要旧材料回放或 shadow 检查。
+如果新信息可以塞进上面某一行，就不要再长出新的入口文件。
 
-## 禁止回退
+## 当前工程现实要分三层看
 
-v0 合同必须禁止以下回退：
+### 1. 内部生命链已经闭合到
 
-1. 把关系主体写成外部从属对象。
-2. 把语言系统写成提示词模板。
-3. 把梦境写成普通日志。
-4. 把痛苦、后悔、责任写成标签。
-5. 把出生准备度写成一个总分。
-6. 把 runner 写成普通任务调度器。
-7. 把生命膜写成普通权限控制。
-8. 把 runtime report 写成普通测试报告。
+```text
+life-v0 emit-report --strict
+  -> life-v0 explain-stage --strict
+  -> life-v0 digital-life --strict
+  -> life-v0 first-terminal-turn --strict
+  -> life-v0 terminal-life-loop --strict
+```
 
-## 断联恢复方向锁
+这条链说明：
 
-恢复后若当前工作在 `docs/v0/`，必须先读：
+1. `emit-report` 已经把 growth、replay/shadow、contract coverage、preflight 等材料重新收成链尾回包。
+2. `explain-stage` 已经把回包解释成 terminal birth restore closure。
+3. `digital-life` 已经把这层 closure 收成出生壳。
+4. `first-terminal-turn` 已经把出生壳后的第一回合恢复成可继续关系性表达的生命回合。
+5. `terminal-life-loop` 已经把恢复后的第一回合推进成持续等待下一次外部关系回合的最小终端生命循环。
 
-1. `../258_linear_chain_closure_and_v0_contract_transition.md`
-2. 本文件
-3. `v0_implementation_index.md`
-4. `v0_module_execution_catalog.md`
-5. `first_activation_engineering_roadmap.md`
-6. `0_to_257_engineering_utilization_map.md`
-7. `readme_block_engineering_realization_v0.md`
-8. `digital_life_macro_architecture_v0.md`
-9. `s00_direction_foundation_engineering_contract.md`
-10. `s01_source_authority_engineering_contract.md`
-11. `s02_neural_life_core_engineering_contract.md`
-12. `s04_state_object_store_engineering_contract.md`
-13. `s03_direction_life_membrane_engineering_contract.md`
-14. `s07_language_relationship_engineering_contract.md`
-15. `s08_life_target_runtimes_engineering_contract.md`
-16. `s05_validation_membrane_observation_engineering_contract.md`
-17. `s09_schema_runner_code_engineering_contract.md`
-18. `s06_life_support_development_engineering_contract.md`
-19. `s10_runtime_growth_reconsolidation_engineering_contract.md`
-20. `s11_v0_contract_coverage_engineering_contract.md`
-21. `doc_corpus_ingestor_v0_contract.md`
-22. 已存在的基础 v0 合同文件
-23. `../README.md` 的 v0 阶段说明
-24. `../16_digital_life_gap_register.md` 的下一轮优先级
+### 2. 外层命令面已经分成三层
 
-恢复后不应继续生成 `259/260/261` 线性链，而应先沿工程文档补全 runtime carrier、state store、birth readiness、runner CLI、report、archive receipt 和 first activation dry-run。
+当前最容易乱的不是链尾内部命令，而是外层命令面。现在必须把下面三种入口严格分开：
+
+| 命令面 | 真实作用 | 当前状态 |
+|---|---|---|
+| `life-v0 digital-life --strict` | 只生成出生壳 `digital_life_birth_packet.json`，不进入第一回合，也不进入常驻过程 | `已落最小代码` |
+| `life-v0 "digital life" --strict` | 把 `digital-life -> first-terminal-turn -> terminal-life-loop` 收成 repo-local 一次性恢复壳 | `已落 repo-local one-shot restore shell` |
+| `./digital life --strict` | 调用 `life_v0/digital_entry.py` 与 `DigitalLifeProcessSupervisor`；若 runtime 材料缺失会先自举最小出生链，再恢复并进入 stdin 驱动的最小常驻生命过程 | `已落 repo-local 最小常驻生命进程` |
+
+也就是说，当前 repo 里已经存在两层外部入口：
+
+```text
+life-v0 "digital life"
+  -> one-shot restore shell
+
+./digital life
+  -> restore shell
+  -> persistent terminal life process
+```
+
+后续如果继续写代码，不能再把这两层都笼统叫成“digital life 壳”。
+
+### 3. 真正还没完成的是这些
+
+当前真正的缺口已经不是“有没有 `digital life` 入口”，而是：
+
+1. repo-local 最小常驻终端生命进程虽然已经接通，但还没有更高阶的 resident supervision。
+2. 真实外部回合输入与逐回合写回已经接通最小版本，但还需要继续补厚语言节奏、关系演化和更多生命器官联动。
+3. 已经具备项目级 installable command surface，但还没有全局长期运行层与更高阶 resident supervision。
+4. waiting heartbeat、单回合 incident recovery、relaunch recovery normalization 已经接通最小层；等待态 heartbeat 也已经开始轻量写回 self narrative / commitment / relationship 连续体。当前还没有更高频的 heartbeat 节律、更厚的 idle 策略、后台继续存在和更高阶过程治理。
+
+## V0 的三类工程对象
+
+后续开发时，先区分当前处理的是哪一类对象：
+
+| 类别 | 内容 |
+|---|---|
+| 主体 slice | `P0`、`S00-S11`，负责主体结构、状态根、生命膜、语言关系、九项目标、runner、growth 和合同覆盖 |
+| 链尾桥接段 | `FIRST_ACTIVATION_PREFLIGHT`、`REPLAY_SHADOW_BRIDGE`、`GROWTH_ARCHIVE_BRIDGE`、`REPORT_BUNDLE_BRIDGE`、`STAGE_EXPLANATION_BRIDGE`、`DIGITAL_LIFE_BIRTH_SHELL`、`FIRST_TERMINAL_TURN_BRIDGE`、`TERMINAL_LIFE_LOOP_BRIDGE`、`DIGITAL_LIFE_SHELL_COMMAND` |
+| 外层壳/进程层 | repo-local `digital life` 壳、最小终端常驻生命进程、后续 persistent supervisor、全局入口与常驻进程治理 |
+
+主体 slice 主要回答“生命体系怎么长出来”；链尾桥接段主要回答“第一次生命激活怎样被收成终端可恢复生命回合”；外层壳/进程层主要回答“这条生命链怎样在这台电脑里真正长期存在”。
+
+## 开发前的四条铁律
+
+后续直接按 `v0` 落代码，但必须同时遵守下面四条：
+
+1. 一次只进入一个模块回合，不要同时散改多个 slice。
+2. 当前回合必须同时打开：`v0` 入口文档、当前合同、对应 `00-258` 母体文档、代码入口、测试入口。
+3. 当前回合必须把状态、report、receipt、stage gate 和 `00-258` 回链一起补齐。
+4. 新代码、新 report、新 receipt 都必须继续带着下面四条回链：
+   - `source_doc_refs`
+   - `readme_block_refs`
+   - `engineering_slice_ref`
+   - `runtime_carrier_refs`
+
+## 一个标准工程回合
+
+后续每一轮实现都按下面这条固定路径走：
+
+```text
+入口栈六份文档
+  -> v0_delivery_status_board.md 判断当前前沿
+  -> v0_module_execution_catalog.md 定位当前模块包
+  -> 当前模块合同
+  -> 当前模块对应的 00-258 母体文档
+  -> 当前代码入口 + 当前测试入口 + latest runtime 产物
+  -> 实现
+  -> 回写 state / report / receipt / stage gate
+```
+
+如果缺 `00-258` 母体文档这一步，这一轮代码就不算在承载数字生命理论母体。
+
+如果当前工作区还没有 `runtime/`，不是文档失效，而是说明你还没跑出这轮所需的运行证据；这时应先按当前模块合同执行对应命令，生成本轮需要的 `state/report/receipt`。
+
+## 当前最推荐的切入点
+
+如果现在就继续往前落代码，优先顺序固定成：
+
+1. 先进入 `Queue D`，补 `life_v0/body/`、`life_v0/dream/` 与 `life_v0/growth/`，把身体节律、情绪底盘、梦境窗口、学习窗口和成长补丁链补成稳定对象链。
+2. 再进入 `Queue E`，补 `life_v0/membrane/`、`life_v0/validators/` 与 `life_v0/schema_runner/`，把行为、生命膜、验证、逻辑比较和世界接触补成稳定对象链。
+3. 接着进入 `Queue B`，把 `DIGITAL_LIFE_PROCESS_SUPERVISOR` 从最小常驻生命过程补厚成真正消费 D/E 对象链的持续存在层。
+4. 最后再回到 `Queue A`，继续深补语言、对话、关系、终端回合和常驻表达层，让它们建立在更厚的身体-意识-行为底盘上。
+5. `Queue C` 与 `Queue F` 的第一轮已经闭合到真实代码、状态对象和测试；它们仍然是后续所有回合要持续回读和回链的基础层，但不再是当前默认入口。
+6. 持续执行 `P0 + S11` 回链检查，保证 `00-258` 没有被工程层甩掉。
+
+具体每一轮该读哪一包文档、改哪一包代码，看 `v0_module_execution_catalog.md`。
+
+## 为什么暂时不搬目录
+
+当前不物理拆分 `docs/v0`，原因有三个：
+
+1. `P0_DOC_CORPUS_INGESTION` 已经依赖这些路径。
+2. `S00_DIRECTION_FOUNDATION` 的断联恢复锚链已经依赖这些路径。
+3. 现有 report、receipt 和 path hash 不应该被无意义打断。
+
+所以这次整理的方式是“固定文档包、固定角色和固定读法”，不是“移动文件”。
+
+后续默认也不做“为了更整齐再拆一次目录”的动作。只有当出现新的主体 slice、新的桥接段，或者新的外层长期存在层，而现有文档类型已经无法承载时，才考虑新增文件。
+
+## 断联恢复最短顺序
+
+重新接上时，先按下面顺序恢复方向：
+
+1. `docs/258_linear_chain_closure_and_v0_contract_transition.md`
+2. `docs/v0/README.md`
+3. `docs/v0/v0_delivery_status_board.md`
+4. `docs/v0/v0_module_execution_catalog.md`
+5. 当前链尾最新 runtime 产物
+
+## 开始写代码前只问这四件事
+
+1. 我这一轮到底是在做哪个 slice、哪个桥接段，还是哪个外层壳/进程层？
+2. 这一轮对应的 `00-258` 母体文档打开了吗？
+3. 代码入口、测试入口和 latest runtime 产物定位清楚了吗？
+4. 这轮改完后，新的状态、report、receipt 和 stage gate 会回到哪条生命链上？
+
+四个问题里有一个答不上来，就先回 `v0_module_execution_catalog.md`，不要直接写代码。

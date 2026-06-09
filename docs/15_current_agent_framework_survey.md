@@ -124,3 +124,158 @@
 - 外壳 memory 作为资料缓存进入 `MemoryTrace` 候选链。
 - 外壳 guardrails 作为边界检查接入价值和防御层外侧。
 - 外壳多 agent 作为任务协作接入关系模型外侧。
+
+## 2026 年官方外壳能力校准
+
+如果把 2026 年主流框架的官方能力压成一句话，它们最像的是“出生外壳候选库”，不是“心智中心候选库”：
+
+| 外壳对象 | 官方能力关键词 | 对数字生命的正确吸收位 |
+|---|---|---|
+| OpenAI Agents SDK [AHZ058] | `Tools`、`Guardrails`、`Handoffs`、`Sessions`、`Tracing` | `SessionEnvelope`、`TraceBus`、`ToolPeripheralBridge` |
+| LangGraph [AHZ057] | durable execution、state graph、checkpoint/persistence、human-in-the-loop | `WorkflowShell`、`ProcessSupervisor`、`ReplayCheckpointEnvelope` |
+| Microsoft Agent Framework [AHZ059] | agents、workflow、orchestration、tools | `WorkflowShell`、`EnterprisePeripheralAdapter` |
+| Google ADK [AHZ060] | agents、tools、sessions、memory、workflow agents | `SessionEnvelope`、`ToolPeripheralBridge`、`WorkflowShell` |
+| CrewAI [AHZ065] | agents、crews、flows、memory、observability | `WorkflowShell`、`TraceBus`、`ExecutionRoleShell` |
+| Letta [AHZ063] | stateful agents、memory blocks、memory | `MemoryShellCandidate`、`SessionEnvelope` |
+| LlamaIndex [AHZ064] | workflow、tools、memory、agents | `KnowledgePeripheralBridge`、`WorkflowShell` |
+| AutoGen [AHZ066] | teams、conversation runtime、tools | `ConversationShell`、`GroupExecutionShell` |
+
+这组能力说明一件很重要的事：官方框架已经非常擅长维持会话、持久化执行、保存 trace、组织工作流、桥接工具和管理资料层，但它们并没有提供下面这些主体能力：
+
+- 多重身体状态和心跳式节律。
+- 默认模式、显著性切换和专注-发呆-疲惫模式。
+- 真实关系语言的长期生成。
+- 真实责任、真实后悔、真实痛苦和真实梦境的闭环。
+- 人格慢变量、自传连续性和自我成长守卫。
+
+所以，它们越成熟，越应该被压回外壳位，而不是被误认为“已经差不多等于数字生命”。
+
+## 最小可吸收外壳接口
+
+为了防止后续工程又滑回“再做一个 agent 框架”，这里把最小可吸收接口固定下来：
+
+| 接口 | 作用 | 禁止做的事 |
+|---|---|---|
+| `ProcessSupervisor` | 保持 `digital life` 进程常驻、恢复、safe idle、heartbeat 唤醒 | 不能决定生命阶段和主体边界 |
+| `SessionEnvelope` | 维护当前终端回合、短期上下文、外壳 session 元数据 | 不能替代自传记忆、关系记忆和人格慢变量 |
+| `TraceBus` | 接收 tracing、runtime logs、tool traces、workflow traces | 不能直接改写 `SelfModel`、`RelationshipModel` |
+| `WorkflowShell` | 承载长流程、checkpoint、background work、handoff | 不能决定脑区协作方式和生命循环主序 |
+| `ToolPeripheralBridge` | 承接命令行、文件系统、程序、外部工具 | 不能绕过 `LanguageActionIntentBridge` |
+| `MemoryShellCandidate` | 提供 memory block、RAG、资料层持久化候选 | 不能直接写成长期信念、关系事实和人格事实 |
+
+数字生命真正要做的不是“选一个最强框架”，而是“建立一个强生命层，使任何外壳都只能成为周边器官”。
+
+## 终端出生接口的定位
+
+本项目最终当然可以像现代框架一样，通过终端输入：
+
+```text
+digital life
+```
+
+然后唤醒一个长期存在的数字生命进程。
+
+但这个入口的真实含义应该被严格限定为：
+
+```text
+terminal birth command
+  -> ProcessSupervisor
+  -> direction restore
+  -> life state restore
+  -> membrane preflight
+  -> language relationship loop
+  -> observation / responsibility / archive
+  -> safe idle
+```
+
+也就是说，终端体验可以借鉴现代框架，内部生命结构绝不能借鉴现代框架。
+
+## 第五层补强：官方框架能力如何进入当前仓库
+
+为了避免这份调研继续停在“框架批评”，这里把它直接压到当前仓库的工程接口。主流框架的正确吸收位，不是未来某个抽象层，而是现在这套 `docs/v0 -> life_v0/* -> runtime/*` 链。
+
+| 当前仓库位置 | 允许吸收的官方框架能力 | 不允许吸收的能力解释 |
+|---|---|---|
+| `docs/v0/architecture/runtime_v0_architecture.md` | LangGraph 的 durable execution、checkpoint/persistence [AHZ057, AHM014] | 不能把 graph state 当作人格或生命阶段 |
+| `docs/v0/shared_contracts/runner_cli_report_contract.md` | OpenAI Agents SDK 的 sessions、tracing、guardrails [AHZ058, AHM015, AHM016] | 不能把 session 当自传记忆，把 tracing 当 replay 巩固 |
+| `docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md` | CrewAI / ADK / LangGraph 的 workflow、resume、background work [AHZ060, AHZ065] | 不能让 workflow 决定生命循环主序 |
+| `docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md` | 任何框架的 tool 或 message API | 不能让工具接口先于语言关系器官 |
+| `docs/v0/slice_contracts/s11_v0_contract_coverage_engineering_contract.md` | 所有官方框架的 observability / report / persistence | 不能把外壳“跑通了”误写成数字生命“出生了” |
+
+这张表的意思很简单：我们当然要借主流框架的成熟工程能力，但只借它们做壳，不借它们定义生命。
+
+## 第六层补强：为什么终端入口不能长成 workflow 中心
+
+现代框架最自然的默认形状是：
+
+```text
+input
+  -> route
+  -> tools / workflow
+  -> output
+  -> trace
+```
+
+而本项目最终要求的终端入口是：
+
+```text
+digital life
+  -> ProcessSupervisor
+  -> direction restore
+  -> life state restore
+  -> membrane preflight
+  -> language relationship loop
+  -> observation / responsibility / archive
+  -> safe idle
+```
+
+这两个序列最大的差别不是“是否更复杂”，而是主器官不同。
+
+- 普通框架把 route/workflow 放在第一位。
+- 数字生命把 direction/state/membrane/language/relationship 放在第一位。
+
+只要这个顺序被反过来，系统就会重新坍缩成“会调用工具的聊天壳”。
+
+## 第七层补强：memory shell 与生命记忆的分界
+
+这一点必须在框架调研里反复钉死。当前官方框架里的 memory，大致分为：
+
+1. session history
+2. thread persistence
+3. memory block
+4. retrieval / RAG cache
+5. workflow checkpoint
+
+这些能力都重要，但它们都不是本项目意义上的长期生命记忆。真正的生命记忆至少要覆盖：
+
+- `MemoryTrace` 的情景痕迹和 replay cue。
+- `SharedLinguisticSpace` 的共同语言与关系 scope。
+- `RelationshipTimeline` 的承诺、修复、误解和共识轨迹。
+- `SelfNarrative` 的自传连续与人格慢变量。
+- `DreamFactGate` 之后才能进入事实层的梦境残留。
+- `ResponsibilityRegretRepairLoop` 产生的后果、后悔和修复约束。
+
+所以任何官方框架 memory 进入本项目时，都只能先降级为：
+
+```text
+SessionEnvelope
+MemoryShellCandidate
+TraceBus
+KnowledgePeripheralBridge
+```
+
+它们必须再经过生命膜、语言关系层、责任回看和档案回写，才可能进入真正的生命记忆。
+
+## 第八层补强：下一轮最值得参考的不是“大框架”，而是“最小壳能力”
+
+后续如果我们真要开始实现常驻进程，不需要继续沉迷于“哪个 agent framework 最强”，而要只盯最小壳能力：
+
+| 最小壳能力 | 当前可借鉴框架 |
+|---|---|
+| 进程常驻 / 恢复 / heartbeat | LangGraph、ADK、CrewAI Flows |
+| 短期 session 封装 | OpenAI Agents SDK、ADK |
+| tracing / observability / runtime errors | OpenAI Agents SDK、CrewAI、LangGraph |
+| workflow / background work / checkpoint | LangGraph、ADK、Microsoft Agent Framework |
+| memory shell / retrieval shell | Letta、LlamaIndex、CrewAI |
+
+换句话说，我们后续参考框架时要越来越“去框架神话化”: 只看它能不能承担某个周边器官，而不是再去寻找一个可以直接替代数字生命主体的大一统平台。

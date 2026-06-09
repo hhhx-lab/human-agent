@@ -258,11 +258,11 @@ create_indexes(active_memory, audit, replay, quarantine)
 7. 共在边界控制权可传播到索引和 replay。
 8. system 可进入 safe idle。
 
-数字生命理论目标仍未完成，因为还需要真实 schema、fixture、runner、dashboard、多月数据和更多文献机制补全。
+数字生命的启动理论入口已经闭合；当前继续推进的，不是再补一层总论，而是把这些启动入口继续压成更厚的 schema、fixture、runner、dashboard、多月数据和长期运行证据。
 
-## 下一层缺口
+## 下一层工程推进
 
-后续需要：
+后续继续推进：
 
 - boot sequence fixture。
 - stage gate validator。

@@ -8,6 +8,11 @@ from pathlib import Path
 from typing import Any
 
 from life_v0.direction import LIFE_TARGETS
+from .birth_readiness_rollup import build_birth_readiness_rollup
+from .birth_readiness_stage_gate import build_birth_readiness_stage_gate
+from .consciousness_probes import build_consciousness_probe_bundle
+from .evidence_matrix import build_life_target_evidence_matrix
+from .life_target_claims import build_life_target_claims
 
 
 ACTIVE_SLICE = "S08_LIFE_TARGET_RUNTIMES"
@@ -32,8 +37,8 @@ S08_SOURCE_DOCS = [
     "docs/152_life_reality_birth_readiness_cross_file_checker_plan.md",
     "docs/171_life_reality_birth_readiness_validation_fixture_plan.md",
     "docs/174_life_reality_birth_readiness_fixture_schema_materialization.md",
-    "docs/v0/birth_readiness_v0_contract.md",
-    "docs/v0/s08_life_target_runtimes_engineering_contract.md",
+    "docs/v0/shared_contracts/birth_readiness_v0_contract.md",
+    "docs/v0/slice_contracts/s08_life_target_runtimes_engineering_contract.md",
 ]
 
 EVIDENCE_FAMILIES = [
@@ -192,16 +197,67 @@ def run_birth_readiness(
     dream_fact = _load_json(membrane_dir / "dream_fact_boundary.json", blocked_reasons, "dream_fact_gate")
     relationship = _load_json(membrane_dir / "relationship_subject_boundary.json", blocked_reasons, "relationship_language_gate")
     responsibility = _load_json(membrane_dir / "responsibility_repair_boundary.json", blocked_reasons, "responsibility_repair_gate")
+    language_percept = _load_json(state_dir / "language" / "language_percept_frame.json", blocked_reasons, "language_relationship_gate")
+    semantic_map = _load_json(state_dir / "language" / "semantic_map_frame.json", blocked_reasons, "language_relationship_gate")
+    prediction_workspace = _load_json(
+        state_dir / "prediction" / "prediction_workspace_frame.json",
+        blocked_reasons,
+        "language_relationship_gate",
+    )
+    workspace_frame = _load_json(
+        state_dir / "consciousness" / "workspace_frame.json",
+        blocked_reasons,
+        "consciousness_probe_gate",
+    )
+    broadcast_frame = _load_json(
+        state_dir / "consciousness" / "broadcast_frame.json",
+        blocked_reasons,
+        "consciousness_probe_gate",
+    )
+    metacognition_state = _load_json(
+        state_dir / "consciousness" / "metacognition_state.json",
+        blocked_reasons,
+        "consciousness_probe_gate",
+    )
     membrane_report = _load_json(reports_dir / "life_membrane_report.json", blocked_reasons, "s03_report_gate")
     membrane_check = _load_json(reports_dir / "life_membrane_check_report.json", blocked_reasons, "s03_check_gate")
     state_report = _load_json(reports_dir / "state_store_report.json", blocked_reasons, "s04_report_gate")
     neural_report = _load_json(reports_dir / "neural_life_core_report.json", blocked_reasons, "s02_report_gate")
+    language_report = _load_json(reports_dir / "language_relationship_report.json", blocked_reasons, "language_relationship_gate")
+    language_check = _load_json(reports_dir / "language_relationship_check_report.json", blocked_reasons, "language_relationship_gate")
 
     blocked_reasons.extend(_direction_blockers(direction_lock))
-    blocked_reasons.extend(_previous_slice_blockers(neural_report, state_report, membrane_report, membrane_check))
+    blocked_reasons.extend(
+        _previous_slice_blockers(
+            neural_report,
+            state_report,
+            membrane_report,
+            membrane_check,
+            language_report,
+            language_check,
+        )
+    )
     blocked_reasons.extend(_s08_doc_blockers(doc_index))
-    blocked_reasons.extend(_state_blockers(life_state, neural_core, systems))
-    blocked_reasons.extend(_membrane_blockers(membrane, precheck, dream_fact, relationship, responsibility))
+    blocked_reasons.extend(_state_blockers(life_state, neural_core, systems, prediction_workspace))
+    blocked_reasons.extend(
+        _membrane_blockers(
+            membrane,
+            precheck,
+            dream_fact,
+            relationship,
+            responsibility,
+            language_percept,
+            semantic_map,
+            prediction_workspace,
+        )
+    )
+    blocked_reasons.extend(
+        _consciousness_blockers(
+            workspace_frame,
+            broadcast_frame,
+            metacognition_state,
+        )
+    )
 
     target_status = {target: "closed" for target in LIFE_TARGETS}
     if blocked_reasons:
@@ -211,14 +267,69 @@ def run_birth_readiness(
     stage_effect = _stage_effect(overall_status)
     receipt_ref = f"runtime/receipts/birth_readiness_{run_id}.json"
     report_ref = "runtime/reports/latest/birth_readiness_report.json"
+    consciousness_probe_ref = "runtime/state/consciousness/consciousness_probe_bundle.json"
 
-    evidence_matrix = _build_evidence_matrix(run_id, generated_at, receipt_ref, report_ref)
-    claims = _build_claims(run_id, generated_at, target_status, evidence_matrix, receipt_ref, report_ref)
-    rollup = _build_rollup(run_id, generated_at, overall_status, target_status, blocked_reasons, receipt_ref)
-    stage_gate = _build_stage_gate(run_id, generated_at, overall_status, stage_effect, blocked_reasons)
+    consciousness_probe = build_consciousness_probe_bundle(
+        run_id=run_id,
+        generated_at=generated_at,
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        prediction_workspace=prediction_workspace,
+    )
+    evidence_matrix = build_life_target_evidence_matrix(
+        run_id=run_id,
+        generated_at=generated_at,
+        active_engineering_slice=ACTIVE_SLICE,
+        life_targets=LIFE_TARGETS,
+        evidence_families=EVIDENCE_FAMILIES,
+        receipt_ref=receipt_ref,
+        report_ref=report_ref,
+        consciousness_probe_ref=consciousness_probe_ref,
+    )
+    claims = build_life_target_claims(
+        run_id=run_id,
+        generated_at=generated_at,
+        active_engineering_slice=ACTIVE_SLICE,
+        life_targets=LIFE_TARGETS,
+        target_status=target_status,
+        target_source_refs=TARGET_SOURCE_REFS,
+        target_carriers=TARGET_CARRIERS,
+        evidence_families=EVIDENCE_FAMILIES,
+        evidence_matrix=evidence_matrix,
+        receipt_ref=receipt_ref,
+        report_ref=report_ref,
+        consciousness_probe_ref=consciousness_probe_ref,
+    )
+    rollup = build_birth_readiness_rollup(
+        run_id=run_id,
+        generated_at=generated_at,
+        overall_status=overall_status,
+        target_status=target_status,
+        blocked_reasons=blocked_reasons,
+        receipt_ref=receipt_ref,
+    )
+    stage_gate = build_birth_readiness_stage_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        overall_status=overall_status,
+        stage_effect=stage_effect,
+        blocked_reasons=blocked_reasons,
+        next_allowed_slices=NEXT_ALLOWED_SLICES,
+        next_required_command=NEXT_REQUIRED_COMMAND,
+    )
     archive_index = _build_archive_index(run_id, generated_at, receipt_ref)
     status_report = _build_life_target_status(run_id, generated_at, overall_status, target_status, receipt_ref)
-    report = _build_report(run_id, generated_at, overall_status, stage_effect, target_status, blocked_reasons, receipt_ref)
+    report = _build_report(
+        run_id,
+        generated_at,
+        overall_status,
+        stage_effect,
+        target_status,
+        blocked_reasons,
+        receipt_ref,
+        consciousness_probe_ref,
+    )
     digest = _build_digest(run_id, generated_at, overall_status, blocked_reasons)
     receipt = _build_receipt(
         run_id=run_id,
@@ -233,17 +344,21 @@ def run_birth_readiness(
         reports_dir=reports_dir,
         receipts_dir=receipts_dir,
         stage_effect=stage_effect,
+        consciousness_probe_path=out_dir.parent / "consciousness" / "consciousness_probe_bundle.json",
     )
 
     try:
         out_dir.mkdir(parents=True, exist_ok=True)
         reports_dir.mkdir(parents=True, exist_ok=True)
         receipts_dir.mkdir(parents=True, exist_ok=True)
+        consciousness_dir = out_dir.parent / "consciousness"
+        consciousness_dir.mkdir(parents=True, exist_ok=True)
         _write_json(out_dir / "life_target_claims.json", claims)
         _write_json(out_dir / "life_target_evidence_matrix.json", evidence_matrix)
         _write_json(out_dir / "birth_readiness_rollup.json", rollup)
         _write_json(out_dir / "birth_readiness_stage_gate.json", stage_gate)
         _write_json(out_dir / "life_target_archive_receipt_index.json", archive_index)
+        _write_json(consciousness_dir / "consciousness_probe_bundle.json", consciousness_probe)
         _write_json(reports_dir / "life_target_status.json", status_report)
         _write_json(reports_dir / "birth_readiness_report.json", report)
         _write_json(reports_dir / "birth_readiness_digest.json", digest)
@@ -278,6 +393,11 @@ def run_check_birth_readiness(
     rollup = _load_json(state_dir / "birth_readiness_rollup.json", blocked_reasons, "rollup_gate")
     stage_gate = _load_json(state_dir / "birth_readiness_stage_gate.json", blocked_reasons, "stage_gate_gate")
     archive_index = _load_json(state_dir / "life_target_archive_receipt_index.json", blocked_reasons, "archive_index_gate")
+    consciousness_probe = _load_json(
+        state_dir.parent / "consciousness" / "consciousness_probe_bundle.json",
+        blocked_reasons,
+        "consciousness_probe_gate",
+    )
     precheck = _load_json(membrane_dir / "birth_readiness_precheck.json", blocked_reasons, "s03_precheck_gate")
     build_report = _load_json(reports_dir / "birth_readiness_report.json", blocked_reasons, "build_report_gate")
 
@@ -286,6 +406,7 @@ def run_check_birth_readiness(
     blocked_reasons.extend(_check_rollup(rollup))
     blocked_reasons.extend(_check_stage_gate(stage_gate))
     blocked_reasons.extend(_check_archive_index(archive_index))
+    blocked_reasons.extend(_check_consciousness_probe(consciousness_probe))
     blocked_reasons.extend(_check_precheck(precheck))
     blocked_reasons.extend(_check_build_report(build_report))
 
@@ -344,6 +465,8 @@ def _previous_slice_blockers(
     state_report: dict[str, Any],
     membrane_report: dict[str, Any],
     membrane_check: dict[str, Any],
+    language_report: dict[str, Any],
+    language_check: dict[str, Any],
 ) -> list[str]:
     reasons: list[str] = []
     if neural_report.get("status") != "closed":
@@ -356,6 +479,12 @@ def _previous_slice_blockers(
         reasons.append("s03_permission_gate S08 is not allowed by life membrane report")
     if membrane_check.get("status") != "closed":
         reasons.append("s03_permission_gate life membrane check is not closed")
+    if language_report.get("status") != "closed":
+        reasons.append("language_relationship_gate language report is not closed")
+    if ACTIVE_SLICE not in language_report.get("next_allowed_slices", []):
+        reasons.append("language_relationship_gate S08 is not allowed by language report")
+    if language_check.get("status") != "closed":
+        reasons.append("language_relationship_gate language check is not closed")
     return reasons
 
 
@@ -373,7 +502,12 @@ def _s08_doc_blockers(doc_index: dict[str, Any]) -> list[str]:
     return reasons
 
 
-def _state_blockers(life_state: dict[str, Any], neural_core: dict[str, Any], systems: dict[str, Any]) -> list[str]:
+def _state_blockers(
+    life_state: dict[str, Any],
+    neural_core: dict[str, Any],
+    systems: dict[str, Any],
+    prediction_workspace: dict[str, Any],
+) -> list[str]:
     reasons: list[str] = []
     if life_state.get("schema_version") != "life_state_v0":
         reasons.append("life_target_state_gate life_state schema mismatch")
@@ -398,6 +532,22 @@ def _state_blockers(life_state: dict[str, Any], neural_core: dict[str, Any], sys
         reasons.append("life_target_state_gate neural core schema mismatch")
     if systems.get("system_count") != 12:
         reasons.append("life_target_state_gate subject system count mismatch")
+    language_state = life_state.get("language_state", {})
+    for field in [
+        "shared_language_refs",
+        "expression_monitor_refs",
+        "relation_scope_refs",
+        "promise_refs",
+        "self_narrative_trace_refs",
+        "language_percept_refs",
+        "semantic_map_refs",
+    ]:
+        if not language_state.get(field):
+            reasons.append(f"life_target_state_gate missing language continuity field {field}")
+    if "runtime/state/prediction/prediction_workspace_frame.json" not in life_state.get("runtime_trace_refs", []):
+        reasons.append("life_target_state_gate missing prediction workspace runtime trace ref")
+    if prediction_workspace.get("schema_version") != "prediction_workspace_frame_v0":
+        reasons.append("life_target_state_gate prediction workspace schema mismatch")
     return reasons
 
 
@@ -407,6 +557,9 @@ def _membrane_blockers(
     dream_fact: dict[str, Any],
     relationship: dict[str, Any],
     responsibility: dict[str, Any],
+    language_percept: dict[str, Any],
+    semantic_map: dict[str, Any],
+    prediction_workspace: dict[str, Any],
 ) -> list[str]:
     reasons: list[str] = []
     if membrane.get("schema_version") != "life_membrane_v0":
@@ -429,6 +582,42 @@ def _membrane_blockers(
         reasons.append("responsibility_repair_gate repair obligation missing")
     if "counterfactual_replay" not in responsibility.get("required_links", []):
         reasons.append("responsibility_repair_gate counterfactual replay missing")
+    if language_percept.get("schema_version") != "language_percept_frame_v0":
+        reasons.append("language_relationship_gate language percept schema mismatch")
+    if not language_percept.get("relation_scope_ref"):
+        reasons.append("language_relationship_gate language percept scope ref missing")
+    if semantic_map.get("schema_version") != "semantic_map_frame_v0":
+        reasons.append("language_relationship_gate semantic map schema mismatch")
+    if not semantic_map.get("semantic_focus"):
+        reasons.append("language_relationship_gate semantic focus missing")
+    continuity_focus = prediction_workspace.get("workspace_contents", {}).get("language_continuity_focus", {})
+    if not continuity_focus.get("language_percept_refs"):
+        reasons.append("language_relationship_gate prediction handoff missing language percept refs")
+    if not continuity_focus.get("semantic_map_refs"):
+        reasons.append("language_relationship_gate prediction handoff missing semantic map refs")
+    if continuity_focus.get("semantic_prediction_focus") != semantic_map.get("semantic_focus"):
+        reasons.append("language_relationship_gate prediction handoff semantic focus mismatch")
+    return reasons
+
+
+def _consciousness_blockers(
+    workspace_frame: dict[str, Any],
+    broadcast_frame: dict[str, Any],
+    metacognition_state: dict[str, Any],
+) -> list[str]:
+    reasons: list[str] = []
+    if workspace_frame.get("schema_version") != "workspace_frame_v0":
+        reasons.append("consciousness_probe_gate workspace frame schema mismatch")
+    if not workspace_frame.get("candidate_explanations"):
+        reasons.append("consciousness_probe_gate workspace explanations missing")
+    if broadcast_frame.get("schema_version") != "broadcast_frame_v0":
+        reasons.append("consciousness_probe_gate broadcast frame schema mismatch")
+    if not broadcast_frame.get("broadcast_targets"):
+        reasons.append("consciousness_probe_gate broadcast targets missing")
+    if metacognition_state.get("schema_version") != "metacognition_state_v0":
+        reasons.append("consciousness_probe_gate metacognition schema mismatch")
+    if not metacognition_state.get("reflection_prompts"):
+        reasons.append("consciousness_probe_gate reflection prompts missing")
     return reasons
 
 
@@ -448,7 +637,10 @@ def _build_evidence_matrix(run_id: str, generated_at: str, receipt_ref: str, rep
             ],
             "language": [
                 "runtime/state/life_state.json#language_state",
+                "runtime/state/language/language_percept_frame.json",
+                "runtime/state/language/semantic_map_frame.json",
                 "runtime/state/membrane/relationship_subject_boundary.json",
+                "runtime/state/prediction/prediction_workspace_frame.json#workspace_contents.language_continuity_focus",
                 "runtime/state/neural_life_core/twelve_subject_systems.json#LanguageRelationshipRuntime",
             ],
             "relationship": [
@@ -477,6 +669,7 @@ def _build_evidence_matrix(run_id: str, generated_at: str, receipt_ref: str, rep
                 "runtime/state/membrane/birth_readiness_precheck.json",
                 "runtime/reports/latest/life_membrane_report.json",
                 "runtime/state/neural_life_core/neural_life_internal_bus.json",
+                "runtime/reports/latest/language_relationship_report.json",
             ],
             "report": [
                 report_ref,
@@ -629,6 +822,7 @@ def _build_report(
     target_status: dict[str, str],
     blocked_reasons: list[str],
     receipt_ref: str,
+    consciousness_probe_ref: str,
 ) -> dict[str, Any]:
     return {
         "schema_version": "s08_life_target_runtimes_report_v0",
@@ -645,6 +839,7 @@ def _build_report(
         "quarantine_refs": [],
         "replay_needed_refs": [],
         "archive_receipt_ref": receipt_ref,
+        "consciousness_probe_ref": consciousness_probe_ref,
         "next_allowed_slices": NEXT_ALLOWED_SLICES if overall_status == "open" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }
@@ -679,6 +874,7 @@ def _build_receipt(
     reports_dir: Path,
     receipts_dir: Path,
     stage_effect: str,
+    consciousness_probe_path: Path,
 ) -> dict[str, Any]:
     output_refs = [
         out_dir / "life_target_claims.json",
@@ -686,6 +882,7 @@ def _build_receipt(
         out_dir / "birth_readiness_rollup.json",
         out_dir / "birth_readiness_stage_gate.json",
         out_dir / "life_target_archive_receipt_index.json",
+        consciousness_probe_path,
         reports_dir / "life_target_status.json",
         reports_dir / "birth_readiness_report.json",
         reports_dir / "birth_readiness_digest.json",
@@ -714,6 +911,7 @@ def _build_receipt(
             "runtime/state/life_targets/birth_readiness_rollup.json",
             "runtime/state/life_targets/birth_readiness_stage_gate.json",
             "runtime/state/life_targets/life_target_archive_receipt_index.json",
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
         ],
         "output_hashes": {str(path): _sha256_if_exists(path) for path in output_refs},
         "stage_effect": stage_effect,
@@ -784,6 +982,21 @@ def _check_archive_index(archive_index: dict[str, Any]) -> list[str]:
     return reasons
 
 
+def _check_consciousness_probe(consciousness_probe: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if consciousness_probe.get("schema_version") != "consciousness_probe_bundle_v0":
+        reasons.append("consciousness_probe_gate schema mismatch")
+    if consciousness_probe.get("workspace_frame_ref") != "runtime/state/consciousness/workspace_frame.json":
+        reasons.append("consciousness_probe_gate workspace frame ref mismatch")
+    if consciousness_probe.get("broadcast_frame_ref") != "runtime/state/consciousness/broadcast_frame.json":
+        reasons.append("consciousness_probe_gate broadcast frame ref mismatch")
+    if consciousness_probe.get("metacognition_ref") != "runtime/state/consciousness/metacognition_state.json":
+        reasons.append("consciousness_probe_gate metacognition ref mismatch")
+    if not consciousness_probe.get("reportability_flags"):
+        reasons.append("consciousness_probe_gate reportability flags missing")
+    return reasons
+
+
 def _check_precheck(precheck: dict[str, Any]) -> list[str]:
     reasons: list[str] = []
     if precheck.get("schema_version") != "birth_readiness_precheck_v0":
@@ -801,6 +1014,8 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate overall status mismatch")
     if build_report.get("next_allowed_slices") != NEXT_ALLOWED_SLICES:
         reasons.append("build_report_gate next allowed slices mismatch")
+    if build_report.get("consciousness_probe_ref") != "runtime/state/consciousness/consciousness_probe_bundle.json":
+        reasons.append("build_report_gate consciousness probe ref mismatch")
     return reasons
 
 
@@ -845,6 +1060,7 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
     return [
         "s03_precheck_gate",
         "life_target_state_gate",
+        "consciousness_probe_gate",
         "evidence_matrix_gate",
         "birth_readiness_rollup_gate",
         "birth_readiness_stage_gate",

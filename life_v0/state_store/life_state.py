@@ -1,0 +1,164 @@
+from __future__ import annotations
+
+from typing import Any
+
+from life_v0.direction import LIFE_TARGETS
+
+
+SOURCE_DOC_REFS = [
+    "docs/05_memory_systems_and_growth.md",
+    "docs/07_emotion_personality_self.md",
+    "docs/17_memory_trace_object_model.md",
+    "docs/21_memory_schema_and_audit_protocol.md",
+    "docs/41_runtime_state_store_schema.md",
+    "docs/v0/shared_contracts/life_state_store_v0_schema.md",
+]
+
+
+def build_life_state_projection(
+    *,
+    run_id: str,
+    generated_at: str,
+    self_model_state: dict[str, Any],
+    commitment_truth_state: dict[str, Any],
+    responsibility_ledger: dict[str, Any],
+    language_state_projection: dict[str, Any] | None = None,
+    replay_cue_bundle: dict[str, Any] | None = None,
+    engram_index: dict[str, Any] | None = None,
+    autobiographical_stack: dict[str, Any] | None = None,
+    relationship_memory: dict[str, Any] | None = None,
+    runtime_trace_refs: list[str] | None = None,
+    archive_refs: list[str] | None = None,
+) -> dict[str, Any]:
+    target_status = {target: "state_root_seeded" for target in LIFE_TARGETS}
+    language_state = _build_language_state_projection(language_state_projection)
+    replay_refs = list((replay_cue_bundle or {}).get("anti_forgetting_targets", []))
+    autobiographical_ref = "runtime/state/self/autobiographical_stack.json#anchor_refs"
+    relationship_ref = "runtime/state/memory/relationship_memory.json#shared_memory_refs"
+    engram_ref = "runtime/state/memory/engram_index.json"
+
+    self_model = {
+        "self_narrative": {
+            "status": self_model_state.get("self_narrative_status", "seeded"),
+            "source_refs": list(self_model_state.get("source_doc_refs", [])) or ["docs/07_emotion_personality_self.md"],
+        },
+        "trait_slow_variables": dict(self_model_state.get("trait_slow_variables", {})),
+        "old_self_anchors": list(self_model_state.get("old_self_anchor_refs", []))
+        or ["docs/构思.md", "docs/258_linear_chain_closure_and_v0_contract_transition.md"],
+        "growth_windows": list(self_model_state.get("growth_window_refs", [])),
+        "trait_drift_seed_refs": list(self_model_state.get("trait_drift_seed_refs", [])),
+        "anti_forgetting_refs": replay_refs or list((engram_index or {}).get("anti_forgetting_anchor_refs", [])),
+    }
+    memory_index = {
+        "autobiographical_memory_refs": list((engram_index or {}).get("autobiographical_memory_refs", []))
+        or [autobiographical_ref],
+        "relationship_memory_refs": list((engram_index or {}).get("relationship_memory_refs", []))
+        or [relationship_ref],
+        "dream_memory_refs": list((engram_index or {}).get("dream_memory_refs", [])),
+        "responsibility_memory_refs": list((engram_index or {}).get("responsibility_memory_refs", []))
+        or list(commitment_truth_state.get("responsibility_event_refs", []))
+        or list(responsibility_ledger.get("responsibility_event_refs", [])),
+        "replay_cues": list((engram_index or {}).get("replay_cue_refs", []))
+        or replay_refs
+        or [
+            "runtime/state/replay/replay_cue_bundle.json",
+            "docs/17_memory_trace_object_model.md",
+            "docs/19_offline_consolidation_cycle.md",
+        ],
+        "quarantine_refs": list((engram_index or {}).get("quarantine_refs", [])),
+    }
+    default_runtime_trace_refs = [
+        "runtime/state/neural_life_core/neural_life_core.json",
+        "runtime/state/neural_life_core/brain_graph.json",
+        "runtime/state/neural_life_core/network_state.json",
+        "runtime/state/consciousness/workspace_frame.json",
+        "runtime/state/prediction/prediction_workspace_frame.json",
+        "runtime/state/subject_namespace_binding.json",
+        engram_ref,
+        "runtime/state/self/autobiographical_stack.json",
+        "runtime/state/memory/relationship_memory.json",
+    ]
+    return {
+        "schema_version": "life_state_v0",
+        "run_id": run_id,
+        "generated_at": generated_at,
+        "life_identity": {
+            "life_id": "digital-life-v0",
+            "birth_phase": "pre_activation",
+            "direction_lock": "build_real_digital_life",
+            "created_at": generated_at,
+            "continuity_refs": [
+                "runtime/reports/latest/direction_lock_report.json",
+                "runtime/reports/latest/neural_life_core_report.json",
+                "runtime/reports/latest/state_store_report.json",
+                "docs/v0/slice_contracts/s04_state_object_store_engineering_contract.md",
+            ],
+        },
+        "self_model": self_model,
+        "memory_index": memory_index,
+        "dream_records": [],
+        "relationship_subjects": [
+            {
+                "relationship_id": "rel-v0-0001",
+                "relation_role": "friend",
+                "subject_name_ref": "runtime/state/memory/relationship_memory.json#subject_refs",
+                "shared_memory_refs": list((relationship_memory or {}).get("shared_memory_refs", [])) or [relationship_ref],
+                "shared_language_refs": ["runtime/state/language/language_relationship_state.json#shared-language-v0-0001"],
+                "commitment_refs": list(commitment_truth_state.get("open_commitment_refs", [])),
+                "boundary_refs": ["runtime/state/membrane/relationship_subject_boundary.json"],
+                "repair_obligation_refs": list(responsibility_ledger.get("repair_obligations", []))
+                or ["runtime/state/responsibility/responsibility_ledger.json#repair_obligations"],
+                "last_contact_ref": "runtime/state/memory/relationship_memory.json#last_contact_refs",
+                "relationship_stage": "pre_activation",
+            }
+        ],
+        "pain_events": [],
+        "regret_events": [],
+        "responsibility_bindings": [],
+        "language_state": language_state,
+        "birth_readiness": {
+            "readiness_version": "v0",
+            "overall_status": "state_root_seeded",
+            "life_target_status": target_status,
+            "evidence_family_refs": ["runtime/state/state_store_doc_coverage_snapshot.json", engram_ref],
+            "blocked_reasons": [],
+            "quarantine_refs": list((engram_index or {}).get("quarantine_refs", [])),
+            "replay_needed_refs": list((engram_index or {}).get("replay_cue_refs", [])),
+            "last_report_ref": "runtime/reports/latest/state_store_report.json",
+            "archive_receipt_ref": f"runtime/receipts/state_store_{run_id}.json",
+        },
+        "runtime_trace_refs": _dedupe(list(runtime_trace_refs or []) + default_runtime_trace_refs),
+        "archive_refs": _dedupe(list(archive_refs or []) + [f"runtime/receipts/state_store_{run_id}.json"]),
+        "source_doc_refs": SOURCE_DOC_REFS,
+    }
+
+
+def _build_language_state_projection(language_state_projection: dict[str, Any] | None) -> dict[str, list[str]]:
+    defaults = {
+        "inner_speech_refs": ["runtime/state/language/inner_speech_frame.json#inner_speech_seed"],
+        "expression_monitor_refs": ["runtime/state/language/expression_monitor_state.json#expression_monitor_seed"],
+        "shared_language_refs": ["runtime/state/language/language_relationship_state.json#shared_language_refs_seed"],
+        "promise_refs": ["runtime/state/language/commitment_repair_language_index.json#commitment_seed"],
+        "repair_language_refs": ["runtime/state/language/commitment_repair_language_index.json#repair_language_seed"],
+        "dream_report_language_refs": ["runtime/state/language/dream_report_language_gate.json#dream_report_seed"],
+        "shared_term_registry_refs": ["runtime/state/language/shared_term_registry.json#shared_term_seed"],
+        "relation_scope_refs": ["runtime/state/language/relation_scope_language_index.json#relation_scope_seed"],
+        "self_narrative_trace_refs": ["runtime/state/language/self_narrative_language_trace.json#self_narrative_seed"],
+        "dialogue_turn_log_refs": ["runtime/state/language/dialogue_turn_log.jsonl#dialogue_turn_seed"],
+        "language_percept_refs": ["runtime/state/language/language_percept_frame.json#language_percept_seed"],
+        "semantic_map_refs": ["runtime/state/language/semantic_map_frame.json#semantic_map_seed"],
+        "dialogue_writeback_refs": ["runtime/reports/latest/dialogue_writeback_bundle.json"],
+    }
+    projection = language_state_projection or {}
+    merged: dict[str, list[str]] = {}
+    for field, fallback in defaults.items():
+        merged[field] = list(projection.get(field, fallback))
+    return merged
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item not in result:
+            result.append(item)
+    return result
