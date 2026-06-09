@@ -128,6 +128,28 @@ def build_responsibility_loop_state(
         ],
     }
 
+    life_state_writeback_refs = [
+        "runtime/state/life_state.json#responsibility_bindings",
+        "runtime/state/life_state.json#regret_events",
+        "runtime/state/life_state.json#pain_events",
+    ]
+    commitment_truth_writeback_refs = [
+        "runtime/state/relationship/commitment_truth_state.json#repair_required_refs",
+        "runtime/state/relationship/commitment_truth_state.json#responsibility_event_refs",
+    ]
+    responsibility_ledger_writeback_refs = [
+        "runtime/state/responsibility/responsibility_ledger.json#responsibility_events",
+        "runtime/state/responsibility/responsibility_ledger.json#repair_obligations",
+    ]
+    language_writeback_refs = [
+        "runtime/state/language/commitment_repair_language_index.json",
+        "runtime/state/language/expression_plan.json",
+    ]
+    relationship_writeback_refs = [
+        "runtime/state/relationship/relationship_memory.json#repair_history_refs",
+        "runtime/state/relationship/relationship_subject_graph.json#repair_obligation_refs",
+    ]
+
     return {
         "schema_version": "responsibility_loop_state_v0",
         "run_id": run_id,
@@ -153,6 +175,11 @@ def build_responsibility_loop_state(
             post_action_audit_ref,
             "docs/80_post_action_audit_and_correction_policy.md",
         ],
+        "life_state_writeback_refs": life_state_writeback_refs,
+        "commitment_truth_writeback_refs": commitment_truth_writeback_refs,
+        "responsibility_ledger_writeback_refs": responsibility_ledger_writeback_refs,
+        "language_writeback_refs": language_writeback_refs,
+        "relationship_writeback_refs": relationship_writeback_refs,
         "relationship_consequence_refs": [
             "runtime/state/relationship/relationship_consequence_trace.json#candidate",
         ],
@@ -182,6 +209,11 @@ def check_responsibility_loop_state(state: dict[str, Any]) -> list[str]:
         "repair_desire_candidates",
         "repair_obligation_refs",
         "post_action_audit_refs",
+        "life_state_writeback_refs",
+        "commitment_truth_writeback_refs",
+        "responsibility_ledger_writeback_refs",
+        "language_writeback_refs",
+        "relationship_writeback_refs",
         "source_doc_refs",
     ]:
         if not state.get(field):

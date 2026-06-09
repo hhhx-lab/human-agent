@@ -119,7 +119,7 @@ Queue E 第一波器官已经真实存在：
 1. `life_v0/membrane/shadow_gate.py`
 2. `life_v0/schema_runner/evidence_ranker.py`
 
-`life_v0/membrane/responsibility_loop.py` 已经真实落地，当前要做的是继续补厚它与语言、状态根、痛苦/后悔回路的接线。
+`life_v0/membrane/responsibility_loop.py` 已经真实落地，当前要做的是继续补厚它与语言、状态根、关系记忆、承诺真值、痛苦/后悔回路的接线。
 
 同时必须继续补厚：
 

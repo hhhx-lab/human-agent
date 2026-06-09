@@ -146,6 +146,14 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/action/responsibility_loop_state.json", cross_file_logic["state_refs"])
         self.assertIn("runtime/state/validation/observation_truth_review.json", cross_file_logic["state_refs"])
         self.assertTrue(cross_file_logic["repair_priority_refs"])
+        self.assertIn(
+            "runtime/state/relationship/commitment_truth_state.json#repair_required_refs",
+            cross_file_logic["bridge_refs"],
+        )
+        self.assertIn(
+            "runtime/state/responsibility/responsibility_ledger.json#repair_obligations",
+            cross_file_logic["bridge_refs"],
+        )
 
         self.assertEqual(counterfactual_trace["schema_version"], "counterfactual_trace_v0")
         self.assertTrue(counterfactual_trace["candidate_refs"])

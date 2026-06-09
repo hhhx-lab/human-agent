@@ -237,8 +237,37 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertTrue(responsibility_loop["repair_desire_candidates"])
         self.assertTrue(responsibility_loop["counterfactual_repair_frames"])
         self.assertTrue(responsibility_loop["post_action_audit_refs"])
+        self.assertTrue(responsibility_loop["life_state_writeback_refs"])
+        self.assertTrue(responsibility_loop["commitment_truth_writeback_refs"])
+        self.assertTrue(responsibility_loop["responsibility_ledger_writeback_refs"])
+        self.assertTrue(responsibility_loop["language_writeback_refs"])
+        self.assertTrue(responsibility_loop["relationship_writeback_refs"])
         self.assertTrue(responsibility_loop["repair_followup_required"])
         self.assertIn("docs/94_pain_regret_and_repair_signal_schema.md", responsibility_loop["source_doc_refs"])
+        self.assertIn(
+            "runtime/state/life_state.json#responsibility_bindings",
+            responsibility_loop["life_state_writeback_refs"],
+        )
+        self.assertIn(
+            "runtime/state/life_state.json#regret_events",
+            responsibility_loop["life_state_writeback_refs"],
+        )
+        self.assertIn(
+            "runtime/state/relationship/commitment_truth_state.json#repair_required_refs",
+            responsibility_loop["commitment_truth_writeback_refs"],
+        )
+        self.assertIn(
+            "runtime/state/responsibility/responsibility_ledger.json#repair_obligations",
+            responsibility_loop["responsibility_ledger_writeback_refs"],
+        )
+        self.assertIn(
+            "runtime/state/language/commitment_repair_language_index.json",
+            responsibility_loop["language_writeback_refs"],
+        )
+        self.assertIn(
+            "runtime/state/relationship/relationship_memory.json#repair_history_refs",
+            responsibility_loop["relationship_writeback_refs"],
+        )
 
         self.assertEqual(manifest["schema_version"], "life_membrane_manifest_v0")
         self.assertIn("runtime/state/membrane/life_membrane.json", manifest["state_refs"])

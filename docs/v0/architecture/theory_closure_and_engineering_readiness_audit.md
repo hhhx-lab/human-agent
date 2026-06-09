@@ -145,7 +145,7 @@
 | 关系 | `40`、`94`、`96`、`98`、`101`、`01j` | `life_v0/language/`、`life_v0/state_store/`、`life_v0/life_targets/` | 理论母体已闭合，当前重点转向关系阶段、承诺兑现与 repair 时间线 |
 | 意识/工作区 | `10`、`143`、`146`、`149`、`152`、`171`、`01m` | `life_v0/neural_core/`、`life_v0/life_targets/` | 理论母体已闭合，当前重点转向可报告性 probe 和全局广播对象 |
 | 行为/抑制 | `06`、`20`、`75`、`80-84`、`01r` | `life_v0/membrane/` | 理论母体已闭合，当前重点转向 `candidate_arena.py`、`go_nogo.py`、side effect 分类 |
-| 责任/后悔/修复 | `81-84`、`94`、`98`、`101` | `life_v0/membrane/`、`life_v0/state_store/`、`life_v0/body/` | 理论母体已闭合，当前重点转向 `responsibility_loop.py`、regret signal 与 repair writeback |
+| 责任/后悔/修复 | `81-84`、`94`、`98`、`101` | `life_v0/membrane/`、`life_v0/state_store/`、`life_v0/body/`、`life_v0/language/` | 理论母体已闭合，当前重点转向 `responsibility_loop.py`、regret signal、repair writeback 与语言/关系修复表达 |
 | 内环境/身体状态 | `04`、`08`、`11`、`18`、`37-39`、`01n` | `life_v0/body/`、`life_v0/defense/` | 理论母体已闭合，当前重点转向 rhythm / need / recovery 文件化 |
 | 信号介质/调质机制 | `11`、`18`、`22`、`30`、`01l` | `life_v0/neural_core/`、`life_v0/body/` | 理论母体已闭合，当前重点转向 `signal_media.py` 与 modulation object |
 | 身份/自我/价值/承诺 | `07`、`13`、`16`、`37`、`39`、`40`、`91`、`92`、`93` | `life_v0/direction/`、`life_v0/state_store/`、`life_v0/growth/` | 理论母体已闭合，当前重点转向身份根、价值权重和核心连续性保护 |
