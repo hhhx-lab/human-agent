@@ -631,7 +631,7 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/16_digital_life_gap_register.md",
             DIRECTION_LOCK_REF,
             "docs/v0/README.md",
-            "docs/v0/readme_block_engineering_realization_v0.md",
+            "docs/v0/mapping/readme_block_engineering_realization_v0.md",
             "docs/v0/architecture/digital_life_macro_architecture_v0.md",
             "docs/v0/slice_contracts/doc_corpus_ingestor_v0_contract.md",
         ]
@@ -644,9 +644,9 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/151_life_reality_authority_schema_cross_file_checker_plan.md",
             DIRECTION_LOCK_REF,
             "docs/v0/README.md",
-            "docs/v0/v0_implementation_index.md",
+            "docs/v0/entry/v0_implementation_index.md",
             "docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md",
-            "docs/v0/readme_block_engineering_realization_v0.md",
+            "docs/v0/mapping/readme_block_engineering_realization_v0.md",
         ]
     if doc.rel_path.endswith("s02_neural_life_core_engineering_contract.md"):
         return [
@@ -664,7 +664,7 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/13_agentic_human_research_synthesis.md",
             "docs/v0/architecture/digital_life_macro_architecture_v0.md",
             "docs/v0/slice_contracts/s01_source_authority_engineering_contract.md",
-            "docs/v0/readme_block_engineering_realization_v0.md",
+            "docs/v0/mapping/readme_block_engineering_realization_v0.md",
         ]
     if doc.rel_path.endswith("s04_state_object_store_engineering_contract.md"):
         return [
@@ -706,7 +706,7 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/133_life_reality_first_json_writer_and_reporter_contract.md",
             "docs/v0/shared_contracts/life_state_store_v0_schema.md",
             "docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md",
-            "docs/v0/readme_block_engineering_realization_v0.md",
+            "docs/v0/mapping/readme_block_engineering_realization_v0.md",
         ]
     if doc.rel_path.endswith("s03_direction_life_membrane_engineering_contract.md"):
         return [
@@ -745,15 +745,15 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/v0/shared_contracts/first_activation_protocol.md",
             "docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md",
             "docs/v0/slice_contracts/s04_state_object_store_engineering_contract.md",
-            "docs/v0/readme_block_engineering_realization_v0.md",
+            "docs/v0/mapping/readme_block_engineering_realization_v0.md",
         ]
     if doc.rel_path.endswith("v0_implementation_index.md"):
         return [
             DIRECTION_LOCK_REF,
             "docs/v0/README.md",
             "docs/v0/architecture/first_activation_engineering_roadmap.md",
-            "docs/v0/readme_block_engineering_realization_v0.md",
-            "docs/v0/0_to_257_engineering_utilization_map.md",
+            "docs/v0/mapping/readme_block_engineering_realization_v0.md",
+            "docs/v0/mapping/0_to_257_engineering_utilization_map.md",
             "docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md",
             "docs/v0/slice_contracts/s01_source_authority_engineering_contract.md",
             "docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md",

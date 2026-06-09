@@ -6,7 +6,7 @@
 
 v0 runtime 只负责第一次有限激活前后的最小生命循环。它要把 `91 -> 257` 的理论链压成可运行结构，但不开放完整长期运行、自我训练、模型内核升级或外部不可逆行动。
 
-v0 runtime 的模块边界来自 `docs/README.md` 和 `docs/v0/readme_block_engineering_realization_v0.md`。每次运行都必须能解释：当前状态、report、archive receipt 和 stage gate 分别承载了哪个 README block、哪个 engineering slice、哪个生命 runtime carrier。无法回链到 `00 -> 258` 的运行结果不能进入出生准备度。
+v0 runtime 的模块边界来自 `docs/README.md` 和 `docs/v0/mapping/readme_block_engineering_realization_v0.md`。每次运行都必须能解释：当前状态、report、archive receipt 和 stage gate 分别承载了哪个 README block、哪个 engineering slice、哪个生命 runtime carrier。无法回链到 `00 -> 258` 的运行结果不能进入出生准备度。
 
 核心目标是让一次运行能够回答：
 

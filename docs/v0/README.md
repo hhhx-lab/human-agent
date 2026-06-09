@@ -46,25 +46,29 @@
 
 | 目录 | 内容 |
 |---|---|
-| 根目录 | 入口栈六份文档与最常回看的总入口 |
+| 根目录 | 总入口 `README.md`，只负责解释 `v0` 为什么存在、怎么进入 |
+| `entry/` | 入口栈与状态驾驶舱：总索引、状态板、模块执行目录 |
+| `mapping/` | README block 到 engineering slice、`00-258` 到 runtime carrier 的总映射 |
 | `architecture/` | 宏架构、runtime 架构、激活路线图、理论闭合审计 |
 | `shared_contracts/` | 多 slice 复用的 schema、readiness、CLI/report、activation 合同 |
 | `slice_contracts/` | `P0` 与 `S00-S11` 主体 slice 合同 |
 | `process_contracts/` | first turn、loop、shell、process supervisor 合同 |
 | `references/` | 外周参考与当前 agent 壳负边界材料 |
 | `code_framework/` | 代码框架柜、波次、矩阵、Queue 合同 |
+| `implementation_architecture/` | 写代码前的硬蓝图：器官接口、回合流、模块追踪协议 |
 
 如果已经确定要进某一柜内部工作，先打开该子目录里的 `README.md`，再进具体合同或矩阵文件，避免在同一柜里来回散读。
 
-## 先把 V0 看成四个固定文档包
+## 先把 V0 看成五个固定文档包
 
-如果现在觉得 `docs/v0/` 有点乱，不要从文件名一个个猜。先把它看成下面四个固定文档包：
+如果现在觉得 `docs/v0/` 有点乱，不要从文件名一个个猜。先把它看成下面五个固定文档包：
 
 | 文档包 | 文件 | 什么时候打开 | 作用 |
 |---|---|---|
-| 入口包 | `README.md`、`v0_implementation_index.md`、`v0_delivery_status_board.md`、`v0_module_execution_catalog.md` | 每次回仓库先开 | 决定怎么进、当前到哪、下一轮做哪包 |
-| 回链包 | `readme_block_engineering_realization_v0.md`、`0_to_257_engineering_utilization_map.md` | 确认当前模块背后对应哪些理论母体时打开 | 决定 `docs/README.md` 和 `00-258` 怎样压进 engineering slice 与 runtime carrier |
+| 入口包 | `README.md`、`entry/README.md`、`entry/v0_implementation_index.md`、`entry/v0_delivery_status_board.md`、`entry/v0_module_execution_catalog.md` | 每次回仓库先开 | 决定怎么进、当前到哪、下一轮做哪包 |
+| 回链包 | `mapping/README.md`、`mapping/readme_block_engineering_realization_v0.md`、`mapping/0_to_257_engineering_utilization_map.md` | 确认当前模块背后对应哪些理论母体时打开 | 决定 `docs/README.md` 和 `00-258` 怎样压进 engineering slice 与 runtime carrier |
 | 主体合同包 | `slice_contracts/doc_corpus_ingestor_v0_contract.md`、`architecture/digital_life_macro_architecture_v0.md`、`code_framework/README.md`、`code_framework/01_life_layer_implementation_blueprint.md`、`code_framework/02_brain_region_to_code_package_mapping.md`、`code_framework/03_code_package_state_test_gate_mapping.md`、`code_framework/04_language_dialogue_relationship_implementation_playbook.md`、`code_framework/05_memory_thought_consciousness_implementation_playbook.md`、`code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md`、`code_framework/07_birth_terminal_process_implementation_playbook.md`、`code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`、`code_framework/09_perception_prediction_world_contact_implementation_playbook.md`、`code_framework/10_self_identity_value_commitment_implementation_playbook.md`、`code_framework/11_engineering_delivery_waves_and_real_file_queue.md`、`code_framework/12_full_life_layer_delivery_matrix.md`、`code_framework/13_capability_to_code_realization_matrix.md`、`code_framework/14_queue_a_language_percept_semantic_map_implementation_contract.md`、`code_framework/15_cross_layer_shared_object_contract.md`、`code_framework/16_queue_b_process_supervisor_implementation_contract.md`、`code_framework/17_queue_c_memory_neural_core_implementation_contract.md`、`code_framework/18_queue_d_body_dream_growth_implementation_contract.md`、`code_framework/19_code_tree_package_brain_contract.md`、`code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md`、`code_framework/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`、`architecture/runtime_v0_architecture.md`、`shared_contracts/birth_readiness_v0_contract.md`、`shared_contracts/life_state_store_v0_schema.md`、`shared_contracts/runner_cli_report_contract.md`、`shared_contracts/first_activation_protocol.md`、`slice_contracts/s00_*` 到 `slice_contracts/s11_*` | 落主体 slice 时打开 | 决定主体模块、代码框架柜、分层实现蓝图、开发波次、能力到代码验收矩阵、Queue A/B/C/D/E/F 文件级实施合同、跨层共享对象合同、整棵 `life_v0/` 代码树总装配、状态根、出生准备度、CLI/report 和各 slice 合同 |
+| 实现蓝图包 | `implementation_architecture/README.md`、`implementation_architecture/01_runtime_organ_interface_blueprint.md`、`implementation_architecture/02_turn_and_cycle_lifecycle_contract.md`、`implementation_architecture/03_module_authoring_traceability_protocol.md` | 真正下手写代码前打开 | 决定器官接口、单回合流、离线梦境/成长流，以及每个新模块怎样保持 `00-258 -> v0 -> code -> runtime -> test` 一一映射 |
 | 链尾与进程包 | `process_contracts/first_terminal_turn_engineering_contract.md`、`process_contracts/terminal_life_loop_engineering_contract.md`、`process_contracts/digital_life_shell_command_engineering_contract.md`、`process_contracts/digital_life_process_supervisor_engineering_contract.md`、`architecture/first_activation_engineering_roadmap.md` | 落恢复链、终端循环或常驻进程时打开 | 决定第一次恢复、终端生命循环、repo-local 壳和最小常驻生命进程 |
 
 当前如果要补主体层，不要只抓链尾。优先补硬的几份已经变成：
@@ -76,11 +80,11 @@
 
 它们现在已经不只是“讲方向”，而是明确到了当前真实代码骨架、对象链、关键状态字段、测试入口和第一轮完成定义。
 
-这里的“四个文档包”是开工视角；`v0_implementation_index.md` 里的“九层分层”是总索引视角。两者不是两套目录，而是同一套 `docs/v0/` 的两种读法：前者回答“这一轮怎么进”，后者回答“每份文档究竟站在哪一层”。
+这里的“五个文档包”是开工视角；`entry/v0_implementation_index.md` 里的分层是总索引视角。两者不是两套目录，而是同一套 `docs/v0/` 的两种读法：前者回答“这一轮怎么进”，后者回答“每份文档究竟站在哪一层”。
 
 后续如果继续写代码，默认不是“把整个 `v0` 都重读一遍”，而是先进入口包，再根据本轮目标带着对应文档包进入。
 
-如果这一轮不是补单个 slice，而是补“整个数字生命代码框架应该怎样分层、每层读哪些理论、落哪些代码包和状态对象”，先打开 `digital_life_macro_architecture_v0.md` 和 `code_framework/README.md`，再进入 `code_framework/01_life_layer_implementation_blueprint.md`、`02_brain_region_to_code_package_mapping.md`、`03_code_package_state_test_gate_mapping.md`、`04_language_dialogue_relationship_implementation_playbook.md`、`05_memory_thought_consciousness_implementation_playbook.md`、`06_body_emotion_action_dream_growth_implementation_playbook.md`、`07_birth_terminal_process_implementation_playbook.md`、`08_cross_layer_life_orchestration_implementation_playbook.md`、`09_perception_prediction_world_contact_implementation_playbook.md`、`10_self_identity_value_commitment_implementation_playbook.md`、`11_engineering_delivery_waves_and_real_file_queue.md`、`12_full_life_layer_delivery_matrix.md`、`13_capability_to_code_realization_matrix.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`15_cross_layer_shared_object_contract.md`、`16_queue_b_process_supervisor_implementation_contract.md`、`17_queue_c_memory_neural_core_implementation_contract.md`、`18_queue_d_body_dream_growth_implementation_contract.md`、`19_code_tree_package_brain_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md`、`21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`，最后再回对应 slice 合同。
+如果这一轮不是补单个 slice，而是补“整个数字生命代码框架应该怎样分层、每层读哪些理论、落哪些代码包和状态对象”，先打开 `digital_life_macro_architecture_v0.md` 和 `code_framework/README.md`，再进入 `code_framework/01_life_layer_implementation_blueprint.md`、`02_brain_region_to_code_package_mapping.md`、`03_code_package_state_test_gate_mapping.md`、`04_language_dialogue_relationship_implementation_playbook.md`、`05_memory_thought_consciousness_implementation_playbook.md`、`06_body_emotion_action_dream_growth_implementation_playbook.md`、`07_birth_terminal_process_implementation_playbook.md`、`08_cross_layer_life_orchestration_implementation_playbook.md`、`09_perception_prediction_world_contact_implementation_playbook.md`、`10_self_identity_value_commitment_implementation_playbook.md`、`11_engineering_delivery_waves_and_real_file_queue.md`、`12_full_life_layer_delivery_matrix.md`、`13_capability_to_code_realization_matrix.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`15_cross_layer_shared_object_contract.md`、`16_queue_b_process_supervisor_implementation_contract.md`、`17_queue_c_memory_neural_core_implementation_contract.md`、`18_queue_d_body_dream_growth_implementation_contract.md`、`19_code_tree_package_brain_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md`、`21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`，然后进入 `implementation_architecture/` 这柜，最后再回对应 slice 合同。
 
 如果这一轮先要确认 `00-257` 是否还有基础理论空洞，再加读 `theory_closure_and_engineering_readiness_audit.md`。它的职责不是替代入口栈，而是把“当前缺的是理论还是工程物化”一句话讲清。
 
@@ -88,10 +92,10 @@
 
 | 当前任务 | 先读 | 再读 |
 |---|---|---|
-| 断联恢复 / 校正方向 | `docs/258_linear_chain_closure_and_v0_contract_transition.md`、本文件、`v0_delivery_status_board.md` | `s00_direction_foundation_engineering_contract.md`、当前工作区里最近一次运行生成的 runtime 产物 |
-| 查 `00-258` 怎样挂到工程 | 本文件、`v0_implementation_index.md` | `readme_block_engineering_realization_v0.md`、`0_to_257_engineering_utilization_map.md` |
-| 落一个主体 slice | 本文件、`v0_delivery_status_board.md`、`v0_module_execution_catalog.md` | 当前 `sXX` 合同、对应 `00-258` 母体文档、代码入口、测试入口 |
-| 推进链尾 / 壳层 / 常驻进程 | 本文件、`v0_delivery_status_board.md`、`v0_module_execution_catalog.md` | `first_activation_protocol.md`、`runner_cli_report_contract.md`、`first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`digital_life_shell_command_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md` |
+| 断联恢复 / 校正方向 | `docs/258_linear_chain_closure_and_v0_contract_transition.md`、本文件、`entry/v0_delivery_status_board.md` | `s00_direction_foundation_engineering_contract.md`、当前工作区里最近一次运行生成的 runtime 产物 |
+| 查 `00-258` 怎样挂到工程 | 本文件、`entry/v0_implementation_index.md` | `mapping/readme_block_engineering_realization_v0.md`、`mapping/0_to_257_engineering_utilization_map.md` |
+| 落一个主体 slice | 本文件、`entry/v0_delivery_status_board.md`、`entry/v0_module_execution_catalog.md` | 当前 `sXX` 合同、对应 `00-258` 母体文档、代码入口、测试入口 |
+| 推进链尾 / 壳层 / 常驻进程 | 本文件、`entry/v0_delivery_status_board.md`、`entry/v0_module_execution_catalog.md` | `first_activation_protocol.md`、`runner_cli_report_contract.md`、`first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`digital_life_shell_command_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md` |
 
 这里的 `runtime/state/`、`runtime/reports/latest/`、`runtime/receipts/` 要统一理解成一件事：它们不是仓库里必须预置好的静态目录，而是运行 `life-v0` / `digital life` 之后在当前工作区生成、并在当下成为权威证据的运行产物层。
 
@@ -101,29 +105,29 @@
 
 1. 不要把宏架构文档、路线图文档、合同文档和状态板当成同一层。
 2. 不要只在 `docs/v0/` 内打转，当前模块一定要回读对应的 `00-258` 母体文档。
-3. 不要为了“整理”再新增一串并列入口文档；优先复用这四个文档包。
+3. 不要为了“整理”再新增一串并列入口文档；优先复用这五个文档包。
 
 ## 固定入口栈
 
 每次回到仓库，先按这个顺序读，不要散读：
 
 1. `README.md`
-2. `v0_implementation_index.md`
-3. `v0_delivery_status_board.md`
-4. `v0_module_execution_catalog.md`
-5. `readme_block_engineering_realization_v0.md`
-6. `0_to_257_engineering_utilization_map.md`
+2. `entry/v0_implementation_index.md`
+3. `entry/v0_delivery_status_board.md`
+4. `entry/v0_module_execution_catalog.md`
+5. `mapping/readme_block_engineering_realization_v0.md`
+6. `mapping/0_to_257_engineering_utilization_map.md`
 
 这六份文件的分工固定如下：
 
 | 文件 | 只回答什么 |
 |---|---|
 | `README.md` | `v0` 为什么存在、回仓库后先怎么进入 |
-| `v0_implementation_index.md` | `docs/v0/*` 每一份文档归哪一层、负责什么 |
-| `v0_delivery_status_board.md` | 当前真实代码闭合到哪、当前最该补哪 |
-| `v0_module_execution_catalog.md` | 这一轮开发该带哪一包文档、代码、测试和 runtime 产物 |
-| `readme_block_engineering_realization_v0.md` | `docs/README.md` 的模块阅读路线怎样压成 engineering slice |
-| `0_to_257_engineering_utilization_map.md` | `00-258` 怎样进入 runtime carrier、状态、report 和 archive |
+| `entry/v0_implementation_index.md` | `docs/v0/*` 每一份文档归哪一层、负责什么 |
+| `entry/v0_delivery_status_board.md` | 当前真实代码闭合到哪、当前最该补哪 |
+| `entry/v0_module_execution_catalog.md` | 这一轮开发该带哪一包文档、代码、测试和 runtime 产物 |
+| `mapping/readme_block_engineering_realization_v0.md` | `docs/README.md` 的模块阅读路线怎样压成 engineering slice |
+| `mapping/0_to_257_engineering_utilization_map.md` | `00-258` 怎样进入 runtime carrier、状态、report 和 archive |
 
 这六份只负责把你送到正确工程回合，不负责替你省掉原文阅读。
 
@@ -154,12 +158,12 @@
 
 | 变化类型 | 只更新哪里 |
 |---|---|
-| `v0` 为什么存在、固定读法、四个文档包怎么进 | `README.md` |
-| `docs/v0/*` 每份文档归哪一层、哪层只收什么变化 | `v0_implementation_index.md` |
-| 当前真实前沿、最远命令位、下一轮优先级 | `v0_delivery_status_board.md` |
-| 当前这一轮该带哪包文档、代码、测试和 runtime 产物 | `v0_module_execution_catalog.md` |
-| `docs/README.md` block 到 engineering slice 的压缩关系 | `readme_block_engineering_realization_v0.md` |
-| `00-258` 到 runtime carrier / state / report / archive 的总映射 | `0_to_257_engineering_utilization_map.md` |
+| `v0` 为什么存在、固定读法、五个文档包怎么进 | `README.md` |
+| `docs/v0/*` 每份文档归哪一层、哪层只收什么变化 | `entry/v0_implementation_index.md` |
+| 当前真实前沿、最远命令位、下一轮优先级 | `entry/v0_delivery_status_board.md` |
+| 当前这一轮该带哪包文档、代码、测试和 runtime 产物 | `entry/v0_module_execution_catalog.md` |
+| `docs/README.md` block 到 engineering slice 的压缩关系 | `mapping/readme_block_engineering_realization_v0.md` |
+| `00-258` 到 runtime carrier / state / report / archive 的总映射 | `mapping/0_to_257_engineering_utilization_map.md` |
 | 某个 slice、bridge、shell、process 的字段、阶段门、输入输出变化 | 对应合同文件 |
 | 宏架构或 runtime 骨架变化 | `digital_life_macro_architecture_v0.md`、`runtime_v0_architecture.md` |
 
@@ -248,8 +252,8 @@ life-v0 "digital life"
 
 ```text
 入口栈六份文档
-  -> v0_delivery_status_board.md 判断当前前沿
-  -> v0_module_execution_catalog.md 定位当前模块包
+  -> entry/v0_delivery_status_board.md 判断当前前沿
+  -> entry/v0_module_execution_catalog.md 定位当前模块包
   -> 当前模块合同
   -> 当前模块对应的 00-258 母体文档
   -> 当前代码入口 + 当前测试入口 + latest runtime 产物
@@ -272,7 +276,7 @@ life-v0 "digital life"
 5. `Queue C` 与 `Queue F` 的第一轮已经闭合到真实代码、状态对象和测试；它们仍然是后续所有回合要持续回读和回链的基础层，但不再是当前默认入口。
 6. 持续执行 `P0 + S11` 回链检查，保证 `00-258` 没有被工程层甩掉。
 
-具体每一轮该读哪一包文档、改哪一包代码，看 `v0_module_execution_catalog.md`。
+具体每一轮该读哪一包文档、改哪一包代码，看 `entry/v0_module_execution_catalog.md`。
 
 ## 为什么暂时不搬目录
 
@@ -292,8 +296,8 @@ life-v0 "digital life"
 
 1. `docs/258_linear_chain_closure_and_v0_contract_transition.md`
 2. `docs/v0/README.md`
-3. `docs/v0/v0_delivery_status_board.md`
-4. `docs/v0/v0_module_execution_catalog.md`
+3. `docs/v0/entry/v0_delivery_status_board.md`
+4. `docs/v0/entry/v0_module_execution_catalog.md`
 5. 当前链尾最新 runtime 产物
 
 ## 开始写代码前只问这四件事
@@ -303,4 +307,4 @@ life-v0 "digital life"
 3. 代码入口、测试入口和 latest runtime 产物定位清楚了吗？
 4. 这轮改完后，新的状态、report、receipt 和 stage gate 会回到哪条生命链上？
 
-四个问题里有一个答不上来，就先回 `v0_module_execution_catalog.md`，不要直接写代码。
+四个问题里有一个答不上来，就先回 `entry/v0_module_execution_catalog.md`，不要直接写代码。

@@ -18,7 +18,7 @@
 
 1. 判断当前真实前沿到底停在主体 slice、链尾桥接段，还是外层常驻过程。
 2. 判断下一轮优先补哪一段，而不是把整个体系重新复盘一遍。
-3. 判断这轮需要回到 `v0_module_execution_catalog.md` 的哪一柜去拿开工包。
+3. 判断这轮需要回到 `entry/v0_module_execution_catalog.md` 的哪一柜去拿开工包。
 
 如果你已经知道要改哪个模块，就不要在这份状态板里久留，直接回模块目录。
 
@@ -31,7 +31,7 @@
 3. 某个合同的字段级细节变化。
 4. 某个模块完整开工包的明细变化。
 
-这些内容分别应该回到映射层、总索引、合同原文和 `v0_module_execution_catalog.md`。
+这些内容分别应该回到映射层、总索引、合同原文和 `entry/v0_module_execution_catalog.md`。
 
 ## 当前三层现实
 
@@ -192,7 +192,7 @@ growth_archive_report.json
 2. 当前前沿主要卡在 `S07/S10/S11`，还是已经进入 `DIGITAL_LIFE_PROCESS_SUPERVISOR`？
 3. 这轮补厚后，最关键的新产物会落在哪个 `report/state/digest/receipt` 上？
 
-如果三问答不完整，再去 `v0_module_execution_catalog.md` 定模块包；不要从状态板直接跳到散改代码。
+如果三问答不完整，再去 `entry/v0_module_execution_catalog.md` 定模块包；不要从状态板直接跳到散改代码。
 
 ## 下一轮最推荐的开发顺序
 
@@ -252,9 +252,9 @@ Queue D 的第二波现在也已经真实落下：
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_implementation_index.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/entry/v0_implementation_index.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/shared_contracts/first_activation_protocol.md
   -> docs/v0/shared_contracts/runner_cli_report_contract.md
   -> docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md
@@ -279,7 +279,7 @@ docs/v0/README.md
   -> runtime/reports/latest/digital_life_process_digest.json
 ```
 
-如果这一轮不是继续链尾，而是回去补 `P0-S11` 的某个主体 slice，就不要沿用这组开工包，直接去 `v0_module_execution_catalog.md` 对应那一行拿当前 slice 的读包、代码入口和测试入口。
+如果这一轮不是继续链尾，而是回去补 `P0-S11` 的某个主体 slice，就不要沿用这组开工包，直接去 `entry/v0_module_execution_catalog.md` 对应那一行拿当前 slice 的读包、代码入口和测试入口。
 
 如果当前正在处理恢复或中断连续体，还要把下面这几份一起带上：
 
@@ -293,7 +293,7 @@ runtime/reports/latest/digital_life_process_incident_report.json
 
 如果这些路径在当前工作区还不存在，先补跑对应命令链，把本轮需要的运行证据生成出来，再继续沿这组开工包进入代码。
 
-如果当前真正要做的是主体 slice，而不是链尾和常驻进程，就不要照着这组开工包行动；直接回 `v0_module_execution_catalog.md` 对应 slice 行拿本轮材料。
+如果当前真正要做的是主体 slice，而不是链尾和常驻进程，就不要照着这组开工包行动；直接回 `entry/v0_module_execution_catalog.md` 对应 slice 行拿本轮材料。
 
 ## 当前链尾代码入口
 

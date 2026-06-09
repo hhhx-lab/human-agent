@@ -6,7 +6,7 @@
 
 本文档不是 `docs/v0` 的入口文件，而是理论母体到工程承载层的总映射图。后续开发时，它要和下面两类文件一起读：
 
-1. `readme_block_engineering_realization_v0.md`：回答“这一批文档属于哪个 README block 和哪个 engineering slice”。
+1. `mapping/readme_block_engineering_realization_v0.md`：回答“这一批文档属于哪个 README block 和哪个 engineering slice”。
 2. 当前 `sXX` 工程合同：回答“这一 slice 具体落哪些代码、状态、report 和 receipt”。
 
 所以，正确读法不是只看本文档就直接写代码，而是：
@@ -33,7 +33,7 @@
 
 ## 文档组到 runtime carrier
 
-README 模块分块以 `docs/v0/readme_block_engineering_realization_v0.md` 为准；本文件负责补充每组文档进入哪些 runtime carrier。两者缺一不可：前者保证按 README 一个模块一个模块落实，后者保证每份文档进入生命运行时。
+README 模块分块以 `docs/v0/mapping/readme_block_engineering_realization_v0.md` 为准；本文件负责补充每组文档进入哪些 runtime carrier。两者缺一不可：前者保证按 README 一个模块一个模块落实，后者保证每份文档进入生命运行时。
 
 | 文档组 | 文件范围 | runtime carrier | 工程用途 |
 |---|---|---|---|

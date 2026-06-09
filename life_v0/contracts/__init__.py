@@ -23,7 +23,16 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/README.md",
         ],
     },
-    "docs/v0/v0_implementation_index.md": {
+    "docs/v0/entry/README.md": {
+        "role": "v0_entry_cabinet_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/README.md",
+            "docs/v0/entry/v0_implementation_index.md",
+        ],
+    },
+    "docs/v0/entry/v0_implementation_index.md": {
         "role": "v0_global_index",
         "slice": ACTIVE_SLICE,
         "status": "closed",
@@ -32,40 +41,49 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/README.md",
         ],
     },
-    "docs/v0/v0_delivery_status_board.md": {
+    "docs/v0/entry/v0_delivery_status_board.md": {
         "role": "delivery_status_board",
         "slice": ACTIVE_SLICE,
         "status": "closed",
         "source_refs": [
-            "docs/v0/v0_implementation_index.md",
+            "docs/v0/entry/v0_implementation_index.md",
             "docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md",
         ],
     },
-    "docs/v0/v0_module_execution_catalog.md": {
+    "docs/v0/entry/v0_module_execution_catalog.md": {
         "role": "module_execution_catalog",
         "slice": ACTIVE_SLICE,
         "status": "closed",
         "source_refs": [
-            "docs/v0/v0_implementation_index.md",
-            "docs/v0/readme_block_engineering_realization_v0.md",
+            "docs/v0/entry/v0_implementation_index.md",
+            "docs/v0/mapping/readme_block_engineering_realization_v0.md",
         ],
     },
-    "docs/v0/readme_block_engineering_realization_v0.md": {
+    "docs/v0/mapping/readme_block_engineering_realization_v0.md": {
         "role": "readme_block_realization_map",
         "slice": ACTIVE_SLICE,
         "status": "closed",
         "source_refs": [
             "docs/README.md",
-            "docs/v0/v0_implementation_index.md",
+            "docs/v0/entry/v0_implementation_index.md",
         ],
     },
-    "docs/v0/0_to_257_engineering_utilization_map.md": {
+    "docs/v0/mapping/README.md": {
+        "role": "v0_mapping_cabinet_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/README.md",
+            "docs/v0/mapping/readme_block_engineering_realization_v0.md",
+        ],
+    },
+    "docs/v0/mapping/0_to_257_engineering_utilization_map.md": {
         "role": "zero_to_258_utilization_map",
         "slice": ACTIVE_SLICE,
         "status": "closed",
         "source_refs": [
             "docs/258_linear_chain_closure_and_v0_contract_transition.md",
-            "docs/v0/readme_block_engineering_realization_v0.md",
+            "docs/v0/mapping/readme_block_engineering_realization_v0.md",
         ],
     },
     "docs/v0/architecture/first_activation_engineering_roadmap.md": {
@@ -93,6 +111,42 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
         "source_refs": [
             "docs/v0/architecture/digital_life_macro_architecture_v0.md",
             "docs/v0/shared_contracts/first_activation_protocol.md",
+        ],
+    },
+    "docs/v0/implementation_architecture/README.md": {
+        "role": "implementation_architecture_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/README.md",
+            "docs/v0/code_framework/README.md",
+        ],
+    },
+    "docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md": {
+        "role": "runtime_organ_interface_blueprint",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_framework/15_cross_layer_shared_object_contract.md",
+            "docs/v0/code_framework/19_code_tree_package_brain_contract.md",
+        ],
+    },
+    "docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md": {
+        "role": "turn_cycle_lifecycle_contract",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/process_contracts/terminal_life_loop_engineering_contract.md",
+            "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md",
+        ],
+    },
+    "docs/v0/implementation_architecture/03_module_authoring_traceability_protocol.md": {
+        "role": "module_authoring_traceability_protocol",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md",
+            "docs/v0/code_framework/19_code_tree_package_brain_contract.md",
         ],
     },
     "docs/v0/shared_contracts/life_state_store_v0_schema.md": {
@@ -810,7 +864,7 @@ def _build_report(
         "source_doc_refs": [
             "docs/258_linear_chain_closure_and_v0_contract_transition.md",
             "docs/v0/README.md",
-            "docs/v0/v0_implementation_index.md",
+            "docs/v0/entry/v0_implementation_index.md",
             "docs/v0/slice_contracts/s11_v0_contract_coverage_engineering_contract.md",
         ],
         "readme_block_refs": READ_ME_BLOCK_REFS,

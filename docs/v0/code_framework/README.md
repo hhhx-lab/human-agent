@@ -9,14 +9,23 @@
 3. 每个包要承载哪些状态、report、receipt、测试和 gate。
 4. 后续工程回合怎样保证 `00-258 -> v0 合同 -> 代码包 -> runtime 产物` 不断链。
 
+如果读完这柜之后，下一步已经是“真的要写代码，而不是继续补矩阵”，就接着进入：
+
+- `docs/v0/implementation_architecture/README.md`
+- `docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md`
+- `docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md`
+- `docs/v0/implementation_architecture/03_module_authoring_traceability_protocol.md`
+
+也就是说，`code_framework/` 解决“要建什么”，`implementation_architecture/` 解决“真实一回合怎么流、每个器官怎么接、每个模块怎么留痕”。
+
 ## 这柜文档怎么读
 
 如果这一轮不是补某个单独 slice，而是补“整个代码框架应该怎么搭”，先按下面顺序读：
 
 1. `docs/v0/README.md`
-2. `docs/v0/v0_implementation_index.md`
-3. `docs/v0/v0_delivery_status_board.md`
-4. `docs/v0/v0_module_execution_catalog.md`
+2. `docs/v0/entry/v0_implementation_index.md`
+3. `docs/v0/entry/v0_delivery_status_board.md`
+4. `docs/v0/entry/v0_module_execution_catalog.md`
 5. 本文件
 6. `01_life_layer_implementation_blueprint.md`
 7. `02_brain_region_to_code_package_mapping.md`

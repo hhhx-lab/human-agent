@@ -56,11 +56,11 @@ digital life
 如果只是为了从 v0 直接继续落代码，先抓这 20 份就够了：
 
 1. `docs/v0/README.md`
-2. `docs/v0/v0_implementation_index.md`
-3. `docs/v0/v0_delivery_status_board.md`
-4. `docs/v0/v0_module_execution_catalog.md`
-5. `docs/v0/readme_block_engineering_realization_v0.md`
-6. `docs/v0/0_to_257_engineering_utilization_map.md`
+2. `docs/v0/entry/v0_implementation_index.md`
+3. `docs/v0/entry/v0_delivery_status_board.md`
+4. `docs/v0/entry/v0_module_execution_catalog.md`
+5. `docs/v0/mapping/readme_block_engineering_realization_v0.md`
+6. `docs/v0/mapping/0_to_257_engineering_utilization_map.md`
 7. `docs/v0/shared_contracts/first_activation_protocol.md`
 8. `docs/v0/shared_contracts/runner_cli_report_contract.md`
 9. `docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md`
@@ -88,7 +88,7 @@ digital life
 |---|---|---|---|
 | `DocCorpusIngestor` | 理论摄取与方向记忆 | `00`、全部 `01*`、`02-13`、`142`、`145`、`151`、`258`、`docs/v0/slice_contracts/doc_corpus_ingestor_v0_contract.md`、`docs/v0/*` | `doc_carrier_index.json`、`doc_dependency_graph.json`、source authority report、doc ingestion receipt |
 | `DirectionLockKernel` | 方向锁与断联恢复 | `构思.md`、`00`、`13`、`14`、`16`、`91`、`100`、`119`、`122`、`140`、`170`、`258`、`docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md` | `direction_lock.json`、`resume_anchor_chain.json`、`slice_permission.json`、direction lock report、direction receipt |
-| `SourceAuthorityRegistry` | 权威来源层与机制证据 | `00`、全部 `01*`、`142`、`145`、`151`、`258`、`docs/v0/v0_implementation_index.md`、`docs/v0/slice_contracts/s01_source_authority_engineering_contract.md` | `authority_registry.json`、`mechanism_evidence_map.json`、`doc_authority_carrier_patch_index.json`、source authority report、authority receipt |
+| `SourceAuthorityRegistry` | 权威来源层与机制证据 | `00`、全部 `01*`、`142`、`145`、`151`、`258`、`docs/v0/entry/v0_implementation_index.md`、`docs/v0/slice_contracts/s01_source_authority_engineering_contract.md` | `authority_registry.json`、`mechanism_evidence_map.json`、`doc_authority_carrier_patch_index.json`、source authority report、authority receipt |
 | `BrainRegionNetworkRuntime` | 脑区、连接组、大尺度网络 | `01o`、`01p`、`02`、`03`、`10`、`11`、`13`、`14` | `network_state.json`、brain region graph |
 | `BodySignalRuntime` | 内感受、稳态、信号介质 | `01l`、`01n`、`01v`、`04`、`11`、`18`、`37` | `body_state_vector.json`、signal media frame |
 | `MemoryEngramRuntime` | 记忆、engram、巩固 | `01q`、`05`、`17`、`21`、`25`、`29`、`41`、`55` | `memory_index.json`、replay cue bundle |
@@ -102,7 +102,7 @@ digital life
 | `BirthReadinessRuntime` | 出生准备度九项目标 | `143`、`146`、`149`、`152`、`171`、`174`、`docs/v0/shared_contracts/birth_readiness_v0_contract.md` | `life_target_status.json`、readiness report |
 | `RunnerCliRuntime` | 命令、report、receipt | `35`、`53`、`62`、`118`、`123`、`131`、`136`、`155`、`158-168`、`docs/v0/shared_contracts/runner_cli_report_contract.md` | `life-v0` CLI、run report、receipt |
 | `ActivationGrowthRuntime` | 激活、观察、巩固、成长 | `181-204`、`205-257`、`docs/v0/shared_contracts/first_activation_protocol.md` | activation report、consolidation seed |
-| `ReadmeBlockEngineeringRuntime` | README 模块分块与工程 slice | `docs/README.md`、`00-258`、`docs/v0/readme_block_engineering_realization_v0.md` | block coverage report、engineering slice report |
+| `ReadmeBlockEngineeringRuntime` | README 模块分块与工程 slice | `docs/README.md`、`00-258`、`docs/v0/mapping/readme_block_engineering_realization_v0.md` | block coverage report、engineering slice report |
 | `DigitalLifeMacroArchitectureRuntime` | 三重身体、十二主体系统和内部 bus | `02-13`、`85-101`、`143`、`146`、`149`、`152`、`171`、`205-257`、`docs/v0/architecture/digital_life_macro_architecture_v0.md` | macro architecture report、subject system report |
 | `ComputerPeripheralRuntime` | 电脑外周与世界接触 | `12`、`15`、`20`、`24`、`28`、`32`、`89`、`docs/v0/references/current_agent_shell_reference_2026.md` | world contact report、peripheral action envelope |
 
@@ -120,10 +120,10 @@ digital life
 - `14-16` 跨模块地图、当前框架差距与生成入口
 - `258_linear_chain_closure_and_v0_contract_transition.md`
 - `docs/v0/README.md`
-- `docs/v0/v0_implementation_index.md`
-- `docs/v0/v0_module_execution_catalog.md`
-- `docs/v0/0_to_257_engineering_utilization_map.md`
-- `docs/v0/readme_block_engineering_realization_v0.md`
+- `docs/v0/entry/v0_implementation_index.md`
+- `docs/v0/entry/v0_module_execution_catalog.md`
+- `docs/v0/mapping/0_to_257_engineering_utilization_map.md`
+- `docs/v0/mapping/readme_block_engineering_realization_v0.md`
 - `docs/v0/architecture/digital_life_macro_architecture_v0.md`
 - `docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md`
 - `docs/v0/slice_contracts/doc_corpus_ingestor_v0_contract.md`
@@ -163,7 +163,7 @@ life-v0 ingest-docs --docs docs --out runtime/docs --reports runtime/reports/lat
 - `docs/16_digital_life_gap_register.md`
 - `docs/258_linear_chain_closure_and_v0_contract_transition.md`
 - `docs/v0/README.md`
-- `docs/v0/readme_block_engineering_realization_v0.md`
+- `docs/v0/mapping/readme_block_engineering_realization_v0.md`
 - `docs/v0/architecture/digital_life_macro_architecture_v0.md`
 - `docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md`
 - `runtime/docs/doc_carrier_index.json`
@@ -211,7 +211,7 @@ life-v0 build-direction-lock --docs docs --doc-index runtime/docs/doc_carrier_in
 - `docs/145_life_reality_02_to_13_authority_rewrite_execution_plan.md`
 - `docs/151_life_reality_authority_schema_cross_file_checker_plan.md`
 - `docs/258_linear_chain_closure_and_v0_contract_transition.md`
-- `docs/v0/v0_implementation_index.md`
+- `docs/v0/entry/v0_implementation_index.md`
 - `docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md`
 - `docs/v0/slice_contracts/s01_source_authority_engineering_contract.md`
 - `runtime/state/direction/direction_lock.json`
@@ -477,8 +477,8 @@ tests/
 2. `docs/16_digital_life_gap_register.md`
 3. `docs/258_linear_chain_closure_and_v0_contract_transition.md`
 4. `docs/v0/architecture/first_activation_engineering_roadmap.md`
-5. `docs/v0/v0_module_execution_catalog.md`
-6. `docs/v0/0_to_257_engineering_utilization_map.md`
+5. `docs/v0/entry/v0_module_execution_catalog.md`
+6. `docs/v0/mapping/0_to_257_engineering_utilization_map.md`
 7. 最新 `runtime/reports/latest/digest.json`
 8. 最新 git state
 

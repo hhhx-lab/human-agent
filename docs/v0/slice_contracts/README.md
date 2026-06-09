@@ -21,4 +21,4 @@
 ## 使用原则
 
 - 一轮实现只拿当前 slice 的合同，不要同时把多个 slice 当成当前工作面。
-- 进入单个 slice 前，先从 `docs/v0/v0_module_execution_catalog.md` 确认它是不是这轮真正前沿。
+- 进入单个 slice 前，先从 `docs/v0/entry/v0_module_execution_catalog.md` 确认它是不是这轮真正前沿。

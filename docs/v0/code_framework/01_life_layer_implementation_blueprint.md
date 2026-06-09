@@ -9,9 +9,9 @@
 先读：
 
 1. `docs/v0/README.md`
-2. `docs/v0/v0_implementation_index.md`
-3. `docs/v0/v0_delivery_status_board.md`
-4. `docs/v0/v0_module_execution_catalog.md`
+2. `docs/v0/entry/v0_implementation_index.md`
+3. `docs/v0/entry/v0_delivery_status_board.md`
+4. `docs/v0/entry/v0_module_execution_catalog.md`
 5. `docs/v0/code_framework/README.md`
 6. `docs/v0/architecture/digital_life_macro_architecture_v0.md`
 7. 本文件

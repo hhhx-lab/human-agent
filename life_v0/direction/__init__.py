@@ -37,7 +37,7 @@ DIRECT_SOURCE_REFS = {
     "life_boundary": "docs/91_life_reality_generation_boundary_principles.md",
     "linear_closure": "docs/258_linear_chain_closure_and_v0_contract_transition.md",
     "v0_readme": "docs/v0/README.md",
-    "v0_index": "docs/v0/v0_implementation_index.md",
+    "v0_index": "docs/v0/entry/v0_implementation_index.md",
     "s00_contract": "docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md",
 }
 
@@ -157,10 +157,10 @@ ANCHORS = [
 RESUME_ORDER = [
     "docs/258_linear_chain_closure_and_v0_contract_transition.md",
     "docs/v0/README.md",
-    "docs/v0/v0_implementation_index.md",
+    "docs/v0/entry/v0_implementation_index.md",
     "docs/v0/architecture/first_activation_engineering_roadmap.md",
-    "docs/v0/0_to_257_engineering_utilization_map.md",
-    "docs/v0/readme_block_engineering_realization_v0.md",
+    "docs/v0/mapping/0_to_257_engineering_utilization_map.md",
+    "docs/v0/mapping/readme_block_engineering_realization_v0.md",
     "docs/v0/architecture/digital_life_macro_architecture_v0.md",
     "docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md",
     "docs/v0/slice_contracts/s01_source_authority_engineering_contract.md",
@@ -335,7 +335,7 @@ def _coverage_blockers(
 
     required_v0_refs = {
         "docs/v0/README.md",
-        "docs/v0/v0_implementation_index.md",
+        "docs/v0/entry/v0_implementation_index.md",
         "docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md",
         "docs/v0/slice_contracts/s01_source_authority_engineering_contract.md",
         "docs/v0/slice_contracts/doc_corpus_ingestor_v0_contract.md",

@@ -97,7 +97,7 @@ class DirectionLockTests(unittest.TestCase):
             },
             anchor_ids,
         )
-        self.assertIn("docs/v0/v0_implementation_index.md", resume_chain["resume_order"])
+        self.assertIn("docs/v0/entry/v0_implementation_index.md", resume_chain["resume_order"])
         self.assertIn("docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md", resume_chain["resume_order"])
 
         self.assertEqual(continuity_refs["schema_version"], "continuity_refs_v0")

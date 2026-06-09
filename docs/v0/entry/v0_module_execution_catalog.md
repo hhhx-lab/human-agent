@@ -2,7 +2,7 @@
 
 本文档负责把 `docs/v0/*` 收束成可以直接开工的模块目录。
 
-它不负责解释 v0 为什么存在，那是 `README.md` 的工作；它也不负责表达当前最远命令位，那是 `v0_delivery_status_board.md` 的工作。本文档只负责告诉后续开发：
+它不负责解释 v0 为什么存在，那是 `README.md` 的工作；它也不负责表达当前最远命令位，那是 `entry/v0_delivery_status_board.md` 的工作。本文档只负责告诉后续开发：
 
 1. 当前要做哪个模块。
 2. 这个模块要配哪一包 v0 文档。
@@ -27,11 +27,11 @@
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_implementation_index.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
-  -> docs/v0/readme_block_engineering_realization_v0.md
-  -> docs/v0/0_to_257_engineering_utilization_map.md
+  -> docs/v0/entry/v0_implementation_index.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
+  -> docs/v0/mapping/readme_block_engineering_realization_v0.md
+  -> docs/v0/mapping/0_to_257_engineering_utilization_map.md
 ```
 
 然后再进入你这一轮对应的模块包。
@@ -71,13 +71,17 @@ docs/v0/code_framework/README.md
   -> docs/v0/code_framework/19_code_tree_package_brain_contract.md
   -> docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md
   -> docs/v0/code_framework/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md
+  -> docs/v0/implementation_architecture/README.md
+  -> docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md
+  -> docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md
+  -> docs/v0/implementation_architecture/03_module_authoring_traceability_protocol.md
 ```
 
 ## 三步开工法
 
 后续开工时，优先按这三步走：
 
-1. 先用 `v0_delivery_status_board.md` 判断当前是主体补厚，还是链尾/壳层/常驻进程补厚。
+1. 先用 `entry/v0_delivery_status_board.md` 判断当前是主体补厚，还是链尾/壳层/常驻进程补厚。
 2. 再回本文件找到对应那一行，把 `v0` 文档、`00-258` 母体文档、代码入口、测试入口和 runtime 产物一起带上。
 3. 真正开写前，再打开当前合同原文，不要只看矩阵表格。
 
@@ -91,10 +95,10 @@ docs/v0/code_framework/README.md
 
 | 变化 | 更新位置 |
 |---|---|
-| 当前最优先前沿变化，但模块包本身没变 | `v0_delivery_status_board.md` |
+| 当前最优先前沿变化，但模块包本身没变 | `entry/v0_delivery_status_board.md` |
 | 某模块需要带的文档、代码、测试或 runtime 产物变化 | 本文件 |
 | 某个合同字段或 gate 变化 | 对应合同文件 |
-| `00-258` 理论映射变化 | `readme_block_engineering_realization_v0.md`、`0_to_257_engineering_utilization_map.md` |
+| `00-258` 理论映射变化 | `mapping/readme_block_engineering_realization_v0.md`、`mapping/0_to_257_engineering_utilization_map.md` |
 
 这样做的目的，是让本文件始终保持“拿起就能开工”，不被别的信息淹掉。
 
@@ -140,7 +144,7 @@ docs/v0/code_framework/README.md
 | `S09_SCHEMA_RUNNER_CODE` | `runner_cli_report_contract.md`、`s09_schema_runner_code_engineering_contract.md` | `102-180` | `life_v0/schema_runner/__init__.py`、`life_v0/cli.py` | `tests/slices/test_schema_runner.py` | `runtime/state/schema_runner/*` |
 | `S06_LIFE_SUPPORT_DEVELOPMENT` | `life_state_store_v0_schema.md`、`s06_life_support_development_engineering_contract.md` | `37-40`、`92-93`、`181-204` | `life_v0/body/__init__.py`、`life_v0/growth/__init__.py`、`life_v0/defense/__init__.py` | `tests/slices/test_life_support.py` | `runtime/state/body/*`、`runtime/state/growth/*`、`runtime/state/defense/*` |
 | `S10_RUNTIME_GROWTH_RECONSOLIDATION` | `runtime_v0_architecture.md`、`first_activation_protocol.md`、`runner_cli_report_contract.md`、`s10_runtime_growth_reconsolidation_engineering_contract.md` | `181-257` | `life_v0/growth/__init__.py`、`life_v0/replay/__init__.py`、`life_v0/archive/__init__.py`、`life_v0/activation/__init__.py`、`life_v0/reporting/__init__.py` | `tests/bridges/test_runtime_growth.py`、`tests/bridges/test_replay_shadow.py`、`tests/bridges/test_growth_archive.py`、`tests/bridges/test_first_activation_preflight.py`、`tests/bridges/test_emit_report.py` | `runtime/reports/latest/run_report.json`、`growth_archive_report.json` |
-| `S11_V0_ENGINEERING_CONTRACTS` | `v0_implementation_index.md`、`v0_delivery_status_board.md`、`v0_module_execution_catalog.md`、`s11_v0_contract_coverage_engineering_contract.md` | `258`、全部 `docs/v0/*`、P0-S10 report/receipt | `life_v0/contracts/__init__.py` | `tests/contracts/test_v0_contracts.py` | `runtime/state/contracts/*`、`v0_contract_coverage_report.json` |
+| `S11_V0_ENGINEERING_CONTRACTS` | `entry/v0_implementation_index.md`、`entry/v0_delivery_status_board.md`、`entry/v0_module_execution_catalog.md`、`s11_v0_contract_coverage_engineering_contract.md` | `258`、全部 `docs/v0/*`、P0-S10 report/receipt | `life_v0/contracts/__init__.py` | `tests/contracts/test_v0_contracts.py` | `runtime/state/contracts/*`、`v0_contract_coverage_report.json` |
 
 ## 当前链尾桥接模块矩阵
 
@@ -173,9 +177,9 @@ docs/v0/code_framework/README.md
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_implementation_index.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/entry/v0_implementation_index.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md
   -> docs/v0/shared_contracts/life_state_store_v0_schema.md
   -> docs/v0/slice_contracts/s06_life_support_development_engineering_contract.md
@@ -249,9 +253,9 @@ Queue D 一轮站稳后，紧接着进入 Queue E，不绕回链尾。
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_implementation_index.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/entry/v0_implementation_index.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md
   -> docs/v0/slice_contracts/s03_direction_life_membrane_engineering_contract.md
   -> docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md
@@ -302,7 +306,7 @@ life_v0/membrane/candidate_arena.py
 
 | 阶段 | 当前要解决什么 | 必读 v0 文档 | 必回读理论母体 | 主代码落点 | 主要验证 / 运行证据 | 进入下一段之前必须满足 |
 |---|---|---|---|---|---|---|
-| `Phase 0` 文档闭合加固 | 先把 `00-258` 的理论闭合判断、`v0` 入口、Queue 合同、代码树合同写到足够硬，防止后面代码阶段重新跑偏 | `README.md`、`v0_implementation_index.md`、`v0_delivery_status_board.md`、本文件、`architecture/theory_closure_and_engineering_readiness_audit.md`、`code_framework/11-21` | `构思.md`、`00`、`02-13`、`85-101`、`181-258` | `docs/v0/**` | `tests/contracts/test_v0_contracts.py`、`v0_contract_coverage_report.json` | 所有当前活跃模块都能回链到明确理论母体、代码包、测试入口和 runtime 产物 |
+| `Phase 0` 文档闭合加固 | 先把 `00-258` 的理论闭合判断、`v0` 入口、Queue 合同、代码树合同写到足够硬，防止后面代码阶段重新跑偏 | `README.md`、`entry/v0_implementation_index.md`、`entry/v0_delivery_status_board.md`、本文件、`architecture/theory_closure_and_engineering_readiness_audit.md`、`code_framework/11-21` | `构思.md`、`00`、`02-13`、`85-101`、`181-258` | `docs/v0/**` | `tests/contracts/test_v0_contracts.py`、`v0_contract_coverage_report.json` | 所有当前活跃模块都能回链到明确理论母体、代码包、测试入口和 runtime 产物 |
 | `Phase 1` Queue D | 把身体、情绪、梦境、成长从“已有第一轮器官”继续压成稳定对象链和 gate | `s06_*`、`s10_*`、`code_framework/06`、`08`、`13`、`15`、`18` | `07`、`08`、`18`、`19`、`37`、`39`、`92`、`93`、`95` | `life_v0/body/`、`life_v0/dream/`、`life_v0/growth/` | `tests/slices/test_life_support.py`、`tests/bridges/test_runtime_growth.py`、`runtime/state/body/*`、`runtime/state/dream/*`、`runtime/state/growth/*` | `CoreAffectVector`、`NeedStateVector`、`DreamExperienceWindow`、`PlasticityWindow`、`GrowthPatchCandidateQueue` 全部进入稳定 state/report 路径 |
 | `Phase 2` Queue E | 把候选行动、go/no-go、world contact、side effect、validation、counterfactual 比较补成稳定行为-验证-逻辑链 | `s03_*`、`s05_*`、`s09_*`、`code_framework/09`、`13`、`15`、`20` | `06`、`20`、`22`、`29-36`、`49-84`、`94`、`98`、`102-118` | `life_v0/membrane/`、`life_v0/validators/`、`life_v0/schema_runner/` | `tests/slices/test_life_membrane.py`、`test_validation_membrane.py`、`test_schema_runner.py`、`runtime/state/membrane/*`、`runtime/state/validation/*`、`runtime/state/schema_runner/*` | `ActionCandidateSet`、`GoNoGoDecision`、`WorldContactDecision`、`SideEffectReview`、`CounterfactualTrace` 全部具备稳定文件器官与 report/gate |
 | `Phase 3` Queue B + Queue A 外层补厚 | 让 process supervisor 真正消费 D/E/F/A 对象，把语言回合、等待心跳、关系写回、恢复治理接成持续存在层 | `process_contracts/digital_life_process_supervisor_engineering_contract.md`、`first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`code_framework/04`、`07`、`08`、`14`、`16` | `09`、`20`、`86`、`89`、`90`、`96`、`101` | `life_v0/process_supervisor/`、`life_v0/terminal_turn/`、`life_v0/terminal_loop/`、`life_v0/language/` | `tests/process/test_persistent_digital_life_process.py`、`tests/bridges/test_first_terminal_turn.py`、`test_terminal_life_loop.py`、`digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` | waiting heartbeat、incident recovery、relaunch recovery、language turn writeback、relationship continuity 全部显式消费 D/E/F 对象链 |
@@ -323,9 +327,9 @@ life_v0/membrane/candidate_arena.py
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_implementation_index.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/entry/v0_implementation_index.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/shared_contracts/first_activation_protocol.md
   -> docs/v0/shared_contracts/runner_cli_report_contract.md
   -> docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md
@@ -495,4 +499,4 @@ docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md
 3. 某个模块的代码入口、测试入口或关键 runtime 产物变化。
 4. 当前最推荐开工包的组成发生变化。
 
-如果只是“现在最该先做哪个模块”变了，而这一行的读包和入口没变，更新 `v0_delivery_status_board.md` 就够了。
+如果只是“现在最该先做哪个模块”变了，而这一行的读包和入口没变，更新 `entry/v0_delivery_status_board.md` 就够了。

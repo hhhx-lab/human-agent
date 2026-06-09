@@ -4,7 +4,7 @@
 
 - `tests/slices/`：P0 与 `S00-S11` 主体 slice 测试。
 - `tests/bridges/`：first activation、replay、archive、report、terminal loop 等桥接链测试。
-- `tests/process/`：repo-local shell、`digital` 入口、常驻进程测试。
+- `tests/process/`：repo-local shell、`digital` 入口、可安装命令面、常驻进程测试。
 - `tests/contracts/`：v0 合同覆盖与工程回链测试。
 
 每个子目录现在各自带一个 `README.md`，只解释这一柜测试在验证哪一层，避免重新翻整仓库文件名。

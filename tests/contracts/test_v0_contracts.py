@@ -79,6 +79,21 @@ class V0ContractCoverageTests(unittest.TestCase):
 
         self.assertEqual(contract_index["schema_version"], "v0_contract_file_index_v0")
         self.assertIn("docs/v0/README.md", contract_index["files"])
+        self.assertIn("docs/v0/entry/README.md", contract_index["files"])
+        self.assertIn("docs/v0/mapping/README.md", contract_index["files"])
+        self.assertIn("docs/v0/implementation_architecture/README.md", contract_index["files"])
+        self.assertIn(
+            "docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/implementation_architecture/03_module_authoring_traceability_protocol.md",
+            contract_index["files"],
+        )
         self.assertIn("docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md", contract_index["files"])
         self.assertIn("docs/v0/slice_contracts/s11_v0_contract_coverage_engineering_contract.md", contract_index["files"])
 

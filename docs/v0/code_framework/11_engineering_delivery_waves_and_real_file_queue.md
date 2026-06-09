@@ -12,10 +12,10 @@
 这份文档只在下面两种场景打开：
 
 1. 已经确认这一轮要继续补 `life_v0/` 真代码，而不是继续扩写理论总论。
-2. 已经读过 `docs/v0/README.md`、`v0_implementation_index.md`、`v0_delivery_status_board.md`、`v0_module_execution_catalog.md` 和 `code_framework/01-10`，现在要把“下一轮代码该怎么切”压成明确波次。
+2. 已经读过 `docs/v0/README.md`、`entry/v0_implementation_index.md`、`entry/v0_delivery_status_board.md`、`entry/v0_module_execution_catalog.md` 和 `code_framework/01-10`，现在要把“下一轮代码该怎么切”压成明确波次。
 
-如果当前还没确认要改哪个层，先回 `v0_delivery_status_board.md`。
-如果当前还没确认模块读包，先回 `v0_module_execution_catalog.md`。
+如果当前还没确认要改哪个层，先回 `entry/v0_delivery_status_board.md`。
+如果当前还没确认模块读包，先回 `entry/v0_module_execution_catalog.md`。
 如果当前只是补某个 slice 合同，不必先读本文件。
 
 ## 和代码框架柜的关系
@@ -82,8 +82,8 @@
 
 每次拆分后，至少同步下面三类文档：
 
-1. `v0_delivery_status_board.md`
-2. `v0_module_execution_catalog.md`
+1. `entry/v0_delivery_status_board.md`
+2. `entry/v0_module_execution_catalog.md`
 3. 对应 `code_framework/*.md` 或模块合同
 
 这样后续断联恢复时，不会把旧文件结构当成当前现实。
@@ -152,8 +152,8 @@
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md
   -> docs/v0/slice_contracts/s04_state_object_store_engineering_contract.md
   -> docs/v0/shared_contracts/life_state_store_v0_schema.md
@@ -214,8 +214,8 @@ python -m unittest tests.contracts.test_v0_contracts
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md
   -> docs/v0/slice_contracts/s08_life_target_runtimes_engineering_contract.md
   -> docs/v0/shared_contracts/birth_readiness_v0_contract.md
@@ -259,8 +259,8 @@ BodyRhythmPulse
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/slice_contracts/s06_life_support_development_engineering_contract.md
   -> docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md
   -> docs/v0/code_framework/18_queue_d_body_dream_growth_implementation_contract.md
@@ -288,8 +288,8 @@ python -m unittest tests.bridges.test_growth_archive
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/slice_contracts/s03_direction_life_membrane_engineering_contract.md
   -> docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md
   -> docs/v0/slice_contracts/s09_schema_runner_code_engineering_contract.md
@@ -318,8 +318,8 @@ python -m unittest tests.process.test_digital_life_shell_command
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md
   -> docs/v0/process_contracts/terminal_life_loop_engineering_contract.md
   -> docs/v0/code_framework/16_queue_b_process_supervisor_implementation_contract.md
@@ -351,8 +351,8 @@ python -m unittest tests.bridges.test_terminal_life_loop
 
 ```text
 docs/v0/README.md
-  -> docs/v0/v0_delivery_status_board.md
-  -> docs/v0/v0_module_execution_catalog.md
+  -> docs/v0/entry/v0_delivery_status_board.md
+  -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md
   -> docs/v0/code_framework/14_queue_a_language_percept_semantic_map_implementation_contract.md
   -> docs/09_language_symbolic_top_layer.md
@@ -375,7 +375,7 @@ python -m unittest tests.bridges.test_first_terminal_turn
 1. 在 `Wave C` 里先落 `life_state.py`
 2. 再落 `engram_index.py`
 3. 跑 `tests.slices.test_state_store` 和 `tests.slices.test_neural_life_core`
-4. 回写 `v0_delivery_status_board.md` 与 `v0_module_execution_catalog.md`
+4. 回写 `entry/v0_delivery_status_board.md` 与 `entry/v0_module_execution_catalog.md`
 5. 再进入 `Wave F` 的 `direction_lock.py / continuity_refs.py`
 
 这样做的原因是：

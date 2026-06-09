@@ -75,7 +75,7 @@ P0 不读取 runtime 产物作为理论来源。runtime 产物只能作为输出
 2. 文件名关键词补充。
 3. 文档标题补充。
 4. 文档正文关键词补充。
-5. `0_to_257_engineering_utilization_map.md` 的分组规则兜底。
+5. `mapping/0_to_257_engineering_utilization_map.md` 的分组规则兜底。
 
 若一份文档只被兜底分类，`classification_confidence` 为 `inferred`。若找不到 carrier，则 `doc_carrier_gate` 返回 `blocked`。
 

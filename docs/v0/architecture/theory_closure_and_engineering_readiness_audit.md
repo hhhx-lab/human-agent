@@ -216,8 +216,8 @@
 | 文档 | 只回答什么 |
 |---|---|
 | `theory_closure_and_engineering_readiness_audit.md` | `00-257` 是否还缺基础理论，以及当前差距究竟在理论还是工程 |
-| `readme_block_engineering_realization_v0.md` | 这些理论分属哪个 README block 和 engineering slice |
-| `0_to_257_engineering_utilization_map.md` | 每份文档最终进入哪个 runtime carrier |
+| `mapping/readme_block_engineering_realization_v0.md` | 这些理论分属哪个 README block 和 engineering slice |
+| `mapping/0_to_257_engineering_utilization_map.md` | 每份文档最终进入哪个 runtime carrier |
 | `code_framework/12_full_life_layer_delivery_matrix.md` | 每一层下一轮具体改哪些包、哪些文件、哪些状态和测试 |
 
 所以，本文件只负责判定“该不该继续补理论”和“能不能直接进代码”，不替代其他 v0 映射或合同文档。
