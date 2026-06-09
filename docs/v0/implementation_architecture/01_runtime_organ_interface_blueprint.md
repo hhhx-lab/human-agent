@@ -90,7 +90,7 @@
 | 主要输出 | `RelationTurnFrame`、`ExpressionPlan`、language/relationship state、session envelope |
 | 必写 runtime | `runtime/state/language/*`、`runtime/state/relationship/*`、`session_envelope.json`、`context_accumulation_window.json`、`turn_transition_trace.json` |
 | 必守测试 | `tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py` |
-| 下一步 | terminal-turn 与 terminal-loop 的首轮核心器官已经闭合；下一步转向 `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py`，并把更厚的 loop continuity / resident supervision 接进 `process_supervisor/` |
+| 下一步 | terminal-turn 与 terminal-loop 的首轮核心器官已经闭合，`relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` 也已落成；当前前沿转向把这批长期语言对象更深接进 `process_supervisor/response_surface.py`、resident supervision 与 terminal loop continuity |
 
 ### 5. 记忆、自传与关系真值层
 

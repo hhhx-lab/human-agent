@@ -78,9 +78,9 @@ Python 3 作为主体语言
 | 必读 | `16_queue_b_process_supervisor_implementation_contract.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`04`、`07`、`08` playbooks |
 | 主包 | `process_supervisor/`、`language/`、`terminal_turn/`、`terminal_loop/` |
 | 已落核心器官 | `idle_strategy.py`、`resident_supervision.py`、`live_turn_cycle.py`、`process_session_loop.py`、`persistent_process.py` |
-| 关键待补文件 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` |
+| 已落关键文件 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` |
 | 最低测试 | `tests/process/test_persistent_digital_life_process.py`、`tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_terminal_life_loop.py` |
-| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance snapshot/report 进入 process closeout 主链，关系时间线与承诺表达进入长期语言链 |
+| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链，下一步转向让 process / terminal 更深消费这批对象 |
 
 ### Stage 4: Queue C / Queue F 维护性深化
 

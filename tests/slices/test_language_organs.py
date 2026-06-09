@@ -362,6 +362,127 @@ class LanguageOrgansTests(unittest.TestCase):
             "repair_commitment_shared_language",
         )
 
+    def test_relationship_timeline_commitment_expression_and_apology_repair_organs(self):
+        from life_v0.language.apology_repair_language import build_apology_repair_language_trace
+        from life_v0.language.commitment_expression import build_commitment_expression_plan
+        from life_v0.language.commitment_repair import build_commitment_repair_language_index
+        from life_v0.language.dialogue_log import build_dialogue_turn_log_entries
+        from life_v0.language.relationship_graph import build_relationship_subject_graph
+        from life_v0.language.relationship_timeline import build_relationship_timeline
+        from life_v0.state_store.commitment_truth import build_commitment_truth_state, build_responsibility_ledger
+        from life_v0.state_store.relationship_memory import build_relationship_memory
+
+        source_doc_refs = [
+            "docs/96_real_relationship_longitudinal_timeline.md",
+            "docs/101_relationship_timeline_json_schema_and_fixture_bundle.md",
+        ]
+        responsibility_loop_state = {
+            "repair_obligation_refs": [
+                "runtime/state/membrane/responsibility_repair_boundary.json#repair_obligation",
+                "repair-desire-001",
+            ],
+            "regret_pressure_candidates": [
+                {
+                    "regret_pressure_id": "regret-pressure-001",
+                    "pain_signal_refs": ["runtime/state/body/core_affect_vector.json#pain_pressure"],
+                }
+            ],
+            "responsibility_attribution_events": [
+                {"responsibility_event_id": "responsibility-001"},
+            ],
+            "counterfactual_repair_frames": [
+                {"counterfactual_id": "counterfactual-repair-001"},
+            ],
+            "relationship_consequence_refs": [
+                "runtime/state/relationship/relationship_consequence_trace.json#candidate",
+            ],
+        }
+        commitment_truth_state = build_commitment_truth_state(
+            run_id="organs-test",
+            generated_at="2026-06-10T00:00:00+00:00",
+        )
+        responsibility_ledger = build_responsibility_ledger(
+            run_id="organs-test",
+            generated_at="2026-06-10T00:00:00+00:00",
+        )
+        relationship_graph = build_relationship_subject_graph(
+            run_id="organs-test",
+            generated_at="2026-06-10T00:00:00+00:00",
+            source_doc_refs=source_doc_refs,
+        )
+        relationship_memory = build_relationship_memory(
+            run_id="organs-test",
+            generated_at="2026-06-10T00:00:00+00:00",
+            commitment_truth_state=commitment_truth_state,
+            responsibility_ledger=responsibility_ledger,
+        )
+        dialogue_entries = build_dialogue_turn_log_entries(
+            run_id="organs-test",
+            generated_at="2026-06-10T00:00:00+00:00",
+            source_doc_refs=source_doc_refs,
+        )
+        commitment_repair_index = build_commitment_repair_language_index(
+            run_id="organs-test",
+            generated_at="2026-06-10T00:00:00+00:00",
+            responsibility_loop_state=responsibility_loop_state,
+            source_doc_refs=source_doc_refs,
+        )
+        relationship_timeline = build_relationship_timeline(
+            run_id="organs-test",
+            generated_at="2026-06-10T00:00:00+00:00",
+            relationship_graph=relationship_graph,
+            relationship_memory=relationship_memory,
+            commitment_truth_state=commitment_truth_state,
+            responsibility_ledger=responsibility_ledger,
+            dialogue_turn_entries=dialogue_entries,
+            source_doc_refs=source_doc_refs,
+        )
+        commitment_expression_plan = build_commitment_expression_plan(
+            run_id="organs-test",
+            generated_at="2026-06-10T00:00:00+00:00",
+            expression_plan={
+                "semantic_goal": "repair_commitment_shared_language",
+                "repair_pressure": 3,
+                "responsibility_pressure": 3,
+                "delay_or_release_decision": "delay_for_clarification",
+            },
+            commitment_repair_index=commitment_repair_index,
+            commitment_truth_state=commitment_truth_state,
+            responsibility_ledger=responsibility_ledger,
+            responsibility_loop_state=responsibility_loop_state,
+            relationship_timeline=relationship_timeline,
+            source_doc_refs=source_doc_refs,
+        )
+        apology_repair_language_trace = build_apology_repair_language_trace(
+            run_id="organs-test",
+            generated_at="2026-06-10T00:00:00+00:00",
+            responsibility_loop_state=responsibility_loop_state,
+            relationship_timeline=relationship_timeline,
+            commitment_expression_plan=commitment_expression_plan,
+            source_doc_refs=source_doc_refs,
+        )
+
+        self.assertEqual(relationship_timeline["schema_version"], "relationship_timeline_v0")
+        self.assertEqual(relationship_timeline["status"], "closed")
+        self.assertTrue(relationship_timeline["first_encounter_events"])
+        self.assertTrue(relationship_timeline["commitment_histories"])
+        self.assertTrue(relationship_timeline["relationship_continuity_reports"])
+        self.assertTrue(relationship_timeline["dialogue_turn_refs"])
+
+        self.assertEqual(commitment_expression_plan["schema_version"], "commitment_expression_plan_v0")
+        self.assertEqual(commitment_expression_plan["status"], "closed")
+        self.assertTrue(commitment_expression_plan["language_act_candidates"])
+        self.assertIn("apology", commitment_expression_plan["act_type_order"])
+        self.assertTrue(commitment_expression_plan["repair_obligation_refs"])
+        self.assertTrue(commitment_expression_plan["responsibility_event_refs"])
+
+        self.assertEqual(apology_repair_language_trace["schema_version"], "apology_repair_language_trace_v0")
+        self.assertEqual(apology_repair_language_trace["status"], "closed")
+        self.assertTrue(apology_repair_language_trace["repair_language_moves"])
+        self.assertTrue(apology_repair_language_trace["trigger_regret_refs"])
+        self.assertTrue(apology_repair_language_trace["relationship_injury_refs"])
+        self.assertIn("followup_commitment", apology_repair_language_trace["move_type_order"])
+
 
 if __name__ == "__main__":
     unittest.main()

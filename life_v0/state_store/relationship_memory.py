@@ -50,12 +50,14 @@ def project_relationship_memory(
     *,
     relationship_memory: dict[str, Any],
     relationship_graph: dict[str, Any] | None = None,
+    relationship_timeline: dict[str, Any] | None = None,
     commitment_truth_state: dict[str, Any] | None = None,
     responsibility_ledger: dict[str, Any] | None = None,
     commitment_repair_index: dict[str, Any] | None = None,
     last_contact_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     relationship_graph = relationship_graph or {}
+    relationship_timeline = relationship_timeline or {}
     commitment_truth_state = commitment_truth_state or {}
     responsibility_ledger = responsibility_ledger or {}
     commitment_repair_index = commitment_repair_index or {}
@@ -66,6 +68,7 @@ def project_relationship_memory(
         "repair_history_refs": list(relationship_memory.get("repair_history_refs", [])),
         "last_contact_refs": list(relationship_memory.get("last_contact_refs", [])),
         "responsibility_event_refs": list(relationship_memory.get("responsibility_event_refs", [])),
+        "timeline_refs": list(relationship_memory.get("timeline_refs", [])),
     }
 
     subject_refs = [
@@ -92,6 +95,15 @@ def project_relationship_memory(
     )
     updated["responsibility_event_refs"] = _dedupe(
         updated["responsibility_event_refs"] + list(responsibility_ledger.get("responsibility_event_refs", []))
+    )
+    updated["timeline_refs"] = _dedupe(
+        updated["timeline_refs"]
+        + ["runtime/state/relationship/relationship_timeline.json"]
+        + [
+            f"runtime/state/relationship/relationship_timeline.json#{item.get('relationship_continuity_report_id')}"
+            for item in relationship_timeline.get("relationship_continuity_reports", [])
+            if isinstance(item, dict) and item.get("relationship_continuity_report_id")
+        ]
     )
     return updated
 

@@ -16,8 +16,11 @@ life_v0/language/
   expression_monitor.py
   language_state.py
   relationship_graph.py
+  relationship_timeline.py
   shared_terms.py
   commitment_repair.py
+  commitment_expression.py
+  apology_repair_language.py
   dialogue_log.py
   narrative_trace.py
   dream_gate.py
@@ -35,7 +38,7 @@ life_v0/process_supervisor/dialogue_events.py
 life_v0/process_supervisor/response_surface.py
 ```
 
-## 当前最关键的下一轮文件
+## 当前刚落成的长期器官
 
 ### 1. `relationship_timeline.py`
 
@@ -75,7 +78,9 @@ life_v0/process_supervisor/response_surface.py
 | `ContextAccumulationWindow` | 多回合累积窗口 | `terminal_turn/context_accumulation.py` |
 | `TurnTransitionTrace` | 回合切换轨迹 | `terminal_turn/turn_transition.py` |
 | `DialogueWritebackBundle` | 每一回合结束后的写回包 | `terminal_loop/dialogue_writeback.py` |
-| `RelationshipTimeline` | 长期关系史 | 下一轮新增 |
+| `RelationshipTimeline` | 长期关系史 | `relationship_timeline.py` |
+| `CommitmentExpressionPlan` | 承诺/责任/修复的真实表达候选面 | `commitment_expression.py` |
+| `ApologyRepairLanguageTrace` | 道歉、承担责任、修复跟进语言轨迹 | `apology_repair_language.py` |
 
 当前 `ExpressionPlan` 已经不再只是 repair / replay / dream / growth 的汇总面。只要 `runtime/state/body/body_resource_budget.json` 与 `runtime/state/body/core_affect_vector.json` 存在，它还会显式携带：
 
@@ -105,6 +110,21 @@ life_v0/process_supervisor/response_surface.py
 - `life_state_writeback_refs`
 
 这意味着语言层现在已经不是“听见责任，再说几句修复话术”，而是把责任、后悔、修复与关系记忆真正送入长期连续体和链尾交接单。
+
+这一轮之后，S07 新增了三条真实 runtime 写出：
+
+- `runtime/state/relationship/relationship_timeline.json`
+- `runtime/state/language/commitment_expression_plan.json`
+- `runtime/state/language/apology_repair_language_trace.json`
+
+并且它们不只停在局部文件里，还已经继续接进：
+
+- `runtime/state/memory/relationship_memory.json#timeline_refs`
+- `runtime/state/life_state.json#language_state.relationship_timeline_refs`
+- `runtime/state/life_state.json#language_state.commitment_expression_refs`
+- `runtime/state/life_state.json#language_state.apology_repair_language_refs`
+- `runtime/state/life_state.json#runtime_trace_refs`
+- `runtime/reports/latest/language_relationship_report.json#state_refs`
 
 ## 最低测试与后续新增测试
 

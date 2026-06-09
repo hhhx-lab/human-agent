@@ -81,7 +81,7 @@
 5. `runtime/reports/latest/dialogue_writeback_bundle.json`
 6. `runtime/reports/latest/resumed_external_dialogue_packet.json`
 
-## 语言轴的下一轮文件
+## 语言轴当前已落文件
 
 1. `life_v0/language/relationship_timeline.py`
 2. `life_v0/language/commitment_expression.py`
@@ -103,7 +103,7 @@
 4. `tests/bridges/test_terminal_life_loop.py`
 5. `tests/process/test_persistent_digital_life_process.py`
 
-## 完成定义
+## 当前完成定义
 
 这一层不以“能说话”算完成，而以这五件事算完成：
 
@@ -112,3 +112,9 @@
 3. 能把离线梦境、重放线索和成长候选带入下一次生命回应。
 4. 能把每轮对话写回关系连续体，而不是只写日志。
 5. 能在等待态维持最小自我叙事、关系图和承诺索引。
+
+## 下一步前沿
+
+1. 让 `response_surface.py` 真实读取 `relationship_timeline.json`
+2. 让 `terminal_loop` 和 `resident supervision` 把 `commitment_expression_plan.json` 带入恢复包
+3. 让 `apology_repair_language_trace.json` 进入更厚的关系修复外显和回合节律

@@ -141,6 +141,9 @@ def project_responsibility_language_continuity(
     responsibility_ledger: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
     relationship_graph: dict[str, Any] | None = None,
+    relationship_timeline: dict[str, Any] | None = None,
+    commitment_expression_plan: dict[str, Any] | None = None,
+    apology_repair_language_trace: dict[str, Any] | None = None,
     responsibility_loop_state: dict[str, Any] | None = None,
     commitment_repair_index: dict[str, Any] | None = None,
     additional_runtime_trace_refs: list[str] | None = None,
@@ -149,6 +152,9 @@ def project_responsibility_language_continuity(
     responsibility_ledger = responsibility_ledger or {}
     relationship_memory = relationship_memory or {}
     relationship_graph = relationship_graph or {}
+    relationship_timeline = relationship_timeline or {}
+    commitment_expression_plan = commitment_expression_plan or {}
+    apology_repair_language_trace = apology_repair_language_trace or {}
     responsibility_loop_state = responsibility_loop_state or {}
     commitment_repair_index = commitment_repair_index or {}
 
@@ -170,7 +176,9 @@ def project_responsibility_language_continuity(
 
     memory_index = updated.setdefault("memory_index", {})
     memory_index["relationship_memory_refs"] = _dedupe(
-        list(memory_index.get("relationship_memory_refs", [])) + list(relationship_memory.get("shared_memory_refs", []))
+        list(memory_index.get("relationship_memory_refs", []))
+        + list(relationship_memory.get("shared_memory_refs", []))
+        + list(relationship_memory.get("timeline_refs", []))
     )
     memory_index["responsibility_memory_refs"] = _dedupe(
         list(memory_index.get("responsibility_memory_refs", []))
@@ -208,8 +216,27 @@ def project_responsibility_language_continuity(
             "runtime/state/relationship/commitment_truth_state.json",
             "runtime/state/responsibility/responsibility_ledger.json",
             "runtime/state/memory/relationship_memory.json",
+            "runtime/state/relationship/relationship_timeline.json",
+            "runtime/state/language/commitment_expression_plan.json",
+            "runtime/state/language/apology_repair_language_trace.json",
         ]
     )
+
+    language_state = updated.setdefault("language_state", {})
+    language_state["relationship_timeline_refs"] = _dedupe(
+        list(language_state.get("relationship_timeline_refs", []))
+        + ["runtime/state/relationship/relationship_timeline.json"]
+    )
+    if commitment_expression_plan:
+        language_state["commitment_expression_refs"] = _dedupe(
+            list(language_state.get("commitment_expression_refs", []))
+            + ["runtime/state/language/commitment_expression_plan.json"]
+        )
+    if apology_repair_language_trace:
+        language_state["apology_repair_language_refs"] = _dedupe(
+            list(language_state.get("apology_repair_language_refs", []))
+            + ["runtime/state/language/apology_repair_language_trace.json"]
+        )
     return updated
 
 
