@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
 from typing import Any
+
+from life_v0.growth.offline_learning_profile import derive_offline_learning_profile
 
 
 def build_commitment_expression_plan(
@@ -13,6 +16,10 @@ def build_commitment_expression_plan(
     responsibility_ledger: dict[str, Any],
     responsibility_loop_state: dict[str, Any],
     relationship_timeline: dict[str, Any],
+    nightmare_risk: dict[str, Any] | None = None,
+    belief_learning_plan: dict[str, Any] | None = None,
+    language_learning_plan: dict[str, Any] | None = None,
+    relationship_learning_plan: dict[str, Any] | None = None,
     source_doc_refs: list[str],
 ) -> dict[str, Any]:
     repair_refs = list(commitment_repair_index.get("repair_obligation_refs", []))
@@ -64,7 +71,7 @@ def build_commitment_expression_plan(
             }
         )
 
-    return {
+    plan = {
         "schema_version": "commitment_expression_plan_v0",
         "run_id": run_id,
         "generated_at": generated_at,
@@ -90,3 +97,124 @@ def build_commitment_expression_plan(
             if isinstance(item, dict) and item.get("counterfactual_id")
         ],
     }
+    return project_commitment_expression_plan_with_offline_learning(
+        commitment_expression_plan=plan,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+
+
+def project_commitment_expression_plan_with_offline_learning(
+    *,
+    commitment_expression_plan: dict[str, Any],
+    nightmare_risk: dict[str, Any] | None = None,
+    belief_learning_plan: dict[str, Any] | None = None,
+    language_learning_plan: dict[str, Any] | None = None,
+    relationship_learning_plan: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not commitment_expression_plan:
+        return {}
+
+    updated = json.loads(json.dumps(commitment_expression_plan))
+    offline_profile = derive_offline_learning_profile(
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    ref_set = list(offline_profile.get("offline_learning_ref_set", []))
+    if not ref_set:
+        return updated
+
+    relationship_targets = list((relationship_learning_plan or {}).get("relationship_targets", []))
+    language_targets = list((language_learning_plan or {}).get("language_targets", []))
+    belief_targets = list((belief_learning_plan or {}).get("belief_targets", []))
+    rewrite_required = bool((nightmare_risk or {}).get("rewrite_required"))
+    boundary_hold_required = (
+        (relationship_learning_plan or {}).get("world_contact_release_posture")
+        == "confirmation_blocked"
+        or "confirmation_locked_expression_restraint" in language_targets
+    )
+    paced_reentry_required = any(
+        target in relationship_targets
+        for target in [
+            "repair_reentry_timing_adjustment",
+            "relationship_pacing_adjustment",
+            "repair_timing_adjustment",
+        ]
+    )
+
+    candidates = list(updated.get("language_act_candidates", []))
+    if boundary_hold_required and not _has_item_type(candidates, "boundary_statement", "act_type"):
+        candidates.append(
+            {
+                "act_id": f"commitment-act-{updated.get('run_id', 'offline')}-offline-boundary",
+                "act_type": "boundary_statement",
+                "surface_goal": "在修复重返前先说明边界与接触释放条件。",
+                "trigger_refs": ref_set,
+            }
+        )
+    if paced_reentry_required and not _has_item_type(candidates, "paced_reentry", "act_type"):
+        candidates.append(
+            {
+                "act_id": f"commitment-act-{updated.get('run_id', 'offline')}-offline-paced-reentry",
+                "act_type": "paced_reentry",
+                "surface_goal": "把下一次修复重返放慢，先确认窗口，再进入兑现动作。",
+                "trigger_refs": ref_set,
+            }
+        )
+    updated["language_act_candidates"] = candidates
+
+    act_type_order = list(updated.get("act_type_order", []))
+    if paced_reentry_required and "paced_reentry" not in act_type_order:
+        try:
+            followup_index = act_type_order.index("followup_commitment")
+        except ValueError:
+            act_type_order.append("paced_reentry")
+        else:
+            act_type_order.insert(followup_index, "paced_reentry")
+    updated["act_type_order"] = _dedupe(act_type_order)
+
+    if rewrite_required:
+        updated["delay_or_release_decision"] = "hold_for_nightmare_rewrite_integration"
+    elif boundary_hold_required:
+        updated["delay_or_release_decision"] = "hold_for_boundary_confirmation"
+
+    if boundary_hold_required:
+        tempo_mode = "confirmation_locked_restraint"
+    elif paced_reentry_required:
+        tempo_mode = "paced_reentry_guarded"
+    elif offline_profile["offline_learning_pressure_level"] in {"urgent", "elevated"}:
+        tempo_mode = "offline_learning_guarded"
+    else:
+        tempo_mode = "baseline"
+
+    updated["commitment_tempo_mode"] = tempo_mode
+    updated["offline_learning_pressure_level"] = offline_profile[
+        "offline_learning_pressure_level"
+    ]
+    updated["offline_learning_attention_target"] = offline_profile[
+        "offline_learning_attention_target"
+    ]
+    updated["offline_learning_priority_profile"] = offline_profile[
+        "offline_learning_priority_profile"
+    ]
+    updated["offline_learning_ref_set"] = ref_set
+    updated["offline_learning_targets"] = _dedupe(
+        relationship_targets + language_targets + belief_targets
+    )
+    return updated
+
+
+def _has_item_type(items: list[dict[str, Any]], expected: str, field: str) -> bool:
+    return any(isinstance(item, dict) and item.get(field) == expected for item in items)
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result

@@ -131,6 +131,16 @@ Queue E
   -> idle_strategy / waiting heartbeat / response surface
 ```
 
+现在这条链又往前推进了一段：离线学习对象不再只停在 waiting governance 或 response surface，而是会在 resident supervision 启动阶段继续反写：
+
+1. `runtime/state/relationship/relationship_timeline.json`
+2. `runtime/state/language/commitment_expression_plan.json`
+3. `runtime/state/language/apology_repair_language_trace.json`
+4. `runtime/state/memory/relationship_memory.json`
+5. `runtime/state/life_state.json`
+
+这意味着 repair pacing、commitment tempo、apology move order、dream memory projection 与 relationship continuity 已经开始吃到 Queue D 的离线结果，而不是只在 report 文本里表达“有离线学习压力”。
+
 ## 当前最该继续补硬的实现包
 
 如果下一轮继续推进，不要重新发明新的生命外壳；直接按下面这包推进：

@@ -169,6 +169,11 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertTrue(relationship_timeline["we_memory_traces"])
         self.assertTrue(relationship_timeline["commitment_histories"])
         self.assertTrue(relationship_timeline["relationship_continuity_reports"])
+        self.assertIn("offline_learning_projection", relationship_timeline)
+        self.assertIn(
+            "runtime/state/growth/relationship_learning_plan.json",
+            relationship_timeline["offline_learning_ref_set"],
+        )
 
         self.assertEqual(repair_language["schema_version"], "commitment_repair_language_index_v0")
         self.assertEqual(repair_language["status"], "closed")
@@ -190,6 +195,11 @@ class LanguageRelationshipTests(unittest.TestCase):
             commitment_expression_plan["relationship_timeline_ref"],
             "runtime/state/relationship/relationship_timeline.json",
         )
+        self.assertIn(
+            "runtime/state/growth/language_learning_plan.json",
+            commitment_expression_plan["offline_learning_ref_set"],
+        )
+        self.assertIn("commitment_tempo_mode", commitment_expression_plan)
 
         self.assertEqual(apology_repair_language_trace["schema_version"], "apology_repair_language_trace_v0")
         self.assertEqual(apology_repair_language_trace["status"], "closed")
@@ -200,6 +210,11 @@ class LanguageRelationshipTests(unittest.TestCase):
             apology_repair_language_trace["commitment_expression_ref"],
             "runtime/state/language/commitment_expression_plan.json",
         )
+        self.assertIn(
+            "runtime/state/dream/nightmare_loop_risk.json",
+            apology_repair_language_trace["offline_learning_ref_set"],
+        )
+        self.assertIn("repair_window_mode", apology_repair_language_trace)
 
         self.assertEqual(commitment_truth_state["schema_version"], "commitment_truth_state_v0")
         self.assertTrue(commitment_truth_state["open_commitment_refs"])
@@ -219,6 +234,10 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertTrue(relationship_memory["repair_history_refs"])
         self.assertTrue(relationship_memory["responsibility_event_refs"])
         self.assertTrue(relationship_memory["timeline_refs"])
+        self.assertIn(
+            "runtime/state/growth/relationship_learning_plan.json",
+            relationship_memory["offline_learning_refs"],
+        )
         self.assertIn(
             "runtime/state/language/dialogue_turn_log.jsonl",
             relationship_memory["last_contact_refs"],
@@ -342,9 +361,17 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertTrue(life_state["language_state"]["relationship_timeline_refs"])
         self.assertTrue(life_state["language_state"]["commitment_expression_refs"])
         self.assertTrue(life_state["language_state"]["apology_repair_language_refs"])
+        self.assertIn(
+            "runtime/state/growth/language_learning_plan.json",
+            life_state["language_state"]["offline_learning_refs"],
+        )
         self.assertTrue(life_state["responsibility_bindings"])
         self.assertTrue(life_state["regret_events"])
         self.assertTrue(life_state["pain_events"])
+        self.assertIn(
+            "runtime/state/dream/nightmare_loop_risk.json",
+            life_state["memory_index"]["dream_memory_refs"],
+        )
         self.assertIn("runtime/state/prediction/prediction_workspace_frame.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/relationship/commitment_truth_state.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/responsibility/responsibility_ledger.json", life_state["runtime_trace_refs"])
@@ -354,6 +381,10 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertIn("runtime/state/language/apology_repair_language_trace.json", life_state["runtime_trace_refs"])
         self.assertTrue(life_state["relationship_subjects"])
         self.assertTrue(life_state["relationship_subjects"][0]["repair_obligation_refs"])
+        self.assertIn(
+            "runtime/state/growth/relationship_learning_plan.json",
+            life_state["relationship_subjects"][0]["offline_learning_refs"],
+        )
 
     def test_cli_build_language_relationship_returns_zero_and_writes_report(self):
         with tempfile.TemporaryDirectory() as tmp:

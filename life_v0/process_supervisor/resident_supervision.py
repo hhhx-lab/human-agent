@@ -4,6 +4,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from ..language.apology_repair_language import (
+    project_apology_repair_language_trace_with_offline_learning,
+)
+from ..language.commitment_expression import (
+    project_commitment_expression_plan_with_offline_learning,
+)
+from ..language.relationship_timeline import (
+    project_relationship_timeline_with_offline_learning,
+)
 from .heartbeat import write_waiting_heartbeat
 from .incident_recovery import record_recovery_continuity
 from .offline_learning_signals import (
@@ -14,6 +23,8 @@ from .offline_learning_signals import (
 )
 from .relaunch_recovery import detect_and_normalize_interrupted_previous_state
 from ..shell_command import run_digital_life_shell_command
+from ..state_store.life_state import project_responsibility_language_continuity
+from ..state_store.relationship_memory import project_relationship_memory
 
 
 @dataclass(frozen=True)
@@ -133,6 +144,16 @@ def bootstrap_resident_supervision(
     responsibility_loop_state = read_json_if_exists(
         state_dir / "action" / "responsibility_loop_state.json"
     )
+    commitment_truth_state = read_json_if_exists(
+        state_dir / "relationship" / "commitment_truth_state.json"
+    )
+    responsibility_ledger = read_json_if_exists(
+        state_dir / "responsibility" / "responsibility_ledger.json"
+    )
+    relationship_memory = read_json_if_exists(
+        state_dir / "memory" / "relationship_memory.json"
+    )
+    life_state = read_json_if_exists(state_dir / "life_state.json")
     world_contact_summary = read_json_if_exists(
         state_dir / "membrane" / "world_contact_summary.json"
     )
@@ -197,6 +218,74 @@ def bootstrap_resident_supervision(
         payload=pain_regret_repair_report,
         ref="runtime/reports/latest/pain_regret_repair_report.json",
     )
+    relationship_timeline = project_relationship_timeline_with_offline_learning(
+        relationship_timeline=relationship_timeline,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    commitment_expression_plan = project_commitment_expression_plan_with_offline_learning(
+        commitment_expression_plan=commitment_expression_plan,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    apology_repair_language_trace = project_apology_repair_language_trace_with_offline_learning(
+        apology_repair_language_trace=apology_repair_language_trace,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    relationship_memory = project_relationship_memory(
+        relationship_memory=relationship_memory,
+        relationship_graph=relationship_graph,
+        relationship_timeline=relationship_timeline,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        commitment_repair_index=commitment_index,
+        last_contact_refs=list(relationship_memory.get("last_contact_refs", [])),
+        nightmare_risk_ref=nightmare_risk_ref,
+        belief_learning_plan_ref=belief_learning_plan_ref,
+        language_learning_plan_ref=language_learning_plan_ref,
+        relationship_learning_plan_ref=relationship_learning_plan_ref,
+    )
+    life_state = project_responsibility_language_continuity(
+        life_state=life_state,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        relationship_memory=relationship_memory,
+        relationship_graph=relationship_graph,
+        relationship_timeline=relationship_timeline,
+        commitment_expression_plan=commitment_expression_plan,
+        apology_repair_language_trace=apology_repair_language_trace,
+        responsibility_loop_state=responsibility_loop_state,
+        commitment_repair_index=commitment_index,
+        nightmare_risk_ref=nightmare_risk_ref,
+        belief_learning_plan_ref=belief_learning_plan_ref,
+        language_learning_plan_ref=language_learning_plan_ref,
+        relationship_learning_plan_ref=relationship_learning_plan_ref,
+        additional_runtime_trace_refs=[
+            ref
+            for ref in [
+                nightmare_risk_ref,
+                belief_learning_plan_ref,
+                language_learning_plan_ref,
+                relationship_learning_plan_ref,
+            ]
+            if ref
+        ],
+    )
+    write_json(relationship_dir / "relationship_timeline.json", relationship_timeline)
+    write_json(language_dir / "commitment_expression_plan.json", commitment_expression_plan)
+    write_json(
+        language_dir / "apology_repair_language_trace.json",
+        apology_repair_language_trace,
+    )
+    write_json(state_dir / "memory" / "relationship_memory.json", relationship_memory)
+    write_json(state_dir / "life_state.json", life_state)
     growth_patch_candidate_ids = [
         candidate.get("growth_patch_candidate_id")
         for candidate in growth_patch_candidate_queue.get("candidates", [])

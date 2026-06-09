@@ -702,7 +702,13 @@ Queue B 至少新增三道 gate：
    - `offline_learning_attention_target`
    - `offline_learning_priority_profile`
 10. `response_surface.py` 现在不能只带 replay / dream window / growth patch 候选数量，也要把 dream/growth 已形成的离线学习压力真实转成语言表面
-8. 对应测试直接证明以上闭环
+11. `resident_supervision.py` 在 restore shell 之后不能只把 Queue D 结果喂给 waiting governance，还必须把它们继续反写进：
+   - `runtime/state/relationship/relationship_timeline.json`
+   - `runtime/state/language/commitment_expression_plan.json`
+   - `runtime/state/language/apology_repair_language_trace.json`
+   - `runtime/state/memory/relationship_memory.json`
+   - `runtime/state/life_state.json`
+12. 对应测试直接证明以上闭环
 
 ## 这份合同和下一轮落码的关系
 

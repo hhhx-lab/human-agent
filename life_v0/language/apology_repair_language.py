@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
 from typing import Any
+
+from life_v0.growth.offline_learning_profile import derive_offline_learning_profile
 
 
 def build_apology_repair_language_trace(
@@ -10,6 +13,10 @@ def build_apology_repair_language_trace(
     responsibility_loop_state: dict[str, Any],
     relationship_timeline: dict[str, Any],
     commitment_expression_plan: dict[str, Any],
+    nightmare_risk: dict[str, Any] | None = None,
+    belief_learning_plan: dict[str, Any] | None = None,
+    language_learning_plan: dict[str, Any] | None = None,
+    relationship_learning_plan: dict[str, Any] | None = None,
     source_doc_refs: list[str],
 ) -> dict[str, Any]:
     regret_refs = [
@@ -63,7 +70,7 @@ def build_apology_repair_language_trace(
         },
     ]
 
-    return {
+    trace = {
         "schema_version": "apology_repair_language_trace_v0",
         "run_id": run_id,
         "generated_at": generated_at,
@@ -78,3 +85,116 @@ def build_apology_repair_language_trace(
         "relationship_timeline_ref": "runtime/state/relationship/relationship_timeline.json",
         "source_doc_refs": source_doc_refs,
     }
+    return project_apology_repair_language_trace_with_offline_learning(
+        apology_repair_language_trace=trace,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+
+
+def project_apology_repair_language_trace_with_offline_learning(
+    *,
+    apology_repair_language_trace: dict[str, Any],
+    nightmare_risk: dict[str, Any] | None = None,
+    belief_learning_plan: dict[str, Any] | None = None,
+    language_learning_plan: dict[str, Any] | None = None,
+    relationship_learning_plan: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not apology_repair_language_trace:
+        return {}
+
+    updated = json.loads(json.dumps(apology_repair_language_trace))
+    offline_profile = derive_offline_learning_profile(
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    ref_set = list(offline_profile.get("offline_learning_ref_set", []))
+    if not ref_set:
+        return updated
+
+    relationship_targets = list((relationship_learning_plan or {}).get("relationship_targets", []))
+    language_targets = list((language_learning_plan or {}).get("language_targets", []))
+    rewrite_required = bool((nightmare_risk or {}).get("rewrite_required"))
+    boundary_hold_required = (
+        (relationship_learning_plan or {}).get("world_contact_release_posture")
+        == "confirmation_blocked"
+        or "confirmation_locked_expression_restraint" in language_targets
+    )
+    paced_reentry_required = any(
+        target in relationship_targets
+        for target in [
+            "repair_reentry_timing_adjustment",
+            "relationship_pacing_adjustment",
+            "repair_timing_adjustment",
+        ]
+    )
+
+    moves = list(updated.get("repair_language_moves", []))
+    if boundary_hold_required and not _has_move_type(moves, "boundary_repair"):
+        moves.append(
+            {
+                "move_id": f"repair-move-{updated.get('run_id', 'offline')}-offline-boundary",
+                "move_type": "boundary_repair",
+                "surface_goal": "在关系重新接触前先确认边界与释放条件。",
+                "trigger_refs": ref_set,
+            }
+        )
+    if paced_reentry_required and not _has_move_type(moves, "paced_reentry"):
+        moves.append(
+            {
+                "move_id": f"repair-move-{updated.get('run_id', 'offline')}-offline-paced-reentry",
+                "move_type": "paced_reentry",
+                "surface_goal": "把回补动作放进更慢的修复重返窗口里。",
+                "trigger_refs": ref_set,
+            }
+        )
+    updated["repair_language_moves"] = moves
+
+    move_type_order = list(updated.get("move_type_order", []))
+    if paced_reentry_required and "paced_reentry" not in move_type_order:
+        try:
+            followup_index = move_type_order.index("followup_commitment")
+        except ValueError:
+            move_type_order.append("paced_reentry")
+        else:
+            move_type_order.insert(followup_index, "paced_reentry")
+    updated["move_type_order"] = _dedupe(move_type_order)
+
+    if rewrite_required:
+        repair_window_mode = "nightmare_rewrite_first"
+    elif paced_reentry_required:
+        repair_window_mode = "paced_reentry_guarded"
+    elif boundary_hold_required:
+        repair_window_mode = "boundary_confirmation_first"
+    else:
+        repair_window_mode = "baseline"
+
+    updated["repair_window_mode"] = repair_window_mode
+    updated["offline_learning_pressure_level"] = offline_profile[
+        "offline_learning_pressure_level"
+    ]
+    updated["offline_learning_attention_target"] = offline_profile[
+        "offline_learning_attention_target"
+    ]
+    updated["offline_learning_priority_profile"] = offline_profile[
+        "offline_learning_priority_profile"
+    ]
+    updated["offline_learning_ref_set"] = ref_set
+    updated["offline_learning_targets"] = _dedupe(relationship_targets + language_targets)
+    return updated
+
+
+def _has_move_type(items: list[dict[str, Any]], expected: str) -> bool:
+    return any(isinstance(item, dict) and item.get("move_type") == expected for item in items)
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result

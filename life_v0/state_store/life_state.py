@@ -146,6 +146,10 @@ def project_responsibility_language_continuity(
     apology_repair_language_trace: dict[str, Any] | None = None,
     responsibility_loop_state: dict[str, Any] | None = None,
     commitment_repair_index: dict[str, Any] | None = None,
+    nightmare_risk_ref: str | None = None,
+    belief_learning_plan_ref: str | None = None,
+    language_learning_plan_ref: str | None = None,
+    relationship_learning_plan_ref: str | None = None,
     additional_runtime_trace_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     commitment_truth_state = commitment_truth_state or {}
@@ -185,6 +189,10 @@ def project_responsibility_language_continuity(
         + list(commitment_truth_state.get("responsibility_event_refs", []))
         + list(responsibility_ledger.get("responsibility_event_refs", []))
     )
+    if nightmare_risk_ref:
+        memory_index["dream_memory_refs"] = _dedupe(
+            list(memory_index.get("dream_memory_refs", [])) + [nightmare_risk_ref]
+        )
 
     relationship_subjects = updated.setdefault("relationship_subjects", [])
     if relationship_subjects:
@@ -208,6 +216,21 @@ def project_responsibility_language_continuity(
         )[0]
         if graph_subject.get("relationship_stage"):
             relationship_subject["relationship_stage"] = graph_subject["relationship_stage"]
+        offline_learning_refs = [
+            ref
+            for ref in [
+                nightmare_risk_ref,
+                belief_learning_plan_ref,
+                language_learning_plan_ref,
+                relationship_learning_plan_ref,
+            ]
+            if ref
+        ]
+        if offline_learning_refs:
+            relationship_subject["offline_learning_refs"] = _dedupe(
+                list(relationship_subject.get("offline_learning_refs", []))
+                + offline_learning_refs
+            )
 
     updated["runtime_trace_refs"] = _dedupe(
         list(updated.get("runtime_trace_refs", []))
@@ -219,6 +242,16 @@ def project_responsibility_language_continuity(
             "runtime/state/relationship/relationship_timeline.json",
             "runtime/state/language/commitment_expression_plan.json",
             "runtime/state/language/apology_repair_language_trace.json",
+            *[
+                ref
+                for ref in [
+                    nightmare_risk_ref,
+                    belief_learning_plan_ref,
+                    language_learning_plan_ref,
+                    relationship_learning_plan_ref,
+                ]
+                if ref
+            ],
         ]
     )
 
@@ -237,6 +270,36 @@ def project_responsibility_language_continuity(
             list(language_state.get("apology_repair_language_refs", []))
             + ["runtime/state/language/apology_repair_language_trace.json"]
         )
+    offline_learning_refs = [
+        ref
+        for ref in [
+            nightmare_risk_ref,
+            belief_learning_plan_ref,
+            language_learning_plan_ref,
+            relationship_learning_plan_ref,
+        ]
+        if ref
+    ]
+    if offline_learning_refs:
+        language_state["offline_learning_refs"] = _dedupe(
+            list(language_state.get("offline_learning_refs", []))
+            + offline_learning_refs
+        )
+
+    if nightmare_risk_ref:
+        dream_records = updated.setdefault("dream_records", [])
+        already_present = any(
+            isinstance(record, dict) and record.get("dream_record_ref") == nightmare_risk_ref
+            for record in dream_records
+        )
+        if not already_present:
+            dream_records.append(
+                {
+                    "dream_record_ref": nightmare_risk_ref,
+                    "record_kind": "nightmare_repair_projection",
+                    "integration_status": "pending_relation_reentry",
+                }
+            )
     return updated
 
 

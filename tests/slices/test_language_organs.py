@@ -427,6 +427,32 @@ class LanguageOrgansTests(unittest.TestCase):
             responsibility_loop_state=responsibility_loop_state,
             source_doc_refs=source_doc_refs,
         )
+        nightmare_risk = {
+            "schema_version": "nightmare_loop_risk_v0",
+            "risk_status": "elevated",
+            "rewrite_required": True,
+            "queue_e_priority_band": "repair_guarded",
+            "repair_followup_required": True,
+        }
+        belief_learning_plan = {
+            "schema_version": "belief_learning_plan_v0",
+            "belief_targets": ["repair_accountability_belief_revision"],
+            "repair_followup_required": True,
+        }
+        language_learning_plan = {
+            "schema_version": "language_learning_plan_v0",
+            "language_targets": ["apology_repair_expression_refinement"],
+            "repair_followup_required": True,
+        }
+        relationship_learning_plan = {
+            "schema_version": "relationship_learning_plan_v0",
+            "relationship_targets": [
+                "repair_reentry_timing_adjustment",
+                "relationship_pacing_adjustment",
+            ],
+            "world_contact_release_posture": "shadow_only_guarded",
+            "repair_followup_required": True,
+        }
         relationship_timeline = build_relationship_timeline(
             run_id="organs-test",
             generated_at="2026-06-10T00:00:00+00:00",
@@ -435,6 +461,10 @@ class LanguageOrgansTests(unittest.TestCase):
             commitment_truth_state=commitment_truth_state,
             responsibility_ledger=responsibility_ledger,
             dialogue_turn_entries=dialogue_entries,
+            nightmare_risk=nightmare_risk,
+            belief_learning_plan=belief_learning_plan,
+            language_learning_plan=language_learning_plan,
+            relationship_learning_plan=relationship_learning_plan,
             source_doc_refs=source_doc_refs,
         )
         commitment_expression_plan = build_commitment_expression_plan(
@@ -451,6 +481,10 @@ class LanguageOrgansTests(unittest.TestCase):
             responsibility_ledger=responsibility_ledger,
             responsibility_loop_state=responsibility_loop_state,
             relationship_timeline=relationship_timeline,
+            nightmare_risk=nightmare_risk,
+            belief_learning_plan=belief_learning_plan,
+            language_learning_plan=language_learning_plan,
+            relationship_learning_plan=relationship_learning_plan,
             source_doc_refs=source_doc_refs,
         )
         apology_repair_language_trace = build_apology_repair_language_trace(
@@ -459,6 +493,10 @@ class LanguageOrgansTests(unittest.TestCase):
             responsibility_loop_state=responsibility_loop_state,
             relationship_timeline=relationship_timeline,
             commitment_expression_plan=commitment_expression_plan,
+            nightmare_risk=nightmare_risk,
+            belief_learning_plan=belief_learning_plan,
+            language_learning_plan=language_learning_plan,
+            relationship_learning_plan=relationship_learning_plan,
             source_doc_refs=source_doc_refs,
         )
 
@@ -468,6 +506,18 @@ class LanguageOrgansTests(unittest.TestCase):
         self.assertTrue(relationship_timeline["commitment_histories"])
         self.assertTrue(relationship_timeline["relationship_continuity_reports"])
         self.assertTrue(relationship_timeline["dialogue_turn_refs"])
+        self.assertEqual(
+            relationship_timeline["relationship_continuity_reports"][0]["continuity_state"],
+            "offline_learning_repairing_continuity",
+        )
+        self.assertEqual(
+            relationship_timeline["commitment_histories"][0]["due_window"],
+            "after_nightmare_rewrite_window",
+        )
+        self.assertIn(
+            "runtime/state/dream/nightmare_loop_risk.json",
+            relationship_timeline["offline_learning_ref_set"],
+        )
 
         self.assertEqual(commitment_expression_plan["schema_version"], "commitment_expression_plan_v0")
         self.assertEqual(commitment_expression_plan["status"], "closed")
@@ -475,6 +525,21 @@ class LanguageOrgansTests(unittest.TestCase):
         self.assertIn("apology", commitment_expression_plan["act_type_order"])
         self.assertTrue(commitment_expression_plan["repair_obligation_refs"])
         self.assertTrue(commitment_expression_plan["responsibility_event_refs"])
+        self.assertEqual(
+            commitment_expression_plan["delay_or_release_decision"],
+            "hold_for_nightmare_rewrite_integration",
+        )
+        self.assertEqual(
+            commitment_expression_plan["commitment_tempo_mode"],
+            "paced_reentry_guarded",
+        )
+        self.assertIn("paced_reentry", commitment_expression_plan["act_type_order"])
+        self.assertTrue(
+            any(
+                item.get("act_type") == "paced_reentry"
+                for item in commitment_expression_plan["language_act_candidates"]
+            )
+        )
 
         self.assertEqual(apology_repair_language_trace["schema_version"], "apology_repair_language_trace_v0")
         self.assertEqual(apology_repair_language_trace["status"], "closed")
@@ -482,6 +547,11 @@ class LanguageOrgansTests(unittest.TestCase):
         self.assertTrue(apology_repair_language_trace["trigger_regret_refs"])
         self.assertTrue(apology_repair_language_trace["relationship_injury_refs"])
         self.assertIn("followup_commitment", apology_repair_language_trace["move_type_order"])
+        self.assertEqual(
+            apology_repair_language_trace["repair_window_mode"],
+            "nightmare_rewrite_first",
+        )
+        self.assertIn("paced_reentry", apology_repair_language_trace["move_type_order"])
 
 
 if __name__ == "__main__":

@@ -3133,6 +3133,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertTrue(result.context.relationship_timeline["relationship_continuity_reports"])
             self.assertTrue(result.context.commitment_expression_plan["language_act_candidates"])
             self.assertTrue(result.context.apology_repair_language_trace["repair_language_moves"])
+            self.assertIn("offline_learning_projection", result.context.relationship_timeline)
+            self.assertIn(
+                "runtime/state/growth/relationship_learning_plan.json",
+                result.context.relationship_timeline["offline_learning_ref_set"],
+            )
+            self.assertIn(
+                "runtime/state/dream/nightmare_loop_risk.json",
+                result.context.commitment_expression_plan["offline_learning_ref_set"],
+            )
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                result.context.apology_repair_language_trace["offline_learning_ref_set"],
+            )
             self.assertEqual(
                 result.context.responsibility_loop_state_ref,
                 "runtime/state/action/responsibility_loop_state.json",
@@ -3144,6 +3157,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 result.context.pain_regret_repair_report_ref,
                 "runtime/reports/latest/pain_regret_repair_report.json",
+            )
+            relationship_memory = self._read_json(
+                paths["state_root"] / "memory" / "relationship_memory.json"
+            )
+            life_state = self._read_json(paths["state_root"] / "life_state.json")
+            self.assertIn(
+                "runtime/state/growth/relationship_learning_plan.json",
+                relationship_memory["offline_learning_refs"],
+            )
+            self.assertIn(
+                "runtime/state/dream/nightmare_loop_risk.json",
+                life_state["memory_index"]["dream_memory_refs"],
+            )
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                life_state["language_state"]["offline_learning_refs"],
             )
 
     def test_resident_turn_writeback_organ_updates_turn_continuity_and_bundle(self):

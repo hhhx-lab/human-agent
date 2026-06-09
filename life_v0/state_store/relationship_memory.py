@@ -55,6 +55,10 @@ def project_relationship_memory(
     responsibility_ledger: dict[str, Any] | None = None,
     commitment_repair_index: dict[str, Any] | None = None,
     last_contact_refs: list[str] | None = None,
+    nightmare_risk_ref: str | None = None,
+    belief_learning_plan_ref: str | None = None,
+    language_learning_plan_ref: str | None = None,
+    relationship_learning_plan_ref: str | None = None,
 ) -> dict[str, Any]:
     relationship_graph = relationship_graph or {}
     relationship_timeline = relationship_timeline or {}
@@ -69,6 +73,7 @@ def project_relationship_memory(
         "last_contact_refs": list(relationship_memory.get("last_contact_refs", [])),
         "responsibility_event_refs": list(relationship_memory.get("responsibility_event_refs", [])),
         "timeline_refs": list(relationship_memory.get("timeline_refs", [])),
+        "offline_learning_refs": list(relationship_memory.get("offline_learning_refs", [])),
     }
 
     subject_refs = [
@@ -103,6 +108,19 @@ def project_relationship_memory(
             f"runtime/state/relationship/relationship_timeline.json#{item.get('relationship_continuity_report_id')}"
             for item in relationship_timeline.get("relationship_continuity_reports", [])
             if isinstance(item, dict) and item.get("relationship_continuity_report_id")
+        ]
+    )
+    updated["offline_learning_refs"] = _dedupe(
+        updated["offline_learning_refs"]
+        + [
+            ref
+            for ref in [
+                nightmare_risk_ref,
+                belief_learning_plan_ref,
+                language_learning_plan_ref,
+                relationship_learning_plan_ref,
+            ]
+            if ref
         ]
     )
     return updated

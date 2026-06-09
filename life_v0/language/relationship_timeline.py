@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
 from typing import Any
+
+from life_v0.growth.offline_learning_profile import derive_offline_learning_profile
 
 
 def build_relationship_timeline(
@@ -12,6 +15,10 @@ def build_relationship_timeline(
     commitment_truth_state: dict[str, Any],
     responsibility_ledger: dict[str, Any],
     dialogue_turn_entries: list[dict[str, Any]],
+    nightmare_risk: dict[str, Any] | None = None,
+    belief_learning_plan: dict[str, Any] | None = None,
+    language_learning_plan: dict[str, Any] | None = None,
+    relationship_learning_plan: dict[str, Any] | None = None,
     source_doc_refs: list[str],
 ) -> dict[str, Any]:
     subject = _first_subject(relationship_graph)
@@ -46,7 +53,7 @@ def build_relationship_timeline(
 
     injury_refs = [f"runtime/state/relationship/relationship_timeline.json#{injury_trace_id}"]
 
-    return {
+    timeline = {
         "schema_version": "relationship_timeline_v0",
         "run_id": run_id,
         "generated_at": generated_at,
@@ -194,6 +201,118 @@ def build_relationship_timeline(
         ],
         "source_doc_refs": source_doc_refs,
     }
+    return project_relationship_timeline_with_offline_learning(
+        relationship_timeline=timeline,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+
+
+def project_relationship_timeline_with_offline_learning(
+    *,
+    relationship_timeline: dict[str, Any],
+    nightmare_risk: dict[str, Any] | None = None,
+    belief_learning_plan: dict[str, Any] | None = None,
+    language_learning_plan: dict[str, Any] | None = None,
+    relationship_learning_plan: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not relationship_timeline:
+        return {}
+
+    updated = json.loads(json.dumps(relationship_timeline))
+    offline_profile = derive_offline_learning_profile(
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    ref_set = list(offline_profile.get("offline_learning_ref_set", []))
+    if not ref_set:
+        return updated
+
+    relationship_targets = list((relationship_learning_plan or {}).get("relationship_targets", []))
+    language_targets = list((language_learning_plan or {}).get("language_targets", []))
+    belief_targets = list((belief_learning_plan or {}).get("belief_targets", []))
+    rewrite_required = bool((nightmare_risk or {}).get("rewrite_required"))
+    next_repair_window_policy = _next_repair_window_policy(
+        rewrite_required=rewrite_required,
+        relationship_targets=relationship_targets,
+    )
+    due_window = _commitment_due_window(
+        rewrite_required=rewrite_required,
+        relationship_targets=relationship_targets,
+    )
+
+    for report in updated.get("relationship_continuity_reports", []):
+        if not isinstance(report, dict):
+            continue
+        report["continuity_state"] = (
+            "offline_learning_repairing_continuity"
+            if offline_profile["offline_learning_pressure_level"] != "quiet"
+            else report.get("continuity_state", "active_repairing_continuity")
+        )
+        report["offline_learning_ref_set"] = ref_set
+        report["offline_learning_attention_target"] = offline_profile[
+            "offline_learning_attention_target"
+        ]
+        report["offline_learning_pressure_level"] = offline_profile[
+            "offline_learning_pressure_level"
+        ]
+        report["next_repair_window_policy"] = next_repair_window_policy
+
+    for trajectory in updated.get("trust_trajectories", []):
+        if not isinstance(trajectory, dict):
+            continue
+        trajectory["offline_learning_targets"] = _merge_targets(
+            relationship_targets=relationship_targets,
+            language_targets=language_targets,
+            belief_targets=belief_targets,
+        )
+        if rewrite_required:
+            trajectory["next_probe"] = "nightmare_rewrite_checkin_probe"
+        elif relationship_targets:
+            trajectory["next_probe"] = "offline_reentry_probe"
+
+    for history in updated.get("commitment_histories", []):
+        if not isinstance(history, dict):
+            continue
+        history["due_window"] = due_window
+        history["offline_learning_ref_set"] = ref_set
+        history["next_repair_window_policy"] = next_repair_window_policy
+
+    for gate in updated.get("longitudinal_stage_gates", []):
+        if not isinstance(gate, dict):
+            continue
+        gate["required_evidence_refs"] = _dedupe(
+            list(gate.get("required_evidence_refs", [])) + ref_set
+        )
+        if offline_profile["blocked_learning_modes"]:
+            gate["blocked_learning_modes"] = list(
+                offline_profile["blocked_learning_modes"]
+            )
+        if offline_profile["offline_learning_pressure_level"] in {"urgent", "elevated"}:
+            gate["gate_status"] = "offline_repair_hold"
+
+    updated["offline_learning_projection"] = {
+        "offline_learning_pressure_level": offline_profile[
+            "offline_learning_pressure_level"
+        ],
+        "offline_learning_attention_target": offline_profile[
+            "offline_learning_attention_target"
+        ],
+        "offline_learning_priority_profile": offline_profile[
+            "offline_learning_priority_profile"
+        ],
+        "offline_learning_ref_set": ref_set,
+        "next_repair_window_policy": next_repair_window_policy,
+        "relationship_targets": relationship_targets,
+        "language_targets": language_targets,
+        "belief_targets": belief_targets,
+    }
+    updated["offline_learning_ref_set"] = ref_set
+    return updated
 
 
 def _first_subject(relationship_graph: dict[str, Any]) -> dict[str, Any]:
@@ -201,3 +320,58 @@ def _first_subject(relationship_graph: dict[str, Any]) -> dict[str, Any]:
     if subjects and isinstance(subjects[0], dict):
         return subjects[0]
     return {}
+
+
+def _next_repair_window_policy(
+    *,
+    rewrite_required: bool,
+    relationship_targets: list[str],
+) -> str:
+    if rewrite_required:
+        return "nightmare_rewrite_before_reentry"
+    if any(
+        target in relationship_targets
+        for target in [
+            "repair_reentry_timing_adjustment",
+            "relationship_pacing_adjustment",
+            "repair_timing_adjustment",
+        ]
+    ):
+        return "paced_reentry_after_offline_integration"
+    return "followup_commitment_probe"
+
+
+def _commitment_due_window(
+    *,
+    rewrite_required: bool,
+    relationship_targets: list[str],
+) -> str:
+    if rewrite_required:
+        return "after_nightmare_rewrite_window"
+    if any(
+        target in relationship_targets
+        for target in [
+            "repair_reentry_timing_adjustment",
+            "relationship_pacing_adjustment",
+            "repair_timing_adjustment",
+        ]
+    ):
+        return "post_offline_reentry_window"
+    return "next_relational_turn"
+
+
+def _merge_targets(
+    *,
+    relationship_targets: list[str],
+    language_targets: list[str],
+    belief_targets: list[str],
+) -> list[str]:
+    return _dedupe(relationship_targets + language_targets + belief_targets)
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result
