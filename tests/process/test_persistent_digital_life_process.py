@@ -360,6 +360,91 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/reports/latest/digital_life_waiting_heartbeat.json",
             )
 
+    def test_idle_refresh_loop_organ_refreshes_heartbeat_until_external_turn(self):
+        from life_v0.process_supervisor.idle_refresh_loop import (
+            wait_for_next_external_relation_turn,
+        )
+        from life_v0.shell_command import run_digital_life_shell_command
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            self._bootstrap(paths)
+            shell_result = run_digital_life_shell_command(
+                state_dir=paths["state_root"],
+                reports_dir=paths["reports"],
+                receipts_dir=paths["receipts"],
+                run_id="idle-refresh-organ-restore",
+                strict=True,
+            )
+            self.assertEqual(shell_result.exit_code, 0)
+
+            safe_terminal_loop = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
+            terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
+            narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
+            commitment_index = self._read_json(paths["language_state"] / "commitment_repair_language_index.json")
+            relationship_graph = self._read_json(paths["relationship_state"] / "relationship_subject_graph.json")
+            replay_cue_bundle = self._read_json(paths["state_root"] / "replay" / "replay_cue_bundle.json")
+            offline_consolidation_frame = self._read_json(
+                paths["state_root"] / "dream" / "offline_consolidation_frame.json"
+            )
+            growth_patch_candidate_queue = self._read_json(
+                paths["state_root"] / "growth" / "growth_patch_candidate_queue.json"
+            )
+            growth_patch_candidate_ids = [
+                candidate["growth_patch_candidate_id"]
+                for candidate in growth_patch_candidate_queue["candidates"]
+            ]
+
+            result = wait_for_next_external_relation_turn(
+                input_stream=DelayedInputStream(
+                    idle_polls_before_lines=2,
+                    lines=["你好\n"],
+                ),
+                run_id="idle-refresh-organ",
+                generated_at="2026-06-09T00:00:00+00:00",
+                terminal_dir=paths["terminal_state"],
+                reports_dir=paths["reports"],
+                language_dir=paths["language_state"],
+                relationship_dir=paths["relationship_state"],
+                safe_terminal_loop=safe_terminal_loop,
+                terminal_life_loop_state=terminal_loop_state,
+                self_narrative_trace=narrative_trace,
+                commitment_index=commitment_index,
+                relationship_graph=relationship_graph,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                replay_cue_bundle=replay_cue_bundle,
+                offline_consolidation_frame=offline_consolidation_frame,
+                growth_patch_candidate_queue=growth_patch_candidate_queue,
+                replay_cue_bundle_ref="runtime/state/replay/replay_cue_bundle.json",
+                offline_consolidation_frame_ref="runtime/state/dream/offline_consolidation_frame.json",
+                growth_patch_candidate_queue_ref="runtime/state/growth/growth_patch_candidate_queue.json",
+                growth_patch_candidate_ids=growth_patch_candidate_ids,
+                replay_residue_ref_count=len(replay_cue_bundle["turn_residue_refs"]),
+                dream_window_ref_count=len(offline_consolidation_frame["dream_window_refs"]),
+                growth_patch_candidate_count=len(growth_patch_candidate_queue["candidates"]),
+                heartbeat_counter=0,
+                now_iso=lambda: "2026-06-09T00:00:00+00:00",
+                write_json=self._write_json,
+            )
+
+            safe_terminal_loop = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
+            terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
+            heartbeat_packet = self._read_json(paths["reports"] / "digital_life_waiting_heartbeat.json")
+            idle_continuity = self._read_json(paths["terminal_state"] / "idle_continuity_frame.json")
+
+            self.assertEqual(result.heartbeat_counter, 2)
+            self.assertEqual(result.external_utterance, "你好")
+            self.assertIsNone(result.exit_reason)
+            self.assertEqual(safe_terminal_loop["heartbeat_counter"], 2)
+            self.assertEqual(terminal_loop_state["heartbeat_counter"], 2)
+            self.assertEqual(heartbeat_packet["heartbeat_counter"], 2)
+            self.assertEqual(idle_continuity["heartbeat_counter"], 2)
+            self.assertEqual(idle_continuity["event_kind"], "waiting_heartbeat_refresh")
+
     def test_turn_io_poll_input_line_uses_custom_poll_hook_before_fileno(self):
         from life_v0.process_supervisor.turn_io import poll_input_line
 

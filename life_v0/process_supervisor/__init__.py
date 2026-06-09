@@ -10,6 +10,7 @@ from typing import Any, TextIO
 
 from .dialogue_events import build_external_turn_event, build_life_turn_event
 from .heartbeat import write_waiting_heartbeat
+from .idle_refresh_loop import wait_for_next_external_relation_turn
 from .idle_strategy import IDLE_STRATEGY_STATE_REF
 from .incident_recovery import (
     record_recovery_continuity,
@@ -19,7 +20,6 @@ from .process_closeout import close_digital_life_process
 from .resident_turn_writeback import write_resident_turn_writeback
 from .relaunch_recovery import detect_and_normalize_interrupted_previous_state
 from .response_surface import compose_life_response
-from .turn_io import poll_input_line
 from ..shell_command import run_digital_life_shell_command
 
 
@@ -202,46 +202,43 @@ def run_digital_life_process(
     last_recovery_report_ref: str | None = None
 
     while True:
-        raw_line = poll_input_line(input_stream, timeout_seconds=0.05)
-        if raw_line is None:
-            heartbeat_counter = write_waiting_heartbeat(
-                run_id=run_id,
-                generated_at=generated_at,
-                terminal_dir=terminal_dir,
-                reports_dir=reports_dir,
-                language_dir=language_dir,
-                relationship_dir=relationship_dir,
-                safe_terminal_loop=safe_terminal_loop,
-                terminal_life_loop_state=terminal_life_loop_state,
-                self_narrative_trace=self_narrative_trace,
-                commitment_index=commitment_index,
-                relationship_graph=relationship_graph,
-                source_doc_refs=SOURCE_DOC_REFS,
-                readme_block_refs=READ_ME_BLOCK_REFS,
-                runtime_carrier_refs=RUNTIME_CARRIER_REFS,
-                replay_cue_bundle=replay_cue_bundle,
-                offline_consolidation_frame=offline_consolidation_frame,
-                growth_patch_candidate_queue=growth_patch_candidate_queue,
-                replay_cue_bundle_ref=replay_cue_bundle_ref,
-                offline_consolidation_frame_ref=offline_consolidation_frame_ref,
-                growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
-                growth_patch_candidate_ids=growth_patch_candidate_ids,
-                replay_residue_ref_count=replay_residue_ref_count,
-                dream_window_ref_count=dream_window_ref_count,
-                growth_patch_candidate_count=growth_patch_candidate_count,
-                now_iso=_now_iso,
-                write_json=_write_json,
-            )
-            continue
-        if raw_line == "":
-            exit_reason = "eof"
+        idle_refresh = wait_for_next_external_relation_turn(
+            input_stream=input_stream,
+            run_id=run_id,
+            generated_at=generated_at,
+            terminal_dir=terminal_dir,
+            reports_dir=reports_dir,
+            language_dir=language_dir,
+            relationship_dir=relationship_dir,
+            safe_terminal_loop=safe_terminal_loop,
+            terminal_life_loop_state=terminal_life_loop_state,
+            self_narrative_trace=self_narrative_trace,
+            commitment_index=commitment_index,
+            relationship_graph=relationship_graph,
+            source_doc_refs=SOURCE_DOC_REFS,
+            readme_block_refs=READ_ME_BLOCK_REFS,
+            runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+            replay_cue_bundle=replay_cue_bundle,
+            offline_consolidation_frame=offline_consolidation_frame,
+            growth_patch_candidate_queue=growth_patch_candidate_queue,
+            replay_cue_bundle_ref=replay_cue_bundle_ref,
+            offline_consolidation_frame_ref=offline_consolidation_frame_ref,
+            growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
+            growth_patch_candidate_ids=growth_patch_candidate_ids,
+            replay_residue_ref_count=replay_residue_ref_count,
+            dream_window_ref_count=dream_window_ref_count,
+            growth_patch_candidate_count=growth_patch_candidate_count,
+            heartbeat_counter=heartbeat_counter,
+            now_iso=_now_iso,
+            write_json=_write_json,
+        )
+        heartbeat_counter = idle_refresh.heartbeat_counter
+        if idle_refresh.exit_reason is not None:
+            exit_reason = idle_refresh.exit_reason
             break
-        external_utterance = raw_line.strip()
-        if not external_utterance:
+        external_utterance = idle_refresh.external_utterance
+        if external_utterance is None:
             continue
-        if external_utterance == "/exit":
-            exit_reason = "explicit_exit"
-            break
 
         turn_counter += 1
         external_turn_id = f"dialogue-turn-live-{turn_counter:04d}"

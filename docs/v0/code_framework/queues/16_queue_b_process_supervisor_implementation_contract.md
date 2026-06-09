@@ -94,6 +94,7 @@ Queue B 必须接到这些现有器官上：
 - `life_v0/process_supervisor/response_surface.py`
 - `life_v0/process_supervisor/resident_turn_writeback.py`
 - `life_v0/process_supervisor/process_closeout.py`
+- `life_v0/process_supervisor/idle_refresh_loop.py`
 - `life_v0/digital_entry.py`
 - `life_v0/terminal_loop/dialogue_writeback.py`
 - `life_v0/terminal_turn/context_accumulation.py`
@@ -320,10 +321,13 @@ process report / shared object receipt 已开始显式回链：
 ### `life_v0/process_supervisor/__init__.py`
 
 从这一轮开始，它不应继续独占 process orchestration 细节。
-至少要把下面几类逻辑继续外移到器官文件：
+当前已经外移：
 
 - process closeout decision
 - idle refresh loop 调度
+
+下一步继续外移：
+
 - 更厚的 resident supervision 治理
 
 ### `life_v0/digital_entry.py`
