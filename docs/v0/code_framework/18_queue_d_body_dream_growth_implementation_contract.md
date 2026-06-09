@@ -93,8 +93,9 @@ Queue D 第二波器官现在已经真实落下：
 当前 Queue D 的后续口径应改成：
 
 1. 第一波与第二波都已落地。
-2. 下一轮默认转入 Queue E。
-3. Queue D 再次回切时，优先补第三波扩展器官，例如 `nightmare_risk / belief_learning / language_learning / relationship_learning`。
+2. 第三波第一批扩展器官已经落地：`nightmare_risk / belief_learning / language_learning / relationship_learning`。
+3. 下一轮默认转入 Queue E。
+4. Queue D 再次回切时，优先补这批扩展器官与 replay、dream、relationship、language 的更深联动，而不是重新回头拆第一波。
 
 ## 必回读理论母体
 

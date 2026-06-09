@@ -12,6 +12,11 @@ from .dream_fact_gate import (
     build_dream_fact_gate_decision,
     check_dream_fact_gate_decision,
 )
+from .nightmare_risk import (
+    SOURCE_DOC_REFS as NIGHTMARE_RISK_SOURCE_DOC_REFS,
+    build_nightmare_loop_risk,
+    check_nightmare_loop_risk,
+)
 from .offline_entry import (
     SOURCE_DOC_REFS as OFFLINE_ENTRY_SOURCE_DOC_REFS,
     build_offline_entry_gate,
@@ -43,6 +48,7 @@ SOURCE_DOC_REFS = sorted(
         + DREAM_WINDOW_SOURCE_DOC_REFS
         + WAKE_INTEGRATION_SOURCE_DOC_REFS
         + DREAM_FACT_GATE_SOURCE_DOC_REFS
+        + NIGHTMARE_RISK_SOURCE_DOC_REFS
     )
 )
 

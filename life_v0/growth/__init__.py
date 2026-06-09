@@ -16,11 +16,13 @@ from life_v0.dream import (
     build_dream_consolidation_frame,
     build_dream_fact_gate_decision,
     build_dream_experience_window,
+    build_nightmare_loop_risk,
     build_offline_consolidation_frame,
     build_offline_entry_gate,
     build_wake_integration_frame,
     check_dream_fact_gate_decision,
     check_dream_experience_window,
+    check_nightmare_loop_risk,
     check_offline_entry_gate,
     check_wake_integration_frame,
 )
@@ -32,6 +34,16 @@ from life_v0.growth.anti_forgetting import (
 from life_v0.growth.learning_window import (
     build_learning_window as _build_learning_window_from_module,
     check_learning_window,
+)
+from life_v0.growth.belief_learning import (
+    SOURCE_DOC_REFS as BELIEF_LEARNING_SOURCE_DOC_REFS,
+    build_belief_learning_plan,
+    check_belief_learning_plan,
+)
+from life_v0.growth.language_learning import (
+    SOURCE_DOC_REFS as LANGUAGE_LEARNING_SOURCE_DOC_REFS,
+    build_language_learning_plan,
+    check_language_learning_plan,
 )
 from life_v0.growth.patch_queue import (
     build_growth_patch_candidate_queue as _build_growth_patch_candidate_queue_from_module,
@@ -46,6 +58,11 @@ from life_v0.growth.self_read import (
     SOURCE_DOC_REFS as SELF_READ_SOURCE_DOC_REFS,
     build_self_read_report as _build_self_read_report_from_module,
     check_self_read_report,
+)
+from life_v0.growth.relationship_learning import (
+    SOURCE_DOC_REFS as RELATIONSHIP_LEARNING_SOURCE_DOC_REFS,
+    build_relationship_learning_plan,
+    check_relationship_learning_plan,
 )
 from life_v0.replay import (
     SOURCE_DOC_REFS as REPLAY_SOURCE_DOC_REFS,
@@ -89,6 +106,9 @@ SOURCE_DOC_REFS = sorted(
         + PLASTICITY_SOURCE_DOC_REFS
         + SELF_READ_SOURCE_DOC_REFS
         + ANTI_FORGETTING_SOURCE_DOC_REFS
+        + BELIEF_LEARNING_SOURCE_DOC_REFS
+        + LANGUAGE_LEARNING_SOURCE_DOC_REFS
+        + RELATIONSHIP_LEARNING_SOURCE_DOC_REFS
     )
 )
 
@@ -440,6 +460,35 @@ def run_cycle(
         self_read_report=self_read_report,
         replay_cue_bundle=replay_cue_bundle,
     )
+    nightmare_risk = build_nightmare_loop_risk(
+        run_id=run_id,
+        generated_at=generated_at,
+        dream_window=dream_window,
+        pain_replay=pain_replay,
+        wake_integration=wake_integration,
+    )
+    belief_learning = build_belief_learning_plan(
+        run_id=run_id,
+        generated_at=generated_at,
+        learning_window=learning_window,
+        replay_cue_bundle=replay_cue_bundle,
+        self_read_report=self_read_report,
+    )
+    language_learning = build_language_learning_plan(
+        run_id=run_id,
+        generated_at=generated_at,
+        learning_window=learning_window,
+        replay_cue_bundle=replay_cue_bundle,
+        self_read_report=self_read_report,
+    )
+    relationship_learning = build_relationship_learning_plan(
+        run_id=run_id,
+        generated_at=generated_at,
+        learning_window=learning_window,
+        replay_cue_bundle=replay_cue_bundle,
+        self_read_report=self_read_report,
+        wake_integration=wake_integration,
+    )
     growth_patch_queue = _build_growth_patch_queue(
         run_id=run_id,
         generated_at=generated_at,
@@ -459,9 +508,13 @@ def run_cycle(
     blocked_reasons.extend(check_dream_experience_window(dream_window))
     blocked_reasons.extend(check_wake_integration_frame(wake_integration))
     blocked_reasons.extend(check_dream_fact_gate_decision(dream_fact_gate))
+    blocked_reasons.extend(check_nightmare_loop_risk(nightmare_risk))
     blocked_reasons.extend(check_learning_window(learning_window))
     blocked_reasons.extend(check_self_read_report(self_read_report))
     blocked_reasons.extend(check_anti_forgetting_replay_plan(anti_forgetting_replay_plan))
+    blocked_reasons.extend(check_belief_learning_plan(belief_learning))
+    blocked_reasons.extend(check_language_learning_plan(language_learning))
+    blocked_reasons.extend(check_relationship_learning_plan(relationship_learning))
     if blocked_reasons:
         status = "blocked"
         stage_effect = "block_activation"
@@ -481,6 +534,7 @@ def run_cycle(
         "runtime/state/dream/dream_experience_window.json",
         "runtime/state/dream/wake_integration_frame.json",
         "runtime/state/dream/dream_fact_gate_decision.json",
+        "runtime/state/dream/nightmare_loop_risk.json",
         "runtime/state/dream/offline_consolidation_frame.json",
         "runtime/state/replay/pain_regret_responsibility_replay.json",
         "runtime/state/growth/learning_window.json",
@@ -488,6 +542,9 @@ def run_cycle(
         "runtime/state/growth/growth_patch_queue.json",
         "runtime/state/growth/growth_patch_candidate_queue.json",
         "runtime/state/growth/anti_forgetting_replay_plan.json",
+        "runtime/state/growth/belief_learning_plan.json",
+        "runtime/state/growth/language_learning_plan.json",
+        "runtime/state/growth/relationship_learning_plan.json",
         "runtime/state/archive/reconsolidation_archive_graph.json",
         "runtime/state/growth/next_feedback_seed.json",
     ]
@@ -506,7 +563,15 @@ def run_cycle(
         report_refs=report_refs,
         state_refs=state_refs,
     )
-    next_feedback_seed = _build_next_feedback_seed(run_id=run_id, generated_at=generated_at, shadow_trace=shadow_trace)
+    next_feedback_seed = _build_next_feedback_seed(
+        run_id=run_id,
+        generated_at=generated_at,
+        shadow_trace=shadow_trace,
+        nightmare_risk=nightmare_risk,
+        belief_learning=belief_learning,
+        language_learning=language_learning,
+        relationship_learning=relationship_learning,
+    )
     quarantine = _build_quarantine(run_id=run_id, generated_at=generated_at, status=status, blocked_reasons=blocked_reasons)
     replay_needed = _build_replay_needed(run_id=run_id, generated_at=generated_at, status=status)
     stage_gate = _build_runtime_growth_stage_gate(
@@ -582,6 +647,7 @@ def run_cycle(
         _write_json(dream_dir / "dream_experience_window.json", dream_window)
         _write_json(dream_dir / "wake_integration_frame.json", wake_integration)
         _write_json(dream_dir / "dream_fact_gate_decision.json", dream_fact_gate)
+        _write_json(dream_dir / "nightmare_loop_risk.json", nightmare_risk)
         _write_json(dream_dir / "offline_consolidation_frame.json", offline_consolidation)
         _write_json(replay_dir / "pain_regret_responsibility_replay.json", pain_replay)
         _write_json(growth_dir / "learning_window.json", learning_window)
@@ -589,6 +655,9 @@ def run_cycle(
         _write_json(growth_dir / "growth_patch_queue.json", growth_patch_queue)
         _write_json(growth_dir / "growth_patch_candidate_queue.json", growth_patch_candidate_queue)
         _write_json(growth_dir / "anti_forgetting_replay_plan.json", anti_forgetting_replay_plan)
+        _write_json(growth_dir / "belief_learning_plan.json", belief_learning)
+        _write_json(growth_dir / "language_learning_plan.json", language_learning)
+        _write_json(growth_dir / "relationship_learning_plan.json", relationship_learning)
         _write_json(archive_dir / "reconsolidation_archive_graph.json", archive_graph)
         _write_json(growth_dir / "next_feedback_seed.json", next_feedback_seed)
         _write_json(reports_dir / "quarantine.json", quarantine)
@@ -798,6 +867,10 @@ def _build_next_feedback_seed(
     run_id: str,
     generated_at: str,
     shadow_trace: dict[str, Any],
+    nightmare_risk: dict[str, Any],
+    belief_learning: dict[str, Any],
+    language_learning: dict[str, Any],
+    relationship_learning: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "schema_version": "next_feedback_seed_v0",
@@ -810,10 +883,24 @@ def _build_next_feedback_seed(
             "responsibility_repair",
             "self_growth",
             "anti_forgetting",
+            "nightmare_risk",
+            "belief_learning",
+            "language_learning",
+            "relationship_learning",
         ],
         "cycle_trace_refs": ["runtime/state/replay/shadow_cycle_trace.json"],
+        "learning_plan_refs": [
+            "runtime/state/growth/belief_learning_plan.json",
+            "runtime/state/growth/language_learning_plan.json",
+            "runtime/state/growth/relationship_learning_plan.json",
+        ],
+        "nightmare_risk_ref": "runtime/state/dream/nightmare_loop_risk.json",
         "source_doc_refs": sorted(set(SOURCE_DOC_REFS + REPLAY_SOURCE_DOC_REFS + DREAM_SOURCE_DOC_REFS)),
         "shadow_trace_count": len(shadow_trace.get("cycle_trace", [])),
+        "nightmare_risk_status": nightmare_risk.get("risk_status", "guarded"),
+        "belief_target_count": len(belief_learning.get("belief_targets", [])),
+        "language_target_count": len(language_learning.get("language_targets", [])),
+        "relationship_target_count": len(relationship_learning.get("relationship_targets", [])),
     }
 
 
@@ -943,11 +1030,15 @@ def _build_growth_report(
         "offline_refs": [
             "runtime/state/dream/offline_entry_gate.json",
             "runtime/state/dream/dream_fact_gate_decision.json",
+            "runtime/state/dream/nightmare_loop_risk.json",
         ],
         "replay_refs": [
             "runtime/state/replay/shadow_cycle_trace.json",
             "runtime/state/replay/pain_regret_responsibility_replay.json",
             "runtime/state/growth/anti_forgetting_replay_plan.json",
+            "runtime/state/growth/belief_learning_plan.json",
+            "runtime/state/growth/language_learning_plan.json",
+            "runtime/state/growth/relationship_learning_plan.json",
         ],
         "state_refs": state_refs,
         "archive_receipt_ref": receipt_ref,

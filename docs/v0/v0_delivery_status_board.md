@@ -238,7 +238,7 @@ Queue D 的第二波现在也已经真实落下：
 - `runtime/state/growth/self_read_report.json`
 - `runtime/state/growth/anti_forgetting_replay_plan.json`
 
-所以当前 Queue D 不再是“第一波已落、第二波待补”，而是“身体-梦境-成长的第二波对象链已经接通，下一轮默认入口转入 Queue E，Queue D 后续只在第三波继续补 `nightmare_risk / belief_learning / language_learning / relationship_learning` 一类扩展器官时再回切”。
+所以当前 Queue D 不再是“第一波已落、第二波待补”，而是“身体-梦境-成长的第二波对象链已经接通，第三波第一批扩展器官也已落到 `nightmare_risk / belief_learning / language_learning / relationship_learning`。下一轮默认入口仍转入 Queue E；Queue D 只在继续补厚这批扩展器官与更深联动时再回切”。
 
 这里的状态要钉死：
 
