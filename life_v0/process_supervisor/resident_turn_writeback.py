@@ -65,6 +65,9 @@ def write_resident_turn_writeback(
     readme_block_refs: list[str],
     runtime_carrier_refs: list[str],
     replay_cue_bundle_ref: str | None,
+    responsibility_loop_state_ref: str | None = None,
+    world_contact_summary_ref: str | None = None,
+    pain_regret_repair_report_ref: str | None = None,
     now_iso: Callable[[], str],
     write_json: Callable[[Path, dict[str, Any]], None],
     append_jsonl: Callable[[Path, list[dict[str, Any]]], None],
@@ -127,6 +130,15 @@ def write_resident_turn_writeback(
     replay_cue_refs = ["runtime/state/life_state.json#memory_index.replay_cues"]
     if replay_cue_bundle_ref:
         replay_cue_refs.append(replay_cue_bundle_ref)
+    membrane_guard_refs = [
+        ref
+        for ref in [
+            responsibility_loop_state_ref,
+            world_contact_summary_ref,
+            pain_regret_repair_report_ref,
+        ]
+        if ref
+    ]
     dialogue_writeback_bundle = build_dialogue_writeback_bundle(
         run_id=run_id,
         generated_at=generated_at,
@@ -149,6 +161,7 @@ def write_resident_turn_writeback(
         responsibility_writeback_refs=[
             RESPONSIBILITY_EVENT_REF,
             RESPONSIBILITY_OBLIGATION_REF,
+            *membrane_guard_refs,
         ],
         life_state_writeback_refs=[
             LIFE_STATE_RESPONSIBILITY_REF,
@@ -181,6 +194,14 @@ def write_resident_turn_writeback(
         "dialogue_writeback_bundle_ref": DIALOGUE_WRITEBACK_BUNDLE_REF,
         "next_required_action": "await_next_external_relation_turn",
     }
+    if responsibility_loop_state_ref:
+        resumed_dialogue_packet["responsibility_loop_state_ref"] = responsibility_loop_state_ref
+    if world_contact_summary_ref:
+        resumed_dialogue_packet["world_contact_summary_ref"] = world_contact_summary_ref
+    if pain_regret_repair_report_ref:
+        resumed_dialogue_packet["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
+    if membrane_guard_refs:
+        resumed_dialogue_packet["membrane_guard_refs"] = membrane_guard_refs
     write_json(reports_dir / "resumed_external_dialogue_packet.json", resumed_dialogue_packet)
 
     return ResidentTurnWritebackResult(

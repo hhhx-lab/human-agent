@@ -56,10 +56,16 @@ def run_live_turn_cycle(
     replay_cue_bundle: dict[str, Any],
     offline_consolidation_frame: dict[str, Any],
     growth_patch_candidate_queue: dict[str, Any],
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
     source_doc_refs: list[str],
     readme_block_refs: list[str],
     runtime_carrier_refs: list[str],
     replay_cue_bundle_ref: str | None,
+    responsibility_loop_state_ref: str | None = None,
+    world_contact_summary_ref: str | None = None,
+    pain_regret_repair_report_ref: str | None = None,
     now_iso: Callable[[], str],
     write_json: Callable[[Path, dict[str, Any]], None],
     append_jsonl: Callable[[Path, list[dict[str, Any]]], None],
@@ -77,6 +83,9 @@ def run_live_turn_cycle(
         utterance=external_utterance,
         shared_term_registry=shared_term_registry,
         commitment_index=commitment_index,
+        responsibility_loop_state_ref=responsibility_loop_state_ref,
+        world_contact_summary_ref=world_contact_summary_ref,
+        pain_regret_repair_report_ref=pain_regret_repair_report_ref,
     )
 
     try:
@@ -98,6 +107,9 @@ def run_live_turn_cycle(
             growth_patch_candidate_queue=growth_patch_candidate_queue,
             body_resource_budget=body_resource_budget,
             core_affect_vector=core_affect_vector,
+            responsibility_loop_state=responsibility_loop_state,
+            world_contact_summary=world_contact_summary,
+            pain_regret_repair_report=pain_regret_repair_report,
         )
         life_turn = build_life_turn_event_fn(
             turn_id=life_turn_id,
@@ -105,6 +117,9 @@ def run_live_turn_cycle(
             utterance=life_response,
             shared_term_registry=shared_term_registry,
             commitment_index=commitment_index,
+            responsibility_loop_state_ref=responsibility_loop_state_ref,
+            world_contact_summary_ref=world_contact_summary_ref,
+            pain_regret_repair_report_ref=pain_regret_repair_report_ref,
         )
         turn_writeback = write_resident_turn_writeback_fn(
             run_id=run_id,
@@ -128,6 +143,9 @@ def run_live_turn_cycle(
             readme_block_refs=readme_block_refs,
             runtime_carrier_refs=runtime_carrier_refs,
             replay_cue_bundle_ref=replay_cue_bundle_ref,
+            responsibility_loop_state_ref=responsibility_loop_state_ref,
+            world_contact_summary_ref=world_contact_summary_ref,
+            pain_regret_repair_report_ref=pain_regret_repair_report_ref,
             now_iso=now_iso,
             write_json=write_json,
             append_jsonl=append_jsonl,

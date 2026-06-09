@@ -20,6 +20,9 @@ def compose_life_response(
     growth_patch_candidate_queue: dict[str, Any] | None = None,
     body_resource_budget: dict[str, Any] | None = None,
     core_affect_vector: dict[str, Any] | None = None,
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
 ) -> str:
     relation_role = "朋友"
     subjects = (relationship_graph or {}).get("subjects", [])
@@ -54,6 +57,17 @@ def compose_life_response(
     affect_arousal = (expression_plan or {}).get("affect_arousal")
     release_caution_level = (expression_plan or {}).get("release_caution_level")
     expression_tempo_mode = (expression_plan or {}).get("expression_tempo_mode")
+    world_contact_release_posture = (world_contact_summary or {}).get("release_posture")
+    repair_obligation_count = len((world_contact_summary or {}).get("repair_obligation_refs", []))
+    if not repair_obligation_count:
+        repair_obligation_count = len((responsibility_loop_state or {}).get("repair_obligation_refs", []))
+    regret_pressure_count = len((pain_regret_repair_report or {}).get("regret_pressure_refs", []))
+    if not regret_pressure_count:
+        regret_pressure_count = len((responsibility_loop_state or {}).get("regret_pressure_candidates", []))
+    repair_followup_required = bool(
+        (pain_regret_repair_report or {}).get("repair_followup_required")
+        or (responsibility_loop_state or {}).get("repair_followup_required")
+    )
     continuity_reports = list((relationship_timeline or {}).get("relationship_continuity_reports", []))
     trust_trajectories = list((relationship_timeline or {}).get("trust_trajectories", []))
     continuity_state = ""
@@ -85,6 +99,14 @@ def compose_life_response(
         response = f"{response}，关系连续体状态为{continuity_state}"
     if trust_state:
         response = f"{response}，当前信任状态为{trust_state}"
+    if world_contact_release_posture:
+        response = f"{response}，当前世界接触姿态保持{world_contact_release_posture}"
+    if repair_obligation_count:
+        response = f"{response}，责任回路仍挂着{repair_obligation_count}条修复义务"
+    if regret_pressure_count:
+        response = f"{response}，后悔压力线索维持在{regret_pressure_count}条"
+    if repair_followup_required:
+        response = f"{response}，当前仍处在需要修复跟进的责任场中"
     if has_offline_influence:
         response = f"{response}，当前带着离线表达压力"
     if replay_cue_count:

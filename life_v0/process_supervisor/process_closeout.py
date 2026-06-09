@@ -64,6 +64,9 @@ def close_digital_life_process(
     replay_cue_bundle_ref: str | None,
     offline_consolidation_frame_ref: str | None,
     growth_patch_candidate_queue_ref: str | None,
+    responsibility_loop_state_ref: str | None = None,
+    world_contact_summary_ref: str | None = None,
+    pain_regret_repair_report_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> ProcessCloseoutResult:
     persistent_process_artifacts = write_persistent_process_artifacts(
@@ -95,6 +98,9 @@ def close_digital_life_process(
             payload=apology_repair_language_trace,
             ref=APOLOGY_REPAIR_LANGUAGE_TRACE_REF,
         ),
+        responsibility_loop_state_ref=responsibility_loop_state_ref,
+        world_contact_summary_ref=world_contact_summary_ref,
+        pain_regret_repair_report_ref=pain_regret_repair_report_ref,
         write_json=write_json,
     )
 
@@ -154,6 +160,9 @@ def close_digital_life_process(
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
+        responsibility_loop_state_ref=responsibility_loop_state_ref,
+        world_contact_summary_ref=world_contact_summary_ref,
+        pain_regret_repair_report_ref=pain_regret_repair_report_ref,
         write_json=write_json,
     )
     return ProcessCloseoutResult(

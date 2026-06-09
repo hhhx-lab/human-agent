@@ -47,11 +47,31 @@ def write_waiting_heartbeat(
     replay_residue_ref_count: int = 0,
     dream_window_ref_count: int = 0,
     growth_patch_candidate_count: int = 0,
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
+    responsibility_loop_state_ref: str | None = None,
+    world_contact_summary_ref: str | None = None,
+    pain_regret_repair_report_ref: str | None = None,
     now_iso: Callable[[], str],
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> int:
     heartbeat_counter = int(safe_terminal_loop.get("heartbeat_counter", 0)) + 1
     heartbeat_report_ref = "runtime/reports/latest/digital_life_waiting_heartbeat.json"
+    membrane_guard_refs = [
+        ref
+        for ref in [
+            responsibility_loop_state_ref,
+            world_contact_summary_ref,
+            pain_regret_repair_report_ref,
+        ]
+        if ref
+    ]
+    world_contact_release_posture = (world_contact_summary or {}).get("release_posture")
+    repair_followup_required = bool(
+        (pain_regret_repair_report or {}).get("repair_followup_required")
+        or (responsibility_loop_state or {}).get("repair_followup_required")
+    )
     idle_strategy = decide_idle_strategy(
         run_id=run_id,
         generated_at=generated_at,
@@ -94,6 +114,18 @@ def write_waiting_heartbeat(
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
         "next_required_action": "await_next_external_relation_turn",
     }
+    if responsibility_loop_state_ref:
+        heartbeat_packet["responsibility_loop_state_ref"] = responsibility_loop_state_ref
+    if world_contact_summary_ref:
+        heartbeat_packet["world_contact_summary_ref"] = world_contact_summary_ref
+    if pain_regret_repair_report_ref:
+        heartbeat_packet["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
+    if membrane_guard_refs:
+        heartbeat_packet["membrane_guard_refs"] = membrane_guard_refs
+    if world_contact_release_posture:
+        heartbeat_packet["world_contact_release_posture"] = world_contact_release_posture
+    if repair_followup_required:
+        heartbeat_packet["repair_followup_required"] = True
     heartbeat_packet.update(extract_idle_governance_fields(idle_strategy))
 
     safe_terminal_loop["current_mode"] = waiting_mode
@@ -118,6 +150,14 @@ def write_waiting_heartbeat(
     ):
         if field in idle_strategy:
             terminal_life_loop_state[field] = idle_strategy[field]
+    if responsibility_loop_state_ref:
+        terminal_life_loop_state["responsibility_loop_state_ref"] = responsibility_loop_state_ref
+    if world_contact_summary_ref:
+        terminal_life_loop_state["world_contact_summary_ref"] = world_contact_summary_ref
+    if pain_regret_repair_report_ref:
+        terminal_life_loop_state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
+    if membrane_guard_refs:
+        terminal_life_loop_state["membrane_guard_refs"] = membrane_guard_refs
     write_json(terminal_dir / "terminal_life_loop_state.json", terminal_life_loop_state)
 
     record_idle_continuity(
@@ -149,6 +189,11 @@ def write_waiting_heartbeat(
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,
         growth_patch_candidate_count=growth_patch_candidate_count,
+        responsibility_loop_state_ref=responsibility_loop_state_ref,
+        world_contact_summary_ref=world_contact_summary_ref,
+        pain_regret_repair_report_ref=pain_regret_repair_report_ref,
+        world_contact_release_posture=world_contact_release_posture,
+        repair_followup_required=repair_followup_required,
     )
     write_json(terminal_dir / "idle_continuity_frame.json", idle_continuity_frame)
     resident_governance_state = {
@@ -173,6 +218,14 @@ def write_waiting_heartbeat(
         "long_horizon_language_refs": list(idle_strategy.get("long_horizon_language_refs", [])),
         "next_required_action": "await_next_external_relation_turn",
     }
+    if responsibility_loop_state_ref:
+        resident_governance_state["responsibility_loop_state_ref"] = responsibility_loop_state_ref
+    if world_contact_summary_ref:
+        resident_governance_state["world_contact_summary_ref"] = world_contact_summary_ref
+    if pain_regret_repair_report_ref:
+        resident_governance_state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
+    if membrane_guard_refs:
+        resident_governance_state["membrane_guard_refs"] = membrane_guard_refs
     resident_governance_state.update(extract_idle_governance_fields(idle_strategy))
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     idle_strategy["idle_continuity_ref"] = "runtime/state/terminal/idle_continuity_frame.json"

@@ -34,9 +34,15 @@ class ResidentSupervisionContext:
     replay_cue_bundle: dict[str, Any]
     offline_consolidation_frame: dict[str, Any]
     growth_patch_candidate_queue: dict[str, Any]
+    responsibility_loop_state: dict[str, Any]
+    world_contact_summary: dict[str, Any]
+    pain_regret_repair_report: dict[str, Any]
     replay_cue_bundle_ref: str | None
     offline_consolidation_frame_ref: str | None
     growth_patch_candidate_queue_ref: str | None
+    responsibility_loop_state_ref: str | None
+    world_contact_summary_ref: str | None
+    pain_regret_repair_report_ref: str | None
     growth_patch_candidate_ids: list[str]
     replay_residue_ref_count: int
     dream_window_ref_count: int
@@ -110,12 +116,21 @@ def bootstrap_resident_supervision(
     expression_plan = read_json_if_exists(language_dir / "expression_plan.json")
     relationship_graph = read_json(relationship_dir / "relationship_subject_graph.json")
     relationship_timeline = read_json_if_exists(relationship_dir / "relationship_timeline.json")
+    responsibility_loop_state = read_json_if_exists(
+        state_dir / "action" / "responsibility_loop_state.json"
+    )
+    world_contact_summary = read_json_if_exists(
+        state_dir / "membrane" / "world_contact_summary.json"
+    )
     replay_cue_bundle = read_json_if_exists(state_dir / "replay" / "replay_cue_bundle.json")
     offline_consolidation_frame = read_json_if_exists(
         state_dir / "dream" / "offline_consolidation_frame.json"
     )
     growth_patch_candidate_queue = read_json_if_exists(
         state_dir / "growth" / "growth_patch_candidate_queue.json"
+    )
+    pain_regret_repair_report = read_json_if_exists(
+        reports_dir / "pain_regret_repair_report.json"
     )
 
     replay_cue_bundle_ref = _ref_if_present(
@@ -129,6 +144,18 @@ def bootstrap_resident_supervision(
     growth_patch_candidate_queue_ref = _ref_if_present(
         payload=growth_patch_candidate_queue,
         ref="runtime/state/growth/growth_patch_candidate_queue.json",
+    )
+    responsibility_loop_state_ref = _ref_if_present(
+        payload=responsibility_loop_state,
+        ref="runtime/state/action/responsibility_loop_state.json",
+    )
+    world_contact_summary_ref = _ref_if_present(
+        payload=world_contact_summary,
+        ref="runtime/state/membrane/world_contact_summary.json",
+    )
+    pain_regret_repair_report_ref = _ref_if_present(
+        payload=pain_regret_repair_report,
+        ref="runtime/reports/latest/pain_regret_repair_report.json",
     )
     growth_patch_candidate_ids = [
         candidate.get("growth_patch_candidate_id")
@@ -211,6 +238,12 @@ def bootstrap_resident_supervision(
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,
         growth_patch_candidate_count=growth_patch_candidate_count,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+        responsibility_loop_state_ref=responsibility_loop_state_ref,
+        world_contact_summary_ref=world_contact_summary_ref,
+        pain_regret_repair_report_ref=pain_regret_repair_report_ref,
         now_iso=now_iso,
         write_json=write_json,
     )
@@ -235,12 +268,18 @@ def bootstrap_resident_supervision(
         relationship_timeline=relationship_timeline,
         commitment_expression_plan=commitment_expression_plan,
         apology_repair_language_trace=apology_repair_language_trace,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
+        responsibility_loop_state_ref=responsibility_loop_state_ref,
+        world_contact_summary_ref=world_contact_summary_ref,
+        pain_regret_repair_report_ref=pain_regret_repair_report_ref,
         growth_patch_candidate_ids=growth_patch_candidate_ids,
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,

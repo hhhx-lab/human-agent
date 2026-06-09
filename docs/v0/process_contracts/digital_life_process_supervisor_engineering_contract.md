@@ -30,7 +30,7 @@ life-v0 "digital life"
 当前仍然还没有的是：
 
 1. 更高频的 heartbeat 节律、后台继续存在和更厚的 idle 策略。
-2. 更细的关系/语言/责任器官联动写回。
+2. 更高阶的关系/语言/责任器官联动写回与跨进程持续治理；但最小层的 Queue E 联动已经不再缺席，`responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 已经正式进入 waiting heartbeat、dialogue events、response surface、resident governance、process report 与 process receipt。
 3. 全局长期运行层、后台继续存在与更强的安装后常驻治理。
 4. 真正高阶的 resident supervision。
 
@@ -45,7 +45,7 @@ life-v0 "digital life"
 
 1. 当 `stage_explanation_report.json` 等关键前置材料缺失时，先执行一次最小出生自举，把必要运行材料补齐。
 2. 调用现有 `digital_life_shell_command` 完成 restore shell 启动。
-2. 在恢复成功后先写一次 waiting heartbeat，证明当前生命过程已经进入等待态而不是立即沉默。
+3. 在恢复成功后先写一次 waiting heartbeat，证明当前生命过程已经进入等待态而不是立即沉默。
 3. 在等待态之上持续刷新 waiting heartbeat，并进入可轮询的 stdin 驱动关系回合循环。
 4. 每接收一次新回合输入，就写回新的外部回合事件和生命回应事件。
 5. 每回合结束后重新回到 `restored_waiting_for_external_turn`，直到收到退出语义。
@@ -73,6 +73,9 @@ life-v0 "digital life"
 | `runtime/state/relationship/relationship_subject_graph.json` | 关系主体、关系阶段、最后接触材料 |
 | `runtime/state/body/body_resource_budget.json` | 当前身体预算、疲惫级别、维护压力与修复驱力 |
 | `runtime/state/body/core_affect_vector.json` | 当前核心情绪张力、责任重量与修复驱动 |
+| `runtime/state/action/responsibility_loop_state.json` | 当前责任归因、修复义务、后悔压力与 repair followup 状态 |
+| `runtime/state/membrane/world_contact_summary.json` | 当前世界接触姿态、confirmation 状态、relationship / archive effects |
+| `runtime/reports/latest/pain_regret_repair_report.json` | 当前痛苦 / 后悔 / 修复报告回包 |
 | `runtime/state/replay/replay_cue_bundle.json` | 等待态 residue、离线 replay 入口与未来回放线索 |
 | `runtime/state/dream/offline_consolidation_frame.json` | 梦境/离线整合统一容器与醒后回接线索 |
 | `runtime/state/growth/growth_patch_candidate_queue.json` | 成长补丁候选、塑性风险与防遗忘要求 |
@@ -119,6 +122,7 @@ life-v0 "digital life"
 7. 把常驻进程的 `persistent_process + process_report + receipt` closeout 决策也接回同一条对象链。
 8. 继续把离线对象压进 waiting state 与下一轮表达。
 9. 把 `body_resource_budget.json` 与 `core_affect_vector.json` 装载进 resident supervision 上下文，使疲惫级别、修复驱力与情绪张力能够真实调制常驻过程的生命表达，而不是停在 S06 状态柜里。
+10. 把 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 显式装载进 resident supervision / live turn / waiting governance / closeout，使 Queue E 不只停在语言器官侧，而是正式进入常驻生命过程。
 
 ## 最小行为合同
 
@@ -154,6 +158,7 @@ repo-local 最小常驻终端入口固定为：
 
 ```text
 IdleContinuityFrame
+  -> responsibility_loop_state.json / world_contact_summary.json / pain_regret_repair_report.json
   -> external turn event
   -> body_resource_budget.json + core_affect_vector.json
   -> life turn event
@@ -165,11 +170,12 @@ IdleContinuityFrame
 它表达的是：
 
 1. 先证明“在等”；
-2. 再记录“看到了什么外部回合”；
-3. 再把身体预算、疲惫、修复驱力和情绪张力带进回应生成；
-4. 再记录“这次如何回应”；
-5. 再把结果回写到长期连续体与 replay 线索；
-6. 最后再重新回到等待态。
+2. 再把当前责任回路、世界接触姿态和 pain/regret/repair 报告重新挂上等待态；
+3. 再记录“看到了什么外部回合”；
+4. 再把身体预算、疲惫、修复驱力、情绪张力与责任压力一起带进回应生成；
+5. 再记录“这次如何回应”；
+6. 再把结果回写到长期连续体与 replay 线索；
+7. 最后再重新回到等待态。
 
 如果 process supervisor 只有 stdin 读写，没有 `IdleContinuityFrame -> DialogueWritebackBundle -> ReplayCueBundle` 这条链，它仍然只是终端壳，而不是生命进程。
 
@@ -181,6 +187,9 @@ IdleContinuityFrame
 
 - `heartbeat_counter`
 - `waiting_state`
+- `responsibility_loop_state_ref`
+- `world_contact_summary_ref`
+- `pain_regret_repair_report_ref`
 - `self_narrative_idle_refs`
 - `commitment_idle_refs`
 - `relationship_idle_refs`
@@ -197,6 +206,7 @@ IdleContinuityFrame
 - `relation_scope_ref`
 - `shared_term_hits`
 - `commitment_trigger_candidates`
+- `membrane_guard_refs`
 
 ### `life turn event`
 
@@ -208,6 +218,9 @@ IdleContinuityFrame
 - `relationship_subject_ref`
 - `commitment_refs`
 - `offline_influence_refs`
+- `responsibility_loop_ref`
+- `world_contact_summary_ref`
+- `pain_regret_repair_report_ref`
 
 ### `DialogueWritebackBundle`
 
@@ -220,6 +233,8 @@ IdleContinuityFrame
 - `responsibility_writeback_refs`
 - `life_state_writeback_refs`
 - `replay_cue_refs`
+
+当前这一层的 `responsibility_writeback_refs` 已经不只回到 `responsibility_ledger.json`，还要显式带上 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 这组 Queue E 上下文。
 
 ### `ReplayCueBundle`
 

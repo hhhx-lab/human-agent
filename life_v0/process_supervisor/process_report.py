@@ -51,9 +51,21 @@ def write_process_report_bundle(
     replay_cue_bundle_ref: str | None,
     offline_consolidation_frame_ref: str | None,
     growth_patch_candidate_queue_ref: str | None,
+    responsibility_loop_state_ref: str | None = None,
+    world_contact_summary_ref: str | None = None,
+    pain_regret_repair_report_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> ProcessReportBundleResult:
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
+    membrane_guard_refs = [
+        ref
+        for ref in [
+            responsibility_loop_state_ref,
+            world_contact_summary_ref,
+            pain_regret_repair_report_ref,
+        ]
+        if ref
+    ]
     report = {
         "schema_version": "digital_life_process_report_v0",
         "run_id": run_id,
@@ -93,6 +105,14 @@ def write_process_report_bundle(
         "next_required_action": "process_closed_waiting_relaunch",
         "blocked_reasons": [],
     }
+    if responsibility_loop_state_ref:
+        report["responsibility_loop_state_ref"] = responsibility_loop_state_ref
+    if world_contact_summary_ref:
+        report["world_contact_summary_ref"] = world_contact_summary_ref
+    if pain_regret_repair_report_ref:
+        report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
+    if membrane_guard_refs:
+        report["membrane_guard_refs"] = membrane_guard_refs
     report.update(idle_governance)
     digest = {
         "schema_version": "digital_life_process_digest_v0",
@@ -125,6 +145,8 @@ def write_process_report_bundle(
             if ref
         ],
     }
+    if membrane_guard_refs:
+        digest["membrane_guard_refs"] = membrane_guard_refs
     receipt = build_process_receipt(
         run_id=run_id,
         generated_at=generated_at,
@@ -144,6 +166,9 @@ def write_process_report_bundle(
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
+        responsibility_loop_state_ref=responsibility_loop_state_ref,
+        world_contact_summary_ref=world_contact_summary_ref,
+        pain_regret_repair_report_ref=pain_regret_repair_report_ref,
     )
 
     receipts_dir.mkdir(parents=True, exist_ok=True)
@@ -175,6 +200,9 @@ def build_process_receipt(
     replay_cue_bundle_ref: str | None,
     offline_consolidation_frame_ref: str | None,
     growth_patch_candidate_queue_ref: str | None,
+    responsibility_loop_state_ref: str | None = None,
+    world_contact_summary_ref: str | None = None,
+    pain_regret_repair_report_ref: str | None = None,
 ) -> dict[str, Any]:
     input_hashes: dict[str, str] = {}
     for path in [
@@ -190,10 +218,13 @@ def build_process_receipt(
         state_dir / "language" / "self_narrative_language_trace.json",
         state_dir / "language" / "commitment_repair_language_index.json",
         state_dir / "language" / "expression_plan.json",
+        state_dir / "action" / "responsibility_loop_state.json",
+        state_dir / "membrane" / "world_contact_summary.json",
         state_dir / "replay" / "replay_cue_bundle.json",
         state_dir / "dream" / "offline_consolidation_frame.json",
         state_dir / "growth" / "growth_patch_candidate_queue.json",
         state_dir / "relationship" / "relationship_subject_graph.json",
+        reports_dir / "pain_regret_repair_report.json",
         reports_dir / "dialogue_writeback_bundle.json",
         reports_dir / "digital_life_process_relaunch_recovery_report.json",
         reports_dir / "digital_life_process_incident_report.json",
@@ -232,6 +263,9 @@ def build_process_receipt(
                 replay_cue_bundle_ref,
                 offline_consolidation_frame_ref,
                 growth_patch_candidate_queue_ref,
+                responsibility_loop_state_ref,
+                world_contact_summary_ref,
+                pain_regret_repair_report_ref,
             ]
             if ref
         ],

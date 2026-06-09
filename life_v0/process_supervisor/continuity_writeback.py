@@ -22,11 +22,25 @@ def build_idle_continuity_frame(
     replay_residue_ref_count: int = 0,
     dream_window_ref_count: int = 0,
     growth_patch_candidate_count: int = 0,
+    responsibility_loop_state_ref: str | None = None,
+    world_contact_summary_ref: str | None = None,
+    pain_regret_repair_report_ref: str | None = None,
+    world_contact_release_posture: str | None = None,
+    repair_followup_required: bool = False,
 ) -> dict[str, Any]:
     replay_seed_refs = ["runtime/state/life_state.json#memory_index.replay_cues"]
     if replay_cue_bundle_ref:
         replay_seed_refs.append(replay_cue_bundle_ref)
-    return {
+    membrane_guard_refs = [
+        ref
+        for ref in [
+            responsibility_loop_state_ref,
+            world_contact_summary_ref,
+            pain_regret_repair_report_ref,
+        ]
+        if ref
+    ]
+    payload = {
         "schema_version": "idle_continuity_frame_v0",
         "run_id": run_id,
         "generated_at": generated_at,
@@ -66,6 +80,19 @@ def build_idle_continuity_frame(
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
     }
+    if responsibility_loop_state_ref:
+        payload["responsibility_loop_state_ref"] = responsibility_loop_state_ref
+    if world_contact_summary_ref:
+        payload["world_contact_summary_ref"] = world_contact_summary_ref
+    if pain_regret_repair_report_ref:
+        payload["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
+    if membrane_guard_refs:
+        payload["membrane_guard_refs"] = membrane_guard_refs
+    if world_contact_release_posture:
+        payload["world_contact_release_posture"] = world_contact_release_posture
+    if repair_followup_required:
+        payload["repair_followup_required"] = True
+    return payload
 
 
 def record_idle_continuity(

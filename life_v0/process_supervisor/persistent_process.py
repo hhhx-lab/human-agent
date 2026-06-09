@@ -44,12 +44,24 @@ def write_persistent_process_artifacts(
     relationship_timeline_ref: str | None,
     commitment_expression_plan_ref: str | None,
     apology_repair_language_trace_ref: str | None,
+    responsibility_loop_state_ref: str | None = None,
+    world_contact_summary_ref: str | None = None,
+    pain_regret_repair_report_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> PersistentProcessArtifactsResult:
     terminal_dir = state_dir / "terminal"
     terminal_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
+    membrane_guard_refs = [
+        ref
+        for ref in [
+            responsibility_loop_state_ref,
+            world_contact_summary_ref,
+            pain_regret_repair_report_ref,
+        ]
+        if ref
+    ]
 
     resident_governance_snapshot = {
         "schema_version": "resident_governance_snapshot_v0",
@@ -73,6 +85,8 @@ def write_persistent_process_artifacts(
         "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
     }
+    if membrane_guard_refs:
+        resident_governance_snapshot["membrane_guard_refs"] = membrane_guard_refs
     resident_governance_snapshot.update(idle_governance)
     resident_governance_state = {
         "schema_version": "resident_governance_state_v0",
@@ -108,6 +122,14 @@ def write_persistent_process_artifacts(
         ],
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
     }
+    if responsibility_loop_state_ref:
+        resident_governance_state["responsibility_loop_state_ref"] = responsibility_loop_state_ref
+    if world_contact_summary_ref:
+        resident_governance_state["world_contact_summary_ref"] = world_contact_summary_ref
+    if pain_regret_repair_report_ref:
+        resident_governance_state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
+    if membrane_guard_refs:
+        resident_governance_state["membrane_guard_refs"] = membrane_guard_refs
     resident_governance_state.update(idle_governance)
     state = {
         "schema_version": "persistent_process_state_v0",
@@ -132,6 +154,14 @@ def write_persistent_process_artifacts(
         "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
     }
+    if responsibility_loop_state_ref:
+        state["responsibility_loop_state_ref"] = responsibility_loop_state_ref
+    if world_contact_summary_ref:
+        state["world_contact_summary_ref"] = world_contact_summary_ref
+    if pain_regret_repair_report_ref:
+        state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
+    if membrane_guard_refs:
+        state["membrane_guard_refs"] = membrane_guard_refs
     state.update(idle_governance)
     report = {
         "schema_version": "digital_life_persistent_process_report_v0",
@@ -160,6 +190,14 @@ def write_persistent_process_artifacts(
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
     }
+    if responsibility_loop_state_ref:
+        report["responsibility_loop_state_ref"] = responsibility_loop_state_ref
+    if world_contact_summary_ref:
+        report["world_contact_summary_ref"] = world_contact_summary_ref
+    if pain_regret_repair_report_ref:
+        report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
+    if membrane_guard_refs:
+        report["membrane_guard_refs"] = membrane_guard_refs
     report.update(idle_governance)
     resident_governance_report = {
         "schema_version": "digital_life_resident_governance_report_v0",
@@ -186,6 +224,14 @@ def write_persistent_process_artifacts(
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
     }
+    if responsibility_loop_state_ref:
+        resident_governance_report["responsibility_loop_state_ref"] = responsibility_loop_state_ref
+    if world_contact_summary_ref:
+        resident_governance_report["world_contact_summary_ref"] = world_contact_summary_ref
+    if pain_regret_repair_report_ref:
+        resident_governance_report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
+    if membrane_guard_refs:
+        resident_governance_report["membrane_guard_refs"] = membrane_guard_refs
     resident_governance_report.update(idle_governance)
 
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)

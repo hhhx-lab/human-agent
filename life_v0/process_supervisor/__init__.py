@@ -117,9 +117,15 @@ def run_digital_life_process(
     replay_cue_bundle = supervision.replay_cue_bundle
     offline_consolidation_frame = supervision.offline_consolidation_frame
     growth_patch_candidate_queue = supervision.growth_patch_candidate_queue
+    responsibility_loop_state = supervision.responsibility_loop_state
+    world_contact_summary = supervision.world_contact_summary
+    pain_regret_repair_report = supervision.pain_regret_repair_report
     replay_cue_bundle_ref = supervision.replay_cue_bundle_ref
     offline_consolidation_frame_ref = supervision.offline_consolidation_frame_ref
     growth_patch_candidate_queue_ref = supervision.growth_patch_candidate_queue_ref
+    responsibility_loop_state_ref = supervision.responsibility_loop_state_ref
+    world_contact_summary_ref = supervision.world_contact_summary_ref
+    pain_regret_repair_report_ref = supervision.pain_regret_repair_report_ref
     growth_patch_candidate_ids = supervision.growth_patch_candidate_ids
     replay_residue_ref_count = supervision.replay_residue_ref_count
     dream_window_ref_count = supervision.dream_window_ref_count
@@ -157,12 +163,18 @@ def run_digital_life_process(
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         source_doc_refs=SOURCE_DOC_REFS,
         readme_block_refs=READ_ME_BLOCK_REFS,
         runtime_carrier_refs=RUNTIME_CARRIER_REFS,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
+        responsibility_loop_state_ref=responsibility_loop_state_ref,
+        world_contact_summary_ref=world_contact_summary_ref,
+        pain_regret_repair_report_ref=pain_regret_repair_report_ref,
         growth_patch_candidate_ids=growth_patch_candidate_ids,
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,
@@ -217,6 +229,9 @@ def run_digital_life_process(
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
+        responsibility_loop_state_ref=responsibility_loop_state_ref,
+        world_contact_summary_ref=world_contact_summary_ref,
+        pain_regret_repair_report_ref=pain_regret_repair_report_ref,
         write_json=_write_json,
     )
     return DigitalLifeProcessResult(exit_code=0, report=closeout.report_bundle.report)
