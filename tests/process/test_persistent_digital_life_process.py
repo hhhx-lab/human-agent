@@ -258,7 +258,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(heartbeat_packet["world_contact_release_posture"], "shadow_only_guarded")
             self.assertTrue(heartbeat_packet["repair_followup_required"])
-            self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 70)
+            self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 55)
             self.assertEqual(
                 heartbeat_packet["idle_probe_mode"],
                 "stdin_poll_with_background_continuity_refresh",
@@ -319,6 +319,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 idle_strategy["apology_repair_language_trace_ref"],
                 "runtime/state/language/apology_repair_language_trace.json",
             )
+            self.assertEqual(idle_strategy["world_contact_release_posture"], "shadow_only_guarded")
+            self.assertTrue(idle_strategy["repair_followup_required"])
+            self.assertEqual(idle_strategy["repair_obligation_count"], 2)
+            self.assertEqual(idle_strategy["regret_pressure_count"], 1)
+            self.assertEqual(idle_strategy["queue_e_priority_band"], "repair_guarded")
             self.assertEqual(
                 idle_strategy["long_horizon_language_refs"],
                 [
@@ -407,7 +412,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/language/apology_repair_language_trace.json",
                 ],
             )
-            self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 70)
+            self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 55)
             self.assertEqual(resident_governance_state["offline_pressure_level"], "elevated")
             self.assertEqual(
                 resident_governance_state["governance_attention_target"],
@@ -630,7 +635,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertGreater(idle_continuity["dream_window_ref_count"], 0)
             self.assertGreater(idle_continuity["growth_patch_candidate_count"], 0)
             self.assertEqual(idle_strategy["schema_version"], "idle_strategy_state_v0")
-            self.assertEqual(idle_strategy["heartbeat_interval_ms"], 70)
+            self.assertEqual(idle_strategy["heartbeat_interval_ms"], 55)
             self.assertEqual(idle_strategy["idle_probe_mode"], "stdin_poll_with_background_continuity_refresh")
             self.assertEqual(idle_strategy["offline_pressure_level"], "elevated")
             self.assertEqual(idle_strategy["relaunch_caution_level"], "baseline")
@@ -648,7 +653,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 idle_strategy["governance_cadence_profile"],
                 "repair_weighted_resident_hold",
             )
-            self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 70)
+            self.assertEqual(idle_strategy["world_contact_release_posture"], "shadow_only_guarded")
+            self.assertTrue(idle_strategy["repair_followup_required"])
+            self.assertEqual(idle_strategy["repair_obligation_count"], 2)
+            self.assertEqual(idle_strategy["regret_pressure_count"], 1)
+            self.assertEqual(idle_strategy["queue_e_priority_band"], "repair_guarded")
+            self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 55)
             self.assertEqual(
                 heartbeat_packet["idle_probe_mode"],
                 "stdin_poll_with_background_continuity_refresh",
@@ -661,7 +671,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "refresh_waiting_heartbeat_with_repair_readiness_hold",
             )
             self.assertEqual(process_report["waiting_mode"], "restored_waiting_for_external_turn")
-            self.assertEqual(process_report["heartbeat_interval_ms"], 70)
+            self.assertEqual(process_report["heartbeat_interval_ms"], 55)
             self.assertEqual(
                 process_report["idle_probe_mode"],
                 "stdin_poll_with_background_continuity_refresh",
@@ -715,8 +725,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/language/apology_repair_language_trace.json",
                 ],
             )
-            self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 70)
+            self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 55)
             self.assertEqual(resident_governance_state["offline_pressure_level"], "elevated")
+            self.assertEqual(
+                resident_governance_state["world_contact_release_posture"],
+                "shadow_only_guarded",
+            )
+            self.assertTrue(resident_governance_state["repair_followup_required"])
             self.assertEqual(
                 resident_governance_state["governance_attention_target"],
                 "apology_repair_language_trace",
@@ -1003,6 +1018,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(idle_strategy["heartbeat_interval_ms"], 120)
         self.assertEqual(idle_strategy["offline_pressure_level"], "elevated")
         self.assertEqual(idle_strategy["body_waiting_posture"], "low_bandwidth_guarded")
+        self.assertEqual(idle_strategy["world_contact_release_posture"], "shadow_only_guarded")
+        self.assertFalse(idle_strategy["repair_followup_required"])
+        self.assertEqual(idle_strategy["repair_obligation_count"], 0)
+        self.assertEqual(idle_strategy["regret_pressure_count"], 0)
+        self.assertEqual(idle_strategy["queue_e_priority_band"], "baseline")
         self.assertEqual(
             idle_strategy["next_idle_action"],
             "downshift_probe_and_preserve_recovery_bandwidth",
@@ -1057,6 +1077,96 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "relationship_timeline": "baseline",
                 "commitment_expression_plan": "elevated",
                 "apology_repair_language_trace": "primary",
+            },
+        )
+
+    def test_idle_strategy_uses_queue_e_repair_lock_to_raise_waiting_priority(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-queue-e-governance",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={
+                "schema_version": "relationship_timeline_v0",
+                "relationship_continuity_reports": [{"continuity_state": "repair_pending"}],
+            },
+            commitment_expression_plan={
+                "schema_version": "commitment_expression_plan_v0",
+                "language_act_candidates": [{"act_type": "repair_commitment"}],
+            },
+            apology_repair_language_trace={
+                "schema_version": "apology_repair_language_trace_v0",
+                "repair_language_moves": [{"move_type": "repair_hold"}],
+            },
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "inactive",
+                "cognitive_bandwidth": "steady_open",
+                "sleep_pressure": "low",
+            },
+            replay_cue_bundle={"turn_residue_refs": []},
+            offline_consolidation_frame=None,
+            growth_patch_candidate_queue=None,
+            responsibility_loop_state={
+                "schema_version": "responsibility_loop_state_v0",
+                "repair_followup_required": True,
+                "repair_obligation_refs": ["repair-1", "repair-2"],
+                "regret_pressure_candidates": [{"regret_pressure_id": "regret-1"}],
+            },
+            world_contact_summary={
+                "schema_version": "world_contact_summary_v0",
+                "release_posture": "confirmation_blocked",
+                "repair_obligation_refs": ["repair-1", "repair-2"],
+                "regret_pressure_refs": ["regret-1"],
+            },
+            pain_regret_repair_report={
+                "schema_version": "pain_regret_repair_report_v0",
+                "repair_followup_required": True,
+                "repair_obligation_refs": ["repair-1", "repair-2"],
+                "regret_pressure_refs": ["regret-1"],
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(idle_strategy["world_contact_release_posture"], "confirmation_blocked")
+        self.assertTrue(idle_strategy["repair_followup_required"])
+        self.assertEqual(idle_strategy["repair_obligation_count"], 2)
+        self.assertEqual(idle_strategy["regret_pressure_count"], 1)
+        self.assertEqual(idle_strategy["queue_e_priority_band"], "locked_repair_urgent")
+        self.assertEqual(idle_strategy["heartbeat_interval_ms"], 45)
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "maintain_confirmation_block_and_refresh_repair_priority",
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_target"],
+            "apology_repair_language_trace",
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_reason"],
+            "confirmation_blocked_requires_repair_lock",
+        )
+        self.assertEqual(
+            idle_strategy["governance_cadence_profile"],
+            "confirmation_blocked_repair_hold",
+        )
+        self.assertEqual(
+            idle_strategy["long_horizon_priority_profile"],
+            {
+                "relationship_timeline": "baseline",
+                "commitment_expression_plan": "baseline",
+                "apology_repair_language_trace": "locked_primary",
             },
         )
 

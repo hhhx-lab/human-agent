@@ -27,6 +27,11 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "commitment_expression_plan_ref",
     "apology_repair_language_trace_ref",
     "long_horizon_language_refs",
+    "world_contact_release_posture",
+    "repair_followup_required",
+    "repair_obligation_count",
+    "regret_pressure_count",
+    "queue_e_priority_band",
 )
 
 
@@ -55,6 +60,9 @@ def decide_idle_strategy(
     replay_cue_bundle: dict[str, Any] | None,
     offline_consolidation_frame: dict[str, Any] | None,
     growth_patch_candidate_queue: dict[str, Any] | None,
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
     growth_patch_candidate_queue_ref: str | None = None,
@@ -83,15 +91,29 @@ def decide_idle_strategy(
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
     )
+    (
+        world_contact_release_posture,
+        repair_followup_required,
+        repair_obligation_count,
+        regret_pressure_count,
+        queue_e_priority_band,
+    ) = _queue_e_idle_regulation(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
     heartbeat_interval_ms = _heartbeat_interval_ms(
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
         offline_pressure_level=offline_pressure_level,
+        queue_e_priority_band=queue_e_priority_band,
     )
     next_idle_action = _next_idle_action(
         body_waiting_posture=body_waiting_posture,
         offline_pressure_level=offline_pressure_level,
         need_state_vector=need_state_vector,
+        repair_followup_required=repair_followup_required,
+        queue_e_priority_band=queue_e_priority_band,
     )
     relaunch_caution_level = _relaunch_caution_level(
         safe_terminal_loop=safe_terminal_loop,
@@ -130,6 +152,11 @@ def decide_idle_strategy(
         offline_pressure_level=offline_pressure_level,
         need_state_vector=need_state_vector,
         body_waiting_posture=body_waiting_posture,
+        world_contact_release_posture=world_contact_release_posture,
+        repair_followup_required=repair_followup_required,
+        repair_obligation_count=repair_obligation_count,
+        regret_pressure_count=regret_pressure_count,
+        queue_e_priority_band=queue_e_priority_band,
     )
 
     return {
@@ -164,6 +191,11 @@ def decide_idle_strategy(
         "commitment_expression_plan_ref": commitment_expression_plan_ref,
         "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "long_horizon_language_refs": long_horizon_refs,
+        "world_contact_release_posture": world_contact_release_posture,
+        "repair_followup_required": repair_followup_required,
+        "repair_obligation_count": repair_obligation_count,
+        "regret_pressure_count": regret_pressure_count,
+        "queue_e_priority_band": queue_e_priority_band,
         "idle_continuity_ref": IDLE_CONTINUITY_FRAME_REF,
         "replay_cue_bundle_ref": replay_cue_bundle_ref if replay_cue_bundle else None,
         "offline_consolidation_frame_ref": (
@@ -246,6 +278,7 @@ def _heartbeat_interval_ms(
     body_rhythm_pulse: dict[str, Any] | None,
     need_state_vector: dict[str, Any] | None,
     offline_pressure_level: str,
+    queue_e_priority_band: str,
 ) -> int:
     fatigue_load = str((body_rhythm_pulse or {}).get("fatigue_load", "")).lower()
     cognitive_bandwidth = str((need_state_vector or {}).get("cognitive_bandwidth", "")).lower()
@@ -255,6 +288,10 @@ def _heartbeat_interval_ms(
         return 120
     if fatigue_load in {"elevated_guard", "high_load", "critical"}:
         return 110
+    if queue_e_priority_band == "locked_repair_urgent":
+        return 45
+    if queue_e_priority_band == "repair_guarded":
+        return 55
     if offline_pressure_level == "elevated":
         return 70
     if offline_pressure_level == "present":
@@ -267,10 +304,16 @@ def _next_idle_action(
     body_waiting_posture: str,
     offline_pressure_level: str,
     need_state_vector: dict[str, Any] | None,
+    repair_followup_required: bool,
+    queue_e_priority_band: str,
 ) -> str:
     repair_drive = str((need_state_vector or {}).get("repair_drive", "")).lower()
     if body_waiting_posture == "low_bandwidth_guarded":
         return "downshift_probe_and_preserve_recovery_bandwidth"
+    if queue_e_priority_band == "locked_repair_urgent":
+        return "maintain_confirmation_block_and_refresh_repair_priority"
+    if repair_followup_required and queue_e_priority_band == "repair_guarded":
+        return "refresh_waiting_heartbeat_with_repair_readiness_hold"
     if repair_drive == "active" and offline_pressure_level in {"elevated", "present"}:
         return "refresh_waiting_heartbeat_with_repair_readiness_hold"
     return "refresh_waiting_heartbeat_or_accept_external_turn"
@@ -284,6 +327,11 @@ def _resident_governance_language_priority(
     offline_pressure_level: str,
     need_state_vector: dict[str, Any] | None,
     body_waiting_posture: str,
+    world_contact_release_posture: str,
+    repair_followup_required: bool,
+    repair_obligation_count: int,
+    regret_pressure_count: int,
+    queue_e_priority_band: str,
 ) -> tuple[str, str, str, dict[str, str]]:
     repair_drive = str((need_state_vector or {}).get("repair_drive", "")).lower()
     priority_profile: dict[str, str] = {}
@@ -295,19 +343,33 @@ def _resident_governance_language_priority(
             "elevated" if offline_pressure_level in {"present", "elevated"} else "baseline"
         )
     if apology_repair_language_trace_ref:
-        if repair_drive == "active" and offline_pressure_level in {"present", "elevated"}:
+        if queue_e_priority_band == "locked_repair_urgent":
+            priority_profile["apology_repair_language_trace"] = "locked_primary"
+        elif repair_drive == "active" and offline_pressure_level in {"present", "elevated"}:
             priority_profile["apology_repair_language_trace"] = "primary"
-        elif repair_drive == "active" or offline_pressure_level == "elevated":
+        elif (
+            repair_drive == "active"
+            or offline_pressure_level == "elevated"
+            or repair_followup_required
+            or repair_obligation_count > 0
+            or regret_pressure_count > 0
+        ):
             priority_profile["apology_repair_language_trace"] = "elevated"
         else:
             priority_profile["apology_repair_language_trace"] = "baseline"
 
-    if priority_profile.get("apology_repair_language_trace") == "primary":
+    if priority_profile.get("apology_repair_language_trace") == "locked_primary":
+        target = "apology_repair_language_trace"
+        reason = f"{world_contact_release_posture}_requires_repair_lock"
+    elif priority_profile.get("apology_repair_language_trace") == "primary":
         target = "apology_repair_language_trace"
         reason = "repair_drive_active_with_offline_pressure"
     elif priority_profile.get("apology_repair_language_trace") == "elevated":
         target = "apology_repair_language_trace"
-        reason = "repair_drive_or_offline_pressure_requires_repair_hold"
+        if repair_followup_required:
+            reason = f"{world_contact_release_posture}_requires_guarded_repair_followup"
+        else:
+            reason = "repair_drive_or_offline_pressure_requires_repair_hold"
     elif priority_profile.get("commitment_expression_plan") == "elevated":
         target = "commitment_expression_plan"
         reason = "offline_pressure_requires_commitment_continuity"
@@ -319,11 +381,14 @@ def _resident_governance_language_priority(
         reason = "no_long_horizon_language_refs"
 
     if target == "apology_repair_language_trace":
-        cadence_profile = (
-            "guarded_repair_hold"
-            if body_waiting_posture == "low_bandwidth_guarded"
-            else "repair_weighted_resident_hold"
-        )
+        if queue_e_priority_band == "locked_repair_urgent":
+            cadence_profile = "confirmation_blocked_repair_hold"
+        else:
+            cadence_profile = (
+                "guarded_repair_hold"
+                if body_waiting_posture == "low_bandwidth_guarded"
+                else "repair_weighted_resident_hold"
+            )
     elif target == "commitment_expression_plan":
         cadence_profile = "commitment_continuity_refresh"
     elif target == "relationship_timeline":
@@ -332,6 +397,44 @@ def _resident_governance_language_priority(
         cadence_profile = "baseline_waiting_presence"
 
     return target, reason, cadence_profile, priority_profile
+
+
+def _queue_e_idle_regulation(
+    *,
+    responsibility_loop_state: dict[str, Any] | None,
+    world_contact_summary: dict[str, Any] | None,
+    pain_regret_repair_report: dict[str, Any] | None,
+) -> tuple[str, bool, int, int, str]:
+    world_contact_release_posture = str(
+        (world_contact_summary or {}).get("release_posture", "shadow_only_guarded")
+    )
+    repair_followup_required = bool(
+        (pain_regret_repair_report or {}).get("repair_followup_required")
+        or (responsibility_loop_state or {}).get("repair_followup_required")
+    )
+    repair_obligation_count = max(
+        len((world_contact_summary or {}).get("repair_obligation_refs", [])),
+        len((pain_regret_repair_report or {}).get("repair_obligation_refs", [])),
+        len((responsibility_loop_state or {}).get("repair_obligation_refs", [])),
+    )
+    regret_pressure_count = max(
+        len((world_contact_summary or {}).get("regret_pressure_refs", [])),
+        len((pain_regret_repair_report or {}).get("regret_pressure_refs", [])),
+        len((responsibility_loop_state or {}).get("regret_pressure_candidates", [])),
+    )
+    if repair_followup_required and world_contact_release_posture == "confirmation_blocked":
+        queue_e_priority_band = "locked_repair_urgent"
+    elif repair_followup_required or repair_obligation_count > 0 or regret_pressure_count > 0:
+        queue_e_priority_band = "repair_guarded"
+    else:
+        queue_e_priority_band = "baseline"
+    return (
+        world_contact_release_posture,
+        repair_followup_required,
+        repair_obligation_count,
+        regret_pressure_count,
+        queue_e_priority_band,
+    )
 
 
 def _body_governance_flags(

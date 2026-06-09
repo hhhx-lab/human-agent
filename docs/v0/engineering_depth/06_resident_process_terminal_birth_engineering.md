@@ -69,3 +69,94 @@ life-v0 emit-report --strict
 的第一轮红绿覆盖，并且这轮又继续把 `resident_governance_state.json`、
 `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json`
 及其在主进程 report / receipt 上的回链断言纳入同一测试闭环；同时，这轮还把身体节律调制 waiting governance 的断言一起纳入同一测试闭环。后续是否拆独立测试文件，以不破坏现有 Queue B 测试闭环为先。
+
+## Queue E 进入 waiting governance 之后的当前前沿
+
+这轮之后，Queue E 的三份关键对象已经不只存在于 process supervisor 的 report 层：
+
+1. `responsibility_loop_state.json`
+2. `world_contact_summary.json`
+3. `pain_regret_repair_report.json`
+
+它们现在已经显式进入：
+
+- `idle_strategy_state.json`
+- `digital_life_waiting_heartbeat.json`
+- `resident_governance_state.json`
+- `idle_continuity_frame.json`
+
+这意味着 waiting governance 第一次不只是“看见有修复对象”，而是会被这些对象直接调节：
+
+1. `world_contact_release_posture`
+2. `repair_followup_required`
+3. `repair_obligation_count`
+4. `regret_pressure_count`
+5. `queue_e_priority_band`
+
+## 当前最该继续补硬的实现包
+
+如果下一轮继续推进，不要重新发明新的生命外壳；直接按下面这包推进：
+
+### A. waiting governance 输入层
+
+- `life_v0/process_supervisor/idle_strategy.py`
+- `life_v0/process_supervisor/heartbeat.py`
+- `life_v0/process_supervisor/continuity_writeback.py`
+
+目标：
+
+1. 让 waiting cadence 真正由身体节律、离线压力和 Queue E 修复锁三方共同决定
+2. 让 `confirmation_blocked`、`shadow_only_guarded`、`repair_guarded` 进入显式字段，而不是只靠 report 文本暗示
+
+### B. 离线生命调制层
+
+- `life_v0/dream/nightmare_risk.py`
+- `life_v0/growth/belief_learning.py`
+- `life_v0/growth/language_learning.py`
+- `life_v0/growth/relationship_learning.py`
+
+目标：
+
+1. 梦魇风险不再只由 body/affect 决定，还要吃入 `repair_followup_required`
+2. belief / language / relationship learning 不再只看 replay/growth patch，也要看 Queue E 带来的 regret / obligation / release posture
+
+### C. turn return 与 closeout 收口层
+
+- `life_v0/process_supervisor/live_turn_cycle.py`
+- `life_v0/process_supervisor/process_session_loop.py`
+- `life_v0/process_supervisor/process_closeout.py`
+- `life_v0/process_supervisor/process_report.py`
+
+目标：
+
+1. live turn 结束后回到 waiting governance 的相位切换，不只靠下一拍 heartbeat 间接体现
+2. Queue E 调制字段在 waiting report、resident governance report、主进程 report 和 receipt 中保持同口径
+
+## 这一柜的代码实现顺序
+
+推荐顺序固定成：
+
+```text
+idle_strategy.py
+  -> heartbeat.py
+  -> continuity_writeback.py
+  -> nightmare_risk.py / belief_learning.py / language_learning.py / relationship_learning.py
+  -> process_session_loop.py
+  -> process_closeout.py / process_report.py
+```
+
+原因：
+
+1. `idle_strategy.py` 是 waiting governance 的节律入口
+2. `heartbeat.py` 决定第一拍如何把这些节律外显成 process-visible state/report
+3. 只有 waiting side 稳住后，dream/growth 的调制才不会变成平行逻辑
+4. 最后再让 closeout/report 固定最终证据链
+
+## 最低新增断言
+
+下一轮至少要新增或保持下面几类断言：
+
+1. `confirmation_blocked` 会把 waiting cadence 压到更高频的 repair hold
+2. `shadow_only_guarded + repair_followup_required` 会保留 repair-weighted waiting governance
+3. `resident_governance_state.json` 会显式携带 `world_contact_release_posture`、`repair_followup_required`、`repair_obligation_count`、`regret_pressure_count`
+4. dream/growth 器官在接线后，至少有一条测试证明它们真的消费了 waiting governance 或 Queue E 的调制输出

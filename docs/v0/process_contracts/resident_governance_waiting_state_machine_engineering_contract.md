@@ -32,6 +32,14 @@ resident_governance_state.json
 
 这组对象的职责不是替代语言、关系、身体或成长器官，而是把 waiting governance 的当前相位、长期语言关注目标、节律档位和关闭态回执固定成同一条证据链。
 
+从 Queue E 第二波与 replay/archive/reporting 补厚之后，waiting governance 还必须额外显式装载三份生命膜后果对象：
+
+1. `runtime/state/action/responsibility_loop_state.json`
+2. `runtime/state/membrane/world_contact_summary.json`
+3. `runtime/reports/latest/pain_regret_repair_report.json`
+
+它们在这里不是“顺手带一下的 refs”，而是 waiting 节律、修复保持、世界接触释放姿态和长期语言优先级的直接调制输入。
+
 ## 必读来源
 
 - `docs/20_agent_runtime_bridge_contract.md`
@@ -155,6 +163,14 @@ restore shell completed
 - `governance_cadence_profile`
 - `long_horizon_priority_profile`
 - `next_required_action`
+- `responsibility_loop_state_ref`
+- `world_contact_summary_ref`
+- `pain_regret_repair_report_ref`
+- `world_contact_release_posture`
+- `repair_followup_required`
+- `repair_obligation_count`
+- `regret_pressure_count`
+- `queue_e_priority_band`
 
 ### `resident_governance_snapshot.json`
 
@@ -233,6 +249,7 @@ process receipt 里，resident governance 必须进入：
 - `commitment_continuity_refresh`
 - `relationship_presence_refresh`
 - `baseline_waiting_refresh`
+- `confirmation_blocked_repair_hold`
 
 ### `long_horizon_priority_profile`
 
@@ -243,6 +260,44 @@ process receipt 里，resident governance 必须进入：
 1. `relationship_timeline`
 2. `commitment_expression_plan`
 3. `apology_repair_language_trace`
+
+## Queue E 调制矩阵
+
+这一层现在必须承认：Queue E 不是只在 live turn 里起作用，waiting governance 也要直接消费它的后果。
+
+### 1. `confirmation_blocked`
+
+当 `world_contact_summary.release_posture=confirmation_blocked` 且修复跟进仍未解除时：
+
+1. `governance_attention_target` 固定升到 `apology_repair_language_trace`
+2. `governance_attention_reason` 固定为 `confirmation_blocked_requires_repair_lock`
+3. `governance_cadence_profile` 固定为 `confirmation_blocked_repair_hold`
+4. `next_idle_action` 固定为 `maintain_confirmation_block_and_refresh_repair_priority`
+5. `heartbeat_interval_ms` 进入更高频的 guarded repair 节律
+
+### 2. `shadow_only_guarded`
+
+当 `release_posture=shadow_only_guarded` 且修复义务仍在：
+
+1. waiting governance 保持 `repair_weighted_resident_hold` 或 `guarded_repair_hold`
+2. `commitment_expression_plan` 与 `apology_repair_language_trace` 进入长期优先级分布
+3. `heartbeat_interval_ms` 可收紧，但仍受身体恢复姿态上限约束
+
+### 3. `baseline`
+
+当没有 Queue E 修复跟进压力时：
+
+1. waiting governance 回到关系维持或普通 presence refresh
+2. Queue E refs 仍被保留在 state/report/receipt 中，供后续 replay/archive/growth/dream 消费
+
+## 下一轮直接落码入口
+
+如果继续推进这一柜，默认优先顺序不是新建更多状态机，而是：
+
+1. 让 `idle_strategy.py` 深消费 Queue E 字段，决定节律、修复优先级和下一拍动作
+2. 让 `continuity_writeback.py` 把 Queue E 的修复压力持续写进 idle continuity
+3. 让 `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py` 开始显式读取这组 waiting governance 输出
+4. 让 process closeout / report / receipt 保持同一组 Queue E 调制字段，不再只停在 refs carry-through
 
 ## 文件级写权限
 

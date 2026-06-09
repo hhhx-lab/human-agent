@@ -34,6 +34,7 @@ life_v0/process_supervisor/heartbeat.py
 2. `DialogueWritebackBundle` 仍主要停在 report 层，缺 process supervisor 内部的显式对象链。
 3. `LifeContextFrame`、`RelationTurnFrame`、`ExpressionPlan` 虽已被读取，但还没有被 process supervisor 作为固定生命回合对象贯穿治理。
 4. waiting heartbeat、incident recovery、relaunch recovery、response surface 之间还缺更硬的文件级施工顺序与字段约束。
+5. Queue E 虽然已经进入 process supervisor 的 refs 与 report 闭环，但 waiting governance 对 `responsibility_loop / world_contact / pain_regret_repair` 的节律级消费还需要继续补厚。
 
 所以 Queue B 的目标很明确：
 让 `./digital life` 不再只是“能持续跑起来”，而是开始以受对象合同约束的常驻生命进程存在。
@@ -296,6 +297,11 @@ def decide_idle_strategy(
 - `body_governance_flags`
 - `body_rhythm_ref`
 - `need_state_ref`
+- `world_contact_release_posture`
+- `repair_followup_required`
+- `repair_obligation_count`
+- `regret_pressure_count`
+- `queue_e_priority_band`
 
 ### 当前已落第一轮
 
@@ -332,6 +338,14 @@ process report / shared object receipt 已开始显式回链：
 1. `body_rhythm_pulse["fatigue_load"]` 会调制 waiting heartbeat 节律；
 2. `need_state_vector["cognitive_bandwidth"]` 与 `need_state_vector["sleep_pressure"]` 会决定 `body_waiting_posture`；
 3. `need_state_vector["repair_drive"]` 会参与 `next_idle_action`，把等待态从单纯轮询推进到修复保持。
+
+这一轮又继续把 Queue E 作为 waiting governance 的直接调制输入：
+
+1. `world_contact_summary["release_posture"]` 会进入 `world_contact_release_posture`
+2. `pain_regret_repair_report["repair_followup_required"]` 会进入 `repair_followup_required`
+3. `repair_obligation_refs` 与 `regret_pressure_refs` 会收口成等待态优先级统计
+4. `confirmation_blocked` 会把 `queue_e_priority_band` 升到 `locked_repair_urgent`
+5. 对应情况下，`next_idle_action` 会切到 `maintain_confirmation_block_and_refresh_repair_priority`
 
 ## G. 新增 `life_v0/process_supervisor/resident_supervision.py`
 
@@ -510,6 +524,7 @@ def run_process_session_loop(
 - 更高频 heartbeat 节律
 - 后台 resident governance
 - 更厚的 idle strategy / closeout 治理
+- dream / growth 对 waiting governance 输出的反向消费
 
 ### `life_v0/digital_entry.py`
 
@@ -558,6 +573,11 @@ Queue B 第一轮至少更新：
 - `governance_attention_target`
 - `governance_cadence_profile`
 - `long_horizon_priority_profile`
+- `world_contact_release_posture`
+- `repair_followup_required`
+- `repair_obligation_count`
+- `regret_pressure_count`
+- `queue_e_priority_band`
 - `dialogue_writeback_bundle_ref`
 - `offline_growth_cycle_refs`
 
@@ -600,6 +620,7 @@ Queue B 第一轮允许写回轻量连续体 ref，不允许 process supervisor 
 6. closeout 后会写 `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json`
 7. process report 与 receipt 会显式回链 resident governance refs
 8. waiting heartbeat 与 closeout 会共用 `resident_governance_state.json`，分别写出运行相位与关闭相位
+9. Queue E 的 waiting cadence 调制会真实改变 `heartbeat_interval_ms`
 
 #### `tests/process/test_digital_entrypoint.py`
 
@@ -665,7 +686,8 @@ Queue B 至少新增三道 gate：
 4. process report / digest / receipt 都能回链核心共享对象
 5. incident / relaunch recovery 进入同一连续体口径
 6. resident governance state / snapshot / report 进入 waiting、persistent closeout 与主进程 report / receipt
-7. 对应测试直接证明以上闭环
+7. Queue E 的 release posture / repair followup / obligation pressure 已经能真实调制 waiting cadence 与下一拍动作
+8. 对应测试直接证明以上闭环
 
 ## 这份合同和下一轮落码的关系
 

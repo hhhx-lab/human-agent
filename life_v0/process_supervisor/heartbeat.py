@@ -67,11 +67,6 @@ def write_waiting_heartbeat(
         ]
         if ref
     ]
-    world_contact_release_posture = (world_contact_summary or {}).get("release_posture")
-    repair_followup_required = bool(
-        (pain_regret_repair_report or {}).get("repair_followup_required")
-        or (responsibility_loop_state or {}).get("repair_followup_required")
-    )
     idle_strategy = decide_idle_strategy(
         run_id=run_id,
         generated_at=generated_at,
@@ -86,6 +81,9 @@ def write_waiting_heartbeat(
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
@@ -96,6 +94,15 @@ def write_waiting_heartbeat(
         source_doc_refs=source_doc_refs,
         readme_block_refs=readme_block_refs,
         runtime_carrier_refs=runtime_carrier_refs,
+    )
+    world_contact_release_posture = str(
+        idle_strategy.get("world_contact_release_posture")
+        or (world_contact_summary or {}).get("release_posture", "shadow_only_guarded")
+    )
+    repair_followup_required = bool(
+        idle_strategy.get("repair_followup_required")
+        or (pain_regret_repair_report or {}).get("repair_followup_required")
+        or (responsibility_loop_state or {}).get("repair_followup_required")
     )
     waiting_mode = str(
         idle_strategy.get("waiting_mode", "restored_waiting_for_external_turn")
