@@ -101,6 +101,28 @@ restore shell completed
 
 ## 运行态文件族
 
+### `digital_life_waiting_heartbeat.json`
+
+最小职责：
+
+1. 证明当前生命过程仍在等待态脉冲中。
+2. 直接回链当前治理主对象，而不是只停在 heartbeat 文本层。
+
+当前必须显式带：
+
+- `resident_governance_state_ref`
+
+### `safe_terminal_loop_state.json` / `terminal_life_loop_state.json`
+
+最小职责：
+
+1. 让外层 waiting shell state 与 terminal loop state 都能回链当前治理主对象。
+2. 保证 waiting 层的任何消费者，不需要重新猜测 resident governance state 在哪里。
+
+当前必须显式带：
+
+- `resident_governance_state_ref`
+
 ### `resident_governance_state.json`
 
 最小职责：

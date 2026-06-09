@@ -180,11 +180,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 safe_terminal_loop["last_heartbeat_packet_ref"],
                 "runtime/reports/latest/digital_life_waiting_heartbeat.json",
             )
+            self.assertEqual(
+                safe_terminal_loop["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
 
             terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
             self.assertEqual(terminal_loop_state["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["heartbeat_counter"], 1)
             self.assertEqual(terminal_loop_state["next_required_action"], "await_next_external_relation_turn")
+            self.assertEqual(
+                terminal_loop_state["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
             self.assertEqual(
                 terminal_loop_state["relationship_timeline_ref"],
                 "runtime/state/relationship/relationship_timeline.json",
@@ -219,6 +227,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 heartbeat_packet["idle_strategy_ref"],
                 "runtime/state/terminal/idle_strategy_state.json",
+            )
+            self.assertEqual(
+                heartbeat_packet["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 70)
             self.assertEqual(
@@ -511,15 +523,27 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 safe_terminal_loop["idle_strategy_ref"],
                 "runtime/state/terminal/idle_strategy_state.json",
             )
+            self.assertEqual(
+                safe_terminal_loop["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
             self.assertEqual(terminal_loop_state["heartbeat_counter"], 3)
             self.assertEqual(
                 terminal_loop_state["idle_strategy_ref"],
                 "runtime/state/terminal/idle_strategy_state.json",
             )
+            self.assertEqual(
+                terminal_loop_state["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
             self.assertEqual(heartbeat_packet["heartbeat_counter"], 3)
             self.assertEqual(
                 heartbeat_packet["idle_strategy_ref"],
                 "runtime/state/terminal/idle_strategy_state.json",
+            )
+            self.assertEqual(
+                heartbeat_packet["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(process_report["heartbeat_counter"], 3)
             self.assertEqual(process_digest["heartbeat_counter"], 3)

@@ -128,6 +128,7 @@ heartbeat packet 至少要有：
 - `heartbeat_counter`
 - `waiting_mode`
 - `idle_strategy_ref`
+- `resident_governance_state_ref`
 - `idle_continuity_ref`
 - `next_required_action`
 

@@ -88,6 +88,7 @@ def write_waiting_heartbeat(
         "heartbeat_counter": heartbeat_counter,
         "waiting_mode": waiting_mode,
         "idle_strategy_ref": IDLE_STRATEGY_STATE_REF,
+        "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
         "safe_terminal_loop_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
@@ -100,6 +101,7 @@ def write_waiting_heartbeat(
     safe_terminal_loop["heartbeat_counter"] = heartbeat_counter
     safe_terminal_loop["last_heartbeat_packet_ref"] = heartbeat_report_ref
     safe_terminal_loop["idle_strategy_ref"] = IDLE_STRATEGY_STATE_REF
+    safe_terminal_loop["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
     write_json(terminal_dir / "safe_terminal_loop_state.json", safe_terminal_loop)
 
     terminal_life_loop_state["current_mode"] = waiting_mode
@@ -107,6 +109,7 @@ def write_waiting_heartbeat(
     terminal_life_loop_state["last_heartbeat_packet_ref"] = heartbeat_report_ref
     terminal_life_loop_state["next_required_action"] = "await_next_external_relation_turn"
     terminal_life_loop_state["idle_strategy_ref"] = IDLE_STRATEGY_STATE_REF
+    terminal_life_loop_state["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
     for field in (
         "relationship_timeline_ref",
         "commitment_expression_plan_ref",
