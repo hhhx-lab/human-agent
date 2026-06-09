@@ -8,7 +8,7 @@ SOURCE_DOC_REFS = [
     "docs/75_external_irreversible_action_confirmation_policy.md",
     "docs/80_post_action_audit_and_correction_policy.md",
     "docs/94_pain_regret_and_repair_signal_schema.md",
-    "docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md",
+    "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
 ]
 
 

@@ -8,6 +8,8 @@
 - repo-local restore shell
 - persistent terminal life process
 
+这一柜测试共享 `tests/helpers/life_v0_bootstrap.py` 的 runtime 路径与完整出生链 bootstrap 命令，避免每个入口测试复制一整段准备流程。
+
 常用命令：
 
 ```bash

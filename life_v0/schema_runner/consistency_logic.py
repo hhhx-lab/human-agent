@@ -8,7 +8,7 @@ SOURCE_DOC_REFS = [
     "docs/53_runner_integration_plan.md",
     "docs/65_schema_cross_ref_checker_design.md",
     "docs/153_life_reality_full_archive_cross_file_checker_rollup_plan.md",
-    "docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md",
+    "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
 ]
 
 

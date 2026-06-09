@@ -432,9 +432,9 @@ turn residue
 
 进入前固定带上：
 
-1. `docs/v0/code_framework/04_language_dialogue_relationship_implementation_playbook.md`
-2. `docs/v0/code_framework/05_memory_thought_consciousness_implementation_playbook.md`
-3. `docs/v0/code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md`
+1. `docs/v0/code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md`
+2. `docs/v0/code_framework/playbooks/05_memory_thought_consciousness_implementation_playbook.md`
+3. `docs/v0/code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md`
 4. 本文件
 
 ## 完成定义

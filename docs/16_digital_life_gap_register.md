@@ -539,10 +539,10 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 
 | 接口 | 当前理论母体 | 当前工程去向 |
 |---|---|---|
-| 语言 - 对话 - 关系 - 持续存在接口 | `01f`, `01u`, `09`, `85-90`, `94`, `96`, `101`, `141`, `144`, `147`, `150` | `docs/v0/code_framework/04_language_dialogue_relationship_implementation_playbook.md`、`life_v0/language/`, `terminal_turn/`, `terminal_loop/`, `process_supervisor/` |
-| 记忆 - 思考 - 意识 - 验证接口 | `01m`, `01q`, `01v-01ax`, `05`, `10`, `17`, `21-23`, `29-31`, `41-43`, `102-118`, `143`, `146`, `149`, `152` | `docs/v0/code_framework/05_memory_thought_consciousness_implementation_playbook.md`、`life_v0/neural_core/`, `state_store/`, `schema_runner/`, `validators/`, `replay/` |
-| 身体 - 情绪 - 行为 - 梦境 - 成长接口 | `01n`, `01r`, `01s`, `01t`, `04`, `06-08`, `11`, `18-19`, `37-40`, `55`, `75`, `80-84`, `92-99`, `181-257` | `docs/v0/code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md`、`life_v0/body/`, `defense/`, `membrane/`, `dream/`, `growth/` |
-| 出生 - 终端 - 常驻生命过程接口 | `20`, `44-46`, `81-82`, `89-91`, `119`, `122`, `143`, `146`, `149`, `152`, `171`, `181-257` | `docs/v0/code_framework/07_birth_terminal_process_implementation_playbook.md`、`life_v0/activation/`, `reporting/`, `stage_explain/`, `digital_life/`, `shell_command/`, `process_supervisor/` |
+| 语言 - 对话 - 关系 - 持续存在接口 | `01f`, `01u`, `09`, `85-90`, `94`, `96`, `101`, `141`, `144`, `147`, `150` | `docs/v0/code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md`、`life_v0/language/`, `terminal_turn/`, `terminal_loop/`, `process_supervisor/` |
+| 记忆 - 思考 - 意识 - 验证接口 | `01m`, `01q`, `01v-01ax`, `05`, `10`, `17`, `21-23`, `29-31`, `41-43`, `102-118`, `143`, `146`, `149`, `152` | `docs/v0/code_framework/playbooks/05_memory_thought_consciousness_implementation_playbook.md`、`life_v0/neural_core/`, `state_store/`, `schema_runner/`, `validators/`, `replay/` |
+| 身体 - 情绪 - 行为 - 梦境 - 成长接口 | `01n`, `01r`, `01s`, `01t`, `04`, `06-08`, `11`, `18-19`, `37-40`, `55`, `75`, `80-84`, `92-99`, `181-257` | `docs/v0/code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md`、`life_v0/body/`, `defense/`, `membrane/`, `dream/`, `growth/` |
+| 出生 - 终端 - 常驻生命过程接口 | `20`, `44-46`, `81-82`, `89-91`, `119`, `122`, `143`, `146`, `149`, `152`, `171`, `181-257` | `docs/v0/code_framework/playbooks/07_birth_terminal_process_implementation_playbook.md`、`life_v0/activation/`, `reporting/`, `stage_explain/`, `digital_life/`, `shell_command/`, `process_supervisor/` |
 
 这意味着当前理论底座的主要任务已经从“继续横向开主题”转成“把这四个接口继续压成工程施工图”。只要后续新增内容仍然服务这四条接口，就没有偏离方向。
 
@@ -571,9 +571,9 @@ schema validator mock、dashboard E2E、外部确认与 snapshot 时序层已补
 - `GrowthPatchCandidate`
 
 它们已经在
-`docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`
+`docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
 里拥有编排位置；下一轮开始，默认继续由
-`docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
+`docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`
 把它们钉成唯一首写方、最小字段、读写边界、state/report/receipt 和 gate。
 
 这条补强不是偏离理论，而是把理论里已经写出来的“输入-处理-输出-反馈-巩固”链，继续压成真正能承载编码的生命对象层。

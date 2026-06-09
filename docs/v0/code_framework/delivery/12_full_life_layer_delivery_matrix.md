@@ -18,9 +18,9 @@
 3. `docs/v0/entry/v0_delivery_status_board.md`
 4. `docs/v0/entry/v0_module_execution_catalog.md`
 5. `docs/v0/code_framework/README.md`
-6. `docs/v0/code_framework/01_life_layer_implementation_blueprint.md`
-7. `docs/v0/code_framework/02_brain_region_to_code_package_mapping.md`
-8. `docs/v0/code_framework/03_code_package_state_test_gate_mapping.md`
+6. `docs/v0/code_framework/foundation/01_life_layer_implementation_blueprint.md`
+7. `docs/v0/code_framework/foundation/02_brain_region_to_code_package_mapping.md`
+8. `docs/v0/code_framework/foundation/03_code_package_state_test_gate_mapping.md`
 
 ## 全生命层落地矩阵
 
@@ -189,9 +189,9 @@ Queue C 与 Queue F 的第一轮文件级器官已经真实落地，不再是默
 7. `life_v0/state_store/memory_write_gate.py`
 
 Queue A 当前已由
-`docs/v0/code_framework/14_queue_a_language_percept_semantic_map_implementation_contract.md`
+`docs/v0/code_framework/queues/14_queue_a_language_percept_semantic_map_implementation_contract.md`
 进一步压成文件级实施合同；如果这一轮要把 Queue A 继续接进统一生命回合，继续补读
-`docs/v0/code_framework/15_cross_layer_shared_object_contract.md`，再落码。
+`docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`，再落码。
 
 其中第 6/7 项的第一轮接线已经落下：
 

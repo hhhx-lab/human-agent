@@ -19,7 +19,7 @@ life_v0/membrane/candidate_arena.py
 - `docs/v0/slice_contracts/s03_direction_life_membrane_engineering_contract.md`
 - `docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md`
 - `docs/v0/slice_contracts/s09_schema_runner_code_engineering_contract.md`
-- `docs/v0/code_framework/09_perception_prediction_world_contact_implementation_playbook.md`
+- `docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`
 
 它只把 Queue E 压成真正可以直接施工的文件级实现合同，防止下一轮代码又退回“知道生命膜、validator、逻辑层很重要，但还是把判断全塞回 `__init__.py` 和临时字典”。
 
@@ -109,11 +109,11 @@ ObservationEvent / PredictionWorkspaceFrame / ExpressionPlan
 - `docs/v0/slice_contracts/s09_schema_runner_code_engineering_contract.md`
 - `docs/v0/architecture/runtime_v0_architecture.md`
 - `docs/v0/shared_contracts/runner_cli_report_contract.md`
-- `docs/v0/code_framework/09_perception_prediction_world_contact_implementation_playbook.md`
-- `docs/v0/code_framework/12_full_life_layer_delivery_matrix.md`
-- `docs/v0/code_framework/13_capability_to_code_realization_matrix.md`
-- `docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
-- `docs/v0/code_framework/19_code_tree_package_brain_contract.md`
+- `docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`
+- `docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md`
+- `docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md`
+- `docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`
+- `docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md`
 
 ## 当前代码落点
 

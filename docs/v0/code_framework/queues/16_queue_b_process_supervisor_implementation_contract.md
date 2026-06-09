@@ -72,12 +72,12 @@ life_v0/process_supervisor/heartbeat.py
 - `docs/v0/process_contracts/terminal_life_loop_engineering_contract.md`
 - `docs/v0/process_contracts/first_terminal_turn_engineering_contract.md`
 - `docs/v0/process_contracts/digital_life_shell_command_engineering_contract.md`
-- `docs/v0/code_framework/07_birth_terminal_process_implementation_playbook.md`
-- `docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`
-- `docs/v0/code_framework/11_engineering_delivery_waves_and_real_file_queue.md`
-- `docs/v0/code_framework/12_full_life_layer_delivery_matrix.md`
-- `docs/v0/code_framework/13_capability_to_code_realization_matrix.md`
-- `docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
+- `docs/v0/code_framework/playbooks/07_birth_terminal_process_implementation_playbook.md`
+- `docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
+- `docs/v0/code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md`
+- `docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md`
+- `docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md`
+- `docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`
 
 ## 当前代码落点
 
@@ -441,13 +441,13 @@ Queue B 至少新增三道 gate：
 下一轮如果继续推进常驻生命进程，默认读包就是：
 
 ```text
-docs/v0/code_framework/07_birth_terminal_process_implementation_playbook.md
-  -> docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md
-  -> docs/v0/code_framework/11_engineering_delivery_waves_and_real_file_queue.md
-  -> docs/v0/code_framework/12_full_life_layer_delivery_matrix.md
-  -> docs/v0/code_framework/13_capability_to_code_realization_matrix.md
-  -> docs/v0/code_framework/15_cross_layer_shared_object_contract.md
-  -> docs/v0/code_framework/16_queue_b_process_supervisor_implementation_contract.md
+docs/v0/code_framework/playbooks/07_birth_terminal_process_implementation_playbook.md
+  -> docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md
+  -> docs/v0/code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md
+  -> docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md
+  -> docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md
+  -> docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md
+  -> docs/v0/code_framework/queues/16_queue_b_process_supervisor_implementation_contract.md
 ```
 
 然后直接进入：

@@ -166,21 +166,21 @@ growth_archive_report.json
 
 当前文档前沿也有几个明确补厚位：
 
-1. `docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`
-2. `docs/v0/code_framework/09_perception_prediction_world_contact_implementation_playbook.md`
-3. `docs/v0/code_framework/10_self_identity_value_commitment_implementation_playbook.md`
-4. `docs/v0/code_framework/13_capability_to_code_realization_matrix.md`
-5. `docs/v0/code_framework/14_queue_a_language_percept_semantic_map_implementation_contract.md`
+1. `docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
+2. `docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`
+3. `docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md`
+4. `docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md`
+5. `docs/v0/code_framework/queues/14_queue_a_language_percept_semantic_map_implementation_contract.md`
 6. `docs/v0/slice_contracts/s06_life_support_development_engineering_contract.md`
 7. `docs/v0/slice_contracts/s08_life_target_runtimes_engineering_contract.md`
 8. `docs/v0/architecture/digital_life_macro_architecture_v0.md`
 9. `docs/v0/architecture/runtime_v0_architecture.md`
-10. `docs/v0/code_framework/16_queue_b_process_supervisor_implementation_contract.md`
-11. `docs/v0/code_framework/17_queue_c_memory_neural_core_implementation_contract.md`
-12. `docs/v0/code_framework/18_queue_d_body_dream_growth_implementation_contract.md`
-13. `docs/v0/code_framework/19_code_tree_package_brain_contract.md`
-14. `docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md`
-15. `docs/v0/code_framework/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`
+10. `docs/v0/code_framework/queues/16_queue_b_process_supervisor_implementation_contract.md`
+11. `docs/v0/code_framework/queues/17_queue_c_memory_neural_core_implementation_contract.md`
+12. `docs/v0/code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md`
+13. `docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md`
+14. `docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md`
+15. `docs/v0/code_framework/queues/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`
 
 它们不是新的理论平行层，而是把身体脉冲、预测工作区、语言回合、关系写回、等待态连续体、梦境离线整合、世界接触、自我连续体、承诺真值和成长补丁接成同一生命回合。`13_capability_to_code_realization_matrix.md` 负责把“语言、记忆、梦境、成长、关系、责任、常驻存在”等生命能力直接压成代码文件、state、测试和 gate 的验收面，`19_code_tree_package_brain_contract.md` 把整棵 `life_v0/` 代码树、脑区到包、共享对象、runtime 产物和整体施工顺序钉成总装配板，`20_queue_e_membrane_validator_logic_implementation_contract.md` 与 `21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md` 则继续把行为/验证/逻辑和身份/意识/出生准备度这两组还偏薄的器官层压成文件级施工合同。后续代码如果不先沿这些 playbook、能力矩阵和总装配合同进入，很容易重新变成“局部模块各自闭合、整体生命回合不闭合”。
 

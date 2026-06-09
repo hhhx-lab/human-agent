@@ -503,7 +503,7 @@ flowchart TD
 - `GrowthPatchCandidate`
 
 这批对象的理论来源已经分散在 `04-11`、`17-20`、`81-96` 里，工程上则由
-`docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
+`docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`
 统一收口。后续只要某一轮代码涉及：
 
 1. 在线回合怎样从身体、预测、语言、关系、责任一路走到回应；

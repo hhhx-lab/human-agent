@@ -7,7 +7,7 @@ SOURCE_DOC_REFS = [
     "docs/86_language_neuroscience_pragmatics_and_inner_speech.md",
     "docs/92_self_growth_and_self_modification_life_chain.md",
     "docs/93_self_training_kernel_growth_protocol.md",
-    "docs/v0/code_framework/18_queue_d_body_dream_growth_implementation_contract.md",
+    "docs/v0/code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md",
 ]
 
 

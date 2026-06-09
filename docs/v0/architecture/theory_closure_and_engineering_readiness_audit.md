@@ -101,13 +101,13 @@
 
 | 最初七点 | 主要理论母体 | 当前工程压缩入口 | 当前判断 |
 |---|---|---|---|
-| 1. 规划脑区/区域、功能边界与协同 | `02`、`03`、`11`、`12`、`13`、`01l`、`01o`、`01p` | `docs/v0/code_framework/02_brain_region_to_code_package_mapping.md`、`19_code_tree_package_brain_contract.md`、`life_v0/neural_core/` | 已有区域规划与跨区协同母体，当前重点是继续拆成稳定代码包与共享对象 |
-| 2. 分化不同脑状态、不同模式 | `08`、`10`、`18`、`86`、`95`、`01t` | `docs/v0/code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md`、`08_cross_layer_life_orchestration_implementation_playbook.md`、`life_v0/body/`、`life_v0/dream/` | 已有状态分化母体，当前重点是把状态切换写成真实 runtime 对象与 gate |
+| 1. 规划脑区/区域、功能边界与协同 | `02`、`03`、`11`、`12`、`13`、`01l`、`01o`、`01p` | `docs/v0/code_framework/foundation/02_brain_region_to_code_package_mapping.md`、`19_code_tree_package_brain_contract.md`、`life_v0/neural_core/` | 已有区域规划与跨区协同母体，当前重点是继续拆成稳定代码包与共享对象 |
+| 2. 分化不同脑状态、不同模式 | `08`、`10`、`18`、`86`、`95`、`01t` | `docs/v0/code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md`、`08_cross_layer_life_orchestration_implementation_playbook.md`、`life_v0/body/`、`life_v0/dream/` | 已有状态分化母体，当前重点是把状态切换写成真实 runtime 对象与 gate |
 | 3. 把人脑反应映射成 agent 功能，例如心跳/唤醒 | `08`、`11`、`18`、`86`、`89`、`90` | `docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md`、`life_v0/process_supervisor/heartbeat.py`、`life_v0/body/rhythm.py` | 已有明确映射逻辑，当前重点是把节律、heartbeat、waiting continuity 补厚成长期存在机制 |
-| 4. 设计信号传递介质/因子 | `11`、`18`、`22`、`30`、`01l` | `docs/v0/code_framework/15_cross_layer_shared_object_contract.md`、`17_queue_c_memory_neural_core_implementation_contract.md`、`life_v0/neural_core/` | 已有调质、状态向量和共享对象母体，当前重点是继续文件级对象化 |
-| 5. 固定机制：奖赏、惩罚、抑制 | `06`、`07`、`18`、`72`、`75`、`80-84`、`94` | `docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md`、`life_v0/membrane/`、`life_v0/validators/` | 已有完整行为-抑制-责任理论链，当前重点是补硬候选行动、go/no-go、side effect 与 repair 写回 |
-| 6. 顶级上层功能：语言 | `09`、`85-90`、`96`、`101`、`141`、`144`、`147`、`150`、`01f`、`01u` | `docs/v0/code_framework/04_language_dialogue_relationship_implementation_playbook.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`life_v0/language/` | 已有语言主神经束母体，当前重点是更外层语言感知器官、长期关系语言和终端回合补厚 |
-| 7. 建立梦境、发呆、专注、情绪高潮、疲惫等状态机制 | `08`、`18`、`86`、`95`、`01t` | `docs/v0/code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md`、`18_queue_d_body_dream_growth_implementation_contract.md`、`life_v0/body/`、`life_v0/dream/` | 这些状态已进入独立理论链，当前重点是把它们压成状态对象、节律和恢复/切换 gate |
+| 4. 设计信号传递介质/因子 | `11`、`18`、`22`、`30`、`01l` | `docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`、`17_queue_c_memory_neural_core_implementation_contract.md`、`life_v0/neural_core/` | 已有调质、状态向量和共享对象母体，当前重点是继续文件级对象化 |
+| 5. 固定机制：奖赏、惩罚、抑制 | `06`、`07`、`18`、`72`、`75`、`80-84`、`94` | `docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md`、`life_v0/membrane/`、`life_v0/validators/` | 已有完整行为-抑制-责任理论链，当前重点是补硬候选行动、go/no-go、side effect 与 repair 写回 |
+| 6. 顶级上层功能：语言 | `09`、`85-90`、`96`、`101`、`141`、`144`、`147`、`150`、`01f`、`01u` | `docs/v0/code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`life_v0/language/` | 已有语言主神经束母体，当前重点是更外层语言感知器官、长期关系语言和终端回合补厚 |
+| 7. 建立梦境、发呆、专注、情绪高潮、疲惫等状态机制 | `08`、`18`、`86`、`95`、`01t` | `docs/v0/code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md`、`18_queue_d_body_dream_growth_implementation_contract.md`、`life_v0/body/`、`life_v0/dream/` | 这些状态已进入独立理论链，当前重点是把它们压成状态对象、节律和恢复/切换 gate |
 
 这张表的作用只有一个：防止我们在工程前再次误判“七点里还有哪一点根本没被写到”。当前已经不是“没写到”，而是“有没有写成稳定器官”。
 
@@ -218,6 +218,6 @@
 | `theory_closure_and_engineering_readiness_audit.md` | `00-257` 是否还缺基础理论，以及当前差距究竟在理论还是工程 |
 | `mapping/readme_block_engineering_realization_v0.md` | 这些理论分属哪个 README block 和 engineering slice |
 | `mapping/0_to_257_engineering_utilization_map.md` | 每份文档最终进入哪个 runtime carrier |
-| `code_framework/12_full_life_layer_delivery_matrix.md` | 每一层下一轮具体改哪些包、哪些文件、哪些状态和测试 |
+| `code_framework/delivery/12_full_life_layer_delivery_matrix.md` | 每一层下一轮具体改哪些包、哪些文件、哪些状态和测试 |
 
 所以，本文件只负责判定“该不该继续补理论”和“能不能直接进代码”，不替代其他 v0 映射或合同文档。

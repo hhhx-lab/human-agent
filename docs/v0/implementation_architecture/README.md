@@ -33,7 +33,7 @@
 2. `docs/v0/entry/v0_implementation_index.md`
 3. `docs/v0/entry/v0_delivery_status_board.md`
 4. `docs/v0/code_framework/README.md`
-5. `docs/v0/code_framework/19_code_tree_package_brain_contract.md`
+5. `docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md`
 6. 本柜 `01 -> 03`
 
 如果读完这一柜仍然无法回答“这次新增文件到底首写哪个共享对象、写出哪份 state/report/receipt、由哪个测试守住”，就不要开写代码。

@@ -20,7 +20,7 @@ life_v0/direction/direction_lock.py
 - `docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md`
 - `docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md`
 - `docs/v0/slice_contracts/s08_life_target_runtimes_engineering_contract.md`
-- `docs/v0/code_framework/10_self_identity_value_commitment_implementation_playbook.md`
+- `docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md`
 
 它只把 Queue F 压成真正可以直接施工的文件级实现合同，防止下一轮代码又退回“知道身份、意识、出生准备度很重要，但还是让它们停在 `__init__.py` 的大函数里”。
 
@@ -100,12 +100,12 @@ identity_root / direction_lock / continuity_refs
 - `docs/v0/slice_contracts/s08_life_target_runtimes_engineering_contract.md`
 - `docs/v0/shared_contracts/birth_readiness_v0_contract.md`
 - `docs/v0/architecture/runtime_v0_architecture.md`
-- `docs/v0/code_framework/05_memory_thought_consciousness_implementation_playbook.md`
-- `docs/v0/code_framework/10_self_identity_value_commitment_implementation_playbook.md`
-- `docs/v0/code_framework/12_full_life_layer_delivery_matrix.md`
-- `docs/v0/code_framework/13_capability_to_code_realization_matrix.md`
-- `docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
-- `docs/v0/code_framework/19_code_tree_package_brain_contract.md`
+- `docs/v0/code_framework/playbooks/05_memory_thought_consciousness_implementation_playbook.md`
+- `docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md`
+- `docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md`
+- `docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md`
+- `docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`
+- `docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md`
 
 ## 当前代码落点
 

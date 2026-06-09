@@ -138,12 +138,12 @@ Queue D 第二波器官现在已经真实落下：
 - `docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md`
 - `docs/v0/shared_contracts/life_state_store_v0_schema.md`
 - `docs/v0/architecture/runtime_v0_architecture.md`
-- `docs/v0/code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md`
-- `docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`
-- `docs/v0/code_framework/11_engineering_delivery_waves_and_real_file_queue.md`
-- `docs/v0/code_framework/12_full_life_layer_delivery_matrix.md`
-- `docs/v0/code_framework/13_capability_to_code_realization_matrix.md`
-- `docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
+- `docs/v0/code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md`
+- `docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
+- `docs/v0/code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md`
+- `docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md`
+- `docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md`
+- `docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`
 
 ## 当前代码落点
 
@@ -555,13 +555,13 @@ Queue D 至少新增三道 gate：
 下一轮如果继续推进身体、梦境、成长，默认读包就是：
 
 ```text
-docs/v0/code_framework/06_body_emotion_action_dream_growth_implementation_playbook.md
-  -> docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md
-  -> docs/v0/code_framework/11_engineering_delivery_waves_and_real_file_queue.md
-  -> docs/v0/code_framework/12_full_life_layer_delivery_matrix.md
-  -> docs/v0/code_framework/13_capability_to_code_realization_matrix.md
-  -> docs/v0/code_framework/15_cross_layer_shared_object_contract.md
-  -> docs/v0/code_framework/18_queue_d_body_dream_growth_implementation_contract.md
+docs/v0/code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md
+  -> docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md
+  -> docs/v0/code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md
+  -> docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md
+  -> docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md
+  -> docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md
+  -> docs/v0/code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md
 ```
 
 然后直接进入：

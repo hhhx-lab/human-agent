@@ -50,7 +50,7 @@
 - `docs/v0/slice_contracts/s06_life_support_development_engineering_contract.md`
 - `docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md`
 - `docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md`
-- `docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`
+- `docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
 
 ## 为什么现在必须单开这份合同
 
@@ -387,7 +387,7 @@ BodyRhythmPulse
 
 如果下一轮直接开始补共享对象，固定按这个顺序读：
 
-1. `docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`
+1. `docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
 2. 本文件
 3. 当前对象对应的 `04-10` playbook
 4. 当前对象对应的 `sXX` 合同

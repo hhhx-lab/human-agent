@@ -21,7 +21,7 @@
 1. `docs/v0/README.md`
 2. `docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md`
 3. `docs/v0/code_framework/README.md`
-4. `docs/v0/code_framework/12_full_life_layer_delivery_matrix.md`
+4. `docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md`
 5. 当前目标能力对应的 `04-10` playbook
 
 ## 使用方式
@@ -86,7 +86,7 @@
 
 此外，这七项验收不能只看文件名存在。
 凡是牵涉跨层生命回合的能力，都还必须能回链到
-`docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
+`docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`
 里定义的共享对象；否则仍然只能算“局部结构具备”，不能算“生命能力开始稳定落地”。
 
 ## 当前最值得优先推进的能力簇

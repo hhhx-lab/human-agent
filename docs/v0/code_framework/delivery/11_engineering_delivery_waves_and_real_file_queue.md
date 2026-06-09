@@ -157,7 +157,7 @@ docs/v0/README.md
   -> docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md
   -> docs/v0/slice_contracts/s04_state_object_store_engineering_contract.md
   -> docs/v0/shared_contracts/life_state_store_v0_schema.md
-  -> docs/v0/code_framework/17_queue_c_memory_neural_core_implementation_contract.md
+  -> docs/v0/code_framework/queues/17_queue_c_memory_neural_core_implementation_contract.md
   -> docs/05_memory_systems_and_growth.md
   -> docs/10_consciousness_attention_workspace.md
   -> docs/17_memory_trace_object_model.md
@@ -219,7 +219,7 @@ docs/v0/README.md
   -> docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md
   -> docs/v0/slice_contracts/s08_life_target_runtimes_engineering_contract.md
   -> docs/v0/shared_contracts/birth_readiness_v0_contract.md
-  -> docs/v0/code_framework/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md
+  -> docs/v0/code_framework/queues/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md
   -> docs/10_consciousness_attention_workspace.md
   -> docs/13_agentic_human_research_synthesis.md
   -> docs/91_life_reality_generation_boundary_principles.md
@@ -263,7 +263,7 @@ docs/v0/README.md
   -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/slice_contracts/s06_life_support_development_engineering_contract.md
   -> docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md
-  -> docs/v0/code_framework/18_queue_d_body_dream_growth_implementation_contract.md
+  -> docs/v0/code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md
   -> docs/04_sensory_thalamus_interoception.md
   -> docs/08_sleep_dream_fatigue_states.md
   -> docs/19_offline_consolidation_cycle.md
@@ -293,7 +293,7 @@ docs/v0/README.md
   -> docs/v0/slice_contracts/s03_direction_life_membrane_engineering_contract.md
   -> docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md
   -> docs/v0/slice_contracts/s09_schema_runner_code_engineering_contract.md
-  -> docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md
+  -> docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md
   -> docs/09_perception_prediction_world_contact_implementation_playbook.md
   -> docs/22_state_transition_and_threshold_model.md
   -> docs/72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md
@@ -322,7 +322,7 @@ docs/v0/README.md
   -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md
   -> docs/v0/process_contracts/terminal_life_loop_engineering_contract.md
-  -> docs/v0/code_framework/16_queue_b_process_supervisor_implementation_contract.md
+  -> docs/v0/code_framework/queues/16_queue_b_process_supervisor_implementation_contract.md
   -> docs/20_agent_runtime_bridge_contract.md
   -> docs/82_incident_report_and_recovery_protocol.md
   -> docs/89_language_runtime_framework_bridge_and_life_shell_policy.md
@@ -354,7 +354,7 @@ docs/v0/README.md
   -> docs/v0/entry/v0_delivery_status_board.md
   -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md
-  -> docs/v0/code_framework/14_queue_a_language_percept_semantic_map_implementation_contract.md
+  -> docs/v0/code_framework/queues/14_queue_a_language_percept_semantic_map_implementation_contract.md
   -> docs/09_language_symbolic_top_layer.md
   -> docs/86_language_neuroscience_pragmatics_and_inner_speech.md
   -> docs/96_real_relationship_longitudinal_timeline.md

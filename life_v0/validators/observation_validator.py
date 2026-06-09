@@ -7,7 +7,7 @@ SOURCE_DOC_REFS = [
     "docs/64_real_runtime_observation_ingestion_policy.md",
     "docs/68_runtime_observation_report_mock_and_redaction_fixture.md",
     "docs/72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md",
-    "docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md",
+    "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
 ]
 
 

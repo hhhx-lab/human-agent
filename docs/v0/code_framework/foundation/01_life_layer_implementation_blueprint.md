@@ -15,8 +15,8 @@
 5. `docs/v0/code_framework/README.md`
 6. `docs/v0/architecture/digital_life_macro_architecture_v0.md`
 7. 本文件
-8. `docs/v0/code_framework/09_perception_prediction_world_contact_implementation_playbook.md`
-9. `docs/v0/code_framework/10_self_identity_value_commitment_implementation_playbook.md`
+8. `docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`
+9. `docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md`
 
 然后才进入本轮要改的主体层、桥接层或常驻进程层合同。
 

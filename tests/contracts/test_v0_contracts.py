@@ -81,6 +81,20 @@ class V0ContractCoverageTests(unittest.TestCase):
         self.assertIn("docs/v0/README.md", contract_index["files"])
         self.assertIn("docs/v0/entry/README.md", contract_index["files"])
         self.assertIn("docs/v0/mapping/README.md", contract_index["files"])
+        self.assertIn("docs/v0/code_framework/README.md", contract_index["files"])
+        self.assertIn("docs/v0/code_framework/foundation/README.md", contract_index["files"])
+        self.assertIn("docs/v0/code_framework/playbooks/README.md", contract_index["files"])
+        self.assertIn("docs/v0/code_framework/delivery/README.md", contract_index["files"])
+        self.assertIn("docs/v0/code_framework/queues/README.md", contract_index["files"])
+        self.assertIn("docs/v0/code_framework/assembly/README.md", contract_index["files"])
+        self.assertIn(
+            "docs/v0/code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
+            contract_index["files"],
+        )
         self.assertIn("docs/v0/implementation_architecture/README.md", contract_index["files"])
         self.assertIn(
             "docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md",

@@ -8,7 +8,7 @@ SOURCE_DOC_REFS = [
     "docs/72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md",
     "docs/75_external_irreversible_action_confirmation_policy.md",
     "docs/84_longitudinal_external_action_evaluation_protocol.md",
-    "docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md",
+    "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
 ]
 
 

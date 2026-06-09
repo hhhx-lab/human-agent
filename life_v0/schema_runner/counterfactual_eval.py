@@ -8,7 +8,7 @@ SOURCE_DOC_REFS = [
     "docs/55_scope_aware_replay_and_consolidation_policy.md",
     "docs/80_post_action_audit_and_correction_policy.md",
     "docs/98_pain_regret_repair_json_schema_and_fixture_bundle.md",
-    "docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md",
+    "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
 ]
 
 

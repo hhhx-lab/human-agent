@@ -127,8 +127,8 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
         "slice": ACTIVE_SLICE,
         "status": "closed",
         "source_refs": [
-            "docs/v0/code_framework/15_cross_layer_shared_object_contract.md",
-            "docs/v0/code_framework/19_code_tree_package_brain_contract.md",
+            "docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md",
+            "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
         ],
     },
     "docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md": {
@@ -146,7 +146,7 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
         "status": "closed",
         "source_refs": [
             "docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md",
-            "docs/v0/code_framework/19_code_tree_package_brain_contract.md",
+            "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
         ],
     },
     "docs/v0/shared_contracts/life_state_store_v0_schema.md": {
@@ -361,6 +361,249 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
         ],
     },
 }
+
+V0_DOC_FILE_RULES.update(
+    {
+        "docs/v0/code_framework/README.md": {
+            "role": "code_framework_index",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/README.md",
+                "docs/v0/entry/v0_module_execution_catalog.md",
+            ],
+        },
+        "docs/v0/code_framework/foundation/README.md": {
+            "role": "code_framework_foundation_index",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/README.md",
+            ],
+        },
+        "docs/v0/code_framework/foundation/01_life_layer_implementation_blueprint.md": {
+            "role": "life_layer_implementation_blueprint",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/13_agentic_human_research_synthesis.md",
+                "docs/v0/architecture/digital_life_macro_architecture_v0.md",
+            ],
+        },
+        "docs/v0/code_framework/foundation/02_brain_region_to_code_package_mapping.md": {
+            "role": "brain_region_to_code_package_mapping",
+            "slice": "S02_NEURAL_LIFE_CORE",
+            "status": "closed",
+            "source_refs": [
+                "docs/02_brain_region_and_network_atlas.md",
+                "docs/14_cross_module_digital_life_map.md",
+            ],
+        },
+        "docs/v0/code_framework/foundation/03_code_package_state_test_gate_mapping.md": {
+            "role": "code_package_state_test_gate_mapping",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/shared_contracts/life_state_store_v0_schema.md",
+                "docs/v0/shared_contracts/runner_cli_report_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/playbooks/README.md": {
+            "role": "code_framework_playbook_index",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/README.md",
+            ],
+        },
+        "docs/v0/code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md": {
+            "role": "language_dialogue_relationship_playbook",
+            "slice": "S07_LANGUAGE_RELATIONSHIP",
+            "status": "closed",
+            "source_refs": [
+                "docs/09_language_symbolic_top_layer.md",
+                "docs/96_real_relationship_longitudinal_timeline.md",
+            ],
+        },
+        "docs/v0/code_framework/playbooks/05_memory_thought_consciousness_implementation_playbook.md": {
+            "role": "memory_thought_consciousness_playbook",
+            "slice": "S04_STATE_OBJECT_STORE",
+            "status": "closed",
+            "source_refs": [
+                "docs/05_memory_systems_and_growth.md",
+                "docs/10_consciousness_attention_workspace.md",
+            ],
+        },
+        "docs/v0/code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md": {
+            "role": "body_emotion_action_dream_growth_playbook",
+            "slice": "S06_LIFE_SUPPORT_DEVELOPMENT",
+            "status": "closed",
+            "source_refs": [
+                "docs/07_emotion_personality_self.md",
+                "docs/08_sleep_dream_fatigue_states.md",
+            ],
+        },
+        "docs/v0/code_framework/playbooks/07_birth_terminal_process_implementation_playbook.md": {
+            "role": "birth_terminal_process_playbook",
+            "slice": "S10_RUNTIME_GROWTH_RECONSOLIDATION",
+            "status": "closed",
+            "source_refs": [
+                "docs/20_agent_runtime_bridge_contract.md",
+                "docs/v0/shared_contracts/first_activation_protocol.md",
+            ],
+        },
+        "docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md": {
+            "role": "cross_layer_orchestration_playbook",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md",
+                "docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md": {
+            "role": "perception_prediction_world_contact_playbook",
+            "slice": "S03_DIRECTION_LIFE_MEMBRANE",
+            "status": "closed",
+            "source_refs": [
+                "docs/04_sensory_thalamus_interoception.md",
+                "docs/20_agent_runtime_bridge_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md": {
+            "role": "self_identity_value_commitment_playbook",
+            "slice": "S08_LIFE_TARGET_RUNTIMES",
+            "status": "closed",
+            "source_refs": [
+                "docs/07_emotion_personality_self.md",
+                "docs/143_life_reality_birth_readiness_rollup_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/delivery/README.md": {
+            "role": "code_framework_delivery_index",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/README.md",
+            ],
+        },
+        "docs/v0/code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md": {
+            "role": "engineering_delivery_waves",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/entry/v0_delivery_status_board.md",
+                "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md": {
+            "role": "full_life_layer_delivery_matrix",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/foundation/01_life_layer_implementation_blueprint.md",
+                "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md": {
+            "role": "capability_to_code_realization_matrix",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md",
+                "docs/v0/code_framework/foundation/03_code_package_state_test_gate_mapping.md",
+            ],
+        },
+        "docs/v0/code_framework/queues/README.md": {
+            "role": "code_framework_queue_index",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/README.md",
+            ],
+        },
+        "docs/v0/code_framework/queues/14_queue_a_language_percept_semantic_map_implementation_contract.md": {
+            "role": "queue_a_language_percept_semantic_map_contract",
+            "slice": "S07_LANGUAGE_RELATIONSHIP",
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md",
+                "docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/queues/16_queue_b_process_supervisor_implementation_contract.md": {
+            "role": "queue_b_process_supervisor_contract",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md",
+                "docs/v0/code_framework/playbooks/07_birth_terminal_process_implementation_playbook.md",
+            ],
+        },
+        "docs/v0/code_framework/queues/17_queue_c_memory_neural_core_implementation_contract.md": {
+            "role": "queue_c_memory_neural_core_contract",
+            "slice": "S02_NEURAL_LIFE_CORE",
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/playbooks/05_memory_thought_consciousness_implementation_playbook.md",
+                "docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md": {
+            "role": "queue_d_body_dream_growth_contract",
+            "slice": "S06_LIFE_SUPPORT_DEVELOPMENT",
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md",
+                "docs/v0/slice_contracts/s06_life_support_development_engineering_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md": {
+            "role": "queue_e_membrane_validator_logic_contract",
+            "slice": "S05_VALIDATION_MEMBRANE_OBSERVATION",
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md",
+                "docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/queues/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md": {
+            "role": "queue_f_identity_consciousness_birth_readiness_contract",
+            "slice": "S08_LIFE_TARGET_RUNTIMES",
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md",
+                "docs/v0/slice_contracts/s08_life_target_runtimes_engineering_contract.md",
+            ],
+        },
+        "docs/v0/code_framework/assembly/README.md": {
+            "role": "code_framework_assembly_index",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/README.md",
+            ],
+        },
+        "docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md": {
+            "role": "cross_layer_shared_object_contract",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/foundation/03_code_package_state_test_gate_mapping.md",
+                "docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md",
+            ],
+        },
+        "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md": {
+            "role": "code_tree_package_brain_contract",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_framework/foundation/02_brain_region_to_code_package_mapping.md",
+                "docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md",
+            ],
+        },
+    }
+)
 
 SLICE_STATUS_RULES: dict[str, dict[str, Any]] = {
     "P0_DOC_CORPUS_INGESTION": {

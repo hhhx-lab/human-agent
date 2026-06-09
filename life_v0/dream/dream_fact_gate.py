@@ -7,7 +7,7 @@ SOURCE_DOC_REFS = [
     "docs/08_sleep_dream_fatigue_states.md",
     "docs/95_dream_reality_and_offline_life_timeline.md",
     "docs/99_dream_reality_json_schema_and_fixture_bundle.md",
-    "docs/v0/code_framework/18_queue_d_body_dream_growth_implementation_contract.md",
+    "docs/v0/code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md",
     "docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md",
 ]
 

@@ -6,6 +6,8 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
+from tests.helpers.life_v0_bootstrap import activation_bootstrap_commands, build_runtime_paths
+
 
 class DelayedInputStream:
     def __init__(self, idle_polls_before_lines: int, lines: list[str]) -> None:
@@ -32,7 +34,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
     def test_repo_local_digital_life_process_keeps_dialogue_alive_and_writes_back(self):
         with tempfile.TemporaryDirectory() as tmp:
-            paths = self._runtime_paths(Path(tmp))
+            paths = build_runtime_paths(Path(tmp))
             self._bootstrap(paths)
 
             completed = subprocess.run(
@@ -100,7 +102,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
     def test_repo_local_digital_life_process_writes_waiting_heartbeat_before_first_turn(self):
         with tempfile.TemporaryDirectory() as tmp:
-            paths = self._runtime_paths(Path(tmp))
+            paths = build_runtime_paths(Path(tmp))
             self._bootstrap(paths)
 
             completed = subprocess.run(
@@ -208,7 +210,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         from life_v0.process_supervisor import run_digital_life_process
 
         with tempfile.TemporaryDirectory() as tmp:
-            paths = self._runtime_paths(Path(tmp))
+            paths = build_runtime_paths(Path(tmp))
             self._bootstrap(paths)
 
             input_stream = DelayedInputStream(
@@ -635,7 +637,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         from life_v0.process_supervisor import run_digital_life_process
 
         with tempfile.TemporaryDirectory() as tmp:
-            paths = self._runtime_paths(Path(tmp))
+            paths = build_runtime_paths(Path(tmp))
             self._bootstrap(paths)
 
             input_stream = StringIO("这次回合会触发一次异常\n/exit\n")
@@ -729,7 +731,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         from life_v0.process_supervisor import run_digital_life_process
 
         with tempfile.TemporaryDirectory() as tmp:
-            paths = self._runtime_paths(Path(tmp))
+            paths = build_runtime_paths(Path(tmp))
             self._bootstrap(paths)
 
             seed_result = run_digital_life_process(
@@ -838,32 +840,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
     def _bootstrap(self, paths: dict[str, Path]) -> None:
         commands = [
-            ["python", "-m", "life_v0", "ingest-docs", "--docs", str(self.docs_dir), "--out", str(paths["doc_out"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-ingest", "--strict"],
-            ["python", "-m", "life_v0", "build-direction-lock", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--out", str(paths["direction_state"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-direction", "--strict"],
-            ["python", "-m", "life_v0", "build-source-authority", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--direction", str(paths["direction_state"]), "--out", str(paths["authority_state"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-authority", "--strict"],
-            ["python", "-m", "life_v0", "build-neural-life-core", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--authority", str(paths["authority_state"]), "--out", str(paths["neural_state"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-neural", "--strict"],
-            ["python", "-m", "life_v0", "check-neural-life-core", "--state", str(paths["neural_state"]), "--reports", str(paths["reports"]), "--strict"],
-            ["python", "-m", "life_v0", "build-state-store", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--neural-core", str(paths["neural_state"]), "--out", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-state", "--strict"],
-            ["python", "-m", "life_v0", "check-state-store", "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--strict"],
-            ["python", "-m", "life_v0", "build-life-membrane", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--direction", str(paths["direction_state"]), "--neural-core", str(paths["neural_state"]), "--state", str(paths["state_root"]), "--out", str(paths["membrane_state"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-membrane", "--strict"],
-            ["python", "-m", "life_v0", "check-life-membrane", "--membrane", str(paths["membrane_state"]), "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--strict"],
-            ["python", "-m", "life_v0", "build-language-relationship", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--neural-core", str(paths["neural_state"]), "--state", str(paths["state_root"]), "--membrane", str(paths["membrane_state"]), "--out", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-language", "--strict"],
-            ["python", "-m", "life_v0", "check-language-relationship", "--state", str(paths["state_root"]), "--membrane", str(paths["membrane_state"]), "--reports", str(paths["reports"]), "--strict"],
-            ["python", "-m", "life_v0", "check-birth-readiness", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--direction", str(paths["direction_state"]), "--neural-core", str(paths["neural_state"]), "--state", str(paths["state_root"]), "--membrane", str(paths["membrane_state"]), "--out", str(paths["life_targets_state"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-birth", "--strict"],
-            ["python", "-m", "life_v0", "run-validation-membrane", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--state", str(paths["state_root"]), "--membrane", str(paths["membrane_state"]), "--life-targets", str(paths["life_targets_state"]), "--validation", str(paths["validation_state"]), "--observation", str(paths["observation_state"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-validation", "--strict"],
-            ["python", "-m", "life_v0", "check-validation-membrane", "--state", str(paths["state_root"]), "--validation", str(paths["validation_state"]), "--observation", str(paths["observation_state"]), "--reports", str(paths["reports"]), "--strict"],
-            ["python", "-m", "life_v0", "build-schema-runner", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-schema", "--strict"],
-            ["python", "-m", "life_v0", "check-schema-runner", "--state", str(paths["schema_runner_state"]), "--reports", str(paths["reports"]), "--strict"],
-            ["python", "-m", "life_v0", "run-schema-smoke", "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-smoke", "--strict"],
-            ["python", "-m", "life_v0", "build-life-support", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--state", str(paths["state_root"]), "--validation", str(paths["reports"] / "validation_membrane_report.json"), "--out", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-support", "--strict"],
-            ["python", "-m", "life_v0", "check-life-support", "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--strict"],
-            ["python", "-m", "life_v0", "run-cycle", "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-cycle", "--shadow-only", "--strict"],
-            ["python", "-m", "life_v0", "check-v0-contracts", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-contracts", "--strict"],
-            ["python", "-m", "life_v0", "first-activation-preflight", "--docs", str(self.docs_dir), "--doc-index", str(paths["doc_out"] / "doc_carrier_index.json"), "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-preflight", "--strict"],
-            ["python", "-m", "life_v0", "run-replay-shadow", "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-replay", "--strict"],
-            ["python", "-m", "life_v0", "write-growth-archive", "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-archive", "--strict"],
-            ["python", "-m", "life_v0", "emit-report", "--state", str(paths["state_root"]), "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-emit", "--strict"],
-            ["python", "-m", "life_v0", "explain-stage", "--reports", str(paths["reports"]), "--receipts", str(paths["receipts"]), "--run-id", "persistent-stage", "--strict"],
+            ["python", "-m", "life_v0", *command]
+            for command in activation_bootstrap_commands(
+                docs_dir=self.docs_dir,
+                paths=paths,
+                run_id_prefix="persistent",
+            )
         ]
 
         for command in commands:
@@ -875,28 +857,6 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 check=False,
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
-
-    def _runtime_paths(self, tmp_path: Path) -> dict[str, Path]:
-        state_root = tmp_path / "runtime" / "state"
-        runtime_root = tmp_path / "runtime"
-        return {
-            "runtime_root": runtime_root,
-            "doc_out": runtime_root / "docs",
-            "reports": runtime_root / "reports" / "latest",
-            "receipts": runtime_root / "receipts",
-            "direction_state": state_root / "direction",
-            "authority_state": state_root / "authority",
-            "neural_state": state_root / "neural_life_core",
-            "state_root": state_root,
-            "membrane_state": state_root / "membrane",
-            "life_targets_state": state_root / "life_targets",
-            "validation_state": state_root / "validation",
-            "observation_state": state_root / "observation",
-            "schema_runner_state": state_root / "schema_runner",
-            "terminal_state": state_root / "terminal",
-            "language_state": state_root / "language",
-            "relationship_state": state_root / "relationship",
-        }
 
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))

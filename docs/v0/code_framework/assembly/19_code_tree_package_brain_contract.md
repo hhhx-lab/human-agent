@@ -44,15 +44,15 @@
 3. `docs/v0/entry/v0_delivery_status_board.md`
 4. `docs/v0/entry/v0_module_execution_catalog.md`
 5. `docs/v0/code_framework/README.md`
-6. `docs/v0/code_framework/02_brain_region_to_code_package_mapping.md`
-7. `docs/v0/code_framework/03_code_package_state_test_gate_mapping.md`
-8. `docs/v0/code_framework/12_full_life_layer_delivery_matrix.md`
-9. `docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
-10. `docs/v0/code_framework/16_queue_b_process_supervisor_implementation_contract.md`
-11. `docs/v0/code_framework/17_queue_c_memory_neural_core_implementation_contract.md`
-12. `docs/v0/code_framework/18_queue_d_body_dream_growth_implementation_contract.md`
-13. `docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md`
-14. `docs/v0/code_framework/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`
+6. `docs/v0/code_framework/foundation/02_brain_region_to_code_package_mapping.md`
+7. `docs/v0/code_framework/foundation/03_code_package_state_test_gate_mapping.md`
+8. `docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md`
+9. `docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`
+10. `docs/v0/code_framework/queues/16_queue_b_process_supervisor_implementation_contract.md`
+11. `docs/v0/code_framework/queues/17_queue_c_memory_neural_core_implementation_contract.md`
+12. `docs/v0/code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md`
+13. `docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md`
+14. `docs/v0/code_framework/queues/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`
 
 ## 总装配原则
 

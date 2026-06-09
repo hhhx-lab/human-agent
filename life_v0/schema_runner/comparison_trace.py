@@ -7,7 +7,7 @@ SOURCE_DOC_REFS = [
     "docs/35_minimal_validator_runner_design.md",
     "docs/65_schema_cross_ref_checker_design.md",
     "docs/66_runner_report_json_examples.md",
-    "docs/v0/code_framework/20_queue_e_membrane_validator_logic_implementation_contract.md",
+    "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
 ]
 
 

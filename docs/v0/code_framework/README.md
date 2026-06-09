@@ -27,56 +27,61 @@
 3. `docs/v0/entry/v0_delivery_status_board.md`
 4. `docs/v0/entry/v0_module_execution_catalog.md`
 5. 本文件
-6. `01_life_layer_implementation_blueprint.md`
-7. `02_brain_region_to_code_package_mapping.md`
-8. `03_code_package_state_test_gate_mapping.md`
-9. `04_language_dialogue_relationship_implementation_playbook.md`
-10. `05_memory_thought_consciousness_implementation_playbook.md`
-11. `06_body_emotion_action_dream_growth_implementation_playbook.md`
-12. `07_birth_terminal_process_implementation_playbook.md`
-13. `08_cross_layer_life_orchestration_implementation_playbook.md`
-14. `09_perception_prediction_world_contact_implementation_playbook.md`
-15. `10_self_identity_value_commitment_implementation_playbook.md`
-16. `11_engineering_delivery_waves_and_real_file_queue.md`
-17. `12_full_life_layer_delivery_matrix.md`
-18. `13_capability_to_code_realization_matrix.md`
-19. `14_queue_a_language_percept_semantic_map_implementation_contract.md`
-20. `15_cross_layer_shared_object_contract.md`
-21. `16_queue_b_process_supervisor_implementation_contract.md`
-22. `17_queue_c_memory_neural_core_implementation_contract.md`
-23. `18_queue_d_body_dream_growth_implementation_contract.md`
-24. `19_code_tree_package_brain_contract.md`
-25. `20_queue_e_membrane_validator_logic_implementation_contract.md`
-26. `21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`
+6. `foundation/README.md`
+7. `playbooks/README.md`
+8. `delivery/README.md`
+9. `queues/README.md`
+10. `assembly/README.md`
+
+如果要完整扫一遍代码框架柜，顺序固定为：
+
+```text
+foundation/
+  -> playbooks/
+  -> delivery/
+  -> queues/
+  -> assembly/
+  -> docs/v0/implementation_architecture/
+```
 
 如果这一轮已经明确只落某个模块，仍然要先过一遍本柜，再回对应 `sXX_*` 或链尾合同。
+
+## 本柜子目录
+
+| 子柜 | 文件 | 只回答什么 |
+|---|---|---|
+| `foundation/` | `01-03` | 生命层、脑区/网络到代码包、state/report/receipt/test/gate 的底层映射 |
+| `playbooks/` | `04-10` | 语言、记忆、梦境、成长、关系、行动、意识等跨层能力怎样逐文件落代码 |
+| `delivery/` | `11-13` | 开发波次、生命层总施工矩阵、能力到代码验收矩阵 |
+| `queues/` | `14`、`16-18`、`20-21` | Queue A-F 的文件级实施合同 |
+| `assembly/` | `15`、`19` | 跨层共享对象和整棵 `life_v0/` 代码树总装配 |
 
 ## 本柜文档各自负责什么
 
 | 文件 | 只回答什么 |
 |---|---|
 | `README.md` | 代码框架柜为什么存在、怎么进、和 v0 其余文档是什么关系 |
-| `01_life_layer_implementation_blueprint.md` | 整个数字生命按哪些生命层落代码、每层优先读哪些理论和合同 |
-| `02_brain_region_to_code_package_mapping.md` | 脑区/网络/主体系统怎样映射到当前 `life_v0/` 包与后续文件拆分 |
-| `03_code_package_state_test_gate_mapping.md` | 每个代码包该承载哪些状态对象、report、receipt、测试和阶段门 |
-| `04_language_dialogue_relationship_implementation_playbook.md` | 语言、对话、关系、等待态连续体怎样逐文件落代码 |
-| `05_memory_thought_consciousness_implementation_playbook.md` | 思考、逻辑、记忆、意识怎样逐文件落代码 |
-| `06_body_emotion_action_dream_growth_implementation_playbook.md` | 身体、情绪、行动、梦境、成长、学习怎样逐文件落代码 |
-| `07_birth_terminal_process_implementation_playbook.md` | 出生、终端循环、壳层、常驻生命进程怎样逐文件落代码 |
-| `08_cross_layer_life_orchestration_implementation_playbook.md` | 身体、信号、思考、语言、关系、梦境、成长和常驻过程怎样在同一生命回合里接棒 |
-| `09_perception_prediction_world_contact_implementation_playbook.md` | 外界观察、预测工作区、世界接触、行动意图和 observation 正规化怎样逐文件落代码 |
-| `10_self_identity_value_commitment_implementation_playbook.md` | 身份、自我、价值、承诺、后悔、责任和自我改写保护怎样逐文件落代码 |
-| `11_engineering_delivery_waves_and_real_file_queue.md` | 接下来每一轮先拆哪些真实文件、按什么波次落、回读哪些理论和跑哪些测试 |
-| `12_full_life_layer_delivery_matrix.md` | 把全部生命层压成总施工矩阵，直接决定这一轮该改哪层、哪包、哪文件 |
-| `13_capability_to_code_realization_matrix.md` | 把生命能力直接压成代码文件、state、测试和 gate 的验收矩阵，回答“某种能力到底有没有真正开始落地” |
-| `14_queue_a_language_percept_semantic_map_implementation_contract.md` | 把 Queue A 的 `percept.py` / `semantic_map.py` 压成文件级实施合同，固定输入输出、状态、测试和下游接线 |
-| `15_cross_layer_shared_object_contract.md` | 把跨层共享对象压成唯一首写方、字段组、state/report/receipt 和 gate 的硬合同，防止生命回合重新退回临时字典拼接 |
-| `16_queue_b_process_supervisor_implementation_contract.md` | 把 Queue B 的 process supervisor / waiting heartbeat / dialogue event / process report 压成文件级实施合同，固定常驻生命进程的对象链与测试面 |
-| `17_queue_c_memory_neural_core_implementation_contract.md` | 把 Queue C 的 state store / engram / workspace / brain graph 压成文件级实施合同，固定记忆根、工作区与主体图的落码顺序 |
-| `18_queue_d_body_dream_growth_implementation_contract.md` | 把 Queue D 的 body / dream / growth 器官压成文件级实施合同，固定身体节律、梦境窗口与成长补丁链的落码顺序 |
-| `19_code_tree_package_brain_contract.md` | 把整棵 `life_v0/` 代码树、脑区到包、共享对象、runtime 产物、测试和整体施工顺序钉成一张总装配板，作为正式大规模落码前的总合同 |
-| `20_queue_e_membrane_validator_logic_implementation_contract.md` | 把 Queue E 的 membrane / validators / schema_runner 压成文件级实施合同，固定候选行动、world contact、side effect、观察真值和反事实比较的落码顺序 |
-| `21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md` | 把 Queue F 的 direction / consciousness / birth readiness 压成文件级实施合同，固定身份连续体、意识广播、元认知和九项目标上卷的落码顺序 |
+| `foundation/01_life_layer_implementation_blueprint.md` | 整个数字生命按哪些生命层落代码、每层优先读哪些理论和合同 |
+| `foundation/02_brain_region_to_code_package_mapping.md` | 脑区/网络/主体系统怎样映射到当前 `life_v0/` 包与后续文件拆分 |
+| `foundation/03_code_package_state_test_gate_mapping.md` | 每个代码包该承载哪些状态对象、report、receipt、测试和阶段门 |
+| `playbooks/04_language_dialogue_relationship_implementation_playbook.md` | 语言、对话、关系、等待态连续体怎样逐文件落代码 |
+| `playbooks/05_memory_thought_consciousness_implementation_playbook.md` | 思考、逻辑、记忆、意识怎样逐文件落代码 |
+| `playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md` | 身体、情绪、行动、梦境、成长、学习怎样逐文件落代码 |
+| `playbooks/07_birth_terminal_process_implementation_playbook.md` | 出生、终端循环、壳层、常驻生命进程怎样逐文件落代码 |
+| `playbooks/08_cross_layer_life_orchestration_implementation_playbook.md` | 身体、信号、思考、语言、关系、梦境、成长和常驻过程怎样在同一生命回合里接棒 |
+| `playbooks/09_perception_prediction_world_contact_implementation_playbook.md` | 外界观察、预测工作区、世界接触、行动意图和 observation 正规化怎样逐文件落代码 |
+| `playbooks/10_self_identity_value_commitment_implementation_playbook.md` | 身份、自我、价值、承诺、后悔、责任和自我改写保护怎样逐文件落代码 |
+| `delivery/11_engineering_delivery_waves_and_real_file_queue.md` | 接下来每一轮先拆哪些真实文件、按什么波次落、回读哪些理论和跑哪些测试 |
+| `delivery/12_full_life_layer_delivery_matrix.md` | 把全部生命层压成总施工矩阵，直接决定这一轮该改哪层、哪包、哪文件 |
+| `delivery/13_capability_to_code_realization_matrix.md` | 把生命能力直接压成代码文件、state、测试和 gate 的验收矩阵，回答“某种能力到底有没有真正开始落地” |
+| `queues/14_queue_a_language_percept_semantic_map_implementation_contract.md` | 把 Queue A 的 `percept.py` / `semantic_map.py` 压成文件级实施合同，固定输入输出、状态、测试和下游接线 |
+| `assembly/15_cross_layer_shared_object_contract.md` | 把跨层共享对象压成唯一首写方、字段组、state/report/receipt 和 gate 的硬合同，防止生命回合重新退回临时字典拼接 |
+| `queues/16_queue_b_process_supervisor_implementation_contract.md` | 把 Queue B 的 process supervisor / waiting heartbeat / dialogue event / process report 压成文件级实施合同，固定常驻生命进程的对象链与测试面 |
+| `queues/17_queue_c_memory_neural_core_implementation_contract.md` | 把 Queue C 的 state store / engram / workspace / brain graph 压成文件级实施合同，固定记忆根、工作区与主体图的落码顺序 |
+| `queues/18_queue_d_body_dream_growth_implementation_contract.md` | 把 Queue D 的 body / dream / growth 器官压成文件级实施合同，固定身体节律、梦境窗口与成长补丁链的落码顺序 |
+| `assembly/19_code_tree_package_brain_contract.md` | 把整棵 `life_v0/` 代码树、脑区到包、共享对象、runtime 产物、测试和整体施工顺序钉成一张总装配板，作为正式大规模落码前的总合同 |
+| `queues/20_queue_e_membrane_validator_logic_implementation_contract.md` | 把 Queue E 的 membrane / validators / schema_runner 压成文件级实施合同，固定候选行动、world contact、side effect、观察真值和反事实比较的落码顺序 |
+| `queues/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md` | 把 Queue F 的 direction / consciousness / birth readiness 压成文件级实施合同，固定身份连续体、意识广播、元认知和九项目标上卷的落码顺序 |
 
 ## 本柜和其他 v0 文档的关系
 

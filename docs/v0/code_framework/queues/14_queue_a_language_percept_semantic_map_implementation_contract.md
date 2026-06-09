@@ -83,12 +83,12 @@ life_v0/language/percept.py
 ## 必读 v0 文档
 
 - `docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md`
-- `docs/v0/code_framework/04_language_dialogue_relationship_implementation_playbook.md`
-- `docs/v0/code_framework/08_cross_layer_life_orchestration_implementation_playbook.md`
-- `docs/v0/code_framework/09_perception_prediction_world_contact_implementation_playbook.md`
-- `docs/v0/code_framework/11_engineering_delivery_waves_and_real_file_queue.md`
-- `docs/v0/code_framework/12_full_life_layer_delivery_matrix.md`
-- `docs/v0/code_framework/13_capability_to_code_realization_matrix.md`
+- `docs/v0/code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md`
+- `docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
+- `docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`
+- `docs/v0/code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md`
+- `docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md`
+- `docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md`
 - `docs/v0/process_contracts/first_terminal_turn_engineering_contract.md`
 - `docs/v0/process_contracts/terminal_life_loop_engineering_contract.md`
 
@@ -446,12 +446,12 @@ Queue A 至少新增三道 gate：
 下一轮如果继续推进语言主神经束，默认读包就是：
 
 ```text
-docs/v0/code_framework/04_language_dialogue_relationship_implementation_playbook.md
-  -> docs/v0/code_framework/09_perception_prediction_world_contact_implementation_playbook.md
-  -> docs/v0/code_framework/11_engineering_delivery_waves_and_real_file_queue.md
-  -> docs/v0/code_framework/12_full_life_layer_delivery_matrix.md
-  -> docs/v0/code_framework/13_capability_to_code_realization_matrix.md
-  -> docs/v0/code_framework/14_queue_a_language_percept_semantic_map_implementation_contract.md
+docs/v0/code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md
+  -> docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md
+  -> docs/v0/code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md
+  -> docs/v0/code_framework/delivery/12_full_life_layer_delivery_matrix.md
+  -> docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md
+  -> docs/v0/code_framework/queues/14_queue_a_language_percept_semantic_map_implementation_contract.md
 ```
 
 然后直接进入：

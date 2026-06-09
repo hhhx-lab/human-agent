@@ -12,9 +12,9 @@
 
 ## 必读前置
 
-- `docs/v0/code_framework/01_life_layer_implementation_blueprint.md`
-- `docs/v0/code_framework/15_cross_layer_shared_object_contract.md`
-- `docs/v0/code_framework/19_code_tree_package_brain_contract.md`
+- `docs/v0/code_framework/foundation/01_life_layer_implementation_blueprint.md`
+- `docs/v0/code_framework/assembly/15_cross_layer_shared_object_contract.md`
+- `docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md`
 - `docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md`
 - `docs/v0/shared_contracts/life_state_store_v0_schema.md`
 
