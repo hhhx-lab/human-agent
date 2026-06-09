@@ -584,6 +584,124 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 receipt["output_hashes"],
             )
 
+    def test_process_closeout_organ_writes_persistent_artifacts_and_report_bundle(self):
+        from life_v0.process_supervisor.process_closeout import close_digital_life_process
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state_dir = runtime_root / "state"
+            reports_dir = runtime_root / "reports" / "latest"
+            receipts_dir = runtime_root / "receipts"
+            terminal_dir = state_dir / "terminal"
+            language_dir = state_dir / "language"
+            relationship_dir = state_dir / "relationship"
+            replay_dir = state_dir / "replay"
+            dream_dir = state_dir / "dream"
+            growth_dir = state_dir / "growth"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            language_dir.mkdir(parents=True, exist_ok=True)
+            relationship_dir.mkdir(parents=True, exist_ok=True)
+            replay_dir.mkdir(parents=True, exist_ok=True)
+            dream_dir.mkdir(parents=True, exist_ok=True)
+            growth_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            receipts_dir.mkdir(parents=True, exist_ok=True)
+
+            self._write_json(reports_dir / "digital_life_shell_report.json", {"status": "closed"})
+            self._write_json(reports_dir / "dialogue_writeback_bundle.json", {"status": "closed"})
+            self._write_json(
+                terminal_dir / "safe_terminal_loop_state.json",
+                {"current_mode": "restored_waiting_for_external_turn"},
+            )
+            self._write_json(
+                terminal_dir / "terminal_life_loop_state.json",
+                {"current_mode": "restored_waiting_for_external_turn"},
+            )
+            self._write_json(terminal_dir / "session_envelope.json", {"schema_version": "session_envelope_v0"})
+            self._write_json(terminal_dir / "life_context_frame.json", {"context_anchor_count": 2})
+            self._write_json(terminal_dir / "relation_turn_frame.json", {"relation_subject_ref": "rel-v0-0001"})
+            self._write_json(language_dir / "expression_plan.json", {"semantic_goal": "repair_commitment_shared_language"})
+            self._write_json(language_dir / "self_narrative_language_trace.json", {"schema_version": "self_narrative_language_trace_v0"})
+            self._write_json(language_dir / "commitment_repair_language_index.json", {"schema_version": "commitment_repair_language_index_v0"})
+            self._write_json(relationship_dir / "relationship_subject_graph.json", {"subjects": []})
+            self._write_json(replay_dir / "replay_cue_bundle.json", {"schema_version": "replay_cue_bundle_v0"})
+            self._write_json(dream_dir / "offline_consolidation_frame.json", {"schema_version": "offline_consolidation_frame_v0"})
+            self._write_json(
+                growth_dir / "growth_patch_candidate_queue.json",
+                {
+                    "schema_version": "growth_patch_candidate_queue_v0",
+                    "candidates": [{"growth_patch_candidate_id": "growth-patch-candidate-closeout-0001"}],
+                },
+            )
+            (language_dir / "dialogue_turn_log.jsonl").write_text(
+                '{"turn_id":"dialogue-turn-live-0001"}\n',
+                encoding="utf-8",
+            )
+
+            result = close_digital_life_process(
+                run_id="process-closeout-organ",
+                generated_at="2026-06-09T00:00:00+00:00",
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                receipts_dir=receipts_dir,
+                heartbeat_counter=4,
+                completed_turns=2,
+                incident_count=1,
+                relaunch_recovery_count=1,
+                exit_reason="explicit_exit",
+                last_incident_report_ref="runtime/reports/latest/digital_life_process_incident_report.json",
+                last_recovery_report_ref="runtime/reports/latest/digital_life_process_recovery_report.json",
+                last_relaunch_recovery_report_ref="runtime/reports/latest/digital_life_process_relaunch_recovery_report.json",
+                last_external_turn={"utterance": "你还记得我们吗？"},
+                last_life_turn={"utterance": "我当然记得。"},
+                waiting_mode="restored_waiting_for_external_turn",
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
+                last_dialogue_packet_ref="runtime/reports/latest/resumed_external_dialogue_packet.json",
+                source_doc_refs=["docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                life_context_frame={"context_anchor_count": 2},
+                relation_turn_frame={"relation_subject_ref": "rel-v0-0001"},
+                expression_plan={"semantic_goal": "repair_commitment_shared_language"},
+                replay_cue_bundle_ref="runtime/state/replay/replay_cue_bundle.json",
+                offline_consolidation_frame_ref="runtime/state/dream/offline_consolidation_frame.json",
+                growth_patch_candidate_queue_ref="runtime/state/growth/growth_patch_candidate_queue.json",
+                write_json=self._write_json,
+            )
+
+            persistent_state = self._read_json(terminal_dir / "persistent_process_state.json")
+            persistent_report = self._read_json(reports_dir / "digital_life_persistent_process_report.json")
+            process_report = self._read_json(reports_dir / "digital_life_process_report.json")
+            process_digest = self._read_json(reports_dir / "digital_life_process_digest.json")
+            process_receipt = self._read_json(receipts_dir / "digital_life_process_process-closeout-organ.json")
+
+            self.assertEqual(
+                result.persistent_process_artifacts.state["run_id"],
+                "process-closeout-organ",
+            )
+            self.assertEqual(
+                result.report_bundle.report["run_id"],
+                "process-closeout-organ",
+            )
+            self.assertEqual(persistent_state["heartbeat_counter"], 4)
+            self.assertEqual(persistent_report["heartbeat_counter"], 4)
+            self.assertEqual(process_report["completed_dialogue_turns"], 2)
+            self.assertEqual(process_report["persistent_process_report_ref"], "runtime/reports/latest/digital_life_persistent_process_report.json")
+            self.assertEqual(process_report["life_context_frame_ref"], "runtime/state/terminal/life_context_frame.json")
+            self.assertEqual(process_report["relation_turn_frame_ref"], "runtime/state/terminal/relation_turn_frame.json")
+            self.assertEqual(process_report["expression_plan_ref"], "runtime/state/language/expression_plan.json")
+            self.assertEqual(process_report["dialogue_writeback_bundle_ref"], "runtime/reports/latest/dialogue_writeback_bundle.json")
+            self.assertEqual(process_digest["heartbeat_counter"], 4)
+            self.assertIn(
+                "runtime/state/terminal/idle_strategy_state.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/dialogue_writeback_bundle.json",
+                process_receipt["shared_object_refs"],
+            )
+
     def test_persistent_process_organ_writes_state_and_report(self):
         from life_v0.process_supervisor.persistent_process import write_persistent_process_artifacts
 

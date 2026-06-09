@@ -8,7 +8,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, TextIO
 
-from .continuity_writeback import record_idle_continuity
 from .dialogue_events import build_external_turn_event, build_life_turn_event
 from .heartbeat import write_waiting_heartbeat
 from .idle_strategy import IDLE_STRATEGY_STATE_REF
@@ -16,11 +15,7 @@ from .incident_recovery import (
     record_recovery_continuity,
     recover_from_dialogue_turn_exception,
 )
-from .persistent_process import (
-    PERSISTENT_PROCESS_REPORT_REF,
-    write_persistent_process_artifacts,
-)
-from .process_report import write_process_report_bundle
+from .process_closeout import close_digital_life_process
 from .resident_turn_writeback import write_resident_turn_writeback
 from .relaunch_recovery import detect_and_normalize_interrupted_previous_state
 from .response_surface import compose_life_response
@@ -102,7 +97,7 @@ def run_digital_life_process(
     language_dir = state_dir / "language"
     relationship_dir = state_dir / "relationship"
 
-    session_envelope = _read_json(terminal_dir / "session_envelope.json")
+    _read_json(terminal_dir / "session_envelope.json")
     safe_terminal_loop = _read_json(terminal_dir / "safe_terminal_loop_state.json")
     terminal_life_loop_state = _read_json(terminal_dir / "terminal_life_loop_state.json")
     life_context_frame = _read_json_if_exists(terminal_dir / "life_context_frame.json")
@@ -336,66 +331,40 @@ def run_digital_life_process(
             _print_line(output_stream, "生命回合处理出现异常，已执行异常恢复并回到等待态。")
             continue
 
-    persistent_process_artifacts = write_persistent_process_artifacts(
-        run_id=run_id,
-        generated_at=generated_at,
-        state_dir=state_dir,
-        reports_dir=reports_dir,
-        heartbeat_counter=heartbeat_counter,
-        completed_turns=completed_turns,
-        incident_count=incident_count,
-        relaunch_recovery_count=relaunch_recovery_count,
-        waiting_mode=terminal_life_loop_state.get("current_mode", "restored_waiting_for_external_turn"),
-        idle_strategy_ref=IDLE_STRATEGY_STATE_REF,
-        last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
-        last_dialogue_packet_ref=safe_terminal_loop.get("last_dialogue_packet_ref"),
-        source_doc_refs=SOURCE_DOC_REFS,
-        readme_block_refs=READ_ME_BLOCK_REFS,
-        runtime_carrier_refs=RUNTIME_CARRIER_REFS,
-        write_json=_write_json,
-    )
-
-    report_bundle = write_process_report_bundle(
+    closeout = close_digital_life_process(
         run_id=run_id,
         generated_at=generated_at,
         state_dir=state_dir,
         reports_dir=reports_dir,
         receipts_dir=receipts_dir,
-        source_doc_refs=SOURCE_DOC_REFS,
-        readme_block_refs=READ_ME_BLOCK_REFS,
-        runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+        heartbeat_counter=heartbeat_counter,
         completed_turns=completed_turns,
         incident_count=incident_count,
         relaunch_recovery_count=relaunch_recovery_count,
-        heartbeat_counter=heartbeat_counter,
         exit_reason=exit_reason,
         last_incident_report_ref=last_incident_report_ref,
         last_recovery_report_ref=last_recovery_report_ref,
         last_relaunch_recovery_report_ref=last_relaunch_recovery_report_ref,
         last_external_turn=last_external_turn,
         last_life_turn=last_life_turn,
+        waiting_mode=terminal_life_loop_state.get(
+            "current_mode", "restored_waiting_for_external_turn"
+        ),
         idle_strategy_ref=IDLE_STRATEGY_STATE_REF,
-        persistent_process_report_ref=PERSISTENT_PROCESS_REPORT_REF,
-        life_context_frame_ref=(
-            "runtime/state/terminal/life_context_frame.json" if life_context_frame else None
-        ),
-        relation_turn_frame_ref=(
-            "runtime/state/terminal/relation_turn_frame.json" if relation_turn_frame else None
-        ),
-        expression_plan_ref=(
-            "runtime/state/language/expression_plan.json" if expression_plan else None
-        ),
-        dialogue_writeback_bundle_ref=(
-            "runtime/reports/latest/dialogue_writeback_bundle.json"
-            if (reports_dir / "dialogue_writeback_bundle.json").exists()
-            else None
-        ),
+        last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
+        last_dialogue_packet_ref=safe_terminal_loop.get("last_dialogue_packet_ref"),
+        source_doc_refs=SOURCE_DOC_REFS,
+        readme_block_refs=READ_ME_BLOCK_REFS,
+        runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+        life_context_frame=life_context_frame,
+        relation_turn_frame=relation_turn_frame,
+        expression_plan=expression_plan,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
         write_json=_write_json,
     )
-    return DigitalLifeProcessResult(exit_code=0, report=report_bundle.report)
+    return DigitalLifeProcessResult(exit_code=0, report=closeout.report_bundle.report)
 
 
 def _current_dialogue_turn_count(path: Path) -> int:

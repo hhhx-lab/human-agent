@@ -93,6 +93,7 @@ Queue B 必须接到这些现有器官上：
 - `life_v0/process_supervisor/dialogue_events.py`
 - `life_v0/process_supervisor/response_surface.py`
 - `life_v0/process_supervisor/resident_turn_writeback.py`
+- `life_v0/process_supervisor/process_closeout.py`
 - `life_v0/digital_entry.py`
 - `life_v0/terminal_loop/dialogue_writeback.py`
 - `life_v0/terminal_turn/context_accumulation.py`
