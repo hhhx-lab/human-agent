@@ -11,7 +11,7 @@ python -m life_v0 ingest-docs --docs docs --out runtime/docs --reports runtime/r
 
 该命令会把 `docs/` 中 `00 -> 257`、`258` 和 `docs/v0/` 合同写成带 `readme_block`、`engineering_slice`、`runtime_carriers` 的 `doc_carrier_index.json`，以及 `doc_dependency_graph.json`、`source_authority_report.json`、`doc_ingestion_report.json` 和摄取 receipt。只有 P0 返回 `status=closed`、`stage_effect=allow_p1` 后，才进入生命状态根、主体宏架构、出生准备度和第一次有限激活。
 
-`docs/v0/v0_implementation_index.md` 是第一版工程实现总索引。后续落代码从 `docs/v0/` 开始，但每个模块都必须按该索引回读对应的 `00 -> 258` 理论文档，不能只读 v0 合同就写代码。
+`docs/v0/entry/v0_implementation_index.md` 是第一版工程实现总索引。后续落代码从 `docs/v0/` 开始，但每个模块都必须按该索引回读对应的 `00 -> 258` 理论文档，不能只读 v0 合同就写代码。
 
 P0 之后先进入 `S00_DIRECTION_FOUNDATION`：`docs/v0/slice_contracts/s00_direction_foundation_engineering_contract.md` 会把原始构思、研究协议、README、`258`、七条方向锚链、断联恢复和外部框架负边界落成 `runtime/state/direction/*`、`direction_lock_report.json` 和 direction receipt。后续每个 README block 都从这个方向锁领取下一 slice 许可。
 

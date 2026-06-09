@@ -10,6 +10,11 @@
 - 生命目标、schema runner
 - 身体、成长支持
 
+当前这一柜里有两类语言测试，角色不同但都保留：
+
+- `test_language_organs.py`：盯器官级对象和字段闭合，防止语言层重新退回临时字典拼装。
+- `test_language_relationship.py`：盯 S07 主链与 runtime 写回，确保语言、关系、预测和责任压力一起闭合。
+
 常用命令：
 
 ```bash

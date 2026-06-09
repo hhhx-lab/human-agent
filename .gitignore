@@ -5,6 +5,12 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+.mypy_cache/
+.ruff_cache/
 .DS_Store
 .pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
 runtime/
