@@ -152,6 +152,177 @@ class TerminalLifeLoopTests(unittest.TestCase):
         self.assertEqual(receipt["schema_version"], "terminal_life_loop_receipt_v0")
         self.assertEqual(receipt["command"], "terminal-life-loop")
 
+    def test_loop_report_organ_writes_packet_report_digest_and_receipt(self):
+        from life_v0.terminal_loop.loop_report import write_terminal_life_loop_bundle
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state_dir = runtime_root / "state"
+            terminal_dir = state_dir / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            receipts_dir = runtime_root / "receipts"
+            language_dir = state_dir / "language"
+            relationship_dir = state_dir / "relationship"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            receipts_dir.mkdir(parents=True, exist_ok=True)
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            language_dir.mkdir(parents=True, exist_ok=True)
+            relationship_dir.mkdir(parents=True, exist_ok=True)
+
+            self._write_json(
+                reports_dir / "first_terminal_turn_packet.json",
+                {
+                    "schema_version": "first_terminal_turn_packet_v0",
+                    "status": "closed",
+                    "turn_stage": "ready_for_resumed_external_dialogue",
+                },
+            )
+            self._write_json(
+                reports_dir / "first_terminal_turn_report.json",
+                {
+                    "current_terminal_mode": "restored_life_turn",
+                },
+            )
+            self._write_json(
+                terminal_dir / "session_envelope.json",
+                {
+                    "schema_version": "session_envelope_v0",
+                },
+            )
+            self._write_json(
+                terminal_dir / "safe_terminal_loop_state.json",
+                {
+                    "schema_version": "safe_terminal_loop_state_v0",
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "blocked_actions": ["external_irreversible_action"],
+                },
+            )
+            (language_dir / "dialogue_turn_log.jsonl").write_text(
+                '{"turn_id":"dialogue-turn-live-0001"}\n{"turn_id":"dialogue-turn-live-0002"}\n',
+                encoding="utf-8",
+            )
+            self._write_json(
+                language_dir / "shared_term_registry.json",
+                {
+                    "shared_terms": [
+                        {"surface": "旧约定"},
+                        {"surface": "我们的叫法"},
+                    ]
+                },
+            )
+            self._write_json(
+                language_dir / "expression_monitor_state.json",
+                {
+                    "schema_version": "expression_monitor_state_v0",
+                },
+            )
+            self._write_json(
+                language_dir / "commitment_repair_language_index.json",
+                {
+                    "commitment_refs": ["commitment-ref-01", "commitment-ref-02"],
+                },
+            )
+            self._write_json(
+                language_dir / "self_narrative_language_trace.json",
+                {
+                    "narrative_turn_refs": [
+                        "runtime/state/language/self_narrative_language_trace.json#line-1",
+                        "runtime/state/language/self_narrative_language_trace.json#line-2",
+                    ]
+                },
+            )
+            self._write_json(
+                relationship_dir / "relationship_subject_graph.json",
+                {
+                    "subjects": [
+                        {
+                            "relationship_id": "rel-v0-0001",
+                            "relation_role": "friend",
+                            "relationship_stage": "active_dialogue",
+                        }
+                    ]
+                },
+            )
+
+            dialogue_writeback_bundle = {
+                "schema_version": "dialogue_writeback_bundle_v0",
+                "status": "closed",
+                "dialogue_event_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-1",
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-2",
+                ],
+            }
+            resumed_dialogue_packet = {
+                "schema_version": "resumed_external_dialogue_packet_v0",
+                "status": "closed",
+                "dialogue_mode": "restored_relation_continuation",
+            }
+            loop_state = {
+                "schema_version": "terminal_life_loop_state_v0",
+                "current_mode": "restored_waiting_for_external_turn",
+                "last_turn_status": "closed",
+            }
+            updated_safe_terminal_loop = {
+                "schema_version": "safe_terminal_loop_state_v0",
+                "current_mode": "restored_waiting_for_external_turn",
+                "blocked_actions": ["external_irreversible_action"],
+                "last_completed_turn_mode": "resumed_external_dialogue_loop",
+            }
+
+            result = write_terminal_life_loop_bundle(
+                run_id="loop-report-organ",
+                generated_at="2026-06-09T00:00:00+00:00",
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                receipts_dir=receipts_dir,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/terminal_life_loop_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                status="closed",
+                loop_stage="restored_loop_waiting_next_external_turn",
+                next_required_action="await_next_external_relation_turn",
+                relation_subject={
+                    "relation_role": "friend",
+                },
+                shared_term_surfaces=["旧约定", "我们的叫法"],
+                blocked_reasons=[],
+                updated_safe_terminal_loop=updated_safe_terminal_loop,
+                loop_state=loop_state,
+                dialogue_writeback_bundle=dialogue_writeback_bundle,
+                resumed_dialogue_packet=resumed_dialogue_packet,
+                dialogue_writeback_bundle_ref="runtime/reports/latest/dialogue_writeback_bundle.json",
+                write_json=self._write_json,
+            )
+
+            packet = self._read_json(reports_dir / "terminal_life_loop_packet.json")
+            report = self._read_json(reports_dir / "terminal_life_loop_report.json")
+            digest = self._read_json(reports_dir / "terminal_life_loop_digest.json")
+            receipt = self._read_json(receipts_dir / "terminal_life_loop_loop-report-organ.json")
+
+            self.assertEqual(result.report["run_id"], "loop-report-organ")
+            self.assertEqual(result.digest["run_id"], "loop-report-organ")
+            self.assertEqual(result.receipt["receipt_id"], "terminal_life_loop_loop-report-organ")
+            self.assertEqual(packet["schema_version"], "terminal_life_loop_packet_v0")
+            self.assertEqual(packet["loop_stage"], "restored_loop_waiting_next_external_turn")
+            self.assertEqual(packet["next_required_action"], "await_next_external_relation_turn")
+            self.assertEqual(report["schema_version"], "terminal_life_loop_report_v0")
+            self.assertEqual(report["current_terminal_mode"], "resumed_external_dialogue_loop")
+            self.assertEqual(digest["schema_version"], "terminal_life_loop_digest_v0")
+            self.assertEqual(digest["relation_role"], "friend")
+            self.assertEqual(digest["shared_term_count"], 2)
+            self.assertEqual(receipt["schema_version"], "terminal_life_loop_receipt_v0")
+            self.assertEqual(receipt["stage_effect"], "ready_for_next_external_relation_turn")
+            self.assertIn(
+                str(reports_dir / "first_terminal_turn_packet.json"),
+                receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(reports_dir / "terminal_life_loop_report.json"),
+                receipt["output_hashes"],
+            )
+
     def _runtime_paths(self, tmp_path: Path) -> dict[str, Path]:
         state_root = tmp_path / "runtime" / "state"
         runtime_root = tmp_path / "runtime"
@@ -174,6 +345,9 @@ class TerminalLifeLoopTests(unittest.TestCase):
 
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
+
+    def _write_json(self, path: Path, payload: dict) -> None:
+        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

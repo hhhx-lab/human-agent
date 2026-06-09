@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -9,6 +8,7 @@ from typing import Any
 
 from .loop_state import build_terminal_life_loop_state
 from .dialogue_writeback import build_dialogue_writeback_bundle
+from .loop_report import write_terminal_life_loop_bundle
 from .resume_packet import build_resumed_external_dialogue_packet
 
 
@@ -199,86 +199,50 @@ def run_terminal_life_loop(
         "last_dialogue_packet_ref": "runtime/reports/latest/resumed_external_dialogue_packet.json",
     }
 
-    loop_packet = {
-        "schema_version": "terminal_life_loop_packet_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "status": status,
-        "loop_stage": loop_stage,
-        "source_doc_refs": SOURCE_DOC_REFS,
-        "readme_block_refs": READ_ME_BLOCK_REFS,
-        "runtime_carrier_refs": RUNTIME_CARRIER_REFS,
-        "loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
-        "session_envelope_ref": "runtime/state/terminal/session_envelope.json",
-        "safe_terminal_loop_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
-        "last_dialogue_packet_ref": "runtime/reports/latest/resumed_external_dialogue_packet.json",
-        "dialogue_writeback_bundle_ref": dialogue_writeback_bundle_ref,
-        "writeback_targets": [
-            "runtime/state/language/dialogue_turn_log.jsonl",
-            "runtime/state/language/self_narrative_language_trace.json",
-            "runtime/state/language/commitment_repair_language_index.json",
-            "runtime/state/relationship/relationship_subject_graph.json",
-        ],
-        "next_required_action": next_required_action,
-        "receipt_ref": f"runtime/receipts/terminal_life_loop_{run_id}.json",
-    }
-
-    loop_report = {
-        "schema_version": "terminal_life_loop_report_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "status": status,
-        "engineering_slice_ref": "FIRST_TERMINAL_LIFE_LOOP",
-        "source_doc_refs": SOURCE_DOC_REFS,
-        "readme_block_refs": READ_ME_BLOCK_REFS,
-        "runtime_carrier_refs": RUNTIME_CARRIER_REFS,
-        "current_terminal_mode": "resumed_external_dialogue_loop" if status == "closed" else "blocked",
-        "loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
-        "last_dialogue_packet_ref": "runtime/reports/latest/resumed_external_dialogue_packet.json",
-        "blocked_reasons": blocked_reasons,
-        "next_required_action": next_required_action,
-    }
-
-    loop_digest = {
-        "schema_version": "terminal_life_loop_digest_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "status": status,
-        "loop_stage": loop_stage,
-        "next_required_action": next_required_action,
-        "relation_role": relation_subject.get("relation_role"),
-        "shared_term_count": len(shared_term_surfaces),
-        "blocked_reasons": blocked_reasons,
-    }
-
-    receipt = _build_receipt(
-        run_id=run_id,
-        generated_at=generated_at,
-        state_dir=state_dir,
-        reports_dir=reports_dir,
-        receipts_dir=receipts_dir,
-    )
-
     try:
-        terminal_dir.mkdir(parents=True, exist_ok=True)
-        reports_dir.mkdir(parents=True, exist_ok=True)
-        receipts_dir.mkdir(parents=True, exist_ok=True)
-        _write_json(terminal_dir / "safe_terminal_loop_state.json", updated_safe_terminal_loop)
-        _write_json(terminal_dir / "terminal_life_loop_state.json", loop_state)
-        _write_json(reports_dir / "dialogue_writeback_bundle.json", dialogue_writeback_bundle)
-        _write_json(reports_dir / "resumed_external_dialogue_packet.json", resumed_dialogue_packet)
-        _write_json(reports_dir / "terminal_life_loop_packet.json", loop_packet)
-        _write_json(reports_dir / "terminal_life_loop_report.json", loop_report)
-        _write_json(reports_dir / "terminal_life_loop_digest.json", loop_digest)
-        _write_json(receipts_dir / f"terminal_life_loop_{run_id}.json", receipt)
+        report_bundle = write_terminal_life_loop_bundle(
+            run_id=run_id,
+            generated_at=generated_at,
+            state_dir=state_dir,
+            reports_dir=reports_dir,
+            receipts_dir=receipts_dir,
+            source_doc_refs=SOURCE_DOC_REFS,
+            readme_block_refs=READ_ME_BLOCK_REFS,
+            runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+            status=status,
+            loop_stage=loop_stage,
+            next_required_action=next_required_action,
+            relation_subject=relation_subject,
+            shared_term_surfaces=shared_term_surfaces,
+            blocked_reasons=blocked_reasons,
+            updated_safe_terminal_loop=updated_safe_terminal_loop,
+            loop_state=loop_state,
+            dialogue_writeback_bundle=dialogue_writeback_bundle,
+            resumed_dialogue_packet=resumed_dialogue_packet,
+            dialogue_writeback_bundle_ref=dialogue_writeback_bundle_ref,
+            write_json=_write_json,
+        )
     except OSError as exc:
-        loop_report["status"] = "blocked"
-        loop_report["blocked_reasons"].append(f"output_write_gate failed: {exc}")
-        return TerminalLifeLoopResult(exit_code=4, report=loop_report)
+        blocked_report = {
+            "schema_version": "terminal_life_loop_report_v0",
+            "run_id": run_id,
+            "generated_at": generated_at,
+            "status": "blocked",
+            "engineering_slice_ref": "FIRST_TERMINAL_LIFE_LOOP",
+            "source_doc_refs": SOURCE_DOC_REFS,
+            "readme_block_refs": READ_ME_BLOCK_REFS,
+            "runtime_carrier_refs": RUNTIME_CARRIER_REFS,
+            "current_terminal_mode": "blocked",
+            "loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
+            "last_dialogue_packet_ref": "runtime/reports/latest/resumed_external_dialogue_packet.json",
+            "blocked_reasons": [*blocked_reasons, f"output_write_gate failed: {exc}"],
+            "next_required_action": next_required_action,
+        }
+        return TerminalLifeLoopResult(exit_code=4, report=blocked_report)
 
     if status == "closed":
-        return TerminalLifeLoopResult(exit_code=0, report=loop_report)
-    return TerminalLifeLoopResult(exit_code=1 if strict else 0, report=loop_report)
+        return TerminalLifeLoopResult(exit_code=0, report=report_bundle.report)
+    return TerminalLifeLoopResult(exit_code=1 if strict else 0, report=report_bundle.report)
 
 
 def _loop_blockers(
@@ -342,59 +306,6 @@ def _collect_dialogue_turn_refs(path: Path, blocked_reasons: list[str]) -> list[
     return [f"runtime/state/language/dialogue_turn_log.jsonl#line-{idx}" for idx, _ in enumerate(lines, start=1)]
 
 
-def _build_receipt(
-    *,
-    run_id: str,
-    generated_at: str,
-    state_dir: Path,
-    reports_dir: Path,
-    receipts_dir: Path,
-) -> dict[str, Any]:
-    input_hashes: dict[str, str] = {}
-    for path in [
-        reports_dir / "first_terminal_turn_packet.json",
-        reports_dir / "first_terminal_turn_report.json",
-        state_dir / "terminal" / "session_envelope.json",
-        state_dir / "terminal" / "safe_terminal_loop_state.json",
-        state_dir / "relationship" / "relationship_subject_graph.json",
-        state_dir / "language" / "shared_term_registry.json",
-        state_dir / "language" / "expression_monitor_state.json",
-        state_dir / "language" / "commitment_repair_language_index.json",
-        state_dir / "language" / "self_narrative_language_trace.json",
-        state_dir / "language" / "dialogue_turn_log.jsonl",
-    ]:
-        if path.exists():
-            input_hashes[str(path)] = _sha256(path)
-
-    output_paths = [
-        state_dir / "terminal" / "safe_terminal_loop_state.json",
-        state_dir / "terminal" / "terminal_life_loop_state.json",
-        reports_dir / "dialogue_writeback_bundle.json",
-        reports_dir / "resumed_external_dialogue_packet.json",
-        reports_dir / "terminal_life_loop_packet.json",
-        reports_dir / "terminal_life_loop_report.json",
-        reports_dir / "terminal_life_loop_digest.json",
-        receipts_dir / f"terminal_life_loop_{run_id}.json",
-    ]
-    return {
-        "schema_version": "terminal_life_loop_receipt_v0",
-        "receipt_id": f"terminal_life_loop_{run_id}",
-        "run_id": run_id,
-        "command": "terminal-life-loop",
-        "report_refs": [
-            "runtime/reports/latest/dialogue_writeback_bundle.json",
-            "runtime/reports/latest/resumed_external_dialogue_packet.json",
-            "runtime/reports/latest/terminal_life_loop_packet.json",
-            "runtime/reports/latest/terminal_life_loop_report.json",
-            "runtime/reports/latest/terminal_life_loop_digest.json",
-        ],
-        "stage_effect": "ready_for_next_external_relation_turn",
-        "created_at": generated_at,
-        "input_hashes": input_hashes,
-        "output_hashes": {str(path): _sha256_if_exists(path) for path in output_paths},
-    }
-
-
 def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, Any]:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -409,16 +320,6 @@ def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, A
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def _sha256_if_exists(path: Path) -> str | None:
-    if not path.exists():
-        return None
-    return _sha256(path)
 
 
 def _default_run_id(prefix: str) -> str:

@@ -201,7 +201,7 @@ replay cues
 | `RelationTurnFrame` | 当前关系身份、共同术语、旧承诺、回合范围 | `life_v0/language/relationship_graph.py` 或 `terminal_turn/turn_transition.py` | `language`, `terminal_loop`, `process_supervisor` |
 | `ExpressionPlan` | 外显语言前的意图、表面策略、风险点 | `life_v0/language/expression_monitor.py` | `terminal_loop`, `process_supervisor` |
 | `ActionCandidateSet` | 候选行动、抑制结果、责任预期 | `life_v0/membrane/candidate_arena.py` | `terminal_loop`, `shell_command`, `process_supervisor` |
-| `DialogueWritebackBundle` | 一回合结束后的语言/关系/承诺/自我叙事写回集 | `life_v0/terminal_loop/loop_report.py` 或 `language/dialogue_log.py` | `state_store`, `replay`, `archive` |
+| `DialogueWritebackBundle` | 一回合结束后的语言/关系/承诺/自我叙事写回集 | `life_v0/terminal_loop/loop_report.py` | `state_store`, `replay`, `archive` |
 | `IdleContinuityFrame` | 等待态仍存在的轻量连续体事件 | `life_v0/process_supervisor/heartbeat.py` | `language`, `relationship`, `replay` |
 | `OfflineConsolidationFrame` | replay、dream、wake integration 的统一容器 | `life_v0/dream/offline_entry.py` | `growth`, `archive`, `reporting` |
 | `GrowthPatchCandidate` | 成长补丁候选、塑性窗口、风险说明 | `life_v0/growth/patch_queue.py` | `replay`, `archive`, `contracts` |
@@ -212,7 +212,7 @@ replay cues
 
 1. `percept.py`、`semantic_map.py` 已经在代码里存在，当前任务不是“再把它们建出来”，而是继续把它们接厚到 prediction/body/process supervisor 主链。
 2. `dialogue_writeback.py`、`dialogue_events.py`、`response_surface.py` 也已经存在，当前任务不是重新起名，而是把它们真正升级成共享对象的首写器官或稳定消费器官。
-3. `restore_context.py`、`loop_report.py` 目前还没有独立成文件，所以文档里提到它们时，含义是“后续如需继续拆分时的器官候选位”。`idle_strategy.py` 与 `persistent_process.py` 已经在 Queue B 第二波中独立落地。
+3. `loop_report.py` 已经独立成文件并接回 `terminal_loop/__init__.py`；`idle_strategy.py` 与 `persistent_process.py` 也已经落地。当前仍未独立的重职责主要收敛在 `restore_context.py` 与 `conversation_carryover.py` 候选位。
 
 ## 一次真实生命回合的编排顺序
 
