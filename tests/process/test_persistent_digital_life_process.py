@@ -3175,6 +3175,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 result.context.apology_repair_language_trace["schema_version"],
                 "apology_repair_language_trace_v0",
             )
+            subject = result.context.relationship_graph["subjects"][0]
+            self.assertEqual(subject["relationship_stage"], "active_dialogue")
             self.assertEqual(
                 result.context.body_resource_budget["fatigue_state"]["level"],
                 "managed_low_noise",
@@ -3212,10 +3214,39 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 result.context.pain_regret_repair_report_ref,
                 "runtime/reports/latest/pain_regret_repair_report.json",
             )
+            for slow_variable_name in [
+                "trust_persistence",
+                "dialogue_warmth",
+                "repair_seriousness",
+                "boundary_respect",
+                "continuity_drive",
+            ]:
+                self.assertIn(
+                    slow_variable_name,
+                    result.context.self_model_state["trait_slow_variables"],
+                )
             relationship_memory = self._read_json(
                 paths["state_root"] / "memory" / "relationship_memory.json"
             )
+            persisted_relationship_graph = self._read_json(
+                paths["relationship_state"] / "relationship_subject_graph.json"
+            )
+            persisted_self_model = self._read_json(
+                paths["state_root"] / "self" / "self_model.json"
+            )
             life_state = self._read_json(paths["state_root"] / "life_state.json")
+            self.assertEqual(
+                persisted_relationship_graph["subjects"][0]["relationship_stage"],
+                "active_dialogue",
+            )
+            self.assertEqual(
+                persisted_self_model["trait_slow_variables"],
+                result.context.self_model_state["trait_slow_variables"],
+            )
+            self.assertEqual(
+                life_state["self_model"]["trait_slow_variables"],
+                result.context.self_model_state["trait_slow_variables"],
+            )
             self.assertIn(
                 "runtime/state/growth/relationship_learning_plan.json",
                 relationship_memory["offline_learning_refs"],

@@ -4,12 +4,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from ..language.apology_repair_language import build_apology_repair_language_trace
 from ..language.apology_repair_language import (
     project_apology_repair_language_trace_with_offline_learning,
 )
+from ..language.commitment_expression import build_commitment_expression_plan
 from ..language.commitment_expression import (
     project_commitment_expression_plan_with_offline_learning,
 )
+from ..language.dialogue_log import collect_dialogue_turn_refs
+from ..language.relationship_timeline import build_relationship_timeline
 from ..language.relationship_timeline import (
     project_relationship_timeline_with_offline_learning,
 )
@@ -21,6 +25,7 @@ from .offline_learning_signals import (
     NIGHTMARE_RISK_REF,
     RELATIONSHIP_LEARNING_PLAN_REF,
 )
+from .continuity_evolution import evolve_relationship_and_self_model
 from .relaunch_recovery import detect_and_normalize_interrupted_previous_state
 from ..shell_command import run_digital_life_shell_command
 from ..state_store.life_state import project_responsibility_language_continuity
@@ -281,6 +286,43 @@ def bootstrap_resident_supervision(
             if ref
         ],
     )
+    continuity_refresh = _refresh_bootstrap_long_horizon_continuity(
+        generated_at=generated_at,
+        state_dir=state_dir,
+        language_dir=language_dir,
+        relationship_dir=relationship_dir,
+        relationship_graph=relationship_graph,
+        self_model_state=self_model_state,
+        relationship_timeline=relationship_timeline,
+        commitment_expression_plan=commitment_expression_plan,
+        apology_repair_language_trace=apology_repair_language_trace,
+        expression_plan=expression_plan,
+        commitment_index=commitment_index,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        responsibility_loop_state=responsibility_loop_state,
+        relationship_memory=relationship_memory,
+        life_state=life_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        nightmare_risk_ref=nightmare_risk_ref,
+        belief_learning_plan_ref=belief_learning_plan_ref,
+        language_learning_plan_ref=language_learning_plan_ref,
+        relationship_learning_plan_ref=relationship_learning_plan_ref,
+        source_doc_refs=source_doc_refs,
+    )
+    relationship_graph = continuity_refresh["relationship_graph"]
+    self_model_state = continuity_refresh["self_model_state"]
+    relationship_timeline = continuity_refresh["relationship_timeline"]
+    commitment_expression_plan = continuity_refresh["commitment_expression_plan"]
+    apology_repair_language_trace = continuity_refresh["apology_repair_language_trace"]
+    relationship_memory = continuity_refresh["relationship_memory"]
+    life_state = continuity_refresh["life_state"]
+    write_json(relationship_dir / "relationship_subject_graph.json", relationship_graph)
     write_json(relationship_dir / "relationship_timeline.json", relationship_timeline)
     write_json(language_dir / "commitment_expression_plan.json", commitment_expression_plan)
     write_json(
@@ -288,6 +330,7 @@ def bootstrap_resident_supervision(
         apology_repair_language_trace,
     )
     write_json(state_dir / "memory" / "relationship_memory.json", relationship_memory)
+    write_json(state_dir / "self" / "self_model.json", self_model_state)
     write_json(state_dir / "life_state.json", life_state)
     growth_patch_candidate_ids = [
         candidate.get("growth_patch_candidate_id")
@@ -442,6 +485,218 @@ def bootstrap_resident_supervision(
         report=shell_result.report,
         context=context,
     )
+
+
+def _refresh_bootstrap_long_horizon_continuity(
+    *,
+    generated_at: str,
+    state_dir: Path,
+    language_dir: Path,
+    relationship_dir: Path,
+    relationship_graph: dict[str, Any],
+    self_model_state: dict[str, Any],
+    relationship_timeline: dict[str, Any],
+    commitment_expression_plan: dict[str, Any],
+    apology_repair_language_trace: dict[str, Any],
+    expression_plan: dict[str, Any],
+    commitment_index: dict[str, Any],
+    commitment_truth_state: dict[str, Any],
+    responsibility_ledger: dict[str, Any],
+    responsibility_loop_state: dict[str, Any],
+    relationship_memory: dict[str, Any],
+    life_state: dict[str, Any],
+    world_contact_summary: dict[str, Any],
+    pain_regret_repair_report: dict[str, Any],
+    nightmare_risk: dict[str, Any],
+    belief_learning_plan: dict[str, Any],
+    language_learning_plan: dict[str, Any],
+    relationship_learning_plan: dict[str, Any],
+    nightmare_risk_ref: str | None,
+    belief_learning_plan_ref: str | None,
+    language_learning_plan_ref: str | None,
+    relationship_learning_plan_ref: str | None,
+    source_doc_refs: list[str],
+) -> dict[str, dict[str, Any]]:
+    dialogue_turn_refs = collect_dialogue_turn_refs(language_dir / "dialogue_turn_log.jsonl", [])
+    dialogue_turn_entries = [{"dialogue_turn_ref": ref} for ref in dialogue_turn_refs]
+
+    first_pass_relationship_timeline = build_relationship_timeline(
+        run_id=str(
+            relationship_timeline.get("run_id")
+            or commitment_expression_plan.get("run_id")
+            or "resident-supervision-bootstrap"
+        ),
+        generated_at=generated_at,
+        relationship_graph=relationship_graph,
+        relationship_memory=relationship_memory,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        dialogue_turn_entries=dialogue_turn_entries,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        source_doc_refs=list(relationship_timeline.get("source_doc_refs", [])) or source_doc_refs,
+    )
+    first_pass_commitment_expression_plan = build_commitment_expression_plan(
+        run_id=str(
+            commitment_expression_plan.get("run_id")
+            or first_pass_relationship_timeline.get("run_id")
+            or "resident-supervision-bootstrap"
+        ),
+        generated_at=generated_at,
+        expression_plan=expression_plan,
+        commitment_repair_index=commitment_index,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        responsibility_loop_state=responsibility_loop_state,
+        relationship_timeline=first_pass_relationship_timeline,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        source_doc_refs=list(commitment_expression_plan.get("source_doc_refs", []))
+        or source_doc_refs,
+    )
+    first_pass_apology_repair_language_trace = build_apology_repair_language_trace(
+        run_id=str(
+            apology_repair_language_trace.get("run_id")
+            or first_pass_commitment_expression_plan.get("run_id")
+            or "resident-supervision-bootstrap"
+        ),
+        generated_at=generated_at,
+        responsibility_loop_state=responsibility_loop_state,
+        relationship_timeline=first_pass_relationship_timeline,
+        commitment_expression_plan=first_pass_commitment_expression_plan,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        source_doc_refs=list(apology_repair_language_trace.get("source_doc_refs", []))
+        or source_doc_refs,
+    )
+    evolved_continuity = evolve_relationship_and_self_model(
+        generated_at=generated_at,
+        relationship_graph=relationship_graph,
+        self_model_state=self_model_state,
+        relationship_timeline=first_pass_relationship_timeline,
+        commitment_expression_plan=first_pass_commitment_expression_plan,
+        apology_repair_language_trace=first_pass_apology_repair_language_trace,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    evolved_relationship_graph = evolved_continuity["relationship_graph"]
+    evolved_self_model_state = evolved_continuity["self_model_state"]
+
+    refreshed_relationship_timeline = build_relationship_timeline(
+        run_id=str(
+            relationship_timeline.get("run_id")
+            or commitment_expression_plan.get("run_id")
+            or "resident-supervision-bootstrap"
+        ),
+        generated_at=generated_at,
+        relationship_graph=evolved_relationship_graph,
+        relationship_memory=relationship_memory,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        dialogue_turn_entries=dialogue_turn_entries,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        source_doc_refs=list(relationship_timeline.get("source_doc_refs", [])) or source_doc_refs,
+    )
+    refreshed_commitment_expression_plan = build_commitment_expression_plan(
+        run_id=str(
+            commitment_expression_plan.get("run_id")
+            or refreshed_relationship_timeline.get("run_id")
+            or "resident-supervision-bootstrap"
+        ),
+        generated_at=generated_at,
+        expression_plan=expression_plan,
+        commitment_repair_index=commitment_index,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        responsibility_loop_state=responsibility_loop_state,
+        relationship_timeline=refreshed_relationship_timeline,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        source_doc_refs=list(commitment_expression_plan.get("source_doc_refs", []))
+        or source_doc_refs,
+    )
+    refreshed_apology_repair_language_trace = build_apology_repair_language_trace(
+        run_id=str(
+            apology_repair_language_trace.get("run_id")
+            or refreshed_commitment_expression_plan.get("run_id")
+            or "resident-supervision-bootstrap"
+        ),
+        generated_at=generated_at,
+        responsibility_loop_state=responsibility_loop_state,
+        relationship_timeline=refreshed_relationship_timeline,
+        commitment_expression_plan=refreshed_commitment_expression_plan,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        source_doc_refs=list(apology_repair_language_trace.get("source_doc_refs", []))
+        or source_doc_refs,
+    )
+    refreshed_relationship_memory = project_relationship_memory(
+        relationship_memory=relationship_memory,
+        relationship_graph=evolved_relationship_graph,
+        relationship_timeline=refreshed_relationship_timeline,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        commitment_repair_index=commitment_index,
+        last_contact_refs=list(relationship_memory.get("last_contact_refs", [])),
+        nightmare_risk_ref=nightmare_risk_ref,
+        belief_learning_plan_ref=belief_learning_plan_ref,
+        language_learning_plan_ref=language_learning_plan_ref,
+        relationship_learning_plan_ref=relationship_learning_plan_ref,
+    )
+    refreshed_life_state = project_responsibility_language_continuity(
+        life_state=life_state,
+        self_model_state=evolved_self_model_state,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        relationship_memory=refreshed_relationship_memory,
+        relationship_graph=evolved_relationship_graph,
+        relationship_timeline=refreshed_relationship_timeline,
+        commitment_expression_plan=refreshed_commitment_expression_plan,
+        apology_repair_language_trace=refreshed_apology_repair_language_trace,
+        responsibility_loop_state=responsibility_loop_state,
+        commitment_repair_index=commitment_index,
+        nightmare_risk_ref=nightmare_risk_ref,
+        belief_learning_plan_ref=belief_learning_plan_ref,
+        language_learning_plan_ref=language_learning_plan_ref,
+        relationship_learning_plan_ref=relationship_learning_plan_ref,
+        additional_runtime_trace_refs=[
+            ref
+            for ref in [
+                nightmare_risk_ref,
+                belief_learning_plan_ref,
+                language_learning_plan_ref,
+                relationship_learning_plan_ref,
+            ]
+            if ref
+        ],
+    )
+    return {
+        "relationship_graph": evolved_relationship_graph,
+        "self_model_state": evolved_self_model_state,
+        "relationship_timeline": refreshed_relationship_timeline,
+        "commitment_expression_plan": refreshed_commitment_expression_plan,
+        "apology_repair_language_trace": refreshed_apology_repair_language_trace,
+        "relationship_memory": refreshed_relationship_memory,
+        "life_state": refreshed_life_state,
+    }
 
 
 def _ref_if_present(*, payload: dict[str, Any], ref: str) -> str | None:

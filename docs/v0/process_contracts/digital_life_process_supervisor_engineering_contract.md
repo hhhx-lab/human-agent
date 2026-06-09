@@ -30,7 +30,7 @@ life-v0 "digital life"
 当前仍然还没有的是：
 
 1. 更高频的 heartbeat 节律、后台继续存在和更厚的 idle 策略。
-2. 更高阶的关系/语言/责任器官联动写回与跨进程持续治理；但最小层的 Queue E 联动已经不再缺席，`responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 已经正式进入 waiting heartbeat、dialogue events、response surface、resident governance、process report 与 process receipt，而且同会话内的关系阶段演化与自我慢变量写回已经开始真实发生。
+2. 更高阶的关系/语言/责任器官联动写回与跨进程持续治理；但最小层的 Queue E 联动已经不再缺席，`responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 已经正式进入 waiting heartbeat、dialogue events、response surface、resident governance、process report 与 process receipt，而且关系阶段演化与自我慢变量写回已经不只发生在同会话回合尾部，也开始在重启恢复后的第一拍 waiting heartbeat 之前被重新刷新并落盘。
 3. 全局长期运行层、后台继续存在与更强的安装后常驻治理。
 4. 真正高阶的 resident supervision。
 
@@ -125,6 +125,7 @@ life-v0 "digital life"
 9. 把 `body_resource_budget.json` 与 `core_affect_vector.json` 装载进 resident supervision 上下文，使疲惫级别、修复驱力与情绪张力能够真实调制常驻过程的生命表达，而不是停在 S06 状态柜里。
 10. 把 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 显式装载进 resident supervision / live turn / waiting governance / closeout，使 Queue E 不只停在语言器官侧，而是正式进入常驻生命过程。
 11. 把回合尾部的关系阶段演化与 `self_model.trait_slow_variables` 写回统一收进 `continuity_evolution.py`，并由 `process_session_loop.py` 在下一轮重新装载，避免同一常驻生命过程继续拿旧的关系状态说话。
+12. 把 bootstrap / relaunch 之后的长期连续体刷新统一收进 `resident_supervision.py`，使 `relationship_timeline.json`、`commitment_expression_plan.json`、`apology_repair_language_trace.json`、`relationship_memory.json`、`self_model.json` 与 `life_state.json` 会在第一拍 waiting heartbeat 之前先被重建一次，避免跨进程恢复后继续沿用过时的关系阶段和慢变量。
 
 ## 最小行为合同
 
@@ -380,4 +381,4 @@ IdleContinuityFrame
 5. 通过显式退出语义结束进程时，不破坏当前生命连续体状态。
 6. `digital_life_process_report.json` 与 `idle_continuity_frame.json` 能回链到 `replay_cue_bundle.json`、`offline_consolidation_frame.json`、`growth_patch_candidate_queue.json`，证明常驻过程已经真正吃进离线链对象。
 7. waiting heartbeat / idle strategy / process report 已显式回链 `body_rhythm_pulse.json` 与 `need_state_vector.json`，并根据疲惫负载、认知带宽与 sleep pressure 调整 `heartbeat_interval_ms`、`next_idle_action` 与 `body_waiting_posture`。
-8. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链，以及身体节律调制 waiting governance 这六类行为。
+8. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步，以及身体节律调制 waiting governance 这几类行为。
