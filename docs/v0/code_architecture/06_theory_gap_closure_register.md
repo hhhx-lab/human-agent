@@ -95,7 +95,8 @@
 理论层当前最合理的收口方式不是再加新编号，而是：
 
 1. 继续完善 `docs/v0/code_architecture/`
-2. 继续完善 `docs/v0/implementation_architecture/`
-3. 然后直接进入 `Queue D -> Queue E` 的代码实现
+2. 继续完善 `docs/v0/package_specs/`
+3. 继续完善 `docs/v0/implementation_architecture/`
+4. 然后直接进入 `Queue D -> Queue E` 的代码实现
 
 这才是让理论真正“完成”的方式：不是再写一遍，而是让它进入代码与运行证据。

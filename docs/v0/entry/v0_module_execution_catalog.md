@@ -87,6 +87,10 @@ docs/v0/code_framework/README.md
   -> docs/v0/code_architecture/04_language_as_primary_expression_system.md
   -> docs/v0/code_architecture/05_module_reading_and_execution_map.md
   -> docs/v0/code_architecture/06_theory_gap_closure_register.md
+  -> docs/v0/package_specs/README.md
+  -> docs/v0/package_specs/01_life_v0_package_construction_matrix.md
+  -> docs/v0/package_specs/02_shared_object_write_authority_and_dependency_graph.md
+  -> docs/v0/package_specs/03_incremental_package_delivery_protocol.md
   -> docs/v0/implementation_architecture/README.md
   -> docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md
   -> docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md

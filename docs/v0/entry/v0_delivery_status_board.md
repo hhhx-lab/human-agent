@@ -174,6 +174,10 @@ growth_archive_report.json
 5. `docs/v0/code_blueprints/05_birth_residency_terminal_blueprint.md`
 6. `docs/v0/code_blueprints/06_runtime_state_report_receipt_manifest.md`
 7. `docs/v0/code_blueprints/07_theory_to_package_trace_contract.md`
+8. `docs/v0/package_specs/README.md`
+9. `docs/v0/package_specs/01_life_v0_package_construction_matrix.md`
+10. `docs/v0/package_specs/02_shared_object_write_authority_and_dependency_graph.md`
+11. `docs/v0/package_specs/03_incremental_package_delivery_protocol.md`
 1. `docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
 2. `docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`
 3. `docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md`
