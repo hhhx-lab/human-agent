@@ -553,6 +553,9 @@ Queue B 第一轮至少更新：
 - `idle_strategy_ref`
 - `resident_governance_report_ref`
 - `resident_governance_snapshot_ref`
+- `governance_attention_target`
+- `governance_cadence_profile`
+- `long_horizon_priority_profile`
 - `dialogue_writeback_bundle_ref`
 - `offline_growth_cycle_refs`
 

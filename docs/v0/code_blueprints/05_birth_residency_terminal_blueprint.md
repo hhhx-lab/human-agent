@@ -114,7 +114,7 @@ run_report.json
 
 | 文件 | 作用 | 必须消费 | 必须写出 |
 |---|---|---|---|
-| `idle_strategy.py` | 定义等待态 heartbeat 节律、空闲探针、离线对象消费策略 | `IdleContinuityFrame`、`ReplayCueBundle`、`OfflineConsolidationFrame`、`GrowthPatchCandidateQueue` | `runtime/state/terminal/idle_strategy_state.json` |
+| `idle_strategy.py` | 定义等待态 heartbeat 节律、空闲探针、离线对象消费策略，并给出当前 resident governance 的关注目标与优先级分布 | `IdleContinuityFrame`、`ReplayCueBundle`、`OfflineConsolidationFrame`、`GrowthPatchCandidateQueue` | `runtime/state/terminal/idle_strategy_state.json` |
 | `resident_supervision.py` | 接住 restore shell 之后的状态装载、relaunch normalization、初次 waiting heartbeat 进入 | shell report、terminal state、language/relationship continuity、offline shared objects | 首轮 `digital_life_waiting_heartbeat.json`、`resident_governance_state.json`、更新后的 terminal/language/relationship state |
 | `live_turn_cycle.py` | 承接真实新回合的 event -> response -> writeback -> incident recovery 生命周期 | shared terms、commitment、relationship、offline cues、resident turn writeback、incident recovery | dialogue writeback、resumed dialogue packet、incident/recovery reports、更新后的 waiting state |
 | `persistent_process.py` | 把最小常驻进程补成明确的持续治理器官 | shell report、terminal loop state、incident/relaunch reports、idle strategy | `runtime/state/terminal/persistent_process_state.json`、`runtime/state/terminal/resident_governance_state.json`、`runtime/state/terminal/resident_governance_snapshot.json`、`runtime/reports/latest/digital_life_persistent_process_report.json`、`runtime/reports/latest/digital_life_resident_governance_report.json` |
@@ -140,7 +140,8 @@ event -> response -> writeback -> incident recovery 生命周期继续从 `__ini
 这批长期语言对象继续接进 `idle_strategy_state.json`、`digital_life_waiting_heartbeat.json`、
 `idle_continuity_frame.json` 与 `terminal_life_loop_state.json`，让 waiting continuity 本身也显式
 承载长期关系/承诺/修复语言对象；同时又新增 `resident_governance_state.json`，把运行中的 waiting
-governance 与关闭态 `resident_governance_snapshot/report` 分开。当前
+governance 与关闭态 `resident_governance_snapshot/report` 分开，并开始显式写出
+`governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`。当前
 `__init__.py` 基本只剩启动、接线和 closeout 外壳；后续重点转向后台 resident governance 与更高频
 heartbeat 节律。
 

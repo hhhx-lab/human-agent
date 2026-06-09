@@ -290,6 +290,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
             )
             self.assertEqual(
+                idle_strategy["governance_attention_target"],
+                "apology_repair_language_trace",
+            )
+            self.assertEqual(
+                idle_strategy["governance_attention_reason"],
+                "repair_drive_active_with_offline_pressure",
+            )
+            self.assertEqual(
+                idle_strategy["governance_cadence_profile"],
+                "repair_weighted_resident_hold",
+            )
+            self.assertEqual(
+                idle_strategy["long_horizon_priority_profile"],
+                {
+                    "relationship_timeline": "baseline",
+                    "commitment_expression_plan": "elevated",
+                    "apology_repair_language_trace": "primary",
+                },
+            )
+            self.assertEqual(
                 resident_governance_state["schema_version"],
                 "resident_governance_state_v0",
             )
@@ -339,6 +359,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 70)
             self.assertEqual(resident_governance_state["offline_pressure_level"], "elevated")
+            self.assertEqual(
+                resident_governance_state["governance_attention_target"],
+                "apology_repair_language_trace",
+            )
+            self.assertEqual(
+                resident_governance_state["governance_cadence_profile"],
+                "repair_weighted_resident_hold",
+            )
 
             process_report = self._read_json(paths["reports"] / "digital_life_process_report.json")
             self.assertEqual(process_report["completed_dialogue_turns"], 0)
@@ -391,6 +419,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 process_report["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
+                process_report["governance_attention_target"],
+                "apology_repair_language_trace",
             )
             self.assertEqual(process_report["body_waiting_posture"], "guarded_attentive")
             self.assertEqual(
@@ -528,6 +560,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(idle_strategy["relaunch_caution_level"], "baseline")
             self.assertEqual(idle_strategy["next_idle_action"], "refresh_waiting_heartbeat_with_repair_readiness_hold")
             self.assertEqual(idle_strategy["body_waiting_posture"], "guarded_attentive")
+            self.assertEqual(
+                idle_strategy["governance_attention_target"],
+                "apology_repair_language_trace",
+            )
+            self.assertEqual(
+                idle_strategy["governance_attention_reason"],
+                "repair_drive_active_with_offline_pressure",
+            )
+            self.assertEqual(
+                idle_strategy["governance_cadence_profile"],
+                "repair_weighted_resident_hold",
+            )
             self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 70)
             self.assertEqual(
                 heartbeat_packet["idle_probe_mode"],
@@ -597,6 +641,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 70)
             self.assertEqual(resident_governance_state["offline_pressure_level"], "elevated")
+            self.assertEqual(
+                resident_governance_state["governance_attention_target"],
+                "apology_repair_language_trace",
+            )
+            self.assertEqual(
+                resident_governance_state["governance_cadence_profile"],
+                "repair_weighted_resident_hold",
+            )
             self.assertEqual(narrative_trace["idle_continuity_counter"], 3)
             self.assertEqual(len(narrative_trace["idle_continuity_refs"]), 3)
             self.assertEqual(
@@ -910,6 +962,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/language/commitment_expression_plan.json",
                 "runtime/state/language/apology_repair_language_trace.json",
             ],
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_target"],
+            "apology_repair_language_trace",
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_reason"],
+            "repair_drive_active_with_offline_pressure",
+        )
+        self.assertEqual(
+            idle_strategy["governance_cadence_profile"],
+            "guarded_repair_hold",
+        )
+        self.assertEqual(
+            idle_strategy["long_horizon_priority_profile"],
+            {
+                "relationship_timeline": "baseline",
+                "commitment_expression_plan": "elevated",
+                "apology_repair_language_trace": "primary",
+            },
         )
 
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
@@ -1616,6 +1688,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "relaunch_caution_level": "guarded",
                     "next_idle_action": "refresh_waiting_heartbeat_or_accept_external_turn",
                     "waiting_mode": "restored_waiting_for_external_turn",
+                    "governance_attention_target": "commitment_expression_plan",
+                    "governance_attention_reason": "offline_pressure_requires_commitment_continuity",
+                    "governance_cadence_profile": "commitment_continuity_refresh",
+                    "long_horizon_priority_profile": {
+                        "relationship_timeline": "baseline",
+                        "commitment_expression_plan": "elevated",
+                        "apology_repair_language_trace": "baseline",
+                    },
                 },
             )
             self._write_json(language_dir / "self_narrative_language_trace.json", {"schema_version": "self_narrative_language_trace_v0"})
@@ -1702,6 +1782,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(report["heartbeat_interval_ms"], 80)
             self.assertEqual(report["offline_pressure_level"], "present")
             self.assertEqual(report["relaunch_caution_level"], "guarded")
+            self.assertEqual(
+                report["governance_attention_target"],
+                "commitment_expression_plan",
+            )
             self.assertEqual(
                 report["relationship_timeline_ref"],
                 "runtime/state/relationship/relationship_timeline.json",
@@ -2062,6 +2146,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "relaunch_caution_level": "heightened",
                 "next_idle_action": "refresh_waiting_heartbeat_or_accept_external_turn",
                 "waiting_mode": "restored_waiting_for_external_turn",
+                "governance_attention_target": "commitment_expression_plan",
+                "governance_attention_reason": "offline_pressure_requires_commitment_continuity",
+                "governance_cadence_profile": "commitment_continuity_refresh",
+                "long_horizon_priority_profile": {
+                    "relationship_timeline": "baseline",
+                    "commitment_expression_plan": "elevated",
+                    "apology_repair_language_trace": "baseline",
+                },
             }
             self._write_json(terminal_dir / "idle_strategy_state.json", idle_strategy_state)
 
@@ -2165,15 +2257,31 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 70)
             self.assertEqual(resident_governance_state["offline_pressure_level"], "present")
             self.assertEqual(
+                resident_governance_state["governance_attention_target"],
+                "commitment_expression_plan",
+            )
+            self.assertEqual(
+                resident_governance_state["governance_cadence_profile"],
+                "commitment_continuity_refresh",
+            )
+            self.assertEqual(
                 resident_governance_snapshot["idle_continuity_ref"],
                 "runtime/state/terminal/idle_continuity_frame.json",
             )
             self.assertEqual(resident_governance_snapshot["heartbeat_interval_ms"], 70)
             self.assertEqual(resident_governance_snapshot["offline_pressure_level"], "present")
             self.assertEqual(resident_governance_snapshot["relaunch_caution_level"], "heightened")
+            self.assertEqual(
+                resident_governance_snapshot["governance_attention_target"],
+                "commitment_expression_plan",
+            )
             self.assertEqual(report["heartbeat_interval_ms"], 70)
             self.assertEqual(report["offline_pressure_level"], "present")
             self.assertEqual(report["relaunch_caution_level"], "heightened")
+            self.assertEqual(
+                report["governance_attention_target"],
+                "commitment_expression_plan",
+            )
             self.assertEqual(
                 resident_governance_report["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",

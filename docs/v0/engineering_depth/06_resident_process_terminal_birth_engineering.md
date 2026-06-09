@@ -20,7 +20,7 @@ life-v0 emit-report --strict
 
 1. `life_v0/process_supervisor/live_turn_cycle.py` 已接住真实新回合的 success / incident 生命周期
 2. `life_v0/process_supervisor/resident_supervision.py` 已接住 restore shell 之后的常驻治理启动链，并开始显式装载 `body_rhythm_pulse.json` 与 `need_state_vector.json`
-3. `life_v0/process_supervisor/idle_strategy.py` 继续补厚 heartbeat 节律与 idle probe 治理，并开始把 fatigue / bandwidth / sleep pressure / repair drive 压成 waiting governance
+3. `life_v0/process_supervisor/idle_strategy.py` 继续补厚 heartbeat 节律与 idle probe 治理，并开始把 fatigue / bandwidth / sleep pressure / repair drive 压成 waiting governance，同时给出 `governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`
 4. `life_v0/process_supervisor/persistent_process.py` 继续补厚 resident supervision 的关闭态 artifact，并显式写出 resident governance state / snapshot / report
 5. `life_v0/process_supervisor/process_closeout.py` 与 `process_report.py` 已把 resident governance 证据收口进主进程 report / digest / receipt
 6. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排；当前前沿转向后台 resident governance 与更高频节律

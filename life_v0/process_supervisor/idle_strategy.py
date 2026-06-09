@@ -19,6 +19,10 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "body_governance_flags",
     "body_rhythm_ref",
     "need_state_ref",
+    "governance_attention_target",
+    "governance_attention_reason",
+    "governance_cadence_profile",
+    "long_horizon_priority_profile",
     "relationship_timeline_ref",
     "commitment_expression_plan_ref",
     "apology_repair_language_trace_ref",
@@ -114,6 +118,19 @@ def decide_idle_strategy(
         commitment_expression_plan_ref=commitment_expression_plan_ref,
         apology_repair_language_trace_ref=apology_repair_language_trace_ref,
     )
+    (
+        governance_attention_target,
+        governance_attention_reason,
+        governance_cadence_profile,
+        long_horizon_priority_profile,
+    ) = _resident_governance_language_priority(
+        relationship_timeline_ref=relationship_timeline_ref,
+        commitment_expression_plan_ref=commitment_expression_plan_ref,
+        apology_repair_language_trace_ref=apology_repair_language_trace_ref,
+        offline_pressure_level=offline_pressure_level,
+        need_state_vector=need_state_vector,
+        body_waiting_posture=body_waiting_posture,
+    )
 
     return {
         "schema_version": "idle_strategy_state_v0",
@@ -139,6 +156,10 @@ def decide_idle_strategy(
         "need_state_ref": (
             "runtime/state/body/need_state_vector.json" if need_state_vector else None
         ),
+        "governance_attention_target": governance_attention_target,
+        "governance_attention_reason": governance_attention_reason,
+        "governance_cadence_profile": governance_cadence_profile,
+        "long_horizon_priority_profile": long_horizon_priority_profile,
         "relationship_timeline_ref": relationship_timeline_ref,
         "commitment_expression_plan_ref": commitment_expression_plan_ref,
         "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
@@ -253,6 +274,64 @@ def _next_idle_action(
     if repair_drive == "active" and offline_pressure_level in {"elevated", "present"}:
         return "refresh_waiting_heartbeat_with_repair_readiness_hold"
     return "refresh_waiting_heartbeat_or_accept_external_turn"
+
+
+def _resident_governance_language_priority(
+    *,
+    relationship_timeline_ref: str | None,
+    commitment_expression_plan_ref: str | None,
+    apology_repair_language_trace_ref: str | None,
+    offline_pressure_level: str,
+    need_state_vector: dict[str, Any] | None,
+    body_waiting_posture: str,
+) -> tuple[str, str, str, dict[str, str]]:
+    repair_drive = str((need_state_vector or {}).get("repair_drive", "")).lower()
+    priority_profile: dict[str, str] = {}
+
+    if relationship_timeline_ref:
+        priority_profile["relationship_timeline"] = "baseline"
+    if commitment_expression_plan_ref:
+        priority_profile["commitment_expression_plan"] = (
+            "elevated" if offline_pressure_level in {"present", "elevated"} else "baseline"
+        )
+    if apology_repair_language_trace_ref:
+        if repair_drive == "active" and offline_pressure_level in {"present", "elevated"}:
+            priority_profile["apology_repair_language_trace"] = "primary"
+        elif repair_drive == "active" or offline_pressure_level == "elevated":
+            priority_profile["apology_repair_language_trace"] = "elevated"
+        else:
+            priority_profile["apology_repair_language_trace"] = "baseline"
+
+    if priority_profile.get("apology_repair_language_trace") == "primary":
+        target = "apology_repair_language_trace"
+        reason = "repair_drive_active_with_offline_pressure"
+    elif priority_profile.get("apology_repair_language_trace") == "elevated":
+        target = "apology_repair_language_trace"
+        reason = "repair_drive_or_offline_pressure_requires_repair_hold"
+    elif priority_profile.get("commitment_expression_plan") == "elevated":
+        target = "commitment_expression_plan"
+        reason = "offline_pressure_requires_commitment_continuity"
+    elif "relationship_timeline" in priority_profile:
+        target = "relationship_timeline"
+        reason = "baseline_relation_presence_maintenance"
+    else:
+        target = "waiting_presence_maintenance"
+        reason = "no_long_horizon_language_refs"
+
+    if target == "apology_repair_language_trace":
+        cadence_profile = (
+            "guarded_repair_hold"
+            if body_waiting_posture == "low_bandwidth_guarded"
+            else "repair_weighted_resident_hold"
+        )
+    elif target == "commitment_expression_plan":
+        cadence_profile = "commitment_continuity_refresh"
+    elif target == "relationship_timeline":
+        cadence_profile = "relationship_presence_refresh"
+    else:
+        cadence_profile = "baseline_waiting_presence"
+
+    return target, reason, cadence_profile, priority_profile
 
 
 def _body_governance_flags(
