@@ -711,6 +711,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 reports_dir=paths["reports"],
                 safe_terminal_loop=context.safe_terminal_loop,
                 terminal_life_loop_state=context.terminal_life_loop_state,
+                body_resource_budget=context.body_resource_budget,
+                core_affect_vector=context.core_affect_vector,
                 self_narrative_trace=context.self_narrative_trace,
                 commitment_index=context.commitment_index,
                 relationship_graph=context.relationship_graph,
@@ -806,6 +808,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 reports_dir=paths["reports"],
                 safe_terminal_loop=context.safe_terminal_loop,
                 terminal_life_loop_state=context.terminal_life_loop_state,
+                body_resource_budget=context.body_resource_budget,
+                core_affect_vector=context.core_affect_vector,
                 self_narrative_trace=context.self_narrative_trace,
                 commitment_index=context.commitment_index,
                 relationship_graph=context.relationship_graph,
@@ -916,6 +920,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 reports_dir=runtime_root / "reports" / "latest",
                 safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
                 terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+                body_resource_budget={},
+                core_affect_vector={},
                 life_context_frame={},
                 relation_turn_frame={},
                 shared_term_registry={},
@@ -1050,6 +1056,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 reports_dir=runtime_root / "reports" / "latest",
                 safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
                 terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+                body_resource_budget={},
+                core_affect_vector={},
                 life_context_frame={},
                 relation_turn_frame={},
                 shared_term_registry={},
@@ -1747,6 +1755,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             },
             expression_plan={
                 "semantic_goal": "repair_commitment_shared_language",
+                "body_signal_refs": [
+                    "runtime/state/body/body_resource_budget.json",
+                    "runtime/state/body/core_affect_vector.json",
+                ],
+                "fatigue_pressure": "managed_low_noise",
+                "body_repair_drive": "active",
+                "affect_arousal": 0.74,
+                "release_caution_level": "elevated",
+                "expression_tempo_mode": "guarded_deliberate",
             },
             life_context_frame={
                 "self_narrative_refs": [
@@ -1772,6 +1789,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     {"growth_patch_candidate_id": "growth-patch-candidate-002"},
                 ]
             },
+            body_resource_budget={
+                "fatigue_state": {"level": "managed_low_noise"},
+                "maintenance_pressure": {"repair_drive": "active"},
+            },
+            core_affect_vector={
+                "valence": -0.35,
+                "arousal": 0.74,
+                "repair_drive": "active",
+            },
         )
 
         self.assertIn("朋友", response)
@@ -1783,7 +1809,58 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("2条离线重放线索", response)
         self.assertIn("2个梦境整合窗口", response)
         self.assertIn("2个成长补丁候选", response)
+        self.assertIn("表达层当前已接入身体信号", response)
+        self.assertIn("表达疲惫压力为managed_low_noise", response)
+        self.assertIn("表达节奏采用guarded_deliberate", response)
+        self.assertIn("释放谨慎级别为elevated", response)
+        self.assertIn("表达计划唤醒度为0.74", response)
+        self.assertIn("修复驱力", response)
+        self.assertIn("情绪张力", response)
         self.assertIn("你还记得我们吗？", response)
+
+    def test_resident_supervision_loads_body_and_affect_context_for_process_runtime(self):
+        from life_v0.process_supervisor.resident_supervision import (
+            bootstrap_resident_supervision,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            self._bootstrap(paths)
+
+            result = bootstrap_resident_supervision(
+                state_dir=paths["state_root"],
+                reports_dir=paths["reports"],
+                receipts_dir=paths["receipts"],
+                run_id="resident-supervision-body-context",
+                generated_at="2026-06-10T00:00:00+00:00",
+                strict=True,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                read_json=self._read_json,
+                read_json_if_exists=lambda path: self._read_json(path) if path.exists() else {},
+                write_json=self._write_json,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+            )
+
+            self.assertEqual(result.exit_code, 0)
+            self.assertIsNotNone(result.context)
+            assert result.context is not None
+            self.assertEqual(
+                result.context.body_resource_budget["schema_version"],
+                "body_resource_budget_v0",
+            )
+            self.assertEqual(
+                result.context.core_affect_vector["schema_version"],
+                "core_affect_vector_v0",
+            )
+            self.assertEqual(
+                result.context.body_resource_budget["fatigue_state"]["level"],
+                "managed_low_noise",
+            )
+            self.assertIn("repair_drive", result.context.core_affect_vector)
 
     def test_resident_turn_writeback_organ_updates_turn_continuity_and_bundle(self):
         from life_v0.process_supervisor.resident_turn_writeback import (

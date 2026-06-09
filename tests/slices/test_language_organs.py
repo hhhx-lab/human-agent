@@ -160,6 +160,16 @@ class LanguageOrgansTests(unittest.TestCase):
                     {"growth_patch_candidate_id": "growth-patch-candidate-002"},
                 ]
             },
+            body_resource_budget={
+                "fatigue_state": {"level": "managed_low_noise"},
+                "maintenance_pressure": {"repair_drive": "active"},
+            },
+            core_affect_vector={
+                "valence": -0.21,
+                "arousal": 0.73,
+                "responsibility_weight": 0.44,
+                "repair_drive": "active",
+            },
             source_doc_refs=source_doc_refs,
         )
 
@@ -175,6 +185,24 @@ class LanguageOrgansTests(unittest.TestCase):
         self.assertEqual(expression_plan["replay_cue_pressure"], 2)
         self.assertEqual(expression_plan["dream_integration_pressure"], 2)
         self.assertEqual(expression_plan["growth_candidate_pressure"], 2)
+        self.assertEqual(expression_plan["fatigue_pressure"], "managed_low_noise")
+        self.assertEqual(expression_plan["body_repair_drive"], "active")
+        self.assertEqual(expression_plan["affect_arousal"], 0.73)
+        self.assertEqual(expression_plan["affect_valence"], -0.21)
+        self.assertEqual(expression_plan["affect_responsibility_weight"], 0.44)
+        self.assertEqual(expression_plan["expression_tempo_mode"], "guarded_deliberate")
+        self.assertEqual(expression_plan["release_caution_level"], "elevated")
+        self.assertEqual(
+            expression_plan["body_signal_refs"],
+            [
+                "runtime/state/body/body_resource_budget.json",
+                "runtime/state/body/core_affect_vector.json",
+            ],
+        )
+        self.assertIn("fatigue_pressure_present", expression_plan["body_modulation_flags"])
+        self.assertIn("repair_drive_present", expression_plan["body_modulation_flags"])
+        self.assertIn("affect_arousal_present", expression_plan["body_modulation_flags"])
+        self.assertIn("body_signal_refs_present", expression_plan["body_modulation_flags"])
         self.assertEqual(
             expression_plan["offline_influence_refs"],
             [

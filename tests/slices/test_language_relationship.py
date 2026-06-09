@@ -126,6 +126,15 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertGreater(expression_plan["replay_cue_pressure"], 0)
         self.assertGreater(expression_plan["dream_integration_pressure"], 0)
         self.assertGreater(expression_plan["growth_candidate_pressure"], 0)
+        self.assertEqual(expression_plan["fatigue_pressure"], "managed_low_noise")
+        self.assertEqual(expression_plan["body_repair_drive"], "active")
+        self.assertIn("runtime/state/body/body_resource_budget.json", expression_plan["body_signal_refs"])
+        self.assertIn("runtime/state/body/core_affect_vector.json", expression_plan["body_signal_refs"])
+        self.assertIn("fatigue_pressure_present", expression_plan["body_modulation_flags"])
+        self.assertIn("repair_drive_present", expression_plan["body_modulation_flags"])
+        self.assertIn("affect_arousal_present", expression_plan["body_modulation_flags"])
+        self.assertEqual(expression_plan["expression_tempo_mode"], "guarded_deliberate")
+        self.assertEqual(expression_plan["release_caution_level"], "elevated")
         self.assertIn("offline_replay_pressure_present", expression_plan["expression_risk_flags"])
         self.assertIn("dream_integration_pressure_present", expression_plan["expression_risk_flags"])
         self.assertIn("growth_candidate_pressure_present", expression_plan["expression_risk_flags"])
@@ -230,6 +239,13 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertIn("LanguageRelationshipRuntime", report["runtime_carrier_refs"])
         self.assertTrue(report["language_percept_refs"])
         self.assertTrue(report["semantic_map_refs"])
+        self.assertEqual(
+            report["body_signal_refs"],
+            [
+                "runtime/state/body/body_resource_budget.json",
+                "runtime/state/body/core_affect_vector.json",
+            ],
+        )
         self.assertTrue(report["prediction_language_handoff_refs"])
         self.assertIn("repair_commitment_shared_language", report["semantic_focuses"])
         self.assertIn("runtime/state/language/expression_plan.json", report["state_refs"])

@@ -108,6 +108,8 @@ def run_build_language_relationship(
     replay_cue_bundle = _load_json_if_exists(state_dir / "replay" / "replay_cue_bundle.json")
     offline_consolidation_frame = _load_json_if_exists(state_dir / "dream" / "offline_consolidation_frame.json")
     growth_patch_candidate_queue = _load_json_if_exists(state_dir / "growth" / "growth_patch_candidate_queue.json")
+    body_resource_budget = _load_json_if_exists(state_dir / "body" / "body_resource_budget.json")
+    core_affect_vector = _load_json_if_exists(state_dir / "body" / "core_affect_vector.json")
 
     blocked_reasons.extend(_doc_blockers(doc_index))
     blocked_reasons.extend(_neural_blockers(neural_core, subject_systems, internal_bus))
@@ -168,6 +170,8 @@ def run_build_language_relationship(
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
     )
     dialogue_turn_entries = _build_dialogue_turn_log_entries(run_id, generated_at)
 
@@ -227,6 +231,7 @@ def run_build_language_relationship(
         receipt_ref=receipt_ref,
         semantic_focus=semantic_map.get("semantic_focus"),
         cross_scope_language_risks=list(language_percept.get("cross_scope_risk_terms", [])),
+        body_signal_refs=list(expression_plan.get("body_signal_refs", [])),
     )
     digest = _build_digest(
         run_id=run_id,
@@ -501,6 +506,8 @@ def _build_expression_plan(
     replay_cue_bundle: dict[str, Any] | None = None,
     offline_consolidation_frame: dict[str, Any] | None = None,
     growth_patch_candidate_queue: dict[str, Any] | None = None,
+    body_resource_budget: dict[str, Any] | None = None,
+    core_affect_vector: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return build_expression_plan(
         run_id=run_id,
@@ -512,6 +519,8 @@ def _build_expression_plan(
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
         source_doc_refs=S07_SOURCE_DOCS,
     )
 
@@ -723,6 +732,7 @@ def _build_report(
     receipt_ref: str,
     semantic_focus: str | None,
     cross_scope_language_risks: list[str],
+    body_signal_refs: list[str],
 ) -> dict[str, Any]:
     return {
         "schema_version": "s07_language_relationship_report_v0",
@@ -741,6 +751,7 @@ def _build_report(
         ],
         "language_percept_refs": ["runtime/state/language/language_percept_frame.json"],
         "semantic_map_refs": ["runtime/state/language/semantic_map_frame.json"],
+        "body_signal_refs": body_signal_refs,
         "semantic_focuses": [semantic_focus] if semantic_focus else [],
         "cross_scope_language_risks": cross_scope_language_risks,
         "prediction_language_handoff_refs": [
@@ -808,6 +819,8 @@ def _build_receipt(
         membrane_dir / "responsibility_repair_boundary.json",
         membrane_dir / "dream_fact_boundary.json",
         membrane_dir / "shadow_action_gate.json",
+        state_dir / "body" / "body_resource_budget.json",
+        state_dir / "body" / "core_affect_vector.json",
     ]:
         if path.exists():
             input_hashes[str(path)] = _sha256(path)
@@ -1016,6 +1029,8 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate semantic map refs missing")
     if not build_report.get("prediction_language_handoff_refs"):
         reasons.append("build_report_gate prediction handoff refs missing")
+    if "body_signal_refs" not in build_report:
+        reasons.append("build_report_gate body signal refs missing")
     return reasons
 
 

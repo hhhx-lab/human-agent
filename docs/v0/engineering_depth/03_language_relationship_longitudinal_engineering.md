@@ -77,6 +77,17 @@ life_v0/process_supervisor/response_surface.py
 | `DialogueWritebackBundle` | 每一回合结束后的写回包 | `terminal_loop/dialogue_writeback.py` |
 | `RelationshipTimeline` | 长期关系史 | 下一轮新增 |
 
+当前 `ExpressionPlan` 已经不再只是 repair / replay / dream / growth 的汇总面。只要 `runtime/state/body/body_resource_budget.json` 与 `runtime/state/body/core_affect_vector.json` 存在，它还会显式携带：
+
+- `body_signal_refs`
+- `fatigue_pressure`
+- `body_repair_drive`
+- `affect_arousal`
+- `expression_tempo_mode`
+- `release_caution_level`
+
+这意味着 S07 现在已经有了第一轮 `S06 -> S07` 工程接线：身体疲惫、修复驱力和核心唤醒张力会先进入表达计划，再进入常驻生命过程的响应面，而不是由 Queue B 私下另读一份身体状态。
+
 ## 最低测试与后续新增测试
 
 当前最低测试：

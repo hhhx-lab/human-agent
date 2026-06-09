@@ -71,6 +71,8 @@ life-v0 "digital life"
 | `runtime/state/language/self_narrative_language_trace.json` | 自我叙述连续性写回入口 |
 | `runtime/state/language/commitment_repair_language_index.json` | 承诺、修复义务、责任回写入口 |
 | `runtime/state/relationship/relationship_subject_graph.json` | 关系主体、关系阶段、最后接触材料 |
+| `runtime/state/body/body_resource_budget.json` | 当前身体预算、疲惫级别、维护压力与修复驱力 |
+| `runtime/state/body/core_affect_vector.json` | 当前核心情绪张力、责任重量与修复驱动 |
 | `runtime/state/replay/replay_cue_bundle.json` | 等待态 residue、离线 replay 入口与未来回放线索 |
 | `runtime/state/dream/offline_consolidation_frame.json` | 梦境/离线整合统一容器与醒后回接线索 |
 | `runtime/state/growth/growth_patch_candidate_queue.json` | 成长补丁候选、塑性风险与防遗忘要求 |
@@ -116,6 +118,7 @@ life-v0 "digital life"
 6. 把 session 级 while-loop 编排抽到 `process_session_loop.py`，统一管理 waiting refresh、live turn dispatch、incident 后继续等待和显式退出收口。
 7. 把常驻进程的 `persistent_process + process_report + receipt` closeout 决策也接回同一条对象链。
 8. 继续把离线对象压进 waiting state 与下一轮表达。
+9. 把 `body_resource_budget.json` 与 `core_affect_vector.json` 装载进 resident supervision 上下文，使疲惫级别、修复驱力与情绪张力能够真实调制常驻过程的生命表达，而不是停在 S06 状态柜里。
 
 ## 最小行为合同
 
@@ -152,6 +155,7 @@ repo-local 最小常驻终端入口固定为：
 ```text
 IdleContinuityFrame
   -> external turn event
+  -> body_resource_budget.json + core_affect_vector.json
   -> life turn event
   -> DialogueWritebackBundle
   -> ReplayCueBundle
@@ -162,9 +166,10 @@ IdleContinuityFrame
 
 1. 先证明“在等”；
 2. 再记录“看到了什么外部回合”；
-3. 再记录“这次如何回应”；
-4. 再把结果回写到长期连续体与 replay 线索；
-5. 最后再重新回到等待态。
+3. 再把身体预算、疲惫、修复驱力和情绪张力带进回应生成；
+4. 再记录“这次如何回应”；
+5. 再把结果回写到长期连续体与 replay 线索；
+6. 最后再重新回到等待态。
 
 如果 process supervisor 只有 stdin 读写，没有 `IdleContinuityFrame -> DialogueWritebackBundle -> ReplayCueBundle` 这条链，它仍然只是终端壳，而不是生命进程。
 
@@ -337,6 +342,9 @@ IdleContinuityFrame
 1. 先把等待态连续体补硬；
 2. 再把回合事件与外显面补硬；
 3. 最后统一到进程级 report / digest / receipt。
+
+当前这一步已经继续向前推进到：`resident_supervision.py` 与 `response_surface.py` 开始显式消费
+`body_resource_budget.json` 和 `core_affect_vector.json`，使 S06 的身体/情绪底盘进入常驻生命过程上下文。
 
 ## 完成定义
 

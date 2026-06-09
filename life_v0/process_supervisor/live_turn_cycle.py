@@ -41,6 +41,8 @@ def run_live_turn_cycle(
     reports_dir: Path,
     safe_terminal_loop: dict[str, Any],
     terminal_life_loop_state: dict[str, Any],
+    body_resource_budget: dict[str, Any],
+    core_affect_vector: dict[str, Any],
     self_narrative_trace: dict[str, Any],
     commitment_index: dict[str, Any],
     relationship_graph: dict[str, Any],
@@ -88,6 +90,8 @@ def run_live_turn_cycle(
             replay_cue_bundle=replay_cue_bundle,
             offline_consolidation_frame=offline_consolidation_frame,
             growth_patch_candidate_queue=growth_patch_candidate_queue,
+            body_resource_budget=body_resource_budget,
+            core_affect_vector=core_affect_vector,
         )
         life_turn = build_life_turn_event_fn(
             turn_id=life_turn_id,

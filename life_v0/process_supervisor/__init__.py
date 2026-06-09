@@ -98,6 +98,8 @@ def run_digital_life_process(
     terminal_dir = supervision.terminal_dir
     language_dir = supervision.language_dir
     relationship_dir = supervision.relationship_dir
+    body_resource_budget = supervision.body_resource_budget
+    core_affect_vector = supervision.core_affect_vector
     safe_terminal_loop = supervision.safe_terminal_loop
     terminal_life_loop_state = supervision.terminal_life_loop_state
     life_context_frame = supervision.life_context_frame
@@ -133,6 +135,8 @@ def run_digital_life_process(
         reports_dir=reports_dir,
         safe_terminal_loop=safe_terminal_loop,
         terminal_life_loop_state=terminal_life_loop_state,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
         life_context_frame=life_context_frame,
         relation_turn_frame=relation_turn_frame,
         shared_term_registry=shared_term_registry,

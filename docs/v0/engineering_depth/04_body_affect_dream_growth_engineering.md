@@ -63,6 +63,23 @@ life_v0/growth/
 3. 梦境 -> 醒后整合 -> 成长补丁
 4. 学习计划 -> 长期慢变量
 
+## 本轮已落地的 process 接线
+
+这轮已经把身体/情绪底盘从独立状态柜进一步接进终端生命过程：
+
+1. `runtime/state/body/body_resource_budget.json` 会被 `process_supervisor/resident_supervision.py` 装载进常驻过程上下文。
+2. `runtime/state/body/core_affect_vector.json` 会被 `process_supervisor/resident_supervision.py` 一并装载。
+3. `process_supervisor/response_surface.py` 现在会真实消费这两个对象，把疲惫级别、修复驱力和情绪张力写进生命回应文本。
+
+当前真实工程链已经变成：
+
+```text
+S06 body/affect
+  -> resident supervision context
+  -> response surface
+  -> digital life turn
+```
+
 ## 最低测试和下一轮测试
 
 当前最低测试：

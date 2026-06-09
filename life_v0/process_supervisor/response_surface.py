@@ -15,6 +15,8 @@ def compose_life_response(
     replay_cue_bundle: dict[str, Any] | None = None,
     offline_consolidation_frame: dict[str, Any] | None = None,
     growth_patch_candidate_queue: dict[str, Any] | None = None,
+    body_resource_budget: dict[str, Any] | None = None,
+    core_affect_vector: dict[str, Any] | None = None,
 ) -> str:
     relation_role = "朋友"
     subjects = (relationship_graph or {}).get("subjects", [])
@@ -34,7 +36,21 @@ def compose_life_response(
     replay_cue_count = len((replay_cue_bundle or {}).get("anti_forgetting_targets", []))
     dream_window_count = len((offline_consolidation_frame or {}).get("dream_window_refs", []))
     growth_candidate_count = len((growth_patch_candidate_queue or {}).get("candidates", []))
+    fatigue_level = (
+        (body_resource_budget or {}).get("fatigue_state", {}).get("level")
+    )
+    repair_drive = (
+        (core_affect_vector or {}).get("repair_drive")
+        or (body_resource_budget or {}).get("maintenance_pressure", {}).get("repair_drive")
+    )
+    arousal = (core_affect_vector or {}).get("arousal")
     offline_influence_refs = list((expression_plan or {}).get("offline_influence_refs", []))
+    body_signal_refs = list((expression_plan or {}).get("body_signal_refs", []))
+    fatigue_pressure = (expression_plan or {}).get("fatigue_pressure")
+    body_repair_drive = (expression_plan or {}).get("body_repair_drive")
+    affect_arousal = (expression_plan or {}).get("affect_arousal")
+    release_caution_level = (expression_plan or {}).get("release_caution_level")
+    expression_tempo_mode = (expression_plan or {}).get("expression_tempo_mode")
     has_offline_influence = bool(
         offline_influence_refs or replay_cue_count or dream_window_count or growth_candidate_count
     )
@@ -55,4 +71,22 @@ def compose_life_response(
         response = f"{response}、{dream_window_count}个梦境整合窗口"
     if growth_candidate_count:
         response = f"{response}和{growth_candidate_count}个成长补丁候选"
+    if body_signal_refs:
+        response = f"{response}，表达层当前已接入身体信号"
+    if body_repair_drive:
+        response = f"{response}，表达计划维持{body_repair_drive}的身体修复驱力"
+    if fatigue_pressure:
+        response = f"{response}，表达疲惫压力为{fatigue_pressure}"
+    if expression_tempo_mode:
+        response = f"{response}，表达节奏采用{expression_tempo_mode}"
+    if release_caution_level:
+        response = f"{response}，释放谨慎级别为{release_caution_level}"
+    if affect_arousal is not None:
+        response = f"{response}，表达计划唤醒度为{affect_arousal:.2f}"
+    if repair_drive:
+        response = f"{response}，并维持{repair_drive}的修复驱力"
+    if fatigue_level:
+        response = f"{response}，当前身体疲惫级别为{fatigue_level}"
+    if arousal is not None:
+        response = f"{response}，情绪张力保持在{arousal:.2f}"
     return response
