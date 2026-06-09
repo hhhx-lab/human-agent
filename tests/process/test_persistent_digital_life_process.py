@@ -23,6 +23,18 @@ class DelayedInputStream:
         return ""
 
 
+class TimeoutRecordingInputStream:
+    def __init__(self, lines: list[str]) -> None:
+        self._lines = list(lines)
+        self.timeouts: list[float] = []
+
+    def poll_line(self, timeout_seconds: float) -> str | None:
+        self.timeouts.append(timeout_seconds)
+        if self._lines:
+            return self._lines.pop(0)
+        return ""
+
+
 class PersistentDigitalLifeProcessTests(unittest.TestCase):
     @property
     def repo_root(self) -> Path:
@@ -218,6 +230,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 process_report["persistent_process_report_ref"],
                 "runtime/reports/latest/digital_life_persistent_process_report.json",
+            )
+            self.assertEqual(
+                process_report["resident_governance_report_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+            )
+            self.assertEqual(
+                process_report["resident_governance_snapshot_ref"],
+                "runtime/state/terminal/resident_governance_snapshot.json",
             )
             self.assertEqual(
                 idle_continuity["replay_cue_bundle_ref"],
@@ -444,6 +464,70 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(heartbeat_packet["heartbeat_counter"], 2)
             self.assertEqual(idle_continuity["heartbeat_counter"], 2)
             self.assertEqual(idle_continuity["event_kind"], "waiting_heartbeat_refresh")
+
+    def test_idle_refresh_loop_uses_idle_strategy_interval_as_poll_timeout(self):
+        from life_v0.process_supervisor.idle_refresh_loop import (
+            wait_for_next_external_relation_turn,
+        )
+        from life_v0.shell_command import run_digital_life_shell_command
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            self._bootstrap(paths)
+            shell_result = run_digital_life_shell_command(
+                state_dir=paths["state_root"],
+                reports_dir=paths["reports"],
+                receipts_dir=paths["receipts"],
+                run_id="idle-timeout-restore",
+                strict=True,
+            )
+            self.assertEqual(shell_result.exit_code, 0)
+
+            self._write_json(
+                paths["terminal_state"] / "idle_strategy_state.json",
+                {
+                    "schema_version": "idle_strategy_state_v0",
+                    "run_id": "idle-timeout",
+                    "heartbeat_interval_ms": 125,
+                },
+            )
+
+            input_stream = TimeoutRecordingInputStream(lines=["/exit\n"])
+            result = wait_for_next_external_relation_turn(
+                input_stream=input_stream,
+                run_id="idle-timeout",
+                generated_at="2026-06-10T00:00:00+00:00",
+                terminal_dir=paths["terminal_state"],
+                reports_dir=paths["reports"],
+                language_dir=paths["language_state"],
+                relationship_dir=paths["relationship_state"],
+                safe_terminal_loop=self._read_json(
+                    paths["terminal_state"] / "safe_terminal_loop_state.json"
+                ),
+                terminal_life_loop_state=self._read_json(
+                    paths["terminal_state"] / "terminal_life_loop_state.json"
+                ),
+                self_narrative_trace=self._read_json(
+                    paths["language_state"] / "self_narrative_language_trace.json"
+                ),
+                commitment_index=self._read_json(
+                    paths["language_state"] / "commitment_repair_language_index.json"
+                ),
+                relationship_graph=self._read_json(
+                    paths["relationship_state"] / "relationship_subject_graph.json"
+                ),
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                heartbeat_counter=0,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+                write_json=self._write_json,
+            )
+
+            self.assertEqual(result.exit_reason, "explicit_exit")
+            self.assertEqual(input_stream.timeouts, [0.125])
 
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
         from life_v0.process_supervisor.resident_supervision import (
@@ -1150,6 +1234,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 last_life_turn={"utterance": "我当然记得。"},
                 idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
                 persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
+                resident_governance_report_ref="runtime/reports/latest/digital_life_resident_governance_report.json",
+                resident_governance_snapshot_ref="runtime/state/terminal/resident_governance_snapshot.json",
                 life_context_frame_ref="runtime/state/terminal/life_context_frame.json",
                 relation_turn_frame_ref="runtime/state/terminal/relation_turn_frame.json",
                 expression_plan_ref="runtime/state/language/expression_plan.json",
@@ -1180,6 +1266,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/replay/replay_cue_bundle.json",
             )
             self.assertEqual(
+                report["resident_governance_report_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+            )
+            self.assertEqual(
+                report["resident_governance_snapshot_ref"],
+                "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
                 report["offline_consolidation_frame_ref"],
                 "runtime/state/dream/offline_consolidation_frame.json",
             )
@@ -1204,6 +1298,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 "runtime/state/replay/replay_cue_bundle.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/terminal/resident_governance_snapshot.json",
                 receipt["shared_object_refs"],
             )
             self.assertIn(
@@ -1303,6 +1401,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
             persistent_state = self._read_json(terminal_dir / "persistent_process_state.json")
             persistent_report = self._read_json(reports_dir / "digital_life_persistent_process_report.json")
+            resident_governance_snapshot = self._read_json(
+                terminal_dir / "resident_governance_snapshot.json"
+            )
+            resident_governance_report = self._read_json(
+                reports_dir / "digital_life_resident_governance_report.json"
+            )
             process_report = self._read_json(reports_dir / "digital_life_process_report.json")
             process_digest = self._read_json(reports_dir / "digital_life_process_digest.json")
             process_receipt = self._read_json(receipts_dir / "digital_life_process_process-closeout-organ.json")
@@ -1323,13 +1427,41 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(process_report["relation_turn_frame_ref"], "runtime/state/terminal/relation_turn_frame.json")
             self.assertEqual(process_report["expression_plan_ref"], "runtime/state/language/expression_plan.json")
             self.assertEqual(process_report["dialogue_writeback_bundle_ref"], "runtime/reports/latest/dialogue_writeback_bundle.json")
+            self.assertEqual(
+                process_report["resident_governance_report_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+            )
+            self.assertEqual(
+                process_report["resident_governance_snapshot_ref"],
+                "runtime/state/terminal/resident_governance_snapshot.json",
+            )
             self.assertEqual(process_digest["heartbeat_counter"], 4)
+            self.assertEqual(
+                resident_governance_snapshot["schema_version"],
+                "resident_governance_snapshot_v0",
+            )
+            self.assertEqual(
+                resident_governance_report["schema_version"],
+                "digital_life_resident_governance_report_v0",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["idle_continuity_ref"],
+                "runtime/state/terminal/idle_continuity_frame.json",
+            )
+            self.assertEqual(
+                resident_governance_report["resident_governance_snapshot_ref"],
+                "runtime/state/terminal/resident_governance_snapshot.json",
+            )
             self.assertIn(
                 "runtime/state/terminal/idle_strategy_state.json",
                 process_receipt["shared_object_refs"],
             )
             self.assertIn(
                 "runtime/reports/latest/dialogue_writeback_bundle.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/terminal/resident_governance_snapshot.json",
                 process_receipt["shared_object_refs"],
             )
 
@@ -1381,6 +1513,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
             state = self._read_json(terminal_dir / "persistent_process_state.json")
             report = self._read_json(reports_dir / "digital_life_persistent_process_report.json")
+            resident_governance_snapshot = self._read_json(
+                terminal_dir / "resident_governance_snapshot.json"
+            )
+            resident_governance_report = self._read_json(
+                reports_dir / "digital_life_resident_governance_report.json"
+            )
 
             self.assertEqual(result.state["schema_version"], "persistent_process_state_v0")
             self.assertEqual(result.report["schema_version"], "digital_life_persistent_process_report_v0")
@@ -1407,6 +1545,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 report["terminal_life_loop_state_ref"],
                 "runtime/state/terminal/terminal_life_loop_state.json",
+            )
+            self.assertEqual(
+                state["resident_governance_snapshot_ref"],
+                "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
+                report["resident_governance_report_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["schema_version"],
+                "resident_governance_snapshot_v0",
+            )
+            self.assertEqual(
+                resident_governance_report["schema_version"],
+                "digital_life_resident_governance_report_v0",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["governance_mode"],
+                "foreground_terminal_residency",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["idle_continuity_ref"],
+                "runtime/state/terminal/idle_continuity_frame.json",
+            )
+            self.assertEqual(
+                resident_governance_report["resident_governance_snapshot_ref"],
+                "runtime/state/terminal/resident_governance_snapshot.json",
             )
 
     def test_dialogue_events_organ_builds_external_and_life_turn_events(self):
@@ -1922,6 +2088,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         return json.loads(path.read_text(encoding="utf-8"))
 
     def _write_json(self, path: Path, payload: dict) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     def _append_jsonl(self, path: Path, payloads: list[dict]) -> None:

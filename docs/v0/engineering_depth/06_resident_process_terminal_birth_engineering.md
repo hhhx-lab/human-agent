@@ -21,8 +21,9 @@ life-v0 emit-report --strict
 1. `life_v0/process_supervisor/live_turn_cycle.py` 已接住真实新回合的 success / incident 生命周期
 2. `life_v0/process_supervisor/resident_supervision.py` 已接住 restore shell 之后的常驻治理启动链
 3. `life_v0/process_supervisor/idle_strategy.py` 继续补厚 heartbeat 节律与 idle probe 治理
-4. `life_v0/process_supervisor/persistent_process.py` 继续补厚 resident supervision 的关闭态 artifact
-5. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排；当前前沿转向后台 resident governance 与更高频节律
+4. `life_v0/process_supervisor/persistent_process.py` 继续补厚 resident supervision 的关闭态 artifact，并显式写出 resident governance snapshot / report
+5. `life_v0/process_supervisor/process_closeout.py` 与 `process_report.py` 已把 resident governance 证据收口进主进程 report / digest / receipt
+6. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排；当前前沿转向后台 resident governance 与更高频节律
 
 ## 当前最关键的 runtime 证据
 
@@ -35,8 +36,10 @@ life-v0 emit-report --strict
 7. `runtime/reports/latest/digital_life_waiting_heartbeat.json`
 8. `runtime/state/terminal/idle_strategy_state.json`
 9. `runtime/state/terminal/persistent_process_state.json`
-10. `runtime/reports/latest/digital_life_persistent_process_report.json`
-11. `runtime/reports/latest/digital_life_process_report.json`
+10. `runtime/state/terminal/resident_governance_snapshot.json`
+11. `runtime/reports/latest/digital_life_persistent_process_report.json`
+12. `runtime/reports/latest/digital_life_resident_governance_report.json`
+13. `runtime/reports/latest/digital_life_process_report.json`
 
 ## 最低测试与新增测试
 
@@ -62,4 +65,5 @@ life-v0 emit-report --strict
 
 当前实际已经由 `tests/process/test_persistent_digital_life_process.py` 吸收了
 `idle_strategy.py`、`persistent_process.py`、`resident_supervision.py` 与 `live_turn_cycle.py`
-的第一轮红绿覆盖；后续是否拆独立测试文件，以不破坏现有 Queue B 测试闭环为先。
+的第一轮红绿覆盖，并且这轮又继续把 `resident_governance_snapshot.json` /
+`digital_life_resident_governance_report.json` 及其在主进程 report / receipt 上的回链断言纳入同一测试闭环；后续是否拆独立测试文件，以不破坏现有 Queue B 测试闭环为先。

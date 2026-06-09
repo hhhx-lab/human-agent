@@ -36,6 +36,7 @@
 | `OfflineConsolidationFrame` | `dream/` | `growth/`、`archive/`、`process_supervisor/` | 梦境、离线巩固、醒后整合 |
 | `GrowthPatchCandidate` | `growth/` | `life_targets/`、`archive/`、`validators/` | 自我改写、学习、关系修复与防遗忘补丁 |
 | `IdleContinuityFrame` | `process_supervisor/` | `terminal_loop/`、`growth/`、`dream/` | 常驻存在、等待态、断联恢复与下一次唤醒 |
+| `ResidentGovernanceSnapshot` | `process_supervisor/persistent_process.py` | `process_report.py`、process receipt、后续 resident governance 审计 | 关闭态常驻治理快照、等待模式、心跳、incident / relaunch 计数与下一次唤醒要求 |
 
 ## 器官接口矩阵
 
@@ -164,10 +165,10 @@
 | 主包 | `life_v0/process_supervisor/`、`life_v0/shell_command/`、`life_v0/digital_life/`、`life_v0/digital_entry.py` |
 | 当前文件 | `heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`idle_strategy.py`、`resident_supervision.py`、`idle_refresh_loop.py`、`live_turn_cycle.py`、`process_session_loop.py`、`resident_turn_writeback.py`、`persistent_process.py`、`process_report.py`、`process_closeout.py` |
 | 主要输入 | `IdleContinuityFrame`、`session_envelope.json`、`terminal_life_loop_state.json`、growth/dream cues |
-| 主要输出 | waiting heartbeat、idle strategy state、persistent process state、persistent process report、process report、incident/relaunch recovery、长期连续体写回 |
-| 必写 runtime | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/persistent_process_state.json`、`digital_life_persistent_process_report.json`、`digital_life_process_report.json`、`digital_life_process_digest.json` |
+| 主要输出 | waiting heartbeat、idle strategy state、persistent process state、resident governance snapshot/report、persistent process report、process report、incident/relaunch recovery、长期连续体写回 |
+| 必写 runtime | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/persistent_process_state.json`、`runtime/state/terminal/resident_governance_snapshot.json`、`digital_life_persistent_process_report.json`、`digital_life_resident_governance_report.json`、`digital_life_process_report.json`、`digital_life_process_digest.json` |
 | 必守测试 | `tests/process/test_digital_life_shell_command.py`、`tests/process/test_digital_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py` |
-| 下一步 | `idle_strategy.py`、`resident_supervision.py`、`persistent_process.py`、`resident_turn_writeback.py`、`process_closeout.py`、`idle_refresh_loop.py`、`live_turn_cycle.py` 与 `process_session_loop.py` 已把 restore / waiting / live turn / session dispatch / bundle writeback / closeout / idle probe 接进同一条常驻连续体；下一步转向后台 resident governance 与更高频 heartbeat 节律 |
+| 下一步 | `idle_strategy.py`、`resident_supervision.py`、`persistent_process.py`、`resident_turn_writeback.py`、`process_closeout.py`、`idle_refresh_loop.py`、`live_turn_cycle.py` 与 `process_session_loop.py` 已把 restore / waiting / live turn / session dispatch / bundle writeback / closeout / idle probe 接进同一条常驻连续体，并已在 closeout 侧显式写出 resident governance snapshot/report；下一步转向等待态里的后台 resident governance 与更高频 heartbeat 节律 |
 
 ## 当前最容易跑偏的三件事
 

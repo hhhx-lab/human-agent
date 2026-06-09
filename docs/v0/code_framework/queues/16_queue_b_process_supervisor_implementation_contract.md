@@ -498,12 +498,14 @@ def run_process_session_loop(
 ### 新增
 
 - `runtime/state/terminal/idle_strategy_state.json`
+- `runtime/state/terminal/resident_governance_snapshot.json`
 
 ### 更新
 
 - `runtime/state/terminal/idle_continuity_frame.json`
 - `runtime/state/terminal/terminal_life_loop_state.json`
 - `runtime/state/terminal/safe_terminal_loop_state.json`
+- `runtime/state/terminal/persistent_process_state.json`
 - `runtime/state/language/dialogue_turn_log.jsonl`
 - `runtime/state/language/self_narrative_language_trace.json`
 - `runtime/state/language/commitment_repair_language_index.json`
@@ -514,6 +516,8 @@ def run_process_session_loop(
 Queue B 第一轮至少更新：
 
 - `runtime/reports/latest/digital_life_waiting_heartbeat.json`
+- `runtime/reports/latest/digital_life_persistent_process_report.json`
+- `runtime/reports/latest/digital_life_resident_governance_report.json`
 - `runtime/reports/latest/digital_life_process_report.json`
 - `runtime/reports/latest/digital_life_process_digest.json`
 - `runtime/receipts/digital_life_process_<run_id>.json`
@@ -521,6 +525,8 @@ Queue B 第一轮至少更新：
 报告里至少新增或固定：
 
 - `idle_strategy_ref`
+- `resident_governance_report_ref`
+- `resident_governance_snapshot_ref`
 - `dialogue_writeback_bundle_ref`
 - `offline_growth_cycle_refs`
 
@@ -560,6 +566,8 @@ Queue B 第一轮允许写回轻量连续体 ref，不允许 process supervisor 
 3. dialogue 事件会写 `dialogue_turn_log.jsonl`
 4. process report 会带 `life_context_frame_ref / relation_turn_frame_ref / expression_plan_ref`
 5. 外显回应会带离线重放/梦境/成长候选压力
+6. closeout 后会写 `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json`
+7. process report 与 receipt 会显式回链 resident governance refs
 
 #### `tests/process/test_digital_entrypoint.py`
 
@@ -591,6 +599,7 @@ Queue B 至少新增三道 gate：
 1. process report 缺 `life_context / relation_turn / expression_plan` ref
 2. 新回合结束后没有回到 waiting state
 3. incident / relaunch recovery 没有进入同一连续体
+4. persistent closeout 没有写 resident governance snapshot/report
 
 ### `dialogue_process_receipt_gate`
 
@@ -598,6 +607,7 @@ Queue B 至少新增三道 gate：
 
 1. receipt 没收 shared object refs
 2. report / digest / receipt 三件套不一致
+3. resident governance snapshot 没有进入 receipt / report 回链
 
 ## 推荐实现顺序
 
@@ -613,14 +623,15 @@ Queue B 至少新增三道 gate：
 
 ## 第一轮完成定义
 
-只有同时满足下面六条，Queue B 才算完成第一轮：
+只有同时满足下面七条，Queue B 才算完成第一轮：
 
 1. waiting heartbeat 不再只是计数器，而是带 `IdleContinuityFrame`
 2. process supervisor 有独立 `idle_strategy.py`
 3. 外部回合和生命回合都能写成标准事件对象
 4. process report / digest / receipt 都能回链核心共享对象
 5. incident / relaunch recovery 进入同一连续体口径
-6. 对应测试直接证明以上闭环
+6. resident governance snapshot / report 进入 persistent closeout 与主进程 report / receipt
+7. 对应测试直接证明以上闭环
 
 ## 这份合同和下一轮落码的关系
 

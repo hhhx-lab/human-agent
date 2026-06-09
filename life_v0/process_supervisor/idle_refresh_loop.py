@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, TextIO
@@ -49,12 +50,19 @@ def wait_for_next_external_relation_turn(
     poll_input_line_fn: Callable[[TextIO], str | None] | None = None,
     write_waiting_heartbeat_fn: Callable[..., int] = write_waiting_heartbeat,
 ) -> IdleRefreshLoopResult:
-    poll_input_line_fn = poll_input_line_fn or (
-        lambda stream: poll_input_line(stream, timeout_seconds=poll_timeout_seconds)
-    )
-
     while True:
-        raw_line = poll_input_line_fn(input_stream)
+        effective_poll_timeout_seconds = poll_timeout_seconds
+        if poll_input_line_fn is None:
+            effective_poll_timeout_seconds = _resolve_idle_poll_timeout_seconds(
+                terminal_dir=terminal_dir,
+                default_timeout_seconds=poll_timeout_seconds,
+            )
+            raw_line = poll_input_line(
+                input_stream,
+                timeout_seconds=effective_poll_timeout_seconds,
+            )
+        else:
+            raw_line = poll_input_line_fn(input_stream)
         if raw_line is None:
             heartbeat_counter = write_waiting_heartbeat_fn(
                 run_id=run_id,
@@ -108,3 +116,28 @@ def wait_for_next_external_relation_turn(
             external_utterance=external_utterance,
             exit_reason=None,
         )
+
+
+def _resolve_idle_poll_timeout_seconds(
+    *,
+    terminal_dir: Path,
+    default_timeout_seconds: float,
+) -> float:
+    strategy_path = terminal_dir / "idle_strategy_state.json"
+    if not strategy_path.exists():
+        return default_timeout_seconds
+
+    try:
+        payload = json.loads(strategy_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return default_timeout_seconds
+
+    heartbeat_interval_ms = payload.get("heartbeat_interval_ms")
+    try:
+        timeout_seconds = float(heartbeat_interval_ms) / 1000.0
+    except (TypeError, ValueError):
+        return default_timeout_seconds
+
+    if timeout_seconds <= 0:
+        return default_timeout_seconds
+    return timeout_seconds
