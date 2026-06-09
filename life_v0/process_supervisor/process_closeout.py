@@ -7,6 +7,7 @@ from typing import Any, Callable
 from .persistent_process import (
     PERSISTENT_PROCESS_REPORT_REF,
     RESIDENT_GOVERNANCE_REPORT_REF,
+    RESIDENT_GOVERNANCE_STATE_REF,
     RESIDENT_GOVERNANCE_SNAPSHOT_REF,
     PersistentProcessArtifactsResult,
     write_persistent_process_artifacts,
@@ -120,6 +121,7 @@ def close_digital_life_process(
         idle_strategy_state=idle_strategy_state,
         persistent_process_report_ref=PERSISTENT_PROCESS_REPORT_REF,
         resident_governance_report_ref=RESIDENT_GOVERNANCE_REPORT_REF,
+        resident_governance_state_ref=RESIDENT_GOVERNANCE_STATE_REF,
         resident_governance_snapshot_ref=RESIDENT_GOVERNANCE_SNAPSHOT_REF,
         life_context_frame_ref=_ref_if_present(
             payload=life_context_frame,

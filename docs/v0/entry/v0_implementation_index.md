@@ -76,7 +76,7 @@
 | 共用合同层 | `life_state_store_v0_schema.md`、`birth_readiness_v0_contract.md`、`runner_cli_report_contract.md`、`first_activation_protocol.md` | 给多个模块共用的状态、出生准备度、CLI/report 和激活协议 |
 | 主体 slice 合同层 | `doc_corpus_ingestor_v0_contract.md`、`s00_*` 到 `s11_*` | 主体骨架、状态根、生命膜、语言关系、九项目标、runner、growth 和合同覆盖 |
 | 链尾桥接合同层 | `first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md` | 把 terminal birth restore 收成可继续的终端生命回合 |
-| 外层壳/进程合同层 | `digital_life_shell_command_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md` | 固定 one-shot restore shell 与 repo-local 最小常驻生命进程 |
+| 外层壳/进程合同层 | `digital_life_shell_command_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md`、`resident_governance_waiting_state_machine_engineering_contract.md` | 固定 one-shot restore shell、repo-local 最小常驻生命进程，以及 waiting / closeout resident governance 状态机 |
 | 外周参考层 | `current_agent_shell_reference_2026.md` | 只作为电脑外周与终端壳参考，不反向定义主体架构 |
 
 `../README.md` 里的“五个文档包”是为了让人快速开工，这里的“十三层分层”是为了防止入口、映射、合同、包级施工、代码蓝图和链尾壳层撞在一起。后续整理和落代码时，优先用五包视角进入，再用十三层视角校正自己现在到底站在哪一层。

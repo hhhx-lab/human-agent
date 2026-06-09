@@ -1698,6 +1698,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     },
                 },
             )
+            self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "governance_phase": "waiting_for_external_turn",
+                },
+            )
             self._write_json(language_dir / "self_narrative_language_trace.json", {"schema_version": "self_narrative_language_trace_v0"})
             self._write_json(language_dir / "commitment_repair_language_index.json", {"schema_version": "commitment_repair_language_index_v0"})
             self._write_json(relationship_dir / "relationship_subject_graph.json", {"subjects": []})
@@ -1738,6 +1745,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 idle_strategy_state=self._read_json(terminal_dir / "idle_strategy_state.json"),
                 persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
                 resident_governance_report_ref="runtime/reports/latest/digital_life_resident_governance_report.json",
+                resident_governance_state_ref="runtime/state/terminal/resident_governance_state.json",
                 resident_governance_snapshot_ref="runtime/state/terminal/resident_governance_snapshot.json",
                 life_context_frame_ref="runtime/state/terminal/life_context_frame.json",
                 relation_turn_frame_ref="runtime/state/terminal/relation_turn_frame.json",
@@ -1774,6 +1782,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 report["resident_governance_report_ref"],
                 "runtime/reports/latest/digital_life_resident_governance_report.json",
+            )
+            self.assertEqual(
+                report["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(
                 report["resident_governance_snapshot_ref"],
@@ -1834,6 +1846,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 receipt["shared_object_refs"],
             )
             self.assertIn(
+                "runtime/state/terminal/resident_governance_state.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
                 "runtime/state/terminal/resident_governance_snapshot.json",
                 receipt["shared_object_refs"],
             )
@@ -1851,6 +1867,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 str(state_dir / "replay" / "replay_cue_bundle.json"),
+                receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(terminal_dir / "resident_governance_state.json"),
                 receipt["input_hashes"],
             )
             self.assertIn(
@@ -2008,6 +2028,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(persistent_report["heartbeat_counter"], 4)
             self.assertEqual(process_report["completed_dialogue_turns"], 2)
             self.assertEqual(process_report["persistent_process_report_ref"], "runtime/reports/latest/digital_life_persistent_process_report.json")
+            self.assertEqual(
+                process_report["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
             self.assertEqual(process_report["life_context_frame_ref"], "runtime/state/terminal/life_context_frame.json")
             self.assertEqual(process_report["relation_turn_frame_ref"], "runtime/state/terminal/relation_turn_frame.json")
             self.assertEqual(process_report["expression_plan_ref"], "runtime/state/language/expression_plan.json")
@@ -2048,6 +2072,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_report["schema_version"],
                 "digital_life_resident_governance_report_v0",
+            )
+            self.assertEqual(
+                resident_governance_report["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(
                 resident_governance_snapshot["idle_continuity_ref"],
@@ -2194,6 +2222,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
             self.assertEqual(result.state["schema_version"], "persistent_process_state_v0")
             self.assertEqual(result.report["schema_version"], "digital_life_persistent_process_report_v0")
+            self.assertEqual(
+                result.resident_governance_state["schema_version"],
+                "resident_governance_state_v0",
+            )
             self.assertEqual(state["run_id"], "persistent-process-organ")
             self.assertEqual(report["run_id"], "persistent-process-organ")
             self.assertEqual(state["heartbeat_counter"], 3)
@@ -2221,6 +2253,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 state["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
+            )
+            self.assertEqual(
+                state["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
+            self.assertEqual(
+                report["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(
                 report["resident_governance_report_ref"],
@@ -2253,6 +2293,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_state["resident_governance_report_ref"],
                 "runtime/reports/latest/digital_life_resident_governance_report.json",
+            )
+            self.assertEqual(
+                resident_governance_report["resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 70)
             self.assertEqual(resident_governance_state["offline_pressure_level"], "present")

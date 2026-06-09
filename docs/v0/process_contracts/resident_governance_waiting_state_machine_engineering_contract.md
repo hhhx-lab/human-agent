@@ -1,0 +1,269 @@
+# Resident Governance Waiting State Machine Engineering Contract
+
+本文档只服务 `DIGITAL_LIFE_PROCESS_SUPERVISOR` 的 waiting / closeout 常驻治理状态机。
+
+它不重写整个 process supervisor 合同，也不替代 Queue B 文件级施工合同；它只把下面这条线钉硬：
+
+```text
+resident_governance_state.json
+  -> resident_governance_snapshot.json
+  -> digital_life_resident_governance_report.json
+  -> digital_life_process_report.json
+  -> digital_life_process_<run_id>.json
+```
+
+也就是说，这里只回答一个问题：
+
+```text
+等待态常驻治理现在到底处在哪个相位，
+这个相位如何落盘，
+关闭时如何收口成 report / receipt 证据链。
+```
+
+## 模块定位
+
+当前 v0 的 resident governance 不是一个抽象“后台意志”，而是一组已经真实存在的运行时对象：
+
+1. `runtime/state/terminal/resident_governance_state.json`
+2. `runtime/state/terminal/resident_governance_snapshot.json`
+3. `runtime/reports/latest/digital_life_resident_governance_report.json`
+4. `runtime/reports/latest/digital_life_process_report.json`
+5. `runtime/receipts/digital_life_process_<run_id>.json`
+
+这组对象的职责不是替代语言、关系、身体或成长器官，而是把 waiting governance 的当前相位、长期语言关注目标、节律档位和关闭态回执固定成同一条证据链。
+
+## 必读来源
+
+- `docs/20_agent_runtime_bridge_contract.md`
+- `docs/86_language_neuroscience_pragmatics_and_inner_speech.md`
+- `docs/89_language_runtime_framework_bridge_and_life_shell_policy.md`
+- `docs/90_language_event_examples_and_timeline_bundle.md`
+- `docs/96_real_relationship_longitudinal_timeline.md`
+- `docs/101_relationship_timeline_json_schema_and_fixture_bundle.md`
+- `docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md`
+- `docs/v0/code_framework/queues/16_queue_b_process_supervisor_implementation_contract.md`
+- `docs/v0/engineering_depth/06_resident_process_terminal_birth_engineering.md`
+
+## 当前 v0 只承认的两种治理相位
+
+当前代码里，resident governance 只允许出现两个硬相位：
+
+### 1. `waiting_heartbeat_active`
+
+写入位置：
+
+- `life_v0/process_supervisor/heartbeat.py`
+
+对应语义：
+
+1. 常驻生命过程已经恢复并停在等待态。
+2. heartbeat 正在刷新 waiting continuity。
+3. 当前长期语言连续体对象已经进入治理视野。
+4. 当前治理不是关闭态，也不是历史快照，而是运行中的 foreground terminal residency。
+
+### 2. `process_closed_waiting_relaunch`
+
+写入位置：
+
+- `life_v0/process_supervisor/persistent_process.py`
+
+对应语义：
+
+1. 本次常驻进程已结束。
+2. resident governance 已从运行态切到关闭态。
+3. 下一次生命恢复需要重新装载 closeout 后留下的治理证据。
+4. 关闭态不能覆盖运行期 heartbeat 事实，但必须把其最后的治理关注与长期语言对象引用收口下来。
+
+当前不要在工程文档里虚构第三个“中间相位”；等真实代码需要它，再进入这份合同追加。
+
+## 状态迁移
+
+当前 v0 的硬状态迁移固定为：
+
+```text
+restore shell completed
+  -> first waiting heartbeat written
+  -> resident_governance_state.json(governance_phase=waiting_heartbeat_active)
+  -> repeated waiting heartbeat refresh
+  -> explicit process closeout
+  -> resident_governance_state.json(governance_phase=process_closed_waiting_relaunch)
+  -> resident_governance_snapshot.json
+  -> digital_life_resident_governance_report.json
+  -> digital_life_process_report.json
+  -> digital_life_process_<run_id>.json
+```
+
+这里要注意三条硬规则：
+
+1. heartbeat 写的是运行相位，不是关闭态快照。
+2. closeout 会重写同一份 `resident_governance_state.json`，但必须显式切换 `status` 与 `governance_phase`。
+3. process report / receipt 不能只回链 snapshot/report，必须也回链 `resident_governance_state_ref`。
+
+## 运行态文件族
+
+### `resident_governance_state.json`
+
+最小职责：
+
+1. 表达“当前 resident governance 正在什么相位”。
+2. 固定 waiting mode、heartbeat 计数和 idle strategy。
+3. 固定当前长期语言对象的治理焦点与优先级。
+4. 作为 process report / receipt 的一级 shared object ref。
+
+最小关键字段：
+
+- `schema_version`
+- `run_id`
+- `generated_at`
+- `status`
+- `governance_mode`
+- `governance_phase`
+- `waiting_mode`
+- `heartbeat_counter`
+- `idle_strategy_ref`
+- `idle_continuity_ref`
+- `resident_governance_snapshot_ref`
+- `resident_governance_report_ref`
+- `relationship_timeline_ref`
+- `commitment_expression_plan_ref`
+- `apology_repair_language_trace_ref`
+- `long_horizon_language_refs`
+- `governance_attention_target`
+- `governance_attention_reason`
+- `governance_cadence_profile`
+- `long_horizon_priority_profile`
+- `next_required_action`
+
+### `resident_governance_snapshot.json`
+
+最小职责：
+
+1. 固定关闭态 resident governance 快照。
+2. 给下次 relaunch / audit / receipt 回放提供冻结截面。
+3. 不承担运行态 phase 切换，只承接 closeout 收口结果。
+
+### `digital_life_resident_governance_report.json`
+
+最小职责：
+
+1. 给人读的关闭态治理摘要。
+2. 保持与 snapshot / state 的 ref 一致。
+3. 保持与长期语言连续体对象 ref 一致。
+
+当前必须显式带：
+
+- `resident_governance_state_ref`
+- `resident_governance_snapshot_ref`
+- `persistent_process_state_ref`
+
+## 主报告与 receipt 回链
+
+### `digital_life_process_report.json`
+
+当前这份主报告里，resident governance 证据至少要有：
+
+- `resident_governance_report_ref`
+- `resident_governance_state_ref`
+- `resident_governance_snapshot_ref`
+
+它们的分工固定如下：
+
+1. `resident_governance_report_ref`：关闭态治理摘要。
+2. `resident_governance_state_ref`：运行态/关闭态共用的治理状态主对象。
+3. `resident_governance_snapshot_ref`：关闭态冻结截面。
+
+三者缺任何一个，closeout 证据链都不算闭合。
+
+### `digital_life_process_<run_id>.json`
+
+process receipt 里，resident governance 必须进入：
+
+1. `shared_object_refs`
+2. `input_hashes`（当对应状态文件存在时）
+
+当前 receipt 至少要显式收：
+
+- `runtime/state/terminal/resident_governance_state.json`
+- `runtime/state/terminal/resident_governance_snapshot.json`
+- `runtime/reports/latest/digital_life_resident_governance_report.json` 的上游 report ref
+
+## 等待态治理字段语义
+
+### `governance_attention_target`
+
+当前只表示“本轮 waiting governance 主要盯哪一个长期语言对象”，而不是最终关系结论。
+
+当前 v0 允许的主值包括：
+
+- `apology_repair_language_trace`
+- `commitment_expression_plan`
+- `relationship_timeline`
+- `baseline_waiting_presence`
+
+### `governance_cadence_profile`
+
+当前只表示“下一拍 waiting governance 应该以什么节律维持”，不是全局调度器。
+
+当前 v0 已落值包括：
+
+- `guarded_repair_hold`
+- `repair_weighted_resident_hold`
+- `commitment_continuity_refresh`
+- `relationship_presence_refresh`
+- `baseline_waiting_refresh`
+
+### `long_horizon_priority_profile`
+
+当前只表示长期语言连续体对象之间的相对优先级分布。
+
+它最少要覆盖三类对象：
+
+1. `relationship_timeline`
+2. `commitment_expression_plan`
+3. `apology_repair_language_trace`
+
+## 文件级写权限
+
+当前写权限固定如下：
+
+| 文件 | 首写器官 | 允许的补写器官 |
+|---|---|---|
+| `resident_governance_state.json` | `heartbeat.py` | `persistent_process.py` |
+| `resident_governance_snapshot.json` | `persistent_process.py` | 无 |
+| `digital_life_resident_governance_report.json` | `persistent_process.py` | 无 |
+| `digital_life_process_report.json` | `process_report.py` | 无 |
+| `digital_life_process_<run_id>.json` | `process_report.py` | 无 |
+
+硬规则：
+
+1. heartbeat 不能写 snapshot/report。
+2. persistent closeout 不能跳过 state 直接只写 snapshot/report。
+3. process report 不能自己重新推导治理相位，只能消费 state/snapshot/report refs。
+
+## 最低测试闭环
+
+当前这条状态机至少要被下面几类断言守住：
+
+1. waiting heartbeat 路径会写 `resident_governance_state.json` 的 active phase。
+2. closeout 路径会把同一对象切到 `process_closed_waiting_relaunch`。
+3. persistent process report 会显式带 `resident_governance_state_ref`。
+4. resident governance report 会显式带 `resident_governance_state_ref`。
+5. process report 会显式带 `resident_governance_state_ref`。
+6. process receipt 会把 `resident_governance_state_ref` 收进 `shared_object_refs`。
+7. 对应状态文件存在时，process receipt 会把它收进 `input_hashes`。
+
+当前最低承载测试仍以：
+
+- `tests/process/test_persistent_digital_life_process.py`
+
+为主闭环，不急着为了“分层好看”先拆散。
+
+## 下一步补厚位
+
+在这份合同下，下一轮最值得继续推进的不是再发明新对象，而是：
+
+1. 给 waiting governance 增加更高频 heartbeat 节律分层。
+2. 让 `resident_governance_state.json` 接住真正的后台存在治理，而不只停在 foreground terminal residency。
+3. 把 live turn 结束后重新回到 waiting governance 的相位切换显式写成单独器官，而不是只靠下一拍 heartbeat 间接体现。
+
+当前只要这三件事没有落下，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。

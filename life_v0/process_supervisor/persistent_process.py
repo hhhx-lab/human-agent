@@ -18,6 +18,7 @@ RESIDENT_GOVERNANCE_REPORT_REF = "runtime/reports/latest/digital_life_resident_g
 class PersistentProcessArtifactsResult:
     state: dict[str, Any]
     report: dict[str, Any]
+    resident_governance_state: dict[str, Any]
     resident_governance_snapshot: dict[str, Any]
     resident_governance_report: dict[str, Any]
 
@@ -120,6 +121,7 @@ def write_persistent_process_artifacts(
         "incident_count": incident_count,
         "relaunch_recovery_count": relaunch_recovery_count,
         "idle_strategy_ref": idle_strategy_ref,
+        "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
         "resident_governance_snapshot_ref": RESIDENT_GOVERNANCE_SNAPSHOT_REF,
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
@@ -138,6 +140,7 @@ def write_persistent_process_artifacts(
         "status": "closed",
         "governance_mode": "foreground_terminal_residency",
         "persistent_process_state_ref": PERSISTENT_PROCESS_STATE_REF,
+        "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
         "resident_governance_report_ref": RESIDENT_GOVERNANCE_REPORT_REF,
         "resident_governance_snapshot_ref": RESIDENT_GOVERNANCE_SNAPSHOT_REF,
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
@@ -164,6 +167,7 @@ def write_persistent_process_artifacts(
         "generated_at": generated_at,
         "status": "closed",
         "governance_mode": "foreground_terminal_residency",
+        "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
         "resident_governance_snapshot_ref": RESIDENT_GOVERNANCE_SNAPSHOT_REF,
         "persistent_process_state_ref": PERSISTENT_PROCESS_STATE_REF,
         "waiting_mode": waiting_mode,
@@ -192,6 +196,7 @@ def write_persistent_process_artifacts(
     return PersistentProcessArtifactsResult(
         state=state,
         report=report,
+        resident_governance_state=resident_governance_state,
         resident_governance_snapshot=resident_governance_snapshot,
         resident_governance_report=resident_governance_report,
     )
