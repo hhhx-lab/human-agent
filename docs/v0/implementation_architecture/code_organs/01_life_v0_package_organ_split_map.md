@@ -193,9 +193,9 @@
 | 必回读理论 | `20`、`81-82`、`86`、`89-90`、`96`、`101`、`181-257` |
 | 必回读 v0 | `first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md`、`16_queue_b_process_supervisor_implementation_contract.md` |
 | 已落器官 | `restore_context.py`、`context_accumulation.py`、`turn_transition.py`、`turn_packet.py`、`conversation_carryover.py`、`dialogue_turn.py`、`loop_state.py`、`resume_packet.py`、`dialogue_writeback.py`、`loop_report.py`、`persistent_wait_bridge.py`、`heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`idle_strategy.py`、`resident_supervision.py`、`idle_refresh_loop.py`、`live_turn_cycle.py`、`process_session_loop.py`、`persistent_process.py`、`process_report.py`、`resident_turn_writeback.py`、`process_closeout.py` |
-| 仍压在入口的职责 | 后台长期 resident governance 编排 |
-| 下一轮优先拆分 | `-（resident supervision / idle_refresh_loop / live_turn_cycle / process_session_loop 已落；当前前沿转向 idle_strategy.py / persistent_process.py / process_closeout.py 的后台治理补厚）` |
-| runtime 产物 | `session_envelope.json`、`context_accumulation_window.json`、`turn_transition_trace.json`、`terminal_life_loop_state.json`、`digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` |
+| 仍压在入口的职责 | 后台长期 resident governance 编排、waiting governance 字段到 stage explain / 上层运行时的后续消费 |
+| 下一轮优先拆分 | `-（resident supervision / idle_refresh_loop / live_turn_cycle / process_session_loop 已落；当前前沿转向 idle_strategy.py / heartbeat.py / persistent_process.py / process_closeout.py 的后台治理补厚，尤其是 waiting governance 字段实化）` |
+| runtime 产物 | `session_envelope.json`、`context_accumulation_window.json`、`turn_transition_trace.json`、`terminal_life_loop_state.json`、`digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_process_report.json` |
 | 测试 / gate | `tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py`、`tests/process/test_digital_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py` |
 
 ## 当前施工顺序
@@ -204,7 +204,7 @@
 
 1. `Queue D`：先补身体、梦境、成长链的剩余器官与跨层 writeback。
 2. `Queue E`：再补候选行动、责任回路、validator、evidence rank。
-3. `Queue B`：再补 waiting heartbeat、idle strategy、persistent process。
+3. `Queue B`：再补 waiting heartbeat、idle strategy、persistent process，并持续把 waiting governance 变成真实 runtime 行为而不是静态 state。
 4. `Queue A`：再深补关系时间线、承诺表达、修复语言。
 5. `Queue C/F`：作为维护回切，继续细分 neural core / life targets / state store 剩余重职责。
 

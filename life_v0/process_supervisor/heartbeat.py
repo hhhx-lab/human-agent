@@ -4,7 +4,11 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .continuity_writeback import build_idle_continuity_frame, record_idle_continuity
-from .idle_strategy import IDLE_STRATEGY_STATE_REF, decide_idle_strategy
+from .idle_strategy import (
+    IDLE_STRATEGY_STATE_REF,
+    decide_idle_strategy,
+    extract_idle_governance_fields,
+)
 
 
 def write_waiting_heartbeat(
@@ -58,28 +62,32 @@ def write_waiting_heartbeat(
         readme_block_refs=readme_block_refs,
         runtime_carrier_refs=runtime_carrier_refs,
     )
+    waiting_mode = str(
+        idle_strategy.get("waiting_mode", "restored_waiting_for_external_turn")
+    )
     heartbeat_packet = {
         "schema_version": "digital_life_waiting_heartbeat_v0",
         "run_id": run_id,
         "generated_at": now_iso(),
         "status": "closed",
         "heartbeat_counter": heartbeat_counter,
-        "waiting_mode": "restored_waiting_for_external_turn",
+        "waiting_mode": waiting_mode,
         "idle_strategy_ref": IDLE_STRATEGY_STATE_REF,
         "safe_terminal_loop_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
         "next_required_action": "await_next_external_relation_turn",
     }
+    heartbeat_packet.update(extract_idle_governance_fields(idle_strategy))
 
-    safe_terminal_loop["current_mode"] = "restored_waiting_for_external_turn"
-    safe_terminal_loop["last_heartbeat_mode"] = "restored_waiting_for_external_turn"
+    safe_terminal_loop["current_mode"] = waiting_mode
+    safe_terminal_loop["last_heartbeat_mode"] = waiting_mode
     safe_terminal_loop["heartbeat_counter"] = heartbeat_counter
     safe_terminal_loop["last_heartbeat_packet_ref"] = heartbeat_report_ref
     safe_terminal_loop["idle_strategy_ref"] = IDLE_STRATEGY_STATE_REF
     write_json(terminal_dir / "safe_terminal_loop_state.json", safe_terminal_loop)
 
-    terminal_life_loop_state["current_mode"] = "restored_waiting_for_external_turn"
+    terminal_life_loop_state["current_mode"] = waiting_mode
     terminal_life_loop_state["heartbeat_counter"] = heartbeat_counter
     terminal_life_loop_state["last_heartbeat_packet_ref"] = heartbeat_report_ref
     terminal_life_loop_state["next_required_action"] = "await_next_external_relation_turn"

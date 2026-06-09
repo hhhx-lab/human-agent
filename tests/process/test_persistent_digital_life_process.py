@@ -181,6 +181,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 heartbeat_packet["idle_strategy_ref"],
                 "runtime/state/terminal/idle_strategy_state.json",
             )
+            self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 50)
+            self.assertEqual(
+                heartbeat_packet["idle_probe_mode"],
+                "stdin_poll_with_background_continuity_refresh",
+            )
+            self.assertEqual(heartbeat_packet["offline_pressure_level"], "elevated")
+            self.assertEqual(heartbeat_packet["relaunch_caution_level"], "baseline")
+            self.assertEqual(
+                heartbeat_packet["next_idle_action"],
+                "refresh_waiting_heartbeat_or_accept_external_turn",
+            )
             self.assertEqual(idle_strategy["schema_version"], "idle_strategy_state_v0")
             self.assertEqual(idle_strategy["run_id"], "persistent-heartbeat")
             self.assertIn("strategy_id", idle_strategy)
@@ -350,6 +361,29 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(idle_strategy["offline_pressure_level"], "elevated")
             self.assertEqual(idle_strategy["relaunch_caution_level"], "baseline")
             self.assertEqual(idle_strategy["next_idle_action"], "refresh_waiting_heartbeat_or_accept_external_turn")
+            self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 50)
+            self.assertEqual(
+                heartbeat_packet["idle_probe_mode"],
+                "stdin_poll_with_background_continuity_refresh",
+            )
+            self.assertEqual(heartbeat_packet["offline_pressure_level"], "elevated")
+            self.assertEqual(heartbeat_packet["relaunch_caution_level"], "baseline")
+            self.assertEqual(
+                heartbeat_packet["next_idle_action"],
+                "refresh_waiting_heartbeat_or_accept_external_turn",
+            )
+            self.assertEqual(process_report["waiting_mode"], "restored_waiting_for_external_turn")
+            self.assertEqual(process_report["heartbeat_interval_ms"], 50)
+            self.assertEqual(
+                process_report["idle_probe_mode"],
+                "stdin_poll_with_background_continuity_refresh",
+            )
+            self.assertEqual(process_report["offline_pressure_level"], "elevated")
+            self.assertEqual(process_report["relaunch_caution_level"], "baseline")
+            self.assertEqual(
+                process_report["next_idle_action"],
+                "refresh_waiting_heartbeat_or_accept_external_turn",
+            )
             self.assertEqual(
                 idle_strategy["idle_continuity_ref"],
                 "runtime/state/terminal/idle_continuity_frame.json",
@@ -1196,6 +1230,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self._write_json(terminal_dir / "session_envelope.json", {"schema_version": "session_envelope_v0"})
             self._write_json(terminal_dir / "safe_terminal_loop_state.json", {"current_mode": "restored_waiting_for_external_turn"})
             self._write_json(terminal_dir / "terminal_life_loop_state.json", {"current_mode": "restored_waiting_for_external_turn"})
+            self._write_json(
+                terminal_dir / "idle_strategy_state.json",
+                {
+                    "schema_version": "idle_strategy_state_v0",
+                    "heartbeat_interval_ms": 80,
+                    "idle_probe_mode": "stdin_poll_with_background_continuity_refresh",
+                    "offline_pressure_level": "present",
+                    "relaunch_caution_level": "guarded",
+                    "next_idle_action": "refresh_waiting_heartbeat_or_accept_external_turn",
+                    "waiting_mode": "restored_waiting_for_external_turn",
+                },
+            )
             self._write_json(language_dir / "self_narrative_language_trace.json", {"schema_version": "self_narrative_language_trace_v0"})
             self._write_json(language_dir / "commitment_repair_language_index.json", {"schema_version": "commitment_repair_language_index_v0"})
             self._write_json(relationship_dir / "relationship_subject_graph.json", {"subjects": []})
@@ -1233,6 +1279,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 last_external_turn={"utterance": "你还记得我们吗？"},
                 last_life_turn={"utterance": "我当然记得。"},
                 idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state=self._read_json(terminal_dir / "idle_strategy_state.json"),
                 persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
                 resident_governance_report_ref="runtime/reports/latest/digital_life_resident_governance_report.json",
                 resident_governance_snapshot_ref="runtime/state/terminal/resident_governance_snapshot.json",
@@ -1273,6 +1320,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 report["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
             )
+            self.assertEqual(report["heartbeat_interval_ms"], 80)
+            self.assertEqual(report["offline_pressure_level"], "present")
+            self.assertEqual(report["relaunch_caution_level"], "guarded")
             self.assertEqual(
                 report["offline_consolidation_frame_ref"],
                 "runtime/state/dream/offline_consolidation_frame.json",
@@ -1349,6 +1399,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self._write_json(terminal_dir / "session_envelope.json", {"schema_version": "session_envelope_v0"})
             self._write_json(terminal_dir / "life_context_frame.json", {"context_anchor_count": 2})
             self._write_json(terminal_dir / "relation_turn_frame.json", {"relation_subject_ref": "rel-v0-0001"})
+            self._write_json(
+                terminal_dir / "idle_strategy_state.json",
+                {
+                    "schema_version": "idle_strategy_state_v0",
+                    "heartbeat_interval_ms": 90,
+                    "idle_probe_mode": "stdin_poll_with_background_continuity_refresh",
+                    "offline_pressure_level": "light",
+                    "relaunch_caution_level": "baseline",
+                    "next_idle_action": "refresh_waiting_heartbeat_or_accept_external_turn",
+                    "waiting_mode": "restored_waiting_for_external_turn",
+                },
+            )
             self._write_json(language_dir / "expression_plan.json", {"semantic_goal": "repair_commitment_shared_language"})
             self._write_json(language_dir / "self_narrative_language_trace.json", {"schema_version": "self_narrative_language_trace_v0"})
             self._write_json(language_dir / "commitment_repair_language_index.json", {"schema_version": "commitment_repair_language_index_v0"})
@@ -1385,6 +1447,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 last_life_turn={"utterance": "我当然记得。"},
                 waiting_mode="restored_waiting_for_external_turn",
                 idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state=self._read_json(terminal_dir / "idle_strategy_state.json"),
                 last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
                 last_dialogue_packet_ref="runtime/reports/latest/resumed_external_dialogue_packet.json",
                 source_doc_refs=["docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"],
@@ -1452,6 +1515,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_report["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
             )
+            self.assertEqual(resident_governance_snapshot["heartbeat_interval_ms"], 90)
+            self.assertEqual(resident_governance_snapshot["offline_pressure_level"], "light")
+            self.assertEqual(resident_governance_report["heartbeat_interval_ms"], 90)
+            self.assertEqual(resident_governance_report["offline_pressure_level"], "light")
+            self.assertEqual(process_report["heartbeat_interval_ms"], 90)
+            self.assertEqual(process_report["offline_pressure_level"], "light")
             self.assertIn(
                 "runtime/state/terminal/idle_strategy_state.json",
                 process_receipt["shared_object_refs"],
@@ -1491,6 +1560,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "next_required_action": "await_next_external_relation_turn",
                 },
             )
+            idle_strategy_state = {
+                "schema_version": "idle_strategy_state_v0",
+                "heartbeat_interval_ms": 70,
+                "idle_probe_mode": "stdin_poll_with_background_continuity_refresh",
+                "offline_pressure_level": "present",
+                "relaunch_caution_level": "heightened",
+                "next_idle_action": "refresh_waiting_heartbeat_or_accept_external_turn",
+                "waiting_mode": "restored_waiting_for_external_turn",
+            }
+            self._write_json(terminal_dir / "idle_strategy_state.json", idle_strategy_state)
 
             result = write_persistent_process_artifacts(
                 run_id="persistent-process-organ",
@@ -1503,6 +1582,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 relaunch_recovery_count=1,
                 waiting_mode="restored_waiting_for_external_turn",
                 idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state=idle_strategy_state,
                 last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
                 last_dialogue_packet_ref="runtime/reports/latest/resumed_external_dialogue_packet.json",
                 source_doc_refs=["docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"],
@@ -1570,6 +1650,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_snapshot["idle_continuity_ref"],
                 "runtime/state/terminal/idle_continuity_frame.json",
             )
+            self.assertEqual(resident_governance_snapshot["heartbeat_interval_ms"], 70)
+            self.assertEqual(resident_governance_snapshot["offline_pressure_level"], "present")
+            self.assertEqual(resident_governance_snapshot["relaunch_caution_level"], "heightened")
+            self.assertEqual(report["heartbeat_interval_ms"], 70)
+            self.assertEqual(report["offline_pressure_level"], "present")
+            self.assertEqual(report["relaunch_caution_level"], "heightened")
             self.assertEqual(
                 resident_governance_report["resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",

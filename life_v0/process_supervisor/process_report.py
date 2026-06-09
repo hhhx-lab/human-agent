@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from .idle_strategy import extract_idle_governance_fields
+
 
 @dataclass(frozen=True)
 class ProcessReportBundleResult:
@@ -34,6 +36,7 @@ def write_process_report_bundle(
     last_external_turn: dict[str, Any] | None,
     last_life_turn: dict[str, Any] | None,
     idle_strategy_ref: str | None,
+    idle_strategy_state: dict[str, Any] | None,
     persistent_process_report_ref: str | None,
     resident_governance_report_ref: str | None,
     resident_governance_snapshot_ref: str | None,
@@ -46,6 +49,7 @@ def write_process_report_bundle(
     growth_patch_candidate_queue_ref: str | None,
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> ProcessReportBundleResult:
+    idle_governance = extract_idle_governance_fields(idle_strategy_state)
     report = {
         "schema_version": "digital_life_process_report_v0",
         "run_id": run_id,
@@ -81,6 +85,7 @@ def write_process_report_bundle(
         "next_required_action": "process_closed_waiting_relaunch",
         "blocked_reasons": [],
     }
+    report.update(idle_governance)
     digest = {
         "schema_version": "digital_life_process_digest_v0",
         "run_id": run_id,
@@ -152,6 +157,7 @@ def build_process_receipt(
         state_dir / "terminal" / "session_envelope.json",
         state_dir / "terminal" / "safe_terminal_loop_state.json",
         state_dir / "terminal" / "terminal_life_loop_state.json",
+        state_dir / "terminal" / "idle_strategy_state.json",
         state_dir / "terminal" / "life_context_frame.json",
         state_dir / "terminal" / "relation_turn_frame.json",
         state_dir / "language" / "dialogue_turn_log.jsonl",

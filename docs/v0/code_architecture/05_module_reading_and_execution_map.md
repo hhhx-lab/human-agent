@@ -158,9 +158,9 @@
 | 类别 | 内容 |
 |---|---|
 | 先读理论 | `20`、`81-84`、`86`、`89-90`、`96`、`101`、`181-257` |
-| 先读 v0 | `digital_life_process_supervisor_engineering_contract.md`、`16_queue_b_process_supervisor_implementation_contract.md`、`07_birth_terminal_process_implementation_playbook.md`、`03_build_order_and_definition_of_done.md` |
-| 打开代码 | `life_v0/process_supervisor/__init__.py`、`heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`process_report.py`、`life_v0/digital_entry.py`、`digital` |
-| 确认证据 | `digital_life_waiting_heartbeat.json`、`digital_life_process_report.json`、incident / relaunch recovery reports |
+| 先读 v0 | `digital_life_process_supervisor_engineering_contract.md`、`16_queue_b_process_supervisor_implementation_contract.md`、`07_birth_terminal_process_implementation_playbook.md`、`03_build_order_and_definition_of_done.md`、`05_birth_residency_terminal_blueprint.md` |
+| 打开代码 | `life_v0/process_supervisor/__init__.py`、`heartbeat.py`、`idle_strategy.py`、`idle_refresh_loop.py`、`persistent_process.py`、`process_closeout.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`process_report.py`、`life_v0/digital_entry.py`、`digital` |
+| 确认证据 | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_process_report.json`、incident / relaunch recovery reports |
 | 最低测试 | `tests/process/test_digital_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py`、`tests/process/test_digital_life_shell_command.py` |
 
 ## 当前最适合直接开写的顺序
@@ -169,7 +169,7 @@
 
 1. `body/`、`dream/`、`growth/`
 2. `membrane/`、`validators/`、`schema_runner/`
-3. `process_supervisor/`
+3. `process_supervisor/`，优先继续补 waiting governance 的字段贯通、resident governance closeout 和 heartbeat 节律实化
 4. `language/`、`terminal_turn/`、`terminal_loop/`
 5. 再回切 `neural_core/`、`state_store/`、`life_targets/`
 

@@ -5,6 +5,24 @@ from typing import Any
 
 IDLE_STRATEGY_STATE_REF = "runtime/state/terminal/idle_strategy_state.json"
 IDLE_CONTINUITY_FRAME_REF = "runtime/state/terminal/idle_continuity_frame.json"
+IDLE_GOVERNANCE_FIELD_NAMES = (
+    "heartbeat_interval_ms",
+    "idle_probe_mode",
+    "offline_pressure_level",
+    "relaunch_caution_level",
+    "next_idle_action",
+    "waiting_mode",
+)
+
+
+def extract_idle_governance_fields(idle_strategy_state: dict[str, Any] | None) -> dict[str, Any]:
+    if not idle_strategy_state:
+        return {}
+    return {
+        field: idle_strategy_state[field]
+        for field in IDLE_GOVERNANCE_FIELD_NAMES
+        if field in idle_strategy_state and idle_strategy_state[field] is not None
+    }
 
 
 def decide_idle_strategy(

@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from .idle_strategy import extract_idle_governance_fields
+
 
 PERSISTENT_PROCESS_STATE_REF = "runtime/state/terminal/persistent_process_state.json"
 PERSISTENT_PROCESS_REPORT_REF = "runtime/reports/latest/digital_life_persistent_process_report.json"
@@ -31,6 +33,7 @@ def write_persistent_process_artifacts(
     relaunch_recovery_count: int,
     waiting_mode: str,
     idle_strategy_ref: str | None,
+    idle_strategy_state: dict[str, Any] | None,
     last_heartbeat_packet_ref: str | None,
     last_dialogue_packet_ref: str | None,
     source_doc_refs: list[str],
@@ -41,6 +44,7 @@ def write_persistent_process_artifacts(
     terminal_dir = state_dir / "terminal"
     terminal_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
+    idle_governance = extract_idle_governance_fields(idle_strategy_state)
 
     resident_governance_snapshot = {
         "schema_version": "resident_governance_snapshot_v0",
@@ -61,6 +65,7 @@ def write_persistent_process_artifacts(
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
     }
+    resident_governance_snapshot.update(idle_governance)
     state = {
         "schema_version": "persistent_process_state_v0",
         "run_id": run_id,
@@ -80,6 +85,7 @@ def write_persistent_process_artifacts(
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
         "next_required_action": "await_process_relaunch_or_new_terminal_wake",
     }
+    state.update(idle_governance)
     report = {
         "schema_version": "digital_life_persistent_process_report_v0",
         "run_id": run_id,
@@ -103,6 +109,7 @@ def write_persistent_process_artifacts(
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
     }
+    report.update(idle_governance)
     resident_governance_report = {
         "schema_version": "digital_life_resident_governance_report_v0",
         "run_id": run_id,
@@ -124,6 +131,7 @@ def write_persistent_process_artifacts(
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
     }
+    resident_governance_report.update(idle_governance)
 
     write_json(terminal_dir / "resident_governance_snapshot.json", resident_governance_snapshot)
     write_json(terminal_dir / "persistent_process_state.json", state)

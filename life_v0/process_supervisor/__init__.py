@@ -167,6 +167,7 @@ def run_digital_life_process(
         ),
     )
 
+    idle_strategy_state = _read_json_if_exists(terminal_dir / "idle_strategy_state.json")
     closeout = close_digital_life_process(
         run_id=run_id,
         generated_at=generated_at,
@@ -187,6 +188,7 @@ def run_digital_life_process(
             "current_mode", "restored_waiting_for_external_turn"
         ),
         idle_strategy_ref=IDLE_STRATEGY_STATE_REF,
+        idle_strategy_state=idle_strategy_state,
         last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
         last_dialogue_packet_ref=session_loop.safe_terminal_loop.get("last_dialogue_packet_ref"),
         source_doc_refs=SOURCE_DOC_REFS,
