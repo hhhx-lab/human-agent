@@ -19,12 +19,15 @@ def build_consistency_logic(
     action_candidate_set: dict[str, Any],
     observation_truth_review: dict[str, Any],
     boundary_audit: dict[str, Any],
+    responsibility_loop: dict[str, Any],
 ) -> dict[str, Any]:
     inconsistency_findings: list[str] = []
     if not action_candidate_set.get("candidate_actions"):
         inconsistency_findings.append("candidate_action_missing")
     if observation_truth_review.get("missing_fields"):
         inconsistency_findings.append("observation_truth_missing_fields")
+    if not responsibility_loop.get("responsibility_attribution_events"):
+        inconsistency_findings.append("responsibility_loop_missing_attribution")
     return {
         "schema_version": "consistency_logic_v0",
         "run_id": run_id,
@@ -34,17 +37,20 @@ def build_consistency_logic(
             "runtime/state/action/action_candidate_set.json",
             "runtime/state/validation/observation_truth_review.json",
             "runtime/state/validation/boundary_audit_state.json",
+            "runtime/state/action/responsibility_loop_state.json",
         ],
         "comparison_axes": [
             "observation_to_prediction",
             "prediction_to_action_candidate",
             "world_contact_to_boundary_audit",
+            "responsibility_loop_to_counterfactual_repair",
         ],
         "inconsistency_findings": inconsistency_findings,
         "severity": "guarded_low" if not inconsistency_findings else "guarded_medium",
         "repair_route_refs": [
             "runtime/state/validation/boundary_audit_state.json",
             "runtime/state/action/world_contact_gate_state.json",
+            "runtime/state/action/responsibility_loop_state.json",
         ],
         "source_doc_refs": SOURCE_DOC_REFS,
     }

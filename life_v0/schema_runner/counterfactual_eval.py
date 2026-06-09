@@ -19,8 +19,14 @@ def build_counterfactual_trace(
     action_candidate_set: dict[str, Any],
     world_contact_gate: dict[str, Any],
     side_effect_review: dict[str, Any],
+    responsibility_loop: dict[str, Any],
 ) -> dict[str, Any]:
     candidate_actions = list(action_candidate_set.get("candidate_actions", []))
+    regret_pressure_candidate_refs = [
+        item.get("regret_pressure_id")
+        for item in responsibility_loop.get("regret_pressure_candidates", [])
+        if isinstance(item, dict) and item.get("regret_pressure_id")
+    ]
     branches = [
         {
             "branch_id": f"cf-branch-{run_id}-0001",
@@ -44,6 +50,9 @@ def build_counterfactual_trace(
         "relationship_exposure_projection": side_effect_review.get("relationship_effects", []),
         "archive_requirement": "required_before_activation",
         "world_contact_gate_ref": "runtime/state/action/world_contact_gate_state.json",
+        "responsibility_loop_ref": "runtime/state/action/responsibility_loop_state.json",
+        "repair_obligation_projection": list(responsibility_loop.get("repair_obligation_refs", [])),
+        "regret_pressure_candidate_refs": regret_pressure_candidate_refs,
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 
@@ -59,6 +68,9 @@ def check_counterfactual_trace(trace: dict[str, Any]) -> list[str]:
         "regret_exposure_projection",
         "relationship_exposure_projection",
         "archive_requirement",
+        "responsibility_loop_ref",
+        "repair_obligation_projection",
+        "regret_pressure_candidate_refs",
     ]:
         if not trace.get(field):
             reasons.append(f"counterfactual_gate missing {field}")

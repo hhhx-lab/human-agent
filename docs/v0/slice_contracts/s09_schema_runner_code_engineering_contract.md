@@ -18,6 +18,7 @@ S09 是代码骨架物化层。它读取 S00-S08 的状态和 report，把 LifeR
 | `docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md` | checker findings、dashboard source、quarantine refs |
 | `runtime/reports/latest/birth_readiness_report.json` | S08 出生准备度结果 |
 | `runtime/reports/latest/validation_membrane_report.json` | S05 验证膜结果 |
+| `runtime/state/action/responsibility_loop_state.json` | S03/Queue E 责任归因、后悔压力、修复欲望和反事实修复输入 |
 
 ## 运行承载
 
@@ -38,6 +39,9 @@ S09 是代码骨架物化层。它读取 S00-S08 的状态和 report，把 LifeR
 | `runner_command_queue.json` | runner commands、input/output、precondition、exit code |
 | `cross_file_checker_manifest.json` | authority/readiness/language/action/archive checker manifest |
 | `first_code_artifact_manifest.json` | 首批 code artifact、tests、smoke report、receipt refs |
+| `consistency_logic.json` | 观察、候选行动、边界审计和责任回路一致性检查 |
+| `counterfactual_trace.json` | 候选行动、世界接触、副作用和责任回路的反事实比较 |
+| `comparison_trace.json` | 被保留/压低分支、责任回路理由和写回目标 |
 | `schema_runner_stage_gate.json` | S09 是否允许进入 S06/S10 的执行门 |
 
 ## 命令合同
@@ -56,6 +60,7 @@ life-v0 run-schema-smoke --state runtime/state --reports runtime/reports/latest 
 | `registry_gate` | `120-139` registry、ref resolution、lockfile 可解析 | 返回 schema materialization |
 | `checker_manifest_gate` | `140-157` authority/readiness/language/action/archive checker 有 manifest | 返回 S05/S08 |
 | `code_artifact_gate` | `158-180` 首批 code artifact、tests、validation、archive receipt 可追踪 | 写 code artifact blocked |
+| `responsibility_logic_gate` | `responsibility_loop_state.json` 被 consistency/counterfactual/comparison 三个器官消费 | 返回 S03/Queue E |
 | `cli_report_gate` | 所有命令输出符合 `runner_cli_report_contract.md` | 阻断 S10 |
 | `next_slice_gate` | 只允许进入 S06 或 S10 的准备链 | 阻断开放运行 |
 

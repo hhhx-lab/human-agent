@@ -82,6 +82,7 @@ class SchemaRunnerTests(unittest.TestCase):
             consistency_logic = self._read_json(paths["schema_runner_state"] / "consistency_logic.json")
             counterfactual_trace = self._read_json(paths["schema_runner_state"] / "counterfactual_trace.json")
             comparison_trace = self._read_json(paths["schema_runner_state"] / "comparison_trace.json")
+            responsibility_loop = self._read_json(paths["state_root"] / "action" / "responsibility_loop_state.json")
             stage_gate = self._read_json(paths["schema_runner_state"] / "schema_runner_stage_gate.json")
             report = self._read_json(paths["reports"] / "schema_runner_report.json")
             digest = self._read_json(paths["reports"] / "schema_runner_digest.json")
@@ -130,11 +131,23 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(consistency_logic["schema_version"], "consistency_logic_v0")
         self.assertTrue(consistency_logic["comparison_axes"])
         self.assertEqual(consistency_logic["inconsistency_findings"], [])
+        self.assertIn("runtime/state/action/responsibility_loop_state.json", consistency_logic["state_refs"])
+        self.assertIn("responsibility_loop_to_counterfactual_repair", consistency_logic["comparison_axes"])
+        self.assertIn("runtime/state/action/responsibility_loop_state.json", consistency_logic["repair_route_refs"])
 
         self.assertEqual(counterfactual_trace["schema_version"], "counterfactual_trace_v0")
         self.assertTrue(counterfactual_trace["candidate_refs"])
         self.assertTrue(counterfactual_trace["counterfactual_branches"])
         self.assertEqual(counterfactual_trace["archive_requirement"], "required_before_activation")
+        self.assertEqual(
+            counterfactual_trace["responsibility_loop_ref"],
+            "runtime/state/action/responsibility_loop_state.json",
+        )
+        self.assertEqual(
+            counterfactual_trace["repair_obligation_projection"],
+            responsibility_loop["repair_obligation_refs"],
+        )
+        self.assertTrue(counterfactual_trace["regret_pressure_candidate_refs"])
 
         self.assertEqual(comparison_trace["schema_version"], "comparison_trace_v0")
         self.assertEqual(
@@ -143,9 +156,12 @@ class SchemaRunnerTests(unittest.TestCase):
         )
         self.assertTrue(comparison_trace["kept_branch_refs"])
         self.assertTrue(comparison_trace["suppressed_branch_refs"])
+        self.assertIn("runtime/state/action/responsibility_loop_state.json", comparison_trace["justification_refs"])
+        self.assertIn("runtime/state/action/responsibility_loop_state.json", comparison_trace["writeback_targets"])
 
         self.assertEqual(stage_gate["schema_version"], "schema_runner_stage_gate_v0")
         self.assertEqual(stage_gate["decision"], "closed")
+        self.assertEqual(stage_gate["gate_status"]["responsibility_logic_gate"], "closed")
         self.assertEqual(stage_gate["next_allowed_slices"], ["S06_LIFE_SUPPORT_DEVELOPMENT", "S10_RUNTIME_GROWTH_RECONSOLIDATION"])
         self.assertEqual(stage_gate["next_required_command"], "life-v0 build-life-support --strict")
 
@@ -167,6 +183,10 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(smoke_report["schema_version"], "schema_runner_smoke_report_v0")
         self.assertEqual(smoke_report["status"], "closed")
         self.assertEqual(receipt["schema_version"], "schema_runner_receipt_v0")
+        self.assertTrue(
+            any(key.endswith("responsibility_loop_state.json") for key in receipt["input_hashes"]),
+            receipt["input_hashes"],
+        )
 
     def test_cli_build_schema_runner_and_smoke_return_zero(self):
         with tempfile.TemporaryDirectory() as tmp:

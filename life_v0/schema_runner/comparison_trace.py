@@ -21,6 +21,10 @@ def build_comparison_trace(
     branches = list(counterfactual_trace.get("counterfactual_branches", []))
     kept = [branches[0]["branch_id"]] if branches else []
     suppressed = [branch["branch_id"] for branch in branches[1:]]
+    responsibility_loop_ref = counterfactual_trace.get(
+        "responsibility_loop_ref",
+        "runtime/state/action/responsibility_loop_state.json",
+    )
     return {
         "schema_version": "comparison_trace_v0",
         "run_id": run_id,
@@ -32,10 +36,12 @@ def build_comparison_trace(
         "justification_refs": [
             "runtime/state/schema_runner/consistency_logic.json",
             *list(consistency_logic.get("repair_route_refs", []))[:1],
+            responsibility_loop_ref,
         ],
         "writeback_targets": [
             "runtime/state/action/go_nogo_state.json",
             "runtime/state/action/world_contact_gate_state.json",
+            responsibility_loop_ref,
         ],
         "source_doc_refs": SOURCE_DOC_REFS,
     }

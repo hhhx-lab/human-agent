@@ -77,6 +77,7 @@
 | `RelationTurnFrame` | `life_v0/terminal_turn/turn_transition.py` | `language`, `terminal_loop`, `process_supervisor` | `runtime/state/terminal/relation_turn_frame.json` | 当前关系身份、共同语言、承诺范围 |
 | `ExpressionPlan` | `life_v0/language/expression_monitor.py` | `terminal_loop`, `process_supervisor`, `membrane` | `runtime/state/language/expression_plan.json` | 外显语言前的表达风险与意图 |
 | `ActionCandidateSet` | `life_v0/membrane/candidate_arena.py` | `terminal_loop`, `shell_command`, `process_supervisor` | `runtime/state/action/action_candidate_set.json` | 候选行动、抑制、责任预期 |
+| `ResponsibilityLoopState` | `life_v0/membrane/responsibility_loop.py` | `schema_runner`, `language`, `growth`, `dream` | `runtime/state/action/responsibility_loop_state.json` | 责任归因、后悔压力、修复欲望、反事实修复 |
 | `DialogueWritebackBundle` | `life_v0/terminal_loop/loop_report.py` | `state_store`, `replay`, `archive`, `growth` | `runtime/reports/latest/dialogue_writeback_bundle.json` | 对话回写、叙事回写、关系推进 |
 | `IdleContinuityFrame` | `life_v0/process_supervisor/heartbeat.py` | `language`, `relationship`, `replay` | `runtime/state/terminal/idle_continuity_frame.json` | 等待态持续存在与轻量连续体 |
 | `ReplayCueBundle` | `life_v0/replay/replay_cues.py` | `dream`, `growth`, `archive` | `runtime/state/replay/replay_cue_bundle.json` | 回合残留、离线入口、反复回放 |

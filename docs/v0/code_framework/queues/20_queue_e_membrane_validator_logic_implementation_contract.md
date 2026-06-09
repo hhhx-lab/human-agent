@@ -304,6 +304,9 @@ Queue E 必须接到这些现有器官上：
 - `regret_exposure_projection`
 - `relationship_exposure_projection`
 - `archive_requirement`
+- `responsibility_loop_ref`
+- `repair_obligation_projection`
+- `regret_pressure_candidate_refs`
 
 ## J. 新增 `life_v0/schema_runner/comparison_trace.py`
 
@@ -319,6 +322,10 @@ Queue E 必须接到这些现有器官上：
 - `suppressed_branch_refs`
 - `justification_refs`
 - `writeback_targets`
+
+### 责任回路连接
+
+`comparison_trace.py` 的 `justification_refs` 与 `writeback_targets` 必须包含 `runtime/state/action/responsibility_loop_state.json`，使责任、后悔、修复不只停在 S03，而能进入 S09 的反事实比较和后续 S06/S10 成长/运行链。
 
 ## Queue E 对现有器官的改动合同
 

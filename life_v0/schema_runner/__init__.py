@@ -80,6 +80,11 @@ def run_schema_runner(
     )
     boundary_audit = _load_json(state_dir / "validation" / "boundary_audit_state.json", blocked_reasons, "boundary_audit_gate")
     side_effect_review = _load_json(state_dir / "action" / "side_effect_review.json", blocked_reasons, "side_effect_gate")
+    responsibility_loop = _load_json(
+        state_dir / "action" / "responsibility_loop_state.json",
+        blocked_reasons,
+        "responsibility_loop_gate",
+    )
 
     source_docs = _collect_s09_source_docs(doc_index)
     blocked_reasons.extend(_doc_blockers(doc_index, source_docs))
@@ -100,6 +105,7 @@ def run_schema_runner(
         action_candidate_set=action_candidate_set,
         observation_truth_review=observation_truth_review,
         boundary_audit=boundary_audit,
+        responsibility_loop=responsibility_loop,
     )
     counterfactual_trace = build_counterfactual_trace(
         run_id=run_id,
@@ -107,6 +113,7 @@ def run_schema_runner(
         action_candidate_set=action_candidate_set,
         world_contact_gate=world_contact_gate,
         side_effect_review=side_effect_review,
+        responsibility_loop=responsibility_loop,
     )
     comparison_trace = build_comparison_trace(
         run_id=run_id,
@@ -517,6 +524,7 @@ def _build_stage_gate(
         "registry_gate",
         "checker_manifest_gate",
         "code_artifact_gate",
+        "responsibility_logic_gate",
         "cli_report_gate",
         "next_slice_gate",
     ]
@@ -620,6 +628,7 @@ def _build_receipt(
         state_dir / "life_state.json",
         reports_dir / "birth_readiness_report.json",
         reports_dir / "validation_membrane_report.json",
+        state_dir / "action" / "responsibility_loop_state.json",
     ]:
         if path.exists():
             input_hashes[str(path)] = _sha256(path)
@@ -761,6 +770,7 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "registry_gate",
         "checker_manifest_gate",
         "code_artifact_gate",
+        "responsibility_logic_gate",
         "cli_report_gate",
         "next_slice_gate",
     ]
