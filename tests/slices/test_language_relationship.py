@@ -120,7 +120,9 @@ class LanguageRelationshipTests(unittest.TestCase):
         )
         self.assertTrue(expression_plan["expression_risk_flags"])
         self.assertEqual(expression_plan["delay_or_release_decision"], "delay_for_clarification")
-        self.assertEqual(expression_plan["repair_pressure"], 1)
+        self.assertGreaterEqual(expression_plan["repair_pressure"], 2)
+        self.assertGreaterEqual(expression_plan["responsibility_pressure"], 2)
+        self.assertIn("responsibility_repair_language_pressure_present", expression_plan["expression_risk_flags"])
         self.assertGreater(expression_plan["replay_cue_pressure"], 0)
         self.assertGreater(expression_plan["dream_integration_pressure"], 0)
         self.assertGreater(expression_plan["growth_candidate_pressure"], 0)
@@ -149,6 +151,13 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertEqual(repair_language["schema_version"], "commitment_repair_language_index_v0")
         self.assertEqual(repair_language["status"], "closed")
         self.assertTrue(repair_language["repair_language_refs"])
+        self.assertEqual(
+            repair_language["responsibility_loop_ref"],
+            "runtime/state/action/responsibility_loop_state.json",
+        )
+        self.assertTrue(repair_language["repair_obligation_refs"])
+        self.assertTrue(repair_language["regret_trace_refs"])
+        self.assertTrue(repair_language["responsibility_trace_refs"])
 
         self.assertEqual(dream_language_gate["schema_version"], "dream_report_language_gate_v0")
         self.assertEqual(dream_language_gate["dream_fact_gate"], "closed")
@@ -236,6 +245,10 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertEqual(
             receipt["semantic_map_ref"],
             "runtime/state/language/semantic_map_frame.json",
+        )
+        self.assertTrue(
+            any(key.endswith("responsibility_loop_state.json") for key in receipt["input_hashes"]),
+            receipt["input_hashes"],
         )
         self.assertTrue(
             any(ref.endswith("/runtime/state/language/expression_plan.json") for ref in receipt["output_refs"])

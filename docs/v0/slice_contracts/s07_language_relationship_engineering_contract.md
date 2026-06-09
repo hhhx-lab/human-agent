@@ -153,6 +153,8 @@ LanguagePerceptFrame
 - `delay_or_release_decision`
 - `offline_influence_refs`
 
+其中 `repair_pressure` 与 `responsibility_pressure` 不能只来自模糊语言风险；它们必须能够吸收 `runtime/state/action/responsibility_loop_state.json` 经 `commitment_repair_language_index.json` 回写的修复义务、后悔压力和责任归因。
+
 ### `RelationTurnFrame`
 
 至少要有：

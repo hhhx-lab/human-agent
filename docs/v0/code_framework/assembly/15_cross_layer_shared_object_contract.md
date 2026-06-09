@@ -75,7 +75,7 @@
 | `LifeContextFrame` | `life_v0/terminal_turn/restore_context.py` | `language`, `terminal_loop`, `process_supervisor` | `runtime/state/terminal/life_context_frame.json` | 回合上下文、自我/关系/记忆聚合 |
 | `PredictionWorkspaceFrame` | `life_v0/neural_core/workspace.py` | `language`, `membrane`, `growth` | `runtime/state/prediction/prediction_workspace_frame.json` | 预测、工作区、误差与候选解释 |
 | `RelationTurnFrame` | `life_v0/terminal_turn/turn_transition.py` | `language`, `terminal_loop`, `process_supervisor` | `runtime/state/terminal/relation_turn_frame.json` | 当前关系身份、共同语言、承诺范围 |
-| `ExpressionPlan` | `life_v0/language/expression_monitor.py` | `terminal_loop`, `process_supervisor`, `membrane` | `runtime/state/language/expression_plan.json` | 外显语言前的表达风险与意图 |
+| `ExpressionPlan` | `life_v0/language/expression_monitor.py` | `terminal_loop`, `process_supervisor`, `membrane` | `runtime/state/language/expression_plan.json` | 外显语言前的表达风险、修复压力与责任表达意图 |
 | `ActionCandidateSet` | `life_v0/membrane/candidate_arena.py` | `terminal_loop`, `shell_command`, `process_supervisor` | `runtime/state/action/action_candidate_set.json` | 候选行动、抑制、责任预期 |
 | `ResponsibilityLoopState` | `life_v0/membrane/responsibility_loop.py` | `schema_runner`, `language`, `growth`, `dream` | `runtime/state/action/responsibility_loop_state.json` | 责任归因、后悔压力、修复欲望、反事实修复 |
 | `DialogueWritebackBundle` | `life_v0/terminal_loop/loop_report.py` | `state_store`, `replay`, `archive`, `growth` | `runtime/reports/latest/dialogue_writeback_bundle.json` | 对话回写、叙事回写、关系推进 |

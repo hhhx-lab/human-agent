@@ -56,6 +56,8 @@ def build_expression_plan(
         expression_risk_flags.append("repair_pressure_present")
     if commitment_triggers:
         expression_risk_flags.append("commitment_trace_present")
+    if commitment_repair_index.get("repair_obligation_refs") or commitment_repair_index.get("responsibility_trace_refs"):
+        expression_risk_flags.append("responsibility_repair_language_pressure_present")
     if replay_cue_targets:
         expression_risk_flags.append("offline_replay_pressure_present")
     if dream_window_refs:
@@ -72,8 +74,9 @@ def build_expression_plan(
         "inner_speech_ref": "runtime/state/language/inner_speech_frame.json",
         "semantic_goal": semantic_map.get("semantic_focus"),
         "expression_risk_flags": expression_risk_flags,
-        "repair_pressure": len(repair_triggers),
-        "responsibility_pressure": len(commitment_repair_index.get("commitment_refs", [])),
+        "repair_pressure": len(repair_triggers) + len(commitment_repair_index.get("repair_obligation_refs", [])),
+        "responsibility_pressure": len(commitment_repair_index.get("commitment_refs", []))
+        + len(commitment_repair_index.get("responsibility_trace_refs", [])),
         "replay_cue_pressure": len(replay_cue_targets),
         "dream_integration_pressure": len(dream_window_refs),
         "growth_candidate_pressure": len(growth_candidates),

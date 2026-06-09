@@ -94,6 +94,11 @@ def run_build_language_relationship(
     life_state = _load_json(state_dir / "life_state.json", blocked_reasons, "life_state_root_gate")
     relationship_boundary = _load_json(membrane_dir / "relationship_subject_boundary.json", blocked_reasons, "relationship_subject_gate")
     responsibility_boundary = _load_json(membrane_dir / "responsibility_repair_boundary.json", blocked_reasons, "repair_language_gate")
+    responsibility_loop = _load_json(
+        state_dir / "action" / "responsibility_loop_state.json",
+        blocked_reasons,
+        "repair_language_gate",
+    )
     dream_fact_boundary = _load_json(membrane_dir / "dream_fact_boundary.json", blocked_reasons, "dream_language_gate")
     shadow_action_gate = _load_json(membrane_dir / "shadow_action_gate.json", blocked_reasons, "shadow_action_gate")
     membrane_report = _load_json(reports_dir / "life_membrane_report.json", blocked_reasons, "s03_report_gate")
@@ -115,7 +120,11 @@ def run_build_language_relationship(
 
     language_state = _build_language_relationship_state(run_id, generated_at, life_state)
     relationship_graph = _build_relationship_subject_graph(run_id, generated_at)
-    repair_language = _build_commitment_repair_language_index(run_id, generated_at)
+    repair_language = _build_commitment_repair_language_index(
+        run_id,
+        generated_at,
+        responsibility_loop_state=responsibility_loop,
+    )
     dream_language_gate = _build_dream_report_language_gate(run_id, generated_at, dream_fact_boundary)
     shadow_bridge = _build_language_action_bridge_shadow(run_id, generated_at, shadow_action_gate)
     shared_term_registry = _build_shared_term_registry(run_id, generated_at)
@@ -524,19 +533,18 @@ def _build_language_relationship_state(run_id: str, generated_at: str, life_stat
     )
 
 
-def _build_commitment_repair_language_index(run_id: str, generated_at: str) -> dict[str, Any]:
-    return {
-        "schema_version": "commitment_repair_language_index_v0",
-        "run_id": run_id,
-        "generated_at": generated_at,
-        "status": "closed",
-        "commitment_refs": ["commitment-v0-0001"],
-        "repair_language_refs": ["repair-language-v0-0001"],
-        "repair_obligation_refs": ["repair-obligation-v0-0001"],
-        "regret_trace_refs": ["runtime/state/life_state.json#regret_events"],
-        "responsibility_trace_refs": ["runtime/state/life_state.json#responsibility_bindings"],
-        "source_doc_refs": S07_SOURCE_DOCS,
-    }
+def _build_commitment_repair_language_index(
+    run_id: str,
+    generated_at: str,
+    *,
+    responsibility_loop_state: dict[str, Any],
+) -> dict[str, Any]:
+    return build_commitment_repair_language_index(
+        run_id=run_id,
+        generated_at=generated_at,
+        responsibility_loop_state=responsibility_loop_state,
+        source_doc_refs=S07_SOURCE_DOCS,
+    )
 
 
 def _build_dream_report_language_gate(run_id: str, generated_at: str, dream_fact_boundary: dict[str, Any]) -> dict[str, Any]:
@@ -795,6 +803,7 @@ def _build_receipt(
         neural_core_state_dir / "twelve_subject_systems.json",
         neural_core_state_dir / "neural_life_internal_bus.json",
         state_dir / "life_state.json",
+        state_dir / "action" / "responsibility_loop_state.json",
         membrane_dir / "relationship_subject_boundary.json",
         membrane_dir / "responsibility_repair_boundary.json",
         membrane_dir / "dream_fact_boundary.json",

@@ -18,6 +18,19 @@ class LanguageOrgansTests(unittest.TestCase):
         commitment_index = build_commitment_repair_language_index(
             run_id="organs-test",
             generated_at="2026-06-09T00:00:00+00:00",
+            responsibility_loop_state={
+                "repair_obligation_refs": [
+                    "runtime/state/membrane/responsibility_repair_boundary.json#repair_obligation",
+                    "repair-desire-001",
+                ],
+                "regret_pressure_candidates": [
+                    {"regret_pressure_id": "regret-pressure-001"},
+                    {"regret_pressure_id": "regret-pressure-002"},
+                ],
+                "responsibility_attribution_events": [
+                    {"responsibility_event_id": "responsibility-001"},
+                ],
+            },
             source_doc_refs=["docs/94_pain_regret_and_repair_signal_schema.md"],
         )
         narrative_trace = build_self_narrative_language_trace(
@@ -122,6 +135,12 @@ class LanguageOrgansTests(unittest.TestCase):
             },
             commitment_repair_index={
                 "commitment_refs": ["commitment-ref-001", "commitment-ref-002"],
+                "repair_obligation_refs": [
+                    "runtime/state/membrane/responsibility_repair_boundary.json#repair_obligation",
+                    "repair-desire-001",
+                ],
+                "regret_trace_refs": ["regret-pressure-001", "regret-pressure-002"],
+                "responsibility_trace_refs": ["responsibility-001"],
             },
             replay_cue_bundle={
                 "anti_forgetting_targets": [
@@ -147,9 +166,12 @@ class LanguageOrgansTests(unittest.TestCase):
         self.assertEqual(expression_plan["schema_version"], "expression_plan_v0")
         self.assertIn("repair_pressure_present", expression_plan["expression_risk_flags"])
         self.assertIn("commitment_trace_present", expression_plan["expression_risk_flags"])
+        self.assertIn("responsibility_repair_language_pressure_present", expression_plan["expression_risk_flags"])
         self.assertIn("offline_replay_pressure_present", expression_plan["expression_risk_flags"])
         self.assertIn("dream_integration_pressure_present", expression_plan["expression_risk_flags"])
         self.assertIn("growth_candidate_pressure_present", expression_plan["expression_risk_flags"])
+        self.assertEqual(expression_plan["responsibility_pressure"], 3)
+        self.assertEqual(expression_plan["repair_pressure"], 3)
         self.assertEqual(expression_plan["replay_cue_pressure"], 2)
         self.assertEqual(expression_plan["dream_integration_pressure"], 2)
         self.assertEqual(expression_plan["growth_candidate_pressure"], 2)

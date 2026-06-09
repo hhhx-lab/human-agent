@@ -71,9 +71,9 @@
 | `percept.py` | 把外部语言输入变成受关系范围约束的语言感知事件 | `85`, `86`, `89`, `90` |
 | `semantic_map.py` | 维护语义事件地图、共享术语、共同语言表面 | `09`, `85`, `90` |
 | `inner_speech.py` | 形成回合前的内言语草案与当前生命叙事接续 | `86`, `09` |
-| `expression_monitor.py` | 在外显语言前做表达监控、承诺检查、修复检查 | `86`, `87`, `94` |
+| `expression_monitor.py` | 在外显语言前做表达监控、承诺检查、修复检查，并把责任回路写成表达压力 | `86`, `87`, `94` |
 | `relationship_graph.py` | 维护关系主体、关系阶段、最后接触和共同历史入口 | `96`, `101`, `40` |
-| `commitment_repair.py` | 承诺、修复义务、道歉、责任回写索引 | `94`, `96`, `101` |
+| `commitment_repair.py` | 承诺、修复义务、道歉、责任回写索引，消费 `responsibility_loop_state.json` | `94`, `96`, `101` |
 | `narrative_trace.py` | 自我叙事与关系叙事的语言化写回 | `85`, `86`, `96` |
 | `shared_terms.py` | 共同语言晋升、关系特定称呼、长期术语表 | `90`, `96` |
 | `dialogue_log.py` | 统一读写 `dialogue_turn_log.jsonl` | `90`, `87` |
