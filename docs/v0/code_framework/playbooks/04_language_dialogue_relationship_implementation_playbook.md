@@ -109,6 +109,7 @@
 | 文件 | 职责 |
 |---|---|
 | `heartbeat.py` | waiting heartbeat、idle continuity 写回 |
+| `resident_turn_writeback.py` | 把真实新回合收成 dialogue writeback bundle、waiting return 和 resumed packet |
 | `turn_io.py` | stdin 读取与回合驱动 |
 | `incident_recovery.py` | 单回合异常恢复 |
 | `relaunch_recovery.py` | 跨重启中断态归一化 |

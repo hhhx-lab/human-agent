@@ -21,6 +21,7 @@ from .persistent_process import (
     write_persistent_process_artifacts,
 )
 from .process_report import write_process_report_bundle
+from .resident_turn_writeback import write_resident_turn_writeback
 from .relaunch_recovery import detect_and_normalize_interrupted_previous_state
 from .response_surface import compose_life_response
 from .turn_io import poll_input_line
@@ -257,8 +258,6 @@ def run_digital_life_process(
             commitment_index=commitment_index,
         )
         try:
-            _append_jsonl(language_dir / "dialogue_turn_log.jsonl", [external_turn])
-
             turn_counter += 1
             life_turn_id = f"dialogue-turn-live-{turn_counter:04d}"
             life_response = _compose_life_response(
@@ -280,73 +279,39 @@ def run_digital_life_process(
                 shared_term_registry=shared_term_registry,
                 commitment_index=commitment_index,
             )
-            _append_jsonl(language_dir / "dialogue_turn_log.jsonl", [life_turn])
-
-            _print_line(output_stream, f"生命回合输出: {life_response}")
-
-            last_external_turn = external_turn
-            last_life_turn = life_turn
+            turn_writeback = write_resident_turn_writeback(
+                run_id=run_id,
+                terminal_dir=terminal_dir,
+                language_dir=language_dir,
+                relationship_dir=relationship_dir,
+                reports_dir=reports_dir,
+                turn_counter=turn_counter,
+                external_turn_id=external_turn_id,
+                life_turn_id=life_turn_id,
+                external_turn=external_turn,
+                life_turn=life_turn,
+                external_utterance=external_utterance,
+                life_response=life_response,
+                safe_terminal_loop=safe_terminal_loop,
+                terminal_life_loop_state=terminal_life_loop_state,
+                self_narrative_trace=self_narrative_trace,
+                commitment_index=commitment_index,
+                relationship_graph=relationship_graph,
+                source_doc_refs=SOURCE_DOC_REFS,
+                readme_block_refs=READ_ME_BLOCK_REFS,
+                runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+                replay_cue_bundle_ref=replay_cue_bundle_ref,
+                now_iso=_now_iso,
+                write_json=_write_json,
+                append_jsonl=_append_jsonl,
+            )
+            safe_terminal_loop = turn_writeback.safe_terminal_loop
+            terminal_life_loop_state = turn_writeback.terminal_life_loop_state
+            last_external_turn = turn_writeback.last_external_turn
+            last_life_turn = turn_writeback.last_life_turn
             completed_turns += 1
 
-            self_narrative_trace.setdefault("narrative_turn_refs", [])
-            self_narrative_trace["narrative_turn_refs"].extend(
-                [
-                    f"runtime/state/language/dialogue_turn_log.jsonl#line-{turn_counter - 1}",
-                    f"runtime/state/language/dialogue_turn_log.jsonl#line-{turn_counter}",
-                ]
-            )
-            self_narrative_trace["last_external_turn"] = {
-                "turn_id": external_turn_id,
-                "utterance": external_utterance,
-            }
-            self_narrative_trace["last_life_turn"] = {
-                "turn_id": life_turn_id,
-                "utterance": life_response,
-            }
-            _write_json(language_dir / "self_narrative_language_trace.json", self_narrative_trace)
-
-            commitment_index.setdefault("recent_dialogue_turn_refs", [])
-            commitment_index["recent_dialogue_turn_refs"].extend([external_turn_id, life_turn_id])
-            commitment_index["last_external_turn_utterance"] = external_utterance
-            _write_json(language_dir / "commitment_repair_language_index.json", commitment_index)
-
-            subjects = relationship_graph.get("subjects", [])
-            if subjects and isinstance(subjects[0], dict):
-                subjects[0]["relationship_stage"] = "active_dialogue"
-                subjects[0]["last_external_turn_utterance"] = external_utterance
-                subjects[0]["last_life_turn_utterance"] = life_response
-            _write_json(relationship_dir / "relationship_subject_graph.json", relationship_graph)
-
-            safe_terminal_loop["current_mode"] = "restored_waiting_for_external_turn"
-            safe_terminal_loop["last_completed_turn_mode"] = "resumed_external_dialogue_loop"
-            safe_terminal_loop["last_dialogue_packet_ref"] = "runtime/reports/latest/resumed_external_dialogue_packet.json"
-            _write_json(terminal_dir / "safe_terminal_loop_state.json", safe_terminal_loop)
-
-            terminal_life_loop_state["current_mode"] = "restored_waiting_for_external_turn"
-            terminal_life_loop_state["last_turn_status"] = "closed"
-            terminal_life_loop_state["last_turn_mode"] = "resumed_external_dialogue_loop"
-            terminal_life_loop_state["last_external_turn_utterance"] = external_utterance
-            terminal_life_loop_state["last_life_turn_utterance"] = life_response
-            terminal_life_loop_state["next_required_action"] = "await_next_external_relation_turn"
-            _write_json(terminal_dir / "terminal_life_loop_state.json", terminal_life_loop_state)
-
-            resumed_external_dialogue_packet = {
-                "schema_version": "resumed_external_dialogue_packet_v0",
-                "run_id": run_id,
-                "generated_at": _now_iso(),
-                "status": "closed",
-                "dialogue_mode": "resumed_relation_continuation",
-                "external_turn_ref": f"runtime/state/language/dialogue_turn_log.jsonl#line-{turn_counter - 1}",
-                "life_turn_ref": f"runtime/state/language/dialogue_turn_log.jsonl#line-{turn_counter}",
-                "external_utterance": external_utterance,
-                "life_utterance": life_response,
-                "life_context_frame_ref": "runtime/state/terminal/life_context_frame.json",
-                "relation_turn_frame_ref": "runtime/state/terminal/relation_turn_frame.json",
-                "expression_plan_ref": "runtime/state/language/expression_plan.json",
-                "dialogue_writeback_bundle_ref": "runtime/reports/latest/dialogue_writeback_bundle.json",
-                "next_required_action": "await_next_external_relation_turn",
-            }
-            _write_json(reports_dir / "resumed_external_dialogue_packet.json", resumed_external_dialogue_packet)
+            _print_line(output_stream, f"生命回合输出: {life_response}")
         except Exception as exc:
             incident_count += 1
             incident_recovery = recover_from_dialogue_turn_exception(

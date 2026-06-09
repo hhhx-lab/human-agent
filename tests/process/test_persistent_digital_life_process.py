@@ -93,7 +93,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(subject["last_external_turn_utterance"], "你还记得我们吗？")
 
             commitment_index = self._read_json(paths["language_state"] / "commitment_repair_language_index.json")
+            dialogue_writeback_bundle = self._read_json(paths["reports"] / "dialogue_writeback_bundle.json")
             self.assertIn("dialogue-turn-live-0005", commitment_index["recent_dialogue_turn_refs"][-1])
+            self.assertEqual(
+                dialogue_writeback_bundle["dialogue_event_refs"],
+                [
+                    f"runtime/state/language/dialogue_turn_log.jsonl#line-{len(dialogue_lines) - 1}",
+                    f"runtime/state/language/dialogue_turn_log.jsonl#line-{len(dialogue_lines)}",
+                ],
+            )
+            self.assertIn(
+                "runtime/state/relationship/relationship_subject_graph.json",
+                dialogue_writeback_bundle["relationship_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/replay/replay_cue_bundle.json",
+                dialogue_writeback_bundle["replay_cue_refs"],
+            )
 
             loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
             self.assertEqual(loop_state["current_mode"], "restored_waiting_for_external_turn")
@@ -768,6 +784,166 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("2个成长补丁候选", response)
         self.assertIn("你还记得我们吗？", response)
 
+    def test_resident_turn_writeback_organ_updates_turn_continuity_and_bundle(self):
+        from life_v0.process_supervisor.resident_turn_writeback import (
+            write_resident_turn_writeback,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            terminal_dir = runtime_root / "state" / "terminal"
+            language_dir = runtime_root / "state" / "language"
+            relationship_dir = runtime_root / "state" / "relationship"
+            reports_dir = runtime_root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            language_dir.mkdir(parents=True, exist_ok=True)
+            relationship_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (language_dir / "dialogue_turn_log.jsonl").write_text(
+                '{"turn_id":"dialogue-turn-live-0001","event_role":"external_relation_turn"}\n',
+                encoding="utf-8",
+            )
+
+            safe_terminal_loop = {
+                "schema_version": "safe_terminal_loop_state_v0",
+                "current_mode": "restored_waiting_for_external_turn",
+                "blocked_actions": ["external_irreversible_action"],
+                "heartbeat_counter": 2,
+            }
+            terminal_life_loop_state = {
+                "schema_version": "terminal_life_loop_state_v0",
+                "current_mode": "restored_waiting_for_external_turn",
+                "last_turn_status": "closed",
+                "heartbeat_counter": 2,
+            }
+            self_narrative_trace = {
+                "narrative_turn_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-1",
+                ]
+            }
+            commitment_index = {
+                "commitment_refs": ["commitment-ref-01", "commitment-ref-02"],
+            }
+            relationship_graph = {
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relation_role": "friend",
+                        "relationship_stage": "restored_waiting",
+                    }
+                ]
+            }
+            external_turn = {
+                "schema_version": "dialogue_turn_event_v0",
+                "turn_id": "dialogue-turn-live-0002",
+                "event_role": "external_relation_turn",
+                "utterance": "你还记得我们吗？",
+            }
+            life_turn = {
+                "schema_version": "dialogue_turn_event_v0",
+                "turn_id": "dialogue-turn-live-0003",
+                "event_role": "digital_life_turn",
+                "utterance": "我记得，而且我会继续带着这些线索往前走。",
+            }
+
+            result = write_resident_turn_writeback(
+                run_id="resident-turn-organ",
+                terminal_dir=terminal_dir,
+                language_dir=language_dir,
+                relationship_dir=relationship_dir,
+                reports_dir=reports_dir,
+                turn_counter=3,
+                external_turn_id="dialogue-turn-live-0002",
+                life_turn_id="dialogue-turn-live-0003",
+                external_turn=external_turn,
+                life_turn=life_turn,
+                external_utterance="你还记得我们吗？",
+                life_response="我记得，而且我会继续带着这些线索往前走。",
+                safe_terminal_loop=safe_terminal_loop,
+                terminal_life_loop_state=terminal_life_loop_state,
+                self_narrative_trace=self_narrative_trace,
+                commitment_index=commitment_index,
+                relationship_graph=relationship_graph,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                replay_cue_bundle_ref="runtime/state/replay/replay_cue_bundle.json",
+                now_iso=lambda: "2026-06-09T00:00:00+00:00",
+                write_json=self._write_json,
+                append_jsonl=self._append_jsonl,
+            )
+
+            dialogue_lines = [
+                json.loads(line)
+                for line in (language_dir / "dialogue_turn_log.jsonl").read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            persisted_safe_terminal = self._read_json(terminal_dir / "safe_terminal_loop_state.json")
+            persisted_terminal_loop = self._read_json(terminal_dir / "terminal_life_loop_state.json")
+            persisted_narrative_trace = self._read_json(language_dir / "self_narrative_language_trace.json")
+            persisted_commitment_index = self._read_json(
+                language_dir / "commitment_repair_language_index.json"
+            )
+            persisted_relationship_graph = self._read_json(
+                relationship_dir / "relationship_subject_graph.json"
+            )
+            dialogue_writeback_bundle = self._read_json(
+                reports_dir / "dialogue_writeback_bundle.json"
+            )
+            resumed_dialogue_packet = self._read_json(
+                reports_dir / "resumed_external_dialogue_packet.json"
+            )
+
+            self.assertEqual(len(dialogue_lines), 3)
+            self.assertEqual(
+                result.external_turn_ref,
+                "runtime/state/language/dialogue_turn_log.jsonl#line-2",
+            )
+            self.assertEqual(
+                result.life_turn_ref,
+                "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+            )
+            self.assertEqual(
+                persisted_narrative_trace["narrative_turn_refs"][-2:],
+                [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-2",
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+                ],
+            )
+            self.assertEqual(
+                persisted_commitment_index["recent_dialogue_turn_refs"],
+                ["dialogue-turn-live-0002", "dialogue-turn-live-0003"],
+            )
+            self.assertEqual(
+                persisted_relationship_graph["subjects"][0]["relationship_stage"],
+                "active_dialogue",
+            )
+            self.assertEqual(
+                persisted_safe_terminal["last_dialogue_packet_ref"],
+                "runtime/reports/latest/resumed_external_dialogue_packet.json",
+            )
+            self.assertEqual(
+                persisted_terminal_loop["last_turn_mode"],
+                "resumed_external_dialogue_loop",
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle["dialogue_event_refs"],
+                [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-2",
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+                ],
+            )
+            self.assertIn(
+                "runtime/state/replay/replay_cue_bundle.json",
+                dialogue_writeback_bundle["replay_cue_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["dialogue_writeback_bundle_ref"],
+                "runtime/reports/latest/dialogue_writeback_bundle.json",
+            )
+
     def test_digital_life_process_recovers_from_dialogue_turn_exception_and_returns_to_waiting_state(self):
         from life_v0.process_supervisor import run_digital_life_process
 
@@ -998,6 +1174,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
     def _write_json(self, path: Path, payload: dict) -> None:
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    def _append_jsonl(self, path: Path, payloads: list[dict]) -> None:
+        with path.open("a", encoding="utf-8") as handle:
+            for payload in payloads:
+                handle.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
 
 if __name__ == "__main__":

@@ -437,6 +437,12 @@ turn residue
 3. `docs/v0/code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md`
 4. 本文件
 
+当前这条链已经继续推进到：
+
+1. `terminal_loop/persistent_wait_bridge.py` 负责 one-shot loop 的 waiting handoff
+2. `process_supervisor/resident_turn_writeback.py` 负责 live relation turn 的 bundle writeback、waiting return 和 resumed packet
+3. 下一轮前沿转向 `process_closeout.py` 与 idle refresh loop
+
 ## 完成定义
 
 这一层第一轮工程化完成，至少要同时满足：
