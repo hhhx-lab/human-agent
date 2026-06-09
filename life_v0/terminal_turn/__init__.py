@@ -6,14 +6,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .context_accumulation import build_context_accumulation_window, build_life_context_frame
+from .conversation_carryover import build_first_terminal_turn_carryover
 from .restore_context import (
     build_restored_session_envelope,
     build_safe_terminal_loop_state,
     load_first_terminal_restore_context,
 )
 from .turn_packet import write_first_terminal_turn_bundle
-from .turn_transition import build_relation_turn_frame, build_turn_transition_trace
 
 
 SOURCE_DOC_REFS = [
@@ -107,91 +106,13 @@ def run_first_terminal_turn(
         status=status,
     )
 
-    context_accumulation = build_context_accumulation_window(
-        run_id=run_id,
-        generated_at=generated_at,
-        status=status,
-        relation_subject=restored.relation_subject,
-        shared_term_surfaces=restored.shared_term_surfaces,
-        unresolved_commitments=restored.unresolved_commitments,
-        expression_monitor=restored.expression_monitor,
-        relation_scope_index=restored.relation_scope_index,
-        self_narrative_trace=restored.self_narrative_trace,
-        dialogue_turn_restore_refs=restored.dialogue_refs,
-        expression_monitor_restore_refs=list(
-            restored.return_packet.get("expression_monitor_restore_refs", [])
-        ),
-        relation_scope_restore_refs=list(
-            restored.return_packet.get("relation_scope_restore_refs", [])
-        ),
-        self_narrative_restore_refs=list(
-            restored.return_packet.get("self_narrative_restore_refs", [])
-        ),
-        language_percept_restore_refs=["runtime/state/language/language_percept_frame.json"],
-        semantic_map_restore_refs=["runtime/state/language/semantic_map_frame.json"],
-        semantic_focus=restored.semantic_map.get("semantic_focus"),
-        waiting_heartbeat_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
-        source_doc_refs=SOURCE_DOC_REFS,
-        readme_block_refs=READ_ME_BLOCK_REFS,
-        runtime_carrier_refs=RUNTIME_CARRIER_REFS,
-    )
-
-    life_context = build_life_context_frame(
-        run_id=run_id,
-        generated_at=generated_at,
-        status=status,
-        direction_refs=["runtime/state/direction/direction_lock.json"],
-        self_narrative_refs=list(restored.return_packet.get("self_narrative_restore_refs", [])),
-        relationship_refs=["runtime/state/relationship/relationship_subject_graph.json"],
-        autobiographical_memory_refs=list(
-            restored.life_state.get("memory_index", {}).get("relationship_memory_refs", [])
-            or ["runtime/state/life_state.json#memory_index.relationship_memory_refs"]
-        ),
-        shared_terms_refs=["runtime/state/language/shared_term_registry.json"],
-        commitment_refs=restored.unresolved_commitments,
-        body_state_refs=["runtime/state/body/body_resource_budget.json"],
-        prediction_seed_refs=["runtime/state/prediction/prediction_workspace_frame.json"],
-        source_doc_refs=SOURCE_DOC_REFS,
-        readme_block_refs=READ_ME_BLOCK_REFS,
-        runtime_carrier_refs=RUNTIME_CARRIER_REFS,
-    )
-
-    relation_turn = build_relation_turn_frame(
-        run_id=run_id,
-        generated_at=generated_at,
-        status=status,
-        relation_subject_ref=restored.relation_subject.get("relationship_id"),
-        relation_stage=restored.relation_subject.get("relationship_stage"),
-        shared_language_refs=list(
-            restored.relationship_graph.get("subjects", [{}])[0].get("shared_language_refs", [])
-        ),
-        commitment_truth_refs=restored.unresolved_commitments,
-        last_contact_refs=[restored.relation_subject.get("last_contact_ref")]
-        if restored.relation_subject.get("last_contact_ref")
-        else [],
-        boundary_state="restored_waiting_for_external_turn" if status == "closed" else "blocked",
-        source_doc_refs=SOURCE_DOC_REFS,
-        readme_block_refs=READ_ME_BLOCK_REFS,
-        runtime_carrier_refs=RUNTIME_CARRIER_REFS,
-    )
-
-    turn_transition = build_turn_transition_trace(
+    carryover = build_first_terminal_turn_carryover(
         run_id=run_id,
         generated_at=generated_at,
         status=status,
         turn_stage=turn_stage,
-        life_context_ref="runtime/state/terminal/life_context_frame.json",
-        relation_turn_ref="runtime/state/terminal/relation_turn_frame.json",
-        relation_scope_ref=restored.relation_subject.get("relationship_id"),
-        expression_monitor_restore_refs=list(
-            restored.return_packet.get("expression_monitor_restore_refs", [])
-        ),
-        unresolved_commitment_refs=restored.unresolved_commitments,
-        context_accumulation_restore_refs=["runtime/state/terminal/context_accumulation_window.json"],
-        language_percept_restore_refs=["runtime/state/language/language_percept_frame.json"],
-        semantic_map_restore_refs=["runtime/state/language/semantic_map_frame.json"],
-        waiting_heartbeat_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
         next_required_action=next_required_action,
+        restored=restored,
         source_doc_refs=SOURCE_DOC_REFS,
         readme_block_refs=READ_ME_BLOCK_REFS,
         runtime_carrier_refs=RUNTIME_CARRIER_REFS,
@@ -220,10 +141,10 @@ def run_first_terminal_turn(
             blocked_reasons=blocked_reasons,
             session_envelope=session_envelope,
             safe_terminal_loop=safe_terminal_loop,
-            life_context=life_context,
-            relation_turn=relation_turn,
-            context_accumulation=context_accumulation,
-            turn_transition=turn_transition,
+            life_context=carryover.life_context,
+            relation_turn=carryover.relation_turn,
+            context_accumulation=carryover.context_accumulation,
+            turn_transition=carryover.turn_transition,
             write_json=_write_json,
         )
     except OSError as exc:

@@ -516,6 +516,151 @@ class FirstTerminalTurnTests(unittest.TestCase):
             self.assertIn(str(reports_dir / "digital_life_birth_packet.json"), receipt["input_hashes"])
             self.assertIn(str(reports_dir / "first_terminal_turn_report.json"), receipt["output_hashes"])
 
+    def test_conversation_carryover_organ_builds_terminal_carryover_frames(self):
+        from life_v0.terminal_turn.conversation_carryover import (
+            build_first_terminal_turn_carryover,
+        )
+        from life_v0.terminal_turn.restore_context import FirstTerminalRestoreContext
+
+        restored = FirstTerminalRestoreContext(
+            birth_packet={},
+            birth_digest={},
+            return_packet={
+                "shared_term_restore_refs": [
+                    "runtime/state/language/shared_term_registry.json#shared-term-v0-0001"
+                ],
+                "expression_monitor_restore_refs": [
+                    "runtime/state/language/expression_monitor_state.json"
+                ],
+                "relation_scope_restore_refs": [
+                    "runtime/state/language/relation_scope_language_index.json#scope-v0-0001"
+                ],
+                "self_narrative_restore_refs": [
+                    "runtime/state/language/self_narrative_language_trace.json#line-1"
+                ],
+                "dialogue_turn_restore_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                ],
+            },
+            stage_explanation={},
+            direction_lock={},
+            life_state={
+                "memory_index": {
+                    "relationship_memory_refs": [
+                        "runtime/state/life_state.json#memory_index.relationship_memory_refs.0"
+                    ]
+                }
+            },
+            relationship_graph={
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relation_role": "friend",
+                        "relationship_stage": "pre_activation",
+                        "shared_language_refs": [
+                            "runtime/state/language/shared_term_registry.json#shared-term-v0-0001"
+                        ],
+                        "last_contact_ref": "runtime/state/relationship/contact-history-0001",
+                    }
+                ]
+            },
+            shared_term_registry={},
+            expression_monitor={
+                "monitor_dimensions": ["responsibility", "relationship"],
+            },
+            relation_scope_index={
+                "relation_scopes": [
+                    {
+                        "scope_id": "scope-v0-0001",
+                        "scope_label": "friendship_continuity",
+                        "scope_ref": "runtime/state/language/relation_scope_language_index.json#scope-v0-0001",
+                    }
+                ]
+            },
+            self_narrative_trace={
+                "narrative_turn_refs": [
+                    "runtime/state/language/self_narrative_language_trace.json#line-1"
+                ]
+            },
+            language_percept={
+                "schema_version": "language_percept_frame_v0",
+            },
+            semantic_map={
+                "schema_version": "semantic_map_frame_v0",
+                "semantic_focus": "repair_commitment_shared_language",
+            },
+            commitment_repair={
+                "commitment_refs": ["commitment-ref-01", "commitment-ref-02"]
+            },
+            dialogue_refs=["runtime/state/language/dialogue_turn_log.jsonl#line-1"],
+            relation_subject={
+                "relationship_id": "rel-v0-0001",
+                "relation_role": "friend",
+                "relationship_stage": "pre_activation",
+                "last_contact_ref": "runtime/state/relationship/contact-history-0001",
+            },
+            shared_term_surfaces=["旧约定", "我们的叫法"],
+            unresolved_commitments=["commitment-ref-01", "commitment-ref-02"],
+        )
+
+        carryover = build_first_terminal_turn_carryover(
+            run_id="carryover-organ",
+            generated_at="2026-06-09T00:00:00+00:00",
+            status="closed",
+            turn_stage="ready_for_resumed_external_dialogue",
+            next_required_action="await_external_relation_turn",
+            restored=restored,
+            source_doc_refs=["docs/v0/process_contracts/first_terminal_turn_engineering_contract.md"],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(
+            carryover.context_accumulation["schema_version"],
+            "context_accumulation_window_v0",
+        )
+        self.assertEqual(carryover.context_accumulation["current_relation_role"], "friend")
+        self.assertEqual(carryover.context_accumulation["shared_term_surfaces"], ["旧约定", "我们的叫法"])
+        self.assertEqual(
+            carryover.context_accumulation["active_scope_label"],
+            "friendship_continuity",
+        )
+        self.assertEqual(
+            carryover.context_accumulation["waiting_heartbeat_ref"],
+            "runtime/reports/latest/digital_life_waiting_heartbeat.json",
+        )
+
+        self.assertEqual(carryover.life_context["schema_version"], "life_context_frame_v0")
+        self.assertEqual(
+            carryover.life_context["autobiographical_memory_refs"],
+            ["runtime/state/life_state.json#memory_index.relationship_memory_refs.0"],
+        )
+        self.assertEqual(carryover.life_context["shared_terms_refs"], ["runtime/state/language/shared_term_registry.json"])
+
+        self.assertEqual(carryover.relation_turn["schema_version"], "relation_turn_frame_v0")
+        self.assertEqual(carryover.relation_turn["relation_stage"], "pre_activation")
+        self.assertEqual(
+            carryover.relation_turn["last_contact_refs"],
+            ["runtime/state/relationship/contact-history-0001"],
+        )
+
+        self.assertEqual(
+            carryover.turn_transition["schema_version"],
+            "turn_transition_trace_v0",
+        )
+        self.assertEqual(
+            carryover.turn_transition["to_stage"],
+            "ready_for_resumed_external_dialogue",
+        )
+        self.assertEqual(
+            carryover.turn_transition["next_required_action"],
+            "await_external_relation_turn",
+        )
+        self.assertEqual(
+            carryover.turn_transition["waiting_heartbeat_ref"],
+            "runtime/reports/latest/digital_life_waiting_heartbeat.json",
+        )
+
     def _runtime_paths(self, tmp_path: Path) -> dict[str, Path]:
         state_root = tmp_path / "runtime" / "state"
         runtime_root = tmp_path / "runtime"

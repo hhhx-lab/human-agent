@@ -84,12 +84,12 @@
 |---|---|
 | 理论文档 | `09`、`85-90`、`96`、`101`、`141`、`144`、`147`、`150`、`01f`、`01j`、`01u` |
 | 主包 | `life_v0/language/`、`life_v0/terminal_turn/`、`life_v0/terminal_loop/` |
-| 当前文件 | `percept.py`、`semantic_map.py`、`inner_speech.py`、`expression_monitor.py`、`shared_terms.py`、`relationship_graph.py`、`commitment_repair.py`、`dialogue_log.py`、`narrative_trace.py`、`relation_scope.py`、`dream_gate.py`、`action_shadow.py`、`context_accumulation.py`、`turn_transition.py`、`dialogue_writeback.py` |
+| 当前文件 | `percept.py`、`semantic_map.py`、`inner_speech.py`、`expression_monitor.py`、`shared_terms.py`、`relationship_graph.py`、`commitment_repair.py`、`dialogue_log.py`、`narrative_trace.py`、`relation_scope.py`、`dream_gate.py`、`action_shadow.py`、`context_accumulation.py`、`turn_transition.py`、`turn_packet.py`、`conversation_carryover.py`、`dialogue_writeback.py` |
 | 主要输入 | `LifeContextFrame`、`RelationTurnFrame`、`PredictionWorkspaceFrame`、`CoreAffectVector` |
 | 主要输出 | `RelationTurnFrame`、`ExpressionPlan`、language/relationship state、session envelope |
 | 必写 runtime | `runtime/state/language/*`、`runtime/state/relationship/*`、`session_envelope.json`、`context_accumulation_window.json`、`turn_transition_trace.json` |
 | 必守测试 | `tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py` |
-| 下一步 | 按 Queue A 第二波继续补 `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` |
+| 下一步 | 在 Queue A 第二波补 `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` 的同时，继续补 `dialogue_turn.py`，把首回合恢复正式接到外显语言释放 |
 
 ### 5. 记忆、自传与关系真值层
 
@@ -167,7 +167,7 @@
 | 主要输出 | waiting heartbeat、idle strategy state、persistent process state、persistent process report、process report、incident/relaunch recovery、长期连续体写回 |
 | 必写 runtime | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/persistent_process_state.json`、`digital_life_persistent_process_report.json`、`digital_life_process_report.json`、`digital_life_process_digest.json` |
 | 必守测试 | `tests/process/test_digital_life_shell_command.py`、`tests/process/test_digital_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py` |
-| 下一步 | `idle_strategy.py` 与 `persistent_process.py` 第一轮已落；继续把等待态从“最小可用”补成“真正长期存在”，并进一步拆出更厚的 resident supervision / conversation carryover / loop report |
+| 下一步 | `idle_strategy.py` 与 `persistent_process.py` 第一轮已落；继续把等待态从“最小可用”补成“真正长期存在”，并进一步拆出更厚的 resident supervision / terminal-loop continuity bridge / loop report |
 
 ## 当前最容易跑偏的三件事
 

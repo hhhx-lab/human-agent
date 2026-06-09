@@ -48,8 +48,8 @@ life-v0 first-terminal-turn --strict
 | 承载 | 路径 |
 |---|---|
 | 代码包 | `life_v0/terminal_turn/` |
-| 已落器官 | `restore_context.py`、`context_accumulation.py`、`turn_transition.py`、`turn_packet.py` |
-| 下一轮器官 | `dialogue_turn.py`、`conversation_carryover.py` |
+| 已落器官 | `restore_context.py`、`context_accumulation.py`、`turn_transition.py`、`turn_packet.py`、`conversation_carryover.py` |
+| 下一轮器官 | `dialogue_turn.py` |
 | 状态命名空间 | `runtime/state/terminal/` |
 | report | `runtime/reports/latest/first_terminal_turn_report.json` |
 | digest | `runtime/reports/latest/first_terminal_turn_digest.json` |
