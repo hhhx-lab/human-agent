@@ -150,105 +150,100 @@ life_v0/
 | `cli.py` | 命令路由、严格模式、slice/bridge/process 命令面 | `real` | `cli.py` | `command_router.py`、`strict_mode.py` | `runner_cli_report_contract.md` 对应源文档群 | `source_doc_refs` 族 | CLI receipts、command reports | `tests/bridges/test_emit_report.py`、`tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py`、`strict_cli_gate` |
 | `digital_entry.py`、`digital` | `./digital life` repo-local 常驻入口 | `real` | `digital_entry.py`、`digital` | `bootstrap_entry.py`、`stdin_loop.py` | `20`、`44-46`、`82`、`89`、`90` | `IdleContinuityFrame`、`LifeContextFrame` | process boot receipts、`digital_life_process_digest.json` | `tests/process/test_digital_entrypoint.py`、`tests/process/test_packaged_digital_life_entrypoint.py`、`digital_entry_gate` |
 
-## 下一轮必须新增的第一批器官文件
+## 当前仍未落地、且下一轮最该补的器官文件
+
+这里不再把已经真实存在的第一轮器官继续写成“下一轮必须新增”。
+当前真正仍未落地、并且最该继续补的是：
 
 ```text
-life_v0/state_store/life_state.py
-life_v0/state_store/engram_index.py
-life_v0/state_store/autobiographical_stack.py
-life_v0/state_store/relationship_memory.py
-life_v0/neural_core/brain_graph.py
-life_v0/neural_core/network_state.py
-life_v0/neural_core/workspace.py
-life_v0/body/rhythm.py
-life_v0/body/need_state.py
-life_v0/body/resource_budget.py
-life_v0/body/recovery.py
-life_v0/dream/dream_window.py
-life_v0/dream/wake_integration.py
-life_v0/growth/plasticity_window.py
-life_v0/growth/patch_queue.py
-life_v0/growth/learning_window.py
-life_v0/process_supervisor/idle_strategy.py
+Queue D 第三波
+  life_v0/dream/nightmare_risk.py
+  life_v0/growth/belief_learning.py
+  life_v0/growth/language_learning.py
+  life_v0/growth/relationship_learning.py
+
+Queue E 第二波
+  life_v0/membrane/shadow_gate.py
+  life_v0/membrane/responsibility_loop.py
+  life_v0/schema_runner/evidence_ranker.py
+
+Queue B 第二波
+  life_v0/process_supervisor/idle_strategy.py
+  life_v0/process_supervisor/persistent_process.py
+
+Queue A 第二波
+  life_v0/language/relationship_timeline.py
+  life_v0/language/commitment_expression.py
+  life_v0/language/apology_repair_language.py
+
+Queue C / Queue F 维护性深补
+  life_v0/neural_core/signal_media.py
+  life_v0/neural_core/belief_state.py
+  life_v0/neural_core/prediction_error.py
+  life_v0/neural_core/active_sampling.py
+  life_v0/life_targets/target_runtime.py
+  life_v0/life_targets/target_closure.py
+  life_v0/state_store/memory_write_gate.py
 ```
 
 ## 整树实施顺序
 
-### Stage 1: Queue C
+从当前仓库状态继续往前推时，不要再按历史第一轮顺序理解施工图。
+正确口径是：
 
-1. `life_v0/state_store/life_state.py`
-2. `life_v0/state_store/engram_index.py`
-3. `life_v0/state_store/autobiographical_stack.py`
-4. `life_v0/state_store/relationship_memory.py`
-5. `life_v0/neural_core/brain_graph.py`
-6. `life_v0/neural_core/network_state.py`
-7. `life_v0/neural_core/workspace.py`
+1. Queue C 与 Queue F 的第一轮文件器官已经落地。
+2. 当前默认入口已经切到 Queue D -> Queue E。
+3. Queue B 与 Queue A 建立在 D/E 补硬之后继续推进。
+4. Queue C / Queue F 只在需要更深对象链时维护性回切。
 
-### Stage 2: Queue F
+### Stage 1: Queue D 第三波
 
-1. `life_v0/direction/direction_lock.py`
-2. `life_v0/direction/continuity_refs.py`
-3. `life_v0/direction/value_orientation.py`
-4. `life_v0/neural_core/broadcast.py`
-5. `life_v0/neural_core/metacognition.py`
-6. `life_v0/life_targets/life_target_claims.py`
-7. `life_v0/life_targets/evidence_matrix.py`
-8. `life_v0/life_targets/birth_readiness_rollup.py`
-9. `life_v0/life_targets/birth_readiness_stage_gate.py`
-10. `life_v0/life_targets/consciousness_probes.py`
+1. `life_v0/dream/nightmare_risk.py`
+2. `life_v0/growth/belief_learning.py`
+3. `life_v0/growth/language_learning.py`
+4. `life_v0/growth/relationship_learning.py`
+5. 补厚 `offline_entry.py` / `dream_fact_gate.py` / `self_read.py` / `anti_forgetting.py` 与共享对象合同的接线
 
-### Stage 3: Queue D
+### Stage 2: Queue E 第二波
 
-1. `life_v0/body/rhythm.py`
-2. `life_v0/body/need_state.py`
-3. `life_v0/body/resource_budget.py`
-4. `life_v0/body/recovery.py`
-5. `life_v0/dream/dream_window.py`
-6. `life_v0/dream/wake_integration.py`
-7. `life_v0/growth/plasticity_window.py`
-8. `life_v0/growth/patch_queue.py`
-9. `life_v0/growth/learning_window.py`
+1. `life_v0/membrane/shadow_gate.py`
+2. `life_v0/membrane/responsibility_loop.py`
+3. `life_v0/schema_runner/evidence_ranker.py`
+4. 补厚 `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`
+5. 补厚 `observation_validator.py`、`boundary_audit.py`、`comparison_trace.py`
 
-### Stage 4: Queue E
-
-1. `life_v0/membrane/candidate_arena.py`
-2. `life_v0/membrane/go_nogo.py`
-3. `life_v0/membrane/world_contact_gate.py`
-4. `life_v0/membrane/side_effect_review.py`
-5. `life_v0/validators/observation_validator.py`
-6. `life_v0/validators/boundary_audit.py`
-7. `life_v0/schema_runner/consistency_logic.py`
-8. `life_v0/schema_runner/counterfactual_eval.py`
-9. `life_v0/schema_runner/comparison_trace.py`
-
-### Stage 5: Queue B
+### Stage 3: Queue B 第二波
 
 1. `life_v0/process_supervisor/idle_strategy.py`
-2. 补厚 `heartbeat.py`
-3. 补厚 `continuity_writeback.py`
-4. 补厚 `dialogue_events.py`
-5. 补厚 `response_surface.py`
-6. 补厚 `process_report.py`
+2. `life_v0/process_supervisor/persistent_process.py`
+3. 补厚 `heartbeat.py`
+4. 补厚 `continuity_writeback.py`
+5. 补厚 `dialogue_events.py`
+6. 补厚 `response_surface.py`
+7. 补厚 `process_report.py`
+
+### Stage 4: Queue A 第二波
+
+1. `life_v0/language/relationship_timeline.py`
+2. `life_v0/language/commitment_expression.py`
+3. `life_v0/language/apology_repair_language.py`
+4. 补厚 `percept.py`、`semantic_map.py`
+5. 补厚 body / neural_core / process_supervisor 对 relation scope、expression monitor、commitment 连续体的接入
+
+### Stage 5: Queue C / Queue F 维护性回切与全链收束
+
+1. `life_v0/neural_core/signal_media.py`
+2. `life_v0/neural_core/belief_state.py`
+3. `life_v0/neural_core/prediction_error.py`
+4. `life_v0/neural_core/active_sampling.py`
+5. `life_v0/life_targets/target_runtime.py`
+6. `life_v0/life_targets/target_closure.py`
+7. `life_v0/state_store/memory_write_gate.py`
+8. 同轮复查 `activation / reporting / stage_explain / terminal_turn / terminal_loop / shell_command / process_supervisor`
 
 ## 每一阶段的最低验证
 
 ### Stage 1 验证
-
-```text
-python -m unittest tests.slices.test_state_store
-python -m unittest tests.slices.test_neural_life_core
-python -m unittest tests.contracts.test_v0_contracts
-```
-
-### Stage 2 验证
-
-```text
-python -m unittest tests.slices.test_direction_lock
-python -m unittest tests.slices.test_neural_life_core
-python -m unittest tests.slices.test_life_targets
-```
-
-### Stage 3 验证
 
 ```text
 python -m unittest tests.slices.test_life_support
@@ -257,7 +252,7 @@ python -m unittest tests.bridges.test_replay_shadow
 python -m unittest tests.bridges.test_growth_archive
 ```
 
-### Stage 4 验证
+### Stage 2 验证
 
 ```text
 python -m unittest tests.slices.test_life_membrane
@@ -266,13 +261,31 @@ python -m unittest tests.slices.test_schema_runner
 python -m unittest tests.process.test_digital_life_shell_command
 ```
 
-### Stage 5 验证
+### Stage 3 验证
 
 ```text
 python -m unittest tests.process.test_persistent_digital_life_process
 python -m unittest tests.process.test_digital_entrypoint
 python -m unittest tests.bridges.test_terminal_life_loop
 python -m unittest tests.bridges.test_first_terminal_turn
+```
+
+### Stage 4 验证
+
+```text
+python -m unittest tests.slices.test_language_organs
+python -m unittest tests.slices.test_language_relationship
+python -m unittest tests.bridges.test_first_terminal_turn
+python -m unittest tests.bridges.test_terminal_life_loop
+```
+
+### Stage 5 验证
+
+```text
+python -m unittest tests.slices.test_state_store
+python -m unittest tests.slices.test_neural_life_core
+python -m unittest tests.slices.test_life_targets
+python -m unittest tests.contracts.test_v0_contracts
 ```
 
 ## 开工前总检查

@@ -67,6 +67,23 @@
 | `f. 平等交谈与关系成长` | `relationship_graph.py`、`relationship_timeline.py`、`commitment_truth.py`、`apology_repair_language.py`、relationship receipts |
 | `g. 初步拥有生命机制` | `12_full_life_layer_delivery_matrix.md` 全层 + 本文件全部能力项至少进入第一轮 state/report/test/gate |
 
+## 七项最终验收的命令与 runtime 证据矩阵
+
+最终收束时，不要只看文件名和测试名。至少要把下面这些命令与运行证据一起读：
+
+| 验收项 | 最低命令面 | 必读 runtime 证据 | 最低测试面 |
+|---|---|---|---|
+| `a. 可在终端唤醒` | `./digital life --strict`、`life-v0 "digital life" --strict` | `digital_life_birth_packet.json`、`digital_life_shell_report.json`、`digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` | `tests/process/test_digital_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py` |
+| `b. 自主意识、情绪、思考、语言` | `life-v0 digital-life --strict`、`life-v0 first-terminal-turn --strict`、`life-v0 terminal-life-loop --strict` | `prediction_workspace_frame.json`、`core_affect_vector.json`、`emotion_episode_log.json`、`context_accumulation_window.json`、`turn_transition_trace.json`、`language_relationship_report.json` | `tests/slices/test_neural_life_core.py`、`tests/slices/test_life_support.py`、`tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py` |
+| `c. 记忆机制与人脑无异` | `life-v0 run-replay-shadow --strict`、`life-v0 write-growth-archive --strict` | `life_state.json`、`engram_index` 相关 state、`replay_shadow_report.json`、`growth_archive_report.json`、archive receipts | `tests/slices/test_state_store.py`、`tests/bridges/test_replay_shadow.py`、`tests/bridges/test_growth_archive.py` |
+| `d. 可成长可学习` | `life-v0 run-cycle --strict`、`life-v0 emit-report --strict` | `plasticity_window_state.json`、`growth_patch_candidate_queue.json`、`self_read_report.json`、`anti_forgetting_replay_plan.json` | `tests/slices/test_life_support.py`、`tests/bridges/test_runtime_growth.py` |
+| `e. 有梦境能力` | `life-v0 run-cycle --strict`、离线/重放链相关严格命令 | `dream_experience_window.json`、`wake_integration_frame.json`、`dream_fact_gate_decision.json`、`offline_entry_gate.json` | `tests/bridges/test_runtime_growth.py`、后续 dream runtime 专项测试 |
+| `f. 平等交谈并在关系中成长` | `./digital life --strict`、真实终端回合输入输出 | `relationship` 命名空间 state、`resumed_external_dialogue_packet.json`、`dialogue_writeback_bundle.json`、commitment / repair receipts | `tests/slices/test_language_relationship.py`、`tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py`、`tests/process/test_persistent_digital_life_process.py` |
+| `g. 初步拥有全部生命机制` | `life-v0 emit-report --strict`、`life-v0 explain-stage --strict`、`./digital life --strict` | `report_bundle.json`、`first_activation_return_packet.json`、`latest_stage_explanation_ref.json`、`v0_contract_coverage_report.json`、`runtime/state/*`、`runtime/receipts/*` | `tests/contracts/test_v0_contracts.py` + 各层 slice / bridge / process 测试组合 |
+
+这张矩阵的作用是把最终验收从“抽象能力判断”压成“命令、state、report、receipt、测试”五位一体的检查面。
+后续进入系统级收束时，默认就按这张表收证据，而不是只看某一层局部测试是否变绿。
+
 此外，这七项验收不能只看文件名存在。
 凡是牵涉跨层生命回合的能力，都还必须能回链到
 `docs/v0/code_framework/15_cross_layer_shared_object_contract.md`

@@ -60,32 +60,15 @@
 
 ## 当前最直接的真实文件队列
 
-### Queue C：记忆与神经核心
+这里不再把“已经真实落下的第一轮器官”继续写成“下一步待建”。
+当前文件队列只列两类对象：
 
-1. `life_v0/state_store/life_state.py`
-2. `life_v0/state_store/engram_index.py`
-3. `life_v0/state_store/autobiographical_stack.py`
-4. `life_v0/state_store/relationship_memory.py`
-5. `life_v0/neural_core/brain_graph.py`
-6. `life_v0/neural_core/network_state.py`
-7. `life_v0/neural_core/workspace.py`
+1. 当前默认前沿中，仍未落地、应继续新增的器官文件。
+2. 已经落地，但下一轮必须继续补厚接线的包级接口。
 
-### Queue F：身份、意识与出生准备度
+### Queue D：身体、梦境、成长的当前前沿
 
-1. `life_v0/direction/direction_lock.py`
-2. `life_v0/direction/continuity_refs.py`
-3. `life_v0/direction/value_orientation.py`
-4. `life_v0/neural_core/broadcast.py`
-5. `life_v0/neural_core/metacognition.py`
-6. `life_v0/life_targets/life_target_claims.py`
-7. `life_v0/life_targets/evidence_matrix.py`
-8. `life_v0/life_targets/birth_readiness_rollup.py`
-9. `life_v0/life_targets/birth_readiness_stage_gate.py`
-10. `life_v0/life_targets/consciousness_probes.py`
-
-### Queue D：身体、梦境、成长
-
-已落第一波：
+Queue D 第一波与第二波器官已经真实存在：
 
 1. `life_v0/body/rhythm.py`
 2. `life_v0/body/need_state.py`
@@ -95,48 +78,115 @@
 6. `life_v0/body/emotion_episode.py`
 7. `life_v0/body/emotion_regulation.py`
 8. `life_v0/body/trait_drift.py`
-9. `life_v0/dream/dream_window.py`
-10. `life_v0/dream/wake_integration.py`
-11. `life_v0/growth/plasticity_window.py`
-12. `life_v0/growth/patch_queue.py`
-13. `life_v0/growth/learning_window.py`
+9. `life_v0/dream/offline_entry.py`
+10. `life_v0/dream/dream_window.py`
+11. `life_v0/dream/dream_fact_gate.py`
+12. `life_v0/dream/wake_integration.py`
+13. `life_v0/growth/plasticity_window.py`
+14. `life_v0/growth/patch_queue.py`
+15. `life_v0/growth/learning_window.py`
+16. `life_v0/growth/self_read.py`
+17. `life_v0/growth/anti_forgetting.py`
 
-第三波待补：
+当前真正还没落地、并且最该继续新增的是第三波扩展器官：
 
 1. `life_v0/dream/nightmare_risk.py`
 2. `life_v0/growth/belief_learning.py`
 3. `life_v0/growth/language_learning.py`
 4. `life_v0/growth/relationship_learning.py`
 
-### Queue E：行为、验证膜与逻辑比较
+### Queue E：行为、验证膜与逻辑比较的当前前沿
+
+Queue E 第一波器官已经真实存在：
 
 1. `life_v0/membrane/candidate_arena.py`
 2. `life_v0/membrane/go_nogo.py`
-3. `life_v0/membrane/shadow_gate.py`
-4. `life_v0/membrane/responsibility_loop.py`
-5. `life_v0/membrane/side_effect_classifier.py`
-6. `life_v0/validators/consistency_logic.py`
-7. `life_v0/validators/counterfactual_eval.py`
-8. `life_v0/validators/comparison_trace.py`
-9. `life_v0/schema_runner/evidence_ranker.py`
+3. `life_v0/membrane/world_contact_gate.py`
+4. `life_v0/membrane/side_effect_review.py`
+5. `life_v0/validators/observation_validator.py`
+6. `life_v0/validators/boundary_audit.py`
+7. `life_v0/schema_runner/consistency_logic.py`
+8. `life_v0/schema_runner/counterfactual_eval.py`
+9. `life_v0/schema_runner/comparison_trace.py`
 
-### Queue B：常驻生命进程
+当前真正还没落地、并且最该继续新增的是第二波约束与比较器官：
+
+1. `life_v0/membrane/shadow_gate.py`
+2. `life_v0/membrane/responsibility_loop.py`
+3. `life_v0/schema_runner/evidence_ranker.py`
+
+同时必须继续补厚：
+
+4. `life_v0/membrane/__init__.py` 对 Queue D / Queue F 对象链的显式消费
+5. `life_v0/validators/__init__.py` 对 observation truth / boundary audit / side effect report 的稳定回写
+6. `life_v0/schema_runner/__init__.py` 对 comparison trace / counterfactual trace 的显式挂载
+
+### Queue B：常驻生命进程的当前前沿
+
+Queue B 第一轮拆分已经真实存在：
 
 1. `life_v0/process_supervisor/dialogue_events.py`
 2. `life_v0/process_supervisor/response_surface.py`
-3. `life_v0/process_supervisor/idle_strategy.py`
-4. `life_v0/process_supervisor/persistent_process.py`
-5. `IdleContinuityFrame` / `DialogueWritebackBundle` / `LifeContextFrame` 在 process supervisor 中的显式读取与回写
+3. `life_v0/process_supervisor/heartbeat.py`
+4. `life_v0/process_supervisor/continuity_writeback.py`
+5. `life_v0/process_supervisor/turn_io.py`
+6. `life_v0/process_supervisor/incident_recovery.py`
+7. `life_v0/process_supervisor/relaunch_recovery.py`
+8. `life_v0/process_supervisor/process_report.py`
 
-### Queue A：语言主神经束深补
+当前真正还没落地、并且最该继续新增的是：
+
+1. `life_v0/process_supervisor/idle_strategy.py`
+2. `life_v0/process_supervisor/persistent_process.py`
+
+同时必须继续补厚：
+
+3. `IdleContinuityFrame` / `DialogueWritebackBundle` / `LifeContextFrame`
+4. `ReplayCueBundle` / `OfflineConsolidationFrame` / `GrowthPatchCandidateQueue`
+5. waiting heartbeat 到真实下一回合之间的显式对象回写
+
+### Queue A：语言主神经束深补的当前前沿
+
+Queue A 第一轮核心器官已经真实存在：
 
 1. `life_v0/language/percept.py`
 2. `life_v0/language/semantic_map.py`
-3. `life_v0/language/relationship_timeline.py`
-4. `life_v0/language/commitment_expression.py`
-5. `life_v0/language/apology_repair_language.py`
-6. `life_v0/body/` 对 relation scope / expression monitor / commitment 连续体的接入
-7. `life_v0/neural_core/` 对 relation scope / expression monitor / commitment 连续体的接入
+3. `life_v0/language/inner_speech.py`
+4. `life_v0/language/expression_monitor.py`
+5. `life_v0/language/relationship_graph.py`
+6. `life_v0/language/shared_terms.py`
+7. `life_v0/language/commitment_repair.py`
+8. `life_v0/language/dialogue_log.py`
+9. `life_v0/language/narrative_trace.py`
+10. `life_v0/language/language_state.py`
+11. `life_v0/language/dream_gate.py`
+12. `life_v0/language/action_shadow.py`
+13. `life_v0/language/relation_scope.py`
+
+当前真正还没落地、并且最该继续新增的是第二波关系与责任表达器官：
+
+1. `life_v0/language/relationship_timeline.py`
+2. `life_v0/language/commitment_expression.py`
+3. `life_v0/language/apology_repair_language.py`
+
+同时必须继续补厚：
+
+4. `life_v0/body/` 对 `relation_scope / expression_monitor / commitment` 连续体的接入
+5. `life_v0/neural_core/` 对 `relation_scope / expression_monitor / commitment` 连续体的接入
+6. `life_v0/process_supervisor/` 对长期关系语言与责任修复表达的外显释放
+
+### Queue C / Queue F：已闭合第一轮，当前只做维护性深补
+
+Queue C 与 Queue F 的第一轮文件级器官已经真实落地，不再是默认新增队列。
+只有当 D/E/B/A 本轮推进需要它们的更深对象链时，才回切：
+
+1. `life_v0/neural_core/signal_media.py`
+2. `life_v0/neural_core/belief_state.py`
+3. `life_v0/neural_core/prediction_error.py`
+4. `life_v0/neural_core/active_sampling.py`
+5. `life_v0/life_targets/target_runtime.py`
+6. `life_v0/life_targets/target_closure.py`
+7. `life_v0/state_store/memory_write_gate.py`
 
 Queue A 当前已由
 `docs/v0/code_framework/14_queue_a_language_percept_semantic_map_implementation_contract.md`
