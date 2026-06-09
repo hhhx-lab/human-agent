@@ -22,7 +22,7 @@ life-v0 emit-report --strict
 2. `life_v0/process_supervisor/resident_supervision.py` 已接住 restore shell 之后的常驻治理启动链
 3. `life_v0/process_supervisor/idle_strategy.py` 继续补厚 heartbeat 节律与 idle probe 治理
 4. `life_v0/process_supervisor/persistent_process.py` 继续补厚 resident supervision 的关闭态 artifact
-5. 下一前沿转向 `life_v0/process_supervisor/process_session_loop.py`
+5. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排；当前前沿转向后台 resident governance 与更高频节律
 
 ## 当前最关键的 runtime 证据
 
@@ -58,7 +58,7 @@ life-v0 emit-report --strict
 2. `tests/process/test_persistent_process_state.py`
 3. `tests/process/test_relaunch_continuity.py`
 4. `tests/process/test_live_turn_cycle.py`
-5. `tests/process/test_process_session_loop.py`
+5. `tests/process/test_process_session_loop.py`（若后续从 `test_persistent_digital_life_process.py` 独立拆出）
 
 当前实际已经由 `tests/process/test_persistent_digital_life_process.py` 吸收了
 `idle_strategy.py`、`persistent_process.py`、`resident_supervision.py` 与 `live_turn_cycle.py`

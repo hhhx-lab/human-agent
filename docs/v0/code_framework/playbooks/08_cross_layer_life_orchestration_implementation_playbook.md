@@ -445,7 +445,7 @@ turn residue
 4. `process_supervisor/resident_supervision.py` 负责 restore shell 之后的状态装载、relaunch normalization 和第一拍 waiting heartbeat 进入
 5. `process_supervisor/idle_refresh_loop.py` 负责 idle heartbeat refresh、stdin probe 和 exit/next-turn 判定
 6. `process_supervisor/live_turn_cycle.py` 负责真实新回合的 event -> response -> writeback -> incident recovery 生命周期
-7. 下一轮前沿转向 `process_session_loop.py`
+7. `process_session_loop.py` 已落；当前前沿转向后台 resident governance 与更高频 heartbeat 节律
 
 ## 完成定义
 

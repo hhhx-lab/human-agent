@@ -8,10 +8,10 @@ from pathlib import Path
 from typing import Any, TextIO
 
 from .dialogue_events import build_external_turn_event, build_life_turn_event
-from .idle_refresh_loop import wait_for_next_external_relation_turn
 from .idle_strategy import IDLE_STRATEGY_STATE_REF
 from .live_turn_cycle import run_live_turn_cycle
 from .process_closeout import close_digital_life_process
+from .process_session_loop import run_process_session_loop
 from .resident_supervision import bootstrap_resident_supervision
 from .response_surface import compose_life_response
 
@@ -123,102 +123,49 @@ def run_digital_life_process(
 
     _print_line(output_stream, "当前生命回合已恢复。输入新的关系性回合，使用 /exit 结束本次生命进程。")
 
-    turn_counter = _current_dialogue_turn_count(language_dir / "dialogue_turn_log.jsonl")
-    completed_turns = 0
-    incident_count = 0
-    last_external_turn: dict[str, Any] | None = None
-    last_life_turn: dict[str, Any] | None = None
-    last_incident_report_ref: str | None = None
-    last_recovery_report_ref: str | None = None
-
-    while True:
-        idle_refresh = wait_for_next_external_relation_turn(
-            input_stream=input_stream,
-            run_id=run_id,
-            generated_at=generated_at,
-            terminal_dir=terminal_dir,
-            reports_dir=reports_dir,
-            language_dir=language_dir,
-            relationship_dir=relationship_dir,
-            safe_terminal_loop=safe_terminal_loop,
-            terminal_life_loop_state=terminal_life_loop_state,
-            self_narrative_trace=self_narrative_trace,
-            commitment_index=commitment_index,
-            relationship_graph=relationship_graph,
-            source_doc_refs=SOURCE_DOC_REFS,
-            readme_block_refs=READ_ME_BLOCK_REFS,
-            runtime_carrier_refs=RUNTIME_CARRIER_REFS,
-            replay_cue_bundle=replay_cue_bundle,
-            offline_consolidation_frame=offline_consolidation_frame,
-            growth_patch_candidate_queue=growth_patch_candidate_queue,
-            replay_cue_bundle_ref=replay_cue_bundle_ref,
-            offline_consolidation_frame_ref=offline_consolidation_frame_ref,
-            growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
-            growth_patch_candidate_ids=growth_patch_candidate_ids,
-            replay_residue_ref_count=replay_residue_ref_count,
-            dream_window_ref_count=dream_window_ref_count,
-            growth_patch_candidate_count=growth_patch_candidate_count,
-            heartbeat_counter=heartbeat_counter,
-            now_iso=_now_iso,
-            write_json=_write_json,
-        )
-        heartbeat_counter = idle_refresh.heartbeat_counter
-        if idle_refresh.exit_reason is not None:
-            exit_reason = idle_refresh.exit_reason
-            break
-        external_utterance = idle_refresh.external_utterance
-        if external_utterance is None:
-            continue
-
-        live_turn_cycle = run_live_turn_cycle(
-            run_id=run_id,
-            incident_count=incident_count,
-            turn_counter=turn_counter,
-            external_utterance=external_utterance,
-            terminal_dir=terminal_dir,
-            language_dir=language_dir,
-            relationship_dir=relationship_dir,
-            reports_dir=reports_dir,
-            safe_terminal_loop=safe_terminal_loop,
-            terminal_life_loop_state=terminal_life_loop_state,
-            self_narrative_trace=self_narrative_trace,
-            commitment_index=commitment_index,
-            relationship_graph=relationship_graph,
-            shared_term_registry=shared_term_registry,
-            relation_turn_frame=relation_turn_frame,
-            expression_plan=expression_plan,
-            life_context_frame=life_context_frame,
-            replay_cue_bundle=replay_cue_bundle,
-            offline_consolidation_frame=offline_consolidation_frame,
-            growth_patch_candidate_queue=growth_patch_candidate_queue,
-            source_doc_refs=SOURCE_DOC_REFS,
-            readme_block_refs=READ_ME_BLOCK_REFS,
-            runtime_carrier_refs=RUNTIME_CARRIER_REFS,
-            replay_cue_bundle_ref=replay_cue_bundle_ref,
-            now_iso=_now_iso,
-            write_json=_write_json,
-            append_jsonl=_append_jsonl,
+    session_loop = run_process_session_loop(
+        run_id=run_id,
+        generated_at=generated_at,
+        input_stream=input_stream,
+        terminal_dir=terminal_dir,
+        language_dir=language_dir,
+        relationship_dir=relationship_dir,
+        reports_dir=reports_dir,
+        safe_terminal_loop=safe_terminal_loop,
+        terminal_life_loop_state=terminal_life_loop_state,
+        life_context_frame=life_context_frame,
+        relation_turn_frame=relation_turn_frame,
+        shared_term_registry=shared_term_registry,
+        self_narrative_trace=self_narrative_trace,
+        commitment_index=commitment_index,
+        expression_plan=expression_plan,
+        relationship_graph=relationship_graph,
+        replay_cue_bundle=replay_cue_bundle,
+        offline_consolidation_frame=offline_consolidation_frame,
+        growth_patch_candidate_queue=growth_patch_candidate_queue,
+        source_doc_refs=SOURCE_DOC_REFS,
+        readme_block_refs=READ_ME_BLOCK_REFS,
+        runtime_carrier_refs=RUNTIME_CARRIER_REFS,
+        replay_cue_bundle_ref=replay_cue_bundle_ref,
+        offline_consolidation_frame_ref=offline_consolidation_frame_ref,
+        growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
+        growth_patch_candidate_ids=growth_patch_candidate_ids,
+        replay_residue_ref_count=replay_residue_ref_count,
+        dream_window_ref_count=dream_window_ref_count,
+        growth_patch_candidate_count=growth_patch_candidate_count,
+        heartbeat_counter=heartbeat_counter,
+        turn_counter=_current_dialogue_turn_count(language_dir / "dialogue_turn_log.jsonl"),
+        emit_output=lambda text: _print_line(output_stream, text),
+        now_iso=_now_iso,
+        write_json=_write_json,
+        append_jsonl=_append_jsonl,
+        run_live_turn_cycle_fn=lambda **kwargs: run_live_turn_cycle(
+            **kwargs,
             build_external_turn_event_fn=_build_external_turn_event,
             compose_life_response_fn=_compose_life_response,
             build_life_turn_event_fn=_build_life_turn_event,
-        )
-        turn_counter = live_turn_cycle.turn_counter
-        completed_turns += live_turn_cycle.completed_turns_delta
-        incident_count += live_turn_cycle.incident_count_delta
-        safe_terminal_loop = live_turn_cycle.safe_terminal_loop
-        terminal_life_loop_state = live_turn_cycle.terminal_life_loop_state
-        if live_turn_cycle.last_external_turn is not None:
-            last_external_turn = live_turn_cycle.last_external_turn
-        if live_turn_cycle.last_life_turn is not None:
-            last_life_turn = live_turn_cycle.last_life_turn
-        if live_turn_cycle.last_incident_report_ref is not None:
-            last_incident_report_ref = live_turn_cycle.last_incident_report_ref
-        if live_turn_cycle.last_recovery_report_ref is not None:
-            last_recovery_report_ref = live_turn_cycle.last_recovery_report_ref
-
-        _print_line(output_stream, live_turn_cycle.emitted_output)
-        if live_turn_cycle.cycle_status == "incident_recovered":
-            continue
+        ),
+    )
 
     closeout = close_digital_life_process(
         run_id=run_id,
@@ -226,22 +173,22 @@ def run_digital_life_process(
         state_dir=state_dir,
         reports_dir=reports_dir,
         receipts_dir=receipts_dir,
-        heartbeat_counter=heartbeat_counter,
-        completed_turns=completed_turns,
-        incident_count=incident_count,
+        heartbeat_counter=session_loop.heartbeat_counter,
+        completed_turns=session_loop.completed_turns,
+        incident_count=session_loop.incident_count,
         relaunch_recovery_count=relaunch_recovery_count,
-        exit_reason=exit_reason,
-        last_incident_report_ref=last_incident_report_ref,
-        last_recovery_report_ref=last_recovery_report_ref,
+        exit_reason=session_loop.exit_reason,
+        last_incident_report_ref=session_loop.last_incident_report_ref,
+        last_recovery_report_ref=session_loop.last_recovery_report_ref,
         last_relaunch_recovery_report_ref=last_relaunch_recovery_report_ref,
-        last_external_turn=last_external_turn,
-        last_life_turn=last_life_turn,
-        waiting_mode=terminal_life_loop_state.get(
+        last_external_turn=session_loop.last_external_turn,
+        last_life_turn=session_loop.last_life_turn,
+        waiting_mode=session_loop.terminal_life_loop_state.get(
             "current_mode", "restored_waiting_for_external_turn"
         ),
         idle_strategy_ref=IDLE_STRATEGY_STATE_REF,
         last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
-        last_dialogue_packet_ref=safe_terminal_loop.get("last_dialogue_packet_ref"),
+        last_dialogue_packet_ref=session_loop.safe_terminal_loop.get("last_dialogue_packet_ref"),
         source_doc_refs=SOURCE_DOC_REFS,
         readme_block_refs=READ_ME_BLOCK_REFS,
         runtime_carrier_refs=RUNTIME_CARRIER_REFS,

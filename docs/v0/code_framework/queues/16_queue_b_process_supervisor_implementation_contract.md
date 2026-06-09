@@ -418,6 +418,55 @@ def run_live_turn_cycle(
 - `last_incident_report_ref`
 - `last_recovery_report_ref`
 
+## I. 新增 `life_v0/process_supervisor/process_session_loop.py`
+
+### 角色
+
+把 waiting heartbeat refresh、stdin probe、live turn dispatch、incident 后继续等待、显式退出收口，统一抽成 session 级编排器官。
+
+### 第一轮建议接口
+
+```python
+@dataclass(frozen=True)
+class ProcessSessionLoopResult:
+    ...
+
+
+def run_process_session_loop(
+    *,
+    run_id: str,
+    generated_at: str,
+    input_stream: TextIO,
+    heartbeat_counter: int,
+    turn_counter: int,
+    ...
+) -> ProcessSessionLoopResult:
+    ...
+```
+
+### 必须承担的功能
+
+1. 循环调用 `idle_refresh_loop.py`
+2. 对真实新外部回合调用 `live_turn_cycle.py`
+3. 汇总 `completed_turns`、`incident_count`、`heartbeat_counter`
+4. 保持最后一轮 external/life turn 与 incident/recovery refs
+5. 管理 incident recovered 后继续等待、显式退出后统一返回
+6. 把每轮输出通过上层注入的 emit hook 发回终端
+
+### 第一轮最低字段
+
+- `turn_counter`
+- `completed_turns`
+- `incident_count`
+- `heartbeat_counter`
+- `exit_reason`
+- `safe_terminal_loop`
+- `terminal_life_loop_state`
+- `last_external_turn`
+- `last_life_turn`
+- `last_incident_report_ref`
+- `last_recovery_report_ref`
+
 ## Queue B 对现有器官的改动合同
 
 ### `life_v0/process_supervisor/__init__.py`
@@ -428,10 +477,13 @@ def run_live_turn_cycle(
 - process closeout decision
 - idle refresh loop 调度
 - resident supervision bootstrap
-
-下一步继续外移：
-
 - process session loop 编排
+
+下一步继续补厚：
+
+- 更高频 heartbeat 节律
+- 后台 resident governance
+- 更厚的 idle strategy / closeout 治理
 
 ### `life_v0/digital_entry.py`
 
@@ -595,4 +647,5 @@ life_v0/process_supervisor/heartbeat.py
   -> response_surface.py
   -> process_report.py
   -> idle_strategy.py
+  -> process_session_loop.py
 ```

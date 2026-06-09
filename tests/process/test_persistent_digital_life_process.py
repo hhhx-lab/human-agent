@@ -733,6 +733,264 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(incident_report["error_type"], "RuntimeError")
             self.assertEqual(recovery_report["result"], "recovered_to_waiting_state")
 
+    def test_process_session_loop_organ_dispatches_live_turn_and_exits_cleanly(self):
+        from life_v0.process_supervisor.idle_refresh_loop import IdleRefreshLoopResult
+        from life_v0.process_supervisor.live_turn_cycle import LiveTurnCycleResult
+        from life_v0.process_supervisor.process_session_loop import run_process_session_loop
+
+        wait_heartbeat_inputs: list[int] = []
+        live_turn_inputs: list[tuple[int, int, str]] = []
+        emitted_outputs: list[str] = []
+        wait_results = [
+            IdleRefreshLoopResult(
+                heartbeat_counter=2,
+                external_utterance="你好",
+                exit_reason=None,
+            ),
+            IdleRefreshLoopResult(
+                heartbeat_counter=2,
+                external_utterance=None,
+                exit_reason="explicit_exit",
+            ),
+        ]
+
+        def fake_wait_for_next_external_relation_turn(**kwargs: object) -> IdleRefreshLoopResult:
+            wait_heartbeat_inputs.append(kwargs["heartbeat_counter"])  # type: ignore[arg-type]
+            return wait_results.pop(0)
+
+        def fake_run_live_turn_cycle(**kwargs: object) -> LiveTurnCycleResult:
+            live_turn_inputs.append(
+                (
+                    kwargs["incident_count"],  # type: ignore[arg-type]
+                    kwargs["turn_counter"],  # type: ignore[arg-type]
+                    kwargs["external_utterance"],  # type: ignore[arg-type]
+                )
+            )
+            return LiveTurnCycleResult(
+                turn_counter=3,
+                completed_turns_delta=1,
+                incident_count_delta=0,
+                cycle_status="completed",
+                emitted_output="生命回合输出: 你好，我记得。",
+                safe_terminal_loop={
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "last_dialogue_packet_ref": "runtime/reports/latest/resumed_external_dialogue_packet.json",
+                },
+                terminal_life_loop_state={
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "last_turn_mode": "resumed_external_dialogue_loop",
+                },
+                last_external_turn={"turn_id": "external-1"},
+                last_life_turn={"turn_id": "life-1"},
+                last_incident_report_ref=None,
+                last_recovery_report_ref=None,
+            )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            result = run_process_session_loop(
+                run_id="process-session-loop-organ",
+                generated_at="2026-06-10T00:00:00+00:00",
+                input_stream=StringIO(),
+                terminal_dir=runtime_root / "state" / "terminal",
+                language_dir=runtime_root / "state" / "language",
+                relationship_dir=runtime_root / "state" / "relationship",
+                reports_dir=runtime_root / "reports" / "latest",
+                safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+                terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+                life_context_frame={},
+                relation_turn_frame={},
+                shared_term_registry={},
+                self_narrative_trace={},
+                commitment_index={},
+                expression_plan={},
+                relationship_graph={},
+                replay_cue_bundle={},
+                offline_consolidation_frame={},
+                growth_patch_candidate_queue={},
+                source_doc_refs=[],
+                readme_block_refs=[],
+                runtime_carrier_refs=[],
+                replay_cue_bundle_ref=None,
+                offline_consolidation_frame_ref=None,
+                growth_patch_candidate_queue_ref=None,
+                growth_patch_candidate_ids=[],
+                replay_residue_ref_count=0,
+                dream_window_ref_count=0,
+                growth_patch_candidate_count=0,
+                heartbeat_counter=1,
+                turn_counter=1,
+                emit_output=emitted_outputs.append,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+                write_json=self._write_json,
+                append_jsonl=self._append_jsonl,
+                wait_for_next_external_relation_turn_fn=fake_wait_for_next_external_relation_turn,
+                run_live_turn_cycle_fn=fake_run_live_turn_cycle,
+            )
+
+        self.assertEqual(wait_heartbeat_inputs, [1, 2])
+        self.assertEqual(live_turn_inputs, [(0, 1, "你好")])
+        self.assertEqual(emitted_outputs, ["生命回合输出: 你好，我记得。"])
+        self.assertEqual(result.turn_counter, 3)
+        self.assertEqual(result.completed_turns, 1)
+        self.assertEqual(result.incident_count, 0)
+        self.assertEqual(result.heartbeat_counter, 2)
+        self.assertEqual(result.exit_reason, "explicit_exit")
+        self.assertEqual(
+            result.safe_terminal_loop["last_dialogue_packet_ref"],
+            "runtime/reports/latest/resumed_external_dialogue_packet.json",
+        )
+        self.assertEqual(result.last_external_turn, {"turn_id": "external-1"})
+        self.assertEqual(result.last_life_turn, {"turn_id": "life-1"})
+
+    def test_process_session_loop_organ_continues_after_incident_then_exits(self):
+        from life_v0.process_supervisor.idle_refresh_loop import IdleRefreshLoopResult
+        from life_v0.process_supervisor.live_turn_cycle import LiveTurnCycleResult
+        from life_v0.process_supervisor.process_session_loop import run_process_session_loop
+
+        live_turn_inputs: list[tuple[int, int, str]] = []
+        emitted_outputs: list[str] = []
+        wait_results = [
+            IdleRefreshLoopResult(
+                heartbeat_counter=1,
+                external_utterance="第一轮触发异常",
+                exit_reason=None,
+            ),
+            IdleRefreshLoopResult(
+                heartbeat_counter=1,
+                external_utterance="第二轮继续前进",
+                exit_reason=None,
+            ),
+            IdleRefreshLoopResult(
+                heartbeat_counter=1,
+                external_utterance=None,
+                exit_reason="explicit_exit",
+            ),
+        ]
+
+        def fake_wait_for_next_external_relation_turn(**_: object) -> IdleRefreshLoopResult:
+            return wait_results.pop(0)
+
+        def fake_run_live_turn_cycle(**kwargs: object) -> LiveTurnCycleResult:
+            live_turn_inputs.append(
+                (
+                    kwargs["incident_count"],  # type: ignore[arg-type]
+                    kwargs["turn_counter"],  # type: ignore[arg-type]
+                    kwargs["external_utterance"],  # type: ignore[arg-type]
+                )
+            )
+            if len(live_turn_inputs) == 1:
+                return LiveTurnCycleResult(
+                    turn_counter=3,
+                    completed_turns_delta=0,
+                    incident_count_delta=1,
+                    cycle_status="incident_recovered",
+                    emitted_output="生命回合处理出现异常，已执行异常恢复并回到等待态。",
+                    safe_terminal_loop={
+                        "current_mode": "restored_waiting_for_external_turn",
+                        "last_incident_status": "recovered_to_waiting_state",
+                    },
+                    terminal_life_loop_state={
+                        "current_mode": "restored_waiting_for_external_turn",
+                        "last_turn_status": "incident_recovered",
+                    },
+                    last_external_turn=None,
+                    last_life_turn=None,
+                    last_incident_report_ref="runtime/reports/latest/digital_life_process_incident_report.json",
+                    last_recovery_report_ref="runtime/reports/latest/digital_life_process_recovery_report.json",
+                )
+
+            return LiveTurnCycleResult(
+                turn_counter=5,
+                completed_turns_delta=1,
+                incident_count_delta=0,
+                cycle_status="completed",
+                emitted_output="生命回合输出: 第二轮继续前进。",
+                safe_terminal_loop={
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "last_dialogue_packet_ref": "runtime/reports/latest/resumed_external_dialogue_packet.json",
+                },
+                terminal_life_loop_state={
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "last_turn_mode": "resumed_external_dialogue_loop",
+                },
+                last_external_turn={"turn_id": "external-2"},
+                last_life_turn={"turn_id": "life-2"},
+                last_incident_report_ref=None,
+                last_recovery_report_ref=None,
+            )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            result = run_process_session_loop(
+                run_id="process-session-loop-incident",
+                generated_at="2026-06-10T00:00:00+00:00",
+                input_stream=StringIO(),
+                terminal_dir=runtime_root / "state" / "terminal",
+                language_dir=runtime_root / "state" / "language",
+                relationship_dir=runtime_root / "state" / "relationship",
+                reports_dir=runtime_root / "reports" / "latest",
+                safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+                terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+                life_context_frame={},
+                relation_turn_frame={},
+                shared_term_registry={},
+                self_narrative_trace={},
+                commitment_index={},
+                expression_plan={},
+                relationship_graph={},
+                replay_cue_bundle={},
+                offline_consolidation_frame={},
+                growth_patch_candidate_queue={},
+                source_doc_refs=[],
+                readme_block_refs=[],
+                runtime_carrier_refs=[],
+                replay_cue_bundle_ref=None,
+                offline_consolidation_frame_ref=None,
+                growth_patch_candidate_queue_ref=None,
+                growth_patch_candidate_ids=[],
+                replay_residue_ref_count=0,
+                dream_window_ref_count=0,
+                growth_patch_candidate_count=0,
+                heartbeat_counter=1,
+                turn_counter=1,
+                emit_output=emitted_outputs.append,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+                write_json=self._write_json,
+                append_jsonl=self._append_jsonl,
+                wait_for_next_external_relation_turn_fn=fake_wait_for_next_external_relation_turn,
+                run_live_turn_cycle_fn=fake_run_live_turn_cycle,
+            )
+
+        self.assertEqual(
+            live_turn_inputs,
+            [
+                (0, 1, "第一轮触发异常"),
+                (1, 3, "第二轮继续前进"),
+            ],
+        )
+        self.assertEqual(
+            emitted_outputs,
+            [
+                "生命回合处理出现异常，已执行异常恢复并回到等待态。",
+                "生命回合输出: 第二轮继续前进。",
+            ],
+        )
+        self.assertEqual(result.turn_counter, 5)
+        self.assertEqual(result.completed_turns, 1)
+        self.assertEqual(result.incident_count, 1)
+        self.assertEqual(result.exit_reason, "explicit_exit")
+        self.assertEqual(
+            result.last_incident_report_ref,
+            "runtime/reports/latest/digital_life_process_incident_report.json",
+        )
+        self.assertEqual(
+            result.last_recovery_report_ref,
+            "runtime/reports/latest/digital_life_process_recovery_report.json",
+        )
+        self.assertEqual(result.last_external_turn, {"turn_id": "external-2"})
+        self.assertEqual(result.last_life_turn, {"turn_id": "life-2"})
+
     def test_turn_io_poll_input_line_uses_custom_poll_hook_before_fileno(self):
         from life_v0.process_supervisor.turn_io import poll_input_line
 
