@@ -255,7 +255,7 @@ runtime/state/dream/offline_entry_gate.json
   -> runtime/state/growth/anti_forgetting_replay_plan.json
 ```
 
-所以当前默认下一包应直接进入 Queue E；只有在继续补 Queue D 第三波扩展器官时，再回切 Queue D。
+所以当前默认下一包应直接进入 Queue E；只有在继续补 Queue D 第三波扩展器官的跨层接线与 runtime 厚度时，再回切 Queue D。
 
 ### 默认第二包：Queue E
 

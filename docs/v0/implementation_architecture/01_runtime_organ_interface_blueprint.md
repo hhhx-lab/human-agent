@@ -115,7 +115,7 @@
 | 主要输出 | `ActionCandidateSet`、membrane reports、validation reports、schema runner reports |
 | 必写 runtime | `runtime/state/membrane/*`、`runtime/state/action/*`、`runtime/state/validation/*`、`runtime/state/schema_runner/*` |
 | 必守测试 | `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
-| 下一步 | 按 Queue E 第二波补 `shadow_gate.py`、`responsibility_loop.py`、`evidence_ranker.py` |
+| 下一步 | 按 Queue E 第二波补 `shadow_gate.py`、`evidence_ranker.py`，并把 `responsibility_loop.py` 继续补厚成稳定责任回路 |
 
 ### 7. 梦境、离线生命与醒后整合层
 
@@ -149,7 +149,7 @@
 |---|---|
 | 理论文档 | `10`、`91-101`、`143`、`146`、`149`、`152`、`171`、`174`、`01m` |
 | 主包 | `life_v0/life_targets/` |
-| 当前文件 | `target_runtime.py`、`target_closure.py`、`consciousness_probes.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py` |
+| 当前文件 | `life_target_claims.py`、`evidence_matrix.py`、`consciousness_probes.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py` |
 | 主要输入 | `PredictionWorkspaceFrame`、`GrowthPatchCandidate`、language/relationship state、membrane reports |
 | 主要输出 | life target claims、birth readiness rollup、consciousness probes |
 | 必写 runtime | `runtime/state/life_targets/*`、`birth_readiness_report.json` |

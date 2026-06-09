@@ -66,7 +66,7 @@ Python 3 作为主体语言
 | 目标 | 先补硬身体/梦境/成长与行为/验证/逻辑这两条中轴 |
 | 必读 | `18_queue_d_body_dream_growth_implementation_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md`、`06`、`08`、`09` playbooks |
 | 主包 | `body/`、`dream/`、`growth/`、`membrane/`、`validators/`、`schema_runner/` |
-| 关键待补文件 | `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py`、`shadow_gate.py`、`responsibility_loop.py`、`evidence_ranker.py` |
+| 当前前沿 | Queue D 扩展器官已落下 `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py`；当前仍待补的是 `shadow_gate.py`、`evidence_ranker.py`，以及把已落 `responsibility_loop.py` 继续从最小闭合补厚为稳定责任回路 |
 | 最低测试 | `tests/slices/test_life_support.py`、`tests/bridges/test_runtime_growth.py`、`tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
 | 完成定义 | 身体信号、梦境离线链、成长补丁、行为候选、责任回路、反事实比较都不再压在重型 `__init__.py` 里，并且有独立 state/report 证据 |
 
@@ -88,7 +88,8 @@ Python 3 作为主体语言
 | 目标 | 在主体底盘稳定后，回切神经核心、状态根和生命目标的更深对象链 |
 | 必读 | `17_queue_c_memory_neural_core_implementation_contract.md`、`21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`、`05`、`10` playbooks |
 | 主包 | `neural_core/`、`state_store/`、`life_targets/` |
-| 关键待补文件 | `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py`、`memory_write_gate.py`、`target_runtime.py`、`target_closure.py` |
+| 关键待补文件 | `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py`、`memory_write_gate.py` |
+| 已落但待补厚 | `direction_lock.py`、`continuity_refs.py`、`value_orientation.py`、`brain_graph.py`、`network_state.py`、`workspace.py`、`broadcast.py`、`metacognition.py`、`life_target_claims.py`、`evidence_matrix.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py`、`consciousness_probes.py` |
 | 最低测试 | `tests/slices/test_neural_life_core.py`、`tests/slices/test_state_store.py`、`tests/slices/test_life_targets.py` |
 | 完成定义 | 预测、意识、记忆写门、生命目标闭合进入更细对象链，而不是继续由总入口粘合 |
 

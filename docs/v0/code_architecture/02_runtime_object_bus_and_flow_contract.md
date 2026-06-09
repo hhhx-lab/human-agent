@@ -55,7 +55,7 @@
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
 | `ActionCandidateSet` | `membrane/candidate_arena.py` | `validators`、`schema_runner`、`shell_command`、`process_supervisor` | 已存在；继续补 `shadow_gate.py` | `runtime/state/action/*`、`world_contact_audit_report.json` |
-| `ResponsibilityLoopState` | `membrane/responsibility_loop.py` | `language/commitment_repair.py`、`state_store/commitment_truth.py`、`body/regret_signal.py` | 待进一步独立落地 | `runtime/state/action/responsibility_loop_state.json`、`pain_regret_repair_report.json` |
+| `ResponsibilityLoopState` | `membrane/responsibility_loop.py` | `language/commitment_repair.py`、`state_store/commitment_truth.py`、`body/regret_signal.py` | 已落第一轮；继续补厚跨层责任/后悔/修复接线 | `runtime/state/action/responsibility_loop_state.json`、`pain_regret_repair_report.json` |
 | `ObservationTruthFrame` | `validators/observation_validator.py` | `schema_runner/evidence_ranker.py`、`archive` | 已有第一轮；继续补 `cross_file_logic.py` | `runtime/state/validation/*`、validation reports |
 
 这条总线保证世界接触、责任、后悔和修复义务都进入真实生命链，而不是只在 action 之后补一句解释。

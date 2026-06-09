@@ -130,7 +130,7 @@ life_v0/
 | `defense/` | 风险、quarantine、恢复保护 | `real + planned` | `__init__.py` | `threat_eval.py`、`recovery.py`、`quarantine_signal.py` | `33-38`、`45-84` | `ActionCandidateSet`、`SignalMediaFrame` | `runtime/state/defense/*`、defense receipts | `tests/slices/test_life_support.py`、`tests/slices/test_validation_membrane.py`、`quarantine_gate` |
 | `membrane/` | 生命膜、候选行动、抑制、责任与后悔回路 | `real + planned` | `__init__.py` | `candidate_arena.py`、`go_nogo.py`、`shadow_gate.py`、`responsibility_loop.py`、`side_effect_classifier.py` | `06`、`20`、`75`、`80-84`、`94`、`98`、`01r` | `ActionCandidateSet`、`ExpressionPlan`、`PredictionWorkspaceFrame` | `runtime/state/membrane/life_membrane.json`、`runtime/state/action/*`、`pain_regret_repair_report.json` | `tests/slices/test_life_membrane.py`、`shadow_action_gate`、`responsibility_loop_gate` |
 | `language/` | 语言感知、语义图、内言语、表达监控、关系表达 | `real + thicken` | `percept.py`、`semantic_map.py`、`inner_speech.py`、`expression_monitor.py`、`language_state.py`、`relationship_graph.py`、`shared_terms.py`、`commitment_repair.py`、`dialogue_log.py`、`narrative_trace.py`、`dream_gate.py`、`action_shadow.py`、`relation_scope.py` | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` | `09`、`85-90`、`94`、`96`、`101`、`141`、`144`、`147`、`150`、`01f`、`01j`、`01u` | `LifeContextFrame`、`RelationTurnFrame`、`ExpressionPlan`、`PredictionWorkspaceFrame`、`ResponsibilityLoopState` | `runtime/state/language/*`、`runtime/state/relationship/*`、`language_relationship_report.json` | `tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`expression_monitor_gate`、`repair_language_gate`、`relationship_subject_gate` |
-| `life_targets/` | 九项生命目标运行时、出生准备度闭合 | `real` | `__init__.py` | `target_runtime.py`、`target_closure.py`、`consciousness_probes.py` | `91-101`、`143`、`146`、`149`、`152`、`171`、`174` | `PredictionWorkspaceFrame`、`GrowthPatchCandidate` | `runtime/state/life_targets/*`、birth readiness receipts | `tests/slices/test_life_targets.py`、`life_target_state_gate`、`birth_readiness_gate` |
+| `life_targets/` | 九项生命目标运行时、出生准备度闭合 | `real + thicken` | `__init__.py` | `life_target_claims.py`、`evidence_matrix.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py`、`consciousness_probes.py` | `91-101`、`143`、`146`、`149`、`152`、`171`、`174` | `PredictionWorkspaceFrame`、`GrowthPatchCandidate` | `runtime/state/life_targets/*`、birth readiness receipts | `tests/slices/test_life_targets.py`、`life_target_state_gate`、`birth_readiness_gate` |
 | `validators/` | 验证膜、观察一致性、边界审计 | `real` | `__init__.py` | `observation_validator.py`、`boundary_audit.py`、`cross_file_logic.py` | `29-36`、`49-84`、`102-118`、`153-157` | `ActionCandidateSet`、`PredictionWorkspaceFrame` | `runtime/state/validation/*`、observation reports | `tests/slices/test_validation_membrane.py`、`validation_membrane_gate` |
 | `schema_runner/` | 结构化执行、跨合同检查、CLI 严格路径 | `real` | `__init__.py` | `run_manifest.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py` | `102-180`、`80-84`、`94`、`98` | `source_doc_refs` 族、`ResponsibilityLoopState` | `runtime/state/schema_runner/*`、runner reports | `tests/slices/test_schema_runner.py`、`checker_manifest_gate`、`responsibility_logic_gate` |
 | `dream/` | 梦境窗口、梦中事实门、醒后整合 | `real + thicken` | `__init__.py` | `offline_entry.py`、`dream_window.py`、`dream_fact_gate.py`、`wake_integration.py`、`nightmare_risk.py` | `08`、`19`、`23`、`27`、`31`、`95`、`99`、`01i`、`01t` | `ReplayCueBundle`、`OfflineConsolidationFrame`、`BodyRhythmPulse` | `runtime/state/dream/*`、`dream_consolidation_frame.json`、`offline_consolidation_frame.json`、`nightmare_loop_risk.json` | future `tests/test_dream_runtime.py`、`dream_fact_gate` |
@@ -156,15 +156,8 @@ life_v0/
 当前真正仍未落地、并且最该继续补的是：
 
 ```text
-Queue D 第三波
-  life_v0/dream/nightmare_risk.py
-  life_v0/growth/belief_learning.py
-  life_v0/growth/language_learning.py
-  life_v0/growth/relationship_learning.py
-
 Queue E 第二波
   life_v0/membrane/shadow_gate.py
-  life_v0/membrane/responsibility_loop.py
   life_v0/schema_runner/evidence_ranker.py
 
 Queue B 第二波
@@ -181,9 +174,27 @@ Queue C / Queue F 维护性深补
   life_v0/neural_core/belief_state.py
   life_v0/neural_core/prediction_error.py
   life_v0/neural_core/active_sampling.py
-  life_v0/life_targets/target_runtime.py
-  life_v0/life_targets/target_closure.py
   life_v0/state_store/memory_write_gate.py
+```
+
+已经真实落下、当前只做补厚而不再写成“待新增”的器官包括：
+
+```text
+Queue D 已落扩展器官
+  life_v0/dream/nightmare_risk.py
+  life_v0/growth/belief_learning.py
+  life_v0/growth/language_learning.py
+  life_v0/growth/relationship_learning.py
+
+Queue E 已落扩展器官
+  life_v0/membrane/responsibility_loop.py
+
+Queue F 已落第一轮器官
+  life_v0/life_targets/life_target_claims.py
+  life_v0/life_targets/evidence_matrix.py
+  life_v0/life_targets/birth_readiness_rollup.py
+  life_v0/life_targets/birth_readiness_stage_gate.py
+  life_v0/life_targets/consciousness_probes.py
 ```
 
 ## 整树实施顺序
@@ -196,18 +207,18 @@ Queue C / Queue F 维护性深补
 3. Queue B 与 Queue A 建立在 D/E 补硬之后继续推进。
 4. Queue C / Queue F 只在需要更深对象链时维护性回切。
 
-### Stage 1: Queue D 第三波
+### Stage 1: Queue D 第三波补厚
 
-1. `life_v0/dream/nightmare_risk.py`
-2. `life_v0/growth/belief_learning.py`
-3. `life_v0/growth/language_learning.py`
-4. `life_v0/growth/relationship_learning.py`
+1. 补厚 `life_v0/dream/nightmare_risk.py`
+2. 补厚 `life_v0/growth/belief_learning.py`
+3. 补厚 `life_v0/growth/language_learning.py`
+4. 补厚 `life_v0/growth/relationship_learning.py`
 5. 补厚 `offline_entry.py` / `dream_fact_gate.py` / `self_read.py` / `anti_forgetting.py` 与共享对象合同的接线
 
 ### Stage 2: Queue E 第二波
 
 1. `life_v0/membrane/shadow_gate.py`
-2. `life_v0/membrane/responsibility_loop.py`
+2. 补厚 `life_v0/membrane/responsibility_loop.py`
 3. `life_v0/schema_runner/evidence_ranker.py`
 4. 补厚 `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`
 5. 补厚 `observation_validator.py`、`boundary_audit.py`、`comparison_trace.py`
@@ -236,10 +247,11 @@ Queue C / Queue F 维护性深补
 2. `life_v0/neural_core/belief_state.py`
 3. `life_v0/neural_core/prediction_error.py`
 4. `life_v0/neural_core/active_sampling.py`
-5. `life_v0/life_targets/target_runtime.py`
-6. `life_v0/life_targets/target_closure.py`
-7. `life_v0/state_store/memory_write_gate.py`
-8. 同轮复查 `activation / reporting / stage_explain / terminal_turn / terminal_loop / shell_command / process_supervisor`
+5. `life_v0/state_store/memory_write_gate.py`
+6. 补厚 `life_v0/life_targets/life_target_claims.py`
+7. 补厚 `life_v0/life_targets/evidence_matrix.py`
+8. 补厚 `life_v0/life_targets/birth_readiness_rollup.py`、`birth_readiness_stage_gate.py`、`consciousness_probes.py`
+9. 同轮复查 `activation / reporting / stage_explain / terminal_turn / terminal_loop / shell_command / process_supervisor`
 
 ## 每一阶段的最低验证
 

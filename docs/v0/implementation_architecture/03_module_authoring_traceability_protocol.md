@@ -148,8 +148,9 @@ def check_xxx(payload: dict[str, Any]) -> list[str]:
 ### Queue E
 
 - `life_v0/membrane/shadow_gate.py`
-- `life_v0/membrane/responsibility_loop.py`
 - `life_v0/schema_runner/evidence_ranker.py`
+
+`life_v0/membrane/responsibility_loop.py` 已经落地，当前把它视为“继续补厚的已落器官”，而不是默认新增文件。
 
 ### Queue B
 

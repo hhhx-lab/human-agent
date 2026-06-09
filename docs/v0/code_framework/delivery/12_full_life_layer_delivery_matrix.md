@@ -88,12 +88,17 @@ Queue D 第一波与第二波器官已经真实存在：
 16. `life_v0/growth/self_read.py`
 17. `life_v0/growth/anti_forgetting.py`
 
-当前真正还没落地、并且最该继续新增的是第三波扩展器官：
+Queue D 第三波扩展器官已经真实落地：
 
 1. `life_v0/dream/nightmare_risk.py`
 2. `life_v0/growth/belief_learning.py`
 3. `life_v0/growth/language_learning.py`
 4. `life_v0/growth/relationship_learning.py`
+
+当前 Queue D 的直接工作重点改为继续补厚：
+
+5. `life_v0/dream/__init__.py` 对 nightmare risk 的回写与优先级接线
+6. `life_v0/growth/__init__.py` 对 belief / language / relationship learning plans 的跨层消费
 
 ### Queue E：行为、验证膜与逻辑比较的当前前沿
 
@@ -112,8 +117,9 @@ Queue E 第一波器官已经真实存在：
 当前真正还没落地、并且最该继续新增的是第二波约束与比较器官：
 
 1. `life_v0/membrane/shadow_gate.py`
-2. `life_v0/membrane/responsibility_loop.py`
-3. `life_v0/schema_runner/evidence_ranker.py`
+2. `life_v0/schema_runner/evidence_ranker.py`
+
+`life_v0/membrane/responsibility_loop.py` 已经真实落地，当前要做的是继续补厚它与语言、状态根、痛苦/后悔回路的接线。
 
 同时必须继续补厚：
 
@@ -184,9 +190,15 @@ Queue C 与 Queue F 的第一轮文件级器官已经真实落地，不再是默
 2. `life_v0/neural_core/belief_state.py`
 3. `life_v0/neural_core/prediction_error.py`
 4. `life_v0/neural_core/active_sampling.py`
-5. `life_v0/life_targets/target_runtime.py`
-6. `life_v0/life_targets/target_closure.py`
-7. `life_v0/state_store/memory_write_gate.py`
+5. `life_v0/state_store/memory_write_gate.py`
+
+Queue F 当前真实已经由下列器官承载第一轮闭合，不再把旧文件名写成当前默认队列：
+
+6. `life_v0/life_targets/life_target_claims.py`
+7. `life_v0/life_targets/evidence_matrix.py`
+8. `life_v0/life_targets/birth_readiness_rollup.py`
+9. `life_v0/life_targets/birth_readiness_stage_gate.py`
+10. `life_v0/life_targets/consciousness_probes.py`
 
 Queue A 当前已由
 `docs/v0/code_framework/queues/14_queue_a_language_percept_semantic_map_implementation_contract.md`

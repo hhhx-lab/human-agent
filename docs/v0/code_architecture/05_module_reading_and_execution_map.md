@@ -129,7 +129,7 @@
 |---|---|
 | 先读理论 | `10`、`91-101`、`143`、`146`、`149`、`152`、`171`、`174`、`01m` |
 | 先读 v0 | `s08_life_target_runtimes_engineering_contract.md`、`birth_readiness_v0_contract.md`、`21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md` |
-| 打开代码 | `life_v0/life_targets/__init__.py`、`target_runtime.py`、`target_closure.py`、`consciousness_probes.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py` |
+| 打开代码 | `life_v0/life_targets/__init__.py`、`life_target_claims.py`、`evidence_matrix.py`、`consciousness_probes.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py` |
 | 确认证据 | `runtime/state/life_targets/*`、`birth_readiness_report.json` |
 | 最低测试 | `tests/slices/test_life_targets.py` |
 

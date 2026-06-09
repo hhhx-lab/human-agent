@@ -29,7 +29,7 @@
 |---|---:|---|
 | `life_v0/contracts/` | 1304 | 合同登记中心，暂不随意拆散，但要受新增文档同步更新约束 |
 | `life_v0/neural_core/` | 1155 | 主体工作区和预测链过重，后续继续做 Queue C 维护回切 |
-| `life_v0/growth/` | 1153 | 学习/成长/防遗忘链仍偏集中，继续按 Queue D 第三波拆 |
+| `life_v0/growth/` | 1153 | 学习/成长/防遗忘链仍偏集中，继续按 Queue D 第三波补厚与跨层回写拆 |
 | `life_v0/life_targets/` | 1100 | 目标闭合、证据矩阵、出生准备度仍需更细分 |
 | `life_v0/membrane/` | 1090 | 候选行动、抑制、责任回路、世界接触逻辑还需要继续抽出 |
 | `life_v0/language/` | 1081 | 已经完成第一轮器官化，但长期关系/修复表达仍未独立出来 |
@@ -168,6 +168,7 @@
 | 已落器官 | `life_target_claims.py`、`evidence_matrix.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py`、`consciousness_probes.py` |
 | 仍压在入口的职责 | target runtime orchestration、probe 汇总、claim/evidence 交叉验证 |
 | 下一轮优先拆分 | `target_runtime.py`、`target_closure.py`、`probe_battery.py` |
+| 当前说明 | `life_target_claims.py`、`evidence_matrix.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py`、`consciousness_probes.py` 已经落下，上一行列的是下一轮若继续细分 `__init__.py` 时的候选位 |
 | runtime 产物 | `runtime/state/life_targets/*`、`birth_readiness_report.json` |
 | 测试 / gate | `tests/slices/test_life_targets.py`、`birth_readiness_gate` |
 
