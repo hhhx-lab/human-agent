@@ -111,6 +111,7 @@ def write_process_report_bundle(
         exit_reason=exit_reason,
         relationship_resume_summary=relationship_resume_summary,
         trait_slow_variable_summary=trait_slow_variable_summary,
+        background_convergence_summary_ref=background_convergence_summary_ref,
         write_json=write_json,
     )
     report = {

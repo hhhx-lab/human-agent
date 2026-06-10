@@ -35,6 +35,7 @@ def write_resident_governance_explanation(
     write_json: Callable[[Path, dict[str, Any]], None],
     relationship_resume_summary: dict[str, Any] | None = None,
     trait_slow_variable_summary: dict[str, Any] | None = None,
+    background_convergence_summary_ref: str | None = None,
 ) -> ResidentGovernanceExplanationResult:
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
     background_carryover_generation = _int_or_zero(
@@ -47,6 +48,10 @@ def write_resident_governance_explanation(
     trait_summary = _trait_slow_variable_summary(
         idle_governance=idle_governance,
         trait_slow_variable_summary=trait_slow_variable_summary,
+    )
+    background_convergence = _background_convergence_summary(
+        idle_governance=idle_governance,
+        explicit_summary_ref=background_convergence_summary_ref,
     )
     dominant_driver_family = _dominant_driver_family(idle_governance)
     next_wake_expectation = _next_wake_expectation(
@@ -95,9 +100,34 @@ def write_resident_governance_explanation(
             else None
         ),
         "background_trait_slow_variable_summary": trait_summary,
+        "background_convergence_summary_ref": background_convergence.get(
+            "background_convergence_summary_ref"
+        ),
+        "background_convergence_state": background_convergence.get(
+            "background_convergence_state"
+        ),
+        "background_convergence_pressure_level": background_convergence.get(
+            "background_convergence_pressure_level"
+        ),
+        "background_convergence_attention_target": background_convergence.get(
+            "background_convergence_attention_target"
+        ),
+        "background_relationship_stage_continuity": background_convergence.get(
+            "background_relationship_stage_continuity"
+        ),
+        "background_trait_convergence_score": background_convergence.get(
+            "background_trait_convergence_score"
+        ),
+        "background_trait_convergence_summary": background_convergence.get(
+            "background_trait_convergence_summary",
+            {},
+        ),
         "background_resume_focus": _background_resume_focus(
             relationship_resume=relationship_resume,
             trait_slow_variable_summary=trait_summary,
+        ),
+        "background_convergence_focus": _background_convergence_focus(
+            background_convergence
         ),
         "queue_f_focus_active": bool(identity_consciousness_birth_refs),
         "identity_consciousness_birth_refs": identity_consciousness_birth_refs,
@@ -108,6 +138,7 @@ def write_resident_governance_explanation(
             background_carryover_generation=background_carryover_generation,
             relationship_resume=relationship_resume,
             trait_slow_variable_summary=trait_summary,
+            background_convergence=background_convergence,
             completed_turns=completed_turns,
             incident_count=incident_count,
             relaunch_recovery_count=relaunch_recovery_count,
@@ -126,6 +157,30 @@ def _dominant_driver_family(idle_governance: dict[str, Any]) -> str:
     background_mode = idle_governance.get("background_continuity_mode")
     attention_target = str(idle_governance.get("governance_attention_target") or "")
     attention_reason = str(idle_governance.get("governance_attention_reason") or "")
+    convergence_state = str(
+        idle_governance.get("background_convergence_state") or ""
+    )
+    convergence_pressure = str(
+        idle_governance.get("background_convergence_pressure_level") or ""
+    )
+    convergence_attention_target = str(
+        idle_governance.get("background_convergence_attention_target") or ""
+    )
+    convergence_target_active = (
+        attention_target
+        in {
+            "relationship_stage_convergence",
+            "trait_slow_variable_recalibration",
+            "trait_slow_variable_convergence",
+            "background_convergence_summary",
+        }
+        or (
+            bool(convergence_attention_target)
+            and attention_target == convergence_attention_target
+        )
+        or "background_convergence" in attention_reason
+        or "cross_process_continuity" in attention_reason
+    )
     birth_waiting_posture = str(idle_governance.get("birth_readiness_waiting_posture") or "")
     consciousness_waiting_posture = str(
         idle_governance.get("consciousness_waiting_posture") or ""
@@ -136,6 +191,18 @@ def _dominant_driver_family(idle_governance: dict[str, Any]) -> str:
     offline_pressure = str(idle_governance.get("offline_pressure_level") or "")
     repair_followup_required = bool(idle_governance.get("repair_followup_required"))
 
+    if convergence_target_active and (
+        convergence_pressure == "elevated"
+        or convergence_state == "recalibrating_cross_process_continuity"
+        or convergence_attention_target
+        in {"relationship_stage_convergence", "trait_slow_variable_recalibration"}
+    ):
+        return "background_convergence_recalibration"
+    if convergence_target_active and (
+        convergence_pressure == "present"
+        or convergence_attention_target == "trait_slow_variable_convergence"
+    ):
+        return "background_trait_convergence_hold"
     if background_mode and background_generation >= 2:
         return "persistent_background_continuity"
     if background_mode:
@@ -174,6 +241,10 @@ def _dominant_driver_family(idle_governance: dict[str, Any]) -> str:
 
 
 def _next_wake_expectation(*, dominant_driver_family: str) -> str:
+    if dominant_driver_family == "background_convergence_recalibration":
+        return "recalibrate_background_convergence_before_accepting_external_turn"
+    if dominant_driver_family == "background_trait_convergence_hold":
+        return "stabilize_background_trait_convergence_before_accepting_external_turn"
     if dominant_driver_family == "persistent_background_continuity":
         return "resume_background_lineage_before_accepting_external_turn"
     if dominant_driver_family == "background_continuity_carryover":
@@ -207,6 +278,7 @@ def _compose_continuity_story(
     background_carryover_generation: int,
     relationship_resume: dict[str, Any],
     trait_slow_variable_summary: dict[str, Any],
+    background_convergence: dict[str, Any],
     completed_turns: int,
     incident_count: int,
     relaunch_recovery_count: int,
@@ -255,6 +327,40 @@ def _compose_continuity_story(
                 f"{idle_governance['background_carryover_parent_run_id']}"
             )
         lines.append(lineage_line)
+    if background_convergence.get("background_convergence_state"):
+        convergence_line = (
+            "background convergence state is "
+            f"{background_convergence['background_convergence_state']}"
+        )
+        if background_convergence.get("background_convergence_pressure_level"):
+            convergence_line += (
+                " with pressure "
+                f"{background_convergence['background_convergence_pressure_level']}"
+            )
+        if background_convergence.get("background_convergence_attention_target"):
+            convergence_line += (
+                " and attention target "
+                f"{background_convergence['background_convergence_attention_target']}"
+            )
+        lines.append(convergence_line)
+    if background_convergence.get("background_relationship_stage_continuity"):
+        lines.append(
+            "background relationship stage continuity is "
+            f"{background_convergence['background_relationship_stage_continuity']}"
+        )
+    if background_convergence.get("background_trait_convergence_score") is not None:
+        lines.append(
+            "background trait convergence score is "
+            f"{background_convergence['background_trait_convergence_score']}"
+        )
+    convergence_trait_summary = background_convergence.get(
+        "background_trait_convergence_summary"
+    )
+    if isinstance(convergence_trait_summary, dict) and convergence_trait_summary:
+        lines.append(
+            "background convergence carries trait bands "
+            + ", ".join(_trait_convergence_band_pairs(convergence_trait_summary))
+        )
     if relationship_resume.get("relationship_stage"):
         relationship_line = (
             "background resume carries relationship stage "
@@ -366,6 +472,31 @@ def _trait_slow_variable_summary(
     return {}
 
 
+def _background_convergence_summary(
+    *,
+    idle_governance: dict[str, Any],
+    explicit_summary_ref: str | None,
+) -> dict[str, Any]:
+    summary: dict[str, Any] = {}
+    ref = explicit_summary_ref or idle_governance.get("background_convergence_summary_ref")
+    if ref:
+        summary["background_convergence_summary_ref"] = ref
+    for key in [
+        "background_convergence_state",
+        "background_convergence_pressure_level",
+        "background_convergence_attention_target",
+        "background_relationship_stage_continuity",
+        "background_trait_convergence_score",
+        "background_max_trait_delta_from_background",
+        "background_average_trait_delta_from_background",
+        "background_trait_convergence_summary",
+    ]:
+        value = idle_governance.get(key)
+        if value is not None and value != "" and value != []:
+            summary[key] = value
+    return summary
+
+
 def _background_resume_focus(
     *,
     relationship_resume: dict[str, Any],
@@ -383,3 +514,41 @@ def _background_resume_focus(
             trait_slow_variable_summary.keys()
         )
     return focus
+
+
+def _background_convergence_focus(
+    background_convergence: dict[str, Any],
+) -> dict[str, Any]:
+    focus: dict[str, Any] = {}
+    for key in [
+        "background_convergence_summary_ref",
+        "background_convergence_state",
+        "background_convergence_pressure_level",
+        "background_convergence_attention_target",
+        "background_relationship_stage_continuity",
+        "background_trait_convergence_score",
+    ]:
+        if background_convergence.get(key) is not None:
+            focus[key] = background_convergence[key]
+    trait_summary = background_convergence.get("background_trait_convergence_summary")
+    if isinstance(trait_summary, dict) and trait_summary:
+        focus["trait_convergence_names"] = sorted(trait_summary.keys())
+        focus["trait_convergence_bands"] = {
+            name: payload.get("convergence_band")
+            for name, payload in trait_summary.items()
+            if isinstance(payload, dict) and payload.get("convergence_band")
+        }
+    return focus
+
+
+def _trait_convergence_band_pairs(
+    trait_summary: dict[str, Any],
+) -> list[str]:
+    pairs: list[str] = []
+    for name in sorted(trait_summary.keys()):
+        payload = trait_summary[name]
+        if isinstance(payload, dict) and payload.get("convergence_band"):
+            pairs.append(f"{name}:{payload['convergence_band']}")
+        else:
+            pairs.append(str(name))
+    return pairs
