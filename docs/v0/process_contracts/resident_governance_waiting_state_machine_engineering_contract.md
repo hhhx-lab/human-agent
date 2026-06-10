@@ -101,6 +101,7 @@ resident_governance_state.json
 2. 常驻生命过程已经回到 waiting mode，但下一拍 heartbeat 还没有刷新，所以需要显式写出“回合后交接中的 resident governance”。
 3. 当前 resident governance 不能再只靠上一拍 `waiting_heartbeat_active` 间接代表，而要显式承认长期关系对象、Queue E 修复后果和这次回合留下的交接痕迹已经进入等待态治理。
 4. 这个相位不是关闭态，也不是下一拍 heartbeat 的替代物；它只负责把 live turn 结束和下一拍 waiting heartbeat 之间的空白段补成可追踪证据。
+5. 如果上一轮关闭态解释已经恢复进 `idle_strategy_state.json`，这个相位必须继续原样承接 `background_resident_governance_explanation_ref`、`background_governance_driver_family`、`background_next_wake_expectation` 与 `background_governance_explanation_story`，不能在真实回合结束时把“为什么这样等待”的跨唤醒解释断开。
 
 ## 后台连续体 carryover
 
@@ -505,7 +506,7 @@ process receipt 里，resident governance 必须进入：
 
 1. 给 waiting governance 增加更细的后台连续体节律分层，尤其是显式消费 `background_carryover_generation` 带来的 cadence 差异。
 2. 让 `resident_governance_state.json` 接住真正跨多次唤醒的后台存在治理，而不只停在 foreground terminal residency。
-3. 把 live turn 结束后重新回到 waiting governance 的相位切换显式写成单独器官，而不是只靠下一拍 heartbeat 间接体现。该项现在已由 `resident_governance_handoff.py` 第一轮落下，下一轮继续补厚其后台存在治理口径。
+3. 把 live turn 结束后重新回到 waiting governance 的相位切换显式写成单独器官，而不是只靠下一拍 heartbeat 间接体现。该项现在已由 `resident_governance_handoff.py` 第一轮落下，并已经要求 handoff 原样承接后台治理解释字段，使关闭态“为何如此等待”的解释不会在真实回合结束时断开。
 4. 继续让 background resume summary 不只用于 closeout/next bootstrap，还能进入更长时标的慢变量收敛与多次唤醒关系阶段稳定化。
 
 当前只要这四件事没有落下，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。

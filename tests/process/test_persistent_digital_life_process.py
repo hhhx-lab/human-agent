@@ -3038,6 +3038,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(supervision.exit_code, 0)
             assert supervision.context is not None
             context = supervision.context
+            idle_strategy_state = self._read_json(context.terminal_dir / "idle_strategy_state.json")
+            background_explanation_story = [
+                "上一轮关闭态解释要求下一次醒来保留背景等待理由。",
+                "本轮真实回合结束后仍需把这份解释带入 waiting handoff。",
+            ]
+            idle_strategy_state.update(
+                {
+                    "background_resident_governance_explanation_ref": "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                    "background_governance_driver_family": "background_history_stability_hold",
+                    "background_next_wake_expectation": "下一拍等待心跳必须继续携带后台治理解释。",
+                    "background_governance_explanation_story": background_explanation_story,
+                }
+            )
+            self._write_json(context.terminal_dir / "idle_strategy_state.json", idle_strategy_state)
 
             result = run_live_turn_cycle(
                 run_id="live-turn-cycle-organ",
@@ -3108,6 +3122,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_state["next_required_action"],
                 "refresh_waiting_heartbeat_before_next_external_turn",
+            )
+            self.assertEqual(
+                resident_governance_state["background_resident_governance_explanation_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+            )
+            self.assertEqual(
+                resident_governance_state["background_governance_driver_family"],
+                "background_history_stability_hold",
+            )
+            self.assertEqual(
+                resident_governance_state["background_next_wake_expectation"],
+                "下一拍等待心跳必须继续携带后台治理解释。",
+            )
+            self.assertEqual(
+                resident_governance_state["background_governance_explanation_story"],
+                background_explanation_story,
             )
             self.assertEqual(
                 resident_governance_state["dialogue_writeback_bundle_ref"],
