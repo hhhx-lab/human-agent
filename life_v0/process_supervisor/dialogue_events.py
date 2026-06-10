@@ -3,6 +3,15 @@ from __future__ import annotations
 from typing import Any
 
 
+BACKGROUND_TRAIT_CONVERGENCE_REF_KEYS = (
+    "background_resident_governance_state_ref",
+    "background_resident_governance_explanation_ref",
+    "background_trait_drift_monitor_ref",
+    "background_convergence_summary_ref",
+    "background_convergence_history_ref",
+)
+
+
 def build_external_turn_event(
     *,
     turn_id: str,
@@ -42,6 +51,7 @@ def build_life_turn_event(
     utterance: str,
     shared_term_registry: dict[str, Any],
     commitment_index: dict[str, Any],
+    terminal_life_loop_state: dict[str, Any] | None = None,
     responsibility_loop_state_ref: str | None = None,
     world_contact_summary_ref: str | None = None,
     pain_regret_repair_report_ref: str | None = None,
@@ -64,6 +74,7 @@ def build_life_turn_event(
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
     )
+    event.update(build_background_trait_convergence_payload(terminal_life_loop_state))
     return event
 
 
@@ -99,3 +110,44 @@ def _attach_queue_e_refs(
         event["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         event["membrane_guard_refs"] = membrane_guard_refs
+
+
+def build_background_trait_convergence_payload(
+    terminal_life_loop_state: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not terminal_life_loop_state:
+        return {}
+
+    payload: dict[str, Any] = {}
+    evidence_refs: list[str] = []
+    for key in BACKGROUND_TRAIT_CONVERGENCE_REF_KEYS:
+        value = terminal_life_loop_state.get(key)
+        if isinstance(value, str) and value:
+            payload[key] = value
+            evidence_refs.append(value)
+
+    focus = terminal_life_loop_state.get("background_trait_convergence_history_focus")
+    if isinstance(focus, str) and focus:
+        payload["background_trait_convergence_history_focus"] = focus
+
+    for key in (
+        "background_trait_convergence_unstable_names",
+        "background_trait_convergence_stable_names",
+    ):
+        names = _string_list(terminal_life_loop_state.get(key))
+        if names:
+            payload[key] = names
+
+    profile = terminal_life_loop_state.get("background_trait_convergence_history_profile")
+    if isinstance(profile, dict) and profile:
+        payload["background_trait_convergence_history_profile"] = dict(profile)
+
+    if evidence_refs:
+        payload["background_trait_convergence_evidence_refs"] = evidence_refs
+    return payload
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]

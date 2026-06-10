@@ -22,6 +22,7 @@ def build_dialogue_writeback_bundle(
     source_doc_refs: list[str],
     readme_block_refs: list[str],
     runtime_carrier_refs: list[str],
+    background_trait_convergence_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     return {
         "schema_version": "dialogue_writeback_bundle_v0",
@@ -40,6 +41,9 @@ def build_dialogue_writeback_bundle(
         "life_state_writeback_refs": life_state_writeback_refs,
         "replay_cue_refs": replay_cue_refs,
         "terminal_state_refs": terminal_state_refs,
+        "background_trait_convergence_refs": list(
+            background_trait_convergence_refs or []
+        ),
         "source_doc_refs": source_doc_refs,
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,

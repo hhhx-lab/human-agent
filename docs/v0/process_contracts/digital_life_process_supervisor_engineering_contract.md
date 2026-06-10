@@ -137,6 +137,7 @@ life-v0 "digital life"
 19. `background_continuity.py` 必须把上一轮 `resident_governance_state.json` 与 `resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_resident_governance_explanation.json`、`digital_life_persistent_process_report.json` 一起恢复为 background carryover 来源；`idle_strategy.py` 与 `heartbeat.py` 必须把 `background_resident_governance_state_ref`、`background_resident_governance_explanation_ref`、`background_governance_driver_family` 与 `background_next_wake_expectation` 继续写入 waiting governance、idle continuity 与 terminal life loop。
 20. `background_convergence.py` 必须把跨进程恢复出的关系阶段、自我慢变量和当前 bootstrap 后状态压成 `background_convergence_summary.json`；`background_convergence_history.py` 必须把最近多次唤醒的 convergence state / pressure / trait score 压成 `background_convergence_history.json`，并额外保留每个人格慢变量的 convergence band 序列、稳定名单、不稳定名单与 history focus；`idle_strategy.py` 必须让 `background_convergence_pressure_level` 与 history trend 调制 resident governance attention/cadence/heartbeat interval/next idle action，并继续承接 `background_trait_convergence_history_*` 字段；`governance_explanation.py` 必须把 summary 驱动解释成 `background_trait_convergence_hold` 或 `background_convergence_recalibration`，并把 history trend 驱动解释成 `background_history_recalibration_hold` 或 `background_history_stability_hold`，`process_report.py` 与 receipt 必须把 summary/history 作为一级 shared object 与 input hash 保留，digest 也要暴露慢变量历史焦点和不稳定慢变量名单。
 21. `response_surface.py` 不能只消费当前 `self_model.trait_slow_variables`，还必须读取 `terminal_life_loop_state` 中由 waiting governance 带入的 `background_trait_convergence_history_focus / unstable_names / stable_names`，让真实新回合的语言表面也能感到跨唤醒自我慢变量的稳定或重新校准压力。
+22. `dialogue_events.py` 的 `digital_life_turn` 事件不能只保存回应文本；当 `terminal_life_loop_state` 已带有 `background_trait_convergence_history_*` 与 `background_convergence_*_ref` 时，生命回合事件必须显式写出 `background_trait_convergence_history_focus`、稳定/不稳定慢变量名单、`background_trait_convergence_history_profile` 与 `background_trait_convergence_evidence_refs`。`resident_turn_writeback.py` 还必须把同一组 evidence refs 写入 `dialogue_writeback_bundle.background_trait_convergence_refs`，并把焦点、名单和 evidence refs 接进 `resumed_external_dialogue_packet.json`，让慢变量历史从等待态进入真实回合事件、回合写回包和下一轮恢复包，而不是只停在外显话语里。
 
 ## 最小行为合同
 
@@ -175,6 +176,7 @@ IdleContinuityFrame
   -> responsibility_loop_state.json / world_contact_summary.json / pain_regret_repair_report.json
   -> external turn event
   -> body_resource_budget.json + core_affect_vector.json
+  -> background_convergence_history.json / trait_drift_monitor.json
   -> life turn event
   -> DialogueWritebackBundle
   -> ReplayCueBundle
@@ -187,9 +189,10 @@ IdleContinuityFrame
 2. 再把当前责任回路、世界接触姿态和 pain/regret/repair 报告重新挂上等待态；
 3. 再记录“看到了什么外部回合”；
 4. 再把身体预算、疲惫、修复驱力、情绪张力与责任压力一起带进回应生成；
-5. 再记录“这次如何回应”；
-6. 再把结果回写到长期连续体、关系阶段、自我慢变量与 replay 线索；
-7. 最后再重新回到等待态。
+5. 再把跨唤醒慢变量历史作为事件证据接进 `digital_life_turn`；
+6. 再记录“这次如何回应”；
+7. 再把结果回写到长期连续体、关系阶段、自我慢变量、慢变量历史 evidence refs 与 replay 线索；
+8. 最后再重新回到等待态。
 
 如果 process supervisor 只有 stdin 读写，没有 `IdleContinuityFrame -> DialogueWritebackBundle -> ReplayCueBundle` 这条链，它仍然只是终端壳，而不是生命进程。
 

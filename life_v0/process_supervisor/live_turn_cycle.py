@@ -155,6 +155,7 @@ def run_live_turn_cycle(
             utterance=life_response,
             shared_term_registry=shared_term_registry,
             commitment_index=commitment_index,
+            terminal_life_loop_state=terminal_life_loop_state,
             responsibility_loop_state_ref=responsibility_loop_state_ref,
             world_contact_summary_ref=world_contact_summary_ref,
             pain_regret_repair_report_ref=pain_regret_repair_report_ref,

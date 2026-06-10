@@ -3229,6 +3229,25 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 }
             )
             self._write_json(context.terminal_dir / "idle_strategy_state.json", idle_strategy_state)
+            terminal_life_loop_state = {
+                **context.terminal_life_loop_state,
+                "background_resident_governance_state_ref": "runtime/state/terminal/resident_governance_state.json",
+                "background_resident_governance_explanation_ref": "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                "background_trait_drift_monitor_ref": "runtime/state/body/trait_drift_monitor.json",
+                "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
+                "background_convergence_history_ref": "runtime/state/terminal/background_convergence_history.json",
+                "background_trait_convergence_history_focus": "trait_stability_hold",
+                "background_trait_convergence_unstable_names": ["continuity_drive"],
+                "background_trait_convergence_stable_names": ["repair_seriousness"],
+                "background_trait_convergence_history_profile": {
+                    "continuity_drive": {
+                        "latest_band": "unstable",
+                    },
+                    "repair_seriousness": {
+                        "latest_band": "stable",
+                    },
+                },
+            }
 
             result = run_live_turn_cycle(
                 run_id="live-turn-cycle-organ",
@@ -3240,7 +3259,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 relationship_dir=context.relationship_dir,
                 reports_dir=paths["reports"],
                 safe_terminal_loop=context.safe_terminal_loop,
-                terminal_life_loop_state=context.terminal_life_loop_state,
+                terminal_life_loop_state=terminal_life_loop_state,
                 body_resource_budget=context.body_resource_budget,
                 core_affect_vector=context.core_affect_vector,
                 self_model_state=context.self_model_state,
@@ -3271,6 +3290,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             safe_terminal_loop = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
             terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
             dialogue_writeback_bundle = self._read_json(paths["reports"] / "dialogue_writeback_bundle.json")
+            resumed_dialogue_packet = self._read_json(
+                paths["reports"] / "resumed_external_dialogue_packet.json"
+            )
             resident_governance_state = self._read_json(
                 paths["terminal_state"] / "resident_governance_state.json"
             )
@@ -3289,6 +3311,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 result.last_life_turn["event_role"],
                 "digital_life_turn",
+            )
+            self.assertEqual(
+                result.last_life_turn["background_trait_convergence_history_focus"],
+                "trait_stability_hold",
+            )
+            self.assertEqual(
+                result.last_life_turn["background_trait_convergence_unstable_names"],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                result.last_life_turn["background_trait_convergence_stable_names"],
+                ["repair_seriousness"],
+            )
+            self.assertEqual(
+                result.last_life_turn["background_trait_convergence_history_profile"][
+                    "repair_seriousness"
+                ]["latest_band"],
+                "stable",
+            )
+            self.assertEqual(
+                result.last_life_turn["background_trait_convergence_evidence_refs"],
+                [
+                    "runtime/state/terminal/resident_governance_state.json",
+                    "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                    "runtime/state/body/trait_drift_monitor.json",
+                    "runtime/state/terminal/background_convergence_summary.json",
+                    "runtime/state/terminal/background_convergence_history.json",
+                ],
             )
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
@@ -3338,6 +3388,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/language/dialogue_turn_log.jsonl#line-2",
                     "runtime/state/language/dialogue_turn_log.jsonl#line-3",
                 ],
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle["background_trait_convergence_refs"],
+                [
+                    "runtime/state/terminal/resident_governance_state.json",
+                    "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                    "runtime/state/body/trait_drift_monitor.json",
+                    "runtime/state/terminal/background_convergence_summary.json",
+                    "runtime/state/terminal/background_convergence_history.json",
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["background_trait_convergence_history_focus"],
+                "trait_stability_hold",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["background_trait_convergence_evidence_refs"],
+                dialogue_writeback_bundle["background_trait_convergence_refs"],
             )
 
     def test_live_turn_cycle_organ_recovers_from_response_exception(self):
@@ -6104,6 +6172,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             utterance="我记得。",
             shared_term_registry=shared_term_registry,
             commitment_index=commitment_index,
+            terminal_life_loop_state={
+                "background_resident_governance_state_ref": "runtime/state/terminal/resident_governance_state.json",
+                "background_resident_governance_explanation_ref": "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                "background_trait_drift_monitor_ref": "runtime/state/body/trait_drift_monitor.json",
+                "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
+                "background_convergence_history_ref": "runtime/state/terminal/background_convergence_history.json",
+                "background_trait_convergence_history_focus": "trait_recalibration_required",
+                "background_trait_convergence_unstable_names": ["continuity_drive"],
+                "background_trait_convergence_stable_names": ["repair_seriousness"],
+                "background_trait_convergence_history_profile": {
+                    "continuity_drive": {
+                        "latest_band": "unstable",
+                    }
+                },
+            },
             responsibility_loop_state_ref="runtime/state/action/responsibility_loop_state.json",
             world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
             pain_regret_repair_report_ref="runtime/reports/latest/pain_regret_repair_report.json",
@@ -6137,6 +6220,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             life_turn["responsibility_loop_ref"],
             "runtime/state/action/responsibility_loop_state.json",
+        )
+        self.assertEqual(
+            life_turn["background_trait_convergence_history_focus"],
+            "trait_recalibration_required",
+        )
+        self.assertEqual(
+            life_turn["background_trait_convergence_unstable_names"],
+            ["continuity_drive"],
+        )
+        self.assertEqual(
+            life_turn["background_trait_convergence_stable_names"],
+            ["repair_seriousness"],
+        )
+        self.assertEqual(
+            life_turn["background_trait_convergence_history_profile"]["continuity_drive"][
+                "latest_band"
+            ],
+            "unstable",
+        )
+        self.assertEqual(
+            life_turn["background_trait_convergence_evidence_refs"],
+            [
+                "runtime/state/terminal/resident_governance_state.json",
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                "runtime/state/body/trait_drift_monitor.json",
+                "runtime/state/terminal/background_convergence_summary.json",
+                "runtime/state/terminal/background_convergence_history.json",
+            ],
         )
 
     def test_response_surface_organ_carries_relation_shared_terms_and_commitment_pressure(self):
