@@ -274,7 +274,7 @@ restore shell completed
 六个 presence 子面固定含义如下：
 
 - `relationship_presence`：承接 `background_relationship_stage`、关系阶段理由、关系对象 ref 与关系阶段连续性。
-- `trait_convergence_presence`：承接 `background_trait_slow_variable_summary`、trait convergence history focus、稳定/不稳定慢变量名单、history profile、trait convergence score、trait drift monitor ref 与 `trait_convergence_evidence_refs`。这些 evidence refs 至少要能吸收已存在的 resident governance state、governance explanation、trait drift monitor、background convergence summary/history refs，使自我/人格慢变量连续体可以从后台驻留主状态体继续进入真实回合链。
+- `trait_convergence_presence`：承接 `background_trait_slow_variable_summary`、trait convergence history focus、稳定/不稳定慢变量名单、history profile、trait convergence score、trait drift monitor ref、`background_trait_drift_update_mode_summary / recalibration_names / stabilized_names` 与 `trait_convergence_evidence_refs`。这些 evidence refs 至少要能吸收已存在的 resident governance state、governance explanation、trait drift monitor、background convergence summary/history refs，使自我/人格慢变量连续体和人格漂移重校准/稳定信号可以从后台驻留主状态体继续进入真实回合链。
 - `heartbeat_presence`：承接当前或后台 `idle_heartbeat_trace_ref/count`、heartbeat interval 与下一步 idle action。
 - `language_presence`：承接长期语言对象 refs、长期优先级 profile、当前治理注意目标/理由/节律。
 - `offline_learning_presence`：承接累计梦境-成长离线学习 generation、pressure、attention target、priority profile 与 ref set。

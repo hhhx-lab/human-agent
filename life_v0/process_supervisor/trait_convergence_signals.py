@@ -55,6 +55,30 @@ def cross_wake_trait_convergence_profile(
         if trait_presence.get("trait_convergence_score") is not None
         else carrier.get("background_trait_convergence_score")
     )
+    trait_drift_update_mode_summary = _dict_or_empty(
+        existing_profile.get("trait_drift_update_mode_summary")
+        or carrier.get("cross_wake_trait_drift_update_mode_summary")
+        or trait_presence.get("trait_drift_update_mode_summary")
+        or carrier.get("background_trait_drift_update_mode_summary")
+    )
+    trait_drift_recalibration_names = _dedupe_string_list(
+        _string_list(existing_profile.get("trait_drift_recalibration_names"))
+        or _string_list(carrier.get("cross_wake_trait_drift_recalibration_names"))
+        or _string_list(trait_presence.get("trait_drift_recalibration_names"))
+        or _string_list(carrier.get("background_trait_drift_recalibration_names"))
+        or _string_list(
+            trait_drift_update_mode_summary.get("background_history_recalibration")
+        )
+    )
+    trait_drift_stabilized_names = _dedupe_string_list(
+        _string_list(existing_profile.get("trait_drift_stabilized_names"))
+        or _string_list(carrier.get("cross_wake_trait_drift_stabilized_names"))
+        or _string_list(trait_presence.get("trait_drift_stabilized_names"))
+        or _string_list(carrier.get("background_trait_drift_stabilized_names"))
+        or _string_list(
+            trait_drift_update_mode_summary.get("background_history_stabilized")
+        )
+    )
     refs = _dedupe_string_list(
         _string_list(carrier.get("cross_wake_trait_convergence_refs"))
         + _string_list(existing_profile.get("refs"))
@@ -82,6 +106,7 @@ def cross_wake_trait_convergence_profile(
             trend_state=str(
                 carrier.get("background_convergence_history_trend_state") or ""
             ),
+            trait_drift_recalibration_names=trait_drift_recalibration_names,
         )
     )
     profile = _drop_empty(
@@ -93,6 +118,9 @@ def cross_wake_trait_convergence_profile(
             "stable_names": stable_names,
             "score": score,
             "history_profile": history_profile,
+            "trait_drift_update_mode_summary": trait_drift_update_mode_summary,
+            "trait_drift_recalibration_names": trait_drift_recalibration_names,
+            "trait_drift_stabilized_names": trait_drift_stabilized_names,
             "refs": refs,
             "ref_count": len(refs),
         }
@@ -112,6 +140,17 @@ def cross_wake_trait_convergence_profile(
             ),
             "cross_wake_trait_convergence_score": profile.get("score"),
             "cross_wake_trait_convergence_refs": profile.get("refs", []),
+            "cross_wake_trait_drift_update_mode_summary": profile.get(
+                "trait_drift_update_mode_summary"
+            ),
+            "cross_wake_trait_drift_recalibration_names": profile.get(
+                "trait_drift_recalibration_names",
+                [],
+            ),
+            "cross_wake_trait_drift_stabilized_names": profile.get(
+                "trait_drift_stabilized_names",
+                [],
+            ),
         }
     )
 
@@ -122,7 +161,10 @@ def _pressure_from_focus_and_history(
     unstable_names: list[str],
     history_profile: dict[str, Any],
     trend_state: str,
+    trait_drift_recalibration_names: list[str],
 ) -> str:
+    if trait_drift_recalibration_names:
+        return "recalibration"
     if focus == "trait_recalibration_required":
         return "recalibration"
     if trend_state in {"recent_recalibration_pressure", "elevated_pressure_watch"}:

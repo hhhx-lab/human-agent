@@ -268,6 +268,15 @@ def _trait_convergence_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "background_trait_drift_monitor_ref"
         )
         or governance.get("trait_drift_monitor_ref"),
+        "trait_drift_update_mode_summary": _dict_or_empty(
+            governance.get("background_trait_drift_update_mode_summary")
+        ),
+        "trait_drift_recalibration_names": _string_list(
+            governance.get("background_trait_drift_recalibration_names")
+        ),
+        "trait_drift_stabilized_names": _string_list(
+            governance.get("background_trait_drift_stabilized_names")
+        ),
         "trait_convergence_evidence_refs": _dedupe_string_list(
             _string_list(
                 [

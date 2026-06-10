@@ -3748,6 +3748,45 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 idle_strategy["background_trait_drift_update_mode_summary"],
                 expected_update_mode_summary,
             )
+            self.assertEqual(
+                idle_strategy["cross_wake_trait_convergence_profile"][
+                    "trait_drift_update_mode_summary"
+                ],
+                expected_update_mode_summary,
+            )
+            self.assertEqual(
+                idle_strategy["cross_wake_trait_convergence_profile"][
+                    "trait_drift_recalibration_names"
+                ],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                idle_strategy["cross_wake_trait_convergence_profile"][
+                    "trait_drift_stabilized_names"
+                ],
+                ["repair_seriousness"],
+            )
+            lineage_trait_presence = resident_governance_state[
+                "resident_background_lineage_state"
+            ]["trait_convergence_presence"]
+            self.assertEqual(
+                lineage_trait_presence["trait_drift_update_mode_summary"],
+                expected_update_mode_summary,
+            )
+            self.assertEqual(
+                lineage_trait_presence["trait_drift_recalibration_names"],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                lineage_trait_presence["trait_drift_stabilized_names"],
+                ["repair_seriousness"],
+            )
+            self.assertEqual(
+                terminal_life_loop_state["resident_background_lineage_state"][
+                    "trait_convergence_presence"
+                ]["trait_drift_update_mode_summary"],
+                expected_update_mode_summary,
+            )
             for artifact in (
                 resident_governance_state,
                 idle_continuity,
