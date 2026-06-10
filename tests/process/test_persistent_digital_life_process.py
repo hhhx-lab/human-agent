@@ -2914,6 +2914,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_lineage_waiting_posture": "deep_background_residency_hold",
                     "background_lineage_cadence_weight": "deep",
                     "background_lineage_evidence_ref_count": 6,
+                    "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
+                    "state_merge_policy": "long_term_merge_fail_closed",
+                    "state_merge_long_term_change_count": 4,
+                    "state_merge_long_term_change_families": [
+                        "offline_learning_cumulative_refs",
+                        "queue_e_repair_modulation_refs",
+                        "relationship_memory_offline_refs",
+                    ],
+                    "state_merge_long_term_change_refs": [
+                        "runtime/state/growth/relationship_learning_plan.json",
+                        "runtime/state/growth/language_learning_plan.json",
+                        "runtime/state/action/responsibility_loop_state.json",
+                        "runtime/state/dream/offline_consolidation_frame.json",
+                    ],
                     "resident_background_lineage_state": {
                         "schema_version": "resident_background_lineage_state_v0",
                         "status": "closed",
@@ -3187,10 +3201,47 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 profile["background_live_language_presence_profile"]["ref_count"],
                 5,
             )
+            expected_state_merge_change_families = [
+                "offline_learning_cumulative_refs",
+                "queue_e_repair_modulation_refs",
+                "relationship_memory_offline_refs",
+            ]
+            expected_state_merge_change_refs = [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/dream/offline_consolidation_frame.json",
+            ]
+            self.assertEqual(
+                profile["background_state_merge_guard_ref"],
+                "runtime/state/memory/state_merge_guard.json",
+            )
+            self.assertEqual(
+                profile["background_state_merge_policy"],
+                "long_term_merge_fail_closed",
+            )
+            self.assertEqual(
+                profile["background_state_merge_long_term_change_count"],
+                4,
+            )
+            self.assertEqual(
+                profile["background_state_merge_long_term_change_families"],
+                expected_state_merge_change_families,
+            )
+            self.assertEqual(
+                profile["background_state_merge_long_term_change_refs"],
+                expected_state_merge_change_refs,
+            )
             self.assertIn(
                 "runtime/state/terminal/resident_governance_state.json",
                 profile["background_continuity_ref_set"],
             )
+            self.assertIn(
+                "runtime/state/memory/state_merge_guard.json",
+                profile["background_continuity_ref_set"],
+            )
+            for ref in expected_state_merge_change_refs:
+                self.assertIn(ref, profile["background_continuity_ref_set"])
             self.assertIn(
                 "runtime/state/language/language_percept_frame.json",
                 profile["background_continuity_ref_set"],
@@ -3570,6 +3621,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 1,
             )
             self.assertEqual(
+                idle_strategy["background_state_merge_guard_ref"],
+                "runtime/state/memory/state_merge_guard.json",
+            )
+            self.assertEqual(
+                idle_strategy["background_state_merge_policy"],
+                "long_term_merge_fail_closed",
+            )
+            self.assertGreater(
+                idle_strategy["background_state_merge_long_term_change_count"],
+                0,
+            )
+            self.assertTrue(
+                idle_strategy["background_state_merge_long_term_change_families"],
+            )
+            self.assertTrue(
+                idle_strategy["background_state_merge_long_term_change_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/state_merge_guard.json",
+                idle_strategy["background_continuity_ref_set"],
+            )
+            for ref in idle_strategy["background_state_merge_long_term_change_refs"]:
+                self.assertIn(ref, idle_strategy["background_continuity_ref_set"])
+            self.assertEqual(
                 idle_strategy["background_convergence_summary_ref"],
                 "runtime/state/terminal/background_convergence_summary.json",
             )
@@ -3841,6 +3916,35 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
                 "single_carryover",
             )
+            for artifact in (
+                resident_governance_state,
+                idle_continuity,
+                terminal_life_loop_state,
+            ):
+                self.assertEqual(
+                    artifact["background_state_merge_guard_ref"],
+                    idle_strategy["background_state_merge_guard_ref"],
+                )
+                self.assertEqual(
+                    artifact["background_state_merge_policy"],
+                    idle_strategy["background_state_merge_policy"],
+                )
+                self.assertEqual(
+                    artifact["background_state_merge_long_term_change_count"],
+                    idle_strategy[
+                        "background_state_merge_long_term_change_count"
+                    ],
+                )
+                self.assertEqual(
+                    artifact["background_state_merge_long_term_change_families"],
+                    idle_strategy[
+                        "background_state_merge_long_term_change_families"
+                    ],
+                )
+                self.assertEqual(
+                    artifact["background_state_merge_long_term_change_refs"],
+                    idle_strategy["background_state_merge_long_term_change_refs"],
+                )
             self.assertEqual(
                 background_convergence_summary["schema_version"],
                 "background_convergence_summary_v0",

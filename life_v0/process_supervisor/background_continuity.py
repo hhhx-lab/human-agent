@@ -295,8 +295,118 @@ def load_background_continuity_profile(
         or resident_governance_report.get("background_live_language_presence_profile")
         or persistent_process_report.get("background_live_language_presence_profile")
     )
+    state_merge_guard_ref = (
+        resident_governance_state.get("state_merge_guard_ref")
+        or resident_governance_state.get("background_state_merge_guard_ref")
+        or snapshot.get("state_merge_guard_ref")
+        or snapshot.get("background_state_merge_guard_ref")
+        or resident_governance_report.get("state_merge_guard_ref")
+        or resident_governance_report.get("background_state_merge_guard_ref")
+        or persistent_process_report.get("state_merge_guard_ref")
+        or persistent_process_report.get("background_state_merge_guard_ref")
+    )
+    state_merge_policy = (
+        resident_governance_state.get("state_merge_policy")
+        or resident_governance_state.get("background_state_merge_policy")
+        or snapshot.get("state_merge_policy")
+        or snapshot.get("background_state_merge_policy")
+        or resident_governance_report.get("state_merge_policy")
+        or resident_governance_report.get("background_state_merge_policy")
+        or persistent_process_report.get("state_merge_policy")
+        or persistent_process_report.get("background_state_merge_policy")
+    )
+    state_merge_long_term_change_count = max(
+        _int_or_zero(
+            resident_governance_state.get("state_merge_long_term_change_count")
+        ),
+        _int_or_zero(
+            resident_governance_state.get(
+                "background_state_merge_long_term_change_count"
+            )
+        ),
+        _int_or_zero(snapshot.get("state_merge_long_term_change_count")),
+        _int_or_zero(snapshot.get("background_state_merge_long_term_change_count")),
+        _int_or_zero(
+            resident_governance_report.get("state_merge_long_term_change_count")
+        ),
+        _int_or_zero(
+            resident_governance_report.get(
+                "background_state_merge_long_term_change_count"
+            )
+        ),
+        _int_or_zero(
+            persistent_process_report.get("state_merge_long_term_change_count")
+        ),
+        _int_or_zero(
+            persistent_process_report.get(
+                "background_state_merge_long_term_change_count"
+            )
+        ),
+    )
+    state_merge_long_term_change_families = _dedupe_list(
+        _list_or_empty(
+            resident_governance_state.get("state_merge_long_term_change_families")
+        )
+        + _list_or_empty(
+            resident_governance_state.get(
+                "background_state_merge_long_term_change_families"
+            )
+        )
+        + _list_or_empty(snapshot.get("state_merge_long_term_change_families"))
+        + _list_or_empty(
+            snapshot.get("background_state_merge_long_term_change_families")
+        )
+        + _list_or_empty(
+            resident_governance_report.get("state_merge_long_term_change_families")
+        )
+        + _list_or_empty(
+            resident_governance_report.get(
+                "background_state_merge_long_term_change_families"
+            )
+        )
+        + _list_or_empty(
+            persistent_process_report.get("state_merge_long_term_change_families")
+        )
+        + _list_or_empty(
+            persistent_process_report.get(
+                "background_state_merge_long_term_change_families"
+            )
+        )
+    )
+    state_merge_long_term_change_refs = _dedupe_list(
+        _list_or_empty(
+            resident_governance_state.get("state_merge_long_term_change_refs")
+        )
+        + _list_or_empty(
+            resident_governance_state.get(
+                "background_state_merge_long_term_change_refs"
+            )
+        )
+        + _list_or_empty(snapshot.get("state_merge_long_term_change_refs"))
+        + _list_or_empty(snapshot.get("background_state_merge_long_term_change_refs"))
+        + _list_or_empty(
+            resident_governance_report.get("state_merge_long_term_change_refs")
+        )
+        + _list_or_empty(
+            resident_governance_report.get(
+                "background_state_merge_long_term_change_refs"
+            )
+        )
+        + _list_or_empty(
+            persistent_process_report.get("state_merge_long_term_change_refs")
+        )
+        + _list_or_empty(
+            persistent_process_report.get(
+                "background_state_merge_long_term_change_refs"
+            )
+        )
+    )
     if live_language_turn_refs:
         ref_set = _dedupe_list(ref_set + live_language_turn_refs)
+    if state_merge_guard_ref:
+        ref_set = _dedupe_list(ref_set + [str(state_merge_guard_ref)])
+    if state_merge_long_term_change_refs:
+        ref_set = _dedupe_list(ref_set + state_merge_long_term_change_refs)
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
@@ -376,6 +486,22 @@ def load_background_continuity_profile(
                 last_live_semantic_focus=last_live_semantic_focus,
                 source_profile=live_language_presence_profile,
             )
+        )
+    if state_merge_guard_ref:
+        profile["background_state_merge_guard_ref"] = str(state_merge_guard_ref)
+    if state_merge_policy:
+        profile["background_state_merge_policy"] = str(state_merge_policy)
+    if state_merge_long_term_change_count:
+        profile["background_state_merge_long_term_change_count"] = (
+            state_merge_long_term_change_count
+        )
+    if state_merge_long_term_change_families:
+        profile["background_state_merge_long_term_change_families"] = (
+            state_merge_long_term_change_families
+        )
+    if state_merge_long_term_change_refs:
+        profile["background_state_merge_long_term_change_refs"] = (
+            state_merge_long_term_change_refs
         )
     if resident_governance_state:
         profile["background_resident_governance_state_ref"] = (

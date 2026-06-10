@@ -319,12 +319,14 @@ runtime/state/memory/state_merge_guard.json#long_term_change_sources
   -> digital_life_persistent_process_report.json
   -> digital_life_process_report.json / digital_life_process_digest.json
   -> digital_life_process_<run_id>.json#shared_object_refs
+  -> background_continuity.background_state_merge_*
+  -> next waiting heartbeat / idle_continuity_frame / terminal_life_loop_state
   -> digital_life_turn / response_surface
 ```
 
-这条链的关键点是：`state_merge_guard.json` 已经不只是 Packet C 的状态根守门文件，也不是只给等待态或回应表面读取的临时压力。`state_merge_signals.py` 负责把 `offline_learning_cumulative_refs`、`queue_e_repair_modulation_refs`、`relationship_memory_offline_refs` 等来源族压成统一的 `state_merge_long_term_change_count`、`state_merge_long_term_change_families` 与 `state_merge_long_term_change_refs`；`persistent_process.py` 与 `process_report.py` 必须在 closeout 时把同一画像写入 resident governance state/snapshot/report、persistent process report、process report、process digest 和 process receipt shared refs。
+这条链的关键点是：`state_merge_guard.json` 已经不只是 Packet C 的状态根守门文件，也不是只给等待态或回应表面读取的临时压力。`state_merge_signals.py` 负责把 `offline_learning_cumulative_refs`、`queue_e_repair_modulation_refs`、`relationship_memory_offline_refs` 等来源族压成统一的 `state_merge_long_term_change_count`、`state_merge_long_term_change_families` 与 `state_merge_long_term_change_refs`；`persistent_process.py` 与 `process_report.py` 必须在 closeout 时把同一画像写入 resident governance state/snapshot/report、persistent process report、process report、process digest 和 process receipt shared refs；下一次 `background_continuity.py` 必须把这些关闭态证据恢复成 `background_state_merge_guard_ref`、`background_state_merge_policy`、`background_state_merge_long_term_change_count/families/refs`，并继续送入 waiting heartbeat、idle continuity、resident governance state 与 terminal loop。
 
-这让长期状态合并治理在断开、退出和下一次唤醒之间拥有可追溯的关闭态存在面。以后如果 dream/growth/repair 已经写进 `relationship_memory.json` 和 `state_merge_guard.json`，但 `resident_governance_snapshot.json`、`digital_life_process_digest.json` 或 receipt shared refs 看不到同一批长期变化来源，就说明长期治理链在关闭态断开。
+这让长期状态合并治理在断开、退出和下一次唤醒之间拥有可追溯的关闭态存在面与恢复态存在面。以后如果 dream/growth/repair 已经写进 `relationship_memory.json` 和 `state_merge_guard.json`，但 `resident_governance_snapshot.json`、`digital_life_process_digest.json`、receipt shared refs 或下一次 `background_continuity_profile.background_state_merge_*` 看不到同一批长期变化来源，就说明长期治理链在关闭态或下一次唤醒处断开。
 
 ## 关系阶段与自我慢变量已经进入同会话与重启恢复闭环
 
@@ -452,4 +454,4 @@ idle_strategy.py
 22. `dialogue_events.py` 必须把 `language_presence` 展开为 live refs、background live refs、最后语义焦点与 language evidence refs；`resident_turn_writeback.py` 必须把这些语言证据并入写回包与恢复包；`response_surface.py` 必须把后台语言语义余波和证据数量表达出来。
 23. `trait_convergence_signals.py` 必须把 `resident_background_lineage_state_v0.trait_convergence_presence`、`background_convergence_summary/history`、`trait_drift_monitor_ref` 与 closeout refs 统一压成 `cross_wake_trait_convergence_profile_v0`，并由 `idle_strategy.py`、`heartbeat.py`、`persistent_process.py`、`process_report.py`、`dialogue_events.py`、`resident_turn_writeback.py` 与 `response_surface.py` 同口径消费。
 24. 关闭态 resident governance artifacts、persistent process report、process report、process digest、process receipt、`digital_life_turn`、`dialogue_writeback_bundle`、`resumed_external_dialogue_packet` 与回应文本必须同时证明跨唤醒人格收敛画像进入关闭态和真实回合，而不是只保留在 background lineage 或单一 report。
-25. `state_merge_signals.py` 必须把 `state_merge_guard.json#long_term_change_sources` 统一压成 `state_merge_long_term_change_count/families/refs`，并由 `idle_strategy.py`、`heartbeat.py`、`persistent_process.py`、`process_report.py`、`dialogue_events.py` 与 `response_surface.py` 同口径消费；关闭态 resident governance artifacts、persistent process report、process report、process digest 与 process receipt shared refs 必须同时保留 `state_merge_guard_ref`、`state_merge_policy` 和长期变化来源 refs。
+25. `state_merge_signals.py` 必须把 `state_merge_guard.json#long_term_change_sources` 统一压成 `state_merge_long_term_change_count/families/refs`，并由 `idle_strategy.py`、`heartbeat.py`、`persistent_process.py`、`process_report.py`、`dialogue_events.py` 与 `response_surface.py` 同口径消费；关闭态 resident governance artifacts、persistent process report、process report、process digest 与 process receipt shared refs 必须同时保留 `state_merge_guard_ref`、`state_merge_policy` 和长期变化来源 refs；下一次 `background_continuity.py` 必须恢复同一批证据为 `background_state_merge_*`，并继续落入 waiting governance、idle heartbeat trace、idle continuity 和 terminal loop。

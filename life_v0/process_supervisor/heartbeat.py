@@ -338,6 +338,11 @@ def write_waiting_heartbeat(
         "state_merge_long_term_change_count",
         "state_merge_long_term_change_families",
         "state_merge_long_term_change_refs",
+        "background_state_merge_guard_ref",
+        "background_state_merge_policy",
+        "background_state_merge_long_term_change_count",
+        "background_state_merge_long_term_change_families",
+        "background_state_merge_long_term_change_refs",
         "schema_cross_file_logic_ref",
         "schema_run_manifest_ref",
         "life_constraint_refs",
@@ -517,6 +522,21 @@ def write_waiting_heartbeat(
         active_sampling_plan_ref=idle_strategy.get("active_sampling_plan_ref"),
         memory_write_gate_ref=idle_strategy.get("memory_write_gate_ref"),
         state_merge_guard_ref=idle_strategy.get("state_merge_guard_ref"),
+        background_state_merge_guard_ref=idle_strategy.get(
+            "background_state_merge_guard_ref"
+        ),
+        background_state_merge_policy=idle_strategy.get(
+            "background_state_merge_policy"
+        ),
+        background_state_merge_long_term_change_count=idle_strategy.get(
+            "background_state_merge_long_term_change_count"
+        ),
+        background_state_merge_long_term_change_families=idle_strategy.get(
+            "background_state_merge_long_term_change_families"
+        ),
+        background_state_merge_long_term_change_refs=idle_strategy.get(
+            "background_state_merge_long_term_change_refs"
+        ),
         prediction_write_gate_refs=idle_strategy.get("prediction_write_gate_refs"),
         prediction_waiting_posture=idle_strategy.get("prediction_waiting_posture"),
         response_surface_posture_hint=idle_strategy.get("response_surface_posture_hint"),
@@ -633,6 +653,21 @@ def _append_idle_heartbeat_trace(
         ),
         "cross_wake_trait_convergence_refs": list(
             idle_strategy.get("cross_wake_trait_convergence_refs", [])
+        ),
+        "background_state_merge_guard_ref": idle_strategy.get(
+            "background_state_merge_guard_ref"
+        ),
+        "background_state_merge_policy": idle_strategy.get(
+            "background_state_merge_policy"
+        ),
+        "background_state_merge_long_term_change_count": idle_strategy.get(
+            "background_state_merge_long_term_change_count"
+        ),
+        "background_state_merge_long_term_change_families": list(
+            idle_strategy.get("background_state_merge_long_term_change_families", [])
+        ),
+        "background_state_merge_long_term_change_refs": list(
+            idle_strategy.get("background_state_merge_long_term_change_refs", [])
         ),
         "long_horizon_language_refs": list(
             idle_strategy.get("long_horizon_language_refs", [])

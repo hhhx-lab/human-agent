@@ -80,6 +80,11 @@ def build_idle_continuity_frame(
     active_sampling_plan_ref: str | None = None,
     memory_write_gate_ref: str | None = None,
     state_merge_guard_ref: str | None = None,
+    background_state_merge_guard_ref: str | None = None,
+    background_state_merge_policy: str | None = None,
+    background_state_merge_long_term_change_count: int | None = None,
+    background_state_merge_long_term_change_families: list[str] | None = None,
+    background_state_merge_long_term_change_refs: list[str] | None = None,
     prediction_write_gate_refs: list[str] | None = None,
     prediction_waiting_posture: str | None = None,
     response_surface_posture_hint: str | None = None,
@@ -283,6 +288,22 @@ def build_idle_continuity_frame(
         payload["memory_write_gate_ref"] = memory_write_gate_ref
     if state_merge_guard_ref:
         payload["state_merge_guard_ref"] = state_merge_guard_ref
+    if background_state_merge_guard_ref:
+        payload["background_state_merge_guard_ref"] = background_state_merge_guard_ref
+    if background_state_merge_policy:
+        payload["background_state_merge_policy"] = background_state_merge_policy
+    if background_state_merge_long_term_change_count is not None:
+        payload["background_state_merge_long_term_change_count"] = int(
+            background_state_merge_long_term_change_count
+        )
+    if background_state_merge_long_term_change_families:
+        payload["background_state_merge_long_term_change_families"] = list(
+            background_state_merge_long_term_change_families
+        )
+    if background_state_merge_long_term_change_refs:
+        payload["background_state_merge_long_term_change_refs"] = list(
+            background_state_merge_long_term_change_refs
+        )
     if prediction_write_gate_refs:
         payload["prediction_write_gate_refs"] = list(prediction_write_gate_refs)
     if prediction_waiting_posture:
