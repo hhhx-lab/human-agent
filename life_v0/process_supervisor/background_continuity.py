@@ -112,6 +112,14 @@ def load_background_continuity_profile(
         or resident_governance_report.get("background_self_model_ref")
         or persistent_process_report.get("background_self_model_ref")
     )
+    trait_drift_monitor_ref = (
+        snapshot.get("trait_drift_monitor_ref")
+        or snapshot.get("background_trait_drift_monitor_ref")
+        or resident_governance_report.get("trait_drift_monitor_ref")
+        or resident_governance_report.get("background_trait_drift_monitor_ref")
+        or persistent_process_report.get("trait_drift_monitor_ref")
+        or persistent_process_report.get("background_trait_drift_monitor_ref")
+    )
     trait_slow_variable_summary = _dict_or_empty(
         snapshot.get("background_trait_slow_variable_summary")
         or resident_governance_report.get("background_trait_slow_variable_summary")
@@ -147,6 +155,8 @@ def load_background_continuity_profile(
         profile["background_relationship_subject_ref"] = str(relationship_subject_ref)
     if self_model_ref:
         profile["background_self_model_ref"] = str(self_model_ref)
+    if trait_drift_monitor_ref:
+        profile["background_trait_drift_monitor_ref"] = str(trait_drift_monitor_ref)
     if trait_slow_variable_summary:
         profile["background_trait_slow_variable_summary"] = trait_slow_variable_summary
     if background_resume_summary:

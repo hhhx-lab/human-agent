@@ -40,6 +40,7 @@ def build_idle_continuity_frame(
     background_carryover_parent_run_id: str | None = None,
     background_carryover_source_ref_set: list[str] | None = None,
     background_continuity_ref_set: list[str] | None = None,
+    background_trait_drift_monitor_ref: str | None = None,
     signal_media_ref: str | None = None,
     belief_state_ref: str | None = None,
     prediction_error_ref: str | None = None,
@@ -136,6 +137,8 @@ def build_idle_continuity_frame(
         payload["background_carryover_source_ref_set"] = list(background_carryover_source_ref_set)
     if background_continuity_ref_set:
         payload["background_continuity_ref_set"] = list(background_continuity_ref_set)
+    if background_trait_drift_monitor_ref:
+        payload["background_trait_drift_monitor_ref"] = background_trait_drift_monitor_ref
     if signal_media_ref:
         payload["signal_media_ref"] = signal_media_ref
     if belief_state_ref:

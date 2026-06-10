@@ -52,6 +52,8 @@ Packet D 必须读取这些已有对象：
 | `runtime/state/growth/*_learning_plan.json` | `S10_RUNTIME_GROWTH_RECONSOLIDATION` | 已有 offline learning waiting pressure |
 | `runtime/state/relationship/relationship_timeline.json` | `S07_LANGUAGE_RELATIONSHIP` | long-horizon language governance |
 
+另外，closeout 回写的 `trait_drift_monitor_ref` 还必须在下一次 waiting governance 中恢复成 `background_trait_drift_monitor_ref`，并继续进入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`，否则 Packet D 的等待态只能看见 prediction，而看不见上一轮人格观察面。
+
 ## 代码入口
 
 | 文件 | 本轮职责 |

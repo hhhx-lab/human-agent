@@ -73,6 +73,7 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_relationship_stage",
     "background_relationship_stage_reason",
     "background_self_model_ref",
+    "background_trait_drift_monitor_ref",
     "background_trait_slow_variable_summary",
     "background_resume_summary",
     "signal_media_ref",

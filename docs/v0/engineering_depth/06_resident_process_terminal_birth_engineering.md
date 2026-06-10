@@ -298,3 +298,4 @@ idle_strategy.py
 11. `continuity_evolution.py` 必须让这组 resume summary 进入关系阶段保留和慢变量惯性收敛，至少能在测试中看到 `background_resume_value` 与 `background_inertia_weight`
 12. bootstrap refresh 与 live turn writeback 后都必须刷新 `trait_drift_monitor.json`，让人格漂移监控面真实跟上常驻关系/自我连续体
 13. closeout 后必须把 `trait_drift_monitor.json` 写成 resident governance / process report / digest / receipt 的一级 ref，并进入 input hash，防止人格漂移监控停留在身体层而没有成为跨进程恢复证据
+14. 下一次 `background_continuity.py` / `idle_strategy.py` / `heartbeat.py` 必须把这份关闭态 monitor ref 恢复成 `background_trait_drift_monitor_ref`，并继续写回 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`

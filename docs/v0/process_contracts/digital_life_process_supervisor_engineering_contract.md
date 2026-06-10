@@ -133,6 +133,7 @@ life-v0 "digital life"
 15. `continuity_evolution.py` 在 bootstrap continuity refresh 时必须把 `background_relationship_stage` 作为新回合前的关系阶段保留候选，并把 `background_trait_slow_variable_summary` 作为慢变量惯性参与下一次 `trait_slow_variables` 收敛，写出 `background_resume_value` 与 `background_inertia_weight`。
 16. `resident_supervision.py` 与 `resident_turn_writeback.py` 在每次重建关系阶段和自我慢变量后，必须同步刷新 `runtime/state/body/trait_drift_monitor.json`，让人格漂移监控面跟随常驻生命过程持续更新，而不是只停在 S06 build-life-support 阶段。
 17. `process_closeout.py` / `persistent_process.py` / `process_report.py` 必须把最新 `trait_drift_monitor.json` 作为关闭态 ref 写进 resident governance state/snapshot/report、process report/digest、receipt shared refs 与 input hash，让下一次唤醒能追溯人格慢变量观察面本身。
+18. `background_continuity.py` / `idle_strategy.py` / `heartbeat.py` 必须把关闭态 `trait_drift_monitor_ref` 恢复成 `background_trait_drift_monitor_ref`，并继续写入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`，让下一次 waiting heartbeat 仍能看见上一轮人格观察面。
 
 ## 最小行为合同
 

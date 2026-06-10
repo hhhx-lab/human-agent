@@ -1571,6 +1571,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_relationship_stage_reason": "repair_followup_required_after_multi_turn_dialogue",
                 "background_relationship_subject_ref": "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
                 "background_self_model_ref": "runtime/state/self/self_model.json",
+                "background_trait_drift_monitor_ref": "runtime/state/body/trait_drift_monitor.json",
                 "background_trait_slow_variable_summary": {
                     "continuity_drive": {
                         "value": 0.71,
@@ -1608,6 +1609,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             idle_strategy["background_self_model_ref"],
             "runtime/state/self/self_model.json",
+        )
+        self.assertEqual(
+            idle_strategy["background_trait_drift_monitor_ref"],
+            "runtime/state/body/trait_drift_monitor.json",
         )
         self.assertEqual(
             idle_strategy["background_trait_slow_variable_summary"]["continuity_drive"][
@@ -1729,6 +1734,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_relationship_stage_reason": "repair_followup_required_after_multi_turn_dialogue",
                     "background_relationship_subject_ref": "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
                     "background_self_model_ref": "runtime/state/self/self_model.json",
+                    "trait_drift_monitor_ref": "runtime/state/body/trait_drift_monitor.json",
                     "background_trait_slow_variable_summary": {
                         "continuity_drive": {
                             "value": 0.73,
@@ -1764,6 +1770,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 profile["background_self_model_ref"],
                 "runtime/state/self/self_model.json",
+            )
+            self.assertEqual(
+                profile["background_trait_drift_monitor_ref"],
+                "runtime/state/body/trait_drift_monitor.json",
             )
             self.assertEqual(
                 profile["background_trait_slow_variable_summary"]["continuity_drive"][
@@ -1975,6 +1985,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 paths["terminal_state"] / "resident_governance_state.json"
             )
             idle_continuity = self._read_json(paths["terminal_state"] / "idle_continuity_frame.json")
+            terminal_life_loop_state = self._read_json(
+                paths["terminal_state"] / "terminal_life_loop_state.json"
+            )
 
             self.assertEqual(idle_strategy["background_continuity_mode"], "closed_process_carryover")
             self.assertEqual(idle_strategy["background_carryover_generation"], 1)
@@ -1991,11 +2004,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/reports/latest/digital_life_resident_governance_report.json",
             )
             self.assertEqual(
+                idle_strategy["background_trait_drift_monitor_ref"],
+                "runtime/state/body/trait_drift_monitor.json",
+            )
+            self.assertEqual(
                 resident_governance_state["background_continuity_mode"],
                 "closed_process_carryover",
             )
             self.assertTrue(
                 resident_governance_state["background_continuity_ref_set"],
+            )
+            self.assertEqual(
+                resident_governance_state["background_trait_drift_monitor_ref"],
+                "runtime/state/body/trait_drift_monitor.json",
             )
             self.assertEqual(
                 idle_continuity["background_continuity_mode"],
@@ -2005,6 +2026,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 idle_continuity["background_carryover_parent_run_id"],
                 "background-carryover-seed",
+            )
+            self.assertEqual(
+                idle_continuity["background_trait_drift_monitor_ref"],
+                "runtime/state/body/trait_drift_monitor.json",
+            )
+            self.assertEqual(
+                terminal_life_loop_state["background_trait_drift_monitor_ref"],
+                "runtime/state/body/trait_drift_monitor.json",
             )
 
     def test_continuity_evolution_projects_background_lineage_into_stage_and_slow_variables(self):
@@ -3633,6 +3662,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_relationship_stage_reason": "persistent_background_continuity_lineage_preserved_before_dialogue",
                     "background_relationship_subject_ref": "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
                     "background_self_model_ref": "runtime/state/self/self_model.json",
+                    "background_trait_drift_monitor_ref": "runtime/state/body/trait_drift_monitor.json",
                     "background_trait_slow_variable_summary": {
                         "continuity_drive": {
                             "value": 0.77,
@@ -3691,8 +3721,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/self/self_model.json",
             )
             self.assertEqual(
+                report["background_trait_drift_monitor_ref"],
+                "runtime/state/body/trait_drift_monitor.json",
+            )
+            self.assertEqual(
                 report["background_resume_focus"]["trait_slow_variable_names"],
                 ["continuity_drive"],
+            )
+            self.assertTrue(
+                any(
+                    "trait drift monitor ref runtime/state/body/trait_drift_monitor.json"
+                    in line
+                    for line in report["continuity_story"]
+                )
             )
             self.assertTrue(
                 any(

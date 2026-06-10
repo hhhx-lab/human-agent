@@ -309,6 +309,7 @@ Queue D 必须接到这些现有器官上：
 2. `resident_turn_writeback.py` 在 live turn 后关系阶段与自我慢变量发生演化时刷新同一份 monitor。
 3. 如果慢变量带有 `background_resume_value` / `background_inertia_weight`，monitor 必须把这组惯性痕迹保留在 `slow_variable_summary` 里。
 4. `persistent_process.py` / `process_report.py` 关闭常驻过程时必须把同一份 monitor 的 ref 写入关闭态 state、resident governance report、process report、digest、receipt 与 input hash。
+5. `background_continuity.py` 与 `idle_strategy.py` 必须把关闭态 monitor ref 重新挂到 waiting governance，避免身体/人格观察面在下一次唤醒里断线。
 
 ## I. 新增 `life_v0/dream/dream_window.py`
 
@@ -539,7 +540,7 @@ Queue D 至少新增三道 gate：
 2. `EmotionEpisode` 与 `EmotionRegulationState` 没有 ref 链
 3. `TraitDriftState` 没有绑定 anchor / archive requirement
 4. 常驻过程改写 `self_model.trait_slow_variables` 后没有刷新 `trait_drift_monitor.json`
-5. 常驻关闭态 report / receipt 没有回链 `trait_drift_monitor.json`
+6. 常驻关闭态 report / receipt 没有回链 `trait_drift_monitor.json`
 
 ### `growth_learning_window_gate`
 

@@ -271,6 +271,11 @@ def _compose_continuity_story(
             "background resume carries trait slow variables "
             + ", ".join(sorted(trait_slow_variable_summary.keys()))
         )
+    if idle_governance.get("background_trait_drift_monitor_ref"):
+        lines.append(
+            "background resume carries trait drift monitor ref "
+            f"{idle_governance['background_trait_drift_monitor_ref']}"
+        )
     lines.append(
         "dominant driver family is "
         f"{dominant_driver_family} and next wake should {next_wake_expectation}"
