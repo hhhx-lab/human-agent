@@ -120,6 +120,18 @@ def write_resident_governance_explanation(
         "background_dominant_convergence_state": idle_governance.get(
             "background_dominant_convergence_state"
         ),
+        "background_trait_convergence_history_focus": idle_governance.get(
+            "background_trait_convergence_history_focus"
+        ),
+        "background_trait_convergence_unstable_names": list(
+            idle_governance.get("background_trait_convergence_unstable_names", [])
+        ),
+        "background_trait_convergence_stable_names": list(
+            idle_governance.get("background_trait_convergence_stable_names", [])
+        ),
+        "background_trait_convergence_history_profile": idle_governance.get(
+            "background_trait_convergence_history_profile", {}
+        ),
         "background_convergence_state": background_convergence.get(
             "background_convergence_state"
         ),
@@ -407,6 +419,26 @@ def _compose_continuity_story(
                 f"{idle_governance['background_dominant_convergence_pressure_level']}"
             )
         lines.append(history_line)
+    if idle_governance.get("background_trait_convergence_history_focus"):
+        trait_history_line = (
+            "background trait convergence history focus is "
+            f"{idle_governance['background_trait_convergence_history_focus']}"
+        )
+        unstable_names = list(
+            idle_governance.get("background_trait_convergence_unstable_names", [])
+        )
+        stable_names = list(
+            idle_governance.get("background_trait_convergence_stable_names", [])
+        )
+        if unstable_names:
+            trait_history_line += (
+                " with unstable traits " + ", ".join(sorted(unstable_names))
+            )
+        if stable_names:
+            trait_history_line += (
+                " and stable traits " + ", ".join(sorted(stable_names))
+            )
+        lines.append(trait_history_line)
     convergence_trait_summary = background_convergence.get(
         "background_trait_convergence_summary"
     )

@@ -4886,6 +4886,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_convergence_history_window_size": 3,
                     "background_dominant_convergence_pressure_level": "elevated",
                     "background_dominant_convergence_state": "recalibrating_cross_process_continuity",
+                    "background_trait_convergence_history_focus": "trait_recalibration_required",
+                    "background_trait_convergence_unstable_names": ["continuity_drive"],
+                    "background_trait_convergence_stable_names": ["repair_seriousness"],
+                    "background_trait_convergence_history_profile": {
+                        "continuity_drive": {
+                            "latest_band": "recalibrating",
+                            "trend_state": "recent_trait_recalibration",
+                        },
+                        "repair_seriousness": {
+                            "latest_band": "stabilized",
+                            "trend_state": "stable_trait_convergence",
+                        },
+                    },
                     "background_convergence_state": "stabilized_cross_process_continuity",
                     "background_convergence_pressure_level": "light",
                     "background_convergence_attention_target": "trait_slow_variable_convergence",
@@ -4923,9 +4936,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 report["background_convergence_history_trend_state"],
                 "recent_recalibration_pressure",
             )
+            self.assertEqual(
+                report["background_trait_convergence_history_focus"],
+                "trait_recalibration_required",
+            )
+            self.assertEqual(
+                report["background_trait_convergence_unstable_names"],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                report["background_trait_convergence_history_profile"][
+                    "continuity_drive"
+                ]["latest_band"],
+                "recalibrating",
+            )
             self.assertTrue(
                 any(
                     "background convergence history trend is recent_recalibration_pressure across 3 wake samples with dominant pressure elevated"
+                    in line
+                    for line in report["continuity_story"]
+                )
+            )
+            self.assertTrue(
+                any(
+                    "background trait convergence history focus is trait_recalibration_required with unstable traits continuity_drive and stable traits repair_seriousness"
                     in line
                     for line in report["continuity_story"]
                 )
@@ -4960,6 +4994,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_convergence_history_window_size": 4,
                     "background_dominant_convergence_pressure_level": "present",
                     "background_dominant_convergence_state": "integrating_cross_process_continuity",
+                    "background_trait_convergence_history_focus": "trait_stability_hold",
+                    "background_trait_convergence_unstable_names": ["continuity_drive"],
+                    "background_trait_convergence_stable_names": ["repair_seriousness"],
+                    "background_trait_convergence_history_profile": {
+                        "continuity_drive": {
+                            "latest_band": "integrating",
+                            "trend_state": "integrating_trait_convergence",
+                        },
+                        "repair_seriousness": {
+                            "latest_band": "stabilized",
+                            "trend_state": "stable_trait_convergence",
+                        },
+                    },
                     "background_convergence_state": "integrating_cross_process_continuity",
                     "background_convergence_pressure_level": "present",
                     "background_convergence_attention_target": "trait_slow_variable_convergence",
@@ -4993,9 +5040,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 report["background_convergence_history_trend_state"],
                 "integrating_cross_wake_convergence",
             )
+            self.assertEqual(
+                report["background_trait_convergence_history_focus"],
+                "trait_stability_hold",
+            )
+            self.assertEqual(
+                report["background_trait_convergence_stable_names"],
+                ["repair_seriousness"],
+            )
             self.assertTrue(
                 any(
                     "background convergence history trend is integrating_cross_wake_convergence across 4 wake samples with dominant pressure present"
+                    in line
+                    for line in report["continuity_story"]
+                )
+            )
+            self.assertTrue(
+                any(
+                    "background trait convergence history focus is trait_stability_hold with unstable traits continuity_drive and stable traits repair_seriousness"
                     in line
                     for line in report["continuity_story"]
                 )

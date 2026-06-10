@@ -286,9 +286,9 @@ restore shell completed
 
 1. 把 resident governance closeout 的主导 driver family、下一次唤醒预期和 lineage depth 写成人可读解释。
 2. 在 background resume summary 存在时，显式写出 `background_relationship_stage`、`background_relationship_stage_reason`、`background_trait_slow_variable_summary` 与 `background_resume_focus`。
-3. 当 waiting governance 已由 `background_convergence_*` 调制时，显式写出 `background_convergence_summary_ref`、`background_convergence_history_ref`、`background_convergence_state`、`background_convergence_pressure_level`、`background_convergence_attention_target`、`background_relationship_stage_continuity`、`background_trait_convergence_score`、`background_trait_convergence_summary`、`background_convergence_history_trend_state` 与 `background_convergence_focus`。
+3. 当 waiting governance 已由 `background_convergence_*` 调制时，显式写出 `background_convergence_summary_ref`、`background_convergence_history_ref`、`background_convergence_state`、`background_convergence_pressure_level`、`background_convergence_attention_target`、`background_relationship_stage_continuity`、`background_trait_convergence_score`、`background_trait_convergence_summary`、`background_convergence_history_trend_state`、`background_trait_convergence_history_focus`、`background_trait_convergence_unstable_names`、`background_trait_convergence_stable_names` 与 `background_convergence_focus`。
 4. 当 `background_convergence_history_trend_state` 进入 `recent_recalibration_pressure` / `elevated_pressure_watch` / `integrating_cross_wake_convergence` 时，解释报告必须把主导 driver family 分别落到 `background_history_recalibration_hold` 或 `background_history_stability_hold`，并给出下一次唤醒前需要重新校准或稳定跨唤醒历史的 expectation。
-5. `continuity_story` 里必须出现关系阶段、慢变量名称、convergence state / trait band / history trend，让关闭态解释报告能说明这次生命过程是带着什么关系阶段、自我慢变量和跨进程收敛压力等待下一次唤醒。
+5. `continuity_story` 里必须出现关系阶段、慢变量名称、convergence state / trait band / history trend / trait history focus，让关闭态解释报告能说明这次生命过程是带着什么关系阶段、自我慢变量、哪些慢变量稳定、哪些慢变量仍在整合或重新校准，以及什么跨进程收敛压力等待下一次唤醒。
 6. 下一次 bootstrap 时，`background_continuity.py` 必须把该解释报告恢复成 `background_resident_governance_explanation_ref`、`background_governance_driver_family`、`background_next_wake_expectation` 与 `background_governance_explanation_story`，并继续交给 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`；这表示上一次生命过程的“为何如此等待”会进入下一次醒来的背景连续体。
 
 ## 主报告与 receipt 回链
