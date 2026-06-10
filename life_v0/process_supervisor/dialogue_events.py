@@ -219,6 +219,47 @@ def build_resident_background_lineage_payload(
         presence = lineage_state.get(key)
         if isinstance(presence, dict) and presence:
             payload[f"resident_background_lineage_{key}"] = dict(presence)
+    language_presence = lineage_state.get("language_presence")
+    if isinstance(language_presence, dict):
+        live_language_refs = _dedupe_string_list(
+            _string_list(language_presence.get("live_language_turn_refs"))
+        )
+        background_live_language_refs = _dedupe_string_list(
+            _string_list(language_presence.get("background_live_language_turn_refs"))
+        )
+        long_horizon_language_refs = _dedupe_string_list(
+            _string_list(language_presence.get("long_horizon_language_refs"))
+        )
+        live_language_presence_refs = _dedupe_string_list(
+            [
+                *long_horizon_language_refs,
+                *live_language_refs,
+                *background_live_language_refs,
+            ]
+        )
+        semantic_focus = (
+            language_presence.get("last_live_semantic_focus")
+            or language_presence.get("background_last_live_semantic_focus")
+        )
+        if live_language_refs:
+            payload["resident_background_lineage_live_language_refs"] = (
+                live_language_refs
+            )
+            lineage_refs.extend(live_language_refs)
+        if background_live_language_refs:
+            payload["resident_background_lineage_background_live_language_refs"] = (
+                background_live_language_refs
+            )
+            lineage_refs.extend(background_live_language_refs)
+        if semantic_focus not in {None, ""}:
+            payload["resident_background_lineage_last_live_semantic_focus"] = (
+                semantic_focus
+            )
+        if live_language_presence_refs:
+            payload["resident_background_lineage_language_evidence_refs"] = (
+                live_language_presence_refs
+            )
+            lineage_refs.extend(live_language_presence_refs)
     offline_presence = lineage_state.get("offline_learning_presence")
     if isinstance(offline_presence, dict):
         for source_key, target_key in (

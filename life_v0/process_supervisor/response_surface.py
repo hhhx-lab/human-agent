@@ -211,6 +211,42 @@ def compose_life_response(
                 f"{response}，后台语言关注指向"
                 f"{language_presence['governance_attention_target']}"
             )
+        if isinstance(language_presence, dict):
+            live_semantic_focus = (
+                language_presence.get("last_live_semantic_focus")
+                or language_presence.get("background_last_live_semantic_focus")
+            )
+            live_language_refs = _string_list(
+                language_presence.get("live_language_turn_refs")
+            )
+            background_live_language_refs = _string_list(
+                language_presence.get("background_live_language_turn_refs")
+            )
+            live_presence_profile = language_presence.get(
+                "live_language_presence_profile"
+            )
+            if isinstance(live_presence_profile, dict):
+                live_language_refs = live_language_refs or _string_list(
+                    live_presence_profile.get("live_language_turn_refs")
+                )
+                background_live_language_refs = (
+                    background_live_language_refs
+                    or _string_list(
+                        live_presence_profile.get("background_live_language_turn_refs")
+                    )
+                )
+                live_semantic_focus = (
+                    live_semantic_focus
+                    or live_presence_profile.get("last_live_semantic_focus")
+                    or live_presence_profile.get("background_last_live_semantic_focus")
+                )
+            language_ref_count = len(
+                _dedupe_string_list(live_language_refs + background_live_language_refs)
+            )
+            if live_semantic_focus:
+                response = f"{response}，后台语言语义余波停在{live_semantic_focus}"
+            if language_ref_count:
+                response = f"{response}，后台语言证据保留{language_ref_count}条"
         offline_learning_presence = resident_background_lineage_state.get(
             "offline_learning_presence"
         )
@@ -358,6 +394,23 @@ def _slow_value(trait_slow_variables: dict[str, Any], key: str) -> float:
     if isinstance(payload, (int, float)):
         return float(payload)
     return 0.0
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
+
+
+def _dedupe_string_list(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        result.append(value)
+    return result
 
 
 def _prediction_surface_posture(

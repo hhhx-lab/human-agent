@@ -4197,6 +4197,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/relationship/relationship_timeline.json"
                         ],
                         "governance_attention_target": "relationship_timeline",
+                        "live_language_turn_refs": [
+                            "runtime/state/language/language_percept_frame.json",
+                            "runtime/state/language/semantic_map_frame.json",
+                            "runtime/state/language/inner_speech_frame.json",
+                            "runtime/state/language/expression_monitor_state.json",
+                            "runtime/state/language/expression_plan.json",
+                        ],
+                        "last_live_semantic_focus": "repair_commitment_shared_language",
+                        "background_live_language_turn_refs": [
+                            "runtime/state/language/language_percept_frame.json",
+                            "runtime/state/language/semantic_map_frame.json",
+                        ],
+                        "background_last_live_semantic_focus": "repair_commitment_shared_language",
+                        "live_language_presence_profile": {
+                            "schema_version": "live_language_presence_profile_v0",
+                            "continuity_mode": "current_turn_plus_background_language_presence",
+                            "ref_count": 5,
+                        },
                     },
                 },
                 "offline_learning_cumulative_profile": {
@@ -4361,6 +4379,44 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "relationship_timeline",
             )
             self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_last_live_semantic_focus"
+                ],
+                "repair_commitment_shared_language",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_live_language_refs"
+                ],
+                [
+                    "runtime/state/language/language_percept_frame.json",
+                    "runtime/state/language/semantic_map_frame.json",
+                    "runtime/state/language/inner_speech_frame.json",
+                    "runtime/state/language/expression_monitor_state.json",
+                    "runtime/state/language/expression_plan.json",
+                ],
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_background_live_language_refs"
+                ],
+                [
+                    "runtime/state/language/language_percept_frame.json",
+                    "runtime/state/language/semantic_map_frame.json",
+                ],
+            )
+            self.assertIn(
+                "runtime/state/language/expression_plan.json",
+                result.last_life_turn[
+                    "resident_background_lineage_language_evidence_refs"
+                ],
+            )
+            self.assertIn(
+                "后台语言语义余波停在repair_commitment_shared_language",
+                result.emitted_output,
+            )
+            self.assertIn("后台语言证据保留5条", result.emitted_output)
+            self.assertEqual(
                 result.last_life_turn["prediction_waiting_posture"],
                 "hold_for_evidence",
             )
@@ -4491,14 +4547,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/terminal/background_convergence_history.json",
                 ],
             )
-            self.assertEqual(
-                dialogue_writeback_bundle["resident_background_lineage_refs"],
-                [
-                    "runtime/state/terminal/resident_governance_state.json",
-                    "runtime/state/terminal/resident_governance_snapshot.json",
-                    "runtime/reports/latest/digital_life_resident_governance_report.json",
-                ],
-            )
+            for ref in [
+                "runtime/state/terminal/resident_governance_state.json",
+                "runtime/state/terminal/resident_governance_snapshot.json",
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+                "runtime/state/language/expression_plan.json",
+            ]:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle["resident_background_lineage_refs"],
+                )
             self.assertEqual(
                 dialogue_writeback_bundle["prediction_write_gate_refs"],
                 [
@@ -7877,6 +7935,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/relationship/relationship_timeline.json"
                         ],
                         "governance_attention_target": "relationship_timeline",
+                        "live_language_turn_refs": [
+                            "runtime/state/language/language_percept_frame.json",
+                            "runtime/state/language/semantic_map_frame.json",
+                            "runtime/state/language/inner_speech_frame.json",
+                        ],
+                        "last_live_semantic_focus": "repair_commitment_shared_language",
+                        "background_live_language_turn_refs": [
+                            "runtime/state/language/language_percept_frame.json",
+                            "runtime/state/language/semantic_map_frame.json",
+                        ],
+                        "background_last_live_semantic_focus": "repair_commitment_shared_language",
                     },
                     "offline_learning_presence": {
                         "generation": 4,
@@ -8019,6 +8088,29 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "relationship_timeline",
         )
         self.assertEqual(
+            life_turn["resident_background_lineage_last_live_semantic_focus"],
+            "repair_commitment_shared_language",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_live_language_refs"],
+            [
+                "runtime/state/language/language_percept_frame.json",
+                "runtime/state/language/semantic_map_frame.json",
+                "runtime/state/language/inner_speech_frame.json",
+            ],
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_background_live_language_refs"],
+            [
+                "runtime/state/language/language_percept_frame.json",
+                "runtime/state/language/semantic_map_frame.json",
+            ],
+        )
+        self.assertIn(
+            "runtime/state/language/inner_speech_frame.json",
+            life_turn["resident_background_lineage_language_evidence_refs"],
+        )
+        self.assertEqual(
             life_turn["resident_background_lineage_offline_learning_presence"][
                 "generation"
             ],
@@ -8070,19 +8162,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/dream/dream_fact_gate_decision.json",
             ],
         )
-        self.assertEqual(
-            life_turn["resident_background_lineage_evidence_refs"],
-            [
-                "runtime/state/terminal/resident_governance_state.json",
-                "runtime/state/terminal/background_convergence_history.json",
-                "runtime/state/growth/relationship_learning_plan.json",
-                "runtime/state/growth/language_learning_plan.json",
-                "runtime/state/dream/offline_consolidation_frame.json",
-                "runtime/state/dream/dream_experience_window.json",
-                "runtime/state/dream/wake_integration_frame.json",
-                "runtime/state/dream/dream_fact_gate_decision.json",
-            ],
-        )
+        for ref in [
+            "runtime/state/terminal/resident_governance_state.json",
+            "runtime/state/terminal/background_convergence_history.json",
+            "runtime/state/language/inner_speech_frame.json",
+            "runtime/state/growth/relationship_learning_plan.json",
+            "runtime/state/growth/language_learning_plan.json",
+            "runtime/state/dream/offline_consolidation_frame.json",
+            "runtime/state/dream/dream_experience_window.json",
+            "runtime/state/dream/wake_integration_frame.json",
+            "runtime/state/dream/dream_fact_gate_decision.json",
+        ]:
+            self.assertIn(ref, life_turn["resident_background_lineage_evidence_refs"])
         self.assertEqual(life_turn["prediction_waiting_posture"], "hold_for_evidence")
         self.assertEqual(life_turn["response_surface_posture_hint"], "question")
         self.assertEqual(life_turn["prediction_attention_target"], "active_sampling_plan")
@@ -8943,6 +9034,31 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "current_mode": "restored_waiting_for_external_turn",
                 "last_turn_status": "closed",
                 "heartbeat_counter": 2,
+                "resident_background_lineage_state": {
+                    "schema_version": "resident_background_lineage_state_v0",
+                    "governance_phase": "waiting_heartbeat_active",
+                    "generation": 2,
+                    "depth_band": "persistent_lineage",
+                    "waiting_posture": "persistent_background_hold",
+                    "cadence_weight": "persistent",
+                    "evidence_refs": [
+                        "runtime/state/terminal/resident_governance_state.json",
+                    ],
+                    "language_presence": {
+                        "long_horizon_language_refs": [
+                            "runtime/state/relationship/relationship_timeline.json",
+                        ],
+                        "governance_attention_target": "relationship_timeline",
+                        "live_language_turn_refs": [
+                            "runtime/state/language/language_percept_frame.json",
+                            "runtime/state/language/semantic_map_frame.json",
+                            "runtime/state/language/inner_speech_frame.json",
+                            "runtime/state/language/expression_monitor_state.json",
+                            "runtime/state/language/expression_plan.json",
+                        ],
+                        "last_live_semantic_focus": "repair_commitment_shared_language",
+                    },
+                },
             }
             self_narrative_trace = {
                 "narrative_turn_refs": [
@@ -9293,6 +9409,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/language/inner_speech_frame.json",
                     "runtime/state/language/expression_monitor_state.json",
                     "runtime/state/language/expression_plan.json",
+                ],
+            )
+            self.assertIn(
+                "runtime/state/language/expression_plan.json",
+                dialogue_writeback_bundle["resident_background_lineage_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_last_live_semantic_focus"
+                ],
+                "repair_commitment_shared_language",
+            )
+            self.assertIn(
+                "runtime/state/language/inner_speech_frame.json",
+                resumed_dialogue_packet[
+                    "resident_background_lineage_language_evidence_refs"
                 ],
             )
             self.assertEqual(

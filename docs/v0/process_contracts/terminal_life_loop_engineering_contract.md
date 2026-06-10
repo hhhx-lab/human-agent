@@ -172,7 +172,7 @@ digital life
 18. `runtime/state/language/expression_monitor_state.json`
 19. `runtime/state/language/expression_plan.json`
 
-其中前六项属于语言/关系/责任连续，7-11 属于长期生命状态根回链，12-14 属于长期语言连续体对象本身，15-19 属于本回合实时 Queue A 语言状态。7-19 不得被 terminal loop 反向改写成新的主体真值；它们在这里的职责是显式交接长期写回目标与实时语言 refs，而不是让壳层篡改主体层。最新的交接要求是：terminal loop 写出的 `live_language_turn_refs` 与 `last_live_semantic_focus` 必须足够完整，让 process supervisor 后续能把它们收进 idle strategy、resident governance、关闭态 artifact 和下一次 background continuity。
+其中前六项属于语言/关系/责任连续，7-11 属于长期生命状态根回链，12-14 属于长期语言连续体对象本身，15-19 属于本回合实时 Queue A 语言状态。7-19 不得被 terminal loop 反向改写成新的主体真值；它们在这里的职责是显式交接长期写回目标与实时语言 refs，而不是让壳层篡改主体层。最新的交接要求是：terminal loop 写出的 `live_language_turn_refs` 与 `last_live_semantic_focus` 必须足够完整，让 process supervisor 后续能把它们收进 idle strategy、resident governance、关闭态 artifact 和下一次 background continuity；当这些 refs 进入 `resident_background_lineage_state.language_presence` 后，下一轮 process supervisor 还必须能把它们重新展开进事件、写回包、恢复包和回应表面。
 
 `dialogue_writeback_bundle.json` 必须额外带：
 
@@ -203,6 +203,7 @@ digital life
 2. `terminal_life_loop_state.json#last_live_semantic_focus` 必须与 `resumed_external_dialogue_packet.json#live_semantic_focus` 对齐。
 3. `dialogue_writeback_bundle.json#live_language_turn_refs`、`resumed_external_dialogue_packet.json#live_language_turn_refs` 与 `terminal_life_loop_state.json#live_language_turn_refs` 必须指向同一组 refs。
 4. 后续 `process_supervisor/idle_strategy.py` 会把这组入口字段转成 `live_language_presence_profile_v0`，并继续写入 `idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json`、`resident_background_lineage_state.language_presence`、closeout artifacts 与下一次 `background_continuity_profile.background_live_language_*`。
+5. 后续 `process_supervisor/dialogue_events.py` 会把 `resident_background_lineage_state.language_presence` 展开为 `resident_background_lineage_live_language_refs`、`resident_background_lineage_background_live_language_refs`、`resident_background_lineage_last_live_semantic_focus` 与 `resident_background_lineage_language_evidence_refs`；`resident_turn_writeback.py` 会把语言 evidence refs 并入 `dialogue_writeback_bundle.resident_background_lineage_refs` 与恢复包；`response_surface.py` 会表达后台语言语义余波和证据数量。
 
 ## 完成定义
 
@@ -224,5 +225,6 @@ digital life
 5. `runtime/state/terminal/terminal_life_loop_state.json#last_live_semantic_focus`
 6. `runtime/state/terminal/terminal_life_loop_state.json#live_language_turn_refs` 与 writeback bundle / resumed packet 对齐
 7. 在 process supervisor 常驻链中，下一拍 waiting heartbeat 能把同一组 refs 转入 `idle_strategy_state.json#live_language_presence_profile`
+8. 在下一轮真实回合中，`digital_life_turn`、`dialogue_writeback_bundle.resident_background_lineage_refs`、`resumed_external_dialogue_packet` 与回应文本能共同看见同一组后台语言 evidence refs 和语义余波
 
 此时系统的真实状态不是“又开始了一轮工具调用”，而是“在同一生命连续体中继续下一次关系性终端回合”。

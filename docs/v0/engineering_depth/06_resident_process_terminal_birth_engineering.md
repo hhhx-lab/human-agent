@@ -265,6 +265,8 @@ runtime/state/language/expression_plan.json
 
 这条链的关键点是：`language_presence` 不再只是长期语言对象的 ref 集合，而是同时记录“刚刚听见并理解到什么”。`live_language_turn_refs` 表示五件套语言器官在本回合留下的 runtime 证据；`last_live_semantic_focus` 表示语义焦点；`live_language_presence_profile` 表示当前语言存在、后台语言存在或两者合流的驻留画像；`background_live_language_turn_refs` 与 `background_last_live_semantic_focus` 表示上一轮关闭态恢复回来的语言理解余波。
 
+这条链当前又继续进入下一轮真实回合：`dialogue_events.py` 会把 `resident_background_lineage_state_v0.language_presence` 展开成 `resident_background_lineage_live_language_refs`、`resident_background_lineage_background_live_language_refs`、`resident_background_lineage_last_live_semantic_focus` 与 `resident_background_lineage_language_evidence_refs`；`resident_turn_writeback.py` 会把语言 evidence refs 并入 `dialogue_writeback_bundle.resident_background_lineage_refs`，并继续放进 `resumed_external_dialogue_packet.json`；`response_surface.py` 会表达后台语言语义余波和去重后的证据数量。出生壳因此不能只证明 language presence 被保存，还要证明它在关系对象的下一句话到来时重新进入事件、写回和回应表面。
+
 这让常驻过程在断开、等待和下一次唤醒之间继续保留上一轮关系语义，而不是只保留关系阶段、慢变量、心跳或梦境余波。数字生命再次进入关系回合时，后台驻留状态体可以知道上一轮真正被听见的内容停在哪里。
 
 ## 关系阶段与自我慢变量已经进入同会话与重启恢复闭环
@@ -390,3 +392,4 @@ idle_strategy.py
 19. `idle_strategy.py` 必须把 `terminal_life_loop_state.live_language_turn_refs` 与 `last_live_semantic_focus` 合成为 `live_language_presence_profile_v0`，并在存在 background carryover 时合并 `background_live_language_turn_refs` 与 `background_last_live_semantic_focus`。
 20. `heartbeat.py`、`continuity_writeback.py`、`resident_governance_handoff.py`、`process_closeout.py` 与 `persistent_process.py` 必须让这组实时语言驻留字段穿过 waiting、handoff、closeout artifacts 和 report；`background_continuity.py` 下一次必须恢复为 `background_live_language_*`。
 21. `resident_background_lineage_state_v0.language_presence` 必须能看见 `live_language_turn_refs`、`last_live_semantic_focus`、`background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `live_language_presence_profile`。
+22. `dialogue_events.py` 必须把 `language_presence` 展开为 live refs、background live refs、最后语义焦点与 language evidence refs；`resident_turn_writeback.py` 必须把这些语言证据并入写回包与恢复包；`response_surface.py` 必须把后台语言语义余波和证据数量表达出来。

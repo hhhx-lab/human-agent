@@ -235,6 +235,14 @@ def write_resident_turn_writeback(
             "resident_background_lineage_evidence_refs", []
         )
     )
+    resident_background_lineage_language_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_language_evidence_refs", []
+        )
+    )
+    resident_background_lineage_refs = _dedupe_refs(
+        resident_background_lineage_refs + resident_background_lineage_language_refs
+    )
     offline_learning_cumulative_refs = list(
         offline_learning_cumulative_payload.get(
             "offline_learning_cumulative_evidence_refs", []

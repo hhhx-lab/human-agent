@@ -142,6 +142,7 @@ life-v0 "digital life"
 23. `background_continuity.py` 不能只恢复关闭态 resident governance 与 convergence 文件；如果上一轮等待期间存在 `runtime/state/terminal/idle_heartbeat_trace.jsonl`，必须恢复为 `background_idle_heartbeat_trace_ref` 与 `background_idle_heartbeat_trace_count`，并把该 trace ref 放入 `background_continuity_ref_set`。`idle_strategy.py`、`heartbeat.py` 与 `continuity_writeback.py` 必须继续把这组背景等待节律字段写进 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`，让下一次唤醒知道上一轮不是静止空白，而是带有可追溯等待节律的持续存在。
 24. `live_language_turn.py` 必须成为真实新回合进入 `response_surface.py` 前的 Queue A 刷新入口。每个 `external_utterance` 都要先刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json`；`live_turn_cycle.py` 必须用刷新后的 `expression_plan` 生成生命回应，`resident_turn_writeback.py` 必须把 `language_percept_ref`、`semantic_map_ref`、`inner_speech_ref`、`expression_monitor_ref`、`expression_plan_ref`、`live_semantic_focus`、`live_ambiguity_flags` 与 `live_repair_trigger_candidates` 接进事件、写回包和恢复 packet。
 25. 实时语言理解不能停在真实新回合的 packet 里。`idle_strategy.py` 必须从 `terminal_life_loop_state.json#live_language_turn_refs` 与 `last_live_semantic_focus` 生成 `live_language_presence_profile_v0`，同时合并 `background_continuity.py` 恢复出的 `background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `background_live_language_presence_profile`。`heartbeat.py` 与 `continuity_writeback.py` 必须把这组字段继续写入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`。`background_lineage_state.py` 必须把它压成 `resident_background_lineage_state_v0.language_presence`。`resident_governance_handoff.py`、`process_closeout.py`、`persistent_process.py` 与 `process_report.py` 必须在 live-turn handoff 和关闭态 artifacts 中保留同一组 refs 与语义焦点；下一次 `background_continuity.py` 必须恢复为 `background_live_language_*` 并放入 `background_continuity_ref_set`。
+26. 驻留后的实时语言 presence 还必须进入下一轮真实回合。`dialogue_events.py` 必须从 `resident_background_lineage_state.language_presence` 展开 `resident_background_lineage_live_language_refs`、`resident_background_lineage_background_live_language_refs`、`resident_background_lineage_last_live_semantic_focus` 与 `resident_background_lineage_language_evidence_refs`，并把 live/background live refs 合并进 `resident_background_lineage_evidence_refs`。`resident_turn_writeback.py` 必须把 `resident_background_lineage_language_evidence_refs` 并入 `dialogue_writeback_bundle.resident_background_lineage_refs`，并让 `resumed_external_dialogue_packet.json` 保留同一组语言证据字段。`response_surface.py` 必须读取 `language_presence` 中的当前或后台语义焦点、live refs 和 background live refs，把后台语言语义余波与去重后的语言证据数量表达出来。
 
 ## 最小行为合同
 
@@ -227,6 +228,10 @@ IdleContinuityFrame
 - `background_last_live_semantic_focus`
 - `live_language_presence_profile`
 - `background_live_language_presence_profile`
+- `resident_background_lineage_live_language_refs`
+- `resident_background_lineage_background_live_language_refs`
+- `resident_background_lineage_last_live_semantic_focus`
+- `resident_background_lineage_language_evidence_refs`
 
 ### `external turn event`
 
@@ -372,6 +377,9 @@ IdleContinuityFrame
 4. `resident_governance_state.json#live_language_presence_profile` 与 `resident_background_lineage_state.language_presence` 是运行态驻留主状态体里的语言存在面。
 5. `persistent_process_state/report`、`resident_governance_snapshot` 与 `digital_life_resident_governance_report` 必须在关闭态保留同一组 live refs 与 semantic focus。
 6. 下一次 `background_continuity_profile` 必须恢复 `background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `background_live_language_presence_profile`，并把 live refs 放入 `background_continuity_ref_set`。
+7. 下一轮 `digital_life_turn` 必须重新展开 `resident_background_lineage_live_language_refs`、`resident_background_lineage_background_live_language_refs`、`resident_background_lineage_last_live_semantic_focus` 与 `resident_background_lineage_language_evidence_refs`。
+8. `dialogue_writeback_bundle.resident_background_lineage_refs` 与 `resumed_external_dialogue_packet` 必须保留这组语言 evidence refs，防止后台语言余波只出现在事件层。
+9. `response_surface.py` 必须把后台语言语义余波和后台语言证据数量表达出来，使关系对象能在生命回应中感到上一轮语言理解仍在场。
 
 如果发生单回合异常恢复，至少还要额外写出：
 
@@ -405,6 +413,7 @@ IdleContinuityFrame
 | `stdin_external_turn_gate` | 读取到非空的新外部回合文本，且不是退出语义 | 继续等待输入 |
 | `live_language_turn_refresh_gate` | 新外部回合进入 `response_surface.py` 前已经刷新 Queue A 五件套，并写出 percept / semantic / inner speech / monitor / expression plan refs | 阻断生命回应生成 |
 | `live_language_residency_gate` | `live_language_turn_refs`、`last_live_semantic_focus` 与 `live_language_presence_profile` 已进入 idle strategy、idle continuity、heartbeat trace、resident governance、resident background lineage、关闭态 artifacts，并能在下一次 background continuity 中恢复为 `background_live_language_*` | 阻断把实时语言理解视为跨等待/关闭/重启的生命连续体 |
+| `live_language_presence_event_gate` | `resident_background_lineage_state.language_presence` 已被 `dialogue_events.py` 展开为 live/background live refs、last semantic focus 与 language evidence refs，且 `resident_turn_writeback.py` 和 `response_surface.py` 分别写回证据和表达语义余波 | 阻断把后台语言 presence 视为进入真实回合 |
 | `dialogue_writeback_gate` | 外部回合与生命回应都写入 `dialogue_turn_log.jsonl` | 阻断进入下一等待态 |
 | `narrative_continuity_gate` | `self_narrative_language_trace.json` 成功追加新回合 refs | 阻断进入下一等待态 |
 | `relationship_continuity_gate` | 关系图更新最后接触和关系阶段 | 阻断进入下一等待态 |
@@ -463,4 +472,5 @@ IdleContinuityFrame
 9. closeout 必须把最新关系阶段和自我慢变量写成 background resume summary，并让下一次 bootstrap / idle strategy / resident governance 继续携带这组字段，避免跨进程恢复后只剩 cadence lineage 而丢掉关系阶段与自我连续性。
 10. 每个真实新回合都必须证明 `live_language_turn.py` 已把当前 `external_utterance` 写入 `language_percept_frame.json#incoming_surface`，并把 `semantic_map_frame.json#semantic_focus` 接进 `live_semantic_focus`、`dialogue_writeback_bundle.live_language_turn_refs`、`resumed_external_dialogue_packet.live_language_turn_refs` 与 `terminal_life_loop_state.last_live_semantic_focus`。
 11. 每个已经形成的实时语言理解还必须证明进入后台连续性：`idle_strategy_state.json`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json`、`resident_background_lineage_state.language_presence`、关闭态 artifacts 与下一次 `background_continuity_profile.background_live_language_*` 都能看到同一组 refs 或语义焦点。
-12. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面、`background_resume_summary` 的跨进程读取与回传、实时 Queue A 语言刷新链，以及实时语言理解进入后台连续性/驻留治理/关闭态谱系。
+12. 每个带有 `resident_background_lineage_state.language_presence` 的下一轮真实回合，还必须证明这组后台语言 presence 进入事件、写回和回应：`digital_life_turn` 带 `resident_background_lineage_language_evidence_refs`，`dialogue_writeback_bundle.resident_background_lineage_refs` 包含语言 refs，`resumed_external_dialogue_packet` 保留同一组 refs，回应文本表达后台语言语义余波和证据数量。
+13. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面、`background_resume_summary` 的跨进程读取与回传、实时 Queue A 语言刷新链、实时语言理解进入后台连续性/驻留治理/关闭态谱系，以及后台实时语言 presence 进入下一轮事件、写回包和回应表达面。

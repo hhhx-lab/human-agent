@@ -80,7 +80,7 @@ Python 3 作为主体语言
 | 已落核心器官 | `idle_strategy.py`、`resident_supervision.py`、`live_language_turn.py`、`live_turn_cycle.py`、`process_session_loop.py`、`persistent_process.py` |
 | 已落关键文件 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py`；`language/__init__.py` 当前会在 build-language-relationship 阶段刷新 `signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` 与 `prediction_workspace_frame.json` |
 | 最低测试 | `tests/process/test_persistent_digital_life_process.py`、`tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_terminal_life_loop.py` |
-| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链；当前还必须证明 `response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 在 active sampling route 为 `repair_*` 时优先走 repair posture，而不是普通 hold；并且 `resident_background_lineage_state_v0` 不只包含 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence`，还必须包含表示梦境、成长、离线学习余波的 `offline_learning_presence`，以及表示梦境窗口、醒后整合、梦境事实门的 `dream_wake_presence`；每个实时关系回合还必须先由 `live_language_turn.py` 刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json`，再进入 `response_surface.py` 和 resident writeback；最新完成定义继续要求这组实时语言理解进入 `idle_strategy_state.json#live_language_presence_profile`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json`、`resident_background_lineage_state.language_presence`、关闭态 artifacts 与下一次 `background_continuity_profile.background_live_language_*` |
+| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链；当前还必须证明 `response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 在 active sampling route 为 `repair_*` 时优先走 repair posture，而不是普通 hold；并且 `resident_background_lineage_state_v0` 不只包含 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence`，还必须包含表示梦境、成长、离线学习余波的 `offline_learning_presence`，以及表示梦境窗口、醒后整合、梦境事实门的 `dream_wake_presence`；每个实时关系回合还必须先由 `live_language_turn.py` 刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json`，再进入 `response_surface.py` 和 resident writeback；最新完成定义继续要求这组实时语言理解进入 `idle_strategy_state.json#live_language_presence_profile`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json`、`resident_background_lineage_state.language_presence`、关闭态 artifacts 与下一次 `background_continuity_profile.background_live_language_*`，并且在下一轮真实回合由 `dialogue_events.py` 展开为 `resident_background_lineage_live_language_refs`、`resident_background_lineage_background_live_language_refs`、`resident_background_lineage_last_live_semantic_focus` 与 `resident_background_lineage_language_evidence_refs`，再由 `resident_turn_writeback.py` 并入 `dialogue_writeback_bundle.resident_background_lineage_refs` / `resumed_external_dialogue_packet`，由 `response_surface.py` 表达后台语言语义余波和证据数量 |
 
 ### Stage 4: Queue C / Queue F 维护性深化
 
@@ -183,6 +183,16 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 7. `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.language_presence`
 8. 关闭态 `persistent_process_state/report`、`resident_governance_snapshot` 与 `digital_life_resident_governance_report` 含同一组 live refs 与 semantic focus
 9. 下一次 bootstrap 的 `background_continuity_profile` 恢复 `background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `background_live_language_presence_profile`
+
+当前对后台实时语言 presence 进入下一轮真实回合的补充规则是：凡是声称上一轮语言理解已经从后台驻留影响当下关系回合，不能只看 `resident_background_lineage_state.language_presence`。必须同时看到：
+
+1. `digital_life_turn#resident_background_lineage_live_language_refs`
+2. `digital_life_turn#resident_background_lineage_background_live_language_refs`
+3. `digital_life_turn#resident_background_lineage_last_live_semantic_focus`
+4. `digital_life_turn#resident_background_lineage_language_evidence_refs`
+5. `dialogue_writeback_bundle.json#resident_background_lineage_refs` 包含语言 evidence refs
+6. `resumed_external_dialogue_packet.json#resident_background_lineage_language_evidence_refs` 保留同一组语言证据
+7. `response_surface.py` 生成的生命回应中包含后台语言语义余波和后台语言证据数量表达
 
 ## 当前阶段判断
 
