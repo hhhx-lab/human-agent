@@ -255,6 +255,26 @@ def write_process_report_bundle(
             ]
             if ref
         ],
+        "offline_learning_cumulative_focus": governance_explanation.report.get(
+            "offline_learning_cumulative_focus",
+            {},
+        ),
+        "offline_learning_cumulative_generation": idle_governance.get(
+            "offline_learning_cumulative_generation"
+        ),
+        "offline_learning_cumulative_pressure_level": idle_governance.get(
+            "offline_learning_cumulative_pressure_level"
+        ),
+        "offline_learning_cumulative_attention_target": idle_governance.get(
+            "offline_learning_cumulative_attention_target"
+        ),
+        "offline_learning_cumulative_priority_profile": idle_governance.get(
+            "offline_learning_cumulative_priority_profile",
+            {},
+        ),
+        "offline_learning_cumulative_ref_set": list(
+            idle_governance.get("offline_learning_cumulative_ref_set", [])
+        ),
         "identity_consciousness_birth_refs": identity_consciousness_birth_refs,
         "background_relationship_stage": relationship_resume_summary.get(
             "relationship_stage"

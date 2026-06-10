@@ -5633,6 +5633,110 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 report["continuity_story"],
             )
 
+    def test_resident_governance_explanation_organ_writes_cumulative_offline_learning_story(self):
+        from life_v0.process_supervisor.governance_explanation import (
+            write_resident_governance_explanation,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            reports_dir = Path(tmp) / "runtime" / "reports" / "latest"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+
+            result = write_resident_governance_explanation(
+                run_id="governance-explain-offline-learning",
+                generated_at="2026-06-10T00:00:00+00:00",
+                reports_dir=reports_dir,
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state={
+                    "schema_version": "idle_strategy_state_v0",
+                    "heartbeat_interval_ms": 58,
+                    "next_idle_action": "refresh_waiting_heartbeat_with_offline_learning_hold",
+                    "governance_attention_target": "relationship_timeline",
+                    "governance_attention_reason": "baseline_relation_presence_maintenance",
+                    "governance_cadence_profile": "relationship_presence_refresh",
+                    "offline_learning_pressure_level": "quiet",
+                    "offline_learning_attention_target": "baseline_offline_learning_maintenance",
+                    "offline_learning_priority_profile": {},
+                    "offline_learning_ref_set": [],
+                    "offline_learning_cumulative_profile": {
+                        "schema_version": "offline_learning_cumulative_profile_v0",
+                        "generation": 3,
+                        "pressure_level": "elevated",
+                        "attention_target": "relationship_learning_plan",
+                        "priority_profile": {
+                            "relationship_learning_plan": "elevated",
+                            "language_learning_plan": "baseline",
+                        },
+                        "ref_set": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                        "current_pressure_level": "quiet",
+                        "previous_generation": 3,
+                    },
+                    "offline_learning_cumulative_generation": 3,
+                    "offline_learning_cumulative_pressure_level": "elevated",
+                    "offline_learning_cumulative_attention_target": "relationship_learning_plan",
+                    "offline_learning_cumulative_priority_profile": {
+                        "relationship_learning_plan": "elevated",
+                        "language_learning_plan": "baseline",
+                    },
+                    "offline_learning_cumulative_ref_set": [
+                        "runtime/state/growth/relationship_learning_plan.json",
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
+                },
+                persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
+                resident_governance_report_ref="runtime/reports/latest/digital_life_resident_governance_report.json",
+                resident_governance_state_ref="runtime/state/terminal/resident_governance_state.json",
+                resident_governance_snapshot_ref="runtime/state/terminal/resident_governance_snapshot.json",
+                completed_turns=1,
+                incident_count=0,
+                relaunch_recovery_count=0,
+                exit_reason="explicit_exit",
+                write_json=self._write_json,
+            )
+
+            report = self._read_json(
+                reports_dir / "digital_life_resident_governance_explanation.json"
+            )
+
+            self.assertEqual(
+                result.report["dominant_driver_family"],
+                "offline_learning_reconsolidation",
+            )
+            self.assertEqual(
+                report["next_wake_expectation"],
+                "re_enter_offline_learning_hold_before_accepting_external_turn",
+            )
+            self.assertEqual(
+                report["offline_learning_cumulative_focus"]["generation"],
+                3,
+            )
+            self.assertEqual(
+                report["offline_learning_cumulative_focus"]["pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                report["offline_learning_cumulative_focus"]["attention_target"],
+                "relationship_learning_plan",
+            )
+            self.assertEqual(
+                report["offline_learning_cumulative_focus"]["priority_names"],
+                ["language_learning_plan", "relationship_learning_plan"],
+            )
+            self.assertEqual(
+                report["offline_learning_cumulative_focus"]["ref_count"],
+                2,
+            )
+            self.assertTrue(
+                any(
+                    "offline learning cumulative profile is generation 3 with pressure elevated and attention target relationship_learning_plan"
+                    in line
+                    for line in report["continuity_story"]
+                )
+            )
+
     def test_resident_governance_explanation_organ_writes_convergence_story(self):
         from life_v0.process_supervisor.governance_explanation import (
             write_resident_governance_explanation,
@@ -6020,6 +6124,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_convergence_history_window_size": 2,
                     "background_dominant_convergence_pressure_level": "present",
                     "background_dominant_convergence_state": "stabilized_cross_process_continuity",
+                    "offline_learning_cumulative_profile": {
+                        "schema_version": "offline_learning_cumulative_profile_v0",
+                        "generation": 2,
+                        "pressure_level": "elevated",
+                        "attention_target": "relationship_learning_plan",
+                        "priority_profile": {
+                            "relationship_learning_plan": "elevated",
+                            "language_learning_plan": "baseline",
+                        },
+                        "ref_set": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                        "current_pressure_level": "quiet",
+                        "previous_generation": 2,
+                    },
+                    "offline_learning_cumulative_generation": 2,
+                    "offline_learning_cumulative_pressure_level": "elevated",
+                    "offline_learning_cumulative_attention_target": "relationship_learning_plan",
+                    "offline_learning_cumulative_priority_profile": {
+                        "relationship_learning_plan": "elevated",
+                        "language_learning_plan": "baseline",
+                    },
+                    "offline_learning_cumulative_ref_set": [
+                        "runtime/state/growth/relationship_learning_plan.json",
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
                 },
             )
             (terminal_dir / "idle_heartbeat_trace.jsonl").write_text(
@@ -6222,6 +6353,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             process_report = self._read_json(reports_dir / "digital_life_process_report.json")
             process_digest = self._read_json(reports_dir / "digital_life_process_digest.json")
+            governance_explanation = self._read_json(
+                reports_dir / "digital_life_resident_governance_explanation.json"
+            )
             process_receipt = self._read_json(receipts_dir / "digital_life_process_process-closeout-organ.json")
 
             self.assertEqual(
@@ -6361,6 +6495,35 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 process_digest["background_dominant_convergence_pressure_level"],
                 "present",
+            )
+            self.assertEqual(
+                process_digest["offline_learning_cumulative_generation"],
+                2,
+            )
+            self.assertEqual(
+                process_digest["offline_learning_cumulative_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                process_digest["offline_learning_cumulative_attention_target"],
+                "relationship_learning_plan",
+            )
+            self.assertEqual(
+                process_digest["offline_learning_cumulative_focus"]["ref_count"],
+                2,
+            )
+            self.assertEqual(
+                governance_explanation["offline_learning_cumulative_focus"][
+                    "priority_profile"
+                ]["relationship_learning_plan"],
+                "elevated",
+            )
+            self.assertTrue(
+                any(
+                    "offline learning cumulative profile is generation 2"
+                    in line
+                    for line in governance_explanation["continuity_story"]
+                )
             )
             self.assertEqual(
                 resident_governance_snapshot["schema_version"],

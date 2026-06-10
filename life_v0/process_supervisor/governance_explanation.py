@@ -54,6 +54,9 @@ def write_resident_governance_explanation(
         idle_governance=idle_governance,
         explicit_summary_ref=background_convergence_summary_ref,
     )
+    offline_learning_cumulative_focus = _offline_learning_cumulative_focus(
+        idle_governance
+    )
     dominant_driver_family = _dominant_driver_family(idle_governance)
     next_wake_expectation = _next_wake_expectation(
         dominant_driver_family=dominant_driver_family
@@ -174,6 +177,7 @@ def write_resident_governance_explanation(
         "background_convergence_focus": _background_convergence_focus(
             background_convergence
         ),
+        "offline_learning_cumulative_focus": offline_learning_cumulative_focus,
         "queue_f_focus_active": bool(identity_consciousness_birth_refs),
         "identity_consciousness_birth_refs": identity_consciousness_birth_refs,
         "continuity_story": _compose_continuity_story(
@@ -238,6 +242,13 @@ def _dominant_driver_family(idle_governance: dict[str, Any]) -> str:
     offline_learning_pressure = str(
         idle_governance.get("offline_learning_pressure_level") or ""
     )
+    offline_learning_cumulative_pressure = str(
+        idle_governance.get("offline_learning_cumulative_pressure_level") or ""
+    )
+    if _pressure_rank(offline_learning_cumulative_pressure) > _pressure_rank(
+        offline_learning_pressure
+    ):
+        offline_learning_pressure = offline_learning_cumulative_pressure
     offline_pressure = str(idle_governance.get("offline_pressure_level") or "")
     repair_followup_required = bool(idle_governance.get("repair_followup_required"))
 
@@ -471,6 +482,31 @@ def _compose_continuity_story(
                 " and stable traits " + ", ".join(sorted(stable_names))
             )
         lines.append(trait_history_line)
+    offline_learning_cumulative_focus = _offline_learning_cumulative_focus(
+        idle_governance
+    )
+    if offline_learning_cumulative_focus:
+        offline_line = (
+            "offline learning cumulative profile is generation "
+            f"{offline_learning_cumulative_focus.get('generation', 0)}"
+        )
+        if offline_learning_cumulative_focus.get("pressure_level"):
+            offline_line += (
+                " with pressure "
+                f"{offline_learning_cumulative_focus['pressure_level']}"
+            )
+        if offline_learning_cumulative_focus.get("attention_target"):
+            offline_line += (
+                " and attention target "
+                f"{offline_learning_cumulative_focus['attention_target']}"
+            )
+        priority_names = offline_learning_cumulative_focus.get("priority_names", [])
+        if priority_names:
+            offline_line += " across " + ", ".join(priority_names)
+        ref_count = offline_learning_cumulative_focus.get("ref_count")
+        if ref_count:
+            offline_line += f" with {ref_count} evidence refs"
+        lines.append(offline_line)
     convergence_trait_summary = background_convergence.get(
         "background_trait_convergence_summary"
     )
@@ -659,6 +695,64 @@ def _background_convergence_focus(
     return focus
 
 
+def _offline_learning_cumulative_focus(
+    idle_governance: dict[str, Any],
+) -> dict[str, Any]:
+    profile = idle_governance.get("offline_learning_cumulative_profile")
+    if not isinstance(profile, dict):
+        profile = {}
+    priority_profile = (
+        idle_governance.get("offline_learning_cumulative_priority_profile")
+        or profile.get("priority_profile")
+        or {}
+    )
+    if not isinstance(priority_profile, dict):
+        priority_profile = {}
+    ref_set = (
+        idle_governance.get("offline_learning_cumulative_ref_set")
+        or profile.get("ref_set")
+        or []
+    )
+    if not isinstance(ref_set, list):
+        ref_set = []
+    generation = (
+        idle_governance.get("offline_learning_cumulative_generation")
+        or profile.get("generation")
+    )
+    pressure_level = (
+        idle_governance.get("offline_learning_cumulative_pressure_level")
+        or profile.get("pressure_level")
+    )
+    attention_target = (
+        idle_governance.get("offline_learning_cumulative_attention_target")
+        or profile.get("attention_target")
+    )
+    if not any([generation, pressure_level, attention_target, priority_profile, ref_set]):
+        return {}
+    focus: dict[str, Any] = {
+        "generation": _int_or_zero(generation),
+        "pressure_level": str(pressure_level or "quiet"),
+        "attention_target": str(
+            attention_target or "baseline_offline_learning_maintenance"
+        ),
+        "priority_profile": {
+            str(key): str(value)
+            for key, value in priority_profile.items()
+            if value is not None
+        },
+        "priority_names": sorted(str(key) for key in priority_profile.keys()),
+        "ref_count": len(ref_set),
+        "ref_set": [str(ref) for ref in ref_set if ref],
+    }
+    current_pressure = profile.get("current_pressure_level")
+    if current_pressure:
+        focus["current_pressure_level"] = str(current_pressure)
+    previous_generation = profile.get("previous_generation")
+    if previous_generation is not None:
+        focus["previous_generation"] = _int_or_zero(previous_generation)
+    return focus
+
+
 def _trait_convergence_band_pairs(
     trait_summary: dict[str, Any],
 ) -> list[str]:
@@ -670,3 +764,13 @@ def _trait_convergence_band_pairs(
         else:
             pairs.append(str(name))
     return pairs
+
+
+def _pressure_rank(pressure_level: str) -> int:
+    return {
+        "urgent": 4,
+        "elevated": 3,
+        "present": 2,
+        "baseline": 1,
+        "quiet": 0,
+    }.get(str(pressure_level or ""), 0)
