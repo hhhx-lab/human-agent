@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, Callable
 
@@ -15,6 +16,9 @@ from .persistent_process import (
     RESIDENT_GOVERNANCE_SNAPSHOT_REF,
     RESIDENT_GOVERNANCE_STATE_REF,
 )
+
+
+IDLE_HEARTBEAT_TRACE_REF = "runtime/state/terminal/idle_heartbeat_trace.jsonl"
 
 
 def write_waiting_heartbeat(
@@ -219,6 +223,8 @@ def write_waiting_heartbeat(
     safe_terminal_loop["last_heartbeat_packet_ref"] = heartbeat_report_ref
     safe_terminal_loop["idle_strategy_ref"] = IDLE_STRATEGY_STATE_REF
     safe_terminal_loop["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
+    safe_terminal_loop["idle_heartbeat_trace_ref"] = IDLE_HEARTBEAT_TRACE_REF
+    safe_terminal_loop["idle_heartbeat_trace_count"] = heartbeat_counter
     write_json(terminal_dir / "safe_terminal_loop_state.json", safe_terminal_loop)
 
     terminal_life_loop_state["current_mode"] = waiting_mode
@@ -227,6 +233,8 @@ def write_waiting_heartbeat(
     terminal_life_loop_state["next_required_action"] = "await_next_external_relation_turn"
     terminal_life_loop_state["idle_strategy_ref"] = IDLE_STRATEGY_STATE_REF
     terminal_life_loop_state["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
+    terminal_life_loop_state["idle_heartbeat_trace_ref"] = IDLE_HEARTBEAT_TRACE_REF
+    terminal_life_loop_state["idle_heartbeat_trace_count"] = heartbeat_counter
     for field in (
         "relationship_timeline_ref",
         "commitment_expression_plan_ref",
@@ -414,6 +422,17 @@ def write_waiting_heartbeat(
         response_surface_posture_hint=idle_strategy.get("response_surface_posture_hint"),
     )
     write_json(terminal_dir / "idle_continuity_frame.json", idle_continuity_frame)
+    _append_idle_heartbeat_trace(
+        terminal_dir=terminal_dir,
+        run_id=run_id,
+        generated_at=heartbeat_packet["generated_at"],
+        heartbeat_counter=heartbeat_counter,
+        waiting_mode=waiting_mode,
+        heartbeat_report_ref=heartbeat_report_ref,
+        idle_strategy=idle_strategy,
+        idle_continuity_frame=idle_continuity_frame,
+        membrane_guard_refs=membrane_guard_refs,
+    )
     resident_governance_state = {
         "schema_version": "resident_governance_state_v0",
         "run_id": run_id,
@@ -430,12 +449,17 @@ def write_waiting_heartbeat(
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
         "last_heartbeat_packet_ref": heartbeat_report_ref,
+        "idle_heartbeat_trace_ref": IDLE_HEARTBEAT_TRACE_REF,
+        "idle_heartbeat_trace_count": heartbeat_counter,
         "relationship_timeline_ref": idle_strategy.get("relationship_timeline_ref"),
         "commitment_expression_plan_ref": idle_strategy.get("commitment_expression_plan_ref"),
         "apology_repair_language_trace_ref": idle_strategy.get("apology_repair_language_trace_ref"),
         "long_horizon_language_refs": list(idle_strategy.get("long_horizon_language_refs", [])),
         "next_required_action": "await_next_external_relation_turn",
     }
+    idle_strategy["idle_continuity_ref"] = "runtime/state/terminal/idle_continuity_frame.json"
+    idle_strategy["idle_heartbeat_trace_ref"] = IDLE_HEARTBEAT_TRACE_REF
+    idle_strategy["idle_heartbeat_trace_count"] = heartbeat_counter
     if responsibility_loop_state_ref:
         resident_governance_state["responsibility_loop_state_ref"] = responsibility_loop_state_ref
     if world_contact_summary_ref:
@@ -446,7 +470,54 @@ def write_waiting_heartbeat(
         resident_governance_state["membrane_guard_refs"] = membrane_guard_refs
     resident_governance_state.update(extract_idle_governance_fields(idle_strategy))
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
-    idle_strategy["idle_continuity_ref"] = "runtime/state/terminal/idle_continuity_frame.json"
     write_json(terminal_dir / "idle_strategy_state.json", idle_strategy)
     write_json(reports_dir / "digital_life_waiting_heartbeat.json", heartbeat_packet)
     return heartbeat_counter
+
+
+def _append_idle_heartbeat_trace(
+    *,
+    terminal_dir: Path,
+    run_id: str,
+    generated_at: str,
+    heartbeat_counter: int,
+    waiting_mode: str,
+    heartbeat_report_ref: str,
+    idle_strategy: dict[str, Any],
+    idle_continuity_frame: dict[str, Any],
+    membrane_guard_refs: list[str],
+) -> None:
+    trace_event = {
+        "schema_version": "idle_heartbeat_trace_event_v0",
+        "run_id": run_id,
+        "generated_at": generated_at,
+        "event_kind": "waiting_heartbeat_refresh",
+        "heartbeat_counter": heartbeat_counter,
+        "waiting_mode": waiting_mode,
+        "heartbeat_ref": heartbeat_report_ref,
+        "idle_strategy_ref": IDLE_STRATEGY_STATE_REF,
+        "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
+        "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
+        "heartbeat_interval_ms": idle_strategy.get("heartbeat_interval_ms"),
+        "idle_probe_mode": idle_strategy.get("idle_probe_mode"),
+        "next_idle_action": idle_strategy.get("next_idle_action"),
+        "governance_attention_target": idle_strategy.get("governance_attention_target"),
+        "governance_cadence_profile": idle_strategy.get("governance_cadence_profile"),
+        "offline_pressure_level": idle_strategy.get("offline_pressure_level"),
+        "body_waiting_posture": idle_strategy.get("body_waiting_posture"),
+        "queue_e_priority_band": idle_strategy.get("queue_e_priority_band"),
+        "background_convergence_history_trend_state": idle_strategy.get(
+            "background_convergence_history_trend_state"
+        ),
+        "background_trait_convergence_history_focus": idle_strategy.get(
+            "background_trait_convergence_history_focus"
+        ),
+        "long_horizon_language_refs": list(
+            idle_strategy.get("long_horizon_language_refs", [])
+        ),
+        "replay_seed_refs": list(idle_continuity_frame.get("replay_seed_refs", [])),
+        "membrane_guard_refs": list(membrane_guard_refs),
+    }
+    trace_path = terminal_dir / "idle_heartbeat_trace.jsonl"
+    with trace_path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(trace_event, ensure_ascii=False) + "\n")

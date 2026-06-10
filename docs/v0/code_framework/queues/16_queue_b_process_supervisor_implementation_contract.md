@@ -610,6 +610,7 @@ def run_process_session_loop(
 ### 新增
 
 - `runtime/state/terminal/idle_strategy_state.json`
+- `runtime/state/terminal/idle_heartbeat_trace.jsonl`
 - `runtime/state/terminal/resident_governance_state.json`
 - `runtime/state/terminal/resident_governance_snapshot.json`
 
@@ -791,7 +792,7 @@ Queue B 至少新增三道 gate：
 
 只有同时满足下面七条，Queue B 才算完成第一轮：
 
-1. waiting heartbeat 不再只是计数器，而是带 `IdleContinuityFrame`
+1. waiting heartbeat 不再只是计数器，而是带 `IdleContinuityFrame` 与 append-only `idle_heartbeat_trace.jsonl`
 2. process supervisor 有独立 `idle_strategy.py`
 3. 外部回合和生命回合都能写成标准事件对象
 4. process report / digest / receipt 都能回链核心共享对象
@@ -803,6 +804,7 @@ Queue B 至少新增三道 gate：
    - `runtime/state/growth/belief_learning_plan.json`
    - `runtime/state/growth/language_learning_plan.json`
    - `runtime/state/growth/relationship_learning_plan.json`
+9. `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`idle_strategy_state.json`、`resident_governance_state.json`、`digital_life_process_report.json`、`digital_life_process_digest.json` 与 receipt 必须能回链 `runtime/state/terminal/idle_heartbeat_trace.jsonl`，让等待节律在关闭态之后仍可追溯。
 9. `idle_strategy_state.json` 现在必须额外显式写出：
    - `nightmare_risk_ref`
    - `belief_learning_plan_ref`

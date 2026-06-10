@@ -204,6 +204,10 @@ def write_process_report_bundle(
         "incident_count": incident_count,
         "relaunch_recovery_count": relaunch_recovery_count,
         "heartbeat_counter": heartbeat_counter,
+        "idle_heartbeat_trace_ref": idle_governance.get("idle_heartbeat_trace_ref"),
+        "idle_heartbeat_trace_count": idle_governance.get(
+            "idle_heartbeat_trace_count"
+        ),
         "exit_reason": exit_reason,
         "last_external_turn_utterance": None if last_external_turn is None else last_external_turn["utterance"],
         "dialogue_writeback_bundle_ref": dialogue_writeback_bundle_ref,
@@ -333,6 +337,7 @@ def write_process_report_bundle(
         trait_drift_monitor_ref=trait_drift_monitor_ref,
         background_convergence_summary_ref=background_convergence_summary_ref,
         background_convergence_history_ref=background_convergence_history_ref,
+        idle_heartbeat_trace_ref=idle_governance.get("idle_heartbeat_trace_ref"),
         workspace_frame_ref=idle_governance.get("workspace_frame_ref"),
         broadcast_frame_ref=idle_governance.get("broadcast_frame_ref"),
         metacognition_ref=idle_governance.get("metacognition_ref"),
@@ -387,6 +392,7 @@ def build_process_receipt(
     trait_drift_monitor_ref: str | None = None,
     background_convergence_summary_ref: str | None = None,
     background_convergence_history_ref: str | None = None,
+    idle_heartbeat_trace_ref: str | None = None,
     workspace_frame_ref: str | None = None,
     broadcast_frame_ref: str | None = None,
     metacognition_ref: str | None = None,
@@ -401,6 +407,7 @@ def build_process_receipt(
         state_dir / "terminal" / "safe_terminal_loop_state.json",
         state_dir / "terminal" / "terminal_life_loop_state.json",
         state_dir / "terminal" / "idle_strategy_state.json",
+        state_dir / "terminal" / "idle_heartbeat_trace.jsonl",
         state_dir / "terminal" / "resident_governance_state.json",
         state_dir / "terminal" / "life_context_frame.json",
         state_dir / "terminal" / "relation_turn_frame.json",
@@ -473,6 +480,7 @@ def build_process_receipt(
             ref
             for ref in [
                 idle_strategy_ref,
+                idle_heartbeat_trace_ref,
                 resident_governance_state_ref,
                 resident_governance_snapshot_ref,
                 resident_governance_explanation_ref,

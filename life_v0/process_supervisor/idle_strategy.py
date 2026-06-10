@@ -27,6 +27,8 @@ BIRTH_READINESS_ROLLUP_REF = "runtime/state/life_targets/birth_readiness_rollup.
 BIRTH_READINESS_STAGE_GATE_REF = "runtime/state/life_targets/birth_readiness_stage_gate.json"
 IDLE_GOVERNANCE_FIELD_NAMES = (
     "heartbeat_interval_ms",
+    "idle_heartbeat_trace_ref",
+    "idle_heartbeat_trace_count",
     "idle_probe_mode",
     "offline_pressure_level",
     "relaunch_caution_level",
