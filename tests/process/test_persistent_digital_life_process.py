@@ -3089,6 +3089,29 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
                 idle_strategy["governance_cadence_profile"],
             )
+            lineage_state = resident_governance_state[
+                "resident_background_lineage_state"
+            ]
+            self.assertEqual(
+                lineage_state["relationship_presence"]["relationship_stage"],
+                resident_governance_state["background_relationship_stage"],
+            )
+            self.assertIn(
+                "continuity_drive",
+                lineage_state["trait_convergence_presence"][
+                    "trait_slow_variable_summary"
+                ],
+            )
+            self.assertEqual(
+                lineage_state["heartbeat_presence"][
+                    "background_idle_heartbeat_trace_ref"
+                ],
+                "runtime/state/terminal/idle_heartbeat_trace.jsonl",
+            )
+            self.assertIn(
+                "runtime/state/relationship/relationship_timeline.json",
+                lineage_state["language_presence"]["long_horizon_language_refs"],
+            )
             self.assertEqual(
                 idle_continuity["background_continuity_mode"],
                 "closed_process_carryover",
@@ -3619,6 +3642,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_lineage_waiting_posture": "deep_background_residency_hold",
                     "background_lineage_cadence_weight": "deep",
                     "background_lineage_evidence_ref_count": 3,
+                    "background_trait_convergence_history_focus": "trait_stability_hold",
+                    "background_trait_convergence_unstable_names": ["continuity_drive"],
+                    "background_trait_convergence_stable_names": ["repair_seriousness"],
+                    "background_trait_convergence_history_profile": {
+                        "continuity_drive": {
+                            "latest_band": "unstable",
+                        },
+                        "repair_seriousness": {
+                            "latest_band": "stable",
+                        },
+                    },
                     "background_lineage_governance_profile": {
                         "schema_version": "background_lineage_governance_profile_v0",
                         "generation": 3,
@@ -3794,6 +3828,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "parent_run_id"
                 ],
                 "live-turn-lineage-seed",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_background_lineage_state"][
+                    "trait_convergence_presence"
+                ]["trait_convergence_history_focus"],
+                "trait_stability_hold",
+            )
+            self.assertIn(
+                "runtime/state/relationship/relationship_timeline.json",
+                resident_governance_state["resident_background_lineage_state"][
+                    "language_presence"
+                ]["long_horizon_language_refs"],
             )
             self.assertEqual(
                 resident_governance_state["dialogue_writeback_bundle_ref"],
@@ -6524,6 +6570,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_convergence_history_ref": "runtime/state/terminal/background_convergence_history.json",
                 "background_convergence_history_trend_state": "integrating_cross_wake_convergence",
                 "background_convergence_history_window_size": 2,
+                "background_trait_convergence_history_focus": "trait_stability_hold",
+                "background_trait_convergence_unstable_names": ["continuity_drive"],
+                "background_trait_convergence_stable_names": ["repair_seriousness"],
+                "background_trait_convergence_history_profile": {
+                    "continuity_drive": {
+                        "latest_band": "integrating",
+                        "trend_state": "integrating_trait_convergence",
+                    },
+                    "repair_seriousness": {
+                        "latest_band": "stabilized",
+                        "trend_state": "stable_trait_convergence",
+                    },
+                },
                 "background_convergence_state": "integrating_cross_process_continuity",
                 "background_convergence_pressure_level": "present",
                 "background_convergence_attention_target": "trait_slow_variable_convergence",
@@ -6641,6 +6700,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "cadence_weight"
                     ],
                     "deep",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "trait_convergence_presence"
+                    ]["trait_convergence_history_focus"],
+                    "trait_stability_hold",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "heartbeat_presence"
+                    ]["heartbeat_interval_ms"],
+                    52,
                 )
 
     def test_persistent_process_increments_background_carryover_generation_on_closeout(self):

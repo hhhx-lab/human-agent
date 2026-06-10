@@ -262,8 +262,19 @@ restore shell completed
 - `heartbeat_interval_ms`
 - `evidence_refs`
 - `continuity_refs`
+- `relationship_presence`
+- `trait_convergence_presence`
+- `heartbeat_presence`
+- `language_presence`
 
 这组字段必须在三段相位中连续存在：waiting heartbeat 写 `waiting_heartbeat_active`，live turn handoff 写 `live_turn_waiting_handoff`，closeout 写 `process_closed_waiting_relaunch`。下一次 `background_continuity.py` 必须把它恢复成 `resident_background_lineage_state` 与 `background_resident_lineage_state`，让后台 lineage 不是一次性报告字段，而是跨唤醒主状态。
+
+四个 presence 子面固定含义如下：
+
+- `relationship_presence`：承接 `background_relationship_stage`、关系阶段理由、关系对象 ref 与关系阶段连续性。
+- `trait_convergence_presence`：承接 `background_trait_slow_variable_summary`、trait convergence history focus、稳定/不稳定慢变量名单、history profile、trait drift monitor ref。
+- `heartbeat_presence`：承接当前或后台 `idle_heartbeat_trace_ref/count`、heartbeat interval 与下一步 idle action。
+- `language_presence`：承接长期语言对象 refs、长期优先级 profile、当前治理注意目标/理由/节律。
 - `queue_e_priority_band`
 - `nightmare_risk_ref`
 - `belief_learning_plan_ref`
@@ -536,7 +547,7 @@ process receipt 里，resident governance 必须进入：
 
 1. 把 live turn 结束后重新回到 waiting governance 的相位切换继续补成更完整的交接体；当前已由 `resident_governance_handoff.py` 第一轮落下，并已经要求 handoff 原样承接后台治理解释字段与 `resident_background_lineage_state`，使关闭态“为何如此等待”和“以什么后台驻留深度等待”不会在真实回合结束时断开。
 2. 继续让 background resume summary 不只用于 closeout/next bootstrap，还能进入更长时标的慢变量收敛与多次唤醒关系阶段稳定化。
-3. 将 `resident_background_lineage_state_v0` 继续扩展为更高阶 resident governance state body，使它能同时承接关系阶段、慢变量收敛、心跳历史和语言关注，而不只承接 lineage depth。
+3. 将 `resident_background_lineage_state_v0` 的四个 presence 子面继续接入后续器官，使关系阶段、慢变量收敛、心跳历史和语言关注不只在 state body 中存在，还能反向调制梦境整合、成长补丁和下一轮语言表达。
 4. 继续把 deep persistent / entrenched background presence 对应到后续的长期成长、梦境整合和关系稳定化器官。
 
 当前只要这四件事继续推进，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。

@@ -80,6 +80,18 @@ def build_resident_background_lineage_state(
         lineage_state["governance_profile_ref"] = (
             "background_lineage_governance_profile"
         )
+    relationship_presence = _relationship_presence(governance)
+    if relationship_presence:
+        lineage_state["relationship_presence"] = relationship_presence
+    trait_convergence_presence = _trait_convergence_presence(governance)
+    if trait_convergence_presence:
+        lineage_state["trait_convergence_presence"] = trait_convergence_presence
+    heartbeat_presence = _heartbeat_presence(governance)
+    if heartbeat_presence:
+        lineage_state["heartbeat_presence"] = heartbeat_presence
+    language_presence = _language_presence(governance)
+    if language_presence:
+        lineage_state["language_presence"] = language_presence
     return {
         key: value
         for key, value in lineage_state.items()
@@ -161,3 +173,147 @@ def _cadence_weight_for_depth(depth_band: str) -> str:
     if depth_band == "single_carryover":
         return "carryover"
     return "none"
+
+
+def _relationship_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    relationship = _dict_or_empty(
+        _dict_or_empty(governance.get("background_resume_summary")).get(
+            "relationship"
+        )
+    )
+    stage = (
+        governance.get("background_relationship_stage")
+        or relationship.get("relationship_stage")
+    )
+    if not stage:
+        return {}
+    payload = {
+        "relationship_stage": str(stage),
+        "relationship_stage_reason": governance.get(
+            "background_relationship_stage_reason"
+        )
+        or relationship.get("relationship_stage_reason"),
+        "relationship_subject_ref": governance.get(
+            "background_relationship_subject_ref"
+        )
+        or relationship.get("relationship_subject_ref"),
+        "relationship_stage_continuity": governance.get(
+            "background_relationship_stage_continuity"
+        ),
+        "relationship_stage_turn_count": governance.get(
+            "background_relationship_stage_turn_count"
+        )
+        or relationship.get("relationship_stage_turn_count"),
+    }
+    evidence_refs = _string_list(
+        governance.get("background_relationship_stage_evidence_refs")
+        or relationship.get("relationship_stage_evidence_refs")
+    )
+    if evidence_refs:
+        payload["relationship_stage_evidence_refs"] = evidence_refs
+    return _drop_empty(payload)
+
+
+def _trait_convergence_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    trait_summary = _dict_or_empty(
+        governance.get("background_trait_slow_variable_summary")
+        or _dict_or_empty(governance.get("background_resume_summary")).get(
+            "trait_slow_variables"
+        )
+    )
+    history_profile = _dict_or_empty(
+        governance.get("background_trait_convergence_history_profile")
+    )
+    if not trait_summary and not history_profile:
+        return {}
+    payload = {
+        "trait_slow_variable_summary": trait_summary,
+        "trait_convergence_history_focus": governance.get(
+            "background_trait_convergence_history_focus"
+        ),
+        "trait_convergence_history_profile": history_profile,
+        "trait_convergence_unstable_names": _string_list(
+            governance.get("background_trait_convergence_unstable_names")
+        ),
+        "trait_convergence_stable_names": _string_list(
+            governance.get("background_trait_convergence_stable_names")
+        ),
+        "trait_convergence_score": governance.get(
+            "background_trait_convergence_score"
+        ),
+        "trait_convergence_summary": _dict_or_empty(
+            governance.get("background_trait_convergence_summary")
+        ),
+        "trait_drift_monitor_ref": governance.get(
+            "background_trait_drift_monitor_ref"
+        )
+        or governance.get("trait_drift_monitor_ref"),
+    }
+    return _drop_empty(payload)
+
+
+def _heartbeat_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    current_trace_ref = governance.get("idle_heartbeat_trace_ref")
+    background_trace_ref = governance.get("background_idle_heartbeat_trace_ref")
+    current_count = _int_or_zero(governance.get("idle_heartbeat_trace_count"))
+    background_count = _int_or_zero(
+        governance.get("background_idle_heartbeat_trace_count")
+    )
+    heartbeat_interval_ms = _int_or_zero(governance.get("heartbeat_interval_ms"))
+    next_idle_action = governance.get("next_idle_action")
+    if (
+        not current_trace_ref
+        and not background_trace_ref
+        and not current_count
+        and not background_count
+        and not heartbeat_interval_ms
+        and not next_idle_action
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "idle_heartbeat_trace_ref": current_trace_ref,
+            "idle_heartbeat_trace_count": current_count,
+            "background_idle_heartbeat_trace_ref": background_trace_ref,
+            "background_idle_heartbeat_trace_count": background_count,
+            "heartbeat_interval_ms": heartbeat_interval_ms,
+            "next_idle_action": next_idle_action,
+        }
+    )
+
+
+def _language_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    language_refs = _string_list(governance.get("long_horizon_language_refs"))
+    priority_profile = _dict_or_empty(
+        governance.get("long_horizon_priority_profile")
+    )
+    if not language_refs and not priority_profile:
+        return {}
+    return _drop_empty(
+        {
+            "long_horizon_language_refs": language_refs,
+            "long_horizon_priority_profile": priority_profile,
+            "governance_attention_target": governance.get(
+                "governance_attention_target"
+            ),
+            "governance_attention_reason": governance.get(
+                "governance_attention_reason"
+            ),
+            "governance_cadence_profile": governance.get(
+                "governance_cadence_profile"
+            ),
+        }
+    )
+
+
+def _drop_empty(payload: dict[str, Any]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in payload.items():
+        if value is None:
+            continue
+        if isinstance(value, str) and not value:
+            continue
+        if isinstance(value, (list, tuple, dict)) and not value:
+            continue
+        result[key] = value
+    return result
