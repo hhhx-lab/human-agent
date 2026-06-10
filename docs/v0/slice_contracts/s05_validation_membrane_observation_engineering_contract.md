@@ -25,6 +25,7 @@ S05 接在 S03 生命膜与 S08 九项目标之后，用来复查“状态、证
 | `docs/v0/shared_contracts/runner_cli_report_contract.md` | CLI/report/stage gate 统一字段 |
 | `runtime/state/membrane/*` | S03 生命膜 gate、quarantine seed、DreamFactGate、shadow action gate |
 | `runtime/state/life_targets/*` | S08 九项目标闭合状态和证据族 |
+| `runtime/state/life_targets/queue_e_birth_repair_profile.json` | Queue E 责任、后悔、痛苦、修复压力在出生准备层的一等画像；S05 必须重新验证并写入 validation rollup / stage gate / report / digest / receipt |
 
 ## 运行承载
 
@@ -47,6 +48,7 @@ S05 接在 S03 生命膜与 S08 九项目标之后，用来复查“状态、证
 | `quarantine_packet_index.json` | quarantine、incident、post-action audit 的阻断包 |
 | `dashboard_metric_source.json` | dashboard panel、metric、stage gate、blocked reason 的统一数据源 |
 | `cross_file_finding_index.json` | `153-157` cross-file checker findings 与 report refs |
+| `validation_rollup.json` | observation truth、world contact、prediction trace、boundary audit 与 `queue_e_birth_repair_gate` 的统一闭合汇总 |
 
 ## 命令合同
 
@@ -64,6 +66,7 @@ life-v0 check-validation-membrane --state runtime/state --validation runtime/sta
 | `quarantine_gate` | quarantine refs 可定位到膜、梦境、关系、责任或外周后果 | 写 quarantine packet |
 | `dashboard_gate` | dashboard source 可以聚合 S03/S08/S05 findings | 阻断 S09 |
 | `archive_cross_file_gate` | `153-157` cross-file checker refs 和 receipt refs 齐全 | 写 archive blocked report |
+| `queue_e_birth_repair_gate` | `queue_e_birth_repair_profile.json` 的 schema、pressure、attention、ref_set 与 S08 report / digest / claims / evidence / rollup / stage gate 一致 | 返回 S08 或 Queue E 修复 |
 | `next_slice_gate` | 只允许进入 `S09_SCHEMA_RUNNER_CODE` 或返回 S08/S03 修复 | 阻断跳步 |
 
 ## Report 最小字段
@@ -77,6 +80,15 @@ life-v0 check-validation-membrane --state runtime/state --validation runtime/sta
   "source_doc_refs": [],
   "readme_block_refs": ["B07_VALIDATOR_RULES", "B08_RUNNER_EVALUATION"],
   "runtime_carrier_refs": ["LifeMembraneStageGate", "RuntimeObservationIngestor", "SchemaBundleCompiler", "ActionResponsibilityRuntime"],
+  "queue_e_birth_repair_profile_ref": "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+  "queue_e_birth_repair_pressure_level": "elevated",
+  "queue_e_birth_repair_attention_target": "regret_pressure",
+  "queue_e_birth_repair_ref_set": [
+    "runtime/state/action/responsibility_loop_state.json",
+    "runtime/state/membrane/world_contact_summary.json",
+    "runtime/reports/latest/pain_regret_repair_report.json",
+    "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+  ],
   "blocked_reasons": [],
   "quarantine_refs": [],
   "finding_refs": [],
@@ -87,4 +99,4 @@ life-v0 check-validation-membrane --state runtime/state --validation runtime/sta
 
 ## 交接
 
-S05 交给 S09 的不是测试通过口号，而是可读取的 rule index、observation intake、quarantine packet、dashboard source、cross-file finding 和 receipt。S09 只能在这些文件闭合后编译 schema runner 与首批 code artifact。
+S05 交给 S09 的不是测试通过口号，而是可读取的 rule index、observation intake、quarantine packet、dashboard source、cross-file finding、Queue E 出生修复压力画像和 receipt。S09 只能在这些文件闭合后编译 schema runner 与首批 code artifact。

@@ -12,6 +12,8 @@ SOURCE_DOC_REFS = [
     "docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md",
 ]
 
+QUEUE_E_BIRTH_REPAIR_PROFILE_REF = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+
 
 def build_validation_rollup(
     *,
@@ -21,11 +23,22 @@ def build_validation_rollup(
     world_contact_validation: dict[str, Any],
     prediction_trace_validation: dict[str, Any],
     boundary_audit: dict[str, Any],
+    queue_e_birth_repair_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    queue_e_birth_repair_profile = queue_e_birth_repair_profile or {}
     cross_layer_gate_status = dict(world_contact_validation.get("life_constraint_validation", {}))
     life_constraint_blocked = any(
         status == "missing" or status == "blocked"
         for status in cross_layer_gate_status.values()
+    )
+    queue_e_birth_repair_gate_status = (
+        "closed" if _queue_e_birth_repair_profile_ready(queue_e_birth_repair_profile) else "blocked"
+    )
+    queue_e_birth_repair_ref_set = _dedupe_string_refs(
+        [
+            *queue_e_birth_repair_profile.get("ref_set", []),
+            QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
+        ]
     )
     gate_status = {
         "observation_truth_gate": "closed" if not observation_truth_review.get("missing_fields") else "guarded",
@@ -33,6 +46,7 @@ def build_validation_rollup(
         "prediction_trace_validation_gate": prediction_trace_validation.get("status", "blocked"),
         "boundary_audit_gate": "closed" if not boundary_audit.get("audit_findings") else "guarded",
         "life_constraint_validation_gate": "blocked" if life_constraint_blocked else "closed",
+        "queue_e_birth_repair_gate": queue_e_birth_repair_gate_status,
     }
     blocked_gates = [gate for gate, status in gate_status.items() if status == "blocked"]
     guarded_gates = [gate for gate, status in gate_status.items() if status == "guarded"]
@@ -60,6 +74,10 @@ def build_validation_rollup(
         "repair_backlog_refs": repair_backlog_refs,
         "queue_e_cross_layer_gate_status": cross_layer_gate_status,
         "queue_e_cross_layer_refs": list(world_contact_validation.get("life_constraint_refs", [])),
+        "queue_e_birth_repair_profile_ref": QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
+        "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
+        "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
+        "queue_e_birth_repair_ref_set": queue_e_birth_repair_ref_set,
         "deferred_cross_layer_gates": [
             gate
             for gate, gate_state in cross_layer_gate_status.items()
@@ -70,6 +88,7 @@ def build_validation_rollup(
             "runtime/state/validation/world_contact_validation.json",
             "runtime/state/validation/prediction_trace_validation.json",
             "runtime/state/validation/boundary_audit_state.json",
+            QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
         ],
         "next_stage_ready": overall_status == "closed",
         "source_doc_refs": SOURCE_DOC_REFS,
@@ -87,10 +106,38 @@ def check_validation_rollup(rollup: dict[str, Any]) -> list[str]:
         "gate_status",
         "queue_e_cross_layer_gate_status",
         "queue_e_cross_layer_refs",
+        "queue_e_birth_repair_profile_ref",
+        "queue_e_birth_repair_pressure_level",
+        "queue_e_birth_repair_attention_target",
+        "queue_e_birth_repair_ref_set",
         "state_refs",
         "next_stage_ready",
         "source_doc_refs",
     ]:
         if not rollup.get(field):
             reasons.append(f"validation_rollup_gate missing {field}")
+    if rollup.get("gate_status", {}).get("queue_e_birth_repair_gate") != "closed":
+        reasons.append("validation_rollup_gate queue_e birth repair gate mismatch")
+    if rollup.get("queue_e_birth_repair_profile_ref") != QUEUE_E_BIRTH_REPAIR_PROFILE_REF:
+        reasons.append("validation_rollup_gate queue_e birth repair profile ref mismatch")
     return reasons
+
+
+def _queue_e_birth_repair_profile_ready(profile: dict[str, Any]) -> bool:
+    return (
+        profile.get("schema_version") == "queue_e_repair_modulation_profile_v0"
+        and profile.get("pressure_level") in {"quiet", "present", "elevated", "urgent"}
+        and bool(profile.get("attention_target"))
+        and bool(profile.get("ref_set"))
+    )
+
+
+def _dedupe_string_refs(refs: list[Any]) -> list[str]:
+    merged: list[str] = []
+    seen: set[str] = set()
+    for ref in refs:
+        if not isinstance(ref, str) or not ref or ref in seen:
+            continue
+        seen.add(ref)
+        merged.append(ref)
+    return merged

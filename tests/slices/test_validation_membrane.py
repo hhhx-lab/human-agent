@@ -79,12 +79,21 @@ class ValidationMembraneTests(unittest.TestCase):
             boundary_audit = self._read_json(paths["validation_state"] / "boundary_audit_state.json")
             validation_rollup = self._read_json(paths["validation_state"] / "validation_rollup.json")
             stage_gate = self._read_json(paths["validation_state"] / "validation_stage_gate.json")
+            queue_e_profile = self._read_json(paths["life_targets_state"] / "queue_e_birth_repair_profile.json")
             report = self._read_json(paths["reports"] / "validation_membrane_report.json")
             world_contact_report = self._read_json(paths["reports"] / "world_contact_audit_report.json")
             side_effect_report = self._read_json(paths["reports"] / "side_effect_review_report.json")
             digest = self._read_json(paths["reports"] / "validation_membrane_digest.json")
             check_report = self._read_json(paths["reports"] / "validation_membrane_check_report.json")
             receipt = self._read_json(paths["receipts"] / "validation_membrane_validation-test.json")
+
+        queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+        expected_queue_e_refs = {
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/membrane/world_contact_summary.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+            queue_e_profile_ref,
+        }
 
         self.assertEqual(rules["schema_version"], "validator_rule_index_v0")
         self.assertEqual(rules["active_engineering_slice"], "S05_VALIDATION_MEMBRANE_OBSERVATION")
@@ -183,6 +192,7 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertEqual(validation_rollup["guarded_gates"], [])
         self.assertTrue(validation_rollup["next_stage_ready"])
         self.assertIn("runtime/state/validation/world_contact_validation.json", validation_rollup["state_refs"])
+        self.assertIn(queue_e_profile_ref, validation_rollup["state_refs"])
         self.assertEqual(
             validation_rollup["queue_e_cross_layer_gate_status"]["consciousness_probe_gate"],
             "closed",
@@ -191,6 +201,14 @@ class ValidationMembraneTests(unittest.TestCase):
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             validation_rollup["queue_e_cross_layer_refs"],
         )
+        self.assertEqual(
+            validation_rollup["gate_status"]["queue_e_birth_repair_gate"],
+            "closed",
+        )
+        self.assertEqual(validation_rollup["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(validation_rollup["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(validation_rollup["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(validation_rollup["queue_e_birth_repair_ref_set"])))
 
         self.assertEqual(boundary_audit["schema_version"], "boundary_audit_state_v0")
         self.assertEqual(boundary_audit["life_membrane_ref"], "runtime/state/membrane/life_membrane.json")
@@ -204,6 +222,11 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertEqual(stage_gate["decision"], "closed")
         self.assertEqual(stage_gate["next_allowed_slices"], ["S09_SCHEMA_RUNNER_CODE"])
         self.assertEqual(stage_gate["next_required_command"], "life-v0 build-schema-runner --strict")
+        self.assertEqual(stage_gate["gate_status"]["queue_e_birth_repair_gate"], "closed")
+        self.assertEqual(stage_gate["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(stage_gate["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(stage_gate["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(stage_gate["queue_e_birth_repair_ref_set"])))
 
         self.assertEqual(report["schema_version"], "s05_validation_membrane_observation_report_v0")
         self.assertEqual(report["engineering_slice_ref"], "S05_VALIDATION_MEMBRANE_OBSERVATION")
@@ -217,6 +240,11 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertIn("runtime/state/validation/prediction_trace_validation.json", report["state_refs"])
         self.assertIn("runtime/state/validation/validation_rollup.json", report["state_refs"])
         self.assertIn("runtime/state/validation/boundary_audit_state.json", report["state_refs"])
+        self.assertIn(queue_e_profile_ref, report["state_refs"])
+        self.assertEqual(report["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(report["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(report["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(report["queue_e_birth_repair_ref_set"])))
         self.assertEqual(report["next_allowed_slices"], ["S09_SCHEMA_RUNNER_CODE"])
         self.assertEqual(report["next_required_command"], "life-v0 build-schema-runner --strict")
 
@@ -235,8 +263,21 @@ class ValidationMembraneTests(unittest.TestCase):
         )
 
         self.assertEqual(digest["current_slice"], "S05_VALIDATION_MEMBRANE_OBSERVATION")
+        self.assertEqual(digest["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(digest["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(digest["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertGreaterEqual(digest["queue_e_birth_repair_ref_count"], len(expected_queue_e_refs))
         self.assertEqual(check_report["status"], "closed")
+        self.assertIn("queue_e_birth_repair_gate", check_report["closed_gates"])
         self.assertEqual(receipt["schema_version"], "validation_membrane_receipt_v0")
+        self.assertIn(
+            str((paths["life_targets_state"] / "queue_e_birth_repair_profile.json").resolve()),
+            receipt["input_hashes"],
+        )
+        self.assertEqual(queue_e_profile["schema_version"], "queue_e_repair_modulation_profile_v0")
+        self.assertEqual(queue_e_profile["pressure_level"], "elevated")
+        self.assertEqual(queue_e_profile["attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.difference({queue_e_profile_ref}).issubset(set(queue_e_profile["ref_set"])))
 
     def test_cli_run_validation_membrane_returns_zero_and_writes_check_report(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -675,6 +675,33 @@ Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判
 
 这一步的工程意义是：Queue E 的责任、后悔、修复压力已经成为出生准备度的一等 evidence gate。后续不得把 `real_pain`、`real_responsibility`、`real_regret` 写成只引用 `life_state.json` 的静态目标，也不得把 Queue E 画像绕过 S08 直接交给 S10。
 
+### 第三点五轮验证膜复查链已落口径
+
+这一轮把同一份 `queue_e_birth_repair_profile.json` 从 S08 继续推进到 S05，不允许出生准备层的责任/后悔/痛苦/修复压力在进入验证膜时消失。S05 现在不是只相信 `birth_readiness_report.json`，而是重新读取 profile，并把它作为验证膜自己的 `queue_e_birth_repair_gate`。
+
+真实入口与输出如下：
+
+- `life_v0/validators/__init__.py`
+  - `run_validation_membrane(...)` 读取 `runtime/state/life_targets/queue_e_birth_repair_profile.json`。
+  - `_s08_blockers(...)` 复查 profile schema、`pressure_level`、`attention_target`、`ref_set`，并核对 S08 claims / evidence / rollup / stage gate / report / digest 是否都回链同一 profile。
+  - `run_check_validation_membrane(...)` 在只读检查时继续读取同一 profile，避免 check 命令只检查 S05 自己写出的文件。
+- `life_v0/validators/validation_rollup.py`
+  - `build_validation_rollup(...)` 接收 `queue_e_birth_repair_profile`。
+  - `validation_rollup.json` 必须写出 `gate_status.queue_e_birth_repair_gate=closed`、profile ref、pressure、attention target 与 ref set。
+- `validation_stage_gate.json`
+  - 必须关闭 `queue_e_birth_repair_gate`，并携带同一 profile ref、pressure、attention target 和 ref set。
+- `validation_membrane_report.json`
+  - `state_refs` 必须包含 `runtime/state/life_targets/queue_e_birth_repair_profile.json`。
+  - report 必须写出同一组 Queue E 出生修复画像字段。
+- `validation_membrane_digest.json`
+  - 必须写出 profile ref、pressure、attention target 和 ref count。
+- `validation_membrane_<run_id>.json`
+  - receipt input hashes 必须包含 `queue_e_birth_repair_profile.json` 与 `birth_readiness_digest.json`。
+- `tests/slices/test_validation_membrane.py`
+  - 断言 rollup、stage gate、report、digest、check report、receipt 都携带或验证同一 profile。
+
+这一步的工程意义是：Queue E 责任/后悔/修复压力已经从出生准备的一等 evidence gate 继续变成验证膜的一等复查 gate。后续不得让 S05 / S09 只消费泛化的 birth readiness status，而必须保留 profile ref、pressure、attention target 和原始责任链 refs。
+
 ### 第四轮预测调制链已落口径
 
 本轮 Queue E repair pressure 已经继续进入 prediction / active sampling / signal media / belief state / prediction workspace。这里必须明确：它属于数字生命 v0 内部责任、后悔、痛苦、修复压力进入预测调制链的工程闭合，不属于外部行动分发或外围能力编排。

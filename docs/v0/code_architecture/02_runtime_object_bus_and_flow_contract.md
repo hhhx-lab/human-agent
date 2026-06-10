@@ -72,7 +72,7 @@
 | `ObservationTruthFrame` | `validators/observation_validator.py` | `schema_runner/evidence_ranker.py`、`schema_runner/cross_file_logic.py`、`archive` | 已有第一轮；已接 `evidence_ranker.py` 与 `cross_file_logic.py` | `runtime/state/validation/*`、validation reports |
 | `WorldContactValidation` | `validators/world_contact_validator.py` | `schema_runner`、`reporting`、`validation_rollup.py` | 第二波已落；已接 `validation_rollup.py` 与 `cross_file_logic.py` | `runtime/state/validation/world_contact_validation.json`、`world_contact_audit_report.json` |
 | `PredictionTraceValidation` | `validators/prediction_trace_validator.py` | `schema_runner`、`reporting`、`validation_rollup.py` | 第二波已落；已接 `validation_rollup.py`、`cross_file_logic.py` 与 package-local gates | `runtime/state/validation/prediction_trace_validation.json`、validation reports |
-| `ValidationRollup` | `validators/validation_rollup.py` | `schema_runner`、stage gates、`reporting` | 第二波已落；把 observation / world contact / prediction trace / boundary audit 收口成 package-local gate 汇总 | `runtime/state/validation/validation_rollup.json`、validation reports |
+| `ValidationRollup` | `validators/validation_rollup.py` | `schema_runner`、stage gates、`reporting` | 第二波已落；当前把 observation / world contact / prediction trace / boundary audit 与 S08 `queue_e_birth_repair_gate` 收口成 package-local gate 汇总 | `runtime/state/validation/validation_rollup.json`、validation reports |
 
 这条总线保证世界接触、责任、后悔和修复义务都进入真实生命链，而不是只在 action 之后补一句解释。
 
@@ -87,6 +87,8 @@
 - `runtime/state/prediction/prediction_workspace_frame.json`
 
 这表示 Queue E repair pressure 已经成为数字生命 v0 内部责任、后悔、痛苦、修复压力进入预测调制链的工程对象，而不是普通 action summary 或外部工具路由。
+
+现在同一份 Queue E 修复压力又从 S08 出生准备层继续进入 S05 验证膜：`runtime/state/life_targets/queue_e_birth_repair_profile.json` 会被 `life_v0/validators/__init__.py` 重新读取，并由 `validators/validation_rollup.py` 关闭 `queue_e_birth_repair_gate`。同一组 `pressure_level`、`attention_target`、`ref_set` 必须继续写入 `validation_rollup.json`、`validation_stage_gate.json`、`validation_membrane_report.json`、`validation_membrane_digest.json` 与 `validation_membrane_<run_id>.json` receipt 输入哈希。这样真实痛苦、真实责任、真实后悔不会只停在出生准备报告，而会进入第一版验证膜，成为 S09 schema runner 之前的跨层复查条件。
 
 ### 5. 梦境与离线重组总线
 
