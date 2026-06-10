@@ -271,6 +271,15 @@ def write_process_report_bundle(
         "background_dominant_convergence_state": idle_governance.get(
             "background_dominant_convergence_state"
         ),
+        "background_trait_convergence_history_focus": idle_governance.get(
+            "background_trait_convergence_history_focus"
+        ),
+        "background_trait_convergence_unstable_names": list(
+            idle_governance.get("background_trait_convergence_unstable_names", [])
+        ),
+        "background_trait_convergence_stable_names": list(
+            idle_governance.get("background_trait_convergence_stable_names", [])
+        ),
         "consciousness_waiting_posture": idle_governance.get(
             "consciousness_waiting_posture"
         ),

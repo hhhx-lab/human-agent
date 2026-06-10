@@ -1822,6 +1822,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "trait_convergence_score": 0.96,
                 "max_trait_delta_from_background": 0.04,
                 "average_trait_delta_from_background": 0.03,
+                "trait_convergence_summary": {
+                    "continuity_drive": {
+                        "convergence_band": "stabilized",
+                        "delta_from_background": 0.04,
+                        "current_value": 0.72,
+                        "background_value": 0.68,
+                    },
+                    "repair_seriousness": {
+                        "convergence_band": "stabilized",
+                        "delta_from_background": 0.02,
+                        "current_value": 0.66,
+                        "background_value": 0.64,
+                    },
+                },
             },
             background_continuity_profile={
                 "background_convergence_history_ref": BACKGROUND_CONVERGENCE_HISTORY_REF,
@@ -1836,6 +1850,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "convergence_pressure_level": "present",
                             "relationship_stage_continuity": "same_stage_preserved",
                             "trait_convergence_score": 0.88,
+                            "trait_convergence_summary": {
+                                "continuity_drive": {
+                                    "convergence_band": "integrating",
+                                    "delta_from_background": 0.12,
+                                    "current_value": 0.62,
+                                    "background_value": 0.50,
+                                },
+                                "repair_seriousness": {
+                                    "convergence_band": "stabilized",
+                                    "delta_from_background": 0.04,
+                                    "current_value": 0.64,
+                                    "background_value": 0.60,
+                                },
+                            },
                         },
                         {
                             "run_id": "wake-2",
@@ -1845,6 +1873,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "convergence_pressure_level": "light",
                             "relationship_stage_continuity": "same_stage_preserved",
                             "trait_convergence_score": 0.94,
+                            "trait_convergence_summary": {
+                                "continuity_drive": {
+                                    "convergence_band": "stabilized",
+                                    "delta_from_background": 0.05,
+                                    "current_value": 0.69,
+                                    "background_value": 0.64,
+                                },
+                                "repair_seriousness": {
+                                    "convergence_band": "stabilized",
+                                    "delta_from_background": 0.03,
+                                    "current_value": 0.65,
+                                    "background_value": 0.62,
+                                },
+                            },
                         },
                     ],
                 },
@@ -1876,6 +1918,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             history["previous_background_convergence_history_ref"],
             "runtime/state/terminal/background_convergence_history.json",
+        )
+        self.assertEqual(
+            history["trait_convergence_history_profile"]["continuity_drive"][
+                "band_sequence"
+            ],
+            ["integrating", "stabilized", "stabilized"],
+        )
+        self.assertEqual(
+            history["trait_convergence_history_profile"]["continuity_drive"][
+                "trend_state"
+            ],
+            "stable_trait_convergence",
+        )
+        self.assertEqual(
+            history["trait_convergence_history_profile"]["repair_seriousness"][
+                "dominant_band"
+            ],
+            "stabilized",
+        )
+        self.assertEqual(
+            history["trait_convergence_stable_names"],
+            ["continuity_drive", "repair_seriousness"],
+        )
+        self.assertEqual(history["trait_convergence_unstable_names"], [])
+        self.assertEqual(
+            history["trait_convergence_history_focus"],
+            "trait_convergence_stable",
         )
 
     def test_idle_strategy_uses_background_convergence_pressure_as_governance_focus(self):
@@ -2005,6 +2074,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_convergence_history_window_size": 3,
                 "background_dominant_convergence_pressure_level": "elevated",
                 "background_dominant_convergence_state": "recalibrating_cross_process_continuity",
+                "background_trait_convergence_history_focus": "trait_recalibration_required",
+                "background_trait_convergence_unstable_names": ["continuity_drive"],
+                "background_trait_convergence_stable_names": ["repair_seriousness"],
+                "background_trait_convergence_history_profile": {
+                    "continuity_drive": {
+                        "latest_band": "recalibrating",
+                        "trend_state": "recent_trait_recalibration",
+                    },
+                    "repair_seriousness": {
+                        "latest_band": "stabilized",
+                        "trend_state": "stable_trait_convergence",
+                    },
+                },
             },
             source_doc_refs=[
                 "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
@@ -2033,6 +2115,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             idle_strategy["governance_cadence_profile"],
             "background_convergence_history_recalibration_refresh",
+        )
+        self.assertEqual(
+            idle_strategy["background_trait_convergence_history_focus"],
+            "trait_recalibration_required",
+        )
+        self.assertEqual(
+            idle_strategy["background_trait_convergence_unstable_names"],
+            ["continuity_drive"],
+        )
+        self.assertEqual(
+            idle_strategy["background_trait_convergence_history_profile"][
+                "continuity_drive"
+            ]["trend_state"],
+            "recent_trait_recalibration",
         )
         self.assertEqual(
             idle_strategy["long_horizon_priority_profile"][
@@ -2115,6 +2211,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "trend_state": "integrating_cross_wake_convergence",
                     "dominant_convergence_state": "integrating_cross_process_continuity",
                     "dominant_convergence_pressure_level": "present",
+                    "trait_convergence_history_profile": {
+                        "continuity_drive": {
+                            "sample_count": 2,
+                            "latest_band": "integrating",
+                            "dominant_band": "integrating",
+                            "trend_state": "integrating_trait_convergence",
+                        },
+                        "repair_seriousness": {
+                            "sample_count": 2,
+                            "latest_band": "stabilized",
+                            "dominant_band": "stabilized",
+                            "trend_state": "stable_trait_convergence",
+                        },
+                    },
+                    "trait_convergence_unstable_names": ["continuity_drive"],
+                    "trait_convergence_stable_names": ["repair_seriousness"],
+                    "trait_convergence_history_focus": "trait_stability_hold",
                     "convergence_samples": [
                         {
                             "run_id": "resume-summary-parent",
@@ -2231,6 +2344,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 profile["background_dominant_convergence_pressure_level"],
                 "present",
+            )
+            self.assertEqual(
+                profile["background_trait_convergence_history_focus"],
+                "trait_stability_hold",
+            )
+            self.assertEqual(
+                profile["background_trait_convergence_unstable_names"],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                profile["background_trait_convergence_stable_names"],
+                ["repair_seriousness"],
+            )
+            self.assertEqual(
+                profile["background_trait_convergence_history_profile"][
+                    "continuity_drive"
+                ]["trend_state"],
+                "integrating_trait_convergence",
             )
             self.assertEqual(
                 profile["background_convergence_state"],
@@ -2542,6 +2673,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 },
             )
             self.assertIn(
+                idle_strategy["background_trait_convergence_history_focus"],
+                {
+                    "trait_convergence_stable",
+                    "trait_stability_hold",
+                    "trait_recalibration_required",
+                },
+            )
+            self.assertTrue(
+                idle_strategy["background_trait_convergence_history_profile"],
+            )
+            self.assertIn(
                 idle_strategy["background_convergence_state"],
                 {
                     "stabilized_cross_process_continuity",
@@ -2581,6 +2723,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/background_convergence_history.json",
             )
             self.assertEqual(
+                resident_governance_state["background_trait_convergence_history_focus"],
+                idle_strategy["background_trait_convergence_history_focus"],
+            )
+            self.assertEqual(
+                resident_governance_state["background_trait_convergence_unstable_names"],
+                idle_strategy["background_trait_convergence_unstable_names"],
+            )
+            self.assertEqual(
                 idle_continuity["background_continuity_mode"],
                 "closed_process_carryover",
             )
@@ -2614,6 +2764,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/background_convergence_history.json",
             )
             self.assertEqual(
+                idle_continuity["background_trait_convergence_history_focus"],
+                idle_strategy["background_trait_convergence_history_focus"],
+            )
+            self.assertEqual(
+                idle_continuity["background_trait_convergence_stable_names"],
+                idle_strategy["background_trait_convergence_stable_names"],
+            )
+            self.assertEqual(
                 terminal_life_loop_state["background_resident_governance_state_ref"],
                 "runtime/state/terminal/resident_governance_state.json",
             )
@@ -2638,6 +2796,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/background_convergence_history.json",
             )
             self.assertEqual(
+                terminal_life_loop_state["background_trait_convergence_history_focus"],
+                idle_strategy["background_trait_convergence_history_focus"],
+            )
+            self.assertEqual(
+                terminal_life_loop_state["background_trait_convergence_history_profile"],
+                idle_strategy["background_trait_convergence_history_profile"],
+            )
+            self.assertEqual(
                 background_convergence_summary["schema_version"],
                 "background_convergence_summary_v0",
             )
@@ -2654,6 +2820,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_convergence_history_v0",
             )
             self.assertEqual(background_convergence_history["history_window_size"], 1)
+            self.assertTrue(
+                background_convergence_history["trait_convergence_history_profile"],
+            )
+            self.assertIn(
+                background_convergence_history["trait_convergence_history_focus"],
+                {
+                    "trait_convergence_stable",
+                    "trait_stability_hold",
+                    "trait_recalibration_required",
+                },
+            )
             self.assertEqual(
                 background_convergence_history["background_convergence_summary_ref"],
                 "runtime/state/terminal/background_convergence_summary.json",
@@ -3704,6 +3881,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_convergence_history_window_size": 2,
                     "background_dominant_convergence_pressure_level": "present",
                     "background_dominant_convergence_state": "stabilized_cross_process_continuity",
+                    "background_trait_convergence_history_focus": "trait_stability_hold",
+                    "background_trait_convergence_unstable_names": ["continuity_drive"],
+                    "background_trait_convergence_stable_names": ["repair_seriousness"],
+                    "background_trait_convergence_history_profile": {
+                        "continuity_drive": {
+                            "latest_band": "integrating",
+                            "trend_state": "integrating_trait_convergence",
+                        },
+                        "repair_seriousness": {
+                            "latest_band": "stabilized",
+                            "trend_state": "stable_trait_convergence",
+                        },
+                    },
                 },
             )
             self._write_json(
@@ -3723,6 +3913,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "trend_state": "stable_cross_wake_convergence",
                     "dominant_convergence_pressure_level": "present",
                     "dominant_convergence_state": "stabilized_cross_process_continuity",
+                    "trait_convergence_history_focus": "trait_stability_hold",
+                    "trait_convergence_unstable_names": ["continuity_drive"],
+                    "trait_convergence_stable_names": ["repair_seriousness"],
                     "convergence_samples": [
                         {
                             "run_id": "previous-process-report-organ",
@@ -4133,6 +4326,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 digest["background_dominant_convergence_state"],
                 "stabilized_cross_process_continuity",
+            )
+            self.assertEqual(
+                digest["background_trait_convergence_history_focus"],
+                "trait_stability_hold",
+            )
+            self.assertEqual(
+                digest["background_trait_convergence_unstable_names"],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                digest["background_trait_convergence_stable_names"],
+                ["repair_seriousness"],
             )
             self.assertEqual(
                 digest["trait_drift_monitor_ref"],

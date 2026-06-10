@@ -82,6 +82,7 @@ life-v0 emit-report --strict
 再补强：`governance_explanation.py` 已把这份跨唤醒 history trend 继续接进 closeout 解释链；`recent_recalibration_pressure` / `elevated_pressure_watch` 会落到 `background_history_recalibration_hold`，`integrating_cross_wake_convergence` 会落到 `background_history_stability_hold`，并分别写出下一次唤醒前重新校准或稳定跨唤醒历史的 expectation。
 继续补强：`process_report.py` 现在把这份已经进入 idle governance 的 history trend / window / dominant pressure / dominant state 直接写入 `digital_life_process_digest.json`，使一页摘要也能看见跨唤醒历史如何调制本次常驻等待治理。
 再往前一格：`background_continuity.py` 现在会把上一轮 `digital_life_resident_governance_explanation.json` 也恢复成下一次唤醒的 background carryover，`background_governance_driver_family` 与 `background_next_wake_expectation` 会继续进入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`。
+继续压硬：`background_convergence_history.py` 现在不只记录整体跨唤醒 trend，还会把每个 `trait_slow_variables` 的 convergence band 序列压成 `trait_convergence_history_profile`，并把稳定/不稳定慢变量名单和 history focus 继续送进 background continuity、waiting governance、idle continuity、terminal loop 与 process digest。
 
 3. 真实新外部回合已经能进入终端生命过程并写回连续体，但还只是最小生命循环。
 4. 项目级 packaging / installable command surface 已接通，但还没有全局长期运行层。

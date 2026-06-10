@@ -52,6 +52,15 @@ def build_background_convergence_history(
         for sample in samples
         if isinstance(sample.get("trait_convergence_score"), (int, float))
     ]
+    trait_history_profile = _trait_history_profile(samples)
+    unstable_trait_names = _trait_names_by_stability(
+        trait_history_profile=trait_history_profile,
+        stable=False,
+    )
+    stable_trait_names = _trait_names_by_stability(
+        trait_history_profile=trait_history_profile,
+        stable=True,
+    )
     latest_state = current_sample.get("convergence_state")
     latest_pressure = current_sample.get("convergence_pressure_level")
 
@@ -81,6 +90,13 @@ def build_background_convergence_history(
         "convergence_pressure_sequence": pressure_sequence,
         "trait_convergence_score_average": _rounded_average(trait_scores),
         "trait_convergence_score_min": min(trait_scores) if trait_scores else None,
+        "trait_convergence_history_profile": trait_history_profile,
+        "trait_convergence_unstable_names": unstable_trait_names,
+        "trait_convergence_stable_names": stable_trait_names,
+        "trait_convergence_history_focus": _trait_history_focus(
+            trait_history_profile=trait_history_profile,
+            unstable_trait_names=unstable_trait_names,
+        ),
         "trend_state": _trend_state(samples),
         "convergence_samples": samples,
         "background_convergence_summary_ref": (
@@ -144,6 +160,9 @@ def _current_sample(
         "average_trait_delta_from_background": background_convergence_summary.get(
             "average_trait_delta_from_background"
         ),
+        "trait_convergence_summary": _trait_summary(
+            background_convergence_summary.get("trait_convergence_summary")
+        ),
     }
 
 
@@ -164,6 +183,120 @@ def _rounded_average(values: list[float]) -> float | None:
     if not values:
         return None
     return round(sum(values) / len(values), 3)
+
+
+def _trait_history_profile(samples: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    names = sorted(
+        {
+            str(name)
+            for sample in samples
+            for name in _trait_summary(sample.get("trait_convergence_summary")).keys()
+        }
+    )
+    profile: dict[str, dict[str, Any]] = {}
+    for name in names:
+        entries = [
+            _trait_entry(sample=sample, name=name)
+            for sample in samples
+            if name in _trait_summary(sample.get("trait_convergence_summary"))
+        ]
+        band_sequence = [
+            str(entry["convergence_band"])
+            for entry in entries
+            if entry.get("convergence_band")
+        ]
+        deltas = [
+            abs(float(entry["delta_from_background"]))
+            for entry in entries
+            if isinstance(entry.get("delta_from_background"), (int, float))
+        ]
+        latest_entry = entries[-1] if entries else {}
+        profile[name] = {
+            "sample_count": len(entries),
+            "band_sequence": band_sequence,
+            "latest_band": latest_entry.get("convergence_band"),
+            "dominant_band": _mode(band_sequence),
+            "trend_state": _trait_trend_state(band_sequence),
+            "latest_delta_from_background": latest_entry.get(
+                "delta_from_background"
+            ),
+            "max_abs_delta_from_background": (
+                round(max(deltas), 3) if deltas else None
+            ),
+            "average_abs_delta_from_background": _rounded_average(deltas),
+            "latest_current_value": latest_entry.get("current_value"),
+            "latest_background_value": latest_entry.get("background_value"),
+            "last_seen_run_id": latest_entry.get("run_id"),
+        }
+    return profile
+
+
+def _trait_entry(*, sample: dict[str, Any], name: str) -> dict[str, Any]:
+    summary = _trait_summary(sample.get("trait_convergence_summary"))
+    payload = summary.get(name, {})
+    if not isinstance(payload, dict):
+        payload = {}
+    return {
+        "run_id": sample.get("run_id"),
+        "convergence_band": payload.get("convergence_band"),
+        "delta_from_background": payload.get("delta_from_background"),
+        "current_value": payload.get("current_value"),
+        "background_value": payload.get("background_value"),
+    }
+
+
+def _trait_summary(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    return {str(name): payload for name, payload in value.items()}
+
+
+def _trait_names_by_stability(
+    *,
+    trait_history_profile: dict[str, dict[str, Any]],
+    stable: bool,
+) -> list[str]:
+    names: list[str] = []
+    for name, payload in trait_history_profile.items():
+        latest_band = payload.get("latest_band")
+        trend_state = payload.get("trend_state")
+        is_stable = latest_band == "stabilized" and trend_state in {
+            "stable_trait_convergence",
+            "trait_convergence_observed",
+        }
+        if is_stable == stable:
+            names.append(name)
+    return sorted(names)
+
+
+def _trait_history_focus(
+    *,
+    trait_history_profile: dict[str, dict[str, Any]],
+    unstable_trait_names: list[str],
+) -> str | None:
+    if not trait_history_profile:
+        return None
+    if any(
+        trait_history_profile[name].get("latest_band") == "recalibrating"
+        for name in unstable_trait_names
+    ):
+        return "trait_recalibration_required"
+    if unstable_trait_names:
+        return "trait_stability_hold"
+    return "trait_convergence_stable"
+
+
+def _trait_trend_state(band_sequence: list[str]) -> str:
+    recent = band_sequence[-3:]
+    if not recent:
+        return "no_trait_convergence_history"
+    if recent[-1] == "recalibrating":
+        return "recent_trait_recalibration"
+    if len(recent) >= 2 and recent[-2:] == ["stabilized", "stabilized"]:
+        return "stable_trait_convergence"
+    if recent[-1] == "integrating":
+        return "integrating_trait_convergence"
+    return "trait_convergence_observed"
 
 
 def _trend_state(samples: list[dict[str, Any]]) -> str:

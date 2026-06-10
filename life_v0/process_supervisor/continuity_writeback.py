@@ -45,6 +45,10 @@ def build_idle_continuity_frame(
     background_convergence_history_ref: str | None = None,
     background_convergence_history_trend_state: str | None = None,
     background_convergence_history_window_size: int | None = None,
+    background_trait_convergence_history_profile: dict[str, Any] | None = None,
+    background_trait_convergence_unstable_names: list[str] | None = None,
+    background_trait_convergence_stable_names: list[str] | None = None,
+    background_trait_convergence_history_focus: str | None = None,
     background_convergence_state: str | None = None,
     background_convergence_pressure_level: str | None = None,
     background_convergence_attention_target: str | None = None,
@@ -164,6 +168,22 @@ def build_idle_continuity_frame(
     if background_convergence_history_window_size is not None:
         payload["background_convergence_history_window_size"] = int(
             background_convergence_history_window_size
+        )
+    if background_trait_convergence_history_profile:
+        payload["background_trait_convergence_history_profile"] = dict(
+            background_trait_convergence_history_profile
+        )
+    if background_trait_convergence_unstable_names:
+        payload["background_trait_convergence_unstable_names"] = list(
+            background_trait_convergence_unstable_names
+        )
+    if background_trait_convergence_stable_names:
+        payload["background_trait_convergence_stable_names"] = list(
+            background_trait_convergence_stable_names
+        )
+    if background_trait_convergence_history_focus:
+        payload["background_trait_convergence_history_focus"] = (
+            background_trait_convergence_history_focus
         )
     if background_convergence_state:
         payload["background_convergence_state"] = background_convergence_state

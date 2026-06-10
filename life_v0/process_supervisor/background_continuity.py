@@ -254,6 +254,22 @@ def load_background_continuity_profile(
                 "dominant_convergence_state",
                 "background_dominant_convergence_state",
             ),
+            (
+                "trait_convergence_history_profile",
+                "background_trait_convergence_history_profile",
+            ),
+            (
+                "trait_convergence_unstable_names",
+                "background_trait_convergence_unstable_names",
+            ),
+            (
+                "trait_convergence_stable_names",
+                "background_trait_convergence_stable_names",
+            ),
+            (
+                "trait_convergence_history_focus",
+                "background_trait_convergence_history_focus",
+            ),
         ]:
             if source_key in background_convergence_history:
                 profile[target_key] = background_convergence_history[source_key]
