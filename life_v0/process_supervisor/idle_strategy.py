@@ -8,6 +8,7 @@ from .offline_learning_signals import (
     derive_offline_learning_profile,
 )
 from .state_merge_signals import state_merge_long_term_change_profile
+from .trait_convergence_signals import cross_wake_trait_convergence_profile
 
 
 IDLE_STRATEGY_STATE_REF = "runtime/state/terminal/idle_strategy_state.json"
@@ -119,6 +120,13 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_trait_convergence_unstable_names",
     "background_trait_convergence_stable_names",
     "background_trait_convergence_history_focus",
+    "cross_wake_trait_convergence_profile",
+    "cross_wake_trait_convergence_focus",
+    "cross_wake_trait_convergence_pressure",
+    "cross_wake_trait_convergence_unstable_names",
+    "cross_wake_trait_convergence_stable_names",
+    "cross_wake_trait_convergence_score",
+    "cross_wake_trait_convergence_refs",
     "background_convergence_state",
     "background_convergence_pressure_level",
     "background_convergence_attention_target",
@@ -357,6 +365,9 @@ def decide_idle_strategy(
         _background_history_attention_target(background_continuity_profile)
         or background_continuity_profile.get("background_convergence_attention_target")
         or background_continuity_profile.get("background_carryover_attention_target")
+    )
+    trait_convergence_profile = cross_wake_trait_convergence_profile(
+        background_continuity_profile
     )
     heartbeat_interval_ms = _heartbeat_interval_ms(
         body_rhythm_pulse=body_rhythm_pulse,
@@ -767,6 +778,7 @@ def decide_idle_strategy(
             if value is not None
         }
     )
+    payload.update(trait_convergence_profile)
     if background_lineage_governance_profile:
         payload["background_lineage_governance_profile"] = (
             background_lineage_governance_profile

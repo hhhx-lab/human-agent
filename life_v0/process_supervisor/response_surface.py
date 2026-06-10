@@ -5,6 +5,7 @@ from typing import Any
 from .dialogue_events import build_offline_learning_cumulative_payload
 from .offline_learning_signals import derive_offline_learning_profile
 from .state_merge_signals import state_merge_long_term_change_profile
+from .trait_convergence_signals import cross_wake_trait_convergence_profile
 
 
 def compose_life_response(
@@ -364,6 +365,37 @@ def compose_life_response(
             f"{response}，已经稳定的慢变量包括"
             f"{'、'.join(sorted(background_stable_traits))}"
         )
+    cross_wake_trait_payload = cross_wake_trait_convergence_profile(
+        terminal_life_loop_state
+    )
+    if cross_wake_trait_payload:
+        cross_wake_trait_profile = cross_wake_trait_payload.get(
+            "cross_wake_trait_convergence_profile",
+            {},
+        )
+        cross_wake_focus = cross_wake_trait_payload.get(
+            "cross_wake_trait_convergence_focus"
+        )
+        cross_wake_pressure = cross_wake_trait_payload.get(
+            "cross_wake_trait_convergence_pressure"
+        )
+        cross_wake_refs = list(
+            cross_wake_trait_payload.get("cross_wake_trait_convergence_refs", [])
+        )
+        if cross_wake_focus:
+            response = f"{response}，跨唤醒人格收敛画像为{cross_wake_focus}"
+        if cross_wake_pressure and cross_wake_pressure != "quiet":
+            response = f"{response}，跨唤醒人格收敛压力为{cross_wake_pressure}"
+        if cross_wake_refs:
+            response = f"{response}，跨唤醒人格收敛证据保留{len(cross_wake_refs)}条"
+        if (
+            isinstance(cross_wake_trait_profile, dict)
+            and cross_wake_trait_profile.get("score") is not None
+        ):
+            response = (
+                f"{response}，跨唤醒人格收敛评分为"
+                f"{cross_wake_trait_profile['score']}"
+            )
     prediction_surface = _prediction_surface_posture(
         signal_media_runtime=signal_media_runtime,
         belief_state=belief_state,

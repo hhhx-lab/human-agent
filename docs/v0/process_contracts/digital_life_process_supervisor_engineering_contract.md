@@ -106,6 +106,7 @@ life-v0 "digital life"
 - `life_v0/process_supervisor/governance_explanation.py`
 - `life_v0/process_supervisor/dialogue_events.py`
 - `life_v0/process_supervisor/response_surface.py`
+- `life_v0/process_supervisor/trait_convergence_signals.py`
 - `life_v0/process_supervisor/resident_supervision.py`
 - `life_v0/process_supervisor/continuity_evolution.py`
 - `life_v0/process_supervisor/idle_refresh_loop.py`
@@ -143,7 +144,7 @@ life-v0 "digital life"
 24. `live_language_turn.py` 必须成为真实新回合进入 `response_surface.py` 前的 Queue A 刷新入口。每个 `external_utterance` 都要先刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json`；`live_turn_cycle.py` 必须用刷新后的 `expression_plan` 生成生命回应，`resident_turn_writeback.py` 必须把 `language_percept_ref`、`semantic_map_ref`、`inner_speech_ref`、`expression_monitor_ref`、`expression_plan_ref`、`live_semantic_focus`、`live_ambiguity_flags` 与 `live_repair_trigger_candidates` 接进事件、写回包和恢复 packet。
 25. 实时语言理解不能停在真实新回合的 packet 里。`idle_strategy.py` 必须从 `terminal_life_loop_state.json#live_language_turn_refs` 与 `last_live_semantic_focus` 生成 `live_language_presence_profile_v0`，同时合并 `background_continuity.py` 恢复出的 `background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `background_live_language_presence_profile`。`heartbeat.py` 与 `continuity_writeback.py` 必须把这组字段继续写入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`。`background_lineage_state.py` 必须把它压成 `resident_background_lineage_state_v0.language_presence`。`resident_governance_handoff.py`、`process_closeout.py`、`persistent_process.py` 与 `process_report.py` 必须在 live-turn handoff 和关闭态 artifacts 中保留同一组 refs 与语义焦点；下一次 `background_continuity.py` 必须恢复为 `background_live_language_*` 并放入 `background_continuity_ref_set`。
 26. 驻留后的实时语言 presence 还必须进入下一轮真实回合。`dialogue_events.py` 必须从 `resident_background_lineage_state.language_presence` 展开 `resident_background_lineage_live_language_refs`、`resident_background_lineage_background_live_language_refs`、`resident_background_lineage_last_live_semantic_focus` 与 `resident_background_lineage_language_evidence_refs`，并把 live/background live refs 合并进 `resident_background_lineage_evidence_refs`。`resident_turn_writeback.py` 必须把 `resident_background_lineage_language_evidence_refs` 并入 `dialogue_writeback_bundle.resident_background_lineage_refs`，并让 `resumed_external_dialogue_packet.json` 保留同一组语言证据字段。`response_surface.py` 必须读取 `language_presence` 中的当前或后台语义焦点、live refs 和 background live refs，把后台语言语义余波与去重后的语言证据数量表达出来。
-27. 驻留后的自我/人格慢变量 presence 也必须进入下一轮真实回合。`background_lineage_state.py` 必须从 resident governance 中抽出 `background_trait_slow_variable_summary`、`background_trait_convergence_history_focus`、稳定/不稳定慢变量名单、`background_trait_convergence_score`、`background_trait_convergence_history_profile`、`background_trait_drift_monitor_ref`、`background_convergence_summary_ref`、`background_convergence_history_ref`、`background_resident_governance_state_ref` 与 `background_resident_governance_explanation_ref`，压成 `resident_background_lineage_state_v0.trait_convergence_presence`，并写出 `trait_convergence_evidence_refs`。`dialogue_events.py` 必须把这份 presence 展开为 `resident_background_lineage_trait_convergence_history_focus`、`resident_background_lineage_trait_convergence_unstable_names`、`resident_background_lineage_trait_convergence_stable_names`、`resident_background_lineage_trait_convergence_score`、`resident_background_lineage_trait_drift_monitor_ref`、`resident_background_lineage_trait_convergence_history_profile` 与 `resident_background_lineage_trait_convergence_refs`，并合并进 `resident_background_lineage_evidence_refs`。`resident_turn_writeback.py` 必须让同一组 trait lineage refs 进入 `dialogue_writeback_bundle.resident_background_lineage_refs` 与 `resumed_external_dialogue_packet.json`；`response_surface.py` 必须表达后台人格慢变量焦点、仍需收敛/已稳定名单、人格收敛评分、人格漂移监控在场和人格慢变量证据数量。
+27. 驻留后的自我/人格慢变量 presence 也必须进入下一轮真实回合。`background_lineage_state.py` 必须从 resident governance 中抽出 `background_trait_slow_variable_summary`、`background_trait_convergence_history_focus`、稳定/不稳定慢变量名单、`background_trait_convergence_score`、`background_trait_convergence_history_profile`、`background_trait_drift_monitor_ref`、`background_convergence_summary_ref`、`background_convergence_history_ref`、`background_resident_governance_state_ref` 与 `background_resident_governance_explanation_ref`，压成 `resident_background_lineage_state_v0.trait_convergence_presence`，并写出 `trait_convergence_evidence_refs`。`trait_convergence_signals.py` 必须把 lineage presence、background convergence summary/history、trait drift monitor 和等待态 carryover 中分散的人格慢变量信号合成为 `cross_wake_trait_convergence_profile_v0`，至少输出 `cross_wake_trait_convergence_focus`、`cross_wake_trait_convergence_pressure`、稳定/不稳定名单、score 与 refs。`idle_strategy.py`、`heartbeat.py` 与 `terminal_life_loop_state.json` 必须继续搬运这组跨唤醒画像字段，使它们在等待态、idle heartbeat trace 和真实新回合前都可见。`dialogue_events.py` 必须把这份 presence 展开为 `resident_background_lineage_trait_convergence_history_focus`、`resident_background_lineage_trait_convergence_unstable_names`、`resident_background_lineage_trait_convergence_stable_names`、`resident_background_lineage_trait_convergence_score`、`resident_background_lineage_trait_drift_monitor_ref`、`resident_background_lineage_trait_convergence_history_profile`、`resident_background_lineage_trait_convergence_refs` 与 `cross_wake_trait_convergence_*`，并合并进 `resident_background_lineage_evidence_refs`。`resident_turn_writeback.py` 必须让同一组 trait lineage refs 进入 `dialogue_writeback_bundle.resident_background_lineage_refs`，并让 `cross_wake_trait_convergence_refs` 进入 `dialogue_writeback_bundle.cross_wake_trait_convergence_refs` 与 `resumed_external_dialogue_packet.json`；`response_surface.py` 必须表达后台人格慢变量焦点、仍需收敛/已稳定名单、人格收敛评分、人格漂移监控在场、跨唤醒人格收敛画像、压力、评分和证据数量。
 28. 驻留后的梦境成长余波与梦境醒后 presence 必须拥有专用写回槽。`dialogue_events.py` 已经从 `resident_background_lineage_state.offline_learning_presence` 展开 `resident_background_lineage_offline_learning_*`，并从 `dream_wake_presence` 展开 `resident_background_lineage_dream_*`、`resident_background_lineage_wake_*` 与 `resident_background_lineage_dream_wake_refs`；`resident_turn_writeback.py` 必须把 `resident_background_lineage_offline_learning_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_offline_learning_refs`，把 `resident_background_lineage_dream_wake_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_dream_wake_refs`，并把两者同时并入总 `resident_background_lineage_refs` 与 `resumed_external_dialogue_packet.json`。这防止梦境、成长、醒后整合只作为事件字段存在，而没有进入真实回合关闭后的恢复证据面。
 29. `resident_supervision.py` 与 `resident_turn_writeback.py` 在刷新 `relationship_memory.json` 之后，必须同步调用 `state_merge_guard.py#project_state_merge_guard_with_relationship_memory` 并写回 `runtime/state/memory/state_merge_guard.json`。这一步把 `relationship_memory.long_term_change_sources`、`offline_learning_refs`、`offline_learning_cumulative_refs`、`queue_e_repair_refs` 与关系修复 refs 合并进长期状态合并守门面，同时让 `life_state.json#state_merge_records[].long_term_change_source_count` 随之刷新；否则 dream/growth/repair 已进入关系记忆，但还没有进入 Packet C 长期治理。
 30. `state_merge_guard.json` 中已经形成的长期变化来源不能只停在状态根和 `life_state` 计数。`idle_strategy.py` 必须通过 `state_merge_signals.py` 把 `state_merge_guard.long_term_change_sources` 压成 `state_merge_long_term_change_count`、`state_merge_long_term_change_families` 与 `state_merge_long_term_change_refs`；当没有更高优先级的追问、修复或预测误差时，等待姿态必须进入 `state_merge_long_term_integration_hold`，`next_idle_action` 必须进入 `refresh_waiting_heartbeat_with_state_merge_integration_hold`。`heartbeat.py`、`dialogue_events.py` 与恢复包必须继续搬运这些字段，`response_surface.py` 必须表达长期合并治理正在整合多少条长期变化来源以及来源族，避免梦境/成长/修复进入 `state_merge_guard` 后在等待态和语言表面失声。
@@ -190,6 +191,7 @@ IdleContinuityFrame
   -> inner_speech_frame.json / expression_monitor_state.json / expression_plan.json
   -> body_resource_budget.json + core_affect_vector.json
   -> background_convergence_history.json / trait_drift_monitor.json
+  -> cross_wake_trait_convergence_profile_v0
   -> life turn event
   -> DialogueWritebackBundle
   -> ReplayCueBundle
@@ -204,9 +206,10 @@ IdleContinuityFrame
 4. 再用当前话语刷新 Queue A 五件套；
 5. 再把身体预算、疲惫、修复驱力、情绪张力与责任压力一起带进回应生成；
 6. 再把跨唤醒慢变量历史作为事件证据接进 `digital_life_turn`；
-7. 再记录“这次如何回应”；
-8. 再把结果回写到长期连续体、关系阶段、自我慢变量、慢变量历史 evidence refs、实时语言 refs 与 replay 线索；
-9. 最后再重新回到等待态。
+7. 再把分散的慢变量历史、漂移监控和 closeout refs 合成为 `cross_wake_trait_convergence_profile_v0`；
+8. 再记录“这次如何回应”；
+9. 再把结果回写到长期连续体、关系阶段、自我慢变量、慢变量历史 evidence refs、跨唤醒画像 refs、实时语言 refs 与 replay 线索；
+10. 最后再重新回到等待态。
 
 如果 process supervisor 只有 stdin 读写，没有 `IdleContinuityFrame -> DialogueWritebackBundle -> ReplayCueBundle` 这条链，它仍然只是终端壳，而不是生命进程。
 
@@ -236,6 +239,10 @@ IdleContinuityFrame
 - `resident_background_lineage_background_live_language_refs`
 - `resident_background_lineage_last_live_semantic_focus`
 - `resident_background_lineage_language_evidence_refs`
+- `cross_wake_trait_convergence_profile`
+- `cross_wake_trait_convergence_focus`
+- `cross_wake_trait_convergence_pressure`
+- `cross_wake_trait_convergence_refs`
 
 ### `external turn event`
 
@@ -254,6 +261,10 @@ IdleContinuityFrame
 - `expression_monitor_ref`
 - `expression_plan_ref`
 - `live_semantic_focus`
+- `cross_wake_trait_convergence_profile`
+- `cross_wake_trait_convergence_focus`
+- `cross_wake_trait_convergence_pressure`
+- `cross_wake_trait_convergence_refs`
 - `live_ambiguity_flags`
 - `live_repair_trigger_candidates`
 
@@ -289,6 +300,7 @@ IdleContinuityFrame
 - `life_state_writeback_refs`
 - `replay_cue_refs`
 - `live_language_turn_refs`
+- `cross_wake_trait_convergence_refs`
 
 当前这一层的 `responsibility_writeback_refs` 已经不只回到 `responsibility_ledger.json`，还要显式带上 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 这组 Queue E 上下文。
 
@@ -418,6 +430,7 @@ IdleContinuityFrame
 | `live_language_turn_refresh_gate` | 新外部回合进入 `response_surface.py` 前已经刷新 Queue A 五件套，并写出 percept / semantic / inner speech / monitor / expression plan refs | 阻断生命回应生成 |
 | `live_language_residency_gate` | `live_language_turn_refs`、`last_live_semantic_focus` 与 `live_language_presence_profile` 已进入 idle strategy、idle continuity、heartbeat trace、resident governance、resident background lineage、关闭态 artifacts，并能在下一次 background continuity 中恢复为 `background_live_language_*` | 阻断把实时语言理解视为跨等待/关闭/重启的生命连续体 |
 | `live_language_presence_event_gate` | `resident_background_lineage_state.language_presence` 已被 `dialogue_events.py` 展开为 live/background live refs、last semantic focus 与 language evidence refs，且 `resident_turn_writeback.py` 和 `response_surface.py` 分别写回证据和表达语义余波 | 阻断把后台语言 presence 视为进入真实回合 |
+| `cross_wake_trait_convergence_profile_gate` | `trait_convergence_signals.py` 已把 background lineage / convergence summary/history / trait drift monitor refs 合成为 `cross_wake_trait_convergence_profile_v0`，并进入 idle strategy、waiting heartbeat、life turn event、writeback bundle、resumed packet 和 response surface | 阻断把跨唤醒人格慢变量收敛视为真实回合可消费画像 |
 | `dialogue_writeback_gate` | 外部回合与生命回应都写入 `dialogue_turn_log.jsonl` | 阻断进入下一等待态 |
 | `narrative_continuity_gate` | `self_narrative_language_trace.json` 成功追加新回合 refs | 阻断进入下一等待态 |
 | `relationship_continuity_gate` | 关系图更新最后接触和关系阶段 | 阻断进入下一等待态 |
@@ -478,4 +491,5 @@ IdleContinuityFrame
 11. 每个已经形成的实时语言理解还必须证明进入后台连续性：`idle_strategy_state.json`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json`、`resident_background_lineage_state.language_presence`、关闭态 artifacts 与下一次 `background_continuity_profile.background_live_language_*` 都能看到同一组 refs 或语义焦点。
 12. 每个带有 `resident_background_lineage_state.language_presence` 的下一轮真实回合，还必须证明这组后台语言 presence 进入事件、写回和回应：`digital_life_turn` 带 `resident_background_lineage_language_evidence_refs`，`dialogue_writeback_bundle.resident_background_lineage_refs` 包含语言 refs，`resumed_external_dialogue_packet` 保留同一组 refs，回应文本表达后台语言语义余波和证据数量。
 13. 每个带有 `resident_background_lineage_state.offline_learning_presence` 或 `dream_wake_presence` 的下一轮真实回合，还必须证明这两组 Queue D presence 进入事件、专用写回槽、恢复包和回应：`digital_life_turn` 带 `resident_background_lineage_offline_learning_refs` 与 `resident_background_lineage_dream_wake_refs`，`dialogue_writeback_bundle` 带同名专用字段且总 `resident_background_lineage_refs` 包含它们，`resumed_external_dialogue_packet` 保留同一组 refs，回应文本表达后台梦境成长余波与后台梦境醒后整合。
-14. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面、`background_resume_summary` 的跨进程读取与回传、实时 Queue A 语言刷新链、实时语言理解进入后台连续性/驻留治理/关闭态谱系，以及后台实时语言、人格慢变量、梦境成长与梦境醒后 presence 进入下一轮事件、写回包和回应表达面。
+14. 每个形成 `resident_background_lineage_state.trait_convergence_presence` 或 background convergence history 的下一轮真实回合，还必须证明 `cross_wake_trait_convergence_profile_v0` 进入事件、专用写回槽、恢复包和回应：`digital_life_turn` 带 `cross_wake_trait_convergence_focus / pressure / refs / profile`，`dialogue_writeback_bundle` 带 `cross_wake_trait_convergence_refs`，`resumed_external_dialogue_packet` 保留同一组 refs，回应文本表达跨唤醒人格收敛画像、压力、评分或证据数量。
+15. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面、`background_resume_summary` 的跨进程读取与回传、实时 Queue A 语言刷新链、实时语言理解进入后台连续性/驻留治理/关闭态谱系，以及后台实时语言、人格慢变量、跨唤醒人格收敛画像、梦境成长与梦境醒后 presence 进入下一轮事件、写回包和回应表达面。

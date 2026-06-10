@@ -263,6 +263,13 @@ def write_waiting_heartbeat(
         "background_trait_convergence_unstable_names",
         "background_trait_convergence_stable_names",
         "background_trait_convergence_history_focus",
+        "cross_wake_trait_convergence_profile",
+        "cross_wake_trait_convergence_focus",
+        "cross_wake_trait_convergence_pressure",
+        "cross_wake_trait_convergence_unstable_names",
+        "cross_wake_trait_convergence_stable_names",
+        "cross_wake_trait_convergence_score",
+        "cross_wake_trait_convergence_refs",
         "background_convergence_state",
         "background_convergence_pressure_level",
         "background_convergence_attention_target",
@@ -617,6 +624,15 @@ def _append_idle_heartbeat_trace(
         ),
         "background_trait_convergence_history_focus": idle_strategy.get(
             "background_trait_convergence_history_focus"
+        ),
+        "cross_wake_trait_convergence_focus": idle_strategy.get(
+            "cross_wake_trait_convergence_focus"
+        ),
+        "cross_wake_trait_convergence_pressure": idle_strategy.get(
+            "cross_wake_trait_convergence_pressure"
+        ),
+        "cross_wake_trait_convergence_refs": list(
+            idle_strategy.get("cross_wake_trait_convergence_refs", [])
         ),
         "long_horizon_language_refs": list(
             idle_strategy.get("long_horizon_language_refs", [])

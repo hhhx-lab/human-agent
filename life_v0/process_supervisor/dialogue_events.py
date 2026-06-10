@@ -3,14 +3,9 @@ from __future__ import annotations
 from typing import Any
 
 from .state_merge_signals import state_merge_long_term_change_profile
-
-
-BACKGROUND_TRAIT_CONVERGENCE_REF_KEYS = (
-    "background_resident_governance_state_ref",
-    "background_resident_governance_explanation_ref",
-    "background_trait_drift_monitor_ref",
-    "background_convergence_summary_ref",
-    "background_convergence_history_ref",
+from .trait_convergence_signals import (
+    BACKGROUND_TRAIT_CONVERGENCE_REF_KEYS,
+    cross_wake_trait_convergence_profile,
 )
 
 
@@ -177,6 +172,7 @@ def build_background_trait_convergence_payload(
 
     if evidence_refs:
         payload["background_trait_convergence_evidence_refs"] = evidence_refs
+    payload.update(cross_wake_trait_convergence_profile(terminal_life_loop_state))
     return payload
 
 

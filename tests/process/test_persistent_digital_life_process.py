@@ -2861,6 +2861,27 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "recent_trait_recalibration",
         )
         self.assertEqual(
+            idle_strategy["cross_wake_trait_convergence_focus"],
+            "trait_recalibration_required",
+        )
+        self.assertEqual(
+            idle_strategy["cross_wake_trait_convergence_pressure"],
+            "recalibration",
+        )
+        self.assertEqual(
+            idle_strategy["cross_wake_trait_convergence_refs"],
+            [
+                "runtime/state/terminal/background_convergence_summary.json",
+                "runtime/state/terminal/background_convergence_history.json",
+            ],
+        )
+        self.assertEqual(
+            idle_strategy["cross_wake_trait_convergence_profile"][
+                "unstable_names"
+            ],
+            ["continuity_drive"],
+        )
+        self.assertEqual(
             idle_strategy["long_horizon_priority_profile"][
                 "background_convergence_history_recalibration"
             ],
@@ -4536,6 +4557,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
             )
             self.assertEqual(
+                result.last_life_turn["cross_wake_trait_convergence_focus"],
+                "trait_stability_hold",
+            )
+            self.assertEqual(
+                result.last_life_turn["cross_wake_trait_convergence_pressure"],
+                "stability_hold",
+            )
+            self.assertEqual(
+                result.last_life_turn["cross_wake_trait_convergence_profile"][
+                    "stable_names"
+                ],
+                ["repair_seriousness"],
+            )
+            self.assertEqual(
                 result.last_life_turn["resident_background_lineage_depth_band"],
                 "deep_persistent_lineage",
             )
@@ -4618,6 +4653,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn("后台已稳定的慢变量包括repair_seriousness", result.emitted_output)
             self.assertIn("后台人格漂移监控仍在场", result.emitted_output)
             self.assertIn("后台人格慢变量证据保留5条", result.emitted_output)
+            self.assertIn("跨唤醒人格收敛画像为trait_stability_hold", result.emitted_output)
+            self.assertIn("跨唤醒人格收敛压力为stability_hold", result.emitted_output)
             self.assertEqual(
                 result.last_life_turn["prediction_waiting_posture"],
                 "hold_for_evidence",
@@ -4749,6 +4786,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/terminal/background_convergence_history.json",
                 ],
             )
+            self.assertEqual(
+                dialogue_writeback_bundle["cross_wake_trait_convergence_refs"],
+                dialogue_writeback_bundle["background_trait_convergence_refs"],
+            )
             for ref in [
                 "runtime/state/terminal/resident_governance_state.json",
                 "runtime/state/terminal/resident_governance_snapshot.json",
@@ -4801,6 +4842,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["background_trait_convergence_evidence_refs"],
                 dialogue_writeback_bundle["background_trait_convergence_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["cross_wake_trait_convergence_focus"],
+                "trait_stability_hold",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["cross_wake_trait_convergence_refs"],
+                dialogue_writeback_bundle["cross_wake_trait_convergence_refs"],
             )
             self.assertEqual(
                 resumed_dialogue_packet["resident_background_lineage_depth_band"],
@@ -8340,6 +8389,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             ],
         )
         self.assertEqual(
+            life_turn["cross_wake_trait_convergence_focus"],
+            "trait_recalibration_required",
+        )
+        self.assertEqual(
+            life_turn["cross_wake_trait_convergence_pressure"],
+            "recalibration",
+        )
+        self.assertEqual(
+            life_turn["cross_wake_trait_convergence_refs"],
+            life_turn["background_trait_convergence_evidence_refs"],
+        )
+        self.assertEqual(
             life_turn["resident_background_lineage_depth_band"],
             "deep_persistent_lineage",
         )
@@ -8789,6 +8850,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("后台人格收敛评分为0.96", response)
         self.assertIn("后台人格漂移监控仍在场", response)
         self.assertIn("后台人格慢变量证据保留5条", response)
+        self.assertIn("跨唤醒人格收敛画像为trait_stability_hold", response)
+        self.assertIn("跨唤醒人格收敛压力为stability_hold", response)
+        self.assertIn("跨唤醒人格收敛证据保留5条", response)
         self.assertIn("后台语言关注指向relationship_timeline", response)
         self.assertIn("后台梦境成长余波延续到第4代", response)
         self.assertIn("后台梦境成长压力为elevated", response)

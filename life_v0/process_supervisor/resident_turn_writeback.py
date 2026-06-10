@@ -230,6 +230,11 @@ def write_resident_turn_writeback(
             "background_trait_convergence_evidence_refs", []
         )
     )
+    cross_wake_trait_convergence_refs = list(
+        background_trait_convergence_payload.get(
+            "cross_wake_trait_convergence_refs", []
+        )
+    )
     resident_background_lineage_payload = build_resident_background_lineage_payload(
         terminal_life_loop_state
     )
@@ -323,6 +328,7 @@ def write_resident_turn_writeback(
         readme_block_refs=readme_block_refs,
         runtime_carrier_refs=runtime_carrier_refs,
         background_trait_convergence_refs=background_trait_convergence_refs,
+        cross_wake_trait_convergence_refs=cross_wake_trait_convergence_refs,
         resident_background_lineage_refs=resident_background_lineage_refs,
         resident_background_lineage_offline_learning_refs=(
             resident_background_lineage_offline_learning_refs
