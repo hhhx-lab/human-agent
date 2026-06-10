@@ -24,6 +24,12 @@ def compose_life_response(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
+    belief_state: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
+    memory_write_gate: dict[str, Any] | None = None,
+    state_merge_guard: dict[str, Any] | None = None,
     body_resource_budget: dict[str, Any] | None = None,
     core_affect_vector: dict[str, Any] | None = None,
     responsibility_loop_state: dict[str, Any] | None = None,
@@ -147,6 +153,24 @@ def compose_life_response(
         response = f"{response}，离线学习计划会经过{'、'.join(offline_learning_targets)}"
     if has_offline_influence:
         response = f"{response}，当前带着离线表达压力"
+    prediction_surface = _prediction_surface_posture(
+        signal_media_runtime=signal_media_runtime,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+    )
+    if prediction_surface["surface_posture"]:
+        response = f"{response}，预测输出姿态为{prediction_surface['surface_posture']}"
+    if prediction_surface["active_sampling_route"]:
+        response = f"{response}，主动采样路线为{prediction_surface['active_sampling_route']}"
+    if prediction_surface["prediction_error_count"]:
+        response = f"{response}，预测误差仍有{prediction_surface['prediction_error_count']}条"
+    if prediction_surface["memory_write_gate_policy"]:
+        response = f"{response}，记忆写门处于{prediction_surface['memory_write_gate_policy']}"
+    if prediction_surface["state_merge_policy"]:
+        response = f"{response}，长期合并治理处于{prediction_surface['state_merge_policy']}"
     if replay_cue_count:
         response = f"{response}，同时带着{replay_cue_count}条离线重放线索"
     if dream_window_count:
@@ -197,3 +221,46 @@ def _slow_value(trait_slow_variables: dict[str, Any], key: str) -> float:
     if isinstance(payload, (int, float)):
         return float(payload)
     return 0.0
+
+
+def _prediction_surface_posture(
+    *,
+    signal_media_runtime: dict[str, Any] | None,
+    belief_state: dict[str, Any] | None,
+    prediction_error_field: dict[str, Any] | None,
+    active_sampling_plan: dict[str, Any] | None,
+    memory_write_gate: dict[str, Any] | None,
+    state_merge_guard: dict[str, Any] | None,
+) -> dict[str, Any]:
+    selected_route = str((active_sampling_plan or {}).get("selected_route", ""))
+    stage_effect = str((active_sampling_plan or {}).get("stage_effect", ""))
+    error_events = (prediction_error_field or {}).get("error_events", [])
+    error_count = len(error_events) if isinstance(error_events, list) else 0
+    modulation_vector = (signal_media_runtime or {}).get("modulation_vector", {})
+    if not isinstance(modulation_vector, dict):
+        modulation_vector = {}
+    repair_drive = str(modulation_vector.get("repair_drive", "")).lower()
+    confidence_level = str((belief_state or {}).get("confidence_level", "")).lower()
+    memory_policy = str((memory_write_gate or {}).get("stage_policy", ""))
+    merge_policy = str((state_merge_guard or {}).get("stage_policy", ""))
+    route_lower = selected_route.lower()
+    stage_lower = stage_effect.lower()
+    memory_policy_lower = memory_policy.lower()
+
+    surface_posture = ""
+    if "clarify" in route_lower:
+        surface_posture = "追问"
+    elif "hold_for_evidence" in stage_lower or error_count > 0:
+        surface_posture = "保留"
+    elif repair_drive == "active" or "repair" in route_lower or "repair" in memory_policy_lower:
+        surface_posture = "修复"
+    elif confidence_level in {"stable", "high", "confirmed"}:
+        surface_posture = "确认"
+
+    return {
+        "surface_posture": surface_posture,
+        "active_sampling_route": selected_route,
+        "prediction_error_count": error_count,
+        "memory_write_gate_policy": memory_policy,
+        "state_merge_policy": merge_policy,
+    }

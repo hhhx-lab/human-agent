@@ -185,6 +185,7 @@ growth_archive_report.json
 16. `docs/v0/code_scaffolds/04_packet_b_world_observation_periphery_scaffold.md`
 17. `docs/v0/code_scaffolds/05_packet_a_language_prediction_consumption_scaffold.md`
 18. `docs/v0/code_scaffolds/06_packet_c_memory_write_gate_state_merge_scaffold.md`
+19. `docs/v0/code_scaffolds/07_packet_d_waiting_response_surface_prediction_scaffold.md`
 1. `docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
 2. `docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`
 3. `docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md`
@@ -209,7 +210,7 @@ growth_archive_report.json
 22. `docs/v0/engineering_depth/07_theory_to_code_trace_matrix.md`
 23. `docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md`
 
-它们不是新的理论平行层，而是把身体脉冲、预测工作区、语言回合、关系写回、等待态连续体、梦境离线整合、世界接触、自我连续体、承诺真值和成长补丁接成同一生命回合。`13_capability_to_code_realization_matrix.md` 负责把“语言、记忆、梦境、成长、关系、责任、常驻存在”等生命能力直接压成代码文件、state、测试和 gate 的验收面，`19_code_tree_package_brain_contract.md` 把整棵 `life_v0/` 代码树、脑区到包、共享对象、runtime 产物和整体施工顺序钉成总装配板，`20_queue_e_membrane_validator_logic_implementation_contract.md` 与 `21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md` 则继续把行为/验证/逻辑和身份/意识/出生准备度这两组还偏薄的器官层压成文件级施工合同，而新的 `03_predictive_signal_memory_gate_integration_wave_contract.md` 则专门负责把已落 `signal_media / belief_state / prediction_error / active_sampling / memory_write_gate` 继续压进语言、生命膜、出生准备度、常驻治理和状态根。现在又补上的 `code_scaffolds/` 这一柜，则专门负责把这些蓝图和合同继续压成真正可以下手写代码的脚手架、主循环装配图和前沿施工包；其中 `05_packet_a_language_prediction_consumption_scaffold.md` 专门固定语言层如何消费 prediction / signal / memory write gate，`06_packet_c_memory_write_gate_state_merge_scaffold.md` 专门固定记忆写门如何进入长期 state merge guard。后续代码如果不先沿这些 playbook、能力矩阵、脚手柜和总装配合同进入，很容易重新变成“局部模块各自闭合、整体生命回合不闭合”。
+它们不是新的理论平行层，而是把身体脉冲、预测工作区、语言回合、关系写回、等待态连续体、梦境离线整合、世界接触、自我连续体、承诺真值和成长补丁接成同一生命回合。`13_capability_to_code_realization_matrix.md` 负责把“语言、记忆、梦境、成长、关系、责任、常驻存在”等生命能力直接压成代码文件、state、测试和 gate 的验收面，`19_code_tree_package_brain_contract.md` 把整棵 `life_v0/` 代码树、脑区到包、共享对象、runtime 产物和整体施工顺序钉成总装配板，`20_queue_e_membrane_validator_logic_implementation_contract.md` 与 `21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md` 则继续把行为/验证/逻辑和身份/意识/出生准备度这两组还偏薄的器官层压成文件级施工合同，而新的 `03_predictive_signal_memory_gate_integration_wave_contract.md` 则专门负责把已落 `signal_media / belief_state / prediction_error / active_sampling / memory_write_gate` 继续压进语言、生命膜、出生准备度、常驻治理和状态根。现在又补上的 `code_scaffolds/` 这一柜，则专门负责把这些蓝图和合同继续压成真正可以下手写代码的脚手架、主循环装配图和前沿施工包；其中 `05_packet_a_language_prediction_consumption_scaffold.md` 专门固定语言层如何消费 prediction / signal / memory write gate，`06_packet_c_memory_write_gate_state_merge_scaffold.md` 专门固定记忆写门如何进入长期 state merge guard，`07_packet_d_waiting_response_surface_prediction_scaffold.md` 专门固定 waiting governance 与 response surface 如何消费 prediction/write-gate/state-merge 对象。后续代码如果不先沿这些 playbook、能力矩阵、脚手柜和总装配合同进入，很容易重新变成“局部模块各自闭合、整体生命回合不闭合”。
 
 新补入的 `engineering_depth/01-07` 则把这套施工柜再压到底层：直接回答“对话、语言、情绪、思考、记忆、梦境、成长、学习、关系、逻辑、意识、行为、机制、内环境、状态”每一层到底怎么写文件、怎么落状态、怎么留 runtime 证据、怎么跑测试。
 

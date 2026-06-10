@@ -62,6 +62,12 @@ def write_process_report_bundle(
     responsibility_loop_state_ref: str | None = None,
     world_contact_summary_ref: str | None = None,
     pain_regret_repair_report_ref: str | None = None,
+    signal_media_runtime_ref: str | None = None,
+    belief_state_ref: str | None = None,
+    prediction_error_field_ref: str | None = None,
+    active_sampling_plan_ref: str | None = None,
+    memory_write_gate_ref: str | None = None,
+    state_merge_guard_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> ProcessReportBundleResult:
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
@@ -74,6 +80,14 @@ def write_process_report_bundle(
         ]
         if ref
     ]
+    prediction_write_gate_refs = _prediction_write_gate_refs(
+        signal_media_runtime_ref=signal_media_runtime_ref,
+        belief_state_ref=belief_state_ref,
+        prediction_error_field_ref=prediction_error_field_ref,
+        active_sampling_plan_ref=active_sampling_plan_ref,
+        memory_write_gate_ref=memory_write_gate_ref,
+        state_merge_guard_ref=state_merge_guard_ref,
+    )
     governance_explanation = write_resident_governance_explanation(
         run_id=run_id,
         generated_at=generated_at,
@@ -131,6 +145,13 @@ def write_process_report_bundle(
         "belief_learning_plan_ref": belief_learning_plan_ref,
         "language_learning_plan_ref": language_learning_plan_ref,
         "relationship_learning_plan_ref": relationship_learning_plan_ref,
+        "signal_media_ref": signal_media_runtime_ref,
+        "belief_state_ref": belief_state_ref,
+        "prediction_error_ref": prediction_error_field_ref,
+        "active_sampling_plan_ref": active_sampling_plan_ref,
+        "memory_write_gate_ref": memory_write_gate_ref,
+        "state_merge_guard_ref": state_merge_guard_ref,
+        "prediction_write_gate_refs": prediction_write_gate_refs,
         "next_required_action": "process_closed_waiting_relaunch",
         "blocked_reasons": [],
     }
@@ -187,6 +208,7 @@ def write_process_report_bundle(
             ]
             if ref
         ],
+        "prediction_write_gate_refs": prediction_write_gate_refs,
     }
     if membrane_guard_refs:
         digest["membrane_guard_refs"] = membrane_guard_refs
@@ -217,6 +239,12 @@ def write_process_report_bundle(
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
+        signal_media_runtime_ref=signal_media_runtime_ref,
+        belief_state_ref=belief_state_ref,
+        prediction_error_field_ref=prediction_error_field_ref,
+        active_sampling_plan_ref=active_sampling_plan_ref,
+        memory_write_gate_ref=memory_write_gate_ref,
+        state_merge_guard_ref=state_merge_guard_ref,
     )
 
     receipts_dir.mkdir(parents=True, exist_ok=True)
@@ -256,6 +284,12 @@ def build_process_receipt(
     responsibility_loop_state_ref: str | None = None,
     world_contact_summary_ref: str | None = None,
     pain_regret_repair_report_ref: str | None = None,
+    signal_media_runtime_ref: str | None = None,
+    belief_state_ref: str | None = None,
+    prediction_error_field_ref: str | None = None,
+    active_sampling_plan_ref: str | None = None,
+    memory_write_gate_ref: str | None = None,
+    state_merge_guard_ref: str | None = None,
 ) -> dict[str, Any]:
     input_hashes: dict[str, str] = {}
     for path in [
@@ -273,6 +307,12 @@ def build_process_receipt(
         state_dir / "language" / "expression_plan.json",
         state_dir / "action" / "responsibility_loop_state.json",
         state_dir / "membrane" / "world_contact_summary.json",
+        state_dir / "signal" / "signal_media_runtime.json",
+        state_dir / "prediction" / "belief_state_frame.json",
+        state_dir / "prediction" / "prediction_error_field.json",
+        state_dir / "prediction" / "active_sampling_plan.json",
+        state_dir / "memory" / "memory_write_gate.json",
+        state_dir / "memory" / "state_merge_guard.json",
         state_dir / "replay" / "replay_cue_bundle.json",
         state_dir / "dream" / "offline_consolidation_frame.json",
         state_dir / "dream" / "nightmare_loop_risk.json",
@@ -330,6 +370,12 @@ def build_process_receipt(
                 responsibility_loop_state_ref,
                 world_contact_summary_ref,
                 pain_regret_repair_report_ref,
+                signal_media_runtime_ref,
+                belief_state_ref,
+                prediction_error_field_ref,
+                active_sampling_plan_ref,
+                memory_write_gate_ref,
+                state_merge_guard_ref,
             ]
             if ref
         ],
@@ -348,3 +394,26 @@ def sha256_if_exists(path: Path) -> str | None:
     if not path.exists():
         return None
     return sha256(path)
+
+
+def _prediction_write_gate_refs(
+    *,
+    signal_media_runtime_ref: str | None,
+    belief_state_ref: str | None,
+    prediction_error_field_ref: str | None,
+    active_sampling_plan_ref: str | None,
+    memory_write_gate_ref: str | None,
+    state_merge_guard_ref: str | None,
+) -> list[str]:
+    return [
+        ref
+        for ref in [
+            signal_media_runtime_ref,
+            belief_state_ref,
+            prediction_error_field_ref,
+            active_sampling_plan_ref,
+            memory_write_gate_ref,
+            state_merge_guard_ref,
+        ]
+        if ref
+    ]

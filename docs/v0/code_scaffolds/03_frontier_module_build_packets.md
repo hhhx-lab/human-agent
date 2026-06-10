@@ -166,6 +166,10 @@
 
 让 waiting governance 和 response surface 真正显式消费 prediction 五件套与离线学习对象。
 
+当前施工脚手：
+
+- `docs/v0/code_scaffolds/07_packet_d_waiting_response_surface_prediction_scaffold.md`
+
 ### 必读材料
 
 - `docs/95_dream_reality_and_offline_life_timeline.md`
@@ -190,6 +194,8 @@
 3. `resident_supervision.py` 在 bootstrap 时装载 prediction refs
 4. `process_closeout.py` 回链这些对象到 report / receipt
 
+当前落地口径：`resident_supervision.py` 在 bootstrap 时装载 `signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json`、`memory_write_gate.json`、`state_merge_guard.json`；`idle_strategy.py` 将它们压成 `prediction_waiting_posture`、`response_surface_posture_hint`、`prediction_attention_target` 与 `prediction_write_gate_refs`；`response_surface.py` 释放确认 / 追问 / 修复 / 保留四类预测输出姿态；`process_report.py` 则把六个输入对象回链进 report、digest、receipt 和 input hash。
+
 ### 必写 runtime
 
 - `runtime/state/terminal/idle_strategy_state.json`
@@ -208,4 +214,4 @@
 2. Packet C
 3. Packet D
 
-这个顺序的意思不是语言不重要，而是 Packet B 这条 observation 底盘已经接通，所以下一步先让语言表达和长期记忆真正建立在这条底盘上，最后再把它们更深压进 waiting governance。
+这个顺序已经完成第一轮闭合：Packet A 让语言消费预测对象，Packet C 让记忆写门进入长期合并治理，Packet D 让等待态和回应表面真正消费这两条对象链。下一轮应转入更长时标的后台存在、跨进程离线学习累计和关系慢变量收敛。

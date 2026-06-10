@@ -1302,6 +1302,100 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         )
         self.assertEqual(idle_strategy["heartbeat_interval_ms"], 58)
 
+    def test_idle_strategy_consumes_prediction_write_gate_and_state_merge_guard(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-prediction-write-gate-governance",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "inactive",
+                "cognitive_bandwidth": "steady_open",
+                "sleep_pressure": "low",
+            },
+            replay_cue_bundle={},
+            offline_consolidation_frame={},
+            growth_patch_candidate_queue={},
+            signal_media_runtime={
+                "schema_version": "signal_media_runtime_v0",
+                "modulation_vector": {
+                    "precision_gain": "high",
+                    "repair_drive": "active",
+                },
+            },
+            belief_state={
+                "schema_version": "belief_state_frame_v0",
+                "confidence_level": "unstable",
+            },
+            prediction_error_field={
+                "schema_version": "prediction_error_field_v0",
+                "error_events": [
+                    {"error_id": "prediction-error-001"},
+                    {"error_id": "prediction-error-002"},
+                ],
+            },
+            active_sampling_plan={
+                "schema_version": "active_sampling_plan_v0",
+                "selected_route": "clarify_with_relation_subject",
+                "stage_effect": "hold_for_evidence",
+            },
+            memory_write_gate={
+                "schema_version": "memory_write_gate_v0",
+                "stage_policy": "write_guarded_candidate_then_validate",
+            },
+            state_merge_guard={
+                "schema_version": "state_merge_guard_v0",
+                "stage_policy": "long_term_merge_fail_closed",
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(idle_strategy["prediction_waiting_posture"], "hold_for_evidence")
+        self.assertEqual(idle_strategy["response_surface_posture_hint"], "question")
+        self.assertEqual(idle_strategy["prediction_attention_target"], "active_sampling_plan")
+        self.assertEqual(
+            idle_strategy["prediction_attention_reason"],
+            "selected_route_requires_relation_subject_clarification",
+        )
+        self.assertEqual(idle_strategy["prediction_error_count"], 2)
+        self.assertEqual(idle_strategy["active_sampling_route"], "clarify_with_relation_subject")
+        self.assertEqual(
+            idle_strategy["memory_write_gate_policy"],
+            "write_guarded_candidate_then_validate",
+        )
+        self.assertEqual(idle_strategy["state_merge_policy"], "long_term_merge_fail_closed")
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "refresh_waiting_heartbeat_with_prediction_evidence_hold",
+        )
+        self.assertEqual(idle_strategy["heartbeat_interval_ms"], 48)
+        self.assertEqual(
+            idle_strategy["prediction_write_gate_refs"],
+            [
+                "runtime/state/signal/signal_media_runtime.json",
+                "runtime/state/prediction/belief_state_frame.json",
+                "runtime/state/prediction/prediction_error_field.json",
+                "runtime/state/prediction/active_sampling_plan.json",
+                "runtime/state/memory/memory_write_gate.json",
+                "runtime/state/memory/state_merge_guard.json",
+            ],
+        )
+
     def test_idle_strategy_reloads_background_continuity_carryover(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
 
@@ -2565,6 +2659,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             (state_dir / "replay").mkdir(parents=True, exist_ok=True)
             (state_dir / "dream").mkdir(parents=True, exist_ok=True)
             (state_dir / "growth").mkdir(parents=True, exist_ok=True)
+            (state_dir / "signal").mkdir(parents=True, exist_ok=True)
+            (state_dir / "prediction").mkdir(parents=True, exist_ok=True)
+            (state_dir / "memory").mkdir(parents=True, exist_ok=True)
 
             self._write_json(reports_dir / "digital_life_shell_report.json", {"status": "closed"})
             self._write_json(reports_dir / "digital_life_waiting_heartbeat.json", {"heartbeat_counter": 3})
@@ -2634,6 +2731,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 {"schema_version": "responsibility_loop_state_v0"},
             )
             self._write_json(
+                state_dir / "signal" / "signal_media_runtime.json",
+                {"schema_version": "signal_media_runtime_v0"},
+            )
+            self._write_json(
+                state_dir / "prediction" / "belief_state_frame.json",
+                {"schema_version": "belief_state_frame_v0"},
+            )
+            self._write_json(
+                state_dir / "prediction" / "prediction_error_field.json",
+                {"schema_version": "prediction_error_field_v0"},
+            )
+            self._write_json(
+                state_dir / "prediction" / "active_sampling_plan.json",
+                {"schema_version": "active_sampling_plan_v0"},
+            )
+            self._write_json(
+                state_dir / "memory" / "memory_write_gate.json",
+                {"schema_version": "memory_write_gate_v0"},
+            )
+            self._write_json(
+                state_dir / "memory" / "state_merge_guard.json",
+                {"schema_version": "state_merge_guard_v0"},
+            )
+            self._write_json(
                 state_dir / "membrane" / "world_contact_summary.json",
                 {"schema_version": "world_contact_summary_v0"},
             )
@@ -2685,6 +2806,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 responsibility_loop_state_ref="runtime/state/action/responsibility_loop_state.json",
                 world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
                 pain_regret_repair_report_ref="runtime/reports/latest/pain_regret_repair_report.json",
+                signal_media_runtime_ref="runtime/state/signal/signal_media_runtime.json",
+                belief_state_ref="runtime/state/prediction/belief_state_frame.json",
+                prediction_error_field_ref="runtime/state/prediction/prediction_error_field.json",
+                active_sampling_plan_ref="runtime/state/prediction/active_sampling_plan.json",
+                memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
+                state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
                 write_json=self._write_json,
             )
 
@@ -2753,6 +2880,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 report["pain_regret_repair_report_ref"],
                 "runtime/reports/latest/pain_regret_repair_report.json",
+            )
+            self.assertEqual(
+                report["prediction_write_gate_refs"],
+                [
+                    "runtime/state/signal/signal_media_runtime.json",
+                    "runtime/state/prediction/belief_state_frame.json",
+                    "runtime/state/prediction/prediction_error_field.json",
+                    "runtime/state/prediction/active_sampling_plan.json",
+                    "runtime/state/memory/memory_write_gate.json",
+                    "runtime/state/memory/state_merge_guard.json",
+                ],
             )
             self.assertEqual(report["heartbeat_interval_ms"], 80)
             self.assertEqual(report["offline_pressure_level"], "present")
@@ -2835,6 +2973,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/reports/latest/pain_regret_repair_report.json",
                 ],
             )
+            self.assertEqual(
+                digest["prediction_write_gate_refs"],
+                [
+                    "runtime/state/signal/signal_media_runtime.json",
+                    "runtime/state/prediction/belief_state_frame.json",
+                    "runtime/state/prediction/prediction_error_field.json",
+                    "runtime/state/prediction/active_sampling_plan.json",
+                    "runtime/state/memory/memory_write_gate.json",
+                    "runtime/state/memory/state_merge_guard.json",
+                ],
+            )
             self.assertEqual(receipt["receipt_id"], "digital_life_process_process-report-organ")
             self.assertEqual(receipt["stage_effect"], "persistent_dialogue_process_closed")
             self.assertIn(
@@ -2898,7 +3047,39 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 receipt["shared_object_refs"],
             )
             self.assertIn(
+                "runtime/state/signal/signal_media_runtime.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/prediction/belief_state_frame.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/prediction/prediction_error_field.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/prediction/active_sampling_plan.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_write_gate.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/state_merge_guard.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
                 str(state_dir / "replay" / "replay_cue_bundle.json"),
+                receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(state_dir / "prediction" / "active_sampling_plan.json"),
+                receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(state_dir / "memory" / "state_merge_guard.json"),
                 receipt["input_hashes"],
             )
             self.assertIn(
@@ -3000,12 +3181,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             replay_dir = state_dir / "replay"
             dream_dir = state_dir / "dream"
             growth_dir = state_dir / "growth"
+            signal_dir = state_dir / "signal"
+            prediction_dir = state_dir / "prediction"
+            memory_dir = state_dir / "memory"
             terminal_dir.mkdir(parents=True, exist_ok=True)
             language_dir.mkdir(parents=True, exist_ok=True)
             relationship_dir.mkdir(parents=True, exist_ok=True)
             replay_dir.mkdir(parents=True, exist_ok=True)
             dream_dir.mkdir(parents=True, exist_ok=True)
             growth_dir.mkdir(parents=True, exist_ok=True)
+            signal_dir.mkdir(parents=True, exist_ok=True)
+            prediction_dir.mkdir(parents=True, exist_ok=True)
+            memory_dir.mkdir(parents=True, exist_ok=True)
             reports_dir.mkdir(parents=True, exist_ok=True)
             receipts_dir.mkdir(parents=True, exist_ok=True)
 
@@ -3032,6 +3219,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "relaunch_caution_level": "baseline",
                     "next_idle_action": "refresh_waiting_heartbeat_or_accept_external_turn",
                     "waiting_mode": "restored_waiting_for_external_turn",
+                    "prediction_write_gate_refs": [
+                        "runtime/state/signal/signal_media_runtime.json",
+                        "runtime/state/prediction/belief_state_frame.json",
+                        "runtime/state/prediction/prediction_error_field.json",
+                        "runtime/state/prediction/active_sampling_plan.json",
+                        "runtime/state/memory/memory_write_gate.json",
+                        "runtime/state/memory/state_merge_guard.json",
+                    ],
+                    "prediction_waiting_posture": "confirm_when_stable",
+                    "response_surface_posture_hint": "confirm",
+                    "prediction_attention_target": "belief_state",
+                    "prediction_attention_reason": "stable_belief_frame_allows_confirmation",
                 },
             )
             self._write_json(language_dir / "expression_plan.json", {"semantic_goal": "repair_commitment_shared_language"})
@@ -3073,6 +3272,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self._write_json(
                 state_dir / "action" / "responsibility_loop_state.json",
                 {"schema_version": "responsibility_loop_state_v0"},
+            )
+            self._write_json(
+                signal_dir / "signal_media_runtime.json",
+                {"schema_version": "signal_media_runtime_v0"},
+            )
+            self._write_json(
+                prediction_dir / "belief_state_frame.json",
+                {"schema_version": "belief_state_frame_v0"},
+            )
+            self._write_json(
+                prediction_dir / "prediction_error_field.json",
+                {"schema_version": "prediction_error_field_v0"},
+            )
+            self._write_json(
+                prediction_dir / "active_sampling_plan.json",
+                {"schema_version": "active_sampling_plan_v0"},
+            )
+            self._write_json(
+                memory_dir / "memory_write_gate.json",
+                {"schema_version": "memory_write_gate_v0"},
+            )
+            self._write_json(
+                memory_dir / "state_merge_guard.json",
+                {"schema_version": "state_merge_guard_v0"},
             )
             self._write_json(
                 state_dir / "membrane" / "world_contact_summary.json",
@@ -3123,6 +3346,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 responsibility_loop_state_ref="runtime/state/action/responsibility_loop_state.json",
                 world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
                 pain_regret_repair_report_ref="runtime/reports/latest/pain_regret_repair_report.json",
+                signal_media_runtime_ref="runtime/state/signal/signal_media_runtime.json",
+                belief_state_ref="runtime/state/prediction/belief_state_frame.json",
+                prediction_error_field_ref="runtime/state/prediction/prediction_error_field.json",
+                active_sampling_plan_ref="runtime/state/prediction/active_sampling_plan.json",
+                memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
+                state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
                 write_json=self._write_json,
             )
 
@@ -3193,6 +3422,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 process_report["pain_regret_repair_report_ref"],
                 "runtime/reports/latest/pain_regret_repair_report.json",
             )
+            self.assertEqual(
+                process_report["prediction_write_gate_refs"],
+                [
+                    "runtime/state/signal/signal_media_runtime.json",
+                    "runtime/state/prediction/belief_state_frame.json",
+                    "runtime/state/prediction/prediction_error_field.json",
+                    "runtime/state/prediction/active_sampling_plan.json",
+                    "runtime/state/memory/memory_write_gate.json",
+                    "runtime/state/memory/state_merge_guard.json",
+                ],
+            )
             self.assertEqual(process_digest["heartbeat_counter"], 4)
             self.assertEqual(
                 process_digest["long_horizon_language_refs"],
@@ -3258,6 +3498,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(resident_governance_snapshot["offline_pressure_level"], "light")
             self.assertEqual(resident_governance_report["heartbeat_interval_ms"], 90)
             self.assertEqual(resident_governance_report["offline_pressure_level"], "light")
+            self.assertEqual(resident_governance_snapshot["response_surface_posture_hint"], "confirm")
+            self.assertEqual(resident_governance_report["prediction_waiting_posture"], "confirm_when_stable")
             self.assertEqual(process_report["heartbeat_interval_ms"], 90)
             self.assertEqual(process_report["offline_pressure_level"], "light")
             self.assertIn(
@@ -3294,6 +3536,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 "runtime/reports/latest/pain_regret_repair_report.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/state_merge_guard.json",
                 process_receipt["shared_object_refs"],
             )
 
@@ -3850,6 +4096,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "repair_followup_required": True,
                 "regret_pressure_refs": ["regret-1"],
             },
+            signal_media_runtime={
+                "schema_version": "signal_media_runtime_v0",
+                "modulation_vector": {
+                    "precision_gain": "high",
+                    "repair_drive": "active",
+                },
+            },
+            belief_state={
+                "schema_version": "belief_state_frame_v0",
+                "confidence_level": "unstable",
+            },
+            prediction_error_field={
+                "schema_version": "prediction_error_field_v0",
+                "error_events": [{"error_id": "prediction-error-001"}],
+            },
+            active_sampling_plan={
+                "schema_version": "active_sampling_plan_v0",
+                "selected_route": "clarify_with_relation_subject",
+                "stage_effect": "hold_for_evidence",
+            },
+            memory_write_gate={
+                "schema_version": "memory_write_gate_v0",
+                "stage_policy": "write_guarded_candidate_then_validate",
+            },
+            state_merge_guard={
+                "schema_version": "state_merge_guard_v0",
+                "stage_policy": "long_term_merge_fail_closed",
+            },
         )
 
         self.assertIn("朋友", response)
@@ -3877,6 +4151,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("离线学习压力级别为urgent", response)
         self.assertIn("离线学习焦点当前指向nightmare_risk", response)
         self.assertIn("离线学习计划会经过repair_reentry_timing_adjustment、relationship_pacing_adjustment", response)
+        self.assertIn("预测输出姿态为追问", response)
+        self.assertIn("主动采样路线为clarify_with_relation_subject", response)
+        self.assertIn("预测误差仍有1条", response)
+        self.assertIn("记忆写门处于write_guarded_candidate_then_validate", response)
+        self.assertIn("长期合并治理处于long_term_merge_fail_closed", response)
         self.assertIn("表达计划唤醒度为0.74", response)
         self.assertIn("修复驱力", response)
         self.assertIn("情绪张力", response)
@@ -3978,6 +4257,54 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 result.context.pain_regret_repair_report_ref,
                 "runtime/reports/latest/pain_regret_repair_report.json",
+            )
+            self.assertEqual(
+                result.context.signal_media_runtime["schema_version"],
+                "signal_media_runtime_v0",
+            )
+            self.assertEqual(
+                result.context.belief_state["schema_version"],
+                "belief_state_frame_v0",
+            )
+            self.assertEqual(
+                result.context.prediction_error_field["schema_version"],
+                "prediction_error_field_v0",
+            )
+            self.assertEqual(
+                result.context.active_sampling_plan["schema_version"],
+                "active_sampling_plan_v0",
+            )
+            self.assertEqual(
+                result.context.memory_write_gate["schema_version"],
+                "memory_write_gate_v0",
+            )
+            self.assertEqual(
+                result.context.state_merge_guard["schema_version"],
+                "state_merge_guard_v0",
+            )
+            self.assertEqual(
+                result.context.signal_media_runtime_ref,
+                "runtime/state/signal/signal_media_runtime.json",
+            )
+            self.assertEqual(
+                result.context.belief_state_ref,
+                "runtime/state/prediction/belief_state_frame.json",
+            )
+            self.assertEqual(
+                result.context.prediction_error_field_ref,
+                "runtime/state/prediction/prediction_error_field.json",
+            )
+            self.assertEqual(
+                result.context.active_sampling_plan_ref,
+                "runtime/state/prediction/active_sampling_plan.json",
+            )
+            self.assertEqual(
+                result.context.memory_write_gate_ref,
+                "runtime/state/memory/memory_write_gate.json",
+            )
+            self.assertEqual(
+                result.context.state_merge_guard_ref,
+                "runtime/state/memory/state_merge_guard.json",
             )
             for slow_variable_name in [
                 "trust_persistence",

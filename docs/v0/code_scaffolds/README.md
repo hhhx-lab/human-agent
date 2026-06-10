@@ -51,6 +51,7 @@
 | `04_packet_b_world_observation_periphery_scaffold.md` | Packet B 这一轮怎样把世界观察与外周归一化真正落进 S03/S05 |
 | `05_packet_a_language_prediction_consumption_scaffold.md` | Packet A 这一轮怎样把 prediction / signal / memory write gate 真正落进 S07 语言系统 |
 | `06_packet_c_memory_write_gate_state_merge_scaffold.md` | Packet C 这一轮怎样把记忆写门推进到长期 state merge guard |
+| `07_packet_d_waiting_response_surface_prediction_scaffold.md` | Packet D 这一轮怎样把 prediction / write gate / state merge guard 真正落进 waiting governance 与 response surface |
 
 ## 使用顺序
 
@@ -73,6 +74,7 @@
 4. `04_packet_b_world_observation_periphery_scaffold.md`
 5. `05_packet_a_language_prediction_consumption_scaffold.md`
 6. `06_packet_c_memory_write_gate_state_merge_scaffold.md`
+7. `07_packet_d_waiting_response_surface_prediction_scaffold.md`
 
 ## 这柜的硬约束
 

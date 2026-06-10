@@ -18,6 +18,14 @@ from ..language.relationship_timeline import (
     project_relationship_timeline_with_offline_learning,
 )
 from .heartbeat import write_waiting_heartbeat
+from .idle_strategy import (
+    ACTIVE_SAMPLING_PLAN_REF,
+    BELIEF_STATE_FRAME_REF,
+    MEMORY_WRITE_GATE_REF,
+    PREDICTION_ERROR_FIELD_REF,
+    SIGNAL_MEDIA_RUNTIME_REF,
+    STATE_MERGE_GUARD_REF,
+)
 from .incident_recovery import record_recovery_continuity
 from .offline_learning_signals import (
     BELIEF_LEARNING_PLAN_REF,
@@ -62,6 +70,12 @@ class ResidentSupervisionContext:
     belief_learning_plan: dict[str, Any]
     language_learning_plan: dict[str, Any]
     relationship_learning_plan: dict[str, Any]
+    signal_media_runtime: dict[str, Any]
+    belief_state: dict[str, Any]
+    prediction_error_field: dict[str, Any]
+    active_sampling_plan: dict[str, Any]
+    memory_write_gate: dict[str, Any]
+    state_merge_guard: dict[str, Any]
     responsibility_loop_state: dict[str, Any]
     world_contact_summary: dict[str, Any]
     pain_regret_repair_report: dict[str, Any]
@@ -72,6 +86,12 @@ class ResidentSupervisionContext:
     belief_learning_plan_ref: str | None
     language_learning_plan_ref: str | None
     relationship_learning_plan_ref: str | None
+    signal_media_runtime_ref: str | None
+    belief_state_ref: str | None
+    prediction_error_field_ref: str | None
+    active_sampling_plan_ref: str | None
+    memory_write_gate_ref: str | None
+    state_merge_guard_ref: str | None
     responsibility_loop_state_ref: str | None
     world_contact_summary_ref: str | None
     pain_regret_repair_report_ref: str | None
@@ -130,6 +150,9 @@ def bootstrap_resident_supervision(
     language_dir = state_dir / "language"
     relationship_dir = state_dir / "relationship"
     body_dir = state_dir / "body"
+    signal_dir = state_dir / "signal"
+    prediction_dir = state_dir / "prediction"
+    memory_dir = state_dir / "memory"
 
     read_json(terminal_dir / "session_envelope.json")
     safe_terminal_loop = read_json(terminal_dir / "safe_terminal_loop_state.json")
@@ -182,6 +205,14 @@ def bootstrap_resident_supervision(
     relationship_learning_plan = read_json_if_exists(
         state_dir / "growth" / "relationship_learning_plan.json"
     )
+    signal_media_runtime = read_json_if_exists(signal_dir / "signal_media_runtime.json")
+    belief_state = read_json_if_exists(prediction_dir / "belief_state_frame.json")
+    prediction_error_field = read_json_if_exists(
+        prediction_dir / "prediction_error_field.json"
+    )
+    active_sampling_plan = read_json_if_exists(prediction_dir / "active_sampling_plan.json")
+    memory_write_gate = read_json_if_exists(memory_dir / "memory_write_gate.json")
+    state_merge_guard = read_json_if_exists(memory_dir / "state_merge_guard.json")
     pain_regret_repair_report = read_json_if_exists(
         reports_dir / "pain_regret_repair_report.json"
     )
@@ -217,6 +248,30 @@ def bootstrap_resident_supervision(
     relationship_learning_plan_ref = _ref_if_present(
         payload=relationship_learning_plan,
         ref=RELATIONSHIP_LEARNING_PLAN_REF,
+    )
+    signal_media_runtime_ref = _ref_if_present(
+        payload=signal_media_runtime,
+        ref=SIGNAL_MEDIA_RUNTIME_REF,
+    )
+    belief_state_ref = _ref_if_present(
+        payload=belief_state,
+        ref=BELIEF_STATE_FRAME_REF,
+    )
+    prediction_error_field_ref = _ref_if_present(
+        payload=prediction_error_field,
+        ref=PREDICTION_ERROR_FIELD_REF,
+    )
+    active_sampling_plan_ref = _ref_if_present(
+        payload=active_sampling_plan,
+        ref=ACTIVE_SAMPLING_PLAN_REF,
+    )
+    memory_write_gate_ref = _ref_if_present(
+        payload=memory_write_gate,
+        ref=MEMORY_WRITE_GATE_REF,
+    )
+    state_merge_guard_ref = _ref_if_present(
+        payload=state_merge_guard,
+        ref=STATE_MERGE_GUARD_REF,
     )
     responsibility_loop_state_ref = _ref_if_present(
         payload=responsibility_loop_state,
@@ -416,6 +471,12 @@ def bootstrap_resident_supervision(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        signal_media_runtime=signal_media_runtime,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
@@ -423,6 +484,12 @@ def bootstrap_resident_supervision(
         belief_learning_plan_ref=belief_learning_plan_ref,
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
+        signal_media_runtime_ref=signal_media_runtime_ref,
+        belief_state_ref=belief_state_ref,
+        prediction_error_field_ref=prediction_error_field_ref,
+        active_sampling_plan_ref=active_sampling_plan_ref,
+        memory_write_gate_ref=memory_write_gate_ref,
+        state_merge_guard_ref=state_merge_guard_ref,
         growth_patch_candidate_ids=growth_patch_candidate_ids,
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,
@@ -468,6 +535,12 @@ def bootstrap_resident_supervision(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        signal_media_runtime=signal_media_runtime,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
@@ -475,6 +548,12 @@ def bootstrap_resident_supervision(
         belief_learning_plan_ref=belief_learning_plan_ref,
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
+        signal_media_runtime_ref=signal_media_runtime_ref,
+        belief_state_ref=belief_state_ref,
+        prediction_error_field_ref=prediction_error_field_ref,
+        active_sampling_plan_ref=active_sampling_plan_ref,
+        memory_write_gate_ref=memory_write_gate_ref,
+        state_merge_guard_ref=state_merge_guard_ref,
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,

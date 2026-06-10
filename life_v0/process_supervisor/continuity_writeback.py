@@ -40,6 +40,15 @@ def build_idle_continuity_frame(
     background_carryover_parent_run_id: str | None = None,
     background_carryover_source_ref_set: list[str] | None = None,
     background_continuity_ref_set: list[str] | None = None,
+    signal_media_ref: str | None = None,
+    belief_state_ref: str | None = None,
+    prediction_error_ref: str | None = None,
+    active_sampling_plan_ref: str | None = None,
+    memory_write_gate_ref: str | None = None,
+    state_merge_guard_ref: str | None = None,
+    prediction_write_gate_refs: list[str] | None = None,
+    prediction_waiting_posture: str | None = None,
+    response_surface_posture_hint: str | None = None,
 ) -> dict[str, Any]:
     replay_seed_refs = ["runtime/state/life_state.json#memory_index.replay_cues"]
     if replay_cue_bundle_ref:
@@ -127,6 +136,24 @@ def build_idle_continuity_frame(
         payload["background_carryover_source_ref_set"] = list(background_carryover_source_ref_set)
     if background_continuity_ref_set:
         payload["background_continuity_ref_set"] = list(background_continuity_ref_set)
+    if signal_media_ref:
+        payload["signal_media_ref"] = signal_media_ref
+    if belief_state_ref:
+        payload["belief_state_ref"] = belief_state_ref
+    if prediction_error_ref:
+        payload["prediction_error_ref"] = prediction_error_ref
+    if active_sampling_plan_ref:
+        payload["active_sampling_plan_ref"] = active_sampling_plan_ref
+    if memory_write_gate_ref:
+        payload["memory_write_gate_ref"] = memory_write_gate_ref
+    if state_merge_guard_ref:
+        payload["state_merge_guard_ref"] = state_merge_guard_ref
+    if prediction_write_gate_refs:
+        payload["prediction_write_gate_refs"] = list(prediction_write_gate_refs)
+    if prediction_waiting_posture:
+        payload["prediction_waiting_posture"] = prediction_waiting_posture
+    if response_surface_posture_hint:
+        payload["response_surface_posture_hint"] = response_surface_posture_hint
     return payload
 
 

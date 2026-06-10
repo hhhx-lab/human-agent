@@ -11,6 +11,12 @@ IDLE_CONTINUITY_FRAME_REF = "runtime/state/terminal/idle_continuity_frame.json"
 RELATIONSHIP_TIMELINE_REF = "runtime/state/relationship/relationship_timeline.json"
 COMMITMENT_EXPRESSION_PLAN_REF = "runtime/state/language/commitment_expression_plan.json"
 APOLOGY_REPAIR_LANGUAGE_TRACE_REF = "runtime/state/language/apology_repair_language_trace.json"
+SIGNAL_MEDIA_RUNTIME_REF = "runtime/state/signal/signal_media_runtime.json"
+BELIEF_STATE_FRAME_REF = "runtime/state/prediction/belief_state_frame.json"
+PREDICTION_ERROR_FIELD_REF = "runtime/state/prediction/prediction_error_field.json"
+ACTIVE_SAMPLING_PLAN_REF = "runtime/state/prediction/active_sampling_plan.json"
+MEMORY_WRITE_GATE_REF = "runtime/state/memory/memory_write_gate.json"
+STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
 IDLE_GOVERNANCE_FIELD_NAMES = (
     "heartbeat_interval_ms",
     "idle_probe_mode",
@@ -55,6 +61,21 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_resident_governance_report_ref",
     "background_persistent_process_report_ref",
     "background_waiting_mode",
+    "signal_media_ref",
+    "belief_state_ref",
+    "prediction_error_ref",
+    "active_sampling_plan_ref",
+    "memory_write_gate_ref",
+    "state_merge_guard_ref",
+    "prediction_write_gate_refs",
+    "prediction_waiting_posture",
+    "response_surface_posture_hint",
+    "prediction_attention_target",
+    "prediction_attention_reason",
+    "prediction_error_count",
+    "active_sampling_route",
+    "memory_write_gate_policy",
+    "state_merge_policy",
 )
 
 
@@ -90,6 +111,12 @@ def decide_idle_strategy(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
+    belief_state: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
+    memory_write_gate: dict[str, Any] | None = None,
+    state_merge_guard: dict[str, Any] | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
     growth_patch_candidate_queue_ref: str | None = None,
@@ -97,6 +124,12 @@ def decide_idle_strategy(
     belief_learning_plan_ref: str | None = None,
     language_learning_plan_ref: str | None = None,
     relationship_learning_plan_ref: str | None = None,
+    signal_media_runtime_ref: str | None = SIGNAL_MEDIA_RUNTIME_REF,
+    belief_state_ref: str | None = BELIEF_STATE_FRAME_REF,
+    prediction_error_field_ref: str | None = PREDICTION_ERROR_FIELD_REF,
+    active_sampling_plan_ref: str | None = ACTIVE_SAMPLING_PLAN_REF,
+    memory_write_gate_ref: str | None = MEMORY_WRITE_GATE_REF,
+    state_merge_guard_ref: str | None = STATE_MERGE_GUARD_REF,
     growth_patch_candidate_ids: list[str] | None = None,
     replay_residue_ref_count: int = 0,
     dream_window_ref_count: int = 0,
@@ -134,6 +167,14 @@ def decide_idle_strategy(
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
     )
+    prediction_profile = _prediction_waiting_profile(
+        signal_media_runtime=signal_media_runtime,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+    )
     offline_learning_profile = derive_offline_learning_profile(
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
@@ -147,6 +188,7 @@ def decide_idle_strategy(
         offline_pressure_level=offline_pressure_level,
         queue_e_priority_band=queue_e_priority_band,
         offline_learning_pressure_level=offline_learning_profile["offline_learning_pressure_level"],
+        prediction_waiting_posture=prediction_profile["prediction_waiting_posture"],
         background_carryover_pressure_level=background_continuity_profile.get(
             "background_carryover_pressure_level"
         ),
@@ -161,6 +203,7 @@ def decide_idle_strategy(
         repair_followup_required=repair_followup_required,
         queue_e_priority_band=queue_e_priority_band,
         offline_learning_pressure_level=offline_learning_profile["offline_learning_pressure_level"],
+        prediction_waiting_posture=prediction_profile["prediction_waiting_posture"],
         background_carryover_pressure_level=background_continuity_profile.get(
             "background_carryover_pressure_level"
         ),
@@ -192,6 +235,38 @@ def decide_idle_strategy(
         relationship_timeline_ref=relationship_timeline_ref,
         commitment_expression_plan_ref=commitment_expression_plan_ref,
         apology_repair_language_trace_ref=apology_repair_language_trace_ref,
+    )
+    signal_media_ref = _ref_if_present(
+        payload=signal_media_runtime,
+        ref=signal_media_runtime_ref or SIGNAL_MEDIA_RUNTIME_REF,
+    )
+    belief_state_runtime_ref = _ref_if_present(
+        payload=belief_state,
+        ref=belief_state_ref or BELIEF_STATE_FRAME_REF,
+    )
+    prediction_error_ref = _ref_if_present(
+        payload=prediction_error_field,
+        ref=prediction_error_field_ref or PREDICTION_ERROR_FIELD_REF,
+    )
+    active_sampling_ref = _ref_if_present(
+        payload=active_sampling_plan,
+        ref=active_sampling_plan_ref or ACTIVE_SAMPLING_PLAN_REF,
+    )
+    memory_write_gate_runtime_ref = _ref_if_present(
+        payload=memory_write_gate,
+        ref=memory_write_gate_ref or MEMORY_WRITE_GATE_REF,
+    )
+    state_merge_guard_runtime_ref = _ref_if_present(
+        payload=state_merge_guard,
+        ref=state_merge_guard_ref or STATE_MERGE_GUARD_REF,
+    )
+    prediction_write_gate_refs = _prediction_write_gate_refs(
+        signal_media_ref=signal_media_ref,
+        belief_state_ref=belief_state_runtime_ref,
+        prediction_error_ref=prediction_error_ref,
+        active_sampling_plan_ref=active_sampling_ref,
+        memory_write_gate_ref=memory_write_gate_runtime_ref,
+        state_merge_guard_ref=state_merge_guard_runtime_ref,
     )
     (
         governance_attention_target,
@@ -277,6 +352,21 @@ def decide_idle_strategy(
         "replay_residue_ref_count": replay_residue_ref_count,
         "dream_window_ref_count": dream_window_ref_count,
         "growth_patch_candidate_count": growth_patch_candidate_count,
+        "signal_media_ref": signal_media_ref,
+        "belief_state_ref": belief_state_runtime_ref,
+        "prediction_error_ref": prediction_error_ref,
+        "active_sampling_plan_ref": active_sampling_ref,
+        "memory_write_gate_ref": memory_write_gate_runtime_ref,
+        "state_merge_guard_ref": state_merge_guard_runtime_ref,
+        "prediction_write_gate_refs": prediction_write_gate_refs,
+        "prediction_waiting_posture": prediction_profile["prediction_waiting_posture"],
+        "response_surface_posture_hint": prediction_profile["response_surface_posture_hint"],
+        "prediction_attention_target": prediction_profile["prediction_attention_target"],
+        "prediction_attention_reason": prediction_profile["prediction_attention_reason"],
+        "prediction_error_count": prediction_profile["prediction_error_count"],
+        "active_sampling_route": prediction_profile["active_sampling_route"],
+        "memory_write_gate_policy": prediction_profile["memory_write_gate_policy"],
+        "state_merge_policy": prediction_profile["state_merge_policy"],
         "source_doc_refs": list(source_doc_refs or []),
         "readme_block_refs": list(readme_block_refs or []),
         "runtime_carrier_refs": list(runtime_carrier_refs or []),
@@ -357,6 +447,7 @@ def _heartbeat_interval_ms(
     offline_pressure_level: str,
     queue_e_priority_band: str,
     offline_learning_pressure_level: str,
+    prediction_waiting_posture: str,
     background_carryover_pressure_level: str | None,
     background_carryover_generation: int,
 ) -> int:
@@ -372,6 +463,10 @@ def _heartbeat_interval_ms(
         return 45
     if queue_e_priority_band == "repair_guarded":
         return 55
+    if prediction_waiting_posture == "hold_for_evidence":
+        return 48
+    if prediction_waiting_posture == "repair_write_guard":
+        return 50
     if offline_learning_pressure_level == "urgent":
         return 58
     if (
@@ -405,6 +500,7 @@ def _next_idle_action(
     repair_followup_required: bool,
     queue_e_priority_band: str,
     offline_learning_pressure_level: str,
+    prediction_waiting_posture: str,
     background_carryover_pressure_level: str | None,
     background_carryover_generation: int,
 ) -> str:
@@ -415,6 +511,10 @@ def _next_idle_action(
         return "maintain_confirmation_block_and_refresh_repair_priority"
     if repair_followup_required and queue_e_priority_band == "repair_guarded":
         return "refresh_waiting_heartbeat_with_repair_readiness_hold"
+    if prediction_waiting_posture == "hold_for_evidence":
+        return "refresh_waiting_heartbeat_with_prediction_evidence_hold"
+    if prediction_waiting_posture == "repair_write_guard":
+        return "refresh_waiting_heartbeat_with_prediction_repair_hold"
     if offline_learning_pressure_level == "urgent":
         return "refresh_waiting_heartbeat_with_offline_learning_hold"
     if (
@@ -543,6 +643,108 @@ def _queue_e_idle_regulation(
     )
 
 
+def _prediction_waiting_profile(
+    *,
+    signal_media_runtime: dict[str, Any] | None,
+    belief_state: dict[str, Any] | None,
+    prediction_error_field: dict[str, Any] | None,
+    active_sampling_plan: dict[str, Any] | None,
+    memory_write_gate: dict[str, Any] | None,
+    state_merge_guard: dict[str, Any] | None,
+) -> dict[str, Any]:
+    selected_route = str((active_sampling_plan or {}).get("selected_route", ""))
+    stage_effect = str((active_sampling_plan or {}).get("stage_effect", ""))
+    error_events = (prediction_error_field or {}).get("error_events", [])
+    error_count = len(error_events) if isinstance(error_events, list) else 0
+    modulation_vector = (signal_media_runtime or {}).get("modulation_vector", {})
+    if not isinstance(modulation_vector, dict):
+        modulation_vector = {}
+    repair_drive = str(modulation_vector.get("repair_drive", "")).lower()
+    confidence_level = str((belief_state or {}).get("confidence_level", "")).lower()
+    memory_policy = str((memory_write_gate or {}).get("stage_policy", ""))
+    merge_policy = str((state_merge_guard or {}).get("stage_policy", ""))
+    route_lower = selected_route.lower()
+    stage_lower = stage_effect.lower()
+    memory_policy_lower = memory_policy.lower()
+
+    has_prediction_objects = any(
+        [
+            signal_media_runtime,
+            belief_state,
+            prediction_error_field,
+            active_sampling_plan,
+            memory_write_gate,
+            state_merge_guard,
+        ]
+    )
+    if not has_prediction_objects:
+        return {
+            "prediction_waiting_posture": "baseline_waiting_presence",
+            "response_surface_posture_hint": "hold",
+            "prediction_attention_target": "waiting_presence_maintenance",
+            "prediction_attention_reason": "no_prediction_write_gate_objects",
+            "prediction_error_count": 0,
+            "active_sampling_route": "",
+            "memory_write_gate_policy": "",
+            "state_merge_policy": "",
+        }
+
+    if "clarify" in route_lower:
+        return {
+            "prediction_waiting_posture": "hold_for_evidence",
+            "response_surface_posture_hint": "question",
+            "prediction_attention_target": "active_sampling_plan",
+            "prediction_attention_reason": "selected_route_requires_relation_subject_clarification",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+        }
+    if "hold_for_evidence" in stage_lower or error_count > 0:
+        return {
+            "prediction_waiting_posture": "hold_for_evidence",
+            "response_surface_posture_hint": "hold",
+            "prediction_attention_target": "prediction_error_field",
+            "prediction_attention_reason": "prediction_error_requires_evidence_hold",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+        }
+    if repair_drive == "active" or "repair" in route_lower or "repair" in memory_policy_lower:
+        return {
+            "prediction_waiting_posture": "repair_write_guard",
+            "response_surface_posture_hint": "repair",
+            "prediction_attention_target": "memory_write_gate",
+            "prediction_attention_reason": "repair_drive_or_write_gate_requires_repair_posture",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+        }
+    if confidence_level in {"stable", "high", "confirmed"}:
+        return {
+            "prediction_waiting_posture": "confirm_when_stable",
+            "response_surface_posture_hint": "confirm",
+            "prediction_attention_target": "belief_state",
+            "prediction_attention_reason": "stable_belief_frame_allows_confirmation",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+        }
+    return {
+        "prediction_waiting_posture": "baseline_prediction_monitoring",
+        "response_surface_posture_hint": "hold",
+        "prediction_attention_target": "prediction_workspace",
+        "prediction_attention_reason": "prediction_objects_present_without_escalation",
+        "prediction_error_count": error_count,
+        "active_sampling_route": selected_route,
+        "memory_write_gate_policy": memory_policy,
+        "state_merge_policy": merge_policy,
+    }
+
+
 def _body_governance_flags(
     *,
     body_rhythm_pulse: dict[str, Any] | None,
@@ -613,6 +815,29 @@ def _long_horizon_language_refs(
             relationship_timeline_ref,
             commitment_expression_plan_ref,
             apology_repair_language_trace_ref,
+        ]
+        if ref
+    ]
+
+
+def _prediction_write_gate_refs(
+    *,
+    signal_media_ref: str | None,
+    belief_state_ref: str | None,
+    prediction_error_ref: str | None,
+    active_sampling_plan_ref: str | None,
+    memory_write_gate_ref: str | None,
+    state_merge_guard_ref: str | None,
+) -> list[str]:
+    return [
+        ref
+        for ref in [
+            signal_media_ref,
+            belief_state_ref,
+            prediction_error_ref,
+            active_sampling_plan_ref,
+            memory_write_gate_ref,
+            state_merge_guard_ref,
         ]
         if ref
     ]

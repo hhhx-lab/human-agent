@@ -276,6 +276,17 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md",
         ],
     },
+    "docs/v0/code_scaffolds/07_packet_d_waiting_response_surface_prediction_scaffold.md": {
+        "role": "packet_d_waiting_response_surface_prediction_scaffold",
+        "slice": "DIGITAL_LIFE_PROCESS_SUPERVISOR",
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_scaffolds/03_frontier_module_build_packets.md",
+            "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md",
+            "docs/v0/process_contracts/resident_governance_waiting_state_machine_engineering_contract.md",
+            "docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md",
+        ],
+    },
     "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md": {
         "role": "life_code_stack_package_layers",
         "slice": ACTIVE_SLICE,

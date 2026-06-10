@@ -122,6 +122,7 @@ class V0ContractCoverageTests(unittest.TestCase):
         self.assertIn("docs/v0/code_scaffolds/04_packet_b_world_observation_periphery_scaffold.md", contract_index["files"])
         self.assertIn("docs/v0/code_scaffolds/05_packet_a_language_prediction_consumption_scaffold.md", contract_index["files"])
         self.assertIn("docs/v0/code_scaffolds/06_packet_c_memory_write_gate_state_merge_scaffold.md", contract_index["files"])
+        self.assertIn("docs/v0/code_scaffolds/07_packet_d_waiting_response_surface_prediction_scaffold.md", contract_index["files"])
         self.assertIn(
             "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md",
             contract_index["files"],

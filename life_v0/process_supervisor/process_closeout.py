@@ -71,6 +71,12 @@ def close_digital_life_process(
     responsibility_loop_state_ref: str | None = None,
     world_contact_summary_ref: str | None = None,
     pain_regret_repair_report_ref: str | None = None,
+    signal_media_runtime_ref: str | None = None,
+    belief_state_ref: str | None = None,
+    prediction_error_field_ref: str | None = None,
+    active_sampling_plan_ref: str | None = None,
+    memory_write_gate_ref: str | None = None,
+    state_merge_guard_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> ProcessCloseoutResult:
     persistent_process_artifacts = write_persistent_process_artifacts(
@@ -171,6 +177,12 @@ def close_digital_life_process(
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
+        signal_media_runtime_ref=signal_media_runtime_ref,
+        belief_state_ref=belief_state_ref,
+        prediction_error_field_ref=prediction_error_field_ref,
+        active_sampling_plan_ref=active_sampling_plan_ref,
+        memory_write_gate_ref=memory_write_gate_ref,
+        state_merge_guard_ref=state_merge_guard_ref,
         write_json=write_json,
     )
     return ProcessCloseoutResult(

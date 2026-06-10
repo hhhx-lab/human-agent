@@ -122,6 +122,12 @@ def run_digital_life_process(
     belief_learning_plan = supervision.belief_learning_plan
     language_learning_plan = supervision.language_learning_plan
     relationship_learning_plan = supervision.relationship_learning_plan
+    signal_media_runtime = supervision.signal_media_runtime
+    belief_state = supervision.belief_state
+    prediction_error_field = supervision.prediction_error_field
+    active_sampling_plan = supervision.active_sampling_plan
+    memory_write_gate = supervision.memory_write_gate
+    state_merge_guard = supervision.state_merge_guard
     responsibility_loop_state = supervision.responsibility_loop_state
     world_contact_summary = supervision.world_contact_summary
     pain_regret_repair_report = supervision.pain_regret_repair_report
@@ -132,6 +138,12 @@ def run_digital_life_process(
     belief_learning_plan_ref = supervision.belief_learning_plan_ref
     language_learning_plan_ref = supervision.language_learning_plan_ref
     relationship_learning_plan_ref = supervision.relationship_learning_plan_ref
+    signal_media_runtime_ref = supervision.signal_media_runtime_ref
+    belief_state_ref = supervision.belief_state_ref
+    prediction_error_field_ref = supervision.prediction_error_field_ref
+    active_sampling_plan_ref = supervision.active_sampling_plan_ref
+    memory_write_gate_ref = supervision.memory_write_gate_ref
+    state_merge_guard_ref = supervision.state_merge_guard_ref
     responsibility_loop_state_ref = supervision.responsibility_loop_state_ref
     world_contact_summary_ref = supervision.world_contact_summary_ref
     pain_regret_repair_report_ref = supervision.pain_regret_repair_report_ref
@@ -177,6 +189,12 @@ def run_digital_life_process(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        signal_media_runtime=signal_media_runtime,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
         responsibility_loop_state=responsibility_loop_state,
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
@@ -190,6 +208,12 @@ def run_digital_life_process(
         belief_learning_plan_ref=belief_learning_plan_ref,
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
+        signal_media_runtime_ref=signal_media_runtime_ref,
+        belief_state_ref=belief_state_ref,
+        prediction_error_field_ref=prediction_error_field_ref,
+        active_sampling_plan_ref=active_sampling_plan_ref,
+        memory_write_gate_ref=memory_write_gate_ref,
+        state_merge_guard_ref=state_merge_guard_ref,
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
@@ -254,6 +278,12 @@ def run_digital_life_process(
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
+        signal_media_runtime_ref=signal_media_runtime_ref,
+        belief_state_ref=belief_state_ref,
+        prediction_error_field_ref=prediction_error_field_ref,
+        active_sampling_plan_ref=active_sampling_plan_ref,
+        memory_write_gate_ref=memory_write_gate_ref,
+        state_merge_guard_ref=state_merge_guard_ref,
         write_json=_write_json,
     )
     return DigitalLifeProcessResult(exit_code=0, report=closeout.report_bundle.report)
