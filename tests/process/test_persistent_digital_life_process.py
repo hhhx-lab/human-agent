@@ -1559,10 +1559,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 },
                 "background_carryover_generation": 1,
                 "background_continuity_ref_set": [
+                    "runtime/state/terminal/resident_governance_state.json",
                     "runtime/state/terminal/resident_governance_snapshot.json",
                     "runtime/reports/latest/digital_life_resident_governance_report.json",
                 ],
                 "background_carryover_parent_run_id": "background-carryover-seed",
+                "background_resident_governance_state_ref": "runtime/state/terminal/resident_governance_state.json",
                 "background_resident_governance_snapshot_ref": "runtime/state/terminal/resident_governance_snapshot.json",
                 "background_resident_governance_report_ref": "runtime/reports/latest/digital_life_resident_governance_report.json",
                 "background_persistent_process_report_ref": "runtime/reports/latest/digital_life_persistent_process_report.json",
@@ -1597,6 +1599,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             idle_strategy["background_carryover_attention_target"],
             "commitment_expression_plan",
+        )
+        self.assertEqual(
+            idle_strategy["background_resident_governance_state_ref"],
+            "runtime/state/terminal/resident_governance_state.json",
         )
         self.assertEqual(
             idle_strategy["background_resident_governance_snapshot_ref"],
@@ -1673,6 +1679,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_carryover_generation": 2,
                 "background_carryover_parent_run_id": "background-carryover-seed",
                 "background_continuity_ref_set": [
+                    "runtime/state/terminal/resident_governance_state.json",
                     "runtime/state/terminal/resident_governance_snapshot.json",
                     "runtime/reports/latest/digital_life_resident_governance_report.json",
                     "runtime/reports/latest/digital_life_persistent_process_report.json",
@@ -1723,6 +1730,39 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             terminal_dir.mkdir(parents=True, exist_ok=True)
             reports_dir.mkdir(parents=True, exist_ok=True)
             self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "run_id": "resume-summary-parent",
+                    "governance_attention_target": "commitment_expression_plan",
+                    "completed_dialogue_turns": 6,
+                    "background_carryover_generation": 3,
+                    "background_carryover_source_ref_set": [
+                        "runtime/archive/resume-summary-parent/resident_governance_state.json"
+                    ],
+                    "background_relationship_stage": "repair_guarded_continuity",
+                    "background_relationship_stage_reason": "repair_followup_required_after_multi_turn_dialogue",
+                    "background_relationship_subject_ref": "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
+                    "background_self_model_ref": "runtime/state/self/self_model.json",
+                    "trait_drift_monitor_ref": "runtime/state/body/trait_drift_monitor.json",
+                    "background_trait_slow_variable_summary": {
+                        "continuity_drive": {
+                            "value": 0.74,
+                            "trend": "up",
+                            "last_relationship_stage": "repair_guarded_continuity",
+                        }
+                    },
+                    "background_resume_summary": {
+                        "relationship": {
+                            "relationship_stage": "repair_guarded_continuity"
+                        },
+                        "trait_slow_variables": {
+                            "continuity_drive": {"value": 0.74}
+                        },
+                    },
+                },
+            )
+            self._write_json(
                 terminal_dir / "resident_governance_snapshot.json",
                 {
                     "schema_version": "resident_governance_snapshot_v0",
@@ -1758,7 +1798,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 reports_dir=reports_dir,
             )
 
-            self.assertEqual(profile["background_carryover_generation"], 2)
+            self.assertEqual(profile["background_carryover_generation"], 3)
+            self.assertEqual(
+                profile["background_carryover_source_ref_set"],
+                ["runtime/archive/resume-summary-parent/resident_governance_state.json"],
+            )
+            self.assertIn(
+                "runtime/state/terminal/resident_governance_state.json",
+                profile["background_continuity_ref_set"],
+            )
             self.assertEqual(
                 profile["background_relationship_stage"],
                 "repair_guarded_continuity",
@@ -1772,6 +1820,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/self/self_model.json",
             )
             self.assertEqual(
+                profile["background_resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
+            self.assertEqual(
                 profile["background_trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
             )
@@ -1779,7 +1831,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 profile["background_trait_slow_variable_summary"]["continuity_drive"][
                     "value"
                 ],
-                0.73,
+                0.74,
             )
             self.assertEqual(
                 profile["background_resume_summary"]["relationship"][
@@ -1996,6 +2048,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background-carryover-seed",
             )
             self.assertEqual(
+                idle_strategy["background_resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
+            self.assertEqual(
                 idle_strategy["background_resident_governance_snapshot_ref"],
                 "runtime/state/terminal/resident_governance_snapshot.json",
             )
@@ -2015,6 +2071,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_state["background_continuity_ref_set"],
             )
             self.assertEqual(
+                resident_governance_state["background_resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
+            self.assertEqual(
                 resident_governance_state["background_trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
             )
@@ -2028,8 +2088,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background-carryover-seed",
             )
             self.assertEqual(
+                idle_continuity["background_resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
+            )
+            self.assertEqual(
                 idle_continuity["background_trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
+            )
+            self.assertEqual(
+                terminal_life_loop_state["background_resident_governance_state_ref"],
+                "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(
                 terminal_life_loop_state["background_trait_drift_monitor_ref"],
@@ -4442,6 +4510,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_state["background_continuity_ref_set"],
                 [
+                    "runtime/state/terminal/resident_governance_state.json",
                     "runtime/state/terminal/resident_governance_snapshot.json",
                     "runtime/reports/latest/digital_life_resident_governance_report.json",
                     "runtime/reports/latest/digital_life_persistent_process_report.json",
@@ -4526,6 +4595,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_report["background_continuity_ref_set"],
                 [
+                    "runtime/state/terminal/resident_governance_state.json",
                     "runtime/state/terminal/resident_governance_snapshot.json",
                     "runtime/reports/latest/digital_life_resident_governance_report.json",
                     "runtime/reports/latest/digital_life_persistent_process_report.json",
@@ -4558,6 +4628,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             reports_dir.mkdir(parents=True, exist_ok=True)
 
             previous_ref_set = [
+                "runtime/state/terminal/resident_governance_state.json",
                 "runtime/state/terminal/resident_governance_snapshot.json",
                 "runtime/reports/latest/digital_life_resident_governance_report.json",
                 "runtime/reports/latest/digital_life_persistent_process_report.json",
@@ -4608,6 +4679,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
 
             current_ref_set = [
+                "runtime/state/terminal/resident_governance_state.json",
                 "runtime/state/terminal/resident_governance_snapshot.json",
                 "runtime/reports/latest/digital_life_resident_governance_report.json",
                 "runtime/reports/latest/digital_life_persistent_process_report.json",

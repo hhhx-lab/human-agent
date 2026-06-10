@@ -231,6 +231,7 @@ def write_waiting_heartbeat(
         "relationship_timeline_ref",
         "commitment_expression_plan_ref",
         "apology_repair_language_trace_ref",
+        "background_resident_governance_state_ref",
         "background_trait_drift_monitor_ref",
         "long_horizon_language_refs",
         "signal_media_ref",
@@ -331,6 +332,9 @@ def write_waiting_heartbeat(
         background_carryover_parent_run_id=idle_strategy.get("background_carryover_parent_run_id"),
         background_carryover_source_ref_set=idle_strategy.get("background_carryover_source_ref_set"),
         background_continuity_ref_set=idle_strategy.get("background_continuity_ref_set"),
+        background_resident_governance_state_ref=idle_strategy.get(
+            "background_resident_governance_state_ref"
+        ),
         background_trait_drift_monitor_ref=idle_strategy.get(
             "background_trait_drift_monitor_ref"
         ),

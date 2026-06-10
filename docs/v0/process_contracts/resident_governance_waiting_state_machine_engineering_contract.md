@@ -106,8 +106,8 @@ resident_governance_state.json
 
 当前这一轮又新增一条硬约束：
 
-1. `persistent_process.py` / `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json` 写出的关闭态治理，不再只算 closeout 归档。
-2. `background_continuity.py` 现在会把这批关闭态 artifact 重新解释成下一次唤醒前可消费的后台连续体 profile。
+1. `persistent_process.py` / `resident_governance_state.json` / `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json` 写出的关闭态治理，不再只算 closeout 归档。
+2. `background_continuity.py` 现在会把这批关闭态 artifact 连同 `digital_life_persistent_process_report.json` 重新解释成下一次唤醒前可消费的后台连续体 profile。
 3. `heartbeat.py` 会在新的 waiting heartbeat 写入前重新装载这份 profile，并把它压进：
    - `idle_strategy_state.json`
    - `idle_continuity_frame.json`
@@ -127,6 +127,7 @@ resident_governance_state.json
 - `background_carryover_parent_run_id`
 - `background_carryover_source_ref_set`
 - `background_continuity_ref_set`
+- `background_resident_governance_state_ref`
 - `background_resident_governance_snapshot_ref`
 - `background_resident_governance_report_ref`
 - `background_persistent_process_report_ref`
@@ -156,7 +157,7 @@ restore shell completed
 2. live turn handoff 只写运行中的交接相位，不自己伪造新的 heartbeat counter。
 3. closeout 会重写同一份 `resident_governance_state.json`，但必须显式切换 `status` 与 `governance_phase`。
 4. process report / receipt 不能只回链 snapshot/report，必须也回链 `resident_governance_state_ref`。
-5. 同一次 closeout 写出的 `background_continuity_ref_set` 必须指向当前关闭态 artifact，而不是把上一轮 carryover 的 ref set 原样覆盖回来；上一轮来源应单独进入 `background_carryover_source_ref_set`。
+5. 同一次 closeout 写出的 `background_continuity_ref_set` 必须指向当前关闭态 artifact，并且至少包含 `resident_governance_state.json`、`resident_governance_snapshot.json`、`digital_life_resident_governance_report.json` 与 `digital_life_persistent_process_report.json`；不能把上一轮 carryover 的 ref set 原样覆盖回来，上一轮来源应单独进入 `background_carryover_source_ref_set`。
 6. 同一次 closeout 还必须把最新 `relationship_subject_graph.json#subjects[0]` 与 `self_model.json#trait_slow_variables` 压成 `background_resume_summary`；下一次 bootstrap 的 `background_continuity_profile` 必须恢复这组字段，而不是只恢复 lineage generation。
 
 ## 运行态文件族

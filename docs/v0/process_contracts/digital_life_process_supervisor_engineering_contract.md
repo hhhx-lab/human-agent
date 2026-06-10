@@ -134,6 +134,7 @@ life-v0 "digital life"
 16. `resident_supervision.py` 与 `resident_turn_writeback.py` 在每次重建关系阶段和自我慢变量后，必须同步刷新 `runtime/state/body/trait_drift_monitor.json`，让人格漂移监控面跟随常驻生命过程持续更新，而不是只停在 S06 build-life-support 阶段。
 17. `process_closeout.py` / `persistent_process.py` / `process_report.py` 必须把最新 `trait_drift_monitor.json` 作为关闭态 ref 写进 resident governance state/snapshot/report、process report/digest、receipt shared refs 与 input hash，让下一次唤醒能追溯人格慢变量观察面本身。
 18. `background_continuity.py` / `idle_strategy.py` / `heartbeat.py` 必须把关闭态 `trait_drift_monitor_ref` 恢复成 `background_trait_drift_monitor_ref`，并继续写入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`，让下一次 waiting heartbeat 仍能看见上一轮人格观察面。
+19. `background_continuity.py` 必须把上一轮 `resident_governance_state.json` 与 `resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_persistent_process_report.json` 一起恢复为 background carryover 来源；`idle_strategy.py` 与 `heartbeat.py` 必须把 `background_resident_governance_state_ref` 继续写入 waiting governance、idle continuity 与 terminal life loop。
 
 ## 最小行为合同
 

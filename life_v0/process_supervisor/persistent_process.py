@@ -60,6 +60,7 @@ def write_persistent_process_artifacts(
     reports_dir.mkdir(parents=True, exist_ok=True)
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
     current_background_ref_set = [
+        RESIDENT_GOVERNANCE_STATE_REF,
         RESIDENT_GOVERNANCE_SNAPSHOT_REF,
         RESIDENT_GOVERNANCE_REPORT_REF,
         PERSISTENT_PROCESS_REPORT_REF,

@@ -299,3 +299,4 @@ idle_strategy.py
 12. bootstrap refresh 与 live turn writeback 后都必须刷新 `trait_drift_monitor.json`，让人格漂移监控面真实跟上常驻关系/自我连续体
 13. closeout 后必须把 `trait_drift_monitor.json` 写成 resident governance / process report / digest / receipt 的一级 ref，并进入 input hash，防止人格漂移监控停留在身体层而没有成为跨进程恢复证据
 14. 下一次 `background_continuity.py` / `idle_strategy.py` / `heartbeat.py` 必须把这份关闭态 monitor ref 恢复成 `background_trait_drift_monitor_ref`，并继续写回 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`
+15. closeout 的 `background_continuity_ref_set` 必须把关闭态 `resident_governance_state.json` 与 `resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_persistent_process_report.json` 一起作为当前 lineage artifact；下一次唤醒必须恢复 `background_resident_governance_state_ref` 并继续写回 waiting governance / idle continuity / terminal life loop。

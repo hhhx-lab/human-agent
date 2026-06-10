@@ -65,6 +65,7 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_carryover_parent_run_id",
     "background_carryover_source_ref_set",
     "background_continuity_ref_set",
+    "background_resident_governance_state_ref",
     "background_resident_governance_snapshot_ref",
     "background_resident_governance_report_ref",
     "background_persistent_process_report_ref",
