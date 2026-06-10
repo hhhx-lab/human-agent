@@ -120,7 +120,10 @@ artifact 留在 `idle_strategy_state.json` 或 `resident_governance_state.json` 
 
 每次 `resident_supervision.py` 或 `resident_turn_writeback.py` 改写这组慢变量后，还必须刷新
 `runtime/state/body/trait_drift_monitor.json`。这份 monitor 是身体/人格层对自我慢变量漂移的观察面，
-至少要带 `slow_variable_summary`、`relationship_stage`、`drift_observation_refs` 和 anchor refs。
+至少要带 `slow_variable_summary`、`relationship_stage`、`drift_observation_refs` 和 anchor refs。常驻过程关闭时，
+同一份 monitor 必须作为 `trait_drift_monitor_ref` 进入 resident governance state/snapshot/report、
+`digital_life_process_report.json`、`digital_life_process_digest.json`、process receipt 的 `shared_object_refs`
+与 `input_hashes`。
 
 ## `memory_index`
 

@@ -3111,6 +3111,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 {"schema_version": "state_merge_guard_v0"},
             )
             self._write_json(
+                state_dir / "body" / "trait_drift_monitor.json",
+                {
+                    "schema_version": "trait_drift_monitor_v0",
+                    "relationship_stage": "repair_guarded_continuity",
+                    "slow_variable_summary": self_model_state["trait_slow_variables"],
+                },
+            )
+            self._write_json(
                 state_dir / "membrane" / "world_contact_summary.json",
                 {"schema_version": "world_contact_summary_v0"},
             )
@@ -3192,6 +3200,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 active_sampling_plan_ref="runtime/state/prediction/active_sampling_plan.json",
                 memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
                 state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
+                trait_drift_monitor_ref="runtime/state/body/trait_drift_monitor.json",
                 relationship_graph=relationship_graph,
                 self_model_state=self_model_state,
                 write_json=self._write_json,
@@ -3296,6 +3305,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/memory/state_merge_guard.json",
                 ],
             )
+            self.assertEqual(
+                report["trait_drift_monitor_ref"],
+                "runtime/state/body/trait_drift_monitor.json",
+            )
             self.assertEqual(report["heartbeat_interval_ms"], 80)
             self.assertEqual(report["offline_pressure_level"], "present")
             self.assertEqual(report["relaunch_caution_level"], "guarded")
@@ -3368,6 +3381,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "last_relationship_stage"
                 ],
                 "repair_guarded_continuity",
+            )
+            self.assertEqual(
+                digest["trait_drift_monitor_ref"],
+                "runtime/state/body/trait_drift_monitor.json",
             )
             self.assertEqual(
                 digest["offline_growth_cycle_refs"],
@@ -3519,6 +3536,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 receipt["shared_object_refs"],
             )
             self.assertIn(
+                "runtime/state/body/trait_drift_monitor.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
                 "runtime/state/relationship/relationship_subject_graph.json",
                 receipt["shared_object_refs"],
             )
@@ -3548,6 +3569,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 str(state_dir / "memory" / "state_merge_guard.json"),
+                receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(state_dir / "body" / "trait_drift_monitor.json"),
                 receipt["input_hashes"],
             )
             self.assertIn(
@@ -3888,6 +3913,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 {"schema_version": "state_merge_guard_v0"},
             )
             self._write_json(
+                state_dir / "body" / "trait_drift_monitor.json",
+                {
+                    "schema_version": "trait_drift_monitor_v0",
+                    "relationship_stage": "repair_guarded_continuity",
+                    "slow_variable_summary": {
+                        "continuity_drive": {
+                            "value": 0.68,
+                            "last_relationship_stage": "repair_guarded_continuity",
+                        }
+                    },
+                },
+            )
+            self._write_json(
                 state_dir / "membrane" / "world_contact_summary.json",
                 {"schema_version": "world_contact_summary_v0"},
             )
@@ -4023,6 +4061,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/memory/state_merge_guard.json",
                 ],
             )
+            self.assertEqual(
+                process_report["trait_drift_monitor_ref"],
+                "runtime/state/body/trait_drift_monitor.json",
+            )
             self.assertEqual(process_digest["heartbeat_counter"], 4)
             self.assertEqual(
                 process_digest["long_horizon_language_refs"],
@@ -4039,6 +4081,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/membrane/world_contact_summary.json",
                     "runtime/reports/latest/pain_regret_repair_report.json",
                 ],
+            )
+            self.assertEqual(
+                process_digest["trait_drift_monitor_ref"],
+                "runtime/state/body/trait_drift_monitor.json",
             )
             self.assertEqual(
                 resident_governance_snapshot["schema_version"],
@@ -4132,6 +4178,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/memory/state_merge_guard.json",
                 process_receipt["shared_object_refs"],
             )
+            self.assertIn(
+                "runtime/state/body/trait_drift_monitor.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                str(state_dir / "body" / "trait_drift_monitor.json"),
+                process_receipt["input_hashes"],
+            )
 
     def test_persistent_process_organ_writes_state_and_report(self):
         from life_v0.process_supervisor.persistent_process import write_persistent_process_artifacts
@@ -4201,6 +4255,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 responsibility_loop_state_ref="runtime/state/action/responsibility_loop_state.json",
                 world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
                 pain_regret_repair_report_ref="runtime/reports/latest/pain_regret_repair_report.json",
+                trait_drift_monitor_ref="runtime/state/body/trait_drift_monitor.json",
                 write_json=self._write_json,
                 relationship_graph={
                     "subjects": [
@@ -4302,6 +4357,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_report["pain_regret_repair_report_ref"],
                 "runtime/reports/latest/pain_regret_repair_report.json",
             )
+            for artifact in (
+                state,
+                report,
+                resident_governance_state,
+                resident_governance_snapshot,
+                resident_governance_report,
+            ):
+                self.assertEqual(
+                    artifact["trait_drift_monitor_ref"],
+                    "runtime/state/body/trait_drift_monitor.json",
+                )
             self.assertEqual(
                 resident_governance_snapshot["schema_version"],
                 "resident_governance_snapshot_v0",

@@ -14,6 +14,7 @@ RESIDENT_GOVERNANCE_SNAPSHOT_REF = "runtime/state/terminal/resident_governance_s
 RESIDENT_GOVERNANCE_REPORT_REF = "runtime/reports/latest/digital_life_resident_governance_report.json"
 RELATIONSHIP_SUBJECT_GRAPH_REF = "runtime/state/relationship/relationship_subject_graph.json"
 SELF_MODEL_REF = "runtime/state/self/self_model.json"
+TRAIT_DRIFT_MONITOR_REF = "runtime/state/body/trait_drift_monitor.json"
 
 
 @dataclass(frozen=True)
@@ -49,6 +50,7 @@ def write_persistent_process_artifacts(
     responsibility_loop_state_ref: str | None = None,
     world_contact_summary_ref: str | None = None,
     pain_regret_repair_report_ref: str | None = None,
+    trait_drift_monitor_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
     relationship_graph: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
@@ -122,6 +124,8 @@ def write_persistent_process_artifacts(
         )
     if membrane_guard_refs:
         resident_governance_snapshot["membrane_guard_refs"] = membrane_guard_refs
+    if trait_drift_monitor_ref:
+        resident_governance_snapshot["trait_drift_monitor_ref"] = trait_drift_monitor_ref
     _apply_background_resume_fields(
         resident_governance_snapshot,
         relationship_resume_summary=relationship_resume_summary,
@@ -182,6 +186,8 @@ def write_persistent_process_artifacts(
         resident_governance_state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         resident_governance_state["membrane_guard_refs"] = membrane_guard_refs
+    if trait_drift_monitor_ref:
+        resident_governance_state["trait_drift_monitor_ref"] = trait_drift_monitor_ref
     _apply_background_resume_fields(
         resident_governance_state,
         relationship_resume_summary=relationship_resume_summary,
@@ -227,6 +233,8 @@ def write_persistent_process_artifacts(
         state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         state["membrane_guard_refs"] = membrane_guard_refs
+    if trait_drift_monitor_ref:
+        state["trait_drift_monitor_ref"] = trait_drift_monitor_ref
     _apply_background_resume_fields(
         state,
         relationship_resume_summary=relationship_resume_summary,
@@ -276,6 +284,8 @@ def write_persistent_process_artifacts(
         report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         report["membrane_guard_refs"] = membrane_guard_refs
+    if trait_drift_monitor_ref:
+        report["trait_drift_monitor_ref"] = trait_drift_monitor_ref
     _apply_background_resume_fields(
         report,
         relationship_resume_summary=relationship_resume_summary,
@@ -327,6 +337,8 @@ def write_persistent_process_artifacts(
         resident_governance_report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         resident_governance_report["membrane_guard_refs"] = membrane_guard_refs
+    if trait_drift_monitor_ref:
+        resident_governance_report["trait_drift_monitor_ref"] = trait_drift_monitor_ref
     _apply_background_resume_fields(
         resident_governance_report,
         relationship_resume_summary=relationship_resume_summary,

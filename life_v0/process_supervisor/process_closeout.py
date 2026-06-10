@@ -9,6 +9,7 @@ from .persistent_process import (
     RESIDENT_GOVERNANCE_REPORT_REF,
     RESIDENT_GOVERNANCE_STATE_REF,
     RESIDENT_GOVERNANCE_SNAPSHOT_REF,
+    TRAIT_DRIFT_MONITOR_REF,
     PersistentProcessArtifactsResult,
     write_persistent_process_artifacts,
 )
@@ -77,10 +78,16 @@ def close_digital_life_process(
     active_sampling_plan_ref: str | None = None,
     memory_write_gate_ref: str | None = None,
     state_merge_guard_ref: str | None = None,
+    trait_drift_monitor_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
     relationship_graph: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
 ) -> ProcessCloseoutResult:
+    if (
+        trait_drift_monitor_ref is None
+        and (state_dir / "body" / "trait_drift_monitor.json").exists()
+    ):
+        trait_drift_monitor_ref = TRAIT_DRIFT_MONITOR_REF
     persistent_process_artifacts = write_persistent_process_artifacts(
         run_id=run_id,
         generated_at=generated_at,
@@ -113,6 +120,7 @@ def close_digital_life_process(
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
+        trait_drift_monitor_ref=trait_drift_monitor_ref,
         relationship_graph=relationship_graph,
         self_model_state=self_model_state,
         write_json=write_json,
@@ -187,6 +195,7 @@ def close_digital_life_process(
         active_sampling_plan_ref=active_sampling_plan_ref,
         memory_write_gate_ref=memory_write_gate_ref,
         state_merge_guard_ref=state_merge_guard_ref,
+        trait_drift_monitor_ref=trait_drift_monitor_ref,
         relationship_graph=relationship_graph,
         self_model_state=self_model_state,
         write_json=write_json,

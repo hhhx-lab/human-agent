@@ -297,3 +297,4 @@ idle_strategy.py
 10. `digital_life_resident_governance_explanation.json` 必须把这组 resume summary 写进 `background_resume_focus` 与 `continuity_story`，让 closeout 解释层也能承载关系阶段和自我慢变量
 11. `continuity_evolution.py` 必须让这组 resume summary 进入关系阶段保留和慢变量惯性收敛，至少能在测试中看到 `background_resume_value` 与 `background_inertia_weight`
 12. bootstrap refresh 与 live turn writeback 后都必须刷新 `trait_drift_monitor.json`，让人格漂移监控面真实跟上常驻关系/自我连续体
+13. closeout 后必须把 `trait_drift_monitor.json` 写成 resident governance / process report / digest / receipt 的一级 ref，并进入 input hash，防止人格漂移监控停留在身体层而没有成为跨进程恢复证据

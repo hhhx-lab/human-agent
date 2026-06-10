@@ -121,10 +121,12 @@ Packet D 必须读取这些已有对象：
 - `memory_write_gate_ref`
 - `state_merge_guard_ref`
 - `prediction_write_gate_refs`
+- `trait_drift_monitor_ref`
 
 `digital_life_process_digest.json` 必须写出：
 
 - `prediction_write_gate_refs`
+- `trait_drift_monitor_ref`
 
 `digital_life_process_<run_id>.json` receipt 必须把下列对象纳入 `shared_object_refs` 和 `input_hashes`：
 
@@ -134,6 +136,7 @@ Packet D 必须读取这些已有对象：
 - `active_sampling_plan.json`
 - `memory_write_gate.json`
 - `state_merge_guard.json`
+- `trait_drift_monitor.json`
 
 ## 验收
 
