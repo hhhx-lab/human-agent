@@ -172,7 +172,7 @@ digital life
 18. `runtime/state/language/expression_monitor_state.json`
 19. `runtime/state/language/expression_plan.json`
 
-其中前六项属于语言/关系/责任连续，7-11 属于长期生命状态根回链，12-14 属于长期语言连续体对象本身，15-19 属于本回合实时 Queue A 语言状态。7-19 不得被 terminal loop 反向改写成新的主体真值；它们在这里的职责是显式交接长期写回目标与实时语言 refs，而不是让壳层篡改主体层。
+其中前六项属于语言/关系/责任连续，7-11 属于长期生命状态根回链，12-14 属于长期语言连续体对象本身，15-19 属于本回合实时 Queue A 语言状态。7-19 不得被 terminal loop 反向改写成新的主体真值；它们在这里的职责是显式交接长期写回目标与实时语言 refs，而不是让壳层篡改主体层。最新的交接要求是：terminal loop 写出的 `live_language_turn_refs` 与 `last_live_semantic_focus` 必须足够完整，让 process supervisor 后续能把它们收进 idle strategy、resident governance、关闭态 artifact 和下一次 background continuity。
 
 `dialogue_writeback_bundle.json` 必须额外带：
 
@@ -197,6 +197,13 @@ digital life
 - `last_live_semantic_focus`
 - `live_language_turn_refs`
 
+终端循环自身不负责生成后台驻留 lineage，但必须把实时语言驻留的入口字段放稳：
+
+1. `terminal_life_loop_state.json#live_language_turn_refs` 必须是当前回合 Queue A 五件套 refs。
+2. `terminal_life_loop_state.json#last_live_semantic_focus` 必须与 `resumed_external_dialogue_packet.json#live_semantic_focus` 对齐。
+3. `dialogue_writeback_bundle.json#live_language_turn_refs`、`resumed_external_dialogue_packet.json#live_language_turn_refs` 与 `terminal_life_loop_state.json#live_language_turn_refs` 必须指向同一组 refs。
+4. 后续 `process_supervisor/idle_strategy.py` 会把这组入口字段转成 `live_language_presence_profile_v0`，并继续写入 `idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json`、`resident_background_lineage_state.language_presence`、closeout artifacts 与下一次 `background_continuity_profile.background_live_language_*`。
+
 ## 完成定义
 
 只有当下面六项同时存在时，才能说系统已经越过“第一回合恢复”，进入“终端持续生命回合”：
@@ -215,5 +222,7 @@ digital life
 3. `runtime/reports/latest/dialogue_writeback_bundle.json#live_language_turn_refs`
 4. `runtime/reports/latest/resumed_external_dialogue_packet.json#live_semantic_focus`
 5. `runtime/state/terminal/terminal_life_loop_state.json#last_live_semantic_focus`
+6. `runtime/state/terminal/terminal_life_loop_state.json#live_language_turn_refs` 与 writeback bundle / resumed packet 对齐
+7. 在 process supervisor 常驻链中，下一拍 waiting heartbeat 能把同一组 refs 转入 `idle_strategy_state.json#live_language_presence_profile`
 
 此时系统的真实状态不是“又开始了一轮工具调用”，而是“在同一生命连续体中继续下一次关系性终端回合”。

@@ -116,7 +116,12 @@ def write_live_turn_waiting_governance_handoff(
         resident_governance_state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         resident_governance_state["membrane_guard_refs"] = membrane_guard_refs
-    resident_governance_state.update(extract_idle_governance_fields(idle_strategy_state))
+    resident_governance_state.update(
+        _merge_live_language_governance(
+            extract_idle_governance_fields(idle_strategy_state),
+            terminal_life_loop_state,
+        )
+    )
     resident_background_lineage_state = build_resident_background_lineage_state(
         resident_governance_state,
         governance_phase="live_turn_waiting_handoff",
@@ -143,3 +148,61 @@ def _ref_if_present(*, payload: dict[str, Any] | None, ref: str) -> str | None:
     if not payload:
         return None
     return ref
+
+
+def _merge_live_language_governance(
+    idle_governance: dict[str, Any],
+    terminal_life_loop_state: dict[str, Any],
+) -> dict[str, Any]:
+    current_refs = _dedupe_string_list(
+        _string_list(terminal_life_loop_state.get("live_language_turn_refs"))
+        or _string_list(idle_governance.get("live_language_turn_refs"))
+    )
+    current_focus = (
+        terminal_life_loop_state.get("last_live_semantic_focus")
+        or idle_governance.get("last_live_semantic_focus")
+    )
+    background_refs = _dedupe_string_list(
+        _string_list(idle_governance.get("background_live_language_turn_refs"))
+    )
+    background_focus = idle_governance.get("background_last_live_semantic_focus")
+    all_refs = _dedupe_string_list(current_refs + background_refs)
+    if current_refs:
+        idle_governance["live_language_turn_refs"] = current_refs
+    if current_focus:
+        idle_governance["last_live_semantic_focus"] = current_focus
+    if all_refs or current_focus or background_focus:
+        idle_governance["live_language_presence_profile"] = {
+            "schema_version": "live_language_presence_profile_v0",
+            "continuity_mode": (
+                "current_turn_plus_background_language_presence"
+                if current_refs and background_refs
+                else "current_turn_language_presence"
+                if current_refs
+                else "background_language_presence"
+            ),
+            "live_language_turn_refs": current_refs,
+            "last_live_semantic_focus": current_focus,
+            "background_live_language_turn_refs": background_refs,
+            "background_last_live_semantic_focus": background_focus,
+            "ref_count": len(all_refs),
+            "ref_set": all_refs,
+        }
+    return idle_governance
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
+
+
+def _dedupe_string_list(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        result.append(value)
+    return result

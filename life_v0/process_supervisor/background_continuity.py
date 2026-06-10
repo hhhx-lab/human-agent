@@ -259,6 +259,44 @@ def load_background_continuity_profile(
         or persistent_process_report.get("offline_learning_cumulative_ref_set")
         or offline_learning_cumulative_profile.get("ref_set")
     )
+    live_language_turn_refs = _dedupe_list(
+        _list_or_empty(resident_governance_state.get("live_language_turn_refs"))
+        + _list_or_empty(snapshot.get("live_language_turn_refs"))
+        + _list_or_empty(resident_governance_report.get("live_language_turn_refs"))
+        + _list_or_empty(persistent_process_report.get("live_language_turn_refs"))
+        + _list_or_empty(
+            resident_governance_state.get("background_live_language_turn_refs")
+        )
+        + _list_or_empty(snapshot.get("background_live_language_turn_refs"))
+        + _list_or_empty(
+            resident_governance_report.get("background_live_language_turn_refs")
+        )
+        + _list_or_empty(
+            persistent_process_report.get("background_live_language_turn_refs")
+        )
+    )
+    last_live_semantic_focus = (
+        resident_governance_state.get("last_live_semantic_focus")
+        or snapshot.get("last_live_semantic_focus")
+        or resident_governance_report.get("last_live_semantic_focus")
+        or persistent_process_report.get("last_live_semantic_focus")
+        or resident_governance_state.get("background_last_live_semantic_focus")
+        or snapshot.get("background_last_live_semantic_focus")
+        or resident_governance_report.get("background_last_live_semantic_focus")
+        or persistent_process_report.get("background_last_live_semantic_focus")
+    )
+    live_language_presence_profile = _dict_or_empty(
+        resident_governance_state.get("live_language_presence_profile")
+        or snapshot.get("live_language_presence_profile")
+        or resident_governance_report.get("live_language_presence_profile")
+        or persistent_process_report.get("live_language_presence_profile")
+        or resident_governance_state.get("background_live_language_presence_profile")
+        or snapshot.get("background_live_language_presence_profile")
+        or resident_governance_report.get("background_live_language_presence_profile")
+        or persistent_process_report.get("background_live_language_presence_profile")
+    )
+    if live_language_turn_refs:
+        ref_set = _dedupe_list(ref_set + live_language_turn_refs)
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
@@ -326,6 +364,18 @@ def load_background_continuity_profile(
     if offline_learning_cumulative_profile:
         profile["background_offline_learning_cumulative_profile"] = (
             offline_learning_cumulative_profile
+        )
+    if live_language_turn_refs:
+        profile["background_live_language_turn_refs"] = live_language_turn_refs
+    if last_live_semantic_focus:
+        profile["background_last_live_semantic_focus"] = str(last_live_semantic_focus)
+    if live_language_turn_refs or last_live_semantic_focus or live_language_presence_profile:
+        profile["background_live_language_presence_profile"] = (
+            _background_live_language_presence_profile(
+                live_language_turn_refs=live_language_turn_refs,
+                last_live_semantic_focus=last_live_semantic_focus,
+                source_profile=live_language_presence_profile,
+            )
         )
     if resident_governance_state:
         profile["background_resident_governance_state_ref"] = (
@@ -450,10 +500,48 @@ def _list_or_empty(value: Any) -> list[str]:
     return [str(item) for item in value if item]
 
 
+def _dedupe_list(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        result.append(value)
+    return result
+
+
 def _dict_or_empty(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         return {}
     return value
+
+
+def _background_live_language_presence_profile(
+    *,
+    live_language_turn_refs: list[str],
+    last_live_semantic_focus: Any,
+    source_profile: dict[str, Any],
+) -> dict[str, Any]:
+    source_ref_set = _list_or_empty(source_profile.get("ref_set"))
+    ref_set = _dedupe_list(list(live_language_turn_refs) + source_ref_set)
+    profile = {
+        "schema_version": "background_live_language_presence_profile_v0",
+        "continuity_mode": "closed_process_live_language_carryover",
+        "live_language_turn_refs": list(live_language_turn_refs),
+        "last_live_semantic_focus": (
+            str(last_live_semantic_focus) if last_live_semantic_focus else None
+        ),
+        "ref_count": len(ref_set),
+        "ref_set": ref_set,
+    }
+    if source_profile:
+        profile["source_presence_profile"] = source_profile
+    return {
+        key: value
+        for key, value in profile.items()
+        if value is not None and value != [] and value != {}
+    }
 
 
 def _idle_heartbeat_trace_count(path: Path) -> int:

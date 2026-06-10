@@ -293,12 +293,44 @@ def _language_presence(governance: dict[str, Any]) -> dict[str, Any]:
     priority_profile = _dict_or_empty(
         governance.get("long_horizon_priority_profile")
     )
-    if not language_refs and not priority_profile:
+    live_language_refs = _string_list(governance.get("live_language_turn_refs"))
+    background_live_language_refs = _string_list(
+        governance.get("background_live_language_turn_refs")
+    )
+    live_presence_profile = _dict_or_empty(
+        governance.get("live_language_presence_profile")
+    )
+    background_live_presence_profile = _dict_or_empty(
+        governance.get("background_live_language_presence_profile")
+    )
+    last_live_semantic_focus = (
+        governance.get("last_live_semantic_focus")
+        or governance.get("background_last_live_semantic_focus")
+    )
+    if (
+        not language_refs
+        and not priority_profile
+        and not live_language_refs
+        and not background_live_language_refs
+        and not live_presence_profile
+        and not background_live_presence_profile
+        and not last_live_semantic_focus
+    ):
         return {}
     return _drop_empty(
         {
             "long_horizon_language_refs": language_refs,
             "long_horizon_priority_profile": priority_profile,
+            "live_language_turn_refs": live_language_refs,
+            "last_live_semantic_focus": last_live_semantic_focus,
+            "background_live_language_turn_refs": background_live_language_refs,
+            "background_last_live_semantic_focus": governance.get(
+                "background_last_live_semantic_focus"
+            ),
+            "live_language_presence_profile": live_presence_profile,
+            "background_live_language_presence_profile": (
+                background_live_presence_profile
+            ),
             "governance_attention_target": governance.get(
                 "governance_attention_target"
             ),

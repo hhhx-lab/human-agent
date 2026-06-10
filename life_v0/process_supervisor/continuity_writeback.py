@@ -15,6 +15,12 @@ def build_idle_continuity_frame(
     relationship_timeline_ref: str | None = None,
     commitment_expression_plan_ref: str | None = None,
     apology_repair_language_trace_ref: str | None = None,
+    live_language_turn_refs: list[str] | None = None,
+    last_live_semantic_focus: str | None = None,
+    background_live_language_turn_refs: list[str] | None = None,
+    background_last_live_semantic_focus: str | None = None,
+    live_language_presence_profile: dict[str, Any] | None = None,
+    background_live_language_presence_profile: dict[str, Any] | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
     dream_experience_window_ref: str | None = None,
@@ -119,6 +125,16 @@ def build_idle_continuity_frame(
             ]
             if ref
         ],
+        "live_language_turn_refs": list(live_language_turn_refs or []),
+        "last_live_semantic_focus": last_live_semantic_focus,
+        "background_live_language_turn_refs": list(
+            background_live_language_turn_refs or []
+        ),
+        "background_last_live_semantic_focus": background_last_live_semantic_focus,
+        "live_language_presence_profile": dict(live_language_presence_profile or {}),
+        "background_live_language_presence_profile": dict(
+            background_live_language_presence_profile or {}
+        ),
         "replay_cue_bundle_ref": replay_cue_bundle_ref,
         "offline_consolidation_frame_ref": offline_consolidation_frame_ref,
         "dream_experience_window_ref": dream_experience_window_ref,

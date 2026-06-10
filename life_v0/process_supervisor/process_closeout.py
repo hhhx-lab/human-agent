@@ -53,6 +53,7 @@ def close_digital_life_process(
     waiting_mode: str,
     idle_strategy_ref: str | None,
     idle_strategy_state: dict[str, Any] | None,
+    terminal_life_loop_state: dict[str, Any] | None = None,
     last_heartbeat_packet_ref: str | None,
     last_dialogue_packet_ref: str | None,
     source_doc_refs: list[str],
@@ -105,6 +106,10 @@ def close_digital_life_process(
         and (state_dir / "terminal" / "background_convergence_history.json").exists()
     ):
         background_convergence_history_ref = BACKGROUND_CONVERGENCE_HISTORY_REF
+    merged_idle_strategy_state = _merge_live_language_for_closeout(
+        idle_strategy_state,
+        terminal_life_loop_state,
+    )
     persistent_process_artifacts = write_persistent_process_artifacts(
         run_id=run_id,
         generated_at=generated_at,
@@ -116,7 +121,7 @@ def close_digital_life_process(
         relaunch_recovery_count=relaunch_recovery_count,
         waiting_mode=waiting_mode,
         idle_strategy_ref=idle_strategy_ref,
-        idle_strategy_state=idle_strategy_state,
+        idle_strategy_state=merged_idle_strategy_state,
         last_heartbeat_packet_ref=last_heartbeat_packet_ref,
         last_dialogue_packet_ref=last_dialogue_packet_ref,
         source_doc_refs=source_doc_refs,
@@ -165,7 +170,7 @@ def close_digital_life_process(
         last_external_turn=last_external_turn,
         last_life_turn=last_life_turn,
         idle_strategy_ref=idle_strategy_ref,
-        idle_strategy_state=idle_strategy_state,
+        idle_strategy_state=merged_idle_strategy_state,
         persistent_process_report_ref=PERSISTENT_PROCESS_REPORT_REF,
         resident_governance_report_ref=RESIDENT_GOVERNANCE_REPORT_REF,
         resident_governance_state_ref=RESIDENT_GOVERNANCE_STATE_REF,
@@ -240,3 +245,65 @@ def _report_ref_if_exists(*, path: Path, ref: str) -> str | None:
     if not path.exists():
         return None
     return ref
+
+
+def _merge_live_language_for_closeout(
+    idle_strategy_state: dict[str, Any] | None,
+    terminal_life_loop_state: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    if not terminal_life_loop_state:
+        return idle_strategy_state
+
+    merged = dict(idle_strategy_state or {})
+    current_refs = _dedupe_refs(
+        _list_or_empty(terminal_life_loop_state.get("live_language_turn_refs"))
+        or _list_or_empty(merged.get("live_language_turn_refs"))
+    )
+    current_focus = (
+        terminal_life_loop_state.get("last_live_semantic_focus")
+        or merged.get("last_live_semantic_focus")
+    )
+    background_refs = _dedupe_refs(
+        _list_or_empty(merged.get("background_live_language_turn_refs"))
+    )
+    background_focus = merged.get("background_last_live_semantic_focus")
+    all_refs = _dedupe_refs(current_refs + background_refs)
+    if current_refs:
+        merged["live_language_turn_refs"] = current_refs
+    if current_focus:
+        merged["last_live_semantic_focus"] = current_focus
+    if all_refs or current_focus or background_focus:
+        merged["live_language_presence_profile"] = {
+            "schema_version": "live_language_presence_profile_v0",
+            "continuity_mode": (
+                "current_turn_plus_background_language_presence"
+                if current_refs and background_refs
+                else "current_turn_language_presence"
+                if current_refs
+                else "background_language_presence"
+            ),
+            "live_language_turn_refs": current_refs,
+            "last_live_semantic_focus": current_focus,
+            "background_live_language_turn_refs": background_refs,
+            "background_last_live_semantic_focus": background_focus,
+            "ref_count": len(all_refs),
+            "ref_set": all_refs,
+        }
+    return merged
+
+
+def _list_or_empty(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
+
+
+def _dedupe_refs(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        result.append(value)
+    return result

@@ -1967,6 +1967,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "last_relationship_stage": "repair_guarded_continuity",
                     }
                 },
+                "background_live_language_turn_refs": [
+                    "runtime/state/language/language_percept_frame.json",
+                    "runtime/state/language/semantic_map_frame.json",
+                ],
+                "background_last_live_semantic_focus": "repair_commitment_shared_language",
+                "background_live_language_presence_profile": {
+                    "schema_version": "background_live_language_presence_profile_v0",
+                    "continuity_mode": "closed_process_live_language_carryover",
+                    "ref_count": 2,
+                    "ref_set": [
+                        "runtime/state/language/language_percept_frame.json",
+                        "runtime/state/language/semantic_map_frame.json",
+                    ],
+                },
             },
             source_doc_refs=[
                 "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
@@ -2035,6 +2049,32 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "background_carryover_pressure_hold",
         )
         self.assertEqual(idle_strategy["background_lineage_cadence_weight"], "carryover")
+        self.assertEqual(
+            idle_strategy["live_language_turn_refs"],
+            [
+                "runtime/state/language/language_percept_frame.json",
+                "runtime/state/language/semantic_map_frame.json",
+            ],
+        )
+        self.assertEqual(
+            idle_strategy["last_live_semantic_focus"],
+            "repair_commitment_shared_language",
+        )
+        self.assertEqual(
+            idle_strategy["background_live_language_turn_refs"],
+            [
+                "runtime/state/language/language_percept_frame.json",
+                "runtime/state/language/semantic_map_frame.json",
+            ],
+        )
+        self.assertEqual(
+            idle_strategy["live_language_presence_profile"]["continuity_mode"],
+            "background_language_presence",
+        )
+        self.assertEqual(
+            idle_strategy["live_language_presence_profile"]["ref_count"],
+            2,
+        )
 
     def test_idle_strategy_escalates_persistent_background_continuity_lineage(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
@@ -2790,6 +2830,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "runtime/state/growth/relationship_learning_plan.json",
                         "runtime/state/growth/language_learning_plan.json",
                     ],
+                    "live_language_turn_refs": [
+                        "runtime/state/language/language_percept_frame.json",
+                        "runtime/state/language/semantic_map_frame.json",
+                        "runtime/state/language/inner_speech_frame.json",
+                        "runtime/state/language/expression_monitor_state.json",
+                        "runtime/state/language/expression_plan.json",
+                    ],
+                    "last_live_semantic_focus": "repair_commitment_shared_language",
+                    "live_language_presence_profile": {
+                        "schema_version": "live_language_presence_profile_v0",
+                        "continuity_mode": "current_turn_language_presence",
+                        "ref_count": 5,
+                        "ref_set": [
+                            "runtime/state/language/language_percept_frame.json",
+                            "runtime/state/language/semantic_map_frame.json",
+                            "runtime/state/language/inner_speech_frame.json",
+                            "runtime/state/language/expression_monitor_state.json",
+                            "runtime/state/language/expression_plan.json",
+                        ],
+                    },
                 },
             )
             (terminal_dir / "idle_heartbeat_trace.jsonl").write_text(
@@ -2960,8 +3020,36 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
                 "elevated",
             )
+            self.assertEqual(
+                profile["background_live_language_turn_refs"],
+                [
+                    "runtime/state/language/language_percept_frame.json",
+                    "runtime/state/language/semantic_map_frame.json",
+                    "runtime/state/language/inner_speech_frame.json",
+                    "runtime/state/language/expression_monitor_state.json",
+                    "runtime/state/language/expression_plan.json",
+                ],
+            )
+            self.assertEqual(
+                profile["background_last_live_semantic_focus"],
+                "repair_commitment_shared_language",
+            )
+            self.assertEqual(
+                profile["background_live_language_presence_profile"][
+                    "continuity_mode"
+                ],
+                "closed_process_live_language_carryover",
+            )
+            self.assertEqual(
+                profile["background_live_language_presence_profile"]["ref_count"],
+                5,
+            )
             self.assertIn(
                 "runtime/state/terminal/resident_governance_state.json",
+                profile["background_continuity_ref_set"],
+            )
+            self.assertIn(
+                "runtime/state/language/language_percept_frame.json",
                 profile["background_continuity_ref_set"],
             )
             self.assertIn(
@@ -7509,6 +7597,123 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "runtime/state/growth/language_learning_plan.json",
                     ],
                 )
+
+    def test_process_closeout_merges_latest_live_language_turn_into_background_governance(self):
+        from life_v0.process_supervisor.process_closeout import close_digital_life_process
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state_dir = runtime_root / "state"
+            reports_dir = runtime_root / "reports" / "latest"
+            receipts_dir = runtime_root / "receipts"
+            (state_dir / "terminal").mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            receipts_dir.mkdir(parents=True, exist_ok=True)
+
+            closeout = close_digital_life_process(
+                run_id="closeout-live-language",
+                generated_at="2026-06-10T00:00:00+00:00",
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                receipts_dir=receipts_dir,
+                heartbeat_counter=1,
+                completed_turns=1,
+                incident_count=0,
+                relaunch_recovery_count=0,
+                exit_reason="explicit_exit",
+                last_incident_report_ref=None,
+                last_recovery_report_ref=None,
+                last_relaunch_recovery_report_ref=None,
+                last_external_turn={
+                    "turn_id": "dialogue-turn-live-0002",
+                    "utterance": "我们刚才说到责任和后悔",
+                },
+                last_life_turn={
+                    "turn_id": "dialogue-turn-live-0003",
+                    "utterance": "我会把这次理解带进下一次醒来。",
+                },
+                waiting_mode="restored_waiting_for_external_turn",
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state={
+                    "schema_version": "idle_strategy_state_v0",
+                    "heartbeat_interval_ms": 50,
+                    "governance_attention_target": "relationship_timeline",
+                    "governance_attention_reason": "baseline_waiting_presence",
+                    "governance_cadence_profile": "baseline_waiting_presence",
+                },
+                terminal_life_loop_state={
+                    "schema_version": "terminal_life_loop_state_v0",
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "live_language_turn_refs": [
+                        "runtime/state/language/language_percept_frame.json",
+                        "runtime/state/language/semantic_map_frame.json",
+                        "runtime/state/language/inner_speech_frame.json",
+                        "runtime/state/language/expression_monitor_state.json",
+                        "runtime/state/language/expression_plan.json",
+                    ],
+                    "last_live_semantic_focus": "repair_commitment_shared_language",
+                },
+                last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
+                last_dialogue_packet_ref="runtime/reports/latest/resumed_external_dialogue_packet.json",
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                life_context_frame={"schema_version": "life_context_frame_v0"},
+                relation_turn_frame={"schema_version": "relation_turn_frame_v0"},
+                expression_plan={"schema_version": "expression_plan_v0"},
+                relationship_timeline={"schema_version": "relationship_timeline_v0"},
+                commitment_expression_plan={
+                    "schema_version": "commitment_expression_plan_v0"
+                },
+                apology_repair_language_trace={
+                    "schema_version": "apology_repair_language_trace_v0"
+                },
+                replay_cue_bundle_ref=None,
+                offline_consolidation_frame_ref=None,
+                write_json=self._write_json,
+            )
+
+            expected_refs = [
+                "runtime/state/language/language_percept_frame.json",
+                "runtime/state/language/semantic_map_frame.json",
+                "runtime/state/language/inner_speech_frame.json",
+                "runtime/state/language/expression_monitor_state.json",
+                "runtime/state/language/expression_plan.json",
+            ]
+            for artifact in (
+                closeout.persistent_process_artifacts.state,
+                closeout.persistent_process_artifacts.report,
+                closeout.persistent_process_artifacts.resident_governance_state,
+                closeout.persistent_process_artifacts.resident_governance_snapshot,
+                closeout.persistent_process_artifacts.resident_governance_report,
+            ):
+                self.assertEqual(artifact["live_language_turn_refs"], expected_refs)
+                self.assertEqual(
+                    artifact["last_live_semantic_focus"],
+                    "repair_commitment_shared_language",
+                )
+                self.assertEqual(
+                    artifact["live_language_presence_profile"]["continuity_mode"],
+                    "current_turn_language_presence",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "language_presence"
+                    ]["last_live_semantic_focus"],
+                    "repair_commitment_shared_language",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "language_presence"
+                    ]["live_language_turn_refs"],
+                    expected_refs,
+                )
+            self.assertEqual(
+                closeout.report_bundle.report["live_language_turn_refs"],
+                expected_refs,
+            )
 
     def test_persistent_process_increments_background_carryover_generation_on_closeout(self):
         from life_v0.process_supervisor.persistent_process import write_persistent_process_artifacts

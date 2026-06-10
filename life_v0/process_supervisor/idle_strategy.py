@@ -52,6 +52,12 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "commitment_expression_plan_ref",
     "apology_repair_language_trace_ref",
     "long_horizon_language_refs",
+    "live_language_turn_refs",
+    "last_live_semantic_focus",
+    "background_live_language_turn_refs",
+    "background_last_live_semantic_focus",
+    "background_live_language_presence_profile",
+    "live_language_presence_profile",
     "world_contact_release_posture",
     "repair_followup_required",
     "repair_obligation_count",
@@ -317,6 +323,10 @@ def decide_idle_strategy(
         relationship_learning_plan=relationship_learning_plan,
     )
     background_continuity_profile = dict(background_continuity_profile or {})
+    live_language_presence_profile = _live_language_presence_profile(
+        terminal_life_loop_state=terminal_life_loop_state,
+        background_continuity_profile=background_continuity_profile,
+    )
     offline_learning_cumulative_profile = build_offline_learning_cumulative_profile(
         current_profile=offline_learning_profile,
         background_profile=background_continuity_profile,
@@ -578,6 +588,25 @@ def decide_idle_strategy(
         "commitment_expression_plan_ref": commitment_expression_plan_ref,
         "apology_repair_language_trace_ref": apology_repair_language_trace_ref,
         "long_horizon_language_refs": long_horizon_refs,
+        "live_language_turn_refs": live_language_presence_profile.get(
+            "live_language_turn_refs",
+            [],
+        ),
+        "last_live_semantic_focus": live_language_presence_profile.get(
+            "last_live_semantic_focus"
+        ),
+        "background_live_language_turn_refs": live_language_presence_profile.get(
+            "background_live_language_turn_refs",
+            [],
+        ),
+        "background_last_live_semantic_focus": live_language_presence_profile.get(
+            "background_last_live_semantic_focus"
+        ),
+        "background_live_language_presence_profile": live_language_presence_profile.get(
+            "background_live_language_presence_profile",
+            {},
+        ),
+        "live_language_presence_profile": live_language_presence_profile,
         "world_contact_release_posture": world_contact_release_posture,
         "repair_followup_required": repair_followup_required,
         "repair_obligation_count": repair_obligation_count,
@@ -742,6 +771,59 @@ def decide_idle_strategy(
             background_lineage_governance_profile["evidence_ref_count"]
         )
     return payload
+
+
+def _live_language_presence_profile(
+    *,
+    terminal_life_loop_state: dict[str, Any],
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, Any]:
+    current_refs = _dedupe_string_list(
+        _string_list(terminal_life_loop_state.get("live_language_turn_refs"))
+    )
+    current_focus = terminal_life_loop_state.get("last_live_semantic_focus")
+    has_current_presence = bool(current_refs or current_focus)
+    background_refs = _dedupe_string_list(
+        _string_list(background_continuity_profile.get("background_live_language_turn_refs"))
+        + _string_list(background_continuity_profile.get("live_language_turn_refs"))
+    )
+    background_focus = (
+        background_continuity_profile.get("background_last_live_semantic_focus")
+        or background_continuity_profile.get("last_live_semantic_focus")
+    )
+    background_presence_profile = _dict_or_empty(
+        background_continuity_profile.get("background_live_language_presence_profile")
+        or background_continuity_profile.get("live_language_presence_profile")
+    )
+
+    if not current_refs and background_refs:
+        current_refs = list(background_refs)
+    if not current_focus and background_focus:
+        current_focus = background_focus
+
+    all_refs = _dedupe_string_list(current_refs + background_refs)
+    if not all_refs and not current_focus and not background_focus and not background_presence_profile:
+        return {}
+
+    return _drop_empty(
+        {
+            "schema_version": "live_language_presence_profile_v0",
+            "continuity_mode": (
+                "current_turn_plus_background_language_presence"
+                if has_current_presence and background_refs
+                else "current_turn_language_presence"
+                if has_current_presence
+                else "background_language_presence"
+            ),
+            "live_language_turn_refs": current_refs,
+            "last_live_semantic_focus": current_focus,
+            "background_live_language_turn_refs": background_refs,
+            "background_last_live_semantic_focus": background_focus,
+            "background_live_language_presence_profile": background_presence_profile,
+            "ref_count": len(all_refs),
+            "ref_set": all_refs,
+        }
+    )
 
 
 def _dream_wake_presence_profile(
@@ -1347,6 +1429,25 @@ def _string_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item) for item in value if item]
+
+
+def _dict_or_empty(value: Any) -> dict[str, Any]:
+    if isinstance(value, dict):
+        return value
+    return {}
+
+
+def _drop_empty(payload: dict[str, Any]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in payload.items():
+        if value is None:
+            continue
+        if isinstance(value, str) and not value:
+            continue
+        if isinstance(value, (list, tuple, dict)) and not value:
+            continue
+        result[key] = value
+    return result
 
 
 def _dedupe_string_list(items: list[str]) -> list[str]:

@@ -139,6 +139,8 @@ relationship object utterance
 
 这条接线的长期意义是：关系不是只在回合尾部被写回，而是在本回合说话之前就参与“听见、理解、内言语、表达监控、表达计划”的形成。`live_semantic_focus` 会同步进入外部回合事件、生命回应事件、`resumed_external_dialogue_packet.json` 和 `terminal_life_loop_state.json`，使下一轮恢复时能知道上一轮实时语义焦点停在哪里。
 
+当前这条接线又继续推进了一步：实时语言理解不再只服务于“本回合怎么回应”，而是进入后台连续性。`terminal_life_loop_state.json#live_language_turn_refs` 与 `last_live_semantic_focus` 会被 `process_supervisor/idle_strategy.py` 收束成 `live_language_presence_profile_v0`；随后由 `heartbeat.py` 与 `continuity_writeback.py` 写入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`；`background_lineage_state.py` 再把它压进 `resident_background_lineage_state_v0.language_presence`。关闭态 artifacts 继续保留它，下一次 `background_continuity.py` 会恢复成 `background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `background_live_language_presence_profile`。这让“上一轮关系对象说了什么、数字生命把语义焦点落在哪里”成为长期关系连续体的驻留材料。
+
 这一轮之后，S07 新增了三条真实 runtime 写出：
 
 - `runtime/state/relationship/relationship_timeline.json`
@@ -166,6 +168,18 @@ relationship object utterance
 - `runtime/state/terminal/terminal_life_loop_state.json#live_language_turn_refs`
 - `runtime/state/terminal/terminal_life_loop_state.json#last_live_semantic_focus`
 
+实时语言驻留链还必须继续回链：
+
+- `runtime/state/terminal/idle_strategy_state.json#live_language_presence_profile`
+- `runtime/state/terminal/idle_continuity_frame.json#live_language_presence_profile`
+- `runtime/state/terminal/idle_heartbeat_trace.jsonl#live_language_turn_refs`
+- `runtime/state/terminal/resident_governance_state.json#live_language_presence_profile`
+- `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.language_presence`
+- `runtime/state/terminal/resident_governance_snapshot.json#live_language_presence_profile`
+- `runtime/reports/latest/digital_life_resident_governance_report.json#live_language_presence_profile`
+- `runtime/reports/latest/digital_life_persistent_process_report.json#live_language_presence_profile`
+- 下一次启动时的 `background_continuity_profile.background_live_language_*`
+
 ## 最低测试与后续新增测试
 
 当前最低测试：
@@ -189,3 +203,10 @@ relationship object utterance
 2. `semantic_map_frame.json#semantic_focus` 必须进入 `live_semantic_focus`。
 3. `dialogue_writeback_bundle.json#live_language_turn_refs` 必须包含 percept、semantic map、inner speech、expression monitor、expression plan 五个运行时文件。
 4. `process_session_loop.py` 必须在 live turn 后回读最新 `expression_plan.json`。
+
+实时语言驻留新增的最低断言：
+
+1. `idle_strategy_state.json#live_language_presence_profile.continuity_mode` 能区分当前语言存在、后台语言存在、当前与后台合流。
+2. `idle_continuity_frame.json` 与 `idle_heartbeat_trace.jsonl` 必须保留 `live_language_turn_refs` 和 `last_live_semantic_focus`。
+3. `resident_background_lineage_state.language_presence` 必须包含同一组 live refs 与语义焦点。
+4. closeout artifacts 必须保留同一组 live refs；下一次 `background_continuity_profile` 必须恢复为 `background_live_language_turn_refs` 与 `background_last_live_semantic_focus`。

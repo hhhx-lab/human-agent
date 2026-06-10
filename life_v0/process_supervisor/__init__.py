@@ -304,6 +304,7 @@ def run_digital_life_process(
         ),
         idle_strategy_ref=IDLE_STRATEGY_STATE_REF,
         idle_strategy_state=idle_strategy_state,
+        terminal_life_loop_state=session_loop.terminal_life_loop_state,
         last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
         last_dialogue_packet_ref=session_loop.safe_terminal_loop.get("last_dialogue_packet_ref"),
         source_doc_refs=SOURCE_DOC_REFS,

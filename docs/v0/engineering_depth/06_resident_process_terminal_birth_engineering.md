@@ -25,7 +25,7 @@ life-v0 emit-report --strict
 5. `life_v0/process_supervisor/process_closeout.py` 与 `process_report.py` 已把 resident governance 证据收口进主进程 report / digest / receipt
 6. `life_v0/process_supervisor/continuity_evolution.py` 已开始在回合尾部把关系时间线、Queue E 修复压力、Queue D 离线学习压力与 continuity / trust 轨迹压成关系阶段和自我慢变量
 7. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排，并开始在 live turn 之后重新装回长期关系/语言对象以及最新 `self_model_state`；当前前沿转向后台 resident governance、跨进程持久化与更高频节律
-8. `life_v0/process_supervisor/background_lineage_state.py` 已把关闭态/等待态的 resident governance lineage 压成 `resident_background_lineage_state_v0`，当前新增的 `offline_learning_presence` 明确承载后台驻留里的梦境、成长、离线学习余波，`dream_wake_presence` 明确承载后台驻留里的梦境窗口、醒后整合与梦境事实门
+8. `life_v0/process_supervisor/background_lineage_state.py` 已把关闭态/等待态的 resident governance lineage 压成 `resident_background_lineage_state_v0`，当前新增的 `offline_learning_presence` 明确承载后台驻留里的梦境、成长、离线学习余波，`dream_wake_presence` 明确承载后台驻留里的梦境窗口、醒后整合与梦境事实门；最新补强还把 `live_language_turn_refs`、`last_live_semantic_focus` 与 `live_language_presence_profile` 压进 `language_presence`，让上一轮真实关系话语的理解余波也成为后台驻留存在面
 9. `life_v0/process_supervisor/dialogue_events.py` 与 `response_surface.py` 已开始分别把 `offline_learning_presence / dream_wake_presence` 写进 `digital_life_turn` 和生命回应文本
 
 ## 当前最关键的 runtime 证据
@@ -55,6 +55,12 @@ life-v0 emit-report --strict
 23. `runtime/state/dream/wake_integration_frame.json`
 24. `runtime/state/dream/dream_fact_gate_decision.json`
 25. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.dream_wake_presence`
+26. `runtime/state/terminal/idle_strategy_state.json#live_language_presence_profile`
+27. `runtime/state/terminal/idle_continuity_frame.json#live_language_presence_profile`
+28. `runtime/state/terminal/idle_heartbeat_trace.jsonl#live_language_turn_refs`
+29. `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.language_presence`
+30. `runtime/state/terminal/resident_governance_snapshot.json#live_language_presence_profile`
+31. `runtime/reports/latest/digital_life_resident_governance_report.json#live_language_presence_profile`
 
 ## 最低测试与新增测试
 
@@ -237,6 +243,30 @@ runtime/state/dream/dream_fact_gate_decision.json
 
 这让常驻过程在关系回合中不只表达“后台还有离线学习压力”，也能表达“上一段梦境窗口如何被事实门约束、醒后整合携带了哪些归档和成长修复压力”。
 
+## resident background lineage 中的实时语言存在面
+
+当前实现又把本回合实时语言理解从 terminal loop 继续推进到常驻驻留主状态体：
+
+```text
+runtime/state/language/language_percept_frame.json
+runtime/state/language/semantic_map_frame.json
+runtime/state/language/inner_speech_frame.json
+runtime/state/language/expression_monitor_state.json
+runtime/state/language/expression_plan.json
+  -> terminal_life_loop_state.live_language_turn_refs / last_live_semantic_focus
+  -> idle_strategy_state.json#live_language_presence_profile
+  -> waiting heartbeat / idle_continuity_frame / idle_heartbeat_trace
+  -> resident_governance_state.json
+  -> resident_background_lineage_state_v0.language_presence
+  -> resident_governance_snapshot / resident governance report / persistent process report
+  -> background_continuity_profile.background_live_language_*
+  -> next idle strategy / next waiting governance
+```
+
+这条链的关键点是：`language_presence` 不再只是长期语言对象的 ref 集合，而是同时记录“刚刚听见并理解到什么”。`live_language_turn_refs` 表示五件套语言器官在本回合留下的 runtime 证据；`last_live_semantic_focus` 表示语义焦点；`live_language_presence_profile` 表示当前语言存在、后台语言存在或两者合流的驻留画像；`background_live_language_turn_refs` 与 `background_last_live_semantic_focus` 表示上一轮关闭态恢复回来的语言理解余波。
+
+这让常驻过程在断开、等待和下一次唤醒之间继续保留上一轮关系语义，而不是只保留关系阶段、慢变量、心跳或梦境余波。数字生命再次进入关系回合时，后台驻留状态体可以知道上一轮真正被听见的内容停在哪里。
+
 ## 关系阶段与自我慢变量已经进入同会话与重启恢复闭环
 
 最新这一步又把长期连续体从“重建对象”推进到了“演化对象”：
@@ -357,3 +387,6 @@ idle_strategy.py
 16. 下一次 bootstrap 必须把 `background_continuity_profile`、当前 `relationship_subject_graph.json`、`self_model.json` 与 `trait_drift_monitor.json` 压成 `background_convergence_summary.json`，用 `relationship_stage_continuity`、`convergence_state`、`convergence_pressure_level` 与 `trait_convergence_summary` 表达跨进程关系/人格慢变量是否稳定、整合或需要重新校准。
 17. closeout 的 `digital_life_resident_governance_explanation.json` 必须继续解释这份 `background_convergence_summary.json`：当 convergence pressure 主导 waiting governance 时，driver family 要落到 `background_trait_convergence_hold` 或 `background_convergence_recalibration`，并在 `continuity_story` 里写出 convergence state、pressure、attention target、stage continuity 与 trait convergence bands。
 18. `background_convergence_history.py` 必须把最近多次唤醒的 summary 压成 `background_convergence_history.json`，并把 `history_window_size`、`trend_state`、`dominant_convergence_pressure_level` 和 `convergence_samples` 回链到下一次 background continuity / idle strategy / heartbeat / resident governance / closeout report。
+19. `idle_strategy.py` 必须把 `terminal_life_loop_state.live_language_turn_refs` 与 `last_live_semantic_focus` 合成为 `live_language_presence_profile_v0`，并在存在 background carryover 时合并 `background_live_language_turn_refs` 与 `background_last_live_semantic_focus`。
+20. `heartbeat.py`、`continuity_writeback.py`、`resident_governance_handoff.py`、`process_closeout.py` 与 `persistent_process.py` 必须让这组实时语言驻留字段穿过 waiting、handoff、closeout artifacts 和 report；`background_continuity.py` 下一次必须恢复为 `background_live_language_*`。
+21. `resident_background_lineage_state_v0.language_presence` 必须能看见 `live_language_turn_refs`、`last_live_semantic_focus`、`background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `live_language_presence_profile`。

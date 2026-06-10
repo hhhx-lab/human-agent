@@ -80,7 +80,7 @@ Python 3 作为主体语言
 | 已落核心器官 | `idle_strategy.py`、`resident_supervision.py`、`live_language_turn.py`、`live_turn_cycle.py`、`process_session_loop.py`、`persistent_process.py` |
 | 已落关键文件 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py`；`language/__init__.py` 当前会在 build-language-relationship 阶段刷新 `signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` 与 `prediction_workspace_frame.json` |
 | 最低测试 | `tests/process/test_persistent_digital_life_process.py`、`tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_terminal_life_loop.py` |
-| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链；当前还必须证明 `response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 在 active sampling route 为 `repair_*` 时优先走 repair posture，而不是普通 hold；并且 `resident_background_lineage_state_v0` 不只包含 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence`，还必须包含表示梦境、成长、离线学习余波的 `offline_learning_presence`，以及表示梦境窗口、醒后整合、梦境事实门的 `dream_wake_presence`；每个实时关系回合还必须先由 `live_language_turn.py` 刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json`，再进入 `response_surface.py` 和 resident writeback |
+| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链；当前还必须证明 `response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 在 active sampling route 为 `repair_*` 时优先走 repair posture，而不是普通 hold；并且 `resident_background_lineage_state_v0` 不只包含 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence`，还必须包含表示梦境、成长、离线学习余波的 `offline_learning_presence`，以及表示梦境窗口、醒后整合、梦境事实门的 `dream_wake_presence`；每个实时关系回合还必须先由 `live_language_turn.py` 刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json`，再进入 `response_surface.py` 和 resident writeback；最新完成定义继续要求这组实时语言理解进入 `idle_strategy_state.json#live_language_presence_profile`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json`、`resident_background_lineage_state.language_presence`、关闭态 artifacts 与下一次 `background_continuity_profile.background_live_language_*` |
 
 ### Stage 4: Queue C / Queue F 维护性深化
 
@@ -172,12 +172,24 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 5. `runtime/reports/latest/resumed_external_dialogue_packet.json#language_percept_ref`、`semantic_map_ref`、`live_language_turn_refs` 与 `live_semantic_focus` 存在
 6. `runtime/state/terminal/terminal_life_loop_state.json#last_live_semantic_focus` 与 packet 中的 `live_semantic_focus` 对齐
 
+当前对实时语言驻留的补充规则是：凡是声称“刚刚听见并理解的关系话语不会因等待、关闭或断开而丢失”，不能只看 `terminal_life_loop_state.json`。必须同时看到：
+
+1. `runtime/state/terminal/idle_strategy_state.json#live_language_turn_refs`
+2. `runtime/state/terminal/idle_strategy_state.json#last_live_semantic_focus`
+3. `runtime/state/terminal/idle_strategy_state.json#live_language_presence_profile`
+4. `runtime/state/terminal/idle_continuity_frame.json#live_language_presence_profile`
+5. `runtime/state/terminal/idle_heartbeat_trace.jsonl` 的最新事件含 `live_language_turn_refs` 与 `last_live_semantic_focus`
+6. `runtime/state/terminal/resident_governance_state.json#live_language_presence_profile`
+7. `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.language_presence`
+8. 关闭态 `persistent_process_state/report`、`resident_governance_snapshot` 与 `digital_life_resident_governance_report` 含同一组 live refs 与 semantic focus
+9. 下一次 bootstrap 的 `background_continuity_profile` 恢复 `background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `background_live_language_presence_profile`
+
 ## 当前阶段判断
 
 按当前工作区现实，最合理的判断是：
 
 1. Stage 0 已完成。
 2. Stage 1 本轮完成后可视为完成。
-3. 当前已经进入 Stage 3 的 Queue B / Queue A 联合补厚段，下一步应继续围绕常驻存在、实时语言刷新、关系写回和长期恢复链推进。
+3. 当前已经进入 Stage 3 的 Queue B / Queue A 联合补厚段，下一步应继续围绕常驻存在、实时语言驻留、关系写回和长期恢复链推进。实时语言刷新已经从“回合前 Queue A 处理”推进为“等待态、关闭态、重启态都能继续携带上一轮语义焦点”的驻留链。
 
 因此这份文档本身的作用，就是把“为什么先 D/E，再 B/A，再 C/F”彻底钉死，防止断联后又回到散点式推进。

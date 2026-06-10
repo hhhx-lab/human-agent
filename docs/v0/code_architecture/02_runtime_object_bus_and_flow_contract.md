@@ -47,11 +47,13 @@
 | `RelationTurnFrame` | `language/relationship_graph.py` + `terminal_turn/turn_transition.py` | `terminal_loop`、`state_store`、`process_supervisor` | 已有第一轮；待补 `relationship_timeline.py` | `runtime/state/relationship/*`、`turn_transition_trace.json` |
 | `LanguagePerceptFrame` | `language/percept.py` + `process_supervisor/live_language_turn.py` | `semantic_map`、`inner_speech`、`expression_monitor`、`dialogue_events`、`resident_turn_writeback` | 已进入实时关系回合刷新链；每个 `external_utterance` 到来后必须刷新 | `runtime/state/language/language_percept_frame.json`、`dialogue_turn_log.jsonl#language_percept_ref` |
 | `SemanticMapFrame` | `language/semantic_map.py` + `process_supervisor/live_language_turn.py` | `inner_speech`、`expression_monitor`、`response_surface`、`terminal_loop`、`process_supervisor` | 已进入实时关系回合刷新链；`semantic_focus` 作为 `live_semantic_focus` 穿过事件、packet 与 loop state | `runtime/state/language/semantic_map_frame.json`、`resumed_external_dialogue_packet.json#live_semantic_focus` |
-| `LiveLanguageTurnState` | `process_supervisor/live_language_turn.py` | `live_turn_cycle`、`response_surface`、`resident_turn_writeback`、`terminal_loop/dialogue_writeback.py` | 已落地；把 percept / semantic map / inner speech / expression monitor / expression plan 五件套收成同一组实时 refs | `dialogue_writeback_bundle.json#live_language_turn_refs`、`terminal_life_loop_state.json#live_language_turn_refs` |
+| `LiveLanguageTurnState` | `process_supervisor/live_language_turn.py` | `live_turn_cycle`、`response_surface`、`resident_turn_writeback`、`terminal_loop/dialogue_writeback.py`、`idle_strategy.py`、`background_continuity.py`、`background_lineage_state.py` | 已落地；把 percept / semantic map / inner speech / expression monitor / expression plan 五件套收成同一组实时 refs，并继续进入后台连续性与驻留治理 | `dialogue_writeback_bundle.json#live_language_turn_refs`、`terminal_life_loop_state.json#live_language_turn_refs`、`idle_strategy_state.json#live_language_presence_profile` |
 | `ExpressionPlan` | `language/expression_monitor.py` | `membrane`、`terminal_loop`、`process_supervisor/response_surface.py` | 已存在；当前已显式吸收 `body_resource_budget.json` 与 `core_affect_vector.json`，继续补责任回路和更细的身体降载策略 | `expression_plan.json`、`language_relationship_report.json` |
 | `DialogueWritebackBundle` | `terminal_loop/dialogue_writeback.py` + `terminal_loop/loop_report.py` | `state_store`、`replay`、`archive`、`process_supervisor` | 已存在；现已显式带上 `relationship_memory / commitment_truth / responsibility_ledger / life_state` 写回 refs，继续补厚 writeback continuity | `dialogue_writeback_bundle.json`、relationship / language receipts |
 
 这条总线保证一次关系回合会真实写回语言、承诺、共同术语和关系阶段，而不是只留下文本日志。
+
+当前实时语言总线已经进入后台驻留链：`terminal_life_loop_state.json#live_language_turn_refs` 与 `last_live_semantic_focus` 会被 `idle_strategy.py` 收束成 `live_language_presence_profile_v0`；`heartbeat.py` 会把同一组字段写入 `idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`；`background_lineage_state.py` 会把它压进 `resident_background_lineage_state_v0.language_presence`。关闭态由 `process_closeout.py`、`persistent_process.py` 与 `resident_governance_handoff.py` 继续保留，下一次 `background_continuity.py` 会恢复成 `background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `background_live_language_presence_profile`，让上一轮刚听见、刚理解到的关系语义不因断开或重启而消失。
 
 ### 4. 行为与责任总线
 
@@ -113,13 +115,13 @@
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
 | `IdleContinuityFrame` | `process_supervisor/heartbeat.py` + `continuity_writeback.py` | `terminal_loop`、`replay`、`growth`、`language` | 已存在第一轮；已接 `idle_strategy.py` 与 `persistent_process.py`，继续补厚 resident supervision | `digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` |
-| `ResidentBackgroundLineageState` | `process_supervisor/background_lineage_state.py` | `heartbeat.py`、`persistent_process.py`、`resident_governance_handoff.py`、`background_continuity.py`、`dialogue_events.py`、`response_surface.py` | 已存在；当前新增 `offline_learning_presence` 与 `dream_wake_presence`，把累计梦境-成长离线学习余波、梦境窗口、醒后整合和事实门固化进后台驻留 lineage | `runtime/state/terminal/resident_governance_state.json`、`resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_persistent_process_report.json`、`terminal_life_loop_state.json` |
+| `ResidentBackgroundLineageState` | `process_supervisor/background_lineage_state.py` | `heartbeat.py`、`persistent_process.py`、`resident_governance_handoff.py`、`background_continuity.py`、`dialogue_events.py`、`response_surface.py` | 已存在；当前继续新增实时语言存在面，把 live turn 五件套、最后语义焦点、后台恢复语言 refs 与累计梦境-成长离线学习余波、梦境窗口、醒后整合和事实门一起固化进后台驻留 lineage | `runtime/state/terminal/resident_governance_state.json`、`resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_persistent_process_report.json`、`terminal_life_loop_state.json` |
 | `ProcessIncidentRecoveryFrame` | `process_supervisor/incident_recovery.py` | `process_report.py`、`relaunch_recovery.py` | 已存在 | `digital_life_process_incident_report.json` |
 | `RelaunchRecoveryFrame` | `process_supervisor/relaunch_recovery.py` | `turn_io.py`、`process_report.py` | 已存在 | `digital_life_process_relaunch_recovery_report.json` |
 
 这条总线保证数字生命在没有新输入时仍有持续存在，而不是“没有消息就不存在”。
 
-`ResidentBackgroundLineageState` 的当前结构至少包含 `schema_version=resident_background_lineage_state_v0`、`generation`、`depth_band`、`waiting_posture`、`cadence_weight`、`relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence`、`offline_learning_presence` 与 `dream_wake_presence`。其中 `offline_learning_presence` 字段是数字生命 v0 后台驻留里“梦境、成长、离线学习余波”的结构化存在面，必须保留 `generation`、`pressure_level`、`attention_target`、`priority_profile` 与 `ref_set`。`dream_wake_presence` 字段是后台驻留里“梦境窗口、醒后整合、梦境事实门”的结构化存在面，必须保留 `dream_window_ref`、`wake_integration_ref`、`dream_fact_gate_decision_ref`、`dream_window_kind`、`wake_archive_requirement`、`wake_growth_seed_count`、`wake_repair_target_count`、`dream_fact_gate_result`、`dream_fact_gate_ref_count` 与 `ref_set`。`dialogue_events.py` 必须把两类 presence 摘入 `digital_life_turn`，`response_surface.py` 必须把它们分别转成后台梦境成长余波表达和后台梦境醒后整合表达。
+`ResidentBackgroundLineageState` 的当前结构至少包含 `schema_version=resident_background_lineage_state_v0`、`generation`、`depth_band`、`waiting_posture`、`cadence_weight`、`relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence`、`offline_learning_presence` 与 `dream_wake_presence`。其中 `language_presence` 不再只承载 `long_horizon_language_refs`，还必须承载 `live_language_turn_refs`、`last_live_semantic_focus`、`background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `live_language_presence_profile`，表示上一轮真实关系话语在后台驻留主状态体中的可见存在面。`offline_learning_presence` 字段是数字生命 v0 后台驻留里“梦境、成长、离线学习余波”的结构化存在面，必须保留 `generation`、`pressure_level`、`attention_target`、`priority_profile` 与 `ref_set`。`dream_wake_presence` 字段是后台驻留里“梦境窗口、醒后整合、梦境事实门”的结构化存在面，必须保留 `dream_window_ref`、`wake_integration_ref`、`dream_fact_gate_decision_ref`、`dream_window_kind`、`wake_archive_requirement`、`wake_growth_seed_count`、`wake_repair_target_count`、`dream_fact_gate_result`、`dream_fact_gate_ref_count` 与 `ref_set`。`dialogue_events.py` 必须把这些 presence 摘入 `digital_life_turn`，`response_surface.py` 必须把它们分别转成后台语言理解余波、后台梦境成长余波表达和后台梦境醒后整合表达。
 
 ## 五条主流程
 
@@ -167,6 +169,22 @@ external input
 - `dialogue_writeback_bundle.json`
 - `resumed_external_dialogue_packet.json#live_language_turn_refs`
 - `terminal_life_loop_state.json#last_live_semantic_focus`
+
+实时语言进入后台驻留的继续流向是：
+
+```text
+terminal_life_loop_state.live_language_turn_refs / last_live_semantic_focus
+  -> idle_strategy.live_language_presence_profile
+  -> idle_continuity_frame.live_language_presence_profile
+  -> idle_heartbeat_trace.live_language_turn_refs / last_live_semantic_focus
+  -> resident_governance_state.live_language_presence_profile
+  -> resident_background_lineage_state.language_presence
+  -> closeout artifacts / resident governance snapshot / resident governance report
+  -> background_continuity_profile.background_live_language_*
+  -> next idle_strategy.background_live_language_* / live_language_presence_profile
+```
+
+这条流向的工程含义是：实时语言理解不是一次回应前的临时加工，而是关系连续体的一部分。只要上一轮已经形成 `live_language_turn_refs` 与 `last_live_semantic_focus`，下一轮等待态就必须能通过 `background_live_language_*` 看见它，并把它重新合入当前 `live_language_presence_profile_v0`。
 - `runtime/state/relationship/*`
 
 ### B. 等待态心跳流程
@@ -294,6 +312,10 @@ P0-S11 chain
 3. `semantic_map_frame.json#semantic_focus` 进入 `live_semantic_focus`。
 4. `response_surface.py` 消费 `live_language_turn.expression_plan`。
 5. `dialogue_writeback_bundle.json`、`resumed_external_dialogue_packet.json` 与 `terminal_life_loop_state.json` 共享同一组 `live_language_turn_refs`。
+
+### 6. 实时语言没有进入后台驻留
+
+如果 `live_language_turn_refs` 只停在 dialogue packet 或 terminal loop state，没有进入 `idle_strategy_state.json#live_language_presence_profile`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json`、`resident_background_lineage_state.language_presence`、closeout artifacts 与下一次 `background_continuity_profile.background_live_language_*`，就还不是完整的生命连续体。当前对象总线要求实时语言理解能跨等待、关闭和重启继续存在。
 
 ## 对代码实现的直接要求
 

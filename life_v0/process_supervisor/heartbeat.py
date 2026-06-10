@@ -301,6 +301,12 @@ def write_waiting_heartbeat(
         "background_idle_heartbeat_trace_ref",
         "background_idle_heartbeat_trace_count",
         "long_horizon_language_refs",
+        "live_language_turn_refs",
+        "last_live_semantic_focus",
+        "background_live_language_turn_refs",
+        "background_last_live_semantic_focus",
+        "background_live_language_presence_profile",
+        "live_language_presence_profile",
         "offline_learning_cumulative_profile",
         "offline_learning_cumulative_generation",
         "offline_learning_cumulative_pressure_level",
@@ -380,6 +386,20 @@ def write_waiting_heartbeat(
         relationship_timeline_ref=idle_strategy.get("relationship_timeline_ref"),
         commitment_expression_plan_ref=idle_strategy.get("commitment_expression_plan_ref"),
         apology_repair_language_trace_ref=idle_strategy.get("apology_repair_language_trace_ref"),
+        live_language_turn_refs=idle_strategy.get("live_language_turn_refs"),
+        last_live_semantic_focus=idle_strategy.get("last_live_semantic_focus"),
+        background_live_language_turn_refs=idle_strategy.get(
+            "background_live_language_turn_refs"
+        ),
+        background_last_live_semantic_focus=idle_strategy.get(
+            "background_last_live_semantic_focus"
+        ),
+        live_language_presence_profile=idle_strategy.get(
+            "live_language_presence_profile"
+        ),
+        background_live_language_presence_profile=idle_strategy.get(
+            "background_live_language_presence_profile"
+        ),
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         dream_experience_window_ref=idle_strategy.get("dream_experience_window_ref"),
@@ -597,6 +617,19 @@ def _append_idle_heartbeat_trace(
         ),
         "long_horizon_language_refs": list(
             idle_strategy.get("long_horizon_language_refs", [])
+        ),
+        "live_language_turn_refs": list(
+            idle_strategy.get("live_language_turn_refs", [])
+        ),
+        "last_live_semantic_focus": idle_strategy.get("last_live_semantic_focus"),
+        "background_live_language_turn_refs": list(
+            idle_strategy.get("background_live_language_turn_refs", [])
+        ),
+        "background_last_live_semantic_focus": idle_strategy.get(
+            "background_last_live_semantic_focus"
+        ),
+        "live_language_presence_profile": idle_strategy.get(
+            "live_language_presence_profile"
         ),
         "replay_seed_refs": list(idle_continuity_frame.get("replay_seed_refs", [])),
         "dream_wake_ref_set": list(idle_strategy.get("dream_wake_ref_set", [])),
