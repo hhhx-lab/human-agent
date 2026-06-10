@@ -2759,6 +2759,105 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "trait_convergence_stable",
         )
 
+    def test_background_convergence_history_preserves_trait_drift_update_modes(self):
+        from life_v0.process_supervisor.background_convergence_history import (
+            build_background_convergence_history,
+        )
+
+        history = build_background_convergence_history(
+            run_id="background-history-trait-drift",
+            generated_at="2026-06-10T00:00:00+00:00",
+            background_convergence_summary={
+                "schema_version": "background_convergence_summary_v0",
+                "run_id": "background-history-trait-drift",
+                "background_carryover_generation": 3,
+                "convergence_state": "recalibrating_cross_process_continuity",
+                "convergence_pressure_level": "elevated",
+                "convergence_attention_target": "trait_drift_history_recalibration",
+                "relationship_stage_continuity": "same_stage_preserved",
+                "trait_convergence_score": 0.97,
+                "max_trait_delta_from_background": 0.02,
+                "average_trait_delta_from_background": 0.01,
+                "trait_drift_update_mode_summary": {
+                    "background_history_recalibration": ["continuity_drive"],
+                    "background_history_stabilized": ["repair_seriousness"],
+                },
+                "trait_drift_background_history_recalibration_names": [
+                    "continuity_drive"
+                ],
+                "trait_drift_background_history_stabilized_names": [
+                    "repair_seriousness"
+                ],
+                "trait_convergence_summary": {
+                    "continuity_drive": {
+                        "convergence_band": "stabilized",
+                        "delta_from_background": 0.02,
+                        "current_value": 0.76,
+                        "background_value": 0.74,
+                        "trait_drift_update_mode": "background_history_recalibration",
+                    },
+                    "repair_seriousness": {
+                        "convergence_band": "stabilized",
+                        "delta_from_background": 0.0,
+                        "current_value": 0.82,
+                        "background_value": 0.82,
+                        "trait_drift_update_mode": "background_history_stabilized",
+                    },
+                },
+            },
+            background_continuity_profile={
+                "background_convergence_history": {
+                    "schema_version": "background_convergence_history_v0",
+                    "convergence_samples": [
+                        {
+                            "run_id": "wake-previous",
+                            "generated_at": "2026-06-09T00:00:00+00:00",
+                            "background_carryover_generation": 2,
+                            "convergence_state": "stabilized_cross_process_continuity",
+                            "convergence_pressure_level": "present",
+                            "relationship_stage_continuity": "same_stage_preserved",
+                            "trait_convergence_score": 0.95,
+                            "trait_convergence_summary": {
+                                "continuity_drive": {
+                                    "convergence_band": "stabilized",
+                                    "delta_from_background": 0.03,
+                                    "current_value": 0.73,
+                                    "background_value": 0.70,
+                                    "trait_drift_update_mode": "background_history_stabilized",
+                                }
+                            },
+                        }
+                    ],
+                }
+            },
+        )
+
+        continuity_profile = history["trait_convergence_history_profile"][
+            "continuity_drive"
+        ]
+        self.assertEqual(
+            history["trait_drift_update_mode_summary"][
+                "background_history_recalibration"
+            ],
+            ["continuity_drive"],
+        )
+        self.assertEqual(
+            history["trait_drift_background_history_recalibration_names"],
+            ["continuity_drive"],
+        )
+        self.assertEqual(
+            continuity_profile["trait_drift_update_mode_sequence"],
+            ["background_history_stabilized", "background_history_recalibration"],
+        )
+        self.assertEqual(
+            continuity_profile["latest_trait_drift_update_mode"],
+            "background_history_recalibration",
+        )
+        self.assertEqual(
+            continuity_profile["dominant_trait_drift_update_mode"],
+            "background_history_recalibration",
+        )
+
     def test_idle_strategy_uses_background_convergence_pressure_as_governance_focus(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
 

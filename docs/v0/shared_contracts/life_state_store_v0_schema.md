@@ -153,6 +153,14 @@ background_history_stability_hold / background_history_stabilized`，并记录
 也必须把 `convergence_state / convergence_pressure_level / convergence_attention_target` 提升为
 `recalibrating_cross_process_continuity / elevated / trait_drift_history_recalibration`。
 
+`runtime/state/terminal/background_convergence_history.json` 继续压缩这条信号时，不能只保留
+`trait_convergence_history_profile[*].band_sequence`。它还必须保留当前 summary 的
+`trait_drift_update_mode_summary`、`trait_drift_background_history_recalibration_names`、
+`trait_drift_background_history_stabilized_names`，并在每个慢变量的 history profile 里写出
+`trait_drift_update_mode_sequence`、`latest_trait_drift_update_mode` 与
+`dominant_trait_drift_update_mode`。这样身体/人格观察面提出的重校准或稳定判断会穿过
+summary -> history -> background continuity -> waiting governance，而不是在历史压缩时消失。
+
 ## `memory_index`
 
 | 字段 | 类型 | 要求 |

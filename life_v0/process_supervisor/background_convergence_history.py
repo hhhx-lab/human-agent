@@ -63,6 +63,19 @@ def build_background_convergence_history(
     )
     latest_state = current_sample.get("convergence_state")
     latest_pressure = current_sample.get("convergence_pressure_level")
+    trait_drift_update_mode_summary = _dict_of_string_lists(
+        current_sample.get("trait_drift_update_mode_summary")
+    )
+    trait_drift_recalibration_names = (
+        _string_list(
+            current_sample.get("trait_drift_background_history_recalibration_names")
+        )
+        or trait_drift_update_mode_summary.get("background_history_recalibration", [])
+    )
+    trait_drift_stabilized_names = (
+        _string_list(current_sample.get("trait_drift_background_history_stabilized_names"))
+        or trait_drift_update_mode_summary.get("background_history_stabilized", [])
+    )
 
     return {
         "schema_version": "background_convergence_history_v0",
@@ -96,6 +109,13 @@ def build_background_convergence_history(
         "trait_convergence_history_focus": _trait_history_focus(
             trait_history_profile=trait_history_profile,
             unstable_trait_names=unstable_trait_names,
+        ),
+        "trait_drift_update_mode_summary": trait_drift_update_mode_summary,
+        "trait_drift_background_history_recalibration_names": _dedupe(
+            trait_drift_recalibration_names
+        ),
+        "trait_drift_background_history_stabilized_names": _dedupe(
+            trait_drift_stabilized_names
         ),
         "trend_state": _trend_state(samples),
         "convergence_samples": samples,
@@ -163,6 +183,19 @@ def _current_sample(
         "trait_convergence_summary": _trait_summary(
             background_convergence_summary.get("trait_convergence_summary")
         ),
+        "trait_drift_update_mode_summary": _dict_of_string_lists(
+            background_convergence_summary.get("trait_drift_update_mode_summary")
+        ),
+        "trait_drift_background_history_recalibration_names": _string_list(
+            background_convergence_summary.get(
+                "trait_drift_background_history_recalibration_names"
+            )
+        ),
+        "trait_drift_background_history_stabilized_names": _string_list(
+            background_convergence_summary.get(
+                "trait_drift_background_history_stabilized_names"
+            )
+        ),
     }
 
 
@@ -205,6 +238,11 @@ def _trait_history_profile(samples: list[dict[str, Any]]) -> dict[str, dict[str,
             for entry in entries
             if entry.get("convergence_band")
         ]
+        update_mode_sequence = [
+            str(entry["trait_drift_update_mode"])
+            for entry in entries
+            if entry.get("trait_drift_update_mode")
+        ]
         deltas = [
             abs(float(entry["delta_from_background"]))
             for entry in entries
@@ -226,6 +264,11 @@ def _trait_history_profile(samples: list[dict[str, Any]]) -> dict[str, dict[str,
             "average_abs_delta_from_background": _rounded_average(deltas),
             "latest_current_value": latest_entry.get("current_value"),
             "latest_background_value": latest_entry.get("background_value"),
+            "trait_drift_update_mode_sequence": update_mode_sequence,
+            "latest_trait_drift_update_mode": latest_entry.get(
+                "trait_drift_update_mode"
+            ),
+            "dominant_trait_drift_update_mode": _mode(update_mode_sequence),
             "last_seen_run_id": latest_entry.get("run_id"),
         }
     return profile
@@ -242,6 +285,7 @@ def _trait_entry(*, sample: dict[str, Any], name: str) -> dict[str, Any]:
         "delta_from_background": payload.get("delta_from_background"),
         "current_value": payload.get("current_value"),
         "background_value": payload.get("background_value"),
+        "trait_drift_update_mode": payload.get("trait_drift_update_mode"),
     }
 
 
@@ -330,6 +374,24 @@ def _int_or_zero(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _string_list(value: Any) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, str)]
+    return []
+
+
+def _dict_of_string_lists(value: Any) -> dict[str, list[str]]:
+    if not isinstance(value, dict):
+        return {}
+    return {
+        str(key): _string_list(item)
+        for key, item in value.items()
+        if _string_list(item)
+    }
 
 
 def _dedupe(items: list[Any]) -> list[str]:
