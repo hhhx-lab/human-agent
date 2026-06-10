@@ -267,10 +267,18 @@ def decide_idle_strategy(
     background_continuity_profile = dict(background_continuity_profile or {})
     background_pressure_level = _background_pressure_overlay(
         background_continuity_profile.get("background_carryover_pressure_level"),
+        _background_pressure_overlay(
+            background_continuity_profile.get("background_convergence_pressure_level"),
+            _background_history_pressure_level(background_continuity_profile),
+        ),
+    )
+    convergence_governance_pressure_level = _background_pressure_overlay(
         background_continuity_profile.get("background_convergence_pressure_level"),
+        _background_history_pressure_level(background_continuity_profile),
     )
     background_attention_target = (
-        background_continuity_profile.get("background_convergence_attention_target")
+        _background_history_attention_target(background_continuity_profile)
+        or background_continuity_profile.get("background_convergence_attention_target")
         or background_continuity_profile.get("background_carryover_attention_target")
     )
     heartbeat_interval_ms = _heartbeat_interval_ms(
@@ -288,6 +296,9 @@ def decide_idle_strategy(
         background_carryover_generation=_int_or_zero(
             background_continuity_profile.get("background_carryover_generation")
         ),
+        background_convergence_history_trend_state=background_continuity_profile.get(
+            "background_convergence_history_trend_state"
+        ),
     )
     next_idle_action = _next_idle_action(
         body_waiting_posture=body_waiting_posture,
@@ -304,6 +315,9 @@ def decide_idle_strategy(
         background_carryover_pressure_level=background_pressure_level,
         background_carryover_generation=_int_or_zero(
             background_continuity_profile.get("background_carryover_generation")
+        ),
+        background_convergence_history_trend_state=background_continuity_profile.get(
+            "background_convergence_history_trend_state"
         ),
     )
     relaunch_caution_level = _relaunch_caution_level(
@@ -415,9 +429,13 @@ def decide_idle_strategy(
         background_carryover_attention_target=background_attention_target,
         background_convergence_state=background_continuity_profile.get(
             "background_convergence_state"
+        )
+        or background_continuity_profile.get(
+            "background_convergence_history_trend_state"
         ),
-        background_convergence_pressure_level=background_continuity_profile.get(
-            "background_convergence_pressure_level"
+        background_convergence_pressure_level=convergence_governance_pressure_level,
+        background_convergence_history_trend_state=background_continuity_profile.get(
+            "background_convergence_history_trend_state"
         ),
         background_carryover_generation=_int_or_zero(
             background_continuity_profile.get("background_carryover_generation")
@@ -646,6 +664,7 @@ def _heartbeat_interval_ms(
     birth_readiness_waiting_posture: str,
     background_carryover_pressure_level: str | None,
     background_carryover_generation: int,
+    background_convergence_history_trend_state: str | None = None,
 ) -> int:
     fatigue_load = str((body_rhythm_pulse or {}).get("fatigue_load", "")).lower()
     cognitive_bandwidth = str((need_state_vector or {}).get("cognitive_bandwidth", "")).lower()
@@ -671,6 +690,18 @@ def _heartbeat_interval_ms(
         return 58
     if birth_readiness_waiting_posture == "birth_open_waiting":
         return 44
+    if (
+        background_convergence_history_trend_state
+        in {"recent_recalibration_pressure", "elevated_pressure_watch"}
+        and offline_pressure_level == "quiet"
+    ):
+        return 49
+    if (
+        background_convergence_history_trend_state
+        == "integrating_cross_wake_convergence"
+        and offline_pressure_level == "quiet"
+    ):
+        return 53
     if (
         background_carryover_generation >= 3
         and background_carryover_pressure_level in {"present", "elevated"}
@@ -707,6 +738,7 @@ def _next_idle_action(
     birth_readiness_waiting_posture: str,
     background_carryover_pressure_level: str | None,
     background_carryover_generation: int,
+    background_convergence_history_trend_state: str | None = None,
 ) -> str:
     repair_drive = str((need_state_vector or {}).get("repair_drive", "")).lower()
     if body_waiting_posture == "low_bandwidth_guarded":
@@ -727,6 +759,18 @@ def _next_idle_action(
         return "refresh_waiting_heartbeat_with_offline_learning_hold"
     if birth_readiness_waiting_posture == "birth_open_waiting":
         return "refresh_waiting_heartbeat_with_birth_ready_presence_hold"
+    if (
+        background_convergence_history_trend_state
+        in {"recent_recalibration_pressure", "elevated_pressure_watch"}
+        and offline_pressure_level == "quiet"
+    ):
+        return "refresh_waiting_heartbeat_with_background_history_recalibration_hold"
+    if (
+        background_convergence_history_trend_state
+        == "integrating_cross_wake_convergence"
+        and offline_pressure_level == "quiet"
+    ):
+        return "refresh_waiting_heartbeat_with_background_history_stability_hold"
     if (
         background_carryover_generation >= 2
         and background_carryover_pressure_level in {"present", "elevated"}
@@ -757,6 +801,7 @@ def _resident_governance_language_priority(
     background_carryover_generation: int,
     background_convergence_state: str | None = None,
     background_convergence_pressure_level: str | None = None,
+    background_convergence_history_trend_state: str | None = None,
 ) -> tuple[str, str, str, dict[str, str]]:
     repair_drive = str((need_state_vector or {}).get("repair_drive", "")).lower()
     priority_profile: dict[str, str] = {}
@@ -804,12 +849,17 @@ def _resident_governance_language_priority(
     ):
         target = background_carryover_attention_target
         priority_profile[str(background_carryover_attention_target)] = (
-            "convergence_primary"
+            "history_convergence_primary"
+            if background_convergence_history_trend_state
+            else "convergence_primary"
         )
-        reason = (
-            f"{background_convergence_state or 'background_convergence'}"
-            "_requires_trait_stability_hold"
-        )
+        if background_convergence_history_trend_state:
+            reason = f"{background_convergence_history_trend_state}_requires_cross_wake_governance_hold"
+        else:
+            reason = (
+                f"{background_convergence_state or 'background_convergence'}"
+                "_requires_trait_stability_hold"
+            )
     elif "relationship_timeline" in priority_profile:
         target = "relationship_timeline"
         reason = "baseline_relation_presence_maintenance"
@@ -839,9 +889,17 @@ def _resident_governance_language_priority(
             )
     elif target == background_carryover_attention_target and background_carryover_attention_target:
         if background_convergence_pressure_level == "elevated":
-            cadence_profile = "background_convergence_recalibration_refresh"
+            cadence_profile = (
+                "background_convergence_history_recalibration_refresh"
+                if background_convergence_history_trend_state
+                else "background_convergence_recalibration_refresh"
+            )
         elif background_convergence_pressure_level == "present":
-            cadence_profile = "background_convergence_stability_refresh"
+            cadence_profile = (
+                "background_convergence_history_stability_refresh"
+                if background_convergence_history_trend_state
+                else "background_convergence_stability_refresh"
+            )
         elif background_carryover_generation >= 2:
             cadence_profile = "persistent_background_continuity_refresh"
         else:
@@ -870,6 +928,47 @@ def _background_pressure_overlay(
     if levels.get(convergence, 0) > levels.get(carryover, 0):
         return convergence
     return carryover or None
+
+
+def _background_history_pressure_level(
+    background_continuity_profile: dict[str, Any],
+) -> str | None:
+    trend_state = str(
+        background_continuity_profile.get("background_convergence_history_trend_state")
+        or ""
+    )
+    dominant_pressure = str(
+        background_continuity_profile.get("background_dominant_convergence_pressure_level")
+        or ""
+    )
+    if trend_state == "recent_recalibration_pressure":
+        return "elevated"
+    if trend_state == "elevated_pressure_watch":
+        return "elevated"
+    if trend_state == "integrating_cross_wake_convergence":
+        return "present"
+    if dominant_pressure in {"present", "elevated"}:
+        return dominant_pressure
+    if trend_state == "stable_cross_wake_convergence":
+        return "light"
+    return None
+
+
+def _background_history_attention_target(
+    background_continuity_profile: dict[str, Any],
+) -> str | None:
+    trend_state = str(
+        background_continuity_profile.get("background_convergence_history_trend_state")
+        or ""
+    )
+    if trend_state in {
+        "recent_recalibration_pressure",
+        "elevated_pressure_watch",
+    }:
+        return "background_convergence_history_recalibration"
+    if trend_state == "integrating_cross_wake_convergence":
+        return "background_convergence_history_stability"
+    return None
 
 
 def _queue_e_idle_regulation(

@@ -1964,6 +1964,83 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "convergence_primary",
         )
 
+    def test_idle_strategy_uses_background_convergence_history_as_cadence_pressure(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-background-history",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "inactive",
+                "cognitive_bandwidth": "steady_open",
+                "sleep_pressure": "low",
+            },
+            replay_cue_bundle={},
+            offline_consolidation_frame={},
+            growth_patch_candidate_queue={},
+            responsibility_loop_state={},
+            world_contact_summary={},
+            pain_regret_repair_report={},
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_pressure_level": "light",
+                "background_carryover_attention_target": "relationship_timeline",
+                "background_carryover_generation": 3,
+                "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
+                "background_convergence_state": "stabilized_cross_process_continuity",
+                "background_convergence_pressure_level": "light",
+                "background_convergence_history_ref": "runtime/state/terminal/background_convergence_history.json",
+                "background_convergence_history_trend_state": "recent_recalibration_pressure",
+                "background_convergence_history_window_size": 3,
+                "background_dominant_convergence_pressure_level": "elevated",
+                "background_dominant_convergence_state": "recalibrating_cross_process_continuity",
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(idle_strategy["heartbeat_interval_ms"], 49)
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "refresh_waiting_heartbeat_with_background_history_recalibration_hold",
+        )
+        self.assertEqual(
+            idle_strategy["background_convergence_history_ref"],
+            "runtime/state/terminal/background_convergence_history.json",
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_target"],
+            "background_convergence_history_recalibration",
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_reason"],
+            "recent_recalibration_pressure_requires_cross_wake_governance_hold",
+        )
+        self.assertEqual(
+            idle_strategy["governance_cadence_profile"],
+            "background_convergence_history_recalibration_refresh",
+        )
+        self.assertEqual(
+            idle_strategy["long_horizon_priority_profile"][
+                "background_convergence_history_recalibration"
+            ],
+            "history_convergence_primary",
+        )
+
     def test_background_continuity_profile_carries_resume_summary(self):
         from life_v0.process_supervisor.background_continuity import (
             load_background_continuity_profile,
