@@ -12,9 +12,14 @@ from .candidate_arena import build_action_candidate_set, check_action_candidate_
 from .confirmation_binding import build_confirmation_binding, check_confirmation_binding
 from .go_nogo import build_go_nogo_decision, check_go_nogo_decision
 from .observation_truth_gate import build_observation_truth_gate, check_observation_truth_gate
+from .periphery_normalizer import (
+    build_periphery_normalization_trace,
+    check_periphery_normalization_trace,
+)
 from .responsibility_loop import build_responsibility_loop_state, check_responsibility_loop_state
 from .shadow_gate import build_shadow_action_gate, check_shadow_action_gate
 from .side_effect_review import build_side_effect_review, check_side_effect_review
+from .world_observation import build_world_observation_route, check_world_observation_route
 from .world_contact_summary import (
     build_pain_regret_repair_report,
     build_world_contact_summary,
@@ -175,6 +180,11 @@ def run_life_membrane(
     object_registry = _load_json(state_dir / "object_registry.json", blocked_reasons, "object_registry_gate")
     lifecycle_policy = _load_json(state_dir / "lifecycle_policy.json", blocked_reasons, "lifecycle_policy_gate")
     subject_binding = _load_json(state_dir / "subject_namespace_binding.json", blocked_reasons, "subject_binding_gate")
+    belief_state = _load_json_optional(state_dir / "prediction" / "belief_state_frame.json")
+    prediction_error_field = _load_json_optional(state_dir / "prediction" / "prediction_error_field.json")
+    active_sampling_plan = _load_json_optional(state_dir / "prediction" / "active_sampling_plan.json")
+    prediction_workspace = _load_json_optional(state_dir / "prediction" / "prediction_workspace_frame.json")
+    signal_media_runtime = _load_json_optional(state_dir / "signal" / "signal_media_runtime.json")
     prediction_workspace = _load_json_optional(state_dir / "prediction" / "prediction_workspace_frame.json")
     expression_plan = _load_json_optional(state_dir / "language" / "expression_plan.json")
     relation_turn_frame = _load_json_optional(state_dir / "terminal" / "relation_turn_frame.json")
@@ -247,6 +257,25 @@ def run_life_membrane(
         go_nogo_decision=go_nogo,
         shadow_action_gate=shadow_action,
     )
+    world_observation_route = build_world_observation_route(
+        run_id=run_id,
+        generated_at=generated_at,
+        active_sampling_plan=active_sampling_plan,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        signal_media_runtime=signal_media_runtime,
+        prediction_workspace=prediction_workspace,
+    )
+    periphery_normalization_trace = build_periphery_normalization_trace(
+        run_id=run_id,
+        generated_at=generated_at,
+        world_observation_route=world_observation_route,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        signal_media_runtime=signal_media_runtime,
+        need_state=need_state,
+        core_affect=core_affect,
+    )
     confirmation_binding = build_confirmation_binding(
         run_id=run_id,
         generated_at=generated_at,
@@ -268,6 +297,11 @@ def run_life_membrane(
         go_nogo_decision=go_nogo,
         world_contact_gate=world_contact_gate,
         responsibility_boundary=responsibility,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        signal_media_runtime=signal_media_runtime,
+        world_observation_route=world_observation_route,
+        periphery_normalization_trace=periphery_normalization_trace,
     )
     world_contact_summary = build_world_contact_summary(
         run_id=run_id,
@@ -277,6 +311,8 @@ def run_life_membrane(
         confirmation_binding=confirmation_binding,
         side_effect_review=side_effect_review,
         responsibility_loop=responsibility_loop,
+        world_observation_route=world_observation_route,
+        periphery_normalization_trace=periphery_normalization_trace,
     )
     pain_regret_repair_report = build_pain_regret_repair_report(
         run_id=run_id,
@@ -306,7 +342,9 @@ def run_life_membrane(
     try:
         out_dir.mkdir(parents=True, exist_ok=True)
         action_dir = state_dir / "action"
+        observation_dir = state_dir / "observation"
         action_dir.mkdir(parents=True, exist_ok=True)
+        observation_dir.mkdir(parents=True, exist_ok=True)
         reports_dir.mkdir(parents=True, exist_ok=True)
         receipts_dir.mkdir(parents=True, exist_ok=True)
 
@@ -322,6 +360,11 @@ def run_life_membrane(
         _write_json(out_dir / "observation_truth_gate.json", observation_truth_gate)
         _write_json(out_dir / "confirmation_binding.json", confirmation_binding)
         _write_json(out_dir / "world_contact_summary.json", world_contact_summary)
+        _write_json(observation_dir / "world_observation_route.json", world_observation_route)
+        _write_json(
+            observation_dir / "periphery_normalization_trace.json",
+            periphery_normalization_trace,
+        )
         _write_json(action_dir / "action_candidate_set.json", action_candidate_set)
         _write_json(action_dir / "go_nogo_state.json", go_nogo)
         _write_json(action_dir / "world_contact_gate_state.json", world_contact_gate)
@@ -392,6 +435,16 @@ def run_check_life_membrane(
     preflight = _load_json(membrane_dir / "first_activation_preflight_seed.json", blocked_reasons, "first_activation_preflight_gate")
     manifest = _load_json(membrane_dir / "life_membrane_manifest.json", blocked_reasons, "manifest_gate")
     action_candidate_set = _load_json(state_dir / "action" / "action_candidate_set.json", blocked_reasons, "action_candidate_gate")
+    world_observation_route = _load_json(
+        state_dir / "observation" / "world_observation_route.json",
+        blocked_reasons,
+        "world_observation_gate",
+    )
+    periphery_normalization_trace = _load_json(
+        state_dir / "observation" / "periphery_normalization_trace.json",
+        blocked_reasons,
+        "periphery_normalization_gate",
+    )
     go_nogo = _load_json(state_dir / "action" / "go_nogo_state.json", blocked_reasons, "go_nogo_gate")
     world_contact_gate = _load_json(state_dir / "action" / "world_contact_gate_state.json", blocked_reasons, "world_contact_gate")
     side_effect_review = _load_json(state_dir / "action" / "side_effect_review.json", blocked_reasons, "side_effect_gate")
@@ -425,6 +478,8 @@ def run_check_life_membrane(
     blocked_reasons.extend(_check_preflight(preflight))
     blocked_reasons.extend(_check_manifest(manifest))
     blocked_reasons.extend(check_action_candidate_set(action_candidate_set))
+    blocked_reasons.extend(check_world_observation_route(world_observation_route))
+    blocked_reasons.extend(check_periphery_normalization_trace(periphery_normalization_trace))
     blocked_reasons.extend(check_go_nogo_decision(go_nogo))
     blocked_reasons.extend(check_world_contact_gate_state(world_contact_gate))
     blocked_reasons.extend(check_side_effect_review(side_effect_review))
@@ -808,6 +863,8 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
             "runtime/state/membrane/observation_truth_gate.json",
             "runtime/state/membrane/confirmation_binding.json",
             "runtime/state/membrane/world_contact_summary.json",
+            "runtime/state/observation/world_observation_route.json",
+            "runtime/state/observation/periphery_normalization_trace.json",
             "runtime/state/action/action_candidate_set.json",
             "runtime/state/action/go_nogo_state.json",
             "runtime/state/action/world_contact_gate_state.json",
@@ -889,6 +946,8 @@ def _build_report(
             "runtime/state/membrane/observation_truth_gate.json",
             "runtime/state/membrane/confirmation_binding.json",
             "runtime/state/membrane/world_contact_summary.json",
+            "runtime/state/observation/world_observation_route.json",
+            "runtime/state/observation/periphery_normalization_trace.json",
             "runtime/state/action/action_candidate_set.json",
             "runtime/state/action/go_nogo_state.json",
             "runtime/state/action/world_contact_gate_state.json",
@@ -960,6 +1019,8 @@ def _build_receipt(
             str(out_dir / "observation_truth_gate.json"),
             str(out_dir / "confirmation_binding.json"),
             str(out_dir / "world_contact_summary.json"),
+            str(state_dir / "observation" / "world_observation_route.json"),
+            str(state_dir / "observation" / "periphery_normalization_trace.json"),
             str(state_dir / "action" / "action_candidate_set.json"),
             str(state_dir / "action" / "go_nogo_state.json"),
             str(state_dir / "action" / "world_contact_gate_state.json"),
@@ -1103,6 +1164,10 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
         reasons.append("manifest_gate confirmation binding ref missing")
     if "runtime/state/membrane/world_contact_summary.json" not in manifest.get("state_refs", []):
         reasons.append("manifest_gate world contact summary ref missing")
+    if "runtime/state/observation/world_observation_route.json" not in manifest.get("state_refs", []):
+        reasons.append("manifest_gate world observation route ref missing")
+    if "runtime/state/observation/periphery_normalization_trace.json" not in manifest.get("state_refs", []):
+        reasons.append("manifest_gate periphery normalization ref missing")
     if "runtime/state/action/action_candidate_set.json" not in manifest.get("state_refs", []):
         reasons.append("manifest_gate action candidate ref missing")
     if "runtime/state/action/responsibility_loop_state.json" not in manifest.get("state_refs", []):
@@ -1133,6 +1198,10 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate next allowed mismatch")
     if "runtime/state/membrane/world_contact_summary.json" not in build_report.get("state_refs", []):
         reasons.append("build_report_gate world contact summary ref missing")
+    if "runtime/state/observation/world_observation_route.json" not in build_report.get("state_refs", []):
+        reasons.append("build_report_gate world observation route ref missing")
+    if "runtime/state/observation/periphery_normalization_trace.json" not in build_report.get("state_refs", []):
+        reasons.append("build_report_gate periphery normalization ref missing")
     if "runtime/reports/latest/pain_regret_repair_report.json" not in build_report.get("report_refs", []):
         reasons.append("build_report_gate pain regret repair report ref missing")
     return reasons

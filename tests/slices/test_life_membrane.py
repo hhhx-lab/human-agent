@@ -141,6 +141,10 @@ class LifeMembraneTests(unittest.TestCase):
             coverage = self._read_json(membrane_state / "membrane_doc_coverage_snapshot.json")
             preflight = self._read_json(membrane_state / "first_activation_preflight_seed.json")
             manifest = self._read_json(membrane_state / "life_membrane_manifest.json")
+            world_observation_route = self._read_json(state_root / "observation" / "world_observation_route.json")
+            periphery_normalization = self._read_json(
+                state_root / "observation" / "periphery_normalization_trace.json"
+            )
             action_candidate_set = self._read_json(state_root / "action" / "action_candidate_set.json")
             go_nogo = self._read_json(state_root / "action" / "go_nogo_state.json")
             world_contact = self._read_json(state_root / "action" / "world_contact_gate_state.json")
@@ -240,8 +244,35 @@ class LifeMembraneTests(unittest.TestCase):
             world_contact_summary["confirmation_binding_ref"],
             "runtime/state/membrane/confirmation_binding.json",
         )
+        self.assertEqual(
+            world_contact_summary["world_observation_route_ref"],
+            "runtime/state/observation/world_observation_route.json",
+        )
+        self.assertEqual(
+            world_contact_summary["periphery_normalization_ref"],
+            "runtime/state/observation/periphery_normalization_trace.json",
+        )
         self.assertEqual(world_contact_summary["release_posture"], "shadow_only_guarded")
         self.assertTrue(world_contact_summary["next_guard_refs"])
+
+        self.assertEqual(world_observation_route["schema_version"], "world_observation_route_v0")
+        self.assertEqual(
+            world_observation_route["active_sampling_plan_ref"],
+            "runtime/state/prediction/active_sampling_plan.json",
+        )
+        self.assertTrue(world_observation_route["observation_targets"])
+        self.assertTrue(world_observation_route["prioritized_channels"])
+
+        self.assertEqual(periphery_normalization["schema_version"], "periphery_normalization_trace_v0")
+        self.assertEqual(
+            periphery_normalization["world_observation_route_ref"],
+            "runtime/state/observation/world_observation_route.json",
+        )
+        self.assertTrue(periphery_normalization["normalized_channels"])
+        self.assertIn(
+            "runtime/state/observation/runtime_observation_intake.json",
+            periphery_normalization["write_target_refs"],
+        )
 
         self.assertEqual(precheck["schema_version"], "birth_readiness_precheck_v0")
         self.assertEqual(set(precheck["life_target_status"]), set(LIFE_TARGETS))
@@ -254,6 +285,8 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertEqual(preflight["schema_version"], "first_activation_preflight_seed_v0")
         self.assertEqual(preflight["activation_mode"], "shadow_only")
         self.assertIn("state_root_check", preflight["preflight_checks"])
+        self.assertIn("runtime/state/observation/world_observation_route.json", manifest["state_refs"])
+        self.assertIn("runtime/state/observation/periphery_normalization_trace.json", manifest["state_refs"])
         self.assertIn("runtime/state/membrane/action_intent_queue.json", manifest["state_refs"])
         self.assertIn("runtime/state/membrane/confirmation_binding.json", manifest["state_refs"])
         self.assertIn("runtime/state/membrane/world_contact_summary.json", manifest["state_refs"])
@@ -287,6 +320,14 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertEqual(
             responsibility_loop["side_effect_review_ref"],
             "runtime/state/action/side_effect_review.json",
+        )
+        self.assertEqual(
+            responsibility_loop["world_observation_route_ref"],
+            "runtime/state/observation/world_observation_route.json",
+        )
+        self.assertEqual(
+            responsibility_loop["periphery_normalization_ref"],
+            "runtime/state/observation/periphery_normalization_trace.json",
         )
         self.assertIn(
             "runtime/state/membrane/responsibility_repair_boundary.json",

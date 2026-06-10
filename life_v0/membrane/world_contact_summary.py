@@ -24,7 +24,11 @@ def build_world_contact_summary(
     confirmation_binding: dict[str, Any],
     side_effect_review: dict[str, Any],
     responsibility_loop: dict[str, Any],
+    world_observation_route: dict[str, Any] | None = None,
+    periphery_normalization_trace: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    world_observation_route = world_observation_route or {}
+    periphery_normalization_trace = periphery_normalization_trace or {}
     action_intents = list(action_intent_queue.get("action_intents", []))
     confirmation_pending_ids = list(confirmation_binding.get("required_action_intent_ids", []))
     blocked_contacts = list(world_contact_gate.get("blocked_contacts", []))
@@ -53,9 +57,21 @@ def build_world_contact_summary(
         "confirmation_binding_ref": "runtime/state/membrane/confirmation_binding.json",
         "side_effect_review_ref": "runtime/state/action/side_effect_review.json",
         "responsibility_loop_ref": "runtime/state/action/responsibility_loop_state.json",
+        "world_observation_route_ref": (
+            "runtime/state/observation/world_observation_route.json"
+            if world_observation_route
+            else None
+        ),
+        "periphery_normalization_ref": (
+            "runtime/state/observation/periphery_normalization_trace.json"
+            if periphery_normalization_trace
+            else None
+        ),
         "candidate_intent_count": len(action_intents),
         "blocked_contact_count": len(blocked_contacts),
         "confirmation_pending_ids": confirmation_pending_ids,
+        "observation_route_mode": world_observation_route.get("route_mode"),
+        "deferred_channel_count": len(periphery_normalization_trace.get("deferred_channels", [])),
         "relationship_effects": list(side_effect_review.get("relationship_effects", [])),
         "archive_effects": list(side_effect_review.get("archive_effects", [])),
         "repair_obligation_refs": repair_obligations,
@@ -109,6 +125,8 @@ def check_world_contact_summary(summary: dict[str, Any]) -> list[str]:
         "confirmation_binding_ref",
         "side_effect_review_ref",
         "responsibility_loop_ref",
+        "world_observation_route_ref",
+        "periphery_normalization_ref",
         "next_guard_refs",
         "source_doc_refs",
     ]:

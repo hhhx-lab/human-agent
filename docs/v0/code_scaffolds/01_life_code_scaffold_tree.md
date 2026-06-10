@@ -148,7 +148,7 @@ life_v0/
 
 | 包 | 当前稳定器官 | 接下来优先长什么 |
 |---|---|---|
-| `membrane/` | `responsibility_loop.py`、`world_contact_summary.py`、`shadow_gate.py` | `world_observation.py`、`periphery_normalizer.py`、更深的 prediction 消费 |
+| `membrane/` | `responsibility_loop.py`、`world_contact_summary.py`、`shadow_gate.py`、`world_observation.py`、`periphery_normalizer.py` | 更深的 prediction 消费、observation intake 深消费、schema/validator 回挂 |
 | `validators/` | `world_contact_validator.py`、`prediction_trace_validator.py`、`validation_rollup.py` | validation backlog 与长期桥接 |
 | `schema_runner/` | `cross_file_logic.py`、`run_manifest.py`、`evidence_ranker.py` | archive / reporting / process 闭环引用 |
 

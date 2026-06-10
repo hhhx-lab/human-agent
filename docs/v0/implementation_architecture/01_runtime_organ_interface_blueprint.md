@@ -70,7 +70,7 @@
 | 主要输出 | `PredictionWorkspaceFrame`、`SignalMediaFrame`、`BeliefStateFrame`、`PredictionErrorField`、`ActiveSamplingPlan`、`neural_life_core.json` |
 | 必写 runtime | `runtime/state/neural_life_core/neural_life_core.json`、`runtime/state/prediction/prediction_workspace_frame.json`、`runtime/state/signal/signal_media_runtime.json`、`runtime/state/prediction/belief_state_frame.json`、`runtime/state/prediction/prediction_error_field.json`、`runtime/state/prediction/active_sampling_plan.json` |
 | 必守测试 | `tests/slices/test_neural_life_core.py` |
-| 下一步 | `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` 已成为稳定器官；当前前沿转向把这些对象更深接进 `language/percept.py`、`language/semantic_map.py`、`membrane/responsibility_loop.py`、`life_targets/evidence_matrix.py`、`process_supervisor/response_surface.py` 与后续 `world_observation.py` / `periphery_normalizer.py` |
+| 下一步 | `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` 已成为稳定器官；`world_observation.py` 与 `periphery_normalizer.py` 也已落下第一轮世界观察底盘。当前前沿转向把这些对象更深接进 `language/percept.py`、`language/semantic_map.py`、`life_targets/evidence_matrix.py`、`process_supervisor/response_surface.py` 与 `state_store/state_merge_guard.py` |
 
 ### 3. 身体、内环境与情绪底盘
 

@@ -61,11 +61,19 @@
 
 让 `membrane/` 真正接收 prediction 裂口与主动采样路线，而不是只接语言末端候选。
 
+当前状态：
+
+- `world_observation.py` 已落
+- `periphery_normalizer.py` 已落
+- `responsibility_loop.py` / `world_contact_summary.py` 已显式挂上 observation refs
+- `validators/` 已开始消费这组 observation state
+
 ### 必读材料
 
 - `docs/04_sensory_thalamus_interoception.md`
 - `docs/22_state_transition_and_threshold_model.md`
 - `docs/64_real_runtime_observation_ingestion_policy.md`
+- `docs/v0/code_scaffolds/04_packet_b_world_observation_periphery_scaffold.md`
 - `docs/v0/slice_contracts/s03_direction_life_membrane_engineering_contract.md`
 - `docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md`
 - `docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md`
@@ -81,16 +89,16 @@
 
 ### 最低新增 / 改动点
 
-1. 新建 `world_observation.py`
-2. 新建 `periphery_normalizer.py`
-3. `responsibility_loop.py` 显式引用 `belief_state / prediction_error / signal_media`
-4. `world_contact_summary.py` 回挂主动采样 guard 与 observation route
+1. `world_observation.py` 把主动采样计划压成真实 observation route
+2. `periphery_normalizer.py` 把信念帧、误差场和调质向量压成外周归一化轨迹
+3. `responsibility_loop.py` 显式引用 `belief_state / prediction_error / signal_media / observation route`
+4. `world_contact_summary.py` 回挂主动采样 guard、observation route 与 normalization trace
 
 ### 必写 runtime
 
 - `runtime/state/observation/world_observation_route.json`
 - `runtime/state/observation/periphery_normalization_trace.json`
-- `runtime/state/membrane/responsibility_loop_state.json`
+- `runtime/state/action/responsibility_loop_state.json`
 - `runtime/state/membrane/world_contact_summary.json`
 
 ### 最低测试
@@ -184,9 +192,8 @@
 
 ## 当前推荐施工顺序
 
-1. Packet B
-2. Packet A
-3. Packet C
-4. Packet D
+1. Packet A
+2. Packet C
+3. Packet D
 
-这个顺序的意思不是语言不重要，而是先让世界接触和责任回路吃到 prediction 裂口，再让语言表达和长期记忆真正建立在这条底盘上，最后把它们接进 waiting governance。
+这个顺序的意思不是语言不重要，而是 Packet B 这条 observation 底盘已经接通，所以下一步先让语言表达和长期记忆真正建立在这条底盘上，最后再把它们更深压进 waiting governance。

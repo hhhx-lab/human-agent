@@ -248,6 +248,15 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/code_scaffolds/02_cognitive_loop_code_scaffold.md",
         ],
     },
+    "docs/v0/code_scaffolds/04_packet_b_world_observation_periphery_scaffold.md": {
+        "role": "packet_b_world_observation_periphery_scaffold",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_scaffolds/03_frontier_module_build_packets.md",
+            "docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md",
+        ],
+    },
     "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md": {
         "role": "life_code_stack_package_layers",
         "slice": ACTIVE_SLICE,

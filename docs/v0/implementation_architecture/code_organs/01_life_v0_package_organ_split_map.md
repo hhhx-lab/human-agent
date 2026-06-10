@@ -128,7 +128,7 @@
 | 必回读 v0 | `s03_direction_life_membrane_engineering_contract.md`、`s05_validation_membrane_observation_engineering_contract.md`、`s09_schema_runner_code_engineering_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md` |
 | 已落器官 | `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`、`shadow_gate.py`、`responsibility_loop.py`、`world_contact_summary.py`、`observation_validator.py`、`boundary_audit.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` |
 | 仍压在入口的职责 | predictive consumer wiring、world observation normalization、validator rollup glue |
-| 下一轮优先拆分 | `world_observation.py`、`periphery_normalizer.py`，并继续补厚 `responsibility_loop.py` / `world_contact_summary.py` 的预测消费 |
+| 下一轮优先拆分 | `world_observation.py`、`periphery_normalizer.py` 已落；当前转向继续补厚 `responsibility_loop.py` / `world_contact_summary.py` 的 observation 深消费，以及 validator / schema 对这批 route 的长期消费 |
 | runtime 产物 | `runtime/state/membrane/*`、`runtime/state/action/*`、`runtime/state/validation/*`、`runtime/state/schema_runner/*` |
 | 测试 / gate | `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
 

@@ -95,6 +95,7 @@ docs/v0/code_framework/README.md
   -> docs/v0/code_scaffolds/01_life_code_scaffold_tree.md
   -> docs/v0/code_scaffolds/02_cognitive_loop_code_scaffold.md
   -> docs/v0/code_scaffolds/03_frontier_module_build_packets.md
+  -> docs/v0/code_scaffolds/04_packet_b_world_observation_periphery_scaffold.md
   -> docs/v0/implementation_architecture/README.md
   -> docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md
   -> docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md

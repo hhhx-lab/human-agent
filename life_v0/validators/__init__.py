@@ -202,6 +202,8 @@ def run_validation_membrane(
     archive_index = _load_json(life_targets_dir / "life_target_archive_receipt_index.json", blocked_reasons, "life_target_archive_gate")
     birth_report = _load_json(reports_dir / "birth_readiness_report.json", blocked_reasons, "s08_report_gate")
     birth_digest = _load_json(reports_dir / "birth_readiness_digest.json", blocked_reasons, "s08_digest_gate")
+    world_observation_route = _load_json_optional(observation_dir / "world_observation_route.json")
+    periphery_normalization_trace = _load_json_optional(observation_dir / "periphery_normalization_trace.json")
 
     blocked_reasons.extend(_doc_blockers(doc_index))
     blocked_reasons.extend(_s03_blockers(life_membrane, dream_fact, relationship, responsibility, shadow_action, membrane_report, membrane_check))
@@ -213,7 +215,12 @@ def run_validation_membrane(
     receipt_ref = f"runtime/receipts/validation_membrane_{run_id}.json"
 
     rule_index = _build_rule_index(run_id, generated_at)
-    observation = _build_observation_intake(run_id, generated_at)
+    observation = _build_observation_intake(
+        run_id,
+        generated_at,
+        world_observation_route=world_observation_route,
+        periphery_normalization_trace=periphery_normalization_trace,
+    )
     quarantine = _build_quarantine_index(run_id, generated_at, status, blocked_reasons)
     dashboard = _build_dashboard_source(run_id, generated_at, status, blocked_reasons)
     findings = _build_cross_file_finding_index(run_id, generated_at, status, blocked_reasons, receipt_ref)
@@ -224,6 +231,8 @@ def run_validation_membrane(
         observation_intake=observation,
         prediction_workspace=prediction_workspace,
         action_candidate_set=action_candidate_set,
+        world_observation_route=world_observation_route,
+        periphery_normalization_trace=periphery_normalization_trace,
     )
     world_contact_validation = build_world_contact_validation(
         run_id=run_id,
@@ -536,7 +545,15 @@ def _build_rule_index(run_id: str, generated_at: str) -> dict[str, Any]:
     }
 
 
-def _build_observation_intake(run_id: str, generated_at: str) -> dict[str, Any]:
+def _build_observation_intake(
+    run_id: str,
+    generated_at: str,
+    *,
+    world_observation_route: dict[str, Any] | None = None,
+    periphery_normalization_trace: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    world_observation_route = world_observation_route or {}
+    periphery_normalization_trace = periphery_normalization_trace or {}
     return {
         "schema_version": "runtime_observation_intake_v0",
         "run_id": run_id,
@@ -562,6 +579,22 @@ def _build_observation_intake(run_id: str, generated_at: str) -> dict[str, Any]:
             "runtime/state/membrane/shadow_action_gate.json",
             "runtime/state/membrane/dream_fact_boundary.json",
             "runtime/state/membrane/responsibility_repair_boundary.json",
+        ],
+        "observation_route_refs": [
+            ref
+            for ref in [
+                (
+                    "runtime/state/observation/world_observation_route.json"
+                    if world_observation_route
+                    else None
+                ),
+                (
+                    "runtime/state/observation/periphery_normalization_trace.json"
+                    if periphery_normalization_trace
+                    else None
+                ),
+            ]
+            if ref
         ],
         "report_refs": [
             "runtime/reports/latest/life_membrane_report.json",
@@ -883,6 +916,10 @@ def _check_observation(observation: dict[str, Any]) -> list[str]:
         reasons.append("runtime_observation_gate side effect policy mismatch")
     if "runtime/state/membrane/shadow_action_gate.json" not in observation.get("membrane_refs", []):
         reasons.append("runtime_observation_gate shadow action ref missing")
+    if "runtime/state/observation/world_observation_route.json" not in observation.get("observation_route_refs", []):
+        reasons.append("runtime_observation_gate world observation route ref missing")
+    if "runtime/state/observation/periphery_normalization_trace.json" not in observation.get("observation_route_refs", []):
+        reasons.append("runtime_observation_gate periphery normalization ref missing")
     return reasons
 
 

@@ -107,6 +107,8 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertEqual(observation["redaction_policy"], "runtime_observation_redaction")
         self.assertEqual(observation["side_effect_policy"], "shadow_only_external_action")
         self.assertIn("runtime/state/membrane/shadow_action_gate.json", observation["membrane_refs"])
+        self.assertIn("runtime/state/observation/world_observation_route.json", observation["observation_route_refs"])
+        self.assertIn("runtime/state/observation/periphery_normalization_trace.json", observation["observation_route_refs"])
         self.assertIn("runtime/reports/latest/birth_readiness_report.json", observation["report_refs"])
 
         self.assertEqual(quarantine["schema_version"], "quarantine_packet_index_v0")
@@ -132,6 +134,14 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertEqual(
             truth_review["prediction_workspace_ref"],
             "runtime/state/prediction/prediction_workspace_frame.json",
+        )
+        self.assertEqual(
+            truth_review["world_observation_route_ref"],
+            "runtime/state/observation/world_observation_route.json",
+        )
+        self.assertEqual(
+            truth_review["periphery_normalization_ref"],
+            "runtime/state/observation/periphery_normalization_trace.json",
         )
         self.assertEqual(truth_review["missing_fields"], [])
 

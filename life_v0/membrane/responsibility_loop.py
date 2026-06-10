@@ -22,15 +22,32 @@ def build_responsibility_loop_state(
     go_nogo_decision: dict[str, Any],
     world_contact_gate: dict[str, Any],
     responsibility_boundary: dict[str, Any],
+    belief_state: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
+    world_observation_route: dict[str, Any] | None = None,
+    periphery_normalization_trace: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    belief_state = belief_state or {}
+    prediction_error_field = prediction_error_field or {}
+    signal_media_runtime = signal_media_runtime or {}
+    world_observation_route = world_observation_route or {}
+    periphery_normalization_trace = periphery_normalization_trace or {}
     responsibility_effects = list(side_effect_review.get("responsibility_effects", []))
     relationship_effects = list(side_effect_review.get("relationship_effects", []))
     archive_effects = list(side_effect_review.get("archive_effects", []))
     repair_required = bool(side_effect_review.get("repair_followup_required") or responsibility_effects)
     contact_mode = world_contact_gate.get("contact_mode", "shadow_only")
     decision = go_nogo_decision.get("decision", "delay")
-    responsibility_weight = 0.62 if repair_required else 0.24
-    moral_salience = "medium" if repair_required else "low"
+    modulation = signal_media_runtime.get("modulation_vector", {})
+    relationship_pressure = modulation.get("relationship_pressure", 0.0)
+    unexpected_uncertainty = modulation.get("unexpected_uncertainty", 0.0)
+    route_pressure = 0.06 if world_observation_route.get("selected_route") == "clarify" else 0.02
+    responsibility_weight = round(
+        (0.62 if repair_required else 0.24) + relationship_pressure * 0.2 + route_pressure,
+        2,
+    )
+    moral_salience = "medium" if repair_required or unexpected_uncertainty >= 0.2 else "low"
 
     responsibility_event_id = f"responsibility-{run_id}-0001"
     counterfactual_id = f"counterfactual-repair-{run_id}-0001"
@@ -162,6 +179,27 @@ def build_responsibility_loop_state(
         ],
         "world_contact_gate_ref": "runtime/state/action/world_contact_gate_state.json",
         "go_nogo_ref": "runtime/state/action/go_nogo_state.json",
+        "belief_state_ref": (
+            "runtime/state/prediction/belief_state_frame.json" if belief_state else None
+        ),
+        "prediction_error_ref": (
+            "runtime/state/prediction/prediction_error_field.json"
+            if prediction_error_field
+            else None
+        ),
+        "signal_media_ref": (
+            "runtime/state/signal/signal_media_runtime.json" if signal_media_runtime else None
+        ),
+        "world_observation_route_ref": (
+            "runtime/state/observation/world_observation_route.json"
+            if world_observation_route
+            else None
+        ),
+        "periphery_normalization_ref": (
+            "runtime/state/observation/periphery_normalization_trace.json"
+            if periphery_normalization_trace
+            else None
+        ),
         "responsibility_effect_refs": responsibility_effects,
         "responsibility_attribution_events": [responsibility_event],
         "counterfactual_repair_frames": [counterfactual_frame],
@@ -203,6 +241,11 @@ def check_responsibility_loop_state(state: dict[str, Any]) -> list[str]:
     for field in [
         "responsibility_loop_id",
         "responsibility_boundary_refs",
+        "belief_state_ref",
+        "prediction_error_ref",
+        "signal_media_ref",
+        "world_observation_route_ref",
+        "periphery_normalization_ref",
         "responsibility_attribution_events",
         "counterfactual_repair_frames",
         "regret_pressure_candidates",

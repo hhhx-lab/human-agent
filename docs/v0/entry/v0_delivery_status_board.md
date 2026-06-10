@@ -182,6 +182,7 @@ growth_archive_report.json
 13. `docs/v0/code_scaffolds/01_life_code_scaffold_tree.md`
 14. `docs/v0/code_scaffolds/02_cognitive_loop_code_scaffold.md`
 15. `docs/v0/code_scaffolds/03_frontier_module_build_packets.md`
+16. `docs/v0/code_scaffolds/04_packet_b_world_observation_periphery_scaffold.md`
 1. `docs/v0/code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`
 2. `docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`
 3. `docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md`
@@ -300,7 +301,7 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 - `runtime/state/schema_runner/cross_file_logic.json`
 - `runtime/state/schema_runner/run_manifest.json`
 
-所以当前 Queue E 也不再只是“下一个要做什么”的合同描述，而是已经把行为摘要、验证收口和 schema runner 局部闭包写成了真实对象链。最新一轮又把 `responsibility_loop_state.json` 通过 S07 真实投影回 `commitment_truth_state.json`、`responsibility_ledger.json`、`relationship_memory.json` 和 `life_state.json`，并继续接进 `dialogue_writeback_bundle.json` 的长期交接单。当前如果继续补 Queue E，默认入口不再是 `world_contact_summary.py` 或 validator rollup 本身，而是转向更厚的关系时间线、repair 表达器官，以及把这批 package-local gates 继续接进 archive / reporting / process supervisor 的长期连续体。
+所以当前 Queue E 也不再只是“下一个要做什么”的合同描述，而是已经把行为摘要、验证收口和 schema runner 局部闭包写成了真实对象链。最新一轮又把 `world_observation_route.json`、`periphery_normalization_trace.json` 正式落进 `runtime/state/observation/`，并让 `responsibility_loop_state.json`、`world_contact_summary.json`、`runtime_observation_intake.json` 与 `observation_truth_review.json` 都显式回挂这两份 observation state；与此同时，`responsibility_loop_state.json` 也继续通过 S07 真实投影回 `commitment_truth_state.json`、`responsibility_ledger.json`、`relationship_memory.json` 和 `life_state.json`，并接进 `dialogue_writeback_bundle.json` 的长期交接单。当前如果继续补 Queue E，默认入口不再是 `world_contact_summary.py` 或 validator rollup 本身，而是转向 Packet A 的语言预测消费、Packet C 的长期记忆治理，以及把这批 package-local gates 继续接进 archive / reporting / process supervisor 的长期连续体。
 
 ## 当前链尾开工包
 

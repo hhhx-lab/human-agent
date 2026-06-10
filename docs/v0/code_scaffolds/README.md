@@ -48,6 +48,7 @@
 | `01_life_code_scaffold_tree.md` | `life_v0/`、`runtime/`、`tests/` 的代码脚手树该怎样稳定生长 |
 | `02_cognitive_loop_code_scaffold.md` | 在线回合、离线回合、常驻等待态在代码层如何真实装配 |
 | `03_frontier_module_build_packets.md` | 当前前沿模块下一步到底读什么、改什么、写什么、跑什么 |
+| `04_packet_b_world_observation_periphery_scaffold.md` | Packet B 这一轮怎样把世界观察与外周归一化真正落进 S03/S05 |
 
 ## 使用顺序
 
@@ -67,6 +68,7 @@
 1. `01_life_code_scaffold_tree.md`
 2. `02_cognitive_loop_code_scaffold.md`
 3. `03_frontier_module_build_packets.md`
+4. `04_packet_b_world_observation_periphery_scaffold.md`
 
 ## 这柜的硬约束
 
