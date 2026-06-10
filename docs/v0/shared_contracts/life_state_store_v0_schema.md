@@ -144,6 +144,15 @@ background_history_stability_hold / background_history_stabilized`，并记录
 `digital_life_process_report.json`、`digital_life_process_digest.json`、process receipt 的 `shared_object_refs`
 与 `input_hashes`。
 
+`runtime/state/terminal/background_convergence_summary.json` 现在也必须消费这份 monitor 的更新模式观察：
+当 `trait_drift_monitor.json` 带有 `slow_variable_update_mode_summary`、`background_history_recalibration_names`
+或 `background_history_stabilized_names` 时，summary 要写出 `trait_drift_update_mode_summary`、
+`trait_drift_background_history_recalibration_names`、`trait_drift_background_history_stabilized_names`，
+并把对应慢变量的 `trait_drift_update_mode` 写进 `trait_convergence_summary[*]`。如果身体/人格观察面已经给出
+`background_history_recalibration_needed`，即使数值 delta 暂时很小，`background_convergence_summary.json`
+也必须把 `convergence_state / convergence_pressure_level / convergence_attention_target` 提升为
+`recalibrating_cross_process_continuity / elevated / trait_drift_history_recalibration`。
+
 ## `memory_index`
 
 | 字段 | 类型 | 要求 |

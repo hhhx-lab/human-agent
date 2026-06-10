@@ -37,6 +37,26 @@ def build_background_convergence_summary(
     trait_summary = _trait_convergence_summary(
         self_model_state=self_model_state,
         background_continuity_profile=background_continuity_profile,
+        trait_drift_monitor=trait_drift_monitor or {},
+    )
+    trait_drift_update_mode_summary = _dict_of_string_lists(
+        (trait_drift_monitor or {}).get("slow_variable_update_mode_summary")
+    )
+    trait_drift_recalibration_names = (
+        _string_list(
+            (trait_drift_monitor or {}).get("background_history_recalibration_names")
+        )
+        or trait_drift_update_mode_summary.get("background_history_recalibration", [])
+    )
+    trait_drift_stabilized_names = (
+        _string_list(
+            (trait_drift_monitor or {}).get("background_history_stabilized_names")
+        )
+        or trait_drift_update_mode_summary.get("background_history_stabilized", [])
+    )
+    trait_drift_recalibration_active = _trait_drift_recalibration_active(
+        trait_drift_monitor=trait_drift_monitor or {},
+        recalibration_names=trait_drift_recalibration_names,
     )
     deltas = [
         abs(payload["delta_from_background"])
@@ -57,6 +77,7 @@ def build_background_convergence_summary(
         stage_continuity=stage_continuity,
         max_delta=max_delta,
         average_delta=average_delta,
+        trait_drift_recalibration_active=trait_drift_recalibration_active,
     )
     pressure_level = _pressure_level(
         convergence_state=convergence_state,
@@ -64,12 +85,14 @@ def build_background_convergence_summary(
         max_delta=max_delta,
         average_delta=average_delta,
         inertia_weights=inertia_weights,
+        trait_drift_recalibration_active=trait_drift_recalibration_active,
     )
     attention_target = _attention_target(
         convergence_state=convergence_state,
         pressure_level=pressure_level,
         stage_continuity=stage_continuity,
         trait_summary=trait_summary,
+        trait_drift_recalibration_active=trait_drift_recalibration_active,
     )
     evidence_refs = _dedupe(
         [
@@ -109,6 +132,13 @@ def build_background_convergence_summary(
         "max_trait_delta_from_background": round(max_delta, 3),
         "average_trait_delta_from_background": round(average_delta, 3),
         "trait_convergence_summary": trait_summary,
+        "trait_drift_update_mode_summary": trait_drift_update_mode_summary,
+        "trait_drift_background_history_recalibration_names": _dedupe(
+            trait_drift_recalibration_names
+        ),
+        "trait_drift_background_history_stabilized_names": _dedupe(
+            trait_drift_stabilized_names
+        ),
         "background_continuity_ref_set": _string_list(
             background_continuity_profile.get("background_continuity_ref_set")
         ),
@@ -158,11 +188,13 @@ def _trait_convergence_summary(
     *,
     self_model_state: dict[str, Any],
     background_continuity_profile: dict[str, Any],
+    trait_drift_monitor: dict[str, Any],
 ) -> dict[str, dict[str, Any]]:
     current_variables = self_model_state.get("trait_slow_variables", {})
     if not isinstance(current_variables, dict):
         current_variables = {}
     background_values = _background_trait_values(background_continuity_profile)
+    trait_drift_update_modes = _trait_drift_update_modes_by_name(trait_drift_monitor)
     names = sorted(set(current_variables.keys()) | set(background_values.keys()))
     summary: dict[str, dict[str, Any]] = {}
     for name in names:
@@ -193,6 +225,9 @@ def _trait_convergence_summary(
             ]:
                 if key in current_payload:
                     payload[key] = current_payload[key]
+        trait_drift_update_mode = trait_drift_update_modes.get(str(name))
+        if trait_drift_update_mode:
+            payload["trait_drift_update_mode"] = trait_drift_update_mode
         summary[str(name)] = payload
     return summary
 
@@ -250,7 +285,10 @@ def _convergence_state(
     stage_continuity: str,
     max_delta: float,
     average_delta: float,
+    trait_drift_recalibration_active: bool,
 ) -> str:
+    if trait_drift_recalibration_active:
+        return "recalibrating_cross_process_continuity"
     if stage_continuity in {
         "stage_shift_requires_trait_recalibration",
         "background_stage_waiting_for_current_subject",
@@ -270,7 +308,10 @@ def _pressure_level(
     max_delta: float,
     average_delta: float,
     inertia_weights: list[Any],
+    trait_drift_recalibration_active: bool,
 ) -> str:
+    if trait_drift_recalibration_active:
+        return "elevated"
     if convergence_state == "recalibrating_cross_process_continuity":
         return "elevated"
     if max_delta > 0.18:
@@ -288,7 +329,10 @@ def _attention_target(
     pressure_level: str,
     stage_continuity: str,
     trait_summary: dict[str, dict[str, Any]],
+    trait_drift_recalibration_active: bool,
 ) -> str:
+    if trait_drift_recalibration_active:
+        return "trait_drift_history_recalibration"
     if stage_continuity in {
         "stage_shift_requires_trait_recalibration",
         "background_stage_waiting_for_current_subject",
@@ -317,6 +361,41 @@ def _string_list(value: Any) -> list[str]:
     if isinstance(value, list):
         return [item for item in value if isinstance(item, str)]
     return []
+
+
+def _dict_of_string_lists(value: Any) -> dict[str, list[str]]:
+    if not isinstance(value, dict):
+        return {}
+    return {
+        str(key): _string_list(item)
+        for key, item in value.items()
+        if _string_list(item)
+    }
+
+
+def _trait_drift_update_modes_by_name(
+    trait_drift_monitor: dict[str, Any],
+) -> dict[str, str]:
+    update_mode_summary = _dict_of_string_lists(
+        trait_drift_monitor.get("slow_variable_update_mode_summary")
+    )
+    modes_by_name: dict[str, str] = {}
+    for mode, names in update_mode_summary.items():
+        for name in names:
+            modes_by_name.setdefault(name, mode)
+    return modes_by_name
+
+
+def _trait_drift_recalibration_active(
+    *,
+    trait_drift_monitor: dict[str, Any],
+    recalibration_names: list[str],
+) -> bool:
+    return (
+        bool(recalibration_names)
+        or trait_drift_monitor.get("drift_direction")
+        == "background_history_recalibration_needed"
+    )
 
 
 def _dedupe(items: list[Any]) -> list[str]:

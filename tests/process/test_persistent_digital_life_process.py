@@ -2532,6 +2532,88 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             summary["evidence_refs"],
         )
 
+    def test_background_convergence_summary_uses_trait_drift_history_update_modes(self):
+        from life_v0.process_supervisor.background_convergence import (
+            build_background_convergence_summary,
+        )
+
+        summary = build_background_convergence_summary(
+            run_id="background-convergence-trait-drift",
+            generated_at="2026-06-10T00:00:00+00:00",
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_generation": 3,
+                "background_relationship_stage": "background_continuity_waiting",
+                "background_trait_slow_variable_summary": {
+                    "continuity_drive": {"value": 0.74},
+                    "repair_seriousness": {"value": 0.82},
+                },
+                "background_continuity_ref_set": [
+                    "runtime/state/terminal/background_convergence_history.json"
+                ],
+            },
+            relationship_graph={
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relationship_stage": "background_continuity_waiting",
+                    }
+                ]
+            },
+            self_model_state={
+                "trait_slow_variables": {
+                    "continuity_drive": {
+                        "value": 0.75,
+                        "background_resume_value": 0.74,
+                    },
+                    "repair_seriousness": {
+                        "value": 0.82,
+                        "background_resume_value": 0.82,
+                    },
+                }
+            },
+            trait_drift_monitor={
+                "schema_version": "trait_drift_monitor_v0",
+                "drift_direction": "background_history_recalibration_needed",
+                "slow_variable_update_mode_summary": {
+                    "background_history_recalibration": ["continuity_drive"],
+                    "background_history_stabilized": ["repair_seriousness"],
+                },
+                "background_history_recalibration_names": ["continuity_drive"],
+                "background_history_stabilized_names": ["repair_seriousness"],
+            },
+        )
+
+        self.assertEqual(
+            summary["convergence_state"],
+            "recalibrating_cross_process_continuity",
+        )
+        self.assertEqual(summary["convergence_pressure_level"], "elevated")
+        self.assertEqual(
+            summary["convergence_attention_target"],
+            "trait_drift_history_recalibration",
+        )
+        self.assertEqual(
+            summary["trait_drift_update_mode_summary"][
+                "background_history_recalibration"
+            ],
+            ["continuity_drive"],
+        )
+        self.assertEqual(
+            summary["trait_drift_background_history_recalibration_names"],
+            ["continuity_drive"],
+        )
+        self.assertEqual(
+            summary["trait_convergence_summary"]["continuity_drive"][
+                "trait_drift_update_mode"
+            ],
+            "background_history_recalibration",
+        )
+        self.assertIn(
+            "runtime/state/body/trait_drift_monitor.json",
+            summary["evidence_refs"],
+        )
+
     def test_background_convergence_history_tracks_cross_wake_trend(self):
         from life_v0.process_supervisor.background_convergence_history import (
             BACKGROUND_CONVERGENCE_HISTORY_REF,
