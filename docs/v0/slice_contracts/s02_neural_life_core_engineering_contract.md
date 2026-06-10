@@ -78,7 +78,7 @@ body_signal_bus
 
 ## 状态命名空间
 
-S02 所有运行态写入 `runtime/state/neural_life_core/`：
+S02 主状态写入 `runtime/state/neural_life_core/`，并把预测/信号器官分流到各自命名空间：
 
 | 文件 | 内容 |
 |---|---|
@@ -89,6 +89,11 @@ S02 所有运行态写入 `runtime/state/neural_life_core/`：
 | `doc_core_coverage_snapshot.json` | `02-13` 文档覆盖、readme block、engineering slice、carrier |
 | `computer_body_boundary_seed.json` | 电脑外周只作为外设和观测入口的负边界 |
 | `neural_life_core_manifest.json` | S02 输出文件、schema version、receipt refs |
+| `runtime/state/signal/signal_media_runtime.json` | 调质、精度政策、抑制轮廓、衰减/恢复路径 |
+| `runtime/state/prediction/belief_state_frame.json` | 当前信念帧、证据密度、不确定性分类 |
+| `runtime/state/prediction/prediction_error_field.json` | 预测误差事件、精度请求、进入工作区候选 |
+| `runtime/state/prediction/active_sampling_plan.json` | 主动采样路线、guard、scope、命令绑定与预期观察 |
+| `runtime/state/prediction/prediction_workspace_frame.json` | 预测工作区，显式回挂信念/误差/采样/信号 refs |
 
 S02 不写入长期 `runtime/state/memory/*`、`language/*`、`dream/*` 的真实事件，只写系统种子和命名空间约定。
 
@@ -120,6 +125,10 @@ S02 report 必须包含 v0 回链字段：
 | `authority_patch_gate` | `doc_authority_carrier_patch_index.json` | `02-13` 每份都有 patch、authority refs 和机制对象 | 返回 S01 |
 | `twelve_system_gate` | `twelve_subject_systems.json` | 12 个主体系统全部存在且有 source docs、authority refs、state namespace | 阻断 S04/S03 |
 | `internal_bus_gate` | `neural_life_internal_bus.json` | bus 边覆盖身体、预测、记忆、意识、语言、情绪、梦境、行动、外周、成长 | 写 repair finding |
+| `signal_media_gate` | `runtime/state/signal/signal_media_runtime.json` | 调质向量、精度政策、抑制轮廓与 bus refs 完整 | 阻断预测闭环 |
+| `belief_state_gate` | `runtime/state/prediction/belief_state_frame.json` | 信念范围、来源证据、生命目标与 signal ref 完整 | 阻断工作区 |
+| `prediction_error_gate` | `runtime/state/prediction/prediction_error_field.json` | 误差事件、精度请求、stage effect 与 belief ref 完整 | 阻断广播前推理 |
+| `active_sampling_gate` | `runtime/state/prediction/active_sampling_plan.json` | candidate/guard/scope/command binding 完整 | 阻断主动采样 |
 | `computer_boundary_gate` | `computer_body_boundary_seed.json` | 外部框架只进入 `ComputerPeripheralRuntime`、`WorldContactMembrane`、`RunnerCliRuntime` | quarantine |
 | `next_slice_permission_gate` | S02 report | 只允许进入 `S04_STATE_OBJECT_STORE` 和 `S03_DIRECTION_LIFE_MEMBRANE` | 阻断开放运行 |
 
@@ -172,10 +181,11 @@ S02 完成后必须满足：
 1. `life-v0 build-neural-life-core --strict` 返回 `status=closed`。
 2. `twelve_subject_systems.json` 含 12 个主体系统，每个系统有 source docs、authority refs、runtime carriers、state namespace 和 life targets。
 3. `neural_life_internal_bus.json` 至少含 12 条 bus edge，并覆盖三重身体循环。
-4. `doc_authority_carrier_patch_index.json` 中 `02-13` 每份 patch 被 S02 读取。
-5. `ComputerPeripheralRuntime` 被固定为电脑外周，不进入记忆、意识、语言、情绪、梦境、关系或人格主体。
-6. S02 report 的下一步只能指向 `S04_STATE_OBJECT_STORE` 与 `S03_DIRECTION_LIFE_MEMBRANE`，不能直接进入开放式长期运行。
-7. `life-v0 check-neural-life-core --strict` 返回 `status=closed`，并写出 `neural_life_core_check_report.json`。
+4. `runtime/state/signal/signal_media_runtime.json`、`runtime/state/prediction/belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` 全部存在，并且回挂到 `prediction_workspace_frame.json`。
+5. `doc_authority_carrier_patch_index.json` 中 `02-13` 每份 patch 被 S02 读取。
+6. `ComputerPeripheralRuntime` 被固定为电脑外周，不进入记忆、意识、语言、情绪、梦境、关系或人格主体。
+7. S02 report 的下一步只能指向 `S04_STATE_OBJECT_STORE` 与 `S03_DIRECTION_LIFE_MEMBRANE`，不能直接进入开放式长期运行。
+8. `life-v0 check-neural-life-core --strict` 返回 `status=closed`，并写出 `neural_life_core_check_report.json`。
 
 ## 本轮边界
 

@@ -7,7 +7,15 @@ def build_prediction_workspace_frame(
     run_id: str,
     generated_at: str,
     language_continuity: dict[str, Any] | None = None,
+    belief_state: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    belief_state = belief_state or {}
+    prediction_error_field = prediction_error_field or {}
+    active_sampling_plan = active_sampling_plan or {}
+    signal_media_runtime = signal_media_runtime or {}
     continuity = {
         "shared_language_refs": list((language_continuity or {}).get("shared_language_refs", [])),
         "expression_monitor_refs": list((language_continuity or {}).get("expression_monitor_refs", [])),
@@ -48,10 +56,38 @@ def build_prediction_workspace_frame(
                 if semantic_focus
                 else []
             ),
-            "precision_state": "semantic_handoff_seeded" if has_language_handoff else "seed_only",
-            "active_sampling_mode": "clarify_ambiguity" if has_ambiguity_queue else "observation_first",
+            "precision_state": (
+                signal_media_runtime.get("precision_policy", {}).get("policy_mode")
+                or ("semantic_handoff_seeded" if has_language_handoff else "seed_only")
+            ),
+            "active_sampling_mode": (
+                active_sampling_plan.get("selected_route")
+                or ("clarify_ambiguity" if has_ambiguity_queue else "observation_first")
+            ),
             "language_continuity_focus": continuity,
+            "belief_scope": belief_state.get("state_scope"),
+            "sampling_stage_effect": active_sampling_plan.get("stage_effect"),
         },
+        "belief_state_ref": (
+            "runtime/state/prediction/belief_state_frame.json"
+            if belief_state
+            else None
+        ),
+        "prediction_error_ref": (
+            "runtime/state/prediction/prediction_error_field.json"
+            if prediction_error_field
+            else None
+        ),
+        "active_sampling_plan_ref": (
+            "runtime/state/prediction/active_sampling_plan.json"
+            if active_sampling_plan
+            else None
+        ),
+        "signal_media_ref": (
+            "runtime/state/signal/signal_media_runtime.json"
+            if signal_media_runtime
+            else None
+        ),
         "bus_edge_refs": [
             "prediction_error_bus",
             "conscious_broadcast_bus",

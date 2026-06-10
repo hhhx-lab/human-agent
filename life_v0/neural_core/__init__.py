@@ -8,11 +8,15 @@ from pathlib import Path
 from typing import Any
 
 from life_v0.direction import LIFE_TARGETS
+from .active_sampling import build_active_sampling_plan
+from .belief_state import build_belief_state_frame
 from .brain_graph import build_brain_graph
 from .broadcast import build_broadcast_frame
 from .metacognition import build_metacognition_state
 from .network_state import build_network_state
+from .prediction_error import build_prediction_error_field
 from .prediction_workspace import build_prediction_workspace_frame
+from .signal_media import build_signal_media_runtime
 from .workspace import build_workspace_frame
 
 
@@ -287,10 +291,39 @@ def run_neural_life_core(
         mechanism_map,
         carrier_patches,
     )
+    language_continuity = _seed_prediction_language_continuity()
+    signal_media = build_signal_media_runtime(
+        run_id=run_id,
+        generated_at=generated_at,
+        network_state=network_state,
+    )
+    belief_state = build_belief_state_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        signal_media_runtime=signal_media,
+        language_continuity=language_continuity,
+    )
+    prediction_error_field = build_prediction_error_field(
+        run_id=run_id,
+        generated_at=generated_at,
+        belief_state=belief_state,
+        signal_media_runtime=signal_media,
+    )
+    active_sampling_plan = build_active_sampling_plan(
+        run_id=run_id,
+        generated_at=generated_at,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        signal_media_runtime=signal_media,
+    )
     prediction_workspace = build_prediction_workspace_frame(
         run_id,
         generated_at,
-        language_continuity=_seed_prediction_language_continuity(),
+        language_continuity=language_continuity,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        signal_media_runtime=signal_media,
     )
     workspace_frame = build_workspace_frame(
         run_id=run_id,
@@ -322,6 +355,10 @@ def run_neural_life_core(
         systems=systems_payload["systems"],
         bus_edges=bus_payload["edges"],
         doc_core_coverage=doc_core_coverage,
+        signal_media_ref="runtime/state/signal/signal_media_runtime.json",
+        belief_state_ref="runtime/state/prediction/belief_state_frame.json",
+        prediction_error_ref="runtime/state/prediction/prediction_error_field.json",
+        active_sampling_plan_ref="runtime/state/prediction/active_sampling_plan.json",
         prediction_workspace_ref="runtime/state/prediction/prediction_workspace_frame.json",
         brain_graph_ref="runtime/state/neural_life_core/brain_graph.json",
         network_state_ref="runtime/state/neural_life_core/network_state.json",
@@ -347,6 +384,10 @@ def run_neural_life_core(
             out_dir / "doc_core_coverage_snapshot.json",
             out_dir / "computer_body_boundary_seed.json",
             out_dir / "neural_life_core_manifest.json",
+            out_dir.parent / "signal" / "signal_media_runtime.json",
+            out_dir.parent / "prediction" / "belief_state_frame.json",
+            out_dir.parent / "prediction" / "prediction_error_field.json",
+            out_dir.parent / "prediction" / "active_sampling_plan.json",
             out_dir.parent / "prediction" / "prediction_workspace_frame.json",
             out_dir.parent / "consciousness" / "workspace_frame.json",
             out_dir.parent / "consciousness" / "broadcast_frame.json",
@@ -372,8 +413,14 @@ def run_neural_life_core(
         _write_json(out_dir / "doc_core_coverage_snapshot.json", doc_core_coverage)
         _write_json(out_dir / "computer_body_boundary_seed.json", computer_boundary)
         _write_json(out_dir / "neural_life_core_manifest.json", manifest)
+        signal_state_dir = out_dir.parent / "signal"
+        signal_state_dir.mkdir(parents=True, exist_ok=True)
+        _write_json(signal_state_dir / "signal_media_runtime.json", signal_media)
         prediction_state_dir = out_dir.parent / "prediction"
         prediction_state_dir.mkdir(parents=True, exist_ok=True)
+        _write_json(prediction_state_dir / "belief_state_frame.json", belief_state)
+        _write_json(prediction_state_dir / "prediction_error_field.json", prediction_error_field)
+        _write_json(prediction_state_dir / "active_sampling_plan.json", active_sampling_plan)
         _write_json(prediction_state_dir / "prediction_workspace_frame.json", prediction_workspace)
         consciousness_state_dir = out_dir.parent / "consciousness"
         consciousness_state_dir.mkdir(parents=True, exist_ok=True)
@@ -425,6 +472,26 @@ def run_check_neural_life_core(
         blocked_reasons,
         "computer_boundary_gate",
     )
+    signal_media = _load_json(
+        state_dir.parent / "signal" / "signal_media_runtime.json",
+        blocked_reasons,
+        "signal_media_gate",
+    )
+    belief_state = _load_json(
+        state_dir.parent / "prediction" / "belief_state_frame.json",
+        blocked_reasons,
+        "belief_state_gate",
+    )
+    prediction_error_field = _load_json(
+        state_dir.parent / "prediction" / "prediction_error_field.json",
+        blocked_reasons,
+        "prediction_error_gate",
+    )
+    active_sampling_plan = _load_json(
+        state_dir.parent / "prediction" / "active_sampling_plan.json",
+        blocked_reasons,
+        "active_sampling_gate",
+    )
     prediction_workspace = _load_json(
         state_dir.parent / "prediction" / "prediction_workspace_frame.json",
         blocked_reasons,
@@ -456,6 +523,10 @@ def run_check_neural_life_core(
     blocked_reasons.extend(_check_authority_binding_payload(authority_binding))
     blocked_reasons.extend(_check_coverage_payload(coverage))
     blocked_reasons.extend(_check_computer_boundary_payload(computer_boundary))
+    blocked_reasons.extend(_check_signal_media_payload(signal_media))
+    blocked_reasons.extend(_check_belief_state_payload(belief_state))
+    blocked_reasons.extend(_check_prediction_error_payload(prediction_error_field))
+    blocked_reasons.extend(_check_active_sampling_payload(active_sampling_plan))
     blocked_reasons.extend(_check_prediction_workspace_payload(prediction_workspace))
     blocked_reasons.extend(_check_workspace_frame_payload(workspace_frame))
     blocked_reasons.extend(_check_broadcast_frame_payload(broadcast_frame))
@@ -517,6 +588,14 @@ def _check_core_payload(core: dict[str, Any]) -> list[str]:
         reasons.append("core_state_gate broadcast frame ref mismatch")
     if core.get("metacognition_ref") != "runtime/state/consciousness/metacognition_state.json":
         reasons.append("core_state_gate metacognition ref mismatch")
+    if core.get("signal_media_ref") != "runtime/state/signal/signal_media_runtime.json":
+        reasons.append("core_state_gate signal media ref mismatch")
+    if core.get("belief_state_ref") != "runtime/state/prediction/belief_state_frame.json":
+        reasons.append("core_state_gate belief state ref mismatch")
+    if core.get("prediction_error_ref") != "runtime/state/prediction/prediction_error_field.json":
+        reasons.append("core_state_gate prediction error ref mismatch")
+    if core.get("active_sampling_plan_ref") != "runtime/state/prediction/active_sampling_plan.json":
+        reasons.append("core_state_gate active sampling ref mismatch")
     return reasons
 
 
@@ -590,6 +669,79 @@ def _check_computer_boundary_payload(computer_boundary: dict[str, Any]) -> list[
     return reasons
 
 
+def _check_signal_media_payload(signal_media: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if signal_media.get("schema_version") != "signal_media_runtime_v0":
+        reasons.append("signal_media_gate schema mismatch")
+    modulation_vector = signal_media.get("modulation_vector", {})
+    for field in [
+        "arousal_gain",
+        "expected_uncertainty",
+        "unexpected_uncertainty",
+        "relationship_pressure",
+        "repair_drive",
+        "fatigue_load",
+    ]:
+        if field not in modulation_vector:
+            reasons.append(f"signal_media_gate modulation field missing: {field}")
+    if not signal_media.get("precision_policy"):
+        reasons.append("signal_media_gate precision policy missing")
+    if not signal_media.get("inhibition_profile"):
+        reasons.append("signal_media_gate inhibition profile missing")
+    if "signal_media_bus" not in signal_media.get("bus_edge_refs", []):
+        reasons.append("signal_media_gate bus refs missing signal_media_bus")
+    return reasons
+
+
+def _check_belief_state_payload(belief_state: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if belief_state.get("schema_version") != "belief_state_frame_v0":
+        reasons.append("belief_state_gate schema mismatch")
+    if not belief_state.get("state_scope"):
+        reasons.append("belief_state_gate state scope missing")
+    if not belief_state.get("source_evidence_refs"):
+        reasons.append("belief_state_gate source evidence refs missing")
+    if not belief_state.get("active_life_targets"):
+        reasons.append("belief_state_gate active life targets missing")
+    if belief_state.get("signal_media_ref") != "runtime/state/signal/signal_media_runtime.json":
+        reasons.append("belief_state_gate signal media ref mismatch")
+    return reasons
+
+
+def _check_prediction_error_payload(prediction_error_field: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if prediction_error_field.get("schema_version") != "prediction_error_field_v0":
+        reasons.append("prediction_error_gate schema mismatch")
+    if prediction_error_field.get("belief_frame_ref") != "runtime/state/prediction/belief_state_frame.json":
+        reasons.append("prediction_error_gate belief frame ref mismatch")
+    if not prediction_error_field.get("error_events"):
+        reasons.append("prediction_error_gate error events missing")
+    if not prediction_error_field.get("precision_requests"):
+        reasons.append("prediction_error_gate precision requests missing")
+    if not prediction_error_field.get("stage_effect"):
+        reasons.append("prediction_error_gate stage effect missing")
+    return reasons
+
+
+def _check_active_sampling_payload(active_sampling_plan: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if active_sampling_plan.get("schema_version") != "active_sampling_plan_v0":
+        reasons.append("active_sampling_gate schema mismatch")
+    if active_sampling_plan.get("belief_frame_ref") != "runtime/state/prediction/belief_state_frame.json":
+        reasons.append("active_sampling_gate belief frame ref mismatch")
+    if active_sampling_plan.get("prediction_error_ref") != "runtime/state/prediction/prediction_error_field.json":
+        reasons.append("active_sampling_gate prediction error ref mismatch")
+    if not active_sampling_plan.get("candidate_refs"):
+        reasons.append("active_sampling_gate candidate refs missing")
+    if not active_sampling_plan.get("guard_refs"):
+        reasons.append("active_sampling_gate guard refs missing")
+    if not active_sampling_plan.get("command_binding_refs"):
+        reasons.append("active_sampling_gate command binding refs missing")
+    if not active_sampling_plan.get("selected_route"):
+        reasons.append("active_sampling_gate selected route missing")
+    return reasons
+
+
 def _check_manifest_payload(manifest: dict[str, Any]) -> list[str]:
     reasons: list[str] = []
     if manifest.get("schema_version") != "neural_life_core_manifest_v0":
@@ -600,6 +752,10 @@ def _check_manifest_payload(manifest: dict[str, Any]) -> list[str]:
         "runtime/state/neural_life_core/neural_life_internal_bus.json",
         "runtime/state/neural_life_core/brain_graph.json",
         "runtime/state/neural_life_core/network_state.json",
+        "runtime/state/signal/signal_media_runtime.json",
+        "runtime/state/prediction/belief_state_frame.json",
+        "runtime/state/prediction/prediction_error_field.json",
+        "runtime/state/prediction/active_sampling_plan.json",
         "runtime/state/prediction/prediction_workspace_frame.json",
         "runtime/state/consciousness/workspace_frame.json",
         "runtime/state/consciousness/broadcast_frame.json",
@@ -620,6 +776,14 @@ def _check_build_report_payload(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate active slice mismatch")
     if build_report.get("next_allowed_slices") != NEXT_ALLOWED_SLICES:
         reasons.append("build_report_gate next allowed slices mismatch")
+    if build_report.get("signal_media_ref") != "runtime/state/signal/signal_media_runtime.json":
+        reasons.append("build_report_gate signal media ref mismatch")
+    if build_report.get("belief_state_ref") != "runtime/state/prediction/belief_state_frame.json":
+        reasons.append("build_report_gate belief state ref mismatch")
+    if build_report.get("prediction_error_ref") != "runtime/state/prediction/prediction_error_field.json":
+        reasons.append("build_report_gate prediction error ref mismatch")
+    if build_report.get("active_sampling_plan_ref") != "runtime/state/prediction/active_sampling_plan.json":
+        reasons.append("build_report_gate active sampling ref mismatch")
     if build_report.get("broadcast_frame_ref") != "runtime/state/consciousness/broadcast_frame.json":
         reasons.append("build_report_gate broadcast frame ref mismatch")
     if build_report.get("metacognition_ref") != "runtime/state/consciousness/metacognition_state.json":
@@ -845,6 +1009,10 @@ def _build_core(run_id: str, generated_at: str, stage_effect: str) -> dict[str, 
         "life_targets": LIFE_TARGETS,
         "brain_graph_ref": "runtime/state/neural_life_core/brain_graph.json",
         "network_state_ref": "runtime/state/neural_life_core/network_state.json",
+        "signal_media_ref": "runtime/state/signal/signal_media_runtime.json",
+        "belief_state_ref": "runtime/state/prediction/belief_state_frame.json",
+        "prediction_error_ref": "runtime/state/prediction/prediction_error_field.json",
+        "active_sampling_plan_ref": "runtime/state/prediction/active_sampling_plan.json",
         "prediction_workspace_ref": "runtime/state/prediction/prediction_workspace_frame.json",
         "workspace_frame_ref": "runtime/state/consciousness/workspace_frame.json",
         "broadcast_frame_ref": "runtime/state/consciousness/broadcast_frame.json",
@@ -863,6 +1031,10 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "runtime/state/neural_life_core/authority_binding_snapshot.json",
         "runtime/state/neural_life_core/doc_core_coverage_snapshot.json",
         "runtime/state/neural_life_core/computer_body_boundary_seed.json",
+        "runtime/state/signal/signal_media_runtime.json",
+        "runtime/state/prediction/belief_state_frame.json",
+        "runtime/state/prediction/prediction_error_field.json",
+        "runtime/state/prediction/active_sampling_plan.json",
         "runtime/state/prediction/prediction_workspace_frame.json",
         "runtime/state/consciousness/workspace_frame.json",
         "runtime/state/consciousness/broadcast_frame.json",
@@ -889,6 +1061,10 @@ def _build_report(
     systems: list[dict[str, Any]],
     bus_edges: list[dict[str, Any]],
     doc_core_coverage: dict[str, Any],
+    signal_media_ref: str,
+    belief_state_ref: str,
+    prediction_error_ref: str,
+    active_sampling_plan_ref: str,
     prediction_workspace_ref: str,
     brain_graph_ref: str,
     network_state_ref: str,
@@ -909,6 +1085,10 @@ def _build_report(
         "core_doc_coverage": doc_core_coverage["coverage"],
         "brain_graph_ref": brain_graph_ref,
         "network_state_ref": network_state_ref,
+        "signal_media_ref": signal_media_ref,
+        "belief_state_ref": belief_state_ref,
+        "prediction_error_ref": prediction_error_ref,
+        "active_sampling_plan_ref": active_sampling_plan_ref,
         "prediction_workspace_ref": prediction_workspace_ref,
         "workspace_frame_ref": workspace_frame_ref,
         "broadcast_frame_ref": broadcast_frame_ref,
@@ -945,6 +1125,10 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "internal_bus_gate",
         "brain_graph_gate",
         "network_state_gate",
+        "signal_media_gate",
+        "belief_state_gate",
+        "prediction_error_gate",
+        "active_sampling_gate",
         "prediction_workspace_gate",
         "workspace_projection_gate",
         "broadcast_gate",
@@ -1028,6 +1212,14 @@ def _check_prediction_workspace_payload(prediction_workspace: dict[str, Any]) ->
         reasons.append("prediction_workspace_gate source runtime mismatch")
     if prediction_workspace.get("active_engineering_slice") != ACTIVE_SLICE:
         reasons.append("prediction_workspace_gate active slice mismatch")
+    if prediction_workspace.get("signal_media_ref") != "runtime/state/signal/signal_media_runtime.json":
+        reasons.append("prediction_workspace_gate signal media ref mismatch")
+    if prediction_workspace.get("belief_state_ref") != "runtime/state/prediction/belief_state_frame.json":
+        reasons.append("prediction_workspace_gate belief state ref mismatch")
+    if prediction_workspace.get("prediction_error_ref") != "runtime/state/prediction/prediction_error_field.json":
+        reasons.append("prediction_workspace_gate prediction error ref mismatch")
+    if prediction_workspace.get("active_sampling_plan_ref") != "runtime/state/prediction/active_sampling_plan.json":
+        reasons.append("prediction_workspace_gate active sampling ref mismatch")
     if "prediction_error_bus" not in prediction_workspace.get("bus_edge_refs", []):
         reasons.append("prediction_workspace_gate missing prediction error bus ref")
     if "ConsciousWorkspaceRuntime" not in prediction_workspace.get("downstream_systems", []):
@@ -1116,6 +1308,9 @@ def _seed_prediction_language_continuity() -> dict[str, list[str]]:
         "commitment_refs": ["runtime/state/language/commitment_repair_language_index.json#commitment_seed"],
         "self_narrative_trace_refs": ["runtime/state/language/self_narrative_language_trace.json#self_narrative_seed"],
         "dialogue_turn_log_refs": ["runtime/state/language/dialogue_turn_log.jsonl#turn_seed"],
+        "language_percept_refs": ["runtime/state/language/language_percept_state.json#percept_seed"],
+        "semantic_map_refs": ["runtime/state/language/semantic_map_state.json#semantic_seed"],
+        "semantic_ambiguity_refs": ["runtime/state/language/semantic_map_state.json#ambiguity_seed"],
     }
 
 

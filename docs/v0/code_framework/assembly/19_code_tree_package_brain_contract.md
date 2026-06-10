@@ -174,11 +174,11 @@ Queue A 第二波
   life_v0/language/apology_repair_language.py
 
 Queue C / Queue F 维护性深补
-  life_v0/neural_core/signal_media.py
-  life_v0/neural_core/belief_state.py
-  life_v0/neural_core/prediction_error.py
-  life_v0/neural_core/active_sampling.py
-  life_v0/state_store/memory_write_gate.py
+  life_v0/neural_core/signal_media.py （已落，进入维护性深补）
+  life_v0/neural_core/belief_state.py （已落，进入维护性深补）
+  life_v0/neural_core/prediction_error.py （已落，进入维护性深补）
+  life_v0/neural_core/active_sampling.py （已落，进入维护性深补）
+  life_v0/state_store/memory_write_gate.py （已落，进入维护性深补）
 ```
 
 已经真实落下、当前只做补厚而不再写成“待新增”的器官包括：
@@ -251,11 +251,11 @@ Queue F 已落第一轮器官
 
 ### Stage 5: Queue C / Queue F 维护性回切与全链收束
 
-1. `life_v0/neural_core/signal_media.py`
-2. `life_v0/neural_core/belief_state.py`
-3. `life_v0/neural_core/prediction_error.py`
-4. `life_v0/neural_core/active_sampling.py`
-5. `life_v0/state_store/memory_write_gate.py`
+1. `life_v0/neural_core/signal_media.py` 已落，继续补厚跨层消费
+2. `life_v0/neural_core/belief_state.py` 已落，继续补厚跨层消费
+3. `life_v0/neural_core/prediction_error.py` 已落，继续补厚跨层消费
+4. `life_v0/neural_core/active_sampling.py` 已落，继续补厚跨层消费
+5. `life_v0/state_store/memory_write_gate.py` 已落，继续补厚长期写回/隔离路线
 6. 补厚 `life_v0/life_targets/life_target_claims.py`
 7. 补厚 `life_v0/life_targets/evidence_matrix.py`
 8. 补厚 `life_v0/life_targets/birth_readiness_rollup.py`、`birth_readiness_stage_gate.py`、`consciousness_probes.py`

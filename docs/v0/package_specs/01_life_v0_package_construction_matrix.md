@@ -44,13 +44,13 @@
 
 | 包 | 脑科学/理论锚点 | 主职责 | 必入对象 | 必出对象 / runtime | 主测试 / gate | 当前 / 下一步 |
 |---|---|---|---|---|---|---|
-| `life_v0/neural_core/` | `02`、`03`、`10`、`11`、`18`、`22`、`30`、`143`、`146`、`149`、`152`、`171`、`01l`、`01m`、`01o`、`01p`、`01v-01ax` | 脑区图、网络状态、信号介质、工作区、广播、元认知、预测误差 | `BodyRhythmPulse`、`NeedStateVector`、authority evidence、memory cues | `PredictionWorkspaceFrame`、`SignalMediaFrame`、`ConsciousBroadcastFrame`、`runtime/state/neural_life_core/*`、`runtime/state/prediction/*` | `tests/slices/test_neural_life_core.py`、`prediction_coherence_gate`、`internal_bus_gate` | 已落第一轮；继续补 `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` |
+| `life_v0/neural_core/` | `02`、`03`、`10`、`11`、`18`、`22`、`30`、`143`、`146`、`149`、`152`、`171`、`01l`、`01m`、`01o`、`01p`、`01v-01ax` | 脑区图、网络状态、信号介质、工作区、广播、元认知、预测误差 | `BodyRhythmPulse`、`NeedStateVector`、authority evidence、memory cues | `PredictionWorkspaceFrame`、`SignalMediaFrame`、`BeliefStateFrame`、`PredictionErrorField`、`ActiveSamplingPlan`、`ConsciousBroadcastFrame`、`runtime/state/neural_life_core/*`、`runtime/state/signal/*`、`runtime/state/prediction/*` | `tests/slices/test_neural_life_core.py`、`prediction_coherence_gate`、`internal_bus_gate` | 第二波器官已落并闭合到 state/report/check；下一步继续补 membrane、language、life target 对这些预测对象的深消费 |
 
 ## E. 状态根、记忆与自传包
 
 | 包 | 脑科学/理论锚点 | 主职责 | 必入对象 | 必出对象 / runtime | 主测试 / gate | 当前 / 下一步 |
 |---|---|---|---|---|---|---|
-| `life_v0/state_store/` | `05`、`17-31`、`41-48`、`55`、`57`、`61`、`69`、`01q` | life state root、自传、关系记忆、承诺真值、engram index、自我模型 | `DialogueWritebackBundle`、dream / replay / growth receipts、direction anchors | `LifeStateRoot`、`EngramIndexFrame`、`RelationshipMemoryFrame`、`CommitmentTruthFrame`、`runtime/state/life_state.json` | `tests/slices/test_state_store.py`、`state_store_gate`、`commitment_truth_gate` | 已落第一轮；继续补 `memory_write_gate.py`、`state_merge_guard.py`、relationship memory writeback |
+| `life_v0/state_store/` | `05`、`17-31`、`41-48`、`55`、`57`、`61`、`69`、`01q` | life state root、自传、关系记忆、承诺真值、engram index、自我模型 | `DialogueWritebackBundle`、dream / replay / growth receipts、direction anchors | `LifeStateRoot`、`EngramIndexFrame`、`RelationshipMemoryFrame`、`CommitmentTruthFrame`、`MemoryWriteGate`、`runtime/state/life_state.json` | `tests/slices/test_state_store.py`、`state_store_gate`、`commitment_truth_gate` | 第二波记忆写门已落；下一步继续补 `state_merge_guard.py`、relationship memory writeback 和长期 promotion / quarantine 路线 |
 
 ## F. 语言、终端回合与持续表达包
 

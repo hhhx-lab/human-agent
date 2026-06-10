@@ -78,6 +78,7 @@ S04 写入 `runtime/state/`：
 | `indexes/responsibility_index.json` | 责任、后悔、修复义务索引空壳 |
 | `indexes/replay_index.json` | replay cue 与 no_replay 生命周期过滤 |
 | `indexes/audit_seed_index.json` | 审计事件索引空壳 |
+| `memory/memory_write_gate.json` | 记忆候选写入事务、validator envelope、quarantine route、索引更新和生命支持压力更新 |
 | `objects/runtime_bridge_boundary.json` | 电脑外周和运行外壳写入禁令 |
 | `objects/consolidation_seed.json` | ConsolidationReport 与 DreamSandbox 种子 |
 
@@ -141,6 +142,7 @@ S04 report 写入 `runtime/reports/latest/state_store_report.json`、`state_stor
 | `object_registry_gate` | `object_registry.json` | 必需对象类型齐全且每个有来源、命名空间、生命周期 | 阻断 S03 |
 | `namespace_index_gate` | `indexes/*.json` | memory、relationship、dream、responsibility、replay、audit 索引齐全 | 阻断 S03 |
 | `lifecycle_policy_gate` | `lifecycle_policy.json` | deleted/quarantined/sandboxed/protected/frozen 语义固定 | 阻断写入 |
+| `memory_write_gate_gate` | `runtime/state/memory/memory_write_gate.json` | 写入事务顺序、validation envelope、quarantine route 和 life support pressure 更新完整 | 阻断长期记忆写入 |
 | `subject_binding_gate` | S02 十二主体系统 | 十二主体系统都有 state namespace binding | 返回 S02 |
 | `scope_schema_gate` | scope/schema seeds | scope、schema bundle、versioning 默认 fail closed | 阻断 S03 |
 | `next_slice_permission_gate` | S04 report | 只允许进入 `S03_DIRECTION_LIFE_MEMBRANE` | 阻断开放运行 |
@@ -176,9 +178,10 @@ S04 完成后必须满足：
 3. `birth_readiness.life_target_status` 含九项目标。
 4. `object_registry.json` 含至少 15 类生命对象，每类有 `source_doc_refs`、`state_namespace`、`lifecycle_states` 和 `write_gate`。
 5. `indexes/` 下 memory、relationship、dream、responsibility、replay、audit 六类索引齐全。
-6. `lifecycle_policy.json` 固定 deleted、quarantined、sandboxed、protected、frozen 的检索、replay、写入和迁移语义。
-7. `state_store_report.json` 下一步只能指向 `S03_DIRECTION_LIFE_MEMBRANE`。
-8. `life-v0 check-state-store --strict` 返回 `status=closed`。
+6. `memory/memory_write_gate.json` 存在，并固定 `create_candidate_object -> create_validation_envelope -> run_required_validator -> update_indexes -> update_life_support_pressure` 事务顺序。
+7. `lifecycle_policy.json` 固定 deleted、quarantined、sandboxed、protected、frozen 的检索、replay、写入和迁移语义。
+8. `state_store_report.json` 下一步只能指向 `S03_DIRECTION_LIFE_MEMBRANE`。
+9. `life-v0 check-state-store --strict` 返回 `status=closed`。
 
 ## 本轮边界
 

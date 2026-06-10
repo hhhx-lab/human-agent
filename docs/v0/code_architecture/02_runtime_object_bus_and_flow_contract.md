@@ -33,8 +33,8 @@
 
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
-| `PredictionWorkspaceFrame` | `life_v0/neural_core/prediction_workspace.py` / `workspace.py` | `language`、`membrane`、`life_targets`、`schema_runner` | 已存在；继续补 `belief_state.py`、`prediction_error.py`、`active_sampling.py` | `runtime/state/prediction/prediction_workspace_frame.json` |
-| `SignalMediaFrame` | `life_v0/neural_core/signal_media.py` | `workspace`、`language`、`membrane`、`dream` | 待进一步独立落地 | `runtime/state/signals/*`、`neural_life_internal_bus.json` |
+| `PredictionWorkspaceFrame` | `life_v0/neural_core/prediction_workspace.py` / `workspace.py` | `language`、`membrane`、`life_targets`、`schema_runner` | 已存在；现已显式回挂 `belief_state.py`、`prediction_error.py`、`active_sampling.py` 与 `signal_media.py` refs，下一步继续补 membrane / language 深消费 | `runtime/state/prediction/prediction_workspace_frame.json` |
+| `SignalMediaFrame` | `life_v0/neural_core/signal_media.py` | `workspace`、`language`、`membrane`、`dream` | 已独立落地并写出调质/精度/抑制状态；下一步补更多跨层消费 | `runtime/state/signal/signal_media_runtime.json`、`neural_life_internal_bus.json` |
 | `ConsciousBroadcastFrame` | `life_v0/neural_core/broadcast.py` | `language`、`life_targets`、`reporting` | 已存在第一轮；待补厚 | `runtime/state/consciousness/*`、birth readiness evidence |
 
 这条总线保证“思考、注意、可报告内容、语言表达、生命目标”使用的是同一工作区，而不是各层私有上下文。

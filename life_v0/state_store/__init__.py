@@ -12,6 +12,7 @@ from .autobiographical_stack import build_autobiographical_stack
 from .commitment_truth import build_commitment_truth_state, build_responsibility_ledger
 from .engram_index import build_engram_index
 from .life_state import build_life_state_projection
+from .memory_write_gate import build_memory_write_gate
 from .relationship_memory import build_relationship_memory
 from .self_model import build_self_model_state
 
@@ -224,6 +225,15 @@ def run_state_store(
         commitment_truth_state=commitment_truth,
         responsibility_ledger=responsibility_ledger,
     )
+    memory_write_gate = build_memory_write_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        commitment_truth_state=commitment_truth,
+        responsibility_ledger=responsibility_ledger,
+        indexes=indexes,
+    )
     life_state = build_life_state_projection(
         run_id=run_id,
         generated_at=generated_at,
@@ -233,6 +243,7 @@ def run_state_store(
         engram_index=engram_index,
         autobiographical_stack=autobiographical_stack,
         relationship_memory=relationship_memory,
+        runtime_trace_refs=["runtime/state/memory/memory_write_gate.json"],
     )
     runtime_boundary = _build_runtime_bridge_boundary(run_id, generated_at)
     consolidation_seed = _build_consolidation_seed(run_id, generated_at)
@@ -247,6 +258,7 @@ def run_state_store(
         commitment_truth_state_ref="runtime/state/relationship/commitment_truth_state.json",
         engram_index_ref="runtime/state/memory/engram_index.json",
         autobiographical_stack_ref="runtime/state/self/autobiographical_stack.json",
+        memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
         blocked_reasons=blocked_reasons,
     )
     digest = _build_digest(run_id, generated_at, status, blocked_reasons)
@@ -285,6 +297,7 @@ def run_state_store(
         _write_json(out_dir / "self" / "autobiographical_stack.json", autobiographical_stack)
         _write_json(out_dir / "memory" / "engram_index.json", engram_index)
         _write_json(out_dir / "memory" / "relationship_memory.json", relationship_memory)
+        _write_json(out_dir / "memory" / "memory_write_gate.json", memory_write_gate)
         _write_json(out_dir / "relationship" / "commitment_truth_state.json", commitment_truth)
         _write_json(out_dir / "responsibility" / "responsibility_ledger.json", responsibility_ledger)
         _write_json(out_dir / "objects" / "runtime_bridge_boundary.json", runtime_boundary)
@@ -337,6 +350,11 @@ def run_check_state_store(
         blocked_reasons,
         "relationship_memory_gate",
     )
+    memory_write_gate = _load_json(
+        state_dir / "memory" / "memory_write_gate.json",
+        blocked_reasons,
+        "memory_write_gate_gate",
+    )
     commitment_truth = _load_json(
         state_dir / "relationship" / "commitment_truth_state.json",
         blocked_reasons,
@@ -362,6 +380,7 @@ def run_check_state_store(
     blocked_reasons.extend(_check_autobiographical_stack(autobiographical_stack))
     blocked_reasons.extend(_check_engram_index(engram_index))
     blocked_reasons.extend(_check_relationship_memory(relationship_memory))
+    blocked_reasons.extend(_check_memory_write_gate(memory_write_gate))
     blocked_reasons.extend(_check_commitment_truth_projection(commitment_truth))
     blocked_reasons.extend(_check_responsibility_ledger_projection(responsibility_ledger))
     blocked_reasons.extend(_check_indexes(indexes))
@@ -670,6 +689,7 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "runtime/state/self/autobiographical_stack.json",
         "runtime/state/memory/engram_index.json",
         "runtime/state/memory/relationship_memory.json",
+        "runtime/state/memory/memory_write_gate.json",
         "runtime/state/relationship/commitment_truth_state.json",
         "runtime/state/responsibility/responsibility_ledger.json",
     ]
@@ -698,6 +718,7 @@ def _build_report(
     commitment_truth_state_ref: str,
     engram_index_ref: str,
     autobiographical_stack_ref: str,
+    memory_write_gate_ref: str,
     blocked_reasons: list[str],
 ) -> dict[str, Any]:
     return {
@@ -713,6 +734,7 @@ def _build_report(
         "commitment_truth_state_ref": commitment_truth_state_ref,
         "engram_index_ref": engram_index_ref,
         "autobiographical_stack_ref": autobiographical_stack_ref,
+        "memory_write_gate_ref": memory_write_gate_ref,
         "closed_gates": _closed_gates(blocked_reasons),
         "blocked_gates": [] if not blocked_reasons else _blocked_gates(blocked_reasons),
         "blocked_reasons": blocked_reasons,
@@ -769,6 +791,7 @@ def _build_receipt(
         out_dir / "self" / "autobiographical_stack.json",
         out_dir / "memory" / "engram_index.json",
         out_dir / "memory" / "relationship_memory.json",
+        out_dir / "memory" / "memory_write_gate.json",
         out_dir / "relationship" / "commitment_truth_state.json",
         out_dir / "responsibility" / "responsibility_ledger.json",
         reports_dir / "state_store_report.json",
@@ -935,6 +958,31 @@ def _check_relationship_memory(relationship_memory: dict[str, Any]) -> list[str]
     return reasons
 
 
+def _check_memory_write_gate(memory_write_gate: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if memory_write_gate.get("schema_version") != "memory_write_gate_v0":
+        reasons.append("memory_write_gate_gate schema mismatch")
+    transaction_order = memory_write_gate.get("transaction_order", [])
+    for step in [
+        "create_candidate_object",
+        "create_validation_envelope",
+        "run_required_validator",
+        "update_indexes",
+        "update_life_support_pressure",
+    ]:
+        if step not in transaction_order:
+            reasons.append(f"memory_write_gate_gate transaction missing: {step}")
+    envelope = memory_write_gate.get("validation_envelope", {})
+    for field in ["trace_id", "source_refs", "lifecycle_state", "audit_log_refs"]:
+        if field not in envelope.get("required_fields", []):
+            reasons.append(f"memory_write_gate_gate envelope field missing: {field}")
+    if not memory_write_gate.get("quarantine_route", {}).get("blocked_indexes"):
+        reasons.append("memory_write_gate_gate quarantine route blocked indexes missing")
+    if not memory_write_gate.get("life_support_pressure_update", {}).get("tracked_fields"):
+        reasons.append("memory_write_gate_gate life support pressure fields missing")
+    return reasons
+
+
 def _check_commitment_truth_projection(commitment_truth: dict[str, Any]) -> list[str]:
     reasons: list[str] = []
     if commitment_truth.get("schema_version") != "commitment_truth_state_v0":
@@ -969,7 +1017,12 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
     reasons: list[str] = []
     if manifest.get("schema_version") != "state_store_manifest_v0":
         reasons.append("manifest_gate schema mismatch")
-    required = {"runtime/state/life_state.json", "runtime/state/object_registry.json", "runtime/state/lifecycle_policy.json"}
+    required = {
+        "runtime/state/life_state.json",
+        "runtime/state/object_registry.json",
+        "runtime/state/lifecycle_policy.json",
+        "runtime/state/memory/memory_write_gate.json",
+    }
     if not required.issubset(set(manifest.get("state_refs", []))):
         reasons.append("manifest_gate state refs incomplete")
     return reasons
@@ -985,6 +1038,8 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate active slice mismatch")
     if build_report.get("next_allowed_slices") != NEXT_ALLOWED_SLICES:
         reasons.append("build_report_gate next allowed slices mismatch")
+    if build_report.get("memory_write_gate_ref") != "runtime/state/memory/memory_write_gate.json":
+        reasons.append("build_report_gate memory write gate ref mismatch")
     return reasons
 
 
@@ -1003,6 +1058,7 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "autobiographical_stack_gate",
         "engram_index_gate",
         "relationship_memory_gate",
+        "memory_write_gate_gate",
         "commitment_truth_projection_gate",
         "responsibility_ledger_projection_gate",
         "state_root_continuity_gate",

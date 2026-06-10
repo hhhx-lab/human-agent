@@ -1,6 +1,34 @@
 # V0 Code Framework 17: Queue C Memory Neural Core Implementation Contract
 
-这份合同只服务当前最直接的一轮记忆与神经核心补厚：
+这份合同现在服务两件事：
+
+1. 记录 Queue C 第一轮记忆与神经核心器官已经真实落地。
+2. 把下一轮维护性深补明确成“继续补跨层消费”，而不是再把同一批文件当成待建空壳。
+
+当前这一轮已经真实落下：
+
+```text
+life_v0/neural_core/signal_media.py
+  -> belief_state.py
+  -> prediction_error.py
+  -> active_sampling.py
+  -> prediction_workspace.py
+life_v0/state_store/memory_write_gate.py
+```
+
+并已写出：
+
+```text
+runtime/state/signal/signal_media_runtime.json
+runtime/state/prediction/belief_state_frame.json
+runtime/state/prediction/prediction_error_field.json
+runtime/state/prediction/active_sampling_plan.json
+runtime/state/memory/memory_write_gate.json
+```
+
+它们已经进入 manifest、report、receipt 和 check gate。
+
+这份合同最初服务当前最直接的一轮记忆与神经核心补厚：
 
 ```text
 life_v0/state_store/life_state.py
@@ -28,15 +56,15 @@ life_v0/state_store/life_state.py
 6. `commitment_truth_state.json`
 7. `responsibility_ledger.json`
 
-但现在的真实缺口不是“没有状态根”，而是：
+当前这些基础器官已经闭合，所以新的真实缺口变成：
 
-1. 缺明确的 `LifeStateProjection` 文件器官，统一把 runtime 关键 ref 回写到生命状态根。
-2. 缺明确的 `EngramIndex`，把 replay cue、关系记忆、自传记忆放到同一可检索对象。
-3. `prediction_workspace.py` 已经开始吸收语言 continuity，但 `brain_graph / network_state / workspace` 还没有拆成独立器官。
-4. `self_model.py`、`commitment_truth.py` 已经存在，但它们还没有被 `life_state.py` 与 `engram_index.py` 这种更高一层的状态桥收住。
+1. `signal_media / belief_state / prediction_error / active_sampling` 如何被 `language/`、`membrane/`、`life_targets/` 和 `process_supervisor/` 更深消费。
+2. `memory_write_gate.py` 如何继续长出 `state_merge_guard.py`、长期 promotion / quarantine / repair route。
+3. `life_state.py`、`engram_index.py`、`relationship_memory.py` 如何在 live turn writeback、offline learning 和常驻等待态里继续被长期重写。
+4. Queue C 不再缺“单文件存在”，而是缺“跨层稳定消费链”。
 
-所以 Queue C 的目标很明确：
-让记忆根、主体图、工作区和语言/关系/成长回放进入同一对象链，而不是只以几个分散 JSON 并列存在。
+所以 Queue C 现在的目标很明确：
+让已经独立出来的记忆根、主体图、工作区、预测器官和记忆写门继续进入语言/关系/责任/成长/常驻存在同一对象链，而不是重新发明一套平行预测层。
 
 ## 必回读理论母体
 
