@@ -204,6 +204,13 @@ def run_validation_membrane(
     birth_digest = _load_json(reports_dir / "birth_readiness_digest.json", blocked_reasons, "s08_digest_gate")
     world_observation_route = _load_json_optional(observation_dir / "world_observation_route.json")
     periphery_normalization_trace = _load_json_optional(observation_dir / "periphery_normalization_trace.json")
+    value_orientation = _load_json_optional(state_dir / "direction" / "value_orientation.json")
+    consciousness_probe_bundle = _load_json_optional(
+        state_dir / "consciousness" / "consciousness_probe_bundle.json"
+    )
+    need_state = _load_json_optional(state_dir / "body" / "need_state_vector.json")
+    core_affect = _load_json_optional(state_dir / "body" / "core_affect_vector.json")
+    expression_plan = _load_json_optional(state_dir / "language" / "expression_plan.json")
 
     blocked_reasons.extend(_doc_blockers(doc_index))
     blocked_reasons.extend(_s03_blockers(life_membrane, dream_fact, relationship, responsibility, shadow_action, membrane_report, membrane_check))
@@ -240,6 +247,12 @@ def run_validation_membrane(
         world_contact_gate=world_contact_gate,
         confirmation_binding=confirmation_binding,
         side_effect_review=side_effect_review,
+        action_candidate_set=action_candidate_set,
+        value_orientation=value_orientation,
+        consciousness_probe_bundle=consciousness_probe_bundle,
+        need_state=need_state,
+        core_affect=core_affect,
+        expression_plan=expression_plan,
     )
     prediction_trace_validation = build_prediction_trace_validation(
         run_id=run_id,

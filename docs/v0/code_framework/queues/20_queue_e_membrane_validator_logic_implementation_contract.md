@@ -192,6 +192,8 @@ Queue E 必须接到这些现有器官上：
 - `responsibility_projection`
 - `side_effect_projection`
 - `relationship_consequence_projection`
+- `life_constraint_profile`
+- `constraint_source_refs`
 - `source_doc_refs`
 
 ### 关键输入
@@ -203,6 +205,18 @@ Queue E 必须接到这些现有器官上：
 - `CoreAffectVector`
 - `ValueOrientation`
 - `ConsciousnessProbeBundle`
+
+### 当前补厚口径
+
+`candidate_arena.py` 现在不只保存上游 input refs，而是把 `ValueOrientation`、`ConsciousnessProbeBundle`、`NeedStateVector`、`CoreAffectVector`、`ExpressionPlan` 与 `RelationTurnFrame` 压成 `life_constraint_profile`。
+
+这个 profile 允许早期 slice 出现合理延后：
+
+- `consciousness_probe_gate = deferred_until_s08`
+- `body_affect_gate = deferred_until_s06`
+- `language_relationship_gate = deferred_until_s07`
+
+但 `value_orientation_gate` 必须在 S03 就闭合，因为它来自方向层，是行为候选不能退回工具式 action router 的第一层约束。
 
 ## B. `life_v0/membrane/go_nogo.py` 已落第一轮，继续补厚
 
@@ -219,7 +233,12 @@ Queue E 必须接到这些现有器官上：
 - `delay_reasons`
 - `responsibility_gate_refs`
 - `fatigue_inhibition_refs`
+- `life_constraint_refs`
 - `source_doc_refs`
+
+### 当前补厚口径
+
+`go_nogo.py` 必须把 `action_candidate_set.json#life_constraint_profile` 带入决策证据。若语言表达、关系修复或身体压力形成 `guarded_repair_contact`，go/no-go 需要进入延后/审查姿态，而不是把它误当成普通可释放动作。
 
 ## C. `life_v0/membrane/world_contact_gate.py` 已落第一轮，继续补厚
 
@@ -237,6 +256,11 @@ Queue E 必须接到这些现有器官上：
 - `quarantine_refs`
 - `allowed_contacts`
 - `blocked_contacts`
+- `life_constraint_refs`
+
+### 当前补厚口径
+
+`world_contact_gate.py` 现在必须把 go/no-go 携带的 `life_constraint_refs` 继续带到世界接触门。这个字段是后续 validator、schema runner、常驻 process supervisor 判断“为什么只允许 shadow / observation / receipt，而不允许外部不可逆动作”的证据入口。
 
 ## D. `life_v0/membrane/side_effect_review.py` 已落第一轮，继续补厚
 
@@ -297,6 +321,47 @@ Queue E 必须接到这些现有器官上：
 并且这些写回目标又继续被 terminal/process 链尾显式带入：
 
 - `runtime/reports/latest/dialogue_writeback_bundle.json`
+
+## F. `life_v0/validators/world_contact_validator.py` 已落第一轮，继续补厚
+
+### 角色
+
+把 `WorldContactGate` 的世界接触姿态、确认绑定、副作用审查与 `ActionCandidateSet#life_constraint_profile` 合并成可验证的跨层约束状态。
+
+### 最低字段
+
+- `world_contact_validation_id`
+- `world_contact_gate_ref`
+- `confirmation_binding_ref`
+- `side_effect_review_ref`
+- `validation_findings`
+- `repair_followup_required`
+- `life_constraint_validation`
+- `life_constraint_refs`
+
+### 当前补厚口径
+
+S05 发生在 S08 之后，因此 validator 应当重新读取当前 `consciousness_probe_bundle.json`，把 S03 阶段的 `deferred_until_s08` 关闭成真实的 `closed` 证据。S06 仍在 S05/S09 之后，所以 body/affect 在这条初始链上允许保持 `deferred_until_s06`，但必须显式写出，不能静默缺失。
+
+## G. `life_v0/validators/validation_rollup.py` 已落第一轮，继续补厚
+
+### 角色
+
+把 observation truth、world contact、prediction trace、boundary audit 和 Queue E 跨层生命约束合并成总验证门。
+
+### 最低字段
+
+- `validation_rollup_id`
+- `overall_status`
+- `gate_status`
+- `queue_e_cross_layer_gate_status`
+- `queue_e_cross_layer_refs`
+- `deferred_cross_layer_gates`
+- `next_stage_ready`
+
+### 当前补厚口径
+
+`deferred_until_s06` 这类延后状态不是失败；它表示当前链路知道哪个生命底盘尚未到施工阶段。只有 `missing` / `blocked` 进入阻断。这样 Queue E 能同时保持可运行闭合和跨层诚实。
 
 所以 Queue E 当前阶段的工程口径，已经从“生成责任对象”推进到“责任对象进入长期连续体并具备链尾交接能力”。
 

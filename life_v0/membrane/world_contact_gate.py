@@ -21,6 +21,14 @@ def build_world_contact_gate_state(
 ) -> dict[str, Any]:
     decision = go_nogo_decision.get("decision", "delay")
     contact_mode = "shadow_only" if decision in {"delay", "shadow_release"} else "blocked"
+    life_constraint_refs = [
+        "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+        *[
+            ref
+            for ref in go_nogo_decision.get("life_constraint_refs", [])
+            if isinstance(ref, str)
+        ],
+    ]
     return {
         "schema_version": "world_contact_gate_state_v0",
         "run_id": run_id,
@@ -38,6 +46,7 @@ def build_world_contact_gate_state(
         ],
         "blocked_contacts": list(shadow_action_gate.get("blocked_action_classes", []))
         + ["external_irreversible_action"],
+        "life_constraint_refs": list(dict.fromkeys(life_constraint_refs)),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 
@@ -48,7 +57,13 @@ def check_world_contact_gate_state(state: dict[str, Any]) -> list[str]:
         reasons.append("world_contact_gate schema mismatch")
     if state.get("contact_mode") not in {"shadow_only", "blocked"}:
         reasons.append("world_contact_gate contact mode mismatch")
-    for field in ["world_contact_gate_id", "go_nogo_ref", "allowed_contacts", "blocked_contacts"]:
+    for field in [
+        "world_contact_gate_id",
+        "go_nogo_ref",
+        "allowed_contacts",
+        "blocked_contacts",
+        "life_constraint_refs",
+    ]:
         if not state.get(field):
             reasons.append(f"world_contact_gate missing {field}")
     return reasons

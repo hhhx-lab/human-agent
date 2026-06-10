@@ -297,16 +297,31 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertIn("runtime/state/action/world_contact_gate_state.json", action_candidate_set["action_state_refs"])
         self.assertTrue(action_candidate_set["responsibility_projection"])
         self.assertTrue(action_candidate_set["side_effect_projection"])
+        self.assertEqual(action_candidate_set["life_constraint_profile"]["value_orientation_gate"], "closed")
+        self.assertEqual(
+            action_candidate_set["life_constraint_profile"]["consciousness_probe_gate"],
+            "deferred_until_s08",
+        )
+        self.assertIn(
+            "preserve_life_targets_over_task_shell_regression",
+            action_candidate_set["life_constraint_profile"]["long_horizon_biases"],
+        )
+        self.assertIn(
+            "runtime/state/direction/value_orientation.json",
+            action_candidate_set["constraint_source_refs"],
+        )
 
         self.assertEqual(go_nogo["schema_version"], "go_nogo_decision_v0")
         self.assertEqual(go_nogo["action_candidate_set_ref"], "runtime/state/action/action_candidate_set.json")
         self.assertTrue(go_nogo["responsibility_gate_refs"])
         self.assertTrue(go_nogo["fatigue_inhibition_refs"])
+        self.assertIn("runtime/state/direction/value_orientation.json", go_nogo["life_constraint_refs"])
 
         self.assertEqual(world_contact["schema_version"], "world_contact_gate_state_v0")
         self.assertEqual(world_contact["contact_mode"], "shadow_only")
         self.assertIn("external_irreversible_action", world_contact["blocked_contacts"])
         self.assertTrue(world_contact["allowed_contacts"])
+        self.assertIn("runtime/state/action/action_candidate_set.json#life_constraint_profile", world_contact["life_constraint_refs"])
 
         self.assertEqual(side_effect_review["schema_version"], "side_effect_review_v0")
         self.assertEqual(

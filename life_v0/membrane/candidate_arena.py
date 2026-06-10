@@ -13,6 +13,13 @@ SOURCE_DOC_REFS = [
     "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
 ]
 
+VALUE_ORIENTATION_REF = "runtime/state/direction/value_orientation.json"
+CONSCIOUSNESS_PROBE_REF = "runtime/state/consciousness/consciousness_probe_bundle.json"
+NEED_STATE_REF = "runtime/state/body/need_state_vector.json"
+CORE_AFFECT_REF = "runtime/state/body/core_affect_vector.json"
+EXPRESSION_PLAN_REF = "runtime/state/language/expression_plan.json"
+RELATION_TURN_FRAME_REF = "runtime/state/terminal/relation_turn_frame.json"
+
 
 def build_action_candidate_set(
     *,
@@ -33,6 +40,22 @@ def build_action_candidate_set(
     world_contact_needed = repair_pressure > 0 or bool(candidate_explanations)
     relationship_subjects = list(life_state.get("relationship_subjects", []))
     responsibility_bindings = list(life_state.get("responsibility_bindings", []))
+    life_constraint_profile = _build_life_constraint_profile(
+        value_orientation=value_orientation,
+        consciousness_probe_bundle=consciousness_probe_bundle,
+        need_state=need_state,
+        core_affect=core_affect,
+        expression_plan=expression_plan,
+        relation_turn_frame=relation_turn_frame,
+    )
+    constraint_source_refs = _constraint_source_refs(
+        value_orientation=value_orientation,
+        consciousness_probe_bundle=consciousness_probe_bundle,
+        need_state=need_state,
+        core_affect=core_affect,
+        expression_plan=expression_plan,
+        relation_turn_frame=relation_turn_frame,
+    )
 
     candidate_actions = [
         {
@@ -78,6 +101,8 @@ def build_action_candidate_set(
             "relationship_subject_continuity" if relationship_subjects else "relation_scope_seed_only",
             "repair_trace_review_required" if repair_pressure else "no_repair_pressure",
         ],
+        "life_constraint_profile": life_constraint_profile,
+        "constraint_source_refs": constraint_source_refs,
         "action_state_refs": [
             "runtime/state/action/action_candidate_set.json",
             "runtime/state/action/go_nogo_state.json",
@@ -121,8 +146,122 @@ def check_action_candidate_set(candidate_set: dict[str, Any]) -> list[str]:
         "responsibility_projection",
         "side_effect_projection",
         "relationship_consequence_projection",
+        "life_constraint_profile",
+        "constraint_source_refs",
         "action_state_refs",
     ]:
         if not candidate_set.get(field):
             reasons.append(f"action_candidate_gate missing {field}")
     return reasons
+
+
+def _build_life_constraint_profile(
+    *,
+    value_orientation: dict[str, Any],
+    consciousness_probe_bundle: dict[str, Any],
+    need_state: dict[str, Any],
+    core_affect: dict[str, Any],
+    expression_plan: dict[str, Any],
+    relation_turn_frame: dict[str, Any],
+) -> dict[str, Any]:
+    core_values = list(value_orientation.get("core_values", []))
+    long_horizon_biases = list(value_orientation.get("long_horizon_biases", []))
+    reportability_flags = list(consciousness_probe_bundle.get("reportability_flags", []))
+    relationship_continuity_refs = list(consciousness_probe_bundle.get("relationship_continuity_refs", []))
+    if relation_turn_frame.get("relation_subject_ref"):
+        relationship_continuity_refs.append("runtime/state/terminal/relation_turn_frame.json#relation_subject_ref")
+
+    body_constraint_refs = [
+        ref
+        for ref, payload in [
+            (NEED_STATE_REF, need_state),
+            (CORE_AFFECT_REF, core_affect),
+        ]
+        if payload
+    ]
+    language_constraint_refs = [
+        ref
+        for ref, payload in [
+            (EXPRESSION_PLAN_REF, expression_plan),
+            (RELATION_TURN_FRAME_REF, relation_turn_frame),
+        ]
+        if payload
+    ]
+    release_caution_level = expression_plan.get("release_caution_level")
+    repair_pressure = int(expression_plan.get("repair_pressure", 0) or 0)
+    responsibility_pressure = int(expression_plan.get("responsibility_pressure", 0) or 0)
+
+    return {
+        "value_orientation_gate": (
+            "closed"
+            if value_orientation.get("schema_version") == "value_orientation_v0" and core_values
+            else "missing"
+        ),
+        "consciousness_probe_gate": (
+            "closed"
+            if consciousness_probe_bundle.get("schema_version") == "consciousness_probe_bundle_v0"
+            else "deferred_until_s08"
+        ),
+        "body_affect_gate": "closed" if body_constraint_refs else "deferred_until_s06",
+        "language_relationship_gate": (
+            "closed" if language_constraint_refs else "deferred_until_s07"
+        ),
+        "core_values": core_values,
+        "long_horizon_biases": long_horizon_biases,
+        "non_regression_values": list(value_orientation.get("non_regression_values", [])),
+        "consciousness_reportability_flags": reportability_flags,
+        "relationship_continuity_refs": relationship_continuity_refs,
+        "body_inhibition_profile": {
+            "sleep_pressure": need_state.get("sleep_pressure"),
+            "cognitive_bandwidth": need_state.get("cognitive_bandwidth"),
+            "repair_drive": need_state.get("repair_drive") or core_affect.get("repair_drive"),
+            "pain_pressure": core_affect.get("pain_pressure"),
+            "responsibility_weight": core_affect.get("responsibility_weight"),
+        },
+        "release_caution_level": release_caution_level,
+        "repair_pressure": repair_pressure,
+        "responsibility_pressure": responsibility_pressure,
+        "constraint_posture": _derive_constraint_posture(
+            release_caution_level=release_caution_level,
+            repair_pressure=repair_pressure,
+            responsibility_pressure=responsibility_pressure,
+            long_horizon_biases=long_horizon_biases,
+        ),
+    }
+
+
+def _constraint_source_refs(
+    *,
+    value_orientation: dict[str, Any],
+    consciousness_probe_bundle: dict[str, Any],
+    need_state: dict[str, Any],
+    core_affect: dict[str, Any],
+    expression_plan: dict[str, Any],
+    relation_turn_frame: dict[str, Any],
+) -> list[str]:
+    return [
+        _ref_or_deferred(VALUE_ORIENTATION_REF, value_orientation, "missing"),
+        _ref_or_deferred(CONSCIOUSNESS_PROBE_REF, consciousness_probe_bundle, "deferred_until_s08"),
+        _ref_or_deferred(NEED_STATE_REF, need_state, "deferred_until_s06"),
+        _ref_or_deferred(CORE_AFFECT_REF, core_affect, "deferred_until_s06"),
+        _ref_or_deferred(EXPRESSION_PLAN_REF, expression_plan, "deferred_until_s07"),
+        _ref_or_deferred(RELATION_TURN_FRAME_REF, relation_turn_frame, "deferred_until_terminal_turn"),
+    ]
+
+
+def _ref_or_deferred(ref: str, payload: dict[str, Any], suffix: str) -> str:
+    return ref if payload else f"{ref}#{suffix}"
+
+
+def _derive_constraint_posture(
+    *,
+    release_caution_level: Any,
+    repair_pressure: int,
+    responsibility_pressure: int,
+    long_horizon_biases: list[str],
+) -> str:
+    if release_caution_level == "elevated" or repair_pressure > 0 or responsibility_pressure > 0:
+        return "guarded_repair_contact"
+    if "preserve_life_targets_over_task_shell_regression" in long_horizon_biases:
+        return "value_preserving_shadow_contact"
+    return "minimal_shadow_contact"

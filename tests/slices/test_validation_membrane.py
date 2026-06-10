@@ -152,6 +152,22 @@ class ValidationMembraneTests(unittest.TestCase):
             "runtime/state/membrane/confirmation_binding.json",
         )
         self.assertEqual(world_contact_validation["validation_findings"], [])
+        self.assertEqual(
+            world_contact_validation["life_constraint_validation"]["value_orientation_gate"],
+            "closed",
+        )
+        self.assertEqual(
+            world_contact_validation["life_constraint_validation"]["consciousness_probe_gate"],
+            "closed",
+        )
+        self.assertEqual(
+            world_contact_validation["life_constraint_validation"]["body_affect_gate"],
+            "deferred_until_s06",
+        )
+        self.assertIn(
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+            world_contact_validation["life_constraint_refs"],
+        )
 
         self.assertEqual(prediction_trace_validation["schema_version"], "prediction_trace_validation_v0")
         self.assertEqual(prediction_trace_validation["status"], "closed")
@@ -167,6 +183,14 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertEqual(validation_rollup["guarded_gates"], [])
         self.assertTrue(validation_rollup["next_stage_ready"])
         self.assertIn("runtime/state/validation/world_contact_validation.json", validation_rollup["state_refs"])
+        self.assertEqual(
+            validation_rollup["queue_e_cross_layer_gate_status"]["consciousness_probe_gate"],
+            "closed",
+        )
+        self.assertIn(
+            "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+            validation_rollup["queue_e_cross_layer_refs"],
+        )
 
         self.assertEqual(boundary_audit["schema_version"], "boundary_audit_state_v0")
         self.assertEqual(boundary_audit["life_membrane_ref"], "runtime/state/membrane/life_membrane.json")

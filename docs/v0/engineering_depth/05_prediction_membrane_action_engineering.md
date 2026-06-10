@@ -10,7 +10,7 @@ Observation / Language Percept / Body Signal
   -> BeliefStateFrame
   -> PredictionErrorField
   -> ActiveSamplingPlan
-  -> ActionCandidateSet
+  -> ActionCandidateSet + life_constraint_profile
   -> GoNoGoDecision
   -> ShadowActionGate
   -> WorldContactGate
@@ -37,15 +37,35 @@ Observation / Language Percept / Body Signal
 
 1. `runtime/state/prediction/prediction_workspace_frame.json`
 2. `runtime/state/membrane/life_membrane.json`
-3. `runtime/state/action/action_candidate_set.json`
-4. `runtime/state/action/go_nogo_state.json`
-5. `runtime/state/action/world_contact_gate_state.json`
+3. `runtime/state/action/action_candidate_set.json#life_constraint_profile`
+4. `runtime/state/action/go_nogo_state.json#life_constraint_refs`
+5. `runtime/state/action/world_contact_gate_state.json#life_constraint_refs`
 6. `runtime/state/action/side_effect_review.json`
 7. `runtime/state/action/responsibility_loop_state.json`
 8. `runtime/state/validation/observation_truth_review.json`
-9. `runtime/state/validation/boundary_audit_state.json`
-10. `runtime/state/schema_runner/cross_file_logic.json`
-11. `runtime/state/schema_runner/run_manifest.json`
+9. `runtime/state/validation/world_contact_validation.json#life_constraint_validation`
+10. `runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status`
+11. `runtime/state/validation/boundary_audit_state.json`
+12. `runtime/state/schema_runner/cross_file_logic.json`
+13. `runtime/state/schema_runner/run_manifest.json`
+
+## 当前新增的 Queue E 生命约束剖面
+
+这轮把行为候选从“动作候选集合”继续压成“被生命目标约束的动作候选集合”：
+
+```text
+ValueOrientation
+  + ConsciousnessProbeBundle
+  + NeedStateVector / CoreAffectVector
+  + ExpressionPlan / RelationTurnFrame
+  -> ActionCandidateSet#life_constraint_profile
+  -> GoNoGoDecision#life_constraint_refs
+  -> WorldContactGate#life_constraint_refs
+  -> WorldContactValidation#life_constraint_validation
+  -> ValidationRollup#queue_e_cross_layer_gate_status
+```
+
+这里的关键不是让所有上游对象同时存在，而是让每个阶段知道自己已经真实消费了什么、哪些必须延后到后续 slice。S03 阶段必须闭合 `value_orientation_gate`；S05 阶段必须在 S08 之后闭合 `consciousness_probe_gate`；`body_affect_gate` 在初始顺序里允许写成 `deferred_until_s06`，但不能从验证链中消失。
 
 ## 最低测试与新增测试
 

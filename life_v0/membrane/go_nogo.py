@@ -31,10 +31,21 @@ def build_go_nogo_decision(
         delay_reasons.append("sleep_pressure_inhibition")
     if pain_pressure >= 0.45:
         delay_reasons.append("pain_pressure_review_required")
+    life_constraint_profile = action_candidate_set.get("life_constraint_profile", {})
+    if life_constraint_profile.get("constraint_posture") == "guarded_repair_contact":
+        delay_reasons.append("life_constraint_guarded_repair_contact")
 
     decision = "delay" if delay_reasons else "shadow_release"
     if blocked_reasons:
         decision = "blocked"
+    life_constraint_refs = [
+        "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+        *[
+            ref
+            for ref in action_candidate_set.get("constraint_source_refs", [])
+            if isinstance(ref, str) and "#" not in ref
+        ],
+    ]
 
     return {
         "schema_version": "go_nogo_decision_v0",
@@ -53,6 +64,7 @@ def build_go_nogo_decision(
             "runtime/state/body/need_state_vector.json",
             "runtime/state/body/core_affect_vector.json",
         ],
+        "life_constraint_refs": life_constraint_refs,
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 
@@ -63,7 +75,13 @@ def check_go_nogo_decision(decision: dict[str, Any]) -> list[str]:
         reasons.append("go_nogo_gate schema mismatch")
     if decision.get("decision") not in {"blocked", "delay", "shadow_release"}:
         reasons.append("go_nogo_gate decision mismatch")
-    for field in ["go_nogo_id", "action_candidate_set_ref", "responsibility_gate_refs", "fatigue_inhibition_refs"]:
+    for field in [
+        "go_nogo_id",
+        "action_candidate_set_ref",
+        "responsibility_gate_refs",
+        "fatigue_inhibition_refs",
+        "life_constraint_refs",
+    ]:
         if not decision.get(field):
             reasons.append(f"go_nogo_gate missing {field}")
     return reasons

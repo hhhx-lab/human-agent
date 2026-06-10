@@ -22,11 +22,17 @@ def build_validation_rollup(
     prediction_trace_validation: dict[str, Any],
     boundary_audit: dict[str, Any],
 ) -> dict[str, Any]:
+    cross_layer_gate_status = dict(world_contact_validation.get("life_constraint_validation", {}))
+    life_constraint_blocked = any(
+        status == "missing" or status == "blocked"
+        for status in cross_layer_gate_status.values()
+    )
     gate_status = {
         "observation_truth_gate": "closed" if not observation_truth_review.get("missing_fields") else "guarded",
         "world_contact_validation_gate": world_contact_validation.get("status", "blocked"),
         "prediction_trace_validation_gate": prediction_trace_validation.get("status", "blocked"),
         "boundary_audit_gate": "closed" if not boundary_audit.get("audit_findings") else "guarded",
+        "life_constraint_validation_gate": "blocked" if life_constraint_blocked else "closed",
     }
     blocked_gates = [gate for gate, status in gate_status.items() if status == "blocked"]
     guarded_gates = [gate for gate, status in gate_status.items() if status == "guarded"]
@@ -52,6 +58,13 @@ def build_validation_rollup(
         "blocked_gates": blocked_gates,
         "guarded_gates": guarded_gates,
         "repair_backlog_refs": repair_backlog_refs,
+        "queue_e_cross_layer_gate_status": cross_layer_gate_status,
+        "queue_e_cross_layer_refs": list(world_contact_validation.get("life_constraint_refs", [])),
+        "deferred_cross_layer_gates": [
+            gate
+            for gate, gate_state in cross_layer_gate_status.items()
+            if isinstance(gate_state, str) and gate_state.startswith("deferred_until_")
+        ],
         "state_refs": [
             "runtime/state/validation/observation_truth_review.json",
             "runtime/state/validation/world_contact_validation.json",
@@ -72,6 +85,8 @@ def check_validation_rollup(rollup: dict[str, Any]) -> list[str]:
     for field in [
         "validation_rollup_id",
         "gate_status",
+        "queue_e_cross_layer_gate_status",
+        "queue_e_cross_layer_refs",
         "state_refs",
         "next_stage_ready",
         "source_doc_refs",
