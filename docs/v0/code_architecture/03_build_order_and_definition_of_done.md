@@ -210,6 +210,7 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 9. `dialogue_writeback_bundle.json#resident_background_lineage_refs` 和 `resumed_external_dialogue_packet.json` 保留同一组人格慢变量 lineage 证据
 10. `dialogue_writeback_bundle.json#cross_wake_trait_convergence_refs` 与 `resumed_external_dialogue_packet.json#cross_wake_trait_convergence_refs` 保留同一组跨唤醒人格收敛证据
 11. `response_surface.py` 生成的生命回应中包含后台人格慢变量焦点、仍需收敛/已稳定名单、人格收敛评分、人格漂移监控在场、跨唤醒人格收敛画像、跨唤醒人格收敛压力和后台人格慢变量证据数量表达
+12. `self_model.json#trait_slow_variables[*]` 本体必须写出 `slow_variable_update_mode`、`background_trait_convergence_history_role`、`background_trait_convergence_history_latest_band` 与 `background_trait_convergence_history_trend_state`，并把 `background_convergence_history_ref`、`background_convergence_summary_ref`、`background_trait_drift_monitor_ref` 放入对应慢变量 evidence refs；否则跨唤醒慢变量历史仍只是在事件/回应里被描述，还没有真正进入自我慢变量收敛。
 
 当前对后台长期合并治理 presence 进入下一轮真实回合的补充规则是：凡是声称上一轮长期状态合并治理已经从关闭态恢复并影响当下关系回合，不能只看 `background_continuity_profile#background_state_merge_*` 或普通 `state_merge_long_term_change_*`。必须同时看到：
 

@@ -4165,6 +4165,93 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             continuity_drive["evidence_refs"],
         )
 
+    def test_continuity_evolution_uses_background_trait_history_as_slow_variable_update_mode(self):
+        from life_v0.process_supervisor.continuity_evolution import (
+            evolve_relationship_and_self_model,
+        )
+
+        result = evolve_relationship_and_self_model(
+            generated_at="2026-06-10T00:00:00+00:00",
+            relationship_graph={
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relation_role": "friend",
+                        "relationship_stage": "restored_waiting",
+                    }
+                ]
+            },
+            self_model_state={"trait_slow_variables": {}, "growth_window_refs": []},
+            relationship_timeline={
+                "dialogue_turn_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                ],
+                "relationship_continuity_reports": [],
+                "trust_trajectories": [],
+            },
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_pressure_level": "elevated",
+                "background_carryover_generation": 3,
+                "background_relationship_stage": "repair_guarded_continuity",
+                "background_self_model_ref": "runtime/state/self/self_model.json",
+                "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
+                "background_convergence_history_ref": "runtime/state/terminal/background_convergence_history.json",
+                "background_trait_drift_monitor_ref": "runtime/state/body/trait_drift_monitor.json",
+                "background_trait_convergence_history_focus": "trait_recalibration_required",
+                "background_trait_convergence_unstable_names": ["continuity_drive"],
+                "background_trait_convergence_stable_names": ["repair_seriousness"],
+                "background_trait_convergence_history_profile": {
+                    "continuity_drive": {
+                        "latest_band": "recalibrating",
+                        "trend_state": "recent_trait_recalibration",
+                    },
+                    "repair_seriousness": {
+                        "latest_band": "stabilized",
+                        "trend_state": "stable_trait_convergence",
+                    },
+                },
+            },
+        )
+
+        variables = result["self_model_state"]["trait_slow_variables"]
+        continuity_drive = variables["continuity_drive"]
+        repair_seriousness = variables["repair_seriousness"]
+        self.assertEqual(
+            continuity_drive["slow_variable_update_mode"],
+            "background_history_recalibration",
+        )
+        self.assertEqual(
+            continuity_drive["background_trait_convergence_history_focus"],
+            "trait_recalibration_required",
+        )
+        self.assertEqual(
+            continuity_drive["background_trait_convergence_history_role"],
+            "unstable",
+        )
+        self.assertEqual(
+            continuity_drive["background_trait_convergence_history_trend_state"],
+            "recent_trait_recalibration",
+        )
+        self.assertEqual(
+            repair_seriousness["slow_variable_update_mode"],
+            "background_history_stabilized",
+        )
+        self.assertEqual(
+            repair_seriousness["background_trait_convergence_history_role"],
+            "stable",
+        )
+        self.assertIn(
+            "runtime/state/terminal/background_convergence_history.json",
+            continuity_drive["evidence_refs"],
+        )
+        self.assertIn(
+            "runtime/state/body/trait_drift_monitor.json",
+            repair_seriousness["evidence_refs"],
+        )
+
     def test_continuity_evolution_uses_background_offline_learning_as_relationship_reconsolidation(self):
         from life_v0.process_supervisor.continuity_evolution import (
             evolve_relationship_and_self_model,

@@ -90,6 +90,11 @@
     "last_generated_at": "2026-06-10T12:34:56Z",
     "background_resume_value": 0.58,
     "background_inertia_weight": 0.55,
+    "slow_variable_update_mode": "background_history_recalibration",
+    "background_trait_convergence_history_focus": "trait_recalibration_required",
+    "background_trait_convergence_history_role": "unstable",
+    "background_trait_convergence_history_latest_band": "recalibrating",
+    "background_trait_convergence_history_trend_state": "recent_trait_recalibration",
     "evidence_refs": [
       "runtime/state/relationship/relationship_timeline.json",
       "runtime/state/membrane/world_contact_summary.json",
@@ -117,6 +122,14 @@ artifact 留在 `idle_strategy_state.json` 或 `resident_governance_state.json` 
 留下的慢变量值，而要把它作为 `background_resume_value` 参与下一次 `value` 收敛，并写出
 `background_inertia_weight`。当前回合证据仍然优先，但在还没有进入新 live turn、证据不足以覆盖上一轮状态时，
 上一轮 relationship stage 也可以被 `background_relationship_stage` 保留下来。
+
+现在这组慢变量还必须直接消费跨唤醒收敛历史。`background_convergence_history.py` 输出的
+`background_trait_convergence_history_focus / unstable_names / stable_names / history_profile` 不能只进入
+waiting governance、回合事件或回应文本；`continuity_evolution.py` 在下一次刷新 `trait_slow_variables`
+时，要把对应慢变量写成 `slow_variable_update_mode=background_history_recalibration /
+background_history_stability_hold / background_history_stabilized`，并记录
+`background_trait_convergence_history_role`、`latest_band` 与 `trend_state`。这样“需要重新校准”或“已经稳定”
+会进入自我慢变量本体，而不是只停在外层调度。
 
 每次 `resident_supervision.py` 或 `resident_turn_writeback.py` 改写这组慢变量后，还必须刷新
 `runtime/state/body/trait_drift_monitor.json`。这份 monitor 是身体/人格层对自我慢变量漂移的观察面，

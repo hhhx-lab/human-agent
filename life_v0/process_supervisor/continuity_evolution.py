@@ -288,6 +288,9 @@ def _evolve_trait_slow_variables(
     background_offline_learning_metadata = _background_offline_learning_metadata(
         offline_learning_profile
     )
+    background_trait_history_metadata = _background_trait_history_metadata(
+        background_continuity_profile
+    )
 
     target_values = {
         "trust_persistence": _clamp(
@@ -362,6 +365,13 @@ def _evolve_trait_slow_variables(
         }
         if background_offline_learning_metadata:
             updated[name].update(background_offline_learning_metadata)
+        if background_trait_history_metadata:
+            updated[name].update(
+                _slow_variable_trait_history_metadata(
+                    name=name,
+                    background_trait_history_metadata=background_trait_history_metadata,
+                )
+            )
         if background_resume_value is not None:
             updated[name]["background_resume_value"] = round(background_resume_value, 3)
             updated[name]["background_inertia_weight"] = round(
@@ -442,6 +452,11 @@ def _background_evidence_refs(background_continuity_profile: dict[str, Any]) -> 
         + [
             background_continuity_profile.get("background_relationship_subject_ref", ""),
             background_continuity_profile.get("background_self_model_ref", ""),
+            background_continuity_profile.get("background_trait_drift_monitor_ref", ""),
+            background_continuity_profile.get("background_convergence_summary_ref", ""),
+            background_continuity_profile.get("background_convergence_history_ref", ""),
+            background_continuity_profile.get("background_resident_governance_state_ref", ""),
+            background_continuity_profile.get("background_resident_governance_explanation_ref", ""),
         ]
     )
 
@@ -569,6 +584,108 @@ def _background_offline_learning_metadata(
             or "baseline_offline_learning_maintenance"
         ),
     }
+
+
+def _background_trait_history_metadata(
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, Any]:
+    focus = str(
+        background_continuity_profile.get("background_trait_convergence_history_focus")
+        or ""
+    )
+    profile = _dict_or_empty(
+        background_continuity_profile.get(
+            "background_trait_convergence_history_profile"
+        )
+    )
+    unstable_names = _string_list(
+        background_continuity_profile.get("background_trait_convergence_unstable_names")
+    )
+    stable_names = _string_list(
+        background_continuity_profile.get("background_trait_convergence_stable_names")
+    )
+    if not any([focus, profile, unstable_names, stable_names]):
+        return {}
+    return {
+        "focus": focus,
+        "profile": profile,
+        "unstable_names": unstable_names,
+        "stable_names": stable_names,
+    }
+
+
+def _slow_variable_trait_history_metadata(
+    *,
+    name: str,
+    background_trait_history_metadata: dict[str, Any],
+) -> dict[str, Any]:
+    focus = str(background_trait_history_metadata.get("focus") or "")
+    history_profile = _dict_or_empty(background_trait_history_metadata.get("profile"))
+    trait_history = _dict_or_empty(history_profile.get(name))
+    unstable_names = _string_list(
+        background_trait_history_metadata.get("unstable_names")
+    )
+    stable_names = _string_list(background_trait_history_metadata.get("stable_names"))
+    role = _trait_history_role(
+        name=name,
+        unstable_names=unstable_names,
+        stable_names=stable_names,
+        trait_history=trait_history,
+    )
+    latest_band = str(trait_history.get("latest_band") or "")
+    trend_state = str(trait_history.get("trend_state") or "")
+    metadata = {
+        "background_trait_convergence_history_focus": focus,
+        "background_trait_convergence_history_role": role,
+        "background_trait_convergence_history_latest_band": latest_band,
+        "background_trait_convergence_history_trend_state": trend_state,
+        "slow_variable_update_mode": _slow_variable_update_mode_from_history(
+            focus=focus,
+            role=role,
+            latest_band=latest_band,
+            trend_state=trend_state,
+        ),
+    }
+    return {key: value for key, value in metadata.items() if value}
+
+
+def _trait_history_role(
+    *,
+    name: str,
+    unstable_names: list[str],
+    stable_names: list[str],
+    trait_history: dict[str, Any],
+) -> str:
+    if name in unstable_names:
+        return "unstable"
+    if name in stable_names:
+        return "stable"
+    if trait_history:
+        return "observed"
+    return ""
+
+
+def _slow_variable_update_mode_from_history(
+    *,
+    focus: str,
+    role: str,
+    latest_band: str,
+    trend_state: str,
+) -> str:
+    if (
+        focus == "trait_recalibration_required"
+        or latest_band == "recalibrating"
+        or trend_state == "recent_trait_recalibration"
+    ):
+        if role in {"unstable", "observed"}:
+            return "background_history_recalibration"
+    if role == "stable" or latest_band == "stabilized":
+        return "background_history_stabilized"
+    if focus == "trait_stability_hold" and role == "unstable":
+        return "background_history_stability_hold"
+    if focus:
+        return "background_history_observed"
+    return ""
 
 
 def _background_offline_learning_pressure_level(
