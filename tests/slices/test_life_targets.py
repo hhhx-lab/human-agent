@@ -84,6 +84,7 @@ class LifeTargetRuntimeTests(unittest.TestCase):
 
             claims = self._read_json(life_targets_state / "life_target_claims.json")
             evidence = self._read_json(life_targets_state / "life_target_evidence_matrix.json")
+            queue_e_profile = self._read_json(life_targets_state / "queue_e_birth_repair_profile.json")
             rollup = self._read_json(life_targets_state / "birth_readiness_rollup.json")
             stage_gate = self._read_json(life_targets_state / "birth_readiness_stage_gate.json")
             archive_index = self._read_json(life_targets_state / "life_target_archive_receipt_index.json")
@@ -107,6 +108,13 @@ class LifeTargetRuntimeTests(unittest.TestCase):
             "report",
             "archive",
         }
+        queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+        expected_queue_e_refs = {
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/membrane/world_contact_summary.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+            queue_e_profile_ref,
+        }
 
         self.assertEqual(claims["schema_version"], "life_target_claims_v0")
         self.assertEqual(claims["active_engineering_slice"], "S08_LIFE_TARGET_RUNTIMES")
@@ -118,6 +126,17 @@ class LifeTargetRuntimeTests(unittest.TestCase):
             self.assertTrue(claim["runtime_observation_refs"], target)
             self.assertTrue(claim["report_refs"], target)
             self.assertTrue(claim["archive_receipt_refs"], target)
+        for target in ["real_pain", "real_responsibility", "real_regret"]:
+            self.assertEqual(
+                claims["targets"][target]["queue_e_birth_repair_profile_ref"],
+                queue_e_profile_ref,
+            )
+            self.assertTrue(
+                expected_queue_e_refs.issubset(
+                    set(claims["targets"][target]["queue_e_birth_repair_refs"])
+                ),
+                target,
+            )
 
         self.assertEqual(evidence["schema_version"], "life_target_evidence_matrix_v0")
         self.assertEqual(set(evidence["targets"]), expected_targets)
@@ -135,6 +154,22 @@ class LifeTargetRuntimeTests(unittest.TestCase):
             evidence["targets"]["real_consciousness"]["runtime"][0],
             "runtime/state/consciousness/consciousness_probe_bundle.json",
         )
+        for target in ["real_pain", "real_responsibility", "real_regret"]:
+            self.assertTrue(
+                expected_queue_e_refs.issubset(
+                    set(evidence["targets"][target]["pain_regret_responsibility"])
+                ),
+                target,
+            )
+
+        self.assertEqual(queue_e_profile["schema_version"], "queue_e_repair_modulation_profile_v0")
+        self.assertEqual(queue_e_profile["pressure_level"], "elevated")
+        self.assertEqual(queue_e_profile["attention_target"], "regret_pressure")
+        self.assertTrue(
+            expected_queue_e_refs.difference({queue_e_profile_ref}).issubset(
+                set(queue_e_profile["ref_set"])
+            )
+        )
 
         self.assertEqual(consciousness_probe["schema_version"], "consciousness_probe_bundle_v0")
         self.assertEqual(consciousness_probe["workspace_frame_ref"], "runtime/state/consciousness/workspace_frame.json")
@@ -149,12 +184,21 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertEqual(rollup["blocked_reasons"], [])
         self.assertEqual(rollup["quarantine_refs"], [])
         self.assertEqual(rollup["replay_needed_refs"], [])
+        self.assertEqual(rollup["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(rollup["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(rollup["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(rollup["queue_e_birth_repair_ref_set"])))
 
         self.assertEqual(stage_gate["schema_version"], "birth_readiness_stage_gate_v0")
         self.assertEqual(stage_gate["decision"], "open")
         self.assertEqual(stage_gate["stage_effect"], "allow_first_activation_protocol")
         self.assertEqual(stage_gate["next_allowed_slices"], ["S05_VALIDATION_MEMBRANE_OBSERVATION"])
         self.assertEqual(stage_gate["next_required_command"], "life-v0 run-validation-membrane --strict")
+        self.assertEqual(stage_gate["gate_status"]["queue_e_birth_repair_gate"], "closed")
+        self.assertEqual(stage_gate["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(stage_gate["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(stage_gate["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(stage_gate["queue_e_birth_repair_ref_set"])))
 
         self.assertEqual(archive_index["schema_version"], "life_target_archive_receipt_index_v0")
         self.assertEqual(set(archive_index["target_receipts"]), expected_targets)
@@ -167,17 +211,27 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertEqual(report["next_allowed_slices"], ["S05_VALIDATION_MEMBRANE_OBSERVATION"])
         self.assertEqual(report["next_required_command"], "life-v0 run-validation-membrane --strict")
         self.assertIn("BirthReadinessRuntime", report["runtime_carrier_refs"])
+        self.assertEqual(report["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(report["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(report["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(report["queue_e_birth_repair_ref_set"])))
 
         self.assertEqual(target_status["schema_version"], "life_target_status_v0")
         self.assertEqual(target_status["overall_status"], "open")
         self.assertEqual(digest["current_slice"], "S08_LIFE_TARGET_RUNTIMES")
+        self.assertEqual(digest["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(digest["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(digest["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertGreaterEqual(digest["queue_e_birth_repair_ref_count"], 4)
         self.assertEqual(check_report["status"], "open")
         self.assertIn("consciousness_probe_gate", check_report["closed_gates"])
+        self.assertIn("queue_e_birth_repair_gate", check_report["closed_gates"])
         self.assertEqual(receipt["schema_version"], "birth_readiness_receipt_v0")
         self.assertIn(
             "runtime/state/consciousness/consciousness_probe_bundle.json",
             receipt["state_refs"],
         )
+        self.assertIn(queue_e_profile_ref, receipt["state_refs"])
 
     def test_cli_check_birth_readiness_returns_zero_and_writes_report(self):
         with tempfile.TemporaryDirectory() as tmp:

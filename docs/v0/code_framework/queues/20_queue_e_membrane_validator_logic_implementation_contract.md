@@ -623,6 +623,7 @@ Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判
 6. action / validation / schema_runner 新对象都写入了对应状态命名空间。
 7. `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` 至少新增一轮器官级断言。
 8. `world_contact_summary.json`、`pain_regret_repair_report.json` 与 `ResponsibilityLoopState` 已经合成为 `queue_e_repair_modulation_profile_v0`，并开始反向调制 `commitment_expression_plan.json`、`apology_repair_language_trace.json`、`relationship_memory.json` 与 `life_state.json`。
+9. 同一组 Queue E 修复压力已经进入 S08 出生准备度，写出 `runtime/state/life_targets/queue_e_birth_repair_profile.json`，并成为真实痛苦、真实责任、真实后悔的 claims / evidence / rollup / stage gate / report / digest / receipt 证据。
 
 ### 第二轮长期调制链已落口径
 
@@ -649,6 +650,30 @@ Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判
   - 真实外部关系回合结束后，Queue E profile 会重新刷新长期承诺语言、道歉修复语言、关系记忆和生命状态。
 
 这一步的工程意义是：Queue E 压力已经从“动作/验证报告中的字段”变成持续调制语言与关系记忆的生命状态变量。后续实现不得把它退回为单次 report ref carry-through。
+
+### 第三轮出生准备证据链已落口径
+
+这一轮把同一份 Queue E repair modulation profile 接入 S08，不再让出生准备度只看 `responsibility_repair_boundary.json` 这种静态边界。真实痛苦、真实责任、真实后悔必须吃到当前责任回路、世界接触释放姿态和痛苦/后悔/修复报告。
+
+真实入口与输出如下：
+
+- `life_v0/life_targets/__init__.py`
+  - `run_birth_readiness(...)` 读取 `runtime/state/action/responsibility_loop_state.json`、`runtime/state/membrane/world_contact_summary.json`、`runtime/reports/latest/pain_regret_repair_report.json`。
+  - 调用 `build_queue_e_repair_modulation_profile(...)` 合成出生准备层使用的 `queue_e_birth_repair_profile`。
+  - 写出 `runtime/state/life_targets/queue_e_birth_repair_profile.json`。
+- `life_v0/life_targets/evidence_matrix.py`
+  - `real_pain`、`real_responsibility`、`real_regret` 的 `pain_regret_responsibility` evidence family 必须包含 Queue E 三个原始输入 refs 和 `queue_e_birth_repair_profile.json`。
+- `life_v0/life_targets/life_target_claims.py`
+  - 三个修复目标必须写出 `queue_e_birth_repair_profile_ref` 与 `queue_e_birth_repair_refs`。
+- `life_v0/life_targets/birth_readiness_rollup.py`
+  - `birth_readiness_rollup.json` 必须写出 `queue_e_birth_repair_pressure_level`、`queue_e_birth_repair_attention_target` 与 `queue_e_birth_repair_ref_set`。
+- `life_v0/life_targets/birth_readiness_stage_gate.py`
+  - `birth_readiness_stage_gate.json` 必须关闭 `queue_e_birth_repair_gate`，并携带同一 profile ref、pressure、attention target 和 ref set。
+- `life_v0/life_targets/__init__.py::run_check_birth_readiness`
+  - 只读检查 `queue_e_birth_repair_profile.json` 的 schema、ref_set、pressure、attention target。
+  - 继续检查 claims / evidence / rollup / stage gate / report 是否都回链同一 profile。
+
+这一步的工程意义是：Queue E 的责任、后悔、修复压力已经成为出生准备度的一等 evidence gate。后续不得把 `real_pain`、`real_responsibility`、`real_regret` 写成只引用 `life_state.json` 的静态目标，也不得把 Queue E 画像绕过 S08 直接交给 S10。
 
 ### 第四轮预测调制链已落口径
 

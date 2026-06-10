@@ -11,7 +11,11 @@ def build_birth_readiness_rollup(
     target_status: dict[str, str],
     blocked_reasons: list[str],
     receipt_ref: str,
+    queue_e_birth_repair_profile: dict[str, Any] | None = None,
+    queue_e_birth_repair_profile_ref: str | None = None,
+    queue_e_birth_repair_refs: list[str] | None = None,
 ) -> dict[str, Any]:
+    queue_e_birth_repair_profile = queue_e_birth_repair_profile or {}
     return {
         "schema_version": "birth_readiness_rollup_v0",
         "run_id": run_id,
@@ -22,4 +26,8 @@ def build_birth_readiness_rollup(
         "quarantine_refs": [],
         "replay_needed_refs": [],
         "archive_receipt_ref": receipt_ref,
+        "queue_e_birth_repair_profile_ref": queue_e_birth_repair_profile_ref,
+        "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
+        "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
+        "queue_e_birth_repair_ref_set": list(queue_e_birth_repair_refs or []),
     }

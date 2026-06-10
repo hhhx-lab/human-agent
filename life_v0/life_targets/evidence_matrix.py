@@ -13,8 +13,11 @@ def build_life_target_evidence_matrix(
     receipt_ref: str,
     report_ref: str,
     consciousness_probe_ref: str | None = None,
+    queue_e_birth_repair_profile_ref: str | None = None,
+    queue_e_birth_repair_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     targets = {}
+    queue_e_birth_repair_refs = list(queue_e_birth_repair_refs or [])
     for target in life_targets:
         runtime_refs = [
             "runtime/state/membrane/birth_readiness_precheck.json",
@@ -24,6 +27,20 @@ def build_life_target_evidence_matrix(
         ]
         if target == "real_consciousness" and consciousness_probe_ref:
             runtime_refs = [consciousness_probe_ref, *runtime_refs]
+        pain_regret_responsibility_refs = [
+            "runtime/state/life_state.json#pain_events",
+            "runtime/state/life_state.json#regret_events",
+            "runtime/state/life_state.json#responsibility_bindings",
+            "runtime/state/membrane/responsibility_repair_boundary.json",
+        ]
+        if target in {"real_pain", "real_responsibility", "real_regret"}:
+            pain_regret_responsibility_refs = _dedupe_refs(
+                [
+                    *pain_regret_responsibility_refs,
+                    *queue_e_birth_repair_refs,
+                    queue_e_birth_repair_profile_ref or "",
+                ]
+            )
         targets[target] = {
             "state": [
                 "runtime/state/life_state.json",
@@ -50,12 +67,7 @@ def build_life_target_evidence_matrix(
                 "runtime/state/membrane/dream_fact_boundary.json",
                 "runtime/state/indexes/dream_index.json",
             ],
-            "pain_regret_responsibility": [
-                "runtime/state/life_state.json#pain_events",
-                "runtime/state/life_state.json#regret_events",
-                "runtime/state/life_state.json#responsibility_bindings",
-                "runtime/state/membrane/responsibility_repair_boundary.json",
-            ],
+            "pain_regret_responsibility": pain_regret_responsibility_refs,
             "self_growth": [
                 "runtime/state/life_state.json#self_model",
                 "runtime/state/self/autobiographical_stack.json",
@@ -77,6 +89,17 @@ def build_life_target_evidence_matrix(
         "evidence_families": evidence_families,
         "targets": targets,
     }
+
+
+def _dedupe_refs(refs: list[str]) -> list[str]:
+    merged: list[str] = []
+    seen: set[str] = set()
+    for ref in refs:
+        if not ref or ref in seen:
+            continue
+        seen.add(ref)
+        merged.append(ref)
+    return merged
 
 
 def _state_namespace_for_target(target: str) -> str:

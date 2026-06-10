@@ -147,7 +147,7 @@ P0_DOC_CORPUS_INGESTION
 | `S02_NEURAL_LIFE_CORE` | `稳定` | 固定主体骨架、十二主体系统和内部 bus |
 | `S04_STATE_OBJECT_STORE` | `稳定` | 固定生命状态根、对象注册、迁移种子、记忆写门和 `state_merge_guard.json` 长期合并治理器官；当前 `state_merge_guard.json` 已能在 bootstrap restore 与 live turn writeback 后从关系记忆吸收离线学习、梦境、Queue E 修复和关系修复长期变化来源，并把这些来源继续压进 Packet D 的等待态、回合事件、回应表面、关闭态 resident governance / process report / digest / receipt 证据链，以及下一次后台驻留 lineage 的 `state_merge_presence` 与专用写回槽 |
 | `S03_DIRECTION_LIFE_MEMBRANE` | `稳定` | 固定生命膜、DreamFactGate、责任修复边界和影子行动门 |
-| `S08_LIFE_TARGET_RUNTIMES` | `稳定` | 固定九项目标闭合检查 |
+| `S08_LIFE_TARGET_RUNTIMES` | `稳定` | 固定九项目标闭合检查；当前 `queue_e_birth_repair_profile.json` 已把 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 合成为出生准备层一等证据，并进入真实痛苦、真实责任、真实后悔的 claims / evidence / rollup / stage gate / report / digest / receipt |
 | `S05_VALIDATION_MEMBRANE_OBSERVATION` | `稳定` | 固定 validator、观测和 stage gate |
 | `S09_SCHEMA_RUNNER_CODE` | `稳定` | 固定 schema runner、CLI 和 smoke 路径 |
 | `S06_LIFE_SUPPORT_DEVELOPMENT` | `稳定` | 固定生命支持、防御、预算与成长基础层 |
@@ -333,6 +333,8 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 - `runtime/state/schema_runner/run_manifest.json`
 
 所以当前 Queue E 也不再只是“下一个要做什么”的合同描述，而是已经把行为摘要、验证收口和 schema runner 局部闭包写成了真实对象链。最新一轮又把 `world_observation_route.json`、`periphery_normalization_trace.json` 正式落进 `runtime/state/observation/`，并让 `responsibility_loop_state.json`、`world_contact_summary.json`、`runtime_observation_intake.json` 与 `observation_truth_review.json` 都显式回挂这两份 observation state；与此同时，`responsibility_loop_state.json` 也继续通过 S07 真实投影回 `commitment_truth_state.json`、`responsibility_ledger.json`、`relationship_memory.json` 和 `life_state.json`，并接进 `dialogue_writeback_bundle.json` 的长期交接单。当前如果继续补 Queue E，默认入口不再是 `world_contact_summary.py` 或 validator rollup 本身，而是转向 Packet A 的语言预测消费、Packet C 的长期记忆治理，以及把这批 package-local gates 继续接进 archive / reporting / process supervisor 的长期连续体。
+
+最新这一步又把同一份 Queue E 修复压力正式接进 S08 出生准备：`life_v0/life_targets/__init__.py` 会读取 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json`，调用 `build_queue_e_repair_modulation_profile(...)` 写出 `runtime/state/life_targets/queue_e_birth_repair_profile.json`；`life_target_claims.py`、`evidence_matrix.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py` 与 `run_check_birth_readiness` 会共同检查并回链同一 profile。状态板因此把这一格视为“Queue E 责任/后悔/修复压力已经进入出生准备的一等 gate”，不是只停在 S10 replay/growth 或 process supervisor carry-through。
 
 ## 当前链尾开工包
 

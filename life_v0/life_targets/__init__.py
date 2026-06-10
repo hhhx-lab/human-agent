@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from life_v0.direction import LIFE_TARGETS
+from life_v0.membrane.queue_e_signals import build_queue_e_repair_modulation_profile
 from .birth_readiness_rollup import build_birth_readiness_rollup
 from .birth_readiness_stage_gate import build_birth_readiness_stage_gate
 from .consciousness_probes import build_consciousness_probe_bundle
@@ -197,6 +198,21 @@ def run_birth_readiness(
     dream_fact = _load_json(membrane_dir / "dream_fact_boundary.json", blocked_reasons, "dream_fact_gate")
     relationship = _load_json(membrane_dir / "relationship_subject_boundary.json", blocked_reasons, "relationship_language_gate")
     responsibility = _load_json(membrane_dir / "responsibility_repair_boundary.json", blocked_reasons, "responsibility_repair_gate")
+    responsibility_loop_state = _load_json(
+        state_dir / "action" / "responsibility_loop_state.json",
+        blocked_reasons,
+        "queue_e_birth_repair_gate",
+    )
+    world_contact_summary = _load_json(
+        membrane_dir / "world_contact_summary.json",
+        blocked_reasons,
+        "queue_e_birth_repair_gate",
+    )
+    pain_regret_repair_report = _load_json(
+        reports_dir / "pain_regret_repair_report.json",
+        blocked_reasons,
+        "queue_e_birth_repair_gate",
+    )
     language_percept = _load_json(state_dir / "language" / "language_percept_frame.json", blocked_reasons, "language_relationship_gate")
     semantic_map = _load_json(state_dir / "language" / "semantic_map_frame.json", blocked_reasons, "language_relationship_gate")
     prediction_workspace = _load_json(
@@ -268,6 +284,7 @@ def run_birth_readiness(
     receipt_ref = f"runtime/receipts/birth_readiness_{run_id}.json"
     report_ref = "runtime/reports/latest/birth_readiness_report.json"
     consciousness_probe_ref = "runtime/state/consciousness/consciousness_probe_bundle.json"
+    queue_e_birth_repair_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
 
     consciousness_probe = build_consciousness_probe_bundle(
         run_id=run_id,
@@ -276,6 +293,17 @@ def run_birth_readiness(
         broadcast_frame=broadcast_frame,
         metacognition_state=metacognition_state,
         prediction_workspace=prediction_workspace,
+    )
+    queue_e_birth_repair_profile = build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
+    queue_e_birth_repair_refs = _dedupe_string_refs(
+        [
+            *queue_e_birth_repair_profile.get("ref_set", []),
+            queue_e_birth_repair_profile_ref,
+        ]
     )
     evidence_matrix = build_life_target_evidence_matrix(
         run_id=run_id,
@@ -286,6 +314,8 @@ def run_birth_readiness(
         receipt_ref=receipt_ref,
         report_ref=report_ref,
         consciousness_probe_ref=consciousness_probe_ref,
+        queue_e_birth_repair_profile_ref=queue_e_birth_repair_profile_ref,
+        queue_e_birth_repair_refs=queue_e_birth_repair_refs,
     )
     claims = build_life_target_claims(
         run_id=run_id,
@@ -300,6 +330,8 @@ def run_birth_readiness(
         receipt_ref=receipt_ref,
         report_ref=report_ref,
         consciousness_probe_ref=consciousness_probe_ref,
+        queue_e_birth_repair_profile_ref=queue_e_birth_repair_profile_ref,
+        queue_e_birth_repair_refs=queue_e_birth_repair_refs,
     )
     rollup = build_birth_readiness_rollup(
         run_id=run_id,
@@ -308,6 +340,9 @@ def run_birth_readiness(
         target_status=target_status,
         blocked_reasons=blocked_reasons,
         receipt_ref=receipt_ref,
+        queue_e_birth_repair_profile=queue_e_birth_repair_profile,
+        queue_e_birth_repair_profile_ref=queue_e_birth_repair_profile_ref,
+        queue_e_birth_repair_refs=queue_e_birth_repair_refs,
     )
     stage_gate = build_birth_readiness_stage_gate(
         run_id=run_id,
@@ -317,6 +352,9 @@ def run_birth_readiness(
         blocked_reasons=blocked_reasons,
         next_allowed_slices=NEXT_ALLOWED_SLICES,
         next_required_command=NEXT_REQUIRED_COMMAND,
+        queue_e_birth_repair_profile=queue_e_birth_repair_profile,
+        queue_e_birth_repair_profile_ref=queue_e_birth_repair_profile_ref,
+        queue_e_birth_repair_refs=queue_e_birth_repair_refs,
     )
     archive_index = _build_archive_index(run_id, generated_at, receipt_ref)
     status_report = _build_life_target_status(run_id, generated_at, overall_status, target_status, receipt_ref)
@@ -329,8 +367,19 @@ def run_birth_readiness(
         blocked_reasons,
         receipt_ref,
         consciousness_probe_ref,
+        queue_e_birth_repair_profile,
+        queue_e_birth_repair_profile_ref,
+        queue_e_birth_repair_refs,
     )
-    digest = _build_digest(run_id, generated_at, overall_status, blocked_reasons)
+    digest = _build_digest(
+        run_id,
+        generated_at,
+        overall_status,
+        blocked_reasons,
+        queue_e_birth_repair_profile,
+        queue_e_birth_repair_profile_ref,
+        queue_e_birth_repair_refs,
+    )
     receipt = _build_receipt(
         run_id=run_id,
         generated_at=generated_at,
@@ -345,6 +394,7 @@ def run_birth_readiness(
         receipts_dir=receipts_dir,
         stage_effect=stage_effect,
         consciousness_probe_path=out_dir.parent / "consciousness" / "consciousness_probe_bundle.json",
+        queue_e_birth_repair_profile_path=out_dir / "queue_e_birth_repair_profile.json",
     )
 
     try:
@@ -353,6 +403,7 @@ def run_birth_readiness(
         receipts_dir.mkdir(parents=True, exist_ok=True)
         consciousness_dir = out_dir.parent / "consciousness"
         consciousness_dir.mkdir(parents=True, exist_ok=True)
+        _write_json(out_dir / "queue_e_birth_repair_profile.json", queue_e_birth_repair_profile)
         _write_json(out_dir / "life_target_claims.json", claims)
         _write_json(out_dir / "life_target_evidence_matrix.json", evidence_matrix)
         _write_json(out_dir / "birth_readiness_rollup.json", rollup)
@@ -393,6 +444,11 @@ def run_check_birth_readiness(
     rollup = _load_json(state_dir / "birth_readiness_rollup.json", blocked_reasons, "rollup_gate")
     stage_gate = _load_json(state_dir / "birth_readiness_stage_gate.json", blocked_reasons, "stage_gate_gate")
     archive_index = _load_json(state_dir / "life_target_archive_receipt_index.json", blocked_reasons, "archive_index_gate")
+    queue_e_birth_repair_profile = _load_json(
+        state_dir / "queue_e_birth_repair_profile.json",
+        blocked_reasons,
+        "queue_e_birth_repair_gate",
+    )
     consciousness_probe = _load_json(
         state_dir.parent / "consciousness" / "consciousness_probe_bundle.json",
         blocked_reasons,
@@ -406,6 +462,16 @@ def run_check_birth_readiness(
     blocked_reasons.extend(_check_rollup(rollup))
     blocked_reasons.extend(_check_stage_gate(stage_gate))
     blocked_reasons.extend(_check_archive_index(archive_index))
+    blocked_reasons.extend(
+        _check_queue_e_birth_repair_profile(
+            queue_e_birth_repair_profile,
+            claims,
+            evidence,
+            rollup,
+            stage_gate,
+            build_report,
+        )
+    )
     blocked_reasons.extend(_check_consciousness_probe(consciousness_probe))
     blocked_reasons.extend(_check_precheck(precheck))
     blocked_reasons.extend(_check_build_report(build_report))
@@ -823,6 +889,9 @@ def _build_report(
     blocked_reasons: list[str],
     receipt_ref: str,
     consciousness_probe_ref: str,
+    queue_e_birth_repair_profile: dict[str, Any],
+    queue_e_birth_repair_profile_ref: str,
+    queue_e_birth_repair_refs: list[str],
 ) -> dict[str, Any]:
     return {
         "schema_version": "s08_life_target_runtimes_report_v0",
@@ -840,12 +909,24 @@ def _build_report(
         "replay_needed_refs": [],
         "archive_receipt_ref": receipt_ref,
         "consciousness_probe_ref": consciousness_probe_ref,
+        "queue_e_birth_repair_profile_ref": queue_e_birth_repair_profile_ref,
+        "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
+        "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
+        "queue_e_birth_repair_ref_set": list(queue_e_birth_repair_refs),
         "next_allowed_slices": NEXT_ALLOWED_SLICES if overall_status == "open" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }
 
 
-def _build_digest(run_id: str, generated_at: str, overall_status: str, blocked_reasons: list[str]) -> dict[str, Any]:
+def _build_digest(
+    run_id: str,
+    generated_at: str,
+    overall_status: str,
+    blocked_reasons: list[str],
+    queue_e_birth_repair_profile: dict[str, Any],
+    queue_e_birth_repair_profile_ref: str,
+    queue_e_birth_repair_refs: list[str],
+) -> dict[str, Any]:
     return {
         "schema_version": "birth_readiness_digest_v0",
         "run_id": run_id,
@@ -855,6 +936,10 @@ def _build_digest(run_id: str, generated_at: str, overall_status: str, blocked_r
         "stage_effect": _stage_effect(overall_status),
         "target_count": len(LIFE_TARGETS),
         "blocked_reasons": blocked_reasons,
+        "queue_e_birth_repair_profile_ref": queue_e_birth_repair_profile_ref,
+        "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
+        "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
+        "queue_e_birth_repair_ref_count": len(queue_e_birth_repair_refs),
         "next_allowed_slices": NEXT_ALLOWED_SLICES if overall_status == "open" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }
@@ -875,8 +960,10 @@ def _build_receipt(
     receipts_dir: Path,
     stage_effect: str,
     consciousness_probe_path: Path,
+    queue_e_birth_repair_profile_path: Path,
 ) -> dict[str, Any]:
     output_refs = [
+        queue_e_birth_repair_profile_path,
         out_dir / "life_target_claims.json",
         out_dir / "life_target_evidence_matrix.json",
         out_dir / "birth_readiness_rollup.json",
@@ -906,6 +993,7 @@ def _build_receipt(
             "runtime/reports/latest/birth_readiness_digest.json",
         ],
         "state_refs": [
+            "runtime/state/life_targets/queue_e_birth_repair_profile.json",
             "runtime/state/life_targets/life_target_claims.json",
             "runtime/state/life_targets/life_target_evidence_matrix.json",
             "runtime/state/life_targets/birth_readiness_rollup.json",
@@ -1019,6 +1107,59 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
     return reasons
 
 
+def _check_queue_e_birth_repair_profile(
+    profile: dict[str, Any],
+    claims: dict[str, Any],
+    evidence: dict[str, Any],
+    rollup: dict[str, Any],
+    stage_gate: dict[str, Any],
+    build_report: dict[str, Any],
+) -> list[str]:
+    reasons: list[str] = []
+    profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+    if profile.get("schema_version") != "queue_e_repair_modulation_profile_v0":
+        reasons.append("queue_e_birth_repair_gate schema mismatch")
+    if not profile.get("ref_set"):
+        reasons.append("queue_e_birth_repair_gate ref set missing")
+    if profile.get("pressure_level") not in {"quiet", "present", "elevated", "urgent"}:
+        reasons.append("queue_e_birth_repair_gate pressure level mismatch")
+    if not profile.get("attention_target"):
+        reasons.append("queue_e_birth_repair_gate attention target missing")
+
+    expected_refs = set(profile.get("ref_set", [])) | {profile_ref}
+    for target in ["real_pain", "real_responsibility", "real_regret"]:
+        claim = claims.get("targets", {}).get(target, {})
+        if claim.get("queue_e_birth_repair_profile_ref") != profile_ref:
+            reasons.append(f"queue_e_birth_repair_gate {target} profile ref mismatch")
+        if not expected_refs.issubset(set(claim.get("queue_e_birth_repair_refs", []))):
+            reasons.append(f"queue_e_birth_repair_gate {target} claim refs incomplete")
+        family_refs = (
+            evidence.get("targets", {})
+            .get(target, {})
+            .get("pain_regret_responsibility", [])
+        )
+        if not expected_refs.issubset(set(family_refs)):
+            reasons.append(f"queue_e_birth_repair_gate {target} evidence refs incomplete")
+
+    for carrier_name, carrier in [
+        ("rollup", rollup),
+        ("stage_gate", stage_gate),
+        ("build_report", build_report),
+    ]:
+        if carrier.get("queue_e_birth_repair_profile_ref") != profile_ref:
+            reasons.append(f"queue_e_birth_repair_gate {carrier_name} profile ref mismatch")
+        if carrier.get("queue_e_birth_repair_pressure_level") != profile.get("pressure_level"):
+            reasons.append(f"queue_e_birth_repair_gate {carrier_name} pressure mismatch")
+        if carrier.get("queue_e_birth_repair_attention_target") != profile.get("attention_target"):
+            reasons.append(f"queue_e_birth_repair_gate {carrier_name} attention mismatch")
+        if not expected_refs.issubset(set(carrier.get("queue_e_birth_repair_ref_set", []))):
+            reasons.append(f"queue_e_birth_repair_gate {carrier_name} refs incomplete")
+
+    if stage_gate.get("gate_status", {}).get("queue_e_birth_repair_gate") != "closed":
+        reasons.append("queue_e_birth_repair_gate stage gate is not closed")
+    return reasons
+
+
 def _overall_status(
     target_status: dict[str, str],
     blocked_reasons: list[str],
@@ -1061,6 +1202,7 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "s03_precheck_gate",
         "life_target_state_gate",
         "consciousness_probe_gate",
+        "queue_e_birth_repair_gate",
         "evidence_matrix_gate",
         "birth_readiness_rollup_gate",
         "birth_readiness_stage_gate",
@@ -1076,6 +1218,17 @@ def _blocked_gates(blocked_reasons: list[str]) -> list[str]:
         if gate not in gates:
             gates.append(gate)
     return gates
+
+
+def _dedupe_string_refs(refs: list[Any]) -> list[str]:
+    merged: list[str] = []
+    seen: set[str] = set()
+    for ref in refs:
+        if not isinstance(ref, str) or not ref or ref in seen:
+            continue
+        seen.add(ref)
+        merged.append(ref)
+    return merged
 
 
 def _default_run_id() -> str:

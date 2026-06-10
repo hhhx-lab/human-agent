@@ -17,13 +17,16 @@ def build_life_target_claims(
     receipt_ref: str,
     report_ref: str,
     consciousness_probe_ref: str | None = None,
+    queue_e_birth_repair_profile_ref: str | None = None,
+    queue_e_birth_repair_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     targets = {}
+    queue_e_birth_repair_refs = list(queue_e_birth_repair_refs or [])
     for target in life_targets:
         runtime_refs = list(evidence_matrix["targets"][target]["runtime"])
         if target == "real_consciousness" and consciousness_probe_ref:
             runtime_refs = [consciousness_probe_ref, *runtime_refs]
-        targets[target] = {
+        target_claim = {
             "status": target_status[target],
             "source_doc_refs": target_source_refs[target],
             "carrier_refs": target_carriers[target],
@@ -33,6 +36,12 @@ def build_life_target_claims(
             "report_refs": [report_ref, "runtime/reports/latest/life_target_status.json"],
             "archive_receipt_refs": [receipt_ref],
         }
+        if target in {"real_pain", "real_responsibility", "real_regret"}:
+            target_claim["queue_e_birth_repair_profile_ref"] = (
+                queue_e_birth_repair_profile_ref
+            )
+            target_claim["queue_e_birth_repair_refs"] = queue_e_birth_repair_refs
+        targets[target] = target_claim
     return {
         "schema_version": "life_target_claims_v0",
         "run_id": run_id,
