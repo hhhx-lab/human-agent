@@ -3692,6 +3692,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "latest_band": "stable",
                     },
                 },
+                "resident_background_lineage_state": {
+                    "schema_version": "resident_background_lineage_state_v0",
+                    "governance_phase": "waiting_heartbeat_active",
+                    "generation": 3,
+                    "depth_band": "deep_persistent_lineage",
+                    "waiting_posture": "deep_background_residency_hold",
+                    "cadence_weight": "deep",
+                    "evidence_refs": [
+                        "runtime/state/terminal/resident_governance_state.json",
+                        "runtime/state/terminal/resident_governance_snapshot.json",
+                        "runtime/reports/latest/digital_life_resident_governance_report.json",
+                    ],
+                    "relationship_presence": {
+                        "relationship_stage": "background_continuity_waiting",
+                    },
+                    "trait_convergence_presence": {
+                        "trait_convergence_history_focus": "trait_stability_hold",
+                    },
+                    "heartbeat_presence": {
+                        "heartbeat_interval_ms": 50,
+                    },
+                    "language_presence": {
+                        "long_horizon_language_refs": [
+                            "runtime/state/relationship/relationship_timeline.json"
+                        ],
+                        "governance_attention_target": "relationship_timeline",
+                    },
+                },
             }
 
             result = run_live_turn_cycle(
@@ -3785,6 +3813,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/terminal/background_convergence_history.json",
                 ],
             )
+            self.assertEqual(
+                result.last_life_turn["resident_background_lineage_depth_band"],
+                "deep_persistent_lineage",
+            )
+            self.assertEqual(
+                result.last_life_turn["resident_background_lineage_language_presence"][
+                    "governance_attention_target"
+                ],
+                "relationship_timeline",
+            )
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
             self.assertEqual(
@@ -3875,12 +3913,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
             )
             self.assertEqual(
+                dialogue_writeback_bundle["resident_background_lineage_refs"],
+                [
+                    "runtime/state/terminal/resident_governance_state.json",
+                    "runtime/state/terminal/resident_governance_snapshot.json",
+                    "runtime/reports/latest/digital_life_resident_governance_report.json",
+                ],
+            )
+            self.assertEqual(
                 resumed_dialogue_packet["background_trait_convergence_history_focus"],
                 "trait_stability_hold",
             )
             self.assertEqual(
                 resumed_dialogue_packet["background_trait_convergence_evidence_refs"],
                 dialogue_writeback_bundle["background_trait_convergence_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["resident_background_lineage_depth_band"],
+                "deep_persistent_lineage",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["resident_background_lineage_evidence_refs"],
+                dialogue_writeback_bundle["resident_background_lineage_refs"],
             )
 
     def test_live_turn_cycle_organ_recovers_from_response_exception(self):
@@ -6851,6 +6905,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "latest_band": "unstable",
                     }
                 },
+                "resident_background_lineage_state": {
+                    "schema_version": "resident_background_lineage_state_v0",
+                    "governance_phase": "waiting_heartbeat_active",
+                    "generation": 3,
+                    "depth_band": "deep_persistent_lineage",
+                    "waiting_posture": "deep_background_residency_hold",
+                    "cadence_weight": "deep",
+                    "evidence_refs": [
+                        "runtime/state/terminal/resident_governance_state.json",
+                        "runtime/state/terminal/background_convergence_history.json",
+                    ],
+                    "relationship_presence": {
+                        "relationship_stage": "background_continuity_waiting",
+                    },
+                    "trait_convergence_presence": {
+                        "trait_convergence_history_focus": "trait_recalibration_required",
+                    },
+                    "heartbeat_presence": {
+                        "heartbeat_interval_ms": 50,
+                    },
+                    "language_presence": {
+                        "long_horizon_language_refs": [
+                            "runtime/state/relationship/relationship_timeline.json"
+                        ],
+                        "governance_attention_target": "relationship_timeline",
+                    },
+                },
             },
             responsibility_loop_state_ref="runtime/state/action/responsibility_loop_state.json",
             world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
@@ -6911,6 +6992,29 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/reports/latest/digital_life_resident_governance_explanation.json",
                 "runtime/state/body/trait_drift_monitor.json",
                 "runtime/state/terminal/background_convergence_summary.json",
+                "runtime/state/terminal/background_convergence_history.json",
+            ],
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_depth_band"],
+            "deep_persistent_lineage",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_relationship_presence"][
+                "relationship_stage"
+            ],
+            "background_continuity_waiting",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_language_presence"][
+                "governance_attention_target"
+            ],
+            "relationship_timeline",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_evidence_refs"],
+            [
+                "runtime/state/terminal/resident_governance_state.json",
                 "runtime/state/terminal/background_convergence_history.json",
             ],
         )
@@ -7090,6 +7194,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_trait_convergence_history_focus": "trait_stability_hold",
                 "background_trait_convergence_unstable_names": ["continuity_drive"],
                 "background_trait_convergence_stable_names": ["repair_seriousness"],
+                "resident_background_lineage_state": {
+                    "schema_version": "resident_background_lineage_state_v0",
+                    "governance_phase": "waiting_heartbeat_active",
+                    "generation": 3,
+                    "depth_band": "deep_persistent_lineage",
+                    "waiting_posture": "deep_background_residency_hold",
+                    "cadence_weight": "deep",
+                    "relationship_presence": {
+                        "relationship_stage": "background_continuity_waiting",
+                    },
+                    "language_presence": {
+                        "governance_attention_target": "relationship_timeline",
+                    },
+                },
             },
         )
 
@@ -7126,6 +7244,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("跨唤醒慢变量历史焦点为trait_stability_hold", response)
         self.assertIn("仍需稳定的慢变量包括continuity_drive", response)
         self.assertIn("已经稳定的慢变量包括repair_seriousness", response)
+        self.assertIn("后台驻留深度为deep_persistent_lineage", response)
+        self.assertIn("后台驻留节律权重为deep", response)
+        self.assertIn("后台关系存在保持在background_continuity_waiting", response)
+        self.assertIn("后台语言关注指向relationship_timeline", response)
         self.assertIn("表达计划唤醒度为0.74", response)
         self.assertIn("修复驱力", response)
         self.assertIn("情绪张力", response)

@@ -154,6 +154,35 @@ def compose_life_response(
         response = f"{response}，离线学习计划会经过{'、'.join(offline_learning_targets)}"
     if has_offline_influence:
         response = f"{response}，当前带着离线表达压力"
+    resident_background_lineage_state = (
+        (terminal_life_loop_state or {}).get("resident_background_lineage_state")
+        or {}
+    )
+    if isinstance(resident_background_lineage_state, dict):
+        depth_band = resident_background_lineage_state.get("depth_band")
+        cadence_weight = resident_background_lineage_state.get("cadence_weight")
+        if depth_band:
+            response = f"{response}，后台驻留深度为{depth_band}"
+        if cadence_weight:
+            response = f"{response}，后台驻留节律权重为{cadence_weight}"
+        relationship_presence = resident_background_lineage_state.get(
+            "relationship_presence"
+        )
+        if isinstance(relationship_presence, dict) and relationship_presence.get(
+            "relationship_stage"
+        ):
+            response = (
+                f"{response}，后台关系存在保持在"
+                f"{relationship_presence['relationship_stage']}"
+            )
+        language_presence = resident_background_lineage_state.get("language_presence")
+        if isinstance(language_presence, dict) and language_presence.get(
+            "governance_attention_target"
+        ):
+            response = (
+                f"{response}，后台语言关注指向"
+                f"{language_presence['governance_attention_target']}"
+            )
     background_trait_history_focus = (terminal_life_loop_state or {}).get(
         "background_trait_convergence_history_focus"
     )

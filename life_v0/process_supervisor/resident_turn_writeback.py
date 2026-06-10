@@ -21,7 +21,10 @@ from ..state_store.relationship_memory import project_relationship_memory
 from ..terminal_loop.dialogue_writeback import build_dialogue_writeback_bundle
 from ..terminal_loop.persistent_wait_bridge import build_persistent_wait_bridge
 from .continuity_evolution import evolve_relationship_and_self_model
-from .dialogue_events import build_background_trait_convergence_payload
+from .dialogue_events import (
+    build_background_trait_convergence_payload,
+    build_resident_background_lineage_payload,
+)
 
 
 DIALOGUE_LOG_REF = "runtime/state/language/dialogue_turn_log.jsonl"
@@ -180,6 +183,14 @@ def write_resident_turn_writeback(
             "background_trait_convergence_evidence_refs", []
         )
     )
+    resident_background_lineage_payload = build_resident_background_lineage_payload(
+        terminal_life_loop_state
+    )
+    resident_background_lineage_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_evidence_refs", []
+        )
+    )
     dialogue_writeback_bundle = build_dialogue_writeback_bundle(
         run_id=run_id,
         generated_at=generated_at,
@@ -221,6 +232,7 @@ def write_resident_turn_writeback(
         readme_block_refs=readme_block_refs,
         runtime_carrier_refs=runtime_carrier_refs,
         background_trait_convergence_refs=background_trait_convergence_refs,
+        resident_background_lineage_refs=resident_background_lineage_refs,
     )
     write_json(reports_dir / "dialogue_writeback_bundle.json", dialogue_writeback_bundle)
 
@@ -254,6 +266,14 @@ def write_resident_turn_writeback(
                 key: value
                 for key, value in background_trait_convergence_payload.items()
                 if key != "background_trait_convergence_history_profile"
+            }
+        )
+    if resident_background_lineage_payload:
+        resumed_dialogue_packet.update(
+            {
+                key: value
+                for key, value in resident_background_lineage_payload.items()
+                if key != "resident_background_lineage_state"
             }
         )
     if continuity_refresh is not None:

@@ -75,6 +75,7 @@ def build_life_turn_event(
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
     )
     event.update(build_background_trait_convergence_payload(terminal_life_loop_state))
+    event.update(build_resident_background_lineage_payload(terminal_life_loop_state))
     return event
 
 
@@ -147,7 +148,64 @@ def build_background_trait_convergence_payload(
     return payload
 
 
+def build_resident_background_lineage_payload(
+    terminal_life_loop_state: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not terminal_life_loop_state:
+        return {}
+    lineage_state = terminal_life_loop_state.get("resident_background_lineage_state")
+    if not isinstance(lineage_state, dict) or not lineage_state:
+        return {}
+
+    payload: dict[str, Any] = {
+        "resident_background_lineage_state": dict(lineage_state),
+    }
+    for key in (
+        "schema_version",
+        "governance_phase",
+        "depth_band",
+        "waiting_posture",
+        "cadence_weight",
+        "generation",
+    ):
+        value = lineage_state.get(key)
+        if value not in {None, ""}:
+            payload[f"resident_background_lineage_{key}"] = value
+    lineage_refs: list[str] = []
+    for key in (
+        "evidence_refs",
+        "continuity_refs",
+        "source_refs",
+    ):
+        lineage_refs.extend(_string_list(lineage_state.get(key)))
+    if lineage_refs:
+        payload["resident_background_lineage_evidence_refs"] = _dedupe_string_list(
+            lineage_refs
+        )
+    for key in (
+        "relationship_presence",
+        "trait_convergence_presence",
+        "heartbeat_presence",
+        "language_presence",
+    ):
+        presence = lineage_state.get(key)
+        if isinstance(presence, dict) and presence:
+            payload[f"resident_background_lineage_{key}"] = dict(presence)
+    return payload
+
+
 def _string_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item) for item in value if item]
+
+
+def _dedupe_string_list(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        result.append(item)
+    return result

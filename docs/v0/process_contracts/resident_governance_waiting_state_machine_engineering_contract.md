@@ -275,6 +275,8 @@ restore shell completed
 - `trait_convergence_presence`：承接 `background_trait_slow_variable_summary`、trait convergence history focus、稳定/不稳定慢变量名单、history profile、trait drift monitor ref。
 - `heartbeat_presence`：承接当前或后台 `idle_heartbeat_trace_ref/count`、heartbeat interval 与下一步 idle action。
 - `language_presence`：承接长期语言对象 refs、长期优先级 profile、当前治理注意目标/理由/节律。
+
+这四个子面不能只作为治理文件里的静态字段存在。真实回合链必须继续消费它们：`dialogue_events.py` 的 `digital_life_turn` 要保存 lineage 摘要与 presence 子面，`response_surface.py` 要把后台驻留深度、关系存在和语言关注转成回应表面压力，`dialogue_writeback_bundle.json` 要保留 `resident_background_lineage_refs`，`resumed_external_dialogue_packet.json` 要保存下一轮恢复可直接读取的 lineage 摘要证据。
 - `queue_e_priority_band`
 - `nightmare_risk_ref`
 - `belief_learning_plan_ref`
