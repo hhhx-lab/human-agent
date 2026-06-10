@@ -2156,6 +2156,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     },
                 },
             )
+            self._write_json(
+                reports_dir / "digital_life_resident_governance_explanation.json",
+                {
+                    "schema_version": "digital_life_resident_governance_explanation_v0",
+                    "run_id": "resume-summary-parent",
+                    "dominant_driver_family": "background_history_stability_hold",
+                    "next_wake_expectation": "stabilize_cross_wake_convergence_history_before_accepting_external_turn",
+                    "continuity_story": [
+                        "dominant attention target is background_convergence_history_stability",
+                        "background convergence history trend is integrating_cross_wake_convergence across 2 wake samples",
+                    ],
+                },
+            )
 
             profile = load_background_continuity_profile(
                 terminal_dir=terminal_dir,
@@ -2179,9 +2192,32 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/background_convergence_history.json",
                 profile["background_continuity_ref_set"],
             )
+            self.assertIn(
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                profile["background_continuity_ref_set"],
+            )
             self.assertEqual(
                 profile["background_convergence_summary_ref"],
                 "runtime/state/terminal/background_convergence_summary.json",
+            )
+            self.assertEqual(
+                profile["background_resident_governance_explanation_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+            )
+            self.assertEqual(
+                profile["background_governance_driver_family"],
+                "background_history_stability_hold",
+            )
+            self.assertEqual(
+                profile["background_next_wake_expectation"],
+                "stabilize_cross_wake_convergence_history_before_accepting_external_turn",
+            )
+            self.assertEqual(
+                profile["background_governance_explanation_story"],
+                [
+                    "dominant attention target is background_convergence_history_stability",
+                    "background convergence history trend is integrating_cross_wake_convergence across 2 wake samples",
+                ],
             )
             self.assertEqual(
                 profile["background_convergence_history_ref"],
@@ -2463,6 +2499,27 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/reports/latest/digital_life_resident_governance_report.json",
             )
             self.assertEqual(
+                idle_strategy["background_resident_governance_explanation_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+            )
+            self.assertIn(
+                idle_strategy["background_governance_driver_family"],
+                {
+                    "background_history_recalibration_hold",
+                    "background_history_stability_hold",
+                    "background_trait_convergence_hold",
+                    "background_convergence_recalibration",
+                    "queue_e_repair_guard",
+                    "replay_growth_reconsolidation",
+                    "long_horizon_language_continuity",
+                    "baseline_waiting_presence",
+                },
+            )
+            self.assertIn(
+                "background_next_wake_expectation",
+                idle_strategy,
+            )
+            self.assertEqual(
                 idle_strategy["background_trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
             )
@@ -2504,6 +2561,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(
+                resident_governance_state["background_resident_governance_explanation_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+            )
+            self.assertEqual(
+                resident_governance_state["background_next_wake_expectation"],
+                idle_strategy["background_next_wake_expectation"],
+            )
+            self.assertEqual(
                 resident_governance_state["background_trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
             )
@@ -2529,6 +2594,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(
+                idle_continuity["background_resident_governance_explanation_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+            )
+            self.assertEqual(
+                idle_continuity["background_next_wake_expectation"],
+                idle_strategy["background_next_wake_expectation"],
+            )
+            self.assertEqual(
                 idle_continuity["background_trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
             )
@@ -2543,6 +2616,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 terminal_life_loop_state["background_resident_governance_state_ref"],
                 "runtime/state/terminal/resident_governance_state.json",
+            )
+            self.assertEqual(
+                terminal_life_loop_state["background_resident_governance_explanation_ref"],
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+            )
+            self.assertEqual(
+                terminal_life_loop_state["background_next_wake_expectation"],
+                idle_strategy["background_next_wake_expectation"],
             )
             self.assertEqual(
                 terminal_life_loop_state["background_trait_drift_monitor_ref"],

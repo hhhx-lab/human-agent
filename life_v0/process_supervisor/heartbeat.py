@@ -246,6 +246,10 @@ def write_waiting_heartbeat(
         "background_max_trait_delta_from_background",
         "background_average_trait_delta_from_background",
         "background_trait_convergence_summary",
+        "background_resident_governance_explanation_ref",
+        "background_governance_driver_family",
+        "background_next_wake_expectation",
+        "background_governance_explanation_story",
         "background_trait_drift_monitor_ref",
         "long_horizon_language_refs",
         "signal_media_ref",
@@ -367,6 +371,18 @@ def write_waiting_heartbeat(
         ),
         background_convergence_attention_target=idle_strategy.get(
             "background_convergence_attention_target"
+        ),
+        background_resident_governance_explanation_ref=idle_strategy.get(
+            "background_resident_governance_explanation_ref"
+        ),
+        background_governance_driver_family=idle_strategy.get(
+            "background_governance_driver_family"
+        ),
+        background_next_wake_expectation=idle_strategy.get(
+            "background_next_wake_expectation"
+        ),
+        background_governance_explanation_story=idle_strategy.get(
+            "background_governance_explanation_story"
         ),
         background_trait_drift_monitor_ref=idle_strategy.get(
             "background_trait_drift_monitor_ref"

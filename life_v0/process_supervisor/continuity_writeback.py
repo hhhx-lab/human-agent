@@ -48,6 +48,10 @@ def build_idle_continuity_frame(
     background_convergence_state: str | None = None,
     background_convergence_pressure_level: str | None = None,
     background_convergence_attention_target: str | None = None,
+    background_resident_governance_explanation_ref: str | None = None,
+    background_governance_driver_family: str | None = None,
+    background_next_wake_expectation: str | None = None,
+    background_governance_explanation_story: list[str] | None = None,
     background_trait_drift_monitor_ref: str | None = None,
     signal_media_ref: str | None = None,
     belief_state_ref: str | None = None,
@@ -170,6 +174,20 @@ def build_idle_continuity_frame(
     if background_convergence_attention_target:
         payload["background_convergence_attention_target"] = (
             background_convergence_attention_target
+        )
+    if background_resident_governance_explanation_ref:
+        payload["background_resident_governance_explanation_ref"] = (
+            background_resident_governance_explanation_ref
+        )
+    if background_governance_driver_family:
+        payload["background_governance_driver_family"] = (
+            background_governance_driver_family
+        )
+    if background_next_wake_expectation:
+        payload["background_next_wake_expectation"] = background_next_wake_expectation
+    if background_governance_explanation_story:
+        payload["background_governance_explanation_story"] = list(
+            background_governance_explanation_story
         )
     if background_trait_drift_monitor_ref:
         payload["background_trait_drift_monitor_ref"] = background_trait_drift_monitor_ref

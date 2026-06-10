@@ -17,6 +17,9 @@ BACKGROUND_RESIDENT_GOVERNANCE_STATE_REF = (
 BACKGROUND_RESIDENT_GOVERNANCE_REPORT_REF = (
     "runtime/reports/latest/digital_life_resident_governance_report.json"
 )
+BACKGROUND_RESIDENT_GOVERNANCE_EXPLANATION_REF = (
+    "runtime/reports/latest/digital_life_resident_governance_explanation.json"
+)
 BACKGROUND_PERSISTENT_PROCESS_REPORT_REF = (
     "runtime/reports/latest/digital_life_persistent_process_report.json"
 )
@@ -40,6 +43,9 @@ def load_background_continuity_profile(
     resident_governance_report = _read_json_if_exists(
         reports_dir / "digital_life_resident_governance_report.json"
     )
+    resident_governance_explanation = _read_json_if_exists(
+        reports_dir / "digital_life_resident_governance_explanation.json"
+    )
     persistent_process_report = _read_json_if_exists(
         reports_dir / "digital_life_persistent_process_report.json"
     )
@@ -50,6 +56,7 @@ def load_background_continuity_profile(
         and not background_convergence_history
         and not snapshot
         and not resident_governance_report
+        and not resident_governance_explanation
         and not persistent_process_report
     ):
         return {}
@@ -101,6 +108,10 @@ def load_background_continuity_profile(
             (BACKGROUND_CONVERGENCE_HISTORY_REF, background_convergence_history),
             (BACKGROUND_RESIDENT_GOVERNANCE_SNAPSHOT_REF, snapshot),
             (BACKGROUND_RESIDENT_GOVERNANCE_REPORT_REF, resident_governance_report),
+            (
+                BACKGROUND_RESIDENT_GOVERNANCE_EXPLANATION_REF,
+                resident_governance_explanation,
+            ),
             (BACKGROUND_PERSISTENT_PROCESS_REPORT_REF, persistent_process_report),
         ]
         if payload
@@ -254,6 +265,23 @@ def load_background_continuity_profile(
         profile["background_resident_governance_report_ref"] = (
             BACKGROUND_RESIDENT_GOVERNANCE_REPORT_REF
         )
+    if resident_governance_explanation:
+        profile["background_resident_governance_explanation_ref"] = (
+            BACKGROUND_RESIDENT_GOVERNANCE_EXPLANATION_REF
+        )
+        if resident_governance_explanation.get("dominant_driver_family"):
+            profile["background_governance_driver_family"] = str(
+                resident_governance_explanation["dominant_driver_family"]
+            )
+        if resident_governance_explanation.get("next_wake_expectation"):
+            profile["background_next_wake_expectation"] = str(
+                resident_governance_explanation["next_wake_expectation"]
+            )
+        explanation_story = _list_or_empty(
+            resident_governance_explanation.get("continuity_story")
+        )
+        if explanation_story:
+            profile["background_governance_explanation_story"] = explanation_story
     if persistent_process_report:
         profile["background_persistent_process_report_ref"] = (
             BACKGROUND_PERSISTENT_PROCESS_REPORT_REF
