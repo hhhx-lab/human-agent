@@ -4506,6 +4506,150 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 )
             )
 
+    def test_resident_governance_explanation_organ_writes_history_recalibration_story(self):
+        from life_v0.process_supervisor.governance_explanation import (
+            write_resident_governance_explanation,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            reports_dir = Path(tmp) / "runtime" / "reports" / "latest"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+
+            result = write_resident_governance_explanation(
+                run_id="governance-explain-history",
+                generated_at="2026-06-10T00:00:00+00:00",
+                reports_dir=reports_dir,
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state={
+                    "schema_version": "idle_strategy_state_v0",
+                    "heartbeat_interval_ms": 49,
+                    "next_idle_action": "refresh_waiting_heartbeat_with_background_history_recalibration_hold",
+                    "governance_attention_target": "background_convergence_history_recalibration",
+                    "governance_attention_reason": "recent_recalibration_pressure_requires_cross_wake_governance_hold",
+                    "governance_cadence_profile": "background_convergence_history_recalibration_refresh",
+                    "background_continuity_mode": "closed_process_carryover",
+                    "background_carryover_generation": 3,
+                    "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
+                    "background_convergence_history_ref": "runtime/state/terminal/background_convergence_history.json",
+                    "background_convergence_history_trend_state": "recent_recalibration_pressure",
+                    "background_convergence_history_window_size": 3,
+                    "background_dominant_convergence_pressure_level": "elevated",
+                    "background_dominant_convergence_state": "recalibrating_cross_process_continuity",
+                    "background_convergence_state": "stabilized_cross_process_continuity",
+                    "background_convergence_pressure_level": "light",
+                    "background_convergence_attention_target": "trait_slow_variable_convergence",
+                },
+                persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
+                resident_governance_report_ref="runtime/reports/latest/digital_life_resident_governance_report.json",
+                resident_governance_state_ref="runtime/state/terminal/resident_governance_state.json",
+                resident_governance_snapshot_ref="runtime/state/terminal/resident_governance_snapshot.json",
+                completed_turns=2,
+                incident_count=0,
+                relaunch_recovery_count=1,
+                exit_reason="explicit_exit",
+                background_convergence_summary_ref="runtime/state/terminal/background_convergence_summary.json",
+                background_convergence_history_ref="runtime/state/terminal/background_convergence_history.json",
+                write_json=self._write_json,
+            )
+
+            report = self._read_json(
+                reports_dir / "digital_life_resident_governance_explanation.json"
+            )
+
+            self.assertEqual(
+                result.report["dominant_driver_family"],
+                "background_history_recalibration_hold",
+            )
+            self.assertEqual(
+                report["next_wake_expectation"],
+                "recalibrate_cross_wake_convergence_history_before_accepting_external_turn",
+            )
+            self.assertEqual(
+                report["background_convergence_history_ref"],
+                "runtime/state/terminal/background_convergence_history.json",
+            )
+            self.assertEqual(
+                report["background_convergence_history_trend_state"],
+                "recent_recalibration_pressure",
+            )
+            self.assertTrue(
+                any(
+                    "background convergence history trend is recent_recalibration_pressure across 3 wake samples with dominant pressure elevated"
+                    in line
+                    for line in report["continuity_story"]
+                )
+            )
+
+    def test_resident_governance_explanation_organ_writes_history_stability_story(self):
+        from life_v0.process_supervisor.governance_explanation import (
+            write_resident_governance_explanation,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            reports_dir = Path(tmp) / "runtime" / "reports" / "latest"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+
+            result = write_resident_governance_explanation(
+                run_id="governance-explain-history-stability",
+                generated_at="2026-06-10T00:00:00+00:00",
+                reports_dir=reports_dir,
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state={
+                    "schema_version": "idle_strategy_state_v0",
+                    "heartbeat_interval_ms": 53,
+                    "next_idle_action": "refresh_waiting_heartbeat_with_background_history_stability_hold",
+                    "governance_attention_target": "background_convergence_history_stability",
+                    "governance_attention_reason": "integrating_cross_wake_convergence_requires_stability_hold",
+                    "governance_cadence_profile": "background_convergence_history_stability_refresh",
+                    "background_continuity_mode": "closed_process_carryover",
+                    "background_carryover_generation": 4,
+                    "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
+                    "background_convergence_history_ref": "runtime/state/terminal/background_convergence_history.json",
+                    "background_convergence_history_trend_state": "integrating_cross_wake_convergence",
+                    "background_convergence_history_window_size": 4,
+                    "background_dominant_convergence_pressure_level": "present",
+                    "background_dominant_convergence_state": "integrating_cross_process_continuity",
+                    "background_convergence_state": "integrating_cross_process_continuity",
+                    "background_convergence_pressure_level": "present",
+                    "background_convergence_attention_target": "trait_slow_variable_convergence",
+                },
+                persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
+                resident_governance_report_ref="runtime/reports/latest/digital_life_resident_governance_report.json",
+                resident_governance_state_ref="runtime/state/terminal/resident_governance_state.json",
+                resident_governance_snapshot_ref="runtime/state/terminal/resident_governance_snapshot.json",
+                completed_turns=3,
+                incident_count=0,
+                relaunch_recovery_count=2,
+                exit_reason="explicit_exit",
+                background_convergence_summary_ref="runtime/state/terminal/background_convergence_summary.json",
+                background_convergence_history_ref="runtime/state/terminal/background_convergence_history.json",
+                write_json=self._write_json,
+            )
+
+            report = self._read_json(
+                reports_dir / "digital_life_resident_governance_explanation.json"
+            )
+
+            self.assertEqual(
+                result.report["dominant_driver_family"],
+                "background_history_stability_hold",
+            )
+            self.assertEqual(
+                report["next_wake_expectation"],
+                "stabilize_cross_wake_convergence_history_before_accepting_external_turn",
+            )
+            self.assertEqual(
+                report["background_convergence_history_trend_state"],
+                "integrating_cross_wake_convergence",
+            )
+            self.assertTrue(
+                any(
+                    "background convergence history trend is integrating_cross_wake_convergence across 4 wake samples with dominant pressure present"
+                    in line
+                    for line in report["continuity_story"]
+                )
+            )
+
     def test_process_closeout_organ_writes_persistent_artifacts_and_report_bundle(self):
         from life_v0.process_supervisor.process_closeout import close_digital_life_process
 

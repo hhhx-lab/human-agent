@@ -183,6 +183,9 @@ def _dominant_driver_family(idle_governance: dict[str, Any]) -> str:
     convergence_attention_target = str(
         idle_governance.get("background_convergence_attention_target") or ""
     )
+    convergence_history_trend = str(
+        idle_governance.get("background_convergence_history_trend_state") or ""
+    )
     convergence_target_active = (
         attention_target
         in {
@@ -190,6 +193,8 @@ def _dominant_driver_family(idle_governance: dict[str, Any]) -> str:
             "trait_slow_variable_recalibration",
             "trait_slow_variable_convergence",
             "background_convergence_summary",
+            "background_convergence_history_recalibration",
+            "background_convergence_history_stability",
         }
         or (
             bool(convergence_attention_target)
@@ -208,6 +213,17 @@ def _dominant_driver_family(idle_governance: dict[str, Any]) -> str:
     offline_pressure = str(idle_governance.get("offline_pressure_level") or "")
     repair_followup_required = bool(idle_governance.get("repair_followup_required"))
 
+    if attention_target == "background_convergence_history_recalibration" or (
+        convergence_history_trend
+        in {"recent_recalibration_pressure", "elevated_pressure_watch"}
+        and convergence_target_active
+    ):
+        return "background_history_recalibration_hold"
+    if attention_target == "background_convergence_history_stability" or (
+        convergence_history_trend == "integrating_cross_wake_convergence"
+        and convergence_target_active
+    ):
+        return "background_history_stability_hold"
     if convergence_target_active and (
         convergence_pressure == "elevated"
         or convergence_state == "recalibrating_cross_process_continuity"
@@ -258,6 +274,10 @@ def _dominant_driver_family(idle_governance: dict[str, Any]) -> str:
 
 
 def _next_wake_expectation(*, dominant_driver_family: str) -> str:
+    if dominant_driver_family == "background_history_recalibration_hold":
+        return "recalibrate_cross_wake_convergence_history_before_accepting_external_turn"
+    if dominant_driver_family == "background_history_stability_hold":
+        return "stabilize_cross_wake_convergence_history_before_accepting_external_turn"
     if dominant_driver_family == "background_convergence_recalibration":
         return "recalibrate_background_convergence_before_accepting_external_turn"
     if dominant_driver_family == "background_trait_convergence_hold":
