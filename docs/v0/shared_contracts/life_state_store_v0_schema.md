@@ -166,6 +166,10 @@ summary -> history -> background continuity -> waiting governance，而不是在
 `background_trait_convergence_history_profile[*].latest_trait_drift_update_mode` /
 `dominant_trait_drift_update_mode` 原样可读，让后续 waiting governance、人格慢变量 presence 与真实回合事件
 不用重新解析历史文件就能看见重校准压力。
+这组恢复字段进入等待态时不能只停在 `idle_strategy_state.json`：`heartbeat.py` 与
+`continuity_writeback.py` 必须继续写入 `digital_life_waiting_heartbeat.json`、
+`resident_governance_state.json`、`idle_continuity_frame.json`、`terminal_life_loop_state.json` 与
+`idle_heartbeat_trace.jsonl`，让重校准 / 稳定名单在等待心跳、驻留治理、连续体帧和下一轮终端状态中都可追溯。
 
 ## `memory_index`
 

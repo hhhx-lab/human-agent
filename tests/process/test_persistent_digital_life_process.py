@@ -3628,6 +3628,145 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_history_recalibration",
             )
 
+    def test_waiting_heartbeat_carries_trait_drift_update_mode_history(self):
+        from life_v0.process_supervisor.heartbeat import write_waiting_heartbeat
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            terminal_dir = runtime_root / "state" / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            language_dir = runtime_root / "state" / "language"
+            relationship_dir = runtime_root / "state" / "relationship"
+            for directory in (
+                terminal_dir,
+                reports_dir,
+                language_dir,
+                relationship_dir,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                terminal_dir / "background_convergence_history.json",
+                {
+                    "schema_version": "background_convergence_history_v0",
+                    "history_window_size": 2,
+                    "trend_state": "recent_recalibration_pressure",
+                    "trait_drift_update_mode_summary": {
+                        "background_history_recalibration": ["continuity_drive"],
+                        "background_history_stabilized": ["repair_seriousness"],
+                    },
+                    "trait_drift_background_history_recalibration_names": [
+                        "continuity_drive"
+                    ],
+                    "trait_drift_background_history_stabilized_names": [
+                        "repair_seriousness"
+                    ],
+                    "trait_convergence_history_profile": {
+                        "continuity_drive": {
+                            "sample_count": 2,
+                            "latest_band": "recalibrating",
+                            "dominant_band": "recalibrating",
+                            "trend_state": "recent_trait_recalibration",
+                            "trait_drift_update_mode_sequence": [
+                                "background_history_stabilized",
+                                "background_history_recalibration",
+                            ],
+                            "latest_trait_drift_update_mode": "background_history_recalibration",
+                            "dominant_trait_drift_update_mode": "background_history_recalibration",
+                        }
+                    },
+                    "convergence_samples": [
+                        {
+                            "run_id": "trait-drift-history-parent",
+                            "background_carryover_generation": 2,
+                            "convergence_state": "recalibrating_cross_process_continuity",
+                            "convergence_pressure_level": "elevated",
+                            "trait_convergence_score": 0.62,
+                        }
+                    ],
+                },
+            )
+
+            write_waiting_heartbeat(
+                run_id="trait-drift-waiting-carry",
+                generated_at="2026-06-10T00:00:00+00:00",
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+                language_dir=language_dir,
+                relationship_dir=relationship_dir,
+                safe_terminal_loop={
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "heartbeat_counter": 0,
+                },
+                terminal_life_loop_state={
+                    "current_mode": "restored_waiting_for_external_turn"
+                },
+                relationship_timeline={},
+                commitment_expression_plan={},
+                apology_repair_language_trace={},
+                body_rhythm_pulse={
+                    "schema_version": "body_rhythm_pulse_v0",
+                    "fatigue_load": "managed_low_noise",
+                },
+                need_state_vector={
+                    "schema_version": "need_state_vector_v0",
+                    "repair_drive": "inactive",
+                    "cognitive_bandwidth": "steady_open",
+                    "sleep_pressure": "low",
+                },
+                self_narrative_trace={},
+                commitment_index={},
+                relationship_graph={"subjects": [{"subject_id": "friend"}]},
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+                write_json=self._write_json,
+            )
+
+            idle_strategy = self._read_json(terminal_dir / "idle_strategy_state.json")
+            resident_governance_state = self._read_json(
+                terminal_dir / "resident_governance_state.json"
+            )
+            idle_continuity = self._read_json(
+                terminal_dir / "idle_continuity_frame.json"
+            )
+            terminal_life_loop_state = self._read_json(
+                terminal_dir / "terminal_life_loop_state.json"
+            )
+            heartbeat_trace_event = json.loads(
+                (terminal_dir / "idle_heartbeat_trace.jsonl")
+                .read_text(encoding="utf-8")
+                .splitlines()[0]
+            )
+            expected_update_mode_summary = {
+                "background_history_recalibration": ["continuity_drive"],
+                "background_history_stabilized": ["repair_seriousness"],
+            }
+            self.assertEqual(
+                idle_strategy["background_trait_drift_update_mode_summary"],
+                expected_update_mode_summary,
+            )
+            for artifact in (
+                resident_governance_state,
+                idle_continuity,
+                terminal_life_loop_state,
+                heartbeat_trace_event,
+            ):
+                self.assertEqual(
+                    artifact["background_trait_drift_update_mode_summary"],
+                    expected_update_mode_summary,
+                )
+                self.assertEqual(
+                    artifact["background_trait_drift_recalibration_names"],
+                    ["continuity_drive"],
+                )
+                self.assertEqual(
+                    artifact["background_trait_drift_stabilized_names"],
+                    ["repair_seriousness"],
+                )
+
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
         from life_v0.process_supervisor.resident_supervision import (
             bootstrap_resident_supervision,

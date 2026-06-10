@@ -283,6 +283,9 @@ def write_waiting_heartbeat(
         "background_next_wake_expectation",
         "background_governance_explanation_story",
         "background_trait_drift_monitor_ref",
+        "background_trait_drift_update_mode_summary",
+        "background_trait_drift_recalibration_names",
+        "background_trait_drift_stabilized_names",
         "background_lineage_governance_profile",
         "background_lineage_depth_band",
         "background_lineage_waiting_posture",
@@ -495,6 +498,15 @@ def write_waiting_heartbeat(
         background_trait_drift_monitor_ref=idle_strategy.get(
             "background_trait_drift_monitor_ref"
         ),
+        background_trait_drift_update_mode_summary=idle_strategy.get(
+            "background_trait_drift_update_mode_summary"
+        ),
+        background_trait_drift_recalibration_names=idle_strategy.get(
+            "background_trait_drift_recalibration_names"
+        ),
+        background_trait_drift_stabilized_names=idle_strategy.get(
+            "background_trait_drift_stabilized_names"
+        ),
         background_lineage_governance_profile=idle_strategy.get(
             "background_lineage_governance_profile"
         ),
@@ -644,6 +656,15 @@ def _append_idle_heartbeat_trace(
         ),
         "background_trait_convergence_history_focus": idle_strategy.get(
             "background_trait_convergence_history_focus"
+        ),
+        "background_trait_drift_update_mode_summary": idle_strategy.get(
+            "background_trait_drift_update_mode_summary"
+        ),
+        "background_trait_drift_recalibration_names": list(
+            idle_strategy.get("background_trait_drift_recalibration_names", [])
+        ),
+        "background_trait_drift_stabilized_names": list(
+            idle_strategy.get("background_trait_drift_stabilized_names", [])
         ),
         "cross_wake_trait_convergence_focus": idle_strategy.get(
             "cross_wake_trait_convergence_focus"

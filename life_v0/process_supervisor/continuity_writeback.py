@@ -67,6 +67,9 @@ def build_idle_continuity_frame(
     background_next_wake_expectation: str | None = None,
     background_governance_explanation_story: list[str] | None = None,
     background_trait_drift_monitor_ref: str | None = None,
+    background_trait_drift_update_mode_summary: dict[str, Any] | None = None,
+    background_trait_drift_recalibration_names: list[str] | None = None,
+    background_trait_drift_stabilized_names: list[str] | None = None,
     background_lineage_governance_profile: dict[str, Any] | None = None,
     background_lineage_depth_band: str | None = None,
     background_lineage_waiting_posture: str | None = None,
@@ -250,6 +253,18 @@ def build_idle_continuity_frame(
         )
     if background_trait_drift_monitor_ref:
         payload["background_trait_drift_monitor_ref"] = background_trait_drift_monitor_ref
+    if background_trait_drift_update_mode_summary:
+        payload["background_trait_drift_update_mode_summary"] = dict(
+            background_trait_drift_update_mode_summary
+        )
+    if background_trait_drift_recalibration_names:
+        payload["background_trait_drift_recalibration_names"] = list(
+            background_trait_drift_recalibration_names
+        )
+    if background_trait_drift_stabilized_names:
+        payload["background_trait_drift_stabilized_names"] = list(
+            background_trait_drift_stabilized_names
+        )
     if background_lineage_governance_profile:
         payload["background_lineage_governance_profile"] = dict(
             background_lineage_governance_profile
