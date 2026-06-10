@@ -256,6 +256,21 @@ def write_process_report_bundle(
         "background_convergence_pressure_level": idle_governance.get(
             "background_convergence_pressure_level"
         ),
+        "background_convergence_attention_target": idle_governance.get(
+            "background_convergence_attention_target"
+        ),
+        "background_convergence_history_trend_state": idle_governance.get(
+            "background_convergence_history_trend_state"
+        ),
+        "background_convergence_history_window_size": idle_governance.get(
+            "background_convergence_history_window_size"
+        ),
+        "background_dominant_convergence_pressure_level": idle_governance.get(
+            "background_dominant_convergence_pressure_level"
+        ),
+        "background_dominant_convergence_state": idle_governance.get(
+            "background_dominant_convergence_state"
+        ),
         "consciousness_waiting_posture": idle_governance.get(
             "consciousness_waiting_posture"
         ),

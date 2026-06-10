@@ -293,6 +293,13 @@ digest / receipt 现在还必须继续显式带出：
 - `birth_readiness_waiting_posture`
 - `birth_readiness_decision`
 - `birth_readiness_next_required_command`
+- `background_convergence_attention_target`
+- `background_convergence_history_trend_state`
+- `background_convergence_history_window_size`
+- `background_dominant_convergence_pressure_level`
+- `background_dominant_convergence_state`
+
+这些 background history 字段的来源必须是已经进入 `idle_strategy_state.json` 的 waiting governance 摘要，而不是 `process_report.py` 在 closeout 末尾临时绕过 idle strategy 去直接重读 history 文件。这样 digest 表达的是“本次常驻等待治理实际吸收了什么跨唤醒历史压力”，而不是旁路审计。
 
 ## F. 新增 `life_v0/process_supervisor/idle_strategy.py`
 

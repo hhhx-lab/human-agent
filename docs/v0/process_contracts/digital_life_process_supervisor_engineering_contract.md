@@ -355,7 +355,7 @@ IdleContinuityFrame
 | `digital_life_process_recovery_report.json` | 单回合异常恢复报告 |
 | `digital_life_process_report.json` | 当前终端生命进程报告 |
 | `digital_life_resident_governance_explanation.json` | 当前关闭态 resident governance 的解释报告 |
-| `digital_life_process_digest.json` | 当前终端生命进程摘要 |
+| `digital_life_process_digest.json` | 当前终端生命进程摘要；必须显式暴露 resident governance driver family、下一次唤醒预期、跨唤醒 convergence history trend / window / dominant pressure / dominant state |
 | `digital_life_process_<run_id>.json` | 当前终端生命进程 receipt |
 
 ## 当前最值得直接进入的代码入口

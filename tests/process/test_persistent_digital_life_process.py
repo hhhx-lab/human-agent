@@ -3584,6 +3584,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "birth_readiness_waiting_posture": "birth_open_waiting",
                     "birth_readiness_decision": "open",
                     "birth_readiness_next_required_command": "digital life",
+                    "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
+                    "background_convergence_history_ref": "runtime/state/terminal/background_convergence_history.json",
+                    "background_convergence_state": "stabilized_cross_process_continuity",
+                    "background_convergence_pressure_level": "light",
+                    "background_convergence_attention_target": "trait_slow_variable_convergence",
+                    "background_convergence_history_trend_state": "stable_cross_wake_convergence",
+                    "background_convergence_history_window_size": 2,
+                    "background_dominant_convergence_pressure_level": "present",
+                    "background_dominant_convergence_state": "stabilized_cross_process_continuity",
                 },
             )
             self._write_json(
@@ -3592,17 +3601,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "schema_version": "background_convergence_summary_v0",
                     "convergence_state": "stabilized_cross_process_continuity",
                     "convergence_pressure_level": "light",
-                    "convergence_attention_target": "background_convergence_summary",
+                    "convergence_attention_target": "trait_slow_variable_convergence",
                 },
             )
             self._write_json(
                 terminal_dir / "background_convergence_history.json",
                 {
                     "schema_version": "background_convergence_history_v0",
-                    "history_window_size": 1,
-                    "trend_state": "cross_wake_convergence_observed",
-                    "dominant_convergence_pressure_level": "light",
+                    "history_window_size": 2,
+                    "trend_state": "stable_cross_wake_convergence",
+                    "dominant_convergence_pressure_level": "present",
+                    "dominant_convergence_state": "stabilized_cross_process_continuity",
                     "convergence_samples": [
+                        {
+                            "run_id": "previous-process-report-organ",
+                            "convergence_state": "stabilized_cross_process_continuity",
+                            "convergence_pressure_level": "present",
+                        },
                         {
                             "run_id": "process-report-organ",
                             "convergence_state": "stabilized_cross_process_continuity",
@@ -3987,6 +4002,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "last_relationship_stage"
                 ],
                 "repair_guarded_continuity",
+            )
+            self.assertEqual(
+                digest["background_convergence_attention_target"],
+                "trait_slow_variable_convergence",
+            )
+            self.assertEqual(
+                digest["background_convergence_history_trend_state"],
+                "stable_cross_wake_convergence",
+            )
+            self.assertEqual(
+                digest["background_convergence_history_window_size"],
+                2,
+            )
+            self.assertEqual(
+                digest["background_dominant_convergence_pressure_level"],
+                "present",
+            )
+            self.assertEqual(
+                digest["background_dominant_convergence_state"],
+                "stabilized_cross_process_continuity",
             )
             self.assertEqual(
                 digest["trait_drift_monitor_ref"],
@@ -4714,6 +4749,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "response_surface_posture_hint": "confirm",
                     "prediction_attention_target": "belief_state",
                     "prediction_attention_reason": "stable_belief_frame_allows_confirmation",
+                    "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
+                    "background_convergence_history_ref": "runtime/state/terminal/background_convergence_history.json",
+                    "background_convergence_state": "stabilized_cross_process_continuity",
+                    "background_convergence_pressure_level": "present",
+                    "background_convergence_attention_target": "trait_slow_variable_convergence",
+                    "background_convergence_history_trend_state": "stable_cross_wake_convergence",
+                    "background_convergence_history_window_size": 2,
+                    "background_dominant_convergence_pressure_level": "present",
+                    "background_dominant_convergence_state": "stabilized_cross_process_continuity",
                 },
             )
             self._write_json(language_dir / "expression_plan.json", {"semantic_goal": "repair_commitment_shared_language"})
@@ -5002,6 +5046,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 process_digest["background_convergence_history_ref"],
                 "runtime/state/terminal/background_convergence_history.json",
+            )
+            self.assertEqual(
+                process_digest["background_convergence_attention_target"],
+                "trait_slow_variable_convergence",
+            )
+            self.assertEqual(
+                process_digest["background_convergence_history_trend_state"],
+                "stable_cross_wake_convergence",
+            )
+            self.assertEqual(
+                process_digest["background_convergence_history_window_size"],
+                2,
+            )
+            self.assertEqual(
+                process_digest["background_dominant_convergence_pressure_level"],
+                "present",
             )
             self.assertEqual(
                 resident_governance_snapshot["schema_version"],
