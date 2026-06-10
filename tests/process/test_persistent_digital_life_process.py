@@ -3877,6 +3877,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "governance_attention_target": "relationship_timeline",
                     },
                 },
+                "offline_learning_cumulative_profile": {
+                    "schema_version": "offline_learning_cumulative_profile_v0",
+                    "generation": 3,
+                    "pressure_level": "elevated",
+                    "attention_target": "relationship_learning_plan",
+                    "priority_profile": {
+                        "relationship_learning_plan": "elevated",
+                        "language_learning_plan": "baseline",
+                    },
+                    "ref_set": [
+                        "runtime/state/growth/relationship_learning_plan.json",
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
+                    "current_pressure_level": "quiet",
+                    "previous_generation": 3,
+                },
+                "offline_learning_cumulative_generation": 3,
+                "offline_learning_cumulative_pressure_level": "elevated",
+                "offline_learning_cumulative_attention_target": "relationship_learning_plan",
+                "offline_learning_cumulative_priority_profile": {
+                    "relationship_learning_plan": "elevated",
+                    "language_learning_plan": "baseline",
+                },
+                "offline_learning_cumulative_ref_set": [
+                    "runtime/state/growth/relationship_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                ],
             }
 
             result = run_live_turn_cycle(
@@ -4030,6 +4057,29 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/memory/state_merge_guard.json",
                 ],
             )
+            self.assertEqual(
+                result.last_life_turn["offline_learning_cumulative_generation"],
+                3,
+            )
+            self.assertEqual(
+                result.last_life_turn["offline_learning_cumulative_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                result.last_life_turn["offline_learning_cumulative_attention_target"],
+                "relationship_learning_plan",
+            )
+            self.assertEqual(
+                result.last_life_turn["offline_learning_cumulative_evidence_refs"],
+                [
+                    "runtime/state/growth/relationship_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                ],
+            )
+            self.assertIn(
+                "累计离线学习已经延续到第3代",
+                result.last_life_turn["utterance"],
+            )
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
             self.assertEqual(
@@ -4139,6 +4189,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
             )
             self.assertEqual(
+                dialogue_writeback_bundle["offline_learning_cumulative_refs"],
+                [
+                    "runtime/state/growth/relationship_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                ],
+            )
+            self.assertEqual(
                 resumed_dialogue_packet["background_trait_convergence_history_focus"],
                 "trait_stability_hold",
             )
@@ -4161,6 +4218,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["prediction_attention_reason"],
                 "selected_route_requires_relation_subject_clarification",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["offline_learning_cumulative_refs"],
+                dialogue_writeback_bundle["offline_learning_cumulative_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["offline_learning_cumulative_attention_target"],
+                "relationship_learning_plan",
             )
 
     def test_live_turn_cycle_organ_recovers_from_response_exception(self):

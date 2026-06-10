@@ -88,6 +88,7 @@ def build_life_turn_event(
     )
     event.update(build_background_trait_convergence_payload(terminal_life_loop_state))
     event.update(build_resident_background_lineage_payload(terminal_life_loop_state))
+    event.update(build_offline_learning_cumulative_payload(terminal_life_loop_state))
     event.update(
         build_prediction_write_gate_payload(
             terminal_life_loop_state=terminal_life_loop_state,
@@ -220,6 +221,63 @@ def build_resident_background_lineage_payload(
         presence = lineage_state.get(key)
         if isinstance(presence, dict) and presence:
             payload[f"resident_background_lineage_{key}"] = dict(presence)
+    return payload
+
+
+def build_offline_learning_cumulative_payload(
+    terminal_life_loop_state: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not terminal_life_loop_state:
+        return {}
+    profile = terminal_life_loop_state.get("offline_learning_cumulative_profile")
+    if not isinstance(profile, dict):
+        profile = {}
+    priority_profile = (
+        terminal_life_loop_state.get("offline_learning_cumulative_priority_profile")
+        or profile.get("priority_profile")
+        or {}
+    )
+    if not isinstance(priority_profile, dict):
+        priority_profile = {}
+    ref_set = _dedupe_string_list(
+        _string_list(
+            terminal_life_loop_state.get("offline_learning_cumulative_ref_set")
+            or profile.get("ref_set")
+        )
+    )
+    generation = (
+        terminal_life_loop_state.get("offline_learning_cumulative_generation")
+        or profile.get("generation")
+    )
+    pressure_level = (
+        terminal_life_loop_state.get("offline_learning_cumulative_pressure_level")
+        or profile.get("pressure_level")
+    )
+    attention_target = (
+        terminal_life_loop_state.get("offline_learning_cumulative_attention_target")
+        or profile.get("attention_target")
+    )
+    if not any([profile, priority_profile, ref_set, generation, pressure_level, attention_target]):
+        return {}
+
+    payload: dict[str, Any] = {}
+    if profile:
+        payload["offline_learning_cumulative_profile"] = dict(profile)
+    if generation is not None:
+        payload["offline_learning_cumulative_generation"] = generation
+    if pressure_level:
+        payload["offline_learning_cumulative_pressure_level"] = str(pressure_level)
+    if attention_target:
+        payload["offline_learning_cumulative_attention_target"] = str(attention_target)
+    if priority_profile:
+        payload["offline_learning_cumulative_priority_profile"] = {
+            str(key): str(value)
+            for key, value in priority_profile.items()
+            if value is not None
+        }
+    if ref_set:
+        payload["offline_learning_cumulative_ref_set"] = ref_set
+        payload["offline_learning_cumulative_evidence_refs"] = ref_set
     return payload
 
 

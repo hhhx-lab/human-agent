@@ -23,6 +23,7 @@ from ..terminal_loop.persistent_wait_bridge import build_persistent_wait_bridge
 from .continuity_evolution import evolve_relationship_and_self_model
 from .dialogue_events import (
     build_background_trait_convergence_payload,
+    build_offline_learning_cumulative_payload,
     build_prediction_write_gate_payload,
     build_resident_background_lineage_payload,
 )
@@ -204,6 +205,14 @@ def write_resident_turn_writeback(
             "resident_background_lineage_evidence_refs", []
         )
     )
+    offline_learning_cumulative_payload = build_offline_learning_cumulative_payload(
+        terminal_life_loop_state
+    )
+    offline_learning_cumulative_refs = list(
+        offline_learning_cumulative_payload.get(
+            "offline_learning_cumulative_evidence_refs", []
+        )
+    )
     prediction_write_gate_payload = build_prediction_write_gate_payload(
         terminal_life_loop_state=terminal_life_loop_state,
         signal_media_runtime=signal_media_runtime,
@@ -264,6 +273,7 @@ def write_resident_turn_writeback(
         runtime_carrier_refs=runtime_carrier_refs,
         background_trait_convergence_refs=background_trait_convergence_refs,
         resident_background_lineage_refs=resident_background_lineage_refs,
+        offline_learning_cumulative_refs=offline_learning_cumulative_refs,
         prediction_write_gate_refs=prediction_write_gate_refs,
     )
     write_json(reports_dir / "dialogue_writeback_bundle.json", dialogue_writeback_bundle)
@@ -308,6 +318,18 @@ def write_resident_turn_writeback(
                 if key != "resident_background_lineage_state"
             }
         )
+    if offline_learning_cumulative_payload:
+        resumed_dialogue_packet.update(
+            {
+                key: value
+                for key, value in offline_learning_cumulative_payload.items()
+                if key != "offline_learning_cumulative_profile"
+            }
+        )
+        if offline_learning_cumulative_refs:
+            resumed_dialogue_packet["offline_learning_cumulative_refs"] = (
+                offline_learning_cumulative_refs
+            )
     if prediction_write_gate_payload:
         resumed_dialogue_packet.update(prediction_write_gate_payload)
     if continuity_refresh is not None:

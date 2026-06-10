@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .dialogue_events import build_offline_learning_cumulative_payload
 from .offline_learning_signals import derive_offline_learning_profile
 
 
@@ -150,6 +151,33 @@ def compose_life_response(
             f"{response}，离线学习焦点当前指向"
             f"{offline_learning_profile['offline_learning_attention_target']}"
         )
+    offline_learning_cumulative_payload = build_offline_learning_cumulative_payload(
+        terminal_life_loop_state
+    )
+    if offline_learning_cumulative_payload:
+        cumulative_generation = offline_learning_cumulative_payload.get(
+            "offline_learning_cumulative_generation"
+        )
+        cumulative_pressure = offline_learning_cumulative_payload.get(
+            "offline_learning_cumulative_pressure_level"
+        )
+        cumulative_target = offline_learning_cumulative_payload.get(
+            "offline_learning_cumulative_attention_target"
+        )
+        cumulative_refs = list(
+            offline_learning_cumulative_payload.get(
+                "offline_learning_cumulative_ref_set",
+                [],
+            )
+        )
+        if cumulative_generation:
+            response = f"{response}，累计离线学习已经延续到第{cumulative_generation}代"
+        if cumulative_pressure and cumulative_pressure != "quiet":
+            response = f"{response}，累计离线学习压力为{cumulative_pressure}"
+        if cumulative_target:
+            response = f"{response}，累计离线学习焦点指向{cumulative_target}"
+        if cumulative_refs:
+            response = f"{response}，累计离线学习证据保留{len(cumulative_refs)}条"
     if offline_learning_targets:
         response = f"{response}，离线学习计划会经过{'、'.join(offline_learning_targets)}"
     if has_offline_influence:
