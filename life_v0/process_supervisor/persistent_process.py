@@ -13,6 +13,9 @@ RESIDENT_GOVERNANCE_STATE_REF = "runtime/state/terminal/resident_governance_stat
 BACKGROUND_CONVERGENCE_SUMMARY_REF = (
     "runtime/state/terminal/background_convergence_summary.json"
 )
+BACKGROUND_CONVERGENCE_HISTORY_REF = (
+    "runtime/state/terminal/background_convergence_history.json"
+)
 RESIDENT_GOVERNANCE_SNAPSHOT_REF = "runtime/state/terminal/resident_governance_snapshot.json"
 RESIDENT_GOVERNANCE_REPORT_REF = "runtime/reports/latest/digital_life_resident_governance_report.json"
 RELATIONSHIP_SUBJECT_GRAPH_REF = "runtime/state/relationship/relationship_subject_graph.json"
@@ -55,6 +58,7 @@ def write_persistent_process_artifacts(
     pain_regret_repair_report_ref: str | None = None,
     trait_drift_monitor_ref: str | None = None,
     background_convergence_summary_ref: str | None = None,
+    background_convergence_history_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
     relationship_graph: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
@@ -71,6 +75,8 @@ def write_persistent_process_artifacts(
     ]
     if background_convergence_summary_ref:
         current_background_ref_set.insert(1, background_convergence_summary_ref)
+    if background_convergence_history_ref:
+        current_background_ref_set.insert(2, background_convergence_history_ref)
     background_source_ref_set = [
         str(ref)
         for ref in idle_governance.get("background_continuity_ref_set", [])
@@ -136,6 +142,10 @@ def write_persistent_process_artifacts(
     if background_convergence_summary_ref:
         resident_governance_snapshot["background_convergence_summary_ref"] = (
             background_convergence_summary_ref
+        )
+    if background_convergence_history_ref:
+        resident_governance_snapshot["background_convergence_history_ref"] = (
+            background_convergence_history_ref
         )
     _apply_background_resume_fields(
         resident_governance_snapshot,
@@ -203,6 +213,10 @@ def write_persistent_process_artifacts(
         resident_governance_state["background_convergence_summary_ref"] = (
             background_convergence_summary_ref
         )
+    if background_convergence_history_ref:
+        resident_governance_state["background_convergence_history_ref"] = (
+            background_convergence_history_ref
+        )
     _apply_background_resume_fields(
         resident_governance_state,
         relationship_resume_summary=relationship_resume_summary,
@@ -252,6 +266,8 @@ def write_persistent_process_artifacts(
         state["trait_drift_monitor_ref"] = trait_drift_monitor_ref
     if background_convergence_summary_ref:
         state["background_convergence_summary_ref"] = background_convergence_summary_ref
+    if background_convergence_history_ref:
+        state["background_convergence_history_ref"] = background_convergence_history_ref
     _apply_background_resume_fields(
         state,
         relationship_resume_summary=relationship_resume_summary,
@@ -305,6 +321,8 @@ def write_persistent_process_artifacts(
         report["trait_drift_monitor_ref"] = trait_drift_monitor_ref
     if background_convergence_summary_ref:
         report["background_convergence_summary_ref"] = background_convergence_summary_ref
+    if background_convergence_history_ref:
+        report["background_convergence_history_ref"] = background_convergence_history_ref
     _apply_background_resume_fields(
         report,
         relationship_resume_summary=relationship_resume_summary,
@@ -361,6 +379,10 @@ def write_persistent_process_artifacts(
     if background_convergence_summary_ref:
         resident_governance_report["background_convergence_summary_ref"] = (
             background_convergence_summary_ref
+        )
+    if background_convergence_history_ref:
+        resident_governance_report["background_convergence_history_ref"] = (
+            background_convergence_history_ref
         )
     _apply_background_resume_fields(
         resident_governance_report,

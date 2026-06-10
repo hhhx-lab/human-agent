@@ -23,6 +23,10 @@ from .background_convergence import (
     BACKGROUND_CONVERGENCE_SUMMARY_REF,
     build_background_convergence_summary,
 )
+from .background_convergence_history import (
+    BACKGROUND_CONVERGENCE_HISTORY_REF,
+    build_background_convergence_history,
+)
 from .idle_strategy import (
     ACTIVE_SAMPLING_PLAN_REF,
     BELIEF_STATE_FRAME_REF,
@@ -65,6 +69,7 @@ class ResidentSupervisionContext:
     core_affect_vector: dict[str, Any]
     trait_drift_monitor: dict[str, Any]
     background_convergence_summary: dict[str, Any]
+    background_convergence_history: dict[str, Any]
     self_model_state: dict[str, Any]
     safe_terminal_loop: dict[str, Any]
     terminal_life_loop_state: dict[str, Any]
@@ -127,6 +132,7 @@ class ResidentSupervisionContext:
     world_contact_summary_ref: str | None
     pain_regret_repair_report_ref: str | None
     background_convergence_summary_ref: str | None
+    background_convergence_history_ref: str | None
     growth_patch_candidate_ids: list[str]
     replay_residue_ref_count: int
     dream_window_ref_count: int
@@ -475,6 +481,17 @@ def bootstrap_resident_supervision(
         payload=background_convergence_summary,
         ref=BACKGROUND_CONVERGENCE_SUMMARY_REF,
     )
+    background_convergence_history = build_background_convergence_history(
+        run_id=run_id,
+        generated_at=generated_at,
+        background_convergence_summary=background_convergence_summary,
+        background_continuity_profile=background_continuity_profile,
+        source_doc_refs=source_doc_refs,
+    )
+    background_convergence_history_ref = _ref_if_present(
+        payload=background_convergence_history,
+        ref=BACKGROUND_CONVERGENCE_HISTORY_REF,
+    )
     relationship_timeline = continuity_refresh["relationship_timeline"]
     commitment_expression_plan = continuity_refresh["commitment_expression_plan"]
     apology_repair_language_trace = continuity_refresh["apology_repair_language_trace"]
@@ -494,6 +511,11 @@ def bootstrap_resident_supervision(
         write_json(
             terminal_dir / "background_convergence_summary.json",
             background_convergence_summary,
+        )
+    if background_convergence_history:
+        write_json(
+            terminal_dir / "background_convergence_history.json",
+            background_convergence_history,
         )
     write_json(state_dir / "self" / "self_model.json", self_model_state)
     write_json(state_dir / "life_state.json", life_state)
@@ -634,6 +656,7 @@ def bootstrap_resident_supervision(
         core_affect_vector=core_affect_vector,
         trait_drift_monitor=trait_drift_monitor,
         background_convergence_summary=background_convergence_summary,
+        background_convergence_history=background_convergence_history,
         self_model_state=self_model_state,
         safe_terminal_loop=safe_terminal_loop,
         terminal_life_loop_state=terminal_life_loop_state,
@@ -696,6 +719,7 @@ def bootstrap_resident_supervision(
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
         background_convergence_summary_ref=background_convergence_summary_ref,
+        background_convergence_history_ref=background_convergence_history_ref,
         growth_patch_candidate_ids=growth_patch_candidate_ids,
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,

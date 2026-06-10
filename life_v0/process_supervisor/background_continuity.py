@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from .background_convergence import BACKGROUND_CONVERGENCE_SUMMARY_REF
+from .background_convergence_history import BACKGROUND_CONVERGENCE_HISTORY_REF
 
 
 BACKGROUND_RESIDENT_GOVERNANCE_SNAPSHOT_REF = (
@@ -32,6 +33,9 @@ def load_background_continuity_profile(
     background_convergence_summary = _read_json_if_exists(
         terminal_dir / "background_convergence_summary.json"
     )
+    background_convergence_history = _read_json_if_exists(
+        terminal_dir / "background_convergence_history.json"
+    )
     snapshot = _read_json_if_exists(terminal_dir / "resident_governance_snapshot.json")
     resident_governance_report = _read_json_if_exists(
         reports_dir / "digital_life_resident_governance_report.json"
@@ -43,6 +47,7 @@ def load_background_continuity_profile(
     if (
         not resident_governance_state
         and not background_convergence_summary
+        and not background_convergence_history
         and not snapshot
         and not resident_governance_report
         and not persistent_process_report
@@ -93,6 +98,7 @@ def load_background_continuity_profile(
         for ref, payload in [
             (BACKGROUND_RESIDENT_GOVERNANCE_STATE_REF, resident_governance_state),
             (BACKGROUND_CONVERGENCE_SUMMARY_REF, background_convergence_summary),
+            (BACKGROUND_CONVERGENCE_HISTORY_REF, background_convergence_history),
             (BACKGROUND_RESIDENT_GOVERNANCE_SNAPSHOT_REF, snapshot),
             (BACKGROUND_RESIDENT_GOVERNANCE_REPORT_REF, resident_governance_report),
             (BACKGROUND_PERSISTENT_PROCESS_REPORT_REF, persistent_process_report),
@@ -102,6 +108,7 @@ def load_background_continuity_profile(
     carryover_generation = max(
         _int_or_zero(resident_governance_state.get("background_carryover_generation")),
         _int_or_zero(background_convergence_summary.get("background_carryover_generation")),
+        _max_history_generation(background_convergence_history),
         _int_or_zero(snapshot.get("background_carryover_generation")),
         _int_or_zero(resident_governance_report.get("background_carryover_generation")),
         _int_or_zero(persistent_process_report.get("background_carryover_generation")),
@@ -220,6 +227,25 @@ def load_background_continuity_profile(
         ]:
             if key in background_convergence_summary:
                 profile[f"background_{key}"] = background_convergence_summary[key]
+    if background_convergence_history:
+        profile["background_convergence_history_ref"] = (
+            BACKGROUND_CONVERGENCE_HISTORY_REF
+        )
+        profile["background_convergence_history"] = background_convergence_history
+        for source_key, target_key in [
+            ("trend_state", "background_convergence_history_trend_state"),
+            ("history_window_size", "background_convergence_history_window_size"),
+            (
+                "dominant_convergence_pressure_level",
+                "background_dominant_convergence_pressure_level",
+            ),
+            (
+                "dominant_convergence_state",
+                "background_dominant_convergence_state",
+            ),
+        ]:
+            if source_key in background_convergence_history:
+                profile[target_key] = background_convergence_history[source_key]
     if snapshot:
         profile["background_resident_governance_snapshot_ref"] = (
             BACKGROUND_RESIDENT_GOVERNANCE_SNAPSHOT_REF
@@ -249,6 +275,20 @@ def _int_or_zero(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _max_history_generation(history: dict[str, Any]) -> int:
+    samples = history.get("convergence_samples", [])
+    if not isinstance(samples, list):
+        return 0
+    return max(
+        [
+            _int_or_zero(sample.get("background_carryover_generation"))
+            for sample in samples
+            if isinstance(sample, dict)
+        ],
+        default=0,
+    )
 
 
 def _list_or_empty(value: Any) -> list[str]:

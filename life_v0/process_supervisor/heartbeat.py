@@ -233,6 +233,11 @@ def write_waiting_heartbeat(
         "apology_repair_language_trace_ref",
         "background_resident_governance_state_ref",
         "background_convergence_summary_ref",
+        "background_convergence_history_ref",
+        "background_convergence_history_trend_state",
+        "background_convergence_history_window_size",
+        "background_dominant_convergence_pressure_level",
+        "background_dominant_convergence_state",
         "background_convergence_state",
         "background_convergence_pressure_level",
         "background_convergence_attention_target",
@@ -346,6 +351,15 @@ def write_waiting_heartbeat(
         ),
         background_convergence_summary_ref=idle_strategy.get(
             "background_convergence_summary_ref"
+        ),
+        background_convergence_history_ref=idle_strategy.get(
+            "background_convergence_history_ref"
+        ),
+        background_convergence_history_trend_state=idle_strategy.get(
+            "background_convergence_history_trend_state"
+        ),
+        background_convergence_history_window_size=idle_strategy.get(
+            "background_convergence_history_window_size"
         ),
         background_convergence_state=idle_strategy.get("background_convergence_state"),
         background_convergence_pressure_level=idle_strategy.get(

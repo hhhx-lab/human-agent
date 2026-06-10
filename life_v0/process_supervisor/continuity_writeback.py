@@ -42,6 +42,9 @@ def build_idle_continuity_frame(
     background_continuity_ref_set: list[str] | None = None,
     background_resident_governance_state_ref: str | None = None,
     background_convergence_summary_ref: str | None = None,
+    background_convergence_history_ref: str | None = None,
+    background_convergence_history_trend_state: str | None = None,
+    background_convergence_history_window_size: int | None = None,
     background_convergence_state: str | None = None,
     background_convergence_pressure_level: str | None = None,
     background_convergence_attention_target: str | None = None,
@@ -148,6 +151,16 @@ def build_idle_continuity_frame(
         )
     if background_convergence_summary_ref:
         payload["background_convergence_summary_ref"] = background_convergence_summary_ref
+    if background_convergence_history_ref:
+        payload["background_convergence_history_ref"] = background_convergence_history_ref
+    if background_convergence_history_trend_state:
+        payload["background_convergence_history_trend_state"] = (
+            background_convergence_history_trend_state
+        )
+    if background_convergence_history_window_size is not None:
+        payload["background_convergence_history_window_size"] = int(
+            background_convergence_history_window_size
+        )
     if background_convergence_state:
         payload["background_convergence_state"] = background_convergence_state
     if background_convergence_pressure_level:

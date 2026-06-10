@@ -70,6 +70,7 @@ def write_process_report_bundle(
     state_merge_guard_ref: str | None = None,
     trait_drift_monitor_ref: str | None = None,
     background_convergence_summary_ref: str | None = None,
+    background_convergence_history_ref: str | None = None,
     relationship_graph: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
@@ -112,6 +113,7 @@ def write_process_report_bundle(
         relationship_resume_summary=relationship_resume_summary,
         trait_slow_variable_summary=trait_slow_variable_summary,
         background_convergence_summary_ref=background_convergence_summary_ref,
+        background_convergence_history_ref=background_convergence_history_ref,
         write_json=write_json,
     )
     report = {
@@ -164,6 +166,7 @@ def write_process_report_bundle(
         "prediction_write_gate_refs": prediction_write_gate_refs,
         "trait_drift_monitor_ref": trait_drift_monitor_ref,
         "background_convergence_summary_ref": background_convergence_summary_ref,
+        "background_convergence_history_ref": background_convergence_history_ref,
         "background_relationship_stage": relationship_resume_summary.get(
             "relationship_stage"
         ),
@@ -246,6 +249,7 @@ def write_process_report_bundle(
         "background_trait_slow_variable_summary": trait_slow_variable_summary,
         "trait_drift_monitor_ref": trait_drift_monitor_ref,
         "background_convergence_summary_ref": background_convergence_summary_ref,
+        "background_convergence_history_ref": background_convergence_history_ref,
         "background_convergence_state": idle_governance.get(
             "background_convergence_state"
         ),
@@ -304,6 +308,7 @@ def write_process_report_bundle(
         state_merge_guard_ref=state_merge_guard_ref,
         trait_drift_monitor_ref=trait_drift_monitor_ref,
         background_convergence_summary_ref=background_convergence_summary_ref,
+        background_convergence_history_ref=background_convergence_history_ref,
         workspace_frame_ref=idle_governance.get("workspace_frame_ref"),
         broadcast_frame_ref=idle_governance.get("broadcast_frame_ref"),
         metacognition_ref=idle_governance.get("metacognition_ref"),
@@ -357,6 +362,7 @@ def build_process_receipt(
     state_merge_guard_ref: str | None = None,
     trait_drift_monitor_ref: str | None = None,
     background_convergence_summary_ref: str | None = None,
+    background_convergence_history_ref: str | None = None,
     workspace_frame_ref: str | None = None,
     broadcast_frame_ref: str | None = None,
     metacognition_ref: str | None = None,
@@ -394,6 +400,7 @@ def build_process_receipt(
         state_dir / "memory" / "state_merge_guard.json",
         state_dir / "body" / "trait_drift_monitor.json",
         state_dir / "terminal" / "background_convergence_summary.json",
+        state_dir / "terminal" / "background_convergence_history.json",
         state_dir / "replay" / "replay_cue_bundle.json",
         state_dir / "dream" / "offline_consolidation_frame.json",
         state_dir / "dream" / "nightmare_loop_risk.json",
@@ -470,6 +477,7 @@ def build_process_receipt(
                 state_merge_guard_ref,
                 trait_drift_monitor_ref,
                 background_convergence_summary_ref,
+                background_convergence_history_ref,
                 workspace_frame_ref,
                 broadcast_frame_ref,
                 metacognition_ref,

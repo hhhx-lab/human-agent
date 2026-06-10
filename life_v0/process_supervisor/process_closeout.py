@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .persistent_process import (
+    BACKGROUND_CONVERGENCE_HISTORY_REF,
     BACKGROUND_CONVERGENCE_SUMMARY_REF,
     PERSISTENT_PROCESS_REPORT_REF,
     RESIDENT_GOVERNANCE_REPORT_REF,
@@ -81,6 +82,7 @@ def close_digital_life_process(
     state_merge_guard_ref: str | None = None,
     trait_drift_monitor_ref: str | None = None,
     background_convergence_summary_ref: str | None = None,
+    background_convergence_history_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
     relationship_graph: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
@@ -95,6 +97,11 @@ def close_digital_life_process(
         and (state_dir / "terminal" / "background_convergence_summary.json").exists()
     ):
         background_convergence_summary_ref = BACKGROUND_CONVERGENCE_SUMMARY_REF
+    if (
+        background_convergence_history_ref is None
+        and (state_dir / "terminal" / "background_convergence_history.json").exists()
+    ):
+        background_convergence_history_ref = BACKGROUND_CONVERGENCE_HISTORY_REF
     persistent_process_artifacts = write_persistent_process_artifacts(
         run_id=run_id,
         generated_at=generated_at,
@@ -129,6 +136,7 @@ def close_digital_life_process(
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
         trait_drift_monitor_ref=trait_drift_monitor_ref,
         background_convergence_summary_ref=background_convergence_summary_ref,
+        background_convergence_history_ref=background_convergence_history_ref,
         relationship_graph=relationship_graph,
         self_model_state=self_model_state,
         write_json=write_json,
@@ -205,6 +213,7 @@ def close_digital_life_process(
         state_merge_guard_ref=state_merge_guard_ref,
         trait_drift_monitor_ref=trait_drift_monitor_ref,
         background_convergence_summary_ref=background_convergence_summary_ref,
+        background_convergence_history_ref=background_convergence_history_ref,
         relationship_graph=relationship_graph,
         self_model_state=self_model_state,
         write_json=write_json,

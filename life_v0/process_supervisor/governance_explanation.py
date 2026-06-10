@@ -36,6 +36,7 @@ def write_resident_governance_explanation(
     relationship_resume_summary: dict[str, Any] | None = None,
     trait_slow_variable_summary: dict[str, Any] | None = None,
     background_convergence_summary_ref: str | None = None,
+    background_convergence_history_ref: str | None = None,
 ) -> ResidentGovernanceExplanationResult:
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
     background_carryover_generation = _int_or_zero(
@@ -102,6 +103,22 @@ def write_resident_governance_explanation(
         "background_trait_slow_variable_summary": trait_summary,
         "background_convergence_summary_ref": background_convergence.get(
             "background_convergence_summary_ref"
+        ),
+        "background_convergence_history_ref": (
+            background_convergence_history_ref
+            or idle_governance.get("background_convergence_history_ref")
+        ),
+        "background_convergence_history_trend_state": idle_governance.get(
+            "background_convergence_history_trend_state"
+        ),
+        "background_convergence_history_window_size": idle_governance.get(
+            "background_convergence_history_window_size"
+        ),
+        "background_dominant_convergence_pressure_level": idle_governance.get(
+            "background_dominant_convergence_pressure_level"
+        ),
+        "background_dominant_convergence_state": idle_governance.get(
+            "background_dominant_convergence_state"
         ),
         "background_convergence_state": background_convergence.get(
             "background_convergence_state"
@@ -353,6 +370,23 @@ def _compose_continuity_story(
             "background trait convergence score is "
             f"{background_convergence['background_trait_convergence_score']}"
         )
+    if idle_governance.get("background_convergence_history_trend_state"):
+        history_line = (
+            "background convergence history trend is "
+            f"{idle_governance['background_convergence_history_trend_state']}"
+        )
+        if idle_governance.get("background_convergence_history_window_size"):
+            history_line += (
+                " across "
+                f"{idle_governance['background_convergence_history_window_size']}"
+                " wake samples"
+            )
+        if idle_governance.get("background_dominant_convergence_pressure_level"):
+            history_line += (
+                " with dominant pressure "
+                f"{idle_governance['background_dominant_convergence_pressure_level']}"
+            )
+        lines.append(history_line)
     convergence_trait_summary = background_convergence.get(
         "background_trait_convergence_summary"
     )
