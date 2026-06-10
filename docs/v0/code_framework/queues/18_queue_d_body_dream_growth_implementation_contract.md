@@ -295,10 +295,19 @@ Queue D 必须接到这些现有器官上：
 
 - `trait_drift_id`
 - `slow_variable_targets`
+- `slow_variable_summary`
+- `relationship_stage`
 - `drift_direction`
+- `drift_observation_refs`
 - `required_anchor_refs`
 - `blocked_update_refs`
 - `archive_requirement`
+
+当前 `trait_drift.py` 不只服务 `build-life-support` 的一次性身体状态构建，还必须服务常驻生命过程：
+
+1. `resident_supervision.py` 在 bootstrap continuity refresh 后刷新 `trait_drift_monitor.json`。
+2. `resident_turn_writeback.py` 在 live turn 后关系阶段与自我慢变量发生演化时刷新同一份 monitor。
+3. 如果慢变量带有 `background_resume_value` / `background_inertia_weight`，monitor 必须把这组惯性痕迹保留在 `slow_variable_summary` 里。
 
 ## I. 新增 `life_v0/dream/dream_window.py`
 
@@ -528,6 +537,7 @@ Queue D 至少新增三道 gate：
 1. 身体预算、关系压力、梦境残留没有压成统一 `CoreAffectVector`
 2. `EmotionEpisode` 与 `EmotionRegulationState` 没有 ref 链
 3. `TraitDriftState` 没有绑定 anchor / archive requirement
+4. 常驻过程改写 `self_model.trait_slow_variables` 后没有刷新 `trait_drift_monitor.json`
 
 ### `growth_learning_window_gate`
 

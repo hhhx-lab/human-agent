@@ -118,6 +118,10 @@ artifact 留在 `idle_strategy_state.json` 或 `resident_governance_state.json` 
 `background_inertia_weight`。当前回合证据仍然优先，但在还没有进入新 live turn、证据不足以覆盖上一轮状态时，
 上一轮 relationship stage 也可以被 `background_relationship_stage` 保留下来。
 
+每次 `resident_supervision.py` 或 `resident_turn_writeback.py` 改写这组慢变量后，还必须刷新
+`runtime/state/body/trait_drift_monitor.json`。这份 monitor 是身体/人格层对自我慢变量漂移的观察面，
+至少要带 `slow_variable_summary`、`relationship_stage`、`drift_observation_refs` 和 anchor refs。
+
 ## `memory_index`
 
 | 字段 | 类型 | 要求 |

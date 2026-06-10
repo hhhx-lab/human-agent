@@ -131,6 +131,7 @@ life-v0 "digital life"
 13. `resident_supervision.py` 在做这次 bootstrap continuity refresh 时，还必须把 `background_continuity.py` 读出的 lineage 一并喂进 `continuity_evolution.py`；当 `background_carryover_generation >= 2` 时，关系阶段要先进入 `background_continuity_waiting`，`trait_slow_variables` 也要显式带上关闭态 resident governance refs / source refs，不能只让后台 lineage 停留在 cadence 调度层。
 14. `process_session_loop.py` 在显式退出 closeout 前必须返回最新的 `relationship_subject_graph.json`、`relationship_timeline.json`、`commitment_expression_plan.json`、`apology_repair_language_trace.json` 与 `self_model.json`；`process_closeout.py` / `persistent_process.py` / `process_report.py` 必须把这些最新对象压成 `background_resume_summary`，并在下一次 `background_continuity.py` bootstrap 时恢复 `background_relationship_stage`、`background_relationship_stage_reason`、`background_relationship_subject_ref`、`background_self_model_ref` 与 `background_trait_slow_variable_summary`。这一步是跨进程连续体保真，不是新的关系推断器。
 15. `continuity_evolution.py` 在 bootstrap continuity refresh 时必须把 `background_relationship_stage` 作为新回合前的关系阶段保留候选，并把 `background_trait_slow_variable_summary` 作为慢变量惯性参与下一次 `trait_slow_variables` 收敛，写出 `background_resume_value` 与 `background_inertia_weight`。
+16. `resident_supervision.py` 与 `resident_turn_writeback.py` 在每次重建关系阶段和自我慢变量后，必须同步刷新 `runtime/state/body/trait_drift_monitor.json`，让人格漂移监控面跟随常驻生命过程持续更新，而不是只停在 S06 build-life-support 阶段。
 
 ## 最小行为合同
 

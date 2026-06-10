@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from ..body.trait_drift import build_trait_drift_monitor_from_self_model
 from ..language.apology_repair_language import build_apology_repair_language_trace
 from ..language.apology_repair_language import (
     project_apology_repair_language_trace_with_offline_learning,
@@ -58,6 +59,7 @@ class ResidentSupervisionContext:
     need_state_vector: dict[str, Any]
     body_resource_budget: dict[str, Any]
     core_affect_vector: dict[str, Any]
+    trait_drift_monitor: dict[str, Any]
     self_model_state: dict[str, Any]
     safe_terminal_loop: dict[str, Any]
     terminal_life_loop_state: dict[str, Any]
@@ -188,6 +190,7 @@ def bootstrap_resident_supervision(
     need_state_vector = read_json_if_exists(body_dir / "need_state_vector.json")
     body_resource_budget = read_json_if_exists(body_dir / "body_resource_budget.json")
     core_affect_vector = read_json_if_exists(body_dir / "core_affect_vector.json")
+    trait_drift_monitor = read_json_if_exists(body_dir / "trait_drift_monitor.json")
     self_model_state = read_json_if_exists(state_dir / "self" / "self_model.json")
     life_context_frame = read_json_if_exists(terminal_dir / "life_context_frame.json")
     relation_turn_frame = read_json_if_exists(terminal_dir / "relation_turn_frame.json")
@@ -448,9 +451,11 @@ def bootstrap_resident_supervision(
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
         source_doc_refs=source_doc_refs,
+        previous_trait_drift_monitor=trait_drift_monitor,
     )
     relationship_graph = continuity_refresh["relationship_graph"]
     self_model_state = continuity_refresh["self_model_state"]
+    trait_drift_monitor = continuity_refresh["trait_drift_monitor"]
     relationship_timeline = continuity_refresh["relationship_timeline"]
     commitment_expression_plan = continuity_refresh["commitment_expression_plan"]
     apology_repair_language_trace = continuity_refresh["apology_repair_language_trace"]
@@ -464,6 +469,8 @@ def bootstrap_resident_supervision(
         apology_repair_language_trace,
     )
     write_json(state_dir / "memory" / "relationship_memory.json", relationship_memory)
+    body_dir.mkdir(parents=True, exist_ok=True)
+    write_json(body_dir / "trait_drift_monitor.json", trait_drift_monitor)
     write_json(state_dir / "self" / "self_model.json", self_model_state)
     write_json(state_dir / "life_state.json", life_state)
     growth_patch_candidate_ids = [
@@ -601,6 +608,7 @@ def bootstrap_resident_supervision(
         need_state_vector=need_state_vector,
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
+        trait_drift_monitor=trait_drift_monitor,
         self_model_state=self_model_state,
         safe_terminal_loop=safe_terminal_loop,
         terminal_life_loop_state=terminal_life_loop_state,
@@ -707,6 +715,7 @@ def _refresh_bootstrap_long_horizon_continuity(
     language_learning_plan_ref: str | None,
     relationship_learning_plan_ref: str | None,
     source_doc_refs: list[str],
+    previous_trait_drift_monitor: dict[str, Any] | None = None,
 ) -> dict[str, dict[str, Any]]:
     dialogue_turn_refs = collect_dialogue_turn_refs(language_dir / "dialogue_turn_log.jsonl", [])
     dialogue_turn_entries = [{"dialogue_turn_ref": ref} for ref in dialogue_turn_refs]
@@ -880,9 +889,22 @@ def _refresh_bootstrap_long_horizon_continuity(
             if ref
         ],
     )
+    trait_drift_monitor = build_trait_drift_monitor_from_self_model(
+        run_id=str(
+            refreshed_relationship_timeline.get("run_id")
+            or "resident-supervision-bootstrap"
+        ),
+        generated_at=generated_at,
+        self_model_state=evolved_self_model_state,
+        relationship_graph=evolved_relationship_graph,
+        trigger_ref="runtime/state/terminal/resident_governance_state.json#bootstrap_continuity_refresh",
+        previous_monitor=previous_trait_drift_monitor,
+        source_doc_refs=source_doc_refs,
+    )
     return {
         "relationship_graph": evolved_relationship_graph,
         "self_model_state": evolved_self_model_state,
+        "trait_drift_monitor": trait_drift_monitor,
         "relationship_timeline": refreshed_relationship_timeline,
         "commitment_expression_plan": refreshed_commitment_expression_plan,
         "apology_repair_language_trace": refreshed_apology_repair_language_trace,

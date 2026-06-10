@@ -2312,6 +2312,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 paths["state_root"] / "self" / "self_model.json"
             )
             persisted_life_state = self._read_json(paths["state_root"] / "life_state.json")
+            persisted_trait_drift = self._read_json(
+                paths["state_root"] / "body" / "trait_drift_monitor.json"
+            )
             self.assertEqual(
                 persisted_relationship_graph["subjects"][0]["relationship_stage"],
                 "background_continuity_waiting",
@@ -2335,6 +2338,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 persisted_self_model["trait_slow_variables"]["continuity_drive"]["last_relationship_stage"],
                 "background_continuity_waiting",
+            )
+            self.assertEqual(
+                persisted_trait_drift["schema_version"],
+                "trait_drift_monitor_v0",
+            )
+            self.assertEqual(
+                persisted_trait_drift["relationship_stage"],
+                "background_continuity_waiting",
+            )
+            self.assertIn(
+                "continuity_drive",
+                persisted_trait_drift["slow_variable_summary"],
+            )
+            self.assertIn(
+                "runtime/state/terminal/resident_governance_state.json#bootstrap_continuity_refresh",
+                persisted_trait_drift["drift_observation_refs"],
             )
 
     def test_live_turn_cycle_organ_writes_response_and_returns_to_waiting_state(self):
@@ -5073,6 +5092,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             dream_dir = runtime_root / "state" / "dream"
             growth_dir = runtime_root / "state" / "growth"
             self_dir = runtime_root / "state" / "self"
+            body_dir = runtime_root / "state" / "body"
             reports_dir = runtime_root / "reports" / "latest"
             terminal_dir.mkdir(parents=True, exist_ok=True)
             language_dir.mkdir(parents=True, exist_ok=True)
@@ -5083,6 +5103,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             dream_dir.mkdir(parents=True, exist_ok=True)
             growth_dir.mkdir(parents=True, exist_ok=True)
             self_dir.mkdir(parents=True, exist_ok=True)
+            body_dir.mkdir(parents=True, exist_ok=True)
             reports_dir.mkdir(parents=True, exist_ok=True)
             (language_dir / "dialogue_turn_log.jsonl").write_text(
                 '{"turn_id":"dialogue-turn-live-0001","event_role":"external_relation_turn"}\n',
@@ -5356,6 +5377,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 memory_dir / "relationship_memory.json"
             )
             persisted_self_model = self._read_json(self_dir / "self_model.json")
+            persisted_trait_drift = self._read_json(body_dir / "trait_drift_monitor.json")
             persisted_life_state = self._read_json(runtime_root / "state" / "life_state.json")
             dialogue_writeback_bundle = self._read_json(
                 reports_dir / "dialogue_writeback_bundle.json"
@@ -5458,6 +5480,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 persisted_life_state["self_model"]["trait_slow_variables"]["boundary_respect"]["last_relationship_stage"],
                 "repair_guarded_continuity",
+            )
+            self.assertEqual(
+                persisted_trait_drift["schema_version"],
+                "trait_drift_monitor_v0",
+            )
+            self.assertEqual(
+                persisted_trait_drift["relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertIn(
+                "repair_seriousness",
+                persisted_trait_drift["slow_variable_summary"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/resumed_external_dialogue_packet.json",
+                persisted_trait_drift["drift_observation_refs"],
             )
             self.assertTrue(persisted_self_model["growth_window_refs"])
             self.assertEqual(

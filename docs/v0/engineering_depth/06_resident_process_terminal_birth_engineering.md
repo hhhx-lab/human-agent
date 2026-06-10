@@ -296,3 +296,4 @@ idle_strategy.py
 9. 下一次 bootstrap 的 `background_continuity_profile` 必须恢复这组 resume summary，并由 `idle_strategy.py` 原样带入 waiting governance
 10. `digital_life_resident_governance_explanation.json` 必须把这组 resume summary 写进 `background_resume_focus` 与 `continuity_story`，让 closeout 解释层也能承载关系阶段和自我慢变量
 11. `continuity_evolution.py` 必须让这组 resume summary 进入关系阶段保留和慢变量惯性收敛，至少能在测试中看到 `background_resume_value` 与 `background_inertia_weight`
+12. bootstrap refresh 与 live turn writeback 后都必须刷新 `trait_drift_monitor.json`，让人格漂移监控面真实跟上常驻关系/自我连续体

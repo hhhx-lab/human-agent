@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from ..body.trait_drift import build_trait_drift_monitor_from_self_model
 from ..growth.offline_learning_profile import (
     BELIEF_LEARNING_PLAN_REF,
     LANGUAGE_LEARNING_PLAN_REF,
@@ -279,6 +280,7 @@ def _refresh_long_horizon_continuity(
     relationship_memory_path = state_dir / "memory" / "relationship_memory.json"
     life_state_path = state_dir / "life_state.json"
     self_model_path = state_dir / "self" / "self_model.json"
+    trait_drift_monitor_path = state_dir / "body" / "trait_drift_monitor.json"
     responsibility_loop_path = state_dir / "action" / "responsibility_loop_state.json"
     world_contact_summary_path = state_dir / "membrane" / "world_contact_summary.json"
     pain_regret_repair_report_path = state_dir.parent / "reports" / "latest" / "pain_regret_repair_report.json"
@@ -307,6 +309,7 @@ def _refresh_long_horizon_continuity(
     relationship_memory = _read_json(relationship_memory_path)
     life_state = _read_json(life_state_path)
     persisted_self_model_state = _read_json(self_model_path)
+    previous_trait_drift_monitor = _read_json_if_exists(trait_drift_monitor_path)
     responsibility_loop_state = _read_json(responsibility_loop_path)
     world_contact_summary = _read_json_if_exists(world_contact_summary_path)
     pain_regret_repair_report = _read_json_if_exists(pain_regret_repair_report_path)
@@ -496,6 +499,17 @@ def _refresh_long_horizon_continuity(
     write_json(apology_repair_path, refreshed_apology_repair_language_trace)
     write_json(relationship_dir / "relationship_subject_graph.json", evolved_relationship_graph)
     write_json(relationship_memory_path, refreshed_relationship_memory)
+    trait_drift_monitor = build_trait_drift_monitor_from_self_model(
+        run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
+        generated_at=generated_at,
+        self_model_state=evolved_self_model_state,
+        relationship_graph=evolved_relationship_graph,
+        trigger_ref=RESUMED_DIALOGUE_PACKET_REF,
+        previous_monitor=previous_trait_drift_monitor,
+        source_doc_refs=source_doc_refs,
+    )
+    trait_drift_monitor_path.parent.mkdir(parents=True, exist_ok=True)
+    write_json(trait_drift_monitor_path, trait_drift_monitor)
     write_json(self_model_path, evolved_self_model_state)
     write_json(life_state_path, refreshed_life_state)
     return {
