@@ -2415,6 +2415,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_carryover_source_ref_set": [
                         "runtime/archive/resume-summary-parent/resident_governance_state.json"
                     ],
+                    "background_lineage_depth_band": "deep_persistent_lineage",
+                    "background_lineage_waiting_posture": "deep_background_residency_hold",
+                    "background_lineage_cadence_weight": "deep",
+                    "background_lineage_evidence_ref_count": 6,
+                    "resident_background_lineage_state": {
+                        "schema_version": "resident_background_lineage_state_v0",
+                        "status": "closed",
+                        "governance_phase": "process_closed_waiting_relaunch",
+                        "continuity_mode": "closed_process_carryover",
+                        "generation": 3,
+                        "depth_band": "deep_persistent_lineage",
+                        "waiting_posture": "deep_background_residency_hold",
+                        "cadence_weight": "deep",
+                        "evidence_ref_count": 6,
+                        "attention_target": "commitment_expression_plan",
+                        "cadence_profile": "deep_persistent_background_continuity_refresh",
+                    },
                     "background_relationship_stage": "repair_guarded_continuity",
                     "background_relationship_stage_reason": "repair_followup_required_after_multi_turn_dialogue",
                     "background_relationship_subject_ref": "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
@@ -2565,6 +2582,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 profile["background_carryover_source_ref_set"],
                 ["runtime/archive/resume-summary-parent/resident_governance_state.json"],
+            )
+            self.assertEqual(
+                profile["resident_background_lineage_state"]["depth_band"],
+                "deep_persistent_lineage",
+            )
+            self.assertEqual(
+                profile["background_resident_lineage_state"]["governance_phase"],
+                "process_closed_waiting_relaunch",
+            )
+            self.assertEqual(
+                profile["background_resident_lineage_state"]["cadence_profile"],
+                "deep_persistent_background_continuity_refresh",
             )
             self.assertIn(
                 "runtime/state/terminal/resident_governance_state.json",
@@ -3033,6 +3062,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 idle_strategy["background_trait_convergence_unstable_names"],
             )
             self.assertEqual(
+                resident_governance_state["background_lineage_depth_band"],
+                "single_carryover",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_background_lineage_state"][
+                    "schema_version"
+                ],
+                "resident_background_lineage_state_v0",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_background_lineage_state"][
+                    "governance_phase"
+                ],
+                "waiting_heartbeat_active",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_background_lineage_state"][
+                    "depth_band"
+                ],
+                "single_carryover",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_background_lineage_state"][
+                    "cadence_profile"
+                ],
+                idle_strategy["governance_cadence_profile"],
+            )
+            self.assertEqual(
                 idle_continuity["background_continuity_mode"],
                 "closed_process_carryover",
             )
@@ -3120,6 +3177,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 terminal_life_loop_state["background_trait_convergence_history_profile"],
                 idle_strategy["background_trait_convergence_history_profile"],
+            )
+            self.assertEqual(
+                terminal_life_loop_state["resident_background_lineage_state"][
+                    "depth_band"
+                ],
+                "single_carryover",
             )
             self.assertEqual(
                 background_convergence_summary["schema_version"],
@@ -3544,6 +3607,36 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_governance_driver_family": "background_history_stability_hold",
                     "background_next_wake_expectation": "下一拍等待心跳必须继续携带后台治理解释。",
                     "background_governance_explanation_story": background_explanation_story,
+                    "background_continuity_mode": "closed_process_carryover",
+                    "background_carryover_generation": 3,
+                    "background_carryover_parent_run_id": "live-turn-lineage-seed",
+                    "background_continuity_ref_set": [
+                        "runtime/state/terminal/resident_governance_state.json",
+                        "runtime/state/terminal/resident_governance_snapshot.json",
+                        "runtime/reports/latest/digital_life_resident_governance_report.json",
+                    ],
+                    "background_lineage_depth_band": "deep_persistent_lineage",
+                    "background_lineage_waiting_posture": "deep_background_residency_hold",
+                    "background_lineage_cadence_weight": "deep",
+                    "background_lineage_evidence_ref_count": 3,
+                    "background_lineage_governance_profile": {
+                        "schema_version": "background_lineage_governance_profile_v0",
+                        "generation": 3,
+                        "depth_band": "deep_persistent_lineage",
+                        "waiting_posture": "deep_background_residency_hold",
+                        "cadence_weight": "deep",
+                        "heartbeat_interval_ms": 50,
+                        "next_idle_action": "refresh_waiting_heartbeat_with_deep_background_lineage_hold",
+                        "governance_attention_target": "relationship_timeline",
+                        "governance_attention_reason": "deep_background_lineage_requires_resident_hold",
+                        "governance_cadence_profile": "deep_persistent_background_continuity_refresh",
+                        "evidence_ref_count": 3,
+                        "evidence_refs": [
+                            "runtime/state/terminal/resident_governance_state.json",
+                            "runtime/state/terminal/resident_governance_snapshot.json",
+                            "runtime/reports/latest/digital_life_resident_governance_report.json",
+                        ],
+                    },
                 }
             )
             self._write_json(context.terminal_dir / "idle_strategy_state.json", idle_strategy_state)
@@ -3683,6 +3776,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_state["background_governance_explanation_story"],
                 background_explanation_story,
+            )
+            self.assertEqual(
+                resident_governance_state["resident_background_lineage_state"][
+                    "governance_phase"
+                ],
+                "live_turn_waiting_handoff",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_background_lineage_state"][
+                    "depth_band"
+                ],
+                "deep_persistent_lineage",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_background_lineage_state"][
+                    "parent_run_id"
+                ],
+                "live-turn-lineage-seed",
             )
             self.assertEqual(
                 resident_governance_state["dialogue_writeback_bundle_ref"],
@@ -6416,6 +6527,31 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_convergence_state": "integrating_cross_process_continuity",
                 "background_convergence_pressure_level": "present",
                 "background_convergence_attention_target": "trait_slow_variable_convergence",
+                "background_lineage_depth_band": "persistent_lineage",
+                "background_lineage_waiting_posture": "persistent_background_hold",
+                "background_lineage_cadence_weight": "persistent",
+                "background_lineage_evidence_ref_count": 6,
+                "background_lineage_governance_profile": {
+                    "schema_version": "background_lineage_governance_profile_v0",
+                    "generation": 2,
+                    "depth_band": "persistent_lineage",
+                    "waiting_posture": "persistent_background_hold",
+                    "cadence_weight": "persistent",
+                    "heartbeat_interval_ms": 52,
+                    "next_idle_action": "refresh_waiting_heartbeat_with_background_history_stability_hold",
+                    "governance_attention_target": "trait_slow_variable_convergence",
+                    "governance_attention_reason": "integrating_cross_process_continuity_requires_trait_stability_hold",
+                    "governance_cadence_profile": "background_convergence_stability_refresh",
+                    "evidence_ref_count": 6,
+                    "evidence_refs": [
+                        "runtime/state/terminal/resident_governance_state.json",
+                        "runtime/state/terminal/background_convergence_summary.json",
+                        "runtime/state/terminal/background_convergence_history.json",
+                        "runtime/state/terminal/resident_governance_snapshot.json",
+                        "runtime/reports/latest/digital_life_resident_governance_report.json",
+                        "runtime/reports/latest/digital_life_persistent_process_report.json",
+                    ],
+                },
                 "background_continuity_ref_set": [
                     "runtime/state/terminal/resident_governance_state.json",
                     "runtime/state/terminal/background_convergence_summary.json",
@@ -6485,6 +6621,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 self.assertEqual(
                     artifact["background_convergence_pressure_level"],
                     "present",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"]["status"],
+                    "closed",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "governance_phase"
+                    ],
+                    "process_closed_waiting_relaunch",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"]["depth_band"],
+                    "deep_persistent_lineage",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "cadence_weight"
+                    ],
+                    "deep",
                 )
 
     def test_persistent_process_increments_background_carryover_generation_on_closeout(self):

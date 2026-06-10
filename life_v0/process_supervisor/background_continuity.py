@@ -206,6 +206,12 @@ def load_background_continuity_profile(
         or resident_governance_report.get("background_resume_summary")
         or persistent_process_report.get("background_resume_summary")
     )
+    resident_background_lineage_state = _dict_or_empty(
+        resident_governance_state.get("resident_background_lineage_state")
+        or snapshot.get("resident_background_lineage_state")
+        or resident_governance_report.get("resident_background_lineage_state")
+        or persistent_process_report.get("resident_background_lineage_state")
+    )
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
@@ -245,6 +251,11 @@ def load_background_continuity_profile(
         profile["background_trait_slow_variable_summary"] = trait_slow_variable_summary
     if background_resume_summary:
         profile["background_resume_summary"] = background_resume_summary
+    if resident_background_lineage_state:
+        profile["resident_background_lineage_state"] = resident_background_lineage_state
+        profile["background_resident_lineage_state"] = (
+            resident_background_lineage_state
+        )
     if resident_governance_state:
         profile["background_resident_governance_state_ref"] = (
             BACKGROUND_RESIDENT_GOVERNANCE_STATE_REF

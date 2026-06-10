@@ -72,6 +72,8 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_lineage_cadence_weight",
     "background_lineage_evidence_ref_count",
     "background_lineage_governance_profile",
+    "background_resident_lineage_state",
+    "resident_background_lineage_state",
     "background_resident_governance_state_ref",
     "background_convergence_summary_ref",
     "background_convergence_history_ref",

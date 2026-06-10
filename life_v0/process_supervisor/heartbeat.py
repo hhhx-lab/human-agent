@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .background_continuity import load_background_continuity_profile
+from .background_lineage_state import build_resident_background_lineage_state
 from .continuity_writeback import build_idle_continuity_frame, record_idle_continuity
 from .idle_strategy import (
     IDLE_STRATEGY_STATE_REF,
@@ -268,6 +269,8 @@ def write_waiting_heartbeat(
         "background_lineage_waiting_posture",
         "background_lineage_cadence_weight",
         "background_lineage_evidence_ref_count",
+        "background_resident_lineage_state",
+        "resident_background_lineage_state",
         "background_idle_heartbeat_trace_ref",
         "background_idle_heartbeat_trace_count",
         "long_horizon_language_refs",
@@ -497,6 +500,15 @@ def write_waiting_heartbeat(
     if membrane_guard_refs:
         resident_governance_state["membrane_guard_refs"] = membrane_guard_refs
     resident_governance_state.update(extract_idle_governance_fields(idle_strategy))
+    resident_background_lineage_state = build_resident_background_lineage_state(
+        resident_governance_state,
+        governance_phase="waiting_heartbeat_active",
+        status="active",
+    )
+    if resident_background_lineage_state:
+        resident_governance_state["resident_background_lineage_state"] = (
+            resident_background_lineage_state
+        )
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     write_json(terminal_dir / "idle_strategy_state.json", idle_strategy)
     write_json(reports_dir / "digital_life_waiting_heartbeat.json", heartbeat_packet)

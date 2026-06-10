@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from .background_lineage_state import build_resident_background_lineage_state
 from .idle_strategy import extract_idle_governance_fields
 
 
@@ -154,6 +155,11 @@ def write_persistent_process_artifacts(
         background_resume_summary=background_resume_summary,
     )
     resident_governance_snapshot.update(_idle_governance_without_background_lineage(idle_governance))
+    _attach_resident_background_lineage_state(
+        resident_governance_snapshot,
+        governance_phase="process_closed_waiting_relaunch",
+        status="closed",
+    )
     resident_governance_state = {
         "schema_version": "resident_governance_state_v0",
         "run_id": run_id,
@@ -224,6 +230,11 @@ def write_persistent_process_artifacts(
         background_resume_summary=background_resume_summary,
     )
     resident_governance_state.update(_idle_governance_without_background_lineage(idle_governance))
+    _attach_resident_background_lineage_state(
+        resident_governance_state,
+        governance_phase="process_closed_waiting_relaunch",
+        status="closed",
+    )
     state = {
         "schema_version": "persistent_process_state_v0",
         "run_id": run_id,
@@ -275,6 +286,11 @@ def write_persistent_process_artifacts(
         background_resume_summary=background_resume_summary,
     )
     state.update(_idle_governance_without_background_lineage(idle_governance))
+    _attach_resident_background_lineage_state(
+        state,
+        governance_phase="process_closed_waiting_relaunch",
+        status="closed",
+    )
     report = {
         "schema_version": "digital_life_persistent_process_report_v0",
         "run_id": run_id,
@@ -330,6 +346,11 @@ def write_persistent_process_artifacts(
         background_resume_summary=background_resume_summary,
     )
     report.update(_idle_governance_without_background_lineage(idle_governance))
+    _attach_resident_background_lineage_state(
+        report,
+        governance_phase="process_closed_waiting_relaunch",
+        status="closed",
+    )
     resident_governance_report = {
         "schema_version": "digital_life_resident_governance_report_v0",
         "run_id": run_id,
@@ -391,6 +412,11 @@ def write_persistent_process_artifacts(
         background_resume_summary=background_resume_summary,
     )
     resident_governance_report.update(_idle_governance_without_background_lineage(idle_governance))
+    _attach_resident_background_lineage_state(
+        resident_governance_report,
+        governance_phase="process_closed_waiting_relaunch",
+        status="closed",
+    )
 
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     write_json(terminal_dir / "resident_governance_snapshot.json", resident_governance_snapshot)
@@ -430,6 +456,21 @@ def _idle_governance_without_background_lineage(
             "background_carryover_parent_run_id",
         }
     }
+
+
+def _attach_resident_background_lineage_state(
+    artifact: dict[str, Any],
+    *,
+    governance_phase: str,
+    status: str,
+) -> None:
+    lineage_state = build_resident_background_lineage_state(
+        artifact,
+        governance_phase=governance_phase,
+        status=status,
+    )
+    if lineage_state:
+        artifact["resident_background_lineage_state"] = lineage_state
 
 
 def _int_or_default(value: Any, *, default: int) -> int:

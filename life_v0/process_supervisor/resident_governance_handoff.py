@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, Callable
 
+from .background_lineage_state import build_resident_background_lineage_state
 from .idle_strategy import IDLE_STRATEGY_STATE_REF, extract_idle_governance_fields
 from .persistent_process import (
     RESIDENT_GOVERNANCE_REPORT_REF,
@@ -116,6 +117,15 @@ def write_live_turn_waiting_governance_handoff(
     if membrane_guard_refs:
         resident_governance_state["membrane_guard_refs"] = membrane_guard_refs
     resident_governance_state.update(extract_idle_governance_fields(idle_strategy_state))
+    resident_background_lineage_state = build_resident_background_lineage_state(
+        resident_governance_state,
+        governance_phase="live_turn_waiting_handoff",
+        status="active",
+    )
+    if resident_background_lineage_state:
+        resident_governance_state["resident_background_lineage_state"] = (
+            resident_background_lineage_state
+        )
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     return resident_governance_state
 

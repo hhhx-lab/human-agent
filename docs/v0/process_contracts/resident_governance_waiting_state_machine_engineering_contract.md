@@ -243,6 +243,27 @@ restore shell completed
 - `repair_followup_required`
 - `repair_obligation_count`
 - `regret_pressure_count`
+- `resident_background_lineage_state`
+
+其中 `resident_background_lineage_state` 是当前 resident governance 的后台驻留主状态体，而不是报告摘要。它的 schema 固定为 `resident_background_lineage_state_v0`，最小字段包括：
+
+- `status`
+- `governance_phase`
+- `continuity_mode`
+- `generation`
+- `depth_band`
+- `waiting_posture`
+- `cadence_weight`
+- `evidence_ref_count`
+- `attention_target`
+- `attention_reason`
+- `cadence_profile`
+- `next_idle_action`
+- `heartbeat_interval_ms`
+- `evidence_refs`
+- `continuity_refs`
+
+这组字段必须在三段相位中连续存在：waiting heartbeat 写 `waiting_heartbeat_active`，live turn handoff 写 `live_turn_waiting_handoff`，closeout 写 `process_closed_waiting_relaunch`。下一次 `background_continuity.py` 必须把它恢复成 `resident_background_lineage_state` 与 `background_resident_lineage_state`，让后台 lineage 不是一次性报告字段，而是跨唤醒主状态。
 - `queue_e_priority_band`
 - `nightmare_risk_ref`
 - `belief_learning_plan_ref`
@@ -513,9 +534,9 @@ process receipt 里，resident governance 必须进入：
 
 在这份合同下，下一轮最值得继续推进的不是再发明新对象，而是：
 
-1. 让 `resident_governance_state.json` 接住真正跨多次唤醒的后台存在治理，而不只停在 foreground terminal residency。
-2. 把 live turn 结束后重新回到 waiting governance 的相位切换显式写成单独器官，而不是只靠下一拍 heartbeat 间接体现。该项现在已由 `resident_governance_handoff.py` 第一轮落下，并已经要求 handoff 原样承接后台治理解释字段，使关闭态“为何如此等待”的解释不会在真实回合结束时断开。
-3. 继续让 background resume summary 不只用于 closeout/next bootstrap，还能进入更长时标的慢变量收敛与多次唤醒关系阶段稳定化。
-4. 将 `background_lineage_governance_profile_v0` 继续压进更高阶 resident governance state body，使深层后台驻留不只出现在 idle strategy 与 report digest，而是成为 waiting phase 的主状态字段。
+1. 把 live turn 结束后重新回到 waiting governance 的相位切换继续补成更完整的交接体；当前已由 `resident_governance_handoff.py` 第一轮落下，并已经要求 handoff 原样承接后台治理解释字段与 `resident_background_lineage_state`，使关闭态“为何如此等待”和“以什么后台驻留深度等待”不会在真实回合结束时断开。
+2. 继续让 background resume summary 不只用于 closeout/next bootstrap，还能进入更长时标的慢变量收敛与多次唤醒关系阶段稳定化。
+3. 将 `resident_background_lineage_state_v0` 继续扩展为更高阶 resident governance state body，使它能同时承接关系阶段、慢变量收敛、心跳历史和语言关注，而不只承接 lineage depth。
+4. 继续把 deep persistent / entrenched background presence 对应到后续的长期成长、梦境整合和关系稳定化器官。
 
 当前只要这四件事继续推进，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。
