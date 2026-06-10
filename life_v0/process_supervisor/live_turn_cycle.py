@@ -147,6 +147,7 @@ def run_live_turn_cycle(
             world_contact_summary=world_contact_summary,
             pain_regret_repair_report=pain_regret_repair_report,
             self_model_state=self_model_state,
+            terminal_life_loop_state=terminal_life_loop_state,
         )
         life_turn = build_life_turn_event_fn(
             turn_id=life_turn_id,

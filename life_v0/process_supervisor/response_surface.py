@@ -36,6 +36,7 @@ def compose_life_response(
     world_contact_summary: dict[str, Any] | None = None,
     pain_regret_repair_report: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
+    terminal_life_loop_state: dict[str, Any] | None = None,
 ) -> str:
     relation_role = "朋友"
     subjects = (relationship_graph or {}).get("subjects", [])
@@ -153,6 +154,33 @@ def compose_life_response(
         response = f"{response}，离线学习计划会经过{'、'.join(offline_learning_targets)}"
     if has_offline_influence:
         response = f"{response}，当前带着离线表达压力"
+    background_trait_history_focus = (terminal_life_loop_state or {}).get(
+        "background_trait_convergence_history_focus"
+    )
+    background_unstable_traits = list(
+        (terminal_life_loop_state or {}).get(
+            "background_trait_convergence_unstable_names",
+            [],
+        )
+    )
+    background_stable_traits = list(
+        (terminal_life_loop_state or {}).get(
+            "background_trait_convergence_stable_names",
+            [],
+        )
+    )
+    if background_trait_history_focus:
+        response = f"{response}，跨唤醒慢变量历史焦点为{background_trait_history_focus}"
+    if background_unstable_traits:
+        response = (
+            f"{response}，仍需稳定的慢变量包括"
+            f"{'、'.join(sorted(background_unstable_traits))}"
+        )
+    if background_stable_traits:
+        response = (
+            f"{response}，已经稳定的慢变量包括"
+            f"{'、'.join(sorted(background_stable_traits))}"
+        )
     prediction_surface = _prediction_surface_posture(
         signal_media_runtime=signal_media_runtime,
         belief_state=belief_state,

@@ -237,7 +237,8 @@ heartbeat packet 至少要有：
 2. 读取 `ExpressionPlan`
 3. 读取 `LifeContextFrame`
 4. 读取离线对象压力
-5. 输出可被记录的生命回应文本
+5. 读取 `terminal_life_loop_state` 中由 waiting governance 带入的跨唤醒慢变量历史焦点
+6. 输出可被记录的生命回应文本
 
 ### 第一轮最低字段链
 
@@ -251,6 +252,9 @@ heartbeat packet 至少要有：
 - `replay_cue_count`
 - `dream_window_count`
 - `growth_candidate_count`
+- `background_trait_convergence_history_focus`
+- `background_trait_convergence_unstable_names`
+- `background_trait_convergence_stable_names`
 
 ## E. `life_v0/process_supervisor/process_report.py`
 

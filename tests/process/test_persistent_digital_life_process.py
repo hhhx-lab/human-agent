@@ -6310,6 +6310,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "schema_version": "state_merge_guard_v0",
                 "stage_policy": "long_term_merge_fail_closed",
             },
+            terminal_life_loop_state={
+                "background_trait_convergence_history_focus": "trait_stability_hold",
+                "background_trait_convergence_unstable_names": ["continuity_drive"],
+                "background_trait_convergence_stable_names": ["repair_seriousness"],
+            },
         )
 
         self.assertIn("朋友", response)
@@ -6342,6 +6347,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("预测误差仍有1条", response)
         self.assertIn("记忆写门处于write_guarded_candidate_then_validate", response)
         self.assertIn("长期合并治理处于long_term_merge_fail_closed", response)
+        self.assertIn("跨唤醒慢变量历史焦点为trait_stability_hold", response)
+        self.assertIn("仍需稳定的慢变量包括continuity_drive", response)
+        self.assertIn("已经稳定的慢变量包括repair_seriousness", response)
         self.assertIn("表达计划唤醒度为0.74", response)
         self.assertIn("修复驱力", response)
         self.assertIn("情绪张力", response)
