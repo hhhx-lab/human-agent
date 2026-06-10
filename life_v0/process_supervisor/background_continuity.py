@@ -212,6 +212,53 @@ def load_background_continuity_profile(
         or resident_governance_report.get("resident_background_lineage_state")
         or persistent_process_report.get("resident_background_lineage_state")
     )
+    offline_learning_cumulative_profile = _dict_or_empty(
+        resident_governance_state.get("offline_learning_cumulative_profile")
+        or snapshot.get("offline_learning_cumulative_profile")
+        or resident_governance_report.get("offline_learning_cumulative_profile")
+        or persistent_process_report.get("offline_learning_cumulative_profile")
+    )
+    offline_learning_cumulative_generation = max(
+        _int_or_zero(
+            resident_governance_state.get("offline_learning_cumulative_generation")
+        ),
+        _int_or_zero(snapshot.get("offline_learning_cumulative_generation")),
+        _int_or_zero(
+            resident_governance_report.get("offline_learning_cumulative_generation")
+        ),
+        _int_or_zero(
+            persistent_process_report.get("offline_learning_cumulative_generation")
+        ),
+        _int_or_zero(offline_learning_cumulative_profile.get("generation")),
+    )
+    offline_learning_cumulative_pressure_level = (
+        resident_governance_state.get("offline_learning_cumulative_pressure_level")
+        or snapshot.get("offline_learning_cumulative_pressure_level")
+        or resident_governance_report.get("offline_learning_cumulative_pressure_level")
+        or persistent_process_report.get("offline_learning_cumulative_pressure_level")
+        or offline_learning_cumulative_profile.get("pressure_level")
+    )
+    offline_learning_cumulative_attention_target = (
+        resident_governance_state.get("offline_learning_cumulative_attention_target")
+        or snapshot.get("offline_learning_cumulative_attention_target")
+        or resident_governance_report.get("offline_learning_cumulative_attention_target")
+        or persistent_process_report.get("offline_learning_cumulative_attention_target")
+        or offline_learning_cumulative_profile.get("attention_target")
+    )
+    offline_learning_cumulative_priority_profile = _dict_or_empty(
+        resident_governance_state.get("offline_learning_cumulative_priority_profile")
+        or snapshot.get("offline_learning_cumulative_priority_profile")
+        or resident_governance_report.get("offline_learning_cumulative_priority_profile")
+        or persistent_process_report.get("offline_learning_cumulative_priority_profile")
+        or offline_learning_cumulative_profile.get("priority_profile")
+    )
+    offline_learning_cumulative_ref_set = _list_or_empty(
+        resident_governance_state.get("offline_learning_cumulative_ref_set")
+        or snapshot.get("offline_learning_cumulative_ref_set")
+        or resident_governance_report.get("offline_learning_cumulative_ref_set")
+        or persistent_process_report.get("offline_learning_cumulative_ref_set")
+        or offline_learning_cumulative_profile.get("ref_set")
+    )
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
@@ -255,6 +302,30 @@ def load_background_continuity_profile(
         profile["resident_background_lineage_state"] = resident_background_lineage_state
         profile["background_resident_lineage_state"] = (
             resident_background_lineage_state
+        )
+    if offline_learning_cumulative_generation:
+        profile["background_offline_learning_generation"] = (
+            offline_learning_cumulative_generation
+        )
+    if offline_learning_cumulative_pressure_level:
+        profile["background_offline_learning_pressure_level"] = str(
+            offline_learning_cumulative_pressure_level
+        )
+    if offline_learning_cumulative_attention_target:
+        profile["background_offline_learning_attention_target"] = str(
+            offline_learning_cumulative_attention_target
+        )
+    if offline_learning_cumulative_priority_profile:
+        profile["background_offline_learning_priority_profile"] = (
+            offline_learning_cumulative_priority_profile
+        )
+    if offline_learning_cumulative_ref_set:
+        profile["background_offline_learning_ref_set"] = (
+            offline_learning_cumulative_ref_set
+        )
+    if offline_learning_cumulative_profile:
+        profile["background_offline_learning_cumulative_profile"] = (
+            offline_learning_cumulative_profile
         )
     if resident_governance_state:
         profile["background_resident_governance_state_ref"] = (

@@ -1500,6 +1500,110 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "refresh_waiting_heartbeat_with_offline_learning_hold",
         )
         self.assertEqual(idle_strategy["heartbeat_interval_ms"], 58)
+        self.assertEqual(idle_strategy["offline_learning_cumulative_generation"], 1)
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_pressure_level"],
+            "urgent",
+        )
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_attention_target"],
+            "nightmare_risk",
+        )
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_priority_profile"][
+                "relationship_learning_plan"
+            ],
+            "elevated",
+        )
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_ref_set"],
+            [
+                "runtime/state/dream/nightmare_loop_risk.json",
+                "runtime/state/growth/belief_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/growth/relationship_learning_plan.json",
+            ],
+        )
+
+    def test_idle_strategy_restores_cumulative_offline_learning_pressure(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-offline-cumulative-carryover",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={
+                "current_mode": "restored_waiting_for_external_turn"
+            },
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "inactive",
+                "cognitive_bandwidth": "steady_open",
+                "sleep_pressure": "low",
+            },
+            replay_cue_bundle={},
+            offline_consolidation_frame={},
+            growth_patch_candidate_queue={},
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_generation": 2,
+                "background_carryover_pressure_level": "present",
+                "background_carryover_attention_target": "relationship_timeline",
+                "background_continuity_ref_set": [
+                    "runtime/state/terminal/resident_governance_state.json",
+                ],
+                "background_offline_learning_generation": 2,
+                "background_offline_learning_pressure_level": "elevated",
+                "background_offline_learning_attention_target": "relationship_learning_plan",
+                "background_offline_learning_priority_profile": {
+                    "relationship_learning_plan": "elevated",
+                    "language_learning_plan": "baseline",
+                },
+                "background_offline_learning_ref_set": [
+                    "runtime/state/growth/relationship_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                ],
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(idle_strategy["offline_learning_pressure_level"], "quiet")
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_generation"],
+            2,
+        )
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_attention_target"],
+            "relationship_learning_plan",
+        )
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_ref_set"],
+            [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+            ],
+        )
+        self.assertEqual(idle_strategy["heartbeat_interval_ms"], 58)
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "refresh_waiting_heartbeat_with_offline_learning_hold",
+        )
 
     def test_idle_strategy_consumes_prediction_write_gate_and_state_merge_guard(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
@@ -2453,6 +2557,31 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "continuity_drive": {"value": 0.74}
                         },
                     },
+                    "offline_learning_cumulative_profile": {
+                        "schema_version": "offline_learning_cumulative_profile_v0",
+                        "generation": 2,
+                        "pressure_level": "elevated",
+                        "attention_target": "relationship_learning_plan",
+                        "priority_profile": {
+                            "relationship_learning_plan": "elevated",
+                            "language_learning_plan": "baseline",
+                        },
+                        "ref_set": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                    },
+                    "offline_learning_cumulative_generation": 2,
+                    "offline_learning_cumulative_pressure_level": "elevated",
+                    "offline_learning_cumulative_attention_target": "relationship_learning_plan",
+                    "offline_learning_cumulative_priority_profile": {
+                        "relationship_learning_plan": "elevated",
+                        "language_learning_plan": "baseline",
+                    },
+                    "offline_learning_cumulative_ref_set": [
+                        "runtime/state/growth/relationship_learning_plan.json",
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
                 },
             )
             (terminal_dir / "idle_heartbeat_trace.jsonl").write_text(
@@ -2594,6 +2723,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 profile["background_resident_lineage_state"]["cadence_profile"],
                 "deep_persistent_background_continuity_refresh",
+            )
+            self.assertEqual(profile["background_offline_learning_generation"], 2)
+            self.assertEqual(
+                profile["background_offline_learning_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                profile["background_offline_learning_attention_target"],
+                "relationship_learning_plan",
+            )
+            self.assertEqual(
+                profile["background_offline_learning_priority_profile"][
+                    "relationship_learning_plan"
+                ],
+                "elevated",
+            )
+            self.assertEqual(
+                profile["background_offline_learning_ref_set"],
+                [
+                    "runtime/state/growth/relationship_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                ],
+            )
+            self.assertEqual(
+                profile["background_offline_learning_cumulative_profile"][
+                    "pressure_level"
+                ],
+                "elevated",
             )
             self.assertIn(
                 "runtime/state/terminal/resident_governance_state.json",

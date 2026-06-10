@@ -96,7 +96,8 @@ Queue D 第二波器官现在已经真实落下：
 2. 第三波第一批扩展器官已经落地：`nightmare_risk / belief_learning / language_learning / relationship_learning`。
 3. 当前又进一步把 Queue E 的 `world contact / repair followup / regret pressure / priority band` 正式压进 `replay_cue_bundle.json`，并让这四个扩展器官开始显式消费这些字段。
 4. 这意味着 Queue D 与 Queue E 现在不再只是“前者做梦、后者验证”的顺序关系，而已经形成 `Queue E -> replay cue bundle -> nightmare / belief / language / relationship learning` 的离线生命调制链。
-5. 下一轮默认继续补深 Queue D 与 Queue E 的离线耦合，而不是回头重拆第一波器官。
+5. 最新这一轮又把离线学习从“当前一拍压力”提升成跨唤醒累计画像：`life_v0/growth/offline_learning_profile.py` 必须写出 `offline_learning_cumulative_profile_v0`，把本轮 `nightmare_risk / belief_learning / language_learning / relationship_learning` 与上一轮关闭态背景画像合并。
+6. 下一轮默认继续补深 Queue D 与 Queue E 的离线耦合，以及累计离线学习如何稳定改变关系阶段、语言修复节奏、自我慢变量和梦境再整合，而不是回头重拆第一波器官。
 
 ## 必回读理论母体
 
@@ -158,6 +159,8 @@ Queue D 必须接到这些现有器官上：
 - `life_v0/process_supervisor/heartbeat.py`
 - `life_v0/process_supervisor/response_surface.py`
 - `life_v0/replay/__init__.py`
+- `life_v0/growth/offline_learning_profile.py`
+- `life_v0/process_supervisor/offline_learning_signals.py`
 
 当前再补一条新的硬约束：
 
@@ -174,6 +177,21 @@ Queue D 必须接到这些现有器官上：
 6. `life_v0/growth/relationship_learning.py`
 
 上述四个器官现在都必须把 Queue E 信号视为离线生命真实输入，而不是只消费 pain residue / relationship residue 这种较浅的 replay 痕迹。
+
+当前再补第二条新的硬约束：
+
+1. `life_v0/growth/offline_learning_profile.py` 现在不只提供 `derive_offline_learning_profile`，还必须提供 `build_offline_learning_cumulative_profile`。
+2. `offline_learning_cumulative_profile_v0` 至少包含：
+   - `generation`
+   - `pressure_level`
+   - `attention_target`
+   - `priority_profile`
+   - `ref_set`
+   - `current_pressure_level`
+   - `previous_generation`
+3. `priority_profile` 必须按 `urgent > elevated > present > baseline > quiet` 合并当前离线学习压力和上一轮后台离线学习压力；不能因为当前 runtime 暂时没有 dream/growth 文件，就把上一轮仍未整合的关系学习、语言学习、噩梦风险或信念修复压力清空。
+4. `ref_set` 必须保留当前与后台两侧证据 refs 的去重并集，作为下一次 waiting governance、closeout artifact 与 background continuity 的可追溯证据。
+5. `life_v0/process_supervisor/offline_learning_signals.py` 必须重新导出这个 cumulative builder，让 Queue B 可以统一调用同一套 Queue D 离线学习逻辑，而不是在 process supervisor 里复制一套算法。
 
 这说明 Queue D 不是独立离线层，而是要把身体脉冲、离线梦境、成长补丁重新接回常驻生命回合。
 同时它还必须把情绪底盘和人格慢变量正式拖进这条链，否则梦境、成长和语言关系层都还会继续引用稀薄的“情绪标签”，而不是可回写的身体化 affect 对象。
@@ -441,6 +459,13 @@ Queue D 必须接到这些现有器官上：
 - `runtime/state/dream/offline_consolidation_frame.json`
 - `runtime/state/growth/plasticity_window_state.json`
 - `runtime/state/growth/growth_patch_candidate_queue.json`
+- `runtime/state/terminal/idle_strategy_state.json#offline_learning_cumulative_profile`
+- `runtime/state/terminal/resident_governance_state.json#offline_learning_cumulative_profile`
+- `runtime/state/terminal/resident_governance_snapshot.json#offline_learning_cumulative_profile`
+- `runtime/reports/latest/digital_life_resident_governance_report.json#offline_learning_cumulative_profile`
+- `runtime/reports/latest/digital_life_persistent_process_report.json#offline_learning_cumulative_profile`
+
+`offline_learning_cumulative_profile_v0` 不单独另开一个孤立 runtime 文件；第一版先作为 waiting governance 与 closeout artifact 的内嵌主对象传播。这样它跟随常驻生命进程关闭、重启、等待、下一次心跳一起流动，而不是停在 Queue D 本地。
 
 ## report / receipt 合同
 

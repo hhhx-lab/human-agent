@@ -93,6 +93,67 @@ def derive_offline_learning_profile(
     }
 
 
+def build_offline_learning_cumulative_profile(
+    *,
+    current_profile: dict[str, Any],
+    background_profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    background_profile = background_profile or {}
+    current_priority = _priority_profile(
+        current_profile.get("offline_learning_priority_profile")
+    )
+    background_priority = _priority_profile(
+        background_profile.get("background_offline_learning_priority_profile")
+        or background_profile.get("offline_learning_cumulative_priority_profile")
+    )
+    cumulative_priority = _merge_priority_profiles(
+        background_priority,
+        current_priority,
+    )
+    current_refs = _string_list(current_profile.get("offline_learning_ref_set"))
+    background_refs = _string_list(
+        background_profile.get("background_offline_learning_ref_set")
+        or background_profile.get("offline_learning_cumulative_ref_set")
+    )
+    cumulative_refs = _dedupe_string_list([*background_refs, *current_refs])
+    background_generation = _int_or_zero(
+        background_profile.get("background_offline_learning_generation")
+        or background_profile.get("offline_learning_cumulative_generation")
+    )
+    current_pressure = str(
+        current_profile.get("offline_learning_pressure_level") or "quiet"
+    )
+    generation = background_generation + (
+        1 if current_pressure != "quiet" or current_refs else 0
+    )
+    pressure_level = _pressure_from_priority(cumulative_priority)
+    if pressure_level == "quiet" and background_generation > 0:
+        pressure_level = str(
+            background_profile.get("background_offline_learning_pressure_level")
+            or background_profile.get("offline_learning_cumulative_pressure_level")
+            or "present"
+        )
+    dominant_target = _dominant_target(
+        priority_profile=cumulative_priority,
+        fallback=str(
+            current_profile.get("offline_learning_attention_target")
+            or background_profile.get("background_offline_learning_attention_target")
+            or background_profile.get("offline_learning_cumulative_attention_target")
+            or "baseline_offline_learning_maintenance"
+        ),
+    )
+    return {
+        "schema_version": "offline_learning_cumulative_profile_v0",
+        "generation": generation,
+        "pressure_level": pressure_level,
+        "attention_target": dominant_target,
+        "priority_profile": cumulative_priority,
+        "ref_set": cumulative_refs,
+        "current_pressure_level": current_pressure,
+        "previous_generation": background_generation,
+    }
+
+
 def _nightmare_priority(nightmare_risk: dict[str, Any]) -> str | None:
     if not nightmare_risk:
         return None
@@ -146,3 +207,77 @@ def _relationship_priority(plan: dict[str, Any]) -> str | None:
     if plan.get("repair_followup_required") or any("repair" in target for target in targets):
         return "elevated"
     return "baseline"
+
+
+def _priority_profile(value: Any) -> dict[str, str]:
+    if not isinstance(value, dict):
+        return {}
+    return {str(key): str(priority) for key, priority in value.items() if priority}
+
+
+def _merge_priority_profiles(
+    previous: dict[str, str],
+    current: dict[str, str],
+) -> dict[str, str]:
+    merged = dict(previous)
+    for key, priority in current.items():
+        if _priority_rank(priority) >= _priority_rank(merged.get(key)):
+            merged[key] = priority
+    return merged
+
+
+def _pressure_from_priority(priority_profile: dict[str, str]) -> str:
+    if any(priority == "urgent" for priority in priority_profile.values()):
+        return "urgent"
+    if any(priority == "elevated" for priority in priority_profile.values()):
+        return "elevated"
+    if priority_profile:
+        return "present"
+    return "quiet"
+
+
+def _dominant_target(*, priority_profile: dict[str, str], fallback: str) -> str:
+    preferred_order = [
+        "nightmare_risk",
+        "relationship_learning_plan",
+        "language_learning_plan",
+        "belief_learning_plan",
+    ]
+    for level in ["urgent", "elevated", "present", "baseline"]:
+        for target in preferred_order:
+            if priority_profile.get(target) == level:
+                return target
+    return fallback
+
+
+def _priority_rank(priority: str | None) -> int:
+    return {
+        "urgent": 4,
+        "elevated": 3,
+        "present": 2,
+        "baseline": 1,
+    }.get(str(priority or ""), 0)
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
+
+
+def _dedupe_string_list(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        result.append(item)
+    return result
+
+
+def _int_or_zero(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0

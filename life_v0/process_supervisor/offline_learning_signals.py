@@ -5,6 +5,7 @@ from ..growth.offline_learning_profile import (
     LANGUAGE_LEARNING_PLAN_REF,
     NIGHTMARE_RISK_REF,
     RELATIONSHIP_LEARNING_PLAN_REF,
+    build_offline_learning_cumulative_profile,
     derive_offline_learning_profile,
 )
 
@@ -14,5 +15,6 @@ __all__ = [
     "LANGUAGE_LEARNING_PLAN_REF",
     "NIGHTMARE_RISK_REF",
     "RELATIONSHIP_LEARNING_PLAN_REF",
+    "build_offline_learning_cumulative_profile",
     "derive_offline_learning_profile",
 ]

@@ -3,7 +3,10 @@ from __future__ import annotations
 from typing import Any
 
 from life_v0.membrane.queue_e_signals import derive_queue_e_signal_profile
-from .offline_learning_signals import derive_offline_learning_profile
+from .offline_learning_signals import (
+    build_offline_learning_cumulative_profile,
+    derive_offline_learning_profile,
+)
 
 
 IDLE_STRATEGY_STATE_REF = "runtime/state/terminal/idle_strategy_state.json"
@@ -59,6 +62,12 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "offline_learning_attention_target",
     "offline_learning_priority_profile",
     "offline_learning_ref_set",
+    "offline_learning_cumulative_profile",
+    "offline_learning_cumulative_generation",
+    "offline_learning_cumulative_pressure_level",
+    "offline_learning_cumulative_attention_target",
+    "offline_learning_cumulative_priority_profile",
+    "offline_learning_cumulative_ref_set",
     "background_continuity_mode",
     "background_carryover_pressure_level",
     "background_carryover_attention_target",
@@ -284,6 +293,14 @@ def decide_idle_strategy(
         relationship_learning_plan=relationship_learning_plan,
     )
     background_continuity_profile = dict(background_continuity_profile or {})
+    offline_learning_cumulative_profile = build_offline_learning_cumulative_profile(
+        current_profile=offline_learning_profile,
+        background_profile=background_continuity_profile,
+    )
+    effective_offline_learning_pressure_level = _effective_offline_learning_pressure(
+        current_pressure_level=offline_learning_profile["offline_learning_pressure_level"],
+        cumulative_pressure_level=offline_learning_cumulative_profile["pressure_level"],
+    )
     background_carryover_generation = _int_or_zero(
         background_continuity_profile.get("background_carryover_generation")
     )
@@ -308,7 +325,7 @@ def decide_idle_strategy(
         need_state_vector=need_state_vector,
         offline_pressure_level=offline_pressure_level,
         queue_e_priority_band=queue_e_priority_band,
-        offline_learning_pressure_level=offline_learning_profile["offline_learning_pressure_level"],
+        offline_learning_pressure_level=effective_offline_learning_pressure_level,
         prediction_waiting_posture=prediction_profile["prediction_waiting_posture"],
         consciousness_waiting_posture=consciousness_profile["consciousness_waiting_posture"],
         birth_readiness_waiting_posture=birth_readiness_profile[
@@ -326,7 +343,7 @@ def decide_idle_strategy(
         need_state_vector=need_state_vector,
         repair_followup_required=repair_followup_required,
         queue_e_priority_band=queue_e_priority_band,
-        offline_learning_pressure_level=offline_learning_profile["offline_learning_pressure_level"],
+        offline_learning_pressure_level=effective_offline_learning_pressure_level,
         prediction_waiting_posture=prediction_profile["prediction_waiting_posture"],
         consciousness_waiting_posture=consciousness_profile["consciousness_waiting_posture"],
         birth_readiness_waiting_posture=birth_readiness_profile[
@@ -530,6 +547,22 @@ def decide_idle_strategy(
         "offline_learning_attention_target": offline_learning_profile["offline_learning_attention_target"],
         "offline_learning_priority_profile": offline_learning_profile["offline_learning_priority_profile"],
         "offline_learning_ref_set": offline_learning_profile["offline_learning_ref_set"],
+        "offline_learning_cumulative_profile": offline_learning_cumulative_profile,
+        "offline_learning_cumulative_generation": offline_learning_cumulative_profile[
+            "generation"
+        ],
+        "offline_learning_cumulative_pressure_level": (
+            offline_learning_cumulative_profile["pressure_level"]
+        ),
+        "offline_learning_cumulative_attention_target": (
+            offline_learning_cumulative_profile["attention_target"]
+        ),
+        "offline_learning_cumulative_priority_profile": (
+            offline_learning_cumulative_profile["priority_profile"]
+        ),
+        "offline_learning_cumulative_ref_set": (
+            offline_learning_cumulative_profile["ref_set"]
+        ),
         "idle_continuity_ref": IDLE_CONTINUITY_FRAME_REF,
         "replay_cue_bundle_ref": replay_cue_bundle_ref if replay_cue_bundle else None,
         "offline_consolidation_frame_ref": (
@@ -729,7 +762,7 @@ def _heartbeat_interval_ms(
         return 48
     if prediction_waiting_posture == "repair_write_guard":
         return 50
-    if offline_learning_pressure_level == "urgent":
+    if offline_learning_pressure_level in {"urgent", "elevated"}:
         return 58
     if birth_readiness_waiting_posture == "birth_open_waiting":
         return 44
@@ -799,7 +832,7 @@ def _next_idle_action(
         return "refresh_waiting_heartbeat_with_prediction_evidence_hold"
     if prediction_waiting_posture == "repair_write_guard":
         return "refresh_waiting_heartbeat_with_prediction_repair_hold"
-    if offline_learning_pressure_level == "urgent":
+    if offline_learning_pressure_level in {"urgent", "elevated"}:
         return "refresh_waiting_heartbeat_with_offline_learning_hold"
     if birth_readiness_waiting_posture == "birth_open_waiting":
         return "refresh_waiting_heartbeat_with_birth_ready_presence_hold"
@@ -1047,6 +1080,22 @@ def _background_history_attention_target(
     if trend_state == "integrating_cross_wake_convergence":
         return "background_convergence_history_stability"
     return None
+
+
+def _effective_offline_learning_pressure(
+    *,
+    current_pressure_level: str,
+    cumulative_pressure_level: str,
+) -> str:
+    levels = {
+        "quiet": 0,
+        "present": 1,
+        "elevated": 2,
+        "urgent": 3,
+    }
+    if levels.get(cumulative_pressure_level, 0) > levels.get(current_pressure_level, 0):
+        return cumulative_pressure_level
+    return current_pressure_level
 
 
 def _background_lineage_governance_profile(
