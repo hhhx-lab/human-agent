@@ -263,6 +263,8 @@ def write_waiting_heartbeat(
         "background_next_wake_expectation",
         "background_governance_explanation_story",
         "background_trait_drift_monitor_ref",
+        "background_idle_heartbeat_trace_ref",
+        "background_idle_heartbeat_trace_count",
         "long_horizon_language_refs",
         "signal_media_ref",
         "belief_state_ref",
@@ -410,6 +412,12 @@ def write_waiting_heartbeat(
         ),
         background_trait_drift_monitor_ref=idle_strategy.get(
             "background_trait_drift_monitor_ref"
+        ),
+        background_idle_heartbeat_trace_ref=idle_strategy.get(
+            "background_idle_heartbeat_trace_ref"
+        ),
+        background_idle_heartbeat_trace_count=idle_strategy.get(
+            "background_idle_heartbeat_trace_count"
         ),
         signal_media_ref=idle_strategy.get("signal_media_ref"),
         belief_state_ref=idle_strategy.get("belief_state_ref"),

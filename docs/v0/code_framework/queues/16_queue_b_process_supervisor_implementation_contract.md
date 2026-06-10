@@ -120,7 +120,7 @@ Queue B 必须接到这些现有器官上：
 - `life_v0/terminal_turn/turn_transition.py`
 
 这说明 Queue B 不是新增平行进程层，而是给已经存在的常驻生命进程补器官、补对象链、补 idle 治理。
-这一轮最新已经落下 `background_continuity.py`，用于把 closeout artifact 解释成 waiting heartbeat 可消费的后台连续体 profile；现在又继续把 closeout 时最新 `relationship_subject_graph.json` 与 `self_model.json` 压成 `background_resume_summary`，让多次唤醒 lineage 不只携带 cadence，也携带关系阶段与自我慢变量。接下来的 Queue B 继续围绕多次唤醒 lineage、cadence 加权、更高阶后台治理和更长时标慢变量收敛推进。
+这一轮最新已经落下 `background_continuity.py`，用于把 closeout artifact 解释成 waiting heartbeat 可消费的后台连续体 profile；现在又继续把 closeout 时最新 `relationship_subject_graph.json` 与 `self_model.json` 压成 `background_resume_summary`，让多次唤醒 lineage 不只携带 cadence，也携带关系阶段与自我慢变量。等待态自身的节律也已经开始进入这条 lineage：`idle_heartbeat_trace.jsonl` 在下一次唤醒时必须被恢复成 `background_idle_heartbeat_trace_ref/count`，继续写进 idle strategy、idle continuity、resident governance 与 terminal loop。接下来的 Queue B 继续围绕多次唤醒 lineage、cadence 加权、更高阶后台治理和更长时标慢变量收敛推进。
 
 ## 文件级合同
 
@@ -790,7 +790,7 @@ Queue B 至少新增三道 gate：
 
 ## 第一轮完成定义
 
-只有同时满足下面七条，Queue B 才算完成第一轮：
+只有同时满足下面这些闭环条目，Queue B 才算完成第一轮：
 
 1. waiting heartbeat 不再只是计数器，而是带 `IdleContinuityFrame` 与 append-only `idle_heartbeat_trace.jsonl`
 2. process supervisor 有独立 `idle_strategy.py`
@@ -805,7 +805,8 @@ Queue B 至少新增三道 gate：
    - `runtime/state/growth/language_learning_plan.json`
    - `runtime/state/growth/relationship_learning_plan.json`
 9. `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`idle_strategy_state.json`、`resident_governance_state.json`、`digital_life_process_report.json`、`digital_life_process_digest.json` 与 receipt 必须能回链 `runtime/state/terminal/idle_heartbeat_trace.jsonl`，让等待节律在关闭态之后仍可追溯。
-9. `idle_strategy_state.json` 现在必须额外显式写出：
+10. 下一次 `background_continuity.py` 必须从上一轮 `idle_heartbeat_trace.jsonl` 与 governance state/report 中恢复 `background_idle_heartbeat_trace_ref`、`background_idle_heartbeat_trace_count` 与对应 `background_continuity_ref_set`，并由 `idle_strategy.py` / `heartbeat.py` / `continuity_writeback.py` 写入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`。
+11. `idle_strategy_state.json` 现在必须额外显式写出：
    - `nightmare_risk_ref`
    - `belief_learning_plan_ref`
    - `language_learning_plan_ref`
@@ -813,14 +814,14 @@ Queue B 至少新增三道 gate：
    - `offline_learning_pressure_level`
    - `offline_learning_attention_target`
    - `offline_learning_priority_profile`
-10. `response_surface.py` 现在不能只带 replay / dream window / growth patch 候选数量，也要把 dream/growth 已形成的离线学习压力真实转成语言表面
-11. `resident_supervision.py` 在 restore shell 之后不能只把 Queue D 结果喂给 waiting governance，还必须把它们继续反写进：
+12. `response_surface.py` 现在不能只带 replay / dream window / growth patch 候选数量，也要把 dream/growth 已形成的离线学习压力真实转成语言表面
+13. `resident_supervision.py` 在 restore shell 之后不能只把 Queue D 结果喂给 waiting governance，还必须把它们继续反写进：
    - `runtime/state/relationship/relationship_timeline.json`
    - `runtime/state/language/commitment_expression_plan.json`
    - `runtime/state/language/apology_repair_language_trace.json`
    - `runtime/state/memory/relationship_memory.json`
    - `runtime/state/life_state.json`
-12. 对应测试直接证明以上闭环
+14. 对应测试直接证明以上闭环
 
 ## 这份合同和下一轮落码的关系
 

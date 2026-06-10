@@ -2238,6 +2238,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_relationship_subject_ref": "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
                     "background_self_model_ref": "runtime/state/self/self_model.json",
                     "trait_drift_monitor_ref": "runtime/state/body/trait_drift_monitor.json",
+                    "idle_heartbeat_trace_count": 7,
                     "background_trait_slow_variable_summary": {
                         "continuity_drive": {
                             "value": 0.74,
@@ -2254,6 +2255,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         },
                     },
                 },
+            )
+            (terminal_dir / "idle_heartbeat_trace.jsonl").write_text(
+                "\n".join(
+                    [
+                        json.dumps(
+                            {
+                                "schema_version": "idle_heartbeat_trace_event_v0",
+                                "heartbeat_counter": counter,
+                            },
+                            ensure_ascii=False,
+                        )
+                        for counter in range(1, 8)
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
             )
             self._write_json(
                 terminal_dir / "background_convergence_summary.json",
@@ -2383,6 +2400,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/reports/latest/digital_life_resident_governance_explanation.json",
                 profile["background_continuity_ref_set"],
             )
+            self.assertIn(
+                "runtime/state/terminal/idle_heartbeat_trace.jsonl",
+                profile["background_continuity_ref_set"],
+            )
+            self.assertEqual(
+                profile["background_idle_heartbeat_trace_ref"],
+                "runtime/state/terminal/idle_heartbeat_trace.jsonl",
+            )
+            self.assertEqual(profile["background_idle_heartbeat_trace_count"], 7)
             self.assertEqual(
                 profile["background_convergence_summary_ref"],
                 "runtime/state/terminal/background_convergence_summary.json",
@@ -2729,6 +2755,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/body/trait_drift_monitor.json",
             )
             self.assertEqual(
+                idle_strategy["background_idle_heartbeat_trace_ref"],
+                "runtime/state/terminal/idle_heartbeat_trace.jsonl",
+            )
+            self.assertGreaterEqual(
+                idle_strategy["background_idle_heartbeat_trace_count"],
+                1,
+            )
+            self.assertEqual(
                 idle_strategy["background_convergence_summary_ref"],
                 "runtime/state/terminal/background_convergence_summary.json",
             )
@@ -2772,6 +2806,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertTrue(
                 resident_governance_state["background_continuity_ref_set"],
             )
+            self.assertIn(
+                "runtime/state/terminal/idle_heartbeat_trace.jsonl",
+                resident_governance_state["background_continuity_ref_set"],
+            )
             self.assertEqual(
                 resident_governance_state["background_resident_governance_state_ref"],
                 "runtime/state/terminal/resident_governance_state.json",
@@ -2787,6 +2825,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_state["background_trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
+            )
+            self.assertEqual(
+                resident_governance_state["background_idle_heartbeat_trace_ref"],
+                "runtime/state/terminal/idle_heartbeat_trace.jsonl",
+            )
+            self.assertEqual(
+                resident_governance_state["background_idle_heartbeat_trace_count"],
+                idle_strategy["background_idle_heartbeat_trace_count"],
             )
             self.assertEqual(
                 resident_governance_state["background_convergence_summary_ref"],
@@ -2830,6 +2876,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/body/trait_drift_monitor.json",
             )
             self.assertEqual(
+                idle_continuity["background_idle_heartbeat_trace_ref"],
+                "runtime/state/terminal/idle_heartbeat_trace.jsonl",
+            )
+            self.assertEqual(
+                idle_continuity["background_idle_heartbeat_trace_count"],
+                idle_strategy["background_idle_heartbeat_trace_count"],
+            )
+            self.assertEqual(
                 idle_continuity["background_convergence_summary_ref"],
                 "runtime/state/terminal/background_convergence_summary.json",
             )
@@ -2860,6 +2914,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 terminal_life_loop_state["background_trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
+            )
+            self.assertEqual(
+                terminal_life_loop_state["background_idle_heartbeat_trace_ref"],
+                "runtime/state/terminal/idle_heartbeat_trace.jsonl",
+            )
+            self.assertEqual(
+                terminal_life_loop_state["background_idle_heartbeat_trace_count"],
+                idle_strategy["background_idle_heartbeat_trace_count"],
             )
             self.assertEqual(
                 terminal_life_loop_state["background_convergence_summary_ref"],

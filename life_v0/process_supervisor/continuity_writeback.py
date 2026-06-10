@@ -57,6 +57,8 @@ def build_idle_continuity_frame(
     background_next_wake_expectation: str | None = None,
     background_governance_explanation_story: list[str] | None = None,
     background_trait_drift_monitor_ref: str | None = None,
+    background_idle_heartbeat_trace_ref: str | None = None,
+    background_idle_heartbeat_trace_count: int | None = None,
     signal_media_ref: str | None = None,
     belief_state_ref: str | None = None,
     prediction_error_ref: str | None = None,
@@ -211,6 +213,14 @@ def build_idle_continuity_frame(
         )
     if background_trait_drift_monitor_ref:
         payload["background_trait_drift_monitor_ref"] = background_trait_drift_monitor_ref
+    if background_idle_heartbeat_trace_ref:
+        payload["background_idle_heartbeat_trace_ref"] = (
+            background_idle_heartbeat_trace_ref
+        )
+    if background_idle_heartbeat_trace_count is not None:
+        payload["background_idle_heartbeat_trace_count"] = int(
+            background_idle_heartbeat_trace_count
+        )
     if signal_media_ref:
         payload["signal_media_ref"] = signal_media_ref
     if belief_state_ref:

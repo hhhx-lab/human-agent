@@ -23,6 +23,9 @@ BACKGROUND_RESIDENT_GOVERNANCE_EXPLANATION_REF = (
 BACKGROUND_PERSISTENT_PROCESS_REPORT_REF = (
     "runtime/reports/latest/digital_life_persistent_process_report.json"
 )
+BACKGROUND_IDLE_HEARTBEAT_TRACE_REF = (
+    "runtime/state/terminal/idle_heartbeat_trace.jsonl"
+)
 
 
 def load_background_continuity_profile(
@@ -49,6 +52,8 @@ def load_background_continuity_profile(
     persistent_process_report = _read_json_if_exists(
         reports_dir / "digital_life_persistent_process_report.json"
     )
+    idle_heartbeat_trace_path = terminal_dir / "idle_heartbeat_trace.jsonl"
+    idle_heartbeat_trace_exists = idle_heartbeat_trace_path.exists()
 
     if (
         not resident_governance_state
@@ -58,6 +63,7 @@ def load_background_continuity_profile(
         and not resident_governance_report
         and not resident_governance_explanation
         and not persistent_process_report
+        and not idle_heartbeat_trace_exists
     ):
         return {}
 
@@ -113,6 +119,10 @@ def load_background_continuity_profile(
                 resident_governance_explanation,
             ),
             (BACKGROUND_PERSISTENT_PROCESS_REPORT_REF, persistent_process_report),
+            (
+                BACKGROUND_IDLE_HEARTBEAT_TRACE_REF,
+                {"present": True} if idle_heartbeat_trace_exists else {},
+            ),
         ]
         if payload
     ]
@@ -174,6 +184,15 @@ def load_background_continuity_profile(
         or persistent_process_report.get("trait_drift_monitor_ref")
         or persistent_process_report.get("background_trait_drift_monitor_ref")
     )
+    idle_heartbeat_trace_count = max(
+        _int_or_zero(resident_governance_state.get("idle_heartbeat_trace_count")),
+        _int_or_zero(snapshot.get("idle_heartbeat_trace_count")),
+        _int_or_zero(resident_governance_report.get("idle_heartbeat_trace_count")),
+        _int_or_zero(persistent_process_report.get("idle_heartbeat_trace_count")),
+        _idle_heartbeat_trace_count(idle_heartbeat_trace_path)
+        if idle_heartbeat_trace_exists
+        else 0,
+    )
     trait_slow_variable_summary = _dict_or_empty(
         resident_governance_state.get("background_trait_slow_variable_summary")
         or background_convergence_summary.get("background_trait_slow_variable_summary")
@@ -214,6 +233,14 @@ def load_background_continuity_profile(
         profile["background_self_model_ref"] = str(self_model_ref)
     if trait_drift_monitor_ref:
         profile["background_trait_drift_monitor_ref"] = str(trait_drift_monitor_ref)
+    if idle_heartbeat_trace_exists:
+        profile["background_idle_heartbeat_trace_ref"] = (
+            BACKGROUND_IDLE_HEARTBEAT_TRACE_REF
+        )
+        if idle_heartbeat_trace_count:
+            profile["background_idle_heartbeat_trace_count"] = (
+                idle_heartbeat_trace_count
+            )
     if trait_slow_variable_summary:
         profile["background_trait_slow_variable_summary"] = trait_slow_variable_summary
     if background_resume_summary:
@@ -345,3 +372,26 @@ def _dict_or_empty(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         return {}
     return value
+
+
+def _idle_heartbeat_trace_count(path: Path) -> int:
+    max_counter = 0
+    line_count = 0
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return 0
+    for line in lines:
+        if not line.strip():
+            continue
+        line_count += 1
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(event, dict):
+            max_counter = max(
+                max_counter,
+                _int_or_zero(event.get("heartbeat_counter")),
+            )
+    return max(max_counter, line_count)

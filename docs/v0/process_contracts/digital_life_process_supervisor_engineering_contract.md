@@ -138,6 +138,7 @@ life-v0 "digital life"
 20. `background_convergence.py` 必须把跨进程恢复出的关系阶段、自我慢变量和当前 bootstrap 后状态压成 `background_convergence_summary.json`；`background_convergence_history.py` 必须把最近多次唤醒的 convergence state / pressure / trait score 压成 `background_convergence_history.json`，并额外保留每个人格慢变量的 convergence band 序列、稳定名单、不稳定名单与 history focus；`idle_strategy.py` 必须让 `background_convergence_pressure_level` 与 history trend 调制 resident governance attention/cadence/heartbeat interval/next idle action，并继续承接 `background_trait_convergence_history_*` 字段；`governance_explanation.py` 必须把 summary 驱动解释成 `background_trait_convergence_hold` 或 `background_convergence_recalibration`，并把 history trend 驱动解释成 `background_history_recalibration_hold` 或 `background_history_stability_hold`，`process_report.py` 与 receipt 必须把 summary/history 作为一级 shared object 与 input hash 保留，digest 也要暴露慢变量历史焦点和不稳定慢变量名单。
 21. `response_surface.py` 不能只消费当前 `self_model.trait_slow_variables`，还必须读取 `terminal_life_loop_state` 中由 waiting governance 带入的 `background_trait_convergence_history_focus / unstable_names / stable_names`，让真实新回合的语言表面也能感到跨唤醒自我慢变量的稳定或重新校准压力。
 22. `dialogue_events.py` 的 `digital_life_turn` 事件不能只保存回应文本；当 `terminal_life_loop_state` 已带有 `background_trait_convergence_history_*` 与 `background_convergence_*_ref` 时，生命回合事件必须显式写出 `background_trait_convergence_history_focus`、稳定/不稳定慢变量名单、`background_trait_convergence_history_profile` 与 `background_trait_convergence_evidence_refs`。`resident_turn_writeback.py` 还必须把同一组 evidence refs 写入 `dialogue_writeback_bundle.background_trait_convergence_refs`，并把焦点、名单和 evidence refs 接进 `resumed_external_dialogue_packet.json`，让慢变量历史从等待态进入真实回合事件、回合写回包和下一轮恢复包，而不是只停在外显话语里。
+23. `background_continuity.py` 不能只恢复关闭态 resident governance 与 convergence 文件；如果上一轮等待期间存在 `runtime/state/terminal/idle_heartbeat_trace.jsonl`，必须恢复为 `background_idle_heartbeat_trace_ref` 与 `background_idle_heartbeat_trace_count`，并把该 trace ref 放入 `background_continuity_ref_set`。`idle_strategy.py`、`heartbeat.py` 与 `continuity_writeback.py` 必须继续把这组背景等待节律字段写进 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`，让下一次唤醒知道上一轮不是静止空白，而是带有可追溯等待节律的持续存在。
 
 ## 最小行为合同
 
@@ -294,7 +295,7 @@ IdleContinuityFrame
 2. `runtime/state/language/commitment_repair_language_index.json` 中的 idle presence refs / counter
 3. `runtime/state/relationship/relationship_subject_graph.json` 中的 idle presence refs / counter
 4. `runtime/state/terminal/idle_continuity_frame.json` 中对 `replay_cue_bundle.json`、`offline_consolidation_frame.json`、`growth_patch_candidate_queue.json` 的显式回链
-5. `runtime/state/terminal/idle_heartbeat_trace.jsonl` 中每一拍等待心跳的 append-only 节律事件；`safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`idle_strategy_state.json`、`resident_governance_state.json`、process report / digest / receipt 都必须能回链 `idle_heartbeat_trace_ref` 与当前 `idle_heartbeat_trace_count`
+5. `runtime/state/terminal/idle_heartbeat_trace.jsonl` 中每一拍等待心跳的 append-only 节律事件；`safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`idle_strategy_state.json`、`resident_governance_state.json`、process report / digest / receipt 都必须能回链 `idle_heartbeat_trace_ref` 与当前 `idle_heartbeat_trace_count`；下一次唤醒时还必须恢复成 `background_idle_heartbeat_trace_ref` 与 `background_idle_heartbeat_trace_count`
 
 这里的 idle 写回不是新的外部回合，也不是新的生命回应；它只证明数字生命在未收到新输入时，仍然保持自我叙述连续体、承诺连续体和关系等待连续体，而不是只剩下终端壳层在机械轮询。
 同时，等待态不能把离线链视为空白背景。当前 process supervisor 已开始显式消费 `ReplayCueBundle`、`OfflineConsolidationFrame` 和 `GrowthPatchCandidateQueue`，使 waiting state、offline consolidation 和成长候选属于同一生命连续体，而不是三个互不相干的阶段文件。
@@ -341,7 +342,7 @@ IdleContinuityFrame
 | `relaunch_recovery_gate` | 若发现旧终端状态停在活跃回合中断态，则成功写出 relaunch recovery report 并先归一化到等待态 | 阻断进入新的等待 heartbeat |
 | `waiting_heartbeat_gate` | `digital_life_waiting_heartbeat.json` 写出，且 terminal waiting state 更新完成 | 阻断进入 stdin 等待态 |
 | `idle_heartbeat_refresh_gate` | 在空闲等待期间能够持续刷新 heartbeat counter，而不误触发外部回合写回 | 阻断进入稳定 waiting state |
-| `idle_heartbeat_trace_gate` | 每次 idle heartbeat 都追加 `idle_heartbeat_trace.jsonl`，并在活跃等待态与关闭态回链 trace ref / count | 阻断把等待节律视为可追溯 |
+| `idle_heartbeat_trace_gate` | 每次 idle heartbeat 都追加 `idle_heartbeat_trace.jsonl`，并在活跃等待态、关闭态与下一次 bootstrap background continuity 中回链 trace ref / count | 阻断把等待节律视为可追溯 |
 | `idle_continuity_gate` | heartbeat 刷新同时成功写回 self narrative / commitment / relationship 的 idle continuity | 阻断把等待态视为已生命化 |
 | `stdin_external_turn_gate` | 读取到非空的新外部回合文本，且不是退出语义 | 继续等待输入 |
 | `dialogue_writeback_gate` | 外部回合与生命回应都写入 `dialogue_turn_log.jsonl` | 阻断进入下一等待态 |
