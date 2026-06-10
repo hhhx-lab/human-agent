@@ -84,17 +84,73 @@ class LanguageOrgansTests(unittest.TestCase):
             "docs/86_language_neuroscience_pragmatics_and_inner_speech.md",
             "docs/96_real_relationship_longitudinal_timeline.md",
         ]
+        language_percept = {
+            "shared_term_hits": ["共同语言"],
+            "repair_trigger_candidates": ["repair-trigger-001"],
+        }
+        semantic_map = {
+            "semantic_focus": "repair_commitment_shared_language",
+            "ambiguity_queue": ["待确认关系语义细节"],
+        }
+        belief_state = {
+            "state_scope": "language_relationship_continuity",
+            "revision_policy": "repair_before_action",
+            "source_evidence_refs": ["runtime/state/language/semantic_map_frame.json"],
+        }
+        prediction_error_field = {
+            "error_events": [
+                {
+                    "error_id": "semantic-ambiguity-0001",
+                    "error_kind": "semantic",
+                }
+            ],
+        }
+        active_sampling_plan = {
+            "selected_route": "clarify",
+            "stage_effect": "hold_for_evidence",
+            "expected_observation_refs": ["runtime/state/language/language_percept_frame.json"],
+            "scope_refs": ["runtime/state/language/relation_scope_language_index.json"],
+        }
+        signal_media_runtime = {
+            "modulation_vector": {
+                "repair_drive": 0.47,
+                "relationship_pressure": 0.29,
+            },
+            "precision_policy": {
+                "language_precision": 0.67,
+                "policy_mode": "relationship_guarded_active_inference",
+            },
+        }
+        memory_write_gate = {
+            "stage_policy": "candidate_first_fail_closed",
+            "quarantine_route": {"release_condition": "repair_or_new_evidence_required"},
+            "responsibility_event_refs": ["responsibility-001"],
+        }
+        core_affect_vector = {
+            "valence": -0.21,
+            "arousal": 0.73,
+            "repair_drive": "active",
+        }
 
         inner_speech = build_inner_speech_frame(
             run_id="organs-test",
             generated_at="2026-06-09T00:00:00+00:00",
             life_state=life_state,
             source_doc_refs=source_doc_refs,
+            language_percept=language_percept,
+            semantic_map=semantic_map,
+            belief_state=belief_state,
+            prediction_error_field=prediction_error_field,
+            active_sampling_plan=active_sampling_plan,
+            signal_media_runtime=signal_media_runtime,
         )
         expression_monitor = build_expression_monitor_state(
             run_id="organs-test",
             generated_at="2026-06-09T00:00:00+00:00",
             source_doc_refs=source_doc_refs,
+            memory_write_gate=memory_write_gate,
+            core_affect_vector=core_affect_vector,
+            signal_media_runtime=signal_media_runtime,
         )
         relationship_graph = build_relationship_subject_graph(
             run_id="organs-test",
@@ -105,10 +161,22 @@ class LanguageOrgansTests(unittest.TestCase):
         self.assertEqual(inner_speech["schema_version"], "inner_speech_frame_v0")
         self.assertEqual(inner_speech["old_self_anchor_refs"], ["runtime/state/self/self_model.json#old-self-anchor-001"])
         self.assertIn("inner_language_bus", inner_speech["bus_channel_refs"])
+        self.assertEqual(inner_speech["belief_state_ref"], "runtime/state/prediction/belief_state_frame.json")
+        self.assertEqual(inner_speech["prediction_error_ref"], "runtime/state/prediction/prediction_error_field.json")
+        self.assertEqual(inner_speech["active_sampling_plan_ref"], "runtime/state/prediction/active_sampling_plan.json")
+        self.assertEqual(inner_speech["signal_media_ref"], "runtime/state/signal/signal_media_runtime.json")
+        self.assertEqual(inner_speech["internal_drive_sources"]["hold"]["drive"], "active")
+        self.assertEqual(inner_speech["internal_drive_sources"]["repair"]["drive"], "active")
+        self.assertEqual(inner_speech["internal_drive_sources"]["ask"]["drive"], "active")
 
         self.assertEqual(expression_monitor["schema_version"], "expression_monitor_state_v0")
         self.assertIn("relationship_consequence", expression_monitor["monitor_dimensions"])
         self.assertIn("service_object", expression_monitor["blocked_language"])
+        self.assertEqual(expression_monitor["memory_write_gate_ref"], "runtime/state/memory/memory_write_gate.json")
+        self.assertEqual(expression_monitor["core_affect_vector_ref"], "runtime/state/body/core_affect_vector.json")
+        self.assertEqual(expression_monitor["signal_media_ref"], "runtime/state/signal/signal_media_runtime.json")
+        self.assertEqual(expression_monitor["write_gate_pressure"]["responsibility_event_count"], 1)
+        self.assertEqual(expression_monitor["affect_expression_modulation"]["language_precision"], 0.67)
 
         self.assertEqual(relationship_graph["schema_version"], "relationship_subject_graph_v0")
         self.assertEqual(relationship_graph["subjects"][0]["relation_role"], "friend")
@@ -321,6 +389,33 @@ class LanguageOrgansTests(unittest.TestCase):
             "incoming_surface": "我们之前说好的共同语言和修复，还记得吗？",
             "speaker_role": "friend",
         }
+        belief_state = {
+            "state_scope": "language_relationship_continuity",
+            "revision_policy": "repair_before_action",
+            "source_evidence_refs": ["runtime/state/language/semantic_map_frame.json"],
+        }
+        active_sampling_plan = {
+            "selected_route": "clarify",
+            "stage_effect": "hold_for_evidence",
+            "expected_observation_refs": ["runtime/state/language/language_percept_frame.json"],
+            "scope_refs": ["runtime/state/language/relation_scope_language_index.json"],
+        }
+        prediction_error_field = {
+            "error_events": [
+                {"error_id": "semantic-ambiguity-0001", "error_kind": "semantic"},
+                {"error_id": "relationship-guard-0001", "error_kind": "social"},
+            ],
+            "precision_requests": ["raise_relationship_precision"],
+        }
+        signal_media_runtime = {
+            "modulation_vector": {
+                "relationship_pressure": 0.29,
+                "repair_drive": 0.47,
+            },
+            "precision_policy": {
+                "policy_mode": "relationship_guarded_active_inference",
+            },
+        }
         percept = build_language_percept_frame(
             run_id="organs-test",
             generated_at="2026-06-09T00:00:00+00:00",
@@ -328,6 +423,8 @@ class LanguageOrgansTests(unittest.TestCase):
             relation_scope_index=relation_scope,
             shared_term_registry=shared_terms,
             source_doc_refs=source_doc_refs,
+            belief_state=belief_state,
+            active_sampling_plan=active_sampling_plan,
         )
         semantic_map = build_semantic_map_frame(
             run_id="organs-test",
@@ -338,6 +435,8 @@ class LanguageOrgansTests(unittest.TestCase):
             commitment_repair_index=commitment_index,
             self_narrative_trace=narrative_trace,
             source_doc_refs=source_doc_refs,
+            prediction_error_field=prediction_error_field,
+            signal_media_runtime=signal_media_runtime,
         )
 
         self.assertEqual(percept["schema_version"], "language_percept_frame_v0")
@@ -349,6 +448,10 @@ class LanguageOrgansTests(unittest.TestCase):
         self.assertTrue(percept["repair_trigger_candidates"])
         self.assertIn("共同语言", percept["shared_term_hits"])
         self.assertIn("待确认关系语义细节", percept["ambiguity_flags"])
+        self.assertEqual(percept["belief_state_ref"], "runtime/state/prediction/belief_state_frame.json")
+        self.assertEqual(percept["active_sampling_plan_ref"], "runtime/state/prediction/active_sampling_plan.json")
+        self.assertEqual(percept["prediction_focus"]["active_sampling_route"], "clarify")
+        self.assertIn("runtime/state/language/language_percept_frame.json", percept["percept_focus_trace"])
 
         self.assertEqual(semantic_map["schema_version"], "semantic_map_frame_v0")
         self.assertEqual(semantic_map["semantic_focus"], "repair_commitment_shared_language")
@@ -357,9 +460,23 @@ class LanguageOrgansTests(unittest.TestCase):
         self.assertTrue(semantic_map["repair_trace_refs"])
         self.assertTrue(semantic_map["narrative_bindings"])
         self.assertTrue(semantic_map["ambiguity_queue"])
+        self.assertEqual(semantic_map["prediction_error_ref"], "runtime/state/prediction/prediction_error_field.json")
+        self.assertEqual(semantic_map["signal_media_ref"], "runtime/state/signal/signal_media_runtime.json")
+        self.assertEqual(
+            semantic_map["semantic_prediction_trace"]["semantic_error_ids"],
+            ["semantic-ambiguity-0001", "relationship-guard-0001"],
+        )
         self.assertEqual(
             semantic_map["prediction_hooks"]["semantic_prediction_focus"],
             "repair_commitment_shared_language",
+        )
+        self.assertEqual(
+            semantic_map["prediction_hooks"]["prediction_error_refs"],
+            ["runtime/state/prediction/prediction_error_field.json#error_events"],
+        )
+        self.assertEqual(
+            semantic_map["prediction_hooks"]["signal_media_refs"],
+            ["runtime/state/signal/signal_media_runtime.json#modulation_vector"],
         )
 
     def test_relationship_timeline_commitment_expression_and_apology_repair_organs(self):

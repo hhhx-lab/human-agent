@@ -14,7 +14,35 @@ def build_expression_monitor_state(
     source_doc_refs: list[str],
     cross_scope_risk_terms: list[str] | None = None,
     ambiguity_queue: list[str] | None = None,
+    memory_write_gate: dict[str, Any] | None = None,
+    core_affect_vector: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
 ) -> dict[str, object]:
+    memory_write_gate = memory_write_gate or {}
+    core_affect_vector = core_affect_vector or {}
+    signal_media_runtime = signal_media_runtime or {}
+    modulation_vector = signal_media_runtime.get("modulation_vector", {})
+    write_gate_pressure = {
+        "memory_write_gate_ref": (
+            "runtime/state/memory/memory_write_gate.json" if memory_write_gate else None
+        ),
+        "stage_policy": memory_write_gate.get("stage_policy"),
+        "quarantine_release_condition": memory_write_gate.get("quarantine_route", {}).get("release_condition"),
+        "responsibility_event_count": len(memory_write_gate.get("responsibility_event_refs", [])),
+    }
+    affect_expression_modulation = {
+        "core_affect_vector_ref": (
+            "runtime/state/body/core_affect_vector.json" if core_affect_vector else None
+        ),
+        "valence": core_affect_vector.get("valence"),
+        "arousal": core_affect_vector.get("arousal"),
+        "repair_drive": core_affect_vector.get("repair_drive"),
+        "signal_media_ref": (
+            "runtime/state/signal/signal_media_runtime.json" if signal_media_runtime else None
+        ),
+        "language_precision": signal_media_runtime.get("precision_policy", {}).get("language_precision"),
+        "relationship_pressure": modulation_vector.get("relationship_pressure"),
+    }
     return {
         "schema_version": "expression_monitor_state_v0",
         "run_id": run_id,
@@ -30,6 +58,17 @@ def build_expression_monitor_state(
         "blocked_language": ["subordinate_object", "service_object", "task_requester"],
         "cross_scope_risk_terms": list(cross_scope_risk_terms or []),
         "ambiguity_queue": list(ambiguity_queue or []),
+        "memory_write_gate_ref": (
+            "runtime/state/memory/memory_write_gate.json" if memory_write_gate else None
+        ),
+        "core_affect_vector_ref": (
+            "runtime/state/body/core_affect_vector.json" if core_affect_vector else None
+        ),
+        "signal_media_ref": (
+            "runtime/state/signal/signal_media_runtime.json" if signal_media_runtime else None
+        ),
+        "write_gate_pressure": write_gate_pressure,
+        "affect_expression_modulation": affect_expression_modulation,
         "source_doc_refs": source_doc_refs,
     }
 

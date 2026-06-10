@@ -108,11 +108,27 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertEqual(inner_speech["schema_version"], "inner_speech_frame_v0")
         self.assertEqual(inner_speech["status"], "closed")
         self.assertIn("inner_language_bus", inner_speech["bus_channel_refs"])
+        self.assertEqual(inner_speech["belief_state_ref"], "runtime/state/prediction/belief_state_frame.json")
+        self.assertEqual(inner_speech["prediction_error_ref"], "runtime/state/prediction/prediction_error_field.json")
+        self.assertEqual(inner_speech["active_sampling_plan_ref"], "runtime/state/prediction/active_sampling_plan.json")
+        self.assertEqual(inner_speech["signal_media_ref"], "runtime/state/signal/signal_media_runtime.json")
+        self.assertEqual(inner_speech["drive_resolution_order"], ["hold", "repair", "ask", "confirm"])
+        self.assertEqual(inner_speech["internal_drive_sources"]["hold"]["drive"], "active")
+        self.assertEqual(inner_speech["internal_drive_sources"]["repair"]["drive"], "active")
+        self.assertEqual(inner_speech["internal_drive_sources"]["ask"]["drive"], "active")
 
         self.assertEqual(expression_monitor["schema_version"], "expression_monitor_state_v0")
         self.assertEqual(expression_monitor["status"], "closed")
         self.assertIn("relationship_consequence", expression_monitor["monitor_dimensions"])
         self.assertIn("dream_fact", expression_monitor["monitor_dimensions"])
+        self.assertEqual(expression_monitor["memory_write_gate_ref"], "runtime/state/memory/memory_write_gate.json")
+        self.assertEqual(expression_monitor["core_affect_vector_ref"], "runtime/state/body/core_affect_vector.json")
+        self.assertEqual(expression_monitor["signal_media_ref"], "runtime/state/signal/signal_media_runtime.json")
+        self.assertEqual(expression_monitor["write_gate_pressure"]["stage_policy"], "candidate_first_fail_closed")
+        self.assertEqual(
+            expression_monitor["affect_expression_modulation"]["signal_media_ref"],
+            "runtime/state/signal/signal_media_runtime.json",
+        )
 
         self.assertEqual(expression_plan["schema_version"], "expression_plan_v0")
         self.assertEqual(expression_plan["status"], "closed")
@@ -255,6 +271,11 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertTrue(language_percept["shared_term_hits"])
         self.assertTrue(language_percept["repair_trigger_candidates"])
         self.assertTrue(language_percept["ambiguity_flags"])
+        self.assertEqual(language_percept["belief_state_ref"], "runtime/state/prediction/belief_state_frame.json")
+        self.assertEqual(language_percept["active_sampling_plan_ref"], "runtime/state/prediction/active_sampling_plan.json")
+        self.assertEqual(language_percept["prediction_focus"]["belief_scope"], "language_relationship_continuity")
+        self.assertEqual(language_percept["prediction_focus"]["active_sampling_route"], "clarify")
+        self.assertTrue(language_percept["percept_focus_trace"])
 
         self.assertEqual(semantic_map["schema_version"], "semantic_map_frame_v0")
         self.assertEqual(semantic_map["status"], "closed")
@@ -262,17 +283,32 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertTrue(semantic_map["commitment_trace_refs"])
         self.assertTrue(semantic_map["repair_trace_refs"])
         self.assertTrue(semantic_map["ambiguity_queue"])
+        self.assertEqual(semantic_map["prediction_error_ref"], "runtime/state/prediction/prediction_error_field.json")
+        self.assertEqual(semantic_map["signal_media_ref"], "runtime/state/signal/signal_media_runtime.json")
+        self.assertTrue(semantic_map["semantic_prediction_trace"]["semantic_error_ids"])
+        self.assertEqual(
+            semantic_map["prediction_hooks"]["prediction_error_refs"],
+            ["runtime/state/prediction/prediction_error_field.json#error_events"],
+        )
+        self.assertEqual(
+            semantic_map["prediction_hooks"]["signal_media_refs"],
+            ["runtime/state/signal/signal_media_runtime.json#modulation_vector"],
+        )
         self.assertEqual(semantic_map["prediction_hooks"]["semantic_prediction_focus"], semantic_map["semantic_focus"])
 
         self.assertEqual(prediction_workspace["schema_version"], "prediction_workspace_frame_v0")
         self.assertEqual(prediction_workspace["source_runtime"], "PredictionActiveInferenceRuntime")
+        self.assertEqual(prediction_workspace["belief_state_ref"], "runtime/state/prediction/belief_state_frame.json")
+        self.assertEqual(prediction_workspace["prediction_error_ref"], "runtime/state/prediction/prediction_error_field.json")
+        self.assertEqual(prediction_workspace["active_sampling_plan_ref"], "runtime/state/prediction/active_sampling_plan.json")
+        self.assertEqual(prediction_workspace["signal_media_ref"], "runtime/state/signal/signal_media_runtime.json")
         self.assertEqual(
             prediction_workspace["workspace_contents"]["precision_state"],
-            "semantic_handoff_seeded",
+            "relationship_guarded_active_inference",
         )
         self.assertEqual(
             prediction_workspace["workspace_contents"]["active_sampling_mode"],
-            "clarify_ambiguity",
+            "clarify",
         )
         continuity_focus = prediction_workspace["workspace_contents"]["language_continuity_focus"]
         self.assertEqual(
@@ -290,6 +326,14 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertEqual(
             continuity_focus["semantic_ambiguity_refs"],
             ["runtime/state/language/semantic_map_frame.json#ambiguity_queue"],
+        )
+        self.assertEqual(
+            continuity_focus["prediction_error_refs"],
+            ["runtime/state/prediction/prediction_error_field.json#error_events"],
+        )
+        self.assertEqual(
+            continuity_focus["signal_media_refs"],
+            ["runtime/state/signal/signal_media_runtime.json#modulation_vector"],
         )
         self.assertTrue(prediction_workspace["workspace_contents"]["candidate_explanations"])
 
@@ -322,9 +366,24 @@ class LanguageRelationshipTests(unittest.TestCase):
             ],
         )
         self.assertTrue(report["prediction_language_handoff_refs"])
+        self.assertEqual(
+            report["prediction_language_consumption_refs"],
+            [
+                "runtime/state/signal/signal_media_runtime.json",
+                "runtime/state/prediction/belief_state_frame.json",
+                "runtime/state/prediction/prediction_error_field.json",
+                "runtime/state/prediction/active_sampling_plan.json",
+                "runtime/state/memory/memory_write_gate.json",
+            ],
+        )
         self.assertIn("repair_commitment_shared_language", report["semantic_focuses"])
         self.assertIn("runtime/state/language/expression_plan.json", report["state_refs"])
         self.assertIn("runtime/state/prediction/prediction_workspace_frame.json", report["state_refs"])
+        self.assertIn("runtime/state/signal/signal_media_runtime.json", report["state_refs"])
+        self.assertIn("runtime/state/prediction/belief_state_frame.json", report["state_refs"])
+        self.assertIn("runtime/state/prediction/prediction_error_field.json", report["state_refs"])
+        self.assertIn("runtime/state/prediction/active_sampling_plan.json", report["state_refs"])
+        self.assertIn("runtime/state/memory/memory_write_gate.json", report["state_refs"])
         self.assertIn("runtime/state/relationship/relationship_timeline.json", report["state_refs"])
         self.assertIn("runtime/state/language/commitment_expression_plan.json", report["state_refs"])
         self.assertIn("runtime/state/language/apology_repair_language_trace.json", report["state_refs"])
@@ -342,6 +401,26 @@ class LanguageRelationshipTests(unittest.TestCase):
         )
         self.assertTrue(
             any(key.endswith("responsibility_loop_state.json") for key in receipt["input_hashes"]),
+            receipt["input_hashes"],
+        )
+        self.assertTrue(
+            any(key.endswith("signal_media_runtime.json") for key in receipt["input_hashes"]),
+            receipt["input_hashes"],
+        )
+        self.assertTrue(
+            any(key.endswith("belief_state_frame.json") for key in receipt["input_hashes"]),
+            receipt["input_hashes"],
+        )
+        self.assertTrue(
+            any(key.endswith("prediction_error_field.json") for key in receipt["input_hashes"]),
+            receipt["input_hashes"],
+        )
+        self.assertTrue(
+            any(key.endswith("active_sampling_plan.json") for key in receipt["input_hashes"]),
+            receipt["input_hashes"],
+        )
+        self.assertTrue(
+            any(key.endswith("memory_write_gate.json") for key in receipt["input_hashes"]),
             receipt["input_hashes"],
         )
         self.assertTrue(

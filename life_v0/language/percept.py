@@ -11,7 +11,11 @@ def build_language_percept_frame(
     relation_scope_index: dict[str, Any],
     shared_term_registry: dict[str, Any],
     source_doc_refs: list[str],
+    belief_state: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    belief_state = belief_state or {}
+    active_sampling_plan = active_sampling_plan or {}
     incoming_surface = str(incoming_turn.get("incoming_surface", "")).strip()
     speaker_role = str(incoming_turn.get("speaker_role", "unknown")).strip() or "unknown"
 
@@ -50,6 +54,24 @@ def build_language_percept_frame(
     if speaker_role != active_scope.get("relation_role"):
         ambiguity_flags.append("relation_role_mismatch")
 
+    active_sampling_targets = list(active_sampling_plan.get("expected_observation_refs", []))
+    active_sampling_scopes = list(active_sampling_plan.get("scope_refs", []))
+    percept_focus_trace = _dedupe(
+        [
+            *active_sampling_targets,
+            *active_sampling_scopes,
+            *belief_state.get("source_evidence_refs", []),
+            f"runtime/state/language/relation_scope_language_index.json#{active_scope.get('scope_id', 'relation-scope-v0-0001')}",
+        ]
+    )
+    prediction_focus = {
+        "belief_scope": belief_state.get("state_scope"),
+        "belief_revision_policy": belief_state.get("revision_policy"),
+        "active_sampling_route": active_sampling_plan.get("selected_route"),
+        "active_sampling_stage_effect": active_sampling_plan.get("stage_effect"),
+        "focus_ref_count": len(percept_focus_trace),
+    }
+
     scope_id = active_scope.get("scope_id", "relation-scope-v0-0001")
     return {
         "schema_version": "language_percept_frame_v0",
@@ -66,5 +88,23 @@ def build_language_percept_frame(
         "affective_cue_candidates": affective_cue_candidates,
         "cross_scope_risk_terms": cross_scope_risk_terms,
         "ambiguity_flags": ambiguity_flags,
+        "belief_state_ref": (
+            "runtime/state/prediction/belief_state_frame.json" if belief_state else None
+        ),
+        "active_sampling_plan_ref": (
+            "runtime/state/prediction/active_sampling_plan.json"
+            if active_sampling_plan
+            else None
+        ),
+        "prediction_focus": prediction_focus,
+        "percept_focus_trace": percept_focus_trace,
         "source_doc_refs": source_doc_refs,
     }
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result

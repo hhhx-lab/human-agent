@@ -257,6 +257,15 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md",
         ],
     },
+    "docs/v0/code_scaffolds/05_packet_a_language_prediction_consumption_scaffold.md": {
+        "role": "packet_a_language_prediction_consumption_scaffold",
+        "slice": "S07_LANGUAGE_RELATIONSHIP",
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_scaffolds/03_frontier_module_build_packets.md",
+            "docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md",
+        ],
+    },
     "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md": {
         "role": "life_code_stack_package_layers",
         "slice": ACTIVE_SLICE,

@@ -49,6 +49,7 @@
 | `02_cognitive_loop_code_scaffold.md` | 在线回合、离线回合、常驻等待态在代码层如何真实装配 |
 | `03_frontier_module_build_packets.md` | 当前前沿模块下一步到底读什么、改什么、写什么、跑什么 |
 | `04_packet_b_world_observation_periphery_scaffold.md` | Packet B 这一轮怎样把世界观察与外周归一化真正落进 S03/S05 |
+| `05_packet_a_language_prediction_consumption_scaffold.md` | Packet A 这一轮怎样把 prediction / signal / memory write gate 真正落进 S07 语言系统 |
 
 ## 使用顺序
 
@@ -69,6 +70,7 @@
 2. `02_cognitive_loop_code_scaffold.md`
 3. `03_frontier_module_build_packets.md`
 4. `04_packet_b_world_observation_periphery_scaffold.md`
+5. `05_packet_a_language_prediction_consumption_scaffold.md`
 
 ## 这柜的硬约束
 

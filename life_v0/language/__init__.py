@@ -146,6 +146,11 @@ def run_build_language_relationship(
     )
     body_resource_budget = _load_json_if_exists(state_dir / "body" / "body_resource_budget.json")
     core_affect_vector = _load_json_if_exists(state_dir / "body" / "core_affect_vector.json")
+    signal_media_runtime = _load_json_if_exists(state_dir / "signal" / "signal_media_runtime.json")
+    belief_state = _load_json_if_exists(state_dir / "prediction" / "belief_state_frame.json")
+    prediction_error_field = _load_json_if_exists(state_dir / "prediction" / "prediction_error_field.json")
+    active_sampling_plan = _load_json_if_exists(state_dir / "prediction" / "active_sampling_plan.json")
+    memory_write_gate = _load_json_if_exists(state_dir / "memory" / "memory_write_gate.json")
 
     blocked_reasons.extend(_doc_blockers(doc_index))
     blocked_reasons.extend(_neural_blockers(neural_core, subject_systems, internal_bus))
@@ -173,6 +178,8 @@ def run_build_language_relationship(
         generated_at,
         relation_scope_index=relation_scope_index,
         shared_term_registry=shared_term_registry,
+        belief_state=belief_state,
+        active_sampling_plan=active_sampling_plan,
     )
     semantic_map = _build_semantic_map_frame(
         run_id,
@@ -182,6 +189,8 @@ def run_build_language_relationship(
         shared_term_registry=shared_term_registry,
         commitment_repair_index=repair_language,
         self_narrative_trace=self_narrative_trace,
+        prediction_error_field=prediction_error_field,
+        signal_media_runtime=signal_media_runtime,
     )
     inner_speech = _build_inner_speech_frame(
         run_id,
@@ -189,12 +198,19 @@ def run_build_language_relationship(
         life_state,
         language_percept=language_percept,
         semantic_map=semantic_map,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        signal_media_runtime=signal_media_runtime,
     )
     expression_monitor = _build_expression_monitor_state(
         run_id,
         generated_at,
         cross_scope_risk_terms=list(language_percept.get("cross_scope_risk_terms", [])),
         ambiguity_queue=list(semantic_map.get("ambiguity_queue", [])),
+        memory_write_gate=memory_write_gate,
+        core_affect_vector=core_affect_vector,
+        signal_media_runtime=signal_media_runtime,
     )
     expression_plan = _build_expression_plan(
         run_id,
@@ -297,6 +313,11 @@ def run_build_language_relationship(
         "runtime/state/relationship/commitment_truth_state.json",
         "runtime/state/responsibility/responsibility_ledger.json",
         "runtime/state/memory/relationship_memory.json",
+        "runtime/state/signal/signal_media_runtime.json",
+        "runtime/state/prediction/belief_state_frame.json",
+        "runtime/state/prediction/prediction_error_field.json",
+        "runtime/state/prediction/active_sampling_plan.json",
+        "runtime/state/memory/memory_write_gate.json",
     ]
     receipt_ref = f"runtime/receipts/language_relationship_{run_id}.json"
 
@@ -349,6 +370,10 @@ def run_build_language_relationship(
             life_state=updated_life_state,
             semantic_map=semantic_map,
         ),
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        signal_media_runtime=signal_media_runtime,
     )
     runtime_trace_refs = updated_life_state.setdefault("runtime_trace_refs", [])
     if "runtime/state/prediction/prediction_workspace_frame.json" not in runtime_trace_refs:
@@ -365,6 +390,13 @@ def run_build_language_relationship(
         semantic_focus=semantic_map.get("semantic_focus"),
         cross_scope_language_risks=list(language_percept.get("cross_scope_risk_terms", [])),
         body_signal_refs=list(expression_plan.get("body_signal_refs", [])),
+        prediction_language_consumption_refs=_prediction_language_consumption_refs(
+            signal_media_runtime=signal_media_runtime,
+            belief_state=belief_state,
+            prediction_error_field=prediction_error_field,
+            active_sampling_plan=active_sampling_plan,
+            memory_write_gate=memory_write_gate,
+        ),
     )
     digest = _build_digest(
         run_id=run_id,
@@ -644,6 +676,10 @@ def _build_inner_speech_frame(
     *,
     language_percept: dict[str, Any] | None = None,
     semantic_map: dict[str, Any] | None = None,
+    belief_state: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return build_inner_speech_frame(
         run_id=run_id,
@@ -652,6 +688,10 @@ def _build_inner_speech_frame(
         source_doc_refs=S07_SOURCE_DOCS,
         language_percept=language_percept,
         semantic_map=semantic_map,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        signal_media_runtime=signal_media_runtime,
     )
 
 
@@ -660,6 +700,9 @@ def _build_expression_monitor_state(
     generated_at: str,
     cross_scope_risk_terms: list[str] | None = None,
     ambiguity_queue: list[str] | None = None,
+    memory_write_gate: dict[str, Any] | None = None,
+    core_affect_vector: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return build_expression_monitor_state(
         run_id=run_id,
@@ -667,6 +710,9 @@ def _build_expression_monitor_state(
         source_doc_refs=S07_SOURCE_DOCS,
         cross_scope_risk_terms=cross_scope_risk_terms,
         ambiguity_queue=ambiguity_queue,
+        memory_write_gate=memory_write_gate,
+        core_affect_vector=core_affect_vector,
+        signal_media_runtime=signal_media_runtime,
     )
 
 
@@ -867,6 +913,8 @@ def _build_language_percept_frame(
     *,
     relation_scope_index: dict[str, Any],
     shared_term_registry: dict[str, Any],
+    belief_state: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return build_language_percept_frame(
         run_id=run_id,
@@ -878,6 +926,8 @@ def _build_language_percept_frame(
         relation_scope_index=relation_scope_index,
         shared_term_registry=shared_term_registry,
         source_doc_refs=S07_SOURCE_DOCS,
+        belief_state=belief_state,
+        active_sampling_plan=active_sampling_plan,
     )
 
 
@@ -890,6 +940,8 @@ def _build_semantic_map_frame(
     shared_term_registry: dict[str, Any],
     commitment_repair_index: dict[str, Any],
     self_narrative_trace: dict[str, Any],
+    prediction_error_field: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return build_semantic_map_frame(
         run_id=run_id,
@@ -900,6 +952,8 @@ def _build_semantic_map_frame(
         commitment_repair_index=commitment_repair_index,
         self_narrative_trace=self_narrative_trace,
         source_doc_refs=S07_SOURCE_DOCS,
+        prediction_error_field=prediction_error_field,
+        signal_media_runtime=signal_media_runtime,
     )
 
 
@@ -983,6 +1037,8 @@ def _build_prediction_language_continuity(
         "language_percept_refs": list(language_state.get("language_percept_refs", [])),
         "semantic_map_refs": list(language_state.get("semantic_map_refs", [])),
         "semantic_ambiguity_refs": list(prediction_hooks.get("semantic_ambiguity_refs", [])),
+        "prediction_error_refs": list(prediction_hooks.get("prediction_error_refs", [])),
+        "signal_media_refs": list(prediction_hooks.get("signal_media_refs", [])),
         "semantic_prediction_focus": prediction_hooks.get("semantic_prediction_focus") or semantic_map.get("semantic_focus"),
     }
 
@@ -999,6 +1055,7 @@ def _build_report(
     semantic_focus: str | None,
     cross_scope_language_risks: list[str],
     body_signal_refs: list[str],
+    prediction_language_consumption_refs: list[str],
 ) -> dict[str, Any]:
     return {
         "schema_version": "s07_language_relationship_report_v0",
@@ -1018,6 +1075,7 @@ def _build_report(
         "language_percept_refs": ["runtime/state/language/language_percept_frame.json"],
         "semantic_map_refs": ["runtime/state/language/semantic_map_frame.json"],
         "body_signal_refs": body_signal_refs,
+        "prediction_language_consumption_refs": prediction_language_consumption_refs,
         "semantic_focuses": [semantic_focus] if semantic_focus else [],
         "cross_scope_language_risks": cross_scope_language_risks,
         "prediction_language_handoff_refs": [
@@ -1031,6 +1089,28 @@ def _build_report(
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }
+
+
+def _prediction_language_consumption_refs(
+    *,
+    signal_media_runtime: dict[str, Any],
+    belief_state: dict[str, Any],
+    prediction_error_field: dict[str, Any],
+    active_sampling_plan: dict[str, Any],
+    memory_write_gate: dict[str, Any],
+) -> list[str]:
+    refs: list[str] = []
+    if signal_media_runtime:
+        refs.append("runtime/state/signal/signal_media_runtime.json")
+    if belief_state:
+        refs.append("runtime/state/prediction/belief_state_frame.json")
+    if prediction_error_field:
+        refs.append("runtime/state/prediction/prediction_error_field.json")
+    if active_sampling_plan:
+        refs.append("runtime/state/prediction/active_sampling_plan.json")
+    if memory_write_gate:
+        refs.append("runtime/state/memory/memory_write_gate.json")
+    return refs
 
 
 def _build_digest(
@@ -1087,6 +1167,11 @@ def _build_receipt(
         membrane_dir / "shadow_action_gate.json",
         state_dir / "body" / "body_resource_budget.json",
         state_dir / "body" / "core_affect_vector.json",
+        state_dir / "signal" / "signal_media_runtime.json",
+        state_dir / "prediction" / "belief_state_frame.json",
+        state_dir / "prediction" / "prediction_error_field.json",
+        state_dir / "prediction" / "active_sampling_plan.json",
+        state_dir / "memory" / "memory_write_gate.json",
     ]:
         if path.exists():
             input_hashes[str(path)] = _sha256(path)
@@ -1135,6 +1220,20 @@ def _check_inner_speech(inner_speech: dict[str, Any]) -> list[str]:
         reasons.append("inner_speech_gate status mismatch")
     if "inner_language_bus" not in inner_speech.get("bus_channel_refs", []):
         reasons.append("inner_speech_gate inner_language_bus missing")
+    for field in [
+        "belief_state_ref",
+        "prediction_error_ref",
+        "active_sampling_plan_ref",
+        "signal_media_ref",
+    ]:
+        if not inner_speech.get(field):
+            reasons.append(f"inner_speech_gate missing {field}")
+    drive_sources = inner_speech.get("internal_drive_sources", {})
+    for drive in ["confirm", "hold", "repair", "ask"]:
+        if drive not in drive_sources:
+            reasons.append(f"inner_speech_gate missing {drive} drive source")
+    if inner_speech.get("drive_resolution_order") != ["hold", "repair", "ask", "confirm"]:
+        reasons.append("inner_speech_gate drive resolution order mismatch")
     return reasons
 
 
@@ -1145,6 +1244,15 @@ def _check_expression_monitor(expression_monitor: dict[str, Any]) -> list[str]:
     for dimension in ["relationship_consequence", "commitment_trace", "dream_fact", "action_consequence"]:
         if dimension not in expression_monitor.get("monitor_dimensions", []):
             reasons.append(f"expression_monitor_gate missing {dimension}")
+    for field in ["memory_write_gate_ref", "signal_media_ref"]:
+        if not expression_monitor.get(field):
+            reasons.append(f"expression_monitor_gate missing {field}")
+    if "core_affect_vector_ref" not in expression_monitor:
+        reasons.append("expression_monitor_gate core affect vector ref field missing")
+    if not expression_monitor.get("write_gate_pressure"):
+        reasons.append("expression_monitor_gate write gate pressure missing")
+    if not expression_monitor.get("affect_expression_modulation"):
+        reasons.append("expression_monitor_gate affect modulation missing")
     return reasons
 
 
@@ -1171,6 +1279,14 @@ def _check_language_percept(language_percept: dict[str, Any]) -> list[str]:
         or language_percept.get("ambiguity_flags")
     ):
         reasons.append("language_percept_gate minimal observation family missing")
+    if not language_percept.get("belief_state_ref"):
+        reasons.append("language_percept_gate belief state ref missing")
+    if not language_percept.get("active_sampling_plan_ref"):
+        reasons.append("language_percept_gate active sampling plan ref missing")
+    if not language_percept.get("prediction_focus"):
+        reasons.append("language_percept_gate prediction focus missing")
+    if not language_percept.get("percept_focus_trace"):
+        reasons.append("language_percept_gate percept focus trace missing")
     return reasons
 
 
@@ -1188,6 +1304,17 @@ def _check_semantic_map(semantic_map: dict[str, Any]) -> list[str]:
         reasons.append("semantic_map_gate missing bridge bindings")
     if not semantic_map.get("ambiguity_queue"):
         reasons.append("semantic_map_gate ambiguity queue missing")
+    if not semantic_map.get("prediction_error_ref"):
+        reasons.append("semantic_map_gate prediction error ref missing")
+    if not semantic_map.get("signal_media_ref"):
+        reasons.append("semantic_map_gate signal media ref missing")
+    if not semantic_map.get("semantic_prediction_trace"):
+        reasons.append("semantic_map_gate semantic prediction trace missing")
+    prediction_hooks = semantic_map.get("prediction_hooks", {})
+    if not prediction_hooks.get("prediction_error_refs"):
+        reasons.append("semantic_map_gate prediction error hooks missing")
+    if not prediction_hooks.get("signal_media_refs"):
+        reasons.append("semantic_map_gate signal media hooks missing")
     return reasons
 
 
@@ -1373,6 +1500,8 @@ def _check_prediction_handoff(
         "language_percept_refs",
         "semantic_map_refs",
         "semantic_ambiguity_refs",
+        "prediction_error_refs",
+        "signal_media_refs",
     ]:
         if not continuity.get(field):
             reasons.append(f"semantic_prediction_handoff_gate missing {field}")
@@ -1380,6 +1509,11 @@ def _check_prediction_handoff(
         reasons.append("semantic_prediction_handoff_gate semantic focus mismatch")
     if prediction_workspace.get("workspace_contents", {}).get("precision_state") == "seed_only":
         reasons.append("semantic_prediction_handoff_gate precision state stayed seed_only")
+    prediction_hooks = semantic_map.get("prediction_hooks", {})
+    if not prediction_hooks.get("prediction_error_refs"):
+        reasons.append("semantic_prediction_handoff_gate prediction error refs missing from semantic map")
+    if not prediction_hooks.get("signal_media_refs"):
+        reasons.append("semantic_prediction_handoff_gate signal media refs missing from semantic map")
     return reasons
 
 
@@ -1397,6 +1531,8 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate semantic map refs missing")
     if not build_report.get("prediction_language_handoff_refs"):
         reasons.append("build_report_gate prediction handoff refs missing")
+    if not build_report.get("prediction_language_consumption_refs"):
+        reasons.append("build_report_gate prediction consumption refs missing")
     if "body_signal_refs" not in build_report:
         reasons.append("build_report_gate body signal refs missing")
     return reasons

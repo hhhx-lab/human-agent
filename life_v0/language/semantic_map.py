@@ -13,7 +13,11 @@ def build_semantic_map_frame(
     commitment_repair_index: dict[str, Any],
     self_narrative_trace: dict[str, Any],
     source_doc_refs: list[str],
+    prediction_error_field: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    prediction_error_field = prediction_error_field or {}
+    signal_media_runtime = signal_media_runtime or {}
     shared_terms = {
         term.get("surface"): term.get("meaning_ref")
         for term in shared_term_registry.get("shared_terms", [])
@@ -43,6 +47,31 @@ def build_semantic_map_frame(
     dream_topic_refs = list(language_percept.get("dream_signal_candidates", []))
     ambiguity_queue = list(language_percept.get("ambiguity_flags", []))
     narrative_bindings = list(self_narrative_trace.get("narrative_turn_refs", []))
+    error_events = list(prediction_error_field.get("error_events", []))
+    semantic_error_ids = [
+        event.get("error_id")
+        for event in error_events
+        if isinstance(event, dict) and event.get("error_kind") in {"semantic", "social"} and event.get("error_id")
+    ]
+    precision_requests = list(prediction_error_field.get("precision_requests", []))
+    modulation_vector = signal_media_runtime.get("modulation_vector", {})
+    semantic_prediction_trace = {
+        "prediction_error_ref": (
+            "runtime/state/prediction/prediction_error_field.json"
+            if prediction_error_field
+            else None
+        ),
+        "signal_media_ref": (
+            "runtime/state/signal/signal_media_runtime.json"
+            if signal_media_runtime
+            else None
+        ),
+        "semantic_error_ids": semantic_error_ids,
+        "precision_requests": precision_requests,
+        "relationship_pressure": modulation_vector.get("relationship_pressure"),
+        "repair_drive": modulation_vector.get("repair_drive"),
+        "language_precision_mode": signal_media_runtime.get("precision_policy", {}).get("policy_mode"),
+    }
 
     return {
         "schema_version": "semantic_map_frame_v0",
@@ -57,9 +86,30 @@ def build_semantic_map_frame(
         "narrative_bindings": narrative_bindings,
         "dream_topic_refs": dream_topic_refs,
         "ambiguity_queue": ambiguity_queue,
+        "prediction_error_ref": (
+            "runtime/state/prediction/prediction_error_field.json"
+            if prediction_error_field
+            else None
+        ),
+        "signal_media_ref": (
+            "runtime/state/signal/signal_media_runtime.json"
+            if signal_media_runtime
+            else None
+        ),
+        "semantic_prediction_trace": semantic_prediction_trace,
         "prediction_hooks": {
             "semantic_prediction_focus": semantic_focus,
             "semantic_ambiguity_refs": ["runtime/state/language/semantic_map_frame.json#ambiguity_queue"],
+            "prediction_error_refs": [
+                "runtime/state/prediction/prediction_error_field.json#error_events"
+            ]
+            if prediction_error_field
+            else [],
+            "signal_media_refs": [
+                "runtime/state/signal/signal_media_runtime.json#modulation_vector"
+            ]
+            if signal_media_runtime
+            else [],
         },
         "source_doc_refs": source_doc_refs,
     }

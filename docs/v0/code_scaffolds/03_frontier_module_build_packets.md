@@ -18,6 +18,10 @@
 
 让 `language/` 不只是“会生成表达”，而是真正消费 prediction 五件套。
 
+当前施工脚手：
+
+- `docs/v0/code_scaffolds/05_packet_a_language_prediction_consumption_scaffold.md`
+
 ### 必读材料
 
 - `docs/09_language_symbolic_top_layer.md`
@@ -49,6 +53,8 @@
 - `runtime/state/language/percept_focus_trace.json`
 - `runtime/state/language/semantic_prediction_trace.json`
 - 或把上述字段稳定接进现有 `runtime/state/language/*`
+
+当前落地口径采用第三项：不新增平行 runtime 文件，把 `belief_state_ref`、`active_sampling_plan_ref`、`prediction_error_ref`、`signal_media_ref`、`memory_write_gate_ref`、`prediction_focus`、`semantic_prediction_trace`、`internal_drive_sources` 与 `affect_expression_modulation` 直接写进现有语言 state，并在 `language_relationship_report.json` / receipt 里留下消费证据。
 
 ### 最低测试
 

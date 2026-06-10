@@ -26,6 +26,8 @@ def build_prediction_workspace_frame(
         "language_percept_refs": list((language_continuity or {}).get("language_percept_refs", [])),
         "semantic_map_refs": list((language_continuity or {}).get("semantic_map_refs", [])),
         "semantic_ambiguity_refs": list((language_continuity or {}).get("semantic_ambiguity_refs", [])),
+        "prediction_error_refs": list((language_continuity or {}).get("prediction_error_refs", [])),
+        "signal_media_refs": list((language_continuity or {}).get("signal_media_refs", [])),
         "semantic_prediction_focus": (language_continuity or {}).get("semantic_prediction_focus"),
     }
     has_language_handoff = bool(continuity["language_percept_refs"] or continuity["semantic_map_refs"])
