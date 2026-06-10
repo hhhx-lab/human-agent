@@ -115,6 +115,7 @@ resident_governance_state.json
 4. 因此 resident governance 当前已经不是“只有前台 terminal residency”，而是“前台等待态 + 后台关闭态余波”共同组成的跨进程连续体。
 5. 这份后台连续体现在又不再只是一次性 carryover，而是开始带有最小 lineage：`background_carryover_generation`、`background_carryover_parent_run_id` 与 `background_carryover_source_ref_set`。
 6. 现在这份 lineage 又继续进入 `resident_supervision.py` 的 bootstrap continuity refresh：当 `background_carryover_generation >= 2` 时，在第一拍 waiting heartbeat 落盘前，`relationship_subject_graph.json#subjects[0].relationship_stage` 就必须先进入 `background_continuity_waiting`，并把关闭态 resident governance refs / source refs 压进 `self_model.json#trait_slow_variables[*].evidence_refs`。
+7. 现在这份 resume summary 还必须进入慢变量惯性：当 `background_trait_slow_variable_summary` 存在时，下一次 `self_model.json#trait_slow_variables[*]` 要写出 `background_resume_value` 与 `background_inertia_weight`，表示上一轮 closeout 的自我状态正在参与当前收敛。
 
 当前最小 background carryover 字段至少包括：
 
@@ -473,6 +474,7 @@ process receipt 里，resident governance 必须进入：
 8. `background_continuity.py` 会从上一轮 snapshot/report 里恢复 `background_relationship_stage`、`background_relationship_subject_ref`、`background_self_model_ref`、`background_trait_slow_variable_summary` 与 `background_resume_summary`。
 9. `idle_strategy.py` / resident governance 会把这组 background resume fields 原样带入下一次 waiting governance，不在等待态重新发明关系结论。
 10. `governance_explanation.py` 会把 background resume fields 写进 explanation report，并在 `continuity_story` 中讲出关系阶段与慢变量名称。
+11. `continuity_evolution.py` 会在新 live turn 之前保留 `background_relationship_stage`，并用 `background_trait_slow_variable_summary` 形成慢变量惯性。
 
 当前最低承载测试仍以：
 

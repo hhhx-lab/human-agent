@@ -152,6 +152,12 @@ def _derive_relationship_stage(
     background_carryover_generation = _int_or_zero(
         background_continuity_profile.get("background_carryover_generation")
     )
+    background_relationship_stage = str(
+        background_continuity_profile.get("background_relationship_stage") or ""
+    )
+    background_relationship_stage_reason = str(
+        background_continuity_profile.get("background_relationship_stage_reason") or ""
+    )
 
     if (
         dialogue_turn_count >= 4
@@ -174,6 +180,22 @@ def _derive_relationship_stage(
         )
     if dialogue_turn_count >= 2:
         return ("active_dialogue", "dialogue_turns_accumulated")
+    if (
+        background_relationship_stage
+        and background_continuity_mode == "closed_process_carryover"
+        and current_stage
+        in {
+            "pre_activation",
+            "restored_waiting",
+            "background_continuity_waiting",
+            background_relationship_stage,
+        }
+    ):
+        return (
+            background_relationship_stage,
+            background_relationship_stage_reason
+            or "background_resume_relationship_stage_preserved_before_dialogue",
+        )
     if (
         background_continuity_mode == "closed_process_carryover"
         and background_carryover_generation >= 2
@@ -225,6 +247,10 @@ def _evolve_trait_slow_variables(
     )
     background_pressure_scale = _background_pressure_scale(
         str(background_continuity_profile.get("background_carryover_pressure_level", "light"))
+    )
+    background_trait_values = _background_trait_values(background_continuity_profile)
+    background_trait_update_counts = _background_trait_update_counts(
+        background_continuity_profile
     )
     evidence_refs = _dedupe(
         [
@@ -287,14 +313,34 @@ def _evolve_trait_slow_variables(
     for name, value in target_values.items():
         previous_payload = previous_variables.get(name, {})
         previous_value = _extract_previous_value(previous_payload)
+        background_resume_value = background_trait_values.get(name)
+        value, background_inertia_weight = _apply_background_trait_inertia(
+            target_value=value,
+            background_resume_value=background_resume_value,
+            background_generation_scale=background_generation_scale,
+            background_pressure_scale=background_pressure_scale,
+        )
+        trend_reference = previous_value
+        if trend_reference is None:
+            trend_reference = background_resume_value
+        update_count = max(
+            _extract_update_count(previous_payload),
+            background_trait_update_counts.get(name, 0),
+        )
         updated[name] = {
             "value": round(value, 3),
-            "trend": _trend(previous_value, value),
-            "update_count": _extract_update_count(previous_payload) + 1,
+            "trend": _trend(trend_reference, value),
+            "update_count": update_count + 1,
             "last_relationship_stage": relationship_stage,
             "last_generated_at": generated_at,
             "evidence_refs": evidence_refs,
         }
+        if background_resume_value is not None:
+            updated[name]["background_resume_value"] = round(background_resume_value, 3)
+            updated[name]["background_inertia_weight"] = round(
+                background_inertia_weight,
+                3,
+            )
     return updated
 
 
@@ -360,6 +406,12 @@ def _background_evidence_refs(background_continuity_profile: dict[str, Any]) -> 
     return _dedupe(
         list(background_continuity_profile.get("background_continuity_ref_set", []))
         + list(background_continuity_profile.get("background_carryover_source_ref_set", []))
+        + list(
+            background_continuity_profile.get(
+                "background_relationship_stage_evidence_refs",
+                [],
+            )
+        )
         + [
             background_continuity_profile.get("background_relationship_subject_ref", ""),
             background_continuity_profile.get("background_self_model_ref", ""),
@@ -391,6 +443,65 @@ def _int_or_zero(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _background_trait_values(
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, float]:
+    summary = background_continuity_profile.get(
+        "background_trait_slow_variable_summary",
+        {},
+    )
+    if not isinstance(summary, dict):
+        return {}
+    values: dict[str, float] = {}
+    for name, payload in summary.items():
+        value: Any
+        if isinstance(payload, dict):
+            value = payload.get("value")
+        else:
+            value = payload
+        if isinstance(value, (int, float)):
+            values[str(name)] = _clamp(float(value))
+    return values
+
+
+def _background_trait_update_counts(
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, int]:
+    summary = background_continuity_profile.get(
+        "background_trait_slow_variable_summary",
+        {},
+    )
+    if not isinstance(summary, dict):
+        return {}
+    counts: dict[str, int] = {}
+    for name, payload in summary.items():
+        if isinstance(payload, dict) and isinstance(payload.get("update_count"), int):
+            counts[str(name)] = payload["update_count"]
+    return counts
+
+
+def _apply_background_trait_inertia(
+    *,
+    target_value: float,
+    background_resume_value: float | None,
+    background_generation_scale: float,
+    background_pressure_scale: float,
+) -> tuple[float, float]:
+    if background_resume_value is None:
+        return target_value, 0.0
+    inertia_weight = min(
+        0.70,
+        0.40 + 0.20 * background_generation_scale + 0.10 * background_pressure_scale,
+    )
+    return (
+        _clamp(
+            (1.0 - inertia_weight) * target_value
+            + inertia_weight * background_resume_value
+        ),
+        inertia_weight,
+    )
 
 
 def _trend(previous_value: float | None, current_value: float) -> str:

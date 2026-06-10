@@ -2097,6 +2097,77 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             projected["self_model_state"]["growth_window_refs"],
         )
 
+    def test_continuity_evolution_uses_background_resume_as_trait_inertia(self):
+        from life_v0.process_supervisor.continuity_evolution import (
+            evolve_relationship_and_self_model,
+        )
+
+        result = evolve_relationship_and_self_model(
+            generated_at="2026-06-10T00:00:00+00:00",
+            relationship_graph={
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relation_role": "friend",
+                        "relationship_stage": "restored_waiting",
+                    }
+                ]
+            },
+            self_model_state={"trait_slow_variables": {}, "growth_window_refs": []},
+            relationship_timeline={
+                "dialogue_turn_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                ],
+                "relationship_continuity_reports": [],
+                "trust_trajectories": [],
+            },
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_pressure_level": "present",
+                "background_carryover_generation": 1,
+                "background_relationship_stage": "repair_guarded_continuity",
+                "background_relationship_stage_reason": "repair_followup_required_after_multi_turn_dialogue",
+                "background_relationship_subject_ref": "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
+                "background_relationship_stage_evidence_refs": [
+                    "runtime/state/relationship/relationship_timeline.json"
+                ],
+                "background_self_model_ref": "runtime/state/self/self_model.json",
+                "background_trait_slow_variable_summary": {
+                    "continuity_drive": {
+                        "value": 0.82,
+                        "trend": "up",
+                        "update_count": 7,
+                        "last_relationship_stage": "repair_guarded_continuity",
+                    }
+                },
+            },
+        )
+
+        subject = result["relationship_graph"]["subjects"][0]
+        self.assertEqual(subject["relationship_stage"], "repair_guarded_continuity")
+        self.assertEqual(
+            subject["relationship_stage_reason"],
+            "repair_followup_required_after_multi_turn_dialogue",
+        )
+        self.assertIn(
+            "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
+            subject["relationship_stage_evidence_refs"],
+        )
+
+        continuity_drive = result["self_model_state"]["trait_slow_variables"][
+            "continuity_drive"
+        ]
+        self.assertGreater(continuity_drive["value"], 0.5)
+        self.assertEqual(continuity_drive["background_resume_value"], 0.82)
+        self.assertGreater(continuity_drive["background_inertia_weight"], 0.4)
+        self.assertEqual(continuity_drive["update_count"], 8)
+        self.assertIn(
+            "runtime/state/self/self_model.json",
+            continuity_drive["evidence_refs"],
+        )
+
     def test_resident_supervision_projects_background_lineage_into_bootstrap_relationship_state(self):
         from life_v0.process_supervisor.resident_supervision import (
             bootstrap_resident_supervision,

@@ -88,6 +88,8 @@
     "update_count": 4,
     "last_relationship_stage": "repair_guarded_continuity",
     "last_generated_at": "2026-06-10T12:34:56Z",
+    "background_resume_value": 0.58,
+    "background_inertia_weight": 0.55,
     "evidence_refs": [
       "runtime/state/relationship/relationship_timeline.json",
       "runtime/state/membrane/world_contact_summary.json",
@@ -109,6 +111,12 @@
 `background_carryover_generation >= 2` 的后台连续体 lineage 时，它必须在第一拍 waiting heartbeat
 之前就把关闭态 lineage 压进 `trait_slow_variables[*].evidence_refs` 与 `growth_window_refs`，而不能只把这批
 artifact 留在 `idle_strategy_state.json` 或 `resident_governance_state.json` 里。
+
+现在这组慢变量又继续进入“跨进程惯性”约束：当 `background_continuity_profile` 带回
+`background_trait_slow_variable_summary` 时，`continuity_evolution.py` 不能完全丢弃上一轮 closeout
+留下的慢变量值，而要把它作为 `background_resume_value` 参与下一次 `value` 收敛，并写出
+`background_inertia_weight`。当前回合证据仍然优先，但在还没有进入新 live turn、证据不足以覆盖上一轮状态时，
+上一轮 relationship stage 也可以被 `background_relationship_stage` 保留下来。
 
 ## `memory_index`
 

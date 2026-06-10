@@ -295,3 +295,4 @@ idle_strategy.py
 8. closeout 后的 `resident_governance_snapshot.json`、`digital_life_persistent_process_report.json` 与 `digital_life_process_report.json` 必须保留 `background_relationship_stage` 与 `background_trait_slow_variable_summary`
 9. 下一次 bootstrap 的 `background_continuity_profile` 必须恢复这组 resume summary，并由 `idle_strategy.py` 原样带入 waiting governance
 10. `digital_life_resident_governance_explanation.json` 必须把这组 resume summary 写进 `background_resume_focus` 与 `continuity_story`，让 closeout 解释层也能承载关系阶段和自我慢变量
+11. `continuity_evolution.py` 必须让这组 resume summary 进入关系阶段保留和慢变量惯性收敛，至少能在测试中看到 `background_resume_value` 与 `background_inertia_weight`
