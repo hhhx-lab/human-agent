@@ -128,6 +128,8 @@ def run_digital_life_process(
     active_sampling_plan = supervision.active_sampling_plan
     memory_write_gate = supervision.memory_write_gate
     state_merge_guard = supervision.state_merge_guard
+    schema_cross_file_logic = supervision.schema_cross_file_logic
+    schema_run_manifest = supervision.schema_run_manifest
     responsibility_loop_state = supervision.responsibility_loop_state
     world_contact_summary = supervision.world_contact_summary
     pain_regret_repair_report = supervision.pain_regret_repair_report
@@ -144,6 +146,8 @@ def run_digital_life_process(
     active_sampling_plan_ref = supervision.active_sampling_plan_ref
     memory_write_gate_ref = supervision.memory_write_gate_ref
     state_merge_guard_ref = supervision.state_merge_guard_ref
+    schema_cross_file_logic_ref = supervision.schema_cross_file_logic_ref
+    schema_run_manifest_ref = supervision.schema_run_manifest_ref
     responsibility_loop_state_ref = supervision.responsibility_loop_state_ref
     world_contact_summary_ref = supervision.world_contact_summary_ref
     pain_regret_repair_report_ref = supervision.pain_regret_repair_report_ref
@@ -195,6 +199,8 @@ def run_digital_life_process(
         active_sampling_plan=active_sampling_plan,
         memory_write_gate=memory_write_gate,
         state_merge_guard=state_merge_guard,
+        schema_cross_file_logic=schema_cross_file_logic,
+        schema_run_manifest=schema_run_manifest,
         responsibility_loop_state=responsibility_loop_state,
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
@@ -214,6 +220,8 @@ def run_digital_life_process(
         active_sampling_plan_ref=active_sampling_plan_ref,
         memory_write_gate_ref=memory_write_gate_ref,
         state_merge_guard_ref=state_merge_guard_ref,
+        schema_cross_file_logic_ref=schema_cross_file_logic_ref,
+        schema_run_manifest_ref=schema_run_manifest_ref,
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,

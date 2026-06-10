@@ -191,6 +191,7 @@ def run_schema_runner(
             "runtime/state/membrane/action_intent_queue.json",
             "runtime/state/membrane/confirmation_binding.json",
             "runtime/state/action/action_candidate_set.json",
+            "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/validation/observation_truth_review.json",
             "runtime/state/validation/world_contact_validation.json",
@@ -207,6 +208,10 @@ def run_schema_runner(
         input_hashes=input_hashes,
         package_local_gate_refs=list(cross_file_logic.get("package_local_gate_refs", [])),
         closure_status_refs=list(cross_file_logic.get("closure_status_refs", [])),
+        queue_e_cross_layer_gate_status=dict(
+            cross_file_logic.get("queue_e_cross_layer_gate_status", {})
+        ),
+        queue_e_cross_layer_refs=list(cross_file_logic.get("life_constraint_refs", [])),
     )
     artifact_manifest = _build_artifact_manifest(run_id, generated_at, status)
     stage_gate = _build_stage_gate(run_id, generated_at, status, stage_effect, blocked_reasons)

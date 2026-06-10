@@ -23,6 +23,8 @@ from .idle_strategy import (
     BELIEF_STATE_FRAME_REF,
     MEMORY_WRITE_GATE_REF,
     PREDICTION_ERROR_FIELD_REF,
+    SCHEMA_CROSS_FILE_LOGIC_REF,
+    SCHEMA_RUN_MANIFEST_REF,
     SIGNAL_MEDIA_RUNTIME_REF,
     STATE_MERGE_GUARD_REF,
 )
@@ -76,6 +78,8 @@ class ResidentSupervisionContext:
     active_sampling_plan: dict[str, Any]
     memory_write_gate: dict[str, Any]
     state_merge_guard: dict[str, Any]
+    schema_cross_file_logic: dict[str, Any]
+    schema_run_manifest: dict[str, Any]
     responsibility_loop_state: dict[str, Any]
     world_contact_summary: dict[str, Any]
     pain_regret_repair_report: dict[str, Any]
@@ -92,6 +96,8 @@ class ResidentSupervisionContext:
     active_sampling_plan_ref: str | None
     memory_write_gate_ref: str | None
     state_merge_guard_ref: str | None
+    schema_cross_file_logic_ref: str | None
+    schema_run_manifest_ref: str | None
     responsibility_loop_state_ref: str | None
     world_contact_summary_ref: str | None
     pain_regret_repair_report_ref: str | None
@@ -153,6 +159,7 @@ def bootstrap_resident_supervision(
     signal_dir = state_dir / "signal"
     prediction_dir = state_dir / "prediction"
     memory_dir = state_dir / "memory"
+    schema_runner_dir = state_dir / "schema_runner"
 
     read_json(terminal_dir / "session_envelope.json")
     safe_terminal_loop = read_json(terminal_dir / "safe_terminal_loop_state.json")
@@ -213,6 +220,8 @@ def bootstrap_resident_supervision(
     active_sampling_plan = read_json_if_exists(prediction_dir / "active_sampling_plan.json")
     memory_write_gate = read_json_if_exists(memory_dir / "memory_write_gate.json")
     state_merge_guard = read_json_if_exists(memory_dir / "state_merge_guard.json")
+    schema_cross_file_logic = read_json_if_exists(schema_runner_dir / "cross_file_logic.json")
+    schema_run_manifest = read_json_if_exists(schema_runner_dir / "run_manifest.json")
     pain_regret_repair_report = read_json_if_exists(
         reports_dir / "pain_regret_repair_report.json"
     )
@@ -272,6 +281,14 @@ def bootstrap_resident_supervision(
     state_merge_guard_ref = _ref_if_present(
         payload=state_merge_guard,
         ref=STATE_MERGE_GUARD_REF,
+    )
+    schema_cross_file_logic_ref = _ref_if_present(
+        payload=schema_cross_file_logic,
+        ref=SCHEMA_CROSS_FILE_LOGIC_REF,
+    )
+    schema_run_manifest_ref = _ref_if_present(
+        payload=schema_run_manifest,
+        ref=SCHEMA_RUN_MANIFEST_REF,
     )
     responsibility_loop_state_ref = _ref_if_present(
         payload=responsibility_loop_state,
@@ -477,6 +494,8 @@ def bootstrap_resident_supervision(
         active_sampling_plan=active_sampling_plan,
         memory_write_gate=memory_write_gate,
         state_merge_guard=state_merge_guard,
+        schema_cross_file_logic=schema_cross_file_logic,
+        schema_run_manifest=schema_run_manifest,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
@@ -490,6 +509,8 @@ def bootstrap_resident_supervision(
         active_sampling_plan_ref=active_sampling_plan_ref,
         memory_write_gate_ref=memory_write_gate_ref,
         state_merge_guard_ref=state_merge_guard_ref,
+        schema_cross_file_logic_ref=schema_cross_file_logic_ref,
+        schema_run_manifest_ref=schema_run_manifest_ref,
         growth_patch_candidate_ids=growth_patch_candidate_ids,
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,
@@ -541,6 +562,8 @@ def bootstrap_resident_supervision(
         active_sampling_plan=active_sampling_plan,
         memory_write_gate=memory_write_gate,
         state_merge_guard=state_merge_guard,
+        schema_cross_file_logic=schema_cross_file_logic,
+        schema_run_manifest=schema_run_manifest,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
@@ -554,6 +577,8 @@ def bootstrap_resident_supervision(
         active_sampling_plan_ref=active_sampling_plan_ref,
         memory_write_gate_ref=memory_write_gate_ref,
         state_merge_guard_ref=state_merge_guard_ref,
+        schema_cross_file_logic_ref=schema_cross_file_logic_ref,
+        schema_run_manifest_ref=schema_run_manifest_ref,
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,

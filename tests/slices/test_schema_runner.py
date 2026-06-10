@@ -159,6 +159,28 @@ class SchemaRunnerTests(unittest.TestCase):
             "runtime/state/responsibility/responsibility_ledger.json#repair_obligations",
             cross_file_logic["bridge_refs"],
         )
+        self.assertEqual(
+            cross_file_logic["queue_e_cross_layer_gate_status"]["consciousness_probe_gate"],
+            "closed",
+        )
+        self.assertEqual(
+            cross_file_logic["queue_e_cross_layer_gate_status"]["body_affect_gate"],
+            "deferred_until_s06",
+        )
+        self.assertIn(
+            "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+            cross_file_logic["life_constraint_refs"],
+        )
+        self.assertIn(
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+            cross_file_logic["life_constraint_refs"],
+        )
+        self.assertTrue(
+            any(
+                finding["finding_kind"] == "life_constraint_alignment"
+                for finding in cross_file_logic["cross_file_findings"]
+            )
+        )
 
         self.assertEqual(counterfactual_trace["schema_version"], "counterfactual_trace_v0")
         self.assertTrue(counterfactual_trace["candidate_refs"])
@@ -203,7 +225,20 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/validation/world_contact_validation.json", run_manifest["input_state_refs"])
         self.assertIn("runtime/state/validation/prediction_trace_validation.json", run_manifest["input_state_refs"])
         self.assertIn("runtime/state/validation/validation_rollup.json", run_manifest["input_state_refs"])
+        self.assertIn(
+            "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+            run_manifest["input_state_refs"],
+        )
+        self.assertEqual(
+            run_manifest["queue_e_cross_layer_gate_status"]["consciousness_probe_gate"],
+            "closed",
+        )
+        self.assertIn(
+            "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+            run_manifest["queue_e_cross_layer_refs"],
+        )
         self.assertIn("validation_rollup_gate", run_manifest["package_local_gate_refs"])
+        self.assertIn("life_constraint_validation_gate", run_manifest["package_local_gate_refs"])
         self.assertIn("runtime/state/membrane/action_intent_queue.json", run_manifest["closure_status_refs"])
 
         self.assertEqual(stage_gate["schema_version"], "schema_runner_stage_gate_v0")

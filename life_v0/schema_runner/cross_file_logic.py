@@ -37,6 +37,20 @@ def build_cross_file_logic(
     world_contact_findings = list(world_contact_validation.get("validation_findings", []))
     prediction_links = list(prediction_trace_validation.get("missing_prediction_links", []))
     validation_guarded = list(validation_rollup.get("guarded_gates", []))
+    queue_e_cross_layer_gate_status = dict(
+        validation_rollup.get("queue_e_cross_layer_gate_status")
+        or world_contact_validation.get("life_constraint_validation")
+        or {}
+    )
+    life_constraint_refs = list(
+        dict.fromkeys(
+            [
+                "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                *list(world_contact_validation.get("life_constraint_refs", [])),
+                *list(validation_rollup.get("queue_e_cross_layer_refs", [])),
+            ]
+        )
+    )
     audit_findings = list(boundary_audit.get("audit_findings", []))
     inconsistency_findings = list(consistency_logic.get("inconsistency_findings", []))
     repair_obligations = list(responsibility_loop.get("repair_obligation_refs", []))
@@ -101,6 +115,28 @@ def build_cross_file_logic(
                 "repair_priority": "medium",
             }
         )
+    findings.append(
+        {
+            "finding_id": f"cross-file-{run_id}-0004",
+            "finding_kind": "life_constraint_alignment",
+            "severity": (
+                "guarded_medium"
+                if _has_blocking_life_constraint(queue_e_cross_layer_gate_status)
+                else "guarded_low"
+            ),
+            "state_refs": [
+                "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                "runtime/state/validation/world_contact_validation.json#life_constraint_validation",
+                "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status",
+            ],
+            "summary": "world contact remains coupled to value orientation, consciousness probe, and deferred body-affect gates",
+            "repair_priority": (
+                "high"
+                if _has_blocking_life_constraint(queue_e_cross_layer_gate_status)
+                else "medium"
+            ),
+        }
+    )
 
     repair_priority_refs = [
         "runtime/state/action/responsibility_loop_state.json",
@@ -119,6 +155,10 @@ def build_cross_file_logic(
         repair_priority_refs.append("runtime/state/validation/prediction_trace_validation.json")
     if validation_guarded:
         repair_priority_refs.append("runtime/state/validation/validation_rollup.json")
+    if _has_blocking_life_constraint(queue_e_cross_layer_gate_status):
+        repair_priority_refs.append(
+            "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status"
+        )
     if growth_refs:
         repair_priority_refs.extend(growth_refs[:1])
     if dream_refs:
@@ -132,6 +172,9 @@ def build_cross_file_logic(
         "runtime/state/growth/growth_patch_candidate_queue.json",
         "runtime/state/dream/offline_consolidation_frame.json",
         "runtime/state/validation/validation_rollup.json#gate_status",
+        "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+        "runtime/state/validation/world_contact_validation.json#life_constraint_validation",
+        "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status",
     ]
 
     return {
@@ -148,12 +191,15 @@ def build_cross_file_logic(
             "runtime/state/validation/world_contact_validation.json",
             "runtime/state/validation/prediction_trace_validation.json",
             "runtime/state/validation/validation_rollup.json",
+            "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             "runtime/state/validation/boundary_audit_state.json",
             "runtime/state/schema_runner/consistency_logic.json",
             "runtime/state/schema_runner/comparison_trace.json",
         ],
         "cross_file_findings": findings,
         "repair_priority_refs": repair_priority_refs,
+        "life_constraint_refs": life_constraint_refs,
+        "queue_e_cross_layer_gate_status": queue_e_cross_layer_gate_status,
         "closure_status_refs": [
             "runtime/state/validation/observation_truth_review.json",
             "runtime/state/validation/world_contact_validation.json",
@@ -162,9 +208,12 @@ def build_cross_file_logic(
             "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/membrane/action_intent_queue.json",
             "runtime/state/membrane/confirmation_binding.json",
+            "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+            "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status",
         ],
         "package_local_gate_refs": [
             "validation_rollup_gate",
+            "life_constraint_validation_gate",
             "prediction_trace_validation_gate",
             "world_contact_validation_gate",
             "cross_file_logic_gate",
@@ -187,6 +236,8 @@ def check_cross_file_logic(state: dict[str, Any]) -> list[str]:
         "state_refs",
         "cross_file_findings",
         "repair_priority_refs",
+        "life_constraint_refs",
+        "queue_e_cross_layer_gate_status",
         "closure_status_refs",
         "package_local_gate_refs",
         "bridge_refs",
@@ -195,3 +246,11 @@ def check_cross_file_logic(state: dict[str, Any]) -> list[str]:
         if not state.get(field):
             reasons.append(f"cross_file_logic_gate missing {field}")
     return reasons
+
+
+def _has_blocking_life_constraint(gate_status: dict[str, Any]) -> bool:
+    return any(
+        status in {"missing", "blocked"}
+        for key, status in gate_status.items()
+        if key.endswith("_gate") and isinstance(status, str)
+    )

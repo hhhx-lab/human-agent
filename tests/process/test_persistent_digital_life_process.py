@@ -1182,6 +1182,29 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "repair_obligation_refs": ["repair-1", "repair-2"],
                 "regret_pressure_refs": ["regret-1"],
             },
+            schema_cross_file_logic={
+                "schema_version": "cross_file_logic_v0",
+                "life_constraint_refs": [
+                    "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                    "runtime/state/consciousness/consciousness_probe_bundle.json",
+                ],
+                "queue_e_cross_layer_gate_status": {
+                    "value_orientation_gate": "closed",
+                    "consciousness_probe_gate": "closed",
+                    "body_affect_gate": "deferred_until_s06",
+                    "language_relationship_gate": "closed",
+                },
+            },
+            schema_run_manifest={
+                "schema_version": "schema_runner_run_manifest_v0",
+                "queue_e_cross_layer_refs": [
+                    "runtime/state/action/action_candidate_set.json#life_constraint_profile"
+                ],
+                "queue_e_cross_layer_gate_status": {
+                    "consciousness_probe_gate": "closed",
+                    "body_affect_gate": "deferred_until_s06",
+                },
+            },
             source_doc_refs=[
                 "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
             ],
@@ -1218,6 +1241,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "commitment_expression_plan": "baseline",
                 "apology_repair_language_trace": "locked_primary",
             },
+        )
+        self.assertEqual(idle_strategy["life_constraint_waiting_posture"], "schema_guarded_waiting")
+        self.assertEqual(idle_strategy["life_constraint_attention_target"], "life_constraint_profile")
+        self.assertIn(
+            "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+            idle_strategy["life_constraint_refs"],
+        )
+        self.assertEqual(
+            idle_strategy["queue_e_cross_layer_gate_status"]["consciousness_probe_gate"],
+            "closed",
         )
 
     def test_idle_strategy_carries_offline_learning_results_into_waiting_governance(self):
@@ -4305,6 +4338,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 result.context.state_merge_guard_ref,
                 "runtime/state/memory/state_merge_guard.json",
+            )
+            self.assertEqual(
+                result.context.schema_cross_file_logic["schema_version"],
+                "cross_file_logic_v0",
+            )
+            self.assertEqual(
+                result.context.schema_run_manifest["schema_version"],
+                "schema_runner_run_manifest_v0",
+            )
+            self.assertEqual(
+                result.context.schema_cross_file_logic_ref,
+                "runtime/state/schema_runner/cross_file_logic.json",
+            )
+            self.assertEqual(
+                result.context.schema_run_manifest_ref,
+                "runtime/state/schema_runner/run_manifest.json",
+            )
+            idle_strategy_state = self._read_json(
+                paths["terminal_state"] / "idle_strategy_state.json"
+            )
+            self.assertIn(
+                "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                idle_strategy_state["life_constraint_refs"],
+            )
+            self.assertEqual(
+                idle_strategy_state["life_constraint_waiting_posture"],
+                "schema_guarded_waiting",
             )
             for slow_variable_name in [
                 "trust_persistence",

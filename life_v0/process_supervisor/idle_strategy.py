@@ -17,6 +17,8 @@ PREDICTION_ERROR_FIELD_REF = "runtime/state/prediction/prediction_error_field.js
 ACTIVE_SAMPLING_PLAN_REF = "runtime/state/prediction/active_sampling_plan.json"
 MEMORY_WRITE_GATE_REF = "runtime/state/memory/memory_write_gate.json"
 STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
+SCHEMA_CROSS_FILE_LOGIC_REF = "runtime/state/schema_runner/cross_file_logic.json"
+SCHEMA_RUN_MANIFEST_REF = "runtime/state/schema_runner/run_manifest.json"
 IDLE_GOVERNANCE_FIELD_NAMES = (
     "heartbeat_interval_ms",
     "idle_probe_mode",
@@ -76,6 +78,13 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "active_sampling_route",
     "memory_write_gate_policy",
     "state_merge_policy",
+    "schema_cross_file_logic_ref",
+    "schema_run_manifest_ref",
+    "life_constraint_refs",
+    "queue_e_cross_layer_gate_status",
+    "life_constraint_waiting_posture",
+    "life_constraint_attention_target",
+    "life_constraint_attention_reason",
 )
 
 
@@ -117,6 +126,8 @@ def decide_idle_strategy(
     active_sampling_plan: dict[str, Any] | None = None,
     memory_write_gate: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
+    schema_cross_file_logic: dict[str, Any] | None = None,
+    schema_run_manifest: dict[str, Any] | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
     growth_patch_candidate_queue_ref: str | None = None,
@@ -130,6 +141,8 @@ def decide_idle_strategy(
     active_sampling_plan_ref: str | None = ACTIVE_SAMPLING_PLAN_REF,
     memory_write_gate_ref: str | None = MEMORY_WRITE_GATE_REF,
     state_merge_guard_ref: str | None = STATE_MERGE_GUARD_REF,
+    schema_cross_file_logic_ref: str | None = SCHEMA_CROSS_FILE_LOGIC_REF,
+    schema_run_manifest_ref: str | None = SCHEMA_RUN_MANIFEST_REF,
     growth_patch_candidate_ids: list[str] | None = None,
     replay_residue_ref_count: int = 0,
     dream_window_ref_count: int = 0,
@@ -174,6 +187,10 @@ def decide_idle_strategy(
         active_sampling_plan=active_sampling_plan,
         memory_write_gate=memory_write_gate,
         state_merge_guard=state_merge_guard,
+    )
+    life_constraint_profile = _life_constraint_waiting_profile(
+        schema_cross_file_logic=schema_cross_file_logic,
+        schema_run_manifest=schema_run_manifest,
     )
     offline_learning_profile = derive_offline_learning_profile(
         nightmare_risk=nightmare_risk,
@@ -259,6 +276,14 @@ def decide_idle_strategy(
     state_merge_guard_runtime_ref = _ref_if_present(
         payload=state_merge_guard,
         ref=state_merge_guard_ref or STATE_MERGE_GUARD_REF,
+    )
+    schema_cross_file_logic_runtime_ref = _ref_if_present(
+        payload=schema_cross_file_logic,
+        ref=schema_cross_file_logic_ref or SCHEMA_CROSS_FILE_LOGIC_REF,
+    )
+    schema_run_manifest_runtime_ref = _ref_if_present(
+        payload=schema_run_manifest,
+        ref=schema_run_manifest_ref or SCHEMA_RUN_MANIFEST_REF,
     )
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_ref=signal_media_ref,
@@ -367,6 +392,21 @@ def decide_idle_strategy(
         "active_sampling_route": prediction_profile["active_sampling_route"],
         "memory_write_gate_policy": prediction_profile["memory_write_gate_policy"],
         "state_merge_policy": prediction_profile["state_merge_policy"],
+        "schema_cross_file_logic_ref": schema_cross_file_logic_runtime_ref,
+        "schema_run_manifest_ref": schema_run_manifest_runtime_ref,
+        "life_constraint_refs": life_constraint_profile["life_constraint_refs"],
+        "queue_e_cross_layer_gate_status": life_constraint_profile[
+            "queue_e_cross_layer_gate_status"
+        ],
+        "life_constraint_waiting_posture": life_constraint_profile[
+            "life_constraint_waiting_posture"
+        ],
+        "life_constraint_attention_target": life_constraint_profile[
+            "life_constraint_attention_target"
+        ],
+        "life_constraint_attention_reason": life_constraint_profile[
+            "life_constraint_attention_reason"
+        ],
         "source_doc_refs": list(source_doc_refs or []),
         "readme_block_refs": list(readme_block_refs or []),
         "runtime_carrier_refs": list(runtime_carrier_refs or []),
@@ -742,6 +782,65 @@ def _prediction_waiting_profile(
         "active_sampling_route": selected_route,
         "memory_write_gate_policy": memory_policy,
         "state_merge_policy": merge_policy,
+    }
+
+
+def _life_constraint_waiting_profile(
+    *,
+    schema_cross_file_logic: dict[str, Any] | None,
+    schema_run_manifest: dict[str, Any] | None,
+) -> dict[str, Any]:
+    cross_file_logic = schema_cross_file_logic or {}
+    run_manifest = schema_run_manifest or {}
+    gate_status = dict(
+        cross_file_logic.get("queue_e_cross_layer_gate_status")
+        or run_manifest.get("queue_e_cross_layer_gate_status")
+        or {}
+    )
+    refs = list(
+        dict.fromkeys(
+            [
+                *list(cross_file_logic.get("life_constraint_refs", [])),
+                *list(run_manifest.get("queue_e_cross_layer_refs", [])),
+            ]
+        )
+    )
+    blocking_gates = [
+        gate
+        for gate, status in gate_status.items()
+        if gate.endswith("_gate") and status in {"missing", "blocked"}
+    ]
+    deferred_gates = [
+        gate
+        for gate, status in gate_status.items()
+        if gate.endswith("_gate")
+        and isinstance(status, str)
+        and status.startswith("deferred_until_")
+    ]
+
+    if blocking_gates:
+        posture = "schema_blocked_waiting"
+        target = "life_constraint_repair"
+        reason = "queue_e_cross_layer_gate_blocked"
+    elif refs or gate_status:
+        posture = "schema_guarded_waiting"
+        target = "life_constraint_profile"
+        reason = (
+            "queue_e_cross_layer_gate_has_deferred_life_constraints"
+            if deferred_gates
+            else "queue_e_cross_layer_gate_closed"
+        )
+    else:
+        posture = "schema_unobserved_waiting"
+        target = "waiting_presence_maintenance"
+        reason = "schema_runner_life_constraint_objects_absent"
+
+    return {
+        "life_constraint_refs": refs,
+        "queue_e_cross_layer_gate_status": gate_status,
+        "life_constraint_waiting_posture": posture,
+        "life_constraint_attention_target": target,
+        "life_constraint_attention_reason": reason,
     }
 
 

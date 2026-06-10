@@ -365,7 +365,7 @@ S05 发生在 S08 之后，因此 validator 应当重新读取当前 `consciousn
 
 所以 Queue E 当前阶段的工程口径，已经从“生成责任对象”推进到“责任对象进入长期连续体并具备链尾交接能力”。
 
-## F. `life_v0/validators/observation_validator.py` 已落第一轮，继续补厚
+## H. `life_v0/validators/observation_validator.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -381,7 +381,7 @@ S05 发生在 S08 之后，因此 validator 应当重新读取当前 `consciousn
 - `truth_review_required`
 - `source_doc_refs`
 
-## G. `life_v0/validators/boundary_audit.py` 已落第一轮，继续补厚
+## I. `life_v0/validators/boundary_audit.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -397,7 +397,7 @@ S05 发生在 S08 之后，因此 validator 应当重新读取当前 `consciousn
 - `audit_findings`
 - `blocked_reasons`
 
-## H. `life_v0/schema_runner/consistency_logic.py` 已落第一轮，继续补厚
+## J. `life_v0/schema_runner/consistency_logic.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -412,7 +412,7 @@ S05 发生在 S08 之后，因此 validator 应当重新读取当前 `consciousn
 - `severity`
 - `repair_route_refs`
 
-## I. `life_v0/schema_runner/counterfactual_eval.py` 已落第一轮，继续补厚
+## K. `life_v0/schema_runner/counterfactual_eval.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -430,7 +430,7 @@ S05 发生在 S08 之后，因此 validator 应当重新读取当前 `consciousn
 - `repair_obligation_projection`
 - `regret_pressure_candidate_refs`
 
-## J. `life_v0/schema_runner/comparison_trace.py` 已落第一轮，继续补厚
+## L. `life_v0/schema_runner/comparison_trace.py` 已落第一轮，继续补厚
 
 ### 角色
 
@@ -449,7 +449,45 @@ S05 发生在 S08 之后，因此 validator 应当重新读取当前 `consciousn
 
 `comparison_trace.py` 的 `justification_refs` 与 `writeback_targets` 必须包含 `runtime/state/action/responsibility_loop_state.json`，使责任、后悔、修复不只停在 S03，而能进入 S09 的反事实比较和后续 S06/S10 成长/运行链。
 
-## K. Queue E 第二波已落桥接器官
+## M. `life_v0/schema_runner/cross_file_logic.py` / `run_manifest.py` 当前补厚
+
+### 角色
+
+把 S05 已经闭合的 `life_constraint_validation` 继续推进到 S09 的跨文件逻辑和 run manifest，避免生命约束只停在 validator 报告里。
+
+### 最低字段
+
+- `life_constraint_refs`
+- `queue_e_cross_layer_gate_status`
+- `cross_file_findings[].finding_kind = life_constraint_alignment`
+- `run_manifest.queue_e_cross_layer_gate_status`
+- `run_manifest.queue_e_cross_layer_refs`
+
+### 当前补厚口径
+
+`cross_file_logic.py` 现在必须把 `ActionCandidateSet#life_constraint_profile`、`WorldContactValidation#life_constraint_validation` 与 `ValidationRollup#queue_e_cross_layer_gate_status` 统一成 `life_constraint_alignment` finding；`run_manifest.py` 则必须把这组约束作为 S09 输入证据、local gate 和 closure refs 保存下来。这样后续 process supervisor 看到的不是抽象“验证通过”，而是可以追溯到价值取向、意识探针、身体/语言延后 gate 的行为约束链。
+
+## N. `DIGITAL_LIFE_PROCESS_SUPERVISOR` 当前回灌口径
+
+### 角色
+
+让常驻等待态消费 schema runner 留下的生命约束证据，使 waiting governance 不只受责任环、世界接触和预测写门调制，也受 `life_constraint_profile` 调制。
+
+### 最低字段
+
+- `schema_cross_file_logic_ref`
+- `schema_run_manifest_ref`
+- `life_constraint_refs`
+- `queue_e_cross_layer_gate_status`
+- `life_constraint_waiting_posture`
+- `life_constraint_attention_target`
+- `life_constraint_attention_reason`
+
+### 当前补厚口径
+
+`resident_supervision.py` 负责装载 `runtime/state/schema_runner/cross_file_logic.json` 与 `runtime/state/schema_runner/run_manifest.json`；`idle_strategy.py` 把它们压成 `schema_guarded_waiting / schema_blocked_waiting / schema_unobserved_waiting` 三类姿态；`heartbeat.py` 再把这些字段写入 waiting heartbeat、terminal loop state 与 resident governance state。
+
+## O. Queue E 第二波已落桥接器官
 
 下面这些文件已经不是“待新增”，而是 Queue E 第二波真实已落、当前需要继续补硬的桥接器官：
 

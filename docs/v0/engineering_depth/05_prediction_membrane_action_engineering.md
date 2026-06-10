@@ -19,6 +19,7 @@ Observation / Language Percept / Body Signal
   -> ActionIntentQueue / ObservationTruthGate / ConfirmationBinding / WorldContactSummary
   -> ObservationTruthReview / WorldContactValidation / PredictionTraceValidation / BoundaryAuditState
   -> ConsistencyLogic / CounterfactualTrace / ComparisonTrace / CrossFileLogic / EvidenceRanking / RunManifest
+  -> IdleStrategy / WaitingHeartbeat / ResidentGovernance
   -> life_targets / repair / growth / process_supervisor
 ```
 
@@ -46,8 +47,10 @@ Observation / Language Percept / Body Signal
 9. `runtime/state/validation/world_contact_validation.json#life_constraint_validation`
 10. `runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status`
 11. `runtime/state/validation/boundary_audit_state.json`
-12. `runtime/state/schema_runner/cross_file_logic.json`
-13. `runtime/state/schema_runner/run_manifest.json`
+12. `runtime/state/schema_runner/cross_file_logic.json#life_constraint_refs`
+13. `runtime/state/schema_runner/run_manifest.json#queue_e_cross_layer_refs`
+14. `runtime/state/terminal/idle_strategy_state.json#life_constraint_waiting_posture`
+15. `runtime/state/terminal/resident_governance_state.json#life_constraint_refs`
 
 ## 当前新增的 Queue E 生命约束剖面
 
@@ -63,9 +66,14 @@ ValueOrientation
   -> WorldContactGate#life_constraint_refs
   -> WorldContactValidation#life_constraint_validation
   -> ValidationRollup#queue_e_cross_layer_gate_status
+  -> CrossFileLogic#life_constraint_alignment
+  -> RunManifest#queue_e_cross_layer_refs
+  -> IdleStrategy#life_constraint_waiting_posture
 ```
 
 这里的关键不是让所有上游对象同时存在，而是让每个阶段知道自己已经真实消费了什么、哪些必须延后到后续 slice。S03 阶段必须闭合 `value_orientation_gate`；S05 阶段必须在 S08 之后闭合 `consciousness_probe_gate`；`body_affect_gate` 在初始顺序里允许写成 `deferred_until_s06`，但不能从验证链中消失。
+
+当前 schema runner 已经把这条链继续压成 `life_constraint_alignment` finding 与 `run_manifest.queue_e_cross_layer_refs`；常驻过程则由 `resident_supervision.py` 装载 `cross_file_logic.json` / `run_manifest.json`，再由 `idle_strategy.py` 写出 `schema_guarded_waiting`。这说明 Queue E 的生命约束不只是离线验证结果，而已经进入等待心跳和 resident governance。
 
 ## 最低测试与新增测试
 

@@ -26,6 +26,8 @@ def build_run_manifest(
     input_hashes: dict[str, str],
     package_local_gate_refs: list[str],
     closure_status_refs: list[str],
+    queue_e_cross_layer_gate_status: dict[str, Any] | None = None,
+    queue_e_cross_layer_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     return {
         "schema_version": "schema_runner_run_manifest_v0",
@@ -45,6 +47,8 @@ def build_run_manifest(
         "output_refs": output_refs,
         "package_local_gate_refs": package_local_gate_refs,
         "closure_status_refs": closure_status_refs,
+        "queue_e_cross_layer_gate_status": dict(queue_e_cross_layer_gate_status or {}),
+        "queue_e_cross_layer_refs": list(queue_e_cross_layer_refs or []),
         "receipt_ref": f"runtime/receipts/schema_runner_{run_id}.json",
         "source_doc_refs": sorted(set(source_doc_refs + SOURCE_DOC_REFS)),
     }
@@ -64,6 +68,8 @@ def check_run_manifest(state: dict[str, Any]) -> list[str]:
         "output_refs",
         "package_local_gate_refs",
         "closure_status_refs",
+        "queue_e_cross_layer_gate_status",
+        "queue_e_cross_layer_refs",
         "receipt_ref",
         "source_doc_refs",
     ]:
