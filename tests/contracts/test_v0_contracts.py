@@ -115,6 +115,10 @@ class V0ContractCoverageTests(unittest.TestCase):
         self.assertIn("docs/v0/code_blueprints/05_birth_residency_terminal_blueprint.md", contract_index["files"])
         self.assertIn("docs/v0/code_blueprints/06_runtime_state_report_receipt_manifest.md", contract_index["files"])
         self.assertIn("docs/v0/code_blueprints/07_theory_to_package_trace_contract.md", contract_index["files"])
+        self.assertIn("docs/v0/code_scaffolds/README.md", contract_index["files"])
+        self.assertIn("docs/v0/code_scaffolds/01_life_code_scaffold_tree.md", contract_index["files"])
+        self.assertIn("docs/v0/code_scaffolds/02_cognitive_loop_code_scaffold.md", contract_index["files"])
+        self.assertIn("docs/v0/code_scaffolds/03_frontier_module_build_packets.md", contract_index["files"])
         self.assertIn(
             "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md",
             contract_index["files"],

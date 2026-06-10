@@ -212,6 +212,42 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/engineering_depth/07_theory_to_code_trace_matrix.md",
         ],
     },
+    "docs/v0/code_scaffolds/README.md": {
+        "role": "code_scaffolds_index",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_blueprints/README.md",
+            "docs/v0/package_specs/README.md",
+        ],
+    },
+    "docs/v0/code_scaffolds/01_life_code_scaffold_tree.md": {
+        "role": "life_code_scaffold_tree",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/code_blueprints/01_full_system_code_blueprint.md",
+            "docs/v0/package_specs/01_life_v0_package_construction_matrix.md",
+        ],
+    },
+    "docs/v0/code_scaffolds/02_cognitive_loop_code_scaffold.md": {
+        "role": "cognitive_loop_code_scaffold",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md",
+            "docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md",
+        ],
+    },
+    "docs/v0/code_scaffolds/03_frontier_module_build_packets.md": {
+        "role": "frontier_module_build_packets",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/entry/v0_module_execution_catalog.md",
+            "docs/v0/code_scaffolds/02_cognitive_loop_code_scaffold.md",
+        ],
+    },
     "docs/v0/code_architecture/01_life_code_stack_and_package_layers.md": {
         "role": "life_code_stack_package_layers",
         "slice": ACTIVE_SLICE,

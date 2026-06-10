@@ -91,6 +91,10 @@ docs/v0/code_framework/README.md
   -> docs/v0/package_specs/01_life_v0_package_construction_matrix.md
   -> docs/v0/package_specs/02_shared_object_write_authority_and_dependency_graph.md
   -> docs/v0/package_specs/03_incremental_package_delivery_protocol.md
+  -> docs/v0/code_scaffolds/README.md
+  -> docs/v0/code_scaffolds/01_life_code_scaffold_tree.md
+  -> docs/v0/code_scaffolds/02_cognitive_loop_code_scaffold.md
+  -> docs/v0/code_scaffolds/03_frontier_module_build_packets.md
   -> docs/v0/implementation_architecture/README.md
   -> docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md
   -> docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md

@@ -35,7 +35,7 @@
 `v0` 现在已经不是“缺文档”，而是“入口太多容易撞层”。所以读这份索引时只记一条：
 
 1. 先判断当前是在看入口、回链、主体合同，还是链尾/进程合同。
-2. 一轮开发只带一个主合同包进入，不要把十三层都同时当作“当前要改的文档”。
+2. 一轮开发只带一个主合同包进入，不要把十四层都同时当作“当前要改的文档”。
 
 ## 目录柜位
 
@@ -53,14 +53,15 @@
 - `code_architecture/`：代码总架构层
 - `package_specs/`：代码包规格层
 - `code_blueprints/`：代码蓝图压缩层
+- `code_scaffolds/`：代码脚手层
 - `implementation_architecture/`：实现蓝图层
 - `engineering_depth/`：工程深描层
 
-这次整理之后，后续如果有人觉得 `v0` “又乱了”，先不要新建目录；先回到上面这十三个柜位里判断应该并回哪一柜。
+这次整理之后，后续如果有人觉得 `v0` “又乱了”，先不要新建目录；先回到上面这十四个柜位里判断应该并回哪一柜。
 
 ## 文档分层
 
-`docs/v0` 现在固定成十三层：
+`docs/v0` 现在固定成十四层：
 
 | 层 | 文件 | 作用 |
 |---|---|---|
@@ -71,6 +72,7 @@
 | 代码总架构层 | `code_architecture/README.md`、`code_architecture/01_life_code_stack_and_package_layers.md`、`code_architecture/02_runtime_object_bus_and_flow_contract.md`、`code_architecture/03_build_order_and_definition_of_done.md`、`code_architecture/04_language_as_primary_expression_system.md`、`code_architecture/05_module_reading_and_execution_map.md`、`code_architecture/06_theory_gap_closure_register.md` | 把代码框架柜继续压成整棵代码树的生命分层、跨层共享对象总线、语言主表达系统、模块级读包执行地图、理论缺口收口方式、实现语言决策、阶段顺序和完成定义 |
 | 代码包规格层 | `package_specs/README.md`、`package_specs/01_life_v0_package_construction_matrix.md`、`package_specs/02_shared_object_write_authority_and_dependency_graph.md`、`package_specs/03_incremental_package_delivery_protocol.md` | 把代码总架构继续压到逐包施工：每个 `life_v0/*` 包读什么理论、首写什么对象、写什么 runtime、守什么测试和交付协议 |
 | 代码蓝图压缩层 | `code_blueprints/README.md`、`code_blueprints/01_full_system_code_blueprint.md`、`code_blueprints/02_conversation_language_relationship_blueprint.md`、`code_blueprints/03_body_affect_dream_growth_blueprint.md`、`code_blueprints/04_prediction_membrane_validation_blueprint.md`、`code_blueprints/05_birth_residency_terminal_blueprint.md`、`code_blueprints/06_runtime_state_report_receipt_manifest.md`、`code_blueprints/07_theory_to_package_trace_contract.md` | 把 `code_framework/`、`code_architecture/`、`implementation_architecture/`、`engineering_depth/` 再压成一个真正适合直接落代码的总装配柜 |
+| 代码脚手层 | `code_scaffolds/README.md`、`code_scaffolds/01_life_code_scaffold_tree.md`、`code_scaffolds/02_cognitive_loop_code_scaffold.md`、`code_scaffolds/03_frontier_module_build_packets.md` | 把总蓝图、逐包规格和器官回合流继续压成真正可下手写文件的代码脚手与当前前沿施工包 |
 | 实现蓝图层 | `implementation_architecture/README.md`、`implementation_architecture/01_runtime_organ_interface_blueprint.md`、`implementation_architecture/02_turn_and_cycle_lifecycle_contract.md`、`implementation_architecture/03_module_authoring_traceability_protocol.md`、`implementation_architecture/code_organs/README.md`、`implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md`、`implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md`、`implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md` | 把代码总架构层再压成真实器官接口、外部回合流、离线成长流、逐包器官拆分图、跨层预测-记忆写门深消费合同，以及模块级理论-代码追踪协议 |
 | 工程深描层 | `engineering_depth/README.md`、`engineering_depth/01_full_life_layer_implementation_deep_spec.md`、`engineering_depth/02_state_object_runtime_evidence_map.md`、`engineering_depth/03_language_relationship_longitudinal_engineering.md`、`engineering_depth/04_body_affect_dream_growth_engineering.md`、`engineering_depth/05_prediction_membrane_action_engineering.md`、`engineering_depth/06_resident_process_terminal_birth_engineering.md`、`engineering_depth/07_theory_to_code_trace_matrix.md` | 把生命层、状态对象、对话/语言/情绪/记忆/梦境/成长/逻辑/意识/常驻过程继续压成能直接指导落码的深描柜，并把 theory -> code -> runtime -> tests 回链钉死 |
 | 共用合同层 | `life_state_store_v0_schema.md`、`birth_readiness_v0_contract.md`、`runner_cli_report_contract.md`、`first_activation_protocol.md` | 给多个模块共用的状态、出生准备度、CLI/report 和激活协议 |
@@ -79,24 +81,24 @@
 | 外层壳/进程合同层 | `digital_life_shell_command_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md`、`resident_governance_waiting_state_machine_engineering_contract.md` | 固定 one-shot restore shell、repo-local 最小常驻生命进程，以及 waiting / closeout resident governance 状态机 |
 | 外周参考层 | `current_agent_shell_reference_2026.md` | 只作为电脑外周与终端壳参考，不反向定义主体架构 |
 
-`../README.md` 里的“五个文档包”是为了让人快速开工，这里的“十三层分层”是为了防止入口、映射、合同、包级施工、代码蓝图和链尾壳层撞在一起。后续整理和落代码时，优先用五包视角进入，再用十三层视角校正自己现在到底站在哪一层。
+`../README.md` 里的“五个文档包”是为了让人快速开工，这里的“十四层分层”是为了防止入口、映射、合同、包级施工、蓝图、脚手和链尾壳层撞在一起。后续整理和落代码时，优先用五包视角进入，再用十四层视角校正自己现在到底站在哪一层。
 
-## 五包和十三层怎么对齐
+## 五包和十四层怎么对齐
 
-为了避免“五个文档包”和“十三层分层”看起来像两套体系，直接按下面理解：
+为了避免“五个文档包”和“十四层分层”看起来像两套体系，直接按下面理解：
 
-| 开工视角的文档包 | 在十三层分层里覆盖哪些层 |
+| 开工视角的文档包 | 在十四层分层里覆盖哪些层 |
 |---|---|
 | 入口包 | 入口层 |
 | 回链包 | 映射层 |
-| 主体合同包 | 总架构层、代码框架层、代码总架构层、代码包规格层、代码蓝图压缩层、实现蓝图层、工程深描层、共用合同层、主体 slice 合同层 |
+| 主体合同包 | 总架构层、代码框架层、代码总架构层、代码包规格层、代码蓝图压缩层、代码脚手层、实现蓝图层、工程深描层、共用合同层、主体 slice 合同层 |
 | 链尾与进程包 | 链尾桥接合同层、外层壳/进程合同层、外周参考层的一部分 |
 
 所以：
 
 1. 四包回答“这轮先带哪一柜进去”。
-2. 十三层回答“这份文件在整个工程入口里站在哪一层”。
-3. 先按五包开工，再用十三层防止写串层。
+2. 十四层回答“这份文件在整个工程入口里站在哪一层”。
+3. 先按五包开工，再用十四层防止写串层。
 
 ## 最小检索法
 
@@ -109,7 +111,7 @@
 | 现在真实已经落到哪 | `entry/v0_delivery_status_board.md` |
 | 我这一轮具体带哪包文档、代码、测试和 runtime 产物 | `entry/v0_module_execution_catalog.md` |
 | 整个数字生命每一层怎么落代码、读哪些理论、映射哪些状态和测试 | `code_framework/README.md`、`code_framework/foundation/01_life_layer_implementation_blueprint.md`、`code_framework/foundation/02_brain_region_to_code_package_mapping.md`、`code_framework/foundation/03_code_package_state_test_gate_mapping.md`、`code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md`、`code_framework/playbooks/05_memory_thought_consciousness_implementation_playbook.md`、`code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md`、`code_framework/playbooks/07_birth_terminal_process_implementation_playbook.md`、`code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`、`code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`、`code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md`、`code_framework/delivery/12_full_life_layer_delivery_matrix.md`、`code_framework/delivery/13_capability_to_code_realization_matrix.md`、`code_framework/queues/14_queue_a_language_percept_semantic_map_implementation_contract.md`、`code_framework/assembly/15_cross_layer_shared_object_contract.md`、`code_framework/queues/16_queue_b_process_supervisor_implementation_contract.md`、`code_framework/queues/17_queue_c_memory_neural_core_implementation_contract.md`、`code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md`、`code_framework/assembly/19_code_tree_package_brain_contract.md`、`code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md`、`code_framework/queues/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`、`code_architecture/01_life_code_stack_and_package_layers.md`、`package_specs/01_life_v0_package_construction_matrix.md` |
-| 整个数字生命真实一回合怎样流、语言为什么是主表达系统、每个主包开工前该读什么、每个新模块怎样保留映射，以及下一轮先拆哪个真实包/文件 | `code_blueprints/README.md`、`code_blueprints/01_full_system_code_blueprint.md`、`code_blueprints/02_conversation_language_relationship_blueprint.md`、`code_blueprints/03_body_affect_dream_growth_blueprint.md`、`code_blueprints/04_prediction_membrane_validation_blueprint.md`、`code_blueprints/05_birth_residency_terminal_blueprint.md`、`code_blueprints/06_runtime_state_report_receipt_manifest.md`、`code_blueprints/07_theory_to_package_trace_contract.md`、`code_architecture/README.md`、`code_architecture/02_runtime_object_bus_and_flow_contract.md`、`code_architecture/03_build_order_and_definition_of_done.md`、`code_architecture/04_language_as_primary_expression_system.md`、`code_architecture/05_module_reading_and_execution_map.md`、`code_architecture/06_theory_gap_closure_register.md`、`package_specs/README.md`、`package_specs/02_shared_object_write_authority_and_dependency_graph.md`、`package_specs/03_incremental_package_delivery_protocol.md`、`implementation_architecture/README.md`、`implementation_architecture/01_runtime_organ_interface_blueprint.md`、`implementation_architecture/02_turn_and_cycle_lifecycle_contract.md`、`implementation_architecture/03_module_authoring_traceability_protocol.md`、`implementation_architecture/code_organs/README.md`、`implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md`、`implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md`、`implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md`、`engineering_depth/README.md`、`engineering_depth/01_full_life_layer_implementation_deep_spec.md`、`engineering_depth/02_state_object_runtime_evidence_map.md`、`engineering_depth/03_language_relationship_longitudinal_engineering.md`、`engineering_depth/04_body_affect_dream_growth_engineering.md`、`engineering_depth/05_prediction_membrane_action_engineering.md`、`engineering_depth/06_resident_process_terminal_birth_engineering.md`、`engineering_depth/07_theory_to_code_trace_matrix.md` |
+| 整个数字生命真实一回合怎样流、语言为什么是主表达系统、每个主包开工前该读什么、每个新模块怎样保留映射，以及下一轮先拆哪个真实包/文件 | `code_blueprints/README.md`、`code_blueprints/01_full_system_code_blueprint.md`、`code_blueprints/02_conversation_language_relationship_blueprint.md`、`code_blueprints/03_body_affect_dream_growth_blueprint.md`、`code_blueprints/04_prediction_membrane_validation_blueprint.md`、`code_blueprints/05_birth_residency_terminal_blueprint.md`、`code_blueprints/06_runtime_state_report_receipt_manifest.md`、`code_blueprints/07_theory_to_package_trace_contract.md`、`code_architecture/README.md`、`code_architecture/02_runtime_object_bus_and_flow_contract.md`、`code_architecture/03_build_order_and_definition_of_done.md`、`code_architecture/04_language_as_primary_expression_system.md`、`code_architecture/05_module_reading_and_execution_map.md`、`code_architecture/06_theory_gap_closure_register.md`、`package_specs/README.md`、`package_specs/02_shared_object_write_authority_and_dependency_graph.md`、`package_specs/03_incremental_package_delivery_protocol.md`、`code_scaffolds/README.md`、`code_scaffolds/01_life_code_scaffold_tree.md`、`code_scaffolds/02_cognitive_loop_code_scaffold.md`、`code_scaffolds/03_frontier_module_build_packets.md`、`implementation_architecture/README.md`、`implementation_architecture/01_runtime_organ_interface_blueprint.md`、`implementation_architecture/02_turn_and_cycle_lifecycle_contract.md`、`implementation_architecture/03_module_authoring_traceability_protocol.md`、`implementation_architecture/code_organs/README.md`、`implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md`、`implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md`、`implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md`、`engineering_depth/README.md`、`engineering_depth/01_full_life_layer_implementation_deep_spec.md`、`engineering_depth/02_state_object_runtime_evidence_map.md`、`engineering_depth/03_language_relationship_longitudinal_engineering.md`、`engineering_depth/04_body_affect_dream_growth_engineering.md`、`engineering_depth/05_prediction_membrane_action_engineering.md`、`engineering_depth/06_resident_process_terminal_birth_engineering.md`、`engineering_depth/07_theory_to_code_trace_matrix.md` |
 | 整棵 `life_v0/` 代码树怎样一次性看清、哪些文件已存在/计划新增、哪些脑区和共享对象落到哪 | `code_framework/assembly/19_code_tree_package_brain_contract.md` |
 | 下一轮先拆哪个真实文件、按什么波次推、跑哪些测试 | `code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md` |
 | `docs/README.md` 的模块阅读路线怎样压成工程块 | `mapping/readme_block_engineering_realization_v0.md` |
