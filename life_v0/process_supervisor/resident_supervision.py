@@ -60,6 +60,9 @@ from .relaunch_recovery import detect_and_normalize_interrupted_previous_state
 from ..shell_command import run_digital_life_shell_command
 from ..state_store.life_state import project_responsibility_language_continuity
 from ..state_store.relationship_memory import project_relationship_memory
+from ..state_store.state_merge_guard import (
+    project_state_merge_guard_with_relationship_memory,
+)
 
 
 @dataclass(frozen=True)
@@ -471,6 +474,10 @@ def bootstrap_resident_supervision(
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
     )
+    state_merge_guard = project_state_merge_guard_with_relationship_memory(
+        state_merge_guard=state_merge_guard,
+        relationship_memory=relationship_memory,
+    )
     life_state = project_responsibility_language_continuity(
         life_state=life_state,
         self_model_state=self_model_state,
@@ -490,6 +497,7 @@ def bootstrap_resident_supervision(
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
+        state_merge_guard=state_merge_guard,
         additional_runtime_trace_refs=[
             ref
             for ref in [
@@ -517,6 +525,7 @@ def bootstrap_resident_supervision(
         responsibility_ledger=responsibility_ledger,
         responsibility_loop_state=responsibility_loop_state,
         relationship_memory=relationship_memory,
+        state_merge_guard=state_merge_guard,
         life_state=life_state,
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
@@ -564,6 +573,7 @@ def bootstrap_resident_supervision(
     commitment_expression_plan = continuity_refresh["commitment_expression_plan"]
     apology_repair_language_trace = continuity_refresh["apology_repair_language_trace"]
     relationship_memory = continuity_refresh["relationship_memory"]
+    state_merge_guard = continuity_refresh["state_merge_guard"]
     life_state = continuity_refresh["life_state"]
     write_json(relationship_dir / "relationship_subject_graph.json", relationship_graph)
     write_json(relationship_dir / "relationship_timeline.json", relationship_timeline)
@@ -573,6 +583,8 @@ def bootstrap_resident_supervision(
         apology_repair_language_trace,
     )
     write_json(state_dir / "memory" / "relationship_memory.json", relationship_memory)
+    if state_merge_guard:
+        write_json(state_dir / "memory" / "state_merge_guard.json", state_merge_guard)
     body_dir.mkdir(parents=True, exist_ok=True)
     write_json(body_dir / "trait_drift_monitor.json", trait_drift_monitor)
     if background_convergence_summary:
@@ -849,6 +861,7 @@ def _refresh_bootstrap_long_horizon_continuity(
     responsibility_ledger: dict[str, Any],
     responsibility_loop_state: dict[str, Any],
     relationship_memory: dict[str, Any],
+    state_merge_guard: dict[str, Any],
     life_state: dict[str, Any],
     world_contact_summary: dict[str, Any],
     pain_regret_repair_report: dict[str, Any],
@@ -1028,6 +1041,10 @@ def _refresh_bootstrap_long_horizon_continuity(
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
     )
+    refreshed_state_merge_guard = project_state_merge_guard_with_relationship_memory(
+        state_merge_guard=state_merge_guard,
+        relationship_memory=refreshed_relationship_memory,
+    )
     refreshed_life_state = project_responsibility_language_continuity(
         life_state=life_state,
         self_model_state=evolved_self_model_state,
@@ -1047,6 +1064,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
+        state_merge_guard=refreshed_state_merge_guard,
         additional_runtime_trace_refs=[
             ref
             for ref in [
@@ -1078,6 +1096,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         "commitment_expression_plan": refreshed_commitment_expression_plan,
         "apology_repair_language_trace": refreshed_apology_repair_language_trace,
         "relationship_memory": refreshed_relationship_memory,
+        "state_merge_guard": refreshed_state_merge_guard,
         "life_state": refreshed_life_state,
     }
 

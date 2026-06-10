@@ -167,6 +167,7 @@ def project_responsibility_language_continuity(
     offline_learning_cumulative_profile: dict[str, Any] | None = None,
     world_contact_summary: dict[str, Any] | None = None,
     pain_regret_repair_report: dict[str, Any] | None = None,
+    state_merge_guard: dict[str, Any] | None = None,
     additional_runtime_trace_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     commitment_truth_state = commitment_truth_state or {}
@@ -196,6 +197,12 @@ def project_responsibility_language_continuity(
     updated["pain_events"] = _dedupe(list(updated.get("pain_events", [])) + pain_refs)
 
     memory_index = updated.setdefault("memory_index", {})
+    if state_merge_guard:
+        memory_index["state_merge_guard_refs"] = _dedupe(
+            list(memory_index.get("state_merge_guard_refs", []))
+            + ["runtime/state/memory/state_merge_guard.json"]
+        )
+        updated["state_merge_records"] = _build_state_merge_records(state_merge_guard)
     memory_index["relationship_memory_refs"] = _dedupe(
         list(memory_index.get("relationship_memory_refs", []))
         + list(relationship_memory.get("shared_memory_refs", []))
@@ -259,6 +266,7 @@ def project_responsibility_language_continuity(
             "runtime/state/relationship/relationship_timeline.json",
             "runtime/state/language/commitment_expression_plan.json",
             "runtime/state/language/apology_repair_language_trace.json",
+            "runtime/state/memory/state_merge_guard.json" if state_merge_guard else "",
             *[
                 ref
                 for ref in [
@@ -430,6 +438,11 @@ def _build_language_state_projection(language_state_projection: dict[str, Any] |
 def _build_state_merge_records(state_merge_guard: dict[str, Any] | None) -> list[dict[str, Any]]:
     if not state_merge_guard:
         return []
+    long_term_change_source_count = sum(
+        len(value)
+        for value in state_merge_guard.get("long_term_change_sources", {}).values()
+        if isinstance(value, list)
+    )
     return [
         {
             "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
@@ -438,6 +451,7 @@ def _build_state_merge_records(state_merge_guard: dict[str, Any] | None) -> list
             "quarantine_route_count": len(state_merge_guard.get("quarantine_routes", [])),
             "repair_route_count": len(state_merge_guard.get("repair_routes", [])),
             "merge_route_count": len(state_merge_guard.get("merge_routes", [])),
+            "long_term_change_source_count": long_term_change_source_count,
             "slow_variable_update_policy_ref": "runtime/state/memory/state_merge_guard.json#slow_variable_update_policy",
         }
     ]

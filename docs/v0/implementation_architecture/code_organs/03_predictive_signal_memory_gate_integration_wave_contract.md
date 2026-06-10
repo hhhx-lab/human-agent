@@ -143,19 +143,19 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 | 位置 | 下一轮必须做什么 |
 |---|---|
 | `response_surface.py` | 根据 `belief_state / prediction_error / signal_media / active_sampling_plan` 决定当前回应是确认、追问、保留还是修复优先；本轮已让 active sampling route 中的 `repair_*` 优先于普通 `hold_for_evidence` |
-| `dialogue_events.py` | 从 terminal loop state / prediction write gate profile 推导 `repair_write_guard`，当 active sampling route 已进入 repair 时，不再被普通 hold 覆盖 |
+| `dialogue_events.py` | 从 terminal loop state / prediction write gate profile 推导 `repair_write_guard`，当 active sampling route 已进入 repair 时，不再被普通 hold 覆盖；同时从 `resident_background_lineage_state.offline_learning_presence` 恢复 cumulative offline learning payload，让后台梦境/成长余波继续进入长期写回 |
 | `idle_strategy.py` | 把 `active_sampling_plan.json`、`memory_write_gate.json` 和离线学习结果带进等待态治理目标；本轮已让 repair route 先生成 `repair_write_guard` 与 `response_surface_posture_hint=repair` |
-| `resident_supervision.py` | 在 bootstrap 阶段装回这五个对象的 refs，保证多次唤醒不是裸恢复 |
+| `resident_supervision.py` | 在 bootstrap 阶段装回这五个对象的 refs，保证多次唤醒不是裸恢复；当前还会在关系记忆刷新后调用 state merge guard 投影，把离线学习、梦境与 Queue E 修复证据并入长期合并守门 |
 | `persistent_process.py` / `process_closeout.py` | 让常驻治理报告显式回链预测对象与写门对象，而不是只回链语言末端产物 |
-| `resident_turn_writeback.py` | live turn 结束后，把新的长期关系对象和写门事务重新压回下一拍 waiting governance |
+| `resident_turn_writeback.py` | live turn 结束后，把新的长期关系对象和写门事务重新压回下一拍 waiting governance；当前会同步写回 `state_merge_guard.json`，让 `relationship_memory.long_term_change_sources` 的累计离线学习、梦境和修复证据进入长期合并面 |
 
 ### 5. `life_v0/state_store/`
 
 | 位置 | 下一轮必须做什么 |
 |---|---|
-| `state_merge_guard.py` | 成为 `memory_write_gate.json` 的下游治理器官，处理 promotion / quarantine / repair / merge |
+| `state_merge_guard.py` | 成为 `memory_write_gate.json` 的下游治理器官，处理 promotion / quarantine / repair / merge；当前新增 `project_state_merge_guard_with_relationship_memory(...)`，从 `relationship_memory.json` 吸收 prediction error、offline learning、Queue E repair、梦境/成长与关系修复来源 |
 | `relationship_memory.py` | 显式记录哪些长期关系变化来自预测误差消解，哪些来自离线学习反写 |
-| `life_state.py` / `self_model.py` | 把写门结果、关系阶段与慢变量变化固定成可回放的长期连续体痕迹 |
+| `life_state.py` / `self_model.py` | 把写门结果、关系阶段与慢变量变化固定成可回放的长期连续体痕迹；`life_state.py` 当前会在 `state_merge_records` 中记录长期变化来源数量 |
 
 ## 运行时 ref 约定
 
@@ -167,6 +167,7 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 - `runtime/state/prediction/active_sampling_plan.json`
 - `runtime/state/prediction/prediction_workspace_frame.json`
 - `runtime/state/memory/memory_write_gate.json`
+- `runtime/state/memory/state_merge_guard.json`
 - `runtime/state/action/responsibility_loop_state.json`
 - `runtime/state/membrane/world_contact_summary.json`
 - `runtime/reports/latest/pain_regret_repair_report.json`
@@ -206,6 +207,7 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 6. 文档口径从“补缺文件”切换为“补厚跨层消费与长期闭环”，不再把这五个器官写成待实现。
 7. Queue E repair pressure 至少从 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 进入 `signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` 与 `prediction_workspace_frame.json`。
 8. `process_supervisor/response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 对 `repair_*` active sampling route 的优先级高于普通 evidence hold。
+9. `state_merge_guard.json` 不能只保留 S04 初始 route；bootstrap restore 与 live turn writeback 后，必须从 `relationship_memory.long_term_change_sources` 吸收 `offline_learning_cumulative_refs`、`queue_e_repair_modulation_refs`、`relationship_memory_offline_refs` 与 `relationship_memory_repair_refs`，并让 `life_state.state_merge_records[].long_term_change_source_count` 同步刷新。
 
 ## 不允许出现的退化
 

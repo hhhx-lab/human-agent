@@ -375,9 +375,16 @@ def build_offline_learning_cumulative_payload(
     profile = terminal_life_loop_state.get("offline_learning_cumulative_profile")
     if not isinstance(profile, dict):
         profile = {}
+    lineage_state = terminal_life_loop_state.get("resident_background_lineage_state")
+    if not isinstance(lineage_state, dict):
+        lineage_state = {}
+    offline_learning_presence = lineage_state.get("offline_learning_presence")
+    if not isinstance(offline_learning_presence, dict):
+        offline_learning_presence = {}
     priority_profile = (
         terminal_life_loop_state.get("offline_learning_cumulative_priority_profile")
         or profile.get("priority_profile")
+        or offline_learning_presence.get("priority_profile")
         or {}
     )
     if not isinstance(priority_profile, dict):
@@ -386,19 +393,23 @@ def build_offline_learning_cumulative_payload(
         _string_list(
             terminal_life_loop_state.get("offline_learning_cumulative_ref_set")
             or profile.get("ref_set")
+            or offline_learning_presence.get("ref_set")
         )
     )
     generation = (
         terminal_life_loop_state.get("offline_learning_cumulative_generation")
         or profile.get("generation")
+        or offline_learning_presence.get("generation")
     )
     pressure_level = (
         terminal_life_loop_state.get("offline_learning_cumulative_pressure_level")
         or profile.get("pressure_level")
+        or offline_learning_presence.get("pressure_level")
     )
     attention_target = (
         terminal_life_loop_state.get("offline_learning_cumulative_attention_target")
         or profile.get("attention_target")
+        or offline_learning_presence.get("attention_target")
     )
     if not any([profile, priority_profile, ref_set, generation, pressure_level, attention_target]):
         return {}

@@ -9088,6 +9088,61 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 },
             )
             self._write_json(
+                memory_dir / "memory_write_gate.json",
+                {
+                    "schema_version": "memory_write_gate_v0",
+                    "stage_policy": "write_guarded_candidate_then_validate",
+                    "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
+                },
+            )
+            self._write_json(
+                memory_dir / "state_merge_guard.json",
+                {
+                    "schema_version": "state_merge_guard_v0",
+                    "stage_policy": "long_term_merge_fail_closed",
+                    "memory_write_gate_ref": "runtime/state/memory/memory_write_gate.json",
+                    "promotion_routes": [
+                        {
+                            "route_id": "candidate_to_active_memory",
+                            "index_update_refs": ["runtime/state/indexes/memory_index.json"],
+                        }
+                    ],
+                    "quarantine_routes": [
+                        {
+                            "route_id": "missing_source_or_conflict_quarantine",
+                            "blocked_indexes": ["memory_index"],
+                        }
+                    ],
+                    "repair_routes": [
+                        {
+                            "route_id": "responsibility_repair_before_promotion",
+                            "repair_gate": "repair_obligation_tracking",
+                        }
+                    ],
+                    "merge_routes": [
+                        {
+                            "route_id": "relationship_memory_merge",
+                            "target_ref": "runtime/state/memory/relationship_memory.json",
+                            "source_refs": ["shared-memory-001"],
+                            "merge_policy": "append_with_dedupe_and_audit",
+                        }
+                    ],
+                    "long_term_change_sources": {
+                        "prediction_error_resolution_refs": [
+                            "runtime/state/prediction/prediction_error_field.json#error_events"
+                        ],
+                        "offline_learning_writeback_refs": [
+                            "runtime/state/growth/belief_learning_plan.json",
+                            "runtime/state/growth/relationship_learning_plan.json",
+                        ],
+                    },
+                    "slow_variable_update_policy": {
+                        "allowed_effects": ["repair_seriousness_adjustment"],
+                        "requires_merge_audit": True,
+                    },
+                },
+            )
+            self._write_json(
                 runtime_root / "state" / "life_state.json",
                 {
                     "schema_version": "life_state_v0",
@@ -9404,6 +9459,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             persisted_relationship_memory = self._read_json(
                 memory_dir / "relationship_memory.json"
             )
+            persisted_state_merge_guard = self._read_json(
+                memory_dir / "state_merge_guard.json"
+            )
             persisted_self_model = self._read_json(self_dir / "self_model.json")
             persisted_trait_drift = self._read_json(body_dir / "trait_drift_monitor.json")
             persisted_life_state = self._read_json(runtime_root / "state" / "life_state.json")
@@ -9509,6 +9567,35 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "runtime/reports/latest/resumed_external_dialogue_packet.json",
                 persisted_relationship_memory["last_contact_refs"],
+            )
+            state_merge_change_sources = persisted_state_merge_guard[
+                "long_term_change_sources"
+            ]
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                state_merge_change_sources["offline_learning_cumulative_refs"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/pain_regret_repair_report.json",
+                state_merge_change_sources["queue_e_repair_modulation_refs"],
+            )
+            self.assertIn(
+                "runtime/state/dream/nightmare_loop_risk.json",
+                state_merge_change_sources["relationship_memory_offline_refs"],
+            )
+            self.assertIn(
+                "runtime/state/membrane/world_contact_summary.json",
+                persisted_state_merge_guard["merge_routes"][0]["source_refs"],
+            )
+            self.assertEqual(
+                persisted_state_merge_guard["last_projected_from_relationship_memory_ref"],
+                "runtime/state/memory/relationship_memory.json",
+            )
+            self.assertGreaterEqual(
+                persisted_life_state["state_merge_records"][0][
+                    "long_term_change_source_count"
+                ],
+                8,
             )
             self.assertIn(
                 "runtime/state/dream/nightmare_loop_risk.json",

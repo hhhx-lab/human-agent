@@ -18,6 +18,9 @@ from ..language.dialogue_log import collect_dialogue_turn_refs
 from ..language.relationship_timeline import build_relationship_timeline
 from ..state_store.life_state import project_responsibility_language_continuity
 from ..state_store.relationship_memory import project_relationship_memory
+from ..state_store.state_merge_guard import (
+    project_state_merge_guard_with_relationship_memory,
+)
 from ..terminal_loop.dialogue_writeback import build_dialogue_writeback_bundle
 from ..terminal_loop.persistent_wait_bridge import build_persistent_wait_bridge
 from .continuity_evolution import evolve_relationship_and_self_model
@@ -436,6 +439,7 @@ def _refresh_long_horizon_continuity(
     commitment_truth_path = relationship_dir / "commitment_truth_state.json"
     responsibility_ledger_path = state_dir / "responsibility" / "responsibility_ledger.json"
     relationship_memory_path = state_dir / "memory" / "relationship_memory.json"
+    state_merge_guard_path = state_dir / "memory" / "state_merge_guard.json"
     life_state_path = state_dir / "life_state.json"
     self_model_path = state_dir / "self" / "self_model.json"
     trait_drift_monitor_path = state_dir / "body" / "trait_drift_monitor.json"
@@ -465,6 +469,7 @@ def _refresh_long_horizon_continuity(
     commitment_truth_state = _read_json(commitment_truth_path)
     responsibility_ledger = _read_json(responsibility_ledger_path)
     relationship_memory = _read_json(relationship_memory_path)
+    state_merge_guard = _read_json_if_exists(state_merge_guard_path)
     life_state = _read_json(life_state_path)
     persisted_self_model_state = _read_json(self_model_path)
     previous_trait_drift_monitor = _read_json_if_exists(trait_drift_monitor_path)
@@ -640,6 +645,10 @@ def _refresh_long_horizon_continuity(
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
     )
+    refreshed_state_merge_guard = project_state_merge_guard_with_relationship_memory(
+        state_merge_guard=state_merge_guard,
+        relationship_memory=refreshed_relationship_memory,
+    )
     refreshed_life_state = project_responsibility_language_continuity(
         life_state=life_state,
         self_model_state=evolved_self_model_state,
@@ -661,6 +670,7 @@ def _refresh_long_horizon_continuity(
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
+        state_merge_guard=refreshed_state_merge_guard,
         additional_runtime_trace_refs=[
             ref
             for ref in [
@@ -678,6 +688,8 @@ def _refresh_long_horizon_continuity(
     write_json(apology_repair_path, refreshed_apology_repair_language_trace)
     write_json(relationship_dir / "relationship_subject_graph.json", evolved_relationship_graph)
     write_json(relationship_memory_path, refreshed_relationship_memory)
+    if refreshed_state_merge_guard:
+        write_json(state_merge_guard_path, refreshed_state_merge_guard)
     trait_drift_monitor = build_trait_drift_monitor_from_self_model(
         run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
         generated_at=generated_at,
@@ -697,6 +709,7 @@ def _refresh_long_horizon_continuity(
         "commitment_expression_plan": refreshed_commitment_expression_plan,
         "apology_repair_language_trace": refreshed_apology_repair_language_trace,
         "relationship_memory": refreshed_relationship_memory,
+        "state_merge_guard": refreshed_state_merge_guard,
         "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
     }

@@ -114,6 +114,15 @@
 
 `OfflineLearningCumulativeProfile` 当前承担新的跨唤醒责任：它把本轮 dream/growth 学习压力与上一轮后台驻留余波合并，形成可继续被 closeout / relaunch 恢复的 cumulative profile。进入 `life_v0/process_supervisor/background_lineage_state.py` 后，它不再只是 Queue D 的学习画像，而会成为 `resident_background_lineage_state_v0.offline_learning_presence`，与 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence` 并列，表示后台驻留主状态体中的梦境、成长、离线学习余波存在面。进入真实回合写回时，`resident_turn_writeback.py` 必须把 `resident_background_lineage_offline_learning_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_offline_learning_refs` 与 `resumed_external_dialogue_packet.json`，并同时并入总的 `resident_background_lineage_refs`，避免离线学习余波只混在事件字段里。
 
+### 6.1 记忆写门与状态合并总线
+
+| 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
+|---|---|---|---|---|
+| `MemoryWriteGate` | `state_store/memory_write_gate.py` | `state_merge_guard.py`、`idle_strategy.py`、`dialogue_events.py`、`response_surface.py` | 已存在；保持候选写入事务、validation envelope、隔离路线和长期治理 ref | `runtime/state/memory/memory_write_gate.json` |
+| `StateMergeGuard` | `state_store/state_merge_guard.py` | `relationship_memory.py`、`life_state.py`、`resident_supervision.py`、`resident_turn_writeback.py` | 已存在；当前通过 `project_state_merge_guard_with_relationship_memory(...)` 动态吸收关系记忆里的离线学习、梦境、Queue E 修复与关系修复长期变化来源 | `runtime/state/memory/state_merge_guard.json`、`life_state.json#state_merge_records` |
+
+这条总线保证长期记忆治理不是 S04 初始化时的一次性文件。`relationship_memory.json` 在 bootstrap restore 与 live turn writeback 中刷新后，`state_merge_guard.json` 必须同步吸收 `relationship_memory.long_term_change_sources`、`offline_learning_refs`、`offline_learning_cumulative_refs` 与 `queue_e_repair_refs`，再由 `life_state.py` 写入 `state_merge_records[].long_term_change_source_count`。如果 `relationship_memory.json` 已经包含梦境/成长/修复证据，而 `state_merge_guard.json` 仍只保留初始 route，就说明 Packet C 长期治理链断开。
+
 ### 7. 等待态与存在连续体总线
 
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |

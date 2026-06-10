@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 
@@ -134,6 +135,75 @@ def build_state_merge_guard(
         ],
         "source_doc_refs": SOURCE_DOC_REFS,
     }
+
+
+def project_state_merge_guard_with_relationship_memory(
+    *,
+    state_merge_guard: dict[str, Any],
+    relationship_memory: dict[str, Any],
+) -> dict[str, Any]:
+    if not state_merge_guard:
+        return {}
+    relationship_memory = relationship_memory or {}
+    updated = json.loads(json.dumps(state_merge_guard))
+    change_sources = dict(updated.get("long_term_change_sources", {}))
+    relationship_change_sources = relationship_memory.get("long_term_change_sources", {})
+
+    for field in [
+        "prediction_error_resolution_refs",
+        "offline_learning_writeback_refs",
+        "repair_responsibility_refs",
+        "offline_learning_cumulative_refs",
+        "queue_e_repair_modulation_refs",
+    ]:
+        change_sources[field] = _dedupe(
+            list(change_sources.get(field, []))
+            + list(relationship_change_sources.get(field, []))
+        )
+
+    change_sources["relationship_memory_ref"] = "runtime/state/memory/relationship_memory.json"
+    change_sources["relationship_memory_offline_refs"] = _dedupe(
+        list(change_sources.get("relationship_memory_offline_refs", []))
+        + list(relationship_memory.get("offline_learning_refs", []))
+        + list(relationship_memory.get("offline_learning_cumulative_refs", []))
+    )
+    change_sources["relationship_memory_repair_refs"] = _dedupe(
+        list(change_sources.get("relationship_memory_repair_refs", []))
+        + list(relationship_memory.get("repair_history_refs", []))
+        + list(relationship_memory.get("queue_e_repair_refs", []))
+    )
+    updated["long_term_change_sources"] = change_sources
+    updated["last_projected_from_relationship_memory_ref"] = (
+        "runtime/state/memory/relationship_memory.json"
+    )
+
+    merge_routes = list(updated.get("merge_routes", []))
+    relationship_source_refs = _dedupe(
+        list(relationship_memory.get("shared_memory_refs", []))
+        + list(relationship_memory.get("repair_history_refs", []))
+        + list(relationship_memory.get("responsibility_event_refs", []))
+        + list(relationship_memory.get("timeline_refs", []))
+        + list(relationship_memory.get("offline_learning_refs", []))
+        + list(relationship_memory.get("queue_e_repair_refs", []))
+    )
+    for route in merge_routes:
+        if route.get("route_id") != "relationship_memory_merge":
+            continue
+        route["source_refs"] = _dedupe(
+            list(route.get("source_refs", [])) + relationship_source_refs
+        )
+        route["source_change_refs"] = relationship_source_refs
+        route["source_change_count"] = len(relationship_source_refs)
+    updated["merge_routes"] = merge_routes
+    updated["downstream_refs"] = _dedupe(
+        list(updated.get("downstream_refs", []))
+        + [
+            "runtime/state/memory/relationship_memory.json",
+            "runtime/state/life_state.json",
+            "runtime/state/self/self_model.json",
+        ]
+    )
+    return updated
 
 
 def _index_refs(indexes: dict[str, dict[str, Any]], *, exclude: list[str]) -> list[str]:

@@ -91,6 +91,8 @@ life-v0 emit-report --strict
 
 当前这一轮继续把 Queue D 的后台梦境成长与梦境醒后 presence 从“事件字段”补进写回证据面：`resident_turn_writeback.py` 现在会把 `resident_background_lineage_offline_learning_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_offline_learning_refs`，把 `resident_background_lineage_dream_wake_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_dream_wake_refs`，并让两者同时并入总 `resident_background_lineage_refs` 与 `resumed_external_dialogue_packet.json`。状态板因此把这一格视为“后台梦境成长余波、梦境窗口、醒后整合和梦境事实门 presence 进入下一轮事件、专用写回槽、恢复包和回应表达面”，不是只停在 `resident_background_lineage_state` 或 `digital_life_turn`。
 
+最新继续补强：Packet C 的 `state_merge_guard.json` 已经从 S04 初始状态文件推进为驻留回合动态投影对象。`dialogue_events.py` 现在会从 `resident_background_lineage_state.offline_learning_presence` 恢复 cumulative offline learning payload；`resident_supervision.py` 与 `resident_turn_writeback.py` 在刷新 `relationship_memory.json` 后，会调用 `state_merge_guard.py#project_state_merge_guard_with_relationship_memory`，把 `relationship_memory.long_term_change_sources`、`offline_learning_refs`、`offline_learning_cumulative_refs`、`queue_e_repair_refs` 与关系修复 refs 合并进 `state_merge_guard.json#long_term_change_sources`，并让 `life_state.json#state_merge_records[].long_term_change_source_count` 同步刷新。状态板因此把这一格视为“梦境/成长/修复已经从关系记忆进入长期状态合并守门”，不是只停在关系记忆或写回包。
+
 3. 真实新外部回合已经能进入终端生命过程并写回连续体，但还只是最小生命循环。
 4. 项目级 packaging / installable command surface 已接通，但还没有全局长期运行层。
 5. resident supervision 已进入第一轮器官化，但还没有更高阶的长期进程治理与后台存在层。
@@ -132,7 +134,7 @@ P0_DOC_CORPUS_INGESTION
 | `S00_DIRECTION_FOUNDATION` | `稳定` | 固定方向锁、断联恢复锚链和禁止回退项 |
 | `S01_SOURCE_AUTHORITY` | `稳定` | 固定 `01*` 权威来源与机制证据图 |
 | `S02_NEURAL_LIFE_CORE` | `稳定` | 固定主体骨架、十二主体系统和内部 bus |
-| `S04_STATE_OBJECT_STORE` | `稳定` | 固定生命状态根、对象注册、迁移种子、记忆写门和 `state_merge_guard.json` 长期合并治理器官 |
+| `S04_STATE_OBJECT_STORE` | `稳定` | 固定生命状态根、对象注册、迁移种子、记忆写门和 `state_merge_guard.json` 长期合并治理器官；当前 `state_merge_guard.json` 已能在 bootstrap restore 与 live turn writeback 后从关系记忆吸收离线学习、梦境、Queue E 修复和关系修复长期变化来源 |
 | `S03_DIRECTION_LIFE_MEMBRANE` | `稳定` | 固定生命膜、DreamFactGate、责任修复边界和影子行动门 |
 | `S08_LIFE_TARGET_RUNTIMES` | `稳定` | 固定九项目标闭合检查 |
 | `S05_VALIDATION_MEMBRANE_OBSERVATION` | `稳定` | 固定 validator、观测和 stage gate |
