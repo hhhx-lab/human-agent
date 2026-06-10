@@ -265,6 +265,14 @@ restore shell completed
 - `background_trait_slow_variable_summary`
 - `background_resume_summary`
 
+### `digital_life_resident_governance_explanation.json`
+
+最小职责：
+
+1. 把 resident governance closeout 的主导 driver family、下一次唤醒预期和 lineage depth 写成人可读解释。
+2. 在 background resume summary 存在时，显式写出 `background_relationship_stage`、`background_relationship_stage_reason`、`background_trait_slow_variable_summary` 与 `background_resume_focus`。
+3. `continuity_story` 里必须出现关系阶段与慢变量名称，让关闭态解释报告能说明这次生命过程是带着什么关系阶段和自我慢变量等待下一次唤醒。
+
 ## 主报告与 receipt 回链
 
 ### `digital_life_process_report.json`
@@ -464,6 +472,7 @@ process receipt 里，resident governance 必须进入：
 7. 对应状态文件存在时，process receipt 会把它收进 `input_hashes`。
 8. `background_continuity.py` 会从上一轮 snapshot/report 里恢复 `background_relationship_stage`、`background_relationship_subject_ref`、`background_self_model_ref`、`background_trait_slow_variable_summary` 与 `background_resume_summary`。
 9. `idle_strategy.py` / resident governance 会把这组 background resume fields 原样带入下一次 waiting governance，不在等待态重新发明关系结论。
+10. `governance_explanation.py` 会把 background resume fields 写进 explanation report，并在 `continuity_story` 中讲出关系阶段与慢变量名称。
 
 当前最低承载测试仍以：
 

@@ -33,10 +33,20 @@ def write_resident_governance_explanation(
     relaunch_recovery_count: int,
     exit_reason: str,
     write_json: Callable[[Path, dict[str, Any]], None],
+    relationship_resume_summary: dict[str, Any] | None = None,
+    trait_slow_variable_summary: dict[str, Any] | None = None,
 ) -> ResidentGovernanceExplanationResult:
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
     background_carryover_generation = _int_or_zero(
         idle_governance.get("background_carryover_generation")
+    )
+    relationship_resume = _relationship_resume_summary(
+        idle_governance=idle_governance,
+        relationship_resume_summary=relationship_resume_summary,
+    )
+    trait_summary = _trait_slow_variable_summary(
+        idle_governance=idle_governance,
+        trait_slow_variable_summary=trait_slow_variable_summary,
     )
     dominant_driver_family = _dominant_driver_family(idle_governance)
     next_wake_expectation = _next_wake_expectation(
@@ -70,6 +80,25 @@ def write_resident_governance_explanation(
         "background_carryover_source_ref_set": list(
             idle_governance.get("background_carryover_source_ref_set", [])
         ),
+        "background_relationship_stage": relationship_resume.get(
+            "relationship_stage"
+        ),
+        "background_relationship_stage_reason": relationship_resume.get(
+            "relationship_stage_reason"
+        ),
+        "background_relationship_subject_ref": relationship_resume.get(
+            "relationship_subject_ref"
+        ),
+        "background_self_model_ref": (
+            idle_governance.get("background_self_model_ref")
+            if trait_summary
+            else None
+        ),
+        "background_trait_slow_variable_summary": trait_summary,
+        "background_resume_focus": _background_resume_focus(
+            relationship_resume=relationship_resume,
+            trait_slow_variable_summary=trait_summary,
+        ),
         "queue_f_focus_active": bool(identity_consciousness_birth_refs),
         "identity_consciousness_birth_refs": identity_consciousness_birth_refs,
         "continuity_story": _compose_continuity_story(
@@ -77,6 +106,8 @@ def write_resident_governance_explanation(
             dominant_driver_family=dominant_driver_family,
             next_wake_expectation=next_wake_expectation,
             background_carryover_generation=background_carryover_generation,
+            relationship_resume=relationship_resume,
+            trait_slow_variable_summary=trait_summary,
             completed_turns=completed_turns,
             incident_count=incident_count,
             relaunch_recovery_count=relaunch_recovery_count,
@@ -174,6 +205,8 @@ def _compose_continuity_story(
     dominant_driver_family: str,
     next_wake_expectation: str,
     background_carryover_generation: int,
+    relationship_resume: dict[str, Any],
+    trait_slow_variable_summary: dict[str, Any],
     completed_turns: int,
     incident_count: int,
     relaunch_recovery_count: int,
@@ -222,6 +255,22 @@ def _compose_continuity_story(
                 f"{idle_governance['background_carryover_parent_run_id']}"
             )
         lines.append(lineage_line)
+    if relationship_resume.get("relationship_stage"):
+        relationship_line = (
+            "background resume carries relationship stage "
+            f"{relationship_resume['relationship_stage']}"
+        )
+        if relationship_resume.get("relationship_stage_reason"):
+            relationship_line += (
+                " because "
+                f"{relationship_resume['relationship_stage_reason']}"
+            )
+        lines.append(relationship_line)
+    if trait_slow_variable_summary:
+        lines.append(
+            "background resume carries trait slow variables "
+            + ", ".join(sorted(trait_slow_variable_summary.keys()))
+        )
     lines.append(
         "dominant driver family is "
         f"{dominant_driver_family} and next wake should {next_wake_expectation}"
@@ -249,3 +298,83 @@ def _identity_consciousness_birth_refs(idle_governance: dict[str, Any]) -> list[
         ]
         if ref
     ]
+
+
+def _relationship_resume_summary(
+    *,
+    idle_governance: dict[str, Any],
+    relationship_resume_summary: dict[str, Any] | None,
+) -> dict[str, Any]:
+    relationship_resume = dict(relationship_resume_summary or {})
+    if not relationship_resume and isinstance(
+        idle_governance.get("background_resume_summary"), dict
+    ):
+        relationship_resume = dict(
+            idle_governance["background_resume_summary"].get("relationship") or {}
+        )
+    if not relationship_resume and idle_governance.get("background_relationship_stage"):
+        relationship_resume = {
+            "relationship_stage": idle_governance.get("background_relationship_stage")
+        }
+    if idle_governance.get("background_relationship_subject_ref"):
+        relationship_resume.setdefault(
+            "relationship_subject_ref",
+            idle_governance["background_relationship_subject_ref"],
+        )
+    if idle_governance.get("background_relationship_stage_reason"):
+        relationship_resume.setdefault(
+            "relationship_stage_reason",
+            idle_governance["background_relationship_stage_reason"],
+        )
+    if idle_governance.get("background_relationship_stage_turn_count") is not None:
+        relationship_resume.setdefault(
+            "relationship_stage_turn_count",
+            idle_governance["background_relationship_stage_turn_count"],
+        )
+    if idle_governance.get("background_relationship_stage_evidence_refs"):
+        relationship_resume.setdefault(
+            "relationship_stage_evidence_refs",
+            list(idle_governance["background_relationship_stage_evidence_refs"]),
+        )
+    return {
+        key: value
+        for key, value in relationship_resume.items()
+        if value is not None and value != "" and value != []
+    }
+
+
+def _trait_slow_variable_summary(
+    *,
+    idle_governance: dict[str, Any],
+    trait_slow_variable_summary: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if isinstance(trait_slow_variable_summary, dict) and trait_slow_variable_summary:
+        return trait_slow_variable_summary
+    if isinstance(idle_governance.get("background_trait_slow_variable_summary"), dict):
+        return idle_governance["background_trait_slow_variable_summary"]
+    if isinstance(idle_governance.get("background_resume_summary"), dict):
+        traits = idle_governance["background_resume_summary"].get(
+            "trait_slow_variables"
+        )
+        if isinstance(traits, dict):
+            return traits
+    return {}
+
+
+def _background_resume_focus(
+    *,
+    relationship_resume: dict[str, Any],
+    trait_slow_variable_summary: dict[str, Any],
+) -> dict[str, Any]:
+    focus: dict[str, Any] = {}
+    if relationship_resume.get("relationship_stage"):
+        focus["relationship_stage"] = relationship_resume["relationship_stage"]
+    if relationship_resume.get("relationship_stage_reason"):
+        focus["relationship_stage_reason"] = relationship_resume[
+            "relationship_stage_reason"
+        ]
+    if trait_slow_variable_summary:
+        focus["trait_slow_variable_names"] = sorted(
+            trait_slow_variable_summary.keys()
+        )
+    return focus

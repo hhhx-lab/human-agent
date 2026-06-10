@@ -3131,6 +3131,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 governance_explanation["resident_governance_state_ref"],
                 "runtime/state/terminal/resident_governance_state.json",
             )
+            self.assertEqual(
+                governance_explanation["background_relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertEqual(
+                governance_explanation["background_trait_slow_variable_summary"][
+                    "continuity_drive"
+                ]["value"],
+                0.74,
+            )
+            self.assertEqual(
+                governance_explanation["background_resume_focus"][
+                    "relationship_stage"
+                ],
+                "repair_guarded_continuity",
+            )
+            self.assertTrue(
+                any(
+                    "relationship stage repair_guarded_continuity" in line
+                    for line in governance_explanation["continuity_story"]
+                )
+            )
             self.assertEqual(report["completed_dialogue_turns"], 2)
             self.assertEqual(report["incident_count"], 1)
             self.assertEqual(report["relaunch_recovery_count"], 1)
@@ -3492,6 +3514,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_carryover_source_ref_set": [
                         "runtime/archive/background-lineage-seed.json"
                     ],
+                    "background_relationship_stage": "background_continuity_waiting",
+                    "background_relationship_stage_reason": "persistent_background_continuity_lineage_preserved_before_dialogue",
+                    "background_relationship_subject_ref": "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
+                    "background_self_model_ref": "runtime/state/self/self_model.json",
+                    "background_trait_slow_variable_summary": {
+                        "continuity_drive": {
+                            "value": 0.77,
+                            "trend": "up",
+                            "last_relationship_stage": "background_continuity_waiting",
+                        }
+                    },
                 },
                 persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
                 resident_governance_report_ref="runtime/reports/latest/digital_life_resident_governance_report.json",
@@ -3533,6 +3566,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "generation 3",
                 report["continuity_story"][2],
+            )
+            self.assertEqual(
+                report["background_relationship_stage"],
+                "background_continuity_waiting",
+            )
+            self.assertEqual(
+                report["background_self_model_ref"],
+                "runtime/state/self/self_model.json",
+            )
+            self.assertEqual(
+                report["background_resume_focus"]["trait_slow_variable_names"],
+                ["continuity_drive"],
+            )
+            self.assertTrue(
+                any(
+                    "trait slow variables continuity_drive" in line
+                    for line in report["continuity_story"]
+                )
             )
 
     def test_resident_governance_explanation_organ_writes_queue_f_presence_story(self):

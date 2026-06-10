@@ -107,6 +107,8 @@ def write_process_report_bundle(
         incident_count=incident_count,
         relaunch_recovery_count=relaunch_recovery_count,
         exit_reason=exit_reason,
+        relationship_resume_summary=relationship_resume_summary,
+        trait_slow_variable_summary=trait_slow_variable_summary,
         write_json=write_json,
     )
     report = {
