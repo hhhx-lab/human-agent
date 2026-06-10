@@ -263,6 +263,11 @@ def write_waiting_heartbeat(
         "background_next_wake_expectation",
         "background_governance_explanation_story",
         "background_trait_drift_monitor_ref",
+        "background_lineage_governance_profile",
+        "background_lineage_depth_band",
+        "background_lineage_waiting_posture",
+        "background_lineage_cadence_weight",
+        "background_lineage_evidence_ref_count",
         "background_idle_heartbeat_trace_ref",
         "background_idle_heartbeat_trace_count",
         "long_horizon_language_refs",
@@ -412,6 +417,21 @@ def write_waiting_heartbeat(
         ),
         background_trait_drift_monitor_ref=idle_strategy.get(
             "background_trait_drift_monitor_ref"
+        ),
+        background_lineage_governance_profile=idle_strategy.get(
+            "background_lineage_governance_profile"
+        ),
+        background_lineage_depth_band=idle_strategy.get(
+            "background_lineage_depth_band"
+        ),
+        background_lineage_waiting_posture=idle_strategy.get(
+            "background_lineage_waiting_posture"
+        ),
+        background_lineage_cadence_weight=idle_strategy.get(
+            "background_lineage_cadence_weight"
+        ),
+        background_lineage_evidence_ref_count=idle_strategy.get(
+            "background_lineage_evidence_ref_count"
         ),
         background_idle_heartbeat_trace_ref=idle_strategy.get(
             "background_idle_heartbeat_trace_ref"

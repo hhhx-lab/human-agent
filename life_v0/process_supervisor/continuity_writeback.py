@@ -57,6 +57,11 @@ def build_idle_continuity_frame(
     background_next_wake_expectation: str | None = None,
     background_governance_explanation_story: list[str] | None = None,
     background_trait_drift_monitor_ref: str | None = None,
+    background_lineage_governance_profile: dict[str, Any] | None = None,
+    background_lineage_depth_band: str | None = None,
+    background_lineage_waiting_posture: str | None = None,
+    background_lineage_cadence_weight: str | None = None,
+    background_lineage_evidence_ref_count: int | None = None,
     background_idle_heartbeat_trace_ref: str | None = None,
     background_idle_heartbeat_trace_count: int | None = None,
     signal_media_ref: str | None = None,
@@ -213,6 +218,24 @@ def build_idle_continuity_frame(
         )
     if background_trait_drift_monitor_ref:
         payload["background_trait_drift_monitor_ref"] = background_trait_drift_monitor_ref
+    if background_lineage_governance_profile:
+        payload["background_lineage_governance_profile"] = dict(
+            background_lineage_governance_profile
+        )
+    if background_lineage_depth_band:
+        payload["background_lineage_depth_band"] = background_lineage_depth_band
+    if background_lineage_waiting_posture:
+        payload["background_lineage_waiting_posture"] = (
+            background_lineage_waiting_posture
+        )
+    if background_lineage_cadence_weight:
+        payload["background_lineage_cadence_weight"] = (
+            background_lineage_cadence_weight
+        )
+    if background_lineage_evidence_ref_count is not None:
+        payload["background_lineage_evidence_ref_count"] = int(
+            background_lineage_evidence_ref_count
+        )
     if background_idle_heartbeat_trace_ref:
         payload["background_idle_heartbeat_trace_ref"] = (
             background_idle_heartbeat_trace_ref

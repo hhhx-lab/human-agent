@@ -86,6 +86,22 @@ def write_resident_governance_explanation(
         "background_carryover_source_ref_set": list(
             idle_governance.get("background_carryover_source_ref_set", [])
         ),
+        "background_lineage_depth_band": idle_governance.get(
+            "background_lineage_depth_band"
+        ),
+        "background_lineage_waiting_posture": idle_governance.get(
+            "background_lineage_waiting_posture"
+        ),
+        "background_lineage_cadence_weight": idle_governance.get(
+            "background_lineage_cadence_weight"
+        ),
+        "background_lineage_evidence_ref_count": idle_governance.get(
+            "background_lineage_evidence_ref_count"
+        ),
+        "background_lineage_governance_profile": idle_governance.get(
+            "background_lineage_governance_profile",
+            {},
+        ),
         "background_relationship_stage": relationship_resume.get(
             "relationship_stage"
         ),
@@ -376,6 +392,22 @@ def _compose_continuity_story(
                 f"{idle_governance['background_carryover_parent_run_id']}"
             )
         lines.append(lineage_line)
+    if idle_governance.get("background_lineage_depth_band"):
+        depth_line = (
+            "background lineage depth band is "
+            f"{idle_governance['background_lineage_depth_band']}"
+        )
+        if idle_governance.get("background_lineage_waiting_posture"):
+            depth_line += (
+                " with waiting posture "
+                f"{idle_governance['background_lineage_waiting_posture']}"
+            )
+        if idle_governance.get("background_lineage_cadence_weight"):
+            depth_line += (
+                " and cadence weight "
+                f"{idle_governance['background_lineage_cadence_weight']}"
+            )
+        lines.append(depth_line)
     if background_convergence.get("background_convergence_state"):
         convergence_line = (
             "background convergence state is "

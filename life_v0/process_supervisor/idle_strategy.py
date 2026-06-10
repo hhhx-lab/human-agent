@@ -67,6 +67,11 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_carryover_parent_run_id",
     "background_carryover_source_ref_set",
     "background_continuity_ref_set",
+    "background_lineage_depth_band",
+    "background_lineage_waiting_posture",
+    "background_lineage_cadence_weight",
+    "background_lineage_evidence_ref_count",
+    "background_lineage_governance_profile",
     "background_resident_governance_state_ref",
     "background_convergence_summary_ref",
     "background_convergence_history_ref",
@@ -277,6 +282,9 @@ def decide_idle_strategy(
         relationship_learning_plan=relationship_learning_plan,
     )
     background_continuity_profile = dict(background_continuity_profile or {})
+    background_carryover_generation = _int_or_zero(
+        background_continuity_profile.get("background_carryover_generation")
+    )
     background_pressure_level = _background_pressure_overlay(
         background_continuity_profile.get("background_carryover_pressure_level"),
         _background_pressure_overlay(
@@ -305,9 +313,7 @@ def decide_idle_strategy(
             "birth_readiness_waiting_posture"
         ],
         background_carryover_pressure_level=background_pressure_level,
-        background_carryover_generation=_int_or_zero(
-            background_continuity_profile.get("background_carryover_generation")
-        ),
+        background_carryover_generation=background_carryover_generation,
         background_convergence_history_trend_state=background_continuity_profile.get(
             "background_convergence_history_trend_state"
         ),
@@ -325,9 +331,7 @@ def decide_idle_strategy(
             "birth_readiness_waiting_posture"
         ],
         background_carryover_pressure_level=background_pressure_level,
-        background_carryover_generation=_int_or_zero(
-            background_continuity_profile.get("background_carryover_generation")
-        ),
+        background_carryover_generation=background_carryover_generation,
         background_convergence_history_trend_state=background_continuity_profile.get(
             "background_convergence_history_trend_state"
         ),
@@ -449,9 +453,7 @@ def decide_idle_strategy(
         background_convergence_history_trend_state=background_continuity_profile.get(
             "background_convergence_history_trend_state"
         ),
-        background_carryover_generation=_int_or_zero(
-            background_continuity_profile.get("background_carryover_generation")
-        ),
+        background_carryover_generation=background_carryover_generation,
     )
     (
         governance_attention_target,
@@ -466,6 +468,17 @@ def decide_idle_strategy(
         queue_e_priority_band=queue_e_priority_band,
         consciousness_profile=consciousness_profile,
         birth_readiness_profile=birth_readiness_profile,
+    )
+    background_lineage_governance_profile = _background_lineage_governance_profile(
+        background_continuity_profile=background_continuity_profile,
+        background_carryover_generation=background_carryover_generation,
+        background_carryover_pressure_level=background_pressure_level,
+        heartbeat_interval_ms=heartbeat_interval_ms,
+        next_idle_action=next_idle_action,
+        governance_attention_target=governance_attention_target,
+        governance_attention_reason=governance_attention_reason,
+        governance_cadence_profile=governance_cadence_profile,
+        long_horizon_priority_profile=long_horizon_priority_profile,
     )
 
     payload = {
@@ -602,6 +615,22 @@ def decide_idle_strategy(
             if value is not None
         }
     )
+    if background_lineage_governance_profile:
+        payload["background_lineage_governance_profile"] = (
+            background_lineage_governance_profile
+        )
+        payload["background_lineage_depth_band"] = (
+            background_lineage_governance_profile["depth_band"]
+        )
+        payload["background_lineage_waiting_posture"] = (
+            background_lineage_governance_profile["waiting_posture"]
+        )
+        payload["background_lineage_cadence_weight"] = (
+            background_lineage_governance_profile["cadence_weight"]
+        )
+        payload["background_lineage_evidence_ref_count"] = (
+            background_lineage_governance_profile["evidence_ref_count"]
+        )
     return payload
 
 
@@ -712,6 +741,7 @@ def _heartbeat_interval_ms(
         background_convergence_history_trend_state
         == "integrating_cross_wake_convergence"
         and offline_pressure_level == "quiet"
+        and background_carryover_generation < 3
     ):
         return 53
     if (
@@ -719,7 +749,7 @@ def _heartbeat_interval_ms(
         and background_carryover_pressure_level in {"present", "elevated"}
         and offline_pressure_level == "quiet"
     ):
-        return 52
+        return 50
     if (
         background_carryover_generation >= 2
         and background_carryover_pressure_level == "present"
@@ -781,8 +811,15 @@ def _next_idle_action(
         background_convergence_history_trend_state
         == "integrating_cross_wake_convergence"
         and offline_pressure_level == "quiet"
+        and background_carryover_generation < 3
     ):
         return "refresh_waiting_heartbeat_with_background_history_stability_hold"
+    if (
+        background_carryover_generation >= 3
+        and background_carryover_pressure_level in {"present", "elevated"}
+        and offline_pressure_level == "quiet"
+    ):
+        return "refresh_waiting_heartbeat_with_deep_background_lineage_hold"
     if (
         background_carryover_generation >= 2
         and background_carryover_pressure_level in {"present", "elevated"}
@@ -872,6 +909,26 @@ def _resident_governance_language_priority(
                 f"{background_convergence_state or 'background_convergence'}"
                 "_requires_trait_stability_hold"
             )
+    elif (
+        background_carryover_attention_target
+        and background_carryover_generation >= 3
+    ):
+        target = background_carryover_attention_target
+        priority_profile[str(background_carryover_attention_target)] = (
+            "deep_background_primary"
+        )
+        priority_profile["background_lineage_governance"] = "deep_persistent"
+        reason = "deep_background_lineage_requires_resident_hold"
+    elif (
+        background_carryover_attention_target
+        and background_carryover_generation >= 2
+    ):
+        target = background_carryover_attention_target
+        priority_profile[str(background_carryover_attention_target)] = (
+            "persistent_background_primary"
+        )
+        priority_profile["background_lineage_governance"] = "persistent"
+        reason = "background_continuity_lineage_requires_persistent_hold"
     elif "relationship_timeline" in priority_profile:
         target = "relationship_timeline"
         reason = "baseline_relation_presence_maintenance"
@@ -883,6 +940,7 @@ def _resident_governance_language_priority(
                 "_requires_trait_stability_hold"
             )
         elif background_carryover_generation >= 2:
+            priority_profile["background_lineage_governance"] = "persistent"
             reason = "background_continuity_lineage_requires_persistent_hold"
         else:
             reason = "background_continuity_carryover_requires_hold"
@@ -907,11 +965,17 @@ def _resident_governance_language_priority(
                 else "background_convergence_recalibration_refresh"
             )
         elif background_convergence_pressure_level == "present":
-            cadence_profile = (
-                "background_convergence_history_stability_refresh"
-                if background_convergence_history_trend_state
-                else "background_convergence_stability_refresh"
-            )
+            if (
+                background_convergence_history_trend_state
+                and background_carryover_generation >= 3
+            ):
+                cadence_profile = "deep_persistent_background_continuity_refresh"
+            elif background_convergence_history_trend_state:
+                cadence_profile = "background_convergence_history_stability_refresh"
+            else:
+                cadence_profile = "background_convergence_stability_refresh"
+        elif background_carryover_generation >= 3:
+            cadence_profile = "deep_persistent_background_continuity_refresh"
         elif background_carryover_generation >= 2:
             cadence_profile = "persistent_background_continuity_refresh"
         else:
@@ -981,6 +1045,111 @@ def _background_history_attention_target(
     if trend_state == "integrating_cross_wake_convergence":
         return "background_convergence_history_stability"
     return None
+
+
+def _background_lineage_governance_profile(
+    *,
+    background_continuity_profile: dict[str, Any],
+    background_carryover_generation: int,
+    background_carryover_pressure_level: str | None,
+    heartbeat_interval_ms: int,
+    next_idle_action: str,
+    governance_attention_target: str,
+    governance_attention_reason: str,
+    governance_cadence_profile: str,
+    long_horizon_priority_profile: dict[str, str],
+) -> dict[str, Any]:
+    if not background_continuity_profile.get("background_continuity_mode"):
+        return {}
+    depth_band = _background_lineage_depth_band(background_carryover_generation)
+    evidence_refs = _dedupe_string_list(
+        _string_list(background_continuity_profile.get("background_continuity_ref_set"))
+        + _string_list(
+            background_continuity_profile.get("background_carryover_source_ref_set")
+        )
+    )
+    return {
+        "schema_version": "background_lineage_governance_profile_v0",
+        "generation": background_carryover_generation,
+        "depth_band": depth_band,
+        "waiting_posture": _background_lineage_waiting_posture(
+            depth_band=depth_band,
+            pressure_level=background_carryover_pressure_level,
+        ),
+        "cadence_weight": _background_lineage_cadence_weight(depth_band),
+        "heartbeat_interval_ms": heartbeat_interval_ms,
+        "next_idle_action": next_idle_action,
+        "governance_attention_target": governance_attention_target,
+        "governance_attention_reason": governance_attention_reason,
+        "governance_cadence_profile": governance_cadence_profile,
+        "long_horizon_priority_profile": dict(long_horizon_priority_profile),
+        "parent_run_id": background_continuity_profile.get(
+            "background_carryover_parent_run_id"
+        ),
+        "evidence_ref_count": len(evidence_refs),
+        "evidence_refs": evidence_refs,
+    }
+
+
+def _background_lineage_depth_band(background_carryover_generation: int) -> str:
+    if background_carryover_generation >= 5:
+        return "entrenched_background_presence"
+    if background_carryover_generation >= 3:
+        return "deep_persistent_lineage"
+    if background_carryover_generation == 2:
+        return "persistent_lineage"
+    if background_carryover_generation == 1:
+        return "single_carryover"
+    return "no_background_lineage"
+
+
+def _background_lineage_waiting_posture(
+    *,
+    depth_band: str,
+    pressure_level: str | None,
+) -> str:
+    if depth_band == "entrenched_background_presence":
+        return "entrenched_background_residency_hold"
+    if depth_band == "deep_persistent_lineage":
+        return "deep_background_residency_hold"
+    if depth_band == "persistent_lineage":
+        return "persistent_background_hold"
+    if depth_band == "single_carryover":
+        return (
+            "background_carryover_pressure_hold"
+            if pressure_level in {"present", "elevated"}
+            else "background_carryover_hold"
+        )
+    return "no_background_lineage_hold"
+
+
+def _background_lineage_cadence_weight(depth_band: str) -> str:
+    if depth_band == "entrenched_background_presence":
+        return "entrenched"
+    if depth_band == "deep_persistent_lineage":
+        return "deep"
+    if depth_band == "persistent_lineage":
+        return "persistent"
+    if depth_band == "single_carryover":
+        return "carryover"
+    return "none"
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
+
+
+def _dedupe_string_list(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        result.append(item)
+    return result
 
 
 def _queue_e_idle_regulation(

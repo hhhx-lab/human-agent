@@ -221,6 +221,18 @@ def write_process_report_bundle(
         "resident_governance_lineage_depth": governance_explanation.report[
             "background_carryover_generation"
         ],
+        "background_lineage_depth_band": idle_governance.get(
+            "background_lineage_depth_band"
+        ),
+        "background_lineage_waiting_posture": idle_governance.get(
+            "background_lineage_waiting_posture"
+        ),
+        "background_lineage_cadence_weight": idle_governance.get(
+            "background_lineage_cadence_weight"
+        ),
+        "background_lineage_evidence_ref_count": idle_governance.get(
+            "background_lineage_evidence_ref_count"
+        ),
         "long_horizon_language_refs": [
             ref
             for ref in [

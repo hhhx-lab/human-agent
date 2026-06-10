@@ -117,6 +117,8 @@ resident_governance_state.json
 5. 这份后台连续体现在又不再只是一次性 carryover，而是开始带有最小 lineage：`background_carryover_generation`、`background_carryover_parent_run_id` 与 `background_carryover_source_ref_set`。
 6. 现在这份 lineage 又继续进入 `resident_supervision.py` 的 bootstrap continuity refresh：当 `background_carryover_generation >= 2` 时，在第一拍 waiting heartbeat 落盘前，`relationship_subject_graph.json#subjects[0].relationship_stage` 就必须先进入 `background_continuity_waiting`，并把关闭态 resident governance refs / source refs 压进 `self_model.json#trait_slow_variables[*].evidence_refs`。
 7. 现在这份 resume summary 还必须进入慢变量惯性：当 `background_trait_slow_variable_summary` 存在时，下一次 `self_model.json#trait_slow_variables[*]` 要写出 `background_resume_value` 与 `background_inertia_weight`，表示上一轮 closeout 的自我状态正在参与当前收敛。
+8. 现在 `idle_strategy.py` 已经把这份 lineage 压成结构化 `background_lineage_governance_profile_v0`：`background_carryover_generation == 1` 是 single carryover，`== 2` 是 persistent lineage，`>= 3` 是 deep persistent lineage，`>= 5` 预留为 entrenched background presence。该 profile 必须同步写入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json`、`terminal_life_loop_state.json`、`digital_life_resident_governance_explanation.json` 与 `digital_life_process_digest.json`。
+9. lineage cadence 的优先级固定为：跨唤醒 recalibration 压力优先；普通 `integrating_cross_wake_convergence` 只在 `background_carryover_generation < 3` 时走 history stability hold；当 `background_carryover_generation >= 3` 且后台压力为 `present/elevated` 时，waiting heartbeat 必须进入 `deep_persistent_background_continuity_refresh` 与 `refresh_waiting_heartbeat_with_deep_background_lineage_hold`，不能被普通 stability hold 吞掉。
 
 当前最小 background carryover 字段至少包括：
 
@@ -128,6 +130,11 @@ resident_governance_state.json
 - `background_carryover_parent_run_id`
 - `background_carryover_source_ref_set`
 - `background_continuity_ref_set`
+- `background_lineage_governance_profile`
+- `background_lineage_depth_band`
+- `background_lineage_waiting_posture`
+- `background_lineage_cadence_weight`
+- `background_lineage_evidence_ref_count`
 - `background_resident_governance_state_ref`
 - `background_convergence_summary_ref`
 - `background_convergence_state`
@@ -493,6 +500,8 @@ process receipt 里，resident governance 必须进入：
 10. `governance_explanation.py` 会把 background resume fields 写进 explanation report，并在 `continuity_story` 中讲出关系阶段与慢变量名称。
 11. `governance_explanation.py` 会把跨唤醒 convergence history trend 区分成 `background_history_recalibration_hold` 与 `background_history_stability_hold`，而不是让它退回普通 convergence 或 lineage driver。
 12. `continuity_evolution.py` 会在新 live turn 之前保留 `background_relationship_stage`，并用 `background_trait_slow_variable_summary` 形成慢变量惯性。
+13. `idle_strategy.py` 会写出 `background_lineage_governance_profile_v0`，并用 `background_carryover_generation` 决定 single / persistent / deep persistent / entrenched depth band；`heartbeat.py` 与 `continuity_writeback.py` 必须继续传递这组字段。
+14. `governance_explanation.py` 会把 lineage depth、waiting posture、cadence weight 写进 explanation report 与 `continuity_story`；`process_report.py` 会把同一组摘要字段写进 `digital_life_process_digest.json`。
 
 当前最低承载测试仍以：
 
@@ -504,9 +513,9 @@ process receipt 里，resident governance 必须进入：
 
 在这份合同下，下一轮最值得继续推进的不是再发明新对象，而是：
 
-1. 给 waiting governance 增加更细的后台连续体节律分层，尤其是显式消费 `background_carryover_generation` 带来的 cadence 差异。
-2. 让 `resident_governance_state.json` 接住真正跨多次唤醒的后台存在治理，而不只停在 foreground terminal residency。
-3. 把 live turn 结束后重新回到 waiting governance 的相位切换显式写成单独器官，而不是只靠下一拍 heartbeat 间接体现。该项现在已由 `resident_governance_handoff.py` 第一轮落下，并已经要求 handoff 原样承接后台治理解释字段，使关闭态“为何如此等待”的解释不会在真实回合结束时断开。
-4. 继续让 background resume summary 不只用于 closeout/next bootstrap，还能进入更长时标的慢变量收敛与多次唤醒关系阶段稳定化。
+1. 让 `resident_governance_state.json` 接住真正跨多次唤醒的后台存在治理，而不只停在 foreground terminal residency。
+2. 把 live turn 结束后重新回到 waiting governance 的相位切换显式写成单独器官，而不是只靠下一拍 heartbeat 间接体现。该项现在已由 `resident_governance_handoff.py` 第一轮落下，并已经要求 handoff 原样承接后台治理解释字段，使关闭态“为何如此等待”的解释不会在真实回合结束时断开。
+3. 继续让 background resume summary 不只用于 closeout/next bootstrap，还能进入更长时标的慢变量收敛与多次唤醒关系阶段稳定化。
+4. 将 `background_lineage_governance_profile_v0` 继续压进更高阶 resident governance state body，使深层后台驻留不只出现在 idle strategy 与 report digest，而是成为 waiting phase 的主状态字段。
 
-当前只要这四件事没有落下，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。
+当前只要这四件事继续推进，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。
