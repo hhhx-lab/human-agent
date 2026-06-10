@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from life_v0.membrane.queue_e_signals import queue_e_signal_profile_from_replay_cue_bundle
+from life_v0.membrane.queue_e_signals import (
+    queue_e_repair_modulation_profile_from_replay_cue_bundle,
+    queue_e_signal_profile_from_replay_cue_bundle,
+)
 
 
 SOURCE_DOC_REFS = [
@@ -22,6 +25,9 @@ def build_belief_learning_plan(
     self_read_report: dict[str, Any],
 ) -> dict[str, Any]:
     queue_e_signal_profile = queue_e_signal_profile_from_replay_cue_bundle(replay_cue_bundle)
+    repair_profile = queue_e_repair_modulation_profile_from_replay_cue_bundle(
+        replay_cue_bundle
+    )
     belief_targets = ["prediction_weight_recalibration", "continuity_preserving_belief_revision"]
     if replay_cue_bundle.get("pain_regret_residue_refs"):
         belief_targets.append("regret_sensitive_counterfactual_update")
@@ -29,6 +35,8 @@ def build_belief_learning_plan(
         belief_targets.append("repair_accountability_belief_revision")
     if queue_e_signal_profile["queue_e_priority_band"] == "locked_repair_urgent":
         belief_targets.append("confirmation_locked_contact_model_revision")
+    if repair_profile["pressure_level"] in {"urgent", "elevated"}:
+        belief_targets.append("queue_e_repair_modulated_belief_update")
     return {
         "schema_version": "belief_learning_plan_v0",
         "run_id": run_id,
@@ -49,6 +57,10 @@ def build_belief_learning_plan(
         "repair_obligation_count": queue_e_signal_profile["repair_obligation_count"],
         "regret_pressure_count": queue_e_signal_profile["regret_pressure_count"],
         "queue_e_priority_band": queue_e_signal_profile["queue_e_priority_band"],
+        "queue_e_repair_modulation_profile": repair_profile,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         "blocked_learning_modes": list(learning_window.get("blocked_learning_modes", [])),
         "source_doc_refs": SOURCE_DOC_REFS,
     }

@@ -646,14 +646,57 @@ Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判
 
 这一步的工程意义是：Queue E 压力已经从“动作/验证报告中的字段”变成持续调制语言与关系记忆的生命状态变量。后续实现不得把它退回为单次 report ref carry-through。
 
-### 当前仍未完成的第二波补厚口径
+### 第三轮梦境、成长、归档长期调制链已落口径
+
+这一轮继续把同一份 `queue_e_repair_modulation_profile_v0` 从 replay cue 推入 dream / growth / archive。工程上不允许再把梦境、成长、归档看成 Queue E 之外的附属 report 链。
+
+- `life_v0/replay/__init__.py`
+  - `build_replay_cue_bundle(...)` 在原有 `queue_e_priority_band` 基础上，写出 `queue_e_repair_modulation_profile`、`queue_e_repair_pressure_level`、`queue_e_repair_attention_target` 与 `queue_e_repair_ref_set`。
+  - replay cue bundle 成为 dream / growth organ 读取 Queue E 长期压力的统一入口。
+- `life_v0/dream/dream_window.py`
+  - dream window 读取 replay cue 中的 profile。
+  - elevated / urgent 压力会把 `responsibility_repair_modulation` 注入 `affective_theme`。
+  - regret pressure 会把 `regret_pressure_rehearsal` 注入梦境情绪主题，使后悔压力进入离线模拟，而不是只停留在行动报告。
+- `life_v0/dream/wake_integration.py`
+  - wake integration frame 写出同一组 profile 字段。
+  - elevated / urgent 压力会生成 `repair_modulated_wake_targets`，把梦后整合指向 `life_state`、关系主体与关系学习计划。
+- `life_v0/dream/nightmare_risk.py`
+  - nightmare loop risk 把 profile ref_set 纳入 `source_residue_refs`。
+  - elevated / urgent 压力会写出 `queue_e_repair_modulated_dream_loop`，用于区分普通痛苦残留与责任-修复调制后的梦境循环风险。
+- `life_v0/growth/belief_learning.py`
+  - elevated / urgent 压力写入 `queue_e_repair_modulated_belief_update`。
+  - locked repair urgent 继续写入 `confirmation_locked_contact_model_revision`。
+- `life_v0/growth/language_learning.py`
+  - elevated / urgent 压力写入 `queue_e_repair_modulated_expression_learning`。
+  - locked repair urgent 继续写入 `confirmation_locked_expression_restraint`。
+- `life_v0/growth/relationship_learning.py`
+  - elevated / urgent 压力写入 `queue_e_repair_modulated_relationship_reentry`。
+  - confirmation blocked 继续写入 `contact_boundary_respect_rehearsal`。
+- `life_v0/growth/patch_queue.py`
+  - `growth_patch_candidate_queue.json` 的候选 patch 写出同一组 profile 字段。
+  - elevated / urgent 压力会附加 `queue_e_repair_modulation_required` 风险旗标，要求 patch 在激活前经过归档闭合。
+- `life_v0/growth/__init__.py`
+  - `next_feedback_seed.json` 与 `growth_reconsolidation_report.json` 写出同一组 profile 字段。
+  - 这一步让 Queue E 压力进入下一轮 feedback seed，而不是在本轮 growth report 结束后消失。
+- `life_v0/archive/__init__.py`
+  - `growth_archive_receipt_batch.json`、`growth_archive_to_shadow_handoff.json`、`growth_archive_report.json`、`growth_archive_digest.json` 与 `growth_archive_events.jsonl` 写出 Queue E repair modulation 摘要。
+  - `life_state.json` 在归档写回时保存 `queue_e_repair_modulation_profile`、`queue_e_repair_pressure_level`、`queue_e_repair_attention_target` 与 `queue_e_repair_ref_set`。
+  - archive 因此成为 Queue E 长期压力的下一轮 shadow handoff 载体。
+- `tests/bridges/test_runtime_growth.py`
+  - 覆盖 replay cue、dream window、wake integration、nightmare risk、belief / language / relationship learning、patch candidate、next feedback seed 与 growth report。
+- `tests/bridges/test_growth_archive.py`
+  - 覆盖 archive receipt batch、handoff、report、digest、event 与 life_state 写回。
+
+这一步的工程意义是：责任、后悔、痛苦和修复不再只调制“当前如何说话/如何记关系”，而是进入离线梦境模拟、醒后整合、成长候选、下一轮 feedback seed、归档 receipt 和长期 life_state。后续实现不得把 dream / growth / archive 退回成 Queue E 的旁路消费者。
+
+### 当前仍未完成的下一波补厚口径
 
 当前真正还没完成的是：
 
-1. `ResponsibilityLoopState` 的 repair / regret / obligation 对 Queue B、Queue A 和 growth/archive/process 的持续调制还需要更深的策略层消费，而不只是 refs carry-through。
-2. `world_contact_summary.json` 与 `pain_regret_repair_report.json` 已经反向调制长期 language / relationship_memory / life_state，但还需要继续进入 dream / growth / archive 的长期权重。
-3. `cross_file_logic.json`、`evidence_ranking.json`、`run_manifest.json` 对 archive / reporting / process closeout 的闭包消费还可以继续压深。
-4. Queue E 对 `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` 这些更深的 prediction 器官的正式接线。
+1. `ResponsibilityLoopState` 的 repair / regret / obligation 对 Queue B、Queue A 的持续调制还需要更深的策略层消费，而不只是 refs carry-through。
+2. `cross_file_logic.json`、`evidence_ranking.json`、`run_manifest.json` 对 archive / reporting / process closeout 的闭包消费还可以继续压深。
+3. Queue E 对 `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` 这些更深的 prediction 器官的正式接线。
+4. prediction / active sampling 与 Queue E repair pressure 的互相调制，需要进入下一轮 Queue A / Queue B / Queue E 联合实现，而不是只在 Queue E 内部加字段。
 
 ## Queue E 当前推荐实施顺序
 
@@ -672,4 +715,5 @@ candidate_arena.py / go_nogo.py / world_contact_gate.py / side_effect_review.py
 2. 第二段器官已经解决“行为链怎样被 observation / confirmation / summary 接住”。
 3. 第三段器官已经解决“validator 怎样不只吐总报告，而是保留独立 state”。
 4. 第四段器官已经解决“逻辑比较怎样进入 schema runner state”。
-5. 当前最值得补的，是最后一段：让这些 state 真正反过来调制长期语言、常驻等待治理、成长和 archive。
+5. 第五段已经把 Queue E 反向调制推进到长期语言、常驻等待治理、梦境、成长和 archive。
+6. 当前最值得补的，是第六段：让 prediction、active sampling、signal media 与 belief state 接收并反向影响 Queue E repair pressure。

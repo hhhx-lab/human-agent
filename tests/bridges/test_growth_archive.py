@@ -81,6 +81,7 @@ class GrowthArchiveTests(unittest.TestCase):
             receipt = self._read_json(paths["receipts"] / "write_growth_archive_growth-archive-test.json")
             history_path = paths["runtime_root"] / "archive" / "growth_archive_events.jsonl"
             history_lines = history_path.read_text(encoding="utf-8").strip().splitlines()
+            archive_event = json.loads(history_lines[-1])
             life_state = self._read_json(paths["state_root"] / "life_state.json")
 
         self.assertEqual(batch["schema_version"], "growth_archive_receipt_batch_v0")
@@ -92,6 +93,16 @@ class GrowthArchiveTests(unittest.TestCase):
         self.assertEqual(batch["world_contact_release_posture"], "shadow_only_guarded")
         self.assertTrue(batch["repair_followup_required"])
         self.assertTrue(batch["repair_obligation_refs"])
+        self.assertEqual(
+            batch["queue_e_repair_modulation_profile"]["schema_version"],
+            "queue_e_repair_modulation_profile_v0",
+        )
+        self.assertEqual(batch["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(batch["queue_e_repair_attention_target"], "regret_pressure")
+        self.assertIn(
+            "runtime/reports/latest/pain_regret_repair_report.json",
+            batch["queue_e_repair_ref_set"],
+        )
 
         self.assertEqual(preconditions["schema_version"], "shadow_run_preconditions_v0")
         self.assertEqual(preconditions["status"], "closed")
@@ -105,6 +116,12 @@ class GrowthArchiveTests(unittest.TestCase):
         self.assertTrue(handoff["responsibility_archive_receipt_refs"])
         self.assertEqual(handoff["world_contact_release_posture"], "shadow_only_guarded")
         self.assertTrue(handoff["repair_followup_required"])
+        self.assertEqual(handoff["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(handoff["queue_e_repair_attention_target"], "regret_pressure")
+        self.assertIn(
+            "runtime/state/action/responsibility_loop_state.json",
+            handoff["queue_e_repair_ref_set"],
+        )
 
         self.assertEqual(archive_graph["schema_version"], "reconsolidation_archive_graph_v0")
         self.assertEqual(archive_graph["status"], "closed")
@@ -122,11 +139,16 @@ class GrowthArchiveTests(unittest.TestCase):
         self.assertIn("B30_RECONSOLIDATION_REPLAY_GROWTH", report["readme_block_refs"])
         self.assertEqual(report["queue_e_state_refs"][0], "runtime/state/action/responsibility_loop_state.json")
         self.assertEqual(report["queue_e_report_refs"], ["runtime/reports/latest/pain_regret_repair_report.json"])
+        self.assertEqual(report["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(report["queue_e_repair_attention_target"], "regret_pressure")
 
         self.assertEqual(digest["schema_version"], "growth_archive_digest_v0")
         self.assertEqual(digest["current_phase"], "growth_archive")
         self.assertEqual(digest["status"], "closed")
         self.assertEqual(digest["queue_e_ref_count"], 3)
+        self.assertEqual(digest["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(digest["queue_e_repair_attention_target"], "regret_pressure")
+        self.assertGreaterEqual(digest["queue_e_repair_ref_count"], 3)
 
         self.assertEqual(stage_gate["schema_version"], "growth_archive_stage_gate_v0")
         self.assertEqual(stage_gate["decision"], "closed")
@@ -136,8 +158,12 @@ class GrowthArchiveTests(unittest.TestCase):
         self.assertEqual(receipt["schema_version"], "write_growth_archive_receipt_v0")
         self.assertEqual(receipt["command"], "write-growth-archive")
         self.assertGreaterEqual(len(history_lines), 1)
+        self.assertEqual(archive_event["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(archive_event["queue_e_repair_attention_target"], "regret_pressure")
         self.assertTrue(life_state["archive_refs"])
         self.assertIn("runtime/archive/growth_archive_events.jsonl", life_state["archive_refs"])
+        self.assertEqual(life_state["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(life_state["queue_e_repair_attention_target"], "regret_pressure")
 
     def test_cli_write_growth_archive_returns_zero_and_writes_report(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -190,6 +216,9 @@ class GrowthArchiveTests(unittest.TestCase):
         self.assertEqual(digest["current_phase"], "growth_archive")
         self.assertEqual(stage_gate["decision"], "closed")
         self.assertEqual(batch["status"], "closed")
+        self.assertEqual(report["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(digest["queue_e_repair_attention_target"], "regret_pressure")
+        self.assertEqual(batch["queue_e_repair_pressure_level"], "elevated")
 
     def _runtime_paths(self, tmp_path: Path) -> dict[str, Path]:
         state_root = tmp_path / "runtime" / "state"

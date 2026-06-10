@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from life_v0.membrane.queue_e_signals import (
+    queue_e_repair_modulation_profile_from_replay_cue_bundle,
+)
+
 
 SOURCE_DOC_REFS = [
     "docs/92_self_growth_and_self_modification_life_chain.md",
@@ -45,6 +49,9 @@ def build_growth_patch_candidate_queue(
     growth_route: dict[str, Any],
     learning_window: dict[str, Any],
 ) -> dict[str, Any]:
+    repair_profile = queue_e_repair_modulation_profile_from_replay_cue_bundle(
+        replay_cue_bundle
+    )
     return {
         "schema_version": "growth_patch_candidate_queue_v0",
         "run_id": run_id,
@@ -59,8 +66,17 @@ def build_growth_patch_candidate_queue(
                 "risk_flags": [
                     "direction_lock_required",
                     "archive_before_activation",
+                    *(
+                        ["queue_e_repair_modulation_required"]
+                        if repair_profile["pressure_level"] in {"urgent", "elevated"}
+                        else []
+                    ),
                 ],
                 "anti_forgetting_requirements": list(replay_cue_bundle.get("anti_forgetting_targets", [])),
+                "queue_e_repair_modulation_profile": repair_profile,
+                "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+                "queue_e_repair_attention_target": repair_profile["attention_target"],
+                "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
                 "core_continuity_requirements": [
                     "runtime/state/life_state.json#self_model.old_self_anchors",
                     "runtime/state/life_state.json#memory_index.replay_cues",

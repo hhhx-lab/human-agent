@@ -64,6 +64,9 @@ from life_v0.growth.relationship_learning import (
     build_relationship_learning_plan,
     check_relationship_learning_plan,
 )
+from life_v0.membrane.queue_e_signals import (
+    queue_e_repair_modulation_profile_from_replay_cue_bundle,
+)
 from life_v0.replay import (
     SOURCE_DOC_REFS as REPLAY_SOURCE_DOC_REFS,
     build_pain_regret_responsibility_replay,
@@ -590,6 +593,7 @@ def run_cycle(
         belief_learning=belief_learning,
         language_learning=language_learning,
         relationship_learning=relationship_learning,
+        replay_cue_bundle=replay_cue_bundle,
     )
     quarantine = _build_quarantine(run_id=run_id, generated_at=generated_at, status=status, blocked_reasons=blocked_reasons)
     replay_needed = _build_replay_needed(run_id=run_id, generated_at=generated_at, status=status)
@@ -627,6 +631,7 @@ def run_cycle(
         next_required_command=next_required_command,
         source_doc_refs=source_doc_refs,
         state_refs=state_refs,
+        replay_cue_bundle=replay_cue_bundle,
         blocked_reasons=blocked_reasons,
         receipt_ref=receipt_ref,
     )
@@ -890,7 +895,11 @@ def _build_next_feedback_seed(
     belief_learning: dict[str, Any],
     language_learning: dict[str, Any],
     relationship_learning: dict[str, Any],
+    replay_cue_bundle: dict[str, Any],
 ) -> dict[str, Any]:
+    repair_profile = queue_e_repair_modulation_profile_from_replay_cue_bundle(
+        replay_cue_bundle
+    )
     return {
         "schema_version": "next_feedback_seed_v0",
         "run_id": run_id,
@@ -920,6 +929,10 @@ def _build_next_feedback_seed(
         "belief_target_count": len(belief_learning.get("belief_targets", [])),
         "language_target_count": len(language_learning.get("language_targets", [])),
         "relationship_target_count": len(relationship_learning.get("relationship_targets", [])),
+        "queue_e_repair_modulation_profile": repair_profile,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
     }
 
 
@@ -1031,9 +1044,13 @@ def _build_growth_report(
     next_required_command: str,
     source_doc_refs: list[str],
     state_refs: list[str],
+    replay_cue_bundle: dict[str, Any],
     blocked_reasons: list[str],
     receipt_ref: str,
 ) -> dict[str, Any]:
+    repair_profile = queue_e_repair_modulation_profile_from_replay_cue_bundle(
+        replay_cue_bundle
+    )
     return {
         "schema_version": "s10_runtime_growth_reconsolidation_report_v0",
         "run_id": run_id,
@@ -1060,6 +1077,10 @@ def _build_growth_report(
             "runtime/state/growth/relationship_learning_plan.json",
         ],
         "state_refs": state_refs,
+        "queue_e_repair_modulation_profile": repair_profile,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         "archive_receipt_ref": receipt_ref,
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [] if status == "safe_idle" else ["runtime/reports/latest/quarantine.json"],

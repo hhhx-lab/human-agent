@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from life_v0.membrane.queue_e_signals import build_queue_e_repair_modulation_profile
+
 
 SOURCE_DOC_REFS = [
     "docs/61_json_schema_bundle_draft.md",
@@ -173,6 +175,11 @@ def run_write_growth_archive(
         blocked_reasons,
         "pain_regret_repair_gate",
     )
+    repair_profile = build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
 
     blocked_reasons.extend(
         _archive_blockers(
@@ -193,6 +200,7 @@ def run_write_growth_archive(
             responsibility_loop=responsibility_loop,
             world_contact_summary=world_contact_summary,
             pain_regret_repair_report=pain_regret_repair_report,
+            repair_profile=repair_profile,
         )
     )
 
@@ -212,6 +220,7 @@ def run_write_growth_archive(
         responsibility_loop=responsibility_loop,
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
+        repair_profile=repair_profile,
     )
     shadow_preconditions = _build_shadow_run_preconditions(
         run_id=run_id,
@@ -228,6 +237,7 @@ def run_write_growth_archive(
         replay_report=replay_report,
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
+        repair_profile=repair_profile,
     )
 
     report_refs = [
@@ -261,6 +271,7 @@ def run_write_growth_archive(
         state_refs=state_refs,
         queue_e_state_refs=QUEUE_E_STATE_REFS,
         queue_e_report_refs=QUEUE_E_REPORT_REFS,
+        repair_profile=repair_profile,
         next_allowed_slices=next_allowed_slices,
         next_required_command=next_required_command,
         receipt_ref=receipt_ref,
@@ -272,6 +283,7 @@ def run_write_growth_archive(
         stage_effect=stage_effect,
         blocked_reasons=blocked_reasons,
         queue_e_ref_count=len(QUEUE_E_STATE_REFS) + len(QUEUE_E_REPORT_REFS),
+        repair_profile=repair_profile,
         next_allowed_slices=next_allowed_slices,
         next_required_command=next_required_command,
     )
@@ -290,6 +302,7 @@ def run_write_growth_archive(
         shadow_preconditions=shadow_preconditions,
         shadow_handoff=shadow_handoff,
         stage_effect=stage_effect,
+        repair_profile=repair_profile,
     )
     updated_life_state = _integrate_archive_refs(
         life_state=life_state,
@@ -300,6 +313,7 @@ def run_write_growth_archive(
             "runtime/state/archive/growth_archive_to_shadow_handoff.json",
             receipt_ref,
         ],
+        repair_profile=repair_profile,
     )
     receipt = _build_receipt(
         run_id=run_id,
@@ -356,6 +370,7 @@ def _archive_blockers(
     responsibility_loop: dict[str, Any],
     world_contact_summary: dict[str, Any],
     pain_regret_repair_report: dict[str, Any],
+    repair_profile: dict[str, Any],
 ) -> list[str]:
     reasons: list[str] = []
     if life_state.get("schema_version") != "life_state_v0":
@@ -418,6 +433,10 @@ def _archive_blockers(
         reasons.append("world_contact_summary_gate release posture missing")
     if not pain_regret_repair_report.get("repair_obligation_refs"):
         reasons.append("pain_regret_repair_gate repair obligations missing")
+    if repair_profile.get("schema_version") != "queue_e_repair_modulation_profile_v0":
+        reasons.append("queue_e_repair_modulation_gate schema mismatch")
+    if not repair_profile.get("ref_set"):
+        reasons.append("queue_e_repair_modulation_gate ref set missing")
     return reasons
 
 
@@ -433,6 +452,7 @@ def _build_growth_archive_receipt_batch(
     responsibility_loop: dict[str, Any],
     world_contact_summary: dict[str, Any],
     pain_regret_repair_report: dict[str, Any],
+    repair_profile: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "schema_version": "growth_archive_receipt_batch_v0",
@@ -484,6 +504,10 @@ def _build_growth_archive_receipt_batch(
         "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
         "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
         "repair_obligation_refs": list(responsibility_loop.get("repair_obligation_refs", [])),
+        "queue_e_repair_modulation_profile": repair_profile,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         "report_ref": replay_report.get("engineering_slice_ref", ACTIVE_SLICE),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -529,6 +553,7 @@ def _build_growth_archive_to_shadow_handoff(
     replay_report: dict[str, Any],
     world_contact_summary: dict[str, Any],
     pain_regret_repair_report: dict[str, Any],
+    repair_profile: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "schema_version": "growth_archive_to_shadow_handoff_v0",
@@ -549,6 +574,10 @@ def _build_growth_archive_to_shadow_handoff(
         ),
         "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
         "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
+        "queue_e_repair_modulation_profile": repair_profile,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         "report_ref": replay_report.get("schema_version", "replay_shadow_report_v0"),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -564,6 +593,7 @@ def _build_report(
     state_refs: list[str],
     queue_e_state_refs: list[str],
     queue_e_report_refs: list[str],
+    repair_profile: dict[str, Any],
     next_allowed_slices: list[str],
     next_required_command: str,
     receipt_ref: str,
@@ -581,6 +611,10 @@ def _build_report(
         "state_refs": state_refs,
         "queue_e_state_refs": queue_e_state_refs,
         "queue_e_report_refs": queue_e_report_refs,
+        "queue_e_repair_modulation_profile": repair_profile,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
         "next_allowed_slices": next_allowed_slices,
@@ -597,6 +631,7 @@ def _build_digest(
     stage_effect: str,
     blocked_reasons: list[str],
     queue_e_ref_count: int,
+    repair_profile: dict[str, Any],
     next_allowed_slices: list[str],
     next_required_command: str,
 ) -> dict[str, Any]:
@@ -608,6 +643,9 @@ def _build_digest(
         "status": status,
         "stage_effect": stage_effect,
         "queue_e_ref_count": queue_e_ref_count,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_count": len(repair_profile.get("ref_set", [])),
         "blocked_reasons": blocked_reasons,
         "next_allowed_slices": next_allowed_slices,
         "next_required_command": next_required_command,
@@ -650,6 +688,7 @@ def _build_archive_events(
     shadow_preconditions: dict[str, Any],
     shadow_handoff: dict[str, Any],
     stage_effect: str,
+    repair_profile: dict[str, Any],
 ) -> list[dict[str, Any]]:
     return [
         {
@@ -667,11 +706,19 @@ def _build_archive_events(
             },
             "preconditions_ready": bool(shadow_preconditions.get("preconditions_ready")),
             "shadow_run_handoff_ready": bool(shadow_handoff.get("shadow_run_handoff_ready")),
+            "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+            "queue_e_repair_attention_target": repair_profile["attention_target"],
+            "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         }
     ]
 
 
-def _integrate_archive_refs(*, life_state: dict[str, Any], archive_refs: list[str]) -> dict[str, Any]:
+def _integrate_archive_refs(
+    *,
+    life_state: dict[str, Any],
+    archive_refs: list[str],
+    repair_profile: dict[str, Any],
+) -> dict[str, Any]:
     updated = json.loads(json.dumps(life_state))
     current = updated.setdefault("archive_refs", [])
     for ref in archive_refs:
@@ -685,6 +732,10 @@ def _integrate_archive_refs(*, life_state: dict[str, Any], archive_refs: list[st
     ]:
         if ref not in updated["runtime_trace_refs"]:
             updated["runtime_trace_refs"].append(ref)
+    updated["queue_e_repair_modulation_profile"] = repair_profile
+    updated["queue_e_repair_pressure_level"] = repair_profile["pressure_level"]
+    updated["queue_e_repair_attention_target"] = repair_profile["attention_target"]
+    updated["queue_e_repair_ref_set"] = list(repair_profile.get("ref_set", []))
     return updated
 
 

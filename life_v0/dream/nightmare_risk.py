@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from life_v0.membrane.queue_e_signals import queue_e_signal_profile_from_replay_cue_bundle
+from life_v0.membrane.queue_e_signals import (
+    queue_e_repair_modulation_profile_from_replay_cue_bundle,
+    queue_e_signal_profile_from_replay_cue_bundle,
+)
 
 
 SOURCE_DOC_REFS = [
@@ -24,8 +27,13 @@ def build_nightmare_loop_risk(
     replay_cue_bundle: dict[str, Any],
 ) -> dict[str, Any]:
     queue_e_signal_profile = queue_e_signal_profile_from_replay_cue_bundle(replay_cue_bundle)
+    repair_profile = queue_e_repair_modulation_profile_from_replay_cue_bundle(
+        replay_cue_bundle
+    )
     source_residue_refs = list(dream_window.get("pain_residue_refs", [])) + list(
         pain_replay.get("repair_obligation_refs", [])
+    ) + list(
+        repair_profile.get("ref_set", [])
     )
     relationship_candidates = list(wake_integration.get("relationship_repair_candidates", []))
     risk_score = (
@@ -43,6 +51,8 @@ def build_nightmare_loop_risk(
         loop_indicators.append("confirmation_blocked_repair_lock")
     elif queue_e_signal_profile["repair_followup_required"]:
         loop_indicators.append("guarded_repair_followup")
+    if repair_profile["pressure_level"] in {"urgent", "elevated"}:
+        loop_indicators.append("queue_e_repair_modulated_dream_loop")
     return {
         "schema_version": "nightmare_loop_risk_v0",
         "run_id": run_id,
@@ -66,6 +76,10 @@ def build_nightmare_loop_risk(
         "repair_obligation_count": queue_e_signal_profile["repair_obligation_count"],
         "regret_pressure_count": queue_e_signal_profile["regret_pressure_count"],
         "queue_e_priority_band": queue_e_signal_profile["queue_e_priority_band"],
+        "queue_e_repair_modulation_profile": repair_profile,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 

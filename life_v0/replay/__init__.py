@@ -7,7 +7,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from life_v0.membrane.queue_e_signals import derive_queue_e_signal_profile
+from life_v0.membrane.queue_e_signals import (
+    build_queue_e_repair_modulation_profile,
+    derive_queue_e_signal_profile,
+)
 
 
 SOURCE_DOC_REFS = [
@@ -126,6 +129,11 @@ def build_replay_cue_bundle(
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
     )
+    repair_modulation_profile = build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
     return {
         "schema_version": "replay_cue_bundle_v0",
         "run_id": run_id,
@@ -153,6 +161,10 @@ def build_replay_cue_bundle(
         "regret_pressure_refs": queue_e_signal_profile["regret_pressure_refs"],
         "regret_pressure_count": queue_e_signal_profile["regret_pressure_count"],
         "queue_e_priority_band": queue_e_signal_profile["queue_e_priority_band"],
+        "queue_e_repair_modulation_profile": repair_modulation_profile,
+        "queue_e_repair_pressure_level": repair_modulation_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_modulation_profile["attention_target"],
+        "queue_e_repair_ref_set": list(repair_modulation_profile.get("ref_set", [])),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 

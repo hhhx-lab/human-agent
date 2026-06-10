@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from life_v0.membrane.queue_e_signals import (
+    queue_e_repair_modulation_profile_from_replay_cue_bundle,
+)
+
 
 SOURCE_DOC_REFS = [
     "docs/08_sleep_dream_fatigue_states.md",
@@ -19,6 +23,10 @@ def build_wake_integration_frame(
     replay_cue_bundle: dict[str, Any],
 ) -> dict[str, Any]:
     relationship_candidates = list(dream_window.get("relationship_simulation_refs", []))
+    repair_profile = queue_e_repair_modulation_profile_from_replay_cue_bundle(
+        replay_cue_bundle
+    )
+    repair_refs = list(repair_profile.get("ref_set", []))
     return {
         "schema_version": "wake_integration_frame_v0",
         "run_id": run_id,
@@ -35,6 +43,17 @@ def build_wake_integration_frame(
         "dream_fact_gate_ref": "runtime/state/membrane/dream_fact_boundary.json",
         "narrative_writeback_candidates": list(dream_window.get("source_trace_refs", []))[:3],
         "relationship_repair_candidates": relationship_candidates,
+        "queue_e_repair_modulation_profile": repair_profile,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_set": repair_refs,
+        "repair_modulated_wake_targets": [
+            "runtime/state/life_state.json#regret_events",
+            "runtime/state/life_state.json#relationship_subjects",
+            "runtime/state/growth/relationship_learning_plan.json",
+        ]
+        if repair_profile["pressure_level"] in {"urgent", "elevated"}
+        else [],
         "action_candidate_after_wake": ["defer_until_membrane_review"],
         "archive_requirement": "required_before_activation",
         "source_doc_refs": SOURCE_DOC_REFS,

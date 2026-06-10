@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from life_v0.membrane.queue_e_signals import queue_e_signal_profile_from_replay_cue_bundle
+from life_v0.membrane.queue_e_signals import (
+    queue_e_repair_modulation_profile_from_replay_cue_bundle,
+    queue_e_signal_profile_from_replay_cue_bundle,
+)
 
 
 SOURCE_DOC_REFS = [
@@ -23,6 +26,9 @@ def build_relationship_learning_plan(
     wake_integration: dict[str, Any],
 ) -> dict[str, Any]:
     queue_e_signal_profile = queue_e_signal_profile_from_replay_cue_bundle(replay_cue_bundle)
+    repair_profile = queue_e_repair_modulation_profile_from_replay_cue_bundle(
+        replay_cue_bundle
+    )
     relationship_targets = [
         "repair_timing_adjustment",
         "relationship_pacing_adjustment",
@@ -32,6 +38,8 @@ def build_relationship_learning_plan(
         relationship_targets.append("repair_reentry_timing_adjustment")
     if queue_e_signal_profile["world_contact_release_posture"] == "confirmation_blocked":
         relationship_targets.append("contact_boundary_respect_rehearsal")
+    if repair_profile["pressure_level"] in {"urgent", "elevated"}:
+        relationship_targets.append("queue_e_repair_modulated_relationship_reentry")
     return {
         "schema_version": "relationship_learning_plan_v0",
         "run_id": run_id,
@@ -52,6 +60,10 @@ def build_relationship_learning_plan(
         "repair_obligation_count": queue_e_signal_profile["repair_obligation_count"],
         "regret_pressure_count": queue_e_signal_profile["regret_pressure_count"],
         "queue_e_priority_band": queue_e_signal_profile["queue_e_priority_band"],
+        "queue_e_repair_modulation_profile": repair_profile,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         "blocked_learning_modes": list(learning_window.get("blocked_learning_modes", [])),
         "source_doc_refs": SOURCE_DOC_REFS,
     }

@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from life_v0.membrane.queue_e_signals import queue_e_signal_profile_from_replay_cue_bundle
+from life_v0.membrane.queue_e_signals import (
+    queue_e_repair_modulation_profile_from_replay_cue_bundle,
+    queue_e_signal_profile_from_replay_cue_bundle,
+)
 
 
 SOURCE_DOC_REFS = [
@@ -22,6 +25,9 @@ def build_language_learning_plan(
     self_read_report: dict[str, Any],
 ) -> dict[str, Any]:
     queue_e_signal_profile = queue_e_signal_profile_from_replay_cue_bundle(replay_cue_bundle)
+    repair_profile = queue_e_repair_modulation_profile_from_replay_cue_bundle(
+        replay_cue_bundle
+    )
     language_targets = [
         "shared_terms_alignment",
         "repair_language_refinement",
@@ -31,6 +37,8 @@ def build_language_learning_plan(
         language_targets.append("apology_repair_expression_refinement")
     if queue_e_signal_profile["queue_e_priority_band"] == "locked_repair_urgent":
         language_targets.append("confirmation_locked_expression_restraint")
+    if repair_profile["pressure_level"] in {"urgent", "elevated"}:
+        language_targets.append("queue_e_repair_modulated_expression_learning")
     return {
         "schema_version": "language_learning_plan_v0",
         "run_id": run_id,
@@ -51,6 +59,10 @@ def build_language_learning_plan(
         "repair_obligation_count": queue_e_signal_profile["repair_obligation_count"],
         "regret_pressure_count": queue_e_signal_profile["regret_pressure_count"],
         "queue_e_priority_band": queue_e_signal_profile["queue_e_priority_band"],
+        "queue_e_repair_modulation_profile": repair_profile,
+        "queue_e_repair_pressure_level": repair_profile["pressure_level"],
+        "queue_e_repair_attention_target": repair_profile["attention_target"],
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         "blocked_learning_modes": list(learning_window.get("blocked_learning_modes", [])),
         "source_doc_refs": SOURCE_DOC_REFS,
     }

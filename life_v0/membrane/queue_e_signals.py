@@ -112,6 +112,54 @@ def build_queue_e_repair_modulation_profile(
     }
 
 
+def queue_e_repair_modulation_profile_from_replay_cue_bundle(
+    replay_cue_bundle: dict[str, Any] | None,
+) -> dict[str, Any]:
+    replay_cue_bundle = replay_cue_bundle or {}
+    embedded_profile = replay_cue_bundle.get("queue_e_repair_modulation_profile")
+    if (
+        isinstance(embedded_profile, dict)
+        and embedded_profile.get("schema_version")
+        == "queue_e_repair_modulation_profile_v0"
+    ):
+        return {
+            **embedded_profile,
+            "ref_set": _merge_refs(list(embedded_profile.get("ref_set", []))),
+        }
+
+    signal_profile = queue_e_signal_profile_from_replay_cue_bundle(replay_cue_bundle)
+    pressure_level = _repair_pressure_level(signal_profile)
+    ref_set = _merge_refs(
+        signal_profile.get("repair_obligation_refs", []),
+        signal_profile.get("regret_pressure_refs", []),
+        [
+            "runtime/state/replay/replay_cue_bundle.json"
+            if replay_cue_bundle
+            else "",
+        ],
+    )
+    attention_target = "repair_followup"
+    if signal_profile["world_contact_release_posture"] == "confirmation_blocked":
+        attention_target = "world_contact_confirmation_lock"
+    elif signal_profile["regret_pressure_count"]:
+        attention_target = "regret_pressure"
+    elif signal_profile["repair_obligation_count"]:
+        attention_target = "repair_obligation"
+    return {
+        "schema_version": "queue_e_repair_modulation_profile_v0",
+        "pressure_level": pressure_level,
+        "attention_target": attention_target,
+        "world_contact_release_posture": signal_profile["world_contact_release_posture"],
+        "repair_followup_required": signal_profile["repair_followup_required"],
+        "repair_obligation_count": signal_profile["repair_obligation_count"],
+        "regret_pressure_count": signal_profile["regret_pressure_count"],
+        "queue_e_priority_band": signal_profile["queue_e_priority_band"],
+        "repair_obligation_refs": list(signal_profile.get("repair_obligation_refs", [])),
+        "regret_pressure_refs": list(signal_profile.get("regret_pressure_refs", [])),
+        "ref_set": ref_set,
+    }
+
+
 def queue_e_signal_profile_from_replay_cue_bundle(
     replay_cue_bundle: dict[str, Any] | None,
 ) -> dict[str, Any]:
