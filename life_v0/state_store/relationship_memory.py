@@ -5,6 +5,9 @@ from typing import Any
 from life_v0.growth.offline_learning_profile import (
     normalize_offline_learning_cumulative_profile,
 )
+from life_v0.membrane.queue_e_signals import (
+    build_queue_e_repair_modulation_profile,
+)
 
 
 SOURCE_DOC_REFS = [
@@ -76,6 +79,9 @@ def project_relationship_memory(
     language_learning_plan_ref: str | None = None,
     relationship_learning_plan_ref: str | None = None,
     offline_learning_cumulative_profile: dict[str, Any] | None = None,
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     relationship_graph = relationship_graph or {}
     relationship_timeline = relationship_timeline or {}
@@ -160,6 +166,24 @@ def project_relationship_memory(
         updated.setdefault("long_term_change_sources", {})
         updated["long_term_change_sources"]["offline_learning_cumulative_refs"] = (
             cumulative_refs
+        )
+    repair_profile = build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
+    if repair_profile["pressure_level"] != "quiet" or repair_profile["ref_set"]:
+        repair_refs = list(repair_profile.get("ref_set", []))
+        updated["repair_history_refs"] = _dedupe(
+            updated["repair_history_refs"] + repair_refs
+        )
+        updated["queue_e_repair_modulation_profile"] = repair_profile
+        updated["queue_e_repair_pressure_level"] = repair_profile["pressure_level"]
+        updated["queue_e_repair_attention_target"] = repair_profile["attention_target"]
+        updated["queue_e_repair_refs"] = repair_refs
+        updated.setdefault("long_term_change_sources", {})
+        updated["long_term_change_sources"]["queue_e_repair_modulation_refs"] = (
+            repair_refs
         )
     return updated
 

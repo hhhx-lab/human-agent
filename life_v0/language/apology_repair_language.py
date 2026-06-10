@@ -7,6 +7,9 @@ from life_v0.growth.offline_learning_profile import (
     derive_offline_learning_profile,
     normalize_offline_learning_cumulative_profile,
 )
+from life_v0.membrane.queue_e_signals import (
+    build_queue_e_repair_modulation_profile,
+)
 
 
 def build_apology_repair_language_trace(
@@ -16,6 +19,8 @@ def build_apology_repair_language_trace(
     responsibility_loop_state: dict[str, Any],
     relationship_timeline: dict[str, Any],
     commitment_expression_plan: dict[str, Any],
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
     nightmare_risk: dict[str, Any] | None = None,
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
@@ -89,6 +94,12 @@ def build_apology_repair_language_trace(
         "relationship_timeline_ref": "runtime/state/relationship/relationship_timeline.json",
         "source_doc_refs": source_doc_refs,
     }
+    trace = project_apology_repair_language_trace_with_queue_e_repair_modulation(
+        apology_repair_language_trace=trace,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
     return project_apology_repair_language_trace_with_offline_learning(
         apology_repair_language_trace=trace,
         nightmare_risk=nightmare_risk,
@@ -97,6 +108,70 @@ def build_apology_repair_language_trace(
         relationship_learning_plan=relationship_learning_plan,
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
+
+
+def project_apology_repair_language_trace_with_queue_e_repair_modulation(
+    *,
+    apology_repair_language_trace: dict[str, Any],
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not apology_repair_language_trace:
+        return {}
+    repair_profile = build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
+    if repair_profile["pressure_level"] == "quiet" and not repair_profile["ref_set"]:
+        return apology_repair_language_trace
+
+    updated = json.loads(json.dumps(apology_repair_language_trace))
+    ref_set = list(repair_profile.get("ref_set", []))
+    pressure_level = str(repair_profile.get("pressure_level") or "quiet")
+
+    moves = list(updated.get("repair_language_moves", []))
+    if pressure_level in {"urgent", "elevated"} and not _has_move_type(
+        moves,
+        "responsibility_repair_modulation",
+    ):
+        moves.append(
+            {
+                "move_id": f"repair-move-{updated.get('run_id', 'queue-e')}-repair-modulation",
+                "move_type": "responsibility_repair_modulation",
+                "surface_goal": "让责任、后悔和痛苦压力先改写修复语言窗口，再给出后续承诺。",
+                "trigger_refs": ref_set,
+            }
+        )
+    updated["repair_language_moves"] = moves
+
+    move_type_order = list(updated.get("move_type_order", []))
+    if (
+        pressure_level in {"urgent", "elevated"}
+        and "responsibility_repair_modulation" not in move_type_order
+    ):
+        try:
+            followup_index = move_type_order.index("followup_commitment")
+        except ValueError:
+            move_type_order.append("responsibility_repair_modulation")
+        else:
+            move_type_order.insert(followup_index, "responsibility_repair_modulation")
+    updated["move_type_order"] = _dedupe(move_type_order)
+
+    if pressure_level == "urgent":
+        updated["queue_e_repair_window_mode"] = "responsibility_lock_first"
+        updated["delay_or_release_decision"] = "hold_for_responsibility_repair_lock"
+    elif pressure_level == "elevated":
+        updated["queue_e_repair_window_mode"] = "responsibility_repair_guarded"
+    elif pressure_level == "present":
+        updated["queue_e_repair_window_mode"] = "responsibility_pressure_present"
+
+    updated["queue_e_repair_modulation_profile"] = repair_profile
+    updated["queue_e_repair_pressure_level"] = pressure_level
+    updated["queue_e_repair_attention_target"] = repair_profile["attention_target"]
+    updated["queue_e_repair_ref_set"] = ref_set
+    return updated
 
 
 def project_apology_repair_language_trace_with_offline_learning(

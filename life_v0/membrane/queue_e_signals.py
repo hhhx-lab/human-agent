@@ -63,6 +63,55 @@ def derive_queue_e_signal_profile(
     }
 
 
+def build_queue_e_repair_modulation_profile(
+    *,
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    profile = derive_queue_e_signal_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
+    pressure_level = _repair_pressure_level(profile)
+    ref_set = _merge_refs(
+        profile.get("repair_obligation_refs", []),
+        profile.get("regret_pressure_refs", []),
+        [
+            "runtime/state/action/responsibility_loop_state.json"
+            if responsibility_loop_state
+            else "",
+            "runtime/state/membrane/world_contact_summary.json"
+            if world_contact_summary
+            else "",
+            "runtime/reports/latest/pain_regret_repair_report.json"
+            if pain_regret_repair_report
+            else "",
+        ],
+    )
+    attention_target = "repair_followup"
+    if profile["world_contact_release_posture"] == "confirmation_blocked":
+        attention_target = "world_contact_confirmation_lock"
+    elif profile["regret_pressure_count"]:
+        attention_target = "regret_pressure"
+    elif profile["repair_obligation_count"]:
+        attention_target = "repair_obligation"
+    return {
+        "schema_version": "queue_e_repair_modulation_profile_v0",
+        "pressure_level": pressure_level,
+        "attention_target": attention_target,
+        "world_contact_release_posture": profile["world_contact_release_posture"],
+        "repair_followup_required": profile["repair_followup_required"],
+        "repair_obligation_count": profile["repair_obligation_count"],
+        "regret_pressure_count": profile["regret_pressure_count"],
+        "queue_e_priority_band": profile["queue_e_priority_band"],
+        "repair_obligation_refs": list(profile.get("repair_obligation_refs", [])),
+        "regret_pressure_refs": list(profile.get("regret_pressure_refs", [])),
+        "ref_set": ref_set,
+    }
+
+
 def queue_e_signal_profile_from_replay_cue_bundle(
     replay_cue_bundle: dict[str, Any] | None,
 ) -> dict[str, Any]:
@@ -88,12 +137,22 @@ def queue_e_signal_profile_from_replay_cue_bundle(
     }
 
 
+def _repair_pressure_level(profile: dict[str, Any]) -> str:
+    if profile.get("queue_e_priority_band") == "locked_repair_urgent":
+        return "urgent"
+    if profile.get("repair_followup_required"):
+        return "elevated"
+    if profile.get("repair_obligation_count") or profile.get("regret_pressure_count"):
+        return "present"
+    return "quiet"
+
+
 def _merge_refs(*ref_groups: list[Any]) -> list[str]:
     merged: list[str] = []
     seen: set[str] = set()
     for group in ref_groups:
         for ref in group:
-            if not isinstance(ref, str) or ref in seen:
+            if not isinstance(ref, str) or not ref or ref in seen:
                 continue
             seen.add(ref)
             merged.append(ref)

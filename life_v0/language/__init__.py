@@ -139,6 +139,10 @@ def run_build_language_relationship(
     offline_consolidation_frame = _load_json_if_exists(state_dir / "dream" / "offline_consolidation_frame.json")
     nightmare_risk = _load_json_if_exists(state_dir / "dream" / "nightmare_loop_risk.json")
     growth_patch_candidate_queue = _load_json_if_exists(state_dir / "growth" / "growth_patch_candidate_queue.json")
+    world_contact_summary = _load_json_if_exists(state_dir / "membrane" / "world_contact_summary.json")
+    pain_regret_repair_report = _load_json_if_exists(
+        reports_dir / "pain_regret_repair_report.json"
+    )
     belief_learning_plan = _load_json_if_exists(state_dir / "growth" / "belief_learning_plan.json")
     language_learning_plan = _load_json_if_exists(state_dir / "growth" / "language_learning_plan.json")
     relationship_learning_plan = _load_json_if_exists(
@@ -248,6 +252,8 @@ def run_build_language_relationship(
         responsibility_ledger=responsibility_ledger,
         responsibility_loop_state=responsibility_loop,
         relationship_timeline=relationship_timeline,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
@@ -259,6 +265,8 @@ def run_build_language_relationship(
         responsibility_loop_state=responsibility_loop,
         relationship_timeline=relationship_timeline,
         commitment_expression_plan=commitment_expression_plan,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
@@ -290,6 +298,9 @@ def run_build_language_relationship(
         relationship_learning_plan_ref=(
             RELATIONSHIP_LEARNING_PLAN_REF if relationship_learning_plan else None
         ),
+        responsibility_loop_state=responsibility_loop,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
 
     state_refs = [
@@ -354,6 +365,8 @@ def run_build_language_relationship(
         relationship_learning_plan_ref=(
             RELATIONSHIP_LEARNING_PLAN_REF if relationship_learning_plan else None
         ),
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         additional_runtime_trace_refs=[
             "runtime/state/relationship/commitment_truth_state.json",
             "runtime/state/responsibility/responsibility_ledger.json",
@@ -798,6 +811,8 @@ def _build_commitment_expression_plan(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return build_commitment_expression_plan(
         run_id=run_id,
@@ -808,6 +823,8 @@ def _build_commitment_expression_plan(
         responsibility_ledger=responsibility_ledger,
         responsibility_loop_state=responsibility_loop_state,
         relationship_timeline=relationship_timeline,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
@@ -827,6 +844,8 @@ def _build_apology_repair_language_trace(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return build_apology_repair_language_trace(
         run_id=run_id,
@@ -834,6 +853,8 @@ def _build_apology_repair_language_trace(
         responsibility_loop_state=responsibility_loop_state,
         relationship_timeline=relationship_timeline,
         commitment_expression_plan=commitment_expression_plan,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,

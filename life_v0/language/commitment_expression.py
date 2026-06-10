@@ -7,6 +7,9 @@ from life_v0.growth.offline_learning_profile import (
     derive_offline_learning_profile,
     normalize_offline_learning_cumulative_profile,
 )
+from life_v0.membrane.queue_e_signals import (
+    build_queue_e_repair_modulation_profile,
+)
 
 
 def build_commitment_expression_plan(
@@ -19,6 +22,8 @@ def build_commitment_expression_plan(
     responsibility_ledger: dict[str, Any],
     responsibility_loop_state: dict[str, Any],
     relationship_timeline: dict[str, Any],
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
     nightmare_risk: dict[str, Any] | None = None,
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
@@ -101,6 +106,12 @@ def build_commitment_expression_plan(
             if isinstance(item, dict) and item.get("counterfactual_id")
         ],
     }
+    plan = project_commitment_expression_plan_with_queue_e_repair_modulation(
+        commitment_expression_plan=plan,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
     return project_commitment_expression_plan_with_offline_learning(
         commitment_expression_plan=plan,
         nightmare_risk=nightmare_risk,
@@ -109,6 +120,69 @@ def build_commitment_expression_plan(
         relationship_learning_plan=relationship_learning_plan,
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
+
+
+def project_commitment_expression_plan_with_queue_e_repair_modulation(
+    *,
+    commitment_expression_plan: dict[str, Any],
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not commitment_expression_plan:
+        return {}
+    repair_profile = build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
+    if repair_profile["pressure_level"] == "quiet" and not repair_profile["ref_set"]:
+        return commitment_expression_plan
+
+    updated = json.loads(json.dumps(commitment_expression_plan))
+    ref_set = list(repair_profile.get("ref_set", []))
+    pressure_level = str(repair_profile.get("pressure_level") or "quiet")
+
+    candidates = list(updated.get("language_act_candidates", []))
+    if pressure_level in {"urgent", "elevated"} and not _has_item_type(
+        candidates,
+        "responsibility_repair_modulation",
+        "act_type",
+    ):
+        candidates.append(
+            {
+                "act_id": f"commitment-act-{updated.get('run_id', 'queue-e')}-repair-modulation",
+                "act_type": "responsibility_repair_modulation",
+                "surface_goal": "让责任、后悔和痛苦压力先调制承诺表达节奏，再进入下一次兑现。",
+                "trigger_refs": ref_set,
+            }
+        )
+    updated["language_act_candidates"] = candidates
+
+    act_type_order = list(updated.get("act_type_order", []))
+    if (
+        pressure_level in {"urgent", "elevated"}
+        and "responsibility_repair_modulation" not in act_type_order
+    ):
+        try:
+            followup_index = act_type_order.index("followup_commitment")
+        except ValueError:
+            act_type_order.append("responsibility_repair_modulation")
+        else:
+            act_type_order.insert(followup_index, "responsibility_repair_modulation")
+    updated["act_type_order"] = _dedupe(act_type_order)
+
+    if pressure_level == "urgent":
+        updated["queue_e_commitment_tempo_mode"] = "responsibility_lock_first"
+        updated["delay_or_release_decision"] = "hold_for_responsibility_repair_lock"
+    elif pressure_level == "elevated":
+        updated["queue_e_commitment_tempo_mode"] = "responsibility_repair_guarded"
+
+    updated["queue_e_repair_modulation_profile"] = repair_profile
+    updated["queue_e_repair_pressure_level"] = pressure_level
+    updated["queue_e_repair_attention_target"] = repair_profile["attention_target"]
+    updated["queue_e_repair_ref_set"] = ref_set
+    return updated
 
 
 def project_commitment_expression_plan_with_offline_learning(

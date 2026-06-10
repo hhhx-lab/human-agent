@@ -7,6 +7,9 @@ from life_v0.direction import LIFE_TARGETS
 from life_v0.growth.offline_learning_profile import (
     normalize_offline_learning_cumulative_profile,
 )
+from life_v0.membrane.queue_e_signals import (
+    build_queue_e_repair_modulation_profile,
+)
 from life_v0.state_store.self_model import project_self_model_projection
 
 
@@ -162,6 +165,8 @@ def project_responsibility_language_continuity(
     language_learning_plan_ref: str | None = None,
     relationship_learning_plan_ref: str | None = None,
     offline_learning_cumulative_profile: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
     additional_runtime_trace_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     commitment_truth_state = commitment_truth_state or {}
@@ -297,6 +302,49 @@ def project_responsibility_language_continuity(
             list(language_state.get("offline_learning_refs", []))
             + offline_learning_refs
         )
+    repair_profile = build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
+    if repair_profile["pressure_level"] != "quiet" or repair_profile["ref_set"]:
+        repair_refs = list(repair_profile.get("ref_set", []))
+        memory_index["relationship_memory_refs"] = _dedupe(
+            list(memory_index.get("relationship_memory_refs", [])) + repair_refs
+        )
+        memory_index["responsibility_memory_refs"] = _dedupe(
+            list(memory_index.get("responsibility_memory_refs", [])) + repair_refs
+        )
+        language_state["queue_e_repair_modulation_profile"] = repair_profile
+        language_state["queue_e_repair_pressure_level"] = repair_profile[
+            "pressure_level"
+        ]
+        language_state["queue_e_repair_attention_target"] = repair_profile[
+            "attention_target"
+        ]
+        language_state["queue_e_repair_refs"] = repair_refs
+        updated["regret_events"] = _dedupe(
+            list(updated.get("regret_events", []))
+            + list(repair_profile.get("regret_pressure_refs", []))
+        )
+        if relationship_subjects:
+            relationship_subject = relationship_subjects[0]
+            relationship_subject["queue_e_repair_refs"] = _dedupe(
+                list(relationship_subject.get("queue_e_repair_refs", []))
+                + repair_refs
+            )
+            relationship_subject["queue_e_repair_pressure_level"] = repair_profile[
+                "pressure_level"
+            ]
+            relationship_subject["queue_e_repair_attention_target"] = repair_profile[
+                "attention_target"
+            ]
+            relationship_subject["world_contact_release_posture"] = repair_profile[
+                "world_contact_release_posture"
+            ]
+            relationship_subject["repair_followup_required"] = repair_profile[
+                "repair_followup_required"
+            ]
     cumulative_profile = normalize_offline_learning_cumulative_profile(
         offline_learning_cumulative_profile
     )

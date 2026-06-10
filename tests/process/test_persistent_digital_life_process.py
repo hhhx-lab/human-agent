@@ -8146,6 +8146,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             language_dir = runtime_root / "state" / "language"
             relationship_dir = runtime_root / "state" / "relationship"
             memory_dir = runtime_root / "state" / "memory"
+            membrane_dir = runtime_root / "state" / "membrane"
             responsibility_dir = runtime_root / "state" / "responsibility"
             action_dir = runtime_root / "state" / "action"
             dream_dir = runtime_root / "state" / "dream"
@@ -8157,6 +8158,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             language_dir.mkdir(parents=True, exist_ok=True)
             relationship_dir.mkdir(parents=True, exist_ok=True)
             memory_dir.mkdir(parents=True, exist_ok=True)
+            membrane_dir.mkdir(parents=True, exist_ok=True)
             responsibility_dir.mkdir(parents=True, exist_ok=True)
             action_dir.mkdir(parents=True, exist_ok=True)
             dream_dir.mkdir(parents=True, exist_ok=True)
@@ -8287,6 +8289,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 {
                     "schema_version": "responsibility_loop_state_v0",
                     "repair_obligation_refs": ["repair-001"],
+                    "repair_followup_required": True,
                     "responsibility_attribution_events": [{"responsibility_event_id": "responsibility-event-001"}],
                     "regret_pressure_candidates": [
                         {
@@ -8295,6 +8298,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         }
                     ],
                     "counterfactual_repair_frames": [{"counterfactual_id": "counterfactual-001"}],
+                },
+            )
+            self._write_json(
+                membrane_dir / "world_contact_summary.json",
+                {
+                    "schema_version": "world_contact_summary_v0",
+                    "release_posture": "shadow_only_guarded",
+                    "repair_obligation_refs": ["repair-001"],
+                    "regret_pressure_refs": ["regret-001"],
+                },
+            )
+            self._write_json(
+                reports_dir / "pain_regret_repair_report.json",
+                {
+                    "schema_version": "pain_regret_repair_report_v0",
+                    "repair_followup_required": True,
+                    "repair_obligation_refs": ["repair-001"],
+                    "regret_pressure_refs": ["regret-001"],
                 },
             )
             self._write_json(
@@ -8533,12 +8554,40 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 persisted_commitment_expression_plan["act_type_order"],
             )
             self.assertEqual(
+                persisted_commitment_expression_plan["queue_e_repair_pressure_level"],
+                "elevated",
+            )
+            self.assertIn(
+                "responsibility_repair_modulation",
+                persisted_commitment_expression_plan["act_type_order"],
+            )
+            self.assertIn(
+                "runtime/state/membrane/world_contact_summary.json",
+                persisted_commitment_expression_plan["queue_e_repair_ref_set"],
+            )
+            self.assertEqual(
                 persisted_apology_repair_language_trace["repair_window_mode"],
                 "nightmare_rewrite_first",
+            )
+            self.assertEqual(
+                persisted_apology_repair_language_trace["queue_e_repair_pressure_level"],
+                "elevated",
+            )
+            self.assertIn(
+                "responsibility_repair_modulation",
+                persisted_apology_repair_language_trace["move_type_order"],
             )
             self.assertIn(
                 "runtime/state/growth/relationship_learning_plan.json",
                 persisted_relationship_memory["offline_learning_refs"],
+            )
+            self.assertEqual(
+                persisted_relationship_memory["queue_e_repair_pressure_level"],
+                "elevated",
+            )
+            self.assertIn(
+                "runtime/reports/latest/pain_regret_repair_report.json",
+                persisted_relationship_memory["queue_e_repair_refs"],
             )
             self.assertIn(
                 "runtime/reports/latest/resumed_external_dialogue_packet.json",
@@ -8551,6 +8600,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "runtime/state/growth/language_learning_plan.json",
                 persisted_life_state["language_state"]["offline_learning_refs"],
+            )
+            self.assertEqual(
+                persisted_life_state["language_state"]["queue_e_repair_pressure_level"],
+                "elevated",
+            )
+            self.assertIn(
+                "runtime/state/membrane/world_contact_summary.json",
+                persisted_life_state["language_state"]["queue_e_repair_refs"],
+            )
+            self.assertEqual(
+                persisted_life_state["relationship_subjects"][0][
+                    "queue_e_repair_pressure_level"
+                ],
+                "elevated",
             )
             self.assertEqual(
                 persisted_life_state["relationship_subjects"][0]["relationship_stage"],

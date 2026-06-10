@@ -7,10 +7,12 @@ from typing import Any, Callable
 from ..body.trait_drift import build_trait_drift_monitor_from_self_model
 from ..language.apology_repair_language import build_apology_repair_language_trace
 from ..language.apology_repair_language import (
+    project_apology_repair_language_trace_with_queue_e_repair_modulation,
     project_apology_repair_language_trace_with_offline_learning,
 )
 from ..language.commitment_expression import build_commitment_expression_plan
 from ..language.commitment_expression import (
+    project_commitment_expression_plan_with_queue_e_repair_modulation,
     project_commitment_expression_plan_with_offline_learning,
 )
 from ..language.dialogue_log import collect_dialogue_turn_refs
@@ -399,7 +401,12 @@ def bootstrap_resident_supervision(
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     commitment_expression_plan = project_commitment_expression_plan_with_offline_learning(
-        commitment_expression_plan=commitment_expression_plan,
+        commitment_expression_plan=project_commitment_expression_plan_with_queue_e_repair_modulation(
+            commitment_expression_plan=commitment_expression_plan,
+            responsibility_loop_state=responsibility_loop_state,
+            world_contact_summary=world_contact_summary,
+            pain_regret_repair_report=pain_regret_repair_report,
+        ),
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
@@ -407,7 +414,12 @@ def bootstrap_resident_supervision(
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     apology_repair_language_trace = project_apology_repair_language_trace_with_offline_learning(
-        apology_repair_language_trace=apology_repair_language_trace,
+        apology_repair_language_trace=project_apology_repair_language_trace_with_queue_e_repair_modulation(
+            apology_repair_language_trace=apology_repair_language_trace,
+            responsibility_loop_state=responsibility_loop_state,
+            world_contact_summary=world_contact_summary,
+            pain_regret_repair_report=pain_regret_repair_report,
+        ),
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
@@ -427,6 +439,9 @@ def bootstrap_resident_supervision(
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
     life_state = project_responsibility_language_continuity(
         life_state=life_state,
@@ -445,6 +460,8 @@ def bootstrap_resident_supervision(
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         additional_runtime_trace_refs=[
             ref
             for ref in [
@@ -843,6 +860,8 @@ def _refresh_bootstrap_long_horizon_continuity(
         responsibility_ledger=responsibility_ledger,
         responsibility_loop_state=responsibility_loop_state,
         relationship_timeline=first_pass_relationship_timeline,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
@@ -861,6 +880,8 @@ def _refresh_bootstrap_long_horizon_continuity(
         responsibility_loop_state=responsibility_loop_state,
         relationship_timeline=first_pass_relationship_timeline,
         commitment_expression_plan=first_pass_commitment_expression_plan,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
@@ -920,6 +941,8 @@ def _refresh_bootstrap_long_horizon_continuity(
         responsibility_ledger=responsibility_ledger,
         responsibility_loop_state=responsibility_loop_state,
         relationship_timeline=refreshed_relationship_timeline,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
@@ -938,6 +961,8 @@ def _refresh_bootstrap_long_horizon_continuity(
         responsibility_loop_state=responsibility_loop_state,
         relationship_timeline=refreshed_relationship_timeline,
         commitment_expression_plan=refreshed_commitment_expression_plan,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
@@ -959,6 +984,9 @@ def _refresh_bootstrap_long_horizon_continuity(
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
     )
     refreshed_life_state = project_responsibility_language_continuity(
         life_state=life_state,
@@ -977,6 +1005,8 @@ def _refresh_bootstrap_long_horizon_continuity(
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
         additional_runtime_trace_refs=[
             ref
             for ref in [

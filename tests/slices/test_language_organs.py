@@ -570,6 +570,26 @@ class LanguageOrgansTests(unittest.TestCase):
             "world_contact_release_posture": "shadow_only_guarded",
             "repair_followup_required": True,
         }
+        world_contact_summary = {
+            "schema_version": "world_contact_summary_v0",
+            "release_posture": "shadow_only_guarded",
+            "repair_obligation_refs": [
+                "runtime/state/action/responsibility_loop_state.json#repair-obligation"
+            ],
+            "regret_pressure_refs": [
+                "runtime/state/action/responsibility_loop_state.json#regret-pressure"
+            ],
+        }
+        pain_regret_repair_report = {
+            "schema_version": "pain_regret_repair_report_v0",
+            "repair_followup_required": True,
+            "repair_obligation_refs": [
+                "runtime/reports/latest/pain_regret_repair_report.json#repair-obligation"
+            ],
+            "regret_pressure_refs": [
+                "runtime/reports/latest/pain_regret_repair_report.json#regret-pressure"
+            ],
+        }
         relationship_timeline = build_relationship_timeline(
             run_id="organs-test",
             generated_at="2026-06-10T00:00:00+00:00",
@@ -598,6 +618,8 @@ class LanguageOrgansTests(unittest.TestCase):
             responsibility_ledger=responsibility_ledger,
             responsibility_loop_state=responsibility_loop_state,
             relationship_timeline=relationship_timeline,
+            world_contact_summary=world_contact_summary,
+            pain_regret_repair_report=pain_regret_repair_report,
             nightmare_risk=nightmare_risk,
             belief_learning_plan=belief_learning_plan,
             language_learning_plan=language_learning_plan,
@@ -610,6 +632,8 @@ class LanguageOrgansTests(unittest.TestCase):
             responsibility_loop_state=responsibility_loop_state,
             relationship_timeline=relationship_timeline,
             commitment_expression_plan=commitment_expression_plan,
+            world_contact_summary=world_contact_summary,
+            pain_regret_repair_report=pain_regret_repair_report,
             nightmare_risk=nightmare_risk,
             belief_learning_plan=belief_learning_plan,
             language_learning_plan=language_learning_plan,
@@ -651,6 +675,22 @@ class LanguageOrgansTests(unittest.TestCase):
             "paced_reentry_guarded",
         )
         self.assertIn("paced_reentry", commitment_expression_plan["act_type_order"])
+        self.assertEqual(
+            commitment_expression_plan["queue_e_repair_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            commitment_expression_plan["queue_e_commitment_tempo_mode"],
+            "responsibility_repair_guarded",
+        )
+        self.assertIn(
+            "responsibility_repair_modulation",
+            commitment_expression_plan["act_type_order"],
+        )
+        self.assertIn(
+            "runtime/state/membrane/world_contact_summary.json",
+            commitment_expression_plan["queue_e_repair_ref_set"],
+        )
         self.assertTrue(
             any(
                 item.get("act_type") == "paced_reentry"
@@ -664,6 +704,18 @@ class LanguageOrgansTests(unittest.TestCase):
         self.assertTrue(apology_repair_language_trace["trigger_regret_refs"])
         self.assertTrue(apology_repair_language_trace["relationship_injury_refs"])
         self.assertIn("followup_commitment", apology_repair_language_trace["move_type_order"])
+        self.assertEqual(
+            apology_repair_language_trace["queue_e_repair_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            apology_repair_language_trace["queue_e_repair_window_mode"],
+            "responsibility_repair_guarded",
+        )
+        self.assertIn(
+            "responsibility_repair_modulation",
+            apology_repair_language_trace["move_type_order"],
+        )
         self.assertEqual(
             apology_repair_language_trace["repair_window_mode"],
             "nightmare_rewrite_first",

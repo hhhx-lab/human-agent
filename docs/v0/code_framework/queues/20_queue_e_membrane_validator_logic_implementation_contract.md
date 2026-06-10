@@ -618,13 +618,40 @@ Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判
 5. `ResponsibilityLoopState` 至少有一条真实跨层写回链进入 `commitment_truth_state.json`、`responsibility_ledger.json`、`relationship_memory.json` 与 `life_state.json`。
 6. action / validation / schema_runner 新对象都写入了对应状态命名空间。
 7. `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` 至少新增一轮器官级断言。
+8. `world_contact_summary.json`、`pain_regret_repair_report.json` 与 `ResponsibilityLoopState` 已经合成为 `queue_e_repair_modulation_profile_v0`，并开始反向调制 `commitment_expression_plan.json`、`apology_repair_language_trace.json`、`relationship_memory.json` 与 `life_state.json`。
+
+### 第二轮长期调制链已落口径
+
+这一轮 Queue E 不再只把 repair / regret / obligation refs 带进 process / replay / archive 报告，而是把它们压成长期调制 profile：
+
+- `life_v0/membrane/queue_e_signals.py`
+  - 新增 `build_queue_e_repair_modulation_profile(...)`。
+  - 输入 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json`。
+  - 输出 `pressure_level`、`attention_target`、`world_contact_release_posture`、`repair_followup_required`、`repair_obligation_count`、`regret_pressure_count`、`queue_e_priority_band` 与 `ref_set`。
+- `life_v0/language/commitment_expression.py`
+  - `build_commitment_expression_plan(...)` 接收世界接触摘要与痛苦-后悔-修复报告。
+  - 当压力达到 elevated / urgent 时，把 `responsibility_repair_modulation` 插入承诺表达顺序，并写出 `queue_e_repair_modulation_profile`。
+- `life_v0/language/apology_repair_language.py`
+  - `build_apology_repair_language_trace(...)` 接收同一组 Queue E 输入。
+  - 当压力达到 elevated / urgent 时，把 `responsibility_repair_modulation` 插入修复语言顺序，并写出 `queue_e_repair_window_mode`。
+- `life_v0/state_store/relationship_memory.py`
+  - `project_relationship_memory(...)` 保存 `queue_e_repair_modulation_profile`、`queue_e_repair_refs`、`queue_e_repair_pressure_level`。
+  - `long_term_change_sources.queue_e_repair_modulation_refs` 成为后续关系长期变化的证据入口。
+- `life_v0/state_store/life_state.py`
+  - `project_responsibility_language_continuity(...)` 把 Queue E 修复压力投射进 `language_state`、`memory_index.relationship_memory_refs`、`memory_index.responsibility_memory_refs` 和 `relationship_subjects[0]`。
+- `life_v0/process_supervisor/resident_supervision.py`
+  - 常驻启动刷新时，Queue E profile 先进入当轮语言对象，再进入 bootstrap long-horizon refresh。
+- `life_v0/process_supervisor/resident_turn_writeback.py`
+  - 真实外部关系回合结束后，Queue E profile 会重新刷新长期承诺语言、道歉修复语言、关系记忆和生命状态。
+
+这一步的工程意义是：Queue E 压力已经从“动作/验证报告中的字段”变成持续调制语言与关系记忆的生命状态变量。后续实现不得把它退回为单次 report ref carry-through。
 
 ### 当前仍未完成的第二波补厚口径
 
 当前真正还没完成的是：
 
 1. `ResponsibilityLoopState` 的 repair / regret / obligation 对 Queue B、Queue A 和 growth/archive/process 的持续调制还需要更深的策略层消费，而不只是 refs carry-through。
-2. `world_contact_summary.json` 与 `pain_regret_repair_report.json` 虽然已经进入 report bundle、process report 和 resident waiting governance，但还需要继续反向调制 dream / growth / language 的长期权重。
+2. `world_contact_summary.json` 与 `pain_regret_repair_report.json` 已经反向调制长期 language / relationship_memory / life_state，但还需要继续进入 dream / growth / archive 的长期权重。
 3. `cross_file_logic.json`、`evidence_ranking.json`、`run_manifest.json` 对 archive / reporting / process closeout 的闭包消费还可以继续压深。
 4. Queue E 对 `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` 这些更深的 prediction 器官的正式接线。
 
