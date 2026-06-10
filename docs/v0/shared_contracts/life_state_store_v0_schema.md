@@ -133,7 +133,13 @@ background_history_stability_hold / background_history_stabilized`，并记录
 
 每次 `resident_supervision.py` 或 `resident_turn_writeback.py` 改写这组慢变量后，还必须刷新
 `runtime/state/body/trait_drift_monitor.json`。这份 monitor 是身体/人格层对自我慢变量漂移的观察面，
-至少要带 `slow_variable_summary`、`relationship_stage`、`drift_observation_refs` 和 anchor refs。常驻过程关闭时，
+至少要带 `slow_variable_summary`、`relationship_stage`、`drift_observation_refs` 和 anchor refs。当前 monitor
+还必须把慢变量里的 `slow_variable_update_mode` 与
+`background_trait_convergence_history_role / latest_band / trend_state` 原样带入 `slow_variable_summary`，
+并额外写出 `slow_variable_update_mode_summary`、`background_history_recalibration_names` 与
+`background_history_stabilized_names`。当任一慢变量处于 `background_history_recalibration` 时，
+`drift_direction` 必须提升为 `background_history_recalibration_needed`，让身体/人格层直接看见跨唤醒历史正在要求重校准。
+常驻过程关闭时，
 同一份 monitor 必须作为 `trait_drift_monitor_ref` 进入 resident governance state/snapshot/report、
 `digital_life_process_report.json`、`digital_life_process_digest.json`、process receipt 的 `shared_object_refs`
 与 `input_hashes`。

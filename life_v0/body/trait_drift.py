@@ -51,6 +51,7 @@ def build_trait_drift_monitor_from_self_model(
 ) -> dict[str, Any]:
     previous_monitor = previous_monitor or {}
     slow_variable_summary = _slow_variable_summary(self_model_state)
+    update_mode_summary = _slow_variable_update_mode_summary(slow_variable_summary)
     relationship_subject = _first_subject(relationship_graph)
     background_inertia_weights = [
         payload["background_inertia_weight"]
@@ -77,6 +78,15 @@ def build_trait_drift_monitor_from_self_model(
             "continuity_drive",
         ],
         "slow_variable_summary": slow_variable_summary,
+        "slow_variable_update_mode_summary": update_mode_summary,
+        "background_history_recalibration_names": _names_for_update_modes(
+            update_mode_summary,
+            {"background_history_recalibration"},
+        ),
+        "background_history_stabilized_names": _names_for_update_modes(
+            update_mode_summary,
+            {"background_history_stabilized"},
+        ),
         "relationship_stage": relationship_subject.get("relationship_stage"),
         "relationship_stage_reason": relationship_subject.get("relationship_stage_reason"),
         "background_inertia_active": bool(background_inertia_weights),
@@ -128,6 +138,11 @@ def _slow_variable_summary(self_model_state: dict[str, Any]) -> dict[str, dict[s
                 "last_relationship_stage",
                 "background_resume_value",
                 "background_inertia_weight",
+                "slow_variable_update_mode",
+                "background_trait_convergence_history_focus",
+                "background_trait_convergence_history_role",
+                "background_trait_convergence_history_latest_band",
+                "background_trait_convergence_history_trend_state",
                 "evidence_refs",
             ]
             if key in payload
@@ -144,6 +159,28 @@ def _slow_variable_evidence_refs(
     return refs
 
 
+def _slow_variable_update_mode_summary(
+    slow_variable_summary: dict[str, dict[str, Any]],
+) -> dict[str, list[str]]:
+    summary: dict[str, list[str]] = {}
+    for name, payload in slow_variable_summary.items():
+        mode = payload.get("slow_variable_update_mode")
+        if not isinstance(mode, str) or not mode:
+            continue
+        summary.setdefault(mode, []).append(name)
+    return summary
+
+
+def _names_for_update_modes(
+    update_mode_summary: dict[str, list[str]],
+    modes: set[str],
+) -> list[str]:
+    names: list[str] = []
+    for mode in modes:
+        names.extend(update_mode_summary.get(mode, []))
+    return _dedupe(names)
+
+
 def _first_subject(relationship_graph: dict[str, Any]) -> dict[str, Any]:
     subjects = relationship_graph.get("subjects", [])
     if subjects and isinstance(subjects[0], dict):
@@ -152,6 +189,17 @@ def _first_subject(relationship_graph: dict[str, Any]) -> dict[str, Any]:
 
 
 def _drift_direction(slow_variable_summary: dict[str, dict[str, Any]]) -> str:
+    update_modes = {
+        str(payload.get("slow_variable_update_mode"))
+        for payload in slow_variable_summary.values()
+        if payload.get("slow_variable_update_mode")
+    }
+    if "background_history_recalibration" in update_modes:
+        return "background_history_recalibration_needed"
+    if "background_history_stability_hold" in update_modes:
+        return "background_history_stability_hold"
+    if "background_history_stabilized" in update_modes:
+        return "background_history_stabilized"
     trends = {
         str(payload.get("trend"))
         for payload in slow_variable_summary.values()

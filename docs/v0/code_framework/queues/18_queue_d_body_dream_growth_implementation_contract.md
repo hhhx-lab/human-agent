@@ -349,8 +349,9 @@ Queue D 必须接到这些现有器官上：
 1. `resident_supervision.py` 在 bootstrap continuity refresh 后刷新 `trait_drift_monitor.json`。
 2. `resident_turn_writeback.py` 在 live turn 后关系阶段与自我慢变量发生演化时刷新同一份 monitor。
 3. 如果慢变量带有 `background_resume_value` / `background_inertia_weight`，monitor 必须把这组惯性痕迹保留在 `slow_variable_summary` 里。
-4. `persistent_process.py` / `process_report.py` 关闭常驻过程时必须把同一份 monitor 的 ref 写入关闭态 state、resident governance report、process report、digest、receipt 与 input hash。
-5. `background_continuity.py` 与 `idle_strategy.py` 必须把关闭态 monitor ref 重新挂到 waiting governance，避免身体/人格观察面在下一次唤醒里断线。
+4. 如果慢变量带有 `slow_variable_update_mode` 与 `background_trait_convergence_history_*` 字段，monitor 必须把这些字段原样保留在 `slow_variable_summary`，并派生 `slow_variable_update_mode_summary`、`background_history_recalibration_names`、`background_history_stabilized_names`。当任一慢变量处于 `background_history_recalibration` 时，`drift_direction` 必须进入 `background_history_recalibration_needed`，让身体/人格层成为跨唤醒慢变量历史的观察器，而不是只做静态摘要。
+5. `persistent_process.py` / `process_report.py` 关闭常驻过程时必须把同一份 monitor 的 ref 写入关闭态 state、resident governance report、process report、digest、receipt 与 input hash。
+6. `background_continuity.py` 与 `idle_strategy.py` 必须把关闭态 monitor ref 重新挂到 waiting governance，避免身体/人格观察面在下一次唤醒里断线。
 
 ## I. 新增 `life_v0/dream/dream_window.py`
 
