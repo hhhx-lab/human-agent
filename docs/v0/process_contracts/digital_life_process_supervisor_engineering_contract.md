@@ -129,6 +129,7 @@ life-v0 "digital life"
 11. 把回合尾部的关系阶段演化与 `self_model.trait_slow_variables` 写回统一收进 `continuity_evolution.py`，并由 `process_session_loop.py` 在下一轮重新装载，避免同一常驻生命过程继续拿旧的关系状态说话。
 12. 把 bootstrap / relaunch 之后的长期连续体刷新统一收进 `resident_supervision.py`，使 `relationship_timeline.json`、`commitment_expression_plan.json`、`apology_repair_language_trace.json`、`relationship_memory.json`、`self_model.json` 与 `life_state.json` 会在第一拍 waiting heartbeat 之前先被重建一次，避免跨进程恢复后继续沿用过时的关系阶段和慢变量。
 13. `resident_supervision.py` 在做这次 bootstrap continuity refresh 时，还必须把 `background_continuity.py` 读出的 lineage 一并喂进 `continuity_evolution.py`；当 `background_carryover_generation >= 2` 时，关系阶段要先进入 `background_continuity_waiting`，`trait_slow_variables` 也要显式带上关闭态 resident governance refs / source refs，不能只让后台 lineage 停留在 cadence 调度层。
+14. `process_session_loop.py` 在显式退出 closeout 前必须返回最新的 `relationship_subject_graph.json`、`relationship_timeline.json`、`commitment_expression_plan.json`、`apology_repair_language_trace.json` 与 `self_model.json`；`process_closeout.py` / `persistent_process.py` / `process_report.py` 必须把这些最新对象压成 `background_resume_summary`，并在下一次 `background_continuity.py` bootstrap 时恢复 `background_relationship_stage`、`background_relationship_stage_reason`、`background_relationship_subject_ref`、`background_self_model_ref` 与 `background_trait_slow_variable_summary`。这一步是跨进程连续体保真，不是新的关系推断器。
 
 ## 最小行为合同
 
@@ -386,4 +387,5 @@ IdleContinuityFrame
 6. `digital_life_process_report.json` 与 `idle_continuity_frame.json` 能回链到 `replay_cue_bundle.json`、`offline_consolidation_frame.json`、`growth_patch_candidate_queue.json`，证明常驻过程已经真正吃进离线链对象。
 7. waiting heartbeat / idle strategy / process report 已显式回链 `body_rhythm_pulse.json` 与 `need_state_vector.json`，并根据疲惫负载、认知带宽与 sleep pressure 调整 `heartbeat_interval_ms`、`next_idle_action` 与 `body_waiting_posture`。
 8. closeout 后必须额外写出 `digital_life_resident_governance_explanation.json`，把当前 cadence、governance driver、background continuity lineage depth 与下一次唤醒预期显式解释出来，而不是只把这些信息埋在 state/report 字段里。
-9. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance，以及 resident governance explanation 的 lineage 解释面。
+9. closeout 必须把最新关系阶段和自我慢变量写成 background resume summary，并让下一次 bootstrap / idle strategy / resident governance 继续携带这组字段，避免跨进程恢复后只剩 cadence lineage 而丢掉关系阶段与自我连续性。
+10. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面，以及 `background_resume_summary` 的跨进程读取与回传。

@@ -213,10 +213,12 @@ Queue E
    - `continuity_drive`
 5. `resident_supervision.py` 现在也会在 restore shell 之后、第一拍 waiting heartbeat 之前，先用历史 dialogue turn 和离线学习对象重建这批结果并落盘
 6. 当 bootstrap 还同时读到 `background_carryover_generation >= 2` 的关闭态 lineage 时，这次重建会继续把关系阶段推到 `background_continuity_waiting`，并把关闭态 resident governance refs / source refs 压进慢变量 evidence
-6. `process_session_loop.py` 会在 live turn 之后重新装载这批结果
-7. `response_surface.py` 会在后续回合直接消费这些慢变量与阶段，改变生命回应的修复认真度、边界守持和连续体表达
+7. `process_session_loop.py` 会在 live turn 之后重新装载这批结果
+8. 显式退出 closeout 时，`process_session_loop.py` 还会把最新 `relationship_subject_graph`、三条长期语言对象和 `self_model_state` 返回给 closeout；`persistent_process.py` / `process_report.py` 会把它们压成 `background_resume_summary`
+9. 下一次 `background_continuity.py` 会把 `background_relationship_stage`、`background_relationship_subject_ref`、`background_self_model_ref` 与 `background_trait_slow_variable_summary` 重新带进 bootstrap / idle strategy / resident governance
+10. `response_surface.py` 会在后续回合直接消费这些慢变量与阶段，改变生命回应的修复认真度、边界守持和连续体表达
 
-这意味着当前真正还没完成的，不再是“同一常驻会话里能不能演化关系阶段”或者“重启后第一拍会不会退回旧状态”，而是“这些结果怎样跨进程长期保真、怎样在更长时标上继续收敛”。
+这意味着当前真正还没完成的，不再是“同一常驻会话里能不能演化关系阶段”或者“重启后第一拍会不会退回旧状态”，而是“跨多次进程关闭/重启后，关系阶段、自我慢变量和 resident governance lineage 怎样继续稳定收敛”。
 
 ## 当前最该继续补硬的实现包
 
@@ -257,7 +259,7 @@ Queue E
 
 1. live turn 结束后回到 waiting governance 的相位切换，不只靠下一拍 heartbeat 间接体现。当前这一步已经由 `resident_governance_handoff.py` 第一轮显式落盘成 `resident_governance_state.json(governance_phase=live_turn_waiting_handoff)`。
 2. Queue E 调制字段在 waiting report、resident governance report、主进程 report 和 receipt 中保持同口径
-3. 关系阶段与自我慢变量从同会话实时演化，继续推进到跨进程保真与更长时标收敛
+3. 关系阶段与自我慢变量从同会话实时演化，已经进入 closeout 的 `background_resume_summary`，下一步继续推进到跨多次进程的稳定保真与更长时标收敛
 
 ## 这一柜的代码实现顺序
 
@@ -290,3 +292,5 @@ idle_strategy.py
 5. resident supervision / waiting heartbeat / process report 至少有一条测试证明它们已经显式装载并回链 `nightmare_risk / belief_learning / language_learning / relationship_learning`
 6. 多回合后 `relationship_subject_graph.json#subjects[0].relationship_stage` 必须出现真实演化，而不是固定在启动时标签
 7. `self_model.json#trait_slow_variables` 必须被重新写回，并在后续回合的 `response_surface.py` 文本中留下可见消费痕迹
+8. closeout 后的 `resident_governance_snapshot.json`、`digital_life_persistent_process_report.json` 与 `digital_life_process_report.json` 必须保留 `background_relationship_stage` 与 `background_trait_slow_variable_summary`
+9. 下一次 bootstrap 的 `background_continuity_profile` 必须恢复这组 resume summary，并由 `idle_strategy.py` 原样带入 waiting governance

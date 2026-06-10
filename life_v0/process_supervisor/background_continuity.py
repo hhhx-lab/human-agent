@@ -92,6 +92,36 @@ def load_background_continuity_profile(
         or resident_governance_report.get("run_id")
         or persistent_process_report.get("run_id")
     )
+    relationship_stage = (
+        snapshot.get("background_relationship_stage")
+        or resident_governance_report.get("background_relationship_stage")
+        or persistent_process_report.get("background_relationship_stage")
+    )
+    relationship_stage_reason = (
+        snapshot.get("background_relationship_stage_reason")
+        or resident_governance_report.get("background_relationship_stage_reason")
+        or persistent_process_report.get("background_relationship_stage_reason")
+    )
+    relationship_subject_ref = (
+        snapshot.get("background_relationship_subject_ref")
+        or resident_governance_report.get("background_relationship_subject_ref")
+        or persistent_process_report.get("background_relationship_subject_ref")
+    )
+    self_model_ref = (
+        snapshot.get("background_self_model_ref")
+        or resident_governance_report.get("background_self_model_ref")
+        or persistent_process_report.get("background_self_model_ref")
+    )
+    trait_slow_variable_summary = _dict_or_empty(
+        snapshot.get("background_trait_slow_variable_summary")
+        or resident_governance_report.get("background_trait_slow_variable_summary")
+        or persistent_process_report.get("background_trait_slow_variable_summary")
+    )
+    background_resume_summary = _dict_or_empty(
+        snapshot.get("background_resume_summary")
+        or resident_governance_report.get("background_resume_summary")
+        or persistent_process_report.get("background_resume_summary")
+    )
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
@@ -109,6 +139,18 @@ def load_background_continuity_profile(
         profile["background_carryover_source_ref_set"] = source_ref_set
     if parent_run_id:
         profile["background_carryover_parent_run_id"] = str(parent_run_id)
+    if relationship_stage:
+        profile["background_relationship_stage"] = str(relationship_stage)
+    if relationship_stage_reason:
+        profile["background_relationship_stage_reason"] = str(relationship_stage_reason)
+    if relationship_subject_ref:
+        profile["background_relationship_subject_ref"] = str(relationship_subject_ref)
+    if self_model_ref:
+        profile["background_self_model_ref"] = str(self_model_ref)
+    if trait_slow_variable_summary:
+        profile["background_trait_slow_variable_summary"] = trait_slow_variable_summary
+    if background_resume_summary:
+        profile["background_resume_summary"] = background_resume_summary
     if snapshot:
         profile["background_resident_governance_snapshot_ref"] = (
             BACKGROUND_RESIDENT_GOVERNANCE_SNAPSHOT_REF
@@ -144,3 +186,9 @@ def _list_or_empty(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item) for item in value if item]
+
+
+def _dict_or_empty(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    return value

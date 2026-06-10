@@ -1567,6 +1567,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_resident_governance_report_ref": "runtime/reports/latest/digital_life_resident_governance_report.json",
                 "background_persistent_process_report_ref": "runtime/reports/latest/digital_life_persistent_process_report.json",
                 "background_waiting_mode": "restored_waiting_for_external_turn",
+                "background_relationship_stage": "repair_guarded_continuity",
+                "background_relationship_stage_reason": "repair_followup_required_after_multi_turn_dialogue",
+                "background_relationship_subject_ref": "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
+                "background_self_model_ref": "runtime/state/self/self_model.json",
+                "background_trait_slow_variable_summary": {
+                    "continuity_drive": {
+                        "value": 0.71,
+                        "trend": "up",
+                        "last_relationship_stage": "repair_guarded_continuity",
+                    }
+                },
             },
             source_doc_refs=[
                 "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
@@ -1589,6 +1600,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             idle_strategy["background_resident_governance_snapshot_ref"],
             "runtime/state/terminal/resident_governance_snapshot.json",
+        )
+        self.assertEqual(
+            idle_strategy["background_relationship_stage"],
+            "repair_guarded_continuity",
+        )
+        self.assertEqual(
+            idle_strategy["background_self_model_ref"],
+            "runtime/state/self/self_model.json",
+        )
+        self.assertEqual(
+            idle_strategy["background_trait_slow_variable_summary"]["continuity_drive"][
+                "value"
+            ],
+            0.71,
         )
         self.assertEqual(
             idle_strategy["next_idle_action"],
@@ -1680,6 +1705,78 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             idle_strategy["governance_cadence_profile"],
             "persistent_background_continuity_refresh",
         )
+
+    def test_background_continuity_profile_carries_resume_summary(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            terminal_dir = runtime_root / "state" / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                terminal_dir / "resident_governance_snapshot.json",
+                {
+                    "schema_version": "resident_governance_snapshot_v0",
+                    "run_id": "resume-summary-parent",
+                    "governance_attention_target": "commitment_expression_plan",
+                    "completed_dialogue_turns": 5,
+                    "background_carryover_generation": 2,
+                    "background_relationship_stage": "repair_guarded_continuity",
+                    "background_relationship_stage_reason": "repair_followup_required_after_multi_turn_dialogue",
+                    "background_relationship_subject_ref": "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
+                    "background_self_model_ref": "runtime/state/self/self_model.json",
+                    "background_trait_slow_variable_summary": {
+                        "continuity_drive": {
+                            "value": 0.73,
+                            "trend": "up",
+                            "last_relationship_stage": "repair_guarded_continuity",
+                        }
+                    },
+                    "background_resume_summary": {
+                        "relationship": {
+                            "relationship_stage": "repair_guarded_continuity"
+                        },
+                        "trait_slow_variables": {
+                            "continuity_drive": {"value": 0.73}
+                        },
+                    },
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+            self.assertEqual(profile["background_carryover_generation"], 2)
+            self.assertEqual(
+                profile["background_relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertEqual(
+                profile["background_relationship_subject_ref"],
+                "runtime/state/relationship/relationship_subject_graph.json#subjects[0]",
+            )
+            self.assertEqual(
+                profile["background_self_model_ref"],
+                "runtime/state/self/self_model.json",
+            )
+            self.assertEqual(
+                profile["background_trait_slow_variable_summary"]["continuity_drive"][
+                    "value"
+                ],
+                0.73,
+            )
+            self.assertEqual(
+                profile["background_resume_summary"]["relationship"][
+                    "relationship_stage"
+                ],
+                "repair_guarded_continuity",
+            )
 
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
         from life_v0.process_supervisor.resident_supervision import (
@@ -2837,7 +2934,36 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self._write_json(language_dir / "self_narrative_language_trace.json", {"schema_version": "self_narrative_language_trace_v0"})
             self._write_json(language_dir / "commitment_repair_language_index.json", {"schema_version": "commitment_repair_language_index_v0"})
-            self._write_json(relationship_dir / "relationship_subject_graph.json", {"subjects": []})
+            relationship_graph = {
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relation_role": "friend",
+                        "relationship_stage": "repair_guarded_continuity",
+                        "relationship_stage_reason": "repair_followup_required_after_multi_turn_dialogue",
+                        "relationship_stage_turn_count": 4,
+                        "relationship_stage_evidence_refs": [
+                            "runtime/state/relationship/relationship_timeline.json"
+                        ],
+                    }
+                ]
+            }
+            self_model_state = {
+                "trait_slow_variables": {
+                    "continuity_drive": {
+                        "value": 0.74,
+                        "trend": "up",
+                        "update_count": 4,
+                        "last_relationship_stage": "repair_guarded_continuity",
+                        "last_generated_at": "2026-06-09T00:00:00+00:00",
+                        "evidence_refs": [
+                            "runtime/state/relationship/relationship_timeline.json"
+                        ],
+                    }
+                }
+            }
+            self._write_json(relationship_dir / "relationship_subject_graph.json", relationship_graph)
+            self._write_json(state_dir / "self" / "self_model.json", self_model_state)
             self._write_json(state_dir / "replay" / "replay_cue_bundle.json", {"schema_version": "replay_cue_bundle_v0"})
             self._write_json(
                 state_dir / "dream" / "offline_consolidation_frame.json",
@@ -2976,6 +3102,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 active_sampling_plan_ref="runtime/state/prediction/active_sampling_plan.json",
                 memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
                 state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
+                relationship_graph=relationship_graph,
+                self_model_state=self_model_state,
                 write_json=self._write_json,
             )
 
@@ -3060,6 +3188,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(report["offline_pressure_level"], "present")
             self.assertEqual(report["relaunch_caution_level"], "guarded")
             self.assertEqual(
+                report["background_relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertEqual(
+                report["background_trait_slow_variable_summary"]["continuity_drive"][
+                    "value"
+                ],
+                0.74,
+            )
+            self.assertEqual(
                 report["governance_attention_target"],
                 "commitment_expression_plan",
             )
@@ -3109,6 +3247,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "refresh_replay_growth_hold_before_accepting_external_turn",
             )
             self.assertEqual(digest["resident_governance_lineage_depth"], 0)
+            self.assertEqual(
+                digest["background_relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertEqual(
+                digest["background_trait_slow_variable_summary"]["continuity_drive"][
+                    "last_relationship_stage"
+                ],
+                "repair_guarded_continuity",
+            )
             self.assertEqual(
                 digest["offline_growth_cycle_refs"],
                 [
@@ -3259,6 +3407,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 receipt["shared_object_refs"],
             )
             self.assertIn(
+                "runtime/state/relationship/relationship_subject_graph.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/self/self_model.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
                 "runtime/state/consciousness/workspace_frame.json",
                 receipt["shared_object_refs"],
             )
@@ -3284,6 +3440,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 str(terminal_dir / "resident_governance_state.json"),
+                receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(state_dir / "self" / "self_model.json"),
                 receipt["input_hashes"],
             )
             self.assertIn(
@@ -3901,6 +4061,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
                 pain_regret_repair_report_ref="runtime/reports/latest/pain_regret_repair_report.json",
                 write_json=self._write_json,
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relationship_id": "rel-v0-0001",
+                            "relation_role": "friend",
+                            "relationship_stage": "repair_guarded_continuity",
+                            "relationship_stage_reason": "repair_followup_required_after_multi_turn_dialogue",
+                            "relationship_stage_turn_count": 4,
+                            "relationship_stage_evidence_refs": [
+                                "runtime/state/relationship/relationship_timeline.json"
+                            ],
+                        }
+                    ]
+                },
+                self_model_state={
+                    "trait_slow_variables": {
+                        "continuity_drive": {
+                            "value": 0.71,
+                            "trend": "up",
+                            "update_count": 3,
+                            "last_relationship_stage": "repair_guarded_continuity",
+                            "last_generated_at": "2026-06-09T00:00:00+00:00",
+                            "evidence_refs": [
+                                "runtime/state/relationship/relationship_timeline.json"
+                            ],
+                        }
+                    }
+                },
             )
 
             state = self._read_json(terminal_dir / "persistent_process_state.json")
@@ -4047,6 +4235,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_snapshot["governance_attention_target"],
                 "commitment_expression_plan",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["background_relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["background_relationship_stage_reason"],
+                "repair_followup_required_after_multi_turn_dialogue",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["background_self_model_ref"],
+                "runtime/state/self/self_model.json",
+            )
+            self.assertEqual(
+                resident_governance_snapshot["background_trait_slow_variable_summary"][
+                    "continuity_drive"
+                ]["value"],
+                0.71,
+            )
+            self.assertEqual(
+                resident_governance_report["background_resume_summary"]["relationship"][
+                    "relationship_stage"
+                ],
+                "repair_guarded_continuity",
             )
             self.assertEqual(resident_governance_snapshot["background_carryover_generation"], 1)
             self.assertNotIn("background_carryover_parent_run_id", resident_governance_snapshot)

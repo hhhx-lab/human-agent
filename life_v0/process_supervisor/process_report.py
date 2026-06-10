@@ -68,6 +68,8 @@ def write_process_report_bundle(
     active_sampling_plan_ref: str | None = None,
     memory_write_gate_ref: str | None = None,
     state_merge_guard_ref: str | None = None,
+    relationship_graph: dict[str, Any] | None = None,
+    self_model_state: dict[str, Any] | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> ProcessReportBundleResult:
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
@@ -81,6 +83,8 @@ def write_process_report_bundle(
         if ref
     ]
     identity_consciousness_birth_refs = _identity_consciousness_birth_refs(idle_governance)
+    relationship_resume_summary = _relationship_resume_summary(relationship_graph)
+    trait_slow_variable_summary = _trait_slow_variable_summary(self_model_state)
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_runtime_ref=signal_media_runtime_ref,
         belief_state_ref=belief_state_ref,
@@ -153,6 +157,13 @@ def write_process_report_bundle(
         "memory_write_gate_ref": memory_write_gate_ref,
         "state_merge_guard_ref": state_merge_guard_ref,
         "prediction_write_gate_refs": prediction_write_gate_refs,
+        "background_relationship_stage": relationship_resume_summary.get(
+            "relationship_stage"
+        ),
+        "background_relationship_stage_reason": relationship_resume_summary.get(
+            "relationship_stage_reason"
+        ),
+        "background_trait_slow_variable_summary": trait_slow_variable_summary,
         "next_required_action": "process_closed_waiting_relaunch",
         "blocked_reasons": [],
     }
@@ -210,6 +221,13 @@ def write_process_report_bundle(
             if ref
         ],
         "identity_consciousness_birth_refs": identity_consciousness_birth_refs,
+        "background_relationship_stage": relationship_resume_summary.get(
+            "relationship_stage"
+        ),
+        "background_relationship_stage_reason": relationship_resume_summary.get(
+            "relationship_stage_reason"
+        ),
+        "background_trait_slow_variable_summary": trait_slow_variable_summary,
         "consciousness_waiting_posture": idle_governance.get(
             "consciousness_waiting_posture"
         ),
@@ -354,6 +372,7 @@ def build_process_receipt(
         state_dir / "growth" / "language_learning_plan.json",
         state_dir / "growth" / "relationship_learning_plan.json",
         state_dir / "relationship" / "relationship_subject_graph.json",
+        state_dir / "self" / "self_model.json",
         reports_dir / "pain_regret_repair_report.json",
         reports_dir / "dialogue_writeback_bundle.json",
         reports_dir / "digital_life_process_relaunch_recovery_report.json",
@@ -369,6 +388,16 @@ def build_process_receipt(
         reports_dir / "digital_life_process_digest.json",
         receipts_dir / f"digital_life_process_{run_id}.json",
     ]
+    relationship_graph_ref = (
+        "runtime/state/relationship/relationship_subject_graph.json"
+        if (state_dir / "relationship" / "relationship_subject_graph.json").exists()
+        else None
+    )
+    self_model_ref = (
+        "runtime/state/self/self_model.json"
+        if (state_dir / "self" / "self_model.json").exists()
+        else None
+    )
     return {
         "schema_version": "digital_life_process_receipt_v0",
         "receipt_id": f"digital_life_process_{run_id}",
@@ -415,6 +444,8 @@ def build_process_receipt(
                 consciousness_probe_ref,
                 birth_readiness_rollup_ref,
                 birth_readiness_stage_gate_ref,
+                relationship_graph_ref,
+                self_model_ref,
             ]
             if ref
         ],
@@ -471,3 +502,54 @@ def _identity_consciousness_birth_refs(idle_governance: dict[str, Any]) -> list[
         ]
         if ref
     ]
+
+
+def _relationship_resume_summary(
+    relationship_graph: dict[str, Any] | None,
+) -> dict[str, Any]:
+    subjects = (relationship_graph or {}).get("subjects", [])
+    if not subjects or not isinstance(subjects[0], dict):
+        return {}
+    subject = subjects[0]
+    relationship_stage = str(subject.get("relationship_stage", "") or "")
+    if not relationship_stage:
+        return {}
+    summary = {
+        "relationship_id": subject.get("relationship_id"),
+        "relation_role": subject.get("relation_role"),
+        "relationship_stage": relationship_stage,
+        "relationship_stage_reason": subject.get("relationship_stage_reason"),
+        "relationship_stage_turn_count": subject.get("relationship_stage_turn_count"),
+        "relationship_stage_evidence_refs": subject.get("relationship_stage_evidence_refs"),
+    }
+    return {
+        key: value
+        for key, value in summary.items()
+        if value is not None and value != "" and value != []
+    }
+
+
+def _trait_slow_variable_summary(
+    self_model_state: dict[str, Any] | None,
+) -> dict[str, Any]:
+    trait_slow_variables = (self_model_state or {}).get("trait_slow_variables", {})
+    if not isinstance(trait_slow_variables, dict):
+        return {}
+    summary: dict[str, Any] = {}
+    for name, payload in trait_slow_variables.items():
+        if isinstance(payload, dict):
+            summary[name] = {
+                key: payload[key]
+                for key in [
+                    "value",
+                    "trend",
+                    "update_count",
+                    "last_relationship_stage",
+                    "last_generated_at",
+                    "evidence_refs",
+                ]
+                if key in payload
+            }
+        elif isinstance(payload, (int, float)):
+            summary[name] = {"value": float(payload)}
+    return summary

@@ -360,6 +360,10 @@ def _background_evidence_refs(background_continuity_profile: dict[str, Any]) -> 
     return _dedupe(
         list(background_continuity_profile.get("background_continuity_ref_set", []))
         + list(background_continuity_profile.get("background_carryover_source_ref_set", []))
+        + [
+            background_continuity_profile.get("background_relationship_subject_ref", ""),
+            background_continuity_profile.get("background_self_model_ref", ""),
+        ]
     )
 
 

@@ -156,6 +156,7 @@ restore shell completed
 3. closeout 会重写同一份 `resident_governance_state.json`，但必须显式切换 `status` 与 `governance_phase`。
 4. process report / receipt 不能只回链 snapshot/report，必须也回链 `resident_governance_state_ref`。
 5. 同一次 closeout 写出的 `background_continuity_ref_set` 必须指向当前关闭态 artifact，而不是把上一轮 carryover 的 ref set 原样覆盖回来；上一轮来源应单独进入 `background_carryover_source_ref_set`。
+6. 同一次 closeout 还必须把最新 `relationship_subject_graph.json#subjects[0]` 与 `self_model.json#trait_slow_variables` 压成 `background_resume_summary`；下一次 bootstrap 的 `background_continuity_profile` 必须恢复这组字段，而不是只恢复 lineage generation。
 
 ## 运行态文件族
 
@@ -229,6 +230,14 @@ restore shell completed
 - `offline_learning_attention_target`
 - `offline_learning_priority_profile`
 - `offline_learning_ref_set`
+- `background_relationship_subject_ref`
+- `background_relationship_stage`
+- `background_relationship_stage_reason`
+- `background_relationship_stage_turn_count`
+- `background_relationship_stage_evidence_refs`
+- `background_self_model_ref`
+- `background_trait_slow_variable_summary`
+- `background_resume_summary`
 
 ### `resident_governance_snapshot.json`
 
@@ -251,6 +260,10 @@ restore shell completed
 - `resident_governance_state_ref`
 - `resident_governance_snapshot_ref`
 - `persistent_process_state_ref`
+- `background_relationship_stage`
+- `background_relationship_stage_reason`
+- `background_trait_slow_variable_summary`
+- `background_resume_summary`
 
 ## 主报告与 receipt 回链
 
@@ -269,6 +282,14 @@ restore shell completed
 3. `resident_governance_snapshot_ref`：关闭态冻结截面。
 
 三者缺任何一个，closeout 证据链都不算闭合。
+
+同时，主报告还必须保留跨进程连续体的恢复面：
+
+- `background_relationship_stage`
+- `background_relationship_stage_reason`
+- `background_trait_slow_variable_summary`
+
+这些字段来自 closeout 时最新的关系图和自我模型，不允许 process report 自己重新判定关系阶段。
 
 如果 Queue F 在这轮 waiting governance 里进入了主导位，主报告与治理解释还必须显式保留：
 
@@ -301,6 +322,8 @@ process receipt 里，resident governance 必须进入：
 - `runtime/state/consciousness/consciousness_probe_bundle.json`
 - `runtime/state/life_targets/birth_readiness_rollup.json`
 - `runtime/state/life_targets/birth_readiness_stage_gate.json`
+- `runtime/state/relationship/relationship_subject_graph.json`
+- `runtime/state/self/self_model.json`
 
 ## 等待态治理字段语义
 
@@ -439,6 +462,8 @@ process receipt 里，resident governance 必须进入：
 5. process report 会显式带 `resident_governance_state_ref`。
 6. process receipt 会把 `resident_governance_state_ref` 收进 `shared_object_refs`。
 7. 对应状态文件存在时，process receipt 会把它收进 `input_hashes`。
+8. `background_continuity.py` 会从上一轮 snapshot/report 里恢复 `background_relationship_stage`、`background_relationship_subject_ref`、`background_self_model_ref`、`background_trait_slow_variable_summary` 与 `background_resume_summary`。
+9. `idle_strategy.py` / resident governance 会把这组 background resume fields 原样带入下一次 waiting governance，不在等待态重新发明关系结论。
 
 当前最低承载测试仍以：
 
@@ -453,5 +478,6 @@ process receipt 里，resident governance 必须进入：
 1. 给 waiting governance 增加更细的后台连续体节律分层，尤其是显式消费 `background_carryover_generation` 带来的 cadence 差异。
 2. 让 `resident_governance_state.json` 接住真正跨多次唤醒的后台存在治理，而不只停在 foreground terminal residency。
 3. 把 live turn 结束后重新回到 waiting governance 的相位切换显式写成单独器官，而不是只靠下一拍 heartbeat 间接体现。该项现在已由 `resident_governance_handoff.py` 第一轮落下，下一轮继续补厚其后台存在治理口径。
+4. 继续让 background resume summary 不只用于 closeout/next bootstrap，还能进入更长时标的慢变量收敛与多次唤醒关系阶段稳定化。
 
-当前只要这三件事没有落下，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。
+当前只要这四件事没有落下，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。

@@ -12,6 +12,8 @@ PERSISTENT_PROCESS_REPORT_REF = "runtime/reports/latest/digital_life_persistent_
 RESIDENT_GOVERNANCE_STATE_REF = "runtime/state/terminal/resident_governance_state.json"
 RESIDENT_GOVERNANCE_SNAPSHOT_REF = "runtime/state/terminal/resident_governance_snapshot.json"
 RESIDENT_GOVERNANCE_REPORT_REF = "runtime/reports/latest/digital_life_resident_governance_report.json"
+RELATIONSHIP_SUBJECT_GRAPH_REF = "runtime/state/relationship/relationship_subject_graph.json"
+SELF_MODEL_REF = "runtime/state/self/self_model.json"
 
 
 @dataclass(frozen=True)
@@ -48,6 +50,8 @@ def write_persistent_process_artifacts(
     world_contact_summary_ref: str | None = None,
     pain_regret_repair_report_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
+    relationship_graph: dict[str, Any] | None = None,
+    self_model_state: dict[str, Any] | None = None,
 ) -> PersistentProcessArtifactsResult:
     terminal_dir = state_dir / "terminal"
     terminal_dir.mkdir(parents=True, exist_ok=True)
@@ -74,6 +78,14 @@ def write_persistent_process_artifacts(
         ]
         if ref
     ]
+    relationship_resume_summary = _relationship_resume_summary(relationship_graph)
+    trait_slow_variable_summary = _trait_slow_variable_summary(self_model_state)
+    background_resume_summary = _background_resume_summary(
+        relationship_resume_summary=relationship_resume_summary,
+        trait_slow_variable_summary=trait_slow_variable_summary,
+        current_background_ref_set=current_background_ref_set,
+        background_source_ref_set=background_source_ref_set,
+    )
 
     resident_governance_snapshot = {
         "schema_version": "resident_governance_snapshot_v0",
@@ -110,6 +122,12 @@ def write_persistent_process_artifacts(
         )
     if membrane_guard_refs:
         resident_governance_snapshot["membrane_guard_refs"] = membrane_guard_refs
+    _apply_background_resume_fields(
+        resident_governance_snapshot,
+        relationship_resume_summary=relationship_resume_summary,
+        trait_slow_variable_summary=trait_slow_variable_summary,
+        background_resume_summary=background_resume_summary,
+    )
     resident_governance_snapshot.update(_idle_governance_without_background_lineage(idle_governance))
     resident_governance_state = {
         "schema_version": "resident_governance_state_v0",
@@ -164,6 +182,12 @@ def write_persistent_process_artifacts(
         resident_governance_state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         resident_governance_state["membrane_guard_refs"] = membrane_guard_refs
+    _apply_background_resume_fields(
+        resident_governance_state,
+        relationship_resume_summary=relationship_resume_summary,
+        trait_slow_variable_summary=trait_slow_variable_summary,
+        background_resume_summary=background_resume_summary,
+    )
     resident_governance_state.update(_idle_governance_without_background_lineage(idle_governance))
     state = {
         "schema_version": "persistent_process_state_v0",
@@ -203,6 +227,12 @@ def write_persistent_process_artifacts(
         state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         state["membrane_guard_refs"] = membrane_guard_refs
+    _apply_background_resume_fields(
+        state,
+        relationship_resume_summary=relationship_resume_summary,
+        trait_slow_variable_summary=trait_slow_variable_summary,
+        background_resume_summary=background_resume_summary,
+    )
     state.update(_idle_governance_without_background_lineage(idle_governance))
     report = {
         "schema_version": "digital_life_persistent_process_report_v0",
@@ -246,6 +276,12 @@ def write_persistent_process_artifacts(
         report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         report["membrane_guard_refs"] = membrane_guard_refs
+    _apply_background_resume_fields(
+        report,
+        relationship_resume_summary=relationship_resume_summary,
+        trait_slow_variable_summary=trait_slow_variable_summary,
+        background_resume_summary=background_resume_summary,
+    )
     report.update(_idle_governance_without_background_lineage(idle_governance))
     resident_governance_report = {
         "schema_version": "digital_life_resident_governance_report_v0",
@@ -291,6 +327,12 @@ def write_persistent_process_artifacts(
         resident_governance_report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         resident_governance_report["membrane_guard_refs"] = membrane_guard_refs
+    _apply_background_resume_fields(
+        resident_governance_report,
+        relationship_resume_summary=relationship_resume_summary,
+        trait_slow_variable_summary=trait_slow_variable_summary,
+        background_resume_summary=background_resume_summary,
+    )
     resident_governance_report.update(_idle_governance_without_background_lineage(idle_governance))
 
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
@@ -338,3 +380,104 @@ def _int_or_default(value: Any, *, default: int) -> int:
         return int(value)
     except (TypeError, ValueError):
         return default
+
+
+def _relationship_resume_summary(
+    relationship_graph: dict[str, Any] | None,
+) -> dict[str, Any]:
+    subjects = (relationship_graph or {}).get("subjects", [])
+    if not subjects or not isinstance(subjects[0], dict):
+        return {}
+    subject = subjects[0]
+    stage = str(subject.get("relationship_stage", "") or "")
+    if not stage:
+        return {}
+    summary = {
+        "relationship_subject_ref": RELATIONSHIP_SUBJECT_GRAPH_REF + "#subjects[0]",
+        "relationship_stage": stage,
+    }
+    for source_key, target_key in [
+        ("relationship_id", "relationship_id"),
+        ("relation_role", "relation_role"),
+        ("relationship_stage_reason", "relationship_stage_reason"),
+        ("relationship_stage_turn_count", "relationship_stage_turn_count"),
+        ("relationship_stage_evidence_refs", "relationship_stage_evidence_refs"),
+    ]:
+        if source_key in subject:
+            summary[target_key] = subject[source_key]
+    return summary
+
+
+def _trait_slow_variable_summary(
+    self_model_state: dict[str, Any] | None,
+) -> dict[str, Any]:
+    trait_slow_variables = (self_model_state or {}).get("trait_slow_variables", {})
+    if not isinstance(trait_slow_variables, dict):
+        return {}
+    summary: dict[str, Any] = {}
+    for name, payload in trait_slow_variables.items():
+        if isinstance(payload, dict):
+            summary[name] = {
+                key: payload[key]
+                for key in [
+                    "value",
+                    "trend",
+                    "update_count",
+                    "last_relationship_stage",
+                    "last_generated_at",
+                    "evidence_refs",
+                ]
+                if key in payload
+            }
+        elif isinstance(payload, (int, float)):
+            summary[name] = {"value": float(payload)}
+    return summary
+
+
+def _background_resume_summary(
+    *,
+    relationship_resume_summary: dict[str, Any],
+    trait_slow_variable_summary: dict[str, Any],
+    current_background_ref_set: list[str],
+    background_source_ref_set: list[str],
+) -> dict[str, Any]:
+    if not relationship_resume_summary and not trait_slow_variable_summary:
+        return {}
+    return {
+        "relationship": relationship_resume_summary,
+        "trait_slow_variables": trait_slow_variable_summary,
+        "source_ref_set": list(current_background_ref_set) + list(background_source_ref_set),
+    }
+
+
+def _apply_background_resume_fields(
+    payload: dict[str, Any],
+    *,
+    relationship_resume_summary: dict[str, Any],
+    trait_slow_variable_summary: dict[str, Any],
+    background_resume_summary: dict[str, Any],
+) -> None:
+    if relationship_resume_summary:
+        payload["background_relationship_subject_ref"] = relationship_resume_summary[
+            "relationship_subject_ref"
+        ]
+        payload["background_relationship_stage"] = relationship_resume_summary[
+            "relationship_stage"
+        ]
+        if relationship_resume_summary.get("relationship_stage_reason"):
+            payload["background_relationship_stage_reason"] = relationship_resume_summary[
+                "relationship_stage_reason"
+            ]
+        if relationship_resume_summary.get("relationship_stage_turn_count") is not None:
+            payload["background_relationship_stage_turn_count"] = relationship_resume_summary[
+                "relationship_stage_turn_count"
+            ]
+        if relationship_resume_summary.get("relationship_stage_evidence_refs"):
+            payload["background_relationship_stage_evidence_refs"] = list(
+                relationship_resume_summary["relationship_stage_evidence_refs"]
+            )
+    if trait_slow_variable_summary:
+        payload["background_self_model_ref"] = SELF_MODEL_REF
+        payload["background_trait_slow_variable_summary"] = trait_slow_variable_summary
+    if background_resume_summary:
+        payload["background_resume_summary"] = background_resume_summary

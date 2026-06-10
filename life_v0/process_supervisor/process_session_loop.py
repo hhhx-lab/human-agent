@@ -18,6 +18,11 @@ class ProcessSessionLoopResult:
     exit_reason: str
     safe_terminal_loop: dict[str, Any]
     terminal_life_loop_state: dict[str, Any]
+    relationship_graph: dict[str, Any]
+    relationship_timeline: dict[str, Any]
+    commitment_expression_plan: dict[str, Any]
+    apology_repair_language_trace: dict[str, Any]
+    self_model_state: dict[str, Any] | None
     last_external_turn: dict[str, Any] | None
     last_life_turn: dict[str, Any] | None
     last_incident_report_ref: str | None
@@ -210,6 +215,11 @@ def run_process_session_loop(
                 exit_reason=idle_refresh.exit_reason,
                 safe_terminal_loop=safe_terminal_loop,
                 terminal_life_loop_state=terminal_life_loop_state,
+                relationship_graph=relationship_graph,
+                relationship_timeline=relationship_timeline,
+                commitment_expression_plan=commitment_expression_plan,
+                apology_repair_language_trace=apology_repair_language_trace,
+                self_model_state=self_model_state,
                 last_external_turn=last_external_turn,
                 last_life_turn=last_life_turn,
                 last_incident_report_ref=last_incident_report_ref,
@@ -294,6 +304,10 @@ def run_process_session_loop(
             last_incident_report_ref = live_turn_cycle.last_incident_report_ref
         if live_turn_cycle.last_recovery_report_ref is not None:
             last_recovery_report_ref = live_turn_cycle.last_recovery_report_ref
+        relationship_graph = _read_json_if_exists(
+            relationship_dir / "relationship_subject_graph.json",
+            relationship_graph,
+        )
         relationship_timeline = _read_json_if_exists(
             relationship_dir / "relationship_timeline.json",
             relationship_timeline,
