@@ -49,6 +49,8 @@ from .offline_learning_signals import (
     LANGUAGE_LEARNING_PLAN_REF,
     NIGHTMARE_RISK_REF,
     RELATIONSHIP_LEARNING_PLAN_REF,
+    build_offline_learning_cumulative_profile,
+    derive_offline_learning_profile,
 )
 from .background_continuity import load_background_continuity_profile
 from .continuity_evolution import evolve_relationship_and_self_model
@@ -90,6 +92,7 @@ class ResidentSupervisionContext:
     belief_learning_plan: dict[str, Any]
     language_learning_plan: dict[str, Any]
     relationship_learning_plan: dict[str, Any]
+    offline_learning_cumulative_profile: dict[str, Any]
     signal_media_runtime: dict[str, Any]
     belief_state: dict[str, Any]
     prediction_error_field: dict[str, Any]
@@ -114,6 +117,10 @@ class ResidentSupervisionContext:
     belief_learning_plan_ref: str | None
     language_learning_plan_ref: str | None
     relationship_learning_plan_ref: str | None
+    offline_learning_cumulative_ref_set: list[str]
+    offline_learning_cumulative_generation: int
+    offline_learning_cumulative_pressure_level: str | None
+    offline_learning_cumulative_attention_target: str | None
     signal_media_runtime_ref: str | None
     belief_state_ref: str | None
     prediction_error_field_ref: str | None
@@ -276,6 +283,16 @@ def bootstrap_resident_supervision(
         terminal_dir=terminal_dir,
         reports_dir=reports_dir,
     )
+    offline_learning_profile = derive_offline_learning_profile(
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    offline_learning_cumulative_profile = build_offline_learning_cumulative_profile(
+        current_profile=offline_learning_profile,
+        background_profile=background_continuity_profile,
+    )
 
     replay_cue_bundle_ref = _ref_if_present(
         payload=replay_cue_bundle,
@@ -379,6 +396,7 @@ def bootstrap_resident_supervision(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     commitment_expression_plan = project_commitment_expression_plan_with_offline_learning(
         commitment_expression_plan=commitment_expression_plan,
@@ -386,6 +404,7 @@ def bootstrap_resident_supervision(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     apology_repair_language_trace = project_apology_repair_language_trace_with_offline_learning(
         apology_repair_language_trace=apology_repair_language_trace,
@@ -393,6 +412,7 @@ def bootstrap_resident_supervision(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     relationship_memory = project_relationship_memory(
         relationship_memory=relationship_memory,
@@ -406,6 +426,7 @@ def bootstrap_resident_supervision(
         belief_learning_plan_ref=belief_learning_plan_ref,
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     life_state = project_responsibility_language_continuity(
         life_state=life_state,
@@ -423,6 +444,7 @@ def bootstrap_resident_supervision(
         belief_learning_plan_ref=belief_learning_plan_ref,
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         additional_runtime_trace_refs=[
             ref
             for ref in [
@@ -458,6 +480,7 @@ def bootstrap_resident_supervision(
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
         background_continuity_profile=background_continuity_profile,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         nightmare_risk_ref=nightmare_risk_ref,
         belief_learning_plan_ref=belief_learning_plan_ref,
         language_learning_plan_ref=language_learning_plan_ref,
@@ -680,6 +703,7 @@ def bootstrap_resident_supervision(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         signal_media_runtime=signal_media_runtime,
         belief_state=belief_state,
         prediction_error_field=prediction_error_field,
@@ -701,6 +725,22 @@ def bootstrap_resident_supervision(
         belief_learning_plan_ref=belief_learning_plan_ref,
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
+        offline_learning_cumulative_ref_set=list(
+            offline_learning_cumulative_profile.get("ref_set", [])
+        ),
+        offline_learning_cumulative_generation=int(
+            offline_learning_cumulative_profile.get("generation") or 0
+        ),
+        offline_learning_cumulative_pressure_level=(
+            str(offline_learning_cumulative_profile.get("pressure_level"))
+            if offline_learning_cumulative_profile.get("pressure_level")
+            else None
+        ),
+        offline_learning_cumulative_attention_target=(
+            str(offline_learning_cumulative_profile.get("attention_target"))
+            if offline_learning_cumulative_profile.get("attention_target")
+            else None
+        ),
         signal_media_runtime_ref=signal_media_runtime_ref,
         belief_state_ref=belief_state_ref,
         prediction_error_field_ref=prediction_error_field_ref,
@@ -760,6 +800,7 @@ def _refresh_bootstrap_long_horizon_continuity(
     language_learning_plan: dict[str, Any],
     relationship_learning_plan: dict[str, Any],
     background_continuity_profile: dict[str, Any],
+    offline_learning_cumulative_profile: dict[str, Any],
     nightmare_risk_ref: str | None,
     belief_learning_plan_ref: str | None,
     language_learning_plan_ref: str | None,
@@ -786,6 +827,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(relationship_timeline.get("source_doc_refs", [])) or source_doc_refs,
     )
     first_pass_commitment_expression_plan = build_commitment_expression_plan(
@@ -805,6 +847,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(commitment_expression_plan.get("source_doc_refs", []))
         or source_doc_refs,
     )
@@ -822,6 +865,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(apology_repair_language_trace.get("source_doc_refs", []))
         or source_doc_refs,
     )
@@ -860,6 +904,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(relationship_timeline.get("source_doc_refs", [])) or source_doc_refs,
     )
     refreshed_commitment_expression_plan = build_commitment_expression_plan(
@@ -879,6 +924,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(commitment_expression_plan.get("source_doc_refs", []))
         or source_doc_refs,
     )
@@ -896,6 +942,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(apology_repair_language_trace.get("source_doc_refs", []))
         or source_doc_refs,
     )
@@ -911,6 +958,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         belief_learning_plan_ref=belief_learning_plan_ref,
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     refreshed_life_state = project_responsibility_language_continuity(
         life_state=life_state,
@@ -928,6 +976,7 @@ def _refresh_bootstrap_long_horizon_continuity(
         belief_learning_plan_ref=belief_learning_plan_ref,
         language_learning_plan_ref=language_learning_plan_ref,
         relationship_learning_plan_ref=relationship_learning_plan_ref,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         additional_runtime_trace_refs=[
             ref
             for ref in [

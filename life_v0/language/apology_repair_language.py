@@ -3,7 +3,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from life_v0.growth.offline_learning_profile import derive_offline_learning_profile
+from life_v0.growth.offline_learning_profile import (
+    derive_offline_learning_profile,
+    normalize_offline_learning_cumulative_profile,
+)
 
 
 def build_apology_repair_language_trace(
@@ -17,6 +20,7 @@ def build_apology_repair_language_trace(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
     source_doc_refs: list[str],
 ) -> dict[str, Any]:
     regret_refs = [
@@ -91,6 +95,7 @@ def build_apology_repair_language_trace(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
 
 
@@ -101,6 +106,7 @@ def project_apology_repair_language_trace_with_offline_learning(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not apology_repair_language_trace:
         return {}
@@ -114,7 +120,10 @@ def project_apology_repair_language_trace_with_offline_learning(
     )
     ref_set = list(offline_profile.get("offline_learning_ref_set", []))
     if not ref_set:
-        return updated
+        return project_apology_repair_language_trace_with_cumulative_offline_learning(
+            apology_repair_language_trace=updated,
+            offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+        )
 
     relationship_targets = list((relationship_learning_plan or {}).get("relationship_targets", []))
     language_targets = list((language_learning_plan or {}).get("language_targets", []))
@@ -185,6 +194,79 @@ def project_apology_repair_language_trace_with_offline_learning(
     ]
     updated["offline_learning_ref_set"] = ref_set
     updated["offline_learning_targets"] = _dedupe(relationship_targets + language_targets)
+    return project_apology_repair_language_trace_with_cumulative_offline_learning(
+        apology_repair_language_trace=updated,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+    )
+
+
+def project_apology_repair_language_trace_with_cumulative_offline_learning(
+    *,
+    apology_repair_language_trace: dict[str, Any],
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not apology_repair_language_trace:
+        return {}
+    cumulative_profile = normalize_offline_learning_cumulative_profile(
+        offline_learning_cumulative_profile
+    )
+    if not cumulative_profile:
+        return apology_repair_language_trace
+
+    updated = json.loads(json.dumps(apology_repair_language_trace))
+    ref_set = list(cumulative_profile.get("ref_set", []))
+    pressure_level = str(cumulative_profile.get("pressure_level") or "quiet")
+    attention_target = str(
+        cumulative_profile.get("attention_target")
+        or "baseline_offline_learning_maintenance"
+    )
+    generation = int(cumulative_profile.get("generation") or 0)
+
+    moves = list(updated.get("repair_language_moves", []))
+    if pressure_level in {"urgent", "elevated"} and not _has_move_type(
+        moves,
+        "cumulative_offline_learning_repair",
+    ):
+        moves.append(
+            {
+                "move_id": f"repair-move-{updated.get('run_id', 'offline')}-cumulative-offline",
+                "move_type": "cumulative_offline_learning_repair",
+                "surface_goal": "先承认跨唤醒未整合经验对修复窗口的持续影响。",
+                "trigger_refs": ref_set,
+            }
+        )
+    updated["repair_language_moves"] = moves
+
+    move_type_order = list(updated.get("move_type_order", []))
+    if (
+        pressure_level in {"urgent", "elevated"}
+        and "cumulative_offline_learning_repair" not in move_type_order
+    ):
+        try:
+            followup_index = move_type_order.index("followup_commitment")
+        except ValueError:
+            move_type_order.append("cumulative_offline_learning_repair")
+        else:
+            move_type_order.insert(followup_index, "cumulative_offline_learning_repair")
+    updated["move_type_order"] = _dedupe(move_type_order)
+
+    if pressure_level in {"urgent", "elevated"}:
+        updated["cumulative_repair_window_mode"] = (
+            "cumulative_offline_learning_first"
+        )
+
+    updated["offline_learning_cumulative_projection"] = {
+        "schema_version": cumulative_profile["schema_version"],
+        "generation": generation,
+        "pressure_level": pressure_level,
+        "attention_target": attention_target,
+        "priority_profile": dict(cumulative_profile.get("priority_profile", {})),
+        "ref_set": ref_set,
+    }
+    updated["offline_learning_cumulative_generation"] = generation
+    updated["offline_learning_cumulative_pressure_level"] = pressure_level
+    updated["offline_learning_cumulative_attention_target"] = attention_target
+    updated["offline_learning_cumulative_ref_set"] = ref_set
     return updated
 
 

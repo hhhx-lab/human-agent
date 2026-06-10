@@ -4,6 +4,9 @@ import json
 from typing import Any
 
 from life_v0.direction import LIFE_TARGETS
+from life_v0.growth.offline_learning_profile import (
+    normalize_offline_learning_cumulative_profile,
+)
 from life_v0.state_store.self_model import project_self_model_projection
 
 
@@ -158,6 +161,7 @@ def project_responsibility_language_continuity(
     belief_learning_plan_ref: str | None = None,
     language_learning_plan_ref: str | None = None,
     relationship_learning_plan_ref: str | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
     additional_runtime_trace_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     commitment_truth_state = commitment_truth_state or {}
@@ -293,6 +297,41 @@ def project_responsibility_language_continuity(
             list(language_state.get("offline_learning_refs", []))
             + offline_learning_refs
         )
+    cumulative_profile = normalize_offline_learning_cumulative_profile(
+        offline_learning_cumulative_profile
+    )
+    if cumulative_profile:
+        cumulative_refs = list(cumulative_profile.get("ref_set", []))
+        memory_index["relationship_memory_refs"] = _dedupe(
+            list(memory_index.get("relationship_memory_refs", [])) + cumulative_refs
+        )
+        language_state["offline_learning_refs"] = _dedupe(
+            list(language_state.get("offline_learning_refs", [])) + cumulative_refs
+        )
+        language_state["offline_learning_cumulative_projection"] = {
+            "schema_version": cumulative_profile["schema_version"],
+            "generation": cumulative_profile["generation"],
+            "pressure_level": cumulative_profile["pressure_level"],
+            "attention_target": cumulative_profile["attention_target"],
+            "priority_profile": dict(cumulative_profile.get("priority_profile", {})),
+            "ref_set": cumulative_refs,
+        }
+        language_state["offline_learning_cumulative_refs"] = cumulative_refs
+        if relationship_subjects:
+            relationship_subject = relationship_subjects[0]
+            relationship_subject["offline_learning_refs"] = _dedupe(
+                list(relationship_subject.get("offline_learning_refs", []))
+                + cumulative_refs
+            )
+            relationship_subject["offline_learning_cumulative_generation"] = (
+                cumulative_profile["generation"]
+            )
+            relationship_subject["offline_learning_cumulative_pressure_level"] = (
+                cumulative_profile["pressure_level"]
+            )
+            relationship_subject["offline_learning_cumulative_attention_target"] = (
+                cumulative_profile["attention_target"]
+            )
 
     if nightmare_risk_ref:
         dream_records = updated.setdefault("dream_records", [])

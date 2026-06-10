@@ -163,6 +163,9 @@ def write_resident_turn_writeback(
         terminal_dir / "terminal_life_loop_state.json",
         updated_terminal_life_loop_state,
     )
+    offline_learning_cumulative_payload = build_offline_learning_cumulative_payload(
+        terminal_life_loop_state
+    )
 
     state_dir = terminal_dir.parent
     continuity_refresh = _refresh_long_horizon_continuity(
@@ -172,6 +175,7 @@ def write_resident_turn_writeback(
         relationship_graph=relationship_graph,
         self_model_state=self_model_state,
         commitment_index=commitment_index,
+        offline_learning_cumulative_profile=offline_learning_cumulative_payload,
         generated_at=generated_at,
         source_doc_refs=source_doc_refs,
         write_json=write_json,
@@ -204,9 +208,6 @@ def write_resident_turn_writeback(
         resident_background_lineage_payload.get(
             "resident_background_lineage_evidence_refs", []
         )
-    )
-    offline_learning_cumulative_payload = build_offline_learning_cumulative_payload(
-        terminal_life_loop_state
     )
     offline_learning_cumulative_refs = list(
         offline_learning_cumulative_payload.get(
@@ -361,6 +362,7 @@ def _refresh_long_horizon_continuity(
     relationship_graph: dict[str, Any],
     self_model_state: dict[str, Any] | None,
     commitment_index: dict[str, Any],
+    offline_learning_cumulative_profile: dict[str, Any] | None,
     generated_at: str,
     source_doc_refs: list[str],
     write_json: Callable[[Path, dict[str, Any]], None],
@@ -437,6 +439,7 @@ def _refresh_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(relationship_timeline.get("source_doc_refs", [])) or source_doc_refs,
     )
     first_pass_commitment_expression_plan = build_commitment_expression_plan(
@@ -456,6 +459,7 @@ def _refresh_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(commitment_expression_plan.get("source_doc_refs", []))
         or source_doc_refs,
     )
@@ -469,6 +473,7 @@ def _refresh_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(apology_repair_language_trace.get("source_doc_refs", []))
         or source_doc_refs,
     )
@@ -507,6 +512,7 @@ def _refresh_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(relationship_timeline.get("source_doc_refs", [])) or source_doc_refs,
     )
     refreshed_commitment_expression_plan = build_commitment_expression_plan(
@@ -522,6 +528,7 @@ def _refresh_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(commitment_expression_plan.get("source_doc_refs", []))
         or source_doc_refs,
     )
@@ -535,6 +542,7 @@ def _refresh_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         source_doc_refs=list(apology_repair_language_trace.get("source_doc_refs", []))
         or source_doc_refs,
     )
@@ -557,6 +565,7 @@ def _refresh_long_horizon_continuity(
         relationship_learning_plan_ref=(
             RELATIONSHIP_LEARNING_PLAN_REF if relationship_learning_plan else None
         ),
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     refreshed_life_state = project_responsibility_language_continuity(
         life_state=life_state,
@@ -576,6 +585,7 @@ def _refresh_long_horizon_continuity(
         relationship_learning_plan_ref=(
             RELATIONSHIP_LEARNING_PLAN_REF if relationship_learning_plan else None
         ),
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         additional_runtime_trace_refs=[
             ref
             for ref in [

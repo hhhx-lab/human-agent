@@ -3,7 +3,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from life_v0.growth.offline_learning_profile import derive_offline_learning_profile
+from life_v0.growth.offline_learning_profile import (
+    derive_offline_learning_profile,
+    normalize_offline_learning_cumulative_profile,
+)
 
 
 def build_commitment_expression_plan(
@@ -20,6 +23,7 @@ def build_commitment_expression_plan(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
     source_doc_refs: list[str],
 ) -> dict[str, Any]:
     repair_refs = list(commitment_repair_index.get("repair_obligation_refs", []))
@@ -103,6 +107,7 @@ def build_commitment_expression_plan(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
 
 
@@ -113,6 +118,7 @@ def project_commitment_expression_plan_with_offline_learning(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not commitment_expression_plan:
         return {}
@@ -126,7 +132,10 @@ def project_commitment_expression_plan_with_offline_learning(
     )
     ref_set = list(offline_profile.get("offline_learning_ref_set", []))
     if not ref_set:
-        return updated
+        return project_commitment_expression_plan_with_cumulative_offline_learning(
+            commitment_expression_plan=updated,
+            offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+        )
 
     relationship_targets = list((relationship_learning_plan or {}).get("relationship_targets", []))
     language_targets = list((language_learning_plan or {}).get("language_targets", []))
@@ -205,6 +214,93 @@ def project_commitment_expression_plan_with_offline_learning(
     updated["offline_learning_targets"] = _dedupe(
         relationship_targets + language_targets + belief_targets
     )
+    return project_commitment_expression_plan_with_cumulative_offline_learning(
+        commitment_expression_plan=updated,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+    )
+
+
+def project_commitment_expression_plan_with_cumulative_offline_learning(
+    *,
+    commitment_expression_plan: dict[str, Any],
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not commitment_expression_plan:
+        return {}
+    cumulative_profile = normalize_offline_learning_cumulative_profile(
+        offline_learning_cumulative_profile
+    )
+    if not cumulative_profile:
+        return commitment_expression_plan
+
+    updated = json.loads(json.dumps(commitment_expression_plan))
+    ref_set = list(cumulative_profile.get("ref_set", []))
+    pressure_level = str(cumulative_profile.get("pressure_level") or "quiet")
+    attention_target = str(
+        cumulative_profile.get("attention_target")
+        or "baseline_offline_learning_maintenance"
+    )
+    generation = int(cumulative_profile.get("generation") or 0)
+
+    candidates = list(updated.get("language_act_candidates", []))
+    if pressure_level in {"urgent", "elevated"} and not _has_item_type(
+        candidates,
+        "cumulative_offline_learning_integration",
+        "act_type",
+    ):
+        candidates.append(
+            {
+                "act_id": f"commitment-act-{updated.get('run_id', 'offline')}-cumulative-offline",
+                "act_type": "cumulative_offline_learning_integration",
+                "surface_goal": "把跨唤醒未整合的梦境-成长压力先纳入承诺表达节奏。",
+                "trigger_refs": ref_set,
+            }
+        )
+    updated["language_act_candidates"] = candidates
+
+    act_type_order = list(updated.get("act_type_order", []))
+    if (
+        pressure_level in {"urgent", "elevated"}
+        and "cumulative_offline_learning_integration" not in act_type_order
+    ):
+        try:
+            followup_index = act_type_order.index("followup_commitment")
+        except ValueError:
+            act_type_order.append("cumulative_offline_learning_integration")
+        else:
+            act_type_order.insert(
+                followup_index,
+                "cumulative_offline_learning_integration",
+            )
+    updated["act_type_order"] = _dedupe(act_type_order)
+
+    if pressure_level in {"urgent", "elevated"}:
+        updated["cumulative_commitment_tempo_mode"] = (
+            "cumulative_offline_learning_guarded"
+        )
+        if updated.get("delay_or_release_decision") in {
+            None,
+            "",
+            "baseline",
+            "release",
+            "delay_for_clarification",
+        }:
+            updated["delay_or_release_decision"] = (
+                "hold_for_cumulative_offline_learning_integration"
+            )
+
+    updated["offline_learning_cumulative_projection"] = {
+        "schema_version": cumulative_profile["schema_version"],
+        "generation": generation,
+        "pressure_level": pressure_level,
+        "attention_target": attention_target,
+        "priority_profile": dict(cumulative_profile.get("priority_profile", {})),
+        "ref_set": ref_set,
+    }
+    updated["offline_learning_cumulative_generation"] = generation
+    updated["offline_learning_cumulative_pressure_level"] = pressure_level
+    updated["offline_learning_cumulative_attention_target"] = attention_target
+    updated["offline_learning_cumulative_ref_set"] = ref_set
     return updated
 
 

@@ -154,6 +154,66 @@ def build_offline_learning_cumulative_profile(
     }
 
 
+def normalize_offline_learning_cumulative_profile(
+    profile: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not isinstance(profile, dict):
+        return {}
+    priority_profile = _priority_profile(
+        profile.get("priority_profile")
+        or profile.get("offline_learning_cumulative_priority_profile")
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(
+            profile.get("ref_set")
+            or profile.get("offline_learning_cumulative_ref_set")
+            or profile.get("offline_learning_cumulative_evidence_refs")
+        )
+    )
+    generation = _int_or_zero(
+        profile.get("generation") or profile.get("offline_learning_cumulative_generation")
+    )
+    explicit_pressure = (
+        profile.get("pressure_level") or profile.get("offline_learning_cumulative_pressure_level")
+    )
+    pressure_level = str(explicit_pressure or _pressure_from_priority(priority_profile))
+    if pressure_level == "quiet" and (generation or ref_set):
+        pressure_level = "present"
+    explicit_attention_target = (
+        profile.get("attention_target")
+        or profile.get("offline_learning_cumulative_attention_target")
+    )
+    attention_target = str(
+        explicit_attention_target
+        or _dominant_target(
+            priority_profile=priority_profile,
+            fallback="baseline_offline_learning_maintenance",
+        )
+    )
+    if not any(
+        [
+            generation,
+            ref_set,
+            priority_profile,
+            explicit_pressure,
+            explicit_attention_target,
+        ]
+    ):
+        return {}
+    return {
+        "schema_version": "offline_learning_cumulative_profile_v0",
+        "generation": generation,
+        "pressure_level": pressure_level,
+        "attention_target": attention_target,
+        "priority_profile": priority_profile,
+        "ref_set": ref_set,
+        "current_pressure_level": str(
+            profile.get("current_pressure_level") or pressure_level
+        ),
+        "previous_generation": _int_or_zero(profile.get("previous_generation")),
+    }
+
+
 def _nightmare_priority(nightmare_risk: dict[str, Any]) -> str | None:
     if not nightmare_risk:
         return None

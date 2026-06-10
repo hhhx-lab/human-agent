@@ -137,12 +137,48 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 apology_repair_language_trace["offline_learning_ref_set"],
             )
             self.assertIn(
+                "offline_learning_cumulative_projection",
+                relationship_timeline,
+            )
+            self.assertGreaterEqual(
+                relationship_timeline["offline_learning_cumulative_projection"][
+                    "generation"
+                ],
+                1,
+            )
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                relationship_timeline["offline_learning_cumulative_ref_set"],
+            )
+            self.assertIn(
+                "cumulative_offline_learning_integration",
+                commitment_expression_plan["act_type_order"],
+            )
+            self.assertIn(
+                "cumulative_offline_learning_repair",
+                apology_repair_language_trace["move_type_order"],
+            )
+            self.assertIn(
                 "runtime/reports/latest/resumed_external_dialogue_packet.json",
                 relationship_memory["last_contact_refs"],
             )
             self.assertIn(
+                "runtime/state/growth/relationship_learning_plan.json",
+                relationship_memory["offline_learning_cumulative_refs"],
+            )
+            self.assertIn(
                 "runtime/state/growth/language_learning_plan.json",
                 life_state["language_state"]["offline_learning_refs"],
+            )
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                life_state["language_state"]["offline_learning_cumulative_refs"],
+            )
+            self.assertEqual(
+                life_state["language_state"][
+                    "offline_learning_cumulative_projection"
+                ]["attention_target"],
+                "nightmare_risk",
             )
             self.assertEqual(
                 life_state["relationship_subjects"][0]["relationship_stage"],
@@ -7848,6 +7884,48 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 result.context.apology_repair_language_trace["offline_learning_ref_set"],
             )
             self.assertEqual(
+                result.context.offline_learning_cumulative_generation,
+                1,
+            )
+            self.assertEqual(
+                result.context.offline_learning_cumulative_pressure_level,
+                "urgent",
+            )
+            self.assertEqual(
+                result.context.offline_learning_cumulative_attention_target,
+                "nightmare_risk",
+            )
+            self.assertIn(
+                "runtime/state/growth/relationship_learning_plan.json",
+                result.context.offline_learning_cumulative_ref_set,
+            )
+            self.assertEqual(
+                result.context.relationship_timeline[
+                    "offline_learning_cumulative_projection"
+                ]["generation"],
+                1,
+            )
+            self.assertEqual(
+                result.context.commitment_expression_plan[
+                    "offline_learning_cumulative_pressure_level"
+                ],
+                "urgent",
+            )
+            self.assertIn(
+                "cumulative_offline_learning_integration",
+                result.context.commitment_expression_plan["act_type_order"],
+            )
+            self.assertEqual(
+                result.context.apology_repair_language_trace[
+                    "cumulative_repair_window_mode"
+                ],
+                "cumulative_offline_learning_first",
+            )
+            self.assertIn(
+                "cumulative_offline_learning_repair",
+                result.context.apology_repair_language_trace["move_type_order"],
+            )
+            self.assertEqual(
                 result.context.responsibility_loop_state_ref,
                 "runtime/state/action/responsibility_loop_state.json",
             )
@@ -8026,6 +8104,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/growth/relationship_learning_plan.json",
                 relationship_memory["offline_learning_refs"],
             )
+            self.assertEqual(
+                relationship_memory["offline_learning_cumulative_projection"][
+                    "generation"
+                ],
+                1,
+            )
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                relationship_memory["offline_learning_cumulative_refs"],
+            )
             self.assertIn(
                 "runtime/state/dream/nightmare_loop_risk.json",
                 life_state["memory_index"]["dream_memory_refs"],
@@ -8033,6 +8121,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "runtime/state/growth/language_learning_plan.json",
                 life_state["language_state"]["offline_learning_refs"],
+            )
+            self.assertEqual(
+                life_state["language_state"][
+                    "offline_learning_cumulative_projection"
+                ]["pressure_level"],
+                "urgent",
+            )
+            self.assertEqual(
+                life_state["relationship_subjects"][0][
+                    "offline_learning_cumulative_generation"
+                ],
+                1,
             )
 
     def test_resident_turn_writeback_organ_updates_turn_continuity_and_bundle(self):

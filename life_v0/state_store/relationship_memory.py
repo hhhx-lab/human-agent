@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from life_v0.growth.offline_learning_profile import (
+    normalize_offline_learning_cumulative_profile,
+)
+
 
 SOURCE_DOC_REFS = [
     "docs/07_emotion_personality_self.md",
@@ -71,6 +75,7 @@ def project_relationship_memory(
     belief_learning_plan_ref: str | None = None,
     language_learning_plan_ref: str | None = None,
     relationship_learning_plan_ref: str | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     relationship_graph = relationship_graph or {}
     relationship_timeline = relationship_timeline or {}
@@ -135,6 +140,27 @@ def project_relationship_memory(
             if ref
         ]
     )
+    cumulative_profile = normalize_offline_learning_cumulative_profile(
+        offline_learning_cumulative_profile
+    )
+    if cumulative_profile:
+        cumulative_refs = list(cumulative_profile.get("ref_set", []))
+        updated["offline_learning_refs"] = _dedupe(
+            updated["offline_learning_refs"] + cumulative_refs
+        )
+        updated["offline_learning_cumulative_projection"] = {
+            "schema_version": cumulative_profile["schema_version"],
+            "generation": cumulative_profile["generation"],
+            "pressure_level": cumulative_profile["pressure_level"],
+            "attention_target": cumulative_profile["attention_target"],
+            "priority_profile": dict(cumulative_profile.get("priority_profile", {})),
+            "ref_set": cumulative_refs,
+        }
+        updated["offline_learning_cumulative_refs"] = cumulative_refs
+        updated.setdefault("long_term_change_sources", {})
+        updated["long_term_change_sources"]["offline_learning_cumulative_refs"] = (
+            cumulative_refs
+        )
     return updated
 
 

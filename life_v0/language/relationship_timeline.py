@@ -3,7 +3,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from life_v0.growth.offline_learning_profile import derive_offline_learning_profile
+from life_v0.growth.offline_learning_profile import (
+    derive_offline_learning_profile,
+    normalize_offline_learning_cumulative_profile,
+)
 
 
 def build_relationship_timeline(
@@ -19,6 +22,7 @@ def build_relationship_timeline(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
     source_doc_refs: list[str],
 ) -> dict[str, Any]:
     subject = _first_subject(relationship_graph)
@@ -207,6 +211,7 @@ def build_relationship_timeline(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
 
 
@@ -217,6 +222,7 @@ def project_relationship_timeline_with_offline_learning(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not relationship_timeline:
         return {}
@@ -230,6 +236,14 @@ def project_relationship_timeline_with_offline_learning(
     )
     ref_set = list(offline_profile.get("offline_learning_ref_set", []))
     if not ref_set:
+        cumulative_profile = normalize_offline_learning_cumulative_profile(
+            offline_learning_cumulative_profile
+        )
+        if cumulative_profile:
+            return project_relationship_timeline_with_cumulative_offline_learning(
+                relationship_timeline=updated,
+                offline_learning_cumulative_profile=cumulative_profile,
+            )
         return updated
 
     relationship_targets = list((relationship_learning_plan or {}).get("relationship_targets", []))
@@ -312,6 +326,64 @@ def project_relationship_timeline_with_offline_learning(
         "belief_targets": belief_targets,
     }
     updated["offline_learning_ref_set"] = ref_set
+    return project_relationship_timeline_with_cumulative_offline_learning(
+        relationship_timeline=updated,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+    )
+
+
+def project_relationship_timeline_with_cumulative_offline_learning(
+    *,
+    relationship_timeline: dict[str, Any],
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not relationship_timeline:
+        return {}
+    cumulative_profile = normalize_offline_learning_cumulative_profile(
+        offline_learning_cumulative_profile
+    )
+    if not cumulative_profile:
+        return relationship_timeline
+
+    updated = json.loads(json.dumps(relationship_timeline))
+    ref_set = list(cumulative_profile.get("ref_set", []))
+    pressure_level = str(cumulative_profile.get("pressure_level") or "quiet")
+    attention_target = str(
+        cumulative_profile.get("attention_target")
+        or "baseline_offline_learning_maintenance"
+    )
+    generation = int(cumulative_profile.get("generation") or 0)
+
+    for report in updated.get("relationship_continuity_reports", []):
+        if not isinstance(report, dict):
+            continue
+        report["offline_learning_cumulative_generation"] = generation
+        report["offline_learning_cumulative_pressure_level"] = pressure_level
+        report["offline_learning_cumulative_attention_target"] = attention_target
+        report["offline_learning_cumulative_ref_set"] = ref_set
+        if pressure_level in {"urgent", "elevated"}:
+            report["cumulative_continuity_state"] = (
+                "cumulative_offline_learning_repairing_continuity"
+            )
+
+    for gate in updated.get("longitudinal_stage_gates", []):
+        if not isinstance(gate, dict):
+            continue
+        gate["required_evidence_refs"] = _dedupe(
+            list(gate.get("required_evidence_refs", [])) + ref_set
+        )
+        if pressure_level in {"urgent", "elevated"}:
+            gate["cumulative_gate_status"] = "cumulative_offline_repair_hold"
+
+    updated["offline_learning_cumulative_projection"] = {
+        "schema_version": cumulative_profile["schema_version"],
+        "generation": generation,
+        "pressure_level": pressure_level,
+        "attention_target": attention_target,
+        "priority_profile": dict(cumulative_profile.get("priority_profile", {})),
+        "ref_set": ref_set,
+    }
+    updated["offline_learning_cumulative_ref_set"] = ref_set
     return updated
 
 
