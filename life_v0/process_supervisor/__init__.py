@@ -163,6 +163,7 @@ def run_digital_life_process(
     responsibility_loop_state_ref = supervision.responsibility_loop_state_ref
     world_contact_summary_ref = supervision.world_contact_summary_ref
     pain_regret_repair_report_ref = supervision.pain_regret_repair_report_ref
+    background_convergence_summary_ref = supervision.background_convergence_summary_ref
     growth_patch_candidate_ids = supervision.growth_patch_candidate_ids
     replay_residue_ref_count = supervision.replay_residue_ref_count
     dream_window_ref_count = supervision.dream_window_ref_count
@@ -318,6 +319,7 @@ def run_digital_life_process(
         active_sampling_plan_ref=active_sampling_plan_ref,
         memory_write_gate_ref=memory_write_gate_ref,
         state_merge_guard_ref=state_merge_guard_ref,
+        background_convergence_summary_ref=background_convergence_summary_ref,
         write_json=_write_json,
     )
     return DigitalLifeProcessResult(exit_code=0, report=closeout.report_bundle.report)

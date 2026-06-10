@@ -1718,6 +1718,176 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "persistent_background_continuity_refresh",
         )
 
+    def test_background_convergence_summary_tracks_stage_and_trait_stability(self):
+        from life_v0.process_supervisor.background_convergence import (
+            BACKGROUND_CONVERGENCE_SUMMARY_REF,
+            build_background_convergence_summary,
+        )
+
+        summary = build_background_convergence_summary(
+            run_id="background-convergence-organ",
+            generated_at="2026-06-10T00:00:00+00:00",
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_generation": 3,
+                "background_carryover_parent_run_id": "background-lineage-parent",
+                "background_relationship_stage": "repair_guarded_continuity",
+                "background_continuity_ref_set": [
+                    "runtime/state/terminal/resident_governance_state.json",
+                    "runtime/state/terminal/resident_governance_snapshot.json",
+                ],
+                "background_trait_slow_variable_summary": {
+                    "continuity_drive": {
+                        "value": 0.72,
+                        "last_relationship_stage": "repair_guarded_continuity",
+                    },
+                    "repair_seriousness": {
+                        "value": 0.61,
+                        "last_relationship_stage": "repair_guarded_continuity",
+                    },
+                },
+            },
+            relationship_graph={
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relationship_stage": "repair_guarded_continuity",
+                    }
+                ]
+            },
+            self_model_state={
+                "trait_slow_variables": {
+                    "continuity_drive": {
+                        "value": 0.75,
+                        "background_resume_value": 0.72,
+                        "background_inertia_weight": 0.6,
+                    },
+                    "repair_seriousness": {
+                        "value": 0.67,
+                        "background_resume_value": 0.61,
+                        "background_inertia_weight": 0.6,
+                    },
+                }
+            },
+            trait_drift_monitor={"schema_version": "trait_drift_monitor_v0"},
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+        )
+
+        self.assertEqual(
+            BACKGROUND_CONVERGENCE_SUMMARY_REF,
+            "runtime/state/terminal/background_convergence_summary.json",
+        )
+        self.assertEqual(
+            summary["schema_version"],
+            "background_convergence_summary_v0",
+        )
+        self.assertEqual(summary["relationship_stage_continuity"], "same_stage_preserved")
+        self.assertEqual(
+            summary["convergence_state"],
+            "stabilized_cross_process_continuity",
+        )
+        self.assertEqual(summary["convergence_pressure_level"], "present")
+        self.assertEqual(summary["convergence_attention_target"], "trait_slow_variable_convergence")
+        self.assertGreater(summary["trait_convergence_score"], 0.9)
+        self.assertEqual(
+            summary["trait_convergence_summary"]["continuity_drive"][
+                "convergence_band"
+            ],
+            "stabilized",
+        )
+        self.assertIn(
+            "runtime/state/terminal/resident_governance_state.json",
+            summary["evidence_refs"],
+        )
+
+    def test_idle_strategy_uses_background_convergence_pressure_as_governance_focus(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-background-convergence",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={
+                "schema_version": "relationship_timeline_v0",
+                "relationship_continuity_reports": [],
+            },
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "inactive",
+                "cognitive_bandwidth": "steady_open",
+                "sleep_pressure": "low",
+            },
+            replay_cue_bundle={},
+            offline_consolidation_frame={},
+            growth_patch_candidate_queue={},
+            responsibility_loop_state={},
+            world_contact_summary={},
+            pain_regret_repair_report={},
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_pressure_level": "light",
+                "background_carryover_attention_target": "relationship_timeline",
+                "background_carryover_generation": 2,
+                "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
+                "background_convergence_state": "integrating_cross_process_continuity",
+                "background_convergence_pressure_level": "present",
+                "background_convergence_attention_target": "trait_slow_variable_convergence",
+                "background_relationship_stage_continuity": "same_stage_preserved",
+                "background_trait_convergence_score": 0.91,
+                "background_max_trait_delta_from_background": 0.11,
+                "background_average_trait_delta_from_background": 0.09,
+                "background_trait_convergence_summary": {
+                    "continuity_drive": {"convergence_band": "integrating"}
+                },
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(
+            idle_strategy["background_convergence_summary_ref"],
+            "runtime/state/terminal/background_convergence_summary.json",
+        )
+        self.assertEqual(
+            idle_strategy["background_convergence_state"],
+            "integrating_cross_process_continuity",
+        )
+        self.assertEqual(
+            idle_strategy["background_convergence_pressure_level"],
+            "present",
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_target"],
+            "trait_slow_variable_convergence",
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_reason"],
+            "integrating_cross_process_continuity_requires_trait_stability_hold",
+        )
+        self.assertEqual(
+            idle_strategy["governance_cadence_profile"],
+            "background_convergence_stability_refresh",
+        )
+        self.assertEqual(
+            idle_strategy["long_horizon_priority_profile"][
+                "trait_slow_variable_convergence"
+            ],
+            "convergence_primary",
+        )
+
     def test_background_continuity_profile_carries_resume_summary(self):
         from life_v0.process_supervisor.background_continuity import (
             load_background_continuity_profile,
@@ -1763,6 +1933,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 },
             )
             self._write_json(
+                terminal_dir / "background_convergence_summary.json",
+                {
+                    "schema_version": "background_convergence_summary_v0",
+                    "run_id": "resume-summary-parent",
+                    "background_carryover_generation": 4,
+                    "background_carryover_parent_run_id": "resume-summary-parent",
+                    "background_carryover_source_ref_set": [
+                        "runtime/archive/resume-summary-parent/background_convergence_summary.json"
+                    ],
+                    "convergence_state": "stabilized_cross_process_continuity",
+                    "convergence_pressure_level": "present",
+                    "convergence_attention_target": "trait_slow_variable_convergence",
+                    "relationship_stage_continuity": "same_stage_preserved",
+                    "trait_convergence_score": 0.96,
+                    "max_trait_delta_from_background": 0.04,
+                    "average_trait_delta_from_background": 0.03,
+                    "trait_convergence_summary": {
+                        "continuity_drive": {"convergence_band": "stabilized"}
+                    },
+                },
+            )
+            self._write_json(
                 terminal_dir / "resident_governance_snapshot.json",
                 {
                     "schema_version": "resident_governance_snapshot_v0",
@@ -1798,7 +1990,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 reports_dir=reports_dir,
             )
 
-            self.assertEqual(profile["background_carryover_generation"], 3)
+            self.assertEqual(profile["background_carryover_generation"], 4)
             self.assertEqual(
                 profile["background_carryover_source_ref_set"],
                 ["runtime/archive/resume-summary-parent/resident_governance_state.json"],
@@ -1806,6 +1998,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "runtime/state/terminal/resident_governance_state.json",
                 profile["background_continuity_ref_set"],
+            )
+            self.assertIn(
+                "runtime/state/terminal/background_convergence_summary.json",
+                profile["background_continuity_ref_set"],
+            )
+            self.assertEqual(
+                profile["background_convergence_summary_ref"],
+                "runtime/state/terminal/background_convergence_summary.json",
+            )
+            self.assertEqual(
+                profile["background_convergence_state"],
+                "stabilized_cross_process_continuity",
+            )
+            self.assertEqual(
+                profile["background_convergence_pressure_level"],
+                "present",
             )
             self.assertEqual(
                 profile["background_relationship_stage"],
@@ -2040,6 +2248,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             terminal_life_loop_state = self._read_json(
                 paths["terminal_state"] / "terminal_life_loop_state.json"
             )
+            background_convergence_summary = self._read_json(
+                paths["terminal_state"] / "background_convergence_summary.json"
+            )
 
             self.assertEqual(idle_strategy["background_continuity_mode"], "closed_process_carryover")
             self.assertEqual(idle_strategy["background_carryover_generation"], 1)
@@ -2064,6 +2275,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/body/trait_drift_monitor.json",
             )
             self.assertEqual(
+                idle_strategy["background_convergence_summary_ref"],
+                "runtime/state/terminal/background_convergence_summary.json",
+            )
+            self.assertIn(
+                idle_strategy["background_convergence_state"],
+                {
+                    "stabilized_cross_process_continuity",
+                    "integrating_cross_process_continuity",
+                    "recalibrating_cross_process_continuity",
+                },
+            )
+            self.assertEqual(
                 resident_governance_state["background_continuity_mode"],
                 "closed_process_carryover",
             )
@@ -2077,6 +2300,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_state["background_trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
+            )
+            self.assertEqual(
+                resident_governance_state["background_convergence_summary_ref"],
+                "runtime/state/terminal/background_convergence_summary.json",
             )
             self.assertEqual(
                 idle_continuity["background_continuity_mode"],
@@ -2096,12 +2323,32 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/body/trait_drift_monitor.json",
             )
             self.assertEqual(
+                idle_continuity["background_convergence_summary_ref"],
+                "runtime/state/terminal/background_convergence_summary.json",
+            )
+            self.assertEqual(
                 terminal_life_loop_state["background_resident_governance_state_ref"],
                 "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(
                 terminal_life_loop_state["background_trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
+            )
+            self.assertEqual(
+                terminal_life_loop_state["background_convergence_summary_ref"],
+                "runtime/state/terminal/background_convergence_summary.json",
+            )
+            self.assertEqual(
+                background_convergence_summary["schema_version"],
+                "background_convergence_summary_v0",
+            )
+            self.assertEqual(
+                background_convergence_summary["background_carryover_generation"],
+                1,
+            )
+            self.assertIn(
+                "trait_convergence_summary",
+                background_convergence_summary,
             )
 
     def test_continuity_evolution_projects_background_lineage_into_stage_and_slow_variables(self):
@@ -4035,6 +4282,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 },
             )
             self._write_json(
+                terminal_dir / "background_convergence_summary.json",
+                {
+                    "schema_version": "background_convergence_summary_v0",
+                    "convergence_state": "stabilized_cross_process_continuity",
+                    "convergence_pressure_level": "present",
+                    "convergence_attention_target": "trait_slow_variable_convergence",
+                    "background_carryover_generation": 2,
+                },
+            )
+            self._write_json(
                 state_dir / "membrane" / "world_contact_summary.json",
                 {"schema_version": "world_contact_summary_v0"},
             )
@@ -4174,6 +4431,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 process_report["trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
             )
+            self.assertEqual(
+                process_report["background_convergence_summary_ref"],
+                "runtime/state/terminal/background_convergence_summary.json",
+            )
             self.assertEqual(process_digest["heartbeat_counter"], 4)
             self.assertEqual(
                 process_digest["long_horizon_language_refs"],
@@ -4194,6 +4455,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 process_digest["trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
+            )
+            self.assertEqual(
+                process_digest["background_convergence_summary_ref"],
+                "runtime/state/terminal/background_convergence_summary.json",
             )
             self.assertEqual(
                 resident_governance_snapshot["schema_version"],
@@ -4292,7 +4557,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 process_receipt["shared_object_refs"],
             )
             self.assertIn(
+                "runtime/state/terminal/background_convergence_summary.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
                 str(state_dir / "body" / "trait_drift_monitor.json"),
+                process_receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(terminal_dir / "background_convergence_summary.json"),
                 process_receipt["input_hashes"],
             )
 
@@ -4615,6 +4888,99 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertNotIn("background_carryover_source_ref_set", state)
             self.assertNotIn("background_carryover_source_ref_set", report)
+
+    def test_persistent_process_carries_background_convergence_summary_as_lineage_artifact(self):
+        from life_v0.process_supervisor.persistent_process import (
+            write_persistent_process_artifacts,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state_dir = runtime_root / "state"
+            terminal_dir = state_dir / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+
+            idle_strategy_state = {
+                "schema_version": "idle_strategy_state_v0",
+                "heartbeat_interval_ms": 52,
+                "idle_probe_mode": "stdin_poll_with_background_continuity_refresh",
+                "offline_pressure_level": "quiet",
+                "waiting_mode": "restored_waiting_for_external_turn",
+                "governance_attention_target": "trait_slow_variable_convergence",
+                "governance_attention_reason": "integrating_cross_process_continuity_requires_trait_stability_hold",
+                "governance_cadence_profile": "background_convergence_stability_refresh",
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_generation": 2,
+                "background_carryover_parent_run_id": "background-convergence-parent",
+                "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
+                "background_convergence_state": "integrating_cross_process_continuity",
+                "background_convergence_pressure_level": "present",
+                "background_convergence_attention_target": "trait_slow_variable_convergence",
+                "background_continuity_ref_set": [
+                    "runtime/state/terminal/resident_governance_state.json",
+                    "runtime/state/terminal/background_convergence_summary.json",
+                    "runtime/state/terminal/resident_governance_snapshot.json",
+                    "runtime/reports/latest/digital_life_resident_governance_report.json",
+                    "runtime/reports/latest/digital_life_persistent_process_report.json",
+                ],
+            }
+
+            result = write_persistent_process_artifacts(
+                run_id="persistent-process-convergence",
+                generated_at="2026-06-10T00:00:00+00:00",
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                heartbeat_counter=3,
+                completed_turns=1,
+                incident_count=0,
+                relaunch_recovery_count=1,
+                waiting_mode="restored_waiting_for_external_turn",
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state=idle_strategy_state,
+                last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
+                last_dialogue_packet_ref=None,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                relationship_timeline_ref=None,
+                commitment_expression_plan_ref=None,
+                apology_repair_language_trace_ref=None,
+                trait_drift_monitor_ref="runtime/state/body/trait_drift_monitor.json",
+                background_convergence_summary_ref="runtime/state/terminal/background_convergence_summary.json",
+                write_json=self._write_json,
+            )
+
+            expected_ref_set = [
+                "runtime/state/terminal/resident_governance_state.json",
+                "runtime/state/terminal/background_convergence_summary.json",
+                "runtime/state/terminal/resident_governance_snapshot.json",
+                "runtime/reports/latest/digital_life_resident_governance_report.json",
+                "runtime/reports/latest/digital_life_persistent_process_report.json",
+            ]
+            for artifact in (
+                result.state,
+                result.report,
+                result.resident_governance_state,
+                result.resident_governance_snapshot,
+                result.resident_governance_report,
+            ):
+                self.assertEqual(
+                    artifact["background_convergence_summary_ref"],
+                    "runtime/state/terminal/background_convergence_summary.json",
+                )
+                self.assertEqual(artifact["background_continuity_ref_set"], expected_ref_set)
+                self.assertEqual(
+                    artifact["background_convergence_state"],
+                    "integrating_cross_process_continuity",
+                )
+                self.assertEqual(
+                    artifact["background_convergence_pressure_level"],
+                    "present",
+                )
 
     def test_persistent_process_increments_background_carryover_generation_on_closeout(self):
         from life_v0.process_supervisor.persistent_process import write_persistent_process_artifacts

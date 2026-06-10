@@ -128,6 +128,13 @@ resident_governance_state.json
 - `background_carryover_source_ref_set`
 - `background_continuity_ref_set`
 - `background_resident_governance_state_ref`
+- `background_convergence_summary_ref`
+- `background_convergence_state`
+- `background_convergence_pressure_level`
+- `background_convergence_attention_target`
+- `background_relationship_stage_continuity`
+- `background_trait_convergence_score`
+- `background_trait_convergence_summary`
 - `background_resident_governance_snapshot_ref`
 - `background_resident_governance_report_ref`
 - `background_persistent_process_report_ref`
@@ -159,6 +166,7 @@ restore shell completed
 4. process report / receipt 不能只回链 snapshot/report，必须也回链 `resident_governance_state_ref`。
 5. 同一次 closeout 写出的 `background_continuity_ref_set` 必须指向当前关闭态 artifact，并且至少包含 `resident_governance_state.json`、`resident_governance_snapshot.json`、`digital_life_resident_governance_report.json` 与 `digital_life_persistent_process_report.json`；不能把上一轮 carryover 的 ref set 原样覆盖回来，上一轮来源应单独进入 `background_carryover_source_ref_set`。
 6. 同一次 closeout 还必须把最新 `relationship_subject_graph.json#subjects[0]` 与 `self_model.json#trait_slow_variables` 压成 `background_resume_summary`；下一次 bootstrap 的 `background_continuity_profile` 必须恢复这组字段，而不是只恢复 lineage generation。
+7. 当下一次 bootstrap 已经写出 `background_convergence_summary.json` 时，后续 closeout 的 `background_continuity_ref_set` 必须把它纳入当前 lineage artifact；如果该文件不存在，则不能伪造 ref，保持四件套 resident governance lineage。
 
 ## 运行态文件族
 

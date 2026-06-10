@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .background_convergence import BACKGROUND_CONVERGENCE_SUMMARY_REF
+
 
 BACKGROUND_RESIDENT_GOVERNANCE_SNAPSHOT_REF = (
     "runtime/state/terminal/resident_governance_snapshot.json"
@@ -27,6 +29,9 @@ def load_background_continuity_profile(
     resident_governance_state = _read_json_if_exists(
         terminal_dir / "resident_governance_state.json"
     )
+    background_convergence_summary = _read_json_if_exists(
+        terminal_dir / "background_convergence_summary.json"
+    )
     snapshot = _read_json_if_exists(terminal_dir / "resident_governance_snapshot.json")
     resident_governance_report = _read_json_if_exists(
         reports_dir / "digital_life_resident_governance_report.json"
@@ -37,6 +42,7 @@ def load_background_continuity_profile(
 
     if (
         not resident_governance_state
+        and not background_convergence_summary
         and not snapshot
         and not resident_governance_report
         and not persistent_process_report
@@ -86,6 +92,7 @@ def load_background_continuity_profile(
         ref
         for ref, payload in [
             (BACKGROUND_RESIDENT_GOVERNANCE_STATE_REF, resident_governance_state),
+            (BACKGROUND_CONVERGENCE_SUMMARY_REF, background_convergence_summary),
             (BACKGROUND_RESIDENT_GOVERNANCE_SNAPSHOT_REF, snapshot),
             (BACKGROUND_RESIDENT_GOVERNANCE_REPORT_REF, resident_governance_report),
             (BACKGROUND_PERSISTENT_PROCESS_REPORT_REF, persistent_process_report),
@@ -94,6 +101,7 @@ def load_background_continuity_profile(
     ]
     carryover_generation = max(
         _int_or_zero(resident_governance_state.get("background_carryover_generation")),
+        _int_or_zero(background_convergence_summary.get("background_carryover_generation")),
         _int_or_zero(snapshot.get("background_carryover_generation")),
         _int_or_zero(resident_governance_report.get("background_carryover_generation")),
         _int_or_zero(persistent_process_report.get("background_carryover_generation")),
@@ -102,12 +110,14 @@ def load_background_continuity_profile(
         carryover_generation = 1
     source_ref_set = _list_or_empty(
         resident_governance_state.get("background_carryover_source_ref_set")
+        or background_convergence_summary.get("background_carryover_source_ref_set")
         or snapshot.get("background_carryover_source_ref_set")
         or resident_governance_report.get("background_carryover_source_ref_set")
         or persistent_process_report.get("background_carryover_source_ref_set")
     )
     parent_run_id = (
         resident_governance_state.get("run_id")
+        or background_convergence_summary.get("background_carryover_parent_run_id")
         or snapshot.get("run_id")
         or resident_governance_report.get("run_id")
         or persistent_process_report.get("run_id")
@@ -148,6 +158,7 @@ def load_background_continuity_profile(
     )
     trait_slow_variable_summary = _dict_or_empty(
         resident_governance_state.get("background_trait_slow_variable_summary")
+        or background_convergence_summary.get("background_trait_slow_variable_summary")
         or snapshot.get("background_trait_slow_variable_summary")
         or resident_governance_report.get("background_trait_slow_variable_summary")
         or persistent_process_report.get("background_trait_slow_variable_summary")
@@ -193,6 +204,22 @@ def load_background_continuity_profile(
         profile["background_resident_governance_state_ref"] = (
             BACKGROUND_RESIDENT_GOVERNANCE_STATE_REF
         )
+    if background_convergence_summary:
+        profile["background_convergence_summary_ref"] = (
+            BACKGROUND_CONVERGENCE_SUMMARY_REF
+        )
+        for key in [
+            "convergence_state",
+            "convergence_pressure_level",
+            "convergence_attention_target",
+            "relationship_stage_continuity",
+            "trait_convergence_score",
+            "max_trait_delta_from_background",
+            "average_trait_delta_from_background",
+            "trait_convergence_summary",
+        ]:
+            if key in background_convergence_summary:
+                profile[f"background_{key}"] = background_convergence_summary[key]
     if snapshot:
         profile["background_resident_governance_snapshot_ref"] = (
             BACKGROUND_RESIDENT_GOVERNANCE_SNAPSHOT_REF

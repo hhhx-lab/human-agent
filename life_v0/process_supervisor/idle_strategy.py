@@ -66,6 +66,15 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_carryover_source_ref_set",
     "background_continuity_ref_set",
     "background_resident_governance_state_ref",
+    "background_convergence_summary_ref",
+    "background_convergence_state",
+    "background_convergence_pressure_level",
+    "background_convergence_attention_target",
+    "background_relationship_stage_continuity",
+    "background_trait_convergence_score",
+    "background_max_trait_delta_from_background",
+    "background_average_trait_delta_from_background",
+    "background_trait_convergence_summary",
     "background_resident_governance_snapshot_ref",
     "background_resident_governance_report_ref",
     "background_persistent_process_report_ref",
@@ -251,6 +260,14 @@ def decide_idle_strategy(
         relationship_learning_plan=relationship_learning_plan,
     )
     background_continuity_profile = dict(background_continuity_profile or {})
+    background_pressure_level = _background_pressure_overlay(
+        background_continuity_profile.get("background_carryover_pressure_level"),
+        background_continuity_profile.get("background_convergence_pressure_level"),
+    )
+    background_attention_target = (
+        background_continuity_profile.get("background_convergence_attention_target")
+        or background_continuity_profile.get("background_carryover_attention_target")
+    )
     heartbeat_interval_ms = _heartbeat_interval_ms(
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
@@ -262,9 +279,7 @@ def decide_idle_strategy(
         birth_readiness_waiting_posture=birth_readiness_profile[
             "birth_readiness_waiting_posture"
         ],
-        background_carryover_pressure_level=background_continuity_profile.get(
-            "background_carryover_pressure_level"
-        ),
+        background_carryover_pressure_level=background_pressure_level,
         background_carryover_generation=_int_or_zero(
             background_continuity_profile.get("background_carryover_generation")
         ),
@@ -281,9 +296,7 @@ def decide_idle_strategy(
         birth_readiness_waiting_posture=birth_readiness_profile[
             "birth_readiness_waiting_posture"
         ],
-        background_carryover_pressure_level=background_continuity_profile.get(
-            "background_carryover_pressure_level"
-        ),
+        background_carryover_pressure_level=background_pressure_level,
         background_carryover_generation=_int_or_zero(
             background_continuity_profile.get("background_carryover_generation")
         ),
@@ -394,8 +407,12 @@ def decide_idle_strategy(
         repair_obligation_count=repair_obligation_count,
         regret_pressure_count=regret_pressure_count,
         queue_e_priority_band=queue_e_priority_band,
-        background_carryover_attention_target=background_continuity_profile.get(
-            "background_carryover_attention_target"
+        background_carryover_attention_target=background_attention_target,
+        background_convergence_state=background_continuity_profile.get(
+            "background_convergence_state"
+        ),
+        background_convergence_pressure_level=background_continuity_profile.get(
+            "background_convergence_pressure_level"
         ),
         background_carryover_generation=_int_or_zero(
             background_continuity_profile.get("background_carryover_generation")
@@ -733,6 +750,8 @@ def _resident_governance_language_priority(
     queue_e_priority_band: str,
     background_carryover_attention_target: str | None,
     background_carryover_generation: int,
+    background_convergence_state: str | None = None,
+    background_convergence_pressure_level: str | None = None,
 ) -> tuple[str, str, str, dict[str, str]]:
     repair_drive = str((need_state_vector or {}).get("repair_drive", "")).lower()
     priority_profile: dict[str, str] = {}
@@ -774,12 +793,29 @@ def _resident_governance_language_priority(
     elif priority_profile.get("commitment_expression_plan") == "elevated":
         target = "commitment_expression_plan"
         reason = "offline_pressure_requires_commitment_continuity"
+    elif (
+        background_carryover_attention_target
+        and background_convergence_pressure_level in {"present", "elevated"}
+    ):
+        target = background_carryover_attention_target
+        priority_profile[str(background_carryover_attention_target)] = (
+            "convergence_primary"
+        )
+        reason = (
+            f"{background_convergence_state or 'background_convergence'}"
+            "_requires_trait_stability_hold"
+        )
     elif "relationship_timeline" in priority_profile:
         target = "relationship_timeline"
         reason = "baseline_relation_presence_maintenance"
     elif background_carryover_attention_target:
         target = background_carryover_attention_target
-        if background_carryover_generation >= 2:
+        if background_convergence_pressure_level in {"present", "elevated"}:
+            reason = (
+                f"{background_convergence_state or 'background_convergence'}"
+                "_requires_trait_stability_hold"
+            )
+        elif background_carryover_generation >= 2:
             reason = "background_continuity_lineage_requires_persistent_hold"
         else:
             reason = "background_continuity_carryover_requires_hold"
@@ -797,7 +833,11 @@ def _resident_governance_language_priority(
                 else "repair_weighted_resident_hold"
             )
     elif target == background_carryover_attention_target and background_carryover_attention_target:
-        if background_carryover_generation >= 2:
+        if background_convergence_pressure_level == "elevated":
+            cadence_profile = "background_convergence_recalibration_refresh"
+        elif background_convergence_pressure_level == "present":
+            cadence_profile = "background_convergence_stability_refresh"
+        elif background_carryover_generation >= 2:
             cadence_profile = "persistent_background_continuity_refresh"
         else:
             cadence_profile = "background_continuity_refresh"
@@ -809,6 +849,22 @@ def _resident_governance_language_priority(
         cadence_profile = "baseline_waiting_presence"
 
     return target, reason, cadence_profile, priority_profile
+
+
+def _background_pressure_overlay(
+    carryover_pressure_level: Any,
+    convergence_pressure_level: Any,
+) -> str | None:
+    levels = {
+        "light": 1,
+        "present": 2,
+        "elevated": 3,
+    }
+    carryover = str(carryover_pressure_level or "")
+    convergence = str(convergence_pressure_level or "")
+    if levels.get(convergence, 0) > levels.get(carryover, 0):
+        return convergence
+    return carryover or None
 
 
 def _queue_e_idle_regulation(

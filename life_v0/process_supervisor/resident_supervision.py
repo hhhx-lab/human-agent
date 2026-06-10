@@ -19,6 +19,10 @@ from ..language.relationship_timeline import (
     project_relationship_timeline_with_offline_learning,
 )
 from .heartbeat import write_waiting_heartbeat
+from .background_convergence import (
+    BACKGROUND_CONVERGENCE_SUMMARY_REF,
+    build_background_convergence_summary,
+)
 from .idle_strategy import (
     ACTIVE_SAMPLING_PLAN_REF,
     BELIEF_STATE_FRAME_REF,
@@ -60,6 +64,7 @@ class ResidentSupervisionContext:
     body_resource_budget: dict[str, Any]
     core_affect_vector: dict[str, Any]
     trait_drift_monitor: dict[str, Any]
+    background_convergence_summary: dict[str, Any]
     self_model_state: dict[str, Any]
     safe_terminal_loop: dict[str, Any]
     terminal_life_loop_state: dict[str, Any]
@@ -121,6 +126,7 @@ class ResidentSupervisionContext:
     responsibility_loop_state_ref: str | None
     world_contact_summary_ref: str | None
     pain_regret_repair_report_ref: str | None
+    background_convergence_summary_ref: str | None
     growth_patch_candidate_ids: list[str]
     replay_residue_ref_count: int
     dream_window_ref_count: int
@@ -456,6 +462,19 @@ def bootstrap_resident_supervision(
     relationship_graph = continuity_refresh["relationship_graph"]
     self_model_state = continuity_refresh["self_model_state"]
     trait_drift_monitor = continuity_refresh["trait_drift_monitor"]
+    background_convergence_summary = build_background_convergence_summary(
+        run_id=run_id,
+        generated_at=generated_at,
+        background_continuity_profile=background_continuity_profile,
+        relationship_graph=relationship_graph,
+        self_model_state=self_model_state,
+        trait_drift_monitor=trait_drift_monitor,
+        source_doc_refs=source_doc_refs,
+    )
+    background_convergence_summary_ref = _ref_if_present(
+        payload=background_convergence_summary,
+        ref=BACKGROUND_CONVERGENCE_SUMMARY_REF,
+    )
     relationship_timeline = continuity_refresh["relationship_timeline"]
     commitment_expression_plan = continuity_refresh["commitment_expression_plan"]
     apology_repair_language_trace = continuity_refresh["apology_repair_language_trace"]
@@ -471,6 +490,11 @@ def bootstrap_resident_supervision(
     write_json(state_dir / "memory" / "relationship_memory.json", relationship_memory)
     body_dir.mkdir(parents=True, exist_ok=True)
     write_json(body_dir / "trait_drift_monitor.json", trait_drift_monitor)
+    if background_convergence_summary:
+        write_json(
+            terminal_dir / "background_convergence_summary.json",
+            background_convergence_summary,
+        )
     write_json(state_dir / "self" / "self_model.json", self_model_state)
     write_json(state_dir / "life_state.json", life_state)
     growth_patch_candidate_ids = [
@@ -609,6 +633,7 @@ def bootstrap_resident_supervision(
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
         trait_drift_monitor=trait_drift_monitor,
+        background_convergence_summary=background_convergence_summary,
         self_model_state=self_model_state,
         safe_terminal_loop=safe_terminal_loop,
         terminal_life_loop_state=terminal_life_loop_state,
@@ -670,6 +695,7 @@ def bootstrap_resident_supervision(
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
+        background_convergence_summary_ref=background_convergence_summary_ref,
         growth_patch_candidate_ids=growth_patch_candidate_ids,
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,
