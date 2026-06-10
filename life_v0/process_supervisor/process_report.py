@@ -10,6 +10,7 @@ from .governance_explanation import (
     write_resident_governance_explanation,
 )
 from .idle_strategy import extract_idle_governance_fields
+from .trait_convergence_signals import cross_wake_trait_convergence_profile
 
 
 @dataclass(frozen=True)
@@ -79,6 +80,17 @@ def write_process_report_bundle(
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> ProcessReportBundleResult:
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
+    idle_governance.update(
+        cross_wake_trait_convergence_profile(
+            _trait_convergence_report_carrier(
+                idle_governance=idle_governance,
+                resident_governance_state_ref=resident_governance_state_ref,
+                trait_drift_monitor_ref=trait_drift_monitor_ref,
+                background_convergence_summary_ref=background_convergence_summary_ref,
+                background_convergence_history_ref=background_convergence_history_ref,
+            )
+        )
+    )
     membrane_guard_refs = [
         ref
         for ref in [
@@ -325,6 +337,28 @@ def write_process_report_bundle(
         "background_trait_convergence_stable_names": list(
             idle_governance.get("background_trait_convergence_stable_names", [])
         ),
+        "cross_wake_trait_convergence_profile": idle_governance.get(
+            "cross_wake_trait_convergence_profile",
+            {},
+        ),
+        "cross_wake_trait_convergence_focus": idle_governance.get(
+            "cross_wake_trait_convergence_focus"
+        ),
+        "cross_wake_trait_convergence_pressure": idle_governance.get(
+            "cross_wake_trait_convergence_pressure"
+        ),
+        "cross_wake_trait_convergence_unstable_names": list(
+            idle_governance.get("cross_wake_trait_convergence_unstable_names", [])
+        ),
+        "cross_wake_trait_convergence_stable_names": list(
+            idle_governance.get("cross_wake_trait_convergence_stable_names", [])
+        ),
+        "cross_wake_trait_convergence_score": idle_governance.get(
+            "cross_wake_trait_convergence_score"
+        ),
+        "cross_wake_trait_convergence_refs": list(
+            idle_governance.get("cross_wake_trait_convergence_refs", [])
+        ),
         "consciousness_waiting_posture": idle_governance.get(
             "consciousness_waiting_posture"
         ),
@@ -381,6 +415,10 @@ def write_process_report_bundle(
         trait_drift_monitor_ref=trait_drift_monitor_ref,
         background_convergence_summary_ref=background_convergence_summary_ref,
         background_convergence_history_ref=background_convergence_history_ref,
+        cross_wake_trait_convergence_refs=idle_governance.get(
+            "cross_wake_trait_convergence_refs",
+            [],
+        ),
         idle_heartbeat_trace_ref=idle_governance.get("idle_heartbeat_trace_ref"),
         workspace_frame_ref=idle_governance.get("workspace_frame_ref"),
         broadcast_frame_ref=idle_governance.get("broadcast_frame_ref"),
@@ -439,6 +477,7 @@ def build_process_receipt(
     trait_drift_monitor_ref: str | None = None,
     background_convergence_summary_ref: str | None = None,
     background_convergence_history_ref: str | None = None,
+    cross_wake_trait_convergence_refs: list[str] | None = None,
     idle_heartbeat_trace_ref: str | None = None,
     workspace_frame_ref: str | None = None,
     broadcast_frame_ref: str | None = None,
@@ -526,7 +565,7 @@ def build_process_receipt(
             "runtime/reports/latest/digital_life_process_report.json",
             "runtime/reports/latest/digital_life_process_digest.json",
         ],
-        "shared_object_refs": [
+        "shared_object_refs": _dedupe_refs([
             ref
             for ref in [
                 idle_strategy_ref,
@@ -571,9 +610,10 @@ def build_process_receipt(
                 birth_readiness_stage_gate_ref,
                 relationship_graph_ref,
                 self_model_ref,
+                *(cross_wake_trait_convergence_refs or []),
             ]
             if ref
-        ],
+        ]),
         "stage_effect": "persistent_dialogue_process_closed",
         "created_at": generated_at,
         "input_hashes": input_hashes,
@@ -627,6 +667,50 @@ def _identity_consciousness_birth_refs(idle_governance: dict[str, Any]) -> list[
         ]
         if ref
     ]
+
+
+def _trait_convergence_report_carrier(
+    *,
+    idle_governance: dict[str, Any],
+    resident_governance_state_ref: str | None,
+    trait_drift_monitor_ref: str | None,
+    background_convergence_summary_ref: str | None,
+    background_convergence_history_ref: str | None,
+) -> dict[str, Any]:
+    carrier = dict(idle_governance)
+    if resident_governance_state_ref:
+        carrier.setdefault(
+            "background_resident_governance_state_ref",
+            resident_governance_state_ref,
+        )
+    carrier.setdefault(
+        "background_resident_governance_explanation_ref",
+        RESIDENT_GOVERNANCE_EXPLANATION_REF,
+    )
+    if trait_drift_monitor_ref:
+        carrier.setdefault("background_trait_drift_monitor_ref", trait_drift_monitor_ref)
+    if background_convergence_summary_ref:
+        carrier.setdefault(
+            "background_convergence_summary_ref",
+            background_convergence_summary_ref,
+        )
+    if background_convergence_history_ref:
+        carrier.setdefault(
+            "background_convergence_history_ref",
+            background_convergence_history_ref,
+        )
+    return carrier
+
+
+def _dedupe_refs(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        result.append(value)
+    return result
 
 
 def _relationship_resume_summary(

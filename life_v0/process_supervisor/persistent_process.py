@@ -5,7 +5,9 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .background_lineage_state import build_resident_background_lineage_state
+from .governance_explanation import RESIDENT_GOVERNANCE_EXPLANATION_REF
 from .idle_strategy import extract_idle_governance_fields
+from .trait_convergence_signals import cross_wake_trait_convergence_profile
 
 
 PERSISTENT_PROCESS_STATE_REF = "runtime/state/terminal/persistent_process_state.json"
@@ -68,6 +70,16 @@ def write_persistent_process_artifacts(
     terminal_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
+    idle_governance.update(
+        cross_wake_trait_convergence_profile(
+            _trait_convergence_closeout_carrier(
+                idle_governance=idle_governance,
+                trait_drift_monitor_ref=trait_drift_monitor_ref,
+                background_convergence_summary_ref=background_convergence_summary_ref,
+                background_convergence_history_ref=background_convergence_history_ref,
+            )
+        )
+    )
     current_background_ref_set = [
         RESIDENT_GOVERNANCE_STATE_REF,
         RESIDENT_GOVERNANCE_SNAPSHOT_REF,
@@ -456,6 +468,37 @@ def _idle_governance_without_background_lineage(
             "background_carryover_parent_run_id",
         }
     }
+
+
+def _trait_convergence_closeout_carrier(
+    *,
+    idle_governance: dict[str, Any],
+    trait_drift_monitor_ref: str | None,
+    background_convergence_summary_ref: str | None,
+    background_convergence_history_ref: str | None,
+) -> dict[str, Any]:
+    carrier = dict(idle_governance)
+    carrier.setdefault(
+        "background_resident_governance_state_ref",
+        RESIDENT_GOVERNANCE_STATE_REF,
+    )
+    carrier.setdefault(
+        "background_resident_governance_explanation_ref",
+        RESIDENT_GOVERNANCE_EXPLANATION_REF,
+    )
+    if trait_drift_monitor_ref:
+        carrier.setdefault("background_trait_drift_monitor_ref", trait_drift_monitor_ref)
+    if background_convergence_summary_ref:
+        carrier.setdefault(
+            "background_convergence_summary_ref",
+            background_convergence_summary_ref,
+        )
+    if background_convergence_history_ref:
+        carrier.setdefault(
+            "background_convergence_history_ref",
+            background_convergence_history_ref,
+        )
+    return carrier
 
 
 def _attach_resident_background_lineage_state(

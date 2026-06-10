@@ -5693,6 +5693,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             report = self._read_json(reports_dir / "digital_life_process_report.json")
             digest = self._read_json(reports_dir / "digital_life_process_digest.json")
             receipt = self._read_json(receipts_dir / "digital_life_process_process-report-organ.json")
+            expected_cross_wake_trait_refs = [
+                "runtime/state/terminal/resident_governance_state.json",
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                "runtime/state/body/trait_drift_monitor.json",
+                "runtime/state/terminal/background_convergence_summary.json",
+                "runtime/state/terminal/background_convergence_history.json",
+            ]
 
             self.assertEqual(result.report["run_id"], "process-report-organ")
             self.assertEqual(
@@ -5913,6 +5920,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 digest["background_trait_convergence_stable_names"],
                 ["repair_seriousness"],
             )
+            for artifact in (report, digest):
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_focus"],
+                    "trait_stability_hold",
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_pressure"],
+                    "stability_hold",
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_unstable_names"],
+                    ["continuity_drive"],
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_stable_names"],
+                    ["repair_seriousness"],
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_profile"]["history_profile"][
+                        "continuity_drive"
+                    ]["trend_state"],
+                    "integrating_trait_convergence",
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_refs"],
+                    expected_cross_wake_trait_refs,
+                )
             self.assertEqual(
                 digest["trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
@@ -6070,6 +6104,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/body/trait_drift_monitor.json",
                 receipt["shared_object_refs"],
             )
+            for ref in expected_cross_wake_trait_refs:
+                self.assertIn(ref, receipt["shared_object_refs"])
             self.assertIn(
                 "runtime/state/relationship/relationship_subject_graph.json",
                 receipt["shared_object_refs"],
@@ -6861,6 +6897,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_convergence_history_window_size": 2,
                     "background_dominant_convergence_pressure_level": "present",
                     "background_dominant_convergence_state": "stabilized_cross_process_continuity",
+                    "background_trait_convergence_history_focus": "trait_stability_hold",
+                    "background_trait_convergence_unstable_names": ["continuity_drive"],
+                    "background_trait_convergence_stable_names": ["repair_seriousness"],
+                    "background_trait_convergence_history_profile": {
+                        "continuity_drive": {
+                            "latest_band": "integrating",
+                            "trend_state": "integrating_trait_convergence",
+                        },
+                        "repair_seriousness": {
+                            "latest_band": "stabilized",
+                            "trend_state": "stable_trait_convergence",
+                        },
+                    },
                     "offline_learning_cumulative_profile": {
                         "schema_version": "offline_learning_cumulative_profile_v0",
                         "generation": 2,
@@ -7003,6 +7052,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "history_window_size": 2,
                     "trend_state": "stable_cross_wake_convergence",
                     "dominant_convergence_pressure_level": "present",
+                    "trait_convergence_history_focus": "trait_stability_hold",
+                    "trait_convergence_unstable_names": ["continuity_drive"],
+                    "trait_convergence_stable_names": ["repair_seriousness"],
                     "convergence_samples": [
                         {
                             "run_id": "previous-closeout",
@@ -7094,6 +7146,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 reports_dir / "digital_life_resident_governance_explanation.json"
             )
             process_receipt = self._read_json(receipts_dir / "digital_life_process_process-closeout-organ.json")
+            expected_cross_wake_trait_refs = [
+                "runtime/state/terminal/resident_governance_state.json",
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                "runtime/state/body/trait_drift_monitor.json",
+                "runtime/state/terminal/background_convergence_summary.json",
+                "runtime/state/terminal/background_convergence_history.json",
+            ]
 
             self.assertEqual(
                 result.persistent_process_artifacts.state["run_id"],
@@ -7233,6 +7292,39 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 process_digest["background_dominant_convergence_pressure_level"],
                 "present",
             )
+            for artifact in (
+                process_report,
+                process_digest,
+                resident_governance_state,
+                resident_governance_snapshot,
+                resident_governance_report,
+            ):
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_focus"],
+                    "trait_stability_hold",
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_pressure"],
+                    "stability_hold",
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_unstable_names"],
+                    ["continuity_drive"],
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_stable_names"],
+                    ["repair_seriousness"],
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_profile"]["history_profile"][
+                        "continuity_drive"
+                    ]["trend_state"],
+                    "integrating_trait_convergence",
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_refs"],
+                    expected_cross_wake_trait_refs,
+                )
             self.assertEqual(
                 process_digest["offline_learning_cumulative_generation"],
                 2,
@@ -7388,6 +7480,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/background_convergence_history.json",
                 process_receipt["shared_object_refs"],
             )
+            for ref in expected_cross_wake_trait_refs:
+                self.assertIn(ref, process_receipt["shared_object_refs"])
             self.assertIn(
                 str(state_dir / "body" / "trait_drift_monitor.json"),
                 process_receipt["input_hashes"],
@@ -7864,6 +7958,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/reports/latest/digital_life_resident_governance_report.json",
                 "runtime/reports/latest/digital_life_persistent_process_report.json",
             ]
+            expected_cross_wake_trait_refs = [
+                "runtime/state/terminal/resident_governance_state.json",
+                "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                "runtime/state/body/trait_drift_monitor.json",
+                "runtime/state/terminal/background_convergence_summary.json",
+                "runtime/state/terminal/background_convergence_history.json",
+            ]
             for artifact in (
                 result.state,
                 result.report,
@@ -7887,6 +7988,32 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 self.assertEqual(
                     artifact["background_convergence_pressure_level"],
                     "present",
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_focus"],
+                    "trait_stability_hold",
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_pressure"],
+                    "stability_hold",
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_unstable_names"],
+                    ["continuity_drive"],
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_stable_names"],
+                    ["repair_seriousness"],
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_profile"]["history_profile"][
+                        "continuity_drive"
+                    ]["trend_state"],
+                    "integrating_trait_convergence",
+                )
+                self.assertEqual(
+                    artifact["cross_wake_trait_convergence_refs"],
+                    expected_cross_wake_trait_refs,
                 )
                 self.assertEqual(
                     artifact["resident_background_lineage_state"]["status"],
