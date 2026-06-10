@@ -270,6 +270,19 @@ restore shell completed
 
 三者缺任何一个，closeout 证据链都不算闭合。
 
+如果 Queue F 在这轮 waiting governance 里进入了主导位，主报告与治理解释还必须显式保留：
+
+- `workspace_frame_ref`
+- `broadcast_frame_ref`
+- `metacognition_ref`
+- `consciousness_probe_ref`
+- `birth_readiness_rollup_ref`
+- `birth_readiness_stage_gate_ref`
+- `consciousness_waiting_posture`
+- `birth_readiness_waiting_posture`
+- `birth_readiness_decision`
+- `birth_readiness_next_required_command`
+
 ### `digital_life_process_<run_id>.json`
 
 process receipt 里，resident governance 必须进入：
@@ -282,6 +295,12 @@ process receipt 里，resident governance 必须进入：
 - `runtime/state/terminal/resident_governance_state.json`
 - `runtime/state/terminal/resident_governance_snapshot.json`
 - `runtime/reports/latest/digital_life_resident_governance_report.json` 的上游 report ref
+- `runtime/state/consciousness/workspace_frame.json`
+- `runtime/state/consciousness/broadcast_frame.json`
+- `runtime/state/consciousness/metacognition_state.json`
+- `runtime/state/consciousness/consciousness_probe_bundle.json`
+- `runtime/state/life_targets/birth_readiness_rollup.json`
+- `runtime/state/life_targets/birth_readiness_stage_gate.json`
 
 ## 等待态治理字段语义
 
@@ -294,6 +313,8 @@ process receipt 里，resident governance 必须进入：
 - `apology_repair_language_trace`
 - `commitment_expression_plan`
 - `relationship_timeline`
+- `consciousness_probe_bundle`
+- `birth_readiness_stage_gate`
 - `baseline_waiting_presence`
 
 ### `governance_cadence_profile`

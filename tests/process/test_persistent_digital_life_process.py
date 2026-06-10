@@ -2811,6 +2811,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "commitment_expression_plan": "elevated",
                         "apology_repair_language_trace": "baseline",
                     },
+                    "workspace_frame_ref": "runtime/state/consciousness/workspace_frame.json",
+                    "broadcast_frame_ref": "runtime/state/consciousness/broadcast_frame.json",
+                    "metacognition_ref": "runtime/state/consciousness/metacognition_state.json",
+                    "consciousness_probe_ref": "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    "birth_readiness_rollup_ref": "runtime/state/life_targets/birth_readiness_rollup.json",
+                    "birth_readiness_stage_gate_ref": "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                    "consciousness_waiting_posture": "consciousness_reportable_waiting",
+                    "consciousness_reportability_flags": [
+                        "workspace_reportable",
+                        "broadcast_reportable",
+                        "metacognition_reportable",
+                    ],
+                    "birth_readiness_waiting_posture": "birth_open_waiting",
+                    "birth_readiness_decision": "open",
+                    "birth_readiness_next_required_command": "digital life",
                 },
             )
             self._write_json(
@@ -2882,6 +2897,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self._write_json(
                 state_dir / "membrane" / "world_contact_summary.json",
                 {"schema_version": "world_contact_summary_v0"},
+            )
+            self._write_json(
+                state_dir / "consciousness" / "workspace_frame.json",
+                {"schema_version": "workspace_frame_v0"},
+            )
+            self._write_json(
+                state_dir / "consciousness" / "broadcast_frame.json",
+                {"schema_version": "broadcast_frame_v0"},
+            )
+            self._write_json(
+                state_dir / "consciousness" / "metacognition_state.json",
+                {"schema_version": "metacognition_state_v0"},
+            )
+            self._write_json(
+                state_dir / "consciousness" / "consciousness_probe_bundle.json",
+                {"schema_version": "consciousness_probe_bundle_v0"},
+            )
+            self._write_json(
+                state_dir / "life_targets" / "birth_readiness_rollup.json",
+                {"schema_version": "birth_readiness_rollup_v0", "overall_status": "open"},
+            )
+            self._write_json(
+                state_dir / "life_targets" / "birth_readiness_stage_gate.json",
+                {"schema_version": "birth_readiness_stage_gate_v0", "decision": "open"},
             )
             self._write_json(
                 reports_dir / "pain_regret_repair_report.json",
@@ -3109,6 +3148,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/memory/state_merge_guard.json",
                 ],
             )
+            self.assertEqual(
+                digest["identity_consciousness_birth_refs"],
+                [
+                    "runtime/state/consciousness/workspace_frame.json",
+                    "runtime/state/consciousness/broadcast_frame.json",
+                    "runtime/state/consciousness/metacognition_state.json",
+                    "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    "runtime/state/life_targets/birth_readiness_rollup.json",
+                    "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                ],
+            )
+            self.assertEqual(
+                digest["consciousness_waiting_posture"],
+                "consciousness_reportable_waiting",
+            )
+            self.assertEqual(
+                digest["birth_readiness_waiting_posture"],
+                "birth_open_waiting",
+            )
+            self.assertEqual(digest["birth_readiness_decision"], "open")
+            self.assertEqual(
+                digest["birth_readiness_next_required_command"],
+                "digital life",
+            )
             self.assertEqual(receipt["receipt_id"], "digital_life_process_process-report-organ")
             self.assertEqual(receipt["stage_effect"], "persistent_dialogue_process_closed")
             self.assertIn(
@@ -3196,6 +3259,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 receipt["shared_object_refs"],
             )
             self.assertIn(
+                "runtime/state/consciousness/workspace_frame.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
                 str(state_dir / "replay" / "replay_cue_bundle.json"),
                 receipt["input_hashes"],
             )
@@ -3209,6 +3284,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn(
                 str(terminal_dir / "resident_governance_state.json"),
+                receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(state_dir / "consciousness" / "workspace_frame.json"),
+                receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(state_dir / "life_targets" / "birth_readiness_stage_gate.json"),
                 receipt["input_hashes"],
             )
             self.assertIn(
@@ -3290,6 +3373,87 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "generation 3",
                 report["continuity_story"][2],
+            )
+
+    def test_resident_governance_explanation_organ_writes_queue_f_presence_story(self):
+        from life_v0.process_supervisor.governance_explanation import (
+            write_resident_governance_explanation,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            reports_dir = Path(tmp) / "runtime" / "reports" / "latest"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+
+            result = write_resident_governance_explanation(
+                run_id="governance-explain-queue-f",
+                generated_at="2026-06-10T00:00:00+00:00",
+                reports_dir=reports_dir,
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state={
+                    "schema_version": "idle_strategy_state_v0",
+                    "heartbeat_interval_ms": 44,
+                    "next_idle_action": "refresh_waiting_heartbeat_with_birth_ready_presence_hold",
+                    "governance_attention_target": "birth_readiness_stage_gate",
+                    "governance_attention_reason": "birth_readiness_open_requires_resident_birth_presence",
+                    "governance_cadence_profile": "birth_ready_resident_presence",
+                    "workspace_frame_ref": "runtime/state/consciousness/workspace_frame.json",
+                    "broadcast_frame_ref": "runtime/state/consciousness/broadcast_frame.json",
+                    "metacognition_ref": "runtime/state/consciousness/metacognition_state.json",
+                    "consciousness_probe_ref": "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    "birth_readiness_rollup_ref": "runtime/state/life_targets/birth_readiness_rollup.json",
+                    "birth_readiness_stage_gate_ref": "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                    "consciousness_waiting_posture": "consciousness_reportable_waiting",
+                    "consciousness_reportability_flags": [
+                        "workspace_reportable",
+                        "broadcast_reportable",
+                        "metacognition_reportable",
+                    ],
+                    "birth_readiness_waiting_posture": "birth_open_waiting",
+                    "birth_readiness_decision": "open",
+                    "birth_readiness_next_required_command": "digital life",
+                },
+                persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
+                resident_governance_report_ref="runtime/reports/latest/digital_life_resident_governance_report.json",
+                resident_governance_state_ref="runtime/state/terminal/resident_governance_state.json",
+                resident_governance_snapshot_ref="runtime/state/terminal/resident_governance_snapshot.json",
+                completed_turns=1,
+                incident_count=0,
+                relaunch_recovery_count=0,
+                exit_reason="explicit_exit",
+                write_json=self._write_json,
+            )
+
+            report = self._read_json(
+                reports_dir / "digital_life_resident_governance_explanation.json"
+            )
+
+            self.assertEqual(
+                result.report["dominant_driver_family"],
+                "birth_readiness_presence_hold",
+            )
+            self.assertEqual(
+                report["next_wake_expectation"],
+                "re_enter_birth_readiness_presence_before_accepting_external_turn",
+            )
+            self.assertTrue(report["queue_f_focus_active"])
+            self.assertEqual(
+                report["identity_consciousness_birth_refs"],
+                [
+                    "runtime/state/consciousness/workspace_frame.json",
+                    "runtime/state/consciousness/broadcast_frame.json",
+                    "runtime/state/consciousness/metacognition_state.json",
+                    "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    "runtime/state/life_targets/birth_readiness_rollup.json",
+                    "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                ],
+            )
+            self.assertIn(
+                "birth readiness posture is birth_open_waiting with decision open and next required command digital life",
+                report["continuity_story"],
+            )
+            self.assertIn(
+                "consciousness posture is consciousness_reportable_waiting with reportability flags workspace_reportable, broadcast_reportable, metacognition_reportable",
+                report["continuity_story"],
             )
 
     def test_process_closeout_organ_writes_persistent_artifacts_and_report_bundle(self):

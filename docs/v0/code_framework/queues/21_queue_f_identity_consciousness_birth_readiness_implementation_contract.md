@@ -350,6 +350,8 @@ Queue F 必须接到这些现有器官上：
 
 `heartbeat.py` 现在通过 `extract_idle_governance_fields()` 把 Queue F 字段统一写入 waiting heartbeat、terminal loop state 与 resident governance state；`process_report.py` 同时把 consciousness / birth readiness 文件加入 process receipt input hashes。这样 Queue F 的出生准备度和意识证据会跨过 S08，进入常驻存在链的运行证据。
 
+最新这一轮再往前推进一步：`governance_explanation.py`、`digital_life_process_digest.json` 与 `digital_life_process_<run_id>.json` 不能只把 Queue F 当成“已经在 idle_strategy 里出现过”。它们还必须显式解释 Queue F 是否主导了本轮 resident governance，写出 `identity_consciousness_birth_refs`，并把 `birth_readiness_waiting_posture / decision / next_required_command` 与 `consciousness_waiting_posture / reportability_flags` 一起进入 closeout 证据链。
+
 ## Queue F 对现有器官的改动合同
 
 ### `life_v0/direction/__init__.py`

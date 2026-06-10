@@ -80,6 +80,7 @@ def write_process_report_bundle(
         ]
         if ref
     ]
+    identity_consciousness_birth_refs = _identity_consciousness_birth_refs(idle_governance)
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_runtime_ref=signal_media_runtime_ref,
         belief_state_ref=belief_state_ref,
@@ -208,6 +209,20 @@ def write_process_report_bundle(
             ]
             if ref
         ],
+        "identity_consciousness_birth_refs": identity_consciousness_birth_refs,
+        "consciousness_waiting_posture": idle_governance.get(
+            "consciousness_waiting_posture"
+        ),
+        "consciousness_reportability_flags": list(
+            idle_governance.get("consciousness_reportability_flags", [])
+        ),
+        "birth_readiness_waiting_posture": idle_governance.get(
+            "birth_readiness_waiting_posture"
+        ),
+        "birth_readiness_decision": idle_governance.get("birth_readiness_decision"),
+        "birth_readiness_next_required_command": idle_governance.get(
+            "birth_readiness_next_required_command"
+        ),
         "prediction_write_gate_refs": prediction_write_gate_refs,
     }
     if membrane_guard_refs:
@@ -245,6 +260,12 @@ def write_process_report_bundle(
         active_sampling_plan_ref=active_sampling_plan_ref,
         memory_write_gate_ref=memory_write_gate_ref,
         state_merge_guard_ref=state_merge_guard_ref,
+        workspace_frame_ref=idle_governance.get("workspace_frame_ref"),
+        broadcast_frame_ref=idle_governance.get("broadcast_frame_ref"),
+        metacognition_ref=idle_governance.get("metacognition_ref"),
+        consciousness_probe_ref=idle_governance.get("consciousness_probe_ref"),
+        birth_readiness_rollup_ref=idle_governance.get("birth_readiness_rollup_ref"),
+        birth_readiness_stage_gate_ref=idle_governance.get("birth_readiness_stage_gate_ref"),
     )
 
     receipts_dir.mkdir(parents=True, exist_ok=True)
@@ -290,6 +311,12 @@ def build_process_receipt(
     active_sampling_plan_ref: str | None = None,
     memory_write_gate_ref: str | None = None,
     state_merge_guard_ref: str | None = None,
+    workspace_frame_ref: str | None = None,
+    broadcast_frame_ref: str | None = None,
+    metacognition_ref: str | None = None,
+    consciousness_probe_ref: str | None = None,
+    birth_readiness_rollup_ref: str | None = None,
+    birth_readiness_stage_gate_ref: str | None = None,
 ) -> dict[str, Any]:
     input_hashes: dict[str, str] = {}
     for path in [
@@ -382,6 +409,12 @@ def build_process_receipt(
                 active_sampling_plan_ref,
                 memory_write_gate_ref,
                 state_merge_guard_ref,
+                workspace_frame_ref,
+                broadcast_frame_ref,
+                metacognition_ref,
+                consciousness_probe_ref,
+                birth_readiness_rollup_ref,
+                birth_readiness_stage_gate_ref,
             ]
             if ref
         ],
@@ -420,6 +453,21 @@ def _prediction_write_gate_refs(
             active_sampling_plan_ref,
             memory_write_gate_ref,
             state_merge_guard_ref,
+        ]
+        if ref
+    ]
+
+
+def _identity_consciousness_birth_refs(idle_governance: dict[str, Any]) -> list[str]:
+    return [
+        ref
+        for ref in [
+            idle_governance.get("workspace_frame_ref"),
+            idle_governance.get("broadcast_frame_ref"),
+            idle_governance.get("metacognition_ref"),
+            idle_governance.get("consciousness_probe_ref"),
+            idle_governance.get("birth_readiness_rollup_ref"),
+            idle_governance.get("birth_readiness_stage_gate_ref"),
         ]
         if ref
     ]

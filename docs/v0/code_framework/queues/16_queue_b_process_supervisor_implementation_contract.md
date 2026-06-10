@@ -279,6 +279,19 @@ report 至少要有：
 - `offline_consolidation_frame_ref`
 - `growth_patch_candidate_queue_ref`
 
+digest / receipt 现在还必须继续显式带出：
+
+- `workspace_frame_ref`
+- `broadcast_frame_ref`
+- `metacognition_ref`
+- `consciousness_probe_ref`
+- `birth_readiness_rollup_ref`
+- `birth_readiness_stage_gate_ref`
+- `consciousness_waiting_posture`
+- `birth_readiness_waiting_posture`
+- `birth_readiness_decision`
+- `birth_readiness_next_required_command`
+
 ## F. 新增 `life_v0/process_supervisor/idle_strategy.py`
 
 ### 角色

@@ -42,6 +42,7 @@ def write_resident_governance_explanation(
     next_wake_expectation = _next_wake_expectation(
         dominant_driver_family=dominant_driver_family
     )
+    identity_consciousness_birth_refs = _identity_consciousness_birth_refs(idle_governance)
     report = {
         "schema_version": "digital_life_resident_governance_explanation_v0",
         "run_id": run_id,
@@ -69,6 +70,8 @@ def write_resident_governance_explanation(
         "background_carryover_source_ref_set": list(
             idle_governance.get("background_carryover_source_ref_set", [])
         ),
+        "queue_f_focus_active": bool(identity_consciousness_birth_refs),
+        "identity_consciousness_birth_refs": identity_consciousness_birth_refs,
         "continuity_story": _compose_continuity_story(
             idle_governance=idle_governance,
             dominant_driver_family=dominant_driver_family,
@@ -92,6 +95,10 @@ def _dominant_driver_family(idle_governance: dict[str, Any]) -> str:
     background_mode = idle_governance.get("background_continuity_mode")
     attention_target = str(idle_governance.get("governance_attention_target") or "")
     attention_reason = str(idle_governance.get("governance_attention_reason") or "")
+    birth_waiting_posture = str(idle_governance.get("birth_readiness_waiting_posture") or "")
+    consciousness_waiting_posture = str(
+        idle_governance.get("consciousness_waiting_posture") or ""
+    )
     offline_learning_pressure = str(
         idle_governance.get("offline_learning_pressure_level") or ""
     )
@@ -104,6 +111,26 @@ def _dominant_driver_family(idle_governance: dict[str, Any]) -> str:
         return "background_continuity_carryover"
     if attention_target == "apology_repair_language_trace" or repair_followup_required:
         return "queue_e_repair_guard"
+    if birth_waiting_posture == "birth_blocked_waiting" and (
+        attention_target == "birth_readiness_stage_gate"
+        or "birth_readiness" in attention_reason
+    ):
+        return "birth_readiness_repair_hold"
+    if consciousness_waiting_posture == "consciousness_probe_blocked_waiting" and (
+        attention_target == "consciousness_probe_bundle"
+        or "consciousness" in attention_reason
+    ):
+        return "consciousness_probe_repair_hold"
+    if (
+        birth_waiting_posture == "birth_open_waiting"
+        and attention_target == "birth_readiness_stage_gate"
+    ):
+        return "birth_readiness_presence_hold"
+    if (
+        consciousness_waiting_posture == "consciousness_reportable_waiting"
+        and attention_target == "consciousness_probe_bundle"
+    ):
+        return "consciousness_reportable_presence"
     if offline_learning_pressure in {"urgent", "elevated", "present"}:
         return "offline_learning_reconsolidation"
     if offline_pressure in {"elevated", "present"}:
@@ -122,6 +149,14 @@ def _next_wake_expectation(*, dominant_driver_family: str) -> str:
         return "reopen_background_carryover_before_accepting_external_turn"
     if dominant_driver_family == "queue_e_repair_guard":
         return "re_evaluate_repair_guard_before_world_contact_release"
+    if dominant_driver_family == "birth_readiness_repair_hold":
+        return "repair_birth_readiness_before_accepting_external_turn"
+    if dominant_driver_family == "consciousness_probe_repair_hold":
+        return "repair_consciousness_reportability_before_accepting_external_turn"
+    if dominant_driver_family == "birth_readiness_presence_hold":
+        return "re_enter_birth_readiness_presence_before_accepting_external_turn"
+    if dominant_driver_family == "consciousness_reportable_presence":
+        return "re_anchor_consciousness_probe_before_accepting_external_turn"
     if dominant_driver_family == "offline_learning_reconsolidation":
         return "re_enter_offline_learning_hold_before_accepting_external_turn"
     if dominant_driver_family == "replay_growth_reconsolidation":
@@ -157,6 +192,25 @@ def _compose_continuity_story(
         "dominant attention target is "
         f"{attention_target} with cadence {cadence_profile}"
     )
+    birth_waiting_posture = idle_governance.get("birth_readiness_waiting_posture")
+    if birth_waiting_posture:
+        birth_line = "birth readiness posture is " f"{birth_waiting_posture}"
+        birth_decision = idle_governance.get("birth_readiness_decision")
+        if birth_decision:
+            birth_line += f" with decision {birth_decision}"
+        birth_next_command = idle_governance.get("birth_readiness_next_required_command")
+        if birth_next_command:
+            birth_line += f" and next required command {birth_next_command}"
+        lines.append(birth_line)
+    consciousness_waiting_posture = idle_governance.get("consciousness_waiting_posture")
+    if consciousness_waiting_posture:
+        consciousness_line = "consciousness posture is " f"{consciousness_waiting_posture}"
+        reportability_flags = list(idle_governance.get("consciousness_reportability_flags", []))
+        if reportability_flags:
+            consciousness_line += (
+                " with reportability flags " + ", ".join(reportability_flags)
+            )
+        lines.append(consciousness_line)
     if idle_governance.get("background_continuity_mode"):
         lineage_line = (
             "background continuity is active at generation "
@@ -180,3 +234,18 @@ def _int_or_zero(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _identity_consciousness_birth_refs(idle_governance: dict[str, Any]) -> list[str]:
+    return [
+        ref
+        for ref in [
+            idle_governance.get("workspace_frame_ref"),
+            idle_governance.get("broadcast_frame_ref"),
+            idle_governance.get("metacognition_ref"),
+            idle_governance.get("consciousness_probe_ref"),
+            idle_governance.get("birth_readiness_rollup_ref"),
+            idle_governance.get("birth_readiness_stage_gate_ref"),
+        ]
+        if ref
+    ]

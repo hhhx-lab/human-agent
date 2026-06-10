@@ -120,6 +120,8 @@ life-v0 emit-report --strict
 
 当出生准备度为 `open` 且 consciousness probe 具备可报告性时，waiting governance 会进入 `birth_open_waiting` / `consciousness_reportable_waiting`，并把 resident attention 指向 `birth_readiness_stage_gate`。这一步的意义是：出生准备度和意识证据不再只停在 S02/S08 的报告与 stage gate，而是进入 `digital_life_waiting_heartbeat.json`、`idle_strategy_state.json`、`resident_governance_state.json`、`terminal_life_loop_state.json` 和最终 process report / receipt 的治理链。
 
+继续往 closeout 收口时，`governance_explanation.py`、`digital_life_process_digest.json` 与 `digital_life_process_<run_id>.json` 也必须保留这批 Queue F 证据，明确回答本轮 resident governance 是否正在维持出生准备度 presence、修补 consciousness reportability，还是已经把这两者让位给 Queue E 修复锁或离线学习压力。
+
 ## Queue D 结果反写回 waiting governance
 
 最新这一轮又把 Queue D 的离线结果重新带回常驻生命治理：
