@@ -142,6 +142,7 @@ def close_digital_life_process(
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
+        state_merge_guard_ref=state_merge_guard_ref,
         trait_drift_monitor_ref=trait_drift_monitor_ref,
         background_convergence_summary_ref=background_convergence_summary_ref,
         background_convergence_history_ref=background_convergence_history_ref,

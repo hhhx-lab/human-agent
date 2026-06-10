@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -10,7 +11,11 @@ from .governance_explanation import (
     write_resident_governance_explanation,
 )
 from .idle_strategy import extract_idle_governance_fields
+from .state_merge_signals import state_merge_long_term_change_profile
 from .trait_convergence_signals import cross_wake_trait_convergence_profile
+
+
+STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
 
 
 @dataclass(frozen=True)
@@ -103,13 +108,21 @@ def write_process_report_bundle(
     identity_consciousness_birth_refs = _identity_consciousness_birth_refs(idle_governance)
     relationship_resume_summary = _relationship_resume_summary(relationship_graph)
     trait_slow_variable_summary = _trait_slow_variable_summary(self_model_state)
+    state_merge_guard = _read_json_if_exists(state_dir / "memory" / "state_merge_guard.json")
+    state_merge_guard_runtime_ref = state_merge_guard_ref or (
+        STATE_MERGE_GUARD_REF if state_merge_guard else None
+    )
+    state_merge_profile = _state_merge_report_profile(
+        state_merge_guard=state_merge_guard,
+        state_merge_guard_ref=state_merge_guard_runtime_ref,
+    )
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_runtime_ref=signal_media_runtime_ref,
         belief_state_ref=belief_state_ref,
         prediction_error_field_ref=prediction_error_field_ref,
         active_sampling_plan_ref=active_sampling_plan_ref,
         memory_write_gate_ref=memory_write_gate_ref,
-        state_merge_guard_ref=state_merge_guard_ref,
+        state_merge_guard_ref=state_merge_guard_runtime_ref,
     )
     governance_explanation = write_resident_governance_explanation(
         run_id=run_id,
@@ -180,7 +193,7 @@ def write_process_report_bundle(
         "prediction_error_ref": prediction_error_field_ref,
         "active_sampling_plan_ref": active_sampling_plan_ref,
         "memory_write_gate_ref": memory_write_gate_ref,
-        "state_merge_guard_ref": state_merge_guard_ref,
+        "state_merge_guard_ref": state_merge_guard_runtime_ref,
         "prediction_write_gate_refs": prediction_write_gate_refs,
         "trait_drift_monitor_ref": trait_drift_monitor_ref,
         "background_convergence_summary_ref": background_convergence_summary_ref,
@@ -212,6 +225,7 @@ def write_process_report_bundle(
         report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         report["membrane_guard_refs"] = membrane_guard_refs
+    report.update(state_merge_profile)
     report.update(idle_governance)
     digest = {
         "schema_version": "digital_life_process_digest_v0",
@@ -373,6 +387,7 @@ def write_process_report_bundle(
             "birth_readiness_next_required_command"
         ),
         "prediction_write_gate_refs": prediction_write_gate_refs,
+        **state_merge_profile,
     }
     if membrane_guard_refs:
         digest["membrane_guard_refs"] = membrane_guard_refs
@@ -411,12 +426,16 @@ def write_process_report_bundle(
         prediction_error_field_ref=prediction_error_field_ref,
         active_sampling_plan_ref=active_sampling_plan_ref,
         memory_write_gate_ref=memory_write_gate_ref,
-        state_merge_guard_ref=state_merge_guard_ref,
+        state_merge_guard_ref=state_merge_guard_runtime_ref,
         trait_drift_monitor_ref=trait_drift_monitor_ref,
         background_convergence_summary_ref=background_convergence_summary_ref,
         background_convergence_history_ref=background_convergence_history_ref,
         cross_wake_trait_convergence_refs=idle_governance.get(
             "cross_wake_trait_convergence_refs",
+            [],
+        ),
+        state_merge_long_term_change_refs=state_merge_profile.get(
+            "state_merge_long_term_change_refs",
             [],
         ),
         idle_heartbeat_trace_ref=idle_governance.get("idle_heartbeat_trace_ref"),
@@ -478,6 +497,7 @@ def build_process_receipt(
     background_convergence_summary_ref: str | None = None,
     background_convergence_history_ref: str | None = None,
     cross_wake_trait_convergence_refs: list[str] | None = None,
+    state_merge_long_term_change_refs: list[str] | None = None,
     idle_heartbeat_trace_ref: str | None = None,
     workspace_frame_ref: str | None = None,
     broadcast_frame_ref: str | None = None,
@@ -611,6 +631,7 @@ def build_process_receipt(
                 relationship_graph_ref,
                 self_model_ref,
                 *(cross_wake_trait_convergence_refs or []),
+                *(state_merge_long_term_change_refs or []),
             ]
             if ref
         ]),
@@ -629,6 +650,12 @@ def sha256_if_exists(path: Path) -> str | None:
     if not path.exists():
         return None
     return sha256(path)
+
+
+def _read_json_if_exists(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def _prediction_write_gate_refs(
@@ -652,6 +679,21 @@ def _prediction_write_gate_refs(
         ]
         if ref
     ]
+
+
+def _state_merge_report_profile(
+    *,
+    state_merge_guard: dict[str, Any],
+    state_merge_guard_ref: str | None,
+) -> dict[str, Any]:
+    profile = state_merge_long_term_change_profile(state_merge_guard)
+    payload: dict[str, Any] = dict(profile)
+    merge_policy = state_merge_guard.get("stage_policy")
+    if state_merge_guard_ref:
+        payload["state_merge_guard_ref"] = state_merge_guard_ref
+    if merge_policy:
+        payload["state_merge_policy"] = str(merge_policy)
+    return payload
 
 
 def _identity_consciousness_birth_refs(idle_governance: dict[str, Any]) -> list[str]:

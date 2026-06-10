@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -7,6 +8,7 @@ from typing import Any, Callable
 from .background_lineage_state import build_resident_background_lineage_state
 from .governance_explanation import RESIDENT_GOVERNANCE_EXPLANATION_REF
 from .idle_strategy import extract_idle_governance_fields
+from .state_merge_signals import state_merge_long_term_change_profile
 from .trait_convergence_signals import cross_wake_trait_convergence_profile
 
 
@@ -24,6 +26,7 @@ RESIDENT_GOVERNANCE_REPORT_REF = "runtime/reports/latest/digital_life_resident_g
 RELATIONSHIP_SUBJECT_GRAPH_REF = "runtime/state/relationship/relationship_subject_graph.json"
 SELF_MODEL_REF = "runtime/state/self/self_model.json"
 TRAIT_DRIFT_MONITOR_REF = "runtime/state/body/trait_drift_monitor.json"
+STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
 
 
 @dataclass(frozen=True)
@@ -59,6 +62,7 @@ def write_persistent_process_artifacts(
     responsibility_loop_state_ref: str | None = None,
     world_contact_summary_ref: str | None = None,
     pain_regret_repair_report_ref: str | None = None,
+    state_merge_guard_ref: str | None = None,
     trait_drift_monitor_ref: str | None = None,
     background_convergence_summary_ref: str | None = None,
     background_convergence_history_ref: str | None = None,
@@ -114,6 +118,12 @@ def write_persistent_process_artifacts(
         current_background_ref_set=current_background_ref_set,
         background_source_ref_set=background_source_ref_set,
     )
+    state_merge_guard = _read_json_if_exists(state_dir / "memory" / "state_merge_guard.json")
+    state_merge_profile = _state_merge_closeout_profile(
+        state_merge_guard=state_merge_guard,
+        state_merge_guard_ref=state_merge_guard_ref
+        or (STATE_MERGE_GUARD_REF if state_merge_guard else None),
+    )
 
     resident_governance_snapshot = {
         "schema_version": "resident_governance_snapshot_v0",
@@ -166,6 +176,7 @@ def write_persistent_process_artifacts(
         trait_slow_variable_summary=trait_slow_variable_summary,
         background_resume_summary=background_resume_summary,
     )
+    resident_governance_snapshot.update(state_merge_profile)
     resident_governance_snapshot.update(_idle_governance_without_background_lineage(idle_governance))
     _attach_resident_background_lineage_state(
         resident_governance_snapshot,
@@ -241,6 +252,7 @@ def write_persistent_process_artifacts(
         trait_slow_variable_summary=trait_slow_variable_summary,
         background_resume_summary=background_resume_summary,
     )
+    resident_governance_state.update(state_merge_profile)
     resident_governance_state.update(_idle_governance_without_background_lineage(idle_governance))
     _attach_resident_background_lineage_state(
         resident_governance_state,
@@ -297,6 +309,7 @@ def write_persistent_process_artifacts(
         trait_slow_variable_summary=trait_slow_variable_summary,
         background_resume_summary=background_resume_summary,
     )
+    state.update(state_merge_profile)
     state.update(_idle_governance_without_background_lineage(idle_governance))
     _attach_resident_background_lineage_state(
         state,
@@ -357,6 +370,7 @@ def write_persistent_process_artifacts(
         trait_slow_variable_summary=trait_slow_variable_summary,
         background_resume_summary=background_resume_summary,
     )
+    report.update(state_merge_profile)
     report.update(_idle_governance_without_background_lineage(idle_governance))
     _attach_resident_background_lineage_state(
         report,
@@ -423,6 +437,7 @@ def write_persistent_process_artifacts(
         trait_slow_variable_summary=trait_slow_variable_summary,
         background_resume_summary=background_resume_summary,
     )
+    resident_governance_report.update(state_merge_profile)
     resident_governance_report.update(_idle_governance_without_background_lineage(idle_governance))
     _attach_resident_background_lineage_state(
         resident_governance_report,
@@ -468,6 +483,27 @@ def _idle_governance_without_background_lineage(
             "background_carryover_parent_run_id",
         }
     }
+
+
+def _read_json_if_exists(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _state_merge_closeout_profile(
+    *,
+    state_merge_guard: dict[str, Any],
+    state_merge_guard_ref: str | None,
+) -> dict[str, Any]:
+    profile = state_merge_long_term_change_profile(state_merge_guard)
+    payload: dict[str, Any] = dict(profile)
+    merge_policy = state_merge_guard.get("stage_policy")
+    if state_merge_guard_ref:
+        payload["state_merge_guard_ref"] = state_merge_guard_ref
+    if merge_policy:
+        payload["state_merge_policy"] = str(merge_policy)
+    return payload
 
 
 def _trait_convergence_closeout_carrier(

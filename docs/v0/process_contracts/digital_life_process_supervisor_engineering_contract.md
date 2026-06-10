@@ -106,6 +106,7 @@ life-v0 "digital life"
 - `life_v0/process_supervisor/governance_explanation.py`
 - `life_v0/process_supervisor/dialogue_events.py`
 - `life_v0/process_supervisor/response_surface.py`
+- `life_v0/process_supervisor/state_merge_signals.py`
 - `life_v0/process_supervisor/trait_convergence_signals.py`
 - `life_v0/process_supervisor/resident_supervision.py`
 - `life_v0/process_supervisor/continuity_evolution.py`
@@ -147,7 +148,7 @@ life-v0 "digital life"
 27. 驻留后的自我/人格慢变量 presence 也必须进入下一轮真实回合。`background_lineage_state.py` 必须从 resident governance 中抽出 `background_trait_slow_variable_summary`、`background_trait_convergence_history_focus`、稳定/不稳定慢变量名单、`background_trait_convergence_score`、`background_trait_convergence_history_profile`、`background_trait_drift_monitor_ref`、`background_convergence_summary_ref`、`background_convergence_history_ref`、`background_resident_governance_state_ref` 与 `background_resident_governance_explanation_ref`，压成 `resident_background_lineage_state_v0.trait_convergence_presence`，并写出 `trait_convergence_evidence_refs`。`trait_convergence_signals.py` 必须把 lineage presence、background convergence summary/history、trait drift monitor 和等待态 carryover 中分散的人格慢变量信号合成为 `cross_wake_trait_convergence_profile_v0`，至少输出 `cross_wake_trait_convergence_focus`、`cross_wake_trait_convergence_pressure`、稳定/不稳定名单、score 与 refs。`idle_strategy.py`、`heartbeat.py` 与 `terminal_life_loop_state.json` 必须继续搬运这组跨唤醒画像字段，使它们在等待态、idle heartbeat trace 和真实新回合前都可见。`process_closeout.py`、`persistent_process.py` 与 `process_report.py` 还必须在关闭态 resident governance state/snapshot/report、persistent process report、process report、process digest 与 process receipt shared refs 中保留同一组画像字段和证据 refs，不能只等到下一轮真实回合才出现。`dialogue_events.py` 必须把这份 presence 展开为 `resident_background_lineage_trait_convergence_history_focus`、`resident_background_lineage_trait_convergence_unstable_names`、`resident_background_lineage_trait_convergence_stable_names`、`resident_background_lineage_trait_convergence_score`、`resident_background_lineage_trait_drift_monitor_ref`、`resident_background_lineage_trait_convergence_history_profile`、`resident_background_lineage_trait_convergence_refs` 与 `cross_wake_trait_convergence_*`，并合并进 `resident_background_lineage_evidence_refs`。`resident_turn_writeback.py` 必须让同一组 trait lineage refs 进入 `dialogue_writeback_bundle.resident_background_lineage_refs`，并让 `cross_wake_trait_convergence_refs` 进入 `dialogue_writeback_bundle.cross_wake_trait_convergence_refs` 与 `resumed_external_dialogue_packet.json`；`response_surface.py` 必须表达后台人格慢变量焦点、仍需收敛/已稳定名单、人格收敛评分、人格漂移监控在场、跨唤醒人格收敛画像、压力、评分和证据数量。
 28. 驻留后的梦境成长余波与梦境醒后 presence 必须拥有专用写回槽。`dialogue_events.py` 已经从 `resident_background_lineage_state.offline_learning_presence` 展开 `resident_background_lineage_offline_learning_*`，并从 `dream_wake_presence` 展开 `resident_background_lineage_dream_*`、`resident_background_lineage_wake_*` 与 `resident_background_lineage_dream_wake_refs`；`resident_turn_writeback.py` 必须把 `resident_background_lineage_offline_learning_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_offline_learning_refs`，把 `resident_background_lineage_dream_wake_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_dream_wake_refs`，并把两者同时并入总 `resident_background_lineage_refs` 与 `resumed_external_dialogue_packet.json`。这防止梦境、成长、醒后整合只作为事件字段存在，而没有进入真实回合关闭后的恢复证据面。
 29. `resident_supervision.py` 与 `resident_turn_writeback.py` 在刷新 `relationship_memory.json` 之后，必须同步调用 `state_merge_guard.py#project_state_merge_guard_with_relationship_memory` 并写回 `runtime/state/memory/state_merge_guard.json`。这一步把 `relationship_memory.long_term_change_sources`、`offline_learning_refs`、`offline_learning_cumulative_refs`、`queue_e_repair_refs` 与关系修复 refs 合并进长期状态合并守门面，同时让 `life_state.json#state_merge_records[].long_term_change_source_count` 随之刷新；否则 dream/growth/repair 已进入关系记忆，但还没有进入 Packet C 长期治理。
-30. `state_merge_guard.json` 中已经形成的长期变化来源不能只停在状态根和 `life_state` 计数。`idle_strategy.py` 必须通过 `state_merge_signals.py` 把 `state_merge_guard.long_term_change_sources` 压成 `state_merge_long_term_change_count`、`state_merge_long_term_change_families` 与 `state_merge_long_term_change_refs`；当没有更高优先级的追问、修复或预测误差时，等待姿态必须进入 `state_merge_long_term_integration_hold`，`next_idle_action` 必须进入 `refresh_waiting_heartbeat_with_state_merge_integration_hold`。`heartbeat.py`、`dialogue_events.py` 与恢复包必须继续搬运这些字段，`response_surface.py` 必须表达长期合并治理正在整合多少条长期变化来源以及来源族，避免梦境/成长/修复进入 `state_merge_guard` 后在等待态和语言表面失声。
+30. `state_merge_guard.json` 中已经形成的长期变化来源不能只停在状态根和 `life_state` 计数。`idle_strategy.py` 必须通过 `state_merge_signals.py` 把 `state_merge_guard.long_term_change_sources` 压成 `state_merge_long_term_change_count`、`state_merge_long_term_change_families` 与 `state_merge_long_term_change_refs`；当没有更高优先级的追问、修复或预测误差时，等待姿态必须进入 `state_merge_long_term_integration_hold`，`next_idle_action` 必须进入 `refresh_waiting_heartbeat_with_state_merge_integration_hold`。`heartbeat.py`、`dialogue_events.py` 与恢复包必须继续搬运这些字段，`response_surface.py` 必须表达长期合并治理正在整合多少条长期变化来源以及来源族；显式退出 closeout 时，`process_closeout.py`、`persistent_process.py` 与 `process_report.py` 必须继续把 `state_merge_guard_ref`、`state_merge_policy`、`state_merge_long_term_change_count/families/refs` 写入 resident governance state/snapshot/report、persistent process report、process report、process digest 与 process receipt shared refs，避免梦境/成长/修复进入 `state_merge_guard` 后在关闭态证据、等待态和语言表面失声。
 
 ## 最小行为合同
 
@@ -243,6 +244,11 @@ IdleContinuityFrame
 - `cross_wake_trait_convergence_focus`
 - `cross_wake_trait_convergence_pressure`
 - `cross_wake_trait_convergence_refs`
+- `state_merge_guard_ref`
+- `state_merge_policy`
+- `state_merge_long_term_change_count`
+- `state_merge_long_term_change_families`
+- `state_merge_long_term_change_refs`
 
 ### `external turn event`
 
@@ -265,6 +271,8 @@ IdleContinuityFrame
 - `cross_wake_trait_convergence_focus`
 - `cross_wake_trait_convergence_pressure`
 - `cross_wake_trait_convergence_refs`
+- `state_merge_guard_ref`
+- `state_merge_long_term_change_refs`
 - `live_ambiguity_flags`
 - `live_repair_trigger_candidates`
 
@@ -287,6 +295,8 @@ IdleContinuityFrame
 - `expression_monitor_ref`
 - `expression_plan_ref`
 - `live_semantic_focus`
+- `state_merge_guard_ref`
+- `state_merge_long_term_change_refs`
 
 ### `DialogueWritebackBundle`
 

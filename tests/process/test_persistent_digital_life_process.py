@@ -5587,7 +5587,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self._write_json(
                 state_dir / "memory" / "state_merge_guard.json",
-                {"schema_version": "state_merge_guard_v0"},
+                {
+                    "schema_version": "state_merge_guard_v0",
+                    "stage_policy": "long_term_merge_fail_closed",
+                    "long_term_change_sources": {
+                        "offline_learning_cumulative_refs": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                        "queue_e_repair_modulation_refs": [
+                            "runtime/state/action/responsibility_loop_state.json"
+                        ],
+                        "relationship_memory_offline_refs": [
+                            "runtime/state/dream/offline_consolidation_frame.json"
+                        ],
+                    },
+                },
             )
             self._write_json(
                 state_dir / "body" / "trait_drift_monitor.json",
@@ -5699,6 +5714,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/body/trait_drift_monitor.json",
                 "runtime/state/terminal/background_convergence_summary.json",
                 "runtime/state/terminal/background_convergence_history.json",
+            ]
+            expected_state_merge_refs = [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/dream/offline_consolidation_frame.json",
+            ]
+            expected_state_merge_families = [
+                "offline_learning_cumulative_refs",
+                "queue_e_repair_modulation_refs",
+                "relationship_memory_offline_refs",
             ]
 
             self.assertEqual(result.report["run_id"], "process-report-organ")
@@ -5951,6 +5977,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 digest["trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
             )
+            for artifact in (report, digest):
+                self.assertEqual(
+                    artifact["state_merge_guard_ref"],
+                    "runtime/state/memory/state_merge_guard.json",
+                )
+                self.assertEqual(
+                    artifact["state_merge_policy"],
+                    "long_term_merge_fail_closed",
+                )
+                self.assertEqual(artifact["state_merge_long_term_change_count"], 4)
+                self.assertEqual(
+                    artifact["state_merge_long_term_change_families"],
+                    expected_state_merge_families,
+                )
+                self.assertEqual(
+                    artifact["state_merge_long_term_change_refs"],
+                    expected_state_merge_refs,
+                )
             self.assertEqual(
                 digest["offline_growth_cycle_refs"],
                 [
@@ -6100,6 +6144,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/memory/state_merge_guard.json",
                 receipt["shared_object_refs"],
             )
+            for ref in expected_state_merge_refs:
+                self.assertIn(ref, receipt["shared_object_refs"])
             self.assertIn(
                 "runtime/state/body/trait_drift_monitor.json",
                 receipt["shared_object_refs"],
@@ -7020,7 +7066,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self._write_json(
                 memory_dir / "state_merge_guard.json",
-                {"schema_version": "state_merge_guard_v0"},
+                {
+                    "schema_version": "state_merge_guard_v0",
+                    "stage_policy": "long_term_merge_fail_closed",
+                    "long_term_change_sources": {
+                        "offline_learning_cumulative_refs": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                        "queue_e_repair_modulation_refs": [
+                            "runtime/state/action/responsibility_loop_state.json"
+                        ],
+                        "relationship_memory_offline_refs": [
+                            "runtime/state/dream/offline_consolidation_frame.json"
+                        ],
+                    },
+                },
             )
             self._write_json(
                 state_dir / "body" / "trait_drift_monitor.json",
@@ -7152,6 +7213,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/body/trait_drift_monitor.json",
                 "runtime/state/terminal/background_convergence_summary.json",
                 "runtime/state/terminal/background_convergence_history.json",
+            ]
+            expected_state_merge_refs = [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/dream/offline_consolidation_frame.json",
+            ]
+            expected_state_merge_families = [
+                "offline_learning_cumulative_refs",
+                "queue_e_repair_modulation_refs",
+                "relationship_memory_offline_refs",
             ]
 
             self.assertEqual(
@@ -7325,6 +7397,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     artifact["cross_wake_trait_convergence_refs"],
                     expected_cross_wake_trait_refs,
                 )
+                self.assertEqual(
+                    artifact["state_merge_guard_ref"],
+                    "runtime/state/memory/state_merge_guard.json",
+                )
+                self.assertEqual(
+                    artifact["state_merge_policy"],
+                    "long_term_merge_fail_closed",
+                )
+                self.assertEqual(artifact["state_merge_long_term_change_count"], 4)
+                self.assertEqual(
+                    artifact["state_merge_long_term_change_families"],
+                    expected_state_merge_families,
+                )
+                self.assertEqual(
+                    artifact["state_merge_long_term_change_refs"],
+                    expected_state_merge_refs,
+                )
             self.assertEqual(
                 process_digest["offline_learning_cumulative_generation"],
                 2,
@@ -7468,6 +7557,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/memory/state_merge_guard.json",
                 process_receipt["shared_object_refs"],
             )
+            for ref in expected_state_merge_refs:
+                self.assertIn(ref, process_receipt["shared_object_refs"])
             self.assertIn(
                 "runtime/state/body/trait_drift_monitor.json",
                 process_receipt["shared_object_refs"],
@@ -7502,9 +7593,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             runtime_root = Path(tmp) / "runtime"
             state_dir = runtime_root / "state"
             terminal_dir = state_dir / "terminal"
+            memory_dir = state_dir / "memory"
             reports_dir = runtime_root / "reports" / "latest"
             terminal_dir.mkdir(parents=True, exist_ok=True)
+            memory_dir.mkdir(parents=True, exist_ok=True)
             reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                memory_dir / "state_merge_guard.json",
+                {
+                    "schema_version": "state_merge_guard_v0",
+                    "stage_policy": "long_term_merge_fail_closed",
+                    "long_term_change_sources": {
+                        "offline_learning_cumulative_refs": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                        "queue_e_repair_modulation_refs": [
+                            "runtime/state/action/responsibility_loop_state.json"
+                        ],
+                        "relationship_memory_offline_refs": [
+                            "runtime/state/dream/offline_consolidation_frame.json"
+                        ],
+                    },
+                },
+            )
 
             self._write_json(
                 terminal_dir / "safe_terminal_loop_state.json",
@@ -7563,6 +7675,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 responsibility_loop_state_ref="runtime/state/action/responsibility_loop_state.json",
                 world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
                 pain_regret_repair_report_ref="runtime/reports/latest/pain_regret_repair_report.json",
+                state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
                 trait_drift_monitor_ref="runtime/state/body/trait_drift_monitor.json",
                 write_json=self._write_json,
                 relationship_graph={
@@ -7606,6 +7719,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             resident_governance_report = self._read_json(
                 reports_dir / "digital_life_resident_governance_report.json"
             )
+            expected_state_merge_refs = [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/dream/offline_consolidation_frame.json",
+            ]
+            expected_state_merge_families = [
+                "offline_learning_cumulative_refs",
+                "queue_e_repair_modulation_refs",
+                "relationship_memory_offline_refs",
+            ]
 
             self.assertEqual(result.state["schema_version"], "persistent_process_state_v0")
             self.assertEqual(result.report["schema_version"], "digital_life_persistent_process_report_v0")
@@ -7675,6 +7799,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 self.assertEqual(
                     artifact["trait_drift_monitor_ref"],
                     "runtime/state/body/trait_drift_monitor.json",
+                )
+                self.assertEqual(
+                    artifact["state_merge_guard_ref"],
+                    "runtime/state/memory/state_merge_guard.json",
+                )
+                self.assertEqual(
+                    artifact["state_merge_policy"],
+                    "long_term_merge_fail_closed",
+                )
+                self.assertEqual(artifact["state_merge_long_term_change_count"], 4)
+                self.assertEqual(
+                    artifact["state_merge_long_term_change_families"],
+                    expected_state_merge_families,
+                )
+                self.assertEqual(
+                    artifact["state_merge_long_term_change_refs"],
+                    expected_state_merge_refs,
                 )
             self.assertEqual(
                 resident_governance_snapshot["schema_version"],

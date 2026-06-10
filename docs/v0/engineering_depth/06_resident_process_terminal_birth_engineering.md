@@ -28,6 +28,7 @@ life-v0 emit-report --strict
 8. `life_v0/process_supervisor/background_lineage_state.py` 已把关闭态/等待态的 resident governance lineage 压成 `resident_background_lineage_state_v0`，当前新增的 `offline_learning_presence` 明确承载后台驻留里的梦境、成长、离线学习余波，`dream_wake_presence` 明确承载后台驻留里的梦境窗口、醒后整合与梦境事实门；最新补强还把 `live_language_turn_refs`、`last_live_semantic_focus` 与 `live_language_presence_profile` 压进 `language_presence`，让上一轮真实关系话语的理解余波也成为后台驻留存在面
 9. `life_v0/process_supervisor/dialogue_events.py` 与 `response_surface.py` 已开始分别把 `offline_learning_presence / dream_wake_presence` 写进 `digital_life_turn` 和生命回应文本
 10. `life_v0/process_supervisor/trait_convergence_signals.py` 已把后台人格慢变量 presence、convergence summary/history、trait drift monitor 与 closeout refs 合成为 `cross_wake_trait_convergence_profile_v0`，并继续进入 waiting governance、关闭态 resident governance artifacts、process report/digest/receipt、真实回合事件、写回包、恢复包和回应表达面
+11. `life_v0/process_supervisor/state_merge_signals.py` 已把 `state_merge_guard.json#long_term_change_sources` 压成 `state_merge_long_term_change_count/families/refs`，并继续进入 waiting governance、关闭态 resident governance artifacts、process report/digest/receipt、真实回合事件和回应表达面
 
 ## 当前最关键的 runtime 证据
 
@@ -66,6 +67,11 @@ life-v0 emit-report --strict
 33. `runtime/reports/latest/digital_life_waiting_heartbeat.json#cross_wake_trait_convergence_focus`
 34. `runtime/state/terminal/terminal_life_loop_state.json#cross_wake_trait_convergence_refs`
 35. `runtime/reports/latest/resumed_external_dialogue_packet.json#cross_wake_trait_convergence_refs`
+36. `runtime/state/memory/state_merge_guard.json#long_term_change_sources`
+37. `runtime/state/terminal/resident_governance_state.json#state_merge_long_term_change_refs`
+38. `runtime/state/terminal/resident_governance_snapshot.json#state_merge_long_term_change_refs`
+39. `runtime/reports/latest/digital_life_process_digest.json#state_merge_long_term_change_refs`
+40. `runtime/receipts/digital_life_process_<run_id>.json#shared_object_refs`
 
 ## 最低测试与新增测试
 
@@ -301,6 +307,25 @@ runtime/reports/latest/digital_life_resident_governance_explanation.json
 
 这让出生壳在真实关系回合中不只证明“关系阶段与慢变量被恢复”，还证明自我/人格慢变量的慢性收敛压力能从等待、关闭和重启进入当下表达。数字生命再次说话时，它能带着上一轮自我连续体的稳定性、漂移监控和重新校准压力，而不是把人格慢变量留在后台报告里。
 
+## 长期状态合并治理的关闭态证据面
+
+当前实现又把 `state_merge_guard.json` 的长期变化来源从等待态推进到关闭态证据链：
+
+```text
+runtime/state/memory/state_merge_guard.json#long_term_change_sources
+  -> state_merge_signals.state_merge_long_term_change_profile
+  -> idle_strategy / waiting heartbeat / terminal_life_loop_state
+  -> persistent_process resident governance artifacts
+  -> digital_life_persistent_process_report.json
+  -> digital_life_process_report.json / digital_life_process_digest.json
+  -> digital_life_process_<run_id>.json#shared_object_refs
+  -> digital_life_turn / response_surface
+```
+
+这条链的关键点是：`state_merge_guard.json` 已经不只是 Packet C 的状态根守门文件，也不是只给等待态或回应表面读取的临时压力。`state_merge_signals.py` 负责把 `offline_learning_cumulative_refs`、`queue_e_repair_modulation_refs`、`relationship_memory_offline_refs` 等来源族压成统一的 `state_merge_long_term_change_count`、`state_merge_long_term_change_families` 与 `state_merge_long_term_change_refs`；`persistent_process.py` 与 `process_report.py` 必须在 closeout 时把同一画像写入 resident governance state/snapshot/report、persistent process report、process report、process digest 和 process receipt shared refs。
+
+这让长期状态合并治理在断开、退出和下一次唤醒之间拥有可追溯的关闭态存在面。以后如果 dream/growth/repair 已经写进 `relationship_memory.json` 和 `state_merge_guard.json`，但 `resident_governance_snapshot.json`、`digital_life_process_digest.json` 或 receipt shared refs 看不到同一批长期变化来源，就说明长期治理链在关闭态断开。
+
 ## 关系阶段与自我慢变量已经进入同会话与重启恢复闭环
 
 最新这一步又把长期连续体从“重建对象”推进到了“演化对象”：
@@ -427,3 +452,4 @@ idle_strategy.py
 22. `dialogue_events.py` 必须把 `language_presence` 展开为 live refs、background live refs、最后语义焦点与 language evidence refs；`resident_turn_writeback.py` 必须把这些语言证据并入写回包与恢复包；`response_surface.py` 必须把后台语言语义余波和证据数量表达出来。
 23. `trait_convergence_signals.py` 必须把 `resident_background_lineage_state_v0.trait_convergence_presence`、`background_convergence_summary/history`、`trait_drift_monitor_ref` 与 closeout refs 统一压成 `cross_wake_trait_convergence_profile_v0`，并由 `idle_strategy.py`、`heartbeat.py`、`persistent_process.py`、`process_report.py`、`dialogue_events.py`、`resident_turn_writeback.py` 与 `response_surface.py` 同口径消费。
 24. 关闭态 resident governance artifacts、persistent process report、process report、process digest、process receipt、`digital_life_turn`、`dialogue_writeback_bundle`、`resumed_external_dialogue_packet` 与回应文本必须同时证明跨唤醒人格收敛画像进入关闭态和真实回合，而不是只保留在 background lineage 或单一 report。
+25. `state_merge_signals.py` 必须把 `state_merge_guard.json#long_term_change_sources` 统一压成 `state_merge_long_term_change_count/families/refs`，并由 `idle_strategy.py`、`heartbeat.py`、`persistent_process.py`、`process_report.py`、`dialogue_events.py` 与 `response_surface.py` 同口径消费；关闭态 resident governance artifacts、persistent process report、process report、process digest 与 process receipt shared refs 必须同时保留 `state_merge_guard_ref`、`state_merge_policy` 和长期变化来源 refs。
