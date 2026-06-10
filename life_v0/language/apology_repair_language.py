@@ -296,6 +296,11 @@ def project_apology_repair_language_trace_with_cumulative_offline_learning(
         or "baseline_offline_learning_maintenance"
     )
     generation = int(cumulative_profile.get("generation") or 0)
+    relationship_reconsolidation_required = (
+        generation >= 2
+        and pressure_level in {"urgent", "elevated"}
+        and attention_target == "relationship_learning_plan"
+    )
 
     moves = list(updated.get("repair_language_moves", []))
     if pressure_level in {"urgent", "elevated"} and not _has_move_type(
@@ -307,6 +312,18 @@ def project_apology_repair_language_trace_with_cumulative_offline_learning(
                 "move_id": f"repair-move-{updated.get('run_id', 'offline')}-cumulative-offline",
                 "move_type": "cumulative_offline_learning_repair",
                 "surface_goal": "先承认跨唤醒未整合经验对修复窗口的持续影响。",
+                "trigger_refs": ref_set,
+            }
+        )
+    if relationship_reconsolidation_required and not _has_move_type(
+        moves,
+        "relationship_offline_reconsolidation_repair",
+    ):
+        moves.append(
+            {
+                "move_id": f"repair-move-{updated.get('run_id', 'offline')}-relationship-reconsolidation",
+                "move_type": "relationship_offline_reconsolidation_repair",
+                "surface_goal": "先承认跨唤醒累计关系学习正在改写修复窗口，再进入后续承诺。",
                 "trigger_refs": ref_set,
             }
         )
@@ -323,9 +340,26 @@ def project_apology_repair_language_trace_with_cumulative_offline_learning(
             move_type_order.append("cumulative_offline_learning_repair")
         else:
             move_type_order.insert(followup_index, "cumulative_offline_learning_repair")
+    if relationship_reconsolidation_required:
+        move_type_order = _insert_before_any(
+            move_type_order,
+            "relationship_offline_reconsolidation_repair",
+            [
+                "cumulative_offline_learning_repair",
+                "followup_commitment",
+            ],
+        )
     updated["move_type_order"] = _dedupe(move_type_order)
 
-    if pressure_level in {"urgent", "elevated"}:
+    if relationship_reconsolidation_required:
+        updated["cumulative_repair_window_mode"] = (
+            "relationship_offline_reconsolidation_first"
+        )
+        if _can_replace_delay_decision(updated.get("delay_or_release_decision")):
+            updated["delay_or_release_decision"] = (
+                "hold_for_relationship_offline_reconsolidation"
+            )
+    elif pressure_level in {"urgent", "elevated"}:
         updated["cumulative_repair_window_mode"] = (
             "cumulative_offline_learning_first"
         )
@@ -355,3 +389,25 @@ def _dedupe(items: list[str]) -> list[str]:
         if item and item not in result:
             result.append(item)
     return result
+
+
+def _insert_before_any(order: list[str], item: str, anchors: list[str]) -> list[str]:
+    if item in order:
+        return _dedupe(order)
+    for anchor in anchors:
+        if anchor in order:
+            order.insert(order.index(anchor), item)
+            return _dedupe(order)
+    order.append(item)
+    return _dedupe(order)
+
+
+def _can_replace_delay_decision(value: Any) -> bool:
+    return value in {
+        None,
+        "",
+        "baseline",
+        "release",
+        "delay_for_clarification",
+        "hold_for_cumulative_offline_learning_integration",
+    }

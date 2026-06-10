@@ -722,6 +722,129 @@ class LanguageOrgansTests(unittest.TestCase):
         )
         self.assertIn("paced_reentry", apology_repair_language_trace["move_type_order"])
 
+    def test_cumulative_relationship_offline_learning_enters_language_reconsolidation_window(self):
+        from life_v0.language.apology_repair_language import (
+            project_apology_repair_language_trace_with_cumulative_offline_learning,
+        )
+        from life_v0.language.commitment_expression import (
+            project_commitment_expression_plan_with_cumulative_offline_learning,
+        )
+
+        cumulative_profile = {
+            "schema_version": "offline_learning_cumulative_profile_v0",
+            "generation": 4,
+            "pressure_level": "elevated",
+            "attention_target": "relationship_learning_plan",
+            "priority_profile": {
+                "relationship_learning_plan": "elevated",
+                "language_learning_plan": "present",
+            },
+            "ref_set": [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+            ],
+        }
+
+        commitment_plan = project_commitment_expression_plan_with_cumulative_offline_learning(
+            commitment_expression_plan={
+                "schema_version": "commitment_expression_plan_v0",
+                "run_id": "relationship-reconsolidation-test",
+                "delay_or_release_decision": "delay_for_clarification",
+                "act_type_order": [
+                    "clarify",
+                    "commitment",
+                    "apology",
+                    "followup_commitment",
+                ],
+                "language_act_candidates": [
+                    {
+                        "act_id": "commitment-act-relationship-reconsolidation-test-0001",
+                        "act_type": "commitment",
+                        "surface_goal": "把未闭合承诺重新说清。",
+                        "trigger_refs": ["commitment-ref-001"],
+                    }
+                ],
+            },
+            offline_learning_cumulative_profile=cumulative_profile,
+        )
+        apology_trace = project_apology_repair_language_trace_with_cumulative_offline_learning(
+            apology_repair_language_trace={
+                "schema_version": "apology_repair_language_trace_v0",
+                "run_id": "relationship-reconsolidation-test",
+                "move_type_order": [
+                    "acknowledge_harm",
+                    "take_responsibility",
+                    "apology",
+                    "followup_commitment",
+                ],
+                "repair_language_moves": [
+                    {
+                        "move_id": "repair-move-relationship-reconsolidation-test-0001",
+                        "move_type": "take_responsibility",
+                        "surface_goal": "明确承担责任。",
+                        "trigger_refs": ["responsibility-ref-001"],
+                    }
+                ],
+            },
+            offline_learning_cumulative_profile=cumulative_profile,
+        )
+
+        self.assertEqual(
+            commitment_plan["cumulative_commitment_tempo_mode"],
+            "relationship_offline_reconsolidation_first",
+        )
+        self.assertEqual(
+            commitment_plan["delay_or_release_decision"],
+            "hold_for_relationship_offline_reconsolidation",
+        )
+        self.assertIn(
+            "relationship_offline_reconsolidation",
+            commitment_plan["act_type_order"],
+        )
+        self.assertLess(
+            commitment_plan["act_type_order"].index("relationship_offline_reconsolidation"),
+            commitment_plan["act_type_order"].index("followup_commitment"),
+        )
+        self.assertTrue(
+            any(
+                item.get("act_type") == "relationship_offline_reconsolidation"
+                and item.get("trigger_refs")
+                == [
+                    "runtime/state/growth/relationship_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                ]
+                for item in commitment_plan["language_act_candidates"]
+            )
+        )
+
+        self.assertEqual(
+            apology_trace["cumulative_repair_window_mode"],
+            "relationship_offline_reconsolidation_first",
+        )
+        self.assertEqual(
+            apology_trace["delay_or_release_decision"],
+            "hold_for_relationship_offline_reconsolidation",
+        )
+        self.assertIn(
+            "relationship_offline_reconsolidation_repair",
+            apology_trace["move_type_order"],
+        )
+        self.assertLess(
+            apology_trace["move_type_order"].index("relationship_offline_reconsolidation_repair"),
+            apology_trace["move_type_order"].index("followup_commitment"),
+        )
+        self.assertTrue(
+            any(
+                item.get("move_type") == "relationship_offline_reconsolidation_repair"
+                and item.get("trigger_refs")
+                == [
+                    "runtime/state/growth/relationship_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                ]
+                for item in apology_trace["repair_language_moves"]
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

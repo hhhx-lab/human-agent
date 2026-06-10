@@ -315,6 +315,11 @@ def project_commitment_expression_plan_with_cumulative_offline_learning(
         or "baseline_offline_learning_maintenance"
     )
     generation = int(cumulative_profile.get("generation") or 0)
+    relationship_reconsolidation_required = (
+        generation >= 2
+        and pressure_level in {"urgent", "elevated"}
+        and attention_target == "relationship_learning_plan"
+    )
 
     candidates = list(updated.get("language_act_candidates", []))
     if pressure_level in {"urgent", "elevated"} and not _has_item_type(
@@ -327,6 +332,19 @@ def project_commitment_expression_plan_with_cumulative_offline_learning(
                 "act_id": f"commitment-act-{updated.get('run_id', 'offline')}-cumulative-offline",
                 "act_type": "cumulative_offline_learning_integration",
                 "surface_goal": "把跨唤醒未整合的梦境-成长压力先纳入承诺表达节奏。",
+                "trigger_refs": ref_set,
+            }
+        )
+    if relationship_reconsolidation_required and not _has_item_type(
+        candidates,
+        "relationship_offline_reconsolidation",
+        "act_type",
+    ):
+        candidates.append(
+            {
+                "act_id": f"commitment-act-{updated.get('run_id', 'offline')}-relationship-reconsolidation",
+                "act_type": "relationship_offline_reconsolidation",
+                "surface_goal": "把跨唤醒累计关系学习先纳入承诺表达重整，再进入后续兑现。",
                 "trigger_refs": ref_set,
             }
         )
@@ -346,19 +364,30 @@ def project_commitment_expression_plan_with_cumulative_offline_learning(
                 followup_index,
                 "cumulative_offline_learning_integration",
             )
+    if relationship_reconsolidation_required:
+        act_type_order = _insert_before_any(
+            act_type_order,
+            "relationship_offline_reconsolidation",
+            [
+                "cumulative_offline_learning_integration",
+                "followup_commitment",
+            ],
+        )
     updated["act_type_order"] = _dedupe(act_type_order)
 
-    if pressure_level in {"urgent", "elevated"}:
+    if relationship_reconsolidation_required:
+        updated["cumulative_commitment_tempo_mode"] = (
+            "relationship_offline_reconsolidation_first"
+        )
+        if _can_replace_delay_decision(updated.get("delay_or_release_decision")):
+            updated["delay_or_release_decision"] = (
+                "hold_for_relationship_offline_reconsolidation"
+            )
+    elif pressure_level in {"urgent", "elevated"}:
         updated["cumulative_commitment_tempo_mode"] = (
             "cumulative_offline_learning_guarded"
         )
-        if updated.get("delay_or_release_decision") in {
-            None,
-            "",
-            "baseline",
-            "release",
-            "delay_for_clarification",
-        }:
+        if _can_replace_delay_decision(updated.get("delay_or_release_decision")):
             updated["delay_or_release_decision"] = (
                 "hold_for_cumulative_offline_learning_integration"
             )
@@ -388,3 +417,25 @@ def _dedupe(items: list[str]) -> list[str]:
         if item and item not in result:
             result.append(item)
     return result
+
+
+def _insert_before_any(order: list[str], item: str, anchors: list[str]) -> list[str]:
+    if item in order:
+        return _dedupe(order)
+    for anchor in anchors:
+        if anchor in order:
+            order.insert(order.index(anchor), item)
+            return _dedupe(order)
+    order.append(item)
+    return _dedupe(order)
+
+
+def _can_replace_delay_decision(value: Any) -> bool:
+    return value in {
+        None,
+        "",
+        "baseline",
+        "release",
+        "delay_for_clarification",
+        "hold_for_cumulative_offline_learning_integration",
+    }
