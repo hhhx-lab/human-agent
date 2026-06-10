@@ -1253,6 +1253,98 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "closed",
         )
 
+    def test_idle_strategy_carries_queue_f_birth_and_consciousness_into_waiting_governance(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-queue-f-governance",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            replay_cue_bundle=None,
+            offline_consolidation_frame=None,
+            growth_patch_candidate_queue=None,
+            workspace_frame={
+                "schema_version": "workspace_frame_v0",
+                "candidate_explanations": [{"explanation_id": "workspace-explanation-001"}],
+            },
+            broadcast_frame={
+                "schema_version": "broadcast_frame_v0",
+                "broadcast_targets": ["LanguageRelationshipRuntime", "BirthReadinessRuntime"],
+            },
+            metacognition_state={
+                "schema_version": "metacognition_state_v0",
+                "reflection_prompts": ["当前工作区内容是否足以形成可报告意识证据"],
+            },
+            consciousness_probe={
+                "schema_version": "consciousness_probe_bundle_v0",
+                "reportability_flags": [
+                    "workspace_access_present",
+                    "broadcast_targets_present",
+                    "metacognition_present",
+                ],
+            },
+            birth_readiness_rollup={
+                "schema_version": "birth_readiness_rollup_v0",
+                "overall_status": "open",
+                "blocked_reasons": [],
+            },
+            birth_readiness_stage_gate={
+                "schema_version": "birth_readiness_stage_gate_v0",
+                "decision": "open",
+                "next_required_command": "life-v0 run-validation-membrane --strict",
+                "blocked_reasons": [],
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(
+            idle_strategy["workspace_frame_ref"],
+            "runtime/state/consciousness/workspace_frame.json",
+        )
+        self.assertEqual(
+            idle_strategy["consciousness_probe_ref"],
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+        )
+        self.assertEqual(
+            idle_strategy["birth_readiness_stage_gate_ref"],
+            "runtime/state/life_targets/birth_readiness_stage_gate.json",
+        )
+        self.assertEqual(
+            idle_strategy["consciousness_waiting_posture"],
+            "consciousness_reportable_waiting",
+        )
+        self.assertEqual(
+            idle_strategy["birth_readiness_waiting_posture"],
+            "birth_open_waiting",
+        )
+        self.assertEqual(idle_strategy["birth_readiness_decision"], "open")
+        self.assertEqual(
+            idle_strategy["birth_readiness_next_required_command"],
+            "life-v0 run-validation-membrane --strict",
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_target"],
+            "birth_readiness_stage_gate",
+        )
+        self.assertEqual(
+            idle_strategy["governance_cadence_profile"],
+            "birth_ready_resident_presence",
+        )
+        self.assertEqual(idle_strategy["heartbeat_interval_ms"], 44)
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "refresh_waiting_heartbeat_with_birth_ready_presence_hold",
+        )
+
     def test_idle_strategy_carries_offline_learning_results_into_waiting_governance(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
 
@@ -4355,6 +4447,42 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 result.context.schema_run_manifest_ref,
                 "runtime/state/schema_runner/run_manifest.json",
             )
+            self.assertEqual(
+                result.context.workspace_frame["schema_version"],
+                "workspace_frame_v0",
+            )
+            self.assertEqual(
+                result.context.broadcast_frame["schema_version"],
+                "broadcast_frame_v0",
+            )
+            self.assertEqual(
+                result.context.metacognition_state["schema_version"],
+                "metacognition_state_v0",
+            )
+            self.assertEqual(
+                result.context.consciousness_probe["schema_version"],
+                "consciousness_probe_bundle_v0",
+            )
+            self.assertEqual(
+                result.context.birth_readiness_rollup["schema_version"],
+                "birth_readiness_rollup_v0",
+            )
+            self.assertEqual(
+                result.context.birth_readiness_stage_gate["schema_version"],
+                "birth_readiness_stage_gate_v0",
+            )
+            self.assertEqual(
+                result.context.workspace_frame_ref,
+                "runtime/state/consciousness/workspace_frame.json",
+            )
+            self.assertEqual(
+                result.context.consciousness_probe_ref,
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+            )
+            self.assertEqual(
+                result.context.birth_readiness_stage_gate_ref,
+                "runtime/state/life_targets/birth_readiness_stage_gate.json",
+            )
             idle_strategy_state = self._read_json(
                 paths["terminal_state"] / "idle_strategy_state.json"
             )
@@ -4365,6 +4493,25 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 idle_strategy_state["life_constraint_waiting_posture"],
                 "schema_guarded_waiting",
+            )
+            self.assertEqual(
+                idle_strategy_state["consciousness_waiting_posture"],
+                "consciousness_reportable_waiting",
+            )
+            self.assertEqual(
+                idle_strategy_state["birth_readiness_waiting_posture"],
+                "birth_open_waiting",
+            )
+            self.assertEqual(
+                idle_strategy_state["birth_readiness_stage_gate_ref"],
+                "runtime/state/life_targets/birth_readiness_stage_gate.json",
+            )
+            resident_governance_state = self._read_json(
+                paths["terminal_state"] / "resident_governance_state.json"
+            )
+            self.assertEqual(
+                resident_governance_state["birth_readiness_waiting_posture"],
+                "birth_open_waiting",
             )
             for slow_variable_name in [
                 "trust_persistence",

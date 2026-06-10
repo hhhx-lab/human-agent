@@ -37,9 +37,21 @@ life_v0/process_supervisor/heartbeat.py
 4. waiting heartbeat、incident recovery、relaunch recovery、response surface 之间还缺更硬的文件级施工顺序与字段约束。
 5. Queue E 虽然已经进入 process supervisor 的 refs 与 report 闭环，但 waiting governance 对 `responsibility_loop / world_contact / pain_regret_repair` 的节律级消费还需要继续补厚。
 6. 后台连续体虽然已经能从上一轮 closeout 重装进下一轮 waiting heartbeat，但还需要继续把它补成可跨多次唤醒维持的 lineage，而不是一次性余波。
+7. Queue F 的意识工作区、consciousness probe 与出生准备度对象虽然已经在 S02/S08 闭合，但还需要继续进入 resident waiting governance，而不是停在离线 report 与 stage gate。
 
 所以 Queue B 的目标很明确：
 让 `./digital life` 不再只是“能持续跑起来”，而是开始以受对象合同约束的常驻生命进程存在。
+
+当前这一轮的具体推进口径是：
+
+```text
+workspace_frame / broadcast_frame / metacognition_state / consciousness_probe_bundle
+  + birth_readiness_rollup / birth_readiness_stage_gate
+  -> resident_supervision
+  -> idle_strategy
+  -> waiting heartbeat / resident_governance_state
+  -> process report / receipt
+```
 
 ## 必回读理论母体
 
@@ -306,6 +318,23 @@ def decide_idle_strategy(
 - `repair_followup_required`
 - `repair_obligation_count`
 - `regret_pressure_count`
+- `workspace_frame_ref`
+- `broadcast_frame_ref`
+- `metacognition_ref`
+- `consciousness_probe_ref`
+- `birth_readiness_rollup_ref`
+- `birth_readiness_stage_gate_ref`
+- `consciousness_waiting_posture`
+- `birth_readiness_waiting_posture`
+- `birth_readiness_decision`
+
+### 当前补厚字段
+
+其中：
+
+1. `consciousness_probe_bundle.json#reportability_flags` 缺失时，waiting governance 应进入 `consciousness_probe_blocked_waiting`
+2. `birth_readiness_rollup.json#overall_status=open` 且 `birth_readiness_stage_gate.json#decision=open` 时，应进入 `birth_open_waiting`
+3. 若没有 Queue E 的紧急修复锁覆盖，resident attention 应提升到 `birth_readiness_stage_gate`
 - `queue_e_priority_band`
 
 ### 当前已落第一轮

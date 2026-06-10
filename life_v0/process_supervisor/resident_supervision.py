@@ -21,12 +21,18 @@ from .heartbeat import write_waiting_heartbeat
 from .idle_strategy import (
     ACTIVE_SAMPLING_PLAN_REF,
     BELIEF_STATE_FRAME_REF,
+    BIRTH_READINESS_ROLLUP_REF,
+    BIRTH_READINESS_STAGE_GATE_REF,
+    BROADCAST_FRAME_REF,
+    CONSCIOUSNESS_PROBE_REF,
     MEMORY_WRITE_GATE_REF,
+    METACOGNITION_STATE_REF,
     PREDICTION_ERROR_FIELD_REF,
     SCHEMA_CROSS_FILE_LOGIC_REF,
     SCHEMA_RUN_MANIFEST_REF,
     SIGNAL_MEDIA_RUNTIME_REF,
     STATE_MERGE_GUARD_REF,
+    WORKSPACE_FRAME_REF,
 )
 from .incident_recovery import record_recovery_continuity
 from .offline_learning_signals import (
@@ -80,6 +86,12 @@ class ResidentSupervisionContext:
     state_merge_guard: dict[str, Any]
     schema_cross_file_logic: dict[str, Any]
     schema_run_manifest: dict[str, Any]
+    workspace_frame: dict[str, Any]
+    broadcast_frame: dict[str, Any]
+    metacognition_state: dict[str, Any]
+    consciousness_probe: dict[str, Any]
+    birth_readiness_rollup: dict[str, Any]
+    birth_readiness_stage_gate: dict[str, Any]
     responsibility_loop_state: dict[str, Any]
     world_contact_summary: dict[str, Any]
     pain_regret_repair_report: dict[str, Any]
@@ -98,6 +110,12 @@ class ResidentSupervisionContext:
     state_merge_guard_ref: str | None
     schema_cross_file_logic_ref: str | None
     schema_run_manifest_ref: str | None
+    workspace_frame_ref: str | None
+    broadcast_frame_ref: str | None
+    metacognition_state_ref: str | None
+    consciousness_probe_ref: str | None
+    birth_readiness_rollup_ref: str | None
+    birth_readiness_stage_gate_ref: str | None
     responsibility_loop_state_ref: str | None
     world_contact_summary_ref: str | None
     pain_regret_repair_report_ref: str | None
@@ -160,6 +178,8 @@ def bootstrap_resident_supervision(
     prediction_dir = state_dir / "prediction"
     memory_dir = state_dir / "memory"
     schema_runner_dir = state_dir / "schema_runner"
+    consciousness_dir = state_dir / "consciousness"
+    life_targets_dir = state_dir / "life_targets"
 
     read_json(terminal_dir / "session_envelope.json")
     safe_terminal_loop = read_json(terminal_dir / "safe_terminal_loop_state.json")
@@ -222,6 +242,18 @@ def bootstrap_resident_supervision(
     state_merge_guard = read_json_if_exists(memory_dir / "state_merge_guard.json")
     schema_cross_file_logic = read_json_if_exists(schema_runner_dir / "cross_file_logic.json")
     schema_run_manifest = read_json_if_exists(schema_runner_dir / "run_manifest.json")
+    workspace_frame = read_json_if_exists(consciousness_dir / "workspace_frame.json")
+    broadcast_frame = read_json_if_exists(consciousness_dir / "broadcast_frame.json")
+    metacognition_state = read_json_if_exists(consciousness_dir / "metacognition_state.json")
+    consciousness_probe = read_json_if_exists(
+        consciousness_dir / "consciousness_probe_bundle.json"
+    )
+    birth_readiness_rollup = read_json_if_exists(
+        life_targets_dir / "birth_readiness_rollup.json"
+    )
+    birth_readiness_stage_gate = read_json_if_exists(
+        life_targets_dir / "birth_readiness_stage_gate.json"
+    )
     pain_regret_repair_report = read_json_if_exists(
         reports_dir / "pain_regret_repair_report.json"
     )
@@ -289,6 +321,30 @@ def bootstrap_resident_supervision(
     schema_run_manifest_ref = _ref_if_present(
         payload=schema_run_manifest,
         ref=SCHEMA_RUN_MANIFEST_REF,
+    )
+    workspace_frame_ref = _ref_if_present(
+        payload=workspace_frame,
+        ref=WORKSPACE_FRAME_REF,
+    )
+    broadcast_frame_ref = _ref_if_present(
+        payload=broadcast_frame,
+        ref=BROADCAST_FRAME_REF,
+    )
+    metacognition_state_ref = _ref_if_present(
+        payload=metacognition_state,
+        ref=METACOGNITION_STATE_REF,
+    )
+    consciousness_probe_ref = _ref_if_present(
+        payload=consciousness_probe,
+        ref=CONSCIOUSNESS_PROBE_REF,
+    )
+    birth_readiness_rollup_ref = _ref_if_present(
+        payload=birth_readiness_rollup,
+        ref=BIRTH_READINESS_ROLLUP_REF,
+    )
+    birth_readiness_stage_gate_ref = _ref_if_present(
+        payload=birth_readiness_stage_gate,
+        ref=BIRTH_READINESS_STAGE_GATE_REF,
     )
     responsibility_loop_state_ref = _ref_if_present(
         payload=responsibility_loop_state,
@@ -496,6 +552,12 @@ def bootstrap_resident_supervision(
         state_merge_guard=state_merge_guard,
         schema_cross_file_logic=schema_cross_file_logic,
         schema_run_manifest=schema_run_manifest,
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        consciousness_probe=consciousness_probe,
+        birth_readiness_rollup=birth_readiness_rollup,
+        birth_readiness_stage_gate=birth_readiness_stage_gate,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
@@ -511,6 +573,12 @@ def bootstrap_resident_supervision(
         state_merge_guard_ref=state_merge_guard_ref,
         schema_cross_file_logic_ref=schema_cross_file_logic_ref,
         schema_run_manifest_ref=schema_run_manifest_ref,
+        workspace_frame_ref=workspace_frame_ref,
+        broadcast_frame_ref=broadcast_frame_ref,
+        metacognition_state_ref=metacognition_state_ref,
+        consciousness_probe_ref=consciousness_probe_ref,
+        birth_readiness_rollup_ref=birth_readiness_rollup_ref,
+        birth_readiness_stage_gate_ref=birth_readiness_stage_gate_ref,
         growth_patch_candidate_ids=growth_patch_candidate_ids,
         replay_residue_ref_count=replay_residue_ref_count,
         dream_window_ref_count=dream_window_ref_count,
@@ -564,6 +632,12 @@ def bootstrap_resident_supervision(
         state_merge_guard=state_merge_guard,
         schema_cross_file_logic=schema_cross_file_logic,
         schema_run_manifest=schema_run_manifest,
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        consciousness_probe=consciousness_probe,
+        birth_readiness_rollup=birth_readiness_rollup,
+        birth_readiness_stage_gate=birth_readiness_stage_gate,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
@@ -579,6 +653,12 @@ def bootstrap_resident_supervision(
         state_merge_guard_ref=state_merge_guard_ref,
         schema_cross_file_logic_ref=schema_cross_file_logic_ref,
         schema_run_manifest_ref=schema_run_manifest_ref,
+        workspace_frame_ref=workspace_frame_ref,
+        broadcast_frame_ref=broadcast_frame_ref,
+        metacognition_state_ref=metacognition_state_ref,
+        consciousness_probe_ref=consciousness_probe_ref,
+        birth_readiness_rollup_ref=birth_readiness_rollup_ref,
+        birth_readiness_stage_gate_ref=birth_readiness_stage_gate_ref,
         responsibility_loop_state_ref=responsibility_loop_state_ref,
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,

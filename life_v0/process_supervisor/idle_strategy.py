@@ -19,6 +19,12 @@ MEMORY_WRITE_GATE_REF = "runtime/state/memory/memory_write_gate.json"
 STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
 SCHEMA_CROSS_FILE_LOGIC_REF = "runtime/state/schema_runner/cross_file_logic.json"
 SCHEMA_RUN_MANIFEST_REF = "runtime/state/schema_runner/run_manifest.json"
+WORKSPACE_FRAME_REF = "runtime/state/consciousness/workspace_frame.json"
+BROADCAST_FRAME_REF = "runtime/state/consciousness/broadcast_frame.json"
+METACOGNITION_STATE_REF = "runtime/state/consciousness/metacognition_state.json"
+CONSCIOUSNESS_PROBE_REF = "runtime/state/consciousness/consciousness_probe_bundle.json"
+BIRTH_READINESS_ROLLUP_REF = "runtime/state/life_targets/birth_readiness_rollup.json"
+BIRTH_READINESS_STAGE_GATE_REF = "runtime/state/life_targets/birth_readiness_stage_gate.json"
 IDLE_GOVERNANCE_FIELD_NAMES = (
     "heartbeat_interval_ms",
     "idle_probe_mode",
@@ -85,6 +91,22 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "life_constraint_waiting_posture",
     "life_constraint_attention_target",
     "life_constraint_attention_reason",
+    "workspace_frame_ref",
+    "broadcast_frame_ref",
+    "metacognition_ref",
+    "consciousness_probe_ref",
+    "birth_readiness_rollup_ref",
+    "birth_readiness_stage_gate_ref",
+    "consciousness_waiting_posture",
+    "consciousness_attention_target",
+    "consciousness_attention_reason",
+    "consciousness_reportability_flags",
+    "birth_readiness_waiting_posture",
+    "birth_readiness_attention_target",
+    "birth_readiness_attention_reason",
+    "birth_readiness_decision",
+    "birth_readiness_next_required_command",
+    "birth_readiness_blocked_reasons",
 )
 
 
@@ -128,6 +150,12 @@ def decide_idle_strategy(
     state_merge_guard: dict[str, Any] | None = None,
     schema_cross_file_logic: dict[str, Any] | None = None,
     schema_run_manifest: dict[str, Any] | None = None,
+    workspace_frame: dict[str, Any] | None = None,
+    broadcast_frame: dict[str, Any] | None = None,
+    metacognition_state: dict[str, Any] | None = None,
+    consciousness_probe: dict[str, Any] | None = None,
+    birth_readiness_rollup: dict[str, Any] | None = None,
+    birth_readiness_stage_gate: dict[str, Any] | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
     growth_patch_candidate_queue_ref: str | None = None,
@@ -143,6 +171,12 @@ def decide_idle_strategy(
     state_merge_guard_ref: str | None = STATE_MERGE_GUARD_REF,
     schema_cross_file_logic_ref: str | None = SCHEMA_CROSS_FILE_LOGIC_REF,
     schema_run_manifest_ref: str | None = SCHEMA_RUN_MANIFEST_REF,
+    workspace_frame_ref: str | None = WORKSPACE_FRAME_REF,
+    broadcast_frame_ref: str | None = BROADCAST_FRAME_REF,
+    metacognition_state_ref: str | None = METACOGNITION_STATE_REF,
+    consciousness_probe_ref: str | None = CONSCIOUSNESS_PROBE_REF,
+    birth_readiness_rollup_ref: str | None = BIRTH_READINESS_ROLLUP_REF,
+    birth_readiness_stage_gate_ref: str | None = BIRTH_READINESS_STAGE_GATE_REF,
     growth_patch_candidate_ids: list[str] | None = None,
     replay_residue_ref_count: int = 0,
     dream_window_ref_count: int = 0,
@@ -192,6 +226,16 @@ def decide_idle_strategy(
         schema_cross_file_logic=schema_cross_file_logic,
         schema_run_manifest=schema_run_manifest,
     )
+    consciousness_profile = _consciousness_waiting_profile(
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        consciousness_probe=consciousness_probe,
+    )
+    birth_readiness_profile = _birth_readiness_waiting_profile(
+        birth_readiness_rollup=birth_readiness_rollup,
+        birth_readiness_stage_gate=birth_readiness_stage_gate,
+    )
     offline_learning_profile = derive_offline_learning_profile(
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
@@ -206,6 +250,10 @@ def decide_idle_strategy(
         queue_e_priority_band=queue_e_priority_band,
         offline_learning_pressure_level=offline_learning_profile["offline_learning_pressure_level"],
         prediction_waiting_posture=prediction_profile["prediction_waiting_posture"],
+        consciousness_waiting_posture=consciousness_profile["consciousness_waiting_posture"],
+        birth_readiness_waiting_posture=birth_readiness_profile[
+            "birth_readiness_waiting_posture"
+        ],
         background_carryover_pressure_level=background_continuity_profile.get(
             "background_carryover_pressure_level"
         ),
@@ -221,6 +269,10 @@ def decide_idle_strategy(
         queue_e_priority_band=queue_e_priority_band,
         offline_learning_pressure_level=offline_learning_profile["offline_learning_pressure_level"],
         prediction_waiting_posture=prediction_profile["prediction_waiting_posture"],
+        consciousness_waiting_posture=consciousness_profile["consciousness_waiting_posture"],
+        birth_readiness_waiting_posture=birth_readiness_profile[
+            "birth_readiness_waiting_posture"
+        ],
         background_carryover_pressure_level=background_continuity_profile.get(
             "background_carryover_pressure_level"
         ),
@@ -285,6 +337,30 @@ def decide_idle_strategy(
         payload=schema_run_manifest,
         ref=schema_run_manifest_ref or SCHEMA_RUN_MANIFEST_REF,
     )
+    workspace_frame_runtime_ref = _ref_if_present(
+        payload=workspace_frame,
+        ref=workspace_frame_ref or WORKSPACE_FRAME_REF,
+    )
+    broadcast_frame_runtime_ref = _ref_if_present(
+        payload=broadcast_frame,
+        ref=broadcast_frame_ref or BROADCAST_FRAME_REF,
+    )
+    metacognition_runtime_ref = _ref_if_present(
+        payload=metacognition_state,
+        ref=metacognition_state_ref or METACOGNITION_STATE_REF,
+    )
+    consciousness_probe_runtime_ref = _ref_if_present(
+        payload=consciousness_probe,
+        ref=consciousness_probe_ref or CONSCIOUSNESS_PROBE_REF,
+    )
+    birth_readiness_rollup_runtime_ref = _ref_if_present(
+        payload=birth_readiness_rollup,
+        ref=birth_readiness_rollup_ref or BIRTH_READINESS_ROLLUP_REF,
+    )
+    birth_readiness_stage_gate_runtime_ref = _ref_if_present(
+        payload=birth_readiness_stage_gate,
+        ref=birth_readiness_stage_gate_ref or BIRTH_READINESS_STAGE_GATE_REF,
+    )
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_ref=signal_media_ref,
         belief_state_ref=belief_state_runtime_ref,
@@ -316,6 +392,20 @@ def decide_idle_strategy(
         background_carryover_generation=_int_or_zero(
             background_continuity_profile.get("background_carryover_generation")
         ),
+    )
+    (
+        governance_attention_target,
+        governance_attention_reason,
+        governance_cadence_profile,
+        long_horizon_priority_profile,
+    ) = _queue_f_governance_overlay(
+        current_target=governance_attention_target,
+        current_reason=governance_attention_reason,
+        current_cadence_profile=governance_cadence_profile,
+        current_priority_profile=long_horizon_priority_profile,
+        queue_e_priority_band=queue_e_priority_band,
+        consciousness_profile=consciousness_profile,
+        birth_readiness_profile=birth_readiness_profile,
     )
 
     payload = {
@@ -407,6 +497,40 @@ def decide_idle_strategy(
         "life_constraint_attention_reason": life_constraint_profile[
             "life_constraint_attention_reason"
         ],
+        "workspace_frame_ref": workspace_frame_runtime_ref,
+        "broadcast_frame_ref": broadcast_frame_runtime_ref,
+        "metacognition_ref": metacognition_runtime_ref,
+        "consciousness_probe_ref": consciousness_probe_runtime_ref,
+        "birth_readiness_rollup_ref": birth_readiness_rollup_runtime_ref,
+        "birth_readiness_stage_gate_ref": birth_readiness_stage_gate_runtime_ref,
+        "consciousness_waiting_posture": consciousness_profile[
+            "consciousness_waiting_posture"
+        ],
+        "consciousness_attention_target": consciousness_profile[
+            "consciousness_attention_target"
+        ],
+        "consciousness_attention_reason": consciousness_profile[
+            "consciousness_attention_reason"
+        ],
+        "consciousness_reportability_flags": consciousness_profile[
+            "consciousness_reportability_flags"
+        ],
+        "birth_readiness_waiting_posture": birth_readiness_profile[
+            "birth_readiness_waiting_posture"
+        ],
+        "birth_readiness_attention_target": birth_readiness_profile[
+            "birth_readiness_attention_target"
+        ],
+        "birth_readiness_attention_reason": birth_readiness_profile[
+            "birth_readiness_attention_reason"
+        ],
+        "birth_readiness_decision": birth_readiness_profile["birth_readiness_decision"],
+        "birth_readiness_next_required_command": birth_readiness_profile[
+            "birth_readiness_next_required_command"
+        ],
+        "birth_readiness_blocked_reasons": birth_readiness_profile[
+            "birth_readiness_blocked_reasons"
+        ],
         "source_doc_refs": list(source_doc_refs or []),
         "readme_block_refs": list(readme_block_refs or []),
         "runtime_carrier_refs": list(runtime_carrier_refs or []),
@@ -488,6 +612,8 @@ def _heartbeat_interval_ms(
     queue_e_priority_band: str,
     offline_learning_pressure_level: str,
     prediction_waiting_posture: str,
+    consciousness_waiting_posture: str,
+    birth_readiness_waiting_posture: str,
     background_carryover_pressure_level: str | None,
     background_carryover_generation: int,
 ) -> int:
@@ -501,6 +627,10 @@ def _heartbeat_interval_ms(
         return 110
     if queue_e_priority_band == "locked_repair_urgent":
         return 45
+    if birth_readiness_waiting_posture == "birth_blocked_waiting":
+        return 46
+    if consciousness_waiting_posture == "consciousness_probe_blocked_waiting":
+        return 47
     if queue_e_priority_band == "repair_guarded":
         return 55
     if prediction_waiting_posture == "hold_for_evidence":
@@ -509,6 +639,8 @@ def _heartbeat_interval_ms(
         return 50
     if offline_learning_pressure_level == "urgent":
         return 58
+    if birth_readiness_waiting_posture == "birth_open_waiting":
+        return 44
     if (
         background_carryover_generation >= 3
         and background_carryover_pressure_level in {"present", "elevated"}
@@ -541,6 +673,8 @@ def _next_idle_action(
     queue_e_priority_band: str,
     offline_learning_pressure_level: str,
     prediction_waiting_posture: str,
+    consciousness_waiting_posture: str,
+    birth_readiness_waiting_posture: str,
     background_carryover_pressure_level: str | None,
     background_carryover_generation: int,
 ) -> str:
@@ -549,6 +683,10 @@ def _next_idle_action(
         return "downshift_probe_and_preserve_recovery_bandwidth"
     if queue_e_priority_band == "locked_repair_urgent":
         return "maintain_confirmation_block_and_refresh_repair_priority"
+    if birth_readiness_waiting_posture == "birth_blocked_waiting":
+        return "refresh_waiting_heartbeat_with_birth_readiness_repair_hold"
+    if consciousness_waiting_posture == "consciousness_probe_blocked_waiting":
+        return "refresh_waiting_heartbeat_with_consciousness_probe_repair_hold"
     if repair_followup_required and queue_e_priority_band == "repair_guarded":
         return "refresh_waiting_heartbeat_with_repair_readiness_hold"
     if prediction_waiting_posture == "hold_for_evidence":
@@ -557,6 +695,8 @@ def _next_idle_action(
         return "refresh_waiting_heartbeat_with_prediction_repair_hold"
     if offline_learning_pressure_level == "urgent":
         return "refresh_waiting_heartbeat_with_offline_learning_hold"
+    if birth_readiness_waiting_posture == "birth_open_waiting":
+        return "refresh_waiting_heartbeat_with_birth_ready_presence_hold"
     if (
         background_carryover_generation >= 2
         and background_carryover_pressure_level in {"present", "elevated"}
@@ -842,6 +982,125 @@ def _life_constraint_waiting_profile(
         "life_constraint_attention_target": target,
         "life_constraint_attention_reason": reason,
     }
+
+
+def _consciousness_waiting_profile(
+    *,
+    workspace_frame: dict[str, Any] | None,
+    broadcast_frame: dict[str, Any] | None,
+    metacognition_state: dict[str, Any] | None,
+    consciousness_probe: dict[str, Any] | None,
+) -> dict[str, Any]:
+    has_objects = any([workspace_frame, broadcast_frame, metacognition_state, consciousness_probe])
+    flags = list((consciousness_probe or {}).get("reportability_flags", []))
+    blocking_flags = {
+        flag
+        for flag in flags
+        if str(flag).endswith("_missing") or str(flag).endswith("_minimal")
+    }
+    if not has_objects:
+        posture = "consciousness_unobserved_waiting"
+        target = "waiting_presence_maintenance"
+        reason = "queue_f_consciousness_objects_absent"
+    elif blocking_flags:
+        posture = "consciousness_probe_blocked_waiting"
+        target = "consciousness_probe_repair"
+        reason = "consciousness_reportability_flags_require_repair"
+    else:
+        posture = "consciousness_reportable_waiting"
+        target = "consciousness_probe_bundle"
+        reason = "workspace_broadcast_metacognition_reportable"
+
+    return {
+        "consciousness_waiting_posture": posture,
+        "consciousness_attention_target": target,
+        "consciousness_attention_reason": reason,
+        "consciousness_reportability_flags": flags,
+    }
+
+
+def _birth_readiness_waiting_profile(
+    *,
+    birth_readiness_rollup: dict[str, Any] | None,
+    birth_readiness_stage_gate: dict[str, Any] | None,
+) -> dict[str, Any]:
+    rollup = birth_readiness_rollup or {}
+    stage_gate = birth_readiness_stage_gate or {}
+    overall_status = str(rollup.get("overall_status", ""))
+    decision = str(stage_gate.get("decision", ""))
+    blocked_reasons = list(rollup.get("blocked_reasons", [])) + list(
+        stage_gate.get("blocked_reasons", [])
+    )
+
+    if not rollup and not stage_gate:
+        posture = "birth_unobserved_waiting"
+        target = "waiting_presence_maintenance"
+        reason = "birth_readiness_objects_absent"
+    elif decision == "open" and overall_status == "open":
+        posture = "birth_open_waiting"
+        target = "birth_readiness_stage_gate"
+        reason = "birth_readiness_open_requires_resident_birth_presence"
+    else:
+        posture = "birth_blocked_waiting"
+        target = "birth_readiness_repair"
+        reason = "birth_readiness_gate_not_open"
+
+    return {
+        "birth_readiness_waiting_posture": posture,
+        "birth_readiness_attention_target": target,
+        "birth_readiness_attention_reason": reason,
+        "birth_readiness_decision": decision,
+        "birth_readiness_next_required_command": stage_gate.get("next_required_command", ""),
+        "birth_readiness_blocked_reasons": blocked_reasons,
+    }
+
+
+def _queue_f_governance_overlay(
+    *,
+    current_target: str,
+    current_reason: str,
+    current_cadence_profile: str,
+    current_priority_profile: dict[str, str],
+    queue_e_priority_band: str,
+    consciousness_profile: dict[str, Any],
+    birth_readiness_profile: dict[str, Any],
+) -> tuple[str, str, str, dict[str, str]]:
+    priority_profile = dict(current_priority_profile)
+    if queue_e_priority_band == "locked_repair_urgent":
+        return current_target, current_reason, current_cadence_profile, priority_profile
+
+    birth_posture = birth_readiness_profile["birth_readiness_waiting_posture"]
+    consciousness_posture = consciousness_profile["consciousness_waiting_posture"]
+    if birth_posture == "birth_blocked_waiting":
+        priority_profile["birth_readiness_stage_gate"] = "blocked_primary"
+        return (
+            "birth_readiness_stage_gate",
+            "birth_readiness_requires_repair_before_resident_progression",
+            "birth_readiness_repair_hold",
+            priority_profile,
+        )
+    if consciousness_posture == "consciousness_probe_blocked_waiting":
+        priority_profile["consciousness_probe_bundle"] = "blocked_primary"
+        return (
+            "consciousness_probe_bundle",
+            "consciousness_probe_requires_reportability_repair",
+            "consciousness_probe_repair_hold",
+            priority_profile,
+        )
+    if birth_posture == "birth_open_waiting" and current_target in {
+        "waiting_presence_maintenance",
+        "relationship_timeline",
+    }:
+        priority_profile["birth_readiness_stage_gate"] = "primary"
+        if consciousness_posture == "consciousness_reportable_waiting":
+            priority_profile["consciousness_probe_bundle"] = "elevated"
+        return (
+            "birth_readiness_stage_gate",
+            "birth_readiness_open_requires_resident_birth_presence",
+            "birth_ready_resident_presence",
+            priority_profile,
+        )
+    return current_target, current_reason, current_cadence_profile, priority_profile
 
 
 def _body_governance_flags(

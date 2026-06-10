@@ -97,6 +97,29 @@ life-v0 emit-report --strict
 4. `regret_pressure_count`
 5. `queue_e_priority_band`
 
+## Queue F 进入 resident waiting governance
+
+当前这一轮又把身份、意识工作区与出生准备度对象继续带入常驻等待态。`resident_supervision.py` 现在会读取：
+
+1. `runtime/state/consciousness/workspace_frame.json`
+2. `runtime/state/consciousness/broadcast_frame.json`
+3. `runtime/state/consciousness/metacognition_state.json`
+4. `runtime/state/consciousness/consciousness_probe_bundle.json`
+5. `runtime/state/life_targets/birth_readiness_rollup.json`
+6. `runtime/state/life_targets/birth_readiness_stage_gate.json`
+
+它们会进入 `idle_strategy.py`，并被压成：
+
+1. `consciousness_waiting_posture`
+2. `consciousness_attention_target`
+3. `consciousness_reportability_flags`
+4. `birth_readiness_waiting_posture`
+5. `birth_readiness_attention_target`
+6. `birth_readiness_decision`
+7. `birth_readiness_next_required_command`
+
+当出生准备度为 `open` 且 consciousness probe 具备可报告性时，waiting governance 会进入 `birth_open_waiting` / `consciousness_reportable_waiting`，并把 resident attention 指向 `birth_readiness_stage_gate`。这一步的意义是：出生准备度和意识证据不再只停在 S02/S08 的报告与 stage gate，而是进入 `digital_life_waiting_heartbeat.json`、`idle_strategy_state.json`、`resident_governance_state.json`、`terminal_life_loop_state.json` 和最终 process report / receipt 的治理链。
+
 ## Queue D 结果反写回 waiting governance
 
 最新这一轮又把 Queue D 的离线结果重新带回常驻生命治理：
