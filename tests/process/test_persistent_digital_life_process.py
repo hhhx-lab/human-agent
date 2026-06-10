@@ -1805,6 +1805,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             state_merge_guard={
                 "schema_version": "state_merge_guard_v0",
                 "stage_policy": "long_term_merge_fail_closed",
+                "long_term_change_sources": {
+                    "offline_learning_cumulative_refs": [
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
+                    "queue_e_repair_modulation_refs": [
+                        "runtime/reports/latest/pain_regret_repair_report.json",
+                    ],
+                    "relationship_memory_offline_refs": [
+                        "runtime/state/dream/nightmare_loop_risk.json",
+                    ],
+                    "relationship_memory_repair_refs": [
+                        "runtime/state/action/responsibility_loop_state.json",
+                    ],
+                },
             },
             source_doc_refs=[
                 "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
@@ -1906,6 +1920,114 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "active_sampling_route_prioritizes_repair_pressure",
         )
         self.assertEqual(repair_idle_strategy["active_sampling_route"], "repair_inspect")
+
+        state_merge_idle_strategy = decide_idle_strategy(
+            run_id="idle-state-merge-long-term-change-governance",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "inactive",
+                "cognitive_bandwidth": "steady_open",
+                "sleep_pressure": "low",
+            },
+            replay_cue_bundle={},
+            offline_consolidation_frame={},
+            growth_patch_candidate_queue={},
+            signal_media_runtime={
+                "schema_version": "signal_media_runtime_v0",
+                "modulation_vector": {"repair_drive": "inactive"},
+            },
+            belief_state={
+                "schema_version": "belief_state_frame_v0",
+                "confidence_level": "stable",
+            },
+            prediction_error_field={
+                "schema_version": "prediction_error_field_v0",
+                "error_events": [],
+            },
+            active_sampling_plan={
+                "schema_version": "active_sampling_plan_v0",
+                "selected_route": "",
+                "stage_effect": "monitor",
+            },
+            memory_write_gate={
+                "schema_version": "memory_write_gate_v0",
+                "stage_policy": "write_guarded_candidate_then_validate",
+            },
+            state_merge_guard={
+                "schema_version": "state_merge_guard_v0",
+                "stage_policy": "long_term_merge_fail_closed",
+                "long_term_change_sources": {
+                    "offline_learning_cumulative_refs": [
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
+                    "queue_e_repair_modulation_refs": [
+                        "runtime/reports/latest/pain_regret_repair_report.json",
+                    ],
+                    "relationship_memory_offline_refs": [
+                        "runtime/state/dream/nightmare_loop_risk.json",
+                    ],
+                    "relationship_memory_repair_refs": [
+                        "runtime/state/action/responsibility_loop_state.json",
+                    ],
+                },
+                "merge_routes": [
+                    {
+                        "route_id": "relationship_memory_merge",
+                        "source_change_count": 4,
+                    }
+                ],
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(
+            state_merge_idle_strategy["prediction_waiting_posture"],
+            "state_merge_long_term_integration_hold",
+        )
+        self.assertEqual(
+            state_merge_idle_strategy["response_surface_posture_hint"],
+            "hold",
+        )
+        self.assertEqual(
+            state_merge_idle_strategy["prediction_attention_target"],
+            "state_merge_guard",
+        )
+        self.assertEqual(
+            state_merge_idle_strategy["prediction_attention_reason"],
+            "state_merge_guard_has_long_term_change_sources",
+        )
+        self.assertEqual(
+            state_merge_idle_strategy["state_merge_long_term_change_count"],
+            4,
+        )
+        self.assertEqual(
+            state_merge_idle_strategy["state_merge_long_term_change_families"],
+            [
+                "offline_learning_cumulative_refs",
+                "queue_e_repair_modulation_refs",
+                "relationship_memory_offline_refs",
+                "relationship_memory_repair_refs",
+            ],
+        )
+        self.assertEqual(
+            state_merge_idle_strategy["next_idle_action"],
+            "refresh_waiting_heartbeat_with_state_merge_integration_hold",
+        )
 
     def test_idle_strategy_reloads_background_continuity_carryover(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
@@ -8134,6 +8256,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             state_merge_guard={
                 "schema_version": "state_merge_guard_v0",
                 "stage_policy": "long_term_merge_fail_closed",
+                "long_term_change_sources": {
+                    "offline_learning_cumulative_refs": [
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
+                    "queue_e_repair_modulation_refs": [
+                        "runtime/reports/latest/pain_regret_repair_report.json",
+                    ],
+                    "relationship_memory_offline_refs": [
+                        "runtime/state/dream/nightmare_loop_risk.json",
+                    ],
+                    "relationship_memory_repair_refs": [
+                        "runtime/state/action/responsibility_loop_state.json",
+                    ],
+                },
             },
             signal_media_runtime_ref="runtime/state/signal/signal_media_runtime.json",
             belief_state_ref="runtime/state/prediction/belief_state_frame.json",
@@ -8534,6 +8670,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             state_merge_guard={
                 "schema_version": "state_merge_guard_v0",
                 "stage_policy": "long_term_merge_fail_closed",
+                "long_term_change_sources": {
+                    "offline_learning_cumulative_refs": [
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
+                    "queue_e_repair_modulation_refs": [
+                        "runtime/reports/latest/pain_regret_repair_report.json",
+                    ],
+                    "relationship_memory_offline_refs": [
+                        "runtime/state/dream/nightmare_loop_risk.json",
+                    ],
+                    "relationship_memory_repair_refs": [
+                        "runtime/state/action/responsibility_loop_state.json",
+                    ],
+                },
             },
             terminal_life_loop_state={
                 "background_trait_convergence_history_focus": "trait_stability_hold",
@@ -8622,6 +8772,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("预测误差仍有1条", response)
         self.assertIn("记忆写门处于write_guarded_candidate_then_validate", response)
         self.assertIn("长期合并治理处于long_term_merge_fail_closed", response)
+        self.assertIn("长期合并治理正在整合4条长期变化来源", response)
+        self.assertIn(
+            "长期变化来源族包括offline_learning_cumulative_refs、queue_e_repair_modulation_refs、relationship_memory_offline_refs、relationship_memory_repair_refs",
+            response,
+        )
         self.assertIn("跨唤醒慢变量历史焦点为trait_stability_hold", response)
         self.assertIn("仍需稳定的慢变量包括continuity_drive", response)
         self.assertIn("已经稳定的慢变量包括repair_seriousness", response)

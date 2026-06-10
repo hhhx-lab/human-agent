@@ -142,9 +142,9 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 
 | 位置 | 下一轮必须做什么 |
 |---|---|
-| `response_surface.py` | 根据 `belief_state / prediction_error / signal_media / active_sampling_plan` 决定当前回应是确认、追问、保留还是修复优先；本轮已让 active sampling route 中的 `repair_*` 优先于普通 `hold_for_evidence` |
-| `dialogue_events.py` | 从 terminal loop state / prediction write gate profile 推导 `repair_write_guard`，当 active sampling route 已进入 repair 时，不再被普通 hold 覆盖；同时从 `resident_background_lineage_state.offline_learning_presence` 恢复 cumulative offline learning payload，让后台梦境/成长余波继续进入长期写回 |
-| `idle_strategy.py` | 把 `active_sampling_plan.json`、`memory_write_gate.json` 和离线学习结果带进等待态治理目标；本轮已让 repair route 先生成 `repair_write_guard` 与 `response_surface_posture_hint=repair` |
+| `response_surface.py` | 根据 `belief_state / prediction_error / signal_media / active_sampling_plan` 决定当前回应是确认、追问、保留还是修复优先；本轮已让 active sampling route 中的 `repair_*` 优先于普通 `hold_for_evidence`，并让 `state_merge_guard.long_term_change_sources` 释放成“长期合并治理正在整合 N 条长期变化来源”与来源族表达 |
+| `dialogue_events.py` | 从 terminal loop state / prediction write gate profile 推导 `repair_write_guard`，当 active sampling route 已进入 repair 时，不再被普通 hold 覆盖；同时从 `resident_background_lineage_state.offline_learning_presence` 恢复 cumulative offline learning payload，让后台梦境/成长余波继续进入长期写回；当前还会把 `state_merge_long_term_change_count/families/refs` 带进 `digital_life_turn` 与恢复包 |
+| `idle_strategy.py` | 把 `active_sampling_plan.json`、`memory_write_gate.json` 和离线学习结果带进等待态治理目标；本轮已让 repair route 先生成 `repair_write_guard` 与 `response_surface_posture_hint=repair`，并让 state merge 长期变化来源在没有更高优先级追问/修复/误差时生成 `state_merge_long_term_integration_hold` |
 | `resident_supervision.py` | 在 bootstrap 阶段装回这五个对象的 refs，保证多次唤醒不是裸恢复；当前还会在关系记忆刷新后调用 state merge guard 投影，把离线学习、梦境与 Queue E 修复证据并入长期合并守门 |
 | `persistent_process.py` / `process_closeout.py` | 让常驻治理报告显式回链预测对象与写门对象，而不是只回链语言末端产物 |
 | `resident_turn_writeback.py` | live turn 结束后，把新的长期关系对象和写门事务重新压回下一拍 waiting governance；当前会同步写回 `state_merge_guard.json`，让 `relationship_memory.long_term_change_sources` 的累计离线学习、梦境和修复证据进入长期合并面 |
@@ -208,6 +208,7 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 7. Queue E repair pressure 至少从 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 进入 `signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` 与 `prediction_workspace_frame.json`。
 8. `process_supervisor/response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 对 `repair_*` active sampling route 的优先级高于普通 evidence hold。
 9. `state_merge_guard.json` 不能只保留 S04 初始 route；bootstrap restore 与 live turn writeback 后，必须从 `relationship_memory.long_term_change_sources` 吸收 `offline_learning_cumulative_refs`、`queue_e_repair_modulation_refs`、`relationship_memory_offline_refs` 与 `relationship_memory_repair_refs`，并让 `life_state.state_merge_records[].long_term_change_source_count` 同步刷新。
+10. `idle_strategy.py`、`heartbeat.py`、`dialogue_events.py` 与 `response_surface.py` 必须消费 `state_merge_guard.long_term_change_sources`，写出 `state_merge_long_term_change_count`、`state_merge_long_term_change_families`、`state_merge_long_term_change_refs`，并在等待态/回应面表达长期合并整合压力，不能让长期变化来源只停在 `life_state` 计数里。
 
 ## 不允许出现的退化
 

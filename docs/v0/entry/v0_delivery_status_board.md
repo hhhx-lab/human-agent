@@ -93,6 +93,8 @@ life-v0 emit-report --strict
 
 最新继续补强：Packet C 的 `state_merge_guard.json` 已经从 S04 初始状态文件推进为驻留回合动态投影对象。`dialogue_events.py` 现在会从 `resident_background_lineage_state.offline_learning_presence` 恢复 cumulative offline learning payload；`resident_supervision.py` 与 `resident_turn_writeback.py` 在刷新 `relationship_memory.json` 后，会调用 `state_merge_guard.py#project_state_merge_guard_with_relationship_memory`，把 `relationship_memory.long_term_change_sources`、`offline_learning_refs`、`offline_learning_cumulative_refs`、`queue_e_repair_refs` 与关系修复 refs 合并进 `state_merge_guard.json#long_term_change_sources`，并让 `life_state.json#state_merge_records[].long_term_change_source_count` 同步刷新。状态板因此把这一格视为“梦境/成长/修复已经从关系记忆进入长期状态合并守门”，不是只停在关系记忆或写回包。
 
+继续向 Packet D 推进：`state_merge_guard.long_term_change_sources` 现在不只进入 `life_state` 计数，还会通过 `process_supervisor/state_merge_signals.py` 被 `idle_strategy.py`、`heartbeat.py`、`dialogue_events.py` 与 `response_surface.py` 消费。等待态会写出 `state_merge_long_term_change_count`、`state_merge_long_term_change_families`、`state_merge_long_term_change_refs`；在没有更高优先级追问、修复或预测误差时，waiting posture 会进入 `state_merge_long_term_integration_hold`，下一拍行动会进入 `refresh_waiting_heartbeat_with_state_merge_integration_hold`；回应表面会表达长期合并治理正在整合多少条长期变化来源和来源族。状态板因此把这一格视为“长期合并治理已经从 Packet C 状态根进入 Packet D 等待态、真实回合事件和语言表面”，不是只停在 state merge 文件。
+
 3. 真实新外部回合已经能进入终端生命过程并写回连续体，但还只是最小生命循环。
 4. 项目级 packaging / installable command surface 已接通，但还没有全局长期运行层。
 5. resident supervision 已进入第一轮器官化，但还没有更高阶的长期进程治理与后台存在层。
@@ -134,7 +136,7 @@ P0_DOC_CORPUS_INGESTION
 | `S00_DIRECTION_FOUNDATION` | `稳定` | 固定方向锁、断联恢复锚链和禁止回退项 |
 | `S01_SOURCE_AUTHORITY` | `稳定` | 固定 `01*` 权威来源与机制证据图 |
 | `S02_NEURAL_LIFE_CORE` | `稳定` | 固定主体骨架、十二主体系统和内部 bus |
-| `S04_STATE_OBJECT_STORE` | `稳定` | 固定生命状态根、对象注册、迁移种子、记忆写门和 `state_merge_guard.json` 长期合并治理器官；当前 `state_merge_guard.json` 已能在 bootstrap restore 与 live turn writeback 后从关系记忆吸收离线学习、梦境、Queue E 修复和关系修复长期变化来源 |
+| `S04_STATE_OBJECT_STORE` | `稳定` | 固定生命状态根、对象注册、迁移种子、记忆写门和 `state_merge_guard.json` 长期合并治理器官；当前 `state_merge_guard.json` 已能在 bootstrap restore 与 live turn writeback 后从关系记忆吸收离线学习、梦境、Queue E 修复和关系修复长期变化来源，并把这些来源继续压进 Packet D 的等待态、回合事件和回应表面 |
 | `S03_DIRECTION_LIFE_MEMBRANE` | `稳定` | 固定生命膜、DreamFactGate、责任修复边界和影子行动门 |
 | `S08_LIFE_TARGET_RUNTIMES` | `稳定` | 固定九项目标闭合检查 |
 | `S05_VALIDATION_MEMBRANE_OBSERVATION` | `稳定` | 固定 validator、观测和 stage gate |

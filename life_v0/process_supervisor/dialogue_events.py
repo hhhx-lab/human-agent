@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .state_merge_signals import state_merge_long_term_change_profile
+
 
 BACKGROUND_TRAIT_CONVERGENCE_REF_KEYS = (
     "background_resident_governance_state_ref",
@@ -501,6 +503,9 @@ def build_prediction_write_gate_payload(
         "active_sampling_route",
         "memory_write_gate_policy",
         "state_merge_policy",
+        "state_merge_long_term_change_count",
+        "state_merge_long_term_change_families",
+        "state_merge_long_term_change_refs",
     ):
         value = profile.get(key) if profile else terminal_life_loop_state.get(key)
         if not _present_value(value):
@@ -535,6 +540,9 @@ def _derive_prediction_write_gate_profile(
     memory_policy = str((memory_write_gate or {}).get("stage_policy", ""))
     memory_policy_lower = memory_policy.lower()
     merge_policy = str((state_merge_guard or {}).get("stage_policy", ""))
+    state_merge_change_profile = state_merge_long_term_change_profile(
+        state_merge_guard
+    )
 
     has_prediction_objects = any(
         [
@@ -558,6 +566,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
         }
     if "repair" in route_lower:
         return {
@@ -569,6 +578,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
         }
     if "hold_for_evidence" in stage_lower or error_count > 0:
         return {
@@ -580,6 +590,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
         }
     if repair_drive == "active" or "repair" in memory_policy_lower:
         return {
@@ -591,6 +602,19 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
+        }
+    if state_merge_change_profile["state_merge_long_term_change_count"] > 0:
+        return {
+            "prediction_waiting_posture": "state_merge_long_term_integration_hold",
+            "response_surface_posture_hint": "hold",
+            "prediction_attention_target": "state_merge_guard",
+            "prediction_attention_reason": "state_merge_guard_has_long_term_change_sources",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
         }
     if confidence_level in {"stable", "high", "confirmed"}:
         return {
@@ -602,6 +626,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
         }
     return {
         "prediction_waiting_posture": "baseline_prediction_monitoring",
@@ -612,6 +637,7 @@ def _derive_prediction_write_gate_profile(
         "active_sampling_route": selected_route,
         "memory_write_gate_policy": memory_policy,
         "state_merge_policy": merge_policy,
+        **state_merge_change_profile,
     }
 
 

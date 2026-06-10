@@ -4,6 +4,7 @@ from typing import Any
 
 from .dialogue_events import build_offline_learning_cumulative_payload
 from .offline_learning_signals import derive_offline_learning_profile
+from .state_merge_signals import state_merge_long_term_change_profile
 
 
 def compose_life_response(
@@ -381,6 +382,16 @@ def compose_life_response(
         response = f"{response}，记忆写门处于{prediction_surface['memory_write_gate_policy']}"
     if prediction_surface["state_merge_policy"]:
         response = f"{response}，长期合并治理处于{prediction_surface['state_merge_policy']}"
+    if prediction_surface["state_merge_long_term_change_count"]:
+        response = (
+            f"{response}，长期合并治理正在整合"
+            f"{prediction_surface['state_merge_long_term_change_count']}条长期变化来源"
+        )
+    if prediction_surface["state_merge_long_term_change_families"]:
+        response = (
+            f"{response}，长期变化来源族包括"
+            f"{'、'.join(prediction_surface['state_merge_long_term_change_families'])}"
+        )
     if replay_cue_count:
         response = f"{response}，同时带着{replay_cue_count}条离线重放线索"
     if dream_window_count:
@@ -470,6 +481,9 @@ def _prediction_surface_posture(
     confidence_level = str((belief_state or {}).get("confidence_level", "")).lower()
     memory_policy = str((memory_write_gate or {}).get("stage_policy", ""))
     merge_policy = str((state_merge_guard or {}).get("stage_policy", ""))
+    state_merge_change_profile = state_merge_long_term_change_profile(
+        state_merge_guard
+    )
     route_lower = selected_route.lower()
     stage_lower = stage_effect.lower()
     memory_policy_lower = memory_policy.lower()
@@ -483,6 +497,8 @@ def _prediction_surface_posture(
         surface_posture = "保留"
     elif repair_drive == "active" or "repair" in memory_policy_lower:
         surface_posture = "修复"
+    elif state_merge_change_profile["state_merge_long_term_change_count"] > 0:
+        surface_posture = "保留"
     elif confidence_level in {"stable", "high", "confirmed"}:
         surface_posture = "确认"
 
@@ -492,4 +508,5 @@ def _prediction_surface_posture(
         "prediction_error_count": error_count,
         "memory_write_gate_policy": memory_policy,
         "state_merge_policy": merge_policy,
+        **state_merge_change_profile,
     }

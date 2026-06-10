@@ -48,7 +48,7 @@ Packet D 必须读取这些已有对象：
 | `runtime/state/prediction/prediction_error_field.json` | `S02_NEURAL_LIFE_CORE` | `idle_strategy.py` 的 evidence hold、`response_surface.py` 的保留/追问输出 |
 | `runtime/state/prediction/active_sampling_plan.json` | `S02_NEURAL_LIFE_CORE` | `idle_strategy.py` 的 active sampling route、`response_surface.py` 的追问姿态 |
 | `runtime/state/memory/memory_write_gate.json` | `S04_STATE_OBJECT_STORE` | waiting 中的写门压力、回应表面的记忆写门说明 |
-| `runtime/state/memory/state_merge_guard.json` | `S04_STATE_OBJECT_STORE` | closeout / receipt 的长期合并治理回链 |
+| `runtime/state/memory/state_merge_guard.json` | `S04_STATE_OBJECT_STORE` | waiting 中的长期变化来源整合压力、回应表面的长期合并治理说明、closeout / receipt 的长期合并治理回链 |
 | `runtime/state/growth/*_learning_plan.json` | `S10_RUNTIME_GROWTH_RECONSOLIDATION` | 已有 offline learning waiting pressure |
 | `runtime/state/relationship/relationship_timeline.json` | `S07_LANGUAGE_RELATIONSHIP` | long-horizon language governance |
 
@@ -59,12 +59,12 @@ Packet D 必须读取这些已有对象：
 | 文件 | 本轮职责 |
 |---|---|
 | `life_v0/process_supervisor/resident_supervision.py` | bootstrap 时装载 signal / prediction / memory write gate / state merge guard，并把 refs 放入 `ResidentSupervisionContext` |
-| `life_v0/process_supervisor/idle_strategy.py` | 依据 active sampling、prediction error、belief confidence、signal repair drive、memory write gate、state merge guard 生成 waiting posture |
-| `life_v0/process_supervisor/heartbeat.py` | 把 prediction/write-gate refs 写进 heartbeat、terminal loop、idle continuity、resident governance state |
+| `life_v0/process_supervisor/idle_strategy.py` | 依据 active sampling、prediction error、belief confidence、signal repair drive、memory write gate、state merge guard 生成 waiting posture；当前会把 `state_merge_guard.long_term_change_sources` 压成长期变化来源数量、来源族与 refs，并在没有更高优先级追问/修复/误差时进入 `state_merge_long_term_integration_hold` |
+| `life_v0/process_supervisor/heartbeat.py` | 把 prediction/write-gate refs 与 state merge long-term change profile 写进 heartbeat、terminal loop、idle continuity、resident governance state |
 | `life_v0/process_supervisor/idle_refresh_loop.py` | 每次 idle refresh 继续传递同一组对象，避免后续心跳丢失预测上下文 |
 | `life_v0/process_supervisor/process_session_loop.py` | 在 waiting -> live turn -> waiting 的 session 编排中持续传递 prediction/write-gate 对象 |
 | `life_v0/process_supervisor/live_turn_cycle.py` | 将 prediction/write-gate 对象传给 response surface |
-| `life_v0/process_supervisor/response_surface.py` | 释放确认 / 追问 / 修复 / 保留四类预测输出姿态 |
+| `life_v0/process_supervisor/response_surface.py` | 释放确认 / 追问 / 修复 / 保留四类预测输出姿态；当前会表达长期合并治理正在整合多少条长期变化来源，以及来源族来自离线学习、Queue E 修复、梦境/成长或关系修复 |
 | `life_v0/process_supervisor/process_closeout.py` | 把 prediction/write-gate refs 交给 process report bundle |
 | `life_v0/process_supervisor/process_report.py` | 在 report、digest、receipt 和 input hash 中回链六个输入对象 |
 
@@ -89,6 +89,9 @@ Packet D 必须读取这些已有对象：
 - `active_sampling_route`
 - `memory_write_gate_policy`
 - `state_merge_policy`
+- `state_merge_long_term_change_count`
+- `state_merge_long_term_change_families`
+- `state_merge_long_term_change_refs`
 
 ### waiting / resident governance
 
@@ -110,13 +113,13 @@ Packet D 必须读取这些已有对象：
 | 确认 | belief confidence 稳定，prediction error 低 | `预测输出姿态为确认` |
 | 追问 | active sampling route 指向 clarify | `预测输出姿态为追问` |
 | 修复 | signal repair drive 或 memory write gate repair pressure | `预测输出姿态为修复` |
-| 保留 | prediction error 未消解或 stage effect 为 hold | `预测输出姿态为保留` |
+| 保留 | prediction error 未消解、stage effect 为 hold，或 `state_merge_guard.long_term_change_sources` 已有长期变化来源但尚未完成整合 | `预测输出姿态为保留`；同时表达 `长期合并治理正在整合N条长期变化来源` 与来源族 |
 
 ### dialogue event / writeback / resume
 
 prediction / write-gate 对象不能只影响等待姿态和一句回应文本。真实回合证据链必须继续保存：
 
-- `digital_life_turn`：写出 `prediction_write_gate_refs`、`prediction_waiting_posture`、`response_surface_posture_hint`、`prediction_attention_target`、`prediction_attention_reason`、`prediction_error_count`、`active_sampling_route`、`memory_write_gate_policy`、`state_merge_policy`。
+- `digital_life_turn`：写出 `prediction_write_gate_refs`、`prediction_waiting_posture`、`response_surface_posture_hint`、`prediction_attention_target`、`prediction_attention_reason`、`prediction_error_count`、`active_sampling_route`、`memory_write_gate_policy`、`state_merge_policy`、`state_merge_long_term_change_count`、`state_merge_long_term_change_families`、`state_merge_long_term_change_refs`。
 - `dialogue_writeback_bundle.json`：写出 `prediction_write_gate_refs`，让这批预测、主动采样、记忆写门和长期合并治理对象成为回合写回的一级证据。
 - `resumed_external_dialogue_packet.json`：保留同一组 prediction / write-gate 摘要，让下一轮恢复不必从回应文本反推上一轮的预测姿态。
 
@@ -160,8 +163,8 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 
 通过标准：
 
-1. `idle_strategy.py` 能直接断言 prediction/write-gate refs、waiting posture、response surface hint、heartbeat interval 与 next idle action。
-2. `response_surface.py` 能把确认 / 追问 / 修复 / 保留姿态释放成关系语言，不出现 `user` 核心抽象。
+1. `idle_strategy.py` 能直接断言 prediction/write-gate refs、waiting posture、response surface hint、heartbeat interval、next idle action 与 state merge long-term change profile。
+2. `response_surface.py` 能把确认 / 追问 / 修复 / 保留姿态释放成关系语言，并把长期合并变化来源数量与来源族表达出来，不出现 `user` 核心抽象。
 3. `dialogue_events.py`、`resident_turn_writeback.py` 与 `dialogue_writeback_bundle.json` 能把 prediction/write-gate refs 和姿态摘要带入 turn event、bundle 与 resumed packet。
 4. `resident_supervision.py` 的 context 持有六个对象与六个 refs。
 5. `process_report.py` 的 report、digest、receipt 和 input hash 都能回链六个输入对象。

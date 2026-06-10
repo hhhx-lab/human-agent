@@ -7,6 +7,7 @@ from .offline_learning_signals import (
     build_offline_learning_cumulative_profile,
     derive_offline_learning_profile,
 )
+from .state_merge_signals import state_merge_long_term_change_profile
 
 
 IDLE_STRATEGY_STATE_REF = "runtime/state/terminal/idle_strategy_state.json"
@@ -158,6 +159,9 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "active_sampling_route",
     "memory_write_gate_policy",
     "state_merge_policy",
+    "state_merge_long_term_change_count",
+    "state_merge_long_term_change_families",
+    "state_merge_long_term_change_refs",
     "schema_cross_file_logic_ref",
     "schema_run_manifest_ref",
     "life_constraint_refs",
@@ -694,6 +698,15 @@ def decide_idle_strategy(
         "active_sampling_route": prediction_profile["active_sampling_route"],
         "memory_write_gate_policy": prediction_profile["memory_write_gate_policy"],
         "state_merge_policy": prediction_profile["state_merge_policy"],
+        "state_merge_long_term_change_count": prediction_profile[
+            "state_merge_long_term_change_count"
+        ],
+        "state_merge_long_term_change_families": prediction_profile[
+            "state_merge_long_term_change_families"
+        ],
+        "state_merge_long_term_change_refs": prediction_profile[
+            "state_merge_long_term_change_refs"
+        ],
         "schema_cross_file_logic_ref": schema_cross_file_logic_runtime_ref,
         "schema_run_manifest_ref": schema_run_manifest_runtime_ref,
         "life_constraint_refs": life_constraint_profile["life_constraint_refs"],
@@ -1071,6 +1084,8 @@ def _next_idle_action(
         return "refresh_waiting_heartbeat_with_prediction_evidence_hold"
     if prediction_waiting_posture == "repair_write_guard":
         return "refresh_waiting_heartbeat_with_prediction_repair_hold"
+    if prediction_waiting_posture == "state_merge_long_term_integration_hold":
+        return "refresh_waiting_heartbeat_with_state_merge_integration_hold"
     if offline_learning_pressure_level in {"urgent", "elevated"}:
         return "refresh_waiting_heartbeat_with_offline_learning_hold"
     if birth_readiness_waiting_posture == "birth_open_waiting":
@@ -1501,6 +1516,9 @@ def _prediction_waiting_profile(
     confidence_level = str((belief_state or {}).get("confidence_level", "")).lower()
     memory_policy = str((memory_write_gate or {}).get("stage_policy", ""))
     merge_policy = str((state_merge_guard or {}).get("stage_policy", ""))
+    state_merge_change_profile = state_merge_long_term_change_profile(
+        state_merge_guard
+    )
     route_lower = selected_route.lower()
     stage_lower = stage_effect.lower()
     memory_policy_lower = memory_policy.lower()
@@ -1525,6 +1543,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": "",
             "memory_write_gate_policy": "",
             "state_merge_policy": "",
+            **state_merge_change_profile,
         }
 
     if "clarify" in route_lower:
@@ -1537,6 +1556,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
         }
     if "repair" in route_lower:
         return {
@@ -1548,6 +1568,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
         }
     if "hold_for_evidence" in stage_lower or error_count > 0:
         return {
@@ -1559,6 +1580,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
         }
     if repair_drive == "active" or "repair" in memory_policy_lower:
         return {
@@ -1570,6 +1592,19 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
+        }
+    if state_merge_change_profile["state_merge_long_term_change_count"] > 0:
+        return {
+            "prediction_waiting_posture": "state_merge_long_term_integration_hold",
+            "response_surface_posture_hint": "hold",
+            "prediction_attention_target": "state_merge_guard",
+            "prediction_attention_reason": "state_merge_guard_has_long_term_change_sources",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
         }
     if confidence_level in {"stable", "high", "confirmed"}:
         return {
@@ -1581,6 +1616,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **state_merge_change_profile,
         }
     return {
         "prediction_waiting_posture": "baseline_prediction_monitoring",
@@ -1591,6 +1627,7 @@ def _prediction_waiting_profile(
         "active_sampling_route": selected_route,
         "memory_write_gate_policy": memory_policy,
         "state_merge_policy": merge_policy,
+        **state_merge_change_profile,
     }
 
 
