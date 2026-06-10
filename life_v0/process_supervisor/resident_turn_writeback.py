@@ -253,6 +253,11 @@ def write_resident_turn_writeback(
             "resident_background_lineage_offline_learning_refs", []
         )
     )
+    resident_background_lineage_state_merge_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_state_merge_refs", []
+        )
+    )
     resident_background_lineage_dream_wake_refs = list(
         resident_background_lineage_payload.get(
             "resident_background_lineage_dream_wake_refs", []
@@ -261,6 +266,7 @@ def write_resident_turn_writeback(
     resident_background_lineage_refs = _dedupe_refs(
         resident_background_lineage_refs
         + resident_background_lineage_language_refs
+        + resident_background_lineage_state_merge_refs
         + resident_background_lineage_offline_learning_refs
         + resident_background_lineage_dream_wake_refs
     )
@@ -330,6 +336,9 @@ def write_resident_turn_writeback(
         background_trait_convergence_refs=background_trait_convergence_refs,
         cross_wake_trait_convergence_refs=cross_wake_trait_convergence_refs,
         resident_background_lineage_refs=resident_background_lineage_refs,
+        resident_background_lineage_state_merge_refs=(
+            resident_background_lineage_state_merge_refs
+        ),
         resident_background_lineage_offline_learning_refs=(
             resident_background_lineage_offline_learning_refs
         ),

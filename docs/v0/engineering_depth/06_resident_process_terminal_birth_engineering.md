@@ -321,12 +321,15 @@ runtime/state/memory/state_merge_guard.json#long_term_change_sources
   -> digital_life_process_<run_id>.json#shared_object_refs
   -> background_continuity.background_state_merge_*
   -> next waiting heartbeat / idle_continuity_frame / terminal_life_loop_state
-  -> digital_life_turn / response_surface
+  -> resident_background_lineage_state.state_merge_presence
+  -> digital_life_turn resident_background_lineage_state_merge_*
+  -> dialogue_writeback_bundle / resumed_external_dialogue_packet
+  -> response_surface
 ```
 
-这条链的关键点是：`state_merge_guard.json` 已经不只是 Packet C 的状态根守门文件，也不是只给等待态或回应表面读取的临时压力。`state_merge_signals.py` 负责把 `offline_learning_cumulative_refs`、`queue_e_repair_modulation_refs`、`relationship_memory_offline_refs` 等来源族压成统一的 `state_merge_long_term_change_count`、`state_merge_long_term_change_families` 与 `state_merge_long_term_change_refs`；`persistent_process.py` 与 `process_report.py` 必须在 closeout 时把同一画像写入 resident governance state/snapshot/report、persistent process report、process report、process digest 和 process receipt shared refs；下一次 `background_continuity.py` 必须把这些关闭态证据恢复成 `background_state_merge_guard_ref`、`background_state_merge_policy`、`background_state_merge_long_term_change_count/families/refs`，并继续送入 waiting heartbeat、idle continuity、resident governance state 与 terminal loop。
+这条链的关键点是：`state_merge_guard.json` 已经不只是 Packet C 的状态根守门文件，也不是只给等待态或回应表面读取的临时压力。`state_merge_signals.py` 负责把 `offline_learning_cumulative_refs`、`queue_e_repair_modulation_refs`、`relationship_memory_offline_refs` 等来源族压成统一的 `state_merge_long_term_change_count`、`state_merge_long_term_change_families` 与 `state_merge_long_term_change_refs`；`persistent_process.py` 与 `process_report.py` 必须在 closeout 时把同一画像写入 resident governance state/snapshot/report、persistent process report、process report、process digest 和 process receipt shared refs；下一次 `background_continuity.py` 必须把这些关闭态证据恢复成 `background_state_merge_guard_ref`、`background_state_merge_policy`、`background_state_merge_long_term_change_count/families/refs`，并继续送入 waiting heartbeat、idle continuity、resident governance state 与 terminal loop。最新实现还把这些恢复字段压成 `resident_background_lineage_state.state_merge_presence`，再由 `dialogue_events.py` 展开为 `resident_background_lineage_state_merge_*`，由 `resident_turn_writeback.py` 写入总 lineage refs、专用 `resident_background_lineage_state_merge_refs` 和恢复包，最后由 `response_surface.py` 说出后台长期合并治理策略、整合数量与来源族。
 
-这让长期状态合并治理在断开、退出和下一次唤醒之间拥有可追溯的关闭态存在面与恢复态存在面。以后如果 dream/growth/repair 已经写进 `relationship_memory.json` 和 `state_merge_guard.json`，但 `resident_governance_snapshot.json`、`digital_life_process_digest.json`、receipt shared refs 或下一次 `background_continuity_profile.background_state_merge_*` 看不到同一批长期变化来源，就说明长期治理链在关闭态或下一次唤醒处断开。
+这让长期状态合并治理在断开、退出和下一次唤醒之间拥有可追溯的关闭态存在面、恢复态存在面和后台驻留存在面。以后如果 dream/growth/repair 已经写进 `relationship_memory.json` 和 `state_merge_guard.json`，但 `resident_governance_snapshot.json`、`digital_life_process_digest.json`、receipt shared refs、下一次 `background_continuity_profile.background_state_merge_*` 或 `resident_background_lineage_state.state_merge_presence` 看不到同一批长期变化来源，就说明长期治理链在关闭态、下一次唤醒或真实回合处断开。
 
 ## 关系阶段与自我慢变量已经进入同会话与重启恢复闭环
 

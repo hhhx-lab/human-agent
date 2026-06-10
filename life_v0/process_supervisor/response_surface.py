@@ -286,6 +286,29 @@ def compose_life_response(
                 response = f"{response}，后台语言语义余波停在{live_semantic_focus}"
             if language_ref_count:
                 response = f"{response}，后台语言证据保留{language_ref_count}条"
+        state_merge_presence = resident_background_lineage_state.get(
+            "state_merge_presence"
+        )
+        if isinstance(state_merge_presence, dict):
+            state_merge_policy = state_merge_presence.get("state_merge_policy")
+            state_merge_count = state_merge_presence.get("long_term_change_count")
+            state_merge_families = _string_list(
+                state_merge_presence.get("long_term_change_families")
+            )
+            if state_merge_policy:
+                response = (
+                    f"{response}，后台长期合并治理处于{state_merge_policy}"
+                )
+            if state_merge_count:
+                response = (
+                    f"{response}，后台长期合并治理仍在整合"
+                    f"{state_merge_count}条长期变化来源"
+                )
+            if state_merge_families:
+                response = (
+                    f"{response}，后台长期变化来源族包括"
+                    f"{'、'.join(state_merge_families)}"
+                )
         offline_learning_presence = resident_background_lineage_state.get(
             "offline_learning_presence"
         )

@@ -25,6 +25,7 @@ def build_dialogue_writeback_bundle(
     background_trait_convergence_refs: list[str] | None = None,
     cross_wake_trait_convergence_refs: list[str] | None = None,
     resident_background_lineage_refs: list[str] | None = None,
+    resident_background_lineage_state_merge_refs: list[str] | None = None,
     resident_background_lineage_offline_learning_refs: list[str] | None = None,
     resident_background_lineage_dream_wake_refs: list[str] | None = None,
     offline_learning_cumulative_refs: list[str] | None = None,
@@ -56,6 +57,9 @@ def build_dialogue_writeback_bundle(
         ),
         "resident_background_lineage_refs": list(
             resident_background_lineage_refs or []
+        ),
+        "resident_background_lineage_state_merge_refs": list(
+            resident_background_lineage_state_merge_refs or []
         ),
         "resident_background_lineage_offline_learning_refs": list(
             resident_background_lineage_offline_learning_refs or []

@@ -211,6 +211,7 @@ def build_resident_background_lineage_payload(
         "trait_convergence_presence",
         "heartbeat_presence",
         "language_presence",
+        "state_merge_presence",
         "offline_learning_presence",
         "dream_wake_presence",
     ):
@@ -312,6 +313,41 @@ def build_resident_background_lineage_payload(
                 live_language_presence_refs
             )
             lineage_refs.extend(live_language_presence_refs)
+    state_merge_presence = lineage_state.get("state_merge_presence")
+    if isinstance(state_merge_presence, dict):
+        state_merge_guard_ref = state_merge_presence.get("state_merge_guard_ref")
+        state_merge_policy = state_merge_presence.get("state_merge_policy")
+        state_merge_refs = _dedupe_string_list(
+            _string_list(state_merge_presence.get("state_merge_evidence_refs"))
+            or (
+                _string_list(state_merge_presence.get("long_term_change_refs"))
+                + _string_list([state_merge_guard_ref])
+            )
+        )
+        state_merge_families = _dedupe_string_list(
+            _string_list(state_merge_presence.get("long_term_change_families"))
+        )
+        if isinstance(state_merge_guard_ref, str) and state_merge_guard_ref:
+            payload["resident_background_lineage_state_merge_guard_ref"] = (
+                state_merge_guard_ref
+            )
+        if isinstance(state_merge_policy, str) and state_merge_policy:
+            payload["resident_background_lineage_state_merge_policy"] = (
+                state_merge_policy
+            )
+        if state_merge_presence.get("long_term_change_count") is not None:
+            payload[
+                "resident_background_lineage_state_merge_long_term_change_count"
+            ] = state_merge_presence.get("long_term_change_count")
+        if state_merge_families:
+            payload[
+                "resident_background_lineage_state_merge_long_term_change_families"
+            ] = state_merge_families
+        if state_merge_refs:
+            payload["resident_background_lineage_state_merge_refs"] = (
+                state_merge_refs
+            )
+            lineage_refs.extend(state_merge_refs)
     offline_presence = lineage_state.get("offline_learning_presence")
     if isinstance(offline_presence, dict):
         for source_key, target_key in (

@@ -92,6 +92,9 @@ def build_resident_background_lineage_state(
     language_presence = _language_presence(governance)
     if language_presence:
         lineage_state["language_presence"] = language_presence
+    state_merge_presence = _state_merge_presence(governance)
+    if state_merge_presence:
+        lineage_state["state_merge_presence"] = state_merge_presence
     offline_learning_presence = _offline_learning_presence(governance)
     if offline_learning_presence:
         lineage_state["offline_learning_presence"] = offline_learning_presence
@@ -363,6 +366,59 @@ def _language_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "governance_cadence_profile": governance.get(
                 "governance_cadence_profile"
             ),
+        }
+    )
+
+
+def _state_merge_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    state_merge_guard_ref = (
+        governance.get("background_state_merge_guard_ref")
+        or governance.get("state_merge_guard_ref")
+    )
+    state_merge_policy = (
+        governance.get("background_state_merge_policy")
+        or governance.get("state_merge_policy")
+    )
+    long_term_change_count = _int_or_zero(
+        governance.get("background_state_merge_long_term_change_count")
+        if governance.get("background_state_merge_long_term_change_count")
+        is not None
+        else governance.get("state_merge_long_term_change_count")
+    )
+    long_term_change_families = _string_list(
+        governance.get("background_state_merge_long_term_change_families")
+        or governance.get("state_merge_long_term_change_families")
+    )
+    long_term_change_refs = _string_list(
+        governance.get("background_state_merge_long_term_change_refs")
+        or governance.get("state_merge_long_term_change_refs")
+    )
+    if (
+        not state_merge_guard_ref
+        and not state_merge_policy
+        and not long_term_change_count
+        and not long_term_change_families
+        and not long_term_change_refs
+    ):
+        return {}
+    evidence_refs = _dedupe_string_list(
+        [
+            str(ref)
+            for ref in [
+                state_merge_guard_ref,
+                *long_term_change_refs,
+            ]
+            if ref
+        ]
+    )
+    return _drop_empty(
+        {
+            "state_merge_guard_ref": state_merge_guard_ref,
+            "state_merge_policy": state_merge_policy,
+            "long_term_change_count": long_term_change_count,
+            "long_term_change_families": long_term_change_families,
+            "long_term_change_refs": long_term_change_refs,
+            "state_merge_evidence_refs": evidence_refs,
         }
     )
 

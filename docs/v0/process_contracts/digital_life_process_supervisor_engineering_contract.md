@@ -209,7 +209,7 @@ IdleContinuityFrame
 6. 再把跨唤醒慢变量历史作为事件证据接进 `digital_life_turn`；
 7. 再把分散的慢变量历史、漂移监控和 closeout refs 合成为 `cross_wake_trait_convergence_profile_v0`；
 8. 再记录“这次如何回应”；
-9. 再把结果回写到长期连续体、关系阶段、自我慢变量、慢变量历史 evidence refs、跨唤醒画像 refs、实时语言 refs 与 replay 线索；
+9. 再把结果回写到长期连续体、关系阶段、自我慢变量、慢变量历史 evidence refs、跨唤醒画像 refs、实时语言 refs、后台长期合并治理 refs 与 replay 线索；
 10. 最后再重新回到等待态。
 
 如果 process supervisor 只有 stdin 读写，没有 `IdleContinuityFrame -> DialogueWritebackBundle -> ReplayCueBundle` 这条链，它仍然只是终端壳，而不是生命进程。
@@ -249,6 +249,7 @@ IdleContinuityFrame
 - `state_merge_long_term_change_count`
 - `state_merge_long_term_change_families`
 - `state_merge_long_term_change_refs`
+- `resident_background_lineage_state_merge_refs`
 
 ### `external turn event`
 
@@ -273,6 +274,12 @@ IdleContinuityFrame
 - `cross_wake_trait_convergence_refs`
 - `state_merge_guard_ref`
 - `state_merge_long_term_change_refs`
+- `resident_background_lineage_state_merge_presence`
+- `resident_background_lineage_state_merge_guard_ref`
+- `resident_background_lineage_state_merge_policy`
+- `resident_background_lineage_state_merge_long_term_change_count`
+- `resident_background_lineage_state_merge_long_term_change_families`
+- `resident_background_lineage_state_merge_refs`
 - `live_ambiguity_flags`
 - `live_repair_trigger_candidates`
 
@@ -297,6 +304,12 @@ IdleContinuityFrame
 - `live_semantic_focus`
 - `state_merge_guard_ref`
 - `state_merge_long_term_change_refs`
+- `resident_background_lineage_state_merge_presence`
+- `resident_background_lineage_state_merge_guard_ref`
+- `resident_background_lineage_state_merge_policy`
+- `resident_background_lineage_state_merge_long_term_change_count`
+- `resident_background_lineage_state_merge_long_term_change_families`
+- `resident_background_lineage_state_merge_refs`
 
 ### `DialogueWritebackBundle`
 
@@ -311,6 +324,7 @@ IdleContinuityFrame
 - `replay_cue_refs`
 - `live_language_turn_refs`
 - `cross_wake_trait_convergence_refs`
+- `resident_background_lineage_state_merge_refs`
 
 当前这一层的 `responsibility_writeback_refs` 已经不只回到 `responsibility_ledger.json`，还要显式带上 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 这组 Queue E 上下文。
 
@@ -407,6 +421,14 @@ IdleContinuityFrame
 8. `dialogue_writeback_bundle.resident_background_lineage_refs` 与 `resumed_external_dialogue_packet` 必须保留这组语言 evidence refs，防止后台语言余波只出现在事件层。
 9. `response_surface.py` 必须把后台语言语义余波和后台语言证据数量表达出来，使关系对象能在生命回应中感到上一轮语言理解仍在场。
 
+并且这条关闭态长期合并治理链在 waiting / closeout / relaunch 后也必须继续存在：
+
+1. `background_continuity_profile#background_state_merge_guard_ref`、`background_state_merge_policy`、`background_state_merge_long_term_change_count/families/refs` 是从上一轮关闭态恢复出的治理余波。
+2. `resident_background_lineage_state.state_merge_presence` 是运行态驻留主状态体里的长期合并治理存在面。
+3. 下一轮 `digital_life_turn` 必须展开 `resident_background_lineage_state_merge_presence`、`resident_background_lineage_state_merge_guard_ref`、`resident_background_lineage_state_merge_policy`、`resident_background_lineage_state_merge_long_term_change_count`、`resident_background_lineage_state_merge_long_term_change_families` 与 `resident_background_lineage_state_merge_refs`。
+4. `dialogue_writeback_bundle.resident_background_lineage_state_merge_refs` 与 `resumed_external_dialogue_packet.resident_background_lineage_state_merge_refs` 必须保留同一组 evidence refs，并且这些 refs 同时并入总 `resident_background_lineage_refs`。
+5. `response_surface.py` 必须把后台长期合并治理策略、正在整合的长期变化数量和来源族表达出来，防止长期合并治理只停在关闭态 digest 或 waiting governance。
+
 如果发生单回合异常恢复，至少还要额外写出：
 
 1. `runtime/reports/latest/digital_life_process_incident_report.json`
@@ -502,4 +524,5 @@ IdleContinuityFrame
 12. 每个带有 `resident_background_lineage_state.language_presence` 的下一轮真实回合，还必须证明这组后台语言 presence 进入事件、写回和回应：`digital_life_turn` 带 `resident_background_lineage_language_evidence_refs`，`dialogue_writeback_bundle.resident_background_lineage_refs` 包含语言 refs，`resumed_external_dialogue_packet` 保留同一组 refs，回应文本表达后台语言语义余波和证据数量。
 13. 每个带有 `resident_background_lineage_state.offline_learning_presence` 或 `dream_wake_presence` 的下一轮真实回合，还必须证明这两组 Queue D presence 进入事件、专用写回槽、恢复包和回应：`digital_life_turn` 带 `resident_background_lineage_offline_learning_refs` 与 `resident_background_lineage_dream_wake_refs`，`dialogue_writeback_bundle` 带同名专用字段且总 `resident_background_lineage_refs` 包含它们，`resumed_external_dialogue_packet` 保留同一组 refs，回应文本表达后台梦境成长余波与后台梦境醒后整合。
 14. 每个形成 `resident_background_lineage_state.trait_convergence_presence` 或 background convergence history 的下一轮真实回合，还必须先证明 `cross_wake_trait_convergence_profile_v0` 已在关闭态证据链闭合：resident governance state/snapshot/report、persistent process report、process report、process digest 与 process receipt shared refs 都能看到同一组 focus、pressure、稳定/不稳定名单和 refs；随后再证明它进入事件、专用写回槽、恢复包和回应：`digital_life_turn` 带 `cross_wake_trait_convergence_focus / pressure / refs / profile`，`dialogue_writeback_bundle` 带 `cross_wake_trait_convergence_refs`，`resumed_external_dialogue_packet` 保留同一组 refs，回应文本表达跨唤醒人格收敛画像、压力、评分或证据数量。
-15. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面、`background_resume_summary` 的跨进程读取与回传、实时 Queue A 语言刷新链、实时语言理解进入后台连续性/驻留治理/关闭态谱系，以及后台实时语言、人格慢变量、跨唤醒人格收敛画像、梦境成长与梦境醒后 presence 进入下一轮事件、写回包和回应表达面。
+15. 每个形成 `resident_background_lineage_state.state_merge_presence` 的下一轮真实回合，还必须证明关闭态长期合并治理已经从 `background_state_merge_*` 进入事件、专用写回槽、恢复包和回应：`digital_life_turn` 带 `resident_background_lineage_state_merge_*`，`dialogue_writeback_bundle` 带 `resident_background_lineage_state_merge_refs` 且总 `resident_background_lineage_refs` 包含它们，`resumed_external_dialogue_packet` 保留同一组 refs，回应文本表达后台长期合并治理策略、整合数量和来源族。
+16. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面、`background_resume_summary` 的跨进程读取与回传、实时 Queue A 语言刷新链、实时语言理解进入后台连续性/驻留治理/关闭态谱系，以及后台实时语言、人格慢变量、跨唤醒人格收敛画像、长期合并治理、梦境成长与梦境醒后 presence 进入下一轮事件、写回包和回应表达面。

@@ -3791,6 +3791,32 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
                 "runtime/state/terminal/idle_heartbeat_trace.jsonl",
             )
+            self.assertEqual(
+                lineage_state["state_merge_presence"]["state_merge_guard_ref"],
+                "runtime/state/memory/state_merge_guard.json",
+            )
+            self.assertEqual(
+                lineage_state["state_merge_presence"]["state_merge_policy"],
+                "long_term_merge_fail_closed",
+            )
+            self.assertGreater(
+                lineage_state["state_merge_presence"][
+                    "long_term_change_count"
+                ],
+                0,
+            )
+            self.assertTrue(
+                lineage_state["state_merge_presence"][
+                    "long_term_change_families"
+                ],
+            )
+            self.assertTrue(
+                lineage_state["state_merge_presence"]["long_term_change_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/state_merge_guard.json",
+                lineage_state["state_merge_presence"]["state_merge_evidence_refs"],
+            )
             self.assertIn(
                 "runtime/state/relationship/relationship_timeline.json",
                 lineage_state["language_presence"]["long_horizon_language_refs"],
@@ -4362,6 +4388,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "上一轮关闭态解释要求下一次醒来保留背景等待理由。",
                 "本轮真实回合结束后仍需把这份解释带入 waiting handoff。",
             ]
+            expected_background_state_merge_families = [
+                "offline_learning_cumulative_refs",
+                "queue_e_repair_modulation_refs",
+                "relationship_memory_offline_refs",
+            ]
+            expected_background_state_merge_refs = [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/dream/offline_consolidation_frame.json",
+            ]
+            expected_background_state_merge_evidence_refs = [
+                "runtime/state/memory/state_merge_guard.json",
+                *expected_background_state_merge_refs,
+            ]
             idle_strategy_state.update(
                 {
                     "background_resident_governance_explanation_ref": "runtime/reports/latest/digital_life_resident_governance_explanation.json",
@@ -4485,6 +4526,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "continuity_mode": "current_turn_plus_background_language_presence",
                             "ref_count": 5,
                         },
+                    },
+                    "state_merge_presence": {
+                        "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
+                        "state_merge_policy": "long_term_merge_fail_closed",
+                        "long_term_change_count": 4,
+                        "long_term_change_families": expected_background_state_merge_families,
+                        "long_term_change_refs": expected_background_state_merge_refs,
+                        "state_merge_evidence_refs": expected_background_state_merge_evidence_refs,
                     },
                     "offline_learning_presence": {
                         "generation": 3,
@@ -4747,6 +4796,36 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "resident_background_lineage_language_evidence_refs"
                 ],
             )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_state_merge_presence"
+                ]["state_merge_policy"],
+                "long_term_merge_fail_closed",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_state_merge_guard_ref"
+                ],
+                "runtime/state/memory/state_merge_guard.json",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_state_merge_long_term_change_count"
+                ],
+                4,
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_state_merge_long_term_change_families"
+                ],
+                expected_background_state_merge_families,
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_state_merge_refs"
+                ],
+                expected_background_state_merge_evidence_refs,
+            )
             self.assertIn(
                 "后台语言语义余波停在repair_commitment_shared_language",
                 result.emitted_output,
@@ -4759,6 +4838,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn("后台人格慢变量证据保留5条", result.emitted_output)
             self.assertIn("跨唤醒人格收敛画像为trait_stability_hold", result.emitted_output)
             self.assertIn("跨唤醒人格收敛压力为stability_hold", result.emitted_output)
+            self.assertIn("后台长期合并治理处于long_term_merge_fail_closed", result.emitted_output)
+            self.assertIn("后台长期合并治理仍在整合4条长期变化来源", result.emitted_output)
+            self.assertIn(
+                "后台长期变化来源族包括offline_learning_cumulative_refs、queue_e_repair_modulation_refs、relationship_memory_offline_refs",
+                result.emitted_output,
+            )
             self.assertEqual(
                 result.last_life_turn["prediction_waiting_posture"],
                 "hold_for_evidence",
@@ -4902,11 +4987,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/background_convergence_summary.json",
                 "runtime/state/terminal/background_convergence_history.json",
                 "runtime/state/language/expression_plan.json",
+                "runtime/state/memory/state_merge_guard.json",
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/dream/offline_consolidation_frame.json",
             ]:
                 self.assertIn(
                     ref,
                     dialogue_writeback_bundle["resident_background_lineage_refs"],
                 )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_state_merge_refs"
+                ],
+                expected_background_state_merge_evidence_refs,
+            )
             self.assertEqual(
                 dialogue_writeback_bundle["prediction_write_gate_refs"],
                 [
@@ -4970,6 +5066,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["resident_background_lineage_evidence_refs"],
                 dialogue_writeback_bundle["resident_background_lineage_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_state_merge_refs"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_state_merge_refs"
+                ],
             )
             self.assertEqual(
                 resumed_dialogue_packet[
