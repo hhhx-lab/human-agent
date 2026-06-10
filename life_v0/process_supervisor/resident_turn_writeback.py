@@ -23,6 +23,7 @@ from ..terminal_loop.persistent_wait_bridge import build_persistent_wait_bridge
 from .continuity_evolution import evolve_relationship_and_self_model
 from .dialogue_events import (
     build_background_trait_convergence_payload,
+    build_prediction_write_gate_payload,
     build_resident_background_lineage_payload,
 )
 
@@ -89,6 +90,18 @@ def write_resident_turn_writeback(
     readme_block_refs: list[str],
     runtime_carrier_refs: list[str],
     replay_cue_bundle_ref: str | None,
+    signal_media_runtime: dict[str, Any] | None = None,
+    belief_state: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
+    memory_write_gate: dict[str, Any] | None = None,
+    state_merge_guard: dict[str, Any] | None = None,
+    signal_media_runtime_ref: str | None = None,
+    belief_state_ref: str | None = None,
+    prediction_error_field_ref: str | None = None,
+    active_sampling_plan_ref: str | None = None,
+    memory_write_gate_ref: str | None = None,
+    state_merge_guard_ref: str | None = None,
     responsibility_loop_state_ref: str | None = None,
     world_contact_summary_ref: str | None = None,
     pain_regret_repair_report_ref: str | None = None,
@@ -191,6 +204,24 @@ def write_resident_turn_writeback(
             "resident_background_lineage_evidence_refs", []
         )
     )
+    prediction_write_gate_payload = build_prediction_write_gate_payload(
+        terminal_life_loop_state=terminal_life_loop_state,
+        signal_media_runtime=signal_media_runtime,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+        signal_media_runtime_ref=signal_media_runtime_ref,
+        belief_state_ref=belief_state_ref,
+        prediction_error_field_ref=prediction_error_field_ref,
+        active_sampling_plan_ref=active_sampling_plan_ref,
+        memory_write_gate_ref=memory_write_gate_ref,
+        state_merge_guard_ref=state_merge_guard_ref,
+    )
+    prediction_write_gate_refs = list(
+        prediction_write_gate_payload.get("prediction_write_gate_refs", [])
+    )
     dialogue_writeback_bundle = build_dialogue_writeback_bundle(
         run_id=run_id,
         generated_at=generated_at,
@@ -233,6 +264,7 @@ def write_resident_turn_writeback(
         runtime_carrier_refs=runtime_carrier_refs,
         background_trait_convergence_refs=background_trait_convergence_refs,
         resident_background_lineage_refs=resident_background_lineage_refs,
+        prediction_write_gate_refs=prediction_write_gate_refs,
     )
     write_json(reports_dir / "dialogue_writeback_bundle.json", dialogue_writeback_bundle)
 
@@ -276,6 +308,8 @@ def write_resident_turn_writeback(
                 if key != "resident_background_lineage_state"
             }
         )
+    if prediction_write_gate_payload:
+        resumed_dialogue_packet.update(prediction_write_gate_payload)
     if continuity_refresh is not None:
         resumed_dialogue_packet["relationship_timeline_ref"] = RELATIONSHIP_TIMELINE_REF
         resumed_dialogue_packet["commitment_expression_plan_ref"] = COMMITMENT_EXPRESSION_PLAN_REF

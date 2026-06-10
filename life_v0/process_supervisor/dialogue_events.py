@@ -52,6 +52,18 @@ def build_life_turn_event(
     shared_term_registry: dict[str, Any],
     commitment_index: dict[str, Any],
     terminal_life_loop_state: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
+    belief_state: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
+    memory_write_gate: dict[str, Any] | None = None,
+    state_merge_guard: dict[str, Any] | None = None,
+    signal_media_runtime_ref: str | None = None,
+    belief_state_ref: str | None = None,
+    prediction_error_field_ref: str | None = None,
+    active_sampling_plan_ref: str | None = None,
+    memory_write_gate_ref: str | None = None,
+    state_merge_guard_ref: str | None = None,
     responsibility_loop_state_ref: str | None = None,
     world_contact_summary_ref: str | None = None,
     pain_regret_repair_report_ref: str | None = None,
@@ -76,6 +88,23 @@ def build_life_turn_event(
     )
     event.update(build_background_trait_convergence_payload(terminal_life_loop_state))
     event.update(build_resident_background_lineage_payload(terminal_life_loop_state))
+    event.update(
+        build_prediction_write_gate_payload(
+            terminal_life_loop_state=terminal_life_loop_state,
+            signal_media_runtime=signal_media_runtime,
+            belief_state=belief_state,
+            prediction_error_field=prediction_error_field,
+            active_sampling_plan=active_sampling_plan,
+            memory_write_gate=memory_write_gate,
+            state_merge_guard=state_merge_guard,
+            signal_media_runtime_ref=signal_media_runtime_ref,
+            belief_state_ref=belief_state_ref,
+            prediction_error_field_ref=prediction_error_field_ref,
+            active_sampling_plan_ref=active_sampling_plan_ref,
+            memory_write_gate_ref=memory_write_gate_ref,
+            state_merge_guard_ref=state_merge_guard_ref,
+        )
+    )
     return event
 
 
@@ -194,10 +223,187 @@ def build_resident_background_lineage_payload(
     return payload
 
 
+def build_prediction_write_gate_payload(
+    *,
+    terminal_life_loop_state: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
+    belief_state: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
+    memory_write_gate: dict[str, Any] | None = None,
+    state_merge_guard: dict[str, Any] | None = None,
+    signal_media_runtime_ref: str | None = None,
+    belief_state_ref: str | None = None,
+    prediction_error_field_ref: str | None = None,
+    active_sampling_plan_ref: str | None = None,
+    memory_write_gate_ref: str | None = None,
+    state_merge_guard_ref: str | None = None,
+) -> dict[str, Any]:
+    terminal_life_loop_state = terminal_life_loop_state or {}
+    profile = _derive_prediction_write_gate_profile(
+        signal_media_runtime=signal_media_runtime,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+    )
+    payload: dict[str, Any] = {}
+
+    for key in (
+        "signal_media_ref",
+        "belief_state_ref",
+        "prediction_error_ref",
+        "active_sampling_plan_ref",
+        "memory_write_gate_ref",
+        "state_merge_guard_ref",
+    ):
+        value = terminal_life_loop_state.get(key)
+        if value:
+            payload[key] = value
+    explicit_ref_values = {
+        "signal_media_ref": signal_media_runtime_ref,
+        "belief_state_ref": belief_state_ref,
+        "prediction_error_ref": prediction_error_field_ref,
+        "active_sampling_plan_ref": active_sampling_plan_ref,
+        "memory_write_gate_ref": memory_write_gate_ref,
+        "state_merge_guard_ref": state_merge_guard_ref,
+    }
+    for key, value in explicit_ref_values.items():
+        if value and key not in payload:
+            payload[key] = value
+
+    prediction_refs = [
+        *_string_list(terminal_life_loop_state.get("prediction_write_gate_refs")),
+        *[ref for ref in explicit_ref_values.values() if ref],
+    ]
+    if prediction_refs:
+        payload["prediction_write_gate_refs"] = _dedupe_string_list(prediction_refs)
+
+    for key in (
+        "prediction_waiting_posture",
+        "response_surface_posture_hint",
+        "prediction_attention_target",
+        "prediction_attention_reason",
+        "prediction_error_count",
+        "active_sampling_route",
+        "memory_write_gate_policy",
+        "state_merge_policy",
+    ):
+        value = terminal_life_loop_state.get(key, profile.get(key))
+        if _present_value(value):
+            payload[key] = value
+    return payload
+
+
+def _derive_prediction_write_gate_profile(
+    *,
+    signal_media_runtime: dict[str, Any] | None,
+    belief_state: dict[str, Any] | None,
+    prediction_error_field: dict[str, Any] | None,
+    active_sampling_plan: dict[str, Any] | None,
+    memory_write_gate: dict[str, Any] | None,
+    state_merge_guard: dict[str, Any] | None,
+) -> dict[str, Any]:
+    selected_route = str((active_sampling_plan or {}).get("selected_route", ""))
+    route_lower = selected_route.lower()
+    stage_effect = str((active_sampling_plan or {}).get("stage_effect", ""))
+    stage_lower = stage_effect.lower()
+    error_events = (prediction_error_field or {}).get("error_events", [])
+    error_count = len(error_events) if isinstance(error_events, list) else 0
+    modulation_vector = (signal_media_runtime or {}).get("modulation_vector", {})
+    repair_drive = str(
+        (modulation_vector if isinstance(modulation_vector, dict) else {}).get(
+            "repair_drive", ""
+        )
+    ).lower()
+    confidence_level = str((belief_state or {}).get("confidence_level", "")).lower()
+    memory_policy = str((memory_write_gate or {}).get("stage_policy", ""))
+    memory_policy_lower = memory_policy.lower()
+    merge_policy = str((state_merge_guard or {}).get("stage_policy", ""))
+
+    has_prediction_objects = any(
+        [
+            signal_media_runtime,
+            belief_state,
+            prediction_error_field,
+            active_sampling_plan,
+            memory_write_gate,
+            state_merge_guard,
+        ]
+    )
+    if not has_prediction_objects:
+        return {}
+    if "clarify" in route_lower:
+        return {
+            "prediction_waiting_posture": "hold_for_evidence",
+            "response_surface_posture_hint": "question",
+            "prediction_attention_target": "active_sampling_plan",
+            "prediction_attention_reason": "selected_route_requires_relation_subject_clarification",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+        }
+    if "hold_for_evidence" in stage_lower or error_count > 0:
+        return {
+            "prediction_waiting_posture": "hold_for_evidence",
+            "response_surface_posture_hint": "hold",
+            "prediction_attention_target": "prediction_error_field",
+            "prediction_attention_reason": "prediction_error_requires_evidence_hold",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+        }
+    if repair_drive == "active" or "repair" in route_lower or "repair" in memory_policy_lower:
+        return {
+            "prediction_waiting_posture": "repair_write_guard",
+            "response_surface_posture_hint": "repair",
+            "prediction_attention_target": "memory_write_gate",
+            "prediction_attention_reason": "repair_drive_or_write_gate_requires_repair_posture",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+        }
+    if confidence_level in {"stable", "high", "confirmed"}:
+        return {
+            "prediction_waiting_posture": "confirm_when_stable",
+            "response_surface_posture_hint": "confirm",
+            "prediction_attention_target": "belief_state",
+            "prediction_attention_reason": "stable_belief_frame_allows_confirmation",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+        }
+    return {
+        "prediction_waiting_posture": "baseline_prediction_monitoring",
+        "response_surface_posture_hint": "hold",
+        "prediction_attention_target": "prediction_workspace",
+        "prediction_attention_reason": "prediction_objects_present_without_escalation",
+        "prediction_error_count": error_count,
+        "active_sampling_route": selected_route,
+        "memory_write_gate_policy": memory_policy,
+        "state_merge_policy": merge_policy,
+    }
+
+
 def _string_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item) for item in value if item]
+
+
+def _present_value(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str) and not value:
+        return False
+    if isinstance(value, (list, tuple, dict, set)) and not value:
+        return False
+    return True
 
 
 def _dedupe_string_list(items: list[str]) -> list[str]:

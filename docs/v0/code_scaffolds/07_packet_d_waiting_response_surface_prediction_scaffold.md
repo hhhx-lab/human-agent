@@ -112,6 +112,14 @@ Packet D 必须读取这些已有对象：
 | 修复 | signal repair drive 或 memory write gate repair pressure | `预测输出姿态为修复` |
 | 保留 | prediction error 未消解或 stage effect 为 hold | `预测输出姿态为保留` |
 
+### dialogue event / writeback / resume
+
+prediction / write-gate 对象不能只影响等待姿态和一句回应文本。真实回合证据链必须继续保存：
+
+- `digital_life_turn`：写出 `prediction_write_gate_refs`、`prediction_waiting_posture`、`response_surface_posture_hint`、`prediction_attention_target`、`prediction_attention_reason`、`prediction_error_count`、`active_sampling_route`、`memory_write_gate_policy`、`state_merge_policy`。
+- `dialogue_writeback_bundle.json`：写出 `prediction_write_gate_refs`，让这批预测、主动采样、记忆写门和长期合并治理对象成为回合写回的一级证据。
+- `resumed_external_dialogue_packet.json`：保留同一组 prediction / write-gate 摘要，让下一轮恢复不必从回应文本反推上一轮的预测姿态。
+
 ### Report / Receipt
 
 `digital_life_process_report.json` 必须写出：
@@ -154,9 +162,10 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 
 1. `idle_strategy.py` 能直接断言 prediction/write-gate refs、waiting posture、response surface hint、heartbeat interval 与 next idle action。
 2. `response_surface.py` 能把确认 / 追问 / 修复 / 保留姿态释放成关系语言，不出现 `user` 核心抽象。
-3. `resident_supervision.py` 的 context 持有六个对象与六个 refs。
-4. `process_report.py` 的 report、digest、receipt 和 input hash 都能回链六个输入对象。
-5. `./digital life --strict` 的完整 process tests 仍能覆盖 waiting heartbeat、live turn、incident recovery、relaunch recovery、closeout 和 receipt。
+3. `dialogue_events.py`、`resident_turn_writeback.py` 与 `dialogue_writeback_bundle.json` 能把 prediction/write-gate refs 和姿态摘要带入 turn event、bundle 与 resumed packet。
+4. `resident_supervision.py` 的 context 持有六个对象与六个 refs。
+5. `process_report.py` 的 report、digest、receipt 和 input hash 都能回链六个输入对象。
+6. `./digital life --strict` 的完整 process tests 仍能覆盖 waiting heartbeat、live turn、incident recovery、relaunch recovery、closeout 和 receipt。
 
 ## 下一步衔接
 

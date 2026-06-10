@@ -3749,12 +3749,43 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 replay_cue_bundle=context.replay_cue_bundle,
                 offline_consolidation_frame=context.offline_consolidation_frame,
                 growth_patch_candidate_queue=context.growth_patch_candidate_queue,
+                signal_media_runtime={
+                    "schema_version": "signal_media_runtime_v0",
+                    "modulation_vector": {"repair_drive": "active"},
+                },
+                belief_state={
+                    "schema_version": "belief_state_frame_v0",
+                    "confidence_level": "unstable",
+                },
+                prediction_error_field={
+                    "schema_version": "prediction_error_field_v0",
+                    "error_events": [{"error_id": "prediction-error-001"}],
+                },
+                active_sampling_plan={
+                    "schema_version": "active_sampling_plan_v0",
+                    "selected_route": "clarify_with_relation_subject",
+                    "stage_effect": "hold_for_evidence",
+                },
+                memory_write_gate={
+                    "schema_version": "memory_write_gate_v0",
+                    "stage_policy": "write_guarded_candidate_then_validate",
+                },
+                state_merge_guard={
+                    "schema_version": "state_merge_guard_v0",
+                    "stage_policy": "long_term_merge_fail_closed",
+                },
                 source_doc_refs=[
                     "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
                 ],
                 readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
                 runtime_carrier_refs=["RunnerCliRuntime"],
                 replay_cue_bundle_ref=context.replay_cue_bundle_ref,
+                signal_media_runtime_ref="runtime/state/signal/signal_media_runtime.json",
+                belief_state_ref="runtime/state/prediction/belief_state_frame.json",
+                prediction_error_field_ref="runtime/state/prediction/prediction_error_field.json",
+                active_sampling_plan_ref="runtime/state/prediction/active_sampling_plan.json",
+                memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
+                state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
                 now_iso=lambda: "2026-06-10T00:00:00+00:00",
                 write_json=self._write_json,
                 append_jsonl=self._append_jsonl,
@@ -3822,6 +3853,25 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "governance_attention_target"
                 ],
                 "relationship_timeline",
+            )
+            self.assertEqual(
+                result.last_life_turn["prediction_waiting_posture"],
+                "hold_for_evidence",
+            )
+            self.assertEqual(
+                result.last_life_turn["response_surface_posture_hint"],
+                "question",
+            )
+            self.assertEqual(
+                result.last_life_turn["prediction_write_gate_refs"],
+                [
+                    "runtime/state/signal/signal_media_runtime.json",
+                    "runtime/state/prediction/belief_state_frame.json",
+                    "runtime/state/prediction/prediction_error_field.json",
+                    "runtime/state/prediction/active_sampling_plan.json",
+                    "runtime/state/memory/memory_write_gate.json",
+                    "runtime/state/memory/state_merge_guard.json",
+                ],
             )
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
@@ -3921,6 +3971,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
             )
             self.assertEqual(
+                dialogue_writeback_bundle["prediction_write_gate_refs"],
+                [
+                    "runtime/state/signal/signal_media_runtime.json",
+                    "runtime/state/prediction/belief_state_frame.json",
+                    "runtime/state/prediction/prediction_error_field.json",
+                    "runtime/state/prediction/active_sampling_plan.json",
+                    "runtime/state/memory/memory_write_gate.json",
+                    "runtime/state/memory/state_merge_guard.json",
+                ],
+            )
+            self.assertEqual(
                 resumed_dialogue_packet["background_trait_convergence_history_focus"],
                 "trait_stability_hold",
             )
@@ -3935,6 +3996,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["resident_background_lineage_evidence_refs"],
                 dialogue_writeback_bundle["resident_background_lineage_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["prediction_write_gate_refs"],
+                dialogue_writeback_bundle["prediction_write_gate_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["prediction_attention_reason"],
+                "selected_route_requires_relation_subject_clarification",
             )
 
     def test_live_turn_cycle_organ_recovers_from_response_exception(self):
@@ -6933,6 +7002,37 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     },
                 },
             },
+            signal_media_runtime={
+                "schema_version": "signal_media_runtime_v0",
+                "modulation_vector": {"repair_drive": "active"},
+            },
+            belief_state={
+                "schema_version": "belief_state_frame_v0",
+                "confidence_level": "unstable",
+            },
+            prediction_error_field={
+                "schema_version": "prediction_error_field_v0",
+                "error_events": [{"error_id": "prediction-error-001"}],
+            },
+            active_sampling_plan={
+                "schema_version": "active_sampling_plan_v0",
+                "selected_route": "clarify_with_relation_subject",
+                "stage_effect": "hold_for_evidence",
+            },
+            memory_write_gate={
+                "schema_version": "memory_write_gate_v0",
+                "stage_policy": "write_guarded_candidate_then_validate",
+            },
+            state_merge_guard={
+                "schema_version": "state_merge_guard_v0",
+                "stage_policy": "long_term_merge_fail_closed",
+            },
+            signal_media_runtime_ref="runtime/state/signal/signal_media_runtime.json",
+            belief_state_ref="runtime/state/prediction/belief_state_frame.json",
+            prediction_error_field_ref="runtime/state/prediction/prediction_error_field.json",
+            active_sampling_plan_ref="runtime/state/prediction/active_sampling_plan.json",
+            memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
+            state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
             responsibility_loop_state_ref="runtime/state/action/responsibility_loop_state.json",
             world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
             pain_regret_repair_report_ref="runtime/reports/latest/pain_regret_repair_report.json",
@@ -7016,6 +7116,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             [
                 "runtime/state/terminal/resident_governance_state.json",
                 "runtime/state/terminal/background_convergence_history.json",
+            ],
+        )
+        self.assertEqual(life_turn["prediction_waiting_posture"], "hold_for_evidence")
+        self.assertEqual(life_turn["response_surface_posture_hint"], "question")
+        self.assertEqual(life_turn["prediction_attention_target"], "active_sampling_plan")
+        self.assertEqual(life_turn["prediction_error_count"], 1)
+        self.assertEqual(
+            life_turn["active_sampling_route"],
+            "clarify_with_relation_subject",
+        )
+        self.assertEqual(
+            life_turn["memory_write_gate_policy"],
+            "write_guarded_candidate_then_validate",
+        )
+        self.assertEqual(life_turn["state_merge_policy"], "long_term_merge_fail_closed")
+        self.assertEqual(
+            life_turn["prediction_write_gate_refs"],
+            [
+                "runtime/state/signal/signal_media_runtime.json",
+                "runtime/state/prediction/belief_state_frame.json",
+                "runtime/state/prediction/prediction_error_field.json",
+                "runtime/state/prediction/active_sampling_plan.json",
+                "runtime/state/memory/memory_write_gate.json",
+                "runtime/state/memory/state_merge_guard.json",
             ],
         )
 
@@ -7792,6 +7916,37 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
                 runtime_carrier_refs=["RunnerCliRuntime"],
                 replay_cue_bundle_ref="runtime/state/replay/replay_cue_bundle.json",
+                signal_media_runtime={
+                    "schema_version": "signal_media_runtime_v0",
+                    "modulation_vector": {"repair_drive": "active"},
+                },
+                belief_state={
+                    "schema_version": "belief_state_frame_v0",
+                    "confidence_level": "unstable",
+                },
+                prediction_error_field={
+                    "schema_version": "prediction_error_field_v0",
+                    "error_events": [{"error_id": "prediction-error-001"}],
+                },
+                active_sampling_plan={
+                    "schema_version": "active_sampling_plan_v0",
+                    "selected_route": "clarify_with_relation_subject",
+                    "stage_effect": "hold_for_evidence",
+                },
+                memory_write_gate={
+                    "schema_version": "memory_write_gate_v0",
+                    "stage_policy": "write_guarded_candidate_then_validate",
+                },
+                state_merge_guard={
+                    "schema_version": "state_merge_guard_v0",
+                    "stage_policy": "long_term_merge_fail_closed",
+                },
+                signal_media_runtime_ref="runtime/state/signal/signal_media_runtime.json",
+                belief_state_ref="runtime/state/prediction/belief_state_frame.json",
+                prediction_error_field_ref="runtime/state/prediction/prediction_error_field.json",
+                active_sampling_plan_ref="runtime/state/prediction/active_sampling_plan.json",
+                memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
+                state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
                 responsibility_loop_state_ref="runtime/state/action/responsibility_loop_state.json",
                 world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
                 pain_regret_repair_report_ref="runtime/reports/latest/pain_regret_repair_report.json",
@@ -7988,12 +8143,31 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 dialogue_writeback_bundle["replay_cue_refs"],
             )
             self.assertEqual(
+                dialogue_writeback_bundle["prediction_write_gate_refs"],
+                [
+                    "runtime/state/signal/signal_media_runtime.json",
+                    "runtime/state/prediction/belief_state_frame.json",
+                    "runtime/state/prediction/prediction_error_field.json",
+                    "runtime/state/prediction/active_sampling_plan.json",
+                    "runtime/state/memory/memory_write_gate.json",
+                    "runtime/state/memory/state_merge_guard.json",
+                ],
+            )
+            self.assertEqual(
                 resumed_dialogue_packet["dialogue_writeback_bundle_ref"],
                 "runtime/reports/latest/dialogue_writeback_bundle.json",
             )
             self.assertEqual(
                 resumed_dialogue_packet["world_contact_summary_ref"],
                 "runtime/state/membrane/world_contact_summary.json",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["prediction_waiting_posture"],
+                "hold_for_evidence",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["prediction_write_gate_refs"],
+                dialogue_writeback_bundle["prediction_write_gate_refs"],
             )
 
     def test_digital_life_process_recovers_from_dialogue_turn_exception_and_returns_to_waiting_state(self):
