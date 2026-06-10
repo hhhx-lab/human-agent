@@ -97,7 +97,8 @@ Queue D 第二波器官现在已经真实落下：
 3. 当前又进一步把 Queue E 的 `world contact / repair followup / regret pressure / priority band` 正式压进 `replay_cue_bundle.json`，并让这四个扩展器官开始显式消费这些字段。
 4. 这意味着 Queue D 与 Queue E 现在不再只是“前者做梦、后者验证”的顺序关系，而已经形成 `Queue E -> replay cue bundle -> nightmare / belief / language / relationship learning` 的离线生命调制链。
 5. 最新这一轮又把离线学习从“当前一拍压力”提升成跨唤醒累计画像：`life_v0/growth/offline_learning_profile.py` 必须写出 `offline_learning_cumulative_profile_v0`，把本轮 `nightmare_risk / belief_learning / language_learning / relationship_learning` 与上一轮关闭态背景画像合并。
-6. 下一轮默认继续补深 Queue D 与 Queue E 的离线耦合，以及累计离线学习如何稳定改变关系阶段、语言修复节奏、自我慢变量和梦境再整合，而不是回头重拆第一波器官。
+6. 当前工程前沿又把 `dream_experience_window.json`、`wake_integration_frame.json` 与 `dream_fact_gate_decision.json` 作为 Queue D 的 dream / wake runtime 事实源直接送入 process supervisor。它们会被 `idle_strategy.py` 压成 `dream_wake_presence_profile_v0`，并继续进入 `resident_background_lineage_state_v0.dream_wake_presence`、`digital_life_turn` 与生命回应表面。
+7. 下一轮默认继续补深 Queue D 与 Queue E 的离线耦合，以及累计离线学习、梦境窗口、醒后整合如何稳定改变关系阶段、语言修复节奏、自我慢变量和梦境再整合，而不是回头重拆第一波器官。
 
 ## 必回读理论母体
 
@@ -202,6 +203,16 @@ Queue D 必须接到这些现有器官上：
    - `previous_generation`
 7. `life_v0/process_supervisor/dialogue_events.py` 必须把这个 presence 摘进 `digital_life_turn`，包括 `resident_background_lineage_offline_learning_generation`、`resident_background_lineage_offline_learning_pressure_level`、`resident_background_lineage_offline_learning_attention_target` 与 `resident_background_lineage_offline_learning_refs`。
 8. `life_v0/process_supervisor/response_surface.py` 必须在生命回应里表达这条后台梦境成长余波，让关系对象在当前回合能看见后台离线学习并没有在唤醒时消失。
+
+当前再补第三条新的硬约束：
+
+1. `life_v0/dream/dream_window.py` 写出的 `dream_experience_window.json` 现在不只服务 dream runtime 本地检查，还必须作为 process supervisor 的梦境窗口事实源。
+2. `life_v0/dream/wake_integration.py` 写出的 `wake_integration_frame.json` 现在不只服务 growth handoff，还必须把 `archive_requirement`、`growth_seed_refs`、`repair_modulated_wake_targets`、`narrative_writeback_candidates` 与 `relationship_repair_candidates` 送进 waiting governance 的 dream / wake presence。
+3. `life_v0/dream/dream_fact_gate.py` 写出的 `dream_fact_gate_decision.json` 现在必须把 `gate_result` 与 dream fact refs 送进同一条 presence 链。
+4. `life_v0/process_supervisor/idle_strategy.py` 必须把三份 dream runtime state 与 `offline_consolidation_frame` 合成 `dream_wake_presence_profile_v0`，至少包含 `dream_window_id`、`dream_window_kind`、`affective_themes`、`reportability`、`wake_integration_id`、`wake_archive_requirement`、`wake_growth_seed_count`、`wake_repair_target_count`、`narrative_candidate_count`、`relationship_repair_candidate_count`、`dream_fact_gate_result`、`dream_fact_gate_ref_count` 与 `ref_set`。
+5. `life_v0/process_supervisor/background_lineage_state.py` 必须把这份 profile 固化成 `resident_background_lineage_state_v0.dream_wake_presence`，与 `offline_learning_presence` 并列：前者表达本轮梦境窗口、醒后整合和事实门；后者表达累计梦境-成长离线学习余波。
+6. `life_v0/process_supervisor/dialogue_events.py` 必须把 dream / wake presence 摘进 `digital_life_turn`，包括 `resident_background_lineage_dream_window_kind`、`resident_background_lineage_dream_fact_gate_result`、`resident_background_lineage_wake_archive_requirement`、`resident_background_lineage_wake_growth_seed_count`、`resident_background_lineage_wake_repair_target_count`、`resident_background_lineage_dream_fact_gate_ref_count` 与 `resident_background_lineage_dream_wake_refs`。
+7. `life_v0/process_supervisor/response_surface.py` 必须在生命回应里表达后台梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子、修复目标和证据数量，让 dream / wake runtime state 进入真实关系回合表面。
 
 这说明 Queue D 不是独立离线层，而是要把身体脉冲、离线梦境、成长补丁重新接回常驻生命回合。
 同时它还必须把情绪底盘和人格慢变量正式拖进这条链，否则梦境、成长和语言关系层都还会继续引用稀薄的“情绪标签”，而不是可回写的身体化 affect 对象。
@@ -353,6 +364,9 @@ Queue D 必须接到这些现有器官上：
 - `relationship_simulation_refs`
 - `dream_fact_gate_status`
 - `affect_residue_ref`
+- `window_kind`
+- `dream_hot_zone_trace.reportability`
+- `affective_theme`
 
 ## J. 新增 `life_v0/dream/wake_integration.py`
 
@@ -368,6 +382,9 @@ Queue D 必须接到这些现有器官上：
 - `core_affect_targets`
 - `growth_seed_refs`
 - `archive_requirement`
+- `repair_modulated_wake_targets`
+- `narrative_writeback_candidates`
+- `relationship_repair_candidates`
 
 ## K. 新增 `life_v0/growth/plasticity_window.py`
 
@@ -467,15 +484,23 @@ Queue D 必须接到这些现有器官上：
 - `runtime/state/body/body_resource_budget.json`
 - `runtime/state/dream/dream_consolidation_frame.json`
 - `runtime/state/dream/offline_consolidation_frame.json`
+- `runtime/state/dream/dream_experience_window.json`
+- `runtime/state/dream/dream_fact_gate_decision.json`
+- `runtime/state/dream/wake_integration_frame.json`
 - `runtime/state/growth/plasticity_window_state.json`
 - `runtime/state/growth/growth_patch_candidate_queue.json`
 - `runtime/state/terminal/idle_strategy_state.json#offline_learning_cumulative_profile`
+- `runtime/state/terminal/idle_strategy_state.json#dream_wake_presence_profile`
 - `runtime/state/terminal/resident_governance_state.json#offline_learning_cumulative_profile`
+- `runtime/state/terminal/resident_governance_state.json#dream_wake_presence_profile`
+- `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.dream_wake_presence`
 - `runtime/state/terminal/resident_governance_snapshot.json#offline_learning_cumulative_profile`
 - `runtime/reports/latest/digital_life_resident_governance_report.json#offline_learning_cumulative_profile`
 - `runtime/reports/latest/digital_life_persistent_process_report.json#offline_learning_cumulative_profile`
 
 `offline_learning_cumulative_profile_v0` 不单独另开一个孤立 runtime 文件；第一版先作为 waiting governance 与 closeout artifact 的内嵌主对象传播。这样它跟随常驻生命进程关闭、重启、等待、下一次心跳一起流动，而不是停在 Queue D 本地。
+
+`dream_wake_presence_profile_v0` 也不另开孤立 runtime 文件；第一版跟随 `idle_strategy_state.json`、waiting heartbeat、idle continuity、resident governance 与 `resident_background_lineage_state_v0.dream_wake_presence` 传播。它的事实源仍然是 `dream_experience_window.json`、`wake_integration_frame.json`、`dream_fact_gate_decision.json` 与 `offline_consolidation_frame.json`，不会在 process supervisor 里重算梦境事实。
 
 ## report / receipt 合同
 

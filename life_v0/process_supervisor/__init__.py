@@ -117,6 +117,9 @@ def run_digital_life_process(
     apology_repair_language_trace = supervision.apology_repair_language_trace
     replay_cue_bundle = supervision.replay_cue_bundle
     offline_consolidation_frame = supervision.offline_consolidation_frame
+    dream_experience_window = supervision.dream_experience_window
+    wake_integration_frame = supervision.wake_integration_frame
+    dream_fact_gate_decision = supervision.dream_fact_gate_decision
     growth_patch_candidate_queue = supervision.growth_patch_candidate_queue
     nightmare_risk = supervision.nightmare_risk
     belief_learning_plan = supervision.belief_learning_plan
@@ -141,6 +144,9 @@ def run_digital_life_process(
     pain_regret_repair_report = supervision.pain_regret_repair_report
     replay_cue_bundle_ref = supervision.replay_cue_bundle_ref
     offline_consolidation_frame_ref = supervision.offline_consolidation_frame_ref
+    dream_experience_window_ref = supervision.dream_experience_window_ref
+    wake_integration_frame_ref = supervision.wake_integration_frame_ref
+    dream_fact_gate_decision_ref = supervision.dream_fact_gate_decision_ref
     growth_patch_candidate_queue_ref = supervision.growth_patch_candidate_queue_ref
     nightmare_risk_ref = supervision.nightmare_risk_ref
     belief_learning_plan_ref = supervision.belief_learning_plan_ref
@@ -202,6 +208,9 @@ def run_digital_life_process(
         apology_repair_language_trace=apology_repair_language_trace,
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
+        dream_experience_window=dream_experience_window,
+        wake_integration_frame=wake_integration_frame,
+        dream_fact_gate_decision=dream_fact_gate_decision,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
@@ -229,6 +238,9 @@ def run_digital_life_process(
         runtime_carrier_refs=RUNTIME_CARRIER_REFS,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
+        dream_experience_window_ref=dream_experience_window_ref,
+        wake_integration_frame_ref=wake_integration_frame_ref,
+        dream_fact_gate_decision_ref=dream_fact_gate_decision_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
         nightmare_risk_ref=nightmare_risk_ref,
         belief_learning_plan_ref=belief_learning_plan_ref,
@@ -306,6 +318,9 @@ def run_digital_life_process(
         apology_repair_language_trace=session_loop.apology_repair_language_trace,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
+        dream_experience_window_ref=dream_experience_window_ref,
+        wake_integration_frame_ref=wake_integration_frame_ref,
+        dream_fact_gate_decision_ref=dream_fact_gate_decision_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
         nightmare_risk_ref=nightmare_risk_ref,
         belief_learning_plan_ref=belief_learning_plan_ref,

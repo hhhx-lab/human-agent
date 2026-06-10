@@ -229,6 +229,40 @@ def compose_life_response(
                 response = f"{response}，后台梦境成长焦点指向{offline_target}"
             if offline_refs:
                 response = f"{response}，后台梦境成长证据保留{len(offline_refs)}条"
+        dream_wake_presence = resident_background_lineage_state.get(
+            "dream_wake_presence"
+        )
+        if isinstance(dream_wake_presence, dict):
+            dream_kind = dream_wake_presence.get("dream_window_kind")
+            gate_result = dream_wake_presence.get("dream_fact_gate_result")
+            wake_archive_requirement = dream_wake_presence.get(
+                "wake_archive_requirement"
+            )
+            wake_growth_seed_count = dream_wake_presence.get(
+                "wake_growth_seed_count"
+            )
+            wake_repair_target_count = dream_wake_presence.get(
+                "wake_repair_target_count"
+            )
+            dream_wake_refs = list(dream_wake_presence.get("ref_set", []))
+            if dream_kind:
+                response = f"{response}，后台梦境窗口类型为{dream_kind}"
+            if gate_result:
+                response = f"{response}，梦境事实门结果为{gate_result}"
+            if wake_archive_requirement:
+                response = (
+                    f"{response}，醒后整合归档要求为{wake_archive_requirement}"
+                )
+            if wake_growth_seed_count:
+                response = (
+                    f"{response}，醒后整合携带{wake_growth_seed_count}条成长种子"
+                )
+            if wake_repair_target_count:
+                response = (
+                    f"{response}，醒后修复目标保留{wake_repair_target_count}条"
+                )
+            if dream_wake_refs:
+                response = f"{response}，后台梦境醒后证据保留{len(dream_wake_refs)}条"
     background_trait_history_focus = (terminal_life_loop_state or {}).get(
         "background_trait_convergence_history_focus"
     )

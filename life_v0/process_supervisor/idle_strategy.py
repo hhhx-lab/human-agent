@@ -28,6 +28,9 @@ METACOGNITION_STATE_REF = "runtime/state/consciousness/metacognition_state.json"
 CONSCIOUSNESS_PROBE_REF = "runtime/state/consciousness/consciousness_probe_bundle.json"
 BIRTH_READINESS_ROLLUP_REF = "runtime/state/life_targets/birth_readiness_rollup.json"
 BIRTH_READINESS_STAGE_GATE_REF = "runtime/state/life_targets/birth_readiness_stage_gate.json"
+DREAM_EXPERIENCE_WINDOW_REF = "runtime/state/dream/dream_experience_window.json"
+WAKE_INTEGRATION_FRAME_REF = "runtime/state/dream/wake_integration_frame.json"
+DREAM_FACT_GATE_DECISION_REF = "runtime/state/dream/dream_fact_gate_decision.json"
 IDLE_GOVERNANCE_FIELD_NAMES = (
     "heartbeat_interval_ms",
     "idle_heartbeat_trace_ref",
@@ -55,6 +58,21 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "regret_pressure_count",
     "queue_e_priority_band",
     "nightmare_risk_ref",
+    "dream_experience_window_ref",
+    "wake_integration_frame_ref",
+    "dream_fact_gate_decision_ref",
+    "dream_wake_presence_profile",
+    "dream_window_id",
+    "dream_window_kind",
+    "dream_affective_themes",
+    "dream_reportability",
+    "dream_fact_gate_result",
+    "dream_fact_gate_ref_count",
+    "wake_integration_id",
+    "wake_integration_archive_requirement",
+    "wake_integration_growth_seed_count",
+    "wake_integration_repair_target_count",
+    "dream_wake_ref_set",
     "belief_learning_plan_ref",
     "language_learning_plan_ref",
     "relationship_learning_plan_ref",
@@ -184,6 +202,9 @@ def decide_idle_strategy(
     need_state_vector: dict[str, Any] | None = None,
     replay_cue_bundle: dict[str, Any] | None,
     offline_consolidation_frame: dict[str, Any] | None,
+    dream_experience_window: dict[str, Any] | None = None,
+    wake_integration_frame: dict[str, Any] | None = None,
+    dream_fact_gate_decision: dict[str, Any] | None = None,
     growth_patch_candidate_queue: dict[str, Any] | None,
     responsibility_loop_state: dict[str, Any] | None = None,
     world_contact_summary: dict[str, Any] | None = None,
@@ -208,6 +229,9 @@ def decide_idle_strategy(
     birth_readiness_stage_gate: dict[str, Any] | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
+    dream_experience_window_ref: str | None = None,
+    wake_integration_frame_ref: str | None = None,
+    dream_fact_gate_decision_ref: str | None = None,
     growth_patch_candidate_queue_ref: str | None = None,
     nightmare_risk_ref: str | None = None,
     belief_learning_plan_ref: str | None = None,
@@ -436,6 +460,28 @@ def decide_idle_strategy(
         payload=birth_readiness_stage_gate,
         ref=birth_readiness_stage_gate_ref or BIRTH_READINESS_STAGE_GATE_REF,
     )
+    dream_experience_window_runtime_ref = _ref_if_present(
+        payload=dream_experience_window,
+        ref=dream_experience_window_ref or DREAM_EXPERIENCE_WINDOW_REF,
+    )
+    wake_integration_frame_runtime_ref = _ref_if_present(
+        payload=wake_integration_frame,
+        ref=wake_integration_frame_ref or WAKE_INTEGRATION_FRAME_REF,
+    )
+    dream_fact_gate_decision_runtime_ref = _ref_if_present(
+        payload=dream_fact_gate_decision,
+        ref=dream_fact_gate_decision_ref or DREAM_FACT_GATE_DECISION_REF,
+    )
+    dream_wake_presence_profile = _dream_wake_presence_profile(
+        offline_consolidation_frame=offline_consolidation_frame,
+        dream_experience_window=dream_experience_window,
+        wake_integration_frame=wake_integration_frame,
+        dream_fact_gate_decision=dream_fact_gate_decision,
+        offline_consolidation_frame_ref=offline_consolidation_frame_ref,
+        dream_experience_window_ref=dream_experience_window_runtime_ref,
+        wake_integration_frame_ref=wake_integration_frame_runtime_ref,
+        dream_fact_gate_decision_ref=dream_fact_gate_decision_runtime_ref,
+    )
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_ref=signal_media_ref,
         belief_state_ref=belief_state_runtime_ref,
@@ -538,6 +584,35 @@ def decide_idle_strategy(
         "regret_pressure_count": regret_pressure_count,
         "queue_e_priority_band": queue_e_priority_band,
         "nightmare_risk_ref": nightmare_risk_ref if nightmare_risk else None,
+        "dream_experience_window_ref": dream_experience_window_runtime_ref,
+        "wake_integration_frame_ref": wake_integration_frame_runtime_ref,
+        "dream_fact_gate_decision_ref": dream_fact_gate_decision_runtime_ref,
+        "dream_wake_presence_profile": dream_wake_presence_profile,
+        "dream_window_id": dream_wake_presence_profile.get("dream_window_id"),
+        "dream_window_kind": dream_wake_presence_profile.get("dream_window_kind"),
+        "dream_affective_themes": dream_wake_presence_profile.get(
+            "affective_themes", []
+        ),
+        "dream_reportability": dream_wake_presence_profile.get("reportability"),
+        "dream_fact_gate_result": dream_wake_presence_profile.get(
+            "dream_fact_gate_result"
+        ),
+        "dream_fact_gate_ref_count": dream_wake_presence_profile.get(
+            "dream_fact_gate_ref_count"
+        ),
+        "wake_integration_id": dream_wake_presence_profile.get(
+            "wake_integration_id"
+        ),
+        "wake_integration_archive_requirement": dream_wake_presence_profile.get(
+            "wake_archive_requirement"
+        ),
+        "wake_integration_growth_seed_count": dream_wake_presence_profile.get(
+            "wake_growth_seed_count"
+        ),
+        "wake_integration_repair_target_count": dream_wake_presence_profile.get(
+            "wake_repair_target_count"
+        ),
+        "dream_wake_ref_set": dream_wake_presence_profile.get("ref_set", []),
         "belief_learning_plan_ref": belief_learning_plan_ref if belief_learning_plan else None,
         "language_learning_plan_ref": language_learning_plan_ref if language_learning_plan else None,
         "relationship_learning_plan_ref": (
@@ -667,6 +742,88 @@ def decide_idle_strategy(
             background_lineage_governance_profile["evidence_ref_count"]
         )
     return payload
+
+
+def _dream_wake_presence_profile(
+    *,
+    offline_consolidation_frame: dict[str, Any] | None,
+    dream_experience_window: dict[str, Any] | None,
+    wake_integration_frame: dict[str, Any] | None,
+    dream_fact_gate_decision: dict[str, Any] | None,
+    offline_consolidation_frame_ref: str | None,
+    dream_experience_window_ref: str | None,
+    wake_integration_frame_ref: str | None,
+    dream_fact_gate_decision_ref: str | None,
+) -> dict[str, Any]:
+    if not any(
+        [
+            offline_consolidation_frame,
+            dream_experience_window,
+            wake_integration_frame,
+            dream_fact_gate_decision,
+        ]
+    ):
+        return {}
+
+    dream_hot_zone_trace = (dream_experience_window or {}).get(
+        "dream_hot_zone_trace",
+        {},
+    )
+    reportability = None
+    if isinstance(dream_hot_zone_trace, dict):
+        reportability = dream_hot_zone_trace.get("reportability")
+
+    ref_set = _dedupe_string_list(
+        [
+            ref
+            for ref in [
+                offline_consolidation_frame_ref,
+                dream_experience_window_ref,
+                wake_integration_frame_ref,
+                dream_fact_gate_decision_ref,
+            ]
+            if ref
+        ]
+    )
+    dream_fact_refs = _string_list(
+        (offline_consolidation_frame or {}).get("dream_fact_gate_refs")
+    )
+    wake_seed_refs = _string_list(
+        (wake_integration_frame or {}).get("growth_seed_refs")
+    )
+    wake_repair_targets = _string_list(
+        (wake_integration_frame or {}).get("repair_modulated_wake_targets")
+    )
+    narrative_candidates = _string_list(
+        (wake_integration_frame or {}).get("narrative_writeback_candidates")
+    )
+    relationship_candidates = _string_list(
+        (wake_integration_frame or {}).get("relationship_repair_candidates")
+    )
+    return {
+        "schema_version": "dream_wake_presence_profile_v0",
+        "dream_window_id": (dream_experience_window or {}).get("dream_window_id"),
+        "dream_window_kind": (dream_experience_window or {}).get("window_kind"),
+        "affective_themes": _string_list(
+            (dream_experience_window or {}).get("affective_theme")
+        ),
+        "reportability": reportability,
+        "wake_integration_id": (wake_integration_frame or {}).get(
+            "wake_integration_id"
+        ),
+        "wake_archive_requirement": (wake_integration_frame or {}).get(
+            "archive_requirement"
+        ),
+        "wake_growth_seed_count": len(wake_seed_refs),
+        "wake_repair_target_count": len(wake_repair_targets),
+        "narrative_candidate_count": len(narrative_candidates),
+        "relationship_repair_candidate_count": len(relationship_candidates),
+        "dream_fact_gate_result": (dream_fact_gate_decision or {}).get(
+            "gate_result"
+        ),
+        "dream_fact_gate_ref_count": len(dream_fact_refs),
+        "ref_set": ref_set,
+    }
 
 
 def _next_heartbeat_counter(

@@ -95,6 +95,9 @@ def build_resident_background_lineage_state(
     offline_learning_presence = _offline_learning_presence(governance)
     if offline_learning_presence:
         lineage_state["offline_learning_presence"] = offline_learning_presence
+    dream_wake_presence = _dream_wake_presence(governance)
+    if dream_wake_presence:
+        lineage_state["dream_wake_presence"] = dream_wake_presence
     return {
         key: value
         for key, value in lineage_state.items()
@@ -352,6 +355,79 @@ def _offline_learning_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "ref_set": ref_set,
             "current_pressure_level": current_pressure_level,
             "previous_generation": previous_generation,
+        }
+    )
+
+
+def _dream_wake_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    profile = _dict_or_empty(governance.get("dream_wake_presence_profile"))
+    ref_set = _string_list(governance.get("dream_wake_ref_set") or profile.get("ref_set"))
+    dream_affective_themes = _string_list(
+        governance.get("dream_affective_themes")
+        or profile.get("affective_themes")
+    )
+    dream_window_id = governance.get("dream_window_id") or profile.get(
+        "dream_window_id"
+    )
+    dream_window_kind = governance.get("dream_window_kind") or profile.get(
+        "dream_window_kind"
+    )
+    wake_integration_id = governance.get("wake_integration_id") or profile.get(
+        "wake_integration_id"
+    )
+    dream_fact_gate_result = governance.get("dream_fact_gate_result") or profile.get(
+        "dream_fact_gate_result"
+    )
+    if (
+        not profile
+        and not ref_set
+        and not dream_affective_themes
+        and not dream_window_id
+        and not wake_integration_id
+        and not dream_fact_gate_result
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "dream_window_ref": governance.get("dream_experience_window_ref"),
+            "wake_integration_ref": governance.get("wake_integration_frame_ref"),
+            "dream_fact_gate_decision_ref": governance.get(
+                "dream_fact_gate_decision_ref"
+            ),
+            "dream_window_id": dream_window_id,
+            "dream_window_kind": dream_window_kind,
+            "affective_themes": dream_affective_themes,
+            "reportability": governance.get("dream_reportability")
+            if governance.get("dream_reportability") is not None
+            else profile.get("reportability"),
+            "wake_integration_id": wake_integration_id,
+            "wake_archive_requirement": governance.get(
+                "wake_integration_archive_requirement"
+            )
+            or profile.get("wake_archive_requirement"),
+            "wake_growth_seed_count": _int_or_zero(
+                governance.get("wake_integration_growth_seed_count")
+                if governance.get("wake_integration_growth_seed_count") is not None
+                else profile.get("wake_growth_seed_count")
+            ),
+            "wake_repair_target_count": _int_or_zero(
+                governance.get("wake_integration_repair_target_count")
+                if governance.get("wake_integration_repair_target_count") is not None
+                else profile.get("wake_repair_target_count")
+            ),
+            "dream_fact_gate_result": dream_fact_gate_result,
+            "dream_fact_gate_ref_count": _int_or_zero(
+                governance.get("dream_fact_gate_ref_count")
+                if governance.get("dream_fact_gate_ref_count") is not None
+                else profile.get("dream_fact_gate_ref_count")
+            ),
+            "narrative_candidate_count": _int_or_zero(
+                profile.get("narrative_candidate_count")
+            ),
+            "relationship_repair_candidate_count": _int_or_zero(
+                profile.get("relationship_repair_candidate_count")
+            ),
+            "ref_set": ref_set,
         }
     )
 

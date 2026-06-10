@@ -45,6 +45,9 @@ def write_waiting_heartbeat(
     runtime_carrier_refs: list[str],
     replay_cue_bundle: dict[str, Any] | None = None,
     offline_consolidation_frame: dict[str, Any] | None = None,
+    dream_experience_window: dict[str, Any] | None = None,
+    wake_integration_frame: dict[str, Any] | None = None,
+    dream_fact_gate_decision: dict[str, Any] | None = None,
     growth_patch_candidate_queue: dict[str, Any] | None = None,
     nightmare_risk: dict[str, Any] | None = None,
     belief_learning_plan: dict[str, Any] | None = None,
@@ -66,6 +69,9 @@ def write_waiting_heartbeat(
     birth_readiness_stage_gate: dict[str, Any] | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
+    dream_experience_window_ref: str | None = None,
+    wake_integration_frame_ref: str | None = None,
+    dream_fact_gate_decision_ref: str | None = None,
     growth_patch_candidate_queue_ref: str | None = None,
     nightmare_risk_ref: str | None = None,
     belief_learning_plan_ref: str | None = None,
@@ -126,6 +132,9 @@ def write_waiting_heartbeat(
         need_state_vector=need_state_vector,
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
+        dream_experience_window=dream_experience_window,
+        wake_integration_frame=wake_integration_frame,
+        dream_fact_gate_decision=dream_fact_gate_decision,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
         responsibility_loop_state=responsibility_loop_state,
         world_contact_summary=world_contact_summary,
@@ -150,6 +159,9 @@ def write_waiting_heartbeat(
         birth_readiness_stage_gate=birth_readiness_stage_gate,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
+        dream_experience_window_ref=dream_experience_window_ref,
+        wake_integration_frame_ref=wake_integration_frame_ref,
+        dream_fact_gate_decision_ref=dream_fact_gate_decision_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
         nightmare_risk_ref=nightmare_risk_ref,
         belief_learning_plan_ref=belief_learning_plan_ref,
@@ -271,6 +283,21 @@ def write_waiting_heartbeat(
         "background_lineage_evidence_ref_count",
         "background_resident_lineage_state",
         "resident_background_lineage_state",
+        "dream_experience_window_ref",
+        "wake_integration_frame_ref",
+        "dream_fact_gate_decision_ref",
+        "dream_wake_presence_profile",
+        "dream_window_id",
+        "dream_window_kind",
+        "dream_affective_themes",
+        "dream_reportability",
+        "dream_fact_gate_result",
+        "dream_fact_gate_ref_count",
+        "wake_integration_id",
+        "wake_integration_archive_requirement",
+        "wake_integration_growth_seed_count",
+        "wake_integration_repair_target_count",
+        "dream_wake_ref_set",
         "background_idle_heartbeat_trace_ref",
         "background_idle_heartbeat_trace_count",
         "long_horizon_language_refs",
@@ -355,6 +382,12 @@ def write_waiting_heartbeat(
         apology_repair_language_trace_ref=idle_strategy.get("apology_repair_language_trace_ref"),
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
+        dream_experience_window_ref=idle_strategy.get("dream_experience_window_ref"),
+        wake_integration_frame_ref=idle_strategy.get("wake_integration_frame_ref"),
+        dream_fact_gate_decision_ref=idle_strategy.get(
+            "dream_fact_gate_decision_ref"
+        ),
+        dream_wake_presence_profile=idle_strategy.get("dream_wake_presence_profile"),
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
         nightmare_risk_ref=nightmare_risk_ref,
         belief_learning_plan_ref=belief_learning_plan_ref,
@@ -515,6 +548,10 @@ def write_waiting_heartbeat(
         resident_governance_state["resident_background_lineage_state"] = (
             resident_background_lineage_state
         )
+        terminal_life_loop_state["resident_background_lineage_state"] = (
+            resident_background_lineage_state
+        )
+        write_json(terminal_dir / "terminal_life_loop_state.json", terminal_life_loop_state)
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     write_json(terminal_dir / "idle_strategy_state.json", idle_strategy)
     write_json(reports_dir / "digital_life_waiting_heartbeat.json", heartbeat_packet)
@@ -562,6 +599,7 @@ def _append_idle_heartbeat_trace(
             idle_strategy.get("long_horizon_language_refs", [])
         ),
         "replay_seed_refs": list(idle_continuity_frame.get("replay_seed_refs", [])),
+        "dream_wake_ref_set": list(idle_strategy.get("dream_wake_ref_set", [])),
         "membrane_guard_refs": list(membrane_guard_refs),
     }
     trace_path = terminal_dir / "idle_heartbeat_trace.jsonl"

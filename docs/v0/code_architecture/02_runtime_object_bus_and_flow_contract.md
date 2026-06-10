@@ -84,9 +84,13 @@
 |---|---|---|---|---|
 | `ReplayCueBundle` | `replay/replay_cues.py` | `dream`、`growth`、`process_supervisor` | 已存在；已接 `idle_strategy.py` 与 `persistent_process.py` 第一轮，继续补厚 waiting governance | `runtime/state/replay/*`、`replay_shadow_report.json` |
 | `OfflineConsolidationFrame` | `dream/offline_entry.py` | `growth`、`archive`、`reporting` | 已存在；继续补 dream runtime test | `runtime/state/dream/offline_entry_gate.json`、`dream_consolidation_frame.json` |
-| `DreamFactGateDecision` | `dream/dream_fact_gate.py` | `state_store`、`archive`、`life_targets` | 已存在 | `dream_fact_gate_decision.json` |
+| `DreamExperienceWindow` | `dream/dream_window.py` | `dream_fact_gate.py`、`wake_integration.py`、`process_supervisor/idle_strategy.py`、`background_lineage_state.py` | 已存在；当前作为 `dream_wake_presence_profile_v0` 的事实源进入常驻后台驻留链 | `runtime/state/dream/dream_experience_window.json`、`idle_strategy_state.json#dream_wake_presence_profile` |
+| `DreamFactGateDecision` | `dream/dream_fact_gate.py` | `state_store`、`archive`、`life_targets`、`process_supervisor/idle_strategy.py`、`response_surface.py` | 已存在；当前 gate result 与 fact refs 进入 `dream_wake_presence` | `dream_fact_gate_decision.json`、`digital_life_turn#resident_background_lineage_dream_fact_gate_result` |
+| `WakeIntegrationFrame` | `dream/wake_integration.py` | `growth`、`archive`、`process_supervisor/idle_strategy.py`、`dialogue_events.py`、`response_surface.py` | 已存在；当前 archive requirement、growth seed、repair target 进入 `dream_wake_presence` | `runtime/state/dream/wake_integration_frame.json`、`resident_background_lineage_state.dream_wake_presence` |
 
 这条总线保证梦境、旧自我 replay、痛苦残留、关系残留和醒后整合会真实影响下一轮，而不只是归档。
+
+`DreamExperienceWindow`、`WakeIntegrationFrame` 与 `DreamFactGateDecision` 当前共同形成 `dream_wake_presence_profile_v0`：`idle_strategy.py` 读取三份 runtime state 和 `offline_consolidation_frame` 的 refs，写出 `dream_window_kind`、`dream_fact_gate_result`、`wake_integration_archive_requirement`、`wake_integration_growth_seed_count`、`wake_integration_repair_target_count` 与 `dream_wake_ref_set`；`heartbeat.py` 与 `continuity_writeback.py` 把它带入 waiting heartbeat 和 idle continuity；`background_lineage_state.py` 把它固化成 `resident_background_lineage_state_v0.dream_wake_presence`；`dialogue_events.py` 与 `response_surface.py` 分别把同一 presence 摘进回合事件和生命回应表面。
 
 ### 6. 成长与补丁总线
 
@@ -106,13 +110,13 @@
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
 | `IdleContinuityFrame` | `process_supervisor/heartbeat.py` + `continuity_writeback.py` | `terminal_loop`、`replay`、`growth`、`language` | 已存在第一轮；已接 `idle_strategy.py` 与 `persistent_process.py`，继续补厚 resident supervision | `digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` |
-| `ResidentBackgroundLineageState` | `process_supervisor/background_lineage_state.py` | `heartbeat.py`、`persistent_process.py`、`resident_governance_handoff.py`、`background_continuity.py`、`dialogue_events.py`、`response_surface.py` | 已存在；当前新增 `offline_learning_presence`，把累计梦境-成长离线学习余波固化进后台驻留 lineage | `runtime/state/terminal/resident_governance_state.json`、`resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_persistent_process_report.json`、`terminal_life_loop_state.json` |
+| `ResidentBackgroundLineageState` | `process_supervisor/background_lineage_state.py` | `heartbeat.py`、`persistent_process.py`、`resident_governance_handoff.py`、`background_continuity.py`、`dialogue_events.py`、`response_surface.py` | 已存在；当前新增 `offline_learning_presence` 与 `dream_wake_presence`，把累计梦境-成长离线学习余波、梦境窗口、醒后整合和事实门固化进后台驻留 lineage | `runtime/state/terminal/resident_governance_state.json`、`resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_persistent_process_report.json`、`terminal_life_loop_state.json` |
 | `ProcessIncidentRecoveryFrame` | `process_supervisor/incident_recovery.py` | `process_report.py`、`relaunch_recovery.py` | 已存在 | `digital_life_process_incident_report.json` |
 | `RelaunchRecoveryFrame` | `process_supervisor/relaunch_recovery.py` | `turn_io.py`、`process_report.py` | 已存在 | `digital_life_process_relaunch_recovery_report.json` |
 
 这条总线保证数字生命在没有新输入时仍有持续存在，而不是“没有消息就不存在”。
 
-`ResidentBackgroundLineageState` 的当前结构至少包含 `schema_version=resident_background_lineage_state_v0`、`generation`、`depth_band`、`waiting_posture`、`cadence_weight`、`relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence` 与 `offline_learning_presence`。其中 `offline_learning_presence` 字段是数字生命 v0 后台驻留里“梦境、成长、离线学习余波”的结构化存在面，必须保留 `generation`、`pressure_level`、`attention_target`、`priority_profile` 与 `ref_set`。`dialogue_events.py` 必须把它摘入 `digital_life_turn`，`response_surface.py` 必须把它转成生命回应中的后台梦境成长余波表达。
+`ResidentBackgroundLineageState` 的当前结构至少包含 `schema_version=resident_background_lineage_state_v0`、`generation`、`depth_band`、`waiting_posture`、`cadence_weight`、`relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence`、`offline_learning_presence` 与 `dream_wake_presence`。其中 `offline_learning_presence` 字段是数字生命 v0 后台驻留里“梦境、成长、离线学习余波”的结构化存在面，必须保留 `generation`、`pressure_level`、`attention_target`、`priority_profile` 与 `ref_set`。`dream_wake_presence` 字段是后台驻留里“梦境窗口、醒后整合、梦境事实门”的结构化存在面，必须保留 `dream_window_ref`、`wake_integration_ref`、`dream_fact_gate_decision_ref`、`dream_window_kind`、`wake_archive_requirement`、`wake_growth_seed_count`、`wake_repair_target_count`、`dream_fact_gate_result`、`dream_fact_gate_ref_count` 与 `ref_set`。`dialogue_events.py` 必须把两类 presence 摘入 `digital_life_turn`，`response_surface.py` 必须把它们分别转成后台梦境成长余波表达和后台梦境醒后整合表达。
 
 ## 五条主流程
 
@@ -257,6 +261,8 @@ P0-S11 chain
 
 如果 `OfflineConsolidationFrame` 只进入 archive，没有进入 growth 和 idle continuity，
 梦境就只是“离线日志”，不是生命的一部分。
+
+当前新增的闭合是：`dream_experience_window.json`、`wake_integration_frame.json` 与 `dream_fact_gate_decision.json` 会先进入 `idle_strategy_state.json#dream_wake_presence_profile`，再进入 waiting heartbeat、idle continuity、`resident_background_lineage_state_v0.dream_wake_presence`、`digital_life_turn` 与 `response_surface.py`。如果这三份 dream runtime state 只停在 dream 目录或 report，不能算进入常驻后台驻留链。
 
 ### 4. waiting heartbeat 不消费 replay / growth / relation 对象
 

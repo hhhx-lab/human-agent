@@ -214,6 +214,7 @@ def build_resident_background_lineage_payload(
         "heartbeat_presence",
         "language_presence",
         "offline_learning_presence",
+        "dream_wake_presence",
     ):
         presence = lineage_state.get(key)
         if isinstance(presence, dict) and presence:
@@ -238,6 +239,32 @@ def build_resident_background_lineage_payload(
         if offline_refs:
             payload["resident_background_lineage_offline_learning_refs"] = offline_refs
             lineage_refs.extend(offline_refs)
+    dream_wake_presence = lineage_state.get("dream_wake_presence")
+    if isinstance(dream_wake_presence, dict):
+        for source_key, target_key in (
+            ("dream_window_kind", "resident_background_lineage_dream_window_kind"),
+            ("dream_fact_gate_result", "resident_background_lineage_dream_fact_gate_result"),
+            ("wake_archive_requirement", "resident_background_lineage_wake_archive_requirement"),
+        ):
+            value = dream_wake_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        for source_key, target_key in (
+            ("wake_growth_seed_count", "resident_background_lineage_wake_growth_seed_count"),
+            ("wake_repair_target_count", "resident_background_lineage_wake_repair_target_count"),
+            ("dream_fact_gate_ref_count", "resident_background_lineage_dream_fact_gate_ref_count"),
+        ):
+            value = dream_wake_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        dream_wake_refs = _dedupe_string_list(
+            _string_list(dream_wake_presence.get("ref_set"))
+        )
+        if dream_wake_refs:
+            payload["resident_background_lineage_dream_wake_refs"] = (
+                dream_wake_refs
+            )
+            lineage_refs.extend(dream_wake_refs)
     if lineage_refs:
         payload["resident_background_lineage_evidence_refs"] = _dedupe_string_list(
             lineage_refs

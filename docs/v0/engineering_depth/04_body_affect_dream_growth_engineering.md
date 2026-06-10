@@ -84,6 +84,18 @@ S06 body/affect
   -> digital life turn
 ```
 
+本轮 dream / wake 侧也已经进入同一条常驻过程链：
+
+```text
+dream_experience_window / wake_integration_frame / dream_fact_gate_decision
+  -> resident supervision context
+  -> idle strategy dream_wake_presence_profile
+  -> resident background lineage dream_wake_presence
+  -> digital life turn / response surface
+```
+
+这表示梦境窗口、醒后整合和梦境事实门不再只停在 Queue D runtime state 或 dream report；它们已经成为 waiting governance、后台驻留 lineage 和真实回应表面都能消费的对象。
+
 ## 本轮新增的 Queue E 离线接线
 
 这轮又把 Queue E 的责任/世界接触/痛苦修复压力真正接进了离线生命链：
@@ -135,6 +147,30 @@ nightmare_risk / belief_learning / language_learning / relationship_learning
 2. turn event：`dialogue_events.py` 的 `digital_life_turn` 会写入 `resident_background_lineage_offline_learning_presence`、generation、pressure、attention target 和 refs
 3. response surface：`response_surface.py` 会表达后台梦境成长余波的代际、压力、焦点和证据数量
 
+## 梦境窗口、醒后整合与事实门进入后台驻留
+
+当前实现继续把梦境链的三个关键对象接进常驻过程：
+
+1. `runtime/state/dream/dream_experience_window.json` 提供 `dream_window_id`、`window_kind`、`affective_theme` 与 `dream_hot_zone_trace.reportability`
+2. `runtime/state/dream/wake_integration_frame.json` 提供 `wake_integration_id`、`archive_requirement`、`growth_seed_refs`、`repair_modulated_wake_targets`、`narrative_writeback_candidates` 与 `relationship_repair_candidates`
+3. `runtime/state/dream/dream_fact_gate_decision.json` 提供 `gate_result`
+
+`process_supervisor/idle_strategy.py` 会把它们压成 `dream_wake_presence_profile_v0`，并写出：
+
+1. `dream_experience_window_ref`
+2. `wake_integration_frame_ref`
+3. `dream_fact_gate_decision_ref`
+4. `dream_window_kind`
+5. `dream_fact_gate_result`
+6. `wake_integration_archive_requirement`
+7. `wake_integration_growth_seed_count`
+8. `wake_integration_repair_target_count`
+9. `dream_wake_ref_set`
+
+随后 `heartbeat.py`、`continuity_writeback.py` 与 `background_lineage_state.py` 会把这组字段继续挂进 `resident_background_lineage_state_v0.dream_wake_presence`。`dialogue_events.py` 会把 dream window kind、fact gate result、wake archive requirement、growth seed count、repair target count 和 dream wake refs 摘进 `digital_life_turn`。`response_surface.py` 会在生命回应里表达后台梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子、修复目标和证据数量。
+
+所以当前 body / affect / dream / growth 链已经有两条并行进入常驻后台的表达面：`offline_learning_presence` 表示累计离线学习余波，`dream_wake_presence` 表示本轮梦境窗口和醒后整合事实。两者共同让梦境与成长不再是离线报告，而是可以进入等待态、回合事件和回应表面的生命连续体。
+
 ## 最低测试和下一轮测试
 
 当前最低测试：
@@ -152,6 +188,7 @@ nightmare_risk / belief_learning / language_learning / relationship_learning
 3. `heartbeat_interval_ms` 与 `next_idle_action` 会随 fatigue / bandwidth / sleep pressure / repair drive 变化。
 4. `tests/bridges/test_runtime_growth.py` 现在又新增守护：Queue E priority band 必须真实调制 `nightmare_risk / belief_learning / language_learning / relationship_learning`。
 5. `tests/process/test_persistent_digital_life_process.py` 当前还继续守护：累计离线学习压力必须进入 `resident_background_lineage_state_v0.offline_learning_presence`，并在 `digital_life_turn` 与 response surface 中可见。
+6. `tests/process/test_persistent_digital_life_process.py` 当前还继续守护：`dream_experience_window.json`、`wake_integration_frame.json` 与 `dream_fact_gate_decision.json` 必须进入 `dream_wake_presence_profile_v0`、`resident_background_lineage_state_v0.dream_wake_presence`、`digital_life_turn` 与 response surface。
 
 下一轮应新增：
 

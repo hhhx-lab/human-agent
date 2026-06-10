@@ -25,8 +25,8 @@ life-v0 emit-report --strict
 5. `life_v0/process_supervisor/process_closeout.py` 与 `process_report.py` 已把 resident governance 证据收口进主进程 report / digest / receipt
 6. `life_v0/process_supervisor/continuity_evolution.py` 已开始在回合尾部把关系时间线、Queue E 修复压力、Queue D 离线学习压力与 continuity / trust 轨迹压成关系阶段和自我慢变量
 7. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排，并开始在 live turn 之后重新装回长期关系/语言对象以及最新 `self_model_state`；当前前沿转向后台 resident governance、跨进程持久化与更高频节律
-8. `life_v0/process_supervisor/background_lineage_state.py` 已把关闭态/等待态的 resident governance lineage 压成 `resident_background_lineage_state_v0`，当前新增的 `offline_learning_presence` 明确承载后台驻留里的梦境、成长、离线学习余波
-9. `life_v0/process_supervisor/dialogue_events.py` 与 `response_surface.py` 已开始分别把 `offline_learning_presence` 写进 `digital_life_turn` 和生命回应文本
+8. `life_v0/process_supervisor/background_lineage_state.py` 已把关闭态/等待态的 resident governance lineage 压成 `resident_background_lineage_state_v0`，当前新增的 `offline_learning_presence` 明确承载后台驻留里的梦境、成长、离线学习余波，`dream_wake_presence` 明确承载后台驻留里的梦境窗口、醒后整合与梦境事实门
+9. `life_v0/process_supervisor/dialogue_events.py` 与 `response_surface.py` 已开始分别把 `offline_learning_presence / dream_wake_presence` 写进 `digital_life_turn` 和生命回应文本
 
 ## 当前最关键的 runtime 证据
 
@@ -51,6 +51,10 @@ life-v0 emit-report --strict
 19. `runtime/state/growth/language_learning_plan.json`
 20. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.offline_learning_presence`
 21. `runtime/reports/latest/digital_life_process_report.json#offline_learning_cumulative_*`
+22. `runtime/state/dream/dream_experience_window.json`
+23. `runtime/state/dream/wake_integration_frame.json`
+24. `runtime/state/dream/dream_fact_gate_decision.json`
+25. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.dream_wake_presence`
 
 ## 最低测试与新增测试
 
@@ -212,6 +216,26 @@ runtime/state/growth/*_learning_plan.json
 5. `ref_set`：可追溯的 runtime refs，例如 `runtime/state/growth/relationship_learning_plan.json` 与 `runtime/state/growth/language_learning_plan.json`
 
 `life_v0/process_supervisor/background_lineage_state.py` 负责构造这一存在面；`heartbeat.py`、`persistent_process.py` 与 `resident_governance_handoff.py` 负责在 waiting、closeout artifact 和 live-turn handoff 中挂回 `resident_background_lineage_state`；`dialogue_events.py` 负责把 presence 摘进 `digital_life_turn`；`response_surface.py` 负责在生命回应中表达“后台梦境成长余波延续到第几代、压力为何、焦点指向哪里、保留多少证据”。这让后台驻留主状态体不再只描述关系、慢变量、节律和语言，也能描述梦境-成长余波如何继续影响当下关系回合。
+
+## resident background lineage 中的梦境醒后存在面
+
+当前实现又把 Queue D 的 dream / wake runtime state 继续送入后台驻留主状态体：
+
+```text
+runtime/state/dream/dream_experience_window.json
+runtime/state/dream/wake_integration_frame.json
+runtime/state/dream/dream_fact_gate_decision.json
+  -> resident_supervision
+  -> idle_strategy_state.json#dream_wake_presence_profile
+  -> waiting heartbeat / idle_continuity_frame
+  -> resident_governance_state.json
+  -> resident_background_lineage_state_v0.dream_wake_presence
+  -> digital_life_turn / response_surface
+```
+
+这条链和 `offline_learning_presence` 分工不同：`offline_learning_presence` 记录累计梦境-成长离线学习余波，`dream_wake_presence` 记录本轮梦境窗口、醒后整合和梦境事实门在后台驻留中的可见存在面。`idle_strategy.py` 会写出 `dream_window_kind`、`dream_fact_gate_result`、`wake_integration_archive_requirement`、`wake_integration_growth_seed_count`、`wake_integration_repair_target_count` 与 `dream_wake_ref_set`；`background_lineage_state.py` 会把它们压成 `dream_wake_presence`；`dialogue_events.py` 会导出 `resident_background_lineage_dream_window_kind`、`resident_background_lineage_dream_fact_gate_result`、`resident_background_lineage_wake_archive_requirement`、`resident_background_lineage_wake_growth_seed_count`、`resident_background_lineage_wake_repair_target_count` 与 `resident_background_lineage_dream_wake_refs`；`response_surface.py` 会表达后台梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子、修复目标和证据数量。
+
+这让常驻过程在关系回合中不只表达“后台还有离线学习压力”，也能表达“上一段梦境窗口如何被事实门约束、醒后整合携带了哪些归档和成长修复压力”。
 
 ## 关系阶段与自我慢变量已经进入同会话与重启恢复闭环
 

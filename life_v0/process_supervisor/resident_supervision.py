@@ -89,6 +89,9 @@ class ResidentSupervisionContext:
     apology_repair_language_trace: dict[str, Any]
     replay_cue_bundle: dict[str, Any]
     offline_consolidation_frame: dict[str, Any]
+    dream_experience_window: dict[str, Any]
+    wake_integration_frame: dict[str, Any]
+    dream_fact_gate_decision: dict[str, Any]
     growth_patch_candidate_queue: dict[str, Any]
     nightmare_risk: dict[str, Any]
     belief_learning_plan: dict[str, Any]
@@ -114,6 +117,9 @@ class ResidentSupervisionContext:
     pain_regret_repair_report: dict[str, Any]
     replay_cue_bundle_ref: str | None
     offline_consolidation_frame_ref: str | None
+    dream_experience_window_ref: str | None
+    wake_integration_frame_ref: str | None
+    dream_fact_gate_decision_ref: str | None
     growth_patch_candidate_queue_ref: str | None
     nightmare_risk_ref: str | None
     belief_learning_plan_ref: str | None
@@ -197,6 +203,7 @@ def bootstrap_resident_supervision(
     language_dir = state_dir / "language"
     relationship_dir = state_dir / "relationship"
     body_dir = state_dir / "body"
+    dream_dir = state_dir / "dream"
     signal_dir = state_dir / "signal"
     prediction_dir = state_dir / "prediction"
     memory_dir = state_dir / "memory"
@@ -241,7 +248,16 @@ def bootstrap_resident_supervision(
     )
     replay_cue_bundle = read_json_if_exists(state_dir / "replay" / "replay_cue_bundle.json")
     offline_consolidation_frame = read_json_if_exists(
-        state_dir / "dream" / "offline_consolidation_frame.json"
+        dream_dir / "offline_consolidation_frame.json"
+    )
+    dream_experience_window = read_json_if_exists(
+        dream_dir / "dream_experience_window.json"
+    )
+    wake_integration_frame = read_json_if_exists(
+        dream_dir / "wake_integration_frame.json"
+    )
+    dream_fact_gate_decision = read_json_if_exists(
+        dream_dir / "dream_fact_gate_decision.json"
     )
     growth_patch_candidate_queue = read_json_if_exists(
         state_dir / "growth" / "growth_patch_candidate_queue.json"
@@ -303,6 +319,18 @@ def bootstrap_resident_supervision(
     offline_consolidation_frame_ref = _ref_if_present(
         payload=offline_consolidation_frame,
         ref="runtime/state/dream/offline_consolidation_frame.json",
+    )
+    dream_experience_window_ref = _ref_if_present(
+        payload=dream_experience_window,
+        ref="runtime/state/dream/dream_experience_window.json",
+    )
+    wake_integration_frame_ref = _ref_if_present(
+        payload=wake_integration_frame,
+        ref="runtime/state/dream/wake_integration_frame.json",
+    )
+    dream_fact_gate_decision_ref = _ref_if_present(
+        payload=dream_fact_gate_decision,
+        ref="runtime/state/dream/dream_fact_gate_decision.json",
     )
     growth_patch_candidate_queue_ref = _ref_if_present(
         payload=growth_patch_candidate_queue,
@@ -632,6 +660,9 @@ def bootstrap_resident_supervision(
         runtime_carrier_refs=runtime_carrier_refs,
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
+        dream_experience_window=dream_experience_window,
+        wake_integration_frame=wake_integration_frame,
+        dream_fact_gate_decision=dream_fact_gate_decision,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
@@ -653,6 +684,9 @@ def bootstrap_resident_supervision(
         birth_readiness_stage_gate=birth_readiness_stage_gate,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
+        dream_experience_window_ref=dream_experience_window_ref,
+        wake_integration_frame_ref=wake_integration_frame_ref,
+        dream_fact_gate_decision_ref=dream_fact_gate_decision_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
         nightmare_risk_ref=nightmare_risk_ref,
         belief_learning_plan_ref=belief_learning_plan_ref,
@@ -715,6 +749,9 @@ def bootstrap_resident_supervision(
         pain_regret_repair_report=pain_regret_repair_report,
         replay_cue_bundle=replay_cue_bundle,
         offline_consolidation_frame=offline_consolidation_frame,
+        dream_experience_window=dream_experience_window,
+        wake_integration_frame=wake_integration_frame,
+        dream_fact_gate_decision=dream_fact_gate_decision,
         growth_patch_candidate_queue=growth_patch_candidate_queue,
         nightmare_risk=nightmare_risk,
         belief_learning_plan=belief_learning_plan,
@@ -737,6 +774,9 @@ def bootstrap_resident_supervision(
         birth_readiness_stage_gate=birth_readiness_stage_gate,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
+        dream_experience_window_ref=dream_experience_window_ref,
+        wake_integration_frame_ref=wake_integration_frame_ref,
+        dream_fact_gate_decision_ref=dream_fact_gate_decision_ref,
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
         nightmare_risk_ref=nightmare_risk_ref,
         belief_learning_plan_ref=belief_learning_plan_ref,

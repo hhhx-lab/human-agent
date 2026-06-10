@@ -542,6 +542,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/dream/offline_consolidation_frame.json",
             )
             self.assertEqual(
+                process_report["dream_experience_window_ref"],
+                "runtime/state/dream/dream_experience_window.json",
+            )
+            self.assertEqual(
+                process_report["wake_integration_frame_ref"],
+                "runtime/state/dream/wake_integration_frame.json",
+            )
+            self.assertEqual(
+                process_report["dream_fact_gate_decision_ref"],
+                "runtime/state/dream/dream_fact_gate_decision.json",
+            )
+            self.assertEqual(
                 process_report["growth_patch_candidate_queue_ref"],
                 "runtime/state/growth/growth_patch_candidate_queue.json",
             )
@@ -573,6 +585,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 idle_continuity["offline_consolidation_frame_ref"],
                 "runtime/state/dream/offline_consolidation_frame.json",
+            )
+            self.assertEqual(
+                idle_continuity["dream_experience_window_ref"],
+                "runtime/state/dream/dream_experience_window.json",
+            )
+            self.assertEqual(
+                idle_continuity["wake_integration_frame_ref"],
+                "runtime/state/dream/wake_integration_frame.json",
+            )
+            self.assertEqual(
+                idle_continuity["dream_fact_gate_decision_ref"],
+                "runtime/state/dream/dream_fact_gate_decision.json",
+            )
+            self.assertEqual(
+                idle_continuity["dream_wake_presence_profile"][
+                    "dream_window_kind"
+                ],
+                "micro_dream",
+            )
+            self.assertEqual(
+                idle_continuity["dream_wake_presence_profile"][
+                    "dream_fact_gate_result"
+                ],
+                "passed",
+            )
+            self.assertIn(
+                "runtime/state/dream/wake_integration_frame.json",
+                idle_continuity["dream_wake_ref_set"],
             )
             self.assertEqual(
                 idle_continuity["growth_patch_candidate_queue_ref"],
@@ -3367,6 +3407,32 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "runtime/state/relationship/relationship_timeline.json",
                 lineage_state["language_presence"]["long_horizon_language_refs"],
+            )
+            self.assertEqual(
+                lineage_state["dream_wake_presence"]["dream_window_ref"],
+                "runtime/state/dream/dream_experience_window.json",
+            )
+            self.assertEqual(
+                lineage_state["dream_wake_presence"]["wake_integration_ref"],
+                "runtime/state/dream/wake_integration_frame.json",
+            )
+            self.assertEqual(
+                lineage_state["dream_wake_presence"][
+                    "dream_fact_gate_decision_ref"
+                ],
+                "runtime/state/dream/dream_fact_gate_decision.json",
+            )
+            self.assertEqual(
+                lineage_state["dream_wake_presence"]["dream_window_kind"],
+                "micro_dream",
+            )
+            self.assertEqual(
+                lineage_state["dream_wake_presence"]["dream_fact_gate_result"],
+                "passed",
+            )
+            self.assertGreater(
+                lineage_state["dream_wake_presence"]["wake_growth_seed_count"],
+                0,
             )
             self.assertEqual(
                 idle_continuity["background_continuity_mode"],
@@ -7550,6 +7616,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/growth/language_learning_plan.json",
                         ],
                     },
+                    "dream_wake_presence": {
+                        "dream_window_ref": "runtime/state/dream/dream_experience_window.json",
+                        "wake_integration_ref": "runtime/state/dream/wake_integration_frame.json",
+                        "dream_fact_gate_decision_ref": "runtime/state/dream/dream_fact_gate_decision.json",
+                        "dream_window_kind": "nrem_like_replay",
+                        "dream_fact_gate_result": "passed",
+                        "wake_archive_requirement": "required_before_activation",
+                        "wake_growth_seed_count": 2,
+                        "wake_repair_target_count": 3,
+                        "dream_fact_gate_ref_count": 3,
+                        "ref_set": [
+                            "runtime/state/dream/offline_consolidation_frame.json",
+                            "runtime/state/dream/dream_experience_window.json",
+                            "runtime/state/dream/wake_integration_frame.json",
+                            "runtime/state/dream/dream_fact_gate_decision.json",
+                        ],
+                    },
                 },
             },
             signal_media_runtime={
@@ -7683,12 +7766,47 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             ],
         )
         self.assertEqual(
+            life_turn["resident_background_lineage_dream_wake_presence"][
+                "dream_window_kind"
+            ],
+            "nrem_like_replay",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_dream_fact_gate_result"],
+            "passed",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_wake_archive_requirement"],
+            "required_before_activation",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_wake_growth_seed_count"],
+            2,
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_wake_repair_target_count"],
+            3,
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_dream_wake_refs"],
+            [
+                "runtime/state/dream/offline_consolidation_frame.json",
+                "runtime/state/dream/dream_experience_window.json",
+                "runtime/state/dream/wake_integration_frame.json",
+                "runtime/state/dream/dream_fact_gate_decision.json",
+            ],
+        )
+        self.assertEqual(
             life_turn["resident_background_lineage_evidence_refs"],
             [
                 "runtime/state/terminal/resident_governance_state.json",
                 "runtime/state/terminal/background_convergence_history.json",
                 "runtime/state/growth/relationship_learning_plan.json",
                 "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/dream/offline_consolidation_frame.json",
+                "runtime/state/dream/dream_experience_window.json",
+                "runtime/state/dream/wake_integration_frame.json",
+                "runtime/state/dream/dream_fact_gate_decision.json",
             ],
         )
         self.assertEqual(life_turn["prediction_waiting_posture"], "hold_for_evidence")
@@ -7913,6 +8031,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/growth/language_learning_plan.json",
                         ],
                     },
+                    "dream_wake_presence": {
+                        "dream_window_kind": "nrem_like_replay",
+                        "dream_fact_gate_result": "passed",
+                        "wake_archive_requirement": "required_before_activation",
+                        "wake_growth_seed_count": 2,
+                        "wake_repair_target_count": 3,
+                        "ref_set": [
+                            "runtime/state/dream/offline_consolidation_frame.json",
+                            "runtime/state/dream/dream_experience_window.json",
+                            "runtime/state/dream/wake_integration_frame.json",
+                            "runtime/state/dream/dream_fact_gate_decision.json",
+                        ],
+                    },
                 },
             },
         )
@@ -7958,6 +8089,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("后台梦境成长压力为elevated", response)
         self.assertIn("后台梦境成长焦点指向relationship_learning_plan", response)
         self.assertIn("后台梦境成长证据保留2条", response)
+        self.assertIn("后台梦境窗口类型为nrem_like_replay", response)
+        self.assertIn("梦境事实门结果为passed", response)
+        self.assertIn("醒后整合归档要求为required_before_activation", response)
+        self.assertIn("醒后整合携带2条成长种子", response)
+        self.assertIn("醒后修复目标保留3条", response)
+        self.assertIn("后台梦境醒后证据保留4条", response)
         self.assertIn("表达计划唤醒度为0.74", response)
         self.assertIn("修复驱力", response)
         self.assertIn("情绪张力", response)
