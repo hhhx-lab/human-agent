@@ -555,6 +555,18 @@ def load_background_continuity_profile(
                 "trait_convergence_history_focus",
                 "background_trait_convergence_history_focus",
             ),
+            (
+                "trait_drift_update_mode_summary",
+                "background_trait_drift_update_mode_summary",
+            ),
+            (
+                "trait_drift_background_history_recalibration_names",
+                "background_trait_drift_recalibration_names",
+            ),
+            (
+                "trait_drift_background_history_stabilized_names",
+                "background_trait_drift_stabilized_names",
+            ),
         ]:
             if source_key in background_convergence_history:
                 profile[target_key] = background_convergence_history[source_key]

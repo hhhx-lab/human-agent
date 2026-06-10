@@ -3543,6 +3543,91 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "repair_guarded_continuity",
             )
 
+    def test_background_continuity_profile_restores_trait_drift_update_mode_history(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            terminal_dir = runtime_root / "state" / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                terminal_dir / "background_convergence_history.json",
+                {
+                    "schema_version": "background_convergence_history_v0",
+                    "history_window_size": 2,
+                    "trend_state": "recent_recalibration_pressure",
+                    "trait_drift_update_mode_summary": {
+                        "background_history_recalibration": ["continuity_drive"],
+                        "background_history_stabilized": ["repair_seriousness"],
+                    },
+                    "trait_drift_background_history_recalibration_names": [
+                        "continuity_drive"
+                    ],
+                    "trait_drift_background_history_stabilized_names": [
+                        "repair_seriousness"
+                    ],
+                    "trait_convergence_history_profile": {
+                        "continuity_drive": {
+                            "sample_count": 2,
+                            "latest_band": "recalibrating",
+                            "dominant_band": "recalibrating",
+                            "trend_state": "recent_trait_recalibration",
+                            "trait_drift_update_mode_sequence": [
+                                "background_history_stabilized",
+                                "background_history_recalibration",
+                            ],
+                            "latest_trait_drift_update_mode": "background_history_recalibration",
+                            "dominant_trait_drift_update_mode": "background_history_recalibration",
+                        }
+                    },
+                    "convergence_samples": [
+                        {
+                            "run_id": "trait-drift-history-parent",
+                            "background_carryover_generation": 3,
+                            "convergence_state": "recalibrating_cross_process_continuity",
+                            "convergence_pressure_level": "elevated",
+                            "trait_convergence_score": 0.62,
+                        }
+                    ],
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+            self.assertEqual(
+                profile["background_trait_drift_update_mode_summary"][
+                    "background_history_recalibration"
+                ],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                profile["background_trait_drift_recalibration_names"],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                profile["background_trait_drift_stabilized_names"],
+                ["repair_seriousness"],
+            )
+            self.assertEqual(
+                profile["background_trait_convergence_history_profile"][
+                    "continuity_drive"
+                ]["latest_trait_drift_update_mode"],
+                "background_history_recalibration",
+            )
+            self.assertEqual(
+                profile["background_trait_convergence_history_profile"][
+                    "continuity_drive"
+                ]["dominant_trait_drift_update_mode"],
+                "background_history_recalibration",
+            )
+
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
         from life_v0.process_supervisor.resident_supervision import (
             bootstrap_resident_supervision,

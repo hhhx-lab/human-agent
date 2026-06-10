@@ -160,6 +160,12 @@ background_history_stability_hold / background_history_stabilized`，并记录
 `trait_drift_update_mode_sequence`、`latest_trait_drift_update_mode` 与
 `dominant_trait_drift_update_mode`。这样身体/人格观察面提出的重校准或稳定判断会穿过
 summary -> history -> background continuity -> waiting governance，而不是在历史压缩时消失。
+下一次唤醒时，`background_continuity.py` 必须把这组 history 字段恢复为
+`background_trait_drift_update_mode_summary`、`background_trait_drift_recalibration_names` 与
+`background_trait_drift_stabilized_names`，并保持
+`background_trait_convergence_history_profile[*].latest_trait_drift_update_mode` /
+`dominant_trait_drift_update_mode` 原样可读，让后续 waiting governance、人格慢变量 presence 与真实回合事件
+不用重新解析历史文件就能看见重校准压力。
 
 ## `memory_index`
 
