@@ -15,6 +15,7 @@ from .life_state import build_life_state_projection
 from .memory_write_gate import build_memory_write_gate
 from .relationship_memory import build_relationship_memory
 from .self_model import build_self_model_state
+from .state_merge_guard import build_state_merge_guard
 
 
 ACTIVE_SLICE = "S04_STATE_OBJECT_STORE"
@@ -234,6 +235,15 @@ def run_state_store(
         responsibility_ledger=responsibility_ledger,
         indexes=indexes,
     )
+    state_merge_guard = build_state_merge_guard(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_write_gate=memory_write_gate,
+        relationship_memory=relationship_memory,
+        commitment_truth_state=commitment_truth,
+        responsibility_ledger=responsibility_ledger,
+        indexes=indexes,
+    )
     life_state = build_life_state_projection(
         run_id=run_id,
         generated_at=generated_at,
@@ -243,7 +253,11 @@ def run_state_store(
         engram_index=engram_index,
         autobiographical_stack=autobiographical_stack,
         relationship_memory=relationship_memory,
-        runtime_trace_refs=["runtime/state/memory/memory_write_gate.json"],
+        state_merge_guard=state_merge_guard,
+        runtime_trace_refs=[
+            "runtime/state/memory/memory_write_gate.json",
+            "runtime/state/memory/state_merge_guard.json",
+        ],
     )
     runtime_boundary = _build_runtime_bridge_boundary(run_id, generated_at)
     consolidation_seed = _build_consolidation_seed(run_id, generated_at)
@@ -259,6 +273,7 @@ def run_state_store(
         engram_index_ref="runtime/state/memory/engram_index.json",
         autobiographical_stack_ref="runtime/state/self/autobiographical_stack.json",
         memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
+        state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
         blocked_reasons=blocked_reasons,
     )
     digest = _build_digest(run_id, generated_at, status, blocked_reasons)
@@ -298,6 +313,7 @@ def run_state_store(
         _write_json(out_dir / "memory" / "engram_index.json", engram_index)
         _write_json(out_dir / "memory" / "relationship_memory.json", relationship_memory)
         _write_json(out_dir / "memory" / "memory_write_gate.json", memory_write_gate)
+        _write_json(out_dir / "memory" / "state_merge_guard.json", state_merge_guard)
         _write_json(out_dir / "relationship" / "commitment_truth_state.json", commitment_truth)
         _write_json(out_dir / "responsibility" / "responsibility_ledger.json", responsibility_ledger)
         _write_json(out_dir / "objects" / "runtime_bridge_boundary.json", runtime_boundary)
@@ -355,6 +371,11 @@ def run_check_state_store(
         blocked_reasons,
         "memory_write_gate_gate",
     )
+    state_merge_guard = _load_json(
+        state_dir / "memory" / "state_merge_guard.json",
+        blocked_reasons,
+        "state_merge_guard_gate",
+    )
     commitment_truth = _load_json(
         state_dir / "relationship" / "commitment_truth_state.json",
         blocked_reasons,
@@ -381,6 +402,7 @@ def run_check_state_store(
     blocked_reasons.extend(_check_engram_index(engram_index))
     blocked_reasons.extend(_check_relationship_memory(relationship_memory))
     blocked_reasons.extend(_check_memory_write_gate(memory_write_gate))
+    blocked_reasons.extend(_check_state_merge_guard(state_merge_guard))
     blocked_reasons.extend(_check_commitment_truth_projection(commitment_truth))
     blocked_reasons.extend(_check_responsibility_ledger_projection(responsibility_ledger))
     blocked_reasons.extend(_check_indexes(indexes))
@@ -690,6 +712,7 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "runtime/state/memory/engram_index.json",
         "runtime/state/memory/relationship_memory.json",
         "runtime/state/memory/memory_write_gate.json",
+        "runtime/state/memory/state_merge_guard.json",
         "runtime/state/relationship/commitment_truth_state.json",
         "runtime/state/responsibility/responsibility_ledger.json",
     ]
@@ -719,6 +742,7 @@ def _build_report(
     engram_index_ref: str,
     autobiographical_stack_ref: str,
     memory_write_gate_ref: str,
+    state_merge_guard_ref: str,
     blocked_reasons: list[str],
 ) -> dict[str, Any]:
     return {
@@ -735,6 +759,7 @@ def _build_report(
         "engram_index_ref": engram_index_ref,
         "autobiographical_stack_ref": autobiographical_stack_ref,
         "memory_write_gate_ref": memory_write_gate_ref,
+        "state_merge_guard_ref": state_merge_guard_ref,
         "closed_gates": _closed_gates(blocked_reasons),
         "blocked_gates": [] if not blocked_reasons else _blocked_gates(blocked_reasons),
         "blocked_reasons": blocked_reasons,
@@ -792,6 +817,7 @@ def _build_receipt(
         out_dir / "memory" / "engram_index.json",
         out_dir / "memory" / "relationship_memory.json",
         out_dir / "memory" / "memory_write_gate.json",
+        out_dir / "memory" / "state_merge_guard.json",
         out_dir / "relationship" / "commitment_truth_state.json",
         out_dir / "responsibility" / "responsibility_ledger.json",
         reports_dir / "state_store_report.json",
@@ -823,6 +849,7 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
         "regret_events",
         "responsibility_bindings",
         "language_state",
+        "state_merge_records",
         "birth_readiness",
         "runtime_trace_refs",
         "archive_refs",
@@ -855,12 +882,17 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
         "runtime/state/memory/engram_index.json",
         "runtime/state/self/autobiographical_stack.json",
         "runtime/state/memory/relationship_memory.json",
+        "runtime/state/memory/state_merge_guard.json",
         "runtime/state/neural_life_core/brain_graph.json",
         "runtime/state/neural_life_core/network_state.json",
         "runtime/state/consciousness/workspace_frame.json",
     ]:
         if ref not in runtime_trace_refs:
             reasons.append(f"state_root_continuity_gate missing runtime trace ref: {ref}")
+    if "runtime/state/memory/state_merge_guard.json" not in life_state.get("memory_index", {}).get("state_merge_guard_refs", []):
+        reasons.append("state_root_continuity_gate state merge guard ref missing from memory index")
+    if not life_state.get("state_merge_records"):
+        reasons.append("state_root_continuity_gate state merge records missing")
     return reasons
 
 
@@ -955,6 +987,13 @@ def _check_relationship_memory(relationship_memory: dict[str, Any]) -> list[str]
         reasons.append("relationship_memory_gate schema mismatch")
     if not relationship_memory.get("shared_memory_refs"):
         reasons.append("relationship_memory_gate shared memory refs missing")
+    if relationship_memory.get("state_merge_guard_ref") != "runtime/state/memory/state_merge_guard.json":
+        reasons.append("relationship_memory_gate state merge guard ref missing")
+    change_sources = relationship_memory.get("long_term_change_sources", {})
+    if not change_sources.get("prediction_error_resolution_refs"):
+        reasons.append("relationship_memory_gate prediction error resolution refs missing")
+    if not change_sources.get("offline_learning_writeback_refs"):
+        reasons.append("relationship_memory_gate offline learning writeback refs missing")
     return reasons
 
 
@@ -980,6 +1019,27 @@ def _check_memory_write_gate(memory_write_gate: dict[str, Any]) -> list[str]:
         reasons.append("memory_write_gate_gate quarantine route blocked indexes missing")
     if not memory_write_gate.get("life_support_pressure_update", {}).get("tracked_fields"):
         reasons.append("memory_write_gate_gate life support pressure fields missing")
+    if memory_write_gate.get("state_merge_guard_ref") != "runtime/state/memory/state_merge_guard.json":
+        reasons.append("memory_write_gate_gate state merge guard ref missing")
+    if not memory_write_gate.get("long_term_governance_refs"):
+        reasons.append("memory_write_gate_gate long term governance refs missing")
+    return reasons
+
+
+def _check_state_merge_guard(state_merge_guard: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if state_merge_guard.get("schema_version") != "state_merge_guard_v0":
+        reasons.append("state_merge_guard_gate schema mismatch")
+        return reasons
+    if state_merge_guard.get("memory_write_gate_ref") != "runtime/state/memory/memory_write_gate.json":
+        reasons.append("state_merge_guard_gate memory write gate ref mismatch")
+    for field in ["promotion_routes", "quarantine_routes", "repair_routes", "merge_routes"]:
+        if not state_merge_guard.get(field):
+            reasons.append(f"state_merge_guard_gate missing {field}")
+    if not state_merge_guard.get("long_term_change_sources", {}).get("prediction_error_resolution_refs"):
+        reasons.append("state_merge_guard_gate prediction error source refs missing")
+    if not state_merge_guard.get("slow_variable_update_policy", {}).get("allowed_effects"):
+        reasons.append("state_merge_guard_gate slow variable policy missing")
     return reasons
 
 
@@ -1022,6 +1082,7 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
         "runtime/state/object_registry.json",
         "runtime/state/lifecycle_policy.json",
         "runtime/state/memory/memory_write_gate.json",
+        "runtime/state/memory/state_merge_guard.json",
     }
     if not required.issubset(set(manifest.get("state_refs", []))):
         reasons.append("manifest_gate state refs incomplete")
@@ -1040,6 +1101,8 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate next allowed slices mismatch")
     if build_report.get("memory_write_gate_ref") != "runtime/state/memory/memory_write_gate.json":
         reasons.append("build_report_gate memory write gate ref mismatch")
+    if build_report.get("state_merge_guard_ref") != "runtime/state/memory/state_merge_guard.json":
+        reasons.append("build_report_gate state merge guard ref mismatch")
     return reasons
 
 
@@ -1059,6 +1122,7 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "engram_index_gate",
         "relationship_memory_gate",
         "memory_write_gate_gate",
+        "state_merge_guard_gate",
         "commitment_truth_projection_gate",
         "responsibility_ledger_projection_gate",
         "state_root_continuity_gate",

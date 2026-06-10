@@ -118,6 +118,10 @@
 
 把 `memory_write_gate.json` 从单次事务对象扩成长期治理链。
 
+当前施工脚手：
+
+- `docs/v0/code_scaffolds/06_packet_c_memory_write_gate_state_merge_scaffold.md`
+
 ### 必读材料
 
 - `docs/17_memory_trace_object_model.md`
@@ -149,6 +153,8 @@
 - `runtime/state/memory/memory_write_gate.json`
 - `runtime/state/relationship/relationship_memory.json`
 - `runtime/state/life_state.json`
+
+当前落地口径：`state_merge_guard.py` 成为 `memory_write_gate.json` 的下游长期治理器官，并把 promotion / quarantine / repair / merge 四组 route 回写到 `state_merge_guard.json`、`life_state.json#state_merge_records`、`relationship_memory.json#long_term_change_sources`、manifest、report 与 receipt。
 
 ### 最低测试
 

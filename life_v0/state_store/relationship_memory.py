@@ -42,6 +42,18 @@ def build_relationship_memory(
         ],
         "responsibility_event_refs": list(responsibility_ledger.get("responsibility_event_refs", []))
         or ["runtime/state/responsibility/responsibility_ledger.json#responsibility_events"],
+        "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
+        "long_term_change_sources": {
+            "prediction_error_resolution_refs": [
+                "runtime/state/prediction/prediction_error_field.json#error_events"
+            ],
+            "offline_learning_writeback_refs": [
+                "runtime/state/growth/belief_learning_plan.json",
+                "runtime/state/growth/relationship_learning_plan.json",
+            ],
+            "repair_responsibility_refs": list(responsibility_ledger.get("responsibility_event_refs", []))
+            or ["runtime/state/responsibility/responsibility_ledger.json#responsibility_events"],
+        },
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 

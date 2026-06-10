@@ -29,6 +29,7 @@ def build_life_state_projection(
     engram_index: dict[str, Any] | None = None,
     autobiographical_stack: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
+    state_merge_guard: dict[str, Any] | None = None,
     runtime_trace_refs: list[str] | None = None,
     archive_refs: list[str] | None = None,
 ) -> dict[str, Any]:
@@ -61,6 +62,11 @@ def build_life_state_projection(
             "docs/19_offline_consolidation_cycle.md",
         ],
         "quarantine_refs": list((engram_index or {}).get("quarantine_refs", [])),
+        "state_merge_guard_refs": [
+            "runtime/state/memory/state_merge_guard.json"
+        ]
+        if state_merge_guard
+        else [],
     }
     default_runtime_trace_refs = [
         "runtime/state/neural_life_core/neural_life_core.json",
@@ -111,11 +117,18 @@ def build_life_state_projection(
         "regret_events": [],
         "responsibility_bindings": [],
         "language_state": language_state,
+        "state_merge_records": _build_state_merge_records(state_merge_guard),
         "birth_readiness": {
             "readiness_version": "v0",
             "overall_status": "state_root_seeded",
             "life_target_status": target_status,
-            "evidence_family_refs": ["runtime/state/state_store_doc_coverage_snapshot.json", engram_ref],
+            "evidence_family_refs": _dedupe(
+                [
+                    "runtime/state/state_store_doc_coverage_snapshot.json",
+                    engram_ref,
+                    "runtime/state/memory/state_merge_guard.json" if state_merge_guard else "",
+                ]
+            ),
             "blocked_reasons": [],
             "quarantine_refs": list((engram_index or {}).get("quarantine_refs", [])),
             "replay_needed_refs": list((engram_index or {}).get("replay_cue_refs", [])),
@@ -327,9 +340,25 @@ def _build_language_state_projection(language_state_projection: dict[str, Any] |
     return merged
 
 
+def _build_state_merge_records(state_merge_guard: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if not state_merge_guard:
+        return []
+    return [
+        {
+            "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
+            "stage_policy": state_merge_guard.get("stage_policy"),
+            "promotion_route_count": len(state_merge_guard.get("promotion_routes", [])),
+            "quarantine_route_count": len(state_merge_guard.get("quarantine_routes", [])),
+            "repair_route_count": len(state_merge_guard.get("repair_routes", [])),
+            "merge_route_count": len(state_merge_guard.get("merge_routes", [])),
+            "slow_variable_update_policy_ref": "runtime/state/memory/state_merge_guard.json#slow_variable_update_policy",
+        }
+    ]
+
+
 def _dedupe(items: list[str]) -> list[str]:
     result: list[str] = []
     for item in items:
-        if item not in result:
+        if item and item not in result:
             result.append(item)
     return result

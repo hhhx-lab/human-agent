@@ -97,6 +97,7 @@ docs/v0/code_framework/README.md
   -> docs/v0/code_scaffolds/03_frontier_module_build_packets.md
   -> docs/v0/code_scaffolds/04_packet_b_world_observation_periphery_scaffold.md
   -> docs/v0/code_scaffolds/05_packet_a_language_prediction_consumption_scaffold.md
+  -> docs/v0/code_scaffolds/06_packet_c_memory_write_gate_state_merge_scaffold.md
   -> docs/v0/implementation_architecture/README.md
   -> docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md
   -> docs/v0/implementation_architecture/02_turn_and_cycle_lifecycle_contract.md
@@ -174,7 +175,7 @@ docs/v0/code_framework/README.md
 | `S00_DIRECTION_FOUNDATION` | `s00_direction_foundation_engineering_contract.md` | `docs/构思.md`、`00`、`13`、`16`、`91`、`258` | `life_v0/direction/__init__.py` | `tests/slices/test_direction_lock.py` | `runtime/state/direction/direction_lock.json` |
 | `S01_SOURCE_AUTHORITY` | `s01_source_authority_engineering_contract.md` | 全部 `01*`、`142`、`145`、`151` | `life_v0/authority/__init__.py` | `tests/slices/test_source_authority.py` | `runtime/state/authority/authority_registry.json` |
 | `S02_NEURAL_LIFE_CORE` | `digital_life_macro_architecture_v0.md`、`runtime_v0_architecture.md`、`s02_neural_life_core_engineering_contract.md` | `02-13`、对应 `01*`、`143`、`146`、`149`、`152`、`171` | `life_v0/neural_core/__init__.py` | `tests/slices/test_neural_life_core.py` | `runtime/state/neural_life_core/neural_life_core.json` |
-| `S04_STATE_OBJECT_STORE` | `life_state_store_v0_schema.md`、`s04_state_object_store_engineering_contract.md` | `17-30`、`41-48`、`57`、`61`、`69`、`123-133` | `life_v0/state_store/__init__.py` | `tests/slices/test_state_store.py` | `runtime/state/life_state.json` |
+| `S04_STATE_OBJECT_STORE` | `life_state_store_v0_schema.md`、`s04_state_object_store_engineering_contract.md`、`code_scaffolds/06_packet_c_memory_write_gate_state_merge_scaffold.md` | `17-30`、`41-48`、`57`、`61`、`69`、`123-133` | `life_v0/state_store/__init__.py` | `tests/slices/test_state_store.py` | `runtime/state/life_state.json`、`runtime/state/memory/memory_write_gate.json`、`runtime/state/memory/state_merge_guard.json` |
 | `S03_DIRECTION_LIFE_MEMBRANE` | `runtime_v0_architecture.md`、`birth_readiness_v0_contract.md`、`s03_direction_life_membrane_engineering_contract.md` | `13-16`、`33-84`、`91`、`97-100`、`102-122` | `life_v0/membrane/__init__.py` | `tests/slices/test_life_membrane.py` | `runtime/state/membrane/life_membrane.json` |
 | `S07_LANGUAGE_RELATIONSHIP` | `first_activation_protocol.md`、`s07_language_relationship_engineering_contract.md`、`code_scaffolds/05_packet_a_language_prediction_consumption_scaffold.md` | `01f`、`01j`、`01u`、`09`、`81`、`85-90`、`94`、`96`、`101`、`141`、`144`、`147`、`150` | `life_v0/language/__init__.py` | `tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py` | `runtime/state/language/*`、`runtime/state/relationship/*`、`runtime/state/prediction/prediction_workspace_frame.json`、`runtime/state/signal/signal_media_runtime.json`、`runtime/state/prediction/belief_state_frame.json`、`runtime/state/prediction/prediction_error_field.json`、`runtime/state/prediction/active_sampling_plan.json`、`runtime/state/memory/memory_write_gate.json`、`runtime/state/action/responsibility_loop_state.json` |
 | `S08_LIFE_TARGET_RUNTIMES` | `birth_readiness_v0_contract.md`、`s08_life_target_runtimes_engineering_contract.md` | `91-101`、`143`、`146`、`149`、`152`、`171`、`174` | `life_v0/life_targets/__init__.py` | `tests/slices/test_life_targets.py` | `runtime/state/life_targets/*` |
@@ -210,6 +211,7 @@ docs/v0/code_framework/README.md
 ```text
 docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md
 docs/v0/code_scaffolds/05_packet_a_language_prediction_consumption_scaffold.md
+docs/v0/code_scaffolds/06_packet_c_memory_write_gate_state_merge_scaffold.md
 ```
 
 这条切换的含义要写死：

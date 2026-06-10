@@ -113,6 +113,7 @@ class StateStoreTests(unittest.TestCase):
             engram_index = self._read_json(state_root / "memory" / "engram_index.json")
             relationship_memory = self._read_json(state_root / "memory" / "relationship_memory.json")
             memory_write_gate = self._read_json(state_root / "memory" / "memory_write_gate.json")
+            state_merge_guard = self._read_json(state_root / "memory" / "state_merge_guard.json")
             commitment_truth = self._read_json(state_root / "relationship" / "commitment_truth_state.json")
             responsibility_ledger = self._read_json(state_root / "responsibility" / "responsibility_ledger.json")
             memory_index = self._read_json(state_root / "indexes" / "memory_index.json")
@@ -181,9 +182,19 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/self/autobiographical_stack.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/memory/relationship_memory.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/memory/memory_write_gate.json", life_state["runtime_trace_refs"])
+        self.assertIn("runtime/state/memory/state_merge_guard.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/neural_life_core/brain_graph.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/neural_life_core/network_state.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/consciousness/workspace_frame.json", life_state["runtime_trace_refs"])
+        self.assertEqual(
+            life_state["memory_index"]["state_merge_guard_refs"],
+            ["runtime/state/memory/state_merge_guard.json"],
+        )
+        self.assertEqual(
+            life_state["state_merge_records"][0]["state_merge_guard_ref"],
+            "runtime/state/memory/state_merge_guard.json",
+        )
+        self.assertEqual(life_state["state_merge_records"][0]["promotion_route_count"], 2)
         self.assertTrue(life_state["language_state"]["language_percept_refs"])
         self.assertTrue(life_state["language_state"]["semantic_map_refs"])
 
@@ -200,11 +211,37 @@ class StateStoreTests(unittest.TestCase):
         self.assertTrue(engram_index["relationship_memory_refs"])
         self.assertEqual(relationship_memory["schema_version"], "relationship_memory_v0")
         self.assertTrue(relationship_memory["shared_memory_refs"])
+        self.assertEqual(relationship_memory["state_merge_guard_ref"], "runtime/state/memory/state_merge_guard.json")
+        self.assertEqual(
+            relationship_memory["long_term_change_sources"]["prediction_error_resolution_refs"],
+            ["runtime/state/prediction/prediction_error_field.json#error_events"],
+        )
+        self.assertIn(
+            "runtime/state/growth/relationship_learning_plan.json",
+            relationship_memory["long_term_change_sources"]["offline_learning_writeback_refs"],
+        )
         self.assertEqual(memory_write_gate["schema_version"], "memory_write_gate_v0")
         self.assertIn("create_candidate_object", memory_write_gate["transaction_order"])
         self.assertIn("update_indexes", memory_write_gate["transaction_order"])
         self.assertIn("trace_id", memory_write_gate["validation_envelope"]["required_fields"])
         self.assertTrue(memory_write_gate["quarantine_route"]["blocked_indexes"])
+        self.assertEqual(memory_write_gate["state_merge_guard_ref"], "runtime/state/memory/state_merge_guard.json")
+        self.assertIn(
+            "runtime/state/memory/state_merge_guard.json#merge_routes",
+            memory_write_gate["long_term_governance_refs"],
+        )
+        self.assertEqual(state_merge_guard["schema_version"], "state_merge_guard_v0")
+        self.assertEqual(state_merge_guard["memory_write_gate_ref"], "runtime/state/memory/memory_write_gate.json")
+        self.assertEqual(state_merge_guard["stage_policy"], "long_term_merge_fail_closed")
+        self.assertTrue(state_merge_guard["promotion_routes"])
+        self.assertTrue(state_merge_guard["quarantine_routes"])
+        self.assertTrue(state_merge_guard["repair_routes"])
+        self.assertTrue(state_merge_guard["merge_routes"])
+        self.assertEqual(
+            state_merge_guard["long_term_change_sources"]["prediction_error_resolution_refs"],
+            ["runtime/state/prediction/prediction_error_field.json#error_events"],
+        )
+        self.assertIn("trust_persistence_adjustment", state_merge_guard["slow_variable_update_policy"]["allowed_effects"])
         self.assertEqual(commitment_truth["schema_version"], "commitment_truth_state_v0")
         self.assertEqual(commitment_truth["default_commitment_mode"], "truth_tracking_required")
         self.assertTrue(commitment_truth["open_commitment_refs"])
@@ -253,6 +290,7 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/memory/engram_index.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/relationship_memory.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/memory_write_gate.json", manifest["state_refs"])
+        self.assertIn("runtime/state/memory/state_merge_guard.json", manifest["state_refs"])
         self.assertIn("runtime/state/relationship/commitment_truth_state.json", manifest["state_refs"])
         self.assertIn("runtime/state/responsibility/responsibility_ledger.json", manifest["state_refs"])
 
@@ -266,6 +304,7 @@ class StateStoreTests(unittest.TestCase):
         self.assertEqual(report["engram_index_ref"], "runtime/state/memory/engram_index.json")
         self.assertEqual(report["autobiographical_stack_ref"], "runtime/state/self/autobiographical_stack.json")
         self.assertEqual(report["memory_write_gate_ref"], "runtime/state/memory/memory_write_gate.json")
+        self.assertEqual(report["state_merge_guard_ref"], "runtime/state/memory/state_merge_guard.json")
         self.assertEqual(report["blocked_gates"], [])
         self.assertEqual(report["next_allowed_slices"], ["S03_DIRECTION_LIFE_MEMBRANE"])
         self.assertEqual(report["next_required_command"], "life-v0 build-life-membrane --strict")
@@ -280,6 +319,7 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("engram_index_gate", check_report["closed_gates"])
         self.assertIn("relationship_memory_gate", check_report["closed_gates"])
         self.assertIn("memory_write_gate_gate", check_report["closed_gates"])
+        self.assertIn("state_merge_guard_gate", check_report["closed_gates"])
         self.assertIn("commitment_truth_projection_gate", check_report["closed_gates"])
         self.assertIn("state_root_continuity_gate", check_report["closed_gates"])
         self.assertEqual(digest["current_slice"], "S04_STATE_OBJECT_STORE")
@@ -288,6 +328,7 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/memory/engram_index.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/relationship_memory.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/memory_write_gate.json", receipt["output_refs"])
+        self.assertIn("runtime/state/memory/state_merge_guard.json", receipt["output_refs"])
         self.assertIn("runtime/state/relationship/commitment_truth_state.json", receipt["output_refs"])
         self.assertEqual(receipt["schema_version"], "state_store_receipt_v0")
 

@@ -112,6 +112,13 @@ def build_memory_write_gate(
             "maintenance_queue_ref": "runtime/state/body/maintenance_queue.json",
             "high_load_effect": "defer_noncritical_memory_commit",
         },
+        "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
+        "long_term_governance_refs": [
+            "runtime/state/memory/state_merge_guard.json#promotion_routes",
+            "runtime/state/memory/state_merge_guard.json#quarantine_routes",
+            "runtime/state/memory/state_merge_guard.json#repair_routes",
+            "runtime/state/memory/state_merge_guard.json#merge_routes",
+        ],
         "engram_index_ref": (
             "runtime/state/memory/engram_index.json"
             if engram_index
