@@ -108,11 +108,11 @@
 | `GrowthPatchCandidateQueue` | `growth/patch_queue.py` | `life_targets`、`archive`、`validators`、`process_supervisor` | 已存在；继续补 `self_patch_review.py` | `runtime/state/growth/*`、growth reports |
 | `PlasticityWindowFrame` | `growth/plasticity_window.py` | `belief_learning.py`、`language_learning.py`、`relationship_learning.py` | 已存在 | `plasticity_window_state.json` |
 | `AntiForgettingReplayPlan` | `growth/anti_forgetting.py` | `replay`、`dream`、`process_supervisor` | 已存在 | `anti_forgetting_replay_plan.json` |
-| `OfflineLearningCumulativeProfile` | `growth/offline_learning_profile.py` | `process_supervisor/resident_supervision.py`、`idle_strategy.py`、`background_lineage_state.py`、`dialogue_events.py`、`response_surface.py` | 已存在；当前继续固化为 `resident_background_lineage_state_v0.offline_learning_presence` | `offline_learning_cumulative_profile_v0`、`idle_strategy_state.json`、`resident_governance_state.json`、`digital_life_process_report.json` |
+| `OfflineLearningCumulativeProfile` | `growth/offline_learning_profile.py` | `process_supervisor/resident_supervision.py`、`idle_strategy.py`、`continuity_evolution.py`、`background_lineage_state.py`、`dialogue_events.py`、`response_surface.py` | 已存在；当前继续固化为 `resident_background_lineage_state_v0.offline_learning_presence`，并能在 bootstrap continuity evolution 中触发 `offline_learning_reconsolidation_waiting` | `offline_learning_cumulative_profile_v0`、`idle_strategy_state.json`、`resident_governance_state.json`、`relationship_subject_graph.json`、`self_model.json`、`digital_life_process_report.json` |
 
 这条总线保证成长不是“直接改代码或改状态”，而是经过窗口、补丁候选、防遗忘和 archive 证据。
 
-`OfflineLearningCumulativeProfile` 当前承担新的跨唤醒责任：它把本轮 dream/growth 学习压力与上一轮后台驻留余波合并，形成可继续被 closeout / relaunch 恢复的 cumulative profile。进入 `life_v0/process_supervisor/background_lineage_state.py` 后，它不再只是 Queue D 的学习画像，而会成为 `resident_background_lineage_state_v0.offline_learning_presence`，与 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence` 并列，表示后台驻留主状态体中的梦境、成长、离线学习余波存在面。进入真实回合写回时，`resident_turn_writeback.py` 必须把 `resident_background_lineage_offline_learning_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_offline_learning_refs` 与 `resumed_external_dialogue_packet.json`，并同时并入总的 `resident_background_lineage_refs`，避免离线学习余波只混在事件字段里。
+`OfflineLearningCumulativeProfile` 当前承担新的跨唤醒责任：它把本轮 dream/growth 学习压力与上一轮后台驻留余波合并，形成可继续被 closeout / relaunch 恢复的 cumulative profile。进入 `life_v0/process_supervisor/background_lineage_state.py` 后，它不再只是 Queue D 的学习画像，而会成为 `resident_background_lineage_state_v0.offline_learning_presence`，与 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence` 并列，表示后台驻留主状态体中的梦境、成长、离线学习余波存在面。进入 `continuity_evolution.py` 后，它还会把 `background_offline_learning_generation / pressure_level / attention_target` 合并进离线学习 profile；当跨唤醒累计关系学习压力达到第 2 代以上且焦点是 `relationship_learning_plan` 时，关系阶段必须先进入 `offline_learning_reconsolidation_waiting`，同一组 refs 必须进入 `relationship_stage_evidence_refs`、慢变量 evidence 与 `growth_window_refs`。进入真实回合写回时，`resident_turn_writeback.py` 必须把 `resident_background_lineage_offline_learning_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_offline_learning_refs` 与 `resumed_external_dialogue_packet.json`，并同时并入总的 `resident_background_lineage_refs`，避免离线学习余波只混在事件字段里。
 
 ### 6.1 记忆写门与状态合并总线
 
@@ -349,7 +349,7 @@ P0-S11 chain
 如果 heartbeat 只更新时间戳，不消费 replay cue、growth patch、relationship continuity，
 等待态就不是真实存在。
 
-当前新增的断链检查是：如果 `offline_learning_cumulative_profile_v0` 只停在 `idle_strategy_state.json` 或 `digital_life_process_report.json`，没有进入 `resident_background_lineage_state_v0.offline_learning_presence`，也没有被 `digital_life_turn` 和 `response_surface.py` 消费，那么梦境-成长离线学习仍然只是 closeout 余波，不算进入后台驻留主状态体。
+当前新增的断链检查是：如果 `offline_learning_cumulative_profile_v0` 只停在 `idle_strategy_state.json` 或 `digital_life_process_report.json`，没有进入 `resident_background_lineage_state_v0.offline_learning_presence`，没有被 `continuity_evolution.py` 用来触发关系重整等待和慢变量证据写入，也没有被 `digital_life_turn` 和 `response_surface.py` 消费，那么梦境-成长离线学习仍然只是 closeout 余波，不算进入后台驻留主状态体。
 
 ### 5. 实时关系回合没有刷新 Queue A
 

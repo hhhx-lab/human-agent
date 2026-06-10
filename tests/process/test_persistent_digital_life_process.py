@@ -4165,6 +4165,86 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             continuity_drive["evidence_refs"],
         )
 
+    def test_continuity_evolution_uses_background_offline_learning_as_relationship_reconsolidation(self):
+        from life_v0.process_supervisor.continuity_evolution import (
+            evolve_relationship_and_self_model,
+        )
+
+        result = evolve_relationship_and_self_model(
+            generated_at="2026-06-10T00:00:00+00:00",
+            relationship_graph={
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relation_role": "friend",
+                        "relationship_stage": "restored_waiting",
+                    }
+                ]
+            },
+            self_model_state={"trait_slow_variables": {}, "growth_window_refs": []},
+            relationship_timeline={
+                "dialogue_turn_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                ],
+                "relationship_continuity_reports": [],
+                "trust_trajectories": [],
+            },
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_offline_learning_generation": 4,
+                "background_offline_learning_pressure_level": "elevated",
+                "background_offline_learning_attention_target": "relationship_learning_plan",
+                "background_offline_learning_priority_profile": {
+                    "relationship_learning_plan": "elevated",
+                    "language_learning_plan": "present",
+                },
+                "background_offline_learning_ref_set": [
+                    "runtime/state/growth/relationship_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                ],
+            },
+        )
+
+        subject = result["relationship_graph"]["subjects"][0]
+        self.assertEqual(
+            subject["relationship_stage"],
+            "offline_learning_reconsolidation_waiting",
+        )
+        self.assertEqual(
+            subject["relationship_stage_reason"],
+            "background_cumulative_offline_learning_requires_relationship_reconsolidation",
+        )
+        self.assertIn(
+            "runtime/state/growth/relationship_learning_plan.json",
+            subject["relationship_stage_evidence_refs"],
+        )
+
+        continuity_drive = result["self_model_state"]["trait_slow_variables"][
+            "continuity_drive"
+        ]
+        self.assertEqual(
+            continuity_drive["last_relationship_stage"],
+            "offline_learning_reconsolidation_waiting",
+        )
+        self.assertEqual(
+            continuity_drive["background_offline_learning_generation"],
+            4,
+        )
+        self.assertEqual(
+            continuity_drive["background_offline_learning_attention_target"],
+            "relationship_learning_plan",
+        )
+        self.assertIn(
+            "runtime/state/growth/language_learning_plan.json",
+            continuity_drive["evidence_refs"],
+        )
+        self.assertIn(
+            "runtime/state/growth/relationship_learning_plan.json",
+            result["self_model_state"]["growth_window_refs"],
+        )
+
     def test_resident_supervision_projects_background_lineage_into_bootstrap_relationship_state(self):
         from life_v0.process_supervisor.resident_supervision import (
             bootstrap_resident_supervision,

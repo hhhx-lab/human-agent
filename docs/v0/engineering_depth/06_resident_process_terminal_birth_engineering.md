@@ -349,6 +349,7 @@ runtime/state/memory/state_merge_guard.json#long_term_change_sources
    - `pre_activation`
    - `restored_waiting`
    - `background_continuity_waiting`
+   - `offline_learning_reconsolidation_waiting`
    - `active_dialogue`
    - `repair_guarded_continuity`
    - `boundary_guarded_repair`
@@ -361,12 +362,13 @@ runtime/state/memory/state_merge_guard.json#long_term_change_sources
    - `continuity_drive`
 5. `resident_supervision.py` 现在也会在 restore shell 之后、第一拍 waiting heartbeat 之前，先用历史 dialogue turn 和离线学习对象重建这批结果并落盘
 6. 当 bootstrap 还同时读到 `background_carryover_generation >= 2` 的关闭态 lineage 时，这次重建会继续把关系阶段推到 `background_continuity_waiting`，并把关闭态 resident governance refs / source refs 压进慢变量 evidence
-7. `process_session_loop.py` 会在 live turn 之后重新装载这批结果
-8. 显式退出 closeout 时，`process_session_loop.py` 还会把最新 `relationship_subject_graph`、三条长期语言对象和 `self_model_state` 返回给 closeout；`persistent_process.py` / `process_report.py` 会把它们压成 `background_resume_summary`
-9. 下一次 `background_continuity.py` 会把 `background_relationship_stage`、`background_relationship_subject_ref`、`background_self_model_ref` 与 `background_trait_slow_variable_summary` 重新带进 bootstrap / idle strategy / resident governance
-10. `response_surface.py` 会在后续回合直接消费这些慢变量与阶段，改变生命回应的修复认真度、边界守持和连续体表达
+7. 当 bootstrap 读到跨唤醒累计离线学习已经进入第 2 代以上、压力为 `elevated / urgent` 且焦点是 `relationship_learning_plan` 时，`continuity_evolution.py` 会优先把关系阶段推到 `offline_learning_reconsolidation_waiting`，并把 `background_offline_learning_generation / pressure_level / attention_target` 写入 `trait_slow_variables`，同时把累计学习 refs 写入关系阶段证据、慢变量证据与 `growth_window_refs`
+8. `process_session_loop.py` 会在 live turn 之后重新装载这批结果
+9. 显式退出 closeout 时，`process_session_loop.py` 还会把最新 `relationship_subject_graph`、三条长期语言对象和 `self_model_state` 返回给 closeout；`persistent_process.py` / `process_report.py` 会把它们压成 `background_resume_summary`
+10. 下一次 `background_continuity.py` 会把 `background_relationship_stage`、`background_relationship_subject_ref`、`background_self_model_ref` 与 `background_trait_slow_variable_summary` 重新带进 bootstrap / idle strategy / resident governance
+11. `response_surface.py` 会在后续回合直接消费这些慢变量与阶段，改变生命回应的修复认真度、边界守持和连续体表达
 
-这意味着当前真正还没完成的，不再是“同一常驻会话里能不能演化关系阶段”或者“重启后第一拍会不会退回旧状态”，而是“跨多次进程关闭/重启后，关系阶段、自我慢变量和 resident governance lineage 怎样继续稳定收敛”。
+这意味着当前真正还没完成的，不再是“同一常驻会话里能不能演化关系阶段”“重启后第一拍会不会退回旧状态”或者“累计离线关系学习能不能改变第一拍关系窗口”，而是“跨多次进程关闭/重启后，关系阶段、自我慢变量、累计离线学习压力和 resident governance lineage 怎样继续稳定收敛”。
 
 ## 当前最该继续补硬的实现包
 

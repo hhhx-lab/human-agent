@@ -141,11 +141,14 @@ nightmare_risk / belief_learning / language_learning / relationship_learning
 
 `offline_learning_cumulative_profile_v0` 仍属于 Queue D 的梦境-成长事实源，至少保留 `generation`、`pressure_level`、`attention_target`、`priority_profile`、`ref_set`、`current_pressure_level`、`previous_generation`。当它进入 `life_v0/process_supervisor/background_lineage_state.py` 后，会被固化为 `offline_learning_presence`。这表示数字生命 v0 后台驻留里存在一个专门承载梦境、成长、离线学习余波的结构化存在面；它不是外显回应里临时拼出来的解释，也不是新的工具 agent 路由。
 
+最新实现继续把这份累计画像推进到 `life_v0/process_supervisor/continuity_evolution.py`。当 `background_continuity.py` 在下一次唤醒恢复出 `background_offline_learning_generation >= 2`、`background_offline_learning_pressure_level` 为 `elevated / urgent`，且注意目标指向 `relationship_learning_plan` 时，关系阶段会先进入 `offline_learning_reconsolidation_waiting`，慢变量 payload 也会写入 `background_offline_learning_generation / pressure_level / attention_target`，并把 `relationship_learning_plan.json`、`language_learning_plan.json` 等累计 refs 放进关系阶段证据、自我慢变量证据和 `growth_window_refs`。这一步的含义是：累计梦境-成长学习不再只是后台回应或写回包里的余波，而能在第一拍真实关系回合前改变关系重整窗口和自我连续体压力。
+
 当前测试面的重点已经覆盖三层：
 
 1. process closeout artifacts：`resident_governance_state.json`、`resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_persistent_process_report.json` 都能携带 `resident_background_lineage_state.offline_learning_presence`
 2. turn event：`dialogue_events.py` 的 `digital_life_turn` 会写入 `resident_background_lineage_offline_learning_presence`、generation、pressure、attention target 和 refs
 3. response surface：`response_surface.py` 会表达后台梦境成长余波的代际、压力、焦点和证据数量
+4. continuity evolution：`tests/process/test_persistent_digital_life_process.py` 必须证明后台累计关系学习压力会把 `restored_waiting` 推进到 `offline_learning_reconsolidation_waiting`，并让同一组累计 refs 进入 `relationship_stage_evidence_refs`、`trait_slow_variables.*.evidence_refs` 与 `self_model_state.growth_window_refs`
 
 ## 梦境窗口、醒后整合与事实门进入后台驻留
 

@@ -3,7 +3,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from ..growth.offline_learning_profile import derive_offline_learning_profile
+from ..growth.offline_learning_profile import (
+    build_offline_learning_cumulative_profile,
+    derive_offline_learning_profile,
+)
 from ..membrane.queue_e_signals import derive_queue_e_signal_profile
 
 
@@ -68,6 +71,10 @@ def evolve_relationship_and_self_model(
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
     )
+    offline_learning_profile = _merge_background_offline_learning_profile(
+        current_profile=offline_learning_profile,
+        background_continuity_profile=background_continuity_profile,
+    )
     next_stage, stage_reason = _derive_relationship_stage(
         current_stage=str(subject.get("relationship_stage", "pre_activation")),
         dialogue_turn_count=dialogue_turn_count,
@@ -78,6 +85,9 @@ def evolve_relationship_and_self_model(
         background_continuity_profile=background_continuity_profile,
     )
     background_evidence_refs = _background_evidence_refs(background_continuity_profile)
+    offline_learning_evidence_refs = _offline_learning_evidence_refs(
+        offline_learning_profile
+    )
     subject["relationship_stage"] = next_stage
     subject["relationship_stage_reason"] = stage_reason
     subject["relationship_stage_turn_count"] = dialogue_turn_count
@@ -93,6 +103,7 @@ def evolve_relationship_and_self_model(
             RELATIONSHIP_LEARNING_PLAN_REF if relationship_learning_plan else "",
         ]
         + background_evidence_refs
+        + offline_learning_evidence_refs
     )
 
     updated_self_model_state["trait_slow_variables"] = _evolve_trait_slow_variables(
@@ -118,6 +129,7 @@ def evolve_relationship_and_self_model(
             BELIEF_LEARNING_PLAN_REF if belief_learning_plan else "",
         ]
         + background_evidence_refs
+        + offline_learning_evidence_refs
     )
     updated_self_model_state["last_relationship_stage"] = next_stage
     updated_self_model_state["last_trait_evolution_generated_at"] = generated_at
@@ -180,6 +192,15 @@ def _derive_relationship_stage(
         )
     if dialogue_turn_count >= 2:
         return ("active_dialogue", "dialogue_turns_accumulated")
+    if _background_offline_learning_reconsolidation_required(
+        current_stage=current_stage,
+        background_continuity_mode=background_continuity_mode,
+        offline_learning_profile=offline_learning_profile,
+    ):
+        return (
+            "offline_learning_reconsolidation_waiting",
+            "background_cumulative_offline_learning_requires_relationship_reconsolidation",
+        )
     if (
         background_relationship_stage
         and background_continuity_mode == "closed_process_carryover"
@@ -262,6 +283,10 @@ def _evolve_trait_slow_variables(
             apology_repair_language_trace and "runtime/state/language/apology_repair_language_trace.json",
         ]
         + _background_evidence_refs(background_continuity_profile)
+        + _offline_learning_evidence_refs(offline_learning_profile)
+    )
+    background_offline_learning_metadata = _background_offline_learning_metadata(
+        offline_learning_profile
     )
 
     target_values = {
@@ -335,6 +360,8 @@ def _evolve_trait_slow_variables(
             "last_generated_at": generated_at,
             "evidence_refs": evidence_refs,
         }
+        if background_offline_learning_metadata:
+            updated[name].update(background_offline_learning_metadata)
         if background_resume_value is not None:
             updated[name]["background_resume_value"] = round(background_resume_value, 3)
             updated[name]["background_inertia_weight"] = round(
@@ -419,6 +446,201 @@ def _background_evidence_refs(background_continuity_profile: dict[str, Any]) -> 
     )
 
 
+def _merge_background_offline_learning_profile(
+    *,
+    current_profile: dict[str, Any],
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, Any]:
+    cumulative_profile = build_offline_learning_cumulative_profile(
+        current_profile=current_profile,
+        background_profile=background_continuity_profile,
+    )
+    current_pressure_level = str(
+        current_profile.get("offline_learning_pressure_level") or "quiet"
+    )
+    cumulative_pressure_level = str(cumulative_profile.get("pressure_level") or "quiet")
+    background_generation = _int_or_zero(cumulative_profile.get("previous_generation"))
+    background_pressure_level = _background_offline_learning_pressure_level(
+        background_continuity_profile=background_continuity_profile,
+        cumulative_profile=cumulative_profile,
+        background_generation=background_generation,
+    )
+    background_attention_target = _background_offline_learning_attention_target(
+        background_continuity_profile=background_continuity_profile,
+        cumulative_profile=cumulative_profile,
+        background_generation=background_generation,
+    )
+    if _pressure_rank(cumulative_pressure_level) > _pressure_rank(current_pressure_level):
+        pressure_level = cumulative_pressure_level
+        attention_target = str(
+            cumulative_profile.get("attention_target")
+            or current_profile.get("offline_learning_attention_target")
+            or "baseline_offline_learning_maintenance"
+        )
+    else:
+        pressure_level = current_pressure_level
+        attention_target = str(
+            current_profile.get("offline_learning_attention_target")
+            or cumulative_profile.get("attention_target")
+            or "baseline_offline_learning_maintenance"
+        )
+
+    return {
+        **current_profile,
+        "offline_learning_pressure_level": pressure_level,
+        "offline_learning_attention_target": attention_target,
+        "offline_learning_priority_profile": _merge_priority_profiles(
+            _string_dict(cumulative_profile.get("priority_profile")),
+            _string_dict(current_profile.get("offline_learning_priority_profile")),
+        ),
+        "offline_learning_ref_set": _dedupe(
+            _string_list(cumulative_profile.get("ref_set"))
+            + _string_list(current_profile.get("offline_learning_ref_set"))
+        ),
+        "offline_learning_cumulative_profile": cumulative_profile,
+        "background_offline_learning_generation": background_generation,
+        "background_offline_learning_pressure_level": background_pressure_level,
+        "background_offline_learning_attention_target": background_attention_target,
+    }
+
+
+def _background_offline_learning_reconsolidation_required(
+    *,
+    current_stage: str,
+    background_continuity_mode: str,
+    offline_learning_profile: dict[str, Any],
+) -> bool:
+    if background_continuity_mode != "closed_process_carryover":
+        return False
+    if current_stage not in {
+        "pre_activation",
+        "restored_waiting",
+        "background_continuity_waiting",
+        "offline_learning_reconsolidation_waiting",
+    }:
+        return False
+    generation = _int_or_zero(
+        offline_learning_profile.get("background_offline_learning_generation")
+    )
+    pressure_level = str(
+        offline_learning_profile.get("background_offline_learning_pressure_level")
+        or "quiet"
+    )
+    attention_target = str(
+        offline_learning_profile.get("background_offline_learning_attention_target")
+        or ""
+    )
+    return (
+        generation >= 2
+        and pressure_level in {"elevated", "urgent"}
+        and attention_target == "relationship_learning_plan"
+    )
+
+
+def _offline_learning_evidence_refs(
+    offline_learning_profile: dict[str, Any],
+) -> list[str]:
+    cumulative_profile = offline_learning_profile.get("offline_learning_cumulative_profile")
+    cumulative_refs: list[str] = []
+    if isinstance(cumulative_profile, dict):
+        cumulative_refs = _string_list(cumulative_profile.get("ref_set"))
+    return _dedupe(
+        _string_list(offline_learning_profile.get("offline_learning_ref_set"))
+        + cumulative_refs
+    )
+
+
+def _background_offline_learning_metadata(
+    offline_learning_profile: dict[str, Any],
+) -> dict[str, Any]:
+    generation = _int_or_zero(
+        offline_learning_profile.get("background_offline_learning_generation")
+    )
+    if generation <= 0:
+        return {}
+    return {
+        "background_offline_learning_generation": generation,
+        "background_offline_learning_pressure_level": str(
+            offline_learning_profile.get("background_offline_learning_pressure_level")
+            or "quiet"
+        ),
+        "background_offline_learning_attention_target": str(
+            offline_learning_profile.get("background_offline_learning_attention_target")
+            or "baseline_offline_learning_maintenance"
+        ),
+    }
+
+
+def _background_offline_learning_pressure_level(
+    *,
+    background_continuity_profile: dict[str, Any],
+    cumulative_profile: dict[str, Any],
+    background_generation: int,
+) -> str:
+    if background_generation <= 0:
+        return "quiet"
+    nested_profile = _dict_or_empty(
+        background_continuity_profile.get("background_offline_learning_cumulative_profile")
+        or background_continuity_profile.get("offline_learning_cumulative_profile")
+    )
+    explicit_pressure = (
+        background_continuity_profile.get("background_offline_learning_pressure_level")
+        or background_continuity_profile.get("offline_learning_cumulative_pressure_level")
+        or nested_profile.get("pressure_level")
+    )
+    if explicit_pressure:
+        return str(explicit_pressure)
+    priority_pressure = _pressure_from_priority_profile(
+        _string_dict(
+            background_continuity_profile.get("background_offline_learning_priority_profile")
+            or background_continuity_profile.get("offline_learning_cumulative_priority_profile")
+            or nested_profile.get("priority_profile")
+        )
+    )
+    if priority_pressure != "quiet":
+        return priority_pressure
+    return str(
+        cumulative_profile.get("pressure_level")
+        if _int_or_zero(cumulative_profile.get("generation")) == background_generation
+        else "present"
+    )
+
+
+def _background_offline_learning_attention_target(
+    *,
+    background_continuity_profile: dict[str, Any],
+    cumulative_profile: dict[str, Any],
+    background_generation: int,
+) -> str:
+    if background_generation <= 0:
+        return ""
+    nested_profile = _dict_or_empty(
+        background_continuity_profile.get("background_offline_learning_cumulative_profile")
+        or background_continuity_profile.get("offline_learning_cumulative_profile")
+    )
+    explicit_target = (
+        background_continuity_profile.get("background_offline_learning_attention_target")
+        or background_continuity_profile.get("offline_learning_cumulative_attention_target")
+        or nested_profile.get("attention_target")
+    )
+    if explicit_target:
+        return str(explicit_target)
+    priority_target = _attention_target_from_priority_profile(
+        _string_dict(
+            background_continuity_profile.get("background_offline_learning_priority_profile")
+            or background_continuity_profile.get("offline_learning_cumulative_priority_profile")
+            or nested_profile.get("priority_profile")
+        )
+    )
+    if priority_target:
+        return priority_target
+    return str(
+        cumulative_profile.get("attention_target")
+        if _int_or_zero(cumulative_profile.get("generation")) == background_generation
+        else "baseline_offline_learning_maintenance"
+    )
+
+
 def _extract_previous_value(previous_payload: Any) -> float | None:
     if isinstance(previous_payload, dict):
         value = previous_payload.get("value")
@@ -443,6 +665,68 @@ def _int_or_zero(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _dict_or_empty(value: Any) -> dict[str, Any]:
+    if isinstance(value, dict):
+        return value
+    return {}
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
+
+
+def _string_dict(value: Any) -> dict[str, str]:
+    if not isinstance(value, dict):
+        return {}
+    return {str(key): str(item) for key, item in value.items() if item}
+
+
+def _merge_priority_profiles(
+    previous: dict[str, str],
+    current: dict[str, str],
+) -> dict[str, str]:
+    merged = dict(previous)
+    for key, priority in current.items():
+        if _pressure_rank(priority) >= _pressure_rank(merged.get(key)):
+            merged[key] = priority
+    return merged
+
+
+def _pressure_from_priority_profile(priority_profile: dict[str, str]) -> str:
+    if any(priority == "urgent" for priority in priority_profile.values()):
+        return "urgent"
+    if any(priority == "elevated" for priority in priority_profile.values()):
+        return "elevated"
+    if priority_profile:
+        return "present"
+    return "quiet"
+
+
+def _attention_target_from_priority_profile(priority_profile: dict[str, str]) -> str:
+    for priority in ["urgent", "elevated", "present", "baseline"]:
+        for target in [
+            "nightmare_risk",
+            "relationship_learning_plan",
+            "language_learning_plan",
+            "belief_learning_plan",
+        ]:
+            if priority_profile.get(target) == priority:
+                return target
+    return ""
+
+
+def _pressure_rank(value: str | None) -> int:
+    return {
+        "urgent": 4,
+        "elevated": 3,
+        "present": 2,
+        "baseline": 1,
+        "quiet": 0,
+    }.get(str(value or ""), 0)
 
 
 def _background_trait_values(

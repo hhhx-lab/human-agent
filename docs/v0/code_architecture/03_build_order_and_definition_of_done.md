@@ -155,6 +155,7 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 3. `digital_life_turn` 中的 `resident_background_lineage_offline_learning_*` 字段
 4. `runtime/reports/latest/dialogue_writeback_bundle.json#resident_background_lineage_offline_learning_refs` 与 `resumed_external_dialogue_packet.json#resident_background_lineage_offline_learning_refs` 保留同一组专用证据 refs
 5. `response_surface.py` 生成的生命回应中包含后台梦境成长余波表达
+6. `continuity_evolution.py` 在 bootstrap continuity refresh 时把第 2 代以上、`elevated / urgent`、焦点为 `relationship_learning_plan` 的 `background_offline_learning_*` 推成 `offline_learning_reconsolidation_waiting`，并把同一组累计学习 refs 写入关系阶段证据、自我慢变量 evidence 和 `growth_window_refs`
 
 当前对梦境醒后整合的补充规则是：凡是声称梦境窗口、醒后整合或梦境事实门已经进入常驻后台驻留，不能只看 `runtime/state/dream/*` 文件存在。必须同时看到：
 
@@ -229,6 +230,6 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 
 1. Stage 0 已完成。
 2. Stage 1 本轮完成后可视为完成。
-3. 当前已经进入 Stage 3 的 Queue B / Queue A 联合补厚段，下一步应继续围绕常驻存在、实时语言驻留、人格慢变量驻留、状态合并治理驻留、关系写回和长期恢复链推进。实时语言刷新已经从“回合前 Queue A 处理”推进为“等待态、关闭态、重启态都能继续携带上一轮语义焦点”的驻留链；人格慢变量也已经开始从后台驻留主状态体进入关闭态 report/digest/receipt、真实回合事件、写回包、恢复包和回应表面，并新增统一的 `cross_wake_trait_convergence_profile_v0` 画像来承接跨唤醒稳定/重新校准压力；长期状态合并治理也已经从 waiting / response surface 继续推进到关闭态 resident governance artifacts、persistent process report、process report/digest、receipt shared refs，并进一步成为 `resident_background_lineage_state.state_merge_presence`，进入下一轮真实回合事件、写回包、恢复包和后台回应表面。后续声明跨唤醒人格画像或长期合并治理已接入时，证据不能只看 live turn 或 response surface，还必须能从 process digest、process receipt、closeout resident governance artifacts 和 resident background lineage 中追溯。
+3. 当前已经进入 Stage 3 的 Queue B / Queue A 联合补厚段，下一步应继续围绕常驻存在、实时语言驻留、人格慢变量驻留、状态合并治理驻留、关系写回和长期恢复链推进。实时语言刷新已经从“回合前 Queue A 处理”推进为“等待态、关闭态、重启态都能继续携带上一轮语义焦点”的驻留链；人格慢变量也已经开始从后台驻留主状态体进入关闭态 report/digest/receipt、真实回合事件、写回包、恢复包和回应表面，并新增统一的 `cross_wake_trait_convergence_profile_v0` 画像来承接跨唤醒稳定/重新校准压力；长期状态合并治理也已经从 waiting / response surface 继续推进到关闭态 resident governance artifacts、persistent process report、process report/digest、receipt shared refs，并进一步成为 `resident_background_lineage_state.state_merge_presence`，进入下一轮真实回合事件、写回包、恢复包和后台回应表面；累计离线学习压力也已经从后台 presence / 写回 refs 继续推进到 `continuity_evolution.py`，能在第一拍关系回合前触发 `offline_learning_reconsolidation_waiting` 并写入自我慢变量证据。后续声明跨唤醒人格画像、长期合并治理或累计离线学习压力已接入时，证据不能只看 live turn 或 response surface，还必须能从 process digest、process receipt、closeout resident governance artifacts、resident background lineage 和 continuity evolution 结果中追溯。
 
 因此这份文档本身的作用，就是把“为什么先 D/E，再 B/A，再 C/F”彻底钉死，防止断联后又回到散点式推进。
