@@ -240,8 +240,21 @@ def write_resident_turn_writeback(
             "resident_background_lineage_language_evidence_refs", []
         )
     )
+    resident_background_lineage_offline_learning_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_offline_learning_refs", []
+        )
+    )
+    resident_background_lineage_dream_wake_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_dream_wake_refs", []
+        )
+    )
     resident_background_lineage_refs = _dedupe_refs(
-        resident_background_lineage_refs + resident_background_lineage_language_refs
+        resident_background_lineage_refs
+        + resident_background_lineage_language_refs
+        + resident_background_lineage_offline_learning_refs
+        + resident_background_lineage_dream_wake_refs
     )
     offline_learning_cumulative_refs = list(
         offline_learning_cumulative_payload.get(
@@ -308,6 +321,12 @@ def write_resident_turn_writeback(
         runtime_carrier_refs=runtime_carrier_refs,
         background_trait_convergence_refs=background_trait_convergence_refs,
         resident_background_lineage_refs=resident_background_lineage_refs,
+        resident_background_lineage_offline_learning_refs=(
+            resident_background_lineage_offline_learning_refs
+        ),
+        resident_background_lineage_dream_wake_refs=(
+            resident_background_lineage_dream_wake_refs
+        ),
         offline_learning_cumulative_refs=offline_learning_cumulative_refs,
         prediction_write_gate_refs=prediction_write_gate_refs,
         live_language_turn_refs=live_language_turn_refs,

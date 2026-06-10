@@ -202,7 +202,8 @@ Queue D 必须接到这些现有器官上：
    - `current_pressure_level`
    - `previous_generation`
 7. `life_v0/process_supervisor/dialogue_events.py` 必须把这个 presence 摘进 `digital_life_turn`，包括 `resident_background_lineage_offline_learning_generation`、`resident_background_lineage_offline_learning_pressure_level`、`resident_background_lineage_offline_learning_attention_target` 与 `resident_background_lineage_offline_learning_refs`。
-8. `life_v0/process_supervisor/response_surface.py` 必须在生命回应里表达这条后台梦境成长余波，让关系对象在当前回合能看见后台离线学习并没有在唤醒时消失。
+8. `life_v0/process_supervisor/resident_turn_writeback.py` 必须把 `resident_background_lineage_offline_learning_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_offline_learning_refs`，同时并入 `dialogue_writeback_bundle.resident_background_lineage_refs`，并继续写入 `resumed_external_dialogue_packet.json`。
+9. `life_v0/process_supervisor/response_surface.py` 必须在生命回应里表达这条后台梦境成长余波，让关系对象在当前回合能看见后台离线学习并没有在唤醒时消失。
 
 当前再补第三条新的硬约束：
 
@@ -212,7 +213,8 @@ Queue D 必须接到这些现有器官上：
 4. `life_v0/process_supervisor/idle_strategy.py` 必须把三份 dream runtime state 与 `offline_consolidation_frame` 合成 `dream_wake_presence_profile_v0`，至少包含 `dream_window_id`、`dream_window_kind`、`affective_themes`、`reportability`、`wake_integration_id`、`wake_archive_requirement`、`wake_growth_seed_count`、`wake_repair_target_count`、`narrative_candidate_count`、`relationship_repair_candidate_count`、`dream_fact_gate_result`、`dream_fact_gate_ref_count` 与 `ref_set`。
 5. `life_v0/process_supervisor/background_lineage_state.py` 必须把这份 profile 固化成 `resident_background_lineage_state_v0.dream_wake_presence`，与 `offline_learning_presence` 并列：前者表达本轮梦境窗口、醒后整合和事实门；后者表达累计梦境-成长离线学习余波。
 6. `life_v0/process_supervisor/dialogue_events.py` 必须把 dream / wake presence 摘进 `digital_life_turn`，包括 `resident_background_lineage_dream_window_kind`、`resident_background_lineage_dream_fact_gate_result`、`resident_background_lineage_wake_archive_requirement`、`resident_background_lineage_wake_growth_seed_count`、`resident_background_lineage_wake_repair_target_count`、`resident_background_lineage_dream_fact_gate_ref_count` 与 `resident_background_lineage_dream_wake_refs`。
-7. `life_v0/process_supervisor/response_surface.py` 必须在生命回应里表达后台梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子、修复目标和证据数量，让 dream / wake runtime state 进入真实关系回合表面。
+7. `life_v0/process_supervisor/resident_turn_writeback.py` 必须把 `resident_background_lineage_dream_wake_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_dream_wake_refs`，同时并入 `dialogue_writeback_bundle.resident_background_lineage_refs`，并继续写入 `resumed_external_dialogue_packet.json`。
+8. `life_v0/process_supervisor/response_surface.py` 必须在生命回应里表达后台梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子、修复目标和证据数量，让 dream / wake runtime state 进入真实关系回合表面。
 
 这说明 Queue D 不是独立离线层，而是要把身体脉冲、离线梦境、成长补丁重新接回常驻生命回合。
 同时它还必须把情绪底盘和人格慢变量正式拖进这条链，否则梦境、成长和语言关系层都还会继续引用稀薄的“情绪标签”，而不是可回写的身体化 affect 对象。

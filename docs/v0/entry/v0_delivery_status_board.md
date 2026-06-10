@@ -89,6 +89,8 @@ life-v0 emit-report --strict
 
 最新再补强：后台自我/人格慢变量 presence 也已经从 `resident_background_lineage_state_v0.trait_convergence_presence` 进入真实回合链。`background_lineage_state.py` 现在会让该 presence 携带 `trait_convergence_evidence_refs`，把 resident governance state、governance explanation、trait drift monitor、background convergence summary/history refs 收成同一组人格慢变量 lineage；`dialogue_events.py` 会展开 `resident_background_lineage_trait_convergence_history_focus`、`resident_background_lineage_trait_convergence_unstable_names`、`resident_background_lineage_trait_convergence_stable_names`、`resident_background_lineage_trait_convergence_score`、`resident_background_lineage_trait_drift_monitor_ref`、`resident_background_lineage_trait_convergence_history_profile` 与 `resident_background_lineage_trait_convergence_refs`，并并入 `resident_background_lineage_evidence_refs`；`resident_turn_writeback.py` 会让这组 refs 进入写回包和恢复包；`response_surface.py` 会表达后台人格慢变量焦点、仍需收敛/已稳定名单、人格收敛评分、人格漂移监控在场和证据数量。状态板因此把这一格视为“后台人格慢变量 presence 进入下一轮事件、写回包、恢复包和回应表达面”，不是单纯 closeout 摘要。
 
+当前这一轮继续把 Queue D 的后台梦境成长与梦境醒后 presence 从“事件字段”补进写回证据面：`resident_turn_writeback.py` 现在会把 `resident_background_lineage_offline_learning_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_offline_learning_refs`，把 `resident_background_lineage_dream_wake_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_dream_wake_refs`，并让两者同时并入总 `resident_background_lineage_refs` 与 `resumed_external_dialogue_packet.json`。状态板因此把这一格视为“后台梦境成长余波、梦境窗口、醒后整合和梦境事实门 presence 进入下一轮事件、专用写回槽、恢复包和回应表达面”，不是只停在 `resident_background_lineage_state` 或 `digital_life_turn`。
+
 3. 真实新外部回合已经能进入终端生命过程并写回连续体，但还只是最小生命循环。
 4. 项目级 packaging / installable command surface 已接通，但还没有全局长期运行层。
 5. resident supervision 已进入第一轮器官化，但还没有更高阶的长期进程治理与后台存在层。

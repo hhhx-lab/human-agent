@@ -4239,6 +4239,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "ref_count": 5,
                         },
                     },
+                    "offline_learning_presence": {
+                        "generation": 3,
+                        "pressure_level": "elevated",
+                        "attention_target": "relationship_learning_plan",
+                        "ref_set": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                    },
+                    "dream_wake_presence": {
+                        "dream_window_kind": "nrem_like_replay",
+                        "dream_fact_gate_result": "passed",
+                        "wake_archive_requirement": "required_before_activation",
+                        "wake_growth_seed_count": 2,
+                        "wake_repair_target_count": 3,
+                        "ref_set": [
+                            "runtime/state/dream/offline_consolidation_frame.json",
+                            "runtime/state/dream/dream_experience_window.json",
+                            "runtime/state/dream/wake_integration_frame.json",
+                            "runtime/state/dream/dream_fact_gate_decision.json",
+                        ],
+                    },
                 },
                 "offline_learning_cumulative_profile": {
                     "schema_version": "offline_learning_cumulative_profile_v0",
@@ -4637,6 +4659,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
             )
             self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_offline_learning_refs"
+                ],
+                result.last_life_turn[
+                    "resident_background_lineage_offline_learning_refs"
+                ],
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_dream_wake_refs"
+                ],
+                result.last_life_turn["resident_background_lineage_dream_wake_refs"],
+            )
+            self.assertEqual(
                 resumed_dialogue_packet["background_trait_convergence_history_focus"],
                 "trait_stability_hold",
             )
@@ -4659,6 +4695,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["resident_background_lineage_evidence_refs"],
                 dialogue_writeback_bundle["resident_background_lineage_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_offline_learning_refs"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_offline_learning_refs"
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_dream_wake_refs"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_dream_wake_refs"
+                ],
             )
             self.assertEqual(
                 resumed_dialogue_packet["prediction_write_gate_refs"],
@@ -9191,8 +9243,40 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         ],
                         "last_live_semantic_focus": "repair_commitment_shared_language",
                     },
+                    "offline_learning_presence": {
+                        "generation": 4,
+                        "pressure_level": "elevated",
+                        "attention_target": "relationship_learning_plan",
+                        "ref_set": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                    },
+                    "dream_wake_presence": {
+                        "dream_window_kind": "nrem_like_replay",
+                        "dream_fact_gate_result": "passed",
+                        "wake_archive_requirement": "required_before_activation",
+                        "wake_growth_seed_count": 2,
+                        "wake_repair_target_count": 3,
+                        "ref_set": [
+                            "runtime/state/dream/offline_consolidation_frame.json",
+                            "runtime/state/dream/dream_experience_window.json",
+                            "runtime/state/dream/wake_integration_frame.json",
+                            "runtime/state/dream/dream_fact_gate_decision.json",
+                        ],
+                    },
                 },
             }
+            expected_background_offline_learning_refs = [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+            ]
+            expected_background_dream_wake_refs = [
+                "runtime/state/dream/offline_consolidation_frame.json",
+                "runtime/state/dream/dream_experience_window.json",
+                "runtime/state/dream/wake_integration_frame.json",
+                "runtime/state/dream/dream_fact_gate_decision.json",
+            ]
             self_narrative_trace = {
                 "narrative_turn_refs": [
                     "runtime/state/language/dialogue_turn_log.jsonl#line-1",
@@ -9549,6 +9633,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 dialogue_writeback_bundle["resident_background_lineage_refs"],
             )
             self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_offline_learning_refs"
+                ],
+                expected_background_offline_learning_refs,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_dream_wake_refs"
+                ],
+                expected_background_dream_wake_refs,
+            )
+            self.assertEqual(
                 resumed_dialogue_packet[
                     "resident_background_lineage_last_live_semantic_focus"
                 ],
@@ -9559,6 +9655,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resumed_dialogue_packet[
                     "resident_background_lineage_language_evidence_refs"
                 ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_offline_learning_refs"
+                ],
+                expected_background_offline_learning_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_dream_wake_refs"
+                ],
+                expected_background_dream_wake_refs,
             )
             self.assertEqual(
                 resumed_dialogue_packet["dialogue_writeback_bundle_ref"],

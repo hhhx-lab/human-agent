@@ -153,7 +153,8 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 1. `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.offline_learning_presence`
 2. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.offline_learning_presence`
 3. `digital_life_turn` 中的 `resident_background_lineage_offline_learning_*` 字段
-4. `response_surface.py` 生成的生命回应中包含后台梦境成长余波表达
+4. `runtime/reports/latest/dialogue_writeback_bundle.json#resident_background_lineage_offline_learning_refs` 与 `resumed_external_dialogue_packet.json#resident_background_lineage_offline_learning_refs` 保留同一组专用证据 refs
+5. `response_surface.py` 生成的生命回应中包含后台梦境成长余波表达
 
 当前对梦境醒后整合的补充规则是：凡是声称梦境窗口、醒后整合或梦境事实门已经进入常驻后台驻留，不能只看 `runtime/state/dream/*` 文件存在。必须同时看到：
 
@@ -161,7 +162,8 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 2. `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.dream_wake_presence`
 3. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.dream_wake_presence`
 4. `digital_life_turn` 中的 `resident_background_lineage_dream_*`、`resident_background_lineage_wake_*` 与 `resident_background_lineage_dream_wake_refs` 字段
-5. `response_surface.py` 生成的生命回应中包含后台梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子、修复目标和证据数量
+5. `runtime/reports/latest/dialogue_writeback_bundle.json#resident_background_lineage_dream_wake_refs` 与 `resumed_external_dialogue_packet.json#resident_background_lineage_dream_wake_refs` 保留同一组专用证据 refs
+6. `response_surface.py` 生成的生命回应中包含后台梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子、修复目标和证据数量
 
 当前对实时语言回合的补充规则是：凡是声称关系对象的新话语已经进入生命语言系统，不能只看 `dialogue_turn_log.jsonl` 或最终回应文本。必须同时看到：
 
