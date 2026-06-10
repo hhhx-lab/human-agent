@@ -28,13 +28,13 @@
 | 包 | `__init__.py` 行数 | 当前判断 |
 |---|---:|---|
 | `life_v0/contracts/` | 1304 | 合同登记中心，暂不随意拆散，但要受新增文档同步更新约束 |
-| `life_v0/neural_core/` | 1155 | 主体工作区和预测链过重，后续继续做 Queue C 维护回切 |
+| `life_v0/neural_core/` | 1155 | 主体工作区和预测链仍偏重，但 `signal_media / belief_state / prediction_error / active_sampling` 已落；当前转向 orchestration 减重与跨层消费 |
 | `life_v0/growth/` | 1153 | 学习/成长/防遗忘链仍偏集中，继续按 Queue D 第三波补厚与跨层回写拆 |
 | `life_v0/life_targets/` | 1100 | 目标闭合、证据矩阵、出生准备度仍需更细分 |
 | `life_v0/membrane/` | 1090 | 候选行动、抑制、责任回路、世界接触逻辑还需要继续抽出 |
-| `life_v0/language/` | 1081 | 已经完成第一轮器官化，但长期关系/修复表达仍未独立出来 |
+| `life_v0/language/` | 1081 | 已经完成第一轮器官化，长期关系/修复表达也已独立；当前转向预测对象与离线学习的深消费 |
 | `life_v0/authority/` | 1077 | 文献权威、机制证据和 intake/checker 还可继续细分 |
-| `life_v0/state_store/` | 1048 | 状态根、自传、关系真值虽然已有器官，但 write gate 仍需补硬 |
+| `life_v0/state_store/` | 1048 | 状态根、自传、关系真值与 write gate 已落第一轮；当前转向 state merge 与长期 promotion / quarantine 治理 |
 | `life_v0/validators/` | 943 | 观察真值、world contact 和 cross-file 逻辑还可继续抽离 |
 | `life_v0/schema_runner/` | 815 | 结构化执行与反事实比较仍可继续拆 manifest/ranker 侧器官 |
 | `life_v0/body/` | 808 | 第二波对象已落，但 affect/fatigue 与语言/膜联动还需继续整理 |
@@ -74,9 +74,9 @@
 | 生命职责 | 生命状态根、自传连续体、关系记忆、承诺真值、记忆索引 |
 | 必回读理论 | `05`、`17-31`、`41-48`、`55`、`57`、`61`、`69`、`01q` |
 | 必回读 v0 | `s04_state_object_store_engineering_contract.md`、`life_state_store_v0_schema.md`、`05_memory_thought_consciousness_implementation_playbook.md` |
-| 已落器官 | `life_state.py`、`self_model.py`、`relationship_memory.py`、`autobiographical_stack.py`、`engram_index.py`、`commitment_truth.py` |
-| 仍压在入口的职责 | 统一 writeback、merge/correct policy、memory write gate、migration glue |
-| 下一轮优先拆分 | `memory_write_gate.py`、`state_merge_guard.py`、`relationship_memory_writeback.py` |
+| 已落器官 | `life_state.py`、`self_model.py`、`relationship_memory.py`、`autobiographical_stack.py`、`engram_index.py`、`commitment_truth.py`、`memory_write_gate.py` |
+| 仍压在入口的职责 | 统一 writeback、merge/correct policy、migration glue、长期 promotion / quarantine 路由 |
+| 下一轮优先拆分 | `state_merge_guard.py`、`relationship_memory_writeback.py`，并继续补厚 `memory_write_gate.py` 的跨层消费 |
 | runtime 产物 | `runtime/state/life_state.json`、`runtime/state/self/*`、`runtime/state/relationship/*`、memory receipts |
 | 测试 / gate | `tests/slices/test_state_store.py`、`state_store_gate`、`commitment_truth_gate` |
 
@@ -87,9 +87,9 @@
 | 生命职责 | 主体图、网络态、信号介质、工作区、预测、元认知 |
 | 必回读理论 | `02`、`03`、`10`、`11`、`18`、`22`、`30`、`143`、`146`、`01l`、`01m`、`01o`、`01p`、`01v-01ax` |
 | 必回读 v0 | `s02_neural_life_core_engineering_contract.md`、`17_queue_c_memory_neural_core_implementation_contract.md`、`09_perception_prediction_world_contact_implementation_playbook.md` |
-| 已落器官 | `brain_graph.py`、`network_state.py`、`workspace.py`、`broadcast.py`、`metacognition.py`、`prediction_workspace.py` |
-| 仍压在入口的职责 | signal media 总线、belief state、prediction error、active sampling、workspace orchestration |
-| 下一轮优先拆分 | `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` |
+| 已落器官 | `brain_graph.py`、`network_state.py`、`workspace.py`、`broadcast.py`、`metacognition.py`、`prediction_workspace.py`、`signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` |
+| 仍压在入口的职责 | workspace orchestration、cross-layer projection、report glue、consumer wiring |
+| 下一轮优先拆分 | 当前不是继续补缺文件；优先转向 `prediction_workspace.py` 编排减重，以及把四个预测器官更深接进 `language/`、`membrane/`、`life_targets/`、`process_supervisor/` |
 | runtime 产物 | `runtime/state/neural_life_core/neural_life_core.json`、`neural_life_internal_bus.json`、`runtime/state/prediction/*` |
 | 测试 / gate | `tests/slices/test_neural_life_core.py`、`internal_bus_gate`、`prediction_coherence_gate` |
 
@@ -113,9 +113,9 @@
 | 生命职责 | 语言感知、语义图、内言语、表达监控、关系表达、承诺修复 |
 | 必回读理论 | `09`、`85-90`、`94`、`96`、`101`、`141`、`144`、`147`、`150`、`01f`、`01j`、`01u` |
 | 必回读 v0 | `s07_language_relationship_engineering_contract.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`04_language_dialogue_relationship_implementation_playbook.md` |
-| 已落器官 | `percept.py`、`semantic_map.py`、`inner_speech.py`、`expression_monitor.py`、`language_state.py`、`relationship_graph.py`、`shared_terms.py`、`commitment_repair.py`、`dialogue_log.py`、`narrative_trace.py`、`dream_gate.py`、`action_shadow.py`、`relation_scope.py` |
-| 仍压在入口的职责 | language report 组合、relation bridge 汇总、长期关系演化、修复表达独立输出 |
-| 下一轮优先拆分 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` |
+| 已落器官 | `percept.py`、`semantic_map.py`、`inner_speech.py`、`expression_monitor.py`、`language_state.py`、`relationship_graph.py`、`shared_terms.py`、`commitment_repair.py`、`dialogue_log.py`、`narrative_trace.py`、`dream_gate.py`、`action_shadow.py`、`relation_scope.py`、`relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` |
+| 仍压在入口的职责 | language report 组合、relation bridge 汇总、prediction-aware percept / semantic orchestration、离线学习回写解释 |
+| 下一轮优先拆分 | 首轮长期语言器官已落；当前转向把 `belief / prediction error / active sampling / offline learning` 更深接进 `percept / semantic_map / inner_speech / expression_monitor` |
 | runtime 产物 | `runtime/state/language/*`、`runtime/state/relationship/*`、`language_relationship_report.json` |
 | 测试 / gate | `tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`expression_monitor_gate`、`repair_language_gate` |
 
@@ -126,9 +126,9 @@
 | 生命职责 | 候选行动、go/no-go、责任回路、观察真值、validator、反事实比较 |
 | 必回读理论 | `06`、`20`、`22`、`29-36`、`49-84`、`94`、`98`、`102-118`、`01r`、`01v-01ax` |
 | 必回读 v0 | `s03_direction_life_membrane_engineering_contract.md`、`s05_validation_membrane_observation_engineering_contract.md`、`s09_schema_runner_code_engineering_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md` |
-| 已落器官 | `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`、`shadow_gate.py`、`observation_validator.py`、`boundary_audit.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py`、`evidence_ranker.py` |
-| 仍压在入口的职责 | responsibility loop 装配、world contact summary、cross-file logic、run manifest 汇总 |
-| 下一轮优先拆分 | `responsibility_loop.py` 补厚、`cross_file_logic.py`、`run_manifest.py`、`idle_strategy.py` |
+| 已落器官 | `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`、`shadow_gate.py`、`responsibility_loop.py`、`world_contact_summary.py`、`observation_validator.py`、`boundary_audit.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` |
+| 仍压在入口的职责 | predictive consumer wiring、world observation normalization、validator rollup glue |
+| 下一轮优先拆分 | `world_observation.py`、`periphery_normalizer.py`，并继续补厚 `responsibility_loop.py` / `world_contact_summary.py` 的预测消费 |
 | runtime 产物 | `runtime/state/membrane/*`、`runtime/state/action/*`、`runtime/state/validation/*`、`runtime/state/schema_runner/*` |
 | 测试 / gate | `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
 
@@ -206,6 +206,6 @@
 2. `Queue E`：再补候选行动、责任回路、validator、evidence rank。
 3. `Queue B`：再补 waiting heartbeat、idle strategy、persistent process，并持续把 waiting governance 变成真实 runtime 行为而不是静态 state。
 4. `Queue A`：再深补关系时间线、承诺表达、修复语言。
-5. `Queue C/F`：作为维护回切，继续细分 neural core / life targets / state store 剩余重职责。
+5. `Queue C/F`：作为维护回切，重点补已落预测器官和记忆写门的跨层消费、orchestration 减重与 `state_merge_guard.py`。
 
 这份顺序的意义不是忽视语言，而是让语言、关系和常驻存在建立在更厚的身体化、梦境化、责任化底盘上。

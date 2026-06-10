@@ -73,31 +73,31 @@ flowchart TD
 
 | 项 | 规定 |
 |---|---|
-| 责任模块 | `life_v0/neural_core/prediction_workspace.py`、`workspace.py`、`life_v0/language/inner_speech.py` |
+| 责任模块 | `life_v0/neural_core/prediction_workspace.py`、`signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py`、`workspace.py`、`life_v0/language/inner_speech.py` |
 | 主要输入 | `RelationTurnFrame`、`NeedStateVector`、recent memory refs |
-| 主要输出 | `PredictionWorkspaceFrame`、inner speech trace、attention focus |
-| 关键 gate | `internal_bus_gate`、`expression_monitor_gate` |
-| 关键要求 | 先形成内言语、预测误差和关系后果预估，再去决定如何表达 |
+| 主要输出 | `PredictionWorkspaceFrame`、`SignalMediaFrame`、`BeliefStateFrame`、`PredictionErrorField`、`ActiveSamplingPlan`、inner speech trace、attention focus |
+| 关键 gate | `signal_media_gate`、`belief_state_gate`、`prediction_error_gate`、`active_sampling_gate`、`internal_bus_gate`、`expression_monitor_gate` |
+| 关键要求 | 先形成内言语、信念帧、预测误差、主动采样路线和关系后果预估，再去决定如何表达 |
 
 ### Stage A4: Body, affect and need update
 
 | 项 | 规定 |
 |---|---|
 | 责任模块 | `life_v0/body/core_affect.py`、`need_state.py`、`resource_budget.py` |
-| 主要输入 | 当前 turn pressure、dream residue、unfinished commitments |
+| 主要输入 | 当前 turn pressure、dream residue、unfinished commitments、`SignalMediaFrame` |
 | 主要输出 | `CoreAffectVector`、`NeedStateVector` |
 | 关键 gate | `resource_budget_gate`、`plasticity_gate` |
-| 关键要求 | 疲惫、高唤醒、关系损伤和修复压力必须真正改变语言强度、节奏和可执行候选 |
+| 关键要求 | 疲惫、高唤醒、关系损伤和修复压力必须真正改变 `signal media -> affect -> language / membrane` 的强度链，而不是只改一行提示语气 |
 
 ### Stage A5: Candidate arena and inhibition
 
 | 项 | 规定 |
 |---|---|
-| 责任模块 | `life_v0/membrane/candidate_arena.py`、`go_nogo.py`、未来 `shadow_gate.py`、`responsibility_loop.py` |
-| 主要输入 | `PredictionWorkspaceFrame`、`ExpressionPlan` 候选、`NeedStateVector`、责任历史 |
-| 主要输出 | `ActionCandidateSet`、go/no-go decision、responsibility pressure |
+| 责任模块 | `life_v0/membrane/candidate_arena.py`、`go_nogo.py`、`shadow_gate.py`、`responsibility_loop.py` |
+| 主要输入 | `PredictionWorkspaceFrame`、`BeliefStateFrame`、`PredictionErrorField`、`ActiveSamplingPlan`、`SignalMediaFrame`、`ExpressionPlan` 候选、`NeedStateVector`、责任历史 |
+| 主要输出 | `ActionCandidateSet`、go/no-go decision、responsibility pressure、world contact posture |
 | 关键 gate | `shadow_action_gate`、`responsibility_loop_gate` |
-| 关键要求 | 不是“有回复就发”，而是先做候选表达、后果比较、责任约束和修复优先级排序 |
+| 关键要求 | 不是“有回复就发”，而是先做候选表达、后果比较、责任约束、主动采样需求和修复优先级排序 |
 
 ### Stage A6: Expression plan and utterance
 
@@ -113,11 +113,11 @@ flowchart TD
 
 | 项 | 规定 |
 |---|---|
-| 责任模块 | `life_v0/terminal_loop/dialogue_writeback.py`、`life_v0/state_store/commitment_truth.py`、`relationship_memory.py` |
+| 责任模块 | `life_v0/terminal_loop/dialogue_writeback.py`、`life_v0/state_store/commitment_truth.py`、`relationship_memory.py`、`memory_write_gate.py` |
 | 主要输入 | utterance、`RelationTurnFrame`、`ExpressionPlan` |
-| 主要输出 | `DialogueWritebackBundle`、更新后的 commitment truth、relationship memory |
-| 关键 gate | `dialogue_writeback_bundle_gate`、`commitment_truth_gate` |
-| 关键要求 | 每次回合结束必须留下可回链的关系后果，不允许对话只存在于 stdout |
+| 主要输出 | `DialogueWritebackBundle`、更新后的 commitment truth、relationship memory、`memory_write_gate.json` 事务轨迹 |
+| 关键 gate | `dialogue_writeback_bundle_gate`、`commitment_truth_gate`、`memory_write_gate_gate` |
+| 关键要求 | 每次回合结束必须留下可回链的关系后果和长期写门事务，不允许对话只存在于 stdout，也不允许长期记忆绕过写门 |
 
 ### Stage A8: Report, digest and receipt
 
@@ -181,9 +181,9 @@ flowchart TD
 | 项 | 规定 |
 |---|---|
 | 责任模块 | `belief_learning.py`、`language_learning.py`、`relationship_learning.py` |
-| 主要输入 | learning window、self read report、wake integration |
-| 主要输出 | 三类 learning plans |
-| 关键要求 | 学习不是统一 patch；要分别区分信念更新、语言风格修正、关系节奏修正 |
+| 主要输入 | learning window、self read report、wake integration、`PredictionErrorField` residue、`memory_write_gate.json` transaction hints |
+| 主要输出 | 三类 learning plans、memory promotion hints |
+| 关键要求 | 学习不是统一 patch；要分别区分信念更新、语言风格修正、关系节奏修正，并明确哪些离线结果允许进入下一次长期写门 |
 
 ### Stage B6: Growth patch, archive and next feedback seed
 
@@ -199,6 +199,7 @@ flowchart TD
 | 连接点 | 外部回合 -> 离线环 | 离线环 -> 外部回合 |
 |---|---|---|
 | 关系压力 | `DialogueWritebackBundle`、unfinished commitments | `relationship_learning_plan.json`、wake integration |
+| 预测-采样 | `belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` | `belief_learning_plan.json`、下一轮 observation / response focus |
 | 梦境残留 | turn residue、pain/regret residue | `dream_fact_gate_decision.json`、`nightmare_loop_risk.json` |
 | 语言修正 | external utterance + expression monitor findings | `language_learning_plan.json`、shared terms refinement |
 | 自我连续体 | latest self narrative、old self anchors | anti-forgetting replay、growth patch guard |
@@ -206,18 +207,16 @@ flowchart TD
 
 ## 当前仍缺的关键闭合
 
-1. `Queue E` 还没把候选表达、责任回路和 world contact 比较层补硬。
-2. `Queue B` 还没把 waiting heartbeat、idle strategy、persistent process 连成更厚的常驻存在层。
-3. `Queue A` 还没把长期关系时间线、道歉修复语言和承诺表达补到语言主神经束里。
+1. `signal_media / belief_state / prediction_error / active_sampling / memory_write_gate` 已经落下第一轮，但还没有被 `language / membrane / life_targets / process_supervisor / state_store` 全面深消费。
+2. `state_merge_guard.py`、长期 promotion / quarantine / repair route 还没有把记忆写门扩成真正的长期层治理。
+3. waiting governance、response surface 和 live-turn writeback 还需要把这批预测与写门对象带过多次唤醒，而不是只在单回合里短暂存在。
 
 因此当前实现顺序不能乱：
 
 ```text
-Queue D 深联动
-  -> Queue E 第二波
-  -> Queue B 第二波
-  -> Queue A 第二波
-  -> Queue C/F 维护回切
+Queue D / Queue E 继续补厚对象链
+  -> Queue B / Queue A 深消费这些已落对象
+  -> Queue C/F 维护回切（state_merge_guard + prediction orchestration 减重）
 ```
 
-如果跳过 E/B 直接只加语言壳，会再次把数字生命压回“会说话的工具 agent”。
+如果跳过这些深消费与长期治理，只在外层继续加语言壳，数字生命会再次退回“会说话但没有长期内部物理”的空壳。

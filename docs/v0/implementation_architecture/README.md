@@ -27,6 +27,7 @@
 | `code_organs/README.md` | 逐包器官装配柜为什么存在、什么时候进入逐包拆分 |
 | `code_organs/01_life_v0_package_organ_split_map.md` | 整棵 `life_v0/` 的逐包器官拆分总图、理论回链、runtime 产物和测试面 |
 | `code_organs/02_heavy_init_refactor_wave_contract.md` | 当前仍然过重的 `__init__.py` 按波次怎样拆、每波最低测试和文档同步要求 |
+| `code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md` | 已落预测器官与记忆写门如何被 `language / membrane / life_targets / process_supervisor / state_store` 深消费 |
 
 ## 使用顺序
 
@@ -42,6 +43,6 @@
 8. `docs/v0/code_architecture/03_build_order_and_definition_of_done.md`
 9. `docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md`
 10. 本柜 `01 -> 03`
-11. `code_organs/01 -> 02`
+11. `code_organs/01 -> 03`
 
 如果读完这一柜仍然无法回答“这次新增文件到底首写哪个共享对象、写出哪份 state/report/receipt、由哪个测试守住”，就不要开写代码。

@@ -98,6 +98,7 @@ docs/v0/code_framework/README.md
   -> docs/v0/implementation_architecture/code_organs/README.md
   -> docs/v0/implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md
   -> docs/v0/implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md
+  -> docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md
   -> docs/v0/engineering_depth/README.md
   -> docs/v0/engineering_depth/01_full_life_layer_implementation_deep_spec.md
   -> docs/v0/engineering_depth/02_state_object_runtime_evidence_map.md
@@ -197,6 +198,12 @@ docs/v0/code_framework/README.md
 ## 当前默认开工包
 
 如果现在就是继续往前落代码，默认不要先回到链尾。`Queue C` 和 `Queue F` 的第一轮已经站稳，当前默认开工包已经切换成 `Queue D -> Queue E`。
+
+如果这一轮不是继续补 D/E 新器官，而是给已落预测器官和记忆写门补跨层消费，则固定追加：
+
+```text
+docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md
+```
 
 这条切换的含义要写死：
 

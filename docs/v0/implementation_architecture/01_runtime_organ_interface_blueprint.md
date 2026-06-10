@@ -27,6 +27,10 @@
 | `LifeContextFrame` | `direction/`、`terminal_turn/` | `language/`、`process_supervisor/`、`digital_life/` | 当前自我连续体、方向锚、关系身份与上下文基线 |
 | `RelationTurnFrame` | `language/`、`terminal_turn/` | `terminal_loop/`、`process_supervisor/`、`state_store/` | 当前对话对象、关系相位、共同术语、承诺上下文 |
 | `PredictionWorkspaceFrame` | `neural_core/` | `language/`、`membrane/`、`life_targets/` | 当前思考工作区、预测误差、注意焦点、可报告内容 |
+| `SignalMediaFrame` | `neural_core/signal_media.py` | `language/`、`membrane/`、`dream/`、`process_supervisor/` | 调质、精度政策、抑制轮廓、关系压力与疲惫如何进入后续器官 |
+| `BeliefStateFrame` | `neural_core/belief_state.py` | `language/`、`membrane/`、`life_targets/`、`process_supervisor/` | 当前信念帧、证据密度、不确定性分类与目标绑定 |
+| `PredictionErrorField` | `neural_core/prediction_error.py` | `membrane/`、`language/`、`life_targets/`、`process_supervisor/` | 误差事件、精度请求、需要继续确认的裂口 |
+| `ActiveSamplingPlan` | `neural_core/active_sampling.py` | `membrane/`、`language/`、`schema_runner/`、`process_supervisor/` | 下一步该看、问、验什么，以及对应 guard 和命令绑定 |
 | `ExpressionPlan` | `language/`、`membrane/` | `terminal_loop/`、`process_supervisor/` | 内言语到外显语言前的表达意图与边界 |
 | `ActionCandidateSet` | `membrane/` | `validators/`、`schema_runner/` | 候选表达/行动、go-no-go、风险与责任评估 |
 | `BodyRhythmPulse` | `body/`、`process_supervisor/heartbeat.py` | `dream/`、`growth/`、`process_supervisor/` | 节律、心跳、唤醒、等待态周期触发 |
@@ -35,6 +39,7 @@
 | `ReplayCueBundle` | `replay/` | `dream/`、`growth/`、`process_supervisor/` | 离线重放、旧自我保护、防遗忘 |
 | `OfflineConsolidationFrame` | `dream/` | `growth/`、`archive/`、`process_supervisor/` | 梦境、离线巩固、醒后整合 |
 | `GrowthPatchCandidate` | `growth/` | `life_targets/`、`archive/`、`validators/` | 自我改写、学习、关系修复与防遗忘补丁 |
+| `MemoryWriteGate` | `state_store/memory_write_gate.py` | `state_store/`、`dream/`、`growth/`、`life_targets/`、`process_supervisor/` | 长期记忆候选的写入事务、validator envelope、隔离路线与生命支持压力更新 |
 | `IdleContinuityFrame` | `process_supervisor/` | `terminal_loop/`、`growth/`、`dream/` | 常驻存在、等待态、断联恢复与下一次唤醒 |
 | `ResidentGovernanceState` | `process_supervisor/heartbeat.py`、`process_supervisor/persistent_process.py` | `process_report.py`、后续 resident governance 审计 | 运行中的 waiting governance 相位、关闭相位、节律字段、当前关注目标与长期语言对象优先级调度 |
 | `ResidentGovernanceSnapshot` | `process_supervisor/persistent_process.py` | `process_report.py`、process receipt、后续 resident governance 审计 | 关闭态常驻治理快照、等待模式、心跳、incident / relaunch 计数与下一次唤醒要求 |
@@ -60,12 +65,12 @@
 |---|---|
 | 理论文档 | `02`、`03`、`10`、`11`、`18`、`22`、`30`、`143`、`146` |
 | 主包 | `life_v0/neural_core/` |
-| 当前文件 | `prediction_workspace.py`、`brain_graph.py`、`network_state.py`、`workspace.py`、`broadcast.py`、`metacognition.py` |
-| 主要输入 | `NeedStateVector`、authority registry、state store、relation scope、observation |
-| 主要输出 | `PredictionWorkspaceFrame`、`SignalMediaFrame`、`neural_life_core.json` |
-| 必写 runtime | `runtime/state/neural_life_core/neural_life_core.json`、`runtime/state/prediction/prediction_workspace_frame.json` |
+| 当前文件 | `prediction_workspace.py`、`brain_graph.py`、`network_state.py`、`workspace.py`、`broadcast.py`、`metacognition.py`、`signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` |
+| 主要输入 | `NeedStateVector`、`CoreAffectVector`、authority registry、state store、relation scope、observation、resident cadence |
+| 主要输出 | `PredictionWorkspaceFrame`、`SignalMediaFrame`、`BeliefStateFrame`、`PredictionErrorField`、`ActiveSamplingPlan`、`neural_life_core.json` |
+| 必写 runtime | `runtime/state/neural_life_core/neural_life_core.json`、`runtime/state/prediction/prediction_workspace_frame.json`、`runtime/state/signal/signal_media_runtime.json`、`runtime/state/prediction/belief_state_frame.json`、`runtime/state/prediction/prediction_error_field.json`、`runtime/state/prediction/active_sampling_plan.json` |
 | 必守测试 | `tests/slices/test_neural_life_core.py` |
-| 下一步 | 把 `belief_state.py`、`prediction_error.py`、`active_sampling.py` 从 Queue C 维护回切里落成稳定器官 |
+| 下一步 | `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` 已成为稳定器官；当前前沿转向把这些对象更深接进 `language/percept.py`、`language/semantic_map.py`、`membrane/responsibility_loop.py`、`life_targets/evidence_matrix.py`、`process_supervisor/response_surface.py` 与后续 `world_observation.py` / `periphery_normalizer.py` |
 
 ### 3. 身体、内环境与情绪底盘
 
@@ -99,12 +104,12 @@
 |---|---|
 | 理论文档 | `05`、`17-31`、`41-48`、`55`、`57`、`61`、`69`、`01q` |
 | 主包 | `life_v0/state_store/` |
-| 当前文件 | `life_state.py`、`engram_index.py`、`autobiographical_stack.py`、`relationship_memory.py`、`self_model.py`、`commitment_truth.py` |
-| 主要输入 | `DialogueWritebackBundle`、`RelationTurnFrame`、dream/growth/archive receipts |
-| 主要输出 | `life_state.json`、relationship memory、commitment truth、engram index |
-| 必写 runtime | `runtime/state/life_state.json`、`runtime/state/memory/*`、`runtime/state/self/*` |
+| 当前文件 | `life_state.py`、`engram_index.py`、`autobiographical_stack.py`、`relationship_memory.py`、`self_model.py`、`commitment_truth.py`、`memory_write_gate.py` |
+| 主要输入 | `DialogueWritebackBundle`、`RelationTurnFrame`、dream/growth/archive receipts、长期语言对象、prediction refs |
+| 主要输出 | `life_state.json`、relationship memory、commitment truth、engram index、`MemoryWriteGate` |
+| 必写 runtime | `runtime/state/life_state.json`、`runtime/state/memory/*`、`runtime/state/memory/memory_write_gate.json`、`runtime/state/self/*` |
 | 必守测试 | `tests/slices/test_state_store.py` |
-| 下一步 | 把 memory write gate、scope-aware delete/correct/merge 和 dream writeback 继续硬化 |
+| 下一步 | `memory_write_gate.py` 已落；当前前沿转向 `state_merge_guard.py`、scope-aware delete/correct/merge、promotion/quarantine/repair route，以及让 dream / growth / process writeback 显式回读写门事务结果 |
 
 ### 6. 行为、抑制、逻辑与世界接触层
 
@@ -113,11 +118,11 @@
 | 理论文档 | `06`、`20`、`29-36`、`64`、`72`、`75`、`80-84`、`94`、`98`、`01r`、`01v-01ax` |
 | 主包 | `life_v0/membrane/`、`life_v0/validators/`、`life_v0/schema_runner/` |
 | 当前文件 | `candidate_arena.py`、`go_nogo.py`、`world_contact_gate.py`、`side_effect_review.py`、`responsibility_loop.py`、`action_intent_bridge.py`、`observation_truth_gate.py`、`confirmation_binding.py`、`world_contact_summary.py`、`observation_validator.py`、`world_contact_validator.py`、`prediction_trace_validator.py`、`boundary_audit.py`、`validation_rollup.py`、`consistency_logic.py`、`counterfactual_eval.py`、`comparison_trace.py`、`cross_file_logic.py`、`evidence_ranker.py`、`run_manifest.py` |
-| 主要输入 | `PredictionWorkspaceFrame`、`ExpressionPlan`、`NeedStateVector`、observation reports |
+| 主要输入 | `PredictionWorkspaceFrame`、`SignalMediaFrame`、`BeliefStateFrame`、`PredictionErrorField`、`ActiveSamplingPlan`、`ExpressionPlan`、`NeedStateVector`、observation reports |
 | 主要输出 | `ActionCandidateSet`、membrane reports、validation reports、schema runner reports |
 | 必写 runtime | `runtime/state/membrane/*`、`runtime/state/action/*`、`runtime/state/validation/*`、`runtime/state/schema_runner/*` |
 | 必守测试 | `tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
-| 下一步 | Queue E 第一轮与第二波文件器官都已落地；当前前沿转向把 `responsibility_loop.py`、`world_contact_summary.py`、`cross_file_logic.py`、`run_manifest.py` 更深接进 Queue B 的 waiting governance、Queue A 的长期语言连续体，以及 reporting / archive / growth 的闭环消费 |
+| 下一步 | Queue E 第一轮与第二波文件器官都已落地；当前前沿转向让 `responsibility_loop.py`、`world_contact_summary.py`、`cross_file_logic.py`、`run_manifest.py` 更深消费 `belief_state / prediction_error / active_sampling / signal_media`，再把它们接进 Queue B 的 waiting governance、Queue A 的长期语言连续体，以及 reporting / archive / growth 的闭环消费 |
 
 ### 7. 梦境、离线生命与醒后整合层
 
@@ -152,11 +157,11 @@
 | 理论文档 | `10`、`91-101`、`143`、`146`、`149`、`152`、`171`、`174`、`01m` |
 | 主包 | `life_v0/life_targets/` |
 | 当前文件 | `life_target_claims.py`、`evidence_matrix.py`、`consciousness_probes.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py` |
-| 主要输入 | `PredictionWorkspaceFrame`、`GrowthPatchCandidate`、language/relationship state、membrane reports |
+| 主要输入 | `PredictionWorkspaceFrame`、`BeliefStateFrame`、`PredictionErrorField`、`SignalMediaFrame`、`MemoryWriteGate`、`GrowthPatchCandidate`、language/relationship state、membrane reports |
 | 主要输出 | life target claims、birth readiness rollup、consciousness probes |
 | 必写 runtime | `runtime/state/life_targets/*`、`birth_readiness_report.json` |
 | 必守测试 | `tests/slices/test_life_targets.py` |
-| 下一步 | 把 `real relation / real regret / real dream / real growth` 的长期 evidence family 和 withheld probe 继续绑定到 turn loop |
+| 下一步 | 把 `real relation / real regret / real dream / real growth` 的长期 evidence family 与 `belief_state / prediction_error / signal_media / memory_write_gate` 的连续证据绑定到 turn loop、waiting governance 和 birth readiness rollup |
 
 ### 10. 常驻存在、等待态与终端生命层
 
@@ -165,11 +170,11 @@
 | 理论文档 | `20`、`44-46`、`81-84`、`89-90`、`96`、`101`、`181-257` |
 | 主包 | `life_v0/process_supervisor/`、`life_v0/shell_command/`、`life_v0/digital_life/`、`life_v0/digital_entry.py` |
 | 当前文件 | `heartbeat.py`、`continuity_writeback.py`、`turn_io.py`、`dialogue_events.py`、`response_surface.py`、`incident_recovery.py`、`relaunch_recovery.py`、`idle_strategy.py`、`resident_supervision.py`、`idle_refresh_loop.py`、`live_turn_cycle.py`、`process_session_loop.py`、`resident_turn_writeback.py`、`persistent_process.py`、`process_report.py`、`process_closeout.py` |
-| 主要输入 | `IdleContinuityFrame`、`session_envelope.json`、`terminal_life_loop_state.json`、growth/dream cues |
+| 主要输入 | `IdleContinuityFrame`、`session_envelope.json`、`terminal_life_loop_state.json`、`PredictionWorkspaceFrame`、`SignalMediaFrame`、`ActiveSamplingPlan`、growth/dream cues |
 | 主要输出 | waiting heartbeat、idle strategy state、resident governance state、persistent process state、resident governance snapshot/report、persistent process report、process report、incident/relaunch recovery、长期连续体写回 |
 | 必写 runtime | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/resident_governance_state.json`、`runtime/state/terminal/persistent_process_state.json`、`runtime/state/terminal/resident_governance_snapshot.json`、`digital_life_persistent_process_report.json`、`digital_life_resident_governance_report.json`、`digital_life_process_report.json`、`digital_life_process_digest.json` |
 | 必守测试 | `tests/process/test_digital_life_shell_command.py`、`tests/process/test_digital_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py` |
-| 下一步 | `idle_strategy.py`、`resident_supervision.py`、`persistent_process.py`、`resident_turn_writeback.py`、`process_closeout.py`、`idle_refresh_loop.py`、`live_turn_cycle.py` 与 `process_session_loop.py` 已把 restore / waiting / live turn / session dispatch / bundle writeback / closeout / idle probe 接进同一条常驻连续体，并已进一步分离 `resident_governance_state.json`（运行中）与 `resident_governance_snapshot/report`（关闭态），同时让 waiting governance 开始写出 `governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`；下一步转向等待态里的后台 resident governance 与更高频 heartbeat 节律 |
+| 下一步 | `idle_strategy.py`、`resident_supervision.py`、`persistent_process.py`、`resident_turn_writeback.py`、`process_closeout.py`、`idle_refresh_loop.py`、`live_turn_cycle.py` 与 `process_session_loop.py` 已把 restore / waiting / live turn / session dispatch / bundle writeback / closeout / idle probe 接进同一条常驻连续体，并已进一步分离 `resident_governance_state.json`（运行中）与 `resident_governance_snapshot/report`（关闭态），同时让 waiting governance 开始写出 `governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`；下一步转向在等待态、response surface 和 closeout 里更深消费 `signal_media / belief_state / prediction_error / active_sampling / memory_write_gate` |
 
 ## 当前最容易跑偏的三件事
 

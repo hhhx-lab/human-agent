@@ -28,6 +28,7 @@
 | `README.md` | 说明这一柜为什么存在、什么时候打开 |
 | `01_life_v0_package_organ_split_map.md` | 整棵 `life_v0/` 的逐包器官拆分总图，固定每个包的理论回链、现状、目标文件、runtime 产物和测试面 |
 | `02_heavy_init_refactor_wave_contract.md` | 把当前仍然过重的 `__init__.py` 按 Queue 波次压成拆分合同，固定每一波先拆谁、怎么拆、跑哪些测试 |
+| `03_predictive_signal_memory_gate_integration_wave_contract.md` | 固定已落 `signal_media / belief_state / prediction_error / active_sampling / memory_write_gate` 的跨层深消费波次 |
 
 ## 使用顺序
 
@@ -38,6 +39,6 @@
 3. `docs/v0/entry/v0_module_execution_catalog.md`
 4. `docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md`
 5. `docs/v0/implementation_architecture/01_runtime_organ_interface_blueprint.md`
-6. 本柜 `01 -> 02`
+6. 本柜 `01 -> 03`
 
 如果读完这里仍然回答不出“这个包下一轮先拆哪个真实文件、要写哪份 state/report/receipt、跑哪组测试”，就不要开写代码。

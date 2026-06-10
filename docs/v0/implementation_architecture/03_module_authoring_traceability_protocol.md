@@ -145,26 +145,41 @@ def check_xxx(payload: dict[str, Any]) -> list[str]:
 
 ## 当前最值得继续按本协议推进的模块
 
-### Queue E
+### 预测-语言消费面
 
-- `life_v0/membrane/shadow_gate.py`
-- `life_v0/schema_runner/evidence_ranker.py`
+- `life_v0/language/percept.py`
+- `life_v0/language/semantic_map.py`
+- `life_v0/language/inner_speech.py`
+- `life_v0/language/expression_monitor.py`
 
-`life_v0/membrane/responsibility_loop.py` 已经落地，当前把它视为“继续补厚的已落器官”，而不是默认新增文件。
+这一组当前不是从零建文件，而是把 `signal_media / belief_state / prediction_error / active_sampling` 变成语言链的真实输入。
 
-### Queue B
+### 预测-生命膜消费面
 
+- `life_v0/membrane/world_observation.py`
+- `life_v0/membrane/periphery_normalizer.py`
+- `life_v0/membrane/responsibility_loop.py`
+- `life_v0/membrane/world_contact_summary.py`
+
+这里的重点不再是“先有 world contact 名字”，而是把已落预测对象真正吃进观察归一化、责任回路和世界接触摘要。
+
+### 预测-常驻治理消费面
+
+- `life_v0/process_supervisor/response_surface.py`
 - `life_v0/process_supervisor/idle_strategy.py`
+- `life_v0/process_supervisor/resident_supervision.py`
 - `life_v0/process_supervisor/persistent_process.py`
 
-这两个器官已经落下第一轮；后续继续推进 Queue B 时，默认动作不是“先把文件建出来”，而是继续补厚它们与
-`heartbeat.py`、`continuity_writeback.py`、`response_surface.py`、`process_report.py` 的治理链。
+这几处已经有第一轮器官；后续继续推进时，默认动作不是“先把文件建出来”，而是继续补厚它们与
+`heartbeat.py`、`continuity_writeback.py`、`resident_turn_writeback.py`、`process_report.py` 的治理链。
 
-### Queue A
+### 记忆写门后续
 
-- `life_v0/language/relationship_timeline.py`
-- `life_v0/language/commitment_expression.py`
-- `life_v0/language/apology_repair_language.py`
+- `life_v0/state_store/state_merge_guard.py`
+- `life_v0/state_store/memory_write_gate.py`
+- `life_v0/state_store/relationship_memory.py`
+
+这一组负责把 `memory_write_gate.json` 从单次事务扩成长期 promotion / quarantine / repair / merge 治理面。
 
 ## 合并前检查清单
 

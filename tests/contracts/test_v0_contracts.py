@@ -172,6 +172,10 @@ class V0ContractCoverageTests(unittest.TestCase):
             "docs/v0/implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md",
             contract_index["files"],
         )
+        self.assertIn(
+            "docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md",
+            contract_index["files"],
+        )
         self.assertIn("docs/v0/engineering_depth/README.md", contract_index["files"])
         self.assertIn(
             "docs/v0/engineering_depth/01_full_life_layer_implementation_deep_spec.md",
