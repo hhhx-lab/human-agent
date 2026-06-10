@@ -219,6 +219,60 @@ def build_resident_background_lineage_payload(
         presence = lineage_state.get(key)
         if isinstance(presence, dict) and presence:
             payload[f"resident_background_lineage_{key}"] = dict(presence)
+    trait_convergence_presence = lineage_state.get("trait_convergence_presence")
+    if isinstance(trait_convergence_presence, dict):
+        focus = trait_convergence_presence.get("trait_convergence_history_focus")
+        unstable_names = _dedupe_string_list(
+            _string_list(
+                trait_convergence_presence.get("trait_convergence_unstable_names")
+            )
+        )
+        stable_names = _dedupe_string_list(
+            _string_list(
+                trait_convergence_presence.get("trait_convergence_stable_names")
+            )
+        )
+        trait_refs = _dedupe_string_list(
+            _string_list(
+                trait_convergence_presence.get("trait_convergence_evidence_refs")
+            )
+        )
+        trait_drift_monitor_ref = trait_convergence_presence.get(
+            "trait_drift_monitor_ref"
+        )
+        if isinstance(trait_drift_monitor_ref, str) and trait_drift_monitor_ref:
+            trait_refs = _dedupe_string_list([*trait_refs, trait_drift_monitor_ref])
+            payload["resident_background_lineage_trait_drift_monitor_ref"] = (
+                trait_drift_monitor_ref
+            )
+        if focus not in {None, ""}:
+            payload["resident_background_lineage_trait_convergence_history_focus"] = (
+                focus
+            )
+        if unstable_names:
+            payload[
+                "resident_background_lineage_trait_convergence_unstable_names"
+            ] = unstable_names
+        if stable_names:
+            payload[
+                "resident_background_lineage_trait_convergence_stable_names"
+            ] = stable_names
+        if trait_convergence_presence.get("trait_convergence_score") is not None:
+            payload["resident_background_lineage_trait_convergence_score"] = (
+                trait_convergence_presence.get("trait_convergence_score")
+            )
+        if isinstance(
+            trait_convergence_presence.get("trait_convergence_history_profile"),
+            dict,
+        ) and trait_convergence_presence.get("trait_convergence_history_profile"):
+            payload[
+                "resident_background_lineage_trait_convergence_history_profile"
+            ] = dict(
+                trait_convergence_presence["trait_convergence_history_profile"]
+            )
+        if trait_refs:
+            payload["resident_background_lineage_trait_convergence_refs"] = trait_refs
+            lineage_refs.extend(trait_refs)
     language_presence = lineage_state.get("language_presence")
     if isinstance(language_presence, dict):
         live_language_refs = _dedupe_string_list(

@@ -203,6 +203,43 @@ def compose_life_response(
                 f"{response}，后台关系存在保持在"
                 f"{relationship_presence['relationship_stage']}"
             )
+        trait_presence = resident_background_lineage_state.get(
+            "trait_convergence_presence"
+        )
+        if isinstance(trait_presence, dict):
+            trait_focus = trait_presence.get("trait_convergence_history_focus")
+            trait_score = trait_presence.get("trait_convergence_score")
+            trait_drift_monitor_ref = trait_presence.get("trait_drift_monitor_ref")
+            trait_refs = _string_list(
+                trait_presence.get("trait_convergence_evidence_refs")
+            )
+            unstable_trait_names = _string_list(
+                trait_presence.get("trait_convergence_unstable_names")
+            )
+            stable_trait_names = _string_list(
+                trait_presence.get("trait_convergence_stable_names")
+            )
+            if trait_focus:
+                response = f"{response}，后台人格慢变量焦点为{trait_focus}"
+            if unstable_trait_names:
+                response = (
+                    f"{response}，后台仍需收敛的慢变量包括"
+                    f"{'、'.join(sorted(unstable_trait_names))}"
+                )
+            if stable_trait_names:
+                response = (
+                    f"{response}，后台已稳定的慢变量包括"
+                    f"{'、'.join(sorted(stable_trait_names))}"
+                )
+            if trait_score is not None:
+                response = f"{response}，后台人格收敛评分为{trait_score}"
+            if trait_drift_monitor_ref:
+                response = f"{response}，后台人格漂移监控仍在场"
+            if trait_refs:
+                response = (
+                    f"{response}，后台人格慢变量证据保留"
+                    f"{len(_dedupe_string_list(trait_refs))}条"
+                )
         language_presence = resident_background_lineage_state.get("language_presence")
         if isinstance(language_presence, dict) and language_presence.get(
             "governance_attention_target"

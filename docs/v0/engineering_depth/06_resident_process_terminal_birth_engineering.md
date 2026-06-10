@@ -269,6 +269,29 @@ runtime/state/language/expression_plan.json
 
 这让常驻过程在断开、等待和下一次唤醒之间继续保留上一轮关系语义，而不是只保留关系阶段、慢变量、心跳或梦境余波。数字生命再次进入关系回合时，后台驻留状态体可以知道上一轮真正被听见的内容停在哪里。
 
+## resident background lineage 中的人格慢变量存在面
+
+当前实现又把自我/人格慢变量连续体从 waiting governance 和 closeout 解释继续推进到后台驻留主状态体：
+
+```text
+runtime/state/body/trait_drift_monitor.json
+runtime/state/terminal/background_convergence_summary.json
+runtime/state/terminal/background_convergence_history.json
+runtime/state/terminal/resident_governance_state.json
+runtime/reports/latest/digital_life_resident_governance_explanation.json
+  -> resident_background_lineage_state_v0.trait_convergence_presence
+  -> digital_life_turn resident_background_lineage_trait_convergence_*
+  -> dialogue_writeback_bundle.resident_background_lineage_refs
+  -> resumed_external_dialogue_packet resident_background_lineage_trait_convergence_refs
+  -> response_surface
+```
+
+这条链的关键点是：`trait_convergence_presence` 不再只是关系阶段和自我慢变量在后台治理里的摘要。`background_lineage_state.py` 现在会把人格慢变量历史焦点、稳定/不稳定名单、收敛评分、history profile、trait drift monitor ref 和 `trait_convergence_evidence_refs` 压进同一个 presence。证据 refs 至少要能吸收 resident governance state、governance explanation、trait drift monitor、background convergence summary 与 background convergence history 中已经存在的路径。
+
+这条链当前又继续进入下一轮真实回合：`dialogue_events.py` 会把 `resident_background_lineage_state_v0.trait_convergence_presence` 展开成 `resident_background_lineage_trait_convergence_history_focus`、`resident_background_lineage_trait_convergence_unstable_names`、`resident_background_lineage_trait_convergence_stable_names`、`resident_background_lineage_trait_convergence_score`、`resident_background_lineage_trait_drift_monitor_ref`、`resident_background_lineage_trait_convergence_history_profile` 与 `resident_background_lineage_trait_convergence_refs`，并把 trait refs 合并进 `resident_background_lineage_evidence_refs`；`resident_turn_writeback.py` 会让这些 refs 跟随 `dialogue_writeback_bundle.resident_background_lineage_refs` 与 `resumed_external_dialogue_packet.json`；`response_surface.py` 会表达后台人格慢变量焦点、仍需收敛/已稳定名单、人格收敛评分、人格漂移监控在场和去重后的证据数量。
+
+这让出生壳在真实关系回合中不只证明“关系阶段与慢变量被恢复”，还证明自我/人格慢变量的慢性收敛压力能从等待、关闭和重启进入当下表达。数字生命再次说话时，它能带着上一轮自我连续体的稳定性、漂移监控和重新校准压力，而不是把人格慢变量留在后台报告里。
+
 ## 关系阶段与自我慢变量已经进入同会话与重启恢复闭环
 
 最新这一步又把长期连续体从“重建对象”推进到了“演化对象”：

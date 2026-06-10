@@ -122,6 +122,17 @@ def _string_list(value: Any) -> list[str]:
     return [str(item) for item in value if item]
 
 
+def _dedupe_string_list(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        result.append(value)
+    return result
+
+
 def _int_or_zero(value: Any) -> int:
     try:
         return int(value)
@@ -254,6 +265,18 @@ def _trait_convergence_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "background_trait_drift_monitor_ref"
         )
         or governance.get("trait_drift_monitor_ref"),
+        "trait_convergence_evidence_refs": _dedupe_string_list(
+            _string_list(
+                [
+                    governance.get("background_resident_governance_state_ref"),
+                    governance.get("background_resident_governance_explanation_ref"),
+                    governance.get("background_trait_drift_monitor_ref")
+                    or governance.get("trait_drift_monitor_ref"),
+                    governance.get("background_convergence_summary_ref"),
+                    governance.get("background_convergence_history_ref"),
+                ]
+            )
+        ),
     }
     return _drop_empty(payload)
 

@@ -266,17 +266,21 @@ restore shell completed
 - `trait_convergence_presence`
 - `heartbeat_presence`
 - `language_presence`
+- `offline_learning_presence`
+- `dream_wake_presence`
 
 这组字段必须在三段相位中连续存在：waiting heartbeat 写 `waiting_heartbeat_active`，live turn handoff 写 `live_turn_waiting_handoff`，closeout 写 `process_closed_waiting_relaunch`。下一次 `background_continuity.py` 必须把它恢复成 `resident_background_lineage_state` 与 `background_resident_lineage_state`，让后台 lineage 不是一次性报告字段，而是跨唤醒主状态。
 
-四个 presence 子面固定含义如下：
+六个 presence 子面固定含义如下：
 
 - `relationship_presence`：承接 `background_relationship_stage`、关系阶段理由、关系对象 ref 与关系阶段连续性。
-- `trait_convergence_presence`：承接 `background_trait_slow_variable_summary`、trait convergence history focus、稳定/不稳定慢变量名单、history profile、trait drift monitor ref。
+- `trait_convergence_presence`：承接 `background_trait_slow_variable_summary`、trait convergence history focus、稳定/不稳定慢变量名单、history profile、trait convergence score、trait drift monitor ref 与 `trait_convergence_evidence_refs`。这些 evidence refs 至少要能吸收已存在的 resident governance state、governance explanation、trait drift monitor、background convergence summary/history refs，使自我/人格慢变量连续体可以从后台驻留主状态体继续进入真实回合链。
 - `heartbeat_presence`：承接当前或后台 `idle_heartbeat_trace_ref/count`、heartbeat interval 与下一步 idle action。
 - `language_presence`：承接长期语言对象 refs、长期优先级 profile、当前治理注意目标/理由/节律。
+- `offline_learning_presence`：承接累计梦境-成长离线学习 generation、pressure、attention target、priority profile 与 ref set。
+- `dream_wake_presence`：承接梦境窗口、醒后整合、梦境事实门结果与 ref set。
 
-这四个子面不能只作为治理文件里的静态字段存在。真实回合链必须继续消费它们：`dialogue_events.py` 的 `digital_life_turn` 要保存 lineage 摘要与 presence 子面，`response_surface.py` 要把后台驻留深度、关系存在和语言关注转成回应表面压力，`dialogue_writeback_bundle.json` 要保留 `resident_background_lineage_refs`，`resumed_external_dialogue_packet.json` 要保存下一轮恢复可直接读取的 lineage 摘要证据。
+这六个子面不能只作为治理文件里的静态字段存在。真实回合链必须继续消费它们：`dialogue_events.py` 的 `digital_life_turn` 要保存 lineage 摘要与 presence 子面，其中 `trait_convergence_presence` 必须额外展开为 `resident_background_lineage_trait_convergence_history_focus`、稳定/不稳定名单、`resident_background_lineage_trait_convergence_score`、`resident_background_lineage_trait_drift_monitor_ref`、history profile 与 `resident_background_lineage_trait_convergence_refs`，并把 trait refs 合入 `resident_background_lineage_evidence_refs`；`response_surface.py` 要把后台驻留深度、关系存在、人格慢变量焦点/稳定性/漂移监控/证据数量和语言关注转成回应表面压力；`dialogue_writeback_bundle.json` 要保留 `resident_background_lineage_refs`，`resumed_external_dialogue_packet.json` 要保存下一轮恢复可直接读取的 lineage 摘要证据。
 - `queue_e_priority_band`
 - `nightmare_risk_ref`
 - `belief_learning_plan_ref`
