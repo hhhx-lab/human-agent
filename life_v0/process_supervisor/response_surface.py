@@ -340,6 +340,81 @@ def compose_life_response(
                     f"{response}，后台长期变化来源族包括"
                     f"{'、'.join(state_merge_families)}"
                 )
+        identity_consciousness_birth_presence = (
+            resident_background_lineage_state.get(
+                "identity_consciousness_birth_presence"
+            )
+        )
+        if isinstance(identity_consciousness_birth_presence, dict):
+            consciousness_waiting_posture = (
+                identity_consciousness_birth_presence.get(
+                    "consciousness_waiting_posture"
+                )
+            )
+            consciousness_flags = _string_list(
+                identity_consciousness_birth_presence.get(
+                    "consciousness_reportability_flags"
+                )
+            )
+            birth_waiting_posture = identity_consciousness_birth_presence.get(
+                "birth_readiness_waiting_posture"
+            )
+            birth_decision = identity_consciousness_birth_presence.get(
+                "birth_readiness_decision"
+            )
+            birth_next_command = identity_consciousness_birth_presence.get(
+                "birth_readiness_next_required_command"
+            )
+            identity_consciousness_birth_refs = _dedupe_string_list(
+                _string_list(
+                    identity_consciousness_birth_presence.get(
+                        "identity_consciousness_birth_refs"
+                    )
+                )
+                or _string_list(
+                    [
+                        identity_consciousness_birth_presence.get(
+                            "workspace_frame_ref"
+                        ),
+                        identity_consciousness_birth_presence.get(
+                            "broadcast_frame_ref"
+                        ),
+                        identity_consciousness_birth_presence.get(
+                            "metacognition_ref"
+                        ),
+                        identity_consciousness_birth_presence.get(
+                            "consciousness_probe_ref"
+                        ),
+                        identity_consciousness_birth_presence.get(
+                            "birth_readiness_rollup_ref"
+                        ),
+                        identity_consciousness_birth_presence.get(
+                            "birth_readiness_stage_gate_ref"
+                        ),
+                    ]
+                )
+            )
+            if consciousness_waiting_posture:
+                response = (
+                    f"{response}，后台意识姿态为"
+                    f"{consciousness_waiting_posture}"
+                )
+            if consciousness_flags:
+                response = (
+                    f"{response}，后台意识可报告性保留"
+                    f"{len(_dedupe_string_list(consciousness_flags))}条"
+                )
+            if birth_waiting_posture:
+                response = f"{response}，后台出生准备姿态为{birth_waiting_posture}"
+            if birth_decision:
+                response = f"{response}，出生准备决策为{birth_decision}"
+            if birth_next_command:
+                response = f"{response}，出生准备下一命令为{birth_next_command}"
+            if identity_consciousness_birth_refs:
+                response = (
+                    f"{response}，后台身份意识出生证据保留"
+                    f"{len(identity_consciousness_birth_refs)}条"
+                )
         offline_learning_presence = resident_background_lineage_state.get(
             "offline_learning_presence"
         )

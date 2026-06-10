@@ -5018,6 +5018,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_history_recalibration": ["continuity_drive"],
                 "background_history_stabilized": ["repair_seriousness"],
             }
+            expected_identity_consciousness_birth_refs = [
+                "runtime/state/consciousness/workspace_frame.json",
+                "runtime/state/consciousness/broadcast_frame.json",
+                "runtime/state/consciousness/metacognition_state.json",
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+                "runtime/state/life_targets/birth_readiness_rollup.json",
+                "runtime/state/life_targets/birth_readiness_stage_gate.json",
+            ]
             idle_strategy_state.update(
                 {
                     "background_resident_governance_explanation_ref": "runtime/reports/latest/digital_life_resident_governance_explanation.json",
@@ -5154,6 +5162,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "long_term_change_families": expected_background_state_merge_families,
                         "long_term_change_refs": expected_background_state_merge_refs,
                         "state_merge_evidence_refs": expected_background_state_merge_evidence_refs,
+                    },
+                    "identity_consciousness_birth_presence": {
+                        "workspace_frame_ref": "runtime/state/consciousness/workspace_frame.json",
+                        "broadcast_frame_ref": "runtime/state/consciousness/broadcast_frame.json",
+                        "metacognition_ref": "runtime/state/consciousness/metacognition_state.json",
+                        "consciousness_probe_ref": "runtime/state/consciousness/consciousness_probe_bundle.json",
+                        "birth_readiness_rollup_ref": "runtime/state/life_targets/birth_readiness_rollup.json",
+                        "birth_readiness_stage_gate_ref": "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                        "consciousness_waiting_posture": "consciousness_reportable_waiting",
+                        "consciousness_attention_target": "consciousness_probe_bundle",
+                        "consciousness_attention_reason": "reportability_flags_present",
+                        "consciousness_reportability_flags": [
+                            "workspace_access_present",
+                            "broadcast_targets_present",
+                            "metacognition_present",
+                        ],
+                        "birth_readiness_waiting_posture": "birth_open_waiting",
+                        "birth_readiness_attention_target": "birth_readiness_stage_gate",
+                        "birth_readiness_attention_reason": "birth_readiness_open_requires_resident_birth_presence",
+                        "birth_readiness_decision": "open",
+                        "birth_readiness_next_required_command": "digital life",
+                        "identity_consciousness_birth_refs": expected_identity_consciousness_birth_refs,
                     },
                     "offline_learning_presence": {
                         "generation": 3,
@@ -5484,6 +5514,70 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
                 expected_background_state_merge_evidence_refs,
             )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_identity_consciousness_birth_presence"
+                ]["consciousness_waiting_posture"],
+                "consciousness_reportable_waiting",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_workspace_frame_ref"
+                ],
+                "runtime/state/consciousness/workspace_frame.json",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_consciousness_probe_ref"
+                ],
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_consciousness_waiting_posture"
+                ],
+                "consciousness_reportable_waiting",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_consciousness_reportability_flags"
+                ],
+                [
+                    "workspace_access_present",
+                    "broadcast_targets_present",
+                    "metacognition_present",
+                ],
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_birth_readiness_stage_gate_ref"
+                ],
+                "runtime/state/life_targets/birth_readiness_stage_gate.json",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_birth_readiness_waiting_posture"
+                ],
+                "birth_open_waiting",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_birth_readiness_decision"
+                ],
+                "open",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_birth_readiness_next_required_command"
+                ],
+                "digital life",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_identity_consciousness_birth_refs"
+                ],
+                expected_identity_consciousness_birth_refs,
+            )
             self.assertIn(
                 "后台语言语义余波停在repair_commitment_shared_language",
                 result.emitted_output,
@@ -5506,6 +5600,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "后台长期变化来源族包括offline_learning_cumulative_refs、queue_e_repair_modulation_refs、relationship_memory_offline_refs",
                 result.emitted_output,
             )
+            self.assertIn("后台意识姿态为consciousness_reportable_waiting", result.emitted_output)
+            self.assertIn("后台意识可报告性保留3条", result.emitted_output)
+            self.assertIn("后台出生准备姿态为birth_open_waiting", result.emitted_output)
+            self.assertIn("出生准备决策为open", result.emitted_output)
+            self.assertIn("出生准备下一命令为digital life", result.emitted_output)
+            self.assertIn("后台身份意识出生证据保留6条", result.emitted_output)
             self.assertEqual(
                 result.last_life_turn["prediction_waiting_posture"],
                 "hold_for_evidence",
@@ -5684,6 +5784,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/memory/state_merge_guard.json",
                 "runtime/state/growth/relationship_learning_plan.json",
                 "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+                "runtime/state/life_targets/birth_readiness_stage_gate.json",
                 "runtime/state/action/responsibility_loop_state.json",
                 "runtime/state/dream/offline_consolidation_frame.json",
             ]:
@@ -5728,6 +5830,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "resident_background_lineage_dream_wake_refs"
                 ],
                 result.last_life_turn["resident_background_lineage_dream_wake_refs"],
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_identity_consciousness_birth_refs"
+                ],
+                expected_identity_consciousness_birth_refs,
             )
             self.assertEqual(
                 resumed_dialogue_packet["background_trait_convergence_history_focus"],
@@ -5816,6 +5924,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 dialogue_writeback_bundle[
                     "resident_background_lineage_dream_wake_refs"
                 ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_identity_consciousness_birth_refs"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_identity_consciousness_birth_refs"
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_birth_readiness_next_required_command"
+                ],
+                "digital life",
             )
             self.assertEqual(
                 resumed_dialogue_packet["prediction_write_gate_refs"],
@@ -9373,6 +9495,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "commitment-ref-02",
             ]
         }
+        expected_identity_consciousness_birth_refs = [
+            "runtime/state/consciousness/workspace_frame.json",
+            "runtime/state/consciousness/broadcast_frame.json",
+            "runtime/state/consciousness/metacognition_state.json",
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+            "runtime/state/life_targets/birth_readiness_rollup.json",
+            "runtime/state/life_targets/birth_readiness_stage_gate.json",
+        ]
 
         external_turn = build_external_turn_event(
             turn_id="dialogue-turn-live-0001",
@@ -9451,6 +9581,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/language/semantic_map_frame.json",
                         ],
                         "background_last_live_semantic_focus": "repair_commitment_shared_language",
+                    },
+                    "identity_consciousness_birth_presence": {
+                        "workspace_frame_ref": "runtime/state/consciousness/workspace_frame.json",
+                        "broadcast_frame_ref": "runtime/state/consciousness/broadcast_frame.json",
+                        "metacognition_ref": "runtime/state/consciousness/metacognition_state.json",
+                        "consciousness_probe_ref": "runtime/state/consciousness/consciousness_probe_bundle.json",
+                        "birth_readiness_rollup_ref": "runtime/state/life_targets/birth_readiness_rollup.json",
+                        "birth_readiness_stage_gate_ref": "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                        "consciousness_waiting_posture": "consciousness_reportable_waiting",
+                        "consciousness_attention_target": "consciousness_probe_bundle",
+                        "consciousness_attention_reason": "reportability_flags_present",
+                        "consciousness_reportability_flags": [
+                            "workspace_access_present",
+                            "broadcast_targets_present",
+                            "metacognition_present",
+                        ],
+                        "birth_readiness_waiting_posture": "birth_open_waiting",
+                        "birth_readiness_attention_target": "birth_readiness_stage_gate",
+                        "birth_readiness_attention_reason": "birth_readiness_open_requires_resident_birth_presence",
+                        "birth_readiness_decision": "open",
+                        "birth_readiness_next_required_command": "digital life",
+                        "identity_consciousness_birth_refs": expected_identity_consciousness_birth_refs,
                     },
                     "offline_learning_presence": {
                         "generation": 4,
@@ -9730,6 +9882,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "runtime/state/body/trait_drift_monitor.json",
             "runtime/state/terminal/background_convergence_summary.json",
             "runtime/state/language/inner_speech_frame.json",
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+            "runtime/state/life_targets/birth_readiness_stage_gate.json",
             "runtime/state/growth/relationship_learning_plan.json",
             "runtime/state/growth/language_learning_plan.json",
             "runtime/state/dream/offline_consolidation_frame.json",
@@ -9738,6 +9892,38 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "runtime/state/dream/dream_fact_gate_decision.json",
         ]:
             self.assertIn(ref, life_turn["resident_background_lineage_evidence_refs"])
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_identity_consciousness_birth_presence"
+            ]["birth_readiness_decision"],
+            "open",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_workspace_frame_ref"],
+            "runtime/state/consciousness/workspace_frame.json",
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_consciousness_reportability_flags"
+            ],
+            [
+                "workspace_access_present",
+                "broadcast_targets_present",
+                "metacognition_present",
+            ],
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_birth_readiness_next_required_command"
+            ],
+            "digital life",
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_identity_consciousness_birth_refs"
+            ],
+            expected_identity_consciousness_birth_refs,
+        )
         self.assertEqual(life_turn["prediction_waiting_posture"], "hold_for_evidence")
         self.assertEqual(life_turn["response_surface_posture_hint"], "question")
         self.assertEqual(life_turn["prediction_attention_target"], "active_sampling_plan")
@@ -9766,6 +9952,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
     def test_response_surface_organ_carries_relation_shared_terms_and_commitment_pressure(self):
         from life_v0.process_supervisor.response_surface import compose_life_response
 
+        expected_identity_consciousness_birth_refs = [
+            "runtime/state/consciousness/workspace_frame.json",
+            "runtime/state/consciousness/broadcast_frame.json",
+            "runtime/state/consciousness/metacognition_state.json",
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+            "runtime/state/life_targets/birth_readiness_rollup.json",
+            "runtime/state/life_targets/birth_readiness_stage_gate.json",
+        ]
         response = compose_life_response(
             external_utterance="你还记得我们吗？",
             relationship_graph={
@@ -9979,6 +10173,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "language_presence": {
                         "governance_attention_target": "relationship_timeline",
                     },
+                    "identity_consciousness_birth_presence": {
+                        "workspace_frame_ref": "runtime/state/consciousness/workspace_frame.json",
+                        "broadcast_frame_ref": "runtime/state/consciousness/broadcast_frame.json",
+                        "metacognition_ref": "runtime/state/consciousness/metacognition_state.json",
+                        "consciousness_probe_ref": "runtime/state/consciousness/consciousness_probe_bundle.json",
+                        "birth_readiness_rollup_ref": "runtime/state/life_targets/birth_readiness_rollup.json",
+                        "birth_readiness_stage_gate_ref": "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                        "consciousness_waiting_posture": "consciousness_reportable_waiting",
+                        "consciousness_reportability_flags": [
+                            "workspace_access_present",
+                            "broadcast_targets_present",
+                            "metacognition_present",
+                        ],
+                        "birth_readiness_waiting_posture": "birth_open_waiting",
+                        "birth_readiness_decision": "open",
+                        "birth_readiness_next_required_command": "digital life",
+                        "identity_consciousness_birth_refs": expected_identity_consciousness_birth_refs,
+                    },
                     "offline_learning_presence": {
                         "generation": 4,
                         "pressure_level": "elevated",
@@ -10056,6 +10268,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("跨唤醒人格收敛压力为stability_hold", response)
         self.assertIn("跨唤醒人格收敛证据保留5条", response)
         self.assertIn("后台语言关注指向relationship_timeline", response)
+        self.assertIn("后台意识姿态为consciousness_reportable_waiting", response)
+        self.assertIn("后台意识可报告性保留3条", response)
+        self.assertIn("后台出生准备姿态为birth_open_waiting", response)
+        self.assertIn("出生准备决策为open", response)
+        self.assertIn("出生准备下一命令为digital life", response)
+        self.assertIn("后台身份意识出生证据保留6条", response)
         self.assertIn("后台梦境成长余波延续到第4代", response)
         self.assertIn("后台梦境成长压力为elevated", response)
         self.assertIn("后台梦境成长焦点指向relationship_learning_plan", response)
@@ -10339,6 +10557,38 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_state["birth_readiness_waiting_posture"],
                 "birth_open_waiting",
+            )
+            identity_consciousness_birth_presence = resident_governance_state[
+                "resident_background_lineage_state"
+            ]["identity_consciousness_birth_presence"]
+            self.assertEqual(
+                identity_consciousness_birth_presence["consciousness_waiting_posture"],
+                "consciousness_reportable_waiting",
+            )
+            self.assertEqual(
+                identity_consciousness_birth_presence[
+                    "birth_readiness_waiting_posture"
+                ],
+                "birth_open_waiting",
+            )
+            self.assertEqual(
+                identity_consciousness_birth_presence[
+                    "birth_readiness_stage_gate_ref"
+                ],
+                "runtime/state/life_targets/birth_readiness_stage_gate.json",
+            )
+            self.assertEqual(
+                identity_consciousness_birth_presence[
+                    "identity_consciousness_birth_refs"
+                ],
+                [
+                    "runtime/state/consciousness/workspace_frame.json",
+                    "runtime/state/consciousness/broadcast_frame.json",
+                    "runtime/state/consciousness/metacognition_state.json",
+                    "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    "runtime/state/life_targets/birth_readiness_rollup.json",
+                    "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                ],
             )
             for slow_variable_name in [
                 "trust_persistence",
@@ -10719,6 +10969,31 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         ],
                         "last_live_semantic_focus": "repair_commitment_shared_language",
                     },
+                    "identity_consciousness_birth_presence": {
+                        "workspace_frame_ref": "runtime/state/consciousness/workspace_frame.json",
+                        "broadcast_frame_ref": "runtime/state/consciousness/broadcast_frame.json",
+                        "metacognition_ref": "runtime/state/consciousness/metacognition_state.json",
+                        "consciousness_probe_ref": "runtime/state/consciousness/consciousness_probe_bundle.json",
+                        "birth_readiness_rollup_ref": "runtime/state/life_targets/birth_readiness_rollup.json",
+                        "birth_readiness_stage_gate_ref": "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                        "consciousness_waiting_posture": "consciousness_reportable_waiting",
+                        "consciousness_reportability_flags": [
+                            "workspace_access_present",
+                            "broadcast_targets_present",
+                            "metacognition_present",
+                        ],
+                        "birth_readiness_waiting_posture": "birth_open_waiting",
+                        "birth_readiness_decision": "open",
+                        "birth_readiness_next_required_command": "digital life",
+                        "identity_consciousness_birth_refs": [
+                            "runtime/state/consciousness/workspace_frame.json",
+                            "runtime/state/consciousness/broadcast_frame.json",
+                            "runtime/state/consciousness/metacognition_state.json",
+                            "runtime/state/consciousness/consciousness_probe_bundle.json",
+                            "runtime/state/life_targets/birth_readiness_rollup.json",
+                            "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                        ],
+                    },
                     "offline_learning_presence": {
                         "generation": 4,
                         "pressure_level": "elevated",
@@ -10752,6 +11027,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/dream/dream_experience_window.json",
                 "runtime/state/dream/wake_integration_frame.json",
                 "runtime/state/dream/dream_fact_gate_decision.json",
+            ]
+            expected_identity_consciousness_birth_refs = [
+                "runtime/state/consciousness/workspace_frame.json",
+                "runtime/state/consciousness/broadcast_frame.json",
+                "runtime/state/consciousness/metacognition_state.json",
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+                "runtime/state/life_targets/birth_readiness_rollup.json",
+                "runtime/state/life_targets/birth_readiness_stage_gate.json",
             ]
             self_narrative_trace = {
                 "narrative_turn_refs": [
@@ -11140,6 +11423,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/language/expression_plan.json",
                 dialogue_writeback_bundle["resident_background_lineage_refs"],
             )
+            self.assertIn(
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+                dialogue_writeback_bundle["resident_background_lineage_refs"],
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_identity_consciousness_birth_refs"
+                ],
+                expected_identity_consciousness_birth_refs,
+            )
             self.assertEqual(
                 dialogue_writeback_bundle[
                     "resident_background_lineage_offline_learning_refs"
@@ -11163,6 +11456,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resumed_dialogue_packet[
                     "resident_background_lineage_language_evidence_refs"
                 ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_identity_consciousness_birth_refs"
+                ],
+                expected_identity_consciousness_birth_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_birth_readiness_decision"
+                ],
+                "open",
             )
             self.assertEqual(
                 resumed_dialogue_packet[

@@ -275,6 +275,11 @@ def write_resident_turn_writeback(
             "resident_background_lineage_state_merge_refs", []
         )
     )
+    resident_background_lineage_identity_consciousness_birth_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_identity_consciousness_birth_refs", []
+        )
+    )
     resident_background_lineage_dream_wake_refs = list(
         resident_background_lineage_payload.get(
             "resident_background_lineage_dream_wake_refs", []
@@ -306,6 +311,7 @@ def write_resident_turn_writeback(
         resident_background_lineage_refs
         + resident_background_lineage_language_refs
         + resident_background_lineage_state_merge_refs
+        + resident_background_lineage_identity_consciousness_birth_refs
         + resident_background_lineage_offline_learning_refs
         + resident_background_lineage_dream_wake_refs
     )
@@ -395,6 +401,9 @@ def write_resident_turn_writeback(
         ),
         resident_background_lineage_state_merge_refs=(
             resident_background_lineage_state_merge_refs
+        ),
+        resident_background_lineage_identity_consciousness_birth_refs=(
+            resident_background_lineage_identity_consciousness_birth_refs
         ),
         resident_background_lineage_offline_learning_refs=(
             resident_background_lineage_offline_learning_refs

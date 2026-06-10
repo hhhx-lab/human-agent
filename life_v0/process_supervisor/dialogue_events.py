@@ -212,6 +212,7 @@ def build_resident_background_lineage_payload(
         "heartbeat_presence",
         "language_presence",
         "state_merge_presence",
+        "identity_consciousness_birth_presence",
         "offline_learning_presence",
         "dream_wake_presence",
     ):
@@ -383,6 +384,112 @@ def build_resident_background_lineage_payload(
                 state_merge_refs
             )
             lineage_refs.extend(state_merge_refs)
+    identity_consciousness_birth_presence = lineage_state.get(
+        "identity_consciousness_birth_presence"
+    )
+    if isinstance(identity_consciousness_birth_presence, dict):
+        for source_key, target_key in (
+            ("workspace_frame_ref", "resident_background_lineage_workspace_frame_ref"),
+            ("broadcast_frame_ref", "resident_background_lineage_broadcast_frame_ref"),
+            ("metacognition_ref", "resident_background_lineage_metacognition_ref"),
+            (
+                "consciousness_probe_ref",
+                "resident_background_lineage_consciousness_probe_ref",
+            ),
+            (
+                "birth_readiness_rollup_ref",
+                "resident_background_lineage_birth_readiness_rollup_ref",
+            ),
+            (
+                "birth_readiness_stage_gate_ref",
+                "resident_background_lineage_birth_readiness_stage_gate_ref",
+            ),
+            (
+                "consciousness_waiting_posture",
+                "resident_background_lineage_consciousness_waiting_posture",
+            ),
+            (
+                "consciousness_attention_target",
+                "resident_background_lineage_consciousness_attention_target",
+            ),
+            (
+                "consciousness_attention_reason",
+                "resident_background_lineage_consciousness_attention_reason",
+            ),
+            (
+                "birth_readiness_waiting_posture",
+                "resident_background_lineage_birth_readiness_waiting_posture",
+            ),
+            (
+                "birth_readiness_attention_target",
+                "resident_background_lineage_birth_readiness_attention_target",
+            ),
+            (
+                "birth_readiness_attention_reason",
+                "resident_background_lineage_birth_readiness_attention_reason",
+            ),
+            (
+                "birth_readiness_decision",
+                "resident_background_lineage_birth_readiness_decision",
+            ),
+            (
+                "birth_readiness_next_required_command",
+                "resident_background_lineage_birth_readiness_next_required_command",
+            ),
+        ):
+            value = identity_consciousness_birth_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        consciousness_flags = _dedupe_string_list(
+            _string_list(
+                identity_consciousness_birth_presence.get(
+                    "consciousness_reportability_flags"
+                )
+            )
+        )
+        blocked_reasons = _dedupe_string_list(
+            _string_list(
+                identity_consciousness_birth_presence.get(
+                    "birth_readiness_blocked_reasons"
+                )
+            )
+        )
+        identity_consciousness_birth_refs = _dedupe_string_list(
+            _string_list(
+                identity_consciousness_birth_presence.get(
+                    "identity_consciousness_birth_refs"
+                )
+            )
+            or _string_list(
+                [
+                    identity_consciousness_birth_presence.get("workspace_frame_ref"),
+                    identity_consciousness_birth_presence.get("broadcast_frame_ref"),
+                    identity_consciousness_birth_presence.get("metacognition_ref"),
+                    identity_consciousness_birth_presence.get(
+                        "consciousness_probe_ref"
+                    ),
+                    identity_consciousness_birth_presence.get(
+                        "birth_readiness_rollup_ref"
+                    ),
+                    identity_consciousness_birth_presence.get(
+                        "birth_readiness_stage_gate_ref"
+                    ),
+                ]
+            )
+        )
+        if consciousness_flags:
+            payload[
+                "resident_background_lineage_consciousness_reportability_flags"
+            ] = consciousness_flags
+        if blocked_reasons:
+            payload[
+                "resident_background_lineage_birth_readiness_blocked_reasons"
+            ] = blocked_reasons
+        if identity_consciousness_birth_refs:
+            payload[
+                "resident_background_lineage_identity_consciousness_birth_refs"
+            ] = identity_consciousness_birth_refs
+            lineage_refs.extend(identity_consciousness_birth_refs)
     offline_presence = lineage_state.get("offline_learning_presence")
     if isinstance(offline_presence, dict):
         for source_key, target_key in (

@@ -266,21 +266,23 @@ restore shell completed
 - `trait_convergence_presence`
 - `heartbeat_presence`
 - `language_presence`
+- `identity_consciousness_birth_presence`
 - `offline_learning_presence`
 - `dream_wake_presence`
 
 这组字段必须在三段相位中连续存在：waiting heartbeat 写 `waiting_heartbeat_active`，live turn handoff 写 `live_turn_waiting_handoff`，closeout 写 `process_closed_waiting_relaunch`。下一次 `background_continuity.py` 必须把它恢复成 `resident_background_lineage_state` 与 `background_resident_lineage_state`，让后台 lineage 不是一次性报告字段，而是跨唤醒主状态。
 
-六个 presence 子面固定含义如下：
+七个 presence 子面固定含义如下：
 
 - `relationship_presence`：承接 `background_relationship_stage`、关系阶段理由、关系对象 ref 与关系阶段连续性。
 - `trait_convergence_presence`：承接 `background_trait_slow_variable_summary`、trait convergence history focus、稳定/不稳定慢变量名单、history profile、trait convergence score、trait drift monitor ref、`background_trait_drift_update_mode_summary / recalibration_names / stabilized_names` 与 `trait_convergence_evidence_refs`。这些 evidence refs 至少要能吸收已存在的 resident governance state、governance explanation、trait drift monitor、background convergence summary/history refs，使自我/人格慢变量连续体和人格漂移重校准/稳定信号可以从后台驻留主状态体继续进入真实回合链。
 - `heartbeat_presence`：承接当前或后台 `idle_heartbeat_trace_ref/count`、heartbeat interval 与下一步 idle action。
 - `language_presence`：承接长期语言对象 refs、长期优先级 profile、当前治理注意目标/理由/节律。
+- `identity_consciousness_birth_presence`：承接 `workspace_frame_ref`、`broadcast_frame_ref`、`metacognition_ref`、`consciousness_probe_ref`、`birth_readiness_rollup_ref`、`birth_readiness_stage_gate_ref`、`consciousness_waiting_posture`、`consciousness_reportability_flags`、`birth_readiness_waiting_posture`、`birth_readiness_decision`、`birth_readiness_next_required_command` 与 `identity_consciousness_birth_refs`。只要 Queue F 证据存在，即使没有上一轮后台 carryover，也必须形成最小 `no_background_lineage` 驻留谱系，让意识可报告性和出生准备不滞留在扁平 waiting governance 字段。
 - `offline_learning_presence`：承接累计梦境-成长离线学习 generation、pressure、attention target、priority profile 与 ref set。
 - `dream_wake_presence`：承接梦境窗口、醒后整合、梦境事实门结果与 ref set。
 
-这六个子面不能只作为治理文件里的静态字段存在。真实回合链必须继续消费它们：`dialogue_events.py` 的 `digital_life_turn` 要保存 lineage 摘要与 presence 子面，其中 `trait_convergence_presence` 必须额外展开为 `resident_background_lineage_trait_convergence_history_focus`、稳定/不稳定名单、`resident_background_lineage_trait_convergence_score`、`resident_background_lineage_trait_drift_monitor_ref`、history profile、`resident_background_lineage_trait_convergence_refs`、`resident_background_lineage_trait_drift_update_mode_summary`、`resident_background_lineage_trait_drift_recalibration_names` 与 `resident_background_lineage_trait_drift_stabilized_names`，并把 trait refs 合入 `resident_background_lineage_evidence_refs`；`cross_wake_trait_convergence_profile_v0` 还必须同步生成 `cross_wake_trait_drift_update_mode_summary / recalibration_names / stabilized_names`，让人格漂移更新模式不只停在后台 presence；`offline_learning_presence` 必须展开为 `resident_background_lineage_offline_learning_refs`，`dream_wake_presence` 必须展开为 `resident_background_lineage_dream_wake_refs`；`response_surface.py` 要把后台驻留深度、关系存在、人格慢变量焦点/稳定性/漂移重校准/漂移已稳定/漂移监控/证据数量、语言关注、梦境成长余波和梦境醒后整合转成回应表面压力；`dialogue_writeback_bundle.json` 要保留总 `resident_background_lineage_refs`，还要分别保留 `resident_background_lineage_trait_drift_*`、`cross_wake_trait_drift_*`、`resident_background_lineage_offline_learning_refs` 与 `resident_background_lineage_dream_wake_refs` 专用证据槽，`resumed_external_dialogue_packet.json` 要保存下一轮恢复可直接读取的 lineage 摘要证据和人格漂移 update mode 字段。
+这七个子面不能只作为治理文件里的静态字段存在。真实回合链必须继续消费它们：`dialogue_events.py` 的 `digital_life_turn` 要保存 lineage 摘要与 presence 子面，其中 `trait_convergence_presence` 必须额外展开为 `resident_background_lineage_trait_convergence_history_focus`、稳定/不稳定名单、`resident_background_lineage_trait_convergence_score`、`resident_background_lineage_trait_drift_monitor_ref`、history profile、`resident_background_lineage_trait_convergence_refs`、`resident_background_lineage_trait_drift_update_mode_summary`、`resident_background_lineage_trait_drift_recalibration_names` 与 `resident_background_lineage_trait_drift_stabilized_names`，并把 trait refs 合入 `resident_background_lineage_evidence_refs`；`cross_wake_trait_convergence_profile_v0` 还必须同步生成 `cross_wake_trait_drift_update_mode_summary / recalibration_names / stabilized_names`，让人格漂移更新模式不只停在后台 presence；`identity_consciousness_birth_presence` 必须展开为 Queue F 的 workspace/broadcast/metacognition/consciousness/birth readiness refs、reportability flags、birth decision、next required command 与 `resident_background_lineage_identity_consciousness_birth_refs`，并把 refs 合入 `resident_background_lineage_evidence_refs`；`offline_learning_presence` 必须展开为 `resident_background_lineage_offline_learning_refs`，`dream_wake_presence` 必须展开为 `resident_background_lineage_dream_wake_refs`；`response_surface.py` 要把后台驻留深度、关系存在、人格慢变量焦点/稳定性/漂移重校准/漂移已稳定/漂移监控/证据数量、语言关注、意识可报告性、出生准备姿态/决策/下一命令、梦境成长余波和梦境醒后整合转成回应表面压力；`dialogue_writeback_bundle.json` 要保留总 `resident_background_lineage_refs`，还要分别保留 `resident_background_lineage_trait_drift_*`、`cross_wake_trait_drift_*`、`resident_background_lineage_identity_consciousness_birth_refs`、`resident_background_lineage_offline_learning_refs` 与 `resident_background_lineage_dream_wake_refs` 专用证据槽，`resumed_external_dialogue_packet.json` 要保存下一轮恢复可直接读取的 lineage 摘要证据、Queue F 出生准备字段和人格漂移 update mode 字段。
 - `queue_e_priority_band`
 - `nightmare_risk_ref`
 - `belief_learning_plan_ref`
@@ -540,6 +542,7 @@ process receipt 里，resident governance 必须进入：
 12. `continuity_evolution.py` 会在新 live turn 之前保留 `background_relationship_stage`，并用 `background_trait_slow_variable_summary` 形成慢变量惯性。
 13. `idle_strategy.py` 会写出 `background_lineage_governance_profile_v0`，并用 `background_carryover_generation` 决定 single / persistent / deep persistent / entrenched depth band；`heartbeat.py` 与 `continuity_writeback.py` 必须继续传递这组字段。
 14. `governance_explanation.py` 会把 lineage depth、waiting posture、cadence weight 写进 explanation report 与 `continuity_story`；`process_report.py` 会把同一组摘要字段写进 `digital_life_process_digest.json`。
+15. `background_lineage_state.py` 会把 Queue F 压成 `identity_consciousness_birth_presence`；`dialogue_events.py`、`resident_turn_writeback.py`、`dialogue_writeback_bundle.json`、`resumed_external_dialogue_packet.json` 与 `response_surface.py` 会分别守住事件展开、专用 refs、恢复字段和回应表面表达。
 
 当前最低承载测试仍以：
 
@@ -553,7 +556,7 @@ process receipt 里，resident governance 必须进入：
 
 1. 把 live turn 结束后重新回到 waiting governance 的相位切换继续补成更完整的交接体；当前已由 `resident_governance_handoff.py` 第一轮落下，并已经要求 handoff 原样承接后台治理解释字段与 `resident_background_lineage_state`，使关闭态“为何如此等待”和“以什么后台驻留深度等待”不会在真实回合结束时断开。
 2. 继续让 background resume summary 不只用于 closeout/next bootstrap，还能进入更长时标的慢变量收敛与多次唤醒关系阶段稳定化。
-3. 将 `resident_background_lineage_state_v0` 的四个 presence 子面继续接入后续器官，使关系阶段、慢变量收敛、心跳历史和语言关注不只在 state body 中存在，还能反向调制梦境整合、成长补丁和下一轮语言表达。
+3. 将 `resident_background_lineage_state_v0` 的七个 presence 子面继续接入后续器官，使关系阶段、慢变量收敛、心跳历史、语言关注、身份/意识/出生准备、离线学习和梦境醒后整合不只在 state body 中存在，还能反向调制梦境整合、成长补丁和下一轮语言表达。
 4. 继续把 deep persistent / entrenched background presence 对应到后续的长期成长、梦境整合和关系稳定化器官。
 
 当前只要这四件事继续推进，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。

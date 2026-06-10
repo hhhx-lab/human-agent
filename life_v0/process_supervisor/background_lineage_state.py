@@ -10,6 +10,9 @@ def build_resident_background_lineage_state(
     status: str,
 ) -> dict[str, Any]:
     governance = idle_governance or {}
+    identity_consciousness_birth_presence = _identity_consciousness_birth_presence(
+        governance
+    )
     profile = _dict_or_empty(governance.get("background_lineage_governance_profile"))
     explicit_depth_band = (
         governance.get("background_lineage_depth_band")
@@ -24,6 +27,8 @@ def build_resident_background_lineage_state(
         str(explicit_depth_band or ""),
         _depth_band_for_generation(generation),
     )
+    if not depth_band and identity_consciousness_birth_presence:
+        depth_band = "no_background_lineage"
     if not depth_band:
         return {}
 
@@ -95,6 +100,10 @@ def build_resident_background_lineage_state(
     state_merge_presence = _state_merge_presence(governance)
     if state_merge_presence:
         lineage_state["state_merge_presence"] = state_merge_presence
+    if identity_consciousness_birth_presence:
+        lineage_state["identity_consciousness_birth_presence"] = (
+            identity_consciousness_birth_presence
+        )
     offline_learning_presence = _offline_learning_presence(governance)
     if offline_learning_presence:
         lineage_state["offline_learning_presence"] = offline_learning_presence
@@ -428,6 +437,81 @@ def _state_merge_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "long_term_change_families": long_term_change_families,
             "long_term_change_refs": long_term_change_refs,
             "state_merge_evidence_refs": evidence_refs,
+        }
+    )
+
+
+def _identity_consciousness_birth_presence(
+    governance: dict[str, Any],
+) -> dict[str, Any]:
+    refs = _dedupe_string_list(
+        _string_list(
+            [
+                governance.get("workspace_frame_ref"),
+                governance.get("broadcast_frame_ref"),
+                governance.get("metacognition_ref"),
+                governance.get("consciousness_probe_ref"),
+                governance.get("birth_readiness_rollup_ref"),
+                governance.get("birth_readiness_stage_gate_ref"),
+            ]
+        )
+    )
+    reportability_flags = _string_list(
+        governance.get("consciousness_reportability_flags")
+    )
+    blocked_reasons = _string_list(governance.get("birth_readiness_blocked_reasons"))
+    has_presence = any(
+        [
+            refs,
+            governance.get("consciousness_waiting_posture"),
+            governance.get("consciousness_attention_target"),
+            governance.get("consciousness_attention_reason"),
+            reportability_flags,
+            governance.get("birth_readiness_waiting_posture"),
+            governance.get("birth_readiness_attention_target"),
+            governance.get("birth_readiness_attention_reason"),
+            governance.get("birth_readiness_decision"),
+            governance.get("birth_readiness_next_required_command"),
+            blocked_reasons,
+        ]
+    )
+    if not has_presence:
+        return {}
+    return _drop_empty(
+        {
+            "workspace_frame_ref": governance.get("workspace_frame_ref"),
+            "broadcast_frame_ref": governance.get("broadcast_frame_ref"),
+            "metacognition_ref": governance.get("metacognition_ref"),
+            "consciousness_probe_ref": governance.get("consciousness_probe_ref"),
+            "birth_readiness_rollup_ref": governance.get("birth_readiness_rollup_ref"),
+            "birth_readiness_stage_gate_ref": governance.get(
+                "birth_readiness_stage_gate_ref"
+            ),
+            "consciousness_waiting_posture": governance.get(
+                "consciousness_waiting_posture"
+            ),
+            "consciousness_attention_target": governance.get(
+                "consciousness_attention_target"
+            ),
+            "consciousness_attention_reason": governance.get(
+                "consciousness_attention_reason"
+            ),
+            "consciousness_reportability_flags": reportability_flags,
+            "birth_readiness_waiting_posture": governance.get(
+                "birth_readiness_waiting_posture"
+            ),
+            "birth_readiness_attention_target": governance.get(
+                "birth_readiness_attention_target"
+            ),
+            "birth_readiness_attention_reason": governance.get(
+                "birth_readiness_attention_reason"
+            ),
+            "birth_readiness_decision": governance.get("birth_readiness_decision"),
+            "birth_readiness_next_required_command": governance.get(
+                "birth_readiness_next_required_command"
+            ),
+            "birth_readiness_blocked_reasons": blocked_reasons,
+            "identity_consciousness_birth_refs": refs,
         }
     )
 

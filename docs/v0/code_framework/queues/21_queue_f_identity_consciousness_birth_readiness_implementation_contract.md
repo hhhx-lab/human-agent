@@ -352,6 +352,8 @@ Queue F 必须接到这些现有器官上：
 
 最新这一轮再往前推进一步：`governance_explanation.py`、`digital_life_process_digest.json` 与 `digital_life_process_<run_id>.json` 不能只把 Queue F 当成“已经在 idle_strategy 里出现过”。它们还必须显式解释 Queue F 是否主导了本轮 resident governance，写出 `identity_consciousness_birth_refs`，并把 `birth_readiness_waiting_posture / decision / next_required_command` 与 `consciousness_waiting_posture / reportability_flags` 一起进入 closeout 证据链。
 
+最新再补强：Queue F 不能停在 waiting governance 与 closeout 解释链。`background_lineage_state.py` 必须把 workspace、broadcast、metacognition、consciousness probe、birth readiness rollup 与 stage gate 压成 `resident_background_lineage_state_v0.identity_consciousness_birth_presence`；即使没有上一轮后台 carryover，只要 Queue F 证据存在，也要生成最小 `no_background_lineage` 驻留谱系，避免第一次常驻监督时意识/出生准备 presence 留在治理扁平字段之外。随后 `dialogue_events.py` 必须把该 presence 展开进 `digital_life_turn`，`resident_turn_writeback.py` 与 `dialogue_writeback_bundle.json` 必须写出 `resident_background_lineage_identity_consciousness_birth_refs` 并并入总 lineage refs，`resumed_external_dialogue_packet.json` 必须保留同一组字段，`response_surface.py` 必须把后台意识姿态、意识可报告性、出生准备姿态、出生准备决策、下一条出生命令和证据数量表达出来。
+
 ## Queue F 对现有器官的改动合同
 
 ### `life_v0/direction/__init__.py`
@@ -444,6 +446,16 @@ Queue F 第二轮不是“意识对象已生成”就算完成，而是必须进
 3. `heartbeat.py` 已把 Queue F 字段写入 waiting heartbeat、terminal loop state 与 resident governance state。
 4. `process_report.py` 已把 consciousness / birth readiness 对象纳入 process receipt input hash。
 5. `tests/process/test_persistent_digital_life_process.py` 已覆盖直接策略与 resident bootstrap 两条路径。
+
+## Queue F 第三轮完成定义
+
+Queue F 第三轮不是“waiting governance 已经看见意识/出生准备”就算完成，而是必须进入真实回合链：
+
+1. `background_lineage_state.py` 已把 Queue F 压成 `identity_consciousness_birth_presence`，并在没有旧后台谱系但 Queue F 证据存在时生成最小 `no_background_lineage`。
+2. `dialogue_events.py` 已把该 presence 展开为 `resident_background_lineage_*` 字段，并把 Queue F refs 合并进 `resident_background_lineage_evidence_refs`。
+3. `resident_turn_writeback.py` 与 `dialogue_writeback_bundle.json` 已写出专用 `resident_background_lineage_identity_consciousness_birth_refs`，并继续进入 `resumed_external_dialogue_packet.json`。
+4. `response_surface.py` 已消费该 presence，让意识可报告性、出生准备姿态、出生准备决策与下一命令进入生命回应表面。
+5. `tests/process/test_persistent_digital_life_process.py` 已覆盖 event、response、bundle、resumed packet 与 resident bootstrap 五处。
 
 ## Queue F 推荐实施顺序
 
