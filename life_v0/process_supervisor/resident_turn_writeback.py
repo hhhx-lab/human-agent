@@ -235,6 +235,23 @@ def write_resident_turn_writeback(
             "cross_wake_trait_convergence_refs", []
         )
     )
+    cross_wake_trait_drift_update_mode_summary = (
+        background_trait_convergence_payload.get(
+            "cross_wake_trait_drift_update_mode_summary", {}
+        )
+    )
+    if not isinstance(cross_wake_trait_drift_update_mode_summary, dict):
+        cross_wake_trait_drift_update_mode_summary = {}
+    cross_wake_trait_drift_recalibration_names = list(
+        background_trait_convergence_payload.get(
+            "cross_wake_trait_drift_recalibration_names", []
+        )
+    )
+    cross_wake_trait_drift_stabilized_names = list(
+        background_trait_convergence_payload.get(
+            "cross_wake_trait_drift_stabilized_names", []
+        )
+    )
     resident_background_lineage_payload = build_resident_background_lineage_payload(
         terminal_life_loop_state
     )
@@ -261,6 +278,28 @@ def write_resident_turn_writeback(
     resident_background_lineage_dream_wake_refs = list(
         resident_background_lineage_payload.get(
             "resident_background_lineage_dream_wake_refs", []
+        )
+    )
+    resident_background_lineage_trait_drift_update_mode_summary = (
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_trait_drift_update_mode_summary",
+            {},
+        )
+    )
+    if not isinstance(
+        resident_background_lineage_trait_drift_update_mode_summary, dict
+    ):
+        resident_background_lineage_trait_drift_update_mode_summary = {}
+    resident_background_lineage_trait_drift_recalibration_names = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_trait_drift_recalibration_names",
+            [],
+        )
+    )
+    resident_background_lineage_trait_drift_stabilized_names = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_trait_drift_stabilized_names",
+            [],
         )
     )
     resident_background_lineage_refs = _dedupe_refs(
@@ -335,7 +374,25 @@ def write_resident_turn_writeback(
         runtime_carrier_refs=runtime_carrier_refs,
         background_trait_convergence_refs=background_trait_convergence_refs,
         cross_wake_trait_convergence_refs=cross_wake_trait_convergence_refs,
+        cross_wake_trait_drift_update_mode_summary=(
+            cross_wake_trait_drift_update_mode_summary
+        ),
+        cross_wake_trait_drift_recalibration_names=(
+            cross_wake_trait_drift_recalibration_names
+        ),
+        cross_wake_trait_drift_stabilized_names=(
+            cross_wake_trait_drift_stabilized_names
+        ),
         resident_background_lineage_refs=resident_background_lineage_refs,
+        resident_background_lineage_trait_drift_update_mode_summary=(
+            resident_background_lineage_trait_drift_update_mode_summary
+        ),
+        resident_background_lineage_trait_drift_recalibration_names=(
+            resident_background_lineage_trait_drift_recalibration_names
+        ),
+        resident_background_lineage_trait_drift_stabilized_names=(
+            resident_background_lineage_trait_drift_stabilized_names
+        ),
         resident_background_lineage_state_merge_refs=(
             resident_background_lineage_state_merge_refs
         ),

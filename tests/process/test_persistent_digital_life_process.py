@@ -5014,6 +5014,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/memory/state_merge_guard.json",
                 *expected_background_state_merge_refs,
             ]
+            expected_trait_drift_update_mode_summary = {
+                "background_history_recalibration": ["continuity_drive"],
+                "background_history_stabilized": ["repair_seriousness"],
+            }
             idle_strategy_state.update(
                 {
                     "background_resident_governance_explanation_ref": "runtime/reports/latest/digital_life_resident_governance_explanation.json",
@@ -5102,6 +5106,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "trait_convergence_unstable_names": ["continuity_drive"],
                         "trait_convergence_stable_names": ["repair_seriousness"],
                         "trait_convergence_score": 0.96,
+                        "trait_drift_update_mode_summary": (
+                            expected_trait_drift_update_mode_summary
+                        ),
+                        "trait_drift_recalibration_names": ["continuity_drive"],
+                        "trait_drift_stabilized_names": ["repair_seriousness"],
                         "trait_drift_monitor_ref": "runtime/state/body/trait_drift_monitor.json",
                         "trait_convergence_evidence_refs": [
                             "runtime/state/terminal/resident_governance_state.json",
@@ -5326,12 +5335,32 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(
                 result.last_life_turn["cross_wake_trait_convergence_pressure"],
-                "stability_hold",
+                "recalibration",
             )
             self.assertEqual(
                 result.last_life_turn["cross_wake_trait_convergence_profile"][
                     "stable_names"
                 ],
+                ["repair_seriousness"],
+            )
+            self.assertEqual(
+                result.last_life_turn["cross_wake_trait_convergence_profile"][
+                    "trait_drift_update_mode_summary"
+                ],
+                expected_trait_drift_update_mode_summary,
+            )
+            self.assertEqual(
+                result.last_life_turn["cross_wake_trait_drift_update_mode_summary"],
+                expected_trait_drift_update_mode_summary,
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "cross_wake_trait_drift_recalibration_names"
+                ],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                result.last_life_turn["cross_wake_trait_drift_stabilized_names"],
                 ["repair_seriousness"],
             )
             self.assertEqual(
@@ -5353,6 +5382,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 result.last_life_turn[
                     "resident_background_lineage_trait_convergence_stable_names"
+                ],
+                ["repair_seriousness"],
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_trait_drift_update_mode_summary"
+                ],
+                expected_trait_drift_update_mode_summary,
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_trait_drift_recalibration_names"
+                ],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_trait_drift_stabilized_names"
                 ],
                 ["repair_seriousness"],
             )
@@ -5445,10 +5492,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn("后台人格慢变量焦点为trait_stability_hold", result.emitted_output)
             self.assertIn("后台仍需收敛的慢变量包括continuity_drive", result.emitted_output)
             self.assertIn("后台已稳定的慢变量包括repair_seriousness", result.emitted_output)
+            self.assertIn("后台人格漂移重校准包括continuity_drive", result.emitted_output)
+            self.assertIn("后台人格漂移已稳定包括repair_seriousness", result.emitted_output)
             self.assertIn("后台人格漂移监控仍在场", result.emitted_output)
             self.assertIn("后台人格慢变量证据保留5条", result.emitted_output)
             self.assertIn("跨唤醒人格收敛画像为trait_stability_hold", result.emitted_output)
-            self.assertIn("跨唤醒人格收敛压力为stability_hold", result.emitted_output)
+            self.assertIn("跨唤醒人格收敛压力为recalibration", result.emitted_output)
+            self.assertIn("跨唤醒人格漂移重校准包括continuity_drive", result.emitted_output)
+            self.assertIn("跨唤醒人格漂移已稳定包括repair_seriousness", result.emitted_output)
             self.assertIn("后台长期合并治理处于long_term_merge_fail_closed", result.emitted_output)
             self.assertIn("后台长期合并治理仍在整合4条长期变化来源", result.emitted_output)
             self.assertIn(
@@ -5590,6 +5641,38 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 dialogue_writeback_bundle["cross_wake_trait_convergence_refs"],
                 dialogue_writeback_bundle["background_trait_convergence_refs"],
             )
+            self.assertEqual(
+                dialogue_writeback_bundle["cross_wake_trait_drift_update_mode_summary"],
+                expected_trait_drift_update_mode_summary,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "cross_wake_trait_drift_recalibration_names"
+                ],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle["cross_wake_trait_drift_stabilized_names"],
+                ["repair_seriousness"],
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_trait_drift_update_mode_summary"
+                ],
+                expected_trait_drift_update_mode_summary,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_trait_drift_recalibration_names"
+                ],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_trait_drift_stabilized_names"
+                ],
+                ["repair_seriousness"],
+            )
             for ref in [
                 "runtime/state/terminal/resident_governance_state.json",
                 "runtime/state/terminal/resident_governance_snapshot.json",
@@ -5659,6 +5742,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "trait_stability_hold",
             )
             self.assertEqual(
+                resumed_dialogue_packet["cross_wake_trait_drift_update_mode_summary"],
+                expected_trait_drift_update_mode_summary,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "cross_wake_trait_drift_recalibration_names"
+                ],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["cross_wake_trait_drift_stabilized_names"],
+                ["repair_seriousness"],
+            )
+            self.assertEqual(
                 resumed_dialogue_packet["cross_wake_trait_convergence_refs"],
                 dialogue_writeback_bundle["cross_wake_trait_convergence_refs"],
             )
@@ -5673,6 +5770,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 result.last_life_turn[
                     "resident_background_lineage_trait_convergence_refs"
                 ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_trait_drift_update_mode_summary"
+                ],
+                expected_trait_drift_update_mode_summary,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_trait_drift_recalibration_names"
+                ],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_trait_drift_stabilized_names"
+                ],
+                ["repair_seriousness"],
             )
             self.assertEqual(
                 resumed_dialogue_packet["resident_background_lineage_evidence_refs"],

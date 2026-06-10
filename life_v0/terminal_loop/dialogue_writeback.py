@@ -24,7 +24,17 @@ def build_dialogue_writeback_bundle(
     runtime_carrier_refs: list[str],
     background_trait_convergence_refs: list[str] | None = None,
     cross_wake_trait_convergence_refs: list[str] | None = None,
+    cross_wake_trait_drift_update_mode_summary: dict[str, Any] | None = None,
+    cross_wake_trait_drift_recalibration_names: list[str] | None = None,
+    cross_wake_trait_drift_stabilized_names: list[str] | None = None,
     resident_background_lineage_refs: list[str] | None = None,
+    resident_background_lineage_trait_drift_update_mode_summary: (
+        dict[str, Any] | None
+    ) = None,
+    resident_background_lineage_trait_drift_recalibration_names: (
+        list[str] | None
+    ) = None,
+    resident_background_lineage_trait_drift_stabilized_names: list[str] | None = None,
     resident_background_lineage_state_merge_refs: list[str] | None = None,
     resident_background_lineage_offline_learning_refs: list[str] | None = None,
     resident_background_lineage_dream_wake_refs: list[str] | None = None,
@@ -55,8 +65,26 @@ def build_dialogue_writeback_bundle(
         "cross_wake_trait_convergence_refs": list(
             cross_wake_trait_convergence_refs or []
         ),
+        "cross_wake_trait_drift_update_mode_summary": dict(
+            cross_wake_trait_drift_update_mode_summary or {}
+        ),
+        "cross_wake_trait_drift_recalibration_names": list(
+            cross_wake_trait_drift_recalibration_names or []
+        ),
+        "cross_wake_trait_drift_stabilized_names": list(
+            cross_wake_trait_drift_stabilized_names or []
+        ),
         "resident_background_lineage_refs": list(
             resident_background_lineage_refs or []
+        ),
+        "resident_background_lineage_trait_drift_update_mode_summary": dict(
+            resident_background_lineage_trait_drift_update_mode_summary or {}
+        ),
+        "resident_background_lineage_trait_drift_recalibration_names": list(
+            resident_background_lineage_trait_drift_recalibration_names or []
+        ),
+        "resident_background_lineage_trait_drift_stabilized_names": list(
+            resident_background_lineage_trait_drift_stabilized_names or []
         ),
         "resident_background_lineage_state_merge_refs": list(
             resident_background_lineage_state_merge_refs or []

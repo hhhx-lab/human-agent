@@ -221,6 +221,27 @@ def compose_life_response(
             stable_trait_names = _string_list(
                 trait_presence.get("trait_convergence_stable_names")
             )
+            trait_drift_update_mode_summary = trait_presence.get(
+                "trait_drift_update_mode_summary"
+            )
+            if not isinstance(trait_drift_update_mode_summary, dict):
+                trait_drift_update_mode_summary = {}
+            trait_drift_recalibration_names = _dedupe_string_list(
+                _string_list(trait_presence.get("trait_drift_recalibration_names"))
+                or _string_list(
+                    trait_drift_update_mode_summary.get(
+                        "background_history_recalibration"
+                    )
+                )
+            )
+            trait_drift_stabilized_names = _dedupe_string_list(
+                _string_list(trait_presence.get("trait_drift_stabilized_names"))
+                or _string_list(
+                    trait_drift_update_mode_summary.get(
+                        "background_history_stabilized"
+                    )
+                )
+            )
             if trait_focus:
                 response = f"{response}，后台人格慢变量焦点为{trait_focus}"
             if unstable_trait_names:
@@ -232,6 +253,16 @@ def compose_life_response(
                 response = (
                     f"{response}，后台已稳定的慢变量包括"
                     f"{'、'.join(sorted(stable_trait_names))}"
+                )
+            if trait_drift_recalibration_names:
+                response = (
+                    f"{response}，后台人格漂移重校准包括"
+                    f"{'、'.join(sorted(trait_drift_recalibration_names))}"
+                )
+            if trait_drift_stabilized_names:
+                response = (
+                    f"{response}，后台人格漂移已稳定包括"
+                    f"{'、'.join(sorted(trait_drift_stabilized_names))}"
                 )
             if trait_score is not None:
                 response = f"{response}，后台人格收敛评分为{trait_score}"
@@ -405,10 +436,51 @@ def compose_life_response(
         cross_wake_refs = list(
             cross_wake_trait_payload.get("cross_wake_trait_convergence_refs", [])
         )
+        cross_wake_recalibration_names = []
+        cross_wake_stabilized_names = []
+        if isinstance(cross_wake_trait_profile, dict):
+            cross_wake_recalibration_names = _dedupe_string_list(
+                _string_list(
+                    cross_wake_trait_profile.get(
+                        "trait_drift_recalibration_names"
+                    )
+                )
+            )
+            cross_wake_stabilized_names = _dedupe_string_list(
+                _string_list(
+                    cross_wake_trait_profile.get("trait_drift_stabilized_names")
+                )
+            )
+        if not cross_wake_recalibration_names:
+            cross_wake_recalibration_names = _dedupe_string_list(
+                _string_list(
+                    cross_wake_trait_payload.get(
+                        "cross_wake_trait_drift_recalibration_names"
+                    )
+                )
+            )
+        if not cross_wake_stabilized_names:
+            cross_wake_stabilized_names = _dedupe_string_list(
+                _string_list(
+                    cross_wake_trait_payload.get(
+                        "cross_wake_trait_drift_stabilized_names"
+                    )
+                )
+            )
         if cross_wake_focus:
             response = f"{response}，跨唤醒人格收敛画像为{cross_wake_focus}"
         if cross_wake_pressure and cross_wake_pressure != "quiet":
             response = f"{response}，跨唤醒人格收敛压力为{cross_wake_pressure}"
+        if cross_wake_recalibration_names:
+            response = (
+                f"{response}，跨唤醒人格漂移重校准包括"
+                f"{'、'.join(sorted(cross_wake_recalibration_names))}"
+            )
+        if cross_wake_stabilized_names:
+            response = (
+                f"{response}，跨唤醒人格漂移已稳定包括"
+                f"{'、'.join(sorted(cross_wake_stabilized_names))}"
+            )
         if cross_wake_refs:
             response = f"{response}，跨唤醒人格收敛证据保留{len(cross_wake_refs)}条"
         if (

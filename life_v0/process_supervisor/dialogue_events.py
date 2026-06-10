@@ -231,6 +231,29 @@ def build_resident_background_lineage_payload(
                 trait_convergence_presence.get("trait_convergence_stable_names")
             )
         )
+        trait_drift_update_mode_summary = trait_convergence_presence.get(
+            "trait_drift_update_mode_summary"
+        )
+        if not isinstance(trait_drift_update_mode_summary, dict):
+            trait_drift_update_mode_summary = {}
+        trait_drift_recalibration_names = _dedupe_string_list(
+            _string_list(
+                trait_convergence_presence.get("trait_drift_recalibration_names")
+            )
+            or _string_list(
+                trait_drift_update_mode_summary.get(
+                    "background_history_recalibration"
+                )
+            )
+        )
+        trait_drift_stabilized_names = _dedupe_string_list(
+            _string_list(
+                trait_convergence_presence.get("trait_drift_stabilized_names")
+            )
+            or _string_list(
+                trait_drift_update_mode_summary.get("background_history_stabilized")
+            )
+        )
         trait_refs = _dedupe_string_list(
             _string_list(
                 trait_convergence_presence.get("trait_convergence_evidence_refs")
@@ -256,6 +279,18 @@ def build_resident_background_lineage_payload(
             payload[
                 "resident_background_lineage_trait_convergence_stable_names"
             ] = stable_names
+        if trait_drift_update_mode_summary:
+            payload[
+                "resident_background_lineage_trait_drift_update_mode_summary"
+            ] = dict(trait_drift_update_mode_summary)
+        if trait_drift_recalibration_names:
+            payload[
+                "resident_background_lineage_trait_drift_recalibration_names"
+            ] = trait_drift_recalibration_names
+        if trait_drift_stabilized_names:
+            payload[
+                "resident_background_lineage_trait_drift_stabilized_names"
+            ] = trait_drift_stabilized_names
         if trait_convergence_presence.get("trait_convergence_score") is not None:
             payload["resident_background_lineage_trait_convergence_score"] = (
                 trait_convergence_presence.get("trait_convergence_score")
