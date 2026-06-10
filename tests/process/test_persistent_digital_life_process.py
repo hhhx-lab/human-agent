@@ -7218,6 +7218,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "runtime/reports/latest/digital_life_persistent_process_report.json",
                     ],
                 },
+                "offline_learning_cumulative_profile": {
+                    "schema_version": "offline_learning_cumulative_profile_v0",
+                    "generation": 3,
+                    "pressure_level": "elevated",
+                    "attention_target": "relationship_learning_plan",
+                    "priority_profile": {
+                        "relationship_learning_plan": "elevated",
+                        "language_learning_plan": "baseline",
+                    },
+                    "ref_set": [
+                        "runtime/state/growth/relationship_learning_plan.json",
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
+                    "current_pressure_level": "quiet",
+                    "previous_generation": 2,
+                },
+                "offline_learning_cumulative_generation": 3,
+                "offline_learning_cumulative_pressure_level": "elevated",
+                "offline_learning_cumulative_attention_target": "relationship_learning_plan",
+                "offline_learning_cumulative_priority_profile": {
+                    "relationship_learning_plan": "elevated",
+                    "language_learning_plan": "baseline",
+                },
+                "offline_learning_cumulative_ref_set": [
+                    "runtime/state/growth/relationship_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                ],
                 "background_continuity_ref_set": [
                     "runtime/state/terminal/resident_governance_state.json",
                     "runtime/state/terminal/background_convergence_summary.json",
@@ -7319,6 +7346,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "heartbeat_presence"
                     ]["heartbeat_interval_ms"],
                     52,
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "offline_learning_presence"
+                    ]["generation"],
+                    3,
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "offline_learning_presence"
+                    ]["pressure_level"],
+                    "elevated",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "offline_learning_presence"
+                    ]["attention_target"],
+                    "relationship_learning_plan",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "offline_learning_presence"
+                    ]["ref_set"],
+                    [
+                        "runtime/state/growth/relationship_learning_plan.json",
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
                 )
 
     def test_persistent_process_increments_background_carryover_generation_on_closeout(self):
@@ -7484,6 +7538,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         ],
                         "governance_attention_target": "relationship_timeline",
                     },
+                    "offline_learning_presence": {
+                        "generation": 4,
+                        "pressure_level": "elevated",
+                        "attention_target": "relationship_learning_plan",
+                        "priority_profile": {
+                            "relationship_learning_plan": "elevated",
+                        },
+                        "ref_set": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                    },
                 },
             },
             signal_media_runtime={
@@ -7596,10 +7662,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "relationship_timeline",
         )
         self.assertEqual(
+            life_turn["resident_background_lineage_offline_learning_presence"][
+                "generation"
+            ],
+            4,
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_offline_learning_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_offline_learning_attention_target"],
+            "relationship_learning_plan",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_offline_learning_refs"],
+            [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+            ],
+        )
+        self.assertEqual(
             life_turn["resident_background_lineage_evidence_refs"],
             [
                 "runtime/state/terminal/resident_governance_state.json",
                 "runtime/state/terminal/background_convergence_history.json",
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
             ],
         )
         self.assertEqual(life_turn["prediction_waiting_posture"], "hold_for_evidence")
@@ -7815,6 +7904,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "language_presence": {
                         "governance_attention_target": "relationship_timeline",
                     },
+                    "offline_learning_presence": {
+                        "generation": 4,
+                        "pressure_level": "elevated",
+                        "attention_target": "relationship_learning_plan",
+                        "ref_set": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                    },
                 },
             },
         )
@@ -7856,6 +7954,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("后台驻留节律权重为deep", response)
         self.assertIn("后台关系存在保持在background_continuity_waiting", response)
         self.assertIn("后台语言关注指向relationship_timeline", response)
+        self.assertIn("后台梦境成长余波延续到第4代", response)
+        self.assertIn("后台梦境成长压力为elevated", response)
+        self.assertIn("后台梦境成长焦点指向relationship_learning_plan", response)
+        self.assertIn("后台梦境成长证据保留2条", response)
         self.assertIn("表达计划唤醒度为0.74", response)
         self.assertIn("修复驱力", response)
         self.assertIn("情绪张力", response)

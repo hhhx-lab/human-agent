@@ -66,7 +66,7 @@ Python 3 作为主体语言
 | 目标 | 先补硬身体/梦境/成长与行为/验证/逻辑这两条中轴 |
 | 必读 | `18_queue_d_body_dream_growth_implementation_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md`、`06`、`08`、`09` playbooks |
 | 主包 | `body/`、`dream/`、`growth/`、`membrane/`、`validators/`、`schema_runner/` |
-| 当前前沿 | Queue D 扩展器官已落下 `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py`；Queue E 第二波中的 `shadow_gate.py`、`world_contact_summary.py`、`validation_rollup.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落地并补上局部闭包；本轮 Queue E 的 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 已合成 repair modulation profile，并接入 signal / belief / prediction error / active sampling / prediction workspace |
+| 当前前沿 | Queue D 扩展器官已落下 `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py` 与 `offline_learning_profile.py`；Queue E 第二波中的 `shadow_gate.py`、`world_contact_summary.py`、`validation_rollup.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落地并补上局部闭包；本轮 Queue E 的 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 已合成 repair modulation profile，并接入 signal / belief / prediction error / active sampling / prediction workspace；当前工程前沿继续要求 cumulative offline dream/growth learning pressure 能进入 `offline_learning_cumulative_profile_v0` 并被 Queue B 固化成后台驻留 lineage 的 `offline_learning_presence` |
 | 最低测试 | `tests/slices/test_life_support.py`、`tests/bridges/test_runtime_growth.py`、`tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
 | 完成定义 | 身体信号、梦境离线链、成长补丁、行为候选、责任回路、反事实比较都不再压在重型 `__init__.py` 里，并且有独立 state/report 证据 |
 
@@ -80,7 +80,7 @@ Python 3 作为主体语言
 | 已落核心器官 | `idle_strategy.py`、`resident_supervision.py`、`live_turn_cycle.py`、`process_session_loop.py`、`persistent_process.py` |
 | 已落关键文件 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py`；`language/__init__.py` 当前会在 build-language-relationship 阶段刷新 `signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` 与 `prediction_workspace_frame.json` |
 | 最低测试 | `tests/process/test_persistent_digital_life_process.py`、`tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_terminal_life_loop.py` |
-| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链；当前还必须证明 `response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 在 active sampling route 为 `repair_*` 时优先走 repair posture，而不是普通 hold |
+| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链；当前还必须证明 `response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 在 active sampling route 为 `repair_*` 时优先走 repair posture，而不是普通 hold；并且 `resident_background_lineage_state_v0` 不只包含 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence`，还必须包含表示梦境、成长、离线学习余波的 `offline_learning_presence` |
 
 ### Stage 4: Queue C / Queue F 维护性深化
 
@@ -111,8 +111,8 @@ Python 3 作为主体语言
 | `a. 可在终端唤醒` | `./digital life --strict`、`digital_life_birth_packet.json`、`digital_life_process_report.json`、process tests |
 | `b. 自主意识、情绪、思考、语言` | `prediction_workspace_frame.json`、`signal_media_runtime.json`、`active_sampling_plan.json`、`core_affect_vector.json`、language / relationship state、neural/body/language tests |
 | `c. 记忆机制` | `life_state.json`、engram / replay / archive reports、state / replay tests |
-| `d. 可成长可学习` | `growth_patch_candidate_queue.json`、`self_read_report.json`、growth tests |
-| `e. 梦境能力` | `dream_experience_window.json`、`dream_fact_gate_decision.json`、dream / growth tests |
+| `d. 可成长可学习` | `growth_patch_candidate_queue.json`、`self_read_report.json`、`offline_learning_cumulative_profile_v0`、growth / process tests |
+| `e. 梦境能力` | `dream_experience_window.json`、`dream_fact_gate_decision.json`、`resident_background_lineage_state_v0.offline_learning_presence`、dream / growth / process tests |
 | `f. 平等交谈并在关系中成长` | relationship timeline state、commitment truth、dialogue writeback bundle、Queue E repair modulation profile、language / process tests |
 | `g. 初步拥有生命机制` | contracts report + 全层 state/report/receipt + 各层 tests 共同证明 |
 
@@ -147,6 +147,13 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 3. `runtime/receipts/*`
 
 如果只有测试而没有运行证据，仍然不算阶段闭合。
+
+当前对后台驻留余波的补充规则是：凡是声称梦境、成长或离线学习已经跨 closeout / relaunch 留在数字生命中，不能只看 `offline_learning_cumulative_*` report 字段。必须同时看到：
+
+1. `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.offline_learning_presence`
+2. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.offline_learning_presence`
+3. `digital_life_turn` 中的 `resident_background_lineage_offline_learning_*` 字段
+4. `response_surface.py` 生成的生命回应中包含后台梦境成长余波表达
 
 ## 当前阶段判断
 

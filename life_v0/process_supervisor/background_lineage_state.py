@@ -92,6 +92,9 @@ def build_resident_background_lineage_state(
     language_presence = _language_presence(governance)
     if language_presence:
         lineage_state["language_presence"] = language_presence
+    offline_learning_presence = _offline_learning_presence(governance)
+    if offline_learning_presence:
+        lineage_state["offline_learning_presence"] = offline_learning_presence
     return {
         key: value
         for key, value in lineage_state.items()
@@ -302,6 +305,53 @@ def _language_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "governance_cadence_profile": governance.get(
                 "governance_cadence_profile"
             ),
+        }
+    )
+
+
+def _offline_learning_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    profile = _dict_or_empty(governance.get("offline_learning_cumulative_profile"))
+    priority_profile = _dict_or_empty(
+        governance.get("offline_learning_cumulative_priority_profile")
+        or profile.get("priority_profile")
+    )
+    ref_set = _string_list(
+        governance.get("offline_learning_cumulative_ref_set")
+        or profile.get("ref_set")
+    )
+    generation = _int_or_zero(
+        governance.get("offline_learning_cumulative_generation")
+        if governance.get("offline_learning_cumulative_generation") is not None
+        else profile.get("generation")
+    )
+    pressure_level = (
+        governance.get("offline_learning_cumulative_pressure_level")
+        or profile.get("pressure_level")
+    )
+    attention_target = (
+        governance.get("offline_learning_cumulative_attention_target")
+        or profile.get("attention_target")
+    )
+    current_pressure_level = profile.get("current_pressure_level")
+    previous_generation = _int_or_zero(profile.get("previous_generation"))
+    if (
+        not profile
+        and not priority_profile
+        and not ref_set
+        and not generation
+        and not pressure_level
+        and not attention_target
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "generation": generation,
+            "pressure_level": pressure_level,
+            "attention_target": attention_target,
+            "priority_profile": priority_profile,
+            "ref_set": ref_set,
+            "current_pressure_level": current_pressure_level,
+            "previous_generation": previous_generation,
         }
     )
 

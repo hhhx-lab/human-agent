@@ -208,19 +208,40 @@ def build_resident_background_lineage_payload(
         "source_refs",
     ):
         lineage_refs.extend(_string_list(lineage_state.get(key)))
-    if lineage_refs:
-        payload["resident_background_lineage_evidence_refs"] = _dedupe_string_list(
-            lineage_refs
-        )
     for key in (
         "relationship_presence",
         "trait_convergence_presence",
         "heartbeat_presence",
         "language_presence",
+        "offline_learning_presence",
     ):
         presence = lineage_state.get(key)
         if isinstance(presence, dict) and presence:
             payload[f"resident_background_lineage_{key}"] = dict(presence)
+    offline_presence = lineage_state.get("offline_learning_presence")
+    if isinstance(offline_presence, dict):
+        for source_key, target_key in (
+            ("generation", "resident_background_lineage_offline_learning_generation"),
+            (
+                "pressure_level",
+                "resident_background_lineage_offline_learning_pressure_level",
+            ),
+            (
+                "attention_target",
+                "resident_background_lineage_offline_learning_attention_target",
+            ),
+        ):
+            value = offline_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        offline_refs = _dedupe_string_list(_string_list(offline_presence.get("ref_set")))
+        if offline_refs:
+            payload["resident_background_lineage_offline_learning_refs"] = offline_refs
+            lineage_refs.extend(offline_refs)
+    if lineage_refs:
+        payload["resident_background_lineage_evidence_refs"] = _dedupe_string_list(
+            lineage_refs
+        )
     return payload
 
 

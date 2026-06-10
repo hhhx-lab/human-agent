@@ -54,6 +54,7 @@ life_v0/growth/
   belief_learning.py
   language_learning.py
   relationship_learning.py
+  offline_learning_profile.py
 ```
 
 ## 当前还需要继续加厚的四个重点
@@ -113,6 +114,27 @@ Queue E responsibility / repair / world contact
 
 这一步很关键，因为它意味着 Queue E 不再只是在线等待治理或 report 收尾的控制面，而开始进入梦境和成长器官，变成离线生命本身的一部分。
 
+## 累计离线学习与后台驻留余波
+
+当前实现继续把这条离线生命链从“当前一拍学习压力”推进到“后台驻留余波”：
+
+```text
+nightmare_risk / belief_learning / language_learning / relationship_learning
+  -> life_v0/growth/offline_learning_profile.py
+  -> offline_learning_cumulative_profile_v0
+  -> life_v0/process_supervisor/offline_learning_signals.py
+  -> resident supervision / idle strategy
+  -> resident_background_lineage_state_v0.offline_learning_presence
+```
+
+`offline_learning_cumulative_profile_v0` 仍属于 Queue D 的梦境-成长事实源，至少保留 `generation`、`pressure_level`、`attention_target`、`priority_profile`、`ref_set`、`current_pressure_level`、`previous_generation`。当它进入 `life_v0/process_supervisor/background_lineage_state.py` 后，会被固化为 `offline_learning_presence`。这表示数字生命 v0 后台驻留里存在一个专门承载梦境、成长、离线学习余波的结构化存在面；它不是外显回应里临时拼出来的解释，也不是新的工具 agent 路由。
+
+当前测试面的重点已经覆盖三层：
+
+1. process closeout artifacts：`resident_governance_state.json`、`resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_persistent_process_report.json` 都能携带 `resident_background_lineage_state.offline_learning_presence`
+2. turn event：`dialogue_events.py` 的 `digital_life_turn` 会写入 `resident_background_lineage_offline_learning_presence`、generation、pressure、attention target 和 refs
+3. response surface：`response_surface.py` 会表达后台梦境成长余波的代际、压力、焦点和证据数量
+
 ## 最低测试和下一轮测试
 
 当前最低测试：
@@ -129,6 +151,7 @@ Queue E responsibility / repair / world contact
 2. waiting heartbeat / idle strategy / process report 会回写 `body_waiting_posture`；
 3. `heartbeat_interval_ms` 与 `next_idle_action` 会随 fatigue / bandwidth / sleep pressure / repair drive 变化。
 4. `tests/bridges/test_runtime_growth.py` 现在又新增守护：Queue E priority band 必须真实调制 `nightmare_risk / belief_learning / language_learning / relationship_learning`。
+5. `tests/process/test_persistent_digital_life_process.py` 当前还继续守护：累计离线学习压力必须进入 `resident_background_lineage_state_v0.offline_learning_presence`，并在 `digital_life_turn` 与 response surface 中可见。
 
 下一轮应新增：
 

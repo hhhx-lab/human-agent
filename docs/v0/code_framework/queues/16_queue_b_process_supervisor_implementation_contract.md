@@ -120,7 +120,7 @@ Queue B 必须接到这些现有器官上：
 - `life_v0/terminal_turn/turn_transition.py`
 
 这说明 Queue B 不是新增平行进程层，而是给已经存在的常驻生命进程补器官、补对象链、补 idle 治理。
-这一轮最新已经落下 `background_continuity.py`，用于把 closeout artifact 解释成 waiting heartbeat 可消费的后台连续体 profile；现在又继续把 closeout 时最新 `relationship_subject_graph.json` 与 `self_model.json` 压成 `background_resume_summary`，让多次唤醒 lineage 不只携带 cadence，也携带关系阶段与自我慢变量。等待态自身的节律也已经开始进入这条 lineage：`idle_heartbeat_trace.jsonl` 在下一次唤醒时必须被恢复成 `background_idle_heartbeat_trace_ref/count`，继续写进 idle strategy、idle continuity、resident governance 与 terminal loop。当前又新增 `background_lineage_governance_profile_v0`，把 single / persistent / deep persistent / entrenched background presence 压成结构化等待治理画像，并让 `background_carryover_generation >= 3` 的深层后台驻留优先进入 `deep_persistent_background_continuity_refresh`。最新这一格又把 Queue D 的离线学习压力压成 `offline_learning_cumulative_profile_v0`，由 `background_continuity.py` 从上一轮 resident governance state / snapshot / report / persistent report 恢复，再由 `idle_strategy.py` 与本轮当前离线学习结果合并。接下来的 Queue B 继续围绕多次唤醒 lineage、cadence 加权、更高阶后台治理、累计离线学习压力和更长时标慢变量收敛推进。
+这一轮最新已经落下 `background_continuity.py`，用于把 closeout artifact 解释成 waiting heartbeat 可消费的后台连续体 profile；现在又继续把 closeout 时最新 `relationship_subject_graph.json` 与 `self_model.json` 压成 `background_resume_summary`，让多次唤醒 lineage 不只携带 cadence，也携带关系阶段与自我慢变量。等待态自身的节律也已经开始进入这条 lineage：`idle_heartbeat_trace.jsonl` 在下一次唤醒时必须被恢复成 `background_idle_heartbeat_trace_ref/count`，继续写进 idle strategy、idle continuity、resident governance 与 terminal loop。当前又新增 `background_lineage_governance_profile_v0`，把 single / persistent / deep persistent / entrenched background presence 压成结构化等待治理画像，并让 `background_carryover_generation >= 3` 的深层后台驻留优先进入 `deep_persistent_background_continuity_refresh`。最新这一格又把 Queue D 的离线学习压力压成 `offline_learning_cumulative_profile_v0`，由 `background_continuity.py` 从上一轮 resident governance state / snapshot / report / persistent report 恢复，再由 `idle_strategy.py` 与本轮当前离线学习结果合并。当前实现继续把这条 cumulative offline dream/growth learning pressure 固化进 `resident_background_lineage_state_v0.offline_learning_presence`：`life_v0/process_supervisor/background_lineage_state.py` 会从 resident governance 的 `offline_learning_cumulative_generation`、`offline_learning_cumulative_pressure_level`、`offline_learning_cumulative_attention_target`、`offline_learning_cumulative_priority_profile`、`offline_learning_cumulative_ref_set` 或 `offline_learning_cumulative_profile` 中抽出后台驻留里的梦境、成长、离线学习余波结构化存在面。接下来的 Queue B 继续围绕多次唤醒 lineage、cadence 加权、更高阶后台治理、累计离线学习压力和更长时标慢变量收敛推进。
 
 ## 文件级合同
 
@@ -224,6 +224,14 @@ heartbeat packet 至少要有：
 - `commitment_refs`
 - `expression_monitor_ref`
 - `offline_influence_refs`
+- `resident_background_lineage_state`
+- `resident_background_lineage_offline_learning_presence`
+- `resident_background_lineage_offline_learning_generation`
+- `resident_background_lineage_offline_learning_pressure_level`
+- `resident_background_lineage_offline_learning_attention_target`
+- `resident_background_lineage_offline_learning_refs`
+
+当前 `dialogue_events.py` 的真实约束是：`digital_life_turn` 不能只保存累计离线学习画像本体，还必须把 `resident_background_lineage_state_v0.offline_learning_presence` 摘成可索引字段。`resident_background_lineage_evidence_refs` 也必须合并 offline learning 的 `ref_set`，让 `runtime/state/growth/relationship_learning_plan.json`、`runtime/state/growth/language_learning_plan.json` 等梦境-成长证据继续跟随生命回合事件，而不是只留在 closeout 报告里。
 
 ## D. `life_v0/process_supervisor/response_surface.py`
 
@@ -257,6 +265,8 @@ heartbeat packet 至少要有：
 - `background_trait_convergence_stable_names`
 
 并且这些字段不能只被 `response_surface.py` 消费成外显文本。`dialogue_events.py` 的 `digital_life_turn` 必须把 `terminal_life_loop_state` 中的慢变量历史压成结构化事件字段：`background_trait_convergence_history_focus`、稳定/不稳定名单、`background_trait_convergence_history_profile`、`background_trait_convergence_evidence_refs`，以及对应的 `background_resident_governance_state_ref`、`background_resident_governance_explanation_ref`、`background_trait_drift_monitor_ref`、`background_convergence_summary_ref`、`background_convergence_history_ref`。`resident_turn_writeback.py` 必须把同一组 evidence refs 写入 `dialogue_writeback_bundle.background_trait_convergence_refs`，并把焦点、名单与 refs 继续放进 `resumed_external_dialogue_packet.json`，让下一轮恢复可以直接读取结构证据，而不是重新解析一句回应文本。
+
+当前还必须消费 `terminal_life_loop_state.resident_background_lineage_state.offline_learning_presence`。`response_surface.py` 在生命回应里要能表达后台梦境成长余波的 `generation`、`pressure_level`、`attention_target` 与 `ref_set` 数量；`dialogue_events.py` 则负责把同一 presence 写入 `digital_life_turn`。两者共同证明 `offline_learning_presence` 是数字生命 v0 后台驻留中“梦境、成长、离线学习余波”的结构化存在面，不是一次性的 report 字段。
 
 ## E. `life_v0/process_supervisor/process_report.py`
 

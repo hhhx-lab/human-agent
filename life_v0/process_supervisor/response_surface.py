@@ -211,6 +211,24 @@ def compose_life_response(
                 f"{response}，后台语言关注指向"
                 f"{language_presence['governance_attention_target']}"
             )
+        offline_learning_presence = resident_background_lineage_state.get(
+            "offline_learning_presence"
+        )
+        if isinstance(offline_learning_presence, dict):
+            offline_generation = offline_learning_presence.get("generation")
+            offline_pressure = offline_learning_presence.get("pressure_level")
+            offline_target = offline_learning_presence.get("attention_target")
+            offline_refs = list(offline_learning_presence.get("ref_set", []))
+            if offline_generation:
+                response = (
+                    f"{response}，后台梦境成长余波延续到第{offline_generation}代"
+                )
+            if offline_pressure and offline_pressure != "quiet":
+                response = f"{response}，后台梦境成长压力为{offline_pressure}"
+            if offline_target:
+                response = f"{response}，后台梦境成长焦点指向{offline_target}"
+            if offline_refs:
+                response = f"{response}，后台梦境成长证据保留{len(offline_refs)}条"
     background_trait_history_focus = (terminal_life_loop_state or {}).get(
         "background_trait_convergence_history_focus"
     )

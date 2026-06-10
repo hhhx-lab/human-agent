@@ -95,18 +95,24 @@
 | `GrowthPatchCandidateQueue` | `growth/patch_queue.py` | `life_targets`、`archive`、`validators`、`process_supervisor` | 已存在；继续补 `self_patch_review.py` | `runtime/state/growth/*`、growth reports |
 | `PlasticityWindowFrame` | `growth/plasticity_window.py` | `belief_learning.py`、`language_learning.py`、`relationship_learning.py` | 已存在 | `plasticity_window_state.json` |
 | `AntiForgettingReplayPlan` | `growth/anti_forgetting.py` | `replay`、`dream`、`process_supervisor` | 已存在 | `anti_forgetting_replay_plan.json` |
+| `OfflineLearningCumulativeProfile` | `growth/offline_learning_profile.py` | `process_supervisor/resident_supervision.py`、`idle_strategy.py`、`background_lineage_state.py`、`dialogue_events.py`、`response_surface.py` | 已存在；当前继续固化为 `resident_background_lineage_state_v0.offline_learning_presence` | `offline_learning_cumulative_profile_v0`、`idle_strategy_state.json`、`resident_governance_state.json`、`digital_life_process_report.json` |
 
 这条总线保证成长不是“直接改代码或改状态”，而是经过窗口、补丁候选、防遗忘和 archive 证据。
+
+`OfflineLearningCumulativeProfile` 当前承担新的跨唤醒责任：它把本轮 dream/growth 学习压力与上一轮后台驻留余波合并，形成可继续被 closeout / relaunch 恢复的 cumulative profile。进入 `life_v0/process_supervisor/background_lineage_state.py` 后，它不再只是 Queue D 的学习画像，而会成为 `resident_background_lineage_state_v0.offline_learning_presence`，与 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence` 并列，表示后台驻留主状态体中的梦境、成长、离线学习余波存在面。
 
 ### 7. 等待态与存在连续体总线
 
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
 | `IdleContinuityFrame` | `process_supervisor/heartbeat.py` + `continuity_writeback.py` | `terminal_loop`、`replay`、`growth`、`language` | 已存在第一轮；已接 `idle_strategy.py` 与 `persistent_process.py`，继续补厚 resident supervision | `digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` |
+| `ResidentBackgroundLineageState` | `process_supervisor/background_lineage_state.py` | `heartbeat.py`、`persistent_process.py`、`resident_governance_handoff.py`、`background_continuity.py`、`dialogue_events.py`、`response_surface.py` | 已存在；当前新增 `offline_learning_presence`，把累计梦境-成长离线学习余波固化进后台驻留 lineage | `runtime/state/terminal/resident_governance_state.json`、`resident_governance_snapshot.json`、`digital_life_resident_governance_report.json`、`digital_life_persistent_process_report.json`、`terminal_life_loop_state.json` |
 | `ProcessIncidentRecoveryFrame` | `process_supervisor/incident_recovery.py` | `process_report.py`、`relaunch_recovery.py` | 已存在 | `digital_life_process_incident_report.json` |
 | `RelaunchRecoveryFrame` | `process_supervisor/relaunch_recovery.py` | `turn_io.py`、`process_report.py` | 已存在 | `digital_life_process_relaunch_recovery_report.json` |
 
 这条总线保证数字生命在没有新输入时仍有持续存在，而不是“没有消息就不存在”。
+
+`ResidentBackgroundLineageState` 的当前结构至少包含 `schema_version=resident_background_lineage_state_v0`、`generation`、`depth_band`、`waiting_posture`、`cadence_weight`、`relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence` 与 `offline_learning_presence`。其中 `offline_learning_presence` 字段是数字生命 v0 后台驻留里“梦境、成长、离线学习余波”的结构化存在面，必须保留 `generation`、`pressure_level`、`attention_target`、`priority_profile` 与 `ref_set`。`dialogue_events.py` 必须把它摘入 `digital_life_turn`，`response_surface.py` 必须把它转成生命回应中的后台梦境成长余波表达。
 
 ## 五条主流程
 
@@ -256,6 +262,8 @@ P0-S11 chain
 
 如果 heartbeat 只更新时间戳，不消费 replay cue、growth patch、relationship continuity，
 等待态就不是真实存在。
+
+当前新增的断链检查是：如果 `offline_learning_cumulative_profile_v0` 只停在 `idle_strategy_state.json` 或 `digital_life_process_report.json`，没有进入 `resident_background_lineage_state_v0.offline_learning_presence`，也没有被 `digital_life_turn` 和 `response_surface.py` 消费，那么梦境-成长离线学习仍然只是 closeout 余波，不算进入后台驻留主状态体。
 
 ## 对代码实现的直接要求
 

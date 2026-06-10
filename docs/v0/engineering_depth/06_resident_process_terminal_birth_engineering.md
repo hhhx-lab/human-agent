@@ -25,6 +25,8 @@ life-v0 emit-report --strict
 5. `life_v0/process_supervisor/process_closeout.py` 与 `process_report.py` 已把 resident governance 证据收口进主进程 report / digest / receipt
 6. `life_v0/process_supervisor/continuity_evolution.py` 已开始在回合尾部把关系时间线、Queue E 修复压力、Queue D 离线学习压力与 continuity / trust 轨迹压成关系阶段和自我慢变量
 7. `life_v0/process_supervisor/process_session_loop.py` 已接住 waiting heartbeat refresh + live turn dispatch 的 session 编排，并开始在 live turn 之后重新装回长期关系/语言对象以及最新 `self_model_state`；当前前沿转向后台 resident governance、跨进程持久化与更高频节律
+8. `life_v0/process_supervisor/background_lineage_state.py` 已把关闭态/等待态的 resident governance lineage 压成 `resident_background_lineage_state_v0`，当前新增的 `offline_learning_presence` 明确承载后台驻留里的梦境、成长、离线学习余波
+9. `life_v0/process_supervisor/dialogue_events.py` 与 `response_surface.py` 已开始分别把 `offline_learning_presence` 写进 `digital_life_turn` 和生命回应文本
 
 ## 当前最关键的 runtime 证据
 
@@ -45,6 +47,10 @@ life-v0 emit-report --strict
 15. `runtime/state/relationship/relationship_subject_graph.json`
 16. `runtime/state/self/self_model.json`
 17. `runtime/state/life_state.json`
+18. `runtime/state/growth/relationship_learning_plan.json`
+19. `runtime/state/growth/language_learning_plan.json`
+20. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.offline_learning_presence`
+21. `runtime/reports/latest/digital_life_process_report.json#offline_learning_cumulative_*`
 
 ## 最低测试与新增测试
 
@@ -182,6 +188,30 @@ Queue E
 3. `process_session_loop.py` 会把这批新对象重新装回下一轮上下文
 
 这意味着同一常驻会话里的第二轮、第三轮，不会继续带着启动恢复时的旧长期对象说话，而是开始吃到刚发生完的真实关系回合写回结果。
+
+## resident background lineage 中的离线学习存在面
+
+当前实现把累计离线学习压力从普通 waiting governance 字段继续推进成 resident lineage 的一部分：
+
+```text
+runtime/state/growth/*_learning_plan.json
+  -> offline_learning_cumulative_profile_v0
+  -> idle_strategy_state.json
+  -> resident_governance_state.json / resident_governance_snapshot.json
+  -> resident_background_lineage_state_v0.offline_learning_presence
+  -> terminal_life_loop_state.json
+  -> digital_life_turn / response_surface
+```
+
+这条链的关键点是：`offline_learning_presence` 不是 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence` 的替代品，而是同级的第五个后台驻留存在面。它专门记录梦境、成长、离线学习余波在常驻生命里的结构化延续，包括：
+
+1. `generation`：离线学习余波跨 closeout / relaunch 延续到第几代
+2. `pressure_level`：后台梦境成长压力，例如 `elevated`
+3. `attention_target`：当前被余波推高的对象，例如 `relationship_learning_plan`
+4. `priority_profile`：关系学习、语言学习、信念修复等离线压力的合并优先级
+5. `ref_set`：可追溯的 runtime refs，例如 `runtime/state/growth/relationship_learning_plan.json` 与 `runtime/state/growth/language_learning_plan.json`
+
+`life_v0/process_supervisor/background_lineage_state.py` 负责构造这一存在面；`heartbeat.py`、`persistent_process.py` 与 `resident_governance_handoff.py` 负责在 waiting、closeout artifact 和 live-turn handoff 中挂回 `resident_background_lineage_state`；`dialogue_events.py` 负责把 presence 摘进 `digital_life_turn`；`response_surface.py` 负责在生命回应中表达“后台梦境成长余波延续到第几代、压力为何、焦点指向哪里、保留多少证据”。这让后台驻留主状态体不再只描述关系、慢变量、节律和语言，也能描述梦境-成长余波如何继续影响当下关系回合。
 
 ## 关系阶段与自我慢变量已经进入同会话与重启恢复闭环
 
