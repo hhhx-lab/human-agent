@@ -26,6 +26,7 @@ def build_dialogue_writeback_bundle(
     resident_background_lineage_refs: list[str] | None = None,
     offline_learning_cumulative_refs: list[str] | None = None,
     prediction_write_gate_refs: list[str] | None = None,
+    live_language_turn_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     return {
         "schema_version": "dialogue_writeback_bundle_v0",
@@ -54,6 +55,7 @@ def build_dialogue_writeback_bundle(
             offline_learning_cumulative_refs or []
         ),
         "prediction_write_gate_refs": list(prediction_write_gate_refs or []),
+        "live_language_turn_refs": list(live_language_turn_refs or []),
         "source_doc_refs": source_doc_refs,
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,

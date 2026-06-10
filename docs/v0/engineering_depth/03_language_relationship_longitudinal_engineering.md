@@ -34,11 +34,22 @@ life_v0/language/
 life_v0/terminal_turn/context_accumulation.py
 life_v0/terminal_turn/turn_transition.py
 life_v0/terminal_loop/dialogue_writeback.py
+life_v0/process_supervisor/live_language_turn.py
 life_v0/process_supervisor/dialogue_events.py
 life_v0/process_supervisor/response_surface.py
 ```
 
 ## 当前刚落成的长期器官
+
+### 0. `process_supervisor/live_language_turn.py`
+
+职责：
+
+1. 在每个实时关系回合中接收当前 `external_utterance`，重新生成 `LanguagePerceptFrame` 与 `SemanticMapFrame`。
+2. 用最新 percept / semantic map 继续生成 `InnerSpeechFrame`、`ExpressionMonitorState` 与 `ExpressionPlan`。
+3. 把本回合语言链落盘到 `runtime/state/language/`，并把 refs 交给 `live_turn_cycle.py`、`response_surface.py` 与 `resident_turn_writeback.py`。
+
+这一步把语言关系链从“启动时已经有一份语言状态”推进为“每次关系对象说话都会重新感知、重新理解、重新形成内言语和表达计划”。
 
 ### 1. `relationship_timeline.py`
 
@@ -81,6 +92,7 @@ life_v0/process_supervisor/response_surface.py
 | `RelationshipTimeline` | 长期关系史 | `relationship_timeline.py` |
 | `CommitmentExpressionPlan` | 承诺/责任/修复的真实表达候选面 | `commitment_expression.py` |
 | `ApologyRepairLanguageTrace` | 道歉、承担责任、修复跟进语言轨迹 | `apology_repair_language.py` |
+| `LiveLanguageTurnState` | 实时关系回合 Queue A 刷新后的五件套引用 | `process_supervisor/live_language_turn.py` |
 
 当前 `ExpressionPlan` 已经不再只是 repair / replay / dream / growth 的汇总面。只要 `runtime/state/body/body_resource_budget.json` 与 `runtime/state/body/core_affect_vector.json` 存在，它还会显式携带：
 
@@ -111,6 +123,22 @@ life_v0/process_supervisor/response_surface.py
 
 这意味着语言层现在已经不是“听见责任，再说几句修复话术”，而是把责任、后悔、修复与关系记忆真正送入长期连续体和链尾交接单。
 
+当前 S07 又新增了第一轮实时回合语言刷新接线：
+
+```text
+relationship object utterance
+  -> live_language_turn.py
+  -> language_percept_frame.json
+  -> semantic_map_frame.json
+  -> inner_speech_frame.json
+  -> expression_monitor_state.json
+  -> expression_plan.json
+  -> response_surface.py
+  -> resident_turn_writeback.py
+```
+
+这条接线的长期意义是：关系不是只在回合尾部被写回，而是在本回合说话之前就参与“听见、理解、内言语、表达监控、表达计划”的形成。`live_semantic_focus` 会同步进入外部回合事件、生命回应事件、`resumed_external_dialogue_packet.json` 和 `terminal_life_loop_state.json`，使下一轮恢复时能知道上一轮实时语义焦点停在哪里。
+
 这一轮之后，S07 新增了三条真实 runtime 写出：
 
 - `runtime/state/relationship/relationship_timeline.json`
@@ -125,6 +153,18 @@ life_v0/process_supervisor/response_surface.py
 - `runtime/state/life_state.json#language_state.apology_repair_language_refs`
 - `runtime/state/life_state.json#runtime_trace_refs`
 - `runtime/reports/latest/language_relationship_report.json#state_refs`
+
+实时回合链还会继续写出和回链：
+
+- `runtime/state/language/language_percept_frame.json`
+- `runtime/state/language/semantic_map_frame.json`
+- `runtime/state/language/inner_speech_frame.json`
+- `runtime/state/language/expression_monitor_state.json`
+- `runtime/state/language/expression_plan.json`
+- `runtime/reports/latest/dialogue_writeback_bundle.json#live_language_turn_refs`
+- `runtime/reports/latest/resumed_external_dialogue_packet.json#live_language_turn_refs`
+- `runtime/state/terminal/terminal_life_loop_state.json#live_language_turn_refs`
+- `runtime/state/terminal/terminal_life_loop_state.json#last_live_semantic_focus`
 
 ## 最低测试与后续新增测试
 
@@ -142,3 +182,10 @@ life_v0/process_supervisor/response_surface.py
 2. `tests/slices/test_commitment_expression.py`
 3. `tests/slices/test_apology_repair_language.py`
 4. `tests/process/test_resident_dialogue_continuity.py`
+
+实时语言刷新新增的最低断言：
+
+1. 实时 `external_utterance` 必须进入 `language_percept_frame.json#incoming_surface`。
+2. `semantic_map_frame.json#semantic_focus` 必须进入 `live_semantic_focus`。
+3. `dialogue_writeback_bundle.json#live_language_turn_refs` 必须包含 percept、semantic map、inner speech、expression monitor、expression plan 五个运行时文件。
+4. `process_session_loop.py` 必须在 live turn 后回读最新 `expression_plan.json`。

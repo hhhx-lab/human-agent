@@ -282,6 +282,7 @@ def run_digital_life_process(
     )
 
     idle_strategy_state = _read_json_if_exists(terminal_dir / "idle_strategy_state.json")
+    expression_plan = _read_json_if_exists(language_dir / "expression_plan.json")
     closeout = close_digital_life_process(
         run_id=run_id,
         generated_at=generated_at,

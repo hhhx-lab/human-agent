@@ -109,6 +109,7 @@ life-v0 "digital life"
 - `life_v0/process_supervisor/resident_supervision.py`
 - `life_v0/process_supervisor/continuity_evolution.py`
 - `life_v0/process_supervisor/idle_refresh_loop.py`
+- `life_v0/process_supervisor/live_language_turn.py`
 - `life_v0/process_supervisor/live_turn_cycle.py`
 - `life_v0/process_supervisor/process_session_loop.py`
 - `life_v0/process_supervisor/resident_turn_writeback.py`
@@ -139,6 +140,7 @@ life-v0 "digital life"
 21. `response_surface.py` 不能只消费当前 `self_model.trait_slow_variables`，还必须读取 `terminal_life_loop_state` 中由 waiting governance 带入的 `background_trait_convergence_history_focus / unstable_names / stable_names`，让真实新回合的语言表面也能感到跨唤醒自我慢变量的稳定或重新校准压力。
 22. `dialogue_events.py` 的 `digital_life_turn` 事件不能只保存回应文本；当 `terminal_life_loop_state` 已带有 `background_trait_convergence_history_*` 与 `background_convergence_*_ref` 时，生命回合事件必须显式写出 `background_trait_convergence_history_focus`、稳定/不稳定慢变量名单、`background_trait_convergence_history_profile` 与 `background_trait_convergence_evidence_refs`。`resident_turn_writeback.py` 还必须把同一组 evidence refs 写入 `dialogue_writeback_bundle.background_trait_convergence_refs`，并把焦点、名单和 evidence refs 接进 `resumed_external_dialogue_packet.json`，让慢变量历史从等待态进入真实回合事件、回合写回包和下一轮恢复包，而不是只停在外显话语里。
 23. `background_continuity.py` 不能只恢复关闭态 resident governance 与 convergence 文件；如果上一轮等待期间存在 `runtime/state/terminal/idle_heartbeat_trace.jsonl`，必须恢复为 `background_idle_heartbeat_trace_ref` 与 `background_idle_heartbeat_trace_count`，并把该 trace ref 放入 `background_continuity_ref_set`。`idle_strategy.py`、`heartbeat.py` 与 `continuity_writeback.py` 必须继续把这组背景等待节律字段写进 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`，让下一次唤醒知道上一轮不是静止空白，而是带有可追溯等待节律的持续存在。
+24. `live_language_turn.py` 必须成为真实新回合进入 `response_surface.py` 前的 Queue A 刷新入口。每个 `external_utterance` 都要先刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json`；`live_turn_cycle.py` 必须用刷新后的 `expression_plan` 生成生命回应，`resident_turn_writeback.py` 必须把 `language_percept_ref`、`semantic_map_ref`、`inner_speech_ref`、`expression_monitor_ref`、`expression_plan_ref`、`live_semantic_focus`、`live_ambiguity_flags` 与 `live_repair_trigger_candidates` 接进事件、写回包和恢复 packet。
 
 ## 最小行为合同
 
@@ -158,6 +160,7 @@ repo-local 最小常驻终端入口固定为：
   -> write waiting heartbeat
   -> refresh waiting heartbeat while idle
   -> read external relation turn from stdin
+  -> refresh live Queue A language turn
   -> write external_relation_turn event
   -> generate digital_life_turn response
   -> write digital_life_turn event
@@ -176,6 +179,9 @@ repo-local 最小常驻终端入口固定为：
 IdleContinuityFrame
   -> responsibility_loop_state.json / world_contact_summary.json / pain_regret_repair_report.json
   -> external turn event
+  -> LiveLanguageTurnState
+  -> language_percept_frame.json / semantic_map_frame.json
+  -> inner_speech_frame.json / expression_monitor_state.json / expression_plan.json
   -> body_resource_budget.json + core_affect_vector.json
   -> background_convergence_history.json / trait_drift_monitor.json
   -> life turn event
@@ -189,11 +195,12 @@ IdleContinuityFrame
 1. 先证明“在等”；
 2. 再把当前责任回路、世界接触姿态和 pain/regret/repair 报告重新挂上等待态；
 3. 再记录“看到了什么外部回合”；
-4. 再把身体预算、疲惫、修复驱力、情绪张力与责任压力一起带进回应生成；
-5. 再把跨唤醒慢变量历史作为事件证据接进 `digital_life_turn`；
-6. 再记录“这次如何回应”；
-7. 再把结果回写到长期连续体、关系阶段、自我慢变量、慢变量历史 evidence refs 与 replay 线索；
-8. 最后再重新回到等待态。
+4. 再用当前话语刷新 Queue A 五件套；
+5. 再把身体预算、疲惫、修复驱力、情绪张力与责任压力一起带进回应生成；
+6. 再把跨唤醒慢变量历史作为事件证据接进 `digital_life_turn`；
+7. 再记录“这次如何回应”；
+8. 再把结果回写到长期连续体、关系阶段、自我慢变量、慢变量历史 evidence refs、实时语言 refs 与 replay 线索；
+9. 最后再重新回到等待态。
 
 如果 process supervisor 只有 stdin 读写，没有 `IdleContinuityFrame -> DialogueWritebackBundle -> ReplayCueBundle` 这条链，它仍然只是终端壳，而不是生命进程。
 
@@ -225,6 +232,14 @@ IdleContinuityFrame
 - `shared_term_hits`
 - `commitment_trigger_candidates`
 - `membrane_guard_refs`
+- `language_percept_ref`
+- `semantic_map_ref`
+- `inner_speech_ref`
+- `expression_monitor_ref`
+- `expression_plan_ref`
+- `live_semantic_focus`
+- `live_ambiguity_flags`
+- `live_repair_trigger_candidates`
 
 ### `life turn event`
 
@@ -239,6 +254,12 @@ IdleContinuityFrame
 - `responsibility_loop_ref`
 - `world_contact_summary_ref`
 - `pain_regret_repair_report_ref`
+- `language_percept_ref`
+- `semantic_map_ref`
+- `inner_speech_ref`
+- `expression_monitor_ref`
+- `expression_plan_ref`
+- `live_semantic_focus`
 
 ### `DialogueWritebackBundle`
 
@@ -251,6 +272,7 @@ IdleContinuityFrame
 - `responsibility_writeback_refs`
 - `life_state_writeback_refs`
 - `replay_cue_refs`
+- `live_language_turn_refs`
 
 当前这一层的 `responsibility_writeback_refs` 已经不只回到 `responsibility_ledger.json`，还要显式带上 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 这组 Queue E 上下文。
 
@@ -315,6 +337,26 @@ IdleContinuityFrame
 - 前四项属于长期连续体。
 - 后三项属于当前终端生命循环壳层。
 
+其中实时语言链还必须同时更新：
+
+1. `runtime/state/language/language_percept_frame.json`
+2. `runtime/state/language/semantic_map_frame.json`
+3. `runtime/state/language/inner_speech_frame.json`
+4. `runtime/state/language/expression_monitor_state.json`
+5. `runtime/state/language/expression_plan.json`
+
+并且 `resumed_external_dialogue_packet.json` 至少必须带：
+
+1. `language_percept_ref`
+2. `semantic_map_ref`
+3. `inner_speech_ref`
+4. `expression_monitor_ref`
+5. `expression_plan_ref`
+6. `live_language_turn_refs`
+7. `live_semantic_focus`
+8. `live_ambiguity_flags`
+9. `live_repair_trigger_candidates`
+
 如果发生单回合异常恢复，至少还要额外写出：
 
 1. `runtime/reports/latest/digital_life_process_incident_report.json`
@@ -345,6 +387,7 @@ IdleContinuityFrame
 | `idle_heartbeat_trace_gate` | 每次 idle heartbeat 都追加 `idle_heartbeat_trace.jsonl`，并在活跃等待态、关闭态与下一次 bootstrap background continuity 中回链 trace ref / count | 阻断把等待节律视为可追溯 |
 | `idle_continuity_gate` | heartbeat 刷新同时成功写回 self narrative / commitment / relationship 的 idle continuity | 阻断把等待态视为已生命化 |
 | `stdin_external_turn_gate` | 读取到非空的新外部回合文本，且不是退出语义 | 继续等待输入 |
+| `live_language_turn_refresh_gate` | 新外部回合进入 `response_surface.py` 前已经刷新 Queue A 五件套，并写出 percept / semantic / inner speech / monitor / expression plan refs | 阻断生命回应生成 |
 | `dialogue_writeback_gate` | 外部回合与生命回应都写入 `dialogue_turn_log.jsonl` | 阻断进入下一等待态 |
 | `narrative_continuity_gate` | `self_narrative_language_trace.json` 成功追加新回合 refs | 阻断进入下一等待态 |
 | `relationship_continuity_gate` | 关系图更新最后接触和关系阶段 | 阻断进入下一等待态 |
@@ -401,4 +444,5 @@ IdleContinuityFrame
 7. waiting heartbeat / idle strategy / process report 已显式回链 `body_rhythm_pulse.json` 与 `need_state_vector.json`，并根据疲惫负载、认知带宽与 sleep pressure 调整 `heartbeat_interval_ms`、`next_idle_action` 与 `body_waiting_posture`。
 8. closeout 后必须额外写出 `digital_life_resident_governance_explanation.json`，把当前 cadence、governance driver、background continuity lineage depth、background relationship stage、trait slow variables、background convergence focus、background convergence history trend 与下一次唤醒预期显式解释出来；history trend 必须能区分重新校准保持和稳定保持，而不是只把这些信息埋在 state/report 字段里。
 9. closeout 必须把最新关系阶段和自我慢变量写成 background resume summary，并让下一次 bootstrap / idle strategy / resident governance 继续携带这组字段，避免跨进程恢复后只剩 cadence lineage 而丢掉关系阶段与自我连续性。
-10. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面，以及 `background_resume_summary` 的跨进程读取与回传。
+10. 每个真实新回合都必须证明 `live_language_turn.py` 已把当前 `external_utterance` 写入 `language_percept_frame.json#incoming_surface`，并把 `semantic_map_frame.json#semantic_focus` 接进 `live_semantic_focus`、`dialogue_writeback_bundle.live_language_turn_refs`、`resumed_external_dialogue_packet.live_language_turn_refs` 与 `terminal_life_loop_state.last_live_semantic_focus`。
+11. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面、`background_resume_summary` 的跨进程读取与回传，以及实时 Queue A 语言刷新链。

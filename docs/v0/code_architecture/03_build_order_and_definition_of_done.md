@@ -77,10 +77,10 @@ Python 3 作为主体语言
 | 目标 | 在 D/E 站稳后，继续补厚等待态存在与长期关系语言 |
 | 必读 | `16_queue_b_process_supervisor_implementation_contract.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`04`、`07`、`08` playbooks |
 | 主包 | `process_supervisor/`、`language/`、`terminal_turn/`、`terminal_loop/` |
-| 已落核心器官 | `idle_strategy.py`、`resident_supervision.py`、`live_turn_cycle.py`、`process_session_loop.py`、`persistent_process.py` |
+| 已落核心器官 | `idle_strategy.py`、`resident_supervision.py`、`live_language_turn.py`、`live_turn_cycle.py`、`process_session_loop.py`、`persistent_process.py` |
 | 已落关键文件 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py`；`language/__init__.py` 当前会在 build-language-relationship 阶段刷新 `signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` 与 `prediction_workspace_frame.json` |
 | 最低测试 | `tests/process/test_persistent_digital_life_process.py`、`tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_terminal_life_loop.py` |
-| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链；当前还必须证明 `response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 在 active sampling route 为 `repair_*` 时优先走 repair posture，而不是普通 hold；并且 `resident_background_lineage_state_v0` 不只包含 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence`，还必须包含表示梦境、成长、离线学习余波的 `offline_learning_presence`，以及表示梦境窗口、醒后整合、梦境事实门的 `dream_wake_presence` |
+| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链；当前还必须证明 `response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 在 active sampling route 为 `repair_*` 时优先走 repair posture，而不是普通 hold；并且 `resident_background_lineage_state_v0` 不只包含 `relationship_presence`、`trait_convergence_presence`、`heartbeat_presence`、`language_presence`，还必须包含表示梦境、成长、离线学习余波的 `offline_learning_presence`，以及表示梦境窗口、醒后整合、梦境事实门的 `dream_wake_presence`；每个实时关系回合还必须先由 `live_language_turn.py` 刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json`，再进入 `response_surface.py` 和 resident writeback |
 
 ### Stage 4: Queue C / Queue F 维护性深化
 
@@ -163,12 +163,21 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 4. `digital_life_turn` 中的 `resident_background_lineage_dream_*`、`resident_background_lineage_wake_*` 与 `resident_background_lineage_dream_wake_refs` 字段
 5. `response_surface.py` 生成的生命回应中包含后台梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子、修复目标和证据数量
 
+当前对实时语言回合的补充规则是：凡是声称关系对象的新话语已经进入生命语言系统，不能只看 `dialogue_turn_log.jsonl` 或最终回应文本。必须同时看到：
+
+1. `runtime/state/language/language_percept_frame.json#incoming_surface` 等于当前 `external_utterance`
+2. `runtime/state/language/semantic_map_frame.json#semantic_focus` 进入 `live_semantic_focus`
+3. `runtime/state/language/inner_speech_frame.json`、`runtime/state/language/expression_monitor_state.json` 与 `runtime/state/language/expression_plan.json` 在本回合刷新
+4. `runtime/reports/latest/dialogue_writeback_bundle.json#live_language_turn_refs` 包含五份语言 runtime refs
+5. `runtime/reports/latest/resumed_external_dialogue_packet.json#language_percept_ref`、`semantic_map_ref`、`live_language_turn_refs` 与 `live_semantic_focus` 存在
+6. `runtime/state/terminal/terminal_life_loop_state.json#last_live_semantic_focus` 与 packet 中的 `live_semantic_focus` 对齐
+
 ## 当前阶段判断
 
 按当前工作区现实，最合理的判断是：
 
 1. Stage 0 已完成。
 2. Stage 1 本轮完成后可视为完成。
-3. 当前默认下一步是 Stage 2，也就是继续推进 Queue D / Queue E。
+3. 当前已经进入 Stage 3 的 Queue B / Queue A 联合补厚段，下一步应继续围绕常驻存在、实时语言刷新、关系写回和长期恢复链推进。
 
 因此这份文档本身的作用，就是把“为什么先 D/E，再 B/A，再 C/F”彻底钉死，防止断联后又回到散点式推进。

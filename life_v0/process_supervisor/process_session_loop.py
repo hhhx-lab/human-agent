@@ -332,6 +332,10 @@ def run_process_session_loop(
             language_dir / "apology_repair_language_trace.json",
             apology_repair_language_trace,
         )
+        expression_plan = _read_json_if_exists(
+            language_dir / "expression_plan.json",
+            expression_plan,
+        )
         self_model_state = _read_json_if_exists(
             terminal_dir.parent / "self" / "self_model.json",
             self_model_state or {},

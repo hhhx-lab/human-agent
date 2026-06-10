@@ -53,6 +53,11 @@ LIFE_STATE_LANGUAGE_OFFLINE_REF = "runtime/state/life_state.json#language_state.
 LIFE_STATE_RELATIONSHIP_SUBJECTS_REF = "runtime/state/life_state.json#relationship_subjects"
 DIALOGUE_WRITEBACK_BUNDLE_REF = "runtime/reports/latest/dialogue_writeback_bundle.json"
 RESUMED_DIALOGUE_PACKET_REF = "runtime/reports/latest/resumed_external_dialogue_packet.json"
+LANGUAGE_PERCEPT_REF = "runtime/state/language/language_percept_frame.json"
+SEMANTIC_MAP_REF = "runtime/state/language/semantic_map_frame.json"
+INNER_SPEECH_REF = "runtime/state/language/inner_speech_frame.json"
+EXPRESSION_MONITOR_REF = "runtime/state/language/expression_monitor_state.json"
+EXPRESSION_PLAN_REF = "runtime/state/language/expression_plan.json"
 
 
 @dataclass(frozen=True)
@@ -106,6 +111,14 @@ def write_resident_turn_writeback(
     responsibility_loop_state_ref: str | None = None,
     world_contact_summary_ref: str | None = None,
     pain_regret_repair_report_ref: str | None = None,
+    language_percept_ref: str | None = None,
+    semantic_map_ref: str | None = None,
+    inner_speech_ref: str | None = None,
+    expression_monitor_ref: str | None = None,
+    expression_plan_ref: str | None = None,
+    live_semantic_focus: str | None = None,
+    live_ambiguity_flags: list[str] | None = None,
+    live_repair_trigger_candidates: list[str] | None = None,
     now_iso: Callable[[], str],
     write_json: Callable[[Path, dict[str, Any]], None],
     append_jsonl: Callable[[Path, list[dict[str, Any]]], None],
@@ -140,6 +153,15 @@ def write_resident_turn_writeback(
     write_json(relationship_dir / "relationship_subject_graph.json", relationship_graph)
 
     generated_at = now_iso()
+    live_language_turn_refs = _dedupe_refs(
+        [
+            language_percept_ref,
+            semantic_map_ref,
+            inner_speech_ref,
+            expression_monitor_ref,
+            expression_plan_ref,
+        ]
+    )
     updated_safe_terminal_loop = build_persistent_wait_bridge(
         run_id=run_id,
         generated_at=generated_at,
@@ -157,6 +179,10 @@ def write_resident_turn_writeback(
         "last_external_turn_utterance": external_utterance,
         "last_life_turn_utterance": life_response,
         "last_dialogue_packet_ref": RESUMED_DIALOGUE_PACKET_REF,
+        "last_language_percept_ref": language_percept_ref or LANGUAGE_PERCEPT_REF,
+        "last_semantic_map_ref": semantic_map_ref or SEMANTIC_MAP_REF,
+        "last_live_semantic_focus": live_semantic_focus,
+        "live_language_turn_refs": live_language_turn_refs,
         "next_required_action": "await_next_external_relation_turn",
     }
     write_json(
@@ -276,6 +302,7 @@ def write_resident_turn_writeback(
         resident_background_lineage_refs=resident_background_lineage_refs,
         offline_learning_cumulative_refs=offline_learning_cumulative_refs,
         prediction_write_gate_refs=prediction_write_gate_refs,
+        live_language_turn_refs=live_language_turn_refs,
     )
     write_json(reports_dir / "dialogue_writeback_bundle.json", dialogue_writeback_bundle)
 
@@ -291,7 +318,15 @@ def write_resident_turn_writeback(
         "life_utterance": life_response,
         "life_context_frame_ref": "runtime/state/terminal/life_context_frame.json",
         "relation_turn_frame_ref": "runtime/state/terminal/relation_turn_frame.json",
-        "expression_plan_ref": "runtime/state/language/expression_plan.json",
+        "language_percept_ref": language_percept_ref or LANGUAGE_PERCEPT_REF,
+        "semantic_map_ref": semantic_map_ref or SEMANTIC_MAP_REF,
+        "inner_speech_ref": inner_speech_ref or INNER_SPEECH_REF,
+        "expression_monitor_ref": expression_monitor_ref or EXPRESSION_MONITOR_REF,
+        "expression_plan_ref": expression_plan_ref or EXPRESSION_PLAN_REF,
+        "live_language_turn_refs": live_language_turn_refs,
+        "live_semantic_focus": live_semantic_focus,
+        "live_ambiguity_flags": list(live_ambiguity_flags or []),
+        "live_repair_trigger_candidates": list(live_repair_trigger_candidates or []),
         "dialogue_writeback_bundle_ref": DIALOGUE_WRITEBACK_BUNDLE_REF,
         "next_required_action": "await_next_external_relation_turn",
     }
@@ -648,3 +683,11 @@ def _read_json_if_exists(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
     return _read_json(path)
+
+
+def _dedupe_refs(refs: list[str | None]) -> list[str]:
+    result: list[str] = []
+    for ref in refs:
+        if ref and ref not in result:
+            result.append(ref)
+    return result

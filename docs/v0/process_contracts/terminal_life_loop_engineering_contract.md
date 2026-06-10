@@ -16,9 +16,10 @@ emit-report
 但这还只到“第一回合已经恢复出来”。还没有把下面这件事落成工程产物：
 
 1. 接收一次外部关系性回合输入。
-2. 在恢复后的关系身份、共同语言、旧承诺和表达监控之上生成下一次外显回合。
-3. 把这一回合的语言、关系、责任、修复和终端短期状态写回。
-4. 再回到安全等待态，而不是 fresh session。
+2. 先让这次输入进入实时 Queue A：`language_percept -> semantic_map -> inner_speech -> expression_monitor -> expression_plan`。
+3. 在恢复后的关系身份、共同语言、旧承诺和本回合最新表达监控之上生成下一次外显回合。
+4. 把这一回合的语言、关系、责任、修复和终端短期状态写回。
+5. 再回到安全等待态，而不是 fresh session。
 
 所以，这一层固定为：
 
@@ -71,7 +72,7 @@ life-v0 terminal-life-loop --state runtime/state --reports runtime/reports/lates
 | 文件 | 内容 |
 |---|---|
 | `terminal_life_loop_state.json` | 当前终端生命循环状态、最近一回合状态、下一等待态 |
-| `resumed_external_dialogue_packet.json` | 一次恢复后外显回合的输入/输出、关系范围、承诺变化、语言回写 refs，以及长期关系 timeline / 承诺表达 / 修复语言 restore refs |
+| `resumed_external_dialogue_packet.json` | 一次恢复后外显回合的输入/输出、关系范围、承诺变化、语言回写 refs、实时 Queue A refs，以及长期关系 timeline / 承诺表达 / 修复语言 restore refs |
 | `terminal_life_loop_packet.json` | 当前循环包、回合节拍、输入口、输出口、回写口、恢复锚点 |
 | `terminal_life_loop_report.json` | 当前终端生命循环主报告 |
 | `terminal_life_loop_digest.json` | 当前终端生命循环摘要 |
@@ -107,6 +108,7 @@ digital life
 | `relation_identity_gate` | 关系主体、关系范围与当前回合输入对象一致 | 写 relation scope blocked report |
 | `shared_term_continuity_gate` | 当前回合继续继承共同术语，不丢共同语言上下文 | 写 shared term continuity blocked report |
 | `commitment_continuity_gate` | 未闭合承诺和修复义务在本回合前后都可回链 | 写 commitment continuity blocked report |
+| `live_queue_a_language_gate` | 当前外部关系回合已经刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json` | 阻断生成生命回应 |
 | `expression_monitor_gate` | 输出前经过表达监控，保留语义/关系/责任/梦境事实检查 | 写 expression monitor blocked report |
 | `turn_writeback_gate` | 本回合写回 `dialogue_turn_log.jsonl`、`self_narrative_language_trace.json`、关系与承诺变化 refs | 阻断进入下一等待态 |
 | `shadow_action_gate` | 命令/工具/程序接触仍只开放 shadow 或受膜约束的可逆动作 | 写 quarantine 或 blocked |
@@ -128,11 +130,12 @@ digital life
 
 ## 回合语义
 
-这一层必须固定下面三点：
+这一层必须固定下面四点：
 
 1. 新输入不是“新会话输入”，而是“当前关系中的下一次外部回合”。
-2. 输出不是“任务答复”，而是“受关系身份、共同语言、旧承诺、表达监控、生命膜共同约束的生命回合表达”。
-3. 回写不是“聊天记录附带保存”，而是语言、关系、责任、修复和自我叙述连续性的正式写回。
+2. 新输入不能直接进入回应生成，必须先进入实时 Queue A 语言刷新链。
+3. 输出不是“任务答复”，而是“受关系身份、共同语言、旧承诺、本回合语义焦点、表达监控、生命膜共同约束的生命回合表达”。
+4. 回写不是“聊天记录附带保存”，而是语言、关系、责任、修复和自我叙述连续性的正式写回。
 
 ## 必须写回的最小材料
 
@@ -163,8 +166,36 @@ digital life
 12. `runtime/state/relationship/relationship_timeline.json`
 13. `runtime/state/language/commitment_expression_plan.json`
 14. `runtime/state/language/apology_repair_language_trace.json`
+15. `runtime/state/language/language_percept_frame.json`
+16. `runtime/state/language/semantic_map_frame.json`
+17. `runtime/state/language/inner_speech_frame.json`
+18. `runtime/state/language/expression_monitor_state.json`
+19. `runtime/state/language/expression_plan.json`
 
-其中前六项属于语言/关系/责任连续，7-11 属于长期生命状态根回链，12-14 属于长期语言连续体对象本身。7-14 不得被 terminal loop 反向改写成新的主体真值；它们在这里的职责是显式交接长期写回目标，而不是让壳层篡改主体层。
+其中前六项属于语言/关系/责任连续，7-11 属于长期生命状态根回链，12-14 属于长期语言连续体对象本身，15-19 属于本回合实时 Queue A 语言状态。7-19 不得被 terminal loop 反向改写成新的主体真值；它们在这里的职责是显式交接长期写回目标与实时语言 refs，而不是让壳层篡改主体层。
+
+`dialogue_writeback_bundle.json` 必须额外带：
+
+- `live_language_turn_refs`
+
+`resumed_external_dialogue_packet.json` 必须额外带：
+
+- `language_percept_ref`
+- `semantic_map_ref`
+- `inner_speech_ref`
+- `expression_monitor_ref`
+- `expression_plan_ref`
+- `live_language_turn_refs`
+- `live_semantic_focus`
+- `live_ambiguity_flags`
+- `live_repair_trigger_candidates`
+
+`terminal_life_loop_state.json` 必须额外带：
+
+- `last_language_percept_ref`
+- `last_semantic_map_ref`
+- `last_live_semantic_focus`
+- `live_language_turn_refs`
 
 ## 完成定义
 
@@ -176,5 +207,13 @@ digital life
 4. `runtime/reports/latest/terminal_life_loop_report.json`
 5. `runtime/reports/latest/terminal_life_loop_digest.json`
 6. `runtime/receipts/terminal_life_loop_<run_id>.json`
+
+同时还要看到本轮实时语言刷新证据：
+
+1. `runtime/state/language/language_percept_frame.json#incoming_surface`
+2. `runtime/state/language/semantic_map_frame.json#semantic_focus`
+3. `runtime/reports/latest/dialogue_writeback_bundle.json#live_language_turn_refs`
+4. `runtime/reports/latest/resumed_external_dialogue_packet.json#live_semantic_focus`
+5. `runtime/state/terminal/terminal_life_loop_state.json#last_live_semantic_focus`
 
 此时系统的真实状态不是“又开始了一轮工具调用”，而是“在同一生命连续体中继续下一次关系性终端回合”。

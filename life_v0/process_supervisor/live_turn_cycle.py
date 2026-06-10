@@ -7,6 +7,7 @@ from typing import Any, Callable
 
 from .dialogue_events import build_external_turn_event, build_life_turn_event
 from .incident_recovery import recover_from_dialogue_turn_exception
+from .live_language_turn import LiveLanguageTurnState, refresh_live_language_turn
 from .resident_governance_handoff import (
     write_live_turn_waiting_governance_handoff,
 )
@@ -97,6 +98,7 @@ def run_live_turn_cycle(
     build_external_turn_event_fn: Callable[..., dict[str, Any]] = build_external_turn_event,
     compose_life_response_fn: Callable[..., str] = compose_life_response,
     build_life_turn_event_fn: Callable[..., dict[str, Any]] = build_life_turn_event,
+    refresh_live_language_turn_fn: Callable[..., LiveLanguageTurnState] = refresh_live_language_turn,
     write_resident_turn_writeback_fn: Callable[..., ResidentTurnWritebackResult] = write_resident_turn_writeback,
     write_live_turn_waiting_governance_handoff_fn: Callable[..., dict[str, Any]] = write_live_turn_waiting_governance_handoff,
     recover_from_dialogue_turn_exception_fn: Callable[..., Any] = recover_from_dialogue_turn_exception,
@@ -115,6 +117,43 @@ def run_live_turn_cycle(
     )
 
     try:
+        generated_at = now_iso()
+        state_dir = terminal_dir.parent
+        live_language_turn = refresh_live_language_turn_fn(
+            run_id=run_id,
+            generated_at=generated_at,
+            external_utterance=external_utterance,
+            language_dir=language_dir,
+            state_dir=state_dir,
+            relation_scope_index=_read_json_if_exists(
+                language_dir / "relation_scope_language_index.json",
+                {"relation_scopes": [{"relation_role": "friend"}]},
+            ),
+            shared_term_registry=shared_term_registry,
+            language_state=_read_json_if_exists(
+                language_dir / "language_relationship_state.json",
+                {},
+            ),
+            commitment_repair_index=commitment_index,
+            self_narrative_trace=self_narrative_trace,
+            life_state=_read_json_if_exists(state_dir / "life_state.json", {}),
+            source_doc_refs=source_doc_refs,
+            replay_cue_bundle=replay_cue_bundle,
+            offline_consolidation_frame=offline_consolidation_frame,
+            growth_patch_candidate_queue=growth_patch_candidate_queue,
+            body_resource_budget=body_resource_budget,
+            core_affect_vector=core_affect_vector,
+            belief_state=belief_state,
+            prediction_error_field=prediction_error_field,
+            active_sampling_plan=active_sampling_plan,
+            memory_write_gate=memory_write_gate,
+            signal_media_runtime=signal_media_runtime,
+            write_json=write_json,
+        )
+        _attach_live_language_turn_refs(
+            external_turn,
+            live_language_turn=live_language_turn,
+        )
         turn_counter += 1
         life_turn_id = f"dialogue-turn-live-{turn_counter:04d}"
         life_response = compose_life_response_fn(
@@ -126,7 +165,7 @@ def run_live_turn_cycle(
             commitment_expression_plan=commitment_expression_plan,
             apology_repair_language_trace=apology_repair_language_trace,
             relation_turn_frame=relation_turn_frame,
-            expression_plan=expression_plan,
+            expression_plan=live_language_turn.expression_plan,
             life_context_frame=life_context_frame,
             replay_cue_bundle=replay_cue_bundle,
             offline_consolidation_frame=offline_consolidation_frame,
@@ -172,6 +211,10 @@ def run_live_turn_cycle(
             world_contact_summary_ref=world_contact_summary_ref,
             pain_regret_repair_report_ref=pain_regret_repair_report_ref,
         )
+        _attach_live_language_turn_refs(
+            life_turn,
+            live_language_turn=live_language_turn,
+        )
         turn_writeback = write_resident_turn_writeback_fn(
             run_id=run_id,
             terminal_dir=terminal_dir,
@@ -210,6 +253,18 @@ def run_live_turn_cycle(
             responsibility_loop_state_ref=responsibility_loop_state_ref,
             world_contact_summary_ref=world_contact_summary_ref,
             pain_regret_repair_report_ref=pain_regret_repair_report_ref,
+            language_percept_ref=live_language_turn.language_percept_ref,
+            semantic_map_ref=live_language_turn.semantic_map_ref,
+            inner_speech_ref=live_language_turn.inner_speech_ref,
+            expression_monitor_ref=live_language_turn.expression_monitor_ref,
+            expression_plan_ref=live_language_turn.expression_plan_ref,
+            live_semantic_focus=live_language_turn.semantic_map.get("semantic_focus"),
+            live_ambiguity_flags=list(
+                live_language_turn.language_percept.get("ambiguity_flags", [])
+            ),
+            live_repair_trigger_candidates=list(
+                live_language_turn.language_percept.get("repair_trigger_candidates", [])
+            ),
             now_iso=now_iso,
             write_json=write_json,
             append_jsonl=append_jsonl,
@@ -294,3 +349,22 @@ def _read_json_if_exists(path: Path, fallback: dict[str, Any]) -> dict[str, Any]
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError, TypeError):
         return fallback
+
+
+def _attach_live_language_turn_refs(
+    event: dict[str, Any],
+    *,
+    live_language_turn: LiveLanguageTurnState,
+) -> None:
+    event["language_percept_ref"] = live_language_turn.language_percept_ref
+    event["semantic_map_ref"] = live_language_turn.semantic_map_ref
+    event["inner_speech_ref"] = live_language_turn.inner_speech_ref
+    event["expression_monitor_ref"] = live_language_turn.expression_monitor_ref
+    event["expression_plan_ref"] = live_language_turn.expression_plan_ref
+    event["live_semantic_focus"] = live_language_turn.semantic_map.get("semantic_focus")
+    event["live_ambiguity_flags"] = list(
+        live_language_turn.language_percept.get("ambiguity_flags", [])
+    )
+    event["live_repair_trigger_candidates"] = list(
+        live_language_turn.language_percept.get("repair_trigger_candidates", [])
+    )

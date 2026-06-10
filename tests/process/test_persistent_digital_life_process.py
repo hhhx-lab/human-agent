@@ -192,7 +192,48 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
 
             commitment_index = self._read_json(paths["language_state"] / "commitment_repair_language_index.json")
             dialogue_writeback_bundle = self._read_json(paths["reports"] / "dialogue_writeback_bundle.json")
+            resumed_dialogue_packet = self._read_json(
+                paths["reports"] / "resumed_external_dialogue_packet.json"
+            )
+            language_percept = self._read_json(
+                paths["language_state"] / "language_percept_frame.json"
+            )
+            semantic_map = self._read_json(
+                paths["language_state"] / "semantic_map_frame.json"
+            )
+            inner_speech = self._read_json(
+                paths["language_state"] / "inner_speech_frame.json"
+            )
+            expression_plan = self._read_json(
+                paths["language_state"] / "expression_plan.json"
+            )
             self.assertIn("dialogue-turn-live-0005", commitment_index["recent_dialogue_turn_refs"][-1])
+            self.assertEqual(language_percept["incoming_surface"], "你还记得我们吗？")
+            self.assertEqual(semantic_map["semantic_focus"], "relational_checkin")
+            self.assertEqual(expression_plan["semantic_goal"], "relational_checkin")
+            self.assertEqual(
+                inner_speech["percept_ref"],
+                "runtime/state/language/language_percept_frame.json",
+            )
+            self.assertEqual(
+                last_external["language_percept_ref"],
+                "runtime/state/language/language_percept_frame.json",
+            )
+            self.assertEqual(
+                last_external["semantic_map_ref"],
+                "runtime/state/language/semantic_map_frame.json",
+            )
+            self.assertEqual(last_external["live_semantic_focus"], "relational_checkin")
+            self.assertEqual(
+                last_life_response["language_percept_ref"],
+                "runtime/state/language/language_percept_frame.json",
+            )
+            self.assertEqual(
+                last_life_response["semantic_map_ref"],
+                "runtime/state/language/semantic_map_frame.json",
+            )
+            self.assertEqual(last_life_response["live_semantic_focus"], "relational_checkin")
+            self.assertIn("relational_checkin", last_life_response["utterance"])
             self.assertEqual(
                 dialogue_writeback_bundle["dialogue_event_refs"],
                 [
@@ -224,11 +265,39 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/replay/replay_cue_bundle.json",
                 dialogue_writeback_bundle["replay_cue_refs"],
             )
+            self.assertEqual(
+                dialogue_writeback_bundle["live_language_turn_refs"],
+                [
+                    "runtime/state/language/language_percept_frame.json",
+                    "runtime/state/language/semantic_map_frame.json",
+                    "runtime/state/language/inner_speech_frame.json",
+                    "runtime/state/language/expression_monitor_state.json",
+                    "runtime/state/language/expression_plan.json",
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["live_language_turn_refs"],
+                dialogue_writeback_bundle["live_language_turn_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["language_percept_ref"],
+                "runtime/state/language/language_percept_frame.json",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["semantic_map_ref"],
+                "runtime/state/language/semantic_map_frame.json",
+            )
+            self.assertEqual(resumed_dialogue_packet["live_semantic_focus"], "relational_checkin")
 
             loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
             self.assertEqual(loop_state["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
             self.assertEqual(loop_state["last_external_turn_utterance"], "你还记得我们吗？")
+            self.assertEqual(loop_state["last_live_semantic_focus"], "relational_checkin")
+            self.assertEqual(
+                loop_state["live_language_turn_refs"],
+                dialogue_writeback_bundle["live_language_turn_refs"],
+            )
 
     def test_repo_local_digital_life_process_writes_waiting_heartbeat_before_first_turn(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -8758,6 +8827,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 responsibility_loop_state_ref="runtime/state/action/responsibility_loop_state.json",
                 world_contact_summary_ref="runtime/state/membrane/world_contact_summary.json",
                 pain_regret_repair_report_ref="runtime/reports/latest/pain_regret_repair_report.json",
+                language_percept_ref="runtime/state/language/language_percept_frame.json",
+                semantic_map_ref="runtime/state/language/semantic_map_frame.json",
+                inner_speech_ref="runtime/state/language/inner_speech_frame.json",
+                expression_monitor_ref="runtime/state/language/expression_monitor_state.json",
+                expression_plan_ref="runtime/state/language/expression_plan.json",
+                live_semantic_focus="repair_commitment_shared_language",
+                live_ambiguity_flags=["shared_term_unresolved"],
+                live_repair_trigger_candidates=["repair-language-v0-0001"],
                 now_iso=lambda: "2026-06-09T00:00:00+00:00",
                 write_json=self._write_json,
                 append_jsonl=self._append_jsonl,
@@ -9004,6 +9081,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
             )
             self.assertEqual(
+                dialogue_writeback_bundle["live_language_turn_refs"],
+                [
+                    "runtime/state/language/language_percept_frame.json",
+                    "runtime/state/language/semantic_map_frame.json",
+                    "runtime/state/language/inner_speech_frame.json",
+                    "runtime/state/language/expression_monitor_state.json",
+                    "runtime/state/language/expression_plan.json",
+                ],
+            )
+            self.assertEqual(
                 resumed_dialogue_packet["dialogue_writeback_bundle_ref"],
                 "runtime/reports/latest/dialogue_writeback_bundle.json",
             )
@@ -9018,6 +9105,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["prediction_write_gate_refs"],
                 dialogue_writeback_bundle["prediction_write_gate_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["live_language_turn_refs"],
+                dialogue_writeback_bundle["live_language_turn_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["language_percept_ref"],
+                "runtime/state/language/language_percept_frame.json",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["semantic_map_ref"],
+                "runtime/state/language/semantic_map_frame.json",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["live_semantic_focus"],
+                "repair_commitment_shared_language",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["live_repair_trigger_candidates"],
+                ["repair-language-v0-0001"],
+            )
+            self.assertEqual(
+                persisted_terminal_loop["live_language_turn_refs"],
+                dialogue_writeback_bundle["live_language_turn_refs"],
+            )
+            self.assertEqual(
+                persisted_terminal_loop["last_live_semantic_focus"],
+                "repair_commitment_shared_language",
             )
 
     def test_digital_life_process_recovers_from_dialogue_turn_exception_and_returns_to_waiting_state(self):

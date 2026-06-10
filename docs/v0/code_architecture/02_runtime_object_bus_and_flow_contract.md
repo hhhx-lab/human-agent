@@ -45,6 +45,9 @@
 |---|---|---|---|---|
 | `LifeContextFrame` | `direction/` + `terminal_turn/restore_context.py` | `language`、`terminal_loop`、`process_supervisor` | 已有第一轮；继续补厚 continuity refs 与 body/prediction anchors | `session_envelope.json`、`context_accumulation_window.json` |
 | `RelationTurnFrame` | `language/relationship_graph.py` + `terminal_turn/turn_transition.py` | `terminal_loop`、`state_store`、`process_supervisor` | 已有第一轮；待补 `relationship_timeline.py` | `runtime/state/relationship/*`、`turn_transition_trace.json` |
+| `LanguagePerceptFrame` | `language/percept.py` + `process_supervisor/live_language_turn.py` | `semantic_map`、`inner_speech`、`expression_monitor`、`dialogue_events`、`resident_turn_writeback` | 已进入实时关系回合刷新链；每个 `external_utterance` 到来后必须刷新 | `runtime/state/language/language_percept_frame.json`、`dialogue_turn_log.jsonl#language_percept_ref` |
+| `SemanticMapFrame` | `language/semantic_map.py` + `process_supervisor/live_language_turn.py` | `inner_speech`、`expression_monitor`、`response_surface`、`terminal_loop`、`process_supervisor` | 已进入实时关系回合刷新链；`semantic_focus` 作为 `live_semantic_focus` 穿过事件、packet 与 loop state | `runtime/state/language/semantic_map_frame.json`、`resumed_external_dialogue_packet.json#live_semantic_focus` |
+| `LiveLanguageTurnState` | `process_supervisor/live_language_turn.py` | `live_turn_cycle`、`response_surface`、`resident_turn_writeback`、`terminal_loop/dialogue_writeback.py` | 已落地；把 percept / semantic map / inner speech / expression monitor / expression plan 五件套收成同一组实时 refs | `dialogue_writeback_bundle.json#live_language_turn_refs`、`terminal_life_loop_state.json#live_language_turn_refs` |
 | `ExpressionPlan` | `language/expression_monitor.py` | `membrane`、`terminal_loop`、`process_supervisor/response_surface.py` | 已存在；当前已显式吸收 `body_resource_budget.json` 与 `core_affect_vector.json`，继续补责任回路和更细的身体降载策略 | `expression_plan.json`、`language_relationship_report.json` |
 | `DialogueWritebackBundle` | `terminal_loop/dialogue_writeback.py` + `terminal_loop/loop_report.py` | `state_store`、`replay`、`archive`、`process_supervisor` | 已存在；现已显式带上 `relationship_memory / commitment_truth / responsibility_ledger / life_state` 写回 refs，继续补厚 writeback continuity | `dialogue_writeback_bundle.json`、relationship / language receipts |
 
@@ -126,12 +129,14 @@
 external input
   -> language percept
   -> semantic map update
+  -> live language turn refresh
+  -> inner speech refresh
+  -> expression monitor refresh
+  -> expression plan refresh
   -> Queue E repair modulation profile refresh
   -> signal / belief / prediction error / active sampling refresh
   -> prediction workspace refresh
   -> memory / relationship cue retrieve
-  -> inner speech
-  -> expression monitoring
   -> candidate arena
   -> go/no-go / responsibility loop
   -> response surface
@@ -149,12 +154,19 @@ external input
 
 - `context_accumulation_window.json`
 - `turn_transition_trace.json`
+- `language_percept_frame.json`
+- `semantic_map_frame.json`
+- `inner_speech_frame.json`
+- `expression_monitor_state.json`
+- `expression_plan.json`
 - `prediction_workspace_frame.json`
 - `signal_media_runtime.json`
 - `belief_state_frame.json`
 - `prediction_error_field.json`
 - `active_sampling_plan.json`
 - `dialogue_writeback_bundle.json`
+- `resumed_external_dialogue_packet.json#live_language_turn_refs`
+- `terminal_life_loop_state.json#last_live_semantic_focus`
 - `runtime/state/relationship/*`
 
 ### B. 等待态心跳流程
@@ -270,6 +282,18 @@ P0-S11 chain
 等待态就不是真实存在。
 
 当前新增的断链检查是：如果 `offline_learning_cumulative_profile_v0` 只停在 `idle_strategy_state.json` 或 `digital_life_process_report.json`，没有进入 `resident_background_lineage_state_v0.offline_learning_presence`，也没有被 `digital_life_turn` 和 `response_surface.py` 消费，那么梦境-成长离线学习仍然只是 closeout 余波，不算进入后台驻留主状态体。
+
+### 5. 实时关系回合没有刷新 Queue A
+
+如果关系对象的新话语只进入 `dialogue_turn_log.jsonl`，没有先刷新 `language_percept_frame.json` 与 `semantic_map_frame.json`，语言主链就会重新退回“旧状态生成回应”。
+
+当前这条接线的闭合要求是：
+
+1. `live_turn_cycle.py` 在 `compose_life_response(...)` 前调用 `refresh_live_language_turn(...)`。
+2. `language_percept_frame.json#incoming_surface` 等于当前 `external_utterance`。
+3. `semantic_map_frame.json#semantic_focus` 进入 `live_semantic_focus`。
+4. `response_surface.py` 消费 `live_language_turn.expression_plan`。
+5. `dialogue_writeback_bundle.json`、`resumed_external_dialogue_packet.json` 与 `terminal_life_loop_state.json` 共享同一组 `live_language_turn_refs`。
 
 ## 对代码实现的直接要求
 
