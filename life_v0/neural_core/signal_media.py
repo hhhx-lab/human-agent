@@ -16,19 +16,31 @@ def build_signal_media_runtime(
     run_id: str,
     generated_at: str,
     network_state: dict[str, Any] | None = None,
+    queue_e_repair_modulation_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     network_state = network_state or {}
+    repair_profile = queue_e_repair_modulation_profile or {}
+    pressure_level = repair_profile.get("pressure_level", "quiet")
+    pressure_scale = _repair_pressure_scale(pressure_level)
     modulation_vector = {
-        "arousal_gain": 0.68,
-        "expected_uncertainty": 0.34,
-        "unexpected_uncertainty": 0.21,
-        "relationship_pressure": 0.29,
-        "repair_drive": 0.47,
+        "arousal_gain": _clamp(0.68 + pressure_scale * 0.08),
+        "expected_uncertainty": _clamp(0.34 + pressure_scale * 0.06),
+        "unexpected_uncertainty": _clamp(0.21 + pressure_scale * 0.11),
+        "relationship_pressure": _clamp(0.29 + pressure_scale * 0.19),
+        "repair_drive": _clamp(0.47 + pressure_scale * 0.29),
         "fatigue_load": 0.26,
-        "control_cost": 0.39,
-        "stress_pulse": 0.22,
-        "allostatic_load": 0.31,
+        "control_cost": _clamp(0.39 + pressure_scale * 0.13),
+        "stress_pulse": _clamp(0.22 + pressure_scale * 0.16),
+        "allostatic_load": _clamp(0.31 + pressure_scale * 0.12),
     }
+    repair_attention_target = repair_profile.get("attention_target", "repair_followup")
+    policy_mode = (
+        "queue_e_repair_locked_active_inference"
+        if pressure_level == "urgent"
+        else "queue_e_repair_guarded_active_inference"
+        if pressure_level == "elevated"
+        else "relationship_guarded_active_inference"
+    )
     return {
         "schema_version": "signal_media_runtime_v0",
         "run_id": run_id,
@@ -54,21 +66,38 @@ def build_signal_media_runtime(
                 "timescale": "subsecond",
                 "primary_fields": ["expected_uncertainty", "unexpected_uncertainty"],
             },
+            *(
+                [
+                    {
+                        "source_id": "queue-e-repair-pressure",
+                        "source_family": "responsibility_repair",
+                        "timescale": "minutes",
+                        "primary_fields": [
+                            "repair_drive",
+                            "relationship_pressure",
+                            "unexpected_uncertainty",
+                        ],
+                    }
+                ]
+                if repair_profile
+                else []
+            ),
         ],
         "modulation_vector": modulation_vector,
         "precision_policy": {
             "precision_policy_id": f"precision-policy-{run_id}",
-            "policy_mode": "relationship_guarded_active_inference",
+            "policy_mode": policy_mode,
             "attention_route": "salience_to_workspace",
             "interoceptive_precision": 0.58,
             "memory_precision": 0.63,
-            "language_precision": 0.67,
-            "relationship_precision": 0.74,
-            "action_precision": 0.52,
+            "language_precision": _clamp(0.67 + pressure_scale * 0.08),
+            "relationship_precision": _clamp(0.74 + pressure_scale * 0.1),
+            "action_precision": _clamp(0.52 - pressure_scale * 0.08),
             "expected_uncertainty_weight": modulation_vector["expected_uncertainty"],
             "unexpected_uncertainty_weight": modulation_vector["unexpected_uncertainty"],
             "repair_priority": "repair_before_action",
             "stage_effect": "hold_for_evidence",
+            "queue_e_attention_target": repair_attention_target,
         },
         "inhibition_profile": {
             "inhibition_profile_id": f"inhibition-profile-{run_id}",
@@ -81,6 +110,11 @@ def build_signal_media_runtime(
                 "irreversible_external_action",
                 "dream_fact_promotion",
                 "protected_memory_overwrite",
+                *(
+                    ["world_contact_release_until_repair_review"]
+                    if pressure_level in {"urgent", "elevated"}
+                    else []
+                ),
             ],
         },
         "diffusion_routes": [
@@ -128,6 +162,10 @@ def build_signal_media_runtime(
             if network_state
             else None
         ),
+        "queue_e_repair_modulation_profile": repair_profile if repair_profile else None,
+        "queue_e_repair_pressure_level": pressure_level,
+        "queue_e_repair_attention_target": repair_attention_target,
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         "bus_edge_refs": [
             "body_signal_bus",
             "signal_media_bus",
@@ -135,3 +173,16 @@ def build_signal_media_runtime(
         ],
         "source_doc_refs": SOURCE_DOC_REFS,
     }
+
+
+def _repair_pressure_scale(pressure_level: str) -> float:
+    return {
+        "quiet": 0.0,
+        "present": 0.35,
+        "elevated": 0.72,
+        "urgent": 1.0,
+    }.get(pressure_level, 0.0)
+
+
+def _clamp(value: float) -> float:
+    return round(max(0.0, min(1.0, value)), 3)

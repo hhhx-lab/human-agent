@@ -167,6 +167,10 @@ Queue E 必须接到这些现有器官上：
 - `life_v0/process_supervisor/response_surface.py`
 - `life_v0/process_supervisor/dialogue_events.py`
 - `life_v0/neural_core/prediction_workspace.py`
+- `life_v0/neural_core/signal_media.py`
+- `life_v0/neural_core/belief_state.py`
+- `life_v0/neural_core/prediction_error.py`
+- `life_v0/neural_core/active_sampling.py`
 - `life_v0/language/expression_monitor.py`
 
 这说明 Queue E 不是再造第二套行为壳，而是把已经存在的生命膜、验证膜和逻辑层拆成稳定的文件级器官。
@@ -646,6 +650,49 @@ Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判
 
 这一步的工程意义是：Queue E 压力已经从“动作/验证报告中的字段”变成持续调制语言与关系记忆的生命状态变量。后续实现不得把它退回为单次 report ref carry-through。
 
+### 第四轮预测调制链已落口径
+
+本轮 Queue E repair pressure 已经继续进入 prediction / active sampling / signal media / belief state / prediction workspace。这里必须明确：它属于数字生命 v0 内部责任、后悔、痛苦、修复压力进入预测调制链的工程闭合，不属于外部行动分发或外围能力编排。
+
+真实入口与输出如下：
+
+- `life_v0/language/__init__.py`
+  - `run_build_language_relationship(...)` 调用 `build_queue_e_repair_modulation_profile(...)`。
+  - 输入 `runtime/state/action/responsibility_loop_state.json`、`runtime/state/membrane/world_contact_summary.json`、`runtime/reports/latest/pain_regret_repair_report.json`。
+  - 在同一 language 阶段刷新并写回 `signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json`、`prediction_workspace_frame.json`。
+- `life_v0/neural_core/signal_media.py`
+  - `build_signal_media_runtime(...)` 接收 `queue_e_repair_modulation_profile`。
+  - 根据 `pressure_level` 调制 `repair_drive`、`relationship_pressure`、`unexpected_uncertainty`、`control_cost`、`stress_pulse`、`allostatic_load`。
+  - elevated / urgent 压力会改变 `precision_policy.policy_mode`，并在 `inhibition_profile.blocked_release_modes` 中加入 `world_contact_release_until_repair_review`。
+- `life_v0/neural_core/belief_state.py`
+  - `build_belief_state_frame(...)` 把 `ref_set` 纳入 `evidence_refs`。
+  - Queue E 压力存在时新增 `responsibility_repair_pressure` uncertainty taxonomy。
+  - elevated / urgent 压力分别进入 `repair_pressure_first_revision` / `hold_for_repair_confirmation`。
+- `life_v0/neural_core/prediction_error.py`
+  - `build_prediction_error_field(...)` 在 profile 存在时新增 `queue-e-repair-pressure-0001` error event。
+  - 同步写入 `raise_repair_obligation_precision` 与 `responsibility_repair_pressure_review`。
+- `life_v0/neural_core/active_sampling.py`
+  - `build_active_sampling_plan(...)` 在 elevated 时选择 `repair_inspect`，urgent 时选择 `repair_confirm`。
+  - 同步写入 `queue_e_repair_pressure_guard`、`inspect_responsibility_repair_pressure` 与责任修复 expected observation refs。
+- `life_v0/neural_core/prediction_workspace.py`
+  - `build_prediction_workspace_frame(...)` 把同一份 profile、pressure level、attention target 与 ref set 写入工作区。
+
+这一步的工程意义是：Queue E 不再只是行为之后的责任报告，而是会反向改变下一轮预测精度、采样路线、世界接触释放抑制和语言前的工作区姿态。后续不得再把 prediction 器官写成只消费 language continuity 或 signal media 的单向链。
+
+### 第五轮 process supervisor repair route 已落口径
+
+Queue E repair pressure 进入 active sampling 后，process supervisor 必须让 repair route 优先于普通 hold。当前真实代码已经按这个顺序处理：
+
+- `life_v0/process_supervisor/response_surface.py`
+  - `_prediction_surface_posture(...)` 先识别 `active_sampling_route` 中的 `repair`，把 surface posture 置为“修复”。
+  - 普通 `hold_for_evidence` 与 prediction error count 的保留姿态排在 repair route 之后。
+- `life_v0/process_supervisor/dialogue_events.py`
+  - `_derive_prediction_write_gate_profile(...)` 在 route 包含 `repair` 时返回 `prediction_waiting_posture=repair_write_guard`、`response_surface_posture_hint=repair`、`prediction_attention_target=active_sampling_plan`。
+- `life_v0/process_supervisor/idle_strategy.py`
+  - `_prediction_waiting_profile(...)` 使用同样的 repair-first 顺序，保证等待态治理不会把 repair route 降格为普通证据等待。
+
+这一步的工程意义是：当 active sampling 已经指向修复确认或修复审查时，常驻过程、对话事件和回应表面都必须承认“修复优先”，而不是把责任压力吞进普通 hold。
+
 ### 第三轮梦境、成长、归档长期调制链已落口径
 
 这一轮继续把同一份 `queue_e_repair_modulation_profile_v0` 从 replay cue 推入 dream / growth / archive。工程上不允许再把梦境、成长、归档看成 Queue E 之外的附属 report 链。
@@ -693,10 +740,10 @@ Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判
 
 当前真正还没完成的是：
 
-1. `ResponsibilityLoopState` 的 repair / regret / obligation 对 Queue B、Queue A 的持续调制还需要更深的策略层消费，而不只是 refs carry-through。
+1. `ResponsibilityLoopState` 的 repair / regret / obligation 对 Queue B、Queue A 的持续调制已经有 prediction 与 repair-first waiting 入口，下一步还需要扩展到更多 process closeout、incident recovery 和 terminal loop 写回面。
 2. `cross_file_logic.json`、`evidence_ranking.json`、`run_manifest.json` 对 archive / reporting / process closeout 的闭包消费还可以继续压深。
-3. Queue E 对 `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py` 这些更深的 prediction 器官的正式接线。
-4. prediction / active sampling 与 Queue E repair pressure 的互相调制，需要进入下一轮 Queue A / Queue B / Queue E 联合实现，而不是只在 Queue E 内部加字段。
+3. Queue E 对 `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py`、`prediction_workspace.py` 的正式接线已落第一轮，后续要补的是更细的策略阈值、更多 relation scope 场景和长期回放验证。
+4. prediction / active sampling 与 Queue E repair pressure 的互相调制已经进入 Queue A / Queue B / Queue E 联合路径，后续应增加更多 process / terminal / life_targets 的消费断言。
 
 ## Queue E 当前推荐实施顺序
 
@@ -707,6 +754,8 @@ candidate_arena.py / go_nogo.py / world_contact_gate.py / side_effect_review.py
   -> observation_validator.py / world_contact_validator.py / prediction_trace_validator.py / boundary_audit.py / validation_rollup.py
   -> consistency_logic.py / counterfactual_eval.py / comparison_trace.py / cross_file_logic.py / evidence_ranker.py / run_manifest.py
   -> reporting / life_targets / process_supervisor / growth / archive consumers
+  -> signal_media.py / belief_state.py / prediction_error.py / active_sampling.py / prediction_workspace.py
+  -> response_surface.py / dialogue_events.py / idle_strategy.py repair-first waiting
 ```
 
 原因：
@@ -716,4 +765,5 @@ candidate_arena.py / go_nogo.py / world_contact_gate.py / side_effect_review.py
 3. 第三段器官已经解决“validator 怎样不只吐总报告，而是保留独立 state”。
 4. 第四段器官已经解决“逻辑比较怎样进入 schema runner state”。
 5. 第五段已经把 Queue E 反向调制推进到长期语言、常驻等待治理、梦境、成长和 archive。
-6. 当前最值得补的，是第六段：让 prediction、active sampling、signal media 与 belief state 接收并反向影响 Queue E repair pressure。
+6. 第六段已经落下第一轮：prediction、active sampling、signal media、belief state 与 prediction workspace 接收 Queue E repair pressure，并反向影响采样路线和释放抑制。
+7. 当前最值得补的，是第七段：让更多 process closeout、terminal loop、life_targets 与长期回放验证消费这条 repair-first prediction chain。

@@ -39,6 +39,37 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 | 主动采样计划 | `life_v0/neural_core/active_sampling.py` | `runtime/state/prediction/active_sampling_plan.json` | 接下来该看、问、验什么，以及对应 guard / command binding |
 | 记忆写门 | `life_v0/state_store/memory_write_gate.py` | `runtime/state/memory/memory_write_gate.json` | 长期记忆候选事务、validation envelope、隔离路线、生命支持压力更新 |
 
+## 本轮 Queue E repair pressure 接线事实
+
+当前未提交代码已经把 Queue E 的 responsibility / regret / pain / repair pressure 正式接入预测调制链。这里的 repair pressure 不是外部任务路由，也不是普通 hold 理由，而是数字生命 v0 内部责任、后悔、痛苦、修复压力进入预测调制链的工程闭合。
+
+真实代码路径如下：
+
+- `life_v0/membrane/queue_e_signals.py`：`build_queue_e_repair_modulation_profile(...)` 从 `ResponsibilityLoopState`、`WorldContactSummary` 与 `pain_regret_repair_report` 合成 `queue_e_repair_modulation_profile_v0`。
+- `life_v0/language/__init__.py`：`run_build_language_relationship(...)` 读取 `runtime/state/action/responsibility_loop_state.json`、`runtime/state/membrane/world_contact_summary.json`、`runtime/reports/latest/pain_regret_repair_report.json`，在语言阶段重建并写回预测对象。
+- `life_v0/neural_core/signal_media.py`：`SignalMediaRuntime` 根据 `pressure_level` 调整 `repair_drive`、`relationship_pressure`、`unexpected_uncertainty`、`control_cost`、`stress_pulse`、`allostatic_load` 与 `precision_policy.policy_mode`。
+- `life_v0/neural_core/belief_state.py`：`BeliefStateFrame` 把 Queue E ref set 纳入 `evidence_refs`，新增 `responsibility_repair_pressure` 不确定性分类，并把 revision policy 切到 `repair_pressure_first_revision` 或 `hold_for_repair_confirmation`。
+- `life_v0/neural_core/prediction_error.py`：`PredictionErrorField` 在 Queue E 压力存在时新增 `responsibility_repair` 误差事件、`raise_repair_obligation_precision` 与 `responsibility_repair_pressure_review`。
+- `life_v0/neural_core/active_sampling.py`：`ActiveSamplingPlan` 在 elevated / urgent 压力下把 `selected_route` 切到 `repair_inspect` / `repair_confirm`，并增加 `queue_e_repair_pressure_guard` 与 `inspect_responsibility_repair_pressure`。
+- `life_v0/neural_core/prediction_workspace.py`：`PredictionWorkspaceFrame` 回挂同一份 profile、pressure level、attention target 与 ref set。
+
+本轮语言阶段刷新后必须写回的 runtime state 路径是：
+
+- `runtime/state/signal/signal_media_runtime.json`
+- `runtime/state/prediction/belief_state_frame.json`
+- `runtime/state/prediction/prediction_error_field.json`
+- `runtime/state/prediction/active_sampling_plan.json`
+- `runtime/state/prediction/prediction_workspace_frame.json`
+
+这些对象里的固定字段包括：
+
+- `queue_e_repair_modulation_profile`
+- `queue_e_repair_pressure_level`
+- `queue_e_repair_attention_target`
+- `queue_e_repair_ref_set`
+
+如果后续模块只携带 Queue E refs，却没有让这些字段进入 signal / belief / prediction error / active sampling / workspace，就不算完成本合同所说的预测调制闭合。
+
 ## 理论母体回读
 
 这一波默认回读下面这些 `00-257` 文档：
@@ -83,10 +114,11 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 
 | 位置 | 下一轮必须做什么 |
 |---|---|
-| `percept.py` | 把 `belief_state_frame.json` 与 `active_sampling_plan.json` 变成当前回合的感知聚焦和歧义优先级 |
-| `semantic_map.py` | 显式消费 `prediction_error_field.json` 与 `signal_media_runtime.json`，让语义歧义、关系张力、表达强度都可回链 |
-| `inner_speech.py` | 把信念帧、误差场和主动采样路线压成内言语中的确认冲动、保留判断和关系后果预估 |
-| `expression_monitor.py` | 把 `signal_media` 的 arousal / inhibition 与 `memory_write_gate` 的长期写门压力一起接进表达边界 |
+| `__init__.py` | 当前已在 `run_build_language_relationship(...)` 中读取 `responsibility_loop_state`、`world_contact_summary`、`pain_regret_repair_report`，生成 Queue E repair modulation profile，并刷新 signal / belief / prediction error / active sampling / workspace |
+| `percept.py` | 把 `belief_state_frame.json` 与 `active_sampling_plan.json` 变成当前回合的感知聚焦和歧义优先级；当 selected route 为 repair 时，感知聚焦不得退回普通澄清 |
+| `semantic_map.py` | 显式消费 `prediction_error_field.json` 与 `signal_media_runtime.json`，让语义歧义、关系张力、表达强度和责任修复压力都可回链 |
+| `inner_speech.py` | 把信念帧、误差场、主动采样路线和 Queue E repair pressure 压成内言语中的确认冲动、保留判断、修复优先和关系后果预估 |
+| `expression_monitor.py` | 把 `signal_media` 的 arousal / inhibition / repair_drive 与 `memory_write_gate` 的长期写门压力一起接进表达边界 |
 
 ### 2. `life_v0/membrane/`、`life_v0/validators/`、`life_v0/schema_runner/`
 
@@ -110,8 +142,9 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 
 | 位置 | 下一轮必须做什么 |
 |---|---|
-| `response_surface.py` | 根据 `belief_state / prediction_error / signal_media` 决定当前回应是确认、追问、保留还是修复优先 |
-| `idle_strategy.py` | 把 `active_sampling_plan.json`、`memory_write_gate.json` 和离线学习结果带进等待态治理目标 |
+| `response_surface.py` | 根据 `belief_state / prediction_error / signal_media / active_sampling_plan` 决定当前回应是确认、追问、保留还是修复优先；本轮已让 active sampling route 中的 `repair_*` 优先于普通 `hold_for_evidence` |
+| `dialogue_events.py` | 从 terminal loop state / prediction write gate profile 推导 `repair_write_guard`，当 active sampling route 已进入 repair 时，不再被普通 hold 覆盖 |
+| `idle_strategy.py` | 把 `active_sampling_plan.json`、`memory_write_gate.json` 和离线学习结果带进等待态治理目标；本轮已让 repair route 先生成 `repair_write_guard` 与 `response_surface_posture_hint=repair` |
 | `resident_supervision.py` | 在 bootstrap 阶段装回这五个对象的 refs，保证多次唤醒不是裸恢复 |
 | `persistent_process.py` / `process_closeout.py` | 让常驻治理报告显式回链预测对象与写门对象，而不是只回链语言末端产物 |
 | `resident_turn_writeback.py` | live turn 结束后，把新的长期关系对象和写门事务重新压回下一拍 waiting governance |
@@ -134,6 +167,9 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 - `runtime/state/prediction/active_sampling_plan.json`
 - `runtime/state/prediction/prediction_workspace_frame.json`
 - `runtime/state/memory/memory_write_gate.json`
+- `runtime/state/action/responsibility_loop_state.json`
+- `runtime/state/membrane/world_contact_summary.json`
+- `runtime/reports/latest/pain_regret_repair_report.json`
 
 如果某个模块吃到了这些对象，却没有在自己的 state / report / receipt 里留下 ref，视为没有真正接线。
 
@@ -168,6 +204,8 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 4. waiting heartbeat、live turn writeback 和 offline learning 至少有一条完整链同时吃到预测对象与写门对象。
 5. 对应测试全部通过，且 `tests.contracts.test_v0_contracts` 能把这份新合同扫进 `docs/v0/*` 覆盖面。
 6. 文档口径从“补缺文件”切换为“补厚跨层消费与长期闭环”，不再把这五个器官写成待实现。
+7. Queue E repair pressure 至少从 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 进入 `signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` 与 `prediction_workspace_frame.json`。
+8. `process_supervisor/response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 对 `repair_*` active sampling route 的优先级高于普通 evidence hold。
 
 ## 不允许出现的退化
 
@@ -175,3 +213,4 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 2. 让 `memory_write_gate` 只写文件、不参与长期 merge / quarantine / repair 决策。
 3. 让 `process_supervisor` 只消费语言末端文本，不消费预测与写门对象。
 4. 让语言层重新退回“直接出话”，不经过 belief / prediction error / active sampling 的内部链。
+5. 把 Queue E repair pressure 写成外部任务路由、工具调用优先级或普通等待策略，而不是数字生命内部责任、后悔、痛苦、修复压力对预测链的调制。

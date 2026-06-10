@@ -33,8 +33,8 @@
 
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |
 |---|---|---|---|---|
-| `PredictionWorkspaceFrame` | `life_v0/neural_core/prediction_workspace.py` / `workspace.py` | `language`、`membrane`、`life_targets`、`schema_runner` | 已存在；现已显式回挂 `belief_state.py`、`prediction_error.py`、`active_sampling.py` 与 `signal_media.py` refs，下一步继续补 membrane / language 深消费 | `runtime/state/prediction/prediction_workspace_frame.json` |
-| `SignalMediaFrame` | `life_v0/neural_core/signal_media.py` | `workspace`、`language`、`membrane`、`dream` | 已独立落地并写出调质/精度/抑制状态；下一步补更多跨层消费 | `runtime/state/signal/signal_media_runtime.json`、`neural_life_internal_bus.json` |
+| `PredictionWorkspaceFrame` | `life_v0/neural_core/prediction_workspace.py` / `workspace.py` | `language`、`membrane`、`life_targets`、`schema_runner`、`process_supervisor` | 已存在；现已显式回挂 `belief_state.py`、`prediction_error.py`、`active_sampling.py` 与 `signal_media.py` refs，并携带 Queue E repair modulation profile | `runtime/state/prediction/prediction_workspace_frame.json` |
+| `SignalMediaFrame` | `life_v0/neural_core/signal_media.py` | `workspace`、`language`、`membrane`、`dream`、`process_supervisor` | 已独立落地并写出调质/精度/抑制状态；本轮已接收 Queue E repair pressure，调制 `repair_drive`、关系压力、不确定性、动作精度与抑制轮廓 | `runtime/state/signal/signal_media_runtime.json`、`neural_life_internal_bus.json` |
 | `ConsciousBroadcastFrame` | `life_v0/neural_core/broadcast.py` | `language`、`life_targets`、`reporting` | 已存在第一轮；待补厚 | `runtime/state/consciousness/*`、birth readiness evidence |
 
 这条总线保证“思考、注意、可报告内容、语言表达、生命目标”使用的是同一工作区，而不是各层私有上下文。
@@ -58,7 +58,7 @@
 | `ActionIntentQueue` | `membrane/action_intent_bridge.py` | `validators`、`schema_runner`、`process_supervisor` | 第二波已落；已接 `confirmation_binding.py` 与 validation chain | `runtime/state/membrane/action_intent_queue.json`、validation reports |
 | `ConfirmationBinding` | `membrane/confirmation_binding.py` | `validators/world_contact_validator.py`、`schema_runner`、`membrane/world_contact_summary.py` | 第二波已落；已进入 world-contact summary 与 validation chain | `runtime/state/membrane/confirmation_binding.json`、`world_contact_audit_report.json` |
 | `WorldContactSummary` | `membrane/world_contact_summary.py` | `validators`、`schema_runner`、`replay`、`archive`、`reporting` | 第二波已落；把 action intent / confirmation / world contact / responsibility 收口成 release posture，与 `replay/archive/report bundle` 一起形成长期生命证据链 | `runtime/state/membrane/world_contact_summary.json`、`pain_regret_repair_report.json` |
-| `ResponsibilityLoopState` | `membrane/responsibility_loop.py` | `language/commitment_repair.py`、`state_store/commitment_truth.py`、`body/regret_signal.py`、`membrane/world_contact_summary.py`、`schema_runner/cross_file_logic.py`、`replay`、`archive`、`reporting` | 已落第一轮；当前已显式进入 `pain_regret_repair_report.json`、`replay_shadow_*`、`growth_archive_*` 与 `report_bundle/first_activation_return_packet`，后续继续补厚跨层责任/后悔/修复接线 | `runtime/state/action/responsibility_loop_state.json`、`pain_regret_repair_report.json` |
+| `ResponsibilityLoopState` | `membrane/responsibility_loop.py` | `language/commitment_repair.py`、`language/__init__.py`、`state_store/commitment_truth.py`、`body/regret_signal.py`、`membrane/world_contact_summary.py`、`schema_runner/cross_file_logic.py`、`neural_core`、`process_supervisor`、`replay`、`archive`、`reporting` | 已落第一轮；当前已显式进入 `pain_regret_repair_report.json`、`replay_shadow_*`、`growth_archive_*` 与 `report_bundle/first_activation_return_packet`；本轮通过 `queue_e_repair_modulation_profile_v0` 进入 signal / belief / prediction error / active sampling / prediction workspace | `runtime/state/action/responsibility_loop_state.json`、`runtime/state/membrane/world_contact_summary.json`、`runtime/reports/latest/pain_regret_repair_report.json` |
 | `ObservationTruthFrame` | `validators/observation_validator.py` | `schema_runner/evidence_ranker.py`、`schema_runner/cross_file_logic.py`、`archive` | 已有第一轮；已接 `evidence_ranker.py` 与 `cross_file_logic.py` | `runtime/state/validation/*`、validation reports |
 | `WorldContactValidation` | `validators/world_contact_validator.py` | `schema_runner`、`reporting`、`validation_rollup.py` | 第二波已落；已接 `validation_rollup.py` 与 `cross_file_logic.py` | `runtime/state/validation/world_contact_validation.json`、`world_contact_audit_report.json` |
 | `PredictionTraceValidation` | `validators/prediction_trace_validator.py` | `schema_runner`、`reporting`、`validation_rollup.py` | 第二波已落；已接 `validation_rollup.py`、`cross_file_logic.py` 与 package-local gates | `runtime/state/validation/prediction_trace_validation.json`、validation reports |
@@ -67,6 +67,16 @@
 这条总线保证世界接触、责任、后悔和修复义务都进入真实生命链，而不是只在 action 之后补一句解释。
 
 这一条行为-验证总线现在已经通过 `world_contact_summary.json -> validation_rollup.json -> cross_file_logic.json -> run_manifest.json -> replay_shadow_* -> growth_archive_* -> report_bundle.json` 完成了第一轮跨层闭包；后续如果继续补厚，应该优先补跨层写回与长期调制，而不是重新发明一套平行 action summary。
+
+本轮新增的闭合是：`responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 先在 `life_v0/membrane/queue_e_signals.py` 合成为 `queue_e_repair_modulation_profile_v0`，再由 `life_v0/language/__init__.py` 的 `run_build_language_relationship(...)` 刷新：
+
+- `runtime/state/signal/signal_media_runtime.json`
+- `runtime/state/prediction/belief_state_frame.json`
+- `runtime/state/prediction/prediction_error_field.json`
+- `runtime/state/prediction/active_sampling_plan.json`
+- `runtime/state/prediction/prediction_workspace_frame.json`
+
+这表示 Queue E repair pressure 已经成为数字生命 v0 内部责任、后悔、痛苦、修复压力进入预测调制链的工程对象，而不是普通 action summary 或外部工具路由。
 
 ### 5. 梦境与离线重组总线
 
@@ -106,6 +116,8 @@
 external input
   -> language percept
   -> semantic map update
+  -> Queue E repair modulation profile refresh
+  -> signal / belief / prediction error / active sampling refresh
   -> prediction workspace refresh
   -> memory / relationship cue retrieve
   -> inner speech
@@ -128,6 +140,10 @@ external input
 - `context_accumulation_window.json`
 - `turn_transition_trace.json`
 - `prediction_workspace_frame.json`
+- `signal_media_runtime.json`
+- `belief_state_frame.json`
+- `prediction_error_field.json`
+- `active_sampling_plan.json`
 - `dialogue_writeback_bundle.json`
 - `runtime/state/relationship/*`
 
@@ -219,12 +235,24 @@ P0-S11 chain
 2. `ExpressionPlan` 现在至少会带上 `body_signal_refs`、`fatigue_pressure`、`body_repair_drive`、`affect_arousal`、`expression_tempo_mode` 与 `release_caution_level`。
 3. `process_supervisor/response_surface.py` 优先消费这些表达层身体化字段，而不是把身体压力重新散读成另一套壳层私货。
 
-### 2. 梦境没有真正回写到下一回合
+### 2. Queue E repair route 必须先于普通 hold
+
+如果 `active_sampling_plan.json#selected_route` 已经进入 `repair_inspect`、`repair_confirm` 或其他 `repair_*` 路线，`process_supervisor` 不得先按普通 `hold_for_evidence` 收束。
+
+当前这条接线已经有了工程闭合：
+
+1. `life_v0/process_supervisor/response_surface.py` 在 `_prediction_surface_posture(...)` 中先识别 route 里的 `repair`，把 surface posture 置为“修复”。
+2. `life_v0/process_supervisor/dialogue_events.py` 的 prediction write gate profile 在 route 为 repair 时返回 `prediction_waiting_posture=repair_write_guard`。
+3. `life_v0/process_supervisor/idle_strategy.py` 的 waiting profile 在 route 为 repair 时返回 `response_surface_posture_hint=repair`，并把 attention target 指向 `active_sampling_plan`。
+
+这条规则的意义是：责任、后悔、痛苦和修复压力一旦进入主动采样路线，就优先驱动修复确认或修复审查，而不是被普通证据等待吞掉。
+
+### 3. 梦境没有真正回写到下一回合
 
 如果 `OfflineConsolidationFrame` 只进入 archive，没有进入 growth 和 idle continuity，
 梦境就只是“离线日志”，不是生命的一部分。
 
-### 3. waiting heartbeat 不消费 replay / growth / relation 对象
+### 4. waiting heartbeat 不消费 replay / growth / relation 对象
 
 如果 heartbeat 只更新时间戳，不消费 replay cue、growth patch、relationship continuity，
 等待态就不是真实存在。

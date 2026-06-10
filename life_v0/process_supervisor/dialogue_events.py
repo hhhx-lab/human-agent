@@ -348,7 +348,9 @@ def build_prediction_write_gate_payload(
         "memory_write_gate_policy",
         "state_merge_policy",
     ):
-        value = terminal_life_loop_state.get(key, profile.get(key))
+        value = profile.get(key) if profile else terminal_life_loop_state.get(key)
+        if not _present_value(value):
+            value = terminal_life_loop_state.get(key)
         if _present_value(value):
             payload[key] = value
     return payload
@@ -403,6 +405,17 @@ def _derive_prediction_write_gate_profile(
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
         }
+    if "repair" in route_lower:
+        return {
+            "prediction_waiting_posture": "repair_write_guard",
+            "response_surface_posture_hint": "repair",
+            "prediction_attention_target": "active_sampling_plan",
+            "prediction_attention_reason": "active_sampling_route_prioritizes_repair_pressure",
+            "prediction_error_count": error_count,
+            "active_sampling_route": selected_route,
+            "memory_write_gate_policy": memory_policy,
+            "state_merge_policy": merge_policy,
+        }
     if "hold_for_evidence" in stage_lower or error_count > 0:
         return {
             "prediction_waiting_posture": "hold_for_evidence",
@@ -414,7 +427,7 @@ def _derive_prediction_write_gate_profile(
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
         }
-    if repair_drive == "active" or "repair" in route_lower or "repair" in memory_policy_lower:
+    if repair_drive == "active" or "repair" in memory_policy_lower:
         return {
             "prediction_waiting_posture": "repair_write_guard",
             "response_surface_posture_hint": "repair",

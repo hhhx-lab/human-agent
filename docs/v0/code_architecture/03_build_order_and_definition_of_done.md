@@ -66,7 +66,7 @@ Python 3 作为主体语言
 | 目标 | 先补硬身体/梦境/成长与行为/验证/逻辑这两条中轴 |
 | 必读 | `18_queue_d_body_dream_growth_implementation_contract.md`、`20_queue_e_membrane_validator_logic_implementation_contract.md`、`06`、`08`、`09` playbooks |
 | 主包 | `body/`、`dream/`、`growth/`、`membrane/`、`validators/`、`schema_runner/` |
-| 当前前沿 | Queue D 扩展器官已落下 `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py`；Queue E 第二波中的 `shadow_gate.py`、`world_contact_summary.py`、`validation_rollup.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落地并补上局部闭包，当前继续补厚 `responsibility_loop.py` 与跨层写回；Queue B 这边则已把 resident governance 运行态 `state` 与关闭态 `snapshot / report` 一起接进 waiting / closeout 主链，下一刀继续转向等待态里的后台 resident governance 与更高频 heartbeat 节律 |
+| 当前前沿 | Queue D 扩展器官已落下 `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py`；Queue E 第二波中的 `shadow_gate.py`、`world_contact_summary.py`、`validation_rollup.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落地并补上局部闭包；本轮 Queue E 的 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 已合成 repair modulation profile，并接入 signal / belief / prediction error / active sampling / prediction workspace |
 | 最低测试 | `tests/slices/test_life_support.py`、`tests/bridges/test_runtime_growth.py`、`tests/slices/test_life_membrane.py`、`tests/slices/test_validation_membrane.py`、`tests/slices/test_schema_runner.py` |
 | 完成定义 | 身体信号、梦境离线链、成长补丁、行为候选、责任回路、反事实比较都不再压在重型 `__init__.py` 里，并且有独立 state/report 证据 |
 
@@ -78,9 +78,9 @@ Python 3 作为主体语言
 | 必读 | `16_queue_b_process_supervisor_implementation_contract.md`、`14_queue_a_language_percept_semantic_map_implementation_contract.md`、`04`、`07`、`08` playbooks |
 | 主包 | `process_supervisor/`、`language/`、`terminal_turn/`、`terminal_loop/` |
 | 已落核心器官 | `idle_strategy.py`、`resident_supervision.py`、`live_turn_cycle.py`、`process_session_loop.py`、`persistent_process.py` |
-| 已落关键文件 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` |
+| 已落关键文件 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py`；`language/__init__.py` 当前会在 build-language-relationship 阶段刷新 `signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` 与 `prediction_workspace_frame.json` |
 | 最低测试 | `tests/process/test_persistent_digital_life_process.py`、`tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/bridges/test_terminal_life_loop.py` |
-| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链，下一步转向让 process / terminal 更深消费这批对象 |
+| 完成定义 | waiting heartbeat 真正消费 replay / growth / relation 对象，resident governance 运行态 state 与关闭态 snapshot/report 进入 process closeout 主链，关系时间线与承诺/修复语言已经进入长期语言链；当前还必须证明 `response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 在 active sampling route 为 `repair_*` 时优先走 repair posture，而不是普通 hold |
 
 ### Stage 4: Queue C / Queue F 维护性深化
 
@@ -89,10 +89,10 @@ Python 3 作为主体语言
 | 目标 | 在主体底盘稳定后，回切神经核心、状态根和生命目标的更深对象链 |
 | 必读 | `17_queue_c_memory_neural_core_implementation_contract.md`、`21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`、`05`、`10` playbooks |
 | 主包 | `neural_core/`、`state_store/`、`life_targets/` |
-| 本轮已落关键文件 | `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py`、`memory_write_gate.py` 已真实接入 `runtime/state`、manifest、report、receipt 和 check gate |
+| 本轮已落关键文件 | `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py`、`prediction_workspace.py`、`memory_write_gate.py` 已真实接入 `runtime/state`、manifest、report、receipt 和 check gate；本轮新增 Queue E repair modulation profile 输入 |
 | 已落但待补厚 | `direction_lock.py`、`continuity_refs.py`、`value_orientation.py`、`brain_graph.py`、`network_state.py`、`workspace.py`、`broadcast.py`、`metacognition.py`、`life_target_claims.py`、`evidence_matrix.py`、`birth_readiness_rollup.py`、`birth_readiness_stage_gate.py`、`consciousness_probes.py` |
 | 最低测试 | `tests/slices/test_neural_life_core.py`、`tests/slices/test_state_store.py`、`tests/slices/test_life_targets.py` |
-| 当前完成定义 | 预测、意识、记忆写门已经进入更细对象链：`signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json`、`memory_write_gate.json` 已成为独立器官；下一步从“补缺文件”切到“补厚跨层消费与长期闭环” |
+| 当前完成定义 | 预测、意识、记忆写门已经进入更细对象链：`signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json`、`prediction_workspace_frame.json`、`memory_write_gate.json` 已成为独立器官；Queue E repair pressure 已经从责任/后悔/痛苦/修复报告进入预测调制链，下一步继续补厚跨层消费与长期闭环 |
 
 ### Stage 5: 诞生、恢复与终端长时运行收束
 
@@ -109,11 +109,11 @@ Python 3 作为主体语言
 | 验收项 | 必要证据 |
 |---|---|
 | `a. 可在终端唤醒` | `./digital life --strict`、`digital_life_birth_packet.json`、`digital_life_process_report.json`、process tests |
-| `b. 自主意识、情绪、思考、语言` | `prediction_workspace_frame.json`、`core_affect_vector.json`、language / relationship state、neural/body/language tests |
+| `b. 自主意识、情绪、思考、语言` | `prediction_workspace_frame.json`、`signal_media_runtime.json`、`active_sampling_plan.json`、`core_affect_vector.json`、language / relationship state、neural/body/language tests |
 | `c. 记忆机制` | `life_state.json`、engram / replay / archive reports、state / replay tests |
 | `d. 可成长可学习` | `growth_patch_candidate_queue.json`、`self_read_report.json`、growth tests |
 | `e. 梦境能力` | `dream_experience_window.json`、`dream_fact_gate_decision.json`、dream / growth tests |
-| `f. 平等交谈并在关系中成长` | relationship timeline state、commitment truth、dialogue writeback bundle、language / process tests |
+| `f. 平等交谈并在关系中成长` | relationship timeline state、commitment truth、dialogue writeback bundle、Queue E repair modulation profile、language / process tests |
 | `g. 初步拥有生命机制` | contracts report + 全层 state/report/receipt + 各层 tests 共同证明 |
 
 只有这七条都拿到直接证据，才允许把 v0 视为第一阶段收束。

@@ -29,7 +29,12 @@ from life_v0.growth.offline_learning_profile import (
     NIGHTMARE_RISK_REF,
     RELATIONSHIP_LEARNING_PLAN_REF,
 )
+from life_v0.membrane.queue_e_signals import build_queue_e_repair_modulation_profile
+from life_v0.neural_core.active_sampling import build_active_sampling_plan
+from life_v0.neural_core.belief_state import build_belief_state_frame
+from life_v0.neural_core.prediction_error import build_prediction_error_field
 from life_v0.neural_core.prediction_workspace import build_prediction_workspace_frame
+from life_v0.neural_core.signal_media import build_signal_media_runtime
 from life_v0.state_store.commitment_truth import (
     project_commitment_truth_state,
     project_responsibility_ledger,
@@ -155,6 +160,11 @@ def run_build_language_relationship(
     prediction_error_field = _load_json_if_exists(state_dir / "prediction" / "prediction_error_field.json")
     active_sampling_plan = _load_json_if_exists(state_dir / "prediction" / "active_sampling_plan.json")
     memory_write_gate = _load_json_if_exists(state_dir / "memory" / "memory_write_gate.json")
+    queue_e_repair_profile = build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
 
     blocked_reasons.extend(_doc_blockers(doc_index))
     blocked_reasons.extend(_neural_blockers(neural_core, subject_systems, internal_bus))
@@ -177,6 +187,34 @@ def run_build_language_relationship(
     shared_term_registry = _build_shared_term_registry(run_id, generated_at)
     relation_scope_index = _build_relation_scope_language_index(run_id, generated_at)
     self_narrative_trace = _build_self_narrative_language_trace(run_id, generated_at)
+    signal_media_runtime = build_signal_media_runtime(
+        run_id=run_id,
+        generated_at=generated_at,
+        network_state=_load_json_if_exists(neural_core_state_dir / "network_state.json"),
+        queue_e_repair_modulation_profile=queue_e_repair_profile,
+    )
+    belief_state = build_belief_state_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        signal_media_runtime=signal_media_runtime,
+        language_continuity=_seed_prediction_language_continuity_from_life_state(life_state),
+        queue_e_repair_modulation_profile=queue_e_repair_profile,
+    )
+    prediction_error_field = build_prediction_error_field(
+        run_id=run_id,
+        generated_at=generated_at,
+        belief_state=belief_state,
+        signal_media_runtime=signal_media_runtime,
+        queue_e_repair_modulation_profile=queue_e_repair_profile,
+    )
+    active_sampling_plan = build_active_sampling_plan(
+        run_id=run_id,
+        generated_at=generated_at,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        signal_media_runtime=signal_media_runtime,
+        queue_e_repair_modulation_profile=queue_e_repair_profile,
+    )
     language_percept = _build_language_percept_frame(
         run_id,
         generated_at,
@@ -436,6 +474,8 @@ def run_build_language_relationship(
     try:
         language_dir.mkdir(parents=True, exist_ok=True)
         relationship_dir.mkdir(parents=True, exist_ok=True)
+        signal_dir = out_dir / "signal"
+        signal_dir.mkdir(parents=True, exist_ok=True)
         prediction_dir = out_dir / "prediction"
         prediction_dir.mkdir(parents=True, exist_ok=True)
         reports_dir.mkdir(parents=True, exist_ok=True)
@@ -457,6 +497,10 @@ def run_build_language_relationship(
         _write_json(language_dir / "apology_repair_language_trace.json", apology_repair_language_trace)
         _append_jsonl(language_dir / "dialogue_turn_log.jsonl", dialogue_turn_entries)
         _write_json(relationship_dir / "relationship_timeline.json", relationship_timeline)
+        _write_json(signal_dir / "signal_media_runtime.json", signal_media_runtime)
+        _write_json(prediction_dir / "belief_state_frame.json", belief_state)
+        _write_json(prediction_dir / "prediction_error_field.json", prediction_error_field)
+        _write_json(prediction_dir / "active_sampling_plan.json", active_sampling_plan)
         _write_json(prediction_dir / "prediction_workspace_frame.json", prediction_workspace)
         _write_json(state_dir / "relationship" / "commitment_truth_state.json", updated_commitment_truth)
         _write_json(state_dir / "responsibility" / "responsibility_ledger.json", updated_responsibility_ledger)
@@ -1034,11 +1078,29 @@ def _integrate_life_state(
         "runtime/state/relationship/relationship_timeline.json",
         "runtime/state/language/commitment_expression_plan.json",
         "runtime/state/language/apology_repair_language_trace.json",
+        "runtime/state/signal/signal_media_runtime.json",
+        "runtime/state/prediction/belief_state_frame.json",
+        "runtime/state/prediction/prediction_error_field.json",
+        "runtime/state/prediction/active_sampling_plan.json",
     ]:
         if ref not in updated["runtime_trace_refs"]:
             updated["runtime_trace_refs"].append(ref)
     updated.setdefault("archive_refs", [])
     return updated
+
+
+def _seed_prediction_language_continuity_from_life_state(life_state: dict[str, Any]) -> dict[str, Any]:
+    language_state = life_state.get("language_state", {})
+    return {
+        "shared_language_refs": list(language_state.get("shared_language_refs", [])),
+        "expression_monitor_refs": list(language_state.get("expression_monitor_refs", [])),
+        "relation_scope_refs": list(language_state.get("relation_scope_refs", [])),
+        "commitment_refs": list(language_state.get("promise_refs", [])),
+        "self_narrative_trace_refs": list(language_state.get("self_narrative_trace_refs", [])),
+        "dialogue_turn_log_refs": list(language_state.get("dialogue_turn_log_refs", [])),
+        "language_percept_refs": list(language_state.get("language_percept_refs", [])),
+        "semantic_map_refs": list(language_state.get("semantic_map_refs", [])),
+    }
 
 
 def _build_prediction_language_continuity(

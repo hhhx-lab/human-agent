@@ -90,6 +90,10 @@ class LanguageRelationshipTests(unittest.TestCase):
             shadow_bridge = self._read_json(paths["language_state"] / "language_action_bridge_shadow.json")
             language_percept = self._read_json(paths["language_state"] / "language_percept_frame.json")
             semantic_map = self._read_json(paths["language_state"] / "semantic_map_frame.json")
+            signal_media = self._read_json(paths["state_root"] / "signal" / "signal_media_runtime.json")
+            belief_state = self._read_json(paths["prediction_state"] / "belief_state_frame.json")
+            prediction_error = self._read_json(paths["prediction_state"] / "prediction_error_field.json")
+            active_sampling = self._read_json(paths["prediction_state"] / "active_sampling_plan.json")
             prediction_workspace = self._read_json(paths["prediction_state"] / "prediction_workspace_frame.json")
             shared_term_registry = self._read_json(paths["language_state"] / "shared_term_registry.json")
             relation_scope_index = self._read_json(paths["language_state"] / "relation_scope_language_index.json")
@@ -274,8 +278,40 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertEqual(language_percept["belief_state_ref"], "runtime/state/prediction/belief_state_frame.json")
         self.assertEqual(language_percept["active_sampling_plan_ref"], "runtime/state/prediction/active_sampling_plan.json")
         self.assertEqual(language_percept["prediction_focus"]["belief_scope"], "language_relationship_continuity")
-        self.assertEqual(language_percept["prediction_focus"]["active_sampling_route"], "clarify")
+        self.assertEqual(language_percept["prediction_focus"]["active_sampling_route"], "repair_inspect")
         self.assertTrue(language_percept["percept_focus_trace"])
+
+        self.assertEqual(signal_media["schema_version"], "signal_media_runtime_v0")
+        self.assertEqual(signal_media["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(signal_media["queue_e_repair_attention_target"], "regret_pressure")
+        self.assertEqual(
+            signal_media["precision_policy"]["policy_mode"],
+            "queue_e_repair_guarded_active_inference",
+        )
+        self.assertIn(
+            "world_contact_release_until_repair_review",
+            signal_media["inhibition_profile"]["blocked_release_surfaces"],
+        )
+
+        self.assertEqual(belief_state["schema_version"], "belief_state_frame_v0")
+        self.assertEqual(belief_state["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(belief_state["revision_policy"], "repair_pressure_first_revision")
+        self.assertIn("responsibility_repair_pressure", belief_state["uncertainty_taxonomy"])
+
+        self.assertEqual(prediction_error["schema_version"], "prediction_error_field_v0")
+        self.assertEqual(prediction_error["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(prediction_error["stage_effect"], "repair_pressure_review")
+        self.assertIn("raise_repair_obligation_precision", prediction_error["precision_requests"])
+        self.assertIn(
+            "responsibility_repair_pressure_review",
+            prediction_error["workspace_entry_candidates"],
+        )
+
+        self.assertEqual(active_sampling["schema_version"], "active_sampling_plan_v0")
+        self.assertEqual(active_sampling["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(active_sampling["selected_route"], "repair_inspect")
+        self.assertIn("queue_e_repair_pressure_guard", active_sampling["guard_refs"])
+        self.assertIn("inspect_responsibility_repair_pressure", active_sampling["command_binding_refs"])
 
         self.assertEqual(semantic_map["schema_version"], "semantic_map_frame_v0")
         self.assertEqual(semantic_map["status"], "closed")
@@ -304,11 +340,16 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertEqual(prediction_workspace["signal_media_ref"], "runtime/state/signal/signal_media_runtime.json")
         self.assertEqual(
             prediction_workspace["workspace_contents"]["precision_state"],
-            "relationship_guarded_active_inference",
+            "queue_e_repair_guarded_active_inference",
         )
         self.assertEqual(
             prediction_workspace["workspace_contents"]["active_sampling_mode"],
-            "clarify",
+            "repair_inspect",
+        )
+        self.assertEqual(prediction_workspace["queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(
+            prediction_workspace["workspace_contents"]["queue_e_repair_attention_target"],
+            "regret_pressure",
         )
         continuity_focus = prediction_workspace["workspace_contents"]["language_continuity_focus"]
         self.assertEqual(

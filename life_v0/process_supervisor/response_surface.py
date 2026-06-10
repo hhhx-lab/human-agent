@@ -335,9 +335,11 @@ def _prediction_surface_posture(
     surface_posture = ""
     if "clarify" in route_lower:
         surface_posture = "追问"
+    elif "repair" in route_lower:
+        surface_posture = "修复"
     elif "hold_for_evidence" in stage_lower or error_count > 0:
         surface_posture = "保留"
-    elif repair_drive == "active" or "repair" in route_lower or "repair" in memory_policy_lower:
+    elif repair_drive == "active" or "repair" in memory_policy_lower:
         surface_posture = "修复"
     elif confidence_level in {"stable", "high", "confirmed"}:
         surface_posture = "确认"

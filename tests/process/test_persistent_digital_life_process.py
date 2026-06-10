@@ -1735,6 +1735,69 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             ],
         )
 
+        repair_idle_strategy = decide_idle_strategy(
+            run_id="idle-prediction-repair-route-governance",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            body_rhythm_pulse={
+                "schema_version": "body_rhythm_pulse_v0",
+                "fatigue_load": "managed_low_noise",
+            },
+            need_state_vector={
+                "schema_version": "need_state_vector_v0",
+                "repair_drive": "active",
+                "cognitive_bandwidth": "steady_open",
+                "sleep_pressure": "low",
+            },
+            replay_cue_bundle={},
+            offline_consolidation_frame={},
+            growth_patch_candidate_queue={},
+            signal_media_runtime={
+                "schema_version": "signal_media_runtime_v0",
+                "modulation_vector": {"repair_drive": 0.679},
+            },
+            belief_state={
+                "schema_version": "belief_state_frame_v0",
+                "confidence_level": "unstable",
+            },
+            prediction_error_field={
+                "schema_version": "prediction_error_field_v0",
+                "error_events": [{"error_id": "queue-e-repair-pressure-0001"}],
+            },
+            active_sampling_plan={
+                "schema_version": "active_sampling_plan_v0",
+                "selected_route": "repair_inspect",
+                "stage_effect": "repair_pressure_review",
+            },
+            memory_write_gate={
+                "schema_version": "memory_write_gate_v0",
+                "stage_policy": "write_guarded_candidate_then_validate",
+            },
+            state_merge_guard={
+                "schema_version": "state_merge_guard_v0",
+                "stage_policy": "long_term_merge_fail_closed",
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(repair_idle_strategy["prediction_waiting_posture"], "repair_write_guard")
+        self.assertEqual(repair_idle_strategy["response_surface_posture_hint"], "repair")
+        self.assertEqual(repair_idle_strategy["prediction_attention_target"], "active_sampling_plan")
+        self.assertEqual(
+            repair_idle_strategy["prediction_attention_reason"],
+            "active_sampling_route_prioritizes_repair_pressure",
+        )
+        self.assertEqual(repair_idle_strategy["active_sampling_route"], "repair_inspect")
+
     def test_idle_strategy_reloads_background_continuity_carryover(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
 

@@ -16,6 +16,14 @@ def build_prediction_workspace_frame(
     prediction_error_field = prediction_error_field or {}
     active_sampling_plan = active_sampling_plan or {}
     signal_media_runtime = signal_media_runtime or {}
+    repair_profile = (
+        active_sampling_plan.get("queue_e_repair_modulation_profile")
+        or prediction_error_field.get("queue_e_repair_modulation_profile")
+        or belief_state.get("queue_e_repair_modulation_profile")
+        or signal_media_runtime.get("queue_e_repair_modulation_profile")
+        or {}
+    )
+    pressure_level = repair_profile.get("pressure_level", "quiet")
     continuity = {
         "shared_language_refs": list((language_continuity or {}).get("shared_language_refs", [])),
         "expression_monitor_refs": list((language_continuity or {}).get("expression_monitor_refs", [])),
@@ -69,6 +77,8 @@ def build_prediction_workspace_frame(
             "language_continuity_focus": continuity,
             "belief_scope": belief_state.get("state_scope"),
             "sampling_stage_effect": active_sampling_plan.get("stage_effect"),
+            "queue_e_repair_pressure_level": pressure_level,
+            "queue_e_repair_attention_target": repair_profile.get("attention_target", "repair_followup"),
         },
         "belief_state_ref": (
             "runtime/state/prediction/belief_state_frame.json"
@@ -90,6 +100,10 @@ def build_prediction_workspace_frame(
             if signal_media_runtime
             else None
         ),
+        "queue_e_repair_modulation_profile": repair_profile if repair_profile else None,
+        "queue_e_repair_pressure_level": pressure_level,
+        "queue_e_repair_attention_target": repair_profile.get("attention_target", "repair_followup"),
+        "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
         "bus_edge_refs": [
             "prediction_error_bus",
             "conscious_broadcast_bus",
