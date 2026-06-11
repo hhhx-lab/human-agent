@@ -1,6 +1,8 @@
 import json
+import os
 import subprocess
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -127,8 +129,153 @@ class DigitalEntrypointTests(unittest.TestCase):
                 "runtime/state/terminal/resident_process_lease_history.jsonl",
             )
 
+    def test_repo_local_digital_life_background_resident_stays_alive_until_stop(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            start_command = [
+                str(self.repo_root / "digital"),
+                "life",
+                "--state",
+                str(paths["state_root"]),
+                "--reports",
+                str(paths["reports"]),
+                "--receipts",
+                str(paths["receipts"]),
+                "--run-id",
+                "entry-background-resident",
+                "--strict",
+                "--background",
+                "--resident-sleep-seconds",
+                "0.2",
+            ]
+            stop_command = [
+                str(self.repo_root / "digital"),
+                "life",
+                "--state",
+                str(paths["state_root"]),
+                "--reports",
+                str(paths["reports"]),
+                "--receipts",
+                str(paths["receipts"]),
+                "--stop",
+                "--stop-timeout-seconds",
+                "30",
+            ]
+            started_pid = 0
+            try:
+                started = subprocess.run(
+                    start_command,
+                    cwd=self.repo_root,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(started.returncode, 0, started.stderr)
+                start_state = json.loads(started.stdout)
+                started_pid = int(start_state["pid"])
+                self.assertTrue(self._pid_alive(started_pid))
+                self.assertEqual(start_state["status"], "background_starting")
+
+                active_state = self._wait_for_resident_status(
+                    paths["terminal_state"],
+                    expected_status="background_active",
+                    timeout_seconds=30,
+                )
+                self.assertEqual(active_state["run_id"], "entry-background-resident")
+                self.assertEqual(active_state["pid"], started_pid)
+                self.assertTrue(active_state["pid_alive"])
+                self.assertEqual(
+                    active_state["residency_posture"],
+                    "sleeping_waiting_for_relation_turn",
+                )
+
+                status = subprocess.run(
+                    [
+                        str(self.repo_root / "digital"),
+                        "life",
+                        "--state",
+                        str(paths["state_root"]),
+                        "--reports",
+                        str(paths["reports"]),
+                        "--receipts",
+                        str(paths["receipts"]),
+                        "--status",
+                    ],
+                    cwd=self.repo_root,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(status.returncode, 0, status.stderr)
+                status_state = json.loads(status.stdout)
+                self.assertEqual(status_state["pid"], started_pid)
+                self.assertTrue(status_state["pid_alive"])
+
+                stopped = subprocess.run(
+                    stop_command,
+                    cwd=self.repo_root,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(stopped.returncode, 0, stopped.stderr)
+                stopped_state = json.loads(stopped.stdout)
+                self.assertEqual(stopped_state["status"], "stopped")
+                self.assertFalse(stopped_state["pid_alive"])
+
+                final_state = self._read_json(
+                    paths["terminal_state"] / "resident_lifecycle_state.json"
+                )
+                process_report = self._read_json(
+                    paths["reports"] / "digital_life_process_report.json"
+                )
+                self.assertEqual(final_state["status"], "stopped")
+                self.assertEqual(final_state["run_id"], "entry-background-resident")
+                self.assertEqual(process_report["status"], "closed")
+                self.assertEqual(process_report["exit_reason"], "explicit_exit")
+            finally:
+                if started_pid and self._pid_alive(started_pid):
+                    subprocess.run(
+                        stop_command,
+                        cwd=self.repo_root,
+                        text=True,
+                        capture_output=True,
+                        check=False,
+                    )
+
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
+
+    def _wait_for_resident_status(
+        self,
+        terminal_dir: Path,
+        *,
+        expected_status: str,
+        timeout_seconds: float,
+    ) -> dict:
+        state_path = terminal_dir / "resident_lifecycle_state.json"
+        deadline = time.monotonic() + timeout_seconds
+        last_state: dict = {}
+        while time.monotonic() < deadline:
+            if state_path.exists():
+                last_state = self._read_json(state_path)
+                pid = int(last_state.get("pid", 0) or 0)
+                last_state["pid_alive"] = self._pid_alive(pid)
+                if last_state.get("status") == expected_status:
+                    return last_state
+            time.sleep(0.1)
+        self.fail(f"resident status did not reach {expected_status}: {last_state}")
+
+    def _pid_alive(self, pid: int) -> bool:
+        if pid <= 0:
+            return False
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return True
 
 
 if __name__ == "__main__":

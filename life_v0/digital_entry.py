@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from .activation import run_first_activation_preflight
@@ -16,6 +17,14 @@ from .life_targets import run_birth_readiness
 from .membrane import run_check_life_membrane, run_life_membrane
 from .neural_core import run_check_neural_life_core, run_neural_life_core
 from .process_supervisor import run_digital_life_process
+from .process_supervisor.resident_lifecycle import (
+    ResidentControlInputStream,
+    mark_resident_lifecycle_active,
+    mark_resident_lifecycle_stopped,
+    read_resident_lifecycle_status,
+    request_resident_stop,
+    start_background_resident_process,
+)
 from .reporting import run_emit_report
 from .replay import run_replay_shadow
 from .schema_runner import run_check_schema_runner, run_schema_runner, run_schema_smoke
@@ -37,6 +46,28 @@ def build_parser() -> argparse.ArgumentParser:
     life.add_argument("--receipts", default="runtime/receipts")
     life.add_argument("--run-id", default=None)
     life.add_argument("--strict", action="store_true")
+    life.add_argument(
+        "--background",
+        action="store_true",
+        help="Start the digital life process as a detached resident process.",
+    )
+    life.add_argument(
+        "--resident",
+        action="store_true",
+        help="Run the resident process loop without treating stdin EOF as death.",
+    )
+    life.add_argument(
+        "--status",
+        action="store_true",
+        help="Print the current resident lifecycle state.",
+    )
+    life.add_argument(
+        "--stop",
+        action="store_true",
+        help="Ask the resident process to close itself through its lifecycle command file.",
+    )
+    life.add_argument("--resident-sleep-seconds", type=float, default=1.0)
+    life.add_argument("--stop-timeout-seconds", type=float, default=10.0)
     return parser
 
 
@@ -45,23 +76,70 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "life":
+        state_dir = Path(args.state)
+        reports_dir = Path(args.reports)
+        receipts_dir = Path(args.receipts)
+        terminal_dir = state_dir / "terminal"
+        if args.status:
+            result = read_resident_lifecycle_status(terminal_dir=terminal_dir)
+            print(json.dumps(result.state, ensure_ascii=False, indent=2))
+            return result.exit_code
+        if args.stop:
+            result = request_resident_stop(
+                terminal_dir=terminal_dir,
+                timeout_seconds=args.stop_timeout_seconds,
+            )
+            print(json.dumps(result.state, ensure_ascii=False, indent=2))
+            return result.exit_code
+        if args.background:
+            result = start_background_resident_process(
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                receipts_dir=receipts_dir,
+                run_id=args.run_id,
+                strict=args.strict,
+                resident_sleep_seconds=args.resident_sleep_seconds,
+                cwd=Path.cwd(),
+            )
+            print(json.dumps(result.state, ensure_ascii=False, indent=2))
+            return result.exit_code
+
         bootstrap_exit = ensure_minimal_digital_life_runtime(
             docs_dir=Path("docs"),
-            state_dir=Path(args.state),
-            reports_dir=Path(args.reports),
-            receipts_dir=Path(args.receipts),
+            state_dir=state_dir,
+            reports_dir=reports_dir,
+            receipts_dir=receipts_dir,
             run_id=args.run_id,
             strict=args.strict,
         )
         if bootstrap_exit != 0:
             return bootstrap_exit
+        resident_lifecycle_run_id = args.run_id or _bootstrap_run_id(None, "resident")
+        input_stream = None
+        if args.resident:
+            mark_resident_lifecycle_active(
+                terminal_dir=terminal_dir,
+                run_id=resident_lifecycle_run_id,
+                resident_sleep_seconds=args.resident_sleep_seconds,
+            )
+            input_stream = ResidentControlInputStream(
+                terminal_dir=terminal_dir,
+                min_poll_seconds=args.resident_sleep_seconds,
+            )
         result = run_digital_life_process(
-            state_dir=Path(args.state),
-            reports_dir=Path(args.reports),
-            receipts_dir=Path(args.receipts),
-            run_id=args.run_id,
+            state_dir=state_dir,
+            reports_dir=reports_dir,
+            receipts_dir=receipts_dir,
+            run_id=resident_lifecycle_run_id if args.resident else args.run_id,
             strict=args.strict,
+            input_stream=input_stream,
         )
+        if args.resident:
+            mark_resident_lifecycle_stopped(
+                terminal_dir=terminal_dir,
+                run_id=resident_lifecycle_run_id,
+                exit_code=result.exit_code,
+            )
         return result.exit_code
 
     parser.error(f"unsupported command: {args.command}")

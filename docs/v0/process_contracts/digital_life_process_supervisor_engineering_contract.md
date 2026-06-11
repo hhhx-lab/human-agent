@@ -225,6 +225,35 @@ runtime/state/terminal/resident_process_lease_history_profile.json
 
 启动时 `process_supervisor/process_lease.py` 必须先检查上一段 lease；如果旧 lease 仍是 active，`relaunch_recovery.py` 必须把它归一化为 `interrupted_on_relaunch`，追加 `lease_interrupted_on_relaunch`，并在 `digital_life_process_relaunch_recovery_report.json` 中写出 `previous_resident_process_id`、`previous_resident_process_lease_state` 与 `normalized_resident_process_lease_state`。之后当前 run 才能写 active lease 并追加 `lease_opened`；每次 waiting heartbeat 必须刷新 `last_seen_at` 与 `heartbeat_counter`，追加 `lease_refreshed`，并让 `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`resident_governance_state.json` 能回链 `resident_process_lease_ref`、`resident_process_lease_history_ref`、`resident_process_lease_history_profile_ref`、`resident_process_identity_continuity_state`、`resident_process_identity_pressure_level` 与 `resident_process_id`；closeout 时必须把同一份 lease 改成 closed，追加 `lease_closed`，写入 completed turns、incident count、exit reason、process report ref，并让 persistent process state/report、resident governance state/snapshot/report、process report、digest、receipt 继续收进 `runtime/state/terminal/resident_process_lease.json`、`runtime/state/terminal/resident_process_lease_history.jsonl` 与 `runtime/state/terminal/resident_process_lease_history_profile.json`。下一次 `background_continuity.py` 必须把 profile 恢复为 `background_resident_process_lease_history_profile_ref` 与 `resident_process_identity_*` 字段，并放入 `background_continuity_ref_set`。这样后续真正做全局长期运行层时，不会从一个无身份的 stdin 循环硬跳到 daemon，而是从可审计、可压缩、可恢复的生命进程身份继续长出来。
 
+### resident lifecycle launcher
+
+当前 v0 还必须给 `digital life` 增加一层本机驻留启动机制，让“终端关闭后仍保持上下文”的第一版目标有工程承载：
+
+```text
+digital life --background
+  -> spawn detached resident process
+  -> child runs digital life --resident
+  -> child keeps the same run_digital_life_process alive
+  -> no stdin EOF death; sleep/wait heartbeat continues
+  -> digital life --stop writes lifecycle command
+  -> resident process receives /exit through control input
+  -> normal lease closeout / process report / receipt
+```
+
+这不是工具 daemon、不是 gateway，也不是另一个 agent。它只负责把当前已经存在的生命进程放进本机后台驻留相位，并用文件证据证明它仍在、可停、可恢复。
+
+最小对象固定为：
+
+```text
+runtime/state/terminal/resident_lifecycle_state.json
+runtime/state/terminal/resident_lifecycle_command.json
+runtime/logs/digital_life_resident.log
+```
+
+`resident_lifecycle_state.json` 的 `schema_version` 固定为 `resident_lifecycle_state_v0`，至少包含 `run_id`、`status = background_starting / background_active / stop_requested / stopped`、`pid`、`pid_alive`、`resident_sleep_seconds`、`residency_mode = background_resident_process`、`residency_posture = sleeping_waiting_for_relation_turn`、`resident_lifecycle_state_ref`、`resident_lifecycle_command_ref` 与 log ref。`resident_lifecycle_command.json` 只作为本机生命周期控制信号，当前只需要 `command=stop`；后台子进程必须通过 `ResidentControlInputStream` 把 stop 转成普通 `/exit`，从而走已有 closeout，而不是由父进程粗暴杀死。`digital life --status` 必须读取同一份 state 并用 PID 探测补上 `pid_alive`，`digital life --stop` 必须写 command file 并等待后台进程完成自我关闭。
+
+后台驻留期间不接收到外部关系话语时，输入流必须返回 `None` 而不是 EOF，使 `idle_refresh_loop.py` 继续刷新 waiting heartbeat。这个相位在 v0 中称为 sleep/rest waiting，不代表主体消失；上下文仍由 `runtime/state/*`、lease history、resident governance、dialogue writeback、background continuity 和 lifecycle state 共同保存。后续如果需要把外部话语投递给后台 resident process，也必须在这条 lifecycle command / queue 证据链上扩展，不能绕开当前生命回合合同。
+
 ## process supervisor 的最小对象链
 
 这一层第一轮至少要显式走下面这条对象链：

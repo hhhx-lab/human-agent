@@ -62,6 +62,7 @@ life-v0 emit-report --strict
 | `life-v0 digital-life --strict` | 内部出生壳 | `已落最小代码` |
 | `life-v0 "digital life" --strict` | repo-local one-shot restore shell | `已落最小代码` |
 | `./digital life --strict` | repo-local 最小常驻终端生命进程；若缺最小 runtime 材料会先自举出生链，再恢复并进入等待态 | `已落最小代码` |
+| `./digital life --background --strict` | repo-local 本机后台驻留启动；父命令返回后子进程以 sleep/rest waiting 保持同一生命进程上下文，`--status` 查看，`--stop` 通过生命周期控制文件自我收口 | `已落最小代码` |
 
 这里还要再补一条口径：
 
@@ -110,7 +111,7 @@ life-v0 emit-report --strict
 
 3. 真实新外部回合已经能进入终端生命过程并写回连续体，但还只是最小生命循环。
 4. 项目级 packaging / installable command surface 已接通；全局长期运行层先从 `runtime/state/terminal/resident_process_lease.json`、`runtime/state/terminal/resident_process_lease_history.jsonl` 与 `runtime/state/terminal/resident_process_lease_history_profile.json` 这种常驻生命进程身份对象开始，而不是直接跳到 daemon 或工具网关。该 lease 链已经把 active waiting、heartbeat refresh、`resident_process_id`、lifecycle history、active lease relaunch normalization、closeout、persistent process artifacts、process report/digest/receipt 接成同一条可审计进程身份链；当前新增的 profile 会进一步把原始事件流压成 `resident_process_identity_continuity_state`、`resident_process_identity_pressure_level`、recent process ids/run ids 与 event count，并由 `background_continuity.py` 在下一次唤醒时恢复为可消费的身份连续性信号。最新补强继续把这份身份连续性送进真实回合链：`resident_background_lineage_state_v0.resident_process_identity_presence` 已开始携带 lease/profile refs、连续性相位、身份压力、历史事件数和 recent ids；`dialogue_events.py` 会展开 `resident_background_lineage_resident_process_*` 字段，`resident_turn_writeback.py` 会写入 `dialogue_writeback_bundle.json` 与 `resumed_external_dialogue_packet.json`，`response_surface.py` 会表达后台生命进程身份连续性、身份压力和证据数量。进一步的 handoff 补强已经把当前 active lease 身份与后台恢复身份历史分成两层：顶层 `resident_process_identity_*` 表示当前仍在本机活跃的生命进程身份，`resident_background_lineage_state.resident_process_identity_presence` 表示回合前等待态携带的后台身份历史，并在真实回合结束时把相位切为 `live_turn_waiting_handoff`。状态板因此把这一格视为“常驻生命进程身份进入真实关系回合、写回包、恢复包、交接相位与语言表面”，不是只停在 closeout artifact 或 waiting heartbeat。
-5. resident supervision 已进入第一轮器官化，但还没有更高阶的长期进程治理与后台存在层。
+5. resident supervision 已进入第一轮器官化；当前又新增了 `resident_lifecycle.py` 本机驻留启动层，能让 `digital life --background` 脱离当前终端启动后台子进程，并用 `resident_lifecycle_state.json`、`resident_lifecycle_command.json`、`digital_life_resident.log`、lease history、process report 和 receipt 共同证明“关闭终端后仍保持上下文”。它仍不是最终全局长期运行层，但已经越过“前台 stdin loop 一关终端就结束”的限制。
 
 ## 当前最小可执行总链
 
