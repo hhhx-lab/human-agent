@@ -370,6 +370,11 @@ def write_waiting_heartbeat(
         "resident_process_lease_history_event_count",
         "resident_process_recent_ids",
         "resident_process_recent_run_ids",
+        "heartbeat_cadence_explanation",
+        "heartbeat_cadence_driver",
+        "heartbeat_cadence_reason",
+        "heartbeat_cadence_modulators",
+        "heartbeat_cadence_evidence_refs",
         "long_horizon_language_refs",
         "live_language_turn_refs",
         "last_live_semantic_focus",
@@ -803,6 +808,17 @@ def _append_idle_heartbeat_trace(
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
         "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
         "heartbeat_interval_ms": idle_strategy.get("heartbeat_interval_ms"),
+        "heartbeat_cadence_explanation": idle_strategy.get(
+            "heartbeat_cadence_explanation"
+        ),
+        "heartbeat_cadence_driver": idle_strategy.get("heartbeat_cadence_driver"),
+        "heartbeat_cadence_reason": idle_strategy.get("heartbeat_cadence_reason"),
+        "heartbeat_cadence_modulators": list(
+            idle_strategy.get("heartbeat_cadence_modulators", [])
+        ),
+        "heartbeat_cadence_evidence_refs": list(
+            idle_strategy.get("heartbeat_cadence_evidence_refs", [])
+        ),
         "idle_probe_mode": idle_strategy.get("idle_probe_mode"),
         "next_idle_action": idle_strategy.get("next_idle_action"),
         "governance_attention_target": idle_strategy.get("governance_attention_target"),

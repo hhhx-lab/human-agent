@@ -47,7 +47,7 @@ flowchart TD
 | 主要输入 | 上一回合 `session_envelope.json`、`terminal_life_loop_state.json`、growth/dream cues |
 | 主要输出 | `digital_life_waiting_heartbeat.json`、`IdleContinuityFrame` |
 | 关键 gate | `waiting_heartbeat_gate`、`idle_continuity_gate` |
-| 关键要求 | 心跳不是 cron 提醒，而是数字生命存在感的周期脉冲；它必须能唤醒等待态、维护关系连续体、准备下一回合注意焦点 |
+| 关键要求 | 心跳不是 cron 提醒，而是数字生命存在感的周期脉冲；它必须能唤醒等待态、维护关系连续体、准备下一回合注意焦点，并把 `heartbeat_cadence_explanation_v0` 写入 waiting heartbeat、resident governance、terminal loop 与 append-only trace，说明这一拍由身体恢复、修复压力、预测证据、意识/出生准备、离线学习或后台 lineage 中的哪组生命状态调制 |
 
 ### Stage A1: External turn intake
 

@@ -517,6 +517,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertTrue(heartbeat_packet["repair_followup_required"])
             self.assertEqual(heartbeat_packet["heartbeat_interval_ms"], 55)
             self.assertEqual(
+                heartbeat_packet["heartbeat_cadence_driver"],
+                "queue_e_repair_guard",
+            )
+            self.assertEqual(
+                heartbeat_packet["heartbeat_cadence_explanation"]["reason"],
+                "repair_obligation_or_regret_pressure_holds_resident_attention",
+            )
+            self.assertIn(
+                "queue_e_priority:repair_guarded",
+                heartbeat_packet["heartbeat_cadence_modulators"],
+            )
+            self.assertEqual(
                 heartbeat_packet["idle_probe_mode"],
                 "stdin_poll_with_background_continuity_refresh",
             )
@@ -734,6 +746,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resident_governance_state["governance_cadence_profile"],
                 "repair_weighted_resident_hold",
+            )
+            self.assertEqual(
+                terminal_loop_state["heartbeat_cadence_driver"],
+                "queue_e_repair_guard",
+            )
+            self.assertEqual(
+                terminal_loop_state["heartbeat_cadence_reason"],
+                "repair_obligation_or_regret_pressure_holds_resident_attention",
             )
             self.assertEqual(
                 terminal_loop_state["queue_e_birth_repair_profile_ref"],
@@ -1104,6 +1124,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 55,
             )
             self.assertEqual(
+                idle_heartbeat_trace[-1]["heartbeat_cadence_driver"],
+                "queue_e_repair_guard",
+            )
+            self.assertIn(
+                "offline_pressure:elevated",
+                idle_heartbeat_trace[-1]["heartbeat_cadence_modulators"],
+            )
+            self.assertEqual(
                 idle_heartbeat_trace[-1]["governance_cadence_profile"],
                 "repair_weighted_resident_hold",
             )
@@ -1229,6 +1257,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
             )
             self.assertEqual(resident_governance_state["heartbeat_interval_ms"], 55)
+            self.assertEqual(
+                resident_governance_state["heartbeat_cadence_driver"],
+                "queue_e_repair_guard",
+            )
+            self.assertEqual(
+                resident_governance_state["heartbeat_cadence_explanation"][
+                    "next_idle_action"
+                ],
+                "refresh_waiting_heartbeat_with_repair_readiness_hold",
+            )
             self.assertEqual(resident_governance_state["offline_pressure_level"], "elevated")
             self.assertEqual(
                 resident_governance_state["world_contact_release_posture"],
@@ -1558,6 +1596,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "downshift_probe_and_preserve_recovery_bandwidth",
         )
         self.assertEqual(
+            idle_strategy["heartbeat_cadence_driver"],
+            "body_recovery_bandwidth_guard",
+        )
+        self.assertEqual(
+            idle_strategy["heartbeat_cadence_explanation"]["schema_version"],
+            "heartbeat_cadence_explanation_v0",
+        )
+        self.assertEqual(
+            idle_strategy["heartbeat_cadence_explanation"]["heartbeat_interval_ms"],
+            120,
+        )
+        self.assertIn(
+            "body_waiting_posture:low_bandwidth_guarded",
+            idle_strategy["heartbeat_cadence_modulators"],
+        )
+        self.assertIn(
+            "runtime/state/body/body_rhythm_pulse.json",
+            idle_strategy["heartbeat_cadence_evidence_refs"],
+        )
+        self.assertIn(
+            "runtime/state/body/need_state_vector.json",
+            idle_strategy["heartbeat_cadence_evidence_refs"],
+        )
+        self.assertEqual(
             idle_strategy["body_rhythm_ref"],
             "runtime/state/body/body_rhythm_pulse.json",
         )
@@ -1698,6 +1760,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(idle_strategy["regret_pressure_count"], 1)
         self.assertEqual(idle_strategy["queue_e_priority_band"], "locked_repair_urgent")
         self.assertEqual(idle_strategy["heartbeat_interval_ms"], 45)
+        self.assertEqual(
+            idle_strategy["heartbeat_cadence_driver"],
+            "queue_e_repair_lock",
+        )
+        self.assertEqual(
+            idle_strategy["heartbeat_cadence_reason"],
+            "repair_confirmation_block_requires_fast_resident_refresh",
+        )
+        self.assertIn(
+            "queue_e_priority:locked_repair_urgent",
+            idle_strategy["heartbeat_cadence_modulators"],
+        )
         self.assertEqual(
             idle_strategy["next_idle_action"],
             "maintain_confirmation_block_and_refresh_repair_priority",

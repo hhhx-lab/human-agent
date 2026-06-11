@@ -160,7 +160,7 @@ run_report.json
 
 | 文件 | 作用 | 必须消费 | 必须写出 |
 |---|---|---|---|
-| `idle_strategy.py` | 定义等待态 heartbeat 节律、空闲探针、离线对象消费策略，并给出当前 resident governance 的关注目标与优先级分布 | `IdleContinuityFrame`、`ReplayCueBundle`、`OfflineConsolidationFrame`、`GrowthPatchCandidateQueue` | `runtime/state/terminal/idle_strategy_state.json` |
+| `idle_strategy.py` | 定义等待态 heartbeat 节律、空闲探针、离线对象消费策略，并给出当前 resident governance 的关注目标、优先级分布与 `heartbeat_cadence_explanation_v0` | `IdleContinuityFrame`、`ReplayCueBundle`、`OfflineConsolidationFrame`、`GrowthPatchCandidateQueue`、身体/需要状态、Queue E/F/预测/后台 lineage 调制源 | `runtime/state/terminal/idle_strategy_state.json` |
 | `resident_supervision.py` | 接住 restore shell 之后的状态装载、relaunch normalization、初次 waiting heartbeat 进入 | shell report、terminal state、language/relationship continuity、offline shared objects | 首轮 `digital_life_waiting_heartbeat.json`、`resident_governance_state.json`、更新后的 terminal/language/relationship state |
 | `live_turn_cycle.py` | 承接真实新回合的 event -> response -> writeback -> incident recovery 生命周期 | shared terms、commitment、relationship、offline cues、resident turn writeback、incident recovery | dialogue writeback、resumed dialogue packet、incident/recovery reports、更新后的 waiting state |
 | `resident_governance_handoff.py` | 把 live turn 结束后的 waiting governance 交接相位显式写出，避免这段连续体只靠下一拍 heartbeat 间接体现 | 更新后的 terminal loop state、idle strategy、dialogue writeback、长期关系/承诺/修复语言对象 | `runtime/state/terminal/resident_governance_state.json(governance_phase=live_turn_waiting_handoff)` |
@@ -191,7 +191,10 @@ event -> response -> writeback -> incident recovery 生命周期继续从 `__ini
 `idle_continuity_frame.json` 与 `terminal_life_loop_state.json`，让 waiting continuity 本身也显式
 承载长期关系/承诺/修复语言对象；同时又新增 `resident_governance_state.json`，把运行中的 waiting
 governance 与关闭态 `resident_governance_snapshot/report` 分开，并开始显式写出
-`governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`。现在又继续把
+`governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`。当前进一步把
+`heartbeat_interval_ms` / `next_idle_action` 的调制来源压成 `heartbeat_cadence_explanation_v0`，并把
+`heartbeat_cadence_driver`、`heartbeat_cadence_reason`、`heartbeat_cadence_modulators` 与
+`heartbeat_cadence_evidence_refs` 送入 waiting heartbeat、terminal loop、resident governance 和 idle heartbeat trace，使等待心跳不是黑箱参数，而是可追踪的身体、修复、预测、意识/出生准备、离线学习和后台 lineage 共同调制结果。现在又继续把
 这份 background lineage 接进 `resident_supervision.py` 的 continuity refresh，因此多次唤醒时，在第一拍
 waiting heartbeat 之前，`relationship_subject_graph.json#subjects[0].relationship_stage` 会先进入
 `background_continuity_waiting`，`self_model.json#trait_slow_variables` 也会显式挂上关闭态 resident
