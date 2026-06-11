@@ -131,7 +131,7 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 1. 器官级测试能直接断言四个语言器官的新字段。
 2. S07 端到端测试能断言 report、receipt、prediction workspace 都保留预测消费 refs。
 3. V0 合同覆盖测试能收录本脚手文件，且本文件所有 `docs/...` 引用可解析。
-4. 不出现 `user` 核心抽象，不引入 skill router / gateway / subagent 架构。
+4. 不出现统一请求核心抽象，不引入 skill router / gateway / subagent 架构。
 
 ## 下一步衔接
 

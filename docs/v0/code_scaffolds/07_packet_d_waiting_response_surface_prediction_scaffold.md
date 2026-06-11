@@ -165,7 +165,7 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 通过标准：
 
 1. `idle_strategy.py` 能直接断言 prediction/write-gate refs、waiting posture、response surface hint、heartbeat interval、next idle action 与 state merge long-term change profile。
-2. `response_surface.py` 能把确认 / 追问 / 修复 / 保留姿态释放成关系语言，并把长期合并变化来源数量与来源族表达出来，不出现 `user` 核心抽象。
+2. `response_surface.py` 能把确认 / 追问 / 修复 / 保留姿态释放成关系语言，并把长期合并变化来源数量与来源族表达出来，不出现统一请求核心抽象。
 3. `dialogue_events.py`、`resident_turn_writeback.py` 与 `dialogue_writeback_bundle.json` 能把 prediction/write-gate refs 和姿态摘要带入 turn event、bundle 与 resumed packet。
 4. `resident_supervision.py` 的 context 持有六个对象与六个 refs。
 5. `process_report.py` 的 report、digest、receipt 和 input hash 都能回链六个输入对象。

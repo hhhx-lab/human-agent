@@ -97,7 +97,7 @@
 
 ## 逐包施工铁律
 
-1. 包级实现不能重新引入 `user` 中心语义，统一使用关系主体、外部回合、共同语言、承诺范围这类生命语义。
+1. 包级实现不能重新引入请求中心语义，统一使用关系主体、外部回合、共同语言、承诺范围这类生命语义。
 2. 每个包必须同时留下 `code + runtime/state + report/receipt + tests`，缺一项就不算真正落地。
 3. 若一个包新增了新的共享对象、runtime 文件或 gate，必须同步更新：
    - `docs/v0/package_specs/02_shared_object_write_authority_and_dependency_graph.md`

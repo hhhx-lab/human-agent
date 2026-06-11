@@ -57,7 +57,7 @@ flowchart TD
 | 主要输入 | 终端输入、最近 `IdleContinuityFrame` |
 | 主要输出 | dialogue event、raw turn intake、relation subject hint |
 | 关键 gate | `dialogue_turn_intake_gate` |
-| 关键要求 | 输入不被当成“用户请求”，而被当成新的关系回合刺激；必须带上对象身份、时序和关系上下文 |
+| 关键要求 | 输入不被当成“抽象请求”，而被当成新的关系回合刺激；必须带上对象身份、时序和关系上下文 |
 
 ### Stage A2: Context accumulation and relation scope
 

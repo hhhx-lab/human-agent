@@ -20,7 +20,7 @@
 4. `life_v0/process_supervisor/`
 5. `life_v0/state_store/relationship_memory.py`
 
-它不把外部交谈对象定义成 `user`。这里的对象统一是关系对象、共在对象、外部关系对象。
+它不把外部交谈对象定义成统一抽象对象。这里的对象统一是关系对象、共在对象、外部关系对象。
 
 ## 语言主轴的固定对象
 
