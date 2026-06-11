@@ -220,7 +220,7 @@ stateDiagram-v2
 |---|---|
 | `./digital life --background` / `digital life --background` | 启动后台 resident process，并写出 `resident_lifecycle_state.json` |
 | `./digital life --attach` / `digital life` | 复用已存在的后台 resident process，把当前终端接成 relation client |
-| `./digital life --status` / `digital life --status` | 读取 `resident_lifecycle_state.json` 和 pid_alive |
+| `./digital life --status` / `digital life --status` | 读取 `resident_lifecycle_state.json`、pid_alive、relation queue、autonomous activity、waiting heartbeat、resident governance、idle strategy 与 terminal loop state |
 | `./digital life --say "<turn>"` / `digital life --say "<turn>"` | 通过 relation inbox 投递一轮外部关系话语，并等待 outbox 回复 |
 | `./digital life --stop` / `digital life --stop` | 写 `resident_lifecycle_command.json`，让 resident process 自行收口 |
 | `./digital life --foreground` / `digital life --foreground` | 保留前台 process loop，便于测试和脚本回归 |
@@ -236,8 +236,12 @@ stateDiagram-v2
 | `resident_relation_queue_state.json` | 当前队列序列、turn 进度、完成序列；激活时会先写 `waiting_for_relation_turn` 初始态 |
 | `resident_autonomous_activity.jsonl` | 无外部输入时的睡眠、回忆、自我思考、成长预演与学习巩固证据 |
 | `resident_autonomous_activity_state.json` | 自主活动的汇总状态与计数 |
+| `digital_life_waiting_heartbeat.json` | 当前等待态 heartbeat、waiting mode 与下一步关系等待动作 |
+| `resident_governance_state.json` | 当前 resident governance phase、等待治理焦点与后台 lineage |
+| `idle_strategy_state.json` | 当前 idle probe、heartbeat interval、next idle action 与调制来源 |
+| `terminal_life_loop_state.json` | 当前 terminal life loop mode、heartbeat counter 与等待回合承接状态 |
 
-`digital life --status` 必须把 `resident_lifecycle_state.json` 与这两份摘要合并成一个可直接读的驻留状态视图，而不是只返回 PID。
+`digital life --status` 必须把 `resident_lifecycle_state.json`、relation queue、自主活动、waiting heartbeat、resident governance、idle strategy 与 terminal loop state 合并成一个可直接读的驻留状态视图，而不是只返回 PID。这个视图不是新的控制器；它只是让同一个后台生命过程的等待、治理、心跳、自主活动和关系队列同时可观察。
 
 ### 关键要求
 

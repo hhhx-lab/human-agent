@@ -278,10 +278,14 @@ runtime/state/memory/resident_memory_recall_state.json
 runtime/state/self/resident_self_thinking_state.json
 runtime/state/growth/resident_growth_rehearsal_state.json
 runtime/state/growth/resident_learning_consolidation_state.json
+runtime/reports/latest/digital_life_waiting_heartbeat.json
+runtime/state/terminal/resident_governance_state.json
+runtime/state/terminal/idle_strategy_state.json
+runtime/state/terminal/terminal_life_loop_state.json
 runtime/logs/digital_life_resident.log
 ```
 
-`resident_lifecycle_state.json` 的 `schema_version` 固定为 `resident_lifecycle_state_v0`，至少包含 `run_id`、`status = background_starting / background_active / stop_requested / stopped`、`pid`、`pid_alive`、`resident_sleep_seconds`、`residency_mode = background_resident_process`、`residency_posture = sleeping_waiting_for_relation_turn`、`resident_lifecycle_state_ref`、`resident_lifecycle_command_ref` 与 log ref。`resident_lifecycle_command.json` 只作为本机生命周期控制信号，当前只需要 `command=stop`；后台子进程必须通过 `ResidentControlInputStream` 把 stop 转成普通 `/exit`，从而走已有 closeout，而不是由父进程粗暴杀死。`digital life --status` 必须读取同一份 state 并用 PID 探测补上 `pid_alive`，`digital life --stop` 必须写 command file 并等待后台进程完成自我关闭。
+`resident_lifecycle_state.json` 的 `schema_version` 固定为 `resident_lifecycle_state_v0`，至少包含 `run_id`、`status = background_starting / background_active / stop_requested / stopped`、`pid`、`pid_alive`、`resident_sleep_seconds`、`residency_mode = background_resident_process`、`residency_posture = sleeping_waiting_for_relation_turn`、`resident_lifecycle_state_ref`、`resident_lifecycle_command_ref` 与 log ref。`resident_lifecycle_command.json` 只作为本机生命周期控制信号，当前只需要 `command=stop`；后台子进程必须通过 `ResidentControlInputStream` 把 stop 转成普通 `/exit`，从而走已有 closeout，而不是由父进程粗暴杀死。`digital life --status` 必须读取同一份 state 并用 PID 探测补上 `pid_alive`，同时合并 `resident_relation_queue_state.json`、`resident_autonomous_activity_state.json`、`digital_life_waiting_heartbeat.json`、`resident_governance_state.json`、`idle_strategy_state.json` 与 `terminal_life_loop_state.json`，暴露 heartbeat counter、waiting mode、next required action、governance phase、governance attention target、idle probe / next idle action、heartbeat interval 与 terminal current mode。`digital life --stop` 必须写 command file 并等待后台进程完成自我关闭。
 
 后台驻留期间不接收到外部关系话语时，输入流必须返回 `None` 而不是 EOF，使 `idle_refresh_loop.py` 继续刷新 waiting heartbeat。这个相位在 v0 中称为 sleep/rest waiting，不代表主体消失；上下文仍由 `runtime/state/*`、lease history、resident governance、dialogue writeback、background continuity 和 lifecycle state 共同保存。后续如果需要把外部话语投递给后台 resident process，也必须在这条 lifecycle command / queue 证据链上扩展，不能绕开当前生命回合合同。
 

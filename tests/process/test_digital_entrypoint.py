@@ -283,6 +283,10 @@ class DigitalEntrypointTests(unittest.TestCase):
                 self.assertTrue(status_state["pid_alive"])
                 self.assertIn("resident_relation_queue_state", status_state)
                 self.assertIn("resident_autonomous_activity_state", status_state)
+                self.assertIn("resident_waiting_heartbeat", status_state)
+                self.assertIn("resident_governance_state", status_state)
+                self.assertIn("resident_idle_strategy_state", status_state)
+                self.assertIn("resident_terminal_life_loop_state", status_state)
                 self.assertEqual(
                     status_state["resident_relation_queue_state"]["status"],
                     "waiting_for_relation_turn",
@@ -290,6 +294,26 @@ class DigitalEntrypointTests(unittest.TestCase):
                 self.assertGreaterEqual(
                     status_state["resident_autonomous_activity_state"]["activity_count"],
                     5,
+                )
+                self.assertGreaterEqual(
+                    status_state["resident_waiting_heartbeat_counter"],
+                    1,
+                )
+                self.assertEqual(
+                    status_state["resident_next_required_action"],
+                    "await_next_external_relation_turn",
+                )
+                self.assertEqual(
+                    status_state["resident_governance_phase"],
+                    "waiting_heartbeat_active",
+                )
+                self.assertEqual(
+                    status_state["resident_terminal_current_mode"],
+                    status_state["resident_waiting_mode"],
+                )
+                self.assertIn(
+                    status_state["resident_idle_strategy_state_ref"],
+                    status_state["resident_waiting_heartbeat"].values(),
                 )
 
                 said = subprocess.run(

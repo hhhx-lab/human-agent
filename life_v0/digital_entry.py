@@ -99,7 +99,10 @@ def main(argv: list[str] | None = None) -> int:
         receipts_dir = Path(args.receipts)
         terminal_dir = state_dir / "terminal"
         if args.status:
-            result = read_resident_lifecycle_status(terminal_dir=terminal_dir)
+            result = read_resident_lifecycle_status(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
             print(json.dumps(result.state, ensure_ascii=False, indent=2))
             return result.exit_code
         if args.stop:

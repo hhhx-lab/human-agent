@@ -26,6 +26,18 @@ RESIDENT_AUTONOMOUS_ACTIVITY_REF = (
 RESIDENT_AUTONOMOUS_ACTIVITY_STATE_REF = (
     "runtime/state/terminal/resident_autonomous_activity_state.json"
 )
+RESIDENT_WAITING_HEARTBEAT_REF = (
+    "runtime/reports/latest/digital_life_waiting_heartbeat.json"
+)
+RESIDENT_GOVERNANCE_STATE_REF = (
+    "runtime/state/terminal/resident_governance_state.json"
+)
+RESIDENT_IDLE_STRATEGY_STATE_REF = (
+    "runtime/state/terminal/idle_strategy_state.json"
+)
+RESIDENT_TERMINAL_LIFE_LOOP_STATE_REF = (
+    "runtime/state/terminal/terminal_life_loop_state.json"
+)
 RESIDENT_BACKGROUND_LOG_REF = "runtime/logs/digital_life_resident.log"
 
 
@@ -443,7 +455,11 @@ def send_resident_relation_turn(
     return ResidentLifecycleResult(exit_code=0 if response_event else 1, state=state)
 
 
-def read_resident_lifecycle_status(*, terminal_dir: Path) -> ResidentLifecycleResult:
+def read_resident_lifecycle_status(
+    *,
+    terminal_dir: Path,
+    reports_dir: Path | None = None,
+) -> ResidentLifecycleResult:
     state = _read_json_if_exists(terminal_dir / "resident_lifecycle_state.json")
     if not state:
         state = {
@@ -454,6 +470,12 @@ def read_resident_lifecycle_status(*, terminal_dir: Path) -> ResidentLifecycleRe
         }
     pid = _int_or_zero(state.get("pid"))
     state["pid_alive"] = bool(pid and _pid_alive(pid))
+    runtime_root = terminal_dir.parent.parent
+    resolved_reports_dir = (
+        reports_dir.resolve()
+        if reports_dir is not None
+        else runtime_root / "reports" / "latest"
+    )
     queue_state = _read_json_if_exists(terminal_dir / "resident_relation_queue_state.json")
     if queue_state:
         state["resident_relation_queue_state"] = queue_state
@@ -477,6 +499,56 @@ def read_resident_lifecycle_status(*, terminal_dir: Path) -> ResidentLifecycleRe
         )
         state["resident_autonomous_activity_current_cycle"] = autonomous_activity_state.get(
             "current_cycle"
+        )
+    waiting_heartbeat = _read_json_if_exists(
+        resolved_reports_dir / "digital_life_waiting_heartbeat.json"
+    )
+    if waiting_heartbeat:
+        state["resident_waiting_heartbeat"] = waiting_heartbeat
+        state["resident_waiting_heartbeat_ref"] = RESIDENT_WAITING_HEARTBEAT_REF
+        state["resident_waiting_heartbeat_counter"] = waiting_heartbeat.get(
+            "heartbeat_counter"
+        )
+        state["resident_waiting_mode"] = waiting_heartbeat.get("waiting_mode")
+        state["resident_next_required_action"] = waiting_heartbeat.get(
+            "next_required_action"
+        )
+    resident_governance_state = _read_json_if_exists(
+        terminal_dir / "resident_governance_state.json"
+    )
+    if resident_governance_state:
+        state["resident_governance_state"] = resident_governance_state
+        state["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
+        state["resident_governance_phase"] = resident_governance_state.get(
+            "governance_phase"
+        )
+        state["resident_governance_attention_target"] = resident_governance_state.get(
+            "governance_attention_target"
+        )
+        state["resident_background_lineage_state"] = resident_governance_state.get(
+            "resident_background_lineage_state"
+        )
+    idle_strategy_state = _read_json_if_exists(terminal_dir / "idle_strategy_state.json")
+    if idle_strategy_state:
+        state["resident_idle_strategy_state"] = idle_strategy_state
+        state["resident_idle_strategy_state_ref"] = RESIDENT_IDLE_STRATEGY_STATE_REF
+        state["resident_idle_probe_mode"] = idle_strategy_state.get("idle_probe_mode")
+        state["resident_next_idle_action"] = idle_strategy_state.get(
+            "next_idle_action"
+        )
+        state["resident_heartbeat_interval_ms"] = idle_strategy_state.get(
+            "heartbeat_interval_ms"
+        )
+    terminal_life_loop_state = _read_json_if_exists(
+        terminal_dir / "terminal_life_loop_state.json"
+    )
+    if terminal_life_loop_state:
+        state["resident_terminal_life_loop_state"] = terminal_life_loop_state
+        state["resident_terminal_life_loop_state_ref"] = (
+            RESIDENT_TERMINAL_LIFE_LOOP_STATE_REF
+        )
+        state["resident_terminal_current_mode"] = terminal_life_loop_state.get(
+            "current_mode"
         )
     return ResidentLifecycleResult(exit_code=0, state=state)
 
@@ -502,6 +574,10 @@ def _base_lifecycle_state(
         "resident_relation_queue_state_ref": RESIDENT_RELATION_QUEUE_STATE_REF,
         "resident_autonomous_activity_ref": RESIDENT_AUTONOMOUS_ACTIVITY_REF,
         "resident_autonomous_activity_state_ref": RESIDENT_AUTONOMOUS_ACTIVITY_STATE_REF,
+        "resident_waiting_heartbeat_ref": RESIDENT_WAITING_HEARTBEAT_REF,
+        "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
+        "resident_idle_strategy_state_ref": RESIDENT_IDLE_STRATEGY_STATE_REF,
+        "resident_terminal_life_loop_state_ref": RESIDENT_TERMINAL_LIFE_LOOP_STATE_REF,
         "resident_sleep_seconds": resident_sleep_seconds,
         "residency_mode": "background_resident_process",
         "residency_posture": "sleeping_waiting_for_relation_turn",
