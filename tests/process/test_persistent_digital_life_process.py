@@ -5125,6 +5125,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/life_targets/birth_readiness_rollup.json",
                 "runtime/state/life_targets/birth_readiness_stage_gate.json",
             ]
+            queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+            expected_queue_e_birth_repair_refs = [
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/membrane/world_contact_summary.json",
+                "runtime/reports/latest/pain_regret_repair_report.json",
+                queue_e_profile_ref,
+            ]
             idle_strategy_state.update(
                 {
                     "background_resident_governance_explanation_ref": "runtime/reports/latest/digital_life_resident_governance_explanation.json",
@@ -5334,6 +5341,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/growth/relationship_learning_plan.json",
                     "runtime/state/growth/language_learning_plan.json",
                 ],
+                "queue_e_birth_repair_waiting_profile": {
+                    "schema_version": "queue_e_birth_repair_waiting_profile_v0",
+                    "gate_status": "closed",
+                    "profile_ref": queue_e_profile_ref,
+                    "pressure_level": "elevated",
+                    "attention_target": "regret_pressure",
+                    "waiting_posture": "birth_repair_pressure_waiting",
+                    "attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+                    "ref_set": expected_queue_e_birth_repair_refs,
+                },
+                "queue_e_birth_repair_gate_status": "closed",
+                "queue_e_birth_repair_profile_ref": queue_e_profile_ref,
+                "queue_e_birth_repair_pressure_level": "elevated",
+                "queue_e_birth_repair_attention_target": "regret_pressure",
+                "queue_e_birth_repair_waiting_posture": "birth_repair_pressure_waiting",
+                "queue_e_birth_repair_attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+                "queue_e_birth_repair_ref_set": expected_queue_e_birth_repair_refs,
             }
 
             result = run_live_turn_cycle(
@@ -5743,10 +5767,45 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/growth/language_learning_plan.json",
                 ],
             )
+            self.assertEqual(
+                result.last_life_turn["queue_e_birth_repair_profile_ref"],
+                queue_e_profile_ref,
+            )
+            self.assertEqual(
+                result.last_life_turn["queue_e_birth_repair_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                result.last_life_turn["queue_e_birth_repair_attention_target"],
+                "regret_pressure",
+            )
+            self.assertEqual(
+                result.last_life_turn["queue_e_birth_repair_waiting_posture"],
+                "birth_repair_pressure_waiting",
+            )
+            self.assertEqual(
+                result.last_life_turn["queue_e_birth_repair_attention_reason"],
+                "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+            )
+            self.assertEqual(
+                result.last_life_turn["queue_e_birth_repair_refs"],
+                expected_queue_e_birth_repair_refs,
+            )
+            self.assertEqual(
+                result.last_life_turn["queue_e_birth_repair_evidence_refs"],
+                expected_queue_e_birth_repair_refs,
+            )
             self.assertIn(
                 "累计离线学习已经延续到第3代",
                 result.last_life_turn["utterance"],
             )
+            self.assertIn(
+                "后台出生修复姿态为birth_repair_pressure_waiting",
+                result.emitted_output,
+            )
+            self.assertIn("后台出生修复压力为elevated", result.emitted_output)
+            self.assertIn("后台出生修复焦点指向regret_pressure", result.emitted_output)
+            self.assertIn("后台出生修复证据保留4条", result.emitted_output)
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
             self.assertEqual(
@@ -5887,6 +5946,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/life_targets/birth_readiness_stage_gate.json",
                 "runtime/state/action/responsibility_loop_state.json",
                 "runtime/state/dream/offline_consolidation_frame.json",
+                queue_e_profile_ref,
             ]:
                 self.assertIn(
                     ref,
@@ -5916,6 +5976,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/growth/language_learning_plan.json",
                 ],
             )
+            self.assertEqual(
+                dialogue_writeback_bundle["queue_e_birth_repair_refs"],
+                expected_queue_e_birth_repair_refs,
+            )
+            for ref in expected_queue_e_birth_repair_refs:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle["resident_background_lineage_refs"],
+                )
             self.assertEqual(
                 dialogue_writeback_bundle[
                     "resident_background_lineage_offline_learning_refs"
@@ -6053,6 +6122,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["offline_learning_cumulative_attention_target"],
                 "relationship_learning_plan",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_profile_ref"],
+                queue_e_profile_ref,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_attention_target"],
+                "regret_pressure",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_waiting_posture"],
+                "birth_repair_pressure_waiting",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_refs"],
+                dialogue_writeback_bundle["queue_e_birth_repair_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_evidence_refs"],
+                expected_queue_e_birth_repair_refs,
             )
 
     def test_live_turn_cycle_organ_recovers_from_response_exception(self):
@@ -11117,6 +11210,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     },
                 },
             }
+            queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+            expected_queue_e_birth_repair_refs = [
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/membrane/world_contact_summary.json",
+                "runtime/reports/latest/pain_regret_repair_report.json",
+                queue_e_profile_ref,
+            ]
+            terminal_life_loop_state.update(
+                {
+                    "queue_e_birth_repair_waiting_profile": {
+                        "schema_version": "queue_e_birth_repair_waiting_profile_v0",
+                        "gate_status": "closed",
+                        "profile_ref": queue_e_profile_ref,
+                        "pressure_level": "elevated",
+                        "attention_target": "regret_pressure",
+                        "waiting_posture": "birth_repair_pressure_waiting",
+                        "attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+                        "ref_set": expected_queue_e_birth_repair_refs,
+                    },
+                    "queue_e_birth_repair_gate_status": "closed",
+                    "queue_e_birth_repair_profile_ref": queue_e_profile_ref,
+                    "queue_e_birth_repair_pressure_level": "elevated",
+                    "queue_e_birth_repair_attention_target": "regret_pressure",
+                    "queue_e_birth_repair_waiting_posture": "birth_repair_pressure_waiting",
+                    "queue_e_birth_repair_attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+                    "queue_e_birth_repair_ref_set": expected_queue_e_birth_repair_refs,
+                }
+            )
             expected_background_offline_learning_refs = [
                 "runtime/state/growth/relationship_learning_plan.json",
                 "runtime/state/growth/language_learning_plan.json",
@@ -11545,6 +11666,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 expected_background_dream_wake_refs,
             )
             self.assertEqual(
+                dialogue_writeback_bundle["queue_e_birth_repair_refs"],
+                expected_queue_e_birth_repair_refs,
+            )
+            for ref in expected_queue_e_birth_repair_refs:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle["resident_background_lineage_refs"],
+                )
+            self.assertEqual(
                 resumed_dialogue_packet[
                     "resident_background_lineage_last_live_semantic_focus"
                 ],
@@ -11615,6 +11745,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["live_repair_trigger_candidates"],
                 ["repair-language-v0-0001"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_profile_ref"],
+                queue_e_profile_ref,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_attention_target"],
+                "regret_pressure",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_waiting_posture"],
+                "birth_repair_pressure_waiting",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_refs"],
+                dialogue_writeback_bundle["queue_e_birth_repair_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_birth_repair_evidence_refs"],
+                expected_queue_e_birth_repair_refs,
             )
             self.assertEqual(
                 persisted_terminal_loop["live_language_turn_refs"],

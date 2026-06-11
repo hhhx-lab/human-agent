@@ -28,6 +28,7 @@ from .dialogue_events import (
     build_background_trait_convergence_payload,
     build_offline_learning_cumulative_payload,
     build_prediction_write_gate_payload,
+    build_queue_e_birth_repair_payload,
     build_resident_background_lineage_payload,
 )
 
@@ -307,6 +308,17 @@ def write_resident_turn_writeback(
             [],
         )
     )
+    offline_learning_cumulative_refs = list(
+        offline_learning_cumulative_payload.get(
+            "offline_learning_cumulative_evidence_refs", []
+        )
+    )
+    queue_e_birth_repair_payload = build_queue_e_birth_repair_payload(
+        terminal_life_loop_state
+    )
+    queue_e_birth_repair_refs = list(
+        queue_e_birth_repair_payload.get("queue_e_birth_repair_refs", [])
+    )
     resident_background_lineage_refs = _dedupe_refs(
         resident_background_lineage_refs
         + resident_background_lineage_language_refs
@@ -314,11 +326,7 @@ def write_resident_turn_writeback(
         + resident_background_lineage_identity_consciousness_birth_refs
         + resident_background_lineage_offline_learning_refs
         + resident_background_lineage_dream_wake_refs
-    )
-    offline_learning_cumulative_refs = list(
-        offline_learning_cumulative_payload.get(
-            "offline_learning_cumulative_evidence_refs", []
-        )
+        + queue_e_birth_repair_refs
     )
     prediction_write_gate_payload = build_prediction_write_gate_payload(
         terminal_life_loop_state=terminal_life_loop_state,
@@ -390,6 +398,7 @@ def write_resident_turn_writeback(
             cross_wake_trait_drift_stabilized_names
         ),
         resident_background_lineage_refs=resident_background_lineage_refs,
+        queue_e_birth_repair_refs=queue_e_birth_repair_refs,
         resident_background_lineage_trait_drift_update_mode_summary=(
             resident_background_lineage_trait_drift_update_mode_summary
         ),
@@ -477,6 +486,18 @@ def write_resident_turn_writeback(
             resumed_dialogue_packet["offline_learning_cumulative_refs"] = (
                 offline_learning_cumulative_refs
             )
+    if queue_e_birth_repair_payload:
+        resumed_dialogue_packet.update(
+            {
+                key: value
+                for key, value in queue_e_birth_repair_payload.items()
+                if key != "queue_e_birth_repair_waiting_profile"
+            }
+        )
+    if resident_background_lineage_refs:
+        resumed_dialogue_packet["resident_background_lineage_evidence_refs"] = (
+            resident_background_lineage_refs
+        )
     if prediction_write_gate_payload:
         resumed_dialogue_packet.update(prediction_write_gate_payload)
     if continuity_refresh is not None:

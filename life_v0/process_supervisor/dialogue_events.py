@@ -83,6 +83,7 @@ def build_life_turn_event(
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
     )
+    event.update(build_queue_e_birth_repair_payload(terminal_life_loop_state))
     event.update(build_background_trait_convergence_payload(terminal_life_loop_state))
     event.update(build_resident_background_lineage_payload(terminal_life_loop_state))
     event.update(build_offline_learning_cumulative_payload(terminal_life_loop_state))
@@ -608,6 +609,82 @@ def build_offline_learning_cumulative_payload(
     if ref_set:
         payload["offline_learning_cumulative_ref_set"] = ref_set
         payload["offline_learning_cumulative_evidence_refs"] = ref_set
+    return payload
+
+
+def build_queue_e_birth_repair_payload(
+    terminal_life_loop_state: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not terminal_life_loop_state:
+        return {}
+    profile = terminal_life_loop_state.get("queue_e_birth_repair_waiting_profile")
+    if not isinstance(profile, dict):
+        profile = {}
+
+    gate_status = (
+        terminal_life_loop_state.get("queue_e_birth_repair_gate_status")
+        or profile.get("gate_status")
+    )
+    profile_ref = (
+        terminal_life_loop_state.get("queue_e_birth_repair_profile_ref")
+        or profile.get("profile_ref")
+    )
+    pressure_level = (
+        terminal_life_loop_state.get("queue_e_birth_repair_pressure_level")
+        or profile.get("pressure_level")
+    )
+    attention_target = (
+        terminal_life_loop_state.get("queue_e_birth_repair_attention_target")
+        or profile.get("attention_target")
+    )
+    waiting_posture = (
+        terminal_life_loop_state.get("queue_e_birth_repair_waiting_posture")
+        or profile.get("waiting_posture")
+    )
+    attention_reason = (
+        terminal_life_loop_state.get("queue_e_birth_repair_attention_reason")
+        or profile.get("attention_reason")
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(terminal_life_loop_state.get("queue_e_birth_repair_ref_set"))
+        + _string_list(profile.get("ref_set"))
+    )
+    if isinstance(profile_ref, str) and profile_ref:
+        ref_set = _dedupe_string_list([*ref_set, profile_ref])
+
+    if not any(
+        [
+            profile,
+            gate_status,
+            profile_ref,
+            pressure_level,
+            attention_target,
+            waiting_posture,
+            attention_reason,
+            ref_set,
+        ]
+    ):
+        return {}
+
+    payload: dict[str, Any] = {}
+    if profile:
+        payload["queue_e_birth_repair_waiting_profile"] = dict(profile)
+    if gate_status:
+        payload["queue_e_birth_repair_gate_status"] = str(gate_status)
+    if profile_ref:
+        payload["queue_e_birth_repair_profile_ref"] = str(profile_ref)
+    if pressure_level:
+        payload["queue_e_birth_repair_pressure_level"] = str(pressure_level)
+    if attention_target:
+        payload["queue_e_birth_repair_attention_target"] = str(attention_target)
+    if waiting_posture:
+        payload["queue_e_birth_repair_waiting_posture"] = str(waiting_posture)
+    if attention_reason:
+        payload["queue_e_birth_repair_attention_reason"] = str(attention_reason)
+    if ref_set:
+        payload["queue_e_birth_repair_ref_set"] = ref_set
+        payload["queue_e_birth_repair_refs"] = ref_set
+        payload["queue_e_birth_repair_evidence_refs"] = ref_set
     return payload
 
 
