@@ -179,6 +179,13 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_state_merge_long_term_change_count",
     "background_state_merge_long_term_change_families",
     "background_state_merge_long_term_change_refs",
+    "background_schema_cross_file_logic_ref",
+    "background_schema_run_manifest_ref",
+    "background_life_constraint_refs",
+    "background_queue_e_cross_layer_gate_status",
+    "background_life_constraint_waiting_posture",
+    "background_life_constraint_attention_target",
+    "background_life_constraint_attention_reason",
     "schema_cross_file_logic_ref",
     "schema_run_manifest_ref",
     "life_constraint_refs",
@@ -331,9 +338,11 @@ def decide_idle_strategy(
         memory_write_gate=memory_write_gate,
         state_merge_guard=state_merge_guard,
     )
+    background_continuity_profile = dict(background_continuity_profile or {})
     life_constraint_profile = _life_constraint_waiting_profile(
         schema_cross_file_logic=schema_cross_file_logic,
         schema_run_manifest=schema_run_manifest,
+        background_continuity_profile=background_continuity_profile,
     )
     queue_e_birth_repair_waiting_profile = _queue_e_birth_repair_waiting_profile(
         schema_cross_file_logic=schema_cross_file_logic,
@@ -355,7 +364,6 @@ def decide_idle_strategy(
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
     )
-    background_continuity_profile = dict(background_continuity_profile or {})
     live_language_presence_profile = _live_language_presence_profile(
         terminal_life_loop_state=terminal_life_loop_state,
         background_continuity_profile=background_continuity_profile,
@@ -477,10 +485,18 @@ def decide_idle_strategy(
     schema_cross_file_logic_runtime_ref = _ref_if_present(
         payload=schema_cross_file_logic,
         ref=schema_cross_file_logic_ref or SCHEMA_CROSS_FILE_LOGIC_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_schema_cross_file_logic_ref",
+        "schema_cross_file_logic_ref",
     )
     schema_run_manifest_runtime_ref = _ref_if_present(
         payload=schema_run_manifest,
         ref=schema_run_manifest_ref or SCHEMA_RUN_MANIFEST_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_schema_run_manifest_ref",
+        "schema_run_manifest_ref",
     )
     workspace_frame_runtime_ref = _ref_if_present(
         payload=workspace_frame,
@@ -1690,22 +1706,30 @@ def _life_constraint_waiting_profile(
     *,
     schema_cross_file_logic: dict[str, Any] | None,
     schema_run_manifest: dict[str, Any] | None,
+    background_continuity_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     cross_file_logic = schema_cross_file_logic or {}
     run_manifest = schema_run_manifest or {}
-    gate_status = dict(
+    background = background_continuity_profile or {}
+    current_gate_status = dict(
         cross_file_logic.get("queue_e_cross_layer_gate_status")
         or run_manifest.get("queue_e_cross_layer_gate_status")
         or {}
     )
-    refs = list(
-        dict.fromkeys(
-            [
-                *list(cross_file_logic.get("life_constraint_refs", [])),
-                *list(run_manifest.get("queue_e_cross_layer_refs", [])),
-            ]
-        )
+    background_gate_status = _dict_or_empty(
+        background.get("background_queue_e_cross_layer_gate_status")
+        or background.get("queue_e_cross_layer_gate_status")
     )
+    gate_status = {**background_gate_status, **current_gate_status}
+    current_refs = _dedupe_string_list(
+        _string_list(cross_file_logic.get("life_constraint_refs"))
+        + _string_list(run_manifest.get("queue_e_cross_layer_refs"))
+    )
+    background_refs = _dedupe_string_list(
+        _string_list(background.get("background_life_constraint_refs"))
+        + _string_list(background.get("life_constraint_refs"))
+    )
+    refs = _dedupe_string_list(background_refs + current_refs)
     blocking_gates = [
         gate
         for gate, status in gate_status.items()
@@ -1718,6 +1742,7 @@ def _life_constraint_waiting_profile(
         and isinstance(status, str)
         and status.startswith("deferred_until_")
     ]
+    has_current_signal = bool(current_refs or current_gate_status)
 
     if blocking_gates:
         posture = "schema_blocked_waiting"
@@ -1731,6 +1756,22 @@ def _life_constraint_waiting_profile(
             if deferred_gates
             else "queue_e_cross_layer_gate_closed"
         )
+        if not has_current_signal:
+            posture = str(
+                background.get("background_life_constraint_waiting_posture")
+                or background.get("life_constraint_waiting_posture")
+                or posture
+            )
+            target = str(
+                background.get("background_life_constraint_attention_target")
+                or background.get("life_constraint_attention_target")
+                or target
+            )
+            reason = str(
+                background.get("background_life_constraint_attention_reason")
+                or background.get("life_constraint_attention_reason")
+                or reason
+            )
     else:
         posture = "schema_unobserved_waiting"
         target = "waiting_presence_maintenance"
@@ -1978,6 +2019,17 @@ def _ref_if_present(*, payload: dict[str, Any] | None, ref: str) -> str | None:
     if not payload:
         return None
     return ref
+
+
+def _background_ref(
+    background_continuity_profile: dict[str, Any],
+    *keys: str,
+) -> str | None:
+    for key in keys:
+        value = background_continuity_profile.get(key)
+        if value:
+            return str(value)
+    return None
 
 
 def _long_horizon_language_refs(

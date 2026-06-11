@@ -26,6 +26,10 @@ BACKGROUND_PERSISTENT_PROCESS_REPORT_REF = (
 BACKGROUND_IDLE_HEARTBEAT_TRACE_REF = (
     "runtime/state/terminal/idle_heartbeat_trace.jsonl"
 )
+BACKGROUND_SCHEMA_CROSS_FILE_LOGIC_REF = (
+    "runtime/state/schema_runner/cross_file_logic.json"
+)
+BACKGROUND_SCHEMA_RUN_MANIFEST_REF = "runtime/state/schema_runner/run_manifest.json"
 
 
 def load_background_continuity_profile(
@@ -401,12 +405,85 @@ def load_background_continuity_profile(
             )
         )
     )
+    schema_cross_file_logic_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("schema_cross_file_logic_ref", "background_schema_cross_file_logic_ref"),
+    )
+    schema_run_manifest_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("schema_run_manifest_ref", "background_schema_run_manifest_ref"),
+    )
+    life_constraint_refs = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=("life_constraint_refs", "background_life_constraint_refs"),
+        )
+    )
+    queue_e_cross_layer_gate_status = _first_dict(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_cross_layer_gate_status",
+            "background_queue_e_cross_layer_gate_status",
+        ),
+    )
+    life_constraint_waiting_posture = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "life_constraint_waiting_posture",
+            "background_life_constraint_waiting_posture",
+        ),
+    )
+    life_constraint_attention_target = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "life_constraint_attention_target",
+            "background_life_constraint_attention_target",
+        ),
+    )
+    life_constraint_attention_reason = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "life_constraint_attention_reason",
+            "background_life_constraint_attention_reason",
+        ),
+    )
     if live_language_turn_refs:
         ref_set = _dedupe_list(ref_set + live_language_turn_refs)
     if state_merge_guard_ref:
         ref_set = _dedupe_list(ref_set + [str(state_merge_guard_ref)])
     if state_merge_long_term_change_refs:
         ref_set = _dedupe_list(ref_set + state_merge_long_term_change_refs)
+    if schema_cross_file_logic_ref:
+        ref_set = _dedupe_list(ref_set + [str(schema_cross_file_logic_ref)])
+    elif queue_e_cross_layer_gate_status or life_constraint_refs:
+        ref_set = _dedupe_list(ref_set + [BACKGROUND_SCHEMA_CROSS_FILE_LOGIC_REF])
+    if schema_run_manifest_ref:
+        ref_set = _dedupe_list(ref_set + [str(schema_run_manifest_ref)])
+    elif queue_e_cross_layer_gate_status or life_constraint_refs:
+        ref_set = _dedupe_list(ref_set + [BACKGROUND_SCHEMA_RUN_MANIFEST_REF])
+    if life_constraint_refs:
+        ref_set = _dedupe_list(ref_set + life_constraint_refs)
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
@@ -502,6 +579,30 @@ def load_background_continuity_profile(
     if state_merge_long_term_change_refs:
         profile["background_state_merge_long_term_change_refs"] = (
             state_merge_long_term_change_refs
+        )
+    if schema_cross_file_logic_ref:
+        profile["background_schema_cross_file_logic_ref"] = str(
+            schema_cross_file_logic_ref
+        )
+    if schema_run_manifest_ref:
+        profile["background_schema_run_manifest_ref"] = str(schema_run_manifest_ref)
+    if life_constraint_refs:
+        profile["background_life_constraint_refs"] = life_constraint_refs
+    if queue_e_cross_layer_gate_status:
+        profile["background_queue_e_cross_layer_gate_status"] = (
+            queue_e_cross_layer_gate_status
+        )
+    if life_constraint_waiting_posture:
+        profile["background_life_constraint_waiting_posture"] = str(
+            life_constraint_waiting_posture
+        )
+    if life_constraint_attention_target:
+        profile["background_life_constraint_attention_target"] = str(
+            life_constraint_attention_target
+        )
+    if life_constraint_attention_reason:
+        profile["background_life_constraint_attention_reason"] = str(
+            life_constraint_attention_reason
         )
     if resident_governance_state:
         profile["background_resident_governance_state_ref"] = (
@@ -653,6 +754,37 @@ def _dict_or_empty(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         return {}
     return value
+
+
+def _first_present(
+    *payloads: dict[str, Any],
+    keys: tuple[str, ...],
+) -> Any:
+    for payload in payloads:
+        for key in keys:
+            value = payload.get(key)
+            if value:
+                return value
+    return None
+
+
+def _first_dict(
+    *payloads: dict[str, Any],
+    keys: tuple[str, ...],
+) -> dict[str, Any]:
+    value = _first_present(*payloads, keys=keys)
+    return _dict_or_empty(value)
+
+
+def _collect_lists(
+    *payloads: dict[str, Any],
+    keys: tuple[str, ...],
+) -> list[str]:
+    values: list[str] = []
+    for payload in payloads:
+        for key in keys:
+            values.extend(_list_or_empty(payload.get(key)))
+    return values
 
 
 def _background_live_language_presence_profile(

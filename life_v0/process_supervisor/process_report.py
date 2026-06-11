@@ -401,6 +401,24 @@ def write_process_report_bundle(
         "queue_e_birth_repair_ref_set": list(
             idle_governance.get("queue_e_birth_repair_ref_set", [])
         ),
+        "schema_cross_file_logic_ref": idle_governance.get(
+            "schema_cross_file_logic_ref"
+        ),
+        "schema_run_manifest_ref": idle_governance.get("schema_run_manifest_ref"),
+        "life_constraint_refs": list(idle_governance.get("life_constraint_refs", [])),
+        "queue_e_cross_layer_gate_status": idle_governance.get(
+            "queue_e_cross_layer_gate_status",
+            {},
+        ),
+        "life_constraint_waiting_posture": idle_governance.get(
+            "life_constraint_waiting_posture"
+        ),
+        "life_constraint_attention_target": idle_governance.get(
+            "life_constraint_attention_target"
+        ),
+        "life_constraint_attention_reason": idle_governance.get(
+            "life_constraint_attention_reason"
+        ),
         "prediction_write_gate_refs": prediction_write_gate_refs,
         **state_merge_profile,
     }
@@ -455,6 +473,7 @@ def write_process_report_bundle(
         ),
         schema_cross_file_logic_ref=idle_governance.get("schema_cross_file_logic_ref"),
         schema_run_manifest_ref=idle_governance.get("schema_run_manifest_ref"),
+        life_constraint_refs=idle_governance.get("life_constraint_refs", []),
         queue_e_birth_repair_refs=idle_governance.get(
             "queue_e_birth_repair_ref_set",
             [],
@@ -521,6 +540,7 @@ def build_process_receipt(
     state_merge_long_term_change_refs: list[str] | None = None,
     schema_cross_file_logic_ref: str | None = None,
     schema_run_manifest_ref: str | None = None,
+    life_constraint_refs: list[str] | None = None,
     queue_e_birth_repair_refs: list[str] | None = None,
     idle_heartbeat_trace_ref: str | None = None,
     workspace_frame_ref: str | None = None,
@@ -551,6 +571,7 @@ def build_process_receipt(
         state_dir / "prediction" / "belief_state_frame.json",
         state_dir / "prediction" / "prediction_error_field.json",
         state_dir / "prediction" / "active_sampling_plan.json",
+        state_dir / "action" / "action_candidate_set.json",
         state_dir / "schema_runner" / "cross_file_logic.json",
         state_dir / "schema_runner" / "run_manifest.json",
         state_dir / "life_targets" / "queue_e_birth_repair_profile.json",
@@ -661,6 +682,7 @@ def build_process_receipt(
                 self_model_ref,
                 *(cross_wake_trait_convergence_refs or []),
                 *(state_merge_long_term_change_refs or []),
+                *(life_constraint_refs or []),
                 *(queue_e_birth_repair_refs or []),
             ]
             if ref

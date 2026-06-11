@@ -1571,6 +1571,85 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "closed",
         )
 
+    def test_idle_strategy_restores_life_constraints_from_background_continuity(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        expected_life_constraint_refs = [
+            "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+        ]
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-background-life-constraint",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            replay_cue_bundle={},
+            offline_consolidation_frame=None,
+            growth_patch_candidate_queue=None,
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_generation": 2,
+                "background_schema_cross_file_logic_ref": "runtime/state/schema_runner/cross_file_logic.json",
+                "background_schema_run_manifest_ref": "runtime/state/schema_runner/run_manifest.json",
+                "background_life_constraint_refs": expected_life_constraint_refs,
+                "background_queue_e_cross_layer_gate_status": {
+                    "value_orientation_gate": "closed",
+                    "consciousness_probe_gate": "closed",
+                    "body_affect_gate": "deferred_until_s06",
+                    "language_relationship_gate": "closed",
+                },
+                "background_life_constraint_waiting_posture": "schema_guarded_waiting",
+                "background_life_constraint_attention_target": "life_constraint_profile",
+                "background_life_constraint_attention_reason": "queue_e_cross_layer_gate_has_deferred_life_constraints",
+                "background_continuity_ref_set": [
+                    "runtime/state/terminal/resident_governance_state.json",
+                    "runtime/state/schema_runner/cross_file_logic.json",
+                    "runtime/state/schema_runner/run_manifest.json",
+                    *expected_life_constraint_refs,
+                ],
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(
+            idle_strategy["schema_cross_file_logic_ref"],
+            "runtime/state/schema_runner/cross_file_logic.json",
+        )
+        self.assertEqual(
+            idle_strategy["schema_run_manifest_ref"],
+            "runtime/state/schema_runner/run_manifest.json",
+        )
+        self.assertEqual(idle_strategy["life_constraint_refs"], expected_life_constraint_refs)
+        self.assertEqual(
+            idle_strategy["queue_e_cross_layer_gate_status"]["body_affect_gate"],
+            "deferred_until_s06",
+        )
+        self.assertEqual(
+            idle_strategy["life_constraint_waiting_posture"],
+            "schema_guarded_waiting",
+        )
+        self.assertEqual(
+            idle_strategy["life_constraint_attention_target"],
+            "life_constraint_profile",
+        )
+        self.assertEqual(
+            idle_strategy["life_constraint_attention_reason"],
+            "queue_e_cross_layer_gate_has_deferred_life_constraints",
+        )
+        self.assertEqual(
+            idle_strategy["background_life_constraint_refs"],
+            expected_life_constraint_refs,
+        )
+
     def test_idle_strategy_carries_queue_f_birth_and_consciousness_into_waiting_governance(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
 
@@ -3287,6 +3366,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/language/expression_plan.json",
                         ],
                     },
+                    "schema_cross_file_logic_ref": "runtime/state/schema_runner/cross_file_logic.json",
+                    "schema_run_manifest_ref": "runtime/state/schema_runner/run_manifest.json",
+                    "life_constraint_refs": [
+                        "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                        "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    ],
+                    "queue_e_cross_layer_gate_status": {
+                        "value_orientation_gate": "closed",
+                        "consciousness_probe_gate": "closed",
+                        "body_affect_gate": "deferred_until_s06",
+                        "language_relationship_gate": "closed",
+                    },
+                    "life_constraint_waiting_posture": "schema_guarded_waiting",
+                    "life_constraint_attention_target": "life_constraint_profile",
+                    "life_constraint_attention_reason": "queue_e_cross_layer_gate_has_deferred_life_constraints",
                 },
             )
             (terminal_dir / "idle_heartbeat_trace.jsonl").write_text(
@@ -3512,6 +3606,40 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 profile["background_state_merge_long_term_change_refs"],
                 expected_state_merge_change_refs,
             )
+            expected_life_constraint_refs = [
+                "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+            ]
+            self.assertEqual(
+                profile["background_schema_cross_file_logic_ref"],
+                "runtime/state/schema_runner/cross_file_logic.json",
+            )
+            self.assertEqual(
+                profile["background_schema_run_manifest_ref"],
+                "runtime/state/schema_runner/run_manifest.json",
+            )
+            self.assertEqual(
+                profile["background_life_constraint_refs"],
+                expected_life_constraint_refs,
+            )
+            self.assertEqual(
+                profile["background_queue_e_cross_layer_gate_status"][
+                    "body_affect_gate"
+                ],
+                "deferred_until_s06",
+            )
+            self.assertEqual(
+                profile["background_life_constraint_waiting_posture"],
+                "schema_guarded_waiting",
+            )
+            self.assertEqual(
+                profile["background_life_constraint_attention_target"],
+                "life_constraint_profile",
+            )
+            self.assertEqual(
+                profile["background_life_constraint_attention_reason"],
+                "queue_e_cross_layer_gate_has_deferred_life_constraints",
+            )
             self.assertIn(
                 "runtime/state/terminal/resident_governance_state.json",
                 profile["background_continuity_ref_set"],
@@ -3521,6 +3649,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 profile["background_continuity_ref_set"],
             )
             for ref in expected_state_merge_change_refs:
+                self.assertIn(ref, profile["background_continuity_ref_set"])
+            self.assertIn(
+                "runtime/state/schema_runner/cross_file_logic.json",
+                profile["background_continuity_ref_set"],
+            )
+            self.assertIn(
+                "runtime/state/schema_runner/run_manifest.json",
+                profile["background_continuity_ref_set"],
+            )
+            for ref in expected_life_constraint_refs:
                 self.assertIn(ref, profile["background_continuity_ref_set"])
             self.assertIn(
                 "runtime/state/language/language_percept_frame.json",
@@ -4111,6 +4249,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             background_convergence_history = self._read_json(
                 paths["terminal_state"] / "background_convergence_history.json"
             )
+            expected_life_constraint_refs = [
+                "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                "runtime/state/direction/value_orientation.json",
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+                "runtime/state/language/expression_plan.json",
+            ]
 
             self.assertEqual(idle_strategy["background_continuity_mode"], "closed_process_carryover")
             self.assertEqual(idle_strategy["background_carryover_generation"], 1)
@@ -4267,6 +4411,54 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_state["background_convergence_history_ref"],
                 "runtime/state/terminal/background_convergence_history.json",
             )
+            self.assertEqual(
+                idle_strategy["background_schema_cross_file_logic_ref"],
+                "runtime/state/schema_runner/cross_file_logic.json",
+            )
+            self.assertEqual(
+                idle_strategy["background_schema_run_manifest_ref"],
+                "runtime/state/schema_runner/run_manifest.json",
+            )
+            self.assertEqual(
+                idle_strategy["background_life_constraint_refs"],
+                expected_life_constraint_refs,
+            )
+            self.assertEqual(
+                idle_strategy["life_constraint_refs"],
+                expected_life_constraint_refs,
+            )
+            self.assertEqual(
+                idle_strategy["queue_e_cross_layer_gate_status"][
+                    "body_affect_gate"
+                ],
+                "deferred_until_s06",
+            )
+            self.assertEqual(
+                idle_strategy["life_constraint_waiting_posture"],
+                "schema_guarded_waiting",
+            )
+            self.assertEqual(
+                idle_strategy["life_constraint_attention_target"],
+                "life_constraint_profile",
+            )
+            self.assertEqual(
+                idle_strategy["life_constraint_attention_reason"],
+                "queue_e_cross_layer_gate_has_deferred_life_constraints",
+            )
+            self.assertEqual(
+                resident_governance_state["background_life_constraint_refs"],
+                expected_life_constraint_refs,
+            )
+            self.assertEqual(
+                resident_governance_state["life_constraint_refs"],
+                expected_life_constraint_refs,
+            )
+            for ref in [
+                "runtime/state/schema_runner/cross_file_logic.json",
+                "runtime/state/schema_runner/run_manifest.json",
+                *expected_life_constraint_refs,
+            ]:
+                self.assertIn(ref, idle_strategy["background_continuity_ref_set"])
             self.assertEqual(
                 resident_governance_state["background_trait_convergence_history_focus"],
                 idle_strategy["background_trait_convergence_history_focus"],
@@ -7060,6 +7252,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "queue_e_repair_modulation_refs",
                 "relationship_memory_offline_refs",
             ]
+            expected_life_constraint_refs = [
+                "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+            ]
 
             self.assertEqual(result.report["run_id"], "process-report-organ")
             self.assertEqual(
@@ -8219,6 +8415,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             signal_dir = state_dir / "signal"
             prediction_dir = state_dir / "prediction"
             memory_dir = state_dir / "memory"
+            schema_runner_dir = state_dir / "schema_runner"
+            consciousness_dir = state_dir / "consciousness"
             terminal_dir.mkdir(parents=True, exist_ok=True)
             language_dir.mkdir(parents=True, exist_ok=True)
             relationship_dir.mkdir(parents=True, exist_ok=True)
@@ -8228,6 +8426,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             signal_dir.mkdir(parents=True, exist_ok=True)
             prediction_dir.mkdir(parents=True, exist_ok=True)
             memory_dir.mkdir(parents=True, exist_ok=True)
+            schema_runner_dir.mkdir(parents=True, exist_ok=True)
+            consciousness_dir.mkdir(parents=True, exist_ok=True)
             reports_dir.mkdir(parents=True, exist_ok=True)
             receipts_dir.mkdir(parents=True, exist_ok=True)
 
@@ -8317,6 +8517,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "runtime/state/growth/relationship_learning_plan.json",
                         "runtime/state/growth/language_learning_plan.json",
                     ],
+                    "schema_cross_file_logic_ref": "runtime/state/schema_runner/cross_file_logic.json",
+                    "schema_run_manifest_ref": "runtime/state/schema_runner/run_manifest.json",
+                    "life_constraint_refs": [
+                        "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                        "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    ],
+                    "queue_e_cross_layer_gate_status": {
+                        "value_orientation_gate": "closed",
+                        "consciousness_probe_gate": "closed",
+                        "body_affect_gate": "deferred_until_s06",
+                        "language_relationship_gate": "closed",
+                    },
+                    "life_constraint_waiting_posture": "schema_guarded_waiting",
+                    "life_constraint_attention_target": "life_constraint_profile",
+                    "life_constraint_attention_reason": "queue_e_cross_layer_gate_has_deferred_life_constraints",
                 },
             )
             (terminal_dir / "idle_heartbeat_trace.jsonl").write_text(
@@ -8377,6 +8592,49 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self._write_json(
                 state_dir / "action" / "responsibility_loop_state.json",
                 {"schema_version": "responsibility_loop_state_v0"},
+            )
+            self._write_json(
+                state_dir / "action" / "action_candidate_set.json",
+                {
+                    "schema_version": "action_candidate_set_v0",
+                    "life_constraint_profile": {
+                        "value_orientation_ref": "runtime/state/life_targets/value_orientation.json",
+                        "consciousness_probe_ref": "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    },
+                },
+            )
+            self._write_json(
+                consciousness_dir / "consciousness_probe_bundle.json",
+                {"schema_version": "consciousness_probe_bundle_v0"},
+            )
+            self._write_json(
+                schema_runner_dir / "cross_file_logic.json",
+                {
+                    "schema_version": "cross_file_logic_v0",
+                    "life_constraint_refs": [
+                        "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                        "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    ],
+                    "queue_e_cross_layer_gate_status": {
+                        "value_orientation_gate": "closed",
+                        "consciousness_probe_gate": "closed",
+                        "body_affect_gate": "deferred_until_s06",
+                        "language_relationship_gate": "closed",
+                    },
+                },
+            )
+            self._write_json(
+                schema_runner_dir / "run_manifest.json",
+                {
+                    "schema_version": "schema_runner_run_manifest_v0",
+                    "queue_e_cross_layer_refs": [
+                        "runtime/state/action/action_candidate_set.json#life_constraint_profile"
+                    ],
+                    "queue_e_cross_layer_gate_status": {
+                        "consciousness_probe_gate": "closed",
+                        "body_affect_gate": "deferred_until_s06",
+                    },
+                },
             )
             self._write_json(
                 signal_dir / "signal_media_runtime.json",
@@ -8559,6 +8817,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "queue_e_repair_modulation_refs",
                 "relationship_memory_offline_refs",
             ]
+            expected_life_constraint_refs = [
+                "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+            ]
 
             self.assertEqual(
                 result.persistent_process_artifacts.state["run_id"],
@@ -8705,6 +8967,36 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_snapshot,
                 resident_governance_report,
             ):
+                self.assertEqual(
+                    artifact["schema_cross_file_logic_ref"],
+                    "runtime/state/schema_runner/cross_file_logic.json",
+                )
+                self.assertEqual(
+                    artifact["schema_run_manifest_ref"],
+                    "runtime/state/schema_runner/run_manifest.json",
+                )
+                self.assertEqual(
+                    artifact["life_constraint_refs"],
+                    expected_life_constraint_refs,
+                )
+                self.assertEqual(
+                    artifact["queue_e_cross_layer_gate_status"][
+                        "body_affect_gate"
+                    ],
+                    "deferred_until_s06",
+                )
+                self.assertEqual(
+                    artifact["life_constraint_waiting_posture"],
+                    "schema_guarded_waiting",
+                )
+                self.assertEqual(
+                    artifact["life_constraint_attention_target"],
+                    "life_constraint_profile",
+                )
+                self.assertEqual(
+                    artifact["life_constraint_attention_reason"],
+                    "queue_e_cross_layer_gate_has_deferred_life_constraints",
+                )
                 self.assertEqual(
                     artifact["cross_wake_trait_convergence_focus"],
                     "trait_stability_hold",
@@ -8907,6 +9199,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             for ref in expected_cross_wake_trait_refs:
                 self.assertIn(ref, process_receipt["shared_object_refs"])
+            self.assertIn(
+                "runtime/state/schema_runner/cross_file_logic.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/schema_runner/run_manifest.json",
+                process_receipt["shared_object_refs"],
+            )
+            for ref in expected_life_constraint_refs:
+                self.assertIn(ref, process_receipt["shared_object_refs"])
+            self.assertIn(
+                str(state_dir / "action" / "action_candidate_set.json"),
+                process_receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(schema_runner_dir / "cross_file_logic.json"),
+                process_receipt["input_hashes"],
+            )
+            self.assertIn(
+                str(schema_runner_dir / "run_manifest.json"),
+                process_receipt["input_hashes"],
+            )
             self.assertIn(
                 str(state_dir / "body" / "trait_drift_monitor.json"),
                 process_receipt["input_hashes"],
