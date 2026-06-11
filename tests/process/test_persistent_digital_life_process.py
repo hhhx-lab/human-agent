@@ -120,8 +120,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             relationship_memory = self._read_json(
                 paths["state_root"] / "memory" / "relationship_memory.json"
             )
+            engram_index = self._read_json(
+                paths["state_root"] / "memory" / "engram_index.json"
+            )
             self_model = self._read_json(paths["state_root"] / "self" / "self_model.json")
             life_state = self._read_json(paths["state_root"] / "life_state.json")
+            dialogue_writeback_bundle = self._read_json(paths["reports"] / "dialogue_writeback_bundle.json")
             self.assertEqual(
                 len(relationship_timeline["dialogue_turn_refs"]),
                 len(dialogue_lines),
@@ -165,6 +169,30 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 relationship_memory["last_contact_refs"],
             )
             self.assertIn(
+                dialogue_writeback_bundle["dialogue_event_refs"][-1],
+                engram_index["live_dialogue_turn_refs"],
+            )
+            self.assertEqual(
+                engram_index["live_language_turn_refs"],
+                dialogue_writeback_bundle["live_language_turn_refs"],
+            )
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                engram_index["offline_learning_refs"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/pain_regret_repair_report.json",
+                engram_index["queue_e_repair_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/engram_index.json#live_dialogue_turn_refs",
+                dialogue_writeback_bundle["engram_index_writeback_refs"],
+            )
+            self.assertIn(
+                dialogue_writeback_bundle["dialogue_event_refs"][-1],
+                life_state["memory_index"]["live_dialogue_turn_refs"],
+            )
+            self.assertIn(
                 "runtime/state/growth/relationship_learning_plan.json",
                 relationship_memory["offline_learning_cumulative_refs"],
             )
@@ -193,7 +221,6 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
 
             commitment_index = self._read_json(paths["language_state"] / "commitment_repair_language_index.json")
-            dialogue_writeback_bundle = self._read_json(paths["reports"] / "dialogue_writeback_bundle.json")
             resumed_dialogue_packet = self._read_json(
                 paths["reports"] / "resumed_external_dialogue_packet.json"
             )
@@ -14915,6 +14942,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             persisted_relationship_memory = self._read_json(
                 memory_dir / "relationship_memory.json"
             )
+            persisted_engram_index = self._read_json(
+                memory_dir / "engram_index.json"
+            )
             persisted_state_merge_guard = self._read_json(
                 memory_dir / "state_merge_guard.json"
             )
@@ -15024,6 +15054,48 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/reports/latest/resumed_external_dialogue_packet.json",
                 persisted_relationship_memory["last_contact_refs"],
             )
+            self.assertEqual(
+                persisted_engram_index["schema_version"],
+                "engram_index_v0",
+            )
+            self.assertEqual(
+                persisted_engram_index["live_dialogue_turn_refs"],
+                [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-1",
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-2",
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+                ],
+            )
+            self.assertEqual(
+                persisted_engram_index["live_language_turn_refs"],
+                [
+                    "runtime/state/language/language_percept_frame.json",
+                    "runtime/state/language/semantic_map_frame.json",
+                    "runtime/state/language/inner_speech_frame.json",
+                    "runtime/state/language/expression_monitor_state.json",
+                    "runtime/state/language/expression_plan.json",
+                ],
+            )
+            self.assertIn(
+                "runtime/state/relationship/relationship_timeline.json",
+                persisted_engram_index["relationship_timeline_refs"],
+            )
+            self.assertIn(
+                "runtime/state/growth/language_learning_plan.json",
+                persisted_engram_index["offline_learning_refs"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/pain_regret_repair_report.json",
+                persisted_engram_index["queue_e_repair_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/state_merge_guard.json",
+                persisted_engram_index["state_merge_guard_refs"],
+            )
+            self.assertEqual(
+                persisted_engram_index["last_projected_from_live_turn_ref"],
+                "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+            )
             state_merge_change_sources = persisted_state_merge_guard[
                 "long_term_change_sources"
             ]
@@ -15060,6 +15132,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "runtime/state/growth/language_learning_plan.json",
                 persisted_life_state["language_state"]["offline_learning_refs"],
+            )
+            self.assertIn(
+                "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+                persisted_life_state["memory_index"]["live_dialogue_turn_refs"],
+            )
+            self.assertIn(
+                "runtime/state/language/expression_plan.json",
+                persisted_life_state["memory_index"]["live_language_turn_refs"],
+            )
+            self.assertIn(
+                "runtime/state/relationship/relationship_timeline.json",
+                persisted_life_state["memory_index"]["relationship_memory_refs"],
             )
             self.assertEqual(
                 persisted_life_state["language_state"]["queue_e_repair_pressure_level"],
@@ -15149,6 +15233,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "runtime/state/replay/replay_cue_bundle.json",
                 dialogue_writeback_bundle["replay_cue_refs"],
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle["engram_index_writeback_refs"],
+                [
+                    "runtime/state/memory/engram_index.json",
+                    "runtime/state/memory/engram_index.json#live_dialogue_turn_refs",
+                    "runtime/state/memory/engram_index.json#live_language_turn_refs",
+                    "runtime/state/memory/engram_index.json#relationship_memory_refs",
+                    "runtime/state/memory/engram_index.json#offline_learning_refs",
+                ],
             )
             self.assertEqual(
                 dialogue_writeback_bundle["prediction_write_gate_refs"],

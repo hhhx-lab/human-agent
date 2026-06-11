@@ -28,6 +28,20 @@ runtime/state/memory/memory_write_gate.json
 
 它们已经进入 manifest、report、receipt 和 check gate。
 
+当前维护性深补已经继续落下一段 live turn 记忆根消费链：
+
+```text
+life_v0/state_store/engram_index.py
+  -> project_engram_index_from_live_turn(...)
+life_v0/process_supervisor/resident_turn_writeback.py
+  -> _refresh_long_horizon_continuity(...)
+  -> runtime/state/memory/engram_index.json
+  -> runtime/state/life_state.json#memory_index
+  -> runtime/reports/latest/dialogue_writeback_bundle.json#engram_index_writeback_refs
+```
+
+这表示 `engram_index.json` 不再只是 S04 初始化产物，而会在真实关系回合结束时吸收 live dialogue refs、Queue A live language refs、关系记忆、关系时间线、责任/修复 refs、离线学习 refs、梦境风险 refs 与 state merge guard change sources。
+
 这份合同最初服务当前最直接的一轮记忆与神经核心补厚：
 
 ```text
@@ -177,6 +191,45 @@ def build_life_state_projection(
 - `anti_forgetting_anchor_refs`
 - `quarantine_refs`
 
+### live turn 维护接口
+
+当前已新增：
+
+```python
+def project_engram_index_from_live_turn(
+    *,
+    engram_index: dict[str, Any],
+    generated_at: str,
+    run_id: str | None,
+    dialogue_turn_refs: list[str] | None,
+    live_language_turn_refs: list[str] | None,
+    relationship_memory: dict[str, Any] | None,
+    relationship_timeline: dict[str, Any] | None,
+    commitment_truth_state: dict[str, Any] | None,
+    responsibility_ledger: dict[str, Any] | None,
+    state_merge_guard: dict[str, Any] | None,
+    nightmare_risk_ref: str | None,
+    belief_learning_plan_ref: str | None,
+    language_learning_plan_ref: str | None,
+    relationship_learning_plan_ref: str | None,
+    offline_learning_cumulative_profile: dict[str, Any] | None,
+) -> dict[str, Any]:
+    ...
+```
+
+它必须维护这些 live 字段：
+
+- `live_dialogue_turn_refs`
+- `live_language_turn_refs`
+- `relationship_timeline_refs`
+- `offline_learning_refs`
+- `offline_learning_cumulative_refs`
+- `offline_learning_cumulative_projection`
+- `queue_e_repair_refs`
+- `state_merge_guard_refs`
+- `state_merge_change_source_refs`
+- `last_projected_from_live_turn_ref`
+
 ## C. 新增 `life_v0/state_store/autobiographical_stack.py`
 
 ### 角色
@@ -304,9 +357,11 @@ def build_workspace_frame(
 ### 更新
 
 - `runtime/state/life_state.json`
+- `runtime/state/memory/engram_index.json`
 - `runtime/state/prediction/prediction_workspace_frame.json`
 - `runtime/state/self/self_model.json`
 - `runtime/state/relationship/commitment_truth_state.json`
+- `runtime/reports/latest/dialogue_writeback_bundle.json`
 
 ## report / receipt 合同
 
@@ -336,6 +391,10 @@ Queue C 第一轮允许把更多 ref 拉回生命状态根，但不允许把 rep
 - autobiographical stack refs
 - relationship memory refs
 - workspace refs
+- live dialogue turn refs
+- live language turn refs
+- offline learning refs
+- state merge guard refs
 
 不允许直接写回：
 
@@ -360,6 +419,17 @@ Queue C 第一轮允许把更多 ref 拉回生命状态根，但不允许把 rep
 2. `engram_index.json` 会带 `replay_cue_refs`
 3. `autobiographical_stack.json` 会带旧自我锚点
 
+#### `tests/process/test_persistent_digital_life_process.py`
+
+当前还必须覆盖：
+
+1. `write_resident_turn_writeback(...)` 能在没有旧 `engram_index.json` 时补建 live engram index。
+2. 真实 `digital life` 回合能把最新 `dialogue_event_refs` 写入 `engram_index.live_dialogue_turn_refs`。
+3. `engram_index.live_language_turn_refs` 与 `dialogue_writeback_bundle.live_language_turn_refs` 完全对齐。
+4. Queue D 离线学习、梦境风险、Queue E 修复压力和 state merge guard refs 能进入 `engram_index.json`。
+5. `life_state.json#memory_index` 会同步回链 live dialogue / live language / relationship timeline refs。
+6. `dialogue_writeback_bundle.json#engram_index_writeback_refs` 显式列出本轮 engram index 写回面。
+
 #### `tests/slices/test_neural_life_core.py`
 
 至少新增：
@@ -382,6 +452,8 @@ Queue C 至少新增三道 gate：
 
 1. 没有 replay cue refs
 2. 没有 old self / relationship memory 家族
+3. live turn 已结束但没有 `live_dialogue_turn_refs`
+4. live turn 已结束但 `live_language_turn_refs` 没有和 `dialogue_writeback_bundle.live_language_turn_refs` 对齐
 
 ### `workspace_projection_gate`
 
@@ -415,10 +487,10 @@ Queue C 至少新增三道 gate：
 只有同时满足下面六条，Queue C 才算完成第一轮：
 
 1. `life_state.json` 不再只是骨架 seed，而能回链更多运行时主对象
-2. `engram_index.json` 存在并承载 replay / relationship / autobiography
+2. `engram_index.json` 存在并承载 replay / relationship / autobiography，并能被真实 live turn 继续刷新
 3. `brain_graph.json` 与 `network_state.json` 独立存在
 4. `workspace_frame.json` 独立存在并接住 `prediction_workspace_frame.json`
-5. 状态根、记忆索引、工作区三者之间有明确 ref 链
+5. 状态根、记忆索引、工作区三者之间有明确 ref 链，且 live dialogue / live language refs 能从 writeback bundle 回链进 `life_state.memory_index`
 6. 对应测试直接证明以上闭环
 
 ## 这份合同和下一轮落码的关系

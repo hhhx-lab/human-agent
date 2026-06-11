@@ -22,6 +22,7 @@ def build_dialogue_writeback_bundle(
     source_doc_refs: list[str],
     readme_block_refs: list[str],
     runtime_carrier_refs: list[str],
+    engram_index_writeback_refs: list[str] | None = None,
     background_trait_convergence_refs: list[str] | None = None,
     cross_wake_trait_convergence_refs: list[str] | None = None,
     cross_wake_trait_drift_update_mode_summary: dict[str, Any] | None = None,
@@ -74,6 +75,7 @@ def build_dialogue_writeback_bundle(
         "apology_repair_writeback_refs": apology_repair_writeback_refs,
         "responsibility_writeback_refs": responsibility_writeback_refs,
         "life_state_writeback_refs": life_state_writeback_refs,
+        "engram_index_writeback_refs": list(engram_index_writeback_refs or []),
         "replay_cue_refs": replay_cue_refs,
         "terminal_state_refs": terminal_state_refs,
         "background_trait_convergence_refs": list(

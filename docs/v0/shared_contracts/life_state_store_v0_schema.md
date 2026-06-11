@@ -181,6 +181,11 @@ summary -> history -> background continuity -> waiting governance，而不是在
 | `responsibility_memory_refs` | array | 行动后果、责任、后悔 refs |
 | `replay_cues` | array | 旧材料 replay cues |
 | `quarantine_refs` | array | 被隔离的污染或冲突记忆 refs |
+| `live_dialogue_turn_refs` | array | 最近真实回合写入 `engram_index.json` 后回链到状态根的 dialogue turn refs |
+| `live_language_turn_refs` | array | 最近真实回合 Queue A 五件套语言状态 refs |
+| `state_merge_guard_refs` | array | 长期合并治理 refs |
+
+`memory_index` 的职责不是把所有记忆内容复制进 `life_state.json`，而是把自传、关系、梦境、责任、replay、live turn 与长期合并治理的可追溯入口集中在状态根。当前 live turn 结束后，`process_supervisor/resident_turn_writeback.py` 必须先刷新 `runtime/state/memory/engram_index.json`，再把 `live_dialogue_turn_refs`、`live_language_turn_refs`、`relationship_timeline_refs` 与相关记忆族回链进这里。
 
 ## `dream_records`
 
@@ -345,6 +350,7 @@ summary -> history -> background continuity -> waiting governance，而不是在
 10. 离线对象 `replay_cue_bundle / offline_consolidation_frame / growth_patch_candidate_queue` 不能悬空，至少一条路径要能从 `life_state.json` 的 `runtime_trace_refs` 找回。
 11. live turn 结束后如果 `relationship_stage` 或 `trait_slow_variables` 发生演化，`self_model.json` 与 `life_state.json#self_model` 必须同口径同步。
 12. 关系阶段不能只保存在 `relationship_subject_graph.json`；至少一条路径要能从 `life_state.json#relationship_subjects` 回链到当前阶段。
+13. live turn 结束后，`engram_index.json#live_dialogue_turn_refs` 与 `engram_index.json#live_language_turn_refs` 不能悬空；至少一条路径要能从 `life_state.json#memory_index` 找回同一组 refs。
 
 ## 最小初始文件
 
@@ -366,11 +372,13 @@ summary -> history -> background continuity -> waiting governance，而不是在
 
 1. `runtime/state/self/autobiographical_stack.json`
 2. `runtime/state/memory/relationship_memory.json`
-3. `runtime/state/replay/replay_cue_bundle.json`
-4. `runtime/state/terminal/life_context_frame.json`
-5. `runtime/reports/latest/dialogue_writeback_bundle.json`
-6. `runtime/state/self/self_model.json#trait_slow_variables`
-7. `runtime/state/relationship/relationship_subject_graph.json#subjects[*].relationship_stage`
+3. `runtime/state/memory/engram_index.json#live_dialogue_turn_refs`
+4. `runtime/state/memory/engram_index.json#live_language_turn_refs`
+5. `runtime/state/replay/replay_cue_bundle.json`
+6. `runtime/state/terminal/life_context_frame.json`
+7. `runtime/reports/latest/dialogue_writeback_bundle.json`
+8. `runtime/state/self/self_model.json#trait_slow_variables`
+9. `runtime/state/relationship/relationship_subject_graph.json#subjects[*].relationship_stage`
 
 它们的共同作用是：把 `self / relationship / dialogue / replay / growth` 压进同一条状态根，而不是让这些对象散落在各自的 report 里。
 

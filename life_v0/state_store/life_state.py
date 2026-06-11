@@ -168,6 +168,7 @@ def project_responsibility_language_continuity(
     world_contact_summary: dict[str, Any] | None = None,
     pain_regret_repair_report: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
+    engram_index: dict[str, Any] | None = None,
     additional_runtime_trace_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     commitment_truth_state = commitment_truth_state or {}
@@ -203,6 +204,45 @@ def project_responsibility_language_continuity(
             + ["runtime/state/memory/state_merge_guard.json"]
         )
         updated["state_merge_records"] = _build_state_merge_records(state_merge_guard)
+    if engram_index:
+        memory_index["autobiographical_memory_refs"] = _dedupe(
+            list(memory_index.get("autobiographical_memory_refs", []))
+            + list(engram_index.get("autobiographical_memory_refs", []))
+        )
+        memory_index["relationship_memory_refs"] = _dedupe(
+            list(memory_index.get("relationship_memory_refs", []))
+            + list(engram_index.get("relationship_memory_refs", []))
+            + list(engram_index.get("relationship_timeline_refs", []))
+        )
+        memory_index["responsibility_memory_refs"] = _dedupe(
+            list(memory_index.get("responsibility_memory_refs", []))
+            + list(engram_index.get("responsibility_memory_refs", []))
+        )
+        memory_index["dream_memory_refs"] = _dedupe(
+            list(memory_index.get("dream_memory_refs", []))
+            + list(engram_index.get("dream_memory_refs", []))
+        )
+        memory_index["replay_cues"] = _dedupe(
+            list(memory_index.get("replay_cues", []))
+            + list(engram_index.get("replay_cue_refs", []))
+        )
+        memory_index["quarantine_refs"] = _dedupe(
+            list(memory_index.get("quarantine_refs", []))
+            + list(engram_index.get("quarantine_refs", []))
+        )
+        if engram_index.get("state_merge_guard_refs"):
+            memory_index["state_merge_guard_refs"] = _dedupe(
+                list(memory_index.get("state_merge_guard_refs", []))
+                + list(engram_index.get("state_merge_guard_refs", []))
+            )
+        memory_index["live_dialogue_turn_refs"] = _dedupe(
+            list(memory_index.get("live_dialogue_turn_refs", []))
+            + list(engram_index.get("live_dialogue_turn_refs", []))
+        )
+        memory_index["live_language_turn_refs"] = _dedupe(
+            list(memory_index.get("live_language_turn_refs", []))
+            + list(engram_index.get("live_language_turn_refs", []))
+        )
     memory_index["relationship_memory_refs"] = _dedupe(
         list(memory_index.get("relationship_memory_refs", []))
         + list(relationship_memory.get("shared_memory_refs", []))
