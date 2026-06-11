@@ -254,6 +254,7 @@ def run_state_store(
         autobiographical_stack=autobiographical_stack,
         relationship_memory=relationship_memory,
         state_merge_guard=state_merge_guard,
+        background_continuity_profile={},
         runtime_trace_refs=[
             "runtime/state/memory/memory_write_gate.json",
             "runtime/state/memory/state_merge_guard.json",

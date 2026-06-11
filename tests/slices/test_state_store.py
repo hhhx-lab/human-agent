@@ -175,6 +175,14 @@ class StateStoreTests(unittest.TestCase):
 
         self.assertEqual(life_state["schema_version"], "life_state_v0")
         self.assertTrue(required_life_state_keys.issubset(life_state))
+        self.assertEqual(
+            life_state["background_continuity_profile"]["schema_version"],
+            "background_continuity_profile_v0",
+        )
+        self.assertEqual(
+            life_state["background_continuity_profile"].get("background_continuity_mode"),
+            None,
+        )
         self.assertEqual(set(life_state["birth_readiness"]["life_target_status"]), expected_life_targets)
         self.assertEqual(life_state["life_identity"]["direction_lock"], "build_real_digital_life")
         self.assertEqual(life_state["life_identity"]["birth_phase"], "pre_activation")

@@ -7736,6 +7736,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
                 expected_life_constraint_refs,
             )
+            persisted_life_state = self._read_json(
+                paths["state_root"] / "life_state.json"
+            )
+            self.assertEqual(
+                persisted_life_state["background_continuity_profile"][
+                    "schema_version"
+                ],
+                "background_continuity_profile_v0",
+            )
+            self.assertIn("background_continuity_profile", persisted_life_state)
             self.assertIn(
                 "后台语言语义余波停在repair_commitment_shared_language",
                 result.emitted_output,

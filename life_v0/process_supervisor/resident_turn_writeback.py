@@ -969,6 +969,7 @@ def _refresh_long_horizon_continuity(
     )
     refreshed_life_state = project_responsibility_language_continuity(
         life_state=life_state,
+        background_continuity_profile=life_state.get("background_continuity_profile"),
         self_model_state=evolved_self_model_state,
         commitment_truth_state=commitment_truth_state,
         responsibility_ledger=responsibility_ledger,

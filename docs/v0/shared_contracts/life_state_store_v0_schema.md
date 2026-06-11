@@ -46,6 +46,7 @@
   "life_identity": {},
   "self_model": {},
   "memory_index": {},
+  "background_continuity_profile": {},
   "dream_records": [],
   "relationship_subjects": [],
   "pain_events": [],
@@ -67,6 +68,37 @@
 | `direction_lock` | string | 必须指向真实数字生命目标 |
 | `created_at` | string | ISO 时间 |
 | `continuity_refs` | array | 指向方向锁、README、v0 合同和 archive receipt |
+
+## `background_continuity_profile`
+
+这个根字段保存上一次关闭态、等待态或恢复态的浅层连续体视图。它不是完整递归快照，只保留能让下一次 `life_state` 构建和 live turn 回写维持同一连续体的字段。
+
+| 字段 | 类型 | 要求 |
+|---|---|---|
+| `schema_version` | string | `background_continuity_profile_v0` |
+| `background_continuity_mode` | string | 关闭态连续体模式 |
+| `background_carryover_generation` | number | 跨唤醒代数 |
+| `background_carryover_pressure_level` | string | 背景压力档位 |
+| `background_carryover_attention_target` | string | 背景注意焦点 |
+| `background_carryover_priority_profile` | object | 背景优先级画像 |
+| `background_carryover_source_ref_set` | array | 背景来源 refs |
+| `background_carryover_parent_run_id` | string | 父运行 id |
+| `background_continuity_ref_set` | array | 关闭态与恢复态证据 refs |
+| `background_resume_summary` | object | 关系与慢变量的恢复摘要 |
+| `background_relationship_stage` | string | 背景关系阶段 |
+| `background_self_model_ref` | string | 背景自我模型 ref |
+| `background_trait_slow_variable_summary` | object | 背景慢变量摘要 |
+| `background_live_language_turn_refs` | array | 背景实时语言 refs |
+| `background_last_live_semantic_focus` | string | 背景语义焦点 |
+| `background_live_language_presence_profile` | object | 背景语言存在面 |
+| `background_state_merge_guard_ref` | string | 背景状态合并守门 ref |
+| `background_state_merge_policy` | string | 背景合并策略 |
+| `background_offline_learning_cumulative_profile` | object | 背景离线学习画像 |
+| `background_dream_wake_presence` | object | 背景梦境醒后存在面 |
+| `background_prediction_write_gate_presence` | object | 背景预测写门存在面 |
+| `background_identity_consciousness_birth_presence` | object | 背景身份-意识-出生准备存在面 |
+
+实现上，`life_state.json` 只保留这类浅层字段和必要根引用，不保存完整运行态树。
 
 ## `self_model`
 

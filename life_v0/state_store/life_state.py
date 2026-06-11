@@ -36,6 +36,7 @@ def build_life_state_projection(
     autobiographical_stack: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
+    background_continuity_profile: dict[str, Any] | None = None,
     runtime_trace_refs: list[str] | None = None,
     archive_refs: list[str] | None = None,
 ) -> dict[str, Any]:
@@ -45,6 +46,10 @@ def build_life_state_projection(
     autobiographical_ref = "runtime/state/self/autobiographical_stack.json#anchor_refs"
     relationship_ref = "runtime/state/memory/relationship_memory.json#shared_memory_refs"
     engram_ref = "runtime/state/memory/engram_index.json"
+    background_continuity_profile = background_continuity_profile or {}
+    background_continuity_root = _build_background_continuity_root(
+        background_continuity_profile
+    )
 
     self_model = project_self_model_projection(
         self_model_state=self_model_state,
@@ -103,6 +108,7 @@ def build_life_state_projection(
         },
         "self_model": self_model,
         "memory_index": memory_index,
+        "background_continuity_profile": background_continuity_root,
         "dream_records": [],
         "relationship_subjects": [
             {
@@ -150,6 +156,7 @@ def build_life_state_projection(
 def project_responsibility_language_continuity(
     *,
     life_state: dict[str, Any],
+    background_continuity_profile: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
     commitment_truth_state: dict[str, Any] | None = None,
     responsibility_ledger: dict[str, Any] | None = None,
@@ -182,6 +189,13 @@ def project_responsibility_language_continuity(
     commitment_repair_index = commitment_repair_index or {}
 
     updated = json.loads(json.dumps(life_state))
+    background_continuity_root = _build_background_continuity_root(
+        updated.get("background_continuity_profile")
+    )
+    if background_continuity_profile is not None:
+        background_continuity_root.update(
+            _build_background_continuity_root(background_continuity_profile)
+        )
     updated["responsibility_bindings"] = _dedupe(
         list(updated.get("responsibility_bindings", []))
         + list(commitment_truth_state.get("responsibility_event_refs", []))
@@ -449,6 +463,8 @@ def project_responsibility_language_continuity(
             anti_forgetting_refs=list(memory_index.get("replay_cues", []))
             or list(updated.get("self_model", {}).get("anti_forgetting_refs", [])),
         )
+    if background_continuity_root:
+        updated["background_continuity_profile"] = background_continuity_root
     return updated
 
 
@@ -495,6 +511,117 @@ def _build_state_merge_records(state_merge_guard: dict[str, Any] | None) -> list
             "slow_variable_update_policy_ref": "runtime/state/memory/state_merge_guard.json#slow_variable_update_policy",
         }
     ]
+
+
+def _build_background_continuity_root(
+    background_continuity_profile: dict[str, Any] | None,
+) -> dict[str, Any]:
+    profile = dict(background_continuity_profile or {})
+    root: dict[str, Any] = {
+        "schema_version": "background_continuity_profile_v0",
+    }
+    if not profile:
+        return root
+    for key in [
+        "background_continuity_mode",
+        "background_carryover_generation",
+        "background_carryover_pressure_level",
+        "background_carryover_attention_target",
+        "background_carryover_priority_profile",
+        "background_carryover_source_ref_set",
+        "background_carryover_parent_run_id",
+        "background_continuity_ref_set",
+        "background_waiting_mode",
+        "background_resume_summary",
+        "background_relationship_stage",
+        "background_relationship_stage_reason",
+        "background_relationship_subject_ref",
+        "background_self_model_ref",
+        "background_trait_drift_monitor_ref",
+        "background_heartbeat_cadence_explanation",
+        "background_heartbeat_cadence_driver",
+        "background_heartbeat_cadence_reason",
+        "background_heartbeat_cadence_modulators",
+        "background_heartbeat_cadence_evidence_refs",
+        "background_trait_slow_variable_summary",
+        "background_offline_learning_generation",
+        "background_offline_learning_pressure_level",
+        "background_offline_learning_attention_target",
+        "background_offline_learning_priority_profile",
+        "background_offline_learning_ref_set",
+        "background_offline_learning_relationship_reconsolidation_required",
+        "background_offline_learning_integration_mode",
+        "background_offline_learning_cumulative_profile",
+        "background_dream_wake_presence",
+        "background_dream_wake_presence_profile",
+        "background_dream_experience_window_ref",
+        "background_wake_integration_frame_ref",
+        "background_dream_fact_gate_decision_ref",
+        "background_dream_window_kind",
+        "background_dream_fact_gate_result",
+        "background_wake_integration_archive_requirement",
+        "background_wake_integration_growth_seed_count",
+        "background_wake_integration_repair_target_count",
+        "background_dream_fact_gate_ref_count",
+        "background_dream_wake_ref_set",
+        "background_resident_autonomous_activity_presence_profile",
+        "background_autonomous_activity_presence",
+        "background_resident_autonomous_activity_ref",
+        "background_resident_autonomous_activity_state_ref",
+        "background_last_autonomous_activity_kind",
+        "background_last_autonomous_activity_at",
+        "background_last_autonomous_activity_state_ref",
+        "background_autonomous_activity_count",
+        "background_autonomous_activity_kind_counts",
+        "background_resident_autonomous_activity_state_refs",
+        "background_resident_autonomous_activity_ref_set",
+        "background_live_language_turn_refs",
+        "background_last_live_semantic_focus",
+        "background_live_language_presence_profile",
+        "background_state_merge_guard_ref",
+        "background_state_merge_policy",
+        "background_state_merge_long_term_change_count",
+        "background_state_merge_long_term_change_families",
+        "background_state_merge_long_term_change_refs",
+        "background_prediction_write_gate_presence",
+        "background_prediction_write_gate_refs",
+        "background_prediction_waiting_posture",
+        "background_response_surface_posture_hint",
+        "background_prediction_attention_target",
+        "background_prediction_attention_reason",
+        "background_active_sampling_route",
+        "background_memory_write_gate_policy",
+        "background_identity_consciousness_birth_presence",
+        "background_schema_cross_file_logic_ref",
+        "background_schema_run_manifest_ref",
+        "background_life_constraint_refs",
+        "background_queue_e_cross_layer_gate_status",
+        "background_life_constraint_waiting_posture",
+        "background_life_constraint_attention_target",
+        "background_life_constraint_attention_reason",
+        "background_queue_e_birth_repair_waiting_profile",
+        "background_queue_e_birth_repair_gate_status",
+        "background_queue_e_birth_repair_profile_ref",
+        "background_queue_e_birth_repair_pressure_level",
+        "background_queue_e_birth_repair_attention_target",
+        "background_queue_e_birth_repair_ref_set",
+        "background_queue_e_birth_repair_waiting_posture",
+        "background_queue_e_birth_repair_attention_reason",
+        "background_resident_process_lease_history_profile_ref",
+        "background_resident_process_lease_history_profile",
+        "resident_process_lease_history_profile_ref",
+        "resident_process_lease_history_profile",
+    ]:
+        if key in profile and profile[key] not in (None, "", [], {}):
+            root[key] = profile[key]
+    for alias_key, source_key in [
+        ("background_live_language_turn_refs", "background_live_language_turn_refs"),
+        ("background_live_language_presence_profile", "background_live_language_presence_profile"),
+        ("background_state_merge_ref_set", "background_state_merge_long_term_change_refs"),
+    ]:
+        if source_key in profile and profile[source_key] not in (None, "", [], {}):
+            root[alias_key] = profile[source_key]
+    return root
 
 
 def _dedupe(items: list[str]) -> list[str]:
