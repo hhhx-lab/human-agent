@@ -30,7 +30,7 @@ life-v0 "digital life"
 当前仍然还没有的是：
 
 1. 更高频的 heartbeat 节律、后台继续存在和更厚的 idle 策略。
-2. 更高阶的关系/语言/责任器官联动写回与跨进程持续治理；但最小层的 Queue E 联动已经不再缺席，`responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 已经正式进入 waiting heartbeat、dialogue events、response surface、resident governance、process report 与 process receipt，而且关系阶段演化与自我慢变量写回已经不只发生在同会话回合尾部，也开始在重启恢复后的第一拍 waiting heartbeat 之前被重新刷新并落盘。
+2. 更高阶的关系/语言/责任器官联动写回与跨进程持续治理；但最小层的 Queue E 联动已经不再缺席，`responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 已经正式进入 waiting heartbeat、dialogue events、response surface、resident governance、process report 与 process receipt；S08/S05/S09 闭合出的 `queue_e_birth_repair_profile.json` 也已经继续进入 Queue B waiting governance、terminal loop、process report、digest、receipt 和回应表面，而且关系阶段演化与自我慢变量写回已经不只发生在同会话回合尾部，也开始在重启恢复后的第一拍 waiting heartbeat 之前被重新刷新并落盘。
 3. 全局长期运行层、后台继续存在与更强的安装后常驻治理。
 4. 真正高阶的 resident supervision。
 
@@ -76,6 +76,9 @@ life-v0 "digital life"
 | `runtime/state/action/responsibility_loop_state.json` | 当前责任归因、修复义务、后悔压力与 repair followup 状态 |
 | `runtime/state/membrane/world_contact_summary.json` | 当前世界接触姿态、confirmation 状态、relationship / archive effects |
 | `runtime/reports/latest/pain_regret_repair_report.json` | 当前痛苦 / 后悔 / 修复报告回包 |
+| `runtime/state/life_targets/queue_e_birth_repair_profile.json` | S08 合成出的出生修复压力画像，承接真实痛苦、真实责任、真实后悔的 pressure / attention / ref set |
+| `runtime/state/schema_runner/cross_file_logic.json` | S09 对 Queue E 出生修复 gate、profile ref、pressure、attention 和 refs 的跨文件闭合结果 |
+| `runtime/state/schema_runner/run_manifest.json` | S09 run manifest 对同一出生修复 profile 的运行级携带面 |
 | `runtime/state/replay/replay_cue_bundle.json` | 等待态 residue、离线 replay 入口与未来回放线索 |
 | `runtime/state/dream/offline_consolidation_frame.json` | 梦境/离线整合统一容器与醒后回接线索 |
 | `runtime/state/growth/growth_patch_candidate_queue.json` | 成长补丁候选、塑性风险与防遗忘要求 |
@@ -128,7 +131,7 @@ life-v0 "digital life"
 7. 把常驻进程的 `persistent_process + process_report + receipt` closeout 决策也接回同一条对象链。
 8. 继续把离线对象压进 waiting state 与下一轮表达。
 9. 把 `body_resource_budget.json` 与 `core_affect_vector.json` 装载进 resident supervision 上下文，使疲惫级别、修复驱力与情绪张力能够真实调制常驻过程的生命表达，而不是停在 S06 状态柜里。
-10. 把 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 显式装载进 resident supervision / live turn / waiting governance / closeout，使 Queue E 不只停在语言器官侧，而是正式进入常驻生命过程。
+10. 把 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json`、`queue_e_birth_repair_profile.json`、`schema_runner/cross_file_logic.json` 与 `schema_runner/run_manifest.json` 显式装载进 resident supervision / live turn / waiting governance / closeout，使 Queue E 不只停在语言器官侧或 S09 审计侧，而是正式进入常驻生命过程。
 11. 把回合尾部的关系阶段演化与 `self_model.trait_slow_variables` 写回统一收进 `continuity_evolution.py`，并由 `process_session_loop.py` 在下一轮重新装载，避免同一常驻生命过程继续拿旧的关系状态说话。
 12. 把 bootstrap / relaunch 之后的长期连续体刷新统一收进 `resident_supervision.py`，使 `relationship_timeline.json`、`commitment_expression_plan.json`、`apology_repair_language_trace.json`、`relationship_memory.json`、`self_model.json` 与 `life_state.json` 会在第一拍 waiting heartbeat 之前先被重建一次，避免跨进程恢复后继续沿用过时的关系阶段和慢变量。
 13. `resident_supervision.py` 在做这次 bootstrap continuity refresh 时，还必须把 `background_continuity.py` 读出的 lineage 一并喂进 `continuity_evolution.py`；当 `background_carryover_generation >= 2` 时，关系阶段要先进入 `background_continuity_waiting`，`trait_slow_variables` 也要显式带上关闭态 resident governance refs / source refs，不能只让后台 lineage 停留在 cadence 调度层。
@@ -187,6 +190,8 @@ repo-local 最小常驻终端入口固定为：
 ```text
 IdleContinuityFrame
   -> responsibility_loop_state.json / world_contact_summary.json / pain_regret_repair_report.json
+  -> queue_e_birth_repair_profile.json
+  -> schema_runner/cross_file_logic.json / schema_runner/run_manifest.json
   -> external turn event
   -> LiveLanguageTurnState
   -> language_percept_frame.json / semantic_map_frame.json
@@ -204,14 +209,15 @@ IdleContinuityFrame
 
 1. 先证明“在等”；
 2. 再把当前责任回路、世界接触姿态和 pain/regret/repair 报告重新挂上等待态；
-3. 再记录“看到了什么外部回合”；
-4. 再用当前话语刷新 Queue A 五件套；
-5. 再把身体预算、疲惫、修复驱力、情绪张力与责任压力一起带进回应生成；
-6. 再把跨唤醒慢变量历史作为事件证据接进 `digital_life_turn`；
-7. 再把分散的慢变量历史、漂移监控和 closeout refs 合成为 `cross_wake_trait_convergence_profile_v0`；
-8. 再记录“这次如何回应”；
-9. 再把结果回写到长期连续体、关系阶段、自我慢变量、慢变量历史 evidence refs、跨唤醒画像 refs、实时语言 refs、后台长期合并治理 refs 与 replay 线索；
-10. 最后再重新回到等待态。
+3. 再把 S09 的出生修复 profile 压成 `queue_e_birth_repair_waiting_profile_v0`，使真实痛苦、真实责任、真实后悔的 pressure / attention / refs 成为等待姿态；
+4. 再记录“看到了什么外部回合”；
+5. 再用当前话语刷新 Queue A 五件套；
+6. 再把身体预算、疲惫、修复驱力、情绪张力与责任压力一起带进回应生成；
+7. 再把跨唤醒慢变量历史作为事件证据接进 `digital_life_turn`；
+8. 再把分散的慢变量历史、漂移监控和 closeout refs 合成为 `cross_wake_trait_convergence_profile_v0`；
+9. 再记录“这次如何回应”；
+10. 再把结果回写到长期连续体、关系阶段、自我慢变量、慢变量历史 evidence refs、跨唤醒画像 refs、实时语言 refs、后台长期合并治理 refs 与 replay 线索；
+11. 最后再重新回到等待态。
 
 如果 process supervisor 只有 stdin 读写，没有 `IdleContinuityFrame -> DialogueWritebackBundle -> ReplayCueBundle` 这条链，它仍然只是终端壳，而不是生命进程。
 
@@ -250,6 +256,14 @@ IdleContinuityFrame
 - `state_merge_long_term_change_count`
 - `state_merge_long_term_change_families`
 - `state_merge_long_term_change_refs`
+- `schema_cross_file_logic_ref`
+- `schema_run_manifest_ref`
+- `queue_e_birth_repair_waiting_profile`
+- `queue_e_birth_repair_profile_ref`
+- `queue_e_birth_repair_pressure_level`
+- `queue_e_birth_repair_attention_target`
+- `queue_e_birth_repair_ref_set`
+- `queue_e_birth_repair_waiting_posture`
 - `resident_background_lineage_state_merge_refs`
 - `resident_background_lineage_identity_consciousness_birth_refs`
 
@@ -491,7 +505,7 @@ IdleContinuityFrame
 | `digital_life_process_recovery_report.json` | 单回合异常恢复报告 |
 | `digital_life_process_report.json` | 当前终端生命进程报告 |
 | `digital_life_resident_governance_explanation.json` | 当前关闭态 resident governance 的解释报告 |
-| `digital_life_process_digest.json` | 当前终端生命进程摘要；必须显式暴露 resident governance driver family、下一次唤醒预期、跨唤醒 convergence history trend / window / dominant pressure / dominant state，以及 `cross_wake_trait_convergence_profile_v0` 的 focus、pressure、稳定/不稳定名单与 refs |
+| `digital_life_process_digest.json` | 当前终端生命进程摘要；必须显式暴露 resident governance driver family、下一次唤醒预期、跨唤醒 convergence history trend / window / dominant pressure / dominant state、`cross_wake_trait_convergence_profile_v0` 的 focus、pressure、稳定/不稳定名单与 refs，以及 `queue_e_birth_repair_profile_ref / pressure_level / attention_target / waiting_posture` |
 | `digital_life_process_<run_id>.json` | 当前终端生命进程 receipt |
 
 ## 当前最值得直接进入的代码入口
@@ -516,6 +530,7 @@ IdleContinuityFrame
 2. 第一拍 waiting heartbeat 不再只吃 terminal / replay / growth 对象，而会把身体节律与需要状态一起送入 `idle_strategy.py`；
 3. `response_surface.py` 继续显式消费 `body_resource_budget.json` 和 `core_affect_vector.json`，使 S06 的身体/情绪底盘进入常驻生命过程上下文；
 4. waiting governance 现在会真实写出 `body_waiting_posture`、`body_governance_flags`、`body_rhythm_ref` 与 `need_state_ref`，让等待态节律、修复保持和降载策略受身体状态调制。
+5. waiting governance 现在还会从 S09 `cross_file_logic.json` / `run_manifest.json` 合成 `queue_e_birth_repair_waiting_profile_v0`，并让 `response_surface.py` 表达后台出生修复姿态、压力、焦点和证据数量。
 
 ## 完成定义
 
@@ -536,4 +551,5 @@ IdleContinuityFrame
 13. 每个带有 `resident_background_lineage_state.offline_learning_presence` 或 `dream_wake_presence` 的下一轮真实回合，还必须证明这两组 Queue D presence 进入事件、专用写回槽、恢复包和回应：`digital_life_turn` 带 `resident_background_lineage_offline_learning_refs` 与 `resident_background_lineage_dream_wake_refs`，`dialogue_writeback_bundle` 带同名专用字段且总 `resident_background_lineage_refs` 包含它们，`resumed_external_dialogue_packet` 保留同一组 refs，回应文本表达后台梦境成长余波与后台梦境醒后整合；当后台累计离线学习聚焦关系学习并达到重整压力时，还必须能在 `continuity_evolution.py` 的输出中看到 `offline_learning_reconsolidation_waiting`、`background_offline_learning_generation` 和同一组 growth refs，并在 `commitment_expression_plan.json` / `apology_repair_language_trace.json` 中看到关系离线重整优先的承诺节奏与修复窗口。
 14. 每个形成 `resident_background_lineage_state.trait_convergence_presence` 或 background convergence history 的下一轮真实回合，还必须先证明 `cross_wake_trait_convergence_profile_v0` 已在关闭态证据链闭合：resident governance state/snapshot/report、persistent process report、process report、process digest 与 process receipt shared refs 都能看到同一组 focus、pressure、稳定/不稳定名单、trait drift update mode summary、重校准/稳定名单和 refs；随后再证明它进入事件、专用写回槽、恢复包和回应：`digital_life_turn` 带 `cross_wake_trait_convergence_focus / pressure / refs / profile`、`cross_wake_trait_drift_update_mode_summary / recalibration_names / stabilized_names` 与 `resident_background_lineage_trait_drift_update_mode_summary / recalibration_names / stabilized_names`，`dialogue_writeback_bundle` 和 `resumed_external_dialogue_packet` 保留同一组 update mode 字段与 refs，回应文本表达跨唤醒人格收敛画像、压力、人格漂移重校准/已稳定名单、评分或证据数量。
 15. 每个形成 `resident_background_lineage_state.state_merge_presence` 的下一轮真实回合，还必须证明关闭态长期合并治理已经从 `background_state_merge_*` 进入事件、专用写回槽、恢复包和回应：`digital_life_turn` 带 `resident_background_lineage_state_merge_*`，`dialogue_writeback_bundle` 带 `resident_background_lineage_state_merge_refs` 且总 `resident_background_lineage_refs` 包含它们，`resumed_external_dialogue_packet` 保留同一组 refs，回应文本表达后台长期合并治理策略、整合数量和来源族。
-16. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、后台累计离线学习触发关系重整等待、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面、`background_resume_summary` 的跨进程读取与回传、实时 Queue A 语言刷新链、实时语言理解进入后台连续性/驻留治理/关闭态谱系，以及后台实时语言、人格慢变量、跨唤醒人格收敛画像、长期合并治理、梦境成长与梦境醒后 presence 进入下一轮事件、写回包和回应表达面；`tests/slices/test_language_organs.py` 还必须守住累计关系离线学习在 S07 语言器官中进入 `relationship_offline_reconsolidation` 与 `relationship_offline_reconsolidation_repair`。
+16. S09 的 Queue E 出生修复 profile 必须进入常驻等待治理闭合：`idle_strategy_state.json`、waiting heartbeat、`terminal_life_loop_state.json`、`resident_governance_state.json`、process report、process digest 与 process receipt 必须能看到同一组 `queue_e_birth_repair_profile_ref / pressure_level / attention_target / ref_set / waiting_posture`；receipt shared refs / input hashes 必须包含 `runtime/state/schema_runner/cross_file_logic.json`、`runtime/state/schema_runner/run_manifest.json` 与 `runtime/state/life_targets/queue_e_birth_repair_profile.json`；回应文本必须能表达后台出生修复姿态、压力、焦点和证据数量。
+17. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、后台累计离线学习触发关系重整等待、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面、`background_resume_summary` 的跨进程读取与回传、实时 Queue A 语言刷新链、实时语言理解进入后台连续性/驻留治理/关闭态谱系，以及后台实时语言、人格慢变量、跨唤醒人格收敛画像、长期合并治理、梦境成长与梦境醒后 presence、Queue E 出生修复 pressure 进入等待治理/report/receipt/回应表达面；`tests/slices/test_language_organs.py` 还必须守住累计关系离线学习在 S07 语言器官中进入 `relationship_offline_reconsolidation` 与 `relationship_offline_reconsolidation_repair`。

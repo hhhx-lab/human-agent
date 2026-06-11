@@ -386,6 +386,21 @@ def write_process_report_bundle(
         "birth_readiness_next_required_command": idle_governance.get(
             "birth_readiness_next_required_command"
         ),
+        "queue_e_birth_repair_profile_ref": idle_governance.get(
+            "queue_e_birth_repair_profile_ref"
+        ),
+        "queue_e_birth_repair_pressure_level": idle_governance.get(
+            "queue_e_birth_repair_pressure_level"
+        ),
+        "queue_e_birth_repair_attention_target": idle_governance.get(
+            "queue_e_birth_repair_attention_target"
+        ),
+        "queue_e_birth_repair_waiting_posture": idle_governance.get(
+            "queue_e_birth_repair_waiting_posture"
+        ),
+        "queue_e_birth_repair_ref_set": list(
+            idle_governance.get("queue_e_birth_repair_ref_set", [])
+        ),
         "prediction_write_gate_refs": prediction_write_gate_refs,
         **state_merge_profile,
     }
@@ -436,6 +451,12 @@ def write_process_report_bundle(
         ),
         state_merge_long_term_change_refs=state_merge_profile.get(
             "state_merge_long_term_change_refs",
+            [],
+        ),
+        schema_cross_file_logic_ref=idle_governance.get("schema_cross_file_logic_ref"),
+        schema_run_manifest_ref=idle_governance.get("schema_run_manifest_ref"),
+        queue_e_birth_repair_refs=idle_governance.get(
+            "queue_e_birth_repair_ref_set",
             [],
         ),
         idle_heartbeat_trace_ref=idle_governance.get("idle_heartbeat_trace_ref"),
@@ -498,6 +519,9 @@ def build_process_receipt(
     background_convergence_history_ref: str | None = None,
     cross_wake_trait_convergence_refs: list[str] | None = None,
     state_merge_long_term_change_refs: list[str] | None = None,
+    schema_cross_file_logic_ref: str | None = None,
+    schema_run_manifest_ref: str | None = None,
+    queue_e_birth_repair_refs: list[str] | None = None,
     idle_heartbeat_trace_ref: str | None = None,
     workspace_frame_ref: str | None = None,
     broadcast_frame_ref: str | None = None,
@@ -527,6 +551,9 @@ def build_process_receipt(
         state_dir / "prediction" / "belief_state_frame.json",
         state_dir / "prediction" / "prediction_error_field.json",
         state_dir / "prediction" / "active_sampling_plan.json",
+        state_dir / "schema_runner" / "cross_file_logic.json",
+        state_dir / "schema_runner" / "run_manifest.json",
+        state_dir / "life_targets" / "queue_e_birth_repair_profile.json",
         state_dir / "consciousness" / "workspace_frame.json",
         state_dir / "consciousness" / "broadcast_frame.json",
         state_dir / "consciousness" / "metacognition_state.json",
@@ -622,6 +649,8 @@ def build_process_receipt(
                 trait_drift_monitor_ref,
                 background_convergence_summary_ref,
                 background_convergence_history_ref,
+                schema_cross_file_logic_ref,
+                schema_run_manifest_ref,
                 workspace_frame_ref,
                 broadcast_frame_ref,
                 metacognition_ref,
@@ -632,6 +661,7 @@ def build_process_receipt(
                 self_model_ref,
                 *(cross_wake_trait_convergence_refs or []),
                 *(state_merge_long_term_change_refs or []),
+                *(queue_e_birth_repair_refs or []),
             ]
             if ref
         ]),

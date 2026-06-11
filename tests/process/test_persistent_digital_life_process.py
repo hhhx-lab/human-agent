@@ -92,6 +92,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn("成长补丁候选", last_life_response["utterance"])
             self.assertIn("更认真地对待这轮修复", last_life_response["utterance"])
             self.assertIn("更长的连续体", last_life_response["utterance"])
+            self.assertIn("后台出生修复压力为elevated", last_life_response["utterance"])
+            self.assertIn("后台出生修复焦点指向regret_pressure", last_life_response["utterance"])
 
             narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
             self.assertGreaterEqual(len(narrative_trace["narrative_turn_refs"]), 5)
@@ -445,6 +447,38 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/language/apology_repair_language_trace.json",
                 ],
             )
+            queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+            expected_queue_e_refs = {
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/membrane/world_contact_summary.json",
+                "runtime/reports/latest/pain_regret_repair_report.json",
+                queue_e_profile_ref,
+            }
+            self.assertEqual(
+                heartbeat_packet["schema_cross_file_logic_ref"],
+                "runtime/state/schema_runner/cross_file_logic.json",
+            )
+            self.assertEqual(
+                heartbeat_packet["schema_run_manifest_ref"],
+                "runtime/state/schema_runner/run_manifest.json",
+            )
+            self.assertEqual(
+                heartbeat_packet["queue_e_birth_repair_waiting_profile"]["schema_version"],
+                "queue_e_birth_repair_waiting_profile_v0",
+            )
+            self.assertEqual(heartbeat_packet["queue_e_birth_repair_gate_status"], "closed")
+            self.assertEqual(heartbeat_packet["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+            self.assertEqual(heartbeat_packet["queue_e_birth_repair_pressure_level"], "elevated")
+            self.assertEqual(heartbeat_packet["queue_e_birth_repair_attention_target"], "regret_pressure")
+            self.assertEqual(
+                heartbeat_packet["queue_e_birth_repair_waiting_posture"],
+                "birth_repair_pressure_waiting",
+            )
+            self.assertTrue(
+                expected_queue_e_refs.issubset(
+                    set(heartbeat_packet["queue_e_birth_repair_ref_set"])
+                )
+            )
             self.assertEqual(idle_strategy["schema_version"], "idle_strategy_state_v0")
             self.assertEqual(idle_strategy["run_id"], "persistent-heartbeat")
             self.assertIn("strategy_id", idle_strategy)
@@ -506,6 +540,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "commitment_expression_plan": "elevated",
                     "apology_repair_language_trace": "primary",
                 },
+            )
+            self.assertEqual(idle_strategy["queue_e_birth_repair_gate_status"], "closed")
+            self.assertEqual(idle_strategy["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+            self.assertEqual(idle_strategy["queue_e_birth_repair_pressure_level"], "elevated")
+            self.assertEqual(idle_strategy["queue_e_birth_repair_attention_target"], "regret_pressure")
+            self.assertEqual(
+                idle_strategy["queue_e_birth_repair_waiting_posture"],
+                "birth_repair_pressure_waiting",
+            )
+            self.assertTrue(
+                expected_queue_e_refs.issubset(
+                    set(idle_strategy["queue_e_birth_repair_ref_set"])
+                )
             )
             self.assertEqual(
                 resident_governance_state["schema_version"],
@@ -577,8 +624,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 resident_governance_state["governance_cadence_profile"],
                 "repair_weighted_resident_hold",
             )
+            self.assertEqual(
+                terminal_loop_state["queue_e_birth_repair_profile_ref"],
+                queue_e_profile_ref,
+            )
+            self.assertEqual(
+                terminal_loop_state["queue_e_birth_repair_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                terminal_loop_state["queue_e_birth_repair_waiting_posture"],
+                "birth_repair_pressure_waiting",
+            )
+            self.assertEqual(
+                resident_governance_state["queue_e_birth_repair_profile_ref"],
+                queue_e_profile_ref,
+            )
+            self.assertEqual(
+                resident_governance_state["queue_e_birth_repair_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                resident_governance_state["queue_e_birth_repair_waiting_posture"],
+                "birth_repair_pressure_waiting",
+            )
 
             process_report = self._read_json(paths["reports"] / "digital_life_process_report.json")
+            process_digest = self._read_json(paths["reports"] / "digital_life_process_digest.json")
+            process_receipt = self._read_json(paths["receipts"] / "digital_life_process_persistent-heartbeat.json")
             self.assertEqual(process_report["completed_dialogue_turns"], 0)
             self.assertEqual(process_report["heartbeat_counter"], 1)
             self.assertEqual(
@@ -647,6 +720,32 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "apology_repair_language_trace",
             )
             self.assertEqual(process_report["body_waiting_posture"], "guarded_attentive")
+            self.assertEqual(process_report["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+            self.assertEqual(process_report["queue_e_birth_repair_pressure_level"], "elevated")
+            self.assertEqual(process_report["queue_e_birth_repair_attention_target"], "regret_pressure")
+            self.assertEqual(
+                process_report["queue_e_birth_repair_waiting_posture"],
+                "birth_repair_pressure_waiting",
+            )
+            self.assertEqual(process_digest["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+            self.assertEqual(process_digest["queue_e_birth_repair_pressure_level"], "elevated")
+            self.assertIn(
+                "runtime/state/schema_runner/cross_file_logic.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/schema_runner/run_manifest.json",
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(queue_e_profile_ref, process_receipt["shared_object_refs"])
+            self.assertIn(
+                str((paths["schema_runner_state"] / "cross_file_logic.json").resolve()),
+                process_receipt["input_hashes"],
+            )
+            self.assertIn(
+                str((paths["schema_runner_state"] / "run_manifest.json").resolve()),
+                process_receipt["input_hashes"],
+            )
             self.assertEqual(
                 idle_continuity["replay_cue_bundle_ref"],
                 "runtime/state/replay/replay_cue_bundle.json",

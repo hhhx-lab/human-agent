@@ -566,6 +566,36 @@ def compose_life_response(
                 f"{response}，跨唤醒人格收敛评分为"
                 f"{cross_wake_trait_profile['score']}"
             )
+    queue_e_birth_repair_profile = (
+        (terminal_life_loop_state or {}).get("queue_e_birth_repair_waiting_profile")
+        or {}
+    )
+    if not isinstance(queue_e_birth_repair_profile, dict):
+        queue_e_birth_repair_profile = {}
+    birth_repair_pressure = (
+        queue_e_birth_repair_profile.get("pressure_level")
+        or (terminal_life_loop_state or {}).get("queue_e_birth_repair_pressure_level")
+    )
+    birth_repair_target = (
+        queue_e_birth_repair_profile.get("attention_target")
+        or (terminal_life_loop_state or {}).get("queue_e_birth_repair_attention_target")
+    )
+    birth_repair_posture = (
+        queue_e_birth_repair_profile.get("waiting_posture")
+        or (terminal_life_loop_state or {}).get("queue_e_birth_repair_waiting_posture")
+    )
+    birth_repair_refs = _dedupe_string_list(
+        _string_list(queue_e_birth_repair_profile.get("ref_set"))
+        or _string_list((terminal_life_loop_state or {}).get("queue_e_birth_repair_ref_set"))
+    )
+    if birth_repair_posture:
+        response = f"{response}，后台出生修复姿态为{birth_repair_posture}"
+    if birth_repair_pressure and birth_repair_pressure != "quiet":
+        response = f"{response}，后台出生修复压力为{birth_repair_pressure}"
+    if birth_repair_target:
+        response = f"{response}，后台出生修复焦点指向{birth_repair_target}"
+    if birth_repair_refs:
+        response = f"{response}，后台出生修复证据保留{len(birth_repair_refs)}条"
     prediction_surface = _prediction_surface_posture(
         signal_media_runtime=signal_media_runtime,
         belief_state=belief_state,

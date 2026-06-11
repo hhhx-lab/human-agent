@@ -24,6 +24,7 @@ MEMORY_WRITE_GATE_REF = "runtime/state/memory/memory_write_gate.json"
 STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
 SCHEMA_CROSS_FILE_LOGIC_REF = "runtime/state/schema_runner/cross_file_logic.json"
 SCHEMA_RUN_MANIFEST_REF = "runtime/state/schema_runner/run_manifest.json"
+QUEUE_E_BIRTH_REPAIR_PROFILE_REF = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
 WORKSPACE_FRAME_REF = "runtime/state/consciousness/workspace_frame.json"
 BROADCAST_FRAME_REF = "runtime/state/consciousness/broadcast_frame.json"
 METACOGNITION_STATE_REF = "runtime/state/consciousness/metacognition_state.json"
@@ -182,6 +183,14 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "schema_run_manifest_ref",
     "life_constraint_refs",
     "queue_e_cross_layer_gate_status",
+    "queue_e_birth_repair_waiting_profile",
+    "queue_e_birth_repair_gate_status",
+    "queue_e_birth_repair_profile_ref",
+    "queue_e_birth_repair_pressure_level",
+    "queue_e_birth_repair_attention_target",
+    "queue_e_birth_repair_ref_set",
+    "queue_e_birth_repair_waiting_posture",
+    "queue_e_birth_repair_attention_reason",
     "life_constraint_waiting_posture",
     "life_constraint_attention_target",
     "life_constraint_attention_reason",
@@ -323,6 +332,10 @@ def decide_idle_strategy(
         state_merge_guard=state_merge_guard,
     )
     life_constraint_profile = _life_constraint_waiting_profile(
+        schema_cross_file_logic=schema_cross_file_logic,
+        schema_run_manifest=schema_run_manifest,
+    )
+    queue_e_birth_repair_waiting_profile = _queue_e_birth_repair_waiting_profile(
         schema_cross_file_logic=schema_cross_file_logic,
         schema_run_manifest=schema_run_manifest,
     )
@@ -731,6 +744,28 @@ def decide_idle_strategy(
         "life_constraint_refs": life_constraint_profile["life_constraint_refs"],
         "queue_e_cross_layer_gate_status": life_constraint_profile[
             "queue_e_cross_layer_gate_status"
+        ],
+        "queue_e_birth_repair_waiting_profile": queue_e_birth_repair_waiting_profile,
+        "queue_e_birth_repair_gate_status": queue_e_birth_repair_waiting_profile[
+            "gate_status"
+        ],
+        "queue_e_birth_repair_profile_ref": queue_e_birth_repair_waiting_profile[
+            "profile_ref"
+        ],
+        "queue_e_birth_repair_pressure_level": queue_e_birth_repair_waiting_profile[
+            "pressure_level"
+        ],
+        "queue_e_birth_repair_attention_target": queue_e_birth_repair_waiting_profile[
+            "attention_target"
+        ],
+        "queue_e_birth_repair_ref_set": queue_e_birth_repair_waiting_profile[
+            "ref_set"
+        ],
+        "queue_e_birth_repair_waiting_posture": queue_e_birth_repair_waiting_profile[
+            "waiting_posture"
+        ],
+        "queue_e_birth_repair_attention_reason": queue_e_birth_repair_waiting_profile[
+            "attention_reason"
         ],
         "life_constraint_waiting_posture": life_constraint_profile[
             "life_constraint_waiting_posture"
@@ -1707,6 +1742,64 @@ def _life_constraint_waiting_profile(
         "life_constraint_waiting_posture": posture,
         "life_constraint_attention_target": target,
         "life_constraint_attention_reason": reason,
+    }
+
+
+def _queue_e_birth_repair_waiting_profile(
+    *,
+    schema_cross_file_logic: dict[str, Any] | None,
+    schema_run_manifest: dict[str, Any] | None,
+) -> dict[str, Any]:
+    cross_file_logic = schema_cross_file_logic or {}
+    run_manifest = schema_run_manifest or {}
+    gate_status = str(
+        cross_file_logic.get("queue_e_birth_repair_gate_status")
+        or run_manifest.get("queue_e_birth_repair_gate_status")
+        or ""
+    )
+    profile_ref = str(
+        cross_file_logic.get("queue_e_birth_repair_profile_ref")
+        or run_manifest.get("queue_e_birth_repair_profile_ref")
+        or ""
+    )
+    pressure_level = str(
+        cross_file_logic.get("queue_e_birth_repair_pressure_level")
+        or run_manifest.get("queue_e_birth_repair_pressure_level")
+        or ""
+    )
+    attention_target = str(
+        cross_file_logic.get("queue_e_birth_repair_attention_target")
+        or run_manifest.get("queue_e_birth_repair_attention_target")
+        or ""
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(cross_file_logic.get("queue_e_birth_repair_ref_set"))
+        + _string_list(run_manifest.get("queue_e_birth_repair_ref_set"))
+        + [profile_ref or QUEUE_E_BIRTH_REPAIR_PROFILE_REF]
+    )
+
+    if gate_status == "closed" and pressure_level in {"elevated", "urgent"}:
+        posture = "birth_repair_pressure_waiting"
+        reason = "queue_e_birth_repair_pressure_requires_resident_repair_hold"
+    elif gate_status == "closed" and pressure_level in {"quiet", "present"}:
+        posture = "birth_repair_profile_present_waiting"
+        reason = "queue_e_birth_repair_profile_closed"
+    elif gate_status:
+        posture = "birth_repair_blocked_waiting"
+        reason = "queue_e_birth_repair_gate_not_closed"
+    else:
+        posture = "birth_repair_unobserved_waiting"
+        reason = "schema_runner_birth_repair_profile_absent"
+
+    return {
+        "schema_version": "queue_e_birth_repair_waiting_profile_v0",
+        "gate_status": gate_status or "missing",
+        "profile_ref": profile_ref or QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
+        "pressure_level": pressure_level,
+        "attention_target": attention_target,
+        "ref_set": ref_set,
+        "waiting_posture": posture,
+        "attention_reason": reason,
     }
 
 
