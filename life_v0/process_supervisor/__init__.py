@@ -281,7 +281,11 @@ def run_digital_life_process(
         growth_patch_candidate_count=growth_patch_candidate_count,
         heartbeat_counter=heartbeat_counter,
         turn_counter=_current_dialogue_turn_count(language_dir / "dialogue_turn_log.jsonl"),
-        emit_output=lambda text: _print_line(output_stream, text),
+        emit_output=lambda text: _emit_life_output(
+            output_stream=output_stream,
+            input_stream=input_stream,
+            text=text,
+        ),
         now_iso=_now_iso,
         write_json=_write_json,
         append_jsonl=_append_jsonl,
@@ -383,6 +387,13 @@ def _append_jsonl(path: Path, payloads: list[dict[str, Any]]) -> None:
 def _print_line(stream: TextIO, text: str) -> None:
     stream.write(text + "\n")
     stream.flush()
+
+
+def _emit_life_output(*, output_stream: TextIO, input_stream: TextIO, text: str) -> None:
+    _print_line(output_stream, text)
+    record_output = getattr(input_stream, "record_output", None)
+    if callable(record_output):
+        record_output(text)
 
 
 def _read_json(path: Path) -> dict[str, Any]:

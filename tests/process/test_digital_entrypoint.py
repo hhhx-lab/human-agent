@@ -163,6 +163,22 @@ class DigitalEntrypointTests(unittest.TestCase):
             ]
             started_pid = 0
             try:
+                paths["terminal_state"].mkdir(parents=True, exist_ok=True)
+                (
+                    paths["terminal_state"] / "resident_lifecycle_command.json"
+                ).write_text(
+                    json.dumps(
+                        {
+                            "schema_version": "resident_lifecycle_command_v0",
+                            "command": "stop",
+                            "status": "requested",
+                            "requested_at": "2026-06-11T00:00:00+00:00",
+                        },
+                        ensure_ascii=False,
+                    ),
+                    encoding="utf-8",
+                )
+
                 started = subprocess.run(
                     start_command,
                     cwd=self.repo_root,
@@ -175,6 +191,11 @@ class DigitalEntrypointTests(unittest.TestCase):
                 started_pid = int(start_state["pid"])
                 self.assertTrue(self._pid_alive(started_pid))
                 self.assertEqual(start_state["status"], "background_starting")
+                cleared_command = self._read_json(
+                    paths["terminal_state"] / "resident_lifecycle_command.json"
+                )
+                self.assertEqual(cleared_command["status"], "cleared_for_start")
+                self.assertEqual(cleared_command["previous_command"], "stop")
 
                 active_state = self._wait_for_resident_status(
                     paths["terminal_state"],
@@ -187,6 +208,21 @@ class DigitalEntrypointTests(unittest.TestCase):
                 self.assertEqual(
                     active_state["residency_posture"],
                     "sleeping_waiting_for_relation_turn",
+                )
+                autonomous_state = self._wait_for_autonomous_activity(
+                    paths["terminal_state"],
+                    timeout_seconds=30,
+                )
+                self.assertGreaterEqual(autonomous_state["activity_count"], 1)
+                self.assertIn(
+                    autonomous_state["last_activity_kind"],
+                    [
+                        "sleep",
+                        "memory_recall",
+                        "self_thinking",
+                        "growth_rehearsal",
+                        "learning_consolidation",
+                    ],
                 )
 
                 status = subprocess.run(
@@ -211,6 +247,56 @@ class DigitalEntrypointTests(unittest.TestCase):
                 self.assertEqual(status_state["pid"], started_pid)
                 self.assertTrue(status_state["pid_alive"])
 
+                said = subprocess.run(
+                    [
+                        str(self.repo_root / "digital"),
+                        "life",
+                        "--state",
+                        str(paths["state_root"]),
+                        "--reports",
+                        str(paths["reports"]),
+                        "--receipts",
+                        str(paths["receipts"]),
+                        "--say",
+                        "你还在后台吗？",
+                        "--say-timeout-seconds",
+                        "30",
+                    ],
+                    cwd=self.repo_root,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(said.returncode, 0, said.stderr)
+                self.assertIn("你还在后台吗？", said.stdout)
+
+                inbox_events = self._read_jsonl(
+                    paths["terminal_state"] / "resident_relation_inbox.jsonl"
+                )
+                outbox_events = self._read_jsonl(
+                    paths["terminal_state"] / "resident_relation_outbox.jsonl"
+                )
+                queue_state = self._read_json(
+                    paths["terminal_state"] / "resident_relation_queue_state.json"
+                )
+                dialogue_events = self._read_jsonl(
+                    paths["language_state"] / "dialogue_turn_log.jsonl"
+                )
+                self.assertEqual(inbox_events[-1]["utterance"], "你还在后台吗？")
+                self.assertEqual(outbox_events[-1]["sequence"], inbox_events[-1]["sequence"])
+                self.assertEqual(outbox_events[-1]["status"], "completed")
+                self.assertIn("你还在后台吗？", outbox_events[-1]["response_text"])
+                self.assertEqual(queue_state["status"], "waiting_for_relation_turn")
+                self.assertEqual(queue_state["last_completed_sequence"], 1)
+                self.assertEqual(
+                    dialogue_events[-2]["event_role"],
+                    "external_relation_turn",
+                )
+                self.assertEqual(
+                    dialogue_events[-1]["event_role"],
+                    "digital_life_turn",
+                )
+
                 stopped = subprocess.run(
                     stop_command,
                     cwd=self.repo_root,
@@ -231,7 +317,10 @@ class DigitalEntrypointTests(unittest.TestCase):
                 )
                 self.assertEqual(final_state["status"], "stopped")
                 self.assertEqual(final_state["run_id"], "entry-background-resident")
+                self.assertEqual(final_state["last_relation_turn_sequence"], 1)
+                self.assertGreaterEqual(final_state["autonomous_activity_count"], 1)
                 self.assertEqual(process_report["status"], "closed")
+                self.assertEqual(process_report["completed_dialogue_turns"], 1)
                 self.assertEqual(process_report["exit_reason"], "explicit_exit")
             finally:
                 if started_pid and self._pid_alive(started_pid):
@@ -245,6 +334,13 @@ class DigitalEntrypointTests(unittest.TestCase):
 
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
+
+    def _read_jsonl(self, path: Path) -> list[dict]:
+        return [
+            json.loads(line)
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
 
     def _wait_for_resident_status(
         self,
@@ -265,6 +361,23 @@ class DigitalEntrypointTests(unittest.TestCase):
                     return last_state
             time.sleep(0.1)
         self.fail(f"resident status did not reach {expected_status}: {last_state}")
+
+    def _wait_for_autonomous_activity(
+        self,
+        terminal_dir: Path,
+        *,
+        timeout_seconds: float,
+    ) -> dict:
+        state_path = terminal_dir / "resident_autonomous_activity_state.json"
+        deadline = time.monotonic() + timeout_seconds
+        last_state: dict = {}
+        while time.monotonic() < deadline:
+            if state_path.exists():
+                last_state = self._read_json(state_path)
+                if int(last_state.get("activity_count", 0) or 0) >= 1:
+                    return last_state
+            time.sleep(0.1)
+        self.fail(f"resident autonomous activity did not start: {last_state}")
 
     def _pid_alive(self, pid: int) -> bool:
         if pid <= 0:

@@ -23,6 +23,7 @@ from .process_supervisor.resident_lifecycle import (
     mark_resident_lifecycle_stopped,
     read_resident_lifecycle_status,
     request_resident_stop,
+    send_resident_relation_turn,
     start_background_resident_process,
 )
 from .reporting import run_emit_report
@@ -66,6 +67,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Ask the resident process to close itself through its lifecycle command file.",
     )
+    life.add_argument(
+        "--say",
+        default=None,
+        help="Send one relation turn to the resident process and print its response.",
+    )
+    life.add_argument("--say-timeout-seconds", type=float, default=30.0)
     life.add_argument("--resident-sleep-seconds", type=float, default=1.0)
     life.add_argument("--stop-timeout-seconds", type=float, default=10.0)
     return parser
@@ -90,6 +97,18 @@ def main(argv: list[str] | None = None) -> int:
                 timeout_seconds=args.stop_timeout_seconds,
             )
             print(json.dumps(result.state, ensure_ascii=False, indent=2))
+            return result.exit_code
+        if args.say is not None:
+            result = send_resident_relation_turn(
+                terminal_dir=terminal_dir,
+                utterance=args.say,
+                wait_timeout_seconds=args.say_timeout_seconds,
+            )
+            response_text = result.state.get("response_text")
+            if response_text:
+                print(response_text)
+            else:
+                print(json.dumps(result.state, ensure_ascii=False, indent=2))
             return result.exit_code
         if args.background:
             result = start_background_resident_process(
