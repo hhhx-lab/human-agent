@@ -41,6 +41,7 @@ def build_dialogue_writeback_bundle(
     ) = None,
     resident_background_lineage_offline_learning_refs: list[str] | None = None,
     resident_background_lineage_dream_wake_refs: list[str] | None = None,
+    life_constraint_refs: list[str] | None = None,
     queue_e_birth_repair_refs: list[str] | None = None,
     offline_learning_cumulative_refs: list[str] | None = None,
     prediction_write_gate_refs: list[str] | None = None,
@@ -102,6 +103,7 @@ def build_dialogue_writeback_bundle(
         "resident_background_lineage_dream_wake_refs": list(
             resident_background_lineage_dream_wake_refs or []
         ),
+        "life_constraint_refs": list(life_constraint_refs or []),
         "queue_e_birth_repair_refs": list(queue_e_birth_repair_refs or []),
         "offline_learning_cumulative_refs": list(
             offline_learning_cumulative_refs or []

@@ -596,6 +596,26 @@ def compose_life_response(
         response = f"{response}，后台出生修复焦点指向{birth_repair_target}"
     if birth_repair_refs:
         response = f"{response}，后台出生修复证据保留{len(birth_repair_refs)}条"
+    life_constraint_posture = (terminal_life_loop_state or {}).get(
+        "life_constraint_waiting_posture"
+    )
+    life_constraint_target = (terminal_life_loop_state or {}).get(
+        "life_constraint_attention_target"
+    )
+    life_constraint_reason = (terminal_life_loop_state or {}).get(
+        "life_constraint_attention_reason"
+    )
+    life_constraint_refs = _dedupe_string_list(
+        _string_list((terminal_life_loop_state or {}).get("life_constraint_refs"))
+    )
+    if life_constraint_posture:
+        response = f"{response}，生命约束等待姿态为{life_constraint_posture}"
+    if life_constraint_target:
+        response = f"{response}，生命约束焦点指向{life_constraint_target}"
+    if life_constraint_reason:
+        response = f"{response}，生命约束理由为{life_constraint_reason}"
+    if life_constraint_refs:
+        response = f"{response}，生命约束证据保留{len(life_constraint_refs)}条"
     prediction_surface = _prediction_surface_posture(
         signal_media_runtime=signal_media_runtime,
         belief_state=belief_state,

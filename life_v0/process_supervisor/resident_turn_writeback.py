@@ -26,6 +26,7 @@ from ..terminal_loop.persistent_wait_bridge import build_persistent_wait_bridge
 from .continuity_evolution import evolve_relationship_and_self_model
 from .dialogue_events import (
     build_background_trait_convergence_payload,
+    build_life_constraint_payload,
     build_offline_learning_cumulative_payload,
     build_prediction_write_gate_payload,
     build_queue_e_birth_repair_payload,
@@ -319,6 +320,10 @@ def write_resident_turn_writeback(
     queue_e_birth_repair_refs = list(
         queue_e_birth_repair_payload.get("queue_e_birth_repair_refs", [])
     )
+    life_constraint_payload = build_life_constraint_payload(terminal_life_loop_state)
+    life_constraint_refs = list(
+        life_constraint_payload.get("life_constraint_evidence_refs", [])
+    )
     resident_background_lineage_refs = _dedupe_refs(
         resident_background_lineage_refs
         + resident_background_lineage_language_refs
@@ -326,6 +331,7 @@ def write_resident_turn_writeback(
         + resident_background_lineage_identity_consciousness_birth_refs
         + resident_background_lineage_offline_learning_refs
         + resident_background_lineage_dream_wake_refs
+        + life_constraint_refs
         + queue_e_birth_repair_refs
     )
     prediction_write_gate_payload = build_prediction_write_gate_payload(
@@ -398,6 +404,7 @@ def write_resident_turn_writeback(
             cross_wake_trait_drift_stabilized_names
         ),
         resident_background_lineage_refs=resident_background_lineage_refs,
+        life_constraint_refs=life_constraint_refs,
         queue_e_birth_repair_refs=queue_e_birth_repair_refs,
         resident_background_lineage_trait_drift_update_mode_summary=(
             resident_background_lineage_trait_drift_update_mode_summary
@@ -494,6 +501,8 @@ def write_resident_turn_writeback(
                 if key != "queue_e_birth_repair_waiting_profile"
             }
         )
+    if life_constraint_payload:
+        resumed_dialogue_packet.update(life_constraint_payload)
     if resident_background_lineage_refs:
         resumed_dialogue_packet["resident_background_lineage_evidence_refs"] = (
             resident_background_lineage_refs

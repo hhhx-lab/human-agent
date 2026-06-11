@@ -5132,6 +5132,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/reports/latest/pain_regret_repair_report.json",
                 queue_e_profile_ref,
             ]
+            expected_life_constraint_refs = [
+                "runtime/state/schema_runner/cross_file_logic.json",
+                "runtime/state/schema_runner/run_manifest.json",
+                "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+            ]
             idle_strategy_state.update(
                 {
                     "background_resident_governance_explanation_ref": "runtime/reports/latest/digital_life_resident_governance_explanation.json",
@@ -5358,6 +5364,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "queue_e_birth_repair_waiting_posture": "birth_repair_pressure_waiting",
                 "queue_e_birth_repair_attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
                 "queue_e_birth_repair_ref_set": expected_queue_e_birth_repair_refs,
+                "schema_cross_file_logic_ref": "runtime/state/schema_runner/cross_file_logic.json",
+                "schema_run_manifest_ref": "runtime/state/schema_runner/run_manifest.json",
+                "life_constraint_refs": [
+                    "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                    "runtime/state/consciousness/consciousness_probe_bundle.json",
+                ],
+                "queue_e_cross_layer_gate_status": {
+                    "value_orientation_gate": "closed",
+                    "consciousness_probe_gate": "closed",
+                    "body_affect_gate": "deferred_until_s06",
+                    "language_relationship_gate": "closed",
+                },
+                "life_constraint_waiting_posture": "schema_guarded_waiting",
+                "life_constraint_attention_target": "life_constraint_profile",
+                "life_constraint_attention_reason": "queue_e_cross_layer_gate_has_deferred_life_constraints",
             }
 
             result = run_live_turn_cycle(
@@ -5795,6 +5816,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 result.last_life_turn["queue_e_birth_repair_evidence_refs"],
                 expected_queue_e_birth_repair_refs,
             )
+            self.assertEqual(
+                result.last_life_turn["life_constraint_waiting_posture"],
+                "schema_guarded_waiting",
+            )
+            self.assertEqual(
+                result.last_life_turn["life_constraint_attention_target"],
+                "life_constraint_profile",
+            )
+            self.assertEqual(
+                result.last_life_turn["life_constraint_attention_reason"],
+                "queue_e_cross_layer_gate_has_deferred_life_constraints",
+            )
+            self.assertEqual(
+                result.last_life_turn["queue_e_cross_layer_gate_status"][
+                    "body_affect_gate"
+                ],
+                "deferred_until_s06",
+            )
+            self.assertEqual(
+                result.last_life_turn["life_constraint_evidence_refs"],
+                expected_life_constraint_refs,
+            )
             self.assertIn(
                 "累计离线学习已经延续到第3代",
                 result.last_life_turn["utterance"],
@@ -5806,6 +5849,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn("后台出生修复压力为elevated", result.emitted_output)
             self.assertIn("后台出生修复焦点指向regret_pressure", result.emitted_output)
             self.assertIn("后台出生修复证据保留4条", result.emitted_output)
+            self.assertIn("生命约束等待姿态为schema_guarded_waiting", result.emitted_output)
+            self.assertIn("生命约束焦点指向life_constraint_profile", result.emitted_output)
+            self.assertIn(
+                "生命约束理由为queue_e_cross_layer_gate_has_deferred_life_constraints",
+                result.emitted_output,
+            )
+            self.assertIn("生命约束证据保留2条", result.emitted_output)
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
             self.assertEqual(
@@ -5947,6 +5997,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/action/responsibility_loop_state.json",
                 "runtime/state/dream/offline_consolidation_frame.json",
                 queue_e_profile_ref,
+                "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                "runtime/state/schema_runner/cross_file_logic.json",
             ]:
                 self.assertIn(
                     ref,
@@ -5980,6 +6032,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 dialogue_writeback_bundle["queue_e_birth_repair_refs"],
                 expected_queue_e_birth_repair_refs,
             )
+            self.assertEqual(
+                dialogue_writeback_bundle["life_constraint_refs"],
+                expected_life_constraint_refs,
+            )
+            for ref in expected_life_constraint_refs:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle["resident_background_lineage_refs"],
+                )
             for ref in expected_queue_e_birth_repair_refs:
                 self.assertIn(
                     ref,
@@ -6146,6 +6207,31 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["queue_e_birth_repair_evidence_refs"],
                 expected_queue_e_birth_repair_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["life_constraint_refs"],
+                [
+                    "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                    "runtime/state/consciousness/consciousness_probe_bundle.json",
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["life_constraint_evidence_refs"],
+                dialogue_writeback_bundle["life_constraint_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["life_constraint_waiting_posture"],
+                "schema_guarded_waiting",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["life_constraint_attention_target"],
+                "life_constraint_profile",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_cross_layer_gate_status"][
+                    "body_affect_gate"
+                ],
+                "deferred_until_s06",
             )
 
     def test_live_turn_cycle_organ_recovers_from_response_exception(self):
@@ -11217,6 +11303,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/reports/latest/pain_regret_repair_report.json",
                 queue_e_profile_ref,
             ]
+            expected_life_constraint_refs = [
+                "runtime/state/schema_runner/cross_file_logic.json",
+                "runtime/state/schema_runner/run_manifest.json",
+                "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+            ]
             terminal_life_loop_state.update(
                 {
                     "queue_e_birth_repair_waiting_profile": {
@@ -11236,6 +11328,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "queue_e_birth_repair_waiting_posture": "birth_repair_pressure_waiting",
                     "queue_e_birth_repair_attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
                     "queue_e_birth_repair_ref_set": expected_queue_e_birth_repair_refs,
+                    "schema_cross_file_logic_ref": "runtime/state/schema_runner/cross_file_logic.json",
+                    "schema_run_manifest_ref": "runtime/state/schema_runner/run_manifest.json",
+                    "life_constraint_refs": [
+                        "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                        "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    ],
+                    "queue_e_cross_layer_gate_status": {
+                        "value_orientation_gate": "closed",
+                        "consciousness_probe_gate": "closed",
+                        "body_affect_gate": "deferred_until_s06",
+                        "language_relationship_gate": "closed",
+                    },
+                    "life_constraint_waiting_posture": "schema_guarded_waiting",
+                    "life_constraint_attention_target": "life_constraint_profile",
+                    "life_constraint_attention_reason": "queue_e_cross_layer_gate_has_deferred_life_constraints",
                 }
             )
             expected_background_offline_learning_refs = [
@@ -11669,6 +11776,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 dialogue_writeback_bundle["queue_e_birth_repair_refs"],
                 expected_queue_e_birth_repair_refs,
             )
+            self.assertEqual(
+                dialogue_writeback_bundle["life_constraint_refs"],
+                expected_life_constraint_refs,
+            )
+            for ref in expected_life_constraint_refs:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle["resident_background_lineage_refs"],
+                )
             for ref in expected_queue_e_birth_repair_refs:
                 self.assertIn(
                     ref,
@@ -11769,6 +11885,31 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["queue_e_birth_repair_evidence_refs"],
                 expected_queue_e_birth_repair_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["life_constraint_refs"],
+                [
+                    "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                    "runtime/state/consciousness/consciousness_probe_bundle.json",
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["life_constraint_evidence_refs"],
+                dialogue_writeback_bundle["life_constraint_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["life_constraint_waiting_posture"],
+                "schema_guarded_waiting",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["life_constraint_attention_target"],
+                "life_constraint_profile",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["queue_e_cross_layer_gate_status"][
+                    "body_affect_gate"
+                ],
+                "deferred_until_s06",
             )
             self.assertEqual(
                 persisted_terminal_loop["live_language_turn_refs"],

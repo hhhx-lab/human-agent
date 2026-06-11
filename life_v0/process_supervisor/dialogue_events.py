@@ -83,6 +83,7 @@ def build_life_turn_event(
         world_contact_summary_ref=world_contact_summary_ref,
         pain_regret_repair_report_ref=pain_regret_repair_report_ref,
     )
+    event.update(build_life_constraint_payload(terminal_life_loop_state))
     event.update(build_queue_e_birth_repair_payload(terminal_life_loop_state))
     event.update(build_background_trait_convergence_payload(terminal_life_loop_state))
     event.update(build_resident_background_lineage_payload(terminal_life_loop_state))
@@ -685,6 +686,73 @@ def build_queue_e_birth_repair_payload(
         payload["queue_e_birth_repair_ref_set"] = ref_set
         payload["queue_e_birth_repair_refs"] = ref_set
         payload["queue_e_birth_repair_evidence_refs"] = ref_set
+    return payload
+
+
+def build_life_constraint_payload(
+    terminal_life_loop_state: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not terminal_life_loop_state:
+        return {}
+
+    gate_status = terminal_life_loop_state.get("queue_e_cross_layer_gate_status")
+    if not isinstance(gate_status, dict):
+        gate_status = {}
+    schema_cross_file_logic_ref = terminal_life_loop_state.get(
+        "schema_cross_file_logic_ref"
+    )
+    schema_run_manifest_ref = terminal_life_loop_state.get("schema_run_manifest_ref")
+    life_constraint_refs = _dedupe_string_list(
+        _string_list(terminal_life_loop_state.get("life_constraint_refs"))
+    )
+    evidence_refs = _dedupe_string_list(
+        [
+            *[
+                str(ref)
+                for ref in [schema_cross_file_logic_ref, schema_run_manifest_ref]
+                if ref
+            ],
+            *life_constraint_refs,
+        ]
+    )
+    waiting_posture = terminal_life_loop_state.get("life_constraint_waiting_posture")
+    attention_target = terminal_life_loop_state.get("life_constraint_attention_target")
+    attention_reason = terminal_life_loop_state.get("life_constraint_attention_reason")
+
+    if not any(
+        [
+            gate_status,
+            schema_cross_file_logic_ref,
+            schema_run_manifest_ref,
+            life_constraint_refs,
+            waiting_posture,
+            attention_target,
+            attention_reason,
+        ]
+    ):
+        return {}
+
+    payload: dict[str, Any] = {}
+    if schema_cross_file_logic_ref:
+        payload["schema_cross_file_logic_ref"] = str(schema_cross_file_logic_ref)
+    if schema_run_manifest_ref:
+        payload["schema_run_manifest_ref"] = str(schema_run_manifest_ref)
+    if gate_status:
+        payload["queue_e_cross_layer_gate_status"] = {
+            str(key): str(value)
+            for key, value in gate_status.items()
+            if value is not None
+        }
+    if life_constraint_refs:
+        payload["life_constraint_refs"] = life_constraint_refs
+    if waiting_posture:
+        payload["life_constraint_waiting_posture"] = str(waiting_posture)
+    if attention_target:
+        payload["life_constraint_attention_target"] = str(attention_target)
+    if attention_reason:
+        payload["life_constraint_attention_reason"] = str(attention_reason)
+    if evidence_refs:
+        payload["life_constraint_evidence_refs"] = evidence_refs
     return payload
 
 
