@@ -250,12 +250,24 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 8. `background_continuity_profile#background_prediction_*` 能由 nested presence 恢复
 9. `response_surface.py` 生成的生命回应中包含后台预测写门姿态、预测关注对象和证据数量表达
 
+当前对后台身份-意识-出生准备 presence 跨关闭态恢复的补充规则是：凡是声称上一轮意识工作区、意识可报告性或出生准备度已经从关闭态恢复并影响下一拍等待治理，不能只看 `resident_background_lineage_state.identity_consciousness_birth_presence` 或 process digest。必须同时看到：
+
+1. `background_continuity_profile#background_identity_consciousness_birth_presence`
+2. `background_continuity_profile#workspace_frame_ref / background_workspace_frame_ref`
+3. `background_continuity_profile#consciousness_waiting_posture / background_consciousness_waiting_posture`
+4. `background_continuity_profile#birth_readiness_waiting_posture / background_birth_readiness_waiting_posture`
+5. `background_continuity_profile#background_identity_consciousness_birth_refs` 并入 `background_continuity_ref_set`
+6. `idle_strategy_state.json#workspace_frame_ref / background_workspace_frame_ref` 能在当前 Queue F 文件缺席时由 background 字段恢复
+7. `idle_strategy_state.json#consciousness_waiting_posture` 与 `birth_readiness_waiting_posture` 保留上一轮姿态，而不是降级为 unobserved
+8. `idle_strategy_state.json#governance_attention_target / governance_cadence_profile / next_idle_action` 被 `birth_open_waiting` 或 `birth_blocked_waiting` 调制
+9. `terminal_life_loop_state.json#background_identity_consciousness_birth_refs` 保留同一组 Queue F refs，使下一轮真实关系回合还能继续构建 `identity_consciousness_birth_presence`
+
 ## 当前阶段判断
 
 按当前工作区现实，最合理的判断是：
 
 1. Stage 0 已完成。
 2. Stage 1 本轮完成后可视为完成。
-3. 当前已经进入 Stage 3 的 Queue B / Queue A 联合补厚段，下一步应继续围绕常驻存在、实时语言驻留、人格慢变量驻留、状态合并治理驻留、prediction/write-gate 驻留、关系写回和长期恢复链推进。实时语言刷新已经从“回合前 Queue A 处理”推进为“等待态、关闭态、重启态都能继续携带上一轮语义焦点”的驻留链；人格慢变量也已经开始从后台驻留主状态体进入关闭态 report/digest/receipt、真实回合事件、写回包、恢复包和回应表面，并新增统一的 `cross_wake_trait_convergence_profile_v0` 画像来承接跨唤醒稳定/重新校准压力；长期状态合并治理也已经从 waiting / response surface 继续推进到关闭态 resident governance artifacts、persistent process report、process report/digest、receipt shared refs，并进一步成为 `resident_background_lineage_state.state_merge_presence`，进入下一轮真实回合事件、写回包、恢复包和后台回应表面；prediction/write-gate 六件套也已经从单轮 `prediction_write_gate_refs` 推进为 `resident_background_lineage_state.prediction_write_gate_presence`，能在下一轮真实回合、写回包、恢复包、background continuity 和回应表面继续被看见；累计离线学习压力也已经从后台 presence / 写回 refs 继续推进到 `continuity_evolution.py`，能在第一拍关系回合前触发 `offline_learning_reconsolidation_waiting` 并写入自我慢变量证据。后续声明跨唤醒人格画像、长期合并治理、prediction/write-gate 或累计离线学习压力已接入时，证据不能只看 live turn 或 response surface，还必须能从 process digest、process receipt、closeout resident governance artifacts、resident background lineage 和 continuity evolution 结果中追溯。
+3. 当前已经进入 Stage 3 的 Queue B / Queue A 联合补厚段，下一步应继续围绕常驻存在、实时语言驻留、人格慢变量驻留、状态合并治理驻留、prediction/write-gate 驻留、Queue F 身份-意识-出生准备驻留、关系写回和长期恢复链推进。实时语言刷新已经从“回合前 Queue A 处理”推进为“等待态、关闭态、重启态都能继续携带上一轮语义焦点”的驻留链；人格慢变量也已经开始从后台驻留主状态体进入关闭态 report/digest/receipt、真实回合事件、写回包、恢复包和回应表面，并新增统一的 `cross_wake_trait_convergence_profile_v0` 画像来承接跨唤醒稳定/重新校准压力；长期状态合并治理也已经从 waiting / response surface 继续推进到关闭态 resident governance artifacts、persistent process report、process report/digest、receipt shared refs，并进一步成为 `resident_background_lineage_state.state_merge_presence`，进入下一轮真实回合事件、写回包、恢复包和后台回应表面；prediction/write-gate 六件套也已经从单轮 `prediction_write_gate_refs` 推进为 `resident_background_lineage_state.prediction_write_gate_presence`，能在下一轮真实回合、写回包、恢复包、background continuity 和回应表面继续被看见；Queue F 的 identity/consciousness/birth readiness presence 也已经能从 nested lineage 与关闭态 artifacts 恢复成 `background_identity_consciousness_birth_*` 与 flat Queue F 字段，在当前 Queue F 文件缺席时继续调制 idle strategy 的出生准备姿态、attention、cadence 和 next idle action；累计离线学习压力也已经从后台 presence / 写回 refs 继续推进到 `continuity_evolution.py`，能在第一拍关系回合前触发 `offline_learning_reconsolidation_waiting` 并写入自我慢变量证据。后续声明跨唤醒人格画像、长期合并治理、prediction/write-gate、Queue F 身份-意识-出生准备或累计离线学习压力已接入时，证据不能只看 live turn 或 response surface，还必须能从 process digest、process receipt、closeout resident governance artifacts、resident background lineage、background continuity 和 continuity evolution 结果中追溯。
 
 因此这份文档本身的作用，就是把“为什么先 D/E，再 B/A，再 C/F”彻底钉死，防止断联后又回到散点式推进。

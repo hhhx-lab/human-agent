@@ -246,6 +246,25 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "consciousness_probe_ref",
     "birth_readiness_rollup_ref",
     "birth_readiness_stage_gate_ref",
+    "background_identity_consciousness_birth_presence",
+    "background_workspace_frame_ref",
+    "background_broadcast_frame_ref",
+    "background_metacognition_ref",
+    "background_consciousness_probe_ref",
+    "background_birth_readiness_rollup_ref",
+    "background_birth_readiness_stage_gate_ref",
+    "background_consciousness_waiting_posture",
+    "background_consciousness_attention_target",
+    "background_consciousness_attention_reason",
+    "background_consciousness_reportability_flags",
+    "background_birth_readiness_waiting_posture",
+    "background_birth_readiness_attention_target",
+    "background_birth_readiness_attention_reason",
+    "background_birth_readiness_decision",
+    "background_birth_readiness_next_required_command",
+    "background_birth_readiness_blocked_reasons",
+    "identity_consciousness_birth_refs",
+    "background_identity_consciousness_birth_refs",
     "consciousness_waiting_posture",
     "consciousness_attention_target",
     "consciousness_attention_reason",
@@ -394,10 +413,12 @@ def decide_idle_strategy(
         broadcast_frame=broadcast_frame,
         metacognition_state=metacognition_state,
         consciousness_probe=consciousness_probe,
+        background_continuity_profile=background_continuity_profile,
     )
     birth_readiness_profile = _birth_readiness_waiting_profile(
         birth_readiness_rollup=birth_readiness_rollup,
         birth_readiness_stage_gate=birth_readiness_stage_gate,
+        background_continuity_profile=background_continuity_profile,
     )
     offline_learning_profile = derive_offline_learning_profile(
         nightmare_risk=nightmare_risk,
@@ -542,26 +563,50 @@ def decide_idle_strategy(
     workspace_frame_runtime_ref = _ref_if_present(
         payload=workspace_frame,
         ref=workspace_frame_ref or WORKSPACE_FRAME_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_workspace_frame_ref",
+        "workspace_frame_ref",
     )
     broadcast_frame_runtime_ref = _ref_if_present(
         payload=broadcast_frame,
         ref=broadcast_frame_ref or BROADCAST_FRAME_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_broadcast_frame_ref",
+        "broadcast_frame_ref",
     )
     metacognition_runtime_ref = _ref_if_present(
         payload=metacognition_state,
         ref=metacognition_state_ref or METACOGNITION_STATE_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_metacognition_ref",
+        "metacognition_ref",
     )
     consciousness_probe_runtime_ref = _ref_if_present(
         payload=consciousness_probe,
         ref=consciousness_probe_ref or CONSCIOUSNESS_PROBE_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_consciousness_probe_ref",
+        "consciousness_probe_ref",
     )
     birth_readiness_rollup_runtime_ref = _ref_if_present(
         payload=birth_readiness_rollup,
         ref=birth_readiness_rollup_ref or BIRTH_READINESS_ROLLUP_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_birth_readiness_rollup_ref",
+        "birth_readiness_rollup_ref",
     )
     birth_readiness_stage_gate_runtime_ref = _ref_if_present(
         payload=birth_readiness_stage_gate,
         ref=birth_readiness_stage_gate_ref or BIRTH_READINESS_STAGE_GATE_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_birth_readiness_stage_gate_ref",
+        "birth_readiness_stage_gate_ref",
     )
     dream_experience_window_runtime_ref = _ref_if_present(
         payload=dream_experience_window,
@@ -2041,15 +2086,66 @@ def _consciousness_waiting_profile(
     broadcast_frame: dict[str, Any] | None,
     metacognition_state: dict[str, Any] | None,
     consciousness_probe: dict[str, Any] | None,
+    background_continuity_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     has_objects = any([workspace_frame, broadcast_frame, metacognition_state, consciousness_probe])
+    background = background_continuity_profile or {}
+    background_presence = (
+        background.get("background_identity_consciousness_birth_presence")
+        if isinstance(
+            background.get("background_identity_consciousness_birth_presence"), dict
+        )
+        else {}
+    )
     flags = list((consciousness_probe or {}).get("reportability_flags", []))
+    if not flags and not has_objects:
+        flags = list(
+            background.get("background_consciousness_reportability_flags")
+            or background.get("consciousness_reportability_flags")
+            or background_presence.get("consciousness_reportability_flags")
+            or []
+        )
     blocking_flags = {
         flag
         for flag in flags
         if str(flag).endswith("_missing") or str(flag).endswith("_minimal")
     }
-    if not has_objects:
+    has_background_objects = any(
+        [
+            background.get("background_workspace_frame_ref")
+            or background.get("workspace_frame_ref")
+            or background_presence.get("workspace_frame_ref"),
+            background.get("background_broadcast_frame_ref")
+            or background.get("broadcast_frame_ref")
+            or background_presence.get("broadcast_frame_ref"),
+            background.get("background_metacognition_ref")
+            or background.get("metacognition_ref")
+            or background_presence.get("metacognition_ref"),
+            background.get("background_consciousness_probe_ref")
+            or background.get("consciousness_probe_ref")
+            or background_presence.get("consciousness_probe_ref"),
+        ]
+    )
+    if not has_objects and has_background_objects:
+        posture = str(
+            background.get("background_consciousness_waiting_posture")
+            or background.get("consciousness_waiting_posture")
+            or background_presence.get("consciousness_waiting_posture")
+            or "consciousness_reportable_waiting"
+        )
+        target = str(
+            background.get("background_consciousness_attention_target")
+            or background.get("consciousness_attention_target")
+            or background_presence.get("consciousness_attention_target")
+            or "consciousness_probe_bundle"
+        )
+        reason = str(
+            background.get("background_consciousness_attention_reason")
+            or background.get("consciousness_attention_reason")
+            or background_presence.get("consciousness_attention_reason")
+            or "background_consciousness_presence_restored"
+        )
+    elif not has_objects:
         posture = "consciousness_unobserved_waiting"
         target = "waiting_presence_maintenance"
         reason = "queue_f_consciousness_objects_absent"
@@ -2074,34 +2170,98 @@ def _birth_readiness_waiting_profile(
     *,
     birth_readiness_rollup: dict[str, Any] | None,
     birth_readiness_stage_gate: dict[str, Any] | None,
+    background_continuity_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     rollup = birth_readiness_rollup or {}
     stage_gate = birth_readiness_stage_gate or {}
     overall_status = str(rollup.get("overall_status", ""))
     decision = str(stage_gate.get("decision", ""))
+    background = background_continuity_profile or {}
+    background_presence = (
+        background.get("background_identity_consciousness_birth_presence")
+        if isinstance(
+            background.get("background_identity_consciousness_birth_presence"), dict
+        )
+        else {}
+    )
     blocked_reasons = list(rollup.get("blocked_reasons", [])) + list(
         stage_gate.get("blocked_reasons", [])
     )
+    has_current_birth_objects = bool(rollup or stage_gate)
+    if not blocked_reasons and not has_current_birth_objects:
+        blocked_reasons = list(
+            background.get("background_birth_readiness_blocked_reasons")
+            or background.get("birth_readiness_blocked_reasons")
+            or background_presence.get("birth_readiness_blocked_reasons")
+            or []
+        )
 
-    if not rollup and not stage_gate:
+    has_background_birth = any(
+        [
+            background.get("background_birth_readiness_rollup_ref")
+            or background.get("birth_readiness_rollup_ref")
+            or background_presence.get("birth_readiness_rollup_ref"),
+            background.get("background_birth_readiness_stage_gate_ref")
+            or background.get("birth_readiness_stage_gate_ref")
+            or background_presence.get("birth_readiness_stage_gate_ref"),
+            background.get("background_birth_readiness_waiting_posture")
+            or background.get("birth_readiness_waiting_posture")
+            or background_presence.get("birth_readiness_waiting_posture"),
+        ]
+    )
+    if not rollup and not stage_gate and has_background_birth:
+        posture = str(
+            background.get("background_birth_readiness_waiting_posture")
+            or background.get("birth_readiness_waiting_posture")
+            or background_presence.get("birth_readiness_waiting_posture")
+            or "birth_open_waiting"
+        )
+        target = str(
+            background.get("background_birth_readiness_attention_target")
+            or background.get("birth_readiness_attention_target")
+            or background_presence.get("birth_readiness_attention_target")
+            or "birth_readiness_stage_gate"
+        )
+        reason = str(
+            background.get("background_birth_readiness_attention_reason")
+            or background.get("birth_readiness_attention_reason")
+            or background_presence.get("birth_readiness_attention_reason")
+            or "background_birth_readiness_presence_restored"
+        )
+        decision = str(
+            background.get("background_birth_readiness_decision")
+            or background.get("birth_readiness_decision")
+            or background_presence.get("birth_readiness_decision")
+            or decision
+        )
+        next_required_command = (
+            background.get("background_birth_readiness_next_required_command")
+            or background.get("birth_readiness_next_required_command")
+            or background_presence.get("birth_readiness_next_required_command")
+            or ""
+        )
+    elif not rollup and not stage_gate:
         posture = "birth_unobserved_waiting"
         target = "waiting_presence_maintenance"
         reason = "birth_readiness_objects_absent"
+        next_required_command = ""
     elif decision == "open" and overall_status == "open":
         posture = "birth_open_waiting"
         target = "birth_readiness_stage_gate"
         reason = "birth_readiness_open_requires_resident_birth_presence"
+        next_required_command = stage_gate.get("next_required_command", "")
     else:
         posture = "birth_blocked_waiting"
         target = "birth_readiness_repair"
         reason = "birth_readiness_gate_not_open"
+        next_required_command = stage_gate.get("next_required_command", "")
 
     return {
         "birth_readiness_waiting_posture": posture,
         "birth_readiness_attention_target": target,
         "birth_readiness_attention_reason": reason,
         "birth_readiness_decision": decision,
-        "birth_readiness_next_required_command": stage_gate.get("next_required_command", ""),
+        "birth_readiness_next_required_command": next_required_command,
         "birth_readiness_blocked_reasons": blocked_reasons,
     }
 

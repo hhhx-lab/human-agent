@@ -262,6 +262,9 @@ def load_background_continuity_profile(
     resident_background_prediction_write_gate_presence = _dict_or_empty(
         resident_background_lineage_state.get("prediction_write_gate_presence")
     )
+    resident_background_identity_consciousness_birth_presence = _dict_or_empty(
+        resident_background_lineage_state.get("identity_consciousness_birth_presence")
+    )
     offline_learning_cumulative_profile = _dict_or_empty(
         resident_governance_state.get("offline_learning_cumulative_profile")
         or snapshot.get("offline_learning_cumulative_profile")
@@ -521,6 +524,220 @@ def load_background_continuity_profile(
             "memory_write_gate_policy"
         )
     )
+    workspace_frame_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("workspace_frame_ref", "background_workspace_frame_ref"),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "workspace_frame_ref"
+    )
+    broadcast_frame_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("broadcast_frame_ref", "background_broadcast_frame_ref"),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "broadcast_frame_ref"
+    )
+    metacognition_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("metacognition_ref", "background_metacognition_ref"),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "metacognition_ref"
+    )
+    consciousness_probe_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("consciousness_probe_ref", "background_consciousness_probe_ref"),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "consciousness_probe_ref"
+    )
+    birth_readiness_rollup_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "birth_readiness_rollup_ref",
+            "background_birth_readiness_rollup_ref",
+        ),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "birth_readiness_rollup_ref"
+    )
+    birth_readiness_stage_gate_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "birth_readiness_stage_gate_ref",
+            "background_birth_readiness_stage_gate_ref",
+        ),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "birth_readiness_stage_gate_ref"
+    )
+    consciousness_waiting_posture = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "consciousness_waiting_posture",
+            "background_consciousness_waiting_posture",
+        ),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "consciousness_waiting_posture"
+    )
+    consciousness_attention_target = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "consciousness_attention_target",
+            "background_consciousness_attention_target",
+        ),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "consciousness_attention_target"
+    )
+    consciousness_attention_reason = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "consciousness_attention_reason",
+            "background_consciousness_attention_reason",
+        ),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "consciousness_attention_reason"
+    )
+    consciousness_reportability_flags = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "consciousness_reportability_flags",
+                "background_consciousness_reportability_flags",
+            ),
+        )
+        + _list_or_empty(
+            resident_background_identity_consciousness_birth_presence.get(
+                "consciousness_reportability_flags"
+            )
+        )
+    )
+    birth_readiness_waiting_posture = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "birth_readiness_waiting_posture",
+            "background_birth_readiness_waiting_posture",
+        ),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "birth_readiness_waiting_posture"
+    )
+    birth_readiness_attention_target = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "birth_readiness_attention_target",
+            "background_birth_readiness_attention_target",
+        ),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "birth_readiness_attention_target"
+    )
+    birth_readiness_attention_reason = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "birth_readiness_attention_reason",
+            "background_birth_readiness_attention_reason",
+        ),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "birth_readiness_attention_reason"
+    )
+    birth_readiness_decision = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("birth_readiness_decision", "background_birth_readiness_decision"),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "birth_readiness_decision"
+    )
+    birth_readiness_next_required_command = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "birth_readiness_next_required_command",
+            "background_birth_readiness_next_required_command",
+        ),
+    ) or resident_background_identity_consciousness_birth_presence.get(
+        "birth_readiness_next_required_command"
+    )
+    birth_readiness_blocked_reasons = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "birth_readiness_blocked_reasons",
+                "background_birth_readiness_blocked_reasons",
+            ),
+        )
+        + _list_or_empty(
+            resident_background_identity_consciousness_birth_presence.get(
+                "birth_readiness_blocked_reasons"
+            )
+        )
+    )
+    identity_consciousness_birth_refs = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "identity_consciousness_birth_refs",
+                "background_identity_consciousness_birth_refs",
+            ),
+        )
+        + _list_or_empty(
+            resident_background_identity_consciousness_birth_presence.get(
+                "identity_consciousness_birth_refs"
+            )
+        )
+        + _list_or_empty(
+            [
+                workspace_frame_ref,
+                broadcast_frame_ref,
+                metacognition_ref,
+                consciousness_probe_ref,
+                birth_readiness_rollup_ref,
+                birth_readiness_stage_gate_ref,
+            ]
+        )
+    )
     schema_cross_file_logic_ref = _first_present(
         resident_governance_state,
         snapshot,
@@ -769,6 +986,8 @@ def load_background_continuity_profile(
         ref_set = _dedupe_list(ref_set + [str(queue_e_birth_repair_profile_ref)])
     if queue_e_birth_repair_ref_set:
         ref_set = _dedupe_list(ref_set + queue_e_birth_repair_ref_set)
+    if identity_consciousness_birth_refs:
+        ref_set = _dedupe_list(ref_set + identity_consciousness_birth_refs)
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
@@ -892,6 +1111,53 @@ def load_background_continuity_profile(
     if memory_write_gate_policy:
         profile["background_memory_write_gate_policy"] = str(
             memory_write_gate_policy
+        )
+    if resident_background_identity_consciousness_birth_presence:
+        profile["background_identity_consciousness_birth_presence"] = (
+            resident_background_identity_consciousness_birth_presence
+        )
+    for key, value in (
+        ("workspace_frame_ref", workspace_frame_ref),
+        ("broadcast_frame_ref", broadcast_frame_ref),
+        ("metacognition_ref", metacognition_ref),
+        ("consciousness_probe_ref", consciousness_probe_ref),
+        ("birth_readiness_rollup_ref", birth_readiness_rollup_ref),
+        ("birth_readiness_stage_gate_ref", birth_readiness_stage_gate_ref),
+        ("consciousness_waiting_posture", consciousness_waiting_posture),
+        ("consciousness_attention_target", consciousness_attention_target),
+        ("consciousness_attention_reason", consciousness_attention_reason),
+        ("birth_readiness_waiting_posture", birth_readiness_waiting_posture),
+        ("birth_readiness_attention_target", birth_readiness_attention_target),
+        ("birth_readiness_attention_reason", birth_readiness_attention_reason),
+        ("birth_readiness_decision", birth_readiness_decision),
+        (
+            "birth_readiness_next_required_command",
+            birth_readiness_next_required_command,
+        ),
+    ):
+        if value:
+            profile[key] = str(value)
+            profile[f"background_{key}"] = str(value)
+    if consciousness_reportability_flags:
+        profile["consciousness_reportability_flags"] = (
+            consciousness_reportability_flags
+        )
+        profile["background_consciousness_reportability_flags"] = (
+            consciousness_reportability_flags
+        )
+    if birth_readiness_blocked_reasons:
+        profile["birth_readiness_blocked_reasons"] = (
+            birth_readiness_blocked_reasons
+        )
+        profile["background_birth_readiness_blocked_reasons"] = (
+            birth_readiness_blocked_reasons
+        )
+    if identity_consciousness_birth_refs:
+        profile["identity_consciousness_birth_refs"] = (
+            identity_consciousness_birth_refs
+        )
+        profile["background_identity_consciousness_birth_refs"] = (
+            identity_consciousness_birth_refs
         )
     if schema_cross_file_logic_ref:
         profile["background_schema_cross_file_logic_ref"] = str(

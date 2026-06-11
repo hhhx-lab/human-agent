@@ -2017,6 +2017,98 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "repair_first_quarantine",
         )
 
+    def test_background_continuity_restores_identity_consciousness_birth_from_lineage_presence(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        expected_refs = [
+            "runtime/state/consciousness/workspace_frame.json",
+            "runtime/state/consciousness/broadcast_frame.json",
+            "runtime/state/consciousness/metacognition_state.json",
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+            "runtime/state/life_targets/birth_readiness_rollup.json",
+            "runtime/state/life_targets/birth_readiness_stage_gate.json",
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            terminal_dir = root / "state" / "terminal"
+            reports_dir = root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "run_id": "queue-f-lineage-restore",
+                    "resident_background_lineage_state": {
+                        "schema_version": "resident_background_lineage_state_v0",
+                        "identity_consciousness_birth_presence": {
+                            "workspace_frame_ref": expected_refs[0],
+                            "broadcast_frame_ref": expected_refs[1],
+                            "metacognition_ref": expected_refs[2],
+                            "consciousness_probe_ref": expected_refs[3],
+                            "birth_readiness_rollup_ref": expected_refs[4],
+                            "birth_readiness_stage_gate_ref": expected_refs[5],
+                            "consciousness_waiting_posture": "consciousness_reportable_waiting",
+                            "consciousness_attention_target": "consciousness_probe_bundle",
+                            "consciousness_attention_reason": "workspace_broadcast_metacognition_reportable",
+                            "consciousness_reportability_flags": [
+                                "workspace_access_present",
+                                "broadcast_targets_present",
+                                "metacognition_present",
+                            ],
+                            "birth_readiness_waiting_posture": "birth_open_waiting",
+                            "birth_readiness_attention_target": "birth_readiness_stage_gate",
+                            "birth_readiness_attention_reason": "birth_readiness_open_requires_resident_birth_presence",
+                            "birth_readiness_decision": "open",
+                            "birth_readiness_next_required_command": "digital life",
+                            "identity_consciousness_birth_refs": expected_refs,
+                        },
+                    },
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+        self.assertEqual(profile["workspace_frame_ref"], expected_refs[0])
+        self.assertEqual(profile["background_workspace_frame_ref"], expected_refs[0])
+        self.assertEqual(profile["consciousness_probe_ref"], expected_refs[3])
+        self.assertEqual(
+            profile["background_consciousness_waiting_posture"],
+            "consciousness_reportable_waiting",
+        )
+        self.assertEqual(
+            profile["background_consciousness_reportability_flags"],
+            [
+                "workspace_access_present",
+                "broadcast_targets_present",
+                "metacognition_present",
+            ],
+        )
+        self.assertEqual(
+            profile["background_birth_readiness_waiting_posture"],
+            "birth_open_waiting",
+        )
+        self.assertEqual(
+            profile["background_birth_readiness_decision"],
+            "open",
+        )
+        self.assertEqual(
+            profile["background_birth_readiness_next_required_command"],
+            "digital life",
+        )
+        self.assertEqual(
+            profile["background_identity_consciousness_birth_refs"],
+            expected_refs,
+        )
+        for ref in expected_refs:
+            self.assertIn(ref, profile["background_continuity_ref_set"])
+
     def test_idle_strategy_carries_queue_f_birth_and_consciousness_into_waiting_governance(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
 
@@ -2104,6 +2196,104 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "birth_ready_resident_presence",
         )
         self.assertEqual(idle_strategy["heartbeat_interval_ms"], 44)
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "refresh_waiting_heartbeat_with_birth_ready_presence_hold",
+        )
+
+    def test_idle_strategy_restores_queue_f_from_background_continuity(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        expected_refs = [
+            "runtime/state/consciousness/workspace_frame.json",
+            "runtime/state/consciousness/broadcast_frame.json",
+            "runtime/state/consciousness/metacognition_state.json",
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+            "runtime/state/life_targets/birth_readiness_rollup.json",
+            "runtime/state/life_targets/birth_readiness_stage_gate.json",
+        ]
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-background-queue-f",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            replay_cue_bundle=None,
+            offline_consolidation_frame=None,
+            growth_patch_candidate_queue=None,
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_generation": 2,
+                "background_workspace_frame_ref": expected_refs[0],
+                "background_broadcast_frame_ref": expected_refs[1],
+                "background_metacognition_ref": expected_refs[2],
+                "background_consciousness_probe_ref": expected_refs[3],
+                "background_birth_readiness_rollup_ref": expected_refs[4],
+                "background_birth_readiness_stage_gate_ref": expected_refs[5],
+                "background_consciousness_waiting_posture": "consciousness_reportable_waiting",
+                "background_consciousness_attention_target": "consciousness_probe_bundle",
+                "background_consciousness_attention_reason": "workspace_broadcast_metacognition_reportable",
+                "background_consciousness_reportability_flags": [
+                    "workspace_access_present",
+                    "broadcast_targets_present",
+                    "metacognition_present",
+                ],
+                "background_birth_readiness_waiting_posture": "birth_open_waiting",
+                "background_birth_readiness_attention_target": "birth_readiness_stage_gate",
+                "background_birth_readiness_attention_reason": "birth_readiness_open_requires_resident_birth_presence",
+                "background_birth_readiness_decision": "open",
+                "background_birth_readiness_next_required_command": "digital life",
+                "background_identity_consciousness_birth_refs": expected_refs,
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(idle_strategy["workspace_frame_ref"], expected_refs[0])
+        self.assertEqual(
+            idle_strategy["background_workspace_frame_ref"],
+            expected_refs[0],
+        )
+        self.assertEqual(
+            idle_strategy["consciousness_waiting_posture"],
+            "consciousness_reportable_waiting",
+        )
+        self.assertEqual(
+            idle_strategy["consciousness_reportability_flags"],
+            [
+                "workspace_access_present",
+                "broadcast_targets_present",
+                "metacognition_present",
+            ],
+        )
+        self.assertEqual(
+            idle_strategy["birth_readiness_waiting_posture"],
+            "birth_open_waiting",
+        )
+        self.assertEqual(idle_strategy["birth_readiness_decision"], "open")
+        self.assertEqual(
+            idle_strategy["birth_readiness_next_required_command"],
+            "digital life",
+        )
+        self.assertEqual(
+            idle_strategy["background_identity_consciousness_birth_refs"],
+            expected_refs,
+        )
+        self.assertEqual(
+            idle_strategy["governance_attention_target"],
+            "birth_readiness_stage_gate",
+        )
+        self.assertEqual(
+            idle_strategy["governance_cadence_profile"],
+            "birth_ready_resident_presence",
+        )
         self.assertEqual(
             idle_strategy["next_idle_action"],
             "refresh_waiting_heartbeat_with_birth_ready_presence_hold",
