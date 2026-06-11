@@ -5317,6 +5317,60 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 4,
             )
 
+    def test_background_continuity_builds_live_language_presence_profile_shallow(self):
+        from life_v0.process_supervisor.background_continuity import (
+            _background_live_language_presence_profile,
+        )
+
+        profile = _background_live_language_presence_profile(
+            live_language_turn_refs=[
+                "runtime/state/language/language_percept_frame.json",
+                "runtime/state/language/semantic_map_frame.json",
+            ],
+            last_live_semantic_focus="repair_commitment_shared_language",
+            source_profile={
+                "schema_version": "live_language_presence_profile_v0",
+                "continuity_mode": "current_turn_plus_background_language_presence",
+                "ref_count": 6,
+                "ref_set": [
+                    "runtime/state/language/language_percept_frame.json",
+                    "runtime/state/language/semantic_map_frame.json",
+                    "runtime/state/language/inner_speech_frame.json",
+                    "runtime/state/language/expression_monitor_state.json",
+                    "runtime/state/language/expression_plan.json",
+                    "runtime/state/language/dialogue_turn_log.jsonl",
+                ],
+                "source_continuity_mode": "legacy_recursive_presence",
+                "source_ref_count": 6,
+                "source_presence_profile": {
+                    "continuity_mode": "legacy_nested_presence",
+                    "ref_count": 6,
+                    "source_presence_profile": {
+                        "continuity_mode": "legacy_deeper_presence",
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(
+            profile["schema_version"],
+            "background_live_language_presence_profile_v0",
+        )
+        self.assertEqual(
+            profile["continuity_mode"],
+            "closed_process_live_language_carryover",
+        )
+        self.assertEqual(
+            profile["ref_count"],
+            6,
+        )
+        self.assertEqual(
+            profile["source_continuity_mode"],
+            "legacy_nested_presence",
+        )
+        self.assertEqual(profile["source_ref_count"], 6)
+        self.assertNotIn("source_presence_profile", profile)
+
     def test_waiting_heartbeat_carries_trait_drift_update_mode_history(self):
         from life_v0.process_supervisor.heartbeat import write_waiting_heartbeat
 
