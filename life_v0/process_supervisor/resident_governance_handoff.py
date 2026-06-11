@@ -122,10 +122,15 @@ def write_live_turn_waiting_governance_handoff(
             terminal_life_loop_state,
         )
     )
-    resident_background_lineage_state = build_resident_background_lineage_state(
-        resident_governance_state,
-        governance_phase="live_turn_waiting_handoff",
-        status="active",
+    resident_background_lineage_state = _merge_handoff_lineage_state(
+        existing_lineage_state=_dict_or_empty(
+            terminal_life_loop_state.get("resident_background_lineage_state")
+        ),
+        rebuilt_lineage_state=build_resident_background_lineage_state(
+            resident_governance_state,
+            governance_phase="live_turn_waiting_handoff",
+            status="active",
+        ),
     )
     if resident_background_lineage_state:
         resident_governance_state["resident_background_lineage_state"] = (
@@ -133,6 +138,42 @@ def write_live_turn_waiting_governance_handoff(
         )
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     return resident_governance_state
+
+
+def _merge_handoff_lineage_state(
+    *,
+    existing_lineage_state: dict[str, Any],
+    rebuilt_lineage_state: dict[str, Any],
+) -> dict[str, Any]:
+    if not existing_lineage_state:
+        return rebuilt_lineage_state
+    if not rebuilt_lineage_state:
+        merged = dict(existing_lineage_state)
+    else:
+        merged = dict(rebuilt_lineage_state)
+        for key, value in existing_lineage_state.items():
+            if key.endswith("_presence") and value:
+                merged[key] = value
+            elif key == "evidence_refs":
+                merged[key] = _dedupe_string_list(
+                    _string_list(value) + _string_list(rebuilt_lineage_state.get(key))
+                )
+            elif key not in merged or _is_empty_scalar(merged[key]):
+                merged[key] = value
+            elif isinstance(merged[key], (list, dict)) and not merged[key]:
+                merged[key] = value
+    merged["schema_version"] = "resident_background_lineage_state_v0"
+    merged["governance_phase"] = "live_turn_waiting_handoff"
+    merged["status"] = "active"
+    return merged
+
+
+def _is_empty_scalar(value: Any) -> bool:
+    return value is None or value == "" or value is False
+
+
+def _dict_or_empty(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
 
 
 def _read_json_if_exists(path: Path) -> dict[str, Any]:

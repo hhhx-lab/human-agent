@@ -6512,6 +6512,46 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ]["trait_convergence_history_focus"],
                 "trait_stability_hold",
             )
+            self.assertEqual(
+                resident_governance_state[
+                    "resident_process_lease_history_profile_ref"
+                ],
+                "runtime/state/terminal/resident_process_lease_history_profile.json",
+            )
+            self.assertEqual(
+                resident_governance_state[
+                    "resident_process_identity_continuity_state"
+                ],
+                "active_residency",
+            )
+            self.assertEqual(
+                resident_governance_state[
+                    "resident_process_identity_pressure_level"
+                ],
+                "present",
+            )
+            self.assertGreaterEqual(
+                resident_governance_state[
+                    "resident_process_lease_history_event_count"
+                ],
+                1,
+            )
+            self.assertEqual(
+                resident_governance_state[
+                    "resident_background_lineage_state"
+                ]["resident_process_identity_presence"][
+                    "resident_process_identity_continuity_state"
+                ],
+                "interrupted_then_recovered",
+            )
+            self.assertEqual(
+                resident_governance_state[
+                    "resident_background_lineage_state"
+                ]["resident_process_identity_presence"][
+                    "resident_process_identity_refs"
+                ],
+                expected_resident_process_identity_refs,
+            )
             self.assertIn(
                 "runtime/state/relationship/relationship_timeline.json",
                 resident_governance_state["resident_background_lineage_state"][
