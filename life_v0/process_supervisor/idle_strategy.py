@@ -7,6 +7,11 @@ from .offline_learning_signals import (
     build_offline_learning_cumulative_profile,
     derive_offline_learning_profile,
 )
+from .resident_autonomous_activity import (
+    ACTIVITY_STATE_REFS,
+    RESIDENT_AUTONOMOUS_ACTIVITY_REF,
+    RESIDENT_AUTONOMOUS_ACTIVITY_STATE_REF,
+)
 from .state_merge_signals import state_merge_long_term_change_profile
 from .trait_convergence_signals import cross_wake_trait_convergence_profile
 
@@ -110,6 +115,16 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_lineage_governance_profile",
     "background_resident_lineage_state",
     "resident_background_lineage_state",
+    "resident_autonomous_activity_ref",
+    "resident_autonomous_activity_state_ref",
+    "resident_autonomous_activity_presence_profile",
+    "resident_autonomous_activity_ref_set",
+    "autonomous_activity_count",
+    "autonomous_activity_kind_counts",
+    "last_autonomous_activity_kind",
+    "last_autonomous_activity_at",
+    "last_autonomous_activity_state_ref",
+    "resident_autonomous_activity_state_refs",
     "background_resident_governance_state_ref",
     "background_convergence_summary_ref",
     "background_convergence_history_ref",
@@ -277,6 +292,7 @@ def decide_idle_strategy(
     consciousness_probe: dict[str, Any] | None = None,
     birth_readiness_rollup: dict[str, Any] | None = None,
     birth_readiness_stage_gate: dict[str, Any] | None = None,
+    resident_autonomous_activity_state: dict[str, Any] | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
     dream_experience_window_ref: str | None = None,
@@ -552,6 +568,9 @@ def decide_idle_strategy(
         wake_integration_frame_ref=wake_integration_frame_runtime_ref,
         dream_fact_gate_decision_ref=dream_fact_gate_decision_runtime_ref,
     )
+    autonomous_activity_presence_profile = _autonomous_activity_presence_profile(
+        resident_autonomous_activity_state
+    )
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_ref=signal_media_ref,
         belief_state_ref=belief_state_runtime_ref,
@@ -702,6 +721,40 @@ def decide_idle_strategy(
             "wake_repair_target_count"
         ),
         "dream_wake_ref_set": dream_wake_presence_profile.get("ref_set", []),
+        "resident_autonomous_activity_ref": (
+            RESIDENT_AUTONOMOUS_ACTIVITY_REF
+            if autonomous_activity_presence_profile
+            else None
+        ),
+        "resident_autonomous_activity_state_ref": (
+            RESIDENT_AUTONOMOUS_ACTIVITY_STATE_REF
+            if autonomous_activity_presence_profile
+            else None
+        ),
+        "resident_autonomous_activity_presence_profile": (
+            autonomous_activity_presence_profile
+        ),
+        "resident_autonomous_activity_ref_set": (
+            autonomous_activity_presence_profile.get("ref_set", [])
+        ),
+        "autonomous_activity_count": autonomous_activity_presence_profile.get(
+            "activity_count"
+        ),
+        "autonomous_activity_kind_counts": autonomous_activity_presence_profile.get(
+            "activity_kind_counts", {}
+        ),
+        "last_autonomous_activity_kind": autonomous_activity_presence_profile.get(
+            "last_activity_kind"
+        ),
+        "last_autonomous_activity_at": autonomous_activity_presence_profile.get(
+            "last_activity_at"
+        ),
+        "last_autonomous_activity_state_ref": autonomous_activity_presence_profile.get(
+            "last_activity_state_ref"
+        ),
+        "resident_autonomous_activity_state_refs": (
+            autonomous_activity_presence_profile.get("activity_state_refs", {})
+        ),
         "belief_learning_plan_ref": belief_learning_plan_ref if belief_learning_plan else None,
         "language_learning_plan_ref": language_learning_plan_ref if language_learning_plan else None,
         "relationship_learning_plan_ref": (
@@ -998,6 +1051,61 @@ def _dream_wake_presence_profile(
         "dream_fact_gate_ref_count": len(dream_fact_refs),
         "ref_set": ref_set,
     }
+
+
+def _autonomous_activity_presence_profile(
+    resident_autonomous_activity_state: dict[str, Any] | None,
+) -> dict[str, Any]:
+    state = _dict_or_empty(resident_autonomous_activity_state)
+    if not state:
+        return {}
+
+    activity_state_refs = _dict_or_empty(state.get("activity_state_refs"))
+    if not activity_state_refs:
+        activity_state_refs = dict(ACTIVITY_STATE_REFS)
+    activity_kind_counts = _dict_or_empty(state.get("activity_kind_counts"))
+    activity_count = _int_or_zero(state.get("activity_count"))
+    last_activity_kind = state.get("last_activity_kind")
+    last_activity_state_ref = state.get("last_activity_state_ref")
+    ref_set = _dedupe_string_list(
+        [
+            RESIDENT_AUTONOMOUS_ACTIVITY_REF,
+            RESIDENT_AUTONOMOUS_ACTIVITY_STATE_REF,
+            *[str(ref) for ref in activity_state_refs.values() if ref],
+            *[
+                str(ref)
+                for ref in [
+                    last_activity_state_ref,
+                    *(_string_list(state.get("last_activity_evidence_refs"))),
+                ]
+                if ref
+            ],
+        ]
+    )
+    if (
+        not activity_count
+        and not activity_kind_counts
+        and not last_activity_kind
+        and not ref_set
+    ):
+        return {}
+
+    return _drop_empty(
+        {
+            "schema_version": "resident_autonomous_activity_presence_profile_v0",
+            "continuity_mode": "resident_idle_autonomous_activity_cycle",
+            "activity_count": activity_count,
+            "activity_kind_counts": activity_kind_counts,
+            "last_activity_kind": last_activity_kind,
+            "last_activity_at": state.get("last_activity_at"),
+            "last_activity_state_ref": last_activity_state_ref,
+            "activity_state_refs": activity_state_refs,
+            "current_cycle": _string_list(state.get("current_cycle")),
+            "ref_count": len(ref_set),
+            "ref_set": ref_set,
+            "source_doc_refs": _string_list(state.get("source_doc_refs")),
+        }
+    )
 
 
 def _next_heartbeat_counter(

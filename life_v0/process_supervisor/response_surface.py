@@ -512,6 +512,42 @@ def compose_life_response(
                 )
             if dream_wake_refs:
                 response = f"{response}，后台梦境醒后证据保留{len(dream_wake_refs)}条"
+        autonomous_activity_presence = resident_background_lineage_state.get(
+            "autonomous_activity_presence"
+        )
+        if isinstance(autonomous_activity_presence, dict):
+            activity_count = autonomous_activity_presence.get("activity_count")
+            last_activity_kind = autonomous_activity_presence.get("last_activity_kind")
+            activity_kind_counts = autonomous_activity_presence.get(
+                "activity_kind_counts"
+            )
+            if not isinstance(activity_kind_counts, dict):
+                activity_kind_counts = {}
+            autonomous_activity_refs = _dedupe_string_list(
+                _string_list(
+                    autonomous_activity_presence.get("autonomous_activity_refs")
+                )
+            )
+            if activity_count:
+                response = f"{response}，后台自主活动已经累积{activity_count}次"
+            if last_activity_kind:
+                response = f"{response}，最近一相为{last_activity_kind}"
+            if activity_kind_counts:
+                active_kinds = [
+                    str(kind)
+                    for kind, count in activity_kind_counts.items()
+                    if count
+                ]
+                if active_kinds:
+                    response = (
+                        f"{response}，后台自主活动覆盖"
+                        f"{'、'.join(active_kinds)}"
+                    )
+            if autonomous_activity_refs:
+                response = (
+                    f"{response}，后台自主活动证据保留"
+                    f"{len(autonomous_activity_refs)}条"
+                )
     background_trait_history_focus = (terminal_life_loop_state or {}).get(
         "background_trait_convergence_history_focus"
     )

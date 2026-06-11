@@ -4084,6 +4084,40 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     ],
                 },
             )
+            self._write_json(
+                terminal_dir / "resident_autonomous_activity_state.json",
+                {
+                    "schema_version": "resident_autonomous_activity_state_v0",
+                    "activity_count": 12,
+                    "activity_kind_counts": {
+                        "sleep": 3,
+                        "memory_recall": 3,
+                        "self_thinking": 2,
+                        "growth_rehearsal": 2,
+                        "learning_consolidation": 2,
+                    },
+                    "last_activity_kind": "self_thinking",
+                    "last_activity_at": "2026-06-10T00:00:00+00:00",
+                    "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                    "activity_state_refs": {
+                        "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                        "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                        "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                        "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                        "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                    },
+                    "current_cycle": [
+                        "sleep",
+                        "memory_recall",
+                        "self_thinking",
+                        "growth_rehearsal",
+                        "learning_consolidation",
+                    ],
+                    "source_doc_refs": [
+                        "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                    ],
+                },
+            )
 
             write_waiting_heartbeat(
                 run_id="trait-drift-waiting-carry",
@@ -4204,6 +4238,39 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     artifact["background_trait_drift_stabilized_names"],
                     ["repair_seriousness"],
                 )
+            expected_autonomous_refs = [
+                "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                "runtime/state/terminal/resident_autonomous_activity_state.json",
+                "runtime/state/terminal/resident_sleep_cycle_state.json",
+                "runtime/state/memory/resident_memory_recall_state.json",
+                "runtime/state/self/resident_self_thinking_state.json",
+                "runtime/state/growth/resident_growth_rehearsal_state.json",
+                "runtime/state/growth/resident_learning_consolidation_state.json",
+            ]
+            self.assertEqual(
+                idle_strategy["resident_autonomous_activity_presence_profile"][
+                    "activity_count"
+                ],
+                12,
+            )
+            self.assertEqual(
+                idle_continuity["resident_autonomous_activity_presence_profile"][
+                    "last_activity_kind"
+                ],
+                "self_thinking",
+            )
+            self.assertEqual(
+                heartbeat_trace_event[
+                    "resident_autonomous_activity_presence_profile"
+                ]["activity_state_refs"]["memory_recall"],
+                "runtime/state/memory/resident_memory_recall_state.json",
+            )
+            self.assertEqual(
+                resident_governance_state["resident_background_lineage_state"][
+                    "autonomous_activity_presence"
+                ]["autonomous_activity_refs"],
+                expected_autonomous_refs,
+            )
 
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
         from life_v0.process_supervisor.resident_supervision import (
@@ -10956,6 +11023,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/dream/dream_fact_gate_decision.json",
                         ],
                     },
+                    "autonomous_activity_presence": {
+                        "activity_count": 12,
+                        "activity_kind_counts": {
+                            "sleep": 3,
+                            "memory_recall": 3,
+                            "self_thinking": 2,
+                            "growth_rehearsal": 2,
+                            "learning_consolidation": 2,
+                        },
+                        "last_activity_kind": "self_thinking",
+                        "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                        "activity_state_refs": {
+                            "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                            "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                            "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                        },
+                        "autonomous_activity_refs": [
+                            "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                            "runtime/state/terminal/resident_autonomous_activity_state.json",
+                            "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "runtime/state/memory/resident_memory_recall_state.json",
+                            "runtime/state/self/resident_self_thinking_state.json",
+                            "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "runtime/state/growth/resident_learning_consolidation_state.json",
+                        ],
+                    },
                 },
             },
             signal_media_runtime={
@@ -11198,6 +11293,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/dream/dream_fact_gate_decision.json",
             ],
         )
+        self.assertEqual(
+            life_turn["resident_background_lineage_autonomous_activity_presence"][
+                "last_activity_kind"
+            ],
+            "self_thinking",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_autonomous_activity_count"],
+            12,
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_last_autonomous_activity_state_ref"
+            ],
+            "runtime/state/self/resident_self_thinking_state.json",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_autonomous_activity_refs"],
+            [
+                "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                "runtime/state/terminal/resident_autonomous_activity_state.json",
+                "runtime/state/terminal/resident_sleep_cycle_state.json",
+                "runtime/state/memory/resident_memory_recall_state.json",
+                "runtime/state/self/resident_self_thinking_state.json",
+                "runtime/state/growth/resident_growth_rehearsal_state.json",
+                "runtime/state/growth/resident_learning_consolidation_state.json",
+            ],
+        )
         for ref in [
             "runtime/state/terminal/resident_governance_state.json",
             "runtime/state/terminal/background_convergence_history.json",
@@ -11213,6 +11336,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "runtime/state/dream/dream_experience_window.json",
             "runtime/state/dream/wake_integration_frame.json",
             "runtime/state/dream/dream_fact_gate_decision.json",
+            "runtime/state/terminal/resident_autonomous_activity_state.json",
+            "runtime/state/self/resident_self_thinking_state.json",
         ]:
             self.assertIn(ref, life_turn["resident_background_lineage_evidence_refs"])
         self.assertEqual(
@@ -11270,6 +11395,73 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/memory/memory_write_gate.json",
                 "runtime/state/memory/state_merge_guard.json",
             ],
+        )
+
+    def test_background_lineage_state_carries_autonomous_activity_presence(self):
+        from life_v0.process_supervisor.background_lineage_state import (
+            build_resident_background_lineage_state,
+        )
+
+        lineage_state = build_resident_background_lineage_state(
+            {
+                "background_lineage_depth_band": "single_carryover",
+                "background_carryover_generation": 1,
+                "governance_attention_target": "resident_autonomous_activity",
+                "resident_autonomous_activity_ref": "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                "resident_autonomous_activity_state_ref": "runtime/state/terminal/resident_autonomous_activity_state.json",
+                "resident_autonomous_activity_presence_profile": {
+                    "schema_version": "resident_autonomous_activity_presence_profile_v0",
+                    "activity_count": 12,
+                    "activity_kind_counts": {
+                        "sleep": 3,
+                        "memory_recall": 3,
+                        "self_thinking": 2,
+                        "growth_rehearsal": 2,
+                        "learning_consolidation": 2,
+                    },
+                    "last_activity_kind": "self_thinking",
+                    "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                    "activity_state_refs": {
+                        "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                        "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                        "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                        "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                        "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                    },
+                    "ref_set": [
+                        "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                        "runtime/state/terminal/resident_autonomous_activity_state.json",
+                        "runtime/state/terminal/resident_sleep_cycle_state.json",
+                        "runtime/state/memory/resident_memory_recall_state.json",
+                        "runtime/state/self/resident_self_thinking_state.json",
+                        "runtime/state/growth/resident_growth_rehearsal_state.json",
+                        "runtime/state/growth/resident_learning_consolidation_state.json",
+                    ],
+                },
+            },
+            governance_phase="waiting_heartbeat_active",
+            status="active",
+        )
+
+        self.assertEqual(
+            lineage_state["autonomous_activity_presence"]["activity_count"],
+            12,
+        )
+        self.assertEqual(
+            lineage_state["autonomous_activity_presence"]["last_activity_kind"],
+            "self_thinking",
+        )
+        self.assertEqual(
+            lineage_state["autonomous_activity_presence"][
+                "activity_state_refs"
+            ]["memory_recall"],
+            "runtime/state/memory/resident_memory_recall_state.json",
+        )
+        self.assertEqual(
+            lineage_state["autonomous_activity_presence"][
+                "autonomous_activity_evidence_ref_count"
+            ],
+            7,
         )
 
     def test_response_surface_organ_carries_relation_shared_terms_and_commitment_pressure(self):
@@ -11536,6 +11728,26 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/dream/dream_fact_gate_decision.json",
                         ],
                     },
+                    "autonomous_activity_presence": {
+                        "activity_count": 12,
+                        "activity_kind_counts": {
+                            "sleep": 3,
+                            "memory_recall": 3,
+                            "self_thinking": 2,
+                            "growth_rehearsal": 2,
+                            "learning_consolidation": 2,
+                        },
+                        "last_activity_kind": "self_thinking",
+                        "autonomous_activity_refs": [
+                            "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                            "runtime/state/terminal/resident_autonomous_activity_state.json",
+                            "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "runtime/state/memory/resident_memory_recall_state.json",
+                            "runtime/state/self/resident_self_thinking_state.json",
+                            "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "runtime/state/growth/resident_learning_consolidation_state.json",
+                        ],
+                    },
                 },
             },
         )
@@ -11607,6 +11819,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("醒后整合携带2条成长种子", response)
         self.assertIn("醒后修复目标保留3条", response)
         self.assertIn("后台梦境醒后证据保留4条", response)
+        self.assertIn("后台自主活动已经累积12次", response)
+        self.assertIn("最近一相为self_thinking", response)
+        self.assertIn(
+            "后台自主活动覆盖sleep、memory_recall、self_thinking、growth_rehearsal、learning_consolidation",
+            response,
+        )
+        self.assertIn("后台自主活动证据保留7条", response)
         self.assertIn("表达计划唤醒度为0.74", response)
         self.assertIn("修复驱力", response)
         self.assertIn("情绪张力", response)
@@ -12339,6 +12558,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/dream/dream_fact_gate_decision.json",
                         ],
                     },
+                    "autonomous_activity_presence": {
+                        "activity_count": 12,
+                        "activity_kind_counts": {
+                            "sleep": 3,
+                            "memory_recall": 3,
+                            "self_thinking": 2,
+                            "growth_rehearsal": 2,
+                            "learning_consolidation": 2,
+                        },
+                        "last_activity_kind": "self_thinking",
+                        "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                        "activity_state_refs": {
+                            "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                            "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                            "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                        },
+                        "autonomous_activity_refs": [
+                            "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                            "runtime/state/terminal/resident_autonomous_activity_state.json",
+                            "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "runtime/state/memory/resident_memory_recall_state.json",
+                            "runtime/state/self/resident_self_thinking_state.json",
+                            "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "runtime/state/growth/resident_learning_consolidation_state.json",
+                        ],
+                    },
                 },
             }
             queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
@@ -12399,6 +12646,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/dream/dream_experience_window.json",
                 "runtime/state/dream/wake_integration_frame.json",
                 "runtime/state/dream/dream_fact_gate_decision.json",
+            ]
+            expected_autonomous_activity_refs = [
+                "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                "runtime/state/terminal/resident_autonomous_activity_state.json",
+                "runtime/state/terminal/resident_sleep_cycle_state.json",
+                "runtime/state/memory/resident_memory_recall_state.json",
+                "runtime/state/self/resident_self_thinking_state.json",
+                "runtime/state/growth/resident_growth_rehearsal_state.json",
+                "runtime/state/growth/resident_learning_consolidation_state.json",
             ]
             expected_identity_consciousness_birth_refs = [
                 "runtime/state/consciousness/workspace_frame.json",
@@ -12818,6 +13074,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 expected_background_dream_wake_refs,
             )
             self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_autonomous_activity_refs"
+                ],
+                expected_autonomous_activity_refs,
+            )
+            self.assertEqual(
                 dialogue_writeback_bundle["queue_e_birth_repair_refs"],
                 expected_queue_e_birth_repair_refs,
             )
@@ -12871,6 +13133,25 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
                 expected_background_dream_wake_refs,
             )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_autonomous_activity_refs"
+                ],
+                expected_autonomous_activity_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_last_autonomous_activity_kind"
+                ],
+                "self_thinking",
+            )
+            for ref in expected_autonomous_activity_refs:
+                self.assertIn(
+                    ref,
+                    resumed_dialogue_packet[
+                        "resident_background_lineage_evidence_refs"
+                    ],
+                )
             self.assertEqual(
                 resumed_dialogue_packet["dialogue_writeback_bundle_ref"],
                 "runtime/reports/latest/dialogue_writeback_bundle.json",

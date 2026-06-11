@@ -132,6 +132,9 @@ def write_waiting_heartbeat(
         terminal_dir=terminal_dir,
         reports_dir=reports_dir,
     )
+    resident_autonomous_activity_state = _read_json_if_exists(
+        terminal_dir / "resident_autonomous_activity_state.json"
+    )
     idle_strategy = decide_idle_strategy(
         run_id=run_id,
         generated_at=generated_at,
@@ -170,6 +173,7 @@ def write_waiting_heartbeat(
         consciousness_probe=consciousness_probe,
         birth_readiness_rollup=birth_readiness_rollup,
         birth_readiness_stage_gate=birth_readiness_stage_gate,
+        resident_autonomous_activity_state=resident_autonomous_activity_state,
         replay_cue_bundle_ref=replay_cue_bundle_ref,
         offline_consolidation_frame_ref=offline_consolidation_frame_ref,
         dream_experience_window_ref=dream_experience_window_ref,
@@ -346,6 +350,16 @@ def write_waiting_heartbeat(
         "wake_integration_growth_seed_count",
         "wake_integration_repair_target_count",
         "dream_wake_ref_set",
+        "resident_autonomous_activity_ref",
+        "resident_autonomous_activity_state_ref",
+        "resident_autonomous_activity_presence_profile",
+        "resident_autonomous_activity_ref_set",
+        "autonomous_activity_count",
+        "autonomous_activity_kind_counts",
+        "last_autonomous_activity_kind",
+        "last_autonomous_activity_at",
+        "last_autonomous_activity_state_ref",
+        "resident_autonomous_activity_state_refs",
         "background_idle_heartbeat_trace_ref",
         "background_idle_heartbeat_trace_count",
         "background_resident_process_lease_history_profile_ref",
@@ -480,6 +494,18 @@ def write_waiting_heartbeat(
             "dream_fact_gate_decision_ref"
         ),
         dream_wake_presence_profile=idle_strategy.get("dream_wake_presence_profile"),
+        resident_autonomous_activity_ref=idle_strategy.get(
+            "resident_autonomous_activity_ref"
+        ),
+        resident_autonomous_activity_state_ref=idle_strategy.get(
+            "resident_autonomous_activity_state_ref"
+        ),
+        resident_autonomous_activity_presence_profile=idle_strategy.get(
+            "resident_autonomous_activity_presence_profile"
+        ),
+        resident_autonomous_activity_ref_set=idle_strategy.get(
+            "resident_autonomous_activity_ref_set"
+        ),
         growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
         nightmare_risk_ref=nightmare_risk_ref,
         belief_learning_plan_ref=belief_learning_plan_ref,
@@ -784,8 +810,37 @@ def _append_idle_heartbeat_trace(
         ),
         "replay_seed_refs": list(idle_continuity_frame.get("replay_seed_refs", [])),
         "dream_wake_ref_set": list(idle_strategy.get("dream_wake_ref_set", [])),
+        "resident_autonomous_activity_ref": idle_strategy.get(
+            "resident_autonomous_activity_ref"
+        ),
+        "resident_autonomous_activity_state_ref": idle_strategy.get(
+            "resident_autonomous_activity_state_ref"
+        ),
+        "resident_autonomous_activity_presence_profile": idle_strategy.get(
+            "resident_autonomous_activity_presence_profile", {}
+        ),
+        "resident_autonomous_activity_ref_set": list(
+            idle_strategy.get("resident_autonomous_activity_ref_set", [])
+        ),
+        "autonomous_activity_count": idle_strategy.get("autonomous_activity_count"),
+        "last_autonomous_activity_kind": idle_strategy.get(
+            "last_autonomous_activity_kind"
+        ),
+        "last_autonomous_activity_state_ref": idle_strategy.get(
+            "last_autonomous_activity_state_ref"
+        ),
         "membrane_guard_refs": list(membrane_guard_refs),
     }
     trace_path = terminal_dir / "idle_heartbeat_trace.jsonl"
     with trace_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(trace_event, ensure_ascii=False) + "\n")
+
+
+def _read_json_if_exists(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}

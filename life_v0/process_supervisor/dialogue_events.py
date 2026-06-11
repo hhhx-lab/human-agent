@@ -218,6 +218,7 @@ def build_resident_background_lineage_payload(
         "resident_process_identity_presence",
         "offline_learning_presence",
         "dream_wake_presence",
+        "autonomous_activity_presence",
     ):
         presence = lineage_state.get(key)
         if isinstance(presence, dict) and presence:
@@ -624,6 +625,60 @@ def build_resident_background_lineage_payload(
                 dream_wake_refs
             )
             lineage_refs.extend(dream_wake_refs)
+    autonomous_activity_presence = lineage_state.get("autonomous_activity_presence")
+    if isinstance(autonomous_activity_presence, dict):
+        for source_key, target_key in (
+            ("activity_count", "resident_background_lineage_autonomous_activity_count"),
+            (
+                "last_activity_kind",
+                "resident_background_lineage_last_autonomous_activity_kind",
+            ),
+            (
+                "last_activity_state_ref",
+                "resident_background_lineage_last_autonomous_activity_state_ref",
+            ),
+        ):
+            value = autonomous_activity_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        activity_kind_counts = autonomous_activity_presence.get(
+            "activity_kind_counts"
+        )
+        if isinstance(activity_kind_counts, dict) and activity_kind_counts:
+            payload[
+                "resident_background_lineage_autonomous_activity_kind_counts"
+            ] = dict(activity_kind_counts)
+        activity_state_refs = autonomous_activity_presence.get("activity_state_refs")
+        if isinstance(activity_state_refs, dict) and activity_state_refs:
+            payload[
+                "resident_background_lineage_autonomous_activity_state_refs"
+            ] = dict(activity_state_refs)
+        autonomous_activity_refs = _dedupe_string_list(
+            _string_list(
+                autonomous_activity_presence.get("autonomous_activity_refs")
+            )
+            or _string_list(
+                [
+                    autonomous_activity_presence.get(
+                        "resident_autonomous_activity_ref"
+                    ),
+                    autonomous_activity_presence.get(
+                        "resident_autonomous_activity_state_ref"
+                    ),
+                    autonomous_activity_presence.get("last_activity_state_ref"),
+                    *(
+                        list(activity_state_refs.values())
+                        if isinstance(activity_state_refs, dict)
+                        else []
+                    ),
+                ]
+            )
+        )
+        if autonomous_activity_refs:
+            payload[
+                "resident_background_lineage_autonomous_activity_refs"
+            ] = autonomous_activity_refs
+            lineage_refs.extend(autonomous_activity_refs)
     if lineage_refs:
         payload["resident_background_lineage_evidence_refs"] = _dedupe_string_list(
             lineage_refs

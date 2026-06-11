@@ -119,6 +119,9 @@ def build_resident_background_lineage_state(
     dream_wake_presence = _dream_wake_presence(governance)
     if dream_wake_presence:
         lineage_state["dream_wake_presence"] = dream_wake_presence
+    autonomous_activity_presence = _autonomous_activity_presence(governance)
+    if autonomous_activity_presence:
+        lineage_state["autonomous_activity_presence"] = autonomous_activity_presence
     return {
         key: value
         for key, value in lineage_state.items()
@@ -713,6 +716,70 @@ def _dream_wake_presence(governance: dict[str, Any]) -> dict[str, Any]:
                 profile.get("relationship_repair_candidate_count")
             ),
             "ref_set": ref_set,
+        }
+    )
+
+
+def _autonomous_activity_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    profile = _dict_or_empty(
+        governance.get("resident_autonomous_activity_presence_profile")
+    )
+    activity_state_refs = _dict_or_empty(
+        governance.get("resident_autonomous_activity_state_refs")
+        or profile.get("activity_state_refs")
+    )
+    activity_kind_counts = _dict_or_empty(
+        governance.get("autonomous_activity_kind_counts")
+        or profile.get("activity_kind_counts")
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(governance.get("resident_autonomous_activity_ref_set"))
+        or _string_list(profile.get("ref_set"))
+    )
+    activity_count = _int_or_zero(
+        governance.get("autonomous_activity_count")
+        if governance.get("autonomous_activity_count") is not None
+        else profile.get("activity_count")
+    )
+    last_activity_kind = (
+        governance.get("last_autonomous_activity_kind")
+        or profile.get("last_activity_kind")
+    )
+    last_activity_state_ref = (
+        governance.get("last_autonomous_activity_state_ref")
+        or profile.get("last_activity_state_ref")
+    )
+    if (
+        not profile
+        and not ref_set
+        and not activity_count
+        and not activity_kind_counts
+        and not last_activity_kind
+        and not activity_state_refs
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "resident_autonomous_activity_ref": governance.get(
+                "resident_autonomous_activity_ref"
+            )
+            or profile.get("resident_autonomous_activity_ref")
+            or "runtime/state/terminal/resident_autonomous_activity.jsonl",
+            "resident_autonomous_activity_state_ref": governance.get(
+                "resident_autonomous_activity_state_ref"
+            )
+            or profile.get("resident_autonomous_activity_state_ref")
+            or "runtime/state/terminal/resident_autonomous_activity_state.json",
+            "activity_count": activity_count,
+            "activity_kind_counts": activity_kind_counts,
+            "last_activity_kind": last_activity_kind,
+            "last_activity_at": governance.get("last_autonomous_activity_at")
+            or profile.get("last_activity_at"),
+            "last_activity_state_ref": last_activity_state_ref,
+            "activity_state_refs": activity_state_refs,
+            "current_cycle": _string_list(profile.get("current_cycle")),
+            "autonomous_activity_refs": ref_set,
+            "autonomous_activity_evidence_ref_count": len(ref_set),
         }
     )
 

@@ -27,6 +27,10 @@ def build_idle_continuity_frame(
     wake_integration_frame_ref: str | None = None,
     dream_fact_gate_decision_ref: str | None = None,
     dream_wake_presence_profile: dict[str, Any] | None = None,
+    resident_autonomous_activity_ref: str | None = None,
+    resident_autonomous_activity_state_ref: str | None = None,
+    resident_autonomous_activity_presence_profile: dict[str, Any] | None = None,
+    resident_autonomous_activity_ref_set: list[str] | None = None,
     growth_patch_candidate_queue_ref: str | None = None,
     nightmare_risk_ref: str | None = None,
     belief_learning_plan_ref: str | None = None,
@@ -151,6 +155,16 @@ def build_idle_continuity_frame(
         "dream_wake_presence_profile": dict(dream_wake_presence_profile or {}),
         "dream_wake_ref_set": list(
             (dream_wake_presence_profile or {}).get("ref_set", [])
+        ),
+        "resident_autonomous_activity_ref": resident_autonomous_activity_ref,
+        "resident_autonomous_activity_state_ref": (
+            resident_autonomous_activity_state_ref
+        ),
+        "resident_autonomous_activity_presence_profile": dict(
+            resident_autonomous_activity_presence_profile or {}
+        ),
+        "resident_autonomous_activity_ref_set": list(
+            resident_autonomous_activity_ref_set or []
         ),
         "growth_patch_candidate_queue_ref": growth_patch_candidate_queue_ref,
         "nightmare_risk_ref": nightmare_risk_ref,
