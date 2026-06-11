@@ -5034,6 +5034,90 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "repair_guarded_continuity",
             )
 
+    def test_background_continuity_profile_restores_heartbeat_cadence_from_lineage_presence(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            terminal_dir = runtime_root / "state" / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            expected_refs = [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+            ]
+            self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "run_id": "heartbeat-cadence-presence-parent",
+                    "resident_background_lineage_state": {
+                        "schema_version": "resident_background_lineage_state_v0",
+                        "status": "closed",
+                        "governance_phase": "process_closed_waiting_relaunch",
+                        "generation": 2,
+                        "depth_band": "persistent_lineage",
+                        "heartbeat_cadence_presence": {
+                            "driver": "offline_learning_pressure",
+                            "reason": "dream_growth_or_relationship_learning_pressure_needs_refresh",
+                            "modulators": [
+                                "offline_learning:elevated",
+                                "background_generation:2",
+                            ],
+                            "evidence_refs": expected_refs,
+                            "heartbeat_interval_ms": 58,
+                            "next_idle_action": "refresh_waiting_heartbeat_with_offline_learning_hold",
+                        },
+                    },
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+            self.assertEqual(
+                profile["background_heartbeat_cadence_driver"],
+                "offline_learning_pressure",
+            )
+            self.assertEqual(
+                profile["background_heartbeat_cadence_reason"],
+                "dream_growth_or_relationship_learning_pressure_needs_refresh",
+            )
+            self.assertEqual(
+                profile["background_heartbeat_cadence_modulators"],
+                [
+                    "offline_learning:elevated",
+                    "background_generation:2",
+                ],
+            )
+            self.assertEqual(
+                profile["background_heartbeat_cadence_evidence_refs"],
+                expected_refs,
+            )
+            self.assertEqual(
+                profile["background_heartbeat_cadence_explanation"]["driver"],
+                "offline_learning_pressure",
+            )
+            self.assertEqual(
+                profile["background_heartbeat_cadence_explanation"][
+                    "heartbeat_interval_ms"
+                ],
+                58,
+            )
+            self.assertEqual(
+                profile["background_resident_lineage_state"][
+                    "heartbeat_cadence_presence"
+                ]["driver"],
+                "offline_learning_pressure",
+            )
+            for ref in expected_refs:
+                self.assertIn(ref, profile["background_continuity_ref_set"])
+
     def test_background_continuity_profile_restores_trait_drift_update_mode_history(self):
         from life_v0.process_supervisor.background_continuity import (
             load_background_continuity_profile,

@@ -309,6 +309,63 @@ def load_background_continuity_profile(
         or resident_governance_report.get("resident_background_lineage_state")
         or persistent_process_report.get("resident_background_lineage_state")
     )
+    resident_background_heartbeat_cadence_presence = _dict_or_empty(
+        resident_background_lineage_state.get("heartbeat_cadence_presence")
+    )
+    presence_cadence_explanation = _dict_or_empty(
+        resident_background_heartbeat_cadence_presence.get(
+            "heartbeat_cadence_explanation"
+        )
+    )
+    if not heartbeat_cadence_explanation and presence_cadence_explanation:
+        heartbeat_cadence_explanation = presence_cadence_explanation
+    if not heartbeat_cadence_driver:
+        heartbeat_cadence_driver = resident_background_heartbeat_cadence_presence.get(
+            "driver"
+        )
+    if not heartbeat_cadence_reason:
+        heartbeat_cadence_reason = resident_background_heartbeat_cadence_presence.get(
+            "reason"
+        )
+    heartbeat_cadence_modulators = _dedupe_list(
+        heartbeat_cadence_modulators
+        + _list_or_empty(
+            resident_background_heartbeat_cadence_presence.get("modulators")
+        )
+    )
+    heartbeat_cadence_evidence_refs = _dedupe_list(
+        heartbeat_cadence_evidence_refs
+        + _list_or_empty(
+            resident_background_heartbeat_cadence_presence.get("evidence_refs")
+        )
+    )
+    if not heartbeat_cadence_explanation and (
+        heartbeat_cadence_driver
+        or heartbeat_cadence_reason
+        or heartbeat_cadence_modulators
+        or heartbeat_cadence_evidence_refs
+    ):
+        heartbeat_cadence_explanation = {
+            key: value
+            for key, value in {
+                "schema_version": "heartbeat_cadence_explanation_v0",
+                "heartbeat_interval_ms": (
+                    resident_background_heartbeat_cadence_presence.get(
+                        "heartbeat_interval_ms"
+                    )
+                ),
+                "next_idle_action": (
+                    resident_background_heartbeat_cadence_presence.get(
+                        "next_idle_action"
+                    )
+                ),
+                "driver": heartbeat_cadence_driver,
+                "reason": heartbeat_cadence_reason,
+                "modulators": heartbeat_cadence_modulators,
+                "evidence_refs": heartbeat_cadence_evidence_refs,
+            }.items()
+            if value not in (None, "", ()) and value != []
+        }
     resident_background_birth_repair_presence = _dict_or_empty(
         resident_background_lineage_state.get("birth_repair_presence")
     )
