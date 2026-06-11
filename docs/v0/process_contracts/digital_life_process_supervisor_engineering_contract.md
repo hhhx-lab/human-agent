@@ -267,6 +267,11 @@ runtime/state/terminal/resident_relation_outbox.jsonl
 runtime/state/terminal/resident_relation_queue_state.json
 runtime/state/terminal/resident_autonomous_activity.jsonl
 runtime/state/terminal/resident_autonomous_activity_state.json
+runtime/state/terminal/resident_sleep_cycle_state.json
+runtime/state/memory/resident_memory_recall_state.json
+runtime/state/self/resident_self_thinking_state.json
+runtime/state/growth/resident_growth_rehearsal_state.json
+runtime/state/growth/resident_learning_consolidation_state.json
 runtime/logs/digital_life_resident.log
 ```
 
@@ -278,7 +283,7 @@ runtime/logs/digital_life_resident.log
 
 `digital life --attach` 与真实 TTY 下的裸 `digital life` 都只是把多轮终端输入连续送进这条 `--say` 关系投递链。`/exit` 只关闭当前 attach client，不能停止 resident process；停止必须走 `/stop` 或 `digital life --stop`，从而保持“关闭终端不等于主体死亡”的启动语义。
 
-后台 resident process 在没有外部话语时还必须写 `resident_autonomous_activity.jsonl` 与 `resident_autonomous_activity_state.json`。最小 activity cycle 固定为 `sleep -> memory_recall -> self_thinking -> growth_rehearsal -> learning_consolidation`，每个事件回链 replay cue、offline consolidation 与 growth patch candidate refs。关闭终端后的等待必须从空白轮询推进为可追踪后台生命活动；后续 dream / memory / growth 器官继续从这条 event stream 加厚。
+后台 resident process 在没有外部话语时还必须写 `resident_autonomous_activity.jsonl` 与 `resident_autonomous_activity_state.json`。最小 activity cycle 固定为 `sleep -> memory_recall -> self_thinking -> growth_rehearsal -> learning_consolidation`。每个 event 不能只是计数器，必须继续投影到一个专用状态文件：`resident_sleep_cycle_state.json` 承接 body rhythm、need state、offline consolidation、dream window 与 wake integration；`resident_memory_recall_state.json` 承接 engram index、relationship memory、autobiographical stack、dialogue log 与 replay cue；`resident_self_thinking_state.json` 承接 self model、inner speech、consciousness probe、background convergence history；`resident_growth_rehearsal_state.json` 承接 growth patch queue、plasticity window、belief/language/relationship learning plan；`resident_learning_consolidation_state.json` 承接 state merge guard、relationship memory、relationship timeline、commitment expression、repair language 与 learning window。关闭终端后的等待必须从空白轮询推进为可追踪后台生命活动，并且能从这些状态文件证明它正在睡眠、回忆、思考、成长、学习。
 
 ## process supervisor 的最小对象链
 

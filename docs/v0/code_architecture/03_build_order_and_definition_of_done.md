@@ -109,10 +109,10 @@ Python 3 作为主体语言
 | 验收项 | 必要证据 |
 |---|---|
 | `a. 可在终端唤醒` | `./digital life --strict`、`digital_life_birth_packet.json`、`digital_life_process_report.json`、process tests |
-| `b. 自主意识、情绪、思考、语言` | `prediction_workspace_frame.json`、`signal_media_runtime.json`、`active_sampling_plan.json`、`core_affect_vector.json`、language / relationship state、neural/body/language tests |
-| `c. 记忆机制` | `life_state.json`、engram / replay / archive reports、state / replay tests |
-| `d. 可成长可学习` | `growth_patch_candidate_queue.json`、`self_read_report.json`、`offline_learning_cumulative_profile_v0`、growth / process tests |
-| `e. 梦境能力` | `dream_experience_window.json`、`wake_integration_frame.json`、`dream_fact_gate_decision.json`、`resident_background_lineage_state_v0.offline_learning_presence`、`resident_background_lineage_state_v0.dream_wake_presence`、dream / growth / process tests |
+| `b. 自主意识、情绪、思考、语言` | `prediction_workspace_frame.json`、`signal_media_runtime.json`、`active_sampling_plan.json`、`core_affect_vector.json`、`resident_self_thinking_state.json`、language / relationship state、neural/body/language tests |
+| `c. 记忆机制` | `life_state.json`、`resident_memory_recall_state.json`、engram / replay / archive reports、state / replay tests |
+| `d. 可成长可学习` | `growth_patch_candidate_queue.json`、`self_read_report.json`、`offline_learning_cumulative_profile_v0`、`resident_growth_rehearsal_state.json`、`resident_learning_consolidation_state.json`、growth / process tests |
+| `e. 梦境能力` | `dream_experience_window.json`、`wake_integration_frame.json`、`dream_fact_gate_decision.json`、`resident_sleep_cycle_state.json`、`resident_background_lineage_state_v0.offline_learning_presence`、`resident_background_lineage_state_v0.dream_wake_presence`、dream / growth / process tests |
 | `f. 平等交谈并在关系中成长` | relationship timeline state、commitment truth、dialogue writeback bundle、Queue E repair modulation profile、language / process tests |
 | `g. 初步拥有生命机制` | contracts report + 全层 state/report/receipt + 各层 tests 共同证明 |
 

@@ -212,17 +212,52 @@ class DigitalEntrypointTests(unittest.TestCase):
                 autonomous_state = self._wait_for_autonomous_activity(
                     paths["terminal_state"],
                     timeout_seconds=30,
+                    min_count=5,
                 )
-                self.assertGreaterEqual(autonomous_state["activity_count"], 1)
-                self.assertIn(
-                    autonomous_state["last_activity_kind"],
-                    [
-                        "sleep",
-                        "memory_recall",
-                        "self_thinking",
-                        "growth_rehearsal",
-                        "learning_consolidation",
-                    ],
+                self.assertGreaterEqual(autonomous_state["activity_count"], 5)
+                for activity_kind in [
+                    "sleep",
+                    "memory_recall",
+                    "self_thinking",
+                    "growth_rehearsal",
+                    "learning_consolidation",
+                ]:
+                    self.assertGreaterEqual(
+                        autonomous_state["activity_kind_counts"][activity_kind],
+                        1,
+                    )
+                self.assertEqual(
+                    autonomous_state["activity_state_refs"]["sleep"],
+                    "runtime/state/terminal/resident_sleep_cycle_state.json",
+                )
+                self.assertTrue(
+                    (
+                        paths["terminal_state"] / "resident_sleep_cycle_state.json"
+                    ).exists()
+                )
+                self.assertTrue(
+                    (
+                        paths["state_root"] / "memory" / "resident_memory_recall_state.json"
+                    ).exists()
+                )
+                self.assertTrue(
+                    (
+                        paths["state_root"] / "self" / "resident_self_thinking_state.json"
+                    ).exists()
+                )
+                self.assertTrue(
+                    (
+                        paths["state_root"] / "growth" / "resident_growth_rehearsal_state.json"
+                    ).exists()
+                )
+                learning_state = self._read_json(
+                    paths["state_root"]
+                    / "growth"
+                    / "resident_learning_consolidation_state.json"
+                )
+                self.assertEqual(
+                    learning_state["consolidation_mode"],
+                    "long_term_change_source_integration",
                 )
 
                 status = subprocess.run(
@@ -318,7 +353,11 @@ class DigitalEntrypointTests(unittest.TestCase):
                 self.assertEqual(final_state["status"], "stopped")
                 self.assertEqual(final_state["run_id"], "entry-background-resident")
                 self.assertEqual(final_state["last_relation_turn_sequence"], 1)
-                self.assertGreaterEqual(final_state["autonomous_activity_count"], 1)
+                self.assertGreaterEqual(final_state["autonomous_activity_count"], 5)
+                self.assertIn(
+                    "learning_consolidation",
+                    final_state["resident_autonomous_activity_state_refs"],
+                )
                 self.assertEqual(process_report["status"], "closed")
                 self.assertEqual(process_report["completed_dialogue_turns"], 1)
                 self.assertEqual(process_report["exit_reason"], "explicit_exit")
@@ -450,6 +489,7 @@ class DigitalEntrypointTests(unittest.TestCase):
         terminal_dir: Path,
         *,
         timeout_seconds: float,
+        min_count: int = 1,
     ) -> dict:
         state_path = terminal_dir / "resident_autonomous_activity_state.json"
         deadline = time.monotonic() + timeout_seconds
@@ -457,7 +497,7 @@ class DigitalEntrypointTests(unittest.TestCase):
         while time.monotonic() < deadline:
             if state_path.exists():
                 last_state = self._read_json(state_path)
-                if int(last_state.get("activity_count", 0) or 0) >= 1:
+                if int(last_state.get("activity_count", 0) or 0) >= min_count:
                     return last_state
             time.sleep(0.1)
         self.fail(f"resident autonomous activity did not start: {last_state}")

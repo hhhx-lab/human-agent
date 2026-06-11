@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .resident_autonomous_activity import record_resident_autonomous_activity
+
 
 RESIDENT_LIFECYCLE_STATE_REF = "runtime/state/terminal/resident_lifecycle_state.json"
 RESIDENT_LIFECYCLE_COMMAND_REF = "runtime/state/terminal/resident_lifecycle_command.json"
@@ -45,10 +47,6 @@ class ResidentControlInputStream:
         self.inbox_path = terminal_dir / "resident_relation_inbox.jsonl"
         self.outbox_path = terminal_dir / "resident_relation_outbox.jsonl"
         self.queue_state_path = terminal_dir / "resident_relation_queue_state.json"
-        self.autonomous_activity_path = terminal_dir / "resident_autonomous_activity.jsonl"
-        self.autonomous_activity_state_path = (
-            terminal_dir / "resident_autonomous_activity_state.json"
-        )
         self.min_poll_seconds = max(float(min_poll_seconds), 0.05)
         queue_state = _read_json_if_exists(self.queue_state_path)
         self.last_consumed_sequence = _int_or_zero(
@@ -82,54 +80,28 @@ class ResidentControlInputStream:
             time.sleep(min(0.05, remaining))
 
     def record_autonomous_activity(self) -> None:
-        state = _read_json_if_exists(self.autonomous_activity_state_path)
-        activity_count = _int_or_zero(state.get("activity_count")) + 1
-        activity_kind = _autonomous_activity_kind(activity_count)
-        event = {
-            "schema_version": "resident_autonomous_activity_event_v0",
-            "activity_sequence": activity_count,
-            "activity_kind": activity_kind,
-            "generated_at": _now_iso(),
-            "residency_posture": "sleeping_waiting_for_relation_turn",
-            "autonomous_activity_ref": RESIDENT_AUTONOMOUS_ACTIVITY_REF,
-            "autonomous_activity_state_ref": RESIDENT_AUTONOMOUS_ACTIVITY_STATE_REF,
-            "replay_cue_bundle_ref": "runtime/state/replay/replay_cue_bundle.json",
-            "offline_consolidation_frame_ref": (
-                "runtime/state/dream/offline_consolidation_frame.json"
-            ),
-            "growth_patch_candidate_queue_ref": (
-                "runtime/state/growth/growth_patch_candidate_queue.json"
-            ),
-        }
-        _append_jsonl(self.autonomous_activity_path, event)
-        state.update(
-            {
-                "schema_version": "resident_autonomous_activity_state_v0",
-                "status": "active",
-                "activity_count": activity_count,
-                "last_activity_kind": activity_kind,
-                "last_activity_at": event["generated_at"],
-                "resident_autonomous_activity_ref": RESIDENT_AUTONOMOUS_ACTIVITY_REF,
-                "resident_autonomous_activity_state_ref": (
-                    RESIDENT_AUTONOMOUS_ACTIVITY_STATE_REF
-                ),
-                "current_cycle": [
-                    "sleep",
-                    "memory_recall",
-                    "self_thinking",
-                    "growth_rehearsal",
-                    "learning_consolidation",
-                ],
-            }
+        result = record_resident_autonomous_activity(
+            terminal_dir=self.terminal_dir,
+            now_iso=_now_iso,
         )
-        _write_json(self.autonomous_activity_state_path, state)
+        state = result["state"]
+        event = result["event"]
         lifecycle_state = _read_json_if_exists(
             self.terminal_dir / "resident_lifecycle_state.json"
         )
         if lifecycle_state:
-            lifecycle_state["last_autonomous_activity_kind"] = activity_kind
+            lifecycle_state["last_autonomous_activity_kind"] = event["activity_kind"]
             lifecycle_state["last_autonomous_activity_at"] = event["generated_at"]
-            lifecycle_state["autonomous_activity_count"] = activity_count
+            lifecycle_state["last_autonomous_activity_state_ref"] = event[
+                "activity_state_ref"
+            ]
+            lifecycle_state["autonomous_activity_count"] = state["activity_count"]
+            lifecycle_state["autonomous_activity_kind_counts"] = dict(
+                state.get("activity_kind_counts", {})
+            )
+            lifecycle_state["resident_autonomous_activity_state_refs"] = dict(
+                state.get("activity_state_refs", {})
+            )
             lifecycle_state["resident_autonomous_activity_ref"] = (
                 RESIDENT_AUTONOMOUS_ACTIVITY_REF
             )
@@ -608,14 +580,3 @@ def _extract_response_text(emitted_output: str) -> str:
     if emitted_output.startswith(prefix):
         return emitted_output[len(prefix) :].strip()
     return ""
-
-
-def _autonomous_activity_kind(activity_count: int) -> str:
-    cycle = [
-        "sleep",
-        "memory_recall",
-        "self_thinking",
-        "growth_rehearsal",
-        "learning_consolidation",
-    ]
-    return cycle[(max(activity_count, 1) - 1) % len(cycle)]
