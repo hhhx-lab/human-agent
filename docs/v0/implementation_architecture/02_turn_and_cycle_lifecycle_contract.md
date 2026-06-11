@@ -218,9 +218,9 @@ stateDiagram-v2
 
 | 命令 | 作用 |
 |---|---|
-| `./digital life --background` / `digital life --background` | 启动后台 resident process，并写出 `resident_lifecycle_state.json` |
+| `./digital life --background` / `digital life --background` | 启动后台 resident process，并写出 `resident_lifecycle_state.json`、`resident_process_lease.json` 与 `persistent_process_state.json` |
 | `./digital life --attach` / `digital life` | 复用已存在的后台 resident process，把当前终端接成 relation client |
-| `./digital life --status` / `digital life --status` | 读取 `resident_lifecycle_state.json`、pid_alive、relation queue、autonomous activity、waiting heartbeat、resident governance、idle strategy 与 terminal loop state |
+| `./digital life --status` / `digital life --status` | 读取 `resident_lifecycle_state.json`、`resident_process_lease.json`、relation queue、autonomous activity、waiting heartbeat、resident governance、idle strategy、background convergence 与 terminal loop state |
 | `./digital life --say "<turn>"` / `digital life --say "<turn>"` | 通过 relation inbox 投递一轮外部关系话语，并等待 outbox 回复 |
 | `./digital life --stop` / `digital life --stop` | 写 `resident_lifecycle_command.json`，让 resident process 自行收口 |
 | `./digital life --foreground` / `digital life --foreground` | 保留前台 process loop，便于测试和脚本回归 |
@@ -231,13 +231,20 @@ stateDiagram-v2
 |---|---|
 | `resident_lifecycle_state.json` | 记录 pid、status、posture、log_ref、resident_sleep_seconds |
 | `resident_lifecycle_command.json` | 记录 stop / shutdown / exit 请求 |
+| `resident_process_lease.json` | 记录 lease、pid、history_ref、active/closed/recovered 归一化状态 |
+| `resident_process_lease_history.jsonl` | 记录每次 lease 变化、relaunch 与 closeout 的事件历史 |
+| `resident_process_lease_history_profile.json` | 记录被压缩后的身份连续性、连续性压力和 recent id 画像 |
 | `resident_relation_inbox.jsonl` | 进入后台 resident process 的关系回合输入 |
 | `resident_relation_outbox.jsonl` | 后台 resident process 的回合输出与响应文本 |
 | `resident_relation_queue_state.json` | 当前队列序列、turn 进度、完成序列；激活时会先写 `waiting_for_relation_turn` 初始态 |
 | `resident_autonomous_activity.jsonl` | 无外部输入时的睡眠、回忆、自我思考、成长预演与学习巩固证据 |
 | `resident_autonomous_activity_state.json` | 自主活动的汇总状态与计数 |
+| `background_convergence_summary.json` | 跨唤醒关系阶段、自我慢变量与漂移压力摘要 |
+| `background_convergence_history.json` | 多次唤醒的收敛历史、趋势状态与更新模式压缩 |
 | `digital_life_waiting_heartbeat.json` | 当前等待态 heartbeat、waiting mode 与下一步关系等待动作 |
 | `resident_governance_state.json` | 当前 resident governance phase、等待治理焦点与后台 lineage |
+| `resident_governance_snapshot.json` | 关闭态常驻治理快照、等待模式、心跳、incident / relaunch 计数与下一次唤醒要求 |
+| `persistent_process_state.json` | 前台终端常驻治理状态、前台/后台交接以及 closeout 前持久化姿态 |
 | `idle_strategy_state.json` | 当前 idle probe、heartbeat interval、next idle action 与调制来源 |
 | `terminal_life_loop_state.json` | 当前 terminal life loop mode、heartbeat counter 与等待回合承接状态 |
 
@@ -250,6 +257,7 @@ stateDiagram-v2
 3. `/exit` 只允许当前终端脱离，不得杀死 resident process。
 4. `--stop` 才能触发真正的收口，并写回 stop 请求证据。
 5. 无外部输入时，process 必须写 autonomous activity 证据，而不是静默空转。
+6. `--status` 必须把 `resident_process_lease`、`background_convergence_summary`、`background_convergence_history` 与 `persistent_process_state` 一并纳入长期驻留视图，证明同一主体在关机、重启和多次唤醒之间保持连续性。
 
 ## 两条环的硬连接点
 

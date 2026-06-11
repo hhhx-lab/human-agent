@@ -130,6 +130,15 @@ def check_xxx(payload: dict[str, Any]) -> list[str]:
 4. 断言新 state/report/receipt 路径真的写出
 5. 断言新对象被当前回合链真正吃到，而不是孤立文件
 
+### 常驻连续体模块的额外测试要求
+
+当模块涉及 `resident_process_lease`、`background_convergence`、`background_convergence_history`、`resident_autonomous_activity_state` 或 `background_lineage_state` 时，还必须额外断言：
+
+1. 同一主体在 closeout、relaunch 和 attach 之间保持连续性。
+2. `resident_governance_state.json` 与 `resident_governance_snapshot.json` 不会互相覆盖掉各自的职责。
+3. `background_convergence_summary.json` 与 `background_convergence_history.json` 能进入 waiting governance 和 response surface。
+4. `resident_autonomous_activity_state.json` 会被 waiting heartbeat 和 process report 同时消费。
+
 ## 新模块落地步骤
 
 后续每次写一个新模块，都按下面顺序：
@@ -180,6 +189,16 @@ def check_xxx(payload: dict[str, Any]) -> list[str]:
 - `life_v0/state_store/relationship_memory.py`
 
 这一组负责把 `memory_write_gate.json` 从单次事务扩成长期 promotion / quarantine / repair / merge 治理面。
+
+### 常驻身份与后台连续体消费面
+
+- `life_v0/process_supervisor/process_lease.py`
+- `life_v0/process_supervisor/background_convergence.py`
+- `life_v0/process_supervisor/background_convergence_history.py`
+- `life_v0/process_supervisor/resident_autonomous_activity.py`
+- `life_v0/process_supervisor/background_lineage_state.py`
+
+这几处负责把“同一主体在关机、重启、多次唤醒和 detached attach 之间保持连续性”写成可审计对象。后续若继续扩展这条链，必须同时更新 `runtime/state/terminal/resident_process_lease.json`、`runtime/state/terminal/resident_process_lease_history.jsonl`、`runtime/state/terminal/resident_process_lease_history_profile.json`、`runtime/state/terminal/background_convergence_summary.json`、`runtime/state/terminal/background_convergence_history.json`、`runtime/state/terminal/resident_autonomous_activity_state.json`、`runtime/state/terminal/resident_governance_state.json` 与对应的 process report / digest / receipt。
 
 ## 合并前检查清单
 

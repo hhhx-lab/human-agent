@@ -45,6 +45,7 @@ receipt 写到哪，
 | `growth/` | `plasticity_window_state.json`、`growth_patch_candidate_queue.json`、`anti_forgetting_replay_plan.json` |
 | `archive/` | `reconsolidation_archive_graph.json` |
 | `activation/` | `limited_context_frame.json`、`life_membrane_opening_decision.json` |
+| `terminal/` | `resident_process_lease.json`、`resident_process_lease_history.jsonl`、`resident_process_lease_history_profile.json`、`resident_lifecycle_state.json`、`resident_lifecycle_command.json`、`resident_autonomous_activity.jsonl`、`resident_autonomous_activity_state.json`、`background_convergence_summary.json`、`background_convergence_history.json`、`persistent_process_state.json`、`resident_governance_state.json`、`resident_governance_snapshot.json`、`idle_strategy_state.json`、`idle_continuity_frame.json` |
 | `contracts/` | `v0_contract_file_index.json`、`doc_to_code_coverage_matrix.json` |
 
 ## 报告家族
@@ -76,7 +77,13 @@ receipt 写到哪，
 8. `terminal_life_loop_report.json`
 9. `digital_life_shell_report.json`
 10. `digital_life_process_report.json`
-11. `digital_life_resident_governance_explanation.json`
+11. `digital_life_waiting_heartbeat.json`
+12. `digital_life_persistent_process_report.json`
+13. `digital_life_resident_governance_report.json`
+14. `digital_life_resident_governance_explanation.json`
+15. `digital_life_process_incident_report.json`
+16. `digital_life_process_recovery_report.json`
+17. `digital_life_process_relaunch_recovery_report.json`
 
 ### digest 家族
 
@@ -95,6 +102,7 @@ receipt 写到哪，
 | 主体 slice | `direction_lock_*.json`、`source_authority_*.json`、`neural_life_core_*.json`、`state_store_*.json`、`life_membrane_*.json`、`language_relationship_*.json`、`birth_readiness_*.json`、`validation_membrane_*.json`、`schema_runner_*.json`、`life_support_development_*.json` |
 | reconsolidation 链 | `run_cycle_*.json`、`first_activation_preflight_*.json`、`emit_report_*.json`、`explain_stage_*.json`、`digital_life_birth_*.json`、`first_terminal_turn_*.json`、`terminal_life_loop_*.json` |
 | 进程层 | `digital_life_shell_command_*.json`、`digital_life_process_*.json` |
+| 常驻治理层 | `digital_life_waiting_heartbeat_*.json`、`digital_life_persistent_process_*.json`、`digital_life_resident_governance_*.json`、`digital_life_process_incident_*.json`、`digital_life_process_recovery_*.json`、`digital_life_process_relaunch_recovery_*.json` |
 
 ## 最小规则
 
