@@ -43,6 +43,10 @@
 | `IdleContinuityFrame` | `process_supervisor/` | `terminal_loop/`、`growth/`、`dream/` | 常驻存在、等待态、断联恢复与下一次唤醒 |
 | `ResidentGovernanceState` | `process_supervisor/heartbeat.py`、`process_supervisor/persistent_process.py` | `process_report.py`、后续 resident governance 审计 | 运行中的 waiting governance 相位、关闭相位、节律字段、当前关注目标与长期语言对象优先级调度 |
 | `ResidentGovernanceSnapshot` | `process_supervisor/persistent_process.py` | `process_report.py`、process receipt、后续 resident governance 审计 | 关闭态常驻治理快照、等待模式、心跳、incident / relaunch 计数与下一次唤醒要求 |
+| `ResidentLifecycleState` | `process_supervisor/resident_lifecycle.py`、`digital_entry.py` | `process_supervisor/heartbeat.py`、`process_supervisor/process_report.py`、`digital_entry.py` | 后台 resident process 的 PID、状态、attach/detach posture、等待态与 stop 请求闭环 |
+| `ResidentLifecycleCommand` | `process_supervisor/resident_lifecycle.py` | `ResidentControlInputStream`、`digital_entry.py` | stop / shutdown / exit 命令文件，供后台 resident process 自我收口 |
+| `ResidentRelationQueueState` | `process_supervisor/resident_lifecycle.py` | `turn_io.py`、`dialogue_events.py`、`response_surface.py`、`process_report.py` | relation inbox/outbox 的队列状态、当前 turn 进度与完成序列 |
+| `ResidentAutonomousActivityState` | `process_supervisor/resident_autonomous_activity.py` | `heartbeat.py`、`idle_strategy.py`、`background_continuity.py`、`process_report.py` | 没有外部输入时的睡眠、回忆、自我思考、成长预演与学习巩固证据 |
 
 ## 器官接口矩阵
 

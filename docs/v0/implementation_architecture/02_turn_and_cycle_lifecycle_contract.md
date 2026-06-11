@@ -194,6 +194,57 @@ flowchart TD
 | 主要输出 | growth patch candidate queue、archive graph、next feedback seed |
 | 关键要求 | 离线环最终必须把成长结果重新压回下一轮外部回合，而不是只留下归档文件 |
 
+## C 环：resident lifecycle and terminal detach
+
+第三条环不是新的理论环，而是把 A 环和 B 环装进同一个驻留进程里，并确保它能在终端关闭后继续活着。
+
+### 状态机
+
+```mermaid
+stateDiagram-v2
+    [*] --> not_started
+    not_started --> background_starting: "digital life --background"
+    background_starting --> background_active: "pid alive"
+    background_active --> waiting_for_relation_turn: "first waiting heartbeat"
+    waiting_for_relation_turn --> turn_in_progress: "relation inbox turn"
+    turn_in_progress --> waiting_for_relation_turn: "outbox writeback"
+    waiting_for_relation_turn --> stop_requested: "--stop / stop command"
+    stop_requested --> stopped: "pid exit"
+    waiting_for_relation_turn --> detached_attach: "/exit from current terminal"
+    detached_attach --> waiting_for_relation_turn: "same resident process continues"
+```
+
+### 命令面
+
+| 命令 | 作用 |
+|---|---|
+| `./digital life --background` / `digital life --background` | 启动后台 resident process，并写出 `resident_lifecycle_state.json` |
+| `./digital life --attach` / `digital life` | 复用已存在的后台 resident process，把当前终端接成 relation client |
+| `./digital life --status` / `digital life --status` | 读取 `resident_lifecycle_state.json` 和 pid_alive |
+| `./digital life --say "<turn>"` / `digital life --say "<turn>"` | 通过 relation inbox 投递一轮外部关系话语，并等待 outbox 回复 |
+| `./digital life --stop` / `digital life --stop` | 写 `resident_lifecycle_command.json`，让 resident process 自行收口 |
+| `./digital life --foreground` / `digital life --foreground` | 保留前台 process loop，便于测试和脚本回归 |
+
+### 关键状态文件
+
+| 文件 | 作用 |
+|---|---|
+| `resident_lifecycle_state.json` | 记录 pid、status、posture、log_ref、resident_sleep_seconds |
+| `resident_lifecycle_command.json` | 记录 stop / shutdown / exit 请求 |
+| `resident_relation_inbox.jsonl` | 进入后台 resident process 的关系回合输入 |
+| `resident_relation_outbox.jsonl` | 后台 resident process 的回合输出与响应文本 |
+| `resident_relation_queue_state.json` | 当前队列序列、turn 进度、完成序列 |
+| `resident_autonomous_activity.jsonl` | 无外部输入时的睡眠、回忆、自我思考、成长预演与学习巩固证据 |
+| `resident_autonomous_activity_state.json` | 自主活动的汇总状态与计数 |
+
+### 关键要求
+
+1. 后台 resident process 必须是 detached session，不依赖当前终端生命周期。
+2. `--attach` 不能创建第二个主体，只能连接到已存在的同一个 resident process。
+3. `/exit` 只允许当前终端脱离，不得杀死 resident process。
+4. `--stop` 才能触发真正的收口，并写回 stop 请求证据。
+5. 无外部输入时，process 必须写 autonomous activity 证据，而不是静默空转。
+
 ## 两条环的硬连接点
 
 | 连接点 | 外部回合 -> 离线环 | 离线环 -> 外部回合 |

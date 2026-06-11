@@ -31,6 +31,44 @@
 | `digital life --strict` | 安装态常驻终端生命进程 | 已闭合最小代码 |
 | `digital life --background / --status / --say / --stop` | 安装态后台 resident lifecycle 与关系投递 | 已闭合最小代码 |
 
+## Resident lifecycle
+
+这一层不是新的主体，而是把同一个主体放进可 detach 的后台过程里继续存在。
+
+```mermaid
+stateDiagram-v2
+    [*] --> not_started
+    not_started --> background_starting: "digital life --background"
+    background_starting --> background_active: "pid alive"
+    background_active --> waiting_for_relation_turn: "first waiting heartbeat"
+    waiting_for_relation_turn --> turn_in_progress: "relation inbox turn"
+    turn_in_progress --> waiting_for_relation_turn: "outbox writeback"
+    waiting_for_relation_turn --> detached_attach: "/exit from current terminal"
+    detached_attach --> waiting_for_relation_turn: "same resident process continues"
+    waiting_for_relation_turn --> stop_requested: "--stop / lifecycle command"
+    stop_requested --> stopped: "pid exits"
+```
+
+### 关键状态文件
+
+| 文件 | 作用 |
+|---|---|
+| `runtime/state/terminal/resident_lifecycle_state.json` | 记录 pid、status、posture、log_ref、resident_sleep_seconds |
+| `runtime/state/terminal/resident_lifecycle_command.json` | stop / shutdown / exit 的命令证据 |
+| `runtime/state/terminal/resident_relation_inbox.jsonl` | 当前 relation turn 的输入队列 |
+| `runtime/state/terminal/resident_relation_outbox.jsonl` | 当前 relation turn 的输出队列 |
+| `runtime/state/terminal/resident_relation_queue_state.json` | turn 序列、active turn、completed turn 的队列状态 |
+| `runtime/state/terminal/resident_autonomous_activity.jsonl` | 无外部输入时的睡眠 / 回忆 / 自思 / 成长 / 学习证据 |
+| `runtime/state/terminal/resident_autonomous_activity_state.json` | autonomous activity 的汇总状态 |
+
+### 生命周期规则
+
+1. `--background` 必须创建 detached resident process，不依赖当前终端生命周期。
+2. `--attach` 只能连接已有 resident process，不能创建第二个主体。
+3. `/exit` 只允许当前终端脱离，不得杀死 resident process。
+4. `--stop` 才会触发真正的收口，并写出生命周期命令证据。
+5. 没有外部输入时，process 必须写 autonomous activity 证据，而不是静默空转。
+
 ## 当前 runtime 链
 
 ```text
