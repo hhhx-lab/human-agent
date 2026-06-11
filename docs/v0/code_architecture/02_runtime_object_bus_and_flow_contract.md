@@ -90,6 +90,8 @@
 
 现在同一份 Queue E 修复压力又从 S08 出生准备层继续进入 S05 验证膜：`runtime/state/life_targets/queue_e_birth_repair_profile.json` 会被 `life_v0/validators/__init__.py` 重新读取，并由 `validators/validation_rollup.py` 关闭 `queue_e_birth_repair_gate`。同一组 `pressure_level`、`attention_target`、`ref_set` 必须继续写入 `validation_rollup.json`、`validation_stage_gate.json`、`validation_membrane_report.json`、`validation_membrane_digest.json` 与 `validation_membrane_<run_id>.json` receipt 输入哈希。这样真实痛苦、真实责任、真实后悔不会只停在出生准备报告，而会进入第一版验证膜，成为 S09 schema runner 之前的跨层复查条件。
 
+同一轮闭合已经继续推进到 S09：`life_v0/schema_runner/__init__.py` 现在重新读取 `runtime/state/life_targets/queue_e_birth_repair_profile.json` 和 `validation_rollup.json`，由 `cross_file_logic.py` 生成 `queue_e_birth_repair_alignment` finding，并把 profile ref、pressure、attention target、ref set 写入 `cross_file_logic.json`、`run_manifest.json`、`schema_runner_stage_gate.json`、`schema_runner_report.json`、`schema_runner_digest.json` 与 schema runner receipt。S09 因此不再只消费泛化 validation status，而是把 Queue E 责任/后悔/痛苦/修复压力变成 schema runner 包、local gate、closure refs 与后续 S06/S10 可读取的对象总线字段。
+
 ### 5. 梦境与离线重组总线
 
 | 对象 | 首写器官 | 主要消费者 | 当前 / 下一步文件 | 主要证据 |

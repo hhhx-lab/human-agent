@@ -86,12 +86,21 @@ class SchemaRunnerTests(unittest.TestCase):
             evidence_ranking = self._read_json(paths["schema_runner_state"] / "evidence_ranking.json")
             run_manifest = self._read_json(paths["schema_runner_state"] / "run_manifest.json")
             responsibility_loop = self._read_json(paths["state_root"] / "action" / "responsibility_loop_state.json")
+            queue_e_profile = self._read_json(paths["life_targets_state"] / "queue_e_birth_repair_profile.json")
             stage_gate = self._read_json(paths["schema_runner_state"] / "schema_runner_stage_gate.json")
             report = self._read_json(paths["reports"] / "schema_runner_report.json")
             digest = self._read_json(paths["reports"] / "schema_runner_digest.json")
             check_report = self._read_json(paths["reports"] / "schema_runner_check_report.json")
             smoke_report = self._read_json(paths["reports"] / "schema_smoke_report.json")
             receipt = self._read_json(paths["receipts"] / "schema_runner_schema-runner-test.json")
+
+        queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+        expected_queue_e_refs = {
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/membrane/world_contact_summary.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+            queue_e_profile_ref,
+        }
 
         self.assertEqual(registry["schema_version"], "schema_registry_v0")
         self.assertEqual(registry["active_engineering_slice"], "S09_SCHEMA_RUNNER_CODE")
@@ -148,9 +157,12 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/action/responsibility_loop_state.json", cross_file_logic["state_refs"])
         self.assertIn("runtime/state/validation/observation_truth_review.json", cross_file_logic["state_refs"])
         self.assertIn("runtime/state/validation/validation_rollup.json", cross_file_logic["state_refs"])
+        self.assertIn(queue_e_profile_ref, cross_file_logic["state_refs"])
         self.assertTrue(cross_file_logic["repair_priority_refs"])
         self.assertIn("validation_rollup_gate", cross_file_logic["package_local_gate_refs"])
+        self.assertIn("queue_e_birth_repair_gate", cross_file_logic["package_local_gate_refs"])
         self.assertIn("runtime/state/membrane/action_intent_queue.json", cross_file_logic["closure_status_refs"])
+        self.assertIn(queue_e_profile_ref, cross_file_logic["closure_status_refs"])
         self.assertIn(
             "runtime/state/relationship/commitment_truth_state.json#repair_required_refs",
             cross_file_logic["bridge_refs"],
@@ -171,6 +183,18 @@ class SchemaRunnerTests(unittest.TestCase):
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             cross_file_logic["life_constraint_refs"],
         )
+        self.assertEqual(cross_file_logic["queue_e_birth_repair_gate_status"], "closed")
+        self.assertEqual(cross_file_logic["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(cross_file_logic["queue_e_birth_repair_pressure_level"], queue_e_profile["pressure_level"])
+        self.assertEqual(cross_file_logic["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(cross_file_logic["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(cross_file_logic["queue_e_birth_repair_ref_set"])))
+        self.assertIn(queue_e_profile_ref, cross_file_logic["repair_priority_refs"])
+        self.assertIn("runtime/state/life_targets/queue_e_birth_repair_profile.json#ref_set", cross_file_logic["bridge_refs"])
+        self.assertIn(
+            "runtime/state/validation/validation_rollup.json#queue_e_birth_repair_gate",
+            cross_file_logic["bridge_refs"],
+        )
         self.assertIn(
             "runtime/state/consciousness/consciousness_probe_bundle.json",
             cross_file_logic["life_constraint_refs"],
@@ -178,6 +202,12 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertTrue(
             any(
                 finding["finding_kind"] == "life_constraint_alignment"
+                for finding in cross_file_logic["cross_file_findings"]
+            )
+        )
+        self.assertTrue(
+            any(
+                finding["finding_kind"] == "queue_e_birth_repair_alignment"
                 for finding in cross_file_logic["cross_file_findings"]
             )
         )
@@ -225,6 +255,7 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/validation/world_contact_validation.json", run_manifest["input_state_refs"])
         self.assertIn("runtime/state/validation/prediction_trace_validation.json", run_manifest["input_state_refs"])
         self.assertIn("runtime/state/validation/validation_rollup.json", run_manifest["input_state_refs"])
+        self.assertIn(queue_e_profile_ref, run_manifest["input_state_refs"])
         self.assertIn(
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             run_manifest["input_state_refs"],
@@ -239,11 +270,22 @@ class SchemaRunnerTests(unittest.TestCase):
         )
         self.assertIn("validation_rollup_gate", run_manifest["package_local_gate_refs"])
         self.assertIn("life_constraint_validation_gate", run_manifest["package_local_gate_refs"])
+        self.assertIn("queue_e_birth_repair_gate", run_manifest["package_local_gate_refs"])
         self.assertIn("runtime/state/membrane/action_intent_queue.json", run_manifest["closure_status_refs"])
+        self.assertEqual(run_manifest["queue_e_birth_repair_gate_status"], "closed")
+        self.assertEqual(run_manifest["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(run_manifest["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(run_manifest["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(run_manifest["queue_e_birth_repair_ref_set"])))
 
         self.assertEqual(stage_gate["schema_version"], "schema_runner_stage_gate_v0")
         self.assertEqual(stage_gate["decision"], "closed")
         self.assertEqual(stage_gate["gate_status"]["responsibility_logic_gate"], "closed")
+        self.assertEqual(stage_gate["gate_status"]["queue_e_birth_repair_gate"], "closed")
+        self.assertEqual(stage_gate["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(stage_gate["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(stage_gate["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(stage_gate["queue_e_birth_repair_ref_set"])))
         self.assertEqual(stage_gate["next_allowed_slices"], ["S06_LIFE_SUPPORT_DEVELOPMENT", "S10_RUNTIME_GROWTH_RECONSOLIDATION"])
         self.assertEqual(stage_gate["next_required_command"], "life-v0 build-life-support --strict")
 
@@ -251,6 +293,10 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(report["engineering_slice_ref"], "S09_SCHEMA_RUNNER_CODE")
         self.assertEqual(report["status"], "closed")
         self.assertEqual(report["stage_effect"], "allow_next_slice")
+        self.assertEqual(report["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(report["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(report["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(report["queue_e_birth_repair_ref_set"])))
         self.assertIn("SchemaBundleCompiler", report["runtime_carrier_refs"])
         self.assertIn("RunnerRepositoryKernel", report["runtime_carrier_refs"])
         self.assertIn("FirstRunnerCodeKernel", report["runtime_carrier_refs"])
@@ -272,10 +318,23 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(report["next_required_command"], "life-v0 build-life-support --strict")
 
         self.assertEqual(digest["current_slice"], "S09_SCHEMA_RUNNER_CODE")
+        self.assertEqual(digest["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(digest["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(digest["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertGreaterEqual(digest["queue_e_birth_repair_ref_count"], len(expected_queue_e_refs))
         self.assertEqual(check_report["status"], "closed")
+        self.assertIn("queue_e_birth_repair_gate", check_report["closed_gates"])
         self.assertEqual(smoke_report["schema_version"], "schema_runner_smoke_report_v0")
         self.assertEqual(smoke_report["status"], "closed")
         self.assertEqual(receipt["schema_version"], "schema_runner_receipt_v0")
+        self.assertEqual(receipt["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
+        self.assertEqual(receipt["queue_e_birth_repair_pressure_level"], "elevated")
+        self.assertEqual(receipt["queue_e_birth_repair_attention_target"], "regret_pressure")
+        self.assertTrue(expected_queue_e_refs.issubset(set(receipt["queue_e_birth_repair_ref_set"])))
+        self.assertIn(
+            str((paths["life_targets_state"] / "queue_e_birth_repair_profile.json").resolve()),
+            receipt["input_hashes"],
+        )
         self.assertTrue(
             any(key.endswith("responsibility_loop_state.json") for key in receipt["input_hashes"]),
             receipt["input_hashes"],

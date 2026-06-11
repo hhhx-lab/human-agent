@@ -149,7 +149,7 @@ P0_DOC_CORPUS_INGESTION
 | `S03_DIRECTION_LIFE_MEMBRANE` | `稳定` | 固定生命膜、DreamFactGate、责任修复边界和影子行动门 |
 | `S08_LIFE_TARGET_RUNTIMES` | `稳定` | 固定九项目标闭合检查；当前 `queue_e_birth_repair_profile.json` 已把 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 合成为出生准备层一等证据，并进入真实痛苦、真实责任、真实后悔的 claims / evidence / rollup / stage gate / report / digest / receipt |
 | `S05_VALIDATION_MEMBRANE_OBSERVATION` | `稳定` | 固定 validator、观测和 stage gate；当前已重新读取 `queue_e_birth_repair_profile.json`，把 Queue E 出生修复压力写入 `validation_rollup.json`、`validation_stage_gate.json`、`validation_membrane_report.json`、`validation_membrane_digest.json` 与 validation receipt 输入哈希 |
-| `S09_SCHEMA_RUNNER_CODE` | `稳定` | 固定 schema runner、CLI 和 smoke 路径 |
+| `S09_SCHEMA_RUNNER_CODE` | `稳定` | 固定 schema runner、CLI 和 smoke 路径；当前已重新读取 `queue_e_birth_repair_profile.json`，把 Queue E 出生修复压力写入 `cross_file_logic.json`、`run_manifest.json`、`schema_runner_stage_gate.json`、`schema_runner_report.json`、`schema_runner_digest.json` 与 schema runner receipt |
 | `S06_LIFE_SUPPORT_DEVELOPMENT` | `稳定` | 固定生命支持、防御、预算与成长基础层 |
 
 ## 当前活跃前沿
@@ -335,6 +335,8 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 所以当前 Queue E 也不再只是“下一个要做什么”的合同描述，而是已经把行为摘要、验证收口和 schema runner 局部闭包写成了真实对象链。最新一轮又把 `world_observation_route.json`、`periphery_normalization_trace.json` 正式落进 `runtime/state/observation/`，并让 `responsibility_loop_state.json`、`world_contact_summary.json`、`runtime_observation_intake.json` 与 `observation_truth_review.json` 都显式回挂这两份 observation state；与此同时，`responsibility_loop_state.json` 也继续通过 S07 真实投影回 `commitment_truth_state.json`、`responsibility_ledger.json`、`relationship_memory.json` 和 `life_state.json`，并接进 `dialogue_writeback_bundle.json` 的长期交接单。当前如果继续补 Queue E，默认入口不再是 `world_contact_summary.py` 或 validator rollup 本身，而是转向 Packet A 的语言预测消费、Packet C 的长期记忆治理，以及把这批 package-local gates 继续接进 archive / reporting / process supervisor 的长期连续体。
 
 最新这一步又把同一份 Queue E 修复压力从 S08 出生准备继续接进 S05 验证膜：`life_v0/validators/__init__.py` 会读取 `runtime/state/life_targets/queue_e_birth_repair_profile.json`，复查 S08 claims / evidence / rollup / stage gate / report / digest 是否回链同一 profile；`life_v0/validators/validation_rollup.py` 会关闭 `queue_e_birth_repair_gate`，并把 profile ref、pressure、attention target 和 ref set 写入 validation rollup；`validation_stage_gate.json`、`validation_membrane_report.json`、`validation_membrane_digest.json` 与 validation receipt 也会携带同一组证据。状态板因此把这一格视为“Queue E 责任/后悔/修复压力已经进入验证膜的一等复查 gate”，不是只停在出生准备或 S10 replay/growth carry-through。
+
+最新收口继续把这份 profile 推进到 S09：`life_v0/schema_runner/__init__.py` 会读取 `runtime/state/life_targets/queue_e_birth_repair_profile.json`，核对 S05 rollup / stage gate / report 是否保持同一 profile；`life_v0/schema_runner/cross_file_logic.py` 生成 `queue_e_birth_repair_alignment` finding；`life_v0/schema_runner/run_manifest.py` 写出 profile ref、pressure、attention target 和 ref set；S09 stage gate、report、digest、receipt 与 check report 也会保留这条链。状态板因此把 S09 视为“Queue E 修复压力已经进入 schema runner 包与后续切片 handoff”的稳定闭合点。
 
 ## 当前链尾开工包
 

@@ -15,6 +15,8 @@ SOURCE_DOC_REFS = [
     "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
 ]
 
+QUEUE_E_BIRTH_REPAIR_PROFILE_REF = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+
 
 def build_cross_file_logic(
     *,
@@ -26,11 +28,13 @@ def build_cross_file_logic(
     world_contact_validation: dict[str, Any],
     prediction_trace_validation: dict[str, Any],
     validation_rollup: dict[str, Any],
+    queue_e_birth_repair_profile: dict[str, Any] | None = None,
     boundary_audit: dict[str, Any],
     responsibility_loop: dict[str, Any],
     consistency_logic: dict[str, Any],
     comparison_trace: dict[str, Any],
 ) -> dict[str, Any]:
+    queue_e_birth_repair_profile = queue_e_birth_repair_profile or {}
     intent_count = len(action_intent_queue.get("action_intents", []))
     confirmation_required = bool(confirmation_binding.get("requires_confirmation"))
     missing_fields = list(observation_truth_review.get("missing_fields", []))
@@ -41,6 +45,29 @@ def build_cross_file_logic(
         validation_rollup.get("queue_e_cross_layer_gate_status")
         or world_contact_validation.get("life_constraint_validation")
         or {}
+    )
+    queue_e_birth_repair_gate_status = (
+        validation_rollup.get("gate_status", {}).get("queue_e_birth_repair_gate")
+        or "blocked"
+    )
+    queue_e_birth_repair_profile_ref = (
+        validation_rollup.get("queue_e_birth_repair_profile_ref")
+        or QUEUE_E_BIRTH_REPAIR_PROFILE_REF
+    )
+    queue_e_birth_repair_pressure_level = (
+        validation_rollup.get("queue_e_birth_repair_pressure_level")
+        or queue_e_birth_repair_profile.get("pressure_level")
+    )
+    queue_e_birth_repair_attention_target = (
+        validation_rollup.get("queue_e_birth_repair_attention_target")
+        or queue_e_birth_repair_profile.get("attention_target")
+    )
+    queue_e_birth_repair_ref_set = _dedupe_string_refs(
+        [
+            *list(queue_e_birth_repair_profile.get("ref_set", [])),
+            *list(validation_rollup.get("queue_e_birth_repair_ref_set", [])),
+            queue_e_birth_repair_profile_ref,
+        ]
     )
     life_constraint_refs = list(
         dict.fromkeys(
@@ -137,6 +164,28 @@ def build_cross_file_logic(
             ),
         }
     )
+    findings.append(
+        {
+            "finding_id": f"cross-file-{run_id}-0005",
+            "finding_kind": "queue_e_birth_repair_alignment",
+            "severity": (
+                "guarded_low"
+                if queue_e_birth_repair_gate_status == "closed"
+                else "guarded_medium"
+            ),
+            "state_refs": [
+                QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
+                "runtime/state/validation/validation_rollup.json#queue_e_birth_repair_gate",
+                "runtime/state/validation/validation_stage_gate.json#queue_e_birth_repair_gate",
+            ],
+            "summary": "S08 repair pressure remains visible through S05 validation before schema runner handoff",
+            "repair_priority": (
+                "medium"
+                if queue_e_birth_repair_pressure_level in {"quiet", "present"}
+                else "high"
+            ),
+        }
+    )
 
     repair_priority_refs = [
         "runtime/state/action/responsibility_loop_state.json",
@@ -155,6 +204,10 @@ def build_cross_file_logic(
         repair_priority_refs.append("runtime/state/validation/prediction_trace_validation.json")
     if validation_guarded:
         repair_priority_refs.append("runtime/state/validation/validation_rollup.json")
+    if queue_e_birth_repair_gate_status == "closed":
+        repair_priority_refs.append(QUEUE_E_BIRTH_REPAIR_PROFILE_REF)
+    if queue_e_birth_repair_pressure_level in {"elevated", "urgent"}:
+        repair_priority_refs.extend(queue_e_birth_repair_ref_set[:2])
     if _has_blocking_life_constraint(queue_e_cross_layer_gate_status):
         repair_priority_refs.append(
             "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status"
@@ -175,6 +228,8 @@ def build_cross_file_logic(
         "runtime/state/action/action_candidate_set.json#life_constraint_profile",
         "runtime/state/validation/world_contact_validation.json#life_constraint_validation",
         "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status",
+        "runtime/state/life_targets/queue_e_birth_repair_profile.json#ref_set",
+        "runtime/state/validation/validation_rollup.json#queue_e_birth_repair_gate",
     ]
 
     return {
@@ -191,6 +246,7 @@ def build_cross_file_logic(
             "runtime/state/validation/world_contact_validation.json",
             "runtime/state/validation/prediction_trace_validation.json",
             "runtime/state/validation/validation_rollup.json",
+            QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             "runtime/state/validation/boundary_audit_state.json",
             "runtime/state/schema_runner/consistency_logic.json",
@@ -200,11 +256,18 @@ def build_cross_file_logic(
         "repair_priority_refs": repair_priority_refs,
         "life_constraint_refs": life_constraint_refs,
         "queue_e_cross_layer_gate_status": queue_e_cross_layer_gate_status,
+        "queue_e_birth_repair_gate_status": queue_e_birth_repair_gate_status,
+        "queue_e_birth_repair_profile_ref": queue_e_birth_repair_profile_ref,
+        "queue_e_birth_repair_pressure_level": queue_e_birth_repair_pressure_level,
+        "queue_e_birth_repair_attention_target": queue_e_birth_repair_attention_target,
+        "queue_e_birth_repair_ref_set": queue_e_birth_repair_ref_set,
         "closure_status_refs": [
             "runtime/state/validation/observation_truth_review.json",
             "runtime/state/validation/world_contact_validation.json",
             "runtime/state/validation/prediction_trace_validation.json",
             "runtime/state/validation/validation_rollup.json",
+            "runtime/state/validation/validation_rollup.json#queue_e_birth_repair_gate",
+            QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
             "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/membrane/action_intent_queue.json",
             "runtime/state/membrane/confirmation_binding.json",
@@ -216,6 +279,7 @@ def build_cross_file_logic(
             "life_constraint_validation_gate",
             "prediction_trace_validation_gate",
             "world_contact_validation_gate",
+            "queue_e_birth_repair_gate",
             "cross_file_logic_gate",
         ],
         "bridge_refs": bridge_refs,
@@ -238,6 +302,11 @@ def check_cross_file_logic(state: dict[str, Any]) -> list[str]:
         "repair_priority_refs",
         "life_constraint_refs",
         "queue_e_cross_layer_gate_status",
+        "queue_e_birth_repair_gate_status",
+        "queue_e_birth_repair_profile_ref",
+        "queue_e_birth_repair_pressure_level",
+        "queue_e_birth_repair_attention_target",
+        "queue_e_birth_repair_ref_set",
         "closure_status_refs",
         "package_local_gate_refs",
         "bridge_refs",
@@ -254,3 +323,14 @@ def _has_blocking_life_constraint(gate_status: dict[str, Any]) -> bool:
         for key, status in gate_status.items()
         if key.endswith("_gate") and isinstance(status, str)
     )
+
+
+def _dedupe_string_refs(refs: list[Any]) -> list[str]:
+    merged: list[str] = []
+    seen: set[str] = set()
+    for ref in refs:
+        if not isinstance(ref, str) or not ref or ref in seen:
+            continue
+        seen.add(ref)
+        merged.append(ref)
+    return merged

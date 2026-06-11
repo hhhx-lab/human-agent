@@ -28,6 +28,11 @@ def build_run_manifest(
     closure_status_refs: list[str],
     queue_e_cross_layer_gate_status: dict[str, Any] | None = None,
     queue_e_cross_layer_refs: list[str] | None = None,
+    queue_e_birth_repair_gate_status: str | None = None,
+    queue_e_birth_repair_profile_ref: str | None = None,
+    queue_e_birth_repair_pressure_level: str | None = None,
+    queue_e_birth_repair_attention_target: str | None = None,
+    queue_e_birth_repair_ref_set: list[str] | None = None,
 ) -> dict[str, Any]:
     return {
         "schema_version": "schema_runner_run_manifest_v0",
@@ -49,6 +54,11 @@ def build_run_manifest(
         "closure_status_refs": closure_status_refs,
         "queue_e_cross_layer_gate_status": dict(queue_e_cross_layer_gate_status or {}),
         "queue_e_cross_layer_refs": list(queue_e_cross_layer_refs or []),
+        "queue_e_birth_repair_gate_status": queue_e_birth_repair_gate_status,
+        "queue_e_birth_repair_profile_ref": queue_e_birth_repair_profile_ref,
+        "queue_e_birth_repair_pressure_level": queue_e_birth_repair_pressure_level,
+        "queue_e_birth_repair_attention_target": queue_e_birth_repair_attention_target,
+        "queue_e_birth_repair_ref_set": list(queue_e_birth_repair_ref_set or []),
         "receipt_ref": f"runtime/receipts/schema_runner_{run_id}.json",
         "source_doc_refs": sorted(set(source_doc_refs + SOURCE_DOC_REFS)),
     }
@@ -70,9 +80,16 @@ def check_run_manifest(state: dict[str, Any]) -> list[str]:
         "closure_status_refs",
         "queue_e_cross_layer_gate_status",
         "queue_e_cross_layer_refs",
+        "queue_e_birth_repair_gate_status",
+        "queue_e_birth_repair_profile_ref",
+        "queue_e_birth_repair_pressure_level",
+        "queue_e_birth_repair_attention_target",
+        "queue_e_birth_repair_ref_set",
         "receipt_ref",
         "source_doc_refs",
     ]:
         if not state.get(field):
             reasons.append(f"run_manifest_gate missing {field}")
+    if state.get("queue_e_birth_repair_gate_status") != "closed":
+        reasons.append("run_manifest_gate queue_e birth repair gate mismatch")
     return reasons

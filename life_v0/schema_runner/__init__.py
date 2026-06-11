@@ -30,6 +30,8 @@ RUNTIME_CARRIERS = [
     "FirstRunnerCodeKernel",
 ]
 
+QUEUE_E_BIRTH_REPAIR_PROFILE_REF = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+
 EXTRA_SOURCE_DOCS = [
     "docs/v0/shared_contracts/runner_cli_report_contract.md",
     "docs/v0/slice_contracts/s05_validation_membrane_observation_engineering_contract.md",
@@ -74,6 +76,16 @@ def run_schema_runner(
     validation_check = _load_json(reports_dir / "validation_membrane_check_report.json", blocked_reasons, "validation_membrane_check_gate")
     life_state = _load_json(state_dir / "life_state.json", blocked_reasons, "state_store_gate")
     validation_stage = _load_json(state_dir / "validation" / "validation_stage_gate.json", blocked_reasons, "validation_stage_gate")
+    validation_rollup = _load_json(
+        state_dir / "validation" / "validation_rollup.json",
+        blocked_reasons,
+        "validation_rollup_gate",
+    )
+    queue_e_birth_repair_profile = _load_json(
+        state_dir / "life_targets" / "queue_e_birth_repair_profile.json",
+        blocked_reasons,
+        "queue_e_birth_repair_gate",
+    )
     action_intent_queue = _load_json(
         state_dir / "membrane" / "action_intent_queue.json",
         blocked_reasons,
@@ -113,6 +125,14 @@ def run_schema_runner(
     blocked_reasons.extend(_doc_blockers(doc_index, source_docs))
     blocked_reasons.extend(_previous_slice_blockers(birth_report, validation_report, validation_check, validation_stage))
     blocked_reasons.extend(_state_blockers(life_state))
+    blocked_reasons.extend(
+        _queue_e_birth_repair_blockers(
+            queue_e_birth_repair_profile,
+            validation_rollup,
+            validation_stage,
+            validation_report,
+        )
+    )
 
     status = "closed" if not blocked_reasons else "blocked"
     stage_effect = "allow_next_slice" if status == "closed" else "block_activation"
@@ -152,11 +172,8 @@ def run_schema_runner(
         observation_truth_review=observation_truth_review,
         world_contact_validation=world_contact_validation,
         prediction_trace_validation=prediction_trace_validation,
-        validation_rollup=_load_json(
-            state_dir / "validation" / "validation_rollup.json",
-            blocked_reasons,
-            "validation_rollup_gate",
-        ),
+        validation_rollup=validation_rollup,
+        queue_e_birth_repair_profile=queue_e_birth_repair_profile,
         boundary_audit=boundary_audit,
         responsibility_loop=responsibility_loop,
         consistency_logic=consistency_logic,
@@ -197,6 +214,7 @@ def run_schema_runner(
             "runtime/state/validation/world_contact_validation.json",
             "runtime/state/validation/prediction_trace_validation.json",
             "runtime/state/validation/validation_rollup.json",
+            QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
             "runtime/state/validation/boundary_audit_state.json",
         ],
         input_report_refs=[
@@ -212,11 +230,49 @@ def run_schema_runner(
             cross_file_logic.get("queue_e_cross_layer_gate_status", {})
         ),
         queue_e_cross_layer_refs=list(cross_file_logic.get("life_constraint_refs", [])),
+        queue_e_birth_repair_gate_status=str(
+            cross_file_logic.get("queue_e_birth_repair_gate_status", "")
+        ),
+        queue_e_birth_repair_profile_ref=str(
+            cross_file_logic.get("queue_e_birth_repair_profile_ref", "")
+        ),
+        queue_e_birth_repair_pressure_level=str(
+            cross_file_logic.get("queue_e_birth_repair_pressure_level", "")
+        ),
+        queue_e_birth_repair_attention_target=str(
+            cross_file_logic.get("queue_e_birth_repair_attention_target", "")
+        ),
+        queue_e_birth_repair_ref_set=list(
+            cross_file_logic.get("queue_e_birth_repair_ref_set", [])
+        ),
     )
     artifact_manifest = _build_artifact_manifest(run_id, generated_at, status)
-    stage_gate = _build_stage_gate(run_id, generated_at, status, stage_effect, blocked_reasons)
-    report = _build_report(run_id, generated_at, status, stage_effect, source_docs, blocked_reasons, receipt_ref)
-    digest = _build_digest(run_id, generated_at, status, stage_effect, blocked_reasons)
+    stage_gate = _build_stage_gate(
+        run_id,
+        generated_at,
+        status,
+        stage_effect,
+        blocked_reasons,
+        cross_file_logic,
+    )
+    report = _build_report(
+        run_id,
+        generated_at,
+        status,
+        stage_effect,
+        source_docs,
+        blocked_reasons,
+        receipt_ref,
+        cross_file_logic,
+    )
+    digest = _build_digest(
+        run_id,
+        generated_at,
+        status,
+        stage_effect,
+        blocked_reasons,
+        cross_file_logic,
+    )
     receipt = _build_receipt(
         run_id=run_id,
         generated_at=generated_at,
@@ -229,6 +285,7 @@ def run_schema_runner(
         stage_effect=stage_effect,
         source_docs=source_docs,
         input_hashes=input_hashes,
+        cross_file_logic=cross_file_logic,
     )
 
     try:
@@ -474,6 +531,42 @@ def _state_blockers(life_state: dict[str, Any]) -> list[str]:
     return reasons
 
 
+def _queue_e_birth_repair_blockers(
+    profile: dict[str, Any],
+    validation_rollup: dict[str, Any],
+    validation_stage: dict[str, Any],
+    validation_report: dict[str, Any],
+) -> list[str]:
+    reasons: list[str] = []
+    ref_set = _queue_e_birth_repair_ref_set(profile)
+    if profile.get("schema_version") != "queue_e_repair_modulation_profile_v0":
+        reasons.append("queue_e_birth_repair_gate schema mismatch")
+    if profile.get("pressure_level") not in {"quiet", "present", "elevated", "urgent"}:
+        reasons.append("queue_e_birth_repair_gate pressure level mismatch")
+    if not profile.get("attention_target"):
+        reasons.append("queue_e_birth_repair_gate attention target missing")
+    if not ref_set:
+        reasons.append("queue_e_birth_repair_gate ref set missing")
+    for carrier_name, carrier in [
+        ("validation_rollup", validation_rollup),
+        ("validation_stage_gate", validation_stage),
+        ("validation_membrane_report", validation_report),
+    ]:
+        if carrier.get("queue_e_birth_repair_profile_ref") != QUEUE_E_BIRTH_REPAIR_PROFILE_REF:
+            reasons.append(f"queue_e_birth_repair_gate {carrier_name} profile ref mismatch")
+        if carrier.get("queue_e_birth_repair_pressure_level") != profile.get("pressure_level"):
+            reasons.append(f"queue_e_birth_repair_gate {carrier_name} pressure mismatch")
+        if carrier.get("queue_e_birth_repair_attention_target") != profile.get("attention_target"):
+            reasons.append(f"queue_e_birth_repair_gate {carrier_name} attention mismatch")
+        if not ref_set.issubset(set(carrier.get("queue_e_birth_repair_ref_set", []))):
+            reasons.append(f"queue_e_birth_repair_gate {carrier_name} refs incomplete")
+    if validation_rollup.get("gate_status", {}).get("queue_e_birth_repair_gate") != "closed":
+        reasons.append("queue_e_birth_repair_gate validation rollup gate is not closed")
+    if validation_stage.get("gate_status", {}).get("queue_e_birth_repair_gate") != "closed":
+        reasons.append("queue_e_birth_repair_gate validation stage gate is not closed")
+    return reasons
+
+
 def _build_schema_registry(run_id: str, generated_at: str, source_docs: list[str]) -> dict[str, Any]:
     return {
         "schema_version": "schema_registry_v0",
@@ -634,6 +727,7 @@ def _build_stage_gate(
     status: str,
     stage_effect: str,
     blocked_reasons: list[str],
+    cross_file_logic: dict[str, Any],
 ) -> dict[str, Any]:
     gates = [
         "schema_bundle_gate",
@@ -641,6 +735,7 @@ def _build_stage_gate(
         "checker_manifest_gate",
         "code_artifact_gate",
         "responsibility_logic_gate",
+        "queue_e_birth_repair_gate",
         "cli_report_gate",
         "next_slice_gate",
     ]
@@ -651,6 +746,10 @@ def _build_stage_gate(
         "decision": status,
         "stage_effect": stage_effect,
         "gate_status": {gate: "closed" for gate in gates} if status == "closed" else {gate: "blocked" for gate in _blocked_gates(blocked_reasons)},
+        "queue_e_birth_repair_profile_ref": cross_file_logic.get("queue_e_birth_repair_profile_ref"),
+        "queue_e_birth_repair_pressure_level": cross_file_logic.get("queue_e_birth_repair_pressure_level"),
+        "queue_e_birth_repair_attention_target": cross_file_logic.get("queue_e_birth_repair_attention_target"),
+        "queue_e_birth_repair_ref_set": list(cross_file_logic.get("queue_e_birth_repair_ref_set", [])),
         "blocked_reasons": blocked_reasons,
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
@@ -665,6 +764,7 @@ def _build_report(
     source_docs: list[str],
     blocked_reasons: list[str],
     receipt_ref: str,
+    cross_file_logic: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "schema_version": "s09_schema_runner_code_report_v0",
@@ -700,6 +800,10 @@ def _build_report(
             "runtime/state/schema_runner/cross_file_logic.json#closure_status_refs",
             "runtime/state/schema_runner/run_manifest.json#closure_status_refs",
         ],
+        "queue_e_birth_repair_profile_ref": cross_file_logic.get("queue_e_birth_repair_profile_ref"),
+        "queue_e_birth_repair_pressure_level": cross_file_logic.get("queue_e_birth_repair_pressure_level"),
+        "queue_e_birth_repair_attention_target": cross_file_logic.get("queue_e_birth_repair_attention_target"),
+        "queue_e_birth_repair_ref_set": list(cross_file_logic.get("queue_e_birth_repair_ref_set", [])),
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
@@ -714,7 +818,9 @@ def _build_digest(
     status: str,
     stage_effect: str,
     blocked_reasons: list[str],
+    cross_file_logic: dict[str, Any],
 ) -> dict[str, Any]:
+    queue_e_birth_repair_ref_set = list(cross_file_logic.get("queue_e_birth_repair_ref_set", []))
     return {
         "schema_version": "schema_runner_digest_v0",
         "run_id": run_id,
@@ -722,6 +828,10 @@ def _build_digest(
         "current_slice": ACTIVE_SLICE,
         "status": status,
         "stage_effect": stage_effect,
+        "queue_e_birth_repair_profile_ref": cross_file_logic.get("queue_e_birth_repair_profile_ref"),
+        "queue_e_birth_repair_pressure_level": cross_file_logic.get("queue_e_birth_repair_pressure_level"),
+        "queue_e_birth_repair_attention_target": cross_file_logic.get("queue_e_birth_repair_attention_target"),
+        "queue_e_birth_repair_ref_count": len(queue_e_birth_repair_ref_set),
         "blocked_reasons": blocked_reasons,
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
@@ -741,6 +851,7 @@ def _build_receipt(
     stage_effect: str,
     source_docs: list[str],
     input_hashes: dict[str, str],
+    cross_file_logic: dict[str, Any],
 ) -> dict[str, Any]:
     output_refs = _schema_runner_output_refs(out_dir, reports_dir, receipts_dir, run_id)
     return {
@@ -753,6 +864,10 @@ def _build_receipt(
         "output_refs": [str(path) for path in output_refs],
         "output_hashes": {str(path): _sha256_if_exists(path) for path in output_refs},
         "stage_effect": stage_effect,
+        "queue_e_birth_repair_profile_ref": cross_file_logic.get("queue_e_birth_repair_profile_ref"),
+        "queue_e_birth_repair_pressure_level": cross_file_logic.get("queue_e_birth_repair_pressure_level"),
+        "queue_e_birth_repair_attention_target": cross_file_logic.get("queue_e_birth_repair_attention_target"),
+        "queue_e_birth_repair_ref_set": list(cross_file_logic.get("queue_e_birth_repair_ref_set", [])),
         "direction_lock_ref": "docs/258_linear_chain_closure_and_v0_contract_transition.md",
     }
 
@@ -841,6 +956,16 @@ def _check_stage_gate(stage_gate: dict[str, Any]) -> list[str]:
         reasons.append("next_slice_gate decision mismatch")
     if stage_gate.get("next_allowed_slices") != NEXT_ALLOWED_SLICES:
         reasons.append("next_slice_gate next allowed mismatch")
+    if stage_gate.get("gate_status", {}).get("queue_e_birth_repair_gate") != "closed":
+        reasons.append("queue_e_birth_repair_gate stage gate mismatch")
+    if stage_gate.get("queue_e_birth_repair_profile_ref") != QUEUE_E_BIRTH_REPAIR_PROFILE_REF:
+        reasons.append("queue_e_birth_repair_gate stage profile ref mismatch")
+    if not stage_gate.get("queue_e_birth_repair_pressure_level"):
+        reasons.append("queue_e_birth_repair_gate stage pressure missing")
+    if not stage_gate.get("queue_e_birth_repair_attention_target"):
+        reasons.append("queue_e_birth_repair_gate stage attention missing")
+    if not stage_gate.get("queue_e_birth_repair_ref_set"):
+        reasons.append("queue_e_birth_repair_gate stage refs missing")
     return reasons
 
 
@@ -864,6 +989,14 @@ def _check_build_report(report: dict[str, Any]) -> list[str]:
     ]:
         if ref not in report.get("closure_refs", []):
             reasons.append(f"build_report_gate missing {ref}")
+    if report.get("queue_e_birth_repair_profile_ref") != QUEUE_E_BIRTH_REPAIR_PROFILE_REF:
+        reasons.append("queue_e_birth_repair_gate report profile ref mismatch")
+    if not report.get("queue_e_birth_repair_pressure_level"):
+        reasons.append("queue_e_birth_repair_gate report pressure missing")
+    if not report.get("queue_e_birth_repair_attention_target"):
+        reasons.append("queue_e_birth_repair_gate report attention missing")
+    if not report.get("queue_e_birth_repair_ref_set"):
+        reasons.append("queue_e_birth_repair_gate report refs missing")
     return reasons
 
 
@@ -891,6 +1024,7 @@ def _build_input_hashes(
         state_dir / "validation" / "world_contact_validation.json",
         state_dir / "validation" / "prediction_trace_validation.json",
         state_dir / "validation" / "validation_rollup.json",
+        state_dir / "life_targets" / "queue_e_birth_repair_profile.json",
         state_dir / "validation" / "boundary_audit_state.json",
         reports_dir / "birth_readiness_report.json",
         reports_dir / "validation_membrane_report.json",
@@ -953,6 +1087,7 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "checker_manifest_gate",
         "code_artifact_gate",
         "responsibility_logic_gate",
+        "queue_e_birth_repair_gate",
         "cli_report_gate",
         "next_slice_gate",
     ]
@@ -965,6 +1100,14 @@ def _blocked_gates(blocked_reasons: list[str]) -> list[str]:
         if gate not in gates:
             gates.append(gate)
     return gates
+
+
+def _queue_e_birth_repair_ref_set(profile: dict[str, Any]) -> set[str]:
+    refs: set[str] = set()
+    for ref in [*profile.get("ref_set", []), QUEUE_E_BIRTH_REPAIR_PROFILE_REF]:
+        if isinstance(ref, str) and ref:
+            refs.add(ref)
+    return refs
 
 
 def _default_run_id() -> str:

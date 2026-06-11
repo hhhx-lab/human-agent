@@ -471,6 +471,8 @@ S05 发生在 S08 之后，因此 validator 应当重新读取当前 `consciousn
 
 `cross_file_logic.py` 现在必须把 `ActionCandidateSet#life_constraint_profile`、`WorldContactValidation#life_constraint_validation` 与 `ValidationRollup#queue_e_cross_layer_gate_status` 统一成 `life_constraint_alignment` finding；`run_manifest.py` 则必须把这组约束作为 S09 输入证据、local gate 和 closure refs 保存下来。这样后续 process supervisor 看到的不是抽象“验证通过”，而是可以追溯到价值取向、意识探针、身体/语言延后 gate 的行为约束链。
 
+当前同一文件组也必须承接 `queue_e_birth_repair_profile.json`。`run_schema_runner(...)` 重新读取 profile，并核对 `validation_rollup.json`、`validation_stage_gate.json`、`validation_membrane_report.json` 都携带同一 `queue_e_birth_repair_profile_ref / pressure_level / attention_target / ref_set`。`cross_file_logic.py` 负责生成 `queue_e_birth_repair_alignment` finding，并把 profile ref 写入 `state_refs`、`repair_priority_refs`、`closure_status_refs`、`package_local_gate_refs`、`bridge_refs`。`run_manifest.py` 必须写出 `queue_e_birth_repair_gate_status`、`queue_e_birth_repair_profile_ref`、`queue_e_birth_repair_pressure_level`、`queue_e_birth_repair_attention_target`、`queue_e_birth_repair_ref_set`。这样 S09 的 schema runner 包不只知道 “S05 closed”，还保留真实责任/后悔/痛苦修复压力的原始对象链。
+
 ## N. `DIGITAL_LIFE_PROCESS_SUPERVISOR` 当前回灌口径
 
 ### 角色
@@ -701,6 +703,20 @@ Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判
   - 断言 rollup、stage gate、report、digest、check report、receipt 都携带或验证同一 profile。
 
 这一步的工程意义是：Queue E 责任/后悔/修复压力已经从出生准备的一等 evidence gate 继续变成验证膜的一等复查 gate。后续不得让 S05 / S09 只消费泛化的 birth readiness status，而必须保留 profile ref、pressure、attention target 和原始责任链 refs。
+
+S09 当前也已经执行同一条要求：
+
+- `life_v0/schema_runner/__init__.py`
+  - `run_schema_runner(...)` 读取 `runtime/state/life_targets/queue_e_birth_repair_profile.json`。
+  - `_queue_e_birth_repair_blockers(...)` 核对 profile schema、pressure、attention target、ref set，以及 S05 rollup / stage gate / report 的回链一致性。
+  - `schema_runner_stage_gate.json`、`schema_runner_report.json`、`schema_runner_digest.json`、`schema_runner_<run_id>.json` receipt 必须携带同一组 Queue E 出生修复画像字段。
+- `life_v0/schema_runner/cross_file_logic.py`
+  - `build_cross_file_logic(...)` 接收 `queue_e_birth_repair_profile`。
+  - `cross_file_logic.json` 必须包含 `queue_e_birth_repair_alignment` finding，并把 profile ref 写入 state refs、closure refs、repair priority refs、bridge refs 和 package-local gate refs。
+- `life_v0/schema_runner/run_manifest.py`
+  - `run_manifest.json` 必须写出 `queue_e_birth_repair_gate_status=closed`、profile ref、pressure、attention target 与 ref set。
+- `tests/slices/test_schema_runner.py`
+  - 断言 cross-file logic、run manifest、stage gate、report、digest、check report、receipt 都携带或验证同一 profile。
 
 ### 第四轮预测调制链已落口径
 
