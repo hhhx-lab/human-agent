@@ -11,6 +11,11 @@ from .dialogue_events import build_external_turn_event, build_life_turn_event
 from .idle_strategy import IDLE_STRATEGY_STATE_REF
 from .live_turn_cycle import run_live_turn_cycle
 from .process_closeout import close_digital_life_process
+from .process_lease import (
+    RESIDENT_PROCESS_LEASE_REF,
+    close_resident_process_lease,
+    open_resident_process_lease,
+)
 from .process_session_loop import run_process_session_loop
 from .resident_supervision import bootstrap_resident_supervision
 from .response_surface import compose_life_response
@@ -178,6 +183,12 @@ def run_digital_life_process(
     relaunch_recovery_count = supervision.relaunch_recovery_count
     last_relaunch_recovery_report_ref = supervision.last_relaunch_recovery_report_ref
     heartbeat_counter = supervision.heartbeat_counter
+    open_resident_process_lease(
+        run_id=run_id,
+        generated_at=generated_at,
+        terminal_dir=terminal_dir,
+        write_json=_write_json,
+    )
 
     _print_line(output_stream, "当前生命回合已恢复。输入新的关系性回合，使用 /exit 结束本次生命进程。")
 
@@ -283,6 +294,16 @@ def run_digital_life_process(
 
     idle_strategy_state = _read_json_if_exists(terminal_dir / "idle_strategy_state.json")
     expression_plan = _read_json_if_exists(language_dir / "expression_plan.json")
+    close_resident_process_lease(
+        run_id=run_id,
+        generated_at=_now_iso(),
+        terminal_dir=terminal_dir,
+        heartbeat_counter=session_loop.heartbeat_counter,
+        completed_turns=session_loop.completed_turns,
+        incident_count=session_loop.incident_count,
+        exit_reason=session_loop.exit_reason,
+        write_json=_write_json,
+    )
     closeout = close_digital_life_process(
         run_id=run_id,
         generated_at=generated_at,
@@ -339,6 +360,7 @@ def run_digital_life_process(
         state_merge_guard_ref=state_merge_guard_ref,
         background_convergence_summary_ref=background_convergence_summary_ref,
         background_convergence_history_ref=background_convergence_history_ref,
+        resident_process_lease_ref=RESIDENT_PROCESS_LEASE_REF,
         write_json=_write_json,
     )
     return DigitalLifeProcessResult(exit_code=0, report=closeout.report_bundle.report)

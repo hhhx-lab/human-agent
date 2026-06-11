@@ -168,6 +168,7 @@ repo-local 最小常驻终端入口固定为：
 ./digital life
   -> ensure_minimal_birth_bootstrap_if_runtime_missing
   -> run_digital_life_shell_command
+  -> open resident_process_lease.json
   -> print restored life process banner
   -> write waiting heartbeat
   -> refresh waiting heartbeat while idle
@@ -179,9 +180,41 @@ repo-local 最小常驻终端入口固定为：
   -> update self_narrative / relationship / commitment / self_model / terminal loop state
   -> return restored_waiting_for_external_turn
   -> repeat until /exit
+  -> close resident_process_lease.json
 ```
 
 这里的 `ensure_minimal_birth_bootstrap_if_runtime_missing` 不是新的主体架构，也不是替代 `life-v0` 的第二套 runner。它只是把已经存在的 `P0 -> S11 -> first-activation-preflight -> replay-shadow -> growth-archive -> emit-report -> explain-stage` 最小链，在入口缺少运行材料时顺序补齐，使 `digital life` 更接近真实诞生入口。
+
+### resident process lease
+
+当前 v0 新增一层最小“常驻生命进程身份”对象：
+
+```text
+runtime/state/terminal/resident_process_lease.json
+```
+
+它不是 daemon manager，也不是工具网关；它只负责证明这一次 `digital life` 在本机打开过一个可追踪的生命进程身份，并把运行、等待、关闭三个相位固定到同一条证据链。
+
+最小字段必须包括：
+
+- `schema_version = resident_process_lease_v0`
+- `run_id`
+- `resident_process_id`
+- `lease_state = active / closed`
+- `opened_at`
+- `last_seen_at`
+- `closed_at`
+- `heartbeat_counter`
+- `completed_dialogue_turns`
+- `incident_count`
+- `exit_reason`
+- `safe_terminal_loop_state_ref`
+- `terminal_life_loop_state_ref`
+- `resident_governance_state_ref`
+- `idle_heartbeat_trace_ref`
+- `process_report_ref`
+
+启动时 `process_supervisor/process_lease.py` 必须先写 active lease；每次 waiting heartbeat 必须刷新 `last_seen_at` 与 `heartbeat_counter`，并让 `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`resident_governance_state.json` 能回链 `resident_process_lease_ref` 与 `resident_process_id`；closeout 时必须把同一份 lease 改成 closed，写入 completed turns、incident count、exit reason、process report ref，并让 persistent process state/report、resident governance state/snapshot/report、process report、digest、receipt 继续收进 `runtime/state/terminal/resident_process_lease.json`。这样后续真正做全局长期运行层时，不会从一个无身份的 stdin 循环硬跳到 daemon，而是从可审计的生命进程身份继续长出来。
 
 ## process supervisor 的最小对象链
 

@@ -17,6 +17,10 @@ from .persistent_process import (
     RESIDENT_GOVERNANCE_SNAPSHOT_REF,
     RESIDENT_GOVERNANCE_STATE_REF,
 )
+from .process_lease import (
+    RESIDENT_PROCESS_LEASE_REF,
+    refresh_resident_process_lease,
+)
 
 
 IDLE_HEARTBEAT_TRACE_REF = "runtime/state/terminal/idle_heartbeat_trace.jsonl"
@@ -202,6 +206,13 @@ def write_waiting_heartbeat(
     waiting_mode = str(
         idle_strategy.get("waiting_mode", "restored_waiting_for_external_turn")
     )
+    lease = refresh_resident_process_lease(
+        run_id=run_id,
+        generated_at=now_iso(),
+        terminal_dir=terminal_dir,
+        heartbeat_counter=heartbeat_counter,
+        write_json=write_json,
+    )
     heartbeat_packet = {
         "schema_version": "digital_life_waiting_heartbeat_v0",
         "run_id": run_id,
@@ -214,6 +225,8 @@ def write_waiting_heartbeat(
         "safe_terminal_loop_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
+        "resident_process_lease_ref": RESIDENT_PROCESS_LEASE_REF,
+        "resident_process_id": lease.get("resident_process_id"),
         "next_required_action": "await_next_external_relation_turn",
     }
     if responsibility_loop_state_ref:
@@ -236,6 +249,8 @@ def write_waiting_heartbeat(
     safe_terminal_loop["last_heartbeat_packet_ref"] = heartbeat_report_ref
     safe_terminal_loop["idle_strategy_ref"] = IDLE_STRATEGY_STATE_REF
     safe_terminal_loop["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
+    safe_terminal_loop["resident_process_lease_ref"] = RESIDENT_PROCESS_LEASE_REF
+    safe_terminal_loop["resident_process_id"] = lease.get("resident_process_id")
     safe_terminal_loop["idle_heartbeat_trace_ref"] = IDLE_HEARTBEAT_TRACE_REF
     safe_terminal_loop["idle_heartbeat_trace_count"] = heartbeat_counter
     write_json(terminal_dir / "safe_terminal_loop_state.json", safe_terminal_loop)
@@ -246,6 +261,8 @@ def write_waiting_heartbeat(
     terminal_life_loop_state["next_required_action"] = "await_next_external_relation_turn"
     terminal_life_loop_state["idle_strategy_ref"] = IDLE_STRATEGY_STATE_REF
     terminal_life_loop_state["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
+    terminal_life_loop_state["resident_process_lease_ref"] = RESIDENT_PROCESS_LEASE_REF
+    terminal_life_loop_state["resident_process_id"] = lease.get("resident_process_id")
     terminal_life_loop_state["idle_heartbeat_trace_ref"] = IDLE_HEARTBEAT_TRACE_REF
     terminal_life_loop_state["idle_heartbeat_trace_count"] = heartbeat_counter
     for field in (
@@ -584,6 +601,8 @@ def write_waiting_heartbeat(
         "heartbeat_counter": heartbeat_counter,
         "idle_strategy_ref": IDLE_STRATEGY_STATE_REF,
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
+        "resident_process_lease_ref": RESIDENT_PROCESS_LEASE_REF,
+        "resident_process_id": lease.get("resident_process_id"),
         "resident_governance_snapshot_ref": RESIDENT_GOVERNANCE_SNAPSHOT_REF,
         "resident_governance_report_ref": RESIDENT_GOVERNANCE_REPORT_REF,
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",

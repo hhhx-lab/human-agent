@@ -27,6 +27,7 @@ RELATIONSHIP_SUBJECT_GRAPH_REF = "runtime/state/relationship/relationship_subjec
 SELF_MODEL_REF = "runtime/state/self/self_model.json"
 TRAIT_DRIFT_MONITOR_REF = "runtime/state/body/trait_drift_monitor.json"
 STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
+RESIDENT_PROCESS_LEASE_REF = "runtime/state/terminal/resident_process_lease.json"
 
 
 @dataclass(frozen=True)
@@ -66,6 +67,7 @@ def write_persistent_process_artifacts(
     trait_drift_monitor_ref: str | None = None,
     background_convergence_summary_ref: str | None = None,
     background_convergence_history_ref: str | None = None,
+    resident_process_lease_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
     relationship_graph: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
@@ -73,6 +75,14 @@ def write_persistent_process_artifacts(
     terminal_dir = state_dir / "terminal"
     terminal_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
+    if resident_process_lease_ref is None and (
+        terminal_dir / "resident_process_lease.json"
+    ).exists():
+        resident_process_lease_ref = RESIDENT_PROCESS_LEASE_REF
+    resident_process_lease = _read_json_if_exists(terminal_dir / "resident_process_lease.json")
+    resident_process_id = resident_process_lease.get("resident_process_id")
+    if not isinstance(resident_process_id, str) or not resident_process_id:
+        resident_process_id = None
     idle_governance = extract_idle_governance_fields(idle_strategy_state)
     idle_governance.update(
         cross_wake_trait_convergence_profile(
@@ -140,6 +150,8 @@ def write_persistent_process_artifacts(
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
+        "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_id": resident_process_id,
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
         "relationship_timeline_ref": relationship_timeline_ref,
@@ -201,6 +213,8 @@ def write_persistent_process_artifacts(
         "resident_governance_report_ref": RESIDENT_GOVERNANCE_REPORT_REF,
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
+        "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_id": resident_process_id,
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
         "relationship_timeline_ref": relationship_timeline_ref,
@@ -275,6 +289,8 @@ def write_persistent_process_artifacts(
         "resident_governance_snapshot_ref": RESIDENT_GOVERNANCE_SNAPSHOT_REF,
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
+        "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_id": resident_process_id,
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
         "relationship_timeline_ref": relationship_timeline_ref,
@@ -328,6 +344,8 @@ def write_persistent_process_artifacts(
         "resident_governance_snapshot_ref": RESIDENT_GOVERNANCE_SNAPSHOT_REF,
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
+        "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_id": resident_process_id,
         "waiting_mode": waiting_mode,
         "heartbeat_counter": heartbeat_counter,
         "completed_dialogue_turns": completed_turns,
@@ -393,6 +411,8 @@ def write_persistent_process_artifacts(
         "relaunch_recovery_count": relaunch_recovery_count,
         "idle_strategy_ref": idle_strategy_ref,
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
+        "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_id": resident_process_id,
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
         "relationship_timeline_ref": relationship_timeline_ref,
