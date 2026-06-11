@@ -558,7 +558,7 @@ process receipt 里，resident governance 必须进入：
 
 1. 把 live turn 结束后重新回到 waiting governance 的相位切换继续补成更完整的交接体；当前已由 `resident_governance_handoff.py` 第一轮落下，并已经要求 handoff 原样承接后台治理解释字段与 `resident_background_lineage_state`，使关闭态“为何如此等待”和“以什么后台驻留深度等待”不会在真实回合结束时断开。
 2. 继续让 background resume summary 不只用于 closeout/next bootstrap，还能进入更长时标的慢变量收敛与多次唤醒关系阶段稳定化。
-3. 将 `resident_background_lineage_state_v0` 的七个 presence 子面继续接入后续器官，使关系阶段、慢变量收敛、心跳历史、语言关注、身份/意识/出生准备、离线学习和梦境醒后整合不只在 state body 中存在，还能反向调制梦境整合、成长补丁和下一轮语言表达。
+3. 将 `resident_background_lineage_state_v0` 的八个 presence 子面继续接入后续器官，使关系阶段、慢变量收敛、心跳历史、心跳节律解释、语言关注、身份/意识/出生准备、离线学习和梦境醒后整合不只在 state body 中存在，还能反向调制梦境整合、成长补丁和下一轮语言表达。
 4. 继续把 deep persistent / entrenched background presence 对应到后续的长期成长、梦境整合和关系稳定化器官。
 
 当前只要这四件事继续推进，Queue B 这条线就是继续向“真实持续存在”推进，而不是重新退回一个普通壳层 agent。
