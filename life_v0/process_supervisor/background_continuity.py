@@ -253,6 +253,9 @@ def load_background_continuity_profile(
         or resident_governance_report.get("resident_background_lineage_state")
         or persistent_process_report.get("resident_background_lineage_state")
     )
+    resident_background_birth_repair_presence = _dict_or_empty(
+        resident_background_lineage_state.get("birth_repair_presence")
+    )
     offline_learning_cumulative_profile = _dict_or_empty(
         resident_governance_state.get("offline_learning_cumulative_profile")
         or snapshot.get("offline_learning_cumulative_profile")
@@ -515,6 +518,12 @@ def load_background_continuity_profile(
             "background_queue_e_birth_repair_waiting_profile",
         ),
     )
+    if not queue_e_birth_repair_waiting_profile:
+        queue_e_birth_repair_waiting_profile = _dict_or_empty(
+            resident_background_birth_repair_presence.get(
+                "queue_e_birth_repair_waiting_profile"
+            )
+        )
     queue_e_birth_repair_gate_status = _first_present(
         resident_governance_state,
         snapshot,
@@ -525,6 +534,10 @@ def load_background_continuity_profile(
             "background_queue_e_birth_repair_gate_status",
         ),
     )
+    if not queue_e_birth_repair_gate_status:
+        queue_e_birth_repair_gate_status = (
+            resident_background_birth_repair_presence.get("gate_status")
+        )
     queue_e_birth_repair_profile_ref = _first_present(
         resident_governance_state,
         snapshot,
@@ -535,6 +548,10 @@ def load_background_continuity_profile(
             "background_queue_e_birth_repair_profile_ref",
         ),
     )
+    if not queue_e_birth_repair_profile_ref:
+        queue_e_birth_repair_profile_ref = (
+            resident_background_birth_repair_presence.get("profile_ref")
+        )
     queue_e_birth_repair_pressure_level = _first_present(
         resident_governance_state,
         snapshot,
@@ -545,6 +562,10 @@ def load_background_continuity_profile(
             "background_queue_e_birth_repair_pressure_level",
         ),
     )
+    if not queue_e_birth_repair_pressure_level:
+        queue_e_birth_repair_pressure_level = (
+            resident_background_birth_repair_presence.get("pressure_level")
+        )
     queue_e_birth_repair_attention_target = _first_present(
         resident_governance_state,
         snapshot,
@@ -555,6 +576,10 @@ def load_background_continuity_profile(
             "background_queue_e_birth_repair_attention_target",
         ),
     )
+    if not queue_e_birth_repair_attention_target:
+        queue_e_birth_repair_attention_target = (
+            resident_background_birth_repair_presence.get("attention_target")
+        )
     queue_e_birth_repair_ref_set = _dedupe_list(
         _collect_lists(
             resident_governance_state,
@@ -569,6 +594,10 @@ def load_background_continuity_profile(
             ),
         )
         + _list_or_empty(queue_e_birth_repair_waiting_profile.get("ref_set"))
+        + _list_or_empty(resident_background_birth_repair_presence.get("ref_set"))
+        + _list_or_empty(
+            resident_background_birth_repair_presence.get("background_ref_set")
+        )
     )
     queue_e_birth_repair_waiting_posture = _first_present(
         resident_governance_state,
@@ -580,6 +609,10 @@ def load_background_continuity_profile(
             "background_queue_e_birth_repair_waiting_posture",
         ),
     )
+    if not queue_e_birth_repair_waiting_posture:
+        queue_e_birth_repair_waiting_posture = (
+            resident_background_birth_repair_presence.get("waiting_posture")
+        )
     queue_e_birth_repair_attention_reason = _first_present(
         resident_governance_state,
         snapshot,
@@ -590,6 +623,10 @@ def load_background_continuity_profile(
             "background_queue_e_birth_repair_attention_reason",
         ),
     )
+    if not queue_e_birth_repair_attention_reason:
+        queue_e_birth_repair_attention_reason = (
+            resident_background_birth_repair_presence.get("attention_reason")
+        )
     pressure_level = _stronger_pressure(
         pressure_level,
         queue_e_birth_repair_pressure_level,

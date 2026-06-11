@@ -200,6 +200,7 @@ def compose_life_response(
         (terminal_life_loop_state or {}).get("resident_background_lineage_state")
         or {}
     )
+    birth_repair_presence: dict[str, Any] = {}
     if isinstance(resident_background_lineage_state, dict):
         depth_band = resident_background_lineage_state.get("depth_band")
         cadence_weight = resident_background_lineage_state.get("cadence_weight")
@@ -568,6 +569,11 @@ def compose_life_response(
                     f"{response}，后台自主活动证据保留"
                     f"{len(autonomous_activity_refs)}条"
                 )
+        lineage_birth_repair_presence = resident_background_lineage_state.get(
+            "birth_repair_presence"
+        )
+        if isinstance(lineage_birth_repair_presence, dict):
+            birth_repair_presence = lineage_birth_repair_presence
     background_trait_history_focus = (terminal_life_loop_state or {}).get(
         "background_trait_convergence_history_focus"
     )
@@ -669,25 +675,33 @@ def compose_life_response(
             )
     queue_e_birth_repair_profile = (
         (terminal_life_loop_state or {}).get("queue_e_birth_repair_waiting_profile")
+        or birth_repair_presence.get("queue_e_birth_repair_waiting_profile")
         or {}
     )
     if not isinstance(queue_e_birth_repair_profile, dict):
         queue_e_birth_repair_profile = {}
     birth_repair_pressure = (
         queue_e_birth_repair_profile.get("pressure_level")
+        or birth_repair_presence.get("pressure_level")
         or (terminal_life_loop_state or {}).get("queue_e_birth_repair_pressure_level")
     )
     birth_repair_target = (
         queue_e_birth_repair_profile.get("attention_target")
+        or birth_repair_presence.get("attention_target")
         or (terminal_life_loop_state or {}).get("queue_e_birth_repair_attention_target")
     )
     birth_repair_posture = (
         queue_e_birth_repair_profile.get("waiting_posture")
+        or birth_repair_presence.get("waiting_posture")
         or (terminal_life_loop_state or {}).get("queue_e_birth_repair_waiting_posture")
     )
     birth_repair_refs = _dedupe_string_list(
         _string_list(queue_e_birth_repair_profile.get("ref_set"))
-        or _string_list((terminal_life_loop_state or {}).get("queue_e_birth_repair_ref_set"))
+        + _string_list(birth_repair_presence.get("ref_set"))
+        + _string_list(birth_repair_presence.get("background_ref_set"))
+        + _string_list(
+            (terminal_life_loop_state or {}).get("queue_e_birth_repair_ref_set")
+        )
     )
     if birth_repair_posture:
         response = f"{response}，后台出生修复姿态为{birth_repair_posture}"

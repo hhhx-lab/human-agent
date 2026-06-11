@@ -297,6 +297,11 @@ def write_resident_turn_writeback(
             "resident_background_lineage_autonomous_activity_refs", []
         )
     )
+    resident_background_lineage_birth_repair_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_birth_repair_refs", []
+        )
+    )
     resident_background_lineage_trait_drift_update_mode_summary = (
         resident_background_lineage_payload.get(
             "resident_background_lineage_trait_drift_update_mode_summary",
@@ -353,6 +358,7 @@ def write_resident_turn_writeback(
         + resident_background_lineage_offline_learning_refs
         + resident_background_lineage_dream_wake_refs
         + resident_background_lineage_autonomous_activity_refs
+        + resident_background_lineage_birth_repair_refs
         + life_constraint_refs
         + queue_e_birth_repair_refs
     )
@@ -454,6 +460,9 @@ def write_resident_turn_writeback(
         ),
         resident_background_lineage_autonomous_activity_refs=(
             resident_background_lineage_autonomous_activity_refs
+        ),
+        resident_background_lineage_birth_repair_refs=(
+            resident_background_lineage_birth_repair_refs
         ),
         offline_learning_cumulative_refs=offline_learning_cumulative_refs,
         offline_learning_cumulative_integration_mode=(

@@ -16,6 +16,7 @@ def build_resident_background_lineage_state(
     resident_process_identity_presence = _resident_process_identity_presence(
         governance
     )
+    birth_repair_presence = _birth_repair_presence(governance)
     profile = _dict_or_empty(governance.get("background_lineage_governance_profile"))
     explicit_depth_band = (
         governance.get("background_lineage_depth_band")
@@ -34,6 +35,8 @@ def build_resident_background_lineage_state(
         depth_band = "no_background_lineage"
     if not depth_band and resident_process_identity_presence:
         depth_band = "no_background_lineage"
+    if not depth_band and birth_repair_presence:
+        depth_band = "no_background_lineage"
     if not depth_band:
         return {}
 
@@ -46,7 +49,10 @@ def build_resident_background_lineage_state(
         "depth_band": str(depth_band),
         "waiting_posture": _waiting_posture_for_depth(
             depth_band,
-            pressure_level=governance.get("background_carryover_pressure_level"),
+            pressure_level=(
+                governance.get("background_carryover_pressure_level")
+                or birth_repair_presence.get("pressure_level")
+            ),
         ),
         "cadence_weight": _cadence_weight_for_depth(depth_band),
         "evidence_ref_count": _int_or_zero(
@@ -122,6 +128,8 @@ def build_resident_background_lineage_state(
     autonomous_activity_presence = _autonomous_activity_presence(governance)
     if autonomous_activity_presence:
         lineage_state["autonomous_activity_presence"] = autonomous_activity_presence
+    if birth_repair_presence:
+        lineage_state["birth_repair_presence"] = birth_repair_presence
     return {
         key: value
         for key, value in lineage_state.items()
@@ -796,6 +804,105 @@ def _autonomous_activity_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "current_cycle": _string_list(profile.get("current_cycle")),
             "autonomous_activity_refs": ref_set,
             "autonomous_activity_evidence_ref_count": len(ref_set),
+        }
+    )
+
+
+def _birth_repair_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    profile = _dict_or_empty(
+        governance.get("queue_e_birth_repair_waiting_profile")
+        or governance.get("background_queue_e_birth_repair_waiting_profile")
+    )
+    gate_status = (
+        governance.get("queue_e_birth_repair_gate_status")
+        or governance.get("background_queue_e_birth_repair_gate_status")
+        or profile.get("gate_status")
+    )
+    profile_ref = (
+        governance.get("queue_e_birth_repair_profile_ref")
+        or governance.get("background_queue_e_birth_repair_profile_ref")
+        or profile.get("profile_ref")
+    )
+    pressure_level = (
+        governance.get("queue_e_birth_repair_pressure_level")
+        or governance.get("background_queue_e_birth_repair_pressure_level")
+        or profile.get("pressure_level")
+    )
+    attention_target = (
+        governance.get("queue_e_birth_repair_attention_target")
+        or governance.get("background_queue_e_birth_repair_attention_target")
+        or profile.get("attention_target")
+    )
+    waiting_posture = (
+        governance.get("queue_e_birth_repair_waiting_posture")
+        or governance.get("background_queue_e_birth_repair_waiting_posture")
+        or profile.get("waiting_posture")
+    )
+    attention_reason = (
+        governance.get("queue_e_birth_repair_attention_reason")
+        or governance.get("background_queue_e_birth_repair_attention_reason")
+        or profile.get("attention_reason")
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(governance.get("queue_e_birth_repair_ref_set"))
+        + _string_list(governance.get("queue_e_birth_repair_refs"))
+        + _string_list(governance.get("queue_e_birth_repair_evidence_refs"))
+        + _string_list(governance.get("background_queue_e_birth_repair_ref_set"))
+        + _string_list(profile.get("ref_set"))
+        + _string_list([profile_ref])
+    )
+    background_ref_set = _dedupe_string_list(
+        _string_list(governance.get("background_queue_e_birth_repair_ref_set"))
+    )
+    continuity_mode = (
+        governance.get("queue_e_birth_repair_continuity_mode")
+        or governance.get("background_queue_e_birth_repair_continuity_mode")
+        or profile.get("continuity_mode")
+        or governance.get("background_continuity_mode")
+    )
+    if not any(
+        [
+            profile,
+            gate_status,
+            profile_ref,
+            pressure_level,
+            attention_target,
+            waiting_posture,
+            attention_reason,
+            ref_set,
+        ]
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "queue_e_birth_repair_waiting_profile": profile,
+            "gate_status": gate_status,
+            "profile_ref": profile_ref,
+            "pressure_level": pressure_level,
+            "attention_target": attention_target,
+            "waiting_posture": waiting_posture,
+            "attention_reason": attention_reason,
+            "continuity_mode": continuity_mode,
+            "ref_set": ref_set,
+            "background_gate_status": governance.get(
+                "background_queue_e_birth_repair_gate_status"
+            ),
+            "background_profile_ref": governance.get(
+                "background_queue_e_birth_repair_profile_ref"
+            ),
+            "background_pressure_level": governance.get(
+                "background_queue_e_birth_repair_pressure_level"
+            ),
+            "background_attention_target": governance.get(
+                "background_queue_e_birth_repair_attention_target"
+            ),
+            "background_waiting_posture": governance.get(
+                "background_queue_e_birth_repair_waiting_posture"
+            ),
+            "background_attention_reason": governance.get(
+                "background_queue_e_birth_repair_attention_reason"
+            ),
+            "background_ref_set": background_ref_set,
         }
     )
 

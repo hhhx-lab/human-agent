@@ -219,6 +219,7 @@ def build_resident_background_lineage_payload(
         "offline_learning_presence",
         "dream_wake_presence",
         "autonomous_activity_presence",
+        "birth_repair_presence",
     ):
         presence = lineage_state.get(key)
         if isinstance(presence, dict) and presence:
@@ -687,6 +688,50 @@ def build_resident_background_lineage_payload(
                 "resident_background_lineage_autonomous_activity_refs"
             ] = autonomous_activity_refs
             lineage_refs.extend(autonomous_activity_refs)
+    birth_repair_presence = lineage_state.get("birth_repair_presence")
+    if isinstance(birth_repair_presence, dict):
+        for source_key, target_key in (
+            ("gate_status", "resident_background_lineage_birth_repair_gate_status"),
+            ("profile_ref", "resident_background_lineage_birth_repair_profile_ref"),
+            (
+                "pressure_level",
+                "resident_background_lineage_birth_repair_pressure_level",
+            ),
+            (
+                "attention_target",
+                "resident_background_lineage_birth_repair_attention_target",
+            ),
+            (
+                "waiting_posture",
+                "resident_background_lineage_birth_repair_waiting_posture",
+            ),
+            (
+                "attention_reason",
+                "resident_background_lineage_birth_repair_attention_reason",
+            ),
+            (
+                "continuity_mode",
+                "resident_background_lineage_birth_repair_continuity_mode",
+            ),
+        ):
+            value = birth_repair_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        birth_repair_refs = _dedupe_string_list(
+            _string_list(birth_repair_presence.get("ref_set"))
+            + _string_list(birth_repair_presence.get("background_ref_set"))
+            + _string_list(
+                [
+                    birth_repair_presence.get("profile_ref"),
+                    birth_repair_presence.get("background_profile_ref"),
+                ]
+            )
+        )
+        if birth_repair_refs:
+            payload["resident_background_lineage_birth_repair_refs"] = (
+                birth_repair_refs
+            )
+            lineage_refs.extend(birth_repair_refs)
     if lineage_refs:
         payload["resident_background_lineage_evidence_refs"] = _dedupe_string_list(
             lineage_refs
@@ -805,36 +850,55 @@ def build_queue_e_birth_repair_payload(
 ) -> dict[str, Any]:
     if not terminal_life_loop_state:
         return {}
+    lineage_state = terminal_life_loop_state.get("resident_background_lineage_state")
+    if not isinstance(lineage_state, dict):
+        lineage_state = {}
+    birth_repair_presence = lineage_state.get("birth_repair_presence")
+    if not isinstance(birth_repair_presence, dict):
+        birth_repair_presence = {}
     profile = terminal_life_loop_state.get("queue_e_birth_repair_waiting_profile")
+    if not isinstance(profile, dict):
+        profile = (
+            birth_repair_presence.get("queue_e_birth_repair_waiting_profile")
+            or {}
+        )
     if not isinstance(profile, dict):
         profile = {}
 
     gate_status = (
         terminal_life_loop_state.get("queue_e_birth_repair_gate_status")
+        or birth_repair_presence.get("gate_status")
         or profile.get("gate_status")
     )
     profile_ref = (
         terminal_life_loop_state.get("queue_e_birth_repair_profile_ref")
+        or birth_repair_presence.get("profile_ref")
         or profile.get("profile_ref")
     )
     pressure_level = (
         terminal_life_loop_state.get("queue_e_birth_repair_pressure_level")
+        or birth_repair_presence.get("pressure_level")
         or profile.get("pressure_level")
     )
     attention_target = (
         terminal_life_loop_state.get("queue_e_birth_repair_attention_target")
+        or birth_repair_presence.get("attention_target")
         or profile.get("attention_target")
     )
     waiting_posture = (
         terminal_life_loop_state.get("queue_e_birth_repair_waiting_posture")
+        or birth_repair_presence.get("waiting_posture")
         or profile.get("waiting_posture")
     )
     attention_reason = (
         terminal_life_loop_state.get("queue_e_birth_repair_attention_reason")
+        or birth_repair_presence.get("attention_reason")
         or profile.get("attention_reason")
     )
     ref_set = _dedupe_string_list(
         _string_list(terminal_life_loop_state.get("queue_e_birth_repair_ref_set"))
+        + _string_list(birth_repair_presence.get("ref_set"))
+        + _string_list(birth_repair_presence.get("background_ref_set"))
         + _string_list(profile.get("ref_set"))
     )
     if isinstance(profile_ref, str) and profile_ref:
