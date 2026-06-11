@@ -5959,6 +5959,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "generation": 3,
                         "pressure_level": "elevated",
                         "attention_target": "relationship_learning_plan",
+                        "integration_mode": "relationship_offline_reconsolidation_required",
+                        "relationship_reconsolidation_required": True,
                         "ref_set": [
                             "runtime/state/growth/relationship_learning_plan.json",
                             "runtime/state/growth/language_learning_plan.json",
@@ -5993,6 +5995,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     ],
                     "current_pressure_level": "quiet",
                     "previous_generation": 3,
+                    "integration_mode": "relationship_offline_reconsolidation_required",
+                    "relationship_reconsolidation_required": True,
                 },
                 "offline_learning_cumulative_generation": 3,
                 "offline_learning_cumulative_pressure_level": "elevated",
@@ -6450,6 +6454,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertIn("后台生命进程身份压力为elevated", result.emitted_output)
             self.assertIn("后台生命进程身份证据保留3条", result.emitted_output)
+            self.assertIn(
+                "累计离线学习整合模式为relationship_offline_reconsolidation_required",
+                result.emitted_output,
+            )
+            self.assertIn("关系离线重整需要保持在场", result.emitted_output)
+            self.assertIn(
+                "后台梦境成长整合模式为relationship_offline_reconsolidation_required",
+                result.emitted_output,
+            )
+            self.assertIn("后台关系离线重整仍需要保持", result.emitted_output)
             self.assertEqual(
                 result.last_life_turn["prediction_waiting_posture"],
                 "hold_for_evidence",
@@ -6480,6 +6494,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 result.last_life_turn["offline_learning_cumulative_attention_target"],
                 "relationship_learning_plan",
+            )
+            self.assertEqual(
+                result.last_life_turn["offline_learning_cumulative_integration_mode"],
+                "relationship_offline_reconsolidation_required",
+            )
+            self.assertTrue(
+                result.last_life_turn[
+                    "offline_learning_cumulative_relationship_reconsolidation_required"
+                ]
             )
             self.assertEqual(
                 result.last_life_turn["offline_learning_cumulative_evidence_refs"],
@@ -10514,6 +10537,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     ],
                     "current_pressure_level": "quiet",
                     "previous_generation": 2,
+                    "integration_mode": "relationship_offline_reconsolidation_required",
+                    "relationship_reconsolidation_required": True,
                 },
                 "offline_learning_cumulative_generation": 3,
                 "offline_learning_cumulative_pressure_level": "elevated",
@@ -10678,6 +10703,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "offline_learning_presence"
                     ]["attention_target"],
                     "relationship_learning_plan",
+                )
+                self.assertEqual(
+                    artifact["resident_background_lineage_state"][
+                        "offline_learning_presence"
+                    ]["integration_mode"],
+                    "relationship_offline_reconsolidation_required",
+                )
+                self.assertTrue(
+                    artifact["resident_background_lineage_state"][
+                        "offline_learning_presence"
+                    ]["relationship_reconsolidation_required"]
                 )
                 self.assertEqual(
                     artifact["resident_background_lineage_state"][
@@ -11028,6 +11064,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "priority_profile": {
                             "relationship_learning_plan": "elevated",
                         },
+                        "integration_mode": "relationship_offline_reconsolidation_required",
+                        "relationship_reconsolidation_required": True,
                         "ref_set": [
                             "runtime/state/growth/relationship_learning_plan.json",
                             "runtime/state/growth/language_learning_plan.json",
@@ -11281,6 +11319,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             life_turn["resident_background_lineage_offline_learning_attention_target"],
             "relationship_learning_plan",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_offline_learning_integration_mode"],
+            "relationship_offline_reconsolidation_required",
+        )
+        self.assertTrue(
+            life_turn[
+                "resident_background_lineage_offline_learning_relationship_reconsolidation_required"
+            ]
+        )
+        self.assertEqual(
+            life_turn["offline_learning_cumulative_integration_mode"],
+            "relationship_offline_reconsolidation_required",
+        )
+        self.assertTrue(
+            life_turn[
+                "offline_learning_cumulative_relationship_reconsolidation_required"
+            ]
         )
         self.assertEqual(
             life_turn["resident_background_lineage_offline_learning_refs"],
@@ -11737,6 +11793,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "generation": 4,
                         "pressure_level": "elevated",
                         "attention_target": "relationship_learning_plan",
+                        "priority_profile": {
+                            "relationship_learning_plan": "elevated",
+                        },
+                        "integration_mode": "relationship_offline_reconsolidation_required",
+                        "relationship_reconsolidation_required": True,
                         "ref_set": [
                             "runtime/state/growth/relationship_learning_plan.json",
                             "runtime/state/growth/language_learning_plan.json",
@@ -12567,6 +12628,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "generation": 4,
                         "pressure_level": "elevated",
                         "attention_target": "relationship_learning_plan",
+                        "priority_profile": {
+                            "relationship_learning_plan": "elevated",
+                        },
+                        "integration_mode": "relationship_offline_reconsolidation_required",
+                        "relationship_reconsolidation_required": True,
                         "ref_set": [
                             "runtime/state/growth/relationship_learning_plan.json",
                             "runtime/state/growth/language_learning_plan.json",
@@ -13096,6 +13162,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(
                 dialogue_writeback_bundle[
+                    "offline_learning_cumulative_integration_mode"
+                ],
+                "relationship_offline_reconsolidation_required",
+            )
+            self.assertTrue(
+                dialogue_writeback_bundle[
+                    "offline_learning_cumulative_relationship_reconsolidation_required"
+                ]
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
                     "resident_background_lineage_dream_wake_refs"
                 ],
                 expected_background_dream_wake_refs,
@@ -13153,6 +13230,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "resident_background_lineage_offline_learning_refs"
                 ],
                 expected_background_offline_learning_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_offline_learning_integration_mode"
+                ],
+                "relationship_offline_reconsolidation_required",
+            )
+            self.assertTrue(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_offline_learning_relationship_reconsolidation_required"
+                ]
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "offline_learning_cumulative_integration_mode"
+                ],
+                "relationship_offline_reconsolidation_required",
+            )
+            self.assertTrue(
+                resumed_dialogue_packet[
+                    "offline_learning_cumulative_relationship_reconsolidation_required"
+                ]
             )
             self.assertEqual(
                 resumed_dialogue_packet[

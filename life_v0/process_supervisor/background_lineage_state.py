@@ -625,6 +625,16 @@ def _offline_learning_presence(governance: dict[str, Any]) -> dict[str, Any]:
     )
     current_pressure_level = profile.get("current_pressure_level")
     previous_generation = _int_or_zero(profile.get("previous_generation"))
+    integration_mode = profile.get("integration_mode") or governance.get(
+        "offline_learning_cumulative_integration_mode"
+    )
+    relationship_reconsolidation_required = profile.get(
+        "relationship_reconsolidation_required"
+    )
+    if relationship_reconsolidation_required is None:
+        relationship_reconsolidation_required = governance.get(
+            "offline_learning_cumulative_relationship_reconsolidation_required"
+        )
     if (
         not profile
         and not priority_profile
@@ -632,6 +642,8 @@ def _offline_learning_presence(governance: dict[str, Any]) -> dict[str, Any]:
         and not generation
         and not pressure_level
         and not attention_target
+        and not integration_mode
+        and relationship_reconsolidation_required is None
     ):
         return {}
     return _drop_empty(
@@ -643,6 +655,10 @@ def _offline_learning_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "ref_set": ref_set,
             "current_pressure_level": current_pressure_level,
             "previous_generation": previous_generation,
+            "integration_mode": integration_mode,
+            "relationship_reconsolidation_required": (
+                relationship_reconsolidation_required
+            ),
         }
     )
 

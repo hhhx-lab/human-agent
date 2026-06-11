@@ -324,6 +324,16 @@ def write_resident_turn_writeback(
             "offline_learning_cumulative_evidence_refs", []
         )
     )
+    offline_learning_cumulative_integration_mode = (
+        offline_learning_cumulative_payload.get(
+            "offline_learning_cumulative_integration_mode"
+        )
+    )
+    offline_learning_cumulative_relationship_reconsolidation_required = (
+        offline_learning_cumulative_payload.get(
+            "offline_learning_cumulative_relationship_reconsolidation_required"
+        )
+    )
     queue_e_birth_repair_payload = build_queue_e_birth_repair_payload(
         terminal_life_loop_state
     )
@@ -446,6 +456,19 @@ def write_resident_turn_writeback(
             resident_background_lineage_autonomous_activity_refs
         ),
         offline_learning_cumulative_refs=offline_learning_cumulative_refs,
+        offline_learning_cumulative_integration_mode=(
+            str(offline_learning_cumulative_integration_mode)
+            if offline_learning_cumulative_integration_mode
+            else None
+        ),
+        offline_learning_cumulative_relationship_reconsolidation_required=(
+            bool(
+                offline_learning_cumulative_relationship_reconsolidation_required
+            )
+            if offline_learning_cumulative_relationship_reconsolidation_required
+            is not None
+            else None
+        ),
         prediction_write_gate_refs=prediction_write_gate_refs,
         live_language_turn_refs=live_language_turn_refs,
     )

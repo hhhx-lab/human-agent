@@ -166,6 +166,14 @@ def compose_life_response(
         cumulative_target = offline_learning_cumulative_payload.get(
             "offline_learning_cumulative_attention_target"
         )
+        cumulative_integration_mode = offline_learning_cumulative_payload.get(
+            "offline_learning_cumulative_integration_mode"
+        )
+        cumulative_relationship_reconsolidation_required = (
+            offline_learning_cumulative_payload.get(
+                "offline_learning_cumulative_relationship_reconsolidation_required"
+            )
+        )
         cumulative_refs = list(
             offline_learning_cumulative_payload.get(
                 "offline_learning_cumulative_ref_set",
@@ -178,6 +186,10 @@ def compose_life_response(
             response = f"{response}，累计离线学习压力为{cumulative_pressure}"
         if cumulative_target:
             response = f"{response}，累计离线学习焦点指向{cumulative_target}"
+        if cumulative_integration_mode:
+            response = f"{response}，累计离线学习整合模式为{cumulative_integration_mode}"
+        if cumulative_relationship_reconsolidation_required:
+            response = f"{response}，关系离线重整需要保持在场"
         if cumulative_refs:
             response = f"{response}，累计离线学习证据保留{len(cumulative_refs)}条"
     if offline_learning_targets:
@@ -467,6 +479,10 @@ def compose_life_response(
             offline_generation = offline_learning_presence.get("generation")
             offline_pressure = offline_learning_presence.get("pressure_level")
             offline_target = offline_learning_presence.get("attention_target")
+            offline_integration_mode = offline_learning_presence.get("integration_mode")
+            offline_relationship_reconsolidation_required = offline_learning_presence.get(
+                "relationship_reconsolidation_required"
+            )
             offline_refs = list(offline_learning_presence.get("ref_set", []))
             if offline_generation:
                 response = (
@@ -476,6 +492,10 @@ def compose_life_response(
                 response = f"{response}，后台梦境成长压力为{offline_pressure}"
             if offline_target:
                 response = f"{response}，后台梦境成长焦点指向{offline_target}"
+            if offline_integration_mode:
+                response = f"{response}，后台梦境成长整合模式为{offline_integration_mode}"
+            if offline_relationship_reconsolidation_required:
+                response = f"{response}，后台关系离线重整仍需要保持"
             if offline_refs:
                 response = f"{response}，后台梦境成长证据保留{len(offline_refs)}条"
         dream_wake_presence = resident_background_lineage_state.get(

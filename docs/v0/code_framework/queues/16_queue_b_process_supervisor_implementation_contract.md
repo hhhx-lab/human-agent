@@ -938,10 +938,12 @@ Queue B 至少新增三道 gate：
    - `offline_learning_cumulative_attention_target`
    - `offline_learning_cumulative_priority_profile`
    - `offline_learning_cumulative_ref_set`
-13. `background_continuity.py` 下一次唤醒必须把这些 cumulative 字段恢复成 `background_offline_learning_*`，再交给 `idle_strategy.py` 合并；当 current pressure 是 `quiet` 但 cumulative pressure 是 `elevated / urgent` 时，heartbeat cadence 与 `next_idle_action` 仍必须走离线学习 hold；当该累计压力聚焦 `relationship_learning_plan` 且 generation 已进入第 2 代以上时，`continuity_evolution.py` 还必须把它落成 `offline_learning_reconsolidation_waiting` 和慢变量证据，`commitment_expression.py` / `apology_repair_language.py` 也必须把它落成关系离线重整优先的承诺节奏与修复窗口，而不是只停在 waiting governance。
+   - `offline_learning_cumulative_integration_mode`
+   - `offline_learning_cumulative_relationship_reconsolidation_required`
+13. `background_continuity.py` 下一次唤醒必须把这些 cumulative 字段恢复成 `background_offline_learning_*`，再交给 `idle_strategy.py` 合并；当 current pressure 是 `quiet` 但 cumulative pressure 是 `elevated / urgent` 时，heartbeat cadence 与 `next_idle_action` 仍必须走离线学习 hold；当该累计压力聚焦 `relationship_learning_plan` 且 generation 已进入第 2 代以上时，`integration_mode` 必须进入 `relationship_offline_reconsolidation_required`，`relationship_reconsolidation_required` 必须为 `true`，`continuity_evolution.py` 还必须把它落成 `offline_learning_reconsolidation_waiting` 和慢变量证据，`commitment_expression.py` / `apology_repair_language.py` 也必须把它落成关系离线重整优先的承诺节奏与修复窗口，而不是只停在 waiting governance。
 14. `digital_life_resident_governance_explanation.json` 与 `digital_life_process_digest.json` 必须显式写出 `offline_learning_cumulative_focus`，并把这份 focus 放入 closeout story / digest，让累计梦境-成长压力成为可解释的跨唤醒证据，而不是只藏在 resident governance state 里。
 15. `response_surface.py` 现在不能只带 replay / dream window / growth patch 候选数量，也要把 dream/growth 已形成的当前离线学习压力和累计离线学习压力都真实转成语言表面。
-16. `dialogue_events.py` 与 `resident_turn_writeback.py` 必须把 cumulative offline learning refs 写进 `digital_life_turn`、`dialogue_writeback_bundle.json` 与 `resumed_external_dialogue_packet.json`；`continuity_evolution.py` 也必须把同一组 refs 写入 `relationship_stage_evidence_refs`、`trait_slow_variables.*.evidence_refs` 与 `self_model_state.growth_window_refs`。
+16. `dialogue_events.py` 与 `resident_turn_writeback.py` 必须把 cumulative offline learning refs、`integration_mode` 与 `relationship_reconsolidation_required` 写进 `digital_life_turn`、`dialogue_writeback_bundle.json` 与 `resumed_external_dialogue_packet.json`；`response_surface.py` 必须表达累计离线学习整合模式和关系离线重整是否仍需保持；`continuity_evolution.py` 也必须把同一组 refs 写入 `relationship_stage_evidence_refs`、`trait_slow_variables.*.evidence_refs` 与 `self_model_state.growth_window_refs`。
 17. `resident_supervision.py` 在 restore shell 之后不能只把 Queue D 结果喂给 waiting governance，还必须把它们继续反写进：
    - `runtime/state/relationship/relationship_timeline.json`
    - `runtime/state/language/commitment_expression_plan.json`

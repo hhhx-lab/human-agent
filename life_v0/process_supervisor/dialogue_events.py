@@ -591,6 +591,14 @@ def build_resident_background_lineage_payload(
                 "attention_target",
                 "resident_background_lineage_offline_learning_attention_target",
             ),
+            (
+                "integration_mode",
+                "resident_background_lineage_offline_learning_integration_mode",
+            ),
+            (
+                "relationship_reconsolidation_required",
+                "resident_background_lineage_offline_learning_relationship_reconsolidation_required",
+            ),
         ):
             value = offline_presence.get(source_key)
             if value not in {None, ""}:
@@ -730,7 +738,37 @@ def build_offline_learning_cumulative_payload(
         or profile.get("attention_target")
         or offline_learning_presence.get("attention_target")
     )
-    if not any([profile, priority_profile, ref_set, generation, pressure_level, attention_target]):
+    integration_mode = (
+        terminal_life_loop_state.get("offline_learning_cumulative_integration_mode")
+        or profile.get("integration_mode")
+        or offline_learning_presence.get("integration_mode")
+    )
+    relationship_reconsolidation_required = (
+        terminal_life_loop_state.get(
+            "offline_learning_cumulative_relationship_reconsolidation_required"
+        )
+        if terminal_life_loop_state.get(
+            "offline_learning_cumulative_relationship_reconsolidation_required"
+        )
+        is not None
+        else profile.get("relationship_reconsolidation_required")
+    )
+    if relationship_reconsolidation_required is None:
+        relationship_reconsolidation_required = offline_learning_presence.get(
+            "relationship_reconsolidation_required"
+        )
+    if not any(
+        [
+            profile,
+            priority_profile,
+            ref_set,
+            generation,
+            pressure_level,
+            attention_target,
+            integration_mode,
+            relationship_reconsolidation_required is not None,
+        ]
+    ):
         return {}
 
     payload: dict[str, Any] = {}
@@ -742,6 +780,14 @@ def build_offline_learning_cumulative_payload(
         payload["offline_learning_cumulative_pressure_level"] = str(pressure_level)
     if attention_target:
         payload["offline_learning_cumulative_attention_target"] = str(attention_target)
+    if integration_mode:
+        payload["offline_learning_cumulative_integration_mode"] = str(
+            integration_mode
+        )
+    if relationship_reconsolidation_required is not None:
+        payload[
+            "offline_learning_cumulative_relationship_reconsolidation_required"
+        ] = bool(relationship_reconsolidation_required)
     if priority_profile:
         payload["offline_learning_cumulative_priority_profile"] = {
             str(key): str(value)

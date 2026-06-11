@@ -48,6 +48,10 @@ def build_dialogue_writeback_bundle(
     life_constraint_refs: list[str] | None = None,
     queue_e_birth_repair_refs: list[str] | None = None,
     offline_learning_cumulative_refs: list[str] | None = None,
+    offline_learning_cumulative_integration_mode: str | None = None,
+    offline_learning_cumulative_relationship_reconsolidation_required: (
+        bool | None
+    ) = None,
     prediction_write_gate_refs: list[str] | None = None,
     live_language_turn_refs: list[str] | None = None,
 ) -> dict[str, Any]:
@@ -117,6 +121,12 @@ def build_dialogue_writeback_bundle(
         "queue_e_birth_repair_refs": list(queue_e_birth_repair_refs or []),
         "offline_learning_cumulative_refs": list(
             offline_learning_cumulative_refs or []
+        ),
+        "offline_learning_cumulative_integration_mode": (
+            offline_learning_cumulative_integration_mode
+        ),
+        "offline_learning_cumulative_relationship_reconsolidation_required": (
+            offline_learning_cumulative_relationship_reconsolidation_required
         ),
         "prediction_write_gate_refs": list(prediction_write_gate_refs or []),
         "live_language_turn_refs": list(live_language_turn_refs or []),
