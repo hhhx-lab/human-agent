@@ -92,6 +92,22 @@ def build_idle_continuity_frame(
     background_state_merge_long_term_change_count: int | None = None,
     background_state_merge_long_term_change_families: list[str] | None = None,
     background_state_merge_long_term_change_refs: list[str] | None = None,
+    background_queue_e_birth_repair_waiting_profile: dict[str, Any] | None = None,
+    background_queue_e_birth_repair_gate_status: str | None = None,
+    background_queue_e_birth_repair_profile_ref: str | None = None,
+    background_queue_e_birth_repair_pressure_level: str | None = None,
+    background_queue_e_birth_repair_attention_target: str | None = None,
+    background_queue_e_birth_repair_ref_set: list[str] | None = None,
+    background_queue_e_birth_repair_waiting_posture: str | None = None,
+    background_queue_e_birth_repair_attention_reason: str | None = None,
+    queue_e_birth_repair_waiting_profile: dict[str, Any] | None = None,
+    queue_e_birth_repair_gate_status: str | None = None,
+    queue_e_birth_repair_profile_ref: str | None = None,
+    queue_e_birth_repair_pressure_level: str | None = None,
+    queue_e_birth_repair_attention_target: str | None = None,
+    queue_e_birth_repair_ref_set: list[str] | None = None,
+    queue_e_birth_repair_waiting_posture: str | None = None,
+    queue_e_birth_repair_attention_reason: str | None = None,
     prediction_write_gate_refs: list[str] | None = None,
     prediction_waiting_posture: str | None = None,
     response_surface_posture_hint: str | None = None,
@@ -332,6 +348,66 @@ def build_idle_continuity_frame(
     if background_state_merge_long_term_change_refs:
         payload["background_state_merge_long_term_change_refs"] = list(
             background_state_merge_long_term_change_refs
+        )
+    if background_queue_e_birth_repair_waiting_profile:
+        payload["background_queue_e_birth_repair_waiting_profile"] = dict(
+            background_queue_e_birth_repair_waiting_profile
+        )
+    if background_queue_e_birth_repair_gate_status:
+        payload["background_queue_e_birth_repair_gate_status"] = (
+            background_queue_e_birth_repair_gate_status
+        )
+    if background_queue_e_birth_repair_profile_ref:
+        payload["background_queue_e_birth_repair_profile_ref"] = (
+            background_queue_e_birth_repair_profile_ref
+        )
+    if background_queue_e_birth_repair_pressure_level:
+        payload["background_queue_e_birth_repair_pressure_level"] = (
+            background_queue_e_birth_repair_pressure_level
+        )
+    if background_queue_e_birth_repair_attention_target:
+        payload["background_queue_e_birth_repair_attention_target"] = (
+            background_queue_e_birth_repair_attention_target
+        )
+    if background_queue_e_birth_repair_ref_set:
+        payload["background_queue_e_birth_repair_ref_set"] = list(
+            background_queue_e_birth_repair_ref_set
+        )
+    if background_queue_e_birth_repair_waiting_posture:
+        payload["background_queue_e_birth_repair_waiting_posture"] = (
+            background_queue_e_birth_repair_waiting_posture
+        )
+    if background_queue_e_birth_repair_attention_reason:
+        payload["background_queue_e_birth_repair_attention_reason"] = (
+            background_queue_e_birth_repair_attention_reason
+        )
+    if queue_e_birth_repair_waiting_profile:
+        payload["queue_e_birth_repair_waiting_profile"] = dict(
+            queue_e_birth_repair_waiting_profile
+        )
+    if queue_e_birth_repair_gate_status:
+        payload["queue_e_birth_repair_gate_status"] = queue_e_birth_repair_gate_status
+    if queue_e_birth_repair_profile_ref:
+        payload["queue_e_birth_repair_profile_ref"] = queue_e_birth_repair_profile_ref
+    if queue_e_birth_repair_pressure_level:
+        payload["queue_e_birth_repair_pressure_level"] = (
+            queue_e_birth_repair_pressure_level
+        )
+    if queue_e_birth_repair_attention_target:
+        payload["queue_e_birth_repair_attention_target"] = (
+            queue_e_birth_repair_attention_target
+        )
+    if queue_e_birth_repair_ref_set:
+        payload["queue_e_birth_repair_ref_set"] = list(
+            queue_e_birth_repair_ref_set
+        )
+    if queue_e_birth_repair_waiting_posture:
+        payload["queue_e_birth_repair_waiting_posture"] = (
+            queue_e_birth_repair_waiting_posture
+        )
+    if queue_e_birth_repair_attention_reason:
+        payload["queue_e_birth_repair_attention_reason"] = (
+            queue_e_birth_repair_attention_reason
         )
     if prediction_write_gate_refs:
         payload["prediction_write_gate_refs"] = list(prediction_write_gate_refs)

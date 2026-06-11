@@ -1740,6 +1740,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             "runtime/state/consciousness/consciousness_probe_bundle.json",
         ]
+        expected_queue_e_birth_repair_refs = [
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/membrane/world_contact_summary.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+            "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+        ]
 
         idle_strategy = decide_idle_strategy(
             run_id="idle-background-life-constraint",
@@ -1768,11 +1774,29 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "background_life_constraint_waiting_posture": "schema_guarded_waiting",
                 "background_life_constraint_attention_target": "life_constraint_profile",
                 "background_life_constraint_attention_reason": "queue_e_cross_layer_gate_has_deferred_life_constraints",
+                "background_queue_e_birth_repair_waiting_profile": {
+                    "schema_version": "queue_e_birth_repair_waiting_profile_v0",
+                    "gate_status": "closed",
+                    "profile_ref": "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+                    "pressure_level": "elevated",
+                    "attention_target": "regret_pressure",
+                    "waiting_posture": "birth_repair_pressure_waiting",
+                    "attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+                    "ref_set": expected_queue_e_birth_repair_refs,
+                },
+                "background_queue_e_birth_repair_gate_status": "closed",
+                "background_queue_e_birth_repair_profile_ref": "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+                "background_queue_e_birth_repair_pressure_level": "elevated",
+                "background_queue_e_birth_repair_attention_target": "regret_pressure",
+                "background_queue_e_birth_repair_ref_set": expected_queue_e_birth_repair_refs,
+                "background_queue_e_birth_repair_waiting_posture": "birth_repair_pressure_waiting",
+                "background_queue_e_birth_repair_attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
                 "background_continuity_ref_set": [
                     "runtime/state/terminal/resident_governance_state.json",
                     "runtime/state/schema_runner/cross_file_logic.json",
                     "runtime/state/schema_runner/run_manifest.json",
                     *expected_life_constraint_refs,
+                    *expected_queue_e_birth_repair_refs,
                 ],
             },
             source_doc_refs=[
@@ -1810,6 +1834,39 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             idle_strategy["background_life_constraint_refs"],
             expected_life_constraint_refs,
+        )
+        self.assertEqual(
+            idle_strategy["queue_e_birth_repair_waiting_profile"]["continuity_mode"],
+            "background_birth_repair_carryover",
+        )
+        self.assertEqual(idle_strategy["queue_e_birth_repair_gate_status"], "closed")
+        self.assertEqual(
+            idle_strategy["queue_e_birth_repair_profile_ref"],
+            "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+        )
+        self.assertEqual(
+            idle_strategy["queue_e_birth_repair_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            idle_strategy["queue_e_birth_repair_attention_target"],
+            "regret_pressure",
+        )
+        self.assertEqual(
+            idle_strategy["queue_e_birth_repair_waiting_posture"],
+            "birth_repair_pressure_waiting",
+        )
+        self.assertEqual(
+            idle_strategy["queue_e_birth_repair_attention_reason"],
+            "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+        )
+        self.assertEqual(
+            idle_strategy["queue_e_birth_repair_ref_set"],
+            expected_queue_e_birth_repair_refs,
+        )
+        self.assertEqual(
+            idle_strategy["background_queue_e_birth_repair_ref_set"],
+            expected_queue_e_birth_repair_refs,
         )
 
     def test_idle_strategy_carries_queue_f_birth_and_consciousness_into_waiting_governance(self):
@@ -3557,6 +3614,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "body_affect_gate": "deferred_until_s06",
                         "language_relationship_gate": "closed",
                     },
+                    "queue_e_birth_repair_waiting_profile": {
+                        "schema_version": "queue_e_birth_repair_waiting_profile_v0",
+                        "gate_status": "closed",
+                        "profile_ref": "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+                        "pressure_level": "elevated",
+                        "attention_target": "regret_pressure",
+                        "waiting_posture": "birth_repair_pressure_waiting",
+                        "attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+                        "ref_set": [
+                            "runtime/state/action/responsibility_loop_state.json",
+                            "runtime/state/membrane/world_contact_summary.json",
+                            "runtime/reports/latest/pain_regret_repair_report.json",
+                            "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+                        ],
+                    },
+                    "queue_e_birth_repair_gate_status": "closed",
+                    "queue_e_birth_repair_profile_ref": "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+                    "queue_e_birth_repair_pressure_level": "elevated",
+                    "queue_e_birth_repair_attention_target": "regret_pressure",
+                    "queue_e_birth_repair_waiting_posture": "birth_repair_pressure_waiting",
+                    "queue_e_birth_repair_attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+                    "queue_e_birth_repair_ref_set": [
+                        "runtime/state/action/responsibility_loop_state.json",
+                        "runtime/state/membrane/world_contact_summary.json",
+                        "runtime/reports/latest/pain_regret_repair_report.json",
+                        "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+                    ],
                     "life_constraint_waiting_posture": "schema_guarded_waiting",
                     "life_constraint_attention_target": "life_constraint_profile",
                     "life_constraint_attention_reason": "queue_e_cross_layer_gate_has_deferred_life_constraints",
@@ -3686,6 +3770,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
 
             self.assertEqual(profile["background_carryover_generation"], 4)
+            self.assertEqual(profile["background_carryover_pressure_level"], "elevated")
             self.assertEqual(
                 profile["background_carryover_source_ref_set"],
                 ["runtime/archive/resume-summary-parent/resident_governance_state.json"],
@@ -3799,6 +3884,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/action/action_candidate_set.json#life_constraint_profile",
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
             ]
+            expected_queue_e_birth_repair_refs = [
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/membrane/world_contact_summary.json",
+                "runtime/reports/latest/pain_regret_repair_report.json",
+                "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+            ]
             self.assertEqual(
                 profile["background_schema_cross_file_logic_ref"],
                 "runtime/state/schema_runner/cross_file_logic.json",
@@ -3829,6 +3920,40 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 profile["background_life_constraint_attention_reason"],
                 "queue_e_cross_layer_gate_has_deferred_life_constraints",
             )
+            self.assertEqual(
+                profile["background_queue_e_birth_repair_waiting_profile"][
+                    "waiting_posture"
+                ],
+                "birth_repair_pressure_waiting",
+            )
+            self.assertEqual(
+                profile["background_queue_e_birth_repair_gate_status"],
+                "closed",
+            )
+            self.assertEqual(
+                profile["background_queue_e_birth_repair_profile_ref"],
+                "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+            )
+            self.assertEqual(
+                profile["background_queue_e_birth_repair_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                profile["background_queue_e_birth_repair_attention_target"],
+                "regret_pressure",
+            )
+            self.assertEqual(
+                profile["background_queue_e_birth_repair_waiting_posture"],
+                "birth_repair_pressure_waiting",
+            )
+            self.assertEqual(
+                profile["background_queue_e_birth_repair_attention_reason"],
+                "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+            )
+            self.assertEqual(
+                profile["background_queue_e_birth_repair_ref_set"],
+                expected_queue_e_birth_repair_refs,
+            )
             self.assertIn(
                 "runtime/state/terminal/resident_governance_state.json",
                 profile["background_continuity_ref_set"],
@@ -3848,6 +3973,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 profile["background_continuity_ref_set"],
             )
             for ref in expected_life_constraint_refs:
+                self.assertIn(ref, profile["background_continuity_ref_set"])
+            for ref in expected_queue_e_birth_repair_refs:
                 self.assertIn(ref, profile["background_continuity_ref_set"])
             self.assertIn(
                 "runtime/state/language/language_percept_frame.json",

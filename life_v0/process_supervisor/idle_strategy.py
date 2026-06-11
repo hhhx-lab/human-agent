@@ -209,6 +209,14 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_life_constraint_waiting_posture",
     "background_life_constraint_attention_target",
     "background_life_constraint_attention_reason",
+    "background_queue_e_birth_repair_waiting_profile",
+    "background_queue_e_birth_repair_gate_status",
+    "background_queue_e_birth_repair_profile_ref",
+    "background_queue_e_birth_repair_pressure_level",
+    "background_queue_e_birth_repair_attention_target",
+    "background_queue_e_birth_repair_ref_set",
+    "background_queue_e_birth_repair_waiting_posture",
+    "background_queue_e_birth_repair_attention_reason",
     "schema_cross_file_logic_ref",
     "schema_run_manifest_ref",
     "life_constraint_refs",
@@ -371,6 +379,7 @@ def decide_idle_strategy(
     queue_e_birth_repair_waiting_profile = _queue_e_birth_repair_waiting_profile(
         schema_cross_file_logic=schema_cross_file_logic,
         schema_run_manifest=schema_run_manifest,
+        background_continuity_profile=background_continuity_profile,
     )
     consciousness_profile = _consciousness_waiting_profile(
         workspace_frame=workspace_frame,
@@ -1938,32 +1947,49 @@ def _queue_e_birth_repair_waiting_profile(
     *,
     schema_cross_file_logic: dict[str, Any] | None,
     schema_run_manifest: dict[str, Any] | None,
+    background_continuity_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     cross_file_logic = schema_cross_file_logic or {}
     run_manifest = schema_run_manifest or {}
+    background = background_continuity_profile or {}
+    background_profile = _dict_or_empty(
+        background.get("background_queue_e_birth_repair_waiting_profile")
+        or background.get("queue_e_birth_repair_waiting_profile")
+    )
+    has_current_schema_signal = bool(cross_file_logic or run_manifest)
     gate_status = str(
         cross_file_logic.get("queue_e_birth_repair_gate_status")
         or run_manifest.get("queue_e_birth_repair_gate_status")
+        or background.get("background_queue_e_birth_repair_gate_status")
+        or background_profile.get("gate_status")
         or ""
     )
     profile_ref = str(
         cross_file_logic.get("queue_e_birth_repair_profile_ref")
         or run_manifest.get("queue_e_birth_repair_profile_ref")
+        or background.get("background_queue_e_birth_repair_profile_ref")
+        or background_profile.get("profile_ref")
         or ""
     )
     pressure_level = str(
         cross_file_logic.get("queue_e_birth_repair_pressure_level")
         or run_manifest.get("queue_e_birth_repair_pressure_level")
+        or background.get("background_queue_e_birth_repair_pressure_level")
+        or background_profile.get("pressure_level")
         or ""
     )
     attention_target = str(
         cross_file_logic.get("queue_e_birth_repair_attention_target")
         or run_manifest.get("queue_e_birth_repair_attention_target")
+        or background.get("background_queue_e_birth_repair_attention_target")
+        or background_profile.get("attention_target")
         or ""
     )
     ref_set = _dedupe_string_list(
         _string_list(cross_file_logic.get("queue_e_birth_repair_ref_set"))
         + _string_list(run_manifest.get("queue_e_birth_repair_ref_set"))
+        + _string_list(background.get("background_queue_e_birth_repair_ref_set"))
+        + _string_list(background_profile.get("ref_set"))
         + [profile_ref or QUEUE_E_BIRTH_REPAIR_PROFILE_REF]
     )
 
@@ -1982,6 +2008,15 @@ def _queue_e_birth_repair_waiting_profile(
 
     return {
         "schema_version": "queue_e_birth_repair_waiting_profile_v0",
+        "continuity_mode": (
+            "current_schema_runner_birth_repair"
+            if has_current_schema_signal
+            else "background_birth_repair_carryover"
+            if background_profile
+            or background.get("background_queue_e_birth_repair_gate_status")
+            or background.get("background_queue_e_birth_repair_ref_set")
+            else "schema_runner_birth_repair_unobserved"
+        ),
         "gate_status": gate_status or "missing",
         "profile_ref": profile_ref or QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
         "pressure_level": pressure_level,

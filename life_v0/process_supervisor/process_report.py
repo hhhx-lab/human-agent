@@ -437,6 +437,21 @@ def write_process_report_bundle(
         "queue_e_birth_repair_ref_set": list(
             idle_governance.get("queue_e_birth_repair_ref_set", [])
         ),
+        "background_queue_e_birth_repair_profile_ref": idle_governance.get(
+            "background_queue_e_birth_repair_profile_ref"
+        ),
+        "background_queue_e_birth_repair_pressure_level": idle_governance.get(
+            "background_queue_e_birth_repair_pressure_level"
+        ),
+        "background_queue_e_birth_repair_attention_target": idle_governance.get(
+            "background_queue_e_birth_repair_attention_target"
+        ),
+        "background_queue_e_birth_repair_waiting_posture": idle_governance.get(
+            "background_queue_e_birth_repair_waiting_posture"
+        ),
+        "background_queue_e_birth_repair_ref_set": list(
+            idle_governance.get("background_queue_e_birth_repair_ref_set", [])
+        ),
         "schema_cross_file_logic_ref": idle_governance.get(
             "schema_cross_file_logic_ref"
         ),

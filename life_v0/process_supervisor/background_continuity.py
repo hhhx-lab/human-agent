@@ -505,6 +505,97 @@ def load_background_continuity_profile(
             "background_life_constraint_attention_reason",
         ),
     )
+    queue_e_birth_repair_waiting_profile = _first_dict(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_birth_repair_waiting_profile",
+            "background_queue_e_birth_repair_waiting_profile",
+        ),
+    )
+    queue_e_birth_repair_gate_status = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_birth_repair_gate_status",
+            "background_queue_e_birth_repair_gate_status",
+        ),
+    )
+    queue_e_birth_repair_profile_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_birth_repair_profile_ref",
+            "background_queue_e_birth_repair_profile_ref",
+        ),
+    )
+    queue_e_birth_repair_pressure_level = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_birth_repair_pressure_level",
+            "background_queue_e_birth_repair_pressure_level",
+        ),
+    )
+    queue_e_birth_repair_attention_target = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_birth_repair_attention_target",
+            "background_queue_e_birth_repair_attention_target",
+        ),
+    )
+    queue_e_birth_repair_ref_set = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "queue_e_birth_repair_ref_set",
+                "queue_e_birth_repair_refs",
+                "queue_e_birth_repair_evidence_refs",
+                "background_queue_e_birth_repair_ref_set",
+            ),
+        )
+        + _list_or_empty(queue_e_birth_repair_waiting_profile.get("ref_set"))
+    )
+    queue_e_birth_repair_waiting_posture = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_birth_repair_waiting_posture",
+            "background_queue_e_birth_repair_waiting_posture",
+        ),
+    )
+    queue_e_birth_repair_attention_reason = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_birth_repair_attention_reason",
+            "background_queue_e_birth_repair_attention_reason",
+        ),
+    )
+    pressure_level = _stronger_pressure(
+        pressure_level,
+        queue_e_birth_repair_pressure_level,
+    )
+    if not attention_target and queue_e_birth_repair_attention_target:
+        attention_target = queue_e_birth_repair_attention_target
     if live_language_turn_refs:
         ref_set = _dedupe_list(ref_set + live_language_turn_refs)
     if state_merge_guard_ref:
@@ -521,6 +612,10 @@ def load_background_continuity_profile(
         ref_set = _dedupe_list(ref_set + [BACKGROUND_SCHEMA_RUN_MANIFEST_REF])
     if life_constraint_refs:
         ref_set = _dedupe_list(ref_set + life_constraint_refs)
+    if queue_e_birth_repair_profile_ref:
+        ref_set = _dedupe_list(ref_set + [str(queue_e_birth_repair_profile_ref)])
+    if queue_e_birth_repair_ref_set:
+        ref_set = _dedupe_list(ref_set + queue_e_birth_repair_ref_set)
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
@@ -640,6 +735,38 @@ def load_background_continuity_profile(
     if life_constraint_attention_reason:
         profile["background_life_constraint_attention_reason"] = str(
             life_constraint_attention_reason
+        )
+    if queue_e_birth_repair_waiting_profile:
+        profile["background_queue_e_birth_repair_waiting_profile"] = (
+            queue_e_birth_repair_waiting_profile
+        )
+    if queue_e_birth_repair_gate_status:
+        profile["background_queue_e_birth_repair_gate_status"] = str(
+            queue_e_birth_repair_gate_status
+        )
+    if queue_e_birth_repair_profile_ref:
+        profile["background_queue_e_birth_repair_profile_ref"] = str(
+            queue_e_birth_repair_profile_ref
+        )
+    if queue_e_birth_repair_pressure_level:
+        profile["background_queue_e_birth_repair_pressure_level"] = str(
+            queue_e_birth_repair_pressure_level
+        )
+    if queue_e_birth_repair_attention_target:
+        profile["background_queue_e_birth_repair_attention_target"] = str(
+            queue_e_birth_repair_attention_target
+        )
+    if queue_e_birth_repair_ref_set:
+        profile["background_queue_e_birth_repair_ref_set"] = (
+            queue_e_birth_repair_ref_set
+        )
+    if queue_e_birth_repair_waiting_posture:
+        profile["background_queue_e_birth_repair_waiting_posture"] = str(
+            queue_e_birth_repair_waiting_posture
+        )
+    if queue_e_birth_repair_attention_reason:
+        profile["background_queue_e_birth_repair_attention_reason"] = str(
+            queue_e_birth_repair_attention_reason
         )
     if resident_process_lease_history_profile:
         profile["background_resident_process_lease_history_profile_ref"] = (
@@ -838,7 +965,7 @@ def _dict_or_empty(value: Any) -> dict[str, Any]:
 
 
 def _stronger_pressure(*values: Any) -> str:
-    rank = {"light": 0, "present": 1, "elevated": 2}
+    rank = {"light": 0, "present": 1, "elevated": 2, "urgent": 3}
     strongest = "light"
     for value in values:
         text = str(value or "")

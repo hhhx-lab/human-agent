@@ -406,6 +406,14 @@ def write_waiting_heartbeat(
         "background_state_merge_long_term_change_count",
         "background_state_merge_long_term_change_families",
         "background_state_merge_long_term_change_refs",
+        "background_queue_e_birth_repair_waiting_profile",
+        "background_queue_e_birth_repair_gate_status",
+        "background_queue_e_birth_repair_profile_ref",
+        "background_queue_e_birth_repair_pressure_level",
+        "background_queue_e_birth_repair_attention_target",
+        "background_queue_e_birth_repair_ref_set",
+        "background_queue_e_birth_repair_waiting_posture",
+        "background_queue_e_birth_repair_attention_reason",
         "schema_cross_file_logic_ref",
         "schema_run_manifest_ref",
         "life_constraint_refs",
@@ -629,6 +637,54 @@ def write_waiting_heartbeat(
         background_state_merge_long_term_change_refs=idle_strategy.get(
             "background_state_merge_long_term_change_refs"
         ),
+        background_queue_e_birth_repair_waiting_profile=idle_strategy.get(
+            "background_queue_e_birth_repair_waiting_profile"
+        ),
+        background_queue_e_birth_repair_gate_status=idle_strategy.get(
+            "background_queue_e_birth_repair_gate_status"
+        ),
+        background_queue_e_birth_repair_profile_ref=idle_strategy.get(
+            "background_queue_e_birth_repair_profile_ref"
+        ),
+        background_queue_e_birth_repair_pressure_level=idle_strategy.get(
+            "background_queue_e_birth_repair_pressure_level"
+        ),
+        background_queue_e_birth_repair_attention_target=idle_strategy.get(
+            "background_queue_e_birth_repair_attention_target"
+        ),
+        background_queue_e_birth_repair_ref_set=idle_strategy.get(
+            "background_queue_e_birth_repair_ref_set"
+        ),
+        background_queue_e_birth_repair_waiting_posture=idle_strategy.get(
+            "background_queue_e_birth_repair_waiting_posture"
+        ),
+        background_queue_e_birth_repair_attention_reason=idle_strategy.get(
+            "background_queue_e_birth_repair_attention_reason"
+        ),
+        queue_e_birth_repair_waiting_profile=idle_strategy.get(
+            "queue_e_birth_repair_waiting_profile"
+        ),
+        queue_e_birth_repair_gate_status=idle_strategy.get(
+            "queue_e_birth_repair_gate_status"
+        ),
+        queue_e_birth_repair_profile_ref=idle_strategy.get(
+            "queue_e_birth_repair_profile_ref"
+        ),
+        queue_e_birth_repair_pressure_level=idle_strategy.get(
+            "queue_e_birth_repair_pressure_level"
+        ),
+        queue_e_birth_repair_attention_target=idle_strategy.get(
+            "queue_e_birth_repair_attention_target"
+        ),
+        queue_e_birth_repair_ref_set=idle_strategy.get(
+            "queue_e_birth_repair_ref_set"
+        ),
+        queue_e_birth_repair_waiting_posture=idle_strategy.get(
+            "queue_e_birth_repair_waiting_posture"
+        ),
+        queue_e_birth_repair_attention_reason=idle_strategy.get(
+            "queue_e_birth_repair_attention_reason"
+        ),
         prediction_write_gate_refs=idle_strategy.get("prediction_write_gate_refs"),
         prediction_waiting_posture=idle_strategy.get("prediction_waiting_posture"),
         response_surface_posture_hint=idle_strategy.get("response_surface_posture_hint"),
@@ -773,6 +829,18 @@ def _append_idle_heartbeat_trace(
         ),
         "background_state_merge_long_term_change_refs": list(
             idle_strategy.get("background_state_merge_long_term_change_refs", [])
+        ),
+        "background_queue_e_birth_repair_pressure_level": idle_strategy.get(
+            "background_queue_e_birth_repair_pressure_level"
+        ),
+        "background_queue_e_birth_repair_waiting_posture": idle_strategy.get(
+            "background_queue_e_birth_repair_waiting_posture"
+        ),
+        "queue_e_birth_repair_pressure_level": idle_strategy.get(
+            "queue_e_birth_repair_pressure_level"
+        ),
+        "queue_e_birth_repair_waiting_posture": idle_strategy.get(
+            "queue_e_birth_repair_waiting_posture"
         ),
         "resident_process_lease_history_profile_ref": idle_strategy.get(
             "resident_process_lease_history_profile_ref"
