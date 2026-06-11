@@ -4178,6 +4178,182 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "runtime/state/growth/relationship_learning_plan.json",
                         "runtime/state/growth/language_learning_plan.json",
                     ],
+                    "offline_learning_cumulative_integration_mode": "relationship_offline_reconsolidation_required",
+                    "offline_learning_cumulative_relationship_reconsolidation_required": True,
+                    "dream_wake_presence_profile": {
+                        "schema_version": "dream_wake_presence_profile_v0",
+                        "continuity_mode": "background_dream_wake_carryover",
+                        "dream_window_id": "dream-window-0001",
+                        "dream_window_kind": "nrem_like_replay",
+                        "affective_themes": ["repair", "continuity"],
+                        "reportability": "reportable",
+                        "wake_integration_id": "wake-integration-0001",
+                        "wake_archive_requirement": "required_before_activation",
+                        "wake_growth_seed_count": 2,
+                        "wake_repair_target_count": 3,
+                        "dream_fact_gate_result": "passed",
+                        "dream_fact_gate_ref_count": 3,
+                        "dream_window_ref": "runtime/state/dream/dream_experience_window.json",
+                        "wake_integration_ref": "runtime/state/dream/wake_integration_frame.json",
+                        "dream_fact_gate_decision_ref": "runtime/state/dream/dream_fact_gate_decision.json",
+                        "ref_set": [
+                            "runtime/state/dream/offline_consolidation_frame.json",
+                            "runtime/state/dream/dream_experience_window.json",
+                            "runtime/state/dream/wake_integration_frame.json",
+                            "runtime/state/dream/dream_fact_gate_decision.json",
+                        ],
+                    },
+                    "background_dream_wake_presence_profile": {
+                        "schema_version": "dream_wake_presence_profile_v0",
+                        "continuity_mode": "background_dream_wake_carryover",
+                        "dream_window_kind": "nrem_like_replay",
+                        "dream_fact_gate_result": "passed",
+                        "wake_archive_requirement": "required_before_activation",
+                        "wake_growth_seed_count": 2,
+                        "wake_repair_target_count": 3,
+                        "dream_fact_gate_ref_count": 3,
+                        "ref_set": [
+                            "runtime/state/dream/offline_consolidation_frame.json",
+                            "runtime/state/dream/dream_experience_window.json",
+                            "runtime/state/dream/wake_integration_frame.json",
+                            "runtime/state/dream/dream_fact_gate_decision.json",
+                        ],
+                    },
+                    "dream_wake_ref_set": [
+                        "runtime/state/dream/offline_consolidation_frame.json",
+                        "runtime/state/dream/dream_experience_window.json",
+                        "runtime/state/dream/wake_integration_frame.json",
+                        "runtime/state/dream/dream_fact_gate_decision.json",
+                    ],
+                    "resident_autonomous_activity_ref": "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                    "resident_autonomous_activity_state_ref": "runtime/state/terminal/resident_autonomous_activity_state.json",
+                    "resident_autonomous_activity_presence_profile": {
+                        "schema_version": "resident_autonomous_activity_presence_profile_v0",
+                        "continuity_mode": "background_resident_autonomous_activity_carryover",
+                        "activity_count": 12,
+                        "activity_kind_counts": {
+                            "sleep": 3,
+                            "memory_recall": 3,
+                            "self_thinking": 2,
+                            "growth_rehearsal": 2,
+                            "learning_consolidation": 2,
+                        },
+                        "last_activity_kind": "self_thinking",
+                        "last_activity_at": "2026-06-10T00:00:00+00:00",
+                        "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                        "resident_autonomous_activity_ref": "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                        "resident_autonomous_activity_state_ref": "runtime/state/terminal/resident_autonomous_activity_state.json",
+                        "activity_state_refs": {
+                            "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                            "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                            "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                        },
+                        "current_cycle": ["sleep", "memory_recall", "self_thinking"],
+                        "ref_count": 7,
+                        "ref_set": [
+                            "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                            "runtime/state/terminal/resident_autonomous_activity_state.json",
+                            "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "runtime/state/memory/resident_memory_recall_state.json",
+                            "runtime/state/self/resident_self_thinking_state.json",
+                            "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "runtime/state/growth/resident_learning_consolidation_state.json",
+                        ],
+                    },
+                    "background_autonomous_activity_presence": {
+                        "activity_count": 12,
+                        "activity_kind_counts": {
+                            "sleep": 3,
+                            "memory_recall": 3,
+                            "self_thinking": 2,
+                            "growth_rehearsal": 2,
+                            "learning_consolidation": 2,
+                        },
+                        "last_activity_kind": "self_thinking",
+                        "last_activity_at": "2026-06-10T00:00:00+00:00",
+                        "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                        "resident_autonomous_activity_ref": "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                        "resident_autonomous_activity_state_ref": "runtime/state/terminal/resident_autonomous_activity_state.json",
+                        "activity_state_refs": {
+                            "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                            "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                            "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                        },
+                        "autonomous_activity_refs": [
+                            "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                            "runtime/state/terminal/resident_autonomous_activity_state.json",
+                            "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "runtime/state/memory/resident_memory_recall_state.json",
+                            "runtime/state/self/resident_self_thinking_state.json",
+                            "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "runtime/state/growth/resident_learning_consolidation_state.json",
+                        ],
+                    },
+                    "background_resident_autonomous_activity_presence_profile": {
+                        "schema_version": "resident_autonomous_activity_presence_profile_v0",
+                        "continuity_mode": "background_resident_autonomous_activity_carryover",
+                        "activity_count": 12,
+                        "activity_kind_counts": {
+                            "sleep": 3,
+                            "memory_recall": 3,
+                            "self_thinking": 2,
+                            "growth_rehearsal": 2,
+                            "learning_consolidation": 2,
+                        },
+                        "last_activity_kind": "self_thinking",
+                        "last_activity_at": "2026-06-10T00:00:00+00:00",
+                        "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                        "resident_autonomous_activity_ref": "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                        "resident_autonomous_activity_state_ref": "runtime/state/terminal/resident_autonomous_activity_state.json",
+                        "activity_state_refs": {
+                            "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                            "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                            "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                        },
+                        "ref_count": 7,
+                        "ref_set": [
+                            "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                            "runtime/state/terminal/resident_autonomous_activity_state.json",
+                            "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "runtime/state/memory/resident_memory_recall_state.json",
+                            "runtime/state/self/resident_self_thinking_state.json",
+                            "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "runtime/state/growth/resident_learning_consolidation_state.json",
+                        ],
+                    },
+                    "background_resident_autonomous_activity_ref_set": [
+                        "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                        "runtime/state/terminal/resident_autonomous_activity_state.json",
+                        "runtime/state/terminal/resident_sleep_cycle_state.json",
+                        "runtime/state/memory/resident_memory_recall_state.json",
+                        "runtime/state/self/resident_self_thinking_state.json",
+                        "runtime/state/growth/resident_growth_rehearsal_state.json",
+                        "runtime/state/growth/resident_learning_consolidation_state.json",
+                    ],
+                    "background_autonomous_activity_count": 12,
+                    "background_autonomous_activity_kind_counts": {
+                        "sleep": 3,
+                        "memory_recall": 3,
+                        "self_thinking": 2,
+                        "growth_rehearsal": 2,
+                        "learning_consolidation": 2,
+                    },
+                    "background_last_autonomous_activity_kind": "self_thinking",
+                    "background_last_autonomous_activity_at": "2026-06-10T00:00:00+00:00",
+                    "background_last_autonomous_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                    "background_resident_autonomous_activity_state_refs": {
+                        "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                        "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                        "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                        "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                        "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                    },
                     "live_language_turn_refs": [
                         "runtime/state/language/language_percept_frame.json",
                         "runtime/state/language/semantic_map_frame.json",
@@ -4321,6 +4497,42 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "trait_convergence_score": 0.96,
                         }
                     ],
+                },
+            )
+            (terminal_dir / "resident_autonomous_activity.jsonl").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "resident_autonomous_activity_event_v0",
+                        "activity_kind": "self_thinking",
+                        "activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            self._write_json(
+                terminal_dir / "resident_autonomous_activity_state.json",
+                {
+                    "schema_version": "resident_autonomous_activity_state_v0",
+                    "activity_count": 12,
+                    "activity_kind_counts": {
+                        "sleep": 3,
+                        "memory_recall": 3,
+                        "self_thinking": 2,
+                        "growth_rehearsal": 2,
+                        "learning_consolidation": 2,
+                    },
+                    "last_activity_kind": "self_thinking",
+                    "last_activity_at": "2026-06-10T00:00:00+00:00",
+                    "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                    "activity_state_refs": {
+                        "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                        "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                        "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                        "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                        "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                    },
                 },
             )
             self._write_json(
@@ -8784,6 +8996,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "queue_e_repair_modulation_refs",
                 "relationship_memory_offline_refs",
             ]
+            expected_dream_wake_refs = [
+                "runtime/state/dream/offline_consolidation_frame.json",
+                "runtime/state/dream/dream_experience_window.json",
+                "runtime/state/dream/wake_integration_frame.json",
+                "runtime/state/dream/dream_fact_gate_decision.json",
+            ]
+            expected_autonomous_activity_refs = [
+                "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                "runtime/state/terminal/resident_autonomous_activity_state.json",
+                "runtime/state/terminal/resident_sleep_cycle_state.json",
+                "runtime/state/memory/resident_memory_recall_state.json",
+                "runtime/state/self/resident_self_thinking_state.json",
+                "runtime/state/growth/resident_growth_rehearsal_state.json",
+                "runtime/state/growth/resident_learning_consolidation_state.json",
+            ]
             expected_life_constraint_refs = [
                 "runtime/state/action/action_candidate_set.json#life_constraint_profile",
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
@@ -8966,6 +9193,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 report["relationship_learning_plan_ref"],
                 "runtime/state/growth/relationship_learning_plan.json",
             )
+            self.assertEqual(
+                report["offline_learning_cumulative_integration_mode"],
+                "relationship_offline_reconsolidation_required",
+            )
+            self.assertTrue(
+                report["offline_learning_cumulative_relationship_reconsolidation_required"]
+            )
             self.assertEqual(digest["last_external_turn_utterance"], "你还记得我们吗？")
             self.assertEqual(
                 digest["resident_governance_driver_family"],
@@ -8989,11 +9223,73 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 digest["resident_process_identity_continuity_state"],
                 "continuous_closed",
             )
+            self.assertEqual(
+                digest["offline_learning_cumulative_integration_mode"],
+                "relationship_offline_reconsolidation_required",
+            )
+            self.assertTrue(
+                digest["offline_learning_cumulative_relationship_reconsolidation_required"]
+            )
+            self.assertEqual(
+                digest["dream_wake_presence_profile"]["continuity_mode"],
+                "background_dream_wake_carryover",
+            )
+            self.assertEqual(digest["dream_wake_ref_set"], expected_dream_wake_refs)
+            self.assertEqual(
+                digest["resident_autonomous_activity_ref"],
+                "runtime/state/terminal/resident_autonomous_activity.jsonl",
+            )
+            self.assertEqual(
+                digest["resident_autonomous_activity_state_ref"],
+                "runtime/state/terminal/resident_autonomous_activity_state.json",
+            )
+            self.assertEqual(
+                digest["resident_autonomous_activity_presence_profile"][
+                    "continuity_mode"
+                ],
+                "background_resident_autonomous_activity_carryover",
+            )
+            self.assertEqual(
+                digest["resident_autonomous_activity_ref_set"],
+                expected_autonomous_activity_refs,
+            )
+            self.assertEqual(
+                digest["background_resident_autonomous_activity_presence_profile"][
+                    "continuity_mode"
+                ],
+                "background_resident_autonomous_activity_carryover",
+            )
             self.assertIn(expected_resident_process_lease_ref, receipt["shared_object_refs"])
             self.assertIn(expected_resident_process_lease_history_ref, receipt["shared_object_refs"])
             self.assertIn(
                 expected_resident_process_lease_history_profile_ref,
                 receipt["shared_object_refs"],
+            )
+            for ref in expected_dream_wake_refs:
+                self.assertIn(ref, receipt["shared_object_refs"])
+            for ref in expected_autonomous_activity_refs:
+                self.assertIn(ref, receipt["shared_object_refs"])
+            self.assertEqual(
+                receipt["offline_learning_cumulative_integration_mode"],
+                "relationship_offline_reconsolidation_required",
+            )
+            self.assertTrue(
+                receipt[
+                    "offline_learning_cumulative_relationship_reconsolidation_required"
+                ]
+            )
+            self.assertEqual(receipt["dream_wake_ref_set"], expected_dream_wake_refs)
+            self.assertEqual(
+                receipt["resident_autonomous_activity_ref"],
+                "runtime/state/terminal/resident_autonomous_activity.jsonl",
+            )
+            self.assertEqual(
+                receipt["resident_autonomous_activity_state_ref"],
+                "runtime/state/terminal/resident_autonomous_activity_state.json",
+            )
+            self.assertEqual(
+                receipt["resident_autonomous_activity_ref_set"],
+                expected_autonomous_activity_refs,
             )
             self.assertIn(
                 True,
@@ -9013,6 +9309,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 True,
                 [
                     path.endswith("/runtime/state/terminal/resident_process_lease_history_profile.json")
+                    for path in receipt["input_hashes"]
+                ],
+            )
+            self.assertIn(
+                True,
+                [
+                    path.endswith("/runtime/state/terminal/resident_autonomous_activity.jsonl")
+                    for path in receipt["input_hashes"]
+                ],
+            )
+            self.assertIn(
+                True,
+                [
+                    path.endswith("/runtime/state/terminal/resident_autonomous_activity_state.json")
                     for path in receipt["input_hashes"]
                 ],
             )
