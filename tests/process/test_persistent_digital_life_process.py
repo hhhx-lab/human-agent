@@ -13408,6 +13408,45 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             expected_refs,
         )
 
+    def test_background_lineage_state_keeps_governance_profile_as_ref_only(self):
+        from life_v0.process_supervisor.background_lineage_state import (
+            build_resident_background_lineage_state,
+        )
+
+        lineage_state = build_resident_background_lineage_state(
+            {
+                "background_lineage_depth_band": "persistent_lineage",
+                "background_carryover_generation": 2,
+                "background_lineage_governance_profile": {
+                    "schema_version": "background_lineage_governance_profile_v0",
+                    "generation": 2,
+                    "depth_band": "persistent_lineage",
+                    "waiting_posture": "persistent_background_hold",
+                    "cadence_weight": "persistent",
+                    "heartbeat_interval_ms": 54,
+                    "next_idle_action": "refresh_waiting_heartbeat_with_background_history_stability_hold",
+                    "governance_attention_target": "trait_slow_variable_convergence",
+                    "governance_attention_reason": "integrating_cross_process_continuity_requires_trait_stability_hold",
+                    "governance_cadence_profile": "background_convergence_stability_refresh",
+                    "evidence_ref_count": 4,
+                    "evidence_refs": [
+                        "runtime/state/terminal/resident_governance_state.json",
+                        "runtime/state/terminal/background_convergence_summary.json",
+                        "runtime/state/terminal/background_convergence_history.json",
+                        "runtime/reports/latest/digital_life_resident_governance_report.json",
+                    ],
+                },
+            },
+            governance_phase="waiting_heartbeat_active",
+            status="active",
+        )
+
+        self.assertEqual(
+            lineage_state["governance_profile_ref"],
+            "background_lineage_governance_profile",
+        )
+        self.assertNotIn("background_lineage_governance_profile", lineage_state)
+
     def test_response_surface_reads_birth_repair_from_background_lineage_presence(self):
         from life_v0.process_supervisor.response_surface import compose_life_response
 
