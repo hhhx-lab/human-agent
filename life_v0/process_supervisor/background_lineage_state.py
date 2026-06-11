@@ -17,6 +17,7 @@ def build_resident_background_lineage_state(
         governance
     )
     birth_repair_presence = _birth_repair_presence(governance)
+    life_constraint_presence = _life_constraint_presence(governance)
     profile = _dict_or_empty(governance.get("background_lineage_governance_profile"))
     explicit_depth_band = (
         governance.get("background_lineage_depth_band")
@@ -36,6 +37,8 @@ def build_resident_background_lineage_state(
     if not depth_band and resident_process_identity_presence:
         depth_band = "no_background_lineage"
     if not depth_band and birth_repair_presence:
+        depth_band = "no_background_lineage"
+    if not depth_band and life_constraint_presence:
         depth_band = "no_background_lineage"
     if not depth_band:
         return {}
@@ -130,6 +133,8 @@ def build_resident_background_lineage_state(
         lineage_state["autonomous_activity_presence"] = autonomous_activity_presence
     if birth_repair_presence:
         lineage_state["birth_repair_presence"] = birth_repair_presence
+    if life_constraint_presence:
+        lineage_state["life_constraint_presence"] = life_constraint_presence
     return {
         key: value
         for key, value in lineage_state.items()
@@ -903,6 +908,89 @@ def _birth_repair_presence(governance: dict[str, Any]) -> dict[str, Any]:
                 "background_queue_e_birth_repair_attention_reason"
             ),
             "background_ref_set": background_ref_set,
+        }
+    )
+
+
+def _life_constraint_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    schema_cross_file_logic_ref = (
+        governance.get("schema_cross_file_logic_ref")
+        or governance.get("background_schema_cross_file_logic_ref")
+    )
+    schema_run_manifest_ref = (
+        governance.get("schema_run_manifest_ref")
+        or governance.get("background_schema_run_manifest_ref")
+    )
+    gate_status = _dict_or_empty(
+        governance.get("queue_e_cross_layer_gate_status")
+        or governance.get("background_queue_e_cross_layer_gate_status")
+    )
+    life_constraint_refs = _dedupe_string_list(
+        _string_list(governance.get("life_constraint_refs"))
+        + _string_list(governance.get("life_constraint_evidence_refs"))
+        + _string_list(governance.get("background_life_constraint_refs"))
+    )
+    waiting_posture = (
+        governance.get("life_constraint_waiting_posture")
+        or governance.get("background_life_constraint_waiting_posture")
+    )
+    attention_target = (
+        governance.get("life_constraint_attention_target")
+        or governance.get("background_life_constraint_attention_target")
+    )
+    attention_reason = (
+        governance.get("life_constraint_attention_reason")
+        or governance.get("background_life_constraint_attention_reason")
+    )
+    evidence_refs = _dedupe_string_list(
+        _string_list([schema_cross_file_logic_ref, schema_run_manifest_ref])
+        + life_constraint_refs
+    )
+    background_life_constraint_refs = _dedupe_string_list(
+        _string_list(governance.get("background_life_constraint_refs"))
+    )
+    if not any(
+        [
+            schema_cross_file_logic_ref,
+            schema_run_manifest_ref,
+            gate_status,
+            life_constraint_refs,
+            waiting_posture,
+            attention_target,
+            attention_reason,
+            evidence_refs,
+        ]
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "schema_cross_file_logic_ref": schema_cross_file_logic_ref,
+            "schema_run_manifest_ref": schema_run_manifest_ref,
+            "queue_e_cross_layer_gate_status": gate_status,
+            "life_constraint_refs": life_constraint_refs,
+            "waiting_posture": waiting_posture,
+            "attention_target": attention_target,
+            "attention_reason": attention_reason,
+            "evidence_refs": evidence_refs,
+            "background_schema_cross_file_logic_ref": governance.get(
+                "background_schema_cross_file_logic_ref"
+            ),
+            "background_schema_run_manifest_ref": governance.get(
+                "background_schema_run_manifest_ref"
+            ),
+            "background_queue_e_cross_layer_gate_status": _dict_or_empty(
+                governance.get("background_queue_e_cross_layer_gate_status")
+            ),
+            "background_life_constraint_refs": background_life_constraint_refs,
+            "background_waiting_posture": governance.get(
+                "background_life_constraint_waiting_posture"
+            ),
+            "background_attention_target": governance.get(
+                "background_life_constraint_attention_target"
+            ),
+            "background_attention_reason": governance.get(
+                "background_life_constraint_attention_reason"
+            ),
         }
     )
 

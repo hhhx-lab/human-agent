@@ -256,6 +256,9 @@ def load_background_continuity_profile(
     resident_background_birth_repair_presence = _dict_or_empty(
         resident_background_lineage_state.get("birth_repair_presence")
     )
+    resident_background_life_constraint_presence = _dict_or_empty(
+        resident_background_lineage_state.get("life_constraint_presence")
+    )
     offline_learning_cumulative_profile = _dict_or_empty(
         resident_governance_state.get("offline_learning_cumulative_profile")
         or snapshot.get("offline_learning_cumulative_profile")
@@ -452,6 +455,12 @@ def load_background_continuity_profile(
         persistent_process_report,
         keys=("schema_cross_file_logic_ref", "background_schema_cross_file_logic_ref"),
     )
+    if not schema_cross_file_logic_ref:
+        schema_cross_file_logic_ref = (
+            resident_background_life_constraint_presence.get(
+                "schema_cross_file_logic_ref"
+            )
+        )
     schema_run_manifest_ref = _first_present(
         resident_governance_state,
         snapshot,
@@ -459,6 +468,12 @@ def load_background_continuity_profile(
         persistent_process_report,
         keys=("schema_run_manifest_ref", "background_schema_run_manifest_ref"),
     )
+    if not schema_run_manifest_ref:
+        schema_run_manifest_ref = (
+            resident_background_life_constraint_presence.get(
+                "schema_run_manifest_ref"
+            )
+        )
     life_constraint_refs = _dedupe_list(
         _collect_lists(
             resident_governance_state,
@@ -466,6 +481,16 @@ def load_background_continuity_profile(
             resident_governance_report,
             persistent_process_report,
             keys=("life_constraint_refs", "background_life_constraint_refs"),
+        )
+        + _list_or_empty(
+            resident_background_life_constraint_presence.get(
+                "life_constraint_refs"
+            )
+        )
+        + _list_or_empty(
+            resident_background_life_constraint_presence.get(
+                "background_life_constraint_refs"
+            )
         )
     )
     queue_e_cross_layer_gate_status = _first_dict(
@@ -478,6 +503,12 @@ def load_background_continuity_profile(
             "background_queue_e_cross_layer_gate_status",
         ),
     )
+    if not queue_e_cross_layer_gate_status:
+        queue_e_cross_layer_gate_status = _dict_or_empty(
+            resident_background_life_constraint_presence.get(
+                "queue_e_cross_layer_gate_status"
+            )
+        )
     life_constraint_waiting_posture = _first_present(
         resident_governance_state,
         snapshot,
@@ -488,6 +519,10 @@ def load_background_continuity_profile(
             "background_life_constraint_waiting_posture",
         ),
     )
+    if not life_constraint_waiting_posture:
+        life_constraint_waiting_posture = (
+            resident_background_life_constraint_presence.get("waiting_posture")
+        )
     life_constraint_attention_target = _first_present(
         resident_governance_state,
         snapshot,
@@ -498,6 +533,10 @@ def load_background_continuity_profile(
             "background_life_constraint_attention_target",
         ),
     )
+    if not life_constraint_attention_target:
+        life_constraint_attention_target = (
+            resident_background_life_constraint_presence.get("attention_target")
+        )
     life_constraint_attention_reason = _first_present(
         resident_governance_state,
         snapshot,
@@ -508,6 +547,10 @@ def load_background_continuity_profile(
             "background_life_constraint_attention_reason",
         ),
     )
+    if not life_constraint_attention_reason:
+        life_constraint_attention_reason = (
+            resident_background_life_constraint_presence.get("attention_reason")
+        )
     queue_e_birth_repair_waiting_profile = _first_dict(
         resident_governance_state,
         snapshot,

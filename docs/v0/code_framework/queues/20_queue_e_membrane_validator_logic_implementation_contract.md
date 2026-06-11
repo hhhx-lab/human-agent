@@ -488,6 +488,9 @@ S05 发生在 S08 之后，因此 validator 应当重新读取当前 `consciousn
 - `life_constraint_waiting_posture`
 - `life_constraint_attention_target`
 - `life_constraint_attention_reason`
+- `resident_background_lineage_state.life_constraint_presence`
+- `resident_background_lineage_life_constraint_*`
+- `resident_background_lineage_life_constraint_refs`
 - `queue_e_birth_repair_waiting_profile`
 - `queue_e_birth_repair_profile_ref`
 - `queue_e_birth_repair_pressure_level`
@@ -501,6 +504,8 @@ S05 发生在 S08 之后，因此 validator 应当重新读取当前 `consciousn
 ### 当前补厚口径
 
 `resident_supervision.py` 负责装载 `runtime/state/schema_runner/cross_file_logic.json` 与 `runtime/state/schema_runner/run_manifest.json`；`idle_strategy.py` 把它们压成 `schema_guarded_waiting / schema_blocked_waiting / schema_unobserved_waiting` 三类姿态；`heartbeat.py` 再把这些字段写入 waiting heartbeat、terminal loop state 与 resident governance state。当前这条链已经继续进入真实回合：`dialogue_events.py` 会把 schema refs、`queue_e_cross_layer_gate_status`、`life_constraint_waiting_posture`、attention target/reason 和 evidence refs 展开进 `digital_life_turn`；`resident_turn_writeback.py` 会把 `life_constraint_refs` 写入 `dialogue_writeback_bundle.json` 专用槽并并入总 `resident_background_lineage_refs`；`resumed_external_dialogue_packet.json` 保留同一组字段；`response_surface.py` 表达生命约束等待姿态、焦点、理由和证据数量。最新闭合点是关闭态恢复：`process_report.py` 必须把同一组生命约束写进 process report / digest，并让 receipt shared refs 与 input hashes 覆盖 schema runner、`action_candidate_set.json` 和 consciousness probe；下一次 `background_continuity.py` 必须恢复出 `background_schema_cross_file_logic_ref`、`background_schema_run_manifest_ref`、`background_life_constraint_refs`、`background_queue_e_cross_layer_gate_status` 与 `background_life_constraint_*`，再由 `idle_strategy.py` 用这些背景字段维持下一轮 guarded waiting。
+
+最新回灌口径继续把这组生命约束压成常驻背景谱系的一等 presence。`background_lineage_state.py` 必须把当前与背景 schema refs、cross-layer gate、life constraint refs、waiting posture、attention target/reason 合成为 `resident_background_lineage_state.life_constraint_presence`，其中 `life_constraint_refs` 只保留约束对象，`evidence_refs` 合并 schema refs 与约束对象 refs。`dialogue_events.py` 必须展开 `resident_background_lineage_schema_cross_file_logic_ref / schema_run_manifest_ref / queue_e_cross_layer_gate_status / life_constraint_waiting_posture / life_constraint_attention_target / life_constraint_attention_reason / life_constraint_refs`；`resident_turn_writeback.py` 必须把 `resident_background_lineage_life_constraint_refs` 写入 `dialogue_writeback_bundle.json` 与 `resumed_external_dialogue_packet.json`；`response_surface.py` 必须优先从该 presence 读取生命约束姿态，再回退到顶层 terminal loop 字段。这样价值取向、意识探针、身体/语言延后 gate 不再只是 schema runner 的顶层等待状态，而是常驻背景生命谱系里可恢复、可表达、可写回的一段约束痕迹。
 
 同一条回灌现在也必须覆盖 `queue_e_birth_repair_waiting_profile_v0`。`idle_strategy.py` 当前先读当前 `cross_file_logic.json / run_manifest.json`，若本轮没有新的 schema runner 输入，则从 `background_continuity.py` 恢复出的 `background_queue_e_birth_repair_waiting_profile`、profile ref、pressure、attention target、ref set、waiting posture 与 attention reason 继续合成当前等待画像，并标注 `continuity_mode=background_birth_repair_carryover`。`heartbeat.py`、`continuity_writeback.py`、`resident_governance_state.json`、`terminal_life_loop_state.json`、`idle_heartbeat_trace.jsonl` 与 `process_report.py` 必须继续携带当前与背景两组字段。这样真实痛苦、真实责任、真实后悔的出生修复压力不会因为进程关闭、下一轮尚未重跑 S09 而掉回 `birth_repair_unobserved_waiting`。
 

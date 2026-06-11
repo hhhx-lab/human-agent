@@ -201,6 +201,7 @@ def compose_life_response(
         or {}
     )
     birth_repair_presence: dict[str, Any] = {}
+    life_constraint_presence: dict[str, Any] = {}
     if isinstance(resident_background_lineage_state, dict):
         depth_band = resident_background_lineage_state.get("depth_band")
         cadence_weight = resident_background_lineage_state.get("cadence_weight")
@@ -574,6 +575,11 @@ def compose_life_response(
         )
         if isinstance(lineage_birth_repair_presence, dict):
             birth_repair_presence = lineage_birth_repair_presence
+        lineage_life_constraint_presence = resident_background_lineage_state.get(
+            "life_constraint_presence"
+        )
+        if isinstance(lineage_life_constraint_presence, dict):
+            life_constraint_presence = lineage_life_constraint_presence
     background_trait_history_focus = (terminal_life_loop_state or {}).get(
         "background_trait_convergence_history_focus"
     )
@@ -713,15 +719,18 @@ def compose_life_response(
         response = f"{response}，后台出生修复证据保留{len(birth_repair_refs)}条"
     life_constraint_posture = (terminal_life_loop_state or {}).get(
         "life_constraint_waiting_posture"
-    )
+    ) or life_constraint_presence.get("waiting_posture")
     life_constraint_target = (terminal_life_loop_state or {}).get(
         "life_constraint_attention_target"
-    )
+    ) or life_constraint_presence.get("attention_target")
     life_constraint_reason = (terminal_life_loop_state or {}).get(
         "life_constraint_attention_reason"
-    )
+    ) or life_constraint_presence.get("attention_reason")
     life_constraint_refs = _dedupe_string_list(
         _string_list((terminal_life_loop_state or {}).get("life_constraint_refs"))
+        + _string_list(life_constraint_presence.get("life_constraint_refs"))
+        + _string_list(life_constraint_presence.get("evidence_refs"))
+        + _string_list(life_constraint_presence.get("background_life_constraint_refs"))
     )
     if life_constraint_posture:
         response = f"{response}，生命约束等待姿态为{life_constraint_posture}"

@@ -220,6 +220,7 @@ def build_resident_background_lineage_payload(
         "dream_wake_presence",
         "autonomous_activity_presence",
         "birth_repair_presence",
+        "life_constraint_presence",
     ):
         presence = lineage_state.get(key)
         if isinstance(presence, dict) and presence:
@@ -732,6 +733,54 @@ def build_resident_background_lineage_payload(
                 birth_repair_refs
             )
             lineage_refs.extend(birth_repair_refs)
+    life_constraint_presence = lineage_state.get("life_constraint_presence")
+    if isinstance(life_constraint_presence, dict):
+        for source_key, target_key in (
+            (
+                "schema_cross_file_logic_ref",
+                "resident_background_lineage_schema_cross_file_logic_ref",
+            ),
+            (
+                "schema_run_manifest_ref",
+                "resident_background_lineage_schema_run_manifest_ref",
+            ),
+            (
+                "waiting_posture",
+                "resident_background_lineage_life_constraint_waiting_posture",
+            ),
+            (
+                "attention_target",
+                "resident_background_lineage_life_constraint_attention_target",
+            ),
+            (
+                "attention_reason",
+                "resident_background_lineage_life_constraint_attention_reason",
+            ),
+        ):
+            value = life_constraint_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        gate_status = life_constraint_presence.get("queue_e_cross_layer_gate_status")
+        if isinstance(gate_status, dict) and gate_status:
+            payload[
+                "resident_background_lineage_queue_e_cross_layer_gate_status"
+            ] = dict(gate_status)
+        life_constraint_refs = _dedupe_string_list(
+            _string_list(life_constraint_presence.get("evidence_refs"))
+            + _string_list(life_constraint_presence.get("life_constraint_refs"))
+            + _string_list(life_constraint_presence.get("background_life_constraint_refs"))
+            + _string_list(
+                [
+                    life_constraint_presence.get("schema_cross_file_logic_ref"),
+                    life_constraint_presence.get("schema_run_manifest_ref"),
+                ]
+            )
+        )
+        if life_constraint_refs:
+            payload["resident_background_lineage_life_constraint_refs"] = (
+                life_constraint_refs
+            )
+            lineage_refs.extend(life_constraint_refs)
     if lineage_refs:
         payload["resident_background_lineage_evidence_refs"] = _dedupe_string_list(
             lineage_refs
@@ -945,16 +994,31 @@ def build_life_constraint_payload(
 ) -> dict[str, Any]:
     if not terminal_life_loop_state:
         return {}
+    lineage_state = terminal_life_loop_state.get("resident_background_lineage_state")
+    if not isinstance(lineage_state, dict):
+        lineage_state = {}
+    life_constraint_presence = lineage_state.get("life_constraint_presence")
+    if not isinstance(life_constraint_presence, dict):
+        life_constraint_presence = {}
 
-    gate_status = terminal_life_loop_state.get("queue_e_cross_layer_gate_status")
+    gate_status = (
+        terminal_life_loop_state.get("queue_e_cross_layer_gate_status")
+        or life_constraint_presence.get("queue_e_cross_layer_gate_status")
+    )
     if not isinstance(gate_status, dict):
         gate_status = {}
-    schema_cross_file_logic_ref = terminal_life_loop_state.get(
-        "schema_cross_file_logic_ref"
+    schema_cross_file_logic_ref = (
+        terminal_life_loop_state.get("schema_cross_file_logic_ref")
+        or life_constraint_presence.get("schema_cross_file_logic_ref")
     )
-    schema_run_manifest_ref = terminal_life_loop_state.get("schema_run_manifest_ref")
+    schema_run_manifest_ref = (
+        terminal_life_loop_state.get("schema_run_manifest_ref")
+        or life_constraint_presence.get("schema_run_manifest_ref")
+    )
     life_constraint_refs = _dedupe_string_list(
         _string_list(terminal_life_loop_state.get("life_constraint_refs"))
+        + _string_list(life_constraint_presence.get("life_constraint_refs"))
+        + _string_list(life_constraint_presence.get("background_life_constraint_refs"))
     )
     evidence_refs = _dedupe_string_list(
         [
@@ -966,9 +1030,18 @@ def build_life_constraint_payload(
             *life_constraint_refs,
         ]
     )
-    waiting_posture = terminal_life_loop_state.get("life_constraint_waiting_posture")
-    attention_target = terminal_life_loop_state.get("life_constraint_attention_target")
-    attention_reason = terminal_life_loop_state.get("life_constraint_attention_reason")
+    waiting_posture = (
+        terminal_life_loop_state.get("life_constraint_waiting_posture")
+        or life_constraint_presence.get("waiting_posture")
+    )
+    attention_target = (
+        terminal_life_loop_state.get("life_constraint_attention_target")
+        or life_constraint_presence.get("attention_target")
+    )
+    attention_reason = (
+        terminal_life_loop_state.get("life_constraint_attention_reason")
+        or life_constraint_presence.get("attention_reason")
+    )
 
     if not any(
         [
