@@ -2109,6 +2109,126 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         for ref in expected_refs:
             self.assertIn(ref, profile["background_continuity_ref_set"])
 
+    def test_background_continuity_restores_queue_d_from_lineage_presence(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            terminal_dir = root / "state" / "terminal"
+            reports_dir = root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "run_id": "queue-d-lineage-restore",
+                    "resident_background_lineage_state": {
+                        "schema_version": "resident_background_lineage_state_v0",
+                        "offline_learning_presence": {
+                            "generation": 4,
+                            "pressure_level": "elevated",
+                            "attention_target": "relationship_learning_plan",
+                            "priority_profile": {
+                                "relationship_learning_plan": "elevated",
+                            },
+                            "integration_mode": "relationship_offline_reconsolidation_required",
+                            "relationship_reconsolidation_required": True,
+                            "ref_set": [
+                                "runtime/state/growth/relationship_learning_plan.json",
+                                "runtime/state/growth/language_learning_plan.json",
+                            ],
+                        },
+                        "dream_wake_presence": {
+                            "dream_window_ref": "runtime/state/dream/dream_experience_window.json",
+                            "wake_integration_ref": "runtime/state/dream/wake_integration_frame.json",
+                            "dream_fact_gate_decision_ref": "runtime/state/dream/dream_fact_gate_decision.json",
+                            "dream_window_kind": "nrem_like_replay",
+                            "dream_fact_gate_result": "passed",
+                            "wake_archive_requirement": "required_before_activation",
+                            "wake_growth_seed_count": 2,
+                            "wake_repair_target_count": 3,
+                            "dream_fact_gate_ref_count": 3,
+                            "ref_set": [
+                                "runtime/state/dream/offline_consolidation_frame.json",
+                                "runtime/state/dream/dream_experience_window.json",
+                                "runtime/state/dream/wake_integration_frame.json",
+                                "runtime/state/dream/dream_fact_gate_decision.json",
+                            ],
+                        },
+                        "autonomous_activity_presence": {
+                            "activity_count": 12,
+                            "activity_kind_counts": {
+                                "sleep": 3,
+                                "memory_recall": 3,
+                                "self_thinking": 2,
+                                "growth_rehearsal": 2,
+                                "learning_consolidation": 2,
+                            },
+                            "last_activity_kind": "self_thinking",
+                            "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                            "activity_state_refs": {
+                                "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                                "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                                "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                                "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                                "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                            },
+                            "autonomous_activity_refs": [
+                                "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                                "runtime/state/terminal/resident_autonomous_activity_state.json",
+                                "runtime/state/terminal/resident_sleep_cycle_state.json",
+                                "runtime/state/memory/resident_memory_recall_state.json",
+                                "runtime/state/self/resident_self_thinking_state.json",
+                                "runtime/state/growth/resident_growth_rehearsal_state.json",
+                                "runtime/state/growth/resident_learning_consolidation_state.json",
+                            ],
+                        },
+                    },
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+        self.assertEqual(profile["background_offline_learning_generation"], 4)
+        self.assertEqual(
+            profile["background_offline_learning_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            profile["background_offline_learning_attention_target"],
+            "relationship_learning_plan",
+        )
+        self.assertEqual(
+            profile["background_offline_learning_integration_mode"],
+            "relationship_offline_reconsolidation_required",
+        )
+        self.assertTrue(
+            profile[
+                "background_offline_learning_relationship_reconsolidation_required"
+            ]
+        )
+        self.assertEqual(profile["background_dream_window_kind"], "nrem_like_replay")
+        self.assertEqual(profile["background_dream_fact_gate_result"], "passed")
+        self.assertEqual(profile["background_wake_integration_growth_seed_count"], 2)
+        self.assertEqual(profile["background_autonomous_activity_count"], 12)
+        self.assertEqual(
+            profile["background_last_autonomous_activity_kind"],
+            "self_thinking",
+        )
+        for ref in [
+            "runtime/state/growth/relationship_learning_plan.json",
+            "runtime/state/dream/dream_experience_window.json",
+            "runtime/state/terminal/resident_autonomous_activity_state.json",
+            "runtime/state/self/resident_self_thinking_state.json",
+        ]:
+            self.assertIn(ref, profile["background_continuity_ref_set"])
+
     def test_idle_strategy_carries_queue_f_birth_and_consciousness_into_waiting_governance(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
 
@@ -2297,6 +2417,151 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             idle_strategy["next_idle_action"],
             "refresh_waiting_heartbeat_with_birth_ready_presence_hold",
+        )
+
+    def test_idle_strategy_restores_queue_d_from_background_continuity(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        offline_refs = [
+            "runtime/state/growth/relationship_learning_plan.json",
+            "runtime/state/growth/language_learning_plan.json",
+        ]
+        dream_refs = [
+            "runtime/state/dream/offline_consolidation_frame.json",
+            "runtime/state/dream/dream_experience_window.json",
+            "runtime/state/dream/wake_integration_frame.json",
+            "runtime/state/dream/dream_fact_gate_decision.json",
+        ]
+        autonomous_refs = [
+            "runtime/state/terminal/resident_autonomous_activity.jsonl",
+            "runtime/state/terminal/resident_autonomous_activity_state.json",
+            "runtime/state/terminal/resident_sleep_cycle_state.json",
+            "runtime/state/memory/resident_memory_recall_state.json",
+            "runtime/state/self/resident_self_thinking_state.json",
+            "runtime/state/growth/resident_growth_rehearsal_state.json",
+            "runtime/state/growth/resident_learning_consolidation_state.json",
+        ]
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-background-queue-d",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            replay_cue_bundle=None,
+            offline_consolidation_frame=None,
+            growth_patch_candidate_queue=None,
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_generation": 3,
+                "background_offline_learning_generation": 4,
+                "background_offline_learning_pressure_level": "elevated",
+                "background_offline_learning_attention_target": "relationship_learning_plan",
+                "background_offline_learning_priority_profile": {
+                    "relationship_learning_plan": "elevated",
+                },
+                "background_offline_learning_ref_set": offline_refs,
+                "background_offline_learning_integration_mode": "relationship_offline_reconsolidation_required",
+                "background_offline_learning_relationship_reconsolidation_required": True,
+                "background_dream_wake_presence": {
+                    "dream_window_kind": "nrem_like_replay",
+                    "dream_fact_gate_result": "passed",
+                    "wake_archive_requirement": "required_before_activation",
+                    "wake_growth_seed_count": 2,
+                    "wake_repair_target_count": 3,
+                    "dream_fact_gate_ref_count": 3,
+                    "ref_set": dream_refs,
+                },
+                "background_dream_experience_window_ref": dream_refs[1],
+                "background_wake_integration_frame_ref": dream_refs[2],
+                "background_dream_fact_gate_decision_ref": dream_refs[3],
+                "background_dream_window_kind": "nrem_like_replay",
+                "background_dream_fact_gate_result": "passed",
+                "background_wake_integration_archive_requirement": "required_before_activation",
+                "background_wake_integration_growth_seed_count": 2,
+                "background_wake_integration_repair_target_count": 3,
+                "background_dream_fact_gate_ref_count": 3,
+                "background_dream_wake_ref_set": dream_refs,
+                "background_autonomous_activity_presence": {
+                    "activity_count": 12,
+                    "activity_kind_counts": {
+                        "sleep": 3,
+                        "memory_recall": 3,
+                        "self_thinking": 2,
+                        "growth_rehearsal": 2,
+                        "learning_consolidation": 2,
+                    },
+                    "last_activity_kind": "self_thinking",
+                    "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                    "activity_state_refs": {
+                        "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                        "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                        "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                        "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                        "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                    },
+                    "autonomous_activity_refs": autonomous_refs,
+                },
+                "background_resident_autonomous_activity_ref_set": autonomous_refs,
+                "background_autonomous_activity_count": 12,
+                "background_last_autonomous_activity_kind": "self_thinking",
+                "background_last_autonomous_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(idle_strategy["offline_learning_cumulative_generation"], 4)
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_attention_target"],
+            "relationship_learning_plan",
+        )
+        self.assertEqual(idle_strategy["offline_learning_cumulative_ref_set"], offline_refs)
+        self.assertEqual(
+            idle_strategy["offline_learning_cumulative_integration_mode"],
+            "relationship_offline_reconsolidation_required",
+        )
+        self.assertTrue(
+            idle_strategy[
+                "offline_learning_cumulative_relationship_reconsolidation_required"
+            ]
+        )
+        self.assertEqual(
+            idle_strategy["dream_wake_presence_profile"]["continuity_mode"],
+            "background_dream_wake_carryover",
+        )
+        self.assertEqual(idle_strategy["dream_window_kind"], "nrem_like_replay")
+        self.assertEqual(idle_strategy["dream_fact_gate_result"], "passed")
+        self.assertEqual(idle_strategy["wake_integration_growth_seed_count"], 2)
+        self.assertEqual(idle_strategy["dream_wake_ref_set"], dream_refs)
+        self.assertEqual(
+            idle_strategy["resident_autonomous_activity_presence_profile"][
+                "continuity_mode"
+            ],
+            "background_resident_autonomous_activity_carryover",
+        )
+        self.assertEqual(idle_strategy["autonomous_activity_count"], 12)
+        self.assertEqual(
+            idle_strategy["last_autonomous_activity_kind"],
+            "self_thinking",
+        )
+        self.assertEqual(
+            idle_strategy["resident_autonomous_activity_ref_set"],
+            autonomous_refs,
+        )
+        self.assertEqual(
+            idle_strategy["next_idle_action"],
+            "refresh_waiting_heartbeat_with_offline_learning_hold",
         )
 
     def test_idle_strategy_carries_offline_learning_results_into_waiting_governance(self):

@@ -178,6 +178,8 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 8. `runtime/reports/latest/dialogue_writeback_bundle.json#resident_background_lineage_autonomous_activity_refs` 与 `resumed_external_dialogue_packet.json#resident_background_lineage_autonomous_activity_refs` 保留同一组专用证据 refs
 9. `response_surface.py` 生成的生命回应中包含后台自主活动累计次数、最近相位、覆盖相位和证据数量表达
 
+当前最新实现已经把上述三组 Queue D presence 继续推进到关闭态恢复层：`background_continuity.py` 能从上一轮 `resident_background_lineage_state.offline_learning_presence / dream_wake_presence / autonomous_activity_presence` 拆出 `background_offline_learning_*`、`background_dream_* / background_wake_*` 与 `background_resident_autonomous_activity_*`，并把证据 refs 写入 `background_continuity_ref_set`；`idle_strategy.py` 在当前 dream runtime 文件或 `resident_autonomous_activity_state.json` 缺席时，会用这些 background 字段恢复当前 `offline_learning_cumulative_profile_v0`、`dream_wake_presence_profile_v0` 与 `resident_autonomous_activity_presence_profile_v0`。新增的 `test_background_continuity_restores_queue_d_from_lineage_presence` 与 `test_idle_strategy_restores_queue_d_from_background_continuity` 负责守住这条跨断连恢复链。
+
 当前对实时语言回合的补充规则是：凡是声称关系对象的新话语已经进入生命语言系统，不能只看 `dialogue_turn_log.jsonl` 或最终回应文本。必须同时看到：
 
 1. `runtime/state/language/language_percept_frame.json#incoming_surface` 等于当前 `external_utterance`

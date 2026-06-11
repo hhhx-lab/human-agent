@@ -99,6 +99,13 @@ def build_offline_learning_cumulative_profile(
     background_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     background_profile = background_profile or {}
+    background_presence = _dict_or_empty(
+        background_profile.get("background_offline_learning_presence")
+    )
+    background_cumulative_profile = _dict_or_empty(
+        background_profile.get("background_offline_learning_cumulative_profile")
+        or background_profile.get("offline_learning_cumulative_profile")
+    )
     current_priority = _priority_profile(
         current_profile.get("offline_learning_priority_profile")
     )
@@ -148,6 +155,33 @@ def build_offline_learning_cumulative_profile(
         attention_target=dominant_target,
         priority_profile=cumulative_priority,
     )
+    explicit_relationship_reconsolidation_required = _bool_or_none(
+        _first_non_none(
+            background_profile.get(
+                "background_offline_learning_relationship_reconsolidation_required"
+            ),
+            background_profile.get(
+                "offline_learning_cumulative_relationship_reconsolidation_required"
+            ),
+            background_presence.get("relationship_reconsolidation_required"),
+            background_cumulative_profile.get("relationship_reconsolidation_required"),
+        )
+    )
+    relationship_reconsolidation_required = bool(
+        integration["relationship_reconsolidation_required"]
+        or explicit_relationship_reconsolidation_required
+    )
+    explicit_integration_mode = _first_non_none(
+        background_profile.get("background_offline_learning_integration_mode"),
+        background_profile.get("offline_learning_cumulative_integration_mode"),
+        background_presence.get("integration_mode"),
+        background_cumulative_profile.get("integration_mode"),
+    )
+    integration_mode = str(
+        "relationship_offline_reconsolidation_required"
+        if relationship_reconsolidation_required
+        else explicit_integration_mode or integration["integration_mode"]
+    )
     return {
         "schema_version": "offline_learning_cumulative_profile_v0",
         "generation": generation,
@@ -157,10 +191,8 @@ def build_offline_learning_cumulative_profile(
         "ref_set": cumulative_refs,
         "current_pressure_level": current_pressure,
         "previous_generation": background_generation,
-        "integration_mode": integration["integration_mode"],
-        "relationship_reconsolidation_required": integration[
-            "relationship_reconsolidation_required"
-        ],
+        "integration_mode": integration_mode,
+        "relationship_reconsolidation_required": relationship_reconsolidation_required,
     }
 
 
@@ -216,6 +248,24 @@ def normalize_offline_learning_cumulative_profile(
         attention_target=attention_target,
         priority_profile=priority_profile,
     )
+    explicit_relationship_reconsolidation_required = _bool_or_none(
+        profile.get("relationship_reconsolidation_required")
+        if profile.get("relationship_reconsolidation_required") is not None
+        else profile.get("offline_learning_cumulative_relationship_reconsolidation_required")
+    )
+    relationship_reconsolidation_required = bool(
+        integration["relationship_reconsolidation_required"]
+        or explicit_relationship_reconsolidation_required
+    )
+    explicit_integration_mode = (
+        profile.get("integration_mode")
+        or profile.get("offline_learning_cumulative_integration_mode")
+    )
+    integration_mode = str(
+        "relationship_offline_reconsolidation_required"
+        if relationship_reconsolidation_required
+        else explicit_integration_mode or integration["integration_mode"]
+    )
     return {
         "schema_version": "offline_learning_cumulative_profile_v0",
         "generation": generation,
@@ -227,10 +277,8 @@ def normalize_offline_learning_cumulative_profile(
             profile.get("current_pressure_level") or pressure_level
         ),
         "previous_generation": _int_or_zero(profile.get("previous_generation")),
-        "integration_mode": integration["integration_mode"],
-        "relationship_reconsolidation_required": integration[
-            "relationship_reconsolidation_required"
-        ],
+        "integration_mode": integration_mode,
+        "relationship_reconsolidation_required": relationship_reconsolidation_required,
     }
 
 
@@ -391,3 +439,29 @@ def _int_or_zero(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _dict_or_empty(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def _first_non_none(*values: Any) -> Any:
+    for value in values:
+        if value is not None:
+            return value
+    return None
+
+
+def _bool_or_none(value: Any) -> bool | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    text = str(value).strip().lower()
+    if text in {"true", "1", "yes", "y"}:
+        return True
+    if text in {"false", "0", "no", "n"}:
+        return False
+    return bool(value)

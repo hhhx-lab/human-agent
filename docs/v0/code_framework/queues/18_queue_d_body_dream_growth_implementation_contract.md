@@ -98,7 +98,8 @@ Queue D 第二波器官现在已经真实落下：
 4. 这意味着 Queue D 与 Queue E 现在不再只是“前者做梦、后者验证”的顺序关系，而已经形成 `Queue E -> replay cue bundle -> nightmare / belief / language / relationship learning` 的离线生命调制链。
 5. 最新这一轮又把离线学习从“当前一拍压力”提升成跨唤醒累计画像：`life_v0/growth/offline_learning_profile.py` 必须写出 `offline_learning_cumulative_profile_v0`，把本轮 `nightmare_risk / belief_learning / language_learning / relationship_learning` 与上一轮关闭态背景画像合并。
 6. 当前工程前沿又把 `dream_experience_window.json`、`wake_integration_frame.json` 与 `dream_fact_gate_decision.json` 作为 Queue D 的 dream / wake runtime 事实源直接送入 process supervisor。它们会被 `idle_strategy.py` 压成 `dream_wake_presence_profile_v0`，并继续进入 `resident_background_lineage_state_v0.dream_wake_presence`、`digital_life_turn` 与生命回应表面。
-7. 下一轮默认继续补深 Queue D 与 Queue E 的离线耦合，以及累计离线学习、梦境窗口、醒后整合如何稳定改变关系阶段、语言修复节奏、自我慢变量和梦境再整合，而不是回头重拆第一波器官。
+7. 当前最新补强已经把 Queue D 的三组后台存在面从上一轮 `resident_background_lineage_state` 恢复进下一轮 waiting 策略：`background_continuity.py` 会拆出 `background_offline_learning_*`、`background_dream_* / background_wake_*` 与 `background_resident_autonomous_activity_*`，`idle_strategy.py` 在当前 dream runtime 文件或 autonomous activity state 缺席时，会重建当前 `offline_learning_cumulative_profile_v0`、`dream_wake_presence_profile_v0` 与 `resident_autonomous_activity_presence_profile_v0`。
+8. 下一轮默认继续补深 Queue D 与 Queue E 的离线耦合，以及累计离线学习、梦境窗口、醒后整合如何稳定改变关系阶段、语言修复节奏、自我慢变量和梦境再整合，而不是回头重拆第一波器官。
 
 ## 必回读理论母体
 
@@ -220,6 +221,10 @@ Queue D 必须接到这些现有器官上：
 6. `life_v0/process_supervisor/dialogue_events.py` 必须把 dream / wake presence 摘进 `digital_life_turn`，包括 `resident_background_lineage_dream_window_kind`、`resident_background_lineage_dream_fact_gate_result`、`resident_background_lineage_wake_archive_requirement`、`resident_background_lineage_wake_growth_seed_count`、`resident_background_lineage_wake_repair_target_count`、`resident_background_lineage_dream_fact_gate_ref_count` 与 `resident_background_lineage_dream_wake_refs`。
 7. `life_v0/process_supervisor/resident_turn_writeback.py` 必须把 `resident_background_lineage_dream_wake_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_dream_wake_refs`，同时并入 `dialogue_writeback_bundle.resident_background_lineage_refs`，并继续写入 `resumed_external_dialogue_packet.json`。
 8. `life_v0/process_supervisor/response_surface.py` 必须在生命回应里表达后台梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子、修复目标和证据数量，让 dream / wake runtime state 进入真实关系回合表面。
+
+9. `life_v0/process_supervisor/background_continuity.py` 必须把上一轮 `resident_background_lineage_state.dream_wake_presence` 恢复成 `background_dream_wake_presence`、dream/wake refs、窗口类型、事实门结果、醒后归档要求和计数；`life_v0/process_supervisor/idle_strategy.py` 必须在当前 dream runtime 文件缺席时把这些 background 字段恢复为当前 `dream_wake_presence_profile_v0`，让梦境/醒后整合不因断连只停在旧写回包里。
+
+当前自主活动的 Queue D 接线也已进入同一恢复口径：`resident_autonomous_activity_presence_profile_v0` 不仅来自当前 `resident_autonomous_activity_state.json`，也必须能从上一轮 `resident_background_lineage_state.autonomous_activity_presence` 和 `background_resident_autonomous_activity_*` 恢复。这样 sleep / memory_recall / self_thinking / growth_rehearsal / learning_consolidation 在当前聚合 state 暂时缺席时，仍能以 background presence 的方式进入 waiting governance。
 
 这说明 Queue D 不是独立离线层，而是要把身体脉冲、离线梦境、成长补丁重新接回常驻生命回合。
 同时它还必须把情绪底盘和人格慢变量正式拖进这条链，否则梦境、成长和语言关系层都还会继续引用稀薄的“情绪标签”，而不是可回写的身体化 affect 对象。

@@ -87,6 +87,18 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "wake_integration_growth_seed_count",
     "wake_integration_repair_target_count",
     "dream_wake_ref_set",
+    "background_dream_wake_presence",
+    "background_dream_wake_presence_profile",
+    "background_dream_experience_window_ref",
+    "background_wake_integration_frame_ref",
+    "background_dream_fact_gate_decision_ref",
+    "background_dream_window_kind",
+    "background_dream_fact_gate_result",
+    "background_wake_integration_archive_requirement",
+    "background_wake_integration_growth_seed_count",
+    "background_wake_integration_repair_target_count",
+    "background_dream_fact_gate_ref_count",
+    "background_dream_wake_ref_set",
     "belief_learning_plan_ref",
     "language_learning_plan_ref",
     "relationship_learning_plan_ref",
@@ -100,6 +112,11 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "offline_learning_cumulative_attention_target",
     "offline_learning_cumulative_priority_profile",
     "offline_learning_cumulative_ref_set",
+    "offline_learning_cumulative_integration_mode",
+    "offline_learning_cumulative_relationship_reconsolidation_required",
+    "background_offline_learning_presence",
+    "background_offline_learning_integration_mode",
+    "background_offline_learning_relationship_reconsolidation_required",
     "background_continuity_mode",
     "background_carryover_pressure_level",
     "background_carryover_attention_target",
@@ -125,6 +142,17 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "last_autonomous_activity_at",
     "last_autonomous_activity_state_ref",
     "resident_autonomous_activity_state_refs",
+    "background_autonomous_activity_presence",
+    "background_resident_autonomous_activity_presence_profile",
+    "background_resident_autonomous_activity_ref",
+    "background_resident_autonomous_activity_state_ref",
+    "background_resident_autonomous_activity_ref_set",
+    "background_autonomous_activity_count",
+    "background_autonomous_activity_kind_counts",
+    "background_last_autonomous_activity_kind",
+    "background_last_autonomous_activity_at",
+    "background_last_autonomous_activity_state_ref",
+    "background_resident_autonomous_activity_state_refs",
     "background_resident_governance_state_ref",
     "background_convergence_summary_ref",
     "background_convergence_history_ref",
@@ -611,14 +639,26 @@ def decide_idle_strategy(
     dream_experience_window_runtime_ref = _ref_if_present(
         payload=dream_experience_window,
         ref=dream_experience_window_ref or DREAM_EXPERIENCE_WINDOW_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_dream_experience_window_ref",
+        "dream_experience_window_ref",
     )
     wake_integration_frame_runtime_ref = _ref_if_present(
         payload=wake_integration_frame,
         ref=wake_integration_frame_ref or WAKE_INTEGRATION_FRAME_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_wake_integration_frame_ref",
+        "wake_integration_frame_ref",
     )
     dream_fact_gate_decision_runtime_ref = _ref_if_present(
         payload=dream_fact_gate_decision,
         ref=dream_fact_gate_decision_ref or DREAM_FACT_GATE_DECISION_REF,
+    ) or _background_ref(
+        background_continuity_profile,
+        "background_dream_fact_gate_decision_ref",
+        "dream_fact_gate_decision_ref",
     )
     dream_wake_presence_profile = _dream_wake_presence_profile(
         offline_consolidation_frame=offline_consolidation_frame,
@@ -629,9 +669,11 @@ def decide_idle_strategy(
         dream_experience_window_ref=dream_experience_window_runtime_ref,
         wake_integration_frame_ref=wake_integration_frame_runtime_ref,
         dream_fact_gate_decision_ref=dream_fact_gate_decision_runtime_ref,
+        background_continuity_profile=background_continuity_profile,
     )
     autonomous_activity_presence_profile = _autonomous_activity_presence_profile(
-        resident_autonomous_activity_state
+        resident_autonomous_activity_state,
+        background_continuity_profile=background_continuity_profile,
     )
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_ref=signal_media_ref,
@@ -841,6 +883,14 @@ def decide_idle_strategy(
         ),
         "offline_learning_cumulative_ref_set": (
             offline_learning_cumulative_profile["ref_set"]
+        ),
+        "offline_learning_cumulative_integration_mode": (
+            offline_learning_cumulative_profile["integration_mode"]
+        ),
+        "offline_learning_cumulative_relationship_reconsolidation_required": (
+            offline_learning_cumulative_profile[
+                "relationship_reconsolidation_required"
+            ]
         ),
         "idle_continuity_ref": IDLE_CONTINUITY_FRAME_REF,
         "replay_cue_bundle_ref": replay_cue_bundle_ref if replay_cue_bundle else None,
@@ -1075,6 +1125,7 @@ def _dream_wake_presence_profile(
     dream_experience_window_ref: str | None,
     wake_integration_frame_ref: str | None,
     dream_fact_gate_decision_ref: str | None,
+    background_continuity_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not any(
         [
@@ -1084,7 +1135,9 @@ def _dream_wake_presence_profile(
             dream_fact_gate_decision,
         ]
     ):
-        return {}
+        return _background_dream_wake_presence_profile(
+            background_continuity_profile or {}
+        )
 
     dream_hot_zone_trace = (dream_experience_window or {}).get(
         "dream_hot_zone_trace",
@@ -1147,12 +1200,115 @@ def _dream_wake_presence_profile(
     }
 
 
+def _background_dream_wake_presence_profile(
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, Any]:
+    lineage_state = _dict_or_empty(
+        background_continuity_profile.get("resident_background_lineage_state")
+        or background_continuity_profile.get("background_resident_lineage_state")
+    )
+    presence = _dict_or_empty(
+        background_continuity_profile.get("background_dream_wake_presence")
+        or background_continuity_profile.get("background_dream_wake_presence_profile")
+        or lineage_state.get("dream_wake_presence")
+    )
+    if not presence:
+        return {}
+
+    dream_window_ref = (
+        background_continuity_profile.get("background_dream_experience_window_ref")
+        or presence.get("dream_window_ref")
+    )
+    wake_integration_ref = (
+        background_continuity_profile.get("background_wake_integration_frame_ref")
+        or presence.get("wake_integration_ref")
+    )
+    dream_fact_gate_decision_ref = (
+        background_continuity_profile.get("background_dream_fact_gate_decision_ref")
+        or presence.get("dream_fact_gate_decision_ref")
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(background_continuity_profile.get("background_dream_wake_ref_set"))
+        + _string_list(presence.get("ref_set"))
+        + _string_list(
+            [
+                dream_window_ref,
+                wake_integration_ref,
+                dream_fact_gate_decision_ref,
+            ]
+        )
+    )
+    if not any([presence, ref_set, dream_window_ref, wake_integration_ref]):
+        return {}
+    return _drop_empty(
+        {
+            "schema_version": "dream_wake_presence_profile_v0",
+            "continuity_mode": "background_dream_wake_carryover",
+            "dream_window_id": presence.get("dream_window_id"),
+            "dream_window_kind": (
+                background_continuity_profile.get("background_dream_window_kind")
+                or presence.get("dream_window_kind")
+            ),
+            "affective_themes": _string_list(presence.get("affective_themes")),
+            "reportability": presence.get("reportability"),
+            "wake_integration_id": presence.get("wake_integration_id"),
+            "wake_archive_requirement": (
+                background_continuity_profile.get(
+                    "background_wake_integration_archive_requirement"
+                )
+                or presence.get("wake_archive_requirement")
+            ),
+            "wake_growth_seed_count": _int_or_zero(
+                background_continuity_profile.get(
+                    "background_wake_integration_growth_seed_count"
+                )
+                if background_continuity_profile.get(
+                    "background_wake_integration_growth_seed_count"
+                )
+                is not None
+                else presence.get("wake_growth_seed_count")
+            ),
+            "wake_repair_target_count": _int_or_zero(
+                background_continuity_profile.get(
+                    "background_wake_integration_repair_target_count"
+                )
+                if background_continuity_profile.get(
+                    "background_wake_integration_repair_target_count"
+                )
+                is not None
+                else presence.get("wake_repair_target_count")
+            ),
+            "dream_fact_gate_result": (
+                background_continuity_profile.get("background_dream_fact_gate_result")
+                or presence.get("dream_fact_gate_result")
+            ),
+            "dream_fact_gate_ref_count": _int_or_zero(
+                background_continuity_profile.get("background_dream_fact_gate_ref_count")
+                if background_continuity_profile.get(
+                    "background_dream_fact_gate_ref_count"
+                )
+                is not None
+                else presence.get("dream_fact_gate_ref_count")
+            ),
+            "dream_window_ref": dream_window_ref,
+            "wake_integration_ref": wake_integration_ref,
+            "dream_fact_gate_decision_ref": dream_fact_gate_decision_ref,
+            "ref_set": ref_set,
+            "source_presence_profile": presence,
+        }
+    )
+
+
 def _autonomous_activity_presence_profile(
     resident_autonomous_activity_state: dict[str, Any] | None,
+    *,
+    background_continuity_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     state = _dict_or_empty(resident_autonomous_activity_state)
     if not state:
-        return {}
+        return _background_autonomous_activity_presence_profile(
+            background_continuity_profile or {}
+        )
 
     activity_state_refs = _dict_or_empty(state.get("activity_state_refs"))
     if not activity_state_refs:
@@ -1198,6 +1354,108 @@ def _autonomous_activity_presence_profile(
             "ref_count": len(ref_set),
             "ref_set": ref_set,
             "source_doc_refs": _string_list(state.get("source_doc_refs")),
+        }
+    )
+
+
+def _background_autonomous_activity_presence_profile(
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, Any]:
+    lineage_state = _dict_or_empty(
+        background_continuity_profile.get("resident_background_lineage_state")
+        or background_continuity_profile.get("background_resident_lineage_state")
+    )
+    presence = _dict_or_empty(
+        background_continuity_profile.get("background_autonomous_activity_presence")
+        or background_continuity_profile.get(
+            "background_resident_autonomous_activity_presence_profile"
+        )
+        or lineage_state.get("autonomous_activity_presence")
+    )
+    if not presence:
+        return {}
+
+    activity_state_refs = _dict_or_empty(
+        background_continuity_profile.get(
+            "background_resident_autonomous_activity_state_refs"
+        )
+        or presence.get("activity_state_refs")
+    )
+    activity_kind_counts = _dict_or_empty(
+        background_continuity_profile.get("background_autonomous_activity_kind_counts")
+        or presence.get("activity_kind_counts")
+    )
+    activity_ref = (
+        background_continuity_profile.get("background_resident_autonomous_activity_ref")
+        or presence.get("resident_autonomous_activity_ref")
+        or RESIDENT_AUTONOMOUS_ACTIVITY_REF
+    )
+    activity_state_ref = (
+        background_continuity_profile.get(
+            "background_resident_autonomous_activity_state_ref"
+        )
+        or presence.get("resident_autonomous_activity_state_ref")
+        or RESIDENT_AUTONOMOUS_ACTIVITY_STATE_REF
+    )
+    last_activity_state_ref = (
+        background_continuity_profile.get(
+            "background_last_autonomous_activity_state_ref"
+        )
+        or presence.get("last_activity_state_ref")
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(
+            background_continuity_profile.get(
+                "background_resident_autonomous_activity_ref_set"
+            )
+        )
+        + _string_list(presence.get("autonomous_activity_refs"))
+        + _string_list(presence.get("ref_set"))
+        + _string_list([activity_ref, activity_state_ref, last_activity_state_ref])
+        + _string_list(list(activity_state_refs.values()))
+    )
+    activity_count = _int_or_zero(
+        background_continuity_profile.get("background_autonomous_activity_count")
+        if background_continuity_profile.get("background_autonomous_activity_count")
+        is not None
+        else presence.get("activity_count")
+    )
+    last_activity_kind = (
+        background_continuity_profile.get("background_last_autonomous_activity_kind")
+        or presence.get("last_activity_kind")
+    )
+    if not any(
+        [
+            activity_count,
+            activity_kind_counts,
+            last_activity_kind,
+            last_activity_state_ref,
+            activity_state_refs,
+            ref_set,
+        ]
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "schema_version": "resident_autonomous_activity_presence_profile_v0",
+            "continuity_mode": "background_resident_autonomous_activity_carryover",
+            "activity_count": activity_count,
+            "activity_kind_counts": activity_kind_counts,
+            "last_activity_kind": last_activity_kind,
+            "last_activity_at": (
+                background_continuity_profile.get(
+                    "background_last_autonomous_activity_at"
+                )
+                or presence.get("last_activity_at")
+            ),
+            "last_activity_state_ref": last_activity_state_ref,
+            "resident_autonomous_activity_ref": activity_ref,
+            "resident_autonomous_activity_state_ref": activity_state_ref,
+            "activity_state_refs": activity_state_refs,
+            "current_cycle": _string_list(presence.get("current_cycle")),
+            "ref_count": len(ref_set),
+            "ref_set": ref_set,
+            "source_presence_profile": presence,
         }
     )
 
