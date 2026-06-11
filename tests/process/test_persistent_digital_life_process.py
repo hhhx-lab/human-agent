@@ -5289,8 +5289,6 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/language/inner_speech_frame.json",
                             "runtime/state/language/expression_plan.json",
                         ],
-                        "source_continuity_mode": "current_turn_language_presence",
-                        "source_ref_count": 4,
                         "source_presence_profile": {
                             "continuity_mode": "current_turn_language_presence",
                             "ref_count": 4,

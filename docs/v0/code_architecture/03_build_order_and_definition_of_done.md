@@ -200,7 +200,7 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 7. `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.language_presence`
 8. 关闭态 `persistent_process_state/report`、`resident_governance_snapshot` 与 `digital_life_resident_governance_report` 含同一组 live refs 与 semantic focus
 9. 下一次 bootstrap 的 `background_continuity_profile` 恢复 `background_live_language_turn_refs`、`background_last_live_semantic_focus` 与 `background_live_language_presence_profile`
-10. `background_live_language_presence_profile` 必须保持浅层结构，只保留 refs、semantic focus、ref_count、source_continuity_mode / source_ref_count 等摘要字段，不能把上一轮完整 `source_presence_profile` 原样嵌回新 profile，防止长驻 heartbeat trace 和 governance state 随唤醒次数递归膨胀
+10. `background_live_language_presence_profile` 必须保持浅层结构，只保留 refs、semantic focus、ref_count、source_continuity_mode / source_ref_count 等摘要字段；即使来源里还带着 `source_presence_profile`，也只能用来推导这两个摘要字段，不能把上一轮完整 `source_presence_profile` 原样嵌回新 profile，防止长驻 heartbeat trace 和 governance state 随唤醒次数递归膨胀
 11. `background_continuity_profile` 现在还必须同时恢复 `background_idle_heartbeat_trace_ref`、`background_idle_heartbeat_trace_count`、`background_convergence_summary_ref`、`background_convergence_history_ref`、`background_trait_drift_update_mode_summary`、`background_trait_drift_recalibration_names`、`background_trait_drift_stabilized_names`、`background_resident_governance_state_ref`、`background_resident_governance_explanation_ref` 与 `background_next_wake_expectation`；这些字段同样只保留摘要，不回灌完整等待态或关闭态树。
 
 当前对后台实时语言 presence 进入下一轮真实回合的补充规则是：凡是声称上一轮语言理解已经从后台驻留影响当下关系回合，不能只看 `resident_background_lineage_state.language_presence`。必须同时看到：
