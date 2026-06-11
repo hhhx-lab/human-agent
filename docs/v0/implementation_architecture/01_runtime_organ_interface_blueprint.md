@@ -40,6 +40,7 @@
 | `OfflineConsolidationFrame` | `dream/` | `growth/`、`archive/`、`process_supervisor/` | 梦境、离线巩固、醒后整合 |
 | `GrowthPatchCandidate` | `growth/` | `life_targets/`、`archive/`、`validators/` | 自我改写、学习、关系修复与防遗忘补丁 |
 | `MemoryWriteGate` | `state_store/memory_write_gate.py` | `state_store/`、`dream/`、`growth/`、`life_targets/`、`process_supervisor/` | 长期记忆候选的写入事务、validator envelope、隔离路线与生命支持压力更新 |
+| `ResidentProcessLease` | `process_supervisor/process_lease.py` | `heartbeat.py`、`persistent_process.py`、`resident_governance_handoff.py`、`process_report.py` | 常驻生命进程身份、lease/open-close/history 与 relaunch 归一化 |
 | `IdleContinuityFrame` | `process_supervisor/` | `terminal_loop/`、`growth/`、`dream/` | 常驻存在、等待态、断联恢复与下一次唤醒 |
 | `ResidentGovernanceState` | `process_supervisor/heartbeat.py`、`process_supervisor/persistent_process.py` | `process_report.py`、后续 resident governance 审计 | 运行中的 waiting governance 相位、关闭相位、节律字段、当前关注目标与长期语言对象优先级调度 |
 | `ResidentGovernanceSnapshot` | `process_supervisor/persistent_process.py` | `process_report.py`、process receipt、后续 resident governance 审计 | 关闭态常驻治理快照、等待模式、心跳、incident / relaunch 计数与下一次唤醒要求 |
@@ -47,6 +48,11 @@
 | `ResidentLifecycleCommand` | `process_supervisor/resident_lifecycle.py` | `ResidentControlInputStream`、`digital_entry.py` | stop / shutdown / exit 命令文件，供后台 resident process 自我收口 |
 | `ResidentRelationQueueState` | `process_supervisor/resident_lifecycle.py` | `turn_io.py`、`dialogue_events.py`、`response_surface.py`、`process_report.py` | relation inbox/outbox 的队列状态、当前 turn 进度与完成序列 |
 | `ResidentAutonomousActivityState` | `process_supervisor/resident_autonomous_activity.py` | `heartbeat.py`、`idle_strategy.py`、`background_continuity.py`、`process_report.py` | 没有外部输入时的睡眠、回忆、自我思考、成长预演与学习巩固证据 |
+| `BackgroundConvergenceSummary` | `process_supervisor/background_convergence.py` | `idle_strategy.py`、`resident_governance_handoff.py`、`process_report.py` | 跨唤醒关系阶段、自我慢变量与漂移压力摘要 |
+| `BackgroundConvergenceHistory` | `process_supervisor/background_convergence_history.py` | `idle_strategy.py`、`heartbeat.py`、`response_surface.py` | 多次唤醒的收敛历史、趋势状态与更新模式压缩 |
+| `CrossWakeTraitConvergenceProfile` | `process_supervisor/trait_convergence_signals.py` | `background_lineage_state.py`、`dialogue_events.py`、`response_surface.py` | 跨唤醒人格慢变量画像、稳定/重校准名单、压力与 refs |
+| `StateMergeLongTermChangeProfile` | `process_supervisor/state_merge_signals.py` | `idle_strategy.py`、`background_lineage_state.py`、`dialogue_events.py` | 长期变化来源族、计数与后台治理压力 |
+| `ResidentBackgroundLineageState` | `process_supervisor/background_lineage_state.py` | `idle_strategy.py`、`dialogue_events.py`、`resident_turn_writeback.py`、`response_surface.py`、`background_continuity.py` | 把 waiting / closeout / live turn 的 relation、trait、state merge、prediction write-gate、offline learning、dream_wake、identity_consciousness_birth、resident process identity 与 heartbeat cadence 统一成后台驻留主状态体 |
 
 最近一次真实终端验证已经确认这组器官不是纸面协议：`--background`、`--status`、`--say`、`--attach`、`--stop` 可以在同一 resident process 上闭合，detach 之后进程仍会继续驻留，autonomous activity 与 waiting heartbeat 也会继续写回。
 

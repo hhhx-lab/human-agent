@@ -258,6 +258,8 @@ stateDiagram-v2
 | 关系压力 | `DialogueWritebackBundle`、unfinished commitments | `relationship_learning_plan.json`、wake integration |
 | 预测-采样 | `belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json` | `belief_learning_plan.json`、下一轮 observation / response focus |
 | 梦境残留 | turn residue、pain/regret residue | `dream_fact_gate_decision.json`、`nightmare_loop_risk.json` |
+| 状态合并 | `state_merge_guard.json`、`state_merge_signals.py`、`state_merge_long_term_change_refs` | `background_state_merge_*`、`resident_background_lineage_state.state_merge_presence` |
+| 预测写门 | `prediction_error_field.json`、`active_sampling_plan.json`、`memory_write_gate.json`、`prediction_write_gate_refs` | `background_prediction_write_gate_*`、`resident_background_lineage_state.prediction_write_gate_presence` |
 | 语言修正 | external utterance + expression monitor findings | `language_learning_plan.json`、shared terms refinement |
 | 自我连续体 | latest self narrative、old self anchors | anti-forgetting replay、growth patch guard |
 | 存在节律 | waiting heartbeat -> external turn | next feedback seed -> next heartbeat / idle continuity |
@@ -267,6 +269,7 @@ stateDiagram-v2
 1. `signal_media / belief_state / prediction_error / active_sampling / memory_write_gate` 已经落下第一轮，但还没有被 `language / membrane / life_targets / process_supervisor / state_store` 全面深消费。
 2. `state_merge_guard.py`、长期 promotion / quarantine / repair route 还没有把记忆写门扩成真正的长期层治理。
 3. waiting governance、response surface 和 live-turn writeback 还需要把这批预测与写门对象带过多次唤醒，而不是只在单回合里短暂存在。
+4. `state_merge_presence` 与 `prediction_write_gate_presence` 还必须进入 `resident_background_lineage_state_v0`，并在下一轮真实回合中继续以 `resident_background_lineage_state_merge_*` / `resident_background_lineage_prediction_write_gate_*` 的形式被展开。
 
 因此当前实现顺序不能乱：
 
