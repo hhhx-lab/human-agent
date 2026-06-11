@@ -12,6 +12,9 @@ from ..growth.offline_learning_profile import (
     NIGHTMARE_RISK_REF,
     RELATIONSHIP_LEARNING_PLAN_REF,
 )
+from ..neural_core.brain_graph import project_brain_graph_from_live_turn
+from ..neural_core.network_state import project_network_state_from_live_turn
+from ..neural_core.workspace import project_workspace_frame_from_live_turn
 from ..language.apology_repair_language import build_apology_repair_language_trace
 from ..language.commitment_expression import build_commitment_expression_plan
 from ..language.dialogue_log import collect_dialogue_turn_refs
@@ -77,6 +80,10 @@ SEMANTIC_MAP_REF = "runtime/state/language/semantic_map_frame.json"
 INNER_SPEECH_REF = "runtime/state/language/inner_speech_frame.json"
 EXPRESSION_MONITOR_REF = "runtime/state/language/expression_monitor_state.json"
 EXPRESSION_PLAN_REF = "runtime/state/language/expression_plan.json"
+BRAIN_GRAPH_REF = "runtime/state/neural_life_core/brain_graph.json"
+NETWORK_STATE_REF = "runtime/state/neural_life_core/network_state.json"
+PREDICTION_WORKSPACE_REF = "runtime/state/prediction/prediction_workspace_frame.json"
+WORKSPACE_FRAME_REF = "runtime/state/consciousness/workspace_frame.json"
 
 
 @dataclass(frozen=True)
@@ -138,6 +145,10 @@ def write_resident_turn_writeback(
     live_semantic_focus: str | None = None,
     live_ambiguity_flags: list[str] | None = None,
     live_repair_trigger_candidates: list[str] | None = None,
+    prediction_workspace: dict[str, Any] | None = None,
+    workspace_frame: dict[str, Any] | None = None,
+    brain_graph: dict[str, Any] | None = None,
+    network_state: dict[str, Any] | None = None,
     now_iso: Callable[[], str],
     write_json: Callable[[Path, dict[str, Any]], None],
     append_jsonl: Callable[[Path, list[dict[str, Any]]], None],
@@ -180,6 +191,9 @@ def write_resident_turn_writeback(
             expression_monitor_ref,
             expression_plan_ref,
         ]
+    )
+    live_turn_focus = live_semantic_focus or (
+        live_language_turn_refs[-1] if live_language_turn_refs else None
     )
     updated_safe_terminal_loop = build_persistent_wait_bridge(
         run_id=run_id,
@@ -225,6 +239,12 @@ def write_resident_turn_writeback(
         generated_at=generated_at,
         source_doc_refs=source_doc_refs,
         live_language_turn_refs=live_language_turn_refs,
+        live_turn_focus=live_turn_focus,
+        prediction_workspace=prediction_workspace,
+        workspace_frame=workspace_frame,
+        brain_graph=brain_graph,
+        network_state=network_state,
+        body_resource_budget=None,
         write_json=write_json,
     )
 
@@ -474,6 +494,10 @@ def write_resident_turn_writeback(
             AUTOBIOGRAPHICAL_STACK_LIVE_LANGUAGE_REF,
             AUTOBIOGRAPHICAL_STACK_RELATIONSHIP_REF,
         ],
+        brain_graph_writeback_refs=[BRAIN_GRAPH_REF],
+        network_state_writeback_refs=[NETWORK_STATE_REF],
+        workspace_frame_writeback_refs=[WORKSPACE_FRAME_REF],
+        prediction_workspace_writeback_refs=[PREDICTION_WORKSPACE_REF],
         replay_cue_refs=replay_cue_refs,
         terminal_state_refs=[SAFE_TERMINAL_LOOP_REF, TERMINAL_LIFE_LOOP_REF],
         source_doc_refs=source_doc_refs,
@@ -637,6 +661,10 @@ def write_resident_turn_writeback(
         resumed_dialogue_packet["apology_repair_language_trace_ref"] = (
             APOLOGY_REPAIR_LANGUAGE_TRACE_REF
         )
+        resumed_dialogue_packet["brain_graph_ref"] = BRAIN_GRAPH_REF
+        resumed_dialogue_packet["network_state_ref"] = NETWORK_STATE_REF
+        resumed_dialogue_packet["workspace_frame_ref"] = WORKSPACE_FRAME_REF
+        resumed_dialogue_packet["prediction_workspace_ref"] = PREDICTION_WORKSPACE_REF
         resumed_dialogue_packet["engram_index_ref"] = ENGRAM_INDEX_REF
         resumed_dialogue_packet["autobiographical_stack_ref"] = (
             AUTOBIOGRAPHICAL_STACK_REF
@@ -669,6 +697,13 @@ def _refresh_long_horizon_continuity(
     generated_at: str,
     source_doc_refs: list[str],
     live_language_turn_refs: list[str] | None,
+    live_turn_focus: str | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
+    prediction_workspace: dict[str, Any] | None = None,
+    workspace_frame: dict[str, Any] | None = None,
+    brain_graph: dict[str, Any] | None = None,
+    network_state: dict[str, Any] | None = None,
+    body_resource_budget: dict[str, Any] | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> dict[str, Any] | None:
     relationship_timeline_path = relationship_dir / "relationship_timeline.json"
@@ -973,10 +1008,49 @@ def _refresh_long_horizon_continuity(
     write_json(apology_repair_path, refreshed_apology_repair_language_trace)
     write_json(relationship_dir / "relationship_subject_graph.json", evolved_relationship_graph)
     write_json(relationship_memory_path, refreshed_relationship_memory)
+    updated_brain_graph = project_brain_graph_from_live_turn(
+        brain_graph=_read_json_if_exists(state_dir / "neural_life_core" / "brain_graph.json"),
+        generated_at=generated_at,
+        run_id=refresh_run_id,
+        dialogue_turn_refs=dialogue_turn_refs,
+        live_language_turn_refs=live_language_turn_refs,
+        relationship_graph=evolved_relationship_graph,
+        relationship_timeline=refreshed_relationship_timeline,
+        self_model_state=evolved_self_model_state,
+        network_state=_read_json_if_exists(state_dir / "neural_life_core" / "network_state.json"),
+        workspace_frame=_read_json_if_exists(state_dir / "consciousness" / "workspace_frame.json"),
+    )
     if refreshed_state_merge_guard:
         write_json(state_merge_guard_path, refreshed_state_merge_guard)
     write_json(autobiographical_stack_path, refreshed_autobiographical_stack)
     write_json(engram_index_path, refreshed_engram_index)
+    updated_network_state = project_network_state_from_live_turn(
+        network_state=_read_json_if_exists(state_dir / "neural_life_core" / "network_state.json"),
+        generated_at=generated_at,
+        run_id=refresh_run_id,
+        live_dialogue_turn_refs=dialogue_turn_refs,
+        live_language_turn_refs=live_language_turn_refs,
+        live_turn_focus=live_turn_focus,
+        signal_media_runtime=signal_media_runtime,
+        brain_graph=updated_brain_graph,
+        workspace_frame=_read_json_if_exists(state_dir / "consciousness" / "workspace_frame.json"),
+        prediction_workspace=_read_json_if_exists(state_dir / "prediction" / "prediction_workspace_frame.json"),
+        body_resource_budget=body_resource_budget,
+    )
+    updated_workspace_frame = project_workspace_frame_from_live_turn(
+        workspace_frame=_read_json_if_exists(state_dir / "consciousness" / "workspace_frame.json"),
+        generated_at=generated_at,
+        run_id=refresh_run_id,
+        prediction_workspace=_read_json_if_exists(state_dir / "prediction" / "prediction_workspace_frame.json"),
+        network_state=updated_network_state,
+        engram_index=refreshed_engram_index,
+        live_dialogue_turn_refs=dialogue_turn_refs,
+        live_language_turn_refs=live_language_turn_refs,
+        live_turn_focus=live_turn_focus,
+    )
+    write_json(state_dir / "neural_life_core" / "brain_graph.json", updated_brain_graph)
+    write_json(state_dir / "neural_life_core" / "network_state.json", updated_network_state)
+    write_json(state_dir / "consciousness" / "workspace_frame.json", updated_workspace_frame)
     trait_drift_monitor = build_trait_drift_monitor_from_self_model(
         run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
         generated_at=generated_at,
@@ -999,6 +1073,9 @@ def _refresh_long_horizon_continuity(
         "state_merge_guard": refreshed_state_merge_guard,
         "autobiographical_stack": refreshed_autobiographical_stack,
         "engram_index": refreshed_engram_index,
+        "brain_graph": updated_brain_graph,
+        "network_state": updated_network_state,
+        "workspace_frame": updated_workspace_frame,
         "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
     }

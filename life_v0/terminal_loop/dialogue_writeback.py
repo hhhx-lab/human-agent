@@ -24,6 +24,10 @@ def build_dialogue_writeback_bundle(
     runtime_carrier_refs: list[str],
     engram_index_writeback_refs: list[str] | None = None,
     autobiographical_writeback_refs: list[str] | None = None,
+    brain_graph_writeback_refs: list[str] | None = None,
+    network_state_writeback_refs: list[str] | None = None,
+    workspace_frame_writeback_refs: list[str] | None = None,
+    prediction_workspace_writeback_refs: list[str] | None = None,
     background_trait_convergence_refs: list[str] | None = None,
     cross_wake_trait_convergence_refs: list[str] | None = None,
     cross_wake_trait_drift_update_mode_summary: dict[str, Any] | None = None,
@@ -79,6 +83,12 @@ def build_dialogue_writeback_bundle(
         "engram_index_writeback_refs": list(engram_index_writeback_refs or []),
         "autobiographical_writeback_refs": list(
             autobiographical_writeback_refs or []
+        ),
+        "brain_graph_writeback_refs": list(brain_graph_writeback_refs or []),
+        "network_state_writeback_refs": list(network_state_writeback_refs or []),
+        "workspace_frame_writeback_refs": list(workspace_frame_writeback_refs or []),
+        "prediction_workspace_writeback_refs": list(
+            prediction_workspace_writeback_refs or []
         ),
         "replay_cue_refs": replay_cue_refs,
         "terminal_state_refs": terminal_state_refs,

@@ -35,6 +35,9 @@
 |---|---|---|---|---|
 | `PredictionWorkspaceFrame` | `life_v0/neural_core/prediction_workspace.py` / `workspace.py` | `language`、`membrane`、`life_targets`、`schema_runner`、`process_supervisor` | 已存在；现已显式回挂 `belief_state.py`、`prediction_error.py`、`active_sampling.py` 与 `signal_media.py` refs，并携带 Queue E repair modulation profile | `runtime/state/prediction/prediction_workspace_frame.json` |
 | `SignalMediaFrame` | `life_v0/neural_core/signal_media.py` | `workspace`、`language`、`membrane`、`dream`、`process_supervisor` | 已独立落地并写出调质/精度/抑制状态；本轮已接收 Queue E repair pressure，调制 `repair_drive`、关系压力、不确定性、动作精度与抑制轮廓 | `runtime/state/signal/signal_media_runtime.json`、`neural_life_internal_bus.json` |
+| `BrainGraph` | `life_v0/neural_core/brain_graph.py` | `state_store`、`process_supervisor`、`language` | 十二主体系统与跨系统耦合图；live turn 后会继续吸收关系语义、自我模型和工作区焦点 | `runtime/state/neural_life_core/brain_graph.json` |
+| `NetworkState` | `life_v0/neural_core/network_state.py` | `workspace`、`process_supervisor`、`language` | 默认/显著性/执行网络的动态切换；live turn 后会继续吸收工作区主导权与焦点切换 | `runtime/state/neural_life_core/network_state.json` |
+| `WorkspaceFrame` | `life_v0/neural_core/workspace.py` | `state_store`、`process_supervisor`、`life_targets` | 由 prediction workspace 上卷出的更高一级工作区与记忆检索面；live turn 后会继续吸收 engram / prediction / network refs | `runtime/state/consciousness/workspace_frame.json` |
 | `ConsciousBroadcastFrame` | `life_v0/neural_core/broadcast.py` | `language`、`life_targets`、`reporting` | 已存在第一轮；待补厚 | `runtime/state/consciousness/*`、birth readiness evidence |
 
 这条总线保证“思考、注意、可报告内容、语言表达、生命目标”使用的是同一工作区，而不是各层私有上下文。

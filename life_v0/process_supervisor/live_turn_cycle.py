@@ -150,6 +150,22 @@ def run_live_turn_cycle(
             signal_media_runtime=signal_media_runtime,
             write_json=write_json,
         )
+        brain_graph = _read_json_if_exists(
+            state_dir / "neural_life_core" / "brain_graph.json",
+            {},
+        )
+        network_state = _read_json_if_exists(
+            state_dir / "neural_life_core" / "network_state.json",
+            {},
+        )
+        prediction_workspace = _read_json_if_exists(
+            state_dir / "prediction" / "prediction_workspace_frame.json",
+            {},
+        )
+        workspace_frame = _read_json_if_exists(
+            state_dir / "consciousness" / "workspace_frame.json",
+            {},
+        )
         _attach_live_language_turn_refs(
             external_turn,
             live_language_turn=live_language_turn,
@@ -265,6 +281,10 @@ def run_live_turn_cycle(
             live_repair_trigger_candidates=list(
                 live_language_turn.language_percept.get("repair_trigger_candidates", [])
             ),
+            prediction_workspace=prediction_workspace,
+            workspace_frame=workspace_frame,
+            brain_graph=brain_graph,
+            network_state=network_state,
             now_iso=now_iso,
             write_json=write_json,
             append_jsonl=append_jsonl,

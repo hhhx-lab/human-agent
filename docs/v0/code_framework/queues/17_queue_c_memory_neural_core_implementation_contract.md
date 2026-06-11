@@ -235,6 +235,38 @@ def project_engram_index_from_live_turn(
 - `state_merge_change_source_refs`
 - `last_projected_from_live_turn_ref`
 
+### live-turn projection chain
+
+当前 `resident_turn_writeback.py` 已把 live-turn 末端投影扩展到神经核心工作面：
+
+```text
+project_brain_graph_from_live_turn(...)
+project_network_state_from_live_turn(...)
+project_workspace_frame_from_live_turn(...)
+```
+
+这三件事不再只是 S02 的静态种子，而会在真实关系回合写回时同步吸收：
+
+- `live_dialogue_turn_refs`
+- `live_language_turn_refs`
+- `live_turn_focus`
+- `relationship_graph`
+- `relationship_timeline`
+- `self_model_state`
+- `engram_index`
+- `prediction_workspace`
+- `workspace_frame`
+- `network_state`
+
+对应写回目标分别是：
+
+- `runtime/state/neural_life_core/brain_graph.json`
+- `runtime/state/neural_life_core/network_state.json`
+- `runtime/state/consciousness/workspace_frame.json`
+- `runtime/state/prediction/prediction_workspace_frame.json`
+
+这一段的工程语义是：真实回合结束后，神经图、网络态和工作区不再停留在“已建好的静态器官”，而会继续跟随关系语义、人格慢变量、记忆索引和工作区焦点一起闭合。
+
 ## C. 新增 `life_v0/state_store/autobiographical_stack.py`
 
 ### 角色
