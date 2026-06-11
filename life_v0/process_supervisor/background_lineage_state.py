@@ -13,6 +13,9 @@ def build_resident_background_lineage_state(
     identity_consciousness_birth_presence = _identity_consciousness_birth_presence(
         governance
     )
+    resident_process_identity_presence = _resident_process_identity_presence(
+        governance
+    )
     profile = _dict_or_empty(governance.get("background_lineage_governance_profile"))
     explicit_depth_band = (
         governance.get("background_lineage_depth_band")
@@ -28,6 +31,8 @@ def build_resident_background_lineage_state(
         _depth_band_for_generation(generation),
     )
     if not depth_band and identity_consciousness_birth_presence:
+        depth_band = "no_background_lineage"
+    if not depth_band and resident_process_identity_presence:
         depth_band = "no_background_lineage"
     if not depth_band:
         return {}
@@ -103,6 +108,10 @@ def build_resident_background_lineage_state(
     if identity_consciousness_birth_presence:
         lineage_state["identity_consciousness_birth_presence"] = (
             identity_consciousness_birth_presence
+        )
+    if resident_process_identity_presence:
+        lineage_state["resident_process_identity_presence"] = (
+            resident_process_identity_presence
         )
     offline_learning_presence = _offline_learning_presence(governance)
     if offline_learning_presence:
@@ -512,6 +521,78 @@ def _identity_consciousness_birth_presence(
             ),
             "birth_readiness_blocked_reasons": blocked_reasons,
             "identity_consciousness_birth_refs": refs,
+        }
+    )
+
+
+def _resident_process_identity_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    profile = _dict_or_empty(
+        governance.get("background_resident_process_lease_history_profile")
+        or governance.get("resident_process_lease_history_profile")
+    )
+    profile_ref = (
+        governance.get("resident_process_lease_history_profile_ref")
+        or governance.get("background_resident_process_lease_history_profile_ref")
+        or profile.get("resident_process_lease_history_profile_ref")
+    )
+    lease_ref = (
+        governance.get("resident_process_lease_ref")
+        or profile.get("resident_process_lease_ref")
+    )
+    history_ref = (
+        governance.get("resident_process_lease_history_ref")
+        or profile.get("resident_process_lease_history_ref")
+    )
+    continuity_state = (
+        governance.get("resident_process_identity_continuity_state")
+        or profile.get("current_identity_continuity_state")
+    )
+    pressure_level = (
+        governance.get("resident_process_identity_pressure_level")
+        or profile.get("identity_pressure_level")
+    )
+    history_event_count = _int_or_zero(
+        governance.get("resident_process_lease_history_event_count")
+        if governance.get("resident_process_lease_history_event_count") is not None
+        else profile.get("history_event_count")
+    )
+    recent_process_ids = _dedupe_string_list(
+        _string_list(governance.get("resident_process_recent_ids"))
+        or _string_list(profile.get("recent_resident_process_ids"))
+    )
+    recent_run_ids = _dedupe_string_list(
+        _string_list(governance.get("resident_process_recent_run_ids"))
+        or _string_list(profile.get("recent_run_ids"))
+    )
+    evidence_refs = _dedupe_string_list(
+        _string_list(profile.get("evidence_refs"))
+        + _string_list([lease_ref, history_ref, profile_ref])
+    )
+    if not any(
+        [
+            profile,
+            profile_ref,
+            lease_ref,
+            history_ref,
+            continuity_state,
+            pressure_level,
+            history_event_count,
+            recent_process_ids,
+            recent_run_ids,
+        ]
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "resident_process_lease_ref": lease_ref,
+            "resident_process_lease_history_ref": history_ref,
+            "resident_process_lease_history_profile_ref": profile_ref,
+            "resident_process_identity_continuity_state": continuity_state,
+            "resident_process_identity_pressure_level": pressure_level,
+            "resident_process_lease_history_event_count": history_event_count,
+            "resident_process_recent_ids": recent_process_ids,
+            "resident_process_recent_run_ids": recent_run_ids,
+            "resident_process_identity_refs": evidence_refs,
         }
     )
 

@@ -415,6 +415,51 @@ def compose_life_response(
                     f"{response}，后台身份意识出生证据保留"
                     f"{len(identity_consciousness_birth_refs)}条"
                 )
+        resident_process_identity_presence = resident_background_lineage_state.get(
+            "resident_process_identity_presence"
+        )
+        if isinstance(resident_process_identity_presence, dict):
+            resident_identity_state = resident_process_identity_presence.get(
+                "resident_process_identity_continuity_state"
+            )
+            resident_identity_pressure = resident_process_identity_presence.get(
+                "resident_process_identity_pressure_level"
+            )
+            resident_identity_refs = _dedupe_string_list(
+                _string_list(
+                    resident_process_identity_presence.get(
+                        "resident_process_identity_refs"
+                    )
+                )
+                or _string_list(
+                    [
+                        resident_process_identity_presence.get(
+                            "resident_process_lease_ref"
+                        ),
+                        resident_process_identity_presence.get(
+                            "resident_process_lease_history_ref"
+                        ),
+                        resident_process_identity_presence.get(
+                            "resident_process_lease_history_profile_ref"
+                        ),
+                    ]
+                )
+            )
+            if resident_identity_state:
+                response = (
+                    f"{response}，后台生命进程身份连续性为"
+                    f"{resident_identity_state}"
+                )
+            if resident_identity_pressure and resident_identity_pressure != "light":
+                response = (
+                    f"{response}，后台生命进程身份压力为"
+                    f"{resident_identity_pressure}"
+                )
+            if resident_identity_refs:
+                response = (
+                    f"{response}，后台生命进程身份证据保留"
+                    f"{len(resident_identity_refs)}条"
+                )
         offline_learning_presence = resident_background_lineage_state.get(
             "offline_learning_presence"
         )

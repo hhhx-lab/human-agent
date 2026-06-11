@@ -5667,6 +5667,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/life_targets/birth_readiness_rollup.json",
                 "runtime/state/life_targets/birth_readiness_stage_gate.json",
             ]
+            expected_resident_process_identity_refs = [
+                "runtime/state/terminal/resident_process_lease.json",
+                "runtime/state/terminal/resident_process_lease_history.jsonl",
+                "runtime/state/terminal/resident_process_lease_history_profile.json",
+            ]
             queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
             expected_queue_e_birth_repair_refs = [
                 "runtime/state/action/responsibility_loop_state.json",
@@ -5838,6 +5843,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "birth_readiness_decision": "open",
                         "birth_readiness_next_required_command": "digital life",
                         "identity_consciousness_birth_refs": expected_identity_consciousness_birth_refs,
+                    },
+                    "resident_process_identity_presence": {
+                        "resident_process_lease_ref": "runtime/state/terminal/resident_process_lease.json",
+                        "resident_process_lease_history_ref": "runtime/state/terminal/resident_process_lease_history.jsonl",
+                        "resident_process_lease_history_profile_ref": "runtime/state/terminal/resident_process_lease_history_profile.json",
+                        "resident_process_identity_continuity_state": "interrupted_then_recovered",
+                        "resident_process_identity_pressure_level": "elevated",
+                        "resident_process_lease_history_event_count": 5,
+                        "resident_process_recent_ids": [
+                            "resident-process-previous-active-lease",
+                            "resident-process-live-turn-cycle-organ",
+                        ],
+                        "resident_process_recent_run_ids": [
+                            "previous-active-lease",
+                            "live-turn-cycle-organ",
+                        ],
+                        "resident_process_identity_refs": expected_resident_process_identity_refs,
                     },
                     "offline_learning_presence": {
                         "generation": 3,
@@ -6264,6 +6286,42 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
                 expected_identity_consciousness_birth_refs,
             )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_resident_process_identity_presence"
+                ]["resident_process_identity_continuity_state"],
+                "interrupted_then_recovered",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_resident_process_lease_history_profile_ref"
+                ],
+                "runtime/state/terminal/resident_process_lease_history_profile.json",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_resident_process_identity_continuity_state"
+                ],
+                "interrupted_then_recovered",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_resident_process_identity_pressure_level"
+                ],
+                "elevated",
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_resident_process_lease_history_event_count"
+                ],
+                5,
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_resident_process_identity_refs"
+                ],
+                expected_resident_process_identity_refs,
+            )
             self.assertIn(
                 "后台语言语义余波停在repair_commitment_shared_language",
                 result.emitted_output,
@@ -6292,6 +6350,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn("出生准备决策为open", result.emitted_output)
             self.assertIn("出生准备下一命令为digital life", result.emitted_output)
             self.assertIn("后台身份意识出生证据保留6条", result.emitted_output)
+            self.assertIn(
+                "后台生命进程身份连续性为interrupted_then_recovered",
+                result.emitted_output,
+            )
+            self.assertIn("后台生命进程身份压力为elevated", result.emitted_output)
+            self.assertIn("后台生命进程身份证据保留3条", result.emitted_output)
             self.assertEqual(
                 result.last_life_turn["prediction_waiting_posture"],
                 "hold_for_evidence",
@@ -6536,6 +6600,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/growth/language_learning_plan.json",
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
                 "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                "runtime/state/terminal/resident_process_lease.json",
+                "runtime/state/terminal/resident_process_lease_history.jsonl",
+                "runtime/state/terminal/resident_process_lease_history_profile.json",
                 "runtime/state/action/responsibility_loop_state.json",
                 "runtime/state/dream/offline_consolidation_frame.json",
                 queue_e_profile_ref,
@@ -6607,6 +6674,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "resident_background_lineage_identity_consciousness_birth_refs"
                 ],
                 expected_identity_consciousness_birth_refs,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_resident_process_identity_refs"
+                ],
+                expected_resident_process_identity_refs,
             )
             self.assertEqual(
                 resumed_dialogue_packet["background_trait_convergence_history_focus"],
@@ -6703,6 +6776,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 dialogue_writeback_bundle[
                     "resident_background_lineage_identity_consciousness_birth_refs"
                 ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_resident_process_identity_refs"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_resident_process_identity_refs"
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_resident_process_identity_continuity_state"
+                ],
+                "interrupted_then_recovered",
             )
             self.assertEqual(
                 resumed_dialogue_packet[

@@ -39,6 +39,9 @@ def build_dialogue_writeback_bundle(
     resident_background_lineage_identity_consciousness_birth_refs: (
         list[str] | None
     ) = None,
+    resident_background_lineage_resident_process_identity_refs: (
+        list[str] | None
+    ) = None,
     resident_background_lineage_offline_learning_refs: list[str] | None = None,
     resident_background_lineage_dream_wake_refs: list[str] | None = None,
     life_constraint_refs: list[str] | None = None,
@@ -96,6 +99,9 @@ def build_dialogue_writeback_bundle(
         ),
         "resident_background_lineage_identity_consciousness_birth_refs": list(
             resident_background_lineage_identity_consciousness_birth_refs or []
+        ),
+        "resident_background_lineage_resident_process_identity_refs": list(
+            resident_background_lineage_resident_process_identity_refs or []
         ),
         "resident_background_lineage_offline_learning_refs": list(
             resident_background_lineage_offline_learning_refs or []

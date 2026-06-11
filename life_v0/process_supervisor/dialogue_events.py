@@ -215,6 +215,7 @@ def build_resident_background_lineage_payload(
         "language_presence",
         "state_merge_presence",
         "identity_consciousness_birth_presence",
+        "resident_process_identity_presence",
         "offline_learning_presence",
         "dream_wake_presence",
     ):
@@ -492,6 +493,91 @@ def build_resident_background_lineage_payload(
                 "resident_background_lineage_identity_consciousness_birth_refs"
             ] = identity_consciousness_birth_refs
             lineage_refs.extend(identity_consciousness_birth_refs)
+    resident_process_identity_presence = lineage_state.get(
+        "resident_process_identity_presence"
+    )
+    if isinstance(resident_process_identity_presence, dict):
+        for source_key, target_key in (
+            (
+                "resident_process_lease_ref",
+                "resident_background_lineage_resident_process_lease_ref",
+            ),
+            (
+                "resident_process_lease_history_ref",
+                "resident_background_lineage_resident_process_lease_history_ref",
+            ),
+            (
+                "resident_process_lease_history_profile_ref",
+                "resident_background_lineage_resident_process_lease_history_profile_ref",
+            ),
+            (
+                "resident_process_identity_continuity_state",
+                "resident_background_lineage_resident_process_identity_continuity_state",
+            ),
+            (
+                "resident_process_identity_pressure_level",
+                "resident_background_lineage_resident_process_identity_pressure_level",
+            ),
+        ):
+            value = resident_process_identity_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        if (
+            resident_process_identity_presence.get(
+                "resident_process_lease_history_event_count"
+            )
+            is not None
+        ):
+            payload[
+                "resident_background_lineage_resident_process_lease_history_event_count"
+            ] = resident_process_identity_presence[
+                "resident_process_lease_history_event_count"
+            ]
+        recent_process_ids = _dedupe_string_list(
+            _string_list(
+                resident_process_identity_presence.get("resident_process_recent_ids")
+            )
+        )
+        recent_run_ids = _dedupe_string_list(
+            _string_list(
+                resident_process_identity_presence.get(
+                    "resident_process_recent_run_ids"
+                )
+            )
+        )
+        resident_process_identity_refs = _dedupe_string_list(
+            _string_list(
+                resident_process_identity_presence.get(
+                    "resident_process_identity_refs"
+                )
+            )
+            or _string_list(
+                [
+                    resident_process_identity_presence.get(
+                        "resident_process_lease_ref"
+                    ),
+                    resident_process_identity_presence.get(
+                        "resident_process_lease_history_ref"
+                    ),
+                    resident_process_identity_presence.get(
+                        "resident_process_lease_history_profile_ref"
+                    ),
+                ]
+            )
+        )
+        if recent_process_ids:
+            payload[
+                "resident_background_lineage_resident_process_recent_ids"
+            ] = recent_process_ids
+        if recent_run_ids:
+            payload[
+                "resident_background_lineage_resident_process_recent_run_ids"
+            ] = recent_run_ids
+        if resident_process_identity_refs:
+            payload[
+                "resident_background_lineage_resident_process_identity_refs"
+            ] = resident_process_identity_refs
+            lineage_refs.extend(resident_process_identity_refs)
     offline_presence = lineage_state.get("offline_learning_presence")
     if isinstance(offline_presence, dict):
         for source_key, target_key in (
