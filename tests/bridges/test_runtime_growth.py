@@ -7,6 +7,10 @@ from pathlib import Path
 
 from life_v0.dream.nightmare_risk import build_nightmare_loop_risk
 from life_v0.growth.belief_learning import build_belief_learning_plan
+from life_v0.growth.offline_learning_profile import (
+    build_offline_learning_cumulative_profile,
+    normalize_offline_learning_cumulative_profile,
+)
 from life_v0.growth.language_learning import build_language_learning_plan
 from life_v0.growth.relationship_learning import build_relationship_learning_plan
 
@@ -19,6 +23,46 @@ class RuntimeGrowthTests(unittest.TestCase):
     @property
     def docs_dir(self) -> Path:
         return self.repo_root / "docs"
+
+    def test_cumulative_offline_learning_profile_marks_relationship_reconsolidation(self):
+        current_profile = {
+            "offline_learning_pressure_level": "quiet",
+            "offline_learning_attention_target": "baseline_offline_learning_maintenance",
+            "offline_learning_priority_profile": {},
+            "offline_learning_ref_set": [],
+        }
+        background_profile = {
+            "background_offline_learning_generation": 2,
+            "background_offline_learning_pressure_level": "elevated",
+            "background_offline_learning_attention_target": "relationship_learning_plan",
+            "background_offline_learning_priority_profile": {
+                "relationship_learning_plan": "elevated",
+            },
+            "background_offline_learning_ref_set": [
+                "runtime/state/growth/relationship_learning_plan.json",
+            ],
+        }
+
+        profile = build_offline_learning_cumulative_profile(
+            current_profile=current_profile,
+            background_profile=background_profile,
+        )
+        normalized = normalize_offline_learning_cumulative_profile(profile)
+
+        self.assertEqual(profile["generation"], 2)
+        self.assertEqual(profile["pressure_level"], "elevated")
+        self.assertEqual(profile["attention_target"], "relationship_learning_plan")
+        self.assertEqual(
+            profile["integration_mode"],
+            "relationship_offline_reconsolidation_required",
+        )
+        self.assertTrue(profile["relationship_reconsolidation_required"])
+        self.assertEqual(normalized["integration_mode"], profile["integration_mode"])
+        self.assertTrue(normalized["relationship_reconsolidation_required"])
+        self.assertIn(
+            "runtime/state/growth/relationship_learning_plan.json",
+            normalized["ref_set"],
+        )
 
     def test_cli_run_cycle_shadow_only_writes_s10_runtime_bundle(self):
         from life_v0.authority import run_source_authority

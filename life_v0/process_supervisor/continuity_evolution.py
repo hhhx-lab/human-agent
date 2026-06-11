@@ -534,6 +534,12 @@ def _background_offline_learning_reconsolidation_required(
         "offline_learning_reconsolidation_waiting",
     }:
         return False
+    cumulative_profile = offline_learning_profile.get("offline_learning_cumulative_profile")
+    if (
+        isinstance(cumulative_profile, dict)
+        and cumulative_profile.get("relationship_reconsolidation_required") is True
+    ):
+        return True
     generation = _int_or_zero(
         offline_learning_profile.get("background_offline_learning_generation")
     )

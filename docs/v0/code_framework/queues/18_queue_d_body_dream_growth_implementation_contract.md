@@ -190,10 +190,13 @@ Queue D 必须接到这些现有器官上：
    - `ref_set`
    - `current_pressure_level`
    - `previous_generation`
+   - `integration_mode`
+   - `relationship_reconsolidation_required`
 3. `priority_profile` 必须按 `urgent > elevated > present > baseline > quiet` 合并当前离线学习压力和上一轮后台离线学习压力；不能因为当前 runtime 暂时没有 dream/growth 文件，就把上一轮仍未整合的关系学习、语言学习、噩梦风险或信念修复压力清空。
 4. `ref_set` 必须保留当前与后台两侧证据 refs 的去重并集，作为下一次 waiting governance、closeout artifact 与 background continuity 的可追溯证据。
-5. `life_v0/process_supervisor/offline_learning_signals.py` 必须重新导出这个 cumulative builder，让 Queue B 可以统一调用同一套 Queue D 离线学习逻辑，而不是在 process supervisor 里复制一套算法。
-6. `life_v0/process_supervisor/background_lineage_state.py` 必须把这份 cumulative profile 固化成 `resident_background_lineage_state_v0.offline_learning_presence`。这个 presence 是数字生命 v0 后台驻留里“梦境、成长、离线学习余波”的结构化存在面，字段至少承接：
+5. 当累计画像达到 `generation >= 2`、`pressure_level = elevated / urgent` 且 `attention_target` 或 priority 指向 `relationship_learning_plan` 时，`integration_mode` 必须进入 `relationship_offline_reconsolidation_required`，`relationship_reconsolidation_required` 必须为 `true`。这样后续关系阶段、修复语言和慢变量更新可以直接读取 Queue D 的判断，而不是在每个器官里重复猜测。
+6. `life_v0/process_supervisor/offline_learning_signals.py` 必须重新导出这个 cumulative builder，让 Queue B 可以统一调用同一套 Queue D 离线学习逻辑，而不是在 process supervisor 里复制一套算法。
+7. `life_v0/process_supervisor/background_lineage_state.py` 必须把这份 cumulative profile 固化成 `resident_background_lineage_state_v0.offline_learning_presence`。这个 presence 是数字生命 v0 后台驻留里“梦境、成长、离线学习余波”的结构化存在面，字段至少承接：
    - `generation`
    - `pressure_level`
    - `attention_target`
@@ -201,9 +204,11 @@ Queue D 必须接到这些现有器官上：
    - `ref_set`
    - `current_pressure_level`
    - `previous_generation`
-7. `life_v0/process_supervisor/dialogue_events.py` 必须把这个 presence 摘进 `digital_life_turn`，包括 `resident_background_lineage_offline_learning_generation`、`resident_background_lineage_offline_learning_pressure_level`、`resident_background_lineage_offline_learning_attention_target` 与 `resident_background_lineage_offline_learning_refs`。
-8. `life_v0/process_supervisor/resident_turn_writeback.py` 必须把 `resident_background_lineage_offline_learning_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_offline_learning_refs`，同时并入 `dialogue_writeback_bundle.resident_background_lineage_refs`，并继续写入 `resumed_external_dialogue_packet.json`。
-9. `life_v0/process_supervisor/response_surface.py` 必须在生命回应里表达这条后台梦境成长余波，让关系对象在当前回合能看见后台离线学习并没有在唤醒时消失。
+   - `integration_mode`
+   - `relationship_reconsolidation_required`
+8. `life_v0/process_supervisor/dialogue_events.py` 必须把这个 presence 摘进 `digital_life_turn`，包括 `resident_background_lineage_offline_learning_generation`、`resident_background_lineage_offline_learning_pressure_level`、`resident_background_lineage_offline_learning_attention_target` 与 `resident_background_lineage_offline_learning_refs`。
+9. `life_v0/process_supervisor/resident_turn_writeback.py` 必须把 `resident_background_lineage_offline_learning_refs` 写入 `dialogue_writeback_bundle.resident_background_lineage_offline_learning_refs`，同时并入 `dialogue_writeback_bundle.resident_background_lineage_refs`，并继续写入 `resumed_external_dialogue_packet.json`。
+10. `life_v0/process_supervisor/response_surface.py` 必须在生命回应里表达这条后台梦境成长余波，让关系对象在当前回合能看见后台离线学习并没有在唤醒时消失。
 
 当前再补第三条新的硬约束：
 

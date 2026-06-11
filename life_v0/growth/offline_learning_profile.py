@@ -142,6 +142,12 @@ def build_offline_learning_cumulative_profile(
             or "baseline_offline_learning_maintenance"
         ),
     )
+    integration = _cumulative_integration_state(
+        generation=generation,
+        pressure_level=pressure_level,
+        attention_target=dominant_target,
+        priority_profile=cumulative_priority,
+    )
     return {
         "schema_version": "offline_learning_cumulative_profile_v0",
         "generation": generation,
@@ -151,6 +157,10 @@ def build_offline_learning_cumulative_profile(
         "ref_set": cumulative_refs,
         "current_pressure_level": current_pressure,
         "previous_generation": background_generation,
+        "integration_mode": integration["integration_mode"],
+        "relationship_reconsolidation_required": integration[
+            "relationship_reconsolidation_required"
+        ],
     }
 
 
@@ -200,6 +210,12 @@ def normalize_offline_learning_cumulative_profile(
         ]
     ):
         return {}
+    integration = _cumulative_integration_state(
+        generation=generation,
+        pressure_level=pressure_level,
+        attention_target=attention_target,
+        priority_profile=priority_profile,
+    )
     return {
         "schema_version": "offline_learning_cumulative_profile_v0",
         "generation": generation,
@@ -211,6 +227,10 @@ def normalize_offline_learning_cumulative_profile(
             profile.get("current_pressure_level") or pressure_level
         ),
         "previous_generation": _int_or_zero(profile.get("previous_generation")),
+        "integration_mode": integration["integration_mode"],
+        "relationship_reconsolidation_required": integration[
+            "relationship_reconsolidation_required"
+        ],
     }
 
 
@@ -317,6 +337,36 @@ def _priority_rank(priority: str | None) -> int:
         "present": 2,
         "baseline": 1,
     }.get(str(priority or ""), 0)
+
+
+def _cumulative_integration_state(
+    *,
+    generation: int,
+    pressure_level: str,
+    attention_target: str,
+    priority_profile: dict[str, str],
+) -> dict[str, Any]:
+    relationship_priority = priority_profile.get("relationship_learning_plan")
+    relationship_reconsolidation_required = (
+        generation >= 2
+        and pressure_level in {"elevated", "urgent"}
+        and (
+            attention_target == "relationship_learning_plan"
+            or relationship_priority in {"elevated", "urgent"}
+        )
+    )
+    if relationship_reconsolidation_required:
+        integration_mode = "relationship_offline_reconsolidation_required"
+    elif pressure_level in {"elevated", "urgent"}:
+        integration_mode = "offline_learning_integration_hold"
+    elif generation > 0 or pressure_level == "present":
+        integration_mode = "offline_learning_maintenance"
+    else:
+        integration_mode = "quiet"
+    return {
+        "integration_mode": integration_mode,
+        "relationship_reconsolidation_required": relationship_reconsolidation_required,
+    }
 
 
 def _string_list(value: Any) -> list[str]:
