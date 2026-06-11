@@ -17,6 +17,7 @@ from .trait_convergence_signals import cross_wake_trait_convergence_profile
 
 STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
 RESIDENT_PROCESS_LEASE_REF = "runtime/state/terminal/resident_process_lease.json"
+RESIDENT_PROCESS_LEASE_HISTORY_REF = "runtime/state/terminal/resident_process_lease_history.jsonl"
 
 
 @dataclass(frozen=True)
@@ -82,6 +83,7 @@ def write_process_report_bundle(
     background_convergence_summary_ref: str | None = None,
     background_convergence_history_ref: str | None = None,
     resident_process_lease_ref: str | None = None,
+    resident_process_lease_history_ref: str | None = None,
     relationship_graph: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
@@ -121,6 +123,11 @@ def write_process_report_bundle(
     resident_process_lease_ref = resident_process_lease_ref or (
         RESIDENT_PROCESS_LEASE_REF
         if (state_dir / "terminal" / "resident_process_lease.json").exists()
+        else None
+    )
+    resident_process_lease_history_ref = resident_process_lease_history_ref or (
+        RESIDENT_PROCESS_LEASE_HISTORY_REF
+        if (state_dir / "terminal" / "resident_process_lease_history.jsonl").exists()
         else None
     )
     prediction_write_gate_refs = _prediction_write_gate_refs(
@@ -179,6 +186,7 @@ def write_process_report_bundle(
         "resident_governance_snapshot_ref": resident_governance_snapshot_ref,
         "resident_governance_explanation_ref": RESIDENT_GOVERNANCE_EXPLANATION_REF,
         "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_lease_history_ref": resident_process_lease_history_ref,
         "life_context_frame_ref": life_context_frame_ref,
         "relation_turn_frame_ref": relation_turn_frame_ref,
         "expression_plan_ref": expression_plan_ref,
@@ -262,6 +270,7 @@ def write_process_report_bundle(
             "background_carryover_generation"
         ],
         "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_lease_history_ref": resident_process_lease_history_ref,
         "background_lineage_depth_band": idle_governance.get(
             "background_lineage_depth_band"
         ),
@@ -444,6 +453,7 @@ def write_process_report_bundle(
         resident_governance_snapshot_ref=resident_governance_snapshot_ref,
         resident_governance_explanation_ref=RESIDENT_GOVERNANCE_EXPLANATION_REF,
         resident_process_lease_ref=resident_process_lease_ref,
+        resident_process_lease_history_ref=resident_process_lease_history_ref,
         life_context_frame_ref=life_context_frame_ref,
         relation_turn_frame_ref=relation_turn_frame_ref,
         expression_plan_ref=expression_plan_ref,
@@ -518,6 +528,7 @@ def build_process_receipt(
     resident_governance_snapshot_ref: str | None,
     resident_governance_explanation_ref: str | None,
     resident_process_lease_ref: str | None = None,
+    resident_process_lease_history_ref: str | None = None,
     life_context_frame_ref: str | None,
     relation_turn_frame_ref: str | None,
     expression_plan_ref: str | None,
@@ -570,6 +581,7 @@ def build_process_receipt(
         state_dir / "terminal" / "idle_strategy_state.json",
         state_dir / "terminal" / "idle_heartbeat_trace.jsonl",
         state_dir / "terminal" / "resident_process_lease.json",
+        state_dir / "terminal" / "resident_process_lease_history.jsonl",
         state_dir / "terminal" / "resident_governance_state.json",
         state_dir / "terminal" / "life_context_frame.json",
         state_dir / "terminal" / "relation_turn_frame.json",
@@ -654,6 +666,7 @@ def build_process_receipt(
                 resident_governance_snapshot_ref,
                 resident_governance_explanation_ref,
                 resident_process_lease_ref,
+                resident_process_lease_history_ref,
                 life_context_frame_ref,
                 relation_turn_frame_ref,
                 expression_plan_ref,

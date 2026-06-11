@@ -12,6 +12,7 @@ from .idle_strategy import IDLE_STRATEGY_STATE_REF
 from .live_turn_cycle import run_live_turn_cycle
 from .process_closeout import close_digital_life_process
 from .process_lease import (
+    RESIDENT_PROCESS_LEASE_HISTORY_REF,
     RESIDENT_PROCESS_LEASE_REF,
     close_resident_process_lease,
     open_resident_process_lease,
@@ -361,6 +362,7 @@ def run_digital_life_process(
         background_convergence_summary_ref=background_convergence_summary_ref,
         background_convergence_history_ref=background_convergence_history_ref,
         resident_process_lease_ref=RESIDENT_PROCESS_LEASE_REF,
+        resident_process_lease_history_ref=RESIDENT_PROCESS_LEASE_HISTORY_REF,
         write_json=_write_json,
     )
     return DigitalLifeProcessResult(exit_code=0, report=closeout.report_bundle.report)

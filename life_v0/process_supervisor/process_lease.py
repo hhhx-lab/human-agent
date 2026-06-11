@@ -6,6 +6,7 @@ from typing import Any, Callable
 
 
 RESIDENT_PROCESS_LEASE_REF = "runtime/state/terminal/resident_process_lease.json"
+RESIDENT_PROCESS_LEASE_HISTORY_REF = "runtime/state/terminal/resident_process_lease_history.jsonl"
 SAFE_TERMINAL_LOOP_STATE_REF = "runtime/state/terminal/safe_terminal_loop_state.json"
 TERMINAL_LIFE_LOOP_STATE_REF = "runtime/state/terminal/terminal_life_loop_state.json"
 RESIDENT_GOVERNANCE_STATE_REF = "runtime/state/terminal/resident_governance_state.json"
@@ -36,9 +37,16 @@ def open_resident_process_lease(
         "terminal_life_loop_state_ref": TERMINAL_LIFE_LOOP_STATE_REF,
         "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
         "idle_heartbeat_trace_ref": IDLE_HEARTBEAT_TRACE_REF,
+        "resident_process_lease_history_ref": RESIDENT_PROCESS_LEASE_HISTORY_REF,
         "process_report_ref": None,
     }
     write_json(terminal_dir / "resident_process_lease.json", lease)
+    _append_lease_history_event(
+        terminal_dir=terminal_dir,
+        generated_at=generated_at,
+        event_kind="lease_opened",
+        lease=lease,
+    )
     return lease
 
 
@@ -67,7 +75,14 @@ def refresh_resident_process_lease(
     lease["terminal_life_loop_state_ref"] = TERMINAL_LIFE_LOOP_STATE_REF
     lease["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
     lease["idle_heartbeat_trace_ref"] = IDLE_HEARTBEAT_TRACE_REF
+    lease["resident_process_lease_history_ref"] = RESIDENT_PROCESS_LEASE_HISTORY_REF
     write_json(terminal_dir / "resident_process_lease.json", lease)
+    _append_lease_history_event(
+        terminal_dir=terminal_dir,
+        generated_at=generated_at,
+        event_kind="lease_refreshed",
+        lease=lease,
+    )
     return lease
 
 
@@ -103,9 +118,45 @@ def close_resident_process_lease(
     lease["terminal_life_loop_state_ref"] = TERMINAL_LIFE_LOOP_STATE_REF
     lease["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
     lease["idle_heartbeat_trace_ref"] = IDLE_HEARTBEAT_TRACE_REF
+    lease["resident_process_lease_history_ref"] = RESIDENT_PROCESS_LEASE_HISTORY_REF
     lease["process_report_ref"] = PROCESS_REPORT_REF
     write_json(terminal_dir / "resident_process_lease.json", lease)
+    _append_lease_history_event(
+        terminal_dir=terminal_dir,
+        generated_at=generated_at,
+        event_kind="lease_closed",
+        lease=lease,
+    )
     return lease
+
+
+def _append_lease_history_event(
+    *,
+    terminal_dir: Path,
+    generated_at: str,
+    event_kind: str,
+    lease: dict[str, Any],
+) -> None:
+    event = {
+        "schema_version": "resident_process_lease_history_event_v0",
+        "event_kind": event_kind,
+        "generated_at": generated_at,
+        "run_id": lease.get("run_id"),
+        "resident_process_id": lease.get("resident_process_id"),
+        "resident_process_lease_ref": RESIDENT_PROCESS_LEASE_REF,
+        "resident_process_lease_history_ref": RESIDENT_PROCESS_LEASE_HISTORY_REF,
+        "lease_state": lease.get("lease_state"),
+        "heartbeat_counter": lease.get("heartbeat_counter", 0),
+        "completed_dialogue_turns": lease.get("completed_dialogue_turns", 0),
+        "incident_count": lease.get("incident_count", 0),
+        "exit_reason": lease.get("exit_reason"),
+        "process_report_ref": lease.get("process_report_ref"),
+    }
+    terminal_dir.mkdir(parents=True, exist_ok=True)
+    with (terminal_dir / "resident_process_lease_history.jsonl").open(
+        "a", encoding="utf-8"
+    ) as handle:
+        handle.write(json.dumps(event, ensure_ascii=False) + "\n")
 
 
 def _read_lease(terminal_dir: Path) -> dict[str, Any]:

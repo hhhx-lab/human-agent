@@ -28,6 +28,7 @@ SELF_MODEL_REF = "runtime/state/self/self_model.json"
 TRAIT_DRIFT_MONITOR_REF = "runtime/state/body/trait_drift_monitor.json"
 STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
 RESIDENT_PROCESS_LEASE_REF = "runtime/state/terminal/resident_process_lease.json"
+RESIDENT_PROCESS_LEASE_HISTORY_REF = "runtime/state/terminal/resident_process_lease_history.jsonl"
 
 
 @dataclass(frozen=True)
@@ -68,6 +69,7 @@ def write_persistent_process_artifacts(
     background_convergence_summary_ref: str | None = None,
     background_convergence_history_ref: str | None = None,
     resident_process_lease_ref: str | None = None,
+    resident_process_lease_history_ref: str | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
     relationship_graph: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
@@ -79,6 +81,10 @@ def write_persistent_process_artifacts(
         terminal_dir / "resident_process_lease.json"
     ).exists():
         resident_process_lease_ref = RESIDENT_PROCESS_LEASE_REF
+    if resident_process_lease_history_ref is None and (
+        terminal_dir / "resident_process_lease_history.jsonl"
+    ).exists():
+        resident_process_lease_history_ref = RESIDENT_PROCESS_LEASE_HISTORY_REF
     resident_process_lease = _read_json_if_exists(terminal_dir / "resident_process_lease.json")
     resident_process_id = resident_process_lease.get("resident_process_id")
     if not isinstance(resident_process_id, str) or not resident_process_id:
@@ -151,6 +157,7 @@ def write_persistent_process_artifacts(
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
         "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_lease_history_ref": resident_process_lease_history_ref,
         "resident_process_id": resident_process_id,
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
@@ -214,6 +221,7 @@ def write_persistent_process_artifacts(
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
         "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_lease_history_ref": resident_process_lease_history_ref,
         "resident_process_id": resident_process_id,
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
@@ -290,6 +298,7 @@ def write_persistent_process_artifacts(
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
         "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_lease_history_ref": resident_process_lease_history_ref,
         "resident_process_id": resident_process_id,
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,
@@ -345,6 +354,7 @@ def write_persistent_process_artifacts(
         "safe_terminal_loop_state_ref": "runtime/state/terminal/safe_terminal_loop_state.json",
         "terminal_life_loop_state_ref": "runtime/state/terminal/terminal_life_loop_state.json",
         "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_lease_history_ref": resident_process_lease_history_ref,
         "resident_process_id": resident_process_id,
         "waiting_mode": waiting_mode,
         "heartbeat_counter": heartbeat_counter,
@@ -412,6 +422,7 @@ def write_persistent_process_artifacts(
         "idle_strategy_ref": idle_strategy_ref,
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
         "resident_process_lease_ref": resident_process_lease_ref,
+        "resident_process_lease_history_ref": resident_process_lease_history_ref,
         "resident_process_id": resident_process_id,
         "last_heartbeat_packet_ref": last_heartbeat_packet_ref,
         "last_dialogue_packet_ref": last_dialogue_packet_ref,

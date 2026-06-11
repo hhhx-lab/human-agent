@@ -89,8 +89,16 @@ class DigitalEntrypointTests(unittest.TestCase):
             self.assertTrue((paths["reports"] / "stage_explanation_report.json").exists())
             self.assertTrue((paths["reports"] / "digital_life_process_report.json").exists())
             self.assertTrue((paths["terminal_state"] / "resident_process_lease.json").exists())
+            self.assertTrue((paths["terminal_state"] / "resident_process_lease_history.jsonl").exists())
 
             lease = self._read_json(paths["terminal_state"] / "resident_process_lease.json")
+            lease_history = [
+                json.loads(line)
+                for line in (paths["terminal_state"] / "resident_process_lease_history.jsonl")
+                .read_text(encoding="utf-8")
+                .splitlines()
+                if line.strip()
+            ]
             process_report = self._read_json(paths["reports"] / "digital_life_process_report.json")
             self.assertEqual(lease["schema_version"], "resident_process_lease_v0")
             self.assertEqual(lease["run_id"], "entry-bootstrap-shell")
@@ -102,11 +110,21 @@ class DigitalEntrypointTests(unittest.TestCase):
                 lease["process_report_ref"],
                 "runtime/reports/latest/digital_life_process_report.json",
             )
+            self.assertEqual(
+                lease["resident_process_lease_history_ref"],
+                "runtime/state/terminal/resident_process_lease_history.jsonl",
+            )
+            self.assertEqual(lease_history[-1]["event_kind"], "lease_closed")
+            self.assertEqual(lease_history[-1]["resident_process_id"], "resident-process-entry-bootstrap-shell")
             self.assertEqual(process_report["status"], "closed")
             self.assertEqual(process_report["completed_dialogue_turns"], 1)
             self.assertEqual(
                 process_report["resident_process_lease_ref"],
                 "runtime/state/terminal/resident_process_lease.json",
+            )
+            self.assertEqual(
+                process_report["resident_process_lease_history_ref"],
+                "runtime/state/terminal/resident_process_lease_history.jsonl",
             )
 
     def _read_json(self, path: Path) -> dict:

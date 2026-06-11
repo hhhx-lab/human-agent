@@ -330,8 +330,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(completed.returncode, 0, completed.stderr)
 
             resident_process_lease_ref = "runtime/state/terminal/resident_process_lease.json"
+            resident_process_lease_history_ref = "runtime/state/terminal/resident_process_lease_history.jsonl"
             resident_process_id = "resident-process-persistent-heartbeat"
             lease = self._read_json(paths["terminal_state"] / "resident_process_lease.json")
+            lease_history = [
+                json.loads(line)
+                for line in (paths["terminal_state"] / "resident_process_lease_history.jsonl")
+                .read_text(encoding="utf-8")
+                .splitlines()
+                if line.strip()
+            ]
             self.assertEqual(lease["schema_version"], "resident_process_lease_v0")
             self.assertEqual(lease["run_id"], "persistent-heartbeat")
             self.assertEqual(lease["resident_process_id"], resident_process_id)
@@ -343,6 +351,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 lease["process_report_ref"],
                 "runtime/reports/latest/digital_life_process_report.json",
             )
+            self.assertEqual(lease["resident_process_lease_history_ref"], resident_process_lease_history_ref)
+            self.assertEqual(lease_history[-1]["event_kind"], "lease_closed")
+            self.assertEqual(lease_history[-1]["resident_process_id"], resident_process_id)
 
             safe_terminal_loop = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
@@ -357,6 +368,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(safe_terminal_loop["resident_process_lease_ref"], resident_process_lease_ref)
+            self.assertEqual(safe_terminal_loop["resident_process_lease_history_ref"], resident_process_lease_history_ref)
             self.assertEqual(safe_terminal_loop["resident_process_id"], resident_process_id)
 
             terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
@@ -368,6 +380,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(terminal_loop_state["resident_process_lease_ref"], resident_process_lease_ref)
+            self.assertEqual(terminal_loop_state["resident_process_lease_history_ref"], resident_process_lease_history_ref)
             self.assertEqual(terminal_loop_state["resident_process_id"], resident_process_id)
             self.assertEqual(
                 terminal_loop_state["relationship_timeline_ref"],
@@ -421,6 +434,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/resident_governance_state.json",
             )
             self.assertEqual(heartbeat_packet["resident_process_lease_ref"], resident_process_lease_ref)
+            self.assertEqual(heartbeat_packet["resident_process_lease_history_ref"], resident_process_lease_history_ref)
             self.assertEqual(heartbeat_packet["resident_process_id"], resident_process_id)
             self.assertEqual(
                 heartbeat_packet["responsibility_loop_state_ref"],
@@ -604,6 +618,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/resident_governance_snapshot.json",
             )
             self.assertEqual(resident_governance_state["resident_process_lease_ref"], resident_process_lease_ref)
+            self.assertEqual(resident_governance_state["resident_process_lease_history_ref"], resident_process_lease_history_ref)
             self.assertEqual(resident_governance_state["resident_process_id"], resident_process_id)
             self.assertEqual(
                 resident_governance_state["relationship_timeline_ref"],
@@ -739,6 +754,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/terminal/resident_governance_snapshot.json",
             )
             self.assertEqual(process_report["resident_process_lease_ref"], resident_process_lease_ref)
+            self.assertEqual(process_report["resident_process_lease_history_ref"], resident_process_lease_history_ref)
             self.assertEqual(
                 process_report["governance_attention_target"],
                 "apology_repair_language_trace",
@@ -754,7 +770,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(process_digest["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
             self.assertEqual(process_digest["queue_e_birth_repair_pressure_level"], "elevated")
             self.assertEqual(process_digest["resident_process_lease_ref"], resident_process_lease_ref)
+            self.assertEqual(process_digest["resident_process_lease_history_ref"], resident_process_lease_history_ref)
             self.assertIn(resident_process_lease_ref, process_receipt["shared_object_refs"])
+            self.assertIn(resident_process_lease_history_ref, process_receipt["shared_object_refs"])
             self.assertIn(
                 "runtime/state/schema_runner/cross_file_logic.json",
                 process_receipt["shared_object_refs"],
@@ -776,6 +794,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 True,
                 [
                     path.endswith("/runtime/state/terminal/resident_process_lease.json")
+                    for path in process_receipt["input_hashes"]
+                ],
+            )
+            self.assertIn(
+                True,
+                [
+                    path.endswith("/runtime/state/terminal/resident_process_lease_history.jsonl")
                     for path in process_receipt["input_hashes"]
                 ],
             )
@@ -7072,6 +7097,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "exit_reason": "explicit_exit",
                 },
             )
+            (terminal_dir / "resident_process_lease_history.jsonl").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "resident_process_lease_history_event_v0",
+                        "event_kind": "lease_closed",
+                        "run_id": "process-report-organ",
+                        "resident_process_id": "resident-process-process-report-organ",
+                        "resident_process_lease_ref": "runtime/state/terminal/resident_process_lease.json",
+                        "resident_process_lease_history_ref": "runtime/state/terminal/resident_process_lease_history.jsonl",
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
             self._write_json(language_dir / "self_narrative_language_trace.json", {"schema_version": "self_narrative_language_trace_v0"})
             self._write_json(language_dir / "commitment_repair_language_index.json", {"schema_version": "commitment_repair_language_index_v0"})
             relationship_graph = {
@@ -7302,6 +7342,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
             ]
             expected_resident_process_lease_ref = "runtime/state/terminal/resident_process_lease.json"
+            expected_resident_process_lease_history_ref = "runtime/state/terminal/resident_process_lease_history.jsonl"
 
             self.assertEqual(result.report["run_id"], "process-report-organ")
             self.assertEqual(
@@ -7381,6 +7422,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/reports/latest/digital_life_resident_governance_explanation.json",
             )
             self.assertEqual(report["resident_process_lease_ref"], expected_resident_process_lease_ref)
+            self.assertEqual(
+                report["resident_process_lease_history_ref"],
+                expected_resident_process_lease_history_ref,
+            )
             self.assertEqual(
                 report["responsibility_loop_state_ref"],
                 "runtime/state/action/responsibility_loop_state.json",
@@ -7472,11 +7517,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(digest["resident_governance_lineage_depth"], 0)
             self.assertEqual(digest["resident_process_lease_ref"], expected_resident_process_lease_ref)
+            self.assertEqual(
+                digest["resident_process_lease_history_ref"],
+                expected_resident_process_lease_history_ref,
+            )
             self.assertIn(expected_resident_process_lease_ref, receipt["shared_object_refs"])
+            self.assertIn(expected_resident_process_lease_history_ref, receipt["shared_object_refs"])
             self.assertIn(
                 True,
                 [
                     path.endswith("/runtime/state/terminal/resident_process_lease.json")
+                    for path in receipt["input_hashes"]
+                ],
+            )
+            self.assertIn(
+                True,
+                [
+                    path.endswith("/runtime/state/terminal/resident_process_lease_history.jsonl")
                     for path in receipt["input_hashes"]
                 ],
             )
@@ -8510,6 +8567,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "exit_reason": "explicit_exit",
                 },
             )
+            (terminal_dir / "resident_process_lease_history.jsonl").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "resident_process_lease_history_event_v0",
+                        "event_kind": "lease_closed",
+                        "run_id": "process-closeout-organ",
+                        "resident_process_id": "resident-process-process-closeout-organ",
+                        "resident_process_lease_ref": "runtime/state/terminal/resident_process_lease.json",
+                        "resident_process_lease_history_ref": "runtime/state/terminal/resident_process_lease_history.jsonl",
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
             self._write_json(terminal_dir / "life_context_frame.json", {"context_anchor_count": 2})
             self._write_json(terminal_dir / "relation_turn_frame.json", {"relation_subject_ref": "rel-v0-0001"})
             self._write_json(
@@ -8890,6 +8962,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
             ]
             expected_resident_process_lease_ref = "runtime/state/terminal/resident_process_lease.json"
+            expected_resident_process_lease_history_ref = "runtime/state/terminal/resident_process_lease_history.jsonl"
 
             self.assertEqual(
                 result.persistent_process_artifacts.state["run_id"],
@@ -8902,12 +8975,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(persistent_state["heartbeat_counter"], 4)
             self.assertEqual(persistent_state["resident_process_lease_ref"], expected_resident_process_lease_ref)
             self.assertEqual(
+                persistent_state["resident_process_lease_history_ref"],
+                expected_resident_process_lease_history_ref,
+            )
+            self.assertEqual(
                 persistent_state["idle_heartbeat_trace_ref"],
                 "runtime/state/terminal/idle_heartbeat_trace.jsonl",
             )
             self.assertEqual(persistent_state["idle_heartbeat_trace_count"], 4)
             self.assertEqual(persistent_report["heartbeat_counter"], 4)
             self.assertEqual(persistent_report["resident_process_lease_ref"], expected_resident_process_lease_ref)
+            self.assertEqual(
+                persistent_report["resident_process_lease_history_ref"],
+                expected_resident_process_lease_history_ref,
+            )
             self.assertEqual(
                 persistent_report["idle_heartbeat_trace_ref"],
                 "runtime/state/terminal/idle_heartbeat_trace.jsonl",
@@ -8920,6 +9001,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(process_report["idle_heartbeat_trace_count"], 4)
             self.assertEqual(process_report["persistent_process_report_ref"], "runtime/reports/latest/digital_life_persistent_process_report.json")
             self.assertEqual(process_report["resident_process_lease_ref"], expected_resident_process_lease_ref)
+            self.assertEqual(
+                process_report["resident_process_lease_history_ref"],
+                expected_resident_process_lease_history_ref,
+            )
             self.assertEqual(
                 process_report["resident_governance_state_ref"],
                 "runtime/state/terminal/resident_governance_state.json",
@@ -8986,6 +9071,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(process_digest["heartbeat_counter"], 4)
             self.assertEqual(process_digest["resident_process_lease_ref"], expected_resident_process_lease_ref)
             self.assertEqual(
+                process_digest["resident_process_lease_history_ref"],
+                expected_resident_process_lease_history_ref,
+            )
+            self.assertEqual(
                 process_digest["idle_heartbeat_trace_ref"],
                 "runtime/state/terminal/idle_heartbeat_trace.jsonl",
             )
@@ -9033,6 +9122,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 process_digest["background_dominant_convergence_pressure_level"],
                 "present",
             )
+            self.assertIn(expected_resident_process_lease_ref, process_receipt["shared_object_refs"])
+            self.assertIn(
+                expected_resident_process_lease_history_ref,
+                process_receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                True,
+                [
+                    path.endswith("/runtime/state/terminal/resident_process_lease_history.jsonl")
+                    for path in process_receipt["input_hashes"]
+                ],
+            )
             for artifact in (
                 process_report,
                 process_digest,
@@ -9043,6 +9144,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 self.assertEqual(
                     artifact["resident_process_lease_ref"],
                     expected_resident_process_lease_ref,
+                )
+                self.assertEqual(
+                    artifact["resident_process_lease_history_ref"],
+                    expected_resident_process_lease_history_ref,
                 )
                 self.assertEqual(
                     artifact["schema_cross_file_logic_ref"],

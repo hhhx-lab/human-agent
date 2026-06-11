@@ -191,6 +191,7 @@ repo-local 最小常驻终端入口固定为：
 
 ```text
 runtime/state/terminal/resident_process_lease.json
+runtime/state/terminal/resident_process_lease_history.jsonl
 ```
 
 它不是 daemon manager，也不是工具网关；它只负责证明这一次 `digital life` 在本机打开过一个可追踪的生命进程身份，并把运行、等待、关闭三个相位固定到同一条证据链。
@@ -212,9 +213,12 @@ runtime/state/terminal/resident_process_lease.json
 - `terminal_life_loop_state_ref`
 - `resident_governance_state_ref`
 - `idle_heartbeat_trace_ref`
+- `resident_process_lease_history_ref`
 - `process_report_ref`
 
-启动时 `process_supervisor/process_lease.py` 必须先写 active lease；每次 waiting heartbeat 必须刷新 `last_seen_at` 与 `heartbeat_counter`，并让 `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`resident_governance_state.json` 能回链 `resident_process_lease_ref` 与 `resident_process_id`；closeout 时必须把同一份 lease 改成 closed，写入 completed turns、incident count、exit reason、process report ref，并让 persistent process state/report、resident governance state/snapshot/report、process report、digest、receipt 继续收进 `runtime/state/terminal/resident_process_lease.json`。这样后续真正做全局长期运行层时，不会从一个无身份的 stdin 循环硬跳到 daemon，而是从可审计的生命进程身份继续长出来。
+`resident_process_lease_history.jsonl` 的每一行是 `resident_process_lease_history_event_v0`，至少记录 `lease_opened / lease_refreshed / lease_closed`、`resident_process_id`、`heartbeat_counter`、`completed_dialogue_turns`、`incident_count`、`exit_reason` 与 report ref。它用于保留生命周期事件流，不用于调度工具，也不代表另起一个 agent。
+
+启动时 `process_supervisor/process_lease.py` 必须先写 active lease 并追加 `lease_opened`；每次 waiting heartbeat 必须刷新 `last_seen_at` 与 `heartbeat_counter`，追加 `lease_refreshed`，并让 `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`resident_governance_state.json` 能回链 `resident_process_lease_ref`、`resident_process_lease_history_ref` 与 `resident_process_id`；closeout 时必须把同一份 lease 改成 closed，追加 `lease_closed`，写入 completed turns、incident count、exit reason、process report ref，并让 persistent process state/report、resident governance state/snapshot/report、process report、digest、receipt 继续收进 `runtime/state/terminal/resident_process_lease.json` 与 `runtime/state/terminal/resident_process_lease_history.jsonl`。这样后续真正做全局长期运行层时，不会从一个无身份的 stdin 循环硬跳到 daemon，而是从可审计的生命进程身份继续长出来。
 
 ## process supervisor 的最小对象链
 
