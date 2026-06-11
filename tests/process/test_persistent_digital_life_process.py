@@ -5394,6 +5394,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             terminal_life_loop_state = self._read_json(
                 terminal_dir / "terminal_life_loop_state.json"
             )
+            heartbeat_packet = self._read_json(
+                reports_dir / "digital_life_waiting_heartbeat.json"
+            )
             heartbeat_trace_event = json.loads(
                 (terminal_dir / "idle_heartbeat_trace.jsonl")
                 .read_text(encoding="utf-8")
@@ -5423,6 +5426,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 idle_strategy["cross_wake_trait_convergence_profile"][
                     "trait_drift_stabilized_names"
                 ],
+                ["repair_seriousness"],
+            )
+            self.assertEqual(
+                heartbeat_packet["cross_wake_trait_drift_update_mode_summary"],
+                expected_update_mode_summary,
+            )
+            self.assertEqual(
+                heartbeat_packet["cross_wake_trait_drift_recalibration_names"],
+                ["continuity_drive"],
+            )
+            self.assertEqual(
+                heartbeat_packet["cross_wake_trait_drift_stabilized_names"],
                 ["repair_seriousness"],
             )
             lineage_trait_presence = resident_governance_state[

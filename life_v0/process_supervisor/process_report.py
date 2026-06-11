@@ -725,6 +725,38 @@ def write_process_report_bundle(
         "background_lineage_evidence_ref_count": idle_governance.get(
             "background_lineage_evidence_ref_count"
         ),
+        "cross_wake_trait_convergence_profile": idle_governance.get(
+            "cross_wake_trait_convergence_profile",
+            {},
+        ),
+        "cross_wake_trait_convergence_focus": idle_governance.get(
+            "cross_wake_trait_convergence_focus"
+        ),
+        "cross_wake_trait_convergence_pressure": idle_governance.get(
+            "cross_wake_trait_convergence_pressure"
+        ),
+        "cross_wake_trait_convergence_unstable_names": list(
+            idle_governance.get("cross_wake_trait_convergence_unstable_names", [])
+        ),
+        "cross_wake_trait_convergence_stable_names": list(
+            idle_governance.get("cross_wake_trait_convergence_stable_names", [])
+        ),
+        "cross_wake_trait_convergence_score": idle_governance.get(
+            "cross_wake_trait_convergence_score"
+        ),
+        "cross_wake_trait_convergence_refs": list(
+            idle_governance.get("cross_wake_trait_convergence_refs", [])
+        ),
+        "cross_wake_trait_drift_update_mode_summary": idle_governance.get(
+            "cross_wake_trait_drift_update_mode_summary",
+            {},
+        ),
+        "cross_wake_trait_drift_recalibration_names": list(
+            idle_governance.get("cross_wake_trait_drift_recalibration_names", [])
+        ),
+        "cross_wake_trait_drift_stabilized_names": list(
+            idle_governance.get("cross_wake_trait_drift_stabilized_names", [])
+        ),
         "long_horizon_language_refs": [
             ref
             for ref in [
@@ -951,6 +983,16 @@ def write_process_report_bundle(
         ),
         "cross_wake_trait_convergence_refs": list(
             idle_governance.get("cross_wake_trait_convergence_refs", [])
+        ),
+        "cross_wake_trait_drift_update_mode_summary": idle_governance.get(
+            "cross_wake_trait_drift_update_mode_summary",
+            {},
+        ),
+        "cross_wake_trait_drift_recalibration_names": list(
+            idle_governance.get("cross_wake_trait_drift_recalibration_names", [])
+        ),
+        "cross_wake_trait_drift_stabilized_names": list(
+            idle_governance.get("cross_wake_trait_drift_stabilized_names", [])
         ),
         "consciousness_waiting_posture": idle_governance.get(
             "consciousness_waiting_posture"
