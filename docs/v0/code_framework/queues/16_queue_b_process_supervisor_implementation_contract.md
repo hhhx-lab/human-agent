@@ -404,6 +404,11 @@ def decide_idle_strategy(
 - `heartbeat_cadence_reason`
 - `heartbeat_cadence_modulators`
 - `heartbeat_cadence_evidence_refs`
+- `background_heartbeat_cadence_explanation`
+- `background_heartbeat_cadence_driver`
+- `background_heartbeat_cadence_reason`
+- `background_heartbeat_cadence_modulators`
+- `background_heartbeat_cadence_evidence_refs`
 - `idle_probe_mode`
 - `offline_pressure_level`
 - `relaunch_caution_level`
@@ -931,7 +936,7 @@ Queue B 至少新增三道 gate：
    - `runtime/state/growth/language_learning_plan.json`
    - `runtime/state/growth/relationship_learning_plan.json`
 9. `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`idle_strategy_state.json`、`resident_governance_state.json`、`digital_life_process_report.json`、`digital_life_process_digest.json` 与 receipt 必须能回链 `runtime/state/terminal/idle_heartbeat_trace.jsonl`，让等待节律在关闭态之后仍可追溯。
-10. `idle_strategy.py` 必须把 `heartbeat_interval_ms` 与 `next_idle_action` 的同源决策解释压成 `heartbeat_cadence_explanation_v0`，至少包含 `driver / reason / modulators / evidence_refs`，并由 `heartbeat.py` 写入 `digital_life_waiting_heartbeat.json`、`terminal_life_loop_state.json`、`resident_governance_state.json` 与 `idle_heartbeat_trace.jsonl`。这条解释必须跟身体节律、Queue E 修复压力、预测等待姿态、Queue F 意识/出生准备、离线学习压力、后台 lineage 等真实调制源绑定，不能变成事后展示文案。
+10. `idle_strategy.py` 必须把 `heartbeat_interval_ms` 与 `next_idle_action` 的同源决策解释压成 `heartbeat_cadence_explanation_v0`，至少包含 `driver / reason / modulators / evidence_refs`，并由 `heartbeat.py` 写入 `digital_life_waiting_heartbeat.json`、`terminal_life_loop_state.json`、`resident_governance_state.json` 与 `idle_heartbeat_trace.jsonl`。`process_report.py` 必须把当前 driver/reason/modulators 写入 process digest；`governance_explanation.py` 必须把 driver 写入 continuity story；`background_continuity.py` 必须从关闭态 state / snapshot / report / persistent report 恢复为 `background_heartbeat_cadence_*` 并把 evidence refs 纳入 `background_continuity_ref_set`。这条解释必须跟身体节律、Queue E 修复压力、预测等待姿态、Queue F 意识/出生准备、离线学习压力、后台 lineage 等真实调制源绑定，不能变成事后展示文案。
 11. 下一次 `background_continuity.py` 必须从上一轮 `idle_heartbeat_trace.jsonl` 与 governance state/report 中恢复 `background_idle_heartbeat_trace_ref`、`background_idle_heartbeat_trace_count` 与对应 `background_continuity_ref_set`，并由 `idle_strategy.py` / `heartbeat.py` / `continuity_writeback.py` 写入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`。
 12. `idle_strategy_state.json` 现在必须额外显式写出：
    - `nightmare_risk_ref`

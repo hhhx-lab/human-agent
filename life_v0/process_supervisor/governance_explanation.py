@@ -373,6 +373,13 @@ def _compose_continuity_story(
         "dominant attention target is "
         f"{attention_target} with cadence {cadence_profile}"
     )
+    heartbeat_cadence_driver = idle_governance.get("heartbeat_cadence_driver")
+    if heartbeat_cadence_driver:
+        cadence_line = f"heartbeat cadence driver is {heartbeat_cadence_driver}"
+        heartbeat_cadence_reason = idle_governance.get("heartbeat_cadence_reason")
+        if heartbeat_cadence_reason:
+            cadence_line += f" because {heartbeat_cadence_reason}"
+        lines.append(cadence_line)
     birth_waiting_posture = idle_governance.get("birth_readiness_waiting_posture")
     if birth_waiting_posture:
         birth_line = "birth readiness posture is " f"{birth_waiting_posture}"

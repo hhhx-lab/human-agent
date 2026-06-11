@@ -234,6 +234,62 @@ def load_background_continuity_profile(
         if idle_heartbeat_trace_exists
         else 0,
     )
+    heartbeat_cadence_explanation = _first_dict(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "heartbeat_cadence_explanation",
+            "background_heartbeat_cadence_explanation",
+        ),
+    )
+    heartbeat_cadence_driver = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "heartbeat_cadence_driver",
+            "background_heartbeat_cadence_driver",
+        ),
+    )
+    heartbeat_cadence_reason = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "heartbeat_cadence_reason",
+            "background_heartbeat_cadence_reason",
+        ),
+    )
+    heartbeat_cadence_modulators = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "heartbeat_cadence_modulators",
+                "background_heartbeat_cadence_modulators",
+            ),
+        )
+        + _list_or_empty(heartbeat_cadence_explanation.get("modulators"))
+    )
+    heartbeat_cadence_evidence_refs = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "heartbeat_cadence_evidence_refs",
+                "background_heartbeat_cadence_evidence_refs",
+            ),
+        )
+        + _list_or_empty(heartbeat_cadence_explanation.get("evidence_refs"))
+    )
     trait_slow_variable_summary = _dict_or_empty(
         resident_governance_state.get("background_trait_slow_variable_summary")
         or background_convergence_summary.get("background_trait_slow_variable_summary")
@@ -1224,6 +1280,8 @@ def load_background_continuity_profile(
         ref_set = _dedupe_list(ref_set + dream_wake_ref_set)
     if autonomous_activity_ref_set:
         ref_set = _dedupe_list(ref_set + autonomous_activity_ref_set)
+    if heartbeat_cadence_evidence_refs:
+        ref_set = _dedupe_list(ref_set + heartbeat_cadence_evidence_refs)
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
@@ -1259,6 +1317,26 @@ def load_background_continuity_profile(
             profile["background_idle_heartbeat_trace_count"] = (
                 idle_heartbeat_trace_count
             )
+    if heartbeat_cadence_explanation:
+        profile["background_heartbeat_cadence_explanation"] = (
+            heartbeat_cadence_explanation
+        )
+    if heartbeat_cadence_driver:
+        profile["background_heartbeat_cadence_driver"] = str(
+            heartbeat_cadence_driver
+        )
+    if heartbeat_cadence_reason:
+        profile["background_heartbeat_cadence_reason"] = str(
+            heartbeat_cadence_reason
+        )
+    if heartbeat_cadence_modulators:
+        profile["background_heartbeat_cadence_modulators"] = (
+            heartbeat_cadence_modulators
+        )
+    if heartbeat_cadence_evidence_refs:
+        profile["background_heartbeat_cadence_evidence_refs"] = (
+            heartbeat_cadence_evidence_refs
+        )
     if trait_slow_variable_summary:
         profile["background_trait_slow_variable_summary"] = trait_slow_variable_summary
     if background_resume_summary:

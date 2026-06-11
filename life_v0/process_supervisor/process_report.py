@@ -685,6 +685,18 @@ def write_process_report_bundle(
         "idle_heartbeat_trace_count": idle_governance.get(
             "idle_heartbeat_trace_count"
         ),
+        "heartbeat_cadence_driver": idle_governance.get(
+            "heartbeat_cadence_driver"
+        ),
+        "heartbeat_cadence_reason": idle_governance.get(
+            "heartbeat_cadence_reason"
+        ),
+        "heartbeat_cadence_modulators": list(
+            idle_governance.get("heartbeat_cadence_modulators", [])
+        ),
+        "background_heartbeat_cadence_driver": idle_governance.get(
+            "background_heartbeat_cadence_driver"
+        ),
         "exit_reason": exit_reason,
         "last_external_turn_utterance": None if last_external_turn is None else last_external_turn["utterance"],
         "dialogue_writeback_bundle_ref": dialogue_writeback_bundle_ref,
