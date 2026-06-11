@@ -57,7 +57,7 @@ stateDiagram-v2
 | `runtime/state/terminal/resident_lifecycle_command.json` | stop / shutdown / exit 的命令证据 |
 | `runtime/state/terminal/resident_relation_inbox.jsonl` | 当前 relation turn 的输入队列 |
 | `runtime/state/terminal/resident_relation_outbox.jsonl` | 当前 relation turn 的输出队列 |
-| `runtime/state/terminal/resident_relation_queue_state.json` | turn 序列、active turn、completed turn 的队列状态 |
+| `runtime/state/terminal/resident_relation_queue_state.json` | turn 序列、active turn、completed turn 的队列状态；后台激活时先落 `waiting_for_relation_turn` |
 | `runtime/state/terminal/resident_autonomous_activity.jsonl` | 无外部输入时的睡眠 / 回忆 / 自思 / 成长 / 学习证据 |
 | `runtime/state/terminal/resident_autonomous_activity_state.json` | autonomous activity 的汇总状态 |
 
@@ -68,6 +68,7 @@ stateDiagram-v2
 3. `/exit` 只允许当前终端脱离，不得杀死 resident process。
 4. `--stop` 才会触发真正的收口，并写出生命周期命令证据。
 5. 没有外部输入时，process 必须写 autonomous activity 证据，而不是静默空转。
+6. `--status` 必须返回 resident lifecycle、relation queue 和 autonomous activity 的合并状态视图。
 
 ## 当前 runtime 链
 

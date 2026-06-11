@@ -281,6 +281,16 @@ class DigitalEntrypointTests(unittest.TestCase):
                 status_state = json.loads(status.stdout)
                 self.assertEqual(status_state["pid"], started_pid)
                 self.assertTrue(status_state["pid_alive"])
+                self.assertIn("resident_relation_queue_state", status_state)
+                self.assertIn("resident_autonomous_activity_state", status_state)
+                self.assertEqual(
+                    status_state["resident_relation_queue_state"]["status"],
+                    "waiting_for_relation_turn",
+                )
+                self.assertGreaterEqual(
+                    status_state["resident_autonomous_activity_state"]["activity_count"],
+                    5,
+                )
 
                 said = subprocess.run(
                     [

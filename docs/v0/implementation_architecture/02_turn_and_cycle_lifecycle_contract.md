@@ -233,9 +233,11 @@ stateDiagram-v2
 | `resident_lifecycle_command.json` | 记录 stop / shutdown / exit 请求 |
 | `resident_relation_inbox.jsonl` | 进入后台 resident process 的关系回合输入 |
 | `resident_relation_outbox.jsonl` | 后台 resident process 的回合输出与响应文本 |
-| `resident_relation_queue_state.json` | 当前队列序列、turn 进度、完成序列 |
+| `resident_relation_queue_state.json` | 当前队列序列、turn 进度、完成序列；激活时会先写 `waiting_for_relation_turn` 初始态 |
 | `resident_autonomous_activity.jsonl` | 无外部输入时的睡眠、回忆、自我思考、成长预演与学习巩固证据 |
 | `resident_autonomous_activity_state.json` | 自主活动的汇总状态与计数 |
+
+`digital life --status` 必须把 `resident_lifecycle_state.json` 与这两份摘要合并成一个可直接读的驻留状态视图，而不是只返回 PID。
 
 ### 关键要求
 

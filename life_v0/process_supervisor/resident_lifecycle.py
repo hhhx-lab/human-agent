@@ -300,6 +300,19 @@ def mark_resident_lifecycle_active(
         RESIDENT_AUTONOMOUS_ACTIVITY_STATE_REF
     )
     _write_json(terminal_dir / "resident_lifecycle_state.json", state)
+    _write_json(
+        terminal_dir / "resident_relation_queue_state.json",
+        {
+            "schema_version": "resident_relation_queue_state_v0",
+            "status": "waiting_for_relation_turn",
+            "last_consumed_sequence": 0,
+            "last_enqueued_sequence": 0,
+            "last_completed_sequence": 0,
+            "resident_relation_inbox_ref": RESIDENT_RELATION_INBOX_REF,
+            "resident_relation_outbox_ref": RESIDENT_RELATION_OUTBOX_REF,
+            "resident_relation_queue_state_ref": RESIDENT_RELATION_QUEUE_STATE_REF,
+        },
+    )
     return state
 
 
@@ -441,6 +454,30 @@ def read_resident_lifecycle_status(*, terminal_dir: Path) -> ResidentLifecycleRe
         }
     pid = _int_or_zero(state.get("pid"))
     state["pid_alive"] = bool(pid and _pid_alive(pid))
+    queue_state = _read_json_if_exists(terminal_dir / "resident_relation_queue_state.json")
+    if queue_state:
+        state["resident_relation_queue_state"] = queue_state
+        state["resident_relation_queue_status"] = queue_state.get("status")
+        state["resident_relation_last_completed_sequence"] = queue_state.get(
+            "last_completed_sequence"
+        )
+        state["resident_relation_last_enqueued_sequence"] = queue_state.get(
+            "last_enqueued_sequence"
+        )
+    autonomous_activity_state = _read_json_if_exists(
+        terminal_dir / "resident_autonomous_activity_state.json"
+    )
+    if autonomous_activity_state:
+        state["resident_autonomous_activity_state"] = autonomous_activity_state
+        state["resident_autonomous_activity_count"] = autonomous_activity_state.get(
+            "activity_count"
+        )
+        state["resident_autonomous_activity_last_kind"] = autonomous_activity_state.get(
+            "last_activity_kind"
+        )
+        state["resident_autonomous_activity_current_cycle"] = autonomous_activity_state.get(
+            "current_cycle"
+        )
     return ResidentLifecycleResult(exit_code=0, state=state)
 
 
