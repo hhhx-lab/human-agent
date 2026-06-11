@@ -7,6 +7,9 @@ from typing import Any, Callable
 
 RESIDENT_PROCESS_LEASE_REF = "runtime/state/terminal/resident_process_lease.json"
 RESIDENT_PROCESS_LEASE_HISTORY_REF = "runtime/state/terminal/resident_process_lease_history.jsonl"
+RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF = (
+    "runtime/state/terminal/resident_process_lease_history_profile.json"
+)
 SAFE_TERMINAL_LOOP_STATE_REF = "runtime/state/terminal/safe_terminal_loop_state.json"
 TERMINAL_LIFE_LOOP_STATE_REF = "runtime/state/terminal/terminal_life_loop_state.json"
 RESIDENT_GOVERNANCE_STATE_REF = "runtime/state/terminal/resident_governance_state.json"
@@ -47,6 +50,10 @@ def open_resident_process_lease(
         event_kind="lease_opened",
         lease=lease,
     )
+    write_resident_process_lease_history_profile(
+        terminal_dir=terminal_dir,
+        write_json=write_json,
+    )
     return lease
 
 
@@ -83,6 +90,10 @@ def refresh_resident_process_lease(
         event_kind="lease_refreshed",
         lease=lease,
     )
+    write_resident_process_lease_history_profile(
+        terminal_dir=terminal_dir,
+        write_json=write_json,
+    )
     return lease
 
 
@@ -115,6 +126,10 @@ def normalize_interrupted_resident_process_lease(
         event_kind="lease_interrupted_on_relaunch",
         lease=interrupted_lease,
         extra={"interrupted_by_run_id": next_run_id},
+    )
+    write_resident_process_lease_history_profile(
+        terminal_dir=terminal_dir,
+        write_json=write_json,
     )
     return interrupted_lease
 
@@ -160,7 +175,80 @@ def close_resident_process_lease(
         event_kind="lease_closed",
         lease=lease,
     )
+    write_resident_process_lease_history_profile(
+        terminal_dir=terminal_dir,
+        write_json=write_json,
+    )
     return lease
+
+
+def write_resident_process_lease_history_profile(
+    *,
+    terminal_dir: Path,
+    write_json: Callable[[Path, dict[str, Any]], None],
+) -> dict[str, Any]:
+    profile = build_resident_process_lease_history_profile(terminal_dir=terminal_dir)
+    write_json(terminal_dir / "resident_process_lease_history_profile.json", profile)
+    return profile
+
+
+def build_resident_process_lease_history_profile(
+    *,
+    terminal_dir: Path,
+) -> dict[str, Any]:
+    history_events = _read_lease_history_events(terminal_dir)
+    event_kinds = [str(event.get("event_kind", "")) for event in history_events]
+    latest_event = history_events[-1] if history_events else {}
+    opened_count = event_kinds.count("lease_opened")
+    refreshed_count = event_kinds.count("lease_refreshed")
+    closed_count = event_kinds.count("lease_closed")
+    interrupted_count = event_kinds.count("lease_interrupted_on_relaunch")
+    latest_event_kind = str(latest_event.get("event_kind", "") or "")
+    continuity_state = _identity_continuity_state(
+        latest_event=latest_event,
+        latest_event_kind=latest_event_kind,
+        interrupted_count=interrupted_count,
+    )
+    pressure_level = _identity_pressure_level(
+        event_count=len(history_events),
+        opened_count=opened_count,
+        refreshed_count=refreshed_count,
+        closed_count=closed_count,
+        interrupted_count=interrupted_count,
+        latest_event_kind=latest_event_kind,
+    )
+    recent_resident_process_ids = _recent_unique_strings(
+        [event.get("resident_process_id") for event in history_events]
+    )
+    recent_run_ids = _recent_unique_strings(
+        [event.get("run_id") for event in history_events]
+    )
+    profile = {
+        "schema_version": "resident_process_lease_history_profile_v0",
+        "resident_process_lease_ref": RESIDENT_PROCESS_LEASE_REF,
+        "resident_process_lease_history_ref": RESIDENT_PROCESS_LEASE_HISTORY_REF,
+        "resident_process_lease_history_profile_ref": RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF,
+        "history_event_count": len(history_events),
+        "opened_count": opened_count,
+        "refreshed_count": refreshed_count,
+        "closed_count": closed_count,
+        "interrupted_on_relaunch_count": interrupted_count,
+        "latest_event_kind": latest_event_kind or None,
+        "latest_event_generated_at": latest_event.get("generated_at"),
+        "latest_run_id": latest_event.get("run_id"),
+        "latest_resident_process_id": latest_event.get("resident_process_id"),
+        "latest_lease_state": latest_event.get("lease_state"),
+        "latest_exit_reason": latest_event.get("exit_reason"),
+        "current_identity_continuity_state": continuity_state,
+        "identity_pressure_level": pressure_level,
+        "recent_resident_process_ids": recent_resident_process_ids,
+        "recent_run_ids": recent_run_ids,
+        "evidence_refs": [
+            RESIDENT_PROCESS_LEASE_REF,
+            RESIDENT_PROCESS_LEASE_HISTORY_REF,
+        ],
+    }
+    return {key: value for key, value in profile.items() if value is not None}
 
 
 def _append_lease_history_event(
@@ -193,6 +281,78 @@ def _append_lease_history_event(
         "a", encoding="utf-8"
     ) as handle:
         handle.write(json.dumps(event, ensure_ascii=False) + "\n")
+
+
+def _read_lease_history_events(terminal_dir: Path) -> list[dict[str, Any]]:
+    path = terminal_dir / "resident_process_lease_history.jsonl"
+    if not path.exists():
+        return []
+    events: list[dict[str, Any]] = []
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return []
+    for line in lines:
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except (ValueError, TypeError):
+            continue
+        if isinstance(event, dict):
+            events.append(event)
+    return events
+
+
+def _identity_continuity_state(
+    *,
+    latest_event: dict[str, Any],
+    latest_event_kind: str,
+    interrupted_count: int,
+) -> str:
+    latest_lease_state = latest_event.get("lease_state")
+    if (
+        latest_event_kind == "lease_interrupted_on_relaunch"
+        or latest_lease_state == "interrupted_on_relaunch"
+    ):
+        return "interrupted_waiting_recovery"
+    if latest_event_kind in {"lease_opened", "lease_refreshed"}:
+        if interrupted_count:
+            return "interrupted_then_recovered"
+        return "active_residency"
+    if latest_event_kind == "lease_closed":
+        if interrupted_count:
+            return "recovered_closed_continuity"
+        return "continuous_closed"
+    return "no_lease_history"
+
+
+def _identity_pressure_level(
+    *,
+    event_count: int,
+    opened_count: int,
+    refreshed_count: int,
+    closed_count: int,
+    interrupted_count: int,
+    latest_event_kind: str,
+) -> str:
+    if interrupted_count or latest_event_kind == "lease_interrupted_on_relaunch":
+        return "elevated"
+    if closed_count or refreshed_count or opened_count > 1 or event_count > 1:
+        return "present"
+    return "light"
+
+
+def _recent_unique_strings(values: list[Any], *, limit: int = 5) -> list[str]:
+    recent: list[str] = []
+    for value in values:
+        if not value:
+            continue
+        text = str(value)
+        if text in recent:
+            recent.remove(text)
+        recent.append(text)
+    return recent[-limit:]
 
 
 def _requires_new_lease(lease: dict[str, Any], run_id: str) -> bool:

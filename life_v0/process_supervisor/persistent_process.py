@@ -29,6 +29,9 @@ TRAIT_DRIFT_MONITOR_REF = "runtime/state/body/trait_drift_monitor.json"
 STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
 RESIDENT_PROCESS_LEASE_REF = "runtime/state/terminal/resident_process_lease.json"
 RESIDENT_PROCESS_LEASE_HISTORY_REF = "runtime/state/terminal/resident_process_lease_history.jsonl"
+RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF = (
+    "runtime/state/terminal/resident_process_lease_history_profile.json"
+)
 
 
 @dataclass(frozen=True)
@@ -85,7 +88,15 @@ def write_persistent_process_artifacts(
         terminal_dir / "resident_process_lease_history.jsonl"
     ).exists():
         resident_process_lease_history_ref = RESIDENT_PROCESS_LEASE_HISTORY_REF
+    resident_process_lease_history_profile_ref = (
+        RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
+        if (terminal_dir / "resident_process_lease_history_profile.json").exists()
+        else None
+    )
     resident_process_lease = _read_json_if_exists(terminal_dir / "resident_process_lease.json")
+    resident_process_lease_history_profile = _read_json_if_exists(
+        terminal_dir / "resident_process_lease_history_profile.json"
+    )
     resident_process_id = resident_process_lease.get("resident_process_id")
     if not isinstance(resident_process_id, str) or not resident_process_id:
         resident_process_id = None
@@ -110,6 +121,8 @@ def write_persistent_process_artifacts(
         current_background_ref_set.insert(1, background_convergence_summary_ref)
     if background_convergence_history_ref:
         current_background_ref_set.insert(2, background_convergence_history_ref)
+    if resident_process_lease_history_profile_ref:
+        current_background_ref_set.append(resident_process_lease_history_profile_ref)
     background_source_ref_set = [
         str(ref)
         for ref in idle_governance.get("background_continuity_ref_set", [])
@@ -197,6 +210,11 @@ def write_persistent_process_artifacts(
     )
     resident_governance_snapshot.update(state_merge_profile)
     resident_governance_snapshot.update(_idle_governance_without_background_lineage(idle_governance))
+    _apply_resident_process_identity_profile(
+        resident_governance_snapshot,
+        resident_process_lease_history_profile=resident_process_lease_history_profile,
+        resident_process_lease_history_profile_ref=resident_process_lease_history_profile_ref,
+    )
     _attach_resident_background_lineage_state(
         resident_governance_snapshot,
         governance_phase="process_closed_waiting_relaunch",
@@ -276,6 +294,11 @@ def write_persistent_process_artifacts(
     )
     resident_governance_state.update(state_merge_profile)
     resident_governance_state.update(_idle_governance_without_background_lineage(idle_governance))
+    _apply_resident_process_identity_profile(
+        resident_governance_state,
+        resident_process_lease_history_profile=resident_process_lease_history_profile,
+        resident_process_lease_history_profile_ref=resident_process_lease_history_profile_ref,
+    )
     _attach_resident_background_lineage_state(
         resident_governance_state,
         governance_phase="process_closed_waiting_relaunch",
@@ -336,6 +359,11 @@ def write_persistent_process_artifacts(
     )
     state.update(state_merge_profile)
     state.update(_idle_governance_without_background_lineage(idle_governance))
+    _apply_resident_process_identity_profile(
+        state,
+        resident_process_lease_history_profile=resident_process_lease_history_profile,
+        resident_process_lease_history_profile_ref=resident_process_lease_history_profile_ref,
+    )
     _attach_resident_background_lineage_state(
         state,
         governance_phase="process_closed_waiting_relaunch",
@@ -400,6 +428,11 @@ def write_persistent_process_artifacts(
     )
     report.update(state_merge_profile)
     report.update(_idle_governance_without_background_lineage(idle_governance))
+    _apply_resident_process_identity_profile(
+        report,
+        resident_process_lease_history_profile=resident_process_lease_history_profile,
+        resident_process_lease_history_profile_ref=resident_process_lease_history_profile_ref,
+    )
     _attach_resident_background_lineage_state(
         report,
         governance_phase="process_closed_waiting_relaunch",
@@ -470,6 +503,11 @@ def write_persistent_process_artifacts(
     )
     resident_governance_report.update(state_merge_profile)
     resident_governance_report.update(_idle_governance_without_background_lineage(idle_governance))
+    _apply_resident_process_identity_profile(
+        resident_governance_report,
+        resident_process_lease_history_profile=resident_process_lease_history_profile,
+        resident_process_lease_history_profile_ref=resident_process_lease_history_profile_ref,
+    )
     _attach_resident_background_lineage_state(
         resident_governance_report,
         governance_phase="process_closed_waiting_relaunch",
@@ -583,11 +621,54 @@ def _attach_resident_background_lineage_state(
         artifact["resident_background_lineage_state"] = lineage_state
 
 
+def _apply_resident_process_identity_profile(
+    artifact: dict[str, Any],
+    *,
+    resident_process_lease_history_profile: dict[str, Any],
+    resident_process_lease_history_profile_ref: str | None,
+) -> None:
+    if not resident_process_lease_history_profile and not resident_process_lease_history_profile_ref:
+        return
+    if resident_process_lease_history_profile_ref:
+        artifact["resident_process_lease_history_profile_ref"] = (
+            resident_process_lease_history_profile_ref
+        )
+        artifact["background_resident_process_lease_history_profile_ref"] = (
+            resident_process_lease_history_profile_ref
+        )
+    if resident_process_lease_history_profile:
+        artifact["resident_process_identity_continuity_state"] = str(
+            resident_process_lease_history_profile.get(
+                "current_identity_continuity_state",
+                "no_lease_history",
+            )
+        )
+        artifact["resident_process_identity_pressure_level"] = str(
+            resident_process_lease_history_profile.get("identity_pressure_level", "light")
+        )
+        artifact["resident_process_lease_history_event_count"] = _int_or_default(
+            resident_process_lease_history_profile.get("history_event_count"),
+            default=0,
+        )
+        artifact["resident_process_recent_ids"] = _list_or_empty(
+            resident_process_lease_history_profile.get("recent_resident_process_ids")
+        )
+        artifact["resident_process_recent_run_ids"] = _list_or_empty(
+            resident_process_lease_history_profile.get("recent_run_ids")
+        )
+
+
 def _int_or_default(value: Any, *, default: int) -> int:
     try:
         return int(value)
     except (TypeError, ValueError):
         return default
+
+
+def _list_or_empty(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
 
 
 def _relationship_resume_summary(

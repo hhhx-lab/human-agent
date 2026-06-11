@@ -18,6 +18,7 @@ from .persistent_process import (
     RESIDENT_GOVERNANCE_STATE_REF,
 )
 from .process_lease import (
+    RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF,
     RESIDENT_PROCESS_LEASE_HISTORY_REF,
     RESIDENT_PROCESS_LEASE_REF,
     refresh_resident_process_lease,
@@ -120,6 +121,13 @@ def write_waiting_heartbeat(
         ]
         if ref
     ]
+    lease = refresh_resident_process_lease(
+        run_id=run_id,
+        generated_at=now_iso(),
+        terminal_dir=terminal_dir,
+        heartbeat_counter=heartbeat_counter,
+        write_json=write_json,
+    )
     background_continuity_profile = load_background_continuity_profile(
         terminal_dir=terminal_dir,
         reports_dir=reports_dir,
@@ -207,13 +215,6 @@ def write_waiting_heartbeat(
     waiting_mode = str(
         idle_strategy.get("waiting_mode", "restored_waiting_for_external_turn")
     )
-    lease = refresh_resident_process_lease(
-        run_id=run_id,
-        generated_at=now_iso(),
-        terminal_dir=terminal_dir,
-        heartbeat_counter=heartbeat_counter,
-        write_json=write_json,
-    )
     heartbeat_packet = {
         "schema_version": "digital_life_waiting_heartbeat_v0",
         "run_id": run_id,
@@ -228,6 +229,7 @@ def write_waiting_heartbeat(
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
         "resident_process_lease_ref": RESIDENT_PROCESS_LEASE_REF,
         "resident_process_lease_history_ref": RESIDENT_PROCESS_LEASE_HISTORY_REF,
+        "resident_process_lease_history_profile_ref": RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF,
         "resident_process_id": lease.get("resident_process_id"),
         "next_required_action": "await_next_external_relation_turn",
     }
@@ -253,9 +255,21 @@ def write_waiting_heartbeat(
     safe_terminal_loop["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
     safe_terminal_loop["resident_process_lease_ref"] = RESIDENT_PROCESS_LEASE_REF
     safe_terminal_loop["resident_process_lease_history_ref"] = RESIDENT_PROCESS_LEASE_HISTORY_REF
+    safe_terminal_loop["resident_process_lease_history_profile_ref"] = (
+        RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
+    )
     safe_terminal_loop["resident_process_id"] = lease.get("resident_process_id")
     safe_terminal_loop["idle_heartbeat_trace_ref"] = IDLE_HEARTBEAT_TRACE_REF
     safe_terminal_loop["idle_heartbeat_trace_count"] = heartbeat_counter
+    for field in (
+        "resident_process_identity_continuity_state",
+        "resident_process_identity_pressure_level",
+        "resident_process_lease_history_event_count",
+        "resident_process_recent_ids",
+        "resident_process_recent_run_ids",
+    ):
+        if field in idle_strategy:
+            safe_terminal_loop[field] = idle_strategy[field]
     write_json(terminal_dir / "safe_terminal_loop_state.json", safe_terminal_loop)
 
     terminal_life_loop_state["current_mode"] = waiting_mode
@@ -266,6 +280,9 @@ def write_waiting_heartbeat(
     terminal_life_loop_state["resident_governance_state_ref"] = RESIDENT_GOVERNANCE_STATE_REF
     terminal_life_loop_state["resident_process_lease_ref"] = RESIDENT_PROCESS_LEASE_REF
     terminal_life_loop_state["resident_process_lease_history_ref"] = RESIDENT_PROCESS_LEASE_HISTORY_REF
+    terminal_life_loop_state["resident_process_lease_history_profile_ref"] = (
+        RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
+    )
     terminal_life_loop_state["resident_process_id"] = lease.get("resident_process_id")
     terminal_life_loop_state["idle_heartbeat_trace_ref"] = IDLE_HEARTBEAT_TRACE_REF
     terminal_life_loop_state["idle_heartbeat_trace_count"] = heartbeat_counter
@@ -331,6 +348,14 @@ def write_waiting_heartbeat(
         "dream_wake_ref_set",
         "background_idle_heartbeat_trace_ref",
         "background_idle_heartbeat_trace_count",
+        "background_resident_process_lease_history_profile_ref",
+        "background_resident_process_lease_history_profile",
+        "resident_process_lease_history_profile_ref",
+        "resident_process_identity_continuity_state",
+        "resident_process_identity_pressure_level",
+        "resident_process_lease_history_event_count",
+        "resident_process_recent_ids",
+        "resident_process_recent_run_ids",
         "long_horizon_language_refs",
         "live_language_turn_refs",
         "last_live_semantic_focus",
@@ -607,6 +632,7 @@ def write_waiting_heartbeat(
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
         "resident_process_lease_ref": RESIDENT_PROCESS_LEASE_REF,
         "resident_process_lease_history_ref": RESIDENT_PROCESS_LEASE_HISTORY_REF,
+        "resident_process_lease_history_profile_ref": RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF,
         "resident_process_id": lease.get("resident_process_id"),
         "resident_governance_snapshot_ref": RESIDENT_GOVERNANCE_SNAPSHOT_REF,
         "resident_governance_report_ref": RESIDENT_GOVERNANCE_REPORT_REF,
@@ -721,6 +747,24 @@ def _append_idle_heartbeat_trace(
         ),
         "background_state_merge_long_term_change_refs": list(
             idle_strategy.get("background_state_merge_long_term_change_refs", [])
+        ),
+        "resident_process_lease_history_profile_ref": idle_strategy.get(
+            "resident_process_lease_history_profile_ref"
+        ),
+        "resident_process_identity_continuity_state": idle_strategy.get(
+            "resident_process_identity_continuity_state"
+        ),
+        "resident_process_identity_pressure_level": idle_strategy.get(
+            "resident_process_identity_pressure_level"
+        ),
+        "resident_process_lease_history_event_count": idle_strategy.get(
+            "resident_process_lease_history_event_count"
+        ),
+        "resident_process_recent_ids": list(
+            idle_strategy.get("resident_process_recent_ids", [])
+        ),
+        "resident_process_recent_run_ids": list(
+            idle_strategy.get("resident_process_recent_run_ids", [])
         ),
         "long_horizon_language_refs": list(
             idle_strategy.get("long_horizon_language_refs", [])

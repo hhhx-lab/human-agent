@@ -18,6 +18,9 @@ from .trait_convergence_signals import cross_wake_trait_convergence_profile
 STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
 RESIDENT_PROCESS_LEASE_REF = "runtime/state/terminal/resident_process_lease.json"
 RESIDENT_PROCESS_LEASE_HISTORY_REF = "runtime/state/terminal/resident_process_lease_history.jsonl"
+RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF = (
+    "runtime/state/terminal/resident_process_lease_history_profile.json"
+)
 
 
 @dataclass(frozen=True)
@@ -130,6 +133,14 @@ def write_process_report_bundle(
         if (state_dir / "terminal" / "resident_process_lease_history.jsonl").exists()
         else None
     )
+    resident_process_lease_history_profile_ref = (
+        RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
+        if (state_dir / "terminal" / "resident_process_lease_history_profile.json").exists()
+        else None
+    )
+    resident_process_lease_history_profile = _read_json_if_exists(
+        state_dir / "terminal" / "resident_process_lease_history_profile.json"
+    )
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_runtime_ref=signal_media_runtime_ref,
         belief_state_ref=belief_state_ref,
@@ -187,6 +198,7 @@ def write_process_report_bundle(
         "resident_governance_explanation_ref": RESIDENT_GOVERNANCE_EXPLANATION_REF,
         "resident_process_lease_ref": resident_process_lease_ref,
         "resident_process_lease_history_ref": resident_process_lease_history_ref,
+        "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "life_context_frame_ref": life_context_frame_ref,
         "relation_turn_frame_ref": relation_turn_frame_ref,
         "expression_plan_ref": expression_plan_ref,
@@ -243,6 +255,11 @@ def write_process_report_bundle(
         report["membrane_guard_refs"] = membrane_guard_refs
     report.update(state_merge_profile)
     report.update(idle_governance)
+    _apply_resident_process_identity_profile(
+        report,
+        resident_process_lease_history_profile=resident_process_lease_history_profile,
+        resident_process_lease_history_profile_ref=resident_process_lease_history_profile_ref,
+    )
     digest = {
         "schema_version": "digital_life_process_digest_v0",
         "run_id": run_id,
@@ -271,6 +288,7 @@ def write_process_report_bundle(
         ],
         "resident_process_lease_ref": resident_process_lease_ref,
         "resident_process_lease_history_ref": resident_process_lease_history_ref,
+        "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "background_lineage_depth_band": idle_governance.get(
             "background_lineage_depth_band"
         ),
@@ -442,6 +460,11 @@ def write_process_report_bundle(
     }
     if membrane_guard_refs:
         digest["membrane_guard_refs"] = membrane_guard_refs
+    _apply_resident_process_identity_profile(
+        digest,
+        resident_process_lease_history_profile=resident_process_lease_history_profile,
+        resident_process_lease_history_profile_ref=resident_process_lease_history_profile_ref,
+    )
     receipt = build_process_receipt(
         run_id=run_id,
         generated_at=generated_at,
@@ -454,6 +477,7 @@ def write_process_report_bundle(
         resident_governance_explanation_ref=RESIDENT_GOVERNANCE_EXPLANATION_REF,
         resident_process_lease_ref=resident_process_lease_ref,
         resident_process_lease_history_ref=resident_process_lease_history_ref,
+        resident_process_lease_history_profile_ref=resident_process_lease_history_profile_ref,
         life_context_frame_ref=life_context_frame_ref,
         relation_turn_frame_ref=relation_turn_frame_ref,
         expression_plan_ref=expression_plan_ref,
@@ -529,6 +553,7 @@ def build_process_receipt(
     resident_governance_explanation_ref: str | None,
     resident_process_lease_ref: str | None = None,
     resident_process_lease_history_ref: str | None = None,
+    resident_process_lease_history_profile_ref: str | None = None,
     life_context_frame_ref: str | None,
     relation_turn_frame_ref: str | None,
     expression_plan_ref: str | None,
@@ -582,6 +607,7 @@ def build_process_receipt(
         state_dir / "terminal" / "idle_heartbeat_trace.jsonl",
         state_dir / "terminal" / "resident_process_lease.json",
         state_dir / "terminal" / "resident_process_lease_history.jsonl",
+        state_dir / "terminal" / "resident_process_lease_history_profile.json",
         state_dir / "terminal" / "resident_governance_state.json",
         state_dir / "terminal" / "life_context_frame.json",
         state_dir / "terminal" / "relation_turn_frame.json",
@@ -667,6 +693,7 @@ def build_process_receipt(
                 resident_governance_explanation_ref,
                 resident_process_lease_ref,
                 resident_process_lease_history_ref,
+                resident_process_lease_history_profile_ref,
                 life_context_frame_ref,
                 relation_turn_frame_ref,
                 expression_plan_ref,
@@ -789,6 +816,43 @@ def _identity_consciousness_birth_refs(idle_governance: dict[str, Any]) -> list[
     ]
 
 
+def _apply_resident_process_identity_profile(
+    artifact: dict[str, Any],
+    *,
+    resident_process_lease_history_profile: dict[str, Any],
+    resident_process_lease_history_profile_ref: str | None,
+) -> None:
+    if not resident_process_lease_history_profile and not resident_process_lease_history_profile_ref:
+        return
+    if resident_process_lease_history_profile_ref:
+        artifact["resident_process_lease_history_profile_ref"] = (
+            resident_process_lease_history_profile_ref
+        )
+        artifact["background_resident_process_lease_history_profile_ref"] = (
+            resident_process_lease_history_profile_ref
+        )
+    if resident_process_lease_history_profile:
+        artifact["resident_process_identity_continuity_state"] = str(
+            resident_process_lease_history_profile.get(
+                "current_identity_continuity_state",
+                "no_lease_history",
+            )
+        )
+        artifact["resident_process_identity_pressure_level"] = str(
+            resident_process_lease_history_profile.get("identity_pressure_level", "light")
+        )
+        artifact["resident_process_lease_history_event_count"] = _int_or_default(
+            resident_process_lease_history_profile.get("history_event_count"),
+            default=0,
+        )
+        artifact["resident_process_recent_ids"] = _list_or_empty(
+            resident_process_lease_history_profile.get("recent_resident_process_ids")
+        )
+        artifact["resident_process_recent_run_ids"] = _list_or_empty(
+            resident_process_lease_history_profile.get("recent_run_ids")
+        )
+
+
 def _trait_convergence_report_carrier(
     *,
     idle_governance: dict[str, Any],
@@ -831,6 +895,19 @@ def _dedupe_refs(values: list[str]) -> list[str]:
         seen.add(value)
         result.append(value)
     return result
+
+
+def _int_or_default(value: Any, *, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _list_or_empty(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
 
 
 def _relationship_resume_summary(

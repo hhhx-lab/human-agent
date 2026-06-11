@@ -6,6 +6,7 @@ from typing import Any
 
 from .background_convergence import BACKGROUND_CONVERGENCE_SUMMARY_REF
 from .background_convergence_history import BACKGROUND_CONVERGENCE_HISTORY_REF
+from .process_lease import RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
 
 
 BACKGROUND_RESIDENT_GOVERNANCE_SNAPSHOT_REF = (
@@ -25,6 +26,9 @@ BACKGROUND_PERSISTENT_PROCESS_REPORT_REF = (
 )
 BACKGROUND_IDLE_HEARTBEAT_TRACE_REF = (
     "runtime/state/terminal/idle_heartbeat_trace.jsonl"
+)
+BACKGROUND_RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF = (
+    RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
 )
 BACKGROUND_SCHEMA_CROSS_FILE_LOGIC_REF = (
     "runtime/state/schema_runner/cross_file_logic.json"
@@ -56,8 +60,23 @@ def load_background_continuity_profile(
     persistent_process_report = _read_json_if_exists(
         reports_dir / "digital_life_persistent_process_report.json"
     )
+    resident_process_lease_history_profile = _read_json_if_exists(
+        terminal_dir / "resident_process_lease_history_profile.json"
+    )
     idle_heartbeat_trace_path = terminal_dir / "idle_heartbeat_trace.jsonl"
     idle_heartbeat_trace_exists = idle_heartbeat_trace_path.exists()
+    has_background_carryover_source = any(
+        [
+            resident_governance_state,
+            background_convergence_summary,
+            background_convergence_history,
+            snapshot,
+            resident_governance_report,
+            resident_governance_explanation,
+            persistent_process_report,
+            idle_heartbeat_trace_exists,
+        ]
+    )
 
     if (
         not resident_governance_state
@@ -67,6 +86,7 @@ def load_background_continuity_profile(
         and not resident_governance_report
         and not resident_governance_explanation
         and not persistent_process_report
+        and not resident_process_lease_history_profile
         and not idle_heartbeat_trace_exists
     ):
         return {}
@@ -102,6 +122,13 @@ def load_background_continuity_profile(
         _int_or_zero(resident_governance_report.get("relaunch_recovery_count")),
         _int_or_zero(persistent_process_report.get("relaunch_recovery_count")),
     )
+    resident_process_identity_pressure_level = (
+        resident_process_lease_history_profile.get("identity_pressure_level")
+        or resident_governance_state.get("resident_process_identity_pressure_level")
+        or snapshot.get("resident_process_identity_pressure_level")
+        or resident_governance_report.get("resident_process_identity_pressure_level")
+        or persistent_process_report.get("resident_process_identity_pressure_level")
+    )
 
     if relaunch_recovery_count > 0 or incident_count > 0:
         pressure_level = "elevated"
@@ -109,6 +136,12 @@ def load_background_continuity_profile(
         pressure_level = "present"
     else:
         pressure_level = "light"
+    pressure_level = _stronger_pressure(
+        pressure_level,
+        resident_process_identity_pressure_level,
+    )
+    if not attention_target and resident_process_lease_history_profile:
+        attention_target = "resident_process_identity_continuity"
 
     ref_set = [
         ref
@@ -123,6 +156,10 @@ def load_background_continuity_profile(
                 resident_governance_explanation,
             ),
             (BACKGROUND_PERSISTENT_PROCESS_REPORT_REF, persistent_process_report),
+            (
+                BACKGROUND_RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF,
+                resident_process_lease_history_profile,
+            ),
             (
                 BACKGROUND_IDLE_HEARTBEAT_TRACE_REF,
                 {"present": True} if idle_heartbeat_trace_exists else {},
@@ -604,6 +641,40 @@ def load_background_continuity_profile(
         profile["background_life_constraint_attention_reason"] = str(
             life_constraint_attention_reason
         )
+    if resident_process_lease_history_profile:
+        profile["background_resident_process_lease_history_profile_ref"] = (
+            BACKGROUND_RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
+        )
+        profile["background_resident_process_lease_history_profile"] = (
+            resident_process_lease_history_profile
+        )
+        profile["resident_process_lease_history_profile_ref"] = (
+            resident_process_lease_history_profile.get(
+                "resident_process_lease_history_profile_ref"
+            )
+            or BACKGROUND_RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
+        )
+        profile["resident_process_identity_continuity_state"] = str(
+            resident_process_lease_history_profile.get(
+                "current_identity_continuity_state",
+                "no_lease_history",
+            )
+        )
+        profile["resident_process_identity_pressure_level"] = str(
+            resident_process_lease_history_profile.get(
+                "identity_pressure_level",
+                "light",
+            )
+        )
+        profile["resident_process_lease_history_event_count"] = _int_or_zero(
+            resident_process_lease_history_profile.get("history_event_count")
+        )
+        profile["resident_process_recent_ids"] = _list_or_empty(
+            resident_process_lease_history_profile.get("recent_resident_process_ids")
+        )
+        profile["resident_process_recent_run_ids"] = _list_or_empty(
+            resident_process_lease_history_profile.get("recent_run_ids")
+        )
     if resident_governance_state:
         profile["background_resident_governance_state_ref"] = (
             BACKGROUND_RESIDENT_GOVERNANCE_STATE_REF
@@ -700,6 +771,16 @@ def load_background_continuity_profile(
         profile["background_persistent_process_report_ref"] = (
             BACKGROUND_PERSISTENT_PROCESS_REPORT_REF
         )
+    if not has_background_carryover_source:
+        for key in [
+            "background_continuity_mode",
+            "background_carryover_pressure_level",
+            "background_carryover_attention_target",
+            "background_carryover_priority_profile",
+            "background_carryover_generation",
+            "background_waiting_mode",
+        ]:
+            profile.pop(key, None)
     return profile
 
 
@@ -754,6 +835,16 @@ def _dict_or_empty(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         return {}
     return value
+
+
+def _stronger_pressure(*values: Any) -> str:
+    rank = {"light": 0, "present": 1, "elevated": 2}
+    strongest = "light"
+    for value in values:
+        text = str(value or "")
+        if rank.get(text, -1) > rank[strongest]:
+            strongest = text
+    return strongest
 
 
 def _first_present(

@@ -192,6 +192,7 @@ repo-local 最小常驻终端入口固定为：
 ```text
 runtime/state/terminal/resident_process_lease.json
 runtime/state/terminal/resident_process_lease_history.jsonl
+runtime/state/terminal/resident_process_lease_history_profile.json
 ```
 
 它不是 daemon manager，也不是工具网关；它只负责证明这一次 `digital life` 在本机打开过一个可追踪的生命进程身份，并把运行、等待、关闭三个相位固定到同一条证据链。
@@ -214,11 +215,14 @@ runtime/state/terminal/resident_process_lease_history.jsonl
 - `resident_governance_state_ref`
 - `idle_heartbeat_trace_ref`
 - `resident_process_lease_history_ref`
+- `resident_process_lease_history_profile_ref`
 - `process_report_ref`
 
 `resident_process_lease_history.jsonl` 的每一行是 `resident_process_lease_history_event_v0`，至少记录 `lease_opened / lease_refreshed / lease_interrupted_on_relaunch / lease_closed`、`resident_process_id`、`heartbeat_counter`、`completed_dialogue_turns`、`incident_count`、`exit_reason` 与 report ref。它用于保留生命周期事件流，不用于调度工具，也不代表另起一个 agent。
 
-启动时 `process_supervisor/process_lease.py` 必须先检查上一段 lease；如果旧 lease 仍是 active，`relaunch_recovery.py` 必须把它归一化为 `interrupted_on_relaunch`，追加 `lease_interrupted_on_relaunch`，并在 `digital_life_process_relaunch_recovery_report.json` 中写出 `previous_resident_process_id`、`previous_resident_process_lease_state` 与 `normalized_resident_process_lease_state`。之后当前 run 才能写 active lease 并追加 `lease_opened`；每次 waiting heartbeat 必须刷新 `last_seen_at` 与 `heartbeat_counter`，追加 `lease_refreshed`，并让 `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`resident_governance_state.json` 能回链 `resident_process_lease_ref`、`resident_process_lease_history_ref` 与 `resident_process_id`；closeout 时必须把同一份 lease 改成 closed，追加 `lease_closed`，写入 completed turns、incident count、exit reason、process report ref，并让 persistent process state/report、resident governance state/snapshot/report、process report、digest、receipt 继续收进 `runtime/state/terminal/resident_process_lease.json` 与 `runtime/state/terminal/resident_process_lease_history.jsonl`。这样后续真正做全局长期运行层时，不会从一个无身份的 stdin 循环硬跳到 daemon，而是从可审计的生命进程身份继续长出来。
+`resident_process_lease_history_profile.json` 是同一事件流的压缩画像，`schema_version = resident_process_lease_history_profile_v0`。它必须记录 `history_event_count`、`opened_count`、`refreshed_count`、`closed_count`、`interrupted_on_relaunch_count`、`latest_event_kind`、`latest_run_id`、`latest_resident_process_id`、`current_identity_continuity_state`、`identity_pressure_level`、`recent_resident_process_ids`、`recent_run_ids` 与 `evidence_refs`。它的职责不是替代原始 history，而是让 waiting governance、background continuity、closeout report 和 receipt 能直接消费“这条生命进程身份当前处于 active residency、continuous closed、interrupted then recovered 等连续性相位”。
+
+启动时 `process_supervisor/process_lease.py` 必须先检查上一段 lease；如果旧 lease 仍是 active，`relaunch_recovery.py` 必须把它归一化为 `interrupted_on_relaunch`，追加 `lease_interrupted_on_relaunch`，并在 `digital_life_process_relaunch_recovery_report.json` 中写出 `previous_resident_process_id`、`previous_resident_process_lease_state` 与 `normalized_resident_process_lease_state`。之后当前 run 才能写 active lease 并追加 `lease_opened`；每次 waiting heartbeat 必须刷新 `last_seen_at` 与 `heartbeat_counter`，追加 `lease_refreshed`，并让 `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`resident_governance_state.json` 能回链 `resident_process_lease_ref`、`resident_process_lease_history_ref`、`resident_process_lease_history_profile_ref`、`resident_process_identity_continuity_state`、`resident_process_identity_pressure_level` 与 `resident_process_id`；closeout 时必须把同一份 lease 改成 closed，追加 `lease_closed`，写入 completed turns、incident count、exit reason、process report ref，并让 persistent process state/report、resident governance state/snapshot/report、process report、digest、receipt 继续收进 `runtime/state/terminal/resident_process_lease.json`、`runtime/state/terminal/resident_process_lease_history.jsonl` 与 `runtime/state/terminal/resident_process_lease_history_profile.json`。下一次 `background_continuity.py` 必须把 profile 恢复为 `background_resident_process_lease_history_profile_ref` 与 `resident_process_identity_*` 字段，并放入 `background_continuity_ref_set`。这样后续真正做全局长期运行层时，不会从一个无身份的 stdin 循环硬跳到 daemon，而是从可审计、可压缩、可恢复的生命进程身份继续长出来。
 
 ## process supervisor 的最小对象链
 
