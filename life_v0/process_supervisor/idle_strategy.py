@@ -936,9 +936,13 @@ def _live_language_presence_profile(
         background_continuity_profile.get("background_last_live_semantic_focus")
         or background_continuity_profile.get("last_live_semantic_focus")
     )
-    background_presence_profile = _dict_or_empty(
-        background_continuity_profile.get("background_live_language_presence_profile")
-        or background_continuity_profile.get("live_language_presence_profile")
+    background_presence_profile = _shallow_live_language_presence_profile(
+        _dict_or_empty(
+            background_continuity_profile.get(
+                "background_live_language_presence_profile"
+            )
+            or background_continuity_profile.get("live_language_presence_profile")
+        )
     )
 
     if not current_refs and background_refs:
@@ -967,6 +971,34 @@ def _live_language_presence_profile(
             "background_live_language_presence_profile": background_presence_profile,
             "ref_count": len(all_refs),
             "ref_set": all_refs,
+        }
+    )
+
+
+def _shallow_live_language_presence_profile(profile: dict[str, Any]) -> dict[str, Any]:
+    if not profile:
+        return {}
+    source_profile = _dict_or_empty(profile.get("source_presence_profile"))
+    return _drop_empty(
+        {
+            "schema_version": profile.get("schema_version"),
+            "continuity_mode": profile.get("continuity_mode"),
+            "live_language_turn_refs": _string_list(
+                profile.get("live_language_turn_refs")
+            ),
+            "last_live_semantic_focus": profile.get("last_live_semantic_focus"),
+            "background_live_language_turn_refs": _string_list(
+                profile.get("background_live_language_turn_refs")
+            ),
+            "background_last_live_semantic_focus": profile.get(
+                "background_last_live_semantic_focus"
+            ),
+            "ref_count": profile.get("ref_count"),
+            "ref_set": _string_list(profile.get("ref_set")),
+            "source_continuity_mode": profile.get("source_continuity_mode")
+            or source_profile.get("continuity_mode"),
+            "source_ref_count": profile.get("source_ref_count")
+            or source_profile.get("ref_count"),
         }
     )
 

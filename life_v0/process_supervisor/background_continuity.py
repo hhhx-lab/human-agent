@@ -895,9 +895,9 @@ def _background_live_language_presence_profile(
         ),
         "ref_count": len(ref_set),
         "ref_set": ref_set,
+        "source_continuity_mode": source_profile.get("continuity_mode"),
+        "source_ref_count": source_profile.get("ref_count"),
     }
-    if source_profile:
-        profile["source_presence_profile"] = source_profile
     return {
         key: value
         for key, value in profile.items()

@@ -2442,6 +2442,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "runtime/state/language/language_percept_frame.json",
                         "runtime/state/language/semantic_map_frame.json",
                     ],
+                    "source_presence_profile": {
+                        "schema_version": "live_language_presence_profile_v0",
+                        "continuity_mode": "legacy_recursive_presence",
+                    },
                 },
             },
             source_doc_refs=[
@@ -2536,6 +2540,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertEqual(
             idle_strategy["live_language_presence_profile"]["ref_count"],
             2,
+        )
+        self.assertNotIn(
+            "source_presence_profile",
+            idle_strategy["live_language_presence_profile"][
+                "background_live_language_presence_profile"
+            ],
         )
 
     def test_idle_strategy_escalates_persistent_background_continuity_lineage(self):
@@ -3527,6 +3537,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "runtime/state/language/expression_monitor_state.json",
                             "runtime/state/language/expression_plan.json",
                         ],
+                        "source_presence_profile": {
+                            "schema_version": "live_language_presence_profile_v0",
+                            "continuity_mode": "legacy_recursive_presence",
+                            "source_presence_profile": {
+                                "continuity_mode": "legacy_nested_presence"
+                            },
+                        },
                     },
                     "schema_cross_file_logic_ref": "runtime/state/schema_runner/cross_file_logic.json",
                     "schema_run_manifest_ref": "runtime/state/schema_runner/run_manifest.json",
@@ -3736,6 +3753,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 profile["background_live_language_presence_profile"]["ref_count"],
                 5,
+            )
+            self.assertEqual(
+                profile["background_live_language_presence_profile"][
+                    "source_continuity_mode"
+                ],
+                "current_turn_language_presence",
+            )
+            self.assertNotIn(
+                "source_presence_profile",
+                profile["background_live_language_presence_profile"],
             )
             expected_state_merge_change_families = [
                 "offline_learning_cumulative_refs",
