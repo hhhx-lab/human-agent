@@ -15488,6 +15488,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(
                 resumed_dialogue_packet[
+                    "resident_background_lineage_offline_learning_generation"
+                ],
+                4,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_offline_learning_pressure_level"
+                ],
+                "elevated",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_offline_learning_attention_target"
+                ],
+                "relationship_learning_plan",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
                     "resident_background_lineage_offline_learning_integration_mode"
                 ],
                 "relationship_offline_reconsolidation_required",
