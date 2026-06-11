@@ -308,6 +308,11 @@ def write_resident_turn_writeback(
             "resident_background_lineage_life_constraint_refs", []
         )
     )
+    resident_background_lineage_heartbeat_cadence_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_heartbeat_cadence_refs", []
+        )
+    )
     resident_background_lineage_prediction_write_gate_refs = list(
         resident_background_lineage_payload.get(
             "resident_background_lineage_prediction_write_gate_refs", []
@@ -371,6 +376,7 @@ def write_resident_turn_writeback(
         + resident_background_lineage_autonomous_activity_refs
         + resident_background_lineage_birth_repair_refs
         + resident_background_lineage_life_constraint_refs
+        + resident_background_lineage_heartbeat_cadence_refs
         + resident_background_lineage_prediction_write_gate_refs
         + life_constraint_refs
         + queue_e_birth_repair_refs
@@ -491,6 +497,9 @@ def write_resident_turn_writeback(
         ),
         resident_background_lineage_life_constraint_refs=(
             resident_background_lineage_life_constraint_refs
+        ),
+        resident_background_lineage_heartbeat_cadence_refs=(
+            resident_background_lineage_heartbeat_cadence_refs
         ),
         resident_background_lineage_prediction_write_gate_refs=(
             resident_background_lineage_prediction_write_gate_refs

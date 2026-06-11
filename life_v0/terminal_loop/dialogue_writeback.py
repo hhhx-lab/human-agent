@@ -47,6 +47,7 @@ def build_dialogue_writeback_bundle(
     resident_background_lineage_autonomous_activity_refs: list[str] | None = None,
     resident_background_lineage_birth_repair_refs: list[str] | None = None,
     resident_background_lineage_life_constraint_refs: list[str] | None = None,
+    resident_background_lineage_heartbeat_cadence_refs: list[str] | None = None,
     resident_background_lineage_prediction_write_gate_refs: list[str] | None = None,
     life_constraint_refs: list[str] | None = None,
     queue_e_birth_repair_refs: list[str] | None = None,
@@ -125,6 +126,9 @@ def build_dialogue_writeback_bundle(
         ),
         "resident_background_lineage_life_constraint_refs": list(
             resident_background_lineage_life_constraint_refs or []
+        ),
+        "resident_background_lineage_heartbeat_cadence_refs": list(
+            resident_background_lineage_heartbeat_cadence_refs or []
         ),
         "resident_background_lineage_prediction_write_gate_refs": list(
             resident_background_lineage_prediction_write_gate_refs or []

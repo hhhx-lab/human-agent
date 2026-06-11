@@ -12340,6 +12340,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "runtime/state/life_targets/birth_readiness_rollup.json",
             "runtime/state/life_targets/birth_readiness_stage_gate.json",
         ]
+        expected_heartbeat_cadence_refs = [
+            "runtime/state/growth/relationship_learning_plan.json",
+            "runtime/state/growth/language_learning_plan.json",
+        ]
 
         external_turn = build_external_turn_event(
             turn_id="dialogue-turn-live-0001",
@@ -12401,6 +12405,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     },
                     "heartbeat_presence": {
                         "heartbeat_interval_ms": 50,
+                    },
+                    "heartbeat_cadence_presence": {
+                        "driver": "offline_learning_pressure",
+                        "reason": "dream_growth_or_relationship_learning_pressure_needs_refresh",
+                        "modulators": [
+                            "offline_learning:elevated",
+                            "background_generation:3",
+                        ],
+                        "evidence_refs": expected_heartbeat_cadence_refs,
+                        "heartbeat_interval_ms": 58,
+                        "next_idle_action": "refresh_waiting_heartbeat_with_offline_learning_hold",
                     },
                     "language_presence": {
                         "long_horizon_language_refs": [
@@ -12691,6 +12706,31 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             life_turn["resident_background_lineage_language_evidence_refs"],
         )
         self.assertEqual(
+            life_turn["resident_background_lineage_heartbeat_cadence_presence"][
+                "driver"
+            ],
+            "offline_learning_pressure",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_heartbeat_cadence_driver"],
+            "offline_learning_pressure",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_heartbeat_cadence_reason"],
+            "dream_growth_or_relationship_learning_pressure_needs_refresh",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_heartbeat_cadence_modulators"],
+            [
+                "offline_learning:elevated",
+                "background_generation:3",
+            ],
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_heartbeat_cadence_refs"],
+            expected_heartbeat_cadence_refs,
+        )
+        self.assertEqual(
             life_turn["resident_background_lineage_offline_learning_presence"][
                 "generation"
             ],
@@ -12930,6 +12970,97 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             ],
             7,
         )
+
+    def test_background_lineage_state_carries_heartbeat_cadence_presence(self):
+        from life_v0.process_supervisor.background_lineage_state import (
+            build_resident_background_lineage_state,
+        )
+
+        expected_refs = [
+            "runtime/state/growth/relationship_learning_plan.json",
+            "runtime/state/growth/language_learning_plan.json",
+        ]
+
+        lineage_state = build_resident_background_lineage_state(
+            {
+                "heartbeat_interval_ms": 58,
+                "next_idle_action": "refresh_waiting_heartbeat_with_offline_learning_hold",
+                "heartbeat_cadence_explanation": {
+                    "schema_version": "heartbeat_cadence_explanation_v0",
+                    "heartbeat_interval_ms": 58,
+                    "next_idle_action": "refresh_waiting_heartbeat_with_offline_learning_hold",
+                    "driver": "offline_learning_pressure",
+                    "reason": "dream_growth_or_relationship_learning_pressure_needs_refresh",
+                    "modulators": [
+                        "offline_learning:elevated",
+                        "background_generation:3",
+                    ],
+                    "evidence_refs": expected_refs,
+                },
+                "heartbeat_cadence_driver": "offline_learning_pressure",
+                "heartbeat_cadence_reason": "dream_growth_or_relationship_learning_pressure_needs_refresh",
+                "heartbeat_cadence_modulators": [
+                    "offline_learning:elevated",
+                    "background_generation:3",
+                ],
+                "heartbeat_cadence_evidence_refs": expected_refs,
+            },
+            governance_phase="waiting_heartbeat_active",
+            status="active",
+        )
+
+        self.assertEqual(lineage_state["depth_band"], "no_background_lineage")
+        cadence_presence = lineage_state["heartbeat_cadence_presence"]
+        self.assertEqual(cadence_presence["driver"], "offline_learning_pressure")
+        self.assertEqual(
+            cadence_presence["reason"],
+            "dream_growth_or_relationship_learning_pressure_needs_refresh",
+        )
+        self.assertEqual(
+            cadence_presence["modulators"],
+            [
+                "offline_learning:elevated",
+                "background_generation:3",
+            ],
+        )
+        self.assertEqual(cadence_presence["evidence_refs"], expected_refs)
+        self.assertEqual(cadence_presence["evidence_ref_count"], 2)
+
+    def test_response_surface_reads_heartbeat_cadence_from_background_lineage_presence(self):
+        from life_v0.process_supervisor.response_surface import compose_life_response
+
+        response = compose_life_response(
+            external_utterance="继续保持后台节律",
+            terminal_life_loop_state={
+                "resident_background_lineage_state": {
+                    "schema_version": "resident_background_lineage_state_v0",
+                    "depth_band": "persistent_lineage",
+                    "heartbeat_cadence_presence": {
+                        "driver": "offline_learning_pressure",
+                        "reason": "dream_growth_or_relationship_learning_pressure_needs_refresh",
+                        "modulators": [
+                            "offline_learning:elevated",
+                            "background_generation:3",
+                        ],
+                        "evidence_refs": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                    },
+                }
+            },
+        )
+
+        self.assertIn("后台心跳节律驱动为offline_learning_pressure", response)
+        self.assertIn(
+            "后台心跳节律理由为dream_growth_or_relationship_learning_pressure_needs_refresh",
+            response,
+        )
+        self.assertIn(
+            "后台心跳节律调制因子包括offline_learning:elevated、background_generation:3",
+            response,
+        )
+        self.assertIn("后台心跳节律证据保留2条", response)
 
     def test_background_lineage_state_carries_birth_repair_presence(self):
         from life_v0.process_supervisor.background_lineage_state import (
@@ -14440,6 +14571,23 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/memory/memory_write_gate.json",
                 "runtime/state/memory/state_merge_guard.json",
             ]
+            expected_heartbeat_cadence_refs = [
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+            ]
+            terminal_life_loop_state["resident_background_lineage_state"][
+                "heartbeat_cadence_presence"
+            ] = {
+                "driver": "offline_learning_pressure",
+                "reason": "dream_growth_or_relationship_learning_pressure_needs_refresh",
+                "modulators": [
+                    "offline_learning:elevated",
+                    "background_generation:4",
+                ],
+                "evidence_refs": expected_heartbeat_cadence_refs,
+                "heartbeat_interval_ms": 58,
+                "next_idle_action": "refresh_waiting_heartbeat_with_offline_learning_hold",
+            }
             terminal_life_loop_state["resident_background_lineage_state"][
                 "birth_repair_presence"
             ] = {
@@ -15007,7 +15155,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ],
                 expected_life_constraint_refs,
             )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_heartbeat_cadence_refs"
+                ],
+                expected_heartbeat_cadence_refs,
+            )
             for ref in expected_life_constraint_refs:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle["resident_background_lineage_refs"],
+                )
+            for ref in expected_heartbeat_cadence_refs:
                 self.assertIn(
                     ref,
                     dialogue_writeback_bundle["resident_background_lineage_refs"],
@@ -15116,6 +15275,18 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "resident_background_lineage_life_constraint_refs"
                 ],
                 expected_life_constraint_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_heartbeat_cadence_refs"
+                ],
+                expected_heartbeat_cadence_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_heartbeat_cadence_driver"
+                ],
+                "offline_learning_pressure",
             )
             self.assertEqual(
                 resumed_dialogue_packet[

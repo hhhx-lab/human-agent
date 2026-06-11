@@ -16,6 +16,7 @@ def build_resident_background_lineage_state(
     resident_process_identity_presence = _resident_process_identity_presence(
         governance
     )
+    heartbeat_cadence_presence = _heartbeat_cadence_presence(governance)
     prediction_write_gate_presence = _prediction_write_gate_presence(governance)
     birth_repair_presence = _birth_repair_presence(governance)
     life_constraint_presence = _life_constraint_presence(governance)
@@ -36,6 +37,8 @@ def build_resident_background_lineage_state(
     if not depth_band and identity_consciousness_birth_presence:
         depth_band = "no_background_lineage"
     if not depth_band and resident_process_identity_presence:
+        depth_band = "no_background_lineage"
+    if not depth_band and heartbeat_cadence_presence:
         depth_band = "no_background_lineage"
     if not depth_band and prediction_write_gate_presence:
         depth_band = "no_background_lineage"
@@ -111,6 +114,8 @@ def build_resident_background_lineage_state(
     heartbeat_presence = _heartbeat_presence(governance)
     if heartbeat_presence:
         lineage_state["heartbeat_presence"] = heartbeat_presence
+    if heartbeat_cadence_presence:
+        lineage_state["heartbeat_cadence_presence"] = heartbeat_cadence_presence
     language_presence = _language_presence(governance)
     if language_presence:
         lineage_state["language_presence"] = language_presence
@@ -360,6 +365,83 @@ def _heartbeat_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "background_idle_heartbeat_trace_count": background_count,
             "heartbeat_interval_ms": heartbeat_interval_ms,
             "next_idle_action": next_idle_action,
+        }
+    )
+
+
+def _heartbeat_cadence_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    previous_presence = _dict_or_empty(
+        _dict_or_empty(
+            governance.get("resident_background_lineage_state")
+            or governance.get("background_resident_lineage_state")
+        ).get("heartbeat_cadence_presence")
+    )
+    explanation = _dict_or_empty(
+        governance.get("heartbeat_cadence_explanation")
+        or governance.get("background_heartbeat_cadence_explanation")
+        or previous_presence.get("heartbeat_cadence_explanation")
+    )
+    driver = _first_present(
+        governance.get("heartbeat_cadence_driver"),
+        governance.get("background_heartbeat_cadence_driver"),
+        explanation.get("driver"),
+        previous_presence.get("driver"),
+    )
+    reason = _first_present(
+        governance.get("heartbeat_cadence_reason"),
+        governance.get("background_heartbeat_cadence_reason"),
+        explanation.get("reason"),
+        previous_presence.get("reason"),
+    )
+    heartbeat_interval_ms = _first_present(
+        governance.get("heartbeat_interval_ms"),
+        explanation.get("heartbeat_interval_ms"),
+        previous_presence.get("heartbeat_interval_ms"),
+    )
+    next_idle_action = _first_present(
+        governance.get("next_idle_action"),
+        explanation.get("next_idle_action"),
+        previous_presence.get("next_idle_action"),
+    )
+    modulators = _dedupe_string_list(
+        _string_list(governance.get("heartbeat_cadence_modulators"))
+        + _string_list(governance.get("background_heartbeat_cadence_modulators"))
+        + _string_list(explanation.get("modulators"))
+        + _string_list(previous_presence.get("modulators"))
+    )
+    evidence_refs = _dedupe_string_list(
+        _string_list(governance.get("heartbeat_cadence_evidence_refs"))
+        + _string_list(governance.get("background_heartbeat_cadence_evidence_refs"))
+        + _string_list(explanation.get("evidence_refs"))
+        + _string_list(previous_presence.get("evidence_refs"))
+    )
+    if not any(
+        [
+            explanation,
+            driver,
+            reason,
+            modulators,
+            evidence_refs,
+            heartbeat_interval_ms,
+            next_idle_action,
+            previous_presence,
+        ]
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "heartbeat_cadence_explanation": explanation,
+            "driver": driver,
+            "reason": reason,
+            "modulators": modulators,
+            "evidence_refs": evidence_refs,
+            "heartbeat_interval_ms": (
+                _int_or_zero(heartbeat_interval_ms)
+                if heartbeat_interval_ms is not None
+                else None
+            ),
+            "next_idle_action": next_idle_action,
+            "evidence_ref_count": len(evidence_refs),
         }
     )
 

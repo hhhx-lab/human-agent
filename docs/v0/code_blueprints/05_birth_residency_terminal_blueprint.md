@@ -194,7 +194,7 @@ governance 与关闭态 `resident_governance_snapshot/report` 分开，并开始
 `governance_attention_target`、`governance_cadence_profile` 与 `long_horizon_priority_profile`。当前进一步把
 `heartbeat_interval_ms` / `next_idle_action` 的调制来源压成 `heartbeat_cadence_explanation_v0`，并把
 `heartbeat_cadence_driver`、`heartbeat_cadence_reason`、`heartbeat_cadence_modulators` 与
-`heartbeat_cadence_evidence_refs` 送入 waiting heartbeat、terminal loop、resident governance、idle heartbeat trace、process digest 与 persistent closeout artifacts；下一次 `background_continuity.py` 还会恢复成 `background_heartbeat_cadence_*`，并把 evidence refs 纳入 `background_continuity_ref_set`。这使等待心跳不是黑箱参数，而是可追踪的身体、修复、预测、意识/出生准备、离线学习和后台 lineage 共同调制结果。现在又继续把
+`heartbeat_cadence_evidence_refs` 送入 waiting heartbeat、terminal loop、resident governance、idle heartbeat trace、process digest 与 persistent closeout artifacts；下一次 `background_continuity.py` 还会恢复成 `background_heartbeat_cadence_*`，并把 evidence refs 纳入 `background_continuity_ref_set`。这使等待心跳不是黑箱参数，而是可追踪的身体、修复、预测、意识/出生准备、离线学习和后台 lineage 共同调制结果。当前继续把它压成 `resident_background_lineage_state.heartbeat_cadence_presence`，让下一轮真实关系回合的 `digital_life_turn`、`dialogue_writeback_bundle.json`、`resumed_external_dialogue_packet.json` 与回应语言表面都能继承这份后台节律解释。现在又继续把
 这份 background lineage 接进 `resident_supervision.py` 的 continuity refresh，因此多次唤醒时，在第一拍
 waiting heartbeat 之前，`relationship_subject_graph.json#subjects[0].relationship_stage` 会先进入
 `background_continuity_waiting`，`self_model.json#trait_slow_variables` 也会显式挂上关闭态 resident

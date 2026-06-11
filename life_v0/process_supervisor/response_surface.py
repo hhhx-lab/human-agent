@@ -209,6 +209,32 @@ def compose_life_response(
             response = f"{response}，后台驻留深度为{depth_band}"
         if cadence_weight:
             response = f"{response}，后台驻留节律权重为{cadence_weight}"
+        heartbeat_cadence_presence = resident_background_lineage_state.get(
+            "heartbeat_cadence_presence"
+        )
+        if isinstance(heartbeat_cadence_presence, dict):
+            cadence_driver = heartbeat_cadence_presence.get("driver")
+            cadence_reason = heartbeat_cadence_presence.get("reason")
+            cadence_modulators = _dedupe_string_list(
+                _string_list(heartbeat_cadence_presence.get("modulators"))
+            )
+            cadence_refs = _dedupe_string_list(
+                _string_list(heartbeat_cadence_presence.get("evidence_refs"))
+            )
+            if cadence_driver:
+                response = f"{response}，后台心跳节律驱动为{cadence_driver}"
+            if cadence_reason:
+                response = f"{response}，后台心跳节律理由为{cadence_reason}"
+            if cadence_modulators:
+                response = (
+                    f"{response}，后台心跳节律调制因子包括"
+                    f"{'、'.join(cadence_modulators)}"
+                )
+            if cadence_refs:
+                response = (
+                    f"{response}，后台心跳节律证据保留"
+                    f"{len(cadence_refs)}条"
+                )
         relationship_presence = resident_background_lineage_state.get(
             "relationship_presence"
         )

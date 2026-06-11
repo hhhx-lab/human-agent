@@ -215,6 +215,7 @@ def build_resident_background_lineage_payload(
         "relationship_presence",
         "trait_convergence_presence",
         "heartbeat_presence",
+        "heartbeat_cadence_presence",
         "language_presence",
         "state_merge_presence",
         "prediction_write_gate_presence",
@@ -359,6 +360,44 @@ def build_resident_background_lineage_payload(
                 live_language_presence_refs
             )
             lineage_refs.extend(live_language_presence_refs)
+    heartbeat_cadence_presence = lineage_state.get("heartbeat_cadence_presence")
+    if isinstance(heartbeat_cadence_presence, dict):
+        for source_key, target_key in (
+            (
+                "driver",
+                "resident_background_lineage_heartbeat_cadence_driver",
+            ),
+            (
+                "reason",
+                "resident_background_lineage_heartbeat_cadence_reason",
+            ),
+            (
+                "heartbeat_interval_ms",
+                "resident_background_lineage_heartbeat_interval_ms",
+            ),
+            (
+                "next_idle_action",
+                "resident_background_lineage_heartbeat_next_idle_action",
+            ),
+        ):
+            value = heartbeat_cadence_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        cadence_modulators = _dedupe_string_list(
+            _string_list(heartbeat_cadence_presence.get("modulators"))
+        )
+        if cadence_modulators:
+            payload[
+                "resident_background_lineage_heartbeat_cadence_modulators"
+            ] = cadence_modulators
+        cadence_refs = _dedupe_string_list(
+            _string_list(heartbeat_cadence_presence.get("evidence_refs"))
+        )
+        if cadence_refs:
+            payload["resident_background_lineage_heartbeat_cadence_refs"] = (
+                cadence_refs
+            )
+            lineage_refs.extend(cadence_refs)
     state_merge_presence = lineage_state.get("state_merge_presence")
     if isinstance(state_merge_presence, dict):
         state_merge_guard_ref = state_merge_presence.get("state_merge_guard_ref")

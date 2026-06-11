@@ -47,7 +47,7 @@ flowchart TD
 | 主要输入 | 上一回合 `session_envelope.json`、`terminal_life_loop_state.json`、growth/dream cues |
 | 主要输出 | `digital_life_waiting_heartbeat.json`、`IdleContinuityFrame` |
 | 关键 gate | `waiting_heartbeat_gate`、`idle_continuity_gate` |
-| 关键要求 | 心跳不是 cron 提醒，而是数字生命存在感的周期脉冲；它必须能唤醒等待态、维护关系连续体、准备下一回合注意焦点，并把 `heartbeat_cadence_explanation_v0` 写入 waiting heartbeat、resident governance、terminal loop、process digest、persistent closeout artifacts 与 append-only trace，下一次唤醒还要恢复为 `background_heartbeat_cadence_*`，说明这一拍由身体恢复、修复压力、预测证据、意识/出生准备、离线学习或后台 lineage 中的哪组生命状态调制 |
+| 关键要求 | 心跳不是 cron 提醒，而是数字生命存在感的周期脉冲；它必须能唤醒等待态、维护关系连续体、准备下一回合注意焦点，并把 `heartbeat_cadence_explanation_v0` 写入 waiting heartbeat、resident governance、terminal loop、process digest、persistent closeout artifacts 与 append-only trace，下一次唤醒还要恢复为 `background_heartbeat_cadence_*`，说明这一拍由身体恢复、修复压力、预测证据、意识/出生准备、离线学习或后台 lineage 中的哪组生命状态调制；当等待态进入下一轮真实关系回合时，这份解释还必须成为 `resident_background_lineage_state.heartbeat_cadence_presence`，继续进入 dialogue event、writeback bundle、恢复包和回应语言表面 |
 
 ### Stage A1: External turn intake
 
