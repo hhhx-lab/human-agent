@@ -1916,6 +1916,28 @@ def _background_live_language_presence_profile(
     source_profile: dict[str, Any],
 ) -> dict[str, Any]:
     source_ref_set = _list_or_empty(source_profile.get("ref_set"))
+    source_presence_profile = _dict_or_empty(source_profile.get("source_presence_profile"))
+    source_continuity_mode = source_presence_profile.get("continuity_mode")
+    source_ref_count = source_presence_profile.get("ref_count")
+    if source_presence_profile:
+        source_continuity_mode = (
+            source_continuity_mode
+            or source_profile.get("source_continuity_mode")
+            or source_profile.get("continuity_mode")
+        )
+        source_ref_count = (
+            source_ref_count
+            or source_profile.get("source_ref_count")
+            or source_profile.get("ref_count")
+        )
+    else:
+        source_continuity_mode = (
+            source_profile.get("source_continuity_mode")
+            or source_profile.get("continuity_mode")
+        )
+        source_ref_count = source_profile.get("source_ref_count") or source_profile.get(
+            "ref_count"
+        )
     ref_set = _dedupe_list(list(live_language_turn_refs) + source_ref_set)
     profile = {
         "schema_version": "background_live_language_presence_profile_v0",
@@ -1926,8 +1948,8 @@ def _background_live_language_presence_profile(
         ),
         "ref_count": len(ref_set),
         "ref_set": ref_set,
-        "source_continuity_mode": source_profile.get("continuity_mode"),
-        "source_ref_count": source_profile.get("ref_count"),
+        "source_continuity_mode": source_continuity_mode,
+        "source_ref_count": source_ref_count,
     }
     return {
         key: value

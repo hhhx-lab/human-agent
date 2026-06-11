@@ -88,6 +88,37 @@
 | `background_relationship_stage` | string | 背景关系阶段 |
 | `background_self_model_ref` | string | 背景自我模型 ref |
 | `background_trait_slow_variable_summary` | object | 背景慢变量摘要 |
+| `background_idle_heartbeat_trace_ref` | string | 背景等待心跳 trace |
+| `background_idle_heartbeat_trace_count` | number | 背景等待心跳数量 |
+| `background_convergence_summary_ref` | string | 背景收敛摘要 ref |
+| `background_convergence_state` | string | 背景收敛状态 |
+| `background_convergence_pressure_level` | string | 背景收敛压力 |
+| `background_convergence_attention_target` | string | 背景收敛注意目标 |
+| `background_relationship_stage_continuity` | string | 背景关系阶段连续体 |
+| `background_trait_convergence_score` | number | 背景人格收敛评分 |
+| `background_max_trait_delta_from_background` | number | 背景最大人格 delta |
+| `background_average_trait_delta_from_background` | number | 背景平均人格 delta |
+| `background_trait_convergence_summary` | object | 背景人格收敛摘要 |
+| `background_convergence_history_ref` | string | 背景收敛历史 ref |
+| `background_convergence_history_trend_state` | string | 背景收敛历史趋势 |
+| `background_convergence_history_window_size` | number | 背景收敛历史窗口 |
+| `background_dominant_convergence_pressure_level` | string | 背景主导收敛压力 |
+| `background_dominant_convergence_state` | string | 背景主导收敛状态 |
+| `background_trait_convergence_history_profile` | object | 背景人格收敛历史画像 |
+| `background_trait_convergence_unstable_names` | array | 背景不稳定人格名 |
+| `background_trait_convergence_stable_names` | array | 背景稳定人格名 |
+| `background_trait_convergence_history_focus` | string | 背景人格收敛焦点 |
+| `background_trait_drift_update_mode_summary` | object | 背景人格漂移更新模式摘要 |
+| `background_trait_drift_recalibration_names` | array | 背景重校准名单 |
+| `background_trait_drift_stabilized_names` | array | 背景稳定名单 |
+| `background_resident_governance_state_ref` | string | 背景驻留治理 state ref |
+| `background_resident_governance_snapshot_ref` | string | 背景驻留治理 snapshot ref |
+| `background_resident_governance_report_ref` | string | 背景驻留治理 report ref |
+| `background_resident_governance_explanation_ref` | string | 背景驻留治理解释 ref |
+| `background_persistent_process_report_ref` | string | 背景常驻进程报告 ref |
+| `background_governance_driver_family` | string | 背景治理驱动族 |
+| `background_next_wake_expectation` | string | 下一次唤醒期望 |
+| `background_governance_explanation_story` | array | 背景治理解释叙事 |
 | `background_live_language_turn_refs` | array | 背景实时语言 refs |
 | `background_last_live_semantic_focus` | string | 背景语义焦点 |
 | `background_live_language_presence_profile` | object | 背景语言存在面 |

@@ -4815,7 +4815,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 profile["background_live_language_presence_profile"][
                     "source_continuity_mode"
                 ],
-                "current_turn_language_presence",
+                "legacy_recursive_presence",
             )
             self.assertNotIn(
                 "source_presence_profile",
@@ -5251,6 +5251,72 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "continuity_drive"
                 ]["dominant_trait_drift_update_mode"],
                 "background_history_recalibration",
+            )
+
+    def test_background_continuity_profile_keeps_live_language_presence_shallow(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            terminal_dir = runtime_root / "state" / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "run_id": "language-shallow-parent",
+                    "live_language_turn_refs": [
+                        "runtime/state/language/language_percept_frame.json",
+                        "runtime/state/language/semantic_map_frame.json",
+                    ],
+                    "last_live_semantic_focus": "repair_commitment_shared_language",
+                    "background_live_language_presence_profile": {
+                        "schema_version": "background_live_language_presence_profile_v0",
+                        "continuity_mode": "closed_process_live_language_carryover",
+                        "live_language_turn_refs": [
+                            "runtime/state/language/language_percept_frame.json",
+                            "runtime/state/language/semantic_map_frame.json",
+                        ],
+                        "last_live_semantic_focus": "repair_commitment_shared_language",
+                        "ref_count": 4,
+                        "ref_set": [
+                            "runtime/state/language/language_percept_frame.json",
+                            "runtime/state/language/semantic_map_frame.json",
+                            "runtime/state/language/inner_speech_frame.json",
+                            "runtime/state/language/expression_plan.json",
+                        ],
+                        "source_continuity_mode": "current_turn_language_presence",
+                        "source_ref_count": 4,
+                        "source_presence_profile": {
+                            "continuity_mode": "current_turn_language_presence",
+                            "ref_count": 4,
+                            "live_language_turn_refs": [
+                                "runtime/state/language/language_percept_frame.json",
+                            ],
+                        },
+                    },
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+            shallow = profile["background_live_language_presence_profile"]
+            self.assertNotIn("source_presence_profile", shallow)
+            self.assertEqual(
+                shallow["source_continuity_mode"],
+                "current_turn_language_presence",
+            )
+            self.assertEqual(shallow["source_ref_count"], 4)
+            self.assertEqual(
+                shallow["ref_count"],
+                4,
             )
 
     def test_waiting_heartbeat_carries_trait_drift_update_mode_history(self):
