@@ -69,6 +69,7 @@ def project_engram_index_from_live_turn(
     commitment_truth_state: dict[str, Any] | None = None,
     responsibility_ledger: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
+    autobiographical_stack: dict[str, Any] | None = None,
     nightmare_risk_ref: str | None = None,
     belief_learning_plan_ref: str | None = None,
     language_learning_plan_ref: str | None = None,
@@ -81,6 +82,7 @@ def project_engram_index_from_live_turn(
     commitment_truth_state = commitment_truth_state or {}
     responsibility_ledger = responsibility_ledger or {}
     state_merge_guard = state_merge_guard or {}
+    autobiographical_stack = autobiographical_stack or {}
 
     updated["generated_at"] = generated_at
     if run_id and not updated.get("run_id"):
@@ -93,6 +95,13 @@ def project_engram_index_from_live_turn(
     updated["live_language_turn_refs"] = _dedupe(
         list(updated.get("live_language_turn_refs", []))
         + list(live_language_turn_refs or [])
+    )
+    updated["autobiographical_memory_refs"] = _dedupe(
+        list(updated.get("autobiographical_memory_refs", []))
+        + list(autobiographical_stack.get("anchor_refs", []))
+        + list(autobiographical_stack.get("turn_refs", []))
+        + list(autobiographical_stack.get("narrative_refs", []))
+        + ["runtime/state/self/autobiographical_stack.json"]
     )
     updated["relationship_memory_refs"] = _dedupe(
         list(updated.get("relationship_memory_refs", []))

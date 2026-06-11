@@ -123,6 +123,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             engram_index = self._read_json(
                 paths["state_root"] / "memory" / "engram_index.json"
             )
+            autobiographical_stack = self._read_json(
+                paths["state_root"] / "self" / "autobiographical_stack.json"
+            )
             self_model = self._read_json(paths["state_root"] / "self" / "self_model.json")
             life_state = self._read_json(paths["state_root"] / "life_state.json")
             dialogue_writeback_bundle = self._read_json(paths["reports"] / "dialogue_writeback_bundle.json")
@@ -172,9 +175,29 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 dialogue_writeback_bundle["dialogue_event_refs"][-1],
                 engram_index["live_dialogue_turn_refs"],
             )
+            self.assertIn(
+                dialogue_writeback_bundle["dialogue_event_refs"][-1],
+                autobiographical_stack["turn_refs"],
+            )
             self.assertEqual(
                 engram_index["live_language_turn_refs"],
                 dialogue_writeback_bundle["live_language_turn_refs"],
+            )
+            self.assertEqual(
+                autobiographical_stack["live_language_turn_refs"],
+                dialogue_writeback_bundle["live_language_turn_refs"],
+            )
+            self.assertEqual(
+                autobiographical_stack["last_relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertIn(
+                "runtime/state/memory/engram_index.json",
+                autobiographical_stack["engram_index_refs"],
+            )
+            self.assertIn(
+                "runtime/state/self/autobiographical_stack.json#turn_refs",
+                dialogue_writeback_bundle["autobiographical_writeback_refs"],
             )
             self.assertIn(
                 "runtime/state/growth/language_learning_plan.json",
@@ -14945,6 +14968,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             persisted_engram_index = self._read_json(
                 memory_dir / "engram_index.json"
             )
+            persisted_autobiographical_stack = self._read_json(
+                self_dir / "autobiographical_stack.json"
+            )
             persisted_state_merge_guard = self._read_json(
                 memory_dir / "state_merge_guard.json"
             )
@@ -15059,7 +15085,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "engram_index_v0",
             )
             self.assertEqual(
+                persisted_autobiographical_stack["schema_version"],
+                "autobiographical_stack_v0",
+            )
+            self.assertEqual(
                 persisted_engram_index["live_dialogue_turn_refs"],
+                [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-1",
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-2",
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+                ],
+            )
+            self.assertEqual(
+                persisted_autobiographical_stack["turn_refs"],
                 [
                     "runtime/state/language/dialogue_turn_log.jsonl#line-1",
                     "runtime/state/language/dialogue_turn_log.jsonl#line-2",
@@ -15076,9 +15114,41 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/language/expression_plan.json",
                 ],
             )
+            self.assertEqual(
+                persisted_autobiographical_stack["live_language_turn_refs"],
+                persisted_engram_index["live_language_turn_refs"],
+            )
             self.assertIn(
                 "runtime/state/relationship/relationship_timeline.json",
                 persisted_engram_index["relationship_timeline_refs"],
+            )
+            self.assertIn(
+                "runtime/state/relationship/relationship_timeline.json",
+                persisted_autobiographical_stack["relationship_turn_refs"],
+            )
+            self.assertIn(
+                "runtime/state/language/self_narrative_language_trace.json",
+                persisted_autobiographical_stack["narrative_refs"],
+            )
+            self.assertEqual(
+                persisted_autobiographical_stack["last_relationship_stage"],
+                "repair_guarded_continuity",
+            )
+            self.assertIn(
+                "repair_seriousness",
+                persisted_autobiographical_stack["trait_slow_variable_names"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/resumed_external_dialogue_packet.json",
+                persisted_autobiographical_stack["autobiographical_update_refs"],
+            )
+            self.assertIn(
+                "runtime/state/self/autobiographical_stack.json",
+                persisted_engram_index["autobiographical_memory_refs"],
+            )
+            self.assertIn(
+                "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+                persisted_engram_index["autobiographical_memory_refs"],
             )
             self.assertIn(
                 "runtime/state/growth/language_learning_plan.json",
@@ -15095,6 +15165,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 persisted_engram_index["last_projected_from_live_turn_ref"],
                 "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet["autobiographical_stack_ref"],
+                "runtime/state/self/autobiographical_stack.json",
             )
             state_merge_change_sources = persisted_state_merge_guard[
                 "long_term_change_sources"
@@ -15136,6 +15210,10 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertIn(
                 "runtime/state/language/dialogue_turn_log.jsonl#line-3",
                 persisted_life_state["memory_index"]["live_dialogue_turn_refs"],
+            )
+            self.assertIn(
+                "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+                persisted_life_state["memory_index"]["autobiographical_memory_refs"],
             )
             self.assertIn(
                 "runtime/state/language/expression_plan.json",
@@ -15242,6 +15320,15 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "runtime/state/memory/engram_index.json#live_language_turn_refs",
                     "runtime/state/memory/engram_index.json#relationship_memory_refs",
                     "runtime/state/memory/engram_index.json#offline_learning_refs",
+                ],
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle["autobiographical_writeback_refs"],
+                [
+                    "runtime/state/self/autobiographical_stack.json",
+                    "runtime/state/self/autobiographical_stack.json#turn_refs",
+                    "runtime/state/self/autobiographical_stack.json#live_language_turn_refs",
+                    "runtime/state/self/autobiographical_stack.json#relationship_turn_refs",
                 ],
             )
             self.assertEqual(

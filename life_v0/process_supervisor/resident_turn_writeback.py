@@ -16,6 +16,9 @@ from ..language.apology_repair_language import build_apology_repair_language_tra
 from ..language.commitment_expression import build_commitment_expression_plan
 from ..language.dialogue_log import collect_dialogue_turn_refs
 from ..language.relationship_timeline import build_relationship_timeline
+from ..state_store.autobiographical_stack import (
+    project_autobiographical_stack_from_live_turn,
+)
 from ..state_store.engram_index import project_engram_index_from_live_turn
 from ..state_store.life_state import project_responsibility_language_continuity
 from ..state_store.relationship_memory import project_relationship_memory
@@ -49,6 +52,10 @@ ENGRAM_INDEX_LIVE_DIALOGUE_REF = "runtime/state/memory/engram_index.json#live_di
 ENGRAM_INDEX_LIVE_LANGUAGE_REF = "runtime/state/memory/engram_index.json#live_language_turn_refs"
 ENGRAM_INDEX_RELATIONSHIP_REF = "runtime/state/memory/engram_index.json#relationship_memory_refs"
 ENGRAM_INDEX_OFFLINE_REF = "runtime/state/memory/engram_index.json#offline_learning_refs"
+AUTOBIOGRAPHICAL_STACK_REF = "runtime/state/self/autobiographical_stack.json"
+AUTOBIOGRAPHICAL_STACK_TURN_REF = "runtime/state/self/autobiographical_stack.json#turn_refs"
+AUTOBIOGRAPHICAL_STACK_LIVE_LANGUAGE_REF = "runtime/state/self/autobiographical_stack.json#live_language_turn_refs"
+AUTOBIOGRAPHICAL_STACK_RELATIONSHIP_REF = "runtime/state/self/autobiographical_stack.json#relationship_turn_refs"
 COMMITMENT_EXPRESSION_PLAN_REF = "runtime/state/language/commitment_expression_plan.json"
 APOLOGY_REPAIR_LANGUAGE_TRACE_REF = "runtime/state/language/apology_repair_language_trace.json"
 COMMITMENT_TRUTH_OPEN_REF = "runtime/state/relationship/commitment_truth_state.json#open_commitment_refs"
@@ -212,6 +219,7 @@ def write_resident_turn_writeback(
         relationship_dir=relationship_dir,
         relationship_graph=relationship_graph,
         self_model_state=self_model_state,
+        self_narrative_trace=self_narrative_trace,
         commitment_index=commitment_index,
         offline_learning_cumulative_profile=offline_learning_cumulative_payload,
         generated_at=generated_at,
@@ -460,6 +468,12 @@ def write_resident_turn_writeback(
             ENGRAM_INDEX_RELATIONSHIP_REF,
             ENGRAM_INDEX_OFFLINE_REF,
         ],
+        autobiographical_writeback_refs=[
+            AUTOBIOGRAPHICAL_STACK_REF,
+            AUTOBIOGRAPHICAL_STACK_TURN_REF,
+            AUTOBIOGRAPHICAL_STACK_LIVE_LANGUAGE_REF,
+            AUTOBIOGRAPHICAL_STACK_RELATIONSHIP_REF,
+        ],
         replay_cue_refs=replay_cue_refs,
         terminal_state_refs=[SAFE_TERMINAL_LOOP_REF, TERMINAL_LIFE_LOOP_REF],
         source_doc_refs=source_doc_refs,
@@ -624,6 +638,9 @@ def write_resident_turn_writeback(
             APOLOGY_REPAIR_LANGUAGE_TRACE_REF
         )
         resumed_dialogue_packet["engram_index_ref"] = ENGRAM_INDEX_REF
+        resumed_dialogue_packet["autobiographical_stack_ref"] = (
+            AUTOBIOGRAPHICAL_STACK_REF
+        )
         resumed_dialogue_packet["life_state_ref"] = "runtime/state/life_state.json"
     write_json(reports_dir / "resumed_external_dialogue_packet.json", resumed_dialogue_packet)
 
@@ -646,6 +663,7 @@ def _refresh_long_horizon_continuity(
     relationship_dir: Path,
     relationship_graph: dict[str, Any],
     self_model_state: dict[str, Any] | None,
+    self_narrative_trace: dict[str, Any] | None,
     commitment_index: dict[str, Any],
     offline_learning_cumulative_profile: dict[str, Any] | None,
     generated_at: str,
@@ -663,6 +681,7 @@ def _refresh_long_horizon_continuity(
     state_merge_guard_path = state_dir / "memory" / "state_merge_guard.json"
     engram_index_path = state_dir / "memory" / "engram_index.json"
     life_state_path = state_dir / "life_state.json"
+    autobiographical_stack_path = state_dir / "self" / "autobiographical_stack.json"
     self_model_path = state_dir / "self" / "self_model.json"
     trait_drift_monitor_path = state_dir / "body" / "trait_drift_monitor.json"
     responsibility_loop_path = state_dir / "action" / "responsibility_loop_state.json"
@@ -694,6 +713,7 @@ def _refresh_long_horizon_continuity(
     state_merge_guard = _read_json_if_exists(state_merge_guard_path)
     engram_index = _read_json_if_exists(engram_index_path)
     life_state = _read_json(life_state_path)
+    autobiographical_stack = _read_json_if_exists(autobiographical_stack_path)
     persisted_self_model_state = _read_json(self_model_path)
     previous_trait_drift_monitor = _read_json_if_exists(trait_drift_monitor_path)
     responsibility_loop_state = _read_json(responsibility_loop_path)
@@ -872,14 +892,30 @@ def _refresh_long_horizon_continuity(
         state_merge_guard=state_merge_guard,
         relationship_memory=refreshed_relationship_memory,
     )
+    refresh_run_id = str(
+        refreshed_relationship_timeline.get("run_id")
+        or relationship_timeline.get("run_id")
+        or "resident-turn-writeback"
+    )
+    refreshed_autobiographical_stack = (
+        project_autobiographical_stack_from_live_turn(
+            autobiographical_stack=autobiographical_stack,
+            generated_at=generated_at,
+            run_id=refresh_run_id,
+            dialogue_turn_refs=dialogue_turn_refs,
+            live_language_turn_refs=live_language_turn_refs,
+            self_narrative_trace=self_narrative_trace,
+            self_model_state=evolved_self_model_state,
+            relationship_graph=evolved_relationship_graph,
+            relationship_timeline=refreshed_relationship_timeline,
+            engram_index=engram_index,
+            trigger_ref=RESUMED_DIALOGUE_PACKET_REF,
+        )
+    )
     refreshed_engram_index = project_engram_index_from_live_turn(
         engram_index=engram_index,
         generated_at=generated_at,
-        run_id=str(
-            refreshed_relationship_timeline.get("run_id")
-            or relationship_timeline.get("run_id")
-            or "resident-turn-writeback"
-        ),
+        run_id=refresh_run_id,
         dialogue_turn_refs=dialogue_turn_refs,
         live_language_turn_refs=live_language_turn_refs,
         relationship_memory=refreshed_relationship_memory,
@@ -887,6 +923,7 @@ def _refresh_long_horizon_continuity(
         commitment_truth_state=commitment_truth_state,
         responsibility_ledger=responsibility_ledger,
         state_merge_guard=refreshed_state_merge_guard,
+        autobiographical_stack=refreshed_autobiographical_stack,
         nightmare_risk_ref=NIGHTMARE_RISK_REF if nightmare_risk else None,
         belief_learning_plan_ref=BELIEF_LEARNING_PLAN_REF if belief_learning_plan else None,
         language_learning_plan_ref=LANGUAGE_LEARNING_PLAN_REF if language_learning_plan else None,
@@ -938,6 +975,7 @@ def _refresh_long_horizon_continuity(
     write_json(relationship_memory_path, refreshed_relationship_memory)
     if refreshed_state_merge_guard:
         write_json(state_merge_guard_path, refreshed_state_merge_guard)
+    write_json(autobiographical_stack_path, refreshed_autobiographical_stack)
     write_json(engram_index_path, refreshed_engram_index)
     trait_drift_monitor = build_trait_drift_monitor_from_self_model(
         run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
@@ -959,6 +997,7 @@ def _refresh_long_horizon_continuity(
         "apology_repair_language_trace": refreshed_apology_repair_language_trace,
         "relationship_memory": refreshed_relationship_memory,
         "state_merge_guard": refreshed_state_merge_guard,
+        "autobiographical_stack": refreshed_autobiographical_stack,
         "engram_index": refreshed_engram_index,
         "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
