@@ -59,7 +59,7 @@ def refresh_resident_process_lease(
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> dict[str, Any]:
     lease = _read_lease(terminal_dir)
-    if not lease:
+    if not lease or _requires_new_lease(lease, run_id):
         lease = open_resident_process_lease(
             run_id=run_id,
             generated_at=generated_at,
@@ -84,6 +84,39 @@ def refresh_resident_process_lease(
         lease=lease,
     )
     return lease
+
+
+def normalize_interrupted_resident_process_lease(
+    *,
+    next_run_id: str,
+    generated_at: str,
+    terminal_dir: Path,
+    previous_lease: dict[str, Any],
+    write_json: Callable[[Path, dict[str, Any]], None],
+) -> dict[str, Any] | None:
+    if previous_lease.get("lease_state") != "active":
+        return None
+
+    interrupted_lease = dict(previous_lease)
+    interrupted_lease.setdefault(
+        "resident_process_id",
+        f"resident-process-{interrupted_lease.get('run_id', 'unknown')}",
+    )
+    interrupted_lease["lease_state"] = "interrupted_on_relaunch"
+    interrupted_lease["last_seen_at"] = generated_at
+    interrupted_lease["closed_at"] = generated_at
+    interrupted_lease["exit_reason"] = "relaunch_detected_active_lease"
+    interrupted_lease["interrupted_by_run_id"] = next_run_id
+    interrupted_lease["resident_process_lease_history_ref"] = RESIDENT_PROCESS_LEASE_HISTORY_REF
+    write_json(terminal_dir / "resident_process_lease.json", interrupted_lease)
+    _append_lease_history_event(
+        terminal_dir=terminal_dir,
+        generated_at=generated_at,
+        event_kind="lease_interrupted_on_relaunch",
+        lease=interrupted_lease,
+        extra={"interrupted_by_run_id": next_run_id},
+    )
+    return interrupted_lease
 
 
 def close_resident_process_lease(
@@ -136,6 +169,7 @@ def _append_lease_history_event(
     generated_at: str,
     event_kind: str,
     lease: dict[str, Any],
+    extra: dict[str, Any] | None = None,
 ) -> None:
     event = {
         "schema_version": "resident_process_lease_history_event_v0",
@@ -152,11 +186,19 @@ def _append_lease_history_event(
         "exit_reason": lease.get("exit_reason"),
         "process_report_ref": lease.get("process_report_ref"),
     }
+    if extra:
+        event.update(extra)
     terminal_dir.mkdir(parents=True, exist_ok=True)
     with (terminal_dir / "resident_process_lease_history.jsonl").open(
         "a", encoding="utf-8"
     ) as handle:
         handle.write(json.dumps(event, ensure_ascii=False) + "\n")
+
+
+def _requires_new_lease(lease: dict[str, Any], run_id: str) -> bool:
+    if lease.get("lease_state") != "active":
+        return True
+    return lease.get("run_id") not in (None, run_id)
 
 
 def _read_lease(terminal_dir: Path) -> dict[str, Any]:

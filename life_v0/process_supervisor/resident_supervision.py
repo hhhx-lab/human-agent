@@ -188,6 +188,9 @@ def bootstrap_resident_supervision(
     previous_terminal_life_loop_state = read_json_if_exists(
         terminal_dir / "terminal_life_loop_state.json"
     )
+    previous_resident_process_lease = read_json_if_exists(
+        terminal_dir / "resident_process_lease.json"
+    )
 
     shell_result = run_digital_life_shell_command(
         state_dir=state_dir,
@@ -613,9 +616,11 @@ def bootstrap_resident_supervision(
     relaunch_recovery_report = detect_and_normalize_interrupted_previous_state(
         run_id=run_id,
         generated_at=generated_at,
+        terminal_dir=terminal_dir,
         reports_dir=reports_dir,
         previous_safe_terminal_loop=previous_safe_terminal_loop,
         previous_terminal_life_loop_state=previous_terminal_life_loop_state,
+        previous_resident_process_lease=previous_resident_process_lease,
         safe_terminal_loop=safe_terminal_loop,
         terminal_life_loop_state=terminal_life_loop_state,
         write_json=write_json,
@@ -641,6 +646,12 @@ def bootstrap_resident_supervision(
                 ),
                 "previous_terminal_loop_mode": relaunch_recovery_report.get(
                     "previous_terminal_loop_mode"
+                ),
+                "previous_resident_process_id": relaunch_recovery_report.get(
+                    "previous_resident_process_id"
+                ),
+                "previous_resident_process_lease_state": relaunch_recovery_report.get(
+                    "previous_resident_process_lease_state"
                 ),
                 "normalized_mode": relaunch_recovery_report.get("normalized_mode"),
             },

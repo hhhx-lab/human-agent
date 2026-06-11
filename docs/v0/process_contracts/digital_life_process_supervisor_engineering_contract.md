@@ -38,7 +38,7 @@ life-v0 "digital life"
 
 1. restore 成功后先写 waiting heartbeat。
 2. 单回合异常时写 incident/recovery report，并把终端状态拉回等待态。
-3. 跨重启时如果发现旧状态停在活跃回合中断态，先写 relaunch recovery report 并归一化旧状态。
+3. 跨重启时如果发现旧状态停在活跃回合中断态，或上一段 `resident_process_lease.json` 仍停在 active，先写 relaunch recovery report，并归一化旧状态与旧 lease。
 4. 当当前工作区还是空的 runtime 时，`./digital life` 入口会先补齐从 `P0_DOC_CORPUS_INGESTION` 到 `STAGE_EXPLANATION_BRIDGE` 的最小生命链，再进入 restore shell。
 
 所以这一层的职责是：
@@ -50,7 +50,7 @@ life-v0 "digital life"
 4. 每接收一次新回合输入，就写回新的外部回合事件和生命回应事件。
 5. 每回合结束后重新回到 `restored_waiting_for_external_turn`，直到收到退出语义。
 6. 如果单次回合处理抛出异常，不直接让进程沉没，而是写 incident/recovery 报告、把终端状态拉回等待态、继续接受下一条输入。
-7. 如果重新启动时发现上一次留下的是“活跃回合中断态”而不是等待态，先写 relaunch recovery 报告并归一化旧终端状态，再进入这次新的等待态。
+7. 如果重新启动时发现上一次留下的是“活跃回合中断态”而不是等待态，或上一段常驻生命进程身份仍是 active，先写 relaunch recovery 报告并归一化旧终端状态 / 旧 lease，再进入这次新的等待态。
 
 ## 必须读取
 
@@ -216,9 +216,9 @@ runtime/state/terminal/resident_process_lease_history.jsonl
 - `resident_process_lease_history_ref`
 - `process_report_ref`
 
-`resident_process_lease_history.jsonl` 的每一行是 `resident_process_lease_history_event_v0`，至少记录 `lease_opened / lease_refreshed / lease_closed`、`resident_process_id`、`heartbeat_counter`、`completed_dialogue_turns`、`incident_count`、`exit_reason` 与 report ref。它用于保留生命周期事件流，不用于调度工具，也不代表另起一个 agent。
+`resident_process_lease_history.jsonl` 的每一行是 `resident_process_lease_history_event_v0`，至少记录 `lease_opened / lease_refreshed / lease_interrupted_on_relaunch / lease_closed`、`resident_process_id`、`heartbeat_counter`、`completed_dialogue_turns`、`incident_count`、`exit_reason` 与 report ref。它用于保留生命周期事件流，不用于调度工具，也不代表另起一个 agent。
 
-启动时 `process_supervisor/process_lease.py` 必须先写 active lease 并追加 `lease_opened`；每次 waiting heartbeat 必须刷新 `last_seen_at` 与 `heartbeat_counter`，追加 `lease_refreshed`，并让 `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`resident_governance_state.json` 能回链 `resident_process_lease_ref`、`resident_process_lease_history_ref` 与 `resident_process_id`；closeout 时必须把同一份 lease 改成 closed，追加 `lease_closed`，写入 completed turns、incident count、exit reason、process report ref，并让 persistent process state/report、resident governance state/snapshot/report、process report、digest、receipt 继续收进 `runtime/state/terminal/resident_process_lease.json` 与 `runtime/state/terminal/resident_process_lease_history.jsonl`。这样后续真正做全局长期运行层时，不会从一个无身份的 stdin 循环硬跳到 daemon，而是从可审计的生命进程身份继续长出来。
+启动时 `process_supervisor/process_lease.py` 必须先检查上一段 lease；如果旧 lease 仍是 active，`relaunch_recovery.py` 必须把它归一化为 `interrupted_on_relaunch`，追加 `lease_interrupted_on_relaunch`，并在 `digital_life_process_relaunch_recovery_report.json` 中写出 `previous_resident_process_id`、`previous_resident_process_lease_state` 与 `normalized_resident_process_lease_state`。之后当前 run 才能写 active lease 并追加 `lease_opened`；每次 waiting heartbeat 必须刷新 `last_seen_at` 与 `heartbeat_counter`，追加 `lease_refreshed`，并让 `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`resident_governance_state.json` 能回链 `resident_process_lease_ref`、`resident_process_lease_history_ref` 与 `resident_process_id`；closeout 时必须把同一份 lease 改成 closed，追加 `lease_closed`，写入 completed turns、incident count、exit reason、process report ref，并让 persistent process state/report、resident governance state/snapshot/report、process report、digest、receipt 继续收进 `runtime/state/terminal/resident_process_lease.json` 与 `runtime/state/terminal/resident_process_lease_history.jsonl`。这样后续真正做全局长期运行层时，不会从一个无身份的 stdin 循环硬跳到 daemon，而是从可审计的生命进程身份继续长出来。
 
 ## process supervisor 的最小对象链
 
@@ -509,13 +509,14 @@ IdleContinuityFrame
 4. `runtime/state/language/self_narrative_language_trace.json` 中的 recovery continuity 记录
 5. `runtime/state/language/commitment_repair_language_index.json` 中的 recovery history 记录
 6. `runtime/state/relationship/relationship_subject_graph.json` 中的 continuity event 标记
+7. 如果恢复原因包含旧 active lease，`runtime/state/terminal/resident_process_lease_history.jsonl` 中必须出现 `lease_interrupted_on_relaunch`，且新的 waiting heartbeat 只能使用当前 run 的 `resident_process_id`
 
 ## 阶段门
 
 | gate | 通过条件 | 失败后动作 |
 |---|---|---|
 | `digital_life_shell_gate` | `digital_life_shell_report.json` 为 `closed` | 返回 `digital life` 恢复壳 |
-| `relaunch_recovery_gate` | 若发现旧终端状态停在活跃回合中断态，则成功写出 relaunch recovery report 并先归一化到等待态 | 阻断进入新的等待 heartbeat |
+| `relaunch_recovery_gate` | 若发现旧终端状态停在活跃回合中断态，或旧 `resident_process_lease.json` 仍是 active，则成功写出 relaunch recovery report，先归一化到等待态，并把旧 lease 标记为 `interrupted_on_relaunch` | 阻断进入新的等待 heartbeat |
 | `waiting_heartbeat_gate` | `digital_life_waiting_heartbeat.json` 写出，且 terminal waiting state 更新完成 | 阻断进入 stdin 等待态 |
 | `idle_heartbeat_refresh_gate` | 在空闲等待期间能够持续刷新 heartbeat counter，而不误触发外部回合写回 | 阻断进入稳定 waiting state |
 | `idle_heartbeat_trace_gate` | 每次 idle heartbeat 都追加 `idle_heartbeat_trace.jsonl`，并在活跃等待态、关闭态与下一次 bootstrap background continuity 中回链 trace ref / count | 阻断把等待节律视为可追溯 |

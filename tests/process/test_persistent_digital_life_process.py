@@ -4243,6 +4243,146 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "relaunch_recovery_normalization",
             )
 
+    def test_resident_supervision_normalizes_interrupted_active_process_lease_on_relaunch(self):
+        from life_v0.process_supervisor.resident_supervision import (
+            bootstrap_resident_supervision,
+        )
+        from life_v0.shell_command import run_digital_life_shell_command
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            self._bootstrap(paths)
+
+            seed_result = run_digital_life_shell_command(
+                state_dir=paths["state_root"],
+                reports_dir=paths["reports"],
+                receipts_dir=paths["receipts"],
+                run_id="resident-lease-relaunch-seed",
+                strict=True,
+            )
+            self.assertEqual(seed_result.exit_code, 0)
+
+            previous_lease = {
+                "schema_version": "resident_process_lease_v0",
+                "run_id": "previous-active-lease",
+                "resident_process_id": "resident-process-previous-active-lease",
+                "lease_state": "active",
+                "opened_at": "2026-06-09T23:59:00+00:00",
+                "last_seen_at": "2026-06-09T23:59:10+00:00",
+                "closed_at": None,
+                "heartbeat_counter": 2,
+                "completed_dialogue_turns": 0,
+                "incident_count": 0,
+                "exit_reason": None,
+                "resident_process_lease_history_ref": "runtime/state/terminal/resident_process_lease_history.jsonl",
+                "process_report_ref": None,
+            }
+            self._write_json(paths["terminal_state"] / "resident_process_lease.json", previous_lease)
+            (paths["terminal_state"] / "resident_process_lease_history.jsonl").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "resident_process_lease_history_event_v0",
+                        "event_kind": "lease_opened",
+                        "generated_at": "2026-06-09T23:59:00+00:00",
+                        "run_id": "previous-active-lease",
+                        "resident_process_id": "resident-process-previous-active-lease",
+                        "resident_process_lease_ref": "runtime/state/terminal/resident_process_lease.json",
+                        "resident_process_lease_history_ref": "runtime/state/terminal/resident_process_lease_history.jsonl",
+                        "lease_state": "active",
+                        "heartbeat_counter": 0,
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            result = bootstrap_resident_supervision(
+                state_dir=paths["state_root"],
+                reports_dir=paths["reports"],
+                receipts_dir=paths["receipts"],
+                run_id="resident-lease-relaunch",
+                generated_at="2026-06-10T00:00:00+00:00",
+                strict=True,
+                source_doc_refs=[
+                    "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                read_json=self._read_json,
+                read_json_if_exists=lambda path: self._read_json(path) if path.exists() else {},
+                write_json=self._write_json,
+                now_iso=lambda: "2026-06-10T00:00:00+00:00",
+            )
+
+            self.assertEqual(result.exit_code, 0)
+            self.assertIsNotNone(result.context)
+            assert result.context is not None
+
+            relaunch_recovery_report = self._read_json(
+                paths["reports"] / "digital_life_process_relaunch_recovery_report.json"
+            )
+            current_lease = self._read_json(paths["terminal_state"] / "resident_process_lease.json")
+            lease_history = [
+                json.loads(line)
+                for line in (paths["terminal_state"] / "resident_process_lease_history.jsonl")
+                .read_text(encoding="utf-8")
+                .splitlines()
+                if line.strip()
+            ]
+            safe_terminal_loop = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
+            terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
+            heartbeat_packet = self._read_json(paths["reports"] / "digital_life_waiting_heartbeat.json")
+
+            self.assertEqual(result.context.relaunch_recovery_count, 1)
+            self.assertEqual(
+                result.context.last_relaunch_recovery_report_ref,
+                "runtime/reports/latest/digital_life_process_relaunch_recovery_report.json",
+            )
+            self.assertEqual(
+                relaunch_recovery_report["relaunch_recovery_kind"],
+                "interrupted_previous_active_lease",
+            )
+            self.assertEqual(
+                relaunch_recovery_report["previous_resident_process_id"],
+                "resident-process-previous-active-lease",
+            )
+            self.assertEqual(
+                relaunch_recovery_report["previous_resident_process_lease_state"],
+                "active",
+            )
+            self.assertEqual(
+                relaunch_recovery_report["normalized_resident_process_lease_state"],
+                "interrupted_on_relaunch",
+            )
+            self.assertEqual(
+                relaunch_recovery_report["resident_process_lease_history_ref"],
+                "runtime/state/terminal/resident_process_lease_history.jsonl",
+            )
+            self.assertEqual(current_lease["run_id"], "resident-lease-relaunch")
+            self.assertEqual(
+                current_lease["resident_process_id"],
+                "resident-process-resident-lease-relaunch",
+            )
+            self.assertEqual(current_lease["lease_state"], "active")
+            self.assertIn(
+                "lease_interrupted_on_relaunch",
+                [event["event_kind"] for event in lease_history],
+            )
+            self.assertEqual(lease_history[-1]["event_kind"], "lease_refreshed")
+            self.assertEqual(
+                safe_terminal_loop["last_resident_process_lease_recovery_status"],
+                "normalized_from_interrupted_active_lease",
+            )
+            self.assertEqual(
+                terminal_loop_state["previous_resident_process_id"],
+                "resident-process-previous-active-lease",
+            )
+            self.assertEqual(
+                heartbeat_packet["resident_process_id"],
+                "resident-process-resident-lease-relaunch",
+            )
+
     def test_resident_supervision_reloads_background_continuity_from_previous_process_closeout(self):
         from life_v0.process_supervisor.resident_supervision import (
             bootstrap_resident_supervision,
