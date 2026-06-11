@@ -1946,6 +1946,77 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "queue_e_cross_layer_gate_has_deferred_life_constraints",
         )
 
+    def test_background_continuity_restores_prediction_write_gate_from_lineage_presence(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        expected_prediction_refs = [
+            "runtime/state/signal/signal_media_runtime.json",
+            "runtime/state/prediction/belief_state_frame.json",
+            "runtime/state/prediction/prediction_error_field.json",
+            "runtime/state/prediction/active_sampling_plan.json",
+            "runtime/state/memory/memory_write_gate.json",
+            "runtime/state/memory/state_merge_guard.json",
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            terminal_dir = root / "state" / "terminal"
+            reports_dir = root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "run_id": "prediction-lineage-restore",
+                    "resident_background_lineage_state": {
+                        "schema_version": "resident_background_lineage_state_v0",
+                        "prediction_write_gate_presence": {
+                            "prediction_write_gate_refs": expected_prediction_refs,
+                            "prediction_waiting_posture": "repair_write_guard",
+                            "response_surface_posture_hint": "repair",
+                            "prediction_attention_target": "active_sampling_plan",
+                            "prediction_attention_reason": "active_sampling_route_prioritizes_repair_pressure",
+                            "active_sampling_route": "repair_inspect",
+                            "memory_write_gate_policy": "repair_first_quarantine",
+                        },
+                    },
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+        self.assertEqual(
+            profile["background_prediction_write_gate_refs"],
+            expected_prediction_refs,
+        )
+        self.assertEqual(
+            profile["background_prediction_waiting_posture"],
+            "repair_write_guard",
+        )
+        self.assertEqual(
+            profile["background_response_surface_posture_hint"],
+            "repair",
+        )
+        self.assertEqual(
+            profile["background_prediction_attention_target"],
+            "active_sampling_plan",
+        )
+        self.assertEqual(
+            profile["background_prediction_attention_reason"],
+            "active_sampling_route_prioritizes_repair_pressure",
+        )
+        self.assertEqual(profile["background_active_sampling_route"], "repair_inspect")
+        self.assertEqual(
+            profile["background_memory_write_gate_policy"],
+            "repair_first_quarantine",
+        )
+
     def test_idle_strategy_carries_queue_f_birth_and_consciousness_into_waiting_governance(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
 
@@ -6770,6 +6841,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 result.emitted_output,
             )
             self.assertIn("后台关系离线重整仍需要保持", result.emitted_output)
+            expected_prediction_write_gate_refs = [
+                "runtime/state/signal/signal_media_runtime.json",
+                "runtime/state/prediction/belief_state_frame.json",
+                "runtime/state/prediction/prediction_error_field.json",
+                "runtime/state/prediction/active_sampling_plan.json",
+                "runtime/state/memory/memory_write_gate.json",
+                "runtime/state/memory/state_merge_guard.json",
+            ]
             self.assertEqual(
                 result.last_life_turn["prediction_waiting_posture"],
                 "hold_for_evidence",
@@ -6780,14 +6859,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(
                 result.last_life_turn["prediction_write_gate_refs"],
-                [
-                    "runtime/state/signal/signal_media_runtime.json",
-                    "runtime/state/prediction/belief_state_frame.json",
-                    "runtime/state/prediction/prediction_error_field.json",
-                    "runtime/state/prediction/active_sampling_plan.json",
-                    "runtime/state/memory/memory_write_gate.json",
-                    "runtime/state/memory/state_merge_guard.json",
-                ],
+                expected_prediction_write_gate_refs,
             )
             self.assertEqual(
                 result.last_life_turn["offline_learning_cumulative_generation"],
@@ -7084,14 +7156,13 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertEqual(
                 dialogue_writeback_bundle["prediction_write_gate_refs"],
-                [
-                    "runtime/state/signal/signal_media_runtime.json",
-                    "runtime/state/prediction/belief_state_frame.json",
-                    "runtime/state/prediction/prediction_error_field.json",
-                    "runtime/state/prediction/active_sampling_plan.json",
-                    "runtime/state/memory/memory_write_gate.json",
-                    "runtime/state/memory/state_merge_guard.json",
+                expected_prediction_write_gate_refs,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_prediction_write_gate_refs"
                 ],
+                expected_prediction_write_gate_refs,
             )
             self.assertEqual(
                 dialogue_writeback_bundle["offline_learning_cumulative_refs"],
@@ -12100,6 +12171,165 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         )
         self.assertIn("生命约束证据保留2条", response)
 
+    def test_background_lineage_state_carries_prediction_write_gate_presence(self):
+        from life_v0.process_supervisor.background_lineage_state import (
+            build_resident_background_lineage_state,
+        )
+
+        expected_prediction_refs = [
+            "runtime/state/signal/signal_media_runtime.json",
+            "runtime/state/prediction/belief_state_frame.json",
+            "runtime/state/prediction/prediction_error_field.json",
+            "runtime/state/prediction/active_sampling_plan.json",
+            "runtime/state/memory/memory_write_gate.json",
+            "runtime/state/memory/state_merge_guard.json",
+        ]
+
+        lineage_state = build_resident_background_lineage_state(
+            {
+                "background_lineage_depth_band": "single_carryover",
+                "background_carryover_generation": 1,
+                "prediction_write_gate_refs": expected_prediction_refs,
+                "prediction_waiting_posture": "repair_write_guard",
+                "response_surface_posture_hint": "repair",
+                "prediction_attention_target": "active_sampling_plan",
+                "prediction_attention_reason": "active_sampling_route_prioritizes_repair_pressure",
+                "prediction_error_count": 2,
+                "active_sampling_route": "repair_inspect",
+                "memory_write_gate_policy": "repair_first_quarantine",
+                "state_merge_policy": "long_term_merge_fail_closed",
+            },
+            governance_phase="waiting_heartbeat_active",
+            status="active",
+        )
+
+        prediction_presence = lineage_state["prediction_write_gate_presence"]
+        self.assertEqual(
+            prediction_presence["prediction_write_gate_refs"],
+            expected_prediction_refs,
+        )
+        self.assertEqual(
+            prediction_presence["prediction_waiting_posture"],
+            "repair_write_guard",
+        )
+        self.assertEqual(
+            prediction_presence["response_surface_posture_hint"],
+            "repair",
+        )
+        self.assertEqual(
+            prediction_presence["prediction_attention_target"],
+            "active_sampling_plan",
+        )
+        self.assertEqual(
+            prediction_presence["prediction_attention_reason"],
+            "active_sampling_route_prioritizes_repair_pressure",
+        )
+        self.assertEqual(prediction_presence["prediction_error_count"], 2)
+        self.assertEqual(prediction_presence["active_sampling_route"], "repair_inspect")
+        self.assertEqual(
+            prediction_presence["memory_write_gate_policy"],
+            "repair_first_quarantine",
+        )
+        self.assertEqual(
+            prediction_presence["state_merge_policy"],
+            "long_term_merge_fail_closed",
+        )
+        self.assertEqual(
+            prediction_presence["prediction_write_gate_evidence_refs"],
+            expected_prediction_refs,
+        )
+
+    def test_response_surface_reads_prediction_write_gate_from_background_lineage_presence(self):
+        from life_v0.process_supervisor.response_surface import compose_life_response
+
+        expected_prediction_refs = [
+            "runtime/state/signal/signal_media_runtime.json",
+            "runtime/state/prediction/belief_state_frame.json",
+            "runtime/state/prediction/prediction_error_field.json",
+            "runtime/state/prediction/active_sampling_plan.json",
+            "runtime/state/memory/memory_write_gate.json",
+            "runtime/state/memory/state_merge_guard.json",
+        ]
+
+        response = compose_life_response(
+            external_utterance="继续保持预测写门",
+            terminal_life_loop_state={
+                "resident_background_lineage_state": {
+                    "schema_version": "resident_background_lineage_state_v0",
+                    "depth_band": "persistent_lineage",
+                    "prediction_write_gate_presence": {
+                        "prediction_write_gate_refs": expected_prediction_refs,
+                        "prediction_waiting_posture": "repair_write_guard",
+                        "response_surface_posture_hint": "repair",
+                        "prediction_attention_target": "active_sampling_plan",
+                        "active_sampling_route": "repair_inspect",
+                        "prediction_error_count": 2,
+                        "memory_write_gate_policy": "repair_first_quarantine",
+                        "state_merge_policy": "long_term_merge_fail_closed",
+                    },
+                }
+            },
+        )
+
+        self.assertIn("预测输出姿态为修复", response)
+        self.assertIn("主动采样路线为repair_inspect", response)
+        self.assertIn("预测误差仍有2条", response)
+        self.assertIn("记忆写门处于repair_first_quarantine", response)
+        self.assertIn("长期合并治理处于long_term_merge_fail_closed", response)
+        self.assertIn("后台预测写门姿态为repair_write_guard", response)
+        self.assertIn("后台预测关注指向active_sampling_plan", response)
+        self.assertIn("后台预测写门证据保留6条", response)
+
+    def test_prediction_write_gate_payload_reads_background_lineage_presence(self):
+        from life_v0.process_supervisor.dialogue_events import (
+            build_prediction_write_gate_payload,
+        )
+
+        expected_prediction_refs = [
+            "runtime/state/signal/signal_media_runtime.json",
+            "runtime/state/prediction/belief_state_frame.json",
+            "runtime/state/prediction/prediction_error_field.json",
+            "runtime/state/prediction/active_sampling_plan.json",
+            "runtime/state/memory/memory_write_gate.json",
+            "runtime/state/memory/state_merge_guard.json",
+        ]
+
+        payload = build_prediction_write_gate_payload(
+            terminal_life_loop_state={
+                "resident_background_lineage_state": {
+                    "prediction_write_gate_presence": {
+                        "signal_media_ref": expected_prediction_refs[0],
+                        "belief_state_ref": expected_prediction_refs[1],
+                        "prediction_error_ref": expected_prediction_refs[2],
+                        "active_sampling_plan_ref": expected_prediction_refs[3],
+                        "memory_write_gate_ref": expected_prediction_refs[4],
+                        "state_merge_guard_ref": expected_prediction_refs[5],
+                        "prediction_write_gate_refs": expected_prediction_refs,
+                        "prediction_waiting_posture": "repair_write_guard",
+                        "response_surface_posture_hint": "repair",
+                        "prediction_attention_target": "active_sampling_plan",
+                        "prediction_attention_reason": "active_sampling_route_prioritizes_repair_pressure",
+                        "prediction_error_count": 2,
+                        "active_sampling_route": "repair_inspect",
+                        "memory_write_gate_policy": "repair_first_quarantine",
+                        "state_merge_policy": "long_term_merge_fail_closed",
+                    }
+                }
+            }
+        )
+
+        self.assertEqual(payload["prediction_write_gate_refs"], expected_prediction_refs)
+        self.assertEqual(payload["prediction_waiting_posture"], "repair_write_guard")
+        self.assertEqual(payload["response_surface_posture_hint"], "repair")
+        self.assertEqual(payload["prediction_attention_target"], "active_sampling_plan")
+        self.assertEqual(
+            payload["prediction_attention_reason"],
+            "active_sampling_route_prioritizes_repair_pressure",
+        )
+        self.assertEqual(payload["active_sampling_route"], "repair_inspect")
+        self.assertEqual(payload["memory_write_gate_policy"], "repair_first_quarantine")
+        self.assertEqual(payload["state_merge_policy"], "long_term_merge_fail_closed")
+
     def test_response_surface_organ_carries_relation_shared_terms_and_commitment_pressure(self):
         from life_v0.process_supervisor.response_surface import compose_life_response
 
@@ -13247,6 +13477,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/action/action_candidate_set.json#life_constraint_profile",
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
             ]
+            expected_prediction_write_gate_refs = [
+                "runtime/state/signal/signal_media_runtime.json",
+                "runtime/state/prediction/belief_state_frame.json",
+                "runtime/state/prediction/prediction_error_field.json",
+                "runtime/state/prediction/active_sampling_plan.json",
+                "runtime/state/memory/memory_write_gate.json",
+                "runtime/state/memory/state_merge_guard.json",
+            ]
             terminal_life_loop_state["resident_background_lineage_state"][
                 "birth_repair_presence"
             ] = {
@@ -13288,6 +13526,17 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "attention_target": "life_constraint_profile",
                 "attention_reason": "queue_e_cross_layer_gate_has_deferred_life_constraints",
                 "evidence_refs": expected_life_constraint_refs,
+            }
+            terminal_life_loop_state["resident_background_lineage_state"][
+                "prediction_write_gate_presence"
+            ] = {
+                "prediction_write_gate_refs": expected_prediction_write_gate_refs,
+                "prediction_waiting_posture": "repair_write_guard",
+                "response_surface_posture_hint": "repair",
+                "prediction_attention_target": "active_sampling_plan",
+                "prediction_attention_reason": "active_sampling_route_prioritizes_repair_pressure",
+                "active_sampling_route": "repair_inspect",
+                "memory_write_gate_policy": "repair_first_quarantine",
             }
             terminal_life_loop_state.update(
                 {
@@ -13743,6 +13992,11 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
                 dialogue_writeback_bundle["resident_background_lineage_refs"],
             )
+            for ref in expected_prediction_write_gate_refs:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle["resident_background_lineage_refs"],
+                )
             self.assertEqual(
                 dialogue_writeback_bundle[
                     "resident_background_lineage_identity_consciousness_birth_refs"
@@ -13948,6 +14202,24 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertEqual(
                 resumed_dialogue_packet["prediction_write_gate_refs"],
                 dialogue_writeback_bundle["prediction_write_gate_refs"],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_prediction_write_gate_refs"
+                ],
+                expected_prediction_write_gate_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_active_sampling_route"
+                ],
+                "repair_inspect",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_prediction_attention_target"
+                ],
+                "active_sampling_plan",
             )
             self.assertEqual(
                 resumed_dialogue_packet["live_language_turn_refs"],

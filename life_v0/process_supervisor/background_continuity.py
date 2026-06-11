@@ -259,6 +259,9 @@ def load_background_continuity_profile(
     resident_background_life_constraint_presence = _dict_or_empty(
         resident_background_lineage_state.get("life_constraint_presence")
     )
+    resident_background_prediction_write_gate_presence = _dict_or_empty(
+        resident_background_lineage_state.get("prediction_write_gate_presence")
+    )
     offline_learning_cumulative_profile = _dict_or_empty(
         resident_governance_state.get("offline_learning_cumulative_profile")
         or snapshot.get("offline_learning_cumulative_profile")
@@ -446,6 +449,76 @@ def load_background_continuity_profile(
             persistent_process_report.get(
                 "background_state_merge_long_term_change_refs"
             )
+        )
+    )
+    prediction_write_gate_refs = _dedupe_list(
+        _list_or_empty(resident_governance_state.get("prediction_write_gate_refs"))
+        + _list_or_empty(snapshot.get("prediction_write_gate_refs"))
+        + _list_or_empty(resident_governance_report.get("prediction_write_gate_refs"))
+        + _list_or_empty(persistent_process_report.get("prediction_write_gate_refs"))
+        + _list_or_empty(
+            resident_background_prediction_write_gate_presence.get(
+                "prediction_write_gate_refs"
+            )
+        )
+        + _list_or_empty(
+            resident_background_prediction_write_gate_presence.get(
+                "prediction_write_gate_evidence_refs"
+            )
+        )
+    )
+    prediction_waiting_posture = (
+        resident_governance_state.get("prediction_waiting_posture")
+        or snapshot.get("prediction_waiting_posture")
+        or resident_governance_report.get("prediction_waiting_posture")
+        or persistent_process_report.get("prediction_waiting_posture")
+        or resident_background_prediction_write_gate_presence.get(
+            "prediction_waiting_posture"
+        )
+    )
+    response_surface_posture_hint = (
+        resident_governance_state.get("response_surface_posture_hint")
+        or snapshot.get("response_surface_posture_hint")
+        or resident_governance_report.get("response_surface_posture_hint")
+        or persistent_process_report.get("response_surface_posture_hint")
+        or resident_background_prediction_write_gate_presence.get(
+            "response_surface_posture_hint"
+        )
+    )
+    prediction_attention_target = (
+        resident_governance_state.get("prediction_attention_target")
+        or snapshot.get("prediction_attention_target")
+        or resident_governance_report.get("prediction_attention_target")
+        or persistent_process_report.get("prediction_attention_target")
+        or resident_background_prediction_write_gate_presence.get(
+            "prediction_attention_target"
+        )
+    )
+    prediction_attention_reason = (
+        resident_governance_state.get("prediction_attention_reason")
+        or snapshot.get("prediction_attention_reason")
+        or resident_governance_report.get("prediction_attention_reason")
+        or persistent_process_report.get("prediction_attention_reason")
+        or resident_background_prediction_write_gate_presence.get(
+            "prediction_attention_reason"
+        )
+    )
+    active_sampling_route = (
+        resident_governance_state.get("active_sampling_route")
+        or snapshot.get("active_sampling_route")
+        or resident_governance_report.get("active_sampling_route")
+        or persistent_process_report.get("active_sampling_route")
+        or resident_background_prediction_write_gate_presence.get(
+            "active_sampling_route"
+        )
+    )
+    memory_write_gate_policy = (
+        resident_governance_state.get("memory_write_gate_policy")
+        or snapshot.get("memory_write_gate_policy")
+        or resident_governance_report.get("memory_write_gate_policy")
+        or persistent_process_report.get("memory_write_gate_policy")
+        or resident_background_prediction_write_gate_presence.get(
+            "memory_write_gate_policy"
         )
     )
     schema_cross_file_logic_ref = _first_present(
@@ -791,6 +864,34 @@ def load_background_continuity_profile(
     if state_merge_long_term_change_refs:
         profile["background_state_merge_long_term_change_refs"] = (
             state_merge_long_term_change_refs
+        )
+    if resident_background_prediction_write_gate_presence:
+        profile["background_prediction_write_gate_presence"] = (
+            resident_background_prediction_write_gate_presence
+        )
+    if prediction_write_gate_refs:
+        profile["background_prediction_write_gate_refs"] = prediction_write_gate_refs
+    if prediction_waiting_posture:
+        profile["background_prediction_waiting_posture"] = str(
+            prediction_waiting_posture
+        )
+    if response_surface_posture_hint:
+        profile["background_response_surface_posture_hint"] = str(
+            response_surface_posture_hint
+        )
+    if prediction_attention_target:
+        profile["background_prediction_attention_target"] = str(
+            prediction_attention_target
+        )
+    if prediction_attention_reason:
+        profile["background_prediction_attention_reason"] = str(
+            prediction_attention_reason
+        )
+    if active_sampling_route:
+        profile["background_active_sampling_route"] = str(active_sampling_route)
+    if memory_write_gate_policy:
+        profile["background_memory_write_gate_policy"] = str(
+            memory_write_gate_policy
         )
     if schema_cross_file_logic_ref:
         profile["background_schema_cross_file_logic_ref"] = str(

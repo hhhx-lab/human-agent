@@ -88,22 +88,25 @@ def build_life_turn_event(
     event.update(build_background_trait_convergence_payload(terminal_life_loop_state))
     event.update(build_resident_background_lineage_payload(terminal_life_loop_state))
     event.update(build_offline_learning_cumulative_payload(terminal_life_loop_state))
-    event.update(
-        build_prediction_write_gate_payload(
-            terminal_life_loop_state=terminal_life_loop_state,
-            signal_media_runtime=signal_media_runtime,
-            belief_state=belief_state,
-            prediction_error_field=prediction_error_field,
-            active_sampling_plan=active_sampling_plan,
-            memory_write_gate=memory_write_gate,
-            state_merge_guard=state_merge_guard,
-            signal_media_runtime_ref=signal_media_runtime_ref,
-            belief_state_ref=belief_state_ref,
-            prediction_error_field_ref=prediction_error_field_ref,
-            active_sampling_plan_ref=active_sampling_plan_ref,
-            memory_write_gate_ref=memory_write_gate_ref,
-            state_merge_guard_ref=state_merge_guard_ref,
-        )
+    prediction_write_gate_payload = build_prediction_write_gate_payload(
+        terminal_life_loop_state=terminal_life_loop_state,
+        signal_media_runtime=signal_media_runtime,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+        signal_media_runtime_ref=signal_media_runtime_ref,
+        belief_state_ref=belief_state_ref,
+        prediction_error_field_ref=prediction_error_field_ref,
+        active_sampling_plan_ref=active_sampling_plan_ref,
+        memory_write_gate_ref=memory_write_gate_ref,
+        state_merge_guard_ref=state_merge_guard_ref,
+    )
+    event.update(prediction_write_gate_payload)
+    attach_prediction_write_gate_lineage_fallback(
+        event,
+        prediction_write_gate_payload,
     )
     return event
 
@@ -214,6 +217,7 @@ def build_resident_background_lineage_payload(
         "heartbeat_presence",
         "language_presence",
         "state_merge_presence",
+        "prediction_write_gate_presence",
         "identity_consciousness_birth_presence",
         "resident_process_identity_presence",
         "offline_learning_presence",
@@ -390,6 +394,115 @@ def build_resident_background_lineage_payload(
                 state_merge_refs
             )
             lineage_refs.extend(state_merge_refs)
+    prediction_write_gate_presence = lineage_state.get(
+        "prediction_write_gate_presence"
+    )
+    if isinstance(prediction_write_gate_presence, dict):
+        for source_key, target_key in (
+            ("signal_media_ref", "resident_background_lineage_signal_media_ref"),
+            ("belief_state_ref", "resident_background_lineage_belief_state_ref"),
+            (
+                "prediction_error_ref",
+                "resident_background_lineage_prediction_error_ref",
+            ),
+            (
+                "active_sampling_plan_ref",
+                "resident_background_lineage_active_sampling_plan_ref",
+            ),
+            (
+                "memory_write_gate_ref",
+                "resident_background_lineage_memory_write_gate_ref",
+            ),
+            (
+                "state_merge_guard_ref",
+                "resident_background_lineage_prediction_state_merge_guard_ref",
+            ),
+            (
+                "prediction_waiting_posture",
+                "resident_background_lineage_prediction_waiting_posture",
+            ),
+            (
+                "response_surface_posture_hint",
+                "resident_background_lineage_response_surface_posture_hint",
+            ),
+            (
+                "prediction_attention_target",
+                "resident_background_lineage_prediction_attention_target",
+            ),
+            (
+                "prediction_attention_reason",
+                "resident_background_lineage_prediction_attention_reason",
+            ),
+            (
+                "active_sampling_route",
+                "resident_background_lineage_active_sampling_route",
+            ),
+            (
+                "memory_write_gate_policy",
+                "resident_background_lineage_memory_write_gate_policy",
+            ),
+            (
+                "state_merge_policy",
+                "resident_background_lineage_prediction_state_merge_policy",
+            ),
+        ):
+            value = prediction_write_gate_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        if prediction_write_gate_presence.get("prediction_error_count") is not None:
+            payload["resident_background_lineage_prediction_error_count"] = (
+                prediction_write_gate_presence.get("prediction_error_count")
+            )
+        if (
+            prediction_write_gate_presence.get("state_merge_long_term_change_count")
+            is not None
+        ):
+            payload[
+                "resident_background_lineage_prediction_state_merge_long_term_change_count"
+            ] = prediction_write_gate_presence.get(
+                "state_merge_long_term_change_count"
+            )
+        state_merge_change_families = _dedupe_string_list(
+            _string_list(
+                prediction_write_gate_presence.get(
+                    "state_merge_long_term_change_families"
+                )
+            )
+        )
+        if state_merge_change_families:
+            payload[
+                "resident_background_lineage_prediction_state_merge_long_term_change_families"
+            ] = state_merge_change_families
+        prediction_write_gate_refs = _dedupe_string_list(
+            _string_list(
+                prediction_write_gate_presence.get(
+                    "prediction_write_gate_evidence_refs"
+                )
+            )
+            or _string_list(
+                prediction_write_gate_presence.get("prediction_write_gate_refs")
+            )
+            + _string_list(
+                prediction_write_gate_presence.get(
+                    "state_merge_long_term_change_refs"
+                )
+            )
+            + _string_list(
+                [
+                    prediction_write_gate_presence.get("signal_media_ref"),
+                    prediction_write_gate_presence.get("belief_state_ref"),
+                    prediction_write_gate_presence.get("prediction_error_ref"),
+                    prediction_write_gate_presence.get("active_sampling_plan_ref"),
+                    prediction_write_gate_presence.get("memory_write_gate_ref"),
+                    prediction_write_gate_presence.get("state_merge_guard_ref"),
+                ]
+            )
+        )
+        if prediction_write_gate_refs:
+            payload[
+                "resident_background_lineage_prediction_write_gate_refs"
+            ] = prediction_write_gate_refs
+            lineage_refs.extend(prediction_write_gate_refs)
     identity_consciousness_birth_presence = lineage_state.get(
         "identity_consciousness_birth_presence"
     )
@@ -1097,6 +1210,14 @@ def build_prediction_write_gate_payload(
     state_merge_guard_ref: str | None = None,
 ) -> dict[str, Any]:
     terminal_life_loop_state = terminal_life_loop_state or {}
+    lineage_state = terminal_life_loop_state.get("resident_background_lineage_state")
+    if not isinstance(lineage_state, dict):
+        lineage_state = {}
+    prediction_write_gate_presence = lineage_state.get(
+        "prediction_write_gate_presence"
+    )
+    if not isinstance(prediction_write_gate_presence, dict):
+        prediction_write_gate_presence = {}
     profile = _derive_prediction_write_gate_profile(
         signal_media_runtime=signal_media_runtime,
         belief_state=belief_state,
@@ -1116,6 +1237,8 @@ def build_prediction_write_gate_payload(
         "state_merge_guard_ref",
     ):
         value = terminal_life_loop_state.get(key)
+        if not value:
+            value = prediction_write_gate_presence.get(key)
         if value:
             payload[key] = value
     explicit_ref_values = {
@@ -1132,6 +1255,12 @@ def build_prediction_write_gate_payload(
 
     prediction_refs = [
         *_string_list(terminal_life_loop_state.get("prediction_write_gate_refs")),
+        *_string_list(
+            prediction_write_gate_presence.get("prediction_write_gate_refs")
+        ),
+        *_string_list(
+            prediction_write_gate_presence.get("prediction_write_gate_evidence_refs")
+        ),
         *[ref for ref in explicit_ref_values.values() if ref],
     ]
     if prediction_refs:
@@ -1153,9 +1282,109 @@ def build_prediction_write_gate_payload(
         value = profile.get(key) if profile else terminal_life_loop_state.get(key)
         if not _present_value(value):
             value = terminal_life_loop_state.get(key)
+        if not _present_value(value):
+            value = prediction_write_gate_presence.get(key)
         if _present_value(value):
             payload[key] = value
     return payload
+
+
+def attach_prediction_write_gate_lineage_fallback(
+    payload: dict[str, Any],
+    prediction_write_gate_payload: dict[str, Any],
+) -> None:
+    prediction_refs = _dedupe_string_list(
+        _string_list(
+            prediction_write_gate_payload.get("prediction_write_gate_refs")
+        )
+    )
+    if not prediction_refs:
+        return
+    if "resident_background_lineage_prediction_write_gate_refs" not in payload:
+        payload["resident_background_lineage_prediction_write_gate_refs"] = (
+            prediction_refs
+        )
+    field_map = (
+        ("signal_media_ref", "resident_background_lineage_signal_media_ref"),
+        ("belief_state_ref", "resident_background_lineage_belief_state_ref"),
+        ("prediction_error_ref", "resident_background_lineage_prediction_error_ref"),
+        (
+            "active_sampling_plan_ref",
+            "resident_background_lineage_active_sampling_plan_ref",
+        ),
+        (
+            "memory_write_gate_ref",
+            "resident_background_lineage_memory_write_gate_ref",
+        ),
+        (
+            "state_merge_guard_ref",
+            "resident_background_lineage_prediction_state_merge_guard_ref",
+        ),
+        (
+            "prediction_waiting_posture",
+            "resident_background_lineage_prediction_waiting_posture",
+        ),
+        (
+            "response_surface_posture_hint",
+            "resident_background_lineage_response_surface_posture_hint",
+        ),
+        (
+            "prediction_attention_target",
+            "resident_background_lineage_prediction_attention_target",
+        ),
+        (
+            "prediction_attention_reason",
+            "resident_background_lineage_prediction_attention_reason",
+        ),
+        ("active_sampling_route", "resident_background_lineage_active_sampling_route"),
+        (
+            "memory_write_gate_policy",
+            "resident_background_lineage_memory_write_gate_policy",
+        ),
+        (
+            "state_merge_policy",
+            "resident_background_lineage_prediction_state_merge_policy",
+        ),
+    )
+    for source_key, target_key in field_map:
+        if target_key in payload:
+            continue
+        value = prediction_write_gate_payload.get(source_key)
+        if value not in {None, ""}:
+            payload[target_key] = value
+    for source_key, target_key in (
+        ("prediction_error_count", "resident_background_lineage_prediction_error_count"),
+        (
+            "state_merge_long_term_change_count",
+            "resident_background_lineage_prediction_state_merge_long_term_change_count",
+        ),
+    ):
+        if target_key in payload:
+            continue
+        value = prediction_write_gate_payload.get(source_key)
+        if value is not None:
+            payload[target_key] = value
+    state_merge_families = _dedupe_string_list(
+        _string_list(
+            prediction_write_gate_payload.get(
+                "state_merge_long_term_change_families"
+            )
+        )
+    )
+    if (
+        state_merge_families
+        and "resident_background_lineage_prediction_state_merge_long_term_change_families"
+        not in payload
+    ):
+        payload[
+            "resident_background_lineage_prediction_state_merge_long_term_change_families"
+        ] = state_merge_families
+    evidence_refs = _dedupe_string_list(
+        _string_list(payload.get("resident_background_lineage_evidence_refs"))
+        + prediction_refs
+    )
+    if evidence_refs:
+        payload["resident_background_lineage_evidence_refs"] = evidence_refs
 
 
 def _derive_prediction_write_gate_profile(

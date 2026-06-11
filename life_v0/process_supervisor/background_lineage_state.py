@@ -16,6 +16,7 @@ def build_resident_background_lineage_state(
     resident_process_identity_presence = _resident_process_identity_presence(
         governance
     )
+    prediction_write_gate_presence = _prediction_write_gate_presence(governance)
     birth_repair_presence = _birth_repair_presence(governance)
     life_constraint_presence = _life_constraint_presence(governance)
     profile = _dict_or_empty(governance.get("background_lineage_governance_profile"))
@@ -35,6 +36,8 @@ def build_resident_background_lineage_state(
     if not depth_band and identity_consciousness_birth_presence:
         depth_band = "no_background_lineage"
     if not depth_band and resident_process_identity_presence:
+        depth_band = "no_background_lineage"
+    if not depth_band and prediction_write_gate_presence:
         depth_band = "no_background_lineage"
     if not depth_band and birth_repair_presence:
         depth_band = "no_background_lineage"
@@ -114,6 +117,10 @@ def build_resident_background_lineage_state(
     state_merge_presence = _state_merge_presence(governance)
     if state_merge_presence:
         lineage_state["state_merge_presence"] = state_merge_presence
+    if prediction_write_gate_presence:
+        lineage_state["prediction_write_gate_presence"] = (
+            prediction_write_gate_presence
+        )
     if identity_consciousness_birth_presence:
         lineage_state["identity_consciousness_birth_presence"] = (
             identity_consciousness_birth_presence
@@ -462,6 +469,152 @@ def _state_merge_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "long_term_change_families": long_term_change_families,
             "long_term_change_refs": long_term_change_refs,
             "state_merge_evidence_refs": evidence_refs,
+        }
+    )
+
+
+def _prediction_write_gate_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    previous_presence = _dict_or_empty(
+        _dict_or_empty(
+            governance.get("resident_background_lineage_state")
+            or governance.get("background_resident_lineage_state")
+        ).get("prediction_write_gate_presence")
+    )
+    signal_media_ref = _first_present(
+        governance.get("signal_media_ref"),
+        governance.get("background_signal_media_ref"),
+        previous_presence.get("signal_media_ref"),
+    )
+    belief_state_ref = _first_present(
+        governance.get("belief_state_ref"),
+        governance.get("background_belief_state_ref"),
+        previous_presence.get("belief_state_ref"),
+    )
+    prediction_error_ref = _first_present(
+        governance.get("prediction_error_ref"),
+        governance.get("background_prediction_error_ref"),
+        previous_presence.get("prediction_error_ref"),
+    )
+    active_sampling_plan_ref = _first_present(
+        governance.get("active_sampling_plan_ref"),
+        governance.get("background_active_sampling_plan_ref"),
+        previous_presence.get("active_sampling_plan_ref"),
+    )
+    memory_write_gate_ref = _first_present(
+        governance.get("memory_write_gate_ref"),
+        governance.get("background_memory_write_gate_ref"),
+        previous_presence.get("memory_write_gate_ref"),
+    )
+    state_merge_guard_ref = _first_present(
+        governance.get("state_merge_guard_ref"),
+        governance.get("background_state_merge_guard_ref"),
+        previous_presence.get("state_merge_guard_ref"),
+    )
+    prediction_refs = _dedupe_string_list(
+        _string_list(governance.get("prediction_write_gate_refs"))
+        + _string_list(governance.get("background_prediction_write_gate_refs"))
+        + _string_list(previous_presence.get("prediction_write_gate_refs"))
+        + _string_list(previous_presence.get("prediction_write_gate_evidence_refs"))
+        + _string_list(
+            [
+                signal_media_ref,
+                belief_state_ref,
+                prediction_error_ref,
+                active_sampling_plan_ref,
+                memory_write_gate_ref,
+                state_merge_guard_ref,
+            ]
+        )
+    )
+    prediction_error_count = _first_present(
+        governance.get("prediction_error_count"),
+        governance.get("background_prediction_error_count"),
+        previous_presence.get("prediction_error_count"),
+    )
+    state_merge_change_count = _first_present(
+        governance.get("state_merge_long_term_change_count"),
+        governance.get("background_state_merge_long_term_change_count"),
+        previous_presence.get("state_merge_long_term_change_count"),
+    )
+    state_merge_change_families = _dedupe_string_list(
+        _string_list(governance.get("state_merge_long_term_change_families"))
+        + _string_list(
+            governance.get("background_state_merge_long_term_change_families")
+        )
+        + _string_list(previous_presence.get("state_merge_long_term_change_families"))
+    )
+    state_merge_change_refs = _dedupe_string_list(
+        _string_list(governance.get("state_merge_long_term_change_refs"))
+        + _string_list(governance.get("background_state_merge_long_term_change_refs"))
+        + _string_list(previous_presence.get("state_merge_long_term_change_refs"))
+    )
+    if not any(
+        [
+            prediction_refs,
+            governance.get("prediction_waiting_posture"),
+            governance.get("response_surface_posture_hint"),
+            governance.get("prediction_attention_target"),
+            governance.get("prediction_attention_reason"),
+            governance.get("active_sampling_route"),
+            governance.get("memory_write_gate_policy"),
+            governance.get("state_merge_policy"),
+            previous_presence,
+        ]
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "signal_media_ref": signal_media_ref,
+            "belief_state_ref": belief_state_ref,
+            "prediction_error_ref": prediction_error_ref,
+            "active_sampling_plan_ref": active_sampling_plan_ref,
+            "memory_write_gate_ref": memory_write_gate_ref,
+            "state_merge_guard_ref": state_merge_guard_ref,
+            "prediction_write_gate_refs": prediction_refs,
+            "prediction_waiting_posture": _first_present(
+                governance.get("prediction_waiting_posture"),
+                governance.get("background_prediction_waiting_posture"),
+                previous_presence.get("prediction_waiting_posture"),
+            ),
+            "response_surface_posture_hint": _first_present(
+                governance.get("response_surface_posture_hint"),
+                governance.get("background_response_surface_posture_hint"),
+                previous_presence.get("response_surface_posture_hint"),
+            ),
+            "prediction_attention_target": _first_present(
+                governance.get("prediction_attention_target"),
+                governance.get("background_prediction_attention_target"),
+                previous_presence.get("prediction_attention_target"),
+            ),
+            "prediction_attention_reason": _first_present(
+                governance.get("prediction_attention_reason"),
+                governance.get("background_prediction_attention_reason"),
+                previous_presence.get("prediction_attention_reason"),
+            ),
+            "prediction_error_count": _int_or_zero(prediction_error_count),
+            "active_sampling_route": _first_present(
+                governance.get("active_sampling_route"),
+                governance.get("background_active_sampling_route"),
+                previous_presence.get("active_sampling_route"),
+            ),
+            "memory_write_gate_policy": _first_present(
+                governance.get("memory_write_gate_policy"),
+                governance.get("background_memory_write_gate_policy"),
+                previous_presence.get("memory_write_gate_policy"),
+            ),
+            "state_merge_policy": _first_present(
+                governance.get("state_merge_policy"),
+                governance.get("background_state_merge_policy"),
+                previous_presence.get("state_merge_policy"),
+            ),
+            "state_merge_long_term_change_count": _int_or_zero(
+                state_merge_change_count
+            ),
+            "state_merge_long_term_change_families": state_merge_change_families,
+            "state_merge_long_term_change_refs": state_merge_change_refs,
+            "prediction_write_gate_evidence_refs": _dedupe_string_list(
+                prediction_refs + state_merge_change_refs
+            ),
         }
     )
 
@@ -1006,3 +1159,10 @@ def _drop_empty(payload: dict[str, Any]) -> dict[str, Any]:
             continue
         result[key] = value
     return result
+
+
+def _first_present(*values: Any) -> Any:
+    for value in values:
+        if value is not None and value != "":
+            return value
+    return None

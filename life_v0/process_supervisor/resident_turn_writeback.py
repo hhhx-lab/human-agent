@@ -25,6 +25,7 @@ from ..terminal_loop.dialogue_writeback import build_dialogue_writeback_bundle
 from ..terminal_loop.persistent_wait_bridge import build_persistent_wait_bridge
 from .continuity_evolution import evolve_relationship_and_self_model
 from .dialogue_events import (
+    attach_prediction_write_gate_lineage_fallback,
     build_background_trait_convergence_payload,
     build_life_constraint_payload,
     build_offline_learning_cumulative_payload,
@@ -307,6 +308,11 @@ def write_resident_turn_writeback(
             "resident_background_lineage_life_constraint_refs", []
         )
     )
+    resident_background_lineage_prediction_write_gate_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_prediction_write_gate_refs", []
+        )
+    )
     resident_background_lineage_trait_drift_update_mode_summary = (
         resident_background_lineage_payload.get(
             "resident_background_lineage_trait_drift_update_mode_summary",
@@ -365,6 +371,7 @@ def write_resident_turn_writeback(
         + resident_background_lineage_autonomous_activity_refs
         + resident_background_lineage_birth_repair_refs
         + resident_background_lineage_life_constraint_refs
+        + resident_background_lineage_prediction_write_gate_refs
         + life_constraint_refs
         + queue_e_birth_repair_refs
     )
@@ -386,6 +393,18 @@ def write_resident_turn_writeback(
     prediction_write_gate_refs = list(
         prediction_write_gate_payload.get("prediction_write_gate_refs", [])
     )
+    if (
+        prediction_write_gate_refs
+        and not resident_background_lineage_prediction_write_gate_refs
+    ):
+        resident_background_lineage_prediction_write_gate_refs = list(
+            prediction_write_gate_refs
+        )
+    if resident_background_lineage_prediction_write_gate_refs:
+        resident_background_lineage_refs = _dedupe_refs(
+            resident_background_lineage_refs
+            + resident_background_lineage_prediction_write_gate_refs
+        )
     dialogue_writeback_bundle = build_dialogue_writeback_bundle(
         run_id=run_id,
         generated_at=generated_at,
@@ -472,6 +491,9 @@ def write_resident_turn_writeback(
         ),
         resident_background_lineage_life_constraint_refs=(
             resident_background_lineage_life_constraint_refs
+        ),
+        resident_background_lineage_prediction_write_gate_refs=(
+            resident_background_lineage_prediction_write_gate_refs
         ),
         offline_learning_cumulative_refs=offline_learning_cumulative_refs,
         offline_learning_cumulative_integration_mode=(
@@ -568,6 +590,10 @@ def write_resident_turn_writeback(
         )
     if prediction_write_gate_payload:
         resumed_dialogue_packet.update(prediction_write_gate_payload)
+        attach_prediction_write_gate_lineage_fallback(
+            resumed_dialogue_packet,
+            prediction_write_gate_payload,
+        )
     if continuity_refresh is not None:
         resumed_dialogue_packet["relationship_timeline_ref"] = RELATIONSHIP_TIMELINE_REF
         resumed_dialogue_packet["commitment_expression_plan_ref"] = COMMITMENT_EXPRESSION_PLAN_REF

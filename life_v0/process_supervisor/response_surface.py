@@ -748,6 +748,18 @@ def compose_life_response(
         memory_write_gate=memory_write_gate,
         state_merge_guard=state_merge_guard,
     )
+    prediction_write_gate_presence = {}
+    if isinstance(resident_background_lineage_state, dict):
+        prediction_presence = resident_background_lineage_state.get(
+            "prediction_write_gate_presence"
+        )
+        if isinstance(prediction_presence, dict):
+            prediction_write_gate_presence = prediction_presence
+    if prediction_write_gate_presence:
+        prediction_surface = _prediction_surface_with_presence(
+            prediction_surface,
+            prediction_write_gate_presence,
+        )
     if prediction_surface["surface_posture"]:
         response = f"{response}，预测输出姿态为{prediction_surface['surface_posture']}"
     if prediction_surface["active_sampling_route"]:
@@ -768,6 +780,36 @@ def compose_life_response(
             f"{response}，长期变化来源族包括"
             f"{'、'.join(prediction_surface['state_merge_long_term_change_families'])}"
         )
+    if prediction_write_gate_presence:
+        prediction_presence_refs = _dedupe_string_list(
+            _string_list(
+                prediction_write_gate_presence.get(
+                    "prediction_write_gate_evidence_refs"
+                )
+            )
+            or _string_list(
+                prediction_write_gate_presence.get("prediction_write_gate_refs")
+            )
+        )
+        prediction_waiting_posture = prediction_write_gate_presence.get(
+            "prediction_waiting_posture"
+        )
+        prediction_attention_target = prediction_write_gate_presence.get(
+            "prediction_attention_target"
+        )
+        if prediction_waiting_posture:
+            response = (
+                f"{response}，后台预测写门姿态为{prediction_waiting_posture}"
+            )
+        if prediction_attention_target:
+            response = (
+                f"{response}，后台预测关注指向{prediction_attention_target}"
+            )
+        if prediction_presence_refs:
+            response = (
+                f"{response}，后台预测写门证据保留"
+                f"{len(prediction_presence_refs)}条"
+            )
     if replay_cue_count:
         response = f"{response}，同时带着{replay_cue_count}条离线重放线索"
     if dream_window_count:
@@ -886,3 +928,32 @@ def _prediction_surface_posture(
         "state_merge_policy": merge_policy,
         **state_merge_change_profile,
     }
+
+
+def _prediction_surface_with_presence(
+    prediction_surface: dict[str, Any],
+    prediction_write_gate_presence: dict[str, Any],
+) -> dict[str, Any]:
+    posture_map = {
+        "repair": "修复",
+        "question": "追问",
+        "hold": "保留",
+        "confirm": "确认",
+    }
+    surface = dict(prediction_surface)
+    posture_hint = str(
+        prediction_write_gate_presence.get("response_surface_posture_hint") or ""
+    )
+    if not surface.get("surface_posture") and posture_hint:
+        surface["surface_posture"] = posture_map.get(posture_hint, posture_hint)
+    for key in (
+        "active_sampling_route",
+        "prediction_error_count",
+        "memory_write_gate_policy",
+        "state_merge_policy",
+        "state_merge_long_term_change_count",
+        "state_merge_long_term_change_families",
+    ):
+        if not surface.get(key) and prediction_write_gate_presence.get(key):
+            surface[key] = prediction_write_gate_presence[key]
+    return surface

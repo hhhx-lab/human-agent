@@ -120,8 +120,9 @@ Packet D 必须读取这些已有对象：
 prediction / write-gate 对象不能只影响等待姿态和一句回应文本。真实回合证据链必须继续保存：
 
 - `digital_life_turn`：写出 `prediction_write_gate_refs`、`prediction_waiting_posture`、`response_surface_posture_hint`、`prediction_attention_target`、`prediction_attention_reason`、`prediction_error_count`、`active_sampling_route`、`memory_write_gate_policy`、`state_merge_policy`、`state_merge_long_term_change_count`、`state_merge_long_term_change_families`、`state_merge_long_term_change_refs`。
-- `dialogue_writeback_bundle.json`：写出 `prediction_write_gate_refs`，让这批预测、主动采样、记忆写门和长期合并治理对象成为回合写回的一级证据。
-- `resumed_external_dialogue_packet.json`：保留同一组 prediction / write-gate 摘要，让下一轮恢复不必从回应文本反推上一轮的预测姿态。
+- `resident_background_lineage_state.prediction_write_gate_presence`：把同一组 prediction / write-gate refs、active sampling route、waiting posture、response surface hint、memory write gate policy 与 state merge policy 压成后台驻留 presence。
+- `dialogue_writeback_bundle.json`：写出 `prediction_write_gate_refs` 与 `resident_background_lineage_prediction_write_gate_refs`，让这批预测、主动采样、记忆写门和长期合并治理对象成为回合写回的一级证据。
+- `resumed_external_dialogue_packet.json`：保留同一组 prediction / write-gate 摘要和 `resident_background_lineage_prediction_write_gate_refs`，让下一轮恢复不必从回应文本反推上一轮的预测姿态。
 
 ### Report / Receipt
 
