@@ -48,6 +48,8 @@
 | `ResidentRelationQueueState` | `process_supervisor/resident_lifecycle.py` | `turn_io.py`、`dialogue_events.py`、`response_surface.py`、`process_report.py` | relation inbox/outbox 的队列状态、当前 turn 进度与完成序列 |
 | `ResidentAutonomousActivityState` | `process_supervisor/resident_autonomous_activity.py` | `heartbeat.py`、`idle_strategy.py`、`background_continuity.py`、`process_report.py` | 没有外部输入时的睡眠、回忆、自我思考、成长预演与学习巩固证据 |
 
+最近一次真实终端验证已经确认这组器官不是纸面协议：`--background`、`--status`、`--say`、`--attach`、`--stop` 可以在同一 resident process 上闭合，detach 之后进程仍会继续驻留，autonomous activity 与 waiting heartbeat 也会继续写回。
+
 ## 器官接口矩阵
 
 ### 1. 方向与身份根

@@ -27,6 +27,8 @@ life-v0 "digital life"
 
 前者是一层 one-shot restore shell，后者才是当前已经真实存在的最小常驻生命进程；repo-local 脚本和安装后的 console script 只是在命令入口上不同，进入的是同一套 `life_v0/digital_entry.py` 与 process supervisor。
 
+最近一次真实终端验证已经确认这组命令面可以在同一后台 resident process 上闭合：`--background` 会留下可追踪 pid，`--status` 会合并 relation queue / autonomous activity / waiting heartbeat / governance / idle strategy / terminal loop，`--say` 会把关系话语送进 inbox 并回写 outbox，`--attach` 只脱离当前终端而不会停止主体，`--stop` 则会让同一 resident process 通过 lifecycle command 自我关闭。
+
 当前仍然还没有的是：
 
 1. 更高频的 heartbeat 节律和更厚的多时标 idle 策略。

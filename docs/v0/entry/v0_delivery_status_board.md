@@ -10,6 +10,8 @@
 
 这份状态板只负责“定前沿、定优先级、定开工包”。如果你需要的是总索引、理论映射或模块合同，请回别的入口文件，不要让状态板承担所有事情。
 
+最近一次真实终端验证已经确认，`./digital life --background / --status / --say / --attach / --stop` 这条 resident lifecycle 链是可闭合的：后台 resident process 会在终端关闭后继续驻留，`--status` 能看见 waiting heartbeat 和 autonomous activity，`--say` 会进入同一 relation queue，`--attach` 只会切换当前终端而不会杀死主体，`--stop` 则会让主体通过生命周期命令自我收口。
+
 这里提到的 runtime 产物，默认都是“当前工作区最近一次相关命令运行后生成的权威产物”。如果本地还没生成 `runtime/`，说明你还没把这一轮运行证据跑出来，不代表状态板写错了。
 
 ## 用这份状态板时只做什么

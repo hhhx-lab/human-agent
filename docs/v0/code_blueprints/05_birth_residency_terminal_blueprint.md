@@ -74,6 +74,8 @@ stateDiagram-v2
 5. 没有外部输入时，process 必须写 autonomous activity 证据，而不是静默空转。
 6. `--status` 必须返回 resident lifecycle、relation queue、autonomous activity、waiting heartbeat、resident governance、idle strategy 与 terminal life loop 的合并状态视图。
 
+最近一次真实终端验证已经确认这套命令面可用：后台 resident process 会在当前终端关闭后继续驻留，`--status` 能看到 waiting heartbeat 和 autonomous activity，`--say` 能继续投递关系话语，`--attach` 只会切换当前终端，不会启动第二个主体。
+
 ## 当前 runtime 链
 
 ```text
