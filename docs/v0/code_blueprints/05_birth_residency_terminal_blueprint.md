@@ -19,15 +19,17 @@
 | 阶段解释 | `life_v0/stage_explain/` | 把当前 stage 解释成下一步出生/恢复命令 |
 | 出生壳 | `life_v0/digital_life/` | 生成 birth packet 与 birth digest |
 | one-shot 壳 | `life_v0/shell_command/` | `life-v0 "digital life"` 恢复壳 |
-| 常驻层 | `life_v0/process_supervisor/`、`life_v0/digital_entry.py`、`digital` | 维持等待态 heartbeat、真实新回合输入、异常恢复 |
+| 常驻层 | `life_v0/process_supervisor/`、`life_v0/digital_entry.py`、`digital` | 维持等待态 heartbeat、真实新回合输入、后台 resident lifecycle、自主活动、异常恢复 |
 
 ## 当前命令面
 
 | 命令 | 真实作用 | 当前状态 |
 |---|---|---|
 | `life-v0 digital-life --strict` | 只生成出生壳 | 已闭合最小代码 |
-| `life-v0 \"digital life\" --strict` | repo-local one-shot restore shell | 已闭合最小代码 |
+| `life-v0 \"digital life\" --strict` | one-shot restore shell | 已闭合最小代码 |
 | `./digital life --strict` | repo-local 常驻终端生命进程 | 已闭合最小代码 |
+| `digital life --strict` | 安装态常驻终端生命进程 | 已闭合最小代码 |
+| `digital life --background / --status / --say / --stop` | 安装态后台 resident lifecycle 与关系投递 | 已闭合最小代码 |
 
 ## 当前 runtime 链
 

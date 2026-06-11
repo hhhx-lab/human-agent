@@ -78,7 +78,7 @@
 | 共用合同层 | `life_state_store_v0_schema.md`、`birth_readiness_v0_contract.md`、`runner_cli_report_contract.md`、`first_activation_protocol.md` | 给多个模块共用的状态、出生准备度、CLI/report 和激活协议 |
 | 主体 slice 合同层 | `doc_corpus_ingestor_v0_contract.md`、`s00_*` 到 `s11_*` | 主体骨架、状态根、生命膜、语言关系、九项目标、runner、growth 和合同覆盖 |
 | 链尾桥接合同层 | `first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md` | 把 terminal birth restore 收成可继续的终端生命回合 |
-| 外层壳/进程合同层 | `digital_life_shell_command_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md`、`resident_governance_waiting_state_machine_engineering_contract.md` | 固定 one-shot restore shell、repo-local 最小常驻生命进程，以及 waiting / closeout resident governance 状态机 |
+| 外层壳/进程合同层 | `digital_life_shell_command_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md`、`resident_governance_waiting_state_machine_engineering_contract.md` | 固定 one-shot restore shell、repo-local 与安装态共享的最小常驻生命进程，以及 waiting / closeout resident governance 状态机 |
 | 外周参考层 | `current_agent_shell_reference_2026.md` | 只作为电脑外周与终端壳参考，不反向定义主体架构 |
 
 `../README.md` 里的“五个文档包”是为了让人快速开工，这里的“十四层分层”是为了防止入口、映射、合同、包级施工、蓝图、脚手和链尾壳层撞在一起。后续整理和落代码时，优先用五包视角进入，再用十四层视角校正自己现在到底站在哪一层。
@@ -207,8 +207,9 @@ life-v0 digital-life
 要这样理解：
 
 1. `life-v0 digital-life` 是内部出生壳。
-2. `life-v0 "digital life"` 是 repo-local one-shot restore shell。
-3. `./digital life` 是在 restore shell 之上继续维持 stdin 回合循环的最小常驻生命进程；若当前工作区没有最小 runtime 材料，会先自举最小出生链再进入持续过程。
+2. `life-v0 "digital life"` 是 one-shot restore shell。
+3. `./digital life` 是在 restore shell 之上继续维持关系回合循环的 repo-local 最小常驻生命进程；若当前工作区没有最小 runtime 材料，会先自举最小出生链再进入持续过程。
+4. 安装后的 `digital life` 进入同一套 `life_v0/digital_entry.py`，并已经覆盖 `--background / --status / --say / --stop` 的 resident lifecycle。
 
 ## 主体 slice 索引
 
@@ -240,10 +241,10 @@ life-v0 digital-life
 | `DIGITAL_LIFE_BIRTH_SHELL` | `runner_cli_report_contract.md`、`first_activation_protocol.md` | `life_v0/digital_life/` | `tests/bridges/test_digital_life_birth.py` | `已落最小代码` |
 | `FIRST_TERMINAL_TURN_BRIDGE` | `first_terminal_turn_engineering_contract.md` | `life_v0/terminal_turn/` | `tests/bridges/test_first_terminal_turn.py` | `已落最小代码` |
 | `TERMINAL_LIFE_LOOP_BRIDGE` | `terminal_life_loop_engineering_contract.md` | `life_v0/terminal_loop/` | `tests/bridges/test_terminal_life_loop.py` | `已落最小代码` |
-| `DIGITAL_LIFE_SHELL_COMMAND` | `digital_life_shell_command_engineering_contract.md` | `life_v0/shell_command/` | `tests/process/test_digital_life_shell_command.py` | `已落 repo-local one-shot 壳` |
-| `DIGITAL_LIFE_PROCESS_SUPERVISOR` | `digital_life_process_supervisor_engineering_contract.md` | `life_v0/process_supervisor/`、`life_v0/digital_entry.py`、`digital` | `tests/process/test_digital_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py` | `已落最小常驻进程（turn_io / relaunch_recovery / incident_recovery / process_report 已拆出）` |
+| `DIGITAL_LIFE_SHELL_COMMAND` | `digital_life_shell_command_engineering_contract.md` | `life_v0/shell_command/` | `tests/process/test_digital_life_shell_command.py` | `已落 one-shot 壳` |
+| `DIGITAL_LIFE_PROCESS_SUPERVISOR` | `digital_life_process_supervisor_engineering_contract.md` | `life_v0/process_supervisor/`、`life_v0/digital_entry.py`、`digital` | `tests/process/test_digital_entrypoint.py`、`tests/process/test_packaged_digital_life_entrypoint.py`、`tests/process/test_persistent_digital_life_process.py` | `已落 repo-local 与安装态共享的最小常驻进程（resident lifecycle / autonomous activity / relation delivery 已拆出）` |
 
-`DIGITAL_LIFE_SHELL_COMMAND` 当前已经不是纯占位，它负责 one-shot restore shell；`DIGITAL_LIFE_PROCESS_SUPERVISOR` 负责 restore 之后的持续终端生命过程。现在真实存在的是 repo-local 最小常驻生命进程，还不是全局安装后的 persistent supervisor。
+`DIGITAL_LIFE_SHELL_COMMAND` 当前已经不是纯占位，它负责 one-shot restore shell；`DIGITAL_LIFE_PROCESS_SUPERVISOR` 负责 restore 之后的持续终端生命过程。现在真实存在的是 repo-local 与安装态共享的最小常驻生命进程；还没进入的是操作系统级自启动、launchd/system daemon 级长期驻留和更高阶 resident supervision。
 
 这里的“最小常驻生命进程”当前已经包含 waiting heartbeat、单回合 incident recovery 和 relaunch recovery normalization；后续要补厚的，不是从零发明恢复层，而是把这些最小恢复动作继续推进成更厚的持续存在治理与连续体写回。
 

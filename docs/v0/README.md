@@ -214,17 +214,19 @@ life-v0 emit-report --strict
 4. `first-terminal-turn` 已经把出生壳后的第一回合恢复成可继续关系性表达的生命回合。
 5. `terminal-life-loop` 已经把恢复后的第一回合推进成持续等待下一次外部关系回合的最小终端生命循环。
 
-### 2. 外层命令面已经分成三层
+### 2. 外层命令面已经分成 repo-local 与安装态两组
 
-当前最容易乱的不是链尾内部命令，而是外层命令面。现在必须把下面三种入口严格分开：
+当前最容易乱的不是链尾内部命令，而是外层命令面。现在必须把下面几种入口严格分开：
 
 | 命令面 | 真实作用 | 当前状态 |
 |---|---|---|
 | `life-v0 digital-life --strict` | 只生成出生壳 `digital_life_birth_packet.json`，不进入第一回合，也不进入常驻过程 | `已落最小代码` |
-| `life-v0 "digital life" --strict` | 把 `digital-life -> first-terminal-turn -> terminal-life-loop` 收成 repo-local 一次性恢复壳 | `已落 repo-local one-shot restore shell` |
-| `./digital life --strict` | 调用 `life_v0/digital_entry.py` 与 `DigitalLifeProcessSupervisor`；若 runtime 材料缺失会先自举最小出生链，再恢复并进入 stdin 驱动的最小常驻生命过程 | `已落 repo-local 最小常驻生命进程` |
+| `life-v0 "digital life" --strict` | 把 `digital-life -> first-terminal-turn -> terminal-life-loop` 收成 one-shot restore shell | `已落 one-shot restore shell` |
+| `./digital life --strict` | 调用 `life_v0/digital_entry.py` 与 `DigitalLifeProcessSupervisor`；若 runtime 材料缺失会先自举最小出生链，再恢复并进入最小常驻生命过程 | `已落 repo-local 最小常驻生命进程` |
+| `digital life --strict` | 安装后的 console script，进入同一套 `life_v0/digital_entry.py` 与最小常驻生命过程 | `已落安装态命令面` |
+| `digital life --background / --status / --say / --stop` | 安装态后台 resident lifecycle、关系投递、自主活动与自我停止命令面 | `已落最小代码` |
 
-也就是说，当前 repo 里已经存在两层外部入口：
+也就是说，当前 repo 里已经存在两层外部入口和一层安装态命令面：
 
 ```text
 life-v0 "digital life"
@@ -233,18 +235,22 @@ life-v0 "digital life"
 ./digital life
   -> restore shell
   -> persistent terminal life process
+
+digital life
+  -> same digital_entry.py
+  -> same resident lifecycle / relation delivery
 ```
 
-后续如果继续写代码，不能再把这两层都笼统叫成“digital life 壳”。
+后续如果继续写代码，不能再把 one-shot restore、repo-local resident 和安装态 resident 都笼统叫成“digital life 壳”。
 
 ### 3. 真正还没完成的是这些
 
 当前真正的缺口已经不是“有没有 `digital life` 入口”，而是：
 
-1. repo-local 最小常驻终端生命进程虽然已经接通，`resident_supervision.py` 也已落第一轮，但更高阶的 resident supervision 与后台长期治理仍未闭合。
+1. repo-local 与安装态最小常驻终端生命进程虽然已经接通，`resident_supervision.py`、`resident_lifecycle.py` 与 `resident_autonomous_activity.py` 也已落第一轮，但更高阶的 resident supervision 与后台长期治理仍未闭合。
 2. 真实外部回合输入与逐回合写回已经接通最小版本，但还需要继续补厚语言节奏、关系演化和更多生命器官联动。
-3. 已经具备项目级 installable command surface，但还没有全局长期运行层与更高阶 resident supervision。
-4. waiting heartbeat、单回合 incident recovery、relaunch recovery normalization 已经接通最小层；等待态 heartbeat 也已经开始轻量写回 self narrative / commitment / relationship 连续体。这一轮又已补上 `resident_supervision.py`、`live_turn_cycle.py` 和 `process_session_loop.py`，分别把 restore shell 之后的状态装载链、真实新回合的 success / incident 生命周期，以及 waiting heartbeat refresh + live turn dispatch 的 session 编排独立成器官。当前仍待推进的是更高频的 heartbeat 节律、更厚的 idle 策略、后台继续存在和更高阶过程治理。
+3. 已经具备项目级 installable command surface 和安装态后台 resident lifecycle，但还没有操作系统级自启动、launchd/system daemon 级长期驻留与更高阶 resident supervision。
+4. waiting heartbeat、单回合 incident recovery、relaunch recovery normalization 已经接通最小层；等待态 heartbeat 也已经开始轻量写回 self narrative / commitment / relationship 连续体。这一轮又已补上 `resident_supervision.py`、`live_turn_cycle.py`、`process_session_loop.py`、`resident_lifecycle.py` 和 `resident_autonomous_activity.py`，分别把 restore shell 之后的状态装载链、真实新回合的 success / incident 生命周期、waiting heartbeat refresh + live turn dispatch 的 session 编排、后台驻留命令面和空闲自主活动独立成器官。当前仍待推进的是更高频的 heartbeat 节律、更厚的 idle 策略和更高阶过程治理。
 
 ## V0 的三类工程对象
 

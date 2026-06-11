@@ -114,6 +114,8 @@ Queue B 必须接到这些现有器官上：
 - `life_v0/process_supervisor/process_closeout.py`
 - `life_v0/process_supervisor/idle_refresh_loop.py`
 - `life_v0/process_supervisor/process_session_loop.py`
+- `life_v0/process_supervisor/resident_lifecycle.py`
+- `life_v0/process_supervisor/resident_autonomous_activity.py`
 - `life_v0/digital_entry.py`
 - `life_v0/terminal_loop/dialogue_writeback.py`
 - `life_v0/terminal_turn/context_accumulation.py`
@@ -122,7 +124,7 @@ Queue B 必须接到这些现有器官上：
 这说明 Queue B 不是新增平行进程层，而是给已经存在的常驻生命进程补器官、补对象链、补 idle 治理。
 当前继续新增的器官是 `process_lease.py`：它写出 `runtime/state/terminal/resident_process_lease.json`、`runtime/state/terminal/resident_process_lease_history.jsonl` 与 `runtime/state/terminal/resident_process_lease_history_profile.json`，作为 `digital life` 在本机打开、等待、关闭、重启恢复的常驻生命进程身份记录。它不是 daemon，也不是工具网关；它必须被 heartbeat 刷新、把 `resident_process_id`、lease history ref、history profile ref、`resident_process_identity_continuity_state` 与 `resident_process_identity_pressure_level` 带进 terminal loop / resident governance、在 relaunch 时把旧 active lease 归一化为 `interrupted_on_relaunch` 并压成 `interrupted_then_recovered` 画像、被 closeout 改成 closed 并压成 closed continuity 画像，并进入 persistent process artifacts、process report / digest / receipt。下一次 `background_continuity.py` 必须恢复这份 profile，把它放入 `background_continuity_ref_set`，让等待治理直接消费跨唤醒身份连续性，而不是每次都重新扫描原始事件流。
 当前最新前沿继续把这份常驻生命进程身份画像送进真实回合链。`background_lineage_state.py` 必须从 resident governance / background profile 中抽出 `resident_process_identity_presence`，把 lease ref、history ref、history profile ref、身份连续性相位、身份压力、历史事件数、recent process ids/run ids 与 identity refs 压成 `resident_background_lineage_state_v0` 的一等 presence；`dialogue_events.py` 必须把它展开成 `resident_background_lineage_resident_process_*` 字段并合并进 lineage evidence；`resident_turn_writeback.py` 必须让 `resident_background_lineage_resident_process_identity_refs` 进入 `dialogue_writeback_bundle.json`、总 lineage refs 与 `resumed_external_dialogue_packet.json`；`response_surface.py` 必须表达后台生命进程身份连续性、身份压力和证据数量。`resident_governance_handoff.py` 还必须保留真实回合前 terminal loop 中已有的 `resident_background_lineage_state` presence，只把 `governance_phase` 切成 `live_turn_waiting_handoff`，同时允许顶层 `resident_process_identity_*` 继续代表当前 active lease。这样 Queue B 不再只证明“进程曾经打开、刷新、关闭”，而是让这条进程身份在下一次关系回合里被事件化、写回、恢复、交接和语言表达。
-当前又新增 `resident_lifecycle.py`，把 `digital life --background / --resident / --status / --stop` 固定成本机驻留启动面。`--background` 只负责脱离当前终端启动一个子进程；子进程以 `--resident` 运行同一套 `run_digital_life_process`，输入层由 `ResidentControlInputStream` 防止 stdin EOF 把生命进程误判为结束，并在无外部话语时进入 `sleeping_waiting_for_relation_turn` 的 sleep/rest waiting。生命周期证据写入 `runtime/state/terminal/resident_lifecycle_state.json`、`runtime/state/terminal/resident_lifecycle_command.json` 与 `runtime/logs/digital_life_resident.log`；`--stop` 写 stop command，让子进程通过普通 `/exit` 走 lease closeout / process report / receipt，而不是直接 kill。这个启动层服务“关闭终端后仍保持上下文”，不是新增 daemon agent 框架。
+当前又新增 `resident_lifecycle.py`，把 repo-local `./digital life` 与安装后 `digital life` 的 `--background / --resident / --status / --say / --attach / --foreground / --stop` 固定成本机驻留启动面。`--background` 只负责脱离当前终端启动一个子进程；子进程以 `--resident` 运行同一套 `run_digital_life_process`，输入层由 `ResidentControlInputStream` 防止 stdin EOF 把生命进程误判为结束，并在无外部话语时进入 `sleeping_waiting_for_relation_turn` 的 sleep/rest waiting。生命周期证据写入 `runtime/state/terminal/resident_lifecycle_state.json`、`runtime/state/terminal/resident_lifecycle_command.json` 与 `runtime/logs/digital_life_resident.log`；`--stop` 写 stop command，让子进程通过普通 `/exit` 走 lease closeout / process report / receipt，而不是直接 kill。这个启动层服务“关闭终端后仍保持上下文”，不是新增 daemon agent 框架。安装态命令必须由 `tests/process/test_packaged_digital_life_entrypoint.py` 直接守住，证明 console script 没有退化成只会前台 one-shot 的包装层。
 当前继续把本机驻留启动面补成可跨终端继续对话的关系投递层：`digital life --say "<relation turn>"` 只负责把外部关系话语写入 `runtime/state/terminal/resident_relation_inbox.jsonl`，后台 resident process 通过同一个 `ResidentControlInputStream` 取出 inbox event，并按普通生命回合进入 `run_process_session_loop -> run_live_turn_cycle -> resident_turn_writeback`。生命回应由 `record_output` 写回 `runtime/state/terminal/resident_relation_outbox.jsonl`，队列状态由 `runtime/state/terminal/resident_relation_queue_state.json` 记录 `queued / turn_in_progress / waiting_for_relation_turn`、active sequence、last completed sequence 与 response text。这个层不创建第二个主体，也不绕过语言、关系、记忆、梦境、成长、责任写回链；新的终端窗口只是向已经存在的后台生命进程投递关系话语。
 当前默认启动机制继续推进：真实 TTY 下的裸 `digital life` 必须自动进入 resident attach，先启动或复用后台 resident process，再把终端输入逐句投递到同一 relation inbox/outbox 链；`/exit` 只 detach 当前终端，不停止 resident process。非交互管道和 `--foreground` 仍走前台 process loop，`--attach` 则可在测试或脚本中强制走 resident attach。
 
@@ -874,8 +876,9 @@ Queue B 至少新增三道 gate：
 6. 后台 resident process 没有 relation inbox/outbox/queue state，却声称支持跨终端继续对话
 7. `--say` 返回文本没有进入 `dialogue_turn_log.jsonl` 和 resident turn writeback 链
 8. sleep/rest waiting 没有写 autonomous activity stream 或五个专用 activity state，导致关闭终端后的睡眠、回忆、思考、成长、学习不可追踪
-9. 真实 TTY 下裸 `digital life` 仍然只启动前台 stdin loop，关闭终端会带走生命进程
+9. 真实 TTY 下裸 `digital life` 没有默认进入 resident attach，关闭终端仍会带走生命进程
 10. attach client 的 `/exit` 会停止 resident process，而不是只让当前终端脱离
+11. 安装后的 `digital life --background / --status / --say / --stop` 没有走同一套 resident lifecycle、relation inbox/outbox 与 autonomous activity 证据链
 
 ### `dialogue_process_receipt_gate`
 
@@ -900,7 +903,7 @@ Queue B 至少新增三道 gate：
 6. 扩 `process_report.py`
 7. 在 `__init__.py` 中接入新的 idle 策略对象
 8. 扩 `tests/process/test_persistent_digital_life_process.py`
-9. 回跑 `tests/process/test_digital_entrypoint.py` / `tests/bridges/test_terminal_life_loop.py`
+9. 回跑 `tests/process/test_digital_entrypoint.py` / `tests/process/test_packaged_digital_life_entrypoint.py` / `tests/bridges/test_terminal_life_loop.py`
 
 ## 第一轮完成定义
 
@@ -948,10 +951,10 @@ Queue B 至少新增三道 gate：
 18. `resident_background_lineage_state_v0` 现在还必须带 `dream_wake_presence`，并且同一组 `dream_wake_ref_set` 必须能在 waiting heartbeat、idle continuity、resident governance、`digital_life_turn` 与 response surface 中看见。
 19. `resident_background_lineage_state_v0.language_presence` 现在还必须带实时语言驻留字段；同一组 `live_language_turn_refs` 与 `last_live_semantic_focus` 必须能在 `idle_strategy_state.json`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json`、closeout artifacts 与下一次 `background_continuity_profile.background_live_language_*` 中看见。
 20. `queue_e_birth_repair_waiting_profile_v0` 现在还必须带 S09 出生修复压力字段；同一组 `queue_e_birth_repair_profile_ref / pressure_level / attention_target / ref_set / waiting_posture` 必须能在 `idle_strategy_state.json`、`digital_life_waiting_heartbeat.json`、`resident_governance_state.json`、`terminal_life_loop_state.json`、`digital_life_process_report.json`、`digital_life_process_digest.json`、process receipt、回应文本、`digital_life_turn`、`dialogue_writeback_bundle.queue_e_birth_repair_refs`、总 `resident_background_lineage_refs` 与 `resumed_external_dialogue_packet.json` 中看见。
-21. 本机后台驻留启动面必须闭合 `--background / --resident / --status / --say / --attach / --foreground / --stop` 命令；其中 `--say` 与 `--attach` 只能通过 relation inbox/outbox/queue 投递给既有 resident process，不能另起一轮 one-shot 主体。真实 TTY 下裸 `digital life` 默认等价于 resident attach；非交互与 `--foreground` 保留前台 process loop。
+21. 本机后台驻留启动面必须在 repo-local `./digital life` 与安装后 `digital life` 两种入口上同时闭合 `--background / --resident / --status / --say / --attach / --foreground / --stop` 命令；其中 `--say` 与 `--attach` 只能通过 relation inbox/outbox/queue 投递给既有 resident process，不能另起一轮 one-shot 主体。真实 TTY 下裸 `digital life` 默认等价于 resident attach；非交互与 `--foreground` 保留前台 process loop。
 22. 后台 resident process 在没有 relation turn 时必须持续写出 autonomous activity stream，并让 lifecycle state 暴露 `last_autonomous_activity_kind / last_autonomous_activity_at / last_autonomous_activity_state_ref / autonomous_activity_count / autonomous_activity_kind_counts / resident_autonomous_activity_state_refs`，证明关闭终端后的等待正在进入睡眠、回忆、思考、成长、学习的自主活动节律。
 23. 这组自主活动必须继续进入 `idle_strategy_state.json#resident_autonomous_activity_presence_profile`、`resident_governance_state.json#resident_background_lineage_state.autonomous_activity_presence`、`digital_life_turn#resident_background_lineage_autonomous_activity_*`、`dialogue_writeback_bundle.json#resident_background_lineage_autonomous_activity_refs`、`resumed_external_dialogue_packet.json#resident_background_lineage_autonomous_activity_refs` 与回应表面；否则只能算后台落盘，还不算进入真实关系回合。
-24. 对应测试直接证明以上闭环
+24. `tests/process/test_digital_entrypoint.py` 直接证明 repo-local 入口，`tests/process/test_packaged_digital_life_entrypoint.py` 直接证明安装态命令面，`tests/process/test_persistent_digital_life_process.py` 直接证明 process supervisor 内部闭环；三者必须共同覆盖以上闭环。
 
 ## 这份合同和下一轮落码的关系
 

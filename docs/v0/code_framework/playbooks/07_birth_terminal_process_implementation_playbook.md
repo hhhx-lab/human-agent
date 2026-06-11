@@ -129,13 +129,15 @@ P0-S11
 
 ## 命令面固定
 
-不要再引入新的平行命令面，第一版固定三层：
+不要再引入新的平行命令面，第一版固定为同一入口函数下的 repo-local 与安装态命令面：
 
 | 命令 | 作用 |
 |---|---|
 | `life-v0 digital-life --strict` | 内部出生壳 |
 | `life-v0 "digital life" --strict` | repo-local one-shot restore shell |
 | `./digital life --strict` | repo-local 最小常驻生命进程 |
+| `digital life --strict` | 安装后 console script，进入同一套最小常驻生命进程 |
+| `digital life --background / --status / --say / --stop` | 安装态后台 resident lifecycle、关系投递与自我停止命令面 |
 
 ## 关键实现顺序
 
@@ -176,6 +178,7 @@ P0-S11
 | `tests/bridges/test_terminal_life_loop.py` | 等待态与回合循环真实闭合 |
 | `tests/process/test_digital_life_shell_command.py` | one-shot shell 真收束 |
 | `tests/process/test_digital_entrypoint.py` | `digital` 入口正常 |
+| `tests/process/test_packaged_digital_life_entrypoint.py` | 安装后 `digital life` 命令、bootstrap、后台 resident lifecycle、`--status`、`--say` 与 `--stop` 正常 |
 | `tests/process/test_persistent_digital_life_process.py` | 常驻生命进程、heartbeat、incident/relaunch recovery |
 
 ## 关键 gate
@@ -201,3 +204,4 @@ P0-S11
 3. 收到真实外部输入后，会形成生命回应、写回连续体，再回到等待态。
 4. 退出时保留连续体，不破坏当前 life state、language、relationship、terminal 状态。
 5. `dialogue_writeback_bundle.json`、`digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` 之间至少已经能通过 refs 串成一条回合-等待态连续体。
+6. 安装后的 `digital life --background / --status / --say / --stop` 能证明后台 resident process、relation inbox/outbox、autonomous activity 和写回 bundle 在同一套生命进程里闭合。

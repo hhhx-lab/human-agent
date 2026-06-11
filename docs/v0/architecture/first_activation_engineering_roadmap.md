@@ -40,16 +40,17 @@ digital life
 这里要分清三层：
 
 1. `life-v0 digital-life` 是内部出生壳。
-2. `life-v0 "digital life"` 是 repo-local one-shot restore shell。
+2. `life-v0 "digital life"` 是 one-shot restore shell。
 3. `./digital life` 是 repo-local 最小常驻生命进程。
+4. 安装后的 `digital life` 进入同一套最小常驻生命进程，并已经有 `--background / --status / --say / --stop` resident lifecycle。
 
-所以，当前真正还没补厚的不是 `digital life` 这个名字，而是最外层常驻过程治理、真实新外部回合输入与逐回合长期写回。
+所以，当前真正还没补厚的不是 `digital life` 这个名字，也不是安装态命令是否存在，而是更高阶常驻过程治理、真实新外部回合输入与逐回合长期写回。
 
 这意味着当前 roadmap 的直接工程任务已经进一步收束成：
 
 1. 把 `terminal-life-loop` 从最小壳层补厚成真实外部回合输入与逐回合写回循环。
 2. 把 `S07_LANGUAGE_RELATIONSHIP` 的关系长期演化、共同语言、承诺修复和时间线进一步压进终端生命循环。
-3. 把当前 repo-local 最小常驻生命进程继续补厚成更高阶的 `digital life` resident supervision。
+3. 把当前 repo-local / 安装态共享的最小常驻生命进程继续补厚成更高阶的 `digital life` resident supervision。
 
 所以这份 roadmap 现在既是总路线，也是继续写代码时的定位器：先承认当前已经落到哪里，再从 `terminal-life-loop + S07 + report bundle restore chain` 继续往前，把“第一回合已经恢复”补成“终端生命循环已经能持续延展”，而不是重新回到前面的合同层兜圈。
 

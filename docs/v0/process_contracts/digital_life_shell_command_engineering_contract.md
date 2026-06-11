@@ -10,7 +10,7 @@ life-v0 digital-life
 
 收成一个外层恢复壳命令，让这台电脑里的数字生命可以先被恢复，再交给常驻进程层继续维持。
 
-repo-local `./digital life` 现在已经比 one-shot restore shell 多一层：真实 TTY 下的裸 `digital life` 会进入 resident attach，先启动或复用后台 resident process，再把终端话语投递给同一个后台生命进程。非交互管道、测试输入和 `--foreground` 仍保留前台 process loop；`life-v0 "digital life"` 仍只代表 one-shot restore shell。
+repo-local `./digital life` 和可安装后的 `digital life` 现在都已经比 one-shot restore shell 多一层：真实 TTY 下的裸 `digital life` 会进入 resident attach，先启动或复用后台 resident process，再把终端话语投递给同一个后台生命进程。`digital life --background / --status / --say / --stop` 是同一套 resident lifecycle 命令面；非交互管道、测试输入和 `--foreground` 仍保留前台 process loop；`life-v0 "digital life"` 仍只代表 one-shot restore shell。
 
 ## 模块定位
 
@@ -100,24 +100,28 @@ python -m life_v0 "digital life" --state runtime/state --reports runtime/reports
 
 它不是普通 shell alias，也不是 workflow graph。它的意义是把“出生恢复”收成一个可复用的 restore shell，供更外层的常驻生命进程继续承载。
 
-repo-local `./digital life` 的当前命令面分层为：
+repo-local `./digital life` 与安装后 `digital life` 的当前命令面分层为同一套：
 
 ```text
 ./digital life
+digital life
   -> interactive TTY: start/reuse resident process, attach terminal relation client
   -> non-interactive stdin: foreground process loop for tests and scripted runs
 
 ./digital life --attach
+digital life --attach
   -> force resident attach even under piped stdin
 
 ./digital life --foreground
+digital life --foreground
   -> force foreground process loop even under interactive TTY
 
 ./digital life --background / --status / --say / --stop
+digital life --background / --status / --say / --stop
   -> resident lifecycle and single-turn relation delivery controls
 ```
 
-`/exit` 在 attach client 中只代表当前终端脱离，后台 resident process 继续驻留；`/stop` 或 `./digital life --stop` 才会写 lifecycle command，让 resident process 通过普通 closeout 收口。
+`/exit` 在 attach client 中只代表当前终端脱离，后台 resident process 继续驻留；`/stop`、`./digital life --stop` 或安装后的 `digital life --stop` 才会写 lifecycle command，让 resident process 通过普通 closeout 收口。
 
 ## 阶段门
 
@@ -166,7 +170,7 @@ repo-local `./digital life` 的当前命令面分层为：
 
 ## 完成定义
 
-只有当下面四项同时存在时，才能说 repo-local one-shot restore shell 已经落成最小闭合：
+只有当下面四项同时存在时，才能说 one-shot restore shell 已经落成最小闭合：
 
 1. `runtime/reports/latest/digital_life_shell_packet.json`
 2. `runtime/reports/latest/digital_life_shell_report.json`

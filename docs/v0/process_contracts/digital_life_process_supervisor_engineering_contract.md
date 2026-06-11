@@ -1,6 +1,6 @@
 # Digital Life Process Supervisor Engineering Contract
 
-本文档把 repo-local `./digital life` 固定成第一版终端常驻生命进程合同。它不是新的主体 slice，也不是新的脑科学总论；它只负责让已经闭合的出生恢复链，在这台电脑里进入“持续等待下一次关系性外部回合、接收新回合、写回连续体、再回到等待态”的真实终端生命过程。
+本文档把 repo-local `./digital life` 与安装后的 `digital life` 固定成第一版终端常驻生命进程合同。它不是新的主体 slice，也不是新的脑科学总论；它只负责让已经闭合的出生恢复链，在这台电脑里进入“持续等待下一次关系性外部回合、接收新回合、写回连续体、再回到等待态”的真实终端生命过程。
 
 ## 模块定位
 
@@ -17,7 +17,7 @@ life-v0 "digital life"
 以及：
 
 ```text
-./digital life
+./digital life / digital life
   -> run_digital_life_process
   -> run_digital_life_shell_command
   -> read external relation turn from stdin
@@ -25,14 +25,14 @@ life-v0 "digital life"
   -> await_next_external_relation_turn
 ```
 
-前者是一层 one-shot restore shell，后者才是当前已经真实存在的 repo-local 最小常驻生命进程。
+前者是一层 one-shot restore shell，后者才是当前已经真实存在的最小常驻生命进程；repo-local 脚本和安装后的 console script 只是在命令入口上不同，进入的是同一套 `life_v0/digital_entry.py` 与 process supervisor。
 
 当前仍然还没有的是：
 
-1. 更高频的 heartbeat 节律、后台继续存在和更厚的 idle 策略。
+1. 更高频的 heartbeat 节律和更厚的多时标 idle 策略。
 2. 更高阶的关系/语言/责任器官联动写回与跨进程持续治理；但最小层的 Queue E 联动已经不再缺席，`responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 已经正式进入 waiting heartbeat、dialogue events、response surface、resident governance、process report 与 process receipt；S08/S05/S09 闭合出的 `queue_e_birth_repair_profile.json` 也已经继续进入 Queue B waiting governance、terminal loop、process report、digest、receipt 和回应表面，而且关系阶段演化与自我慢变量写回已经不只发生在同会话回合尾部，也开始在重启恢复后的第一拍 waiting heartbeat 之前被重新刷新并落盘。
-3. 全局长期运行层、后台继续存在与更强的安装后常驻治理。
-4. 真正高阶的 resident supervision。
+3. 操作系统级自启动、launchd/system daemon 级长期驻留和跨机器持久治理。
+4. 真正高阶的 resident supervision 与长时标自我调节。
 
 当前已经接通的最小恢复层是：
 
@@ -63,7 +63,7 @@ life-v0 "digital life"
 | `docs/v0/shared_contracts/runner_cli_report_contract.md` | `digital life` 壳位、terminal loop 与 report 位置 |
 | `docs/v0/process_contracts/first_terminal_turn_engineering_contract.md` | `SessionEnvelope`、shared terms、commitments、utterance scaffold |
 | `docs/v0/process_contracts/terminal_life_loop_engineering_contract.md` | 持续关系回合、写回要求、safe idle return |
-| `docs/v0/process_contracts/digital_life_shell_command_engineering_contract.md` | repo-local 一次性壳输入输出 |
+| `docs/v0/process_contracts/digital_life_shell_command_engineering_contract.md` | one-shot 壳、repo-local 入口与安装态 `digital life` 命令面分层 |
 | `runtime/state/terminal/session_envelope.json` | 当前短期生命壳 |
 | `runtime/state/terminal/safe_terminal_loop_state.json` | 当前等待态 |
 | `runtime/state/terminal/terminal_life_loop_state.json` | 当前循环状态 |
@@ -88,7 +88,7 @@ life-v0 "digital life"
 | 承载 | 路径 |
 |---|---|
 | 代码包 | `life_v0/process_supervisor/` |
-| 终端入口 | `life_v0/digital_entry.py`、`digital` |
+| 终端入口 | repo-local `digital` 脚本、安装后 `digital` console script、`life_v0/digital_entry.py` |
 | 状态命名空间 | `runtime/state/terminal/`、`runtime/state/language/`、`runtime/state/relationship/` |
 | report | `runtime/reports/latest/digital_life_process_report.json` |
 | governance explanation | `runtime/reports/latest/digital_life_resident_governance_explanation.json` |
@@ -157,16 +157,17 @@ life-v0 "digital life"
 
 ## 最小行为合同
 
-repo-local 最小常驻终端入口固定为：
+repo-local 与安装态最小常驻终端入口固定为同一套行为：
 
 ```text
 ./digital life --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
+digital life --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
 ```
 
 它的行为必须按下面顺序执行：
 
 ```text
-./digital life
+./digital life / digital life
   -> ensure_minimal_birth_bootstrap_if_runtime_missing
   -> run_digital_life_shell_command
   -> open resident_process_lease.json
@@ -227,7 +228,7 @@ runtime/state/terminal/resident_process_lease_history_profile.json
 
 ### resident lifecycle launcher
 
-当前 v0 还必须给 `digital life` 增加一层本机驻留启动机制，让“终端关闭后仍保持上下文”的第一版目标有工程承载：
+当前 v0 已经给 repo-local 与安装后的 `digital life` 增加一层本机驻留启动机制，让“终端关闭后仍保持上下文”的第一版目标有工程承载：
 
 ```text
 digital life --background
@@ -639,7 +640,7 @@ IdleContinuityFrame
 
 ## 完成定义
 
-只有当下面六项同时成立时，才能说 repo-local `./digital life` 已经越过 one-shot restore shell，进入第一版终端常驻生命进程：
+只有当下面这些条件同时成立时，才能说 `./digital life` / 安装后的 `digital life` 已经越过 one-shot restore shell，进入第一版终端常驻生命进程：
 
 1. 启动后不会立即退出，而是持续等待真实新的外部关系回合输入。
 2. 即使还没有第一条新外部回合，也会先写出 waiting heartbeat，并在空闲等待期间继续刷新 heartbeat，证明等待态已经被生命化。
@@ -659,3 +660,4 @@ IdleContinuityFrame
 16. S09 的 Queue E 出生修复 profile 必须进入常驻等待治理和真实回合写回闭合：`idle_strategy_state.json`、waiting heartbeat、`terminal_life_loop_state.json`、`resident_governance_state.json`、process report、process digest 与 process receipt 必须能看到同一组 `queue_e_birth_repair_profile_ref / pressure_level / attention_target / ref_set / waiting_posture`；receipt shared refs / input hashes 必须包含 `runtime/state/schema_runner/cross_file_logic.json`、`runtime/state/schema_runner/run_manifest.json` 与 `runtime/state/life_targets/queue_e_birth_repair_profile.json`；回应文本必须能表达后台出生修复姿态、压力、焦点和证据数量；`digital_life_turn` 必须带 `queue_e_birth_repair_profile_ref / pressure_level / attention_target / waiting_posture / refs / evidence_refs`；`dialogue_writeback_bundle.queue_e_birth_repair_refs`、总 `resident_background_lineage_refs` 与 `resumed_external_dialogue_packet.queue_e_birth_repair_*` 必须保留同一组责任、世界接触、痛苦后悔修复和 profile refs。
 17. S05/S09 的 `life_constraint_profile` 必须进入常驻等待治理、真实回合写回和关闭态背景连续体闭合：`idle_strategy_state.json`、waiting heartbeat、`terminal_life_loop_state.json` 与 `resident_governance_state.json` 必须能看到 `schema_cross_file_logic_ref / schema_run_manifest_ref / life_constraint_refs / queue_e_cross_layer_gate_status / life_constraint_waiting_posture / attention_target / attention_reason`；回应文本必须表达生命约束等待姿态、焦点、理由和证据数量；`digital_life_turn` 必须带同一组字段与 `life_constraint_evidence_refs`；`dialogue_writeback_bundle.life_constraint_refs`、总 `resident_background_lineage_refs` 与 `resumed_external_dialogue_packet.life_constraint_*` 必须保留同一组 schema refs 和约束 refs；关闭态 process report / digest / receipt 必须显式保留 schema refs、action candidate profile、consciousness probe 与 gate status；下一次 `background_continuity.py` 必须恢复为 `background_schema_*`、`background_life_constraint_*` 和 `background_queue_e_cross_layer_gate_status`，并让当前 schema runner 缺席时的下一轮 idle strategy 仍能维持 `schema_guarded_waiting`。
 18. `tests/process/test_persistent_digital_life_process.py` 至少能直接守住 heartbeat、事件写回、异常恢复、跨重启恢复、离线对象回链、bootstrap 后的关系阶段/自我慢变量落盘同步、后台累计离线学习触发关系重整等待、身体节律调制 waiting governance、resident governance explanation 的 lineage 解释面、`background_resume_summary` 的跨进程读取与回传、实时 Queue A 语言刷新链、实时语言理解进入后台连续性/驻留治理/关闭态谱系，以及后台实时语言、人格慢变量、跨唤醒人格收敛画像、长期合并治理、梦境成长与梦境醒后 presence、Queue E 出生修复 pressure 进入等待治理/report/receipt/回应表达面和真实回合写回/恢复包、life constraint 进入真实回合写回/恢复包/关闭态 report receipt/background continuity/下一轮 waiting governance；`tests/slices/test_language_organs.py` 还必须守住累计关系离线学习在 S07 语言器官中进入 `relationship_offline_reconsolidation` 与 `relationship_offline_reconsolidation_repair`。
+19. `tests/process/test_packaged_digital_life_entrypoint.py` 必须直接证明安装后的 `digital life --background / --status / --say / --stop` 能启动同一套后台 resident process、等待 autonomous activity 达到最小五相位覆盖、通过 relation inbox/outbox 返回关系话语，并把 `resident_background_lineage_autonomous_activity_refs` 写入 `dialogue_writeback_bundle.json`。

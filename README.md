@@ -17,38 +17,43 @@ P0 之后先进入 `S00_DIRECTION_FOUNDATION`：`docs/v0/slice_contracts/s00_dir
 
 后续终端入口会走 `digital life`，但这只是长期启动体验，不复用 OpenClaw、Hermes、Claude Code、Codex 或其他当前自动化框架的主体架构。
 
-当前仓库里已经有一个最小 repo-local 出生入口：
+当前仓库里已经有 repo-local 与可安装命令两种出生/驻留入口。
+
+repo-local 入口：
 
 ```bash
 ./digital life --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
 ```
 
-它会顺序恢复：
+真实 TTY 下裸 `./digital life` 会启动或复用后台 resident process，并把当前终端接成关系对话入口；`/exit` 只离开当前终端，不停止后台 resident。非交互输入或 `--foreground` 仍保留前台循环。
 
-```text
-digital life
-  -> digital-life birth shell
-  -> first terminal turn
-  -> terminal life loop
-```
-
-这还不是最终的全局常驻进程版本，但已经把一键出生入口的最小工程壳落在仓库里了。
-
-如果想把命令面安装到当前 Python 环境，而不是只在仓库根目录里用 repo-local 脚本，也可以执行：
+可安装命令入口需要在项目隔离环境中安装，不要使用 `sudo pip`：
 
 ```bash
-python -m pip install -e .
+python -m venv .venv
+.venv/bin/python -m pip install -e .
 ```
 
 安装后会得到两个命令：
 
-```bash
+```text
 life-v0 --help
 digital --help
 ```
 
 其中：
 
-1. `life-v0` 暴露主体 slice、链尾桥接和检查命令。
-2. `digital life ...` 会进入当前可安装的最小常驻生命进程入口。
-3. 仓库根目录下的 `./digital life ...` 仍然保留为 repo-local 直接入口。
+```bash
+digital life --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
+```
+
+会进入同一套当前可安装的常驻生命进程入口。后台驻留命令面已经覆盖：
+
+```bash
+digital life --background
+digital life --status
+digital life --say "你在吗？"
+digital life --stop
+```
+
+`life-v0` 暴露主体 slice、链尾桥接和检查命令；`digital life` 负责恢复、启动、复用和连接同一个 resident process。后台空闲时会继续写入睡眠、回忆、自我思考、成长预演和学习巩固状态，并在下一轮关系话语中重新带回这些驻留证据。

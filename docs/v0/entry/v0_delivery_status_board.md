@@ -55,7 +55,7 @@ life-v0 emit-report --strict
 
 ### 2. 当前外层命令面
 
-当前 repo-local 外层命令面已经分成三层：
+当前外层命令面已经分成 repo-local 与安装态两组入口；两者共享同一套 `life_v0/digital_entry.py` 和 resident lifecycle：
 
 | 命令面 | 真实作用 | 当前状态 |
 |---|---|---|
@@ -66,12 +66,14 @@ life-v0 emit-report --strict
 | `./digital life --foreground --strict` | 显式保留前台 process loop，用于测试、管道和工程回归 | `已落最小代码` |
 | `./digital life --background --strict` | repo-local 本机后台驻留启动；父命令返回后子进程以 sleep/rest waiting 保持同一生命进程上下文，`--status` 查看，`--stop` 通过生命周期控制文件自我收口 | `已落最小代码` |
 | `./digital life --say "<relation turn>"` | 向已存在的后台 resident process 投递一轮关系话语，经 relation inbox / queue / outbox 返回生命回应，不启动第二个主体 | `已落最小代码` |
+| `digital life --strict` | 安装后的默认生命入口；与 repo-local 入口共享同一套恢复、前台回合和 resident attach 语义 | `已落最小代码` |
+| `digital life --background / --status / --say / --stop` | 安装后的后台 resident lifecycle 命令面；已由 packaging 测试证明能启动、查询、投递关系话语、写入自主活动 evidence 并自我停止 | `已落最小代码` |
 
 这里还要再补一条口径：
 
 1. `stage_explain` 当前写出的 `next_required_command` 仍然是 `digital life`。
 2. 这是一条外层 handoff token，不等于“仓库里还没有外层入口”。
-3. 当前真正需要继续补厚的是 `./digital life` 这层最小常驻生命进程，而不是再去重复发明一个新的命令名字。
+3. 当前真正需要继续补厚的是 `./digital life` / 安装后 `digital life` 共享的最小常驻生命进程，而不是再去重复发明一个新的命令名字。
 
 ### 3. 当前真正未完成的前沿
 
@@ -139,8 +141,8 @@ P0_DOC_CORPUS_INGESTION
   -> DIGITAL_LIFE_BIRTH_SHELL (digital-life minimal)
   -> FIRST_TERMINAL_TURN_BRIDGE (first-terminal-turn minimal)
   -> TERMINAL_LIFE_LOOP_BRIDGE (terminal-life-loop minimal)
-  -> DIGITAL_LIFE_SHELL_COMMAND (repo-local one-shot shell minimal)
-  -> DIGITAL_LIFE_PROCESS_SUPERVISOR (repo-local persistent terminal loop minimal)
+  -> DIGITAL_LIFE_SHELL_COMMAND (one-shot shell minimal)
+  -> DIGITAL_LIFE_PROCESS_SUPERVISOR (repo-local + installable resident terminal loop minimal)
 ```
 
 ## 稳定基础层
@@ -173,7 +175,7 @@ P0_DOC_CORPUS_INGESTION
 | `DIGITAL_LIFE_BIRTH_SHELL` | `活跃前沿` | `digital-life` 已写出 birth packet 与 birth digest | 继续承载 terminal birth restore 到第一回合之前的桥 |
 | `FIRST_TERMINAL_TURN_BRIDGE` | `活跃前沿` | `first-terminal-turn` 已写出 `session_envelope.json` 与 `safe_terminal_loop_state.json` | 继续补厚终端常驻层与关系性外显回合循环 |
 | `TERMINAL_LIFE_LOOP_BRIDGE` | `活跃前沿` | `terminal-life-loop` 已把恢复后的第一回合推进成持续终端生命循环的最小壳层 | 继续补厚真实外部回合输入、关系写回和长期语言节奏 |
-| `DIGITAL_LIFE_SHELL_COMMAND` | `已落 repo-local one-shot 壳` | 已能收束 `digital-life -> first-terminal-turn -> terminal-life-loop` | 作为恢复启动层保留，继续服务更高阶常驻进程 |
+| `DIGITAL_LIFE_SHELL_COMMAND` | `已落 one-shot 壳` | 已能收束 `digital-life -> first-terminal-turn -> terminal-life-loop` | 作为恢复启动层保留，继续服务更高阶常驻进程 |
 | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | `已落最小常驻进程` | 启动后已能先写 waiting heartbeat，再持续读取真实新回合输入、输出生命回合、写回连续体、支持 `/exit`，并在单回合异常时写 incident/recovery 报告后回到等待态；若重启时发现上次停在活跃回合中断态，也会先做 relaunch recovery normalization。`turn_io.py`、`relaunch_recovery.py`、`incident_recovery.py`、`process_report.py`、`dialogue_events.py` 与 `response_surface.py` 已从 `__init__.py` 拆出，process supervisor 第一批文件级器官已经闭合；同时 idle continuity 与 process report 已开始显式挂回 `replay_cue_bundle.json`、`offline_consolidation_frame.json`、`growth_patch_candidate_queue.json`，且下一轮生命回应已开始真实带上这些离线对象的压力与候选信息。随后又已补上独立 `idle_strategy.py`，把 waiting heartbeat 的节律、idle probe 和离线压力治理写成 `runtime/state/terminal/idle_strategy_state.json`，并把 `idle_strategy_ref` 接入 heartbeat / process report / process receipt；又已补上 `persistent_process.py` 第一轮，把前台终端常驻治理写成 `runtime/state/terminal/persistent_process_state.json` 与 `runtime/reports/latest/digital_life_persistent_process_report.json`，并把 `persistent_process_report_ref` 接回主进程报告；再补上 `resident_supervision.py`，把 restore shell 之后的状态装载、relaunch normalization、离线对象接线和第一拍 waiting heartbeat 进入独立出来；随后 `live_turn_cycle.py` 把真实新回合的 event -> response -> writeback -> incident recovery 生命周期独立出来；接着 `process_session_loop.py` 把 waiting heartbeat refresh 与 live turn dispatch 的 session 编排从 `__init__.py` 下沉；最新几轮又把常驻治理拆成运行中的 `resident_governance_state.json` 与关闭态 `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json` 两层，并让主进程报告与 receipt 显式回链这些治理证据；这轮又把 `resident_governance_state_ref` 正式接进 persistent report、resident governance report、主进程 report 与 process receipt，同时把长期关系时间线、承诺表达计划与修复语言轨迹继续接进 `idle_strategy_state.json`、`digital_life_waiting_heartbeat.json`、`idle_continuity_frame.json`、`resident_governance_state.json` 与 `terminal_life_loop_state.json`，并开始写出当前治理关注目标、节律档位和长期语言优先级分布；随后又把 `responsibility_loop_state.json`、`world_contact_summary.json` 与 `pain_regret_repair_report.json` 正式装载进 `resident_supervision.py`，并继续接入 waiting heartbeat、idle continuity、dialogue events、response surface、dialogue writeback bundle、persistent process report、resident governance report、主进程 report、process digest 与 process receipt，使 Queue E 的责任/世界接触/痛苦修复对象第一次真正进入常驻生命过程闭环。最新这一轮又把 `nightmare_loop_risk.json`、`belief_learning_plan.json`、`language_learning_plan.json` 与 `relationship_learning_plan.json` 重新装载回 process supervisor，让 Queue D 的离线梦境/学习结果不仅反向调制 waiting governance、idle continuity、response surface 与 process report，还会在 bootstrap 相位直接重写 `relationship_timeline.json`、`commitment_expression_plan.json`、`apology_repair_language_trace.json`、`relationship_memory.json` 与 `life_state.json`；而现在又继续推进到 live turn 结束时由 `resident_turn_writeback.py` 与 `continuity_evolution.py` 立刻重建这批长期对象、演化关系阶段、写回自我慢变量，并先由新增 `resident_governance_handoff.py` 把回合结束到下一拍 heartbeat 之间的 waiting governance 交接相位显式落盘成 `live_turn_waiting_handoff`，再由 `process_session_loop.py` 把这批对象装回下一轮会话上下文，让 `response_surface.py` 在后续回合直接消费这些演化结果；最新补强又把实时语言理解送进 `idle_strategy_state.json#live_language_presence_profile`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl`、`resident_governance_state.json`、`resident_background_lineage_state.language_presence`、关闭态 artifacts 与下一次 `background_continuity_profile.background_live_language_*`，形成 `Queue A live language -> resident governance -> closeout lineage -> background continuity -> next waiting governance` 的驻留闭环；当前前沿继续让 `dialogue_events.py` 展开 `resident_background_lineage_language_evidence_refs`，让 `resident_turn_writeback.py` 把语言 evidence refs 并入写回包和恢复包，让 `response_surface.py` 表达后台语言语义余波和证据数量；同时也让 `trait_convergence_presence` 携带人格慢变量 evidence refs，并由 `dialogue_events.py` 展开人格慢变量焦点、稳定/不稳定名单、收敛评分、漂移监控 ref、history profile 与 trait refs，再进入 lineage evidence、写回包、恢复包和回应表面 | 继续补厚后台存在、真正跨进程持续治理，以及关系阶段、自我慢变量和实时语言理解跨会话稳定保真 |
 
 ## 当前最该直接补的不是新 slice

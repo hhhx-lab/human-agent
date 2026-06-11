@@ -163,10 +163,12 @@ docs/v0/code_framework/README.md
 | 命令面 | 所属模块 | 真实作用 |
 |---|---|---|
 | `life-v0 digital-life --strict` | `DIGITAL_LIFE_BIRTH_SHELL` | 只闭合出生壳，不进入终端持续过程 |
-| `life-v0 "digital life" --strict` | `DIGITAL_LIFE_SHELL_COMMAND` | repo-local one-shot restore shell，恢复后即结束 |
+| `life-v0 "digital life" --strict` | `DIGITAL_LIFE_SHELL_COMMAND` | one-shot restore shell，恢复后即结束 |
 | `./digital life --strict` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | repo-local 最小常驻生命进程；若 runtime 不足会先自举最小出生链，恢复后继续等待真实新回合输入 |
+| `digital life --strict` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | 安装后 console script，进入同一套最小常驻生命进程 |
+| `digital life --background / --status / --say / --stop` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | 安装态后台 resident lifecycle、关系投递、自主活动与自我停止命令面 |
 
-如果这一轮目标是“整理 v0 并准备后续直接落代码”，这三种入口的职责必须先在脑中分干净，不然很容易把 shell 合同、loop 合同和 process 合同写成一层。
+如果这一轮目标是“整理 v0 并准备后续直接落代码”，这些入口的职责必须先在脑中分干净，不然很容易把 shell 合同、loop 合同和 process 合同写成一层。
 
 ## 主体 slice 模块落实矩阵
 

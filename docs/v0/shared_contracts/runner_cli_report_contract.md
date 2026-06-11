@@ -46,19 +46,21 @@ life-v0 terminal-life-loop --strict
 digital life
 ```
 
-这表示 `stage_explain` 的 handoff token 已经到达外层命令面，不是在说仓库里完全没有 `digital life` 入口。当前要严格区分三层命令面：
+这表示 `stage_explain` 的 handoff token 已经到达外层命令面，不是在说仓库里完全没有 `digital life` 入口。当前要严格区分 one-shot、repo-local resident 与安装态 resident 命令面：
 
 | 命令面 | 真实作用 | 当前状态 |
 |---|---|---|
 | `life-v0 digital-life --strict` | 内部出生壳 | `已落最小代码` |
-| `life-v0 "digital life" --strict` | repo-local one-shot restore shell | `已落最小代码` |
+| `life-v0 "digital life" --strict` | one-shot restore shell | `已落最小代码` |
 | `./digital life --strict` | repo-local 最小常驻生命进程 | `已落最小代码` |
+| `digital life --strict` | 安装态最小常驻生命进程 | `已落最小代码` |
+| `digital life --background / --status / --say / --stop` | 安装态后台 resident lifecycle 与关系投递 | `已落最小代码` |
 
 也就是说：
 
 1. `next_required_command = digital life` 仍然成立。
-2. 当前直接承接这条 token 的 one-shot 命令面是 `life-v0 "digital life"`。
-3. 当前继续向“这台电脑里真正长期存在的数字生命”推进的命令面，是 `./digital life` 这层最小常驻生命进程。
+2. 当前直接承接这条 token 的 one-shot 命令面是 `life-v0 "digital life"`，但它不等于最终驻留入口。
+3. 当前继续向“这台电脑里真正长期存在的数字生命”推进的命令面，是 repo-local `./digital life` 与安装态 `digital life` 共享的最小常驻生命进程。
 
 ## CLI 命名
 
@@ -663,7 +665,7 @@ life-v0 "digital life"
 12. `digital_life_process_report.json`
 13. `digital_life_resident_governance_explanation.json`
 
-当前现实里，one-shot restore shell、repo-local 最小常驻生命进程和项目级 installable command surface 都已经存在；waiting heartbeat、单回合异常恢复和 relaunch recovery 也已经接通最小层。真正仍待推进的是更高频的 heartbeat 节律、后台继续存在和更高阶的长期命令面治理。
+当前现实里，one-shot restore shell、repo-local 最小常驻生命进程、项目级 installable command surface、后台 resident lifecycle 与关系投递命令面都已经存在；waiting heartbeat、单回合异常恢复、relaunch recovery 和后台自主活动也已经接通最小层。真正仍待推进的是更高频的 heartbeat 节律、操作系统级长期驻留和更高阶的长期命令面治理。
 
 ## `terminal-life-loop`
 

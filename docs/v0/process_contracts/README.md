@@ -1,18 +1,18 @@
 # V0 进程与壳层柜
 
-`process_contracts/` 放链尾桥接、repo-local shell 和常驻生命进程合同。
+`process_contracts/` 放链尾桥接、one-shot 壳、repo-local / 安装态命令面和常驻生命进程合同。
 
 ## 文件分工
 
 - `first_terminal_turn_engineering_contract.md`：第一次终端回合恢复。
 - `terminal_life_loop_engineering_contract.md`：等待态、回合循环和写回。
 - `digital_life_shell_command_engineering_contract.md`：`life-v0 "digital life"` 的 one-shot restore 壳。
-- `digital_life_process_supervisor_engineering_contract.md`：`./digital life` 的 repo-local 最小常驻生命进程。
+- `digital_life_process_supervisor_engineering_contract.md`：repo-local `./digital life` 与安装后 `digital life` 共享的最小常驻生命进程、后台 resident lifecycle、关系投递与自主活动证据链。
 - `resident_governance_waiting_state_machine_engineering_contract.md`：waiting / closeout 常驻治理状态机，以及 `state -> snapshot/report -> process report/receipt` 的硬回链。
 
 ## 什么时候打开
 
-- 处理外层命令面、stdin 回合循环、heartbeat、idle continuity。
+- 处理外层命令面、stdin 回合循环、安装后 console script、heartbeat、idle continuity。
 - 处理恢复包、loop state、dialogue writeback、process report。
 - 处理 `resident_governance_state.json`、`resident_governance_snapshot.json` 与 process receipt 之间的治理证据链。
 
