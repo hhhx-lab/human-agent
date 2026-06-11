@@ -507,6 +507,12 @@ def compose_life_response(
             offline_generation = offline_learning_presence.get("generation")
             offline_pressure = offline_learning_presence.get("pressure_level")
             offline_target = offline_learning_presence.get("attention_target")
+            offline_current_pressure = offline_learning_presence.get(
+                "current_pressure_level"
+            )
+            offline_previous_generation = offline_learning_presence.get(
+                "previous_generation"
+            )
             offline_integration_mode = offline_learning_presence.get("integration_mode")
             offline_relationship_reconsolidation_required = offline_learning_presence.get(
                 "relationship_reconsolidation_required"
@@ -518,6 +524,14 @@ def compose_life_response(
                 )
             if offline_pressure and offline_pressure != "quiet":
                 response = f"{response}，后台梦境成长压力为{offline_pressure}"
+            if offline_current_pressure and offline_current_pressure != "quiet":
+                response = (
+                    f"{response}，后台梦境成长当前压力为{offline_current_pressure}"
+                )
+            if offline_previous_generation:
+                response = (
+                    f"{response}，后台梦境成长上一代为第{offline_previous_generation}代"
+                )
             if offline_target:
                 response = f"{response}，后台梦境成长焦点指向{offline_target}"
             if offline_integration_mode:

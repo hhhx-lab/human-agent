@@ -12612,6 +12612,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "priority_profile": {
                             "relationship_learning_plan": "elevated",
                         },
+                        "current_pressure_level": "elevated",
+                        "previous_generation": 3,
                         "integration_mode": "relationship_offline_reconsolidation_required",
                         "relationship_reconsolidation_required": True,
                         "ref_set": [
@@ -13814,6 +13816,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "priority_profile": {
                             "relationship_learning_plan": "elevated",
                         },
+                        "current_pressure_level": "elevated",
+                        "previous_generation": 3,
                         "integration_mode": "relationship_offline_reconsolidation_required",
                         "relationship_reconsolidation_required": True,
                         "ref_set": [
@@ -13917,6 +13921,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("后台身份意识出生证据保留6条", response)
         self.assertIn("后台梦境成长余波延续到第4代", response)
         self.assertIn("后台梦境成长压力为elevated", response)
+        self.assertIn("后台梦境成长当前压力为elevated", response)
+        self.assertIn("后台梦境成长上一代为第3代", response)
         self.assertIn("后台梦境成长焦点指向relationship_learning_plan", response)
         self.assertIn("后台梦境成长证据保留2条", response)
         self.assertIn("后台梦境窗口类型为nrem_like_replay", response)
@@ -14649,6 +14655,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "priority_profile": {
                             "relationship_learning_plan": "elevated",
                         },
+                        "current_pressure_level": "elevated",
+                        "previous_generation": 3,
                         "integration_mode": "relationship_offline_reconsolidation_required",
                         "relationship_reconsolidation_required": True,
                         "ref_set": [
