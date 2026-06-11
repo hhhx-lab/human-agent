@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from .activation import run_first_activation_preflight
@@ -72,6 +73,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Send one relation turn to the resident process and print its response.",
     )
+    life.add_argument(
+        "--attach",
+        action="store_true",
+        help="Attach this terminal to the resident process, starting it first if needed.",
+    )
+    life.add_argument(
+        "--foreground",
+        action="store_true",
+        help="Run the foreground process loop even when stdin is an interactive terminal.",
+    )
     life.add_argument("--say-timeout-seconds", type=float, default=30.0)
     life.add_argument("--resident-sleep-seconds", type=float, default=1.0)
     life.add_argument("--stop-timeout-seconds", type=float, default=10.0)
@@ -122,6 +133,16 @@ def main(argv: list[str] | None = None) -> int:
             )
             print(json.dumps(result.state, ensure_ascii=False, indent=2))
             return result.exit_code
+        if _should_attach_resident(args):
+            return run_resident_terminal_client(
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                receipts_dir=receipts_dir,
+                run_id=args.run_id,
+                strict=args.strict,
+                resident_sleep_seconds=args.resident_sleep_seconds,
+                say_timeout_seconds=args.say_timeout_seconds,
+            )
 
         bootstrap_exit = ensure_minimal_digital_life_runtime(
             docs_dir=Path("docs"),
@@ -163,6 +184,67 @@ def main(argv: list[str] | None = None) -> int:
 
     parser.error(f"unsupported command: {args.command}")
     return 5
+
+
+def run_resident_terminal_client(
+    *,
+    state_dir: Path,
+    reports_dir: Path,
+    receipts_dir: Path,
+    run_id: str | None,
+    strict: bool,
+    resident_sleep_seconds: float,
+    say_timeout_seconds: float,
+) -> int:
+    terminal_dir = state_dir / "terminal"
+    start_result = start_background_resident_process(
+        state_dir=state_dir,
+        reports_dir=reports_dir,
+        receipts_dir=receipts_dir,
+        run_id=run_id,
+        strict=strict,
+        resident_sleep_seconds=resident_sleep_seconds,
+        cwd=Path.cwd(),
+    )
+    if start_result.exit_code != 0:
+        print(json.dumps(start_result.state, ensure_ascii=False, indent=2))
+        return start_result.exit_code
+
+    for raw_line in sys.stdin:
+        utterance = raw_line.rstrip("\n")
+        command = utterance.strip().lower()
+        if not utterance.strip():
+            continue
+        if command in {"/exit", "/quit"}:
+            return 0
+        if command in {"/stop", "/shutdown"}:
+            stop_result = request_resident_stop(
+                terminal_dir=terminal_dir,
+                timeout_seconds=30.0,
+            )
+            print(json.dumps(stop_result.state, ensure_ascii=False, indent=2))
+            return stop_result.exit_code
+        turn_result = send_resident_relation_turn(
+            terminal_dir=terminal_dir,
+            utterance=utterance,
+            wait_timeout_seconds=say_timeout_seconds,
+        )
+        response_text = turn_result.state.get("response_text")
+        if response_text:
+            print(response_text)
+        else:
+            print(json.dumps(turn_result.state, ensure_ascii=False, indent=2))
+            if turn_result.exit_code != 0:
+                return turn_result.exit_code
+    return 0
+
+
+def _should_attach_resident(args: argparse.Namespace) -> bool:
+    if args.attach:
+        return True
+    if args.foreground or args.resident:
+        return False
+    return bool(sys.stdin.isatty())
 
 
 def ensure_minimal_digital_life_runtime(

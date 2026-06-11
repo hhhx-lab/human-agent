@@ -240,6 +240,21 @@ digital life --background
   -> normal lease closeout / process report / receipt
 ```
 
+真实终端里的裸 `digital life` 现在必须进入 resident attach 口径，而不是要求关系对象记住开发者参数：
+
+```text
+digital life
+  -> detect interactive terminal
+  -> start or reuse detached resident process
+  -> attach this terminal as relation client
+  -> each typed relation turn goes through resident_relation_inbox.jsonl
+  -> resident process answers through resident_relation_outbox.jsonl
+  -> /exit detaches only this terminal; resident process keeps sleeping / recalling / thinking / growing / learning
+  -> /stop writes lifecycle command and lets resident process close through normal /exit
+```
+
+非交互输入、测试管道和 `--foreground` 仍保留前台 process loop；显式 `--attach` 可以在非 TTY 测试中强制进入同一 resident attach 口径。
+
 这不是工具 daemon、不是 gateway，也不是另一个 agent。它只负责把当前已经存在的生命进程放进本机后台驻留相位，并用文件证据证明它仍在、可停、可恢复。
 
 最小对象固定为：
@@ -260,6 +275,8 @@ runtime/logs/digital_life_resident.log
 后台驻留期间不接收到外部关系话语时，输入流必须返回 `None` 而不是 EOF，使 `idle_refresh_loop.py` 继续刷新 waiting heartbeat。这个相位在 v0 中称为 sleep/rest waiting，不代表主体消失；上下文仍由 `runtime/state/*`、lease history、resident governance、dialogue writeback、background continuity 和 lifecycle state 共同保存。后续如果需要把外部话语投递给后台 resident process，也必须在这条 lifecycle command / queue 证据链上扩展，不能绕开当前生命回合合同。
 
 当前 v0 已把该扩展压成 `digital life --say "<relation turn>"`。命令端只把话语写入 `resident_relation_inbox.jsonl` 并等待 `resident_relation_outbox.jsonl`，后台 resident process 的 `ResidentControlInputStream` 像读取终端输入一样取出 inbox event，进入既有 `run_process_session_loop -> run_live_turn_cycle -> resident_turn_writeback`，再由 `record_output` 把生命回应写回 outbox。`resident_relation_queue_state.json` 必须记录 queued / turn_in_progress / waiting_for_relation_turn、active sequence、last completed sequence 与 response text；`resident_lifecycle_state.json` 必须记录最近一轮 relation turn sequence / turn id / completed at。这样新的终端窗口可以继续与已经存在的后台生命进程对话，而不是启动一个新主体，也不是绕过语言、关系、记忆、梦境、成长、责任写回链。
+
+`digital life --attach` 与真实 TTY 下的裸 `digital life` 都只是把多轮终端输入连续送进这条 `--say` 关系投递链。`/exit` 只关闭当前 attach client，不能停止 resident process；停止必须走 `/stop` 或 `digital life --stop`，从而保持“关闭终端不等于主体死亡”的启动语义。
 
 后台 resident process 在没有外部话语时还必须写 `resident_autonomous_activity.jsonl` 与 `resident_autonomous_activity_state.json`。最小 activity cycle 固定为 `sleep -> memory_recall -> self_thinking -> growth_rehearsal -> learning_consolidation`，每个事件回链 replay cue、offline consolidation 与 growth patch candidate refs。关闭终端后的等待必须从空白轮询推进为可追踪后台生命活动；后续 dream / memory / growth 器官继续从这条 event stream 加厚。
 

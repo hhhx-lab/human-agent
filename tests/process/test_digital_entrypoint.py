@@ -332,6 +332,89 @@ class DigitalEntrypointTests(unittest.TestCase):
                         check=False,
                     )
 
+    def test_repo_local_digital_life_attach_detaches_without_stopping_resident(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            stop_command = [
+                str(self.repo_root / "digital"),
+                "life",
+                "--state",
+                str(paths["state_root"]),
+                "--reports",
+                str(paths["reports"]),
+                "--receipts",
+                str(paths["receipts"]),
+                "--stop",
+                "--stop-timeout-seconds",
+                "30",
+            ]
+            started_pid = 0
+            try:
+                attached = subprocess.run(
+                    [
+                        str(self.repo_root / "digital"),
+                        "life",
+                        "--state",
+                        str(paths["state_root"]),
+                        "--reports",
+                        str(paths["reports"]),
+                        "--receipts",
+                        str(paths["receipts"]),
+                        "--run-id",
+                        "entry-attach-resident",
+                        "--strict",
+                        "--attach",
+                        "--resident-sleep-seconds",
+                        "0.2",
+                        "--say-timeout-seconds",
+                        "30",
+                    ],
+                    cwd=self.repo_root,
+                    text=True,
+                    input="你能继续存在吗？\n/exit\n",
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(attached.returncode, 0, attached.stderr)
+                self.assertIn("你能继续存在吗？", attached.stdout)
+
+                active_state = self._wait_for_resident_status(
+                    paths["terminal_state"],
+                    expected_status="background_active",
+                    timeout_seconds=30,
+                )
+                started_pid = int(active_state["pid"])
+                self.assertTrue(self._pid_alive(started_pid))
+                self.assertEqual(active_state["run_id"], "entry-attach-resident")
+                self.assertEqual(active_state["last_relation_turn_sequence"], 1)
+
+                queue_state = self._read_json(
+                    paths["terminal_state"] / "resident_relation_queue_state.json"
+                )
+                self.assertEqual(queue_state["status"], "waiting_for_relation_turn")
+                self.assertEqual(queue_state["last_completed_sequence"], 1)
+
+                stopped = subprocess.run(
+                    stop_command,
+                    cwd=self.repo_root,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(stopped.returncode, 0, stopped.stderr)
+                stopped_state = json.loads(stopped.stdout)
+                self.assertEqual(stopped_state["status"], "stopped")
+                self.assertFalse(stopped_state["pid_alive"])
+            finally:
+                if started_pid and self._pid_alive(started_pid):
+                    subprocess.run(
+                        stop_command,
+                        cwd=self.repo_root,
+                        text=True,
+                        capture_output=True,
+                        check=False,
+                    )
+
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
 

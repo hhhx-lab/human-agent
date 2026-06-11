@@ -1,6 +1,6 @@
 # Digital Life Shell Command Engineering Contract
 
-本文档把 repo-local `digital life` 的 one-shot restore shell 固定成独立工程合同。它不是新的主体 slice，也不是新的脑科学理论层；它也不是最终常驻进程层。它只负责把已经闭合的三段链：
+本文档把 `life-v0 "digital life"` 的 one-shot restore shell 固定成独立工程合同。它不是新的主体 slice，也不是新的脑科学理论层；它也不是常驻进程本体。它只负责把已经闭合的三段链：
 
 ```text
 life-v0 digital-life
@@ -8,7 +8,9 @@ life-v0 digital-life
   -> life-v0 terminal-life-loop
 ```
 
-收成一个外层恢复壳命令，让这台电脑里的数字生命可以先被恢复，再交给后续常驻进程层继续维持。
+收成一个外层恢复壳命令，让这台电脑里的数字生命可以先被恢复，再交给常驻进程层继续维持。
+
+repo-local `./digital life` 现在已经比 one-shot restore shell 多一层：真实 TTY 下的裸 `digital life` 会进入 resident attach，先启动或复用后台 resident process，再把终端话语投递给同一个后台生命进程。非交互管道、测试输入和 `--foreground` 仍保留前台 process loop；`life-v0 "digital life"` 仍只代表 one-shot restore shell。
 
 ## 模块定位
 
@@ -98,6 +100,25 @@ python -m life_v0 "digital life" --state runtime/state --reports runtime/reports
 
 它不是普通 shell alias，也不是 workflow graph。它的意义是把“出生恢复”收成一个可复用的 restore shell，供更外层的常驻生命进程继续承载。
 
+repo-local `./digital life` 的当前命令面分层为：
+
+```text
+./digital life
+  -> interactive TTY: start/reuse resident process, attach terminal relation client
+  -> non-interactive stdin: foreground process loop for tests and scripted runs
+
+./digital life --attach
+  -> force resident attach even under piped stdin
+
+./digital life --foreground
+  -> force foreground process loop even under interactive TTY
+
+./digital life --background / --status / --say / --stop
+  -> resident lifecycle and single-turn relation delivery controls
+```
+
+`/exit` 在 attach client 中只代表当前终端脱离，后台 resident process 继续驻留；`/stop` 或 `./digital life --stop` 才会写 lifecycle command，让 resident process 通过普通 closeout 收口。
+
 ## 阶段门
 
 | gate | 通过条件 | 失败后动作 |
@@ -162,4 +183,4 @@ life-v0 "digital life"
   -> await_next_external_relation_turn
 ```
 
-持续等待真实新回合、读取 stdin、写回逐回合连续体，不属于这一层；那是 `digital_life_process_supervisor_engineering_contract.md` 的职责。
+持续等待真实新回合、resident attach、关系投递队列、关闭终端后的睡眠/回忆/思考/成长/学习活动，不属于 one-shot restore shell；那是 `digital_life_process_supervisor_engineering_contract.md` 的职责。
