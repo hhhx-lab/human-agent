@@ -440,6 +440,14 @@ def _attach_model_expression_refs(
         "model_expression_status"
     )
     event["model_expression_applied"] = model_expression.applied
+    if model_expression.state.get("post_expression_gate_status"):
+        event["post_expression_gate_status"] = model_expression.state[
+            "post_expression_gate_status"
+        ]
+    if model_expression.state.get("post_expression_gate_fallback_reason"):
+        event["post_expression_gate_fallback_reason"] = model_expression.state[
+            "post_expression_gate_fallback_reason"
+        ]
     if model_expression.state.get("fallback_reason"):
         event["model_expression_fallback_reason"] = model_expression.state[
             "fallback_reason"

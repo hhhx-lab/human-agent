@@ -414,6 +414,12 @@ def write_process_report_bundle(
         "model_expression_fallback_reason": model_expression_state.get(
             "fallback_reason"
         ),
+        "post_expression_gate_status": model_expression_state.get(
+            "post_expression_gate_status"
+        ),
+        "post_expression_gate_fallback_reason": model_expression_state.get(
+            "post_expression_gate_fallback_reason"
+        ),
         "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "life_context_frame_ref": life_context_frame_ref,
         "relation_turn_frame_ref": relation_turn_frame_ref,
@@ -748,6 +754,9 @@ def write_process_report_bundle(
         "model_expression_report_ref": model_expression_report_ref,
         "model_expression_status": model_expression_state.get(
             "model_expression_status"
+        ),
+        "post_expression_gate_status": model_expression_state.get(
+            "post_expression_gate_status"
         ),
         "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "background_lineage_depth_band": idle_governance.get(

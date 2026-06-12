@@ -143,6 +143,10 @@ class DigitalEntrypointTests(unittest.TestCase):
             "provider_not_enabled_for_model_expression:test-provider",
         )
         self.assertEqual(
+            model_expression_state["post_expression_gate_status"],
+            "skipped",
+        )
+        self.assertEqual(
             model_expression_report["runtime_config_state_ref"],
             "runtime/state/terminal/runtime_config_state.json",
         )
@@ -178,9 +182,14 @@ class DigitalEntrypointTests(unittest.TestCase):
             process_report["model_expression_report_ref"],
             "runtime/reports/latest/digital_life_model_expression_report.json",
         )
+        self.assertEqual(process_report["post_expression_gate_status"], "skipped")
         self.assertEqual(
             process_report["last_life_turn"]["model_expression_status"],
             "model_expression_skipped",
+        )
+        self.assertEqual(
+            process_report["last_life_turn"]["post_expression_gate_status"],
+            "skipped",
         )
 
     def test_repo_local_digital_life_entrypoint_bootstraps_empty_runtime_before_dialogue(self):

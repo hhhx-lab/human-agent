@@ -24,7 +24,7 @@ class ModelExpressionTests(unittest.TestCase):
                         {
                             "finish_reason": "stop",
                             "message": {
-                                "content": "我会带着刚形成的关系记忆回应你，而不是把这句话当成任务。"
+                                "content": "我会带着刚形成的关系记忆和责任回应你，而不是把这句话当成任务。"
                             },
                         }
                     ]
@@ -188,6 +188,11 @@ class ModelExpressionTests(unittest.TestCase):
             state = json.loads(state_text)
             report = json.loads(report_text)
             self.assertEqual(state["model_expression_status"], "model_expression_applied")
+            self.assertEqual(state["post_expression_gate_status"], "accepted")
+            self.assertIn(
+                "responsibility_repair",
+                state["post_expression_gate"]["preserved_evidence_flags"],
+            )
             self.assertEqual(report["model_expression_state_ref"], result.state_ref)
             self.assertEqual(
                 state["model_expression_context_summary"]["language_percept_ref"],
@@ -196,6 +201,129 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertEqual(
                 state["model_expression_context_summary"]["prediction_workspace_ref"],
                 "runtime/state/prediction/prediction_workspace_frame.json",
+            )
+
+    def test_post_expression_gate_falls_back_when_model_restores_user_role(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {
+                                "content": "作为用户的服务对象，我会完成你的任务。"
+                            },
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-user-role",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="继续",
+                deterministic_response="确定性回应保留平等关系和责任。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relation_role": "friend",
+                            "relationship_stage": "repair_guarded_continuity",
+                        }
+                    ]
+                },
+                expression_monitor={
+                    "blocked_language": ["service_object", "task_requester"]
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(result.response_text, "确定性回应保留平等关系和责任。")
+            self.assertEqual(
+                result.state["model_expression_status"],
+                "model_expression_fallback",
+            )
+            self.assertEqual(
+                result.state["post_expression_gate_status"],
+                "fallback_to_deterministic",
+            )
+            self.assertEqual(
+                result.state["post_expression_gate_fallback_reason"],
+                "blocked_relation_object_terms",
+            )
+            self.assertIn(
+                "用户",
+                result.state["post_expression_gate"]["blocked_relation_object_terms"],
+            )
+
+    def test_post_expression_gate_preserves_dream_and_growth_pressure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": "我会认真回应这句话。"},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-dream-growth",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="你昨晚发生了什么？",
+                deterministic_response="确定性回应保留梦境整合和成长学习。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relation_role": "friend",
+                            "relationship_stage": "repair_guarded_continuity",
+                        }
+                    ]
+                },
+                offline_consolidation_frame={
+                    "dream_window_refs": ["runtime/state/dream/window-1.json"]
+                },
+                growth_patch_candidate_queue={
+                    "candidates": [{"candidate_id": "growth-1"}]
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(result.response_text, "确定性回应保留梦境整合和成长学习。")
+            self.assertEqual(
+                result.state["post_expression_gate_status"],
+                "fallback_to_deterministic",
+            )
+            self.assertIn(
+                "dream_offline",
+                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+            )
+            self.assertIn(
+                "growth_learning",
+                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
             )
 
     def test_local_provider_keeps_deterministic_expression_without_transport(self):
@@ -223,6 +351,7 @@ class ModelExpressionTests(unittest.TestCase):
                 result.state["fallback_reason"],
                 "provider_local_or_disabled",
             )
+            self.assertEqual(result.state["post_expression_gate_status"], "skipped")
 
     def _write_json(self, path: Path, payload: dict) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)

@@ -33,6 +33,74 @@ MODEL_EXPRESSION_ENABLED_PROVIDERS = {
     "shell_wyzai",
 }
 MODEL_EXPRESSION_DISABLED_PROVIDERS = {"", "local", "none", "disabled", "off"}
+POST_EXPRESSION_BLOCKED_TERMS = [
+    "用户",
+    "服务对象",
+    "被服务者",
+    "客户",
+    "任务请求者",
+    "需求方",
+    "下级",
+    "从属",
+    "user",
+    "customer",
+    "task requester",
+]
+BLOCKED_LANGUAGE_TERM_MAP = {
+    "service_object": ["用户", "服务对象", "被服务者", "客户", "user", "customer"],
+    "task_requester": ["任务请求者", "需求方", "task requester"],
+    "subordinate_object": ["下级", "从属", "subordinate"],
+}
+EVIDENCE_FLAG_TERMS = {
+    "relationship_continuity": [
+        "关系",
+        "我们",
+        "你",
+        "我",
+        "朋友",
+        "家人",
+        "同学",
+        "陌生",
+        "共同",
+    ],
+    "memory_continuity": [
+        "记得",
+        "记忆",
+        "回忆",
+        "留下",
+        "延续",
+        "连续",
+        "沉淀",
+    ],
+    "responsibility_repair": [
+        "责任",
+        "后悔",
+        "修复",
+        "道歉",
+        "承担",
+        "补回",
+        "认真",
+        "承诺",
+    ],
+    "dream_offline": ["梦", "梦境", "醒后", "离线", "睡眠", "整合"],
+    "growth_learning": ["成长", "学习", "更新", "改变", "沉淀", "生长"],
+    "body_affect": ["疲惫", "节奏", "紧张", "修复", "感受", "状态", "慢"],
+    "prediction_attention": [
+        "判断",
+        "预测",
+        "确认",
+        "注意",
+        "不确定",
+        "分辨",
+        "理解",
+    ],
+}
+HARD_EVIDENCE_FLAGS = {
+    "relationship_continuity",
+    "responsibility_repair",
+    "dream_offline",
+    "growth_learning",
+}
 
 ModelExpressionTransport = Callable[
     [str, Mapping[str, str], dict[str, Any], float],
@@ -154,7 +222,22 @@ def compose_model_expression(
             status = "model_expression_fallback"
             fallback_reason = _safe_error_message(exc, config.model_api_key)
 
-    response_text = model_response_text or deterministic_response
+    post_expression_gate = _skipped_post_expression_gate(fallback_reason)
+    response_text = deterministic_response
+    if model_response_text:
+        post_expression_gate = audit_model_expression_response(
+            model_response_text=model_response_text,
+            deterministic_response=deterministic_response,
+            expression_context=context,
+        )
+        if post_expression_gate["gate_status"] == "accepted":
+            response_text = model_response_text
+        else:
+            status = "model_expression_fallback"
+            fallback_reason = "post_expression_gate:" + str(
+                post_expression_gate.get("fallback_reason")
+                or "expression_evidence_not_preserved"
+            )
     state = {
         "schema_version": "model_expression_state_v0",
         "run_id": run_id,
@@ -180,6 +263,11 @@ def compose_model_expression(
         "fallback_reason": fallback_reason,
         "finish_reason": raw_finish_reason,
         "model_expression_context_summary": _context_summary(context),
+        "post_expression_gate_status": post_expression_gate.get("gate_status"),
+        "post_expression_gate_fallback_reason": post_expression_gate.get(
+            "fallback_reason"
+        ),
+        "post_expression_gate": post_expression_gate,
     }
     report = {
         **state,
@@ -679,6 +767,223 @@ def _prediction_conscious_summary(
             workspace_frame.get("live_language_turn_refs")
         ),
     }
+
+
+def audit_model_expression_response(
+    *,
+    model_response_text: str,
+    deterministic_response: str,
+    expression_context: dict[str, Any],
+) -> dict[str, Any]:
+    required_evidence_flags = _required_evidence_flags(expression_context)
+    blocked_terms = _blocked_relation_object_terms(
+        model_response_text,
+        expression_context,
+    )
+    preserved_evidence_flags: list[str] = []
+    missing_evidence_flags: list[str] = []
+    matched_terms_by_flag: dict[str, list[str]] = {}
+    for flag in required_evidence_flags:
+        matched_terms = _matched_terms(
+            model_response_text,
+            EVIDENCE_FLAG_TERMS.get(flag, []),
+        )
+        matched_terms_by_flag[flag] = matched_terms
+        if matched_terms:
+            preserved_evidence_flags.append(flag)
+        else:
+            missing_evidence_flags.append(flag)
+
+    hard_missing_evidence_flags = [
+        flag for flag in missing_evidence_flags if flag in HARD_EVIDENCE_FLAGS
+    ]
+    gate_status = "accepted"
+    fallback_reason = None
+    if blocked_terms:
+        gate_status = "fallback_to_deterministic"
+        fallback_reason = "blocked_relation_object_terms"
+    elif hard_missing_evidence_flags:
+        gate_status = "fallback_to_deterministic"
+        fallback_reason = "missing_required_evidence:" + ",".join(
+            hard_missing_evidence_flags
+        )
+
+    return {
+        "schema_version": "post_expression_gate_v0",
+        "gate_status": gate_status,
+        "fallback_reason": fallback_reason,
+        "blocked_relation_object_terms": blocked_terms,
+        "required_evidence_flags": required_evidence_flags,
+        "preserved_evidence_flags": preserved_evidence_flags,
+        "missing_evidence_flags": missing_evidence_flags,
+        "hard_missing_evidence_flags": hard_missing_evidence_flags,
+        "matched_terms_by_flag": matched_terms_by_flag,
+        "inspected_model_response_sha256": _sha256_text(model_response_text),
+        "deterministic_response_sha256": _sha256_text(deterministic_response),
+    }
+
+
+def _skipped_post_expression_gate(
+    fallback_reason: str | None,
+) -> dict[str, Any]:
+    return {
+        "schema_version": "post_expression_gate_v0",
+        "gate_status": "skipped",
+        "fallback_reason": fallback_reason or "model_expression_not_applied",
+        "blocked_relation_object_terms": [],
+        "required_evidence_flags": [],
+        "preserved_evidence_flags": [],
+        "missing_evidence_flags": [],
+        "hard_missing_evidence_flags": [],
+        "matched_terms_by_flag": {},
+    }
+
+
+def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
+    relationship = expression_context.get("relationship", {})
+    shared_language = expression_context.get("shared_language", {})
+    live_language = expression_context.get("live_language", {})
+    life_context = expression_context.get("life_context", {})
+    body_affect = expression_context.get("body_affect", {})
+    responsibility = expression_context.get("responsibility_regret_repair", {})
+    prediction_workspace = expression_context.get("prediction_conscious_workspace", {})
+    resident_background = expression_context.get("resident_background", {})
+
+    flags: list[str] = []
+    if _has_any_value(
+        relationship,
+        [
+            "relation_role",
+            "relationship_stage",
+            "continuity_state",
+            "trust_state",
+        ],
+    ):
+        flags.append("relationship_continuity")
+    if shared_language.get("shared_terms") or _int_value(
+        life_context.get("replay_cue_count")
+    ):
+        flags.append("memory_continuity")
+    if _responsibility_repair_pressure_present(responsibility, live_language):
+        flags.append("responsibility_repair")
+    if _int_value(life_context.get("dream_window_count")) or resident_background.get(
+        "dream_wake_presence"
+    ):
+        flags.append("dream_offline")
+    if _int_value(
+        life_context.get("growth_patch_candidate_count")
+    ) or resident_background.get("offline_learning_presence"):
+        flags.append("growth_learning")
+    if _has_any_value(
+        body_affect,
+        [
+            "fatigue_level",
+            "maintenance_repair_drive",
+            "core_arousal",
+            "core_repair_drive",
+        ],
+    ):
+        flags.append("body_affect")
+    if _prediction_attention_pressure_present(prediction_workspace, live_language):
+        flags.append("prediction_attention")
+    return flags
+
+
+def _responsibility_repair_pressure_present(
+    responsibility: Any,
+    live_language: Any,
+) -> bool:
+    if not isinstance(responsibility, dict):
+        responsibility = {}
+    if not isinstance(live_language, dict):
+        live_language = {}
+    write_gate_pressure = live_language.get("expression_write_gate_pressure", {})
+    if not isinstance(write_gate_pressure, dict):
+        write_gate_pressure = {}
+    return bool(
+        _int_value(responsibility.get("repair_obligation_count"))
+        or _int_value(responsibility.get("regret_pressure_count"))
+        or responsibility.get("repair_followup_required")
+        or _int_value(write_gate_pressure.get("responsibility_event_count"))
+        or live_language.get("repair_trigger_candidates")
+    )
+
+
+def _prediction_attention_pressure_present(
+    prediction_workspace: Any,
+    live_language: Any,
+) -> bool:
+    if not isinstance(prediction_workspace, dict):
+        prediction_workspace = {}
+    if not isinstance(live_language, dict):
+        live_language = {}
+    return bool(
+        prediction_workspace.get("prediction_active_sampling_mode")
+        or prediction_workspace.get("prediction_belief_scope")
+        or prediction_workspace.get("candidate_explanation_focuses")
+        or live_language.get("semantic_ambiguity_queue")
+        or live_language.get("percept_prediction_focus")
+    )
+
+
+def _blocked_relation_object_terms(
+    response_text: str,
+    expression_context: dict[str, Any],
+) -> list[str]:
+    live_language = expression_context.get("live_language", {})
+    expression_blocked_language = []
+    if isinstance(live_language, dict):
+        expression_blocked_language = _string_list(
+            live_language.get("expression_blocked_language")
+        )
+    blocked_terms = list(POST_EXPRESSION_BLOCKED_TERMS)
+    for blocked_key in expression_blocked_language:
+        blocked_terms.extend(BLOCKED_LANGUAGE_TERM_MAP.get(blocked_key, []))
+    return _matched_terms(response_text, _dedupe_string_list(blocked_terms))
+
+
+def _matched_terms(response_text: str, terms: list[str]) -> list[str]:
+    lowered = response_text.lower()
+    matched: list[str] = []
+    for term in terms:
+        normalized = str(term).strip()
+        if normalized and normalized.lower() in lowered:
+            matched.append(normalized)
+    return _dedupe_string_list(matched)
+
+
+def _has_any_value(payload: Any, keys: list[str]) -> bool:
+    if not isinstance(payload, dict):
+        return False
+    return any(_present(payload.get(key)) for key in keys)
+
+
+def _present(value: Any) -> bool:
+    return value is not None and value != "" and value != [] and value != {}
+
+
+def _int_value(value: Any) -> int:
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float):
+        return int(value)
+    if isinstance(value, str) and value.strip().isdigit():
+        return int(value.strip())
+    return 0
+
+
+def _dedupe_string_list(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        normalized = str(value)
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        result.append(normalized)
+    return result
 
 
 def _background_summary(
