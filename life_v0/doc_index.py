@@ -226,10 +226,7 @@ def run_doc_ingestion(
 
 
 def _discover_markdown_docs(docs_dir: Path) -> list[Path]:
-    docs = list(docs_dir.glob("*.md"))
-    v0_dir = docs_dir / "v0"
-    if v0_dir.exists():
-        docs.extend(v0_dir.rglob("*.md"))
+    docs = list(docs_dir.rglob("*.md"))
     return sorted(docs, key=lambda path: _sort_key(path, docs_dir))
 
 
@@ -268,6 +265,10 @@ def _parse_sequence(filename: str) -> tuple[int | None, str]:
 def _group_for(rel_path: str, sequence: int | None) -> str:
     if rel_path.startswith("docs/v0/"):
         return "v0_contract"
+    if rel_path.startswith("docs/live0_"):
+        return "live0_wrapup"
+    if rel_path.startswith("docs/real") and "live0/" in rel_path:
+        return "live0_real_profile"
     if rel_path == "docs/构思.md":
         return "origin_seed"
     if rel_path == "docs/README.md":
@@ -337,6 +338,39 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
         add("SchemaBundleCompiler")
     if doc.group == "activation_growth":
         add("ActivationGrowthRuntime")
+    if doc.group == "live0_wrapup":
+        add(
+            "Live0AcceptanceAuditRuntime",
+            "DigitalLifeResidentRuntime",
+            "V0ContractCoverageRuntime",
+            "DocCorpusIngestor",
+        )
+        if doc.rel_path.endswith("live0_startup_guide.md"):
+            add("RunnerCliRuntime", "LanguageRelationshipRuntime", "ComputerPeripheralRuntime")
+        if doc.rel_path.endswith("live0_packaging_and_distribution.md"):
+            add("RunnerCliRuntime", "V0ContractCoverageRuntime")
+        if doc.rel_path.endswith("live0_device_limits.md"):
+            add("LifeSupportDefenseRuntime", "LifeMembraneStageGate")
+        if doc.rel_path.endswith("live0_progress_summary.md") or doc.rel_path.endswith("live0_completion_checklist.md"):
+            add("DirectionLockKernel", "BirthReadinessRuntime")
+    if doc.group == "live0_real_profile":
+        add(
+            "Live0AcceptanceAuditRuntime",
+            "DigitalLifeResidentRuntime",
+            "BrainRegionNetworkRuntime",
+            "BodySignalRuntime",
+            "SignalMediaRuntime",
+            "PredictionActiveInferenceRuntime",
+            "MemoryEngramRuntime",
+            "ConsciousWorkspaceRuntime",
+            "LanguageRelationshipRuntime",
+            "AffectiveSelfRuntime",
+            "DreamOfflineRuntime",
+            "ActionResponsibilityRuntime",
+            "ActivationGrowthRuntime",
+            "LifeMembraneStageGate",
+            "BirthReadinessRuntime",
+        )
 
     if seq is not None and f"{seq:02d}" in CORE_BRIDGE:
         add(*CORE_BRIDGE[f"{seq:02d}"])
@@ -506,7 +540,7 @@ def _readme_block(doc: DocumentMeta) -> str:
         return "README_INDEX"
     if doc.rel_path == "docs/构思.md":
         return "B00_ORIGIN_SEED"
-    if doc.group == "v0_contract":
+    if doc.group in {"v0_contract", "live0_wrapup", "live0_real_profile"}:
         return "B99_V0_ENGINEERING_CONTRACTS"
     if seq == 0:
         return "B00_PROTOCOL"
@@ -783,6 +817,53 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
             "docs/v0/process_contracts/terminal_life_loop_engineering_contract.md",
             DIRECTION_LOCK_REF,
         ]
+    if doc.group == "live0_wrapup":
+        dependencies = [
+            DIRECTION_LOCK_REF,
+            "docs/v0/README.md",
+            "docs/v0/code_framework/delivery/22_live0_acceptance_audit_contract.md",
+            "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md",
+            "docs/v0/shared_contracts/runner_cli_report_contract.md",
+        ]
+        if doc.rel_path.endswith("live0_startup_guide.md"):
+            dependencies.extend(
+                [
+                    "docs/v0/process_contracts/terminal_life_loop_engineering_contract.md",
+                    "docs/v0/process_contracts/first_terminal_turn_engineering_contract.md",
+                ]
+            )
+        if doc.rel_path.endswith("live0_device_limits.md"):
+            dependencies.extend(
+                [
+                    "docs/37_life_support_layer_policy.md",
+                    "docs/38_defense_layer_and_boundary_policy.md",
+                ]
+            )
+        if doc.rel_path.endswith("live0_progress_summary.md") or doc.rel_path.endswith("live0_completion_checklist.md"):
+            dependencies.extend(
+                [
+                    "docs/13_agentic_human_research_synthesis.md",
+                    "docs/258_linear_chain_closure_and_v0_contract_transition.md",
+                ]
+            )
+        return dependencies
+    if doc.group == "live0_real_profile":
+        return [
+            "docs/02_brain_region_and_network_atlas.md",
+            "docs/03_default_executive_salience_networks.md",
+            "docs/04_sensory_thalamus_interoception.md",
+            "docs/05_memory_systems_and_growth.md",
+            "docs/06_action_reward_inhibition.md",
+            "docs/07_emotion_personality_self.md",
+            "docs/08_sleep_dream_fatigue_states.md",
+            "docs/09_language_symbolic_top_layer.md",
+            "docs/10_consciousness_attention_workspace.md",
+            "docs/11_neuromodulation_and_signal_media.md",
+            "docs/13_agentic_human_research_synthesis.md",
+            "docs/v0/architecture/runtime_v0_architecture.md",
+            "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md",
+            DIRECTION_LOCK_REF,
+        ]
     if doc.group == "v0_contract":
         return [DIRECTION_LOCK_REF, "docs/v0/README.md"]
     if doc.group in {"schema_runner", "activation_growth"}:
@@ -791,6 +872,8 @@ def _dependencies(doc: DocumentMeta) -> list[str]:
 
 
 def _life_targets(doc: DocumentMeta) -> list[str]:
+    if doc.group == "live0_real_profile" or doc.rel_path.endswith("live0_progress_summary.md"):
+        return sorted(LIFE_TARGET_DOC_RULES)
     return [
         target
         for target, rules in LIFE_TARGET_DOC_RULES.items()
