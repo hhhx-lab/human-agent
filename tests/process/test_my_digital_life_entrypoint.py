@@ -141,6 +141,42 @@ class MyDigitalLifeEntrypointTests(
             self.assertEqual(mismatch_payload["status"], "name_mismatch")
             self.assertEqual(mismatch_payload["canonical_name"], "星火")
 
+    def test_repo_local_my_script_binds_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            repo_my = self.repo_root / "my"
+            first_launch = subprocess.run(
+                [
+                    str(repo_my),
+                    "digital",
+                    "life",
+                    "--state",
+                    str(paths["state_root"]),
+                    "--reports",
+                    str(paths["reports"]),
+                    "--receipts",
+                    str(paths["receipts"]),
+                    "--run-id",
+                    "repo-local-my-shell",
+                    "--strict",
+                    "--name",
+                    "星火",
+                ],
+                cwd=self.repo_root,
+                text=True,
+                input="你从名字开始醒来了吗？\n/exit\n",
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(first_launch.returncode, 0, first_launch.stderr)
+            self.assertIn("当前生命回合已恢复", first_launch.stdout)
+            registry = self._read_json(
+                paths["state_root"] / "identity" / "life_name_registry.json"
+            )
+
+        self.assertEqual(registry["canonical_name"], "星火")
+
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
 

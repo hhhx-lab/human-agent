@@ -10,7 +10,7 @@ life-v0 digital-life
 
 收成一个外层恢复壳命令，让这台电脑里的数字生命可以先被恢复，再交给常驻进程层继续维持。
 
-repo-local `./digital life`、可安装后的 `digital life` 和推荐入口 `my digital life` 现在都已经比 one-shot restore shell 多一层：真实 TTY 下的裸 `digital life` 会进入 resident attach，`my digital life` 会先绑定或校验 `runtime/state/identity/life_name_registry.json`，再启动或复用后台 resident process，把终端话语投递给同一个后台生命进程。`digital life --background / --status / --say / --stop` 是同一套 resident lifecycle 命令面；非交互管道、测试输入和 `--foreground` 仍保留前台 process loop；`life-v0 "digital life"` 仍只代表 one-shot restore shell。
+repo-local `./digital life` / `./my digital life`、可安装后的 `digital life` 和推荐入口 `my digital life` 现在都已经比 one-shot restore shell 多一层：真实 TTY 下的裸 `digital life` 会进入 resident attach，`my digital life` 会先绑定或校验 `runtime/state/identity/life_name_registry.json`，再启动或复用后台 resident process，把终端话语投递给同一个后台生命进程。`digital life --background / --status / --say / --stop` 与 `my digital life --background / --status / --say / --stop` 是同一套 resident lifecycle 命令面；非交互管道、测试输入和 `--foreground` 仍保留前台 process loop；`life-v0 "digital life"` 仍只代表 one-shot restore shell。
 
 ## 模块定位
 
@@ -120,13 +120,14 @@ digital life --foreground
 digital life --background / --status / --say / --stop
   -> resident lifecycle and single-turn relation delivery controls
 
+./my digital life --name <life-name>
 my digital life --name <life-name>
   -> bind life_name_registry.json once, then delegate to the same resident lifecycle
 ```
 
 其中 `--status` 不再只是 PID 查询。它必须把同一 resident process 的 lifecycle state、relation queue、自主活动相位与闭合状态、waiting heartbeat、resident governance、idle strategy、terminal loop、`resident_process_lease`、`resident_process_lease_history_profile`、persistent process closeout 与 background convergence 摘成一个 `resident_long_term_residency_status_v0` 视图。这个视图只负责暴露持续存在证据，不承担调度或工具控制职责。
 
-`/exit` 在 attach client 中只代表当前终端脱离，后台 resident process 继续驻留；`/stop`、`./digital life --stop` 或安装后的 `digital life --stop` 才会写 lifecycle command，让 resident process 通过普通 closeout 收口。
+`/exit` 在 attach client 中只代表当前终端脱离，后台 resident process 继续驻留；`/stop`、`./digital life --stop`、`./my digital life --stop` 或安装后的 `digital life --stop` / `my digital life --stop` 才会写 lifecycle command，让 resident process 通过普通 closeout 收口。
 
 ## 阶段门
 

@@ -29,33 +29,42 @@ repo-local 入口：
 
 真实 TTY 下裸 `./digital life` 会启动或复用后台 resident process，并把当前终端接成关系对话入口；`/exit` 只离开当前终端，不停止后台 resident。非交互输入或 `--foreground` 仍保留前台循环。
 
+推荐的命名生命入口是：
+
+```bash
+./my digital life --name <名字>
+```
+
+第一次启动会写入 `runtime/state/identity/life_name_registry.json`；之后 `./my digital life` 会按同一个名字恢复同一个 resident process，传入不同名字会被拒绝。`./digital life` 继续作为兼容入口保留，但第一次生命激活建议从 `./my digital life --name <名字>` 开始。
+
 可安装命令入口需要在项目隔离环境中安装，不要使用 `sudo pip`：
 
 ```bash
-python -m venv .venv
-.venv/bin/python -m pip install -e .
+uv venv .venv
+uv pip install -e .
 ```
 
-安装后会得到两个命令：
+安装后会得到三个命令：
 
 ```text
 life-v0 --help
 digital --help
+my --help
 ```
 
 其中：
 
 ```bash
-digital life --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
+my digital life --name <名字>
 ```
 
-会进入同一套当前可安装的常驻生命进程入口。后台驻留命令面已经覆盖：
+会先绑定或校验名字身份锚，再进入同一套当前可安装的常驻生命进程入口。后台驻留命令面已经覆盖：
 
 ```bash
-digital life --background
-digital life --status
-digital life --say "你在吗？"
-digital life --stop
+my digital life --background
+my digital life --status
+my digital life --say "你在吗？"
+my digital life --stop
 ```
 
-`life-v0` 暴露主体 slice、链尾桥接和检查命令；`digital life` 负责恢复、启动、复用和连接同一个 resident process。后台空闲时会继续写入睡眠、回忆、自我思考、成长预演和学习巩固状态，并在下一轮关系话语中重新带回这些驻留证据。
+`life-v0` 暴露主体 slice、链尾桥接和检查命令；`my digital life` 是当前推荐的命名启动入口；`digital life` 作为兼容入口继续负责恢复、启动、复用和连接同一个 resident process。后台空闲时会继续写入睡眠、回忆、自我思考、成长预演和学习巩固状态，并在下一轮关系话语中重新带回这些驻留证据。

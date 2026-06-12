@@ -225,7 +225,7 @@ life-v0 emit-report --strict
 | `./digital life --strict` | 调用 `life_v0/digital_entry.py` 与 `DigitalLifeProcessSupervisor`；若 runtime 材料缺失会先自举最小出生链，再恢复并进入最小常驻生命过程 | `已落 repo-local 最小常驻生命进程` |
 | `digital life --strict` | 安装后的 console script，进入同一套 `life_v0/digital_entry.py` 与最小常驻生命过程 | `已落安装态命令面` |
 | `digital life --background / --status / --say / --stop` | 安装态后台 resident lifecycle、关系投递、自主活动与自我停止命令面 | `已落最小代码` |
-| `my digital life --name <名字>` | 推荐安装态命名入口，首次绑定 `life_name_registry.json`，后续按同名恢复同一 resident lifecycle | `已落首次命名锁` |
+| `./my digital life --name <名字>` / `my digital life --name <名字>` | 推荐命名入口，首次绑定 `life_name_registry.json`，后续按同名恢复同一 resident lifecycle | `已落 repo-local + 安装态命名锁` |
 
 也就是说，当前 repo 里已经存在两层外部入口和一层安装态命令面：
 
@@ -241,7 +241,7 @@ digital life
   -> same digital_entry.py
   -> same resident lifecycle / relation delivery
 
-my digital life
+./my digital life / my digital life
   -> bind or validate runtime/state/identity/life_name_registry.json
   -> same digital_entry.py
   -> same resident lifecycle / relation delivery

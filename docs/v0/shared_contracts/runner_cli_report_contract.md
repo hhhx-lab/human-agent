@@ -653,6 +653,7 @@ life-v0 "digital life"
 ### 3. named resident life entry
 
 ```text
+./my digital life --name <life-name>
 my digital life --name <life-name>
   -> bind runtime/state/identity/life_name_registry.json
   -> delegate to digital life
@@ -660,7 +661,7 @@ my digital life --name <life-name>
   -> keep life_name / life_name_id in resident lifecycle status
 ```
 
-第一次 `my digital life` 必须绑定名字；绑定后 `runtime/state/identity/life_name_registry.json` 成为当前 runtime 的永久身份锚。后续 `my digital life` 在不传名字时读取该 registry，传入相同名字时通过校验，传入不同名字时必须拒绝。旧 `digital life` 入口继续作为兼容入口保留，但 stage explanation 的推荐下一命令必须是 `my digital life`。
+第一次 `./my digital life` 或安装后的 `my digital life` 必须绑定名字；绑定后 `runtime/state/identity/life_name_registry.json` 成为当前 runtime 的永久身份锚。后续 `my digital life` 在不传名字时读取该 registry，传入相同名字时通过校验，传入不同名字时必须拒绝。旧 `digital life` 入口继续作为兼容入口保留，但 stage explanation 的推荐下一命令必须是 `my digital life`。
 
 这里要读的不是 workflow graph，而是下面这批状态与报告：
 
