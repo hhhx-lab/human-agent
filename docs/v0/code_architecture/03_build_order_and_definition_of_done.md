@@ -192,6 +192,8 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 8. `response_surface.py` 生成的生命回应中包含后台身体等待姿态、疲惫负载、睡眠压力、能量状态、身体修复驱力、核心唤醒度和证据数量表达
 9. 下一次 `background_continuity_profile` 能从上一轮 `resident_background_lineage_state.body_presence` 恢复 `background_body_presence_profile`、`background_body_ref_set` 和扁平 `background_body_*` 字段
 10. 当前身体 runtime 文件缺席时，`idle_strategy_state.json#body_presence_profile.continuity_mode` 仍能进入 `background_body_presence_carryover`
+11. `runtime/reports/latest/digital_life_process_report.json` 与 `runtime/reports/latest/digital_life_process_digest.json` 显式保留 `body_presence_profile`、`background_body_presence_profile` 与 `body_ref_set`
+12. `runtime/receipts/digital_life_process_<run_id>.json#body_ref_set`、`shared_object_refs` 与 `input_hashes` 保留 `body_rhythm_pulse.json`、`need_state_vector.json`、`body_resource_budget.json` 与 `core_affect_vector.json`
 
 当前对实时语言回合的补充规则是：凡是声称关系对象的新话语已经进入生命语言系统，不能只看 `dialogue_turn_log.jsonl` 或最终回应文本。必须同时看到：
 

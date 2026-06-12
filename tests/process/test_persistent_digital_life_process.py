@@ -9353,6 +9353,12 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             (state_dir / "signal").mkdir(parents=True, exist_ok=True)
             (state_dir / "prediction").mkdir(parents=True, exist_ok=True)
             (state_dir / "memory").mkdir(parents=True, exist_ok=True)
+            expected_body_refs = [
+                "runtime/state/body/body_rhythm_pulse.json",
+                "runtime/state/body/need_state_vector.json",
+                "runtime/state/body/body_resource_budget.json",
+                "runtime/state/body/core_affect_vector.json",
+            ]
 
             self._write_json(reports_dir / "digital_life_shell_report.json", {"status": "closed"})
             self._write_json(reports_dir / "digital_life_waiting_heartbeat.json", {"heartbeat_counter": 3})
@@ -9403,6 +9409,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "background_lineage_waiting_posture": "deep_background_residency_hold",
                     "background_lineage_cadence_weight": "deep",
                     "background_lineage_evidence_ref_count": 4,
+                    "body_presence_profile": {
+                        "schema_version": "resident_body_presence_profile_v0",
+                        "continuity_mode": "resident_body_runtime",
+                        "body_waiting_posture": "repair_reserve_hold",
+                        "body_governance_flags": [
+                            "fatigue_load_managed",
+                            "pain_pressure_bound_to_repair",
+                        ],
+                        "body_rhythm_ref": "runtime/state/body/body_rhythm_pulse.json",
+                        "need_state_ref": "runtime/state/body/need_state_vector.json",
+                        "body_resource_budget_ref": "runtime/state/body/body_resource_budget.json",
+                        "core_affect_vector_ref": "runtime/state/body/core_affect_vector.json",
+                        "fatigue_load": "managed_low_noise",
+                        "sleep_pressure": "offline_ready",
+                        "energy_level": "guarded_reserve",
+                        "repair_drive": "active_repair",
+                        "arousal": 0.0,
+                        "pain_pressure": 0.41,
+                        "responsibility_weight": 0.77,
+                        "body_ref_set": expected_body_refs,
+                    },
+                    "body_ref_set": expected_body_refs,
                     "background_dominant_convergence_pressure_level": "present",
                     "background_dominant_convergence_state": "stabilized_cross_process_continuity",
                     "background_trait_convergence_history_focus": "trait_stability_hold",
@@ -9704,6 +9732,22 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "relationship_stage": "repair_guarded_continuity",
                     "slow_variable_summary": self_model_state["trait_slow_variables"],
                 },
+            )
+            self._write_json(
+                state_dir / "body" / "body_rhythm_pulse.json",
+                {"schema_version": "body_rhythm_pulse_v0"},
+            )
+            self._write_json(
+                state_dir / "body" / "need_state_vector.json",
+                {"schema_version": "need_state_vector_v0"},
+            )
+            self._write_json(
+                state_dir / "body" / "body_resource_budget.json",
+                {"schema_version": "body_resource_budget_v0"},
+            )
+            self._write_json(
+                state_dir / "body" / "core_affect_vector.json",
+                {"schema_version": "core_affect_vector_v0"},
             )
             self._write_json(
                 state_dir / "membrane" / "world_contact_summary.json",
@@ -10023,6 +10067,20 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             self.assertTrue(
                 report["offline_learning_cumulative_relationship_reconsolidation_required"]
             )
+            self.assertEqual(
+                report["body_presence_profile"]["continuity_mode"],
+                "resident_body_runtime",
+            )
+            self.assertEqual(
+                report["body_presence_profile"]["body_waiting_posture"],
+                "repair_reserve_hold",
+            )
+            self.assertEqual(report["body_presence_profile"]["arousal"], 0.0)
+            self.assertEqual(report["body_ref_set"], expected_body_refs)
+            self.assertEqual(
+                report["background_body_presence_profile"]["body_ref_set"],
+                expected_body_refs,
+            )
             self.assertEqual(digest["last_external_turn_utterance"], "你还记得我们吗？")
             self.assertEqual(
                 digest["resident_governance_driver_family"],
@@ -10052,6 +10110,16 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             self.assertTrue(
                 digest["offline_learning_cumulative_relationship_reconsolidation_required"]
+            )
+            self.assertEqual(
+                digest["body_presence_profile"]["continuity_mode"],
+                "resident_body_runtime",
+            )
+            self.assertEqual(digest["body_presence_profile"]["arousal"], 0.0)
+            self.assertEqual(digest["body_ref_set"], expected_body_refs)
+            self.assertEqual(
+                digest["background_body_presence_profile"]["body_ref_set"],
+                expected_body_refs,
             )
             self.assertEqual(
                 digest["dream_wake_presence_profile"]["continuity_mode"],
@@ -10159,6 +10227,8 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             )
             for ref in expected_dream_wake_refs:
                 self.assertIn(ref, receipt["shared_object_refs"])
+            for ref in expected_body_refs:
+                self.assertIn(ref, receipt["shared_object_refs"])
             for ref in expected_autonomous_activity_refs:
                 self.assertIn(ref, receipt["shared_object_refs"])
             self.assertEqual(
@@ -10171,6 +10241,7 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 ]
             )
             self.assertEqual(receipt["dream_wake_ref_set"], expected_dream_wake_refs)
+            self.assertEqual(receipt["body_ref_set"], expected_body_refs)
             self.assertEqual(
                 receipt["resident_autonomous_activity_ref"],
                 "runtime/state/terminal/resident_autonomous_activity.jsonl",
@@ -10218,6 +10289,14 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     for path in receipt["input_hashes"]
                 ],
             )
+            for ref in expected_body_refs:
+                self.assertIn(
+                    True,
+                    [
+                        path.endswith("/" + ref)
+                        for path in receipt["input_hashes"]
+                    ],
+                )
             self.assertEqual(
                 digest["background_relationship_stage"],
                 "repair_guarded_continuity",

@@ -10,7 +10,13 @@ from .governance_explanation import (
     RESIDENT_GOVERNANCE_EXPLANATION_REF,
     write_resident_governance_explanation,
 )
-from .idle_strategy import extract_idle_governance_fields
+from .idle_strategy import (
+    BODY_RESOURCE_BUDGET_REF,
+    BODY_RHYTHM_PULSE_REF,
+    CORE_AFFECT_VECTOR_REF,
+    NEED_STATE_VECTOR_REF,
+    extract_idle_governance_fields,
+)
 from .model_expression import MODEL_EXPRESSION_REPORT_REF, MODEL_EXPRESSION_STATE_REF
 from .resident_autonomous_activity import (
     ACTIVITY_STATE_REFS,
@@ -236,6 +242,126 @@ def write_process_report_bundle(
             * dream_wake_default_ref_set,
         ]
     )
+    resolved_body_presence_profile = _dict_or_empty(
+        idle_governance.get("body_presence_profile")
+        or idle_governance.get("background_body_presence_profile")
+        or idle_governance.get("background_body_presence")
+    )
+    resolved_background_body_presence_profile = _dict_or_empty(
+        idle_governance.get("background_body_presence_profile")
+        or idle_governance.get("background_body_presence")
+        or resolved_body_presence_profile
+    )
+    body_presence_visible = bool(
+        resolved_body_presence_profile
+        or resolved_background_body_presence_profile
+        or _list_or_empty(idle_governance.get("body_ref_set"))
+        or any(
+            idle_governance.get(field_name) is not None
+            for field_name in (
+                "body_waiting_posture",
+                "body_rhythm_ref",
+                "need_state_ref",
+                "body_resource_budget_ref",
+                "core_affect_vector_ref",
+                "body_energy_level",
+                "body_fatigue_load",
+                "body_sleep_pressure",
+                "body_repair_drive",
+                "body_arousal",
+                "body_pain_pressure",
+                "body_responsibility_weight",
+                "background_body_waiting_posture",
+                "background_body_rhythm_ref",
+                "background_need_state_ref",
+                "background_body_resource_budget_ref",
+                "background_core_affect_vector_ref",
+                "background_body_energy_level",
+                "background_body_fatigue_load",
+                "background_body_sleep_pressure",
+                "background_body_repair_drive",
+                "background_body_arousal",
+                "background_body_pain_pressure",
+                "background_body_responsibility_weight",
+            )
+        )
+    )
+    body_default_ref_set = [
+        BODY_RHYTHM_PULSE_REF,
+        NEED_STATE_VECTOR_REF,
+        BODY_RESOURCE_BUDGET_REF,
+        CORE_AFFECT_VECTOR_REF,
+    ] if body_presence_visible else []
+    resolved_body_ref_set = _dedupe_refs(
+        [
+            * _list_or_empty(idle_governance.get("body_ref_set")),
+            * _list_or_empty(resolved_body_presence_profile.get("body_ref_set")),
+            * _list_or_empty(resolved_body_presence_profile.get("body_evidence_refs")),
+            * _list_or_empty(resolved_background_body_presence_profile.get("body_ref_set")),
+            * _list_or_empty(
+                resolved_background_body_presence_profile.get("body_evidence_refs")
+            ),
+            * _list_or_empty(
+                [
+                    idle_governance.get("body_rhythm_ref"),
+                    idle_governance.get("need_state_ref"),
+                    idle_governance.get("body_resource_budget_ref"),
+                    idle_governance.get("core_affect_vector_ref"),
+                    idle_governance.get("background_body_rhythm_ref"),
+                    idle_governance.get("background_need_state_ref"),
+                    idle_governance.get("background_body_resource_budget_ref"),
+                    idle_governance.get("background_core_affect_vector_ref"),
+                    resolved_body_presence_profile.get("body_rhythm_ref"),
+                    resolved_body_presence_profile.get("need_state_ref"),
+                    resolved_body_presence_profile.get("body_resource_budget_ref"),
+                    resolved_body_presence_profile.get("core_affect_vector_ref"),
+                    resolved_background_body_presence_profile.get("body_rhythm_ref"),
+                    resolved_background_body_presence_profile.get("need_state_ref"),
+                    resolved_background_body_presence_profile.get(
+                        "body_resource_budget_ref"
+                    ),
+                    resolved_background_body_presence_profile.get(
+                        "core_affect_vector_ref"
+                    ),
+                ]
+            ),
+            * body_default_ref_set,
+        ]
+    )
+    if not resolved_body_presence_profile and resolved_body_ref_set:
+        resolved_body_presence_profile = {
+            "schema_version": "resident_body_presence_profile_v0",
+            "continuity_mode": "background_body_presence_carryover",
+            "body_ref_set": resolved_body_ref_set,
+        }
+    elif resolved_body_presence_profile and not resolved_body_presence_profile.get(
+        "continuity_mode"
+    ):
+        resolved_body_presence_profile = dict(resolved_body_presence_profile)
+        resolved_body_presence_profile["continuity_mode"] = (
+            "background_body_presence_carryover"
+        )
+    if resolved_body_presence_profile and resolved_body_ref_set:
+        resolved_body_presence_profile = dict(resolved_body_presence_profile)
+        resolved_body_presence_profile["body_ref_set"] = resolved_body_ref_set
+    if not resolved_background_body_presence_profile and resolved_body_presence_profile:
+        resolved_background_body_presence_profile = dict(resolved_body_presence_profile)
+    elif resolved_background_body_presence_profile and not resolved_background_body_presence_profile.get(
+        "continuity_mode"
+    ):
+        resolved_background_body_presence_profile = dict(
+            resolved_background_body_presence_profile
+        )
+        resolved_background_body_presence_profile["continuity_mode"] = (
+            "background_body_presence_carryover"
+        )
+    if resolved_background_body_presence_profile and resolved_body_ref_set:
+        resolved_background_body_presence_profile = dict(
+            resolved_background_body_presence_profile
+        )
+        resolved_background_body_presence_profile["body_ref_set"] = (
+            resolved_body_ref_set
+        )
     resolved_resident_autonomous_activity_presence_profile = _dict_or_empty(
         idle_governance.get("resident_autonomous_activity_presence_profile")
         or idle_governance.get("background_resident_autonomous_activity_presence_profile")
@@ -571,6 +697,11 @@ def write_process_report_bundle(
             resolved_background_dream_wake_presence_profile
         ),
         "dream_wake_ref_set": resolved_dream_wake_ref_set,
+        "body_presence_profile": resolved_body_presence_profile,
+        "background_body_presence_profile": (
+            resolved_background_body_presence_profile
+        ),
+        "body_ref_set": resolved_body_ref_set,
         "resident_autonomous_activity_ref": (
             resolved_resident_autonomous_activity_ref
         ),
@@ -736,6 +867,11 @@ def write_process_report_bundle(
         resolved_background_dream_wake_presence_profile
     )
     report["dream_wake_ref_set"] = resolved_dream_wake_ref_set
+    report["body_presence_profile"] = resolved_body_presence_profile
+    report["background_body_presence_profile"] = (
+        resolved_background_body_presence_profile
+    )
+    report["body_ref_set"] = resolved_body_ref_set
     report["resident_autonomous_activity_ref"] = resolved_resident_autonomous_activity_ref
     report["resident_autonomous_activity_state_ref"] = (
         resolved_resident_autonomous_activity_state_ref
@@ -1034,6 +1170,11 @@ def write_process_report_bundle(
             resolved_background_dream_wake_presence_profile
         ),
         "dream_wake_ref_set": resolved_dream_wake_ref_set,
+        "body_presence_profile": resolved_body_presence_profile,
+        "background_body_presence_profile": (
+            resolved_background_body_presence_profile
+        ),
+        "body_ref_set": resolved_body_ref_set,
         "resident_autonomous_activity_ref": (
             resolved_resident_autonomous_activity_ref
         ),
@@ -1326,6 +1467,14 @@ def write_process_report_bundle(
     digest["background_dream_wake_presence_profile"].setdefault(
         "continuity_mode", "background_dream_wake_carryover"
     )
+    if digest["body_presence_profile"]:
+        digest["body_presence_profile"].setdefault(
+            "continuity_mode", "background_body_presence_carryover"
+        )
+    if digest["background_body_presence_profile"]:
+        digest["background_body_presence_profile"].setdefault(
+            "continuity_mode", "background_body_presence_carryover"
+        )
     digest["resident_autonomous_activity_presence_profile"].setdefault(
         "continuity_mode", "background_resident_autonomous_activity_carryover"
     )
@@ -1398,6 +1547,7 @@ def write_process_report_bundle(
         ),
         idle_heartbeat_trace_ref=idle_governance.get("idle_heartbeat_trace_ref"),
         dream_wake_ref_set=resolved_dream_wake_ref_set,
+        body_ref_set=resolved_body_ref_set,
         resident_autonomous_activity_ref=resolved_resident_autonomous_activity_ref,
         resident_autonomous_activity_state_ref=(
             resolved_resident_autonomous_activity_state_ref
@@ -1477,6 +1627,7 @@ def build_process_receipt(
     queue_e_birth_repair_refs: list[str] | None = None,
     idle_heartbeat_trace_ref: str | None = None,
     dream_wake_ref_set: list[str] | None = None,
+    body_ref_set: list[str] | None = None,
     resident_autonomous_activity_ref: str | None = None,
     resident_autonomous_activity_state_ref: str | None = None,
     resident_autonomous_activity_ref_set: list[str] | None = None,
@@ -1528,6 +1679,10 @@ def build_process_receipt(
         state_dir / "life_targets" / "birth_readiness_stage_gate.json",
         state_dir / "memory" / "memory_write_gate.json",
         state_dir / "memory" / "state_merge_guard.json",
+        state_dir / "body" / "body_rhythm_pulse.json",
+        state_dir / "body" / "need_state_vector.json",
+        state_dir / "body" / "body_resource_budget.json",
+        state_dir / "body" / "core_affect_vector.json",
         state_dir / "body" / "trait_drift_monitor.json",
         state_dir / "terminal" / "background_convergence_summary.json",
         state_dir / "terminal" / "background_convergence_history.json",
@@ -1597,6 +1752,7 @@ def build_process_receipt(
             offline_learning_cumulative_relationship_reconsolidation_required
         ),
         "dream_wake_ref_set": list(dream_wake_ref_set or []),
+        "body_ref_set": list(body_ref_set or []),
         "resident_autonomous_activity_ref": resident_autonomous_activity_ref,
         "resident_autonomous_activity_state_ref": resident_autonomous_activity_state_ref,
         "resident_autonomous_activity_ref_set": list(
@@ -1620,6 +1776,7 @@ def build_process_receipt(
                 idle_strategy_ref,
                 idle_heartbeat_trace_ref,
                 *(dream_wake_ref_set or []),
+                *(body_ref_set or []),
                 resident_governance_state_ref,
                 resident_governance_snapshot_ref,
                 resident_governance_explanation_ref,
