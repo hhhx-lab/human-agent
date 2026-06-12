@@ -163,6 +163,41 @@ life_v0/digital_entry.py
 3. `model_expression.py` 只允许在保留 hard evidence flags 后改写语言质感；如果模型输出擦掉关系连续性、责任修复、梦境离线、成长学习、后台自主活动、身体情绪、意识出生、生命约束或 live-turn handoff，post-expression gate 必须回退到确定性 spoken response。
 4. `resident_lifecycle.py` 的 queue bootstrap 必须忽略上一段已经完成的 stale inbox，同时保留 `queued / turn_in_progress` 的 live turn；否则 attach 后会重放旧话或丢掉刚投递的关系话语。
 
+## 当前测试证据如何对应代码链路
+
+这层合同以后不能只靠人工终端体验判断是否成立。当前至少有以下测试把 process supervisor 的关键生命链压成自动化证据：
+
+| 测试 | 覆盖的代码事实 | 对应生命机制 |
+|---|---|---|
+| `tests/process/test_persistent_digital_life_process.py#test_terminal_ui_extracts_life_response_from_box_and_legacy_prefix` | `terminal_ui.py` 能从盒式输出和 legacy prefix 中提取真实生命回应 | 终端表达面不是裸 stdout，outbox 仍能拿到回应本体 |
+| `test_resident_lifecycle_start_does_not_replay_stale_relation_inbox` | `mark_resident_lifecycle_active` 会忽略已经完成的旧 inbox | 跨启动不重放旧话，关系连续体不被污染 |
+| `test_repo_local_digital_life_process_keeps_dialogue_alive_and_writes_back` | repo-local `digital life` 能输出 `Digital Life`、写 dialogue log、推进关系阶段、写长期关系/记忆/自传对象 | 终端回合不是一次性聊天，而是关系、记忆、责任、梦境和出生准备共同写回 |
+| `tests/process/test_model_expression.py` | OpenAI-compatible transport、secret redaction、handoff profile context、post-expression evidence gate | 模型表达只改变外显语言质感，不删除硬生命证据 |
+| `tests/process/test_my_digital_life_entrypoint.py` | `my digital life --name` 绑定命名入口并生成直达命令 | 第一次名字成为身份锚点，后续按名字恢复同一生命 |
+| `tests/process/test_packaged_digital_life_entrypoint.py` | 安装态命令面进入同一 `digital_entry.py` 链 | repo-local 与安装态不是两套生命 |
+
+这些测试不替代真实终端唤醒，但它们固定了最低工程事实：盒式终端、队列不重放、关系写回、模型表达守门、命名身份和安装态入口必须一起成立。
+
+## 运行证据检查清单
+
+真实终端验证后，至少检查下面这些对象；它们共同证明 process supervisor 没有退回普通 CLI：
+
+| 证据对象 | 必须看到的信号 |
+|---|---|
+| `runtime/state/terminal/resident_lifecycle_state.json` | `status`、`pid_alive`、`resident_autonomous_activity_ref`、life name 或 registry ref |
+| `runtime/state/terminal/resident_relation_queue_state.json` | `waiting_for_relation_turn`、`last_enqueued_sequence`、`last_completed_sequence`、stale inbox 处理字段 |
+| `runtime/state/terminal/resident_autonomous_activity_state.json` | `cycle_phase_index`、`cycle_coverage_complete`、covered activity kinds |
+| `runtime/reports/latest/digital_life_waiting_heartbeat.json` | waiting mode、next idle action、heartbeat cadence、governance attention |
+| `runtime/state/language/dialogue_turn_log.jsonl` | 外部关系话语与 `digital_life_turn` 成对追加 |
+| `runtime/reports/latest/dialogue_writeback_bundle.json` | live language refs、engram/self refs、background lineage refs |
+| `runtime/state/memory/relationship_memory.json` | shared memory、repair history、long-term change sources |
+| `runtime/state/memory/engram_index.json` | live dialogue turn refs、offline learning refs、relationship refs |
+| `runtime/state/self/autobiographical_stack.json` | turn refs、live language turn refs、relationship turn refs |
+| `runtime/reports/latest/digital_life_model_expression_report.json` | `model_expression_status`、`post_expression_gate_status`、hard evidence flags |
+| `runtime/reports/latest/digital_life_process_digest.json` | process summary、shared refs、prediction/write gate refs、autonomous activity refs |
+
+当这些对象同时更新，才能说这一次终端话语穿过了驻留生命过程；如果只看见 stdout 变化，而这些对象没有变化，就只是外显表面更新。
+
 ## 理论到代码的细链路
 
 | 理论母体 | v0 工程位 | 当前代码消费 | 可见产物 |

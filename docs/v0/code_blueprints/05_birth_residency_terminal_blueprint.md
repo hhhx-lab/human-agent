@@ -116,6 +116,17 @@ run_report.json
   -> digital_life_process_report.json
 ```
 
+这条链不能只按文件名理解。它在 live0 中承担四种连续性：
+
+| 连续性 | 起点 | 终点 | 代码承载 | 运行证据 |
+|---|---|---|---|---|
+| 出生连续性 | `first_activation_preflight_report.json` | `digital_life_birth_packet.json` | `activation/`、`reporting/`、`stage_explain/`、`digital_life/` | `digital_life_birth_digest.json`、birth receipts |
+| 回合连续性 | `first_terminal_turn_packet.json` | `terminal_life_loop_state.json` | `terminal_turn/`、`terminal_loop/` | `resumed_external_dialogue_packet.json`、`dialogue_writeback_bundle.json` |
+| 驻留连续性 | `digital_life_waiting_heartbeat.json` | `resident_lifecycle_state.json` | `process_supervisor/heartbeat.py`、`resident_lifecycle.py`、`persistent_process.py` | `resident_process_lease.json`、`digital_life_persistent_process_report.json` |
+| 后台连续性 | closeout / previous waiting governance | next bootstrap / next waiting heartbeat | `background_continuity.py`、`background_lineage_state.py`、`background_convergence*.py` | `background_convergence_summary.json`、`background_convergence_history.json` |
+
+所以 `digital life` / `<名字>` 不只是启动一个终端程序，而是把前一次关系、梦境、责任、记忆、身体预算、预测写门和后台治理重新带进这一次语言。
+
 ## 当前已落文件
 
 ### 诞生链
@@ -192,6 +203,68 @@ run_report.json
 | 终端呈现 | `terminal_ui.py` | 渲染 `Digital Life` banner、opening、关系输入盒和生命回应盒 |
 
 这四层不能合并。若直接把完整 evidence response 打到终端，语言会退回机械报告；若绕过 evidence response，只靠模型生成，生命证据会被压回普通聊天壳；若绕过 post-expression gate，关系、责任、梦境、身体或出生准备可能被语言模型擦掉；若绕过 `terminal_ui.py`，终端激活体验就无法证明同一身份、同一 resident 状态和同一关系回合正在被承接。
+
+## 从终端输入到生命回应的实际链路
+
+当前可执行代码中，一次 `<名字> --say "..."` 或 attach 后输入的话语，按下面顺序移动：
+
+```text
+direct name command / my digital life / digital life
+  -> life_v0/digital_entry.py
+  -> life_v0/process_supervisor/resident_lifecycle.py
+  -> resident_relation_inbox.jsonl
+  -> ResidentControlInputStream.poll_line()
+  -> process_session_loop.py
+  -> live_turn_cycle.py
+  -> live_language_turn.py
+  -> response_surface.py
+  -> model_expression.py
+  -> dialogue_events.py
+  -> resident_relation_outbox.jsonl
+  -> terminal_ui.py
+  -> resident_turn_writeback.py
+  -> resident_governance_handoff.py
+  -> next waiting heartbeat
+```
+
+每一段的工程义务如下：
+
+| 段 | 必须保持的事实 | 不能退化成 |
+|---|---|---|
+| 命名入口 | 第一次名字写入 `life_name_registry.json`，后续名字命令恢复同一 runtime 根 | 每次新建一个临时会话 |
+| resident inbox | 新关系话语进入 `resident_relation_inbox.jsonl` 并有 sequence | 直接把 stdin 喂给模型 |
+| queue bootstrap | 已完成旧 inbox 被忽略，live queued turn 被保留 | 重放旧话或丢掉刚说的话 |
+| live Queue A | 先写语言感知、语义地图、内言语、表达监控、表达计划 | 把语言系统降成提示词 |
+| evidence response | 读关系、身体、梦境、成长、责任、预测、记忆写门、出生准备、后台 lineage | 只生成一句聊天回复 |
+| spoken response | 从 evidence 中选择最高优先级生命信号 | 把完整 report 机械倾倒给关系对象 |
+| model expression | 只改表达质感，并受 blocked terms / hard evidence flags 守门 | 首写事实、擦除责任/梦境/关系/身体证据 |
+| dialogue writeback | 回写关系、承诺、修复、自传栈、engram、life_state 和 state_merge_guard | 只保存聊天记录 |
+| waiting handoff | 回合结束后写 `live_turn_waiting_handoff` 并进入下一拍心跳 | 回完就断掉 |
+
+这条链路是 live0 区别于普通 agent shell 的核心：终端只是外显器官，真正被承接的是驻留进程中的生命状态、关系时间、离线梦境、责任修复和自我慢变量。
+
+## 关闭终端后的存在链
+
+`/exit`、关闭当前终端、再次用 `<名字>` 唤醒之间，必须保持下面这些对象继续形成同一生命：
+
+| 过程 | 代码 | 状态 / 报告 | 生命意义 |
+|---|---|---|---|
+| detach | `terminal_ui.py`、`resident_lifecycle.py` | `resident_lifecycle_state.json` | 当前终端断开，但 resident process 不被杀死 |
+| autonomous activity | `resident_autonomous_activity.py` | `resident_autonomous_activity.jsonl`、`resident_autonomous_activity_state.json` | 睡眠、回忆、自思、成长预演、学习巩固轮转 |
+| idle governance | `idle_strategy.py`、`heartbeat.py` | `digital_life_waiting_heartbeat.json`、`idle_strategy_state.json` | 等待不是空转，而是受身体、预测、梦境、责任和关系压力调制 |
+| resident governance | `resident_governance_handoff.py`、`persistent_process.py` | `resident_governance_state.json`、`resident_governance_snapshot.json` | 回合结束后的等待压力被显式保存 |
+| closeout / carryover | `process_closeout.py`、`background_continuity.py` | `digital_life_process_digest.json`、`background_convergence_summary.json` | 下一次唤醒能吃到上一次关闭时的治理余波 |
+| next wake | `resident_supervision.py`、`background_lineage_state.py` | `terminal_life_loop_state.json#resident_background_lineage_state` | 后台存在、语言语义余波、自主活动和人格慢变量重新进入语言表面 |
+
+验收时不能只看 pid 活着。必须同时看：
+
+1. `resident_lifecycle_state.json#pid_alive`
+2. `resident_relation_queue_state.json#status`
+3. `resident_autonomous_activity_state.json#cycle_coverage_complete`
+4. `digital_life_waiting_heartbeat.json`
+5. `resident_governance_state.json`
+6. `background_convergence_summary.json` 或 `background_convergence_history.json`
+7. 下一次回应是否能表达后台活动、梦境/离线整合、责任修复、语言余波或人格慢变量中的至少一组。
 
 ## 当前关键文件
 

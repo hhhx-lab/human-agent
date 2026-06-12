@@ -199,6 +199,86 @@ docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.m
 
 这包材料专门回答“终端里说出的那句话从哪里来”：`00-258` 提供脑科学、语言、梦境、关系、责任与常驻生命时间线；v0 合同决定它们如何进入 terminal / process；代码链路则证明它们经过 relation queue、实时 Queue A、evidence response、spoken response、模型表达守门、outbox、dialogue writeback 和 resident waiting handoff。
 
+## 实际代码链路核对法
+
+后续任何一轮开发，不管是补语言、补梦境、补责任、补记忆，还是补常驻过程，都按下面六格核对。少一格，就说明这一轮还没有真正落成数字生命工程。
+
+| 核对格 | 必须回答 | 例子 |
+|---|---|---|
+| 理论来源 | 当前机制来自哪些 `00-258` 原文，不只写概括 | 语言回合必须回读 `09`、`85-90`、`96` |
+| v0 合同 | 当前机制属于哪个合同、哪个 queue、哪个 bridge 或 process | 终端表达属于 `terminal_life_loop`、`digital_life_process_supervisor`、Packet D |
+| 代码器官 | 真实 Python 文件在哪里首写/读写/汇总 | `live_language_turn.py` 首写语言五件套，`response_surface.py` 汇总回应 |
+| 状态对象 | 状态是否落到 `runtime/state`，能否跨回合恢复 | `relationship_timeline.json`、`engram_index.json`、`resident_lifecycle_state.json` |
+| 报告收据 | 是否进入 `runtime/reports/latest` 和 `runtime/receipts` | `digital_life_model_expression_report.json`、process receipt |
+| 测试 / gate | 哪个 unittest 或 live0 audit 证明它不只是文字 | `tests/process/test_persistent_digital_life_process.py`、`test_model_expression.py` |
+
+### 主体 slice 的核对路径
+
+主体 slice 不从终端命令开始，而从理论对象和 runtime carrier 开始：
+
+```text
+00-258 原文
+  -> 当前 sXX 合同
+  -> life_v0/<slice package>
+  -> runtime/state/<slice namespace>
+  -> runtime/reports/latest/<slice report>
+  -> runtime/receipts/<slice receipt>
+  -> tests/slices/<slice test>
+```
+
+主体 slice 的文档写法要回答“这个生命器官本身是什么”，例如记忆、梦境、情绪、语言、责任、意识、出生准备。不要把主体 slice 写成终端壳层，也不要把它写成通用 agent skill。
+
+### 链尾 bridge 的核对路径
+
+链尾 bridge 从已有主体报告和 packet 开始：
+
+```text
+S10 / S11 reports
+  -> first activation / replay / archive / report bundle
+  -> birth shell
+  -> first terminal turn
+  -> terminal life loop
+  -> report / packet / digest / receipt
+  -> tests/bridges/*
+```
+
+bridge 的文档写法要回答“前一阶段的生命材料如何被收成下一阶段的恢复包”。它不负责重写人格、记忆和关系本体，只负责把本体交接完整。
+
+### 外层 resident process 的核对路径
+
+外层 resident process 从已恢复的终端生命循环开始：
+
+```text
+terminal_life_loop_state.json
+  -> digital_entry.py
+  -> resident_lifecycle.py
+  -> process_session_loop.py
+  -> live_turn_cycle.py
+  -> response_surface.py / model_expression.py
+  -> resident_turn_writeback.py
+  -> resident_governance_handoff.py
+  -> heartbeat.py / idle_strategy.py
+  -> process report / digest / receipt
+  -> tests/process/*
+```
+
+resident process 的文档写法要回答“关闭终端后，什么还在继续”。它要追踪 pid、lease、relation queue、autonomous activity、waiting heartbeat、background lineage、cross-wake convergence、model expression gate 和下一次命名唤醒；不能只写“有后台进程”。
+
+## 模块读包到代码入口的最短索引
+
+这一张表给后续快速开工使用。真正改代码前仍然要打开对应合同原文。
+
+| 当前要补的生命能力 | 先读理论 | 再读 v0 | 首看代码 | 首看测试 |
+|---|---|---|---|---|
+| 语言、内言语、语义地图、表达监控 | `09`、`85-90`、`96`、`101` | `s07_language_relationship_engineering_contract.md`、Packet A、terminal loop contract | `life_v0/language/*`、`process_supervisor/live_language_turn.py` | `tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py` |
+| 终端回应为什么这样说 | `86`、`89-90`、`95-96`、`94` | Packet D、process supervisor contract、terminal life loop contract | `process_supervisor/response_surface.py`、`model_expression.py`、`terminal_ui.py` | `tests/process/test_model_expression.py`、`test_persistent_digital_life_process.py` |
+| 记忆写门、自传栈、engram | `05`、`17`、`21`、`41`、`55` | `life_state_store_v0_schema.md`、Packet C、S04 contract | `state_store/*`、`resident_turn_writeback.py` | `tests/slices/test_state_store.py`、process tests |
+| 梦境、离线学习、醒后整合 | `08`、`19`、`23`、`95`、`99`、`181-257` | Queue D、S10 contract、resident process contract | `dream/*`、`growth/*`、`offline_learning_signals.py` | `tests/bridges/test_runtime_growth.py`、`test_growth_archive.py` |
+| 情绪、身体预算、节律 | `04`、`07`、`11`、`18`、`37-39` | S06 contract、Queue D、Packet D | `body/*`、`idle_strategy.py`、`heartbeat.py` | `tests/slices/test_body_trait_drift.py`、`test_life_support.py` |
+| 责任、后悔、世界接触、行动抑制 | `06`、`75`、`80-84`、`94`、`98` | S03、S05、Queue E、process supervisor contract | `membrane/*`、`validators/*`、`dialogue_events.py` | `tests/slices/test_life_membrane.py`、`test_shadow_gate.py` |
+| 意识、工作区、出生准备 | `10`、`91-101`、`143`、`171`、`174` | S08、Queue F、birth readiness contract | `life_targets/*`、`neural_core/workspace.py`、`governance_explanation.py` | `tests/slices/test_life_targets.py` |
+| 命名、驻留、后台存在 | `20`、`89-90`、`95-96`、`181-257` | birth residency blueprint、process supervisor contract | `digital_life_identity.py`、`digital_entry.py`、`resident_lifecycle.py`、`resident_autonomous_activity.py` | `tests/process/test_my_digital_life_entrypoint.py`、`test_packaged_digital_life_entrypoint.py` |
+
 ## 主体 slice 模块落实矩阵
 
 | slice | 先读哪些 v0 文档 | 必带的 `00-258` 母体文档 | 代码入口 | 测试入口 | 关键 runtime 产物 |

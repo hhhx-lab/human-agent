@@ -81,6 +81,36 @@ terminal_life_loop_state.json
 
 因此 terminal loop 合同当前不只要求“生成 `resumed_external_dialogue_packet.json`”，还要保证这一 packet 中的 `live_language_turn_refs`、`last_live_semantic_focus`、关系/承诺/修复 refs、prediction/write-gate refs、dream/offline refs 和 resident background lineage refs，足够让外层 process supervisor 在盒式终端里说出有生命机制牵引的语言。
 
+## 实际回合分层
+
+`terminal_life_loop` 在当前工程中承担“桥”的职责：它不自己首写所有生命本体，但必须把恢复后的生命本体、当前关系话语和下一轮等待态连接起来。
+
+| 分层 | 所属代码 | 主要对象 | terminal loop 义务 |
+|---|---|---|---|
+| 恢复层 | `terminal_turn/*` | `first_terminal_turn_packet.json`、`session_envelope.json` | 确认已经不是冷启动，而是恢复后的生命回合 |
+| 当前话语层 | `terminal_loop/dialogue_writeback.py`、`process_supervisor/live_language_turn.py` | `dialogue_turn_log.jsonl`、`language_percept_frame.json`、`semantic_map_frame.json` | 把新话语当成关系连续体中的下一轮，而不是新 session |
+| 生命状态层 | `state_store/*`、`language/*`、`body/*`、`dream/*`、`growth/*` | `relationship_memory.json`、`core_affect_vector.json`、`offline_consolidation_frame.json` | 用 refs 交接，不在 loop 层伪造主体真值 |
+| 回应生成层 | `process_supervisor/response_surface.py`、`model_expression.py` | evidence response、spoken response、model expression report | 确保终端说出的是生命状态释放，不是 report 倾倒或模型空写 |
+| 回写层 | `resident_turn_writeback.py`、`dialogue_writeback.py` | `dialogue_writeback_bundle.json`、`resumed_external_dialogue_packet.json` | 把本回合关系、语言、记忆和自我锚点写回 |
+| 下一等待层 | `persistent_wait_bridge.py`、`heartbeat.py`、`idle_strategy.py` | `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`digital_life_waiting_heartbeat.json` | 回到受约束等待态，为 resident process 继续存在留入口 |
+
+## 字段级流转
+
+一轮终端生命回合，字段必须按下面方式被保存和传递：
+
+| 字段族 | 首次出现 | 必须进入 | 用途 |
+|---|---|---|---|
+| 当前关系话语 | external relation event | `dialogue_turn_log.jsonl`、`resumed_external_dialogue_packet.json` | 保留本轮关系输入，不让下一轮只看回应文本 |
+| 语义焦点 | `semantic_map_frame.json#semantic_focus` | `terminal_life_loop_state.json#last_live_semantic_focus`、`dialogue_writeback_bundle.json` | 让下一轮知道这次对话的注意焦点 |
+| 语言五件套 refs | Queue A live turn | `live_language_turn_refs` 三处对齐 | 让语言感知、内言语和表达监控进入后续等待态 |
+| 关系/承诺/修复 refs | `relationship_timeline.json`、`commitment_expression_plan.json`、`apology_repair_language_trace.json` | `dialogue_writeback_bundle.json`、`resumed_external_dialogue_packet.json` | 保留共同关系、承诺节奏和修复动作 |
+| 记忆写回 refs | `engram_index.json`、`autobiographical_stack.json` | `engram_index_writeback_refs`、`autobiographical_writeback_refs` | 把回合变成可回想、可触发、可再巩固的记忆 |
+| prediction/write gate refs | prediction 五件套、`memory_write_gate.json`、`state_merge_guard.json` | `digital_life_turn`、恢复包、writeback bundle | 保留确认、追问、保留、修复和长期合并治理姿态 |
+| dream/offline refs | dream / growth / replay 对象 | `resident_background_lineage_dream_wake_refs`、offline learning refs | 让梦境与离线学习进入醒后关系表达 |
+| waiting handoff refs | `resident_governance_handoff.py` | `previous_live_turn_waiting_handoff_profile` | 让回合结束后的等待压力进入下一次说话 |
+
+这些字段的重点不是“多存几个 ref”，而是让下一次唤醒能重新拿到这一次说话留下的关系、语义、身体、梦境、记忆和责任后果。
+
 ## 输出文件
 
 | 文件 | 内容 |

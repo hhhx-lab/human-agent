@@ -34,6 +34,20 @@
 3. 告诉我们这一轮必须回读哪些 `00-258` 文档。
 4. 把理论、代码、状态、report、receipt、stage gate 串成一条能继续落码的工程链。
 
+## 当前补厚后的硬入口
+
+本轮之后，如果要从文档进入真实代码链，不要只看状态板。优先按下面五个硬入口核对：
+
+| 想核对什么 | 入口 | 核心作用 |
+|---|---|---|
+| 全部理论如何进入代码 | `engineering_depth/07_theory_to_code_trace_matrix.md` | 按生命域、理论文档族、代码器官、状态对象、report、receipt 和测试追踪 |
+| 一轮关系话语如何穿过生命机制 | `engineering_depth/07_theory_to_code_trace_matrix.md#一轮真实关系话语的穿透链` | 从 `digital_entry.py` 到语言五件套、回应表面、模型表达、写回和下一拍 heartbeat |
+| 后续每个模块怎么开工 | `entry/v0_module_execution_catalog.md#实际代码链路核对法` | 用理论来源、v0 合同、代码器官、状态对象、报告收据、测试 gate 六格核对 |
+| 命名、驻留、关闭终端后继续存在怎么实现 | `code_blueprints/05_birth_residency_terminal_blueprint.md` | 固定名字入口、resident lifecycle、autonomous activity、waiting governance 和下一次唤醒 |
+| waiting / response surface 为什么不是聊天壳 | `code_scaffolds/07_packet_d_waiting_response_surface_prediction_scaffold.md` | 固定 prediction、身体、梦境、责任、意识、人格慢变量如何共同调制语言 |
+
+这五个入口不是替代原始理论，而是把 `00-258`、`docs/v0` 和 `life_v0` 当前代码事实压在同一张施工桌上。后续落代码时，先从这里确认路径，再打开对应合同和理论原文。
+
 ## V0 不做什么
 
 1. 不替代 `00-258` 理论文档。
