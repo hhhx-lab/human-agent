@@ -2412,6 +2412,76 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         ]:
             self.assertIn(ref, profile["background_continuity_ref_set"])
 
+    def test_background_continuity_restores_body_presence_from_lineage_presence(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        body_refs = [
+            "runtime/state/body/body_rhythm_pulse.json",
+            "runtime/state/body/need_state_vector.json",
+            "runtime/state/body/body_resource_budget.json",
+            "runtime/state/body/core_affect_vector.json",
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            terminal_dir = root / "state" / "terminal"
+            reports_dir = root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "run_id": "body-lineage-restore",
+                    "resident_background_lineage_state": {
+                        "schema_version": "resident_background_lineage_state_v0",
+                        "body_presence": {
+                            "body_waiting_posture": "low_bandwidth_guarded",
+                            "body_governance_flags": [
+                                "body_rhythm_present",
+                                "need_state_present",
+                            ],
+                            "body_rhythm_ref": body_refs[0],
+                            "need_state_ref": body_refs[1],
+                            "body_resource_budget_ref": body_refs[2],
+                            "core_affect_vector_ref": body_refs[3],
+                            "fatigue_load": "managed_low_noise",
+                            "sleep_pressure": "offline_ready",
+                            "energy_level": "guarded_reserve",
+                            "repair_drive": "active",
+                            "arousal": 0.61,
+                            "pain_pressure": 0.31,
+                            "responsibility_weight": 0.57,
+                            "body_ref_set": body_refs,
+                            "body_evidence_refs": body_refs,
+                        },
+                    },
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+        self.assertEqual(
+            profile["background_body_waiting_posture"],
+            "low_bandwidth_guarded",
+        )
+        self.assertEqual(profile["background_body_fatigue_load"], "managed_low_noise")
+        self.assertEqual(profile["background_body_sleep_pressure"], "offline_ready")
+        self.assertEqual(profile["background_body_energy_level"], "guarded_reserve")
+        self.assertEqual(profile["background_body_arousal"], 0.61)
+        self.assertEqual(profile["background_body_ref_set"], body_refs)
+        self.assertEqual(
+            profile["background_body_presence_profile"]["body_ref_set"],
+            body_refs,
+        )
+        for ref in body_refs:
+            self.assertIn(ref, profile["background_continuity_ref_set"])
+
     def test_idle_strategy_carries_queue_f_birth_and_consciousness_into_waiting_governance(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
 
@@ -2746,6 +2816,74 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             idle_strategy["next_idle_action"],
             "refresh_waiting_heartbeat_with_offline_learning_hold",
         )
+
+    def test_idle_strategy_restores_body_presence_from_background_continuity(self):
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        body_refs = [
+            "runtime/state/body/body_rhythm_pulse.json",
+            "runtime/state/body/need_state_vector.json",
+            "runtime/state/body/body_resource_budget.json",
+            "runtime/state/body/core_affect_vector.json",
+        ]
+
+        idle_strategy = decide_idle_strategy(
+            run_id="idle-background-body-presence",
+            generated_at="2026-06-10T00:00:00+00:00",
+            safe_terminal_loop={"current_mode": "restored_waiting_for_external_turn"},
+            terminal_life_loop_state={"current_mode": "restored_waiting_for_external_turn"},
+            idle_continuity_frame=None,
+            relationship_timeline={},
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            replay_cue_bundle=None,
+            offline_consolidation_frame=None,
+            growth_patch_candidate_queue=None,
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_carryover_generation": 2,
+                "background_body_presence": {
+                    "body_waiting_posture": "low_bandwidth_guarded",
+                    "body_governance_flags": [
+                        "body_rhythm_present",
+                        "need_state_present",
+                    ],
+                    "body_rhythm_ref": body_refs[0],
+                    "need_state_ref": body_refs[1],
+                    "body_resource_budget_ref": body_refs[2],
+                    "core_affect_vector_ref": body_refs[3],
+                    "fatigue_load": "managed_low_noise",
+                    "sleep_pressure": "offline_ready",
+                    "energy_level": "guarded_reserve",
+                    "repair_drive": "active",
+                    "arousal": 0.61,
+                    "pain_pressure": 0.31,
+                    "responsibility_weight": 0.57,
+                    "body_ref_set": body_refs,
+                },
+                "background_body_ref_set": body_refs,
+            },
+            source_doc_refs=[
+                "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
+            ],
+            readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+            runtime_carrier_refs=["RunnerCliRuntime"],
+        )
+
+        self.assertEqual(
+            idle_strategy["body_presence_profile"]["continuity_mode"],
+            "background_body_presence_carryover",
+        )
+        self.assertEqual(
+            idle_strategy["body_waiting_posture"],
+            "low_bandwidth_guarded",
+        )
+        self.assertEqual(idle_strategy["body_fatigue_load"], "managed_low_noise")
+        self.assertEqual(idle_strategy["body_sleep_pressure"], "offline_ready")
+        self.assertEqual(idle_strategy["body_energy_level"], "guarded_reserve")
+        self.assertEqual(idle_strategy["body_arousal"], 0.61)
+        self.assertEqual(idle_strategy["body_ref_set"], body_refs)
+        self.assertEqual(idle_strategy["body_presence_profile"]["body_ref_set"], body_refs)
 
     def test_idle_strategy_carries_offline_learning_results_into_waiting_governance(self):
         from life_v0.process_supervisor.idle_strategy import decide_idle_strategy

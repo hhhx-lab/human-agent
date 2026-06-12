@@ -387,6 +387,9 @@ def load_background_continuity_profile(
     resident_background_autonomous_activity_presence = _dict_or_empty(
         resident_background_lineage_state.get("autonomous_activity_presence")
     )
+    resident_background_body_presence = _dict_or_empty(
+        resident_background_lineage_state.get("body_presence")
+    )
     offline_learning_cumulative_profile = _dict_or_empty(
         resident_governance_state.get("offline_learning_cumulative_profile")
         or snapshot.get("offline_learning_cumulative_profile")
@@ -734,6 +737,161 @@ def load_background_continuity_profile(
         persistent_process_report,
         keys=("next_autonomous_activity_kind",),
     ) or autonomous_activity_presence_profile.get("next_activity_kind")
+    body_presence_profile = _dict_or_empty(
+        resident_governance_state.get("body_presence_profile")
+        or snapshot.get("body_presence_profile")
+        or resident_governance_report.get("body_presence_profile")
+        or persistent_process_report.get("body_presence_profile")
+        or resident_background_body_presence
+    )
+    body_rhythm_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("body_rhythm_ref", "background_body_rhythm_ref"),
+    ) or body_presence_profile.get(
+        "body_rhythm_ref"
+    ) or resident_background_body_presence.get("body_rhythm_ref")
+    need_state_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("need_state_ref", "background_need_state_ref"),
+    ) or body_presence_profile.get(
+        "need_state_ref"
+    ) or resident_background_body_presence.get("need_state_ref")
+    body_resource_budget_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("body_resource_budget_ref", "background_body_resource_budget_ref"),
+    ) or body_presence_profile.get(
+        "body_resource_budget_ref"
+    ) or resident_background_body_presence.get("body_resource_budget_ref")
+    core_affect_vector_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("core_affect_vector_ref", "background_core_affect_vector_ref"),
+    ) or body_presence_profile.get(
+        "core_affect_vector_ref"
+    ) or resident_background_body_presence.get("core_affect_vector_ref")
+    body_ref_set = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=("body_ref_set", "background_body_ref_set"),
+        )
+        + _list_or_empty(body_presence_profile.get("body_ref_set"))
+        + _list_or_empty(body_presence_profile.get("body_evidence_refs"))
+        + _list_or_empty(resident_background_body_presence.get("body_ref_set"))
+        + _list_or_empty(resident_background_body_presence.get("body_evidence_refs"))
+        + _list_or_empty(
+            [
+                body_rhythm_ref,
+                need_state_ref,
+                body_resource_budget_ref,
+                core_affect_vector_ref,
+            ]
+        )
+    )
+    body_waiting_posture = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("body_waiting_posture", "background_body_waiting_posture"),
+    ) or body_presence_profile.get(
+        "body_waiting_posture"
+    ) or resident_background_body_presence.get("body_waiting_posture")
+    body_governance_flags = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=("body_governance_flags", "background_body_governance_flags"),
+        )
+        + _list_or_empty(body_presence_profile.get("body_governance_flags"))
+        + _list_or_empty(resident_background_body_presence.get("body_governance_flags"))
+    )
+    body_fatigue_load = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("body_fatigue_load", "background_body_fatigue_load"),
+    ) or body_presence_profile.get(
+        "fatigue_load"
+    ) or resident_background_body_presence.get("fatigue_load")
+    body_sleep_pressure = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("body_sleep_pressure", "background_body_sleep_pressure"),
+    ) or body_presence_profile.get(
+        "sleep_pressure"
+    ) or resident_background_body_presence.get("sleep_pressure")
+    body_energy_level = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("body_energy_level", "background_body_energy_level"),
+    ) or body_presence_profile.get(
+        "energy_level"
+    ) or resident_background_body_presence.get("energy_level")
+    body_repair_drive = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("body_repair_drive", "background_body_repair_drive"),
+    ) or body_presence_profile.get(
+        "repair_drive"
+    ) or resident_background_body_presence.get("repair_drive")
+    body_arousal = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("body_arousal", "background_body_arousal"),
+    )
+    if body_arousal is None:
+        body_arousal = body_presence_profile.get("arousal")
+    if body_arousal is None:
+        body_arousal = resident_background_body_presence.get("arousal")
+    body_pain_pressure = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("body_pain_pressure", "background_body_pain_pressure"),
+    )
+    if body_pain_pressure is None:
+        body_pain_pressure = body_presence_profile.get("pain_pressure")
+    if body_pain_pressure is None:
+        body_pain_pressure = resident_background_body_presence.get("pain_pressure")
+    body_responsibility_weight = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("body_responsibility_weight", "background_body_responsibility_weight"),
+    )
+    if body_responsibility_weight is None:
+        body_responsibility_weight = body_presence_profile.get("responsibility_weight")
+    if body_responsibility_weight is None:
+        body_responsibility_weight = resident_background_body_presence.get(
+            "responsibility_weight"
+        )
     live_language_turn_refs = _dedupe_list(
         _list_or_empty(resident_governance_state.get("live_language_turn_refs"))
         + _list_or_empty(snapshot.get("live_language_turn_refs"))
@@ -1416,6 +1574,8 @@ def load_background_continuity_profile(
         ref_set = _dedupe_list(ref_set + dream_wake_ref_set)
     if autonomous_activity_ref_set:
         ref_set = _dedupe_list(ref_set + autonomous_activity_ref_set)
+    if body_ref_set:
+        ref_set = _dedupe_list(ref_set + body_ref_set)
     if heartbeat_cadence_evidence_refs:
         ref_set = _dedupe_list(ref_set + heartbeat_cadence_evidence_refs)
     profile = {
@@ -1620,6 +1780,34 @@ def load_background_continuity_profile(
         profile["background_resident_autonomous_activity_ref_set"] = (
             autonomous_activity_ref_set
         )
+    if resident_background_body_presence:
+        profile["background_body_presence"] = resident_background_body_presence
+    if body_presence_profile:
+        profile["background_body_presence_profile"] = body_presence_profile
+    for key, value in (
+        ("background_body_waiting_posture", body_waiting_posture),
+        ("background_body_rhythm_ref", body_rhythm_ref),
+        ("background_need_state_ref", need_state_ref),
+        ("background_body_resource_budget_ref", body_resource_budget_ref),
+        ("background_core_affect_vector_ref", core_affect_vector_ref),
+        ("background_body_fatigue_load", body_fatigue_load),
+        ("background_body_sleep_pressure", body_sleep_pressure),
+        ("background_body_energy_level", body_energy_level),
+        ("background_body_repair_drive", body_repair_drive),
+    ):
+        if value:
+            profile[key] = str(value)
+    for key, value in (
+        ("background_body_arousal", body_arousal),
+        ("background_body_pain_pressure", body_pain_pressure),
+        ("background_body_responsibility_weight", body_responsibility_weight),
+    ):
+        if value is not None:
+            profile[key] = value
+    if body_governance_flags:
+        profile["background_body_governance_flags"] = body_governance_flags
+    if body_ref_set:
+        profile["background_body_ref_set"] = body_ref_set
     if live_language_turn_refs:
         profile["background_live_language_turn_refs"] = live_language_turn_refs
     if last_live_semantic_focus:

@@ -449,6 +449,7 @@ def decide_idle_strategy(
     body_waiting_posture = _body_waiting_posture(
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
+        background_continuity_profile=background_continuity_profile,
     )
     (
         world_contact_release_posture,
@@ -574,6 +575,7 @@ def decide_idle_strategy(
     body_governance_flags = _body_governance_flags(
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
+        background_continuity_profile=background_continuity_profile,
     )
     body_presence_profile = _body_presence_profile(
         body_waiting_posture=body_waiting_posture,
@@ -582,6 +584,7 @@ def decide_idle_strategy(
         need_state_vector=need_state_vector,
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
+        background_continuity_profile=background_continuity_profile,
     )
     body_ref_set = _string_list(body_presence_profile.get("body_ref_set"))
     relationship_timeline_ref = _ref_if_present(
@@ -1710,7 +1713,16 @@ def _body_waiting_posture(
     *,
     body_rhythm_pulse: dict[str, Any] | None,
     need_state_vector: dict[str, Any] | None,
+    background_continuity_profile: dict[str, Any] | None = None,
 ) -> str:
+    if not body_rhythm_pulse and not need_state_vector:
+        background_profile = _background_body_presence_profile(
+            background_continuity_profile or {}
+        )
+        background_posture = background_profile.get("body_waiting_posture")
+        if background_posture:
+            return str(background_posture)
+
     fatigue_load = str((body_rhythm_pulse or {}).get("fatigue_load", "")).lower()
     cognitive_bandwidth = str((need_state_vector or {}).get("cognitive_bandwidth", "")).lower()
     sleep_pressure = str((need_state_vector or {}).get("sleep_pressure", "")).lower()
@@ -3031,7 +3043,16 @@ def _body_governance_flags(
     *,
     body_rhythm_pulse: dict[str, Any] | None,
     need_state_vector: dict[str, Any] | None,
+    background_continuity_profile: dict[str, Any] | None = None,
 ) -> list[str]:
+    if not body_rhythm_pulse and not need_state_vector:
+        background_profile = _background_body_presence_profile(
+            background_continuity_profile or {}
+        )
+        background_flags = _string_list(background_profile.get("body_governance_flags"))
+        if background_flags:
+            return background_flags
+
     flags: list[str] = []
     if body_rhythm_pulse:
         flags.append("body_rhythm_present")
@@ -3057,7 +3078,22 @@ def _body_presence_profile(
     need_state_vector: dict[str, Any] | None,
     body_resource_budget: dict[str, Any] | None,
     core_affect_vector: dict[str, Any] | None,
+    background_continuity_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    if not any(
+        [
+            body_rhythm_pulse,
+            need_state_vector,
+            body_resource_budget,
+            core_affect_vector,
+        ]
+    ):
+        background_profile = _background_body_presence_profile(
+            background_continuity_profile or {}
+        )
+        if background_profile:
+            return background_profile
+
     body_rhythm_ref = _ref_if_present(
         payload=body_rhythm_pulse,
         ref=BODY_RHYTHM_PULSE_REF,
@@ -3134,6 +3170,111 @@ def _body_presence_profile(
         "ref_count": len(ref_set),
     }
     return _drop_empty(payload)
+
+
+def _background_body_presence_profile(
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, Any]:
+    lineage_state = _dict_or_empty(
+        background_continuity_profile.get("resident_background_lineage_state")
+        or background_continuity_profile.get("background_resident_lineage_state")
+    )
+    presence = _dict_or_empty(
+        background_continuity_profile.get("background_body_presence")
+        or background_continuity_profile.get("background_body_presence_profile")
+        or lineage_state.get("body_presence")
+    )
+    if not presence:
+        return {}
+
+    body_rhythm_ref = (
+        background_continuity_profile.get("background_body_rhythm_ref")
+        or presence.get("body_rhythm_ref")
+    )
+    need_state_ref = (
+        background_continuity_profile.get("background_need_state_ref")
+        or presence.get("need_state_ref")
+    )
+    body_resource_budget_ref = (
+        background_continuity_profile.get("background_body_resource_budget_ref")
+        or presence.get("body_resource_budget_ref")
+    )
+    core_affect_vector_ref = (
+        background_continuity_profile.get("background_core_affect_vector_ref")
+        or presence.get("core_affect_vector_ref")
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(background_continuity_profile.get("background_body_ref_set"))
+        + _string_list(presence.get("body_ref_set"))
+        + _string_list(presence.get("body_evidence_refs"))
+        + _string_list(
+            [
+                body_rhythm_ref,
+                need_state_ref,
+                body_resource_budget_ref,
+                core_affect_vector_ref,
+            ]
+        )
+    )
+    if not any([presence, ref_set]):
+        return {}
+
+    def _background_or_presence(background_key: str, presence_key: str) -> Any:
+        value = background_continuity_profile.get(background_key)
+        if value is not None and value != "":
+            return value
+        return presence.get(presence_key)
+
+    return _drop_empty(
+        {
+            "schema_version": "resident_body_presence_profile_v0",
+            "continuity_mode": "background_body_presence_carryover",
+            "body_waiting_posture": _background_or_presence(
+                "background_body_waiting_posture",
+                "body_waiting_posture",
+            ),
+            "body_governance_flags": _dedupe_string_list(
+                _string_list(
+                    background_continuity_profile.get(
+                        "background_body_governance_flags"
+                    )
+                )
+                + _string_list(presence.get("body_governance_flags"))
+            ),
+            "body_rhythm_ref": body_rhythm_ref,
+            "need_state_ref": need_state_ref,
+            "body_resource_budget_ref": body_resource_budget_ref,
+            "core_affect_vector_ref": core_affect_vector_ref,
+            "fatigue_load": _background_or_presence(
+                "background_body_fatigue_load",
+                "fatigue_load",
+            ),
+            "sleep_pressure": _background_or_presence(
+                "background_body_sleep_pressure",
+                "sleep_pressure",
+            ),
+            "energy_level": _background_or_presence(
+                "background_body_energy_level",
+                "energy_level",
+            ),
+            "repair_drive": _background_or_presence(
+                "background_body_repair_drive",
+                "repair_drive",
+            ),
+            "arousal": _background_or_presence("background_body_arousal", "arousal"),
+            "pain_pressure": _background_or_presence(
+                "background_body_pain_pressure",
+                "pain_pressure",
+            ),
+            "responsibility_weight": _background_or_presence(
+                "background_body_responsibility_weight",
+                "responsibility_weight",
+            ),
+            "body_ref_set": ref_set,
+            "ref_count": len(ref_set),
+            "source_presence_profile": presence,
+        }
+    )
 
 
 def _relaunch_caution_level(
