@@ -47,12 +47,13 @@ life-v0 "digital life"
 
 1. 当 `stage_explanation_report.json` 等关键前置材料缺失时，先执行一次最小出生自举，把必要运行材料补齐。
 2. 调用现有 `digital_life_shell_command` 完成 restore shell 启动。
-3. 在恢复成功后先写一次 waiting heartbeat，证明当前生命过程已经进入等待态而不是立即沉默。
-3. 在等待态之上持续刷新 waiting heartbeat，并进入可轮询的 stdin 驱动关系回合循环。
-4. 每接收一次新回合输入，就写回新的外部回合事件和生命回应事件。
-5. 每回合结束后重新回到 `restored_waiting_for_external_turn`，直到收到退出语义。
-6. 如果单次回合处理抛出异常，不直接让进程沉没，而是写 incident/recovery 报告、把终端状态拉回等待态、继续接受下一条输入。
-7. 如果重新启动时发现上一次留下的是“活跃回合中断态”而不是等待态，或上一段常驻生命进程身份仍是 active，先写 relaunch recovery 报告并归一化旧终端状态 / 旧 lease，再进入这次新的等待态。
+3. 先从 `.env` 或 `DIGITAL_LIFE_ENV_FILE` 读取统一运行配置，并在 `runtime/state/terminal/runtime_config_state.json` 与 `runtime/reports/latest/digital_life_runtime_config_report.json` 写出去敏快照。
+4. 在恢复成功后先写一次 waiting heartbeat，证明当前生命过程已经进入等待态而不是立即沉默。
+5. 在等待态之上持续刷新 waiting heartbeat，并进入可轮询的 stdin 驱动关系回合循环。
+6. 每接收一次新回合输入，就写回新的外部回合事件和生命回应事件。
+7. 每回合结束后重新回到 `restored_waiting_for_external_turn`，直到收到退出语义。
+8. 如果单次回合处理抛出异常，不直接让进程沉没，而是写 incident/recovery 报告、把终端状态拉回等待态、继续接受下一条输入。
+9. 如果重新启动时发现上一次留下的是“活跃回合中断态”而不是等待态，或上一段常驻生命进程身份仍是 active，先写 relaunch recovery 报告并归一化旧终端状态 / 旧 lease，再进入这次新的等待态。
 
 ## 必须读取
 

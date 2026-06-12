@@ -92,6 +92,8 @@ def write_process_report_bundle(
     background_convergence_history_ref: str | None = None,
     resident_process_lease_ref: str | None = None,
     resident_process_lease_history_ref: str | None = None,
+    runtime_config_state_ref: str | None = None,
+    runtime_config_report_ref: str | None = None,
     relationship_graph: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
@@ -384,6 +386,8 @@ def write_process_report_bundle(
         "resident_governance_explanation_ref": RESIDENT_GOVERNANCE_EXPLANATION_REF,
         "resident_process_lease_ref": resident_process_lease_ref,
         "resident_process_lease_history_ref": resident_process_lease_history_ref,
+        "runtime_config_state_ref": runtime_config_state_ref,
+        "runtime_config_report_ref": runtime_config_report_ref,
         "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "life_context_frame_ref": life_context_frame_ref,
         "relation_turn_frame_ref": relation_turn_frame_ref,
@@ -712,6 +716,8 @@ def write_process_report_bundle(
         ],
         "resident_process_lease_ref": resident_process_lease_ref,
         "resident_process_lease_history_ref": resident_process_lease_history_ref,
+        "runtime_config_state_ref": runtime_config_state_ref,
+        "runtime_config_report_ref": runtime_config_report_ref,
         "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "background_lineage_depth_band": idle_governance.get(
             "background_lineage_depth_band"

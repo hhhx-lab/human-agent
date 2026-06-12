@@ -54,6 +54,81 @@ class DigitalEntrypointTests(unittest.TestCase):
         self.assertEqual(report["status"], "closed")
         self.assertEqual(report["current_shell_mode"], "terminal_life_loop_restored")
 
+    def test_repo_local_digital_life_entrypoint_reads_env_runtime_config(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            env_path = Path(tmp) / "digital-life.env"
+            env_path.write_text(
+                "\n".join(
+                    [
+                        "DIGITAL_LIFE_RUNTIME_PROFILE=quiet-lab",
+                        "DIGITAL_LIFE_MODEL_PROVIDER=test-provider",
+                        "DIGITAL_LIFE_MODEL_NAME=test-model",
+                        "DIGITAL_LIFE_MODEL_BASE_URL=https://example.invalid/api",
+                        "DIGITAL_LIFE_MODEL_API_KEY=test-secret-token",
+                        "DIGITAL_LIFE_MODEL_TEMPERATURE=0.25",
+                        "DIGITAL_LIFE_MODEL_MAX_OUTPUT_TOKENS=256",
+                        "DIGITAL_LIFE_MODEL_TIMEOUT_SECONDS=12.5",
+                        "DIGITAL_LIFE_RESPONSE_LANGUAGE=zh-Hans",
+                        "DIGITAL_LIFE_DIALOGUE_STYLE=relationship",
+                        "DIGITAL_LIFE_STRICT_DEFAULT=true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            env = os.environ.copy()
+            env["DIGITAL_LIFE_ENV_FILE"] = str(env_path)
+            completed = subprocess.run(
+                [
+                    str(self.repo_root / "digital"),
+                    "life",
+                    "--state",
+                    str(paths["state_root"]),
+                    "--reports",
+                    str(paths["reports"]),
+                    "--receipts",
+                    str(paths["receipts"]),
+                    "--run-id",
+                    "entry-env-config",
+                    "--strict",
+                ],
+                cwd=self.repo_root,
+                env=env,
+                text=True,
+                input="你好\n/exit\n",
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            config_state = self._read_json(paths["terminal_state"] / "runtime_config_state.json")
+            config_report = self._read_json(paths["reports"] / "digital_life_runtime_config_report.json")
+            process_report = self._read_json(paths["reports"] / "digital_life_process_report.json")
+
+        self.assertEqual(config_state["runtime_profile"], "quiet-lab")
+        self.assertEqual(config_state["model_provider"], "test-provider")
+        self.assertEqual(config_state["model_name"], "test-model")
+        self.assertEqual(config_state["model_base_url"], "https://example.invalid/api")
+        self.assertTrue(config_state["model_api_key_present"])
+        self.assertEqual(config_state["model_api_key_redacted"], "<redacted>")
+        self.assertEqual(config_state["model_temperature"], 0.25)
+        self.assertEqual(config_state["model_max_output_tokens"], 256)
+        self.assertEqual(config_state["model_timeout_seconds"], 12.5)
+        self.assertEqual(config_state["response_language"], "zh-Hans")
+        self.assertEqual(config_state["dialogue_style"], "relationship")
+        self.assertTrue(config_state["strict_default"])
+        self.assertTrue(config_state["env_source"].startswith("env_file:"))
+        self.assertEqual(config_report["runtime_config_ref"], "runtime/state/terminal/runtime_config_state.json")
+        self.assertEqual(
+            process_report["runtime_config_state_ref"],
+            "runtime/state/terminal/runtime_config_state.json",
+        )
+        self.assertEqual(
+            process_report["runtime_config_report_ref"],
+            "runtime/reports/latest/digital_life_runtime_config_report.json",
+        )
+
     def test_repo_local_digital_life_entrypoint_bootstraps_empty_runtime_before_dialogue(self):
         with tempfile.TemporaryDirectory() as tmp:
             paths = build_runtime_paths(Path(tmp))

@@ -124,6 +124,7 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 print(json.dumps(result.state, ensure_ascii=False, indent=2))
             return result.exit_code
+
         if args.background:
             result = start_background_resident_process(
                 state_dir=state_dir,
@@ -510,3 +511,15 @@ def ensure_minimal_digital_life_runtime(
 def _bootstrap_run_id(run_id: str | None, suffix: str) -> str:
     prefix = run_id or "digital-life-bootstrap"
     return f"{prefix}-{suffix}"
+
+
+def _write_json(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()

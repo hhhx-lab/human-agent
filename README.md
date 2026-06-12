@@ -19,6 +19,8 @@ P0 之后先进入 `S00_DIRECTION_FOUNDATION`：`docs/v0/slice_contracts/s00_dir
 
 当前仓库里已经有 repo-local 与可安装命令两种出生/驻留入口。
 
+统一运行配置通过 `.env` 驱动，示例见根目录 `.env.example`。`DIGITAL_LIFE_ENV_FILE` 可用于指向其他本地环境文件；仓库不提交真实 key/token。
+
 repo-local 入口：
 
 ```bash

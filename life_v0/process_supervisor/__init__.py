@@ -20,6 +20,7 @@ from .process_lease import (
 from .process_session_loop import run_process_session_loop
 from .resident_supervision import bootstrap_resident_supervision
 from .response_surface import compose_life_response
+from ..runtime_config import write_digital_life_runtime_config_snapshot
 
 
 SOURCE_DOC_REFS = [
@@ -78,6 +79,30 @@ def run_digital_life_process(
     receipts_dir = receipts_dir.resolve()
     input_stream = input_stream or sys.stdin
     output_stream = output_stream or sys.stdout
+
+    try:
+        write_digital_life_runtime_config_snapshot(
+            repo_root=Path.cwd(),
+            state_dir=state_dir,
+            reports_dir=reports_dir,
+            receipts_dir=receipts_dir,
+            run_id=run_id,
+            generated_at=generated_at,
+            strict=strict,
+            write_json=_write_json,
+        )
+    except ValueError as exc:
+        return DigitalLifeProcessResult(
+            exit_code=2,
+            report={
+                "schema_version": "digital_life_process_report_v0",
+                "run_id": run_id,
+                "generated_at": generated_at,
+                "status": "blocked",
+                "blocked_reasons": [str(exc)],
+                "runtime_config_error": str(exc),
+            },
+        )
 
     resident_supervision = bootstrap_resident_supervision(
         state_dir=state_dir,

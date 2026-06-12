@@ -190,6 +190,8 @@ Queue D
 
 模型、key、base URL、环境开关都只允许通过 `.env` 进入。
 
+当前 `digital` / `life-v0` 统一从 `.env` 或 `DIGITAL_LIFE_ENV_FILE` 读取运行配置，并在 `runtime/state/terminal/runtime_config_state.json` 与 `runtime/reports/latest/digital_life_runtime_config_report.json` 留下去敏快照；真实 key/token 只允许留在本地环境文件，不进入仓库。
+
 不允许：
 
 1. 把 key 直接写进 Python 文件

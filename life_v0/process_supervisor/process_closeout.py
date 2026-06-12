@@ -16,6 +16,7 @@ from .persistent_process import (
     write_persistent_process_artifacts,
 )
 from .process_report import ProcessReportBundleResult, write_process_report_bundle
+from ..runtime_config import RUNTIME_CONFIG_REPORT_REF, RUNTIME_CONFIG_STATE_REF
 
 
 LIFE_CONTEXT_FRAME_REF = "runtime/state/terminal/life_context_frame.json"
@@ -235,6 +236,8 @@ def close_digital_life_process(
         relationship_graph=relationship_graph,
         self_model_state=self_model_state,
         write_json=write_json,
+        runtime_config_state_ref=RUNTIME_CONFIG_STATE_REF,
+        runtime_config_report_ref=RUNTIME_CONFIG_REPORT_REF,
     )
     return ProcessCloseoutResult(
         persistent_process_artifacts=persistent_process_artifacts,
