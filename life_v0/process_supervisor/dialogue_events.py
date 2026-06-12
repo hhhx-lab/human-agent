@@ -215,6 +215,7 @@ def build_resident_background_lineage_payload(
         "relationship_presence",
         "trait_convergence_presence",
         "heartbeat_presence",
+        "body_presence",
         "heartbeat_cadence_presence",
         "language_presence",
         "state_merge_presence",
@@ -398,6 +399,61 @@ def build_resident_background_lineage_payload(
                 cadence_refs
             )
             lineage_refs.extend(cadence_refs)
+    body_presence = lineage_state.get("body_presence")
+    if isinstance(body_presence, dict):
+        for source_key, target_key in (
+            ("body_waiting_posture", "resident_background_lineage_body_waiting_posture"),
+            ("fatigue_load", "resident_background_lineage_body_fatigue_load"),
+            ("sleep_pressure", "resident_background_lineage_body_sleep_pressure"),
+            ("energy_level", "resident_background_lineage_body_energy_level"),
+            ("repair_drive", "resident_background_lineage_body_repair_drive"),
+            ("body_rhythm_ref", "resident_background_lineage_body_rhythm_ref"),
+            ("need_state_ref", "resident_background_lineage_need_state_ref"),
+            (
+                "body_resource_budget_ref",
+                "resident_background_lineage_body_resource_budget_ref",
+            ),
+            (
+                "core_affect_vector_ref",
+                "resident_background_lineage_core_affect_vector_ref",
+            ),
+        ):
+            value = body_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        for source_key, target_key in (
+            ("arousal", "resident_background_lineage_body_arousal"),
+            ("pain_pressure", "resident_background_lineage_body_pain_pressure"),
+            (
+                "responsibility_weight",
+                "resident_background_lineage_body_responsibility_weight",
+            ),
+        ):
+            value = body_presence.get(source_key)
+            if value is not None:
+                payload[target_key] = value
+        body_flags = _dedupe_string_list(
+            _string_list(body_presence.get("body_governance_flags"))
+        )
+        if body_flags:
+            payload["resident_background_lineage_body_governance_flags"] = (
+                body_flags
+            )
+        body_refs = _dedupe_string_list(
+            _string_list(body_presence.get("body_evidence_refs"))
+            or _string_list(body_presence.get("body_ref_set"))
+            + _string_list(
+                [
+                    body_presence.get("body_rhythm_ref"),
+                    body_presence.get("need_state_ref"),
+                    body_presence.get("body_resource_budget_ref"),
+                    body_presence.get("core_affect_vector_ref"),
+                ]
+            )
+        )
+        if body_refs:
+            payload["resident_background_lineage_body_refs"] = body_refs
+            lineage_refs.extend(body_refs)
     state_merge_presence = lineage_state.get("state_merge_presence")
     if isinstance(state_merge_presence, dict):
         state_merge_guard_ref = state_merge_presence.get("state_merge_guard_ref")

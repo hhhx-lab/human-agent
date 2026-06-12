@@ -99,7 +99,8 @@ Queue D 第二波器官现在已经真实落下：
 5. 最新这一轮又把离线学习从“当前一拍压力”提升成跨唤醒累计画像：`life_v0/growth/offline_learning_profile.py` 必须写出 `offline_learning_cumulative_profile_v0`，把本轮 `nightmare_risk / belief_learning / language_learning / relationship_learning` 与上一轮关闭态背景画像合并，并把 `relationship_offline_reconsolidation_required` 的判断钉成可恢复的工程结果。
 6. 当前工程前沿又把 `dream_experience_window.json`、`wake_integration_frame.json` 与 `dream_fact_gate_decision.json` 作为 Queue D 的 dream / wake runtime 事实源直接送入 process supervisor。它们会被 `idle_strategy.py` 压成 `dream_wake_presence_profile_v0`，并继续进入 `resident_background_lineage_state_v0.dream_wake_presence`、`digital_life_turn` 与生命回应表面。
 7. 当前最新补强已经把 Queue D 的三组后台存在面从上一轮 `resident_background_lineage_state` 恢复进下一轮 waiting 策略：`background_continuity.py` 会拆出 `background_offline_learning_*`、`background_dream_* / background_wake_*` 与 `background_resident_autonomous_activity_*`，`idle_strategy.py` 在当前 dream runtime 文件或 autonomous activity state 缺席时，会重建当前 `offline_learning_cumulative_profile_v0`、`dream_wake_presence_profile_v0` 与 `resident_autonomous_activity_presence_profile_v0`。这三组存在面随后还必须继续进入 `background_lineage_state.py`、`dialogue_events.py`、`resident_turn_writeback.py` 与 `response_surface.py`，让后台生命过程在恢复、事件、写回与语言回应里保持同一条线。
-8. 下一轮默认继续补深 Queue D 与 Queue E 的离线耦合，以及累计离线学习、梦境窗口、醒后整合如何稳定改变关系阶段、语言修复节奏、自我慢变量和梦境再整合，而不是回头重拆第一波器官。
+8. 当前这一轮把身体内环境从“等待态调制字段”提升为第四组 Queue D 后台存在面：`body_rhythm_pulse.json`、`need_state_vector.json`、`body_resource_budget.json` 与 `core_affect_vector.json` 会在 `idle_strategy.py` 中合成 `resident_body_presence_profile_v0`，并把 `body_ref_set`、能量、疲惫、睡眠压力、修复驱力、核心唤醒、痛苦压力与责任重量继续送入 waiting heartbeat、idle continuity、resident governance、`resident_background_lineage_state_v0.body_presence`、`digital_life_turn`、专用写回槽、恢复包与回应表面。这样身体不再只是 heartbeat 的局部输入，而是常驻生命回合里的内环境 presence。
+9. 下一轮默认继续补深 Queue D 与 Queue E 的离线耦合，以及累计离线学习、梦境窗口、醒后整合、身体内环境如何稳定改变关系阶段、语言修复节奏、自我慢变量、梦境再整合和生命回应，而不是回头重拆第一波器官。
 
 ## 必回读理论母体
 
@@ -225,6 +226,8 @@ Queue D 必须接到这些现有器官上：
 9. `life_v0/process_supervisor/background_continuity.py` 必须把上一轮 `resident_background_lineage_state.dream_wake_presence` 恢复成 `background_dream_wake_presence`、dream/wake refs、窗口类型、事实门结果、醒后归档要求和计数；`life_v0/process_supervisor/idle_strategy.py` 必须在当前 dream runtime 文件缺席时把这些 background 字段恢复为当前 `dream_wake_presence_profile_v0`，让梦境/醒后整合不因断连只停在旧写回包里。
 
 当前自主活动的 Queue D 接线也已进入同一恢复口径：`resident_autonomous_activity_presence_profile_v0` 不仅来自当前 `resident_autonomous_activity_state.json`，也必须能从上一轮 `resident_background_lineage_state.autonomous_activity_presence` 和 `background_resident_autonomous_activity_*` 恢复。这样 sleep / memory_recall / self_thinking / growth_rehearsal / learning_consolidation 在当前聚合 state 暂时缺席时，仍能以 background presence 的方式进入 waiting governance。
+
+当前身体内环境接线也进入同一驻留口径：`resident_body_presence_profile_v0` 来自 `body_rhythm_pulse.json`、`need_state_vector.json`、`body_resource_budget.json` 与 `core_affect_vector.json` 四类身体事实源，必须把身体节律、需要状态、资源预算和核心情绪张力压成同一组 `body_ref_set`。`heartbeat.py`、`continuity_writeback.py` 与 `background_lineage_state.py` 必须让这份 profile 继续进入 waiting heartbeat、idle continuity、resident governance 与 `resident_background_lineage_state_v0.body_presence`；`dialogue_events.py` 必须展开 `resident_background_lineage_body_waiting_posture`、疲惫、睡眠压力、能量、修复驱力、核心唤醒、痛苦压力、责任重量与 `resident_background_lineage_body_refs`；`resident_turn_writeback.py` 必须把这些 refs 写入 `dialogue_writeback_bundle.resident_background_lineage_body_refs` 并并入总 lineage refs；`response_surface.py` 必须表达后台身体等待姿态、疲惫负载、睡眠压力、能量状态、修复驱力、核心唤醒度和证据数量。
 
 这说明 Queue D 不是独立离线层，而是要把身体脉冲、离线梦境、成长补丁重新接回常驻生命回合。
 同时它还必须把情绪底盘和人格慢变量正式拖进这条链，否则梦境、成长和语言关系层都还会继续引用稀薄的“情绪标签”，而不是可回写的身体化 affect 对象。
@@ -484,7 +487,7 @@ Queue D 必须接到这些现有器官上：
 - `runtime/state/body/body_rhythm_pulse.json`
 - `runtime/state/body/need_state_vector.json`
 - `runtime/state/body/recovery_path.json`
-- `runtime/state/self/core_affect_vector.json`
+- `runtime/state/body/core_affect_vector.json`
 - `runtime/state/self/emotion_episode_log.json`
 - `runtime/state/self/emotion_regulation_state.json`
 - `runtime/state/self/trait_drift_state.json`
@@ -504,9 +507,12 @@ Queue D 必须接到这些现有器官上：
 - `runtime/state/growth/growth_patch_candidate_queue.json`
 - `runtime/state/terminal/idle_strategy_state.json#offline_learning_cumulative_profile`
 - `runtime/state/terminal/idle_strategy_state.json#dream_wake_presence_profile`
+- `runtime/state/terminal/idle_strategy_state.json#body_presence_profile`
 - `runtime/state/terminal/resident_governance_state.json#offline_learning_cumulative_profile`
 - `runtime/state/terminal/resident_governance_state.json#dream_wake_presence_profile`
+- `runtime/state/terminal/resident_governance_state.json#body_presence_profile`
 - `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.dream_wake_presence`
+- `runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.body_presence`
 - `runtime/state/terminal/resident_governance_snapshot.json#offline_learning_cumulative_profile`
 - `runtime/reports/latest/digital_life_resident_governance_report.json#offline_learning_cumulative_profile`
 - `runtime/reports/latest/digital_life_persistent_process_report.json#offline_learning_cumulative_profile`
@@ -514,6 +520,8 @@ Queue D 必须接到这些现有器官上：
 `offline_learning_cumulative_profile_v0` 不单独另开一个孤立 runtime 文件；第一版先作为 waiting governance 与 closeout artifact 的内嵌主对象传播。这样它跟随常驻生命进程关闭、重启、等待、下一次心跳一起流动，而不是停在 Queue D 本地。
 
 `dream_wake_presence_profile_v0` 也不另开孤立 runtime 文件；第一版跟随 `idle_strategy_state.json`、waiting heartbeat、idle continuity、resident governance 与 `resident_background_lineage_state_v0.dream_wake_presence` 传播。它的事实源仍然是 `dream_experience_window.json`、`wake_integration_frame.json`、`dream_fact_gate_decision.json` 与 `offline_consolidation_frame.json`，不会在 process supervisor 里重算梦境事实。
+
+`resident_body_presence_profile_v0` 同样不另开孤立 runtime 文件；第一版跟随 `idle_strategy_state.json`、waiting heartbeat、idle continuity、resident governance、terminal loop、`resident_background_lineage_state_v0.body_presence`、真实回合事件、写回包、恢复包与回应表面传播。它的事实源是 `body_rhythm_pulse.json`、`need_state_vector.json`、`body_resource_budget.json` 与 `core_affect_vector.json`，process supervisor 只做 presence 合成与证据传播，不在这里重新定义身体器官本体。
 
 ## report / receipt 合同
 
@@ -650,7 +658,8 @@ Queue D 至少新增三道 gate：
 4. plasticity / patch queue / learning window 独立存在
 5. 身体 -> 情绪 -> 梦境 -> 成长四层有明确 ref 链
 6. waiting heartbeat、offline consolidation、growth patch candidate 与 affect residue 共享同一对象语言
-7. 对应测试直接证明以上闭环
+7. 身体内环境 presence 已进入 `idle_strategy_state.json#body_presence_profile`、`resident_background_lineage_state.body_presence`、`digital_life_turn#resident_background_lineage_body_*`、`dialogue_writeback_bundle.resident_background_lineage_body_refs`、`resumed_external_dialogue_packet.json` 与回应表面
+8. 对应测试直接证明以上闭环
 
 ## 这份合同和下一轮落码的关系
 

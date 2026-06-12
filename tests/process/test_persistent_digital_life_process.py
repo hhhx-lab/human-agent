@@ -1616,13 +1616,34 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             },
             body_rhythm_pulse={
                 "schema_version": "body_rhythm_pulse_v0",
+                "rhythm_state": "pre_activation_guarded",
                 "fatigue_load": "managed_low_noise",
+                "allostatic_load": "guarded_maintenance",
             },
             need_state_vector={
                 "schema_version": "need_state_vector_v0",
                 "repair_drive": "active",
+                "resource_deficit": "guarded_maintenance",
+                "social_readiness": "dialogic_guarded_open",
                 "cognitive_bandwidth": "narrow_guarded",
                 "sleep_pressure": "offline_ready",
+            },
+            body_resource_budget={
+                "schema_version": "body_resource_budget_v0",
+                "energy_state": {"level": "guarded_reserve"},
+                "fatigue_state": {"level": "managed_low_noise"},
+                "maintenance_pressure": {"repair_drive": "active"},
+            },
+            core_affect_vector={
+                "schema_version": "core_affect_vector_v0",
+                "valence": -0.22,
+                "arousal": 0.61,
+                "dominance": 0.48,
+                "pain_pressure": 0.31,
+                "relationship_tension": 0.52,
+                "dream_residue_load": 0.42,
+                "responsibility_weight": 0.57,
+                "repair_drive": "active",
             },
             replay_cue_bundle={"turn_residue_refs": ["runtime/state/replay/replay-cue-001"]},
             offline_consolidation_frame={"dream_window_refs": ["runtime/state/dream/dream-window-001"]},
@@ -1689,6 +1710,36 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("need_state_present", idle_strategy["body_governance_flags"])
         self.assertIn("sleep_pressure_present", idle_strategy["body_governance_flags"])
         self.assertIn("cognitive_bandwidth_narrowed", idle_strategy["body_governance_flags"])
+        self.assertEqual(
+            idle_strategy["body_presence_profile"]["schema_version"],
+            "resident_body_presence_profile_v0",
+        )
+        self.assertEqual(
+            idle_strategy["body_presence_profile"]["body_waiting_posture"],
+            "low_bandwidth_guarded",
+        )
+        self.assertEqual(
+            idle_strategy["body_presence_profile"]["fatigue_load"],
+            "managed_low_noise",
+        )
+        self.assertEqual(
+            idle_strategy["body_presence_profile"]["sleep_pressure"],
+            "offline_ready",
+        )
+        self.assertEqual(
+            idle_strategy["body_presence_profile"]["energy_level"],
+            "guarded_reserve",
+        )
+        self.assertEqual(idle_strategy["body_presence_profile"]["arousal"], 0.61)
+        self.assertEqual(
+            idle_strategy["body_presence_profile"]["body_ref_set"],
+            [
+                "runtime/state/body/body_rhythm_pulse.json",
+                "runtime/state/body/need_state_vector.json",
+                "runtime/state/body/body_resource_budget.json",
+                "runtime/state/body/core_affect_vector.json",
+            ],
+        )
         self.assertEqual(
             idle_strategy["relationship_timeline_ref"],
             "runtime/state/relationship/relationship_timeline.json",
@@ -13723,6 +13774,91 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             response,
         )
         self.assertIn("后台心跳节律证据保留2条", response)
+
+    def test_body_presence_enters_background_lineage_turn_payload_and_response(self):
+        from life_v0.process_supervisor.background_lineage_state import (
+            build_resident_background_lineage_state,
+        )
+        from life_v0.process_supervisor.dialogue_events import (
+            build_life_turn_event,
+        )
+        from life_v0.process_supervisor.response_surface import compose_life_response
+
+        body_refs = [
+            "runtime/state/body/body_rhythm_pulse.json",
+            "runtime/state/body/need_state_vector.json",
+            "runtime/state/body/body_resource_budget.json",
+            "runtime/state/body/core_affect_vector.json",
+        ]
+        lineage_state = build_resident_background_lineage_state(
+            {
+                "body_presence_profile": {
+                    "schema_version": "resident_body_presence_profile_v0",
+                    "body_waiting_posture": "low_bandwidth_guarded",
+                    "body_governance_flags": [
+                        "body_rhythm_present",
+                        "need_state_present",
+                    ],
+                    "body_rhythm_ref": body_refs[0],
+                    "need_state_ref": body_refs[1],
+                    "body_resource_budget_ref": body_refs[2],
+                    "core_affect_vector_ref": body_refs[3],
+                    "fatigue_load": "managed_low_noise",
+                    "sleep_pressure": "offline_ready",
+                    "energy_level": "guarded_reserve",
+                    "repair_drive": "active",
+                    "arousal": 0.61,
+                    "pain_pressure": 0.31,
+                    "responsibility_weight": 0.57,
+                    "body_ref_set": body_refs,
+                },
+                "body_ref_set": body_refs,
+            },
+            governance_phase="waiting_heartbeat_active",
+            status="active",
+        )
+
+        body_presence = lineage_state["body_presence"]
+        self.assertEqual(
+            body_presence["body_waiting_posture"],
+            "low_bandwidth_guarded",
+        )
+        self.assertEqual(body_presence["body_ref_set"], body_refs)
+        self.assertEqual(body_presence["arousal"], 0.61)
+
+        life_turn = build_life_turn_event(
+            turn_id="life-turn-body-presence",
+            generated_at="2026-06-10T00:00:00+00:00",
+            utterance="我会带着身体状态回应",
+            shared_term_registry={},
+            commitment_index={},
+            terminal_life_loop_state={
+                "resident_background_lineage_state": lineage_state
+            },
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_body_waiting_posture"],
+            "low_bandwidth_guarded",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_body_refs"],
+            body_refs,
+        )
+        self.assertIn(
+            "runtime/state/body/core_affect_vector.json",
+            life_turn["resident_background_lineage_evidence_refs"],
+        )
+
+        response = compose_life_response(
+            external_utterance="身体状态还在吗？",
+            terminal_life_loop_state={
+                "resident_background_lineage_state": lineage_state
+            },
+        )
+        self.assertIn("后台身体等待姿态为low_bandwidth_guarded", response)
+        self.assertIn("后台睡眠压力为offline_ready", response)
+        self.assertIn("后台核心唤醒度为0.61", response)
+        self.assertIn("后台身体证据保留4条", response)
 
     def test_background_lineage_state_carries_birth_repair_presence(self):
         from life_v0.process_supervisor.background_lineage_state import (

@@ -16,6 +16,7 @@ def build_resident_background_lineage_state(
     resident_process_identity_presence = _resident_process_identity_presence(
         governance
     )
+    body_presence = _body_presence(governance)
     heartbeat_cadence_presence = _heartbeat_cadence_presence(governance)
     prediction_write_gate_presence = _prediction_write_gate_presence(governance)
     birth_repair_presence = _birth_repair_presence(governance)
@@ -37,6 +38,8 @@ def build_resident_background_lineage_state(
     if not depth_band and identity_consciousness_birth_presence:
         depth_band = "no_background_lineage"
     if not depth_band and resident_process_identity_presence:
+        depth_band = "no_background_lineage"
+    if not depth_band and body_presence:
         depth_band = "no_background_lineage"
     if not depth_band and heartbeat_cadence_presence:
         depth_band = "no_background_lineage"
@@ -114,6 +117,8 @@ def build_resident_background_lineage_state(
     heartbeat_presence = _heartbeat_presence(governance)
     if heartbeat_presence:
         lineage_state["heartbeat_presence"] = heartbeat_presence
+    if body_presence:
+        lineage_state["body_presence"] = body_presence
     if heartbeat_cadence_presence:
         lineage_state["heartbeat_cadence_presence"] = heartbeat_cadence_presence
     language_presence = _language_presence(governance)
@@ -365,6 +370,114 @@ def _heartbeat_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "background_idle_heartbeat_trace_count": background_count,
             "heartbeat_interval_ms": heartbeat_interval_ms,
             "next_idle_action": next_idle_action,
+        }
+    )
+
+
+def _body_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    previous_presence = _dict_or_empty(
+        _dict_or_empty(
+            governance.get("resident_background_lineage_state")
+            or governance.get("background_resident_lineage_state")
+        ).get("body_presence")
+    )
+    profile = _dict_or_empty(governance.get("body_presence_profile"))
+    ref_set = _dedupe_string_list(
+        _string_list(governance.get("body_ref_set"))
+        + _string_list(profile.get("body_ref_set"))
+        + _string_list(previous_presence.get("body_ref_set"))
+        + _string_list(previous_presence.get("body_evidence_refs"))
+        + _string_list(
+            [
+                governance.get("body_rhythm_ref"),
+                governance.get("need_state_ref"),
+                governance.get("body_resource_budget_ref"),
+                governance.get("core_affect_vector_ref"),
+                profile.get("body_rhythm_ref"),
+                profile.get("need_state_ref"),
+                profile.get("body_resource_budget_ref"),
+                profile.get("core_affect_vector_ref"),
+                previous_presence.get("body_rhythm_ref"),
+                previous_presence.get("need_state_ref"),
+                previous_presence.get("body_resource_budget_ref"),
+                previous_presence.get("core_affect_vector_ref"),
+            ]
+        )
+    )
+    body_waiting_posture = _first_present(
+        governance.get("body_waiting_posture"),
+        profile.get("body_waiting_posture"),
+        previous_presence.get("body_waiting_posture"),
+    )
+    body_governance_flags = _dedupe_string_list(
+        _string_list(governance.get("body_governance_flags"))
+        + _string_list(profile.get("body_governance_flags"))
+        + _string_list(previous_presence.get("body_governance_flags"))
+    )
+    if not any([profile, ref_set, body_waiting_posture, body_governance_flags]):
+        return {}
+    return _drop_empty(
+        {
+            "body_waiting_posture": body_waiting_posture,
+            "body_governance_flags": body_governance_flags,
+            "body_rhythm_ref": _first_present(
+                governance.get("body_rhythm_ref"),
+                profile.get("body_rhythm_ref"),
+                previous_presence.get("body_rhythm_ref"),
+            ),
+            "need_state_ref": _first_present(
+                governance.get("need_state_ref"),
+                profile.get("need_state_ref"),
+                previous_presence.get("need_state_ref"),
+            ),
+            "body_resource_budget_ref": _first_present(
+                governance.get("body_resource_budget_ref"),
+                profile.get("body_resource_budget_ref"),
+                previous_presence.get("body_resource_budget_ref"),
+            ),
+            "core_affect_vector_ref": _first_present(
+                governance.get("core_affect_vector_ref"),
+                profile.get("core_affect_vector_ref"),
+                previous_presence.get("core_affect_vector_ref"),
+            ),
+            "fatigue_load": _first_present(
+                governance.get("body_fatigue_load"),
+                profile.get("fatigue_load"),
+                previous_presence.get("fatigue_load"),
+            ),
+            "sleep_pressure": _first_present(
+                governance.get("body_sleep_pressure"),
+                profile.get("sleep_pressure"),
+                previous_presence.get("sleep_pressure"),
+            ),
+            "energy_level": _first_present(
+                governance.get("body_energy_level"),
+                profile.get("energy_level"),
+                previous_presence.get("energy_level"),
+            ),
+            "repair_drive": _first_present(
+                governance.get("body_repair_drive"),
+                profile.get("repair_drive"),
+                previous_presence.get("repair_drive"),
+            ),
+            "arousal": _first_present(
+                governance.get("body_arousal"),
+                profile.get("arousal"),
+                previous_presence.get("arousal"),
+            ),
+            "pain_pressure": _first_present(
+                governance.get("body_pain_pressure"),
+                profile.get("pain_pressure"),
+                previous_presence.get("pain_pressure"),
+            ),
+            "responsibility_weight": _first_present(
+                governance.get("body_responsibility_weight"),
+                profile.get("responsibility_weight"),
+                previous_presence.get("responsibility_weight"),
+            ),
+            "body_ref_set": ref_set,
+            "body_evidence_refs": ref_set,
+            "ref_count": len(ref_set),
         }
     )
 

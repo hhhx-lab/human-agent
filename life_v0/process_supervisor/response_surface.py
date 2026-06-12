@@ -235,6 +235,32 @@ def compose_life_response(
                     f"{response}，后台心跳节律证据保留"
                     f"{len(cadence_refs)}条"
                 )
+        body_presence = resident_background_lineage_state.get("body_presence")
+        if isinstance(body_presence, dict):
+            body_posture = body_presence.get("body_waiting_posture")
+            body_fatigue = body_presence.get("fatigue_load")
+            body_sleep_pressure = body_presence.get("sleep_pressure")
+            body_energy = body_presence.get("energy_level")
+            body_repair_drive = body_presence.get("repair_drive")
+            body_arousal = body_presence.get("arousal")
+            body_refs = _dedupe_string_list(
+                _string_list(body_presence.get("body_evidence_refs"))
+                or _string_list(body_presence.get("body_ref_set"))
+            )
+            if body_posture:
+                response = f"{response}，后台身体等待姿态为{body_posture}"
+            if body_fatigue:
+                response = f"{response}，后台疲惫负载为{body_fatigue}"
+            if body_sleep_pressure:
+                response = f"{response}，后台睡眠压力为{body_sleep_pressure}"
+            if body_energy:
+                response = f"{response}，后台能量状态为{body_energy}"
+            if body_repair_drive:
+                response = f"{response}，后台身体修复驱力为{body_repair_drive}"
+            if body_arousal is not None:
+                response = f"{response}，后台核心唤醒度为{float(body_arousal):.2f}"
+            if body_refs:
+                response = f"{response}，后台身体证据保留{len(body_refs)}条"
         relationship_presence = resident_background_lineage_state.get(
             "relationship_presence"
         )

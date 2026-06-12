@@ -676,6 +676,8 @@ def bootstrap_resident_supervision(
         apology_repair_language_trace=apology_repair_language_trace,
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
         self_narrative_trace=self_narrative_trace,
         commitment_index=commitment_index,
         relationship_graph=relationship_graph,

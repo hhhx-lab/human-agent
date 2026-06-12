@@ -39,6 +39,10 @@ BIRTH_READINESS_STAGE_GATE_REF = "runtime/state/life_targets/birth_readiness_sta
 DREAM_EXPERIENCE_WINDOW_REF = "runtime/state/dream/dream_experience_window.json"
 WAKE_INTEGRATION_FRAME_REF = "runtime/state/dream/wake_integration_frame.json"
 DREAM_FACT_GATE_DECISION_REF = "runtime/state/dream/dream_fact_gate_decision.json"
+BODY_RHYTHM_PULSE_REF = "runtime/state/body/body_rhythm_pulse.json"
+NEED_STATE_VECTOR_REF = "runtime/state/body/need_state_vector.json"
+BODY_RESOURCE_BUDGET_REF = "runtime/state/body/body_resource_budget.json"
+CORE_AFFECT_VECTOR_REF = "runtime/state/body/core_affect_vector.json"
 IDLE_GOVERNANCE_FIELD_NAMES = (
     "heartbeat_interval_ms",
     "heartbeat_cadence_explanation",
@@ -62,6 +66,17 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "body_governance_flags",
     "body_rhythm_ref",
     "need_state_ref",
+    "body_resource_budget_ref",
+    "core_affect_vector_ref",
+    "body_ref_set",
+    "body_presence_profile",
+    "body_energy_level",
+    "body_fatigue_load",
+    "body_sleep_pressure",
+    "body_repair_drive",
+    "body_arousal",
+    "body_pain_pressure",
+    "body_responsibility_weight",
     "governance_attention_target",
     "governance_attention_reason",
     "governance_cadence_profile",
@@ -355,6 +370,8 @@ def decide_idle_strategy(
     apology_repair_language_trace: dict[str, Any] | None = None,
     body_rhythm_pulse: dict[str, Any] | None = None,
     need_state_vector: dict[str, Any] | None = None,
+    body_resource_budget: dict[str, Any] | None = None,
+    core_affect_vector: dict[str, Any] | None = None,
     replay_cue_bundle: dict[str, Any] | None,
     offline_consolidation_frame: dict[str, Any] | None,
     dream_experience_window: dict[str, Any] | None = None,
@@ -558,6 +575,15 @@ def decide_idle_strategy(
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
     )
+    body_presence_profile = _body_presence_profile(
+        body_waiting_posture=body_waiting_posture,
+        body_governance_flags=body_governance_flags,
+        body_rhythm_pulse=body_rhythm_pulse,
+        need_state_vector=need_state_vector,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
+    )
+    body_ref_set = _string_list(body_presence_profile.get("body_ref_set"))
     relationship_timeline_ref = _ref_if_present(
         payload=relationship_timeline,
         ref=RELATIONSHIP_TIMELINE_REF,
@@ -789,8 +815,7 @@ def decide_idle_strategy(
         governance_attention_target=governance_attention_target,
         governance_cadence_profile=governance_cadence_profile,
         body_refs=[
-            "runtime/state/body/body_rhythm_pulse.json" if body_rhythm_pulse else "",
-            "runtime/state/body/need_state_vector.json" if need_state_vector else "",
+            *body_ref_set,
         ],
         long_horizon_refs=long_horizon_refs,
         queue_e_refs=(
@@ -836,11 +861,22 @@ def decide_idle_strategy(
         ),
         "body_waiting_posture": body_waiting_posture,
         "body_governance_flags": body_governance_flags,
-        "body_rhythm_ref": (
-            "runtime/state/body/body_rhythm_pulse.json" if body_rhythm_pulse else None
+        "body_rhythm_ref": body_presence_profile.get("body_rhythm_ref"),
+        "need_state_ref": body_presence_profile.get("need_state_ref"),
+        "body_resource_budget_ref": body_presence_profile.get(
+            "body_resource_budget_ref"
         ),
-        "need_state_ref": (
-            "runtime/state/body/need_state_vector.json" if need_state_vector else None
+        "core_affect_vector_ref": body_presence_profile.get("core_affect_vector_ref"),
+        "body_ref_set": body_ref_set,
+        "body_presence_profile": body_presence_profile,
+        "body_energy_level": body_presence_profile.get("energy_level"),
+        "body_fatigue_load": body_presence_profile.get("fatigue_load"),
+        "body_sleep_pressure": body_presence_profile.get("sleep_pressure"),
+        "body_repair_drive": body_presence_profile.get("repair_drive"),
+        "body_arousal": body_presence_profile.get("arousal"),
+        "body_pain_pressure": body_presence_profile.get("pain_pressure"),
+        "body_responsibility_weight": body_presence_profile.get(
+            "responsibility_weight"
         ),
         "governance_attention_target": governance_attention_target,
         "governance_attention_reason": governance_attention_reason,
@@ -3011,6 +3047,93 @@ def _body_governance_flags(
     if "narrow" in cognitive_bandwidth:
         flags.append("cognitive_bandwidth_narrowed")
     return flags
+
+
+def _body_presence_profile(
+    *,
+    body_waiting_posture: str,
+    body_governance_flags: list[str],
+    body_rhythm_pulse: dict[str, Any] | None,
+    need_state_vector: dict[str, Any] | None,
+    body_resource_budget: dict[str, Any] | None,
+    core_affect_vector: dict[str, Any] | None,
+) -> dict[str, Any]:
+    body_rhythm_ref = _ref_if_present(
+        payload=body_rhythm_pulse,
+        ref=BODY_RHYTHM_PULSE_REF,
+    )
+    need_state_ref = _ref_if_present(
+        payload=need_state_vector,
+        ref=NEED_STATE_VECTOR_REF,
+    )
+    resource_budget_ref = _ref_if_present(
+        payload=body_resource_budget,
+        ref=BODY_RESOURCE_BUDGET_REF,
+    )
+    core_affect_ref = _ref_if_present(
+        payload=core_affect_vector,
+        ref=CORE_AFFECT_VECTOR_REF,
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(
+            [
+                body_rhythm_ref,
+                need_state_ref,
+                resource_budget_ref,
+                core_affect_ref,
+            ]
+        )
+    )
+    if not ref_set and not body_waiting_posture and not body_governance_flags:
+        return {}
+
+    maintenance_pressure = _dict_or_empty(
+        (body_resource_budget or {}).get("maintenance_pressure")
+    )
+    fatigue_state = _dict_or_empty((body_resource_budget or {}).get("fatigue_state"))
+    energy_state = _dict_or_empty((body_resource_budget or {}).get("energy_state"))
+    repair_drive = (
+        (core_affect_vector or {}).get("repair_drive")
+        or maintenance_pressure.get("repair_drive")
+        or (need_state_vector or {}).get("repair_drive")
+    )
+    fatigue_load = (
+        (body_rhythm_pulse or {}).get("fatigue_load")
+        or fatigue_state.get("level")
+    )
+    payload = {
+        "schema_version": "resident_body_presence_profile_v0",
+        "body_waiting_posture": body_waiting_posture,
+        "body_governance_flags": list(body_governance_flags),
+        "body_rhythm_ref": body_rhythm_ref,
+        "need_state_ref": need_state_ref,
+        "body_resource_budget_ref": resource_budget_ref,
+        "core_affect_vector_ref": core_affect_ref,
+        "rhythm_state": (body_rhythm_pulse or {}).get("rhythm_state"),
+        "fatigue_load": fatigue_load,
+        "allostatic_load": (body_rhythm_pulse or {}).get("allostatic_load"),
+        "resource_deficit": (need_state_vector or {}).get("resource_deficit"),
+        "repair_drive": repair_drive,
+        "social_readiness": (need_state_vector or {}).get("social_readiness"),
+        "cognitive_bandwidth": (need_state_vector or {}).get("cognitive_bandwidth"),
+        "sleep_pressure": (need_state_vector or {}).get("sleep_pressure"),
+        "energy_level": energy_state.get("level"),
+        "maintenance_status": maintenance_pressure.get("status"),
+        "valence": (core_affect_vector or {}).get("valence"),
+        "arousal": (core_affect_vector or {}).get("arousal"),
+        "dominance": (core_affect_vector or {}).get("dominance"),
+        "pain_pressure": (core_affect_vector or {}).get("pain_pressure"),
+        "relationship_tension": (core_affect_vector or {}).get(
+            "relationship_tension"
+        ),
+        "dream_residue_load": (core_affect_vector or {}).get("dream_residue_load"),
+        "responsibility_weight": (core_affect_vector or {}).get(
+            "responsibility_weight"
+        ),
+        "body_ref_set": ref_set,
+        "ref_count": len(ref_set),
+    }
+    return _drop_empty(payload)
 
 
 def _relaunch_caution_level(

@@ -21,6 +21,8 @@ def build_idle_continuity_frame(
     background_last_live_semantic_focus: str | None = None,
     live_language_presence_profile: dict[str, Any] | None = None,
     background_live_language_presence_profile: dict[str, Any] | None = None,
+    body_presence_profile: dict[str, Any] | None = None,
+    body_ref_set: list[str] | None = None,
     replay_cue_bundle_ref: str | None = None,
     offline_consolidation_frame_ref: str | None = None,
     dream_experience_window_ref: str | None = None,
@@ -163,6 +165,8 @@ def build_idle_continuity_frame(
         "background_live_language_presence_profile": dict(
             background_live_language_presence_profile or {}
         ),
+        "body_presence_profile": dict(body_presence_profile or {}),
+        "body_ref_set": list(body_ref_set or []),
         "replay_cue_bundle_ref": replay_cue_bundle_ref,
         "offline_consolidation_frame_ref": offline_consolidation_frame_ref,
         "dream_experience_window_ref": dream_experience_window_ref,
