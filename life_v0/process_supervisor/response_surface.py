@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from .dialogue_events import build_offline_learning_cumulative_payload
+from .handoff_profile import select_handoff_profile
 from .offline_learning_signals import derive_offline_learning_profile
 from .state_merge_signals import state_merge_long_term_change_profile
 from .trait_convergence_signals import cross_wake_trait_convergence_profile
@@ -383,6 +384,54 @@ def compose_life_response(
                 response = f"{response}，后台语言语义余波停在{live_semantic_focus}"
             if language_ref_count:
                 response = f"{response}，后台语言证据保留{language_ref_count}条"
+        previous_handoff_profile = select_handoff_profile(
+            terminal_life_loop_state,
+        )
+        if previous_handoff_profile:
+            handoff_carry_status = (terminal_life_loop_state or {}).get(
+                "previous_live_turn_waiting_handoff_carry_status"
+            )
+            handoff_next_action = previous_handoff_profile.get("next_required_action")
+            handoff_depth_band = previous_handoff_profile.get("lineage_depth_band")
+            handoff_semantic_focus = previous_handoff_profile.get(
+                "last_live_semantic_focus"
+            )
+            handoff_evidence_refs = _dedupe_string_list(
+                _string_list(previous_handoff_profile.get("handoff_evidence_refs"))
+            )
+            handoff_presence_keys = _dedupe_string_list(
+                _string_list(previous_handoff_profile.get("carried_presence_keys"))
+            )
+            if handoff_carry_status:
+                response = (
+                    f"{response}，上一真实回合交接仍在"
+                    f"{handoff_carry_status}中"
+                )
+            if handoff_next_action:
+                response = (
+                    f"{response}，上一真实回合交接要求"
+                    f"{handoff_next_action}"
+                )
+            if handoff_depth_band:
+                response = (
+                    f"{response}，上一真实回合交接驻留深度为"
+                    f"{handoff_depth_band}"
+                )
+            if handoff_semantic_focus:
+                response = (
+                    f"{response}，上一真实回合语义余波停在"
+                    f"{handoff_semantic_focus}"
+                )
+            if handoff_evidence_refs:
+                response = (
+                    f"{response}，上一真实回合交接证据保留"
+                    f"{len(handoff_evidence_refs)}条"
+                )
+            if handoff_presence_keys:
+                response = (
+                    f"{response}，上一真实回合承接presence包括"
+                    f"{'、'.join(handoff_presence_keys)}"
+                )
         state_merge_presence = resident_background_lineage_state.get(
             "state_merge_presence"
         )

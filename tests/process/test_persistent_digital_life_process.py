@@ -14692,6 +14692,7 @@ class PersistentDigitalLifeProcessTests(
     def test_response_surface_organ_carries_relation_shared_terms_and_commitment_pressure(self):
         from life_v0.process_supervisor.response_surface import compose_life_response
 
+        handoff_profile = self._handoff_profile_fixture()
         expected_identity_consciousness_birth_refs = [
             "runtime/state/consciousness/workspace_frame.json",
             "runtime/state/consciousness/broadcast_frame.json",
@@ -14886,6 +14887,12 @@ class PersistentDigitalLifeProcessTests(
                 "background_trait_convergence_history_focus": "trait_stability_hold",
                 "background_trait_convergence_unstable_names": ["continuity_drive"],
                 "background_trait_convergence_stable_names": ["repair_seriousness"],
+                "previous_live_turn_waiting_handoff_profile": handoff_profile,
+                "previous_live_turn_waiting_handoff_carry_status": "carried_into_waiting_heartbeat",
+                "previous_live_turn_waiting_handoff_profile_ref": (
+                    "runtime/state/terminal/terminal_life_loop_state.json"
+                    "#previous_live_turn_waiting_handoff_profile"
+                ),
                 "resident_background_lineage_state": {
                     "schema_version": "resident_background_lineage_state_v0",
                     "governance_phase": "waiting_heartbeat_active",
@@ -15048,6 +15055,18 @@ class PersistentDigitalLifeProcessTests(
         self.assertIn("跨唤醒人格收敛压力为stability_hold", response)
         self.assertIn("跨唤醒人格收敛证据保留5条", response)
         self.assertIn("后台语言关注指向relationship_timeline", response)
+        self.assertIn("上一真实回合交接仍在carried_into_waiting_heartbeat中", response)
+        self.assertIn(
+            "上一真实回合交接要求refresh_waiting_heartbeat_before_next_external_turn",
+            response,
+        )
+        self.assertIn("上一真实回合交接驻留深度为deep_persistent_lineage", response)
+        self.assertIn("上一真实回合语义余波停在repair_commitment_shared_language", response)
+        self.assertIn("上一真实回合交接证据保留4条", response)
+        self.assertIn(
+            "上一真实回合承接presence包括language_presence、identity_consciousness_birth_presence、birth_repair_presence",
+            response,
+        )
         self.assertIn("后台意识姿态为consciousness_reportable_waiting", response)
         self.assertIn("后台意识可报告性保留3条", response)
         self.assertIn("后台出生准备姿态为birth_open_waiting", response)

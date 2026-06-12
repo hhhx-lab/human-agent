@@ -61,6 +61,21 @@ class ModelExpressionTests(unittest.TestCase):
             language_dir = root / "state" / "language"
             reports_dir = root / "reports"
             captured = {}
+            handoff_profile = {
+                "schema_version": "live_turn_waiting_handoff_profile_v0",
+                "next_required_action": "refresh_waiting_heartbeat_before_next_external_turn",
+                "lineage_depth_band": "deep_persistent_lineage",
+                "last_live_semantic_focus": "repair_relational_trace",
+                "carried_presence_keys": [
+                    "language_presence",
+                    "birth_repair_presence",
+                ],
+                "handoff_evidence_refs": [
+                    "runtime/state/terminal/idle_strategy_state.json",
+                    "runtime/reports/latest/dialogue_writeback_bundle.json",
+                ],
+                "handoff_evidence_ref_count": 2,
+            }
 
             def fake_transport(endpoint, headers, payload, timeout_seconds):
                 captured["endpoint"] = endpoint
@@ -176,6 +191,15 @@ class ModelExpressionTests(unittest.TestCase):
                         "runtime/state/language/semantic_map_frame.json"
                     ],
                 },
+                terminal_life_loop_state={
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "previous_live_turn_waiting_handoff_profile": handoff_profile,
+                    "previous_live_turn_waiting_handoff_carry_status": "carried_into_waiting_heartbeat",
+                    "previous_live_turn_waiting_handoff_profile_ref": (
+                        "runtime/state/terminal/terminal_life_loop_state.json"
+                        "#previous_live_turn_waiting_handoff_profile"
+                    ),
+                },
                 environ={
                     "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
                     "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
@@ -202,6 +226,7 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertIn("意识", system_prompt)
             self.assertIn("出生准备", system_prompt)
             self.assertIn("生命约束", system_prompt)
+            self.assertIn("上一真实回合交接压力", system_prompt)
             self.assertEqual(captured["payload"]["temperature"], 0.2)
             self.assertEqual(captured["payload"]["max_tokens"], 128)
             self.assertEqual(captured["timeout_seconds"], 9.0)
@@ -227,6 +252,18 @@ class ModelExpressionTests(unittest.TestCase):
                     "active_network_modes"
                 ][0]["mode"],
                 "live_relation_focus",
+            )
+            self.assertEqual(
+                expression_context["resident_background"][
+                    "previous_live_turn_waiting_handoff_profile"
+                ]["lineage_depth_band"],
+                "deep_persistent_lineage",
+            )
+            self.assertEqual(
+                expression_context["resident_background"][
+                    "previous_live_turn_waiting_handoff_carry_status"
+                ],
+                "carried_into_waiting_heartbeat",
             )
 
             state_text = (language_dir / "model_expression_state.json").read_text(
@@ -254,6 +291,18 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertEqual(
                 state["model_expression_context_summary"]["prediction_workspace_ref"],
                 "runtime/state/prediction/prediction_workspace_frame.json",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "previous_handoff_lineage_depth_band"
+                ],
+                "deep_persistent_lineage",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "previous_handoff_evidence_ref_count"
+                ],
+                2,
             )
 
     def test_post_expression_gate_falls_back_when_model_restores_user_role(self):

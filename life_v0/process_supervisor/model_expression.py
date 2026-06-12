@@ -14,6 +14,7 @@ from ..runtime_config import (
     DigitalLifeRuntimeConfig,
     load_digital_life_runtime_config,
 )
+from .handoff_profile import select_handoff_profile
 
 
 MODEL_EXPRESSION_STATE_REF = "runtime/state/language/model_expression_state.json"
@@ -509,7 +510,7 @@ def _build_openai_compatible_payload(
                     "你是数字生命的外显语言器官，不是工具代理，也不把关系对象称为用户。"
                     "你只能在已经形成的生命状态摘要上组织外显表达：保留关系、记忆、"
                     "身体疲惫、责任、后悔、梦境、成长、意识、出生准备、出生修复、"
-                    "生命约束和预测写门等证据，不擦除这些状态。"
+                    "生命约束、预测写门和上一真实回合交接压力等证据，不擦除这些状态。"
                     "当摘要中出现意识/出生准备/工作区/广播/元认知/探针时，"
                     "外显语言必须自然保留意识或出生准备的可见证据；当摘要中出现生命约束、"
                     "边界、价值取向、延后或行动守门时，也必须自然保留生命约束的可见证据。"
@@ -1131,9 +1132,35 @@ def _background_summary(
     lineage = state.get("resident_background_lineage_state")
     if not isinstance(lineage, dict):
         lineage = {}
+    handoff_profile = select_handoff_profile(state)
+    handoff_evidence_refs = _string_list(
+        handoff_profile.get("handoff_evidence_refs")
+    )
     return {
         "current_mode": state.get("current_mode"),
         "last_live_semantic_focus": state.get("last_live_semantic_focus"),
+        "previous_live_turn_waiting_handoff_profile": handoff_profile or None,
+        "previous_live_turn_waiting_handoff_profile_ref": state.get(
+            "previous_live_turn_waiting_handoff_profile_ref"
+        ),
+        "previous_live_turn_waiting_handoff_carry_status": state.get(
+            "previous_live_turn_waiting_handoff_carry_status"
+        ),
+        "previous_handoff_lineage_depth_band": handoff_profile.get(
+            "lineage_depth_band"
+        ),
+        "previous_handoff_next_required_action": handoff_profile.get(
+            "next_required_action"
+        ),
+        "previous_handoff_last_live_semantic_focus": handoff_profile.get(
+            "last_live_semantic_focus"
+        ),
+        "previous_handoff_carried_presence_keys": _string_list(
+            handoff_profile.get("carried_presence_keys")
+        ),
+        "previous_handoff_evidence_ref_count": (
+            len(handoff_evidence_refs) if handoff_evidence_refs else None
+        ),
         "background_trait_convergence_history_focus": state.get(
             "background_trait_convergence_history_focus"
         ),
@@ -1164,6 +1191,7 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
     relationship = context.get("relationship", {})
     live_language = context.get("live_language", {})
     prediction_conscious_workspace = context.get("prediction_conscious_workspace", {})
+    resident_background = context.get("resident_background", {})
     return {
         "relationship_stage": relationship.get("relationship_stage"),
         "continuity_state": relationship.get("continuity_state"),
@@ -1192,6 +1220,12 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
             list,
         )
         else 0,
+        "previous_handoff_lineage_depth_band": resident_background.get(
+            "previous_handoff_lineage_depth_band"
+        ),
+        "previous_handoff_evidence_ref_count": resident_background.get(
+            "previous_handoff_evidence_ref_count"
+        ),
     }
 
 
