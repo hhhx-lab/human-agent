@@ -519,6 +519,12 @@ def read_resident_lifecycle_status(
         state["resident_autonomous_activity_current_cycle"] = autonomous_activity_state.get(
             "current_cycle"
         )
+        state["resident_autonomous_activity_cycle_phase_index"] = (
+            autonomous_activity_state.get("cycle_phase_index")
+        )
+        state["resident_autonomous_activity_cycle_phase_count"] = (
+            autonomous_activity_state.get("cycle_phase_count")
+        )
         state["resident_autonomous_activity_cycle_completion_count"] = (
             autonomous_activity_state.get("cycle_completion_count")
         )

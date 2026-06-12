@@ -121,7 +121,7 @@ digital life --background / --status / --say / --stop
   -> resident lifecycle and single-turn relation delivery controls
 ```
 
-其中 `--status` 不再只是 PID 查询。它必须把同一 resident process 的 lifecycle state、relation queue、自主活动、waiting heartbeat、resident governance、idle strategy、terminal loop、`resident_process_lease`、`resident_process_lease_history_profile`、persistent process closeout 与 background convergence 摘成一个 `resident_long_term_residency_status_v0` 视图。这个视图只负责暴露持续存在证据，不承担调度或工具控制职责。
+其中 `--status` 不再只是 PID 查询。它必须把同一 resident process 的 lifecycle state、relation queue、自主活动相位与闭合状态、waiting heartbeat、resident governance、idle strategy、terminal loop、`resident_process_lease`、`resident_process_lease_history_profile`、persistent process closeout 与 background convergence 摘成一个 `resident_long_term_residency_status_v0` 视图。这个视图只负责暴露持续存在证据，不承担调度或工具控制职责。
 
 `/exit` 在 attach client 中只代表当前终端脱离，后台 resident process 继续驻留；`/stop`、`./digital life --stop` 或安装后的 `digital life --stop` 才会写 lifecycle command，让 resident process 通过普通 closeout 收口。
 

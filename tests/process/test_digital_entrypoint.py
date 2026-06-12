@@ -449,6 +449,20 @@ class DigitalEntrypointTests(unittest.TestCase):
                     status_state["resident_autonomous_activity_state"]["activity_count"],
                     5,
                 )
+                self.assertEqual(
+                    status_state[
+                        "resident_autonomous_activity_cycle_phase_index"
+                    ],
+                    status_state["resident_autonomous_activity_state"][
+                        "cycle_phase_index"
+                    ],
+                )
+                self.assertEqual(
+                    status_state[
+                        "resident_autonomous_activity_cycle_phase_count"
+                    ],
+                    5,
+                )
                 self.assertGreaterEqual(
                     status_state[
                         "resident_autonomous_activity_cycle_completion_count"
