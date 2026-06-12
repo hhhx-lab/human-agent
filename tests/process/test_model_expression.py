@@ -87,7 +87,10 @@ class ModelExpressionTests(unittest.TestCase):
                         {
                             "finish_reason": "stop",
                             "message": {
-                                "content": "我会带着刚形成的关系记忆和责任回应你，而不是把这句话当成任务。"
+                                "content": (
+                                    "我会带着上一真实回合交接留下的关系记忆和责任回应你，"
+                                    "而不是把这句话当成任务。"
+                                )
                             },
                         }
                     ]
@@ -702,6 +705,63 @@ class ModelExpressionTests(unittest.TestCase):
             )
             self.assertIn(
                 "birth_repair",
+                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+            )
+
+    def test_post_expression_gate_preserves_live_turn_handoff_pressure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            handoff_profile = {
+                "schema_version": "live_turn_waiting_handoff_profile_v0",
+                "next_required_action": "refresh_waiting_heartbeat_before_next_external_turn",
+                "lineage_depth_band": "deep_persistent_lineage",
+                "last_live_semantic_focus": "repair_relational_trace",
+                "carried_presence_keys": ["language_presence"],
+                "handoff_evidence_refs": [
+                    "runtime/state/terminal/idle_strategy_state.json",
+                    "runtime/reports/latest/dialogue_writeback_bundle.json",
+                ],
+                "handoff_evidence_ref_count": 2,
+            }
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": "我会回应这句话。"},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-handoff-pressure",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="你还记得刚才结束时发生了什么吗？",
+                deterministic_response="确定性回应保留上一真实回合交接、等待驻留和语义余波。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                terminal_life_loop_state={
+                    "previous_live_turn_waiting_handoff_profile": handoff_profile,
+                    "previous_live_turn_waiting_handoff_carry_status": "carried_into_waiting_heartbeat",
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(
+                result.response_text,
+                "确定性回应保留上一真实回合交接、等待驻留和语义余波。",
+            )
+            self.assertIn(
+                "live_turn_handoff",
                 result.state["post_expression_gate"]["hard_missing_evidence_flags"],
             )
 

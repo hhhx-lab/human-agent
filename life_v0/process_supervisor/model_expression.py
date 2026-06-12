@@ -147,6 +147,17 @@ EVIDENCE_FLAG_TERMS = {
         "语言",
         "责任",
     ],
+    "live_turn_handoff": [
+        "上一真实回合",
+        "真实回合",
+        "交接",
+        "等待",
+        "驻留",
+        "语义余波",
+        "承接",
+        "presence",
+        "证据",
+    ],
     "prediction_attention": [
         "判断",
         "预测",
@@ -167,6 +178,7 @@ HARD_EVIDENCE_FLAGS = {
     "identity_consciousness_birth",
     "birth_repair",
     "life_constraint",
+    "live_turn_handoff",
 }
 
 ModelExpressionTransport = Callable[
@@ -1023,9 +1035,24 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
         flags.append("birth_repair")
     if resident_background.get("life_constraint_presence"):
         flags.append("life_constraint")
+    if _live_turn_handoff_pressure_present(resident_background):
+        flags.append("live_turn_handoff")
     if _prediction_attention_pressure_present(prediction_workspace, live_language):
         flags.append("prediction_attention")
     return flags
+
+
+def _live_turn_handoff_pressure_present(resident_background: Any) -> bool:
+    if not isinstance(resident_background, dict):
+        return False
+    return bool(
+        resident_background.get("previous_live_turn_waiting_handoff_profile")
+        or resident_background.get("previous_live_turn_waiting_handoff_carry_status")
+        or resident_background.get("previous_handoff_lineage_depth_band")
+        or resident_background.get("previous_handoff_next_required_action")
+        or resident_background.get("previous_handoff_last_live_semantic_focus")
+        or resident_background.get("previous_handoff_evidence_ref_count")
+    )
 
 
 def _responsibility_repair_pressure_present(
