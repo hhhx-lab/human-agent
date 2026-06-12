@@ -494,6 +494,23 @@ def _heartbeat_cadence_presence(governance: dict[str, Any]) -> dict[str, Any]:
         or governance.get("background_heartbeat_cadence_explanation")
         or previous_presence.get("heartbeat_cadence_explanation")
     )
+    priority_stack = _dict_or_empty(
+        governance.get("heartbeat_priority_stack_profile")
+        or governance.get("background_heartbeat_priority_stack_profile")
+        or previous_presence.get("heartbeat_priority_stack_profile")
+    )
+    priority_stack_candidates = _dedupe_string_list(
+        _string_list(governance.get("heartbeat_priority_stack_candidates"))
+        + _string_list(governance.get("background_heartbeat_priority_stack_candidates"))
+        + _string_list(priority_stack.get("candidate_drivers"))
+        + _string_list(previous_presence.get("heartbeat_priority_stack_candidates"))
+    )
+    priority_stack_evidence_refs = _dedupe_string_list(
+        _string_list(governance.get("heartbeat_priority_stack_evidence_refs"))
+        + _string_list(governance.get("background_heartbeat_priority_stack_evidence_refs"))
+        + _string_list(priority_stack.get("evidence_refs"))
+        + _string_list(previous_presence.get("heartbeat_priority_stack_evidence_refs"))
+    )
     driver = _first_present(
         governance.get("heartbeat_cadence_driver"),
         governance.get("background_heartbeat_cadence_driver"),
@@ -527,6 +544,7 @@ def _heartbeat_cadence_presence(governance: dict[str, Any]) -> dict[str, Any]:
         + _string_list(governance.get("background_heartbeat_cadence_evidence_refs"))
         + _string_list(explanation.get("evidence_refs"))
         + _string_list(previous_presence.get("evidence_refs"))
+        + priority_stack_evidence_refs
     )
     if not any(
         [
@@ -537,6 +555,9 @@ def _heartbeat_cadence_presence(governance: dict[str, Any]) -> dict[str, Any]:
             evidence_refs,
             heartbeat_interval_ms,
             next_idle_action,
+            priority_stack,
+            priority_stack_candidates,
+            priority_stack_evidence_refs,
             previous_presence,
         ]
     ):
@@ -554,6 +575,15 @@ def _heartbeat_cadence_presence(governance: dict[str, Any]) -> dict[str, Any]:
                 else None
             ),
             "next_idle_action": next_idle_action,
+            "heartbeat_priority_stack_profile": priority_stack,
+            "heartbeat_priority_stack_winner": _first_present(
+                governance.get("heartbeat_priority_stack_winner"),
+                governance.get("background_heartbeat_priority_stack_winner"),
+                priority_stack.get("winning_driver"),
+                previous_presence.get("heartbeat_priority_stack_winner"),
+            ),
+            "heartbeat_priority_stack_candidates": priority_stack_candidates,
+            "heartbeat_priority_stack_evidence_refs": priority_stack_evidence_refs,
             "evidence_ref_count": len(evidence_refs),
         }
     )

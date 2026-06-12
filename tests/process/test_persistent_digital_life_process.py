@@ -1823,6 +1823,26 @@ class PersistentDigitalLifeProcessTests(
             idle_strategy["heartbeat_cadence_evidence_refs"],
         )
         self.assertEqual(
+            idle_strategy["heartbeat_priority_stack_profile"]["schema_version"],
+            "heartbeat_priority_stack_profile_v0",
+        )
+        self.assertEqual(
+            idle_strategy["heartbeat_priority_stack_winner"],
+            "body_recovery_bandwidth_guard",
+        )
+        self.assertIn(
+            "offline_consolidation_pressure",
+            idle_strategy["heartbeat_priority_stack_candidates"],
+        )
+        self.assertIn(
+            "runtime/state/body/body_rhythm_pulse.json",
+            idle_strategy["heartbeat_priority_stack_evidence_refs"],
+        )
+        self.assertIn(
+            "runtime/state/dream/offline_consolidation_frame.json",
+            idle_strategy["heartbeat_priority_stack_evidence_refs"],
+        )
+        self.assertEqual(
             idle_strategy["body_rhythm_ref"],
             "runtime/state/body/body_rhythm_pulse.json",
         )
@@ -4593,6 +4613,11 @@ class PersistentDigitalLifeProcessTests(
                             "offline_learning:elevated",
                             "background_generation:3",
                         ],
+                        "heartbeat_priority_stack_winner": "offline_learning_pressure",
+                        "heartbeat_priority_stack_candidates": [
+                            "offline_learning_pressure",
+                            "baseline_resident_presence",
+                        ],
                         "evidence_refs": [
                             "runtime/state/growth/relationship_learning_plan.json",
                             "runtime/state/growth/language_learning_plan.json",
@@ -5534,6 +5559,21 @@ class PersistentDigitalLifeProcessTests(
                             "evidence_refs": expected_refs,
                             "heartbeat_interval_ms": 58,
                             "next_idle_action": "refresh_waiting_heartbeat_with_offline_learning_hold",
+                            "heartbeat_priority_stack_profile": {
+                                "schema_version": "heartbeat_priority_stack_profile_v0",
+                                "winning_driver": "offline_learning_pressure",
+                                "candidate_drivers": [
+                                    "offline_learning_pressure",
+                                    "baseline_resident_presence",
+                                ],
+                                "evidence_refs": expected_refs,
+                            },
+                            "heartbeat_priority_stack_winner": "offline_learning_pressure",
+                            "heartbeat_priority_stack_candidates": [
+                                "offline_learning_pressure",
+                                "baseline_resident_presence",
+                            ],
+                            "heartbeat_priority_stack_evidence_refs": expected_refs,
                         },
                     },
                 },
@@ -5566,6 +5606,18 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(
                 profile["background_heartbeat_cadence_explanation"]["driver"],
                 "offline_learning_pressure",
+            )
+            self.assertEqual(
+                profile["background_heartbeat_priority_stack_winner"],
+                "offline_learning_pressure",
+            )
+            self.assertEqual(
+                profile["background_heartbeat_priority_stack_candidates"],
+                ["offline_learning_pressure", "baseline_resident_presence"],
+            )
+            self.assertEqual(
+                profile["background_heartbeat_priority_stack_evidence_refs"],
+                expected_refs,
             )
             self.assertEqual(
                 profile["background_heartbeat_cadence_explanation"][
@@ -11581,6 +11633,52 @@ class PersistentDigitalLifeProcessTests(
                         "runtime/state/growth/relationship_learning_plan.json",
                         "runtime/state/growth/language_learning_plan.json",
                     ],
+                    "heartbeat_priority_stack_profile": {
+                        "schema_version": "heartbeat_priority_stack_profile_v0",
+                        "heartbeat_interval_ms": 90,
+                        "next_idle_action": "refresh_waiting_heartbeat_or_accept_external_turn",
+                        "winning_driver": "offline_learning_pressure",
+                        "winning_rank": 90,
+                        "cadence_driver": "offline_learning_pressure",
+                        "candidate_drivers": [
+                            "offline_learning_pressure",
+                            "baseline_resident_presence",
+                        ],
+                        "candidate_count": 2,
+                        "candidates": [
+                            {
+                                "rank": 90,
+                                "driver": "offline_learning_pressure",
+                                "state": "elevated",
+                                "reason": "dream_growth_or_relationship_learning_requires_refresh",
+                                "evidence_refs": [
+                                    "runtime/state/growth/relationship_learning_plan.json",
+                                    "runtime/state/growth/language_learning_plan.json",
+                                ],
+                            },
+                            {
+                                "rank": 999,
+                                "driver": "baseline_resident_presence",
+                                "state": "baseline",
+                                "reason": "standard_waiting_pulse_remains_available_for_relation_turn",
+                                "evidence_refs": [],
+                            },
+                        ],
+                        "evidence_ref_count": 2,
+                        "evidence_refs": [
+                            "runtime/state/growth/relationship_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                        ],
+                    },
+                    "heartbeat_priority_stack_winner": "offline_learning_pressure",
+                    "heartbeat_priority_stack_candidates": [
+                        "offline_learning_pressure",
+                        "baseline_resident_presence",
+                    ],
+                    "heartbeat_priority_stack_evidence_refs": [
+                        "runtime/state/growth/relationship_learning_plan.json",
+                        "runtime/state/growth/language_learning_plan.json",
+                    ],
                     "prediction_write_gate_refs": [
                         "runtime/state/signal/signal_media_runtime.json",
                         "runtime/state/prediction/belief_state_frame.json",
@@ -12082,6 +12180,14 @@ class PersistentDigitalLifeProcessTests(
             self.assertIn(
                 "offline_learning:elevated",
                 process_digest["heartbeat_cadence_modulators"],
+            )
+            self.assertEqual(
+                process_digest["heartbeat_priority_stack_winner"],
+                "offline_learning_pressure",
+            )
+            self.assertIn(
+                "offline_learning_pressure",
+                process_digest["heartbeat_priority_stack_candidates"],
             )
             self.assertEqual(process_digest["resident_process_lease_ref"], expected_resident_process_lease_ref)
             self.assertEqual(
@@ -14153,6 +14259,21 @@ class PersistentDigitalLifeProcessTests(
                     "background_generation:3",
                 ],
                 "heartbeat_cadence_evidence_refs": expected_refs,
+                "heartbeat_priority_stack_profile": {
+                    "schema_version": "heartbeat_priority_stack_profile_v0",
+                    "winning_driver": "offline_learning_pressure",
+                    "candidate_drivers": [
+                        "offline_learning_pressure",
+                        "baseline_resident_presence",
+                    ],
+                    "evidence_refs": expected_refs,
+                },
+                "heartbeat_priority_stack_winner": "offline_learning_pressure",
+                "heartbeat_priority_stack_candidates": [
+                    "offline_learning_pressure",
+                    "baseline_resident_presence",
+                ],
+                "heartbeat_priority_stack_evidence_refs": expected_refs,
             },
             governance_phase="waiting_heartbeat_active",
             status="active",
@@ -14174,6 +14295,18 @@ class PersistentDigitalLifeProcessTests(
         )
         self.assertEqual(cadence_presence["evidence_refs"], expected_refs)
         self.assertEqual(cadence_presence["evidence_ref_count"], 2)
+        self.assertEqual(
+            cadence_presence["heartbeat_priority_stack_winner"],
+            "offline_learning_pressure",
+        )
+        self.assertEqual(
+            cadence_presence["heartbeat_priority_stack_candidates"],
+            ["offline_learning_pressure", "baseline_resident_presence"],
+        )
+        self.assertEqual(
+            cadence_presence["heartbeat_priority_stack_evidence_refs"],
+            expected_refs,
+        )
 
     def test_response_surface_reads_heartbeat_cadence_from_background_lineage_presence(self):
         from life_v0.process_supervisor.response_surface import compose_life_response
@@ -14190,6 +14323,11 @@ class PersistentDigitalLifeProcessTests(
                         "modulators": [
                             "offline_learning:elevated",
                             "background_generation:3",
+                        ],
+                        "heartbeat_priority_stack_winner": "offline_learning_pressure",
+                        "heartbeat_priority_stack_candidates": [
+                            "offline_learning_pressure",
+                            "baseline_resident_presence",
                         ],
                         "evidence_refs": [
                             "runtime/state/growth/relationship_learning_plan.json",
@@ -14209,6 +14347,11 @@ class PersistentDigitalLifeProcessTests(
             "后台心跳节律调制因子包括offline_learning:elevated、background_generation:3",
             response,
         )
+        self.assertIn(
+            "后台心跳优先级胜出为offline_learning_pressure",
+            response,
+        )
+        self.assertIn("后台心跳候选压力共有2个", response)
         self.assertIn("后台心跳节律证据保留2条", response)
 
     def test_body_presence_enters_background_lineage_turn_payload_and_response(self):

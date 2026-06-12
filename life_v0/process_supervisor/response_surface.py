@@ -219,6 +219,16 @@ def compose_life_response(
             cadence_modulators = _dedupe_string_list(
                 _string_list(heartbeat_cadence_presence.get("modulators"))
             )
+            priority_stack_winner = heartbeat_cadence_presence.get(
+                "heartbeat_priority_stack_winner"
+            )
+            priority_stack_candidates = _dedupe_string_list(
+                _string_list(
+                    heartbeat_cadence_presence.get(
+                        "heartbeat_priority_stack_candidates"
+                    )
+                )
+            )
             cadence_refs = _dedupe_string_list(
                 _string_list(heartbeat_cadence_presence.get("evidence_refs"))
             )
@@ -230,6 +240,16 @@ def compose_life_response(
                 response = (
                     f"{response}，后台心跳节律调制因子包括"
                     f"{'、'.join(cadence_modulators)}"
+                )
+            if priority_stack_winner:
+                response = (
+                    f"{response}，后台心跳优先级胜出为"
+                    f"{priority_stack_winner}"
+                )
+            if priority_stack_candidates:
+                response = (
+                    f"{response}，后台心跳候选压力共有"
+                    f"{len(priority_stack_candidates)}个"
                 )
             if cadence_refs:
                 response = (

@@ -420,11 +420,19 @@ def write_waiting_heartbeat(
         "heartbeat_cadence_reason",
         "heartbeat_cadence_modulators",
         "heartbeat_cadence_evidence_refs",
+        "heartbeat_priority_stack_profile",
+        "heartbeat_priority_stack_winner",
+        "heartbeat_priority_stack_candidates",
+        "heartbeat_priority_stack_evidence_refs",
         "background_heartbeat_cadence_explanation",
         "background_heartbeat_cadence_driver",
         "background_heartbeat_cadence_reason",
         "background_heartbeat_cadence_modulators",
         "background_heartbeat_cadence_evidence_refs",
+        "background_heartbeat_priority_stack_profile",
+        "background_heartbeat_priority_stack_winner",
+        "background_heartbeat_priority_stack_candidates",
+        "background_heartbeat_priority_stack_evidence_refs",
         "long_horizon_language_refs",
         "live_language_turn_refs",
         "last_live_semantic_focus",
@@ -874,6 +882,18 @@ def _append_idle_heartbeat_trace(
         ),
         "heartbeat_cadence_evidence_refs": list(
             idle_strategy.get("heartbeat_cadence_evidence_refs", [])
+        ),
+        "heartbeat_priority_stack_profile": idle_strategy.get(
+            "heartbeat_priority_stack_profile"
+        ),
+        "heartbeat_priority_stack_winner": idle_strategy.get(
+            "heartbeat_priority_stack_winner"
+        ),
+        "heartbeat_priority_stack_candidates": list(
+            idle_strategy.get("heartbeat_priority_stack_candidates", [])
+        ),
+        "heartbeat_priority_stack_evidence_refs": list(
+            idle_strategy.get("heartbeat_priority_stack_evidence_refs", [])
         ),
         "background_heartbeat_cadence_explanation": idle_strategy.get(
             "background_heartbeat_cadence_explanation"

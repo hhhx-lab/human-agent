@@ -1043,6 +1043,15 @@ def write_process_report_bundle(
         "heartbeat_cadence_modulators": list(
             idle_governance.get("heartbeat_cadence_modulators", [])
         ),
+        "heartbeat_priority_stack_winner": idle_governance.get(
+            "heartbeat_priority_stack_winner"
+        ),
+        "heartbeat_priority_stack_candidates": list(
+            idle_governance.get("heartbeat_priority_stack_candidates", [])
+        ),
+        "heartbeat_priority_stack_evidence_refs": list(
+            idle_governance.get("heartbeat_priority_stack_evidence_refs", [])
+        ),
         "background_heartbeat_cadence_driver": idle_governance.get(
             "background_heartbeat_cadence_driver"
         ),

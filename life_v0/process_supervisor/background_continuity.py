@@ -295,6 +295,52 @@ def load_background_continuity_profile(
         )
         + _list_or_empty(heartbeat_cadence_explanation.get("evidence_refs"))
     )
+    heartbeat_priority_stack_profile = _first_dict(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "heartbeat_priority_stack_profile",
+            "background_heartbeat_priority_stack_profile",
+        ),
+    )
+    heartbeat_priority_stack_winner = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "heartbeat_priority_stack_winner",
+            "background_heartbeat_priority_stack_winner",
+        ),
+    )
+    heartbeat_priority_stack_candidates = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "heartbeat_priority_stack_candidates",
+                "background_heartbeat_priority_stack_candidates",
+            ),
+        )
+        + _list_or_empty(heartbeat_priority_stack_profile.get("candidate_drivers"))
+    )
+    heartbeat_priority_stack_evidence_refs = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "heartbeat_priority_stack_evidence_refs",
+                "background_heartbeat_priority_stack_evidence_refs",
+            ),
+        )
+        + _list_or_empty(heartbeat_priority_stack_profile.get("evidence_refs"))
+    )
     trait_slow_variable_summary = _dict_or_empty(
         resident_governance_state.get("background_trait_slow_variable_summary")
         or background_convergence_summary.get("background_trait_slow_variable_summary")
@@ -352,6 +398,41 @@ def load_background_continuity_profile(
         + _list_or_empty(
             resident_background_heartbeat_cadence_presence.get("evidence_refs")
         )
+    )
+    presence_priority_stack_profile = _dict_or_empty(
+        resident_background_heartbeat_cadence_presence.get(
+            "heartbeat_priority_stack_profile"
+        )
+    )
+    if not heartbeat_priority_stack_profile and presence_priority_stack_profile:
+        heartbeat_priority_stack_profile = presence_priority_stack_profile
+    if not heartbeat_priority_stack_winner:
+        heartbeat_priority_stack_winner = (
+            resident_background_heartbeat_cadence_presence.get(
+                "heartbeat_priority_stack_winner"
+            )
+            or heartbeat_priority_stack_profile.get("winning_driver")
+        )
+    heartbeat_priority_stack_candidates = _dedupe_list(
+        heartbeat_priority_stack_candidates
+        + _list_or_empty(
+            resident_background_heartbeat_cadence_presence.get(
+                "heartbeat_priority_stack_candidates"
+            )
+        )
+        + _list_or_empty(heartbeat_priority_stack_profile.get("candidate_drivers"))
+    )
+    heartbeat_priority_stack_evidence_refs = _dedupe_list(
+        heartbeat_priority_stack_evidence_refs
+        + _list_or_empty(
+            resident_background_heartbeat_cadence_presence.get(
+                "heartbeat_priority_stack_evidence_refs"
+            )
+        )
+        + _list_or_empty(heartbeat_priority_stack_profile.get("evidence_refs"))
+    )
+    heartbeat_cadence_evidence_refs = _dedupe_list(
+        heartbeat_cadence_evidence_refs + heartbeat_priority_stack_evidence_refs
     )
     if not heartbeat_cadence_explanation and (
         heartbeat_cadence_driver
@@ -1592,6 +1673,8 @@ def load_background_continuity_profile(
         ref_set = _dedupe_list(ref_set + body_ref_set)
     if heartbeat_cadence_evidence_refs:
         ref_set = _dedupe_list(ref_set + heartbeat_cadence_evidence_refs)
+    if heartbeat_priority_stack_evidence_refs:
+        ref_set = _dedupe_list(ref_set + heartbeat_priority_stack_evidence_refs)
     if previous_handoff_carry_fields:
         ref_set = _dedupe_list(
             ref_set
@@ -1661,6 +1744,22 @@ def load_background_continuity_profile(
     if heartbeat_cadence_evidence_refs:
         profile["background_heartbeat_cadence_evidence_refs"] = (
             heartbeat_cadence_evidence_refs
+        )
+    if heartbeat_priority_stack_profile:
+        profile["background_heartbeat_priority_stack_profile"] = (
+            heartbeat_priority_stack_profile
+        )
+    if heartbeat_priority_stack_winner:
+        profile["background_heartbeat_priority_stack_winner"] = str(
+            heartbeat_priority_stack_winner
+        )
+    if heartbeat_priority_stack_candidates:
+        profile["background_heartbeat_priority_stack_candidates"] = (
+            heartbeat_priority_stack_candidates
+        )
+    if heartbeat_priority_stack_evidence_refs:
+        profile["background_heartbeat_priority_stack_evidence_refs"] = (
+            heartbeat_priority_stack_evidence_refs
         )
     if previous_handoff_carry_fields:
         profile.update(previous_handoff_carry_fields)

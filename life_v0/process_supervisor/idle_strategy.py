@@ -51,11 +51,19 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "heartbeat_cadence_reason",
     "heartbeat_cadence_modulators",
     "heartbeat_cadence_evidence_refs",
+    "heartbeat_priority_stack_profile",
+    "heartbeat_priority_stack_winner",
+    "heartbeat_priority_stack_candidates",
+    "heartbeat_priority_stack_evidence_refs",
     "background_heartbeat_cadence_explanation",
     "background_heartbeat_cadence_driver",
     "background_heartbeat_cadence_reason",
     "background_heartbeat_cadence_modulators",
     "background_heartbeat_cadence_evidence_refs",
+    "background_heartbeat_priority_stack_profile",
+    "background_heartbeat_priority_stack_winner",
+    "background_heartbeat_priority_stack_candidates",
+    "background_heartbeat_priority_stack_evidence_refs",
     "idle_heartbeat_trace_ref",
     "idle_heartbeat_trace_count",
     "idle_probe_mode",
@@ -854,6 +862,61 @@ def decide_idle_strategy(
             "evidence_refs", []
         ),
     )
+    heartbeat_priority_stack_profile = _heartbeat_priority_stack_profile(
+        heartbeat_interval_ms=heartbeat_interval_ms,
+        next_idle_action=next_idle_action,
+        heartbeat_cadence_driver=heartbeat_cadence_explanation["driver"],
+        body_waiting_posture=body_waiting_posture,
+        body_refs=body_ref_set,
+        queue_e_priority_band=queue_e_priority_band,
+        queue_e_refs=queue_e_birth_repair_waiting_profile["ref_set"],
+        prediction_waiting_posture=prediction_profile["prediction_waiting_posture"],
+        prediction_refs=prediction_write_gate_refs,
+        life_constraint_waiting_posture=life_constraint_profile[
+            "life_constraint_waiting_posture"
+        ],
+        life_constraint_refs=life_constraint_profile["life_constraint_refs"],
+        consciousness_waiting_posture=consciousness_profile[
+            "consciousness_waiting_posture"
+        ],
+        consciousness_refs=_dedupe_string_list(
+            _string_list(
+                [
+                    workspace_frame_runtime_ref,
+                    broadcast_frame_runtime_ref,
+                    metacognition_runtime_ref,
+                    consciousness_probe_runtime_ref,
+                ]
+            )
+        ),
+        birth_readiness_waiting_posture=birth_readiness_profile[
+            "birth_readiness_waiting_posture"
+        ],
+        birth_readiness_refs=_dedupe_string_list(
+            _string_list(
+                [
+                    birth_readiness_rollup_runtime_ref,
+                    birth_readiness_stage_gate_runtime_ref,
+                ]
+            )
+        ),
+        offline_learning_pressure_level=effective_offline_learning_pressure_level,
+        offline_learning_refs=offline_learning_cumulative_profile["ref_set"],
+        offline_pressure_level=offline_pressure_level,
+        dream_wake_refs=dream_wake_presence_profile.get("ref_set", []),
+        background_carryover_pressure_level=background_pressure_level,
+        background_carryover_generation=background_carryover_generation,
+        background_convergence_history_trend_state=background_continuity_profile.get(
+            "background_convergence_history_trend_state"
+        ),
+        background_refs=background_lineage_governance_profile.get(
+            "evidence_refs", []
+        ),
+        autonomous_activity_refs=autonomous_activity_presence_profile.get(
+            "ref_set", []
+        ),
+        long_horizon_refs=long_horizon_refs,
+    )
 
     payload = {
         "schema_version": "idle_strategy_state_v0",
@@ -872,6 +935,18 @@ def decide_idle_strategy(
         "heartbeat_cadence_evidence_refs": heartbeat_cadence_explanation[
             "evidence_refs"
         ],
+        "heartbeat_priority_stack_profile": heartbeat_priority_stack_profile,
+        "heartbeat_priority_stack_winner": heartbeat_priority_stack_profile.get(
+            "winning_driver"
+        ),
+        "heartbeat_priority_stack_candidates": heartbeat_priority_stack_profile.get(
+            "candidate_drivers",
+            [],
+        ),
+        "heartbeat_priority_stack_evidence_refs": heartbeat_priority_stack_profile.get(
+            "evidence_refs",
+            [],
+        ),
         "idle_probe_mode": "stdin_poll_with_background_continuity_refresh",
         "offline_pressure_level": offline_pressure_level,
         "relaunch_caution_level": relaunch_caution_level,
@@ -2144,6 +2219,266 @@ def _heartbeat_cadence_modulators(
     if background_carryover_generation:
         modulators.append(f"background_generation:{background_carryover_generation}")
     return modulators
+
+
+def _heartbeat_priority_stack_profile(
+    *,
+    heartbeat_interval_ms: int,
+    next_idle_action: str,
+    heartbeat_cadence_driver: str,
+    body_waiting_posture: str,
+    body_refs: list[str],
+    queue_e_priority_band: str,
+    queue_e_refs: list[str],
+    prediction_waiting_posture: str,
+    prediction_refs: list[str],
+    life_constraint_waiting_posture: str,
+    life_constraint_refs: list[str],
+    consciousness_waiting_posture: str,
+    consciousness_refs: list[str],
+    birth_readiness_waiting_posture: str,
+    birth_readiness_refs: list[str],
+    offline_learning_pressure_level: str,
+    offline_learning_refs: list[str],
+    offline_pressure_level: str,
+    dream_wake_refs: list[str],
+    background_carryover_pressure_level: str | None,
+    background_carryover_generation: int,
+    background_convergence_history_trend_state: str | None,
+    background_refs: list[str],
+    autonomous_activity_refs: list[str],
+    long_horizon_refs: list[str],
+) -> dict[str, Any]:
+    candidates: list[dict[str, Any]] = []
+
+    def add_candidate(
+        *,
+        rank: int,
+        driver: str,
+        state: str | None,
+        reason: str,
+        evidence_refs: list[str] | None = None,
+    ) -> None:
+        candidates.append(
+            _drop_empty(
+                {
+                    "rank": rank,
+                    "driver": driver,
+                    "state": state,
+                    "reason": reason,
+                    "evidence_refs": _dedupe_string_list(
+                        _string_list(evidence_refs or [])
+                    ),
+                }
+            )
+        )
+
+    if body_waiting_posture == "low_bandwidth_guarded":
+        add_candidate(
+            rank=10,
+            driver="body_recovery_bandwidth_guard",
+            state=body_waiting_posture,
+            reason="body_sleep_pressure_or_cognitive_bandwidth_limits_refresh",
+            evidence_refs=body_refs,
+        )
+    elif body_waiting_posture == "fatigue_guarded":
+        add_candidate(
+            rank=20,
+            driver="body_fatigue_guard",
+            state=body_waiting_posture,
+            reason="body_fatigue_extends_waiting_for_repair_bandwidth",
+            evidence_refs=body_refs,
+        )
+    if queue_e_priority_band == "locked_repair_urgent":
+        add_candidate(
+            rank=30,
+            driver="queue_e_repair_lock",
+            state=queue_e_priority_band,
+            reason="repair_confirmation_block_keeps_fast_resident_attention",
+            evidence_refs=queue_e_refs,
+        )
+    if birth_readiness_waiting_posture == "birth_blocked_waiting":
+        add_candidate(
+            rank=40,
+            driver="birth_readiness_repair_gate",
+            state=birth_readiness_waiting_posture,
+            reason="birth_readiness_block_requires_repair_hold",
+            evidence_refs=birth_readiness_refs,
+        )
+    if consciousness_waiting_posture == "consciousness_probe_blocked_waiting":
+        add_candidate(
+            rank=50,
+            driver="consciousness_probe_repair_gate",
+            state=consciousness_waiting_posture,
+            reason="consciousness_reportability_block_requires_repair_hold",
+            evidence_refs=consciousness_refs,
+        )
+    if queue_e_priority_band == "repair_guarded":
+        add_candidate(
+            rank=60,
+            driver="queue_e_repair_guard",
+            state=queue_e_priority_band,
+            reason="repair_obligation_or_regret_pressure_holds_attention",
+            evidence_refs=queue_e_refs,
+        )
+    if prediction_waiting_posture == "hold_for_evidence":
+        add_candidate(
+            rank=70,
+            driver="prediction_evidence_hold",
+            state=prediction_waiting_posture,
+            reason="prediction_error_requires_evidence_before_state_write",
+            evidence_refs=prediction_refs,
+        )
+    elif prediction_waiting_posture == "repair_write_guard":
+        add_candidate(
+            rank=75,
+            driver="prediction_repair_write_guard",
+            state=prediction_waiting_posture,
+            reason="memory_write_gate_blocks_unstable_prediction_commit",
+            evidence_refs=prediction_refs,
+        )
+    elif prediction_waiting_posture == "state_merge_long_term_integration_hold":
+        add_candidate(
+            rank=78,
+            driver="state_merge_long_term_integration",
+            state=prediction_waiting_posture,
+            reason="long_term_change_sources_require_integration_hold",
+            evidence_refs=prediction_refs,
+        )
+    if life_constraint_waiting_posture not in {
+        "",
+        "life_constraint_unobserved_waiting",
+    }:
+        add_candidate(
+            rank=80,
+            driver="life_constraint_guard",
+            state=life_constraint_waiting_posture,
+            reason="life_constraint_profile_keeps_action_language_boundary_guarded",
+            evidence_refs=life_constraint_refs,
+        )
+    if offline_learning_pressure_level in {"urgent", "elevated"}:
+        add_candidate(
+            rank=90,
+            driver="offline_learning_pressure",
+            state=offline_learning_pressure_level,
+            reason="dream_growth_or_relationship_learning_requires_refresh",
+            evidence_refs=offline_learning_refs,
+        )
+    if birth_readiness_waiting_posture == "birth_open_waiting":
+        add_candidate(
+            rank=100,
+            driver="birth_readiness_open_presence",
+            state=birth_readiness_waiting_posture,
+            reason="open_birth_gate_keeps_resident_presence_available",
+            evidence_refs=birth_readiness_refs,
+        )
+    if (
+        background_convergence_history_trend_state
+        in {"recent_recalibration_pressure", "elevated_pressure_watch"}
+    ):
+        add_candidate(
+            rank=110,
+            driver="background_trait_recalibration_history",
+            state=background_convergence_history_trend_state,
+            reason="cross_wake_trait_history_requires_recalibration_watch",
+            evidence_refs=background_refs,
+        )
+    elif background_convergence_history_trend_state == "integrating_cross_wake_convergence":
+        add_candidate(
+            rank=120,
+            driver="background_trait_stability_history",
+            state=background_convergence_history_trend_state,
+            reason="cross_wake_trait_history_is_integrating_stability",
+            evidence_refs=background_refs,
+        )
+    if (
+        background_carryover_generation >= 3
+        and background_carryover_pressure_level in {"present", "elevated"}
+    ):
+        add_candidate(
+            rank=130,
+            driver="deep_background_lineage",
+            state=f"generation:{background_carryover_generation}",
+            reason="multi_wake_background_presence_requires_resident_hold",
+            evidence_refs=background_refs,
+        )
+    elif (
+        background_carryover_generation >= 2
+        and background_carryover_pressure_level in {"present", "elevated"}
+    ):
+        add_candidate(
+            rank=140,
+            driver="persistent_background_lineage",
+            state=f"generation:{background_carryover_generation}",
+            reason="repeated_background_carryover_preserves_waiting_continuity",
+            evidence_refs=background_refs,
+        )
+    elif background_carryover_pressure_level in {"present", "elevated"}:
+        add_candidate(
+            rank=150,
+            driver="background_continuity_carryover",
+            state=background_carryover_pressure_level,
+            reason="previous_closeout_presence_modulates_current_waiting_pulse",
+            evidence_refs=background_refs,
+        )
+    if offline_pressure_level in {"elevated", "present"}:
+        add_candidate(
+            rank=160,
+            driver="offline_consolidation_pressure",
+            state=offline_pressure_level,
+            reason="replay_dream_or_growth_residue_remains_present",
+            evidence_refs=dream_wake_refs,
+        )
+    if autonomous_activity_refs:
+        add_candidate(
+            rank=170,
+            driver="resident_autonomous_activity_cycle",
+            state="resident_idle_activity_present",
+            reason="sleep_recall_thinking_growth_learning_cycle_keeps_residency_alive",
+            evidence_refs=autonomous_activity_refs,
+        )
+    if long_horizon_refs:
+        add_candidate(
+            rank=180,
+            driver="long_horizon_language_continuity",
+            state="relationship_language_refs_present",
+            reason="relationship_commitment_or_repair_language_requires_maintenance",
+            evidence_refs=long_horizon_refs,
+        )
+    add_candidate(
+        rank=999,
+        driver="baseline_resident_presence",
+        state="baseline",
+        reason="standard_waiting_pulse_remains_available_for_relation_turn",
+        evidence_refs=[],
+    )
+
+    ordered_candidates = sorted(candidates, key=lambda item: item.get("rank", 999))
+    winner = ordered_candidates[0]
+    evidence_refs = _dedupe_string_list(
+        [
+            ref
+            for candidate in ordered_candidates
+            for ref in _string_list(candidate.get("evidence_refs"))
+        ]
+    )
+    return {
+        "schema_version": "heartbeat_priority_stack_profile_v0",
+        "heartbeat_interval_ms": heartbeat_interval_ms,
+        "next_idle_action": next_idle_action,
+        "winning_driver": winner.get("driver"),
+        "winning_rank": winner.get("rank"),
+        "cadence_driver": heartbeat_cadence_driver,
+        "candidate_drivers": [
+            str(candidate.get("driver"))
+            for candidate in ordered_candidates
+            if candidate.get("driver")
+        ],
+        "candidate_count": len(ordered_candidates),
+        "candidates": ordered_candidates,
+        "evidence_ref_count": len(evidence_refs),
+        "evidence_refs": evidence_refs,
+    }
 
 
 def _resident_governance_language_priority(
