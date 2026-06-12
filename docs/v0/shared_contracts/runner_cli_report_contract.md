@@ -706,6 +706,8 @@ my digital life --check-name <life-name>
 
 `my digital life --status` / `digital life --status` 默认返回 `resident_lifecycle_terminal_summary_v0`，用于人的终端快速确认：名字、PID、是否仍在后台、关系队列、五相位自主活动、heartbeat、驻留身份、后台收敛和关键证据 refs。需要完整机器可读状态树时，追加 `--json`。`--stop` 也遵守同一规则：默认摘要，`--stop --json` 输出完整 closeout 证据树。
 
+命名前的 `my digital life --status` 必须返回 `life_name_required_residency_status_v0`，作为 live0 最后一段人工命名交接面板，而不是静态错误。它的返回码仍为 `2`，并携带 `required_command=my digital life --name <name>`、`preflight_command=my digital life --check-name <name>`、两个 blocked probe、当前 resident lifecycle 摘要和 `blocked_until_life_name_bound` gate。这样可以证明后台驻留与自主活动仍在，同时不替代第一次正式命名。
+
 这里要读的不是 workflow graph，而是下面这批状态与报告：
 
 1. `direction_lock.json`

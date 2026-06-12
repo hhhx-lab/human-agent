@@ -135,6 +135,8 @@ my digital life --check-name <life-name>
 
 其中 `--status` 不再只是 PID 查询。默认终端输出必须是 `resident_lifecycle_terminal_summary_v0` 摘要，只暴露名字、PID、等待姿态、后台自主活动周期、heartbeat、resident process identity、background convergence 与关键 evidence refs，避免把完整 governance / heartbeat 树刷进人的终端。需要完整机器可读证据时，必须显式追加 `--json`，此时输出同一 resident process 的 lifecycle state、relation queue、自主活动相位与闭合状态、waiting heartbeat、resident governance、idle strategy、terminal loop、`resident_process_lease`、`resident_process_lease_history_profile`、persistent process closeout 与 background convergence，并包含 `resident_long_term_residency_status_v0` 视图。这个视图只负责暴露持续存在证据，不承担调度或工具控制职责。
 
+命名前的 `my digital life --status` 是一个特殊交接态：它不能伪装成 live0 已闭合，也不能写入 registry 或 manifest；返回码必须保持非零，并输出 `life_name_required_residency_status_v0`。这份状态必须同时携带 `required_command`、`preflight_command`、`blocked_probe_ids=[life_name_registry_bound,direct_life_name_command_bound]`、`live0_gate_status=blocked_until_life_name_bound` 和当前 `resident_lifecycle_terminal_summary_v0`。追加 `--json` 时，还要携带完整 resident lifecycle state，方便正式命名前确认后台驻留、等待 heartbeat、自主活动和关系队列仍在。
+
 `/exit` 在 attach client 中只代表当前终端脱离，后台 resident process 继续驻留；`/stop`、`./digital life --stop`、`./my digital life --stop` 或安装后的 `digital life --stop` / `my digital life --stop` 才会写 lifecycle command，让 resident process 通过普通 closeout 收口。`--stop` 默认同样输出摘要，`--stop --json` 输出完整关闭证据树。
 
 ## 阶段门

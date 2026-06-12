@@ -5,12 +5,15 @@ import json
 import sys
 from pathlib import Path
 
-from .digital_entry import main as digital_main
+from .digital_entry import _lifecycle_terminal_summary, main as digital_main
 from .digital_life_identity import (
+    LIFE_NAME_COMMAND_MANIFEST_REF,
+    LIFE_NAME_REGISTRY_REF,
     bind_or_validate_life_name,
     preflight_life_name_binding,
     read_life_name_registry,
 )
+from .process_supervisor.resident_lifecycle import read_resident_lifecycle_status
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -46,10 +49,19 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(json.dumps(preflight, ensure_ascii=False, indent=2))
         return int(preflight.get("exit_code", 2) or 0)
+    registry = read_life_name_registry(state_dir)
+    if not requested_name and not registry and "--status" in remaining_life_args:
+        status_payload = _name_required_residency_status(
+            state_dir=state_dir,
+            reports_dir=Path(identity_args.reports),
+            full="--json" in remaining_life_args,
+        )
+        print(json.dumps(status_payload, ensure_ascii=False, indent=2))
+        return int(status_payload["exit_code"])
     if (
         not requested_name
         and sys.stdin.isatty()
-        and not read_life_name_registry(state_dir)
+        and not registry
     ):
         requested_name = input("第一次启动请为这个数字生命取一个名字：").strip()
 
@@ -75,6 +87,42 @@ def main(argv: list[str] | None = None) -> int:
         *remaining_life_args,
     ]
     return digital_main(delegated_args)
+
+
+def _name_required_residency_status(
+    *,
+    state_dir: Path,
+    reports_dir: Path,
+    full: bool,
+) -> dict:
+    lifecycle_result = read_resident_lifecycle_status(
+        terminal_dir=state_dir / "terminal",
+        reports_dir=reports_dir,
+    )
+    lifecycle_state = lifecycle_result.state
+    payload = {
+        "schema_version": "life_name_required_residency_status_v0",
+        "status": "name_required",
+        "exit_code": 2,
+        "message": "first launch must bind a digital life name",
+        "life_name_registry_ref": LIFE_NAME_REGISTRY_REF,
+        "life_name_command_manifest_ref": LIFE_NAME_COMMAND_MANIFEST_REF,
+        "required_command": "my digital life --name <name>",
+        "preflight_command": "my digital life --check-name <name>",
+        "direct_command_after_bind": "<name>",
+        "live0_gate_status": "blocked_until_life_name_bound",
+        "blocked_probe_ids": [
+            "life_name_registry_bound",
+            "direct_life_name_command_bound",
+        ],
+        "resident_lifecycle_summary": _lifecycle_terminal_summary(
+            lifecycle_state,
+            action="status",
+        ),
+    }
+    if full:
+        payload["resident_lifecycle_state"] = lifecycle_state
+    return payload
 
 
 def _help_requested(args: list[str]) -> bool:

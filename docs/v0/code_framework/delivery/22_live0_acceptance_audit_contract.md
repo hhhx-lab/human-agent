@@ -55,6 +55,14 @@ my digital life --check-name <life-name>
 
 它返回 `life_name_binding_preflight_v0`，且不写 registry、manifest 或命令脚本。预检必须确认命令目录在 PATH 上、名字不会覆盖保留命令、不会遮蔽 PATH 上已有命令，也不会复用非本 runtime 管理的已有脚本。
 
+正式命名前运行：
+
+```text
+my digital life --status
+```
+
+必须返回 `life_name_required_residency_status_v0`，返回码仍为 `2`。这不是验收通过证据，而是命名前交接证据：它要显示当前 resident lifecycle 摘要、`live0_gate_status=blocked_until_life_name_bound`、缺失的 `life_name_registry_bound` 与 `direct_life_name_command_bound` 两个 probe，并把下一步命名命令固定为 `my digital life --name <life-name>`。追加 `--json` 时，输出中必须包含完整 resident lifecycle state。
+
 ## 模型表达验收
 
 `b_conscious_emotion_thought_language` 要求 `digital_life_model_expression_report.json` 满足：

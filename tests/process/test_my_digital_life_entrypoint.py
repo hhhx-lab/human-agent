@@ -46,9 +46,25 @@ class MyDigitalLifeEntrypointTests(
             )
 
         self.assertEqual(completed.returncode, 2)
-        payload = json.loads(completed.stderr)
+        self.assertEqual(completed.stderr, "")
+        payload = json.loads(completed.stdout)
+        self.assertEqual(
+            payload["schema_version"],
+            "life_name_required_residency_status_v0",
+        )
         self.assertEqual(payload["status"], "name_required")
         self.assertEqual(payload["required_command"], "my digital life --name <name>")
+        self.assertEqual(payload["preflight_command"], "my digital life --check-name <name>")
+        self.assertEqual(payload["live0_gate_status"], "blocked_until_life_name_bound")
+        self.assertEqual(
+            payload["blocked_probe_ids"],
+            ["life_name_registry_bound", "direct_life_name_command_bound"],
+        )
+        self.assertEqual(
+            payload["resident_lifecycle_summary"]["schema_version"],
+            "resident_lifecycle_terminal_summary_v0",
+        )
+        self.assertIn("resident_lifecycle_state", payload)
 
     def test_my_digital_life_binds_name_and_reuses_identity(self):
         with tempfile.TemporaryDirectory() as tmp:
