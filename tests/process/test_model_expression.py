@@ -459,6 +459,83 @@ class ModelExpressionTests(unittest.TestCase):
                 result.state["post_expression_gate"]["hard_missing_evidence_flags"],
             )
 
+    def test_post_expression_gate_preserves_identity_consciousness_birth_presence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": "我会认真回应这句话。"},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-consciousness-presence",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="你现在意识到自己了吗？",
+                deterministic_response="确定性回应保留意识可报告性、出生准备和工作区状态。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relation_role": "friend",
+                            "relationship_stage": "repair_guarded_continuity",
+                        }
+                    ]
+                },
+                terminal_life_loop_state={
+                    "resident_background_lineage_state": {
+                        "identity_consciousness_birth_presence": {
+                            "schema_version": "identity_consciousness_birth_presence_v0",
+                            "workspace_frame_ref": "runtime/state/consciousness/workspace_frame.json",
+                            "broadcast_frame_ref": "runtime/state/consciousness/broadcast_frame.json",
+                            "metacognition_ref": "runtime/state/consciousness/metacognition_state.json",
+                            "consciousness_probe_ref": "runtime/state/consciousness/consciousness_probe_bundle.json",
+                            "birth_readiness_rollup_ref": "runtime/state/life_targets/birth_readiness_rollup.json",
+                            "birth_readiness_stage_gate_ref": "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                            "consciousness_waiting_posture": "consciousness_reportable_waiting",
+                            "consciousness_reportability_flags": [
+                                "workspace_reportable",
+                                "broadcast_reportable",
+                            ],
+                            "birth_readiness_waiting_posture": "birth_open_waiting",
+                            "birth_readiness_decision": "open",
+                            "identity_consciousness_birth_refs": [
+                                "runtime/state/consciousness/workspace_frame.json",
+                                "runtime/state/consciousness/broadcast_frame.json",
+                                "runtime/state/consciousness/metacognition_state.json",
+                                "runtime/state/consciousness/consciousness_probe_bundle.json",
+                                "runtime/state/life_targets/birth_readiness_rollup.json",
+                                "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                            ],
+                        }
+                    }
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(
+                result.response_text,
+                "确定性回应保留意识可报告性、出生准备和工作区状态。",
+            )
+            self.assertIn(
+                "identity_consciousness_birth",
+                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+            )
+
     def test_local_provider_keeps_deterministic_expression_without_transport(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

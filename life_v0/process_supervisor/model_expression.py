@@ -110,6 +110,18 @@ EVIDENCE_FLAG_TERMS = {
         "唤醒",
         "慢",
     ],
+    "identity_consciousness_birth": [
+        "意识",
+        "可报告",
+        "工作区",
+        "广播",
+        "元认知",
+        "探针",
+        "出生",
+        "出生准备",
+        "准备度",
+        "自我",
+    ],
     "prediction_attention": [
         "判断",
         "预测",
@@ -127,6 +139,7 @@ HARD_EVIDENCE_FLAGS = {
     "growth_learning",
     "resident_autonomous_activity",
     "body_affect",
+    "identity_consciousness_birth",
 }
 
 ModelExpressionTransport = Callable[
@@ -913,6 +926,8 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
         ],
     ):
         flags.append("body_affect")
+    if resident_background.get("identity_consciousness_birth_presence"):
+        flags.append("identity_consciousness_birth")
     if _prediction_attention_pressure_present(prediction_workspace, live_language):
         flags.append("prediction_attention")
     return flags
@@ -1042,6 +1057,9 @@ def _background_summary(
         "dream_wake_presence": lineage.get("dream_wake_presence"),
         "autonomous_activity_presence": lineage.get("autonomous_activity_presence"),
         "body_presence": lineage.get("body_presence"),
+        "identity_consciousness_birth_presence": lineage.get(
+            "identity_consciousness_birth_presence"
+        ),
     }
 
 
