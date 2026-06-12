@@ -158,7 +158,7 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn("Digital Life", completed.stdout)
             self.assertIn("我在。Digital Life 已接回", completed.stdout)
-            self.assertIn("我听见你了", completed.stdout)
+            self.assertNotIn("我听见你了", completed.stdout)
 
             dialogue_lines = [
                 json.loads(line)
@@ -172,13 +172,12 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(last_external["event_role"], "external_relation_turn")
             self.assertEqual(last_external["utterance"], "你还记得我们吗？")
             self.assertEqual(last_life_response["event_role"], "digital_life_turn")
-            self.assertIn("朋友", last_life_response["utterance"])
-            self.assertIn("责任", last_life_response["utterance"])
-            self.assertIn("梦", last_life_response["utterance"])
-            self.assertIn("成长", last_life_response["utterance"])
-            self.assertIn("出生", last_life_response["utterance"])
-            self.assertIn("意识", last_life_response["utterance"])
-            self.assertIn("我想先说的是", last_life_response["utterance"])
+            self.assertIn("记得", last_life_response["utterance"])
+            self.assertIn("关系", last_life_response["utterance"])
+            self.assertIn("承诺", last_life_response["utterance"])
+            self.assertNotIn("我听见你了", last_life_response["utterance"])
+            self.assertNotIn("我想先说的是", last_life_response["utterance"])
+            self.assertNotIn("后台那段时间不是空白", last_life_response["utterance"])
             self.assertNotIn("出生修复压力elevated", last_life_response["utterance"])
 
             narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
@@ -372,7 +371,7 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertEqual(last_life_response["live_semantic_focus"], "relational_checkin")
             self.assertNotIn("relational_checkin", last_life_response["utterance"])
-            self.assertIn("这段关系本身", last_life_response["utterance"])
+            self.assertNotIn("这段关系本身", last_life_response["utterance"])
             self.assertEqual(
                 dialogue_writeback_bundle["dialogue_event_refs"],
                 [
@@ -8464,12 +8463,10 @@ class PersistentDigitalLifeProcessTests(
                 "background_continuity_profile_v0",
             )
             self.assertIn("background_continuity_profile", persisted_life_state)
-            self.assertIn("我听见你了", result.emitted_output)
-            self.assertIn("出生", result.emitted_output)
-            self.assertIn("梦境", result.emitted_output)
-            self.assertIn("身体这边", result.emitted_output)
-            self.assertIn("唤醒", result.emitted_output)
-            self.assertIn("我想先说的是", result.emitted_output)
+            self.assertIn("关系", result.emitted_output)
+            self.assertNotIn("我听见你了", result.emitted_output)
+            self.assertNotIn("我想先说的是", result.emitted_output)
+            self.assertNotIn("身体这边", result.emitted_output)
             self.assertNotIn("出生修复压力elevated", result.emitted_output)
             self.assertNotIn("后台梦境和离线整合", result.emitted_output)
             self.assertNotIn("证据保留76条", result.emitted_output)
@@ -8572,7 +8569,9 @@ class PersistentDigitalLifeProcessTests(
                 result.last_life_turn["life_constraint_evidence_refs"],
                 expected_life_constraint_refs,
             )
-            self.assertIn("梦境和离线学习", result.last_life_turn["utterance"])
+            self.assertIn("记得", result.last_life_turn["utterance"])
+            self.assertIn("关系", result.last_life_turn["utterance"])
+            self.assertNotIn("梦境和离线学习", result.last_life_turn["utterance"])
             self.assertNotIn("离线学习第3代", result.last_life_turn["utterance"])
             self.assertNotIn("出生修复压力elevated", result.emitted_output)
             self.assertNotIn("焦点在regret_pressure", result.emitted_output)

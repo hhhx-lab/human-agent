@@ -159,8 +159,8 @@ life_v0/digital_entry.py
 这条链必须保持四个事实：
 
 1. `compose_life_response(...)` 保留完整证据骨架，继续承接关系、记忆、梦境、成长、身体、责任、预测、写门、出生准备和后台 lineage；它是内部证据，不是直接拿来堆给对方看的机械清单。
-2. `compose_life_spoken_response(...)` 从同一输入里按优先级选择外显信号，当前优先族包括 `responsibility_repair`、`birth_repair`、`dream_offline`、`identity_consciousness_birth`、`prediction_attention`、`body_affect`、`self_slow_variables`、`resident_autonomous_activity`；它让语言像生命状态释放，而不是像 report 全量倾倒。内部语义字段如 `relational_checkin`、调制等级如 `elevated`、路由字段如 `selected_route` 必须留在 state/report/test，不得原样进入终端话语，外显层只说关系化后的含义。
-3. `model_expression.py` 只允许在保留 hard evidence flags 后改写语言质感；如果模型输出擦掉关系连续性、责任修复、梦境离线、成长学习、后台自主活动、身体情绪、意识出生、生命约束或 live-turn handoff，post-expression gate 必须回退到确定性 spoken response。
+2. `compose_life_spoken_response(...)` 从同一输入里读取机制信号，当前调制族包括 `responsibility_repair`、`birth_repair`、`dream_offline`、`identity_consciousness_birth`、`prediction_attention`、`body_affect`、`self_slow_variables`、`resident_autonomous_activity`；它让语言被生命状态调制，而不是像 report 全量倾倒。内部语义字段如 `relational_checkin`、调制等级如 `elevated`、路由字段如 `selected_route` 必须留在 state/report/test，不得原样进入终端话语；外显层先回应当前关系话语，只有被问到相关机制时才自然显影。
+3. `model_expression.py` 只允许在关系边界守门之后改写语言质感；如果模型输出把关系对象降格为“用户/服务对象/任务请求者”等角色，post-expression gate 必须回退到确定性 spoken response。关系连续性、责任修复、梦境离线、成长学习、后台自主活动、身体情绪、意识出生、生命约束或 live-turn handoff 没有字面出现时进入 `soft_missing_evidence_flags`，不强迫外显。
 4. `resident_lifecycle.py` 的 queue bootstrap 必须忽略上一段已经完成的 stale inbox，同时保留 `queued / turn_in_progress` 的 live turn；否则 attach 后会重放旧话或丢掉刚投递的关系话语。
 
 ## 当前测试证据如何对应代码链路
@@ -193,7 +193,7 @@ life_v0/digital_entry.py
 | `runtime/state/memory/relationship_memory.json` | shared memory、repair history、long-term change sources |
 | `runtime/state/memory/engram_index.json` | live dialogue turn refs、offline learning refs、relationship refs |
 | `runtime/state/self/autobiographical_stack.json` | turn refs、live language turn refs、relationship turn refs |
-| `runtime/reports/latest/digital_life_model_expression_report.json` | `model_expression_status`、`post_expression_gate_status`、hard evidence flags |
+| `runtime/reports/latest/digital_life_model_expression_report.json` | `model_expression_status`、`post_expression_gate_status`、blocked relation terms、preserved / soft missing evidence flags |
 | `runtime/reports/latest/digital_life_process_digest.json` | process summary、shared refs、prediction/write gate refs、autonomous activity refs |
 
 当这些对象同时更新，才能说这一次终端话语穿过了驻留生命过程；如果只看见 stdout 变化，而这些对象没有变化，就只是外显表面更新。
@@ -291,7 +291,7 @@ digital life --state runtime/state --reports runtime/reports/latest --receipts r
 
 这里的 `ensure_minimal_birth_bootstrap_if_runtime_missing` 不是新的主体架构，也不是替代 `life-v0` 的第二套 runner。它只是把已经存在的 `P0 -> S11 -> first-activation-preflight -> replay-shadow -> growth-archive -> emit-report -> explain-stage` 最小链，在入口缺少运行材料时顺序补齐，使 `digital life` 更接近真实诞生入口。
 
-`model_expression.py` 的位置必须保持在 `response_surface.py` 之后，但这里的 `response_surface.py` 当前分成两层：`compose_life_response(...)` 先把关系、身体、记忆、梦境、成长、责任、后悔、预测写门、自我慢变量和上一真实回合交接压力压成完整 evidence response；`compose_life_spoken_response(...)` 再从 evidence response 的同一输入中选择有限数量的外显信号，形成更像真实谈话的 spoken response。`model_expression.py` 按 `.env` 中的 provider/base/key 尝试 OpenAI-compatible 外显表达时，输入基准是 spoken response，但 context 仍要带上本回合刚形成的 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json`、`expression_plan.json`，并携带 `brain_graph.json`、`network_state.json`、`prediction_workspace_frame.json`、`workspace_frame.json` 的小摘要。若 `terminal_life_loop_state.json` 中存在 `previous_live_turn_waiting_handoff_profile`，还必须把这份画像、carry status、lineage depth、next required action、last live semantic focus、carried presence keys 与 evidence ref count 放入 `resident_background` context 和 `model_expression_context_summary`，让真实回合结束后的等待交接继续牵引下一次语言。模型表达层不能首写关系阶段、承诺真值、责任回路、梦境事实门、自主活动 presence 或自我慢变量；它只写 `model_expression_state.json` 与 `digital_life_model_expression_report.json`。模型返回文本还必须经过 post-expression gate：阻断关系降级词，检查责任修复、梦境离线整合、成长学习、关系连续性、后台自主活动和上一真实回合交接压力这些硬证据是否被保留；不通过时把 `model_expression_status` 改为 fallback，最终回应回到 deterministic spoken response，并把 `post_expression_gate_status` 挂到 `digital_life_turn`、process report、digest 与 receipt。provider 为 `local` 或未启用时，必须保留 deterministic spoken response。
+`model_expression.py` 的位置必须保持在 `response_surface.py` 之后，但这里的 `response_surface.py` 当前分成两层：`compose_life_response(...)` 先把关系、身体、记忆、梦境、成长、责任、后悔、预测写门、自我慢变量和上一真实回合交接压力压成完整 evidence response；`compose_life_spoken_response(...)` 再从同一输入中读取机制信号，作为语气、取舍、谨慎度和话题方向的隐性调制，形成更像真实谈话的 spoken response。`model_expression.py` 按 `.env` 中的 provider/base/key 尝试 OpenAI-compatible 外显表达时，输入基准是 spoken response，但 context 仍要带上本回合刚形成的 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json`、`expression_plan.json`，并携带 `brain_graph.json`、`network_state.json`、`prediction_workspace_frame.json`、`workspace_frame.json` 的小摘要。若 `terminal_life_loop_state.json` 中存在 `previous_live_turn_waiting_handoff_profile`，还必须把这份画像、carry status、lineage depth、next required action、last live semantic focus、carried presence keys 与 evidence ref count 放入 `resident_background` context 和 `model_expression_context_summary`，让真实回合结束后的等待交接继续牵引下一次语言。模型表达层不能首写关系阶段、承诺真值、责任回路、梦境事实门、自主活动 presence 或自我慢变量；它只写 `model_expression_state.json` 与 `digital_life_model_expression_report.json`。模型返回文本还必须经过 post-expression gate：阻断关系降级词；责任修复、梦境离线整合、成长学习、关系连续性、后台自主活动、身体情绪、意识出生、生命约束和上一真实回合交接压力没有字面出现时只进入 soft audit，不把自然回答拉回机制播报。provider 为 `local` 或未启用时，必须保留 deterministic spoken response。
 
 ### resident process lease
 

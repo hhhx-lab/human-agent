@@ -30,8 +30,8 @@ life-v0 emit-report --strict
 10. `life_v0/process_supervisor/trait_convergence_signals.py` 已把后台人格慢变量 presence、convergence summary/history、trait drift monitor 与 closeout refs 合成为 `cross_wake_trait_convergence_profile_v0`，并继续进入 waiting governance、关闭态 resident governance artifacts、process report/digest/receipt、真实回合事件、写回包、恢复包和回应表达面
 11. `life_v0/process_supervisor/state_merge_signals.py` 已把 `state_merge_guard.json#long_term_change_sources` 压成 `state_merge_long_term_change_count/families/refs`，并继续进入 waiting governance、关闭态 resident governance artifacts、process report/digest/receipt、真实回合事件和回应表达面
 12. `life_v0/process_supervisor/terminal_ui.py` 已把终端表达面从裸 stdout 改成 `Digital Life` banner、life opening、关系输入盒和生命回应盒；它同时兼容旧 `生命回合输出:` 前缀，让 resident outbox 能从盒式输出中抽取真正回应文本
-13. `life_v0/process_supervisor/response_surface.py` 当前分成 evidence response 与 spoken response 两层：前者保留内部证据骨架，后者只选择当轮最高优先级生命信号进入终端对话，并把 `live_semantic_focus`、调制等级、路由和 ref 计数这类内部字段翻译成关系语言，不能直接泄漏成 schema/debug 文本
-14. `life_v0/process_supervisor/model_expression.py` 在 `.env` 启用模型时接管外显润色，但必须经过 hard evidence post gate，不能擦掉关系连续、责任修复、梦境离线、成长、身体情绪、意识出生、生命约束和 live-turn handoff
+13. `life_v0/process_supervisor/response_surface.py` 当前分成 evidence response 与 spoken response 两层：前者保留内部证据骨架，后者让当轮最高优先级生命信号隐性调制终端对话，并把 `live_semantic_focus`、调制等级、路由和 ref 计数这类内部字段留在 state/report/test，不能直接泄漏成 schema/debug 文本或固定证明段落
+14. `life_v0/process_supervisor/model_expression.py` 在 `.env` 启用模型时接管外显润色，但必须经过 post-expression gate：关系降级词触发回退，关系连续、责任修复、梦境离线、成长、身体情绪、意识出生、生命约束和 live-turn handoff 等证据若未字面外显则写入 soft audit
 15. `life_v0/process_supervisor/resident_lifecycle.py` 已补上 queue bootstrap：后台重新 active 时忽略已完成 stale inbox，同时保留 `queued / turn_in_progress` 的 live queued turn，防止 attach 后重放旧话或吞掉新话
 
 ## 当前最关键的 runtime 证据

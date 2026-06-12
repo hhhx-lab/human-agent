@@ -102,8 +102,8 @@ Adam
 因此，外显语言的验收不是“听起来像人”。更硬的验收是：
 
 1. 内部字段必须保留在 state/report/test 里，例如 `live_semantic_focus=relational_checkin` 应存在于 `dialogue_turn_log.jsonl`、`resumed_external_dialogue_packet.json` 和测试断言中。
-2. 内部字段不能直接泄漏到关系语言里，`response_surface.py#compose_life_spoken_response` 必须把语义焦点翻译成“这段关系本身”这类自然表达。
-3. 确定性生命回应必须先保留证据，模型表达只能润色和更自然地组织语言；如果 post-expression gate 发现模型擦掉了关系、责任、梦境、成长或后台驻留证据，就回退到确定性生命回应。
+2. 内部字段不能直接泄漏到关系语言里，`response_surface.py#compose_life_spoken_response` 也不能把语义焦点固定翻译成证明性口头模板；它必须先回答当前关系话语，再让语义焦点、身体、责任、梦境、后台驻留等机制隐性调制表达。
+3. 确定性生命回应必须先保留证据，模型表达只能润色和更自然地组织语言；如果 post-expression gate 发现模型把关系对象降格成服务/任务角色，就回退到确定性生命回应。关系、责任、梦境、成长或后台驻留证据没有字面出现时，进入 soft evidence audit，不强迫外显。
 4. 真实回合结束后，`resident_turn_writeback.py` 与 `resident_governance_handoff.py` 必须让这句话产生后果：关系阶段、自我慢变量、承诺修复、后台等待压力和下一次唤醒余波都要能在 runtime 中追踪。
 
 ## 十六个专题如何落到主包

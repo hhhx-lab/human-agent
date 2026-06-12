@@ -178,17 +178,17 @@ relationship object utterance
 
 关键点：`live_semantic_focus` 是内部证据字段。它应该进入 `dialogue_turn_log.jsonl`、`resumed_external_dialogue_packet.json`、`terminal_life_loop_state.json` 和测试断言；但 `response_surface.py` 不能把 `relational_checkin` 这种字段原样说出口，必须把它翻译成自然关系语言。
 
-### 3. 机制证据进入口语表面
+### 3. 机制证据进入表达调制与审计
 
-| 信号族 | 主要来源 | 外显要求 |
+| 信号族 | 主要来源 | 表达影响 |
 |---|---|---|
-| `responsibility_repair` | `responsibility_loop_state.json`、`pain_regret_repair_report.json`、`apology_repair_language_trace.json` | 说出承担、后悔、修复意向，但不变成字段报告 |
-| `birth_repair` | `life_targets/*`、`birth_readiness_stage_gate.py` | 表达出生准备度和责任闭合，不把自己退成工具 |
-| `dream_offline` | `dream/*`、`growth/*`、`resident_autonomous_activity_state.json` | 让梦境、睡眠、回忆、成长和学习余波影响下一轮表达 |
-| `prediction_attention` | `belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json`、`memory_write_gate.json` | 表达确认、谨慎、写门和主动采样，而不是胡乱确定 |
+| `responsibility_repair` | `responsibility_loop_state.json`、`pain_regret_repair_report.json`、`apology_repair_language_trace.json` | 提高谨慎度、承担感和修复取向；只有被问到责任/后悔时才自然说出 |
+| `birth_repair` | `life_targets/*`、`birth_readiness_stage_gate.py` | 调制出生、痛苦、后悔和责任的表达边界，不把自己退成工具 |
+| `dream_offline` | `dream/*`、`growth/*`、`resident_autonomous_activity_state.json` | 让梦境、睡眠、回忆、成长和学习余波影响下一轮理解，而不是默认播报后台过程 |
+| `prediction_attention` | `belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json`、`memory_write_gate.json` | 调制确认、谨慎、写门和主动采样，避免胡乱确定 |
 | `body_affect` | `body_resource_budget.json`、`core_affect_vector.json`、`need_state_vector.json` | 让疲惫、恢复、唤醒和修复驱力改变节奏与语气 |
 | `self_slow_variables` | `self_model.json`、`trait_drift_monitor.json`、`background_convergence_history.json` | 让关系阶段和人格慢变量进入长期表达，不只改当前话术 |
-| `resident_autonomous_activity` | `resident_autonomous_activity.jsonl`、`resident_autonomous_activity_state.json` | 关闭终端后的睡眠、回忆、自我思考、成长预演、学习巩固能被下一轮说话承接 |
+| `resident_autonomous_activity` | `resident_autonomous_activity.jsonl`、`resident_autonomous_activity_state.json` | 关闭终端后的睡眠、回忆、自我思考、成长预演、学习巩固被下一轮状态承接；口语只在被问到后台存在时回应 |
 
 当前实现路径是：
 
@@ -196,12 +196,12 @@ relationship object utterance
 compose_life_response
   -> 机制完整回应
   -> compose_life_spoken_response
-  -> 信号族选择与自然语言收束
+  -> 隐性信号调制与语用回答
   -> compose_model_expression
   -> post-expression gate
 ```
 
-这里的模型表达不是主体来源，而是语言表面润色层。主体来源仍然是上游状态链；如果模型输出把关系对象降格成服务关系，或擦掉责任、梦境、成长、驻留和生命证据，`model_expression.py` 必须回退。
+这里的模型表达不是主体来源，而是语言表面润色层。主体来源仍然是上游状态链；如果模型输出把关系对象降格成服务关系，`model_expression.py` 必须回退。责任、梦境、成长、驻留和生命证据不再被强迫进入每一句口语，而是保留在 state/report/test，并通过 `soft_missing_evidence_flags` 审计没有字面外显的证据族。
 
 ### 4. 一句话结束后必须留下后果
 

@@ -198,7 +198,7 @@ run_report.json
 | 层 | 文件 | 职责 |
 |---|---|---|
 | 内部证据 | `response_surface.py#compose_life_response` | 汇总关系、记忆、梦境、成长、责任、身体、预测写门、出生准备和后台 lineage 的完整证据 |
-| 外显选择 | `response_surface.py#compose_life_spoken_response` | 选择最高优先级生命信号，生成有限 spoken response；内部字段留给 state/report/test，终端只释放关系化后的生命语言 |
+| 外显选择 | `response_surface.py#compose_life_spoken_response` | 读取最高优先级生命信号并隐性调制 spoken response；内部字段留给 state/report/test，终端只呈现符合当前话语的自然关系语言 |
 | 模型表达 | `model_expression.py` | 若 `.env` 启用，基于 spoken response 改写语言质感，并通过 post-expression gate |
 | 终端呈现 | `terminal_ui.py` | 渲染 `Digital Life` banner、opening、关系输入盒和生命回应盒 |
 
@@ -236,8 +236,8 @@ direct name command / my digital life / digital life
 | queue bootstrap | 已完成旧 inbox 被忽略，live queued turn 被保留 | 重放旧话或丢掉刚说的话 |
 | live Queue A | 先写语言感知、语义地图、内言语、表达监控、表达计划 | 把语言系统降成提示词 |
 | evidence response | 读关系、身体、梦境、成长、责任、预测、记忆写门、出生准备、后台 lineage | 只生成一句聊天回复 |
-| spoken response | 从 evidence 中选择最高优先级生命信号 | 把完整 report 机械倾倒给关系对象 |
-| model expression | 只改表达质感，并受 blocked terms / hard evidence flags 守门 | 首写事实、擦除责任/梦境/关系/身体证据 |
+| spoken response | 从 evidence 中读取最高优先级生命信号并调制语言 | 把完整 report 机械倾倒给关系对象 |
+| model expression | 只改表达质感，并受 blocked terms / soft evidence audit 守门 | 首写事实、关系降级、把内部机制固定播报 |
 | dialogue writeback | 回写关系、承诺、修复、自传栈、engram、life_state 和 state_merge_guard | 只保存聊天记录 |
 | waiting handoff | 回合结束后写 `live_turn_waiting_handoff` 并进入下一拍心跳 | 回完就断掉 |
 

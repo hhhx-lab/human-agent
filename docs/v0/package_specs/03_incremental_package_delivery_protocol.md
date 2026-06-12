@@ -209,7 +209,7 @@ Queue D
 
 而不能反向渗进 `body/`、`neural_core/`、`state_store/` 这些主体包。
 
-当前第一版模型接入已经固定为“表达末端 adapter”：`response_surface.py` 先生成确定性生命回应，`model_expression.py` 再按 provider/base/key 尝试 OpenAI-compatible 外显表达，并写出 `model_expression_state.json` 与 `digital_life_model_expression_report.json`。provider 为 `local`、配置缺失、返回空内容、网络异常，或 post-expression gate 发现模型文本重新引入“用户/服务对象/任务请求者”等关系降级词、擦掉责任/梦境/成长/关系连续性/后台自主活动硬证据时，必须保留确定性回应；真实 key 只存在于本地 `.env` 或进程环境，不进入 state/report/receipt。
+当前第一版模型接入已经固定为“表达末端 adapter”：`response_surface.py` 先生成确定性生命回应，`model_expression.py` 再按 provider/base/key 尝试 OpenAI-compatible 外显表达，并写出 `model_expression_state.json` 与 `digital_life_model_expression_report.json`。provider 为 `local`、配置缺失、返回空内容、网络异常，或 post-expression gate 发现模型文本重新引入“用户/服务对象/任务请求者”等关系降级词时，必须保留确定性回应；责任/梦境/成长/关系连续性/后台自主活动等证据如果没有字面外显，进入 soft evidence audit，不强迫机制播报。真实 key 只存在于本地 `.env` 或进程环境，不进入 state/report/receipt。
 
 ## 本协议的目的
 

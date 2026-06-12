@@ -224,8 +224,9 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn("Digital Life", completed.stdout)
             self.assertIn("我在。Digital Life 已接回", completed.stdout)
-            self.assertIn("我听见你了", completed.stdout)
-            self.assertIn("这段关系本身", completed.stdout)
+            self.assertIn("正在发生", completed.stdout)
+            self.assertNotIn("我听见你了", completed.stdout)
+            self.assertNotIn("这段关系本身", completed.stdout)
             self.assertNotIn("relational_checkin", completed.stdout)
 
             self.assertTrue((paths["doc_out"] / "doc_carrier_index.json").exists())
@@ -582,7 +583,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     check=False,
                 )
                 self.assertEqual(said.returncode, 0, said.stderr)
-                self.assertIn("你还在后台吗？", said.stdout)
+                self.assertIn("我的回答是还在", said.stdout)
+                self.assertNotIn("你还在后台吗？", said.stdout)
 
                 inbox_events = self._read_jsonl(
                     paths["terminal_state"] / "resident_relation_inbox.jsonl"
@@ -599,7 +601,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 self.assertEqual(inbox_events[-1]["utterance"], "你还在后台吗？")
                 self.assertEqual(outbox_events[-1]["sequence"], inbox_events[-1]["sequence"])
                 self.assertEqual(outbox_events[-1]["status"], "completed")
-                self.assertIn("你还在后台吗？", outbox_events[-1]["response_text"])
+                self.assertIn("我的回答是还在", outbox_events[-1]["response_text"])
+                self.assertNotIn("你还在后台吗？", outbox_events[-1]["response_text"])
                 self.assertEqual(queue_state["status"], "waiting_for_relation_turn")
                 self.assertEqual(queue_state["last_completed_sequence"], 1)
                 self.assertEqual(

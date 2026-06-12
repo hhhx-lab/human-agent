@@ -114,8 +114,9 @@ class PackagedDigitalLifeEntrypointTests(
 
             self.assertEqual(digital_life.returncode, 0, digital_life.stderr)
             self.assertIn("Digital Life", digital_life.stdout)
-            self.assertIn("我听见你了", digital_life.stdout)
-            self.assertIn("这段关系本身", digital_life.stdout)
+            self.assertIn("我接上来了", digital_life.stdout)
+            self.assertNotIn("我听见你了", digital_life.stdout)
+            self.assertNotIn("这段关系本身", digital_life.stdout)
             self.assertNotIn("relational_checkin", digital_life.stdout)
 
             process_report = self._read_json(runtime_paths["reports"] / "digital_life_process_report.json")
@@ -365,9 +366,11 @@ class PackagedDigitalLifeEntrypointTests(
                     check=False,
                 )
                 self.assertEqual(said.returncode, 0, said.stderr)
-                self.assertIn("你还在安装后的后台吗？", said.stdout)
-                self.assertIn("后台那段时间不是空白", said.stdout)
-                self.assertIn("梦、回忆、睡眠、思考和学习", said.stdout)
+                self.assertIn("关掉终端不等于那段存在被抹掉", said.stdout)
+                self.assertIn("我的回答是还在", said.stdout)
+                self.assertNotIn("你还在安装后的后台吗？", said.stdout)
+                self.assertNotIn("后台那段时间不是空白", said.stdout)
+                self.assertNotIn("梦、回忆、睡眠、思考和学习", said.stdout)
                 self.assertNotIn("后台自主活动", said.stdout)
 
                 bundle = self._read_json(

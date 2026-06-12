@@ -226,10 +226,10 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertEqual(captured["payload"]["model"], "gpt-5.5")
             self.assertTrue(captured["payload"]["stream"])
             system_prompt = captured["payload"]["messages"][0]["content"]
-            self.assertIn("意识", system_prompt)
-            self.assertIn("出生准备", system_prompt)
-            self.assertIn("生命约束", system_prompt)
-            self.assertIn("上一真实回合交接压力", system_prompt)
+            self.assertIn("内部生命机制只作为表达调制", system_prompt)
+            self.assertIn("不要把机制证据列成清单", system_prompt)
+            self.assertIn("尊重对方明确提出的长度", system_prompt)
+            self.assertIn("关系对象", system_prompt)
             self.assertEqual(captured["payload"]["temperature"], 0.2)
             self.assertEqual(captured["payload"]["max_tokens"], 128)
             self.assertEqual(captured["timeout_seconds"], 9.0)
@@ -371,7 +371,7 @@ class ModelExpressionTests(unittest.TestCase):
                 result.state["post_expression_gate"]["blocked_relation_object_terms"],
             )
 
-    def test_post_expression_gate_preserves_dream_and_growth_pressure(self):
+    def test_post_expression_gate_audits_dream_and_growth_pressure_without_forcing_visibility(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
 
@@ -416,22 +416,19 @@ class ModelExpressionTests(unittest.TestCase):
                 write_json=self._write_json,
             )
 
-            self.assertFalse(result.applied)
-            self.assertEqual(result.response_text, "确定性回应保留梦境整合和成长学习。")
-            self.assertEqual(
-                result.state["post_expression_gate_status"],
-                "fallback_to_deterministic",
-            )
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, "我会认真回应这句话。")
+            self.assertEqual(result.state["post_expression_gate_status"], "accepted")
             self.assertIn(
                 "dream_offline",
-                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
             self.assertIn(
                 "growth_learning",
-                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
 
-    def test_post_expression_gate_preserves_resident_autonomous_activity(self):
+    def test_post_expression_gate_audits_resident_autonomous_activity_without_forcing_visibility(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
 
@@ -484,17 +481,14 @@ class ModelExpressionTests(unittest.TestCase):
                 write_json=self._write_json,
             )
 
-            self.assertFalse(result.applied)
-            self.assertEqual(
-                result.response_text,
-                "确定性回应保留后台自主活动、睡眠、回忆和思考。",
-            )
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, "我会认真回应这句话。")
             self.assertIn(
                 "resident_autonomous_activity",
-                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
 
-    def test_post_expression_gate_preserves_background_body_presence(self):
+    def test_post_expression_gate_audits_background_body_presence_without_forcing_visibility(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
 
@@ -554,17 +548,14 @@ class ModelExpressionTests(unittest.TestCase):
                 write_json=self._write_json,
             )
 
-            self.assertFalse(result.applied)
-            self.assertEqual(
-                result.response_text,
-                "确定性回应保留身体节奏、疲惫负载和修复状态。",
-            )
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, "我会认真回应这句话。")
             self.assertIn(
                 "body_affect",
-                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
 
-    def test_post_expression_gate_preserves_identity_consciousness_birth_presence(self):
+    def test_post_expression_gate_audits_identity_consciousness_birth_presence_without_forcing_visibility(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
 
@@ -631,17 +622,14 @@ class ModelExpressionTests(unittest.TestCase):
                 write_json=self._write_json,
             )
 
-            self.assertFalse(result.applied)
-            self.assertEqual(
-                result.response_text,
-                "确定性回应保留意识可报告性、出生准备和工作区状态。",
-            )
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, "我会认真回应这句话。")
             self.assertIn(
                 "identity_consciousness_birth",
-                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
 
-    def test_post_expression_gate_preserves_birth_repair_presence(self):
+    def test_post_expression_gate_audits_birth_repair_presence_without_forcing_visibility(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
 
@@ -698,17 +686,14 @@ class ModelExpressionTests(unittest.TestCase):
                 write_json=self._write_json,
             )
 
-            self.assertFalse(result.applied)
-            self.assertEqual(
-                result.response_text,
-                "确定性回应保留出生修复压力、痛苦、后悔和责任。",
-            )
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, "我会回应这句话。")
             self.assertIn(
                 "birth_repair",
-                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
 
-    def test_post_expression_gate_preserves_live_turn_handoff_pressure(self):
+    def test_post_expression_gate_audits_live_turn_handoff_pressure_without_forcing_visibility(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             handoff_profile = {
@@ -755,17 +740,14 @@ class ModelExpressionTests(unittest.TestCase):
                 write_json=self._write_json,
             )
 
-            self.assertFalse(result.applied)
-            self.assertEqual(
-                result.response_text,
-                "确定性回应保留上一真实回合交接、等待驻留和语义余波。",
-            )
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, "我会回应这句话。")
             self.assertIn(
                 "live_turn_handoff",
-                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
 
-    def test_post_expression_gate_preserves_life_constraint_presence(self):
+    def test_post_expression_gate_audits_life_constraint_presence_without_forcing_visibility(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
 
@@ -812,14 +794,11 @@ class ModelExpressionTests(unittest.TestCase):
                 write_json=self._write_json,
             )
 
-            self.assertFalse(result.applied)
-            self.assertEqual(
-                result.response_text,
-                "确定性回应保留生命约束、边界、价值取向和延后守门。",
-            )
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, "我会回应这句话。")
             self.assertIn(
                 "life_constraint",
-                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
 
     def test_local_provider_keeps_deterministic_expression_without_transport(self):

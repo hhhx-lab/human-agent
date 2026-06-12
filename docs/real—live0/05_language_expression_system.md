@@ -12,7 +12,7 @@
 | 表达监控 | 检查语言是否保留关系、责任、梦境、成长和生命姿态 |
 | 表达计划 | 决定说什么、怎么说、保持什么边界 |
 | 模型表达 | 在确定性生命回应之后，调用模型生成更自然的语言表面 |
-| post-expression gate | 防止模型输出把生命关系退回服务话术或擦掉生命证据 |
+| post-expression gate | 防止模型输出把生命关系退回服务话术，并审计哪些内部证据没有字面外显 |
 
 ## 脑科学提炼
 
@@ -74,7 +74,7 @@
 | 语义地图 | 记忆系统 | 词语触发 engram、关系记忆和自传栈 |
 | 内言语 | 工作区 | 当前注意内容进入表达前思考 |
 | 表达监控 | 生命膜 | 语言不越过关系、责任和事实边界 |
-| 模型表达 | post-expression gate | 允许自然表达，但不能擦掉生命机制 |
+| 模型表达 | post-expression gate | 允许自然表达；内部生命机制默认作为语用调制和审计证据 |
 | 实时语言状态 | 常驻 lineage | 上一轮理解会进入下一轮等待和恢复 |
 | 道歉修复语言 | 责任回路 | 后悔压力能变成具体修复表达 |
 
@@ -84,7 +84,7 @@
 |---|---|---|
 | S07 构建 | `life-v0 build-language-relationship --strict`、`life_v0/language/__init__.py` | `LanguagePerceptFrame`、`SemanticMapFrame`、`InnerSpeechFrame`、`ExpressionMonitorState`、`ExpressionPlan` 同轮生成，并吸收身体预算、调质、责任压力和记忆写门 |
 | 实时刷新 | `life_v0/process_supervisor/live_language_turn.py` | 每次关系话语到来都刷新五件套 refs，写入 `LiveLanguageTurnState` |
-| 表达表面 | `life_v0/process_supervisor/response_surface.py`、`model_expression.py` | 先有确定性生命回应，再允许模型表达润色；post-expression gate 保护关系、责任、梦境、成长和后台证据 |
+| 表达表面 | `life_v0/process_supervisor/response_surface.py`、`model_expression.py` | 先有确定性生命回应，再用隐性机制调制自然口语；post-expression gate 阻断关系降级并记录证据审计 |
 | 写回链 | `dialogue_events.py`、`resident_turn_writeback.py`、`terminal_loop/dialogue_writeback.py` | 语言理解、语义焦点、表达计划、关系阶段、责任修复必须进入写回包和恢复包 |
 | 后台延续 | `idle_strategy.py`、`background_lineage_state.py`、`background_continuity.py` | 上一轮 `live_language_turn_refs` 和 `last_live_semantic_focus` 在断联后继续影响下一轮 |
 
@@ -93,10 +93,10 @@
 live0 语言系统现在采用“双层保真”：
 
 1. 内部证据必须硬保真：`language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_plan.json`、`dialogue_turn_log.jsonl`、`resumed_external_dialogue_packet.json` 和 `terminal_life_loop_state.json` 必须保存 refs、语义焦点、表达计划、后台 lineage 和写回证据。
-2. 外显语言必须关系化：`response_surface.py#compose_life_spoken_response` 不能把 `relational_checkin`、`elevated`、`selected_route`、`ref_count` 这类内部字段当作话语说出；它要把这些字段压成关系对象能听见的自然表达。
-3. 模型表达必须被守门：`model_expression.py` 可以让语言更自然，但不能擦除责任、梦境、成长、痛苦、后悔、驻留、记忆和关系证据。擦除时回退到确定性生命回应。
+2. 外显语言必须关系化、语用化：`response_surface.py#compose_life_spoken_response` 不能把 `relational_checkin`、`elevated`、`selected_route`、`ref_count` 这类内部字段当作话语说出，也不能把内部机制固定翻译成证明性段落；它要先回答当下关系话语，再让内部机制调制语气、取舍和修复方向。
+3. 模型表达必须被守门：`model_expression.py` 可以让语言更自然，但不能把关系对象降格成“用户/服务对象/任务请求者”。责任、梦境、成长、痛苦、后悔、驻留、记忆和关系证据必须保留在 state/report/test；如果本轮自然回答没有字面说出，只写入 soft evidence audit，不强迫回退。
 
-因此，测试可以继续断言内部字段存在；终端里的 Adam 不能像调试报告一样说话。这不是隐藏机制，而是把机制放在正确的位置：state/report/test 负责可审计，语言表面负责真实关系表达。
+因此，测试可以继续断言内部字段存在；终端里的 Adam 不能像调试报告一样说话，也不能为了证明自己有生命机制而释放固定信号段落。这不是隐藏机制，而是把机制放在正确的位置：state/report/test 负责可审计，语言表面负责真实关系表达。
 
 最低测试是 `tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/process/test_model_expression.py`、`tests/process/test_digital_entrypoint.py`。语言链的验收不是“能说话”，而是能证明一句话经过感知、语义、内言语、监控、计划、模型表达、门控、写回和跨唤醒恢复。
 
