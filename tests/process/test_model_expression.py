@@ -603,6 +603,63 @@ class ModelExpressionTests(unittest.TestCase):
                 result.state["post_expression_gate"]["hard_missing_evidence_flags"],
             )
 
+    def test_post_expression_gate_preserves_life_constraint_presence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": "我会回应这句话。"},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-life-constraint-presence",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="你会怎么决定要不要行动？",
+                deterministic_response="确定性回应保留生命约束、边界、价值取向和延后守门。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                terminal_life_loop_state={
+                    "resident_background_lineage_state": {
+                        "life_constraint_presence": {
+                            "schema_version": "life_constraint_presence_v0",
+                            "queue_e_cross_layer_gate_status": "guarded",
+                            "waiting_posture": "schema_guarded_waiting",
+                            "attention_target": "value_boundary_action_delay",
+                            "attention_reason": "life_constraint_profile_active",
+                            "life_constraint_refs": [
+                                "runtime/state/action/action_candidate_set.json",
+                                "runtime/state/consciousness/consciousness_probe_bundle.json",
+                                "runtime/state/schema_runner/cross_file_logic.json",
+                            ],
+                        }
+                    }
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(
+                result.response_text,
+                "确定性回应保留生命约束、边界、价值取向和延后守门。",
+            )
+            self.assertIn(
+                "life_constraint",
+                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+            )
+
     def test_local_provider_keeps_deterministic_expression_without_transport(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
