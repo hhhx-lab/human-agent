@@ -326,6 +326,69 @@ class ModelExpressionTests(unittest.TestCase):
                 result.state["post_expression_gate"]["hard_missing_evidence_flags"],
             )
 
+    def test_post_expression_gate_preserves_resident_autonomous_activity(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": "我会认真回应这句话。"},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-autonomous-presence",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="我关掉终端时你还在吗？",
+                deterministic_response="确定性回应保留后台自主活动、睡眠、回忆和思考。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relation_role": "friend",
+                            "relationship_stage": "repair_guarded_continuity",
+                        }
+                    ]
+                },
+                terminal_life_loop_state={
+                    "resident_background_lineage_state": {
+                        "autonomous_activity_presence": {
+                            "activity_count": 5,
+                            "activity_kind_counts": {
+                                "sleep": 1,
+                                "memory_recall": 1,
+                                "self_thinking": 1,
+                                "growth_rehearsal": 1,
+                                "learning_consolidation": 1,
+                            },
+                        }
+                    }
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(
+                result.response_text,
+                "确定性回应保留后台自主活动、睡眠、回忆和思考。",
+            )
+            self.assertIn(
+                "resident_autonomous_activity",
+                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+            )
+
     def test_local_provider_keeps_deterministic_expression_without_transport(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

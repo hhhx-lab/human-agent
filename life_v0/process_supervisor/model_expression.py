@@ -84,6 +84,17 @@ EVIDENCE_FLAG_TERMS = {
     ],
     "dream_offline": ["梦", "梦境", "醒后", "离线", "睡眠", "整合"],
     "growth_learning": ["成长", "学习", "更新", "改变", "沉淀", "生长"],
+    "resident_autonomous_activity": [
+        "自主",
+        "后台",
+        "睡眠",
+        "回忆",
+        "思考",
+        "成长",
+        "学习",
+        "活动",
+        "空闲",
+    ],
     "body_affect": ["疲惫", "节奏", "紧张", "修复", "感受", "状态", "慢"],
     "prediction_attention": [
         "判断",
@@ -100,6 +111,7 @@ HARD_EVIDENCE_FLAGS = {
     "responsibility_repair",
     "dream_offline",
     "growth_learning",
+    "resident_autonomous_activity",
 }
 
 ModelExpressionTransport = Callable[
@@ -874,6 +886,8 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
         life_context.get("growth_patch_candidate_count")
     ) or resident_background.get("offline_learning_presence"):
         flags.append("growth_learning")
+    if resident_background.get("autonomous_activity_presence"):
+        flags.append("resident_autonomous_activity")
     if _has_any_value(
         body_affect,
         [
