@@ -1,6 +1,48 @@
 from __future__ import annotations
 
+import os
+import tempfile
 from pathlib import Path
+
+
+DIGITAL_LIFE_RUNTIME_ENV_KEYS = [
+    "DIGITAL_LIFE_ENV_FILE",
+    "DIGITAL_LIFE_RUNTIME_PROFILE",
+    "DIGITAL_LIFE_MODEL_PROVIDER",
+    "DIGITAL_LIFE_MODEL_NAME",
+    "DIGITAL_LIFE_MODEL_BASE_URL",
+    "DIGITAL_LIFE_MODEL_API_KEY",
+    "DIGITAL_LIFE_MODEL_TEMPERATURE",
+    "DIGITAL_LIFE_MODEL_MAX_OUTPUT_TOKENS",
+    "DIGITAL_LIFE_MODEL_TIMEOUT_SECONDS",
+    "DIGITAL_LIFE_RESPONSE_LANGUAGE",
+    "DIGITAL_LIFE_DIALOGUE_STYLE",
+    "DIGITAL_LIFE_STRICT_DEFAULT",
+]
+
+
+class DigitalLifeRuntimeEnvIsolationMixin:
+    def setUp(self) -> None:
+        super().setUp()
+        self._previous_digital_life_runtime_env = {
+            key: os.environ.get(key) for key in DIGITAL_LIFE_RUNTIME_ENV_KEYS
+        }
+        for key in DIGITAL_LIFE_RUNTIME_ENV_KEYS:
+            os.environ.pop(key, None)
+        os.environ["DIGITAL_LIFE_ENV_FILE"] = str(
+            Path(tempfile.gettempdir())
+            / f"human-agent-test-no-env-{os.getpid()}.env"
+        )
+
+    def tearDown(self) -> None:
+        previous_env = getattr(self, "_previous_digital_life_runtime_env", {})
+        for key in DIGITAL_LIFE_RUNTIME_ENV_KEYS:
+            old_value = previous_env.get(key)
+            if old_value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = old_value
+        super().tearDown()
 
 
 def build_runtime_paths(tmp_path: Path) -> dict[str, Path]:

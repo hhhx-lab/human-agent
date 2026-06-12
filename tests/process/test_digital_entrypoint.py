@@ -6,10 +6,14 @@ import time
 import unittest
 from pathlib import Path
 
-from tests.helpers.life_v0_bootstrap import activation_bootstrap_commands, build_runtime_paths
+from tests.helpers.life_v0_bootstrap import (
+    DigitalLifeRuntimeEnvIsolationMixin,
+    activation_bootstrap_commands,
+    build_runtime_paths,
+)
 
 
-class DigitalEntrypointTests(unittest.TestCase):
+class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestCase):
     @property
     def repo_root(self) -> Path:
         return Path(__file__).resolve().parents[2]

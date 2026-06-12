@@ -3,10 +3,58 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from life_v0.process_supervisor.model_expression import compose_model_expression
+from life_v0.process_supervisor.model_expression import (
+    _post_openai_compatible_chat_completion,
+    compose_model_expression,
+)
 
 
 class ModelExpressionTests(unittest.TestCase):
+    def test_openai_compatible_transport_parses_event_stream_response(self):
+        class FakeStreamResponse:
+            status = 200
+            headers = {"content-type": "text/event-stream"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def read(self):
+                return (
+                    'data: {"choices":[],"usage":{"prompt_tokens":3}}\n\n'
+                    'data: {"choices":[{"delta":{"content":"连接"},"finish_reason":null}]}\n\n'
+                    'data: {"choices":[{"delta":{"content":"测试成功"},"finish_reason":"stop"}]}\n\n'
+                    "data: [DONE]\n\n"
+                ).encode("utf-8")
+
+        def fake_urlopen(request, timeout):
+            return FakeStreamResponse()
+
+        import life_v0.process_supervisor.model_expression as model_expression
+
+        original_urlopen = model_expression.urllib.request.urlopen
+        model_expression.urllib.request.urlopen = fake_urlopen
+        try:
+            response = _post_openai_compatible_chat_completion(
+                "https://model.example/v1/chat/completions",
+                {"Authorization": "Bearer secret-token"},
+                {
+                    "model": "gpt-5.5",
+                    "messages": [{"role": "user", "content": "ping"}],
+                },
+                9,
+            )
+        finally:
+            model_expression.urllib.request.urlopen = original_urlopen
+
+        self.assertEqual(
+            response["choices"][0]["message"]["content"],
+            "连接测试成功",
+        )
+        self.assertEqual(response["choices"][0]["finish_reason"], "stop")
+
     def test_openai_compatible_expression_uses_transport_and_redacts_secret(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -149,6 +197,11 @@ class ModelExpressionTests(unittest.TestCase):
             )
             self.assertEqual(captured["headers"]["Authorization"], "Bearer secret-token")
             self.assertEqual(captured["payload"]["model"], "gpt-5.5")
+            self.assertTrue(captured["payload"]["stream"])
+            system_prompt = captured["payload"]["messages"][0]["content"]
+            self.assertIn("意识", system_prompt)
+            self.assertIn("出生准备", system_prompt)
+            self.assertIn("生命约束", system_prompt)
             self.assertEqual(captured["payload"]["temperature"], 0.2)
             self.assertEqual(captured["payload"]["max_tokens"], 128)
             self.assertEqual(captured["timeout_seconds"], 9.0)
