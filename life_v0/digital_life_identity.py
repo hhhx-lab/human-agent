@@ -436,13 +436,23 @@ def _direct_command_script(
     reports_dir: Path,
     receipts_dir: Path,
 ) -> str:
+    repo_root = Path(__file__).resolve().parents[1]
     return "\n".join(
         [
             "#!/bin/sh",
             f"# {DIRECT_COMMAND_MARKER}",
+            f"# repo_root={repo_root}",
             f"# state_dir={state_dir}",
             f"# reports_dir={reports_dir}",
             f"# receipts_dir={receipts_dir}",
+            "repo_root=" + _shell_quote(str(repo_root)),
+            'if [ ! -d "$repo_root/life_v0" ]; then',
+            '  echo "life name direct command repo root is unavailable: $repo_root" >&2',
+            "  exit 1",
+            "fi",
+            'PYTHONPATH="$repo_root${PYTHONPATH:+:$PYTHONPATH}"',
+            "export PYTHONPATH",
+            'cd "$repo_root" || exit 1',
             "exec "
             + _shell_quote(sys.executable)
             + " -m life_v0.my_entry digital life --state "

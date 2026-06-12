@@ -152,10 +152,15 @@ class MyDigitalLifeEntrypointTests(
                     "--status",
                     "--json",
                 ],
-                cwd=self.repo_root,
+                cwd=Path(tmp),
                 text=True,
                 capture_output=True,
                 check=False,
+                env={
+                    key: value
+                    for key, value in os.environ.items()
+                    if key != "PYTHONPATH"
+                },
             )
             self.assertEqual(direct_status.returncode, 0, direct_status.stderr)
             direct_status_payload = json.loads(direct_status.stdout)
