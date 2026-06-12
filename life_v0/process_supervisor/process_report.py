@@ -341,6 +341,102 @@ def write_process_report_bundle(
             * background_resident_autonomous_activity_default_ref_set,
         ]
     ) or resolved_resident_autonomous_activity_ref_set
+    resolved_autonomous_activity_cycle_phase_index = _first_non_none(
+        idle_governance.get("autonomous_activity_cycle_phase_index"),
+        resolved_resident_autonomous_activity_presence_profile.get(
+            "cycle_phase_index"
+        ),
+    )
+    resolved_autonomous_activity_cycle_phase_count = _first_non_none(
+        idle_governance.get("autonomous_activity_cycle_phase_count"),
+        resolved_resident_autonomous_activity_presence_profile.get(
+            "cycle_phase_count"
+        ),
+    )
+    resolved_autonomous_activity_cycle_completion_count = _first_non_none(
+        idle_governance.get("autonomous_activity_cycle_completion_count"),
+        resolved_resident_autonomous_activity_presence_profile.get(
+            "cycle_completion_count"
+        ),
+    )
+    resolved_autonomous_activity_cycle_coverage_complete = _first_non_none(
+        idle_governance.get("autonomous_activity_cycle_coverage_complete"),
+        resolved_resident_autonomous_activity_presence_profile.get(
+            "cycle_coverage_complete"
+        ),
+    )
+    resolved_autonomous_activity_covered_kinds = (
+        _list_or_empty(idle_governance.get("autonomous_activity_covered_kinds"))
+        or _list_or_empty(
+            resolved_resident_autonomous_activity_presence_profile.get(
+                "covered_activity_kinds"
+            )
+        )
+    )
+    resolved_autonomous_activity_missing_kinds = (
+        _list_or_empty(idle_governance.get("autonomous_activity_missing_kinds"))
+        or _list_or_empty(
+            resolved_resident_autonomous_activity_presence_profile.get(
+                "missing_activity_kinds"
+            )
+        )
+    )
+    resolved_next_autonomous_activity_kind = (
+        idle_governance.get("next_autonomous_activity_kind")
+        or resolved_resident_autonomous_activity_presence_profile.get(
+            "next_activity_kind"
+        )
+    )
+    resolved_background_autonomous_activity_cycle_completion_count = _first_non_none(
+        idle_governance.get("background_autonomous_activity_cycle_completion_count"),
+        resolved_background_resident_autonomous_activity_presence_profile.get(
+            "cycle_completion_count"
+        ),
+    )
+    resolved_background_autonomous_activity_cycle_coverage_complete = _first_non_none(
+        idle_governance.get("background_autonomous_activity_cycle_coverage_complete"),
+        resolved_background_resident_autonomous_activity_presence_profile.get(
+            "cycle_coverage_complete"
+        ),
+    )
+    resolved_background_autonomous_activity_covered_kinds = (
+        _list_or_empty(
+            idle_governance.get("background_autonomous_activity_covered_kinds")
+        )
+        or _list_or_empty(
+            resolved_background_resident_autonomous_activity_presence_profile.get(
+                "covered_activity_kinds"
+            )
+        )
+    )
+    resolved_background_autonomous_activity_missing_kinds = (
+        _list_or_empty(
+            idle_governance.get("background_autonomous_activity_missing_kinds")
+        )
+        or _list_or_empty(
+            resolved_background_resident_autonomous_activity_presence_profile.get(
+                "missing_activity_kinds"
+            )
+        )
+    )
+    resolved_background_next_autonomous_activity_kind = (
+        idle_governance.get("background_next_autonomous_activity_kind")
+        or resolved_background_resident_autonomous_activity_presence_profile.get(
+            "next_activity_kind"
+        )
+    )
+    resolved_background_autonomous_activity_cycle_phase_index = _first_non_none(
+        idle_governance.get("background_autonomous_activity_cycle_phase_index"),
+        resolved_background_resident_autonomous_activity_presence_profile.get(
+            "cycle_phase_index"
+        ),
+    )
+    resolved_background_autonomous_activity_cycle_phase_count = _first_non_none(
+        idle_governance.get("background_autonomous_activity_cycle_phase_count"),
+        resolved_background_resident_autonomous_activity_presence_profile.get(
+            "cycle_phase_count"
+        ),
+    )
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_runtime_ref=signal_media_runtime_ref,
         belief_state_ref=belief_state_ref,
@@ -510,6 +606,25 @@ def write_process_report_bundle(
             {},
         )
         or resolved_resident_autonomous_activity_presence_profile.get("activity_state_refs", {}),
+        "autonomous_activity_cycle_phase_index": (
+            resolved_autonomous_activity_cycle_phase_index
+        ),
+        "autonomous_activity_cycle_phase_count": (
+            resolved_autonomous_activity_cycle_phase_count
+        ),
+        "autonomous_activity_cycle_completion_count": (
+            resolved_autonomous_activity_cycle_completion_count
+        ),
+        "autonomous_activity_cycle_coverage_complete": (
+            resolved_autonomous_activity_cycle_coverage_complete
+        ),
+        "autonomous_activity_covered_kinds": (
+            resolved_autonomous_activity_covered_kinds
+        ),
+        "autonomous_activity_missing_kinds": (
+            resolved_autonomous_activity_missing_kinds
+        ),
+        "next_autonomous_activity_kind": resolved_next_autonomous_activity_kind,
         "background_autonomous_activity_presence": idle_governance.get(
             "background_autonomous_activity_presence",
             {},
@@ -575,6 +690,27 @@ def write_process_report_bundle(
         or resolved_background_resident_autonomous_activity_presence_profile.get(
             "activity_state_refs",
             {},
+        ),
+        "background_autonomous_activity_cycle_phase_index": (
+            resolved_background_autonomous_activity_cycle_phase_index
+        ),
+        "background_autonomous_activity_cycle_phase_count": (
+            resolved_background_autonomous_activity_cycle_phase_count
+        ),
+        "background_autonomous_activity_cycle_completion_count": (
+            resolved_background_autonomous_activity_cycle_completion_count
+        ),
+        "background_autonomous_activity_cycle_coverage_complete": (
+            resolved_background_autonomous_activity_cycle_coverage_complete
+        ),
+        "background_autonomous_activity_covered_kinds": (
+            resolved_background_autonomous_activity_covered_kinds
+        ),
+        "background_autonomous_activity_missing_kinds": (
+            resolved_background_autonomous_activity_missing_kinds
+        ),
+        "background_next_autonomous_activity_kind": (
+            resolved_background_next_autonomous_activity_kind
         ),
         "next_required_action": "process_closed_waiting_relaunch",
         "blocked_reasons": [],
@@ -643,6 +779,25 @@ def write_process_report_bundle(
             {},
         )
     )
+    report["autonomous_activity_cycle_phase_index"] = (
+        resolved_autonomous_activity_cycle_phase_index
+    )
+    report["autonomous_activity_cycle_phase_count"] = (
+        resolved_autonomous_activity_cycle_phase_count
+    )
+    report["autonomous_activity_cycle_completion_count"] = (
+        resolved_autonomous_activity_cycle_completion_count
+    )
+    report["autonomous_activity_cycle_coverage_complete"] = (
+        resolved_autonomous_activity_cycle_coverage_complete
+    )
+    report["autonomous_activity_covered_kinds"] = (
+        resolved_autonomous_activity_covered_kinds
+    )
+    report["autonomous_activity_missing_kinds"] = (
+        resolved_autonomous_activity_missing_kinds
+    )
+    report["next_autonomous_activity_kind"] = resolved_next_autonomous_activity_kind
     report["background_resident_autonomous_activity_presence_profile"] = (
         resolved_background_resident_autonomous_activity_presence_profile
     )
@@ -702,6 +857,27 @@ def write_process_report_bundle(
             "activity_state_refs",
             {},
         )
+    )
+    report["background_autonomous_activity_cycle_phase_index"] = (
+        resolved_background_autonomous_activity_cycle_phase_index
+    )
+    report["background_autonomous_activity_cycle_phase_count"] = (
+        resolved_background_autonomous_activity_cycle_phase_count
+    )
+    report["background_autonomous_activity_cycle_completion_count"] = (
+        resolved_background_autonomous_activity_cycle_completion_count
+    )
+    report["background_autonomous_activity_cycle_coverage_complete"] = (
+        resolved_background_autonomous_activity_cycle_coverage_complete
+    )
+    report["background_autonomous_activity_covered_kinds"] = (
+        resolved_background_autonomous_activity_covered_kinds
+    )
+    report["background_autonomous_activity_missing_kinds"] = (
+        resolved_background_autonomous_activity_missing_kinds
+    )
+    report["background_next_autonomous_activity_kind"] = (
+        resolved_background_next_autonomous_activity_kind
     )
     _apply_resident_process_identity_profile(
         report,
@@ -903,6 +1079,25 @@ def write_process_report_bundle(
                 {},
             )
         ),
+        "autonomous_activity_cycle_phase_index": (
+            resolved_autonomous_activity_cycle_phase_index
+        ),
+        "autonomous_activity_cycle_phase_count": (
+            resolved_autonomous_activity_cycle_phase_count
+        ),
+        "autonomous_activity_cycle_completion_count": (
+            resolved_autonomous_activity_cycle_completion_count
+        ),
+        "autonomous_activity_cycle_coverage_complete": (
+            resolved_autonomous_activity_cycle_coverage_complete
+        ),
+        "autonomous_activity_covered_kinds": (
+            resolved_autonomous_activity_covered_kinds
+        ),
+        "autonomous_activity_missing_kinds": (
+            resolved_autonomous_activity_missing_kinds
+        ),
+        "next_autonomous_activity_kind": resolved_next_autonomous_activity_kind,
         "background_autonomous_activity_presence": (
             idle_governance.get("background_autonomous_activity_presence")
             or resolved_background_resident_autonomous_activity_presence_profile
@@ -966,6 +1161,27 @@ def write_process_report_bundle(
                 "activity_state_refs",
                 {},
             )
+        ),
+        "background_autonomous_activity_cycle_phase_index": (
+            resolved_background_autonomous_activity_cycle_phase_index
+        ),
+        "background_autonomous_activity_cycle_phase_count": (
+            resolved_background_autonomous_activity_cycle_phase_count
+        ),
+        "background_autonomous_activity_cycle_completion_count": (
+            resolved_background_autonomous_activity_cycle_completion_count
+        ),
+        "background_autonomous_activity_cycle_coverage_complete": (
+            resolved_background_autonomous_activity_cycle_coverage_complete
+        ),
+        "background_autonomous_activity_covered_kinds": (
+            resolved_background_autonomous_activity_covered_kinds
+        ),
+        "background_autonomous_activity_missing_kinds": (
+            resolved_background_autonomous_activity_missing_kinds
+        ),
+        "background_next_autonomous_activity_kind": (
+            resolved_background_next_autonomous_activity_kind
         ),
         "identity_consciousness_birth_refs": identity_consciousness_birth_refs,
         "background_relationship_stage": relationship_resume_summary.get(

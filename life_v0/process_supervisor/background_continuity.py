@@ -655,6 +655,85 @@ def load_background_continuity_profile(
         autonomous_activity_state_refs = _dict_or_empty(
             autonomous_activity_presence_profile.get("activity_state_refs")
         )
+    autonomous_activity_cycle_phase_index = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("autonomous_activity_cycle_phase_index",),
+    )
+    if autonomous_activity_cycle_phase_index is None:
+        autonomous_activity_cycle_phase_index = (
+            autonomous_activity_presence_profile.get("cycle_phase_index")
+        )
+    autonomous_activity_cycle_phase_count = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("autonomous_activity_cycle_phase_count",),
+    )
+    if autonomous_activity_cycle_phase_count is None:
+        autonomous_activity_cycle_phase_count = (
+            autonomous_activity_presence_profile.get("cycle_phase_count")
+        )
+    autonomous_activity_cycle_completion_count = max(
+        _int_or_zero(
+            resident_governance_state.get("autonomous_activity_cycle_completion_count")
+        ),
+        _int_or_zero(snapshot.get("autonomous_activity_cycle_completion_count")),
+        _int_or_zero(
+            resident_governance_report.get("autonomous_activity_cycle_completion_count")
+        ),
+        _int_or_zero(
+            persistent_process_report.get("autonomous_activity_cycle_completion_count")
+        ),
+        _int_or_zero(
+            autonomous_activity_presence_profile.get("cycle_completion_count")
+        ),
+    )
+    autonomous_activity_cycle_coverage_complete = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("autonomous_activity_cycle_coverage_complete",),
+    )
+    if autonomous_activity_cycle_coverage_complete is None:
+        autonomous_activity_cycle_coverage_complete = (
+            autonomous_activity_presence_profile.get("cycle_coverage_complete")
+        )
+    autonomous_activity_covered_kinds = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=("autonomous_activity_covered_kinds",),
+        )
+        + _list_or_empty(
+            autonomous_activity_presence_profile.get("covered_activity_kinds")
+        )
+    )
+    autonomous_activity_missing_kinds = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=("autonomous_activity_missing_kinds",),
+        )
+        + _list_or_empty(
+            autonomous_activity_presence_profile.get("missing_activity_kinds")
+        )
+    )
+    next_autonomous_activity_kind = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=("next_autonomous_activity_kind",),
+    ) or autonomous_activity_presence_profile.get("next_activity_kind")
     live_language_turn_refs = _dedupe_list(
         _list_or_empty(resident_governance_state.get("live_language_turn_refs"))
         + _list_or_empty(snapshot.get("live_language_turn_refs"))
@@ -1509,6 +1588,34 @@ def load_background_continuity_profile(
         profile["background_resident_autonomous_activity_state_refs"] = (
             autonomous_activity_state_refs
         )
+    if autonomous_activity_cycle_phase_index is not None:
+        profile["background_autonomous_activity_cycle_phase_index"] = (
+            autonomous_activity_cycle_phase_index
+        )
+    if autonomous_activity_cycle_phase_count is not None:
+        profile["background_autonomous_activity_cycle_phase_count"] = (
+            autonomous_activity_cycle_phase_count
+        )
+    if autonomous_activity_cycle_completion_count is not None:
+        profile["background_autonomous_activity_cycle_completion_count"] = (
+            autonomous_activity_cycle_completion_count
+        )
+    if autonomous_activity_cycle_coverage_complete is not None:
+        profile["background_autonomous_activity_cycle_coverage_complete"] = (
+            bool(autonomous_activity_cycle_coverage_complete)
+        )
+    if autonomous_activity_covered_kinds:
+        profile["background_autonomous_activity_covered_kinds"] = (
+            autonomous_activity_covered_kinds
+        )
+    if autonomous_activity_missing_kinds:
+        profile["background_autonomous_activity_missing_kinds"] = (
+            autonomous_activity_missing_kinds
+        )
+    if next_autonomous_activity_kind:
+        profile["background_next_autonomous_activity_kind"] = str(
+            next_autonomous_activity_kind
+        )
     if autonomous_activity_ref_set:
         profile["background_resident_autonomous_activity_ref_set"] = (
             autonomous_activity_ref_set
@@ -1884,9 +1991,14 @@ def _first_present(
 ) -> Any:
     for payload in payloads:
         for key in keys:
+            if key not in payload:
+                continue
             value = payload.get(key)
-            if value:
-                return value
+            if value is None or value == "":
+                continue
+            if value == [] or value == {}:
+                continue
+            return value
     return None
 
 

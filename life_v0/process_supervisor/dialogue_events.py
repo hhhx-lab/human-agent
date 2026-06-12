@@ -799,10 +799,43 @@ def build_resident_background_lineage_payload(
                 "last_activity_state_ref",
                 "resident_background_lineage_last_autonomous_activity_state_ref",
             ),
+            (
+                "cycle_phase_index",
+                "resident_background_lineage_autonomous_activity_cycle_phase_index",
+            ),
+            (
+                "cycle_phase_count",
+                "resident_background_lineage_autonomous_activity_cycle_phase_count",
+            ),
+            (
+                "cycle_completion_count",
+                "resident_background_lineage_autonomous_activity_cycle_completion_count",
+            ),
+            (
+                "cycle_coverage_complete",
+                "resident_background_lineage_autonomous_activity_cycle_coverage_complete",
+            ),
+            (
+                "next_activity_kind",
+                "resident_background_lineage_next_autonomous_activity_kind",
+            ),
         ):
             value = autonomous_activity_presence.get(source_key)
             if value not in {None, ""}:
                 payload[target_key] = value
+        for source_key, target_key in (
+            (
+                "covered_activity_kinds",
+                "resident_background_lineage_autonomous_activity_covered_kinds",
+            ),
+            (
+                "missing_activity_kinds",
+                "resident_background_lineage_autonomous_activity_missing_kinds",
+            ),
+        ):
+            values = _string_list(autonomous_activity_presence.get(source_key))
+            if values:
+                payload[target_key] = values
         activity_kind_counts = autonomous_activity_presence.get(
             "activity_kind_counts"
         )

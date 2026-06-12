@@ -594,6 +594,19 @@ def compose_life_response(
                 response = f"{response}，后台自主活动已经累积{activity_count}次"
             if last_activity_kind:
                 response = f"{response}，最近一相为{last_activity_kind}"
+            cycle_completion_count = _int_or_zero(
+                autonomous_activity_presence.get("cycle_completion_count")
+            )
+            if cycle_completion_count:
+                response = (
+                    f"{response}，完整后台活动周期已经闭合"
+                    f"{cycle_completion_count}轮"
+                )
+            if autonomous_activity_presence.get("cycle_coverage_complete") is True:
+                response = f"{response}，睡眠回忆思考成长学习链已覆盖"
+            next_activity_kind = autonomous_activity_presence.get("next_activity_kind")
+            if next_activity_kind:
+                response = f"{response}，下一后台相位趋向{next_activity_kind}"
             if activity_kind_counts:
                 active_kinds = [
                     str(kind)
@@ -906,6 +919,13 @@ def _string_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item) for item in value if item]
+
+
+def _int_or_zero(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
 
 
 def _dedupe_string_list(values: list[str]) -> list[str]:

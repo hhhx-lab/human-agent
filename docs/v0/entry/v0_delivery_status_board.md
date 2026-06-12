@@ -140,7 +140,7 @@ life-v0 emit-report --strict
 
 最新继续补强：`resident_lifecycle.py` 的 `read_resident_lifecycle_status()` 现在会写出 `resident_long_term_residency_status_v0`，并在可用时展开 active/closed lease、lease history profile、persistent process state/report 与 background convergence summary/history。状态板因此把这一格视为“`digital life --status` 已经成为持续存在证据视图”，不是只查看当前 pid、队列和 heartbeat。
 
-最新再补强：`resident_autonomous_activity_state.json` 现在写出 `cycle_completion_count`、`cycle_coverage_complete`、covered/missing activity kinds 与 `next_activity_kind`，`digital life --status` 也会扁平暴露这组字段。状态板因此把这一格视为“关闭终端后的睡眠、回忆、自我思考、成长预演、学习巩固已经形成可检查的完整后台活动周期”，不是五个松散计数器。
+最新再补强：`resident_autonomous_activity_state.json` 现在写出 `cycle_phase_index`、`cycle_phase_count`、`cycle_completion_count`、`cycle_coverage_complete`、covered/missing activity kinds 与 `next_activity_kind`，`digital life --status` 也会扁平暴露 completion / coverage / covered / missing / next kind。再往前一拍，这组字段已经从 `resident_autonomous_activity_presence_profile_v0` 进入 idle governance、background continuity、resident background lineage、下一轮 `digital_life_turn`、response surface、process report 与 digest。状态板因此把这一格视为“关闭终端后的睡眠、回忆、自我思考、成长预演、学习巩固已经形成可检查、可恢复、可表达的完整后台活动周期”，不是五个松散计数器。
 
 ## 当前最小可执行总链
 

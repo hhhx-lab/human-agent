@@ -1042,6 +1042,17 @@ def _autonomous_activity_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "last_activity_state_ref": last_activity_state_ref,
             "activity_state_refs": activity_state_refs,
             "current_cycle": _string_list(profile.get("current_cycle")),
+            "cycle_phase_index": profile.get("cycle_phase_index"),
+            "cycle_phase_count": profile.get("cycle_phase_count"),
+            "cycle_completion_count": profile.get("cycle_completion_count"),
+            "cycle_coverage_complete": profile.get("cycle_coverage_complete"),
+            "covered_activity_kinds": _string_list(
+                profile.get("covered_activity_kinds")
+            ),
+            "missing_activity_kinds": _string_list(
+                profile.get("missing_activity_kinds")
+            ),
+            "next_activity_kind": profile.get("next_activity_kind"),
             "autonomous_activity_refs": ref_set,
             "autonomous_activity_evidence_ref_count": len(ref_set),
         }

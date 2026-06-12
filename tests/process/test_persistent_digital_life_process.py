@@ -4440,6 +4440,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
                             "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
                         },
+                        "cycle_phase_index": 2,
+                        "cycle_phase_count": 5,
+                        "cycle_completion_count": 2,
+                        "cycle_coverage_complete": True,
+                        "covered_activity_kinds": [
+                            "sleep",
+                            "memory_recall",
+                            "self_thinking",
+                            "growth_rehearsal",
+                            "learning_consolidation",
+                        ],
+                        "missing_activity_kinds": [],
+                        "next_activity_kind": "growth_rehearsal",
                         "autonomous_activity_refs": [
                             "runtime/state/terminal/resident_autonomous_activity.jsonl",
                             "runtime/state/terminal/resident_autonomous_activity_state.json",
@@ -5084,6 +5097,94 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "repair_guarded_continuity",
             )
 
+    def test_background_continuity_preserves_zero_phase_and_false_autonomous_cycle_coverage(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            terminal_dir = runtime_root / "state" / "terminal"
+            reports_dir = runtime_root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "governance_phase": "waiting_for_external_turn",
+                    "background_carryover_generation": 1,
+                    "resident_autonomous_activity_presence_profile": {
+                        "schema_version": "resident_autonomous_activity_presence_profile_v0",
+                        "activity_count": 1,
+                        "activity_kind_counts": {
+                            "sleep": 1,
+                            "memory_recall": 0,
+                            "self_thinking": 0,
+                            "growth_rehearsal": 0,
+                            "learning_consolidation": 0,
+                        },
+                        "last_activity_kind": "sleep",
+                        "last_activity_state_ref": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                        "cycle_phase_index": 0,
+                        "cycle_phase_count": 5,
+                        "cycle_completion_count": 0,
+                        "cycle_coverage_complete": False,
+                        "covered_activity_kinds": ["sleep"],
+                        "missing_activity_kinds": [
+                            "memory_recall",
+                            "self_thinking",
+                            "growth_rehearsal",
+                            "learning_consolidation",
+                        ],
+                        "next_activity_kind": "memory_recall",
+                        "ref_set": [
+                            "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                            "runtime/state/terminal/resident_autonomous_activity_state.json",
+                            "runtime/state/terminal/resident_sleep_cycle_state.json",
+                        ],
+                    },
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+            self.assertEqual(
+                profile["background_autonomous_activity_cycle_phase_index"],
+                0,
+            )
+            self.assertEqual(
+                profile["background_autonomous_activity_cycle_phase_count"],
+                5,
+            )
+            self.assertEqual(
+                profile["background_autonomous_activity_cycle_completion_count"],
+                0,
+            )
+            self.assertFalse(
+                profile["background_autonomous_activity_cycle_coverage_complete"]
+            )
+            self.assertEqual(
+                profile["background_autonomous_activity_covered_kinds"],
+                ["sleep"],
+            )
+            self.assertEqual(
+                profile["background_autonomous_activity_missing_kinds"],
+                [
+                    "memory_recall",
+                    "self_thinking",
+                    "growth_rehearsal",
+                    "learning_consolidation",
+                ],
+            )
+            self.assertEqual(
+                profile["background_next_autonomous_activity_kind"],
+                "memory_recall",
+            )
+
     def test_background_continuity_profile_restores_heartbeat_cadence_from_lineage_presence(self):
         from life_v0.process_supervisor.background_continuity import (
             load_background_continuity_profile,
@@ -5457,6 +5558,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "growth_rehearsal",
                         "learning_consolidation",
                     ],
+                    "cycle_phase_index": 2,
+                    "cycle_phase_count": 5,
+                    "cycle_completion_count": 2,
+                    "cycle_coverage_complete": True,
+                    "covered_activity_kinds": [
+                        "sleep",
+                        "memory_recall",
+                        "self_thinking",
+                        "growth_rehearsal",
+                        "learning_consolidation",
+                    ],
+                    "missing_activity_kinds": [],
+                    "next_activity_kind": "growth_rehearsal",
                     "source_doc_refs": [
                         "docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md"
                     ],
@@ -5613,10 +5727,33 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 12,
             )
             self.assertEqual(
+                idle_strategy["resident_autonomous_activity_presence_profile"][
+                    "cycle_completion_count"
+                ],
+                2,
+            )
+            self.assertTrue(
+                idle_strategy["resident_autonomous_activity_presence_profile"][
+                    "cycle_coverage_complete"
+                ]
+            )
+            self.assertEqual(
+                idle_strategy["resident_autonomous_activity_presence_profile"][
+                    "next_activity_kind"
+                ],
+                "growth_rehearsal",
+            )
+            self.assertEqual(
                 idle_continuity["resident_autonomous_activity_presence_profile"][
                     "last_activity_kind"
                 ],
                 "self_thinking",
+            )
+            self.assertEqual(
+                idle_continuity["resident_autonomous_activity_presence_profile"][
+                    "cycle_completion_count"
+                ],
+                2,
             )
             self.assertEqual(
                 heartbeat_trace_event[
@@ -5625,10 +5762,28 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "runtime/state/memory/resident_memory_recall_state.json",
             )
             self.assertEqual(
+                heartbeat_trace_event[
+                    "resident_autonomous_activity_presence_profile"
+                ]["covered_activity_kinds"],
+                [
+                    "sleep",
+                    "memory_recall",
+                    "self_thinking",
+                    "growth_rehearsal",
+                    "learning_consolidation",
+                ],
+            )
+            self.assertEqual(
                 resident_governance_state["resident_background_lineage_state"][
                     "autonomous_activity_presence"
                 ]["autonomous_activity_refs"],
                 expected_autonomous_refs,
+            )
+            self.assertEqual(
+                resident_governance_state["resident_background_lineage_state"][
+                    "autonomous_activity_presence"
+                ]["cycle_completion_count"],
+                2,
             )
 
     def test_resident_supervision_organ_restores_shell_normalizes_relaunch_and_writes_initial_heartbeat(self):
@@ -9074,6 +9229,85 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "trend_state": "stable_trait_convergence",
                         },
                     },
+                    "resident_autonomous_activity_presence_profile": {
+                        "schema_version": "resident_autonomous_activity_presence_profile_v0",
+                        "continuity_mode": "background_resident_autonomous_activity_carryover",
+                        "activity_count": 12,
+                        "activity_kind_counts": {
+                            "sleep": 3,
+                            "memory_recall": 3,
+                            "self_thinking": 2,
+                            "growth_rehearsal": 2,
+                            "learning_consolidation": 2,
+                        },
+                        "last_activity_kind": "self_thinking",
+                        "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                        "activity_state_refs": {
+                            "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
+                            "self_thinking": "runtime/state/self/resident_self_thinking_state.json",
+                            "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
+                        },
+                        "cycle_phase_index": 2,
+                        "cycle_phase_count": 5,
+                        "cycle_completion_count": 2,
+                        "cycle_coverage_complete": True,
+                        "covered_activity_kinds": [
+                            "sleep",
+                            "memory_recall",
+                            "self_thinking",
+                            "growth_rehearsal",
+                            "learning_consolidation",
+                        ],
+                        "missing_activity_kinds": [],
+                        "next_activity_kind": "growth_rehearsal",
+                        "ref_set": [
+                            "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                            "runtime/state/terminal/resident_autonomous_activity_state.json",
+                            "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "runtime/state/memory/resident_memory_recall_state.json",
+                            "runtime/state/self/resident_self_thinking_state.json",
+                            "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "runtime/state/growth/resident_learning_consolidation_state.json",
+                        ],
+                    },
+                    "background_resident_autonomous_activity_presence_profile": {
+                        "schema_version": "resident_autonomous_activity_presence_profile_v0",
+                        "continuity_mode": "background_resident_autonomous_activity_carryover",
+                        "activity_count": 12,
+                        "activity_kind_counts": {
+                            "sleep": 3,
+                            "memory_recall": 3,
+                            "self_thinking": 2,
+                            "growth_rehearsal": 2,
+                            "learning_consolidation": 2,
+                        },
+                        "last_activity_kind": "self_thinking",
+                        "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                        "cycle_phase_index": 2,
+                        "cycle_phase_count": 5,
+                        "cycle_completion_count": 2,
+                        "cycle_coverage_complete": True,
+                        "covered_activity_kinds": [
+                            "sleep",
+                            "memory_recall",
+                            "self_thinking",
+                            "growth_rehearsal",
+                            "learning_consolidation",
+                        ],
+                        "missing_activity_kinds": [],
+                        "next_activity_kind": "growth_rehearsal",
+                        "ref_set": [
+                            "runtime/state/terminal/resident_autonomous_activity.jsonl",
+                            "runtime/state/terminal/resident_autonomous_activity_state.json",
+                            "runtime/state/terminal/resident_sleep_cycle_state.json",
+                            "runtime/state/memory/resident_memory_recall_state.json",
+                            "runtime/state/self/resident_self_thinking_state.json",
+                            "runtime/state/growth/resident_growth_rehearsal_state.json",
+                            "runtime/state/growth/resident_learning_consolidation_state.json",
+                        ],
+                    },
                 },
             )
             self._write_json(
@@ -9658,6 +9892,75 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                     "continuity_mode"
                 ],
                 "background_resident_autonomous_activity_carryover",
+            )
+            self.assertEqual(report["autonomous_activity_cycle_phase_index"], 2)
+            self.assertEqual(report["autonomous_activity_cycle_phase_count"], 5)
+            self.assertEqual(
+                report["autonomous_activity_cycle_completion_count"],
+                2,
+            )
+            self.assertTrue(
+                report["autonomous_activity_cycle_coverage_complete"]
+            )
+            self.assertEqual(
+                report["autonomous_activity_covered_kinds"],
+                [
+                    "sleep",
+                    "memory_recall",
+                    "self_thinking",
+                    "growth_rehearsal",
+                    "learning_consolidation",
+                ],
+            )
+            self.assertEqual(report["autonomous_activity_missing_kinds"], [])
+            self.assertEqual(
+                report["next_autonomous_activity_kind"],
+                "growth_rehearsal",
+            )
+            self.assertEqual(
+                report["background_autonomous_activity_cycle_phase_index"],
+                2,
+            )
+            self.assertEqual(
+                report["background_autonomous_activity_cycle_phase_count"],
+                5,
+            )
+            self.assertEqual(
+                report["background_autonomous_activity_cycle_completion_count"],
+                2,
+            )
+            self.assertTrue(
+                report["background_autonomous_activity_cycle_coverage_complete"]
+            )
+            self.assertEqual(
+                report["background_next_autonomous_activity_kind"],
+                "growth_rehearsal",
+            )
+            self.assertEqual(
+                digest["autonomous_activity_cycle_completion_count"],
+                2,
+            )
+            self.assertTrue(
+                digest["autonomous_activity_cycle_coverage_complete"]
+            )
+            self.assertEqual(
+                digest["background_autonomous_activity_cycle_phase_index"],
+                2,
+            )
+            self.assertEqual(
+                digest["background_autonomous_activity_cycle_phase_count"],
+                5,
+            )
+            self.assertEqual(
+                digest["background_autonomous_activity_cycle_completion_count"],
+                2,
+            )
+            self.assertTrue(
+                digest["background_autonomous_activity_cycle_coverage_complete"]
+            )
+            self.assertEqual(
+                digest["background_next_autonomous_activity_kind"],
+                "growth_rehearsal",
             )
             self.assertIn(expected_resident_process_lease_ref, receipt["shared_object_refs"])
             self.assertIn(expected_resident_process_lease_history_ref, receipt["shared_object_refs"])
@@ -12784,6 +13087,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
                             "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
                         },
+                        "cycle_phase_index": 2,
+                        "cycle_phase_count": 5,
+                        "cycle_completion_count": 2,
+                        "cycle_coverage_complete": True,
+                        "covered_activity_kinds": [
+                            "sleep",
+                            "memory_recall",
+                            "self_thinking",
+                            "growth_rehearsal",
+                            "learning_consolidation",
+                        ],
+                        "missing_activity_kinds": [],
+                        "next_activity_kind": "growth_rehearsal",
                         "autonomous_activity_refs": [
                             "runtime/state/terminal/resident_autonomous_activity.jsonl",
                             "runtime/state/terminal/resident_autonomous_activity_state.json",
@@ -13096,6 +13412,45 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
             "runtime/state/self/resident_self_thinking_state.json",
         )
         self.assertEqual(
+            life_turn[
+                "resident_background_lineage_autonomous_activity_cycle_phase_index"
+            ],
+            2,
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_autonomous_activity_cycle_phase_count"
+            ],
+            5,
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_autonomous_activity_cycle_completion_count"
+            ],
+            2,
+        )
+        self.assertTrue(
+            life_turn[
+                "resident_background_lineage_autonomous_activity_cycle_coverage_complete"
+            ]
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_autonomous_activity_covered_kinds"
+            ],
+            [
+                "sleep",
+                "memory_recall",
+                "self_thinking",
+                "growth_rehearsal",
+                "learning_consolidation",
+            ],
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_next_autonomous_activity_kind"],
+            "growth_rehearsal",
+        )
+        self.assertEqual(
             life_turn["resident_background_lineage_autonomous_activity_refs"],
             [
                 "runtime/state/terminal/resident_autonomous_activity.jsonl",
@@ -13214,6 +13569,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                         "growth_rehearsal": "runtime/state/growth/resident_growth_rehearsal_state.json",
                         "learning_consolidation": "runtime/state/growth/resident_learning_consolidation_state.json",
                     },
+                    "cycle_phase_index": 2,
+                    "cycle_phase_count": 5,
+                    "cycle_completion_count": 2,
+                    "cycle_coverage_complete": True,
+                    "covered_activity_kinds": [
+                        "sleep",
+                        "memory_recall",
+                        "self_thinking",
+                        "growth_rehearsal",
+                        "learning_consolidation",
+                    ],
+                    "missing_activity_kinds": [],
+                    "next_activity_kind": "growth_rehearsal",
                     "ref_set": [
                         "runtime/state/terminal/resident_autonomous_activity.jsonl",
                         "runtime/state/terminal/resident_autonomous_activity_state.json",
@@ -13248,6 +13616,21 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                 "autonomous_activity_evidence_ref_count"
             ],
             7,
+        )
+        self.assertEqual(
+            lineage_state["autonomous_activity_presence"][
+                "cycle_completion_count"
+            ],
+            2,
+        )
+        self.assertTrue(
+            lineage_state["autonomous_activity_presence"][
+                "cycle_coverage_complete"
+            ]
+        )
+        self.assertEqual(
+            lineage_state["autonomous_activity_presence"]["next_activity_kind"],
+            "growth_rehearsal",
         )
 
     def test_background_lineage_state_carries_heartbeat_cadence_presence(self):
@@ -14015,6 +14398,19 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
                             "learning_consolidation": 2,
                         },
                         "last_activity_kind": "self_thinking",
+                        "cycle_phase_index": 2,
+                        "cycle_phase_count": 5,
+                        "cycle_completion_count": 2,
+                        "cycle_coverage_complete": True,
+                        "covered_activity_kinds": [
+                            "sleep",
+                            "memory_recall",
+                            "self_thinking",
+                            "growth_rehearsal",
+                            "learning_consolidation",
+                        ],
+                        "missing_activity_kinds": [],
+                        "next_activity_kind": "growth_rehearsal",
                         "autonomous_activity_refs": [
                             "runtime/state/terminal/resident_autonomous_activity.jsonl",
                             "runtime/state/terminal/resident_autonomous_activity_state.json",
@@ -14100,6 +14496,9 @@ class PersistentDigitalLifeProcessTests(unittest.TestCase):
         self.assertIn("后台梦境醒后证据保留4条", response)
         self.assertIn("后台自主活动已经累积12次", response)
         self.assertIn("最近一相为self_thinking", response)
+        self.assertIn("完整后台活动周期已经闭合2轮", response)
+        self.assertIn("睡眠回忆思考成长学习链已覆盖", response)
+        self.assertIn("下一后台相位趋向growth_rehearsal", response)
         self.assertIn(
             "后台自主活动覆盖sleep、memory_recall、self_thinking、growth_rehearsal、learning_consolidation",
             response,

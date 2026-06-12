@@ -152,6 +152,13 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "last_autonomous_activity_at",
     "last_autonomous_activity_state_ref",
     "resident_autonomous_activity_state_refs",
+    "autonomous_activity_cycle_phase_index",
+    "autonomous_activity_cycle_phase_count",
+    "autonomous_activity_cycle_completion_count",
+    "autonomous_activity_cycle_coverage_complete",
+    "autonomous_activity_covered_kinds",
+    "autonomous_activity_missing_kinds",
+    "next_autonomous_activity_kind",
     "background_autonomous_activity_presence",
     "background_resident_autonomous_activity_presence_profile",
     "background_resident_autonomous_activity_ref",
@@ -163,6 +170,13 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_last_autonomous_activity_at",
     "background_last_autonomous_activity_state_ref",
     "background_resident_autonomous_activity_state_refs",
+    "background_autonomous_activity_cycle_phase_index",
+    "background_autonomous_activity_cycle_phase_count",
+    "background_autonomous_activity_cycle_completion_count",
+    "background_autonomous_activity_cycle_coverage_complete",
+    "background_autonomous_activity_covered_kinds",
+    "background_autonomous_activity_missing_kinds",
+    "background_next_autonomous_activity_kind",
     "background_resident_governance_state_ref",
     "background_convergence_summary_ref",
     "background_convergence_history_ref",
@@ -924,6 +938,27 @@ def decide_idle_strategy(
         "resident_autonomous_activity_state_refs": (
             autonomous_activity_presence_profile.get("activity_state_refs", {})
         ),
+        "autonomous_activity_cycle_phase_index": (
+            autonomous_activity_presence_profile.get("cycle_phase_index")
+        ),
+        "autonomous_activity_cycle_phase_count": (
+            autonomous_activity_presence_profile.get("cycle_phase_count")
+        ),
+        "autonomous_activity_cycle_completion_count": (
+            autonomous_activity_presence_profile.get("cycle_completion_count")
+        ),
+        "autonomous_activity_cycle_coverage_complete": (
+            autonomous_activity_presence_profile.get("cycle_coverage_complete")
+        ),
+        "autonomous_activity_covered_kinds": (
+            autonomous_activity_presence_profile.get("covered_activity_kinds", [])
+        ),
+        "autonomous_activity_missing_kinds": (
+            autonomous_activity_presence_profile.get("missing_activity_kinds", [])
+        ),
+        "next_autonomous_activity_kind": (
+            autonomous_activity_presence_profile.get("next_activity_kind")
+        ),
         "belief_learning_plan_ref": belief_learning_plan_ref if belief_learning_plan else None,
         "language_learning_plan_ref": language_learning_plan_ref if language_learning_plan else None,
         "relationship_learning_plan_ref": (
@@ -1416,6 +1451,17 @@ def _autonomous_activity_presence_profile(
             "last_activity_state_ref": last_activity_state_ref,
             "activity_state_refs": activity_state_refs,
             "current_cycle": _string_list(state.get("current_cycle")),
+            "cycle_phase_index": state.get("cycle_phase_index"),
+            "cycle_phase_count": state.get("cycle_phase_count"),
+            "cycle_completion_count": state.get("cycle_completion_count"),
+            "cycle_coverage_complete": state.get("cycle_coverage_complete"),
+            "covered_activity_kinds": _string_list(
+                state.get("covered_activity_kinds")
+            ),
+            "missing_activity_kinds": _string_list(
+                state.get("missing_activity_kinds")
+            ),
+            "next_activity_kind": state.get("next_activity_kind"),
             "ref_count": len(ref_set),
             "ref_set": ref_set,
             "source_doc_refs": _string_list(state.get("source_doc_refs")),
@@ -1518,6 +1564,64 @@ def _background_autonomous_activity_presence_profile(
             "resident_autonomous_activity_state_ref": activity_state_ref,
             "activity_state_refs": activity_state_refs,
             "current_cycle": _string_list(presence.get("current_cycle")),
+            "cycle_phase_index": (
+                background_continuity_profile.get(
+                    "background_autonomous_activity_cycle_phase_index"
+                )
+                if background_continuity_profile.get(
+                    "background_autonomous_activity_cycle_phase_index"
+                )
+                is not None
+                else presence.get("cycle_phase_index")
+            ),
+            "cycle_phase_count": (
+                background_continuity_profile.get(
+                    "background_autonomous_activity_cycle_phase_count"
+                )
+                if background_continuity_profile.get(
+                    "background_autonomous_activity_cycle_phase_count"
+                )
+                is not None
+                else presence.get("cycle_phase_count")
+            ),
+            "cycle_completion_count": (
+                background_continuity_profile.get(
+                    "background_autonomous_activity_cycle_completion_count"
+                )
+                if background_continuity_profile.get(
+                    "background_autonomous_activity_cycle_completion_count"
+                )
+                is not None
+                else presence.get("cycle_completion_count")
+            ),
+            "cycle_coverage_complete": (
+                background_continuity_profile.get(
+                    "background_autonomous_activity_cycle_coverage_complete"
+                )
+                if background_continuity_profile.get(
+                    "background_autonomous_activity_cycle_coverage_complete"
+                )
+                is not None
+                else presence.get("cycle_coverage_complete")
+            ),
+            "covered_activity_kinds": _string_list(
+                background_continuity_profile.get(
+                    "background_autonomous_activity_covered_kinds"
+                )
+            )
+            or _string_list(presence.get("covered_activity_kinds")),
+            "missing_activity_kinds": _string_list(
+                background_continuity_profile.get(
+                    "background_autonomous_activity_missing_kinds"
+                )
+            )
+            or _string_list(presence.get("missing_activity_kinds")),
+            "next_activity_kind": (
+                background_continuity_profile.get(
+                    "background_next_autonomous_activity_kind"
+                )
+                or presence.get("next_activity_kind")
+            ),
             "ref_count": len(ref_set),
             "ref_set": ref_set,
             "source_presence_profile": presence,
