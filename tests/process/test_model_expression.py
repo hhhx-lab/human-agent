@@ -389,6 +389,76 @@ class ModelExpressionTests(unittest.TestCase):
                 result.state["post_expression_gate"]["hard_missing_evidence_flags"],
             )
 
+    def test_post_expression_gate_preserves_background_body_presence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": "我会认真回应这句话。"},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-body-presence",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="你现在身体状态怎么样？",
+                deterministic_response="确定性回应保留身体节奏、疲惫负载和修复状态。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relation_role": "friend",
+                            "relationship_stage": "repair_guarded_continuity",
+                        }
+                    ]
+                },
+                terminal_life_loop_state={
+                    "resident_background_lineage_state": {
+                        "body_presence": {
+                            "schema_version": "resident_body_presence_profile_v0",
+                            "body_waiting_posture": "repair_reserve_hold",
+                            "fatigue_load": "managed_low_noise",
+                            "sleep_pressure": "offline_ready",
+                            "energy_level": "guarded_reserve",
+                            "repair_drive": "active_repair",
+                            "arousal": 0.0,
+                            "pain_pressure": 0.41,
+                            "responsibility_weight": 0.77,
+                            "body_ref_set": [
+                                "runtime/state/body/body_rhythm_pulse.json",
+                                "runtime/state/body/need_state_vector.json",
+                                "runtime/state/body/body_resource_budget.json",
+                                "runtime/state/body/core_affect_vector.json",
+                            ],
+                        }
+                    }
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(
+                result.response_text,
+                "确定性回应保留身体节奏、疲惫负载和修复状态。",
+            )
+            self.assertIn(
+                "body_affect",
+                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+            )
+
     def test_local_provider_keeps_deterministic_expression_without_transport(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

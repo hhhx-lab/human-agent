@@ -95,7 +95,21 @@ EVIDENCE_FLAG_TERMS = {
         "活动",
         "空闲",
     ],
-    "body_affect": ["疲惫", "节奏", "紧张", "修复", "感受", "状态", "慢"],
+    "body_affect": [
+        "身体",
+        "内环境",
+        "疲惫",
+        "节奏",
+        "节律",
+        "紧张",
+        "修复",
+        "感受",
+        "状态",
+        "能量",
+        "痛苦",
+        "唤醒",
+        "慢",
+    ],
     "prediction_attention": [
         "判断",
         "预测",
@@ -112,6 +126,7 @@ HARD_EVIDENCE_FLAGS = {
     "dream_offline",
     "growth_learning",
     "resident_autonomous_activity",
+    "body_affect",
 }
 
 ModelExpressionTransport = Callable[
@@ -888,7 +903,7 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
         flags.append("growth_learning")
     if resident_background.get("autonomous_activity_presence"):
         flags.append("resident_autonomous_activity")
-    if _has_any_value(
+    if resident_background.get("body_presence") or _has_any_value(
         body_affect,
         [
             "fatigue_level",
@@ -1026,6 +1041,7 @@ def _background_summary(
         "offline_learning_presence": lineage.get("offline_learning_presence"),
         "dream_wake_presence": lineage.get("dream_wake_presence"),
         "autonomous_activity_presence": lineage.get("autonomous_activity_presence"),
+        "body_presence": lineage.get("body_presence"),
     }
 
 
