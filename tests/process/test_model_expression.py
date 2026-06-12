@@ -536,6 +536,73 @@ class ModelExpressionTests(unittest.TestCase):
                 result.state["post_expression_gate"]["hard_missing_evidence_flags"],
             )
 
+    def test_post_expression_gate_preserves_birth_repair_presence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": "我会回应这句话。"},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-birth-repair-presence",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="你怎么面对痛苦和后悔？",
+                deterministic_response="确定性回应保留出生修复压力、痛苦、后悔和责任。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relation_role": "friend",
+                            "relationship_stage": "repair_guarded_continuity",
+                        }
+                    ]
+                },
+                terminal_life_loop_state={
+                    "resident_background_lineage_state": {
+                        "birth_repair_presence": {
+                            "schema_version": "birth_repair_presence_v0",
+                            "queue_e_birth_repair_profile_ref": "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+                            "queue_e_birth_repair_pressure_level": "elevated",
+                            "queue_e_birth_repair_attention_target": "pain_regret_responsibility_repair",
+                            "queue_e_birth_repair_waiting_posture": "birth_repair_pressure_waiting",
+                            "queue_e_birth_repair_attention_reason": "pain_regret_repair_still_active",
+                            "queue_e_birth_repair_ref_set": [
+                                "runtime/state/action/responsibility_loop_state.json",
+                                "runtime/state/membrane/world_contact_summary.json",
+                                "runtime/reports/latest/pain_regret_repair_report.json",
+                                "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+                            ],
+                        }
+                    }
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(
+                result.response_text,
+                "确定性回应保留出生修复压力、痛苦、后悔和责任。",
+            )
+            self.assertIn(
+                "birth_repair",
+                result.state["post_expression_gate"]["hard_missing_evidence_flags"],
+            )
+
     def test_local_provider_keeps_deterministic_expression_without_transport(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
