@@ -8401,6 +8401,46 @@ class PersistentDigitalLifeProcessTests(
                 resident_governance_state["background_governance_explanation_story"],
                 background_explanation_story,
             )
+            handoff_profile = resident_governance_state[
+                "live_turn_waiting_handoff_profile"
+            ]
+            self.assertEqual(
+                handoff_profile["schema_version"],
+                "live_turn_waiting_handoff_profile_v0",
+            )
+            self.assertEqual(
+                handoff_profile["handoff_origin"],
+                "live_turn_cycle_completed",
+            )
+            self.assertEqual(
+                handoff_profile["background_governance_driver_family"],
+                "background_history_stability_hold",
+            )
+            self.assertEqual(
+                handoff_profile["background_next_wake_expectation"],
+                "下一拍等待心跳必须继续携带后台治理解释。",
+            )
+            self.assertEqual(
+                handoff_profile["lineage_depth_band"],
+                "deep_persistent_lineage",
+            )
+            self.assertEqual(handoff_profile["live_language_ref_count"], 5)
+            self.assertIn(
+                "identity_consciousness_birth_presence",
+                handoff_profile["carried_presence_keys"],
+            )
+            self.assertIn(
+                "birth_repair_presence",
+                handoff_profile["carried_presence_keys"],
+            )
+            self.assertIn(
+                "life_constraint_presence",
+                handoff_profile["carried_presence_keys"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/dialogue_writeback_bundle.json",
+                handoff_profile["handoff_evidence_refs"],
+            )
             self.assertEqual(
                 resident_governance_state["resident_background_lineage_state"][
                     "governance_phase"

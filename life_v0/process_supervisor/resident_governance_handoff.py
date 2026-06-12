@@ -18,6 +18,22 @@ DIALOGUE_WRITEBACK_BUNDLE_REF = "runtime/reports/latest/dialogue_writeback_bundl
 RELATIONSHIP_TIMELINE_REF = "runtime/state/relationship/relationship_timeline.json"
 COMMITMENT_EXPRESSION_PLAN_REF = "runtime/state/language/commitment_expression_plan.json"
 APOLOGY_REPAIR_LANGUAGE_TRACE_REF = "runtime/state/language/apology_repair_language_trace.json"
+LINEAGE_PRESENCE_KEYS = [
+    "relationship_presence",
+    "trait_convergence_presence",
+    "heartbeat_cadence_presence",
+    "language_presence",
+    "state_merge_presence",
+    "prediction_write_gate_presence",
+    "identity_consciousness_birth_presence",
+    "offline_learning_presence",
+    "dream_wake_presence",
+    "autonomous_activity_presence",
+    "resident_process_identity_presence",
+    "body_presence",
+    "birth_repair_presence",
+    "life_constraint_presence",
+]
 
 
 def write_live_turn_waiting_governance_handoff(
@@ -136,8 +152,72 @@ def write_live_turn_waiting_governance_handoff(
         resident_governance_state["resident_background_lineage_state"] = (
             resident_background_lineage_state
         )
+    resident_governance_state["live_turn_waiting_handoff_profile"] = (
+        _build_live_turn_waiting_handoff_profile(
+            resident_governance_state=resident_governance_state,
+            resident_background_lineage_state=resident_background_lineage_state,
+        )
+    )
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     return resident_governance_state
+
+
+def _build_live_turn_waiting_handoff_profile(
+    *,
+    resident_governance_state: dict[str, Any],
+    resident_background_lineage_state: dict[str, Any],
+) -> dict[str, Any]:
+    live_language_refs = _string_list(
+        resident_governance_state.get("live_language_turn_refs")
+    )
+    long_horizon_language_refs = _string_list(
+        resident_governance_state.get("long_horizon_language_refs")
+    )
+    carried_presence_keys = [
+        key for key in LINEAGE_PRESENCE_KEYS if resident_background_lineage_state.get(key)
+    ]
+    handoff_evidence_refs = _dedupe_string_list(
+        _string_list(resident_background_lineage_state.get("evidence_refs"))
+        + long_horizon_language_refs
+        + [
+            ref
+            for ref in [
+                resident_governance_state.get("idle_strategy_ref"),
+                resident_governance_state.get("terminal_life_loop_state_ref"),
+                resident_governance_state.get(
+                    "background_resident_governance_explanation_ref"
+                ),
+                resident_governance_state.get("dialogue_writeback_bundle_ref"),
+                resident_governance_state.get("last_dialogue_packet_ref"),
+                resident_governance_state.get("last_external_turn_ref"),
+                resident_governance_state.get("last_life_turn_ref"),
+            ]
+            if ref
+        ]
+    )
+    return {
+        "schema_version": "live_turn_waiting_handoff_profile_v0",
+        "handoff_origin": resident_governance_state.get("handoff_origin"),
+        "governance_phase": resident_governance_state.get("governance_phase"),
+        "waiting_mode": resident_governance_state.get("waiting_mode"),
+        "next_required_action": resident_governance_state.get("next_required_action"),
+        "background_governance_driver_family": resident_governance_state.get(
+            "background_governance_driver_family"
+        ),
+        "background_next_wake_expectation": resident_governance_state.get(
+            "background_next_wake_expectation"
+        ),
+        "lineage_depth_band": resident_background_lineage_state.get("depth_band"),
+        "lineage_parent_run_id": resident_background_lineage_state.get("parent_run_id"),
+        "live_language_ref_count": len(live_language_refs),
+        "last_live_semantic_focus": resident_governance_state.get(
+            "last_live_semantic_focus"
+        ),
+        "long_horizon_language_ref_count": len(long_horizon_language_refs),
+        "carried_presence_keys": carried_presence_keys,
+        "handoff_evidence_refs": handoff_evidence_refs,
+        "handoff_evidence_ref_count": len(handoff_evidence_refs),
+    }
 
 
 def _merge_handoff_lineage_state(
