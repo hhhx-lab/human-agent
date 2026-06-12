@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -18,6 +18,7 @@ class DigitalLifeRuntimeConfig:
     model_provider: str
     model_name: str
     model_base_url: str | None
+    model_api_key: str | None = field(repr=False, compare=False)
     model_api_key_present: bool
     model_temperature: float | None
     model_max_output_tokens: int | None
@@ -89,7 +90,8 @@ def load_digital_life_runtime_config(
     model_provider = _get_str(merged_env, "DIGITAL_LIFE_MODEL_PROVIDER", "local")
     model_name = _get_str(merged_env, "DIGITAL_LIFE_MODEL_NAME", "digital-life-core")
     model_base_url = _optional_str(merged_env, "DIGITAL_LIFE_MODEL_BASE_URL")
-    model_api_key_present = bool(_optional_str(merged_env, "DIGITAL_LIFE_MODEL_API_KEY"))
+    model_api_key = _optional_str(merged_env, "DIGITAL_LIFE_MODEL_API_KEY")
+    model_api_key_present = bool(model_api_key)
     model_temperature = _optional_float(merged_env, "DIGITAL_LIFE_MODEL_TEMPERATURE")
     model_max_output_tokens = _optional_int(
         merged_env,
@@ -112,6 +114,7 @@ def load_digital_life_runtime_config(
         model_provider=model_provider,
         model_name=model_name,
         model_base_url=model_base_url,
+        model_api_key=model_api_key,
         model_api_key_present=model_api_key_present,
         model_temperature=model_temperature,
         model_max_output_tokens=model_max_output_tokens,

@@ -50,6 +50,7 @@
 | `DialogueWritebackBundle` | `life_v0/terminal_loop/loop_report.py` | `dialogue_writeback.py`、`process_supervisor/resident_turn_writeback.py` 可追加 bundle refs | `state_store`、`replay`、`archive`、`growth` | `shell_command`、`digital_entry` | `runtime/reports/latest/dialogue_writeback_bundle.json` |
 | `IdleContinuityFrame` | `life_v0/process_supervisor/heartbeat.py` | `continuity_writeback.py`、`idle_strategy.py`、`persistent_process.py` 可追加治理 refs | `language`、`relationship`、`replay`、`growth` | `body`、`state_store`、`shell_command` | `runtime/state/terminal/idle_continuity_frame.json` |
 | `ResidentGovernanceState` | `life_v0/process_supervisor/heartbeat.py` | `persistent_process.py` 仅可刷新关闭相位与 closeout refs；`process_report.py` 仅可追加 report refs | `reporting`、`process_report`、后续 resident governance 审计 | `body`、`language`、`terminal_turn`、`shell_command` | `runtime/state/terminal/resident_governance_state.json` |
+| `ModelExpressionState` | `life_v0/process_supervisor/model_expression.py` | `live_turn_cycle.py` 仅可把 refs/status 挂到 `digital_life_turn`；`process_report.py` 仅可追加 report/digest/receipt refs | `dialogue_events`、`resident_turn_writeback`、`process_report`、后续语言审计 | `body`、`neural_core`、`state_store`、`language/expression_monitor.py`、`membrane` | `runtime/state/language/model_expression_state.json`、`runtime/reports/latest/digital_life_model_expression_report.json` |
 | `ReplayCueBundle` | `life_v0/replay/replay_cues.py` | `process_supervisor/heartbeat.py`、`growth/anti_forgetting.py` 可追加 replay target refs | `dream`、`growth`、`archive`、`process_supervisor` | `shell_command`、`digital_entry` | `runtime/state/replay/replay_cue_bundle.json` |
 | `OfflineConsolidationFrame` | `life_v0/dream/offline_entry.py` | `dream_window.py`、`wake_integration.py` 可追加 refs | `growth`、`archive`、`process_supervisor` | `terminal_loop`、`shell_command` | `runtime/state/dream/offline_consolidation_frame.json` |
 | `GrowthPatchCandidateQueue` | `life_v0/growth/patch_queue.py` | `belief_learning.py`、`language_learning.py`、`relationship_learning.py`、`anti_forgetting.py` 可追加 candidate refs | `life_targets`、`archive`、`process_supervisor` | `shell_command`、`digital_entry` | `runtime/state/growth/growth_patch_candidate_queue.json` |
@@ -73,6 +74,7 @@ flowchart TD
     CB --> WCV["WorldContactValidation"]
     OT --> PTV["PredictionTraceValidation"]
     EP --> DWB["DialogueWritebackBundle"]
+    EP --> MES["ModelExpressionState"]
     RL --> DWB
     DWB --> RCB["ReplayCueBundle"]
     RCB --> OCF["OfflineConsolidationFrame"]

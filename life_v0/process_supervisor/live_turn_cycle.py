@@ -15,6 +15,7 @@ from .resident_turn_writeback import (
     ResidentTurnWritebackResult,
     write_resident_turn_writeback,
 )
+from .model_expression import ModelExpressionResult, compose_model_expression
 from .response_surface import compose_life_response
 
 
@@ -204,6 +205,32 @@ def run_live_turn_cycle(
             self_model_state=self_model_state,
             terminal_life_loop_state=terminal_life_loop_state,
         )
+        model_expression = compose_model_expression(
+            run_id=run_id,
+            generated_at=now_iso(),
+            external_utterance=external_utterance,
+            deterministic_response=life_response,
+            language_dir=language_dir,
+            reports_dir=reports_dir,
+            relationship_graph=relationship_graph,
+            relationship_timeline=relationship_timeline,
+            shared_term_registry=shared_term_registry,
+            commitment_index=commitment_index,
+            expression_plan=live_language_turn.expression_plan,
+            life_context_frame=life_context_frame,
+            replay_cue_bundle=replay_cue_bundle,
+            offline_consolidation_frame=offline_consolidation_frame,
+            growth_patch_candidate_queue=growth_patch_candidate_queue,
+            body_resource_budget=body_resource_budget,
+            core_affect_vector=core_affect_vector,
+            responsibility_loop_state=responsibility_loop_state,
+            world_contact_summary=world_contact_summary,
+            pain_regret_repair_report=pain_regret_repair_report,
+            self_model_state=self_model_state,
+            terminal_life_loop_state=terminal_life_loop_state,
+            write_json=write_json,
+        )
+        life_response = model_expression.response_text
         life_turn = build_life_turn_event_fn(
             turn_id=life_turn_id,
             generated_at=now_iso(),
@@ -230,6 +257,10 @@ def run_live_turn_cycle(
         _attach_live_language_turn_refs(
             life_turn,
             live_language_turn=live_language_turn,
+        )
+        _attach_model_expression_refs(
+            life_turn,
+            model_expression=model_expression,
         )
         turn_writeback = write_resident_turn_writeback_fn(
             run_id=run_id,
@@ -388,3 +419,20 @@ def _attach_live_language_turn_refs(
     event["live_repair_trigger_candidates"] = list(
         live_language_turn.language_percept.get("repair_trigger_candidates", [])
     )
+
+
+def _attach_model_expression_refs(
+    event: dict[str, Any],
+    *,
+    model_expression: ModelExpressionResult,
+) -> None:
+    event["model_expression_state_ref"] = model_expression.state_ref
+    event["model_expression_report_ref"] = model_expression.report_ref
+    event["model_expression_status"] = model_expression.state.get(
+        "model_expression_status"
+    )
+    event["model_expression_applied"] = model_expression.applied
+    if model_expression.state.get("fallback_reason"):
+        event["model_expression_fallback_reason"] = model_expression.state[
+            "fallback_reason"
+        ]

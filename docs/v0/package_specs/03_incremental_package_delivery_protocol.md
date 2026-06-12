@@ -203,10 +203,13 @@ Queue D
 ```text
 .env
   -> config loader
+  -> process_supervisor/model_expression.py
   -> language / shell / process integration layer
 ```
 
 而不能反向渗进 `body/`、`neural_core/`、`state_store/` 这些主体包。
+
+当前第一版模型接入已经固定为“表达末端 adapter”：`response_surface.py` 先生成确定性生命回应，`model_expression.py` 再按 provider/base/key 尝试 OpenAI-compatible 外显表达，并写出 `model_expression_state.json` 与 `digital_life_model_expression_report.json`。provider 为 `local`、配置缺失、返回空内容或网络异常时，必须保留确定性回应；真实 key 只存在于本地 `.env` 或进程环境，不进入 state/report/receipt。
 
 ## 本协议的目的
 

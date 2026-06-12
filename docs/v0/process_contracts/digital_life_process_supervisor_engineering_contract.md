@@ -97,6 +97,8 @@ life-v0 "digital life"
 | governance explanation | `runtime/reports/latest/digital_life_resident_governance_explanation.json` |
 | digest | `runtime/reports/latest/digital_life_process_digest.json` |
 | waiting heartbeat | `runtime/reports/latest/digital_life_waiting_heartbeat.json` |
+| model expression state | `runtime/state/language/model_expression_state.json` |
+| model expression report | `runtime/reports/latest/digital_life_model_expression_report.json` |
 | receipt | `runtime/receipts/digital_life_process_<run_id>.json` |
 
 ## 当前真实器官骨架
@@ -112,6 +114,7 @@ life-v0 "digital life"
 - `life_v0/process_supervisor/governance_explanation.py`
 - `life_v0/process_supervisor/dialogue_events.py`
 - `life_v0/process_supervisor/response_surface.py`
+- `life_v0/process_supervisor/model_expression.py`
 - `life_v0/process_supervisor/state_merge_signals.py`
 - `life_v0/process_supervisor/trait_convergence_signals.py`
 - `life_v0/process_supervisor/resident_supervision.py`
@@ -194,6 +197,7 @@ digital life --state runtime/state --reports runtime/reports/latest --receipts r
   -> refresh live Queue A language turn
   -> write external_relation_turn event
   -> generate digital_life_turn response
+  -> try model_expression adapter after deterministic life response
   -> write digital_life_turn event
   -> update self_narrative / relationship / commitment / self_model / terminal loop state
   -> return restored_waiting_for_external_turn
@@ -202,6 +206,8 @@ digital life --state runtime/state --reports runtime/reports/latest --receipts r
 ```
 
 这里的 `ensure_minimal_birth_bootstrap_if_runtime_missing` 不是新的主体架构，也不是替代 `life-v0` 的第二套 runner。它只是把已经存在的 `P0 -> S11 -> first-activation-preflight -> replay-shadow -> growth-archive -> emit-report -> explain-stage` 最小链，在入口缺少运行材料时顺序补齐，使 `digital life` 更接近真实诞生入口。
+
+`model_expression.py` 的位置必须保持在 `response_surface.py` 之后。`response_surface.py` 先把关系、身体、记忆、梦境、成长、责任、后悔、预测写门和自我慢变量压成确定性生命回应；`model_expression.py` 再按 `.env` 中的 provider/base/key 尝试 OpenAI-compatible 外显表达。模型表达层不能首写关系阶段、承诺真值、责任回路、梦境事实门或自我慢变量；它只写 `model_expression_state.json` 与 `digital_life_model_expression_report.json`，并把 applied / skipped / fallback 状态挂到 `digital_life_turn`、process report、digest 与 receipt。provider 为 `local` 或未启用时，必须保留确定性回应。
 
 ### resident process lease
 

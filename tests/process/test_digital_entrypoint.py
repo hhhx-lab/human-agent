@@ -104,6 +104,12 @@ class DigitalEntrypointTests(unittest.TestCase):
             self.assertEqual(completed.returncode, 0, completed.stderr)
             config_state = self._read_json(paths["terminal_state"] / "runtime_config_state.json")
             config_report = self._read_json(paths["reports"] / "digital_life_runtime_config_report.json")
+            model_expression_state = self._read_json(
+                paths["language_state"] / "model_expression_state.json"
+            )
+            model_expression_report = self._read_json(
+                paths["reports"] / "digital_life_model_expression_report.json"
+            )
             process_report = self._read_json(paths["reports"] / "digital_life_process_report.json")
 
         self.assertEqual(config_state["runtime_profile"], "quiet-lab")
@@ -127,6 +133,30 @@ class DigitalEntrypointTests(unittest.TestCase):
         self.assertEqual(
             process_report["runtime_config_report_ref"],
             "runtime/reports/latest/digital_life_runtime_config_report.json",
+        )
+        self.assertEqual(
+            model_expression_state["model_expression_status"],
+            "model_expression_skipped",
+        )
+        self.assertEqual(
+            model_expression_state["fallback_reason"],
+            "provider_not_enabled_for_model_expression:test-provider",
+        )
+        self.assertEqual(
+            model_expression_report["runtime_config_state_ref"],
+            "runtime/state/terminal/runtime_config_state.json",
+        )
+        self.assertEqual(
+            process_report["model_expression_state_ref"],
+            "runtime/state/language/model_expression_state.json",
+        )
+        self.assertEqual(
+            process_report["model_expression_report_ref"],
+            "runtime/reports/latest/digital_life_model_expression_report.json",
+        )
+        self.assertEqual(
+            process_report["last_life_turn"]["model_expression_status"],
+            "model_expression_skipped",
         )
 
     def test_repo_local_digital_life_entrypoint_bootstraps_empty_runtime_before_dialogue(self):

@@ -11,6 +11,7 @@ from .governance_explanation import (
     write_resident_governance_explanation,
 )
 from .idle_strategy import extract_idle_governance_fields
+from .model_expression import MODEL_EXPRESSION_REPORT_REF, MODEL_EXPRESSION_STATE_REF
 from .resident_autonomous_activity import (
     ACTIVITY_STATE_REFS,
     RESIDENT_AUTONOMOUS_ACTIVITY_REF,
@@ -129,6 +130,17 @@ def write_process_report_bundle(
     state_merge_profile = _state_merge_report_profile(
         state_merge_guard=state_merge_guard,
         state_merge_guard_ref=state_merge_guard_runtime_ref,
+    )
+    model_expression_state = _read_json_if_exists(
+        state_dir / "language" / "model_expression_state.json"
+    )
+    model_expression_state_ref = (
+        MODEL_EXPRESSION_STATE_REF if model_expression_state else None
+    )
+    model_expression_report_ref = (
+        MODEL_EXPRESSION_REPORT_REF
+        if (reports_dir / "digital_life_model_expression_report.json").exists()
+        else None
     )
     relationship_offline_learning_context = (
         relationship_resume_summary.get("relationship_stage") == "repair_guarded_continuity"
@@ -388,6 +400,20 @@ def write_process_report_bundle(
         "resident_process_lease_history_ref": resident_process_lease_history_ref,
         "runtime_config_state_ref": runtime_config_state_ref,
         "runtime_config_report_ref": runtime_config_report_ref,
+        "model_expression_state_ref": model_expression_state_ref,
+        "model_expression_report_ref": model_expression_report_ref,
+        "model_expression_status": model_expression_state.get(
+            "model_expression_status"
+        ),
+        "model_expression_applied": (
+            model_expression_state.get("model_expression_status")
+            == "model_expression_applied"
+            if model_expression_state
+            else None
+        ),
+        "model_expression_fallback_reason": model_expression_state.get(
+            "fallback_reason"
+        ),
         "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "life_context_frame_ref": life_context_frame_ref,
         "relation_turn_frame_ref": relation_turn_frame_ref,
@@ -718,6 +744,11 @@ def write_process_report_bundle(
         "resident_process_lease_history_ref": resident_process_lease_history_ref,
         "runtime_config_state_ref": runtime_config_state_ref,
         "runtime_config_report_ref": runtime_config_report_ref,
+        "model_expression_state_ref": model_expression_state_ref,
+        "model_expression_report_ref": model_expression_report_ref,
+        "model_expression_status": model_expression_state.get(
+            "model_expression_status"
+        ),
         "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "background_lineage_depth_band": idle_governance.get(
             "background_lineage_depth_band"
@@ -1253,6 +1284,7 @@ def build_process_receipt(
         state_dir / "language" / "self_narrative_language_trace.json",
         state_dir / "language" / "commitment_repair_language_index.json",
         state_dir / "language" / "expression_plan.json",
+        state_dir / "language" / "model_expression_state.json",
         state_dir / "action" / "responsibility_loop_state.json",
         state_dir / "membrane" / "world_contact_summary.json",
         state_dir / "signal" / "signal_media_runtime.json",
@@ -1287,6 +1319,7 @@ def build_process_receipt(
         state_dir / "relationship" / "relationship_subject_graph.json",
         state_dir / "self" / "self_model.json",
         reports_dir / "pain_regret_repair_report.json",
+        reports_dir / "digital_life_model_expression_report.json",
         reports_dir / "dialogue_writeback_bundle.json",
         reports_dir / "digital_life_process_relaunch_recovery_report.json",
         reports_dir / "digital_life_process_incident_report.json",
@@ -1319,6 +1352,16 @@ def build_process_receipt(
         if (state_dir / "self" / "self_model.json").exists()
         else None
     )
+    model_expression_state_ref = (
+        MODEL_EXPRESSION_STATE_REF
+        if (state_dir / "language" / "model_expression_state.json").exists()
+        else None
+    )
+    model_expression_report_ref = (
+        MODEL_EXPRESSION_REPORT_REF
+        if (reports_dir / "digital_life_model_expression_report.json").exists()
+        else None
+    )
     return {
         "schema_version": "digital_life_process_receipt_v0",
         "receipt_id": f"digital_life_process_{run_id}",
@@ -1334,11 +1377,18 @@ def build_process_receipt(
         "resident_autonomous_activity_ref_set": list(
             resident_autonomous_activity_ref_set or []
         ),
-        "report_refs": [
-            "runtime/reports/latest/digital_life_resident_governance_explanation.json",
-            "runtime/reports/latest/digital_life_process_report.json",
-            "runtime/reports/latest/digital_life_process_digest.json",
-        ],
+        "report_refs": _dedupe_refs(
+            [
+                ref
+                for ref in [
+                    "runtime/reports/latest/digital_life_resident_governance_explanation.json",
+                    "runtime/reports/latest/digital_life_process_report.json",
+                    "runtime/reports/latest/digital_life_process_digest.json",
+                    model_expression_report_ref,
+                ]
+                if ref
+            ]
+        ),
         "shared_object_refs": _dedupe_refs([
             ref
             for ref in [
@@ -1357,6 +1407,8 @@ def build_process_receipt(
                 life_context_frame_ref,
                 relation_turn_frame_ref,
                 expression_plan_ref,
+                model_expression_state_ref,
+                model_expression_report_ref,
                 relationship_timeline_ref,
                 commitment_expression_plan_ref,
                 apology_repair_language_trace_ref,
