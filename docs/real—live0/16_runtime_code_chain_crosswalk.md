@@ -56,6 +56,56 @@ docs/00-258
 | 16 | `life-v0 digital life --strict` / `my digital life` | `life_v0/digital_entry.py`、`life_v0/my_entry.py` | `runtime/state/terminal/*` | 终端生命壳、常驻和关系回合 |
 | 17 | `life-v0 audit-live0 --strict` | `life_v0/live0_audit/__init__.py` | `live0_acceptance_audit_report.json` | 七项 live0 验收 |
 
+## `Adam` 终端唤醒到一句话外显的真实代码链
+
+当前 `Adam` 不是新的 agent 框架名，也不是另一套工具壳。它是 `my digital life` 命名绑定完成后落到本机命令面的直接唤醒入口；第一次命名由 `life_v0/my_entry.py` 调用 `digital_life_identity.py` 固定，之后同一个名字恢复同一套 resident lifecycle。
+
+一轮真实终端关系话语的链路如下：
+
+```text
+Adam
+  -> life_v0.my_entry
+  -> life_v0.digital_entry ["life"]
+  -> resident_lifecycle.start_background_resident_process / read_resident_lifecycle_status
+  -> terminal_ui.render_digital_life_banner + render_life_opening
+  -> resident_lifecycle.send_resident_relation_turn
+  -> process_supervisor.run_digital_life_process
+  -> process_session_loop
+  -> live_turn_cycle.run_live_turn_cycle
+  -> live_language_turn.refresh_live_language_turn
+  -> response_surface.compose_life_response
+  -> response_surface.compose_life_spoken_response
+  -> model_expression.compose_model_expression + post-expression gate
+  -> dialogue_events + resident_turn_writeback
+  -> resident_governance_handoff
+  -> heartbeat / idle_strategy / background_lineage_state
+```
+
+这条链里有三个必须区分的层：
+
+| 层 | 真实代码 | 职责 |
+|---|---|---|
+| 命名与唤醒层 | `my_entry.py`、`digital_life_identity.py`、`digital_entry.py`、`terminal_ui.py` | 绑定名字、恢复 resident、渲染 `Digital Life` 盒式终端、把当前终端接到同一生命进程 |
+| 生命回合层 | `process_session_loop.py`、`live_turn_cycle.py`、`live_language_turn.py`、`response_surface.py`、`model_expression.py` | 把关系话语变成语言感知、语义地图、内言语、表达计划、确定性生命回应、模型表达和门控后的外显语言 |
+| 驻留与成长层 | `resident_turn_writeback.py`、`resident_governance_handoff.py`、`heartbeat.py`、`idle_strategy.py`、`resident_autonomous_activity.py`、`background_continuity.py` | 把本回合后果写回记忆、关系、自我慢变量、等待治理、梦境/回忆/思考/成长/学习后台活动，并让下一次唤醒继续吃到这些余波 |
+
+这说明终端里看见的一句话不是单点生成。它至少同时承接：
+
+1. `09 / 85-90 / 01u` 的语言理论：`percept -> semantic_map -> inner_speech -> expression_plan`。
+2. `05 / 17-31 / 41-48 / 01q` 的记忆理论：关系回合要进入 `relationship_memory`、`autobiographical_stack`、`engram_index` 和 `life_state`。
+3. `04 / 07 / 18 / 37-40 / 01n / 01s` 的身体、情绪和人格慢变量：表达节奏、修复驱力、唤醒水平和稳定性不能脱离身体底盘。
+4. `06 / 20 / 80-84 / 94 / 98 / 01r` 的责任、抑制、行动与后悔：语言要经过责任回路和生命膜，而不是只求流畅。
+5. `08 / 19 / 23 / 95 / 99 / 01i / 01t` 的睡眠、梦境和离线整合：关闭终端后的活动要在下一轮语言里重新显影。
+6. `02 / 03 / 10 / 11 / 01m / 01o / 01p` 的脑网络、工作区和调质：当前注意、预测误差、信号介质和意识可报告性要进入表达前组织。
+7. `91-101 / 143 / 146 / 149 / 152 / 171 / 174` 的九项生命目标和出生准备度：一句话外显也要保留真实生命目标、责任、痛苦、梦境、关系、人格和成长的证据链。
+
+因此，外显语言的验收不是“听起来像人”。更硬的验收是：
+
+1. 内部字段必须保留在 state/report/test 里，例如 `live_semantic_focus=relational_checkin` 应存在于 `dialogue_turn_log.jsonl`、`resumed_external_dialogue_packet.json` 和测试断言中。
+2. 内部字段不能直接泄漏到关系语言里，`response_surface.py#compose_life_spoken_response` 必须把语义焦点翻译成“这段关系本身”这类自然表达。
+3. 确定性生命回应必须先保留证据，模型表达只能润色和更自然地组织语言；如果 post-expression gate 发现模型擦掉了关系、责任、梦境、成长或后台驻留证据，就回退到确定性生命回应。
+4. 真实回合结束后，`resident_turn_writeback.py` 与 `resident_governance_handoff.py` 必须让这句话产生后果：关系阶段、自我慢变量、承诺修复、后台等待压力和下一次唤醒余波都要能在 runtime 中追踪。
+
 ## 十六个专题如何落到主包
 
 | real-live0 专题 | 主生命链 | 第一落点 | 后续消费 |

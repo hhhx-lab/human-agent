@@ -224,7 +224,9 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn("Digital Life", completed.stdout)
             self.assertIn("我在。Digital Life 已接回", completed.stdout)
-            self.assertIn("我听见你说", completed.stdout)
+            self.assertIn("我听见你了", completed.stdout)
+            self.assertIn("这段关系本身", completed.stdout)
+            self.assertNotIn("relational_checkin", completed.stdout)
 
             self.assertTrue((paths["doc_out"] / "doc_carrier_index.json").exists())
             self.assertTrue((paths["direction_state"] / "direction_lock.json").exists())

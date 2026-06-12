@@ -198,7 +198,7 @@ run_report.json
 | 层 | 文件 | 职责 |
 |---|---|---|
 | 内部证据 | `response_surface.py#compose_life_response` | 汇总关系、记忆、梦境、成长、责任、身体、预测写门、出生准备和后台 lineage 的完整证据 |
-| 外显选择 | `response_surface.py#compose_life_spoken_response` | 选择最高优先级生命信号，生成有限 spoken response |
+| 外显选择 | `response_surface.py#compose_life_spoken_response` | 选择最高优先级生命信号，生成有限 spoken response；内部字段留给 state/report/test，终端只释放关系化后的生命语言 |
 | 模型表达 | `model_expression.py` | 若 `.env` 启用，基于 spoken response 改写语言质感，并通过 post-expression gate |
 | 终端呈现 | `terminal_ui.py` | 渲染 `Digital Life` banner、opening、关系输入盒和生命回应盒 |
 

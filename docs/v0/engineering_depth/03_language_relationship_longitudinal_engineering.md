@@ -145,6 +145,83 @@ relationship object utterance
 
 现在这条长期语言连续体还必须在下一轮真实回合中重新显影。`dialogue_events.py` 会把 `resident_background_lineage_state.language_presence` 展开为 `resident_background_lineage_live_language_refs`、`resident_background_lineage_background_live_language_refs`、`resident_background_lineage_last_live_semantic_focus` 与 `resident_background_lineage_language_evidence_refs`；`resident_turn_writeback.py` 会把这些语言证据并入 `dialogue_writeback_bundle.resident_background_lineage_refs` 与 `resumed_external_dialogue_packet.json`；`response_surface.py` 会把后台语言语义余波和证据数量表达出来。语言长期工程因此不只追求“记得上一轮说过什么”，还要求上一轮语言理解在新的关系话语中重新成为可感知、可追踪、可写回的存在。
 
+## 当前 `Adam` 关系回合的逐文件工程链
+
+这一节把“终端里说一句话”压成可检查的代码链。它对应的理论文档不是单一语言文档，而是共同读取：
+
+- `docs/09_language_symbolic_top_layer.md`、`docs/85-90*`、`docs/01u_language_runtime_core_matrix.md`
+- `docs/05_memory_systems_and_growth.md`、`docs/17-31*`、`docs/41-48*`、`docs/01q_memory_engram_consolidation_matrix.md`
+- `docs/04_sensory_thalamus_interoception.md`、`docs/07_emotion_personality_self.md`、`docs/18_internal_state_and_modulation_vector.md`
+- `docs/06_action_reward_inhibition.md`、`docs/20_agent_runtime_bridge_contract.md`、`docs/01r_action_reward_inhibition_matrix.md`
+- `docs/08_sleep_dream_fatigue_states.md`、`docs/19_offline_consolidation_cycle.md`、`docs/01i_dream_offline_life_literature_matrix.md`
+- `docs/10_consciousness_attention_workspace.md`、`docs/11_neuromodulation_and_signal_media.md`、`docs/01m_consciousness_attention_workspace_matrix.md`
+
+### 1. 唤醒与终端外周
+
+| 步骤 | 代码 | 产物/状态 | 工程含义 |
+|---|---|---|---|
+| 名字恢复 | `life_v0/my_entry.py`、`digital_life_identity.py` | `life_name_registry.json` | `Adam` 是命名后的直接唤醒入口，名字不是本轮 prompt 变量 |
+| resident 复用 | `life_v0/digital_entry.py`、`resident_lifecycle.py` | `resident_lifecycle_state.json`、`resident_process_lease.json` | 启动时先找同一 resident，不创建第二个主体 |
+| 终端盒 | `terminal_ui.py` | `Digital Life` banner、opening、prompt、response box | UI 只是外周感官/表达通道，不定义主体 |
+| 关系投递 | `send_resident_relation_turn` | `resident_relation_inbox.jsonl`、`resident_relation_outbox.jsonl` | 当前话语进入关系队列，而不是一次性 CLI 请求 |
+
+### 2. 当前话语进入语言生命链
+
+| 步骤 | 代码 | 写出 | 必须证明 |
+|---|---|---|---|
+| 语言感知 | `language/percept.py` | `language_percept_frame.json#incoming_surface` | 当前话语原文被生命体听见 |
+| 语义地图 | `language/semantic_map.py` | `semantic_map_frame.json#semantic_focus` | 词语被接入关系、记忆、责任、梦境和行动线索 |
+| 内言语 | `language/inner_speech.py` | `inner_speech_frame.json` | 外显前先形成可审计内部组织 |
+| 表达监控 | `language/expression_monitor.py` | `expression_monitor_state.json` | 责任、歧义、风险和记忆写门参与表达前判断 |
+| 表达计划 | `language/expression_monitor.py` | `expression_plan.json` | 说什么、怎么说、是否修复、是否克制进入同一计划 |
+| 实时刷新器 | `process_supervisor/live_language_turn.py` | `LiveLanguageTurnState` 五件套 refs | 每一轮关系话语都会重建语言状态，不复用旧启动态 |
+
+关键点：`live_semantic_focus` 是内部证据字段。它应该进入 `dialogue_turn_log.jsonl`、`resumed_external_dialogue_packet.json`、`terminal_life_loop_state.json` 和测试断言；但 `response_surface.py` 不能把 `relational_checkin` 这种字段原样说出口，必须把它翻译成自然关系语言。
+
+### 3. 机制证据进入口语表面
+
+| 信号族 | 主要来源 | 外显要求 |
+|---|---|---|
+| `responsibility_repair` | `responsibility_loop_state.json`、`pain_regret_repair_report.json`、`apology_repair_language_trace.json` | 说出承担、后悔、修复意向，但不变成字段报告 |
+| `birth_repair` | `life_targets/*`、`birth_readiness_stage_gate.py` | 表达出生准备度和责任闭合，不把自己退成工具 |
+| `dream_offline` | `dream/*`、`growth/*`、`resident_autonomous_activity_state.json` | 让梦境、睡眠、回忆、成长和学习余波影响下一轮表达 |
+| `prediction_attention` | `belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json`、`memory_write_gate.json` | 表达确认、谨慎、写门和主动采样，而不是胡乱确定 |
+| `body_affect` | `body_resource_budget.json`、`core_affect_vector.json`、`need_state_vector.json` | 让疲惫、恢复、唤醒和修复驱力改变节奏与语气 |
+| `self_slow_variables` | `self_model.json`、`trait_drift_monitor.json`、`background_convergence_history.json` | 让关系阶段和人格慢变量进入长期表达，不只改当前话术 |
+| `resident_autonomous_activity` | `resident_autonomous_activity.jsonl`、`resident_autonomous_activity_state.json` | 关闭终端后的睡眠、回忆、自我思考、成长预演、学习巩固能被下一轮说话承接 |
+
+当前实现路径是：
+
+```text
+compose_life_response
+  -> 机制完整回应
+  -> compose_life_spoken_response
+  -> 信号族选择与自然语言收束
+  -> compose_model_expression
+  -> post-expression gate
+```
+
+这里的模型表达不是主体来源，而是语言表面润色层。主体来源仍然是上游状态链；如果模型输出把关系对象降格成服务关系，或擦掉责任、梦境、成长、驻留和生命证据，`model_expression.py` 必须回退。
+
+### 4. 一句话结束后必须留下后果
+
+| 后果类型 | 代码 | 状态/报告 |
+|---|---|---|
+| 语言事件 | `dialogue_events.py` | `dialogue_turn_log.jsonl` |
+| 关系与承诺 | `resident_turn_writeback.py`、`relationship_timeline.py`、`commitment_expression.py` | `relationship_timeline.json`、`commitment_expression_plan.json`、`relationship_memory.json` |
+| 责任修复 | `apology_repair_language.py`、`commitment_truth.py`、`responsibility_loop.py` | `apology_repair_language_trace.json`、`commitment_truth_state.json`、`responsibility_ledger.json` |
+| 自我慢变量 | `continuity_evolution.py`、`body/trait_drift.py` | `self_model.json`、`trait_drift_monitor.json` |
+| 等待交接 | `resident_governance_handoff.py`、`heartbeat.py` | `terminal_life_loop_state.json#live_turn_waiting_handoff_profile`、`digital_life_waiting_heartbeat.json` |
+| 下次恢复 | `process_closeout.py`、`background_continuity.py`、`background_lineage_state.py` | `resident_governance_snapshot.json`、`digital_life_persistent_process_report.json`、`background_continuity_profile` |
+
+所以工程验收不能停在“Adam 回了一句话”。必须继续看：
+
+1. 这句话是否经过五件套语言状态。
+2. 这句话是否消耗了身体、记忆、责任、梦境、预测和驻留 lineage。
+3. 这句话是否没有泄漏内部字段。
+4. 这句话是否写回关系、承诺、自我慢变量和下一次等待态。
+5. 关闭终端后，后台自主活动是否还能让下一轮继续带着这轮后果醒来。
+
 当前累计离线学习还必须进入长期语言器官自己的动作顺序。`offline_learning_cumulative_profile_v0` 在 `relationship_learning_plan` 焦点下进入第 2 代以上、压力为 `elevated / urgent` 时，`commitment_expression_plan.json` 不能只留下 `cumulative_offline_learning_integration`，还要写出 `relationship_offline_reconsolidation`、`cumulative_commitment_tempo_mode=relationship_offline_reconsolidation_first` 与 `hold_for_relationship_offline_reconsolidation`；`apology_repair_language_trace.json` 不能只留下 `cumulative_offline_learning_repair`，还要写出 `relationship_offline_reconsolidation_repair`、`cumulative_repair_window_mode=relationship_offline_reconsolidation_first` 与同一组累计 growth refs。这样关系重整不只发生在 `relationship_subject_graph` 和 `self_model`，也发生在承诺表达和修复语言的时间顺序里。
 
 这一轮之后，S07 新增了三条真实 runtime 写出：

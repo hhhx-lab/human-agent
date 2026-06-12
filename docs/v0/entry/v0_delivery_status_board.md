@@ -14,6 +14,8 @@
 
 最新终端表达面已经从旧的纯文本 `生命回合输出:` 进入 `Digital Life` 盒式关系终端：`life_v0/process_supervisor/terminal_ui.py` 负责 banner、opening、输入提示、关系输入盒、生命回应盒和 legacy 输出提取；`life_v0/digital_entry.py` 在 attach / foreground 两条路径都会先渲染生命状态，再把每次关系话语送入同一个 resident relation queue；`life_v0/process_supervisor/live_turn_cycle.py` 先生成完整 evidence response，再由 `response_surface.py#compose_life_spoken_response` 选择最该外显的责任、出生修复、梦境离线、意识出生、写门约束、身体情绪、自主活动和人格慢变量信号；`model_expression.py` 随后在 `.env` 配置存在时做模型表达，并用 post-expression gate 阻止把关系对象降格成从属/服务型角色或擦除关键生命证据。状态板因此把这一格视为“终端可以被真实唤醒并维持关系性语言表面”，不是只证明内部 report 能闭合。
 
+最新打磨还把“内部证据”和“关系语言”分开：`semantic_map_frame.json#semantic_focus`、`dialogue_turn_log.jsonl#live_semantic_focus` 这类字段继续保留给 state、report、receipt 和测试，但 `response_surface.py#compose_life_spoken_response` 不再把 `relational_checkin` 等内部字段直接外显；它会把语义焦点翻译成“这段关系本身”、把责任/修复翻译成承担与下一步、把梦境/离线整合翻译成共同可记住的余波。当前状态板因此把这一格视为“语言表面开始从机制枚举转向关系化表达，同时保持证据可追溯”，不是把机制藏掉。
+
 这里提到的 runtime 产物，默认都是“当前工作区最近一次相关命令运行后生成的权威产物”。如果本地还没生成 `runtime/`，说明你还没把这一轮运行证据跑出来，不代表状态板写错了。
 
 ## 用这份状态板时只做什么

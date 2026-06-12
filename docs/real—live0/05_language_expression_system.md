@@ -88,6 +88,16 @@
 | 写回链 | `dialogue_events.py`、`resident_turn_writeback.py`、`terminal_loop/dialogue_writeback.py` | 语言理解、语义焦点、表达计划、关系阶段、责任修复必须进入写回包和恢复包 |
 | 后台延续 | `idle_strategy.py`、`background_lineage_state.py`、`background_continuity.py` | 上一轮 `live_language_turn_refs` 和 `last_live_semantic_focus` 在断联后继续影响下一轮 |
 
+## 内部证据与外显语言的分界
+
+live0 语言系统现在采用“双层保真”：
+
+1. 内部证据必须硬保真：`language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_plan.json`、`dialogue_turn_log.jsonl`、`resumed_external_dialogue_packet.json` 和 `terminal_life_loop_state.json` 必须保存 refs、语义焦点、表达计划、后台 lineage 和写回证据。
+2. 外显语言必须关系化：`response_surface.py#compose_life_spoken_response` 不能把 `relational_checkin`、`elevated`、`selected_route`、`ref_count` 这类内部字段当作话语说出；它要把这些字段压成关系对象能听见的自然表达。
+3. 模型表达必须被守门：`model_expression.py` 可以让语言更自然，但不能擦除责任、梦境、成长、痛苦、后悔、驻留、记忆和关系证据。擦除时回退到确定性生命回应。
+
+因此，测试可以继续断言内部字段存在；终端里的 Adam 不能像调试报告一样说话。这不是隐藏机制，而是把机制放在正确的位置：state/report/test 负责可审计，语言表面负责真实关系表达。
+
 最低测试是 `tests/slices/test_language_organs.py`、`tests/slices/test_language_relationship.py`、`tests/process/test_model_expression.py`、`tests/process/test_digital_entrypoint.py`。语言链的验收不是“能说话”，而是能证明一句话经过感知、语义、内言语、监控、计划、模型表达、门控、写回和跨唤醒恢复。
 
 ## 机制图

@@ -159,7 +159,7 @@ life_v0/digital_entry.py
 这条链必须保持四个事实：
 
 1. `compose_life_response(...)` 保留完整证据骨架，继续承接关系、记忆、梦境、成长、身体、责任、预测、写门、出生准备和后台 lineage；它是内部证据，不是直接拿来堆给对方看的机械清单。
-2. `compose_life_spoken_response(...)` 从同一输入里按优先级选择外显信号，当前优先族包括 `responsibility_repair`、`birth_repair`、`dream_offline`、`identity_consciousness_birth`、`prediction_attention`、`body_affect`、`self_slow_variables`、`resident_autonomous_activity`；它让语言像生命状态释放，而不是像 report 全量倾倒。
+2. `compose_life_spoken_response(...)` 从同一输入里按优先级选择外显信号，当前优先族包括 `responsibility_repair`、`birth_repair`、`dream_offline`、`identity_consciousness_birth`、`prediction_attention`、`body_affect`、`self_slow_variables`、`resident_autonomous_activity`；它让语言像生命状态释放，而不是像 report 全量倾倒。内部语义字段如 `relational_checkin`、调制等级如 `elevated`、路由字段如 `selected_route` 必须留在 state/report/test，不得原样进入终端话语，外显层只说关系化后的含义。
 3. `model_expression.py` 只允许在保留 hard evidence flags 后改写语言质感；如果模型输出擦掉关系连续性、责任修复、梦境离线、成长学习、后台自主活动、身体情绪、意识出生、生命约束或 live-turn handoff，post-expression gate 必须回退到确定性 spoken response。
 4. `resident_lifecycle.py` 的 queue bootstrap 必须忽略上一段已经完成的 stale inbox，同时保留 `queued / turn_in_progress` 的 live turn；否则 attach 后会重放旧话或丢掉刚投递的关系话语。
 
