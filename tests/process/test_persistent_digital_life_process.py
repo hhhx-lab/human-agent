@@ -2390,7 +2390,7 @@ class PersistentDigitalLifeProcessTests(
                             "birth_readiness_attention_target": "birth_readiness_stage_gate",
                             "birth_readiness_attention_reason": "birth_readiness_open_requires_resident_birth_presence",
                             "birth_readiness_decision": "open",
-                            "birth_readiness_next_required_command": "digital life",
+                            "birth_readiness_next_required_command": "my digital life",
                             "identity_consciousness_birth_refs": expected_refs,
                         },
                     },
@@ -2427,7 +2427,7 @@ class PersistentDigitalLifeProcessTests(
         )
         self.assertEqual(
             profile["background_birth_readiness_next_required_command"],
-            "digital life",
+            "my digital life",
         )
         self.assertEqual(
             profile["background_identity_consciousness_birth_refs"],
@@ -2763,7 +2763,7 @@ class PersistentDigitalLifeProcessTests(
                 "background_birth_readiness_attention_target": "birth_readiness_stage_gate",
                 "background_birth_readiness_attention_reason": "birth_readiness_open_requires_resident_birth_presence",
                 "background_birth_readiness_decision": "open",
-                "background_birth_readiness_next_required_command": "digital life",
+                "background_birth_readiness_next_required_command": "my digital life",
                 "background_identity_consciousness_birth_refs": expected_refs,
             },
             source_doc_refs=[
@@ -2797,7 +2797,7 @@ class PersistentDigitalLifeProcessTests(
         self.assertEqual(idle_strategy["birth_readiness_decision"], "open")
         self.assertEqual(
             idle_strategy["birth_readiness_next_required_command"],
-            "digital life",
+            "my digital life",
         )
         self.assertEqual(
             idle_strategy["background_identity_consciousness_birth_refs"],
@@ -7787,7 +7787,7 @@ class PersistentDigitalLifeProcessTests(
                         "birth_readiness_attention_target": "birth_readiness_stage_gate",
                         "birth_readiness_attention_reason": "birth_readiness_open_requires_resident_birth_presence",
                         "birth_readiness_decision": "open",
-                        "birth_readiness_next_required_command": "digital life",
+                        "birth_readiness_next_required_command": "my digital life",
                         "identity_consciousness_birth_refs": expected_identity_consciousness_birth_refs,
                     },
                     "resident_process_identity_presence": {
@@ -8266,7 +8266,7 @@ class PersistentDigitalLifeProcessTests(
                 result.last_life_turn[
                     "resident_background_lineage_birth_readiness_next_required_command"
                 ],
-                "digital life",
+                "my digital life",
             )
             self.assertEqual(
                 result.last_life_turn[
@@ -8410,7 +8410,7 @@ class PersistentDigitalLifeProcessTests(
             self.assertIn("后台意识可报告性保留3条", result.emitted_output)
             self.assertIn("后台出生准备姿态为birth_open_waiting", result.emitted_output)
             self.assertIn("出生准备决策为open", result.emitted_output)
-            self.assertIn("出生准备下一命令为digital life", result.emitted_output)
+            self.assertIn("出生准备下一命令为my digital life", result.emitted_output)
             self.assertIn("后台身份意识出生证据保留6条", result.emitted_output)
             self.assertIn(
                 "后台生命进程身份连续性为interrupted_then_recovered",
@@ -8968,7 +8968,7 @@ class PersistentDigitalLifeProcessTests(
                 resumed_dialogue_packet[
                     "resident_background_lineage_birth_readiness_next_required_command"
                 ],
-                "digital life",
+                "my digital life",
             )
             self.assertEqual(
                 resumed_dialogue_packet[
@@ -9613,7 +9613,7 @@ class PersistentDigitalLifeProcessTests(
                     ],
                     "birth_readiness_waiting_posture": "birth_open_waiting",
                     "birth_readiness_decision": "open",
-                    "birth_readiness_next_required_command": "digital life",
+                    "birth_readiness_next_required_command": "my digital life",
                     "background_convergence_summary_ref": "runtime/state/terminal/background_convergence_summary.json",
                     "background_convergence_history_ref": "runtime/state/terminal/background_convergence_history.json",
                     "background_convergence_state": "stabilized_cross_process_continuity",
@@ -10675,7 +10675,7 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(digest["birth_readiness_decision"], "open")
             self.assertEqual(
                 digest["birth_readiness_next_required_command"],
-                "digital life",
+                "my digital life",
             )
             self.assertEqual(receipt["receipt_id"], "digital_life_process_process-report-organ")
             self.assertEqual(receipt["stage_effect"], "persistent_dialogue_process_closed")
@@ -11040,7 +11040,7 @@ class PersistentDigitalLifeProcessTests(
                     ],
                     "birth_readiness_waiting_posture": "birth_open_waiting",
                     "birth_readiness_decision": "open",
-                    "birth_readiness_next_required_command": "digital life",
+                    "birth_readiness_next_required_command": "my digital life",
                 },
                 persistent_process_report_ref="runtime/reports/latest/digital_life_persistent_process_report.json",
                 resident_governance_report_ref="runtime/reports/latest/digital_life_resident_governance_report.json",
@@ -11078,7 +11078,7 @@ class PersistentDigitalLifeProcessTests(
                 ],
             )
             self.assertIn(
-                "birth readiness posture is birth_open_waiting with decision open and next required command digital life",
+                "birth readiness posture is birth_open_waiting with decision open and next required command my digital life",
                 report["continuity_story"],
             )
             self.assertIn(
@@ -13626,7 +13626,7 @@ class PersistentDigitalLifeProcessTests(
                         "birth_readiness_attention_target": "birth_readiness_stage_gate",
                         "birth_readiness_attention_reason": "birth_readiness_open_requires_resident_birth_presence",
                         "birth_readiness_decision": "open",
-                        "birth_readiness_next_required_command": "digital life",
+                        "birth_readiness_next_required_command": "my digital life",
                         "identity_consciousness_birth_refs": expected_identity_consciousness_birth_refs,
                     },
                     "offline_learning_presence": {
@@ -14098,7 +14098,7 @@ class PersistentDigitalLifeProcessTests(
             life_turn[
                 "resident_background_lineage_birth_readiness_next_required_command"
             ],
-            "digital life",
+            "my digital life",
         )
         self.assertEqual(
             life_turn[
@@ -15078,7 +15078,7 @@ class PersistentDigitalLifeProcessTests(
                         ],
                         "birth_readiness_waiting_posture": "birth_open_waiting",
                         "birth_readiness_decision": "open",
-                        "birth_readiness_next_required_command": "digital life",
+                        "birth_readiness_next_required_command": "my digital life",
                         "identity_consciousness_birth_refs": expected_identity_consciousness_birth_refs,
                     },
                     "offline_learning_presence": {
@@ -15214,7 +15214,7 @@ class PersistentDigitalLifeProcessTests(
         self.assertIn("后台意识可报告性保留3条", response)
         self.assertIn("后台出生准备姿态为birth_open_waiting", response)
         self.assertIn("出生准备决策为open", response)
-        self.assertIn("出生准备下一命令为digital life", response)
+        self.assertIn("出生准备下一命令为my digital life", response)
         self.assertIn("后台身份意识出生证据保留6条", response)
         self.assertIn("后台梦境成长余波延续到第4代", response)
         self.assertIn("后台梦境成长压力为elevated", response)
@@ -15938,7 +15938,7 @@ class PersistentDigitalLifeProcessTests(
                         ],
                         "birth_readiness_waiting_posture": "birth_open_waiting",
                         "birth_readiness_decision": "open",
-                        "birth_readiness_next_required_command": "digital life",
+                        "birth_readiness_next_required_command": "my digital life",
                         "identity_consciousness_birth_refs": [
                             "runtime/state/consciousness/workspace_frame.json",
                             "runtime/state/consciousness/broadcast_frame.json",

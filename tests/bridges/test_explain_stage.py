@@ -64,9 +64,9 @@ class ExplainStageTests(unittest.TestCase):
         self.assertEqual(stage_report["status"], "closed")
         self.assertEqual(stage_report["stage_effect"], "report_bundle_closed")
         self.assertEqual(stage_report["decision"], "ready_for_terminal_birth_restore")
-        self.assertEqual(stage_report["next_required_command"], "digital life")
+        self.assertEqual(stage_report["next_required_command"], "my digital life")
         self.assertEqual(latest_stage_ref["schema_version"], "latest_stage_explanation_ref_v0")
-        self.assertEqual(latest_stage_ref["next_required_command"], "digital life")
+        self.assertEqual(latest_stage_ref["next_required_command"], "my digital life")
 
     def _runtime_paths(self, tmp_path: Path) -> dict[str, Path]:
         state_root = tmp_path / "runtime" / "state"

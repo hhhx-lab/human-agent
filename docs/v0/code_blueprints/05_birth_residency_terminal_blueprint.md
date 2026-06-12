@@ -30,6 +30,7 @@
 | `./digital life --strict` | repo-local 常驻终端生命进程 | 已闭合最小代码 |
 | `digital life --strict` | 安装态常驻终端生命进程 | 已闭合最小代码 |
 | `digital life --background / --status / --say / --stop` | 安装态后台 resident lifecycle 与关系投递 | 已闭合最小代码 |
+| `my digital life --name <名字>` | 推荐安装态命名驻留入口，绑定 `life_name_registry.json` 后恢复同一 resident lifecycle | 已闭合最小代码 |
 
 ## Resident lifecycle
 

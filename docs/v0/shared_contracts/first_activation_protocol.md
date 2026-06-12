@@ -112,7 +112,7 @@ v0 当前不额外写出一个独立的 `LanguageRestorePacket.json`。第一次
 | 自我叙述恢复 | `self_narrative_restore_refs` | `self_narrative_language_trace.json` |
 | 逐回合语言写回恢复 | `dialogue_turn_restore_refs` | `dialogue_turn_log.jsonl` |
 
-所以，未来 `digital life` 的第一回合不是 fresh session，也不是“收到新输入再临时组织回应”，而是先恢复这些语言材料、语境累积窗口和回合转接痕迹，再进入第一次外显回合。
+所以，未来推荐入口 `my digital life` 的第一回合不是 fresh session，也不是“收到新输入再临时组织回应”，而是先绑定或校验 `life_name_registry.json`，再恢复这些语言材料、语境累积窗口和回合转接痕迹，进入第一次外显回合。旧 `digital life` 入口仍作为兼容入口存在，但第一次生命激活的推荐命令必须走命名锁。
 
 ## 激活命令顺序
 

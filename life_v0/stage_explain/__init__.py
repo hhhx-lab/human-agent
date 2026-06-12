@@ -79,7 +79,9 @@ def run_explain_stage(
     status = "closed" if not blocked_reasons else "blocked"
     stage_effect = "report_bundle_closed" if status == "closed" else "stage_explanation_blocked"
     decision = "ready_for_terminal_birth_restore" if status == "closed" else "blocked"
-    next_required_command = "digital life" if status == "closed" else "life-v0 emit-report --strict"
+    next_required_command = (
+        "my digital life" if status == "closed" else "life-v0 emit-report --strict"
+    )
     followup_required_command = (
         "re-run life-v0 check-v0-contracts --strict before terminal birth if runtime state changes"
         if status == "closed"

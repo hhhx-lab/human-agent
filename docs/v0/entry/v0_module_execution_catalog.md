@@ -167,6 +167,7 @@ docs/v0/code_framework/README.md
 | `./digital life --strict` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | repo-local 最小常驻生命进程；若 runtime 不足会先自举最小出生链，恢复后继续等待真实新回合输入 |
 | `digital life --strict` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | 安装后 console script，进入同一套最小常驻生命进程 |
 | `digital life --background / --status / --say / --stop` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | 安装态后台 resident lifecycle、关系投递、自主活动与自我停止命令面 |
+| `my digital life --name <名字>` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | 推荐安装态命名入口，首次绑定 `life_name_registry.json`，后续按同名恢复同一 resident lifecycle |
 
 如果这一轮目标是“整理 v0 并准备后续直接落代码”，这些入口的职责必须先在脑中分干净，不然很容易把 shell 合同、loop 合同和 process 合同写成一层。
 

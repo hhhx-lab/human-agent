@@ -172,7 +172,10 @@ def _birth_blockers(
         reasons.append("report_bundle_gate bundle not closed")
     if return_packet.get("schema_version") != "first_activation_return_packet_v0" or return_packet.get("status") != "closed":
         reasons.append("return_packet_gate packet not closed")
-    if latest_stage_ref.get("next_required_command") != "digital life":
+    if latest_stage_ref.get("next_required_command") not in {
+        "my digital life",
+        "digital life",
+    }:
         reasons.append("stage_ref_gate next command mismatch")
     if stage_explanation.get("decision") != "ready_for_terminal_birth_restore":
         reasons.append("stage_explanation_gate decision mismatch")

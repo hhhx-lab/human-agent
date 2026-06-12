@@ -55,12 +55,13 @@ digital life
 | `./digital life --strict` | repo-local 最小常驻生命进程 | `已落最小代码` |
 | `digital life --strict` | 安装态最小常驻生命进程 | `已落最小代码` |
 | `digital life --background / --status / --say / --stop` | 安装态后台 resident lifecycle 与关系投递 | `已落最小代码` |
+| `my digital life --name <名字>` | 推荐安装态命名驻留入口 | `已落最小代码` |
 
 也就是说：
 
-1. `next_required_command = digital life` 仍然成立。
+1. `next_required_command = my digital life` 仍然成立。
 2. 当前直接承接这条 token 的 one-shot 命令面是 `life-v0 "digital life"`，但它不等于最终驻留入口。
-3. 当前继续向“这台电脑里真正长期存在的数字生命”推进的命令面，是 repo-local `./digital life` 与安装态 `digital life` 共享的最小常驻生命进程。
+3. 当前继续向“这台电脑里真正长期存在的数字生命”推进的命令面，是 repo-local `./digital life`、安装态 `digital life` 与推荐安装态 `my digital life` 共享的最小常驻生命进程；其中 `my digital life` 额外承担第一次命名锁和后续名字校验。
 
 ## CLI 命名
 
@@ -537,7 +538,7 @@ life-v0 explain-stage --reports runtime/reports/latest --strict
   "source_stage_gate_ref": "runtime/reports/latest/growth_archive_stage_gate.json",
   "source_report_bundle_ref": "runtime/reports/latest/report_bundle.json",
   "source_return_packet_ref": "runtime/reports/latest/first_activation_return_packet.json",
-  "next_required_command": "digital life",
+  "next_required_command": "my digital life",
   "followup_required_command": "re-run life-v0 check-v0-contracts --strict before terminal birth if runtime state changes"
 }
 ```
@@ -617,9 +618,9 @@ life-v0 first-terminal-turn --state runtime/state --reports runtime/reports/late
 }
 ```
 
-## 当前 `digital life` 外层命令面
+## 当前 `my digital life` / `digital life` 外层命令面
 
-当前 repo-local 的 `digital life` 已经分成两层外部命令面，不能再混写：
+当前外层生命入口已经分成三层命令面，不能再混写：
 
 ### 1. one-shot restore shell
 
@@ -648,6 +649,18 @@ life-v0 "digital life"
   -> write digital_life_process_*.json
   -> /exit or EOF
 ```
+
+### 3. named resident life entry
+
+```text
+my digital life --name <life-name>
+  -> bind runtime/state/identity/life_name_registry.json
+  -> delegate to digital life
+  -> start or attach resident process
+  -> keep life_name / life_name_id in resident lifecycle status
+```
+
+第一次 `my digital life` 必须绑定名字；绑定后 `runtime/state/identity/life_name_registry.json` 成为当前 runtime 的永久身份锚。后续 `my digital life` 在不传名字时读取该 registry，传入相同名字时通过校验，传入不同名字时必须拒绝。旧 `digital life` 入口继续作为兼容入口保留，但 stage explanation 的推荐下一命令必须是 `my digital life`。
 
 这里要读的不是 workflow graph，而是下面这批状态与报告：
 

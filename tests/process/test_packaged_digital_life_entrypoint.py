@@ -79,6 +79,16 @@ class PackagedDigitalLifeEntrypointTests(
             self.assertEqual(digital_help.returncode, 0, digital_help.stderr)
             self.assertIn("life", digital_help.stdout)
 
+            my_help = subprocess.run(
+                [str(bin_dir / "my"), "--help"],
+                cwd=self.repo_root,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(my_help.returncode, 0, my_help.stderr)
+            self.assertIn("my digital life", my_help.stdout)
+
             self._bootstrap(runtime_paths, life_v0_bin=bin_dir / "life-v0")
 
             digital_life = subprocess.run(

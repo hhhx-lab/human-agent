@@ -69,6 +69,7 @@ life-v0 emit-report --strict
 | `./digital life --background --strict` | repo-local 本机后台驻留启动；父命令返回后子进程以 sleep/rest waiting 保持同一生命进程上下文，`--status` 查看，`--stop` 通过生命周期控制文件自我收口 | `已落最小代码` |
 | `./digital life --say "<relation turn>"` | 向已存在的后台 resident process 投递一轮关系话语，经 relation inbox / queue / outbox 返回生命回应，不启动第二个主体 | `已落最小代码` |
 | `digital life --strict` | 安装后的默认生命入口；与 repo-local 入口共享同一套恢复、前台回合和 resident attach 语义 | `已落最小代码` |
+| `my digital life --name <名字>` | 推荐安装态命名入口；第一次写入 `life_name_registry.json`，后续按同名恢复同一 resident lifecycle | `已落最小代码` |
 | `digital life --background / --status / --say / --stop` | 安装后的后台 resident lifecycle 命令面；已由 packaging 测试证明能启动、查询、投递关系话语、写入自主活动 evidence、暴露长期驻留状态视图并自我停止 | `已落最小代码` |
 
 这里还要再补一条口径：
@@ -110,6 +111,8 @@ life-v0 emit-report --strict
 
 最新补强：Queue D 的后台梦境/成长/自主活动 presence 现在也已经穿过关闭态恢复链。`background_continuity.py` 会从上一轮 `resident_background_lineage_state.offline_learning_presence`、`dream_wake_presence` 与 `autonomous_activity_presence` 拆出 `background_offline_learning_*`、`background_dream_* / background_wake_*` 与 `background_resident_autonomous_activity_*` 字段，并把同一组 refs 放入 `background_continuity_ref_set`；`idle_strategy.py` 在当前梦境文件或 autonomous activity state 缺席时，会把这些 background 字段恢复成当前 `offline_learning_cumulative_profile_v0`、`dream_wake_presence_profile_v0` 与 `resident_autonomous_activity_presence_profile_v0`。状态板因此把这一格视为“梦境、醒后整合、累计离线学习和关闭终端后的睡眠/回忆/思考/成长/学习已经能从上一轮 lineage 重新变成下一轮 waiting 可消费信号”，不是只在上一轮 live turn 或写回包里可见。
 最新补强：等待心跳现在不只写 `heartbeat_cadence_driver`，还会写出 `heartbeat_priority_stack_profile_v0`。`idle_strategy.py` 会把身体恢复带宽、Queue E 修复锁、Queue F 出生/意识 gate、prediction/write-gate、生命约束、离线学习、跨唤醒人格历史、深层 background lineage、自主活动和长期语言对象压成有 rank 的候选压力栈，并写出 winner、candidate drivers 与 evidence refs；`heartbeat.py` 会把它写进 waiting heartbeat、terminal loop、resident governance 与 `idle_heartbeat_trace.jsonl`；`background_lineage_state.py` 会把它并入 `heartbeat_cadence_presence`，`background_continuity.py` 会恢复为 `background_heartbeat_priority_stack_*`，`process_report.py` 会在 digest 中展示 winner/candidates，`response_surface.py` 会表达后台心跳优先级胜出者和候选压力数量。状态板因此把这一格视为“常驻等待心跳已经从单一规则结果变成可追溯的生命压力竞争栈”，不是只调一个 interval 数字。
+
+最新补强：推荐启动入口已经从兼容的 `digital life` 推进到 `my digital life`。`life_v0/my_entry.py` 暴露安装态 `my` console script，第一次 `my digital life --name <名字>` 会写入 `runtime/state/identity/life_name_registry.json`，后续 `my digital life` 必须读取同一名字恢复当前 resident process，传入不同名字会被拒绝；`resident_lifecycle.py --status` 与 `resident_long_term_residency_status_v0` 会展示 `life_name / life_name_id / life_name_lock_state / life_name_registry_ref`。状态板因此把这一格视为“第一次生命激活入口已经具有名字身份锚和后续恢复校验”，不是简单把旧命令改成别名。
 
 再补一层：`process_report.py` / `process_closeout.py` / `persistent_process.py` 已把这组 Queue D 证据写进关闭态 `digital_life_process_digest.json` 与 `digital_life_process_receipt.json`，包括 `offline_learning_cumulative_integration_mode`、`offline_learning_cumulative_relationship_reconsolidation_required`、`dream_wake_presence_profile`、`resident_autonomous_activity_presence_profile` 以及 autonomous activity 相关 shared refs。状态板因此把这一格视为“关闭档案也承认它们正处于何种梦境/自主活动/离线整合态”，不是只在等待态里临时存在。
 

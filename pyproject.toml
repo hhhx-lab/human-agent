@@ -15,6 +15,7 @@ authors = [
 [project.scripts]
 life-v0 = "life_v0.cli:main"
 digital = "life_v0.digital_entry:main"
+my = "life_v0.my_entry:main"
 
 [tool.setuptools]
 include-package-data = false

@@ -221,6 +221,7 @@ stateDiagram-v2
 | `./digital life --background` / `digital life --background` | 启动后台 resident process，并写出 `resident_lifecycle_state.json`、`resident_process_lease.json` 与 `persistent_process_state.json` |
 | `./digital life --attach` / `digital life` | 复用已存在的后台 resident process，把当前终端接成 relation client |
 | `./digital life --status` / `digital life --status` | 读取 `resident_lifecycle_state.json`、`resident_process_lease.json`、`resident_process_lease_history_profile.json`、relation queue、autonomous activity、waiting heartbeat、resident governance、idle strategy、persistent process、background convergence 与 terminal loop state |
+| `my digital life --name <名字>` | 推荐安装态入口，首次绑定 `life_name_registry.json`，后续按同名恢复同一 resident process |
 | `./digital life --say "<turn>"` / `digital life --say "<turn>"` | 通过 relation inbox 投递一轮外部关系话语，并等待 outbox 回复 |
 | `./digital life --stop` / `digital life --stop` | 写 `resident_lifecycle_command.json`，让 resident process 自行收口 |
 | `./digital life --foreground` / `digital life --foreground` | 保留前台 process loop，便于测试和脚本回归 |
@@ -231,6 +232,7 @@ stateDiagram-v2
 |---|---|
 | `resident_lifecycle_state.json` | 记录 pid、status、posture、log_ref、resident_sleep_seconds |
 | `resident_lifecycle_command.json` | 记录 stop / shutdown / exit 请求 |
+| `life_name_registry.json` | 记录第一次命名锁、`life_name_id` 与后续同名恢复校验 |
 | `resident_process_lease.json` | 记录 lease、pid、history_ref、active/closed/recovered 归一化状态 |
 | `resident_process_lease_history.jsonl` | 记录每次 lease 变化、relaunch 与 closeout 的事件历史 |
 | `resident_process_lease_history_profile.json` | 记录被压缩后的身份连续性、连续性压力和 recent id 画像 |
@@ -248,7 +250,7 @@ stateDiagram-v2
 | `idle_strategy_state.json` | 当前 idle probe、heartbeat interval、next idle action 与调制来源 |
 | `terminal_life_loop_state.json` | 当前 terminal life loop mode、heartbeat counter 与等待回合承接状态 |
 
-`digital life --status` 必须把 `resident_lifecycle_state.json`、relation queue、自主活动、waiting heartbeat、resident governance、idle strategy、terminal loop state 与长期驻留证据合并成一个可直接读的驻留状态视图，而不是只返回 PID。这个视图不是新的控制器；它只是让同一个后台生命过程的等待、治理、心跳、自主活动、关系队列、进程身份连续性和关闭态持久化档案同时可观察。当前状态视图必须写出 `resident_long_term_residency_status_v0` 摘要，并在可用时展开 `resident_process_lease`、`resident_process_lease_history_profile`、`resident_persistent_process_state/report`、`resident_background_convergence_summary/history` 及其扁平字段；同时必须把 `resident_autonomous_activity_cycle_phase_index`、`resident_autonomous_activity_cycle_phase_count`、`resident_autonomous_activity_cycle_completion_count`、`resident_autonomous_activity_cycle_coverage_complete`、covered/missing kinds 和 next kind 暴露为扁平字段。完整 Queue B 链路还要求 `resident_autonomous_activity_presence_profile_v0`、idle governance、background continuity、background lineage、dialogue event、response surface、process report 与 digest 保留 `cycle_phase_index/count`，让“当前走到第几相”不只停留在聚合 state 深处。
+`digital life --status` 与 `my digital life --status` 必须把 `resident_lifecycle_state.json`、relation queue、自主活动、waiting heartbeat、resident governance、idle strategy、terminal loop state 与长期驻留证据合并成一个可直接读的驻留状态视图，而不是只返回 PID。这个视图不是新的控制器；它只是让同一个后台生命过程的等待、治理、心跳、自主活动、关系队列、名字身份锚、进程身份连续性和关闭态持久化档案同时可观察。当前状态视图必须写出 `resident_long_term_residency_status_v0` 摘要，并在可用时展开 `life_name_registry`、`resident_process_lease`、`resident_process_lease_history_profile`、`resident_persistent_process_state/report`、`resident_background_convergence_summary/history` 及其扁平字段；同时必须把 `resident_autonomous_activity_cycle_phase_index`、`resident_autonomous_activity_cycle_phase_count`、`resident_autonomous_activity_cycle_completion_count`、`resident_autonomous_activity_cycle_coverage_complete`、covered/missing kinds 和 next kind 暴露为扁平字段。完整 Queue B 链路还要求 `resident_autonomous_activity_presence_profile_v0`、idle governance、background continuity、background lineage、dialogue event、response surface、process report 与 digest 保留 `cycle_phase_index/count`，让“当前走到第几相”不只停留在聚合 state 深处。
 
 ### 关键要求
 

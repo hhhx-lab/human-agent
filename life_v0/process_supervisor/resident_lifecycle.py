@@ -10,6 +10,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from life_v0.digital_life_identity import (
+    LIFE_NAME_REGISTRY_REF,
+    read_life_name_registry,
+)
 from .resident_autonomous_activity import record_resident_autonomous_activity
 
 
@@ -302,6 +306,7 @@ def start_background_resident_process(
         pid=process.pid,
         resident_sleep_seconds=resident_sleep_seconds,
     )
+    _attach_life_name_identity(state, state_dir=state_dir)
     state["log_ref"] = RESIDENT_BACKGROUND_LOG_REF
     _write_json(terminal_dir / "resident_lifecycle_state.json", state)
     return ResidentLifecycleResult(exit_code=0, state=state)
@@ -330,6 +335,7 @@ def mark_resident_lifecycle_active(
     state["resident_autonomous_activity_state_ref"] = (
         RESIDENT_AUTONOMOUS_ACTIVITY_STATE_REF
     )
+    _attach_life_name_identity(state, state_dir=terminal_dir.parent)
     _write_json(terminal_dir / "resident_lifecycle_state.json", state)
     _write_json(
         terminal_dir / "resident_relation_queue_state.json",
@@ -590,6 +596,7 @@ def read_resident_lifecycle_status(
         state["resident_terminal_current_mode"] = terminal_life_loop_state.get(
             "current_mode"
         )
+    _attach_life_name_identity(state, state_dir=terminal_dir.parent)
     _attach_long_term_residency_status(
         state,
         terminal_dir=terminal_dir,
@@ -620,6 +627,7 @@ def _attach_long_term_residency_status(
     background_convergence_history = _read_json_if_exists(
         terminal_dir / "background_convergence_history.json"
     )
+    life_name_registry = read_life_name_registry(terminal_dir.parent)
     lease_history_event_count = _jsonl_event_count(
         terminal_dir / "resident_process_lease_history.jsonl"
     )
@@ -630,6 +638,7 @@ def _attach_long_term_residency_status(
         "resident_process_lease_history_profile_ref": (
             RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
         ),
+        "life_name_registry_ref": LIFE_NAME_REGISTRY_REF,
         "persistent_process_state_ref": RESIDENT_PERSISTENT_PROCESS_STATE_REF,
         "persistent_process_report_ref": RESIDENT_PERSISTENT_PROCESS_REPORT_REF,
         "background_convergence_summary_ref": (
@@ -643,6 +652,7 @@ def _attach_long_term_residency_status(
         "resident_process_lease_history_profile_available": bool(
             lease_history_profile
         ),
+        "life_name_registry_available": bool(life_name_registry),
         "persistent_process_state_available": bool(persistent_process_state),
         "persistent_process_report_available": bool(persistent_process_report),
         "background_convergence_summary_available": bool(
@@ -652,6 +662,16 @@ def _attach_long_term_residency_status(
     }
     evidence_refs: list[str] = []
 
+    if life_name_registry:
+        state["life_name_registry"] = life_name_registry
+        state["life_name_registry_ref"] = LIFE_NAME_REGISTRY_REF
+        state["life_name"] = life_name_registry.get("canonical_name")
+        state["life_name_id"] = life_name_registry.get("life_name_id")
+        state["life_name_lock_state"] = life_name_registry.get("name_lock_state")
+        evidence_refs.append(LIFE_NAME_REGISTRY_REF)
+        long_term_status["life_name"] = state["life_name"]
+        long_term_status["life_name_id"] = state["life_name_id"]
+        long_term_status["life_name_lock_state"] = state["life_name_lock_state"]
     if lease:
         state["resident_process_lease"] = lease
         state["resident_process_lease_ref"] = RESIDENT_PROCESS_LEASE_REF
@@ -826,6 +846,16 @@ def _base_lifecycle_state(
         "residency_mode": "background_resident_process",
         "residency_posture": "sleeping_waiting_for_relation_turn",
     }
+
+
+def _attach_life_name_identity(state: dict[str, Any], *, state_dir: Path) -> None:
+    registry = read_life_name_registry(state_dir)
+    if not registry:
+        return
+    state["life_name_registry_ref"] = LIFE_NAME_REGISTRY_REF
+    state["life_name"] = registry.get("canonical_name")
+    state["life_name_id"] = registry.get("life_name_id")
+    state["life_name_lock_state"] = registry.get("name_lock_state")
 
 
 def _pid_alive(pid: int) -> bool:

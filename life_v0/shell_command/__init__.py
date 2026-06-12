@@ -66,7 +66,10 @@ def run_digital_life_shell_command(
         "stage_explanation_gate",
     )
 
-    if stage_explanation.get("next_required_command") != "digital life":
+    if stage_explanation.get("next_required_command") not in {
+        "my digital life",
+        "digital life",
+    }:
         blocked_reasons.append("stage_explanation_gate next command mismatch")
 
     if stage_explanation.get("decision") != "ready_for_terminal_birth_restore":

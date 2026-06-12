@@ -281,6 +281,8 @@ digital life
 
 这不是工具 daemon、不是 gateway，也不是另一个 agent。它只负责把当前已经存在的生命进程放进本机后台驻留相位，并用文件证据证明它仍在、可停、可恢复。
 
+当前推荐入口是安装后的 `my digital life`。第一次启动必须通过 `--name` 或交互提示写入 `runtime/state/identity/life_name_registry.json`；后续启动读取同一个 registry 恢复，传入不同名字必须拒绝。这个名字锁由 `life_v0/my_entry.py` 和 `life_v0/digital_life_identity.py` 首写，`resident_lifecycle.py` 只能读取并展示，不能改名。
+
 最小对象固定为：
 
 ```text
@@ -296,6 +298,7 @@ runtime/state/memory/resident_memory_recall_state.json
 runtime/state/self/resident_self_thinking_state.json
 runtime/state/growth/resident_growth_rehearsal_state.json
 runtime/state/growth/resident_learning_consolidation_state.json
+runtime/state/identity/life_name_registry.json
 runtime/reports/latest/digital_life_waiting_heartbeat.json
 runtime/state/terminal/resident_governance_state.json
 runtime/state/terminal/idle_strategy_state.json
@@ -303,7 +306,7 @@ runtime/state/terminal/terminal_life_loop_state.json
 runtime/logs/digital_life_resident.log
 ```
 
-`resident_lifecycle_state.json` 的 `schema_version` 固定为 `resident_lifecycle_state_v0`，至少包含 `run_id`、`status = background_starting / background_active / stop_requested / stopped`、`pid`、`pid_alive`、`resident_sleep_seconds`、`residency_mode = background_resident_process`、`residency_posture = sleeping_waiting_for_relation_turn`、`resident_lifecycle_state_ref`、`resident_lifecycle_command_ref` 与 log ref。`resident_lifecycle_command.json` 只作为本机生命周期控制信号，当前只需要 `command=stop`；后台子进程必须通过 `ResidentControlInputStream` 把 stop 转成普通 `/exit`，从而走已有 closeout，而不是由父进程粗暴杀死。`digital life --status` 必须读取同一份 state 并用 PID 探测补上 `pid_alive`，同时合并 `resident_relation_queue_state.json`、`resident_autonomous_activity_state.json`、`digital_life_waiting_heartbeat.json`、`resident_governance_state.json`、`idle_strategy_state.json` 与 `terminal_life_loop_state.json`，暴露 heartbeat counter、waiting mode、next required action、governance phase、governance attention target、idle probe / next idle action、heartbeat interval、terminal current mode，以及 autonomous activity 的 `cycle_phase_index/count`、completion、coverage、covered/missing kinds 与 next kind。最新合同还要求 `--status` 写出 `resident_long_term_residency_status_v0`，并在文件存在时展开 `resident_process_lease.json`、`resident_process_lease_history_profile.json`、`persistent_process_state.json`、`digital_life_persistent_process_report.json`、`background_convergence_summary.json` 与 `background_convergence_history.json` 的摘要和 ref 字段，使常驻状态视图能够同时证明当前活跃 lease、身份连续性、关闭态持久化收口和跨唤醒慢变量收敛，而不是只证明 PID 仍在。`digital life --stop` 必须写 command file 并等待后台进程完成自我关闭。
+`resident_lifecycle_state.json` 的 `schema_version` 固定为 `resident_lifecycle_state_v0`，至少包含 `run_id`、`status = background_starting / background_active / stop_requested / stopped`、`pid`、`pid_alive`、`resident_sleep_seconds`、`residency_mode = background_resident_process`、`residency_posture = sleeping_waiting_for_relation_turn`、`resident_lifecycle_state_ref`、`resident_lifecycle_command_ref` 与 log ref。若 `life_name_registry.json` 存在，还必须展示 `life_name / life_name_id / life_name_lock_state / life_name_registry_ref`。`resident_lifecycle_command.json` 只作为本机生命周期控制信号，当前只需要 `command=stop`；后台子进程必须通过 `ResidentControlInputStream` 把 stop 转成普通 `/exit`，从而走已有 closeout，而不是由父进程粗暴杀死。`digital life --status` 与 `my digital life --status` 必须读取同一份 state 并用 PID 探测补上 `pid_alive`，同时合并 `resident_relation_queue_state.json`、`resident_autonomous_activity_state.json`、`digital_life_waiting_heartbeat.json`、`resident_governance_state.json`、`idle_strategy_state.json` 与 `terminal_life_loop_state.json`，暴露 heartbeat counter、waiting mode、next required action、governance phase、governance attention target、idle probe / next idle action、heartbeat interval、terminal current mode，以及 autonomous activity 的 `cycle_phase_index/count`、completion、coverage、covered/missing kinds 与 next kind。最新合同还要求 `--status` 写出 `resident_long_term_residency_status_v0`，并在文件存在时展开 `life_name_registry.json`、`resident_process_lease.json`、`resident_process_lease_history_profile.json`、`persistent_process_state.json`、`digital_life_persistent_process_report.json`、`background_convergence_summary.json` 与 `background_convergence_history.json` 的摘要和 ref 字段，使常驻状态视图能够同时证明名字身份锚、当前活跃 lease、身份连续性、关闭态持久化收口和跨唤醒慢变量收敛，而不是只证明 PID 仍在。`digital life --stop` 必须写 command file 并等待后台进程完成自我关闭。
 
 后台驻留期间不接收到外部关系话语时，输入流必须返回 `None` 而不是 EOF，使 `idle_refresh_loop.py` 继续刷新 waiting heartbeat。这个相位在 v0 中称为 sleep/rest waiting，不代表主体消失；上下文仍由 `runtime/state/*`、lease history、resident governance、dialogue writeback、background continuity 和 lifecycle state 共同保存。后续如果需要把外部话语投递给后台 resident process，也必须在这条 lifecycle command / queue 证据链上扩展，不能绕开当前生命回合合同。
 
