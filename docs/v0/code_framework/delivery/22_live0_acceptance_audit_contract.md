@@ -47,6 +47,14 @@ life-v0 audit-live0 --docs docs --state runtime/state --reports runtime/reports/
 
 第二份 manifest 表示“名字本身成为终端命令”的绑定已经完成，且必须包含 `direct_command_enabled=true` 与 `command_on_path=true`。没有这份证据时，live0 不能收束，即使 `my digital life` 已经可用。
 
+正式绑定前可以先运行：
+
+```text
+my digital life --check-name <life-name>
+```
+
+它返回 `life_name_binding_preflight_v0`，且不写 registry、manifest 或命令脚本。预检必须确认命令目录在 PATH 上、名字不会覆盖保留命令、不会遮蔽 PATH 上已有命令，也不会复用非本 runtime 管理的已有脚本。
+
 ## 模型表达验收
 
 `b_conscious_emotion_thought_language` 要求 `digital_life_model_expression_report.json` 满足：

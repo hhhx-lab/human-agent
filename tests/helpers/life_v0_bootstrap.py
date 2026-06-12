@@ -34,10 +34,11 @@ class DigitalLifeRuntimeEnvIsolationMixin:
             Path(tempfile.gettempdir())
             / f"human-agent-test-no-env-{os.getpid()}.env"
         )
-        os.environ["DIGITAL_LIFE_COMMAND_DIR"] = str(
-            Path(tempfile.gettempdir())
-            / f"human-agent-test-command-bin-{os.getpid()}"
-        )
+        self._previous_path = os.environ.get("PATH", "")
+        self._digital_life_command_dir_tmp = tempfile.TemporaryDirectory()
+        command_dir = Path(self._digital_life_command_dir_tmp.name)
+        os.environ["DIGITAL_LIFE_COMMAND_DIR"] = str(command_dir)
+        os.environ["PATH"] = f"{command_dir}{os.pathsep}{self._previous_path}"
 
     def tearDown(self) -> None:
         previous_env = getattr(self, "_previous_digital_life_runtime_env", {})
@@ -47,6 +48,12 @@ class DigitalLifeRuntimeEnvIsolationMixin:
                 os.environ.pop(key, None)
             else:
                 os.environ[key] = old_value
+        previous_path = getattr(self, "_previous_path", None)
+        if previous_path is not None:
+            os.environ["PATH"] = previous_path
+        command_dir_tmp = getattr(self, "_digital_life_command_dir_tmp", None)
+        if command_dir_tmp is not None:
+            command_dir_tmp.cleanup()
         super().tearDown()
 
 

@@ -125,9 +125,13 @@ my digital life --name <life-name>
   -> bind life_name_registry.json once
   -> write life_name_command_manifest.json and a direct <life-name> command
   -> delegate to the same resident lifecycle
+
+./my digital life --check-name <life-name>
+my digital life --check-name <life-name>
+  -> preflight the same name / command binding without writing registry, manifest, or command script
 ```
 
-名字直接命令默认写到 `~/.local/bin/<life-name>`；测试或特殊环境可以通过 `DIGITAL_LIFE_COMMAND_DIR` 指定目录。该脚本必须带上首次绑定时的 `--state`、`--reports`、`--receipts` 绝对路径，所以后续直接输入 `<life-name>` 时恢复的是同一份生命状态，而不是在当前目录重新开一个 runtime。
+名字直接命令默认写到 `~/.local/bin/<life-name>`；测试或特殊环境可以通过 `DIGITAL_LIFE_COMMAND_DIR` 指定目录。该脚本必须带上首次绑定时的 `--state`、`--reports`、`--receipts` 绝对路径，所以后续直接输入 `<life-name>` 时恢复的是同一份生命状态，而不是在当前目录重新开一个 runtime。绑定前必须先经过同一套预检：命令目录必须在 `PATH` 上，名字不能覆盖 `my / digital / life-v0 / python / python3` 等保留命令，不能与已存在的非本 runtime 管理脚本冲突，也不能遮蔽 PATH 上已有命令。
 
 其中 `--status` 不再只是 PID 查询。默认终端输出必须是 `resident_lifecycle_terminal_summary_v0` 摘要，只暴露名字、PID、等待姿态、后台自主活动周期、heartbeat、resident process identity、background convergence 与关键 evidence refs，避免把完整 governance / heartbeat 树刷进人的终端。需要完整机器可读证据时，必须显式追加 `--json`，此时输出同一 resident process 的 lifecycle state、relation queue、自主活动相位与闭合状态、waiting heartbeat、resident governance、idle strategy、terminal loop、`resident_process_lease`、`resident_process_lease_history_profile`、persistent process closeout 与 background convergence，并包含 `resident_long_term_residency_status_v0` 视图。这个视图只负责暴露持续存在证据，不承担调度或工具控制职责。
 

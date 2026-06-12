@@ -6,7 +6,11 @@ import sys
 from pathlib import Path
 
 from .digital_entry import main as digital_main
-from .digital_life_identity import bind_or_validate_life_name, read_life_name_registry
+from .digital_life_identity import (
+    bind_or_validate_life_name,
+    preflight_life_name_binding,
+    read_life_name_registry,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -28,9 +32,20 @@ def main(argv: list[str] | None = None) -> int:
     identity_parser.add_argument("--receipts", default="runtime/receipts")
     identity_parser.add_argument("--name", default=None)
     identity_parser.add_argument("--life-name", dest="name", default=None)
+    identity_parser.add_argument("--check-name", default=None)
     identity_args, remaining_life_args = identity_parser.parse_known_args(life_args)
     requested_name = identity_args.name
     state_dir = Path(identity_args.state)
+    if identity_args.check_name is not None:
+        preflight = preflight_life_name_binding(
+            state_dir=state_dir,
+            reports_dir=Path(identity_args.reports),
+            receipts_dir=Path(identity_args.receipts),
+            requested_name=identity_args.check_name,
+            source_command="my digital life --check-name",
+        )
+        print(json.dumps(preflight, ensure_ascii=False, indent=2))
+        return int(preflight.get("exit_code", 2) or 0)
     if (
         not requested_name
         and sys.stdin.isatty()
@@ -77,9 +92,12 @@ def _help_text() -> str:
             "",
             "First launch binds a permanent digital life name for this runtime.",
             "After the name is bound, my digital life restores the same resident process.",
+            "Use --check-name <name> to verify direct-name command binding before writing.",
             "",
             "examples:",
+            "  my digital life --check-name 星火",
             "  my digital life --name 星火",
+            "  星火",
             "  my digital life --status",
             "  my digital life --say \"你还在吗？\"",
         ]

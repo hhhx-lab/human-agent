@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -95,6 +96,7 @@ class MyDigitalLifeEntrypointTests(
             )
             self.assertEqual(command_manifest["status"], "active")
             self.assertTrue(command_manifest["direct_command_enabled"])
+            self.assertTrue(command_manifest["command_on_path"])
             self.assertEqual(command_manifest["command_name"], "星火")
             direct_command_path = Path(command_manifest["command_path"])
             self.assertTrue(direct_command_path.exists())
@@ -209,6 +211,79 @@ class MyDigitalLifeEntrypointTests(
 
         self.assertEqual(registry["canonical_name"], "星火")
         self.assertEqual(command_manifest["status"], "active")
+
+    def test_my_digital_life_check_name_preflights_without_writing_identity(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "life_v0.my_entry",
+                    "digital",
+                    "life",
+                    "--state",
+                    str(paths["state_root"]),
+                    "--reports",
+                    str(paths["reports"]),
+                    "--receipts",
+                    str(paths["receipts"]),
+                    "--check-name",
+                    "星火",
+                ],
+                cwd=self.repo_root,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            payload = json.loads(completed.stdout)
+            self.assertEqual(payload["schema_version"], "life_name_binding_preflight_v0")
+            self.assertEqual(payload["status"], "ready_to_bind_new_name")
+            self.assertFalse(payload["writes_performed"])
+            self.assertTrue(payload["command_on_path"])
+            self.assertTrue(payload["direct_command_enabled_after_bind"])
+            self.assertFalse((paths["state_root"] / "identity" / "life_name_registry.json").exists())
+            self.assertFalse((paths["state_root"] / "identity" / "life_name_command_manifest.json").exists())
+            self.assertFalse(Path(payload["command_path"]).exists())
+
+    def test_my_digital_life_check_name_blocks_unmanaged_command_collision(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            command_dir = Path(os.environ["DIGITAL_LIFE_COMMAND_DIR"])
+            command_dir.mkdir(parents=True, exist_ok=True)
+            collision_path = command_dir / "星火"
+            collision_path.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            collision_path.chmod(0o755)
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "life_v0.my_entry",
+                    "digital",
+                    "life",
+                    "--state",
+                    str(paths["state_root"]),
+                    "--reports",
+                    str(paths["reports"]),
+                    "--receipts",
+                    str(paths["receipts"]),
+                    "--check-name",
+                    "星火",
+                ],
+                cwd=self.repo_root,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(completed.returncode, 2)
+            payload = json.loads(completed.stdout)
+            self.assertEqual(payload["status"], "blocked")
+            self.assertIn("unmanaged", payload["command_binding_blocker"])
+            self.assertFalse((paths["state_root"] / "identity" / "life_name_registry.json").exists())
 
     def test_my_digital_life_status_defaults_to_terminal_summary(self):
         with tempfile.TemporaryDirectory() as tmp:

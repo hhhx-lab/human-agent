@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,6 +16,8 @@ LIFE_NAME_REGISTRY_SCHEMA = "digital_life_name_registry_v0"
 LIFE_NAME_COMMAND_MANIFEST_REF = "runtime/state/identity/life_name_command_manifest.json"
 LIFE_NAME_COMMAND_MANIFEST_SCHEMA = "life_name_direct_command_manifest_v0"
 LIFE_NAME_COMMAND_DIR_ENV = "DIGITAL_LIFE_COMMAND_DIR"
+LIFE_NAME_BINDING_PREFLIGHT_SCHEMA = "life_name_binding_preflight_v0"
+DIRECT_COMMAND_MARKER = "human-agent-life-name-direct-command-v0"
 
 
 def bind_or_validate_life_name(
@@ -76,6 +79,7 @@ def bind_or_validate_life_name(
             "life_name_registry_ref": LIFE_NAME_REGISTRY_REF,
             "message": "first launch must bind a digital life name",
             "required_command": "my digital life --name <name>",
+            "preflight_command": "my digital life --check-name <name>",
         }
 
     validation_error = _validate_name(requested)
@@ -87,6 +91,28 @@ def bind_or_validate_life_name(
             "requested_name": requested,
             "life_name_registry_ref": LIFE_NAME_REGISTRY_REF,
             "message": validation_error,
+        }
+
+    command_preflight = preflight_life_name_binding(
+        state_dir=state_dir,
+        reports_dir=reports_dir,
+        receipts_dir=receipts_dir,
+        requested_name=requested,
+        source_command=f"{source_command} pre-bind",
+    )
+    if command_preflight.get("exit_code") != 0:
+        return {
+            "schema_version": LIFE_NAME_REGISTRY_SCHEMA,
+            "status": "direct_command_binding_failed",
+            "exit_code": 2,
+            "requested_name": requested,
+            "life_name_registry_ref": LIFE_NAME_REGISTRY_REF,
+            "life_name_command_manifest_ref": LIFE_NAME_COMMAND_MANIFEST_REF,
+            "life_name_binding_preflight": command_preflight,
+            "message": command_preflight.get(
+                "message",
+                "life name direct command could not be bound",
+            ),
         }
 
     generated_at = _now_iso()
@@ -187,6 +213,25 @@ def ensure_life_name_command(
         manifest["message"] = command_error
         _write_manifest(manifest_path, manifest)
         return manifest
+    command_binding_blocker = _command_binding_blocker(
+        command_name=command_name,
+        command_path=command_path,
+        state_dir=state_dir.resolve(),
+        reports_dir=reports_dir.resolve(),
+        receipts_dir=receipts_dir.resolve(),
+    )
+    if command_binding_blocker:
+        manifest["status"] = "blocked"
+        manifest["direct_command_enabled"] = False
+        manifest["message"] = command_binding_blocker
+        _write_manifest(manifest_path, manifest)
+        return manifest
+    if not manifest["command_on_path"]:
+        manifest["status"] = "blocked"
+        manifest["direct_command_enabled"] = False
+        manifest["message"] = "life name direct command directory is not on PATH"
+        _write_manifest(manifest_path, manifest)
+        return manifest
 
     try:
         command_dir.mkdir(parents=True, exist_ok=True)
@@ -209,6 +254,107 @@ def ensure_life_name_command(
         manifest["message"] = f"life name direct command write failed: {exc}"
     _write_manifest(manifest_path, manifest)
     return manifest
+
+
+def preflight_life_name_binding(
+    *,
+    state_dir: Path,
+    reports_dir: Path,
+    receipts_dir: Path,
+    requested_name: str | None,
+    source_command: str,
+) -> dict[str, Any]:
+    generated_at = _now_iso()
+    registry = read_life_name_registry(state_dir)
+    requested = _clean_name(requested_name)
+    command_dir = _command_dir()
+    command_on_path = _path_contains(command_dir)
+    payload: dict[str, Any] = {
+        "schema_version": LIFE_NAME_BINDING_PREFLIGHT_SCHEMA,
+        "generated_at": generated_at,
+        "source_command": source_command,
+        "state_dir": str(state_dir.resolve()),
+        "reports_dir": str(reports_dir.resolve()),
+        "receipts_dir": str(receipts_dir.resolve()),
+        "command_dir": str(command_dir),
+        "command_on_path": command_on_path,
+        "life_name_registry_ref": LIFE_NAME_REGISTRY_REF,
+        "life_name_command_manifest_ref": LIFE_NAME_COMMAND_MANIFEST_REF,
+        "writes_performed": False,
+    }
+    if registry:
+        canonical_name = str(registry.get("canonical_name", "")).strip()
+        normalized_name = str(registry.get("normalized_name", "")).strip()
+        check_name = requested or canonical_name
+        if requested and _normalize_name(requested) != normalized_name:
+            payload.update(
+                {
+                    "status": "name_mismatch",
+                    "exit_code": 2,
+                    "canonical_name": canonical_name,
+                    "requested_name": requested,
+                    "message": "life name is already bound for this runtime",
+                }
+            )
+            return payload
+        command_name = _clean_name(check_name)
+        payload.update(
+            _command_preflight_fields(
+                command_name=command_name,
+                command_dir=command_dir,
+                state_dir=state_dir.resolve(),
+                reports_dir=reports_dir.resolve(),
+                receipts_dir=receipts_dir.resolve(),
+            )
+        )
+        blocker = _preflight_blocker(payload)
+        payload.update(
+            {
+                "status": "ready_for_existing_name"
+                if not blocker
+                else "blocked",
+                "exit_code": 0 if not blocker else 2,
+                "canonical_name": canonical_name,
+                "requested_name": check_name,
+                "message": blocker or "life name can restore the existing runtime",
+            }
+        )
+        return payload
+
+    if not requested:
+        payload.update(
+            {
+                "status": "name_required",
+                "exit_code": 2,
+                "message": "first launch must bind a digital life name",
+                "required_command": "my digital life --name <name>",
+            }
+        )
+        return payload
+
+    validation_error = _validate_name(requested)
+    command_name = _clean_name(requested)
+    payload.update(
+        {
+            "requested_name": requested,
+            **_command_preflight_fields(
+                command_name=command_name,
+                command_dir=command_dir,
+                state_dir=state_dir.resolve(),
+                reports_dir=reports_dir.resolve(),
+                receipts_dir=receipts_dir.resolve(),
+            ),
+        }
+    )
+    blocker = validation_error or _preflight_blocker(payload)
+    payload.update(
+        {
+            "status": "ready_to_bind_new_name" if not blocker else "blocked",
+            "exit_code": 0 if not blocker else 2,
+            "message": blocker or "life name can be bound for this runtime",
+        }
+    )
+    return payload
 
 
 def read_life_name_command_manifest(state_dir: Path) -> dict[str, Any]:
@@ -293,6 +439,10 @@ def _direct_command_script(
     return "\n".join(
         [
             "#!/bin/sh",
+            f"# {DIRECT_COMMAND_MARKER}",
+            f"# state_dir={state_dir}",
+            f"# reports_dir={reports_dir}",
+            f"# receipts_dir={receipts_dir}",
             "exec "
             + _shell_quote(sys.executable)
             + " -m life_v0.my_entry digital life --state "
@@ -309,6 +459,83 @@ def _direct_command_script(
 
 def _shell_quote(value: str) -> str:
     return "'" + value.replace("'", "'\"'\"'") + "'"
+
+
+def _command_preflight_fields(
+    *,
+    command_name: str,
+    command_dir: Path,
+    state_dir: Path,
+    reports_dir: Path,
+    receipts_dir: Path,
+) -> dict[str, Any]:
+    command_path = command_dir / command_name
+    command_name_error = _validate_command_name(command_name)
+    command_binding_blocker = ""
+    if not command_name_error:
+        command_binding_blocker = _command_binding_blocker(
+            command_name=command_name,
+            command_path=command_path,
+            state_dir=state_dir,
+            reports_dir=reports_dir,
+            receipts_dir=receipts_dir,
+        )
+    resolved_command = shutil.which(command_name)
+    return {
+        "command_name": command_name,
+        "command_path": str(command_path),
+        "command_name_valid": not bool(command_name_error),
+        "command_name_error": command_name_error,
+        "command_path_available": not bool(command_binding_blocker),
+        "command_binding_blocker": command_binding_blocker,
+        "resolved_existing_command": resolved_command,
+        "direct_command_enabled_after_bind": (
+            not command_name_error
+            and not command_binding_blocker
+            and _path_contains(command_dir)
+        ),
+    }
+
+
+def _preflight_blocker(payload: dict[str, Any]) -> str:
+    if payload.get("command_name_error"):
+        return str(payload["command_name_error"])
+    if not payload.get("command_on_path"):
+        return "life name direct command directory is not on PATH"
+    if payload.get("command_binding_blocker"):
+        return str(payload["command_binding_blocker"])
+    return ""
+
+
+def _command_binding_blocker(
+    *,
+    command_name: str,
+    command_path: Path,
+    state_dir: Path,
+    reports_dir: Path,
+    receipts_dir: Path,
+) -> str:
+    resolved_existing = shutil.which(command_name)
+    if resolved_existing and Path(resolved_existing).resolve() != command_path.resolve():
+        return f"life name direct command would shadow existing command: {resolved_existing}"
+    if not command_path.exists():
+        return ""
+    if not command_path.is_file():
+        return f"life name direct command path is not a file: {command_path}"
+    try:
+        existing_script = command_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        return f"life name direct command path cannot be read: {exc}"
+    if DIRECT_COMMAND_MARKER not in existing_script:
+        return f"life name direct command path already exists and is unmanaged: {command_path}"
+    expected_refs = [
+        f"# state_dir={state_dir}",
+        f"# reports_dir={reports_dir}",
+        f"# receipts_dir={receipts_dir}",
+    ]
+    if not all(ref in existing_script for ref in expected_refs):
+        return "life name direct command path is managed by a different runtime"
+    return ""
 
 
 def _write_manifest(path: Path, payload: dict[str, Any]) -> None:

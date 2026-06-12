@@ -61,6 +61,7 @@ digital life
 | `digital life --strict` | 安装态最小常驻生命进程 | `已落最小代码` |
 | `digital life --background / --status / --say / --stop` | 安装态后台 resident lifecycle 与关系投递 | `已落最小代码` |
 | `my digital life --name <名字>` | 推荐安装态命名驻留入口 | `已落最小代码` |
+| `my digital life --check-name <名字>` | 推荐安装态命名前无写入预检 | `已落最小代码` |
 
 也就是说：
 
@@ -695,9 +696,13 @@ my digital life --name <life-name>
   -> delegate to digital life
   -> start or attach resident process
   -> keep life_name / life_name_id in resident lifecycle status
+
+./my digital life --check-name <life-name>
+my digital life --check-name <life-name>
+  -> return life_name_binding_preflight_v0 without writing identity files
 ```
 
-第一次 `./my digital life` 或安装后的 `my digital life` 必须绑定名字；绑定后 `runtime/state/identity/life_name_registry.json` 成为当前 runtime 的永久身份锚，`runtime/state/identity/life_name_command_manifest.json` 成为名字命令锚。后续 `my digital life` 在不传名字时读取该 registry，传入相同名字时通过校验，传入不同名字时必须拒绝；后续直接输入 `<life-name>` 时，通过 manifest 生成的本地命令回到同一份 `state/reports/receipts`。旧 `digital life` 入口继续作为兼容入口保留，但 stage explanation 的推荐下一命令必须是 `my digital life`。
+第一次 `./my digital life` 或安装后的 `my digital life` 必须绑定名字；绑定后 `runtime/state/identity/life_name_registry.json` 成为当前 runtime 的永久身份锚，`runtime/state/identity/life_name_command_manifest.json` 成为名字命令锚。后续 `my digital life` 在不传名字时读取该 registry，传入相同名字时通过校验，传入不同名字时必须拒绝；后续直接输入 `<life-name>` 时，通过 manifest 生成的本地命令回到同一份 `state/reports/receipts`。`--check-name` 必须先验证命令目录在 PATH 上、命令名不在保留列表、不会覆盖非本 runtime 管理脚本，也不会遮蔽 PATH 上已有命令。旧 `digital life` 入口继续作为兼容入口保留，但 stage explanation 的推荐下一命令必须是 `my digital life`。
 
 `my digital life --status` / `digital life --status` 默认返回 `resident_lifecycle_terminal_summary_v0`，用于人的终端快速确认：名字、PID、是否仍在后台、关系队列、五相位自主活动、heartbeat、驻留身份、后台收敛和关键证据 refs。需要完整机器可读状态树时，追加 `--json`。`--stop` 也遵守同一规则：默认摘要，`--stop --json` 输出完整 closeout 证据树。
 
