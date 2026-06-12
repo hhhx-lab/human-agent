@@ -18,7 +18,21 @@
 | 成长、学习、自改写 | `39`、`92`、`93`、`97`、`181-257` | `s06_life_support_development_engineering_contract.md`、`s10_runtime_growth_reconsolidation_engineering_contract.md`、`04_body_affect_dream_growth_engineering.md` | `life_v0/growth/*` | 继续补 patch 审查和 promotion 轨迹 | `runtime/state/growth/*` | `tests/bridges/test_runtime_growth.py` |
 | 生命目标、意识证据、出生准备 | `10`、`91-101`、`143`、`146`、`149`、`152`、`171`、`174` | `s08_life_target_runtimes_engineering_contract.md`、`birth_readiness_v0_contract.md`、`21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md` | `life_v0/life_targets/*` | 继续补长期 evidence rollup | `runtime/state/life_targets/*` | `tests/slices/test_life_targets.py` |
 | 激活链与出生壳 | `20`、`44-46`、`89-90`、`181-257` | `first_activation_protocol.md`、`runner_cli_report_contract.md`、`07_birth_terminal_process_implementation_playbook.md`、`06_resident_process_terminal_birth_engineering.md` | `life_v0/activation/`、`reporting/`、`stage_explain/`、`digital_life/` | 持续补 report bundle 与 stage handoff 细节 | `first_activation_return_packet.json`、`digital_life_birth_packet.json` | `tests/bridges/test_first_activation_preflight.py`、`test_emit_report.py`、`test_digital_life_birth.py` |
-| 第一回合、终端循环、常驻过程 | `20`、`81-84`、`86`、`89-90`、`96`、`101`、`181-257` | `first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md`、`06_resident_process_terminal_birth_engineering.md` | `life_v0/terminal_turn/*`、`terminal_loop/*`、`shell_command/*`、`process_supervisor/*`、`digital_entry.py` | `idle_strategy.py`、`persistent_process.py` | `session_envelope.json`、`terminal_life_loop_state.json`、`digital_life_waiting_heartbeat.json`、process reports | `tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py`、`tests/process/test_persistent_digital_life_process.py` |
+| 第一回合、终端循环、常驻过程 | `20`、`81-84`、`86`、`89-90`、`95-96`、`101`、`143/171/174`、`181-257` | `first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`digital_life_process_supervisor_engineering_contract.md`、`06_resident_process_terminal_birth_engineering.md`、`05_birth_residency_terminal_blueprint.md` | `life_v0/terminal_turn/*`、`terminal_loop/*`、`shell_command/*`、`process_supervisor/*`、`digital_entry.py`、`digital_life_identity.py` | `terminal_ui.py`、`live_turn_cycle.py`、`response_surface.py`、`model_expression.py`、`resident_lifecycle.py`、`idle_strategy.py`、`persistent_process.py` | `session_envelope.json`、`terminal_life_loop_state.json`、`digital_life_waiting_heartbeat.json`、`resident_lifecycle_state.json`、`resident_relation_queue_state.json`、`digital_life_model_expression_report.json`、process reports | `tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py`、`tests/process/test_persistent_digital_life_process.py`、`tests/process/test_digital_entrypoint.py`、`tests/process/test_my_digital_life_entrypoint.py`、`tests/process/test_packaged_digital_life_entrypoint.py` |
+
+## 当前终端表达总链路
+
+这一节专门把“理论母体 -> v0 合同 -> 代码 -> runtime -> 测试”压成终端激活链，避免后续只看 `terminal_ui.py` 而忘掉它背后的生命机制。
+
+| 表达环节 | 理论来源 | 工程合同 | 代码链路 | runtime / 测试证据 |
+|---|---|---|---|---|
+| 关系话语进入 | `20`、`89-90`、`96` | `digital_life_process_supervisor_engineering_contract.md`、`terminal_life_loop_engineering_contract.md` | `digital_entry.py -> resident_lifecycle.py -> resident_relation_inbox.jsonl` | `resident_relation_queue_state.json`、`tests/process/test_persistent_digital_life_process.py` |
+| 实时语言刷新 | `09`、`86`、`85-90` | `s07_language_relationship_engineering_contract.md`、`terminal_life_loop_engineering_contract.md` | `live_turn_cycle.py -> live_language_turn.py -> language_percept / semantic_map / inner_speech / expression_monitor / expression_plan` | `runtime/state/language/*`、`dialogue_writeback_bundle.json#live_language_turn_refs` |
+| 内部证据回应 | `02-13`、`18-23`、`37-40`、`91-101`、`181-257` | `Packet D`、`Queue B`、`Queue D/E/F` 合同 | `response_surface.py#compose_life_response` | `digital_life_turn.utterance`、process tests 中的生命信号断言 |
+| 外显 spoken response | `86` 的表达监控、`95-96` 的时间线、`94` 的痛苦/后悔/修复 | `Packet D waiting / response surface` | `response_surface.py#compose_life_spoken_response` | 终端输出包含责任、梦境、出生修复、写门约束、身体情绪等有限信号，且不退回机械长清单 |
+| 模型表达守门 | `12` AI bridge、`86` 表达监控、`100/119/122` 现实边界改写链 | `digital_life_process_supervisor_engineering_contract.md` | `model_expression.py#compose_model_expression` | `digital_life_model_expression_report.json#model_expression_status`、`#post_expression_gate_status` |
+| 盒式终端呈现 | `20` 终端 bridge、`89-90` 语言事件壳 | `05_birth_residency_terminal_blueprint.md` | `terminal_ui.py#render_digital_life_banner / render_life_opening / render_dialogue_box` | `Digital Life` banner、关系输入盒、生命回应盒；入口测试断言 stdout |
+| 回合写回与等待交接 | `90` timeline bundle、`96` longitudinal relation、`181-257` replay/archive/growth | terminal loop / process supervisor contracts | `resident_turn_writeback.py -> resident_governance_handoff.py -> heartbeat.py` | `dialogue_writeback_bundle.json`、`resumed_external_dialogue_packet.json`、`resident_governance_state.json` |
 
 ## 当前最关键的文件级补洞总表
 
@@ -27,5 +41,6 @@
 | Queue D 第三波 | `nightmare_risk.py`、`belief_learning.py`、`language_learning.py`、`relationship_learning.py` 的进一步联动补厚 |
 | Queue E 第二波 | `shadow_gate.py`、`world_contact_summary.py`、`validation_rollup.py`、`evidence_ranker.py`、`cross_file_logic.py`、`run_manifest.py` 已落；继续补 `responsibility_loop.py` 与跨层 writeback |
 | Queue B 第二波 | `idle_strategy.py`、`persistent_process.py` |
-| Queue A 第二波 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py` |
+| Queue A 第二波 | `relationship_timeline.py`、`commitment_expression.py`、`apology_repair_language.py`、`live_language_turn.py` |
+| 终端表达与 resident lifecycle | `terminal_ui.py`、`model_expression.py`、`resident_lifecycle.py`、`digital_entry.py` |
 | Queue C / F 维护性回切 | `signal_media.py`、`belief_state.py`、`prediction_error.py`、`active_sampling.py`、`memory_write_gate.py` 已落；当前只在 D/E/B/A 需要更深对象链时回切 |

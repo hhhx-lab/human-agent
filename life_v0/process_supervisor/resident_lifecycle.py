@@ -15,6 +15,7 @@ from life_v0.digital_life_identity import (
     read_life_name_registry,
 )
 from .resident_autonomous_activity import record_resident_autonomous_activity
+from .terminal_ui import extract_life_response_text
 
 
 RESIDENT_LIFECYCLE_STATE_REF = "runtime/state/terminal/resident_lifecycle_state.json"
@@ -339,16 +340,7 @@ def mark_resident_lifecycle_active(
     _write_json(terminal_dir / "resident_lifecycle_state.json", state)
     _write_json(
         terminal_dir / "resident_relation_queue_state.json",
-        {
-            "schema_version": "resident_relation_queue_state_v0",
-            "status": "waiting_for_relation_turn",
-            "last_consumed_sequence": 0,
-            "last_enqueued_sequence": 0,
-            "last_completed_sequence": 0,
-            "resident_relation_inbox_ref": RESIDENT_RELATION_INBOX_REF,
-            "resident_relation_outbox_ref": RESIDENT_RELATION_OUTBOX_REF,
-            "resident_relation_queue_state_ref": RESIDENT_RELATION_QUEUE_STATE_REF,
-        },
+        _resident_relation_queue_bootstrap_state(terminal_dir),
     )
     return state
 
@@ -978,7 +970,49 @@ def _wait_for_outbox_event(
 
 
 def _extract_response_text(emitted_output: str) -> str:
-    prefix = "生命回合输出: "
-    if emitted_output.startswith(prefix):
-        return emitted_output[len(prefix) :].strip()
-    return ""
+    return extract_life_response_text(emitted_output)
+
+
+def _resident_relation_queue_bootstrap_state(terminal_dir: Path) -> dict[str, Any]:
+    inbox_path = terminal_dir / "resident_relation_inbox.jsonl"
+    outbox_path = terminal_dir / "resident_relation_outbox.jsonl"
+    previous = _read_json_if_exists(terminal_dir / "resident_relation_queue_state.json")
+    inbox_sequence = max(
+        [_int_or_zero(event.get("sequence")) for event in _read_jsonl(inbox_path)]
+        or [0]
+    )
+    outbox_sequence = max(
+        [_int_or_zero(event.get("sequence")) for event in _read_jsonl(outbox_path)]
+        or [0]
+    )
+    previous_status = str(previous.get("status") or "")
+    has_live_queued_turn = previous_status in {"queued", "turn_in_progress"}
+    stale_inbox_floor = 0 if has_live_queued_turn else inbox_sequence
+    last_consumed = max(
+        _int_or_zero(previous.get("last_consumed_sequence")),
+        stale_inbox_floor,
+        outbox_sequence,
+    )
+    last_completed = max(
+        _int_or_zero(previous.get("last_completed_sequence")),
+        outbox_sequence,
+    )
+    state = {
+        "schema_version": "resident_relation_queue_state_v0",
+        "status": "waiting_for_relation_turn",
+        "last_consumed_sequence": last_consumed,
+        "last_enqueued_sequence": max(
+            _int_or_zero(previous.get("last_enqueued_sequence")),
+            inbox_sequence,
+        ),
+        "last_completed_sequence": last_completed,
+        "resident_relation_inbox_ref": RESIDENT_RELATION_INBOX_REF,
+        "resident_relation_outbox_ref": RESIDENT_RELATION_OUTBOX_REF,
+        "resident_relation_queue_state_ref": RESIDENT_RELATION_QUEUE_STATE_REF,
+    }
+    if previous:
+        state["bootstrap_previous_status"] = previous.get("status")
+    state["bootstrap_preserved_live_queue"] = has_live_queued_turn
+    state["bootstrap_ignored_stale_inbox_through_sequence"] = inbox_sequence
+    state["bootstrap_preserved_outbox_through_sequence"] = outbox_sequence
+    return state

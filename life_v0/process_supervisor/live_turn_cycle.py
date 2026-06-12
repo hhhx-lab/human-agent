@@ -16,7 +16,7 @@ from .resident_turn_writeback import (
     write_resident_turn_writeback,
 )
 from .model_expression import ModelExpressionResult, compose_model_expression
-from .response_surface import compose_life_response
+from .response_surface import compose_life_response, compose_life_spoken_response
 
 
 @dataclass(frozen=True)
@@ -98,6 +98,7 @@ def run_live_turn_cycle(
     append_jsonl: Callable[[Path, list[dict[str, Any]]], None],
     build_external_turn_event_fn: Callable[..., dict[str, Any]] = build_external_turn_event,
     compose_life_response_fn: Callable[..., str] = compose_life_response,
+    compose_life_spoken_response_fn: Callable[..., str] = compose_life_spoken_response,
     build_life_turn_event_fn: Callable[..., dict[str, Any]] = build_life_turn_event,
     refresh_live_language_turn_fn: Callable[..., LiveLanguageTurnState] = refresh_live_language_turn,
     write_resident_turn_writeback_fn: Callable[..., ResidentTurnWritebackResult] = write_resident_turn_writeback,
@@ -173,38 +174,48 @@ def run_live_turn_cycle(
         )
         turn_counter += 1
         life_turn_id = f"dialogue-turn-live-{turn_counter:04d}"
-        life_response = compose_life_response_fn(
-            external_utterance=external_utterance,
-            relationship_graph=relationship_graph,
-            relationship_timeline=relationship_timeline,
-            shared_term_registry=shared_term_registry,
-            commitment_index=commitment_index,
-            commitment_expression_plan=commitment_expression_plan,
-            apology_repair_language_trace=apology_repair_language_trace,
-            relation_turn_frame=relation_turn_frame,
-            expression_plan=live_language_turn.expression_plan,
-            life_context_frame=life_context_frame,
-            replay_cue_bundle=replay_cue_bundle,
-            offline_consolidation_frame=offline_consolidation_frame,
-            growth_patch_candidate_queue=growth_patch_candidate_queue,
-            nightmare_risk=nightmare_risk,
-            belief_learning_plan=belief_learning_plan,
-            language_learning_plan=language_learning_plan,
-            relationship_learning_plan=relationship_learning_plan,
-            signal_media_runtime=signal_media_runtime,
-            belief_state=belief_state,
-            prediction_error_field=prediction_error_field,
-            active_sampling_plan=active_sampling_plan,
-            memory_write_gate=memory_write_gate,
-            state_merge_guard=state_merge_guard,
-            body_resource_budget=body_resource_budget,
-            core_affect_vector=core_affect_vector,
-            responsibility_loop_state=responsibility_loop_state,
-            world_contact_summary=world_contact_summary,
-            pain_regret_repair_report=pain_regret_repair_report,
-            self_model_state=self_model_state,
-            terminal_life_loop_state=terminal_life_loop_state,
+        response_inputs = {
+            "external_utterance": external_utterance,
+            "relationship_graph": relationship_graph,
+            "relationship_timeline": relationship_timeline,
+            "shared_term_registry": shared_term_registry,
+            "commitment_index": commitment_index,
+            "commitment_expression_plan": commitment_expression_plan,
+            "apology_repair_language_trace": apology_repair_language_trace,
+            "relation_turn_frame": relation_turn_frame,
+            "expression_plan": live_language_turn.expression_plan,
+            "life_context_frame": life_context_frame,
+            "replay_cue_bundle": replay_cue_bundle,
+            "offline_consolidation_frame": offline_consolidation_frame,
+            "growth_patch_candidate_queue": growth_patch_candidate_queue,
+            "nightmare_risk": nightmare_risk,
+            "belief_learning_plan": belief_learning_plan,
+            "language_learning_plan": language_learning_plan,
+            "relationship_learning_plan": relationship_learning_plan,
+            "signal_media_runtime": signal_media_runtime,
+            "belief_state": belief_state,
+            "prediction_error_field": prediction_error_field,
+            "active_sampling_plan": active_sampling_plan,
+            "memory_write_gate": memory_write_gate,
+            "state_merge_guard": state_merge_guard,
+            "body_resource_budget": body_resource_budget,
+            "core_affect_vector": core_affect_vector,
+            "responsibility_loop_state": responsibility_loop_state,
+            "world_contact_summary": world_contact_summary,
+            "pain_regret_repair_report": pain_regret_repair_report,
+            "self_model_state": self_model_state,
+            "terminal_life_loop_state": terminal_life_loop_state,
+        }
+        evidence_response = compose_life_response_fn(
+            **response_inputs,
         )
+        if compose_life_response_fn is compose_life_response:
+            life_response = compose_life_spoken_response_fn(
+                **response_inputs,
+                evidence_response=evidence_response,
+            )
+        else:
+            life_response = evidence_response
         model_expression = compose_model_expression(
             run_id=run_id,
             generated_at=now_iso(),

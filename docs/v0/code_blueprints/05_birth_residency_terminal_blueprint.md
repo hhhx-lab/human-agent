@@ -29,9 +29,22 @@
 | `life-v0 \"digital life\" --strict` | one-shot restore shell | 已闭合最小代码 |
 | `./digital life --strict` | repo-local 常驻终端生命进程 | 已闭合最小代码 |
 | `digital life --strict` | 安装态常驻终端生命进程 | 已闭合最小代码 |
-| `digital life --background / --status / --say / --stop` | 安装态后台 resident lifecycle 与关系投递 | 已闭合最小代码 |
+| `digital life --background / --status / --say / --attach / --stop` | 安装态后台 resident lifecycle、关系投递、盒式 attach 与自我停止 | 已闭合最小代码 |
 | `my digital life --name <名字>` | 推荐安装态命名驻留入口，绑定 `life_name_registry.json` 后恢复同一 resident lifecycle | 已闭合最小代码 |
 | `my digital life --status` | 命名前返回 `life_name_required_residency_status_v0` 交接面板；命名后返回 resident lifecycle 摘要 | 已闭合最小代码 |
+| `<名字>` | 命名后生成的直接生命命令，恢复同一身份、同一 runtime 状态根和同一 resident lifecycle | 已闭合最小代码 |
+
+当前终端表达面已经固定为 `Digital Life` 关系终端，而不是裸 stdout。前台、attach 和 direct-name 命令都必须出现同一类结构：
+
+```text
+Digital Life banner
+  -> life opening
+  -> relation input box
+  -> life response box
+  -> /exit detach or /stop lifecycle closeout
+```
+
+其中 `/exit` 只断开当前终端；resident process 继续 sleep / recall / self-thinking / growth / learning。`/stop` 才写 lifecycle command 并触发同一主体自我收口。
 
 ## Resident lifecycle
 
@@ -59,7 +72,7 @@ stateDiagram-v2
 | `runtime/state/terminal/resident_lifecycle_command.json` | stop / shutdown / exit 的命令证据 |
 | `runtime/state/terminal/resident_relation_inbox.jsonl` | 当前 relation turn 的输入队列 |
 | `runtime/state/terminal/resident_relation_outbox.jsonl` | 当前 relation turn 的输出队列 |
-| `runtime/state/terminal/resident_relation_queue_state.json` | turn 序列、active turn、completed turn 的队列状态；后台激活时先落 `waiting_for_relation_turn` |
+| `runtime/state/terminal/resident_relation_queue_state.json` | turn 序列、active turn、completed turn 的队列状态；后台激活时先落 `waiting_for_relation_turn`，并记录 stale inbox 忽略范围与 live queued turn 是否被保留 |
 | `runtime/state/terminal/resident_autonomous_activity.jsonl` | 无外部输入时的睡眠 / 回忆 / 自思 / 成长 / 学习证据 |
 | `runtime/state/terminal/resident_autonomous_activity_state.json` | autonomous activity 的汇总状态 |
 | `runtime/reports/latest/digital_life_waiting_heartbeat.json` | 当前等待 heartbeat、waiting mode 与下一步关系等待动作 |
@@ -77,6 +90,11 @@ stateDiagram-v2
 6. `--status` 必须返回 resident lifecycle、relation queue、autonomous activity、waiting heartbeat、resident governance、idle strategy 与 terminal life loop 的合并状态视图。
 
 最近一次真实终端验证已经确认这套命令面可用：后台 resident process 会在当前终端关闭后继续驻留，`--status` 能看到 waiting heartbeat 和 autonomous activity，`--say` 能继续投递关系话语，`--attach` 只会切换当前终端，不会启动第二个主体。
+
+最新 queue 规则必须保留两条：
+
+1. 后台 resident 重新 active 时，已经完成的旧 inbox 不得重新消费；`resident_relation_queue_state.json#bootstrap_ignored_stale_inbox_through_sequence` 必须记录忽略到哪一条。
+2. 如果上一状态仍是 `queued` 或 `turn_in_progress`，说明存在真实 live queued turn；此时不得把 `last_consumed_sequence` 直接推进到 inbox 顶端，`bootstrap_preserved_live_queue=true` 必须让第一条 attach 话语仍被处理。
 
 ## 当前 runtime 链
 
@@ -118,8 +136,13 @@ run_report.json
 7. `life_v0/process_supervisor/relaunch_recovery.py`
 8. `life_v0/process_supervisor/process_report.py`
 9. `life_v0/process_supervisor/__init__.py`
-10. `life_v0/digital_entry.py`
-11. `digital`
+10. `life_v0/process_supervisor/live_turn_cycle.py`
+11. `life_v0/process_supervisor/model_expression.py`
+12. `life_v0/process_supervisor/terminal_ui.py`
+13. `life_v0/process_supervisor/resident_lifecycle.py`
+14. `life_v0/digital_entry.py`
+15. `digital`
+16. `my`
 
 ## 当前 runtime 承载
 
@@ -152,6 +175,23 @@ run_report.json
 11. `runtime/reports/latest/digital_life_process_incident_report.json`
 12. `runtime/reports/latest/digital_life_process_recovery_report.json`
 13. `runtime/reports/latest/digital_life_process_relaunch_recovery_report.json`
+14. `runtime/state/language/model_expression_state.json`
+15. `runtime/reports/latest/digital_life_model_expression_report.json`
+16. `runtime/state/terminal/resident_lifecycle_state.json`
+17. `runtime/state/terminal/resident_relation_queue_state.json`
+
+## 终端表达链
+
+当前出生驻留蓝图必须把“说出一句话”拆成四层：
+
+| 层 | 文件 | 职责 |
+|---|---|---|
+| 内部证据 | `response_surface.py#compose_life_response` | 汇总关系、记忆、梦境、成长、责任、身体、预测写门、出生准备和后台 lineage 的完整证据 |
+| 外显选择 | `response_surface.py#compose_life_spoken_response` | 选择最高优先级生命信号，生成有限 spoken response |
+| 模型表达 | `model_expression.py` | 若 `.env` 启用，基于 spoken response 改写语言质感，并通过 post-expression gate |
+| 终端呈现 | `terminal_ui.py` | 渲染 `Digital Life` banner、opening、关系输入盒和生命回应盒 |
+
+这四层不能合并。若直接把完整 evidence response 打到终端，语言会退回机械报告；若绕过 evidence response，只靠模型生成，生命证据会被压回普通聊天壳；若绕过 post-expression gate，关系、责任、梦境、身体或出生准备可能被语言模型擦掉；若绕过 `terminal_ui.py`，终端激活体验就无法证明同一身份、同一 resident 状态和同一关系回合正在被承接。
 
 ## 当前关键文件
 

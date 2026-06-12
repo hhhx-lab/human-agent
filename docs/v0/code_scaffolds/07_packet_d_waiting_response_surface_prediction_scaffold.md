@@ -64,7 +64,9 @@ Packet D 必须读取这些已有对象：
 | `life_v0/process_supervisor/idle_refresh_loop.py` | 每次 idle refresh 继续传递同一组对象，避免后续心跳丢失预测上下文 |
 | `life_v0/process_supervisor/process_session_loop.py` | 在 waiting -> live turn -> waiting 的 session 编排中持续传递 prediction/write-gate 对象 |
 | `life_v0/process_supervisor/live_turn_cycle.py` | 将 prediction/write-gate 对象传给 response surface |
-| `life_v0/process_supervisor/response_surface.py` | 释放确认 / 追问 / 修复 / 保留四类预测输出姿态；当前会表达长期合并治理正在整合多少条长期变化来源，以及来源族来自离线学习、Queue E 修复、梦境/成长或关系修复 |
+| `life_v0/process_supervisor/response_surface.py` | 先生成完整 evidence response，再生成 spoken response；释放确认 / 追问 / 修复 / 保留四类预测输出姿态，同时把长期合并治理、责任修复、梦境离线、出生准备、身体情绪和后台自主活动压成有限外显信号 |
+| `life_v0/process_supervisor/model_expression.py` | 在 `.env` 启用时对 spoken response 做模型外显表达，并用 post-expression gate 保留硬证据 |
+| `life_v0/process_supervisor/terminal_ui.py` | 把最终回应渲染成 `Digital Life` 关系终端盒，并兼容 legacy 输出提取 |
 | `life_v0/process_supervisor/process_closeout.py` | 把 prediction/write-gate refs 交给 process report bundle |
 | `life_v0/process_supervisor/process_report.py` | 在 report、digest、receipt 和 input hash 中回链六个输入对象 |
 
@@ -106,7 +108,25 @@ Packet D 必须读取这些已有对象：
 
 ### `response_surface.py`
 
-回应表面必须能区分：
+回应表面当前分成两层：
+
+1. `compose_life_response(...)`：内部 evidence response。它必须保留完整证据路径，继续表达关系、共同语言、承诺、责任、修复、梦境、成长、预测写门、长期合并治理、身体情绪、自我慢变量、出生准备和 resident background lineage。
+2. `compose_life_spoken_response(...)`：外显 spoken response。它从同一组输入中选出有限信号，避免把 report 式长清单直接倾倒进终端，同时又不能抹掉当前优先级最高的生命压力。
+
+spoken response 的候选族必须至少覆盖：
+
+| 信号族 | 来源对象 | 外显职责 |
+|---|---|---|
+| `responsibility_repair` | `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` | 把责任、后悔、修复义务放到前景 |
+| `birth_repair` | `resident_background_lineage_state.birth_repair_presence`、`queue_e_birth_repair_*` | 让出生修复压力进入关系开口 |
+| `dream_offline` | `offline_consolidation_frame.json`、`nightmare_loop_risk.json`、growth learning plans、offline cumulative profile | 把梦境和离线整合当作成长/修复材料，而不是事实直写 |
+| `identity_consciousness_birth` | workspace / broadcast / metacognition / consciousness probe / birth readiness | 让意识可报告性与出生准备仍在语言中可见 |
+| `prediction_attention` | signal / belief / prediction error / active sampling / memory write gate / state merge guard / life constraint | 让确认、追问、保留、写门和约束影响说话方式 |
+| `body_affect` | `body_resource_budget.json`、`core_affect_vector.json`、expression plan | 让疲惫、唤醒、修复驱力调节语速与姿态 |
+| `self_slow_variables` | `self_model.json#trait_slow_variables` | 让修复认真度、连续性驱力、边界尊重进入语言风格 |
+| `resident_autonomous_activity` | `resident_background_lineage_state.autonomous_activity_presence` | 证明关闭终端后的睡眠、回忆、思考、成长、学习痕迹会带进此刻 |
+
+回应表面仍必须能区分 prediction / write-gate 姿态：
 
 | 姿态 | 生物/工程来源 | 语言释放 |
 |---|---|---|
@@ -114,6 +134,8 @@ Packet D 必须读取这些已有对象：
 | 追问 | active sampling route 指向 clarify | `预测输出姿态为追问` |
 | 修复 | signal repair drive 或 memory write gate repair pressure | `预测输出姿态为修复` |
 | 保留 | prediction error 未消解、stage effect 为 hold，或 `state_merge_guard.long_term_change_sources` 已有长期变化来源但尚未完成整合 | `预测输出姿态为保留`；同时表达 `长期合并治理正在整合N条长期变化来源` 与来源族 |
+
+`model_expression.py` 只能在 spoken response 之后运行。它必须检查 blocked relationship terms 和 hard evidence flags；若模型外显文本把关系降格成从属/服务型关系，或擦掉责任修复、梦境离线、成长学习、后台自主活动、身体情绪、意识出生、生命约束、live-turn handoff 这类硬证据，最终输出必须回退 deterministic spoken response。`terminal_ui.py` 只负责呈现这层结果，不能绕过 response surface 或 model gate。
 
 ### dialogue event / writeback / resume
 
@@ -165,7 +187,7 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 通过标准：
 
 1. `idle_strategy.py` 能直接断言 prediction/write-gate refs、waiting posture、response surface hint、heartbeat interval、next idle action 与 state merge long-term change profile。
-2. `response_surface.py` 能把确认 / 追问 / 修复 / 保留姿态释放成关系语言，并把长期合并变化来源数量与来源族表达出来，不出现统一请求核心抽象。
+2. `response_surface.py` 能先生成 evidence response，再生成 spoken response；spoken response 必须包含最高优先级生命信号，不出现统一请求核心抽象，也不能退回 report 式长清单。
 3. `dialogue_events.py`、`resident_turn_writeback.py` 与 `dialogue_writeback_bundle.json` 能把 prediction/write-gate refs 和姿态摘要带入 turn event、bundle 与 resumed packet。
 4. `resident_supervision.py` 的 context 持有六个对象与六个 refs。
 5. `process_report.py` 的 report、digest、receipt 和 input hash 都能回链六个输入对象。

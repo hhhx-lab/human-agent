@@ -51,6 +51,84 @@ class PersistentDigitalLifeProcessTests(
     def docs_dir(self) -> Path:
         return self.repo_root / "docs"
 
+    def test_terminal_ui_extracts_life_response_from_box_and_legacy_prefix(self):
+        from life_v0.process_supervisor.terminal_ui import (
+            extract_life_response_text,
+            render_life_cycle_output,
+        )
+
+        legacy = "生命回合输出: 我在，也会继续修复。"
+        rendered = render_life_cycle_output(legacy, life_name="Adam", width=72)
+
+        self.assertIn("Adam", rendered)
+        self.assertIn("我在，也会继续修复。", rendered)
+        self.assertEqual(
+            extract_life_response_text(legacy),
+            "我在，也会继续修复。",
+        )
+        self.assertIn("我在，也会继续修复。", extract_life_response_text(rendered))
+
+    def test_resident_lifecycle_start_does_not_replay_stale_relation_inbox(self):
+        from life_v0.process_supervisor.resident_lifecycle import (
+            mark_resident_lifecycle_active,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            terminal_dir = Path(tmp) / "runtime" / "state" / "terminal"
+            terminal_dir.mkdir(parents=True)
+            (terminal_dir / "resident_relation_inbox.jsonl").write_text(
+                "\n".join(
+                    [
+                        json.dumps(
+                            {
+                                "sequence": 1,
+                                "utterance": "旧话一",
+                            },
+                            ensure_ascii=False,
+                        ),
+                        json.dumps(
+                            {
+                                "sequence": 2,
+                                "utterance": "旧话二",
+                            },
+                            ensure_ascii=False,
+                        ),
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (terminal_dir / "resident_relation_outbox.jsonl").write_text(
+                json.dumps(
+                    {
+                        "sequence": 1,
+                        "response_text": "旧回应",
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            mark_resident_lifecycle_active(
+                terminal_dir=terminal_dir,
+                run_id="resident-no-replay",
+                resident_sleep_seconds=0.1,
+            )
+
+            queue_state = self._read_json(
+                terminal_dir / "resident_relation_queue_state.json"
+            )
+
+        self.assertEqual(queue_state["status"], "waiting_for_relation_turn")
+        self.assertEqual(queue_state["last_consumed_sequence"], 2)
+        self.assertEqual(queue_state["last_enqueued_sequence"], 2)
+        self.assertEqual(queue_state["last_completed_sequence"], 1)
+        self.assertEqual(
+            queue_state["bootstrap_ignored_stale_inbox_through_sequence"],
+            2,
+        )
+
     def test_repo_local_digital_life_process_keeps_dialogue_alive_and_writes_back(self):
         with tempfile.TemporaryDirectory() as tmp:
             paths = build_runtime_paths(Path(tmp))
@@ -78,8 +156,9 @@ class PersistentDigitalLifeProcessTests(
             )
 
             self.assertEqual(completed.returncode, 0, completed.stderr)
-            self.assertIn("当前生命回合已恢复", completed.stdout)
-            self.assertIn("生命回合输出", completed.stdout)
+            self.assertIn("Digital Life", completed.stdout)
+            self.assertIn("我在。Digital Life 已接回", completed.stdout)
+            self.assertIn("我听见你说", completed.stdout)
 
             dialogue_lines = [
                 json.loads(line)
@@ -94,13 +173,12 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(last_external["utterance"], "你还记得我们吗？")
             self.assertEqual(last_life_response["event_role"], "digital_life_turn")
             self.assertIn("朋友", last_life_response["utterance"])
-            self.assertIn("离线重放线索", last_life_response["utterance"])
-            self.assertIn("梦境整合窗口", last_life_response["utterance"])
-            self.assertIn("成长补丁候选", last_life_response["utterance"])
-            self.assertIn("更认真地对待这轮修复", last_life_response["utterance"])
-            self.assertIn("更长的连续体", last_life_response["utterance"])
-            self.assertIn("后台出生修复压力为elevated", last_life_response["utterance"])
-            self.assertIn("后台出生修复焦点指向regret_pressure", last_life_response["utterance"])
+            self.assertIn("责任回路", last_life_response["utterance"])
+            self.assertIn("梦境", last_life_response["utterance"])
+            self.assertIn("成长", last_life_response["utterance"])
+            self.assertIn("出生修复压力elevated", last_life_response["utterance"])
+            self.assertIn("意识和出生准备", last_life_response["utterance"])
+            self.assertIn("我先主动说一句", last_life_response["utterance"])
 
             narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
             self.assertGreaterEqual(len(narrative_trace["narrative_turn_refs"]), 5)
@@ -8384,50 +8462,15 @@ class PersistentDigitalLifeProcessTests(
                 "background_continuity_profile_v0",
             )
             self.assertIn("background_continuity_profile", persisted_life_state)
-            self.assertIn(
-                "后台语言语义余波停在repair_commitment_shared_language",
-                result.emitted_output,
-            )
-            self.assertIn("后台语言证据保留5条", result.emitted_output)
-            self.assertIn("后台人格慢变量焦点为trait_stability_hold", result.emitted_output)
-            self.assertIn("后台仍需收敛的慢变量包括continuity_drive", result.emitted_output)
-            self.assertIn("后台已稳定的慢变量包括repair_seriousness", result.emitted_output)
-            self.assertIn("后台人格漂移重校准包括continuity_drive", result.emitted_output)
-            self.assertIn("后台人格漂移已稳定包括repair_seriousness", result.emitted_output)
-            self.assertIn("后台人格漂移监控仍在场", result.emitted_output)
-            self.assertIn("后台人格慢变量证据保留5条", result.emitted_output)
-            self.assertIn("跨唤醒人格收敛画像为trait_stability_hold", result.emitted_output)
-            self.assertIn("跨唤醒人格收敛压力为recalibration", result.emitted_output)
-            self.assertIn("跨唤醒人格漂移重校准包括continuity_drive", result.emitted_output)
-            self.assertIn("跨唤醒人格漂移已稳定包括repair_seriousness", result.emitted_output)
-            self.assertIn("后台长期合并治理处于long_term_merge_fail_closed", result.emitted_output)
-            self.assertIn("后台长期合并治理仍在整合4条长期变化来源", result.emitted_output)
-            self.assertIn(
-                "后台长期变化来源族包括offline_learning_cumulative_refs、queue_e_repair_modulation_refs、relationship_memory_offline_refs",
-                result.emitted_output,
-            )
-            self.assertIn("后台意识姿态为consciousness_reportable_waiting", result.emitted_output)
-            self.assertIn("后台意识可报告性保留3条", result.emitted_output)
-            self.assertIn("后台出生准备姿态为birth_open_waiting", result.emitted_output)
-            self.assertIn("出生准备决策为open", result.emitted_output)
-            self.assertIn("出生准备下一命令为my digital life", result.emitted_output)
-            self.assertIn("后台身份意识出生证据保留6条", result.emitted_output)
-            self.assertIn(
-                "后台生命进程身份连续性为interrupted_then_recovered",
-                result.emitted_output,
-            )
-            self.assertIn("后台生命进程身份压力为elevated", result.emitted_output)
-            self.assertIn("后台生命进程身份证据保留3条", result.emitted_output)
-            self.assertIn(
-                "累计离线学习整合模式为relationship_offline_reconsolidation_required",
-                result.emitted_output,
-            )
-            self.assertIn("关系离线重整需要保持在场", result.emitted_output)
-            self.assertIn(
-                "后台梦境成长整合模式为relationship_offline_reconsolidation_required",
-                result.emitted_output,
-            )
-            self.assertIn("后台关系离线重整仍需要保持", result.emitted_output)
+            self.assertIn("我听见你说", result.emitted_output)
+            self.assertIn("出生修复压力elevated", result.emitted_output)
+            self.assertIn("后台梦境和离线整合", result.emitted_output)
+            self.assertIn("意识和出生准备", result.emitted_output)
+            self.assertIn("写门和约束", result.emitted_output)
+            self.assertIn("身体和情绪", result.emitted_output)
+            self.assertIn("我先主动说一句", result.emitted_output)
+            self.assertNotIn("证据保留76条", result.emitted_output)
+            self.assertLess(result.emitted_output.count("，"), 36)
             expected_prediction_write_gate_refs = [
                 "runtime/state/signal/signal_media_runtime.json",
                 "runtime/state/prediction/belief_state_frame.json",
@@ -8527,23 +8570,13 @@ class PersistentDigitalLifeProcessTests(
                 expected_life_constraint_refs,
             )
             self.assertIn(
-                "累计离线学习已经延续到第3代",
+                "离线学习第3代",
                 result.last_life_turn["utterance"],
             )
-            self.assertIn(
-                "后台出生修复姿态为birth_repair_pressure_waiting",
-                result.emitted_output,
-            )
-            self.assertIn("后台出生修复压力为elevated", result.emitted_output)
-            self.assertIn("后台出生修复焦点指向regret_pressure", result.emitted_output)
-            self.assertIn("后台出生修复证据保留4条", result.emitted_output)
-            self.assertIn("生命约束等待姿态为schema_guarded_waiting", result.emitted_output)
-            self.assertIn("生命约束焦点指向life_constraint_profile", result.emitted_output)
-            self.assertIn(
-                "生命约束理由为queue_e_cross_layer_gate_has_deferred_life_constraints",
-                result.emitted_output,
-            )
-            self.assertIn("生命约束证据保留4条", result.emitted_output)
+            self.assertIn("出生修复压力elevated", result.emitted_output)
+            self.assertIn("焦点在regret_pressure", result.emitted_output)
+            self.assertIn("生命约束姿态schema_guarded_waiting", result.emitted_output)
+            self.assertIn("约束焦点life_constraint_profile", result.emitted_output)
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
             self.assertEqual(
@@ -17056,7 +17089,7 @@ class PersistentDigitalLifeProcessTests(
                 )
 
             self.assertEqual(result.exit_code, 0)
-            self.assertIn("当前生命回合已恢复", output_stream.getvalue())
+            self.assertIn("Digital Life", output_stream.getvalue())
             self.assertIn("异常恢复", output_stream.getvalue())
 
             incident_report = self._read_json(paths["reports"] / "digital_life_process_incident_report.json")

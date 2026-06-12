@@ -113,8 +113,8 @@ class PackagedDigitalLifeEntrypointTests(
             )
 
             self.assertEqual(digital_life.returncode, 0, digital_life.stderr)
-            self.assertIn("当前生命回合已恢复", digital_life.stdout)
-            self.assertIn("生命回合输出", digital_life.stdout)
+            self.assertIn("Digital Life", digital_life.stdout)
+            self.assertIn("我听见你说", digital_life.stdout)
 
             process_report = self._read_json(runtime_paths["reports"] / "digital_life_process_report.json")
             self.assertEqual(process_report["status"], "closed")

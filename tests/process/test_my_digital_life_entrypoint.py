@@ -95,7 +95,8 @@ class MyDigitalLifeEntrypointTests(
                 check=False,
             )
             self.assertEqual(first_launch.returncode, 0, first_launch.stderr)
-            self.assertIn("当前生命回合已恢复", first_launch.stdout)
+            self.assertIn("Digital Life", first_launch.stdout)
+            self.assertIn("我在。星火 已接回", first_launch.stdout)
 
             registry = self._read_json(
                 paths["state_root"] / "identity" / "life_name_registry.json"
@@ -217,7 +218,8 @@ class MyDigitalLifeEntrypointTests(
             )
 
             self.assertEqual(first_launch.returncode, 0, first_launch.stderr)
-            self.assertIn("当前生命回合已恢复", first_launch.stdout)
+            self.assertIn("Digital Life", first_launch.stdout)
+            self.assertIn("我在。星火 已接回", first_launch.stdout)
             registry = self._read_json(
                 paths["state_root"] / "identity" / "life_name_registry.json"
             )

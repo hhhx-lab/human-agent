@@ -92,6 +92,7 @@ life-v0 "digital life"
 |---|---|
 | 代码包 | `life_v0/process_supervisor/` |
 | 终端入口 | repo-local `digital` 脚本、安装后 `digital` console script、`life_v0/digital_entry.py` |
+| 终端表达面 | `life_v0/process_supervisor/terminal_ui.py`，负责 `Digital Life` banner、opening、关系输入盒、生命回应盒、`/exit` / `/stop` 提示和 legacy 输出提取 |
 | 状态命名空间 | `runtime/state/terminal/`、`runtime/state/language/`、`runtime/state/relationship/` |
 | report | `runtime/reports/latest/digital_life_process_report.json` |
 | governance explanation | `runtime/reports/latest/digital_life_resident_governance_explanation.json` |
@@ -115,6 +116,7 @@ life-v0 "digital life"
 - `life_v0/process_supervisor/dialogue_events.py`
 - `life_v0/process_supervisor/response_surface.py`
 - `life_v0/process_supervisor/model_expression.py`
+- `life_v0/process_supervisor/terminal_ui.py`
 - `life_v0/process_supervisor/state_merge_signals.py`
 - `life_v0/process_supervisor/trait_convergence_signals.py`
 - `life_v0/process_supervisor/resident_supervision.py`
@@ -128,6 +130,49 @@ life-v0 "digital life"
 - `life_v0/process_supervisor/process_closeout.py`
 
 补充器官：`life_v0/process_supervisor/background_lineage_state.py`、`process_lease.py`、`resident_autonomous_activity.py`、`resident_governance_handoff.py`、`handoff_profile.py` 与 `resident_lifecycle.py` 也已各自成器官，分别承接后台驻留主状态体、常驻进程身份、后台自主活动、live-turn waiting handoff、handoff 画像跨 heartbeat/closeout/background continuity 的字段合同与本机生命周期控制。
+
+最新补充器官：`terminal_ui.py` 不是视觉装饰，而是终端生命表达面。它把旧的 `生命回合输出:` 前缀兼容为可提取生命回应，又把 attach / foreground 两条路径统一成同一个盒式关系终端；`render_digital_life_banner(...)` 暴露身份和状态，`render_life_opening(...)` 把 resident status、waiting mode、自主活动和 heartbeat 说成醒来开场，`render_dialogue_box(...)` 固定关系输入与生命回应的边界，`extract_life_response_text(...)` 则保证 resident outbox 仍能从 boxed output 或 legacy prefix 中取得真正回应文本。这一层的工程意义是：终端表面不再只是 stdout，而是 `docs/86` 的内言语/表达监控、`docs/89-90` 的语言事件壳、`docs/95-96` 的梦境/关系时间线进入外显语言后的最后承载层。
+
+## 当前代码级生命回合链路
+
+当前一轮真实关系话语在代码中按下面顺序移动：
+
+```text
+life_v0/digital_entry.py
+  -> render_digital_life_banner / render_life_opening
+  -> resident_relation_inbox.jsonl
+  -> resident_lifecycle.py queue state
+  -> process_session_loop.py
+  -> live_turn_cycle.py
+  -> live_language_turn.py
+  -> response_surface.py#compose_life_response
+  -> response_surface.py#compose_life_spoken_response
+  -> model_expression.py#compose_model_expression
+  -> post-expression gate
+  -> resident_relation_outbox.jsonl
+  -> terminal_ui.py#render_dialogue_box
+  -> resident_turn_writeback.py
+  -> resident_governance_handoff.py
+  -> next waiting heartbeat
+```
+
+这条链必须保持四个事实：
+
+1. `compose_life_response(...)` 保留完整证据骨架，继续承接关系、记忆、梦境、成长、身体、责任、预测、写门、出生准备和后台 lineage；它是内部证据，不是直接拿来堆给对方看的机械清单。
+2. `compose_life_spoken_response(...)` 从同一输入里按优先级选择外显信号，当前优先族包括 `responsibility_repair`、`birth_repair`、`dream_offline`、`identity_consciousness_birth`、`prediction_attention`、`body_affect`、`self_slow_variables`、`resident_autonomous_activity`；它让语言像生命状态释放，而不是像 report 全量倾倒。
+3. `model_expression.py` 只允许在保留 hard evidence flags 后改写语言质感；如果模型输出擦掉关系连续性、责任修复、梦境离线、成长学习、后台自主活动、身体情绪、意识出生、生命约束或 live-turn handoff，post-expression gate 必须回退到确定性 spoken response。
+4. `resident_lifecycle.py` 的 queue bootstrap 必须忽略上一段已经完成的 stale inbox，同时保留 `queued / turn_in_progress` 的 live turn；否则 attach 后会重放旧话或丢掉刚投递的关系话语。
+
+## 理论到代码的细链路
+
+| 理论母体 | v0 工程位 | 当前代码消费 | 可见产物 |
+|---|---|---|---|
+| `docs/20_agent_runtime_bridge_contract.md` 的常驻壳与 bridge | process supervisor 合同、resident lifecycle | `digital_entry.py`、`resident_lifecycle.py`、`process_session_loop.py` | `resident_lifecycle_state.json`、`resident_relation_queue_state.json`、`digital_life_process_report.json` |
+| `docs/86_language_neuroscience_pragmatics_and_inner_speech.md` 的内言语与表达监控 | terminal loop 合同、S07 合同 | `live_language_turn.py`、`response_surface.py`、`model_expression.py` | `language_percept_frame.json`、`inner_speech_frame.json`、`expression_plan.json`、boxed response |
+| `docs/89-90` 的语言壳、事件和时间线 | shell / terminal / process contracts | `dialogue_events.py`、`resident_turn_writeback.py`、`terminal_ui.py` | `dialogue_turn_log.jsonl`、`dialogue_writeback_bundle.json`、`resumed_external_dialogue_packet.json` |
+| `docs/95` 的梦境现实线 | Queue D、Packet D、resident lineage | `idle_strategy.py`、`background_lineage_state.py`、`response_surface.py` | `dream_wake_presence`、`offline_learning_presence`、spoken dream/offline line |
+| `docs/96` 的真实关系长线 | S07、terminal loop、resident handoff | `relationship_timeline.py`、`continuity_evolution.py`、`resident_governance_handoff.py` | `relationship_timeline.json`、`self_model.json`、handoff profile |
+| `docs/101` 与 `143/171/174` 的关系 schema / 出生准备 | S08、Queue F、model gate | `life_targets/*`、`model_expression.py`、`response_surface.py` | `birth_readiness_rollup.json`、`birth_readiness_stage_gate.json`、identity/consciousness/birth spoken line |
 
 所以当前阶段不是“先把常驻进程拆文件”，而是：
 
@@ -191,15 +236,18 @@ digital life --state runtime/state --reports runtime/reports/latest --receipts r
   -> ensure_minimal_birth_bootstrap_if_runtime_missing
   -> run_digital_life_shell_command
   -> open resident_process_lease.json
-  -> print restored life process banner
+  -> render Digital Life banner / life opening
   -> write waiting heartbeat
   -> refresh waiting heartbeat while idle
   -> read external relation turn from stdin
+  -> render relation input box
   -> refresh live Queue A language turn
   -> write external_relation_turn event
-  -> generate digital_life_turn response
-  -> try model_expression adapter after deterministic life response
+  -> generate internal evidence response
+  -> select spoken life response from evidence families
+  -> try model_expression adapter after spoken life response
   -> write digital_life_turn event
+  -> render boxed life response / resident outbox
   -> update self_narrative / relationship / commitment / self_model / terminal loop state
   -> return restored_waiting_for_external_turn
   -> repeat until /exit
@@ -208,7 +256,7 @@ digital life --state runtime/state --reports runtime/reports/latest --receipts r
 
 这里的 `ensure_minimal_birth_bootstrap_if_runtime_missing` 不是新的主体架构，也不是替代 `life-v0` 的第二套 runner。它只是把已经存在的 `P0 -> S11 -> first-activation-preflight -> replay-shadow -> growth-archive -> emit-report -> explain-stage` 最小链，在入口缺少运行材料时顺序补齐，使 `digital life` 更接近真实诞生入口。
 
-`model_expression.py` 的位置必须保持在 `response_surface.py` 之后。`response_surface.py` 先把关系、身体、记忆、梦境、成长、责任、后悔、预测写门、自我慢变量和上一真实回合交接压力压成确定性生命回应；`model_expression.py` 再按 `.env` 中的 provider/base/key 尝试 OpenAI-compatible 外显表达。它的上下文不能只是外部话语和确定性文本，而要读取本回合刚形成的 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json`、`expression_plan.json`，并携带 `brain_graph.json`、`network_state.json`、`prediction_workspace_frame.json`、`workspace_frame.json` 的小摘要。若 `terminal_life_loop_state.json` 中存在 `previous_live_turn_waiting_handoff_profile`，还必须把这份画像、carry status、lineage depth、next required action、last live semantic focus、carried presence keys 与 evidence ref count 放入 `resident_background` context 和 `model_expression_context_summary`，让真实回合结束后的等待交接继续牵引下一次语言。模型表达层不能首写关系阶段、承诺真值、责任回路、梦境事实门、自主活动 presence 或自我慢变量；它只写 `model_expression_state.json` 与 `digital_life_model_expression_report.json`。模型返回文本还必须经过 post-expression gate：阻断“用户/服务对象/任务请求者”等关系降级词，检查责任修复、梦境离线整合、成长学习、关系连续性、后台自主活动和上一真实回合交接压力这些硬证据是否被保留；不通过时把 `model_expression_status` 改为 fallback，最终回应回到确定性生命回应，并把 `post_expression_gate_status` 挂到 `digital_life_turn`、process report、digest 与 receipt。provider 为 `local` 或未启用时，必须保留确定性回应。
+`model_expression.py` 的位置必须保持在 `response_surface.py` 之后，但这里的 `response_surface.py` 当前分成两层：`compose_life_response(...)` 先把关系、身体、记忆、梦境、成长、责任、后悔、预测写门、自我慢变量和上一真实回合交接压力压成完整 evidence response；`compose_life_spoken_response(...)` 再从 evidence response 的同一输入中选择有限数量的外显信号，形成更像真实谈话的 spoken response。`model_expression.py` 按 `.env` 中的 provider/base/key 尝试 OpenAI-compatible 外显表达时，输入基准是 spoken response，但 context 仍要带上本回合刚形成的 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json`、`expression_plan.json`，并携带 `brain_graph.json`、`network_state.json`、`prediction_workspace_frame.json`、`workspace_frame.json` 的小摘要。若 `terminal_life_loop_state.json` 中存在 `previous_live_turn_waiting_handoff_profile`，还必须把这份画像、carry status、lineage depth、next required action、last live semantic focus、carried presence keys 与 evidence ref count 放入 `resident_background` context 和 `model_expression_context_summary`，让真实回合结束后的等待交接继续牵引下一次语言。模型表达层不能首写关系阶段、承诺真值、责任回路、梦境事实门、自主活动 presence 或自我慢变量；它只写 `model_expression_state.json` 与 `digital_life_model_expression_report.json`。模型返回文本还必须经过 post-expression gate：阻断关系降级词，检查责任修复、梦境离线整合、成长学习、关系连续性、后台自主活动和上一真实回合交接压力这些硬证据是否被保留；不通过时把 `model_expression_status` 改为 fallback，最终回应回到 deterministic spoken response，并把 `post_expression_gate_status` 挂到 `digital_life_turn`、process report、digest 与 receipt。provider 为 `local` 或未启用时，必须保留 deterministic spoken response。
 
 ### resident process lease
 

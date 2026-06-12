@@ -20,6 +20,11 @@ from .process_lease import (
 from .process_session_loop import run_process_session_loop
 from .resident_supervision import bootstrap_resident_supervision
 from .response_surface import compose_life_response
+from .terminal_ui import (
+    render_digital_life_banner,
+    render_life_cycle_output,
+    render_life_opening,
+)
 from ..runtime_config import write_digital_life_runtime_config_snapshot
 
 
@@ -216,7 +221,28 @@ def run_digital_life_process(
         write_json=_write_json,
     )
 
-    _print_line(output_stream, "当前生命回合已恢复。输入新的关系性回合，使用 /exit 结束本次生命进程。")
+    life_name = _life_name_from_state_dir(state_dir)
+    _print_line(
+        output_stream,
+        render_digital_life_banner(
+            life_name=life_name,
+            status="foreground_life_loop",
+        ),
+    )
+    _print_line(
+        output_stream,
+        render_life_opening(
+            {
+                "status": "foreground_life_loop",
+                "resident_waiting_mode": terminal_life_loop_state.get(
+                    "current_mode",
+                    "restored_waiting_for_external_turn",
+                ),
+                "resident_waiting_heartbeat_counter": heartbeat_counter,
+            },
+            life_name=life_name,
+        ),
+    )
 
     session_loop = run_process_session_loop(
         run_id=run_id,
@@ -310,6 +336,7 @@ def run_digital_life_process(
             output_stream=output_stream,
             input_stream=input_stream,
             text=text,
+            life_name=life_name,
         ),
         now_iso=_now_iso,
         write_json=_write_json,
@@ -414,8 +441,14 @@ def _print_line(stream: TextIO, text: str) -> None:
     stream.flush()
 
 
-def _emit_life_output(*, output_stream: TextIO, input_stream: TextIO, text: str) -> None:
-    _print_line(output_stream, text)
+def _emit_life_output(
+    *,
+    output_stream: TextIO,
+    input_stream: TextIO,
+    text: str,
+    life_name: str | None = None,
+) -> None:
+    _print_line(output_stream, render_life_cycle_output(text, life_name=life_name))
     record_output = getattr(input_stream, "record_output", None)
     if callable(record_output):
         record_output(text)
@@ -433,6 +466,12 @@ def _read_json_if_exists(path: Path) -> dict[str, Any]:
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _life_name_from_state_dir(state_dir: Path) -> str | None:
+    registry = _read_json_if_exists(state_dir / "identity" / "life_name_registry.json")
+    name = str(registry.get("canonical_name") or "").strip()
+    return name or None
 
 
 def _default_run_id(prefix: str) -> str:

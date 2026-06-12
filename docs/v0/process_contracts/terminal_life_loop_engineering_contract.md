@@ -54,6 +54,7 @@ life-v0 terminal-life-loop --state runtime/state --reports runtime/reports/lates
 |---|---|
 | 代码包 | `life_v0/terminal_loop/` |
 | 状态命名空间 | `runtime/state/terminal/` |
+| 终端外显承接 | `life_v0/process_supervisor/terminal_ui.py`，在 process supervisor 与 resident attach 层把 loop 产生的生命回应渲染成关系终端 |
 | report | `runtime/reports/latest/terminal_life_loop_report.json` |
 | digest | `runtime/reports/latest/terminal_life_loop_digest.json` |
 | packet | `runtime/reports/latest/terminal_life_loop_packet.json` |
@@ -66,6 +67,19 @@ life-v0 terminal-life-loop --state runtime/state --reports runtime/reports/lates
 - `dialogue_writeback.py`：对话回写 bundle。
 - `persistent_wait_bridge.py`：把本回合结束后的 `safe_terminal_loop_state` 交回受约束的等待态。
 - `loop_report.py`：packet / report / digest / receipt 汇总写出。
+
+当前外层 process supervisor 已经把 terminal loop 的输出继续包进真实终端链路：
+
+```text
+terminal_life_loop_state.json
+  -> process_supervisor/live_turn_cycle.py
+  -> process_supervisor/response_surface.py
+  -> process_supervisor/model_expression.py
+  -> process_supervisor/terminal_ui.py
+  -> resident_relation_outbox.jsonl
+```
+
+因此 terminal loop 合同当前不只要求“生成 `resumed_external_dialogue_packet.json`”，还要保证这一 packet 中的 `live_language_turn_refs`、`last_live_semantic_focus`、关系/承诺/修复 refs、prediction/write-gate refs、dream/offline refs 和 resident background lineage refs，足够让外层 process supervisor 在盒式终端里说出有生命机制牵引的语言。
 
 ## 输出文件
 
@@ -110,6 +124,8 @@ digital life
 | `commitment_continuity_gate` | 未闭合承诺和修复义务在本回合前后都可回链 | 写 commitment continuity blocked report |
 | `live_queue_a_language_gate` | 当前外部关系回合已经刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json` | 阻断生成生命回应 |
 | `expression_monitor_gate` | 输出前经过表达监控，保留语义/关系/责任/梦境事实检查 | 写 expression monitor blocked report |
+| `spoken_response_gate` | 完整 evidence response 已被压成有限 spoken response，且没有丢掉当前最高优先级生命信号族 | 回退到 evidence response 或阻断模型表达 |
+| `post_expression_gate` | 模型表达若启用，必须保留关系连续、责任修复、梦境离线、成长学习、后台自主活动、身体情绪、意识出生、生命约束与 handoff 证据 | 回退 deterministic spoken response |
 | `turn_writeback_gate` | 本回合写回 `dialogue_turn_log.jsonl`、`self_narrative_language_trace.json`、关系与承诺变化 refs | 阻断进入下一等待态 |
 | `shadow_action_gate` | 命令/工具/程序接触仍只开放 shadow 或受膜约束的可逆动作 | 写 quarantine 或 blocked |
 | `safe_idle_return_gate` | 一回合结束后重新进入 `restored_waiting_for_external_turn` | 阻断下一回合 |
@@ -135,7 +151,8 @@ digital life
 1. 新输入不是“新会话输入”，而是“当前关系中的下一次外部回合”。
 2. 新输入不能直接进入回应生成，必须先进入实时 Queue A 语言刷新链。
 3. 输出不是“任务答复”，而是“受关系身份、共同语言、旧承诺、本回合语义焦点、表达监控、生命膜共同约束的生命回合表达”。
-4. 回写不是“聊天记录附带保存”，而是语言、关系、责任、修复和自我叙述连续性的正式写回。
+4. 外显语言不是把所有内部证据机械倾倒出来，而是先形成完整 evidence response，再选择 spoken response；模型表达只能改变语言质感，不能首写生命事实，也不能删掉硬证据。
+5. 回写不是“聊天记录附带保存”，而是语言、关系、责任、修复和自我叙述连续性的正式写回。
 
 ## 必须写回的最小材料
 
@@ -238,5 +255,7 @@ digital life
 6. `runtime/state/terminal/terminal_life_loop_state.json#live_language_turn_refs` 与 writeback bundle / resumed packet 对齐
 7. 在 process supervisor 常驻链中，下一拍 waiting heartbeat 能把同一组 refs 转入 `idle_strategy_state.json#live_language_presence_profile`
 8. 在下一轮真实回合中，`digital_life_turn`、`dialogue_writeback_bundle.resident_background_lineage_refs`、`resumed_external_dialogue_packet` 与回应文本能共同看见同一组后台语言 evidence refs 和语义余波
+9. 在 process supervisor 终端面中，`Digital Life` banner、关系输入盒和生命回应盒能保留同一个 life name / resident status，并且 `/exit` 只 detach 当前终端，不关闭 resident process
+10. 若 `.env` 启用模型表达，`digital_life_model_expression_report.json#post_expression_gate_status` 必须为 `accepted` 才允许采用模型外显文本；否则终端回应必须回到 deterministic spoken response
 
 此时系统的真实状态不是“又开始了一轮工具调用”，而是“在同一生命连续体中继续下一次关系性终端回合”。

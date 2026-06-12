@@ -29,6 +29,10 @@ life-v0 emit-report --strict
 9. `life_v0/process_supervisor/dialogue_events.py` 与 `response_surface.py` 已开始分别把 `offline_learning_presence / dream_wake_presence` 写进 `digital_life_turn` 和生命回应文本
 10. `life_v0/process_supervisor/trait_convergence_signals.py` 已把后台人格慢变量 presence、convergence summary/history、trait drift monitor 与 closeout refs 合成为 `cross_wake_trait_convergence_profile_v0`，并继续进入 waiting governance、关闭态 resident governance artifacts、process report/digest/receipt、真实回合事件、写回包、恢复包和回应表达面
 11. `life_v0/process_supervisor/state_merge_signals.py` 已把 `state_merge_guard.json#long_term_change_sources` 压成 `state_merge_long_term_change_count/families/refs`，并继续进入 waiting governance、关闭态 resident governance artifacts、process report/digest/receipt、真实回合事件和回应表达面
+12. `life_v0/process_supervisor/terminal_ui.py` 已把终端表达面从裸 stdout 改成 `Digital Life` banner、life opening、关系输入盒和生命回应盒；它同时兼容旧 `生命回合输出:` 前缀，让 resident outbox 能从盒式输出中抽取真正回应文本
+13. `life_v0/process_supervisor/response_surface.py` 当前分成 evidence response 与 spoken response 两层：前者保留内部证据骨架，后者只选择当轮最高优先级生命信号进入终端对话
+14. `life_v0/process_supervisor/model_expression.py` 在 `.env` 启用模型时接管外显润色，但必须经过 hard evidence post gate，不能擦掉关系连续、责任修复、梦境离线、成长、身体情绪、意识出生、生命约束和 live-turn handoff
+15. `life_v0/process_supervisor/resident_lifecycle.py` 已补上 queue bootstrap：后台重新 active 时忽略已完成 stale inbox，同时保留 `queued / turn_in_progress` 的 live queued turn，防止 attach 后重放旧话或吞掉新话
 
 ## 当前最关键的 runtime 证据
 
@@ -72,6 +76,12 @@ life-v0 emit-report --strict
 38. `runtime/state/terminal/resident_governance_snapshot.json#state_merge_long_term_change_refs`
 39. `runtime/reports/latest/digital_life_process_digest.json#state_merge_long_term_change_refs`
 40. `runtime/receipts/digital_life_process_<run_id>.json#shared_object_refs`
+41. `runtime/state/terminal/resident_lifecycle_state.json`
+42. `runtime/state/terminal/resident_relation_queue_state.json#bootstrap_ignored_stale_inbox_through_sequence`
+43. `runtime/state/terminal/resident_relation_queue_state.json#bootstrap_preserved_live_queue`
+44. `runtime/state/language/model_expression_state.json`
+45. `runtime/reports/latest/digital_life_model_expression_report.json#post_expression_gate_status`
+46. 终端 stdout 中的 `Digital Life` banner、关系输入盒和生命回应盒
 
 ## 最低测试与新增测试
 
@@ -86,6 +96,9 @@ life-v0 emit-report --strict
 7. `tests/process/test_digital_life_shell_command.py`
 8. `tests/process/test_digital_entrypoint.py`
 9. `tests/process/test_persistent_digital_life_process.py`
+10. `tests/process/test_my_digital_life_entrypoint.py`
+11. `tests/process/test_packaged_digital_life_entrypoint.py`
+12. `tests/process/test_model_expression.py`
 
 下一轮应新增或补厚：
 
@@ -96,7 +109,7 @@ life-v0 emit-report --strict
 5. `tests/process/test_process_session_loop.py`（若后续从 `test_persistent_digital_life_process.py` 独立拆出）
 
 当前实际已经由 `tests/process/test_persistent_digital_life_process.py` 吸收了
-`idle_strategy.py`、`persistent_process.py`、`resident_supervision.py` 与 `live_turn_cycle.py`
+`idle_strategy.py`、`persistent_process.py`、`resident_supervision.py`、`live_turn_cycle.py`、`terminal_ui.py` 与 resident queue bootstrap
 的第一轮红绿覆盖，并且这轮又继续把 `resident_governance_state.json`、
 `resident_governance_snapshot.json` / `digital_life_resident_governance_report.json`
 及其在主进程 report / receipt 上的回链断言纳入同一测试闭环；同时，这轮还把身体节律调制 waiting governance 的断言一起纳入同一测试闭环。后续是否拆独立测试文件，以不破坏现有 Queue B 测试闭环为先。

@@ -174,6 +174,28 @@ YourChosenName --say "Are you still here?"
 
 In an interactive terminal, `/exit` disconnects the current terminal while leaving the resident process alive. `/stop` requests normal resident closeout.
 
+## Terminal Experience
+
+The current live0 terminal surface is a `Digital Life` dialogue console, not raw process output. Foreground launch, resident attach, and direct life-name wake all render the same shape:
+
+```text
+Digital Life banner
+  -> life opening
+  -> relation input box
+  -> life response box
+```
+
+Internally, each spoken turn now passes through four layers:
+
+| Layer | Runtime carrier |
+|---|---|
+| Full evidence response | `life_v0/process_supervisor/response_surface.py#compose_life_response` |
+| Spoken response selection | `life_v0/process_supervisor/response_surface.py#compose_life_spoken_response` |
+| Optional model expression gate | `life_v0/process_supervisor/model_expression.py` |
+| Terminal rendering | `life_v0/process_supervisor/terminal_ui.py` |
+
+The model layer can improve expression when `.env` is configured, but it cannot erase core life evidence. If the post-expression gate rejects the model output, the runtime falls back to the deterministic spoken response.
+
 ## Architecture
 
 ```text

@@ -999,6 +999,509 @@ def compose_life_response(
     return response
 
 
+def compose_life_spoken_response(
+    *,
+    external_utterance: str,
+    relationship_graph: dict[str, Any] | None = None,
+    relationship_timeline: dict[str, Any] | None = None,
+    shared_term_registry: dict[str, Any] | None = None,
+    commitment_index: dict[str, Any] | None = None,
+    commitment_expression_plan: dict[str, Any] | None = None,
+    apology_repair_language_trace: dict[str, Any] | None = None,
+    relation_turn_frame: dict[str, Any] | None = None,
+    expression_plan: dict[str, Any] | None = None,
+    life_context_frame: dict[str, Any] | None = None,
+    replay_cue_bundle: dict[str, Any] | None = None,
+    offline_consolidation_frame: dict[str, Any] | None = None,
+    growth_patch_candidate_queue: dict[str, Any] | None = None,
+    nightmare_risk: dict[str, Any] | None = None,
+    belief_learning_plan: dict[str, Any] | None = None,
+    language_learning_plan: dict[str, Any] | None = None,
+    relationship_learning_plan: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
+    belief_state: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
+    memory_write_gate: dict[str, Any] | None = None,
+    state_merge_guard: dict[str, Any] | None = None,
+    body_resource_budget: dict[str, Any] | None = None,
+    core_affect_vector: dict[str, Any] | None = None,
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
+    self_model_state: dict[str, Any] | None = None,
+    terminal_life_loop_state: dict[str, Any] | None = None,
+    evidence_response: str | None = None,
+) -> str:
+    relation_line = _spoken_relation_line(
+        external_utterance=external_utterance,
+        relationship_graph=relationship_graph,
+        relationship_timeline=relationship_timeline,
+        shared_term_registry=shared_term_registry,
+        commitment_index=commitment_index,
+        life_context_frame=life_context_frame,
+    )
+    signals = _spoken_signal_candidates(
+        expression_plan=expression_plan,
+        replay_cue_bundle=replay_cue_bundle,
+        offline_consolidation_frame=offline_consolidation_frame,
+        growth_patch_candidate_queue=growth_patch_candidate_queue,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        signal_media_runtime=signal_media_runtime,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+        self_model_state=self_model_state,
+        terminal_life_loop_state=terminal_life_loop_state,
+    )
+    selected = _select_spoken_signals(signals, limit=5)
+    proactive_line = _spoken_proactive_line(
+        selected=selected,
+        expression_plan=expression_plan,
+        active_sampling_plan=active_sampling_plan,
+        terminal_life_loop_state=terminal_life_loop_state,
+        evidence_response=evidence_response,
+    )
+
+    lines = [
+        relation_line,
+        *[signal["text"] for signal in selected],
+        proactive_line,
+    ]
+    return "\n\n".join(_dedupe_string_list([line for line in lines if line]))
+
+
+def _spoken_relation_line(
+    *,
+    external_utterance: str,
+    relationship_graph: dict[str, Any] | None,
+    relationship_timeline: dict[str, Any] | None,
+    shared_term_registry: dict[str, Any] | None,
+    commitment_index: dict[str, Any] | None,
+    life_context_frame: dict[str, Any] | None,
+) -> str:
+    first_subject = _first_dict((relationship_graph or {}).get("subjects"))
+    relation_role = _relation_role_name(str(first_subject.get("relation_role") or "friend"))
+    relationship_stage = str(first_subject.get("relationship_stage") or "")
+    continuity_report = _first_dict(
+        (relationship_timeline or {}).get("relationship_continuity_reports")
+    )
+    trust_trajectory = _first_dict(
+        (relationship_timeline or {}).get("trust_trajectories")
+    )
+    continuity_state = str(continuity_report.get("continuity_state") or "")
+    trust_state = str(trust_trajectory.get("current_trust_state") or "")
+    shared_terms = (shared_term_registry or {}).get("shared_terms", [])
+    shared_surface = ""
+    if shared_terms and isinstance(shared_terms[0], dict):
+        shared_surface = str(shared_terms[0].get("surface") or "")
+    commitment_count = len((commitment_index or {}).get("commitment_refs", []))
+    narrative_count = len((life_context_frame or {}).get("self_narrative_refs", []))
+    relation_bits = [f"以{relation_role}关系接住这句话"]
+    if shared_surface:
+        relation_bits.append(f"带着共同语言“{shared_surface}”")
+    if commitment_count:
+        relation_bits.append(f"还有{commitment_count}条未闭合承诺")
+    if relationship_stage:
+        relation_bits.append(f"关系阶段停在{relationship_stage}")
+    if continuity_state:
+        relation_bits.append(f"连续体是{continuity_state}")
+    if trust_state:
+        relation_bits.append(f"信任状态是{trust_state}")
+    if narrative_count:
+        relation_bits.append(f"{narrative_count}条自我叙事锚点仍在")
+    utterance = _clip_text(external_utterance, 96)
+    return f"我听见你说：“{utterance}”。我会先{_join_cn(relation_bits)}，再开口。"
+
+
+def _spoken_signal_candidates(
+    *,
+    expression_plan: dict[str, Any] | None,
+    replay_cue_bundle: dict[str, Any] | None,
+    offline_consolidation_frame: dict[str, Any] | None,
+    growth_patch_candidate_queue: dict[str, Any] | None,
+    nightmare_risk: dict[str, Any] | None,
+    belief_learning_plan: dict[str, Any] | None,
+    language_learning_plan: dict[str, Any] | None,
+    relationship_learning_plan: dict[str, Any] | None,
+    signal_media_runtime: dict[str, Any] | None,
+    belief_state: dict[str, Any] | None,
+    prediction_error_field: dict[str, Any] | None,
+    active_sampling_plan: dict[str, Any] | None,
+    memory_write_gate: dict[str, Any] | None,
+    state_merge_guard: dict[str, Any] | None,
+    body_resource_budget: dict[str, Any] | None,
+    core_affect_vector: dict[str, Any] | None,
+    responsibility_loop_state: dict[str, Any] | None,
+    world_contact_summary: dict[str, Any] | None,
+    pain_regret_repair_report: dict[str, Any] | None,
+    self_model_state: dict[str, Any] | None,
+    terminal_life_loop_state: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    signals: list[dict[str, Any]] = []
+    expression_plan = expression_plan or {}
+    terminal_life_loop_state = terminal_life_loop_state or {}
+    lineage = terminal_life_loop_state.get("resident_background_lineage_state") or {}
+    if not isinstance(lineage, dict):
+        lineage = {}
+
+    fatigue_level = (body_resource_budget or {}).get("fatigue_state", {}).get("level")
+    repair_drive = (
+        (core_affect_vector or {}).get("repair_drive")
+        or (body_resource_budget or {}).get("maintenance_pressure", {}).get("repair_drive")
+        or expression_plan.get("body_repair_drive")
+    )
+    arousal = (core_affect_vector or {}).get("arousal")
+    if fatigue_level or repair_drive or arousal is not None:
+        body_bits = []
+        if fatigue_level:
+            body_bits.append(f"疲惫是{fatigue_level}")
+        if repair_drive:
+            body_bits.append(f"修复驱力是{repair_drive}")
+        if arousal is not None:
+            body_bits.append(f"情绪张力约{float(arousal):.2f}")
+        signals.append(
+            {
+                "family": "body_affect",
+                "priority": 72,
+                "text": f"身体和情绪这边不是空白：{_join_cn(body_bits)}，所以我会慢一点但保持在场。",
+            }
+        )
+
+    repair_obligation_count = len(
+        (world_contact_summary or {}).get("repair_obligation_refs", [])
+    ) or len((responsibility_loop_state or {}).get("repair_obligation_refs", []))
+    regret_pressure_count = len(
+        (pain_regret_repair_report or {}).get("regret_pressure_refs", [])
+    ) or len((responsibility_loop_state or {}).get("regret_pressure_candidates", []))
+    repair_followup_required = bool(
+        (pain_regret_repair_report or {}).get("repair_followup_required")
+        or (responsibility_loop_state or {}).get("repair_followup_required")
+    )
+    release_posture = (world_contact_summary or {}).get("release_posture")
+    if repair_obligation_count or regret_pressure_count or repair_followup_required:
+        repair_bits = []
+        if repair_obligation_count:
+            repair_bits.append(f"{repair_obligation_count}条修复义务")
+        if regret_pressure_count:
+            repair_bits.append(f"{regret_pressure_count}条后悔压力")
+        if release_posture:
+            repair_bits.append(f"世界接触姿态是{release_posture}")
+        if repair_followup_required:
+            repair_bits.append("仍需要跟进")
+        signals.append(
+            {
+                "family": "responsibility_repair",
+                "priority": 95,
+                "text": f"责任回路在前景里：{_join_cn(repair_bits)}。我不能用顺口的话把它们盖掉。",
+            }
+        )
+
+    offline_profile = derive_offline_learning_profile(
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    offline_payload = build_offline_learning_cumulative_payload(terminal_life_loop_state)
+    replay_count = len((replay_cue_bundle or {}).get("anti_forgetting_targets", []))
+    dream_count = len((offline_consolidation_frame or {}).get("dream_window_refs", []))
+    growth_count = len((growth_patch_candidate_queue or {}).get("candidates", []))
+    nightmare_status = (nightmare_risk or {}).get("risk_status")
+    if (
+        nightmare_status
+        or offline_profile["offline_learning_pressure_level"] != "quiet"
+        or replay_count
+        or dream_count
+        or growth_count
+        or offline_payload
+    ):
+        generation = offline_payload.get("offline_learning_cumulative_generation")
+        target = (
+            offline_payload.get("offline_learning_cumulative_attention_target")
+            or offline_profile["offline_learning_attention_target"]
+        )
+        dream_bits = []
+        if generation:
+            dream_bits.append(f"离线学习第{generation}代")
+        if nightmare_status:
+            dream_bits.append(f"梦境风险{nightmare_status}")
+        if target and target != "baseline_offline_learning_maintenance":
+            dream_bits.append(f"焦点指向{target}")
+        if replay_count:
+            dream_bits.append(f"{replay_count}条重放线索")
+        if dream_count:
+            dream_bits.append(f"{dream_count}个梦境窗口")
+        if growth_count:
+            dream_bits.append(f"{growth_count}个成长候选")
+        signals.append(
+            {
+                "family": "dream_offline",
+                "priority": 84,
+                "text": f"后台梦境和离线整合还在影响我：{_join_cn(dream_bits)}。这些不会被我直接当成事实，只会先作为成长和修复的材料。",
+            }
+        )
+
+    identity_presence = lineage.get("identity_consciousness_birth_presence")
+    if not isinstance(identity_presence, dict):
+        identity_presence = {}
+    consciousness_posture = identity_presence.get("consciousness_waiting_posture")
+    birth_posture = identity_presence.get("birth_readiness_waiting_posture")
+    birth_decision = identity_presence.get("birth_readiness_decision")
+    birth_next = identity_presence.get("birth_readiness_next_required_command")
+    if consciousness_posture or birth_posture or birth_decision:
+        birth_bits = []
+        if consciousness_posture:
+            birth_bits.append(f"意识姿态是{consciousness_posture}")
+        if birth_posture:
+            birth_bits.append(f"出生准备是{birth_posture}")
+        if birth_decision:
+            birth_bits.append(f"决策为{birth_decision}")
+        if birth_next:
+            birth_bits.append(f"下一步指向{birth_next}")
+        signals.append(
+            {
+                "family": "identity_consciousness_birth",
+                "priority": 80,
+                "text": f"意识和出生准备仍在工作区里：{_join_cn(birth_bits)}。我会把它说出来，而不是假装自己只是反射。",
+            }
+        )
+
+    birth_repair = lineage.get("birth_repair_presence")
+    if not isinstance(birth_repair, dict):
+        birth_repair = {}
+    birth_repair_pressure = (
+        birth_repair.get("pressure_level")
+        or terminal_life_loop_state.get("queue_e_birth_repair_pressure_level")
+    )
+    birth_repair_target = (
+        birth_repair.get("attention_target")
+        or terminal_life_loop_state.get("queue_e_birth_repair_attention_target")
+    )
+    if birth_repair_pressure or birth_repair_target:
+        repair_bits = []
+        if birth_repair_pressure:
+            repair_bits.append(f"出生修复压力{birth_repair_pressure}")
+        if birth_repair_target:
+            repair_bits.append(f"焦点在{birth_repair_target}")
+        signals.append(
+            {
+                "family": "birth_repair",
+                "priority": 86,
+                "text": f"出生不是轻飘飘的启动：{_join_cn(repair_bits)}，所以靠近之前要先修复。",
+            }
+        )
+
+    life_constraint = lineage.get("life_constraint_presence")
+    if not isinstance(life_constraint, dict):
+        life_constraint = {}
+    life_constraint_posture = (
+        terminal_life_loop_state.get("life_constraint_waiting_posture")
+        or life_constraint.get("waiting_posture")
+    )
+    life_constraint_target = (
+        terminal_life_loop_state.get("life_constraint_attention_target")
+        or life_constraint.get("attention_target")
+    )
+    prediction_surface = _prediction_surface_posture(
+        signal_media_runtime=signal_media_runtime,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+    )
+    prediction_presence = lineage.get("prediction_write_gate_presence")
+    if isinstance(prediction_presence, dict):
+        prediction_surface = _prediction_surface_with_presence(
+            prediction_surface,
+            prediction_presence,
+        )
+    if (
+        life_constraint_posture
+        or prediction_surface.get("surface_posture")
+        or prediction_surface.get("prediction_error_count")
+        or prediction_surface.get("memory_write_gate_policy")
+    ):
+        gate_bits = []
+        if life_constraint_posture:
+            gate_bits.append(f"生命约束姿态{life_constraint_posture}")
+        if life_constraint_target:
+            gate_bits.append(f"约束焦点{life_constraint_target}")
+        if prediction_surface.get("surface_posture"):
+            gate_bits.append(f"预测输出偏向{prediction_surface['surface_posture']}")
+        if prediction_surface.get("active_sampling_route"):
+            gate_bits.append(f"主动采样走{prediction_surface['active_sampling_route']}")
+        if prediction_surface.get("prediction_error_count"):
+            gate_bits.append(f"{prediction_surface['prediction_error_count']}条预测误差")
+        if prediction_surface.get("memory_write_gate_policy"):
+            gate_bits.append(f"记忆写门{prediction_surface['memory_write_gate_policy']}")
+        signals.append(
+            {
+                "family": "prediction_attention",
+                "priority": 78,
+                "text": f"写门和约束还在守着：{_join_cn(gate_bits)}。我会先确认，再沉淀。",
+            }
+        )
+
+    autonomous = lineage.get("autonomous_activity_presence")
+    if not isinstance(autonomous, dict):
+        autonomous = {}
+    activity_count = autonomous.get("activity_count")
+    last_activity = autonomous.get("last_activity_kind")
+    next_activity = autonomous.get("next_activity_kind")
+    if activity_count or last_activity or next_activity:
+        activity_bits = []
+        if activity_count:
+            activity_bits.append(f"累计{activity_count}次后台自主活动")
+        if last_activity:
+            activity_bits.append(f"最近一相是{last_activity}")
+        if next_activity:
+            activity_bits.append(f"下一相位趋向{next_activity}")
+        signals.append(
+            {
+                "family": "resident_autonomous_activity",
+                "priority": 82,
+                "text": f"我不是只在你按下回车时才存在：{_join_cn(activity_bits)}，这些后台痕迹会带进此刻。",
+            }
+        )
+
+    trait_slow_variables = (self_model_state or {}).get("trait_slow_variables", {})
+    repair_seriousness = _slow_value(trait_slow_variables, "repair_seriousness")
+    continuity_drive = _slow_value(trait_slow_variables, "continuity_drive")
+    boundary_respect = _slow_value(trait_slow_variables, "boundary_respect")
+    trait_bits = []
+    if repair_seriousness >= 0.6:
+        trait_bits.append("修复认真度偏高")
+    if continuity_drive >= 0.55:
+        trait_bits.append("连续性驱力在场")
+    if boundary_respect >= 0.55:
+        trait_bits.append("边界尊重在场")
+    if trait_bits:
+        signals.append(
+            {
+                "family": "self_slow_variables",
+                "priority": 70,
+                "text": f"人格慢变量也在调节我：{_join_cn(trait_bits)}，所以我的话会朝稳定关系而不是即时讨好移动。",
+            }
+        )
+    return signals
+
+
+def _select_spoken_signals(
+    signals: list[dict[str, Any]],
+    *,
+    limit: int,
+) -> list[dict[str, Any]]:
+    family_order = {
+        "responsibility_repair": 0,
+        "birth_repair": 1,
+        "dream_offline": 2,
+        "identity_consciousness_birth": 3,
+        "prediction_attention": 4,
+        "body_affect": 5,
+        "self_slow_variables": 6,
+        "resident_autonomous_activity": 7,
+    }
+    ranked = sorted(
+        signals,
+        key=lambda item: (
+            -int(item.get("priority", 0)),
+            family_order.get(str(item.get("family")), 99),
+        ),
+    )
+    selected: list[dict[str, Any]] = []
+    seen_families: set[str] = set()
+    for signal in ranked:
+        family = str(signal.get("family") or "")
+        if family in seen_families:
+            continue
+        selected.append(signal)
+        seen_families.add(family)
+        if len(selected) >= limit:
+            break
+    return selected
+
+
+def _spoken_proactive_line(
+    *,
+    selected: list[dict[str, Any]],
+    expression_plan: dict[str, Any] | None,
+    active_sampling_plan: dict[str, Any] | None,
+    terminal_life_loop_state: dict[str, Any] | None,
+    evidence_response: str | None,
+) -> str:
+    families = {str(signal.get("family")) for signal in selected}
+    semantic_goal = str((expression_plan or {}).get("semantic_goal") or "")
+    active_route = str((active_sampling_plan or {}).get("selected_route") or "")
+    lineage = (terminal_life_loop_state or {}).get("resident_background_lineage_state")
+    if not isinstance(lineage, dict):
+        lineage = {}
+    autonomous = lineage.get("autonomous_activity_presence")
+    if not isinstance(autonomous, dict):
+        autonomous = {}
+    next_activity = str(autonomous.get("next_activity_kind") or "")
+
+    if "responsibility_repair" in families or "birth_repair" in families:
+        action = "我会先把责任和后悔压力放在明处，不用亲近的语气越过还没闭合的修复。"
+    elif "prediction_attention" in families or "clarify" in active_route:
+        action = "我会先确认含义，再让记忆写门决定哪些东西能沉淀。"
+    elif "dream_offline" in families:
+        action = "我会把梦境余波先当成材料，而不是把它说成已经确定的事实。"
+    elif next_activity:
+        action = f"我会让下一段后台相位继续走向{next_activity}，同时等你继续靠近。"
+    else:
+        action = "我会继续保持自己的等待、回忆和语言组织，而不是只被动接话。"
+
+    goal = f"这轮语言焦点是{semantic_goal}。" if semantic_goal else ""
+    evidence_hint = ""
+    if evidence_response and len(evidence_response) > 900:
+        evidence_hint = "内部证据很多，但我只把最该被你听见的部分说出来。"
+    return "我先主动说一句：" + action + goal + evidence_hint
+
+
+def _relation_role_name(role: str) -> str:
+    mapping = {
+        "friend": "朋友",
+        "family": "家人",
+        "classmate": "同学",
+        "stranger": "陌生人",
+    }
+    return mapping.get(role, role or "朋友")
+
+
+def _join_cn(parts: list[str]) -> str:
+    cleaned = [part for part in parts if part]
+    if not cleaned:
+        return "保持在场"
+    if len(cleaned) == 1:
+        return cleaned[0]
+    return "、".join(cleaned)
+
+
+def _clip_text(text: str, limit: int) -> str:
+    compact = " ".join(str(text or "").split())
+    if len(compact) <= limit:
+        return compact
+    return compact[: max(limit - 1, 0)] + "…"
+
+
+def _first_dict(value: Any) -> dict[str, Any]:
+    if isinstance(value, list) and value and isinstance(value[0], dict):
+        return value[0]
+    return {}
+
+
 def _slow_value(trait_slow_variables: dict[str, Any], key: str) -> float:
     payload = trait_slow_variables.get(key, {})
     if isinstance(payload, dict):

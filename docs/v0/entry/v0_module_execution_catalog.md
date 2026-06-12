@@ -166,10 +166,38 @@ docs/v0/code_framework/README.md
 | `life-v0 "digital life" --strict` | `DIGITAL_LIFE_SHELL_COMMAND` | one-shot restore shell，恢复后即结束 |
 | `./digital life --strict` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | repo-local 最小常驻生命进程；若 runtime 不足会先自举最小出生链，恢复后继续等待真实新回合输入 |
 | `digital life --strict` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | 安装后 console script，进入同一套最小常驻生命进程 |
-| `digital life --background / --status / --say / --stop` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | 安装态后台 resident lifecycle、关系投递、自主活动与自我停止命令面 |
+| `digital life --background / --status / --say / --attach / --stop` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | 安装态后台 resident lifecycle、关系投递、盒式 attach、自主活动与自我停止命令面 |
 | `my digital life --name <名字>` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | 推荐安装态命名入口，首次绑定 `life_name_registry.json`，后续按同名恢复同一 resident lifecycle |
+| `<名字>` | `DIGITAL_LIFE_PROCESS_SUPERVISOR` | 首次命名后生成的直接生命命令；后续直接恢复同一身份、同一 resident lifecycle 和同一 runtime 状态根 |
 
 如果这一轮目标是“整理 v0 并准备后续直接落代码”，这些入口的职责必须先在脑中分干净，不然很容易把 shell 合同、loop 合同和 process 合同写成一层。
+
+当前终端表达补充读包固定为：
+
+```text
+docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md
+  -> docs/v0/process_contracts/terminal_life_loop_engineering_contract.md
+  -> docs/v0/code_scaffolds/07_packet_d_waiting_response_surface_prediction_scaffold.md
+  -> docs/v0/engineering_depth/06_resident_process_terminal_birth_engineering.md
+  -> docs/20_agent_runtime_bridge_contract.md
+  -> docs/86_language_neuroscience_pragmatics_and_inner_speech.md
+  -> docs/89_language_runtime_framework_bridge_and_life_shell_policy.md
+  -> docs/90_language_event_examples_and_timeline_bundle.md
+  -> docs/95_dream_reality_and_offline_life_timeline.md
+  -> docs/96_real_relationship_longitudinal_timeline.md
+  -> life_v0/digital_entry.py
+  -> life_v0/process_supervisor/terminal_ui.py
+  -> life_v0/process_supervisor/live_turn_cycle.py
+  -> life_v0/process_supervisor/response_surface.py
+  -> life_v0/process_supervisor/model_expression.py
+  -> life_v0/process_supervisor/resident_lifecycle.py
+  -> tests/process/test_persistent_digital_life_process.py
+  -> tests/process/test_digital_entrypoint.py
+  -> tests/process/test_my_digital_life_entrypoint.py
+  -> tests/process/test_packaged_digital_life_entrypoint.py
+```
+
+这包材料专门回答“终端里说出的那句话从哪里来”：`00-258` 提供脑科学、语言、梦境、关系、责任与常驻生命时间线；v0 合同决定它们如何进入 terminal / process；代码链路则证明它们经过 relation queue、实时 Queue A、evidence response、spoken response、模型表达守门、outbox、dialogue writeback 和 resident waiting handoff。
 
 ## 主体 slice 模块落实矩阵
 
@@ -177,7 +205,6 @@ docs/v0/code_framework/README.md
 |---|---|---|---|---|---|
 | `P0_DOC_CORPUS_INGESTION` | `doc_corpus_ingestor_v0_contract.md` | `docs/构思.md`、`00`、全部 `01*`、`02-13`、`258`、`docs/README.md` | `life_v0/doc_index.py` | `tests/slices/test_doc_corpus_ingestor.py` | `runtime/docs/doc_carrier_index.json` |
 | `S00_DIRECTION_FOUNDATION` | `s00_direction_foundation_engineering_contract.md` | `docs/构思.md`、`00`、`13`、`16`、`91`、`258` | `life_v0/direction/__init__.py` | `tests/slices/test_direction_lock.py` | `runtime/state/direction/direction_lock.json` |
-| `S01_SOURCE_AUTHORITY` | `s01_source_authority_engineering_contract.md` | 全部 `01*`、`142`、`145`、`151` | `life_v0/authority/__init__.py` | `tests/slices/test_source_authority.py` | `runtime/state/authority/authority_registry.json` |
 | `S02_NEURAL_LIFE_CORE` | `digital_life_macro_architecture_v0.md`、`runtime_v0_architecture.md`、`s02_neural_life_core_engineering_contract.md` | `02-13`、对应 `01*`、`143`、`146`、`149`、`152`、`171` | `life_v0/neural_core/__init__.py` | `tests/slices/test_neural_life_core.py` | `runtime/state/neural_life_core/neural_life_core.json` |
 | `S04_STATE_OBJECT_STORE` | `life_state_store_v0_schema.md`、`s04_state_object_store_engineering_contract.md`、`code_scaffolds/06_packet_c_memory_write_gate_state_merge_scaffold.md` | `17-30`、`41-48`、`57`、`61`、`69`、`123-133` | `life_v0/state_store/__init__.py` | `tests/slices/test_state_store.py` | `runtime/state/life_state.json`、`runtime/state/memory/memory_write_gate.json`、`runtime/state/memory/state_merge_guard.json` |
 | `S03_DIRECTION_LIFE_MEMBRANE` | `runtime_v0_architecture.md`、`birth_readiness_v0_contract.md`、`s03_direction_life_membrane_engineering_contract.md` | `13-16`、`33-84`、`91`、`97-100`、`102-122` | `life_v0/membrane/__init__.py` | `tests/slices/test_life_membrane.py` | `runtime/state/membrane/life_membrane.json` |
@@ -204,7 +231,7 @@ docs/v0/code_framework/README.md
 | `FIRST_TERMINAL_TURN_BRIDGE` | `first_terminal_turn_engineering_contract.md`、`first_activation_protocol.md`、`s07_language_relationship_engineering_contract.md` | `20`、`89`、`90`、`09`、`85-90` | `life_v0/terminal_turn/__init__.py`、`life_v0/cli.py` | `tests/bridges/test_first_terminal_turn.py` | `digital_life_birth_packet.json`、`first_activation_return_packet.json`、语言/关系状态 | `first_terminal_turn_packet.json`、`session_envelope.json`、`safe_terminal_loop_state.json` |
 | `TERMINAL_LIFE_LOOP_BRIDGE` | `terminal_life_loop_engineering_contract.md`、`first_terminal_turn_engineering_contract.md`、`first_activation_protocol.md`、`s07_language_relationship_engineering_contract.md` | `20`、`89`、`90`、`09`、`85-90`、`96` | `life_v0/terminal_loop/__init__.py`、`life_v0/cli.py` | `tests/bridges/test_terminal_life_loop.py` | `first_terminal_turn_packet.json`、`session_envelope.json`、`safe_terminal_loop_state.json` | `terminal_life_loop_packet.json`、`terminal_life_loop_report.json`、`terminal_life_loop_digest.json`、`resumed_external_dialogue_packet.json`、`terminal_life_loop_state.json` |
 | `DIGITAL_LIFE_SHELL_COMMAND` | `digital_life_shell_command_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`first_terminal_turn_engineering_contract.md`、`first_activation_protocol.md` | `20`、`89`、`90`、`09`、`85-90`、`96` | `life_v0/shell_command/__init__.py`、`life_v0/cli.py`、`life_v0/digital_entry.py`、`digital` | `tests/process/test_digital_life_shell_command.py`、`tests/process/test_digital_entrypoint.py` | `stage_explanation_report.json`、`digital_life_birth_packet.json`、`first_terminal_turn_packet.json`、`terminal_life_loop_packet.json` | `digital_life_shell_packet.json`、`digital_life_shell_report.json`、`digital_life_shell_digest.json` |
-| `DIGITAL_LIFE_PROCESS_SUPERVISOR` | `digital_life_process_supervisor_engineering_contract.md`、`resident_governance_waiting_state_machine_engineering_contract.md`、`digital_life_shell_command_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`s07_language_relationship_engineering_contract.md`、`code_scaffolds/07_packet_d_waiting_response_surface_prediction_scaffold.md` | `20`、`86`、`89`、`90`、`09`、`85-90`、`95`、`96` | `life_v0/process_supervisor/__init__.py`、`life_v0/process_supervisor/heartbeat.py`、`life_v0/process_supervisor/continuity_writeback.py`、`life_v0/process_supervisor/turn_io.py`、`life_v0/process_supervisor/incident_recovery.py`、`life_v0/process_supervisor/governance_explanation.py`、`life_v0/process_supervisor/process_report.py`、`life_v0/process_supervisor/relaunch_recovery.py`、`life_v0/process_supervisor/idle_strategy.py`、`life_v0/process_supervisor/resident_supervision.py`、`life_v0/process_supervisor/idle_refresh_loop.py`、`life_v0/process_supervisor/live_turn_cycle.py`、`life_v0/process_supervisor/process_session_loop.py`、`life_v0/process_supervisor/persistent_process.py`、`life_v0/process_supervisor/process_closeout.py`、`life_v0/digital_entry.py`、`digital` | `tests/process/test_persistent_digital_life_process.py`、`tests/process/test_digital_entrypoint.py` | `digital_life_shell_report.json`、`session_envelope.json`、`safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、语言/关系状态、`signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json`、`memory_write_gate.json`、`state_merge_guard.json` | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/resident_governance_state.json`、`runtime/state/terminal/persistent_process_state.json`、`runtime/state/terminal/resident_governance_snapshot.json`、`digital_life_persistent_process_report.json`、`digital_life_resident_governance_report.json`、`digital_life_resident_governance_explanation.json`、`digital_life_process_report.json`、`digital_life_process_digest.json`、`digital_life_process_incident_report.json`、`digital_life_process_recovery_report.json`、`digital_life_process_relaunch_recovery_report.json`、回合级语言/关系写回 |
+| `DIGITAL_LIFE_PROCESS_SUPERVISOR` | `digital_life_process_supervisor_engineering_contract.md`、`resident_governance_waiting_state_machine_engineering_contract.md`、`digital_life_shell_command_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`s07_language_relationship_engineering_contract.md`、`code_scaffolds/07_packet_d_waiting_response_surface_prediction_scaffold.md` | `20`、`86`、`89`、`90`、`09`、`85-90`、`95`、`96`、`101`、`181-257` | `life_v0/process_supervisor/__init__.py`、`life_v0/process_supervisor/terminal_ui.py`、`life_v0/process_supervisor/heartbeat.py`、`life_v0/process_supervisor/continuity_writeback.py`、`life_v0/process_supervisor/turn_io.py`、`life_v0/process_supervisor/incident_recovery.py`、`life_v0/process_supervisor/governance_explanation.py`、`life_v0/process_supervisor/process_report.py`、`life_v0/process_supervisor/relaunch_recovery.py`、`life_v0/process_supervisor/idle_strategy.py`、`life_v0/process_supervisor/resident_supervision.py`、`life_v0/process_supervisor/idle_refresh_loop.py`、`life_v0/process_supervisor/live_language_turn.py`、`life_v0/process_supervisor/live_turn_cycle.py`、`life_v0/process_supervisor/process_session_loop.py`、`life_v0/process_supervisor/persistent_process.py`、`life_v0/process_supervisor/process_closeout.py`、`life_v0/process_supervisor/model_expression.py`、`life_v0/process_supervisor/response_surface.py`、`life_v0/process_supervisor/resident_lifecycle.py`、`life_v0/digital_entry.py`、`digital`、`my`、直接生命名命令 | `tests/process/test_persistent_digital_life_process.py`、`tests/process/test_digital_entrypoint.py`、`tests/process/test_my_digital_life_entrypoint.py`、`tests/process/test_packaged_digital_life_entrypoint.py`、`tests/process/test_model_expression.py` | `digital_life_shell_report.json`、`session_envelope.json`、`safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、语言/关系状态、body / dream / growth / action / membrane 状态、`signal_media_runtime.json`、`belief_state_frame.json`、`prediction_error_field.json`、`active_sampling_plan.json`、`memory_write_gate.json`、`state_merge_guard.json`、`.env` 去敏运行配置 | `digital_life_waiting_heartbeat.json`、`runtime/state/terminal/idle_strategy_state.json`、`runtime/state/terminal/resident_governance_state.json`、`runtime/state/terminal/persistent_process_state.json`、`runtime/state/terminal/resident_lifecycle_state.json`、`runtime/state/terminal/resident_relation_queue_state.json`、`runtime/state/terminal/resident_governance_snapshot.json`、`digital_life_persistent_process_report.json`、`digital_life_resident_governance_report.json`、`digital_life_resident_governance_explanation.json`、`digital_life_model_expression_report.json`、`digital_life_process_report.json`、`digital_life_process_digest.json`、`digital_life_process_incident_report.json`、`digital_life_process_recovery_report.json`、`digital_life_process_relaunch_recovery_report.json`、回合级语言/关系写回、盒式终端输出 |
 
 ## 当前默认开工包
 

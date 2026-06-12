@@ -27,6 +27,12 @@ from .process_supervisor.resident_lifecycle import (
     send_resident_relation_turn,
     start_background_resident_process,
 )
+from .process_supervisor.terminal_ui import (
+    render_dialogue_box,
+    render_digital_life_banner,
+    render_input_prompt,
+    render_life_opening,
+)
 from .reporting import run_emit_report
 from .replay import run_replay_shadow
 from .schema_runner import run_check_schema_runner, run_schema_runner, run_schema_smoke
@@ -219,33 +225,105 @@ def run_resident_terminal_client(
         print(json.dumps(start_result.state, ensure_ascii=False, indent=2))
         return start_result.exit_code
 
+    life_name = str(start_result.state.get("life_name") or "").strip() or None
+    print(
+        render_digital_life_banner(
+            life_name=life_name,
+            status=str(start_result.state.get("status") or "resident"),
+        )
+    )
+    print(render_life_opening(start_result.state, life_name=life_name))
+
+    if sys.stdin.isatty():
+        return _run_interactive_resident_terminal_client(
+            terminal_dir=terminal_dir,
+            life_name=life_name,
+            say_timeout_seconds=say_timeout_seconds,
+        )
+
     for raw_line in sys.stdin:
         utterance = raw_line.rstrip("\n")
-        command = utterance.strip().lower()
-        if not utterance.strip():
-            continue
-        if command in {"/exit", "/quit"}:
-            return 0
-        if command in {"/stop", "/shutdown"}:
-            stop_result = request_resident_stop(
-                terminal_dir=terminal_dir,
-                timeout_seconds=30.0,
-            )
-            print(json.dumps(stop_result.state, ensure_ascii=False, indent=2))
-            return stop_result.exit_code
-        turn_result = send_resident_relation_turn(
+        exit_code = _handle_resident_terminal_utterance(
             terminal_dir=terminal_dir,
             utterance=utterance,
-            wait_timeout_seconds=say_timeout_seconds,
+            life_name=life_name,
+            say_timeout_seconds=say_timeout_seconds,
         )
-        response_text = turn_result.state.get("response_text")
-        if response_text:
-            print(response_text)
-        else:
-            print(json.dumps(turn_result.state, ensure_ascii=False, indent=2))
-            if turn_result.exit_code != 0:
-                return turn_result.exit_code
+        if exit_code is not None:
+            return exit_code
     return 0
+
+
+def _run_interactive_resident_terminal_client(
+    *,
+    terminal_dir: Path,
+    life_name: str | None,
+    say_timeout_seconds: float,
+) -> int:
+    while True:
+        try:
+            utterance = input(render_input_prompt(life_name=life_name))
+        except EOFError:
+            print()
+            return 0
+        exit_code = _handle_resident_terminal_utterance(
+            terminal_dir=terminal_dir,
+            utterance=utterance,
+            life_name=life_name,
+            say_timeout_seconds=say_timeout_seconds,
+        )
+        if exit_code is not None:
+            return exit_code
+
+
+def _handle_resident_terminal_utterance(
+    *,
+    terminal_dir: Path,
+    utterance: str,
+    life_name: str | None,
+    say_timeout_seconds: float,
+) -> int | None:
+    command = utterance.strip().lower()
+    if not utterance.strip():
+        return None
+    if command in {"/exit", "/quit"}:
+        print(render_dialogue_box("Digital Life", "当前终端已离开；常驻生命进程继续保持睡眠、回忆和等待。"))
+        return 0
+    if command in {"/stop", "/shutdown"}:
+        stop_result = request_resident_stop(
+            terminal_dir=terminal_dir,
+            timeout_seconds=30.0,
+        )
+        print(
+            render_dialogue_box(
+                "Digital Life",
+                json.dumps(
+                    _lifecycle_terminal_summary(stop_result.state, action="stop"),
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+            )
+        )
+        return stop_result.exit_code
+    print(render_dialogue_box("关系输入", utterance))
+    turn_result = send_resident_relation_turn(
+        terminal_dir=terminal_dir,
+        utterance=utterance,
+        wait_timeout_seconds=say_timeout_seconds,
+    )
+    response_text = turn_result.state.get("response_text")
+    if response_text:
+        print(render_dialogue_box(life_name or "Digital Life", str(response_text)))
+    else:
+        print(
+            render_dialogue_box(
+                "Digital Life",
+                json.dumps(turn_result.state, ensure_ascii=False, indent=2),
+            )
+        )
+        if turn_result.exit_code != 0:
+            return turn_result.exit_code
+    return None
 
 
 def _should_attach_resident(args: argparse.Namespace) -> bool:
