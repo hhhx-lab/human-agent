@@ -45,7 +45,89 @@ class ModelExpressionTests(unittest.TestCase):
                         }
                     ]
                 },
+                language_percept={
+                    "speaker_role": "friend",
+                    "shared_term_hits": ["知识宝座"],
+                    "ambiguity_flags": ["待确认关系语义细节"],
+                    "repair_trigger_candidates": ["repair-language-v0-0001"],
+                    "prediction_focus": {
+                        "belief_scope": "relationship",
+                        "active_sampling_route": "clarify",
+                    },
+                },
+                semantic_map={
+                    "semantic_focus": "repair_relational_trace",
+                    "ambiguity_queue": ["shared_term_unresolved"],
+                    "shared_meaning_bindings": [{"surface": "知识宝座"}],
+                    "semantic_prediction_trace": {
+                        "relationship_pressure": "elevated",
+                        "repair_drive": "active",
+                    },
+                },
+                inner_speech={
+                    "attention_focus": "relationship_subject_and_responsibility_trace",
+                    "affective_modulation": "guarded_but_expressive",
+                    "responsibility_constraint": "no_untraced_commitment",
+                    "drive_resolution_order": ["hold", "repair"],
+                    "internal_drive_sources": {
+                        "repair": {"drive": "active"},
+                        "confirm": {"drive": "low"},
+                    },
+                },
+                expression_monitor={
+                    "monitor_dimensions": ["semantic_coherence", "commitment_trace"],
+                    "blocked_language": ["service_object"],
+                    "write_gate_pressure": {
+                        "stage_policy": "guarded_append",
+                        "responsibility_event_count": 2,
+                    },
+                    "affect_expression_modulation": {
+                        "arousal": 0.71,
+                        "repair_drive": "active",
+                    },
+                },
                 expression_plan={"semantic_goal": "relational_checkin"},
+                brain_graph={
+                    "region_nodes": [{"node_id": "LanguageRelationshipRuntime"}],
+                    "functional_edges": [{"edge_id": "edge-language-memory"}],
+                    "live_turn_focus": {
+                        "relationship_stage": "repair_guarded_continuity",
+                        "trait_names": ["continuity_drive"],
+                    },
+                },
+                network_state={
+                    "active_networks": [
+                        {
+                            "network_id": "executive_workspace_network",
+                            "mode": "live_relation_focus",
+                        }
+                    ],
+                    "switch_events": [{"event_id": "network-switch-live-1"}],
+                    "workspace_priority": "language_relationship_and_memory_retrieval",
+                },
+                prediction_workspace={
+                    "workspace_contents": {
+                        "precision_state": "semantic_handoff_seeded",
+                        "active_sampling_mode": "clarify_ambiguity",
+                        "belief_scope": "relationship",
+                        "candidate_explanations": [
+                            {
+                                "explanation_id": "semantic-focus-v0-0001",
+                                "focus": "repair_relational_trace",
+                            }
+                        ],
+                    }
+                },
+                workspace_frame={
+                    "live_turn_focus": "repair_relational_trace",
+                    "broadcast_targets": ["LanguageRelationshipRuntime"],
+                    "candidate_explanations": [
+                        {"focus": "repair_relational_trace"}
+                    ],
+                    "live_language_turn_refs": [
+                        "runtime/state/language/semantic_map_frame.json"
+                    ],
+                },
                 environ={
                     "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
                     "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
@@ -70,6 +152,29 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertEqual(captured["payload"]["temperature"], 0.2)
             self.assertEqual(captured["payload"]["max_tokens"], 128)
             self.assertEqual(captured["timeout_seconds"], 9.0)
+            expression_context = json.loads(
+                captured["payload"]["messages"][1]["content"]
+            )
+            self.assertEqual(
+                expression_context["live_language"]["semantic_focus"],
+                "repair_relational_trace",
+            )
+            self.assertEqual(
+                expression_context["live_language"]["inner_drive_states"]["repair"],
+                "active",
+            )
+            self.assertEqual(
+                expression_context["prediction_conscious_workspace"][
+                    "prediction_active_sampling_mode"
+                ],
+                "clarify_ambiguity",
+            )
+            self.assertEqual(
+                expression_context["prediction_conscious_workspace"][
+                    "active_network_modes"
+                ][0]["mode"],
+                "live_relation_focus",
+            )
 
             state_text = (language_dir / "model_expression_state.json").read_text(
                 encoding="utf-8"
@@ -84,6 +189,14 @@ class ModelExpressionTests(unittest.TestCase):
             report = json.loads(report_text)
             self.assertEqual(state["model_expression_status"], "model_expression_applied")
             self.assertEqual(report["model_expression_state_ref"], result.state_ref)
+            self.assertEqual(
+                state["model_expression_context_summary"]["language_percept_ref"],
+                "runtime/state/language/language_percept_frame.json",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"]["prediction_workspace_ref"],
+                "runtime/state/prediction/prediction_workspace_frame.json",
+            )
 
     def test_local_provider_keeps_deterministic_expression_without_transport(self):
         with tempfile.TemporaryDirectory() as tmp:

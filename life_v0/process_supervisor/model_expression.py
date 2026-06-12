@@ -66,6 +66,10 @@ def compose_model_expression(
     relationship_timeline: dict[str, Any] | None = None,
     shared_term_registry: dict[str, Any] | None = None,
     commitment_index: dict[str, Any] | None = None,
+    language_percept: dict[str, Any] | None = None,
+    semantic_map: dict[str, Any] | None = None,
+    inner_speech: dict[str, Any] | None = None,
+    expression_monitor: dict[str, Any] | None = None,
     expression_plan: dict[str, Any] | None = None,
     life_context_frame: dict[str, Any] | None = None,
     replay_cue_bundle: dict[str, Any] | None = None,
@@ -78,6 +82,10 @@ def compose_model_expression(
     pain_regret_repair_report: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
     terminal_life_loop_state: dict[str, Any] | None = None,
+    brain_graph: dict[str, Any] | None = None,
+    network_state: dict[str, Any] | None = None,
+    prediction_workspace: dict[str, Any] | None = None,
+    workspace_frame: dict[str, Any] | None = None,
     repo_root: Path | None = None,
     env_file: Path | None = None,
     environ: Mapping[str, str] | None = None,
@@ -97,6 +105,10 @@ def compose_model_expression(
         relationship_timeline=relationship_timeline,
         shared_term_registry=shared_term_registry,
         commitment_index=commitment_index,
+        language_percept=language_percept,
+        semantic_map=semantic_map,
+        inner_speech=inner_speech,
+        expression_monitor=expression_monitor,
         expression_plan=expression_plan,
         life_context_frame=life_context_frame,
         replay_cue_bundle=replay_cue_bundle,
@@ -109,6 +121,10 @@ def compose_model_expression(
         pain_regret_repair_report=pain_regret_repair_report,
         self_model_state=self_model_state,
         terminal_life_loop_state=terminal_life_loop_state,
+        brain_graph=brain_graph,
+        network_state=network_state,
+        prediction_workspace=prediction_workspace,
+        workspace_frame=workspace_frame,
     )
     endpoint = _chat_completion_endpoint(config.model_base_url)
     request_payload = _build_openai_compatible_payload(
@@ -196,6 +212,10 @@ def build_model_expression_context(
     relationship_timeline: dict[str, Any] | None = None,
     shared_term_registry: dict[str, Any] | None = None,
     commitment_index: dict[str, Any] | None = None,
+    language_percept: dict[str, Any] | None = None,
+    semantic_map: dict[str, Any] | None = None,
+    inner_speech: dict[str, Any] | None = None,
+    expression_monitor: dict[str, Any] | None = None,
     expression_plan: dict[str, Any] | None = None,
     life_context_frame: dict[str, Any] | None = None,
     replay_cue_bundle: dict[str, Any] | None = None,
@@ -208,6 +228,10 @@ def build_model_expression_context(
     pain_regret_repair_report: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
     terminal_life_loop_state: dict[str, Any] | None = None,
+    brain_graph: dict[str, Any] | None = None,
+    network_state: dict[str, Any] | None = None,
+    prediction_workspace: dict[str, Any] | None = None,
+    workspace_frame: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     first_subject = _first_dict((relationship_graph or {}).get("subjects"))
     continuity_report = _first_dict(
@@ -237,6 +261,12 @@ def build_model_expression_context(
             ),
         },
         "live_language": {
+            **_live_language_summary(
+                language_percept=language_percept,
+                semantic_map=semantic_map,
+                inner_speech=inner_speech,
+                expression_monitor=expression_monitor,
+            ),
             "semantic_goal": (expression_plan or {}).get("semantic_goal"),
             "fatigue_pressure": (expression_plan or {}).get("fatigue_pressure"),
             "body_repair_drive": (expression_plan or {}).get("body_repair_drive"),
@@ -248,6 +278,12 @@ def build_model_expression_context(
                 "release_caution_level"
             ),
         },
+        "prediction_conscious_workspace": _prediction_conscious_summary(
+            brain_graph=brain_graph,
+            network_state=network_state,
+            prediction_workspace=prediction_workspace,
+            workspace_frame=workspace_frame,
+        ),
         "life_context": {
             "self_narrative_ref_count": len(
                 (life_context_frame or {}).get("self_narrative_refs", [])
@@ -436,6 +472,215 @@ def _list_surfaces(value: Any) -> list[str]:
     return surfaces[:8]
 
 
+def _live_language_summary(
+    *,
+    language_percept: dict[str, Any] | None,
+    semantic_map: dict[str, Any] | None,
+    inner_speech: dict[str, Any] | None,
+    expression_monitor: dict[str, Any] | None,
+) -> dict[str, Any]:
+    language_percept = language_percept or {}
+    semantic_map = semantic_map or {}
+    inner_speech = inner_speech or {}
+    expression_monitor = expression_monitor or {}
+    internal_drives = inner_speech.get("internal_drive_sources", {})
+    if not isinstance(internal_drives, dict):
+        internal_drives = {}
+    return {
+        "language_percept_ref": (
+            "runtime/state/language/language_percept_frame.json"
+            if language_percept
+            else None
+        ),
+        "semantic_map_ref": (
+            "runtime/state/language/semantic_map_frame.json" if semantic_map else None
+        ),
+        "inner_speech_ref": (
+            "runtime/state/language/inner_speech_frame.json" if inner_speech else None
+        ),
+        "expression_monitor_ref": (
+            "runtime/state/language/expression_monitor_state.json"
+            if expression_monitor
+            else None
+        ),
+        "speaker_role": language_percept.get("speaker_role"),
+        "shared_term_hits": _string_list(language_percept.get("shared_term_hits"))[:8],
+        "ambiguity_flags": _string_list(language_percept.get("ambiguity_flags"))[:8],
+        "repair_trigger_candidates": _string_list(
+            language_percept.get("repair_trigger_candidates")
+        )[:8],
+        "commitment_trigger_candidates": _string_list(
+            language_percept.get("commitment_trigger_candidates")
+        )[:8],
+        "dream_signal_candidates": _string_list(
+            language_percept.get("dream_signal_candidates")
+        )[:8],
+        "affective_cue_candidates": _string_list(
+            language_percept.get("affective_cue_candidates")
+        )[:8],
+        "percept_prediction_focus": _compact_dict(
+            language_percept.get("prediction_focus"),
+            allowed_keys=[
+                "belief_scope",
+                "belief_revision_policy",
+                "active_sampling_route",
+                "active_sampling_stage_effect",
+                "focus_ref_count",
+            ],
+        ),
+        "semantic_focus": semantic_map.get("semantic_focus"),
+        "semantic_ambiguity_queue": _string_list(
+            semantic_map.get("ambiguity_queue")
+        )[:8],
+        "semantic_prediction_trace": _compact_dict(
+            semantic_map.get("semantic_prediction_trace"),
+            allowed_keys=[
+                "semantic_error_ids",
+                "precision_requests",
+                "relationship_pressure",
+                "repair_drive",
+                "language_precision_mode",
+            ],
+        ),
+        "shared_meaning_binding_count": len(
+            semantic_map.get("shared_meaning_bindings", [])
+        )
+        if isinstance(semantic_map.get("shared_meaning_bindings"), list)
+        else 0,
+        "relationship_topic_ref_count": _list_count(
+            semantic_map.get("relationship_topic_refs")
+        ),
+        "commitment_trace_ref_count": _list_count(
+            semantic_map.get("commitment_trace_refs")
+        ),
+        "repair_trace_ref_count": _list_count(semantic_map.get("repair_trace_refs")),
+        "narrative_binding_count": _list_count(semantic_map.get("narrative_bindings")),
+        "inner_attention_focus": inner_speech.get("attention_focus"),
+        "inner_affective_modulation": inner_speech.get("affective_modulation"),
+        "inner_responsibility_constraint": inner_speech.get(
+            "responsibility_constraint"
+        ),
+        "inner_drive_resolution_order": _string_list(
+            inner_speech.get("drive_resolution_order")
+        ),
+        "inner_drive_states": {
+            key: value.get("drive")
+            for key, value in internal_drives.items()
+            if isinstance(value, dict) and value.get("drive")
+        },
+        "expression_monitor_dimensions": _string_list(
+            expression_monitor.get("monitor_dimensions")
+        ),
+        "expression_blocked_language": _string_list(
+            expression_monitor.get("blocked_language")
+        ),
+        "expression_write_gate_pressure": _compact_dict(
+            expression_monitor.get("write_gate_pressure"),
+            allowed_keys=[
+                "stage_policy",
+                "quarantine_release_condition",
+                "responsibility_event_count",
+            ],
+        ),
+        "expression_affect_modulation": _compact_dict(
+            expression_monitor.get("affect_expression_modulation"),
+            allowed_keys=[
+                "valence",
+                "arousal",
+                "repair_drive",
+                "language_precision",
+                "relationship_pressure",
+            ],
+        ),
+    }
+
+
+def _prediction_conscious_summary(
+    *,
+    brain_graph: dict[str, Any] | None,
+    network_state: dict[str, Any] | None,
+    prediction_workspace: dict[str, Any] | None,
+    workspace_frame: dict[str, Any] | None,
+) -> dict[str, Any]:
+    brain_graph = brain_graph or {}
+    network_state = network_state or {}
+    prediction_workspace = prediction_workspace or {}
+    workspace_frame = workspace_frame or {}
+    workspace_contents = prediction_workspace.get("workspace_contents", {})
+    if not isinstance(workspace_contents, dict):
+        workspace_contents = {}
+    return {
+        "brain_graph_ref": (
+            "runtime/state/neural_life_core/brain_graph.json" if brain_graph else None
+        ),
+        "network_state_ref": (
+            "runtime/state/neural_life_core/network_state.json"
+            if network_state
+            else None
+        ),
+        "prediction_workspace_ref": (
+            "runtime/state/prediction/prediction_workspace_frame.json"
+            if prediction_workspace
+            else None
+        ),
+        "workspace_frame_ref": (
+            "runtime/state/consciousness/workspace_frame.json"
+            if workspace_frame
+            else None
+        ),
+        "brain_region_node_count": _list_count(brain_graph.get("region_nodes")),
+        "brain_edge_count": _list_count(brain_graph.get("functional_edges")),
+        "brain_live_turn_focus": _compact_dict(
+            brain_graph.get("live_turn_focus"),
+            allowed_keys=[
+                "relationship_stage",
+                "continuity_state",
+                "trait_names",
+            ],
+        ),
+        "active_network_modes": [
+            {
+                "network_id": item.get("network_id"),
+                "mode": item.get("mode"),
+            }
+            for item in _dict_items(network_state.get("active_networks"))[:8]
+        ],
+        "network_switch_count": _list_count(network_state.get("switch_events")),
+        "workspace_priority": network_state.get("workspace_priority"),
+        "prediction_precision_state": workspace_contents.get("precision_state"),
+        "prediction_active_sampling_mode": workspace_contents.get(
+            "active_sampling_mode"
+        ),
+        "prediction_belief_scope": workspace_contents.get("belief_scope"),
+        "prediction_sampling_stage_effect": workspace_contents.get(
+            "sampling_stage_effect"
+        ),
+        "prediction_queue_e_repair_pressure_level": workspace_contents.get(
+            "queue_e_repair_pressure_level"
+        ),
+        "prediction_queue_e_repair_attention_target": workspace_contents.get(
+            "queue_e_repair_attention_target"
+        ),
+        "candidate_explanation_focuses": [
+            item.get("focus")
+            for item in _dict_items(workspace_contents.get("candidate_explanations"))[
+                :6
+            ]
+            if item.get("focus")
+        ],
+        "conscious_workspace_live_turn_focus": workspace_frame.get("live_turn_focus"),
+        "conscious_broadcast_targets": _string_list(
+            workspace_frame.get("broadcast_targets")
+        )[:8],
+        "conscious_candidate_explanation_count": _list_count(
+            workspace_frame.get("candidate_explanations")
+        ),
+        "conscious_live_language_ref_count": _list_count(
+            workspace_frame.get("live_language_turn_refs")
+        ),
+    }
+
+
 def _background_summary(
     terminal_life_loop_state: dict[str, Any] | None,
 ) -> dict[str, Any]:
@@ -469,15 +714,35 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
     life_context = context.get("life_context", {})
     relationship = context.get("relationship", {})
     live_language = context.get("live_language", {})
+    prediction_conscious_workspace = context.get("prediction_conscious_workspace", {})
     return {
         "relationship_stage": relationship.get("relationship_stage"),
         "continuity_state": relationship.get("continuity_state"),
-        "semantic_goal": live_language.get("semantic_goal"),
+        "semantic_goal": live_language.get("semantic_goal")
+        or live_language.get("semantic_focus"),
         "replay_cue_count": life_context.get("replay_cue_count"),
         "dream_window_count": life_context.get("dream_window_count"),
         "growth_patch_candidate_count": life_context.get(
             "growth_patch_candidate_count"
         ),
+        "language_percept_ref": live_language.get("language_percept_ref"),
+        "semantic_map_ref": live_language.get("semantic_map_ref"),
+        "inner_speech_ref": live_language.get("inner_speech_ref"),
+        "expression_monitor_ref": live_language.get("expression_monitor_ref"),
+        "prediction_workspace_ref": prediction_conscious_workspace.get(
+            "prediction_workspace_ref"
+        ),
+        "workspace_frame_ref": prediction_conscious_workspace.get(
+            "workspace_frame_ref"
+        ),
+        "active_network_mode_count": len(
+            prediction_conscious_workspace.get("active_network_modes", [])
+        )
+        if isinstance(
+            prediction_conscious_workspace.get("active_network_modes"),
+            list,
+        )
+        else 0,
     }
 
 
@@ -503,3 +768,35 @@ def _safe_error_message(exc: Exception, api_key: str | None) -> str:
 
 def _sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item is not None]
+
+
+def _list_count(value: Any) -> int:
+    return len(value) if isinstance(value, list) else 0
+
+
+def _dict_items(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, dict)]
+
+
+def _compact_dict(
+    value: Any,
+    *,
+    allowed_keys: list[str],
+) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    compact: dict[str, Any] = {}
+    for key in allowed_keys:
+        item = value.get(key)
+        if item is None or item == [] or item == {}:
+            continue
+        compact[key] = item
+    return compact

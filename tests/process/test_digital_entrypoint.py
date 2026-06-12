@@ -147,6 +147,30 @@ class DigitalEntrypointTests(unittest.TestCase):
             "runtime/state/terminal/runtime_config_state.json",
         )
         self.assertEqual(
+            model_expression_state["model_expression_context_summary"][
+                "language_percept_ref"
+            ],
+            "runtime/state/language/language_percept_frame.json",
+        )
+        self.assertEqual(
+            model_expression_state["model_expression_context_summary"][
+                "semantic_map_ref"
+            ],
+            "runtime/state/language/semantic_map_frame.json",
+        )
+        self.assertEqual(
+            model_expression_state["model_expression_context_summary"][
+                "inner_speech_ref"
+            ],
+            "runtime/state/language/inner_speech_frame.json",
+        )
+        self.assertEqual(
+            model_expression_state["model_expression_context_summary"][
+                "expression_monitor_ref"
+            ],
+            "runtime/state/language/expression_monitor_state.json",
+        )
+        self.assertEqual(
             process_report["model_expression_state_ref"],
             "runtime/state/language/model_expression_state.json",
         )

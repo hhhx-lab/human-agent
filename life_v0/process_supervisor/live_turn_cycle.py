@@ -216,6 +216,10 @@ def run_live_turn_cycle(
             relationship_timeline=relationship_timeline,
             shared_term_registry=shared_term_registry,
             commitment_index=commitment_index,
+            language_percept=live_language_turn.language_percept,
+            semantic_map=live_language_turn.semantic_map,
+            inner_speech=live_language_turn.inner_speech,
+            expression_monitor=live_language_turn.expression_monitor,
             expression_plan=live_language_turn.expression_plan,
             life_context_frame=life_context_frame,
             replay_cue_bundle=replay_cue_bundle,
@@ -228,6 +232,10 @@ def run_live_turn_cycle(
             pain_regret_repair_report=pain_regret_repair_report,
             self_model_state=self_model_state,
             terminal_life_loop_state=terminal_life_loop_state,
+            brain_graph=brain_graph,
+            network_state=network_state,
+            prediction_workspace=prediction_workspace,
+            workspace_frame=workspace_frame,
             write_json=write_json,
         )
         life_response = model_expression.response_text
