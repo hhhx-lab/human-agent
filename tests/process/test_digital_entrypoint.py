@@ -353,6 +353,22 @@ class DigitalEntrypointTests(unittest.TestCase):
                     min_count=5,
                 )
                 self.assertGreaterEqual(autonomous_state["activity_count"], 5)
+                self.assertGreaterEqual(
+                    autonomous_state["cycle_completion_count"],
+                    1,
+                )
+                self.assertTrue(autonomous_state["cycle_coverage_complete"])
+                self.assertEqual(autonomous_state["missing_activity_kinds"], [])
+                self.assertEqual(
+                    autonomous_state["covered_activity_kinds"],
+                    [
+                        "sleep",
+                        "memory_recall",
+                        "self_thinking",
+                        "growth_rehearsal",
+                        "learning_consolidation",
+                    ],
+                )
                 for activity_kind in [
                     "sleep",
                     "memory_recall",
@@ -432,6 +448,31 @@ class DigitalEntrypointTests(unittest.TestCase):
                 self.assertGreaterEqual(
                     status_state["resident_autonomous_activity_state"]["activity_count"],
                     5,
+                )
+                self.assertGreaterEqual(
+                    status_state[
+                        "resident_autonomous_activity_cycle_completion_count"
+                    ],
+                    1,
+                )
+                self.assertTrue(
+                    status_state[
+                        "resident_autonomous_activity_cycle_coverage_complete"
+                    ]
+                )
+                self.assertEqual(
+                    status_state["resident_autonomous_activity_missing_kinds"],
+                    [],
+                )
+                self.assertEqual(
+                    status_state["resident_autonomous_activity_covered_kinds"],
+                    [
+                        "sleep",
+                        "memory_recall",
+                        "self_thinking",
+                        "growth_rehearsal",
+                        "learning_consolidation",
+                    ],
                 )
                 self.assertGreaterEqual(
                     status_state["resident_waiting_heartbeat_counter"],

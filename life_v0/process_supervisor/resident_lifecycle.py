@@ -519,6 +519,21 @@ def read_resident_lifecycle_status(
         state["resident_autonomous_activity_current_cycle"] = autonomous_activity_state.get(
             "current_cycle"
         )
+        state["resident_autonomous_activity_cycle_completion_count"] = (
+            autonomous_activity_state.get("cycle_completion_count")
+        )
+        state["resident_autonomous_activity_cycle_coverage_complete"] = (
+            autonomous_activity_state.get("cycle_coverage_complete")
+        )
+        state["resident_autonomous_activity_covered_kinds"] = (
+            autonomous_activity_state.get("covered_activity_kinds")
+        )
+        state["resident_autonomous_activity_missing_kinds"] = (
+            autonomous_activity_state.get("missing_activity_kinds")
+        )
+        state["resident_autonomous_activity_next_kind"] = autonomous_activity_state.get(
+            "next_activity_kind"
+        )
     waiting_heartbeat = _read_json_if_exists(
         resolved_reports_dir / "digital_life_waiting_heartbeat.json"
     )

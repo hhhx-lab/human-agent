@@ -205,6 +205,8 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 
 当前对 resident status 的补充验收是：凡是声称 `digital life --status` 能表达“关闭终端后仍是同一生命过程”，不能只检查 `pid_alive`、relation queue 或 waiting heartbeat。必须同时看到 `resident_long_term_residency_status_v0`，以及可用时的 `resident_process_lease_ref`、`resident_process_lease_history_profile_ref`、`resident_process_identity_continuity_state`、`resident_process_lease_history_event_count`、`resident_persistent_process_state_ref`、`resident_persistent_process_report_ref`、`resident_background_convergence_summary_ref` 与 `resident_background_convergence_history_ref`。
 
+当前对后台自主活动的补充验收是：凡是声称关闭终端后的后台活动已经覆盖睡眠、回忆、自我思考、成长预演与学习巩固，不能只看五个 kind 的计数。必须同时看到 `resident_autonomous_activity_state.json#cycle_completion_count >= 1`、`cycle_coverage_complete = true`、`missing_activity_kinds = []`，以及 `digital life --status` 中同名扁平字段。
+
 当前对后台实时语言 presence 进入下一轮真实回合的补充规则是：凡是声称上一轮语言理解已经从后台驻留影响当下关系回合，不能只看 `resident_background_lineage_state.language_presence`。必须同时看到：
 
 1. `digital_life_turn#resident_background_lineage_live_language_refs`

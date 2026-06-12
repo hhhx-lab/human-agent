@@ -89,12 +89,27 @@ def record_resident_autonomous_activity(
         "activity_evidence_refs": activity_state["evidence_refs"],
         "source_doc_refs": SOURCE_DOC_REFS,
     }
-    _append_jsonl(activity_path, event)
 
     kind_counts = dict(aggregate_state.get("activity_kind_counts", {}))
     if _activity_kind_count_total(kind_counts) < previous_activity_count:
         kind_counts = _cycle_kind_counts(previous_activity_count)
     kind_counts[activity_kind] = _int_or_zero(kind_counts.get(activity_kind)) + 1
+    coverage_profile = _cycle_coverage_profile(
+        activity_count=activity_count,
+        kind_counts=kind_counts,
+    )
+    event.update(
+        {
+            "cycle_phase_index": coverage_profile["cycle_phase_index"],
+            "cycle_phase_count": coverage_profile["cycle_phase_count"],
+            "cycle_completion_count": coverage_profile["cycle_completion_count"],
+            "cycle_coverage_complete": coverage_profile["cycle_coverage_complete"],
+            "covered_activity_kinds": coverage_profile["covered_activity_kinds"],
+            "missing_activity_kinds": coverage_profile["missing_activity_kinds"],
+            "next_activity_kind": coverage_profile["next_activity_kind"],
+        }
+    )
+    _append_jsonl(activity_path, event)
     aggregate_state.update(
         {
             "schema_version": "resident_autonomous_activity_state_v0",
@@ -112,6 +127,7 @@ def record_resident_autonomous_activity(
             "current_cycle": list(AUTONOMOUS_ACTIVITY_CYCLE),
             "last_activity_evidence_refs": activity_state["evidence_refs"],
             "source_doc_refs": SOURCE_DOC_REFS,
+            **coverage_profile,
         }
     )
     _write_json(aggregate_state_path, aggregate_state)
@@ -321,4 +337,37 @@ def _cycle_kind_counts(activity_count: int) -> dict[str, int]:
     return {
         kind: full_cycles + (1 if index < remainder else 0)
         for index, kind in enumerate(AUTONOMOUS_ACTIVITY_CYCLE)
+    }
+
+
+def _cycle_coverage_profile(
+    *,
+    activity_count: int,
+    kind_counts: dict[str, Any],
+) -> dict[str, Any]:
+    count = max(_int_or_zero(activity_count), 0)
+    cycle_size = len(AUTONOMOUS_ACTIVITY_CYCLE)
+    covered_kinds = [
+        kind
+        for kind in AUTONOMOUS_ACTIVITY_CYCLE
+        if _int_or_zero(kind_counts.get(kind)) > 0
+    ]
+    missing_kinds = [
+        kind
+        for kind in AUTONOMOUS_ACTIVITY_CYCLE
+        if _int_or_zero(kind_counts.get(kind)) <= 0
+    ]
+    cycle_phase_index = ((count - 1) % cycle_size) if count else 0
+    next_activity_count = count + 1 if count else 1
+    return {
+        "cycle_phase_index": cycle_phase_index,
+        "cycle_phase_count": cycle_size,
+        "cycle_completion_count": min(
+            [_int_or_zero(kind_counts.get(kind)) for kind in AUTONOMOUS_ACTIVITY_CYCLE]
+            or [0]
+        ),
+        "cycle_coverage_complete": not missing_kinds,
+        "covered_activity_kinds": covered_kinds,
+        "missing_activity_kinds": missing_kinds,
+        "next_activity_kind": autonomous_activity_kind(next_activity_count),
     }

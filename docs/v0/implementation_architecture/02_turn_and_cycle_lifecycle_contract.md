@@ -238,7 +238,7 @@ stateDiagram-v2
 | `resident_relation_outbox.jsonl` | 后台 resident process 的回合输出与响应文本 |
 | `resident_relation_queue_state.json` | 当前队列序列、turn 进度、完成序列；激活时会先写 `waiting_for_relation_turn` 初始态 |
 | `resident_autonomous_activity.jsonl` | 无外部输入时的睡眠、回忆、自我思考、成长预演与学习巩固证据 |
-| `resident_autonomous_activity_state.json` | 自主活动的汇总状态与计数 |
+| `resident_autonomous_activity_state.json` | 自主活动的汇总状态、计数、完整周期覆盖与下一活动相位 |
 | `background_convergence_summary.json` | 跨唤醒关系阶段、自我慢变量与漂移压力摘要 |
 | `background_convergence_history.json` | 多次唤醒的收敛历史、趋势状态与更新模式压缩 |
 | `digital_life_waiting_heartbeat.json` | 当前等待态 heartbeat、waiting mode 与下一步关系等待动作 |
@@ -248,7 +248,7 @@ stateDiagram-v2
 | `idle_strategy_state.json` | 当前 idle probe、heartbeat interval、next idle action 与调制来源 |
 | `terminal_life_loop_state.json` | 当前 terminal life loop mode、heartbeat counter 与等待回合承接状态 |
 
-`digital life --status` 必须把 `resident_lifecycle_state.json`、relation queue、自主活动、waiting heartbeat、resident governance、idle strategy、terminal loop state 与长期驻留证据合并成一个可直接读的驻留状态视图，而不是只返回 PID。这个视图不是新的控制器；它只是让同一个后台生命过程的等待、治理、心跳、自主活动、关系队列、进程身份连续性和关闭态持久化档案同时可观察。当前状态视图必须写出 `resident_long_term_residency_status_v0` 摘要，并在可用时展开 `resident_process_lease`、`resident_process_lease_history_profile`、`resident_persistent_process_state/report`、`resident_background_convergence_summary/history` 及其扁平字段。
+`digital life --status` 必须把 `resident_lifecycle_state.json`、relation queue、自主活动、waiting heartbeat、resident governance、idle strategy、terminal loop state 与长期驻留证据合并成一个可直接读的驻留状态视图，而不是只返回 PID。这个视图不是新的控制器；它只是让同一个后台生命过程的等待、治理、心跳、自主活动、关系队列、进程身份连续性和关闭态持久化档案同时可观察。当前状态视图必须写出 `resident_long_term_residency_status_v0` 摘要，并在可用时展开 `resident_process_lease`、`resident_process_lease_history_profile`、`resident_persistent_process_state/report`、`resident_background_convergence_summary/history` 及其扁平字段；同时必须把 `resident_autonomous_activity_cycle_completion_count`、`resident_autonomous_activity_cycle_coverage_complete`、covered/missing kinds 和 next kind 暴露为扁平字段。
 
 ### 关键要求
 
