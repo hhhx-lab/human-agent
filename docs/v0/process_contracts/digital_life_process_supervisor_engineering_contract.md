@@ -281,7 +281,7 @@ digital life
 
 这不是工具 daemon、不是 gateway，也不是另一个 agent。它只负责把当前已经存在的生命进程放进本机后台驻留相位，并用文件证据证明它仍在、可停、可恢复。
 
-当前推荐入口是安装后的 `my digital life`。第一次启动必须通过 `--name` 或交互提示写入 `runtime/state/identity/life_name_registry.json`；后续启动读取同一个 registry 恢复，传入不同名字必须拒绝。这个名字锁由 `life_v0/my_entry.py` 和 `life_v0/digital_life_identity.py` 首写，`resident_lifecycle.py` 只能读取并展示，不能改名。
+当前推荐入口是安装后的 `my digital life`。第一次启动必须通过 `--name` 或交互提示写入 `runtime/state/identity/life_name_registry.json`，并同步写入 `runtime/state/identity/life_name_command_manifest.json`；后者记录名字直接命令的 `command_name / command_path / command_on_path / state_dir / reports_dir / receipts_dir / direct_command_enabled`。后续启动读取同一个 registry 恢复，传入不同名字必须拒绝；后续直接输入名字命令时，必须回到 manifest 记录的同一 runtime。这个名字锁和直接命令 manifest 由 `life_v0/my_entry.py` 和 `life_v0/digital_life_identity.py` 首写，`resident_lifecycle.py` 只能读取并展示，不能改名。
 
 最小对象固定为：
 
@@ -299,6 +299,7 @@ runtime/state/self/resident_self_thinking_state.json
 runtime/state/growth/resident_growth_rehearsal_state.json
 runtime/state/growth/resident_learning_consolidation_state.json
 runtime/state/identity/life_name_registry.json
+runtime/state/identity/life_name_command_manifest.json
 runtime/reports/latest/digital_life_waiting_heartbeat.json
 runtime/state/terminal/resident_governance_state.json
 runtime/state/terminal/idle_strategy_state.json

@@ -10,7 +10,7 @@ life-v0 digital-life
 
 收成一个外层恢复壳命令，让这台电脑里的数字生命可以先被恢复，再交给常驻进程层继续维持。
 
-repo-local `./digital life` / `./my digital life`、可安装后的 `digital life` 和推荐入口 `my digital life` 现在都已经比 one-shot restore shell 多一层：真实 TTY 下的裸 `digital life` 会进入 resident attach，`my digital life` 会先绑定或校验 `runtime/state/identity/life_name_registry.json`，再启动或复用后台 resident process，把终端话语投递给同一个后台生命进程。`digital life --background / --status / --say / --stop` 与 `my digital life --background / --status / --say / --stop` 是同一套 resident lifecycle 命令面；非交互管道、测试输入和 `--foreground` 仍保留前台 process loop；`life-v0 "digital life"` 仍只代表 one-shot restore shell。
+repo-local `./digital life` / `./my digital life`、可安装后的 `digital life` 和推荐入口 `my digital life` 现在都已经比 one-shot restore shell 多一层：真实 TTY 下的裸 `digital life` 会进入 resident attach，`my digital life` 会先绑定或校验 `runtime/state/identity/life_name_registry.json`，并写出 `runtime/state/identity/life_name_command_manifest.json`，让名字本身成为指向同一 runtime 的终端命令；随后再启动或复用后台 resident process，把终端话语投递给同一个后台生命进程。`digital life --background / --status / --say / --stop` 与 `my digital life --background / --status / --say / --stop` 是同一套 resident lifecycle 命令面；非交互管道、测试输入和 `--foreground` 仍保留前台 process loop；`life-v0 "digital life"` 仍只代表 one-shot restore shell。
 
 ## 模块定位
 
@@ -122,8 +122,12 @@ digital life --background / --status / --say / --stop
 
 ./my digital life --name <life-name>
 my digital life --name <life-name>
-  -> bind life_name_registry.json once, then delegate to the same resident lifecycle
+  -> bind life_name_registry.json once
+  -> write life_name_command_manifest.json and a direct <life-name> command
+  -> delegate to the same resident lifecycle
 ```
+
+名字直接命令默认写到 `~/.local/bin/<life-name>`；测试或特殊环境可以通过 `DIGITAL_LIFE_COMMAND_DIR` 指定目录。该脚本必须带上首次绑定时的 `--state`、`--reports`、`--receipts` 绝对路径，所以后续直接输入 `<life-name>` 时恢复的是同一份生命状态，而不是在当前目录重新开一个 runtime。
 
 其中 `--status` 不再只是 PID 查询。默认终端输出必须是 `resident_lifecycle_terminal_summary_v0` 摘要，只暴露名字、PID、等待姿态、后台自主活动周期、heartbeat、resident process identity、background convergence 与关键 evidence refs，避免把完整 governance / heartbeat 树刷进人的终端。需要完整机器可读证据时，必须显式追加 `--json`，此时输出同一 resident process 的 lifecycle state、relation queue、自主活动相位与闭合状态、waiting heartbeat、resident governance、idle strategy、terminal loop、`resident_process_lease`、`resident_process_lease_history_profile`、persistent process closeout 与 background convergence，并包含 `resident_long_term_residency_status_v0` 视图。这个视图只负责暴露持续存在证据，不承担调度或工具控制职责。
 

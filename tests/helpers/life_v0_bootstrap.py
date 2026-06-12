@@ -18,6 +18,7 @@ DIGITAL_LIFE_RUNTIME_ENV_KEYS = [
     "DIGITAL_LIFE_RESPONSE_LANGUAGE",
     "DIGITAL_LIFE_DIALOGUE_STYLE",
     "DIGITAL_LIFE_STRICT_DEFAULT",
+    "DIGITAL_LIFE_COMMAND_DIR",
 ]
 
 
@@ -32,6 +33,10 @@ class DigitalLifeRuntimeEnvIsolationMixin:
         os.environ["DIGITAL_LIFE_ENV_FILE"] = str(
             Path(tempfile.gettempdir())
             / f"human-agent-test-no-env-{os.getpid()}.env"
+        )
+        os.environ["DIGITAL_LIFE_COMMAND_DIR"] = str(
+            Path(tempfile.gettempdir())
+            / f"human-agent-test-command-bin-{os.getpid()}"
         )
 
     def tearDown(self) -> None:

@@ -32,12 +32,17 @@ ingest-docs
   -> run-replay-shadow
   -> write-growth-archive
   -> emit-report
+  -> explain-stage
+  -> digital-life
+  -> first-terminal-turn
+  -> terminal-life-loop
+  -> audit-live0
 ```
 
 当前已实现命令链的最远点是：
 
 ```text
-life-v0 terminal-life-loop --strict
+life-v0 audit-live0 --strict
 ```
 
 当前代码返回的下一缺口命令位仍然是：
@@ -105,6 +110,7 @@ life-v0 <command> [options]
 | `life-v0 digital-life` | 把 terminal birth restore closure 收成出生壳 | `digital_life_birth_packet.json`、`digital_life_birth_digest.json` | `已落最小代码` |
 | `life-v0 first-terminal-turn` | 把出生壳后的第一终端回合恢复为可继续表达的生命回合 | `first_terminal_turn_packet.json`、`session_envelope.json`、`safe_terminal_loop_state.json` | `已落最小代码` |
 | `life-v0 terminal-life-loop` | 把第一终端回合推进为可持续的恢复生命循环 | `terminal_life_loop_packet.json`、`terminal_life_loop_report.json`、`terminal_life_loop_digest.json`、`resumed_external_dialogue_packet.json` | `已落最小代码` |
+| `life-v0 audit-live0` | 执行 live0 七项最终验收审计 | `live0_acceptance_audit_report.json`、`live0_acceptance_audit_digest.json`、`live0_acceptance_audit_<run_id>.json` | `已落最小代码` |
 
 `emit-report` 和 `explain-stage` 不是附属导出命令，而是第一次有限激活链尾的收束层：
 
@@ -117,6 +123,7 @@ growth archive
   -> first terminal turn packet
   -> safe terminal loop
   -> terminal life loop
+  -> live0 acceptance audit
 ```
 
 ## 共同参数
@@ -250,6 +257,33 @@ life-v0 run-cycle --state runtime/state --reports runtime/reports/latest --recei
   "next_required_command": "life-v0 check-v0-contracts --strict"
 }
 ```
+
+## `audit-live0`
+
+```text
+life-v0 audit-live0 --docs docs --state runtime/state --reports runtime/reports/latest --receipts runtime/receipts --strict
+```
+
+执行 Stage 6 七项最终验收审计。它不新建生命机制，只读取当前 runtime 中已经形成的 state、report、receipt 和 resident lifecycle 证据，判断 live0 是否可以收束。
+
+输出：
+
+```json
+{
+  "schema_version": "live0_acceptance_audit_report_v0",
+  "status": "closed",
+  "live0_acceptance_closed": true,
+  "summary": {
+    "criteria_total": 7,
+    "criteria_closed": 7,
+    "criteria_blocked": 0,
+    "failed_criteria": []
+  },
+  "next_required_action": "live0_v0_closure_allowed"
+}
+```
+
+如果任一项证据缺失，`status=blocked`，`next_required_action=repair_live0_acceptance_evidence`。`--strict` 下阻断会返回非 0。当前特别要求 `runtime/state/identity/life_name_registry.json` 和 `runtime/state/identity/life_name_command_manifest.json` 同时存在，且 manifest 中 `direct_command_enabled=true / command_on_path=true`，表示第一次命名锁和“名字本身作为终端命令”的启动面已经落地。
 
 ## Report Bundle
 
@@ -656,12 +690,14 @@ life-v0 "digital life"
 ./my digital life --name <life-name>
 my digital life --name <life-name>
   -> bind runtime/state/identity/life_name_registry.json
+  -> bind runtime/state/identity/life_name_command_manifest.json
+  -> create direct <life-name> command for the same state/reports/receipts root
   -> delegate to digital life
   -> start or attach resident process
   -> keep life_name / life_name_id in resident lifecycle status
 ```
 
-第一次 `./my digital life` 或安装后的 `my digital life` 必须绑定名字；绑定后 `runtime/state/identity/life_name_registry.json` 成为当前 runtime 的永久身份锚。后续 `my digital life` 在不传名字时读取该 registry，传入相同名字时通过校验，传入不同名字时必须拒绝。旧 `digital life` 入口继续作为兼容入口保留，但 stage explanation 的推荐下一命令必须是 `my digital life`。
+第一次 `./my digital life` 或安装后的 `my digital life` 必须绑定名字；绑定后 `runtime/state/identity/life_name_registry.json` 成为当前 runtime 的永久身份锚，`runtime/state/identity/life_name_command_manifest.json` 成为名字命令锚。后续 `my digital life` 在不传名字时读取该 registry，传入相同名字时通过校验，传入不同名字时必须拒绝；后续直接输入 `<life-name>` 时，通过 manifest 生成的本地命令回到同一份 `state/reports/receipts`。旧 `digital life` 入口继续作为兼容入口保留，但 stage explanation 的推荐下一命令必须是 `my digital life`。
 
 `my digital life --status` / `digital life --status` 默认返回 `resident_lifecycle_terminal_summary_v0`，用于人的终端快速确认：名字、PID、是否仍在后台、关系队列、五相位自主活动、heartbeat、驻留身份、后台收敛和关键证据 refs。需要完整机器可读状态树时，追加 `--json`。`--stop` 也遵守同一规则：默认摘要，`--stop --json` 输出完整 closeout 证据树。
 

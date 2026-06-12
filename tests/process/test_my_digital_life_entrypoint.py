@@ -86,6 +86,18 @@ class MyDigitalLifeEntrypointTests(
             self.assertEqual(registry["schema_version"], "digital_life_name_registry_v0")
             self.assertEqual(registry["canonical_name"], "星火")
             self.assertEqual(registry["name_lock_state"], "permanent_for_runtime")
+            command_manifest = self._read_json(
+                paths["state_root"] / "identity" / "life_name_command_manifest.json"
+            )
+            self.assertEqual(
+                command_manifest["schema_version"],
+                "life_name_direct_command_manifest_v0",
+            )
+            self.assertEqual(command_manifest["status"], "active")
+            self.assertTrue(command_manifest["direct_command_enabled"])
+            self.assertEqual(command_manifest["command_name"], "星火")
+            direct_command_path = Path(command_manifest["command_path"])
+            self.assertTrue(direct_command_path.exists())
 
             status = subprocess.run(
                 [
@@ -115,6 +127,20 @@ class MyDigitalLifeEntrypointTests(
                 status_payload["resident_long_term_residency_status"]["life_name"],
                 "星火",
             )
+            direct_status = subprocess.run(
+                [
+                    str(direct_command_path),
+                    "--status",
+                    "--json",
+                ],
+                cwd=self.repo_root,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(direct_status.returncode, 0, direct_status.stderr)
+            direct_status_payload = json.loads(direct_status.stdout)
+            self.assertEqual(direct_status_payload["life_name"], "星火")
 
             mismatch = subprocess.run(
                 [
@@ -177,8 +203,12 @@ class MyDigitalLifeEntrypointTests(
             registry = self._read_json(
                 paths["state_root"] / "identity" / "life_name_registry.json"
             )
+            command_manifest = self._read_json(
+                paths["state_root"] / "identity" / "life_name_command_manifest.json"
+            )
 
         self.assertEqual(registry["canonical_name"], "星火")
+        self.assertEqual(command_manifest["status"], "active")
 
     def test_my_digital_life_status_defaults_to_terminal_summary(self):
         with tempfile.TemporaryDirectory() as tmp:

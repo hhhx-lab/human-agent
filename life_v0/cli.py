@@ -15,6 +15,7 @@ from .doc_index import run_doc_ingestion
 from .growth import run_cycle
 from .language import run_build_language_relationship, run_check_language_relationship
 from .life_targets import run_birth_readiness
+from .live0_audit import run_live0_acceptance_audit
 from .membrane import run_check_life_membrane, run_life_membrane
 from .neural_core import run_check_neural_life_core, run_neural_life_core
 from .reporting import run_emit_report
@@ -365,6 +366,17 @@ def build_parser() -> argparse.ArgumentParser:
     digital_life_shell.add_argument("--receipts", default="runtime/receipts")
     digital_life_shell.add_argument("--run-id", default=None)
     digital_life_shell.add_argument("--strict", action="store_true")
+
+    live0_audit = subparsers.add_parser(
+        "audit-live0",
+        help="Run the seven-item live0 acceptance audit against current runtime evidence.",
+    )
+    live0_audit.add_argument("--docs", default="docs")
+    live0_audit.add_argument("--state", default="runtime/state")
+    live0_audit.add_argument("--reports", default="runtime/reports/latest")
+    live0_audit.add_argument("--receipts", default="runtime/receipts")
+    live0_audit.add_argument("--run-id", default=None)
+    live0_audit.add_argument("--strict", action="store_true")
 
     return parser
 
@@ -728,6 +740,18 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "digital life":
         result = run_digital_life_shell_command(
+            state_dir=Path(args.state),
+            reports_dir=Path(args.reports),
+            receipts_dir=Path(args.receipts),
+            run_id=args.run_id,
+            strict=args.strict,
+        )
+        print(json.dumps(result.report, ensure_ascii=False, indent=2))
+        return result.exit_code
+
+    if args.command == "audit-live0":
+        result = run_live0_acceptance_audit(
+            docs_dir=Path(args.docs),
             state_dir=Path(args.state),
             reports_dir=Path(args.reports),
             receipts_dir=Path(args.receipts),

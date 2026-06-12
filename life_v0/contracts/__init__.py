@@ -814,6 +814,16 @@ V0_DOC_FILE_RULES.update(
                 "docs/v0/code_framework/foundation/03_code_package_state_test_gate_mapping.md",
             ],
         },
+        "docs/v0/code_framework/delivery/22_live0_acceptance_audit_contract.md": {
+            "role": "live0_acceptance_audit_contract",
+            "slice": ACTIVE_SLICE,
+            "status": "closed",
+            "source_refs": [
+                "docs/v0/code_architecture/03_build_order_and_definition_of_done.md",
+                "docs/v0/code_framework/delivery/13_capability_to_code_realization_matrix.md",
+                "docs/v0/shared_contracts/runner_cli_report_contract.md",
+            ],
+        },
         "docs/v0/code_framework/queues/README.md": {
             "role": "code_framework_queue_index",
             "slice": ACTIVE_SLICE,

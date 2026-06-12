@@ -24,6 +24,8 @@ def main(argv: list[str] | None = None) -> int:
 
     identity_parser = argparse.ArgumentParser(add_help=False)
     identity_parser.add_argument("--state", default="runtime/state")
+    identity_parser.add_argument("--reports", default="runtime/reports/latest")
+    identity_parser.add_argument("--receipts", default="runtime/receipts")
     identity_parser.add_argument("--name", default=None)
     identity_parser.add_argument("--life-name", dest="name", default=None)
     identity_args, remaining_life_args = identity_parser.parse_known_args(life_args)
@@ -38,6 +40,8 @@ def main(argv: list[str] | None = None) -> int:
 
     identity = bind_or_validate_life_name(
         state_dir=state_dir,
+        reports_dir=Path(identity_args.reports),
+        receipts_dir=Path(identity_args.receipts),
         requested_name=requested_name,
         source_command="my digital life",
     )
@@ -49,6 +53,10 @@ def main(argv: list[str] | None = None) -> int:
         "life",
         "--state",
         str(identity_args.state),
+        "--reports",
+        str(identity_args.reports),
+        "--receipts",
+        str(identity_args.receipts),
         *remaining_life_args,
     ]
     return digital_main(delegated_args)

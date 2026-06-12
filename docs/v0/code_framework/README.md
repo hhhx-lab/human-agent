@@ -62,7 +62,7 @@ foundation/
 |---|---|---|
 | `foundation/` | `01-03` | 生命层、脑区/网络到代码包、state/report/receipt/test/gate 的底层映射 |
 | `playbooks/` | `04-10` | 语言、记忆、梦境、成长、关系、行动、意识等跨层能力怎样逐文件落代码 |
-| `delivery/` | `11-13` | 开发波次、生命层总施工矩阵、能力到代码验收矩阵 |
+| `delivery/` | `11-13`、`22` | 开发波次、生命层总施工矩阵、能力到代码验收矩阵、live0 七项最终审计 |
 | `queues/` | `14`、`16-18`、`20-21` | Queue A-F 的文件级实施合同 |
 | `assembly/` | `15`、`19` | 跨层共享对象和整棵 `life_v0/` 代码树总装配 |
 
@@ -84,6 +84,7 @@ foundation/
 | `delivery/11_engineering_delivery_waves_and_real_file_queue.md` | 接下来每一轮先拆哪些真实文件、按什么波次落、回读哪些理论和跑哪些测试 |
 | `delivery/12_full_life_layer_delivery_matrix.md` | 把全部生命层压成总施工矩阵，直接决定这一轮该改哪层、哪包、哪文件 |
 | `delivery/13_capability_to_code_realization_matrix.md` | 把生命能力直接压成代码文件、state、测试和 gate 的验收矩阵，回答“某种能力到底有没有真正开始落地” |
+| `delivery/22_live0_acceptance_audit_contract.md` | 把 Stage 6 七项最终验收压成 `life-v0 audit-live0` 的 report、digest、receipt 和严格阻断规则 |
 | `queues/14_queue_a_language_percept_semantic_map_implementation_contract.md` | 把 Queue A 的 `percept.py` / `semantic_map.py` 压成文件级实施合同，固定输入输出、状态、测试和下游接线 |
 | `assembly/15_cross_layer_shared_object_contract.md` | 把跨层共享对象压成唯一首写方、字段组、state/report/receipt 和 gate 的硬合同，防止生命回合重新退回临时字典拼接 |
 | `queues/16_queue_b_process_supervisor_implementation_contract.md` | 把 Queue B 的 process supervisor / waiting heartbeat / dialogue event / process report 压成文件级实施合同，固定常驻生命进程的对象链与测试面 |

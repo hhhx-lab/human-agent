@@ -152,6 +152,10 @@ class V0ContractCoverageTests(unittest.TestCase):
             contract_index["files"],
         )
         self.assertIn(
+            "docs/v0/code_framework/delivery/22_live0_acceptance_audit_contract.md",
+            contract_index["files"],
+        )
+        self.assertIn(
             "docs/v0/code_framework/assembly/19_code_tree_package_brain_contract.md",
             contract_index["files"],
         )
