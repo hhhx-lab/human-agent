@@ -7,6 +7,11 @@ from typing import Any, Callable
 from .background_continuity import load_background_continuity_profile
 from .background_lineage_state import build_resident_background_lineage_state
 from .continuity_writeback import build_idle_continuity_frame, record_idle_continuity
+from .handoff_profile import (
+    HANDOFF_CARRY_FIELD_NAMES,
+    previous_handoff_profile_fields,
+    select_handoff_profile,
+)
 from .idle_strategy import (
     IDLE_STRATEGY_STATE_REF,
     decide_idle_strategy,
@@ -134,6 +139,14 @@ def write_waiting_heartbeat(
         terminal_dir=terminal_dir,
         reports_dir=reports_dir,
     )
+    previous_resident_governance_state = _read_json_if_exists(
+        terminal_dir / "resident_governance_state.json"
+    )
+    previous_handoff_profile = select_handoff_profile(
+        terminal_life_loop_state,
+        previous_resident_governance_state,
+        background_continuity_profile,
+    )
     resident_autonomous_activity_state = _read_json_if_exists(
         terminal_dir / "resident_autonomous_activity_state.json"
     )
@@ -211,6 +224,12 @@ def write_waiting_heartbeat(
         readme_block_refs=readme_block_refs,
         runtime_carrier_refs=runtime_carrier_refs,
     )
+    handoff_carry_fields = previous_handoff_profile_fields(
+        previous_handoff_profile,
+        carry_status="carried_into_waiting_heartbeat",
+    )
+    if handoff_carry_fields:
+        idle_strategy.update(handoff_carry_fields)
     world_contact_release_posture = str(
         idle_strategy.get("world_contact_release_posture")
         or (world_contact_summary or {}).get("release_posture", "shadow_only_guarded")
@@ -511,6 +530,8 @@ def write_waiting_heartbeat(
         terminal_life_loop_state["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         terminal_life_loop_state["membrane_guard_refs"] = membrane_guard_refs
+    if handoff_carry_fields:
+        terminal_life_loop_state.update(handoff_carry_fields)
     write_json(terminal_dir / "terminal_life_loop_state.json", terminal_life_loop_state)
 
     record_idle_continuity(
@@ -746,6 +767,8 @@ def write_waiting_heartbeat(
         prediction_waiting_posture=idle_strategy.get("prediction_waiting_posture"),
         response_surface_posture_hint=idle_strategy.get("response_surface_posture_hint"),
     )
+    if handoff_carry_fields:
+        idle_continuity_frame.update(handoff_carry_fields)
     write_json(terminal_dir / "idle_continuity_frame.json", idle_continuity_frame)
     _append_idle_heartbeat_trace(
         terminal_dir=terminal_dir,
@@ -991,6 +1014,9 @@ def _append_idle_heartbeat_trace(
         ),
         "membrane_guard_refs": list(membrane_guard_refs),
     }
+    for field_name in HANDOFF_CARRY_FIELD_NAMES:
+        if field_name in idle_strategy:
+            trace_event[field_name] = idle_strategy[field_name]
     trace_path = terminal_dir / "idle_heartbeat_trace.jsonl"
     with trace_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(trace_event, ensure_ascii=False) + "\n")

@@ -6,6 +6,11 @@ from typing import Any
 
 from .background_convergence import BACKGROUND_CONVERGENCE_SUMMARY_REF
 from .background_convergence_history import BACKGROUND_CONVERGENCE_HISTORY_REF
+from .handoff_profile import (
+    PREVIOUS_HANDOFF_PROFILE_REF_KEY,
+    previous_handoff_profile_fields,
+    select_handoff_profile,
+)
 from .process_lease import RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
 
 
@@ -308,6 +313,15 @@ def load_background_continuity_profile(
         or snapshot.get("resident_background_lineage_state")
         or resident_governance_report.get("resident_background_lineage_state")
         or persistent_process_report.get("resident_background_lineage_state")
+    )
+    previous_handoff_carry_fields = previous_handoff_profile_fields(
+        select_handoff_profile(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+        ),
+        carry_status="carried_into_background_continuity",
     )
     resident_background_heartbeat_cadence_presence = _dict_or_empty(
         resident_background_lineage_state.get("heartbeat_cadence_presence")
@@ -1578,6 +1592,21 @@ def load_background_continuity_profile(
         ref_set = _dedupe_list(ref_set + body_ref_set)
     if heartbeat_cadence_evidence_refs:
         ref_set = _dedupe_list(ref_set + heartbeat_cadence_evidence_refs)
+    if previous_handoff_carry_fields:
+        ref_set = _dedupe_list(
+            ref_set
+            + [
+                str(previous_handoff_carry_fields[PREVIOUS_HANDOFF_PROFILE_REF_KEY])
+            ]
+            + _list_or_empty(
+                previous_handoff_carry_fields[
+                    "previous_live_turn_waiting_handoff_profile"
+                ].get("handoff_evidence_refs")
+            )
+        )
+        pressure_level = _stronger_pressure(pressure_level, "present")
+        if not attention_target:
+            attention_target = "live_turn_waiting_handoff_profile"
     profile = {
         "background_continuity_mode": "closed_process_carryover",
         "background_carryover_pressure_level": pressure_level,
@@ -1633,6 +1662,8 @@ def load_background_continuity_profile(
         profile["background_heartbeat_cadence_evidence_refs"] = (
             heartbeat_cadence_evidence_refs
         )
+    if previous_handoff_carry_fields:
+        profile.update(previous_handoff_carry_fields)
     if trait_slow_variable_summary:
         profile["background_trait_slow_variable_summary"] = trait_slow_variable_summary
     if background_resume_summary:

@@ -124,9 +124,10 @@ life-v0 "digital life"
 - `life_v0/process_supervisor/live_turn_cycle.py`
 - `life_v0/process_supervisor/process_session_loop.py`
 - `life_v0/process_supervisor/resident_turn_writeback.py`
+- `life_v0/process_supervisor/handoff_profile.py`
 - `life_v0/process_supervisor/process_closeout.py`
 
-补充器官：`life_v0/process_supervisor/background_lineage_state.py`、`process_lease.py`、`resident_autonomous_activity.py`、`resident_governance_handoff.py` 与 `resident_lifecycle.py` 也已各自成器官，分别承接后台驻留主状态体、常驻进程身份、后台自主活动、live-turn waiting handoff 与本机生命周期控制。
+补充器官：`life_v0/process_supervisor/background_lineage_state.py`、`process_lease.py`、`resident_autonomous_activity.py`、`resident_governance_handoff.py`、`handoff_profile.py` 与 `resident_lifecycle.py` 也已各自成器官，分别承接后台驻留主状态体、常驻进程身份、后台自主活动、live-turn waiting handoff、handoff 画像跨 heartbeat/closeout/background continuity 的字段合同与本机生命周期控制。
 
 所以当前阶段不是“先把常驻进程拆文件”，而是：
 

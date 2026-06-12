@@ -1068,6 +1068,123 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(idle_continuity["world_contact_release_posture"], "shadow_only_guarded")
             self.assertTrue(idle_continuity["repair_followup_required"])
 
+    def test_waiting_heartbeat_carries_live_turn_handoff_profile_forward(self):
+        from life_v0.process_supervisor.heartbeat import write_waiting_heartbeat
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state_dir = runtime_root / "state"
+            terminal_dir = state_dir / "terminal"
+            language_dir = state_dir / "language"
+            relationship_dir = state_dir / "relationship"
+            reports_dir = runtime_root / "reports" / "latest"
+            for directory in (terminal_dir, language_dir, relationship_dir, reports_dir):
+                directory.mkdir(parents=True, exist_ok=True)
+
+            handoff_profile = self._handoff_profile_fixture()
+            safe_terminal_loop = {
+                "current_mode": "restored_waiting_for_external_turn",
+                "heartbeat_counter": 2,
+            }
+            terminal_life_loop_state = {
+                "schema_version": "terminal_life_loop_state_v0",
+                "current_mode": "restored_waiting_for_external_turn",
+                "heartbeat_counter": 2,
+                "live_turn_waiting_handoff_profile": handoff_profile,
+                "live_turn_waiting_handoff_profile_ref": (
+                    "runtime/state/terminal/terminal_life_loop_state.json"
+                    "#live_turn_waiting_handoff_profile"
+                ),
+            }
+
+            heartbeat_counter = write_waiting_heartbeat(
+                run_id="heartbeat-handoff-profile",
+                generated_at="2026-06-12T00:00:00+00:00",
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+                language_dir=language_dir,
+                relationship_dir=relationship_dir,
+                safe_terminal_loop=safe_terminal_loop,
+                terminal_life_loop_state=terminal_life_loop_state,
+                self_narrative_trace={},
+                commitment_index={},
+                relationship_graph={"subjects": [{"relation_role": "friend"}]},
+                source_doc_refs=[
+                    "docs/v0/process_contracts/resident_governance_waiting_state_machine_engineering_contract.md"
+                ],
+                readme_block_refs=["B99_V0_ENGINEERING_CONTRACTS"],
+                runtime_carrier_refs=["RunnerCliRuntime"],
+                now_iso=lambda: "2026-06-12T00:00:01+00:00",
+                write_json=self._write_json,
+            )
+
+            self.assertEqual(heartbeat_counter, 3)
+            heartbeat_packet = self._read_json(
+                reports_dir / "digital_life_waiting_heartbeat.json"
+            )
+            idle_strategy = self._read_json(terminal_dir / "idle_strategy_state.json")
+            terminal_loop = self._read_json(
+                terminal_dir / "terminal_life_loop_state.json"
+            )
+            idle_continuity = self._read_json(
+                terminal_dir / "idle_continuity_frame.json"
+            )
+            resident_governance = self._read_json(
+                terminal_dir / "resident_governance_state.json"
+            )
+            trace_event = json.loads(
+                (terminal_dir / "idle_heartbeat_trace.jsonl").read_text(
+                    encoding="utf-8"
+                ).splitlines()[-1]
+            )
+
+            for artifact in (
+                heartbeat_packet,
+                idle_strategy,
+                terminal_loop,
+                idle_continuity,
+                resident_governance,
+                trace_event,
+            ):
+                self.assertEqual(
+                    artifact["previous_live_turn_waiting_handoff_profile"],
+                    handoff_profile,
+                )
+                self.assertEqual(
+                    artifact["previous_live_turn_waiting_handoff_profile_ref"],
+                    "runtime/state/terminal/terminal_life_loop_state.json"
+                    "#previous_live_turn_waiting_handoff_profile",
+                )
+                self.assertEqual(
+                    artifact["previous_live_turn_waiting_handoff_next_required_action"],
+                    "refresh_waiting_heartbeat_before_next_external_turn",
+                )
+                self.assertEqual(
+                    artifact["previous_live_turn_waiting_handoff_lineage_depth_band"],
+                    "deep_persistent_lineage",
+                )
+                self.assertEqual(
+                    artifact["previous_live_turn_waiting_handoff_evidence_ref_count"],
+                    4,
+                )
+                self.assertEqual(
+                    artifact["previous_live_turn_waiting_handoff_carried_presence_keys"],
+                    [
+                        "language_presence",
+                        "identity_consciousness_birth_presence",
+                        "birth_repair_presence",
+                    ],
+                )
+
+            self.assertEqual(
+                heartbeat_packet["previous_live_turn_waiting_handoff_carry_status"],
+                "carried_into_waiting_heartbeat",
+            )
+            self.assertEqual(
+                resident_governance["governance_phase"],
+                "waiting_heartbeat_active",
+            )
+
     def test_digital_life_process_refreshes_waiting_heartbeat_while_idle(self):
         from life_v0.process_supervisor import run_digital_life_process
 
@@ -13005,6 +13122,9 @@ class PersistentDigitalLifeProcessTests(
                 )
 
     def test_process_closeout_merges_latest_live_language_turn_into_background_governance(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
         from life_v0.process_supervisor.process_closeout import close_digital_life_process
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -13015,6 +13135,7 @@ class PersistentDigitalLifeProcessTests(
             (state_dir / "terminal").mkdir(parents=True, exist_ok=True)
             reports_dir.mkdir(parents=True, exist_ok=True)
             receipts_dir.mkdir(parents=True, exist_ok=True)
+            handoff_profile = self._handoff_profile_fixture()
 
             closeout = close_digital_life_process(
                 run_id="closeout-live-language",
@@ -13058,6 +13179,11 @@ class PersistentDigitalLifeProcessTests(
                         "runtime/state/language/expression_plan.json",
                     ],
                     "last_live_semantic_focus": "repair_commitment_shared_language",
+                    "live_turn_waiting_handoff_profile": handoff_profile,
+                    "live_turn_waiting_handoff_profile_ref": (
+                        "runtime/state/terminal/terminal_life_loop_state.json"
+                        "#live_turn_waiting_handoff_profile"
+                    ),
                 },
                 last_heartbeat_packet_ref="runtime/reports/latest/digital_life_waiting_heartbeat.json",
                 last_dialogue_packet_ref="runtime/reports/latest/resumed_external_dialogue_packet.json",
@@ -13116,9 +13242,55 @@ class PersistentDigitalLifeProcessTests(
                     ]["live_language_turn_refs"],
                     expected_refs,
                 )
+                self.assertEqual(
+                    artifact["previous_live_turn_waiting_handoff_profile"],
+                    handoff_profile,
+                )
+                self.assertEqual(
+                    artifact["previous_live_turn_waiting_handoff_carry_status"],
+                    "carried_into_process_closeout",
+                )
+                self.assertEqual(
+                    artifact["previous_live_turn_waiting_handoff_lineage_depth_band"],
+                    "deep_persistent_lineage",
+                )
             self.assertEqual(
                 closeout.report_bundle.report["live_language_turn_refs"],
                 expected_refs,
+            )
+            self.assertEqual(
+                closeout.report_bundle.report[
+                    "previous_live_turn_waiting_handoff_profile"
+                ],
+                handoff_profile,
+            )
+            self.assertEqual(
+                closeout.report_bundle.digest[
+                    "previous_live_turn_waiting_handoff_profile"
+                ],
+                handoff_profile,
+            )
+            self.assertIn(
+                "runtime/state/terminal/terminal_life_loop_state.json"
+                "#previous_live_turn_waiting_handoff_profile",
+                closeout.report_bundle.receipt["shared_object_refs"],
+            )
+            background_profile = load_background_continuity_profile(
+                terminal_dir=state_dir / "terminal",
+                reports_dir=reports_dir,
+            )
+            self.assertEqual(
+                background_profile["previous_live_turn_waiting_handoff_profile"],
+                handoff_profile,
+            )
+            self.assertEqual(
+                background_profile["previous_live_turn_waiting_handoff_carry_status"],
+                "carried_into_background_continuity",
+            )
+            self.assertIn(
+                "runtime/state/terminal/terminal_life_loop_state.json"
+                "#previous_live_turn_waiting_handoff_profile",
+                background_profile["background_continuity_ref_set"],
             )
 
     def test_persistent_process_increments_background_carryover_generation_on_closeout(self):
@@ -16928,6 +17100,34 @@ class PersistentDigitalLifeProcessTests(
     def _write_json(self, path: Path, payload: dict) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    def _handoff_profile_fixture(self) -> dict:
+        return {
+            "schema_version": "live_turn_waiting_handoff_profile_v0",
+            "handoff_origin": "live_turn_cycle_completed",
+            "governance_phase": "live_turn_waiting_handoff",
+            "waiting_mode": "restored_waiting_for_external_turn",
+            "next_required_action": "refresh_waiting_heartbeat_before_next_external_turn",
+            "background_governance_driver_family": "background_history_stability_hold",
+            "background_next_wake_expectation": "下一拍等待心跳必须继续携带后台治理解释。",
+            "lineage_depth_band": "deep_persistent_lineage",
+            "lineage_parent_run_id": "handoff-parent-run",
+            "live_language_ref_count": 5,
+            "last_live_semantic_focus": "repair_commitment_shared_language",
+            "long_horizon_language_ref_count": 3,
+            "carried_presence_keys": [
+                "language_presence",
+                "identity_consciousness_birth_presence",
+                "birth_repair_presence",
+            ],
+            "handoff_evidence_refs": [
+                "runtime/state/terminal/idle_strategy_state.json",
+                "runtime/state/terminal/terminal_life_loop_state.json",
+                "runtime/reports/latest/dialogue_writeback_bundle.json",
+                "runtime/reports/latest/resumed_external_dialogue_packet.json",
+            ],
+            "handoff_evidence_ref_count": 4,
+        }
 
     def _append_jsonl(self, path: Path, payloads: list[dict]) -> None:
         with path.open("a", encoding="utf-8") as handle:

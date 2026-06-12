@@ -7,6 +7,7 @@ from typing import Any, Callable
 
 from .background_lineage_state import build_resident_background_lineage_state
 from .governance_explanation import RESIDENT_GOVERNANCE_EXPLANATION_REF
+from .handoff_profile import previous_handoff_profile_fields, select_handoff_profile
 from .idle_strategy import extract_idle_governance_fields
 from .state_merge_signals import state_merge_long_term_change_profile
 from .trait_convergence_signals import cross_wake_trait_convergence_profile
@@ -80,6 +81,23 @@ def write_persistent_process_artifacts(
     terminal_dir = state_dir / "terminal"
     terminal_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
+    terminal_life_loop_state = _read_json_if_exists(
+        terminal_dir / "terminal_life_loop_state.json"
+    )
+    previous_resident_governance_state = _read_json_if_exists(
+        terminal_dir / "resident_governance_state.json"
+    )
+    handoff_carry_fields = previous_handoff_profile_fields(
+        select_handoff_profile(
+            idle_strategy_state,
+            terminal_life_loop_state,
+            previous_resident_governance_state,
+        ),
+        carry_status="carried_into_process_closeout",
+    )
+    if handoff_carry_fields:
+        idle_strategy_state = dict(idle_strategy_state or {})
+        idle_strategy_state.update(handoff_carry_fields)
     if resident_process_lease_ref is None and (
         terminal_dir / "resident_process_lease.json"
     ).exists():

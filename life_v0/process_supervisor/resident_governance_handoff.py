@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .background_lineage_state import build_resident_background_lineage_state
+from .handoff_profile import active_handoff_profile_fields
 from .idle_strategy import IDLE_STRATEGY_STATE_REF, extract_idle_governance_fields
 from .persistent_process import (
     RESIDENT_GOVERNANCE_REPORT_REF,
@@ -152,12 +153,13 @@ def write_live_turn_waiting_governance_handoff(
         resident_governance_state["resident_background_lineage_state"] = (
             resident_background_lineage_state
         )
-    resident_governance_state["live_turn_waiting_handoff_profile"] = (
-        _build_live_turn_waiting_handoff_profile(
-            resident_governance_state=resident_governance_state,
-            resident_background_lineage_state=resident_background_lineage_state,
-        )
+    handoff_profile = _build_live_turn_waiting_handoff_profile(
+        resident_governance_state=resident_governance_state,
+        resident_background_lineage_state=resident_background_lineage_state,
     )
+    resident_governance_state["live_turn_waiting_handoff_profile"] = handoff_profile
+    terminal_life_loop_state.update(active_handoff_profile_fields(handoff_profile))
+    write_json(terminal_dir / "terminal_life_loop_state.json", terminal_life_loop_state)
     write_json(terminal_dir / "resident_governance_state.json", resident_governance_state)
     return resident_governance_state
 

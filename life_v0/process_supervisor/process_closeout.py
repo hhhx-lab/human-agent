@@ -15,6 +15,7 @@ from .persistent_process import (
     PersistentProcessArtifactsResult,
     write_persistent_process_artifacts,
 )
+from .handoff_profile import previous_handoff_profile_fields, select_handoff_profile
 from .process_report import ProcessReportBundleResult, write_process_report_bundle
 from ..runtime_config import RUNTIME_CONFIG_REPORT_REF, RUNTIME_CONFIG_STATE_REF
 
@@ -299,6 +300,12 @@ def _merge_live_language_for_closeout(
             "ref_count": len(all_refs),
             "ref_set": all_refs,
         }
+    handoff_carry_fields = previous_handoff_profile_fields(
+        select_handoff_profile(merged, terminal_life_loop_state),
+        carry_status="carried_into_process_closeout",
+    )
+    if handoff_carry_fields:
+        merged.update(handoff_carry_fields)
     return merged
 
 

@@ -102,6 +102,8 @@ resident_governance_state.json
 3. 当前 resident governance 不能再只靠上一拍 `waiting_heartbeat_active` 间接代表，而要显式承认长期关系对象、Queue E 修复后果和这次回合留下的交接痕迹已经进入等待态治理。
 4. 这个相位不是关闭态，也不是下一拍 heartbeat 的替代物；它只负责把 live turn 结束和下一拍 waiting heartbeat 之间的空白段补成可追踪证据。
 5. 如果上一轮关闭态解释已经恢复进 `idle_strategy_state.json`，这个相位必须继续原样承接 `background_resident_governance_explanation_ref`、`background_governance_driver_family`、`background_next_wake_expectation` 与 `background_governance_explanation_story`，不能在真实回合结束时把“为什么这样等待”的跨唤醒解释断开。
+6. `resident_governance_handoff.py` 写出的 `live_turn_waiting_handoff_profile_v0` 不只停留在 `resident_governance_state.json`，也必须同步写入 `terminal_life_loop_state.json#live_turn_waiting_handoff_profile`。
+7. 下一拍 `heartbeat.py` 必须把这份画像转换成 `previous_live_turn_waiting_handoff_profile`、`previous_live_turn_waiting_handoff_profile_ref`、`previous_live_turn_waiting_handoff_carry_status`、`previous_live_turn_waiting_handoff_next_required_action`、`previous_live_turn_waiting_handoff_lineage_depth_band`、`previous_live_turn_waiting_handoff_evidence_ref_count` 与 `previous_live_turn_waiting_handoff_carried_presence_keys`，并同时写入 waiting heartbeat packet、`idle_strategy_state.json`、`terminal_life_loop_state.json`、`idle_continuity_frame.json`、`idle_heartbeat_trace.jsonl` 与 `resident_governance_state.json`。
 
 ## 后台连续体 carryover
 
@@ -119,6 +121,7 @@ resident_governance_state.json
 7. 现在这份 resume summary 还必须进入慢变量惯性：当 `background_trait_slow_variable_summary` 存在时，下一次 `self_model.json#trait_slow_variables[*]` 要写出 `background_resume_value` 与 `background_inertia_weight`，表示上一轮 closeout 的自我状态正在参与当前收敛。
 8. 现在 `idle_strategy.py` 已经把这份 lineage 压成结构化 `background_lineage_governance_profile_v0`：`background_carryover_generation == 1` 是 single carryover，`== 2` 是 persistent lineage，`>= 3` 是 deep persistent lineage，`>= 5` 预留为 entrenched background presence。该 profile 必须同步写入 `idle_strategy_state.json`、`idle_continuity_frame.json`、`resident_governance_state.json`、`terminal_life_loop_state.json`、`digital_life_resident_governance_explanation.json` 与 `digital_life_process_digest.json`；但 `background_lineage_state.py` 只把它收束成 `governance_profile_ref="background_lineage_governance_profile"`，不在后台 lineage state 里重复嵌套整份治理画像。
 9. lineage cadence 的优先级固定为：跨唤醒 recalibration 压力优先；普通 `integrating_cross_wake_convergence` 只在 `background_carryover_generation < 3` 时走 history stability hold；当 `background_carryover_generation >= 3` 且后台压力为 `present/elevated` 时，waiting heartbeat 必须进入 `deep_persistent_background_continuity_refresh` 与 `refresh_waiting_heartbeat_with_deep_background_lineage_hold`，不能被普通 stability hold 吞掉。
+10. 真实回合 handoff 画像现在也是后台连续体的一部分：`persistent_process.py`、`process_closeout.py` 与 `process_report.py` 必须在 closeout 时继续保留 `previous_live_turn_waiting_handoff_*` 字段，`background_continuity.py` 下一次读取关闭态 artifact 时还要把它恢复成 `carry_status=carried_into_background_continuity`，并把 profile ref 与 handoff evidence refs 并入 `background_continuity_ref_set`。
 
 当前最小 background carryover 字段至少包括：
 
@@ -566,7 +569,7 @@ process receipt 里，resident governance 必须进入：
 
 在这份合同下，下一轮最值得继续推进的不是再发明新对象，而是：
 
-1. 把 live turn 结束后重新回到 waiting governance 的相位切换继续补成更完整的交接体；当前已由 `resident_governance_handoff.py` 第一轮落下，并已经要求 handoff 原样承接后台治理解释字段与 `resident_background_lineage_state`，使关闭态“为何如此等待”和“以什么后台驻留深度等待”不会在真实回合结束时断开。最新补强要求同一 handoff state 额外写出 `live_turn_waiting_handoff_profile_v0`，把 handoff origin、next required action、background governance driver、next wake expectation、lineage depth、当前语言 refs 数量、长期语言 refs 数量、已承接 presence keys 和 handoff evidence refs 压成一个交接画像；下一拍 heartbeat 与后续 closeout 可以直接读取这份画像，判断这次真实回合为何必须以当前压力重新进入等待治理。
+1. 把 live turn 结束后重新回到 waiting governance 的相位切换继续补成更完整的交接体；当前已由 `resident_governance_handoff.py` 与 `handoff_profile.py` 落下，并已经要求 handoff 原样承接后台治理解释字段与 `resident_background_lineage_state`，使关闭态“为何如此等待”和“以什么后台驻留深度等待”不会在真实回合结束时断开。最新补强已经把 `live_turn_waiting_handoff_profile_v0` 接入下一拍 heartbeat、closeout、process report/digest/receipt 与下一次 background continuity，判断这次真实回合为何必须以当前压力重新进入等待治理。
 2. 继续让 background resume summary 不只用于 closeout/next bootstrap，还能进入更长时标的慢变量收敛与多次唤醒关系阶段稳定化。
 3. 将 `resident_background_lineage_state_v0` 的八个 presence 子面继续接入后续器官，使关系阶段、慢变量收敛、心跳历史、心跳节律解释、语言关注、身份/意识/出生准备、离线学习和梦境醒后整合不只在 state body 中存在，还能反向调制梦境整合、成长补丁和下一轮语言表达。
 4. 继续把 deep persistent / entrenched background presence 对应到后续的长期成长、梦境整合和关系稳定化器官。

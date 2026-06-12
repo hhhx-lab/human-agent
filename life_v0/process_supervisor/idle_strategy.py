@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from life_v0.membrane.queue_e_signals import derive_queue_e_signal_profile
+from .handoff_profile import HANDOFF_CARRY_FIELD_NAMES
 from .offline_learning_signals import (
     build_offline_learning_cumulative_profile,
     derive_offline_learning_profile,
@@ -361,6 +362,7 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "birth_readiness_decision",
     "birth_readiness_next_required_command",
     "birth_readiness_blocked_reasons",
+    *HANDOFF_CARRY_FIELD_NAMES,
 )
 
 

@@ -10,6 +10,7 @@ from .governance_explanation import (
     RESIDENT_GOVERNANCE_EXPLANATION_REF,
     write_resident_governance_explanation,
 )
+from .handoff_profile import HANDOFF_CARRY_FIELD_NAMES
 from .idle_strategy import (
     BODY_RESOURCE_BUDGET_REF,
     BODY_RHYTHM_PULSE_REF,
@@ -1483,6 +1484,9 @@ def write_process_report_bundle(
     )
     if membrane_guard_refs:
         digest["membrane_guard_refs"] = membrane_guard_refs
+    for field_name in HANDOFF_CARRY_FIELD_NAMES:
+        if field_name in idle_governance:
+            digest[field_name] = idle_governance[field_name]
     _apply_resident_process_identity_profile(
         digest,
         resident_process_lease_history_profile=resident_process_lease_history_profile,
@@ -1553,6 +1557,9 @@ def write_process_report_bundle(
             resolved_resident_autonomous_activity_state_ref
         ),
         resident_autonomous_activity_ref_set=resolved_resident_autonomous_activity_ref_set,
+        previous_live_turn_waiting_handoff_profile_ref=idle_governance.get(
+            "previous_live_turn_waiting_handoff_profile_ref"
+        ),
         offline_learning_cumulative_integration_mode=(
             resolved_offline_learning_cumulative_integration_mode
         ),
@@ -1631,6 +1638,7 @@ def build_process_receipt(
     resident_autonomous_activity_ref: str | None = None,
     resident_autonomous_activity_state_ref: str | None = None,
     resident_autonomous_activity_ref_set: list[str] | None = None,
+    previous_live_turn_waiting_handoff_profile_ref: str | None = None,
     offline_learning_cumulative_integration_mode: str | None = None,
     offline_learning_cumulative_relationship_reconsolidation_required: bool | None = None,
     workspace_frame_ref: str | None = None,
@@ -1785,6 +1793,7 @@ def build_process_receipt(
                 resident_process_lease_history_profile_ref,
                 resident_autonomous_activity_ref,
                 resident_autonomous_activity_state_ref,
+                previous_live_turn_waiting_handoff_profile_ref,
                 *(resident_autonomous_activity_ref_set or []),
                 life_context_frame_ref,
                 relation_turn_frame_ref,
