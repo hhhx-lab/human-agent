@@ -453,6 +453,49 @@ class DigitalEntrypointTests(unittest.TestCase):
                     status_state["resident_idle_strategy_state_ref"],
                     status_state["resident_waiting_heartbeat"].values(),
                 )
+                self.assertIn("resident_long_term_residency_status", status_state)
+                self.assertIn("resident_process_lease", status_state)
+                self.assertIn(
+                    "resident_process_lease_history_profile",
+                    status_state,
+                )
+                self.assertEqual(
+                    status_state["resident_process_lease_ref"],
+                    "runtime/state/terminal/resident_process_lease.json",
+                )
+                self.assertEqual(
+                    status_state["resident_process_lease_history_ref"],
+                    "runtime/state/terminal/resident_process_lease_history.jsonl",
+                )
+                self.assertEqual(
+                    status_state["resident_process_lease_history_profile_ref"],
+                    "runtime/state/terminal/resident_process_lease_history_profile.json",
+                )
+                self.assertEqual(
+                    status_state["resident_process_id"],
+                    "resident-process-entry-background-resident",
+                )
+                self.assertEqual(status_state["resident_process_lease_state"], "active")
+                self.assertEqual(
+                    status_state["resident_process_identity_continuity_state"],
+                    "active_residency",
+                )
+                self.assertGreaterEqual(
+                    status_state["resident_process_lease_history_event_count"],
+                    1,
+                )
+                self.assertIn(
+                    "runtime/state/terminal/resident_process_lease.json",
+                    status_state["resident_long_term_residency_status"][
+                        "evidence_refs"
+                    ],
+                )
+                self.assertIn(
+                    "runtime/state/terminal/resident_process_lease_history_profile.json",
+                    status_state["resident_long_term_residency_status"][
+                        "evidence_refs"
+                    ],
+                )
 
                 said = subprocess.run(
                     [
@@ -515,6 +558,22 @@ class DigitalEntrypointTests(unittest.TestCase):
                 stopped_state = json.loads(stopped.stdout)
                 self.assertEqual(stopped_state["status"], "stopped")
                 self.assertFalse(stopped_state["pid_alive"])
+                self.assertEqual(
+                    stopped_state["resident_process_lease_state"],
+                    "closed",
+                )
+                self.assertEqual(
+                    stopped_state["resident_persistent_process_status"],
+                    "closed",
+                )
+                self.assertEqual(
+                    stopped_state["resident_persistent_process_state_ref"],
+                    "runtime/state/terminal/persistent_process_state.json",
+                )
+                self.assertEqual(
+                    stopped_state["resident_persistent_process_report_ref"],
+                    "runtime/reports/latest/digital_life_persistent_process_report.json",
+                )
 
                 final_state = self._read_json(
                     paths["terminal_state"] / "resident_lifecycle_state.json"

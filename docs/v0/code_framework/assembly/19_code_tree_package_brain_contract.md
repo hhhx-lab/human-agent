@@ -150,6 +150,8 @@ life_v0/
 | `cli.py` | 命令路由、严格模式、slice/bridge/process 命令面 | `real` | `cli.py` | `command_router.py`、`strict_mode.py` | `runner_cli_report_contract.md` 对应源文档群 | `source_doc_refs` 族 | CLI receipts、command reports | `tests/bridges/test_emit_report.py`、`tests/bridges/test_first_terminal_turn.py`、`tests/bridges/test_terminal_life_loop.py`、`strict_cli_gate` |
 | `digital_entry.py`、`digital` | repo-local `./digital life` 与安装后 `digital life` 共享的常驻入口 | `real` | `digital_entry.py`、repo-local `digital`、`pyproject.toml` console script `digital` | `bootstrap_entry.py`、`stdin_loop.py`、`resident_lifecycle.py` | `20`、`44-46`、`82`、`89`、`90` | `IdleContinuityFrame`、`LifeContextFrame` | process boot receipts、`digital_life_process_digest.json`、`resident_lifecycle_state.json`、`dialogue_writeback_bundle.json#resident_background_lineage_autonomous_activity_refs` | `tests/process/test_digital_entrypoint.py`、`tests/process/test_packaged_digital_life_entrypoint.py`、`digital_entry_gate` |
 
+当前 `resident_lifecycle.py` 的状态职责已经从 pid/lifecycle 查询扩展为长期驻留证据聚合：`read_resident_lifecycle_status()` 必须生成 `resident_long_term_residency_status_v0`，并在可用时暴露 `resident_process_lease.json`、`resident_process_lease_history_profile.json`、`persistent_process_state.json`、`digital_life_persistent_process_report.json`、`background_convergence_summary.json` 与 `background_convergence_history.json` 的摘要、ref 和可用性字段。`digital_entry.py --status` 只负责打印该视图，不另建调度器。
+
 ## 当前仍未落地、且下一轮最该补的器官文件
 
 这里不再把已经真实存在的第一轮器官继续写成“下一轮必须新增”。

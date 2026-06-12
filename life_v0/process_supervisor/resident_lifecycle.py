@@ -38,6 +38,25 @@ RESIDENT_IDLE_STRATEGY_STATE_REF = (
 RESIDENT_TERMINAL_LIFE_LOOP_STATE_REF = (
     "runtime/state/terminal/terminal_life_loop_state.json"
 )
+RESIDENT_PROCESS_LEASE_REF = "runtime/state/terminal/resident_process_lease.json"
+RESIDENT_PROCESS_LEASE_HISTORY_REF = (
+    "runtime/state/terminal/resident_process_lease_history.jsonl"
+)
+RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF = (
+    "runtime/state/terminal/resident_process_lease_history_profile.json"
+)
+RESIDENT_PERSISTENT_PROCESS_STATE_REF = (
+    "runtime/state/terminal/persistent_process_state.json"
+)
+RESIDENT_PERSISTENT_PROCESS_REPORT_REF = (
+    "runtime/reports/latest/digital_life_persistent_process_report.json"
+)
+RESIDENT_BACKGROUND_CONVERGENCE_SUMMARY_REF = (
+    "runtime/state/terminal/background_convergence_summary.json"
+)
+RESIDENT_BACKGROUND_CONVERGENCE_HISTORY_REF = (
+    "runtime/state/terminal/background_convergence_history.json"
+)
 RESIDENT_BACKGROUND_LOG_REF = "runtime/logs/digital_life_resident.log"
 
 
@@ -550,7 +569,211 @@ def read_resident_lifecycle_status(
         state["resident_terminal_current_mode"] = terminal_life_loop_state.get(
             "current_mode"
         )
+    _attach_long_term_residency_status(
+        state,
+        terminal_dir=terminal_dir,
+        reports_dir=resolved_reports_dir,
+    )
     return ResidentLifecycleResult(exit_code=0, state=state)
+
+
+def _attach_long_term_residency_status(
+    state: dict[str, Any],
+    *,
+    terminal_dir: Path,
+    reports_dir: Path,
+) -> None:
+    lease = _read_json_if_exists(terminal_dir / "resident_process_lease.json")
+    lease_history_profile = _read_json_if_exists(
+        terminal_dir / "resident_process_lease_history_profile.json"
+    )
+    persistent_process_state = _read_json_if_exists(
+        terminal_dir / "persistent_process_state.json"
+    )
+    persistent_process_report = _read_json_if_exists(
+        reports_dir / "digital_life_persistent_process_report.json"
+    )
+    background_convergence_summary = _read_json_if_exists(
+        terminal_dir / "background_convergence_summary.json"
+    )
+    background_convergence_history = _read_json_if_exists(
+        terminal_dir / "background_convergence_history.json"
+    )
+    lease_history_event_count = _jsonl_event_count(
+        terminal_dir / "resident_process_lease_history.jsonl"
+    )
+    long_term_status = {
+        "schema_version": "resident_long_term_residency_status_v0",
+        "resident_process_lease_ref": RESIDENT_PROCESS_LEASE_REF,
+        "resident_process_lease_history_ref": RESIDENT_PROCESS_LEASE_HISTORY_REF,
+        "resident_process_lease_history_profile_ref": (
+            RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
+        ),
+        "persistent_process_state_ref": RESIDENT_PERSISTENT_PROCESS_STATE_REF,
+        "persistent_process_report_ref": RESIDENT_PERSISTENT_PROCESS_REPORT_REF,
+        "background_convergence_summary_ref": (
+            RESIDENT_BACKGROUND_CONVERGENCE_SUMMARY_REF
+        ),
+        "background_convergence_history_ref": (
+            RESIDENT_BACKGROUND_CONVERGENCE_HISTORY_REF
+        ),
+        "resident_process_lease_available": bool(lease),
+        "resident_process_lease_history_available": lease_history_event_count > 0,
+        "resident_process_lease_history_profile_available": bool(
+            lease_history_profile
+        ),
+        "persistent_process_state_available": bool(persistent_process_state),
+        "persistent_process_report_available": bool(persistent_process_report),
+        "background_convergence_summary_available": bool(
+            background_convergence_summary
+        ),
+        "background_convergence_history_available": bool(background_convergence_history),
+    }
+    evidence_refs: list[str] = []
+
+    if lease:
+        state["resident_process_lease"] = lease
+        state["resident_process_lease_ref"] = RESIDENT_PROCESS_LEASE_REF
+        state["resident_process_id"] = lease.get("resident_process_id")
+        state["resident_process_lease_state"] = lease.get("lease_state")
+        state["resident_process_lease_opened_at"] = lease.get("opened_at")
+        state["resident_process_lease_last_seen_at"] = lease.get("last_seen_at")
+        state["resident_process_lease_closed_at"] = lease.get("closed_at")
+        state["resident_process_lease_exit_reason"] = lease.get("exit_reason")
+        state["resident_process_lease_heartbeat_counter"] = lease.get(
+            "heartbeat_counter"
+        )
+        state["resident_process_lease_completed_dialogue_turns"] = lease.get(
+            "completed_dialogue_turns"
+        )
+        evidence_refs.append(RESIDENT_PROCESS_LEASE_REF)
+        long_term_status["resident_process_id"] = lease.get("resident_process_id")
+        long_term_status["resident_process_lease_state"] = lease.get("lease_state")
+        long_term_status["resident_process_lease_heartbeat_counter"] = lease.get(
+            "heartbeat_counter"
+        )
+    if lease_history_event_count:
+        state["resident_process_lease_history_ref"] = RESIDENT_PROCESS_LEASE_HISTORY_REF
+        state["resident_process_lease_history_event_count"] = (
+            lease_history_profile.get("history_event_count")
+            or lease_history_event_count
+        )
+        evidence_refs.append(RESIDENT_PROCESS_LEASE_HISTORY_REF)
+        long_term_status["resident_process_lease_history_event_count"] = state[
+            "resident_process_lease_history_event_count"
+        ]
+    if lease_history_profile:
+        state["resident_process_lease_history_profile"] = lease_history_profile
+        state["resident_process_lease_history_profile_ref"] = (
+            RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF
+        )
+        state["resident_process_identity_continuity_state"] = (
+            lease_history_profile.get("current_identity_continuity_state")
+        )
+        state["resident_process_identity_pressure_level"] = (
+            lease_history_profile.get("identity_pressure_level")
+        )
+        state["resident_process_latest_lease_event_kind"] = (
+            lease_history_profile.get("latest_event_kind")
+        )
+        state["resident_process_recent_ids"] = lease_history_profile.get(
+            "recent_resident_process_ids"
+        )
+        state["resident_process_recent_run_ids"] = lease_history_profile.get(
+            "recent_run_ids"
+        )
+        evidence_refs.append(RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF)
+        long_term_status["resident_process_identity_continuity_state"] = (
+            state["resident_process_identity_continuity_state"]
+        )
+        long_term_status["resident_process_identity_pressure_level"] = (
+            state["resident_process_identity_pressure_level"]
+        )
+        long_term_status["resident_process_latest_lease_event_kind"] = (
+            state["resident_process_latest_lease_event_kind"]
+        )
+    if persistent_process_state:
+        state["resident_persistent_process_state"] = persistent_process_state
+        state["resident_persistent_process_state_ref"] = (
+            RESIDENT_PERSISTENT_PROCESS_STATE_REF
+        )
+        state["resident_persistent_process_status"] = (
+            persistent_process_state.get("status")
+        )
+        state["resident_persistent_background_continuity_mode"] = (
+            persistent_process_state.get("background_continuity_mode")
+        )
+        state["resident_persistent_background_carryover_generation"] = (
+            persistent_process_state.get("background_carryover_generation")
+        )
+        state["resident_persistent_next_required_action"] = (
+            persistent_process_state.get("next_required_action")
+        )
+        evidence_refs.append(RESIDENT_PERSISTENT_PROCESS_STATE_REF)
+        long_term_status["persistent_process_status"] = state[
+            "resident_persistent_process_status"
+        ]
+        long_term_status["persistent_background_continuity_mode"] = state[
+            "resident_persistent_background_continuity_mode"
+        ]
+    if persistent_process_report:
+        state["resident_persistent_process_report"] = persistent_process_report
+        state["resident_persistent_process_report_ref"] = (
+            RESIDENT_PERSISTENT_PROCESS_REPORT_REF
+        )
+        evidence_refs.append(RESIDENT_PERSISTENT_PROCESS_REPORT_REF)
+    if background_convergence_summary:
+        state["resident_background_convergence_summary"] = (
+            background_convergence_summary
+        )
+        state["resident_background_convergence_summary_ref"] = (
+            RESIDENT_BACKGROUND_CONVERGENCE_SUMMARY_REF
+        )
+        state["resident_background_convergence_state"] = (
+            background_convergence_summary.get("convergence_state")
+        )
+        state["resident_background_convergence_pressure_level"] = (
+            background_convergence_summary.get("convergence_pressure_level")
+        )
+        state["resident_background_trait_convergence_score"] = (
+            background_convergence_summary.get("trait_convergence_score")
+        )
+        evidence_refs.append(RESIDENT_BACKGROUND_CONVERGENCE_SUMMARY_REF)
+        long_term_status["background_convergence_state"] = state[
+            "resident_background_convergence_state"
+        ]
+        long_term_status["background_convergence_pressure_level"] = state[
+            "resident_background_convergence_pressure_level"
+        ]
+    if background_convergence_history:
+        state["resident_background_convergence_history"] = (
+            background_convergence_history
+        )
+        state["resident_background_convergence_history_ref"] = (
+            RESIDENT_BACKGROUND_CONVERGENCE_HISTORY_REF
+        )
+        state["resident_background_convergence_trend_state"] = (
+            background_convergence_history.get("trend_state")
+        )
+        state["resident_background_convergence_history_window_size"] = (
+            background_convergence_history.get("history_window_size")
+        )
+        state["resident_background_convergence_history_focus"] = (
+            background_convergence_history.get("trait_convergence_history_focus")
+        )
+        evidence_refs.append(RESIDENT_BACKGROUND_CONVERGENCE_HISTORY_REF)
+        long_term_status["background_convergence_trend_state"] = state[
+            "resident_background_convergence_trend_state"
+        ]
+        long_term_status["background_convergence_history_window_size"] = state[
+            "resident_background_convergence_history_window_size"
+        ]
+
+    if evidence_refs:
+        long_term_status["evidence_refs"] = _dedupe_strings(evidence_refs)
+    state["resident_long_term_residency_status"] = {
+        key: value for key, value in long_term_status.items() if value is not None
+    }
 
 
 def _base_lifecycle_state(
@@ -620,6 +843,21 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
         if isinstance(payload, dict):
             events.append(payload)
     return events
+
+
+def _jsonl_event_count(path: Path) -> int:
+    return len(_read_jsonl(path))
+
+
+def _dedupe_strings(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if not value or value in seen:
+            continue
+        seen.add(value)
+        result.append(value)
+    return result
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:

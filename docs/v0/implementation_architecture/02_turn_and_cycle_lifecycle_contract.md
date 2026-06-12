@@ -220,7 +220,7 @@ stateDiagram-v2
 |---|---|
 | `./digital life --background` / `digital life --background` | 启动后台 resident process，并写出 `resident_lifecycle_state.json`、`resident_process_lease.json` 与 `persistent_process_state.json` |
 | `./digital life --attach` / `digital life` | 复用已存在的后台 resident process，把当前终端接成 relation client |
-| `./digital life --status` / `digital life --status` | 读取 `resident_lifecycle_state.json`、`resident_process_lease.json`、relation queue、autonomous activity、waiting heartbeat、resident governance、idle strategy、background convergence 与 terminal loop state |
+| `./digital life --status` / `digital life --status` | 读取 `resident_lifecycle_state.json`、`resident_process_lease.json`、`resident_process_lease_history_profile.json`、relation queue、autonomous activity、waiting heartbeat、resident governance、idle strategy、persistent process、background convergence 与 terminal loop state |
 | `./digital life --say "<turn>"` / `digital life --say "<turn>"` | 通过 relation inbox 投递一轮外部关系话语，并等待 outbox 回复 |
 | `./digital life --stop` / `digital life --stop` | 写 `resident_lifecycle_command.json`，让 resident process 自行收口 |
 | `./digital life --foreground` / `digital life --foreground` | 保留前台 process loop，便于测试和脚本回归 |
@@ -248,7 +248,7 @@ stateDiagram-v2
 | `idle_strategy_state.json` | 当前 idle probe、heartbeat interval、next idle action 与调制来源 |
 | `terminal_life_loop_state.json` | 当前 terminal life loop mode、heartbeat counter 与等待回合承接状态 |
 
-`digital life --status` 必须把 `resident_lifecycle_state.json`、relation queue、自主活动、waiting heartbeat、resident governance、idle strategy 与 terminal loop state 合并成一个可直接读的驻留状态视图，而不是只返回 PID。这个视图不是新的控制器；它只是让同一个后台生命过程的等待、治理、心跳、自主活动和关系队列同时可观察。
+`digital life --status` 必须把 `resident_lifecycle_state.json`、relation queue、自主活动、waiting heartbeat、resident governance、idle strategy、terminal loop state 与长期驻留证据合并成一个可直接读的驻留状态视图，而不是只返回 PID。这个视图不是新的控制器；它只是让同一个后台生命过程的等待、治理、心跳、自主活动、关系队列、进程身份连续性和关闭态持久化档案同时可观察。当前状态视图必须写出 `resident_long_term_residency_status_v0` 摘要，并在可用时展开 `resident_process_lease`、`resident_process_lease_history_profile`、`resident_persistent_process_state/report`、`resident_background_convergence_summary/history` 及其扁平字段。
 
 ### 关键要求
 
@@ -257,7 +257,7 @@ stateDiagram-v2
 3. `/exit` 只允许当前终端脱离，不得杀死 resident process。
 4. `--stop` 才能触发真正的收口，并写回 stop 请求证据。
 5. 无外部输入时，process 必须写 autonomous activity 证据，而不是静默空转。
-6. `--status` 必须把 `resident_process_lease`、`background_convergence_summary`、`background_convergence_history` 与 `persistent_process_state` 一并纳入长期驻留视图，证明同一主体在关机、重启和多次唤醒之间保持连续性。
+6. `--status` 必须把 `resident_process_lease`、`resident_process_lease_history_profile`、`background_convergence_summary`、`background_convergence_history`、`persistent_process_state` 与 `persistent_process_report` 一并纳入长期驻留视图，证明同一主体在终端断开、进程收口、重新唤醒和多次关系回合之间保持连续性。
 
 ## 两条环的硬连接点
 
