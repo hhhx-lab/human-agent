@@ -210,6 +210,7 @@ class PackagedDigitalLifeEntrypointTests(
                 "--receipts",
                 str(runtime_paths["receipts"]),
                 "--stop",
+                "--json",
                 "--stop-timeout-seconds",
                 "30",
             ]
@@ -281,6 +282,7 @@ class PackagedDigitalLifeEntrypointTests(
                         "--receipts",
                         str(runtime_paths["receipts"]),
                         "--status",
+                        "--json",
                     ],
                     cwd=self.repo_root,
                     text=True,

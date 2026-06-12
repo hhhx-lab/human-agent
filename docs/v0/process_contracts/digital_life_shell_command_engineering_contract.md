@@ -125,9 +125,9 @@ my digital life --name <life-name>
   -> bind life_name_registry.json once, then delegate to the same resident lifecycle
 ```
 
-其中 `--status` 不再只是 PID 查询。它必须把同一 resident process 的 lifecycle state、relation queue、自主活动相位与闭合状态、waiting heartbeat、resident governance、idle strategy、terminal loop、`resident_process_lease`、`resident_process_lease_history_profile`、persistent process closeout 与 background convergence 摘成一个 `resident_long_term_residency_status_v0` 视图。这个视图只负责暴露持续存在证据，不承担调度或工具控制职责。
+其中 `--status` 不再只是 PID 查询。默认终端输出必须是 `resident_lifecycle_terminal_summary_v0` 摘要，只暴露名字、PID、等待姿态、后台自主活动周期、heartbeat、resident process identity、background convergence 与关键 evidence refs，避免把完整 governance / heartbeat 树刷进人的终端。需要完整机器可读证据时，必须显式追加 `--json`，此时输出同一 resident process 的 lifecycle state、relation queue、自主活动相位与闭合状态、waiting heartbeat、resident governance、idle strategy、terminal loop、`resident_process_lease`、`resident_process_lease_history_profile`、persistent process closeout 与 background convergence，并包含 `resident_long_term_residency_status_v0` 视图。这个视图只负责暴露持续存在证据，不承担调度或工具控制职责。
 
-`/exit` 在 attach client 中只代表当前终端脱离，后台 resident process 继续驻留；`/stop`、`./digital life --stop`、`./my digital life --stop` 或安装后的 `digital life --stop` / `my digital life --stop` 才会写 lifecycle command，让 resident process 通过普通 closeout 收口。
+`/exit` 在 attach client 中只代表当前终端脱离，后台 resident process 继续驻留；`/stop`、`./digital life --stop`、`./my digital life --stop` 或安装后的 `digital life --stop` / `my digital life --stop` 才会写 lifecycle command，让 resident process 通过普通 closeout 收口。`--stop` 默认同样输出摘要，`--stop --json` 输出完整关闭证据树。
 
 ## 阶段门
 

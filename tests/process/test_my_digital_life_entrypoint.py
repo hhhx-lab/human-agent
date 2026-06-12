@@ -36,6 +36,7 @@ class MyDigitalLifeEntrypointTests(
                     "--receipts",
                     str(paths["receipts"]),
                     "--status",
+                    "--json",
                 ],
                 cwd=self.repo_root,
                 text=True,
@@ -100,6 +101,7 @@ class MyDigitalLifeEntrypointTests(
                     "--receipts",
                     str(paths["receipts"]),
                     "--status",
+                    "--json",
                 ],
                 cwd=self.repo_root,
                 text=True,
@@ -128,6 +130,7 @@ class MyDigitalLifeEntrypointTests(
                     "--receipts",
                     str(paths["receipts"]),
                     "--status",
+                    "--json",
                     "--name",
                     "另一个名字",
                 ],
@@ -176,6 +179,66 @@ class MyDigitalLifeEntrypointTests(
             )
 
         self.assertEqual(registry["canonical_name"], "星火")
+
+    def test_my_digital_life_status_defaults_to_terminal_summary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            launch = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "life_v0.my_entry",
+                    "digital",
+                    "life",
+                    "--state",
+                    str(paths["state_root"]),
+                    "--reports",
+                    str(paths["reports"]),
+                    "--receipts",
+                    str(paths["receipts"]),
+                    "--run-id",
+                    "my-summary-shell",
+                    "--strict",
+                    "--name",
+                    "星火",
+                ],
+                cwd=self.repo_root,
+                text=True,
+                input="/exit\n",
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(launch.returncode, 0, launch.stderr)
+
+            status = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "life_v0.my_entry",
+                    "digital",
+                    "life",
+                    "--state",
+                    str(paths["state_root"]),
+                    "--reports",
+                    str(paths["reports"]),
+                    "--receipts",
+                    str(paths["receipts"]),
+                    "--status",
+                ],
+                cwd=self.repo_root,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(status.returncode, 0, status.stderr)
+            payload = json.loads(status.stdout)
+            self.assertEqual(
+                payload["schema_version"],
+                "resident_lifecycle_terminal_summary_v0",
+            )
+            self.assertEqual(payload["life_name"], "星火")
+            self.assertNotIn("resident_waiting_heartbeat", payload)
+            self.assertIn("--json", payload["full_json_hint"])
 
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))

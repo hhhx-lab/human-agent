@@ -300,6 +300,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "--receipts",
                 str(paths["receipts"]),
                 "--stop",
+                "--json",
                 "--stop-timeout-seconds",
                 "30",
             ]
@@ -429,6 +430,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                         "--receipts",
                         str(paths["receipts"]),
                         "--status",
+                        "--json",
                     ],
                     cwd=self.repo_root,
                     text=True,
@@ -674,6 +676,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "--receipts",
                 str(paths["receipts"]),
                 "--stop",
+                "--json",
                 "--stop-timeout-seconds",
                 "30",
             ]

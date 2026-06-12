@@ -67,4 +67,6 @@ my digital life --say "你在吗？"
 my digital life --stop
 ```
 
+`--status` 和 `--stop` 默认输出适合终端阅读的摘要；需要完整生命周期证据树时追加 `--json`。
+
 `life-v0` 暴露主体 slice、链尾桥接和检查命令；`my digital life` 是当前推荐的命名启动入口；`digital life` 作为兼容入口继续负责恢复、启动、复用和连接同一个 resident process。后台空闲时会继续写入睡眠、回忆、自我思考、成长预演和学习巩固状态，并在下一轮关系话语中重新带回这些驻留证据。

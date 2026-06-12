@@ -61,7 +61,7 @@ def build_parser() -> argparse.ArgumentParser:
     life.add_argument(
         "--status",
         action="store_true",
-        help="Print the current resident lifecycle state.",
+        help="Print a compact resident lifecycle status for the terminal.",
     )
     life.add_argument(
         "--stop",
@@ -83,6 +83,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Run the foreground process loop even when stdin is an interactive terminal.",
     )
+    life.add_argument(
+        "--json",
+        action="store_true",
+        help="Print the full machine-readable lifecycle JSON for --status or --stop.",
+    )
     life.add_argument("--say-timeout-seconds", type=float, default=30.0)
     life.add_argument("--resident-sleep-seconds", type=float, default=1.0)
     life.add_argument("--stop-timeout-seconds", type=float, default=10.0)
@@ -103,14 +108,14 @@ def main(argv: list[str] | None = None) -> int:
                 terminal_dir=terminal_dir,
                 reports_dir=reports_dir,
             )
-            print(json.dumps(result.state, ensure_ascii=False, indent=2))
+            print(_format_lifecycle_output(result.state, action="status", full=args.json))
             return result.exit_code
         if args.stop:
             result = request_resident_stop(
                 terminal_dir=terminal_dir,
                 timeout_seconds=args.stop_timeout_seconds,
             )
-            print(json.dumps(result.state, ensure_ascii=False, indent=2))
+            print(_format_lifecycle_output(result.state, action="stop", full=args.json))
             return result.exit_code
         if args.say is not None:
             result = send_resident_relation_turn(
@@ -249,6 +254,86 @@ def _should_attach_resident(args: argparse.Namespace) -> bool:
     if args.foreground or args.resident:
         return False
     return bool(sys.stdin.isatty())
+
+
+def _format_lifecycle_output(
+    state: dict,
+    *,
+    action: str,
+    full: bool,
+) -> str:
+    if full:
+        return json.dumps(state, ensure_ascii=False, indent=2)
+    return json.dumps(
+        _lifecycle_terminal_summary(state, action=action),
+        ensure_ascii=False,
+        indent=2,
+    )
+
+
+def _lifecycle_terminal_summary(state: dict, *, action: str) -> dict:
+    long_term = state.get("resident_long_term_residency_status") or {}
+    summary = {
+        "schema_version": "resident_lifecycle_terminal_summary_v0",
+        "action": action,
+        "status": state.get("status"),
+        "run_id": state.get("run_id"),
+        "pid": state.get("pid"),
+        "pid_alive": state.get("pid_alive"),
+        "life_name": state.get("life_name"),
+        "life_name_id": state.get("life_name_id"),
+        "life_name_lock_state": state.get("life_name_lock_state"),
+        "residency_mode": state.get("residency_mode"),
+        "residency_posture": state.get("residency_posture"),
+        "relation_queue_status": state.get("resident_relation_queue_status"),
+        "relation_last_completed_sequence": state.get(
+            "resident_relation_last_completed_sequence"
+        ),
+        "autonomous_activity_count": state.get("resident_autonomous_activity_count"),
+        "autonomous_activity_last_kind": state.get(
+            "resident_autonomous_activity_last_kind"
+        ),
+        "autonomous_activity_cycle_completion_count": state.get(
+            "resident_autonomous_activity_cycle_completion_count"
+        ),
+        "autonomous_activity_cycle_coverage_complete": state.get(
+            "resident_autonomous_activity_cycle_coverage_complete"
+        ),
+        "autonomous_activity_next_kind": state.get(
+            "resident_autonomous_activity_next_kind"
+        ),
+        "waiting_heartbeat_counter": state.get("resident_waiting_heartbeat_counter"),
+        "waiting_mode": state.get("resident_waiting_mode"),
+        "next_required_action": state.get("resident_next_required_action"),
+        "governance_phase": state.get("resident_governance_phase"),
+        "governance_attention_target": state.get(
+            "resident_governance_attention_target"
+        ),
+        "idle_probe_mode": state.get("resident_idle_probe_mode"),
+        "next_idle_action": state.get("resident_next_idle_action"),
+        "heartbeat_interval_ms": state.get("resident_heartbeat_interval_ms"),
+        "terminal_current_mode": state.get("resident_terminal_current_mode"),
+        "resident_process_lease_state": state.get("resident_process_lease_state"),
+        "resident_process_identity_continuity_state": state.get(
+            "resident_process_identity_continuity_state"
+        ),
+        "resident_process_lease_history_event_count": state.get(
+            "resident_process_lease_history_event_count"
+        ),
+        "persistent_process_status": state.get("resident_persistent_process_status")
+        or long_term.get("persistent_process_status"),
+        "background_convergence_state": state.get(
+            "resident_background_convergence_state"
+        )
+        or long_term.get("background_convergence_state"),
+        "background_convergence_pressure_level": state.get(
+            "resident_background_convergence_pressure_level"
+        )
+        or long_term.get("background_convergence_pressure_level"),
+        "evidence_refs": long_term.get("evidence_refs", []),
+        "full_json_hint": "pass --json to print the complete lifecycle evidence tree",
+    }
+    return {key: value for key, value in summary.items() if value is not None}
 
 
 def ensure_minimal_digital_life_runtime(

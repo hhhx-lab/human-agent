@@ -13,7 +13,7 @@
 
 - `test_digital_life_shell_command.py`：repo-local one-shot restore shell。
 - `test_digital_entrypoint.py`：repo-local `./digital life` 入口。
-- `test_packaged_digital_life_entrypoint.py`：安装后 `digital life` 命令面，包括前台出生、空 runtime bootstrap、后台 resident、`--status`、`--say` 和 `--stop`。
+- `test_packaged_digital_life_entrypoint.py`：安装后 `digital life` 命令面，包括前台出生、空 runtime bootstrap、后台 resident、`--status --json`、`--say` 和 `--stop --json`。
 - `test_my_digital_life_entrypoint.py`：安装推荐入口 `my digital life`，覆盖第一次命名锁、后续名字恢复和错名字拒绝。
 - `test_persistent_digital_life_process.py`：最小常驻生命进程、waiting heartbeat 与恢复链。
 
