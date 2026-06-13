@@ -32,10 +32,21 @@ life_v0/membrane/periphery_normalizer.py
 ### `00-257` 母体
 
 - `docs/04_sensory_thalamus_interoception.md`
+- `docs/09_language_symbolic_top_layer.md`
+- `docs/11_neuromodulation_and_signal_media.md`
 - `docs/22_state_transition_and_threshold_model.md`
 - `docs/64_real_runtime_observation_ingestion_policy.md`
 - `docs/68_runtime_observation_report_mock_and_redaction_fixture.md`
 - `docs/72_runtime_side_effect_classifier_and_coexistence_snapshot_policy.md`
+- `docs/75_external_irreversible_action_confirmation_policy.md`
+- `docs/01v_prediction_active_inference_runtime_matrix.md`
+
+### `real—live0` 机制档案
+
+- `docs/real—live0/09_prediction_perception_world_contact.md`
+- `docs/real—live0/11_life_membrane_validation.md`
+- `docs/real—live0/12_neuromodulation_signal_media.md`
+- `docs/real—live0/16_runtime_code_chain_crosswalk.md`
 
 ### v0 合同
 
@@ -81,6 +92,17 @@ life_v0/membrane/periphery_normalizer.py
 - `runtime/state/membrane/world_contact_summary.json`
 - `runtime/state/action/responsibility_loop_state.json`
 - `runtime/state/observation/runtime_observation_intake.json`
+
+## 对象字段最小定义
+
+| 对象 | 必须字段 | 含义 |
+|---|---|---|
+| `WorldObservationRoute` | `selected_route`、`observation_targets`、`expected_observation_refs`、`priority_reasons`、`source_prediction_refs` | 把主动采样从内部计划变成世界观察路线 |
+| `PeripheryNormalizationTrace` | `normalized_channels`、`promoted_channels`、`deferred_channels`、`suppressed_channels`、`body_pressure`、`relationship_pressure` | 把外周输入按身体/关系/预测压力升权、降权或延迟 |
+| `RuntimeObservationIntake` | `world_observation_route_ref`、`periphery_normalization_ref`、`truth_gate_ref` | 让 S05 验证膜能读到 Packet B 状态 |
+| `WorldContactSummary` | `world_observation_route_ref`、`periphery_normalization_ref`、`release_posture` | 世界接触总结必须带观察路径和外周归一化证据 |
+
+这些对象不能成为工具路由。它们只回答：当前生命需要观察什么、哪些外周信号可信、哪些信号要延迟、哪些观察会进入验证和责任链。
 
 ## 施工算法
 
@@ -150,6 +172,15 @@ life_v0/membrane/periphery_normalizer.py
 - 必须带上：
   - `runtime/state/observation/world_observation_route.json`
   - `runtime/state/observation/periphery_normalization_trace.json`
+
+## 协同与对抗
+
+| 关系 | 协同 | 对抗 |
+|---|---|---|
+| 预测 vs 观察 | `ActiveSamplingPlan` 生成观察目标，Packet B 落成 route | 观察结果不能直接变成事实，必须过 `ObservationTruthGate` |
+| 内感受 vs 外周 | 疲惫、痛苦、关系压力改变 channel priority | 高 arousal 不能让外周噪声升格为事实 |
+| 世界接触 vs 责任 | world contact summary 带 observation refs 进入责任链 | 外部接触不能绕过 confirmation binding |
+| 验证膜 vs 记忆写入 | S05 验证后才允许长期写入 | 推断、梦境或未验证外周状态不能污染记忆 |
 
 ## 测试面
 

@@ -71,7 +71,7 @@ my digital life --status
 {
   "model_expression_status": "model_expression_applied",
   "post_expression_gate_status": "accepted",
-  "fallback_to_deterministic_response": false,
+  "audited_expression_material_release_disabled": true,
   "model_provider": "openai-compatible",
   "model_name": "gpt-5.5",
   "model_api_key_present": true,
@@ -79,7 +79,7 @@ my digital life --status
 }
 ```
 
-这条 gate 的作用是确认 live0 已经通过真实模型表达链，而不是只通过确定性 fallback 回应。
+这条 gate 的作用是确认 live0 已经通过真实模型表达链，同时确定性审计材料不会被释放成自然语言回应。
 
 ## 报告结构
 

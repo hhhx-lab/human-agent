@@ -23,6 +23,15 @@
   -> 但仍存在若干“理论到工程的压缩位”需要继续在 v0 中补清
 ```
 
+## 当前寄存器的新入口
+
+本寄存器现在必须同时引用两类硬入口：
+
+1. `docs/v0/mapping/theory_engineering_code_trace_matrix.md`：检查 `00-258` 是否已经映射到工程文档、`life_v0` 代码包、runtime 证据和测试/gate。
+2. `docs/real—live0/00_reading_map_and_traceability.md` 与 `docs/real—live0/16_runtime_code_chain_crosswalk.md`：检查理论机制是否已经压成对象、字段、消费者、断链检查和下一轮恢复。
+
+因此，“没有基础主题空白”不等于“实现时可以不读理论”。它只表示不再继续线性扩写总论文档链；每个代码模块仍然必须回读对应理论族和 `real—live0` 专题。
+
 ## 当前不再视为理论空洞的内容
 
 下面这些以后不要再当成“还没理论化”的主题：
@@ -100,3 +109,18 @@
 4. 然后直接进入 `Queue D -> Queue E` 的代码实现
 
 这才是让理论真正“完成”的方式：不是再写一遍，而是让它进入代码与运行证据。
+
+## 代码前压缩检查
+
+任何“理论已经够了，可以开工”的判断，都必须通过下面的小检查：
+
+| 检查项 | 必须能指向 |
+|---|---|
+| 理论源 | `docs/00-258` 中的具体文档族 |
+| 机制专题 | `docs/real—live0/*.md` 中的专题和机制段 |
+| 工程合同 | `docs/v0/slice_contracts`、`code_framework/queues` 或 `playbooks` |
+| 代码器官 | `life_v0/...` 首写函数和消费函数 |
+| runtime 证据 | `runtime/state`、`runtime/reports/latest`、`runtime/receipts` |
+| gate | `tests/...` 或 `life-v0` strict command |
+
+若某项无法填写，缺的不是新总论，而是当前 v0 工程文档或代码对象还没把理论压实。

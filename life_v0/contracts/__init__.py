@@ -59,6 +59,15 @@ V0_DOC_FILE_RULES: dict[str, dict[str, Any]] = {
             "docs/v0/mapping/readme_block_engineering_realization_v0.md",
         ],
     },
+    "docs/v0/entry/v0_current_iteration_plan.md": {
+        "role": "current_iteration_plan",
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": [
+            "docs/v0/entry/v0_module_execution_catalog.md",
+            "docs/real—live0/17_current_iteration_mechanism_to_code_plan.md",
+        ],
+    },
     "docs/v0/mapping/readme_block_engineering_realization_v0.md": {
         "role": "readme_block_realization_map",
         "slice": ACTIVE_SLICE,
@@ -1146,6 +1155,13 @@ def run_check_v0_contracts(
         indexed_documents=indexed_documents,
         blocked_reasons=blocked_reasons,
     )
+    engineering_consumption = _build_engineering_document_consumption_matrix(
+        run_id=run_id,
+        generated_at=generated_at,
+        docs_dir=docs_dir,
+        indexed_documents=indexed_documents,
+        blocked_reasons=blocked_reasons,
+    )
     slice_matrix = _build_slice_report_receipt_matrix(
         run_id=run_id,
         generated_at=generated_at,
@@ -1185,6 +1201,7 @@ def run_check_v0_contracts(
         blocked_reasons=blocked_reasons,
         slice_matrix=slice_matrix,
         doc_to_code=doc_to_code,
+        engineering_consumption=engineering_consumption,
         activation_preflight_allowed=activation_preflight_allowed,
         next_allowed_slices=next_allowed_slices,
     )
@@ -1214,6 +1231,10 @@ def run_check_v0_contracts(
         receipts_dir.mkdir(parents=True, exist_ok=True)
         _write_json(contracts_dir / "v0_contract_file_index.json", contract_index)
         _write_json(contracts_dir / "doc_to_code_coverage_matrix.json", doc_to_code)
+        _write_json(
+            contracts_dir / "engineering_document_consumption_matrix.json",
+            engineering_consumption,
+        )
         _write_json(contracts_dir / "slice_report_receipt_matrix.json", slice_matrix)
         _write_json(contracts_dir / "runtime_carrier_coverage_matrix.json", carrier_matrix)
         _write_json(contracts_dir / "first_activation_preflight_contract_check.json", preflight)
@@ -1241,7 +1262,8 @@ def _build_contract_file_index(
 ) -> dict[str, Any]:
     files: dict[str, Any] = {}
     missing_files: list[str] = []
-    for rel_path, rule in V0_DOC_FILE_RULES.items():
+    required_rules = _contract_file_rules_with_discovered_docs(docs_dir)
+    for rel_path, rule in required_rules.items():
         file_path = docs_dir.parent / rel_path
         exists = file_path.exists()
         if not exists:
@@ -1263,6 +1285,7 @@ def _build_contract_file_index(
         "generated_at": generated_at,
         "files": files,
         "missing_files": missing_files,
+        "coverage_summary": _contract_file_coverage_summary(files),
     }
 
 
@@ -1316,6 +1339,112 @@ def _build_doc_to_code_coverage_matrix(
             "total_documents": len(documents),
             "uncovered_docs": uncovered_docs,
             "missing_documents": missing_documents,
+        },
+    }
+
+
+def _build_engineering_document_consumption_matrix(
+    *,
+    run_id: str,
+    generated_at: str,
+    docs_dir: Path,
+    indexed_documents: dict[str, dict[str, Any]],
+    blocked_reasons: list[str],
+) -> dict[str, Any]:
+    rows: dict[str, Any] = {}
+    uncovered_documents: list[str] = []
+    missing_index_documents: list[str] = []
+    missing_code_consumers: list[str] = []
+    missing_runtime_evidence: list[str] = []
+    missing_test_gates: list[str] = []
+    required_docs = _discover_contract_markdown_docs(docs_dir.parent)
+
+    for rel_path in required_docs:
+        document = indexed_documents.get(rel_path)
+        if not document:
+            missing_index_documents.append(rel_path)
+            carriers: list[str] = []
+            engineering_slice = None
+            readme_block_ref = None
+        else:
+            carriers = _string_list(document.get("runtime_carriers"))
+            engineering_slice = document.get("engineering_slice")
+            readme_block_ref = document.get("readme_block")
+        code_consumers = _carrier_to_code_packages(carriers)
+        state_namespaces = _carrier_to_state_namespaces(carriers)
+        report_refs = _carrier_to_reports(carriers)
+        receipt_refs = _carrier_to_receipts(carriers)
+        test_gates = _carrier_to_test_gates(carriers)
+        runtime_evidence_refs = _dedupe_string_list(
+            state_namespaces + report_refs + receipt_refs
+        )
+
+        if not carriers:
+            uncovered_documents.append(rel_path)
+        if not code_consumers:
+            missing_code_consumers.append(rel_path)
+        if not runtime_evidence_refs:
+            missing_runtime_evidence.append(rel_path)
+        if not test_gates:
+            missing_test_gates.append(rel_path)
+
+        rows[rel_path] = {
+            "engineering_slice": engineering_slice,
+            "readme_block_ref": readme_block_ref,
+            "runtime_carrier_refs": carriers,
+            "code_consumer_refs": code_consumers,
+            "runtime_evidence_refs": runtime_evidence_refs,
+            "test_gate_refs": test_gates,
+            "consumption_status": "closed"
+            if carriers and code_consumers and runtime_evidence_refs and test_gates
+            else "blocked",
+        }
+
+    if missing_index_documents:
+        blocked_reasons.append(
+            "engineering_doc_consumption_gate missing doc index rows: "
+            + ", ".join(missing_index_documents)
+        )
+    if uncovered_documents:
+        blocked_reasons.append(
+            "engineering_doc_consumption_gate missing runtime carriers: "
+            + ", ".join(uncovered_documents)
+        )
+    if missing_code_consumers:
+        blocked_reasons.append(
+            "engineering_doc_consumption_gate missing code consumers: "
+            + ", ".join(missing_code_consumers)
+        )
+    if missing_runtime_evidence:
+        blocked_reasons.append(
+            "engineering_doc_consumption_gate missing runtime evidence: "
+            + ", ".join(missing_runtime_evidence)
+        )
+    if missing_test_gates:
+        blocked_reasons.append(
+            "engineering_doc_consumption_gate missing test gates: "
+            + ", ".join(missing_test_gates)
+        )
+
+    return {
+        "schema_version": "engineering_document_consumption_matrix_v0",
+        "run_id": run_id,
+        "generated_at": generated_at,
+        "documents": rows,
+        "coverage_summary": {
+            "total_documents": len(rows),
+            "closed_documents": len(
+                [
+                    row
+                    for row in rows.values()
+                    if row.get("consumption_status") == "closed"
+                ]
+            ),
+            "missing_index_documents": missing_index_documents,
+            "uncovered_documents": uncovered_documents,
+            "missing_code_consumers": missing_code_consumers,
+            "missing_runtime_evidence": missing_runtime_evidence,
+            "missing_test_gates": missing_test_gates,
         },
     }
 
@@ -1476,6 +1605,7 @@ def _build_report(
     blocked_reasons: list[str],
     slice_matrix: dict[str, Any],
     doc_to_code: dict[str, Any],
+    engineering_consumption: dict[str, Any],
     activation_preflight_allowed: bool,
     next_allowed_slices: list[str],
 ) -> dict[str, Any]:
@@ -1499,6 +1629,10 @@ def _build_report(
             for key, value in slice_matrix.get("slices", {}).items()
         },
         "doc_to_code_coverage": doc_to_code.get("coverage_summary", {}),
+        "engineering_document_consumption": engineering_consumption.get(
+            "coverage_summary",
+            {},
+        ),
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
         "activation_preflight_allowed": activation_preflight_allowed,
@@ -1545,7 +1679,7 @@ def _build_receipt(
     input_hashes: dict[str, str] = {}
     if doc_index_path.exists():
         input_hashes["runtime/docs/doc_carrier_index.json"] = _sha256(doc_index_path)
-    for rel_path in V0_DOC_FILE_RULES:
+    for rel_path in _contract_file_rules_with_discovered_docs(docs_dir):
         doc_path = docs_dir.parent / rel_path
         if doc_path.exists():
             input_hashes[rel_path] = _sha256(doc_path)
@@ -1553,6 +1687,7 @@ def _build_receipt(
     output_paths = [
         state_dir / "contracts" / "v0_contract_file_index.json",
         state_dir / "contracts" / "doc_to_code_coverage_matrix.json",
+        state_dir / "contracts" / "engineering_document_consumption_matrix.json",
         state_dir / "contracts" / "slice_report_receipt_matrix.json",
         state_dir / "contracts" / "runtime_carrier_coverage_matrix.json",
         state_dir / "contracts" / "first_activation_preflight_contract_check.json",
@@ -1575,11 +1710,98 @@ def _build_receipt(
     }
 
 
+def _contract_file_rules_with_discovered_docs(
+    docs_dir: Path,
+) -> dict[str, dict[str, Any]]:
+    rules = dict(V0_DOC_FILE_RULES)
+    docs_root = docs_dir.parent
+    for rel_path in _discover_contract_markdown_docs(docs_root):
+        if rel_path not in rules:
+            rules[rel_path] = _fallback_contract_rule(rel_path)
+    return dict(sorted(rules.items()))
+
+
+def _discover_contract_markdown_docs(docs_root: Path) -> list[str]:
+    discovered: list[str] = []
+    for base in ("docs/v0", "docs/real—live0"):
+        base_path = docs_root / base
+        if not base_path.exists():
+            continue
+        for path in sorted(base_path.rglob("*.md")):
+            discovered.append(path.relative_to(docs_root).as_posix())
+    return discovered
+
+
+def _fallback_contract_rule(rel_path: str) -> dict[str, Any]:
+    if rel_path.startswith("docs/real—live0/"):
+        role = "real_live0_mechanism_code_profile"
+        source_refs = [
+            "docs/real—live0/00_reading_map_and_traceability.md",
+            "docs/real—live0/16_runtime_code_chain_crosswalk.md",
+            "docs/real—live0/17_current_iteration_mechanism_to_code_plan.md",
+            "docs/v0/entry/v0_current_iteration_plan.md",
+        ]
+    else:
+        role = "v0_engineering_contract_discovered"
+        source_refs = [
+            "docs/v0/README.md",
+            "docs/v0/entry/v0_module_execution_catalog.md",
+            "docs/v0/mapping/theory_engineering_code_trace_matrix.md",
+        ]
+    return {
+        "role": role,
+        "slice": ACTIVE_SLICE,
+        "status": "closed",
+        "source_refs": source_refs,
+    }
+
+
+def _contract_file_coverage_summary(files: dict[str, Any]) -> dict[str, Any]:
+    v0_files = [path for path in files if path.startswith("docs/v0/")]
+    real_live0_files = [
+        path for path in files if path.startswith("docs/real—live0/")
+    ]
+    missing_files = [path for path, row in files.items() if not row.get("exists")]
+    doc_index_missing = [
+        path for path, row in files.items() if not row.get("doc_index_present")
+    ]
+    return {
+        "total_required_files": len(files),
+        "v0_required_files": len(v0_files),
+        "real_live0_required_files": len(real_live0_files),
+        "missing_file_count": len(missing_files),
+        "missing_files": missing_files,
+        "doc_index_missing_count": len(doc_index_missing),
+        "doc_index_missing_files": doc_index_missing,
+    }
+
+
 def _carrier_to_code_packages(carriers: list[str]) -> list[str]:
     mapping = {
         "DocCorpusIngestor": "life_v0/doc_index.py",
         "DirectionLockKernel": "life_v0/direction/",
         "SourceAuthorityRegistry": "life_v0/authority/",
+        "AuthorityReadinessRuntime": "life_v0/authority/",
+        "BrainRegionNetworkRuntime": "life_v0/neural_core/",
+        "MultiscaleBrainGraphRuntime": "life_v0/neural_core/",
+        "BodySignalRuntime": "life_v0/body/",
+        "SignalMediaRuntime": "life_v0/neural_core/",
+        "PredictionActiveInferenceRuntime": "life_v0/neural_core/",
+        "MemoryEngramRuntime": "life_v0/state_store/",
+        "ConsciousWorkspaceRuntime": "life_v0/neural_core/",
+        "AffectiveSelfRuntime": "life_v0/body/",
+        "DreamOfflineRuntime": "life_v0/dream/",
+        "ActionResponsibilityRuntime": "life_v0/membrane/",
+        "ComputerPeripheralRuntime": "life_v0/membrane/",
+        "WorldContactMembrane": "life_v0/membrane/",
+        "RunnerCliRuntime": "life_v0/digital_entry.py",
+        "RunnerRepositoryKernel": "life_v0/schema_runner/",
+        "FirstRunnerCodeKernel": "life_v0/activation/",
+        "RuntimeObservationIngestor": "life_v0/validators/",
+        "LifeSupportDefenseRuntime": "life_v0/body/",
+        "DigitalLifeResidentRuntime": "life_v0/process_supervisor/",
+        "Live0AcceptanceAuditRuntime": "life_v0/live0_audit/",
+        "BirthReadinessRuntime": "life_v0/life_targets/",
         "LifeStateStore": "life_v0/state_store/",
         "LifeMembraneStageGate": "life_v0/membrane/",
         "LifeTargetBundleRuntime": "life_v0/life_targets/",
@@ -1597,6 +1819,27 @@ def _carrier_to_state_namespaces(carriers: list[str]) -> list[str]:
         "DocCorpusIngestor": "runtime/docs/",
         "DirectionLockKernel": "runtime/state/direction/",
         "SourceAuthorityRegistry": "runtime/state/authority/",
+        "AuthorityReadinessRuntime": "runtime/state/authority/",
+        "BrainRegionNetworkRuntime": "runtime/state/neural_life_core/",
+        "MultiscaleBrainGraphRuntime": "runtime/state/neural_life_core/",
+        "BodySignalRuntime": "runtime/state/body/",
+        "SignalMediaRuntime": "runtime/state/signal/",
+        "PredictionActiveInferenceRuntime": "runtime/state/prediction/",
+        "MemoryEngramRuntime": "runtime/state/memory/",
+        "ConsciousWorkspaceRuntime": "runtime/state/consciousness/",
+        "AffectiveSelfRuntime": "runtime/state/body/",
+        "DreamOfflineRuntime": "runtime/state/dream/",
+        "ActionResponsibilityRuntime": "runtime/state/action/",
+        "ComputerPeripheralRuntime": "runtime/state/membrane/",
+        "WorldContactMembrane": "runtime/state/membrane/",
+        "RunnerCliRuntime": "runtime/state/terminal/",
+        "RunnerRepositoryKernel": "runtime/state/schema_runner/",
+        "FirstRunnerCodeKernel": "runtime/state/activation/",
+        "RuntimeObservationIngestor": "runtime/state/observation/",
+        "LifeSupportDefenseRuntime": "runtime/state/body/",
+        "DigitalLifeResidentRuntime": "runtime/state/terminal/",
+        "Live0AcceptanceAuditRuntime": "runtime/state/live0_audit/",
+        "BirthReadinessRuntime": "runtime/state/life_targets/",
         "LifeStateStore": "runtime/state/",
         "LifeMembraneStageGate": "runtime/state/membrane/",
         "LifeTargetBundleRuntime": "runtime/state/life_targets/",
@@ -1614,6 +1857,27 @@ def _carrier_to_reports(carriers: list[str]) -> list[str]:
         "DocCorpusIngestor": "runtime/reports/latest/doc_ingestion_report.json",
         "DirectionLockKernel": "runtime/reports/latest/direction_lock_report.json",
         "SourceAuthorityRegistry": "runtime/reports/latest/source_authority_report.json",
+        "AuthorityReadinessRuntime": "runtime/reports/latest/source_authority_report.json",
+        "BrainRegionNetworkRuntime": "runtime/reports/latest/neural_life_core_report.json",
+        "MultiscaleBrainGraphRuntime": "runtime/reports/latest/neural_life_core_report.json",
+        "BodySignalRuntime": "runtime/reports/latest/life_support_development_report.json",
+        "SignalMediaRuntime": "runtime/reports/latest/neural_life_core_report.json",
+        "PredictionActiveInferenceRuntime": "runtime/reports/latest/neural_life_core_report.json",
+        "MemoryEngramRuntime": "runtime/reports/latest/state_store_report.json",
+        "ConsciousWorkspaceRuntime": "runtime/reports/latest/neural_life_core_report.json",
+        "AffectiveSelfRuntime": "runtime/reports/latest/life_support_development_report.json",
+        "DreamOfflineRuntime": "runtime/reports/latest/growth_reconsolidation_report.json",
+        "ActionResponsibilityRuntime": "runtime/reports/latest/life_membrane_report.json",
+        "ComputerPeripheralRuntime": "runtime/reports/latest/life_membrane_report.json",
+        "WorldContactMembrane": "runtime/reports/latest/life_membrane_report.json",
+        "RunnerCliRuntime": "runtime/reports/latest/digital_life_process_report.json",
+        "RunnerRepositoryKernel": "runtime/reports/latest/schema_runner_report.json",
+        "FirstRunnerCodeKernel": "runtime/reports/latest/first_activation_preflight_report.json",
+        "RuntimeObservationIngestor": "runtime/reports/latest/validation_membrane_report.json",
+        "LifeSupportDefenseRuntime": "runtime/reports/latest/life_support_development_report.json",
+        "DigitalLifeResidentRuntime": "runtime/reports/latest/digital_life_process_report.json",
+        "Live0AcceptanceAuditRuntime": "runtime/reports/latest/live0_acceptance_audit_report.json",
+        "BirthReadinessRuntime": "runtime/reports/latest/birth_readiness_report.json",
         "LifeStateStore": "runtime/reports/latest/state_store_report.json",
         "LifeMembraneStageGate": "runtime/reports/latest/life_membrane_report.json",
         "LifeTargetBundleRuntime": "runtime/reports/latest/birth_readiness_report.json",
@@ -1631,6 +1895,27 @@ def _carrier_to_receipts(carriers: list[str]) -> list[str]:
         "DocCorpusIngestor": "runtime/receipts/doc_ingestion_*.json",
         "DirectionLockKernel": "runtime/receipts/direction_lock_*.json",
         "SourceAuthorityRegistry": "runtime/receipts/source_authority_*.json",
+        "AuthorityReadinessRuntime": "runtime/receipts/source_authority_*.json",
+        "BrainRegionNetworkRuntime": "runtime/receipts/neural_life_core_*.json",
+        "MultiscaleBrainGraphRuntime": "runtime/receipts/neural_life_core_*.json",
+        "BodySignalRuntime": "runtime/receipts/life_support_development_*.json",
+        "SignalMediaRuntime": "runtime/receipts/neural_life_core_*.json",
+        "PredictionActiveInferenceRuntime": "runtime/receipts/neural_life_core_*.json",
+        "MemoryEngramRuntime": "runtime/receipts/state_store_*.json",
+        "ConsciousWorkspaceRuntime": "runtime/receipts/neural_life_core_*.json",
+        "AffectiveSelfRuntime": "runtime/receipts/life_support_development_*.json",
+        "DreamOfflineRuntime": "runtime/receipts/run_cycle_*.json",
+        "ActionResponsibilityRuntime": "runtime/receipts/life_membrane_*.json",
+        "ComputerPeripheralRuntime": "runtime/receipts/life_membrane_*.json",
+        "WorldContactMembrane": "runtime/receipts/life_membrane_*.json",
+        "RunnerCliRuntime": "runtime/receipts/digital_life_process_*.json",
+        "RunnerRepositoryKernel": "runtime/receipts/schema_runner_*.json",
+        "FirstRunnerCodeKernel": "runtime/receipts/first_activation_preflight_*.json",
+        "RuntimeObservationIngestor": "runtime/receipts/validation_membrane_*.json",
+        "LifeSupportDefenseRuntime": "runtime/receipts/life_support_development_*.json",
+        "DigitalLifeResidentRuntime": "runtime/receipts/digital_life_process_*.json",
+        "Live0AcceptanceAuditRuntime": "runtime/receipts/live0_acceptance_audit_*.json",
+        "BirthReadinessRuntime": "runtime/receipts/birth_readiness_*.json",
         "LifeStateStore": "runtime/receipts/state_store_*.json",
         "LifeMembraneStageGate": "runtime/receipts/life_membrane_*.json",
         "LifeTargetBundleRuntime": "runtime/receipts/birth_readiness_*.json",
@@ -1641,6 +1926,62 @@ def _carrier_to_receipts(carriers: list[str]) -> list[str]:
         "LanguageRelationshipRuntime": "runtime/receipts/language_relationship_*.json",
     }
     return [mapping[carrier] for carrier in carriers if carrier in mapping]
+
+
+def _carrier_to_test_gates(carriers: list[str]) -> list[str]:
+    mapping = {
+        "DocCorpusIngestor": "tests/slices/test_doc_corpus_ingestor.py",
+        "DirectionLockKernel": "tests/slices/test_direction_lock.py",
+        "SourceAuthorityRegistry": "tests/slices/test_source_authority.py",
+        "AuthorityReadinessRuntime": "tests/slices/test_source_authority.py",
+        "BrainRegionNetworkRuntime": "tests/slices/test_neural_life_core.py",
+        "MultiscaleBrainGraphRuntime": "tests/slices/test_neural_life_core.py",
+        "BodySignalRuntime": "tests/slices/test_life_support.py",
+        "SignalMediaRuntime": "tests/slices/test_neural_life_core.py",
+        "PredictionActiveInferenceRuntime": "tests/slices/test_neural_life_core.py",
+        "MemoryEngramRuntime": "tests/slices/test_state_store.py",
+        "ConsciousWorkspaceRuntime": "tests/slices/test_neural_life_core.py",
+        "LanguageRelationshipRuntime": "tests/slices/test_language_relationship.py",
+        "AffectiveSelfRuntime": "tests/slices/test_body_trait_drift.py",
+        "DreamOfflineRuntime": "tests/bridges/test_runtime_growth.py",
+        "ActionResponsibilityRuntime": "tests/slices/test_life_membrane.py",
+        "ComputerPeripheralRuntime": "tests/slices/test_validation_membrane.py",
+        "WorldContactMembrane": "tests/slices/test_validation_membrane.py",
+        "RunnerCliRuntime": "tests/process/test_digital_entrypoint.py",
+        "RunnerRepositoryKernel": "tests/slices/test_schema_runner.py",
+        "FirstRunnerCodeKernel": "tests/bridges/test_first_activation_preflight.py",
+        "RuntimeObservationIngestor": "tests/slices/test_validation_membrane.py",
+        "LifeSupportDefenseRuntime": "tests/slices/test_life_support.py",
+        "DigitalLifeResidentRuntime": "tests/process/test_persistent_digital_life_process.py",
+        "Live0AcceptanceAuditRuntime": "tests/contracts/test_live0_acceptance_audit.py",
+        "BirthReadinessRuntime": "tests/slices/test_life_targets.py",
+        "LifeStateStore": "tests/slices/test_state_store.py",
+        "LifeMembraneStageGate": "tests/slices/test_life_membrane.py",
+        "LifeTargetBundleRuntime": "tests/slices/test_life_targets.py",
+        "SchemaBundleCompiler": "tests/slices/test_schema_runner.py",
+        "ActivationGrowthRuntime": "tests/bridges/test_runtime_growth.py",
+        "ReconsolidationReplayRuntime": "tests/bridges/test_replay_shadow.py",
+        "V0ContractCoverageRuntime": "tests/contracts/test_v0_contracts.py",
+    }
+    return [mapping[carrier] for carrier in carriers if carrier in mapping]
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
+
+
+def _dedupe_string_list(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        normalized = str(value)
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        result.append(normalized)
+    return result
 
 
 def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, Any]:

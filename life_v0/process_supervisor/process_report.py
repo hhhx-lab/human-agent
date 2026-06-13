@@ -634,14 +634,14 @@ def write_process_report_bundle(
             if model_expression_state
             else None
         ),
-        "model_expression_fallback_reason": model_expression_state.get(
-            "fallback_reason"
+        "model_expression_unreleased_reason": model_expression_state.get(
+            "unreleased_reason"
         ),
         "post_expression_gate_status": model_expression_state.get(
             "post_expression_gate_status"
         ),
-        "post_expression_gate_fallback_reason": model_expression_state.get(
-            "post_expression_gate_fallback_reason"
+        "post_expression_gate_unreleased_reason": model_expression_state.get(
+            "post_expression_gate_unreleased_reason"
         ),
         "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "life_context_frame_ref": life_context_frame_ref,

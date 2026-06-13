@@ -183,7 +183,7 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
                 "status": "closed",
                 "model_expression_status": "model_expression_applied",
                 "post_expression_gate_status": "accepted",
-                "fallback_to_deterministic_response": False,
+                "audited_expression_material_release_disabled": True,
                 "model_provider": "openai-compatible",
                 "model_name": "gpt-5.5",
                 "model_api_key_present": True,

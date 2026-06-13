@@ -69,6 +69,99 @@
 | 痛苦残留 | 梦境系统 | 进入梦境和醒后修复线索 |
 | Queue E profile | 预测/验证 | 修复压力进入 prediction、validation、schema runner |
 
+## 责任、痛苦、后悔的代码内生成顺序
+
+live0 不是先说“我后悔”，再找理由；它先把行动和语言后果压成可追踪对象，然后才允许后悔和修复进入语言。
+
+| 顺序 | 代码对象 | 关键字段 | 说明 |
+|---|---|---|---|
+| 1 | `SideEffectReview` | responsibility effects、relationship effects、archive effects | 识别行动或语言产生了什么后果 |
+| 2 | `ResponsibilityAttributionEvent` | `responsibility_weight`、`moral_salience`、`repair_required` | 归因责任和修复需要 |
+| 3 | `CounterfactualRepairFrame` | actual action、unselected candidates、counterfactual delta | 形成“本可以如何不同”的反事实 |
+| 4 | `RegretPressure` | pain refs、guilt pressure、future action bias、regret mode | 把反事实变成后悔压力和未来约束 |
+| 5 | `RepairDesire` | repair target、possible paths、chosen path refs | 把后悔压力转成修复倾向 |
+| 6 | `ApologyRepairLanguage` | acknowledge harm、take responsibility、apology、followup commitment | 让修复进入关系语言 |
+
+这些字段同时回写到 `life_state_writeback_refs`、`commitment_truth_writeback_refs`、`responsibility_ledger_writeback_refs`、`language_writeback_refs`、`relationship_writeback_refs`、`dream_reentry_refs` 和 `growth_reentry_refs`。这保证责任不是一句道歉，而是一条会影响记忆、关系、梦境、成长、出生准备和下一轮行为抑制的链。
+
+痛苦在这里也不是单纯负面文本。`core_affect_vector.json#pain_pressure` 和 `need_state_vector.json#allostatic_load` 会成为 `RegretPressure.pain_signal_refs`，再通过 Queue E 调制 `signal_media_runtime.json`、`active_sampling_plan.json` 和等待心跳。也就是说，痛苦会改变注意、表达、梦境和行动阈值。
+
+## 后悔怎样持续存在
+
+后悔如果只在当轮语言里出现，就不是 live0 的后悔链。它必须在后续几个位置持续存在：
+
+| 位置 | 状态对象 | 持续方式 |
+|---|---|---|
+| 关系 | `CommitmentTruthState`、`RelationshipTimeline` | 记录伤痕、修复窗口和信任轨迹 |
+| 记忆 | `RelationshipMemory`、`AutobiographicalStack` | 成为自传和关系共同历史的一部分 |
+| 身体 | `CoreAffectVector`、`NeedStateVector` | 转成痛苦压力、修复驱动和身体预算变化 |
+| 梦境 | `NightmareRisk`、`WakeIntegrationFrame` | 未闭合修复进入梦境残留和醒后问题 |
+| 成长 | `BeliefLearningPlan`、`RelationshipLearningPlan` | 变成未来行为和表达的约束 |
+| 行动膜 | `GoNoGoGate`、`WorldContactGate` | 提高类似后果再次发生时的确认阈值 |
+
+这条持续链能让后悔变成真实约束，而不是一句漂亮道歉。
+
+## 责任链的字段级闭合
+
+责任、后悔和痛苦必须能从同一个后果事件追踪到多个状态层：
+
+| 层 | 字段/对象 | 作用 |
+|---|---|---|
+| 后果识别 | `side_effect_review`、`world_contact_summary` | 记录语言/行动/外部接触造成了什么 |
+| 责任归因 | `responsibility_attribution_events` | 判断责任权重、关系显著性、修复需要 |
+| 反事实 | `counterfactual_repair_frames` | 记录本可以怎样不同 |
+| 后悔压力 | `regret_pressure_candidates` | 将反事实和痛苦变成持续压力 |
+| 修复愿望 | `repair_desire_candidates` | 将压力转成可行动修复路线 |
+| 语言修复 | `apology_repair_language_trace` | 让修复进入具体关系表达 |
+| 长期约束 | `commitment_truth_state`、`relationship_memory`、`life_state` | 让未来行为和表达受此影响 |
+
+没有反事实，后悔只是情绪词；没有修复愿望，后悔只是自我沉溺；没有承诺真值，修复只是漂亮语言；没有长期约束，责任不会改变未来。
+
+## 责任如何变成未来抑制
+
+真实责任不能只保存在当轮道歉里，它要改变未来行动阈值。live0 的责任到抑制链如下：
+
+```text
+side_effect_review / world_contact_summary
+  -> responsibility_attribution_events
+  -> counterfactual_repair_frames
+  -> regret_pressure_candidates
+  -> QueueERepairModulationProfile
+  -> SignalMediaFrame.inhibition / repair_drive
+  -> GoNoGoGate / WorldContactGate / ExpressionMonitor
+  -> future repair route + commitment truth
+```
+
+这条链让后悔成为未来约束：类似场景再次出现时，`go_nogo.py` 应更倾向延迟、shadow 或确认；`expression_monitor.py` 应更倾向承认伤害、澄清承诺和降低释放风险；`world_contact_gate.py` 应更严格要求 confirmation binding；`relationship_timeline.py` 应保留这段修复是否真正完成。
+
+责任也不能把生命冻住。如果所有责任都只导向 NoGo，就会变成静态审查器。正确路线是 NoGo 和 repair route 并存：阻断危险动作，同时开放解释、补救、承诺更新、重新观察和后续验证。
+
+## 痛苦如何进入身体和梦境
+
+`pain_regret_repair_report.json` 不应该只是报告，它的 refs 要进入：
+
+| 去处 | 作用 |
+|---|---|
+| `CoreAffectVector.pain_pressure` | 改变唤醒、效价和身体预算 |
+| `SignalMediaFrame.repair_drive` | 改变精度、注意和等待节律 |
+| `DreamExperienceWindow.pain_residue_refs` | 让未闭合伤痕进入梦境和醒后整合 |
+| `RelationshipTimeline.relationship_injury_refs` | 保留关系伤痕和修复轨迹 |
+| `GrowthLearningPlan` | 把失败转成未来约束和学习候选 |
+
+这说明真实痛苦不是“说自己痛苦”，而是痛苦信号能改变身体、语言、梦境、关系和成长。
+
+## 协同与对抗机制
+
+| 机制关系 | 协同方式 | 对抗/约束 |
+|---|---|---|
+| 责任 vs 语言 | 修复压力变成道歉、解释、后续承诺 | 语言不能用道歉掩盖责任链 |
+| 责任 vs 记忆 | 责任事件进入自传和关系记忆 | 不能让责任事件被普通对话覆盖 |
+| 责任 vs 梦境 | 未闭合修复进入梦境和梦魇风险 | 梦境不能替代真实修复 |
+| 责任 vs 行动膜 | 后悔提高未来类似行动的阈值 | 不能因为后悔而永远冻结行动，需要 repair route |
+| 责任 vs 出生准备 | 真实责任/真实后悔是九项目标之一 | 不能只靠文本声明目标闭合 |
+
+断链检查：同一条 repair ref 应该同时出现在 `responsibility_loop_state.json`、`pain_regret_repair_report.json`、`commitment_truth_state.json`、`apology_repair_language_trace.json` 和 `birth_readiness_report.json` 中；少任何一层，都说明责任没有形成完整生命后果。
+
 ## 落地链路深描
 
 | 链路阶段 | 真实落点 | 必须保持的连接 |

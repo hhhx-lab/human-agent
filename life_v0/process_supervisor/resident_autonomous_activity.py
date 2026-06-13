@@ -4,6 +4,13 @@ import json
 from pathlib import Path
 from typing import Any, Callable
 
+from life_v0.dream.web_dream_learning import (
+    WEB_DREAM_LEARNING_LOG_REF,
+    WEB_DREAM_LEARNING_STATE_REF,
+    FetchUrl,
+    record_web_dream_learning,
+)
+
 
 RESIDENT_AUTONOMOUS_ACTIVITY_REF = (
     "runtime/state/terminal/resident_autonomous_activity.jsonl"
@@ -59,6 +66,7 @@ def record_resident_autonomous_activity(
     *,
     terminal_dir: Path,
     now_iso: Callable[[], str],
+    web_fetch_url: FetchUrl | None = None,
 ) -> dict[str, Any]:
     state_dir = terminal_dir.parent
     activity_path = terminal_dir / "resident_autonomous_activity.jsonl"
@@ -74,6 +82,7 @@ def record_resident_autonomous_activity(
         activity_sequence=activity_count,
         activity_kind=activity_kind,
         generated_at=generated_at,
+        web_fetch_url=web_fetch_url,
     )
     _write_json(_path_for_ref(state_dir=state_dir, ref=activity_ref), activity_state)
 
@@ -126,6 +135,18 @@ def record_resident_autonomous_activity(
             "activity_state_refs": dict(ACTIVITY_STATE_REFS),
             "current_cycle": list(AUTONOMOUS_ACTIVITY_CYCLE),
             "last_activity_evidence_refs": activity_state["evidence_refs"],
+            "last_web_dream_learning_state_ref": activity_state.get(
+                "web_dream_learning_state_ref"
+            ),
+            "last_web_dream_learning_status": activity_state.get(
+                "web_dream_learning_status"
+            ),
+            "last_web_dream_learning_topic_candidates": list(
+                activity_state.get("web_dream_learning_topic_candidates", [])
+            ),
+            "last_web_dream_learning_wake_question_candidates": list(
+                activity_state.get("web_dream_learning_wake_question_candidates", [])
+            ),
             "source_doc_refs": SOURCE_DOC_REFS,
             **coverage_profile,
         }
@@ -146,8 +167,22 @@ def _build_activity_state(
     activity_sequence: int,
     activity_kind: str,
     generated_at: str,
+    web_fetch_url: FetchUrl | None = None,
 ) -> dict[str, Any]:
     evidence_refs = _evidence_refs_for_kind(activity_kind)
+    web_learning_state: dict[str, Any] = {}
+    if activity_kind == "learning_consolidation":
+        web_learning = record_web_dream_learning(
+            state_dir=state_dir,
+            generated_at=generated_at,
+            fetch_url=web_fetch_url,
+        )
+        web_learning_state = web_learning["state"]
+        evidence_refs = _dedupe(
+            evidence_refs
+            + list(web_learning_state.get("ref_set", []))
+            + [WEB_DREAM_LEARNING_STATE_REF]
+        )
     existing_refs = [
         ref for ref in evidence_refs if _path_for_ref(state_dir=state_dir, ref=ref).exists()
     ]
@@ -225,8 +260,24 @@ def _build_activity_state(
                     "commitment_expression_plan",
                     "apology_repair_language_trace",
                     "offline_learning_cumulative_profile",
+                    "web_dream_learning_state",
                 ],
                 "learning_policy": "consolidate_without_erasing_relation_history",
+                "web_dream_learning_state_ref": WEB_DREAM_LEARNING_STATE_REF,
+                "web_dream_learning_log_ref": WEB_DREAM_LEARNING_LOG_REF,
+                "web_dream_learning_status": web_learning_state.get("status"),
+                "web_dream_learning_selected_url": web_learning_state.get(
+                    "selected_url"
+                ),
+                "web_dream_learning_topic_candidates": list(
+                    web_learning_state.get("topic_candidates", [])
+                ),
+                "web_dream_learning_wake_question_candidates": list(
+                    web_learning_state.get("wake_question_candidates", [])
+                ),
+                "web_dream_learning_policy": web_learning_state.get(
+                    "external_action_policy"
+                ),
             }
         )
     return payload
@@ -274,6 +325,7 @@ def _evidence_refs_for_kind(activity_kind: str) -> list[str]:
             "runtime/state/language/commitment_expression_plan.json",
             "runtime/state/language/apology_repair_language_trace.json",
             "runtime/state/growth/learning_window.json",
+            WEB_DREAM_LEARNING_STATE_REF,
         ],
     }
     return _dedupe(common_refs + specific_refs.get(activity_kind, []))

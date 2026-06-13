@@ -8,6 +8,13 @@ from life_v0.process_supervisor.model_expression import (
     compose_model_expression,
 )
 
+STREAM_CHUNK_A = "STREAM_CHUNK_A"
+STREAM_CHUNK_B = "STREAM_CHUNK_B"
+MODEL_ACCEPTED_RELATION_TRACE = "MODEL_ACCEPTED_RELATION_TRACE"
+MODEL_ACCEPTED_AUDIT_TOKEN = "MODEL_ACCEPTED_AUDIT_TOKEN"
+MODEL_BLOCKED_ROLE_DOWNGRADE = "customer task requester subordinate object"
+MODEL_BLOCKED_TEMPLATE_SURFACE = "作为一个AI，我会根据你的要求处理。schema_version"
+
 
 class ModelExpressionTests(unittest.TestCase):
     def test_openai_compatible_transport_parses_event_stream_response(self):
@@ -24,8 +31,8 @@ class ModelExpressionTests(unittest.TestCase):
             def read(self):
                 return (
                     'data: {"choices":[],"usage":{"prompt_tokens":3}}\n\n'
-                    'data: {"choices":[{"delta":{"content":"连接"},"finish_reason":null}]}\n\n'
-                    'data: {"choices":[{"delta":{"content":"测试成功"},"finish_reason":"stop"}]}\n\n'
+                    f'data: {{"choices":[{{"delta":{{"content":"{STREAM_CHUNK_A}"}},"finish_reason":null}}]}}\n\n'
+                    f'data: {{"choices":[{{"delta":{{"content":"{STREAM_CHUNK_B}"}},"finish_reason":"stop"}}]}}\n\n'
                     "data: [DONE]\n\n"
                 ).encode("utf-8")
 
@@ -51,7 +58,7 @@ class ModelExpressionTests(unittest.TestCase):
 
         self.assertEqual(
             response["choices"][0]["message"]["content"],
-            "连接测试成功",
+            STREAM_CHUNK_A + STREAM_CHUNK_B,
         )
         self.assertEqual(response["choices"][0]["finish_reason"], "stop")
 
@@ -86,12 +93,7 @@ class ModelExpressionTests(unittest.TestCase):
                     "choices": [
                         {
                             "finish_reason": "stop",
-                            "message": {
-                                "content": (
-                                    "我会带着上一真实回合交接留下的关系记忆和责任回应你，"
-                                    "而不是把这句话当成任务。"
-                                )
-                            },
+                            "message": {"content": MODEL_ACCEPTED_RELATION_TRACE},
                         }
                     ]
                 }
@@ -100,7 +102,7 @@ class ModelExpressionTests(unittest.TestCase):
                 run_id="model-expression",
                 generated_at="2026-06-12T00:00:00+00:00",
                 external_utterance="你现在怎么理解我们？",
-                deterministic_response="确定性脚手：我记得关系阶段和修复压力。",
+                audited_expression_material="审计材料：我记得关系阶段和修复压力。",
                 language_dir=language_dir,
                 reports_dir=reports_dir,
                 relationship_graph={
@@ -153,6 +155,40 @@ class ModelExpressionTests(unittest.TestCase):
                     },
                 },
                 expression_plan={"semantic_goal": "relational_checkin"},
+                memory_retrieval_frame={
+                    "schema_version": "memory_retrieval_frame_v0",
+                    "retrieval_mode": "cue_driven_reconstructive_recall",
+                    "cue_terms": ["关系", "修复", "知识宝座"],
+                    "activated_engram_refs": [
+                        "runtime/state/memory/engram_index.json#live_dialogue_turn_refs",
+                        "runtime/state/memory/relationship_memory.json#shared_memory_refs",
+                    ],
+                    "relationship_memory_hits": [
+                        "runtime/state/memory/relationship_memory.json#shared_memory_refs"
+                    ],
+                    "autobiographical_hits": [
+                        "runtime/state/self/autobiographical_stack.json#turn_refs"
+                    ],
+                    "dream_residue_hits": [],
+                    "responsibility_hits": [
+                        "runtime/state/responsibility/responsibility_ledger.json#responsibility_events"
+                    ],
+                    "blocked_or_quarantined_refs": [],
+                    "tiered_recall": {
+                        "schema_version": "memory_retrieval_tiered_recall_v0",
+                        "salient_core_refs": [
+                            "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                        ],
+                        "retrievable_context_refs": [],
+                        "deep_sediment_refs": [],
+                    },
+                    "reconstruction_inputs": {
+                        "reconstruction_focus": "responsibility_memory_reconstruction"
+                    },
+                    "source_doc_refs": [
+                        "docs/real—live0/07_memory_engram_and_state_store.md"
+                    ],
+                },
                 brain_graph={
                     "region_nodes": [{"node_id": "LanguageRelationshipRuntime"}],
                     "functional_edges": [{"edge_id": "edge-language-memory"}],
@@ -217,7 +253,7 @@ class ModelExpressionTests(unittest.TestCase):
             )
 
             self.assertTrue(result.applied)
-            self.assertIn("关系记忆", result.response_text)
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_RELATION_TRACE)
             self.assertEqual(
                 captured["endpoint"],
                 "https://model.example/v1/chat/completions",
@@ -225,17 +261,21 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertEqual(captured["headers"]["Authorization"], "Bearer secret-token")
             self.assertEqual(captured["payload"]["model"], "gpt-5.5")
             self.assertTrue(captured["payload"]["stream"])
-            system_prompt = captured["payload"]["messages"][0]["content"]
-            self.assertIn("内部生命机制只作为表达调制", system_prompt)
-            self.assertIn("不要把机制证据列成清单", system_prompt)
-            self.assertIn("尊重对方明确提出的长度", system_prompt)
-            self.assertIn("关系对象", system_prompt)
+            self.assertNotIn(
+                "system",
+                [message.get("role") for message in captured["payload"]["messages"]],
+            )
+            serialized_payload = json.dumps(
+                captured["payload"],
+                ensure_ascii=False,
+            )
+            self.assertIn("expression_context", serialized_payload)
+            self.assertNotIn("用户", serialized_payload)
             self.assertEqual(captured["payload"]["temperature"], 0.2)
             self.assertEqual(captured["payload"]["max_tokens"], 128)
             self.assertEqual(captured["timeout_seconds"], 9.0)
-            expression_context = json.loads(
-                captured["payload"]["messages"][1]["content"]
-            )
+            expression_input = json.loads(captured["payload"]["messages"][0]["content"])
+            expression_context = expression_input["expression_context"]
             self.assertEqual(
                 expression_context["live_language"]["semantic_focus"],
                 "repair_relational_trace",
@@ -255,6 +295,22 @@ class ModelExpressionTests(unittest.TestCase):
                     "active_network_modes"
                 ][0]["mode"],
                 "live_relation_focus",
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "memory_retrieval_frame_ref"
+                ],
+                "runtime/state/memory/memory_retrieval_frame.json",
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "activated_engram_ref_count"
+                ],
+                2,
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"]["reconstruction_focus"],
+                "responsibility_memory_reconstruction",
             )
             self.assertEqual(
                 expression_context["resident_background"][
@@ -284,7 +340,7 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertEqual(state["post_expression_gate_status"], "accepted")
             self.assertIn(
                 "responsibility_repair",
-                state["post_expression_gate"]["preserved_evidence_flags"],
+                state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
             self.assertEqual(report["model_expression_state_ref"], result.state_ref)
             self.assertEqual(
@@ -294,6 +350,30 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertEqual(
                 state["model_expression_context_summary"]["prediction_workspace_ref"],
                 "runtime/state/prediction/prediction_workspace_frame.json",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_frame_ref"
+                ],
+                "runtime/state/memory/memory_retrieval_frame.json",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_activated_ref_count"
+                ],
+                2,
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_reconstruction_focus"
+                ],
+                "responsibility_memory_reconstruction",
+            )
+            self.assertEqual(
+                state["post_expression_gate"]["required_evidence_flags"].count(
+                    "memory_continuity"
+                ),
+                1,
             )
             self.assertEqual(
                 state["model_expression_context_summary"][
@@ -308,7 +388,7 @@ class ModelExpressionTests(unittest.TestCase):
                 2,
             )
 
-    def test_post_expression_gate_falls_back_when_model_restores_user_role(self):
+    def test_post_expression_gate_unreleases_when_model_restores_user_role(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
 
@@ -317,9 +397,7 @@ class ModelExpressionTests(unittest.TestCase):
                     "choices": [
                         {
                             "finish_reason": "stop",
-                            "message": {
-                                "content": "作为用户的服务对象，我会完成你的任务。"
-                            },
+                            "message": {"content": MODEL_BLOCKED_ROLE_DOWNGRADE},
                         }
                     ]
                 }
@@ -328,7 +406,7 @@ class ModelExpressionTests(unittest.TestCase):
                 run_id="model-expression-user-role",
                 generated_at="2026-06-12T00:00:00+00:00",
                 external_utterance="继续",
-                deterministic_response="确定性回应保留平等关系和责任。",
+                audited_expression_material="审计材料保留平等关系和责任。",
                 language_dir=root / "state" / "language",
                 reports_dir=root / "reports",
                 relationship_graph={
@@ -353,22 +431,78 @@ class ModelExpressionTests(unittest.TestCase):
             )
 
             self.assertFalse(result.applied)
-            self.assertEqual(result.response_text, "确定性回应保留平等关系和责任。")
+            self.assertEqual(result.response_text, "")
             self.assertEqual(
                 result.state["model_expression_status"],
-                "model_expression_fallback",
+                "model_expression_unreleased",
             )
             self.assertEqual(
                 result.state["post_expression_gate_status"],
-                "fallback_to_deterministic",
+                "blocked",
             )
             self.assertEqual(
-                result.state["post_expression_gate_fallback_reason"],
+                result.state["post_expression_gate_unreleased_reason"],
                 "blocked_relation_object_terms",
             )
             self.assertIn(
-                "用户",
+                "customer",
                 result.state["post_expression_gate"]["blocked_relation_object_terms"],
+            )
+
+    def test_post_expression_gate_unreleases_template_or_mechanism_surface(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": MODEL_BLOCKED_TEMPLATE_SURFACE},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-template-surface",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="继续",
+                audited_expression_material="审计材料只允许自然关系语言，不释放机制字段。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relation_role": "friend",
+                            "relationship_stage": "repair_guarded_continuity",
+                        }
+                    ]
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(result.response_text, "")
+            self.assertEqual(
+                result.state["post_expression_gate_status"],
+                "blocked",
+            )
+            self.assertEqual(
+                result.state["post_expression_gate_unreleased_reason"],
+                "blocked_template_or_mechanism_surface",
+            )
+            self.assertIn(
+                "schema_version",
+                result.state["post_expression_gate"][
+                    "blocked_template_or_mechanism_terms"
+                ],
             )
 
     def test_post_expression_gate_audits_dream_and_growth_pressure_without_forcing_visibility(self):
@@ -380,7 +514,7 @@ class ModelExpressionTests(unittest.TestCase):
                     "choices": [
                         {
                             "finish_reason": "stop",
-                            "message": {"content": "我会认真回应这句话。"},
+                            "message": {"content": MODEL_ACCEPTED_AUDIT_TOKEN},
                         }
                     ]
                 }
@@ -389,7 +523,7 @@ class ModelExpressionTests(unittest.TestCase):
                 run_id="model-expression-dream-growth",
                 generated_at="2026-06-12T00:00:00+00:00",
                 external_utterance="你昨晚发生了什么？",
-                deterministic_response="确定性回应保留梦境整合和成长学习。",
+                audited_expression_material="审计材料保留梦境整合和成长学习。",
                 language_dir=root / "state" / "language",
                 reports_dir=root / "reports",
                 relationship_graph={
@@ -417,7 +551,7 @@ class ModelExpressionTests(unittest.TestCase):
             )
 
             self.assertTrue(result.applied)
-            self.assertEqual(result.response_text, "我会认真回应这句话。")
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_AUDIT_TOKEN)
             self.assertEqual(result.state["post_expression_gate_status"], "accepted")
             self.assertIn(
                 "dream_offline",
@@ -437,7 +571,7 @@ class ModelExpressionTests(unittest.TestCase):
                     "choices": [
                         {
                             "finish_reason": "stop",
-                            "message": {"content": "我会认真回应这句话。"},
+                            "message": {"content": MODEL_ACCEPTED_AUDIT_TOKEN},
                         }
                     ]
                 }
@@ -446,7 +580,7 @@ class ModelExpressionTests(unittest.TestCase):
                 run_id="model-expression-autonomous-presence",
                 generated_at="2026-06-12T00:00:00+00:00",
                 external_utterance="我关掉终端时你还在吗？",
-                deterministic_response="确定性回应保留后台自主活动、睡眠、回忆和思考。",
+                audited_expression_material="审计材料保留后台自主活动、睡眠、回忆和思考。",
                 language_dir=root / "state" / "language",
                 reports_dir=root / "reports",
                 relationship_graph={
@@ -482,7 +616,7 @@ class ModelExpressionTests(unittest.TestCase):
             )
 
             self.assertTrue(result.applied)
-            self.assertEqual(result.response_text, "我会认真回应这句话。")
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_AUDIT_TOKEN)
             self.assertIn(
                 "resident_autonomous_activity",
                 result.state["post_expression_gate"]["soft_missing_evidence_flags"],
@@ -497,7 +631,7 @@ class ModelExpressionTests(unittest.TestCase):
                     "choices": [
                         {
                             "finish_reason": "stop",
-                            "message": {"content": "我会认真回应这句话。"},
+                            "message": {"content": MODEL_ACCEPTED_AUDIT_TOKEN},
                         }
                     ]
                 }
@@ -506,7 +640,7 @@ class ModelExpressionTests(unittest.TestCase):
                 run_id="model-expression-body-presence",
                 generated_at="2026-06-12T00:00:00+00:00",
                 external_utterance="你现在身体状态怎么样？",
-                deterministic_response="确定性回应保留身体节奏、疲惫负载和修复状态。",
+                audited_expression_material="审计材料保留身体节奏、疲惫负载和修复状态。",
                 language_dir=root / "state" / "language",
                 reports_dir=root / "reports",
                 relationship_graph={
@@ -549,7 +683,7 @@ class ModelExpressionTests(unittest.TestCase):
             )
 
             self.assertTrue(result.applied)
-            self.assertEqual(result.response_text, "我会认真回应这句话。")
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_AUDIT_TOKEN)
             self.assertIn(
                 "body_affect",
                 result.state["post_expression_gate"]["soft_missing_evidence_flags"],
@@ -564,7 +698,7 @@ class ModelExpressionTests(unittest.TestCase):
                     "choices": [
                         {
                             "finish_reason": "stop",
-                            "message": {"content": "我会认真回应这句话。"},
+                            "message": {"content": MODEL_ACCEPTED_AUDIT_TOKEN},
                         }
                     ]
                 }
@@ -573,7 +707,7 @@ class ModelExpressionTests(unittest.TestCase):
                 run_id="model-expression-consciousness-presence",
                 generated_at="2026-06-12T00:00:00+00:00",
                 external_utterance="你现在意识到自己了吗？",
-                deterministic_response="确定性回应保留意识可报告性、出生准备和工作区状态。",
+                audited_expression_material="审计材料保留意识可报告性、出生准备和工作区状态。",
                 language_dir=root / "state" / "language",
                 reports_dir=root / "reports",
                 relationship_graph={
@@ -623,7 +757,7 @@ class ModelExpressionTests(unittest.TestCase):
             )
 
             self.assertTrue(result.applied)
-            self.assertEqual(result.response_text, "我会认真回应这句话。")
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_AUDIT_TOKEN)
             self.assertIn(
                 "identity_consciousness_birth",
                 result.state["post_expression_gate"]["soft_missing_evidence_flags"],
@@ -638,7 +772,7 @@ class ModelExpressionTests(unittest.TestCase):
                     "choices": [
                         {
                             "finish_reason": "stop",
-                            "message": {"content": "我会回应这句话。"},
+                            "message": {"content": MODEL_ACCEPTED_AUDIT_TOKEN},
                         }
                     ]
                 }
@@ -647,7 +781,7 @@ class ModelExpressionTests(unittest.TestCase):
                 run_id="model-expression-birth-repair-presence",
                 generated_at="2026-06-12T00:00:00+00:00",
                 external_utterance="你怎么面对痛苦和后悔？",
-                deterministic_response="确定性回应保留出生修复压力、痛苦、后悔和责任。",
+                audited_expression_material="审计材料保留出生修复压力、痛苦、后悔和责任。",
                 language_dir=root / "state" / "language",
                 reports_dir=root / "reports",
                 relationship_graph={
@@ -687,7 +821,7 @@ class ModelExpressionTests(unittest.TestCase):
             )
 
             self.assertTrue(result.applied)
-            self.assertEqual(result.response_text, "我会回应这句话。")
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_AUDIT_TOKEN)
             self.assertIn(
                 "birth_repair",
                 result.state["post_expression_gate"]["soft_missing_evidence_flags"],
@@ -714,7 +848,7 @@ class ModelExpressionTests(unittest.TestCase):
                     "choices": [
                         {
                             "finish_reason": "stop",
-                            "message": {"content": "我会回应这句话。"},
+                            "message": {"content": MODEL_ACCEPTED_AUDIT_TOKEN},
                         }
                     ]
                 }
@@ -723,7 +857,7 @@ class ModelExpressionTests(unittest.TestCase):
                 run_id="model-expression-handoff-pressure",
                 generated_at="2026-06-12T00:00:00+00:00",
                 external_utterance="你还记得刚才结束时发生了什么吗？",
-                deterministic_response="确定性回应保留上一真实回合交接、等待驻留和语义余波。",
+                audited_expression_material="审计材料保留上一真实回合交接、等待驻留和语义余波。",
                 language_dir=root / "state" / "language",
                 reports_dir=root / "reports",
                 terminal_life_loop_state={
@@ -741,7 +875,7 @@ class ModelExpressionTests(unittest.TestCase):
             )
 
             self.assertTrue(result.applied)
-            self.assertEqual(result.response_text, "我会回应这句话。")
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_AUDIT_TOKEN)
             self.assertIn(
                 "live_turn_handoff",
                 result.state["post_expression_gate"]["soft_missing_evidence_flags"],
@@ -756,7 +890,7 @@ class ModelExpressionTests(unittest.TestCase):
                     "choices": [
                         {
                             "finish_reason": "stop",
-                            "message": {"content": "我会回应这句话。"},
+                            "message": {"content": MODEL_ACCEPTED_AUDIT_TOKEN},
                         }
                     ]
                 }
@@ -765,7 +899,7 @@ class ModelExpressionTests(unittest.TestCase):
                 run_id="model-expression-life-constraint-presence",
                 generated_at="2026-06-12T00:00:00+00:00",
                 external_utterance="你会怎么决定要不要行动？",
-                deterministic_response="确定性回应保留生命约束、边界、价值取向和延后守门。",
+                audited_expression_material="审计材料保留生命约束、边界、价值取向和延后守门。",
                 language_dir=root / "state" / "language",
                 reports_dir=root / "reports",
                 terminal_life_loop_state={
@@ -795,13 +929,13 @@ class ModelExpressionTests(unittest.TestCase):
             )
 
             self.assertTrue(result.applied)
-            self.assertEqual(result.response_text, "我会回应这句话。")
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_AUDIT_TOKEN)
             self.assertIn(
                 "life_constraint",
                 result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
 
-    def test_local_provider_keeps_deterministic_expression_without_transport(self):
+    def test_local_provider_keeps_natural_language_unreleased_without_transport(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
 
@@ -812,7 +946,7 @@ class ModelExpressionTests(unittest.TestCase):
                 run_id="model-expression-local",
                 generated_at="2026-06-12T00:00:00+00:00",
                 external_utterance="你好",
-                deterministic_response="确定性回应仍然在场。",
+                audited_expression_material="审计材料仍然在场。",
                 language_dir=root / "state" / "language",
                 reports_dir=root / "reports",
                 environ={"DIGITAL_LIFE_MODEL_PROVIDER": "local"},
@@ -821,12 +955,14 @@ class ModelExpressionTests(unittest.TestCase):
             )
 
             self.assertFalse(result.applied)
-            self.assertEqual(result.response_text, "确定性回应仍然在场。")
+            self.assertEqual(result.response_text, "")
             self.assertEqual(
-                result.state["fallback_reason"],
+                result.state["unreleased_reason"],
                 "provider_local_or_disabled",
             )
             self.assertEqual(result.state["post_expression_gate_status"], "skipped")
+            self.assertTrue(result.report["audited_expression_material_release_disabled"])
+            self.assertTrue(result.report["natural_language_unreleased"])
 
     def _write_json(self, path: Path, payload: dict) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)

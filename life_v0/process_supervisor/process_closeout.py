@@ -16,6 +16,11 @@ from .persistent_process import (
     write_persistent_process_artifacts,
 )
 from .handoff_profile import previous_handoff_profile_fields, select_handoff_profile
+from .exit_dream_consolidation import (
+    DIALOGUE_MEMORY_SUMMARY_REF,
+    EXIT_DREAM_CONSOLIDATION_SUMMARY_REF,
+    write_exit_dream_memory_consolidation,
+)
 from .process_report import ProcessReportBundleResult, write_process_report_bundle
 from ..runtime_config import RUNTIME_CONFIG_REPORT_REF, RUNTIME_CONFIG_STATE_REF
 
@@ -113,6 +118,16 @@ def close_digital_life_process(
     merged_idle_strategy_state = _merge_live_language_for_closeout(
         idle_strategy_state,
         terminal_life_loop_state,
+    )
+    exit_dream_memory_consolidation = write_exit_dream_memory_consolidation(
+        run_id=run_id,
+        generated_at=generated_at,
+        state_dir=state_dir,
+        write_json=write_json,
+    )
+    merged_idle_strategy_state = _merge_exit_dream_memory_for_closeout(
+        merged_idle_strategy_state,
+        exit_dream_memory_consolidation,
     )
     persistent_process_artifacts = write_persistent_process_artifacts(
         run_id=run_id,
@@ -306,6 +321,75 @@ def _merge_live_language_for_closeout(
     )
     if handoff_carry_fields:
         merged.update(handoff_carry_fields)
+    return merged
+
+
+def _merge_exit_dream_memory_for_closeout(
+    idle_strategy_state: dict[str, Any] | None,
+    exit_dream_memory_consolidation: dict[str, Any],
+) -> dict[str, Any]:
+    merged = dict(idle_strategy_state or {})
+    exit_dream_summary_ref = str(
+        exit_dream_memory_consolidation.get("exit_dream_summary_ref")
+        or EXIT_DREAM_CONSOLIDATION_SUMMARY_REF
+    )
+    dialogue_memory_summary_ref = str(
+        exit_dream_memory_consolidation.get("dialogue_memory_summary_ref")
+        or DIALOGUE_MEMORY_SUMMARY_REF
+    )
+    ref_set = _dedupe_refs(
+        _list_or_empty(merged.get("exit_dream_memory_ref_set"))
+        + [
+            exit_dream_summary_ref,
+            dialogue_memory_summary_ref,
+            "runtime/state/memory/relationship_memory.json",
+            "runtime/state/memory/engram_index.json",
+            "runtime/state/self/autobiographical_stack.json",
+            "runtime/state/life_state.json",
+        ]
+    )
+    exit_dream_summary = (
+        exit_dream_memory_consolidation.get("exit_dream_summary")
+        if isinstance(exit_dream_memory_consolidation.get("exit_dream_summary"), dict)
+        else {}
+    )
+    dialogue_memory_summary = (
+        exit_dream_memory_consolidation.get("dialogue_memory_summary")
+        if isinstance(
+            exit_dream_memory_consolidation.get("dialogue_memory_summary"),
+            dict,
+        )
+        else {}
+    )
+    merged["exit_dream_memory_presence_profile"] = {
+        "schema_version": "exit_dream_memory_presence_profile_v0",
+        "continuity_mode": "terminal_exit_dialogue_memory_consolidated",
+        "entry_state": exit_dream_summary.get("entry_state"),
+        "source_dialogue_turn_count": exit_dream_summary.get(
+            "source_dialogue_turn_count",
+            0,
+        ),
+        "deduplication_policy": exit_dream_summary.get("deduplication_policy"),
+        "exit_dream_summary_ref": exit_dream_summary_ref,
+        "dialogue_memory_summary_ref": dialogue_memory_summary_ref,
+        "relationship_theme_tags": _list_or_empty(
+            exit_dream_summary.get("relationship_theme_tags")
+        ),
+        "next_wake_cues": _list_or_empty(dialogue_memory_summary.get("next_wake_cues")),
+        "ref_set": ref_set,
+    }
+    merged["background_exit_dream_memory_presence_profile"] = dict(
+        merged["exit_dream_memory_presence_profile"]
+    )
+    merged["exit_dream_memory_ref_set"] = ref_set
+    merged["dream_wake_ref_set"] = _dedupe_refs(
+        _list_or_empty(merged.get("dream_wake_ref_set"))
+        + [exit_dream_summary_ref]
+    )
+    merged["memory_consolidation_ref_set"] = _dedupe_refs(
+        _list_or_empty(merged.get("memory_consolidation_ref_set"))
+        + [dialogue_memory_summary_ref]
+    )
     return merged
 
 

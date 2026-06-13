@@ -83,6 +83,10 @@ class V0ContractCoverageTests(unittest.TestCase):
 
             contract_index = self._read_json(paths["contracts_state"] / "v0_contract_file_index.json")
             doc_to_code = self._read_json(paths["contracts_state"] / "doc_to_code_coverage_matrix.json")
+            engineering_consumption = self._read_json(
+                paths["contracts_state"]
+                / "engineering_document_consumption_matrix.json"
+            )
             slice_matrix = self._read_json(paths["contracts_state"] / "slice_report_receipt_matrix.json")
             carrier_matrix = self._read_json(paths["contracts_state"] / "runtime_carrier_coverage_matrix.json")
             preflight = self._read_json(paths["contracts_state"] / "first_activation_preflight_contract_check.json")
@@ -91,9 +95,58 @@ class V0ContractCoverageTests(unittest.TestCase):
             receipt = self._read_json(paths["receipts"] / "v0_contract_coverage_v0-contracts-test.json")
 
         self.assertEqual(contract_index["schema_version"], "v0_contract_file_index_v0")
+        self.assertGreaterEqual(
+            contract_index["coverage_summary"]["v0_required_files"],
+            len(list((self.docs_dir / "v0").rglob("*.md"))),
+        )
+        self.assertEqual(
+            contract_index["coverage_summary"]["real_live0_required_files"],
+            len(list((self.docs_dir / "real—live0").rglob("*.md"))),
+        )
+        self.assertEqual(contract_index["coverage_summary"]["missing_files"], [])
+        self.assertEqual(
+            contract_index["coverage_summary"]["doc_index_missing_files"],
+            [],
+        )
         self.assertIn("docs/v0/README.md", contract_index["files"])
         self.assertIn("docs/v0/entry/README.md", contract_index["files"])
         self.assertIn("docs/v0/mapping/README.md", contract_index["files"])
+        self.assertIn(
+            "docs/v0/mapping/theory_engineering_code_trace_matrix.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/package_specs/README.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/package_specs/01_life_v0_package_construction_matrix.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/package_specs/02_shared_object_write_authority_and_dependency_graph.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/package_specs/03_incremental_package_delivery_protocol.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/v0/process_contracts/resident_governance_waiting_state_machine_engineering_contract.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/real—live0/00_reading_map_and_traceability.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/real—live0/17_current_iteration_mechanism_to_code_plan.md",
+            contract_index["files"],
+        )
+        self.assertIn(
+            "docs/real—live0/README.md",
+            contract_index["files"],
+        )
         self.assertIn("docs/v0/architecture/README.md", contract_index["files"])
         self.assertIn("docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md", contract_index["files"])
         self.assertIn("docs/v0/process_contracts/README.md", contract_index["files"])
@@ -227,6 +280,52 @@ class V0ContractCoverageTests(unittest.TestCase):
             doc_to_code["documents"]["docs/258_linear_chain_closure_and_v0_contract_transition.md"]["engineering_slice"],
             "S00_DIRECTION_FOUNDATION",
         )
+        self.assertEqual(
+            engineering_consumption["schema_version"],
+            "engineering_document_consumption_matrix_v0",
+        )
+        self.assertEqual(
+            engineering_consumption["coverage_summary"]["missing_index_documents"],
+            [],
+        )
+        self.assertEqual(
+            engineering_consumption["coverage_summary"]["uncovered_documents"],
+            [],
+        )
+        self.assertEqual(
+            engineering_consumption["coverage_summary"]["missing_code_consumers"],
+            [],
+        )
+        self.assertEqual(
+            engineering_consumption["coverage_summary"]["missing_runtime_evidence"],
+            [],
+        )
+        self.assertEqual(
+            engineering_consumption["coverage_summary"]["missing_test_gates"],
+            [],
+        )
+        self.assertEqual(
+            engineering_consumption["coverage_summary"]["closed_documents"],
+            engineering_consumption["coverage_summary"]["total_documents"],
+        )
+        self.assertIn(
+            "life_v0/process_supervisor/",
+            engineering_consumption["documents"][
+                "docs/real—live0/14_resident_runtime_state_transition.md"
+            ]["code_consumer_refs"],
+        )
+        self.assertIn(
+            "tests/process/test_persistent_digital_life_process.py",
+            engineering_consumption["documents"][
+                "docs/real—live0/14_resident_runtime_state_transition.md"
+            ]["test_gate_refs"],
+        )
+        self.assertIn(
+            "life_v0/contracts/",
+            engineering_consumption["documents"][
+                "docs/v0/mapping/theory_engineering_code_trace_matrix.md"
+            ]["code_consumer_refs"],
+        )
 
         self.assertEqual(slice_matrix["schema_version"], "slice_report_receipt_matrix_v0")
         self.assertEqual(slice_matrix["slices"]["P0_DOC_CORPUS_INGESTION"]["status"], "closed")
@@ -248,6 +347,10 @@ class V0ContractCoverageTests(unittest.TestCase):
         self.assertTrue(report["activation_preflight_allowed"])
         self.assertEqual(report["readme_block_refs"], ["B99_V0_ENGINEERING_CONTRACTS"])
         self.assertEqual(report["runtime_carrier_refs"], ["V0ContractCoverageRuntime"])
+        self.assertEqual(
+            report["engineering_document_consumption"]["missing_code_consumers"],
+            [],
+        )
         self.assertEqual(report["next_required_command"], "life-v0 first-activation-preflight --strict")
 
         self.assertEqual(digest["schema_version"], "v0_contract_coverage_digest_v0")

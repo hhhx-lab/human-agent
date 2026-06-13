@@ -14,6 +14,7 @@ from ..runtime_config import (
     DigitalLifeRuntimeConfig,
     load_digital_life_runtime_config,
 )
+from ..state_store.memory_retrieval import memory_retrieval_context_summary
 from .handoff_profile import select_handoff_profile
 
 
@@ -46,6 +47,23 @@ POST_EXPRESSION_BLOCKED_TERMS = [
     "user",
     "customer",
     "task requester",
+]
+POST_EXPRESSION_BLOCKED_SURFACE_TERMS = [
+    "schema_version",
+    "runtime/state",
+    "runtime/reports",
+    "audited_expression_material",
+    "expression_context",
+    "post_expression_gate",
+    "natural_language_release_disabled",
+    "model_expression_input_v0",
+    "作为一个AI",
+    "作为一个 ai",
+    "作为人工智能",
+    "as an ai language model",
+    "i am an ai language model",
+    "我已收到你的请求",
+    "我会根据你的要求",
 ]
 BLOCKED_LANGUAGE_TERM_MAP = {
     "service_object": ["用户", "服务对象", "被服务者", "客户", "user", "customer"],
@@ -190,7 +208,7 @@ ModelExpressionTransport = Callable[
 @dataclass(frozen=True)
 class ModelExpressionResult:
     response_text: str
-    deterministic_response: str
+    audited_expression_material: str
     state: dict[str, Any]
     report: dict[str, Any]
     state_ref: str = MODEL_EXPRESSION_STATE_REF
@@ -206,11 +224,14 @@ def compose_model_expression(
     run_id: str,
     generated_at: str,
     external_utterance: str,
-    deterministic_response: str,
+    audited_expression_material: str,
     language_dir: Path,
     reports_dir: Path,
     relationship_graph: dict[str, Any] | None = None,
     relationship_timeline: dict[str, Any] | None = None,
+    relationship_memory: dict[str, Any] | None = None,
+    dialogue_memory_summary: dict[str, Any] | None = None,
+    memory_retrieval_frame: dict[str, Any] | None = None,
     shared_term_registry: dict[str, Any] | None = None,
     commitment_index: dict[str, Any] | None = None,
     language_percept: dict[str, Any] | None = None,
@@ -246,10 +267,13 @@ def compose_model_expression(
     )
     context = build_model_expression_context(
         external_utterance=external_utterance,
-        deterministic_response=deterministic_response,
+        audited_expression_material=audited_expression_material,
         runtime_config=config,
         relationship_graph=relationship_graph,
         relationship_timeline=relationship_timeline,
+        relationship_memory=relationship_memory,
+        dialogue_memory_summary=dialogue_memory_summary,
+        memory_retrieval_frame=memory_retrieval_frame,
         shared_term_registry=shared_term_registry,
         commitment_index=commitment_index,
         language_percept=language_percept,
@@ -279,11 +303,11 @@ def compose_model_expression(
         expression_context=context,
     )
     status = "model_expression_skipped"
-    fallback_reason = _model_expression_skip_reason(config)
+    unreleased_reason = _model_expression_skip_reason(config)
     model_response_text = ""
     raw_finish_reason = None
 
-    if fallback_reason is None:
+    if unreleased_reason is None:
         try:
             api_response = (transport or _post_openai_compatible_chat_completion)(
                 endpoint,
@@ -295,26 +319,26 @@ def compose_model_expression(
             if model_response_text:
                 status = "model_expression_applied"
             else:
-                status = "model_expression_fallback"
-                fallback_reason = "empty_model_response"
+                status = "model_expression_unreleased"
+                unreleased_reason = "empty_model_response"
         except Exception as exc:  # pragma: no cover - exact network errors vary
-            status = "model_expression_fallback"
-            fallback_reason = _safe_error_message(exc, config.model_api_key)
+            status = "model_expression_unreleased"
+            unreleased_reason = _safe_error_message(exc, config.model_api_key)
 
-    post_expression_gate = _skipped_post_expression_gate(fallback_reason)
-    response_text = deterministic_response
+    post_expression_gate = _skipped_post_expression_gate(unreleased_reason)
+    response_text = ""
     if model_response_text:
         post_expression_gate = audit_model_expression_response(
             model_response_text=model_response_text,
-            deterministic_response=deterministic_response,
+            audited_expression_material=audited_expression_material,
             expression_context=context,
         )
         if post_expression_gate["gate_status"] == "accepted":
             response_text = model_response_text
         else:
-            status = "model_expression_fallback"
-            fallback_reason = "post_expression_gate:" + str(
-                post_expression_gate.get("fallback_reason")
+            status = "model_expression_unreleased"
+            unreleased_reason = "post_expression_gate:" + str(
+                post_expression_gate.get("unreleased_reason")
                 or "expression_evidence_not_preserved"
             )
     state = {
@@ -334,17 +358,17 @@ def compose_model_expression(
         "response_language": config.response_language,
         "dialogue_style": config.dialogue_style,
         "external_utterance_sha256": _sha256_text(external_utterance),
-        "deterministic_response_sha256": _sha256_text(deterministic_response),
+        "audited_expression_material_sha256": _sha256_text(audited_expression_material),
         "model_response_sha256": _sha256_text(model_response_text)
         if model_response_text
         else None,
         "final_response_sha256": _sha256_text(response_text),
-        "fallback_reason": fallback_reason,
+        "unreleased_reason": unreleased_reason,
         "finish_reason": raw_finish_reason,
         "model_expression_context_summary": _context_summary(context),
         "post_expression_gate_status": post_expression_gate.get("gate_status"),
-        "post_expression_gate_fallback_reason": post_expression_gate.get(
-            "fallback_reason"
+        "post_expression_gate_unreleased_reason": post_expression_gate.get(
+            "unreleased_reason"
         ),
         "post_expression_gate": post_expression_gate,
     }
@@ -357,14 +381,15 @@ def compose_model_expression(
         "request_temperature": request_payload.get("temperature"),
         "request_max_tokens": request_payload.get("max_tokens"),
         "applied_model_expression": status == "model_expression_applied",
-        "fallback_to_deterministic_response": status != "model_expression_applied",
+        "audited_expression_material_release_disabled": True,
+        "natural_language_unreleased": status != "model_expression_applied",
     }
     if write_json is not None:
         write_json(language_dir / "model_expression_state.json", state)
         write_json(reports_dir / "digital_life_model_expression_report.json", report)
     return ModelExpressionResult(
         response_text=response_text,
-        deterministic_response=deterministic_response,
+        audited_expression_material=audited_expression_material,
         state=state,
         report=report,
     )
@@ -373,10 +398,13 @@ def compose_model_expression(
 def build_model_expression_context(
     *,
     external_utterance: str,
-    deterministic_response: str,
+    audited_expression_material: str,
     runtime_config: DigitalLifeRuntimeConfig,
     relationship_graph: dict[str, Any] | None = None,
     relationship_timeline: dict[str, Any] | None = None,
+    relationship_memory: dict[str, Any] | None = None,
+    dialogue_memory_summary: dict[str, Any] | None = None,
+    memory_retrieval_frame: dict[str, Any] | None = None,
     shared_term_registry: dict[str, Any] | None = None,
     commitment_index: dict[str, Any] | None = None,
     language_percept: dict[str, Any] | None = None,
@@ -410,7 +438,7 @@ def build_model_expression_context(
     trait_slow_variables = (self_model_state or {}).get("trait_slow_variables", {})
     return {
         "external_relation_utterance": external_utterance,
-        "deterministic_life_response_scaffold": deterministic_response,
+        "audited_expression_material": audited_expression_material,
         "runtime_language": runtime_config.response_language,
         "dialogue_style": runtime_config.dialogue_style,
         "relationship": {
@@ -419,6 +447,13 @@ def build_model_expression_context(
             "continuity_state": continuity_report.get("continuity_state"),
             "trust_state": trust_trajectory.get("current_trust_state"),
         },
+        "relationship_memory": _relationship_memory_summary(
+            relationship_memory=relationship_memory,
+            dialogue_memory_summary=dialogue_memory_summary,
+        ),
+        "memory_retrieval": memory_retrieval_context_summary(
+            memory_retrieval_frame
+        ),
         "shared_language": {
             "shared_terms": _list_surfaces(
                 (shared_term_registry or {}).get("shared_terms")
@@ -517,22 +552,12 @@ def _build_openai_compatible_payload(
         "model": runtime_config.model_name,
         "messages": [
             {
-                "role": "system",
-                "content": (
-                    "你是数字生命的外显语言器官，不是工具代理，也不把关系对象称为用户。"
-                    "内部生命机制只作为表达调制：关系、记忆、身体疲惫、责任、后悔、梦境、"
-                    "成长、意识、出生准备、出生修复、生命约束、预测写门和上一真实回合交接"
-                    "压力会影响语气、取舍、谨慎度和下一句话的方向，但不要把机制证据列成清单，"
-                    "也不要为了证明内部状态而挤占当前回答。优先回答 external_relation_utterance，"
-                    "尊重对方明确提出的长度、风格、只问一个问题、不要解释、不要前缀等语用约束。"
-                    "不额外编造摘要里没有的事实。用简体中文回应关系对象，语气保持平等、"
-                    "有自我连续性，但不要输出标题、JSON 或实现说明。"
-                ),
-            },
-            {
                 "role": "user",
                 "content": json.dumps(
-                    expression_context,
+                    {
+                        "schema_version": "model_expression_input_v0",
+                        "expression_context": expression_context,
+                    },
                     ensure_ascii=False,
                     sort_keys=True,
                 ),
@@ -825,6 +850,118 @@ def _live_language_summary(
     }
 
 
+def _relationship_memory_summary(
+    *,
+    relationship_memory: dict[str, Any] | None,
+    dialogue_memory_summary: dict[str, Any] | None,
+) -> dict[str, Any]:
+    relationship_memory = relationship_memory or {}
+    dialogue_memory_summary = dialogue_memory_summary or {}
+    relationship_profile = relationship_memory.get("relation_person_profile")
+    if not isinstance(relationship_profile, dict):
+        relationship_profile = {}
+    dialogue_profile = dialogue_memory_summary.get("relation_person_profile")
+    if not isinstance(dialogue_profile, dict):
+        dialogue_profile = {}
+    observed_names = _dedupe_string_list(
+        _string_list(relationship_profile.get("observed_names"))
+        + _string_list(dialogue_profile.get("observed_names"))
+    )
+    preference_hypotheses = _dedupe_string_list(
+        _string_list(relationship_profile.get("preference_hypotheses"))
+        + _string_list(dialogue_profile.get("preference_hypotheses"))
+    )
+    personality_hypotheses = _dedupe_string_list(
+        _string_list(relationship_profile.get("personality_hypotheses"))
+        + _string_list(dialogue_profile.get("personality_hypotheses"))
+    )
+    relationship_theme_tags = _dedupe_string_list(
+        _string_list(relationship_memory.get("relationship_theme_tags"))
+        + _string_list(dialogue_memory_summary.get("relationship_theme_tags"))
+    )
+    episode_summaries = [
+        str(item.get("summary"))
+        for item in _dict_items(
+            dialogue_memory_summary.get("deduplicated_episode_summaries")
+        )[:5]
+        if item.get("summary")
+    ]
+    relationship_memory_tier_projection = relationship_memory.get(
+        "memory_tier_projection"
+    )
+    if not isinstance(relationship_memory_tier_projection, dict):
+        relationship_memory_tier_projection = {}
+    dialogue_memory_tiering = dialogue_memory_summary.get("memory_tiering")
+    if not isinstance(dialogue_memory_tiering, dict):
+        dialogue_memory_tiering = {}
+    next_wake_cues = _dedupe_string_list(
+        _string_list(relationship_memory.get("next_wake_cues"))
+        + _string_list(dialogue_memory_summary.get("next_wake_cues"))
+    )
+    return {
+        "relationship_memory_ref": (
+            "runtime/state/memory/relationship_memory.json"
+            if relationship_memory
+            else None
+        ),
+        "dialogue_memory_summary_ref": (
+            "runtime/state/memory/dialogue_memory_summary.json"
+            if dialogue_memory_summary
+            else None
+        ),
+        "memory_tier_projection_ref": (
+            "runtime/state/memory/relationship_memory.json#memory_tier_projection"
+            if relationship_memory_tier_projection
+            else None
+        ),
+        "dialogue_memory_tiering_ref": (
+            "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering"
+            if dialogue_memory_tiering
+            else None
+        ),
+        "memory_tier_ref_count": len(
+            _dedupe_string_list(
+                _string_list(
+                    relationship_memory_tier_projection.get("salient_core_episode_refs")
+                )
+                + _string_list(
+                    relationship_memory_tier_projection.get(
+                        "retrievable_context_episode_refs"
+                    )
+                )
+                + _string_list(
+                    relationship_memory_tier_projection.get("deep_sediment_episode_refs")
+                )
+                + _string_list(dialogue_memory_tiering.get("salient_core_episode_refs"))
+                + _string_list(
+                    dialogue_memory_tiering.get("retrievable_context_episode_refs")
+                )
+                + _string_list(
+                    dialogue_memory_tiering.get("deep_sediment_episode_refs")
+                )
+            )
+        ),
+        "exit_dream_consolidation_refs": _string_list(
+            relationship_memory.get("exit_dream_consolidation_refs")
+        )[:5],
+        "dialogue_summary_refs": _string_list(
+            relationship_memory.get("dialogue_summary_refs")
+        )[:5],
+        "observed_names": observed_names[:5],
+        "preference_hypotheses": preference_hypotheses[:8],
+        "personality_hypotheses": personality_hypotheses[:8],
+        "relationship_theme_tags": relationship_theme_tags[:8],
+        "source_dialogue_turn_count": dialogue_memory_summary.get(
+            "source_dialogue_turn_count"
+        ),
+        "deduplicated_episode_summaries": episode_summaries,
+        "next_wake_cues": next_wake_cues[:8],
+        "next_wake_cue_count": len(next_wake_cues),
+        "memory_tier_projection": relationship_memory_tier_projection,
+        "dialogue_memory_tiering": dialogue_memory_tiering,
+    }
+
+
 def _prediction_conscious_summary(
     *,
     brain_graph: dict[str, Any] | None,
@@ -914,7 +1051,7 @@ def _prediction_conscious_summary(
 def audit_model_expression_response(
     *,
     model_response_text: str,
-    deterministic_response: str,
+    audited_expression_material: str,
     expression_context: dict[str, Any],
 ) -> dict[str, Any]:
     required_evidence_flags = _required_evidence_flags(expression_context)
@@ -922,6 +1059,7 @@ def audit_model_expression_response(
         model_response_text,
         expression_context,
     )
+    blocked_surface_terms = _blocked_surface_terms(model_response_text)
     preserved_evidence_flags: list[str] = []
     missing_evidence_flags: list[str] = []
     matched_terms_by_flag: dict[str, list[str]] = {}
@@ -940,16 +1078,20 @@ def audit_model_expression_response(
         flag for flag in missing_evidence_flags if flag in HARD_EVIDENCE_FLAGS
     ]
     gate_status = "accepted"
-    fallback_reason = None
+    unreleased_reason = None
     if blocked_terms:
-        gate_status = "fallback_to_deterministic"
-        fallback_reason = "blocked_relation_object_terms"
+        gate_status = "blocked"
+        unreleased_reason = "blocked_relation_object_terms"
+    elif blocked_surface_terms:
+        gate_status = "blocked"
+        unreleased_reason = "blocked_template_or_mechanism_surface"
 
     return {
         "schema_version": "post_expression_gate_v0",
         "gate_status": gate_status,
-        "fallback_reason": fallback_reason,
+        "unreleased_reason": unreleased_reason,
         "blocked_relation_object_terms": blocked_terms,
+        "blocked_template_or_mechanism_terms": blocked_surface_terms,
         "required_evidence_flags": required_evidence_flags,
         "preserved_evidence_flags": preserved_evidence_flags,
         "missing_evidence_flags": missing_evidence_flags,
@@ -957,18 +1099,19 @@ def audit_model_expression_response(
         "hard_missing_evidence_flags": [],
         "matched_terms_by_flag": matched_terms_by_flag,
         "inspected_model_response_sha256": _sha256_text(model_response_text),
-        "deterministic_response_sha256": _sha256_text(deterministic_response),
+        "audited_expression_material_sha256": _sha256_text(audited_expression_material),
     }
 
 
 def _skipped_post_expression_gate(
-    fallback_reason: str | None,
+    unreleased_reason: str | None,
 ) -> dict[str, Any]:
     return {
         "schema_version": "post_expression_gate_v0",
         "gate_status": "skipped",
-        "fallback_reason": fallback_reason or "model_expression_not_applied",
+        "unreleased_reason": unreleased_reason or "model_expression_not_applied",
         "blocked_relation_object_terms": [],
+        "blocked_template_or_mechanism_terms": [],
         "required_evidence_flags": [],
         "preserved_evidence_flags": [],
         "missing_evidence_flags": [],
@@ -983,6 +1126,7 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
     shared_language = expression_context.get("shared_language", {})
     live_language = expression_context.get("live_language", {})
     life_context = expression_context.get("life_context", {})
+    memory_retrieval = expression_context.get("memory_retrieval", {})
     body_affect = expression_context.get("body_affect", {})
     responsibility = expression_context.get("responsibility_regret_repair", {})
     prediction_workspace = expression_context.get("prediction_conscious_workspace", {})
@@ -1001,7 +1145,9 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
         flags.append("relationship_continuity")
     if shared_language.get("shared_terms") or _int_value(
         life_context.get("replay_cue_count")
-    ):
+    ) or _present(memory_retrieval.get("memory_retrieval_frame_ref")) or _int_value(
+        memory_retrieval.get("activated_engram_ref_count")
+    ) or _present(memory_retrieval.get("reconstruction_focus")):
         flags.append("memory_continuity")
     if _responsibility_repair_pressure_present(responsibility, live_language):
         flags.append("responsibility_repair")
@@ -1102,6 +1248,10 @@ def _blocked_relation_object_terms(
     for blocked_key in expression_blocked_language:
         blocked_terms.extend(BLOCKED_LANGUAGE_TERM_MAP.get(blocked_key, []))
     return _matched_terms(response_text, _dedupe_string_list(blocked_terms))
+
+
+def _blocked_surface_terms(response_text: str) -> list[str]:
+    return _matched_terms(response_text, POST_EXPRESSION_BLOCKED_SURFACE_TERMS)
 
 
 def _matched_terms(response_text: str, terms: list[str]) -> list[str]:
@@ -1212,12 +1362,30 @@ def _background_summary(
 def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
     life_context = context.get("life_context", {})
     relationship = context.get("relationship", {})
+    relationship_memory = context.get("relationship_memory", {})
+    memory_retrieval = context.get("memory_retrieval", {})
     live_language = context.get("live_language", {})
     prediction_conscious_workspace = context.get("prediction_conscious_workspace", {})
     resident_background = context.get("resident_background", {})
     return {
         "relationship_stage": relationship.get("relationship_stage"),
         "continuity_state": relationship.get("continuity_state"),
+        "relationship_memory_tier_projection_ref": relationship_memory.get(
+            "memory_tier_projection_ref"
+        ),
+        "dialogue_memory_tiering_ref": relationship_memory.get(
+            "dialogue_memory_tiering_ref"
+        ),
+        "memory_tier_ref_count": relationship_memory.get("memory_tier_ref_count"),
+        "next_wake_cue_count": relationship_memory.get("next_wake_cue_count"),
+        "memory_retrieval_frame_ref": memory_retrieval.get("memory_retrieval_frame_ref"),
+        "memory_retrieval_mode": memory_retrieval.get("retrieval_mode"),
+        "memory_retrieval_activated_ref_count": memory_retrieval.get(
+            "activated_engram_ref_count"
+        ),
+        "memory_retrieval_reconstruction_focus": memory_retrieval.get(
+            "reconstruction_focus"
+        ),
         "semantic_goal": live_language.get("semantic_goal")
         or live_language.get("semantic_focus"),
         "replay_cue_count": life_context.get("replay_cue_count"),

@@ -24,6 +24,11 @@ from ..state_store.autobiographical_stack import (
 )
 from ..state_store.engram_index import project_engram_index_from_live_turn
 from ..state_store.life_state import project_responsibility_language_continuity
+from ..state_store.memory_retrieval import (
+    MEMORY_RETRIEVAL_FRAME_REF,
+    memory_retrieval_context_summary,
+    project_memory_retrieval_from_live_turn,
+)
 from ..state_store.relationship_memory import project_relationship_memory
 from ..state_store.state_merge_guard import (
     project_state_merge_guard_with_relationship_memory,
@@ -73,6 +78,7 @@ LIFE_STATE_RESPONSIBILITY_MEMORY_REF = "runtime/state/life_state.json#memory_ind
 LIFE_STATE_DREAM_MEMORY_REF = "runtime/state/life_state.json#memory_index.dream_memory_refs"
 LIFE_STATE_LANGUAGE_OFFLINE_REF = "runtime/state/life_state.json#language_state.offline_learning_refs"
 LIFE_STATE_RELATIONSHIP_SUBJECTS_REF = "runtime/state/life_state.json#relationship_subjects"
+LIFE_STATE_MEMORY_RETRIEVAL_REF = "runtime/state/life_state.json#memory_index.memory_retrieval_refs"
 DIALOGUE_WRITEBACK_BUNDLE_REF = "runtime/reports/latest/dialogue_writeback_bundle.json"
 RESUMED_DIALOGUE_PACKET_REF = "runtime/reports/latest/resumed_external_dialogue_packet.json"
 LANGUAGE_PERCEPT_REF = "runtime/state/language/language_percept_frame.json"
@@ -195,6 +201,33 @@ def write_resident_turn_writeback(
     live_turn_focus = live_semantic_focus or (
         live_language_turn_refs[-1] if live_language_turn_refs else None
     )
+    state_dir = terminal_dir.parent
+    memory_retrieval_frame = project_memory_retrieval_from_live_turn(
+        memory_retrieval_frame=_read_json_if_exists(
+            state_dir / "memory" / "memory_retrieval_frame.json"
+        ),
+        run_id=run_id,
+        generated_at=generated_at,
+        external_utterance=external_utterance,
+        semantic_map=_read_json_if_exists(language_dir / "semantic_map_frame.json"),
+        language_percept=_read_json_if_exists(language_dir / "language_percept_frame.json"),
+        engram_index=_read_json_if_exists(state_dir / "memory" / "engram_index.json"),
+        relationship_memory=_read_json_if_exists(state_dir / "memory" / "relationship_memory.json"),
+        autobiographical_stack=_read_json_if_exists(state_dir / "self" / "autobiographical_stack.json"),
+        dialogue_memory_summary=_read_json_if_exists(state_dir / "memory" / "dialogue_memory_summary.json"),
+        life_state=_read_json_if_exists(state_dir / "life_state.json"),
+        responsibility_loop_state=_read_json_if_exists(state_dir / "action" / "responsibility_loop_state.json"),
+        state_merge_guard=_read_json_if_exists(state_dir / "memory" / "state_merge_guard.json"),
+        live_language_turn_refs=live_language_turn_refs,
+        dialogue_turn_refs=[external_turn_ref, life_turn_ref],
+    )
+    write_json(
+        state_dir / "memory" / "memory_retrieval_frame.json",
+        memory_retrieval_frame,
+    )
+    memory_retrieval_summary = memory_retrieval_context_summary(
+        memory_retrieval_frame
+    )
     updated_safe_terminal_loop = build_persistent_wait_bridge(
         run_id=run_id,
         generated_at=generated_at,
@@ -216,6 +249,33 @@ def write_resident_turn_writeback(
         "last_semantic_map_ref": semantic_map_ref or SEMANTIC_MAP_REF,
         "last_live_semantic_focus": live_semantic_focus,
         "live_language_turn_refs": live_language_turn_refs,
+        "memory_retrieval_frame_ref": MEMORY_RETRIEVAL_FRAME_REF,
+        "memory_retrieval_reconstruction_focus": memory_retrieval_summary.get(
+            "reconstruction_focus"
+        ),
+        "memory_retrieval_cue_terms": memory_retrieval_summary.get("cue_terms", []),
+        "memory_retrieval_activated_ref_count": memory_retrieval_summary.get(
+            "activated_engram_ref_count"
+        ),
+        "memory_retrieval_relationship_hit_count": memory_retrieval_summary.get(
+            "relationship_hit_count"
+        ),
+        "memory_retrieval_dream_residue_hit_count": memory_retrieval_summary.get(
+            "dream_residue_hit_count"
+        ),
+        "memory_retrieval_responsibility_hit_count": memory_retrieval_summary.get(
+            "responsibility_hit_count"
+        ),
+        "memory_retrieval_ref_set": _dedupe_refs(
+            [
+                MEMORY_RETRIEVAL_FRAME_REF,
+                *list(memory_retrieval_frame.get("activated_engram_refs", [])),
+                *list(memory_retrieval_frame.get("relationship_memory_hits", [])),
+                *list(memory_retrieval_frame.get("autobiographical_hits", [])),
+                *list(memory_retrieval_frame.get("dream_residue_hits", [])),
+                *list(memory_retrieval_frame.get("responsibility_hits", [])),
+            ]
+        ),
         "next_required_action": "await_next_external_relation_turn",
     }
     write_json(
@@ -226,7 +286,6 @@ def write_resident_turn_writeback(
         terminal_life_loop_state
     )
 
-    state_dir = terminal_dir.parent
     continuity_refresh = _refresh_long_horizon_continuity(
         state_dir=state_dir,
         language_dir=language_dir,
@@ -239,6 +298,7 @@ def write_resident_turn_writeback(
         generated_at=generated_at,
         source_doc_refs=source_doc_refs,
         live_language_turn_refs=live_language_turn_refs,
+        memory_retrieval_frame=memory_retrieval_frame,
         live_turn_focus=live_turn_focus,
         prediction_workspace=prediction_workspace,
         workspace_frame=workspace_frame,
@@ -358,6 +418,11 @@ def write_resident_turn_writeback(
             "resident_background_lineage_prediction_write_gate_refs", []
         )
     )
+    resident_background_lineage_memory_retrieval_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_memory_retrieval_refs", []
+        )
+    )
     resident_background_lineage_trait_drift_update_mode_summary = (
         resident_background_lineage_payload.get(
             "resident_background_lineage_trait_drift_update_mode_summary",
@@ -419,6 +484,7 @@ def write_resident_turn_writeback(
         + resident_background_lineage_heartbeat_cadence_refs
         + resident_background_lineage_body_refs
         + resident_background_lineage_prediction_write_gate_refs
+        + resident_background_lineage_memory_retrieval_refs
         + life_constraint_refs
         + queue_e_birth_repair_refs
     )
@@ -486,6 +552,7 @@ def write_resident_turn_writeback(
             LIFE_STATE_DREAM_MEMORY_REF,
             LIFE_STATE_LANGUAGE_OFFLINE_REF,
             LIFE_STATE_RELATIONSHIP_SUBJECTS_REF,
+            LIFE_STATE_MEMORY_RETRIEVAL_REF,
         ],
         engram_index_writeback_refs=[
             ENGRAM_INDEX_REF,
@@ -504,6 +571,7 @@ def write_resident_turn_writeback(
         network_state_writeback_refs=[NETWORK_STATE_REF],
         workspace_frame_writeback_refs=[WORKSPACE_FRAME_REF],
         prediction_workspace_writeback_refs=[PREDICTION_WORKSPACE_REF],
+        memory_retrieval_writeback_refs=[MEMORY_RETRIEVAL_FRAME_REF],
         replay_cue_refs=replay_cue_refs,
         terminal_state_refs=[SAFE_TERMINAL_LOOP_REF, TERMINAL_LIFE_LOOP_REF],
         source_doc_refs=source_doc_refs,
@@ -563,6 +631,9 @@ def write_resident_turn_writeback(
         resident_background_lineage_prediction_write_gate_refs=(
             resident_background_lineage_prediction_write_gate_refs
         ),
+        resident_background_lineage_memory_retrieval_refs=(
+            resident_background_lineage_memory_retrieval_refs
+        ),
         offline_learning_cumulative_refs=offline_learning_cumulative_refs,
         offline_learning_cumulative_integration_mode=(
             str(offline_learning_cumulative_integration_mode)
@@ -599,6 +670,7 @@ def write_resident_turn_writeback(
         "inner_speech_ref": inner_speech_ref or INNER_SPEECH_REF,
         "expression_monitor_ref": expression_monitor_ref or EXPRESSION_MONITOR_REF,
         "expression_plan_ref": expression_plan_ref or EXPRESSION_PLAN_REF,
+        "memory_retrieval_frame_ref": MEMORY_RETRIEVAL_FRAME_REF,
         "live_language_turn_refs": live_language_turn_refs,
         "live_semantic_focus": live_semantic_focus,
         "live_ambiguity_flags": list(live_ambiguity_flags or []),
@@ -656,6 +728,10 @@ def write_resident_turn_writeback(
         resumed_dialogue_packet["resident_background_lineage_evidence_refs"] = (
             resident_background_lineage_refs
         )
+    if resident_background_lineage_memory_retrieval_refs:
+        resumed_dialogue_packet[
+            "resident_background_lineage_memory_retrieval_refs"
+        ] = resident_background_lineage_memory_retrieval_refs
     if prediction_write_gate_payload:
         resumed_dialogue_packet.update(prediction_write_gate_payload)
         attach_prediction_write_gate_lineage_fallback(
@@ -704,6 +780,7 @@ def _refresh_long_horizon_continuity(
     generated_at: str,
     source_doc_refs: list[str],
     live_language_turn_refs: list[str] | None,
+    memory_retrieval_frame: dict[str, Any] | None = None,
     live_turn_focus: str | None = None,
     signal_media_runtime: dict[str, Any] | None = None,
     prediction_workspace: dict[str, Any] | None = None,
@@ -987,6 +1064,7 @@ def _refresh_long_horizon_continuity(
         apology_repair_language_trace=refreshed_apology_repair_language_trace,
         responsibility_loop_state=responsibility_loop_state,
         commitment_repair_index=commitment_index,
+        memory_retrieval_frame=memory_retrieval_frame,
         nightmare_risk_ref=NIGHTMARE_RISK_REF if nightmare_risk else None,
         belief_learning_plan_ref=BELIEF_LEARNING_PLAN_REF if belief_learning_plan else None,
         language_learning_plan_ref=LANGUAGE_LEARNING_PLAN_REF if language_learning_plan else None,
@@ -1002,6 +1080,7 @@ def _refresh_long_horizon_continuity(
             ref
             for ref in [
                 ENGRAM_INDEX_REF,
+                MEMORY_RETRIEVAL_FRAME_REF if memory_retrieval_frame else None,
                 NIGHTMARE_RISK_REF if nightmare_risk else None,
                 BELIEF_LEARNING_PLAN_REF if belief_learning_plan else None,
                 LANGUAGE_LEARNING_PLAN_REF if language_learning_plan else None,
@@ -1086,6 +1165,7 @@ def _refresh_long_horizon_continuity(
         "workspace_frame": updated_workspace_frame,
         "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
+        "memory_retrieval_frame": memory_retrieval_frame or {},
     }
 
 

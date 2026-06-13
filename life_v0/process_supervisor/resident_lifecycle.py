@@ -152,6 +152,12 @@ class ResidentControlInputStream:
         if not active_sequence:
             return
         response_text = _extract_response_text(emitted_output)
+        if response_text:
+            output_status = "completed"
+        elif not emitted_output:
+            output_status = "completed_unreleased"
+        else:
+            output_status = "incident_or_system_output"
         outbox_event = {
             "schema_version": "resident_relation_outbox_event_v0",
             "sequence": active_sequence,
@@ -159,7 +165,7 @@ class ResidentControlInputStream:
             "utterance": queue_state.get("active_utterance"),
             "emitted_output": emitted_output,
             "response_text": response_text,
-            "status": "completed" if response_text else "incident_or_system_output",
+            "status": output_status,
             "generated_at": _now_iso(),
             "resident_relation_inbox_ref": RESIDENT_RELATION_INBOX_REF,
             "resident_relation_outbox_ref": RESIDENT_RELATION_OUTBOX_REF,

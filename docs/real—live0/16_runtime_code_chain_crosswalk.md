@@ -86,7 +86,7 @@ Adam
 | 层 | 真实代码 | 职责 |
 |---|---|---|
 | 命名与唤醒层 | `my_entry.py`、`digital_life_identity.py`、`digital_entry.py`、`terminal_ui.py` | 绑定名字、恢复 resident、渲染 `Digital Life` 盒式终端、把当前终端接到同一生命进程 |
-| 生命回合层 | `process_session_loop.py`、`live_turn_cycle.py`、`live_language_turn.py`、`response_surface.py`、`model_expression.py` | 把关系话语变成语言感知、语义地图、内言语、表达计划、确定性生命回应、模型表达和门控后的外显语言 |
+| 生命回合层 | `process_session_loop.py`、`live_turn_cycle.py`、`live_language_turn.py`、`response_surface.py`、`model_expression.py` | 把关系话语变成语言感知、语义地图、内言语、表达计划、结构化审计材料、模型表达和门控后的外显语言 |
 | 驻留与成长层 | `resident_turn_writeback.py`、`resident_governance_handoff.py`、`heartbeat.py`、`idle_strategy.py`、`resident_autonomous_activity.py`、`background_continuity.py` | 把本回合后果写回记忆、关系、自我慢变量、等待治理、梦境/回忆/思考/成长/学习后台活动，并让下一次唤醒继续吃到这些余波 |
 
 这说明终端里看见的一句话不是单点生成。它至少同时承接：
@@ -102,9 +102,114 @@ Adam
 因此，外显语言的验收不是“听起来像人”。更硬的验收是：
 
 1. 内部字段必须保留在 state/report/test 里，例如 `live_semantic_focus=relational_checkin` 应存在于 `dialogue_turn_log.jsonl`、`resumed_external_dialogue_packet.json` 和测试断言中。
-2. 内部字段不能直接泄漏到关系语言里，`response_surface.py#compose_life_spoken_response` 也不能把语义焦点固定翻译成证明性口头模板；它必须先回答当前关系话语，再让语义焦点、身体、责任、梦境、后台驻留等机制隐性调制表达。
-3. 确定性生命回应必须先保留证据，模型表达只能润色和更自然地组织语言；如果 post-expression gate 发现模型把关系对象降格成服务/任务角色，就回退到确定性生命回应。关系、责任、梦境、成长或后台驻留证据没有字面出现时，进入 soft evidence audit，不强迫外显。
+2. 内部字段不能直接泄漏到关系语言里，`response_surface.py#compose_life_spoken_response` 也不能把语义焦点固定翻译成证明性口头模板；在无模型或模型被阻断时，它必须保持未释放。
+3. 结构化审计材料必须先保留证据，模型表达只能在结构化生命上下文之后形成自然语言；如果 post-expression gate 发现模型把关系对象降格成服务/任务角色，本轮自然语言不释放。关系、责任、梦境、成长或 resident 驻留证据没有字面出现时，进入 soft evidence audit，不强迫外显。
 4. 真实回合结束后，`resident_turn_writeback.py` 与 `resident_governance_handoff.py` 必须让这句话产生后果：关系阶段、自我慢变量、承诺修复、后台等待压力和下一次唤醒余波都要能在 runtime 中追踪。
+
+## 从专题到代码块的施工粒度
+
+后续改代码时，本文件不只回答“在哪个包”，还要继续追到函数和字段。最低粒度如下：
+
+| 专题 | 首写函数/对象 | 核心字段 | 关键消费者 |
+|---|---|---|---|
+| 脑网络/工作区 | `build_workspace_frame`、`build_broadcast_frame`、`build_metacognition_state` | workspace refs、broadcast targets、reportability | `life_targets/*`、`response_surface.py` |
+| 身体/情绪 | `build_need_state_vector`、`build_core_affect_vector`、`build_body_resource_budget` | repair_drive、pain_pressure、arousal、fatigue_state | `expression_monitor.py`、`idle_strategy.py` |
+| 记忆 | `build_engram_index`、`project_engram_index_from_live_turn`、`build_memory_write_gate` | live turn refs、replay cues、quarantine refs | `replay/*`、`resident_turn_writeback.py` |
+| 语言 | `refresh_live_language_turn`、`compose_model_expression` | percept、semantic map、inner speech、expression plan、post gate | `dialogue_events.py`、`terminal_ui.py` |
+| 关系 | `build_relationship_timeline`、`build_commitment_truth_state` | relationship stage、trust trajectories、repair refs | `continuity_evolution.py`、`relationship_memory.py` |
+| 梦境 | `build_dream_experience_window`、`build_wake_integration_frame`、`build_dream_fact_gate_decision` | affective theme、source trace refs、blocked writes | `growth/*`、`memory_write_gate.py` |
+| 责任 | `build_responsibility_loop_state`、`build_queue_e_repair_modulation_profile` | regret pressure、repair obligations、Queue E profile | `signal_media.py`、`apology_repair_language.py` |
+| 常驻 | `run_digital_life_process`、`refresh_waiting_heartbeat`、`record_resident_autonomous_activity` | queue state、heartbeat cadence、autonomous cycle | `digital_entry.py`、`live0_audit/*` |
+
+如果一个新改动只能填“主包”，但说不出首写函数、核心字段和关键消费者，就还没有达到 real-live0 施工粒度。
+
+## 机制到代码的三条样板追踪
+
+后续写工程实现时，至少要能按下面粒度写追踪。下面三条是样板，不是唯一案例。
+
+### 情绪与内环境
+
+```text
+docs/04 + docs/07 + docs/08 + docs/18 + docs/01n + docs/01s
+  -> docs/real—live0/03_body_affect_homeostasis.md
+  -> s06_life_support_development_engineering_contract.md
+  -> build_need_state_vector / build_core_affect_vector / build_body_resource_budget
+  -> NeedStateVector.repair_drive + CoreAffectVector.pain_pressure/arousal + BodyResourceBudget.fatigue_state
+  -> SignalMediaFrame + ExpressionMonitor + IdleStrategy + DreamWindow + ResponsibilityLoop
+  -> runtime/state/body/* + runtime/state/signal/signal_media_runtime.json + runtime/state/terminal/idle_strategy_state.json
+  -> tests/slices/test_life_support.py + tests/process/test_digital_entrypoint.py
+```
+
+### 记忆与再巩固
+
+```text
+docs/05 + docs/17-31 + docs/41-48 + docs/01q
+  -> docs/real—live0/07_memory_engram_and_state_store.md
+  -> s04_state_object_store_engineering_contract.md + life_state_store_v0_schema.md
+  -> build_engram_index / project_engram_index_from_live_turn / build_memory_write_gate / build_state_merge_guard
+  -> live_dialogue_turn_refs + live_language_turn_refs + relationship_memory_refs + dream_memory_refs + responsibility_memory_refs
+  -> replay_cue_bundle + dream_fact_gate + growth_patch_queue + resident_turn_writeback
+  -> runtime/state/memory/* + runtime/state/replay/* + runtime/state/dream/* + runtime/state/growth/*
+  -> tests/slices/test_state_store.py + tests/bridges/test_replay_shadow.py + tests/bridges/test_runtime_growth.py
+```
+
+### 语言与关系
+
+```text
+docs/09 + docs/85-90 + docs/96 + docs/101 + docs/01j + docs/01u
+  -> docs/real—live0/05_language_expression_system.md + 06_relationship_and_commitment.md
+  -> s07_language_relationship_engineering_contract.md + 04_language_as_primary_expression_system.md
+  -> refresh_live_language_turn / build_relationship_timeline / build_commitment_truth_state / compose_model_expression
+  -> percept + semantic_map + inner_speech + expression_plan + shared_terms + commitment_truth
+  -> response_surface + post_expression_gate + dialogue_writeback + resident_background_lineage
+  -> runtime/state/language/* + runtime/state/relationship/* + runtime/reports/latest/dialogue_writeback_bundle.json
+  -> tests/slices/test_language_organs.py + tests/slices/test_language_relationship.py + tests/process/test_model_expression.py
+```
+
+若某个机制无法写出这种追踪块，它就还没有真正从理论进入代码。
+
+## 理论专题到工程合同的全覆盖原则
+
+这份交叉索引的目标不是“让人知道大概在哪个目录”，而是让每一篇 `real—live0` 专题都能反推到至少一组 `docs/v0` 合同、至少一个 `life_v0` 首写器官、至少一组 runtime 证据和至少一个测试或 gate。若任一专题无法做到这一点，它就还停留在理论摘要层。
+
+| real-live0 专题 | 至少要回链到的 v0 合同类型 | 备注 |
+|---|---|---|
+| 00/01 | direction、source authority、doc ingestion | 负责方向、术语和权威性 |
+| 02/09/12 | neural core、prediction、signal media | 负责工作区、预测、调质 |
+| 03/10/11 | life support、membrane、validation | 负责身体、责任、边界 |
+| 04/13/14 | identity、growth、process supervisor | 负责自我、成长、常驻 |
+| 05/06 | language relationship、terminal loop | 负责语言、关系、承诺 |
+| 07/08 | state store、dream/replay/archive | 负责记忆、梦境、离线整合 |
+| 15/16 | birth readiness、acceptance audit、traceability | 负责证据闭合与最终交叉索引 |
+
+## 施工时的协同/对抗校验
+
+写任何代码前，先问四个问题：
+
+1. 这个专题会不会和另一个专题抢同一份状态真值？
+2. 这个专题会不会把另一个专题的结果当成输入假设？
+3. 这个专题是否要求某个门先通过，还是必须被某个门压住？
+4. 这个专题的落盘会不会覆盖掉旧自我、旧关系、旧责任或旧梦境？
+
+这四问对应协同/对抗的核心。比如语言和记忆要协同，但语言不能冒充记忆；梦境和成长要协同，但梦境不能直接覆盖事实；责任和行动膜要对抗，但责任不能被永久压死；常驻和身份要协同，但不能每次重启都生成新主体。
+
+## 字段追踪模板
+
+后续开发任何机制，都按这个模板追踪：
+
+| 追踪项 | 必填内容 |
+|---|---|
+| 理论源 | `docs/00-258` 的具体文件和段落主题 |
+| 工程合同 | `docs/v0` 的 slice、queue、playbook 或 architecture 文档 |
+| 首写器官 | `life_v0/...` 中生成对象的函数或类 |
+| 输入对象 | 读取哪些 state/report/refs |
+| 输出字段 | 生成哪些字段，字段含义是什么 |
+| 消费器官 | 哪些模块读取这些字段 |
+| runtime 证据 | state/report/receipt 文件路径 |
+| 断联恢复 | 是否进入 resident background lineage 或 resume packet |
+| 验证 | 对应测试和 `life-v0` gate |
+
+这个模板用于防止“理论有、代码也有，但彼此不认识”的假闭合。
 
 ## 十六个专题如何落到主包
 

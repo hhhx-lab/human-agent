@@ -28,7 +28,7 @@
 
 ## 使用规则
 
-进入这柜前，先过入口栈六份：
+进入这柜前，先过入口栈七份：
 
 1. `docs/v0/README.md`
 2. `docs/v0/entry/v0_implementation_index.md`
@@ -36,6 +36,7 @@
 4. `docs/v0/entry/v0_module_execution_catalog.md`
 5. `docs/v0/mapping/readme_block_engineering_realization_v0.md`
 6. `docs/v0/mapping/0_to_257_engineering_utilization_map.md`
+7. `docs/v0/mapping/theory_engineering_code_trace_matrix.md`
 
 然后按下面顺序进入本柜：
 

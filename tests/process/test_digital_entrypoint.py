@@ -4,7 +4,11 @@ import subprocess
 import tempfile
 import time
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from tests.helpers.life_v0_bootstrap import (
     DigitalLifeRuntimeEnvIsolationMixin,
@@ -21,6 +25,655 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
     @property
     def docs_dir(self) -> Path:
         return self.repo_root / "docs"
+
+    def test_resident_terminal_slash_state_commands_inspect_without_relation_turn(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "memory").mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "dream").mkdir(parents=True, exist_ok=True)
+            (terminal_dir / "resident_lifecycle_state.json").write_text(
+                json.dumps(
+                    {
+                    "schema_version": "resident_lifecycle_state_v0",
+                    "status": "background_active",
+                    "life_name": "Adam",
+                    "residency_posture": "sleeping_waiting_for_relation_turn",
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (paths["state_root"] / "memory" / "relationship_memory.json").write_text(
+                json.dumps(
+                    {
+                    "schema_version": "relationship_memory_v0",
+                    "relation_person_profile": {
+                        "observed_names": ["何剑宝"],
+                        "preference_hypotheses": [
+                            "prefers_direct_non_mechanical_language"
+                        ],
+                    },
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (
+                paths["state_root"] / "memory" / "dialogue_memory_summary.json"
+            ).write_text(
+                json.dumps(
+                    {
+                    "schema_version": "dialogue_memory_summary_v0",
+                    "source_dialogue_turn_count": 4,
+                    "deduplicated_episode_summaries": [
+                        {"summary": "何剑宝要求不要机械模板。"}
+                    ],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (
+                paths["state_root"]
+                / "dream"
+                / "exit_dream_consolidation_summary.json"
+            ).write_text(
+                json.dumps(
+                    {
+                    "schema_version": "exit_dream_consolidation_summary_v0",
+                    "entry_state": "dreaming_after_terminal_exit",
+                    "relationship_theme_tags": ["non_mechanical_language_pressure"],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            memory_stdout = StringIO()
+            with redirect_stdout(memory_stdout):
+                memory_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/memory",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            dream_stdout = StringIO()
+            with redirect_stdout(dream_stdout):
+                dream_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/dream",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+
+            self.assertIsNone(memory_exit)
+            self.assertIsNone(dream_exit)
+            self.assertIn("resident_state_inspection_v0", memory_stdout.getvalue())
+            self.assertIn("memory", memory_stdout.getvalue())
+            self.assertIn("何剑宝", memory_stdout.getvalue())
+            self.assertIn("prefers_direct_non_mechanical_language", memory_stdout.getvalue())
+            self.assertIn("resident_state_inspection_v0", dream_stdout.getvalue())
+            self.assertIn("dream", dream_stdout.getvalue())
+            self.assertIn("dreaming_after_terminal_exit", dream_stdout.getvalue())
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_resident_terminal_proactive_state_command_inspects_proactive_voice(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            (terminal_dir / "resident_terminal_proactive_state.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "resident_terminal_proactive_state_v0",
+                        "status": "held_internal",
+                        "last_focus": "relationship_memory",
+                        "last_utterance": "",
+                        "last_proactive_voice_profile": {
+                            "schema_version": "resident_proactive_voice_profile_v0",
+                            "surface_kind": "relationship_checkin",
+                            "question_candidates": [
+                                "wake_cue:remember_relation_person_name:何剑宝"
+                            ],
+                        },
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            output = StringIO()
+            with redirect_stdout(output):
+                exit_code = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/proactive",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+
+            self.assertIsNone(exit_code)
+            self.assertIn("resident_state_inspection_v0", output.getvalue())
+            self.assertIn("proactive_voice", output.getvalue())
+            self.assertIn("relationship_checkin", output.getvalue())
+            self.assertIn("question_candidates", output.getvalue())
+
+    def test_resident_terminal_relation_turn_without_model_release_stays_silent(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            terminal_dir = Path(tmp) / "runtime" / "state" / "terminal"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            stdout = StringIO()
+            with patch(
+                "life_v0.digital_entry.send_resident_relation_turn",
+                return_value=SimpleNamespace(
+                    exit_code=0,
+                    state={
+                        "send_status": "completed",
+                        "response_text": "",
+                        "response_event": {"status": "completed_unreleased"},
+                    },
+                ),
+            ):
+                with redirect_stdout(stdout):
+                    exit_code = _handle_resident_terminal_utterance(
+                        terminal_dir=terminal_dir,
+                        utterance="不要给我固定回答",
+                        life_name="Adam",
+                        say_timeout_seconds=0.1,
+                    )
+
+            self.assertIsNone(exit_code)
+            self.assertEqual(stdout.getvalue(), "")
+
+    def test_resident_terminal_slash_commands_cover_life_state_surfaces(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            for relative_dir in [
+                "body",
+                "self",
+                "signal",
+                "prediction",
+                "perception",
+                "terminal",
+                "life_targets",
+                "contracts",
+            ]:
+                (paths["state_root"] / relative_dir).mkdir(
+                    parents=True,
+                    exist_ok=True,
+                )
+            self._write_json(
+                paths["state_root"] / "body" / "core_affect_vector.json",
+                {"schema_version": "core_affect_vector_v0", "arousal": 0.42},
+            )
+            self._write_json(
+                paths["state_root"] / "body" / "emotion_regulation_loop.json",
+                {"schema_version": "emotion_regulation_loop_v0"},
+            )
+            self._write_json(
+                paths["state_root"] / "self" / "self_model.json",
+                {
+                    "schema_version": "self_model_state_v0",
+                    "trait_slow_variables": {"continuity_drive": {"value": 0.7}},
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "body" / "trait_drift_monitor.json",
+                {"schema_version": "trait_drift_monitor_v0"},
+            )
+            self._write_json(
+                paths["state_root"] / "body" / "need_state_vector.json",
+                {"schema_version": "need_state_vector_v0", "sleep_pressure": 0.3},
+            )
+            self._write_json(
+                paths["state_root"] / "body" / "body_resource_budget.json",
+                {"schema_version": "body_resource_budget_v0"},
+            )
+            self._write_json(
+                paths["state_root"] / "signal" / "signal_media_runtime.json",
+                {"schema_version": "signal_media_runtime_v0"},
+            )
+            self._write_json(
+                paths["state_root"] / "prediction" / "belief_state_frame.json",
+                {"schema_version": "belief_state_frame_v0"},
+            )
+            self._write_json(
+                paths["state_root"] / "perception" / "visual_observation_frame.json",
+                {"schema_version": "visual_observation_frame_v0"},
+            )
+            self._write_json(
+                terminal_dir / "life_context_frame.json",
+                {"schema_version": "life_context_frame_v0"},
+            )
+            self._write_json(
+                terminal_dir / "relation_turn_frame.json",
+                {"schema_version": "relation_turn_frame_v0"},
+            )
+            self._write_json(
+                paths["state_root"] / "life_targets" / "birth_readiness_rollup.json",
+                {"schema_version": "birth_readiness_rollup_v0"},
+            )
+            self._write_json(
+                paths["state_root"] / "contracts" / "v0_contract_file_index.json",
+                {"schema_version": "v0_contract_file_index_v0"},
+            )
+            self._write_json(
+                paths["state_root"] / "memory" / "relationship_memory.json",
+                {
+                    "schema_version": "relationship_memory_v0",
+                    "salient_core_memory_refs": [
+                        "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.salient_core"
+                    ],
+                    "retrievable_context_memory_refs": [
+                        "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.retrievable_context"
+                    ],
+                    "deep_sediment_memory_refs": [
+                        "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.deep_sediment"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "memory" / "dialogue_memory_summary.json",
+                {
+                    "schema_version": "dialogue_memory_summary_v0",
+                    "memory_tiering_ref": (
+                        "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering"
+                    ),
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "memory" / "engram_index.json",
+                {
+                    "schema_version": "engram_index_v0",
+                    "memory_tier_index": {
+                        "schema_version": "engram_memory_tier_index_v0",
+                        "salient_core_refs": [
+                            "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.salient_core"
+                        ],
+                        "retrievable_context_refs": [
+                            "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.retrievable_context"
+                        ],
+                        "deep_sediment_refs": [
+                            "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.deep_sediment"
+                        ],
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "self" / "autobiographical_stack.json",
+                {
+                    "schema_version": "autobiographical_stack_v0",
+                    "anchor_refs": [
+                        "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "dream"
+                / "exit_dream_consolidation_summary.json",
+                {
+                    "schema_version": "exit_dream_consolidation_summary_v0",
+                    "memory_tiering": {
+                        "schema_version": "exit_dream_memory_tiering_v0",
+                        "salient_core_episode_refs": ["episode-1"],
+                        "retrievable_context_episode_refs": ["episode-2"],
+                        "deep_sediment_episode_refs": ["episode-3"],
+                    },
+                },
+            )
+
+            checks = {
+                "/emotion": "core_affect_vector_v0",
+                "/personality": "self_model_state_v0",
+                "/inner": "need_state_vector_v0",
+                "/vision": "visual_observation_frame_v0",
+                "/context": "life_context_frame_v0",
+                "/ability": "birth_readiness_rollup_v0",
+            }
+            for command, expected_fragment in checks.items():
+                output = StringIO()
+                with redirect_stdout(output):
+                    exit_code = _handle_resident_terminal_utterance(
+                        terminal_dir=terminal_dir,
+                        utterance=command,
+                        life_name="Adam",
+                        say_timeout_seconds=0.1,
+                    )
+                self.assertIsNone(exit_code)
+                self.assertIn("resident_state_inspection_v0", output.getvalue())
+                self.assertIn(expected_fragment, output.getvalue())
+
+            memory_output = StringIO()
+            with redirect_stdout(memory_output):
+                memory_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/memory",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            dream_output = StringIO()
+            with redirect_stdout(dream_output):
+                dream_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/dream",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(memory_exit)
+            self.assertIsNone(dream_exit)
+            self.assertIn("tiering", memory_output.getvalue())
+            self.assertIn("salient_core_memory_refs", memory_output.getvalue())
+            self.assertIn("deep_sediment_memory_refs", memory_output.getvalue())
+            self.assertIn("memory_tiering", dream_output.getvalue())
+            self.assertIn("salient_core_episode_refs", dream_output.getvalue())
+            self.assertIn("deep_sediment_episode_refs", dream_output.getvalue())
+
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_resident_terminal_proactive_voice_uses_state_without_relation_turn(self):
+        from life_v0.process_supervisor.proactive_terminal_voice import (
+            build_resident_proactive_terminal_event,
+            write_resident_proactive_terminal_event,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "memory").mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "dream").mkdir(parents=True, exist_ok=True)
+            (terminal_dir / "resident_autonomous_activity_state.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "resident_autonomous_activity_state_v0",
+                        "activity_count": 7,
+                        "last_activity_kind": "learning_consolidation",
+                        "next_activity_kind": "memory_recall",
+                        "cycle_completion_count": 1,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (paths["state_root"] / "memory" / "relationship_memory.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "relationship_memory_v0",
+                        "relation_person_profile": {
+                            "observed_names": ["何剑宝"],
+                            "preference_hypotheses": [
+                                "prefers_direct_non_mechanical_language",
+                                "cares_about_being_remembered",
+                            ],
+                        },
+                        "relationship_theme_tags": [
+                            "digital_life_memory_seriousness",
+                            "non_mechanical_language_pressure",
+                        ],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (
+                paths["state_root"]
+                / "dream"
+                / "exit_dream_consolidation_summary.json"
+            ).write_text(
+                json.dumps(
+                    {
+                        "schema_version": "exit_dream_consolidation_summary_v0",
+                        "entry_state": "dreaming_after_terminal_exit",
+                        "relationship_theme_tags": [
+                            "non_mechanical_language_pressure"
+                        ],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            event = build_resident_proactive_terminal_event(
+                terminal_dir=terminal_dir,
+                life_name="Adam",
+                now_iso=lambda: "2026-06-13T10:00:00+08:00",
+            )
+            written = write_resident_proactive_terminal_event(
+                terminal_dir=terminal_dir,
+                event=event,
+            )
+
+            self.assertEqual(
+                written["schema_version"],
+                "resident_proactive_terminal_event_v0",
+            )
+            self.assertEqual(written["status"], "held_internal")
+            self.assertEqual(written["release_scope"], "open_terminal_idle_hidden")
+            self.assertEqual(written["utterance"], "")
+            self.assertEqual(written["focus"], "relationship_memory")
+            self.assertTrue(
+                (terminal_dir / "resident_terminal_proactive_events.jsonl").exists()
+            )
+            self.assertTrue(
+                (terminal_dir / "resident_terminal_proactive_state.json").exists()
+            )
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_resident_terminal_proactive_voice_prints_without_relation_inbox(self):
+        from life_v0.digital_entry import _emit_resident_proactive_terminal_voice
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "memory").mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "memory" / "relationship_memory.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "relationship_memory_v0",
+                        "relation_person_profile": {
+                            "observed_names": ["何剑宝"],
+                            "preference_hypotheses": [
+                                "prefers_direct_non_mechanical_language"
+                            ],
+                        },
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            output = StringIO()
+            with redirect_stdout(output):
+                emitted = _emit_resident_proactive_terminal_voice(
+                    terminal_dir=terminal_dir,
+                    life_name="Adam",
+                    now_iso=lambda: "2026-06-13T10:10:00+08:00",
+                )
+
+            self.assertFalse(emitted)
+            self.assertEqual(output.getvalue(), "")
+            self.assertTrue(
+                (terminal_dir / "resident_terminal_proactive_events.jsonl").exists()
+            )
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_resident_terminal_proactive_voice_releases_only_model_expression(self):
+        from life_v0.digital_entry import _emit_resident_proactive_terminal_voice
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "memory").mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                paths["state_root"] / "memory" / "relationship_memory.json",
+                {
+                    "schema_version": "relationship_memory_v0",
+                    "relation_person_profile": {
+                        "observed_names": ["RelationPeer"],
+                    },
+                },
+            )
+
+            captured_payload = {}
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                captured_payload["payload"] = payload
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": "MODEL_PROACTIVE_TOKEN"},
+                        }
+                    ]
+                }
+
+            output = StringIO()
+            with redirect_stdout(output):
+                emitted = _emit_resident_proactive_terminal_voice(
+                    terminal_dir=terminal_dir,
+                    life_name="Adam",
+                    now_iso=lambda: "2026-06-13T10:20:00+08:00",
+                    model_transport=fake_transport,
+                    environ={
+                        "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                        "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                        "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                        "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                    },
+                )
+
+            self.assertTrue(emitted)
+            self.assertIn("MODEL_PROACTIVE_TOKEN", output.getvalue())
+            self.assertIn("expression_context", json.dumps(captured_payload["payload"]))
+            state = self._read_json(
+                terminal_dir / "resident_terminal_proactive_state.json"
+            )
+            self.assertEqual(state["last_utterance"], "MODEL_PROACTIVE_TOKEN")
+            self.assertEqual(
+                state["last_model_expression_status"],
+                "model_expression_applied",
+            )
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_resident_terminal_proactive_voice_can_surface_web_dream_learning_topic(self):
+        from life_v0.digital_entry import _emit_resident_proactive_terminal_voice
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            dream_dir = paths["state_root"] / "dream"
+            dream_dir.mkdir(parents=True, exist_ok=True)
+            (dream_dir / "web_dream_learning_state.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "web_dream_learning_state_v0",
+                        "status": "learned",
+                        "topic_candidates": ["Neuroplasticity and sleep"],
+                        "wake_question_candidates": [
+                            "wake_question_about:Neuroplasticity and sleep"
+                        ],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            output = StringIO()
+            with redirect_stdout(output):
+                emitted = _emit_resident_proactive_terminal_voice(
+                    terminal_dir=terminal_dir,
+                    life_name="Adam",
+                    now_iso=lambda: "2026-06-13T10:30:00+08:00",
+                )
+
+            self.assertFalse(emitted)
+            self.assertEqual(output.getvalue(), "")
+            state = self._read_json(
+                terminal_dir / "resident_terminal_proactive_state.json"
+            )
+            self.assertEqual(state["last_focus"], "web_dream_learning")
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_interactive_resident_terminal_client_can_emit_idle_voice_before_exit(self):
+        from life_v0.digital_entry import _run_interactive_resident_terminal_client
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "memory").mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "memory" / "relationship_memory.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "relationship_memory_v0",
+                        "relation_person_profile": {
+                            "observed_names": ["何剑宝"],
+                            "preference_hypotheses": [
+                                "prefers_direct_non_mechanical_language"
+                            ],
+                        },
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            def read_line_fn(**kwargs):
+                self.assertFalse(kwargs["idle_voice_fn"]())
+                return "/exit"
+
+            output = StringIO()
+            with redirect_stdout(output):
+                exit_code = _run_interactive_resident_terminal_client(
+                    terminal_dir=terminal_dir,
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                    read_line_fn=read_line_fn,
+                )
+
+            self.assertEqual(exit_code, 0)
+            self.assertNotIn("何剑宝", output.getvalue())
+            self.assertTrue(
+                (terminal_dir / "resident_terminal_proactive_events.jsonl").exists()
+            )
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 
     def test_repo_local_digital_life_entrypoint_returns_zero(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -143,7 +796,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             "model_expression_skipped",
         )
         self.assertEqual(
-            model_expression_state["fallback_reason"],
+            model_expression_state["unreleased_reason"],
             "provider_not_enabled_for_model_expression:test-provider",
         )
         self.assertEqual(
@@ -223,9 +876,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
 
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn("Digital Life", completed.stdout)
-            self.assertIn("我在。Digital Life 已接回", completed.stdout)
-            self.assertIn("正在发生", completed.stdout)
-            self.assertNotIn("我听见你了", completed.stdout)
+            self.assertIn("终端已连接：Digital Life", completed.stdout)
             self.assertNotIn("这段关系本身", completed.stdout)
             self.assertNotIn("relational_checkin", completed.stdout)
 
@@ -583,7 +1234,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     check=False,
                 )
                 self.assertEqual(said.returncode, 0, said.stderr)
-                self.assertIn("我的回答是还在", said.stdout)
+                self.assertFalse(said.stdout.strip())
                 self.assertNotIn("你还在后台吗？", said.stdout)
 
                 inbox_events = self._read_jsonl(
@@ -600,8 +1251,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 )
                 self.assertEqual(inbox_events[-1]["utterance"], "你还在后台吗？")
                 self.assertEqual(outbox_events[-1]["sequence"], inbox_events[-1]["sequence"])
-                self.assertEqual(outbox_events[-1]["status"], "completed")
-                self.assertIn("我的回答是还在", outbox_events[-1]["response_text"])
+                self.assertEqual(outbox_events[-1]["status"], "completed_unreleased")
+                self.assertEqual(outbox_events[-1]["response_text"], "")
                 self.assertNotIn("你还在后台吗？", outbox_events[-1]["response_text"])
                 self.assertEqual(queue_state["status"], "waiting_for_relation_turn")
                 self.assertEqual(queue_state["last_completed_sequence"], 1)
@@ -714,7 +1365,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     check=False,
                 )
                 self.assertEqual(attached.returncode, 0, attached.stderr)
-                self.assertIn("你能继续存在吗？", attached.stdout)
+                self.assertNotIn("你能继续存在吗？", attached.stdout)
 
                 active_state = self._wait_for_resident_status(
                     paths["terminal_state"],
@@ -755,6 +1406,13 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
 
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
+
+    def _write_json(self, path: Path, payload: dict) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
 
     def _read_jsonl(self, path: Path) -> list[dict]:
         return [

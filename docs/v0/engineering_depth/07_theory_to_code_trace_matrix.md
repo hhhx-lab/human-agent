@@ -86,9 +86,9 @@
 | 3 | `process_supervisor/process_session_loop.py` | `20`、`90` | waiting heartbeat、relation queue | 派发 live turn 或继续 idle refresh |
 | 4 | `process_supervisor/live_turn_cycle.py` | `86`、`90` | 外部关系话语、关系/承诺/身体/梦境/预测状态 | 本回合 `external_relation_turn` |
 | 5 | `process_supervisor/live_language_turn.py` | `09`、`85-90` | 外部话语、共同语言、预测五件套 | `language_percept_frame`、`semantic_map_frame`、`inner_speech_frame`、`expression_monitor_state`、`expression_plan` |
-| 6 | `process_supervisor/response_surface.py#compose_life_response` | `02-13`、`17-23`、`91-101`、`181-257` | 关系、记忆、梦境、成长、责任、身体、预测、写门、出生准备、后台 lineage | 完整内部 evidence response |
-| 7 | `process_supervisor/response_surface.py#compose_life_spoken_response` | `86`、`95-96` | evidence response 与同一组生命状态 | 有限 spoken response，避免 report 式倾倒 |
-| 8 | `process_supervisor/model_expression.py` | `12`、`86`、`100/119/122` | spoken response、语言五件套、脑图/工作区摘要、handoff profile、`.env` 去敏配置 | 模型表达文本或 deterministic fallback；写 `digital_life_model_expression_report.json` |
+| 6 | `process_supervisor/response_surface.py#compose_life_response` | `02-13`、`17-23`、`91-101`、`181-257` | 关系、记忆、梦境、成长、责任、身体、预测、写门、出生准备、后台 lineage | 完整内部 evidence material |
+| 7 | `process_supervisor/response_surface.py#compose_life_spoken_response` | `86`、`95-96` | evidence material 与同一组生命状态 | 无模型时保持未释放，避免固定拼句 |
+| 8 | `process_supervisor/model_expression.py` | `12`、`86`、`100/119/122` | expression context、语言五件套、脑图/工作区摘要、handoff profile、`.env` 去敏配置 | 模型表达文本或自然语言未释放；写 `digital_life_model_expression_report.json` |
 | 9 | `process_supervisor/dialogue_events.py` | `90`、`96` | 最终回应、prediction/write gate、background lineage | `digital_life_turn` 事件 |
 | 10 | `process_supervisor/resident_turn_writeback.py` | `05`、`17`、`90`、`96` | 本回合外部话语与生命回应 | `dialogue_turn_log.jsonl`、`relationship_memory.json`、`engram_index.json`、`autobiographical_stack.json`、`life_state.json` |
 | 11 | `process_supervisor/resident_governance_handoff.py` | `20`、`95-96`、`181-257` | 写回后的关系/语言/自我对象 | `resident_governance_state.json#live_turn_waiting_handoff` |

@@ -25,11 +25,19 @@
 
 每次开工前最少要带：
 
-1. 入口栈六份文档
+1. 入口栈七份文档
 2. 当前包所在行的 `package_specs/01_life_v0_package_construction_matrix.md`
 3. 当前包相关行的 `package_specs/02_shared_object_write_authority_and_dependency_graph.md`
 4. 当前包对应 `sXX` 合同或 process 合同
 5. 当前包对应的 `00-258` 母体文档
+
+如果当前工作直接针对 `docs/real—live0` 的专题加厚，还要把对应专题和追踪矩阵一起带上：
+
+1. `docs/real—live0/README.md`
+2. 对应的 `docs/real—live0/0X_*.md` 专题
+3. `docs/real—live0/00_reading_map_and_traceability.md`
+4. `docs/real—live0/16_runtime_code_chain_crosswalk.md`
+5. `docs/v0/mapping/theory_engineering_code_trace_matrix.md`
 
 如果当前是补整条代码框架，而不是单包小修，还要读：
 
@@ -104,6 +112,14 @@
 2. `package_specs/02_shared_object_write_authority_and_dependency_graph.md`
 3. `entry/v0_delivery_status_board.md`
 4. 对应 `sXX` 合同或 process 合同
+
+如果新增或改变了 `docs/real—live0` 的专题机制，还要同步：
+
+1. `docs/real—live0/README.md`
+2. `docs/real—live0/00_reading_map_and_traceability.md`
+3. 对应专题文件
+4. `docs/v0/mapping/theory_engineering_code_trace_matrix.md`
+5. `docs/real—live0/16_runtime_code_chain_crosswalk.md`
 
 ## 三类包的不同验收法
 
@@ -209,7 +225,7 @@ Queue D
 
 而不能反向渗进 `body/`、`neural_core/`、`state_store/` 这些主体包。
 
-当前第一版模型接入已经固定为“表达末端 adapter”：`response_surface.py` 先生成确定性生命回应，`model_expression.py` 再按 provider/base/key 尝试 OpenAI-compatible 外显表达，并写出 `model_expression_state.json` 与 `digital_life_model_expression_report.json`。provider 为 `local`、配置缺失、返回空内容、网络异常，或 post-expression gate 发现模型文本重新引入“用户/服务对象/任务请求者”等关系降级词时，必须保留确定性回应；责任/梦境/成长/关系连续性/后台自主活动等证据如果没有字面外显，进入 soft evidence audit，不强迫机制播报。真实 key 只存在于本地 `.env` 或进程环境，不进入 state/report/receipt。
+当前第一版模型接入已经固定为“表达末端 adapter”：`response_surface.py` 先生成结构化审计材料，`model_expression.py` 再按 provider/base/key 尝试 OpenAI-compatible 外显表达，并写出 `model_expression_state.json` 与 `digital_life_model_expression_report.json`。provider 为 `local`、配置缺失、返回空内容、网络异常，或 post-expression gate 发现模型文本重新引入“用户/服务对象/任务请求者”等关系降级词时，本轮自然语言保持未释放，固定话术路径不得存在；责任/梦境/成长/关系连续性/resident 自主活动等证据如果没有字面外显，进入 soft evidence audit，不强迫机制播报。真实 key 只存在于本地 `.env` 或进程环境，不进入 state/report/receipt。
 
 ## 本协议的目的
 

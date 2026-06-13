@@ -14,6 +14,14 @@
 - `docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`
 - `docs/v0/engineering_depth/05_prediction_membrane_action_engineering.md`
 - `docs/v0/engineering_depth/06_resident_process_terminal_birth_engineering.md`
+- `docs/real—live0/02_brain_network_and_workspace.md`
+- `docs/real—live0/03_body_affect_homeostasis.md`
+- `docs/real—live0/05_language_expression_system.md`
+- `docs/real—live0/07_memory_engram_and_state_store.md`
+- `docs/real—live0/08_dream_sleep_offline_life.md`
+- `docs/real—live0/10_responsibility_regret_repair.md`
+- `docs/real—live0/14_resident_runtime_state_transition.md`
+- `docs/real—live0/16_runtime_code_chain_crosswalk.md`
 
 ## 一、在线关系回合脚手
 
@@ -131,14 +139,24 @@ closeout snapshot
 | `ActiveSamplingPlan` | A3 生成，A5 消费 | B5 进入下一轮 focus | C1/C3 做 waiting target |
 | `MemoryWriteGate` | A7 生成 | B5/B6 做 promotion hint | C6/C7 做 closeout / merge 决策 |
 
-## 五、当前最该补厚的代码装配位
+## 五、三条循环的协同和对抗
+
+| 循环 | 主要协同 | 主要对抗 | 断链 gate |
+|---|---|---|---|
+| 在线关系回合 | 语言、工作区、身体、责任、记忆同轮更新 | 不允许从输入直接跳到模型输出 | language/process/state_store tests |
+| 离线梦境/成长回合 | replay、dream、wake integration、learning、archive 接力 | 不允许梦境直接覆盖事实或长期自我 | replay/growth/archive bridge tests |
+| waiting/常驻治理 | heartbeat、idle strategy、autonomous activity、background lineage 合流 | 不允许进程保活伪装成生命连续 | persistent process / live0 audit tests |
+
+在线回合负责把外部话语变成生命事件；离线回合负责把残留经验重组为梦境、成长和防遗忘；waiting 回合负责在无外部话语时继续维持身体预算、修复关注、后台谱系和下一轮恢复。三者共享 `SignalMediaFrame`、`PredictionWorkspaceFrame`、`MemoryWriteGate`、`StateMergeGuard`、`ResidentBackgroundLineage`，但任何一个循环都不能私自改写另一个循环的真值。
+
+## 六、当前最该补厚的代码装配位
 
 1. `language/percept.py`、`semantic_map.py` 对 prediction 五件套的显式消费。
 2. `membrane/world_observation.py`、`periphery_normalizer.py` 对主动采样和信念裂口的显式消费。
 3. `state_store/state_merge_guard.py` 对 `memory_write_gate.json` 的长期治理。
 4. `process_supervisor/response_surface.py`、`idle_strategy.py` 对 prediction 五件套和离线学习对象的显式消费。
 
-## 六、不允许出现的退化
+## 七、不允许出现的退化
 
 1. 在线回合直接从输入跳到语言输出，中间不经过 prediction -> membrane -> write gate。
 2. 离线回合只写 dream / growth 文件，不反写长期关系和自我对象。

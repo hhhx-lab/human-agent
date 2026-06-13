@@ -56,25 +56,25 @@ def build_apology_repair_language_trace(
         {
             "move_id": f"repair-move-{run_id}-0001",
             "move_type": "acknowledge_harm",
-            "surface_goal": "先说明造成了什么关系后果与未闭合压力。",
+            "goal_code": "acknowledge_relationship_harm_and_open_pressure",
             "trigger_refs": relationship_injury_refs or repair_obligation_refs,
         },
         {
             "move_id": f"repair-move-{run_id}-0002",
             "move_type": "take_responsibility",
-            "surface_goal": "明确承担责任，不把责任滑走成纯说明。",
+            "goal_code": "take_responsibility_without_deflecting_into_explanation",
             "trigger_refs": responsibility_event_refs,
         },
         {
             "move_id": f"repair-move-{run_id}-0003",
             "move_type": "apology",
-            "surface_goal": "在承担责任之后给出真实道歉表达。",
+            "goal_code": "emit_apology_after_responsibility",
             "trigger_refs": regret_refs or repair_obligation_refs,
         },
         {
             "move_id": f"repair-move-{run_id}-0004",
             "move_type": "followup_commitment",
-            "surface_goal": "给出后续修复动作与关系回补探针。",
+            "goal_code": "followup_probe_for_repair_and_relationship_repair",
             "trigger_refs": list(commitment_expression_plan.get("responsibility_event_refs", [])) or responsibility_event_refs,
         },
     ]
@@ -140,7 +140,7 @@ def project_apology_repair_language_trace_with_queue_e_repair_modulation(
             {
                 "move_id": f"repair-move-{updated.get('run_id', 'queue-e')}-repair-modulation",
                 "move_type": "responsibility_repair_modulation",
-                "surface_goal": "让责任、后悔和痛苦压力先改写修复语言窗口，再给出后续承诺。",
+                "goal_code": "modulate_repair_language_with_responsibility_regret_pain_pressure",
                 "trigger_refs": ref_set,
             }
         )
@@ -223,7 +223,7 @@ def project_apology_repair_language_trace_with_offline_learning(
             {
                 "move_id": f"repair-move-{updated.get('run_id', 'offline')}-offline-boundary",
                 "move_type": "boundary_repair",
-                "surface_goal": "在关系重新接触前先确认边界与释放条件。",
+                "goal_code": "confirm_boundary_and_release_conditions_before_recontact",
                 "trigger_refs": ref_set,
             }
         )
@@ -232,7 +232,7 @@ def project_apology_repair_language_trace_with_offline_learning(
             {
                 "move_id": f"repair-move-{updated.get('run_id', 'offline')}-offline-paced-reentry",
                 "move_type": "paced_reentry",
-                "surface_goal": "把回补动作放进更慢的修复重返窗口里。",
+                "goal_code": "place_repair_actions_into_slower_reentry_window",
                 "trigger_refs": ref_set,
             }
         )
@@ -311,7 +311,7 @@ def project_apology_repair_language_trace_with_cumulative_offline_learning(
             {
                 "move_id": f"repair-move-{updated.get('run_id', 'offline')}-cumulative-offline",
                 "move_type": "cumulative_offline_learning_repair",
-                "surface_goal": "先承认跨唤醒未整合经验对修复窗口的持续影响。",
+                "goal_code": "acknowledge_cross_wake_unintegrated_experience_in_repair_window",
                 "trigger_refs": ref_set,
             }
         )
@@ -323,7 +323,7 @@ def project_apology_repair_language_trace_with_cumulative_offline_learning(
             {
                 "move_id": f"repair-move-{updated.get('run_id', 'offline')}-relationship-reconsolidation",
                 "move_type": "relationship_offline_reconsolidation_repair",
-                "surface_goal": "先承认跨唤醒累计关系学习正在改写修复窗口，再进入后续承诺。",
+                "goal_code": "acknowledge_cross_wake_relationship_reconsolidation_before_commitment",
                 "trigger_refs": ref_set,
             }
         )

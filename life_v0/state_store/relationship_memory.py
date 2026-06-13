@@ -30,6 +30,24 @@ def build_relationship_memory(
     repair_refs = list(commitment_truth_state.get("repair_required_refs", [])) or [
         "runtime/state/relationship/commitment_truth_state.json#repair_required_refs"
     ]
+    shared_memory_refs = _dedupe(
+        [
+            "runtime/state/language/language_relationship_state.json#shared-language-v0-0001",
+            "runtime/state/relationship/commitment_truth_state.json#open_commitment_refs",
+        ]
+        + list(commitment_truth_state.get("open_commitment_refs", []))
+    )
+    initial_profile = {
+        "schema_version": "relationship_person_profile_v0",
+        "observed_names": [],
+        "preference_hypotheses": [],
+        "personality_hypotheses": [],
+        "relationship_stage_hint": "pre_activation",
+        "profile_source_refs": [
+            "runtime/state/relationship/commitment_truth_state.json",
+            "runtime/state/responsibility/responsibility_ledger.json",
+        ],
+    }
     return {
         "schema_version": "relationship_memory_v0",
         "run_id": run_id,
@@ -37,12 +55,24 @@ def build_relationship_memory(
         "status": "closed",
         "relationship_memory_id": f"relationship-memory-{run_id}",
         "subject_refs": ["runtime/state/relationship/relationship_subject_graph.json#rel-v0-0001"],
-        "shared_memory_refs": [
-            "runtime/state/language/language_relationship_state.json#shared-language-v0-0001",
-            "runtime/state/relationship/commitment_truth_state.json#open_commitment_refs",
-        ],
+        "shared_memory_refs": shared_memory_refs,
         "repair_history_refs": repair_refs,
         "last_contact_refs": ["runtime/state/language/inner_speech_frame.json"],
+        "dialogue_summary_refs": [],
+        "exit_dream_consolidation_refs": [],
+        "memory_tier_projection": {
+            "schema_version": "relationship_memory_tier_projection_v0",
+            "salient_core_episode_refs": [],
+            "retrievable_context_episode_refs": [],
+            "deep_sediment_episode_refs": [],
+            "projection_source_ref": "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering",
+        },
+        "salient_core_memory_refs": [],
+        "retrievable_context_memory_refs": [],
+        "deep_sediment_memory_refs": [],
+        "relation_person_profile": initial_profile,
+        "relationship_theme_tags": [],
+        "next_wake_cues": [],
         "timeline_seed_refs": [
             "docs/96_real_relationship_longitudinal_timeline.md",
             "docs/101_relationship_timeline_json_schema_and_fixture_bundle.md",
@@ -60,6 +90,8 @@ def build_relationship_memory(
             ],
             "repair_responsibility_refs": list(responsibility_ledger.get("responsibility_event_refs", []))
             or ["runtime/state/responsibility/responsibility_ledger.json#responsibility_events"],
+            "relationship_memory_offline_refs": [],
+            "relationship_memory_repair_refs": repair_refs,
         },
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -112,6 +144,28 @@ def project_relationship_memory(
         + ["runtime/state/language/language_relationship_state.json#shared_language_refs"]
         + list(commitment_truth_state.get("open_commitment_refs", []))
     )
+    relation_person_profile = dict(updated.get("relation_person_profile", {}))
+    relation_person_profile["schema_version"] = relation_person_profile.get(
+        "schema_version", "relationship_person_profile_v0"
+    )
+    relation_person_profile["observed_names"] = _dedupe(
+        list(relation_person_profile.get("observed_names", []))
+        + list((commitment_truth_state.get("observed_names", [])))
+    )
+    relation_person_profile["preference_hypotheses"] = _dedupe(
+        list(relation_person_profile.get("preference_hypotheses", []))
+        + list((commitment_truth_state.get("preference_hypotheses", [])))
+    )
+    relation_person_profile["personality_hypotheses"] = _dedupe(
+        list(relation_person_profile.get("personality_hypotheses", []))
+        + list((commitment_truth_state.get("personality_hypotheses", [])))
+    )
+    if relationship_timeline.get("relationship_continuity_reports"):
+        first_report = relationship_timeline.get("relationship_continuity_reports", [])
+        first_report = first_report[0] if first_report and isinstance(first_report[0], dict) else {}
+        if first_report.get("relationship_stage_hint"):
+            relation_person_profile["relationship_stage_hint"] = first_report["relationship_stage_hint"]
+    updated["relation_person_profile"] = relation_person_profile
     updated["repair_history_refs"] = _dedupe(
         updated["repair_history_refs"]
         + list(commitment_truth_state.get("repair_required_refs", []))
@@ -167,6 +221,10 @@ def project_relationship_memory(
         updated["long_term_change_sources"]["offline_learning_cumulative_refs"] = (
             cumulative_refs
         )
+        updated["long_term_change_sources"]["relationship_memory_offline_refs"] = _dedupe(
+            list(updated["long_term_change_sources"].get("relationship_memory_offline_refs", []))
+            + cumulative_refs
+        )
     repair_profile = build_queue_e_repair_modulation_profile(
         responsibility_loop_state=responsibility_loop_state,
         world_contact_summary=world_contact_summary,
@@ -184,6 +242,10 @@ def project_relationship_memory(
         updated.setdefault("long_term_change_sources", {})
         updated["long_term_change_sources"]["queue_e_repair_modulation_refs"] = (
             repair_refs
+        )
+        updated["long_term_change_sources"]["relationship_memory_repair_refs"] = _dedupe(
+            list(updated["long_term_change_sources"].get("relationship_memory_repair_refs", []))
+            + repair_refs
         )
     return updated
 

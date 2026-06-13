@@ -31,6 +31,24 @@
 
 五个问题里答不上任意一个，就不能合并这个模块。
 
+## 新增的专题追踪要求
+
+从本轮开始，每个新模块除了回读 `00-258` 和 v0 合同，还必须回链 `docs/real—live0` 专题与总追踪矩阵：
+
+1. `docs/v0/mapping/theory_engineering_code_trace_matrix.md`：确认理论文档族、工程文档、代码包、runtime 证据和 gate。
+2. `docs/real—live0/00_reading_map_and_traceability.md`：填写工程落地追踪模板。
+3. 对应专题文件：确认该机制的人体/脑科学含义、对象链、字段链、协同/对抗和断链检查。
+4. `docs/real—live0/16_runtime_code_chain_crosswalk.md`：确认首写函数、核心字段和关键消费者。
+
+新增模块的 `SOURCE_DOC_REFS` 不应只列 v0 合同，也要列出真正支撑该机制的理论母体；模块文档或 PR 说明中还要写出对应 `real—live0` 专题。比如新增情绪表达调制逻辑时，不能只写 `docs/v0/slice_contracts/s06...`，还要回链 `docs/07_emotion_personality_self.md`、`docs/18_internal_state_and_modulation_vector.md`、`docs/real—live0/03_body_affect_homeostasis.md` 和相关语言/责任专题。
+
+如果一个模块改变了理论覆盖或跨模块协同关系，必须同步更新：
+
+1. `docs/v0/mapping/theory_engineering_code_trace_matrix.md`
+2. 对应 `docs/real—live0/0X_*.md`
+3. `docs/real—live0/16_runtime_code_chain_crosswalk.md`
+4. 本文件或对应 Queue / package spec
+
 ## 新模块必须同时更新的文档位
 
 新增一个真实模块时，默认至少同步更新下面三处：

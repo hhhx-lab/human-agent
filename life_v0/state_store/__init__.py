@@ -12,6 +12,7 @@ from .autobiographical_stack import build_autobiographical_stack
 from .commitment_truth import build_commitment_truth_state, build_responsibility_ledger
 from .engram_index import build_engram_index
 from .life_state import build_life_state_projection
+from .memory_retrieval import build_memory_retrieval_frame
 from .memory_write_gate import build_memory_write_gate
 from .relationship_memory import build_relationship_memory
 from .self_model import build_self_model_state
@@ -244,6 +245,20 @@ def run_state_store(
         responsibility_ledger=responsibility_ledger,
         indexes=indexes,
     )
+    memory_retrieval_frame = build_memory_retrieval_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        cue_sources={
+            "state_store_seed_ref": "runtime/state/memory/engram_index.json",
+            "relationship_memory_ref": "runtime/state/memory/relationship_memory.json",
+        },
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        life_state={},
+        state_merge_guard=state_merge_guard,
+        source_doc_refs=STATE_STORE_DOCS,
+    )
     life_state = build_life_state_projection(
         run_id=run_id,
         generated_at=generated_at,
@@ -253,11 +268,13 @@ def run_state_store(
         engram_index=engram_index,
         autobiographical_stack=autobiographical_stack,
         relationship_memory=relationship_memory,
+        memory_retrieval_frame=memory_retrieval_frame,
         state_merge_guard=state_merge_guard,
         background_continuity_profile={},
         runtime_trace_refs=[
             "runtime/state/memory/memory_write_gate.json",
             "runtime/state/memory/state_merge_guard.json",
+            "runtime/state/memory/memory_retrieval_frame.json",
         ],
     )
     runtime_boundary = _build_runtime_bridge_boundary(run_id, generated_at)
@@ -273,6 +290,7 @@ def run_state_store(
         commitment_truth_state_ref="runtime/state/relationship/commitment_truth_state.json",
         engram_index_ref="runtime/state/memory/engram_index.json",
         autobiographical_stack_ref="runtime/state/self/autobiographical_stack.json",
+        memory_retrieval_frame_ref="runtime/state/memory/memory_retrieval_frame.json",
         memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
         state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
         blocked_reasons=blocked_reasons,
@@ -313,6 +331,7 @@ def run_state_store(
         _write_json(out_dir / "self" / "autobiographical_stack.json", autobiographical_stack)
         _write_json(out_dir / "memory" / "engram_index.json", engram_index)
         _write_json(out_dir / "memory" / "relationship_memory.json", relationship_memory)
+        _write_json(out_dir / "memory" / "memory_retrieval_frame.json", memory_retrieval_frame)
         _write_json(out_dir / "memory" / "memory_write_gate.json", memory_write_gate)
         _write_json(out_dir / "memory" / "state_merge_guard.json", state_merge_guard)
         _write_json(out_dir / "relationship" / "commitment_truth_state.json", commitment_truth)
@@ -367,6 +386,11 @@ def run_check_state_store(
         blocked_reasons,
         "relationship_memory_gate",
     )
+    memory_retrieval_frame = _load_json(
+        state_dir / "memory" / "memory_retrieval_frame.json",
+        blocked_reasons,
+        "memory_retrieval_frame_gate",
+    )
     memory_write_gate = _load_json(
         state_dir / "memory" / "memory_write_gate.json",
         blocked_reasons,
@@ -402,6 +426,7 @@ def run_check_state_store(
     blocked_reasons.extend(_check_autobiographical_stack(autobiographical_stack))
     blocked_reasons.extend(_check_engram_index(engram_index))
     blocked_reasons.extend(_check_relationship_memory(relationship_memory))
+    blocked_reasons.extend(_check_memory_retrieval_frame(memory_retrieval_frame))
     blocked_reasons.extend(_check_memory_write_gate(memory_write_gate))
     blocked_reasons.extend(_check_state_merge_guard(state_merge_guard))
     blocked_reasons.extend(_check_commitment_truth_projection(commitment_truth))
@@ -712,6 +737,7 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "runtime/state/self/autobiographical_stack.json",
         "runtime/state/memory/engram_index.json",
         "runtime/state/memory/relationship_memory.json",
+        "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/memory_write_gate.json",
         "runtime/state/memory/state_merge_guard.json",
         "runtime/state/relationship/commitment_truth_state.json",
@@ -742,6 +768,7 @@ def _build_report(
     commitment_truth_state_ref: str,
     engram_index_ref: str,
     autobiographical_stack_ref: str,
+    memory_retrieval_frame_ref: str,
     memory_write_gate_ref: str,
     state_merge_guard_ref: str,
     blocked_reasons: list[str],
@@ -759,6 +786,7 @@ def _build_report(
         "commitment_truth_state_ref": commitment_truth_state_ref,
         "engram_index_ref": engram_index_ref,
         "autobiographical_stack_ref": autobiographical_stack_ref,
+        "memory_retrieval_frame_ref": memory_retrieval_frame_ref,
         "memory_write_gate_ref": memory_write_gate_ref,
         "state_merge_guard_ref": state_merge_guard_ref,
         "closed_gates": _closed_gates(blocked_reasons),
@@ -817,6 +845,7 @@ def _build_receipt(
         out_dir / "self" / "autobiographical_stack.json",
         out_dir / "memory" / "engram_index.json",
         out_dir / "memory" / "relationship_memory.json",
+        out_dir / "memory" / "memory_retrieval_frame.json",
         out_dir / "memory" / "memory_write_gate.json",
         out_dir / "memory" / "state_merge_guard.json",
         out_dir / "relationship" / "commitment_truth_state.json",
@@ -883,6 +912,7 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
         "runtime/state/memory/engram_index.json",
         "runtime/state/self/autobiographical_stack.json",
         "runtime/state/memory/relationship_memory.json",
+        "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/state_merge_guard.json",
         "runtime/state/neural_life_core/brain_graph.json",
         "runtime/state/neural_life_core/network_state.json",
@@ -890,6 +920,8 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
     ]:
         if ref not in runtime_trace_refs:
             reasons.append(f"state_root_continuity_gate missing runtime trace ref: {ref}")
+    if "runtime/state/memory/memory_retrieval_frame.json" not in life_state.get("memory_index", {}).get("memory_retrieval_refs", []):
+        reasons.append("state_root_continuity_gate memory retrieval ref missing from memory index")
     if "runtime/state/memory/state_merge_guard.json" not in life_state.get("memory_index", {}).get("state_merge_guard_refs", []):
         reasons.append("state_root_continuity_gate state merge guard ref missing from memory index")
     if not life_state.get("state_merge_records"):
@@ -998,6 +1030,30 @@ def _check_relationship_memory(relationship_memory: dict[str, Any]) -> list[str]
     return reasons
 
 
+def _check_memory_retrieval_frame(memory_retrieval_frame: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if memory_retrieval_frame.get("schema_version") != "memory_retrieval_frame_v0":
+        reasons.append("memory_retrieval_frame_gate schema mismatch")
+        return reasons
+    if memory_retrieval_frame.get("retrieval_mode") != "cue_driven_reconstructive_recall":
+        reasons.append("memory_retrieval_frame_gate retrieval mode mismatch")
+    if not memory_retrieval_frame.get("cue_terms"):
+        reasons.append("memory_retrieval_frame_gate cue terms missing")
+    if not memory_retrieval_frame.get("activated_engram_refs"):
+        reasons.append("memory_retrieval_frame_gate activated refs missing")
+    tiered_recall = memory_retrieval_frame.get("tiered_recall", {})
+    if tiered_recall.get("schema_version") != "memory_retrieval_tiered_recall_v0":
+        reasons.append("memory_retrieval_frame_gate tiered recall schema mismatch")
+    reconstruction_inputs = memory_retrieval_frame.get("reconstruction_inputs", {})
+    if not reconstruction_inputs.get("reconstruction_focus"):
+        reasons.append("memory_retrieval_frame_gate reconstruction focus missing")
+    if not memory_retrieval_frame.get("consumer_refs"):
+        reasons.append("memory_retrieval_frame_gate consumer refs missing")
+    if "docs/real—live0/07_memory_engram_and_state_store.md" not in memory_retrieval_frame.get("source_doc_refs", []):
+        reasons.append("memory_retrieval_frame_gate real-live0 source doc missing")
+    return reasons
+
+
 def _check_memory_write_gate(memory_write_gate: dict[str, Any]) -> list[str]:
     reasons: list[str] = []
     if memory_write_gate.get("schema_version") != "memory_write_gate_v0":
@@ -1082,6 +1138,7 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
         "runtime/state/life_state.json",
         "runtime/state/object_registry.json",
         "runtime/state/lifecycle_policy.json",
+        "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/memory_write_gate.json",
         "runtime/state/memory/state_merge_guard.json",
     }
@@ -1102,6 +1159,8 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate next allowed slices mismatch")
     if build_report.get("memory_write_gate_ref") != "runtime/state/memory/memory_write_gate.json":
         reasons.append("build_report_gate memory write gate ref mismatch")
+    if build_report.get("memory_retrieval_frame_ref") != "runtime/state/memory/memory_retrieval_frame.json":
+        reasons.append("build_report_gate memory retrieval frame ref mismatch")
     if build_report.get("state_merge_guard_ref") != "runtime/state/memory/state_merge_guard.json":
         reasons.append("build_report_gate state merge guard ref mismatch")
     return reasons
@@ -1122,6 +1181,7 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "autobiographical_stack_gate",
         "engram_index_gate",
         "relationship_memory_gate",
+        "memory_retrieval_frame_gate",
         "memory_write_gate_gate",
         "state_merge_guard_gate",
         "commitment_truth_projection_gate",

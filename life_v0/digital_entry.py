@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import select
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 from .activation import run_first_activation_preflight
 from .archive import run_write_growth_archive
@@ -26,6 +29,18 @@ from .process_supervisor.resident_lifecycle import (
     request_resident_stop,
     send_resident_relation_turn,
     start_background_resident_process,
+)
+from .process_supervisor.state_inspection import (
+    STATE_INSPECTION_CATEGORIES,
+    build_resident_state_inspection,
+)
+from .process_supervisor.proactive_terminal_voice import (
+    build_resident_proactive_terminal_event,
+    write_resident_proactive_terminal_event,
+)
+from .process_supervisor.model_expression import (
+    ModelExpressionTransport,
+    compose_model_expression,
 )
 from .process_supervisor.terminal_ui import (
     render_dialogue_box,
@@ -132,8 +147,14 @@ def main(argv: list[str] | None = None) -> int:
             response_text = result.state.get("response_text")
             if response_text:
                 print(response_text)
-            else:
-                print(json.dumps(result.state, ensure_ascii=False, indent=2))
+            elif args.json:
+                print(
+                    json.dumps(
+                        _format_relation_send_unreleased_output(result.state),
+                        ensure_ascii=False,
+                        indent=2,
+                    )
+                )
             return result.exit_code
 
         if args.background:
@@ -259,10 +280,29 @@ def _run_interactive_resident_terminal_client(
     terminal_dir: Path,
     life_name: str | None,
     say_timeout_seconds: float,
+    read_line_fn: Callable[..., str] | None = None,
+    idle_voice_interval_seconds: float = 90.0,
 ) -> int:
+    def idle_voice_fn() -> bool:
+        return _emit_resident_proactive_terminal_voice(
+            terminal_dir=terminal_dir,
+            life_name=life_name,
+        )
+
     while True:
         try:
-            utterance = input(render_input_prompt(life_name=life_name))
+            prompt = render_input_prompt(life_name=life_name)
+            if read_line_fn is None:
+                utterance = _read_interactive_line_with_idle_voice(
+                    prompt=prompt,
+                    idle_voice_fn=idle_voice_fn,
+                    idle_voice_interval_seconds=idle_voice_interval_seconds,
+                )
+            else:
+                utterance = read_line_fn(
+                    prompt=prompt,
+                    idle_voice_fn=idle_voice_fn,
+                )
         except EOFError:
             print()
             return 0
@@ -276,6 +316,36 @@ def _run_interactive_resident_terminal_client(
             return exit_code
 
 
+def _read_interactive_line_with_idle_voice(
+    *,
+    prompt: str,
+    idle_voice_fn: Callable[[], bool],
+    idle_voice_interval_seconds: float,
+) -> str:
+    if idle_voice_interval_seconds <= 0:
+        return input(prompt)
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+    while True:
+        try:
+            readable, _, _ = select.select(
+                [sys.stdin],
+                [],
+                [],
+                idle_voice_interval_seconds,
+            )
+        except (OSError, ValueError):
+            return input("")
+        if readable:
+            line = sys.stdin.readline()
+            if line == "":
+                raise EOFError
+            return line.rstrip("\n")
+        if idle_voice_fn():
+            sys.stdout.write(prompt)
+            sys.stdout.flush()
+
+
 def _handle_resident_terminal_utterance(
     *,
     terminal_dir: Path,
@@ -286,8 +356,81 @@ def _handle_resident_terminal_utterance(
     command = utterance.strip().lower()
     if not utterance.strip():
         return None
+    if command in {"/help", "/commands"}:
+        print(
+            render_dialogue_box(
+                "终端命令",
+                "\n".join(
+                    [
+                        "/state 查看常驻状态",
+                        "/context 查看关系上下文",
+                        "/memory 查看记忆摘要",
+                        "/dream 查看梦境和离线整合",
+                        "/body 查看身体和内环境",
+                        "/emotion 查看情绪和调节",
+                        "/relationship 查看关系",
+                        "/language 查看语言系统",
+                        "/cognition 查看工作区、预测和写门",
+                        "/personality 查看人格慢变量",
+                        "/ability 查看能力和出生准备",
+                        "/vision 查看视觉/感知状态",
+                        "/proactive 查看主动发话状态",
+                        "/exit 离开当前终端；/stop 请求停止常驻进程",
+                    ]
+                ),
+            )
+        )
+        return None
+    if command.lstrip("/") in STATE_INSPECTION_CATEGORIES or command in {
+        "/status",
+        "/记忆",
+        "/梦境",
+        "/身体",
+        "/情绪",
+        "/inner",
+        "/内环境",
+        "/关系",
+        "/语言",
+        "/认知",
+        "/上下文",
+        "/人格",
+        "/性格",
+        "/能力",
+        "/视觉",
+        "/感知",
+        "/vision",
+        "/visual",
+        "/proactive",
+        "/主动",
+        "/主动语音",
+        "/voice",
+    }:
+        inspection = build_resident_state_inspection(
+            terminal_dir=terminal_dir,
+            category=command,
+        )
+        print(
+            render_dialogue_box(
+                "状态查看",
+                json.dumps(inspection, ensure_ascii=False, indent=2),
+            )
+        )
+        return None
     if command in {"/exit", "/quit"}:
-        print(render_dialogue_box("Digital Life", "当前终端已离开；常驻生命进程继续保持睡眠、回忆和等待。"))
+        print(
+            render_dialogue_box(
+                "终端连接",
+                json.dumps(
+                    {
+                        "terminal_session": "detached",
+                        "resident_process": "kept_alive",
+                        "state_persistence": "runtime/state",
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+            )
+        )
         return 0
     if command in {"/stop", "/shutdown"}:
         stop_result = request_resident_stop(
@@ -305,7 +448,6 @@ def _handle_resident_terminal_utterance(
             )
         )
         return stop_result.exit_code
-    print(render_dialogue_box("关系输入", utterance))
     turn_result = send_resident_relation_turn(
         terminal_dir=terminal_dir,
         utterance=utterance,
@@ -314,16 +456,113 @@ def _handle_resident_terminal_utterance(
     response_text = turn_result.state.get("response_text")
     if response_text:
         print(render_dialogue_box(life_name or "Digital Life", str(response_text)))
-    else:
-        print(
-            render_dialogue_box(
-                "Digital Life",
-                json.dumps(turn_result.state, ensure_ascii=False, indent=2),
-            )
-        )
-        if turn_result.exit_code != 0:
-            return turn_result.exit_code
+    elif turn_result.exit_code != 0:
+        return turn_result.exit_code
     return None
+
+
+def _emit_resident_proactive_terminal_voice(
+    *,
+    terminal_dir: Path,
+    life_name: str | None,
+    now_iso=None,
+    model_transport: ModelExpressionTransport | None = None,
+    environ: dict[str, str] | None = None,
+) -> bool:
+    event = build_resident_proactive_terminal_event(
+        terminal_dir=terminal_dir,
+        life_name=life_name,
+        now_iso=now_iso or _now_iso,
+    )
+    state_root = terminal_dir.parent
+    generated_at = str(event.get("generated_at") or _now_iso())
+    model_result = compose_model_expression(
+        run_id="resident-proactive-" + str(event.get("composition_fingerprint") or "event"),
+        generated_at=generated_at,
+        external_utterance="open_terminal_idle",
+        audited_expression_material=json.dumps(
+            {
+                key: value
+                for key, value in event.items()
+                if key not in {"utterance"}
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+        ),
+        language_dir=state_root / "language",
+        reports_dir=state_root.parent / "reports" / "latest",
+        terminal_life_loop_state=_read_runtime_json(
+            terminal_dir / "terminal_life_loop_state.json"
+        ),
+        relationship_memory=_read_runtime_json(
+            state_root / "memory" / "relationship_memory.json"
+        ),
+        dialogue_memory_summary=_read_runtime_json(
+            state_root / "memory" / "dialogue_memory_summary.json"
+        ),
+        memory_retrieval_frame=_read_runtime_json(
+            state_root / "memory" / "memory_retrieval_frame.json"
+        ),
+        repo_root=Path.cwd(),
+        environ=environ,
+        transport=model_transport,
+        write_json=_write_runtime_json,
+    )
+    event["utterance"] = model_result.response_text
+    event["model_expression_status"] = model_result.state.get(
+        "model_expression_status"
+    )
+    event["model_expression_state_ref"] = model_result.state_ref
+    event["model_expression_report_ref"] = model_result.report_ref
+    event["post_expression_gate_status"] = model_result.state.get(
+        "post_expression_gate_status"
+    )
+    written = write_resident_proactive_terminal_event(
+        terminal_dir=terminal_dir,
+        event=event,
+    )
+    utterance = str(written.get("utterance") or "").strip()
+    if not utterance:
+        return False
+    print(render_dialogue_box(life_name or "Digital Life", utterance))
+    return True
+
+
+def _read_runtime_json(path: Path) -> dict:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _write_runtime_json(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _format_relation_send_unreleased_output(state: dict) -> dict:
+    response_event = state.get("response_event")
+    response_status = None
+    if isinstance(response_event, dict):
+        response_status = response_event.get("status")
+    return {
+        "schema_version": "resident_relation_send_result_v0",
+        "send_status": state.get("send_status"),
+        "response_status": response_status,
+        "natural_language_released": False,
+        "resident_lifecycle_state_ref": state.get("resident_lifecycle_state_ref"),
+        "resident_relation_inbox_ref": state.get("resident_relation_inbox_ref"),
+        "resident_relation_outbox_ref": state.get("resident_relation_outbox_ref"),
+        "resident_relation_queue_state_ref": state.get(
+            "resident_relation_queue_state_ref"
+        ),
+        "pid": state.get("pid"),
+        "pid_alive": state.get("pid_alive"),
+    }
 
 
 def _should_attach_resident(args: argparse.Namespace) -> bool:
@@ -332,6 +571,10 @@ def _should_attach_resident(args: argparse.Namespace) -> bool:
     if args.foreground or args.resident:
         return False
     return bool(sys.stdin.isatty())
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
 def _format_lifecycle_output(

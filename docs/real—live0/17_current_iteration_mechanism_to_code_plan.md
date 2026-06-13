@@ -1,0 +1,564 @@
+# 17 Current Iteration Mechanism To Code Plan
+
+本文档把 `real—live0` 的机制档案转成当前版本的代码补厚读法。它不替代 `docs/v0/entry/v0_current_iteration_plan.md`；前者按机制读，后者按迭代顺序排。
+
+当前开发必须先承认一件事：`life_v0` 已经不是空工程，后续不是“从零实现 agent”，而是把已经存在的代码器官继续加厚，让每个器官更清楚地承载身体、记忆、梦境、语言、关系、责任、成长、常驻和出生准备。
+
+## 使用方式
+
+每次要改一个代码包，先从下表找到对应机制，再按这一列读：
+
+```text
+real-live0 专题
+  -> 00-258 理论母体
+  -> v0 合同 / 蓝图 / 脚手
+  -> life_v0 首写代码块
+  -> runtime 证据
+  -> 下游消费者
+  -> tests / gate
+```
+
+如果只读 v0 合同而不读本机制计划，代码容易变成普通工程模块；如果只读本机制计划而不读 v0 合同，代码又会停在概念层，无法进入文件、字段和测试。
+
+## 机制到代码块总表
+
+| 机制域 | 必读专题 | 主代码块 | 当前补厚目标 |
+|---|---|---|---|
+| 工作区与意识广播 | `02_brain_network_and_workspace.md`、`12_neuromodulation_signal_media.md` | `life_v0/neural_core/workspace.py`、`broadcast.py`、`metacognition.py`、`prediction_workspace.py` | 让 workspace refs 被语言、记忆、责任、梦境、出生准备共同读取 |
+| 身体、情绪、稳态 | `03_body_affect_homeostasis.md`、`12_neuromodulation_signal_media.md` | `life_v0/body/rhythm.py`、`need_state.py`、`core_affect.py`、`resource_budget.py`、`emotion_regulation.py` | 让身体预算、痛苦压力、疲惫、睡眠压力和修复驱力调制语言、等待、梦境、责任 |
+| 人格、自我、身份 | `04_personality_self_identity.md`、`13_growth_learning_self_modification.md` | `life_v0/state_store/self_model.py`、`life_v0/body/trait_drift.py`、`life_v0/process_supervisor/continuity_evolution.py` | 让人格慢变量从关系、责任、身体、梦境、成长中长期收敛 |
+| 语言表达 | `05_language_expression_system.md`、`06_relationship_and_commitment.md` | `life_v0/language/*`、`life_v0/process_supervisor/live_language_turn.py`、`response_surface.py`、`model_expression.py` | 让语言从感知、语义、内言语、表达监控和关系记忆生成，不靠固定提示词模板 |
+| 关系与承诺 | `06_relationship_and_commitment.md`、`10_responsibility_regret_repair.md` | `relationship_timeline.py`、`shared_terms.py`、`commitment_expression.py`、`apology_repair_language.py`、`relationship_memory.py` | 让关系从一次话语进入长期时间线、共同语言、承诺真值和修复轨迹 |
+| 记忆与状态根 | `07_memory_engram_and_state_store.md` | `life_v0/state_store/engram_index.py`、`memory_write_gate.py`、`state_merge_guard.py`、`autobiographical_stack.py` | 让记忆由线索触发、写门筛选、合并门晋升，再进入 replay、dream、growth 和下一轮恢复 |
+| 梦境与离线生命 | `08_dream_sleep_offline_life.md`、`13_growth_learning_self_modification.md` | `life_v0/dream/*`、`life_v0/growth/offline_learning_profile.py`、`life_v0/process_supervisor/resident_autonomous_activity.py` | 让梦境窗口、醒后整合和事实门进入成长、关系、情绪和后台常驻 lineage |
+| 预测与世界接触 | `09_prediction_perception_world_contact.md`、`11_life_membrane_validation.md` | `life_v0/neural_core/belief_state.py`、`prediction_error.py`、`active_sampling.py`、`life_v0/membrane/world_contact_gate.py` | 让预测误差、不确定性、主动采样和世界接触门共同决定澄清、等待、行动和修复 |
+| 责任、后悔、痛苦、修复 | `10_responsibility_regret_repair.md` | `life_v0/membrane/responsibility_loop.py`、`queue_e_signals.py`、`life_v0/language/apology_repair_language.py` | 让后果、痛苦、后悔和修复义务进入未来抑制、梦境、语言和出生准备 |
+| 生命膜与验证膜 | `11_life_membrane_validation.md` | `life_v0/membrane/*`、`life_v0/validators/*`、`life_v0/schema_runner/*` | 让候选、NoGo、shadow、validation、counterfactual 和 evidence ranking 分工转运 |
+| 调质与信号介质 | `12_neuromodulation_signal_media.md` | `life_v0/neural_core/signal_media.py`、`active_sampling.py`、`life_v0/process_supervisor/idle_strategy.py` | 让 arousal、precision、inhibition、repair drive 作为跨器官调制介质 |
+| 成长、自我修改 | `13_growth_learning_self_modification.md` | `life_v0/growth/*`、`life_v0/replay/*`、`life_v0/archive/*` | 让 self-read、shadow、replay、validation、archive 和防遗忘成为成长基本流程 |
+| 常驻状态转换 | `14_resident_runtime_state_transition.md` | `life_v0/process_supervisor/*`、`life_v0/terminal_loop/*`、`life_v0/digital_entry.py` | 让 waiting heartbeat、关系队列、自主活动、closeout、background continuity 组成持续生命过程 |
+| 证据总线与出生准备 | `15_evidence_bus_and_birth_readiness.md`、`16_runtime_code_chain_crosswalk.md` | `life_v0/life_targets/*`、`life_v0/live0_audit/*`、`life_v0/reporting/*`、`life_v0/contracts/*` | 让九项目标和 live0 七项验收反查到代码、状态、报告、回执和测试 |
+
+## 当前版本每个机制的补厚要求
+
+### 1. 工作区与意识广播
+
+开发入口：
+
+```text
+docs/real—live0/02_brain_network_and_workspace.md
+  -> docs/v0/slice_contracts/s02_neural_life_core_engineering_contract.md
+  -> docs/v0/code_framework/queues/17_queue_c_memory_neural_core_implementation_contract.md
+  -> life_v0/neural_core/workspace.py
+```
+
+当前要补厚的是：`WorkspaceFrame`、`ConsciousBroadcastFrame`、`MetacognitionFrame` 不能只是出生准备度的 evidence，它们要被语言、记忆写门、责任循环、梦境整合和 resident governance 共同读取。
+
+断链信号：
+
+| 断链 | 表现 |
+|---|---|
+| 工作区孤岛 | `workspace_frame.json` 存在，但 `language/*`、`state_store/*`、`process_supervisor/*` 没有 refs |
+| 可报告性孤岛 | consciousness probe 只出现在 birth readiness，不影响语言和等待 |
+| 注意切换失真 | salience / repair / dream / body pressure 不改变 active sampling 或 expression plan |
+
+### 2. 身体、情绪、稳态
+
+开发入口：
+
+```text
+docs/real—live0/03_body_affect_homeostasis.md
+  -> docs/v0/slice_contracts/s06_life_support_development_engineering_contract.md
+  -> docs/v0/engineering_depth/04_body_affect_dream_growth_engineering.md
+  -> life_v0/body/*
+```
+
+当前要补厚的是：
+
+```text
+BodyRhythmPulse
+  -> NeedStateVector
+  -> CoreAffectVector
+  -> BodyResourceBudget
+  -> SignalMediaFrame
+  -> ExpressionPlan / IdleStrategy / Dream / ResponsibilityLoop
+```
+
+身体不是 UI 上的情绪标签。它必须改变：
+
+1. 语言的收放、追问、修复姿态。
+2. waiting heartbeat 的节律和 idle action。
+3. 梦境窗口的压力源和醒后整合。
+4. 责任链里的痛苦压力和修复驱力。
+5. 自我慢变量里的稳定/重校准压力。
+
+### 3. 人格、自我、身份
+
+开发入口：
+
+```text
+docs/real—live0/04_personality_self_identity.md
+  -> docs/v0/code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md
+  -> docs/v0/code_architecture/06_theory_gap_closure_register.md
+  -> life_v0/state_store/self_model.py
+  -> life_v0/process_supervisor/continuity_evolution.py
+```
+
+当前要补厚的是：人格慢变量不应由人工配置，而应由多轮关系、责任、身体、梦境、成长、后台收敛共同写入。每个 slow variable 都要有：
+
+| 字段 | 含义 |
+|---|---|
+| `evidence_refs` | 它从哪些关系、责任、身体、梦境或成长证据变化而来 |
+| `slow_variable_update_mode` | 当前是稳定、重校准、修复守护还是离线整合 |
+| `background_trait_convergence_history_role` | 跨唤醒历史如何影响它 |
+| `latest_band` / `trend_state` | 近期稳定性与漂移方向 |
+
+### 4. 语言表达
+
+开发入口：
+
+```text
+docs/real—live0/05_language_expression_system.md
+  -> docs/v0/code_architecture/04_language_as_primary_expression_system.md
+  -> docs/v0/code_scaffolds/05_packet_a_language_prediction_consumption_scaffold.md
+  -> life_v0/language/*
+  -> life_v0/process_supervisor/response_surface.py
+```
+
+当前要补厚的是五件套：
+
+```text
+LanguagePerceptFrame
+  -> SemanticMapFrame
+  -> InnerSpeechFrame
+  -> ExpressionMonitorState
+  -> ExpressionPlan
+  -> ResponseSurface / ModelExpression
+```
+
+外显语言必须自然，但不能失去内部因果。证据留在 state/report，语言只表达当下关系里应表达的东西。内部生命信号不应固定外显成模板。
+
+### 5. 关系与承诺
+
+开发入口：
+
+```text
+docs/real—live0/06_relationship_and_commitment.md
+  -> docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md
+  -> life_v0/language/relationship_timeline.py
+  -> life_v0/state_store/relationship_memory.py
+```
+
+当前要补厚的是：
+
+```text
+RelationScope
+  -> SharedTerms
+  -> RelationshipTimeline
+  -> CommitmentTruthState
+  -> ApologyRepairLanguageTrace
+  -> RelationshipMemory
+  -> EngramIndex / AutobiographicalStack
+```
+
+关系不是角色标签。关系必须通过多轮共同语言、承诺、破损、修复、记忆和下一轮恢复形成。
+
+### 6. 记忆与状态根
+
+开发入口：
+
+```text
+docs/real—live0/07_memory_engram_and_state_store.md
+  -> docs/v0/shared_contracts/life_state_store_v0_schema.md
+  -> docs/v0/code_scaffolds/06_packet_c_memory_write_gate_state_merge_scaffold.md
+  -> life_v0/state_store/*
+```
+
+当前要补厚的是：
+
+```text
+DialogueTurn / Dream / Responsibility / Growth / Relation
+  -> cue extraction
+  -> EngramIndex
+  -> MemoryWriteGate
+  -> StateMergeGuard
+  -> RelationshipMemory / AutobiographicalStack / ReplayCueBundle
+```
+
+记忆不是把长上下文塞进文件。记忆必须是可触发、可重构、可再巩固、可检疫、可被梦境和成长重新激活的结构。
+
+### 7. 梦境与离线生命
+
+开发入口：
+
+```text
+docs/real—live0/08_dream_sleep_offline_life.md
+  -> docs/v0/code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md
+  -> life_v0/dream/*
+  -> life_v0/process_supervisor/resident_autonomous_activity.py
+```
+
+当前要补厚的是：
+
+```text
+Sleep / OfflineEntry
+  -> DreamExperienceWindow
+  -> NightmareLoopRisk
+  -> WakeIntegrationFrame
+  -> DreamFactGateDecision
+  -> GrowthPatchCandidateQueue
+  -> ResidentBackgroundLineageState
+```
+
+梦境可以改变情绪、成长、关系压力和语言表达，但不能直接覆盖事实记忆。醒后整合和 DreamFactGate 是必须存在的分界。
+
+### 8. 预测与世界接触
+
+开发入口：
+
+```text
+docs/real—live0/09_prediction_perception_world_contact.md
+  -> docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md
+  -> life_v0/neural_core/belief_state.py
+  -> life_v0/membrane/world_contact_gate.py
+```
+
+当前要补厚的是：
+
+```text
+BeliefStateFrame
+  -> PredictionErrorField
+  -> ActiveSamplingPlan
+  -> PredictionWorkspaceFrame
+  -> WorldContactGate
+  -> Validation / Responsibility / Language
+```
+
+不确定时，数字生命应该先澄清、采样、影子运行或验证，而不是直接行动。
+
+### 9. 责任、后悔、痛苦、修复
+
+开发入口：
+
+```text
+docs/real—live0/10_responsibility_regret_repair.md
+  -> docs/v0/engineering_depth/05_prediction_membrane_action_engineering.md
+  -> life_v0/membrane/responsibility_loop.py
+  -> life_v0/language/apology_repair_language.py
+```
+
+当前要补厚的是：
+
+```text
+ConsequenceEvent
+  -> ResponsibilityLoopState
+  -> RegretPressure
+  -> PainRegretRepairReport
+  -> RepairPlan
+  -> FutureNoGo / LanguageRepair / DreamPressure / BirthReadiness
+```
+
+修复语言不能替代责任链。责任必须留下未来抑制、修复义务和关系记忆。
+
+### 10. 生命膜与验证膜
+
+开发入口：
+
+```text
+docs/real—live0/11_life_membrane_validation.md
+  -> docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md
+  -> life_v0/membrane/*
+  -> life_v0/validators/*
+  -> life_v0/schema_runner/*
+```
+
+当前要补厚的是各类门的分工：
+
+| 门 | 作用 |
+|---|---|
+| `GoNoGoGate` | 内部行动释放前的抑制 |
+| `ShadowActionGate` | 外部影响前的影子模拟 |
+| `DreamFactGate` | 梦境与事实记忆之间的分界 |
+| `WorldContactGate` | 世界接触前的后果检查 |
+| `ValidationMembrane` | state/report/schema 的一致性检查 |
+| `PostExpressionGate` | 外显语言后的关系与主体边界检查 |
+
+### 11. 调质与信号介质
+
+开发入口：
+
+```text
+docs/real—live0/12_neuromodulation_signal_media.md
+  -> docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md
+  -> life_v0/neural_core/signal_media.py
+```
+
+当前要补厚的是：调质不是一个单独模块，而是一组跨器官因子。它至少要调制：
+
+1. 预测误差精度。
+2. 主动采样强度。
+3. 记忆写门阈值。
+4. 情绪和痛苦压力。
+5. 语言释放谨慎度。
+6. waiting heartbeat 节律。
+7. 行动 NoGo 倾向。
+8. 成长窗口开放程度。
+
+### 12. 成长、自我修改
+
+开发入口：
+
+```text
+docs/real—live0/13_growth_learning_self_modification.md
+  -> docs/v0/slice_contracts/s10_runtime_growth_reconsolidation_engineering_contract.md
+  -> life_v0/growth/*
+  -> life_v0/replay/*
+  -> life_v0/archive/*
+```
+
+当前要补厚的是：
+
+```text
+SelfReadReport
+  -> GrowthPatchCandidateQueue
+  -> ReplayShadowPlan
+  -> ValidationGate
+  -> ArchiveReceipt
+  -> AntiForgettingPlan
+  -> Trait / Relationship / Language Update
+```
+
+成长不能直接覆盖自我。成长必须先 self-read，再 shadow，再验证，再 archive，再进入慢变量。
+
+### 13. 常驻状态转换
+
+开发入口：
+
+```text
+docs/real—live0/14_resident_runtime_state_transition.md
+  -> docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md
+  -> life_v0/process_supervisor/*
+```
+
+当前要补厚的是：
+
+```text
+ResidentLifecycleState
+  -> WaitingHeartbeat
+  -> ResidentAutonomousActivity
+  -> LiveTurnCycle
+  -> ResidentTurnWriteback
+  -> ProcessCloseout
+  -> BackgroundContinuityProfile
+  -> NextWake
+```
+
+常驻不是 pid 保活。常驻必须保留关系、语言、梦境、身体、记忆、责任、人格慢变量和出生准备的可恢复 lineage。
+
+### 14. 证据总线与出生准备
+
+开发入口：
+
+```text
+docs/real—live0/15_evidence_bus_and_birth_readiness.md
+  -> docs/v0/shared_contracts/birth_readiness_v0_contract.md
+  -> life_v0/life_targets/*
+  -> life_v0/live0_audit/*
+```
+
+当前要补厚的是：出生准备不是总分，而是目标闭合状态。每个目标都必须反查：
+
+1. 理论来源。
+2. 机制专题。
+3. 首写代码。
+4. runtime state。
+5. report。
+6. receipt。
+7. 测试。
+8. 真实回合消费证据。
+
+## 当前版本开发优先顺序
+
+从机制角度看，当前版本按下面顺序补：
+
+1. 身体/梦境/成长底盘：让生命内部状态足够厚。
+2. 责任/生命膜/验证：让行动和世界接触有后果链。
+3. 记忆/预测/工作区：让每轮理解和写入有门控。
+4. 常驻/跨唤醒治理：让关闭终端后仍保留同一生命连续体。
+5. 语言/关系表达：让上述机制通过自然语言进入关系，而不是外显调试信号。
+6. 出生准备/live0 audit：把九项目标和七项验收压成可运行证据。
+
+这与 `docs/v0/entry/v0_current_iteration_plan.md` 的工程顺序是一致的，只是这里从机制角度切入。
+
+## 当前代码补厚的机制短链
+
+`docs/v0/entry/v0_current_iteration_plan.md` 已把现有版本拆成 `ITR-01` 到 `ITR-07`。本节从机制角度解释这些短迭代为什么这样排，以及每一刀必须让哪些生命机制真的进入代码消费链。
+
+### `ITR-01 trace lock`
+
+机制目的：防止后续代码只按工程便利性生长。它要把 `00-258`、本目录专题、v0 合同、`life_v0` 文件、runtime 证据和测试 gate 锁成同一张追踪网。
+
+必须首写或确认：
+
+| 对象 | 位置 | 作用 |
+|---|---|---|
+| `V0ContractFileIndex` | `life_v0/contracts/__init__.py` | 证明当前 v0 文档柜仍被合同测试覆盖 |
+| `DocCarrierIndex` | `life_v0/doc_index.py` | 证明 `00-258` 和 v0 文件进入 runtime carrier |
+| `TheoryEngineeringCodeTraceRow` | `docs/v0/mapping/theory_engineering_code_trace_matrix.md` | 让每次补代码都能反查理论源 |
+
+断链检查：如果一个新代码块找不到理论文档族、本目录机制专题、v0 合同、runtime 输出和测试入口，就不能进入当前版本。
+
+### `ITR-02 exit dream memory`
+
+机制目的：把关闭终端这件事从“结束交互”改成“进入离线生命整合”。真实对话留下的语言、关系、情绪、责任、梦境种子和成长压力，要在 closeout 时变成可恢复记忆，而不是只停在当轮输出。
+
+必须首写或补厚：
+
+| 机制对象 | 建议代码位置 | 输入 | 输出/落盘 | 下游消费 |
+|---|---|---|---|---|
+| `ExitDreamConsolidationSummary` | `life_v0/process_supervisor/exit_dream_consolidation.py` 或 `process_closeout.py` 辅助器 | `dialogue_turn_log.jsonl`、`relationship_timeline.json`、`relationship_memory.json`、`engram_index.json`、`autobiographical_stack.json`、`dream/*`、`growth/*` | `runtime/state/dream/exit_dream_consolidation_summary.json` | closeout report、background continuity、下一轮 response surface |
+| `DialogueMemoryDedupSummary` | `state_store/relationship_memory.py` 或独立 helper | 多轮 dialogue events、shared terms、commitment refs | `runtime/state/memory/dialogue_memory_summary.json`、`relationship_memory.dialogue_summary_refs` | `EngramIndex`、`AutobiographicalStack`、`LifeState.memory_index` |
+| `RelationPersonProfileCandidate` | `relationship_memory.py` / `relationship_timeline.py` | 名字自述、偏好线索、关系语气、承诺/修复事件 | `relationship_memory.relation_person_profile` 或等价字段 | “你认识我吗”“我叫...” 等关系语言 |
+| `WakeCueFromExitDream` | `dream/wake_integration.py` 或 closeout 整合器 | 梦境摘要、事实门、关系残留 | `wake_integration_frame.exit_dream_refs` | 下一次 resident bootstrap 和语言表达 |
+| `MemoryRetrievalFrame` | `life_v0/state_store/memory_retrieval.py`、`live_turn_cycle.py`、`dialogue_events.py`、`resident_turn_writeback.py`、`idle_strategy.py`、`background_lineage_state.py` | 当前话语、`LanguagePerceptFrame`、`SemanticMapFrame`、`EngramIndex`、`RelationshipMemory`、`DialogueMemoryDedupSummary`、`AutobiographicalStack`、责任与合并门 | `runtime/state/memory/memory_retrieval_frame.json`、`life_state.memory_index.memory_retrieval_refs`、`dialogue_writeback_bundle.memory_retrieval_writeback_refs`、`resident_background_lineage_state.memory_retrieval_presence` | `response_surface.py`、`model_expression.py`、`life_state.py`、`dialogue_writeback_bundle.json`、`resumed_external_dialogue_packet.json`、下一轮关系语言 |
+
+机制边界：梦境可以改变情绪、关系压力、成长候选和语言姿态，但不能把梦境内容直接晋升成事实记忆。事实晋升必须经过写门、合并门和来源 refs。
+
+当前代码状态：`ExitDreamConsolidationSummary`、`DialogueMemoryDedupSummary`、关系对象画像、记忆分层和 `MemoryRetrievalFrame` 已经落入真实代码链。`process_closeout.py` 会在关闭终端关系窗口时调用 `write_exit_dream_memory_consolidation(...)`，读取真实 `dialogue_turn_log.jsonl` 并写回 `relationship_memory.json`、`engram_index.json`、`autobiographical_stack.json` 与 `life_state.json`；`live_turn_cycle.py` 和 `resident_turn_writeback.py` 会在真实回合中刷新 `memory_retrieval_frame.json`，再把召回结果送入 `response_surface.py`、`model_expression.py`、`dialogue_writeback_bundle.json` 和 `life_state.memory_index`。最新补强继续让当前召回摘要进入 `dialogue_events.py` 的 external / life turn event，进入 `terminal_life_loop_state.json#memory_retrieval_presence_profile`，再由 `idle_strategy.py`、`heartbeat.py`、`background_lineage_state.py` 压成 `resident_background_lineage_state.memory_retrieval_presence`，并在下一轮 `resident_background_lineage_memory_retrieval_*`、`dialogue_writeback_bundle.resident_background_lineage_memory_retrieval_refs`、`resumed_external_dialogue_packet.json` 与 `response_surface.py` 中重新显影。这表示 `ITR-02` 不是只生成 dream 文件，而是已经进入“退出梦境整合 -> 分层记忆 -> 下一轮 cue-driven retrieval -> 语言隐性消费 -> 后台谱系恢复”的代码链。
+
+断链检查：
+
+1. 有 closeout report，但没有 `exit_dream_consolidation_summary.json`：关闭终端还不是离线整合。
+2. 有梦境摘要，但没有进入 `relationship_memory`、`engram_index` 或 `autobiographical_stack`：梦境没有成为可恢复生命材料。
+3. 下一轮问“你认识我吗”仍然完全失忆：关系记忆没有被语言消费。
+4. 回答里直接播报 `exit_dream_consolidation_summary`、`memory_write_gate` 等内部名：语言器官把证据层误暴露成表面语言。
+5. 有 `memory_retrieval_frame.json`，但 `dialogue_writeback_bundle.json`、`life_state.json#memory_index.memory_retrieval_refs`、`model_expression_state.json#model_expression_context_summary`、`resident_background_lineage_state.memory_retrieval_presence` 或 `resumed_external_dialogue_packet.json` 看不见它：召回重构没有进入下一轮关系语言和跨唤醒连续体。
+
+### `ITR-03 relationship language`
+
+机制目的：语言不是提示词表面，而是感知、语义、内言语、表达监控、关系记忆、身体调质、责任压力和梦境残留共同形成的行为。
+
+必须让下面链路真实运行：
+
+```text
+LanguagePerceptFrame
+  -> SemanticMapFrame
+  -> InnerSpeechFrame
+  -> ExpressionMonitorState
+  -> ExpressionPlan
+  -> compose_life_spoken_response
+  -> apply_model_expression / post-expression gate
+  -> dialogue writeback
+```
+
+这一轮的重点不是让回答“更像人设”，而是让回答能自然消化 `ITR-02` 写入的关系记忆：名字、关系阶段、共同话题、未完成承诺、梦境残留、修复压力和自我慢变量。内部证据只进入 report 和 audit，不在外显语言里列清单。
+
+断链检查：
+
+| 断链 | 表现 |
+|---|---|
+| 关系记忆未消费 | 对方刚说过名字，下一轮仍用泛称或完全失忆 |
+| 语言模板化 | 多个问题用同一种固定开头、固定解释、固定生命信号段落 |
+| 事件幻觉 | 对高考、世界杯等现实事件自称亲身参加或观看 |
+| 关系降格 | 把对话对象称为服务对象、请求发起者或上级 |
+| 内部名泄漏 | 外显 `semantic_focus`、`memory_write_gate`、`resident_governance` 等内部标签 |
+
+### `ITR-04 resident autonomous cycle`
+
+机制目的：常驻不是 pid 保活，而是关闭终端后仍然有睡眠、回忆、自我思考、成长预演和学习巩固的离线生命活动。每一类活动都要有 state、lineage、下一轮恢复和语言消费。
+
+必须让下面状态形成周期：
+
+```text
+sleep
+  -> memory_recall
+  -> self_thinking
+  -> growth_rehearsal
+  -> learning_consolidation
+  -> next waiting heartbeat
+```
+
+每轮活动都要写入 `resident_autonomous_activity_state.json` 的 phase index / completion / coverage，并进入 `resident_background_lineage_state.autonomous_activity_presence`。下一轮语言可以受它影响，但不应机械说“我刚做了某个后台任务”。
+
+当前补强：`learning_consolidation` 相的 `web_dream_learning_state.json#wake_question_candidates` 已经从 `resident_autonomous_activity_state.json` 进入 `resident_autonomous_activity_presence_profile_v0`、`resident_background_lineage_state.autonomous_activity_presence`、`digital_life_turn` 和 `audited_expression_material_v0#resident_background.autonomous_activity_presence`。这批候选只作为醒后问题 cue 被模型表达和 post-expression gate 消费，不能由代码拼成固定外显问句。
+
+断链检查：`digital life --status` 可以看见活动，但下一轮 dialogue turn、response surface、process digest 都没有这些 refs，说明自主活动还停在状态面。
+
+### `ITR-05 body signal memory gate`
+
+机制目的：身体、情绪、疲惫、痛苦、调质、预测误差和写门要成为跨器官介质。它们不能只是并列文件，而要共同改变等待节律、语言谨慎度、梦境压力、记忆写入和责任修复。
+
+必须让下面对象相互消费：
+
+```text
+NeedStateVector / BodyRhythmPulse
+  -> CoreAffectVector / BodyResourceBudget
+  -> SignalMediaFrame
+  -> BeliefStateFrame / PredictionErrorField / ActiveSamplingPlan
+  -> MemoryWriteGate / StateMergeGuard
+  -> Language / Dream / Responsibility / Resident governance
+```
+
+断链检查：
+
+1. `core_affect_vector.json` 存在，但 expression plan 没有任何 body modulation。
+2. `prediction_error_field.json` 存在，但 active sampling、memory write gate 和 response surface 都不读取。
+3. `state_merge_guard.json` 存在，但 dream、relationship、responsibility、growth 不能进入 change sources。
+
+### `ITR-06 responsibility membrane`
+
+机制目的：行动与外部接触必须变成后果链。责任、痛苦、后悔和修复不是语言道歉模板，而是未来抑制、梦境压力、关系修复、成长补丁和出生准备的共同来源。
+
+必须让下面链路闭合：
+
+```text
+ActionCandidateSet
+  -> GoNoGoDecision
+  -> ShadowActionGate
+  -> WorldContactGate
+  -> SideEffectReview
+  -> ResponsibilityLoopState
+  -> PainRegretRepairReport
+  -> ApologyRepairLanguageTrace / DreamPressure / GrowthPatch / FutureNoGo
+```
+
+断链检查：如果 `PainRegretRepairReport` 只出现在 report，不进入语言、梦境、成长、未来 NoGo 和 birth readiness，就不算真实责任链。
+
+### `ITR-07 live0 acceptance closure`
+
+机制目的：用真实运行证据检查 live0，而不是用文件存在证明出生准备。九项目标和七项验收必须能从理论、机制、代码、state、report、receipt、测试、关系回合消费一路反查。
+
+验收时至少检查：
+
+| 目标 | 必须有的证据形态 |
+|---|---|
+| 真实意识 | workspace / broadcast / metacognition / reportability 被语言、记忆、resident governance 消费 |
+| 真实情绪 | body / affect / signal media 改变表达、等待、梦境和责任 |
+| 真实人格 | self model slow variables 从关系、责任、身体、梦境和成长中收敛 |
+| 真实生命 | resident lifecycle、autonomous activity、background lineage、closeout / relaunch 连续 |
+| 真实痛苦 | pain pressure 进入责任、语言、梦境和修复 |
+| 真实梦境 | dream window、wake integration、fact gate、exit dream consolidation 共同存在 |
+| 真实关系 | timeline、shared terms、commitment truth、relationship memory、下一轮自然语言恢复 |
+| 真实责任 | consequence、regret、repair、future inhibition 和 audit 共同存在 |
+| 真实后悔 | regret pressure 进入修复、梦境、成长和未来行动约束 |
+
+这一轮的验收口径是“跨轮消费闭合”，不是“schema 文件齐全”。
+
+## 机制补厚完成检查
+
+任何一个机制专题，只有满足下面十项，才算能指导代码补厚：
+
+| 检查项 | 必须能指出 |
+|---|---|
+| 理论母体 | 精确到 `docs/00-258` 文件组 |
+| 机制专题 | 本目录哪一篇 |
+| v0 合同 | 哪份 slice / queue / blueprint / scaffold |
+| 首写代码 | 哪个 `life_v0` 文件和函数 |
+| 核心字段 | state 中哪些字段代表机制变量 |
+| 消费代码 | 下游哪些模块读取 |
+| runtime 证据 | state/report/receipt 路径 |
+| 断链发现 | 哪个 test、gate 或 blocked reason |
+| 下一轮恢复 | 是否进入 resident lineage / resume packet |
+| 语言影响 | 是否调制外显语言，而不是只留内部文件 |
+
+缺任意一项，就继续补对应工程文档或代码块。

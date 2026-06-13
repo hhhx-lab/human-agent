@@ -53,6 +53,20 @@ terminal command
 | 外部后果观测 | `WorldContactMembrane` | `ObservationEvent`、责任回写、关系回写、梦境再巩固 |
 | 可恢复记录 | `ArchiveReceipt` | 自我连续、防遗忘 replay、断联恢复 |
 
+## 进入本项目时的代码落点
+
+任何外壳概念如果被保留，只能落到下面这些外围位置：
+
+| 参考概念 | 允许代码落点 | runtime 证据 | gate |
+|---|---|---|---|
+| terminal command | `life_v0/digital_entry.py`、`life_v0/my_entry.py` | `runtime/state/identity/life_name_command_manifest.json`、process report | process entry tests |
+| long-lived process | `life_v0/process_supervisor/*` | `resident_lifecycle_state.json`、lease、heartbeat、autonomous activity | persistent process tests |
+| trace/log | `life_v0/reporting/*`、`process_report.py` | `runtime/reports/latest/*`、`runtime/receipts/*` | contract/report tests |
+| peripheral action | `life_v0/membrane/world_contact_gate.py`、`periphery_normalizer.py` | `world_contact_summary.json`、observation state | validation/membrane tests |
+| archive/checkpoint | `life_v0/replay/*`、`life_v0/archive/*` | replay/archive reports and receipts | replay/growth archive tests |
+
+这些代码落点都必须经过 `docs/real—live0/09_prediction_perception_world_contact.md`、`11_life_membrane_validation.md`、`14_resident_runtime_state_transition.md` 和 `16_runtime_code_chain_crosswalk.md`。如果某个参考概念需要写入主体能力，例如记忆、人格、梦境或关系，它默认不允许直接进入，必须重新回到 `docs/00-258` 理论源和 v0 slice 合同。
+
 ## 2026 官方外壳能力快照
 
 当前官方资料能够稳定提供的外壳能力，可以压成下面这张表：

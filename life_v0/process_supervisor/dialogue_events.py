@@ -55,6 +55,7 @@ def build_life_turn_event(
     active_sampling_plan: dict[str, Any] | None = None,
     memory_write_gate: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
+    memory_retrieval_frame: dict[str, Any] | None = None,
     signal_media_runtime_ref: str | None = None,
     belief_state_ref: str | None = None,
     prediction_error_field_ref: str | None = None,
@@ -108,7 +109,69 @@ def build_life_turn_event(
         event,
         prediction_write_gate_payload,
     )
+    attach_memory_retrieval_event_payload(
+        event,
+        memory_retrieval_frame=memory_retrieval_frame,
+    )
     return event
+
+
+def attach_memory_retrieval_event_payload(
+    event: dict[str, Any],
+    *,
+    memory_retrieval_frame: dict[str, Any] | None,
+) -> None:
+    if not isinstance(memory_retrieval_frame, dict) or not memory_retrieval_frame:
+        return
+    frame_ref = (
+        memory_retrieval_frame.get("retrieval_frame_ref")
+        or "runtime/state/memory/memory_retrieval_frame.json"
+    )
+    tiered = memory_retrieval_frame.get("tiered_recall")
+    if not isinstance(tiered, dict):
+        tiered = {}
+    reconstruction = memory_retrieval_frame.get("reconstruction_inputs")
+    if not isinstance(reconstruction, dict):
+        reconstruction = {}
+    refs = _dedupe_string_list(
+        _string_list(memory_retrieval_frame.get("activated_engram_refs"))
+        + _string_list(memory_retrieval_frame.get("relationship_memory_hits"))
+        + _string_list(memory_retrieval_frame.get("autobiographical_hits"))
+        + _string_list(memory_retrieval_frame.get("dream_residue_hits"))
+        + _string_list(memory_retrieval_frame.get("responsibility_hits"))
+        + ([str(frame_ref)] if frame_ref else [])
+    )
+    event["memory_retrieval_frame_ref"] = frame_ref
+    event["memory_retrieval_mode"] = memory_retrieval_frame.get("retrieval_mode")
+    event["memory_retrieval_cue_terms"] = _string_list(
+        memory_retrieval_frame.get("cue_terms")
+    )[:12]
+    event["memory_retrieval_reconstruction_focus"] = reconstruction.get(
+        "reconstruction_focus"
+    )
+    event["memory_retrieval_activated_ref_count"] = len(
+        _string_list(memory_retrieval_frame.get("activated_engram_refs"))
+    )
+    event["memory_retrieval_relationship_hit_count"] = len(
+        _string_list(memory_retrieval_frame.get("relationship_memory_hits"))
+    )
+    event["memory_retrieval_dream_residue_hit_count"] = len(
+        _string_list(memory_retrieval_frame.get("dream_residue_hits"))
+    )
+    event["memory_retrieval_responsibility_hit_count"] = len(
+        _string_list(memory_retrieval_frame.get("responsibility_hits"))
+    )
+    event["memory_retrieval_salient_core_ref_count"] = len(
+        _string_list(tiered.get("salient_core_refs"))
+    )
+    event["memory_retrieval_retrievable_context_ref_count"] = len(
+        _string_list(tiered.get("retrievable_context_refs"))
+    )
+    event["memory_retrieval_deep_sediment_ref_count"] = len(
+        _string_list(tiered.get("deep_sediment_refs"))
+    )
+    if refs:
+        event["memory_retrieval_refs"] = refs
 
 
 def shared_term_refs(shared_term_registry: dict[str, Any]) -> list[str]:
@@ -218,6 +281,7 @@ def build_resident_background_lineage_payload(
         "body_presence",
         "heartbeat_cadence_presence",
         "language_presence",
+        "memory_retrieval_presence",
         "state_merge_presence",
         "prediction_write_gate_presence",
         "identity_consciousness_birth_presence",
@@ -361,6 +425,64 @@ def build_resident_background_lineage_payload(
                 live_language_presence_refs
             )
             lineage_refs.extend(live_language_presence_refs)
+    memory_retrieval_presence = lineage_state.get("memory_retrieval_presence")
+    if isinstance(memory_retrieval_presence, dict):
+        for source_key, target_key in (
+            (
+                "memory_retrieval_frame_ref",
+                "resident_background_lineage_memory_retrieval_frame_ref",
+            ),
+            (
+                "reconstruction_focus",
+                "resident_background_lineage_memory_retrieval_reconstruction_focus",
+            ),
+        ):
+            value = memory_retrieval_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        cue_terms = _dedupe_string_list(
+            _string_list(memory_retrieval_presence.get("cue_terms"))
+        )
+        if cue_terms:
+            payload["resident_background_lineage_memory_retrieval_cue_terms"] = (
+                cue_terms
+            )
+        for source_key, target_key in (
+            (
+                "activated_ref_count",
+                "resident_background_lineage_memory_retrieval_activated_ref_count",
+            ),
+            (
+                "relationship_hit_count",
+                "resident_background_lineage_memory_retrieval_relationship_hit_count",
+            ),
+            (
+                "dream_residue_hit_count",
+                "resident_background_lineage_memory_retrieval_dream_residue_hit_count",
+            ),
+            (
+                "responsibility_hit_count",
+                "resident_background_lineage_memory_retrieval_responsibility_hit_count",
+            ),
+            ("ref_count", "resident_background_lineage_memory_retrieval_ref_count"),
+        ):
+            value = memory_retrieval_presence.get(source_key)
+            if value is not None:
+                payload[target_key] = value
+        memory_retrieval_refs = _dedupe_string_list(
+            _string_list(memory_retrieval_presence.get("memory_retrieval_evidence_refs"))
+            + _string_list(memory_retrieval_presence.get("ref_set"))
+        )
+        frame_ref = memory_retrieval_presence.get("memory_retrieval_frame_ref")
+        if isinstance(frame_ref, str) and frame_ref:
+            memory_retrieval_refs = _dedupe_string_list(
+                [*memory_retrieval_refs, frame_ref]
+            )
+        if memory_retrieval_refs:
+            payload["resident_background_lineage_memory_retrieval_refs"] = (
+                memory_retrieval_refs
+            )
+            lineage_refs.extend(memory_retrieval_refs)
     heartbeat_cadence_presence = lineage_state.get("heartbeat_cadence_presence")
     if isinstance(heartbeat_cadence_presence, dict):
         for source_key, target_key in (
@@ -875,6 +997,14 @@ def build_resident_background_lineage_payload(
                 "next_activity_kind",
                 "resident_background_lineage_next_autonomous_activity_kind",
             ),
+            (
+                "last_web_dream_learning_state_ref",
+                "resident_background_lineage_web_dream_learning_state_ref",
+            ),
+            (
+                "last_web_dream_learning_status",
+                "resident_background_lineage_web_dream_learning_status",
+            ),
         ):
             value = autonomous_activity_presence.get(source_key)
             if value not in {None, ""}:
@@ -887,6 +1017,14 @@ def build_resident_background_lineage_payload(
             (
                 "missing_activity_kinds",
                 "resident_background_lineage_autonomous_activity_missing_kinds",
+            ),
+            (
+                "last_web_dream_learning_topic_candidates",
+                "resident_background_lineage_web_dream_learning_topic_candidates",
+            ),
+            (
+                "last_web_dream_learning_wake_question_candidates",
+                "resident_background_lineage_web_dream_learning_wake_question_candidates",
             ),
         ):
             values = _string_list(autonomous_activity_presence.get(source_key))

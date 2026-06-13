@@ -18,6 +18,7 @@ def build_resident_background_lineage_state(
     )
     body_presence = _body_presence(governance)
     heartbeat_cadence_presence = _heartbeat_cadence_presence(governance)
+    memory_retrieval_presence = _memory_retrieval_presence(governance)
     prediction_write_gate_presence = _prediction_write_gate_presence(governance)
     birth_repair_presence = _birth_repair_presence(governance)
     life_constraint_presence = _life_constraint_presence(governance)
@@ -42,6 +43,8 @@ def build_resident_background_lineage_state(
     if not depth_band and body_presence:
         depth_band = "no_background_lineage"
     if not depth_band and heartbeat_cadence_presence:
+        depth_band = "no_background_lineage"
+    if not depth_band and memory_retrieval_presence:
         depth_band = "no_background_lineage"
     if not depth_band and prediction_write_gate_presence:
         depth_band = "no_background_lineage"
@@ -124,6 +127,8 @@ def build_resident_background_lineage_state(
     language_presence = _language_presence(governance)
     if language_presence:
         lineage_state["language_presence"] = language_presence
+    if memory_retrieval_presence:
+        lineage_state["memory_retrieval_presence"] = memory_retrieval_presence
     state_merge_presence = _state_merge_presence(governance)
     if state_merge_presence:
         lineage_state["state_merge_presence"] = state_merge_presence
@@ -641,6 +646,103 @@ def _language_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "governance_cadence_profile": governance.get(
                 "governance_cadence_profile"
             ),
+        }
+    )
+
+
+def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    previous_presence = _dict_or_empty(
+        _dict_or_empty(
+            governance.get("resident_background_lineage_state")
+            or governance.get("background_resident_lineage_state")
+        ).get("memory_retrieval_presence")
+    )
+    profile = _dict_or_empty(
+        governance.get("memory_retrieval_presence_profile")
+        or governance.get("background_memory_retrieval_presence_profile")
+        or previous_presence
+    )
+    frame_ref = _first_present(
+        governance.get("memory_retrieval_frame_ref"),
+        governance.get("background_memory_retrieval_frame_ref"),
+        profile.get("memory_retrieval_frame_ref"),
+        previous_presence.get("memory_retrieval_frame_ref"),
+    )
+    reconstruction_focus = _first_present(
+        governance.get("memory_retrieval_reconstruction_focus"),
+        governance.get("background_memory_retrieval_reconstruction_focus"),
+        profile.get("reconstruction_focus"),
+        previous_presence.get("reconstruction_focus"),
+    )
+    cue_terms = _dedupe_string_list(
+        _string_list(governance.get("memory_retrieval_cue_terms"))
+        + _string_list(profile.get("cue_terms"))
+        + _string_list(previous_presence.get("cue_terms"))
+    )[:12]
+    ref_set = _dedupe_string_list(
+        _string_list(governance.get("memory_retrieval_ref_set"))
+        + _string_list(governance.get("background_memory_retrieval_ref_set"))
+        + _string_list(profile.get("ref_set"))
+        + _string_list(profile.get("background_ref_set"))
+        + _string_list(previous_presence.get("ref_set"))
+        + ([str(frame_ref)] if frame_ref else [])
+    )
+    activated_ref_count = _int_or_zero(
+        _first_present(
+            governance.get("memory_retrieval_activated_ref_count"),
+            profile.get("activated_ref_count"),
+            previous_presence.get("activated_ref_count"),
+        )
+    )
+    relationship_hit_count = _int_or_zero(
+        _first_present(
+            governance.get("memory_retrieval_relationship_hit_count"),
+            profile.get("relationship_hit_count"),
+            previous_presence.get("relationship_hit_count"),
+        )
+    )
+    dream_residue_hit_count = _int_or_zero(
+        _first_present(
+            governance.get("memory_retrieval_dream_residue_hit_count"),
+            profile.get("dream_residue_hit_count"),
+            previous_presence.get("dream_residue_hit_count"),
+        )
+    )
+    responsibility_hit_count = _int_or_zero(
+        _first_present(
+            governance.get("memory_retrieval_responsibility_hit_count"),
+            profile.get("responsibility_hit_count"),
+            previous_presence.get("responsibility_hit_count"),
+        )
+    )
+    if not any(
+        [
+            frame_ref,
+            reconstruction_focus,
+            cue_terms,
+            ref_set,
+            activated_ref_count,
+            relationship_hit_count,
+            dream_residue_hit_count,
+            responsibility_hit_count,
+            profile,
+            previous_presence,
+        ]
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "schema_version": "memory_retrieval_presence_v0",
+            "memory_retrieval_frame_ref": frame_ref,
+            "reconstruction_focus": reconstruction_focus,
+            "cue_terms": cue_terms,
+            "activated_ref_count": activated_ref_count,
+            "relationship_hit_count": relationship_hit_count,
+            "dream_residue_hit_count": dream_residue_hit_count,
+            "responsibility_hit_count": responsibility_hit_count,
+            "ref_set": ref_set,
+            "memory_retrieval_evidence_refs": ref_set,
+            "ref_count": len(ref_set),
         }
     )
 
@@ -1196,6 +1298,18 @@ def _autonomous_activity_presence(governance: dict[str, Any]) -> dict[str, Any]:
                 profile.get("missing_activity_kinds")
             ),
             "next_activity_kind": profile.get("next_activity_kind"),
+            "last_web_dream_learning_state_ref": profile.get(
+                "last_web_dream_learning_state_ref"
+            ),
+            "last_web_dream_learning_status": profile.get(
+                "last_web_dream_learning_status"
+            ),
+            "last_web_dream_learning_topic_candidates": _string_list(
+                profile.get("last_web_dream_learning_topic_candidates")
+            ),
+            "last_web_dream_learning_wake_question_candidates": _string_list(
+                profile.get("last_web_dream_learning_wake_question_candidates")
+            ),
             "autonomous_activity_refs": ref_set,
             "autonomous_activity_evidence_ref_count": len(ref_set),
         }

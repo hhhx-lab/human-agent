@@ -52,6 +52,20 @@ def build_engram_index(
         ],
         "anti_forgetting_anchor_refs": list((autobiographical_stack or {}).get("anchor_refs", []))
         or ["runtime/state/self/autobiographical_stack.json#anchor_refs"],
+        "memory_tier_index": {
+            "schema_version": "engram_memory_tier_index_v0",
+            "tier_policy": "salience_weighted_progressive_recall",
+            "salient_core_refs": [
+                "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.salient_core"
+            ],
+            "retrievable_context_refs": [
+                "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.retrievable_context"
+            ],
+            "deep_sediment_refs": [
+                "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.deep_sediment"
+            ],
+            "source_ref": "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering",
+        },
         "quarantine_refs": [],
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -160,6 +174,21 @@ def project_engram_index_from_live_turn(
             "attention_target": cumulative_profile["attention_target"],
             "priority_profile": dict(cumulative_profile.get("priority_profile", {})),
             "ref_set": cumulative_refs,
+        }
+    if relationship_memory.get("memory_tier_projection"):
+        tier_projection = dict(relationship_memory.get("memory_tier_projection", {}))
+        updated["memory_tier_index"] = {
+            "schema_version": "engram_memory_tier_index_v0",
+            "tier_policy": "salience_weighted_progressive_recall",
+            "salient_core_refs": list(tier_projection.get("salient_core_episode_refs", [])),
+            "retrievable_context_refs": list(
+                tier_projection.get("retrievable_context_episode_refs", [])
+            ),
+            "deep_sediment_refs": list(tier_projection.get("deep_sediment_episode_refs", [])),
+            "source_ref": tier_projection.get(
+                "projection_source_ref",
+                "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering",
+            ),
         }
 
     queue_e_repair_refs = list(relationship_memory.get("queue_e_repair_refs", []))

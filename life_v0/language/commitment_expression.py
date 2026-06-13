@@ -52,13 +52,13 @@ def build_commitment_expression_plan(
         {
             "act_id": f"commitment-act-{run_id}-0001",
             "act_type": "clarify",
-            "surface_goal": "先澄清共同语言和当前承诺的具体含义。",
+            "goal_code": "clarify_shared_language_and_current_commitment",
             "trigger_refs": ["runtime/state/language/expression_plan.json#semantic_goal"],
         },
         {
             "act_id": f"commitment-act-{run_id}-0002",
             "act_type": "commitment",
-            "surface_goal": "把未闭合承诺重新说清，并保持可追踪的后续兑现窗口。",
+            "goal_code": "restate_open_commitment_with_traceable_followup_window",
             "trigger_refs": commitment_refs or ["runtime/state/language/commitment_repair_language_index.json#commitment_refs"],
         },
     ]
@@ -67,7 +67,7 @@ def build_commitment_expression_plan(
             {
                 "act_id": f"commitment-act-{run_id}-0003",
                 "act_type": "apology",
-                "surface_goal": "当修复压力存在时，先承担责任，再表达道歉与回补意图。",
+                "goal_code": "responsibility_first_apology_with_repair_intent",
                 "trigger_refs": repair_refs + regret_refs + relationship_injury_refs,
             }
         )
@@ -75,7 +75,7 @@ def build_commitment_expression_plan(
             {
                 "act_id": f"commitment-act-{run_id}-0004",
                 "act_type": "followup_commitment",
-                "surface_goal": "给出后续修复与兑现承诺的下一次关系回合探针。",
+                "goal_code": "next_turn_probe_for_repair_and_commitment_realization",
                 "trigger_refs": responsibility_event_refs or ["runtime/state/responsibility/responsibility_ledger.json#responsibility_events"],
             }
         )
@@ -153,7 +153,7 @@ def project_commitment_expression_plan_with_queue_e_repair_modulation(
             {
                 "act_id": f"commitment-act-{updated.get('run_id', 'queue-e')}-repair-modulation",
                 "act_type": "responsibility_repair_modulation",
-                "surface_goal": "让责任、后悔和痛苦压力先调制承诺表达节奏，再进入下一次兑现。",
+                "goal_code": "modulate_commitment_expression_with_responsibility_pressure",
                 "trigger_refs": ref_set,
             }
         )
@@ -235,7 +235,7 @@ def project_commitment_expression_plan_with_offline_learning(
             {
                 "act_id": f"commitment-act-{updated.get('run_id', 'offline')}-offline-boundary",
                 "act_type": "boundary_statement",
-                "surface_goal": "在修复重返前先说明边界与接触释放条件。",
+                "goal_code": "declare_boundary_and_release_conditions_before_reentry",
                 "trigger_refs": ref_set,
             }
         )
@@ -244,7 +244,7 @@ def project_commitment_expression_plan_with_offline_learning(
             {
                 "act_id": f"commitment-act-{updated.get('run_id', 'offline')}-offline-paced-reentry",
                 "act_type": "paced_reentry",
-                "surface_goal": "把下一次修复重返放慢，先确认窗口，再进入兑现动作。",
+                "goal_code": "slow_reentry_then_confirm_window_before_realization",
                 "trigger_refs": ref_set,
             }
         )
@@ -331,7 +331,7 @@ def project_commitment_expression_plan_with_cumulative_offline_learning(
             {
                 "act_id": f"commitment-act-{updated.get('run_id', 'offline')}-cumulative-offline",
                 "act_type": "cumulative_offline_learning_integration",
-                "surface_goal": "把跨唤醒未整合的梦境-成长压力先纳入承诺表达节奏。",
+                "goal_code": "integrate_cross_wake_dream_growth_pressure_into_commitment_expression",
                 "trigger_refs": ref_set,
             }
         )
@@ -344,7 +344,7 @@ def project_commitment_expression_plan_with_cumulative_offline_learning(
             {
                 "act_id": f"commitment-act-{updated.get('run_id', 'offline')}-relationship-reconsolidation",
                 "act_type": "relationship_offline_reconsolidation",
-                "surface_goal": "把跨唤醒累计关系学习先纳入承诺表达重整，再进入后续兑现。",
+                "goal_code": "reconsolidate_relationship_learning_before_followup_realization",
                 "trigger_refs": ref_set,
             }
         )

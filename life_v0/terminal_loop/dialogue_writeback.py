@@ -28,6 +28,7 @@ def build_dialogue_writeback_bundle(
     network_state_writeback_refs: list[str] | None = None,
     workspace_frame_writeback_refs: list[str] | None = None,
     prediction_workspace_writeback_refs: list[str] | None = None,
+    memory_retrieval_writeback_refs: list[str] | None = None,
     background_trait_convergence_refs: list[str] | None = None,
     cross_wake_trait_convergence_refs: list[str] | None = None,
     cross_wake_trait_drift_update_mode_summary: dict[str, Any] | None = None,
@@ -56,6 +57,7 @@ def build_dialogue_writeback_bundle(
     resident_background_lineage_heartbeat_cadence_refs: list[str] | None = None,
     resident_background_lineage_body_refs: list[str] | None = None,
     resident_background_lineage_prediction_write_gate_refs: list[str] | None = None,
+    resident_background_lineage_memory_retrieval_refs: list[str] | None = None,
     life_constraint_refs: list[str] | None = None,
     queue_e_birth_repair_refs: list[str] | None = None,
     offline_learning_cumulative_refs: list[str] | None = None,
@@ -90,6 +92,9 @@ def build_dialogue_writeback_bundle(
         "workspace_frame_writeback_refs": list(workspace_frame_writeback_refs or []),
         "prediction_workspace_writeback_refs": list(
             prediction_workspace_writeback_refs or []
+        ),
+        "memory_retrieval_writeback_refs": list(
+            memory_retrieval_writeback_refs or []
         ),
         "replay_cue_refs": replay_cue_refs,
         "terminal_state_refs": terminal_state_refs,
@@ -152,6 +157,9 @@ def build_dialogue_writeback_bundle(
         ),
         "resident_background_lineage_prediction_write_gate_refs": list(
             resident_background_lineage_prediction_write_gate_refs or []
+        ),
+        "resident_background_lineage_memory_retrieval_refs": list(
+            resident_background_lineage_memory_retrieval_refs or []
         ),
         "life_constraint_refs": list(life_constraint_refs or []),
         "queue_e_birth_repair_refs": list(queue_e_birth_repair_refs or []),

@@ -41,8 +41,10 @@
 | 想核对什么 | 入口 | 核心作用 |
 |---|---|---|
 | 全部理论如何进入代码 | `engineering_depth/07_theory_to_code_trace_matrix.md` | 按生命域、理论文档族、代码器官、状态对象、report、receipt 和测试追踪 |
+| 全部理论如何进入工程文档并指导代码生成 | `mapping/theory_engineering_code_trace_matrix.md` | 按理论文档族反查 v0 工程文档、`life_v0` 首写/消费包、runtime 证据、协同/对抗机制和验收 gate |
 | 一轮关系话语如何穿过生命机制 | `engineering_depth/07_theory_to_code_trace_matrix.md#一轮真实关系话语的穿透链` | 从 `digital_entry.py` 到语言五件套、回应表面、模型表达、写回和下一拍 heartbeat |
 | 后续每个模块怎么开工 | `entry/v0_module_execution_catalog.md#实际代码链路核对法` | 用理论来源、v0 合同、代码器官、状态对象、报告收据、测试 gate 六格核对 |
+| 当前版本按什么顺序补厚代码块 | `entry/v0_current_iteration_plan.md` | 把 `real—live0` 机制档案、v0 合同和 `life_v0` 代码器官排成现版本迭代计划 |
 | 命名、驻留、关闭终端后继续存在怎么实现 | `code_blueprints/05_birth_residency_terminal_blueprint.md` | 固定名字入口、resident lifecycle、autonomous activity、waiting governance 和下一次唤醒 |
 | waiting / response surface 为什么不是聊天壳 | `code_scaffolds/07_packet_d_waiting_response_surface_prediction_scaffold.md` | 固定 prediction、身体、梦境、责任、意识、人格慢变量如何共同调制语言 |
 
@@ -59,7 +61,7 @@
 
 这次整理不是搬目录，而是把 `docs/v0/` 固定成三件事：
 
-1. 固定入口栈：回仓库后先看哪六份。
+1. 固定入口栈：回仓库后先看哪七份。
 2. 固定文档包：当前这一轮到底该带哪一柜进去。
 3. 固定回读门：任何一轮落代码都不能只看 `v0`，必须回读对应 `00-258` 原文。
 
@@ -72,7 +74,7 @@
 | 目录 | 内容 |
 |---|---|
 | 根目录 | 总入口 `README.md`，只负责解释 `v0` 为什么存在、怎么进入 |
-| `entry/` | 入口栈与状态驾驶舱：总索引、状态板、模块执行目录 |
+| `entry/` | 入口栈与状态驾驶舱：总索引、状态板、模块执行目录、当前版本迭代计划 |
 | `mapping/` | README block 到 engineering slice、`00-258` 到 runtime carrier 的总映射 |
 | `architecture/` | 宏架构、runtime 架构、激活路线图、理论闭合审计 |
 | `shared_contracts/` | 多 slice 复用的 schema、readiness、CLI/report、activation 合同 |
@@ -104,8 +106,8 @@
 
 | 文档包 | 文件 | 什么时候打开 | 作用 |
 |---|---|---|
-| 入口包 | `README.md`、`entry/README.md`、`entry/v0_implementation_index.md`、`entry/v0_delivery_status_board.md`、`entry/v0_module_execution_catalog.md` | 每次回仓库先开 | 决定怎么进、当前到哪、下一轮做哪包 |
-| 回链包 | `mapping/README.md`、`mapping/readme_block_engineering_realization_v0.md`、`mapping/0_to_257_engineering_utilization_map.md` | 确认当前模块背后对应哪些理论母体时打开 | 决定 `docs/README.md` 和 `00-258` 怎样压进 engineering slice 与 runtime carrier |
+| 入口包 | `README.md`、`entry/README.md`、`entry/v0_implementation_index.md`、`entry/v0_delivery_status_board.md`、`entry/v0_module_execution_catalog.md`、`entry/v0_current_iteration_plan.md` | 每次回仓库先开 | 决定怎么进、当前到哪、下一轮做哪包，以及当前版本按什么顺序补代码块 |
+| 回链包 | `mapping/README.md`、`mapping/readme_block_engineering_realization_v0.md`、`mapping/0_to_257_engineering_utilization_map.md`、`mapping/theory_engineering_code_trace_matrix.md` | 确认当前模块背后对应哪些理论母体、工程文档、代码包和 gate 时打开 | 决定 `docs/README.md`、`00-258` 和非编号根文档怎样压进 engineering slice、runtime carrier、v0 工程文档、`life_v0` 包与测试 gate |
 | 主体合同包 | `slice_contracts/doc_corpus_ingestor_v0_contract.md`、`architecture/digital_life_macro_architecture_v0.md`、`code_framework/README.md`、`code_framework/foundation/01_life_layer_implementation_blueprint.md`、`code_framework/foundation/02_brain_region_to_code_package_mapping.md`、`code_framework/foundation/03_code_package_state_test_gate_mapping.md`、`code_framework/playbooks/04_language_dialogue_relationship_implementation_playbook.md`、`code_framework/playbooks/05_memory_thought_consciousness_implementation_playbook.md`、`code_framework/playbooks/06_body_emotion_action_dream_growth_implementation_playbook.md`、`code_framework/playbooks/07_birth_terminal_process_implementation_playbook.md`、`code_framework/playbooks/08_cross_layer_life_orchestration_implementation_playbook.md`、`code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md`、`code_framework/playbooks/10_self_identity_value_commitment_implementation_playbook.md`、`code_framework/delivery/11_engineering_delivery_waves_and_real_file_queue.md`、`code_framework/delivery/12_full_life_layer_delivery_matrix.md`、`code_framework/delivery/13_capability_to_code_realization_matrix.md`、`code_framework/queues/14_queue_a_language_percept_semantic_map_implementation_contract.md`、`code_framework/assembly/15_cross_layer_shared_object_contract.md`、`code_framework/queues/16_queue_b_process_supervisor_implementation_contract.md`、`code_framework/queues/17_queue_c_memory_neural_core_implementation_contract.md`、`code_framework/queues/18_queue_d_body_dream_growth_implementation_contract.md`、`code_framework/assembly/19_code_tree_package_brain_contract.md`、`code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md`、`code_framework/queues/21_queue_f_identity_consciousness_birth_readiness_implementation_contract.md`、`architecture/runtime_v0_architecture.md`、`shared_contracts/birth_readiness_v0_contract.md`、`shared_contracts/life_state_store_v0_schema.md`、`shared_contracts/runner_cli_report_contract.md`、`shared_contracts/first_activation_protocol.md`、`slice_contracts/s00_*` 到 `slice_contracts/s11_*` | 落主体 slice 时打开 | 决定主体模块、代码框架柜、分层实现蓝图、开发波次、能力到代码验收矩阵、Queue A/B/C/D/E/F 文件级实施合同、跨层共享对象合同、整棵 `life_v0/` 代码树总装配、状态根、出生准备度、CLI/report 和各 slice 合同 |
 | 实现蓝图包 | `code_blueprints/README.md`、`code_blueprints/01_full_system_code_blueprint.md`、`code_blueprints/02_conversation_language_relationship_blueprint.md`、`code_blueprints/03_body_affect_dream_growth_blueprint.md`、`code_blueprints/04_prediction_membrane_validation_blueprint.md`、`code_blueprints/05_birth_residency_terminal_blueprint.md`、`code_blueprints/06_runtime_state_report_receipt_manifest.md`、`code_blueprints/07_theory_to_package_trace_contract.md`、`code_architecture/README.md`、`code_architecture/01_life_code_stack_and_package_layers.md`、`code_architecture/02_runtime_object_bus_and_flow_contract.md`、`code_architecture/03_build_order_and_definition_of_done.md`、`code_architecture/04_language_as_primary_expression_system.md`、`code_architecture/05_module_reading_and_execution_map.md`、`code_architecture/06_theory_gap_closure_register.md`、`package_specs/README.md`、`package_specs/01_life_v0_package_construction_matrix.md`、`package_specs/02_shared_object_write_authority_and_dependency_graph.md`、`package_specs/03_incremental_package_delivery_protocol.md`、`code_scaffolds/README.md`、`code_scaffolds/01_life_code_scaffold_tree.md`、`code_scaffolds/02_cognitive_loop_code_scaffold.md`、`code_scaffolds/03_frontier_module_build_packets.md`、`code_scaffolds/04_packet_b_world_observation_periphery_scaffold.md`、`code_scaffolds/05_packet_a_language_prediction_consumption_scaffold.md`、`code_scaffolds/06_packet_c_memory_write_gate_state_merge_scaffold.md`、`code_scaffolds/07_packet_d_waiting_response_surface_prediction_scaffold.md`、`implementation_architecture/README.md`、`implementation_architecture/01_runtime_organ_interface_blueprint.md`、`implementation_architecture/02_turn_and_cycle_lifecycle_contract.md`、`implementation_architecture/03_module_authoring_traceability_protocol.md`、`implementation_architecture/code_organs/README.md`、`implementation_architecture/code_organs/01_life_v0_package_organ_split_map.md`、`implementation_architecture/code_organs/02_heavy_init_refactor_wave_contract.md`、`implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md`、`engineering_depth/README.md`、`engineering_depth/01_full_life_layer_implementation_deep_spec.md`、`engineering_depth/02_state_object_runtime_evidence_map.md`、`engineering_depth/03_language_relationship_longitudinal_engineering.md`、`engineering_depth/04_body_affect_dream_growth_engineering.md`、`engineering_depth/05_prediction_membrane_action_engineering.md`、`engineering_depth/06_resident_process_terminal_birth_engineering.md`、`engineering_depth/07_theory_to_code_trace_matrix.md` | 真正下手写代码前打开 | 先用 `code_blueprints/` 定总蓝图，再用 `code_scaffolds/` 固定代码脚手，最后回 `code_architecture/`、`package_specs/`、`implementation_architecture/` 和 `engineering_depth/` 取硬分层、硬包职责、硬对象、硬测试和硬完成定义 |
 | 链尾与进程包 | `process_contracts/first_terminal_turn_engineering_contract.md`、`process_contracts/terminal_life_loop_engineering_contract.md`、`process_contracts/digital_life_shell_command_engineering_contract.md`、`process_contracts/digital_life_process_supervisor_engineering_contract.md`、`process_contracts/resident_governance_waiting_state_machine_engineering_contract.md`、`architecture/first_activation_engineering_roadmap.md` | 落恢复链、终端循环或常驻进程时打开 | 决定第一次恢复、终端生命循环、repo-local 壳、最小常驻生命进程，以及 waiting / closeout resident governance 的状态机回链 |
@@ -156,8 +158,9 @@
 4. `entry/v0_module_execution_catalog.md`
 5. `mapping/readme_block_engineering_realization_v0.md`
 6. `mapping/0_to_257_engineering_utilization_map.md`
+7. `mapping/theory_engineering_code_trace_matrix.md`
 
-这六份文件的分工固定如下：
+这七份文件的分工固定如下：
 
 | 文件 | 只回答什么 |
 |---|---|
@@ -167,21 +170,22 @@
 | `entry/v0_module_execution_catalog.md` | 这一轮开发该带哪一包文档、代码、测试和 runtime 产物 |
 | `mapping/readme_block_engineering_realization_v0.md` | `docs/README.md` 的模块阅读路线怎样压成 engineering slice |
 | `mapping/0_to_257_engineering_utilization_map.md` | `00-258` 怎样进入 runtime carrier、状态、report 和 archive |
+| `mapping/theory_engineering_code_trace_matrix.md` | 理论文档族怎样进入 v0 工程文档、`life_v0` 代码包、runtime 证据和 gate |
 
-这六份只负责把你送到正确工程回合，不负责替你省掉原文阅读。
+这七份只负责把你送到正确工程回合，不负责替你省掉原文阅读。
 
 ## 固定回读门
 
 `v0` 是工程压缩入口，不是理论替身。每一轮真正开写前，必须同时满足下面三件事：
 
-1. 已经读完入口栈六份文档。
+1. 已经读完入口栈七份文档。
 2. 已经打开当前合同文件和它要求回读的 `00-258` 原文。
 3. 已经定位当前代码入口、测试入口和最新 runtime 运行证据。
 
 也就是说，后续标准开工材料永远是：
 
 ```text
-入口栈六份文档
+入口栈七份文档
   -> 当前合同
   -> 当前合同要求回读的 00-258 原文
   -> 当前代码入口
@@ -201,6 +205,7 @@
 | `docs/v0/*` 每份文档归哪一层、哪层只收什么变化 | `entry/v0_implementation_index.md` |
 | 当前真实前沿、最远命令位、下一轮优先级 | `entry/v0_delivery_status_board.md` |
 | 当前这一轮该带哪包文档、代码、测试和 runtime 产物 | `entry/v0_module_execution_catalog.md` |
+| 当前版本代码块补厚顺序和迭代计划 | `entry/v0_current_iteration_plan.md` |
 | `docs/README.md` block 到 engineering slice 的压缩关系 | `mapping/readme_block_engineering_realization_v0.md` |
 | `00-258` 到 runtime carrier / state / report / archive 的总映射 | `mapping/0_to_257_engineering_utilization_map.md` |
 | 某个 slice、bridge、shell、process 的字段、阶段门、输入输出变化 | 对应合同文件 |
@@ -302,9 +307,10 @@ digital life
 后续每一轮实现都按下面这条固定路径走：
 
 ```text
-入口栈六份文档
+入口栈七份文档
   -> entry/v0_delivery_status_board.md 判断当前前沿
   -> entry/v0_module_execution_catalog.md 定位当前模块包
+  -> mapping/theory_engineering_code_trace_matrix.md 校验理论-工程-代码全覆盖
   -> 当前模块合同
   -> 当前模块对应的 00-258 母体文档
   -> 当前代码入口 + 当前测试入口 + latest runtime 产物

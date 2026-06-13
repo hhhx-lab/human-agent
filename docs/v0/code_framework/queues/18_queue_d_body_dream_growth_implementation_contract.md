@@ -101,6 +101,7 @@ Queue D 第二波器官现在已经真实落下：
 7. 当前最新补强已经把 Queue D 的三组后台存在面从上一轮 `resident_background_lineage_state` 恢复进下一轮 waiting 策略：`background_continuity.py` 会拆出 `background_offline_learning_*`、`background_dream_* / background_wake_*` 与 `background_resident_autonomous_activity_*`，`idle_strategy.py` 在当前 dream runtime 文件或 autonomous activity state 缺席时，会重建当前 `offline_learning_cumulative_profile_v0`、`dream_wake_presence_profile_v0` 与 `resident_autonomous_activity_presence_profile_v0`。这三组存在面随后还必须继续进入 `background_lineage_state.py`、`dialogue_events.py`、`resident_turn_writeback.py` 与 `response_surface.py`，让后台生命过程在恢复、事件、写回与语言回应里保持同一条线。
 8. 当前这一轮把身体内环境从“等待态调制字段”提升为第四组 Queue D 后台存在面：`body_rhythm_pulse.json`、`need_state_vector.json`、`body_resource_budget.json` 与 `core_affect_vector.json` 会在 `idle_strategy.py` 中合成 `resident_body_presence_profile_v0`，并把 `body_ref_set`、能量、疲惫、睡眠压力、修复驱力、核心唤醒、痛苦压力与责任重量继续送入 waiting heartbeat、idle continuity、resident governance、`resident_background_lineage_state_v0.body_presence`、`digital_life_turn`、专用写回槽、恢复包与回应表面。最新补强又让 `background_continuity.py` 能从上一轮 `resident_background_lineage_state.body_presence` 恢复 `background_body_*` 和 `background_body_ref_set`，`idle_strategy.py` 在当前身体 runtime 文件缺席时会重建 `resident_body_presence_profile_v0#continuity_mode=background_body_presence_carryover`；本轮继续要求 `process_report.py` 在关闭态 report / digest / receipt 中暴露同一份 `body_presence_profile / background_body_presence_profile / body_ref_set`，并把身体四件套纳入 receipt shared refs 与 input hashes。这样身体不再只是 heartbeat 的局部输入，而是常驻生命回合、跨断连恢复和关闭态证据链里的内环境 presence。
 9. 下一轮默认继续补深 Queue D 与 Queue E 的离线耦合，以及累计离线学习、梦境窗口、醒后整合、身体内环境如何稳定改变关系阶段、语言修复节奏、自我慢变量、梦境再整合和生命回应，而不是回头重拆第一波器官。
+10. 当前补上 `life_v0/dream/web_dream_learning.py`：它在 `learning_consolidation` 相读取 `runtime/state/dream/web_dream_learning_seeds.json` 或 `DIGITAL_LIFE_WEB_DREAM_URLS` 中配置的 `http/https` seed URL，抽取标题、heading、文本摘要、topic candidates 与 wake question candidates，写入 `runtime/state/dream/web_dream_learning_state.json` 与 `web_dream_learning_log.jsonl`。这份对象只能作为梦境/学习残留进入 `resident_learning_consolidation_state.json`、`resident_autonomous_activity_state.json`、`resident_autonomous_activity_presence_profile_v0`、`resident_background_lineage_state.autonomous_activity_presence`、下一轮 `digital_life_turn` 和结构化表达审计材料；其中 wake question candidates 只是醒后问题 cue，不能被代码直接拼成固定外显问句，不能直接覆盖事实记忆或关系真值。
 
 ## 必回读理论母体
 
@@ -164,6 +165,7 @@ Queue D 必须接到这些现有器官上：
 - `life_v0/replay/__init__.py`
 - `life_v0/growth/offline_learning_profile.py`
 - `life_v0/process_supervisor/offline_learning_signals.py`
+- `life_v0/dream/web_dream_learning.py`
 
 当前再补一条新的硬约束：
 

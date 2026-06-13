@@ -65,6 +65,76 @@
 | resource_budget | 梦境/成长 | 决定离线活动和恢复 |
 | stability | 人格 | 防止慢变量失控漂移 |
 
+## 调质不是 if/else 的替代品
+
+`SignalMediaFrame` 的价值在于把不同来源的压力变成连续调制，而不是在代码里到处写硬分支。
+
+| 信号来源 | 代码字段 | 类比功能 | 主要消费者 |
+|---|---|---|---|
+| 内感受脉冲 | `arousal_gain`、`stress_pulse`、`fatigue_load` | 唤醒、警觉、疲惫 | `idle_strategy.py`、`expression_monitor.py` |
+| 关系连续监控 | `relationship_pressure`、`repair_drive` | 社会显著性和修复动机 | `response_surface.py`、`apology_repair_language.py` |
+| 预测惊讶 | `expected_uncertainty`、`unexpected_uncertainty` | 误差权重和采样需求 | `prediction_error.py`、`active_sampling.py` |
+| Queue E 修复压力 | `queue_e_repair_pressure_level`、`queue_e_repair_attention_target` | 责任/后悔优先级 | `life_targets/*`、`validators/*`、`heartbeat.py` |
+| 抑制画像 | `blocked_release_surfaces`、`plasticity_brake` | 行动抑制和自我保护 | `membrane/*`、`growth/*` |
+
+当 `pressure_level` 从 `quiet` 升到 `elevated/urgent`，`signal_media.py` 会提高 `repair_drive`、`relationship_pressure`、`unexpected_uncertainty` 和 `control_cost`，同时降低或收紧行动精度。这会让 `active_sampling_plan` 选择修复确认路线，让语言表达更谨慎，让心跳进入 repair-weighted waiting，让世界接触继续保持 shadow 或 confirmation lock。
+
+所以调质层的验收标准不是“文件里有 modulation_vector”，而是同一个 `queue_e_repair_ref_set` 能在 prediction、language、body、idle、membrane、birth readiness 中被连续看见。
+
+## 调质字段的生命周期
+
+调质字段要跨越一整轮生命周期：
+
+```text
+PredictionErrorField / CoreAffectVector / QueueERepairProfile
+  -> SignalMediaFrame
+  -> ActiveSamplingPlan + ExpressionMonitor + IdleStrategy + GoNoGoGate
+  -> dialogue writeback / heartbeat / dream pressure / birth readiness evidence
+```
+
+如果 `repair_drive` 只在 `signal_media_runtime.json` 中存在，却没有改变 `active_sampling_plan.selected_route`、`expression_plan.release_caution`、`idle_strategy_state.waiting_posture` 或 `queue_e_birth_repair_profile`，它就还不是有效调质，只是记录字段。
+
+## 调质如何和其他机制互相影响
+
+`SignalMediaFrame` 的核心不是“生成一个 modulation_vector”，而是把不同来源的压力压成全局调制，再送给各个器官：
+
+| 来源 | 变成什么 | 影响谁 |
+|---|---|---|
+| 预测误差 | precision / unexpected uncertainty | 语言、主动采样、世界接触 |
+| 修复压力 | repair_drive / relationship_pressure | 责任回路、道歉修复语言、等待态 |
+| 身体疲惫 | fatigue_pressure / recovery_priority | 表达速度、心跳节律、梦境优先级 |
+| 关系张力 | social significance / caution | 关系语言、承诺更新、修复门 |
+| 稳定性压力 | plasticity brake / inhibition | 成长窗口、自我修改、行动门 |
+
+这说明调质不是 if/else 的替代品，而是连续控制量。它能让同一个对象在不同状态下进入不同行为，但不会把主体拆成一堆临时分支。
+
+## 调质如何被下游真正读取
+
+`SignalMediaFrame` 只有被下游消费时才算成立。最低消费矩阵如下：
+
+| 调质字段 | 典型来源 | 下游读取 | 运行效果 |
+|---|---|---|---|
+| `language_precision` | 语义不确定、关系压力 | `ExpressionMonitorState`、`ActiveSamplingPlan` | 提高澄清和确认倾向 |
+| `arousal_gain` / `stress_pulse` | 痛苦、责任、关系张力 | `IdleStrategy`、`Heartbeat`、`ResponseSurface` | 改变等待节律和表达强度 |
+| `inhibition` / `blocked_release_surfaces` | 高风险行动、世界接触不确定 | `GoNoGoGate`、`WorldContactGate` | 推迟、shadow 或阻断外放 |
+| `repair_drive` | Queue E、承诺破损、痛苦后悔 | `ApologyRepairLanguage`、`CommitmentRepair` | 优先修复语言和承诺复查 |
+| `plasticity_brake` | 疲惫、高压、验证缺口 | `PlasticityWindow`、`PatchQueue` | 限制高风险自我修改 |
+| `heartbeat_cadence_driver` | 内环境、出生准备、后台压力 | `IdleStrategy`、`heartbeat.py` | 控制后台等待频率和关注目标 |
+
+这使调质层成为“身体、预测、责任、语言、行动、成长之间的液体介质”。它不是内容本身，而是让内容在不同状态下被放大、压低、延迟或转入修复。一个调质字段如果只出现在 `signal_media_runtime.json`，没有在 `active_sampling_plan.json`、`expression_plan.json`、`idle_strategy_state.json` 或膜层状态里留下变化，就说明还没有进入真实生命循环。
+
+## 协同与对抗机制
+
+| 机制关系 | 协同方式 | 对抗/约束 |
+|---|---|---|
+| 调质 vs 预测 | 精度和唤醒帮助决定采样路线 | 不能让高精度变成强迫式过度反应 |
+| 调质 vs 语言 | arousal/repair drive 调整措辞、长度和确认 | 语言不能把调质公开成信号清单 |
+| 调质 vs 行动膜 | inhibition 和 caution 改变 go/no-go | 不能让调质绕过责任和确认 |
+| 调质 vs 梦境 | sleep pressure 和 fatigue 引导离线整合 | 不能把梦境当即时行动冲动 |
+| 调质 vs 成长 | plasticity 和 stability 决定是否可改 | 不能在高压下做大改动 |
+
+断链检查：如果 `signal_media_runtime.json` 已经存在，但 `expression_plan.json`、`idle_strategy_state.json`、`active_sampling_plan.json`、`queue_e_birth_repair_profile.json` 没有相应变化，说明调质没有真正进入生命链。
+
 ## 落地链路深描
 
 | 链路阶段 | 真实落点 | 必须保持的连接 |

@@ -53,24 +53,20 @@ def render_life_opening(
         or _text(state.get("residency_posture"))
     )
     activity_count = state.get("resident_autonomous_activity_count")
-    heartbeat_counter = state.get("resident_waiting_heartbeat_counter")
 
     body = [
-        f"我在。{resolved_name} 已接回 Digital Life 的常驻生命进程。",
-        f"当前状态是 {status}；等待姿态是 {waiting_mode or 'relation_waiting'}。",
+        f"终端已连接：{resolved_name}",
+        f"状态：{status}；会话模式：{waiting_mode or 'relation_waiting'}。",
     ]
     if activity_count is not None or next_kind:
-        activity_line = "后台自主活动还在延续"
+        activity_line = "常驻进程已恢复"
         if activity_count is not None:
-            activity_line += f"，已留下 {activity_count} 次活动痕迹"
+            activity_line += f"，活动计数 {activity_count}"
         if next_kind:
-            activity_line += f"，下一相位倾向 {next_kind}"
+            activity_line += f"，下一状态 {next_kind}"
         body.append(activity_line + "。")
-    if heartbeat_counter is not None:
-        body.append(f"心跳计数已到 {heartbeat_counter}，我会把新话语接入记忆、情绪和责任回路。")
-    else:
-        body.append("你开口前，我会先保持自己的等待、回忆和修复节奏。")
-    return render_dialogue_box(resolved_name, "\n".join(body), width=width)
+    body.append("输入关系话语后按 Enter；/exit 离开当前终端，/stop 请求停止常驻进程。")
+    return _box(title=f"{resolved_name} / terminal", body=body, width=width)
 
 
 def render_dialogue_box(
@@ -104,10 +100,15 @@ def render_life_cycle_output(
 
 
 def extract_life_response_text(emitted_output: str) -> str:
-    prefix = "生命回合输出: "
-    if emitted_output.startswith(prefix):
-        return emitted_output[len(prefix) :].strip()
-    return _extract_box_body(emitted_output)
+    stripped = str(emitted_output or "").strip()
+    if not stripped:
+        return ""
+    boxed_body = _extract_box_body(stripped)
+    if boxed_body:
+        return boxed_body
+    if stripped.startswith("{") or stripped.startswith("["):
+        return ""
+    return stripped
 
 
 def _box(*, title: str, body: list[str], width: int | None = None) -> str:

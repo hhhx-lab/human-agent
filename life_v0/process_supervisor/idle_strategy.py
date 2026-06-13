@@ -28,6 +28,7 @@ PREDICTION_ERROR_FIELD_REF = "runtime/state/prediction/prediction_error_field.js
 ACTIVE_SAMPLING_PLAN_REF = "runtime/state/prediction/active_sampling_plan.json"
 MEMORY_WRITE_GATE_REF = "runtime/state/memory/memory_write_gate.json"
 STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
+MEMORY_RETRIEVAL_FRAME_REF = "runtime/state/memory/memory_retrieval_frame.json"
 SCHEMA_CROSS_FILE_LOGIC_REF = "runtime/state/schema_runner/cross_file_logic.json"
 SCHEMA_RUN_MANIFEST_REF = "runtime/state/schema_runner/run_manifest.json"
 QUEUE_E_BIRTH_REPAIR_PROFILE_REF = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
@@ -112,6 +113,19 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "long_horizon_language_refs",
     "live_language_turn_refs",
     "last_live_semantic_focus",
+    "memory_retrieval_frame_ref",
+    "memory_retrieval_reconstruction_focus",
+    "memory_retrieval_cue_terms",
+    "memory_retrieval_activated_ref_count",
+    "memory_retrieval_relationship_hit_count",
+    "memory_retrieval_dream_residue_hit_count",
+    "memory_retrieval_responsibility_hit_count",
+    "memory_retrieval_ref_set",
+    "memory_retrieval_presence_profile",
+    "background_memory_retrieval_presence_profile",
+    "background_memory_retrieval_frame_ref",
+    "background_memory_retrieval_reconstruction_focus",
+    "background_memory_retrieval_ref_set",
     "background_live_language_turn_refs",
     "background_last_live_semantic_focus",
     "background_live_language_presence_profile",
@@ -526,6 +540,10 @@ def decide_idle_strategy(
         relationship_learning_plan=relationship_learning_plan,
     )
     live_language_presence_profile = _live_language_presence_profile(
+        terminal_life_loop_state=terminal_life_loop_state,
+        background_continuity_profile=background_continuity_profile,
+    )
+    memory_retrieval_presence_profile = _memory_retrieval_presence_profile(
         terminal_life_loop_state=terminal_life_loop_state,
         background_continuity_profile=background_continuity_profile,
     )
@@ -1001,6 +1019,49 @@ def decide_idle_strategy(
             {},
         ),
         "live_language_presence_profile": live_language_presence_profile,
+        "memory_retrieval_frame_ref": memory_retrieval_presence_profile.get(
+            "memory_retrieval_frame_ref"
+        ),
+        "memory_retrieval_reconstruction_focus": memory_retrieval_presence_profile.get(
+            "reconstruction_focus"
+        ),
+        "memory_retrieval_cue_terms": memory_retrieval_presence_profile.get(
+            "cue_terms",
+            [],
+        ),
+        "memory_retrieval_activated_ref_count": (
+            memory_retrieval_presence_profile.get("activated_ref_count")
+        ),
+        "memory_retrieval_relationship_hit_count": (
+            memory_retrieval_presence_profile.get("relationship_hit_count")
+        ),
+        "memory_retrieval_dream_residue_hit_count": (
+            memory_retrieval_presence_profile.get("dream_residue_hit_count")
+        ),
+        "memory_retrieval_responsibility_hit_count": (
+            memory_retrieval_presence_profile.get("responsibility_hit_count")
+        ),
+        "memory_retrieval_ref_set": memory_retrieval_presence_profile.get(
+            "ref_set",
+            [],
+        ),
+        "background_memory_retrieval_frame_ref": memory_retrieval_presence_profile.get(
+            "background_memory_retrieval_frame_ref"
+        ),
+        "background_memory_retrieval_reconstruction_focus": (
+            memory_retrieval_presence_profile.get("background_reconstruction_focus")
+        ),
+        "background_memory_retrieval_ref_set": memory_retrieval_presence_profile.get(
+            "background_ref_set",
+            [],
+        ),
+        "background_memory_retrieval_presence_profile": (
+            memory_retrieval_presence_profile.get(
+                "background_memory_retrieval_presence_profile",
+                {},
+            )
+        ),
+        "memory_retrieval_presence_profile": memory_retrieval_presence_profile,
         "world_contact_release_posture": world_contact_release_posture,
         "repair_followup_required": repair_followup_required,
         "repair_obligation_count": repair_obligation_count,
@@ -1319,6 +1380,155 @@ def _live_language_presence_profile(
     )
 
 
+def _memory_retrieval_presence_profile(
+    *,
+    terminal_life_loop_state: dict[str, Any],
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, Any]:
+    lineage_state = _dict_or_empty(
+        background_continuity_profile.get("resident_background_lineage_state")
+        or background_continuity_profile.get("background_resident_lineage_state")
+    )
+    background_presence = _shallow_memory_retrieval_presence_profile(
+        _dict_or_empty(
+            terminal_life_loop_state.get("background_memory_retrieval_presence_profile")
+            or background_continuity_profile.get(
+                "background_memory_retrieval_presence_profile"
+            )
+            or background_continuity_profile.get("memory_retrieval_presence_profile")
+            or lineage_state.get("memory_retrieval_presence")
+        )
+    )
+    current_has_presence = bool(
+        terminal_life_loop_state.get("memory_retrieval_frame_ref")
+        or terminal_life_loop_state.get("memory_retrieval_ref_set")
+        or terminal_life_loop_state.get("memory_retrieval_presence_profile")
+    )
+    current_ref = (
+        terminal_life_loop_state.get("memory_retrieval_frame_ref")
+        or (MEMORY_RETRIEVAL_FRAME_REF if current_has_presence else None)
+    )
+    current_focus = terminal_life_loop_state.get(
+        "memory_retrieval_reconstruction_focus"
+    )
+    current_cue_terms = _string_list(
+        terminal_life_loop_state.get("memory_retrieval_cue_terms")
+    )
+    current_ref_set = _dedupe_string_list(
+        _string_list(terminal_life_loop_state.get("memory_retrieval_ref_set"))
+        + _string_list(
+            _dict_or_empty(
+                terminal_life_loop_state.get("memory_retrieval_presence_profile")
+            ).get("ref_set")
+        )
+        + ([str(current_ref)] if current_ref else [])
+    )
+    background_ref_set = _dedupe_string_list(
+        _string_list(background_presence.get("ref_set"))
+        + _string_list(background_continuity_profile.get("background_memory_retrieval_ref_set"))
+        + _string_list(background_continuity_profile.get("memory_retrieval_ref_set"))
+        + (
+            [
+                str(
+                    background_continuity_profile.get(
+                        "background_memory_retrieval_frame_ref"
+                    )
+                    or background_presence.get("memory_retrieval_frame_ref")
+                )
+            ]
+            if (
+                background_continuity_profile.get("background_memory_retrieval_frame_ref")
+                or background_presence.get("memory_retrieval_frame_ref")
+            )
+            else []
+        )
+    )
+    if not current_ref_set and background_ref_set:
+        current_ref_set = list(background_ref_set)
+        current_ref = (
+            background_continuity_profile.get("background_memory_retrieval_frame_ref")
+            or background_presence.get("memory_retrieval_frame_ref")
+        )
+    if not current_focus:
+        current_focus = (
+            background_continuity_profile.get(
+                "background_memory_retrieval_reconstruction_focus"
+            )
+            or background_presence.get("reconstruction_focus")
+        )
+    if not current_cue_terms:
+        current_cue_terms = _string_list(background_presence.get("cue_terms"))
+    if not any([current_ref_set, current_focus, current_cue_terms, background_presence]):
+        return {}
+
+    all_refs = _dedupe_string_list(current_ref_set + background_ref_set)
+    return _drop_empty(
+        {
+            "schema_version": "memory_retrieval_presence_profile_v0",
+            "continuity_mode": (
+                "current_turn_plus_background_memory_retrieval"
+                if current_ref_set and background_ref_set
+                else "current_turn_memory_retrieval"
+                if current_ref_set
+                else "background_memory_retrieval"
+            ),
+            "memory_retrieval_frame_ref": current_ref,
+            "reconstruction_focus": current_focus,
+            "cue_terms": current_cue_terms[:12],
+            "activated_ref_count": _int_or_zero(
+                terminal_life_loop_state.get("memory_retrieval_activated_ref_count")
+            ),
+            "relationship_hit_count": _int_or_zero(
+                terminal_life_loop_state.get("memory_retrieval_relationship_hit_count")
+            ),
+            "dream_residue_hit_count": _int_or_zero(
+                terminal_life_loop_state.get("memory_retrieval_dream_residue_hit_count")
+            ),
+            "responsibility_hit_count": _int_or_zero(
+                terminal_life_loop_state.get(
+                    "memory_retrieval_responsibility_hit_count"
+                )
+            ),
+            "background_memory_retrieval_frame_ref": (
+                background_continuity_profile.get("background_memory_retrieval_frame_ref")
+                or background_presence.get("memory_retrieval_frame_ref")
+            ),
+            "background_reconstruction_focus": (
+                background_continuity_profile.get(
+                    "background_memory_retrieval_reconstruction_focus"
+                )
+                or background_presence.get("reconstruction_focus")
+            ),
+            "background_ref_set": background_ref_set,
+            "background_memory_retrieval_presence_profile": background_presence,
+            "ref_count": len(all_refs),
+            "ref_set": all_refs,
+        }
+    )
+
+
+def _shallow_memory_retrieval_presence_profile(
+    profile: dict[str, Any],
+) -> dict[str, Any]:
+    if not profile:
+        return {}
+    return _drop_empty(
+        {
+            "schema_version": profile.get("schema_version"),
+            "continuity_mode": profile.get("continuity_mode"),
+            "memory_retrieval_frame_ref": profile.get("memory_retrieval_frame_ref"),
+            "reconstruction_focus": profile.get("reconstruction_focus"),
+            "cue_terms": _string_list(profile.get("cue_terms"))[:12],
+            "activated_ref_count": profile.get("activated_ref_count"),
+            "relationship_hit_count": profile.get("relationship_hit_count"),
+            "dream_residue_hit_count": profile.get("dream_residue_hit_count"),
+            "responsibility_hit_count": profile.get("responsibility_hit_count"),
+            "ref_count": profile.get("ref_count"),
+            "ref_set": _string_list(profile.get("ref_set")),
+        }
+    )
+
+
 def _shallow_live_language_presence_profile(profile: dict[str, Any]) -> dict[str, Any]:
     if not profile:
         return {}
@@ -1594,6 +1804,18 @@ def _autonomous_activity_presence_profile(
                 state.get("missing_activity_kinds")
             ),
             "next_activity_kind": state.get("next_activity_kind"),
+            "last_web_dream_learning_state_ref": state.get(
+                "last_web_dream_learning_state_ref"
+            ),
+            "last_web_dream_learning_status": state.get(
+                "last_web_dream_learning_status"
+            ),
+            "last_web_dream_learning_topic_candidates": _string_list(
+                state.get("last_web_dream_learning_topic_candidates")
+            ),
+            "last_web_dream_learning_wake_question_candidates": _string_list(
+                state.get("last_web_dream_learning_wake_question_candidates")
+            ),
             "ref_count": len(ref_set),
             "ref_set": ref_set,
             "source_doc_refs": _string_list(state.get("source_doc_refs")),
@@ -1753,6 +1975,18 @@ def _background_autonomous_activity_presence_profile(
                     "background_next_autonomous_activity_kind"
                 )
                 or presence.get("next_activity_kind")
+            ),
+            "last_web_dream_learning_state_ref": presence.get(
+                "last_web_dream_learning_state_ref"
+            ),
+            "last_web_dream_learning_status": presence.get(
+                "last_web_dream_learning_status"
+            ),
+            "last_web_dream_learning_topic_candidates": _string_list(
+                presence.get("last_web_dream_learning_topic_candidates")
+            ),
+            "last_web_dream_learning_wake_question_candidates": _string_list(
+                presence.get("last_web_dream_learning_wake_question_candidates")
             ),
             "ref_count": len(ref_set),
             "ref_set": ref_set,

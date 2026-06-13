@@ -35,6 +35,7 @@ def build_life_state_projection(
     engram_index: dict[str, Any] | None = None,
     autobiographical_stack: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
+    memory_retrieval_frame: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
     background_continuity_profile: dict[str, Any] | None = None,
     runtime_trace_refs: list[str] | None = None,
@@ -46,6 +47,7 @@ def build_life_state_projection(
     autobiographical_ref = "runtime/state/self/autobiographical_stack.json#anchor_refs"
     relationship_ref = "runtime/state/memory/relationship_memory.json#shared_memory_refs"
     engram_ref = "runtime/state/memory/engram_index.json"
+    memory_retrieval_ref = "runtime/state/memory/memory_retrieval_frame.json"
     background_continuity_profile = background_continuity_profile or {}
     background_continuity_root = _build_background_continuity_root(
         background_continuity_profile
@@ -56,15 +58,34 @@ def build_life_state_projection(
         anti_forgetting_refs=replay_refs
         or list((engram_index or {}).get("anti_forgetting_anchor_refs", [])),
     )
+    memory_retrieval_refs = _dedupe(
+        ([memory_retrieval_ref] if memory_retrieval_frame else [])
+        + list((memory_retrieval_frame or {}).get("activated_engram_refs", []))
+        + list((memory_retrieval_frame or {}).get("relationship_memory_hits", []))
+        + list((memory_retrieval_frame or {}).get("autobiographical_hits", []))
+        + list((memory_retrieval_frame or {}).get("dream_residue_hits", []))
+        + list((memory_retrieval_frame or {}).get("responsibility_hits", []))
+    )
     memory_index = {
         "autobiographical_memory_refs": list((engram_index or {}).get("autobiographical_memory_refs", []))
         or [autobiographical_ref],
         "relationship_memory_refs": list((engram_index or {}).get("relationship_memory_refs", []))
         or [relationship_ref],
+        "memory_retrieval_refs": memory_retrieval_refs,
         "dream_memory_refs": list((engram_index or {}).get("dream_memory_refs", [])),
         "responsibility_memory_refs": list((engram_index or {}).get("responsibility_memory_refs", []))
         or list(commitment_truth_state.get("responsibility_event_refs", []))
         or list(responsibility_ledger.get("responsibility_event_refs", [])),
+        "memory_tier_refs": {
+            "schema_version": "life_memory_tier_refs_v0",
+            "salient_core_refs": list((engram_index or {}).get("memory_tier_index", {}).get("salient_core_refs", [])),
+            "retrievable_context_refs": list((engram_index or {}).get("memory_tier_index", {}).get("retrievable_context_refs", [])),
+            "deep_sediment_refs": list((engram_index or {}).get("memory_tier_index", {}).get("deep_sediment_refs", [])),
+            "source_ref": (engram_index or {}).get("memory_tier_index", {}).get(
+                "source_ref",
+                "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering",
+            ),
+        },
         "replay_cues": list((engram_index or {}).get("replay_cue_refs", []))
         or replay_refs
         or [
@@ -87,6 +108,7 @@ def build_life_state_projection(
         "runtime/state/prediction/prediction_workspace_frame.json",
         "runtime/state/subject_namespace_binding.json",
         engram_ref,
+        memory_retrieval_ref,
         "runtime/state/self/autobiographical_stack.json",
         "runtime/state/memory/relationship_memory.json",
     ]
@@ -138,8 +160,9 @@ def build_life_state_projection(
                 [
                     "runtime/state/state_store_doc_coverage_snapshot.json",
                     engram_ref,
-                    "runtime/state/memory/state_merge_guard.json" if state_merge_guard else "",
-                ]
+            "runtime/state/memory/state_merge_guard.json" if state_merge_guard else "",
+            memory_retrieval_ref if memory_retrieval_frame else "",
+        ]
             ),
             "blocked_reasons": [],
             "quarantine_refs": list((engram_index or {}).get("quarantine_refs", [])),
@@ -176,6 +199,7 @@ def project_responsibility_language_continuity(
     pain_regret_repair_report: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
     engram_index: dict[str, Any] | None = None,
+    memory_retrieval_frame: dict[str, Any] | None = None,
     additional_runtime_trace_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     commitment_truth_state = commitment_truth_state or {}
@@ -212,6 +236,16 @@ def project_responsibility_language_continuity(
     updated["pain_events"] = _dedupe(list(updated.get("pain_events", [])) + pain_refs)
 
     memory_index = updated.setdefault("memory_index", {})
+    if memory_retrieval_frame:
+        memory_index["memory_retrieval_refs"] = _dedupe(
+            list(memory_index.get("memory_retrieval_refs", []))
+            + ["runtime/state/memory/memory_retrieval_frame.json"]
+            + list(memory_retrieval_frame.get("activated_engram_refs", []))
+            + list(memory_retrieval_frame.get("relationship_memory_hits", []))
+            + list(memory_retrieval_frame.get("autobiographical_hits", []))
+            + list(memory_retrieval_frame.get("dream_residue_hits", []))
+            + list(memory_retrieval_frame.get("responsibility_hits", []))
+        )
     if state_merge_guard:
         memory_index["state_merge_guard_refs"] = _dedupe(
             list(memory_index.get("state_merge_guard_refs", []))
@@ -257,6 +291,23 @@ def project_responsibility_language_continuity(
             list(memory_index.get("live_language_turn_refs", []))
             + list(engram_index.get("live_language_turn_refs", []))
         )
+        if engram_index.get("memory_tier_index"):
+            memory_index["memory_tier_refs"] = {
+                "schema_version": "life_memory_tier_refs_v0",
+                "salient_core_refs": list(
+                    engram_index.get("memory_tier_index", {}).get("salient_core_refs", [])
+                ),
+                "retrievable_context_refs": list(
+                    engram_index.get("memory_tier_index", {}).get("retrievable_context_refs", [])
+                ),
+                "deep_sediment_refs": list(
+                    engram_index.get("memory_tier_index", {}).get("deep_sediment_refs", [])
+                ),
+                "source_ref": engram_index.get("memory_tier_index", {}).get(
+                    "source_ref",
+                    "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering",
+                ),
+            }
     memory_index["relationship_memory_refs"] = _dedupe(
         list(memory_index.get("relationship_memory_refs", []))
         + list(relationship_memory.get("shared_memory_refs", []))
@@ -282,6 +333,23 @@ def project_responsibility_language_continuity(
         relationship_subject["shared_memory_refs"] = _dedupe(
             list(relationship_memory.get("shared_memory_refs", [])) or list(relationship_subject.get("shared_memory_refs", []))
         )
+        if relationship_memory.get("memory_tier_projection"):
+            relationship_subject["memory_tier_projection"] = {
+                "schema_version": "relationship_memory_tier_projection_v0",
+                "salient_core_episode_refs": list(
+                    relationship_memory.get("memory_tier_projection", {}).get("salient_core_episode_refs", [])
+                ),
+                "retrievable_context_episode_refs": list(
+                    relationship_memory.get("memory_tier_projection", {}).get("retrievable_context_episode_refs", [])
+                ),
+                "deep_sediment_episode_refs": list(
+                    relationship_memory.get("memory_tier_projection", {}).get("deep_sediment_episode_refs", [])
+                ),
+                "projection_source_ref": relationship_memory.get("memory_tier_projection", {}).get(
+                    "projection_source_ref",
+                    "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering",
+                ),
+            }
         relationship_subject["commitment_refs"] = _dedupe(
             list(commitment_truth_state.get("open_commitment_refs", [])) or list(relationship_subject.get("commitment_refs", []))
         )
@@ -320,6 +388,7 @@ def project_responsibility_language_continuity(
             "runtime/state/relationship/relationship_timeline.json",
             "runtime/state/language/commitment_expression_plan.json",
             "runtime/state/language/apology_repair_language_trace.json",
+            "runtime/state/memory/memory_retrieval_frame.json" if memory_retrieval_frame else "",
             "runtime/state/memory/state_merge_guard.json" if state_merge_guard else "",
             *[
                 ref

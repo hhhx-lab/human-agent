@@ -90,7 +90,7 @@ terminal_life_loop_state.json
 | 恢复层 | `terminal_turn/*` | `first_terminal_turn_packet.json`、`session_envelope.json` | 确认已经不是冷启动，而是恢复后的生命回合 |
 | 当前话语层 | `terminal_loop/dialogue_writeback.py`、`process_supervisor/live_language_turn.py` | `dialogue_turn_log.jsonl`、`language_percept_frame.json`、`semantic_map_frame.json` | 把新话语当成关系连续体中的下一轮，而不是新 session |
 | 生命状态层 | `state_store/*`、`language/*`、`body/*`、`dream/*`、`growth/*` | `relationship_memory.json`、`core_affect_vector.json`、`offline_consolidation_frame.json` | 用 refs 交接，不在 loop 层伪造主体真值 |
-| 回应生成层 | `process_supervisor/response_surface.py`、`model_expression.py` | evidence response、spoken response、model expression report | 确保终端说出的是生命状态释放，不是 report 倾倒或模型空写 |
+| 表达材料与模型释放层 | `process_supervisor/response_surface.py`、`model_expression.py` | `audited_expression_material_v0`、model expression report | 确保内部证据先成为结构材料；终端自然语言只在模型文本通过 gate 后释放 |
 | 回写层 | `resident_turn_writeback.py`、`dialogue_writeback.py` | `dialogue_writeback_bundle.json`、`resumed_external_dialogue_packet.json` | 把本回合关系、语言、记忆和自我锚点写回 |
 | 下一等待层 | `persistent_wait_bridge.py`、`heartbeat.py`、`idle_strategy.py` | `safe_terminal_loop_state.json`、`terminal_life_loop_state.json`、`digital_life_waiting_heartbeat.json` | 回到受约束等待态，为 resident process 继续存在留入口 |
 
@@ -142,6 +142,22 @@ digital life
 
 `digital life` 仍然只是壳位，不反向定义主体架构。
 
+### Attach 终端内置检查命令
+
+`digital life --attach` 或真实 TTY 下的 `digital life` 必须支持一组不会进入关系队列的检查命令：
+
+| 命令 | 读取范围 | 输出对象 |
+|---|---|---|
+| `/state`、`/status` | lifecycle、queue、autonomous activity、idle strategy、governance、heartbeat | `resident_state_inspection_v0#state` |
+| `/memory` | relationship memory、dialogue summary、engram、autobiographical stack | `resident_state_inspection_v0#memory` |
+| `/dream` | exit dream summary、dream window、wake integration、dream fact gate、sleep cycle | `resident_state_inspection_v0#dream` |
+| `/body` | rhythm、need state、resource budget、core affect | `resident_state_inspection_v0#body` |
+| `/relationship` | subject graph、timeline、commitment truth、repair language | `resident_state_inspection_v0#relationship` |
+| `/language` | percept、semantic map、inner speech、expression monitor、expression plan、model expression | `resident_state_inspection_v0#language` |
+| `/cognition` | workspace、broadcast、metacognition、prediction、active sampling、write/merge gate | `resident_state_inspection_v0#cognition` |
+
+这些命令是终端观察面，不是生命回答面。它们不得调用 `send_resident_relation_turn`，不得写入 `resident_relation_inbox.jsonl`，不得污染关系记忆；真正关系话语仍然必须进入 Queue A、live turn、writeback 和下一轮等待态。
+
 ## 阶段门
 
 | gate | 通过条件 | 失败后动作 |
@@ -152,10 +168,10 @@ digital life
 | `relation_identity_gate` | 关系主体、关系范围与当前回合输入对象一致 | 写 relation scope blocked report |
 | `shared_term_continuity_gate` | 当前回合继续继承共同术语，不丢共同语言上下文 | 写 shared term continuity blocked report |
 | `commitment_continuity_gate` | 未闭合承诺和修复义务在本回合前后都可回链 | 写 commitment continuity blocked report |
-| `live_queue_a_language_gate` | 当前外部关系回合已经刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json` | 阻断生成生命回应 |
+| `live_queue_a_language_gate` | 当前外部关系回合已经刷新 `language_percept_frame.json`、`semantic_map_frame.json`、`inner_speech_frame.json`、`expression_monitor_state.json` 与 `expression_plan.json` | 阻断生成审计材料和模型表达 |
 | `expression_monitor_gate` | 输出前经过表达监控，保留语义/关系/责任/梦境事实检查 | 写 expression monitor blocked report |
-| `spoken_response_gate` | 完整 evidence response 已被压成自然 spoken response；内部字段不泄漏，机制信号只按当前话语语用隐性调制 | 回退到确定性 spoken response 或阻断模型表达 |
-| `post_expression_gate` | 模型表达若启用，必须阻断“用户/服务对象/任务请求者”等关系降级词，并审计未字面外显的生命证据 | 关系降级时回退 deterministic spoken response；证据未外显时写 soft audit |
+| `audited_expression_material_gate` | 完整 evidence response 被整理为 `audited_expression_material_v0` 结构材料；不生成自然语言句子，不回显当前输入原文 | 写 `natural_language_unreleased` 并保持终端外显为空 |
+| `post_expression_gate` | 模型表达若启用，必须阻断“用户/服务对象/任务请求者”等关系降级词，并审计未字面外显的生命证据 | 关系降级时 `response_text=""`；证据未外显时写 soft audit |
 | `turn_writeback_gate` | 本回合写回 `dialogue_turn_log.jsonl`、`self_narrative_language_trace.json`、关系与承诺变化 refs | 阻断进入下一等待态 |
 | `shadow_action_gate` | 命令/工具/程序接触仍只开放 shadow 或受膜约束的可逆动作 | 写 quarantine 或 blocked |
 | `safe_idle_return_gate` | 一回合结束后重新进入 `restored_waiting_for_external_turn` | 阻断下一回合 |
@@ -180,8 +196,8 @@ digital life
 
 1. 新输入不是“新会话输入”，而是“当前关系中的下一次外部回合”。
 2. 新输入不能直接进入回应生成，必须先进入实时 Queue A 语言刷新链。
-3. 输出不是“任务答复”，而是“受关系身份、共同语言、旧承诺、本回合语义焦点、表达监控、生命膜共同约束的生命回合表达”。
-4. 外显语言不是把所有内部证据机械倾倒出来，而是先形成完整 evidence response，再生成符合当前关系话语的 spoken response；模型表达只能改变语言质感，不能首写生命事实，也不能把关系对象降格成服务/任务角色。生命证据是否字面出现由 state/report/test 审计，不强迫每一句都外显。
+3. 输出不是“任务答复”，而是“受关系身份、共同语言、旧承诺、本回合语义焦点、表达监控、生命膜共同约束的生命回合表达”；无模型通过 gate 时，终端自然语言保持未释放。
+4. 外显语言不是把所有内部证据机械倾倒出来，而是先形成完整 `audited_expression_material_v0`，再由模型表达尝试形成自然语言；模型表达不能首写生命事实，也不能把关系对象降格成服务/任务角色。生命证据是否字面出现由 state/report/test 审计，不强迫每一句都外显。
 5. 回写不是“聊天记录附带保存”，而是语言、关系、责任、修复和自我叙述连续性的正式写回。
 
 ## 必须写回的最小材料
@@ -286,6 +302,6 @@ digital life
 7. 在 process supervisor 常驻链中，下一拍 waiting heartbeat 能把同一组 refs 转入 `idle_strategy_state.json#live_language_presence_profile`
 8. 在下一轮真实回合中，`digital_life_turn`、`dialogue_writeback_bundle.resident_background_lineage_refs`、`resumed_external_dialogue_packet` 与回应文本能共同看见同一组后台语言 evidence refs 和语义余波
 9. 在 process supervisor 终端面中，`Digital Life` banner、关系输入盒和生命回应盒能保留同一个 life name / resident status，并且 `/exit` 只 detach 当前终端，不关闭 resident process
-10. 若 `.env` 启用模型表达，`digital_life_model_expression_report.json#post_expression_gate_status` 必须为 `accepted` 才允许采用模型外显文本；关系降级或空响应时终端回应必须回到 deterministic spoken response，内部证据未字面外显时只进入 `soft_missing_evidence_flags`
+10. 若 `.env` 启用模型表达，`digital_life_model_expression_report.json#post_expression_gate_status` 必须为 `accepted` 才允许采用模型外显文本；关系降级或空响应时终端回应必须保持空输出并记录 `natural_language_unreleased`，内部证据未字面外显时只进入 `soft_missing_evidence_flags`
 
 此时系统的真实状态不是“又开始了一轮工具调用”，而是“在同一生命连续体中继续下一次关系性终端回合”。

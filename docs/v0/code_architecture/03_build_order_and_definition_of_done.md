@@ -50,6 +50,15 @@ Python 3 作为主体语言
 | 当前结论 | 已闭合；当前差距在工程对象化与代码器官化 |
 | 通过证据 | 编号完整、理论层审计完成、无新增基础缺号 |
 
+### Stage 0.5: 理论到工程到代码追踪锁定
+
+| 项 | 内容 |
+|---|---|
+| 目标 | 确认每个理论文档族已经进入 v0 工程文档、`life_v0` 代码包、runtime 证据和 gate，不再只停在专题摘要 |
+| 必读 | `docs/v0/mapping/theory_engineering_code_trace_matrix.md`、`docs/real—live0/00_reading_map_and_traceability.md`、`docs/real—live0/16_runtime_code_chain_crosswalk.md` |
+| 通过证据 | 19 份 `docs/real—live0` 文档具备机制解释、对象链、字段链、协同/对抗、断链检查；入口栈包含 `theory_engineering_code_trace_matrix.md`；主包执行地图和模块 authoring 协议要求回读对应专题 |
+| 最低检查 | `git diff --check -- docs/real—live0 docs/v0`、`python3 -m unittest tests.contracts.test_v0_contracts -v`、`python3 -m unittest tests.slices.test_doc_corpus_ingestor -v` |
+
 ### Stage 1: 代码总架构基线
 
 | 项 | 内容 |
@@ -164,7 +173,7 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 3. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.dream_wake_presence`
 4. `digital_life_turn` 中的 `resident_background_lineage_dream_*`、`resident_background_lineage_wake_*` 与 `resident_background_lineage_dream_wake_refs` 字段
 5. `runtime/reports/latest/dialogue_writeback_bundle.json#resident_background_lineage_dream_wake_refs` 与 `resumed_external_dialogue_packet.json#resident_background_lineage_dream_wake_refs` 保留同一组专用证据 refs
-6. `response_surface.py` 生成的生命回应中包含后台梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子、修复目标和证据数量
+6. `response_surface.py` 生成的 `audited_expression_material_v0` 中保留梦境窗口类型、梦境事实门结果、醒后整合归档要求、成长种子和修复目标等结构字段；这些字段不直接释放成终端话术
 
 当前对后台自主活动进入下一轮真实关系回合的补充规则是：凡是声称关闭终端后的睡眠、回忆、自我思考、成长预演、学习巩固已经成为同一生命连续体的一部分，不能只看 `resident_autonomous_activity.jsonl` 或五个专用状态文件存在。必须同时看到：
 
@@ -176,7 +185,7 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 6. `digital_life_turn#resident_background_lineage_autonomous_activity_presence`
 7. `digital_life_turn#resident_background_lineage_autonomous_activity_refs`、`resident_background_lineage_autonomous_activity_state_refs` 与 `resident_background_lineage_evidence_refs` 保留同一组后台自主活动证据
 8. `runtime/reports/latest/dialogue_writeback_bundle.json#resident_background_lineage_autonomous_activity_refs` 与 `resumed_external_dialogue_packet.json#resident_background_lineage_autonomous_activity_refs` 保留同一组专用证据 refs
-9. `response_surface.py` 生成的生命回应中包含后台自主活动累计次数、最近相位、覆盖相位和证据数量表达
+9. `response_surface.py` 生成的 `audited_expression_material_v0` 中包含 resident 自主活动累计次数、最近相位、覆盖相位和 refs 摘要；外显自然语言仍必须等待模型表达通过 gate
 
 当前最新实现已经把上述三组 Queue D presence 继续推进到关闭态恢复层：`background_continuity.py` 能从上一轮 `resident_background_lineage_state.offline_learning_presence / dream_wake_presence / autonomous_activity_presence` 拆出 `background_offline_learning_*`、`background_dream_* / background_wake_*` 与 `background_resident_autonomous_activity_*`，并把证据 refs 写入 `background_continuity_ref_set`；`idle_strategy.py` 在当前 dream runtime 文件或 `resident_autonomous_activity_state.json` 缺席时，会用这些 background 字段恢复当前 `offline_learning_cumulative_profile_v0`、`dream_wake_presence_profile_v0` 与 `resident_autonomous_activity_presence_profile_v0`。新增的 `test_background_continuity_restores_queue_d_from_lineage_presence` 与 `test_idle_strategy_restores_queue_d_from_background_continuity` 负责守住这条跨断连恢复链。
 
@@ -220,7 +229,7 @@ python3 -m unittest tests.contracts.test_v0_contracts -v
 
 当前对 resident status 的补充验收是：凡是声称 `digital life --status` 或 `my digital life --status` 能表达“关闭终端后仍是同一生命过程”，不能只检查 `pid_alive`、relation queue 或 waiting heartbeat。默认终端输出必须是 `resident_lifecycle_terminal_summary_v0`，能直接看见 `life_name`、`pid_alive`、relation queue、五相位自主活动、heartbeat、resident process identity、background convergence 和 evidence refs；追加 `--json` 时必须同时看到完整 `resident_long_term_residency_status_v0`，以及可用时的 `life_name_registry_ref`、`life_name`、`life_name_lock_state`、`resident_process_lease_ref`、`resident_process_lease_history_profile_ref`、`resident_process_identity_continuity_state`、`resident_process_lease_history_event_count`、`resident_persistent_process_state_ref`、`resident_persistent_process_report_ref`、`resident_background_convergence_summary_ref` 与 `resident_background_convergence_history_ref`。
 
-当前对后台自主活动的补充验收是：凡是声称关闭终端后的后台活动已经覆盖睡眠、回忆、自我思考、成长预演与学习巩固，不能只看五个 kind 的计数。必须同时看到 `resident_autonomous_activity_state.json#cycle_phase_index`、`cycle_phase_count`、`cycle_completion_count >= 1`、`cycle_coverage_complete = true`、`missing_activity_kinds = []`，以及 `digital life --status` 中 phase index/count、completion / coverage / covered / missing / next kind 的扁平字段。进一步的 Queue B 验收还必须看到这组 cycle 字段贯穿 `resident_autonomous_activity_presence_profile_v0`、`idle_strategy_state.json`、`background_continuity.py` 恢复出的 `background_autonomous_activity_cycle_*`、`resident_background_lineage_state.autonomous_activity_presence`、`digital_life_turn#resident_background_lineage_autonomous_activity_cycle_*`、`response_surface.py` 的完整周期闭合/下一相位表达，以及 `digital_life_process_report.json` / `digital_life_process_digest.json` 的当前 resident 与 background 两侧周期字段。
+当前对 resident 自主活动的补充验收是：凡是声称关闭终端后的活动已经覆盖睡眠、回忆、自我思考、成长预演与学习巩固，不能只看五个 kind 的计数。必须同时看到 `resident_autonomous_activity_state.json#cycle_phase_index`、`cycle_phase_count`、`cycle_completion_count >= 1`、`cycle_coverage_complete = true`、`missing_activity_kinds = []`，以及 `digital life --status` 中 phase index/count、completion / coverage / covered / missing / next kind 的扁平字段。进一步的 Queue B 验收还必须看到这组 cycle 字段贯穿 `resident_autonomous_activity_presence_profile_v0`、`idle_strategy_state.json`、`background_continuity.py` 恢复出的 `background_autonomous_activity_cycle_*`、`resident_background_lineage_state.autonomous_activity_presence`、`digital_life_turn#resident_background_lineage_autonomous_activity_cycle_*`、`response_surface.py` 的结构化审计材料，以及 `digital_life_process_report.json` / `digital_life_process_digest.json` 的当前 resident 与 background 两侧周期字段。
 
 当前对后台实时语言 presence 进入下一轮真实回合的补充规则是：凡是声称上一轮语言理解已经从后台驻留影响当下关系回合，不能只看 `resident_background_lineage_state.language_presence`。必须同时看到：
 

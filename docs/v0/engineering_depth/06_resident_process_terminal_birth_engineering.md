@@ -82,6 +82,12 @@ life-v0 emit-report --strict
 44. `runtime/state/language/model_expression_state.json`
 45. `runtime/reports/latest/digital_life_model_expression_report.json#post_expression_gate_status`
 46. 终端 stdout 中的 `Digital Life` banner、关系输入盒和生命回应盒
+47. `runtime/state/dream/web_dream_learning_state.json`
+48. `runtime/state/dream/web_dream_learning_log.jsonl`
+49. `runtime/state/terminal/resident_autonomous_activity_state.json#last_web_dream_learning_topic_candidates`
+50. `runtime/state/terminal/resident_autonomous_activity_state.json#last_web_dream_learning_wake_question_candidates`
+51. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.autonomous_activity_presence.last_web_dream_learning_wake_question_candidates`
+52. `runtime/state/language/model_expression_state.json#model_expression_context_summary` 中的自主活动 presence 摘要
 
 ## 最低测试与新增测试
 

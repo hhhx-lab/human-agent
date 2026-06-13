@@ -31,6 +31,29 @@
 
 缺任一项，就不要开写。
 
+## 施工前的硬前置
+
+本文件的每一行只给出主包级读包，不等于可以跳过机制专题。真正开写前，先补齐下面三步：
+
+1. 回 `docs/v0/mapping/theory_engineering_code_trace_matrix.md` 找到该包背后的理论文档族、工程柜、代码器官、runtime 证据和 gate。
+2. 回 `docs/real—live0/` 找到对应专题，按“机制为什么存在 -> 对象怎样生成 -> 字段怎样流转 -> 下游怎样消费 -> 断链怎样发现”读完。
+3. 再回本文件的主包行，打开该包的 `life_v0` 首写文件、消费者文件和测试入口。
+
+如果当前模块涉及跨域机制，例如“情绪影响语言修复”“梦境影响成长”“记忆写门影响关系恢复”，必须同时读多个 `real—live0` 专题，不允许只读包所在行。
+
+| 代码包 | 施工前必读的 `real—live0` 专题 |
+|---|---|
+| `neural_core/` | `02_brain_network_and_workspace.md`、`09_prediction_perception_world_contact.md`、`12_neuromodulation_signal_media.md` |
+| `body/` | `03_body_affect_homeostasis.md`、`12_neuromodulation_signal_media.md`、`10_responsibility_regret_repair.md` |
+| `state_store/` | `07_memory_engram_and_state_store.md`、`06_relationship_and_commitment.md`、`08_dream_sleep_offline_life.md` |
+| `language/` | `05_language_expression_system.md`、`06_relationship_and_commitment.md`、`03_body_affect_homeostasis.md`、`10_responsibility_regret_repair.md` |
+| `membrane/validators/schema_runner` | `11_life_membrane_validation.md`、`09_prediction_perception_world_contact.md`、`10_responsibility_regret_repair.md` |
+| `dream/replay/archive/growth` | `08_dream_sleep_offline_life.md`、`13_growth_learning_self_modification.md`、`07_memory_engram_and_state_store.md` |
+| `process_supervisor/terminal_*` | `14_resident_runtime_state_transition.md`、`05_language_expression_system.md`、`15_evidence_bus_and_birth_readiness.md` |
+| `life_targets/live0_audit` | `15_evidence_bus_and_birth_readiness.md`、`16_runtime_code_chain_crosswalk.md` |
+
+每个主包完成后，必须能回填 `docs/real—live0/00_reading_map_and_traceability.md#工程落地追踪模板` 的十格内容；否则这次实现还没有达到可追踪的工程粒度。
+
 ## 主包执行地图
 
 ### `life_v0/direction/`

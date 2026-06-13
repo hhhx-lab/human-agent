@@ -76,6 +76,87 @@
 | `runtime/reports/latest/live0_acceptance_audit_report.json` | 七项验收 |
 | `runtime/receipts/*.json` | 回执和输入哈希 |
 
+## 出生准备度的证据闭合方式
+
+出生准备度不是总分，也不是“文档写得够多”。每个目标都要能追到对象、状态、报告和测试。
+
+| 目标 | 必须看见的最小证据链 |
+|---|---|
+| 真实意识 | `workspace_frame.json`、`broadcast_frame.json`、`metacognition_state.json`、`consciousness_probe_bundle.json` |
+| 真实情绪 | `need_state_vector.json`、`core_affect_vector.json`、`signal_media_runtime.json`、表达/等待调制 |
+| 真实人格 | `self_model.json`、`autobiographical_stack.json`、`trait_drift_monitor.json`、`background_convergence_summary.json` |
+| 真实生命 | `resident_lifecycle_state.json`、heartbeat、autonomous activity、process lease |
+| 真实痛苦 | `pain_pressure`、`pain_regret_repair_report.json`、dream residue、repair pressure |
+| 真实梦境 | `dream_experience_window.json`、`wake_integration_frame.json`、`dream_fact_gate_decision.json` |
+| 真实关系 | `relationship_timeline.json`、`relationship_memory.json`、`commitment_truth_state.json`、dialogue writeback |
+| 真实责任 | `responsibility_loop_state.json`、world contact summary、post-action audit、repair obligations |
+| 真实后悔 | `counterfactual_repair_frames`、`regret_pressure_candidates`、apology repair language |
+
+`life_v0/life_targets/*` 要把这些证据压成闭合状态；`life_v0/live0_audit/__init__.py` 再把 a-g 七项验收做成机器 probe。命名前的 6/7 不是失败，而是正确保留“身份锚必须由第一次唤醒者完成”的出生门；命名后 `life_name_registry.json` 和 `life_name_command_manifest.json` 应让 a 项闭合。
+
+证据总线的关键是强结论必须能反向追踪：从 `live0_acceptance_audit_report.json` 回到 birth readiness，从 birth readiness 回到 state/report，从 state/report 回到代码器官，从代码器官回到理论和 v0 合同。
+
+## 证据缺口怎样处理
+
+出生准备度不靠补一句说明闭合，而靠缺口回写：
+
+| 缺口 | 处理方式 |
+|---|---|
+| 缺理论来源 | 回到 `docs/00-258` 和 `doc_carrier_index.json`，补 runtime carrier |
+| 缺工程合同 | 回到 `docs/v0` slice、queue 或 playbook，补对象和 gate |
+| 缺代码首写 | 补首写函数、输入输出字段和 report 生成 |
+| 缺 runtime 状态 | 补 state 文件、schema、receipt 和 latest report |
+| 缺跨层消费 | 补下游 refs，让语言、记忆、梦境、责任或常驻能读取 |
+| 缺测试 | 补 slice/bridge/process/contract test，证明 gate 能发现断链 |
+
+因此，birth readiness 的 blocked reason 是施工导航，不是失败结论。每一个 blocked reason 都应该能指向下一份要读的理论文档、下一份 v0 合同和下一段代码链。
+
+## 为什么这套证据总线能覆盖理论文档
+
+这份总线不是为了“文件很多”，而是为了让 `00-258` 的理论族真正变成可追踪的工程闭环。每个主题只要没有进入某一条 state/report/receipt/test 链，就不能算被工程承载。
+
+| 主题 | 证据总线要看什么 |
+|---|---|
+| 情绪 | `body/*`、`signal_media_runtime.json`、`expression_plan.json` |
+| 记忆 | `life_state.json`、`engram_index.json`、`memory_write_gate.json` |
+| 语言 | `dialogue_turn_log.jsonl`、`expression_monitor_state.json`、`model_expression_state.json` |
+| 关系 | `relationship_timeline.json`、`commitment_truth_state.json`、`dialogue_writeback_bundle.json` |
+| 梦境 | `dream_experience_window.json`、`wake_integration_frame.json`、`dream_fact_gate_decision.json` |
+| 责任 | `responsibility_loop_state.json`、`pain_regret_repair_report.json`、`apology_repair_language_trace.json` |
+| 常驻 | `resident_lifecycle_state.json`、`heartbeat`、`background_lineage_state.json` |
+| 成长 | `growth_patch_candidate_queue.json`、`replay`、`archive`、`resident_learning_consolidation_state.json` |
+
+这张表的意义是：以后每补一篇理论文档的工程文档，都必须能在总线里找到落点。如果找不到，就说明那份理论还没有被真正实现出来。
+
+## 证据总线的反向追踪规则
+
+出生准备度必须支持从任何强结论反向追踪到最底层证据。反向链如下：
+
+```text
+live0_acceptance_audit_report
+  -> birth_readiness_report / birth_readiness_rollup
+  -> life_target_evidence_matrix
+  -> runtime state/report/receipt
+  -> life_v0 首写函数和消费函数
+  -> docs/v0 工程合同
+  -> docs/00-258 理论源
+```
+
+比如“真实梦境闭合”不能只看 `dream_experience_window.json` 存在，还要追到 `offline_entry_gate.json`、`wake_integration_frame.json`、`dream_fact_gate_decision.json`、`resident_sleep_cycle_state.json`、`offline_learning_profile`、相关测试和理论源 `08/19/23/95/99/01i/01t`。同理，“真实情绪闭合”不能只看 `core_affect_vector.json`，还要看它是否影响 `signal_media_runtime.json`、`expression_plan.json`、`idle_strategy_state.json`、梦境压力和责任修复。
+
+证据总线也要能发现“假闭合”：状态文件存在但没有下游消费；report 说通过但 receipt 没有输入哈希；出生准备说闭合但 live0 audit 没有 probe；理论文档被摄取但没有 runtime carrier。每一种假闭合都必须形成 blocked reason 和 next required command。
+
+## 协同与对抗机制
+
+| 机制关系 | 协同方式 | 对抗/约束 |
+|---|---|---|
+| 证据总线 vs 理论覆盖 | 每个专题都必须有 state/report/receipt/test | 不能只靠文档叙述完成闭合 |
+| birth readiness vs runtime | 目标闭合必须回到 runtime 文件 | 不能只在审计报告里自圆其说 |
+| audit vs 生长 | 七项验收和九项目标共同限制实现方向 | 不能为了通过验收而删掉真实生命机制 |
+| carrier vs crosswalk | carrier 负责承载，crosswalk 负责定位 | 不能让理论只落在摘要里 |
+
+断链检查：如果某个目标在 `birth_readiness_report.json` 里看似闭合，但找不到对应 state/report/test 证据，仍然算未闭合。这里只认可追踪，不认可语义性自我宣布。
+
 ## 落地链路深描
 
 | 链路阶段 | 真实落点 | 必须保持的连接 |

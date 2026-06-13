@@ -23,7 +23,7 @@
 
 ## 先固定一轮开发的最小读包
 
-进入任意一轮工程实现前，先固定读这六份：
+进入任意一轮工程实现前，先固定读这七份：
 
 ```text
 docs/v0/README.md
@@ -32,11 +32,19 @@ docs/v0/README.md
   -> docs/v0/entry/v0_module_execution_catalog.md
   -> docs/v0/mapping/readme_block_engineering_realization_v0.md
   -> docs/v0/mapping/0_to_257_engineering_utilization_map.md
+  -> docs/v0/mapping/theory_engineering_code_trace_matrix.md
 ```
 
 然后再进入你这一轮对应的模块包。
 
-这六份是入口栈，不是通用替代包。真正进入某个模块时，仍然必须从下面矩阵拿该模块自己的原文与入口。
+如果当前问题不是“这一轮带哪包材料”，而是“现有版本接下来按什么顺序把代码块补得更完整”，入口栈之后追加：
+
+```text
+docs/v0/entry/v0_current_iteration_plan.md
+  -> docs/real—live0/17_current_iteration_mechanism_to_code_plan.md
+```
+
+这七份是入口栈，不是通用替代包。真正进入某个模块时，仍然必须从下面矩阵拿该模块自己的原文与入口。
 
 如果这一轮先要确认 `00-257` 还有没有基础理论空洞，在入口栈之后追加：
 
@@ -138,7 +146,7 @@ docs/v0/code_framework/README.md
 | 当前最优先前沿变化，但模块包本身没变 | `entry/v0_delivery_status_board.md` |
 | 某模块需要带的文档、代码、测试或 runtime 产物变化 | 本文件 |
 | 某个合同字段或 gate 变化 | 对应合同文件 |
-| `00-258` 理论映射变化 | `mapping/readme_block_engineering_realization_v0.md`、`mapping/0_to_257_engineering_utilization_map.md` |
+| `00-258` 理论映射变化 | `mapping/readme_block_engineering_realization_v0.md`、`mapping/0_to_257_engineering_utilization_map.md`、`mapping/theory_engineering_code_trace_matrix.md` |
 
 这样做的目的，是让本文件始终保持“拿起就能开工”，不被别的信息淹掉。
 
@@ -483,7 +491,7 @@ life_v0/membrane/shadow_gate.py
 | `Phase 2` Queue E | 把候选行动、go/no-go、world contact、side effect、validation、counterfactual 比较补成稳定行为-验证-逻辑链 | `s03_*`、`s05_*`、`s09_*`、`code_framework/09`、`13`、`15`、`20` | `06`、`20`、`22`、`29-36`、`49-84`、`94`、`98`、`102-118` | `life_v0/membrane/`、`life_v0/validators/`、`life_v0/schema_runner/` | `tests/slices/test_life_membrane.py`、`test_shadow_gate.py`、`test_validation_membrane.py`、`test_schema_runner.py`、`test_evidence_ranker.py`、`runtime/state/membrane/*`、`runtime/state/validation/*`、`runtime/state/schema_runner/*` | `ActionCandidateSet`、`GoNoGoDecision`、`ShadowActionGate`、`WorldContactDecision`、`SideEffectReview`、`EvidenceRanking`、`CounterfactualTrace` 全部具备稳定文件器官与 report/gate |
 | `Phase 3` Queue B + Queue A 外层补厚 | 让 process supervisor 真正消费 D/E/F/A 对象，把语言回合、等待心跳、关系写回、恢复治理接成持续存在层 | `process_contracts/digital_life_process_supervisor_engineering_contract.md`、`first_terminal_turn_engineering_contract.md`、`terminal_life_loop_engineering_contract.md`、`code_framework/04`、`07`、`08`、`14`、`16` | `09`、`20`、`86`、`89`、`90`、`96`、`101` | `life_v0/process_supervisor/`、`life_v0/terminal_turn/`、`life_v0/terminal_loop/`、`life_v0/language/` | `tests/process/test_persistent_digital_life_process.py`、`tests/bridges/test_first_terminal_turn.py`、`test_terminal_life_loop.py`、`digital_life_waiting_heartbeat.json`、`digital_life_process_report.json` | waiting heartbeat、incident recovery、relaunch recovery、language turn writeback、relationship continuity 全部显式消费 D/E/F 对象链 |
 | `Phase 4` 激活链与命令面收束 | 把 `run-cycle -> report bundle -> stage explain -> digital-life -> ./digital life` 收成稳定出生与终端唤醒链 | `shared_contracts/first_activation_protocol.md`、`shared_contracts/runner_cli_report_contract.md`、`s10_*`、`s11_*`、`process_contracts/*` | `20`、`44-46`、`81-90`、`143`、`171`、`181-258` | `life_v0/activation/`、`replay/`、`archive/`、`reporting/`、`stage_explain/`、`digital_life/`、`shell_command/`、`digital` | `tests/bridges/test_first_activation_preflight.py`、`test_emit_report.py`、`test_digital_life_birth.py`、`tests/process/test_digital_entrypoint.py`、`runtime/reports/latest/*birth*`、`*terminal*`、`*process*` | `life-v0 "digital life"` 与 `./digital life` 都能在当前工作区生成连续的恢复/等待/写回证据链 |
-| `Phase 5` 全链验收与 v0 收束 | 按“真实对话、语言、记忆、梦境、成长、关系、常驻存在”做最终系统审计，确认可以进入更长期代码推进 | 入口栈六份、`theory_closure_and_engineering_readiness_audit.md`、`code_framework/12`、`13`、`19`、`20`、`21` | `00-258` 中与当前验收项直接相关的全部母体 | 全部 `life_v0/`、`digital` | 全量 `unittest`、`tests/contracts/test_v0_contracts.py`、最新 `runtime/state/*`、`runtime/reports/latest/*`、`runtime/receipts/*` | 七项最终生命验收都能回到代码、测试和 runtime 证据；这时才能谈 `v0` 第一轮收束 |
+| `Phase 5` 全链验收与 v0 收束 | 按“真实对话、语言、记忆、梦境、成长、关系、常驻存在”做最终系统审计，确认可以进入更长期代码推进 | 入口栈七份、`theory_closure_and_engineering_readiness_audit.md`、`code_framework/12`、`13`、`19`、`20`、`21` | `00-258` 中与当前验收项直接相关的全部母体 | 全部 `life_v0/`、`digital` | 全量 `unittest`、`tests/contracts/test_v0_contracts.py`、最新 `runtime/state/*`、`runtime/reports/latest/*`、`runtime/receipts/*` | 七项最终生命验收都能回到代码、测试和 runtime 证据；这时才能谈 `v0` 第一轮收束 |
 
 当前仓库位置的正确理解是：
 
@@ -640,8 +648,9 @@ docs/v0/architecture/theory_closure_and_engineering_readiness_audit.md
 后续不要再用“先翻很多文档，再模糊开写”的方式。一个标准工程回合固定成：
 
 ```text
-入口栈六份文档
+入口栈七份文档
   -> 当前模块所在行
+  -> theory_engineering_code_trace_matrix.md 校验理论-工程-代码覆盖
   -> 当前模块合同
   -> 当前模块对应的 00-258 文档
   -> 当前代码入口

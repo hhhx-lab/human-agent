@@ -21,6 +21,7 @@ from .process_session_loop import run_process_session_loop
 from .resident_supervision import bootstrap_resident_supervision
 from .response_surface import compose_life_response
 from .terminal_ui import (
+    extract_life_response_text,
     render_digital_life_banner,
     render_life_cycle_output,
     render_life_opening,
@@ -448,7 +449,8 @@ def _emit_life_output(
     text: str,
     life_name: str | None = None,
 ) -> None:
-    _print_line(output_stream, render_life_cycle_output(text, life_name=life_name))
+    if extract_life_response_text(text):
+        _print_line(output_stream, render_life_cycle_output(text, life_name=life_name))
     record_output = getattr(input_stream, "record_output", None)
     if callable(record_output):
         record_output(text)

@@ -5,7 +5,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from .dialogue_events import build_external_turn_event, build_life_turn_event
+from .dialogue_events import (
+    attach_memory_retrieval_event_payload,
+    build_external_turn_event,
+    build_life_turn_event,
+)
 from .incident_recovery import recover_from_dialogue_turn_exception
 from .live_language_turn import LiveLanguageTurnState, refresh_live_language_turn
 from .resident_governance_handoff import (
@@ -17,6 +21,7 @@ from .resident_turn_writeback import (
 )
 from .model_expression import ModelExpressionResult, compose_model_expression
 from .response_surface import compose_life_response, compose_life_spoken_response
+from ..state_store.memory_retrieval import project_memory_retrieval_from_live_turn
 
 
 @dataclass(frozen=True)
@@ -168,6 +173,50 @@ def run_live_turn_cycle(
             state_dir / "consciousness" / "workspace_frame.json",
             {},
         )
+        relationship_memory = _read_json_if_exists(
+            state_dir / "memory" / "relationship_memory.json",
+            {},
+        )
+        dialogue_memory_summary = _read_json_if_exists(
+            state_dir / "memory" / "dialogue_memory_summary.json",
+            {},
+        )
+        memory_retrieval_frame = project_memory_retrieval_from_live_turn(
+            memory_retrieval_frame=_read_json_if_exists(
+                state_dir / "memory" / "memory_retrieval_frame.json",
+                {},
+            ),
+            run_id=run_id,
+            generated_at=generated_at,
+            external_utterance=external_utterance,
+            semantic_map=live_language_turn.semantic_map,
+            language_percept=live_language_turn.language_percept,
+            engram_index=_read_json_if_exists(
+                state_dir / "memory" / "engram_index.json",
+                {},
+            ),
+            relationship_memory=relationship_memory,
+            autobiographical_stack=_read_json_if_exists(
+                state_dir / "self" / "autobiographical_stack.json",
+                {},
+            ),
+            dialogue_memory_summary=dialogue_memory_summary,
+            life_state=_read_json_if_exists(state_dir / "life_state.json", {}),
+            responsibility_loop_state=responsibility_loop_state,
+            state_merge_guard=state_merge_guard,
+            live_language_turn_refs=[
+                live_language_turn.language_percept_ref,
+                live_language_turn.semantic_map_ref,
+                live_language_turn.inner_speech_ref,
+                live_language_turn.expression_monitor_ref,
+                live_language_turn.expression_plan_ref,
+            ],
+            dialogue_turn_refs=[f"runtime/state/language/dialogue_turn_log.jsonl#pending-{external_turn_id}"],
+        )
+        attach_memory_retrieval_event_payload(
+            external_turn,
+            memory_retrieval_frame=memory_retrieval_frame,
+        )
         _attach_live_language_turn_refs(
             external_turn,
             live_language_turn=live_language_turn,
@@ -178,6 +227,9 @@ def run_live_turn_cycle(
             "external_utterance": external_utterance,
             "relationship_graph": relationship_graph,
             "relationship_timeline": relationship_timeline,
+            "relationship_memory": relationship_memory,
+            "dialogue_memory_summary": dialogue_memory_summary,
+            "memory_retrieval_frame": memory_retrieval_frame,
             "shared_term_registry": shared_term_registry,
             "commitment_index": commitment_index,
             "commitment_expression_plan": commitment_expression_plan,
@@ -220,11 +272,14 @@ def run_live_turn_cycle(
             run_id=run_id,
             generated_at=now_iso(),
             external_utterance=external_utterance,
-            deterministic_response=life_response,
+            audited_expression_material=evidence_response,
             language_dir=language_dir,
             reports_dir=reports_dir,
             relationship_graph=relationship_graph,
             relationship_timeline=relationship_timeline,
+            relationship_memory=relationship_memory,
+            dialogue_memory_summary=dialogue_memory_summary,
+            memory_retrieval_frame=memory_retrieval_frame,
             shared_term_registry=shared_term_registry,
             commitment_index=commitment_index,
             language_percept=live_language_turn.language_percept,
@@ -263,6 +318,7 @@ def run_live_turn_cycle(
             active_sampling_plan=active_sampling_plan,
             memory_write_gate=memory_write_gate,
             state_merge_guard=state_merge_guard,
+            memory_retrieval_frame=memory_retrieval_frame,
             signal_media_runtime_ref=signal_media_runtime_ref,
             belief_state_ref=belief_state_ref,
             prediction_error_field_ref=prediction_error_field_ref,
@@ -369,7 +425,7 @@ def run_live_turn_cycle(
             completed_turns_delta=1,
             incident_count_delta=0,
             cycle_status="completed",
-            emitted_output=f"生命回合输出: {life_response}",
+            emitted_output=life_response if life_response else "",
             safe_terminal_loop=turn_writeback.safe_terminal_loop,
             terminal_life_loop_state=turn_writeback.terminal_life_loop_state,
             last_external_turn=turn_writeback.last_external_turn,
@@ -401,7 +457,7 @@ def run_live_turn_cycle(
             completed_turns_delta=0,
             incident_count_delta=1,
             cycle_status="incident_recovered",
-            emitted_output="生命回合处理出现异常，已执行异常恢复并回到等待态。",
+            emitted_output='{"event":"incident_recovered"}',
             safe_terminal_loop=safe_terminal_loop,
             terminal_life_loop_state=terminal_life_loop_state,
             last_external_turn=None,
@@ -455,11 +511,11 @@ def _attach_model_expression_refs(
         event["post_expression_gate_status"] = model_expression.state[
             "post_expression_gate_status"
         ]
-    if model_expression.state.get("post_expression_gate_fallback_reason"):
-        event["post_expression_gate_fallback_reason"] = model_expression.state[
-            "post_expression_gate_fallback_reason"
+    if model_expression.state.get("post_expression_gate_unreleased_reason"):
+        event["post_expression_gate_unreleased_reason"] = model_expression.state[
+            "post_expression_gate_unreleased_reason"
         ]
-    if model_expression.state.get("fallback_reason"):
-        event["model_expression_fallback_reason"] = model_expression.state[
-            "fallback_reason"
+    if model_expression.state.get("unreleased_reason"):
+        event["model_expression_unreleased_reason"] = model_expression.state[
+            "unreleased_reason"
         ]

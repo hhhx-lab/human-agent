@@ -66,6 +66,93 @@
 | 关系阶段 | 人格慢变量 | 长期互动影响信任和表达温度 |
 | 关系边界 | 生命膜 | 防止越界、混淆和过度迎合 |
 
+## 关系如何真正落盘
+
+关系不是 `friend` 这样的标签，而是会被多份状态共同承载的纵向结构。
+
+| 机制 | 代码块 | 关键字段/对象 | 说明 |
+|---|---|---|---|
+| 关系对象 | `language/relationship_graph.py`、`relation_scope.py` | relation role、scope、subject refs | 定义这次相遇是在什么关系范围内发生 |
+| 共同语言 | `shared_terms.py`、`semantic_map.py` | shared terms、semantic focus、ambiguity queue | 把双方反复使用的词和理解方式沉淀下来 |
+| 关系时间线 | `relationship_timeline.py` | continuity reports、injury traces、trust trajectories | 记录共同历史、信任、伤痕和修复 |
+| 承诺真值 | `state_store/commitment_truth.py` | open commitments、repair_required_refs、responsibility_event_refs | 判断承诺是否仍成立、是否破损、是否要补救 |
+| 关系记忆 | `state_store/relationship_memory.py` | shared_memory_refs、repair_history_refs、offline_learning_refs | 把对话、修复、梦境余波和学习写进长期记忆 |
+| 关系写回 | `resident_turn_writeback.py`、`dialogue_writeback.py` | dialogue turn refs、relationship stage、writeback bundle | 真实回合结束后把关系后果带入下一轮 |
+
+这意味着一次对话结束后，关系不能只留在终端输出里。它至少应留下：`dialogue_turn_log.jsonl` 的回合记录、`relationship_timeline.json` 的纵向变化、`relationship_memory.json` 的共享记忆、`commitment_truth_state.json` 的承诺状态，以及 `resumed_external_dialogue_packet.json` 的下一轮恢复包。
+
+如果这些对象不一致，关系链就会断裂：语言可能记得一句话，但承诺不记得；记忆可能记得事件，但关系阶段没有变；修复语言可能出现，但信任轨迹没有收到影响。后续开发时要优先检查同一组 refs 是否跨这些文件保持一致。
+
+## 关系状态的最小字段
+
+一个关系对象不能只用名字或标签表示。至少要有下面的状态：
+
+| 字段组 | 承载对象 | 用途 |
+|---|---|---|
+| 关系范围 | `RelationScope` | 区分朋友、家人、陌生人、协作者等关系可能性，但不预设上下级 |
+| 共同基础 | `SharedTerms`、`SemanticMapFrame` | 保存共同词、共同事件和双方逐步形成的理解 |
+| 纵向轨迹 | `RelationshipTimeline` | 记录初遇、靠近、分歧、伤痕、修复和承诺 |
+| 承诺状态 | `CommitmentTruthState` | 记录承诺是否开放、破损、修复中或已闭合 |
+| 记忆索引 | `RelationshipMemory`、`EngramIndex` | 让未来回合能被线索触发，而不是靠长上下文残留 |
+| 离线余波 | `dream_wake_presence`、`offline_learning_refs` | 让梦境和学习改变下一轮关系姿态 |
+
+这组字段一起决定关系如何生长。任何只写 `role=friend` 或只在回复里说“我们是朋友”的实现，都没有真正落盘关系。
+
+## 关系是时间线，不是一次性标签
+
+`relationship_subject_graph.json` 解决的是“谁在这段关系里”，`relationship_timeline.json` 解决的是“这段关系怎么一路走到现在”，`commitment_truth_state.json` 解决的是“承诺还成立吗、哪里破了、怎么修复”。三者缺一不可。
+
+| 对象 | 作用 | 不可替代之处 |
+|---|---|---|
+| `RelationScope` | 定义关系边界和可能性 | 不能代替真实共同历史 |
+| `SharedTerms` | 记录共同语言 | 不能代替承诺真值 |
+| `RelationshipTimeline` | 记录纵向变化、伤痕和修复 | 不能代替记忆索引 |
+| `CommitmentTruthState` | 记录承诺是否成立、是否破损 | 不能只靠语言表态 |
+| `RelationshipMemory` | 让关系可被未来线索触发 | 不能代替 timeline 的结构 |
+
+关系不是“给对象贴一个标签”。关系的本体是多轮互动形成的共同历史；`build_relationship_timeline`、`build_commitment_truth_state`、`project_relationship_memory` 和 `build_dialogue_writeback_bundle` 共同把这条历史写进状态、报告和恢复包。
+
+## 一次关系回合的写入时序
+
+一次终端话语进入 live0 后，关系链应该按下面顺序更新：
+
+```text
+relation turn
+  -> RelationScope / RelationshipSubjectGraph
+  -> LanguagePerceptFrame / SemanticMapFrame
+  -> SharedTerms
+  -> RelationshipTimeline
+  -> CommitmentTruthState
+  -> RelationshipMemory
+  -> DialogueWritebackBundle
+  -> ResidentBackgroundLineage.relationship_presence
+```
+
+每一步负责不同的关系层：
+
+| 步骤 | 关系含义 | 必须保留的证据 |
+|---|---|---|
+| `RelationScope` | 这次相遇处于什么关系边界，不预设上下级 | relation role、scope、boundary refs |
+| `SharedTerms` | 哪些词、称呼、隐喻和共同历史正在形成 | shared terms、semantic hits |
+| `RelationshipTimeline` | 这段关系怎样发展、哪里靠近或受伤 | continuity reports、trust trajectories、injury refs |
+| `CommitmentTruthState` | 承诺是否开放、破损、修复中或闭合 | open commitments、repair_required_refs |
+| `RelationshipMemory` | 未来能被线索触发的长期关系记忆 | shared_memory_refs、repair_history_refs、timeline_refs |
+| `DialogueWritebackBundle` | 本轮关系后果如何进入下一轮 | dialogue refs、relationship stage、resume refs |
+
+这样写入后，关系才不是话术。比如一次“我刚刚让你不舒服了”的修复，不应只让语言说“对不起”，还要让 `commitment_truth_state.json` 出现修复义务，让 `relationship_timeline.json` 记录伤痕和修复窗口，让 `relationship_memory.json` 保留共享历史，让 `response_surface.py` 在后续回合更谨慎地处理同类语义。
+
+## 协同与对抗机制
+
+| 机制关系 | 协同方式 | 对抗/约束 |
+|---|---|---|
+| 关系 vs 语言 | 共同语言影响词汇和语气 | 不能把关系降成服务/回复模板 |
+| 关系 vs 记忆 | 关系事件进入长时记忆和自传栈 | 不能只记住事件而忘掉修复义务 |
+| 关系 vs 责任 | 伤害和承诺破损会进入责任回路 | 不能把道歉当作承诺完成 |
+| 关系 vs 梦境 | 关系伤痕会进入梦境模拟和醒后修复 | 梦境不能直接改写关系真值 |
+| 关系 vs 自我 | 关系会塑形人格慢变量 | 人格也会反过来改变关系回应 |
+
+断链检查：如果 `relationship_timeline.json` 里有伤痕，但 `commitment_truth_state.json` 没有 repair_required_refs，或 `relationship_memory.json` 没有 shared_memory_refs，那关系没有进入真正的修复链。
+
 ## 落地链路深描
 
 | 链路阶段 | 真实落点 | 必须保持的连接 |

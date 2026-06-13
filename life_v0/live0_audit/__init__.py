@@ -394,12 +394,12 @@ def _criterion_conscious_language(
             and payload.get("status") == "closed"
             and payload.get("model_expression_status") == "model_expression_applied"
             and payload.get("post_expression_gate_status") == "accepted"
-            and payload.get("fallback_to_deterministic_response") is False
+            and payload.get("audited_expression_material_release_disabled") is True
             and payload.get("model_provider") == "openai-compatible"
             and payload.get("model_name") == "gpt-5.5"
             and payload.get("model_api_key_present") is True
             and payload.get("model_api_key_redacted") == "<redacted>",
-            "real model expression must be applied through gpt-5.5 without deterministic fallback",
+            "real model expression must be applied through gpt-5.5 with audited-material release disabled",
         ),
         _value_probe(
             "resident_autonomous_self_thinking_presence",

@@ -438,6 +438,8 @@ def _runtime_carriers(doc: DocumentMeta) -> list[str]:
         add("DocCorpusIngestor", "DirectionLockKernel")
     if doc.rel_path.endswith("0_to_257_engineering_utilization_map.md"):
         add("DocCorpusIngestor", "DirectionLockKernel")
+    if doc.rel_path.endswith("theory_engineering_code_trace_matrix.md"):
+        add("V0ContractCoverageRuntime", "DocCorpusIngestor", "DirectionLockKernel")
     if doc.rel_path.endswith("v0_implementation_index.md"):
         add("DocCorpusIngestor", "DirectionLockKernel")
     if doc.rel_path.endswith("s00_direction_foundation_engineering_contract.md"):

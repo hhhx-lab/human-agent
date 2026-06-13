@@ -760,7 +760,7 @@ class LanguageOrgansTests(unittest.TestCase):
                     {
                         "act_id": "commitment-act-relationship-reconsolidation-test-0001",
                         "act_type": "commitment",
-                        "surface_goal": "把未闭合承诺重新说清。",
+                        "goal_code": "restate_open_commitment",
                         "trigger_refs": ["commitment-ref-001"],
                     }
                 ],
@@ -781,7 +781,7 @@ class LanguageOrgansTests(unittest.TestCase):
                     {
                         "move_id": "repair-move-relationship-reconsolidation-test-0001",
                         "move_type": "take_responsibility",
-                        "surface_goal": "明确承担责任。",
+                        "goal_code": "take_responsibility",
                         "trigger_refs": ["responsibility-ref-001"],
                     }
                 ],
