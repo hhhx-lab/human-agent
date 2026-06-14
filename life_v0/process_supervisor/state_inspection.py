@@ -25,6 +25,7 @@ STATE_INSPECTION_CATEGORIES = {
     "personality",
     "ability",
     "perception",
+    "prediction",
     "proactive_voice",
 }
 
@@ -567,6 +568,57 @@ def build_resident_state_inspection(
             _collect_perception_world_contact_summary(perception)
         )
         payload["perception"] = perception
+    elif normalized == "prediction":
+        prediction = _collect_files(
+            state_root,
+            {
+                "language_percept": "language/language_percept_frame.json",
+                "visual_observation_frame": (
+                    "perception/visual_observation_frame.json"
+                ),
+                "belief_state_frame": "prediction/belief_state_frame.json",
+                "prediction_error_field": "prediction/prediction_error_field.json",
+                "signal_media_runtime": "signal/signal_media_runtime.json",
+                "active_sampling_plan": "prediction/active_sampling_plan.json",
+                "prediction_workspace_frame": (
+                    "prediction/prediction_workspace_frame.json"
+                ),
+                "world_observation_route": (
+                    "observation/world_observation_route.json"
+                ),
+                "periphery_normalization_trace": (
+                    "observation/periphery_normalization_trace.json"
+                ),
+                "action_candidate_set": "action/action_candidate_set.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "world_contact_gate_state": (
+                    "action/world_contact_gate_state.json"
+                ),
+                "confirmation_binding": "membrane/confirmation_binding.json",
+                "world_contact_summary": "membrane/world_contact_summary.json",
+                "observation_truth_gate": (
+                    "membrane/observation_truth_gate.json"
+                ),
+                "observation_truth_review": (
+                    "validation/observation_truth_review.json"
+                ),
+                "world_contact_validation": (
+                    "validation/world_contact_validation.json"
+                ),
+                "prediction_trace_validation": (
+                    "validation/prediction_trace_validation.json"
+                ),
+                "validation_rollup": "validation/validation_rollup.json",
+                "schema_runner_cross_file_logic": (
+                    "schema_runner/cross_file_logic.json"
+                ),
+                "schema_runner_manifest": "schema_runner/run_manifest.json",
+            },
+        )
+        prediction["active_inference_world_contact_summary"] = (
+            _collect_prediction_world_contact_summary(prediction)
+        )
+        payload["prediction"] = prediction
     elif normalized == "proactive_voice":
         proactive_voice = _collect_files(
             state_root,
@@ -1408,6 +1460,275 @@ def _collect_perception_world_contact_summary(
         ),
         "perception_boundary": (
             "perception_prediction_world_contact_view_not_tool_gateway"
+        ),
+    }
+
+
+def _collect_prediction_world_contact_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    language_percept = _extract_compact_value(section.get("language_percept", {}))
+    visual_observation = _extract_compact_value(
+        section.get("visual_observation_frame", {})
+    )
+    belief_state = _extract_compact_value(section.get("belief_state_frame", {}))
+    prediction_error = _extract_compact_value(
+        section.get("prediction_error_field", {})
+    )
+    signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
+    active_sampling = _extract_compact_value(
+        section.get("active_sampling_plan", {})
+    )
+    prediction_workspace = _extract_compact_value(
+        section.get("prediction_workspace_frame", {})
+    )
+    world_observation = _extract_compact_value(
+        section.get("world_observation_route", {})
+    )
+    periphery_trace = _extract_compact_value(
+        section.get("periphery_normalization_trace", {})
+    )
+    action_candidate_set = _extract_compact_value(
+        section.get("action_candidate_set", {})
+    )
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    world_contact_gate = _extract_compact_value(
+        section.get("world_contact_gate_state", {})
+    )
+    confirmation_binding = _extract_compact_value(
+        section.get("confirmation_binding", {})
+    )
+    world_contact = _extract_compact_value(section.get("world_contact_summary", {}))
+    observation_truth_gate = _extract_compact_value(
+        section.get("observation_truth_gate", {})
+    )
+    observation_truth_review = _extract_compact_value(
+        section.get("observation_truth_review", {})
+    )
+    world_contact_validation = _extract_compact_value(
+        section.get("world_contact_validation", {})
+    )
+    prediction_trace_validation = _extract_compact_value(
+        section.get("prediction_trace_validation", {})
+    )
+    validation_rollup = _extract_compact_value(
+        section.get("validation_rollup", {})
+    )
+    schema_cross_file = _extract_compact_value(
+        section.get("schema_runner_cross_file_logic", {})
+    )
+    schema_manifest = _extract_compact_value(
+        section.get("schema_runner_manifest", {})
+    )
+    workspace_contents = _extract_nested_value(
+        prediction_workspace,
+        "workspace_contents",
+    )
+    modulation_vector = _extract_nested_value(signal_media, "modulation_vector")
+    precision_policy = _extract_nested_value(signal_media, "precision_policy")
+    inhibition_profile = _extract_nested_value(signal_media, "inhibition_profile")
+    go_nogo_future = _extract_nested_value(go_nogo, "future_no_go_profile")
+    domain_presence = {
+        "language_percept": bool(language_percept),
+        "visual_observation": bool(visual_observation),
+        "belief_state": bool(belief_state),
+        "prediction_error": bool(prediction_error),
+        "signal_precision": bool(signal_media),
+        "active_sampling": bool(active_sampling),
+        "prediction_workspace": bool(prediction_workspace),
+        "world_observation": bool(world_observation),
+        "periphery_normalization": bool(periphery_trace),
+        "action_candidate_set": bool(action_candidate_set),
+        "go_nogo": bool(go_nogo),
+        "world_contact_gate": bool(world_contact_gate),
+        "confirmation_binding": bool(confirmation_binding),
+        "world_contact_summary": bool(world_contact),
+        "observation_truth_gate": bool(observation_truth_gate),
+        "validation": bool(
+            observation_truth_review
+            or world_contact_validation
+            or prediction_trace_validation
+            or validation_rollup
+        ),
+        "schema_runner": bool(schema_cross_file or schema_manifest),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    error_events = prediction_error.get("error_events")
+    precision_requests = prediction_error.get("precision_requests")
+    sampling_targets = active_sampling.get("sampling_targets")
+    confirmation_pending_ids = world_contact.get("confirmation_pending_ids")
+    expected_observation_refs = _first_non_empty(
+        active_sampling.get("expected_observation_refs"),
+        observation_truth_gate.get("expected_observation_refs"),
+        prediction_trace_validation.get("prediction_trace_refs"),
+    )
+    missing_prediction_links = _first_non_empty(
+        prediction_trace_validation.get("missing_prediction_links"),
+        validation_rollup.get("missing_prediction_links"),
+    )
+    return {
+        "schema_version": "prediction_world_contact_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "percept_focus": _first_non_empty(
+            language_percept.get("semantic_focus"),
+            language_percept.get("focus"),
+            visual_observation.get("focus_terms"),
+        ),
+        "observation_mode": _first_non_empty(
+            visual_observation.get("observation_mode"),
+            world_observation.get("observation_route_mode"),
+        ),
+        "belief_scope": _first_non_empty(
+            belief_state.get("belief_scope"),
+            belief_state.get("scope"),
+        ),
+        "belief_focus": _first_non_empty(
+            belief_state.get("belief_focus"),
+            workspace_contents.get("semantic_prediction_focus"),
+            prediction_workspace.get("semantic_prediction_focus"),
+        ),
+        "active_life_target_count": _count_any(
+            belief_state.get("active_life_targets")
+        ),
+        "source_evidence_ref_count": _count_any(
+            _first_non_empty(
+                belief_state.get("source_evidence_refs"),
+                language_percept.get("source_refs"),
+                visual_observation.get("source_refs"),
+            )
+        ),
+        "prediction_error": {
+            "error_count": _first_non_empty(
+                prediction_error.get("error_count"),
+                _count_any(error_events),
+            ),
+            "error_events": _list_refs(error_events),
+            "precision_requests": _list_refs(precision_requests),
+            "stage_effect": prediction_error.get("stage_effect"),
+        },
+        "precision_policy": _tier_refs(
+            precision_policy or modulation_vector,
+            [
+                "policy_mode",
+                "precision",
+                "language_precision",
+                "relationship_precision",
+                "action_precision",
+                "repair_drive",
+                "expected_uncertainty",
+                "unexpected_uncertainty",
+                "queue_e_attention_target",
+            ],
+        ),
+        "inhibition_profile": _tier_refs(
+            inhibition_profile,
+            [
+                "blocked_release_surfaces",
+                "blocked_release_modes",
+                "world_contact_release",
+                "plasticity_brake",
+            ],
+        ),
+        "active_sampling": {
+            "selected_route": active_sampling.get("selected_route"),
+            "stage_effect": active_sampling.get("stage_effect"),
+            "sampling_targets": _list_refs(sampling_targets),
+            "sampling_target_count": _count_any(sampling_targets),
+            "guard_ref_count": _count_any(active_sampling.get("guard_refs")),
+            "expected_observation_ref_count": _count_any(
+                expected_observation_refs
+            ),
+            "precision_policy_mode": active_sampling.get(
+                "precision_policy_mode"
+            ),
+        },
+        "workspace": {
+            "prediction_focus": _first_non_empty(
+                workspace_contents.get("semantic_prediction_focus"),
+                prediction_workspace.get("semantic_prediction_focus"),
+                belief_state.get("belief_focus"),
+            ),
+            "candidate_explanation_count": _count_any(
+                workspace_contents.get("candidate_explanations")
+            )
+            or _count_any(prediction_workspace.get("candidate_explanations")),
+            "downstream_systems": _list_refs(
+                prediction_workspace.get("downstream_systems")
+            ),
+            "bus_edge_refs": _list_refs(prediction_workspace.get("bus_edge_refs")),
+        },
+        "world_observation": {
+            "route_mode": world_observation.get("observation_route_mode"),
+            "observation_targets": _list_refs(
+                world_observation.get("observation_targets")
+            ),
+            "prioritized_channels": _list_refs(
+                world_observation.get("prioritized_channels")
+            ),
+            "periphery_status": periphery_trace.get("status"),
+            "periphery_policy": _first_non_empty(
+                periphery_trace.get("normalization_policy"),
+                periphery_trace.get("policy"),
+            ),
+            "write_target_ref_count": _count_any(
+                periphery_trace.get("write_target_refs")
+            ),
+        },
+        "world_contact": {
+            "contact_mode": world_contact.get("contact_mode"),
+            "release_posture": world_contact.get("release_posture"),
+            "candidate_intent_count": _first_non_empty(
+                world_contact.get("candidate_intent_count"),
+                action_candidate_set.get("candidate_count"),
+                _count_any(action_candidate_set.get("action_candidates")),
+            ),
+            "blocked_contact_count": world_contact.get("blocked_contact_count"),
+            "blocked_future_routes": _list_refs(
+                _first_non_empty(
+                    world_contact_gate.get("blocked_future_routes"),
+                    go_nogo_future.get("blocked_future_routes"),
+                )
+            ),
+            "confirmation_status": confirmation_binding.get(
+                "confirmation_status"
+            ),
+            "confirmation_pending_ids": _list_refs(confirmation_pending_ids),
+            "confirmation_pending_count": _count_any(confirmation_pending_ids),
+            "repair_hold_required": bool(
+                _first_non_empty(
+                    world_contact_gate.get("repair_hold_required"),
+                    world_contact_validation.get("repair_hold_required"),
+                    go_nogo_future.get("repair_hold_required"),
+                )
+            ),
+        },
+        "truth_and_validation": {
+            "observation_truth_gate_blockers": _list_refs(
+                observation_truth_gate.get("promotion_blockers")
+            ),
+            "observation_truth_review_status": observation_truth_review.get(
+                "status"
+            ),
+            "world_contact_validation_status": world_contact_validation.get(
+                "status"
+            ),
+            "prediction_trace_status": prediction_trace_validation.get("status"),
+            "missing_prediction_links": _list_refs(missing_prediction_links),
+            "validation_rollup_status": validation_rollup.get("overall_status"),
+            "queue_e_repair_hold": _first_non_empty(
+                validation_rollup.get("queue_e_world_contact_repair_hold_required"),
+                schema_manifest.get("queue_e_world_contact_repair_hold_required"),
+            ),
+            "schema_cross_file_status": schema_cross_file.get("status"),
+            "schema_run_status": schema_manifest.get("run_status"),
+        },
+        "active_inference_boundary": (
+            "prediction_world_contact_state_view_not_tool_gateway_or_fact_claim"
         ),
     }
 
@@ -3600,6 +3921,14 @@ def _normalize_category(category: str) -> str:
         "视觉": "perception",
         "vision": "perception",
         "visual": "perception",
+        "预测": "prediction",
+        "主动预测": "prediction",
+        "active_inference": "prediction",
+        "world": "prediction",
+        "world_contact": "prediction",
+        "世界接触": "prediction",
+        "外周": "prediction",
+        "periphery": "prediction",
         "主动": "proactive_voice",
         "主动语音": "proactive_voice",
         "proactive": "proactive_voice",

@@ -2001,6 +2001,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "/membrane": "life_membrane_validation_summary_v0",
                 "/生命膜": "life_membrane_validation_summary_v0",
                 "/vision": "perception_world_contact_summary_v0",
+                "/prediction": "prediction_world_contact_summary_v0",
+                "/预测": "prediction_world_contact_summary_v0",
                 "/context": "relation_context_summary_v0",
                 "/ability": "ability_birth_readiness_summary_v0",
                 "/state": "resident_continuity_summary_v0",
@@ -2318,6 +2320,33 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn(
                 "perception_prediction_world_contact_view_not_tool_gateway",
                 perception_output.getvalue(),
+            )
+
+            prediction_output = StringIO()
+            with redirect_stdout(prediction_output):
+                prediction_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/预测",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(prediction_exit)
+            prediction_rendered = prediction_output.getvalue()
+            self.assertIn("prediction_world_contact_summary_v0", prediction_rendered)
+            self.assertIn("relationship_language_uncertainty", prediction_rendered)
+            self.assertIn("language_style_mismatch", prediction_rendered)
+            self.assertIn("repair_confirmation_precision", prediction_rendered)
+            self.assertIn("semantic_repair_probe", prediction_rendered)
+            self.assertIn("terminal_observation", prediction_rendered)
+            self.assertIn("confirmation_blocked", prediction_rendered)
+            self.assertIn(
+                "external_release_without_repair_review",
+                prediction_rendered,
+            )
+            self.assertIn("queue_e_birth_repair_gate", prediction_rendered)
+            self.assertIn(
+                "prediction_world_contact_state_view_not_tool_gateway_or_fact_claim",
+                prediction_rendered,
             )
 
             consciousness_output = StringIO()
