@@ -399,6 +399,16 @@ def _criterion_conscious_language(
             and payload.get("model_api_key_redacted") == "<redacted>",
             "real model expression must be applied through gpt-5.5 with audited-material release disabled",
         ),
+        _json_probe(
+            context,
+            "resident_proactive_terminal_voice_audited",
+            "runtime/state/terminal/resident_terminal_proactive_state.json",
+            lambda payload: _resident_terminal_proactive_voice_closed(payload, context),
+            "resident terminal proactive voice must be audited as held internal or gated model expression",
+            extra_refs=[
+                "runtime/state/terminal/resident_terminal_proactive_events.jsonl"
+            ],
+        ),
         _value_probe(
             "resident_autonomous_self_thinking_presence",
             ["runtime/state/terminal/resident_autonomous_activity_state.json"],
@@ -1033,6 +1043,43 @@ def _queue_e_world_contact_repair_hold_closed(payload: dict[str, Any]) -> bool:
         and bool(payload.get("queue_e_world_contact_blocked_future_routes"))
         and bool(payload.get("queue_e_world_contact_allowed_repair_routes"))
         and bool(payload.get("queue_e_world_contact_repair_governance_refs"))
+    )
+
+
+def _resident_terminal_proactive_voice_closed(
+    payload: dict[str, Any],
+    context: _AuditContext,
+) -> bool:
+    if payload.get("schema_version") != "resident_terminal_proactive_state_v0":
+        return False
+    status = payload.get("status")
+    if status not in {"held_internal", "released_model_expression"}:
+        return False
+    event_count = _as_int(payload.get("event_count"))
+    if event_count < 1:
+        return False
+    profile = payload.get("last_proactive_voice_profile")
+    if not isinstance(profile, dict):
+        return False
+    if profile.get("schema_version") != "resident_proactive_voice_profile_v0":
+        return False
+    event_path = context.path_for_ref(
+        "runtime/state/terminal/resident_terminal_proactive_events.jsonl"
+    )
+    if _jsonl_count(event_path) < event_count:
+        return False
+    if status == "released_model_expression":
+        return (
+            payload.get("last_natural_language_released") is True
+            and payload.get("last_release_scope")
+            == "open_terminal_idle_model_expression"
+            and payload.get("last_model_expression_status")
+            == "model_expression_applied"
+            and payload.get("last_post_expression_gate_status") == "accepted"
+        )
+    return (
+        payload.get("last_natural_language_released") is False
+        and payload.get("last_release_scope") == "open_terminal_idle_hidden"
     )
 
 

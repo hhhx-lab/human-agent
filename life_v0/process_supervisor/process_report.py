@@ -21,6 +21,10 @@ from .idle_strategy import (
     extract_idle_governance_fields,
 )
 from .model_expression import MODEL_EXPRESSION_REPORT_REF, MODEL_EXPRESSION_STATE_REF
+from .proactive_terminal_voice import (
+    PROACTIVE_TERMINAL_EVENTS_REF,
+    PROACTIVE_TERMINAL_STATE_REF,
+)
 from .resident_autonomous_activity import (
     ACTIVITY_STATE_REFS,
     RESIDENT_AUTONOMOUS_ACTIVITY_REF,
@@ -159,6 +163,17 @@ def write_process_report_bundle(
     model_expression_report_ref = (
         MODEL_EXPRESSION_REPORT_REF
         if (reports_dir / "digital_life_model_expression_report.json").exists()
+        else None
+    )
+    resident_terminal_proactive_state = _read_json_if_exists(
+        state_dir / "terminal" / "resident_terminal_proactive_state.json"
+    )
+    resident_terminal_proactive_state_ref = (
+        PROACTIVE_TERMINAL_STATE_REF if resident_terminal_proactive_state else None
+    )
+    resident_terminal_proactive_events_ref = (
+        PROACTIVE_TERMINAL_EVENTS_REF
+        if (state_dir / "terminal" / "resident_terminal_proactive_events.jsonl").exists()
         else None
     )
     relationship_offline_learning_context = (
@@ -677,6 +692,32 @@ def write_process_report_bundle(
         "post_expression_gate_unreleased_reason": model_expression_state.get(
             "post_expression_gate_unreleased_reason"
         ),
+        "resident_terminal_proactive_state_ref": resident_terminal_proactive_state_ref,
+        "resident_terminal_proactive_events_ref": resident_terminal_proactive_events_ref,
+        "resident_terminal_proactive_status": resident_terminal_proactive_state.get(
+            "status"
+        ),
+        "resident_terminal_proactive_release_count": resident_terminal_proactive_state.get(
+            "release_count"
+        ),
+        "resident_terminal_proactive_event_count": resident_terminal_proactive_state.get(
+            "event_count"
+        ),
+        "resident_terminal_proactive_last_focus": resident_terminal_proactive_state.get(
+            "last_focus"
+        ),
+        "resident_terminal_proactive_last_surface_kind": (
+            resident_terminal_proactive_state.get("last_proactive_voice_surface_kind")
+        ),
+        "resident_terminal_proactive_last_natural_language_released": (
+            resident_terminal_proactive_state.get("last_natural_language_released")
+        ),
+        "resident_terminal_proactive_last_model_expression_status": (
+            resident_terminal_proactive_state.get("last_model_expression_status")
+        ),
+        "resident_terminal_proactive_last_post_expression_gate_status": (
+            resident_terminal_proactive_state.get("last_post_expression_gate_status")
+        ),
         "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "life_context_frame_ref": life_context_frame_ref,
         "relation_turn_frame_ref": relation_turn_frame_ref,
@@ -1161,6 +1202,32 @@ def write_process_report_bundle(
         ),
         "post_expression_gate_status": model_expression_state.get(
             "post_expression_gate_status"
+        ),
+        "resident_terminal_proactive_state_ref": resident_terminal_proactive_state_ref,
+        "resident_terminal_proactive_events_ref": resident_terminal_proactive_events_ref,
+        "resident_terminal_proactive_status": resident_terminal_proactive_state.get(
+            "status"
+        ),
+        "resident_terminal_proactive_release_count": resident_terminal_proactive_state.get(
+            "release_count"
+        ),
+        "resident_terminal_proactive_event_count": resident_terminal_proactive_state.get(
+            "event_count"
+        ),
+        "resident_terminal_proactive_last_focus": resident_terminal_proactive_state.get(
+            "last_focus"
+        ),
+        "resident_terminal_proactive_last_surface_kind": (
+            resident_terminal_proactive_state.get("last_proactive_voice_surface_kind")
+        ),
+        "resident_terminal_proactive_last_natural_language_released": (
+            resident_terminal_proactive_state.get("last_natural_language_released")
+        ),
+        "resident_terminal_proactive_last_model_expression_status": (
+            resident_terminal_proactive_state.get("last_model_expression_status")
+        ),
+        "resident_terminal_proactive_last_post_expression_gate_status": (
+            resident_terminal_proactive_state.get("last_post_expression_gate_status")
         ),
         "resident_process_lease_history_profile_ref": resident_process_lease_history_profile_ref,
         "background_lineage_depth_band": idle_governance.get(
@@ -1741,6 +1808,8 @@ def write_process_report_bundle(
         consciousness_probe_ref=idle_governance.get("consciousness_probe_ref"),
         birth_readiness_rollup_ref=idle_governance.get("birth_readiness_rollup_ref"),
         birth_readiness_stage_gate_ref=idle_governance.get("birth_readiness_stage_gate_ref"),
+        resident_terminal_proactive_state_ref=resident_terminal_proactive_state_ref,
+        resident_terminal_proactive_events_ref=resident_terminal_proactive_events_ref,
     )
 
     receipts_dir.mkdir(parents=True, exist_ok=True)
@@ -1819,6 +1888,8 @@ def build_process_receipt(
     consciousness_probe_ref: str | None = None,
     birth_readiness_rollup_ref: str | None = None,
     birth_readiness_stage_gate_ref: str | None = None,
+    resident_terminal_proactive_state_ref: str | None = None,
+    resident_terminal_proactive_events_ref: str | None = None,
 ) -> dict[str, Any]:
     input_hashes: dict[str, str] = {}
     for path in [
@@ -1836,6 +1907,8 @@ def build_process_receipt(
         state_dir / "terminal" / "relation_turn_frame.json",
         state_dir / "terminal" / "resident_autonomous_activity.jsonl",
         state_dir / "terminal" / "resident_autonomous_activity_state.json",
+        state_dir / "terminal" / "resident_terminal_proactive_state.json",
+        state_dir / "terminal" / "resident_terminal_proactive_events.jsonl",
         state_dir / "language" / "dialogue_turn_log.jsonl",
         state_dir / "language" / "self_narrative_language_trace.json",
         state_dir / "language" / "commitment_repair_language_index.json",
@@ -1894,6 +1967,8 @@ def build_process_receipt(
         state_dir / "terminal" / "resident_process_lease_history_profile.json",
         state_dir / "terminal" / "resident_autonomous_activity.jsonl",
         state_dir / "terminal" / "resident_autonomous_activity_state.json",
+        state_dir / "terminal" / "resident_terminal_proactive_state.json",
+        state_dir / "terminal" / "resident_terminal_proactive_events.jsonl",
     ]:
         input_hashes.setdefault(str(path), sha256_if_exists(path))
 
@@ -1942,6 +2017,8 @@ def build_process_receipt(
         "resident_autonomous_activity_ref_set": list(
             resident_autonomous_activity_ref_set or []
         ),
+        "resident_terminal_proactive_state_ref": resident_terminal_proactive_state_ref,
+        "resident_terminal_proactive_events_ref": resident_terminal_proactive_events_ref,
         "report_refs": _dedupe_refs(
             [
                 ref
@@ -1970,6 +2047,8 @@ def build_process_receipt(
                 resident_process_lease_history_profile_ref,
                 resident_autonomous_activity_ref,
                 resident_autonomous_activity_state_ref,
+                resident_terminal_proactive_state_ref,
+                resident_terminal_proactive_events_ref,
                 previous_live_turn_waiting_handoff_profile_ref,
                 *(resident_autonomous_activity_ref_set or []),
                 life_context_frame_ref,

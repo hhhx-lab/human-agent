@@ -81,6 +81,19 @@ my digital life --status
 
 这条 gate 的作用是确认 live0 已经通过真实模型表达链，同时确定性审计材料不会被释放成自然语言回应。
 
+## 主动发话验收
+
+`b_conscious_emotion_thought_language` 还必须看到终端打开时的主动发话机制已经进入审计链，而不是只停在 `/proactive` 查看面：
+
+1. `runtime/state/terminal/resident_terminal_proactive_state.json` 必须为 `resident_terminal_proactive_state_v0`。
+2. `status` 只能是 `held_internal` 或 `released_model_expression`；前者表示主动发话画像被保留为内部状态，后者表示真实模型表达通过 post-expression gate 后释放。
+3. `event_count >= 1`，且 `runtime/state/terminal/resident_terminal_proactive_events.jsonl` 中的事件数必须覆盖 state 中记录的事件数。
+4. `last_proactive_voice_profile.schema_version` 必须为 `resident_proactive_voice_profile_v0`。
+5. 当 `status=released_model_expression` 时，必须同时满足 `last_natural_language_released=true`、`last_release_scope=open_terminal_idle_model_expression`、`last_model_expression_status=model_expression_applied`、`last_post_expression_gate_status=accepted`。
+6. 当 `status=held_internal` 时，必须保持 `last_natural_language_released=false` 与 `last_release_scope=open_terminal_idle_hidden`。
+
+这条 probe 的作用是证明 point 6 的主动关系语言已经有可审计的生命通道，同时守住 point 8：没有模型释放、模型空文本或 gate 阻断时，不允许补固定替代句，也不允许把内部机制字段拼成外显话术。
+
 ## Queue E 修复抑制验收
 
 `f_equal_relationship_dialogue_growth` 和 `g_initial_life_mechanism_coverage` 还必须复查 ITR-06 的 FutureNoGo 修复抑制交接：

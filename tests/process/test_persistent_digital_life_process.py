@@ -10036,6 +10036,48 @@ class PersistentDigitalLifeProcessTests(
             self._write_json(terminal_dir / "session_envelope.json", {"schema_version": "session_envelope_v0"})
             self._write_json(terminal_dir / "safe_terminal_loop_state.json", {"current_mode": "restored_waiting_for_external_turn"})
             self._write_json(terminal_dir / "terminal_life_loop_state.json", {"current_mode": "restored_waiting_for_external_turn"})
+            (terminal_dir / "resident_terminal_proactive_events.jsonl").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "resident_proactive_terminal_event_v0",
+                        "status": "released_model_expression",
+                        "release_scope": "open_terminal_idle_model_expression",
+                        "natural_language_released": True,
+                        "focus": "memory_wake_question",
+                        "model_expression_status": "model_expression_applied",
+                        "post_expression_gate_status": "accepted",
+                        "proactive_voice_profile": {
+                            "schema_version": "resident_proactive_voice_profile_v0",
+                            "surface_kind": "wake_question_candidate",
+                        },
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            self._write_json(
+                terminal_dir / "resident_terminal_proactive_state.json",
+                {
+                    "schema_version": "resident_terminal_proactive_state_v0",
+                    "status": "released_model_expression",
+                    "last_release_scope": "open_terminal_idle_model_expression",
+                    "last_natural_language_released": True,
+                    "last_sequence": 1,
+                    "last_generated_at": "2026-06-09T00:00:00+00:00",
+                    "last_focus": "memory_wake_question",
+                    "last_proactive_voice_profile": {
+                        "schema_version": "resident_proactive_voice_profile_v0",
+                        "surface_kind": "wake_question_candidate",
+                    },
+                    "last_proactive_voice_surface_kind": "wake_question_candidate",
+                    "last_model_expression_status": "model_expression_applied",
+                    "last_post_expression_gate_status": "accepted",
+                    "event_count": 1,
+                    "release_count": 1,
+                    "resident_terminal_proactive_events_ref": "runtime/state/terminal/resident_terminal_proactive_events.jsonl",
+                },
+            )
             self._write_json(
                 terminal_dir / "idle_strategy_state.json",
                 {
@@ -10674,6 +10716,41 @@ class PersistentDigitalLifeProcessTests(
                 report["resident_governance_explanation_ref"],
                 "runtime/reports/latest/digital_life_resident_governance_explanation.json",
             )
+            self.assertEqual(
+                report["resident_terminal_proactive_state_ref"],
+                "runtime/state/terminal/resident_terminal_proactive_state.json",
+            )
+            self.assertEqual(
+                report["resident_terminal_proactive_events_ref"],
+                "runtime/state/terminal/resident_terminal_proactive_events.jsonl",
+            )
+            self.assertEqual(
+                report["resident_terminal_proactive_status"],
+                "released_model_expression",
+            )
+            self.assertEqual(report["resident_terminal_proactive_release_count"], 1)
+            self.assertEqual(report["resident_terminal_proactive_event_count"], 1)
+            self.assertEqual(
+                report["resident_terminal_proactive_last_focus"],
+                "memory_wake_question",
+            )
+            self.assertEqual(
+                report["resident_terminal_proactive_last_surface_kind"],
+                "wake_question_candidate",
+            )
+            self.assertTrue(
+                report["resident_terminal_proactive_last_natural_language_released"]
+            )
+            self.assertEqual(
+                report["resident_terminal_proactive_last_model_expression_status"],
+                "model_expression_applied",
+            )
+            self.assertEqual(
+                report[
+                    "resident_terminal_proactive_last_post_expression_gate_status"
+                ],
+                "accepted",
+            )
             self.assertEqual(report["resident_process_lease_ref"], expected_resident_process_lease_ref)
             self.assertEqual(
                 report["resident_process_lease_history_ref"],
@@ -11024,6 +11101,22 @@ class PersistentDigitalLifeProcessTests(
                 receipt["resident_autonomous_activity_ref_set"],
                 expected_autonomous_activity_refs,
             )
+            self.assertEqual(
+                receipt["resident_terminal_proactive_state_ref"],
+                "runtime/state/terminal/resident_terminal_proactive_state.json",
+            )
+            self.assertEqual(
+                receipt["resident_terminal_proactive_events_ref"],
+                "runtime/state/terminal/resident_terminal_proactive_events.jsonl",
+            )
+            self.assertIn(
+                "runtime/state/terminal/resident_terminal_proactive_state.json",
+                receipt["shared_object_refs"],
+            )
+            self.assertIn(
+                "runtime/state/terminal/resident_terminal_proactive_events.jsonl",
+                receipt["shared_object_refs"],
+            )
             self.assertIn(
                 True,
                 [
@@ -11056,6 +11149,24 @@ class PersistentDigitalLifeProcessTests(
                 True,
                 [
                     path.endswith("/runtime/state/terminal/resident_autonomous_activity_state.json")
+                    for path in receipt["input_hashes"]
+                ],
+            )
+            self.assertIn(
+                True,
+                [
+                    path.endswith(
+                        "/runtime/state/terminal/resident_terminal_proactive_state.json"
+                    )
+                    for path in receipt["input_hashes"]
+                ],
+            )
+            self.assertIn(
+                True,
+                [
+                    path.endswith(
+                        "/runtime/state/terminal/resident_terminal_proactive_events.jsonl"
+                    )
                     for path in receipt["input_hashes"]
                 ],
             )
@@ -11099,6 +11210,24 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertEqual(digest["background_lineage_cadence_weight"], "deep")
             self.assertEqual(digest["background_lineage_evidence_ref_count"], 4)
+            self.assertEqual(
+                digest["resident_terminal_proactive_state_ref"],
+                "runtime/state/terminal/resident_terminal_proactive_state.json",
+            )
+            self.assertEqual(
+                digest["resident_terminal_proactive_events_ref"],
+                "runtime/state/terminal/resident_terminal_proactive_events.jsonl",
+            )
+            self.assertEqual(
+                digest["resident_terminal_proactive_status"],
+                "released_model_expression",
+            )
+            self.assertEqual(digest["resident_terminal_proactive_release_count"], 1)
+            self.assertEqual(digest["resident_terminal_proactive_event_count"], 1)
+            self.assertEqual(
+                digest["resident_terminal_proactive_last_focus"],
+                "memory_wake_question",
+            )
             self.assertEqual(
                 digest["background_dominant_convergence_pressure_level"],
                 "present",

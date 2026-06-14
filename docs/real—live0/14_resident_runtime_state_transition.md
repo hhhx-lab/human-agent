@@ -115,7 +115,7 @@ resident process 的核心不是“有个进程没退出”，而是同一生命
 
 这意味着 resident process 不只是“继续运行”，而是同一主体在不同状态之间切换。它和终端的关系应该像人在清醒、打盹、回忆、思考、做梦、学习之间切换，而不是像脚本一直打印日志。
 
-主动发话属于“终端打开时的关系通道”，不属于关闭态后台刷屏。`resident_terminal_proactive_state.json` 现在把这条边界写成两个状态：`held_internal` 表示只生成了主动发话画像，没有释放自然语言；`released_model_expression` 表示同一画像经过 `model_expression.py` 和 post-expression gate 后，才允许打印真实模型语言。它可以由记忆、梦境、网页学习、自主活动或等待注意触发，但不能由代码拼成固定问候、固定追问或机制播报。模型未启用、模型空文本、或模型返回模板化/机制化表面时，只写 `resident_terminal_proactive_events.jsonl` 和 `/proactive` 状态，不在终端里补一句替代话术。
+主动发话属于“终端打开时的关系通道”，不属于关闭态后台刷屏。`resident_terminal_proactive_state.json` 现在把这条边界写成两个状态：`held_internal` 表示只生成了主动发话画像，没有释放自然语言；`released_model_expression` 表示同一画像经过 `model_expression.py` 和 post-expression gate 后，才允许打印真实模型语言。它可以由记忆、梦境、网页学习、自主活动或等待注意触发，但不能由代码拼成固定问候、固定追问或机制播报。模型未启用、模型空文本、或模型返回模板化/机制化表面时，只写 `resident_terminal_proactive_events.jsonl` 和 `/proactive` 状态，不在终端里补一句替代话术。关闭态 `digital_life_process_report.json`、`digital_life_process_digest.json` 与 process receipt 也必须继续保留 `resident_terminal_proactive_state_ref`、`resident_terminal_proactive_events_ref`、释放状态、释放次数、事件次数、最后 focus、surface kind、模型表达状态和 gate 状态；`live0_acceptance_audit_report.json` 的语言 criterion 会把这组证据作为主动关系语言通道验收。
 
 ## 协同与对抗机制
 

@@ -66,6 +66,16 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
         mechanism_criterion = self._criterion(
             report, "g_initial_life_mechanism_coverage"
         )
+        language_criterion = self._criterion(
+            report, "b_conscious_emotion_thought_language"
+        )
+        self.assertTrue(
+            any(
+                probe["probe_id"] == "resident_proactive_terminal_voice_audited"
+                and probe["status"] == "passed"
+                for probe in language_criterion["probes"]
+            )
+        )
         self.assertTrue(
             any(
                 probe["probe_id"]
@@ -189,6 +199,39 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
         self.assertTrue(
             any(
                 "queue_e_world_contact_repair_hold_schema_handoff" in reason
+                for reason in report["blocked_reasons"]
+            )
+        )
+
+    def test_live0_acceptance_audit_blocks_without_proactive_terminal_voice(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state = runtime_root / "state"
+            reports = runtime_root / "reports" / "latest"
+            receipts = runtime_root / "receipts"
+            self._write_live0_fixture(runtime_root)
+            (state / "terminal" / "resident_terminal_proactive_state.json").unlink()
+
+            result = run_live0_acceptance_audit(
+                docs_dir=self.docs_dir,
+                state_dir=state,
+                reports_dir=reports,
+                receipts_dir=receipts,
+                run_id="live0-audit-missing-proactive-terminal-voice",
+                strict=True,
+            )
+
+            report = self._read_json(reports / "live0_acceptance_audit_report.json")
+
+        self.assertEqual(result.exit_code, 1)
+        self.assertEqual(report["status"], "blocked")
+        self.assertIn(
+            "b_conscious_emotion_thought_language",
+            report["summary"]["failed_criteria"],
+        )
+        self.assertTrue(
+            any(
+                "resident_proactive_terminal_voice_audited" in reason
                 for reason in report["blocked_reasons"]
             )
         )
@@ -483,6 +526,43 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
                     "learning_consolidation",
                 ],
                 "missing_activity_kinds": [],
+            },
+        )
+        self._write_jsonl_ref(
+            runtime_root,
+            "runtime/state/terminal/resident_terminal_proactive_events.jsonl",
+            [
+                {
+                    "schema_version": "resident_proactive_terminal_event_v0",
+                    "status": "held_internal",
+                    "release_scope": "open_terminal_idle_hidden",
+                    "natural_language_released": False,
+                    "focus": "memory_wake_question",
+                    "proactive_voice_profile": {
+                        "schema_version": "resident_proactive_voice_profile_v0",
+                        "surface_kind": "wake_question_candidate",
+                    },
+                }
+            ],
+        )
+        self._write_json_ref(
+            runtime_root,
+            "runtime/state/terminal/resident_terminal_proactive_state.json",
+            {
+                "schema_version": "resident_terminal_proactive_state_v0",
+                "status": "held_internal",
+                "last_release_scope": "open_terminal_idle_hidden",
+                "last_natural_language_released": False,
+                "last_sequence": 1,
+                "last_focus": "memory_wake_question",
+                "last_proactive_voice_profile": {
+                    "schema_version": "resident_proactive_voice_profile_v0",
+                    "surface_kind": "wake_question_candidate",
+                },
+                "last_proactive_voice_surface_kind": "wake_question_candidate",
+                "event_count": 1,
+                "release_count": 0,
+                "resident_terminal_proactive_events_ref": "runtime/state/terminal/resident_terminal_proactive_events.jsonl",
             },
         )
         for ref, schema in {
