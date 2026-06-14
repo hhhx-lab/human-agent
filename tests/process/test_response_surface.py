@@ -193,6 +193,96 @@ class ResponseSurfaceTests(unittest.TestCase):
 
         self.assertEqual(response, "")
 
+    def test_audited_expression_material_carries_identity_consciousness_birth_refs(self):
+        expected_refs = [
+            "runtime/state/consciousness/workspace_frame.json",
+            "runtime/state/consciousness/broadcast_frame.json",
+            "runtime/state/consciousness/metacognition_state.json",
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+            "runtime/state/life_targets/birth_readiness_rollup.json",
+            "runtime/state/life_targets/birth_readiness_stage_gate.json",
+        ]
+
+        material = compose_life_response(
+            external_utterance="你现在意识到自己了吗？",
+            terminal_life_loop_state={
+                "resident_background_lineage_state": {
+                    "identity_consciousness_birth_presence": {
+                        "workspace_frame_ref": expected_refs[0],
+                        "broadcast_frame_ref": expected_refs[1],
+                        "metacognition_ref": expected_refs[2],
+                        "consciousness_probe_ref": expected_refs[3],
+                        "birth_readiness_rollup_ref": expected_refs[4],
+                        "birth_readiness_stage_gate_ref": expected_refs[5],
+                        "consciousness_waiting_posture": (
+                            "consciousness_reportable_waiting"
+                        ),
+                        "consciousness_attention_target": (
+                            "consciousness_probe_bundle"
+                        ),
+                        "consciousness_attention_reason": (
+                            "workspace_broadcast_metacognition_reportable"
+                        ),
+                        "consciousness_reportability_flags": [
+                            "workspace_reportable",
+                            "broadcast_reportable",
+                            "metacognition_reportable",
+                        ],
+                        "birth_readiness_waiting_posture": "birth_open_waiting",
+                        "birth_readiness_attention_target": (
+                            "birth_readiness_stage_gate"
+                        ),
+                        "birth_readiness_attention_reason": (
+                            "birth_readiness_open_requires_resident_birth_presence"
+                        ),
+                        "birth_readiness_decision": "open",
+                        "birth_readiness_next_required_command": "my digital life",
+                        "identity_consciousness_birth_refs": expected_refs,
+                    }
+                }
+            },
+        )
+
+        payload = json.loads(material)
+        presence = payload["resident_background"][
+            "identity_consciousness_birth_presence"
+        ]
+        self.assertEqual(presence["workspace_frame_ref"], expected_refs[0])
+        self.assertEqual(presence["broadcast_frame_ref"], expected_refs[1])
+        self.assertEqual(presence["metacognition_ref"], expected_refs[2])
+        self.assertEqual(presence["consciousness_probe_ref"], expected_refs[3])
+        self.assertEqual(presence["birth_readiness_rollup_ref"], expected_refs[4])
+        self.assertEqual(
+            presence["birth_readiness_stage_gate_ref"],
+            expected_refs[5],
+        )
+        self.assertEqual(
+            presence["consciousness_waiting_posture"],
+            "consciousness_reportable_waiting",
+        )
+        self.assertEqual(
+            presence["birth_readiness_waiting_posture"],
+            "birth_open_waiting",
+        )
+        self.assertEqual(
+            presence["identity_consciousness_birth_refs"],
+            expected_refs,
+        )
+        self.assertEqual(
+            payload["resident_background"][
+                "identity_consciousness_birth_anchor_refs"
+            ],
+            expected_refs,
+        )
+        self.assertEqual(
+            payload["resident_background"][
+                "identity_consciousness_birth_ref_count"
+            ],
+            len(expected_refs),
+        )
+        self.assertTrue(payload["natural_language_release_disabled"])
+        self.assertNotIn("你现在意识到自己了吗？", material)
+
     def test_audited_expression_material_carries_memory_tier_summary(self):
         material = compose_life_response(
             external_utterance="继续",

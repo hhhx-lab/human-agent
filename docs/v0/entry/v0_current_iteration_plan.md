@@ -446,6 +446,8 @@ GoNoGo.future_no_go_profile
 
 当前 ITR-07 第五段继续加硬最终验收的终端命名入口。`life_v0/live0_audit/__init__.py#a_terminal_wake_and_named_residency` 不再只看 `life_name_command_manifest.json` 的 schema、status、`direct_command_enabled` 和 `command_on_path`，还会检查 manifest 的 `command_path` 是否真实存在、可执行、包含 direct-command 标记，并且脚本与 manifest 中的 `state_dir / reports_dir / receipts_dir` 是否指向本次 audit 的同一 runtime。完成口径是：名字身份锚必须从 registry、manifest 继续闭合到真实终端脚本和同一 runtime 绑定，不能只用 JSON 假装“名字本身可唤醒”。
 
+当前回切补强把 Queue F 的身份、意识和出生准备 presence 继续推进到语言前结构化审计材料。`response_surface.py` 现在不只保留 `consciousness_waiting_posture`、`birth_readiness_waiting_posture` 和 decision，还会把 `workspace_frame_ref`、`broadcast_frame_ref`、`metacognition_ref`、`consciousness_probe_ref`、`birth_readiness_rollup_ref`、`birth_readiness_stage_gate_ref`、可报告性 flags、attention reason、blocked reasons 与 `identity_consciousness_birth_refs` 一起写入 `audited_expression_material_v0#resident_background.identity_consciousness_birth_presence`，并额外给出 anchor refs 与 ref count。完成口径是：意识工作区、广播、元认知和出生准备不只存在于 Queue F 文件、waiting governance、真实回合事件和写回包，也能作为内部结构化材料参与模型表达取舍；外显自然语言仍必须由模型表达和 post-expression gate 决定，代码不补固定意识宣言、不补固定出生声明，也不把内部 state 名称拼成回应。
+
 ## 当前 ITR-08 推进记录
 
 ITR-08 第一段继续留在第 2 点内部，不进入第 3 点记忆重构。当前补的是 `point 6` 与 `point 8` 的交叉断链：终端打开且没有关系话语时，主动发话不能只是生成内部画像，也不能由代码硬塞固定问句。`proactive_terminal_voice.py` 已经能从关系记忆、梦境摘要、网页梦境学习、自主活动、idle strategy 和 resident governance 生成 `resident_proactive_voice_profile_v0`；现在继续把写回状态拆成两档：

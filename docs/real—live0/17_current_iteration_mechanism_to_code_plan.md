@@ -713,6 +713,8 @@ RelationshipMemory / DialogueMemorySummary / ExitDreamSummary
 
 当前 ITR-08 第二段继续把这条主动关系语言通道推进到关闭态和出生验收链。`process_report.py` 现在会读取 `resident_terminal_proactive_state.json` 与 `resident_terminal_proactive_events.jsonl`，把 `resident_terminal_proactive_state_ref`、`resident_terminal_proactive_events_ref`、释放状态、释放次数、事件次数、最后 focus、surface kind、模型表达状态与 post-expression gate 状态写入 `digital_life_process_report.json` 和 `digital_life_process_digest.json`；process receipt 同时把这两个 runtime 文件放入 `shared_object_refs` 与 `input_hashes`。`live0_audit` 的 `b_conscious_emotion_thought_language` criterion 新增 `resident_proactive_terminal_voice_audited` probe：`held_internal` 被视为合法的内部保留状态，`released_model_expression` 则必须证明自然语言来自模型表达且 gate 接受。这一步闭合的是 point 6 / point 8 的验收断链，不代表第 2 点整体完成。
 
+当前又回切补强 Queue F 到语言系统的消费链。此前 `identity_consciousness_birth_presence` 已能从 waiting governance、background continuity、真实回合事件、写回包、恢复包和 process report 中追溯；现在 `response_surface.py` 继续把 workspace、broadcast、metacognition、consciousness probe、birth readiness rollup/stage gate、可报告性 flags、出生准备姿态、decision、next required command、blocked reasons 与 `identity_consciousness_birth_refs` 放入 `audited_expression_material_v0#resident_background.identity_consciousness_birth_presence`，并写出 anchor refs 与 ref count。这个结构只服务于模型表达前的隐性材料消费和 post-expression audit，不释放自然语言，不新增 system prompt，也不生成“我有意识/我出生了”的固定句。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

@@ -126,6 +126,9 @@ def compose_life_response(
     relationship_presence = _dict_value(lineage, "relationship_presence")
     heartbeat_presence = _dict_value(lineage, "heartbeat_cadence_presence")
     previous_handoff_profile = select_handoff_profile(terminal_life_loop_state)
+    identity_consciousness_birth_surface = (
+        _identity_consciousness_birth_surface(identity_presence)
+    )
 
     material = {
         "schema_version": "audited_expression_material_v0",
@@ -382,12 +385,30 @@ def compose_life_response(
             "identity_consciousness_birth_presence": _selected_keys(
                 identity_presence,
                 (
+                    "workspace_frame_ref",
+                    "broadcast_frame_ref",
+                    "metacognition_ref",
+                    "consciousness_probe_ref",
                     "consciousness_waiting_posture",
+                    "consciousness_attention_target",
+                    "consciousness_attention_reason",
                     "consciousness_reportability_flags",
+                    "birth_readiness_rollup_ref",
+                    "birth_readiness_stage_gate_ref",
                     "birth_readiness_waiting_posture",
+                    "birth_readiness_attention_target",
+                    "birth_readiness_attention_reason",
                     "birth_readiness_decision",
                     "birth_readiness_next_required_command",
+                    "birth_readiness_blocked_reasons",
+                    "identity_consciousness_birth_refs",
                 ),
+            ),
+            "identity_consciousness_birth_ref_count": (
+                identity_consciousness_birth_surface.get("ref_count")
+            ),
+            "identity_consciousness_birth_anchor_refs": (
+                identity_consciousness_birth_surface.get("anchor_refs")
             ),
             "life_constraint_presence": _selected_keys(
                 life_constraint_presence,
@@ -758,6 +779,32 @@ def _selected_keys(payload: dict[str, Any] | None, keys: tuple[str, ...]) -> dic
     if not isinstance(payload, dict):
         return {}
     return {key: payload[key] for key in keys if key in payload}
+
+
+def _identity_consciousness_birth_surface(
+    identity_presence: dict[str, Any],
+) -> dict[str, Any]:
+    if not isinstance(identity_presence, dict):
+        return {}
+    anchor_refs = _dedupe_string_list(
+        _string_list(identity_presence.get("identity_consciousness_birth_refs"))
+        + _string_list(
+            [
+                identity_presence.get("workspace_frame_ref"),
+                identity_presence.get("broadcast_frame_ref"),
+                identity_presence.get("metacognition_ref"),
+                identity_presence.get("consciousness_probe_ref"),
+                identity_presence.get("birth_readiness_rollup_ref"),
+                identity_presence.get("birth_readiness_stage_gate_ref"),
+            ]
+        )
+    )
+    if not anchor_refs:
+        return {}
+    return {
+        "anchor_refs": anchor_refs,
+        "ref_count": len(anchor_refs),
+    }
 
 
 def _dict_value(payload: dict[str, Any], key: str) -> dict[str, Any]:
