@@ -435,6 +435,252 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
 
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 
+    def test_resident_terminal_language_command_shows_generation_consumption_summary(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            for relative_dir in [
+                "language",
+                "memory",
+                "dream",
+                "body",
+                "signal",
+                "relationship",
+                "action",
+                "prediction",
+                "terminal",
+            ]:
+                (paths["state_root"] / relative_dir).mkdir(
+                    parents=True,
+                    exist_ok=True,
+                )
+            paths["reports"].mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                paths["state_root"] / "language" / "language_percept_frame.json",
+                {
+                    "schema_version": "language_percept_frame_v0",
+                    "semantic_focus": "关系语言不要机械化",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "language" / "semantic_map_frame.json",
+                {
+                    "schema_version": "semantic_map_frame_v0",
+                    "semantic_focus": "关系语言不要机械化",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "language" / "inner_speech_frame.json",
+                {
+                    "schema_version": "inner_speech_frame_v0",
+                    "inner_drive_states": {
+                        "repair": "active",
+                        "continuity": "active",
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "language"
+                / "expression_monitor_state.json",
+                {
+                    "schema_version": "expression_monitor_state_v0",
+                    "monitor_status": "guarding_non_template_expression",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "language" / "expression_plan.json",
+                {
+                    "schema_version": "expression_plan_v0",
+                    "semantic_goal": "answer_from_relation_context",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "language" / "model_expression_state.json",
+                {
+                    "schema_version": "model_expression_state_v0",
+                    "model_expression_status": "model_expression_applied",
+                    "model_expression_context_summary": {
+                        "relationship_stage": "shared_continuity",
+                    },
+                    "post_expression_gate": {
+                        "schema_version": "post_expression_gate_v0",
+                        "gate_status": "accepted",
+                        "required_evidence_flags": [
+                            "relationship_continuity",
+                            "memory_continuity",
+                            "body_affect",
+                            "prediction_attention",
+                        ],
+                        "missing_evidence_flags": [],
+                        "soft_missing_evidence_flags": [],
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "memory" / "relationship_memory.json",
+                {
+                    "schema_version": "relationship_memory_v0",
+                    "relation_person_profile": {
+                        "observed_names": ["何剑宝"],
+                    },
+                    "next_wake_cues": [
+                        "continue_less_mechanical_language"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "memory" / "dialogue_memory_summary.json",
+                {
+                    "schema_version": "dialogue_memory_summary_v0",
+                    "next_wake_cues": ["ask_about_current_language_feel"],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "memory" / "memory_retrieval_frame.json",
+                {
+                    "schema_version": "memory_retrieval_frame_v0",
+                    "reconstruction_focus": "relationship_continuity",
+                    "activated_refs": [
+                        "runtime/state/memory/engram_index.json#episode/non_template"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "dream"
+                / "exit_dream_consolidation_summary.json",
+                {
+                    "schema_version": "exit_dream_consolidation_summary_v0",
+                    "memory_tiering": {
+                        "salient_core_episode_refs": ["episode-1"],
+                        "retrievable_context_episode_refs": ["episode-2"],
+                        "deep_sediment_episode_refs": ["episode-3"],
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "body" / "core_affect_vector.json",
+                {
+                    "schema_version": "core_affect_vector_v0",
+                    "arousal": 0.55,
+                    "repair_drive": "active",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "body" / "body_resource_budget.json",
+                {
+                    "schema_version": "body_resource_budget_v0",
+                    "fatigue_state": {"level": "low"},
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "signal" / "signal_media_runtime.json",
+                {
+                    "schema_version": "signal_media_runtime_v0",
+                    "modulation_vector": {
+                        "arousal": "awake",
+                        "precision": "relationship_high",
+                        "repair_drive": "active",
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "relationship" / "relationship_timeline.json",
+                {
+                    "schema_version": "relationship_timeline_v0",
+                    "relationship_stage": "shared_continuity",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "relationship" / "commitment_truth_state.json",
+                {
+                    "schema_version": "commitment_truth_state_v0",
+                    "truth_status": "active",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "action" / "responsibility_loop_state.json",
+                {
+                    "schema_version": "responsibility_loop_state_v0",
+                    "repair_followup_required": True,
+                    "regret_pressure_candidates": ["template_language_regret"],
+                },
+            )
+            self._write_json(
+                paths["reports"] / "pain_regret_repair_report.json",
+                {
+                    "schema_version": "pain_regret_repair_report_v0",
+                    "repair_followup_required": True,
+                    "regret_pressure_refs": ["runtime/state/action/responsibility_loop_state.json"],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "prediction" / "belief_state_frame.json",
+                {
+                    "schema_version": "belief_state_frame_v0",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "prediction" / "prediction_error_field.json",
+                {
+                    "schema_version": "prediction_error_field_v0",
+                    "error_events": ["language_style_mismatch"],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "prediction" / "active_sampling_plan.json",
+                {
+                    "schema_version": "active_sampling_plan_v0",
+                    "selected_route": "clarify",
+                },
+            )
+            self._write_json(
+                terminal_dir / "resident_autonomous_activity_state.json",
+                {
+                    "schema_version": "resident_autonomous_activity_state_v0",
+                    "last_activity_kind": "memory_recall",
+                },
+            )
+            self._write_json(
+                terminal_dir / "resident_terminal_proactive_state.json",
+                {
+                    "schema_version": "resident_terminal_proactive_state_v0",
+                    "status": "held_internal",
+                },
+            )
+
+            output = StringIO()
+            with redirect_stdout(output):
+                exit_code = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/language",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+
+            rendered = output.getvalue()
+            self.assertIsNone(exit_code)
+            self.assertIn("resident_state_inspection_v0", rendered)
+            self.assertIn("language_generation_consumption_summary_v0", rendered)
+            self.assertIn("generation_consumption_summary", rendered)
+            self.assertIn("relationship_memory", rendered)
+            self.assertIn("dream_residue", rendered)
+            self.assertIn("body_affect", rendered)
+            self.assertIn("responsibility_repair", rendered)
+            self.assertIn("prediction_attention", rendered)
+            self.assertIn("resident_autonomous_activity", rendered)
+            self.assertIn("proactive_voice", rendered)
+            self.assertIn("state_inspection_only_model_expression_then_post_gate", rendered)
+            self.assertIn("no_code_spoken_template_no_inspection_summary_as_reply", rendered)
+            self.assertIn("relationship_continuity", rendered)
+            self.assertIn("memory_continuity", rendered)
+            self.assertIn("何剑宝", rendered)
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
     def test_resident_terminal_proactive_voice_uses_state_without_relation_turn(self):
         from life_v0.process_supervisor.proactive_terminal_voice import (
             build_resident_proactive_terminal_event,

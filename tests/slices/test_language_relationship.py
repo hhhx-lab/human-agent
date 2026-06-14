@@ -128,7 +128,14 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertEqual(expression_monitor["memory_write_gate_ref"], "runtime/state/memory/memory_write_gate.json")
         self.assertEqual(expression_monitor["core_affect_vector_ref"], "runtime/state/body/core_affect_vector.json")
         self.assertEqual(expression_monitor["signal_media_ref"], "runtime/state/signal/signal_media_runtime.json")
-        self.assertEqual(expression_monitor["write_gate_pressure"]["stage_policy"], "candidate_first_fail_closed")
+        self.assertEqual(
+            expression_monitor["write_gate_pressure"]["stage_policy"],
+            "candidate_first_repair_guarded",
+        )
+        self.assertGreaterEqual(
+            expression_monitor["write_gate_pressure"]["responsibility_event_count"],
+            1,
+        )
         self.assertEqual(
             expression_monitor["affect_expression_modulation"]["signal_media_ref"],
             "runtime/state/signal/signal_media_runtime.json",

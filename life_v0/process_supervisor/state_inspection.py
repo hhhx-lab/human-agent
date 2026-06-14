@@ -136,7 +136,7 @@ def build_resident_state_inspection(
             },
         )
     elif normalized == "language":
-        payload["language"] = _collect_files(
+        language = _collect_files(
             state_root,
             {
                 "language_percept": "language/language_percept_frame.json",
@@ -145,8 +145,36 @@ def build_resident_state_inspection(
                 "expression_monitor": "language/expression_monitor_state.json",
                 "expression_plan": "language/expression_plan.json",
                 "model_expression_state": "language/model_expression_state.json",
+                "relationship_memory": "memory/relationship_memory.json",
+                "dialogue_memory_summary": "memory/dialogue_memory_summary.json",
+                "memory_retrieval": "memory/memory_retrieval_frame.json",
+                "exit_dream_consolidation_summary": (
+                    "dream/exit_dream_consolidation_summary.json"
+                ),
+                "core_affect_vector": "body/core_affect_vector.json",
+                "body_resource_budget": "body/body_resource_budget.json",
+                "signal_media_runtime": "signal/signal_media_runtime.json",
+                "relationship_timeline": "relationship/relationship_timeline.json",
+                "commitment_truth_state": "relationship/commitment_truth_state.json",
+                "responsibility_loop_state": (
+                    "action/responsibility_loop_state.json"
+                ),
+                "pain_regret_repair_report": (
+                    "../reports/latest/pain_regret_repair_report.json"
+                ),
+                "belief_state_frame": "prediction/belief_state_frame.json",
+                "prediction_error_field": "prediction/prediction_error_field.json",
+                "active_sampling_plan": "prediction/active_sampling_plan.json",
+                "resident_autonomous_activity": (
+                    "terminal/resident_autonomous_activity_state.json"
+                ),
+                "proactive_state": "terminal/resident_terminal_proactive_state.json",
             },
         )
+        language["generation_consumption_summary"] = (
+            _collect_language_generation_consumption_summary(language)
+        )
+        payload["language"] = language
     elif normalized == "cognition":
         payload["cognition"] = _collect_files(
             state_root,
@@ -455,6 +483,198 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _collect_language_generation_consumption_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    language_percept = _extract_compact_value(section.get("language_percept", {}))
+    semantic_map = _extract_compact_value(section.get("semantic_map", {}))
+    inner_speech = _extract_compact_value(section.get("inner_speech", {}))
+    expression_monitor = _extract_compact_value(
+        section.get("expression_monitor", {})
+    )
+    expression_plan = _extract_compact_value(section.get("expression_plan", {}))
+    model_expression = _extract_compact_value(
+        section.get("model_expression_state", {})
+    )
+    relationship_memory = _extract_compact_value(
+        section.get("relationship_memory", {})
+    )
+    dialogue_memory_summary = _extract_compact_value(
+        section.get("dialogue_memory_summary", {})
+    )
+    memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
+    exit_dream_summary = _extract_compact_value(
+        section.get("exit_dream_consolidation_summary", {})
+    )
+    core_affect = _extract_compact_value(section.get("core_affect_vector", {}))
+    body_budget = _extract_compact_value(section.get("body_resource_budget", {}))
+    signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
+    relationship_timeline = _extract_compact_value(
+        section.get("relationship_timeline", {})
+    )
+    commitment_truth = _extract_compact_value(
+        section.get("commitment_truth_state", {})
+    )
+    responsibility_loop = _extract_compact_value(
+        section.get("responsibility_loop_state", {})
+    )
+    pain_regret_repair = _extract_compact_value(
+        section.get("pain_regret_repair_report", {})
+    )
+    belief_state = _extract_compact_value(section.get("belief_state_frame", {}))
+    prediction_error = _extract_compact_value(
+        section.get("prediction_error_field", {})
+    )
+    active_sampling = _extract_compact_value(
+        section.get("active_sampling_plan", {})
+    )
+    resident_autonomous = _extract_compact_value(
+        section.get("resident_autonomous_activity", {})
+    )
+    proactive_state = _extract_compact_value(section.get("proactive_state", {}))
+    post_expression_gate = _extract_nested_value(
+        model_expression,
+        "post_expression_gate",
+    )
+    model_context_summary = _extract_nested_value(
+        model_expression,
+        "model_expression_context_summary",
+    )
+
+    domain_presence = {
+        "language_percept": bool(language_percept),
+        "semantic_map": bool(semantic_map),
+        "inner_speech": bool(inner_speech),
+        "expression_monitor": bool(expression_monitor),
+        "expression_plan": bool(expression_plan),
+        "model_expression": bool(model_expression),
+        "relationship_memory": bool(relationship_memory),
+        "dialogue_memory": bool(dialogue_memory_summary),
+        "memory_retrieval": bool(memory_retrieval),
+        "dream_residue": bool(exit_dream_summary),
+        "body_affect": bool(core_affect or body_budget),
+        "signal_media": bool(signal_media),
+        "relationship": bool(relationship_timeline or commitment_truth),
+        "responsibility_repair": bool(responsibility_loop or pain_regret_repair),
+        "prediction_attention": bool(
+            belief_state or prediction_error or active_sampling
+        ),
+        "resident_autonomous_activity": bool(resident_autonomous),
+        "proactive_voice": bool(proactive_state),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    required_evidence_flags = post_expression_gate.get("required_evidence_flags")
+    if not isinstance(required_evidence_flags, list):
+        required_evidence_flags = []
+    missing_evidence_flags = post_expression_gate.get("missing_evidence_flags")
+    if not isinstance(missing_evidence_flags, list):
+        missing_evidence_flags = []
+    soft_missing_evidence_flags = post_expression_gate.get(
+        "soft_missing_evidence_flags"
+    )
+    if not isinstance(soft_missing_evidence_flags, list):
+        soft_missing_evidence_flags = []
+
+    memory_tiering = _extract_nested_value(exit_dream_summary, "memory_tiering")
+    relation_profile = _extract_nested_value(
+        relationship_memory,
+        "relation_person_profile",
+    )
+    return {
+        "schema_version": "language_generation_consumption_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "semantic_focus": semantic_map.get("semantic_focus")
+        or language_percept.get("semantic_focus")
+        or model_context_summary.get("semantic_focus"),
+        "inner_speech_drive_count": _count_any(
+            inner_speech.get("inner_drive_states")
+        ),
+        "expression_monitor_status": expression_monitor.get("monitor_status"),
+        "expression_plan_goal": expression_plan.get("semantic_goal"),
+        "model_expression_status": model_expression.get("model_expression_status"),
+        "post_expression_gate_status": post_expression_gate.get("gate_status"),
+        "required_evidence_flags": required_evidence_flags[:12],
+        "missing_evidence_flags": missing_evidence_flags[:12],
+        "soft_missing_evidence_flags": soft_missing_evidence_flags[:12],
+        "memory_reconstruction_focus": memory_retrieval.get(
+            "reconstruction_focus"
+        ),
+        "memory_activated_ref_count": _count_any(
+            memory_retrieval.get("activated_refs")
+        )
+        or _count_any(memory_retrieval.get("activated_engram_refs")),
+        "relationship_observed_names": _list_refs(
+            relation_profile.get("observed_names")
+        ),
+        "next_wake_cue_count": _count_any(
+            relationship_memory.get("next_wake_cues")
+        )
+        + _count_any(dialogue_memory_summary.get("next_wake_cues")),
+        "dream_memory_tier_presence": {
+            "salient_core": bool(memory_tiering.get("salient_core_episode_refs")),
+            "retrievable_context": bool(
+                memory_tiering.get("retrievable_context_episode_refs")
+            ),
+            "deep_sediment": bool(memory_tiering.get("deep_sediment_episode_refs")),
+        },
+        "body_affect_modulators": {
+            "arousal": core_affect.get("arousal"),
+            "repair_drive": core_affect.get("repair_drive")
+            or _extract_nested_value(body_budget, "maintenance_pressure").get(
+                "repair_drive"
+            ),
+            "fatigue_level": _extract_nested_value(
+                body_budget,
+                "fatigue_state",
+            ).get("level"),
+        },
+        "signal_modulators": _tier_refs(
+            _extract_nested_value(signal_media, "modulation_vector"),
+            [
+                "arousal",
+                "precision",
+                "inhibition",
+                "repair_drive",
+                "language_precision",
+            ],
+        ),
+        "relationship_stage": _first_non_empty(
+            relationship_timeline.get("relationship_stage"),
+            _extract_nested_value(relationship_timeline, "relationship_state").get(
+                "relationship_stage"
+            ),
+            model_context_summary.get("relationship_stage"),
+        ),
+        "commitment_truth_status": commitment_truth.get("truth_status")
+        or commitment_truth.get("stage_status"),
+        "repair_followup_required": bool(
+            responsibility_loop.get("repair_followup_required")
+            or pain_regret_repair.get("repair_followup_required")
+        ),
+        "regret_pressure_count": _count_any(
+            responsibility_loop.get("regret_pressure_candidates")
+        )
+        + _count_any(pain_regret_repair.get("regret_pressure_refs")),
+        "prediction_route": active_sampling.get("selected_route"),
+        "prediction_error_count": _count_any(prediction_error.get("error_events")),
+        "resident_autonomous_last_activity": resident_autonomous.get(
+            "last_activity_kind"
+        ),
+        "proactive_voice_status": proactive_state.get("status"),
+        "language_release_boundary": (
+            "state_inspection_only_model_expression_then_post_gate"
+        ),
+        "fixed_reply_boundary": (
+            "no_code_spoken_template_no_inspection_summary_as_reply"
+        ),
+    }
+
+
 def _read_json(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
@@ -534,3 +754,32 @@ def _tier_refs(entry: dict[str, Any], keys: list[str]) -> dict[str, Any]:
         elif value not in (None, ""):
             result[key] = value
     return result
+
+
+def _count_any(value: Any) -> int:
+    if isinstance(value, dict):
+        return len(value)
+    if isinstance(value, list):
+        return len(value)
+    if isinstance(value, tuple):
+        return len(value)
+    if isinstance(value, str):
+        return 1 if value.strip() else 0
+    if value:
+        return 1
+    return 0
+
+
+def _list_refs(value: Any, limit: int = 12) -> list[Any]:
+    if isinstance(value, list):
+        return value[:limit]
+    if value in (None, ""):
+        return []
+    return [value]
+
+
+def _first_non_empty(*values: Any) -> Any:
+    for value in values:
+        if value not in (None, "", [], {}):
+            return value
+    return None
