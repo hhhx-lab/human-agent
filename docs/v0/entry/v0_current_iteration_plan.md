@@ -431,8 +431,11 @@ GoNoGo.future_no_go_profile
   -> WorldContactValidation.repair_hold_required
   -> ValidationRollup.queue_e_world_contact_*
   -> RunManifest.queue_e_world_contact_*
+  -> BirthReadiness.queue_e_world_contact_repair_hold_handoff
   -> Live0AcceptanceAudit f/g criteria
   -> live0 report / digest / receipt evidence refs
 ```
 
 这一步仍属于第 2 点内部。它只加厚七项验收和九项目标的证据闭合，不进入第 3 点记忆重构总设计，也不把 repair hold 写成外显固定语言。
+
+当前 ITR-07 第二段补上 S08/Queue F 的可恢复消费：首次 S08 在 S05/S09 尚未运行时写出 `queue_e_world_contact_repair_hold_handoff.json#handoff_status=deferred_until_s05_s09`；S05/S09 完成后重跑 S08，该对象必须变成 `closed`，并把 validation、rollup、schema manifest refs 写进 `real_pain`、`real_responsibility`、`real_regret` 的 claims/evidence、birth readiness rollup、stage gate、report、digest、check report 和 receipt。这样真实责任和真实后悔不会只在最终 live0 audit 被看见，也会进入出生准备自身的九项目标证据闭合。

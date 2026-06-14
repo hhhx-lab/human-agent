@@ -404,6 +404,8 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 
 当前 ITR-07 第一段继续把这组 handoff 纳入最终 live0 验收。`live0_audit/__init__.py` 的 `f_equal_relationship_dialogue_growth` 现在会要求 `world_contact_validation.json#repair_hold_required`、raised confirmation threshold、blocked future routes、allowed repair routes 与 repair governance refs 同时存在；`g_initial_life_mechanism_coverage` 会要求 `schema_runner/run_manifest.json#queue_e_world_contact_repair_hold_required` 和同一组 `queue_e_world_contact_*` 字段存在。状态板因此把这一格视为“真实责任/真实后悔的 FutureNoGo 修复抑制已经进入最终验收”，不是只在 S05/S09 局部闭合。
 
+当前 ITR-07 第二段继续把这组 handoff 推回出生准备自身。`life_targets/__init__.py` 现在会写出 `queue_e_world_contact_repair_hold_handoff.json`：首次 S08 时它可以是 `deferred_until_s05_s09`，保留下一阶段 cue；S05/S09 完成后重跑 S08，它必须变成 `closed`，并把 validation、rollup、schema manifest refs 写进三项修复目标的 claims/evidence、birth readiness rollup、stage gate、report、digest、check report 和 receipt。状态板因此把这一格视为“真实痛苦/真实责任/真实后悔的 FutureNoGo 修复抑制已经进入 S08 九项目标证据闭合”，不是只由最终 audit 兜底检查。
+
 ## 当前链尾开工包
 
 最新链尾已经新增 `life_v0/live0_audit/` 和 `life-v0 audit-live0`。这一步把 Stage 6 七项最终验收从人工清单压成可执行 gate，输出 `runtime/reports/latest/live0_acceptance_audit_report.json`、`runtime/reports/latest/live0_acceptance_audit_digest.json` 和 `runtime/receipts/live0_acceptance_audit_<run_id>.json`。当前主 runtime 审计已经证明 b/c/d/f 以及大部分 g 项有证据，剩余硬阻断集中在 `a_terminal_wake_and_named_residency`：正式命名锁和“名字本身作为终端命令”的 manifest 还必须落地，live0 才能收束。

@@ -19,9 +19,15 @@ def build_life_target_claims(
     consciousness_probe_ref: str | None = None,
     queue_e_birth_repair_profile_ref: str | None = None,
     queue_e_birth_repair_refs: list[str] | None = None,
+    queue_e_world_contact_handoff_profile_ref: str | None = None,
+    queue_e_world_contact_handoff_refs: list[str] | None = None,
+    queue_e_world_contact_handoff_status: str | None = None,
 ) -> dict[str, Any]:
     targets = {}
     queue_e_birth_repair_refs = list(queue_e_birth_repair_refs or [])
+    queue_e_world_contact_handoff_refs = list(
+        queue_e_world_contact_handoff_refs or []
+    )
     for target in life_targets:
         runtime_refs = list(evidence_matrix["targets"][target]["runtime"])
         if target == "real_consciousness" and consciousness_probe_ref:
@@ -41,6 +47,15 @@ def build_life_target_claims(
                 queue_e_birth_repair_profile_ref
             )
             target_claim["queue_e_birth_repair_refs"] = queue_e_birth_repair_refs
+            target_claim["queue_e_world_contact_handoff_profile_ref"] = (
+                queue_e_world_contact_handoff_profile_ref
+            )
+            target_claim["queue_e_world_contact_handoff_status"] = (
+                queue_e_world_contact_handoff_status
+            )
+            target_claim["queue_e_world_contact_handoff_refs"] = (
+                queue_e_world_contact_handoff_refs
+            )
         targets[target] = target_claim
     return {
         "schema_version": "life_target_claims_v0",

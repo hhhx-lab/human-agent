@@ -259,6 +259,16 @@ Queue F 必须接到这些现有器官上：
 - `replay_needed_refs`
 - `archive_receipt_ref`
 
+### Queue E handoff 补厚
+
+当前 ITR-07 要求 Queue F 不只消费 `queue_e_birth_repair_profile.json`，还要消费 S05/S09 对 FutureNoGo repair hold 的交接结果：
+
+- `life_targets/__init__.py` 读取可选的 `runtime/state/validation/world_contact_validation.json`、`runtime/state/validation/validation_rollup.json` 与 `runtime/state/schema_runner/run_manifest.json`。
+- 如果 S05/S09 尚未运行，写出 `queue_e_world_contact_repair_hold_handoff.json#handoff_status=deferred_until_s05_s09`，并保留 `go_nogo_state.json#future_no_go_profile` 作为下一阶段 cue。
+- 如果 S05/S09 已运行且 repair hold、raised confirmation threshold、blocked/allowed routes、repair governance refs 全部存在，写出 `handoff_status=closed`。
+- `real_pain`、`real_responsibility`、`real_regret` 的 claims、evidence matrix、rollup、stage gate、report、digest、check report 和 receipt 都必须携带这份 handoff profile ref 和 ref set。
+- 这仍然是出生准备结构化证据，不是语言输出模板，也不能替代 `responsibility_loop_state.json`、`pain_regret_repair_report.json` 或未来行动膜。
+
 ## I. 新增 `life_v0/life_targets/birth_readiness_stage_gate.py`
 
 ### 角色

@@ -15,9 +15,14 @@ def build_life_target_evidence_matrix(
     consciousness_probe_ref: str | None = None,
     queue_e_birth_repair_profile_ref: str | None = None,
     queue_e_birth_repair_refs: list[str] | None = None,
+    queue_e_world_contact_handoff_profile_ref: str | None = None,
+    queue_e_world_contact_handoff_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     targets = {}
     queue_e_birth_repair_refs = list(queue_e_birth_repair_refs or [])
+    queue_e_world_contact_handoff_refs = list(
+        queue_e_world_contact_handoff_refs or []
+    )
     for target in life_targets:
         runtime_refs = [
             "runtime/state/membrane/birth_readiness_precheck.json",
@@ -39,6 +44,8 @@ def build_life_target_evidence_matrix(
                     *pain_regret_responsibility_refs,
                     *queue_e_birth_repair_refs,
                     queue_e_birth_repair_profile_ref or "",
+                    *queue_e_world_contact_handoff_refs,
+                    queue_e_world_contact_handoff_profile_ref or "",
                 ]
             )
         targets[target] = {

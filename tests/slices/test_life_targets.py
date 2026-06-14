@@ -85,6 +85,7 @@ class LifeTargetRuntimeTests(unittest.TestCase):
             claims = self._read_json(life_targets_state / "life_target_claims.json")
             evidence = self._read_json(life_targets_state / "life_target_evidence_matrix.json")
             queue_e_profile = self._read_json(life_targets_state / "queue_e_birth_repair_profile.json")
+            queue_e_handoff = self._read_json(life_targets_state / "queue_e_world_contact_repair_hold_handoff.json")
             rollup = self._read_json(life_targets_state / "birth_readiness_rollup.json")
             stage_gate = self._read_json(life_targets_state / "birth_readiness_stage_gate.json")
             archive_index = self._read_json(life_targets_state / "life_target_archive_receipt_index.json")
@@ -109,11 +110,16 @@ class LifeTargetRuntimeTests(unittest.TestCase):
             "archive",
         }
         queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+        queue_e_handoff_ref = "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
         expected_queue_e_refs = {
             "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/membrane/world_contact_summary.json",
             "runtime/reports/latest/pain_regret_repair_report.json",
             queue_e_profile_ref,
+        }
+        expected_queue_e_handoff_refs = {
+            "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            queue_e_handoff_ref,
         }
 
         self.assertEqual(claims["schema_version"], "life_target_claims_v0")
@@ -134,6 +140,20 @@ class LifeTargetRuntimeTests(unittest.TestCase):
             self.assertTrue(
                 expected_queue_e_refs.issubset(
                     set(claims["targets"][target]["queue_e_birth_repair_refs"])
+                ),
+                target,
+            )
+            self.assertEqual(
+                claims["targets"][target]["queue_e_world_contact_handoff_profile_ref"],
+                queue_e_handoff_ref,
+            )
+            self.assertEqual(
+                claims["targets"][target]["queue_e_world_contact_handoff_status"],
+                "deferred_until_s05_s09",
+            )
+            self.assertTrue(
+                expected_queue_e_handoff_refs.issubset(
+                    set(claims["targets"][target]["queue_e_world_contact_handoff_refs"])
                 ),
                 target,
             )
@@ -161,6 +181,12 @@ class LifeTargetRuntimeTests(unittest.TestCase):
                 ),
                 target,
             )
+            self.assertTrue(
+                expected_queue_e_handoff_refs.issubset(
+                    set(evidence["targets"][target]["pain_regret_responsibility"])
+                ),
+                target,
+            )
 
         self.assertEqual(queue_e_profile["schema_version"], "queue_e_repair_modulation_profile_v0")
         self.assertEqual(queue_e_profile["pressure_level"], "elevated")
@@ -168,6 +194,18 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertTrue(
             expected_queue_e_refs.difference({queue_e_profile_ref}).issubset(
                 set(queue_e_profile["ref_set"])
+            )
+        )
+        self.assertEqual(
+            queue_e_handoff["schema_version"],
+            "queue_e_world_contact_repair_hold_handoff_v0",
+        )
+        self.assertEqual(queue_e_handoff["handoff_status"], "deferred_until_s05_s09")
+        self.assertFalse(queue_e_handoff["repair_hold_required"])
+        self.assertEqual(queue_e_handoff["confirmation_threshold_bias"], "deferred")
+        self.assertTrue(
+            expected_queue_e_handoff_refs.difference({queue_e_handoff_ref}).issubset(
+                set(queue_e_handoff["ref_set"])
             )
         )
 
@@ -188,6 +226,9 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertEqual(rollup["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(rollup["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(rollup["queue_e_birth_repair_ref_set"])))
+        self.assertEqual(rollup["queue_e_world_contact_handoff_profile_ref"], queue_e_handoff_ref)
+        self.assertEqual(rollup["queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
+        self.assertTrue(expected_queue_e_handoff_refs.issubset(set(rollup["queue_e_world_contact_ref_set"])))
 
         self.assertEqual(stage_gate["schema_version"], "birth_readiness_stage_gate_v0")
         self.assertEqual(stage_gate["decision"], "open")
@@ -199,6 +240,10 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertEqual(stage_gate["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(stage_gate["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(stage_gate["queue_e_birth_repair_ref_set"])))
+        self.assertEqual(stage_gate["gate_status"]["queue_e_world_contact_handoff_gate"], "deferred_until_s05_s09")
+        self.assertEqual(stage_gate["queue_e_world_contact_handoff_profile_ref"], queue_e_handoff_ref)
+        self.assertEqual(stage_gate["queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
+        self.assertTrue(expected_queue_e_handoff_refs.issubset(set(stage_gate["queue_e_world_contact_ref_set"])))
 
         self.assertEqual(archive_index["schema_version"], "life_target_archive_receipt_index_v0")
         self.assertEqual(set(archive_index["target_receipts"]), expected_targets)
@@ -215,6 +260,9 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertEqual(report["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(report["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(report["queue_e_birth_repair_ref_set"])))
+        self.assertEqual(report["queue_e_world_contact_handoff_profile_ref"], queue_e_handoff_ref)
+        self.assertEqual(report["queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
+        self.assertTrue(expected_queue_e_handoff_refs.issubset(set(report["queue_e_world_contact_ref_set"])))
 
         self.assertEqual(target_status["schema_version"], "life_target_status_v0")
         self.assertEqual(target_status["overall_status"], "open")
@@ -223,15 +271,214 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertEqual(digest["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(digest["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertGreaterEqual(digest["queue_e_birth_repair_ref_count"], 4)
+        self.assertEqual(digest["queue_e_world_contact_handoff_profile_ref"], queue_e_handoff_ref)
+        self.assertEqual(digest["queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
+        self.assertGreaterEqual(digest["queue_e_world_contact_ref_count"], 2)
         self.assertEqual(check_report["status"], "open")
         self.assertIn("consciousness_probe_gate", check_report["closed_gates"])
         self.assertIn("queue_e_birth_repair_gate", check_report["closed_gates"])
+        self.assertEqual(check_report["queue_e_world_contact_handoff_profile_ref"], queue_e_handoff_ref)
+        self.assertEqual(check_report["queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
         self.assertEqual(receipt["schema_version"], "birth_readiness_receipt_v0")
         self.assertIn(
             "runtime/state/consciousness/consciousness_probe_bundle.json",
             receipt["state_refs"],
         )
         self.assertIn(queue_e_profile_ref, receipt["state_refs"])
+        self.assertIn(queue_e_handoff_ref, receipt["state_refs"])
+
+    def test_birth_readiness_consumes_queue_e_world_contact_handoff_after_s05_s09(self):
+        from life_v0.authority import run_source_authority
+        from life_v0.direction import run_direction_lock
+        from life_v0.doc_index import run_doc_ingestion
+        from life_v0.language import run_build_language_relationship, run_check_language_relationship
+        from life_v0.life_targets import run_birth_readiness, run_check_birth_readiness
+        from life_v0.membrane import run_check_life_membrane, run_life_membrane
+        from life_v0.neural_core import run_check_neural_life_core, run_neural_life_core
+        from life_v0.schema_runner import run_check_schema_runner, run_schema_runner
+        from life_v0.state_store import run_check_state_store, run_state_store
+        from life_v0.validators import run_check_validation_membrane, run_validation_membrane
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            doc_out = tmp_path / "runtime" / "docs"
+            reports = tmp_path / "runtime" / "reports" / "latest"
+            receipts = tmp_path / "runtime" / "receipts"
+            direction_state = tmp_path / "runtime" / "state" / "direction"
+            authority_state = tmp_path / "runtime" / "state" / "authority"
+            neural_state = tmp_path / "runtime" / "state" / "neural_life_core"
+            state_root = tmp_path / "runtime" / "state"
+            membrane_state = tmp_path / "runtime" / "state" / "membrane"
+            life_targets_state = tmp_path / "runtime" / "state" / "life_targets"
+            validation_state = tmp_path / "runtime" / "state" / "validation"
+            observation_state = tmp_path / "runtime" / "state" / "observation"
+            schema_runner_state = tmp_path / "runtime" / "state" / "schema_runner"
+
+            self._run_pre_s08_chain(
+                doc_out=doc_out,
+                reports=reports,
+                receipts=receipts,
+                direction_state=direction_state,
+                authority_state=authority_state,
+                neural_state=neural_state,
+                state_root=state_root,
+                membrane_state=membrane_state,
+                run_doc_ingestion=run_doc_ingestion,
+                run_direction_lock=run_direction_lock,
+                run_source_authority=run_source_authority,
+                run_neural_life_core=run_neural_life_core,
+                run_check_neural_life_core=run_check_neural_life_core,
+                run_state_store=run_state_store,
+                run_check_state_store=run_check_state_store,
+                run_life_membrane=run_life_membrane,
+                run_check_life_membrane=run_check_life_membrane,
+                run_build_language_relationship=run_build_language_relationship,
+                run_check_language_relationship=run_check_language_relationship,
+            )
+
+            first_birth = run_birth_readiness(
+                docs_dir=self.docs_dir,
+                doc_index_path=doc_out / "doc_carrier_index.json",
+                direction_state_dir=direction_state,
+                neural_core_state_dir=neural_state,
+                state_dir=state_root,
+                membrane_dir=membrane_state,
+                out_dir=life_targets_state,
+                reports_dir=reports,
+                receipts_dir=receipts,
+                run_id="birth-readiness-before-s05",
+                strict=True,
+            )
+            self.assertEqual(first_birth.exit_code, 0)
+            self.assertEqual(
+                self._read_json(
+                    life_targets_state
+                    / "queue_e_world_contact_repair_hold_handoff.json"
+                )["handoff_status"],
+                "deferred_until_s05_s09",
+            )
+
+            validation = run_validation_membrane(
+                docs_dir=self.docs_dir,
+                doc_index_path=doc_out / "doc_carrier_index.json",
+                state_dir=state_root,
+                membrane_dir=membrane_state,
+                life_targets_dir=life_targets_state,
+                validation_dir=validation_state,
+                observation_dir=observation_state,
+                reports_dir=reports,
+                receipts_dir=receipts,
+                run_id="birth-readiness-validation",
+                strict=True,
+            )
+            self.assertEqual(validation.exit_code, 0)
+            validation_check = run_check_validation_membrane(
+                state_dir=state_root,
+                validation_dir=validation_state,
+                observation_dir=observation_state,
+                reports_dir=reports,
+                strict=True,
+            )
+            self.assertEqual(validation_check.exit_code, 0)
+
+            schema = run_schema_runner(
+                docs_dir=self.docs_dir,
+                doc_index_path=doc_out / "doc_carrier_index.json",
+                state_dir=state_root,
+                reports_dir=reports,
+                receipts_dir=receipts,
+                run_id="birth-readiness-schema",
+                strict=True,
+            )
+            self.assertEqual(schema.exit_code, 0)
+            schema_check = run_check_schema_runner(
+                state_dir=schema_runner_state,
+                reports_dir=reports,
+                strict=True,
+            )
+            self.assertEqual(schema_check.exit_code, 0)
+
+            result = run_birth_readiness(
+                docs_dir=self.docs_dir,
+                doc_index_path=doc_out / "doc_carrier_index.json",
+                direction_state_dir=direction_state,
+                neural_core_state_dir=neural_state,
+                state_dir=state_root,
+                membrane_dir=membrane_state,
+                out_dir=life_targets_state,
+                reports_dir=reports,
+                receipts_dir=receipts,
+                run_id="birth-readiness-after-s09",
+                strict=True,
+            )
+            self.assertEqual(result.exit_code, 0)
+            check = run_check_birth_readiness(
+                state_dir=life_targets_state,
+                membrane_dir=membrane_state,
+                reports_dir=reports,
+                strict=True,
+            )
+            self.assertEqual(check.exit_code, 0)
+
+            claims = self._read_json(life_targets_state / "life_target_claims.json")
+            evidence = self._read_json(life_targets_state / "life_target_evidence_matrix.json")
+            handoff = self._read_json(
+                life_targets_state / "queue_e_world_contact_repair_hold_handoff.json"
+            )
+            rollup = self._read_json(life_targets_state / "birth_readiness_rollup.json")
+            stage_gate = self._read_json(life_targets_state / "birth_readiness_stage_gate.json")
+            report = self._read_json(reports / "birth_readiness_report.json")
+            digest = self._read_json(reports / "birth_readiness_digest.json")
+            check_report = self._read_json(reports / "birth_readiness_check_report.json")
+
+        handoff_ref = "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
+        expected_handoff_refs = {
+            "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            "runtime/state/validation/world_contact_validation.json",
+            "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+            "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold_required",
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/membrane/world_contact_summary.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+            handoff_ref,
+        }
+
+        self.assertEqual(handoff["schema_version"], "queue_e_world_contact_repair_hold_handoff_v0")
+        self.assertEqual(handoff["handoff_status"], "closed")
+        self.assertTrue(handoff["repair_hold_required"])
+        self.assertEqual(handoff["confirmation_threshold_bias"], "raised")
+        self.assertTrue(handoff["blocked_future_routes"])
+        self.assertTrue(handoff["allowed_repair_routes"])
+        self.assertTrue(handoff["repair_governance_refs"])
+        self.assertTrue(
+            expected_handoff_refs.difference({handoff_ref}).issubset(
+                set(handoff["ref_set"])
+            )
+        )
+        for target in ["real_pain", "real_responsibility", "real_regret"]:
+            claim = claims["targets"][target]
+            self.assertEqual(claim["queue_e_world_contact_handoff_profile_ref"], handoff_ref)
+            self.assertEqual(claim["queue_e_world_contact_handoff_status"], "closed")
+            self.assertTrue(
+                expected_handoff_refs.issubset(
+                    set(claim["queue_e_world_contact_handoff_refs"])
+                ),
+                target,
+            )
+            self.assertTrue(
+                expected_handoff_refs.issubset(
+                    set(evidence["targets"][target]["pain_regret_responsibility"])
+                ),
+                target,
+            )
+        for carrier in [rollup, stage_gate, report]:
+            self.assertEqual(carrier["queue_e_world_contact_handoff_profile_ref"], handoff_ref)
+            self.assertEqual(carrier["queue_e_world_contact_handoff_status"], "closed")
+            self.assertTrue(expected_handoff_refs.issubset(set(carrier["queue_e_world_contact_ref_set"])))
+        self.assertEqual(stage_gate["gate_status"]["queue_e_world_contact_handoff_gate"], "closed")
+        self.assertEqual(digest["queue_e_world_contact_handoff_status"], "closed")
+        self.assertTrue(digest["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(check_report["queue_e_world_contact_handoff_status"], "closed")
 
     def test_cli_check_birth_readiness_returns_zero_and_writes_report(self):
         with tempfile.TemporaryDirectory() as tmp:

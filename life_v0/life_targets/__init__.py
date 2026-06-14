@@ -285,6 +285,9 @@ def run_birth_readiness(
     report_ref = "runtime/reports/latest/birth_readiness_report.json"
     consciousness_probe_ref = "runtime/state/consciousness/consciousness_probe_bundle.json"
     queue_e_birth_repair_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+    queue_e_world_contact_handoff_profile_ref = (
+        "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
+    )
 
     consciousness_probe = build_consciousness_probe_bundle(
         run_id=run_id,
@@ -305,6 +308,28 @@ def run_birth_readiness(
             queue_e_birth_repair_profile_ref,
         ]
     )
+    world_contact_validation = _load_json_optional(
+        state_dir / "validation" / "world_contact_validation.json"
+    )
+    validation_rollup = _load_json_optional(
+        state_dir / "validation" / "validation_rollup.json"
+    )
+    schema_runner_manifest = _load_json_optional(
+        state_dir / "schema_runner" / "run_manifest.json"
+    )
+    queue_e_world_contact_handoff_profile = (
+        _build_queue_e_world_contact_handoff_profile(
+            world_contact_validation=world_contact_validation,
+            validation_rollup=validation_rollup,
+            schema_runner_manifest=schema_runner_manifest,
+        )
+    )
+    queue_e_world_contact_handoff_refs = _dedupe_string_refs(
+        [
+            *queue_e_world_contact_handoff_profile.get("ref_set", []),
+            queue_e_world_contact_handoff_profile_ref,
+        ]
+    )
     evidence_matrix = build_life_target_evidence_matrix(
         run_id=run_id,
         generated_at=generated_at,
@@ -316,6 +341,8 @@ def run_birth_readiness(
         consciousness_probe_ref=consciousness_probe_ref,
         queue_e_birth_repair_profile_ref=queue_e_birth_repair_profile_ref,
         queue_e_birth_repair_refs=queue_e_birth_repair_refs,
+        queue_e_world_contact_handoff_profile_ref=queue_e_world_contact_handoff_profile_ref,
+        queue_e_world_contact_handoff_refs=queue_e_world_contact_handoff_refs,
     )
     claims = build_life_target_claims(
         run_id=run_id,
@@ -332,6 +359,9 @@ def run_birth_readiness(
         consciousness_probe_ref=consciousness_probe_ref,
         queue_e_birth_repair_profile_ref=queue_e_birth_repair_profile_ref,
         queue_e_birth_repair_refs=queue_e_birth_repair_refs,
+        queue_e_world_contact_handoff_profile_ref=queue_e_world_contact_handoff_profile_ref,
+        queue_e_world_contact_handoff_refs=queue_e_world_contact_handoff_refs,
+        queue_e_world_contact_handoff_status=queue_e_world_contact_handoff_profile.get("handoff_status"),
     )
     rollup = build_birth_readiness_rollup(
         run_id=run_id,
@@ -343,6 +373,9 @@ def run_birth_readiness(
         queue_e_birth_repair_profile=queue_e_birth_repair_profile,
         queue_e_birth_repair_profile_ref=queue_e_birth_repair_profile_ref,
         queue_e_birth_repair_refs=queue_e_birth_repair_refs,
+        queue_e_world_contact_handoff_profile=queue_e_world_contact_handoff_profile,
+        queue_e_world_contact_handoff_profile_ref=queue_e_world_contact_handoff_profile_ref,
+        queue_e_world_contact_handoff_refs=queue_e_world_contact_handoff_refs,
     )
     stage_gate = build_birth_readiness_stage_gate(
         run_id=run_id,
@@ -355,6 +388,9 @@ def run_birth_readiness(
         queue_e_birth_repair_profile=queue_e_birth_repair_profile,
         queue_e_birth_repair_profile_ref=queue_e_birth_repair_profile_ref,
         queue_e_birth_repair_refs=queue_e_birth_repair_refs,
+        queue_e_world_contact_handoff_profile=queue_e_world_contact_handoff_profile,
+        queue_e_world_contact_handoff_profile_ref=queue_e_world_contact_handoff_profile_ref,
+        queue_e_world_contact_handoff_refs=queue_e_world_contact_handoff_refs,
     )
     archive_index = _build_archive_index(run_id, generated_at, receipt_ref)
     status_report = _build_life_target_status(run_id, generated_at, overall_status, target_status, receipt_ref)
@@ -370,6 +406,9 @@ def run_birth_readiness(
         queue_e_birth_repair_profile,
         queue_e_birth_repair_profile_ref,
         queue_e_birth_repair_refs,
+        queue_e_world_contact_handoff_profile,
+        queue_e_world_contact_handoff_profile_ref,
+        queue_e_world_contact_handoff_refs,
     )
     digest = _build_digest(
         run_id,
@@ -379,6 +418,9 @@ def run_birth_readiness(
         queue_e_birth_repair_profile,
         queue_e_birth_repair_profile_ref,
         queue_e_birth_repair_refs,
+        queue_e_world_contact_handoff_profile,
+        queue_e_world_contact_handoff_profile_ref,
+        queue_e_world_contact_handoff_refs,
     )
     receipt = _build_receipt(
         run_id=run_id,
@@ -395,6 +437,7 @@ def run_birth_readiness(
         stage_effect=stage_effect,
         consciousness_probe_path=out_dir.parent / "consciousness" / "consciousness_probe_bundle.json",
         queue_e_birth_repair_profile_path=out_dir / "queue_e_birth_repair_profile.json",
+        queue_e_world_contact_handoff_profile_path=out_dir / "queue_e_world_contact_repair_hold_handoff.json",
     )
 
     try:
@@ -404,6 +447,10 @@ def run_birth_readiness(
         consciousness_dir = out_dir.parent / "consciousness"
         consciousness_dir.mkdir(parents=True, exist_ok=True)
         _write_json(out_dir / "queue_e_birth_repair_profile.json", queue_e_birth_repair_profile)
+        _write_json(
+            out_dir / "queue_e_world_contact_repair_hold_handoff.json",
+            queue_e_world_contact_handoff_profile,
+        )
         _write_json(out_dir / "life_target_claims.json", claims)
         _write_json(out_dir / "life_target_evidence_matrix.json", evidence_matrix)
         _write_json(out_dir / "birth_readiness_rollup.json", rollup)
@@ -449,6 +496,11 @@ def run_check_birth_readiness(
         blocked_reasons,
         "queue_e_birth_repair_gate",
     )
+    queue_e_world_contact_handoff_profile = _load_json(
+        state_dir / "queue_e_world_contact_repair_hold_handoff.json",
+        blocked_reasons,
+        "queue_e_world_contact_handoff_gate",
+    )
     consciousness_probe = _load_json(
         state_dir.parent / "consciousness" / "consciousness_probe_bundle.json",
         blocked_reasons,
@@ -472,6 +524,16 @@ def run_check_birth_readiness(
             build_report,
         )
     )
+    blocked_reasons.extend(
+        _check_queue_e_world_contact_handoff_profile(
+            queue_e_world_contact_handoff_profile,
+            claims,
+            evidence,
+            rollup,
+            stage_gate,
+            build_report,
+        )
+    )
     blocked_reasons.extend(_check_consciousness_probe(consciousness_probe))
     blocked_reasons.extend(_check_precheck(precheck))
     blocked_reasons.extend(_check_build_report(build_report))
@@ -488,6 +550,10 @@ def run_check_birth_readiness(
         "target_count": len(claims.get("targets", {})),
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "open" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
+        "queue_e_world_contact_handoff_profile_ref": "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
+        "queue_e_world_contact_handoff_status": queue_e_world_contact_handoff_profile.get(
+            "handoff_status"
+        ),
         "closed_gates": _closed_gates(blocked_reasons),
         "blocked_gates": [] if not blocked_reasons else _blocked_gates(blocked_reasons),
         "blocked_reasons": blocked_reasons,
@@ -513,6 +579,14 @@ def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, A
     except (OSError, json.JSONDecodeError) as exc:
         blocked_reasons.append(f"{gate} failed: {exc}")
         return {}
+
+
+def _load_json_optional(path: Path) -> dict[str, Any]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
 
 
 def _direction_blockers(direction_lock: dict[str, Any]) -> list[str]:
@@ -892,6 +966,9 @@ def _build_report(
     queue_e_birth_repair_profile: dict[str, Any],
     queue_e_birth_repair_profile_ref: str,
     queue_e_birth_repair_refs: list[str],
+    queue_e_world_contact_handoff_profile: dict[str, Any],
+    queue_e_world_contact_handoff_profile_ref: str,
+    queue_e_world_contact_handoff_refs: list[str],
 ) -> dict[str, Any]:
     return {
         "schema_version": "s08_life_target_runtimes_report_v0",
@@ -913,6 +990,11 @@ def _build_report(
         "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
         "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
         "queue_e_birth_repair_ref_set": list(queue_e_birth_repair_refs),
+        "queue_e_world_contact_handoff_profile_ref": queue_e_world_contact_handoff_profile_ref,
+        "queue_e_world_contact_handoff_status": queue_e_world_contact_handoff_profile.get("handoff_status"),
+        "queue_e_world_contact_repair_hold_required": queue_e_world_contact_handoff_profile.get("repair_hold_required"),
+        "queue_e_world_contact_confirmation_threshold_bias": queue_e_world_contact_handoff_profile.get("confirmation_threshold_bias"),
+        "queue_e_world_contact_ref_set": list(queue_e_world_contact_handoff_refs),
         "next_allowed_slices": NEXT_ALLOWED_SLICES if overall_status == "open" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }
@@ -926,6 +1008,9 @@ def _build_digest(
     queue_e_birth_repair_profile: dict[str, Any],
     queue_e_birth_repair_profile_ref: str,
     queue_e_birth_repair_refs: list[str],
+    queue_e_world_contact_handoff_profile: dict[str, Any],
+    queue_e_world_contact_handoff_profile_ref: str,
+    queue_e_world_contact_handoff_refs: list[str],
 ) -> dict[str, Any]:
     return {
         "schema_version": "birth_readiness_digest_v0",
@@ -940,6 +1025,11 @@ def _build_digest(
         "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
         "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
         "queue_e_birth_repair_ref_count": len(queue_e_birth_repair_refs),
+        "queue_e_world_contact_handoff_profile_ref": queue_e_world_contact_handoff_profile_ref,
+        "queue_e_world_contact_handoff_status": queue_e_world_contact_handoff_profile.get("handoff_status"),
+        "queue_e_world_contact_repair_hold_required": queue_e_world_contact_handoff_profile.get("repair_hold_required"),
+        "queue_e_world_contact_confirmation_threshold_bias": queue_e_world_contact_handoff_profile.get("confirmation_threshold_bias"),
+        "queue_e_world_contact_ref_count": len(queue_e_world_contact_handoff_refs),
         "next_allowed_slices": NEXT_ALLOWED_SLICES if overall_status == "open" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }
@@ -961,9 +1051,11 @@ def _build_receipt(
     stage_effect: str,
     consciousness_probe_path: Path,
     queue_e_birth_repair_profile_path: Path,
+    queue_e_world_contact_handoff_profile_path: Path,
 ) -> dict[str, Any]:
     output_refs = [
         queue_e_birth_repair_profile_path,
+        queue_e_world_contact_handoff_profile_path,
         out_dir / "life_target_claims.json",
         out_dir / "life_target_evidence_matrix.json",
         out_dir / "birth_readiness_rollup.json",
@@ -994,6 +1086,7 @@ def _build_receipt(
         ],
         "state_refs": [
             "runtime/state/life_targets/queue_e_birth_repair_profile.json",
+            "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
             "runtime/state/life_targets/life_target_claims.json",
             "runtime/state/life_targets/life_target_evidence_matrix.json",
             "runtime/state/life_targets/birth_readiness_rollup.json",
@@ -1104,6 +1197,11 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate next allowed slices mismatch")
     if build_report.get("consciousness_probe_ref") != "runtime/state/consciousness/consciousness_probe_bundle.json":
         reasons.append("build_report_gate consciousness probe ref mismatch")
+    if (
+        build_report.get("queue_e_world_contact_handoff_profile_ref")
+        != "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
+    ):
+        reasons.append("build_report_gate queue_e world contact handoff ref mismatch")
     return reasons
 
 
@@ -1158,6 +1256,248 @@ def _check_queue_e_birth_repair_profile(
     if stage_gate.get("gate_status", {}).get("queue_e_birth_repair_gate") != "closed":
         reasons.append("queue_e_birth_repair_gate stage gate is not closed")
     return reasons
+
+
+def _build_queue_e_world_contact_handoff_profile(
+    *,
+    world_contact_validation: dict[str, Any],
+    validation_rollup: dict[str, Any],
+    schema_runner_manifest: dict[str, Any],
+) -> dict[str, Any]:
+    validation_closed = _world_contact_repair_hold_ready(world_contact_validation)
+    rollup_closed = _queue_e_world_contact_repair_hold_ready(validation_rollup)
+    manifest_closed = _queue_e_world_contact_repair_hold_ready(schema_runner_manifest)
+    handoff_status = (
+        "closed"
+        if validation_closed and rollup_closed and manifest_closed
+        else "deferred_until_s05_s09"
+    )
+    ref_set = _dedupe_string_refs(
+        [
+            "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            *(
+                [
+                    "runtime/state/validation/world_contact_validation.json",
+                    "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+                    "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold_required",
+                ]
+                if handoff_status == "closed"
+                else []
+            ),
+            *list(world_contact_validation.get("repair_governance_refs", [])),
+            *list(
+                validation_rollup.get(
+                    "queue_e_world_contact_repair_governance_refs", []
+                )
+            ),
+            *list(
+                schema_runner_manifest.get(
+                    "queue_e_world_contact_repair_governance_refs", []
+                )
+            ),
+        ]
+    )
+    return {
+        "schema_version": "queue_e_world_contact_repair_hold_handoff_v0",
+        "handoff_status": handoff_status,
+        "future_no_go_profile_ref": (
+            schema_runner_manifest.get("queue_e_world_contact_future_no_go_profile_ref")
+            or validation_rollup.get("queue_e_world_contact_future_no_go_profile_ref")
+            or world_contact_validation.get("future_no_go_profile_ref")
+            or "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+        ),
+        "repair_hold_required": (
+            bool(
+                schema_runner_manifest.get(
+                    "queue_e_world_contact_repair_hold_required"
+                )
+            )
+            or bool(validation_rollup.get("queue_e_world_contact_repair_hold_required"))
+            or bool(world_contact_validation.get("repair_hold_required"))
+        ),
+        "confirmation_threshold_bias": (
+            schema_runner_manifest.get(
+                "queue_e_world_contact_confirmation_threshold_bias"
+            )
+            or validation_rollup.get(
+                "queue_e_world_contact_confirmation_threshold_bias"
+            )
+            or world_contact_validation.get("confirmation_threshold_bias")
+            or "deferred"
+        ),
+        "future_release_posture": (
+            schema_runner_manifest.get("queue_e_world_contact_future_release_posture")
+            or validation_rollup.get("queue_e_world_contact_future_release_posture")
+            or world_contact_validation.get("future_release_posture")
+            or "deferred_until_repair_handoff"
+        ),
+        "blocked_future_routes": _dedupe_string_refs(
+            [
+                *list(
+                    schema_runner_manifest.get(
+                        "queue_e_world_contact_blocked_future_routes", []
+                    )
+                ),
+                *list(
+                    validation_rollup.get(
+                        "queue_e_world_contact_blocked_future_routes", []
+                    )
+                ),
+                *list(world_contact_validation.get("blocked_future_routes", [])),
+            ]
+        ),
+        "allowed_repair_routes": _dedupe_string_refs(
+            [
+                *list(
+                    schema_runner_manifest.get(
+                        "queue_e_world_contact_allowed_repair_routes", []
+                    )
+                ),
+                *list(
+                    validation_rollup.get(
+                        "queue_e_world_contact_allowed_repair_routes", []
+                    )
+                ),
+                *list(world_contact_validation.get("allowed_repair_routes", [])),
+            ]
+        ),
+        "repair_governance_refs": _dedupe_string_refs(
+            [
+                *list(
+                    schema_runner_manifest.get(
+                        "queue_e_world_contact_repair_governance_refs", []
+                    )
+                ),
+                *list(
+                    validation_rollup.get(
+                        "queue_e_world_contact_repair_governance_refs", []
+                    )
+                ),
+                *list(world_contact_validation.get("repair_governance_refs", [])),
+            ]
+        ),
+        "source_state_refs": [
+            "runtime/state/validation/world_contact_validation.json",
+            "runtime/state/validation/validation_rollup.json",
+            "runtime/state/schema_runner/run_manifest.json",
+        ],
+        "ref_set": ref_set,
+    }
+
+
+def _check_queue_e_world_contact_handoff_profile(
+    profile: dict[str, Any],
+    claims: dict[str, Any],
+    evidence: dict[str, Any],
+    rollup: dict[str, Any],
+    stage_gate: dict[str, Any],
+    build_report: dict[str, Any],
+) -> list[str]:
+    reasons: list[str] = []
+    profile_ref = (
+        "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
+    )
+    if profile.get("schema_version") != "queue_e_world_contact_repair_hold_handoff_v0":
+        reasons.append("queue_e_world_contact_handoff_gate schema mismatch")
+    if profile.get("handoff_status") not in {"closed", "deferred_until_s05_s09"}:
+        reasons.append("queue_e_world_contact_handoff_gate status mismatch")
+    expected_refs = set(profile.get("ref_set", [])) | {profile_ref}
+    for target in ["real_pain", "real_responsibility", "real_regret"]:
+        claim = claims.get("targets", {}).get(target, {})
+        if claim.get("queue_e_world_contact_handoff_profile_ref") != profile_ref:
+            reasons.append(
+                f"queue_e_world_contact_handoff_gate {target} profile ref mismatch"
+            )
+        if claim.get("queue_e_world_contact_handoff_status") != profile.get(
+            "handoff_status"
+        ):
+            reasons.append(
+                f"queue_e_world_contact_handoff_gate {target} status mismatch"
+            )
+        if not expected_refs.issubset(
+            set(claim.get("queue_e_world_contact_handoff_refs", []))
+        ):
+            reasons.append(
+                f"queue_e_world_contact_handoff_gate {target} claim refs incomplete"
+            )
+        family_refs = (
+            evidence.get("targets", {})
+            .get(target, {})
+            .get("pain_regret_responsibility", [])
+        )
+        if not expected_refs.issubset(set(family_refs)):
+            reasons.append(
+                f"queue_e_world_contact_handoff_gate {target} evidence refs incomplete"
+            )
+    for carrier_name, carrier in [
+        ("rollup", rollup),
+        ("stage_gate", stage_gate),
+        ("build_report", build_report),
+    ]:
+        if carrier.get("queue_e_world_contact_handoff_profile_ref") != profile_ref:
+            reasons.append(
+                f"queue_e_world_contact_handoff_gate {carrier_name} profile ref mismatch"
+            )
+        if carrier.get("queue_e_world_contact_handoff_status") != profile.get(
+            "handoff_status"
+        ):
+            reasons.append(
+                f"queue_e_world_contact_handoff_gate {carrier_name} status mismatch"
+            )
+        if not expected_refs.issubset(
+            set(carrier.get("queue_e_world_contact_ref_set", []))
+        ):
+            reasons.append(
+                f"queue_e_world_contact_handoff_gate {carrier_name} refs incomplete"
+            )
+    if (
+        stage_gate.get("gate_status", {}).get("queue_e_world_contact_handoff_gate")
+        != profile.get("handoff_status")
+    ):
+        reasons.append("queue_e_world_contact_handoff_gate stage gate mismatch")
+    if profile.get("handoff_status") == "closed":
+        if profile.get("repair_hold_required") is not True:
+            reasons.append("queue_e_world_contact_handoff_gate repair hold missing")
+        if profile.get("confirmation_threshold_bias") != "raised":
+            reasons.append(
+                "queue_e_world_contact_handoff_gate confirmation threshold mismatch"
+            )
+        if not profile.get("blocked_future_routes"):
+            reasons.append("queue_e_world_contact_handoff_gate blocked routes missing")
+        if not profile.get("allowed_repair_routes"):
+            reasons.append("queue_e_world_contact_handoff_gate allowed routes missing")
+        if not profile.get("repair_governance_refs"):
+            reasons.append(
+                "queue_e_world_contact_handoff_gate repair governance refs missing"
+            )
+    return reasons
+
+
+def _world_contact_repair_hold_ready(payload: dict[str, Any]) -> bool:
+    return (
+        payload.get("schema_version") == "world_contact_validation_v0"
+        and payload.get("repair_hold_required") is True
+        and payload.get("confirmation_threshold_bias") == "raised"
+        and payload.get("future_no_go_profile_ref")
+        == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+        and bool(payload.get("blocked_future_routes"))
+        and bool(payload.get("allowed_repair_routes"))
+        and bool(payload.get("repair_governance_refs"))
+    )
+
+
+def _queue_e_world_contact_repair_hold_ready(payload: dict[str, Any]) -> bool:
+    return (
+        payload.get("schema_version")
+        in {"validation_rollup_v0", "schema_runner_run_manifest_v0"}
+        and payload.get("queue_e_world_contact_repair_hold_required") is True
+        and payload.get("queue_e_world_contact_confirmation_threshold_bias") == "raised"
+        and payload.get("queue_e_world_contact_future_no_go_profile_ref")
+        == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+        and bool(payload.get("queue_e_world_contact_blocked_future_routes"))
+        and bool(payload.get("queue_e_world_contact_allowed_repair_routes"))
+        and bool(payload.get("queue_e_world_contact_repair_governance_refs"))
+    )
 
 
 def _overall_status(

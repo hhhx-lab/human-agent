@@ -646,11 +646,14 @@ GoNoGo.future_no_go_profile
   -> WorldContactValidation.repair_hold_required
   -> ValidationRollup.queue_e_world_contact_*
   -> RunManifest.queue_e_world_contact_*
+  -> BirthReadiness.queue_e_world_contact_repair_hold_handoff
   -> f_equal_relationship_dialogue_growth
   -> g_initial_life_mechanism_coverage
 ```
 
 机制含义是：真实责任和真实后悔不能只在 `PainRegretRepairReport`、birth repair profile 或 S05/S09 报告中闭合；最终 live0 验收也必须确认修复 hold 已经改变世界接触验证与 schema handoff。它仍然是内部证据链，不是外显语言模板。
+
+当前第二段继续把这条 handoff 推回 S08：`birth_readiness` 首次运行时允许 `queue_e_world_contact_repair_hold_handoff.json` 处在 `deferred_until_s05_s09`，因为 S08 的下一步本来就是 S05；当 S05/S09 已经存在时，S08 必须读回 `world_contact_validation.json`、`validation_rollup.json` 和 `schema_runner/run_manifest.json`，把 handoff 状态推进为 `closed`，并写入三项修复目标的 claims、evidence、rollup、stage gate、report、digest、check report 和 receipt。
 
 ## 机制补厚完成检查
 

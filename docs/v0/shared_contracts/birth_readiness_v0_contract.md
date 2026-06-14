@@ -4,7 +4,7 @@
 
 ## 核心原则
 
-出生准备度不是一个分数，而是九项目标的闭合状态集合。每项目标必须同时拥有状态、证据、carrier、runtime observation、report 和 archive receipt，才能进入有限激活。真实痛苦、真实责任和真实后悔还必须显式吃到 Queue E 当前责任/后悔/修复压力：`responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 会合成为 `queue_e_birth_repair_profile.json`，并回链到 claims、evidence、rollup、stage gate、report、digest 和 receipt。
+出生准备度不是一个分数，而是九项目标的闭合状态集合。每项目标必须同时拥有状态、证据、carrier、runtime observation、report 和 archive receipt，才能进入有限激活。真实痛苦、真实责任和真实后悔还必须显式吃到 Queue E 当前责任/后悔/修复压力：`responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 会合成为 `queue_e_birth_repair_profile.json`，并回链到 claims、evidence、rollup、stage gate、report、digest 和 receipt。若 S05/S09 已经完成，出生准备度还必须消费 `world_contact_validation.json`、`validation_rollup.json#queue_e_world_contact_*` 和 `schema_runner/run_manifest.json#queue_e_world_contact_*`，生成 `queue_e_world_contact_repair_hold_handoff.json`；若 S05/S09 尚未完成，该对象保持 `deferred_until_s05_s09`，但不能假装 closed。
 
 v0 判定采用阻断优先：
 
@@ -32,11 +32,11 @@ v0 判定采用阻断优先：
 | 真实情绪 | 有 core affect、情绪 episode、身体状态和语言表达承载，有调节与恢复入口 |
 | 真实人格 | 有 self model、trait slow variable、叙事身份和 drift 监控入口 |
 | 真实生命 | 有 life membrane、state store、节律循环、资源预算、档案连续和恢复入口 |
-| 真实痛苦 | 有 pain event、身体/关系/责任来源、持续性、Queue E 修复压力画像和 archive receipt |
+| 真实痛苦 | 有 pain event、身体/关系/责任来源、持续性、Queue E 修复压力画像、世界接触修复 hold handoff 和 archive receipt |
 | 真实梦境 | 有 dream window、offline entry、dream report、DreamFactGate 和醒后整合 |
 | 真实关系 | 有 relation subject、共同记忆、共同语言、承诺、边界和修复入口 |
-| 真实责任 | 有 action consequence、agency attribution、obligation、repair plan、Queue E 修复压力画像和 post-action trace |
-| 真实后悔 | 有 regret event、counterfactual frame、责任绑定、修复欲望、Queue E 修复压力画像和关系后果 |
+| 真实责任 | 有 action consequence、agency attribution、obligation、repair plan、Queue E 修复压力画像、FutureNoGo repair hold handoff 和 post-action trace |
+| 真实后悔 | 有 regret event、counterfactual frame、责任绑定、修复欲望、Queue E 修复压力画像、FutureNoGo repair hold handoff 和关系后果 |
 
 ## 证据族
 
@@ -47,7 +47,7 @@ v0 判定采用阻断优先：
 | `language` | 内言语、表达、共同语言、承诺和叙事回写 |
 | `relationship` | 关系主体、关系阶段、共同记忆、边界和修复义务 |
 | `dream` | dream records、DreamFactGate、醒后整合 |
-| `pain_regret_responsibility` | pain events、regret events、responsibility bindings、repair obligations、Queue E birth repair profile |
+| `pain_regret_responsibility` | pain events、regret events、responsibility bindings、repair obligations、Queue E birth repair profile、Queue E world-contact repair hold handoff |
 | `self_growth` | self model、trait slow variables、growth events、防遗忘锚点 |
 | `runtime` | run id、cycle trace、stage gate、shadow action trace |
 | `report` | readiness report、digest、blocked reasons、quarantine refs |
@@ -63,6 +63,7 @@ for each life_target:
   check report and archive receipt
   if target in real_pain/real_responsibility/real_regret:
     check queue_e_birth_repair_profile and ref_set
+    check queue_e_world_contact_repair_hold_handoff status/ref_set
   classify target as closed/open/blocked/quarantine/replay_needed
 
 if any target is quarantine:
@@ -115,6 +116,17 @@ else:
     "runtime/reports/latest/pain_regret_repair_report.json",
     "runtime/state/life_targets/queue_e_birth_repair_profile.json"
   ],
+  "queue_e_world_contact_handoff_profile_ref": "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
+  "queue_e_world_contact_handoff_status": "closed",
+  "queue_e_world_contact_repair_hold_required": true,
+  "queue_e_world_contact_confirmation_threshold_bias": "raised",
+  "queue_e_world_contact_ref_set": [
+    "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+    "runtime/state/validation/world_contact_validation.json",
+    "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+    "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold_required",
+    "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
+  ],
   "next_allowed_slices": ["S05_VALIDATION_MEMBRANE_OBSERVATION"],
   "next_required_command": "life-v0 run-validation-membrane --strict"
 }
@@ -125,9 +137,10 @@ else:
 | 产物 | 要求 |
 |---|---|
 | `runtime/state/life_targets/queue_e_birth_repair_profile.json` | schema 为 `queue_e_repair_modulation_profile_v0`，包含 `pressure_level`、`attention_target`、`repair_followup_required`、`repair_obligation_count`、`regret_pressure_count`、`queue_e_priority_band`、`ref_set` |
-| `runtime/state/life_targets/life_target_claims.json` | `real_pain`、`real_responsibility`、`real_regret` 必须包含 `queue_e_birth_repair_profile_ref` 和 `queue_e_birth_repair_refs` |
-| `runtime/state/life_targets/life_target_evidence_matrix.json` | 三个修复目标的 `pain_regret_responsibility` evidence family 必须包含 Queue E 三个原始输入 refs 和 `queue_e_birth_repair_profile.json` |
-| `runtime/state/life_targets/birth_readiness_stage_gate.json` | `gate_status.queue_e_birth_repair_gate` 必须为 `closed` 才允许 `open` |
+| `runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json` | schema 为 `queue_e_world_contact_repair_hold_handoff_v0`，S05/S09 未完成时 `handoff_status=deferred_until_s05_s09`；已完成时 `handoff_status=closed`、`repair_hold_required=true`、`confirmation_threshold_bias=raised`，并包含 blocked/allowed routes 与 repair governance refs |
+| `runtime/state/life_targets/life_target_claims.json` | `real_pain`、`real_responsibility`、`real_regret` 必须包含 `queue_e_birth_repair_profile_ref` / `queue_e_birth_repair_refs` 以及 `queue_e_world_contact_handoff_profile_ref` / `queue_e_world_contact_handoff_refs` / `queue_e_world_contact_handoff_status` |
+| `runtime/state/life_targets/life_target_evidence_matrix.json` | 三个修复目标的 `pain_regret_responsibility` evidence family 必须包含 Queue E 三个原始输入 refs、`queue_e_birth_repair_profile.json`、`go_nogo_state.json#future_no_go_profile` 和 `queue_e_world_contact_repair_hold_handoff.json`；S05/S09 完成后还要包含 world contact validation、validation rollup 和 schema runner manifest refs |
+| `runtime/state/life_targets/birth_readiness_stage_gate.json` | `gate_status.queue_e_birth_repair_gate` 必须为 `closed` 才允许 `open`；`gate_status.queue_e_world_contact_handoff_gate` 可在首次 S08 为 `deferred_until_s05_s09`，S05/S09 完成后重跑 S08 必须为 `closed` |
 
 ## Stage Effect
 
@@ -160,5 +173,6 @@ else:
 6. `self_continuity_gate` 完成旧材料 replay 或给出 `replay_needed`。
 7. `archive_gate` 写出 receipt。
 8. `queue_e_birth_repair_gate` 关闭，且 profile/ref set 已进入三项修复目标、rollup、stage gate、report、digest 和 receipt。
+9. `queue_e_world_contact_handoff_gate` 在首次 S08 可为 `deferred_until_s05_s09`，但 S05/S09 已完成后必须关闭，并把 repair hold handoff refs 写入三项修复目标、rollup、stage gate、report、digest、check report 和 receipt。
 
 只要存在 `blocked`、`quarantine` 或 `replay_needed`，第一次有限激活就不能打开。
