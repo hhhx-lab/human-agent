@@ -14,6 +14,7 @@ from .handoff_profile import (
 )
 from .idle_strategy import (
     IDLE_STRATEGY_STATE_REF,
+    QUEUE_E_WORLD_CONTACT_REPAIR_HOLD_HANDOFF_REF,
     decide_idle_strategy,
     extract_idle_governance_fields,
 )
@@ -151,6 +152,9 @@ def write_waiting_heartbeat(
     resident_autonomous_activity_state = _read_json_if_exists(
         terminal_dir / "resident_autonomous_activity_state.json"
     )
+    queue_e_world_contact_handoff_profile = _read_json_if_exists(
+        terminal_dir.parent / "life_targets" / "queue_e_world_contact_repair_hold_handoff.json"
+    )
     idle_strategy = decide_idle_strategy(
         run_id=run_id,
         generated_at=generated_at,
@@ -186,6 +190,7 @@ def write_waiting_heartbeat(
         state_merge_guard=state_merge_guard,
         schema_cross_file_logic=schema_cross_file_logic,
         schema_run_manifest=schema_run_manifest,
+        queue_e_world_contact_handoff_profile=queue_e_world_contact_handoff_profile,
         workspace_frame=workspace_frame,
         broadcast_frame=broadcast_frame,
         metacognition_state=metacognition_state,
@@ -211,6 +216,11 @@ def write_waiting_heartbeat(
         state_merge_guard_ref=state_merge_guard_ref,
         schema_cross_file_logic_ref=schema_cross_file_logic_ref,
         schema_run_manifest_ref=schema_run_manifest_ref,
+        queue_e_world_contact_handoff_ref=(
+            QUEUE_E_WORLD_CONTACT_REPAIR_HOLD_HANDOFF_REF
+            if queue_e_world_contact_handoff_profile
+            else None
+        ),
         workspace_frame_ref=workspace_frame_ref,
         broadcast_frame_ref=broadcast_frame_ref,
         metacognition_state_ref=metacognition_state_ref,
@@ -504,6 +514,32 @@ def write_waiting_heartbeat(
         "queue_e_birth_repair_ref_set",
         "queue_e_birth_repair_waiting_posture",
         "queue_e_birth_repair_attention_reason",
+        "background_queue_e_world_contact_handoff_profile",
+        "background_queue_e_world_contact_handoff_profile_ref",
+        "background_queue_e_world_contact_handoff_status",
+        "background_queue_e_world_contact_repair_hold_required",
+        "background_queue_e_world_contact_confirmation_threshold_bias",
+        "background_queue_e_world_contact_future_release_posture",
+        "background_queue_e_world_contact_blocked_future_routes",
+        "background_queue_e_world_contact_allowed_repair_routes",
+        "background_queue_e_world_contact_repair_governance_refs",
+        "background_queue_e_world_contact_ref_set",
+        "background_queue_e_world_contact_waiting_posture",
+        "background_queue_e_world_contact_attention_target",
+        "background_queue_e_world_contact_attention_reason",
+        "queue_e_world_contact_handoff_profile",
+        "queue_e_world_contact_handoff_profile_ref",
+        "queue_e_world_contact_handoff_status",
+        "queue_e_world_contact_repair_hold_required",
+        "queue_e_world_contact_confirmation_threshold_bias",
+        "queue_e_world_contact_future_release_posture",
+        "queue_e_world_contact_blocked_future_routes",
+        "queue_e_world_contact_allowed_repair_routes",
+        "queue_e_world_contact_repair_governance_refs",
+        "queue_e_world_contact_ref_set",
+        "queue_e_world_contact_waiting_posture",
+        "queue_e_world_contact_attention_target",
+        "queue_e_world_contact_attention_reason",
         "life_constraint_waiting_posture",
         "life_constraint_attention_target",
         "life_constraint_attention_reason",
@@ -786,6 +822,84 @@ def write_waiting_heartbeat(
         queue_e_birth_repair_attention_reason=idle_strategy.get(
             "queue_e_birth_repair_attention_reason"
         ),
+        background_queue_e_world_contact_handoff_profile=idle_strategy.get(
+            "background_queue_e_world_contact_handoff_profile"
+        ),
+        background_queue_e_world_contact_handoff_profile_ref=idle_strategy.get(
+            "background_queue_e_world_contact_handoff_profile_ref"
+        ),
+        background_queue_e_world_contact_handoff_status=idle_strategy.get(
+            "background_queue_e_world_contact_handoff_status"
+        ),
+        background_queue_e_world_contact_repair_hold_required=idle_strategy.get(
+            "background_queue_e_world_contact_repair_hold_required"
+        ),
+        background_queue_e_world_contact_confirmation_threshold_bias=idle_strategy.get(
+            "background_queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        background_queue_e_world_contact_future_release_posture=idle_strategy.get(
+            "background_queue_e_world_contact_future_release_posture"
+        ),
+        background_queue_e_world_contact_blocked_future_routes=idle_strategy.get(
+            "background_queue_e_world_contact_blocked_future_routes"
+        ),
+        background_queue_e_world_contact_allowed_repair_routes=idle_strategy.get(
+            "background_queue_e_world_contact_allowed_repair_routes"
+        ),
+        background_queue_e_world_contact_repair_governance_refs=idle_strategy.get(
+            "background_queue_e_world_contact_repair_governance_refs"
+        ),
+        background_queue_e_world_contact_ref_set=idle_strategy.get(
+            "background_queue_e_world_contact_ref_set"
+        ),
+        background_queue_e_world_contact_waiting_posture=idle_strategy.get(
+            "background_queue_e_world_contact_waiting_posture"
+        ),
+        background_queue_e_world_contact_attention_target=idle_strategy.get(
+            "background_queue_e_world_contact_attention_target"
+        ),
+        background_queue_e_world_contact_attention_reason=idle_strategy.get(
+            "background_queue_e_world_contact_attention_reason"
+        ),
+        queue_e_world_contact_handoff_profile=idle_strategy.get(
+            "queue_e_world_contact_handoff_profile"
+        ),
+        queue_e_world_contact_handoff_profile_ref=idle_strategy.get(
+            "queue_e_world_contact_handoff_profile_ref"
+        ),
+        queue_e_world_contact_handoff_status=idle_strategy.get(
+            "queue_e_world_contact_handoff_status"
+        ),
+        queue_e_world_contact_repair_hold_required=idle_strategy.get(
+            "queue_e_world_contact_repair_hold_required"
+        ),
+        queue_e_world_contact_confirmation_threshold_bias=idle_strategy.get(
+            "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        queue_e_world_contact_future_release_posture=idle_strategy.get(
+            "queue_e_world_contact_future_release_posture"
+        ),
+        queue_e_world_contact_blocked_future_routes=idle_strategy.get(
+            "queue_e_world_contact_blocked_future_routes"
+        ),
+        queue_e_world_contact_allowed_repair_routes=idle_strategy.get(
+            "queue_e_world_contact_allowed_repair_routes"
+        ),
+        queue_e_world_contact_repair_governance_refs=idle_strategy.get(
+            "queue_e_world_contact_repair_governance_refs"
+        ),
+        queue_e_world_contact_ref_set=idle_strategy.get(
+            "queue_e_world_contact_ref_set"
+        ),
+        queue_e_world_contact_waiting_posture=idle_strategy.get(
+            "queue_e_world_contact_waiting_posture"
+        ),
+        queue_e_world_contact_attention_target=idle_strategy.get(
+            "queue_e_world_contact_attention_target"
+        ),
+        queue_e_world_contact_attention_reason=idle_strategy.get(
+            "queue_e_world_contact_attention_reason"
+        ),
         prediction_write_gate_refs=idle_strategy.get("prediction_write_gate_refs"),
         prediction_waiting_posture=idle_strategy.get("prediction_waiting_posture"),
         response_surface_posture_hint=idle_strategy.get("response_surface_posture_hint"),
@@ -991,6 +1105,18 @@ def _append_idle_heartbeat_trace(
         ),
         "queue_e_birth_repair_waiting_posture": idle_strategy.get(
             "queue_e_birth_repair_waiting_posture"
+        ),
+        "queue_e_world_contact_handoff_status": idle_strategy.get(
+            "queue_e_world_contact_handoff_status"
+        ),
+        "queue_e_world_contact_repair_hold_required": idle_strategy.get(
+            "queue_e_world_contact_repair_hold_required"
+        ),
+        "queue_e_world_contact_waiting_posture": idle_strategy.get(
+            "queue_e_world_contact_waiting_posture"
+        ),
+        "queue_e_world_contact_ref_set": list(
+            idle_strategy.get("queue_e_world_contact_ref_set", [])
         ),
         "resident_process_lease_history_profile_ref": idle_strategy.get(
             "resident_process_lease_history_profile_ref"

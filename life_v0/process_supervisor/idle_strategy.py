@@ -36,6 +36,9 @@ MEMORY_RETRIEVAL_FRAME_REF = "runtime/state/memory/memory_retrieval_frame.json"
 SCHEMA_CROSS_FILE_LOGIC_REF = "runtime/state/schema_runner/cross_file_logic.json"
 SCHEMA_RUN_MANIFEST_REF = "runtime/state/schema_runner/run_manifest.json"
 QUEUE_E_BIRTH_REPAIR_PROFILE_REF = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+QUEUE_E_WORLD_CONTACT_REPAIR_HOLD_HANDOFF_REF = (
+    "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
+)
 WORKSPACE_FRAME_REF = "runtime/state/consciousness/workspace_frame.json"
 BROADCAST_FRAME_REF = "runtime/state/consciousness/broadcast_frame.json"
 METACOGNITION_STATE_REF = "runtime/state/consciousness/metacognition_state.json"
@@ -362,6 +365,19 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_queue_e_birth_repair_ref_set",
     "background_queue_e_birth_repair_waiting_posture",
     "background_queue_e_birth_repair_attention_reason",
+    "background_queue_e_world_contact_handoff_profile",
+    "background_queue_e_world_contact_handoff_profile_ref",
+    "background_queue_e_world_contact_handoff_status",
+    "background_queue_e_world_contact_repair_hold_required",
+    "background_queue_e_world_contact_confirmation_threshold_bias",
+    "background_queue_e_world_contact_future_release_posture",
+    "background_queue_e_world_contact_blocked_future_routes",
+    "background_queue_e_world_contact_allowed_repair_routes",
+    "background_queue_e_world_contact_repair_governance_refs",
+    "background_queue_e_world_contact_ref_set",
+    "background_queue_e_world_contact_waiting_posture",
+    "background_queue_e_world_contact_attention_target",
+    "background_queue_e_world_contact_attention_reason",
     "background_queue_e_repair_modulation_profile",
     "background_queue_e_repair_pressure_level",
     "background_queue_e_repair_attention_target",
@@ -380,6 +396,19 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "queue_e_birth_repair_ref_set",
     "queue_e_birth_repair_waiting_posture",
     "queue_e_birth_repair_attention_reason",
+    "queue_e_world_contact_handoff_profile",
+    "queue_e_world_contact_handoff_profile_ref",
+    "queue_e_world_contact_handoff_status",
+    "queue_e_world_contact_repair_hold_required",
+    "queue_e_world_contact_confirmation_threshold_bias",
+    "queue_e_world_contact_future_release_posture",
+    "queue_e_world_contact_blocked_future_routes",
+    "queue_e_world_contact_allowed_repair_routes",
+    "queue_e_world_contact_repair_governance_refs",
+    "queue_e_world_contact_ref_set",
+    "queue_e_world_contact_waiting_posture",
+    "queue_e_world_contact_attention_target",
+    "queue_e_world_contact_attention_reason",
     "life_constraint_waiting_posture",
     "life_constraint_attention_target",
     "life_constraint_attention_reason",
@@ -468,6 +497,7 @@ def decide_idle_strategy(
     state_merge_guard: dict[str, Any] | None = None,
     schema_cross_file_logic: dict[str, Any] | None = None,
     schema_run_manifest: dict[str, Any] | None = None,
+    queue_e_world_contact_handoff_profile: dict[str, Any] | None = None,
     workspace_frame: dict[str, Any] | None = None,
     broadcast_frame: dict[str, Any] | None = None,
     metacognition_state: dict[str, Any] | None = None,
@@ -493,6 +523,7 @@ def decide_idle_strategy(
     state_merge_guard_ref: str | None = STATE_MERGE_GUARD_REF,
     schema_cross_file_logic_ref: str | None = SCHEMA_CROSS_FILE_LOGIC_REF,
     schema_run_manifest_ref: str | None = SCHEMA_RUN_MANIFEST_REF,
+    queue_e_world_contact_handoff_ref: str | None = QUEUE_E_WORLD_CONTACT_REPAIR_HOLD_HANDOFF_REF,
     workspace_frame_ref: str | None = WORKSPACE_FRAME_REF,
     broadcast_frame_ref: str | None = BROADCAST_FRAME_REF,
     metacognition_state_ref: str | None = METACOGNITION_STATE_REF,
@@ -596,6 +627,17 @@ def decide_idle_strategy(
         schema_run_manifest=schema_run_manifest,
         background_continuity_profile=background_continuity_profile,
     )
+    queue_e_world_contact_handoff_waiting_profile = (
+        _queue_e_world_contact_handoff_waiting_profile(
+            queue_e_world_contact_handoff_profile=queue_e_world_contact_handoff_profile,
+            queue_e_world_contact_handoff_ref=queue_e_world_contact_handoff_ref,
+            background_continuity_profile=background_continuity_profile,
+        )
+    )
+    if queue_e_world_contact_handoff_waiting_profile.get("repair_hold_required"):
+        repair_followup_required = True
+        if queue_e_priority_band == "baseline":
+            queue_e_priority_band = "repair_guarded"
     consciousness_profile = _consciousness_waiting_profile(
         workspace_frame=workspace_frame,
         broadcast_frame=broadcast_frame,
@@ -944,9 +986,16 @@ def decide_idle_strategy(
         ],
         long_horizon_refs=long_horizon_refs,
         queue_e_refs=(
-            queue_e_birth_repair_waiting_profile["ref_set"]
+            _dedupe_string_list(
+                queue_e_birth_repair_waiting_profile["ref_set"]
+                + queue_e_world_contact_handoff_waiting_profile.get("ref_set", [])
+            )
             if queue_e_birth_repair_waiting_profile["waiting_posture"]
             != "birth_repair_unobserved_waiting"
+            or queue_e_world_contact_handoff_waiting_profile.get(
+                "waiting_posture"
+            )
+            not in {None, "world_contact_repair_handoff_unobserved_waiting"}
             else []
         ),
         prediction_refs=prediction_write_gate_refs,
@@ -965,7 +1014,10 @@ def decide_idle_strategy(
         body_waiting_posture=body_waiting_posture,
         body_refs=body_ref_set,
         queue_e_priority_band=queue_e_priority_band,
-        queue_e_refs=queue_e_birth_repair_waiting_profile["ref_set"],
+        queue_e_refs=_dedupe_string_list(
+            queue_e_birth_repair_waiting_profile["ref_set"]
+            + queue_e_world_contact_handoff_waiting_profile.get("ref_set", [])
+        ),
         prediction_waiting_posture=prediction_profile["prediction_waiting_posture"],
         prediction_refs=prediction_write_gate_refs,
         life_constraint_waiting_posture=life_constraint_profile[
@@ -1362,6 +1414,9 @@ def decide_idle_strategy(
         "queue_e_birth_repair_attention_reason": queue_e_birth_repair_waiting_profile[
             "attention_reason"
         ],
+        **_queue_e_world_contact_handoff_idle_fields(
+            queue_e_world_contact_handoff_waiting_profile
+        ),
         "life_constraint_waiting_posture": life_constraint_profile[
             "life_constraint_waiting_posture"
         ],
@@ -3158,6 +3213,14 @@ def _dict_or_empty(value: Any) -> dict[str, Any]:
     return {}
 
 
+def _boolish(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "required"}
+    return bool(value)
+
+
 def _drop_empty(payload: dict[str, Any]) -> dict[str, Any]:
     result: dict[str, Any] = {}
     for key, value in payload.items():
@@ -3629,6 +3692,190 @@ def _queue_e_birth_repair_waiting_profile(
         "ref_set": ref_set,
         "waiting_posture": posture,
         "attention_reason": reason,
+    }
+
+
+def _queue_e_world_contact_handoff_waiting_profile(
+    *,
+    queue_e_world_contact_handoff_profile: dict[str, Any] | None,
+    queue_e_world_contact_handoff_ref: str | None,
+    background_continuity_profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    current = _dict_or_empty(queue_e_world_contact_handoff_profile)
+    background = background_continuity_profile or {}
+    background_profile = _dict_or_empty(
+        background.get("background_queue_e_world_contact_handoff_profile")
+        or background.get("queue_e_world_contact_handoff_profile")
+    )
+    profile = current or background_profile
+    has_current_signal = bool(current)
+    has_background_signal = bool(
+        background_profile
+        or background.get("background_queue_e_world_contact_handoff_status")
+        or background.get("queue_e_world_contact_handoff_status")
+        or background.get("background_queue_e_world_contact_ref_set")
+        or background.get("queue_e_world_contact_ref_set")
+        or background.get("background_queue_e_world_contact_handoff_profile_ref")
+        or background.get("queue_e_world_contact_handoff_profile_ref")
+    )
+
+    profile_ref = str(
+        queue_e_world_contact_handoff_ref
+        if has_current_signal
+        else background.get("background_queue_e_world_contact_handoff_profile_ref")
+        or background.get("queue_e_world_contact_handoff_profile_ref")
+        or profile.get("profile_ref")
+        or (QUEUE_E_WORLD_CONTACT_REPAIR_HOLD_HANDOFF_REF if has_background_signal else "")
+    )
+    handoff_status = str(
+        profile.get("handoff_status")
+        or background.get("background_queue_e_world_contact_handoff_status")
+        or background.get("queue_e_world_contact_handoff_status")
+        or ""
+    )
+    repair_hold_required = _boolish(
+        profile.get("repair_hold_required")
+        if "repair_hold_required" in profile
+        else background.get("background_queue_e_world_contact_repair_hold_required")
+        if "background_queue_e_world_contact_repair_hold_required" in background
+        else background.get("queue_e_world_contact_repair_hold_required")
+    )
+    confirmation_threshold_bias = str(
+        profile.get("confirmation_threshold_bias")
+        or background.get("background_queue_e_world_contact_confirmation_threshold_bias")
+        or background.get("queue_e_world_contact_confirmation_threshold_bias")
+        or ""
+    )
+    future_release_posture = str(
+        profile.get("future_release_posture")
+        or background.get("background_queue_e_world_contact_future_release_posture")
+        or background.get("queue_e_world_contact_future_release_posture")
+        or ""
+    )
+    blocked_future_routes = _dedupe_string_list(
+        _string_list(profile.get("blocked_future_routes"))
+        + _string_list(
+            background.get("background_queue_e_world_contact_blocked_future_routes")
+        )
+        + _string_list(background.get("queue_e_world_contact_blocked_future_routes"))
+    )
+    allowed_repair_routes = _dedupe_string_list(
+        _string_list(profile.get("allowed_repair_routes"))
+        + _string_list(
+            background.get("background_queue_e_world_contact_allowed_repair_routes")
+        )
+        + _string_list(background.get("queue_e_world_contact_allowed_repair_routes"))
+    )
+    repair_governance_refs = _dedupe_string_list(
+        _string_list(profile.get("repair_governance_refs"))
+        + _string_list(
+            background.get("background_queue_e_world_contact_repair_governance_refs")
+        )
+        + _string_list(background.get("queue_e_world_contact_repair_governance_refs"))
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(profile.get("ref_set"))
+        + _string_list(profile.get("source_state_refs"))
+        + repair_governance_refs
+        + _string_list(background.get("background_queue_e_world_contact_ref_set"))
+        + _string_list(background.get("queue_e_world_contact_ref_set"))
+        + _string_list([profile_ref])
+    )
+    if not any(
+        [
+            current,
+            background_profile,
+            has_background_signal,
+            handoff_status,
+            repair_hold_required,
+            confirmation_threshold_bias,
+            future_release_posture,
+            blocked_future_routes,
+            allowed_repair_routes,
+            repair_governance_refs,
+            ref_set,
+        ]
+    ):
+        return {}
+
+    if handoff_status == "closed" and repair_hold_required:
+        posture = "world_contact_repair_hold_waiting"
+        target = "world_contact_future_no_go_repair_hold"
+        reason = "queue_e_world_contact_handoff_closed_with_repair_hold"
+    elif handoff_status == "deferred_until_s05_s09":
+        posture = "world_contact_repair_handoff_deferred_waiting"
+        target = "world_contact_validation_schema_handoff"
+        reason = "queue_e_world_contact_handoff_waits_for_s05_s09"
+    elif handoff_status == "closed":
+        posture = "world_contact_repair_handoff_closed_waiting"
+        target = "world_contact_repair_handoff"
+        reason = "queue_e_world_contact_handoff_closed"
+    elif handoff_status:
+        posture = "world_contact_repair_handoff_blocked_waiting"
+        target = "world_contact_repair_handoff"
+        reason = "queue_e_world_contact_handoff_not_closed"
+    else:
+        posture = "world_contact_repair_handoff_unobserved_waiting"
+        target = "waiting_presence_maintenance"
+        reason = "queue_e_world_contact_handoff_absent"
+
+    return {
+        "schema_version": "queue_e_world_contact_repair_handoff_waiting_profile_v0",
+        "continuity_mode": (
+            "current_birth_readiness_world_contact_handoff"
+            if has_current_signal
+            else "background_world_contact_handoff_carryover"
+            if background_profile
+            or background.get("background_queue_e_world_contact_handoff_status")
+            or background.get("background_queue_e_world_contact_ref_set")
+            else "world_contact_handoff_unobserved"
+        ),
+        "handoff_status": handoff_status or "missing",
+        "profile_ref": profile_ref,
+        "repair_hold_required": repair_hold_required,
+        "confirmation_threshold_bias": confirmation_threshold_bias,
+        "future_release_posture": future_release_posture,
+        "blocked_future_routes": blocked_future_routes,
+        "allowed_repair_routes": allowed_repair_routes,
+        "repair_governance_refs": repair_governance_refs,
+        "ref_set": ref_set,
+        "waiting_posture": posture,
+        "attention_target": target,
+        "attention_reason": reason,
+    }
+
+
+def _queue_e_world_contact_handoff_idle_fields(
+    profile: dict[str, Any],
+) -> dict[str, Any]:
+    if not profile:
+        return {}
+    return {
+        "queue_e_world_contact_handoff_profile": profile,
+        "queue_e_world_contact_handoff_profile_ref": profile.get("profile_ref"),
+        "queue_e_world_contact_handoff_status": profile.get("handoff_status"),
+        "queue_e_world_contact_repair_hold_required": profile.get(
+            "repair_hold_required"
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": profile.get(
+            "confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_future_release_posture": profile.get(
+            "future_release_posture"
+        ),
+        "queue_e_world_contact_blocked_future_routes": profile.get(
+            "blocked_future_routes", []
+        ),
+        "queue_e_world_contact_allowed_repair_routes": profile.get(
+            "allowed_repair_routes", []
+        ),
+        "queue_e_world_contact_repair_governance_refs": profile.get(
+            "repair_governance_refs", []
+        ),
+        "queue_e_world_contact_ref_set": profile.get("ref_set", []),
+        "queue_e_world_contact_waiting_posture": profile.get("waiting_posture"),
+        "queue_e_world_contact_attention_target": profile.get("attention_target"),
+        "queue_e_world_contact_attention_reason": profile.get("attention_reason"),
     }
 
 

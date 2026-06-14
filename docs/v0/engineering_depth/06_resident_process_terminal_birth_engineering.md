@@ -33,6 +33,7 @@ life-v0 emit-report --strict
 13. `life_v0/process_supervisor/response_surface.py` 当前分成 evidence response 与 spoken response 两层：前者保留内部证据骨架，后者让当轮最高优先级生命信号隐性调制终端对话，并把 `live_semantic_focus`、调制等级、路由和 ref 计数这类内部字段留在 state/report/test，不能直接泄漏成 schema/debug 文本或固定证明段落
 14. `life_v0/process_supervisor/model_expression.py` 在 `.env` 启用模型时接管外显润色，但必须经过 post-expression gate：关系降级词触发回退，关系连续、责任修复、梦境离线、成长、身体情绪、意识出生、生命约束和 live-turn handoff 等证据若未字面外显则写入 soft audit
 15. `life_v0/process_supervisor/resident_lifecycle.py` 已补上 queue bootstrap：后台重新 active 时忽略已完成 stale inbox，同时保留 `queued / turn_in_progress` 的 live queued turn，防止 attach 后重放旧话或吞掉新话
+16. `life_v0/process_supervisor/idle_strategy.py`、`heartbeat.py`、`continuity_writeback.py`、`background_lineage_state.py`、`background_continuity.py`、`dialogue_events.py`、`resident_turn_writeback.py` 与 `process_report.py` 已把 `runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json` 从出生准备层接入常驻过程：waiting heartbeat 读取、idle governance 持有、idle continuity 写回、background lineage 压成 `world_contact_handoff_presence`、下一次 background continuity 恢复、真实 `digital_life_turn` 展开、`dialogue_writeback_bundle.json` 和 `resumed_external_dialogue_packet.json` 承载 refs，最后进入 process report/digest/receipt/input hashes。它是世界接触修复 hold 的内部治理证据，不是固定外显语言模板。
 
 ## 当前最关键的 runtime 证据
 
@@ -88,6 +89,12 @@ life-v0 emit-report --strict
 50. `runtime/state/terminal/resident_autonomous_activity_state.json#last_web_dream_learning_wake_question_candidates`
 51. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.autonomous_activity_presence.last_web_dream_learning_wake_question_candidates`
 52. `runtime/state/language/model_expression_state.json#model_expression_context_summary` 中的自主活动 presence 摘要
+53. `runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json`
+54. `runtime/state/terminal/idle_strategy_state.json#queue_e_world_contact_*`
+55. `runtime/state/terminal/terminal_life_loop_state.json#resident_background_lineage_state.world_contact_handoff_presence`
+56. `runtime/reports/latest/dialogue_writeback_bundle.json#queue_e_world_contact_handoff_refs`
+57. `runtime/reports/latest/resumed_external_dialogue_packet.json#queue_e_world_contact_handoff_refs`
+58. `runtime/reports/latest/digital_life_process_digest.json#queue_e_world_contact_*`
 
 ## 最低测试与新增测试
 
@@ -142,6 +149,38 @@ life-v0 emit-report --strict
 3. `repair_obligation_count`
 4. `regret_pressure_count`
 5. `queue_e_priority_band`
+
+## Queue E world-contact handoff 进入 resident lineage
+
+当前继续把 S08 写出的 `queue_e_world_contact_repair_hold_handoff.json` 接入常驻过程：
+
+```text
+queue_e_world_contact_repair_hold_handoff.json
+  -> heartbeat.py
+  -> idle_strategy.py
+  -> idle_continuity_frame.json / resident_governance_state.json
+  -> resident_background_lineage_state.world_contact_handoff_presence
+  -> background_continuity.py
+  -> dialogue_events.py
+  -> resident_turn_writeback.py
+  -> dialogue_writeback_bundle.json / resumed_external_dialogue_packet.json
+  -> process_report.py / digest / receipt
+```
+
+这条链专门处理“世界接触修复 hold 是否会跨关闭、跨唤醒、跨真实关系回合继续存在”。关键字段包括：
+
+1. `handoff_status`
+2. `repair_hold_required`
+3. `confirmation_threshold_bias`
+4. `future_release_posture`
+5. `blocked_future_routes`
+6. `allowed_repair_routes`
+7. `repair_governance_refs`
+8. `waiting_posture`
+9. `attention_target`
+10. `ref_set`
+
+完成定义不是“有 handoff 文件”，而是同一组字段能在 waiting heartbeat、idle strategy、resident governance、background lineage、dialogue turn、writeback bundle、resumed packet、process report/digest/receipt 中被同口径读取和回链。当前这条链由 `tests.process.test_persistent_digital_life_process` 的 89 条 process 回归守住。
 
 ## Queue F 进入 resident waiting governance
 

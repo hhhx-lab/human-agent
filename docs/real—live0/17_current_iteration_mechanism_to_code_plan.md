@@ -655,6 +655,23 @@ GoNoGo.future_no_go_profile
 
 当前第二段继续把这条 handoff 推回 S08：`birth_readiness` 首次运行时允许 `queue_e_world_contact_repair_hold_handoff.json` 处在 `deferred_until_s05_s09`，因为 S08 的下一步本来就是 S05；当 S05/S09 已经存在时，S08 必须读回 `world_contact_validation.json`、`validation_rollup.json` 和 `schema_runner/run_manifest.json`，把 handoff 状态推进为 `closed`，并写入三项修复目标的 claims、evidence、rollup、stage gate、report、digest、check report 和 receipt。
 
+当前第三段把这条 handoff 从出生准备层继续推进到常驻和真实回合层：
+
+```text
+BirthReadiness.queue_e_world_contact_repair_hold_handoff
+  -> WaitingHeartbeat.queue_e_world_contact_*
+  -> IdleStrategy.queue_e_world_contact_*
+  -> IdleContinuity / ResidentGovernanceState
+  -> ResidentBackgroundLineageState.world_contact_handoff_presence
+  -> BackgroundContinuityProfile.background_queue_e_world_contact_*
+  -> DigitalLifeTurn.queue_e_world_contact_* / resident_background_lineage_world_contact_*
+  -> DialogueWritebackBundle.queue_e_world_contact_handoff_refs
+  -> ResumedExternalDialoguePacket.queue_e_world_contact_*
+  -> ProcessReport / Digest / Receipt / input_hashes
+```
+
+机制含义是：世界接触修复 hold 不再只作为 S08/S05/S09 的验收交接文件存在，而是成为常驻等待治理和背景生命谱系的一等 presence。它的语言位置仍然是“隐性调制”：这些字段可以改变等待、行动释放、修复路线、关系回合恢复和模型表达审计，但不能被代码硬拼成固定外显话术。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

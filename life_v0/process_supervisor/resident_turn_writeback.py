@@ -43,6 +43,7 @@ from .dialogue_events import (
     build_offline_learning_cumulative_payload,
     build_prediction_write_gate_payload,
     build_queue_e_birth_repair_payload,
+    build_queue_e_world_contact_handoff_payload,
     build_resident_background_lineage_payload,
 )
 
@@ -398,6 +399,11 @@ def write_resident_turn_writeback(
             "resident_background_lineage_birth_repair_refs", []
         )
     )
+    resident_background_lineage_world_contact_handoff_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_world_contact_handoff_refs", []
+        )
+    )
     resident_background_lineage_life_constraint_refs = list(
         resident_background_lineage_payload.get(
             "resident_background_lineage_life_constraint_refs", []
@@ -466,6 +472,14 @@ def write_resident_turn_writeback(
     queue_e_birth_repair_refs = list(
         queue_e_birth_repair_payload.get("queue_e_birth_repair_refs", [])
     )
+    queue_e_world_contact_handoff_payload = (
+        build_queue_e_world_contact_handoff_payload(terminal_life_loop_state)
+    )
+    queue_e_world_contact_handoff_refs = list(
+        queue_e_world_contact_handoff_payload.get(
+            "queue_e_world_contact_handoff_refs", []
+        )
+    )
     life_constraint_payload = build_life_constraint_payload(terminal_life_loop_state)
     life_constraint_refs = list(
         life_constraint_payload.get("life_constraint_evidence_refs", [])
@@ -480,6 +494,7 @@ def write_resident_turn_writeback(
         + resident_background_lineage_dream_wake_refs
         + resident_background_lineage_autonomous_activity_refs
         + resident_background_lineage_birth_repair_refs
+        + resident_background_lineage_world_contact_handoff_refs
         + resident_background_lineage_life_constraint_refs
         + resident_background_lineage_heartbeat_cadence_refs
         + resident_background_lineage_body_refs
@@ -487,6 +502,7 @@ def write_resident_turn_writeback(
         + resident_background_lineage_memory_retrieval_refs
         + life_constraint_refs
         + queue_e_birth_repair_refs
+        + queue_e_world_contact_handoff_refs
     )
     prediction_write_gate_payload = build_prediction_write_gate_payload(
         terminal_life_loop_state=terminal_life_loop_state,
@@ -655,6 +671,9 @@ def write_resident_turn_writeback(
         resident_background_lineage_birth_repair_refs=(
             resident_background_lineage_birth_repair_refs
         ),
+        resident_background_lineage_world_contact_handoff_refs=(
+            resident_background_lineage_world_contact_handoff_refs
+        ),
         resident_background_lineage_life_constraint_refs=(
             resident_background_lineage_life_constraint_refs
         ),
@@ -756,6 +775,7 @@ def write_resident_turn_writeback(
             else None
         ),
         prediction_write_gate_refs=prediction_write_gate_refs,
+        queue_e_world_contact_handoff_refs=queue_e_world_contact_handoff_refs,
         live_language_turn_refs=live_language_turn_refs,
     )
     write_json(reports_dir / "dialogue_writeback_bundle.json", dialogue_writeback_bundle)
@@ -827,6 +847,14 @@ def write_resident_turn_writeback(
                 key: value
                 for key, value in queue_e_birth_repair_payload.items()
                 if key != "queue_e_birth_repair_waiting_profile"
+            }
+        )
+    if queue_e_world_contact_handoff_payload:
+        resumed_dialogue_packet.update(
+            {
+                key: value
+                for key, value in queue_e_world_contact_handoff_payload.items()
+                if key != "queue_e_world_contact_handoff_profile"
             }
         )
     if life_constraint_payload:

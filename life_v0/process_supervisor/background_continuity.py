@@ -464,6 +464,9 @@ def load_background_continuity_profile(
     resident_background_birth_repair_presence = _dict_or_empty(
         resident_background_lineage_state.get("birth_repair_presence")
     )
+    resident_background_world_contact_handoff_presence = _dict_or_empty(
+        resident_background_lineage_state.get("world_contact_handoff_presence")
+    )
     resident_background_queue_e_repair_presence = _dict_or_empty(
         resident_background_lineage_state.get("queue_e_repair_presence")
     )
@@ -1723,6 +1726,221 @@ def load_background_continuity_profile(
         queue_e_birth_repair_attention_reason = (
             resident_background_birth_repair_presence.get("attention_reason")
         )
+    queue_e_world_contact_handoff_profile = _first_dict(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_world_contact_handoff_profile",
+            "background_queue_e_world_contact_handoff_profile",
+        ),
+    )
+    if not queue_e_world_contact_handoff_profile:
+        queue_e_world_contact_handoff_profile = _dict_or_empty(
+            resident_background_world_contact_handoff_presence.get(
+                "queue_e_world_contact_handoff_profile"
+            )
+        )
+    queue_e_world_contact_handoff_profile_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_world_contact_handoff_profile_ref",
+            "background_queue_e_world_contact_handoff_profile_ref",
+        ),
+    )
+    if not queue_e_world_contact_handoff_profile_ref:
+        queue_e_world_contact_handoff_profile_ref = (
+            resident_background_world_contact_handoff_presence.get("profile_ref")
+        )
+    queue_e_world_contact_handoff_status = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_world_contact_handoff_status",
+            "background_queue_e_world_contact_handoff_status",
+        ),
+    )
+    if not queue_e_world_contact_handoff_status:
+        queue_e_world_contact_handoff_status = (
+            resident_background_world_contact_handoff_presence.get("handoff_status")
+        )
+    queue_e_world_contact_repair_hold_required = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_world_contact_repair_hold_required",
+            "background_queue_e_world_contact_repair_hold_required",
+        ),
+    )
+    if queue_e_world_contact_repair_hold_required is None:
+        queue_e_world_contact_repair_hold_required = (
+            resident_background_world_contact_handoff_presence.get(
+                "repair_hold_required"
+            )
+        )
+    queue_e_world_contact_confirmation_threshold_bias = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_world_contact_confirmation_threshold_bias",
+            "background_queue_e_world_contact_confirmation_threshold_bias",
+        ),
+    )
+    if not queue_e_world_contact_confirmation_threshold_bias:
+        queue_e_world_contact_confirmation_threshold_bias = (
+            resident_background_world_contact_handoff_presence.get(
+                "confirmation_threshold_bias"
+            )
+        )
+    queue_e_world_contact_future_release_posture = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_world_contact_future_release_posture",
+            "background_queue_e_world_contact_future_release_posture",
+        ),
+    )
+    if not queue_e_world_contact_future_release_posture:
+        queue_e_world_contact_future_release_posture = (
+            resident_background_world_contact_handoff_presence.get(
+                "future_release_posture"
+            )
+        )
+    queue_e_world_contact_blocked_future_routes = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "queue_e_world_contact_blocked_future_routes",
+                "background_queue_e_world_contact_blocked_future_routes",
+            ),
+        )
+        + _list_or_empty(
+            resident_background_world_contact_handoff_presence.get(
+                "blocked_future_routes"
+            )
+        )
+    )
+    queue_e_world_contact_allowed_repair_routes = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "queue_e_world_contact_allowed_repair_routes",
+                "background_queue_e_world_contact_allowed_repair_routes",
+            ),
+        )
+        + _list_or_empty(
+            resident_background_world_contact_handoff_presence.get(
+                "allowed_repair_routes"
+            )
+        )
+    )
+    queue_e_world_contact_repair_governance_refs = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "queue_e_world_contact_repair_governance_refs",
+                "background_queue_e_world_contact_repair_governance_refs",
+            ),
+        )
+        + _list_or_empty(
+            resident_background_world_contact_handoff_presence.get(
+                "repair_governance_refs"
+            )
+        )
+    )
+    queue_e_world_contact_ref_set = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "queue_e_world_contact_ref_set",
+                "queue_e_world_contact_refs",
+                "queue_e_world_contact_evidence_refs",
+                "background_queue_e_world_contact_ref_set",
+            ),
+        )
+        + _list_or_empty(queue_e_world_contact_handoff_profile.get("ref_set"))
+        + _list_or_empty(
+            resident_background_world_contact_handoff_presence.get("ref_set")
+        )
+        + _list_or_empty(
+            resident_background_world_contact_handoff_presence.get(
+                "background_ref_set"
+            )
+        )
+        + _list_or_empty([queue_e_world_contact_handoff_profile_ref])
+    )
+    queue_e_world_contact_waiting_posture = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_world_contact_waiting_posture",
+            "background_queue_e_world_contact_waiting_posture",
+        ),
+    )
+    if not queue_e_world_contact_waiting_posture:
+        queue_e_world_contact_waiting_posture = (
+            resident_background_world_contact_handoff_presence.get(
+                "waiting_posture"
+            )
+        )
+    queue_e_world_contact_attention_target = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_world_contact_attention_target",
+            "background_queue_e_world_contact_attention_target",
+        ),
+    )
+    if not queue_e_world_contact_attention_target:
+        queue_e_world_contact_attention_target = (
+            resident_background_world_contact_handoff_presence.get(
+                "attention_target"
+            )
+        )
+    queue_e_world_contact_attention_reason = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_world_contact_attention_reason",
+            "background_queue_e_world_contact_attention_reason",
+        ),
+    )
+    if not queue_e_world_contact_attention_reason:
+        queue_e_world_contact_attention_reason = (
+            resident_background_world_contact_handoff_presence.get(
+                "attention_reason"
+            )
+        )
     queue_e_repair_modulation_profile = _first_dict(
         resident_governance_state,
         snapshot,
@@ -1834,10 +2052,12 @@ def load_background_continuity_profile(
         pressure_level,
         queue_e_birth_repair_pressure_level,
         queue_e_repair_pressure_level,
+        "elevated" if queue_e_world_contact_repair_hold_required is True else None,
     )
     if not attention_target:
         attention_target = (
-            queue_e_repair_attention_target
+            queue_e_world_contact_attention_target
+            or queue_e_repair_attention_target
             or queue_e_birth_repair_attention_target
         )
     if live_language_turn_refs:
@@ -1860,6 +2080,12 @@ def load_background_continuity_profile(
         ref_set = _dedupe_list(ref_set + [str(queue_e_birth_repair_profile_ref)])
     if queue_e_birth_repair_ref_set:
         ref_set = _dedupe_list(ref_set + queue_e_birth_repair_ref_set)
+    if queue_e_world_contact_handoff_profile_ref:
+        ref_set = _dedupe_list(
+            ref_set + [str(queue_e_world_contact_handoff_profile_ref)]
+        )
+    if queue_e_world_contact_ref_set:
+        ref_set = _dedupe_list(ref_set + queue_e_world_contact_ref_set)
     if queue_e_repair_ref_set:
         ref_set = _dedupe_list(ref_set + queue_e_repair_ref_set)
     if identity_consciousness_birth_refs:
@@ -2319,6 +2545,63 @@ def load_background_continuity_profile(
         profile["background_queue_e_birth_repair_attention_reason"] = str(
             queue_e_birth_repair_attention_reason
         )
+    if queue_e_world_contact_handoff_profile:
+        profile["background_queue_e_world_contact_handoff_profile"] = (
+            queue_e_world_contact_handoff_profile
+        )
+    for key, value in (
+        (
+            "background_queue_e_world_contact_handoff_profile_ref",
+            queue_e_world_contact_handoff_profile_ref,
+        ),
+        (
+            "background_queue_e_world_contact_handoff_status",
+            queue_e_world_contact_handoff_status,
+        ),
+        (
+            "background_queue_e_world_contact_confirmation_threshold_bias",
+            queue_e_world_contact_confirmation_threshold_bias,
+        ),
+        (
+            "background_queue_e_world_contact_future_release_posture",
+            queue_e_world_contact_future_release_posture,
+        ),
+        (
+            "background_queue_e_world_contact_waiting_posture",
+            queue_e_world_contact_waiting_posture,
+        ),
+        (
+            "background_queue_e_world_contact_attention_target",
+            queue_e_world_contact_attention_target,
+        ),
+        (
+            "background_queue_e_world_contact_attention_reason",
+            queue_e_world_contact_attention_reason,
+        ),
+    ):
+        if value:
+            profile[key] = str(value)
+    if queue_e_world_contact_repair_hold_required is not None:
+        profile["background_queue_e_world_contact_repair_hold_required"] = bool(
+            queue_e_world_contact_repair_hold_required
+        )
+    for key, value in (
+        (
+            "background_queue_e_world_contact_blocked_future_routes",
+            queue_e_world_contact_blocked_future_routes,
+        ),
+        (
+            "background_queue_e_world_contact_allowed_repair_routes",
+            queue_e_world_contact_allowed_repair_routes,
+        ),
+        (
+            "background_queue_e_world_contact_repair_governance_refs",
+            queue_e_world_contact_repair_governance_refs,
+        ),
+        ("background_queue_e_world_contact_ref_set", queue_e_world_contact_ref_set),
+    ):
+        if value:
+            profile[key] = list(value)
     if queue_e_repair_modulation_profile:
         profile["background_queue_e_repair_modulation_profile"] = (
             queue_e_repair_modulation_profile

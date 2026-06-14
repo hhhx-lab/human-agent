@@ -22,6 +22,7 @@ def build_resident_background_lineage_state(
     prediction_write_gate_presence = _prediction_write_gate_presence(governance)
     queue_e_repair_presence = _queue_e_repair_presence(governance)
     birth_repair_presence = _birth_repair_presence(governance)
+    world_contact_handoff_presence = _world_contact_handoff_presence(governance)
     life_constraint_presence = _life_constraint_presence(governance)
     profile = _dict_or_empty(governance.get("background_lineage_governance_profile"))
     explicit_depth_band = (
@@ -53,6 +54,8 @@ def build_resident_background_lineage_state(
         depth_band = "no_background_lineage"
     if not depth_band and birth_repair_presence:
         depth_band = "no_background_lineage"
+    if not depth_band and world_contact_handoff_presence:
+        depth_band = "no_background_lineage"
     if not depth_band and life_constraint_presence:
         depth_band = "no_background_lineage"
     if not depth_band:
@@ -71,6 +74,7 @@ def build_resident_background_lineage_state(
                 governance.get("background_carryover_pressure_level")
                 or queue_e_repair_presence.get("pressure_level")
                 or birth_repair_presence.get("pressure_level")
+                or world_contact_handoff_presence.get("pressure_level")
             ),
         ),
         "cadence_weight": _cadence_weight_for_depth(depth_band),
@@ -161,6 +165,10 @@ def build_resident_background_lineage_state(
         lineage_state["autonomous_activity_presence"] = autonomous_activity_presence
     if birth_repair_presence:
         lineage_state["birth_repair_presence"] = birth_repair_presence
+    if world_contact_handoff_presence:
+        lineage_state["world_contact_handoff_presence"] = (
+            world_contact_handoff_presence
+        )
     if life_constraint_presence:
         lineage_state["life_constraint_presence"] = life_constraint_presence
     return {
@@ -1471,6 +1479,131 @@ def _birth_repair_presence(governance: dict[str, Any]) -> dict[str, Any]:
                 "background_queue_e_birth_repair_attention_reason"
             ),
             "background_ref_set": background_ref_set,
+        }
+    )
+
+
+def _world_contact_handoff_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    profile = _dict_or_empty(
+        governance.get("queue_e_world_contact_handoff_profile")
+        or governance.get("background_queue_e_world_contact_handoff_profile")
+    )
+    handoff_status = _first_present(
+        governance.get("queue_e_world_contact_handoff_status"),
+        governance.get("background_queue_e_world_contact_handoff_status"),
+        profile.get("handoff_status"),
+    )
+    profile_ref = _first_present(
+        governance.get("queue_e_world_contact_handoff_profile_ref"),
+        governance.get("background_queue_e_world_contact_handoff_profile_ref"),
+        profile.get("profile_ref"),
+    )
+    repair_hold_required = _first_present(
+        governance.get("queue_e_world_contact_repair_hold_required"),
+        governance.get("background_queue_e_world_contact_repair_hold_required"),
+        profile.get("repair_hold_required"),
+    )
+    confirmation_threshold_bias = _first_present(
+        governance.get("queue_e_world_contact_confirmation_threshold_bias"),
+        governance.get(
+            "background_queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        profile.get("confirmation_threshold_bias"),
+    )
+    future_release_posture = _first_present(
+        governance.get("queue_e_world_contact_future_release_posture"),
+        governance.get("background_queue_e_world_contact_future_release_posture"),
+        profile.get("future_release_posture"),
+    )
+    waiting_posture = _first_present(
+        governance.get("queue_e_world_contact_waiting_posture"),
+        governance.get("background_queue_e_world_contact_waiting_posture"),
+        profile.get("waiting_posture"),
+    )
+    attention_target = _first_present(
+        governance.get("queue_e_world_contact_attention_target"),
+        governance.get("background_queue_e_world_contact_attention_target"),
+        profile.get("attention_target"),
+    )
+    attention_reason = _first_present(
+        governance.get("queue_e_world_contact_attention_reason"),
+        governance.get("background_queue_e_world_contact_attention_reason"),
+        profile.get("attention_reason"),
+    )
+    blocked_future_routes = _dedupe_string_list(
+        _string_list(governance.get("queue_e_world_contact_blocked_future_routes"))
+        + _string_list(
+            governance.get("background_queue_e_world_contact_blocked_future_routes")
+        )
+        + _string_list(profile.get("blocked_future_routes"))
+    )
+    allowed_repair_routes = _dedupe_string_list(
+        _string_list(governance.get("queue_e_world_contact_allowed_repair_routes"))
+        + _string_list(
+            governance.get("background_queue_e_world_contact_allowed_repair_routes")
+        )
+        + _string_list(profile.get("allowed_repair_routes"))
+    )
+    repair_governance_refs = _dedupe_string_list(
+        _string_list(governance.get("queue_e_world_contact_repair_governance_refs"))
+        + _string_list(
+            governance.get("background_queue_e_world_contact_repair_governance_refs")
+        )
+        + _string_list(profile.get("repair_governance_refs"))
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(governance.get("queue_e_world_contact_ref_set"))
+        + _string_list(governance.get("queue_e_world_contact_refs"))
+        + _string_list(governance.get("queue_e_world_contact_evidence_refs"))
+        + _string_list(governance.get("background_queue_e_world_contact_ref_set"))
+        + _string_list(profile.get("ref_set"))
+        + _string_list([profile_ref])
+        + repair_governance_refs
+    )
+    if not any(
+        [
+            profile,
+            handoff_status,
+            profile_ref,
+            repair_hold_required,
+            confirmation_threshold_bias,
+            future_release_posture,
+            waiting_posture,
+            attention_target,
+            attention_reason,
+            blocked_future_routes,
+            allowed_repair_routes,
+            repair_governance_refs,
+            ref_set,
+        ]
+    ):
+        return {}
+    pressure_level = "elevated" if repair_hold_required is True else "present"
+    return _drop_empty(
+        {
+            "queue_e_world_contact_handoff_profile": profile,
+            "handoff_status": handoff_status,
+            "profile_ref": profile_ref,
+            "repair_hold_required": repair_hold_required,
+            "confirmation_threshold_bias": confirmation_threshold_bias,
+            "future_release_posture": future_release_posture,
+            "blocked_future_routes": blocked_future_routes,
+            "allowed_repair_routes": allowed_repair_routes,
+            "repair_governance_refs": repair_governance_refs,
+            "waiting_posture": waiting_posture,
+            "attention_target": attention_target,
+            "attention_reason": attention_reason,
+            "pressure_level": pressure_level,
+            "ref_set": ref_set,
+            "background_profile_ref": governance.get(
+                "background_queue_e_world_contact_handoff_profile_ref"
+            ),
+            "background_handoff_status": governance.get(
+                "background_queue_e_world_contact_handoff_status"
+            ),
+            "background_ref_set": _string_list(
+                governance.get("background_queue_e_world_contact_ref_set")
+            ),
         }
     )
 

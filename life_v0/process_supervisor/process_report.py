@@ -1517,6 +1517,42 @@ def write_process_report_bundle(
         "queue_e_birth_repair_ref_set": list(
             idle_governance.get("queue_e_birth_repair_ref_set", [])
         ),
+        "queue_e_world_contact_handoff_profile_ref": idle_governance.get(
+            "queue_e_world_contact_handoff_profile_ref"
+        ),
+        "queue_e_world_contact_handoff_status": idle_governance.get(
+            "queue_e_world_contact_handoff_status"
+        ),
+        "queue_e_world_contact_repair_hold_required": idle_governance.get(
+            "queue_e_world_contact_repair_hold_required"
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": idle_governance.get(
+            "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_future_release_posture": idle_governance.get(
+            "queue_e_world_contact_future_release_posture"
+        ),
+        "queue_e_world_contact_blocked_future_routes": list(
+            idle_governance.get("queue_e_world_contact_blocked_future_routes", [])
+        ),
+        "queue_e_world_contact_allowed_repair_routes": list(
+            idle_governance.get("queue_e_world_contact_allowed_repair_routes", [])
+        ),
+        "queue_e_world_contact_repair_governance_refs": list(
+            idle_governance.get("queue_e_world_contact_repair_governance_refs", [])
+        ),
+        "queue_e_world_contact_ref_set": list(
+            idle_governance.get("queue_e_world_contact_ref_set", [])
+        ),
+        "queue_e_world_contact_waiting_posture": idle_governance.get(
+            "queue_e_world_contact_waiting_posture"
+        ),
+        "queue_e_world_contact_attention_target": idle_governance.get(
+            "queue_e_world_contact_attention_target"
+        ),
+        "queue_e_world_contact_attention_reason": idle_governance.get(
+            "queue_e_world_contact_attention_reason"
+        ),
         "queue_e_repair_modulation_profile": queue_e_repair_modulation_profile,
         "queue_e_repair_pressure_level": queue_e_repair_modulation_profile.get(
             "pressure_level"
@@ -1545,6 +1581,20 @@ def write_process_report_bundle(
         ),
         "background_queue_e_birth_repair_ref_set": list(
             idle_governance.get("background_queue_e_birth_repair_ref_set", [])
+        ),
+        "background_queue_e_world_contact_handoff_profile_ref": idle_governance.get(
+            "background_queue_e_world_contact_handoff_profile_ref"
+        ),
+        "background_queue_e_world_contact_handoff_status": idle_governance.get(
+            "background_queue_e_world_contact_handoff_status"
+        ),
+        "background_queue_e_world_contact_repair_hold_required": (
+            idle_governance.get(
+                "background_queue_e_world_contact_repair_hold_required"
+            )
+        ),
+        "background_queue_e_world_contact_ref_set": list(
+            idle_governance.get("background_queue_e_world_contact_ref_set", [])
         ),
         "schema_cross_file_logic_ref": idle_governance.get(
             "schema_cross_file_logic_ref"
@@ -1662,6 +1712,10 @@ def write_process_report_bundle(
             "queue_e_birth_repair_ref_set",
             [],
         ),
+        queue_e_world_contact_refs=idle_governance.get(
+            "queue_e_world_contact_ref_set",
+            [],
+        ),
         queue_e_repair_refs=queue_e_repair_ref_set,
         idle_heartbeat_trace_ref=idle_governance.get("idle_heartbeat_trace_ref"),
         dream_wake_ref_set=resolved_dream_wake_ref_set,
@@ -1747,6 +1801,7 @@ def build_process_receipt(
     schema_run_manifest_ref: str | None = None,
     life_constraint_refs: list[str] | None = None,
     queue_e_birth_repair_refs: list[str] | None = None,
+    queue_e_world_contact_refs: list[str] | None = None,
     queue_e_repair_refs: list[str] | None = None,
     idle_heartbeat_trace_ref: str | None = None,
     dream_wake_ref_set: list[str] | None = None,
@@ -1796,6 +1851,7 @@ def build_process_receipt(
         state_dir / "schema_runner" / "cross_file_logic.json",
         state_dir / "schema_runner" / "run_manifest.json",
         state_dir / "life_targets" / "queue_e_birth_repair_profile.json",
+        state_dir / "life_targets" / "queue_e_world_contact_repair_hold_handoff.json",
         state_dir / "consciousness" / "workspace_frame.json",
         state_dir / "consciousness" / "broadcast_frame.json",
         state_dir / "consciousness" / "metacognition_state.json",
@@ -1879,6 +1935,7 @@ def build_process_receipt(
         "dream_wake_ref_set": list(dream_wake_ref_set or []),
         "body_ref_set": list(body_ref_set or []),
         "body_signal_ref_set": list(body_signal_ref_set or []),
+        "queue_e_world_contact_ref_set": list(queue_e_world_contact_refs or []),
         "queue_e_repair_ref_set": list(queue_e_repair_refs or []),
         "resident_autonomous_activity_ref": resident_autonomous_activity_ref,
         "resident_autonomous_activity_state_ref": resident_autonomous_activity_state_ref,
@@ -1960,6 +2017,7 @@ def build_process_receipt(
                 *(state_merge_long_term_change_refs or []),
                 *(life_constraint_refs or []),
                 *(queue_e_birth_repair_refs or []),
+                *(queue_e_world_contact_refs or []),
                 *(queue_e_repair_refs or []),
             ]
             if ref

@@ -86,6 +86,7 @@ def build_life_turn_event(
     )
     event.update(build_life_constraint_payload(terminal_life_loop_state))
     event.update(build_queue_e_birth_repair_payload(terminal_life_loop_state))
+    event.update(build_queue_e_world_contact_handoff_payload(terminal_life_loop_state))
     event.update(build_background_trait_convergence_payload(terminal_life_loop_state))
     event.update(build_resident_background_lineage_payload(terminal_life_loop_state))
     event.update(build_offline_learning_cumulative_payload(terminal_life_loop_state))
@@ -290,6 +291,7 @@ def build_resident_background_lineage_payload(
         "dream_wake_presence",
         "autonomous_activity_presence",
         "birth_repair_presence",
+        "world_contact_handoff_presence",
         "life_constraint_presence",
     ):
         presence = lineage_state.get(key)
@@ -1164,6 +1166,86 @@ def build_resident_background_lineage_payload(
                 birth_repair_refs
             )
             lineage_refs.extend(birth_repair_refs)
+    world_contact_handoff_presence = lineage_state.get("world_contact_handoff_presence")
+    if isinstance(world_contact_handoff_presence, dict):
+        for source_key, target_key in (
+            (
+                "handoff_status",
+                "resident_background_lineage_world_contact_handoff_status",
+            ),
+            (
+                "profile_ref",
+                "resident_background_lineage_world_contact_handoff_profile_ref",
+            ),
+            (
+                "pressure_level",
+                "resident_background_lineage_world_contact_handoff_pressure_level",
+            ),
+            (
+                "confirmation_threshold_bias",
+                "resident_background_lineage_world_contact_confirmation_threshold_bias",
+            ),
+            (
+                "future_release_posture",
+                "resident_background_lineage_world_contact_future_release_posture",
+            ),
+            (
+                "attention_target",
+                "resident_background_lineage_world_contact_attention_target",
+            ),
+            (
+                "waiting_posture",
+                "resident_background_lineage_world_contact_waiting_posture",
+            ),
+            (
+                "attention_reason",
+                "resident_background_lineage_world_contact_attention_reason",
+            ),
+        ):
+            value = world_contact_handoff_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        if world_contact_handoff_presence.get("repair_hold_required") is not None:
+            payload[
+                "resident_background_lineage_world_contact_repair_hold_required"
+            ] = bool(world_contact_handoff_presence.get("repair_hold_required"))
+        for source_key, target_key in (
+            (
+                "blocked_future_routes",
+                "resident_background_lineage_world_contact_blocked_future_routes",
+            ),
+            (
+                "allowed_repair_routes",
+                "resident_background_lineage_world_contact_allowed_repair_routes",
+            ),
+            (
+                "repair_governance_refs",
+                "resident_background_lineage_world_contact_repair_governance_refs",
+            ),
+        ):
+            values = _dedupe_string_list(
+                _string_list(world_contact_handoff_presence.get(source_key))
+            )
+            if values:
+                payload[target_key] = values
+        world_contact_handoff_refs = _dedupe_string_list(
+            _string_list(world_contact_handoff_presence.get("ref_set"))
+            + _string_list(world_contact_handoff_presence.get("background_ref_set"))
+            + _string_list(
+                world_contact_handoff_presence.get("repair_governance_refs")
+            )
+            + _string_list(
+                [
+                    world_contact_handoff_presence.get("profile_ref"),
+                    world_contact_handoff_presence.get("background_profile_ref"),
+                ]
+            )
+        )
+        if world_contact_handoff_refs:
+            payload[
+                "resident_background_lineage_world_contact_handoff_refs"
+            ] = world_contact_handoff_refs
+            lineage_refs.extend(world_contact_handoff_refs)
     life_constraint_presence = lineage_state.get("life_constraint_presence")
     if isinstance(life_constraint_presence, dict):
         for source_key, target_key in (
@@ -1322,6 +1404,169 @@ def build_offline_learning_cumulative_payload(
     if ref_set:
         payload["offline_learning_cumulative_ref_set"] = ref_set
         payload["offline_learning_cumulative_evidence_refs"] = ref_set
+    return payload
+
+
+def build_queue_e_world_contact_handoff_payload(
+    terminal_life_loop_state: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not terminal_life_loop_state:
+        return {}
+    lineage_state = terminal_life_loop_state.get("resident_background_lineage_state")
+    if not isinstance(lineage_state, dict):
+        lineage_state = {}
+    handoff_presence = lineage_state.get("world_contact_handoff_presence")
+    if not isinstance(handoff_presence, dict):
+        handoff_presence = {}
+    profile = terminal_life_loop_state.get("queue_e_world_contact_handoff_profile")
+    if not isinstance(profile, dict):
+        profile = (
+            handoff_presence.get("queue_e_world_contact_handoff_profile")
+            or {}
+        )
+    if not isinstance(profile, dict):
+        profile = {}
+
+    handoff_status = (
+        terminal_life_loop_state.get("queue_e_world_contact_handoff_status")
+        or handoff_presence.get("handoff_status")
+        or profile.get("handoff_status")
+    )
+    profile_ref = (
+        terminal_life_loop_state.get("queue_e_world_contact_handoff_profile_ref")
+        or handoff_presence.get("profile_ref")
+        or profile.get("profile_ref")
+    )
+    repair_hold_required = (
+        terminal_life_loop_state.get("queue_e_world_contact_repair_hold_required")
+        if terminal_life_loop_state.get("queue_e_world_contact_repair_hold_required")
+        is not None
+        else handoff_presence.get("repair_hold_required")
+        if handoff_presence.get("repair_hold_required") is not None
+        else profile.get("repair_hold_required")
+    )
+    pressure_level = (
+        terminal_life_loop_state.get("queue_e_world_contact_pressure_level")
+        or handoff_presence.get("pressure_level")
+        or ("elevated" if repair_hold_required is True else None)
+    )
+    confirmation_threshold_bias = (
+        terminal_life_loop_state.get(
+            "queue_e_world_contact_confirmation_threshold_bias"
+        )
+        or handoff_presence.get("confirmation_threshold_bias")
+        or profile.get("confirmation_threshold_bias")
+    )
+    future_release_posture = (
+        terminal_life_loop_state.get("queue_e_world_contact_future_release_posture")
+        or handoff_presence.get("future_release_posture")
+        or profile.get("future_release_posture")
+    )
+    waiting_posture = (
+        terminal_life_loop_state.get("queue_e_world_contact_waiting_posture")
+        or handoff_presence.get("waiting_posture")
+        or profile.get("waiting_posture")
+    )
+    attention_target = (
+        terminal_life_loop_state.get("queue_e_world_contact_attention_target")
+        or handoff_presence.get("attention_target")
+        or profile.get("attention_target")
+    )
+    attention_reason = (
+        terminal_life_loop_state.get("queue_e_world_contact_attention_reason")
+        or handoff_presence.get("attention_reason")
+        or profile.get("attention_reason")
+    )
+    blocked_future_routes = _dedupe_string_list(
+        _string_list(
+            terminal_life_loop_state.get("queue_e_world_contact_blocked_future_routes")
+        )
+        + _string_list(handoff_presence.get("blocked_future_routes"))
+        + _string_list(profile.get("blocked_future_routes"))
+    )
+    allowed_repair_routes = _dedupe_string_list(
+        _string_list(
+            terminal_life_loop_state.get("queue_e_world_contact_allowed_repair_routes")
+        )
+        + _string_list(handoff_presence.get("allowed_repair_routes"))
+        + _string_list(profile.get("allowed_repair_routes"))
+    )
+    repair_governance_refs = _dedupe_string_list(
+        _string_list(
+            terminal_life_loop_state.get("queue_e_world_contact_repair_governance_refs")
+        )
+        + _string_list(handoff_presence.get("repair_governance_refs"))
+        + _string_list(profile.get("repair_governance_refs"))
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(terminal_life_loop_state.get("queue_e_world_contact_ref_set"))
+        + _string_list(handoff_presence.get("ref_set"))
+        + _string_list(handoff_presence.get("background_ref_set"))
+        + _string_list(profile.get("ref_set"))
+        + repair_governance_refs
+    )
+    if isinstance(profile_ref, str) and profile_ref:
+        ref_set = _dedupe_string_list([*ref_set, profile_ref])
+
+    if not any(
+        [
+            profile,
+            handoff_status,
+            profile_ref,
+            repair_hold_required is not None,
+            pressure_level,
+            confirmation_threshold_bias,
+            future_release_posture,
+            waiting_posture,
+            attention_target,
+            attention_reason,
+            blocked_future_routes,
+            allowed_repair_routes,
+            repair_governance_refs,
+            ref_set,
+        ]
+    ):
+        return {}
+
+    payload: dict[str, Any] = {}
+    if profile:
+        payload["queue_e_world_contact_handoff_profile"] = dict(profile)
+    if handoff_status:
+        payload["queue_e_world_contact_handoff_status"] = str(handoff_status)
+    if profile_ref:
+        payload["queue_e_world_contact_handoff_profile_ref"] = str(profile_ref)
+    if repair_hold_required is not None:
+        payload["queue_e_world_contact_repair_hold_required"] = bool(
+            repair_hold_required
+        )
+    if pressure_level:
+        payload["queue_e_world_contact_pressure_level"] = str(pressure_level)
+    if confirmation_threshold_bias:
+        payload["queue_e_world_contact_confirmation_threshold_bias"] = str(
+            confirmation_threshold_bias
+        )
+    if future_release_posture:
+        payload["queue_e_world_contact_future_release_posture"] = str(
+            future_release_posture
+        )
+    if waiting_posture:
+        payload["queue_e_world_contact_waiting_posture"] = str(waiting_posture)
+    if attention_target:
+        payload["queue_e_world_contact_attention_target"] = str(attention_target)
+    if attention_reason:
+        payload["queue_e_world_contact_attention_reason"] = str(attention_reason)
+    if blocked_future_routes:
+        payload["queue_e_world_contact_blocked_future_routes"] = blocked_future_routes
+    if allowed_repair_routes:
+        payload["queue_e_world_contact_allowed_repair_routes"] = allowed_repair_routes
+    if repair_governance_refs:
+        payload["queue_e_world_contact_repair_governance_refs"] = (
+            repair_governance_refs
+        )
+    if ref_set:
+        payload["queue_e_world_contact_ref_set"] = ref_set
+        payload["queue_e_world_contact_handoff_refs"] = ref_set
+        payload["queue_e_world_contact_evidence_refs"] = ref_set
     return payload
 
 

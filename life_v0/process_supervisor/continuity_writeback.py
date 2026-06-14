@@ -110,6 +110,32 @@ def build_idle_continuity_frame(
     queue_e_birth_repair_ref_set: list[str] | None = None,
     queue_e_birth_repair_waiting_posture: str | None = None,
     queue_e_birth_repair_attention_reason: str | None = None,
+    background_queue_e_world_contact_handoff_profile: dict[str, Any] | None = None,
+    background_queue_e_world_contact_handoff_profile_ref: str | None = None,
+    background_queue_e_world_contact_handoff_status: str | None = None,
+    background_queue_e_world_contact_repair_hold_required: bool | None = None,
+    background_queue_e_world_contact_confirmation_threshold_bias: str | None = None,
+    background_queue_e_world_contact_future_release_posture: str | None = None,
+    background_queue_e_world_contact_blocked_future_routes: list[str] | None = None,
+    background_queue_e_world_contact_allowed_repair_routes: list[str] | None = None,
+    background_queue_e_world_contact_repair_governance_refs: list[str] | None = None,
+    background_queue_e_world_contact_ref_set: list[str] | None = None,
+    background_queue_e_world_contact_waiting_posture: str | None = None,
+    background_queue_e_world_contact_attention_target: str | None = None,
+    background_queue_e_world_contact_attention_reason: str | None = None,
+    queue_e_world_contact_handoff_profile: dict[str, Any] | None = None,
+    queue_e_world_contact_handoff_profile_ref: str | None = None,
+    queue_e_world_contact_handoff_status: str | None = None,
+    queue_e_world_contact_repair_hold_required: bool | None = None,
+    queue_e_world_contact_confirmation_threshold_bias: str | None = None,
+    queue_e_world_contact_future_release_posture: str | None = None,
+    queue_e_world_contact_blocked_future_routes: list[str] | None = None,
+    queue_e_world_contact_allowed_repair_routes: list[str] | None = None,
+    queue_e_world_contact_repair_governance_refs: list[str] | None = None,
+    queue_e_world_contact_ref_set: list[str] | None = None,
+    queue_e_world_contact_waiting_posture: str | None = None,
+    queue_e_world_contact_attention_target: str | None = None,
+    queue_e_world_contact_attention_reason: str | None = None,
     prediction_write_gate_refs: list[str] | None = None,
     prediction_waiting_posture: str | None = None,
     response_surface_posture_hint: str | None = None,
@@ -413,6 +439,102 @@ def build_idle_continuity_frame(
         payload["queue_e_birth_repair_attention_reason"] = (
             queue_e_birth_repair_attention_reason
         )
+    if background_queue_e_world_contact_handoff_profile:
+        payload["background_queue_e_world_contact_handoff_profile"] = dict(
+            background_queue_e_world_contact_handoff_profile
+        )
+    for key, value in (
+        (
+            "background_queue_e_world_contact_handoff_profile_ref",
+            background_queue_e_world_contact_handoff_profile_ref,
+        ),
+        (
+            "background_queue_e_world_contact_handoff_status",
+            background_queue_e_world_contact_handoff_status,
+        ),
+        (
+            "background_queue_e_world_contact_confirmation_threshold_bias",
+            background_queue_e_world_contact_confirmation_threshold_bias,
+        ),
+        (
+            "background_queue_e_world_contact_future_release_posture",
+            background_queue_e_world_contact_future_release_posture,
+        ),
+        (
+            "background_queue_e_world_contact_waiting_posture",
+            background_queue_e_world_contact_waiting_posture,
+        ),
+        (
+            "background_queue_e_world_contact_attention_target",
+            background_queue_e_world_contact_attention_target,
+        ),
+        (
+            "background_queue_e_world_contact_attention_reason",
+            background_queue_e_world_contact_attention_reason,
+        ),
+    ):
+        if value:
+            payload[key] = value
+    if background_queue_e_world_contact_repair_hold_required is not None:
+        payload["background_queue_e_world_contact_repair_hold_required"] = bool(
+            background_queue_e_world_contact_repair_hold_required
+        )
+    for key, value in (
+        (
+            "background_queue_e_world_contact_blocked_future_routes",
+            background_queue_e_world_contact_blocked_future_routes,
+        ),
+        (
+            "background_queue_e_world_contact_allowed_repair_routes",
+            background_queue_e_world_contact_allowed_repair_routes,
+        ),
+        (
+            "background_queue_e_world_contact_repair_governance_refs",
+            background_queue_e_world_contact_repair_governance_refs,
+        ),
+        (
+            "background_queue_e_world_contact_ref_set",
+            background_queue_e_world_contact_ref_set,
+        ),
+    ):
+        if value:
+            payload[key] = list(value)
+    if queue_e_world_contact_handoff_profile:
+        payload["queue_e_world_contact_handoff_profile"] = dict(
+            queue_e_world_contact_handoff_profile
+        )
+    for key, value in (
+        (
+            "queue_e_world_contact_handoff_profile_ref",
+            queue_e_world_contact_handoff_profile_ref,
+        ),
+        ("queue_e_world_contact_handoff_status", queue_e_world_contact_handoff_status),
+        (
+            "queue_e_world_contact_confirmation_threshold_bias",
+            queue_e_world_contact_confirmation_threshold_bias,
+        ),
+        (
+            "queue_e_world_contact_future_release_posture",
+            queue_e_world_contact_future_release_posture,
+        ),
+        ("queue_e_world_contact_waiting_posture", queue_e_world_contact_waiting_posture),
+        ("queue_e_world_contact_attention_target", queue_e_world_contact_attention_target),
+        ("queue_e_world_contact_attention_reason", queue_e_world_contact_attention_reason),
+    ):
+        if value:
+            payload[key] = value
+    if queue_e_world_contact_repair_hold_required is not None:
+        payload["queue_e_world_contact_repair_hold_required"] = bool(
+            queue_e_world_contact_repair_hold_required
+        )
+    for key, value in (
+        ("queue_e_world_contact_blocked_future_routes", queue_e_world_contact_blocked_future_routes),
+        ("queue_e_world_contact_allowed_repair_routes", queue_e_world_contact_allowed_repair_routes),
+        ("queue_e_world_contact_repair_governance_refs", queue_e_world_contact_repair_governance_refs),
+        ("queue_e_world_contact_ref_set", queue_e_world_contact_ref_set),
+    ):
+        if value:
+            payload[key] = list(value)
     if prediction_write_gate_refs:
         payload["prediction_write_gate_refs"] = list(prediction_write_gate_refs)
     if prediction_waiting_posture:
