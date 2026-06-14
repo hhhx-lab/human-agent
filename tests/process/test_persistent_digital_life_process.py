@@ -19162,6 +19162,66 @@ class PersistentDigitalLifeProcessTests(
                         "growth_self_modification_refs"
                     ],
                 )
+            self.assertEqual(
+                persisted_autobiographical_stack["replay_priority"],
+                "identity_repair_reconsolidation_first",
+            )
+            responsibility_repair_projection = persisted_autobiographical_stack[
+                "responsibility_repair_projection"
+            ]
+            self.assertEqual(
+                responsibility_repair_projection["schema_version"],
+                "autobiographical_responsibility_repair_projection_v0",
+            )
+            self.assertEqual(
+                responsibility_repair_projection["pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                responsibility_repair_projection["attention_target"],
+                "regret_pressure",
+            )
+            self.assertTrue(
+                responsibility_repair_projection["repair_followup_required"]
+            )
+            self.assertEqual(
+                responsibility_repair_projection["projection_boundary"],
+                "autobiographical_repair_evidence_not_spoken_language",
+            )
+            self.assertIn(
+                "responsibility-event-001",
+                responsibility_repair_projection["responsibility_refs"],
+            )
+            self.assertIn(
+                "regret-001",
+                responsibility_repair_projection["regret_refs"],
+            )
+            self.assertIn(
+                "repair-001",
+                responsibility_repair_projection["repair_refs"],
+            )
+            self.assertIn(
+                "runtime/state/membrane/world_contact_summary.json",
+                responsibility_repair_projection["queue_e_repair_refs"],
+            )
+            self.assertIn(
+                "runtime/reports/latest/pain_regret_repair_report.json",
+                responsibility_repair_projection["queue_e_repair_refs"],
+            )
+            self.assertIn(
+                "responsibility-event-001",
+                persisted_autobiographical_stack[
+                    "autobiographical_responsibility_refs"
+                ],
+            )
+            self.assertIn(
+                "regret-001",
+                persisted_autobiographical_stack["autobiographical_regret_refs"],
+            )
+            self.assertIn(
+                "repair-001",
+                persisted_autobiographical_stack["autobiographical_repair_refs"],
+            )
             self.assertIn(
                 "runtime/reports/latest/resumed_external_dialogue_packet.json",
                 persisted_autobiographical_stack["autobiographical_update_refs"],
@@ -19442,6 +19502,11 @@ class PersistentDigitalLifeProcessTests(
                     "runtime/state/self/autobiographical_stack.json#relationship_turn_refs",
                     "runtime/state/self/autobiographical_stack.json#growth_self_modification_projection",
                     "runtime/state/self/autobiographical_stack.json#growth_self_modification_refs",
+                    "runtime/state/self/autobiographical_stack.json#responsibility_repair_projection",
+                    "runtime/state/self/autobiographical_stack.json#autobiographical_responsibility_refs",
+                    "runtime/state/self/autobiographical_stack.json#autobiographical_regret_refs",
+                    "runtime/state/self/autobiographical_stack.json#autobiographical_repair_refs",
+                    "runtime/state/self/autobiographical_stack.json#queue_e_repair_refs",
                 ],
             )
             self.assertEqual(

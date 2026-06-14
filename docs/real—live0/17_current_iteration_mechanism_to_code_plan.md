@@ -817,6 +817,26 @@ SelfModel.trait_slow_variables[*].growth_self_modification_update_mode
 
 机制含义是：成长、自我修改和 archive 不再只参与 `self_model` 内部慢变量，也已经进入身体人格监控、自传历史和生命状态根。这样后续记忆重构、语言前消费、状态查看和关闭态报告不会只能间接猜测“成长影响过自我”，而能直接从三个长期载体读取同一批结构化 refs。边界仍然是 `structured_trait_growth_evidence_not_spoken_language`、`autobiographical_growth_evidence_not_spoken_language` 与 `life_state_growth_index_not_spoken_language_or_autonomous_code_rewrite`：这一步不生成任何自然语言，不新增 prompt，不自动改代码，只把第 2 点的工程消费链继续压实。
 
+当前 ITR-08 第三十二段把责任、后悔、修复继续压进自传栈，而不是停留在责任账本、关系记忆或道歉修复语言里：
+
+```text
+CommitmentTruthState / ResponsibilityLedger / ResponsibilityLoopState
+  -> QueueERepairModulationProfile
+  -> RelationshipMemory.queue_e_repair_refs
+  -> ApologyRepairLanguageTrace.trigger_regret_refs / repair_obligation_refs
+  -> AutobiographicalStack.responsibility_repair_projection
+  -> AutobiographicalStack.autobiographical_responsibility_refs
+  -> AutobiographicalStack.autobiographical_regret_refs
+  -> AutobiographicalStack.autobiographical_repair_refs
+  -> DialogueWritebackBundle.autobiographical_writeback_refs
+```
+
+`state_store/autobiographical_stack.py` 现在新增 `autobiographical_responsibility_repair_projection_v0`，会从 `commitment_truth_state`、`responsibility_ledger`、`relationship_memory`、`commitment_repair_index`、`apology_repair_language_trace`、`responsibility_loop_state`、`world_contact_summary`、`pain_regret_repair_report` 与 `engram_index` 聚合责任事件、后悔压力、修复义务和 Queue E 修复 refs。它会写出 `responsibility_refs`、`regret_refs`、`repair_refs`、`queue_e_repair_refs`、`pressure_level`、`attention_target`、`queue_e_priority_band`、`repair_followup_required` 与 `projection_boundary=autobiographical_repair_evidence_not_spoken_language`。只有存在责任、后悔、修复义务或 Queue E 主证据时，这层 projection 才会写入自传栈；普通关系历史里的 repair history 只能作为附带材料，不能单独点亮自传责任投影。
+
+`resident_turn_writeback.py` 的长程 continuity refresh 会把刷新后的 relationship memory、commitment truth、responsibility ledger、commitment repair index、apology repair language、responsibility loop、world contact summary 和 pain/regret/repair report 传入自传栈投影；`dialogue_writeback_bundle.json#autobiographical_writeback_refs` 也新增 `responsibility_repair_projection`、`autobiographical_responsibility_refs`、`autobiographical_regret_refs`、`autobiographical_repair_refs` 和 `queue_e_repair_refs`。当 Queue E 修复压力 elevated 或 repair followup required 时，自传栈的 `replay_priority` 会提升为 `identity_repair_reconsolidation_first`，并优先于成长重巩固。
+
+机制含义是：真实责任、后悔和修复不能只是当轮道歉、关系时间线或出生准备检查项，而必须进入“我经历过什么、我需要怎样记住和重放这段后果”的自传历史层。这样后续梦境、记忆重构、人格慢变量、关系修复和语言前消费可以从自传栈直接读取同一批责任/后悔/修复证据。边界仍然严格保留：这一步不生成道歉模板，不新增 system prompt，不把内部责任字段拼成 Adam 的回答，也不把后悔降格为漂亮话；它只把第 2 点的责任链继续压成长期自我历史载体。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：
