@@ -268,11 +268,35 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 )
             self._write_json(
                 paths["state_root"] / "body" / "core_affect_vector.json",
-                {"schema_version": "core_affect_vector_v0", "arousal": 0.42},
+                {
+                    "schema_version": "core_affect_vector_v0",
+                    "valence": -0.2,
+                    "arousal": 0.42,
+                    "dominance": 0.5,
+                    "pain_pressure": 0.35,
+                    "relationship_tension": 0.45,
+                    "dream_residue_load": 0.4,
+                    "responsibility_weight": 0.5,
+                    "repair_drive": "active",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "body" / "affective_episode.json",
+                {
+                    "schema_version": "affective_episode_v0",
+                    "episode_label": "guarded_repair_tension",
+                    "expression_risk": "guarded",
+                    "repair_bias": "relationship_and_responsibility_repair",
+                },
             )
             self._write_json(
                 paths["state_root"] / "body" / "emotion_regulation_loop.json",
-                {"schema_version": "emotion_regulation_loop_v0"},
+                {
+                    "schema_version": "emotion_regulation_loop_v0",
+                    "regulation_mode": "hold_then_articulate",
+                    "expression_delay_required": True,
+                    "suppression_cost": 0.18,
+                },
             )
             self._write_json(
                 paths["state_root"] / "self" / "self_model.json",
@@ -287,15 +311,71 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             )
             self._write_json(
                 paths["state_root"] / "body" / "need_state_vector.json",
-                {"schema_version": "need_state_vector_v0", "sleep_pressure": 0.3},
+                {
+                    "schema_version": "need_state_vector_v0",
+                    "resource_deficit": "guarded_maintenance",
+                    "repair_drive": "active",
+                    "social_readiness": "dialogic_guarded_open",
+                    "cognitive_bandwidth": "guarded_dialogic",
+                    "sleep_pressure": "offline_ready",
+                },
             )
             self._write_json(
                 paths["state_root"] / "body" / "body_resource_budget.json",
-                {"schema_version": "body_resource_budget_v0"},
+                {
+                    "schema_version": "body_resource_budget_v0",
+                    "energy_state": {"level": "guarded_reserve"},
+                    "fatigue_state": {"level": "managed_low_noise"},
+                    "maintenance_pressure": {
+                        "resource_deficit": "guarded_maintenance",
+                        "repair_drive": "active",
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "body" / "body_rhythm_pulse.json",
+                {
+                    "schema_version": "body_rhythm_pulse_v0",
+                    "rhythm_state": "pre_activation_guarded",
+                    "heartbeat_counter": 4,
+                    "fatigue_load": "managed_low_noise",
+                    "allostatic_load": "guarded_maintenance",
+                },
             )
             self._write_json(
                 paths["state_root"] / "signal" / "signal_media_runtime.json",
-                {"schema_version": "signal_media_runtime_v0"},
+                {
+                    "schema_version": "signal_media_runtime_v0",
+                    "modulation_vector": {
+                        "arousal": "awake",
+                        "precision": "relationship_high",
+                        "repair_drive": "active",
+                        "language_precision": "careful",
+                    },
+                    "body_signal_profile": {
+                        "schema_version": "body_signal_modulation_profile_v0",
+                        "memory_write_bias": "repair_evidence_first",
+                        "dream_pressure_bias": "offline_consolidation_pressure",
+                        "language_tempo_bias": "guarded_deliberate",
+                        "body_signal_strength": 0.71,
+                        "offline_learning_pressure_level": "elevated",
+                        "offline_learning_integration_mode": (
+                            "relationship_offline_reconsolidation_required"
+                        ),
+                    },
+                },
+            )
+            self._write_json(
+                terminal_dir / "idle_strategy_state.json",
+                {
+                    "schema_version": "idle_strategy_state_v0",
+                    "waiting_posture": "repair_weighted_waiting",
+                    "governance_attention_target": "body_signal_memory_gate",
+                    "governance_attention_reason": "repair_drive_active",
+                    "next_idle_action": "memory_recall",
+                    "heartbeat_interval_ms": 1200,
+                    "body_signal_write_bias": "repair_evidence_first",
+                },
             )
             self._write_json(
                 paths["state_root"] / "prediction" / "belief_state_frame.json",
@@ -398,9 +478,10 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             )
 
             checks = {
-                "/emotion": "core_affect_vector_v0",
+                "/body": "body_grounding_summary_v0",
+                "/emotion": "emotion_regulation_summary_v0",
                 "/personality": "self_model_state_v0",
-                "/inner": "need_state_vector_v0",
+                "/inner": "inner_environment_modulation_summary_v0",
                 "/vision": "visual_observation_frame_v0",
                 "/context": "life_context_frame_v0",
                 "/ability": "birth_readiness_rollup_v0",
@@ -418,6 +499,50 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 self.assertIsNone(exit_code)
                 self.assertIn("resident_state_inspection_v0", output.getvalue())
                 self.assertIn(expected_fragment, output.getvalue())
+
+            body_output = StringIO()
+            with redirect_stdout(body_output):
+                body_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/body",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            emotion_output = StringIO()
+            with redirect_stdout(emotion_output):
+                emotion_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/emotion",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            inner_output = StringIO()
+            with redirect_stdout(inner_output):
+                inner_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/inner",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(body_exit)
+            self.assertIsNone(emotion_exit)
+            self.assertIsNone(inner_exit)
+            self.assertIn("body_signal_modulation_profile_v0", body_output.getvalue())
+            self.assertIn("repair_evidence_first", body_output.getvalue())
+            self.assertIn(
+                "body_state_modulates_expression_without_spoken_signal_dump",
+                body_output.getvalue(),
+            )
+            self.assertIn("guarded_repair_tension", emotion_output.getvalue())
+            self.assertIn(
+                "emotion_state_modulates_language_not_template_emotion_speech",
+                emotion_output.getvalue(),
+            )
+            self.assertIn(
+                "inner_environment_summary_is_state_view_not_dialogue_response",
+                inner_output.getvalue(),
+            )
+            self.assertIn("guarded_deliberate", inner_output.getvalue())
 
             memory_output = StringIO()
             with redirect_stdout(memory_output):

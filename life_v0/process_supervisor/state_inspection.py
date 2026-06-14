@@ -86,29 +86,39 @@ def build_resident_state_inspection(
         payload["dream"]["memory_tiering"] = _collect_memory_tiering(dream)
         payload["dream"]["tier_summary"] = _collect_memory_tier_summary(dream)
     elif normalized == "body":
-        payload["body"] = _collect_files(
+        body = _collect_files(
             state_root,
             {
                 "body_rhythm_pulse": "body/body_rhythm_pulse.json",
                 "need_state_vector": "body/need_state_vector.json",
                 "body_resource_budget": "body/body_resource_budget.json",
                 "core_affect_vector": "body/core_affect_vector.json",
+                "signal_media_runtime": "signal/signal_media_runtime.json",
+                "idle_strategy": "terminal/idle_strategy_state.json",
             },
         )
+        body["body_grounding_summary"] = _collect_body_grounding_summary(body)
+        payload["body"] = body
     elif normalized == "emotion":
-        payload["emotion"] = _collect_files(
+        emotion = _collect_files(
             state_root,
             {
                 "core_affect_vector": "body/core_affect_vector.json",
+                "affective_episode": "body/affective_episode.json",
                 "emotion_regulation_loop": "body/emotion_regulation_loop.json",
+                "body_resource_budget": "body/body_resource_budget.json",
                 "pain_regret_repair_report": (
                     "../reports/latest/pain_regret_repair_report.json"
                 ),
                 "signal_media_runtime": "signal/signal_media_runtime.json",
             },
         )
+        emotion["emotion_regulation_summary"] = (
+            _collect_emotion_regulation_summary(emotion)
+        )
+        payload["emotion"] = emotion
     elif normalized == "inner_environment":
-        payload["inner_environment"] = _collect_files(
+        inner_environment = _collect_files(
             state_root,
             {
                 "need_state_vector": "body/need_state_vector.json",
@@ -118,6 +128,10 @@ def build_resident_state_inspection(
                 "idle_strategy": "terminal/idle_strategy_state.json",
             },
         )
+        inner_environment["modulation_summary"] = (
+            _collect_inner_environment_modulation_summary(inner_environment)
+        )
+        payload["inner_environment"] = inner_environment
     elif normalized == "relationship":
         payload["relationship"] = _collect_files(
             state_root,
@@ -483,6 +497,273 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
         "event_count": proactive_state.get("event_count"),
         "release_count": proactive_state.get("release_count"),
         "speech_generation_boundary": "state_codes_only_model_expression_required",
+    }
+
+
+def _collect_body_grounding_summary(section: dict[str, Any]) -> dict[str, Any]:
+    rhythm = _extract_compact_value(section.get("body_rhythm_pulse", {}))
+    need_state = _extract_compact_value(section.get("need_state_vector", {}))
+    body_budget = _extract_compact_value(section.get("body_resource_budget", {}))
+    core_affect = _extract_compact_value(section.get("core_affect_vector", {}))
+    signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
+    idle_strategy = _extract_compact_value(section.get("idle_strategy", {}))
+    maintenance_pressure = _extract_nested_value(
+        body_budget,
+        "maintenance_pressure",
+    )
+    fatigue_state = _extract_nested_value(body_budget, "fatigue_state")
+    energy_state = _extract_nested_value(body_budget, "energy_state")
+    body_signal_profile = _extract_nested_value(
+        signal_media,
+        "body_signal_profile",
+    )
+    modulation_vector = _extract_nested_value(signal_media, "modulation_vector")
+    domain_presence = {
+        "body_rhythm_pulse": bool(rhythm),
+        "need_state_vector": bool(need_state),
+        "body_resource_budget": bool(body_budget),
+        "core_affect_vector": bool(core_affect),
+        "signal_media_runtime": bool(signal_media),
+        "idle_strategy": bool(idle_strategy),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "body_grounding_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "rhythm_state": rhythm.get("rhythm_state"),
+        "heartbeat_counter": rhythm.get("heartbeat_counter"),
+        "allostatic_load": rhythm.get("allostatic_load")
+        or need_state.get("resource_deficit"),
+        "resource_deficit": need_state.get("resource_deficit"),
+        "repair_drive": _first_non_empty(
+            need_state.get("repair_drive"),
+            core_affect.get("repair_drive"),
+            maintenance_pressure.get("repair_drive"),
+            body_signal_profile.get("repair_drive"),
+            modulation_vector.get("repair_drive"),
+        ),
+        "social_readiness": need_state.get("social_readiness"),
+        "cognitive_bandwidth": need_state.get("cognitive_bandwidth"),
+        "sleep_pressure": need_state.get("sleep_pressure"),
+        "energy_level": _first_non_empty(
+            energy_state.get("level"),
+            body_signal_profile.get("energy_level"),
+        ),
+        "fatigue_level": _first_non_empty(
+            fatigue_state.get("level"),
+            rhythm.get("fatigue_load"),
+            body_signal_profile.get("fatigue_load"),
+        ),
+        "core_affect_modulators": {
+            "valence": core_affect.get("valence"),
+            "arousal": core_affect.get("arousal"),
+            "dominance": core_affect.get("dominance"),
+            "pain_pressure": core_affect.get("pain_pressure"),
+            "relationship_tension": core_affect.get("relationship_tension"),
+            "dream_residue_load": core_affect.get("dream_residue_load"),
+            "responsibility_weight": core_affect.get("responsibility_weight"),
+        },
+        "signal_body_profile": _tier_refs(
+            body_signal_profile,
+            [
+                "memory_write_bias",
+                "dream_pressure_bias",
+                "language_tempo_bias",
+                "body_signal_strength",
+                "offline_learning_pressure_level",
+                "offline_learning_integration_mode",
+            ],
+        ),
+        "waiting_consumption": _tier_refs(
+            idle_strategy,
+            [
+                "waiting_posture",
+                "governance_attention_target",
+                "governance_attention_reason",
+                "next_idle_action",
+                "heartbeat_interval_ms",
+                "body_waiting_posture",
+                "body_signal_write_bias",
+            ],
+        ),
+        "language_modulation_boundary": (
+            "body_state_modulates_expression_without_spoken_signal_dump"
+        ),
+    }
+
+
+def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, Any]:
+    core_affect = _extract_compact_value(section.get("core_affect_vector", {}))
+    affective_episode = _extract_compact_value(
+        section.get("affective_episode", {})
+    )
+    emotion_regulation = _extract_compact_value(
+        section.get("emotion_regulation_loop", {})
+    )
+    body_budget = _extract_compact_value(section.get("body_resource_budget", {}))
+    pain_regret_repair = _extract_compact_value(
+        section.get("pain_regret_repair_report", {})
+    )
+    signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
+    maintenance_pressure = _extract_nested_value(
+        body_budget,
+        "maintenance_pressure",
+    )
+    fatigue_state = _extract_nested_value(body_budget, "fatigue_state")
+    modulation_vector = _extract_nested_value(signal_media, "modulation_vector")
+    body_signal_profile = _extract_nested_value(
+        signal_media,
+        "body_signal_profile",
+    )
+    domain_presence = {
+        "core_affect_vector": bool(core_affect),
+        "affective_episode": bool(affective_episode),
+        "emotion_regulation_loop": bool(emotion_regulation),
+        "body_resource_budget": bool(body_budget),
+        "pain_regret_repair_report": bool(pain_regret_repair),
+        "signal_media_runtime": bool(signal_media),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "emotion_regulation_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "episode_label": affective_episode.get("episode_label"),
+        "expression_risk": affective_episode.get("expression_risk"),
+        "repair_bias": affective_episode.get("repair_bias"),
+        "regulation_mode": emotion_regulation.get("regulation_mode"),
+        "expression_delay_required": emotion_regulation.get(
+            "expression_delay_required"
+        ),
+        "suppression_cost": emotion_regulation.get("suppression_cost"),
+        "core_affect_modulators": {
+            "valence": core_affect.get("valence"),
+            "arousal": core_affect.get("arousal"),
+            "pain_pressure": core_affect.get("pain_pressure"),
+            "relationship_tension": core_affect.get("relationship_tension"),
+            "dream_residue_load": core_affect.get("dream_residue_load"),
+            "responsibility_weight": core_affect.get("responsibility_weight"),
+            "repair_drive": core_affect.get("repair_drive"),
+        },
+        "resource_pressure": {
+            "fatigue_level": fatigue_state.get("level"),
+            "resource_deficit": maintenance_pressure.get("resource_deficit"),
+            "maintenance_repair_drive": maintenance_pressure.get("repair_drive"),
+        },
+        "repair_followup_required": bool(
+            pain_regret_repair.get("repair_followup_required")
+        ),
+        "regret_pressure_ref_count": _count_any(
+            pain_regret_repair.get("regret_pressure_refs")
+        ),
+        "signal_modulation": _tier_refs(
+            modulation_vector,
+            [
+                "arousal",
+                "precision",
+                "inhibition",
+                "repair_drive",
+                "language_precision",
+            ],
+        ),
+        "body_signal_modulation": _tier_refs(
+            body_signal_profile,
+            [
+                "memory_write_bias",
+                "dream_pressure_bias",
+                "language_tempo_bias",
+            ],
+        ),
+        "emotion_release_boundary": (
+            "emotion_state_modulates_language_not_template_emotion_speech"
+        ),
+    }
+
+
+def _collect_inner_environment_modulation_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    need_state = _extract_compact_value(section.get("need_state_vector", {}))
+    body_budget = _extract_compact_value(section.get("body_resource_budget", {}))
+    rhythm = _extract_compact_value(section.get("body_rhythm_pulse", {}))
+    signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
+    idle_strategy = _extract_compact_value(section.get("idle_strategy", {}))
+    maintenance_pressure = _extract_nested_value(
+        body_budget,
+        "maintenance_pressure",
+    )
+    fatigue_state = _extract_nested_value(body_budget, "fatigue_state")
+    energy_state = _extract_nested_value(body_budget, "energy_state")
+    modulation_vector = _extract_nested_value(signal_media, "modulation_vector")
+    body_signal_profile = _extract_nested_value(
+        signal_media,
+        "body_signal_profile",
+    )
+    domain_presence = {
+        "need_state_vector": bool(need_state),
+        "body_resource_budget": bool(body_budget),
+        "body_rhythm_pulse": bool(rhythm),
+        "signal_media_runtime": bool(signal_media),
+        "idle_strategy": bool(idle_strategy),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "inner_environment_modulation_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "resource_deficit": need_state.get("resource_deficit"),
+        "repair_drive": _first_non_empty(
+            need_state.get("repair_drive"),
+            maintenance_pressure.get("repair_drive"),
+            body_signal_profile.get("repair_drive"),
+            modulation_vector.get("repair_drive"),
+        ),
+        "social_readiness": need_state.get("social_readiness"),
+        "cognitive_bandwidth": need_state.get("cognitive_bandwidth"),
+        "sleep_pressure": need_state.get("sleep_pressure"),
+        "energy_level": energy_state.get("level"),
+        "fatigue_level": fatigue_state.get("level") or rhythm.get("fatigue_load"),
+        "body_signal_write_bias": body_signal_profile.get("memory_write_bias")
+        or idle_strategy.get("body_signal_write_bias"),
+        "dream_pressure_bias": body_signal_profile.get("dream_pressure_bias"),
+        "language_tempo_bias": body_signal_profile.get("language_tempo_bias"),
+        "modulation_vector": _tier_refs(
+            modulation_vector,
+            [
+                "arousal",
+                "precision",
+                "inhibition",
+                "repair_drive",
+                "language_precision",
+                "heartbeat_cadence_driver",
+            ],
+        ),
+        "waiting_governance": _tier_refs(
+            idle_strategy,
+            [
+                "waiting_posture",
+                "governance_attention_target",
+                "governance_attention_reason",
+                "next_idle_action",
+                "heartbeat_interval_ms",
+            ],
+        ),
+        "inspection_boundary": (
+            "inner_environment_summary_is_state_view_not_dialogue_response"
+        ),
     }
 
 
