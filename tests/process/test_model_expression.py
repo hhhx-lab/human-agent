@@ -935,6 +935,81 @@ class ModelExpressionTests(unittest.TestCase):
                 result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
 
+    def test_post_expression_gate_audits_world_contact_handoff_without_forcing_visibility(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": MODEL_ACCEPTED_AUDIT_TOKEN},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-world-contact-handoff",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="你会怎么面对外部世界接触？",
+                audited_expression_material="审计材料保留世界接触修复交接、确认阈值和未来行动抑制。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                terminal_life_loop_state={
+                    "resident_background_lineage_state": {
+                        "world_contact_handoff_presence": {
+                            "schema_version": "world_contact_handoff_presence_v0",
+                            "handoff_status": "closed",
+                            "repair_hold_required": True,
+                            "confirmation_threshold_bias": "raise_before_release",
+                            "future_release_posture": "repair_before_world_release",
+                            "blocked_future_routes": [
+                                "direct_external_action_without_repair_check"
+                            ],
+                            "allowed_repair_routes": [
+                                "repair_governance_review_before_release"
+                            ],
+                            "waiting_posture": "world_contact_repair_hold_waiting",
+                            "attention_target": "world_contact_repair_handoff",
+                            "attention_reason": "repair_hold_closed_into_waiting",
+                            "pressure_level": "elevated",
+                            "ref_set": [
+                                "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
+                                "runtime/state/validation/world_contact_validation.json",
+                            ],
+                        }
+                    }
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_AUDIT_TOKEN)
+            self.assertIn(
+                "world_contact_handoff",
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
+            )
+            self.assertEqual(
+                result.state["model_expression_context_summary"][
+                    "world_contact_handoff_status"
+                ],
+                "closed",
+            )
+            self.assertEqual(
+                result.state["model_expression_context_summary"][
+                    "world_contact_handoff_ref_count"
+                ],
+                2,
+            )
+
     def test_local_provider_keeps_natural_language_unreleased_without_transport(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

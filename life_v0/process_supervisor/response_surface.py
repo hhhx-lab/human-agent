@@ -119,6 +119,10 @@ def compose_life_response(
     autonomous_presence = _dict_value(lineage, "autonomous_activity_presence")
     birth_repair_presence = _dict_value(lineage, "birth_repair_presence")
     life_constraint_presence = _dict_value(lineage, "life_constraint_presence")
+    world_contact_handoff_presence = _dict_value(
+        lineage,
+        "world_contact_handoff_presence",
+    )
     relationship_presence = _dict_value(lineage, "relationship_presence")
     heartbeat_presence = _dict_value(lineage, "heartbeat_cadence_presence")
     previous_handoff_profile = select_handoff_profile(terminal_life_loop_state)
@@ -323,6 +327,29 @@ def compose_life_response(
                     "attention_reason",
                     "continuity_mode",
                 ),
+            ),
+            "world_contact_handoff_presence": _selected_keys(
+                world_contact_handoff_presence,
+                (
+                    "handoff_status",
+                    "repair_hold_required",
+                    "confirmation_threshold_bias",
+                    "future_release_posture",
+                    "blocked_future_routes",
+                    "allowed_repair_routes",
+                    "waiting_posture",
+                    "attention_target",
+                    "attention_reason",
+                    "pressure_level",
+                ),
+            ),
+            "world_contact_handoff_ref_count": len(
+                _dedupe_string_list(
+                    _string_list(world_contact_handoff_presence.get("ref_set"))
+                    + _string_list(
+                        world_contact_handoff_presence.get("repair_governance_refs")
+                    )
+                )
             ),
         },
         "prediction_attention": prediction_surface,

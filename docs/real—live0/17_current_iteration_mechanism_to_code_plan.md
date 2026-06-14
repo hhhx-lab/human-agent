@@ -672,6 +672,19 @@ BirthReadiness.queue_e_world_contact_repair_hold_handoff
 
 机制含义是：世界接触修复 hold 不再只作为 S08/S05/S09 的验收交接文件存在，而是成为常驻等待治理和背景生命谱系的一等 presence。它的语言位置仍然是“隐性调制”：这些字段可以改变等待、行动释放、修复路线、关系回合恢复和模型表达审计，但不能被代码硬拼成固定外显话术。
 
+当前第四段把这条 presence 推进到语言前审计和表达后审计：
+
+```text
+ResidentBackgroundLineageState.world_contact_handoff_presence
+  -> ResponseSurface.audited_expression_material_v0#responsibility_repair.world_contact_handoff_presence
+  -> ModelExpression.resident_background.world_contact_handoff_presence
+  -> ModelExpression.model_expression_context_summary.world_contact_handoff_*
+  -> PostExpressionGate.required_evidence_flags.world_contact_handoff
+  -> PostExpressionGate.soft_missing_evidence_flags
+```
+
+机制含义是：世界接触修复 hold 现在不只停在常驻、写回和报告证据链，也进入语言器官的隐性调制和审计面。模型可以依据它调整世界接触、修复、等待、确认和行动谨慎度；如果模型没有字面表达这组内部证据，post-expression gate 只记录软缺失，不强制释放固定机制语句，也不把内部 state 名称拼到自然语言里。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

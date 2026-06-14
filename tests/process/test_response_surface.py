@@ -556,6 +556,55 @@ class ResponseSurfaceTests(unittest.TestCase):
             "defer_noncritical_memory_commit",
         )
 
+    def test_world_contact_handoff_presence_enters_audited_expression_material(self):
+        handoff_refs = [
+            "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
+            "runtime/state/validation/world_contact_validation.json",
+            "runtime/state/schema_runner/run_manifest.json",
+        ]
+        material = compose_life_response(
+            external_utterance="你现在会直接接触外部世界吗？",
+            terminal_life_loop_state={
+                "resident_background_lineage_state": {
+                    "world_contact_handoff_presence": {
+                        "schema_version": "world_contact_handoff_presence_v0",
+                        "handoff_status": "closed",
+                        "repair_hold_required": True,
+                        "confirmation_threshold_bias": "raise_before_release",
+                        "future_release_posture": "repair_before_world_release",
+                        "blocked_future_routes": [
+                            "direct_external_action_without_repair_check"
+                        ],
+                        "allowed_repair_routes": [
+                            "repair_governance_review_before_release"
+                        ],
+                        "waiting_posture": "world_contact_repair_hold_waiting",
+                        "attention_target": "world_contact_repair_handoff",
+                        "attention_reason": "repair_hold_closed_into_waiting",
+                        "pressure_level": "elevated",
+                        "ref_set": handoff_refs,
+                    }
+                }
+            },
+        )
+
+        payload = json.loads(material)
+        handoff = payload["responsibility_repair"][
+            "world_contact_handoff_presence"
+        ]
+        self.assertTrue(payload["natural_language_release_disabled"])
+        self.assertEqual(handoff["handoff_status"], "closed")
+        self.assertTrue(handoff["repair_hold_required"])
+        self.assertEqual(
+            handoff["confirmation_threshold_bias"],
+            "raise_before_release",
+        )
+        self.assertEqual(
+            payload["responsibility_repair"]["world_contact_handoff_ref_count"],
+            3,
+        )
+        self.assertNotIn("你现在会直接接触外部世界吗？", material)
+
     def test_spoken_response_without_model_does_not_release_style_template(self):
         response = compose_life_spoken_response(
             external_utterance="你不觉得你的说话方式很奇怪吗？Adam",

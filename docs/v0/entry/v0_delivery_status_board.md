@@ -408,6 +408,8 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 
 当前 ITR-07 第三段把同一份 `queue_e_world_contact_repair_hold_handoff.json` 继续推进到 resident 常驻谱系和真实关系回合。`heartbeat.py` 会读取 handoff；`idle_strategy.py` 写出 `queue_e_world_contact_*` waiting governance 字段；`continuity_writeback.py`、`background_lineage_state.py` 与 `background_continuity.py` 会把它变成可跨关闭、跨唤醒恢复的 `world_contact_handoff_presence`；`dialogue_events.py` 会展开到 `digital_life_turn`；`resident_turn_writeback.py` 会写入 `dialogue_writeback_bundle.json` 与 `resumed_external_dialogue_packet.json`；`process_report.py` 会把 refs 与 input hash 写进 report/digest/receipt。状态板因此把这一格视为“世界接触修复 hold 已经从出生准备交接文件进入常驻等待、背景谱系、真实回合和关闭态证据链”，不是只在 S08/S05/S09 之间流转。
 
+当前 ITR-07 第四段继续把这份 `world_contact_handoff_presence` 接进语言审计面。`response_surface.py` 会在 `audited_expression_material_v0#responsibility_repair` 中携带 handoff status、repair hold、确认阈值偏置、未来释放姿态、blocked/allowed routes、waiting posture、attention target/reason 和 ref count；`model_expression.py` 会把同一 presence 放入 `resident_background`、`model_expression_context_summary` 与 post-expression gate 的 `world_contact_handoff` 软审计旗标。状态板因此把这一格视为“世界接触修复 hold 已经从常驻谱系进入下一轮语言器官的隐性调制和审计”，不是固定播报内部修复信号。
+
 ## 当前链尾开工包
 
 最新链尾已经新增 `life_v0/live0_audit/` 和 `life-v0 audit-live0`。这一步把 Stage 6 七项最终验收从人工清单压成可执行 gate，输出 `runtime/reports/latest/live0_acceptance_audit_report.json`、`runtime/reports/latest/live0_acceptance_audit_digest.json` 和 `runtime/receipts/live0_acceptance_audit_<run_id>.json`。当前主 runtime 审计已经证明 b/c/d/f 以及大部分 g 项有证据，剩余硬阻断集中在 `a_terminal_wake_and_named_residency`：正式命名锁和“名字本身作为终端命令”的 manifest 还必须落地，live0 才能收束。

@@ -31,9 +31,10 @@ life-v0 emit-report --strict
 11. `life_v0/process_supervisor/state_merge_signals.py` 已把 `state_merge_guard.json#long_term_change_sources` 压成 `state_merge_long_term_change_count/families/refs`，并继续进入 waiting governance、关闭态 resident governance artifacts、process report/digest/receipt、真实回合事件和回应表达面
 12. `life_v0/process_supervisor/terminal_ui.py` 已把终端表达面从裸 stdout 改成 `Digital Life` banner、life opening、关系输入盒和生命回应盒；它同时兼容旧 `生命回合输出:` 前缀，让 resident outbox 能从盒式输出中抽取真正回应文本
 13. `life_v0/process_supervisor/response_surface.py` 当前分成 evidence response 与 spoken response 两层：前者保留内部证据骨架，后者让当轮最高优先级生命信号隐性调制终端对话，并把 `live_semantic_focus`、调制等级、路由和 ref 计数这类内部字段留在 state/report/test，不能直接泄漏成 schema/debug 文本或固定证明段落
-14. `life_v0/process_supervisor/model_expression.py` 在 `.env` 启用模型时接管外显润色，但必须经过 post-expression gate：关系降级词触发回退，关系连续、责任修复、梦境离线、成长、身体情绪、意识出生、生命约束和 live-turn handoff 等证据若未字面外显则写入 soft audit
+14. `life_v0/process_supervisor/model_expression.py` 在 `.env` 启用模型时接管外显润色，但必须经过 post-expression gate：关系降级词触发回退，关系连续、责任修复、梦境离线、成长、身体情绪、意识出生、生命约束、world-contact handoff 和 live-turn handoff 等证据若未字面外显则写入 soft audit
 15. `life_v0/process_supervisor/resident_lifecycle.py` 已补上 queue bootstrap：后台重新 active 时忽略已完成 stale inbox，同时保留 `queued / turn_in_progress` 的 live queued turn，防止 attach 后重放旧话或吞掉新话
 16. `life_v0/process_supervisor/idle_strategy.py`、`heartbeat.py`、`continuity_writeback.py`、`background_lineage_state.py`、`background_continuity.py`、`dialogue_events.py`、`resident_turn_writeback.py` 与 `process_report.py` 已把 `runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json` 从出生准备层接入常驻过程：waiting heartbeat 读取、idle governance 持有、idle continuity 写回、background lineage 压成 `world_contact_handoff_presence`、下一次 background continuity 恢复、真实 `digital_life_turn` 展开、`dialogue_writeback_bundle.json` 和 `resumed_external_dialogue_packet.json` 承载 refs，最后进入 process report/digest/receipt/input hashes。它是世界接触修复 hold 的内部治理证据，不是固定外显语言模板。
+17. `life_v0/process_supervisor/response_surface.py` 与 `model_expression.py` 已继续消费 `world_contact_handoff_presence`：前者把 handoff status、repair hold、确认阈值、未来释放姿态、blocked/allowed routes、waiting posture 和 ref count 放进 `audited_expression_material_v0#responsibility_repair`；后者把同一 presence 放进 `resident_background`、`model_expression_context_summary` 与 `world_contact_handoff` 软审计旗标。它只调制模型表达和审计，不生成硬编码回答。
 
 ## 当前最关键的 runtime 证据
 
@@ -180,7 +181,7 @@ queue_e_world_contact_repair_hold_handoff.json
 9. `attention_target`
 10. `ref_set`
 
-完成定义不是“有 handoff 文件”，而是同一组字段能在 waiting heartbeat、idle strategy、resident governance、background lineage、dialogue turn、writeback bundle、resumed packet、process report/digest/receipt 中被同口径读取和回链。当前这条链由 `tests.process.test_persistent_digital_life_process` 的 89 条 process 回归守住。
+完成定义不是“有 handoff 文件”，而是同一组字段能在 waiting heartbeat、idle strategy、resident governance、background lineage、dialogue turn、writeback bundle、resumed packet、process report/digest/receipt、`audited_expression_material_v0`、`model_expression_context_summary` 和 post-expression soft audit 中被同口径读取和回链。当前这条链由 `tests.process.test_persistent_digital_life_process`、`tests.process.test_response_surface` 与 `tests.process.test_model_expression` 共同守住。
 
 ## Queue F 进入 resident waiting governance
 
