@@ -338,6 +338,30 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 },
             )
             self._write_json(
+                paths["state_root"] / "self" / "resident_self_thinking_state.json",
+                {
+                    "schema_version": "resident_self_thinking_state_v0",
+                    "activity_kind": "self_thinking",
+                    "thinking_mode": (
+                        "self_model_and_resident_governance_reflection"
+                    ),
+                    "reflection_targets": [
+                        "trait_slow_variables",
+                        "background_convergence_history",
+                        "consciousness_probe",
+                        "inner_speech",
+                    ],
+                    "self_continuity_policy": (
+                        "reflect_then_wait_for_relation_turn"
+                    ),
+                    "evidence_refs": [
+                        "runtime/state/self/self_model.json",
+                        "runtime/state/language/inner_speech_frame.json",
+                        "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    ],
+                },
+            )
+            self._write_json(
                 paths["state_root"] / "body" / "trait_drift_monitor.json",
                 {
                     "schema_version": "trait_drift_monitor_v0",
@@ -557,6 +581,20 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     "relation_subject_ref": (
                         "runtime/state/relationship/relationship_subject_graph.json#rel-v0-0001"
                     ),
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "language" / "inner_speech_frame.json",
+                {
+                    "schema_version": "inner_speech_frame_v0",
+                    "inner_drive_states": {
+                        "continuity": "active",
+                        "repair": "active",
+                    },
+                    "inner_speech_focus": "protect_relationship_continuity",
+                    "self_reflection_refs": [
+                        "runtime/state/self/resident_self_thinking_state.json"
+                    ],
                 },
             )
             self._write_json(
@@ -1264,6 +1302,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "/cognition": "cognitive_workspace_summary_v0",
                 "/consciousness": "consciousness_reportability_summary_v0",
                 "/意识": "consciousness_reportability_summary_v0",
+                "/thinking": "self_thinking_summary_v0",
+                "/思考": "self_thinking_summary_v0",
             }
             for command, expected_fragment in checks.items():
                 output = StringIO()
@@ -1512,6 +1552,26 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn(
                 "resident_state_summary_is_inspection_not_life_speech",
                 state_output.getvalue(),
+            )
+
+            thinking_output = StringIO()
+            with redirect_stdout(thinking_output):
+                thinking_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/思考",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(thinking_exit)
+            self.assertIn("self_thinking_summary_v0", thinking_output.getvalue())
+            self.assertIn(
+                "self_model_and_resident_governance_reflection",
+                thinking_output.getvalue(),
+            )
+            self.assertIn("protect_relationship_continuity", thinking_output.getvalue())
+            self.assertIn(
+                "thinking_state_view_not_inner_monologue_template",
+                thinking_output.getvalue(),
             )
 
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())

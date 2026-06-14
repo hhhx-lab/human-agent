@@ -17,6 +17,7 @@ STATE_INSPECTION_CATEGORIES = {
     "language",
     "cognition",
     "consciousness",
+    "thinking",
     "personality",
     "ability",
     "perception",
@@ -255,6 +256,33 @@ def build_resident_state_inspection(
             _collect_consciousness_reportability_summary(consciousness)
         )
         payload["consciousness"] = consciousness
+    elif normalized == "thinking":
+        thinking = _collect_files(
+            state_root,
+            {
+                "resident_self_thinking": (
+                    "self/resident_self_thinking_state.json"
+                ),
+                "self_model": "self/self_model.json",
+                "inner_speech": "language/inner_speech_frame.json",
+                "consciousness_probe": (
+                    "consciousness/consciousness_probe_bundle.json"
+                ),
+                "background_convergence_summary": (
+                    "terminal/background_convergence_summary.json"
+                ),
+                "background_convergence_history": (
+                    "terminal/background_convergence_history.json"
+                ),
+                "resident_autonomous_activity": (
+                    "terminal/resident_autonomous_activity_state.json"
+                ),
+            },
+        )
+        thinking["self_thinking_summary"] = _collect_self_thinking_summary(
+            thinking
+        )
+        payload["thinking"] = thinking
     elif normalized == "personality":
         personality = _collect_files(
             state_root,
@@ -2011,6 +2039,97 @@ def _collect_consciousness_reportability_summary(
     }
 
 
+def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
+    resident_self_thinking = _extract_compact_value(
+        section.get("resident_self_thinking", {})
+    )
+    self_model = _extract_compact_value(section.get("self_model", {}))
+    inner_speech = _extract_compact_value(section.get("inner_speech", {}))
+    consciousness_probe = _extract_compact_value(
+        section.get("consciousness_probe", {})
+    )
+    background_summary = _extract_compact_value(
+        section.get("background_convergence_summary", {})
+    )
+    background_history = _extract_compact_value(
+        section.get("background_convergence_history", {})
+    )
+    autonomous_activity = _extract_compact_value(
+        section.get("resident_autonomous_activity", {})
+    )
+    slow_variables = self_model.get("trait_slow_variables")
+    if not isinstance(slow_variables, dict):
+        slow_variables = {}
+    inner_drive_states = inner_speech.get("inner_drive_states")
+    if not isinstance(inner_drive_states, dict):
+        inner_drive_states = {}
+    domain_presence = {
+        "resident_self_thinking": bool(resident_self_thinking),
+        "self_model": bool(self_model),
+        "inner_speech": bool(inner_speech),
+        "consciousness_probe": bool(consciousness_probe),
+        "background_convergence_summary": bool(background_summary),
+        "background_convergence_history": bool(background_history),
+        "resident_autonomous_activity": bool(autonomous_activity),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "self_thinking_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "activity_kind": resident_self_thinking.get("activity_kind"),
+        "thinking_mode": resident_self_thinking.get("thinking_mode"),
+        "reflection_targets": _list_refs(
+            resident_self_thinking.get("reflection_targets")
+        ),
+        "self_continuity_policy": resident_self_thinking.get(
+            "self_continuity_policy"
+        ),
+        "thinking_evidence_ref_count": _count_any(
+            resident_self_thinking.get("evidence_refs")
+        ),
+        "identity_mode": self_model.get("identity_mode"),
+        "self_narrative_status": self_model.get("self_narrative_status"),
+        "slow_variable_count": len(slow_variables),
+        "slow_variable_names": list(slow_variables.keys())[:12],
+        "growth_window_ref_count": _count_any(self_model.get("growth_window_refs")),
+        "inner_speech_focus": inner_speech.get("inner_speech_focus"),
+        "inner_drive_names": list(inner_drive_states.keys())[:12],
+        "inner_drive_count": len(inner_drive_states),
+        "self_reflection_ref_count": _count_any(
+            inner_speech.get("self_reflection_refs")
+        ),
+        "consciousness_probe_status": consciousness_probe.get("probe_status"),
+        "reportability_flag_count": _count_any(
+            consciousness_probe.get("reportability_flags")
+        ),
+        "background_convergence_state": background_summary.get(
+            "convergence_state"
+        ),
+        "background_convergence_pressure_level": background_summary.get(
+            "convergence_pressure_level"
+        ),
+        "background_history_trend_state": background_history.get("trend_state"),
+        "background_history_focus": background_history.get(
+            "trait_convergence_history_focus"
+        ),
+        "autonomous_last_activity_kind": autonomous_activity.get(
+            "last_activity_kind"
+        ),
+        "autonomous_self_thinking_count": _extract_nested_value(
+            autonomous_activity,
+            "activity_counts",
+        ).get("self_thinking"),
+        "thinking_boundary": (
+            "thinking_state_view_not_inner_monologue_template"
+        ),
+    }
+
+
 def _collect_personality_convergence_summary(
     section: dict[str, Any]
 ) -> dict[str, Any]:
@@ -2181,6 +2300,9 @@ def _normalize_category(category: str) -> str:
         "意识": "consciousness",
         "conscious": "consciousness",
         "workspace": "consciousness",
+        "思考": "thinking",
+        "self_thinking": "thinking",
+        "inner_speech": "thinking",
         "人格": "personality",
         "性格": "personality",
         "能力": "ability",
