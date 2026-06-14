@@ -421,3 +421,18 @@ ResponsibilityLoopState / WorldContactSummary / PainRegretRepairReport
 ```
 
 这一步仍留在第 2 点内部，不进入第 3 点记忆重构总设计。ITR-05 已经收束到身体信号、离线学习累计画像和记忆写门的跨层消费；当前 ITR-06 第一段把原始 Queue E 责任/后悔/修复调制画像接进 process closeout、digest、receipt、background continuity、idle governance 和 resident background lineage；第二段把同一画像回写到 `go_nogo_state.json#future_no_go_profile`，并继续重建 `world_contact_gate_state.json`，让后悔和修复义务不只被后台保存，也会成为未来行动释放和世界接触前的抑制偏置；第三段把这组 world-contact repair hold 字段推进到 S05 validation 和 S09 schema runner 的复查、总卷、cross-file finding、manifest、stage/report/digest/receipt。它没有新增外部 action router，也没有把内部修复压力变成外显固定语言；证据只进入 state/report/receipt/lineage、行动膜字段和验证/schema 交接字段，后续由语言、关系、梦境、成长、等待治理和下一轮生命膜继续消费。
+
+## 当前 ITR-07 推进记录
+
+ITR-06 第三段把 `FutureNoGoProfile.repair_hold_required` 接入 S05/S09 后，ITR-07 的下一刀不是重新声明 live0 已经完成，而是把这条交接纳入最终验收。`live0_acceptance_audit` 必须确认：
+
+```text
+GoNoGo.future_no_go_profile
+  -> WorldContactValidation.repair_hold_required
+  -> ValidationRollup.queue_e_world_contact_*
+  -> RunManifest.queue_e_world_contact_*
+  -> Live0AcceptanceAudit f/g criteria
+  -> live0 report / digest / receipt evidence refs
+```
+
+这一步仍属于第 2 点内部。它只加厚七项验收和九项目标的证据闭合，不进入第 3 点记忆重构总设计，也不把 repair hold 写成外显固定语言。

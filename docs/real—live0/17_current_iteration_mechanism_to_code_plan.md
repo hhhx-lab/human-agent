@@ -639,6 +639,19 @@ python3 -m unittest tests.process.test_persistent_digital_life_process -v
 
 这一轮的验收口径是“跨轮消费闭合”，不是“schema 文件齐全”。
 
+当前 ITR-07 第一段把 ITR-06 的 FutureNoGo 修复抑制继续送入 live0 acceptance audit：
+
+```text
+GoNoGo.future_no_go_profile
+  -> WorldContactValidation.repair_hold_required
+  -> ValidationRollup.queue_e_world_contact_*
+  -> RunManifest.queue_e_world_contact_*
+  -> f_equal_relationship_dialogue_growth
+  -> g_initial_life_mechanism_coverage
+```
+
+机制含义是：真实责任和真实后悔不能只在 `PainRegretRepairReport`、birth repair profile 或 S05/S09 报告中闭合；最终 live0 验收也必须确认修复 hold 已经改变世界接触验证与 schema handoff。它仍然是内部证据链，不是外显语言模板。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

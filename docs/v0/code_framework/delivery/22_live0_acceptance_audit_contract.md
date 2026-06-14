@@ -35,8 +35,8 @@ life-v0 audit-live0 --docs docs --state runtime/state --reports runtime/reports/
 | `c_memory_mechanism` | `life_state.json`、`engram_index.json`、`relationship_memory.json`、`autobiographical_stack.json`、`resident_memory_recall_state.json`、`memory_write_gate.json`、replay/archive report |
 | `d_growth_and_learning` | `growth_patch_candidate_queue.json`、`self_read_report.json`、`resident_growth_rehearsal_state.json`、`resident_learning_consolidation_state.json`、`resident_autonomous_activity_state.json`、累计离线学习 profile |
 | `e_dream_capability` | `dream_experience_window.json`、`wake_integration_frame.json`、`dream_fact_gate_decision.json#gate_result=passed`、`resident_sleep_cycle_state.json`、resident lineage dream/wake refs |
-| `f_equal_relationship_dialogue_growth` | `relationship_timeline.json`、`commitment_truth_state.json`、`dialogue_writeback_bundle.json`、`queue_e_birth_repair_profile.json`、`dialogue_turn_log.jsonl`、`relation_role != user` |
-| `g_initial_life_mechanism_coverage` | S00-S11 关键 report、`birth_readiness_report.json#overall_status=open`、`growth_reconsolidation_report.json#status=safe_idle`、resident long-term residency evidence |
+| `f_equal_relationship_dialogue_growth` | `relationship_timeline.json`、`commitment_truth_state.json`、`dialogue_writeback_bundle.json`、`queue_e_birth_repair_profile.json`、`world_contact_validation.json#repair_hold_required`、`dialogue_turn_log.jsonl`、`relation_role != user` |
+| `g_initial_life_mechanism_coverage` | S00-S11 关键 report、`birth_readiness_report.json#overall_status=open`、`growth_reconsolidation_report.json#status=safe_idle`、`run_manifest.json#queue_e_world_contact_repair_hold_required`、resident long-term residency evidence |
 
 ## 命名验收
 
@@ -80,6 +80,14 @@ my digital life --status
 ```
 
 这条 gate 的作用是确认 live0 已经通过真实模型表达链，同时确定性审计材料不会被释放成自然语言回应。
+
+## Queue E 修复抑制验收
+
+`f_equal_relationship_dialogue_growth` 和 `g_initial_life_mechanism_coverage` 还必须复查 ITR-06 的 FutureNoGo 修复抑制交接：
+
+1. `runtime/state/validation/world_contact_validation.json` 必须包含 `future_no_go_profile_ref=runtime/state/action/go_nogo_state.json#future_no_go_profile`、`repair_hold_required=true`、`confirmation_threshold_bias=raised`、`blocked_future_routes`、`allowed_repair_routes` 和 `repair_governance_refs`。
+2. `runtime/state/schema_runner/run_manifest.json` 必须携带同一组 `queue_e_world_contact_*` 字段，证明 S09 已经接到 S05 的 repair hold handoff。
+3. 这组 probe 只进入 live0 audit 的结构化证据、report、digest 和 receipt；不能变成外显固定语言，也不能替代语言器官、关系记忆或责任循环。
 
 ## 报告结构
 

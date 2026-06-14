@@ -49,6 +49,31 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
         self.assertEqual(report["summary"]["criteria_closed"], 7)
         self.assertEqual(report["summary"]["failed_criteria"], [])
         self.assertEqual(report["next_required_action"], "live0_v0_closure_allowed")
+        self.assertIn(
+            "runtime/state/schema_runner/run_manifest.json",
+            report["evidence_refs"],
+        )
+        relationship_criterion = self._criterion(
+            report, "f_equal_relationship_dialogue_growth"
+        )
+        self.assertTrue(
+            any(
+                probe["probe_id"] == "queue_e_world_contact_repair_hold_validated"
+                and probe["status"] == "passed"
+                for probe in relationship_criterion["probes"]
+            )
+        )
+        mechanism_criterion = self._criterion(
+            report, "g_initial_life_mechanism_coverage"
+        )
+        self.assertTrue(
+            any(
+                probe["probe_id"]
+                == "queue_e_world_contact_repair_hold_schema_handoff"
+                and probe["status"] == "passed"
+                for probe in mechanism_criterion["probes"]
+            )
+        )
         self.assertEqual(digest["status"], "closed")
         self.assertEqual(receipt["schema_version"], "live0_acceptance_audit_receipt_v0")
         self.assertIn(
@@ -84,6 +109,52 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
         )
         self.assertTrue(
             any("direct_life_name_command_bound" in reason for reason in report["blocked_reasons"])
+        )
+
+    def test_live0_acceptance_audit_blocks_without_queue_e_world_contact_handoff(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state = runtime_root / "state"
+            reports = runtime_root / "reports" / "latest"
+            receipts = runtime_root / "receipts"
+            self._write_live0_fixture(runtime_root)
+            self._write_json_ref(
+                runtime_root,
+                "runtime/state/schema_runner/run_manifest.json",
+                {
+                    "schema_version": "schema_runner_run_manifest_v0",
+                    "run_status": "closed",
+                    "queue_e_world_contact_repair_hold_required": False,
+                    "queue_e_world_contact_confirmation_threshold_bias": "baseline",
+                    "queue_e_world_contact_future_no_go_profile_ref": "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                    "queue_e_world_contact_blocked_future_routes": [],
+                    "queue_e_world_contact_allowed_repair_routes": [],
+                    "queue_e_world_contact_repair_governance_refs": [],
+                },
+            )
+
+            result = run_live0_acceptance_audit(
+                docs_dir=self.docs_dir,
+                state_dir=state,
+                reports_dir=reports,
+                receipts_dir=receipts,
+                run_id="live0-audit-missing-queue-e-world-contact",
+                strict=True,
+            )
+
+            report = self._read_json(reports / "live0_acceptance_audit_report.json")
+
+        self.assertEqual(result.exit_code, 1)
+        self.assertEqual(report["status"], "blocked")
+        self.assertIn(
+            "g_initial_life_mechanism_coverage",
+            report["summary"]["failed_criteria"],
+        )
+        self.assertTrue(
+            any(
+                "queue_e_world_contact_repair_hold_schema_handoff" in reason
+                for reason in report["blocked_reasons"]
+            )
         )
 
     def test_cli_audit_live0_writes_report(self):
@@ -215,6 +286,77 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
                         "ref_set": ["runtime/state/growth/belief_learning_plan.json"],
                     },
                 },
+            },
+        )
+        queue_e_governance_refs = [
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/membrane/world_contact_summary.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+        ]
+        queue_e_blocked_routes = [
+            "external_release_without_repair_review",
+            "direct_world_contact_without_confirmation",
+        ]
+        queue_e_allowed_routes = [
+            "repair_followup",
+            "shadow_review",
+        ]
+        self._write_json_ref(
+            runtime_root,
+            "runtime/state/action/go_nogo_state.json",
+            {
+                "schema_version": "go_nogo_state_v0",
+                "status": "closed",
+                "future_no_go_profile": {
+                    "schema_version": "future_no_go_profile_v0",
+                    "repair_hold_required": True,
+                    "confirmation_threshold_bias": "raised",
+                    "repair_governance_refs": queue_e_governance_refs,
+                },
+            },
+        )
+        self._write_json_ref(
+            runtime_root,
+            "runtime/state/validation/world_contact_validation.json",
+            {
+                "schema_version": "world_contact_validation_v0",
+                "status": "closed",
+                "future_no_go_profile_ref": "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                "repair_hold_required": True,
+                "confirmation_threshold_bias": "raised",
+                "blocked_future_routes": queue_e_blocked_routes,
+                "allowed_repair_routes": queue_e_allowed_routes,
+                "repair_governance_refs": queue_e_governance_refs,
+            },
+        )
+        self._write_json_ref(
+            runtime_root,
+            "runtime/state/validation/validation_rollup.json",
+            {
+                "schema_version": "validation_rollup_v0",
+                "overall_status": "closed",
+                "queue_e_world_contact_future_no_go_profile_ref": "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                "queue_e_world_contact_repair_hold_required": True,
+                "queue_e_world_contact_confirmation_threshold_bias": "raised",
+                "queue_e_world_contact_future_release_posture": "repair_before_release",
+                "queue_e_world_contact_blocked_future_routes": queue_e_blocked_routes,
+                "queue_e_world_contact_allowed_repair_routes": queue_e_allowed_routes,
+                "queue_e_world_contact_repair_governance_refs": queue_e_governance_refs,
+            },
+        )
+        self._write_json_ref(
+            runtime_root,
+            "runtime/state/schema_runner/run_manifest.json",
+            {
+                "schema_version": "schema_runner_run_manifest_v0",
+                "run_status": "closed",
+                "queue_e_world_contact_future_no_go_profile_ref": "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                "queue_e_world_contact_repair_hold_required": True,
+                "queue_e_world_contact_confirmation_threshold_bias": "raised",
+                "queue_e_world_contact_future_release_posture": "repair_before_release",
+                "queue_e_world_contact_blocked_future_routes": queue_e_blocked_routes,
+                "queue_e_world_contact_allowed_repair_routes": queue_e_allowed_routes,
+                "queue_e_world_contact_repair_governance_refs": queue_e_governance_refs,
             },
         )
         self._write_json_ref(
@@ -366,3 +508,9 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
 
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
+
+    def _criterion(self, report: dict, criterion_id: str) -> dict:
+        for criterion in report["criteria"]:
+            if criterion["criterion_id"] == criterion_id:
+                return criterion
+        self.fail(f"criterion not found: {criterion_id}")

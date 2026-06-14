@@ -676,6 +676,17 @@ def _criterion_relationship(context: _AuditContext) -> dict[str, Any]:
             and payload.get("pressure_level") in {"elevated", "urgent", "present"},
             "Queue E repair modulation profile must be present",
         ),
+        _json_probe(
+            context,
+            "queue_e_world_contact_repair_hold_validated",
+            "runtime/state/validation/world_contact_validation.json",
+            _world_contact_validation_repair_hold_closed,
+            "Queue E FutureNoGo repair hold must be validated before relationship repair can close",
+            extra_refs=[
+                "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+            ],
+        ),
         _jsonl_probe(
             context,
             "dialogue_turn_log_has_relation_turns",
@@ -842,6 +853,18 @@ def _criterion_life_mechanisms(
             },
             "resident long-term residency evidence must be attached",
         ),
+        _json_probe(
+            context,
+            "queue_e_world_contact_repair_hold_schema_handoff",
+            "runtime/state/schema_runner/run_manifest.json",
+            _queue_e_world_contact_repair_hold_closed,
+            "S09 run manifest must carry Queue E world-contact repair hold handoff",
+            extra_refs=[
+                "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+                "runtime/state/validation/world_contact_validation.json#repair_hold_required",
+                "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            ],
+        ),
     ]
     return _criterion(
         "g_initial_life_mechanism_coverage",
@@ -941,6 +964,33 @@ def _closed_or_schema(payload: dict[str, Any]) -> bool:
 
 def _report_status_closed(payload: dict[str, Any]) -> bool:
     return payload.get("status") == "closed"
+
+
+def _world_contact_validation_repair_hold_closed(payload: dict[str, Any]) -> bool:
+    return (
+        payload.get("schema_version") == "world_contact_validation_v0"
+        and payload.get("repair_hold_required") is True
+        and payload.get("confirmation_threshold_bias") == "raised"
+        and payload.get("future_no_go_profile_ref")
+        == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+        and bool(payload.get("blocked_future_routes"))
+        and bool(payload.get("allowed_repair_routes"))
+        and bool(payload.get("repair_governance_refs"))
+    )
+
+
+def _queue_e_world_contact_repair_hold_closed(payload: dict[str, Any]) -> bool:
+    return (
+        payload.get("schema_version")
+        in {"validation_rollup_v0", "schema_runner_run_manifest_v0"}
+        and payload.get("queue_e_world_contact_repair_hold_required") is True
+        and payload.get("queue_e_world_contact_confirmation_threshold_bias") == "raised"
+        and payload.get("queue_e_world_contact_future_no_go_profile_ref")
+        == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+        and bool(payload.get("queue_e_world_contact_blocked_future_routes"))
+        and bool(payload.get("queue_e_world_contact_allowed_repair_routes"))
+        and bool(payload.get("queue_e_world_contact_repair_governance_refs"))
+    )
 
 
 def _json_ref_exists(context: _AuditContext, ref: str) -> bool:
