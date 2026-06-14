@@ -236,6 +236,52 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
             )
         )
 
+    def test_live0_acceptance_audit_blocks_without_proactive_voice_coverage(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state = runtime_root / "state"
+            reports = runtime_root / "reports" / "latest"
+            receipts = runtime_root / "receipts"
+            self._write_live0_fixture(runtime_root)
+            proactive_state = self._read_json(
+                state / "terminal" / "resident_terminal_proactive_state.json"
+            )
+            proactive_state.pop("last_profile_coverage", None)
+            proactive_state["last_proactive_voice_profile"].pop(
+                "profile_coverage",
+                None,
+            )
+            proactive_state.pop("last_utterance_candidate_code_count", None)
+            self._write_json_ref(
+                runtime_root,
+                "runtime/state/terminal/resident_terminal_proactive_state.json",
+                proactive_state,
+            )
+
+            result = run_live0_acceptance_audit(
+                docs_dir=self.docs_dir,
+                state_dir=state,
+                reports_dir=reports,
+                receipts_dir=receipts,
+                run_id="live0-audit-missing-proactive-coverage",
+                strict=True,
+            )
+
+            report = self._read_json(reports / "live0_acceptance_audit_report.json")
+
+        self.assertEqual(result.exit_code, 1)
+        self.assertEqual(report["status"], "blocked")
+        self.assertIn(
+            "b_conscious_emotion_thought_language",
+            report["summary"]["failed_criteria"],
+        )
+        self.assertTrue(
+            any(
+                "resident_proactive_terminal_voice_audited" in reason
+                for reason in report["blocked_reasons"]
+            )
+        )
+
     def test_cli_audit_live0_writes_report(self):
         with tempfile.TemporaryDirectory() as tmp:
             runtime_root = Path(tmp) / "runtime"
@@ -541,6 +587,30 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
                     "proactive_voice_profile": {
                         "schema_version": "resident_proactive_voice_profile_v0",
                         "surface_kind": "wake_question_candidate",
+                        "utterance_candidate_code_count": 3,
+                        "utterance_candidate_codes": [
+                            "wake_cue:resume_language_naturalness",
+                            "dream_theme_cue:non_mechanical_language_pressure",
+                            "idle_attention:relationship_memory",
+                        ],
+                        "profile_coverage": {
+                            "schema_version": "resident_proactive_voice_profile_coverage_v0",
+                            "active_domains": [
+                                "memory",
+                                "dream",
+                                "waiting_governance",
+                            ],
+                            "active_domain_count": 3,
+                            "domain_presence": {
+                                "memory": True,
+                                "memory_tier": False,
+                                "dream": True,
+                                "web_dream_learning": False,
+                                "resident_autonomous_activity": False,
+                                "waiting_governance": True,
+                            },
+                            "source_ref_count": 3,
+                        },
                     },
                 }
             ],
@@ -558,7 +628,50 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
                 "last_proactive_voice_profile": {
                     "schema_version": "resident_proactive_voice_profile_v0",
                     "surface_kind": "wake_question_candidate",
+                    "utterance_candidate_code_count": 3,
+                    "utterance_candidate_codes": [
+                        "wake_cue:resume_language_naturalness",
+                        "dream_theme_cue:non_mechanical_language_pressure",
+                        "idle_attention:relationship_memory",
+                    ],
+                    "profile_coverage": {
+                        "schema_version": "resident_proactive_voice_profile_coverage_v0",
+                        "active_domains": [
+                            "memory",
+                            "dream",
+                            "waiting_governance",
+                        ],
+                        "active_domain_count": 3,
+                        "domain_presence": {
+                            "memory": True,
+                            "memory_tier": False,
+                            "dream": True,
+                            "web_dream_learning": False,
+                            "resident_autonomous_activity": False,
+                            "waiting_governance": True,
+                        },
+                        "source_ref_count": 3,
+                    },
                 },
+                "last_profile_coverage": {
+                    "schema_version": "resident_proactive_voice_profile_coverage_v0",
+                    "active_domains": [
+                        "memory",
+                        "dream",
+                        "waiting_governance",
+                    ],
+                    "active_domain_count": 3,
+                    "domain_presence": {
+                        "memory": True,
+                        "memory_tier": False,
+                        "dream": True,
+                        "web_dream_learning": False,
+                        "resident_autonomous_activity": False,
+                        "waiting_governance": True,
+                    },
+                    "source_ref_count": 3,
+                },
+                "last_utterance_candidate_code_count": 3,
                 "last_proactive_voice_surface_kind": "wake_question_candidate",
                 "event_count": 1,
                 "release_count": 0,

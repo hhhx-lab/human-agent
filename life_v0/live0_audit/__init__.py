@@ -1063,10 +1063,32 @@ def _resident_terminal_proactive_voice_closed(
         return False
     if profile.get("schema_version") != "resident_proactive_voice_profile_v0":
         return False
+    coverage = payload.get("last_profile_coverage") or profile.get(
+        "profile_coverage"
+    )
+    if not _proactive_voice_coverage_closed(
+        coverage=coverage,
+        candidate_count=payload.get("last_utterance_candidate_code_count")
+        or profile.get("utterance_candidate_code_count")
+        or profile.get("question_candidate_count"),
+    ):
+        return False
     event_path = context.path_for_ref(
         "runtime/state/terminal/resident_terminal_proactive_events.jsonl"
     )
     if _jsonl_count(event_path) < event_count:
+        return False
+    latest_event = _last_jsonl_payload(event_path)
+    latest_profile = latest_event.get("proactive_voice_profile")
+    if not isinstance(latest_profile, dict):
+        return False
+    if latest_profile.get("schema_version") != "resident_proactive_voice_profile_v0":
+        return False
+    if not _proactive_voice_coverage_closed(
+        coverage=latest_profile.get("profile_coverage"),
+        candidate_count=latest_profile.get("utterance_candidate_code_count")
+        or latest_profile.get("question_candidate_count"),
+    ):
         return False
     if status == "released_model_expression":
         return (
@@ -1081,6 +1103,30 @@ def _resident_terminal_proactive_voice_closed(
         payload.get("last_natural_language_released") is False
         and payload.get("last_release_scope") == "open_terminal_idle_hidden"
     )
+
+
+def _proactive_voice_coverage_closed(
+    *,
+    coverage: Any,
+    candidate_count: Any,
+) -> bool:
+    if not isinstance(coverage, dict):
+        return False
+    if coverage.get("schema_version") != "resident_proactive_voice_profile_coverage_v0":
+        return False
+    active_domains = coverage.get("active_domains")
+    if not isinstance(active_domains, list) or len(active_domains) < 2:
+        return False
+    if _as_int(coverage.get("active_domain_count")) < 2:
+        return False
+    domain_presence = coverage.get("domain_presence")
+    if not isinstance(domain_presence, dict):
+        return False
+    if not any(domain in domain_presence for domain in active_domains):
+        return False
+    if _as_int(candidate_count) < 1:
+        return False
+    return True
 
 
 def _json_ref_exists(context: _AuditContext, ref: str) -> bool:
@@ -1109,6 +1155,25 @@ def _jsonl_count(path: Path) -> int:
         return sum(1 for line in path.read_text(encoding="utf-8").splitlines() if line.strip())
     except OSError:
         return 0
+
+
+def _last_jsonl_payload(path: Path) -> dict[str, Any]:
+    try:
+        lines = [
+            line
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    except OSError:
+        return {}
+    for line in reversed(lines):
+        try:
+            payload = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(payload, dict):
+            return payload
+    return {}
 
 
 def _as_int(value: Any) -> int:

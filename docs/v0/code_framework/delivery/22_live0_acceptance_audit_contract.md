@@ -89,8 +89,11 @@ my digital life --status
 2. `status` 只能是 `held_internal` 或 `released_model_expression`；前者表示主动发话画像被保留为内部状态，后者表示真实模型表达通过 post-expression gate 后释放。
 3. `event_count >= 1`，且 `runtime/state/terminal/resident_terminal_proactive_events.jsonl` 中的事件数必须覆盖 state 中记录的事件数。
 4. `last_proactive_voice_profile.schema_version` 必须为 `resident_proactive_voice_profile_v0`。
-5. 当 `status=released_model_expression` 时，必须同时满足 `last_natural_language_released=true`、`last_release_scope=open_terminal_idle_model_expression`、`last_model_expression_status=model_expression_applied`、`last_post_expression_gate_status=accepted`。
-6. 当 `status=held_internal` 时，必须保持 `last_natural_language_released=false` 与 `last_release_scope=open_terminal_idle_hidden`。
+5. `last_proactive_voice_profile.profile_coverage.schema_version` 或 state 根上的 `last_profile_coverage.schema_version` 必须为 `resident_proactive_voice_profile_coverage_v0`，且 `active_domain_count >= 2`，证明主动发话至少由两个内部生命状态域调制，而不是单一 focus 或固定句。
+6. `utterance_candidate_code_count` 必须大于 0；这些 candidate 是 wake cue、name、dream theme、web topic、activity、idle attention 等内部线索代码，不是预写自然语言句子。
+7. `resident_terminal_proactive_events.jsonl` 的最新事件也必须携带同样的 `resident_proactive_voice_profile_v0` 和 `profile_coverage`，避免只在 state 文件里伪造覆盖摘要。
+8. 当 `status=released_model_expression` 时，必须同时满足 `last_natural_language_released=true`、`last_release_scope=open_terminal_idle_model_expression`、`last_model_expression_status=model_expression_applied`、`last_post_expression_gate_status=accepted`。
+9. 当 `status=held_internal` 时，必须保持 `last_natural_language_released=false` 与 `last_release_scope=open_terminal_idle_hidden`。
 
 这条 probe 的作用是证明 point 6 的主动关系语言已经有可审计的生命通道，同时守住 point 8：没有模型释放、模型空文本或 gate 阻断时，不允许补固定替代句，也不允许把内部机制字段拼成外显话术。
 
