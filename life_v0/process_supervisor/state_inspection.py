@@ -15,6 +15,7 @@ STATE_INSPECTION_CATEGORIES = {
     "emotion",
     "inner_environment",
     "relationship",
+    "responsibility",
     "language",
     "cognition",
     "consciousness",
@@ -225,6 +226,52 @@ def build_resident_state_inspection(
             _collect_relationship_continuity_summary(relationship)
         )
         payload["relationship"] = relationship
+    elif normalized == "responsibility":
+        responsibility = _collect_files(
+            state_root,
+            {
+                "responsibility_loop_state": (
+                    "action/responsibility_loop_state.json"
+                ),
+                "go_nogo_state": "action/go_nogo_state.json",
+                "world_contact_gate_state": (
+                    "action/world_contact_gate_state.json"
+                ),
+                "world_contact_summary": "membrane/world_contact_summary.json",
+                "pain_regret_repair_report": (
+                    "../reports/latest/pain_regret_repair_report.json"
+                ),
+                "commitment_truth_state": (
+                    "relationship/commitment_truth_state.json"
+                ),
+                "apology_repair_language_trace": (
+                    "language/apology_repair_language_trace.json"
+                ),
+                "relationship_memory": "memory/relationship_memory.json",
+                "core_affect_vector": "body/core_affect_vector.json",
+                "signal_media_runtime": "signal/signal_media_runtime.json",
+                "nightmare_loop_risk": "dream/nightmare_loop_risk.json",
+                "wake_integration_frame": "dream/wake_integration_frame.json",
+                "relationship_learning_plan": (
+                    "growth/relationship_learning_plan.json"
+                ),
+                "queue_e_birth_repair_profile": (
+                    "life_targets/queue_e_birth_repair_profile.json"
+                ),
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "world_contact_validation": (
+                    "validation/world_contact_validation.json"
+                ),
+                "validation_rollup": "validation/validation_rollup.json",
+                "schema_runner_manifest": "schema_runner/run_manifest.json",
+            },
+        )
+        responsibility["repair_chain_summary"] = (
+            _collect_responsibility_repair_chain_summary(responsibility)
+        )
+        payload["responsibility"] = responsibility
     elif normalized == "language":
         language = _collect_files(
             state_root,
@@ -1866,6 +1913,250 @@ def _collect_relationship_continuity_summary(
     }
 
 
+def _collect_responsibility_repair_chain_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    responsibility_loop = _extract_compact_value(
+        section.get("responsibility_loop_state", {})
+    )
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    world_contact_gate = _extract_compact_value(
+        section.get("world_contact_gate_state", {})
+    )
+    world_contact = _extract_compact_value(
+        section.get("world_contact_summary", {})
+    )
+    pain_report = _extract_compact_value(
+        section.get("pain_regret_repair_report", {})
+    )
+    commitment_truth = _extract_compact_value(
+        section.get("commitment_truth_state", {})
+    )
+    apology_repair = _extract_compact_value(
+        section.get("apology_repair_language_trace", {})
+    )
+    relationship_memory = _extract_compact_value(
+        section.get("relationship_memory", {})
+    )
+    core_affect = _extract_compact_value(section.get("core_affect_vector", {}))
+    signal_media = _extract_compact_value(
+        section.get("signal_media_runtime", {})
+    )
+    nightmare_risk = _extract_compact_value(
+        section.get("nightmare_loop_risk", {})
+    )
+    wake_integration = _extract_compact_value(
+        section.get("wake_integration_frame", {})
+    )
+    relationship_learning = _extract_compact_value(
+        section.get("relationship_learning_plan", {})
+    )
+    birth_repair_profile = _extract_compact_value(
+        section.get("queue_e_birth_repair_profile", {})
+    )
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    world_contact_validation = _extract_compact_value(
+        section.get("world_contact_validation", {})
+    )
+    validation_rollup = _extract_compact_value(
+        section.get("validation_rollup", {})
+    )
+    schema_manifest = _extract_compact_value(
+        section.get("schema_runner_manifest", {})
+    )
+    future_no_go = _extract_nested_value(go_nogo, "future_no_go_profile")
+    modulation_vector = _extract_nested_value(signal_media, "modulation_vector")
+    domain_presence = {
+        "responsibility_loop_state": bool(responsibility_loop),
+        "go_nogo_state": bool(go_nogo),
+        "world_contact_gate_state": bool(world_contact_gate),
+        "world_contact_summary": bool(world_contact),
+        "pain_regret_repair_report": bool(pain_report),
+        "commitment_truth_state": bool(commitment_truth),
+        "apology_repair_language_trace": bool(apology_repair),
+        "relationship_memory": bool(relationship_memory),
+        "core_affect_vector": bool(core_affect),
+        "signal_media_runtime": bool(signal_media),
+        "dream_repair_residue": bool(nightmare_risk or wake_integration),
+        "relationship_learning_plan": bool(relationship_learning),
+        "queue_e_birth_repair_profile": bool(birth_repair_profile),
+        "queue_e_world_contact_handoff": bool(world_contact_handoff),
+        "validation_and_schema": bool(
+            world_contact_validation or validation_rollup or schema_manifest
+        ),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    regret_candidates = responsibility_loop.get("regret_pressure_candidates")
+    if not isinstance(regret_candidates, list):
+        regret_candidates = []
+    first_regret = regret_candidates[0] if regret_candidates else {}
+    first_regret = first_regret if isinstance(first_regret, dict) else {}
+    repair_candidates = responsibility_loop.get("repair_desire_candidates")
+    if not isinstance(repair_candidates, list):
+        repair_candidates = []
+    first_repair = repair_candidates[0] if repair_candidates else {}
+    first_repair = first_repair if isinstance(first_repair, dict) else {}
+    attribution_events = responsibility_loop.get(
+        "responsibility_attribution_events"
+    )
+    if not isinstance(attribution_events, list):
+        attribution_events = []
+    first_attribution = attribution_events[0] if attribution_events else {}
+    first_attribution = (
+        first_attribution if isinstance(first_attribution, dict) else {}
+    )
+    return {
+        "schema_version": "responsibility_repair_chain_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "responsibility_loop_id": responsibility_loop.get(
+            "responsibility_loop_id"
+        ),
+        "responsibility_effect_ref_count": _count_any(
+            responsibility_loop.get("responsibility_effect_refs")
+        ),
+        "responsibility_attribution_count": _count_any(attribution_events),
+        "responsibility_weight": first_attribution.get("responsibility_weight"),
+        "moral_salience": first_attribution.get("moral_salience"),
+        "counterfactual_frame_count": _count_any(
+            responsibility_loop.get("counterfactual_repair_frames")
+        ),
+        "regret_pressure_count": _first_non_empty(
+            pain_report.get("regret_pressure_count"),
+            _count_any(regret_candidates),
+        ),
+        "regret_pressure_refs": _list_refs(
+            pain_report.get("regret_pressure_refs")
+            or world_contact.get("regret_pressure_refs")
+        ),
+        "regret_mode": first_regret.get("regret_mode"),
+        "guilt_pressure": first_regret.get("guilt_pressure"),
+        "future_action_bias": _list_refs(
+            first_regret.get("future_action_bias")
+        ),
+        "pain_signal_ref_count": _count_any(first_regret.get("pain_signal_refs")),
+        "repair_followup_required": bool(
+            _first_non_empty(
+                pain_report.get("repair_followup_required"),
+                responsibility_loop.get("repair_followup_required"),
+                birth_repair_profile.get("repair_followup_required"),
+            )
+        ),
+        "repair_desire_count": _first_non_empty(
+            pain_report.get("repair_desire_count"),
+            _count_any(repair_candidates),
+        ),
+        "repair_target": first_repair.get("repair_target"),
+        "repair_urgency": first_repair.get("urgency"),
+        "repair_obligation_ref_count": _count_any(
+            pain_report.get("repair_obligation_refs")
+            or world_contact.get("repair_obligation_refs")
+            or responsibility_loop.get("repair_obligation_refs")
+        ),
+        "world_contact_release_posture": world_contact.get("release_posture")
+        or world_contact_gate.get("future_release_posture"),
+        "world_contact_confirmation_threshold_bias": _first_non_empty(
+            world_contact_gate.get("confirmation_threshold_bias"),
+            future_no_go.get("confirmation_threshold_bias"),
+            validation_rollup.get(
+                "queue_e_world_contact_confirmation_threshold_bias"
+            ),
+            schema_manifest.get(
+                "queue_e_world_contact_confirmation_threshold_bias"
+            ),
+        ),
+        "future_repair_hold_required": bool(
+            _first_non_empty(
+                future_no_go.get("repair_hold_required"),
+                world_contact_gate.get("repair_hold_required"),
+                world_contact_validation.get("repair_hold_required"),
+                validation_rollup.get(
+                    "queue_e_world_contact_repair_hold_required"
+                ),
+                schema_manifest.get(
+                    "queue_e_world_contact_repair_hold_required"
+                ),
+                world_contact_handoff.get("repair_hold_required"),
+            )
+        ),
+        "blocked_future_routes": _list_refs(
+            world_contact_gate.get("blocked_future_routes")
+            or future_no_go.get("blocked_future_routes")
+            or validation_rollup.get(
+                "queue_e_world_contact_blocked_future_routes"
+            )
+            or schema_manifest.get(
+                "queue_e_world_contact_blocked_future_routes"
+            )
+        ),
+        "allowed_repair_routes": _list_refs(
+            world_contact_gate.get("allowed_repair_routes")
+            or future_no_go.get("allowed_repair_routes")
+        ),
+        "commitment_truth_status": commitment_truth.get("truth_status")
+        or commitment_truth.get("stage_status"),
+        "repair_required_ref_count": _count_any(
+            commitment_truth.get("repair_required_refs")
+        ),
+        "repair_language_move_order": _list_refs(
+            apology_repair.get("move_type_order")
+        ),
+        "repair_language_move_count": _count_any(
+            apology_repair.get("repair_language_moves")
+        ),
+        "relationship_repair_history_ref_count": _count_any(
+            relationship_memory.get("repair_history_refs")
+        ),
+        "pain_pressure": core_affect.get("pain_pressure"),
+        "repair_drive": core_affect.get("repair_drive")
+        or modulation_vector.get("repair_drive"),
+        "signal_inhibition": modulation_vector.get("inhibition"),
+        "dream_repair_residue": {
+            "nightmare_risk_status": nightmare_risk.get("risk_status"),
+            "wake_archive_requirement": wake_integration.get(
+                "archive_requirement"
+            ),
+            "repair_modulated_wake_target_count": _count_any(
+                wake_integration.get("repair_modulated_wake_targets")
+            ),
+        },
+        "relationship_learning_targets": _list_refs(
+            relationship_learning.get("relationship_targets")
+        ),
+        "queue_e_birth_repair_profile_ref_count": _count_any(
+            birth_repair_profile.get("ref_set")
+        ),
+        "queue_e_birth_repair_pressure_level": birth_repair_profile.get(
+            "pressure_level"
+        ),
+        "queue_e_birth_repair_attention_target": birth_repair_profile.get(
+            "attention_target"
+        ),
+        "queue_e_world_contact_handoff_status": world_contact_handoff.get(
+            "handoff_status"
+        ),
+        "validation_world_contact_status": world_contact_validation.get(
+            "status"
+        ),
+        "validation_queue_e_gate_status": _extract_nested_value(
+            validation_rollup,
+            "gate_status",
+        ).get("queue_e_birth_repair_gate"),
+        "schema_runner_queue_e_gate_status": schema_manifest.get(
+            "queue_e_birth_repair_gate_status"
+        ),
+        "responsibility_boundary": (
+            "responsibility_pain_regret_state_view_not_apology_template_or_service_safety"
+        ),
+    }
+
+
 def _collect_cognitive_workspace_summary(
     section: dict[str, Any]
 ) -> dict[str, Any]:
@@ -2521,6 +2812,13 @@ def _normalize_category(category: str) -> str:
         "homeostasis": "inner_environment",
         "内环境": "inner_environment",
         "关系": "relationship",
+        "责任": "responsibility",
+        "痛苦": "responsibility",
+        "后悔": "responsibility",
+        "修复": "responsibility",
+        "pain": "responsibility",
+        "regret": "responsibility",
+        "repair": "responsibility",
         "记忆": "memory",
         "梦境": "dream",
         "成长": "growth",

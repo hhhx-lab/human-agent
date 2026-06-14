@@ -268,6 +268,9 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "dream",
                 "growth",
                 "archive",
+                "action",
+                "validation",
+                "schema_runner",
             ]:
                 (paths["state_root"] / relative_dir).mkdir(
                     parents=True,
@@ -1088,6 +1091,196 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 },
             )
             self._write_json(
+                paths["state_root"] / "action" / "responsibility_loop_state.json",
+                {
+                    "schema_version": "responsibility_loop_state_v0",
+                    "responsibility_loop_id": "responsibility-loop-test",
+                    "responsibility_effect_refs": [
+                        "runtime/state/action/side_effect_review.json#effect-1"
+                    ],
+                    "responsibility_attribution_events": [
+                        {
+                            "responsibility_weight": 0.72,
+                            "moral_salience": "relationship_repair",
+                            "repair_required": True,
+                        }
+                    ],
+                    "counterfactual_repair_frames": [
+                        {
+                            "counterfactual_id": "counterfactual-repair-1"
+                        }
+                    ],
+                    "regret_pressure_candidates": [
+                        {
+                            "regret_mode": "repair_oriented",
+                            "guilt_pressure": 0.58,
+                            "pain_signal_refs": [
+                                "runtime/state/body/core_affect_vector.json#pain_pressure"
+                            ],
+                            "future_action_bias": [
+                                "raise_confirmation_threshold",
+                                "prefer_repair_before_external_release",
+                            ],
+                        }
+                    ],
+                    "repair_desire_candidates": [
+                        {
+                            "repair_target": "restorative_loop",
+                            "urgency": "medium",
+                        }
+                    ],
+                    "repair_obligation_refs": [
+                        "runtime/state/action/responsibility_loop_state.json#repair"
+                    ],
+                    "repair_followup_required": True,
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "action" / "go_nogo_state.json",
+                {
+                    "schema_version": "go_nogo_state_v0",
+                    "future_no_go_profile": {
+                        "schema_version": "future_no_go_profile_v0",
+                        "repair_hold_required": True,
+                        "confirmation_threshold_bias": "raised",
+                        "blocked_future_routes": [
+                            "external_release_without_repair_review"
+                        ],
+                        "allowed_repair_routes": [
+                            "acknowledge",
+                            "explain",
+                            "schedule_followup_probe",
+                        ],
+                        "repair_governance_refs": [
+                            "runtime/state/action/responsibility_loop_state.json",
+                            "runtime/reports/latest/pain_regret_repair_report.json",
+                        ],
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "action" / "world_contact_gate_state.json",
+                {
+                    "schema_version": "world_contact_gate_state_v0",
+                    "repair_hold_required": True,
+                    "confirmation_threshold_bias": "raised",
+                    "future_release_posture": "repair_before_release",
+                    "blocked_future_routes": [
+                        "external_release_without_repair_review"
+                    ],
+                    "allowed_repair_routes": [
+                        "acknowledge",
+                        "explain",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["reports"] / "pain_regret_repair_report.json",
+                {
+                    "schema_version": "pain_regret_repair_report_v0",
+                    "status": "closed",
+                    "world_contact_summary_ref": (
+                        "runtime/state/membrane/world_contact_summary.json"
+                    ),
+                    "responsibility_loop_ref": (
+                        "runtime/state/action/responsibility_loop_state.json"
+                    ),
+                    "repair_followup_required": True,
+                    "regret_pressure_count": 1,
+                    "repair_desire_count": 1,
+                    "regret_pressure_refs": [
+                        "runtime/state/action/responsibility_loop_state.json#regret"
+                    ],
+                    "repair_obligation_refs": [
+                        "runtime/state/action/responsibility_loop_state.json#repair"
+                    ],
+                    "relationship_effects": ["repair_hold"],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "life_targets"
+                / "queue_e_birth_repair_profile.json",
+                {
+                    "schema_version": "queue_e_repair_modulation_profile_v0",
+                    "pressure_level": "elevated",
+                    "attention_target": "regret_pressure",
+                    "repair_followup_required": True,
+                    "ref_set": [
+                        "runtime/state/action/responsibility_loop_state.json",
+                        "runtime/state/membrane/world_contact_summary.json",
+                        "runtime/reports/latest/pain_regret_repair_report.json",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "life_targets"
+                / "queue_e_world_contact_repair_hold_handoff.json",
+                {
+                    "schema_version": (
+                        "queue_e_world_contact_repair_hold_handoff_v0"
+                    ),
+                    "handoff_status": "closed",
+                    "repair_hold_required": True,
+                    "confirmation_threshold_bias": "raised",
+                    "ref_set": [
+                        "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                        "runtime/state/validation/world_contact_validation.json",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "validation"
+                / "world_contact_validation.json",
+                {
+                    "schema_version": "world_contact_validation_v0",
+                    "status": "closed",
+                    "repair_hold_required": True,
+                    "confirmation_threshold_bias": "raised",
+                    "blocked_future_routes": [
+                        "external_release_without_repair_review"
+                    ],
+                    "repair_governance_refs": [
+                        "runtime/state/action/responsibility_loop_state.json",
+                        "runtime/reports/latest/pain_regret_repair_report.json",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "validation" / "validation_rollup.json",
+                {
+                    "schema_version": "validation_rollup_v0",
+                    "overall_status": "closed",
+                    "gate_status": {
+                        "queue_e_birth_repair_gate": "closed"
+                    },
+                    "queue_e_world_contact_repair_hold_required": True,
+                    "queue_e_world_contact_confirmation_threshold_bias": (
+                        "raised"
+                    ),
+                    "queue_e_world_contact_blocked_future_routes": [
+                        "external_release_without_repair_review"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "schema_runner" / "run_manifest.json",
+                {
+                    "schema_version": "schema_runner_run_manifest_v0",
+                    "run_status": "closed",
+                    "queue_e_birth_repair_gate_status": "closed",
+                    "queue_e_world_contact_repair_hold_required": True,
+                    "queue_e_world_contact_confirmation_threshold_bias": (
+                        "raised"
+                    ),
+                    "queue_e_world_contact_blocked_future_routes": [
+                        "external_release_without_repair_review"
+                    ],
+                },
+            )
+            self._write_json(
                 paths["state_root"] / "life_state.json",
                 {
                     "schema_version": "life_state_v0",
@@ -1474,6 +1667,9 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "/ability": "ability_birth_readiness_summary_v0",
                 "/state": "resident_continuity_summary_v0",
                 "/relationship": "relationship_continuity_summary_v0",
+                "/responsibility": "responsibility_repair_chain_summary_v0",
+                "/痛苦": "responsibility_repair_chain_summary_v0",
+                "/后悔": "responsibility_repair_chain_summary_v0",
                 "/cognition": "cognitive_workspace_summary_v0",
                 "/consciousness": "consciousness_reportability_summary_v0",
                 "/意识": "consciousness_reportability_summary_v0",
@@ -1609,6 +1805,28 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn(
                 "growth_self_modification_state_view_not_autonomous_code_rewrite_or_script",
                 growth_output.getvalue(),
+            )
+
+            responsibility_output = StringIO()
+            with redirect_stdout(responsibility_output):
+                responsibility_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/后悔",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(responsibility_exit)
+            self.assertIn(
+                "responsibility_repair_chain_summary_v0",
+                responsibility_output.getvalue(),
+            )
+            self.assertIn("repair_oriented", responsibility_output.getvalue())
+            self.assertIn("raise_confirmation_threshold", responsibility_output.getvalue())
+            self.assertIn("queue_e_birth_repair_profile", responsibility_output.getvalue())
+            self.assertIn("external_release_without_repair_review", responsibility_output.getvalue())
+            self.assertIn(
+                "responsibility_pain_regret_state_view_not_apology_template_or_service_safety",
+                responsibility_output.getvalue(),
             )
 
             relationship_output = StringIO()
