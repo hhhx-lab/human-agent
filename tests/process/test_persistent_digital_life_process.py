@@ -10049,6 +10049,25 @@ class PersistentDigitalLifeProcessTests(
                         "proactive_voice_profile": {
                             "schema_version": "resident_proactive_voice_profile_v0",
                             "surface_kind": "wake_question_candidate",
+                            "utterance_candidate_code_count": 3,
+                            "profile_coverage": {
+                                "schema_version": "resident_proactive_voice_profile_coverage_v0",
+                                "active_domains": [
+                                    "memory",
+                                    "dream",
+                                    "waiting_governance",
+                                ],
+                                "active_domain_count": 3,
+                                "domain_presence": {
+                                    "memory": True,
+                                    "memory_tier": False,
+                                    "dream": True,
+                                    "web_dream_learning": False,
+                                    "resident_autonomous_activity": False,
+                                    "waiting_governance": True,
+                                },
+                                "source_ref_count": 3,
+                            },
                         },
                     },
                     ensure_ascii=False,
@@ -10069,7 +10088,45 @@ class PersistentDigitalLifeProcessTests(
                     "last_proactive_voice_profile": {
                         "schema_version": "resident_proactive_voice_profile_v0",
                         "surface_kind": "wake_question_candidate",
+                        "utterance_candidate_code_count": 3,
+                        "profile_coverage": {
+                            "schema_version": "resident_proactive_voice_profile_coverage_v0",
+                            "active_domains": [
+                                "memory",
+                                "dream",
+                                "waiting_governance",
+                            ],
+                            "active_domain_count": 3,
+                            "domain_presence": {
+                                "memory": True,
+                                "memory_tier": False,
+                                "dream": True,
+                                "web_dream_learning": False,
+                                "resident_autonomous_activity": False,
+                                "waiting_governance": True,
+                            },
+                            "source_ref_count": 3,
+                        },
                     },
+                    "last_profile_coverage": {
+                        "schema_version": "resident_proactive_voice_profile_coverage_v0",
+                        "active_domains": [
+                            "memory",
+                            "dream",
+                            "waiting_governance",
+                        ],
+                        "active_domain_count": 3,
+                        "domain_presence": {
+                            "memory": True,
+                            "memory_tier": False,
+                            "dream": True,
+                            "web_dream_learning": False,
+                            "resident_autonomous_activity": False,
+                            "waiting_governance": True,
+                        },
+                        "source_ref_count": 3,
+                    },
+                    "last_utterance_candidate_code_count": 3,
                     "last_proactive_voice_surface_kind": "wake_question_candidate",
                     "last_model_expression_status": "model_expression_applied",
                     "last_post_expression_gate_status": "accepted",
@@ -10738,6 +10795,23 @@ class PersistentDigitalLifeProcessTests(
                 report["resident_terminal_proactive_last_surface_kind"],
                 "wake_question_candidate",
             )
+            self.assertEqual(
+                report["resident_terminal_proactive_active_domain_count"],
+                3,
+            )
+            self.assertEqual(
+                report["resident_terminal_proactive_active_domains"],
+                ["memory", "dream", "waiting_governance"],
+            )
+            self.assertEqual(
+                report["resident_terminal_proactive_utterance_candidate_code_count"],
+                3,
+            )
+            self.assertTrue(
+                report["resident_terminal_proactive_last_profile_coverage"][
+                    "domain_presence"
+                ]["memory"]
+            )
             self.assertTrue(
                 report["resident_terminal_proactive_last_natural_language_released"]
             )
@@ -11227,6 +11301,18 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(
                 digest["resident_terminal_proactive_last_focus"],
                 "memory_wake_question",
+            )
+            self.assertEqual(
+                digest["resident_terminal_proactive_active_domain_count"],
+                3,
+            )
+            self.assertEqual(
+                digest["resident_terminal_proactive_active_domains"],
+                ["memory", "dream", "waiting_governance"],
+            )
+            self.assertEqual(
+                digest["resident_terminal_proactive_utterance_candidate_code_count"],
+                3,
             )
             self.assertEqual(
                 digest["background_dominant_convergence_pressure_level"],

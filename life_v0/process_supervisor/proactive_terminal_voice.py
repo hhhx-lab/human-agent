@@ -136,6 +136,12 @@ def write_resident_proactive_terminal_event(
         "last_focus": written.get("focus"),
         "last_utterance": written.get("utterance"),
         "last_proactive_voice_profile": written.get("proactive_voice_profile"),
+        "last_profile_coverage": (
+            written.get("proactive_voice_profile", {}) or {}
+        ).get("profile_coverage"),
+        "last_utterance_candidate_code_count": (
+            written.get("proactive_voice_profile", {}) or {}
+        ).get("utterance_candidate_code_count"),
         "last_proactive_voice_surface_kind": (
             written.get("proactive_voice_profile", {}) or {}
         ).get("surface_kind"),
@@ -348,7 +354,7 @@ def _build_proactive_voice_profile(
     source_refs: list[str],
     fingerprint: str,
 ) -> dict[str, Any]:
-    question_candidates = _build_question_candidates(
+    utterance_candidate_codes = _build_utterance_candidate_codes(
         focus=focus,
         memory_profile=memory_profile,
         dream_profile=dream_profile,
@@ -365,12 +371,24 @@ def _build_proactive_voice_profile(
         activity_profile=activity_profile,
         idle_profile=idle_profile,
     )
+    profile_coverage = _profile_coverage(
+        memory_profile=memory_profile,
+        memory_tier_profile=memory_tier_profile,
+        dream_profile=dream_profile,
+        web_learning_profile=web_learning_profile,
+        activity_profile=activity_profile,
+        idle_profile=idle_profile,
+        source_refs=source_refs,
+    )
     return {
         "schema_version": "resident_proactive_voice_profile_v0",
         "focus": focus,
         "surface_kind": surface_kind,
-        "question_candidate_count": len(question_candidates),
-        "question_candidates": question_candidates,
+        "utterance_candidate_code_count": len(utterance_candidate_codes),
+        "utterance_candidate_codes": utterance_candidate_codes,
+        "question_candidate_count": len(utterance_candidate_codes),
+        "question_candidates": utterance_candidate_codes,
+        "profile_coverage": profile_coverage,
         "memory_cues": _dedupe(
             _string_list(memory_profile.get("next_wake_cues"))[:5]
         ),
@@ -394,7 +412,7 @@ def _build_proactive_voice_profile(
     }
 
 
-def _build_question_candidates(
+def _build_utterance_candidate_codes(
     *,
     focus: str,
     memory_profile: dict[str, Any],
@@ -435,6 +453,58 @@ def _build_question_candidates(
     if not candidates:
         candidates.append(f"presence:{focus}")
     return _dedupe(candidates)[:8]
+
+
+def _profile_coverage(
+    *,
+    memory_profile: dict[str, Any],
+    memory_tier_profile: dict[str, Any],
+    dream_profile: dict[str, Any],
+    web_learning_profile: dict[str, Any],
+    activity_profile: dict[str, Any],
+    idle_profile: dict[str, Any],
+    source_refs: list[str],
+) -> dict[str, Any]:
+    domains: dict[str, bool] = {
+        "memory": bool(
+            memory_profile.get("observed_names")
+            or memory_profile.get("preference_cues")
+            or memory_profile.get("theme_cues")
+            or memory_profile.get("next_wake_cues")
+        ),
+        "memory_tier": bool(
+            memory_tier_profile.get("relationship_memory_tier_refs")
+            or memory_tier_profile.get("dialogue_memory_tier_refs")
+            or memory_tier_profile.get("next_wake_cues")
+            or memory_tier_profile.get("relationship_profile_name_refs")
+        ),
+        "dream": bool(
+            dream_profile.get("entry_state") or dream_profile.get("theme_cues")
+        ),
+        "web_dream_learning": bool(
+            web_learning_profile.get("topic_phrases")
+            or web_learning_profile.get("wake_question_candidates")
+        ),
+        "resident_autonomous_activity": bool(
+            activity_profile.get("activity_count")
+            or activity_profile.get("last_activity_kind")
+            or activity_profile.get("next_activity_kind")
+        ),
+        "waiting_governance": bool(
+            idle_profile.get("attention_target")
+            or idle_profile.get("next_idle_action")
+            or idle_profile.get("waiting_posture")
+        ),
+    }
+    active_domains = [domain for domain, active in domains.items() if active]
+    return {
+        "schema_version": "resident_proactive_voice_profile_coverage_v0",
+        "active_domains": active_domains,
+        "active_domain_count": len(active_domains),
+        "domain_presence": domains,
+        "source_ref_count": len(source_refs),
+        "source_refs": list(source_refs),
+    }
 
 
 def _surface_kind_for_focus(

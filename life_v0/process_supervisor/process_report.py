@@ -709,6 +709,24 @@ def write_process_report_bundle(
         "resident_terminal_proactive_last_surface_kind": (
             resident_terminal_proactive_state.get("last_proactive_voice_surface_kind")
         ),
+        "resident_terminal_proactive_last_profile_coverage": (
+            resident_terminal_proactive_state.get("last_profile_coverage")
+        ),
+        "resident_terminal_proactive_active_domain_count": (
+            (
+                resident_terminal_proactive_state.get("last_profile_coverage") or {}
+            ).get("active_domain_count")
+        ),
+        "resident_terminal_proactive_active_domains": (
+            (
+                resident_terminal_proactive_state.get("last_profile_coverage") or {}
+            ).get("active_domains")
+        ),
+        "resident_terminal_proactive_utterance_candidate_code_count": (
+            resident_terminal_proactive_state.get(
+                "last_utterance_candidate_code_count"
+            )
+        ),
         "resident_terminal_proactive_last_natural_language_released": (
             resident_terminal_proactive_state.get("last_natural_language_released")
         ),
@@ -1219,6 +1237,24 @@ def write_process_report_bundle(
         ),
         "resident_terminal_proactive_last_surface_kind": (
             resident_terminal_proactive_state.get("last_proactive_voice_surface_kind")
+        ),
+        "resident_terminal_proactive_last_profile_coverage": (
+            resident_terminal_proactive_state.get("last_profile_coverage")
+        ),
+        "resident_terminal_proactive_active_domain_count": (
+            (
+                resident_terminal_proactive_state.get("last_profile_coverage") or {}
+            ).get("active_domain_count")
+        ),
+        "resident_terminal_proactive_active_domains": (
+            (
+                resident_terminal_proactive_state.get("last_profile_coverage") or {}
+            ).get("active_domains")
+        ),
+        "resident_terminal_proactive_utterance_candidate_code_count": (
+            resident_terminal_proactive_state.get(
+                "last_utterance_candidate_code_count"
+            )
         ),
         "resident_terminal_proactive_last_natural_language_released": (
             resident_terminal_proactive_state.get("last_natural_language_released")

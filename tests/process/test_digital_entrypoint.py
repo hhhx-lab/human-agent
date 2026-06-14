@@ -434,6 +434,17 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                             "digital_life_memory_seriousness",
                             "non_mechanical_language_pressure",
                         ],
+                        "next_wake_cues": [
+                            "ask_about_language_naturalness_without_template"
+                        ],
+                        "memory_tier_projection": {
+                            "salient_core_episode_refs": [
+                                "runtime/state/memory/engram_index.json#episode/non_mechanical_language_pressure"
+                            ],
+                            "retrievable_context_episode_refs": [
+                                "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering/retrievable_context"
+                            ],
+                        },
                     },
                     ensure_ascii=False,
                     indent=2,
@@ -453,6 +464,28 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                         "relationship_theme_tags": [
                             "non_mechanical_language_pressure"
                         ],
+                        "next_wake_cues": [
+                            "follow_up_on_being_less_mechanical"
+                        ],
+                        "memory_tiering": {
+                            "deep_sediment_episode_refs": [
+                                "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering/deep_sediment"
+                            ]
+                        },
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (terminal_dir / "idle_strategy_state.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "idle_strategy_state_v0",
+                        "governance_attention_target": "relationship_memory",
+                        "next_idle_action": "open_terminal_idle_model_expression",
+                        "body_waiting_posture": "quiet_relation_available",
                     },
                     ensure_ascii=False,
                     indent=2,
@@ -479,12 +512,45 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertEqual(written["release_scope"], "open_terminal_idle_hidden")
             self.assertFalse(written["natural_language_released"])
             self.assertEqual(written["utterance"], "")
-            self.assertEqual(written["focus"], "relationship_memory")
+            self.assertEqual(written["focus"], "memory_tiered_wake_cue")
+            profile = written["proactive_voice_profile"]
+            self.assertEqual(profile["schema_version"], "resident_proactive_voice_profile_v0")
+            self.assertGreaterEqual(profile["utterance_candidate_code_count"], 4)
+            self.assertTrue(
+                all(":" in code for code in profile["utterance_candidate_codes"])
+            )
+            self.assertEqual(profile["question_candidates"], profile["utterance_candidate_codes"])
+            coverage = profile["profile_coverage"]
+            self.assertEqual(
+                coverage["schema_version"],
+                "resident_proactive_voice_profile_coverage_v0",
+            )
+            self.assertEqual(coverage["active_domain_count"], 5)
+            self.assertEqual(
+                set(coverage["active_domains"]),
+                {
+                    "memory",
+                    "memory_tier",
+                    "dream",
+                    "resident_autonomous_activity",
+                    "waiting_governance",
+                },
+            )
+            self.assertEqual(coverage["domain_presence"]["web_dream_learning"], False)
             self.assertTrue(
                 (terminal_dir / "resident_terminal_proactive_events.jsonl").exists()
             )
             self.assertTrue(
                 (terminal_dir / "resident_terminal_proactive_state.json").exists()
+            )
+            state = self._read_json(terminal_dir / "resident_terminal_proactive_state.json")
+            self.assertEqual(
+                state["last_profile_coverage"]["active_domains"],
+                coverage["active_domains"],
+            )
+            self.assertEqual(
+                state["last_utterance_candidate_code_count"],
+                profile["utterance_candidate_code_count"],
             )
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 
