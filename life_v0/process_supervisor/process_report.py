@@ -625,6 +625,9 @@ def write_process_report_bundle(
         state_dir=state_dir,
         idle_governance=idle_governance,
     )
+    exit_dream_memory_tier_profile = _exit_dream_memory_tier_report_profile(
+        state_dir=state_dir,
+    )
     governance_explanation = write_resident_governance_explanation(
         run_id=run_id,
         generated_at=generated_at,
@@ -1003,6 +1006,7 @@ def write_process_report_bundle(
     report.update(state_merge_profile)
     report.update(idle_governance)
     report.update(exit_dream_next_wake_profile)
+    report.update(exit_dream_memory_tier_profile)
     report["offline_learning_cumulative_integration_mode"] = (
         resolved_offline_learning_cumulative_integration_mode
     )
@@ -1756,6 +1760,7 @@ def write_process_report_bundle(
     if membrane_guard_refs:
         digest["membrane_guard_refs"] = membrane_guard_refs
     digest.update(exit_dream_next_wake_profile)
+    digest.update(exit_dream_memory_tier_profile)
     for field_name in HANDOFF_CARRY_FIELD_NAMES:
         if field_name in idle_governance:
             digest[field_name] = idle_governance[field_name]
@@ -1882,6 +1887,36 @@ def write_process_report_bundle(
         exit_dream_next_wake_report_boundary=exit_dream_next_wake_profile.get(
             "exit_dream_next_wake_report_boundary"
         ),
+        exit_dream_memory_tier_report_profile=exit_dream_memory_tier_profile.get(
+            "exit_dream_memory_tier_report_profile"
+        ),
+        exit_dream_memory_tier_ref_set=exit_dream_memory_tier_profile.get(
+            "exit_dream_memory_tier_ref_set",
+            [],
+        ),
+        exit_dream_memory_tier_salient_core_refs=(
+            exit_dream_memory_tier_profile.get(
+                "exit_dream_memory_tier_salient_core_refs",
+                [],
+            )
+        ),
+        exit_dream_memory_tier_retrievable_context_refs=(
+            exit_dream_memory_tier_profile.get(
+                "exit_dream_memory_tier_retrievable_context_refs",
+                [],
+            )
+        ),
+        exit_dream_memory_tier_deep_sediment_refs=(
+            exit_dream_memory_tier_profile.get(
+                "exit_dream_memory_tier_deep_sediment_refs",
+                [],
+            )
+        ),
+        exit_dream_memory_tier_report_boundary=(
+            exit_dream_memory_tier_profile.get(
+                "exit_dream_memory_tier_report_boundary"
+            )
+        ),
     )
 
     receipts_dir.mkdir(parents=True, exist_ok=True)
@@ -1971,6 +2006,12 @@ def build_process_receipt(
     exit_dream_fact_boundary_ref: str | None = None,
     exit_dream_next_wake_candidate_boundary: str | None = None,
     exit_dream_next_wake_report_boundary: str | None = None,
+    exit_dream_memory_tier_report_profile: dict[str, Any] | None = None,
+    exit_dream_memory_tier_ref_set: list[str] | None = None,
+    exit_dream_memory_tier_salient_core_refs: list[str] | None = None,
+    exit_dream_memory_tier_retrievable_context_refs: list[str] | None = None,
+    exit_dream_memory_tier_deep_sediment_refs: list[str] | None = None,
+    exit_dream_memory_tier_report_boundary: str | None = None,
 ) -> dict[str, Any]:
     input_hashes: dict[str, str] = {}
     for path in [
@@ -2111,6 +2152,22 @@ def build_process_receipt(
             exit_dream_next_wake_candidate_boundary
         ),
         "exit_dream_next_wake_report_boundary": exit_dream_next_wake_report_boundary,
+        "exit_dream_memory_tier_report_profile": dict(
+            exit_dream_memory_tier_report_profile or {}
+        ),
+        "exit_dream_memory_tier_ref_set": list(exit_dream_memory_tier_ref_set or []),
+        "exit_dream_memory_tier_salient_core_refs": list(
+            exit_dream_memory_tier_salient_core_refs or []
+        ),
+        "exit_dream_memory_tier_retrievable_context_refs": list(
+            exit_dream_memory_tier_retrievable_context_refs or []
+        ),
+        "exit_dream_memory_tier_deep_sediment_refs": list(
+            exit_dream_memory_tier_deep_sediment_refs or []
+        ),
+        "exit_dream_memory_tier_report_boundary": (
+            exit_dream_memory_tier_report_boundary
+        ),
         "body_ref_set": list(body_ref_set or []),
         "body_signal_ref_set": list(body_signal_ref_set or []),
         "queue_e_world_contact_ref_set": list(queue_e_world_contact_refs or []),
@@ -2147,6 +2204,7 @@ def build_process_receipt(
                 exit_dream_memory_write_gate_ref,
                 exit_dream_state_merge_guard_ref,
                 exit_dream_fact_boundary_ref,
+                *(exit_dream_memory_tier_ref_set or []),
                 *(body_ref_set or []),
                 *(body_signal_ref_set or []),
                 resident_governance_state_ref,
@@ -2354,6 +2412,154 @@ def _exit_dream_next_wake_report_profile(
         "exit_dream_next_wake_candidate_boundary": candidate_boundary,
         "exit_dream_next_wake_report_boundary": (
             "structured_report_evidence_not_spoken_language"
+        ),
+    }
+
+
+def _exit_dream_memory_tier_report_profile(
+    *,
+    state_dir: Path,
+) -> dict[str, Any]:
+    memory_retrieval_frame = _read_json_if_exists(
+        state_dir / "memory" / "memory_retrieval_frame.json"
+    )
+    relationship_memory = _read_json_if_exists(
+        state_dir / "memory" / "relationship_memory.json"
+    )
+    dialogue_memory_summary = _read_json_if_exists(
+        state_dir / "memory" / "dialogue_memory_summary.json"
+    )
+    engram_index = _read_json_if_exists(state_dir / "memory" / "engram_index.json")
+    life_state = _read_json_if_exists(state_dir / "life_state.json")
+    exit_dream_summary = _read_json_if_exists(
+        state_dir / "dream" / "exit_dream_consolidation_summary.json"
+    )
+
+    tiered_recall = _dict_or_empty(memory_retrieval_frame.get("tiered_recall"))
+    relationship_tier = _dict_or_empty(relationship_memory.get("memory_tier_projection"))
+    dialogue_tier = _dict_or_empty(dialogue_memory_summary.get("memory_tiering"))
+    engram_tier = _dict_or_empty(engram_index.get("memory_tier_index"))
+    life_tier = _dict_or_empty(
+        _dict_or_empty(life_state.get("memory_index")).get("memory_tier_refs")
+    )
+    exit_tier = _dict_or_empty(exit_dream_summary.get("memory_tiering"))
+
+    salient_core_refs = _dedupe_refs(
+        [
+            *_list_or_empty(tiered_recall.get("salient_core_refs")),
+            *_list_or_empty(relationship_tier.get("salient_core_episode_refs")),
+            *_list_or_empty(dialogue_tier.get("salient_core_episode_refs")),
+            *_list_or_empty(engram_tier.get("salient_core_refs")),
+            *_list_or_empty(life_tier.get("salient_core_refs")),
+            *_list_or_empty(exit_tier.get("salient_core_episode_refs")),
+        ]
+    )
+    retrievable_context_refs = _dedupe_refs(
+        [
+            *_list_or_empty(tiered_recall.get("retrievable_context_refs")),
+            *_list_or_empty(relationship_tier.get("retrievable_context_episode_refs")),
+            *_list_or_empty(dialogue_tier.get("retrievable_context_episode_refs")),
+            *_list_or_empty(engram_tier.get("retrievable_context_refs")),
+            *_list_or_empty(life_tier.get("retrievable_context_refs")),
+            *_list_or_empty(exit_tier.get("retrievable_context_episode_refs")),
+        ]
+    )
+    deep_sediment_refs = _dedupe_refs(
+        [
+            *_list_or_empty(tiered_recall.get("deep_sediment_refs")),
+            *_list_or_empty(relationship_tier.get("deep_sediment_episode_refs")),
+            *_list_or_empty(dialogue_tier.get("deep_sediment_episode_refs")),
+            *_list_or_empty(engram_tier.get("deep_sediment_refs")),
+            *_list_or_empty(life_tier.get("deep_sediment_refs")),
+            *_list_or_empty(exit_tier.get("deep_sediment_episode_refs")),
+        ]
+    )
+    ref_set = _dedupe_refs(
+        [
+            *salient_core_refs,
+            *retrievable_context_refs,
+            *deep_sediment_refs,
+        ]
+    )
+    carrier_refs = _dedupe_refs(
+        [
+            "runtime/state/memory/memory_retrieval_frame.json#tiered_recall"
+            if tiered_recall
+            else None,
+            "runtime/state/memory/relationship_memory.json#memory_tier_projection"
+            if relationship_tier
+            else None,
+            "runtime/state/memory/dialogue_memory_summary.json#memory_tiering"
+            if dialogue_tier
+            else None,
+            "runtime/state/memory/engram_index.json#memory_tier_index"
+            if engram_tier
+            else None,
+            "runtime/state/life_state.json#memory_index.memory_tier_refs"
+            if life_tier
+            else None,
+            "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering"
+            if exit_tier
+            else None,
+        ]
+    )
+    tier_policy = _first_non_none(
+        exit_tier.get("tier_policy"),
+        dialogue_tier.get("tier_policy"),
+        engram_tier.get("tier_policy"),
+        tiered_recall.get("tier_policy"),
+        "salience_weighted_progressive_recall" if ref_set else None,
+    )
+    deep_sediment_policy = _first_non_none(
+        exit_tier.get("deep_sediment_policy"),
+        dialogue_tier.get("deep_sediment_policy"),
+    )
+    fact_boundary = _first_non_none(
+        exit_tier.get("fact_boundary"),
+        dialogue_tier.get("fact_boundary"),
+        tiered_recall.get("fact_boundary"),
+    )
+    if not any(
+        [
+            salient_core_refs,
+            retrievable_context_refs,
+            deep_sediment_refs,
+            carrier_refs,
+        ]
+    ):
+        return {}
+    profile = {
+        "schema_version": "exit_dream_memory_tier_report_profile_v0",
+        "tier_policy": tier_policy,
+        "salient_core_refs": salient_core_refs,
+        "retrievable_context_refs": retrievable_context_refs,
+        "deep_sediment_refs": deep_sediment_refs,
+        "ref_set": ref_set,
+        "salient_core_ref_count": len(salient_core_refs),
+        "retrievable_context_ref_count": len(retrievable_context_refs),
+        "deep_sediment_ref_count": len(deep_sediment_refs),
+        "carrier_refs": carrier_refs,
+        "deep_sediment_policy": deep_sediment_policy,
+        "fact_boundary": fact_boundary,
+        "report_boundary": "tiered_report_evidence_not_spoken_language",
+    }
+    return {
+        "exit_dream_memory_tier_report_profile": profile,
+        "exit_dream_memory_tier_policy": tier_policy,
+        "exit_dream_memory_tier_salient_core_refs": salient_core_refs,
+        "exit_dream_memory_tier_retrievable_context_refs": retrievable_context_refs,
+        "exit_dream_memory_tier_deep_sediment_refs": deep_sediment_refs,
+        "exit_dream_memory_tier_ref_set": ref_set,
+        "exit_dream_memory_tier_salient_core_ref_count": len(salient_core_refs),
+        "exit_dream_memory_tier_retrievable_context_ref_count": len(
+            retrievable_context_refs
+        ),
+        "exit_dream_memory_tier_deep_sediment_ref_count": len(deep_sediment_refs),
+        "exit_dream_memory_tier_carrier_refs": carrier_refs,
+        "exit_dream_memory_tier_deep_sediment_policy": deep_sediment_policy,
+        "exit_dream_memory_tier_fact_boundary": fact_boundary,
+        "exit_dream_memory_tier_report_boundary": (
+            "tiered_report_evidence_not_spoken_language"
         ),
     }
 

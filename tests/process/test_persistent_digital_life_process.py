@@ -10167,6 +10167,14 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/memory/state_merge_guard.json",
                 "runtime/state/dream/exit_dream_consolidation_summary.json#dream_fact_boundary",
             ]
+            expected_salient_core_refs = ["episode-salient-001"]
+            expected_retrievable_context_refs = ["episode-context-001"]
+            expected_deep_sediment_refs = ["episode-deep-001"]
+            expected_exit_dream_memory_tier_ref_set = [
+                *expected_salient_core_refs,
+                *expected_retrievable_context_refs,
+                *expected_deep_sediment_refs,
+            ]
 
             self._write_json(reports_dir / "digital_life_shell_report.json", {"status": "closed"})
             self._write_json(reports_dir / "digital_life_waiting_heartbeat.json", {"heartbeat_counter": 3})
@@ -10616,6 +10624,14 @@ class PersistentDigitalLifeProcessTests(
                 state_dir / "memory" / "memory_retrieval_frame.json",
                 {
                     "schema_version": "memory_retrieval_frame_v0",
+                    "tiered_recall": {
+                        "schema_version": "memory_retrieval_tiered_recall_v0",
+                        "tier_policy": "salient_core_then_context_then_deep_sediment",
+                        "salient_core_refs": expected_salient_core_refs,
+                        "retrievable_context_refs": expected_retrievable_context_refs,
+                        "deep_sediment_refs": expected_deep_sediment_refs,
+                        "fact_boundary": "retrieval_priority_does_not_promote_dream_or_hypothesis_to_fact",
+                    },
                     "exit_dream_next_wake_governance": {
                         "next_wake_memory_cue_refs": (
                             expected_exit_dream_next_wake_memory_cue_refs
@@ -10638,6 +10654,22 @@ class PersistentDigitalLifeProcessTests(
                     "exit_dream_governance_refs": (
                         expected_exit_dream_next_wake_governance_refs
                     ),
+                    "salient_core_memory_refs": [
+                        "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.salient_core"
+                    ],
+                    "retrievable_context_memory_refs": [
+                        "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.retrievable_context"
+                    ],
+                    "deep_sediment_memory_refs": [
+                        "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.deep_sediment"
+                    ],
+                    "memory_tier_projection": {
+                        "schema_version": "relationship_memory_tier_projection_v0",
+                        "salient_core_episode_refs": expected_salient_core_refs,
+                        "retrievable_context_episode_refs": expected_retrievable_context_refs,
+                        "deep_sediment_episode_refs": expected_deep_sediment_refs,
+                        "projection_source_ref": "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering",
+                    },
                 },
             )
             self._write_json(
@@ -10647,6 +10679,16 @@ class PersistentDigitalLifeProcessTests(
                     "next_wake_memory_cue_refs": (
                         expected_exit_dream_next_wake_memory_cue_refs
                     ),
+                    "memory_tiering_ref": "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering",
+                    "memory_tiering": {
+                        "schema_version": "exit_dream_memory_tiering_v0",
+                        "tier_policy": "salience_weighted_progressive_recall",
+                        "salient_core_episode_refs": expected_salient_core_refs,
+                        "retrievable_context_episode_refs": expected_retrievable_context_refs,
+                        "deep_sediment_episode_refs": expected_deep_sediment_refs,
+                        "deep_sediment_policy": "preserve_low_salience_context_below_default_recall_threshold",
+                        "fact_boundary": "tiering_changes_recall_priority_not_fact_status",
+                    },
                 },
             )
             self._write_json(
@@ -10656,6 +10698,14 @@ class PersistentDigitalLifeProcessTests(
                     "dream_memory_refs": [
                         "runtime/state/dream/exit_dream_consolidation_summary.json"
                     ],
+                    "memory_tier_index": {
+                        "schema_version": "engram_memory_tier_index_v0",
+                        "tier_policy": "salience_weighted_progressive_recall",
+                        "salient_core_refs": expected_salient_core_refs,
+                        "retrievable_context_refs": expected_retrievable_context_refs,
+                        "deep_sediment_refs": expected_deep_sediment_refs,
+                        "source_ref": "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering",
+                    },
                 },
             )
             self._write_json(
@@ -10678,6 +10728,13 @@ class PersistentDigitalLifeProcessTests(
                         "relationship_memory_refs": [
                             "runtime/state/memory/relationship_memory.json"
                         ],
+                        "memory_tier_refs": {
+                            "schema_version": "life_state_memory_tier_refs_v0",
+                            "salient_core_refs": expected_salient_core_refs,
+                            "retrievable_context_refs": expected_retrievable_context_refs,
+                            "deep_sediment_refs": expected_deep_sediment_refs,
+                            "source_ref": "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering",
+                        },
                     },
                 },
             )
@@ -10688,6 +10745,15 @@ class PersistentDigitalLifeProcessTests(
                     "next_wake_memory_cue_refs": (
                         expected_exit_dream_next_wake_memory_cue_refs
                     ),
+                    "memory_tiering": {
+                        "schema_version": "exit_dream_memory_tiering_v0",
+                        "tier_policy": "salience_weighted_progressive_recall",
+                        "salient_core_episode_refs": expected_salient_core_refs,
+                        "retrievable_context_episode_refs": expected_retrievable_context_refs,
+                        "deep_sediment_episode_refs": expected_deep_sediment_refs,
+                        "deep_sediment_policy": "preserve_low_salience_context_below_default_recall_threshold",
+                        "fact_boundary": "tiering_changes_recall_priority_not_fact_status",
+                    },
                     "dream_fact_boundary": {
                         "boundary_kind": "cue_material_not_fact_claim"
                     },
@@ -11319,6 +11385,44 @@ class PersistentDigitalLifeProcessTests(
                     artifact["exit_dream_next_wake_report_boundary"],
                     "structured_report_evidence_not_spoken_language",
                 )
+                self.assertEqual(
+                    artifact["exit_dream_memory_tier_report_profile"][
+                        "schema_version"
+                    ],
+                    "exit_dream_memory_tier_report_profile_v0",
+                )
+                self.assertEqual(
+                    artifact["exit_dream_memory_tier_policy"],
+                    "salience_weighted_progressive_recall",
+                )
+                self.assertEqual(
+                    artifact["exit_dream_memory_tier_salient_core_refs"],
+                    expected_salient_core_refs,
+                )
+                self.assertEqual(
+                    artifact["exit_dream_memory_tier_retrievable_context_refs"],
+                    expected_retrievable_context_refs,
+                )
+                self.assertEqual(
+                    artifact["exit_dream_memory_tier_deep_sediment_refs"],
+                    expected_deep_sediment_refs,
+                )
+                self.assertEqual(
+                    artifact["exit_dream_memory_tier_ref_set"],
+                    expected_exit_dream_memory_tier_ref_set,
+                )
+                self.assertEqual(
+                    artifact["exit_dream_memory_tier_deep_sediment_policy"],
+                    "preserve_low_salience_context_below_default_recall_threshold",
+                )
+                self.assertEqual(
+                    artifact["exit_dream_memory_tier_fact_boundary"],
+                    "tiering_changes_recall_priority_not_fact_status",
+                )
+                self.assertEqual(
+                    artifact["exit_dream_memory_tier_report_boundary"],
+                    "tiered_report_evidence_not_spoken_language",
+                )
             self.assertEqual(
                 digest["resident_autonomous_activity_ref"],
                 "runtime/state/terminal/resident_autonomous_activity.jsonl",
@@ -11455,6 +11559,28 @@ class PersistentDigitalLifeProcessTests(
                 "structured_report_evidence_not_spoken_language",
             )
             for ref in expected_exit_dream_next_wake_ref_set:
+                self.assertIn(ref, receipt["shared_object_refs"])
+            self.assertEqual(
+                receipt["exit_dream_memory_tier_ref_set"],
+                expected_exit_dream_memory_tier_ref_set,
+            )
+            self.assertEqual(
+                receipt["exit_dream_memory_tier_salient_core_refs"],
+                expected_salient_core_refs,
+            )
+            self.assertEqual(
+                receipt["exit_dream_memory_tier_retrievable_context_refs"],
+                expected_retrievable_context_refs,
+            )
+            self.assertEqual(
+                receipt["exit_dream_memory_tier_deep_sediment_refs"],
+                expected_deep_sediment_refs,
+            )
+            self.assertEqual(
+                receipt["exit_dream_memory_tier_report_boundary"],
+                "tiered_report_evidence_not_spoken_language",
+            )
+            for ref in expected_exit_dream_memory_tier_ref_set:
                 self.assertIn(ref, receipt["shared_object_refs"])
             self.assertEqual(receipt["body_ref_set"], expected_body_refs)
             self.assertEqual(receipt["body_signal_ref_set"], expected_body_signal_refs)
