@@ -621,6 +621,10 @@ def write_process_report_bundle(
         memory_write_gate_ref=memory_write_gate_ref,
         state_merge_guard_ref=state_merge_guard_runtime_ref,
     )
+    exit_dream_next_wake_profile = _exit_dream_next_wake_report_profile(
+        state_dir=state_dir,
+        idle_governance=idle_governance,
+    )
     governance_explanation = write_resident_governance_explanation(
         run_id=run_id,
         generated_at=generated_at,
@@ -998,6 +1002,7 @@ def write_process_report_bundle(
         report["queue_e_repair_ref_set"] = queue_e_repair_ref_set
     report.update(state_merge_profile)
     report.update(idle_governance)
+    report.update(exit_dream_next_wake_profile)
     report["offline_learning_cumulative_integration_mode"] = (
         resolved_offline_learning_cumulative_integration_mode
     )
@@ -1750,6 +1755,7 @@ def write_process_report_bundle(
     )
     if membrane_guard_refs:
         digest["membrane_guard_refs"] = membrane_guard_refs
+    digest.update(exit_dream_next_wake_profile)
     for field_name in HANDOFF_CARRY_FIELD_NAMES:
         if field_name in idle_governance:
             digest[field_name] = idle_governance[field_name]
@@ -1846,6 +1852,36 @@ def write_process_report_bundle(
         birth_readiness_stage_gate_ref=idle_governance.get("birth_readiness_stage_gate_ref"),
         resident_terminal_proactive_state_ref=resident_terminal_proactive_state_ref,
         resident_terminal_proactive_events_ref=resident_terminal_proactive_events_ref,
+        exit_dream_next_wake_governance_ref=exit_dream_next_wake_profile.get(
+            "exit_dream_next_wake_governance_ref"
+        ),
+        exit_dream_next_wake_memory_cue_refs=exit_dream_next_wake_profile.get(
+            "exit_dream_next_wake_memory_cue_refs",
+            [],
+        ),
+        exit_dream_next_wake_governance_refs=exit_dream_next_wake_profile.get(
+            "exit_dream_next_wake_governance_refs",
+            [],
+        ),
+        exit_dream_next_wake_ref_set=exit_dream_next_wake_profile.get(
+            "exit_dream_next_wake_ref_set",
+            [],
+        ),
+        exit_dream_memory_write_gate_ref=exit_dream_next_wake_profile.get(
+            "exit_dream_memory_write_gate_ref"
+        ),
+        exit_dream_state_merge_guard_ref=exit_dream_next_wake_profile.get(
+            "exit_dream_state_merge_guard_ref"
+        ),
+        exit_dream_fact_boundary_ref=exit_dream_next_wake_profile.get(
+            "exit_dream_fact_boundary_ref"
+        ),
+        exit_dream_next_wake_candidate_boundary=exit_dream_next_wake_profile.get(
+            "exit_dream_next_wake_candidate_boundary"
+        ),
+        exit_dream_next_wake_report_boundary=exit_dream_next_wake_profile.get(
+            "exit_dream_next_wake_report_boundary"
+        ),
     )
 
     receipts_dir.mkdir(parents=True, exist_ok=True)
@@ -1926,6 +1962,15 @@ def build_process_receipt(
     birth_readiness_stage_gate_ref: str | None = None,
     resident_terminal_proactive_state_ref: str | None = None,
     resident_terminal_proactive_events_ref: str | None = None,
+    exit_dream_next_wake_governance_ref: str | None = None,
+    exit_dream_next_wake_memory_cue_refs: list[str] | None = None,
+    exit_dream_next_wake_governance_refs: list[str] | None = None,
+    exit_dream_next_wake_ref_set: list[str] | None = None,
+    exit_dream_memory_write_gate_ref: str | None = None,
+    exit_dream_state_merge_guard_ref: str | None = None,
+    exit_dream_fact_boundary_ref: str | None = None,
+    exit_dream_next_wake_candidate_boundary: str | None = None,
+    exit_dream_next_wake_report_boundary: str | None = None,
 ) -> dict[str, Any]:
     input_hashes: dict[str, str] = {}
     for path in [
@@ -1967,6 +2012,12 @@ def build_process_receipt(
         state_dir / "consciousness" / "consciousness_probe_bundle.json",
         state_dir / "life_targets" / "birth_readiness_rollup.json",
         state_dir / "life_targets" / "birth_readiness_stage_gate.json",
+        state_dir / "memory" / "memory_retrieval_frame.json",
+        state_dir / "memory" / "relationship_memory.json",
+        state_dir / "memory" / "dialogue_memory_summary.json",
+        state_dir / "memory" / "engram_index.json",
+        state_dir / "self" / "autobiographical_stack.json",
+        state_dir / "life_state.json",
         state_dir / "memory" / "memory_write_gate.json",
         state_dir / "memory" / "state_merge_guard.json",
         state_dir / "body" / "body_rhythm_pulse.json",
@@ -1981,6 +2032,7 @@ def build_process_receipt(
         state_dir / "dream" / "dream_experience_window.json",
         state_dir / "dream" / "wake_integration_frame.json",
         state_dir / "dream" / "dream_fact_gate_decision.json",
+        state_dir / "dream" / "exit_dream_consolidation_summary.json",
         state_dir / "dream" / "nightmare_loop_risk.json",
         state_dir / "growth" / "growth_patch_candidate_queue.json",
         state_dir / "growth" / "belief_learning_plan.json",
@@ -2044,6 +2096,21 @@ def build_process_receipt(
             offline_learning_cumulative_relationship_reconsolidation_required
         ),
         "dream_wake_ref_set": list(dream_wake_ref_set or []),
+        "exit_dream_next_wake_governance_ref": exit_dream_next_wake_governance_ref,
+        "exit_dream_next_wake_memory_cue_refs": list(
+            exit_dream_next_wake_memory_cue_refs or []
+        ),
+        "exit_dream_next_wake_governance_refs": list(
+            exit_dream_next_wake_governance_refs or []
+        ),
+        "exit_dream_next_wake_ref_set": list(exit_dream_next_wake_ref_set or []),
+        "exit_dream_memory_write_gate_ref": exit_dream_memory_write_gate_ref,
+        "exit_dream_state_merge_guard_ref": exit_dream_state_merge_guard_ref,
+        "exit_dream_fact_boundary_ref": exit_dream_fact_boundary_ref,
+        "exit_dream_next_wake_candidate_boundary": (
+            exit_dream_next_wake_candidate_boundary
+        ),
+        "exit_dream_next_wake_report_boundary": exit_dream_next_wake_report_boundary,
         "body_ref_set": list(body_ref_set or []),
         "body_signal_ref_set": list(body_signal_ref_set or []),
         "queue_e_world_contact_ref_set": list(queue_e_world_contact_refs or []),
@@ -2073,6 +2140,13 @@ def build_process_receipt(
                 idle_strategy_ref,
                 idle_heartbeat_trace_ref,
                 *(dream_wake_ref_set or []),
+                exit_dream_next_wake_governance_ref,
+                *(exit_dream_next_wake_memory_cue_refs or []),
+                *(exit_dream_next_wake_governance_refs or []),
+                *(exit_dream_next_wake_ref_set or []),
+                exit_dream_memory_write_gate_ref,
+                exit_dream_state_merge_guard_ref,
+                exit_dream_fact_boundary_ref,
                 *(body_ref_set or []),
                 *(body_signal_ref_set or []),
                 resident_governance_state_ref,
@@ -2196,6 +2270,92 @@ def _state_merge_report_profile(
     if merge_policy:
         payload["state_merge_policy"] = str(merge_policy)
     return payload
+
+
+def _exit_dream_next_wake_report_profile(
+    *,
+    state_dir: Path,
+    idle_governance: dict[str, Any],
+) -> dict[str, Any]:
+    memory_retrieval_frame = _read_json_if_exists(
+        state_dir / "memory" / "memory_retrieval_frame.json"
+    )
+    memory_retrieval_governance = _dict_or_empty(
+        memory_retrieval_frame.get("exit_dream_next_wake_governance")
+    )
+    governance_ref = _first_non_none(
+        idle_governance.get("exit_dream_next_wake_governance_ref"),
+        "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance"
+        if memory_retrieval_governance
+        else None,
+    )
+    memory_cue_refs = _dedupe_refs(
+        [
+            *_list_or_empty(
+                idle_governance.get("exit_dream_next_wake_memory_cue_refs")
+            ),
+            *_list_or_empty(
+                memory_retrieval_governance.get("next_wake_memory_cue_refs")
+            ),
+        ]
+    )
+    governance_refs = _dedupe_refs(
+        [
+            *_list_or_empty(
+                idle_governance.get("exit_dream_next_wake_governance_refs")
+            ),
+            *_list_or_empty(memory_retrieval_governance.get("governance_refs")),
+        ]
+    )
+    memory_write_gate_ref = _first_non_none(
+        idle_governance.get("exit_dream_memory_write_gate_ref"),
+        memory_retrieval_governance.get("memory_write_gate_ref"),
+    )
+    state_merge_guard_ref = _first_non_none(
+        idle_governance.get("exit_dream_state_merge_guard_ref"),
+        memory_retrieval_governance.get("state_merge_guard_ref"),
+    )
+    fact_boundary_ref = _first_non_none(
+        idle_governance.get("exit_dream_fact_boundary_ref"),
+        memory_retrieval_governance.get("dream_fact_boundary_ref"),
+    )
+    candidate_boundary = _first_non_none(
+        idle_governance.get("exit_dream_next_wake_candidate_boundary"),
+        memory_retrieval_governance.get("candidate_boundary"),
+    )
+    ref_set = _dedupe_refs(
+        [
+            *memory_cue_refs,
+            *governance_refs,
+        ]
+    )
+    if not any(
+        [
+            governance_ref,
+            memory_cue_refs,
+            governance_refs,
+            memory_write_gate_ref,
+            state_merge_guard_ref,
+            fact_boundary_ref,
+            candidate_boundary,
+        ]
+    ):
+        return {}
+    return {
+        "exit_dream_next_wake_governance_ref": governance_ref,
+        "exit_dream_next_wake_memory_cue_refs": memory_cue_refs,
+        "exit_dream_next_wake_governance_refs": governance_refs,
+        "exit_dream_next_wake_ref_set": ref_set,
+        "exit_dream_next_wake_cue_ref_count": len(memory_cue_refs),
+        "exit_dream_next_wake_governance_ref_count": len(governance_refs),
+        "exit_dream_memory_write_gate_ref": memory_write_gate_ref,
+        "exit_dream_state_merge_guard_ref": state_merge_guard_ref,
+        "exit_dream_fact_boundary_ref": fact_boundary_ref,
+        "exit_dream_next_wake_candidate_boundary": candidate_boundary,
+        "exit_dream_next_wake_report_boundary": (
+            "structured_report_evidence_not_spoken_language"
+        ),
+    }
 
 
 def _queue_e_repair_modulation_profile_from_runtime(

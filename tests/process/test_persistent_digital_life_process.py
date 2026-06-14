@@ -10158,6 +10158,15 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/body/body_resource_budget.json",
                 "runtime/state/body/core_affect_vector.json",
             ]
+            expected_exit_dream_next_wake_memory_cue_refs = [
+                "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs",
+                "runtime/state/memory/dialogue_memory_summary.json#next_wake_memory_cue_refs",
+            ]
+            expected_exit_dream_next_wake_governance_refs = [
+                "runtime/state/memory/memory_write_gate.json",
+                "runtime/state/memory/state_merge_guard.json",
+                "runtime/state/dream/exit_dream_consolidation_summary.json#dream_fact_boundary",
+            ]
 
             self._write_json(reports_dir / "digital_life_shell_report.json", {"status": "closed"})
             self._write_json(reports_dir / "digital_life_waiting_heartbeat.json", {"heartbeat_counter": 3})
@@ -10435,6 +10444,17 @@ class PersistentDigitalLifeProcessTests(
                             "runtime/state/growth/resident_learning_consolidation_state.json",
                         ],
                     },
+                    "exit_dream_next_wake_governance_ref": "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance",
+                    "exit_dream_next_wake_memory_cue_refs": (
+                        expected_exit_dream_next_wake_memory_cue_refs
+                    ),
+                    "exit_dream_next_wake_governance_refs": (
+                        expected_exit_dream_next_wake_governance_refs
+                    ),
+                    "exit_dream_memory_write_gate_ref": "runtime/state/memory/memory_write_gate.json",
+                    "exit_dream_state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
+                    "exit_dream_fact_boundary_ref": "runtime/state/dream/exit_dream_consolidation_summary.json#dream_fact_boundary",
+                    "exit_dream_next_wake_candidate_boundary": "reactivate_as_cue_material_not_fixed_language",
                 },
             )
             self._write_json(
@@ -10591,6 +10611,87 @@ class PersistentDigitalLifeProcessTests(
             self._write_json(
                 state_dir / "growth" / "relationship_learning_plan.json",
                 {"schema_version": "relationship_learning_plan_v0"},
+            )
+            self._write_json(
+                state_dir / "memory" / "memory_retrieval_frame.json",
+                {
+                    "schema_version": "memory_retrieval_frame_v0",
+                    "exit_dream_next_wake_governance": {
+                        "next_wake_memory_cue_refs": (
+                            expected_exit_dream_next_wake_memory_cue_refs
+                        ),
+                        "governance_refs": expected_exit_dream_next_wake_governance_refs,
+                        "memory_write_gate_ref": "runtime/state/memory/memory_write_gate.json",
+                        "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
+                        "dream_fact_boundary_ref": "runtime/state/dream/exit_dream_consolidation_summary.json#dream_fact_boundary",
+                        "candidate_boundary": "reactivate_as_cue_material_not_fixed_language",
+                    },
+                },
+            )
+            self._write_json(
+                state_dir / "memory" / "relationship_memory.json",
+                {
+                    "schema_version": "relationship_memory_v0",
+                    "next_wake_memory_cue_refs": (
+                        expected_exit_dream_next_wake_memory_cue_refs
+                    ),
+                    "exit_dream_governance_refs": (
+                        expected_exit_dream_next_wake_governance_refs
+                    ),
+                },
+            )
+            self._write_json(
+                state_dir / "memory" / "dialogue_memory_summary.json",
+                {
+                    "schema_version": "dialogue_memory_summary_v0",
+                    "next_wake_memory_cue_refs": (
+                        expected_exit_dream_next_wake_memory_cue_refs
+                    ),
+                },
+            )
+            self._write_json(
+                state_dir / "memory" / "engram_index.json",
+                {
+                    "schema_version": "engram_index_v0",
+                    "dream_memory_refs": [
+                        "runtime/state/dream/exit_dream_consolidation_summary.json"
+                    ],
+                },
+            )
+            self._write_json(
+                state_dir / "self" / "autobiographical_stack.json",
+                {
+                    "schema_version": "autobiographical_stack_v0",
+                    "narrative_refs": [
+                        "runtime/state/memory/dialogue_memory_summary.json"
+                    ],
+                },
+            )
+            self._write_json(
+                state_dir / "life_state.json",
+                {
+                    "schema_version": "life_state_v0",
+                    "memory_index": {
+                        "dream_memory_refs": [
+                            "runtime/state/dream/exit_dream_consolidation_summary.json"
+                        ],
+                        "relationship_memory_refs": [
+                            "runtime/state/memory/relationship_memory.json"
+                        ],
+                    },
+                },
+            )
+            self._write_json(
+                state_dir / "dream" / "exit_dream_consolidation_summary.json",
+                {
+                    "schema_version": "exit_dream_consolidation_summary_v0",
+                    "next_wake_memory_cue_refs": (
+                        expected_exit_dream_next_wake_memory_cue_refs
+                    ),
+                    "dream_fact_boundary": {
+                        "boundary_kind": "cue_material_not_fact_claim"
+                    },
+                },
             )
             self._write_json(
                 state_dir / "action" / "responsibility_loop_state.json",
@@ -10798,6 +10899,10 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/dream/dream_experience_window.json",
                 "runtime/state/dream/wake_integration_frame.json",
                 "runtime/state/dream/dream_fact_gate_decision.json",
+            ]
+            expected_exit_dream_next_wake_ref_set = [
+                *expected_exit_dream_next_wake_memory_cue_refs,
+                *expected_exit_dream_next_wake_governance_refs,
             ]
             expected_autonomous_activity_refs = [
                 "runtime/state/terminal/resident_autonomous_activity.jsonl",
@@ -11172,6 +11277,48 @@ class PersistentDigitalLifeProcessTests(
                 "background_dream_wake_carryover",
             )
             self.assertEqual(digest["dream_wake_ref_set"], expected_dream_wake_refs)
+            for artifact in (report, digest):
+                self.assertEqual(
+                    artifact["exit_dream_next_wake_governance_ref"],
+                    "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance",
+                )
+                self.assertEqual(
+                    artifact["exit_dream_next_wake_memory_cue_refs"],
+                    expected_exit_dream_next_wake_memory_cue_refs,
+                )
+                self.assertEqual(
+                    artifact["exit_dream_next_wake_governance_refs"],
+                    expected_exit_dream_next_wake_governance_refs,
+                )
+                self.assertEqual(
+                    artifact["exit_dream_next_wake_ref_set"],
+                    expected_exit_dream_next_wake_ref_set,
+                )
+                self.assertEqual(artifact["exit_dream_next_wake_cue_ref_count"], 2)
+                self.assertEqual(
+                    artifact["exit_dream_next_wake_governance_ref_count"],
+                    3,
+                )
+                self.assertEqual(
+                    artifact["exit_dream_memory_write_gate_ref"],
+                    "runtime/state/memory/memory_write_gate.json",
+                )
+                self.assertEqual(
+                    artifact["exit_dream_state_merge_guard_ref"],
+                    "runtime/state/memory/state_merge_guard.json",
+                )
+                self.assertEqual(
+                    artifact["exit_dream_fact_boundary_ref"],
+                    "runtime/state/dream/exit_dream_consolidation_summary.json#dream_fact_boundary",
+                )
+                self.assertEqual(
+                    artifact["exit_dream_next_wake_candidate_boundary"],
+                    "reactivate_as_cue_material_not_fixed_language",
+                )
+                self.assertEqual(
+                    artifact["exit_dream_next_wake_report_boundary"],
+                    "structured_report_evidence_not_spoken_language",
+                )
             self.assertEqual(
                 digest["resident_autonomous_activity_ref"],
                 "runtime/state/terminal/resident_autonomous_activity.jsonl",
@@ -11287,6 +11434,28 @@ class PersistentDigitalLifeProcessTests(
                 ]
             )
             self.assertEqual(receipt["dream_wake_ref_set"], expected_dream_wake_refs)
+            self.assertEqual(
+                receipt["exit_dream_next_wake_ref_set"],
+                expected_exit_dream_next_wake_ref_set,
+            )
+            self.assertEqual(
+                receipt["exit_dream_next_wake_memory_cue_refs"],
+                expected_exit_dream_next_wake_memory_cue_refs,
+            )
+            self.assertEqual(
+                receipt["exit_dream_next_wake_governance_refs"],
+                expected_exit_dream_next_wake_governance_refs,
+            )
+            self.assertEqual(
+                receipt["exit_dream_next_wake_candidate_boundary"],
+                "reactivate_as_cue_material_not_fixed_language",
+            )
+            self.assertEqual(
+                receipt["exit_dream_next_wake_report_boundary"],
+                "structured_report_evidence_not_spoken_language",
+            )
+            for ref in expected_exit_dream_next_wake_ref_set:
+                self.assertIn(ref, receipt["shared_object_refs"])
             self.assertEqual(receipt["body_ref_set"], expected_body_refs)
             self.assertEqual(receipt["body_signal_ref_set"], expected_body_signal_refs)
             for ref in expected_body_signal_refs:
@@ -11377,6 +11546,22 @@ class PersistentDigitalLifeProcessTests(
                     True,
                     [
                         path.endswith("/" + ref)
+                        for path in receipt["input_hashes"]
+                    ],
+                )
+            for expected_suffix in [
+                "/runtime/state/memory/memory_retrieval_frame.json",
+                "/runtime/state/memory/relationship_memory.json",
+                "/runtime/state/memory/dialogue_memory_summary.json",
+                "/runtime/state/memory/engram_index.json",
+                "/runtime/state/self/autobiographical_stack.json",
+                "/runtime/state/life_state.json",
+                "/runtime/state/dream/exit_dream_consolidation_summary.json",
+            ]:
+                self.assertIn(
+                    True,
+                    [
+                        path.endswith(expected_suffix)
                         for path in receipt["input_hashes"]
                     ],
                 )
