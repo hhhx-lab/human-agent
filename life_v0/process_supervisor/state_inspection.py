@@ -43,7 +43,7 @@ def build_resident_state_inspection(
             reports_dir=reports_dir,
         )
     elif normalized == "context":
-        payload["context"] = _collect_files(
+        context = _collect_files(
             state_root,
             {
                 "life_context_frame": "terminal/life_context_frame.json",
@@ -53,6 +53,10 @@ def build_resident_state_inspection(
                 "dialogue_memory_summary": "memory/dialogue_memory_summary.json",
             },
         )
+        context["relation_context_summary"] = _collect_relation_context_summary(
+            context
+        )
+        payload["context"] = context
     elif normalized == "memory":
         memory = _collect_files(
             state_root,
@@ -246,7 +250,7 @@ def build_resident_state_inspection(
         )
         payload["personality"] = personality
     elif normalized == "ability":
-        payload["ability"] = _collect_files(
+        ability = _collect_files(
             state_root,
             {
                 "birth_readiness_rollup": (
@@ -261,8 +265,12 @@ def build_resident_state_inspection(
                 "v0_contract_file_index": "contracts/v0_contract_file_index.json",
             },
         )
+        ability["birth_readiness_summary"] = (
+            _collect_ability_birth_readiness_summary(ability)
+        )
+        payload["ability"] = ability
     elif normalized == "perception":
-        payload["perception"] = _collect_files(
+        perception = _collect_files(
             state_root,
             {
                 "visual_observation_frame": (
@@ -276,6 +284,10 @@ def build_resident_state_inspection(
                 "active_sampling_plan": "prediction/active_sampling_plan.json",
             },
         )
+        perception["world_contact_summary_view"] = (
+            _collect_perception_world_contact_summary(perception)
+        )
+        payload["perception"] = perception
     elif normalized == "proactive_voice":
         proactive_voice = _collect_files(
             state_root,
@@ -747,6 +759,255 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
         },
         "dream_boundary": (
             "dream_residue_wake_review_fact_gate_before_memory_or_action"
+        ),
+    }
+
+
+def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]:
+    life_context = _extract_compact_value(section.get("life_context_frame", {}))
+    relation_turn = _extract_compact_value(section.get("relation_turn_frame", {}))
+    language_percept = _extract_compact_value(section.get("language_percept", {}))
+    relationship_timeline = _extract_compact_value(
+        section.get("relationship_timeline", {})
+    )
+    dialogue_memory = _extract_compact_value(
+        section.get("dialogue_memory_summary", {})
+    )
+    relationship_state = _extract_nested_value(
+        relationship_timeline,
+        "relationship_state",
+    )
+    common_ground_states = relationship_timeline.get("common_ground_states")
+    first_common_ground = (
+        common_ground_states[0]
+        if isinstance(common_ground_states, list) and common_ground_states
+        else {}
+    )
+    first_common_ground = (
+        first_common_ground if isinstance(first_common_ground, dict) else {}
+    )
+    domain_presence = {
+        "life_context_frame": bool(life_context),
+        "relation_turn_frame": bool(relation_turn),
+        "language_percept": bool(language_percept),
+        "relationship_timeline": bool(relationship_timeline),
+        "dialogue_memory_summary": bool(dialogue_memory),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "relation_context_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "life_name": life_context.get("life_name"),
+        "context_mode": life_context.get("context_mode"),
+        "current_relation_subject_ref": life_context.get(
+            "current_relation_subject_ref"
+        ),
+        "active_context_refs": _list_refs(life_context.get("active_context_refs")),
+        "relation_turn_id": relation_turn.get("turn_id"),
+        "relation_scope": relation_turn.get("relation_scope"),
+        "turn_intent": relation_turn.get("turn_intent"),
+        "relation_subject_ref": relation_turn.get("relation_subject_ref"),
+        "external_utterance_digest_present": bool(
+            relation_turn.get("external_utterance_digest")
+        ),
+        "language_percept_mode": language_percept.get("percept_mode"),
+        "language_semantic_focus": language_percept.get("semantic_focus"),
+        "relationship_stage": _first_non_empty(
+            relationship_timeline.get("relationship_stage"),
+            relationship_state.get("relationship_stage"),
+        ),
+        "shared_terms": _list_refs(first_common_ground.get("shared_terms")),
+        "open_misalignment_count": _count_any(
+            first_common_ground.get("open_misalignments")
+        ),
+        "dialogue_episode_count": _count_any(
+            dialogue_memory.get("deduplicated_episode_summaries")
+        ),
+        "next_wake_cue_count": _count_any(dialogue_memory.get("next_wake_cues")),
+        "context_boundary": (
+            "context_state_view_not_relationship_turn_injection"
+        ),
+    }
+
+
+def _collect_ability_birth_readiness_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    readiness_rollup = _extract_compact_value(
+        section.get("birth_readiness_rollup", {})
+    )
+    stage_gate = _extract_compact_value(section.get("birth_readiness_stage_gate", {}))
+    live0_audit = _extract_compact_value(section.get("live0_acceptance_audit", {}))
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    life_target_status = readiness_rollup.get("life_target_status")
+    if not isinstance(life_target_status, dict):
+        life_target_status = {}
+    gate_status = stage_gate.get("gate_status")
+    if not isinstance(gate_status, dict):
+        gate_status = {}
+    criteria_summary = _extract_nested_value(live0_audit, "criteria_summary")
+    criteria = live0_audit.get("criteria")
+    if not isinstance(criteria, list):
+        criteria = []
+    domain_presence = {
+        "birth_readiness_rollup": bool(readiness_rollup),
+        "birth_readiness_stage_gate": bool(stage_gate),
+        "live0_acceptance_audit": bool(live0_audit),
+        "v0_contract_file_index": bool(contract_index),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    target_closed = sum(
+        1 for status in life_target_status.values() if status == "closed"
+    )
+    target_open = len(life_target_status) - target_closed
+    blocked_reasons = _list_refs(
+        readiness_rollup.get("blocked_reasons")
+        or stage_gate.get("blocked_reasons")
+        or live0_audit.get("blocked_reasons")
+    )
+    return {
+        "schema_version": "ability_birth_readiness_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "birth_readiness_overall_status": readiness_rollup.get("overall_status"),
+        "life_target_count": len(life_target_status),
+        "life_target_closed_count": target_closed,
+        "life_target_open_count": target_open,
+        "life_target_open_names": [
+            name
+            for name, status in life_target_status.items()
+            if status != "closed"
+        ][:12],
+        "stage_gate_decision": stage_gate.get("decision"),
+        "stage_effect": stage_gate.get("stage_effect"),
+        "gate_closed_count": sum(
+            1 for status in gate_status.values() if status == "closed"
+        ),
+        "gate_open_names": [
+            name for name, status in gate_status.items() if status != "closed"
+        ][:12],
+        "blocked_reasons": blocked_reasons,
+        "next_required_command": _first_non_empty(
+            stage_gate.get("next_required_command"),
+            live0_audit.get("next_required_command"),
+        ),
+        "queue_e_world_contact_handoff_status": _first_non_empty(
+            readiness_rollup.get("queue_e_world_contact_handoff_status"),
+            stage_gate.get("queue_e_world_contact_handoff_status"),
+        ),
+        "queue_e_world_contact_repair_hold_required": bool(
+            readiness_rollup.get("queue_e_world_contact_repair_hold_required")
+            or stage_gate.get("queue_e_world_contact_repair_hold_required")
+        ),
+        "queue_e_birth_repair_pressure_level": readiness_rollup.get(
+            "queue_e_birth_repair_pressure_level"
+        ),
+        "live0_acceptance_status": live0_audit.get("status"),
+        "live0_acceptance_closed": bool(
+            live0_audit.get("live0_acceptance_closed")
+        ),
+        "criteria_total": criteria_summary.get("criteria_total")
+        or _count_any(criteria),
+        "criteria_closed": criteria_summary.get("criteria_closed"),
+        "criteria_blocked": criteria_summary.get("criteria_blocked"),
+        "failed_criteria": _list_refs(criteria_summary.get("failed_criteria")),
+        "contract_count": contract_index.get("contract_count"),
+        "covered_contract_ref_count": _count_any(
+            contract_index.get("covered_contract_refs")
+        ),
+        "ability_boundary": (
+            "ability_summary_is_birth_evidence_view_not_completion_claim"
+        ),
+    }
+
+
+def _collect_perception_world_contact_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    visual_observation = _extract_compact_value(
+        section.get("visual_observation_frame", {})
+    )
+    world_contact = _extract_compact_value(section.get("world_contact_summary", {}))
+    belief_state = _extract_compact_value(section.get("belief_state_frame", {}))
+    prediction_workspace = _extract_compact_value(
+        section.get("prediction_workspace_frame", {})
+    )
+    active_sampling = _extract_compact_value(
+        section.get("active_sampling_plan", {})
+    )
+    workspace_contents = _extract_nested_value(
+        prediction_workspace,
+        "workspace_contents",
+    )
+    domain_presence = {
+        "visual_observation_frame": bool(visual_observation),
+        "world_contact_summary": bool(world_contact),
+        "belief_state_frame": bool(belief_state),
+        "prediction_workspace_frame": bool(prediction_workspace),
+        "active_sampling_plan": bool(active_sampling),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    confirmation_pending_ids = world_contact.get("confirmation_pending_ids")
+    return {
+        "schema_version": "perception_world_contact_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "observation_mode": visual_observation.get("observation_mode"),
+        "observed_surface_count": visual_observation.get(
+            "observed_surface_count"
+        ),
+        "focus_terms": _list_refs(visual_observation.get("focus_terms")),
+        "observation_source_ref_count": _count_any(
+            visual_observation.get("source_refs")
+        ),
+        "contact_mode": world_contact.get("contact_mode"),
+        "release_posture": world_contact.get("release_posture"),
+        "candidate_intent_count": world_contact.get("candidate_intent_count"),
+        "blocked_contact_count": world_contact.get("blocked_contact_count"),
+        "confirmation_pending_count": _count_any(confirmation_pending_ids),
+        "confirmation_pending_ids": _list_refs(confirmation_pending_ids),
+        "observation_route_mode": world_contact.get("observation_route_mode"),
+        "relationship_effects": _list_refs(world_contact.get("relationship_effects")),
+        "repair_obligation_ref_count": _count_any(
+            world_contact.get("repair_obligation_refs")
+        ),
+        "regret_pressure_ref_count": _count_any(
+            world_contact.get("regret_pressure_refs")
+        ),
+        "next_guard_ref_count": _count_any(world_contact.get("next_guard_refs")),
+        "belief_focus": belief_state.get("belief_focus"),
+        "prediction_focus": _first_non_empty(
+            workspace_contents.get("semantic_prediction_focus"),
+            prediction_workspace.get("semantic_prediction_focus"),
+            belief_state.get("belief_focus"),
+        ),
+        "candidate_explanation_count": _count_any(
+            workspace_contents.get("candidate_explanations")
+        )
+        or _count_any(prediction_workspace.get("candidate_explanations")),
+        "downstream_systems": _list_refs(
+            prediction_workspace.get("downstream_systems")
+        ),
+        "active_sampling_route": active_sampling.get("selected_route"),
+        "active_sampling_stage_effect": active_sampling.get("stage_effect"),
+        "active_sampling_target_count": _count_any(
+            active_sampling.get("sampling_targets")
+        ),
+        "perception_boundary": (
+            "perception_prediction_world_contact_view_not_tool_gateway"
         ),
     }
 

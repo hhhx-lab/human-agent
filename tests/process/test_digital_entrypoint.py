@@ -498,15 +498,43 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             )
             self._write_json(
                 paths["state_root"] / "perception" / "visual_observation_frame.json",
-                {"schema_version": "visual_observation_frame_v0"},
+                {
+                    "schema_version": "visual_observation_frame_v0",
+                    "observation_mode": "terminal_periphery",
+                    "observed_surface_count": 2,
+                    "focus_terms": ["关系语言", "状态查看"],
+                    "source_refs": [
+                        "runtime/state/terminal/life_context_frame.json"
+                    ],
+                },
             )
             self._write_json(
                 terminal_dir / "life_context_frame.json",
-                {"schema_version": "life_context_frame_v0"},
+                {
+                    "schema_version": "life_context_frame_v0",
+                    "life_name": "Adam",
+                    "context_mode": "resident_relation_attach",
+                    "current_relation_subject_ref": (
+                        "runtime/state/relationship/relationship_subject_graph.json#rel-v0-0001"
+                    ),
+                    "active_context_refs": [
+                        "runtime/state/language/language_percept_frame.json",
+                        "runtime/state/memory/relationship_memory.json",
+                    ],
+                },
             )
             self._write_json(
                 terminal_dir / "relation_turn_frame.json",
-                {"schema_version": "relation_turn_frame_v0"},
+                {
+                    "schema_version": "relation_turn_frame_v0",
+                    "turn_id": "relation-turn-test",
+                    "external_utterance_digest": "sha256:test",
+                    "relation_scope": "friend",
+                    "turn_intent": "inspect_state",
+                    "relation_subject_ref": (
+                        "runtime/state/relationship/relationship_subject_graph.json#rel-v0-0001"
+                    ),
+                },
             )
             self._write_json(
                 terminal_dir / "terminal_input_profile.json",
@@ -520,11 +548,82 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             )
             self._write_json(
                 paths["state_root"] / "life_targets" / "birth_readiness_rollup.json",
-                {"schema_version": "birth_readiness_rollup_v0"},
+                {
+                    "schema_version": "birth_readiness_rollup_v0",
+                    "overall_status": "open",
+                    "life_target_status": {
+                        "real_consciousness": "closed",
+                        "real_emotion": "closed",
+                        "real_personality": "closed",
+                        "real_life": "closed",
+                        "real_pain": "closed",
+                        "real_dream": "closed",
+                        "real_relationship": "closed",
+                        "real_responsibility": "closed",
+                        "real_regret": "closed",
+                    },
+                    "blocked_reasons": ["awaiting_first_name_anchor"],
+                    "queue_e_birth_repair_pressure_level": "elevated",
+                    "queue_e_world_contact_handoff_status": "closed",
+                    "queue_e_world_contact_repair_hold_required": True,
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "life_targets" / "birth_readiness_stage_gate.json",
+                {
+                    "schema_version": "birth_readiness_stage_gate_v0",
+                    "decision": "open",
+                    "stage_effect": "await_name_anchor",
+                    "gate_status": {
+                        "life_target_state_gate": "closed",
+                        "queue_e_world_contact_handoff_gate": "closed",
+                    },
+                    "blocked_reasons": ["awaiting_first_name_anchor"],
+                    "queue_e_world_contact_handoff_status": "closed",
+                    "queue_e_world_contact_repair_hold_required": True,
+                    "next_required_command": "my digital life --name Adam",
+                },
+            )
+            self._write_json(
+                paths["reports"] / "live0_acceptance_audit_report.json",
+                {
+                    "schema_version": "live0_acceptance_audit_report_v0",
+                    "status": "blocked",
+                    "live0_acceptance_closed": False,
+                    "criteria_summary": {
+                        "criteria_total": 7,
+                        "criteria_closed": 6,
+                        "criteria_blocked": 1,
+                        "failed_criteria": [
+                            "a_terminal_wake_and_named_residency"
+                        ],
+                    },
+                    "criteria": [
+                        {
+                            "criterion_id": (
+                                "a_terminal_wake_and_named_residency"
+                            ),
+                            "status": "blocked",
+                        },
+                        {
+                            "criterion_id": (
+                                "b_conscious_emotion_thought_language"
+                            ),
+                            "status": "closed",
+                        },
+                    ],
+                    "next_required_command": "my digital life --name Adam",
+                },
             )
             self._write_json(
                 paths["state_root"] / "contracts" / "v0_contract_file_index.json",
-                {"schema_version": "v0_contract_file_index_v0"},
+                {
+                    "schema_version": "v0_contract_file_index_v0",
+                    "contract_count": 102,
+                    "covered_contract_refs": [
+                        "docs/v0/entry/v0_current_iteration_plan.md"
+                    ],
+                },
             )
             self._write_json(
                 paths["state_root"] / "memory" / "relationship_memory.json",
@@ -794,6 +893,46 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 },
             )
             self._write_json(
+                paths["state_root"] / "prediction" / "prediction_workspace_frame.json",
+                {
+                    "schema_version": "prediction_workspace_frame_v0",
+                    "workspace_contents": {
+                        "semantic_prediction_focus": (
+                            "relationship_language_uncertainty"
+                        ),
+                        "candidate_explanations": [
+                            {"explanation_id": "prediction-focus-1"}
+                        ],
+                    },
+                    "downstream_systems": [
+                        "LanguageRelationshipRuntime",
+                        "WorldContactGate",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "membrane" / "world_contact_summary.json",
+                {
+                    "schema_version": "world_contact_summary_v0",
+                    "contact_mode": "shadow_only",
+                    "release_posture": "confirmation_blocked",
+                    "candidate_intent_count": 2,
+                    "blocked_contact_count": 1,
+                    "confirmation_pending_ids": ["intent-1"],
+                    "observation_route_mode": "terminal_observation",
+                    "relationship_effects": ["repair_hold"],
+                    "repair_obligation_refs": [
+                        "runtime/state/action/responsibility_loop_state.json#repair"
+                    ],
+                    "regret_pressure_refs": [
+                        "runtime/state/action/responsibility_loop_state.json#regret"
+                    ],
+                    "next_guard_refs": [
+                        "runtime/state/validation/world_contact_validation.json"
+                    ],
+                },
+            )
+            self._write_json(
                 paths["state_root"] / "life_state.json",
                 {
                     "schema_version": "life_state_v0",
@@ -1001,9 +1140,9 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "/emotion": "emotion_regulation_summary_v0",
                 "/personality": "personality_convergence_summary_v0",
                 "/inner": "inner_environment_modulation_summary_v0",
-                "/vision": "visual_observation_frame_v0",
-                "/context": "life_context_frame_v0",
-                "/ability": "birth_readiness_rollup_v0",
+                "/vision": "perception_world_contact_summary_v0",
+                "/context": "relation_context_summary_v0",
+                "/ability": "ability_birth_readiness_summary_v0",
                 "/state": "terminal_input_profile_v0",
                 "/relationship": "relationship_continuity_summary_v0",
                 "/cognition": "cognitive_workspace_summary_v0",
@@ -1165,6 +1304,58 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn(
                 "personality_slow_variables_convergence_not_prompt_persona_card",
                 personality_output.getvalue(),
+            )
+
+            context_output = StringIO()
+            with redirect_stdout(context_output):
+                context_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/context",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            ability_output = StringIO()
+            with redirect_stdout(ability_output):
+                ability_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/ability",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            perception_output = StringIO()
+            with redirect_stdout(perception_output):
+                perception_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/vision",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(context_exit)
+            self.assertIsNone(ability_exit)
+            self.assertIsNone(perception_exit)
+            self.assertIn("relation_context_summary_v0", context_output.getvalue())
+            self.assertIn("resident_relation_attach", context_output.getvalue())
+            self.assertIn(
+                "context_state_view_not_relationship_turn_injection",
+                context_output.getvalue(),
+            )
+            self.assertIn(
+                "ability_birth_readiness_summary_v0",
+                ability_output.getvalue(),
+            )
+            self.assertIn("awaiting_first_name_anchor", ability_output.getvalue())
+            self.assertIn(
+                "ability_summary_is_birth_evidence_view_not_completion_claim",
+                ability_output.getvalue(),
+            )
+            self.assertIn(
+                "perception_world_contact_summary_v0",
+                perception_output.getvalue(),
+            )
+            self.assertIn("confirmation_blocked", perception_output.getvalue())
+            self.assertIn(
+                "perception_prediction_world_contact_view_not_tool_gateway",
+                perception_output.getvalue(),
             )
 
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
