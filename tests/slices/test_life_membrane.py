@@ -316,6 +316,37 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertTrue(go_nogo["responsibility_gate_refs"])
         self.assertTrue(go_nogo["fatigue_inhibition_refs"])
         self.assertIn("runtime/state/direction/value_orientation.json", go_nogo["life_constraint_refs"])
+        self.assertEqual(
+            go_nogo["queue_e_repair_modulation_profile"]["schema_version"],
+            "queue_e_repair_modulation_profile_v0",
+        )
+        self.assertEqual(go_nogo["queue_e_repair_modulation_profile"]["pressure_level"], "elevated")
+        self.assertEqual(go_nogo["queue_e_repair_modulation_profile"]["attention_target"], "regret_pressure")
+        self.assertEqual(
+            go_nogo["future_no_go_profile"]["schema_version"],
+            "future_no_go_profile_v0",
+        )
+        self.assertTrue(go_nogo["future_no_go_profile"]["repair_hold_required"])
+        self.assertIn(
+            "prefer_repair_before_external_release",
+            go_nogo["future_no_go_profile"]["next_action_biases"],
+        )
+        self.assertIn(
+            "raise_confirmation_threshold",
+            go_nogo["future_no_go_profile"]["next_action_biases"],
+        )
+        self.assertIn(
+            "runtime/state/action/responsibility_loop_state.json",
+            go_nogo["future_no_go_profile"]["repair_governance_refs"],
+        )
+        self.assertIn(
+            "runtime/state/membrane/world_contact_summary.json",
+            go_nogo["future_no_go_profile"]["repair_governance_refs"],
+        )
+        self.assertIn(
+            "runtime/reports/latest/pain_regret_repair_report.json",
+            go_nogo["future_no_go_profile"]["repair_governance_refs"],
+        )
 
         self.assertEqual(world_contact["schema_version"], "world_contact_gate_state_v0")
         self.assertEqual(world_contact["contact_mode"], "shadow_only")

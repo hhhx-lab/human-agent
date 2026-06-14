@@ -238,11 +238,27 @@ Queue E 必须接到这些现有器官上：
 - `responsibility_gate_refs`
 - `fatigue_inhibition_refs`
 - `life_constraint_refs`
+- `queue_e_repair_modulation_profile`
+- `future_no_go_profile`
 - `source_doc_refs`
 
 ### 当前补厚口径
 
 `go_nogo.py` 必须把 `action_candidate_set.json#life_constraint_profile` 带入决策证据。若语言表达、关系修复或身体压力形成 `guarded_repair_contact`，go/no-go 需要进入延后/审查姿态，而不是把它误当成普通可释放动作。
+
+最新补厚口径继续要求 `go_nogo.py` 吃到 Queue E 原始修复画像。`run_life_membrane(...)` 在 `ResponsibilityLoopState`、`WorldContactSummary` 和 `PainRegretRepairReport` 生成后，必须用 `build_queue_e_repair_modulation_profile(...)` 合成 `queue_e_repair_modulation_profile_v0`，再回写到 `go_nogo_state.json#queue_e_repair_modulation_profile` 与 `go_nogo_state.json#future_no_go_profile`。
+
+`future_no_go_profile_v0` 至少要表达：
+
+- `repair_hold_required`：修复跟进、后悔压力或修复义务是否要求下一轮释放前 hold。
+- `future_release_posture`：下一轮世界接触应先修复、先确认，还是只维持普通 shadow review。
+- `confirmation_threshold_bias`：责任压力是否提高确认阈值。
+- `next_action_biases`：例如 `prefer_repair_before_external_release`、`raise_confirmation_threshold`。
+- `blocked_future_routes`：修复未闭合时不得直接走的未来释放路线。
+- `allowed_repair_routes`：允许进入解释、边界更新、后续 probe 等修复路线。
+- `repair_governance_refs`：必须回链 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 和 repair/regret refs。
+
+这一步的工程意义是：后悔和责任不是当轮道歉或报告字段，而是下一轮行动膜的抑制偏置。它仍然只写结构化 state，不把内部生命信号外显成固定语句。
 
 ## C. `life_v0/membrane/world_contact_gate.py` 已落第一轮，继续补厚
 

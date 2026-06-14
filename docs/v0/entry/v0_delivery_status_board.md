@@ -398,6 +398,8 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 
 当前 ITR-06 第一段又把原始 `queue_e_repair_modulation_profile_v0` 从语言/关系调制链继续推到常驻链尾：`process_report.py` 会重新读取 `responsibility_loop_state.json`、`world_contact_summary.json` 和 `pain_regret_repair_report.json`，写出 `queue_e_repair_modulation_profile`、pressure、attention target、repair/regret count 与 `queue_e_repair_ref_set`，并让 process receipt 的 shared refs 覆盖同一组原始修复证据。下一次 `background_continuity.py` 会恢复为 `background_queue_e_repair_*`；`idle_strategy.py` 即使本轮没有新的责任输入，也会从背景字段恢复当前 `queue_e_repair_*`；`background_lineage_state.py` 会把它压成 `resident_background_lineage_state.queue_e_repair_presence`，并允许下一轮 background continuity 从 nested presence 反向恢复。状态板因此把这一格视为“责任、痛苦、后悔和修复的原始调制画像已经跨过关闭、恢复、等待治理和背景谱系”，不是只停在 S07 语言对象或 S08/S09 出生修复 profile。
 
+当前 ITR-06 第二段继续把同一份原始修复画像回灌到行动膜本体：`life_v0/membrane/go_nogo.py` 现在写出 `go_nogo_state.json#queue_e_repair_modulation_profile` 与 `go_nogo_state.json#future_no_go_profile`；`run_life_membrane(...)` 在生成 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 后，会用 `build_queue_e_repair_modulation_profile(...)` 回填未来 NoGo 剖面，让 `repair_hold_required`、`confirmation_threshold_bias`、`prefer_repair_before_external_release`、`raise_confirmation_threshold` 和三份原始责任证据 refs 一起进入下一轮行动释放前的抑制偏置。状态板因此把这一格视为“责任、痛苦、后悔和修复已经开始改变未来行动阈值”，不是只保存为后台 lineage 或报告摘要。
+
 ## 当前链尾开工包
 
 最新链尾已经新增 `life_v0/live0_audit/` 和 `life-v0 audit-live0`。这一步把 Stage 6 七项最终验收从人工清单压成可执行 gate，输出 `runtime/reports/latest/live0_acceptance_audit_report.json`、`runtime/reports/latest/live0_acceptance_audit_digest.json` 和 `runtime/receipts/live0_acceptance_audit_<run_id>.json`。当前主 runtime 审计已经证明 b/c/d/f 以及大部分 g 项有证据，剩余硬阻断集中在 `a_terminal_wake_and_named_residency`：正式命名锁和“名字本身作为终端命令”的 manifest 还必须落地，live0 才能收束。

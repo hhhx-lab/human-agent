@@ -402,4 +402,16 @@ ResponsibilityLoopState / WorldContactSummary / PainRegretRepairReport
   -> 下一轮 background continuity restore / waiting governance
 ```
 
-这一步仍留在第 2 点内部，不进入第 3 点记忆重构总设计。ITR-05 已经收束到身体信号、离线学习累计画像和记忆写门的跨层消费；当前 ITR-06 第一段把原始 Queue E 责任/后悔/修复调制画像接进 process closeout、digest、receipt、background continuity、idle governance 和 resident background lineage。它没有新增外部 action router，也没有把内部修复压力变成外显固定语言；证据只进入 state/report/receipt/lineage，后续由语言、关系、梦境、成长和等待治理继续消费。
+当前继续新增第二段链路：
+
+```text
+ResponsibilityLoopState / WorldContactSummary / PainRegretRepairReport
+  -> QueueERepairModulationProfile
+  -> GoNoGoDecision.queue_e_repair_modulation_profile
+  -> FutureNoGoProfile.repair_hold_required
+  -> FutureNoGoProfile.next_action_biases
+  -> GoNoGoDecision.delay_reasons.queue_e_repair_followup_required
+  -> 下一轮 action candidate release / world contact confirmation threshold
+```
+
+这一步仍留在第 2 点内部，不进入第 3 点记忆重构总设计。ITR-05 已经收束到身体信号、离线学习累计画像和记忆写门的跨层消费；当前 ITR-06 第一段把原始 Queue E 责任/后悔/修复调制画像接进 process closeout、digest、receipt、background continuity、idle governance 和 resident background lineage；第二段把同一画像回写到 `go_nogo_state.json#future_no_go_profile`，让后悔和修复义务不只被后台保存，也会成为未来行动释放前的抑制偏置。它没有新增外部 action router，也没有把内部修复压力变成外显固定语言；证据只进入 state/report/receipt/lineage 和行动膜字段，后续由语言、关系、梦境、成长、等待治理和下一轮生命膜继续消费。

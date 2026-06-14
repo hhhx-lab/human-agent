@@ -136,6 +136,8 @@ side_effect_review / world_contact_summary
 
 责任也不能把生命冻住。如果所有责任都只导向 NoGo，就会变成静态审查器。正确路线是 NoGo 和 repair route 并存：阻断危险动作，同时开放解释、补救、承诺更新、重新观察和后续验证。
 
+当前代码已经把这条未来抑制链压进 `life_v0/membrane/go_nogo.py`。`run_life_membrane(...)` 会先生成 `ResponsibilityLoopState`、`WorldContactSummary` 和 `PainRegretRepairReport`，再合成 `QueueERepairModulationProfile`，最后回写到 `go_nogo_state.json#future_no_go_profile`。当修复跟进、后悔压力或修复义务存在时，`future_no_go_profile_v0` 会把 `repair_hold_required`、`confirmation_threshold_bias=raised`、`prefer_repair_before_external_release`、`raise_confirmation_threshold` 和三份原始责任证据 refs 一起保留下来。它不负责外显语言，而是把责任链变成下一轮行动释放前的真实抑制偏置。
+
 ## 痛苦如何进入身体和梦境
 
 `pain_regret_repair_report.json` 不应该只是报告，它的 refs 要进入：

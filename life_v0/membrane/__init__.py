@@ -10,7 +10,11 @@ from typing import Any
 from .action_intent_bridge import build_action_intent_queue, check_action_intent_queue
 from .candidate_arena import build_action_candidate_set, check_action_candidate_set
 from .confirmation_binding import build_confirmation_binding, check_confirmation_binding
-from .go_nogo import build_go_nogo_decision, check_go_nogo_decision
+from .go_nogo import (
+    attach_queue_e_future_no_go_profile,
+    build_go_nogo_decision,
+    check_go_nogo_decision,
+)
 from .observation_truth_gate import build_observation_truth_gate, check_observation_truth_gate
 from .periphery_normalizer import (
     build_periphery_normalization_trace,
@@ -27,6 +31,7 @@ from .world_contact_summary import (
     check_world_contact_summary,
 )
 from .world_contact_gate import build_world_contact_gate_state, check_world_contact_gate_state
+from .queue_e_signals import build_queue_e_repair_modulation_profile
 from life_v0.direction import LIFE_TARGETS, PROHIBITED_REGRESSIONS
 
 
@@ -319,6 +324,17 @@ def run_life_membrane(
         generated_at=generated_at,
         world_contact_summary=world_contact_summary,
         responsibility_loop=responsibility_loop,
+    )
+    queue_e_repair_modulation_profile = build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
+    go_nogo = attach_queue_e_future_no_go_profile(
+        go_nogo_decision=go_nogo,
+        queue_e_repair_modulation_profile=queue_e_repair_modulation_profile,
+        run_id=run_id,
+        generated_at=generated_at,
     )
     precheck = _build_birth_readiness_precheck(run_id, generated_at)
     preflight = _build_first_activation_preflight(run_id, generated_at)
