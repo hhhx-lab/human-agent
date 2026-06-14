@@ -426,9 +426,34 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     "schema_version": "signal_media_runtime_v0",
                     "modulation_vector": {
                         "arousal": "awake",
+                        "arousal_gain": 0.62,
                         "precision": "relationship_high",
                         "repair_drive": "active",
                         "language_precision": "careful",
+                        "relationship_pressure": "elevated",
+                        "expected_uncertainty": 0.22,
+                        "unexpected_uncertainty": 0.31,
+                        "fatigue_load": "managed_low_noise",
+                        "stress_pulse": "repair_guarded",
+                        "allostatic_load": "guarded_maintenance",
+                        "heartbeat_cadence_driver": "repair_weighted_waiting",
+                    },
+                    "precision_policy": {
+                        "policy_mode": "repair_confirmation_precision",
+                        "language_precision": "careful",
+                        "relationship_precision": "high",
+                        "action_precision": "shadow_before_release",
+                        "memory_gate_mode": "repair_evidence_first",
+                        "queue_e_attention_target": "regret_pressure",
+                    },
+                    "inhibition_profile": {
+                        "blocked_release_surfaces": [
+                            "world_contact_release_until_repair_review"
+                        ],
+                        "blocked_release_modes": [
+                            "external_release_without_repair_review"
+                        ],
+                        "plasticity_brake": "high_pressure_shadow_first",
                     },
                     "body_signal_profile": {
                         "schema_version": "body_signal_modulation_profile_v0",
@@ -440,7 +465,14 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                         "offline_learning_integration_mode": (
                             "relationship_offline_reconsolidation_required"
                         ),
+                        "repair_drive": "active",
+                        "unexpected_uncertainty": 0.31,
                     },
+                    "bus_edge_refs": [
+                        "runtime/state/prediction/active_sampling_plan.json",
+                        "runtime/state/memory/memory_write_gate.json",
+                        "runtime/state/terminal/idle_strategy_state.json",
+                    ],
                 },
             )
             self._write_json(
@@ -468,6 +500,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     "schema_version": "prediction_error_field_v0",
                     "error_events": ["language_style_mismatch"],
                     "error_count": 1,
+                    "precision_requests": ["relationship_repair_confirmation"],
                 },
             )
             self._write_json(
@@ -477,6 +510,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     "selected_route": "clarify",
                     "stage_effect": "semantic_repair_probe",
                     "sampling_targets": ["relationship_language_style"],
+                    "precision_policy_mode": "repair_confirmation_precision",
                 },
             )
             self._write_json(
@@ -602,6 +636,31 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 },
             )
             self._write_json(
+                paths["state_root"] / "language" / "expression_monitor_state.json",
+                {
+                    "schema_version": "expression_monitor_state_v0",
+                    "monitor_status": "repair_precision_active",
+                    "language_precision": "careful",
+                    "release_caution": "confirm_before_release",
+                    "signal_media_ref": (
+                        "runtime/state/signal/signal_media_runtime.json"
+                    ),
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "language" / "expression_plan.json",
+                {
+                    "schema_version": "expression_plan_v0",
+                    "semantic_goal": "relationship_repair_clarification",
+                    "language_precision": "careful",
+                    "release_caution_level": "guarded",
+                    "expression_tempo_mode": "guarded_deliberate",
+                    "body_signal_refs": [
+                        "runtime/state/signal/signal_media_runtime.json#body_signal_profile"
+                    ],
+                },
+            )
+            self._write_json(
                 terminal_dir / "terminal_input_profile.json",
                 {
                     "schema_version": "terminal_input_profile_v0",
@@ -645,17 +704,20 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 terminal_dir / "idle_strategy_state.json",
                 {
                     "schema_version": "idle_strategy_state_v0",
-                    "waiting_posture": "relationship_available",
+                    "waiting_posture": "repair_weighted_waiting",
                     "next_idle_action": (
                         "refresh_waiting_heartbeat_before_next_external_turn"
                     ),
                     "heartbeat_interval_ms": 5000,
                     "governance_attention_target": (
-                        "relationship_language_continuity"
+                        "body_signal_memory_gate"
                     ),
                     "governance_attention_reason": (
-                        "resident_waiting_relation_context"
+                        "repair_drive_active"
                     ),
+                    "body_signal_write_bias": "repair_evidence_first",
+                    "body_signal_repair_drive": "active",
+                    "body_signal_unexpected_uncertainty": 0.31,
                 },
             )
             self._write_json(
@@ -1662,6 +1724,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "/成长": "growth_self_modification_summary_v0",
                 "/personality": "personality_convergence_summary_v0",
                 "/inner": "inner_environment_modulation_summary_v0",
+                "/signal": "signal_modulation_consumption_summary_v0",
+                "/调质": "signal_modulation_consumption_summary_v0",
                 "/vision": "perception_world_contact_summary_v0",
                 "/context": "relation_context_summary_v0",
                 "/ability": "ability_birth_readiness_summary_v0",
@@ -1732,6 +1796,26 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 inner_output.getvalue(),
             )
             self.assertIn("guarded_deliberate", inner_output.getvalue())
+
+            signal_output = StringIO()
+            with redirect_stdout(signal_output):
+                signal_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/调质",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(signal_exit)
+            signal_rendered = signal_output.getvalue()
+            self.assertIn("signal_modulation_consumption_summary_v0", signal_rendered)
+            self.assertIn("repair_confirmation_precision", signal_rendered)
+            self.assertIn("repair_evidence_first", signal_rendered)
+            self.assertIn("repair_weighted_waiting", signal_rendered)
+            self.assertIn("world_contact_release_until_repair_review", signal_rendered)
+            self.assertIn(
+                "signal_modulation_state_view_not_spoken_life_signal_or_if_else_script",
+                signal_rendered,
+            )
 
             memory_output = StringIO()
             with redirect_stdout(memory_output):

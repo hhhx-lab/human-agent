@@ -14,6 +14,7 @@ STATE_INSPECTION_CATEGORIES = {
     "body",
     "emotion",
     "inner_environment",
+    "signal",
     "relationship",
     "responsibility",
     "language",
@@ -205,6 +206,47 @@ def build_resident_state_inspection(
             _collect_inner_environment_modulation_summary(inner_environment)
         )
         payload["inner_environment"] = inner_environment
+    elif normalized == "signal":
+        signal = _collect_files(
+            state_root,
+            {
+                "signal_media_runtime": "signal/signal_media_runtime.json",
+                "core_affect_vector": "body/core_affect_vector.json",
+                "need_state_vector": "body/need_state_vector.json",
+                "body_resource_budget": "body/body_resource_budget.json",
+                "prediction_error_field": "prediction/prediction_error_field.json",
+                "active_sampling_plan": "prediction/active_sampling_plan.json",
+                "prediction_workspace_frame": (
+                    "prediction/prediction_workspace_frame.json"
+                ),
+                "expression_monitor": "language/expression_monitor_state.json",
+                "expression_plan": "language/expression_plan.json",
+                "memory_write_gate": "memory/memory_write_gate.json",
+                "idle_strategy": "terminal/idle_strategy_state.json",
+                "queue_e_birth_repair_profile": (
+                    "life_targets/queue_e_birth_repair_profile.json"
+                ),
+                "responsibility_loop_state": (
+                    "action/responsibility_loop_state.json"
+                ),
+                "world_contact_gate_state": (
+                    "action/world_contact_gate_state.json"
+                ),
+                "pain_regret_repair_report": (
+                    "../reports/latest/pain_regret_repair_report.json"
+                ),
+                "resident_autonomous_activity": (
+                    "terminal/resident_autonomous_activity_state.json"
+                ),
+                "waiting_heartbeat": (
+                    "../reports/latest/digital_life_waiting_heartbeat.json"
+                ),
+            },
+        )
+        signal["modulation_consumption_summary"] = (
+            _collect_signal_modulation_consumption_summary(signal)
+        )
+        payload["signal"] = signal
     elif normalized == "relationship":
         relationship = _collect_files(
             state_root,
@@ -1594,6 +1636,263 @@ def _collect_inner_environment_modulation_summary(
     }
 
 
+def _collect_signal_modulation_consumption_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
+    core_affect = _extract_compact_value(section.get("core_affect_vector", {}))
+    need_state = _extract_compact_value(section.get("need_state_vector", {}))
+    body_budget = _extract_compact_value(section.get("body_resource_budget", {}))
+    prediction_error = _extract_compact_value(
+        section.get("prediction_error_field", {})
+    )
+    active_sampling = _extract_compact_value(
+        section.get("active_sampling_plan", {})
+    )
+    prediction_workspace = _extract_compact_value(
+        section.get("prediction_workspace_frame", {})
+    )
+    expression_monitor = _extract_compact_value(
+        section.get("expression_monitor", {})
+    )
+    expression_plan = _extract_compact_value(section.get("expression_plan", {}))
+    memory_write_gate = _extract_compact_value(
+        section.get("memory_write_gate", {})
+    )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy", {}))
+    birth_repair_profile = _extract_compact_value(
+        section.get("queue_e_birth_repair_profile", {})
+    )
+    responsibility_loop = _extract_compact_value(
+        section.get("responsibility_loop_state", {})
+    )
+    world_contact_gate = _extract_compact_value(
+        section.get("world_contact_gate_state", {})
+    )
+    pain_report = _extract_compact_value(
+        section.get("pain_regret_repair_report", {})
+    )
+    autonomous_activity = _extract_compact_value(
+        section.get("resident_autonomous_activity", {})
+    )
+    waiting_heartbeat = _extract_compact_value(
+        section.get("waiting_heartbeat", {})
+    )
+    modulation_vector = _extract_nested_value(signal_media, "modulation_vector")
+    body_signal_profile = _extract_nested_value(
+        signal_media,
+        "body_signal_profile",
+    )
+    precision_policy = _extract_nested_value(signal_media, "precision_policy")
+    inhibition_profile = _extract_nested_value(signal_media, "inhibition_profile")
+    maintenance_pressure = _extract_nested_value(
+        body_budget,
+        "maintenance_pressure",
+    )
+    fatigue_state = _extract_nested_value(body_budget, "fatigue_state")
+    workspace_contents = _extract_nested_value(
+        prediction_workspace,
+        "workspace_contents",
+    )
+    body_signal_write_modulation = _extract_nested_value(
+        memory_write_gate,
+        "body_signal_write_modulation",
+    )
+    regret_candidates = responsibility_loop.get("regret_pressure_candidates")
+    if not isinstance(regret_candidates, list):
+        regret_candidates = []
+    repair_candidates = responsibility_loop.get("repair_desire_candidates")
+    if not isinstance(repair_candidates, list):
+        repair_candidates = []
+    domain_presence = {
+        "signal_media_runtime": bool(signal_media),
+        "body_affect": bool(core_affect or need_state or body_budget),
+        "prediction_error": bool(prediction_error),
+        "active_sampling": bool(active_sampling),
+        "prediction_workspace": bool(prediction_workspace),
+        "language_expression": bool(expression_monitor or expression_plan),
+        "memory_write_gate": bool(memory_write_gate),
+        "idle_waiting": bool(idle_strategy or waiting_heartbeat),
+        "responsibility_repair": bool(
+            birth_repair_profile
+            or responsibility_loop
+            or world_contact_gate
+            or pain_report
+        ),
+        "resident_autonomous_activity": bool(autonomous_activity),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "signal_modulation_consumption_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "modulation_vector": _tier_refs(
+            modulation_vector,
+            [
+                "arousal",
+                "arousal_gain",
+                "precision",
+                "language_precision",
+                "inhibition",
+                "repair_drive",
+                "relationship_pressure",
+                "expected_uncertainty",
+                "unexpected_uncertainty",
+                "fatigue_load",
+                "stress_pulse",
+                "allostatic_load",
+                "heartbeat_cadence_driver",
+            ],
+        ),
+        "precision_policy": _tier_refs(
+            precision_policy,
+            [
+                "policy_mode",
+                "language_precision",
+                "relationship_precision",
+                "action_precision",
+                "memory_gate_mode",
+                "queue_e_attention_target",
+            ],
+        ),
+        "inhibition_profile": _tier_refs(
+            inhibition_profile,
+            [
+                "blocked_release_surfaces",
+                "blocked_release_modes",
+                "plasticity_brake",
+                "world_contact_release",
+                "growth_window",
+            ],
+        ),
+        "body_signal_profile": _tier_refs(
+            body_signal_profile,
+            [
+                "memory_write_bias",
+                "dream_pressure_bias",
+                "language_tempo_bias",
+                "body_signal_strength",
+                "offline_learning_pressure_level",
+                "offline_learning_integration_mode",
+                "repair_drive",
+                "unexpected_uncertainty",
+            ],
+        ),
+        "body_modulation_sources": {
+            "core_arousal": core_affect.get("arousal"),
+            "pain_pressure": core_affect.get("pain_pressure"),
+            "relationship_tension": core_affect.get("relationship_tension"),
+            "need_repair_drive": need_state.get("repair_drive"),
+            "maintenance_repair_drive": maintenance_pressure.get("repair_drive"),
+            "fatigue_level": fatigue_state.get("level"),
+        },
+        "prediction_consumption": {
+            "error_count": _first_non_empty(
+                prediction_error.get("error_count"),
+                _count_any(prediction_error.get("error_events")),
+            ),
+            "error_events": _list_refs(prediction_error.get("error_events")),
+            "selected_route": active_sampling.get("selected_route"),
+            "stage_effect": active_sampling.get("stage_effect"),
+            "sampling_targets": _list_refs(
+                active_sampling.get("sampling_targets")
+            ),
+            "workspace_focus": _first_non_empty(
+                prediction_workspace.get("semantic_prediction_focus"),
+                workspace_contents.get("semantic_prediction_focus"),
+                prediction_workspace.get("belief_focus"),
+            ),
+        },
+        "language_consumption": {
+            "expression_monitor_status": expression_monitor.get(
+                "monitor_status"
+            ),
+            "language_precision": _first_non_empty(
+                expression_monitor.get("language_precision"),
+                expression_plan.get("language_precision"),
+                modulation_vector.get("language_precision"),
+            ),
+            "release_caution": _first_non_empty(
+                expression_plan.get("release_caution"),
+                expression_plan.get("release_caution_level"),
+                expression_monitor.get("release_caution"),
+            ),
+            "expression_tempo_mode": _first_non_empty(
+                expression_plan.get("expression_tempo_mode"),
+                body_signal_profile.get("language_tempo_bias"),
+            ),
+        },
+        "memory_gate_consumption": {
+            "stage_policy": memory_write_gate.get("stage_policy"),
+            "write_bias": _first_non_empty(
+                body_signal_write_modulation.get("write_bias"),
+                body_signal_profile.get("memory_write_bias"),
+                idle_strategy.get("body_signal_write_bias"),
+            ),
+            "candidate_gate_adjustments": _list_refs(
+                body_signal_write_modulation.get("candidate_gate_adjustments")
+            ),
+        },
+        "idle_waiting_consumption": {
+            "waiting_posture": _first_non_empty(
+                idle_strategy.get("waiting_posture"),
+                waiting_heartbeat.get("waiting_mode"),
+            ),
+            "governance_attention_target": idle_strategy.get(
+                "governance_attention_target"
+            ),
+            "governance_attention_reason": idle_strategy.get(
+                "governance_attention_reason"
+            ),
+            "next_idle_action": idle_strategy.get("next_idle_action"),
+            "heartbeat_interval_ms": idle_strategy.get("heartbeat_interval_ms"),
+            "heartbeat_counter": waiting_heartbeat.get("heartbeat_counter"),
+        },
+        "responsibility_repair_consumption": {
+            "queue_e_pressure_level": birth_repair_profile.get("pressure_level"),
+            "queue_e_attention_target": birth_repair_profile.get(
+                "attention_target"
+            ),
+            "queue_e_ref_count": _count_any(birth_repair_profile.get("ref_set")),
+            "regret_pressure_count": _first_non_empty(
+                pain_report.get("regret_pressure_count"),
+                _count_any(regret_candidates),
+            ),
+            "repair_desire_count": _first_non_empty(
+                pain_report.get("repair_desire_count"),
+                _count_any(repair_candidates),
+            ),
+            "repair_hold_required": bool(
+                _first_non_empty(
+                    world_contact_gate.get("repair_hold_required"),
+                    birth_repair_profile.get("repair_followup_required"),
+                    pain_report.get("repair_followup_required"),
+                )
+            ),
+            "confirmation_threshold_bias": world_contact_gate.get(
+                "confirmation_threshold_bias"
+            ),
+            "blocked_release_surfaces": _list_refs(
+                inhibition_profile.get("blocked_release_surfaces")
+                or inhibition_profile.get("blocked_release_modes")
+                or world_contact_gate.get("blocked_future_routes")
+            ),
+        },
+        "resident_activity_consumption": {
+            "last_activity_kind": autonomous_activity.get("last_activity_kind"),
+            "activity_count": autonomous_activity.get("activity_count"),
+            "cycle_phase_index": autonomous_activity.get("cycle_phase_index"),
+        },
+        "signal_boundary": (
+            "signal_modulation_state_view_not_spoken_life_signal_or_if_else_script"
+        ),
+    }
+
+
 def _collect_language_generation_consumption_summary(
     section: dict[str, Any]
 ) -> dict[str, Any]:
@@ -2811,6 +3110,11 @@ def _normalize_category(category: str) -> str:
         "inner": "inner_environment",
         "homeostasis": "inner_environment",
         "内环境": "inner_environment",
+        "调质": "signal",
+        "信号": "signal",
+        "信号介质": "signal",
+        "modulation": "signal",
+        "neuromodulation": "signal",
         "关系": "relationship",
         "责任": "responsibility",
         "痛苦": "responsibility",
