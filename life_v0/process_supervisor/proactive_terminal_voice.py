@@ -120,10 +120,17 @@ def write_resident_proactive_terminal_event(
     sequence = _jsonl_count(events_path) + 1
     written = dict(event)
     written["sequence"] = sequence
+    release_profile = _release_profile(written)
+    written.update(release_profile)
     _append_jsonl(events_path, written)
+    natural_language_release_count = _jsonl_release_count(events_path)
     state = {
         "schema_version": "resident_terminal_proactive_state_v0",
-        "status": "held_internal",
+        "status": release_profile["status"],
+        "last_release_scope": release_profile["release_scope"],
+        "last_natural_language_released": release_profile[
+            "natural_language_released"
+        ],
         "last_sequence": sequence,
         "last_generated_at": written.get("generated_at"),
         "last_focus": written.get("focus"),
@@ -135,12 +142,36 @@ def write_resident_proactive_terminal_event(
         "last_model_expression_status": written.get("model_expression_status"),
         "last_model_expression_state_ref": written.get("model_expression_state_ref"),
         "last_model_expression_report_ref": written.get("model_expression_report_ref"),
+        "last_post_expression_gate_status": written.get("post_expression_gate_status"),
         "last_composition_fingerprint": written.get("composition_fingerprint"),
-        "release_count": sequence,
+        "event_count": sequence,
+        "release_count": natural_language_release_count,
         "resident_terminal_proactive_events_ref": PROACTIVE_TERMINAL_EVENTS_REF,
     }
     _write_json(terminal_dir / "resident_terminal_proactive_state.json", state)
     return written
+
+
+def _release_profile(event: dict[str, Any]) -> dict[str, Any]:
+    utterance = str(event.get("utterance") or "").strip()
+    model_status = str(event.get("model_expression_status") or "")
+    gate_status = str(event.get("post_expression_gate_status") or "")
+    released = bool(
+        utterance
+        and model_status == "model_expression_applied"
+        and gate_status == "accepted"
+    )
+    if released:
+        return {
+            "status": "released_model_expression",
+            "release_scope": "open_terminal_idle_model_expression",
+            "natural_language_released": True,
+        }
+    return {
+        "status": "held_internal",
+        "release_scope": "open_terminal_idle_hidden",
+        "natural_language_released": False,
+    }
 
 
 def _memory_profile(
@@ -528,6 +559,22 @@ def _jsonl_count(path: Path) -> int:
     if not path.exists():
         return 0
     return len([line for line in path.read_text(encoding="utf-8").splitlines() if line])
+
+
+def _jsonl_release_count(path: Path) -> int:
+    if not path.exists():
+        return 0
+    count = 0
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            payload = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(payload, dict) and payload.get("natural_language_released") is True:
+            count += 1
+    return count
 
 
 def _string_list(value: Any) -> list[str]:

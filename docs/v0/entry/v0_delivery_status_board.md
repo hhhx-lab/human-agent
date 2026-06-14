@@ -414,6 +414,8 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 
 最新链尾已经新增 `life_v0/live0_audit/` 和 `life-v0 audit-live0`。这一步把 Stage 6 七项最终验收从人工清单压成可执行 gate，输出 `runtime/reports/latest/live0_acceptance_audit_report.json`、`runtime/reports/latest/live0_acceptance_audit_digest.json` 和 `runtime/receipts/live0_acceptance_audit_<run_id>.json`。当前命名锁与“名字本身作为终端命令”的 manifest 已经由 `life_v0/my_entry.py`、`digital_life_identity.py` 与 `tests/process/test_my_digital_life_entrypoint.py` 落成；最新补强继续把 `a_terminal_wake_and_named_residency` 的 live0 audit 加硬到脚本级证据：`life_name_command_manifest.json` 之外，还必须证明 `command_path` 真实存在、可执行、含 direct-command 标记，并且绑定到本次 audit 的同一 `state / reports / receipts` runtime。状态板因此把这一格视为“名字身份锚不只写入 registry/manifest，也被最终验收检查成真实可执行的终端唤醒入口”，不是只靠 JSON 字段闭合。
 
+当前链尾继续补到主动终端发话释放审计：`life_v0/process_supervisor/proactive_terminal_voice.py` 现在不仅写出 `resident_proactive_voice_profile_v0`，还会在 `resident_terminal_proactive_events.jsonl` 和 `resident_terminal_proactive_state.json` 中区分 `held_internal` 与 `released_model_expression`。`digital_entry.py#_emit_resident_proactive_terminal_voice` 仍只允许模型表达通过 post-expression gate 后打印自然语言；无模型、空文本或模板/机制表面被阻断时，只更新状态，不输出固定替代话术。状态板因此把这一格视为“终端打开时的主动语言有状态画像、模型释放和阻断证据”，不是把后台生命信号刷到终端，也不是代码拼句。
+
 当前如果就是继续链尾，先打开这组：
 
 ```text

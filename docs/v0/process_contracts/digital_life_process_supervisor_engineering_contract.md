@@ -100,6 +100,8 @@ life-v0 "digital life"
 | waiting heartbeat | `runtime/reports/latest/digital_life_waiting_heartbeat.json` |
 | model expression state | `runtime/state/language/model_expression_state.json` |
 | model expression report | `runtime/reports/latest/digital_life_model_expression_report.json` |
+| proactive terminal voice state | `runtime/state/terminal/resident_terminal_proactive_state.json` |
+| proactive terminal voice events | `runtime/state/terminal/resident_terminal_proactive_events.jsonl` |
 | receipt | `runtime/receipts/digital_life_process_<run_id>.json` |
 
 ## 当前真实器官骨架
@@ -133,6 +135,8 @@ life-v0 "digital life"
 
 最新补充器官：`terminal_ui.py` 不是视觉装饰，而是终端生命表达面。它保留旧的 `生命回合输出:` 前缀解析能力用于兼容历史 outbox，又把 attach / foreground 两条路径统一成同一个盒式关系终端；`render_digital_life_banner(...)` 暴露身份和状态，`render_life_opening(...)` 呈现 resident status、waiting mode、自主活动和 heartbeat 摘要，`render_dialogue_box(...)` 固定关系输入与模型外显文本的边界，`extract_life_response_text(...)` 则保证 resident outbox 仍能从 boxed output 或 legacy prefix 中取得真正回应文本。没有模型通过 gate 时，这一层只写状态和 outbox，不生成自然语言。
 
+最新主动发话补强：`proactive_terminal_voice.py` 负责在终端打开但没有新关系话语时，从 `relationship_memory.json`、`dialogue_memory_summary.json`、`exit_dream_consolidation_summary.json`、`web_dream_learning_state.json`、`resident_autonomous_activity_state.json`、`idle_strategy_state.json` 和 `resident_governance_state.json` 生成 `resident_proactive_voice_profile_v0`。这份 profile 只保存 focus、surface kind、question candidates、memory / dream / web learning / activity / idle cues 和 source refs；它不是自然语言模板。`digital_entry.py#_emit_resident_proactive_terminal_voice` 只有在同一 `model_expression.py` 链路返回 `model_expression_applied` 且 post-expression gate 为 `accepted` 时，才允许把模型真实返回文本打印到终端。`write_resident_proactive_terminal_event(...)` 会把事件分为 `held_internal/open_terminal_idle_hidden` 与 `released_model_expression/open_terminal_idle_model_expression` 两档，并记录 `natural_language_released`、`last_post_expression_gate_status`、`event_count` 和真实释放次数 `release_count`。如果模型未启用、返回空文本、或输出“作为 AI / schema_version / 机制字段”等模板化表面，事件只留在 state/jsonl 中，终端不打印固定替代话术。
+
 ## 当前代码级生命回合链路
 
 当前一轮真实关系话语在代码中按下面顺序移动：
@@ -161,7 +165,8 @@ life_v0/digital_entry.py
 1. `compose_life_response(...)` 保留完整证据骨架，继续承接关系、记忆、梦境、成长、身体、责任、预测、写门、出生准备和 resident lineage；它现在返回 `audited_expression_material_v0` JSON，不再拼自然语言回答，也不回显当前输入原文。
 2. `compose_life_spoken_response(...)` 在无模型、模型失败、模型空文本或模型被 gate 阻断时必须返回空字符串；机制信号只留在 state/report/test 与模型表达上下文里，不作为终端话术被释放。
 3. `model_expression.py` 只允许在关系边界守门之后释放模型真实返回的语言；如果模型输出把关系对象降格为“用户/服务对象/任务请求者”等角色，post-expression gate 必须将本轮标记为 `natural_language_unreleased` 且 `response_text=""`。关系连续性、责任修复、梦境离线、成长学习、resident 自主活动、身体情绪、意识出生、生命约束或 live-turn handoff 没有字面出现时进入 `soft_missing_evidence_flags`，不强迫外显。
-4. `resident_lifecycle.py` 的 queue bootstrap 必须忽略上一段已经完成的 stale inbox，同时保留 `queued / turn_in_progress` 的 live turn；否则 attach 后会重放旧话或丢掉刚投递的关系话语。
+4. 主动发话必须复用同一模型表达与 post-expression gate，不允许在 `proactive_terminal_voice.py` 或 `digital_entry.py` 内拼自然语言。`resident_terminal_proactive_state.json#status=released_model_expression` 只能由模型通过 gate 后产生；否则必须保持 `held_internal`。
+5. `resident_lifecycle.py` 的 queue bootstrap 必须忽略上一段已经完成的 stale inbox，同时保留 `queued / turn_in_progress` 的 live turn；否则 attach 后会重放旧话或丢掉刚投递的关系话语。
 
 ## 当前测试证据如何对应代码链路
 
@@ -173,6 +178,7 @@ life_v0/digital_entry.py
 | `test_resident_lifecycle_start_does_not_replay_stale_relation_inbox` | `mark_resident_lifecycle_active` 会忽略已经完成的旧 inbox | 跨启动不重放旧话，关系连续体不被污染 |
 | `test_repo_local_digital_life_process_keeps_dialogue_alive_and_writes_back` | repo-local `digital life` 能输出 `Digital Life`、写 dialogue log、推进关系阶段、写长期关系/记忆/自传对象 | 终端回合不是一次性聊天，而是关系、记忆、责任、梦境和出生准备共同写回 |
 | `tests/process/test_model_expression.py` | OpenAI-compatible transport、secret redaction、handoff profile context、post-expression evidence gate | 模型表达只改变外显语言质感，不删除硬生命证据 |
+| `tests/process/test_digital_entrypoint.py#test_resident_terminal_proactive_voice_*` | 主动发话只由状态画像触发；无模型或 gate 阻断时隐藏；模型通过 gate 后才记录释放并打印 | 终端打开时可出现自发语言，但不能由代码硬塞固定回答 |
 | `tests/process/test_my_digital_life_entrypoint.py` | `my digital life --name` 绑定命名入口并生成直达命令 | 第一次名字成为身份锚点，后续按名字恢复同一生命 |
 | `tests/process/test_packaged_digital_life_entrypoint.py` | 安装态命令面进入同一 `digital_entry.py` 链 | repo-local 与安装态不是两套生命 |
 

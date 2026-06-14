@@ -477,6 +477,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             )
             self.assertEqual(written["status"], "held_internal")
             self.assertEqual(written["release_scope"], "open_terminal_idle_hidden")
+            self.assertFalse(written["natural_language_released"])
             self.assertEqual(written["utterance"], "")
             self.assertEqual(written["focus"], "relationship_memory")
             self.assertTrue(
@@ -585,6 +586,79 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 state["last_model_expression_status"],
                 "model_expression_applied",
             )
+            self.assertEqual(state["status"], "released_model_expression")
+            self.assertEqual(state["last_release_scope"], "open_terminal_idle_model_expression")
+            self.assertTrue(state["last_natural_language_released"])
+            self.assertEqual(state["release_count"], 1)
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_resident_terminal_proactive_voice_blocks_template_model_surface(self):
+        from life_v0.digital_entry import _emit_resident_proactive_terminal_voice
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "memory").mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                paths["state_root"] / "memory" / "relationship_memory.json",
+                {
+                    "schema_version": "relationship_memory_v0",
+                    "relation_person_profile": {
+                        "observed_names": ["RelationPeer"],
+                    },
+                },
+            )
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {
+                                "content": "作为一个AI，我会根据你的要求处理。schema_version"
+                            },
+                        }
+                    ]
+                }
+
+            output = StringIO()
+            with redirect_stdout(output):
+                emitted = _emit_resident_proactive_terminal_voice(
+                    terminal_dir=terminal_dir,
+                    life_name="Adam",
+                    now_iso=lambda: "2026-06-13T10:25:00+08:00",
+                    model_transport=fake_transport,
+                    environ={
+                        "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                        "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                        "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                        "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                    },
+                )
+
+            self.assertFalse(emitted)
+            self.assertEqual(output.getvalue(), "")
+            state = self._read_json(
+                terminal_dir / "resident_terminal_proactive_state.json"
+            )
+            self.assertEqual(state["status"], "held_internal")
+            self.assertFalse(state["last_natural_language_released"])
+            self.assertEqual(state["release_count"], 0)
+            self.assertEqual(
+                state["last_model_expression_status"],
+                "model_expression_unreleased",
+            )
+            self.assertEqual(state["last_post_expression_gate_status"], "blocked")
+            events = [
+                json.loads(line)
+                for line in (terminal_dir / "resident_terminal_proactive_events.jsonl")
+                .read_text(encoding="utf-8")
+                .splitlines()
+                if line.strip()
+            ]
+            self.assertEqual(events[-1]["utterance"], "")
+            self.assertFalse(events[-1]["natural_language_released"])
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 
     def test_resident_terminal_proactive_voice_can_surface_web_dream_learning_topic(self):
@@ -627,6 +701,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 terminal_dir / "resident_terminal_proactive_state.json"
             )
             self.assertEqual(state["last_focus"], "web_dream_learning")
+            self.assertEqual(state["status"], "held_internal")
+            self.assertEqual(state["release_count"], 0)
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 
     def test_interactive_resident_terminal_client_can_emit_idle_voice_before_exit(self):
@@ -673,6 +749,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertTrue(
                 (terminal_dir / "resident_terminal_proactive_events.jsonl").exists()
             )
+            state = self._read_json(terminal_dir / "resident_terminal_proactive_state.json")
+            self.assertIn(state["status"], {"held_internal", "released_model_expression"})
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 
     def test_repo_local_digital_life_entrypoint_returns_zero(self):

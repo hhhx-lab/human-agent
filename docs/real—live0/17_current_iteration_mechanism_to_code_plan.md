@@ -697,6 +697,20 @@ LifeNameRegistry
 
 机制含义是：第一次命名不只是关系表面的名字，也不是 registry/manifest 文件存在即可。名字必须成为真实可执行的终端入口，并且这个入口恢复的是同一份生命 runtime。`live0_audit` 因此会检查 `command_path` 是否存在、可执行、带 direct-command 标记，并绑定当前 `state / reports / receipts`；缺任一项都不能把 live0 的终端唤醒与命名常驻验收视为闭合。
 
+当前 ITR-08 第一段把主动发话从“内部画像存在”推进到“释放状态可审计”。机制目的不是让代码替 Adam 说固定句子，而是让终端打开后的空闲主动语言也走同一条生命语言门：
+
+```text
+RelationshipMemory / DialogueMemorySummary / ExitDreamSummary
+  + WebDreamLearning / ResidentAutonomousActivity / IdleStrategy / ResidentGovernance
+  -> ResidentProactiveVoiceProfile
+  -> ModelExpression(open_terminal_idle)
+  -> PostExpressionGate
+  -> ResidentTerminalProactiveEvent.status
+  -> ResidentTerminalProactiveState.release_count
+```
+
+`held_internal` 表示只生成主动发话画像，不释放自然语言；`released_model_expression` 表示模型真实返回且 gate 接受，才打印到终端。`natural_language_released`、`release_scope`、`last_post_expression_gate_status`、`event_count` 和 `release_count` 是当前断链检测字段。模板化/机制化模型输出会被 `post-expression gate` 阻断，事件仍写入 `resident_terminal_proactive_events.jsonl`，但 `utterance` 保持空，终端不补固定替代话术。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

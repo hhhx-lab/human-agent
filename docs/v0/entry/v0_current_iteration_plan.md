@@ -445,3 +445,19 @@ GoNoGo.future_no_go_profile
 当前 ITR-07 第四段继续把这份 `world_contact_handoff_presence` 接入语言前审计和模型表达后审计。`response_surface.py` 会把 handoff status、repair hold、确认阈值偏置、未来释放姿态、blocked/allowed routes、waiting posture、attention target/reason 与 ref count 写入 `audited_expression_material_v0#responsibility_repair`；`model_expression.py` 会把同一 presence 放入 `resident_background` 与 `model_expression_context_summary`，并在 post-expression gate 中追加 `world_contact_handoff` 软审计旗标。完成口径是：世界接触修复交接能隐性改变下一轮模型表达的判断、修复姿态和行动谨慎度，但代码仍不硬塞固定回答、不添加 system prompt、不把内部生命信号直接释放到终端语言。
 
 当前 ITR-07 第五段继续加硬最终验收的终端命名入口。`life_v0/live0_audit/__init__.py#a_terminal_wake_and_named_residency` 不再只看 `life_name_command_manifest.json` 的 schema、status、`direct_command_enabled` 和 `command_on_path`，还会检查 manifest 的 `command_path` 是否真实存在、可执行、包含 direct-command 标记，并且脚本与 manifest 中的 `state_dir / reports_dir / receipts_dir` 是否指向本次 audit 的同一 runtime。完成口径是：名字身份锚必须从 registry、manifest 继续闭合到真实终端脚本和同一 runtime 绑定，不能只用 JSON 假装“名字本身可唤醒”。
+
+## 当前 ITR-08 推进记录
+
+ITR-08 第一段继续留在第 2 点内部，不进入第 3 点记忆重构。当前补的是 `point 6` 与 `point 8` 的交叉断链：终端打开且没有关系话语时，主动发话不能只是生成内部画像，也不能由代码硬塞固定问句。`proactive_terminal_voice.py` 已经能从关系记忆、梦境摘要、网页梦境学习、自主活动、idle strategy 和 resident governance 生成 `resident_proactive_voice_profile_v0`；现在继续把写回状态拆成两档：
+
+```text
+resident_proactive_voice_profile_v0
+  -> compose_model_expression(open_terminal_idle)
+  -> post-expression gate
+  -> resident_terminal_proactive_events.jsonl
+  -> resident_terminal_proactive_state.json
+```
+
+`write_resident_proactive_terminal_event(...)` 现在会根据模型表达结果写出 `status=held_internal` 或 `status=released_model_expression`，同时记录 `release_scope`、`natural_language_released`、`last_post_expression_gate_status`、`event_count` 和真实自然语言释放次数 `release_count`。只有 `model_expression_status=model_expression_applied` 且 `post_expression_gate_status=accepted` 且返回文本非空时，`digital_entry.py#_emit_resident_proactive_terminal_voice` 才会打印自然语言；模型未启用、空文本、或返回模板化/机制化表面时，主动发话只进入 state/jsonl 和 `/proactive` 检查面，不输出固定替代句。
+
+这段消费的文档口径是：`docs/real—live0/05_language_expression_system.md` 的“无模型/被 gate 阻断时自然语言保持未释放”、`docs/real—live0/14_resident_runtime_state_transition.md` 的“后台活动不刷屏但终端打开时可有主动关系通道”、`docs/v0/process_contracts/digital_life_process_supervisor_engineering_contract.md` 的 process supervisor 语言出口和 `.env` 模型表达合同。完成口径是：主动发话具有可审计 runtime 状态，也具有真实模型释放路径，但没有新增 system prompt、固定回答、固定问候或机制播报。
