@@ -7,6 +7,7 @@ from life_v0.process_supervisor.model_expression import (
     _post_openai_compatible_chat_completion,
     compose_model_expression,
 )
+from life_v0.process_supervisor.response_surface import compose_life_response
 
 STREAM_CHUNK_A = "STREAM_CHUNK_A"
 STREAM_CHUNK_B = "STREAM_CHUNK_B"
@@ -1054,6 +1055,120 @@ class ModelExpressionTests(unittest.TestCase):
                     "world_contact_handoff_ref_count"
                 ],
                 2,
+            )
+
+    def test_model_expression_consumes_prediction_attention_from_audited_material(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            captured = {}
+            material = compose_life_response(
+                external_utterance="这里的不确定性你会怎么处理？",
+                signal_media_runtime={
+                    "modulation_vector": {"repair_drive": "active"}
+                },
+                belief_state={"confidence_level": "uncertain"},
+                prediction_error_field={
+                    "error_events": ["relationship_language_uncertainty"]
+                },
+                active_sampling_plan={
+                    "selected_route": "clarify",
+                    "stage_effect": "semantic_repair_probe",
+                },
+                memory_write_gate={
+                    "stage_policy": "repair_evidence_first",
+                    "body_signal_write_modulation": {
+                        "write_bias": "repair_evidence_first",
+                        "body_signal_ref_count": 2,
+                    },
+                },
+                state_merge_guard={
+                    "stage_policy": "guarded_merge",
+                    "long_term_change_sources": {
+                        "prediction_error_resolution": [
+                            "runtime/state/prediction/prediction_error_field.json"
+                        ]
+                    },
+                },
+            )
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                captured["payload"] = payload
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": MODEL_ACCEPTED_AUDIT_TOKEN},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-prediction-attention",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="这里的不确定性你会怎么处理？",
+                audited_expression_material=material,
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertTrue(result.applied)
+            expression_input = json.loads(
+                captured["payload"]["messages"][0]["content"]
+            )
+            prediction_context = expression_input["expression_context"][
+                "prediction_conscious_workspace"
+            ]
+            self.assertEqual(
+                prediction_context["prediction_surface_posture"],
+                "question",
+            )
+            self.assertEqual(
+                prediction_context["prediction_attention_route"],
+                "clarify",
+            )
+            self.assertEqual(
+                prediction_context["prediction_attention_error_count"],
+                1,
+            )
+            self.assertEqual(
+                prediction_context[
+                    "prediction_attention_memory_write_gate_policy"
+                ],
+                "repair_evidence_first",
+            )
+            self.assertEqual(
+                prediction_context[
+                    "prediction_attention_long_term_change_count"
+                ],
+                1,
+            )
+            self.assertEqual(
+                prediction_context[
+                    "prediction_attention_body_signal_write_bias"
+                ],
+                "repair_evidence_first",
+            )
+            self.assertIn(
+                "prediction_attention",
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
+            )
+            context_summary = result.state["model_expression_context_summary"]
+            self.assertEqual(context_summary["prediction_surface_posture"], "question")
+            self.assertEqual(context_summary["prediction_attention_route"], "clarify")
+            self.assertEqual(context_summary["prediction_attention_error_count"], 1)
+            self.assertEqual(
+                context_summary[
+                    "prediction_attention_body_signal_write_bias"
+                ],
+                "repair_evidence_first",
             )
 
     def test_local_provider_keeps_natural_language_unreleased_without_transport(self):

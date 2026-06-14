@@ -211,6 +211,7 @@ HARD_EVIDENCE_FLAGS = {
     "life_constraint",
     "world_contact_handoff",
     "live_turn_handoff",
+    "prediction_attention",
 }
 
 ModelExpressionTransport = Callable[
@@ -450,6 +451,19 @@ def build_model_expression_context(
         (relationship_timeline or {}).get("trust_trajectories")
     )
     trait_slow_variables = (self_model_state or {}).get("trait_slow_variables", {})
+    audited_material = _decode_audited_expression_material(
+        audited_expression_material
+    )
+    prediction_attention = _prediction_attention_from_material(
+        audited_material.get("prediction_attention")
+    )
+    prediction_conscious_workspace = _prediction_conscious_summary(
+        brain_graph=brain_graph,
+        network_state=network_state,
+        prediction_workspace=prediction_workspace,
+        workspace_frame=workspace_frame,
+        prediction_attention=prediction_attention,
+    )
     return {
         "external_relation_utterance": external_utterance,
         "audited_expression_material": audited_expression_material,
@@ -494,12 +508,7 @@ def build_model_expression_context(
                 "release_caution_level"
             ),
         },
-        "prediction_conscious_workspace": _prediction_conscious_summary(
-            brain_graph=brain_graph,
-            network_state=network_state,
-            prediction_workspace=prediction_workspace,
-            workspace_frame=workspace_frame,
-        ),
+        "prediction_conscious_workspace": prediction_conscious_workspace,
         "life_context": {
             "self_narrative_ref_count": len(
                 (life_context_frame or {}).get("self_narrative_refs", [])
@@ -982,11 +991,13 @@ def _prediction_conscious_summary(
     network_state: dict[str, Any] | None,
     prediction_workspace: dict[str, Any] | None,
     workspace_frame: dict[str, Any] | None,
+    prediction_attention: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     brain_graph = brain_graph or {}
     network_state = network_state or {}
     prediction_workspace = prediction_workspace or {}
     workspace_frame = workspace_frame or {}
+    prediction_attention = prediction_attention or {}
     workspace_contents = prediction_workspace.get("workspace_contents", {})
     if not isinstance(workspace_contents, dict):
         workspace_contents = {}
@@ -1036,6 +1047,31 @@ def _prediction_conscious_summary(
         "prediction_sampling_stage_effect": workspace_contents.get(
             "sampling_stage_effect"
         ),
+        "prediction_surface_posture": prediction_attention.get("surface_posture"),
+        "prediction_attention_route": prediction_attention.get(
+            "active_sampling_route"
+        ),
+        "prediction_attention_error_count": prediction_attention.get(
+            "prediction_error_count"
+        ),
+        "prediction_attention_memory_write_gate_policy": (
+            prediction_attention.get("memory_write_gate_policy")
+        ),
+        "prediction_attention_state_merge_policy": prediction_attention.get(
+            "state_merge_policy"
+        ),
+        "prediction_attention_long_term_change_count": (
+            prediction_attention.get("state_merge_long_term_change_count")
+        ),
+        "prediction_attention_long_term_change_families": _string_list(
+            prediction_attention.get("state_merge_long_term_change_families")
+        )[:8],
+        "prediction_attention_body_signal_write_bias": prediction_attention.get(
+            "body_signal_write_bias"
+        ),
+        "prediction_attention_body_signal_ref_count": prediction_attention.get(
+            "body_signal_ref_count"
+        ),
         "prediction_queue_e_repair_pressure_level": workspace_contents.get(
             "queue_e_repair_pressure_level"
         ),
@@ -1060,6 +1096,31 @@ def _prediction_conscious_summary(
             workspace_frame.get("live_language_turn_refs")
         ),
     }
+
+
+def _decode_audited_expression_material(value: str) -> dict[str, Any]:
+    try:
+        payload = json.loads(value)
+    except (TypeError, ValueError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _prediction_attention_from_material(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    allowed_keys = [
+        "surface_posture",
+        "active_sampling_route",
+        "prediction_error_count",
+        "memory_write_gate_policy",
+        "state_merge_policy",
+        "state_merge_long_term_change_count",
+        "state_merge_long_term_change_families",
+        "body_signal_write_bias",
+        "body_signal_ref_count",
+    ]
+    return _compact_dict(value, allowed_keys=allowed_keys)
 
 
 def audit_model_expression_response(
@@ -1245,6 +1306,22 @@ def _prediction_attention_pressure_present(
         prediction_workspace.get("prediction_active_sampling_mode")
         or prediction_workspace.get("prediction_belief_scope")
         or prediction_workspace.get("candidate_explanation_focuses")
+        or prediction_workspace.get("prediction_surface_posture")
+        or prediction_workspace.get("prediction_attention_route")
+        or _int_value(
+            prediction_workspace.get("prediction_attention_error_count")
+        )
+        or prediction_workspace.get(
+            "prediction_attention_memory_write_gate_policy"
+        )
+        or _int_value(
+            prediction_workspace.get(
+                "prediction_attention_long_term_change_count"
+            )
+        )
+        or prediction_workspace.get(
+            "prediction_attention_body_signal_write_bias"
+        )
         or live_language.get("semantic_ambiguity_queue")
         or live_language.get("percept_prediction_focus")
     )
@@ -1423,6 +1500,40 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         "expression_monitor_ref": live_language.get("expression_monitor_ref"),
         "prediction_workspace_ref": prediction_conscious_workspace.get(
             "prediction_workspace_ref"
+        ),
+        "prediction_surface_posture": prediction_conscious_workspace.get(
+            "prediction_surface_posture"
+        ),
+        "prediction_attention_route": prediction_conscious_workspace.get(
+            "prediction_attention_route"
+        ),
+        "prediction_attention_error_count": prediction_conscious_workspace.get(
+            "prediction_attention_error_count"
+        ),
+        "prediction_attention_memory_write_gate_policy": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_memory_write_gate_policy"
+            )
+        ),
+        "prediction_attention_state_merge_policy": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_state_merge_policy"
+            )
+        ),
+        "prediction_attention_long_term_change_count": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_long_term_change_count"
+            )
+        ),
+        "prediction_attention_body_signal_write_bias": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_body_signal_write_bias"
+            )
+        ),
+        "prediction_attention_body_signal_ref_count": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_body_signal_ref_count"
+            )
         ),
         "workspace_frame_ref": prediction_conscious_workspace.get(
             "workspace_frame_ref"
