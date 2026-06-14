@@ -2145,6 +2145,14 @@ class PersistentDigitalLifeProcessTests(
             "runtime/reports/latest/pain_regret_repair_report.json",
             "runtime/state/life_targets/queue_e_birth_repair_profile.json",
         ]
+        expected_queue_e_repair_refs = [
+            "repair-001",
+            "repair-002",
+            "regret-001",
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/membrane/world_contact_summary.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+        ]
 
         idle_strategy = decide_idle_strategy(
             run_id="idle-background-life-constraint",
@@ -2190,12 +2198,31 @@ class PersistentDigitalLifeProcessTests(
                 "background_queue_e_birth_repair_ref_set": expected_queue_e_birth_repair_refs,
                 "background_queue_e_birth_repair_waiting_posture": "birth_repair_pressure_waiting",
                 "background_queue_e_birth_repair_attention_reason": "queue_e_birth_repair_pressure_requires_resident_repair_hold",
+                "background_queue_e_repair_modulation_profile": {
+                    "schema_version": "queue_e_repair_modulation_profile_v0",
+                    "pressure_level": "elevated",
+                    "attention_target": "regret_pressure",
+                    "world_contact_release_posture": "shadow_only_guarded",
+                    "repair_followup_required": True,
+                    "repair_obligation_count": 2,
+                    "regret_pressure_count": 1,
+                    "queue_e_priority_band": "repair_guarded",
+                    "repair_obligation_refs": ["repair-001", "repair-002"],
+                    "regret_pressure_refs": ["regret-001"],
+                    "ref_set": expected_queue_e_repair_refs,
+                },
+                "background_queue_e_repair_pressure_level": "elevated",
+                "background_queue_e_repair_attention_target": "regret_pressure",
+                "background_queue_e_repair_obligation_count": 2,
+                "background_queue_e_regret_pressure_count": 1,
+                "background_queue_e_repair_ref_set": expected_queue_e_repair_refs,
                 "background_continuity_ref_set": [
                     "runtime/state/terminal/resident_governance_state.json",
                     "runtime/state/schema_runner/cross_file_logic.json",
                     "runtime/state/schema_runner/run_manifest.json",
                     *expected_life_constraint_refs,
                     *expected_queue_e_birth_repair_refs,
+                    *expected_queue_e_repair_refs,
                 ],
             },
             source_doc_refs=[
@@ -2266,6 +2293,29 @@ class PersistentDigitalLifeProcessTests(
         self.assertEqual(
             idle_strategy["background_queue_e_birth_repair_ref_set"],
             expected_queue_e_birth_repair_refs,
+        )
+        self.assertIn("queue_e_repair_modulation_profile", idle_strategy)
+        self.assertEqual(
+            idle_strategy["queue_e_repair_modulation_profile"]["schema_version"],
+            "queue_e_repair_modulation_profile_v0",
+        )
+        self.assertEqual(
+            idle_strategy["queue_e_repair_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            idle_strategy["queue_e_repair_attention_target"],
+            "regret_pressure",
+        )
+        self.assertEqual(idle_strategy["queue_e_repair_obligation_count"], 2)
+        self.assertEqual(idle_strategy["queue_e_regret_pressure_count"], 1)
+        self.assertEqual(
+            idle_strategy["queue_e_repair_ref_set"],
+            expected_queue_e_repair_refs,
+        )
+        self.assertEqual(
+            idle_strategy["background_queue_e_repair_ref_set"],
+            expected_queue_e_repair_refs,
         )
 
     def test_background_continuity_restores_life_constraints_from_lineage_presence(self):
@@ -2344,6 +2394,142 @@ class PersistentDigitalLifeProcessTests(
             profile["background_life_constraint_attention_reason"],
             "queue_e_cross_layer_gate_has_deferred_life_constraints",
         )
+
+    def test_background_continuity_restores_queue_e_repair_modulation_from_process_report(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        expected_refs = [
+            "repair-001",
+            "repair-002",
+            "regret-001",
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/membrane/world_contact_summary.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            terminal_dir = root / "state" / "terminal"
+            reports_dir = root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                reports_dir / "digital_life_persistent_process_report.json",
+                {
+                    "schema_version": "digital_life_process_report_v0",
+                    "run_id": "queue-e-repair-background-restore",
+                    "queue_e_repair_modulation_profile": {
+                        "schema_version": "queue_e_repair_modulation_profile_v0",
+                        "pressure_level": "elevated",
+                        "attention_target": "regret_pressure",
+                        "world_contact_release_posture": "shadow_only_guarded",
+                        "repair_followup_required": True,
+                        "repair_obligation_count": 2,
+                        "regret_pressure_count": 1,
+                        "queue_e_priority_band": "repair_guarded",
+                        "repair_obligation_refs": ["repair-001", "repair-002"],
+                        "regret_pressure_refs": ["regret-001"],
+                        "ref_set": expected_refs,
+                    },
+                    "queue_e_repair_pressure_level": "elevated",
+                    "queue_e_repair_attention_target": "regret_pressure",
+                    "queue_e_repair_obligation_count": 2,
+                    "queue_e_regret_pressure_count": 1,
+                    "queue_e_repair_ref_set": expected_refs,
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+        self.assertIn("background_queue_e_repair_modulation_profile", profile)
+        self.assertEqual(
+            profile["background_queue_e_repair_modulation_profile"][
+                "schema_version"
+            ],
+            "queue_e_repair_modulation_profile_v0",
+        )
+        self.assertEqual(profile["background_queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(
+            profile["background_queue_e_repair_attention_target"],
+            "regret_pressure",
+        )
+        self.assertEqual(profile["background_queue_e_repair_obligation_count"], 2)
+        self.assertEqual(profile["background_queue_e_regret_pressure_count"], 1)
+        self.assertEqual(profile["background_queue_e_repair_ref_set"], expected_refs)
+
+    def test_background_continuity_restores_queue_e_repair_modulation_from_lineage_presence(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        expected_refs = [
+            "repair-001",
+            "regret-001",
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            terminal_dir = root / "state" / "terminal"
+            reports_dir = root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "resident_background_lineage_state": {
+                        "schema_version": "resident_background_lineage_state_v0",
+                        "queue_e_repair_presence": {
+                            "queue_e_repair_modulation_profile": {
+                                "schema_version": "queue_e_repair_modulation_profile_v0",
+                                "pressure_level": "elevated",
+                                "attention_target": "regret_pressure",
+                                "world_contact_release_posture": "shadow_only_guarded",
+                                "repair_followup_required": True,
+                                "repair_obligation_count": 1,
+                                "regret_pressure_count": 1,
+                                "queue_e_priority_band": "repair_guarded",
+                                "repair_obligation_refs": ["repair-001"],
+                                "regret_pressure_refs": ["regret-001"],
+                                "ref_set": expected_refs,
+                            },
+                            "pressure_level": "elevated",
+                            "attention_target": "regret_pressure",
+                            "repair_obligation_count": 1,
+                            "regret_pressure_count": 1,
+                            "ref_set": expected_refs,
+                        },
+                    },
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+        self.assertIn("background_queue_e_repair_modulation_profile", profile)
+        self.assertEqual(
+            profile["background_queue_e_repair_modulation_profile"][
+                "schema_version"
+            ],
+            "queue_e_repair_modulation_profile_v0",
+        )
+        self.assertEqual(profile["background_queue_e_repair_pressure_level"], "elevated")
+        self.assertEqual(
+            profile["background_queue_e_repair_attention_target"],
+            "regret_pressure",
+        )
+        self.assertEqual(profile["background_queue_e_repair_obligation_count"], 1)
+        self.assertEqual(profile["background_queue_e_regret_pressure_count"], 1)
+        self.assertEqual(profile["background_queue_e_repair_ref_set"], expected_refs)
 
     def test_background_continuity_restores_prediction_write_gate_from_lineage_presence(self):
         from life_v0.process_supervisor.background_continuity import (
@@ -10026,7 +10212,17 @@ class PersistentDigitalLifeProcessTests(
             )
             self._write_json(
                 state_dir / "action" / "responsibility_loop_state.json",
-                {"schema_version": "responsibility_loop_state_v0"},
+                {
+                    "schema_version": "responsibility_loop_state_v0",
+                    "repair_followup_required": True,
+                    "repair_obligation_refs": ["repair-001", "repair-002"],
+                    "regret_pressure_candidates": [
+                        {
+                            "regret_pressure_id": "regret-001",
+                            "ref": "regret-001",
+                        }
+                    ],
+                },
             )
             self._write_json(
                 state_dir / "signal" / "signal_media_runtime.json",
@@ -10093,7 +10289,12 @@ class PersistentDigitalLifeProcessTests(
             )
             self._write_json(
                 state_dir / "membrane" / "world_contact_summary.json",
-                {"schema_version": "world_contact_summary_v0"},
+                {
+                    "schema_version": "world_contact_summary_v0",
+                    "release_posture": "shadow_only_guarded",
+                    "repair_obligation_refs": ["repair-001", "repair-002"],
+                    "regret_pressure_refs": ["regret-001"],
+                },
             )
             self._write_json(
                 state_dir / "consciousness" / "workspace_frame.json",
@@ -10121,7 +10322,12 @@ class PersistentDigitalLifeProcessTests(
             )
             self._write_json(
                 reports_dir / "pain_regret_repair_report.json",
-                {"schema_version": "pain_regret_repair_report_v0"},
+                {
+                    "schema_version": "pain_regret_repair_report_v0",
+                    "repair_followup_required": True,
+                    "repair_obligation_refs": ["repair-001", "repair-002"],
+                    "regret_pressure_refs": ["regret-001"],
+                },
             )
             (language_dir / "dialogue_turn_log.jsonl").write_text('{"turn_id":"dialogue-turn-live-0001"}\n', encoding="utf-8")
 
@@ -10223,6 +10429,14 @@ class PersistentDigitalLifeProcessTests(
             expected_life_constraint_refs = [
                 "runtime/state/action/action_candidate_set.json#life_constraint_profile",
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
+            ]
+            expected_queue_e_repair_refs = [
+                "repair-001",
+                "repair-002",
+                "regret-001",
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/membrane/world_contact_summary.json",
+                "runtime/reports/latest/pain_regret_repair_report.json",
             ]
             expected_resident_process_lease_ref = "runtime/state/terminal/resident_process_lease.json"
             expected_resident_process_lease_history_ref = "runtime/state/terminal/resident_process_lease_history.jsonl"
@@ -10334,6 +10548,32 @@ class PersistentDigitalLifeProcessTests(
                 report["pain_regret_repair_report_ref"],
                 "runtime/reports/latest/pain_regret_repair_report.json",
             )
+            for artifact in (report, digest):
+                self.assertIn("queue_e_repair_modulation_profile", artifact)
+                self.assertEqual(
+                    artifact["queue_e_repair_modulation_profile"]["schema_version"],
+                    "queue_e_repair_modulation_profile_v0",
+                )
+                self.assertEqual(
+                    artifact["queue_e_repair_pressure_level"],
+                    "elevated",
+                )
+                self.assertEqual(
+                    artifact["queue_e_repair_attention_target"],
+                    "regret_pressure",
+                )
+                self.assertEqual(
+                    artifact["queue_e_repair_obligation_count"],
+                    2,
+                )
+                self.assertEqual(
+                    artifact["queue_e_regret_pressure_count"],
+                    1,
+                )
+                self.assertEqual(
+                    artifact["queue_e_repair_ref_set"],
+                    expected_queue_e_repair_refs,
+                )
             self.assertEqual(
                 report["prediction_write_gate_refs"],
                 [
@@ -10894,6 +11134,12 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/reports/latest/pain_regret_repair_report.json",
                 receipt["shared_object_refs"],
             )
+            self.assertEqual(
+                receipt["queue_e_repair_ref_set"],
+                expected_queue_e_repair_refs,
+            )
+            for ref in expected_queue_e_repair_refs:
+                self.assertIn(ref, receipt["shared_object_refs"])
             self.assertIn(
                 "runtime/state/language/apology_repair_language_trace.json",
                 receipt["shared_object_refs"],
@@ -14895,6 +15141,60 @@ class PersistentDigitalLifeProcessTests(
             birth_repair_presence["background_ref_set"],
             expected_refs,
         )
+
+    def test_background_lineage_state_carries_queue_e_repair_modulation_presence(self):
+        from life_v0.process_supervisor.background_lineage_state import (
+            build_resident_background_lineage_state,
+        )
+
+        expected_refs = [
+            "repair-001",
+            "repair-002",
+            "regret-001",
+            "runtime/state/action/responsibility_loop_state.json",
+            "runtime/state/membrane/world_contact_summary.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+        ]
+
+        lineage_state = build_resident_background_lineage_state(
+            {
+                "background_lineage_depth_band": "single_carryover",
+                "background_carryover_generation": 1,
+                "background_continuity_mode": "closed_process_carryover",
+                "background_queue_e_repair_modulation_profile": {
+                    "schema_version": "queue_e_repair_modulation_profile_v0",
+                    "pressure_level": "elevated",
+                    "attention_target": "regret_pressure",
+                    "world_contact_release_posture": "shadow_only_guarded",
+                    "repair_followup_required": True,
+                    "repair_obligation_count": 2,
+                    "regret_pressure_count": 1,
+                    "queue_e_priority_band": "repair_guarded",
+                    "repair_obligation_refs": ["repair-001", "repair-002"],
+                    "regret_pressure_refs": ["regret-001"],
+                    "ref_set": expected_refs,
+                },
+                "background_queue_e_repair_pressure_level": "elevated",
+                "background_queue_e_repair_attention_target": "regret_pressure",
+                "background_queue_e_repair_obligation_count": 2,
+                "background_queue_e_regret_pressure_count": 1,
+                "background_queue_e_repair_ref_set": expected_refs,
+            },
+            governance_phase="waiting_heartbeat_active",
+            status="active",
+        )
+
+        self.assertIn("queue_e_repair_presence", lineage_state)
+        repair_presence = lineage_state["queue_e_repair_presence"]
+        self.assertEqual(
+            repair_presence["queue_e_repair_modulation_profile"]["schema_version"],
+            "queue_e_repair_modulation_profile_v0",
+        )
+        self.assertEqual(repair_presence["pressure_level"], "elevated")
+        self.assertEqual(repair_presence["attention_target"], "regret_pressure")
+        self.assertEqual(repair_presence["repair_obligation_count"], 2)
+        self.assertEqual(repair_presence["regret_pressure_count"], 1)
+        self.assertEqual(repair_presence["ref_set"], expected_refs)
 
     def test_background_lineage_state_keeps_governance_profile_as_ref_only(self):
         from life_v0.process_supervisor.background_lineage_state import (

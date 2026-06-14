@@ -464,6 +464,9 @@ def load_background_continuity_profile(
     resident_background_birth_repair_presence = _dict_or_empty(
         resident_background_lineage_state.get("birth_repair_presence")
     )
+    resident_background_queue_e_repair_presence = _dict_or_empty(
+        resident_background_lineage_state.get("queue_e_repair_presence")
+    )
     resident_background_life_constraint_presence = _dict_or_empty(
         resident_background_lineage_state.get("life_constraint_presence")
     )
@@ -1720,12 +1723,123 @@ def load_background_continuity_profile(
         queue_e_birth_repair_attention_reason = (
             resident_background_birth_repair_presence.get("attention_reason")
         )
+    queue_e_repair_modulation_profile = _first_dict(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_repair_modulation_profile",
+            "background_queue_e_repair_modulation_profile",
+        ),
+    )
+    if not queue_e_repair_modulation_profile:
+        queue_e_repair_modulation_profile = _dict_or_empty(
+            resident_background_queue_e_repair_presence.get(
+                "queue_e_repair_modulation_profile"
+            )
+        )
+    queue_e_repair_pressure_level = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_repair_pressure_level",
+            "background_queue_e_repair_pressure_level",
+        ),
+    )
+    if not queue_e_repair_pressure_level:
+        queue_e_repair_pressure_level = (
+            queue_e_repair_modulation_profile.get("pressure_level")
+            or resident_background_queue_e_repair_presence.get("pressure_level")
+        )
+    queue_e_repair_attention_target = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_repair_attention_target",
+            "background_queue_e_repair_attention_target",
+        ),
+    )
+    if not queue_e_repair_attention_target:
+        queue_e_repair_attention_target = (
+            queue_e_repair_modulation_profile.get("attention_target")
+            or resident_background_queue_e_repair_presence.get("attention_target")
+        )
+    queue_e_repair_obligation_count = max(
+        _int_or_zero(
+            _first_present(
+                resident_governance_state,
+                snapshot,
+                resident_governance_report,
+                persistent_process_report,
+                keys=(
+                    "queue_e_repair_obligation_count",
+                    "background_queue_e_repair_obligation_count",
+                ),
+            )
+        ),
+        _int_or_zero(
+            queue_e_repair_modulation_profile.get("repair_obligation_count")
+        ),
+        _int_or_zero(
+            resident_background_queue_e_repair_presence.get(
+                "repair_obligation_count"
+            )
+        ),
+    )
+    queue_e_regret_pressure_count = max(
+        _int_or_zero(
+            _first_present(
+                resident_governance_state,
+                snapshot,
+                resident_governance_report,
+                persistent_process_report,
+                keys=(
+                    "queue_e_regret_pressure_count",
+                    "background_queue_e_regret_pressure_count",
+                ),
+            )
+        ),
+        _int_or_zero(queue_e_repair_modulation_profile.get("regret_pressure_count")),
+        _int_or_zero(
+            resident_background_queue_e_repair_presence.get("regret_pressure_count")
+        ),
+    )
+    queue_e_repair_ref_set = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            keys=(
+                "queue_e_repair_ref_set",
+                "queue_e_repair_refs",
+                "queue_e_repair_evidence_refs",
+                "background_queue_e_repair_ref_set",
+            ),
+        )
+        + _list_or_empty(queue_e_repair_modulation_profile.get("ref_set"))
+        + _list_or_empty(resident_background_queue_e_repair_presence.get("ref_set"))
+        + _list_or_empty(
+            resident_background_queue_e_repair_presence.get(
+                "queue_e_repair_evidence_refs"
+            )
+        )
+    )
     pressure_level = _stronger_pressure(
         pressure_level,
         queue_e_birth_repair_pressure_level,
+        queue_e_repair_pressure_level,
     )
-    if not attention_target and queue_e_birth_repair_attention_target:
-        attention_target = queue_e_birth_repair_attention_target
+    if not attention_target:
+        attention_target = (
+            queue_e_repair_attention_target
+            or queue_e_birth_repair_attention_target
+        )
     if live_language_turn_refs:
         ref_set = _dedupe_list(ref_set + live_language_turn_refs)
     if state_merge_guard_ref:
@@ -1746,6 +1860,8 @@ def load_background_continuity_profile(
         ref_set = _dedupe_list(ref_set + [str(queue_e_birth_repair_profile_ref)])
     if queue_e_birth_repair_ref_set:
         ref_set = _dedupe_list(ref_set + queue_e_birth_repair_ref_set)
+    if queue_e_repair_ref_set:
+        ref_set = _dedupe_list(ref_set + queue_e_repair_ref_set)
     if identity_consciousness_birth_refs:
         ref_set = _dedupe_list(ref_set + identity_consciousness_birth_refs)
     if offline_learning_cumulative_ref_set:
@@ -2203,6 +2319,28 @@ def load_background_continuity_profile(
         profile["background_queue_e_birth_repair_attention_reason"] = str(
             queue_e_birth_repair_attention_reason
         )
+    if queue_e_repair_modulation_profile:
+        profile["background_queue_e_repair_modulation_profile"] = (
+            queue_e_repair_modulation_profile
+        )
+    if queue_e_repair_pressure_level:
+        profile["background_queue_e_repair_pressure_level"] = str(
+            queue_e_repair_pressure_level
+        )
+    if queue_e_repair_attention_target:
+        profile["background_queue_e_repair_attention_target"] = str(
+            queue_e_repair_attention_target
+        )
+    if queue_e_repair_obligation_count:
+        profile["background_queue_e_repair_obligation_count"] = (
+            queue_e_repair_obligation_count
+        )
+    if queue_e_regret_pressure_count:
+        profile["background_queue_e_regret_pressure_count"] = (
+            queue_e_regret_pressure_count
+        )
+    if queue_e_repair_ref_set:
+        profile["background_queue_e_repair_ref_set"] = queue_e_repair_ref_set
     if resident_process_lease_history_profile:
         profile["background_resident_process_lease_history_profile_ref"] = (
             BACKGROUND_RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF

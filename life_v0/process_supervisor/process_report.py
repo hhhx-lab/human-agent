@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from life_v0.membrane.queue_e_signals import build_queue_e_repair_modulation_profile
+
 from .governance_explanation import (
     RESIDENT_GOVERNANCE_EXPLANATION_REF,
     write_resident_governance_explanation,
@@ -127,6 +129,16 @@ def write_process_report_bundle(
         ]
         if ref
     ]
+    queue_e_repair_modulation_profile = _queue_e_repair_modulation_profile_from_runtime(
+        state_dir=state_dir,
+        reports_dir=reports_dir,
+        responsibility_loop_state_ref=responsibility_loop_state_ref,
+        world_contact_summary_ref=world_contact_summary_ref,
+        pain_regret_repair_report_ref=pain_regret_repair_report_ref,
+    )
+    queue_e_repair_ref_set = _list_or_empty(
+        queue_e_repair_modulation_profile.get("ref_set")
+    )
     identity_consciousness_birth_refs = _identity_consciousness_birth_refs(idle_governance)
     relationship_resume_summary = _relationship_resume_summary(relationship_graph)
     trait_slow_variable_summary = _trait_slow_variable_summary(self_model_state)
@@ -910,6 +922,21 @@ def write_process_report_bundle(
         report["pain_regret_repair_report_ref"] = pain_regret_repair_report_ref
     if membrane_guard_refs:
         report["membrane_guard_refs"] = membrane_guard_refs
+    if queue_e_repair_modulation_profile:
+        report["queue_e_repair_modulation_profile"] = queue_e_repair_modulation_profile
+        report["queue_e_repair_pressure_level"] = queue_e_repair_modulation_profile.get(
+            "pressure_level"
+        )
+        report["queue_e_repair_attention_target"] = (
+            queue_e_repair_modulation_profile.get("attention_target")
+        )
+        report["queue_e_repair_obligation_count"] = (
+            queue_e_repair_modulation_profile.get("repair_obligation_count")
+        )
+        report["queue_e_regret_pressure_count"] = (
+            queue_e_repair_modulation_profile.get("regret_pressure_count")
+        )
+        report["queue_e_repair_ref_set"] = queue_e_repair_ref_set
     report.update(state_merge_profile)
     report.update(idle_governance)
     report["offline_learning_cumulative_integration_mode"] = (
@@ -1490,6 +1517,20 @@ def write_process_report_bundle(
         "queue_e_birth_repair_ref_set": list(
             idle_governance.get("queue_e_birth_repair_ref_set", [])
         ),
+        "queue_e_repair_modulation_profile": queue_e_repair_modulation_profile,
+        "queue_e_repair_pressure_level": queue_e_repair_modulation_profile.get(
+            "pressure_level"
+        ),
+        "queue_e_repair_attention_target": queue_e_repair_modulation_profile.get(
+            "attention_target"
+        ),
+        "queue_e_repair_obligation_count": queue_e_repair_modulation_profile.get(
+            "repair_obligation_count"
+        ),
+        "queue_e_regret_pressure_count": queue_e_repair_modulation_profile.get(
+            "regret_pressure_count"
+        ),
+        "queue_e_repair_ref_set": queue_e_repair_ref_set,
         "background_queue_e_birth_repair_profile_ref": idle_governance.get(
             "background_queue_e_birth_repair_profile_ref"
         ),
@@ -1621,6 +1662,7 @@ def write_process_report_bundle(
             "queue_e_birth_repair_ref_set",
             [],
         ),
+        queue_e_repair_refs=queue_e_repair_ref_set,
         idle_heartbeat_trace_ref=idle_governance.get("idle_heartbeat_trace_ref"),
         dream_wake_ref_set=resolved_dream_wake_ref_set,
         body_ref_set=resolved_body_ref_set,
@@ -1705,6 +1747,7 @@ def build_process_receipt(
     schema_run_manifest_ref: str | None = None,
     life_constraint_refs: list[str] | None = None,
     queue_e_birth_repair_refs: list[str] | None = None,
+    queue_e_repair_refs: list[str] | None = None,
     idle_heartbeat_trace_ref: str | None = None,
     dream_wake_ref_set: list[str] | None = None,
     body_ref_set: list[str] | None = None,
@@ -1836,6 +1879,7 @@ def build_process_receipt(
         "dream_wake_ref_set": list(dream_wake_ref_set or []),
         "body_ref_set": list(body_ref_set or []),
         "body_signal_ref_set": list(body_signal_ref_set or []),
+        "queue_e_repair_ref_set": list(queue_e_repair_refs or []),
         "resident_autonomous_activity_ref": resident_autonomous_activity_ref,
         "resident_autonomous_activity_state_ref": resident_autonomous_activity_state_ref,
         "resident_autonomous_activity_ref_set": list(
@@ -1916,6 +1960,7 @@ def build_process_receipt(
                 *(state_merge_long_term_change_refs or []),
                 *(life_constraint_refs or []),
                 *(queue_e_birth_repair_refs or []),
+                *(queue_e_repair_refs or []),
             ]
             if ref
         ]),
@@ -1978,6 +2023,41 @@ def _state_merge_report_profile(
     if merge_policy:
         payload["state_merge_policy"] = str(merge_policy)
     return payload
+
+
+def _queue_e_repair_modulation_profile_from_runtime(
+    *,
+    state_dir: Path,
+    reports_dir: Path,
+    responsibility_loop_state_ref: str | None,
+    world_contact_summary_ref: str | None,
+    pain_regret_repair_report_ref: str | None,
+) -> dict[str, Any]:
+    responsibility_loop_state = _read_json_if_exists(
+        state_dir / "action" / "responsibility_loop_state.json"
+    )
+    world_contact_summary = _read_json_if_exists(
+        state_dir / "membrane" / "world_contact_summary.json"
+    )
+    pain_regret_repair_report = _read_json_if_exists(
+        reports_dir / "pain_regret_repair_report.json"
+    )
+    if not any(
+        [
+            responsibility_loop_state,
+            world_contact_summary,
+            pain_regret_repair_report,
+            responsibility_loop_state_ref,
+            world_contact_summary_ref,
+            pain_regret_repair_report_ref,
+        ]
+    ):
+        return {}
+    return build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
 
 
 def _identity_consciousness_birth_refs(idle_governance: dict[str, Any]) -> list[str]:

@@ -552,7 +552,7 @@ python3 -m unittest tests.process.test_persistent_digital_life_process.Persisten
 python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_process_report_organ_writes_report_digest_and_receipt -v
 ```
 
-当前仍未把第 2 点宣告为 live0 整体完成。ITR-05 的第一段和第二段已经覆盖 signal / write gate / waiting / lineage / event / response surface / writeback / background continuity / process report / digest / receipt；第三段已经把梦境/offline pressure 的累计画像压进身体信号和记忆写门，并通过完整 process、state_store、neural_life_core、language、response surface、model expression、contract 和 live0 acceptance 回归。下一步可以对 ITR-05 做收束判断，再决定是否转入 ITR-06 responsibility membrane。
+当前仍未把第 2 点宣告为 live0 整体完成。ITR-05 的第一段和第二段已经覆盖 signal / write gate / waiting / lineage / event / response surface / writeback / background continuity / process report / digest / receipt；第三段已经把梦境/offline pressure 的累计画像压进身体信号和记忆写门，并通过完整 process、state_store、neural_life_core、language、response surface、model expression、contract 和 live0 acceptance 回归。当前已经转入 ITR-06 responsibility membrane 的第一段，不再停留在“责任对象已经存在”，而是开始检查责任、后悔、痛苦、修复压力能不能跨 closeout、background continuity、idle governance 和 resident lineage 延续。
 
 ### `ITR-06 responsibility membrane`
 
@@ -572,6 +572,33 @@ ActionCandidateSet
 ```
 
 断链检查：如果 `PainRegretRepairReport` 只出现在 report，不进入语言、梦境、成长、未来 NoGo 和 birth readiness，就不算真实责任链。
+
+本轮第一段已落链路：
+
+```text
+ResponsibilityLoopState
+  + WorldContactSummary
+  + PainRegretRepairReport
+  -> QueueERepairModulationProfile
+  -> ProcessReport / Digest / Receipt
+  -> BackgroundContinuityProfile.background_queue_e_repair_*
+  -> IdleStrategy.queue_e_repair_*
+  -> ResidentBackgroundLineageState.queue_e_repair_presence
+  -> 下一轮 waiting governance / background continuity restore
+```
+
+这段闭合把 `queue_e_repair_modulation_profile_v0` 从语言/关系调制对象继续推进为常驻链尾对象。它与 `queue_e_birth_repair_profile.json` 分工不同：前者保存原始责任-后悔-修复调制画像，后者保存出生准备层的 Queue E 目标证据。当前两者都必须跨关闭、恢复和下一轮等待存在，不能让原始责任压力只在当轮语言对象里短暂出现。
+
+本轮断链测试：
+
+```bash
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_process_report_organ_writes_report_digest_and_receipt -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_idle_strategy_restores_life_constraints_from_background_continuity -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_background_continuity_restores_queue_e_repair_modulation_from_process_report -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_background_lineage_state_carries_queue_e_repair_modulation_presence -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_background_continuity_restores_queue_e_repair_modulation_from_lineage_presence -v
+python3 -m unittest tests.process.test_persistent_digital_life_process -v
+```
 
 ### `ITR-07 live0 acceptance closure`
 

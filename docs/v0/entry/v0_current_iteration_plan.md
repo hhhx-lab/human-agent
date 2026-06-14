@@ -388,4 +388,18 @@ BodyResourceBudget / CoreAffectVector
   -> ProcessReport / Digest / Receipt body_signal_ref_set
 ```
 
-下一步仍留在第 2 点内部，不进入第 3 点记忆重构总设计。当前这一刀已经通过 `tests.process.test_response_surface`、完整 `tests.process.test_persistent_digital_life_process`、`tests.slices.test_state_store`、`tests.slices.test_neural_life_core`、`tests.slices.test_language_organs`、`tests.process.test_model_expression`、`tests.contracts.test_v0_contracts` 和 `tests.contracts.test_live0_acceptance_audit`，证明这条身体信号写门链没有破坏既有常驻、记忆、神经核心、语言表面和验收合同；下一步先判断 ITR-05 是否可以收束，再转入 ITR-06 responsibility membrane。
+当前继续新增链路：
+
+```text
+ResponsibilityLoopState / WorldContactSummary / PainRegretRepairReport
+  -> QueueERepairModulationProfile
+  -> ProcessReport.queue_e_repair_modulation_profile
+  -> Digest.queue_e_repair_*
+  -> Receipt.queue_e_repair_ref_set
+  -> BackgroundContinuityProfile.background_queue_e_repair_*
+  -> IdleStrategy.queue_e_repair_*
+  -> ResidentBackgroundLineageState.queue_e_repair_presence
+  -> 下一轮 background continuity restore / waiting governance
+```
+
+这一步仍留在第 2 点内部，不进入第 3 点记忆重构总设计。ITR-05 已经收束到身体信号、离线学习累计画像和记忆写门的跨层消费；当前 ITR-06 第一段把原始 Queue E 责任/后悔/修复调制画像接进 process closeout、digest、receipt、background continuity、idle governance 和 resident background lineage。它没有新增外部 action router，也没有把内部修复压力变成外显固定语言；证据只进入 state/report/receipt/lineage，后续由语言、关系、梦境、成长和等待治理继续消费。

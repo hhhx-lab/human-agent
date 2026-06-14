@@ -671,6 +671,26 @@ Queue E 当前已经不再是“第一轮刚开”。所以这里分成两层判
 
 这一步的工程意义是：Queue E 压力已经从“动作/验证报告中的字段”变成持续调制语言与关系记忆的生命状态变量。后续实现不得把它退回为单次 report ref carry-through。
 
+### 第二轮链尾回灌已落口径
+
+同一份原始 `queue_e_repair_modulation_profile_v0` 现在继续进入常驻链尾。这里的 profile 不等同于 `queue_e_birth_repair_profile.json`：前者保存责任回路、世界接触和痛苦/后悔/修复报告合成出的原始调制画像，后者保存出生准备层针对真实痛苦、真实责任、真实后悔目标的证据投影。两者都要保留，不能互相覆盖。
+
+- `life_v0/process_supervisor/process_report.py`
+  - closeout 时重新读取 `runtime/state/action/responsibility_loop_state.json`、`runtime/state/membrane/world_contact_summary.json` 与 `runtime/reports/latest/pain_regret_repair_report.json`。
+  - 写出 `queue_e_repair_modulation_profile`、`queue_e_repair_pressure_level`、`queue_e_repair_attention_target`、`queue_e_repair_obligation_count`、`queue_e_regret_pressure_count` 与 `queue_e_repair_ref_set`。
+  - process receipt 必须把 `queue_e_repair_ref_set` 并入 shared refs。
+- `life_v0/process_supervisor/background_continuity.py`
+  - 下一次恢复时从 process report 或 `resident_background_lineage_state.queue_e_repair_presence` 恢复 `background_queue_e_repair_*`。
+  - `background_carryover_pressure_level` 需要吃到 Queue E repair pressure，不能只吃到 birth repair pressure。
+- `life_v0/process_supervisor/idle_strategy.py`
+  - 有当前责任输入时重新构建 raw profile；没有当前输入时从 `background_queue_e_repair_*` 恢复当前 `queue_e_repair_*`。
+  - 同一字段进入 idle governance allowlist，供 heartbeat、governance、closeout 和下一轮恢复继续携带。
+- `life_v0/process_supervisor/background_lineage_state.py`
+  - 把当前/背景 `queue_e_repair_*` 合成为 `resident_background_lineage_state.queue_e_repair_presence`，字段包括 modulation profile、pressure、attention target、repair/regret count、repair/regret refs 与 ref set。
+  - `queue_e_repair_presence` 与 `birth_repair_presence`、`life_constraint_presence` 并列，表示原始责任修复调制压力已经进入常驻背景生命谱系。
+
+这一段的完成条件不是“report 里多几个字段”，而是同一组 refs 能从 process report / digest / receipt，跨到 background continuity，再跨到 idle governance 与 resident lineage，并能在下一轮恢复时不丢失。
+
 ### 第三轮出生准备证据链已落口径
 
 这一轮把同一份 Queue E repair modulation profile 接入 S08，不再让出生准备度只看 `responsibility_repair_boundary.json` 这种静态边界。真实痛苦、真实责任、真实后悔必须吃到当前责任回路、世界接触释放姿态和痛苦/后悔/修复报告。

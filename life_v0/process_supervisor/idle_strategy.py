@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from life_v0.membrane.queue_e_signals import derive_queue_e_signal_profile
+from life_v0.membrane.queue_e_signals import (
+    build_queue_e_repair_modulation_profile,
+    derive_queue_e_signal_profile,
+)
 from .handoff_profile import HANDOFF_CARRY_FIELD_NAMES
 from .offline_learning_signals import (
     build_offline_learning_cumulative_profile,
@@ -136,6 +139,12 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "repair_obligation_count",
     "regret_pressure_count",
     "queue_e_priority_band",
+    "queue_e_repair_modulation_profile",
+    "queue_e_repair_pressure_level",
+    "queue_e_repair_attention_target",
+    "queue_e_repair_obligation_count",
+    "queue_e_regret_pressure_count",
+    "queue_e_repair_ref_set",
     "nightmare_risk_ref",
     "dream_experience_window_ref",
     "wake_integration_frame_ref",
@@ -353,6 +362,12 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_queue_e_birth_repair_ref_set",
     "background_queue_e_birth_repair_waiting_posture",
     "background_queue_e_birth_repair_attention_reason",
+    "background_queue_e_repair_modulation_profile",
+    "background_queue_e_repair_pressure_level",
+    "background_queue_e_repair_attention_target",
+    "background_queue_e_repair_obligation_count",
+    "background_queue_e_regret_pressure_count",
+    "background_queue_e_repair_ref_set",
     "schema_cross_file_logic_ref",
     "schema_run_manifest_ref",
     "life_constraint_refs",
@@ -493,6 +508,7 @@ def decide_idle_strategy(
     readme_block_refs: list[str] | None = None,
     runtime_carrier_refs: list[str] | None = None,
 ) -> dict[str, Any]:
+    background_continuity_profile = dict(background_continuity_profile or {})
     heartbeat_counter = _next_heartbeat_counter(
         safe_terminal_loop=safe_terminal_loop,
         terminal_life_loop_state=terminal_life_loop_state,
@@ -522,6 +538,46 @@ def decide_idle_strategy(
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
     )
+    queue_e_repair_modulation_profile = _queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+        background_continuity_profile=background_continuity_profile,
+    )
+    if queue_e_repair_modulation_profile:
+        world_contact_release_posture = str(
+            queue_e_repair_modulation_profile.get(
+                "world_contact_release_posture",
+                world_contact_release_posture,
+            )
+        )
+        repair_followup_required = bool(
+            queue_e_repair_modulation_profile.get(
+                "repair_followup_required",
+                repair_followup_required,
+            )
+        )
+        repair_obligation_count = _int_or_zero(
+            queue_e_repair_modulation_profile.get(
+                "repair_obligation_count",
+                repair_obligation_count,
+            )
+        )
+        regret_pressure_count = _int_or_zero(
+            queue_e_repair_modulation_profile.get(
+                "regret_pressure_count",
+                regret_pressure_count,
+            )
+        )
+        queue_e_priority_band = str(
+            queue_e_repair_modulation_profile.get(
+                "queue_e_priority_band",
+                queue_e_priority_band,
+            )
+        )
+    queue_e_repair_ref_set = _string_list(
+        queue_e_repair_modulation_profile.get("ref_set")
+    )
     prediction_profile = _prediction_waiting_profile(
         signal_media_runtime=signal_media_runtime,
         belief_state=belief_state,
@@ -530,7 +586,6 @@ def decide_idle_strategy(
         memory_write_gate=memory_write_gate,
         state_merge_guard=state_merge_guard,
     )
-    background_continuity_profile = dict(background_continuity_profile or {})
     life_constraint_profile = _life_constraint_waiting_profile(
         schema_cross_file_logic=schema_cross_file_logic,
         schema_run_manifest=schema_run_manifest,
@@ -1090,6 +1145,20 @@ def decide_idle_strategy(
         "repair_obligation_count": repair_obligation_count,
         "regret_pressure_count": regret_pressure_count,
         "queue_e_priority_band": queue_e_priority_band,
+        "queue_e_repair_modulation_profile": queue_e_repair_modulation_profile,
+        "queue_e_repair_pressure_level": (
+            queue_e_repair_modulation_profile.get("pressure_level")
+        ),
+        "queue_e_repair_attention_target": (
+            queue_e_repair_modulation_profile.get("attention_target")
+        ),
+        "queue_e_repair_obligation_count": (
+            queue_e_repair_modulation_profile.get("repair_obligation_count")
+        ),
+        "queue_e_regret_pressure_count": (
+            queue_e_repair_modulation_profile.get("regret_pressure_count")
+        ),
+        "queue_e_repair_ref_set": queue_e_repair_ref_set,
         "nightmare_risk_ref": nightmare_risk_ref if nightmare_risk else None,
         "dream_experience_window_ref": dream_experience_window_runtime_ref,
         "wake_integration_frame_ref": wake_integration_frame_runtime_ref,
@@ -3131,6 +3200,99 @@ def _queue_e_idle_regulation(
         queue_e_signal_profile["regret_pressure_count"],
         queue_e_signal_profile["queue_e_priority_band"],
     )
+
+
+def _queue_e_repair_modulation_profile(
+    *,
+    responsibility_loop_state: dict[str, Any] | None,
+    world_contact_summary: dict[str, Any] | None,
+    pain_regret_repair_report: dict[str, Any] | None,
+    background_continuity_profile: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if responsibility_loop_state or world_contact_summary or pain_regret_repair_report:
+        return build_queue_e_repair_modulation_profile(
+            responsibility_loop_state=responsibility_loop_state,
+            world_contact_summary=world_contact_summary,
+            pain_regret_repair_report=pain_regret_repair_report,
+        )
+    background = background_continuity_profile or {}
+    background_profile = _dict_or_empty(
+        background.get("background_queue_e_repair_modulation_profile")
+        or background.get("queue_e_repair_modulation_profile")
+    )
+    if background_profile:
+        ref_set = _dedupe_string_list(
+            _string_list(background_profile.get("ref_set"))
+            + _string_list(background.get("background_queue_e_repair_ref_set"))
+            + _string_list(background.get("queue_e_repair_ref_set"))
+        )
+        return {
+            **background_profile,
+            "ref_set": ref_set,
+        }
+    ref_set = _dedupe_string_list(
+        _string_list(background.get("background_queue_e_repair_ref_set"))
+        + _string_list(background.get("queue_e_repair_ref_set"))
+    )
+    pressure_level = str(
+        background.get("background_queue_e_repair_pressure_level")
+        or background.get("queue_e_repair_pressure_level")
+        or ""
+    )
+    attention_target = str(
+        background.get("background_queue_e_repair_attention_target")
+        or background.get("queue_e_repair_attention_target")
+        or ""
+    )
+    repair_obligation_count = _int_or_zero(
+        background.get("background_queue_e_repair_obligation_count")
+        or background.get("queue_e_repair_obligation_count")
+    )
+    regret_pressure_count = _int_or_zero(
+        background.get("background_queue_e_regret_pressure_count")
+        or background.get("queue_e_regret_pressure_count")
+    )
+    if not any(
+        [
+            ref_set,
+            pressure_level,
+            attention_target,
+            repair_obligation_count,
+            regret_pressure_count,
+        ]
+    ):
+        return {}
+    return {
+        "schema_version": "queue_e_repair_modulation_profile_v0",
+        "pressure_level": pressure_level or "present",
+        "attention_target": attention_target or "repair_followup",
+        "world_contact_release_posture": str(
+            background.get("background_world_contact_release_posture")
+            or background.get("world_contact_release_posture")
+            or "shadow_only_guarded"
+        ),
+        "repair_followup_required": pressure_level in {"elevated", "urgent"}
+        or repair_obligation_count > 0
+        or regret_pressure_count > 0,
+        "repair_obligation_count": repair_obligation_count,
+        "regret_pressure_count": regret_pressure_count,
+        "queue_e_priority_band": (
+            "repair_guarded"
+            if pressure_level in {"present", "elevated", "urgent"}
+            or repair_obligation_count
+            or regret_pressure_count
+            else "baseline"
+        ),
+        "repair_obligation_refs": _string_list(
+            background.get("background_queue_e_repair_obligation_refs")
+            or background.get("queue_e_repair_obligation_refs")
+        ),
+        "regret_pressure_refs": _string_list(
+            background.get("background_queue_e_regret_pressure_refs")
+            or background.get("queue_e_regret_pressure_refs")
+        ),
+        "ref_set": ref_set,
+    }
 
 
 def _prediction_waiting_profile(

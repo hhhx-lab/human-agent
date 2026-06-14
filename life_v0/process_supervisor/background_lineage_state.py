@@ -20,6 +20,7 @@ def build_resident_background_lineage_state(
     heartbeat_cadence_presence = _heartbeat_cadence_presence(governance)
     memory_retrieval_presence = _memory_retrieval_presence(governance)
     prediction_write_gate_presence = _prediction_write_gate_presence(governance)
+    queue_e_repair_presence = _queue_e_repair_presence(governance)
     birth_repair_presence = _birth_repair_presence(governance)
     life_constraint_presence = _life_constraint_presence(governance)
     profile = _dict_or_empty(governance.get("background_lineage_governance_profile"))
@@ -48,6 +49,8 @@ def build_resident_background_lineage_state(
         depth_band = "no_background_lineage"
     if not depth_band and prediction_write_gate_presence:
         depth_band = "no_background_lineage"
+    if not depth_band and queue_e_repair_presence:
+        depth_band = "no_background_lineage"
     if not depth_band and birth_repair_presence:
         depth_band = "no_background_lineage"
     if not depth_band and life_constraint_presence:
@@ -66,6 +69,7 @@ def build_resident_background_lineage_state(
             depth_band,
             pressure_level=(
                 governance.get("background_carryover_pressure_level")
+                or queue_e_repair_presence.get("pressure_level")
                 or birth_repair_presence.get("pressure_level")
             ),
         ),
@@ -136,6 +140,8 @@ def build_resident_background_lineage_state(
         lineage_state["prediction_write_gate_presence"] = (
             prediction_write_gate_presence
         )
+    if queue_e_repair_presence:
+        lineage_state["queue_e_repair_presence"] = queue_e_repair_presence
     if identity_consciousness_birth_presence:
         lineage_state["identity_consciousness_birth_presence"] = (
             identity_consciousness_birth_presence
@@ -1465,6 +1471,97 @@ def _birth_repair_presence(governance: dict[str, Any]) -> dict[str, Any]:
                 "background_queue_e_birth_repair_attention_reason"
             ),
             "background_ref_set": background_ref_set,
+        }
+    )
+
+
+def _queue_e_repair_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    profile = _dict_or_empty(
+        governance.get("queue_e_repair_modulation_profile")
+        or governance.get("background_queue_e_repair_modulation_profile")
+    )
+    pressure_level = _first_present(
+        governance.get("queue_e_repair_pressure_level"),
+        governance.get("background_queue_e_repair_pressure_level"),
+        profile.get("pressure_level"),
+    )
+    attention_target = _first_present(
+        governance.get("queue_e_repair_attention_target"),
+        governance.get("background_queue_e_repair_attention_target"),
+        profile.get("attention_target"),
+    )
+    repair_obligation_count = _int_or_zero(
+        _first_present(
+            governance.get("queue_e_repair_obligation_count"),
+            governance.get("background_queue_e_repair_obligation_count"),
+            profile.get("repair_obligation_count"),
+        )
+    )
+    regret_pressure_count = _int_or_zero(
+        _first_present(
+            governance.get("queue_e_regret_pressure_count"),
+            governance.get("background_queue_e_regret_pressure_count"),
+            profile.get("regret_pressure_count"),
+        )
+    )
+    repair_obligation_refs = _dedupe_string_list(
+        _string_list(governance.get("queue_e_repair_obligation_refs"))
+        + _string_list(governance.get("background_queue_e_repair_obligation_refs"))
+        + _string_list(profile.get("repair_obligation_refs"))
+    )
+    regret_pressure_refs = _dedupe_string_list(
+        _string_list(governance.get("queue_e_regret_pressure_refs"))
+        + _string_list(governance.get("background_queue_e_regret_pressure_refs"))
+        + _string_list(profile.get("regret_pressure_refs"))
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(governance.get("queue_e_repair_ref_set"))
+        + _string_list(governance.get("queue_e_repair_refs"))
+        + _string_list(governance.get("queue_e_repair_evidence_refs"))
+        + _string_list(governance.get("background_queue_e_repair_ref_set"))
+        + _string_list(profile.get("ref_set"))
+        + repair_obligation_refs
+        + regret_pressure_refs
+    )
+    continuity_mode = (
+        governance.get("queue_e_repair_continuity_mode")
+        or governance.get("background_queue_e_repair_continuity_mode")
+        or governance.get("background_continuity_mode")
+    )
+    if not any(
+        [
+            profile,
+            pressure_level,
+            attention_target,
+            repair_obligation_count,
+            regret_pressure_count,
+            repair_obligation_refs,
+            regret_pressure_refs,
+            ref_set,
+        ]
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "queue_e_repair_modulation_profile": profile,
+            "pressure_level": pressure_level,
+            "attention_target": attention_target,
+            "repair_obligation_count": repair_obligation_count,
+            "regret_pressure_count": regret_pressure_count,
+            "repair_obligation_refs": repair_obligation_refs,
+            "regret_pressure_refs": regret_pressure_refs,
+            "continuity_mode": continuity_mode,
+            "ref_set": ref_set,
+            "queue_e_repair_evidence_refs": ref_set,
+            "background_pressure_level": governance.get(
+                "background_queue_e_repair_pressure_level"
+            ),
+            "background_attention_target": governance.get(
+                "background_queue_e_repair_attention_target"
+            ),
+            "background_ref_set": _string_list(
+                governance.get("background_queue_e_repair_ref_set")
+            ),
         }
     )
 
