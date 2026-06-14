@@ -16,6 +16,7 @@ STATE_INSPECTION_CATEGORIES = {
     "relationship",
     "language",
     "cognition",
+    "consciousness",
     "personality",
     "ability",
     "perception",
@@ -230,6 +231,30 @@ def build_resident_state_inspection(
             cognition
         )
         payload["cognition"] = cognition
+    elif normalized == "consciousness":
+        consciousness = _collect_files(
+            state_root,
+            {
+                "workspace_frame": "consciousness/workspace_frame.json",
+                "broadcast_frame": "consciousness/broadcast_frame.json",
+                "metacognition_state": "consciousness/metacognition_state.json",
+                "consciousness_probe": (
+                    "consciousness/consciousness_probe_bundle.json"
+                ),
+                "birth_readiness_rollup": (
+                    "life_targets/birth_readiness_rollup.json"
+                ),
+                "birth_readiness_stage_gate": (
+                    "life_targets/birth_readiness_stage_gate.json"
+                ),
+                "terminal_life_loop": "terminal/terminal_life_loop_state.json",
+                "resident_governance": "terminal/resident_governance_state.json",
+            },
+        )
+        consciousness["reportability_summary"] = (
+            _collect_consciousness_reportability_summary(consciousness)
+        )
+        payload["consciousness"] = consciousness
     elif normalized == "personality":
         personality = _collect_files(
             state_root,
@@ -1876,6 +1901,116 @@ def _collect_cognitive_workspace_summary(
     }
 
 
+def _collect_consciousness_reportability_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    workspace = _extract_compact_value(section.get("workspace_frame", {}))
+    broadcast = _extract_compact_value(section.get("broadcast_frame", {}))
+    metacognition = _extract_compact_value(section.get("metacognition_state", {}))
+    probe = _extract_compact_value(section.get("consciousness_probe", {}))
+    readiness_rollup = _extract_compact_value(
+        section.get("birth_readiness_rollup", {})
+    )
+    stage_gate = _extract_compact_value(section.get("birth_readiness_stage_gate", {}))
+    terminal_loop = _extract_compact_value(section.get("terminal_life_loop", {}))
+    governance = _extract_compact_value(section.get("resident_governance", {}))
+    lineage = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    identity_birth_presence = _extract_nested_value(
+        lineage,
+        "identity_consciousness_birth_presence",
+    )
+    domain_presence = {
+        "workspace_frame": bool(workspace),
+        "broadcast_frame": bool(broadcast),
+        "metacognition_state": bool(metacognition),
+        "consciousness_probe": bool(probe),
+        "birth_readiness_rollup": bool(readiness_rollup),
+        "birth_readiness_stage_gate": bool(stage_gate),
+        "terminal_life_loop": bool(terminal_loop),
+        "resident_governance": bool(governance),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    reportability_flags = _list_refs(
+        probe.get("reportability_flags")
+        or identity_birth_presence.get("reportability_flags")
+        or governance.get("consciousness_reportability_flags")
+    )
+    blocked_reasons = _list_refs(
+        stage_gate.get("blocked_reasons")
+        or readiness_rollup.get("blocked_reasons")
+        or identity_birth_presence.get("blocked_reasons")
+    )
+    return {
+        "schema_version": "consciousness_reportability_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "workspace_status": workspace.get("status"),
+        "workspace_focus": _first_non_empty(
+            workspace.get("live_turn_focus"),
+            workspace.get("current_focus"),
+        ),
+        "workspace_candidate_explanation_count": _count_any(
+            workspace.get("candidate_explanations")
+        ),
+        "workspace_broadcast_target_count": _count_any(
+            workspace.get("broadcast_targets")
+        ),
+        "broadcast_target_count": _count_any(broadcast.get("broadcast_targets")),
+        "broadcast_targets": _list_refs(broadcast.get("broadcast_targets")),
+        "salience_rank_count": _count_any(broadcast.get("salience_ranking")),
+        "metacognitive_uncertainty_flags": _list_refs(
+            metacognition.get("uncertainty_flags")
+        ),
+        "reflection_prompt_count": _count_any(
+            metacognition.get("reflection_prompts")
+        ),
+        "expression_risk_ref_count": _count_any(
+            metacognition.get("expression_risk_refs")
+        ),
+        "probe_status": probe.get("probe_status"),
+        "reportability_flags": reportability_flags,
+        "reportability_flag_count": len(reportability_flags),
+        "probe_refs": _tier_refs(
+            probe,
+            [
+                "workspace_frame_ref",
+                "broadcast_frame_ref",
+                "metacognition_ref",
+                "relationship_continuity_refs",
+            ],
+        ),
+        "relationship_continuity_ref_count": _count_any(
+            probe.get("relationship_continuity_refs")
+        ),
+        "birth_readiness_overall_status": readiness_rollup.get("overall_status"),
+        "birth_readiness_stage_decision": stage_gate.get("decision"),
+        "birth_readiness_stage_effect": stage_gate.get("stage_effect"),
+        "birth_readiness_waiting_posture": _first_non_empty(
+            identity_birth_presence.get("birth_readiness_waiting_posture"),
+            governance.get("birth_readiness_waiting_posture"),
+        ),
+        "consciousness_waiting_posture": _first_non_empty(
+            identity_birth_presence.get("consciousness_waiting_posture"),
+            governance.get("consciousness_waiting_posture"),
+        ),
+        "blocked_reasons": blocked_reasons,
+        "identity_consciousness_birth_ref_count": _count_any(
+            identity_birth_presence.get("identity_consciousness_birth_refs")
+        )
+        + _count_any(lineage.get("resident_background_lineage_identity_consciousness_birth_refs")),
+        "consciousness_boundary": (
+            "consciousness_state_view_not_consciousness_claim_or_script"
+        ),
+    }
+
+
 def _collect_personality_convergence_summary(
     section: dict[str, Any]
 ) -> dict[str, Any]:
@@ -2043,6 +2178,9 @@ def _normalize_category(category: str) -> str:
         "身体": "body",
         "语言": "language",
         "认知": "cognition",
+        "意识": "consciousness",
+        "conscious": "consciousness",
+        "workspace": "consciousness",
         "人格": "personality",
         "性格": "personality",
         "能力": "ability",

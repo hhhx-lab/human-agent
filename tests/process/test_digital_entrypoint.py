@@ -497,6 +497,29 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 },
             )
             self._write_json(
+                paths["state_root"] / "consciousness" / "consciousness_probe_bundle.json",
+                {
+                    "schema_version": "consciousness_probe_bundle_v0",
+                    "probe_status": "reportable_workspace_present",
+                    "reportability_flags": [
+                        "workspace_accessible",
+                        "metacognitive_monitoring_present",
+                    ],
+                    "workspace_frame_ref": (
+                        "runtime/state/consciousness/workspace_frame.json"
+                    ),
+                    "broadcast_frame_ref": (
+                        "runtime/state/consciousness/broadcast_frame.json"
+                    ),
+                    "metacognition_ref": (
+                        "runtime/state/consciousness/metacognition_state.json"
+                    ),
+                    "relationship_continuity_refs": [
+                        "runtime/state/relationship/relationship_timeline.json#continuity"
+                    ],
+                },
+            )
+            self._write_json(
                 paths["state_root"] / "perception" / "visual_observation_frame.json",
                 {
                     "schema_version": "visual_observation_frame_v0",
@@ -1239,6 +1262,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "/state": "resident_continuity_summary_v0",
                 "/relationship": "relationship_continuity_summary_v0",
                 "/cognition": "cognitive_workspace_summary_v0",
+                "/consciousness": "consciousness_reportability_summary_v0",
+                "/意识": "consciousness_reportability_summary_v0",
             }
             for command, expected_fragment in checks.items():
                 output = StringIO()
@@ -1449,6 +1474,26 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn(
                 "perception_prediction_world_contact_view_not_tool_gateway",
                 perception_output.getvalue(),
+            )
+
+            consciousness_output = StringIO()
+            with redirect_stdout(consciousness_output):
+                consciousness_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/意识",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(consciousness_exit)
+            self.assertIn(
+                "consciousness_reportability_summary_v0",
+                consciousness_output.getvalue(),
+            )
+            self.assertIn("reportable_workspace_present", consciousness_output.getvalue())
+            self.assertIn("workspace_accessible", consciousness_output.getvalue())
+            self.assertIn(
+                "consciousness_state_view_not_consciousness_claim_or_script",
+                consciousness_output.getvalue(),
             )
 
             state_output = StringIO()
