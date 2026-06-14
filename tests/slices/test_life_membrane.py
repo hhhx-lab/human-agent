@@ -353,6 +353,24 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertIn("external_irreversible_action", world_contact["blocked_contacts"])
         self.assertTrue(world_contact["allowed_contacts"])
         self.assertIn("runtime/state/action/action_candidate_set.json#life_constraint_profile", world_contact["life_constraint_refs"])
+        self.assertEqual(
+            world_contact["future_no_go_profile_ref"],
+            "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+        )
+        self.assertTrue(world_contact["repair_hold_required"])
+        self.assertEqual(world_contact["confirmation_threshold_bias"], "raised")
+        self.assertIn(
+            "external_release_without_repair_review",
+            world_contact["blocked_future_routes"],
+        )
+        self.assertIn(
+            "runtime/state/action/responsibility_loop_state.json",
+            world_contact["repair_governance_refs"],
+        )
+        self.assertIn(
+            "runtime/reports/latest/pain_regret_repair_report.json",
+            world_contact["repair_governance_refs"],
+        )
 
         self.assertEqual(side_effect_review["schema_version"], "side_effect_review_v0")
         self.assertEqual(

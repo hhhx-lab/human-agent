@@ -336,6 +336,12 @@ def run_life_membrane(
         run_id=run_id,
         generated_at=generated_at,
     )
+    world_contact_gate = build_world_contact_gate_state(
+        run_id=run_id,
+        generated_at=generated_at,
+        go_nogo_decision=go_nogo,
+        shadow_action_gate=shadow_action,
+    )
     precheck = _build_birth_readiness_precheck(run_id, generated_at)
     preflight = _build_first_activation_preflight(run_id, generated_at)
     manifest = _build_manifest(run_id, generated_at)

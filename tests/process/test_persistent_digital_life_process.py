@@ -6843,6 +6843,8 @@ class PersistentDigitalLifeProcessTests(
             expected_life_constraint_refs = [
                 "runtime/state/action/action_candidate_set.json#life_constraint_profile",
                 "runtime/state/direction/value_orientation.json",
+                "runtime/state/action/go_nogo_state.json#queue_e_repair_modulation_profile",
+                "runtime/state/action/go_nogo_state.json#future_no_go_profile",
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
                 "runtime/state/language/expression_plan.json",
             ]

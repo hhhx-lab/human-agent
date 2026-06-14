@@ -277,10 +277,19 @@ Queue E 必须接到这些现有器官上：
 - `allowed_contacts`
 - `blocked_contacts`
 - `life_constraint_refs`
+- `future_no_go_profile_ref`
+- `repair_hold_required`
+- `confirmation_threshold_bias`
+- `future_release_posture`
+- `blocked_future_routes`
+- `allowed_repair_routes`
+- `repair_governance_refs`
 
 ### 当前补厚口径
 
 `world_contact_gate.py` 现在必须把 go/no-go 携带的 `life_constraint_refs` 继续带到世界接触门。这个字段是后续 validator、schema runner、常驻 process supervisor 判断“为什么只允许 shadow / observation / receipt，而不允许外部不可逆动作”的证据入口。
+
+最新补厚口径要求 `world_contact_gate.py` 继续消费 `go_nogo_state.json#future_no_go_profile`。当 `repair_hold_required=true` 时，世界接触门不能只保留泛化 `life_constraint_refs`，还必须显式写出 raised confirmation threshold、被阻断的未来释放路线、仍然开放的修复路线和责任治理 refs。这样 FutureNoGo 不会停在行动门内部，而会继续改变世界接触释放阈值。
 
 ## D. `life_v0/membrane/side_effect_review.py` 已落第一轮，继续补厚
 
