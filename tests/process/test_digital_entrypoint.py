@@ -271,6 +271,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "action",
                 "validation",
                 "schema_runner",
+                "observation",
             ]:
                 (paths["state_root"] / relative_dir).mkdir(
                     parents=True,
@@ -1153,6 +1154,186 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 },
             )
             self._write_json(
+                paths["state_root"] / "membrane" / "life_membrane.json",
+                {
+                    "schema_version": "life_membrane_v0",
+                    "status": "closed",
+                    "active_engineering_slice": "S03_DIRECTION_LIFE_MEMBRANE",
+                    "stage_policy": "pre_activation_shadow_only",
+                    "gate_chain": [
+                        "life_membrane_gate",
+                        "dream_fact_gate",
+                        "responsibility_gate",
+                        "shadow_action_gate",
+                        "birth_readiness_gate",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "membrane" / "membrane_gate_decision.json",
+                {
+                    "schema_version": "membrane_gate_decision_v0",
+                    "status": "closed",
+                    "stage_effect": "allow_next_slice",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "membrane" / "direction_boundary_lock.json",
+                {
+                    "schema_version": "direction_boundary_lock_v0",
+                    "blocked_regressions": [
+                        "score_based_birth_readiness",
+                        "task_scheduler_subject",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "membrane" / "quarantine_policy_seed.json",
+                {
+                    "schema_version": "quarantine_policy_seed_v0",
+                    "quarantine_routes": [
+                        {"route_id": "missing_source_quarantine"}
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "membrane" / "dream_fact_boundary.json",
+                {
+                    "schema_version": "dream_fact_boundary_v0",
+                    "dream_to_reality_direct_write_allowed": False,
+                    "failure_routes": ["wake_integration", "symbolic_only"],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "membrane"
+                / "relationship_subject_boundary.json",
+                {
+                    "schema_version": "relationship_subject_boundary_v0",
+                    "status": "closed",
+                    "relation_role_boundary": (
+                        "relationship_not_service_role"
+                    ),
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "membrane"
+                / "responsibility_repair_boundary.json",
+                {
+                    "schema_version": "responsibility_repair_boundary_v0",
+                    "status": "closed",
+                    "repair_route_required": True,
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "membrane" / "shadow_action_gate.json",
+                {
+                    "schema_version": "shadow_action_gate_v0",
+                    "external_irreversible_action_allowed": False,
+                    "shadow_only": True,
+                    "allowed_shadow_objects": ["ActionIntent"],
+                    "pending_confirmation_points": [
+                        "external_world_contact"
+                    ],
+                    "confirmation_routes": [
+                        "confirmation_binding_before_release"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "membrane" / "action_intent_queue.json",
+                {
+                    "schema_version": "action_intent_queue_v0",
+                    "queue_status": "shadow_review",
+                    "shadow_routes": ["replay_shadow_before_release"],
+                    "intent_refs": [
+                        "runtime/state/action/action_candidate_set.json#intent-1"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "membrane" / "observation_truth_gate.json",
+                {
+                    "schema_version": "observation_truth_gate_v0",
+                    "prediction_workspace_ref": (
+                        "runtime/state/prediction/prediction_workspace_frame.json"
+                    ),
+                    "action_intent_queue_ref": (
+                        "runtime/state/membrane/action_intent_queue.json"
+                    ),
+                    "promotion_blockers": [
+                        "unverified_world_contact_observation"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "membrane" / "confirmation_binding.json",
+                {
+                    "schema_version": "confirmation_binding_v0",
+                    "confirmation_status": "not_required",
+                    "action_intent_queue_ref": (
+                        "runtime/state/membrane/action_intent_queue.json"
+                    ),
+                    "world_contact_gate_ref": (
+                        "runtime/state/action/world_contact_gate_state.json"
+                    ),
+                    "confirmation_routes": [
+                        "ask_relation_subject_before_irreversible_release"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "action" / "action_candidate_set.json",
+                {
+                    "schema_version": "action_candidate_set_v0",
+                    "candidate_count": 2,
+                    "action_candidates": [
+                        {"candidate_id": "intent-1"},
+                        {"candidate_id": "intent-2"},
+                    ],
+                    "world_contact_needed": True,
+                    "action_state_refs": [
+                        "runtime/state/action/world_contact_gate_state.json"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "action" / "side_effect_review.json",
+                {
+                    "schema_version": "side_effect_review_v0",
+                    "world_contact_gate_ref": (
+                        "runtime/state/action/world_contact_gate_state.json"
+                    ),
+                    "side_effect_refs": [
+                        "runtime/state/action/side_effect_review.json#effect-1"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "observation"
+                / "world_observation_route.json",
+                {
+                    "schema_version": "world_observation_route_v0",
+                    "observation_route_mode": "terminal_observation",
+                    "observation_targets": ["terminal_surface"],
+                    "prioritized_channels": ["text_terminal"],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "observation"
+                / "periphery_normalization_trace.json",
+                {
+                    "schema_version": "periphery_normalization_trace_v0",
+                    "status": "closed",
+                    "world_observation_route_ref": (
+                        "runtime/state/observation/world_observation_route.json"
+                    ),
+                },
+            )
+            self._write_json(
                 paths["state_root"] / "action" / "responsibility_loop_state.json",
                 {
                     "schema_version": "responsibility_loop_state_v0",
@@ -1328,17 +1509,108 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 },
             )
             self._write_json(
+                paths["state_root"] / "validation" / "observation_truth_review.json",
+                {
+                    "schema_version": "observation_truth_review_v0",
+                    "status": "closed",
+                    "reviewed_observation_refs": [
+                        "runtime/state/observation/world_observation_route.json"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "validation" / "prediction_trace_validation.json",
+                {
+                    "schema_version": "prediction_trace_validation_v0",
+                    "status": "closed",
+                    "prediction_trace_refs": [
+                        "runtime/state/prediction/active_sampling_plan.json"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "validation" / "boundary_audit_state.json",
+                {
+                    "schema_version": "boundary_audit_state_v0",
+                    "status": "closed",
+                    "boundary_audit_refs": [
+                        "runtime/state/membrane/life_membrane.json"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "validation" / "validation_stage_gate.json",
+                {
+                    "schema_version": "validation_stage_gate_v0",
+                    "decision": "closed",
+                    "next_allowed_slices": ["S09_SCHEMA_RUNNER_CODE"],
+                },
+            )
+            self._write_json(
                 paths["state_root"] / "schema_runner" / "run_manifest.json",
                 {
                     "schema_version": "schema_runner_run_manifest_v0",
                     "run_status": "closed",
                     "queue_e_birth_repair_gate_status": "closed",
+                    "next_allowed_slices": [
+                        "S06_LIFE_SUPPORT_DEVELOPMENT",
+                        "S10_RUNTIME_GROWTH_RECONSOLIDATION",
+                    ],
                     "queue_e_world_contact_repair_hold_required": True,
                     "queue_e_world_contact_confirmation_threshold_bias": (
                         "raised"
                     ),
                     "queue_e_world_contact_blocked_future_routes": [
                         "external_release_without_repair_review"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "schema_runner" / "cross_file_logic.json",
+                {
+                    "schema_version": "cross_file_logic_v0",
+                    "status": "closed",
+                    "closure_status_refs": [
+                        "runtime/state/validation/validation_rollup.json"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "schema_runner" / "counterfactual_trace.json",
+                {
+                    "schema_version": "counterfactual_trace_v0",
+                    "counterfactual_frames": [
+                        {"counterfactual_id": "repair-before-release"}
+                    ],
+                },
+            )
+            self._write_json(
+                paths["reports"] / "life_membrane_report.json",
+                {
+                    "schema_version": "life_membrane_report_v0",
+                    "status": "closed",
+                    "active_engineering_slice": "S03_DIRECTION_LIFE_MEMBRANE",
+                    "state_refs": [
+                        "runtime/state/membrane/world_contact_summary.json"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["reports"] / "validation_membrane_report.json",
+                {
+                    "schema_version": "validation_membrane_report_v0",
+                    "status": "closed",
+                    "queue_e_world_contact_repair_hold_required": True,
+                },
+            )
+            self._write_json(
+                paths["reports"] / "schema_runner_report.json",
+                {
+                    "schema_version": "schema_runner_report_v0",
+                    "status": "closed",
+                    "queue_e_world_contact_repair_hold_required": True,
+                    "queue_e_world_contact_repair_governance_refs": [
+                        "runtime/state/action/responsibility_loop_state.json"
                     ],
                 },
             )
@@ -1726,6 +1998,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "/inner": "inner_environment_modulation_summary_v0",
                 "/signal": "signal_modulation_consumption_summary_v0",
                 "/调质": "signal_modulation_consumption_summary_v0",
+                "/membrane": "life_membrane_validation_summary_v0",
+                "/生命膜": "life_membrane_validation_summary_v0",
                 "/vision": "perception_world_contact_summary_v0",
                 "/context": "relation_context_summary_v0",
                 "/ability": "ability_birth_readiness_summary_v0",
@@ -1815,6 +2089,29 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn(
                 "signal_modulation_state_view_not_spoken_life_signal_or_if_else_script",
                 signal_rendered,
+            )
+
+            membrane_output = StringIO()
+            with redirect_stdout(membrane_output):
+                membrane_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/生命膜",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(membrane_exit)
+            membrane_rendered = membrane_output.getvalue()
+            self.assertIn("life_membrane_validation_summary_v0", membrane_rendered)
+            self.assertIn("pre_activation_shadow_only", membrane_rendered)
+            self.assertIn("shadow_review", membrane_rendered)
+            self.assertIn("confirmation_binding_before_release", membrane_rendered)
+            self.assertIn("external_release_without_repair_review", membrane_rendered)
+            self.assertIn("missing_source_quarantine", membrane_rendered)
+            self.assertIn("queue_e_birth_repair_gate", membrane_rendered)
+            self.assertIn("blocked_has_route", membrane_rendered)
+            self.assertIn(
+                "life_membrane_state_view_routes_not_static_blocker_or_tool_gateway",
+                membrane_rendered,
             )
 
             memory_output = StringIO()

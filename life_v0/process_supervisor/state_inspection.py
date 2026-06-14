@@ -15,6 +15,7 @@ STATE_INSPECTION_CATEGORIES = {
     "emotion",
     "inner_environment",
     "signal",
+    "membrane",
     "relationship",
     "responsibility",
     "language",
@@ -247,6 +248,91 @@ def build_resident_state_inspection(
             _collect_signal_modulation_consumption_summary(signal)
         )
         payload["signal"] = signal
+    elif normalized == "membrane":
+        membrane = _collect_files(
+            state_root,
+            {
+                "life_membrane": "membrane/life_membrane.json",
+                "membrane_gate_decision": (
+                    "membrane/membrane_gate_decision.json"
+                ),
+                "direction_boundary_lock": (
+                    "membrane/direction_boundary_lock.json"
+                ),
+                "quarantine_policy_seed": (
+                    "membrane/quarantine_policy_seed.json"
+                ),
+                "dream_fact_boundary": "membrane/dream_fact_boundary.json",
+                "relationship_subject_boundary": (
+                    "membrane/relationship_subject_boundary.json"
+                ),
+                "responsibility_repair_boundary": (
+                    "membrane/responsibility_repair_boundary.json"
+                ),
+                "shadow_action_gate": "membrane/shadow_action_gate.json",
+                "action_intent_queue": "membrane/action_intent_queue.json",
+                "observation_truth_gate": (
+                    "membrane/observation_truth_gate.json"
+                ),
+                "confirmation_binding": "membrane/confirmation_binding.json",
+                "world_contact_summary": "membrane/world_contact_summary.json",
+                "action_candidate_set": "action/action_candidate_set.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "world_contact_gate_state": (
+                    "action/world_contact_gate_state.json"
+                ),
+                "side_effect_review": "action/side_effect_review.json",
+                "responsibility_loop_state": (
+                    "action/responsibility_loop_state.json"
+                ),
+                "memory_write_gate": "memory/memory_write_gate.json",
+                "state_merge_guard": "memory/state_merge_guard.json",
+                "dream_fact_gate_decision": (
+                    "dream/dream_fact_gate_decision.json"
+                ),
+                "wake_integration_frame": "dream/wake_integration_frame.json",
+                "world_observation_route": (
+                    "observation/world_observation_route.json"
+                ),
+                "periphery_normalization_trace": (
+                    "observation/periphery_normalization_trace.json"
+                ),
+                "world_contact_validation": (
+                    "validation/world_contact_validation.json"
+                ),
+                "observation_truth_review": (
+                    "validation/observation_truth_review.json"
+                ),
+                "prediction_trace_validation": (
+                    "validation/prediction_trace_validation.json"
+                ),
+                "boundary_audit_state": (
+                    "validation/boundary_audit_state.json"
+                ),
+                "validation_rollup": "validation/validation_rollup.json",
+                "validation_stage_gate": "validation/validation_stage_gate.json",
+                "schema_runner_manifest": "schema_runner/run_manifest.json",
+                "schema_runner_cross_file_logic": (
+                    "schema_runner/cross_file_logic.json"
+                ),
+                "schema_runner_counterfactual_trace": (
+                    "schema_runner/counterfactual_trace.json"
+                ),
+                "life_membrane_report": (
+                    "../reports/latest/life_membrane_report.json"
+                ),
+                "validation_membrane_report": (
+                    "../reports/latest/validation_membrane_report.json"
+                ),
+                "schema_runner_report": (
+                    "../reports/latest/schema_runner_report.json"
+                ),
+            },
+        )
+        membrane["validation_summary"] = (
+            _collect_life_membrane_validation_summary(membrane)
+        )
+        payload["membrane"] = membrane
     elif normalized == "relationship":
         relationship = _collect_files(
             state_root,
@@ -1893,6 +1979,369 @@ def _collect_signal_modulation_consumption_summary(
     }
 
 
+def _collect_life_membrane_validation_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    life_membrane = _extract_compact_value(section.get("life_membrane", {}))
+    membrane_decision = _extract_compact_value(
+        section.get("membrane_gate_decision", {})
+    )
+    direction_boundary = _extract_compact_value(
+        section.get("direction_boundary_lock", {})
+    )
+    quarantine = _extract_compact_value(
+        section.get("quarantine_policy_seed", {})
+    )
+    dream_fact_boundary = _extract_compact_value(
+        section.get("dream_fact_boundary", {})
+    )
+    relationship_boundary = _extract_compact_value(
+        section.get("relationship_subject_boundary", {})
+    )
+    responsibility_boundary = _extract_compact_value(
+        section.get("responsibility_repair_boundary", {})
+    )
+    shadow_gate = _extract_compact_value(section.get("shadow_action_gate", {}))
+    action_intent_queue = _extract_compact_value(
+        section.get("action_intent_queue", {})
+    )
+    observation_truth_gate = _extract_compact_value(
+        section.get("observation_truth_gate", {})
+    )
+    confirmation_binding = _extract_compact_value(
+        section.get("confirmation_binding", {})
+    )
+    world_contact_summary = _extract_compact_value(
+        section.get("world_contact_summary", {})
+    )
+    action_candidate_set = _extract_compact_value(
+        section.get("action_candidate_set", {})
+    )
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    world_contact_gate = _extract_compact_value(
+        section.get("world_contact_gate_state", {})
+    )
+    side_effect_review = _extract_compact_value(
+        section.get("side_effect_review", {})
+    )
+    responsibility_loop = _extract_compact_value(
+        section.get("responsibility_loop_state", {})
+    )
+    memory_write_gate = _extract_compact_value(
+        section.get("memory_write_gate", {})
+    )
+    state_merge_guard = _extract_compact_value(
+        section.get("state_merge_guard", {})
+    )
+    dream_fact_gate = _extract_compact_value(
+        section.get("dream_fact_gate_decision", {})
+    )
+    wake_integration = _extract_compact_value(
+        section.get("wake_integration_frame", {})
+    )
+    world_observation = _extract_compact_value(
+        section.get("world_observation_route", {})
+    )
+    periphery_trace = _extract_compact_value(
+        section.get("periphery_normalization_trace", {})
+    )
+    world_contact_validation = _extract_compact_value(
+        section.get("world_contact_validation", {})
+    )
+    observation_truth_review = _extract_compact_value(
+        section.get("observation_truth_review", {})
+    )
+    prediction_trace_validation = _extract_compact_value(
+        section.get("prediction_trace_validation", {})
+    )
+    boundary_audit = _extract_compact_value(
+        section.get("boundary_audit_state", {})
+    )
+    validation_rollup = _extract_compact_value(
+        section.get("validation_rollup", {})
+    )
+    validation_stage_gate = _extract_compact_value(
+        section.get("validation_stage_gate", {})
+    )
+    schema_manifest = _extract_compact_value(
+        section.get("schema_runner_manifest", {})
+    )
+    schema_cross_file = _extract_compact_value(
+        section.get("schema_runner_cross_file_logic", {})
+    )
+    schema_counterfactual = _extract_compact_value(
+        section.get("schema_runner_counterfactual_trace", {})
+    )
+    life_membrane_report = _extract_compact_value(
+        section.get("life_membrane_report", {})
+    )
+    validation_report = _extract_compact_value(
+        section.get("validation_membrane_report", {})
+    )
+    schema_report = _extract_compact_value(
+        section.get("schema_runner_report", {})
+    )
+    future_no_go = _extract_nested_value(go_nogo, "future_no_go_profile")
+    body_signal_modulation = _extract_nested_value(
+        memory_write_gate,
+        "body_signal_write_modulation",
+    )
+    validation_gate_status = _extract_nested_value(validation_rollup, "gate_status")
+    domain_presence = {
+        "life_membrane": bool(life_membrane or membrane_decision),
+        "direction_boundary": bool(direction_boundary),
+        "quarantine_policy": bool(quarantine),
+        "dream_fact_boundary": bool(dream_fact_boundary or dream_fact_gate),
+        "relationship_boundary": bool(relationship_boundary),
+        "responsibility_boundary": bool(
+            responsibility_boundary or responsibility_loop
+        ),
+        "action_shadow_gate": bool(
+            action_candidate_set or go_nogo or shadow_gate or action_intent_queue
+        ),
+        "world_contact_gate": bool(
+            world_contact_gate or world_contact_summary or confirmation_binding
+        ),
+        "observation_truth_gate": bool(
+            observation_truth_gate
+            or observation_truth_review
+            or world_observation
+            or periphery_trace
+        ),
+        "memory_write_gate": bool(memory_write_gate or state_merge_guard),
+        "validation_membrane": bool(
+            world_contact_validation
+            or prediction_trace_validation
+            or boundary_audit
+            or validation_rollup
+            or validation_stage_gate
+        ),
+        "schema_runner": bool(
+            schema_manifest
+            or schema_cross_file
+            or schema_counterfactual
+            or schema_report
+        ),
+        "reports": bool(life_membrane_report or validation_report or schema_report),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    blocked_routes = (
+        _list_refs(world_contact_gate.get("blocked_future_routes"))
+        + _list_refs(world_contact_gate.get("blocked_contacts"))
+        + _list_refs(validation_rollup.get("queue_e_world_contact_blocked_future_routes"))
+        + _list_refs(schema_manifest.get("queue_e_world_contact_blocked_future_routes"))
+    )
+    repair_routes = (
+        _list_refs(world_contact_gate.get("allowed_repair_routes"))
+        + _list_refs(future_no_go.get("allowed_repair_routes"))
+        + _list_refs(state_merge_guard.get("repair_routes"))
+        + _list_refs(dream_fact_gate.get("allowed_writes"))
+    )
+    quarantine_routes = (
+        _list_refs(state_merge_guard.get("quarantine_routes"))
+        + _list_refs(memory_write_gate.get("quarantine_routes"))
+        + _list_refs(quarantine.get("quarantine_routes"))
+    )
+    shadow_routes = (
+        _list_refs(shadow_gate.get("allowed_shadow_objects"))
+        + _list_refs(shadow_gate.get("confirmation_routes"))
+        + _list_refs(action_intent_queue.get("shadow_routes"))
+    )
+    validation_routes = (
+        _list_refs(world_contact_summary.get("next_guard_refs"))
+        + _list_refs(validation_stage_gate.get("next_allowed_slices"))
+        + _list_refs(schema_manifest.get("next_allowed_slices"))
+    )
+    route_presence = {
+        "shadow": bool(shadow_routes or shadow_gate.get("shadow_only")),
+        "quarantine": bool(quarantine_routes),
+        "repair": bool(repair_routes or responsibility_loop),
+        "validation": bool(validation_routes or validation_rollup),
+        "confirmation": bool(
+            confirmation_binding.get("confirmation_routes")
+            or world_contact_summary.get("confirmation_pending_ids")
+        ),
+        "schema": bool(schema_manifest or schema_cross_file),
+        "archive_or_growth": bool(
+            wake_integration.get("growth_seed_refs")
+            or wake_integration.get("repair_modulated_wake_targets")
+        ),
+    }
+    return {
+        "schema_version": "life_membrane_validation_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "route_presence": route_presence,
+        "life_membrane_status": _first_non_empty(
+            life_membrane.get("status"),
+            membrane_decision.get("status"),
+            life_membrane_report.get("status"),
+        ),
+        "active_engineering_slice": _first_non_empty(
+            life_membrane.get("active_engineering_slice"),
+            life_membrane_report.get("active_engineering_slice"),
+        ),
+        "stage_policy": life_membrane.get("stage_policy"),
+        "gate_chain_count": _count_any(life_membrane.get("gate_chain")),
+        "blocked_regressions": _list_refs(
+            direction_boundary.get("blocked_regressions")
+        ),
+        "quarantine_route_count": _count_any(quarantine_routes),
+        "shadow_gate": {
+            "shadow_only": bool(shadow_gate.get("shadow_only")),
+            "external_irreversible_action_allowed": bool(
+                shadow_gate.get("external_irreversible_action_allowed")
+            ),
+            "allowed_shadow_objects": _list_refs(
+                shadow_gate.get("allowed_shadow_objects")
+            ),
+            "pending_confirmation_points": _list_refs(
+                shadow_gate.get("pending_confirmation_points")
+            ),
+            "action_intent_queue_status": action_intent_queue.get(
+                "queue_status"
+            ),
+        },
+        "action_gate": {
+            "candidate_count": _first_non_empty(
+                action_candidate_set.get("candidate_count"),
+                _count_any(action_candidate_set.get("action_candidates")),
+            ),
+            "go_nogo_decision": go_nogo.get("decision"),
+            "future_repair_hold_required": bool(
+                future_no_go.get("repair_hold_required")
+            ),
+            "confirmation_threshold_bias": _first_non_empty(
+                future_no_go.get("confirmation_threshold_bias"),
+                world_contact_gate.get("confirmation_threshold_bias"),
+            ),
+            "next_action_biases": _list_refs(
+                future_no_go.get("next_action_biases")
+                or future_no_go.get("future_action_bias")
+            ),
+        },
+        "world_contact_gate": {
+            "contact_mode": _first_non_empty(
+                world_contact_gate.get("contact_mode"),
+                world_contact_summary.get("contact_mode"),
+            ),
+            "release_posture": _first_non_empty(
+                world_contact_summary.get("release_posture"),
+                world_contact_gate.get("future_release_posture"),
+            ),
+            "blocked_route_count": _count_any(blocked_routes),
+            "blocked_routes": blocked_routes[:12],
+            "allowed_repair_routes": repair_routes[:12],
+            "confirmation_status": confirmation_binding.get(
+                "confirmation_status"
+            ),
+            "confirmation_pending_ids": _list_refs(
+                world_contact_summary.get("confirmation_pending_ids")
+            ),
+        },
+        "observation_truth_gate": {
+            "observation_route_mode": _first_non_empty(
+                world_contact_summary.get("observation_route_mode"),
+                world_observation.get("observation_route_mode"),
+            ),
+            "promotion_blocker_count": _count_any(
+                observation_truth_gate.get("promotion_blockers")
+            ),
+            "observation_target_count": _count_any(
+                world_observation.get("observation_targets")
+            ),
+            "periphery_trace_status": periphery_trace.get("status"),
+            "observation_review_status": observation_truth_review.get("status"),
+            "prediction_trace_status": prediction_trace_validation.get("status"),
+        },
+        "memory_and_dream_gates": {
+            "memory_stage_policy": memory_write_gate.get("stage_policy"),
+            "memory_write_bias": body_signal_modulation.get("write_bias"),
+            "state_merge_policy": state_merge_guard.get("stage_policy"),
+            "state_merge_repair_route_count": _count_any(
+                state_merge_guard.get("repair_routes")
+            ),
+            "dream_direct_fact_write_allowed": bool(
+                dream_fact_boundary.get("dream_to_reality_direct_write_allowed")
+            ),
+            "dream_allowed_write_kinds": _list_refs(
+                dream_fact_gate.get("allowed_writes")
+            ),
+            "dream_blocked_write_kinds": _list_refs(
+                dream_fact_gate.get("blocked_writes")
+            ),
+        },
+        "responsibility_and_repair": {
+            "responsibility_boundary_status": responsibility_boundary.get(
+                "status"
+            ),
+            "side_effect_count": _count_any(
+                side_effect_review.get("side_effects")
+            )
+            or _count_any(side_effect_review.get("side_effect_refs")),
+            "responsibility_loop_id": responsibility_loop.get(
+                "responsibility_loop_id"
+            ),
+            "repair_followup_required": bool(
+                responsibility_loop.get("repair_followup_required")
+                or world_contact_validation.get("repair_hold_required")
+                or validation_rollup.get(
+                    "queue_e_world_contact_repair_hold_required"
+                )
+                or schema_manifest.get(
+                    "queue_e_world_contact_repair_hold_required"
+                )
+            ),
+            "repair_governance_ref_count": _count_any(
+                world_contact_gate.get("repair_governance_refs")
+                or world_contact_validation.get("repair_governance_refs")
+                or schema_report.get("queue_e_world_contact_repair_governance_refs")
+            ),
+        },
+        "validation_and_schema": {
+            "validation_status": _first_non_empty(
+                validation_rollup.get("overall_status"),
+                validation_report.get("status"),
+            ),
+            "queue_e_gate_status": _first_non_empty(
+                validation_gate_status.get("queue_e_birth_repair_gate"),
+                schema_manifest.get("queue_e_birth_repair_gate_status"),
+            ),
+            "validation_stage_decision": _first_non_empty(
+                validation_stage_gate.get("decision"),
+                validation_stage_gate.get("status"),
+            ),
+            "schema_run_status": schema_manifest.get("run_status"),
+            "cross_file_logic_status": schema_cross_file.get("status"),
+            "counterfactual_trace_count": _count_any(
+                schema_counterfactual.get("counterfactual_frames")
+                or schema_counterfactual.get("counterfactual_trace")
+            ),
+        },
+        "dead_gate_check": {
+            "blocked_has_route": bool(
+                blocked_routes
+                and (
+                    route_presence["repair"]
+                    or route_presence["validation"]
+                    or route_presence["shadow"]
+                    or route_presence["confirmation"]
+                )
+            ),
+            "repair_route_count": _count_any(repair_routes),
+            "validation_route_count": _count_any(validation_routes),
+            "shadow_route_count": _count_any(shadow_routes),
+        },
+        "membrane_boundary": (
+            "life_membrane_state_view_routes_not_static_blocker_or_tool_gateway"
+        ),
+    }
+
+
 def _collect_language_generation_consumption_summary(
     section: dict[str, Any]
 ) -> dict[str, Any]:
@@ -3115,6 +3564,13 @@ def _normalize_category(category: str) -> str:
         "信号介质": "signal",
         "modulation": "signal",
         "neuromodulation": "signal",
+        "生命膜": "membrane",
+        "膜": "membrane",
+        "边界": "membrane",
+        "验证膜": "membrane",
+        "life_membrane": "membrane",
+        "boundary": "membrane",
+        "validation_membrane": "membrane",
         "关系": "relationship",
         "责任": "responsibility",
         "痛苦": "responsibility",
