@@ -75,6 +75,7 @@ def build_resident_state_inspection(
                 "memory_retrieval": "memory/memory_retrieval_frame.json",
                 "memory_write_gate": "memory/memory_write_gate.json",
                 "state_merge_guard": "memory/state_merge_guard.json",
+                "dream_fact_boundary": "membrane/dream_fact_boundary.json",
                 "life_state": "life_state.json",
             },
         )
@@ -96,6 +97,10 @@ def build_resident_state_inspection(
                 "wake_integration_frame": "dream/wake_integration_frame.json",
                 "dream_fact_gate_decision": "dream/dream_fact_gate_decision.json",
                 "nightmare_loop_risk": "dream/nightmare_loop_risk.json",
+                "memory_retrieval": "memory/memory_retrieval_frame.json",
+                "memory_write_gate": "memory/memory_write_gate.json",
+                "state_merge_guard": "memory/state_merge_guard.json",
+                "dream_fact_boundary": "membrane/dream_fact_boundary.json",
                 "web_dream_learning_state": "dream/web_dream_learning_state.json",
                 "offline_learning_cumulative_profile": (
                     "growth/offline_learning_cumulative_profile.json"
@@ -962,7 +967,24 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
     memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
     memory_write_gate = _extract_compact_value(section.get("memory_write_gate", {}))
     state_merge_guard = _extract_compact_value(section.get("state_merge_guard", {}))
+    dream_fact_boundary = _extract_compact_value(
+        section.get("dream_fact_boundary", {})
+    )
     life_state = _extract_compact_value(section.get("life_state", {}))
+    exit_next_wake = _collect_exit_dream_next_wake_inspection(
+        relationship_memory=relationship_memory,
+        dialogue_memory_summary=dialogue_memory_summary,
+        engram_index=engram_index,
+        autobiographical_stack=autobiographical_stack,
+        memory_retrieval=memory_retrieval,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+        dream_fact_boundary=dream_fact_boundary,
+        life_state=life_state,
+        exit_summary={},
+        dream_fact_gate={},
+        wake_integration={},
+    )
     tiered_recall = _extract_nested_value(memory_retrieval, "tiered_recall")
     reconstruction_inputs = _extract_nested_value(
         memory_retrieval,
@@ -985,6 +1007,7 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         "memory_retrieval": bool(memory_retrieval),
         "memory_write_gate": bool(memory_write_gate),
         "state_merge_guard": bool(state_merge_guard),
+        "dream_fact_boundary": bool(dream_fact_boundary),
         "life_state": bool(life_state),
     }
     active_domains = [
@@ -1029,6 +1052,37 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         ),
         "dream_residue_hit_count": _count_any(
             memory_retrieval.get("dream_residue_hits")
+        ),
+        "exit_dream_next_wake_governance_ref": (
+            exit_next_wake.get("governance_ref")
+        ),
+        "exit_dream_next_wake_cue_ref_count": (
+            exit_next_wake.get("cue_ref_count")
+        ),
+        "exit_dream_next_wake_governance_ref_count": (
+            exit_next_wake.get("governance_ref_count")
+        ),
+        "exit_dream_next_wake_memory_cue_refs": (
+            exit_next_wake.get("memory_cue_refs")
+        ),
+        "exit_dream_next_wake_governance_refs": (
+            exit_next_wake.get("governance_refs")
+        ),
+        "exit_dream_write_gate_ref": exit_next_wake.get("write_gate_ref"),
+        "exit_dream_state_merge_guard_ref": (
+            exit_next_wake.get("state_merge_guard_ref")
+        ),
+        "exit_dream_fact_boundary_ref": (
+            exit_next_wake.get("fact_boundary_ref")
+        ),
+        "exit_dream_next_wake_candidate_boundary": (
+            exit_next_wake.get("candidate_boundary")
+        ),
+        "exit_dream_next_wake_writeback_route": (
+            exit_next_wake.get("writeback_route")
+        ),
+        "exit_dream_next_wake_inspection_boundary": (
+            exit_next_wake.get("inspection_boundary")
         ),
         "responsibility_hit_count": _count_any(
             memory_retrieval.get("responsibility_hits")
@@ -1099,6 +1153,12 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
     dream_fact_gate = _extract_compact_value(
         section.get("dream_fact_gate_decision", {})
     )
+    memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
+    memory_write_gate = _extract_compact_value(section.get("memory_write_gate", {}))
+    state_merge_guard = _extract_compact_value(section.get("state_merge_guard", {}))
+    dream_fact_boundary = _extract_compact_value(
+        section.get("dream_fact_boundary", {})
+    )
     nightmare_risk = _extract_compact_value(section.get("nightmare_loop_risk", {}))
     web_dream_learning = _extract_compact_value(
         section.get("web_dream_learning_state", {})
@@ -1108,6 +1168,20 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
     )
     resident_sleep = _extract_compact_value(
         section.get("resident_sleep_cycle_state", {})
+    )
+    exit_next_wake = _collect_exit_dream_next_wake_inspection(
+        relationship_memory={},
+        dialogue_memory_summary={},
+        engram_index={},
+        autobiographical_stack={},
+        memory_retrieval=memory_retrieval,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+        dream_fact_boundary=dream_fact_boundary,
+        life_state={},
+        exit_summary=exit_summary,
+        dream_fact_gate=dream_fact_gate,
+        wake_integration=wake_integration,
     )
     memory_tiering = _extract_nested_value(exit_summary, "memory_tiering")
     repair_profile = _extract_nested_value(
@@ -1125,6 +1199,10 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
         "dream_experience_window": bool(dream_window),
         "wake_integration_frame": bool(wake_integration),
         "dream_fact_gate_decision": bool(dream_fact_gate),
+        "memory_retrieval": bool(memory_retrieval),
+        "memory_write_gate": bool(memory_write_gate),
+        "state_merge_guard": bool(state_merge_guard),
+        "dream_fact_boundary": bool(dream_fact_boundary),
         "nightmare_loop_risk": bool(nightmare_risk),
         "web_dream_learning_state": bool(web_dream_learning),
         "offline_learning_cumulative_profile": bool(offline_learning),
@@ -1174,6 +1252,37 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
         "allowed_write_kinds": _list_refs(dream_fact_gate.get("allowed_writes")),
         "blocked_write_kinds": _list_refs(dream_fact_gate.get("blocked_writes")),
         "decision_item_count": _count_any(dream_fact_gate.get("decision_items")),
+        "exit_dream_next_wake_governance_ref": (
+            exit_next_wake.get("governance_ref")
+        ),
+        "exit_dream_next_wake_cue_ref_count": (
+            exit_next_wake.get("cue_ref_count")
+        ),
+        "exit_dream_next_wake_governance_ref_count": (
+            exit_next_wake.get("governance_ref_count")
+        ),
+        "exit_dream_next_wake_memory_cue_refs": (
+            exit_next_wake.get("memory_cue_refs")
+        ),
+        "exit_dream_next_wake_governance_refs": (
+            exit_next_wake.get("governance_refs")
+        ),
+        "exit_dream_write_gate_ref": exit_next_wake.get("write_gate_ref"),
+        "exit_dream_state_merge_guard_ref": (
+            exit_next_wake.get("state_merge_guard_ref")
+        ),
+        "exit_dream_fact_boundary_ref": (
+            exit_next_wake.get("fact_boundary_ref")
+        ),
+        "exit_dream_next_wake_candidate_boundary": (
+            exit_next_wake.get("candidate_boundary")
+        ),
+        "exit_dream_next_wake_writeback_route": (
+            exit_next_wake.get("writeback_route")
+        ),
+        "exit_dream_next_wake_inspection_boundary": (
+            exit_next_wake.get("inspection_boundary")
+        ),
         "nightmare_risk_status": nightmare_risk.get("risk_status"),
         "nightmare_loop_indicators": _list_refs(
             nightmare_risk.get("loop_indicators")
@@ -1211,6 +1320,149 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
         },
         "dream_boundary": (
             "dream_residue_wake_review_fact_gate_before_memory_or_action"
+        ),
+    }
+
+
+def _collect_exit_dream_next_wake_inspection(
+    *,
+    relationship_memory: dict[str, Any],
+    dialogue_memory_summary: dict[str, Any],
+    engram_index: dict[str, Any],
+    autobiographical_stack: dict[str, Any],
+    memory_retrieval: dict[str, Any],
+    memory_write_gate: dict[str, Any],
+    state_merge_guard: dict[str, Any],
+    dream_fact_boundary: dict[str, Any],
+    life_state: dict[str, Any],
+    exit_summary: dict[str, Any],
+    dream_fact_gate: dict[str, Any],
+    wake_integration: dict[str, Any],
+) -> dict[str, Any]:
+    retrieval_governance = _extract_nested_value(
+        memory_retrieval,
+        "exit_dream_next_wake_governance",
+    )
+    write_gate_envelope = _extract_nested_value(
+        memory_write_gate,
+        "exit_dream_write_gate_envelope",
+    )
+    merge_projection = _extract_nested_value(
+        state_merge_guard,
+        "exit_dream_state_merge_projection",
+    )
+    long_term_change_sources = _extract_nested_value(
+        state_merge_guard,
+        "long_term_change_sources",
+    )
+    life_memory_index = _extract_nested_value(life_state, "memory_index")
+    wake_memory_profile = _extract_nested_value(
+        wake_integration,
+        "exit_dream_next_wake_profile",
+    )
+    memory_cue_refs = _dedupe_refs(
+        retrieval_governance.get("next_wake_memory_cue_refs"),
+        relationship_memory.get("next_wake_memory_cue_refs"),
+        dialogue_memory_summary.get("next_wake_memory_cue_refs"),
+        engram_index.get("next_wake_memory_cue_refs"),
+        autobiographical_stack.get("next_wake_memory_cue_refs"),
+        life_memory_index.get("next_wake_memory_cue_refs"),
+        long_term_change_sources.get("next_wake_memory_cue_refs"),
+        merge_projection.get("next_wake_memory_cue_refs"),
+        write_gate_envelope.get("next_wake_memory_cue_refs"),
+        exit_summary.get("next_wake_memory_cue_refs"),
+        wake_memory_profile.get("next_wake_memory_cue_refs"),
+    )
+    write_gate_ref = _first_non_empty(
+        retrieval_governance.get("memory_write_gate_ref"),
+        dialogue_memory_summary.get("memory_write_gate_ref"),
+        relationship_memory.get("memory_write_gate_ref"),
+        write_gate_envelope.get("memory_write_gate_ref"),
+        merge_projection.get("memory_write_gate_ref"),
+        exit_summary.get("memory_write_gate_ref"),
+        wake_memory_profile.get("memory_write_gate_ref"),
+        "runtime/state/memory/memory_write_gate.json"
+        if memory_write_gate
+        else None,
+    )
+    state_merge_guard_ref = _first_non_empty(
+        retrieval_governance.get("state_merge_guard_ref"),
+        dialogue_memory_summary.get("state_merge_guard_ref"),
+        relationship_memory.get("state_merge_guard_ref"),
+        write_gate_envelope.get("state_merge_guard_ref"),
+        merge_projection.get("state_merge_guard_ref"),
+        exit_summary.get("state_merge_guard_ref"),
+        wake_memory_profile.get("state_merge_guard_ref"),
+        "runtime/state/memory/state_merge_guard.json"
+        if state_merge_guard
+        else None,
+    )
+    fact_boundary_ref = _first_non_empty(
+        retrieval_governance.get("dream_fact_boundary_ref"),
+        dialogue_memory_summary.get("dream_fact_boundary_ref"),
+        relationship_memory.get("dream_fact_boundary_ref"),
+        write_gate_envelope.get("dream_fact_boundary_ref"),
+        merge_projection.get("dream_fact_boundary_ref"),
+        exit_summary.get("dream_fact_boundary_ref"),
+        wake_memory_profile.get("dream_fact_boundary_ref"),
+        _first_non_empty(*_list_refs(long_term_change_sources.get("dream_fact_boundary_refs"))),
+        "runtime/state/membrane/dream_fact_boundary.json"
+        if dream_fact_boundary
+        else None,
+        "runtime/state/dream/dream_fact_gate_decision.json"
+        if dream_fact_gate
+        else None,
+    )
+    governance_refs = _dedupe_refs(
+        retrieval_governance.get("governance_refs"),
+        relationship_memory.get("exit_dream_governance_refs"),
+        engram_index.get("memory_write_gate_refs"),
+        engram_index.get("state_merge_guard_refs"),
+        autobiographical_stack.get("memory_write_gate_refs"),
+        autobiographical_stack.get("state_merge_guard_refs"),
+        long_term_change_sources.get("exit_dream_write_gate_refs"),
+        long_term_change_sources.get("dream_fact_boundary_refs"),
+        write_gate_envelope.get("governance_refs"),
+        merge_projection.get("governance_refs"),
+        write_gate_ref,
+        state_merge_guard_ref,
+        fact_boundary_ref,
+    )
+    return {
+        "schema_version": "exit_dream_next_wake_inspection_v0",
+        "governance_ref": (
+            "runtime/state/memory/memory_retrieval_frame.json#"
+            "exit_dream_next_wake_governance"
+        )
+        if retrieval_governance
+        else None,
+        "memory_cue_refs": memory_cue_refs[:24],
+        "cue_ref_count": len(memory_cue_refs),
+        "governance_refs": governance_refs[:24],
+        "governance_ref_count": len(governance_refs),
+        "write_gate_ref": write_gate_ref,
+        "state_merge_guard_ref": state_merge_guard_ref,
+        "fact_boundary_ref": fact_boundary_ref,
+        "writeback_route": _first_non_empty(
+            retrieval_governance.get("writeback_route"),
+            exit_summary.get("writeback_route"),
+            _extract_nested_value(exit_summary, "write_merge_governance").get(
+                "writeback_route"
+            ),
+            "memory_write_gate_then_state_merge_guard"
+            if (write_gate_ref or state_merge_guard_ref)
+            else None,
+        ),
+        "candidate_boundary": _first_non_empty(
+            retrieval_governance.get("candidate_boundary"),
+            exit_summary.get("candidate_boundary"),
+            wake_memory_profile.get("candidate_boundary"),
+            "reactivate_as_cue_material_not_fixed_language"
+            if memory_cue_refs
+            else None,
+        ),
+        "inspection_boundary": (
+            "inspection_only_not_spoken_response_no_fixed_language"
         ),
     }
 
@@ -3996,6 +4248,24 @@ def _list_refs(value: Any, limit: int = 12) -> list[Any]:
     if value in (None, ""):
         return []
     return [value]
+
+
+def _dedupe_refs(*values: Any) -> list[str]:
+    refs: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        if isinstance(value, dict):
+            continue
+        items = value if isinstance(value, (list, tuple, set)) else [value]
+        for item in items:
+            if item in (None, ""):
+                continue
+            ref = str(item)
+            if not ref or ref in seen:
+                continue
+            seen.add(ref)
+            refs.append(ref)
+    return refs
 
 
 def _first_non_empty(*values: Any) -> Any:

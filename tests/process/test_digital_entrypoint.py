@@ -35,13 +35,15 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             terminal_dir.mkdir(parents=True, exist_ok=True)
             (paths["state_root"] / "memory").mkdir(parents=True, exist_ok=True)
             (paths["state_root"] / "dream").mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "membrane").mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "self").mkdir(parents=True, exist_ok=True)
             (terminal_dir / "resident_lifecycle_state.json").write_text(
                 json.dumps(
                     {
-                    "schema_version": "resident_lifecycle_state_v0",
-                    "status": "background_active",
-                    "life_name": "Adam",
-                    "residency_posture": "sleeping_waiting_for_relation_turn",
+                        "schema_version": "resident_lifecycle_state_v0",
+                        "status": "background_active",
+                        "life_name": "Adam",
+                        "residency_posture": "sleeping_waiting_for_relation_turn",
                     },
                     ensure_ascii=False,
                     indent=2,
@@ -52,13 +54,28 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             (paths["state_root"] / "memory" / "relationship_memory.json").write_text(
                 json.dumps(
                     {
-                    "schema_version": "relationship_memory_v0",
-                    "relation_person_profile": {
-                        "observed_names": ["何剑宝"],
-                        "preference_hypotheses": [
-                            "prefers_direct_non_mechanical_language"
+                        "schema_version": "relationship_memory_v0",
+                        "next_wake_memory_cue_refs": [
+                            "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs"
                         ],
-                    },
+                        "memory_write_gate_ref": (
+                            "runtime/state/memory/memory_write_gate.json"
+                        ),
+                        "state_merge_guard_ref": (
+                            "runtime/state/memory/state_merge_guard.json"
+                        ),
+                        "dream_fact_boundary_ref": (
+                            "runtime/state/membrane/dream_fact_boundary.json"
+                        ),
+                        "exit_dream_governance_refs": [
+                            "runtime/state/dream/exit_dream_consolidation_summary.json#write_merge_governance"
+                        ],
+                        "relation_person_profile": {
+                            "observed_names": ["何剑宝"],
+                            "preference_hypotheses": [
+                                "prefers_direct_non_mechanical_language"
+                            ],
+                        },
                     },
                     ensure_ascii=False,
                     indent=2,
@@ -71,11 +88,23 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             ).write_text(
                 json.dumps(
                     {
-                    "schema_version": "dialogue_memory_summary_v0",
-                    "source_dialogue_turn_count": 4,
-                    "deduplicated_episode_summaries": [
-                        {"summary": "何剑宝要求不要机械模板。"}
-                    ],
+                        "schema_version": "dialogue_memory_summary_v0",
+                        "source_dialogue_turn_count": 4,
+                        "next_wake_memory_cue_refs": [
+                            "runtime/state/memory/dialogue_memory_summary.json#next_wake_memory_cue_refs"
+                        ],
+                        "memory_write_gate_ref": (
+                            "runtime/state/memory/memory_write_gate.json"
+                        ),
+                        "state_merge_guard_ref": (
+                            "runtime/state/memory/state_merge_guard.json"
+                        ),
+                        "dream_fact_boundary_ref": (
+                            "runtime/state/membrane/dream_fact_boundary.json"
+                        ),
+                        "deduplicated_episode_summaries": [
+                            {"summary": "何剑宝要求不要机械模板。"}
+                        ],
                     },
                     ensure_ascii=False,
                     indent=2,
@@ -90,9 +119,174 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             ).write_text(
                 json.dumps(
                     {
-                    "schema_version": "exit_dream_consolidation_summary_v0",
-                    "entry_state": "dreaming_after_terminal_exit",
-                    "relationship_theme_tags": ["non_mechanical_language_pressure"],
+                        "schema_version": "exit_dream_consolidation_summary_v0",
+                        "entry_state": "dreaming_after_terminal_exit",
+                        "relationship_theme_tags": [
+                            "non_mechanical_language_pressure"
+                        ],
+                        "write_merge_governance": {
+                            "schema_version": (
+                                "exit_dream_write_merge_governance_v0"
+                            ),
+                            "writeback_route": (
+                                "memory_write_gate_then_state_merge_guard"
+                            ),
+                            "memory_write_gate_ref": (
+                                "runtime/state/memory/memory_write_gate.json"
+                            ),
+                            "state_merge_guard_ref": (
+                                "runtime/state/memory/state_merge_guard.json"
+                            ),
+                            "dream_fact_boundary_ref": (
+                                "runtime/state/membrane/dream_fact_boundary.json"
+                            ),
+                        },
+                        "next_wake_memory_cue_refs": [
+                            "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs"
+                        ],
+                        "memory_write_gate_ref": (
+                            "runtime/state/memory/memory_write_gate.json"
+                        ),
+                        "state_merge_guard_ref": (
+                            "runtime/state/memory/state_merge_guard.json"
+                        ),
+                        "dream_fact_boundary_ref": (
+                            "runtime/state/membrane/dream_fact_boundary.json"
+                        ),
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (paths["state_root"] / "memory" / "memory_retrieval_frame.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "memory_retrieval_frame_v0",
+                        "retrieval_mode": "cue_driven_reconstructive",
+                        "exit_dream_next_wake_governance": {
+                            "schema_version": (
+                                "exit_dream_next_wake_governance_v0"
+                            ),
+                            "memory_write_gate_ref": (
+                                "runtime/state/memory/memory_write_gate.json"
+                            ),
+                            "state_merge_guard_ref": (
+                                "runtime/state/memory/state_merge_guard.json"
+                            ),
+                            "dream_fact_boundary_ref": (
+                                "runtime/state/membrane/dream_fact_boundary.json"
+                            ),
+                            "writeback_route": (
+                                "memory_write_gate_then_state_merge_guard"
+                            ),
+                            "next_wake_memory_cue_refs": [
+                                "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs",
+                                "runtime/state/memory/dialogue_memory_summary.json#next_wake_memory_cue_refs",
+                            ],
+                            "governance_refs": [
+                                "runtime/state/memory/memory_write_gate.json",
+                                "runtime/state/memory/state_merge_guard.json",
+                                "runtime/state/membrane/dream_fact_boundary.json",
+                            ],
+                            "candidate_boundary": (
+                                "reactivate_as_cue_material_not_fixed_language"
+                            ),
+                        },
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (paths["state_root"] / "memory" / "memory_write_gate.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "memory_write_gate_v0",
+                        "stage_policy": "dream_fact_boundary_then_write_gate",
+                        "status": "allow_cue_not_fact_overwrite",
+                        "exit_dream_write_gate_envelope": {
+                            "schema_version": (
+                                "exit_dream_write_gate_envelope_v0"
+                            ),
+                            "memory_write_gate_ref": (
+                                "runtime/state/memory/memory_write_gate.json"
+                            ),
+                            "state_merge_guard_ref": (
+                                "runtime/state/memory/state_merge_guard.json"
+                            ),
+                            "dream_fact_boundary_ref": (
+                                "runtime/state/membrane/dream_fact_boundary.json"
+                            ),
+                            "next_wake_memory_cue_refs": [
+                                "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs"
+                            ],
+                        },
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (paths["state_root"] / "memory" / "state_merge_guard.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "state_merge_guard_v0",
+                        "stage_policy": "state_merge_guard_before_reactivation",
+                        "exit_dream_state_merge_projection": {
+                            "schema_version": (
+                                "exit_dream_state_merge_projection_v0"
+                            ),
+                            "memory_write_gate_ref": (
+                                "runtime/state/memory/memory_write_gate.json"
+                            ),
+                            "state_merge_guard_ref": (
+                                "runtime/state/memory/state_merge_guard.json"
+                            ),
+                            "dream_fact_boundary_ref": (
+                                "runtime/state/membrane/dream_fact_boundary.json"
+                            ),
+                            "next_wake_memory_cue_refs": [
+                                "runtime/state/memory/dialogue_memory_summary.json#next_wake_memory_cue_refs"
+                            ],
+                        },
+                        "long_term_change_sources": {
+                            "next_wake_memory_cue_refs": [
+                                "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs"
+                            ],
+                            "dream_fact_boundary_refs": [
+                                "runtime/state/membrane/dream_fact_boundary.json"
+                            ],
+                        },
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (paths["state_root"] / "membrane" / "dream_fact_boundary.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "dream_fact_boundary_v0",
+                        "boundary_mode": "dream_residue_not_fact_overwrite",
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (paths["state_root"] / "dream" / "dream_fact_gate_decision.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "dream_fact_gate_decision_v0",
+                        "gate_result": "cue_only",
+                        "allowed_writes": ["affective_residue", "memory_cue"],
+                        "blocked_writes": ["fact_overwrite"],
                     },
                     ensure_ascii=False,
                     indent=2,
@@ -124,9 +318,17 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn("memory", memory_stdout.getvalue())
             self.assertIn("何剑宝", memory_stdout.getvalue())
             self.assertIn("prefers_direct_non_mechanical_language", memory_stdout.getvalue())
+            self.assertIn("exit_dream_next_wake_inspection_boundary", memory_stdout.getvalue())
+            self.assertIn("exit_dream_next_wake_cue_ref_count", memory_stdout.getvalue())
+            self.assertIn("memory_write_gate_then_state_merge_guard", memory_stdout.getvalue())
+            self.assertIn("reactivate_as_cue_material_not_fixed_language", memory_stdout.getvalue())
+            self.assertIn("inspection_only_not_spoken_response_no_fixed_language", memory_stdout.getvalue())
             self.assertIn("resident_state_inspection_v0", dream_stdout.getvalue())
             self.assertIn("dream", dream_stdout.getvalue())
             self.assertIn("dreaming_after_terminal_exit", dream_stdout.getvalue())
+            self.assertIn("dream_fact_boundary_v0", dream_stdout.getvalue())
+            self.assertIn("exit_dream_next_wake_governance_refs", dream_stdout.getvalue())
+            self.assertIn("fact_overwrite", dream_stdout.getvalue())
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 
     def test_resident_terminal_proactive_state_command_inspects_proactive_voice(self):
