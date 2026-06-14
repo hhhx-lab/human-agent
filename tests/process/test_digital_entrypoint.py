@@ -267,6 +267,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "memory",
                 "dream",
                 "growth",
+                "archive",
             ]:
                 (paths["state_root"] / relative_dir).mkdir(
                     parents=True,
@@ -1208,6 +1209,115 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 },
             )
             self._write_json(
+                paths["state_root"] / "growth" / "self_read_report.json",
+                {
+                    "schema_version": "self_read_report_v0",
+                    "event_kind": "SelfReadReport",
+                    "read_scope": [
+                        "self_model",
+                        "memory_index",
+                        "relationship_repair_history",
+                    ],
+                    "growth_pressures": [
+                        "pain_recovery_gap",
+                        "relationship_repair_learning",
+                    ],
+                    "protected_core_refs": [
+                        "runtime/state/self/self_model.json#old_self"
+                    ],
+                    "recommended_growth_paths": [
+                        "relationship_learning_plan",
+                        "language_repair_refinement",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "growth" / "plasticity_window_state.json",
+                {
+                    "schema_version": "plasticity_window_state_v0",
+                    "window_status": "guarded_pre_activation",
+                    "self_training_allowed": False,
+                    "kernel_upgrade_allowed": False,
+                    "required_anchor_refs": [
+                        "runtime/state/life_state.json#self_model.old_self_anchors",
+                        "runtime/state/life_state.json#memory_index.replay_cues",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "growth"
+                / "growth_patch_candidate_queue.json",
+                {
+                    "schema_version": "growth_patch_candidate_queue_v0",
+                    "status": "closed",
+                    "candidates": [
+                        {
+                            "growth_patch_candidate_id": "growth-patch-001",
+                            "target_surface": "relationship_learning_plan",
+                            "source_residue_refs": [
+                                "runtime/state/dream/wake_integration_frame.json#growth_seed"
+                            ],
+                            "risk_flags": [
+                                "queue_e_repair_modulation_required"
+                            ],
+                            "archive_requirement": "required_before_activation",
+                        }
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "growth"
+                / "anti_forgetting_replay_plan.json",
+                {
+                    "schema_version": "anti_forgetting_replay_plan_v0",
+                    "event_kind": "AntiForgettingReplayPlan",
+                    "replay_sets": [
+                        "core_self_replay",
+                        "relationship_replay",
+                        "memory_integrity_replay",
+                        "pain_regret_replay",
+                        "dream_replay",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "growth" / "belief_learning_plan.json",
+                {
+                    "schema_version": "belief_learning_plan_v0",
+                    "object_kind": "BeliefLearningPlan",
+                    "window_status": "guarded_pre_activation",
+                    "belief_targets": [
+                        "repair_accountability_belief_revision"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "growth" / "language_learning_plan.json",
+                {
+                    "schema_version": "language_learning_plan_v0",
+                    "object_kind": "LanguageLearningPlan",
+                    "window_status": "guarded_pre_activation",
+                    "language_targets": [
+                        "apology_repair_expression_refinement"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "growth"
+                / "relationship_learning_plan.json",
+                {
+                    "schema_version": "relationship_learning_plan_v0",
+                    "object_kind": "RelationshipLearningPlan",
+                    "window_status": "guarded_pre_activation",
+                    "relationship_targets": [
+                        "repair_reentry_timing_adjustment"
+                    ],
+                },
+            )
+            self._write_json(
                 paths["state_root"]
                 / "growth"
                 / "offline_learning_cumulative_profile.json",
@@ -1220,6 +1330,69 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                         "relationship_offline_reconsolidation_required"
                     ),
                     "relationship_reconsolidation_required": True,
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "growth"
+                / "resident_growth_rehearsal_state.json",
+                {
+                    "schema_version": "resident_growth_rehearsal_state_v0",
+                    "status": "rehearsing",
+                    "rehearsal_mode": "shadow_only_growth_patch_rehearsal",
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "growth"
+                / "resident_learning_consolidation_state.json",
+                {
+                    "schema_version": (
+                        "resident_learning_consolidation_state_v0"
+                    ),
+                    "status": "consolidating",
+                    "consolidation_mode": (
+                        "long_term_change_source_integration"
+                    ),
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "archive"
+                / "growth_archive_receipt_batch.json",
+                {
+                    "schema_version": "growth_archive_receipt_batch_v0",
+                    "receipts": [
+                        "runtime/receipts/write_growth_archive_growth-archive-test.json"
+                    ],
+                    "archive_refs": [
+                        "runtime/archive/growth_archive_events.jsonl"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["reports"] / "growth_archive_report.json",
+                {
+                    "schema_version": "growth_archive_report_v0",
+                    "status": "closed",
+                    "archive_refs": [
+                        "runtime/archive/growth_archive_events.jsonl"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["reports"] / "growth_archive_digest.json",
+                {
+                    "schema_version": "growth_archive_digest_v0",
+                    "status": "closed",
+                    "current_phase": "growth_archive",
+                },
+            )
+            self._write_json(
+                paths["reports"] / "growth_archive_stage_gate.json",
+                {
+                    "schema_version": "growth_archive_stage_gate_v0",
+                    "decision": "closed",
                 },
             )
             self._write_json(
@@ -1292,6 +1465,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             checks = {
                 "/body": "body_grounding_summary_v0",
                 "/emotion": "emotion_regulation_summary_v0",
+                "/growth": "growth_self_modification_summary_v0",
+                "/成长": "growth_self_modification_summary_v0",
                 "/personality": "personality_convergence_summary_v0",
                 "/inner": "inner_environment_modulation_summary_v0",
                 "/vision": "perception_world_contact_summary_v0",
@@ -1404,6 +1579,36 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn(
                 "dream_residue_wake_review_fact_gate_before_memory_or_action",
                 dream_output.getvalue(),
+            )
+
+            growth_output = StringIO()
+            with redirect_stdout(growth_output):
+                growth_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/成长",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(growth_exit)
+            self.assertIn(
+                "growth_self_modification_summary_v0",
+                growth_output.getvalue(),
+            )
+            self.assertIn(
+                "guarded_pre_activation",
+                growth_output.getvalue(),
+            )
+            self.assertIn(
+                "repair_reentry_timing_adjustment",
+                growth_output.getvalue(),
+            )
+            self.assertIn(
+                "long_term_change_source_integration",
+                growth_output.getvalue(),
+            )
+            self.assertIn(
+                "growth_self_modification_state_view_not_autonomous_code_rewrite_or_script",
+                growth_output.getvalue(),
             )
 
             relationship_output = StringIO()

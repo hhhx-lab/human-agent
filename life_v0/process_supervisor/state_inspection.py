@@ -10,6 +10,7 @@ STATE_INSPECTION_CATEGORIES = {
     "context",
     "memory",
     "dream",
+    "growth",
     "body",
     "emotion",
     "inner_environment",
@@ -106,6 +107,56 @@ def build_resident_state_inspection(
         payload["dream"]["dream_wake_fact_summary"] = (
             _collect_dream_wake_fact_summary(dream)
         )
+    elif normalized == "growth":
+        growth = _collect_files(
+            state_root,
+            {
+                "self_read_report": "growth/self_read_report.json",
+                "plasticity_window": "growth/plasticity_window_state.json",
+                "growth_patch_candidate_queue": (
+                    "growth/growth_patch_candidate_queue.json"
+                ),
+                "anti_forgetting_replay_plan": (
+                    "growth/anti_forgetting_replay_plan.json"
+                ),
+                "belief_learning_plan": "growth/belief_learning_plan.json",
+                "language_learning_plan": "growth/language_learning_plan.json",
+                "relationship_learning_plan": (
+                    "growth/relationship_learning_plan.json"
+                ),
+                "offline_learning_cumulative_profile": (
+                    "growth/offline_learning_cumulative_profile.json"
+                ),
+                "resident_growth_rehearsal": (
+                    "growth/resident_growth_rehearsal_state.json"
+                ),
+                "resident_learning_consolidation": (
+                    "growth/resident_learning_consolidation_state.json"
+                ),
+                "growth_archive_receipt_batch": (
+                    "archive/growth_archive_receipt_batch.json"
+                ),
+                "growth_archive_report": (
+                    "../reports/latest/growth_archive_report.json"
+                ),
+                "growth_archive_digest": (
+                    "../reports/latest/growth_archive_digest.json"
+                ),
+                "growth_archive_stage_gate": (
+                    "../reports/latest/growth_archive_stage_gate.json"
+                ),
+                "resident_autonomous_activity": (
+                    "terminal/resident_autonomous_activity_state.json"
+                ),
+                "background_convergence_summary": (
+                    "terminal/background_convergence_summary.json"
+                ),
+            },
+        )
+        growth["self_modification_summary"] = (
+            _collect_growth_self_modification_summary(growth)
+        )
+        payload["growth"] = growth
     elif normalized == "body":
         body = _collect_files(
             state_root,
@@ -2130,6 +2181,184 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _collect_growth_self_modification_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    self_read = _extract_compact_value(section.get("self_read_report", {}))
+    plasticity = _extract_compact_value(section.get("plasticity_window", {}))
+    patch_queue = _extract_compact_value(
+        section.get("growth_patch_candidate_queue", {})
+    )
+    anti_forgetting = _extract_compact_value(
+        section.get("anti_forgetting_replay_plan", {})
+    )
+    belief_learning = _extract_compact_value(
+        section.get("belief_learning_plan", {})
+    )
+    language_learning = _extract_compact_value(
+        section.get("language_learning_plan", {})
+    )
+    relationship_learning = _extract_compact_value(
+        section.get("relationship_learning_plan", {})
+    )
+    offline_learning = _extract_compact_value(
+        section.get("offline_learning_cumulative_profile", {})
+    )
+    growth_rehearsal = _extract_compact_value(
+        section.get("resident_growth_rehearsal", {})
+    )
+    learning_consolidation = _extract_compact_value(
+        section.get("resident_learning_consolidation", {})
+    )
+    archive_batch = _extract_compact_value(
+        section.get("growth_archive_receipt_batch", {})
+    )
+    archive_report = _extract_compact_value(
+        section.get("growth_archive_report", {})
+    )
+    archive_digest = _extract_compact_value(
+        section.get("growth_archive_digest", {})
+    )
+    archive_stage_gate = _extract_compact_value(
+        section.get("growth_archive_stage_gate", {})
+    )
+    autonomous_activity = _extract_compact_value(
+        section.get("resident_autonomous_activity", {})
+    )
+    background_summary = _extract_compact_value(
+        section.get("background_convergence_summary", {})
+    )
+    candidates = patch_queue.get("candidates")
+    if not isinstance(candidates, list):
+        candidates = []
+    first_candidate = candidates[0] if candidates else {}
+    first_candidate = first_candidate if isinstance(first_candidate, dict) else {}
+    learning_targets = {
+        "belief": _count_any(belief_learning.get("belief_targets")),
+        "language": _count_any(language_learning.get("language_targets")),
+        "relationship": _count_any(
+            relationship_learning.get("relationship_targets")
+        ),
+    }
+    domain_presence = {
+        "self_read_report": bool(self_read),
+        "plasticity_window": bool(plasticity),
+        "growth_patch_candidate_queue": bool(patch_queue),
+        "anti_forgetting_replay_plan": bool(anti_forgetting),
+        "belief_learning_plan": bool(belief_learning),
+        "language_learning_plan": bool(language_learning),
+        "relationship_learning_plan": bool(relationship_learning),
+        "offline_learning_cumulative_profile": bool(offline_learning),
+        "resident_growth_rehearsal": bool(growth_rehearsal),
+        "resident_learning_consolidation": bool(learning_consolidation),
+        "growth_archive": bool(archive_batch or archive_report),
+        "resident_autonomous_activity": bool(autonomous_activity),
+        "background_convergence_summary": bool(background_summary),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    archive_status = _first_non_empty(
+        archive_stage_gate.get("decision"),
+        archive_stage_gate.get("status"),
+        archive_report.get("status"),
+        archive_digest.get("status"),
+    )
+    return {
+        "schema_version": "growth_self_modification_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "self_read_scope_count": _count_any(self_read.get("read_scope")),
+        "growth_pressure_count": _count_any(self_read.get("growth_pressures")),
+        "recommended_growth_paths": _list_refs(
+            self_read.get("recommended_growth_paths")
+        ),
+        "plasticity_window_status": plasticity.get("window_status"),
+        "self_training_allowed": bool(plasticity.get("self_training_allowed")),
+        "kernel_upgrade_allowed": bool(plasticity.get("kernel_upgrade_allowed")),
+        "required_anchor_ref_count": _count_any(
+            plasticity.get("required_anchor_refs")
+        ),
+        "candidate_queue_status": patch_queue.get("status"),
+        "candidate_count": _count_any(candidates),
+        "first_candidate_target_surface": first_candidate.get("target_surface"),
+        "first_candidate_source_ref_count": _count_any(
+            first_candidate.get("source_residue_refs")
+            or first_candidate.get("source_refs")
+        ),
+        "first_candidate_risk_flags": _list_refs(
+            first_candidate.get("risk_flags")
+        ),
+        "archive_requirement": first_candidate.get("archive_requirement"),
+        "anti_forgetting_replay_sets": _list_refs(
+            anti_forgetting.get("replay_sets")
+        ),
+        "anti_forgetting_replay_set_count": _count_any(
+            anti_forgetting.get("replay_sets")
+        ),
+        "learning_target_counts": learning_targets,
+        "learning_windows": {
+            "belief": belief_learning.get("window_status"),
+            "language": language_learning.get("window_status"),
+            "relationship": relationship_learning.get("window_status"),
+        },
+        "offline_learning_generation": offline_learning.get("generation"),
+        "offline_learning_pressure_level": offline_learning.get(
+            "pressure_level"
+        ),
+        "offline_learning_attention_target": offline_learning.get(
+            "attention_target"
+        ),
+        "offline_learning_integration_mode": offline_learning.get(
+            "integration_mode"
+        ),
+        "relationship_reconsolidation_required": bool(
+            offline_learning.get("relationship_reconsolidation_required")
+        ),
+        "resident_growth_rehearsal_status": growth_rehearsal.get("status"),
+        "resident_growth_rehearsal_mode": _first_non_empty(
+            growth_rehearsal.get("rehearsal_mode"),
+            growth_rehearsal.get("activity_mode"),
+        ),
+        "resident_learning_consolidation_status": (
+            learning_consolidation.get("status")
+        ),
+        "resident_learning_consolidation_mode": (
+            learning_consolidation.get("consolidation_mode")
+        ),
+        "autonomous_growth_rehearsal_count": _extract_nested_value(
+            autonomous_activity,
+            "activity_counts",
+        ).get("growth_rehearsal"),
+        "autonomous_learning_consolidation_count": _extract_nested_value(
+            autonomous_activity,
+            "activity_counts",
+        ).get("learning_consolidation"),
+        "archive_status": archive_status,
+        "archive_receipt_count": _count_any(
+            archive_batch.get("receipts")
+            or archive_batch.get("archive_receipts")
+            or archive_batch.get("receipt_refs")
+        ),
+        "archive_ref_count": _count_any(
+            archive_report.get("archive_refs")
+            or archive_digest.get("archive_refs")
+            or archive_batch.get("archive_refs")
+        ),
+        "background_convergence_state": background_summary.get(
+            "convergence_state"
+        ),
+        "background_convergence_attention_target": background_summary.get(
+            "convergence_attention_target"
+        ),
+        "growth_boundary": (
+            "growth_self_modification_state_view_not_autonomous_code_rewrite_or_script"
+        ),
+    }
+
+
 def _collect_personality_convergence_summary(
     section: dict[str, Any]
 ) -> dict[str, Any]:
@@ -2294,6 +2523,9 @@ def _normalize_category(category: str) -> str:
         "关系": "relationship",
         "记忆": "memory",
         "梦境": "dream",
+        "成长": "growth",
+        "学习": "growth",
+        "learning": "growth",
         "身体": "body",
         "语言": "language",
         "认知": "cognition",
