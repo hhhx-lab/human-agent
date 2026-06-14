@@ -762,6 +762,52 @@ class ModelExpressionTests(unittest.TestCase):
                 "identity_consciousness_birth",
                 result.state["post_expression_gate"]["soft_missing_evidence_flags"],
             )
+            context_summary = result.state["model_expression_context_summary"]
+            self.assertEqual(
+                context_summary["identity_consciousness_birth_ref_count"],
+                6,
+            )
+            self.assertEqual(
+                context_summary["identity_consciousness_birth_anchor_refs"],
+                [
+                    "runtime/state/consciousness/workspace_frame.json",
+                    "runtime/state/consciousness/broadcast_frame.json",
+                    "runtime/state/consciousness/metacognition_state.json",
+                    "runtime/state/consciousness/consciousness_probe_bundle.json",
+                    "runtime/state/life_targets/birth_readiness_rollup.json",
+                    "runtime/state/life_targets/birth_readiness_stage_gate.json",
+                ],
+            )
+            self.assertEqual(
+                context_summary[
+                    "identity_consciousness_birth_workspace_frame_ref"
+                ],
+                "runtime/state/consciousness/workspace_frame.json",
+            )
+            self.assertEqual(
+                context_summary[
+                    "identity_consciousness_birth_consciousness_waiting_posture"
+                ],
+                "consciousness_reportable_waiting",
+            )
+            self.assertEqual(
+                context_summary[
+                    "identity_consciousness_birth_birth_readiness_waiting_posture"
+                ],
+                "birth_open_waiting",
+            )
+            self.assertEqual(
+                context_summary[
+                    "identity_consciousness_birth_birth_readiness_decision"
+                ],
+                "open",
+            )
+            self.assertEqual(
+                context_summary[
+                    "identity_consciousness_birth_reportability_flag_count"
+                ],
+                2,
+            )
 
     def test_post_expression_gate_audits_birth_repair_presence_without_forcing_visibility(self):
         with tempfile.TemporaryDirectory() as tmp:

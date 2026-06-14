@@ -1386,6 +1386,11 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
     live_language = context.get("live_language", {})
     prediction_conscious_workspace = context.get("prediction_conscious_workspace", {})
     resident_background = context.get("resident_background", {})
+    identity_consciousness_birth_summary = (
+        _identity_consciousness_birth_context_summary(
+            resident_background.get("identity_consciousness_birth_presence")
+        )
+    )
     return {
         "relationship_stage": relationship.get("relationship_stage"),
         "continuity_state": relationship.get("continuity_state"),
@@ -1436,6 +1441,7 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         "previous_handoff_evidence_ref_count": resident_background.get(
             "previous_handoff_evidence_ref_count"
         ),
+        **identity_consciousness_birth_summary,
         "world_contact_handoff_status": (
             resident_background.get("world_contact_handoff_presence") or {}
         ).get("handoff_status")
@@ -1457,6 +1463,60 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         )
         else None,
     }
+
+
+def _identity_consciousness_birth_context_summary(
+    identity_presence: Any,
+) -> dict[str, Any]:
+    if not isinstance(identity_presence, dict):
+        return {}
+    anchor_refs = _dedupe_string_list(
+        _string_list(identity_presence.get("identity_consciousness_birth_refs"))
+        + _string_list(
+            [
+                identity_presence.get("workspace_frame_ref"),
+                identity_presence.get("broadcast_frame_ref"),
+                identity_presence.get("metacognition_ref"),
+                identity_presence.get("consciousness_probe_ref"),
+                identity_presence.get("birth_readiness_rollup_ref"),
+                identity_presence.get("birth_readiness_stage_gate_ref"),
+            ]
+        )
+    )
+    summary: dict[str, Any] = {
+        "identity_consciousness_birth_ref_count": len(anchor_refs),
+        "identity_consciousness_birth_anchor_refs": anchor_refs,
+    }
+    for key in (
+        "workspace_frame_ref",
+        "broadcast_frame_ref",
+        "metacognition_ref",
+        "consciousness_probe_ref",
+        "birth_readiness_rollup_ref",
+        "birth_readiness_stage_gate_ref",
+        "consciousness_waiting_posture",
+        "birth_readiness_waiting_posture",
+        "birth_readiness_decision",
+        "birth_readiness_attention_target",
+        "birth_readiness_attention_reason",
+        "birth_readiness_next_required_command",
+    ):
+        value = identity_presence.get(key)
+        if value is not None and value != [] and value != {}:
+            summary[f"identity_consciousness_birth_{key}"] = value
+    blocked_reasons = _string_list(identity_presence.get("birth_readiness_blocked_reasons"))
+    reportability_flags = _string_list(
+        identity_presence.get("consciousness_reportability_flags")
+    )
+    if blocked_reasons:
+        summary["identity_consciousness_birth_blocked_reason_count"] = len(
+            blocked_reasons
+        )
+    if reportability_flags:
+        summary["identity_consciousness_birth_reportability_flag_count"] = len(
+            reportability_flags
+        )
+    return summary
 
 
 def _slow_value(trait_slow_variables: Any, key: str) -> float:
@@ -1487,6 +1547,17 @@ def _string_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item) for item in value if item is not None]
+
+
+def _dedupe_string_list(values: list[str]) -> list[str]:
+    deduped: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        if not value or value in seen:
+            continue
+        seen.add(value)
+        deduped.append(value)
+    return deduped
 
 
 def _list_count(value: Any) -> int:

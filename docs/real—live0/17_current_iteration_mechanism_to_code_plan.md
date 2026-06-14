@@ -715,6 +715,8 @@ RelationshipMemory / DialogueMemorySummary / ExitDreamSummary
 
 当前又回切补强 Queue F 到语言系统的消费链。此前 `identity_consciousness_birth_presence` 已能从 waiting governance、background continuity、真实回合事件、写回包、恢复包和 process report 中追溯；现在 `response_surface.py` 继续把 workspace、broadcast、metacognition、consciousness probe、birth readiness rollup/stage gate、可报告性 flags、出生准备姿态、decision、next required command、blocked reasons 与 `identity_consciousness_birth_refs` 放入 `audited_expression_material_v0#resident_background.identity_consciousness_birth_presence`，并写出 anchor refs 与 ref count。这个结构只服务于模型表达前的隐性材料消费和 post-expression audit，不释放自然语言，不新增 system prompt，也不生成“我有意识/我出生了”的固定句。
 
+当前继续把同一组 Queue F 锚点推进到模型表达后的摘要审计。`model_expression.py#_context_summary` 现在会从 `resident_background.identity_consciousness_birth_presence` 生成 `identity_consciousness_birth_*` 摘要字段，包括 anchor refs、ref count、workspace/broadcast/metacognition/probe/birth readiness refs、意识等待姿态、出生准备等待姿态、出生 gate decision、可报告性 flag count 和 blocked reason count。这个补厚解决的是“模型表达审计只知道有 Queue F presence，却不知道具体消费了哪些锚点”的断链；它仍然不生成自然语言，不添加 system prompt，不强迫模型字面外显意识或出生。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：
