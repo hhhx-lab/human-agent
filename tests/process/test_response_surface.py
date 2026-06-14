@@ -405,6 +405,11 @@ class ResponseSurfaceTests(unittest.TestCase):
             "runtime/state/memory/memory_write_gate.json#exit_dream_write_gate_envelope",
             "runtime/state/memory/state_merge_guard.json#exit_dream_state_merge_projection",
         ]
+        autobiographical_repair_refs = [
+            "responsibility-event-001",
+            "regret-001",
+            "repair-001",
+        ]
         lineage_state = build_resident_background_lineage_state(
             {
                 "memory_retrieval_presence_profile": {
@@ -418,6 +423,16 @@ class ResponseSurfaceTests(unittest.TestCase):
                     "relationship_hit_count": 1,
                     "dream_residue_hit_count": 1,
                     "responsibility_hit_count": 1,
+                    "autobiographical_repair_hit_count": 3,
+                    "autobiographical_repair_pressure_level": "elevated",
+                    "autobiographical_repair_attention_target": "regret_pressure",
+                    "autobiographical_repair_projection_boundary": (
+                        "autobiographical_repair_evidence_not_spoken_language"
+                    ),
+                    "autobiographical_repair_retrieval_boundary": (
+                        "autobiographical_repair_retrieval_not_spoken_language"
+                    ),
+                    "autobiographical_repair_refs": autobiographical_repair_refs,
                     "ref_set": memory_refs,
                     "exit_dream_next_wake_governance_ref": (
                         "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance"
@@ -449,7 +464,31 @@ class ResponseSurfaceTests(unittest.TestCase):
             memory_presence["reconstruction_focus"],
             "relationship_continuity_reconstruction",
         )
-        self.assertEqual(memory_presence["ref_count"], 9)
+        self.assertEqual(memory_presence["ref_count"], 12)
+        self.assertEqual(
+            memory_presence["autobiographical_repair_hit_count"],
+            3,
+        )
+        self.assertEqual(
+            memory_presence["autobiographical_repair_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            memory_presence["autobiographical_repair_attention_target"],
+            "regret_pressure",
+        )
+        self.assertEqual(
+            memory_presence["autobiographical_repair_projection_boundary"],
+            "autobiographical_repair_evidence_not_spoken_language",
+        )
+        self.assertEqual(
+            memory_presence["autobiographical_repair_retrieval_boundary"],
+            "autobiographical_repair_retrieval_not_spoken_language",
+        )
+        self.assertEqual(
+            memory_presence["autobiographical_repair_refs"],
+            autobiographical_repair_refs,
+        )
         self.assertEqual(
             memory_presence["exit_dream_next_wake_memory_cue_refs"],
             exit_dream_cue_refs,
@@ -479,6 +518,7 @@ class ResponseSurfaceTests(unittest.TestCase):
             life_turn["resident_background_lineage_memory_retrieval_refs"],
             [
                 *memory_refs,
+                *autobiographical_repair_refs,
                 *exit_dream_cue_refs,
                 *exit_dream_governance_refs,
                 "runtime/state/memory/memory_write_gate.json",
@@ -576,7 +616,15 @@ class ResponseSurfaceTests(unittest.TestCase):
             resident_memory["reconstruction_focus"],
             "relationship_continuity_reconstruction",
         )
-        self.assertEqual(resident_memory["ref_count"], 9)
+        self.assertEqual(resident_memory["ref_count"], 12)
+        self.assertEqual(
+            resident_memory["autobiographical_repair_hit_count"],
+            3,
+        )
+        self.assertEqual(
+            resident_memory["autobiographical_repair_retrieval_boundary"],
+            "autobiographical_repair_retrieval_not_spoken_language",
+        )
         self.assertEqual(
             payload["memory_dream_growth"]["exit_dream_next_wake"][
                 "language_boundary"

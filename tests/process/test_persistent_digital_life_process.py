@@ -10374,6 +10374,12 @@ class PersistentDigitalLifeProcessTests(
                 *expected_retrievable_context_refs,
                 *expected_deep_sediment_refs,
             ]
+            expected_autobiographical_repair_refs = [
+                "responsibility-event-001",
+                "regret-001",
+                "repair-001",
+                "runtime/reports/latest/pain_regret_repair_report.json",
+            ]
             expected_web_dream_learning_refs = [
                 "runtime/state/dream/web_dream_learning_state.json",
                 "runtime/state/dream/web_dream_learning_log.jsonl",
@@ -10993,6 +10999,27 @@ class PersistentDigitalLifeProcessTests(
                         "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
                         "dream_fact_boundary_ref": "runtime/state/dream/exit_dream_consolidation_summary.json#dream_fact_boundary",
                         "candidate_boundary": "reactivate_as_cue_material_not_fixed_language",
+                    },
+                    "autobiographical_responsibility_repair_hits": (
+                        expected_autobiographical_repair_refs
+                    ),
+                    "autobiographical_responsibility_repair_profile": {
+                        "schema_version": (
+                            "memory_retrieval_autobiographical_repair_profile_v0"
+                        ),
+                        "projection_ref": (
+                            "runtime/state/self/autobiographical_stack.json#responsibility_repair_projection"
+                        ),
+                        "hit_count": 4,
+                        "pressure_level": "elevated",
+                        "attention_target": "regret_pressure",
+                        "projection_boundary": (
+                            "autobiographical_repair_evidence_not_spoken_language"
+                        ),
+                        "retrieval_boundary": (
+                            "autobiographical_repair_retrieval_not_spoken_language"
+                        ),
+                        "ref_set": expected_autobiographical_repair_refs,
                     },
                 },
             )
@@ -11839,6 +11866,46 @@ class PersistentDigitalLifeProcessTests(
                     "tiered_report_evidence_not_spoken_language",
                 )
                 self.assertEqual(
+                    artifact["autobiographical_repair_retrieval_report_profile"][
+                        "schema_version"
+                    ],
+                    "autobiographical_repair_retrieval_report_profile_v0",
+                )
+                self.assertEqual(
+                    artifact[
+                        "autobiographical_repair_retrieval_report_profile"
+                    ]["source_profile_schema_version"],
+                    "memory_retrieval_autobiographical_repair_profile_v0",
+                )
+                self.assertEqual(
+                    artifact["autobiographical_repair_retrieval_ref_set"],
+                    expected_autobiographical_repair_refs,
+                )
+                self.assertEqual(
+                    artifact["autobiographical_repair_retrieval_hit_count"],
+                    4,
+                )
+                self.assertEqual(
+                    artifact["autobiographical_repair_retrieval_pressure_level"],
+                    "elevated",
+                )
+                self.assertEqual(
+                    artifact["autobiographical_repair_retrieval_attention_target"],
+                    "regret_pressure",
+                )
+                self.assertEqual(
+                    artifact["autobiographical_repair_projection_boundary"],
+                    "autobiographical_repair_evidence_not_spoken_language",
+                )
+                self.assertEqual(
+                    artifact["autobiographical_repair_retrieval_boundary"],
+                    "autobiographical_repair_retrieval_not_spoken_language",
+                )
+                self.assertEqual(
+                    artifact["autobiographical_repair_report_boundary"],
+                    "autobiographical_repair_structured_report_not_spoken_language",
+                )
+                self.assertEqual(
                     artifact["web_dream_learning_report_profile"][
                         "schema_version"
                     ],
@@ -12066,6 +12133,42 @@ class PersistentDigitalLifeProcessTests(
                 "tiered_report_evidence_not_spoken_language",
             )
             for ref in expected_exit_dream_memory_tier_ref_set:
+                self.assertIn(ref, receipt["shared_object_refs"])
+            self.assertEqual(
+                receipt["autobiographical_repair_retrieval_report_profile"][
+                    "schema_version"
+                ],
+                "autobiographical_repair_retrieval_report_profile_v0",
+            )
+            self.assertEqual(
+                receipt["autobiographical_repair_retrieval_ref_set"],
+                expected_autobiographical_repair_refs,
+            )
+            self.assertEqual(
+                receipt["autobiographical_repair_retrieval_hit_count"],
+                4,
+            )
+            self.assertEqual(
+                receipt["autobiographical_repair_retrieval_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                receipt["autobiographical_repair_retrieval_attention_target"],
+                "regret_pressure",
+            )
+            self.assertEqual(
+                receipt["autobiographical_repair_projection_boundary"],
+                "autobiographical_repair_evidence_not_spoken_language",
+            )
+            self.assertEqual(
+                receipt["autobiographical_repair_retrieval_boundary"],
+                "autobiographical_repair_retrieval_not_spoken_language",
+            )
+            self.assertEqual(
+                receipt["autobiographical_repair_report_boundary"],
+                "autobiographical_repair_structured_report_not_spoken_language",
+            )
+            for ref in expected_autobiographical_repair_refs:
                 self.assertIn(ref, receipt["shared_object_refs"])
             self.assertEqual(
                 receipt["web_dream_learning_report_profile"]["schema_version"],

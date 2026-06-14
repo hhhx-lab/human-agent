@@ -127,6 +127,12 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "memory_retrieval_relationship_hit_count",
     "memory_retrieval_dream_residue_hit_count",
     "memory_retrieval_responsibility_hit_count",
+    "memory_retrieval_autobiographical_repair_hit_count",
+    "memory_retrieval_autobiographical_repair_pressure_level",
+    "memory_retrieval_autobiographical_repair_attention_target",
+    "memory_retrieval_autobiographical_repair_projection_boundary",
+    "memory_retrieval_autobiographical_repair_retrieval_boundary",
+    "memory_retrieval_autobiographical_repair_refs",
     "memory_retrieval_ref_set",
     "memory_retrieval_presence_profile",
     "exit_dream_next_wake_governance_ref",
@@ -1200,6 +1206,37 @@ def decide_idle_strategy(
         "memory_retrieval_responsibility_hit_count": (
             memory_retrieval_presence_profile.get("responsibility_hit_count")
         ),
+        "memory_retrieval_autobiographical_repair_hit_count": (
+            memory_retrieval_presence_profile.get(
+                "autobiographical_repair_hit_count"
+            )
+        ),
+        "memory_retrieval_autobiographical_repair_pressure_level": (
+            memory_retrieval_presence_profile.get(
+                "autobiographical_repair_pressure_level"
+            )
+        ),
+        "memory_retrieval_autobiographical_repair_attention_target": (
+            memory_retrieval_presence_profile.get(
+                "autobiographical_repair_attention_target"
+            )
+        ),
+        "memory_retrieval_autobiographical_repair_projection_boundary": (
+            memory_retrieval_presence_profile.get(
+                "autobiographical_repair_projection_boundary"
+            )
+        ),
+        "memory_retrieval_autobiographical_repair_retrieval_boundary": (
+            memory_retrieval_presence_profile.get(
+                "autobiographical_repair_retrieval_boundary"
+            )
+        ),
+        "memory_retrieval_autobiographical_repair_refs": (
+            memory_retrieval_presence_profile.get(
+                "autobiographical_repair_refs",
+                [],
+            )
+        ),
         "memory_retrieval_ref_set": memory_retrieval_presence_profile.get(
             "ref_set",
             [],
@@ -1684,13 +1721,34 @@ def _memory_retrieval_presence_profile(
     current_cue_terms = _string_list(
         terminal_life_loop_state.get("memory_retrieval_cue_terms")
     )
+    terminal_presence_profile = _dict_or_empty(
+        terminal_life_loop_state.get("memory_retrieval_presence_profile")
+    )
+    current_autobiographical_repair_refs = _dedupe_string_list(
+        _string_list(
+            terminal_life_loop_state.get(
+                "memory_retrieval_autobiographical_repair_refs"
+            )
+        )
+        + _string_list(
+            terminal_presence_profile.get("autobiographical_repair_refs")
+        )
+        + _string_list(
+            terminal_presence_profile.get(
+                "autobiographical_responsibility_repair_hits"
+            )
+        )
+    )
+    background_autobiographical_repair_refs = _dedupe_string_list(
+        _string_list(background_presence.get("autobiographical_repair_refs"))
+        + _string_list(
+            background_presence.get("autobiographical_responsibility_repair_hits")
+        )
+    )
     current_ref_set = _dedupe_string_list(
         _string_list(terminal_life_loop_state.get("memory_retrieval_ref_set"))
-        + _string_list(
-            _dict_or_empty(
-                terminal_life_loop_state.get("memory_retrieval_presence_profile")
-            ).get("ref_set")
-        )
+        + _string_list(terminal_presence_profile.get("ref_set"))
+        + current_autobiographical_repair_refs
         + _string_list(
             terminal_life_loop_state.get("exit_dream_next_wake_memory_cue_refs")
         )
@@ -1710,6 +1768,7 @@ def _memory_retrieval_presence_profile(
         _string_list(background_presence.get("ref_set"))
         + _string_list(background_continuity_profile.get("background_memory_retrieval_ref_set"))
         + _string_list(background_continuity_profile.get("memory_retrieval_ref_set"))
+        + background_autobiographical_repair_refs
         + _string_list(background_presence.get("exit_dream_next_wake_memory_cue_refs"))
         + _string_list(background_presence.get("exit_dream_next_wake_governance_refs"))
         + _string_list(
@@ -1750,6 +1809,50 @@ def _memory_retrieval_presence_profile(
         )
     if not current_cue_terms:
         current_cue_terms = _string_list(background_presence.get("cue_terms"))
+    autobiographical_repair_refs = _dedupe_string_list(
+        current_autobiographical_repair_refs + background_autobiographical_repair_refs
+    )
+    autobiographical_repair_hit_count = _int_or_zero(
+        terminal_life_loop_state.get(
+            "memory_retrieval_autobiographical_repair_hit_count"
+        )
+        or terminal_presence_profile.get("autobiographical_repair_hit_count")
+        or background_presence.get("autobiographical_repair_hit_count")
+    )
+    if not autobiographical_repair_hit_count and autobiographical_repair_refs:
+        autobiographical_repair_hit_count = len(autobiographical_repair_refs)
+    autobiographical_repair_pressure_level = (
+        terminal_life_loop_state.get(
+            "memory_retrieval_autobiographical_repair_pressure_level"
+        )
+        or terminal_presence_profile.get("autobiographical_repair_pressure_level")
+        or background_presence.get("autobiographical_repair_pressure_level")
+    )
+    autobiographical_repair_attention_target = (
+        terminal_life_loop_state.get(
+            "memory_retrieval_autobiographical_repair_attention_target"
+        )
+        or terminal_presence_profile.get("autobiographical_repair_attention_target")
+        or background_presence.get("autobiographical_repair_attention_target")
+    )
+    autobiographical_repair_projection_boundary = (
+        terminal_life_loop_state.get(
+            "memory_retrieval_autobiographical_repair_projection_boundary"
+        )
+        or terminal_presence_profile.get(
+            "autobiographical_repair_projection_boundary"
+        )
+        or background_presence.get("autobiographical_repair_projection_boundary")
+    )
+    autobiographical_repair_retrieval_boundary = (
+        terminal_life_loop_state.get(
+            "memory_retrieval_autobiographical_repair_retrieval_boundary"
+        )
+        or terminal_presence_profile.get(
+            "autobiographical_repair_retrieval_boundary"
+        )
+        or background_presence.get("autobiographical_repair_retrieval_boundary")
+    )
     if not any([current_ref_set, current_focus, current_cue_terms, background_presence]):
         return {}
 
@@ -1781,6 +1884,22 @@ def _memory_retrieval_presence_profile(
                     "memory_retrieval_responsibility_hit_count"
                 )
             ),
+            "autobiographical_repair_hit_count": (
+                autobiographical_repair_hit_count
+            ),
+            "autobiographical_repair_pressure_level": (
+                autobiographical_repair_pressure_level
+            ),
+            "autobiographical_repair_attention_target": (
+                autobiographical_repair_attention_target
+            ),
+            "autobiographical_repair_projection_boundary": (
+                autobiographical_repair_projection_boundary
+            ),
+            "autobiographical_repair_retrieval_boundary": (
+                autobiographical_repair_retrieval_boundary
+            ),
+            "autobiographical_repair_refs": autobiographical_repair_refs,
             "background_memory_retrieval_frame_ref": (
                 background_continuity_profile.get("background_memory_retrieval_frame_ref")
                 or background_presence.get("memory_retrieval_frame_ref")
@@ -1857,6 +1976,24 @@ def _shallow_memory_retrieval_presence_profile(
             "relationship_hit_count": profile.get("relationship_hit_count"),
             "dream_residue_hit_count": profile.get("dream_residue_hit_count"),
             "responsibility_hit_count": profile.get("responsibility_hit_count"),
+            "autobiographical_repair_hit_count": profile.get(
+                "autobiographical_repair_hit_count"
+            ),
+            "autobiographical_repair_pressure_level": profile.get(
+                "autobiographical_repair_pressure_level"
+            ),
+            "autobiographical_repair_attention_target": profile.get(
+                "autobiographical_repair_attention_target"
+            ),
+            "autobiographical_repair_projection_boundary": profile.get(
+                "autobiographical_repair_projection_boundary"
+            ),
+            "autobiographical_repair_retrieval_boundary": profile.get(
+                "autobiographical_repair_retrieval_boundary"
+            ),
+            "autobiographical_repair_refs": _string_list(
+                profile.get("autobiographical_repair_refs")
+            ),
             "exit_dream_next_wake_governance_ref": profile.get(
                 "exit_dream_next_wake_governance_ref"
             ),

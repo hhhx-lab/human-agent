@@ -729,6 +729,9 @@ def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
         + _string_list(governance.get("background_memory_retrieval_ref_set"))
         + _string_list(profile.get("ref_set"))
         + _string_list(profile.get("background_ref_set"))
+        + _string_list(governance.get("memory_retrieval_autobiographical_repair_refs"))
+        + _string_list(profile.get("autobiographical_repair_refs"))
+        + _string_list(previous_presence.get("autobiographical_repair_refs"))
         + _string_list(governance.get("exit_dream_next_wake_memory_cue_refs"))
         + _string_list(governance.get("exit_dream_next_wake_governance_refs"))
         + _string_list(profile.get("exit_dream_next_wake_memory_cue_refs"))
@@ -787,6 +790,20 @@ def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
             previous_presence.get("responsibility_hit_count"),
         )
     )
+    autobiographical_repair_hit_count = _int_or_zero(
+        _first_present(
+            governance.get("memory_retrieval_autobiographical_repair_hit_count"),
+            profile.get("autobiographical_repair_hit_count"),
+            previous_presence.get("autobiographical_repair_hit_count"),
+        )
+    )
+    autobiographical_repair_refs = _dedupe_string_list(
+        _string_list(governance.get("memory_retrieval_autobiographical_repair_refs"))
+        + _string_list(profile.get("autobiographical_repair_refs"))
+        + _string_list(previous_presence.get("autobiographical_repair_refs"))
+    )
+    if not autobiographical_repair_hit_count and autobiographical_repair_refs:
+        autobiographical_repair_hit_count = len(autobiographical_repair_refs)
     if not any(
         [
             frame_ref,
@@ -797,6 +814,7 @@ def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
             relationship_hit_count,
             dream_residue_hit_count,
             responsibility_hit_count,
+            autobiographical_repair_hit_count,
             profile,
             previous_presence,
         ]
@@ -812,6 +830,36 @@ def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "relationship_hit_count": relationship_hit_count,
             "dream_residue_hit_count": dream_residue_hit_count,
             "responsibility_hit_count": responsibility_hit_count,
+            "autobiographical_repair_hit_count": autobiographical_repair_hit_count,
+            "autobiographical_repair_pressure_level": _first_present(
+                governance.get(
+                    "memory_retrieval_autobiographical_repair_pressure_level"
+                ),
+                profile.get("autobiographical_repair_pressure_level"),
+                previous_presence.get("autobiographical_repair_pressure_level"),
+            ),
+            "autobiographical_repair_attention_target": _first_present(
+                governance.get(
+                    "memory_retrieval_autobiographical_repair_attention_target"
+                ),
+                profile.get("autobiographical_repair_attention_target"),
+                previous_presence.get("autobiographical_repair_attention_target"),
+            ),
+            "autobiographical_repair_projection_boundary": _first_present(
+                governance.get(
+                    "memory_retrieval_autobiographical_repair_projection_boundary"
+                ),
+                profile.get("autobiographical_repair_projection_boundary"),
+                previous_presence.get("autobiographical_repair_projection_boundary"),
+            ),
+            "autobiographical_repair_retrieval_boundary": _first_present(
+                governance.get(
+                    "memory_retrieval_autobiographical_repair_retrieval_boundary"
+                ),
+                profile.get("autobiographical_repair_retrieval_boundary"),
+                previous_presence.get("autobiographical_repair_retrieval_boundary"),
+            ),
+            "autobiographical_repair_refs": autobiographical_repair_refs,
             "exit_dream_next_wake_governance_ref": _first_present(
                 governance.get("exit_dream_next_wake_governance_ref"),
                 profile.get("exit_dream_next_wake_governance_ref"),

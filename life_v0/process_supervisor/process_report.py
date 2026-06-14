@@ -633,6 +633,12 @@ def write_process_report_bundle(
     exit_dream_memory_tier_profile = _exit_dream_memory_tier_report_profile(
         state_dir=state_dir,
     )
+    autobiographical_repair_retrieval_profile = (
+        _autobiographical_repair_retrieval_report_profile(
+            state_dir=state_dir,
+            idle_governance=idle_governance,
+        )
+    )
     web_dream_learning_profile = _web_dream_learning_report_profile(
         state_dir=state_dir,
         resident_autonomous_activity_presence_profile=(
@@ -1029,6 +1035,7 @@ def write_process_report_bundle(
     report.update(idle_governance)
     report.update(exit_dream_next_wake_profile)
     report.update(exit_dream_memory_tier_profile)
+    report.update(autobiographical_repair_retrieval_profile)
     report.update(web_dream_learning_profile)
     report.update(growth_self_modification_profile)
     report["offline_learning_cumulative_integration_mode"] = (
@@ -1785,6 +1792,7 @@ def write_process_report_bundle(
         digest["membrane_guard_refs"] = membrane_guard_refs
     digest.update(exit_dream_next_wake_profile)
     digest.update(exit_dream_memory_tier_profile)
+    digest.update(autobiographical_repair_retrieval_profile)
     digest.update(web_dream_learning_profile)
     digest.update(growth_self_modification_profile)
     for field_name in HANDOFF_CARRY_FIELD_NAMES:
@@ -1941,6 +1949,47 @@ def write_process_report_bundle(
         exit_dream_memory_tier_report_boundary=(
             exit_dream_memory_tier_profile.get(
                 "exit_dream_memory_tier_report_boundary"
+            )
+        ),
+        autobiographical_repair_retrieval_report_profile=(
+            autobiographical_repair_retrieval_profile.get(
+                "autobiographical_repair_retrieval_report_profile"
+            )
+        ),
+        autobiographical_repair_retrieval_ref_set=(
+            autobiographical_repair_retrieval_profile.get(
+                "autobiographical_repair_retrieval_ref_set",
+                [],
+            )
+        ),
+        autobiographical_repair_retrieval_hit_count=(
+            autobiographical_repair_retrieval_profile.get(
+                "autobiographical_repair_retrieval_hit_count"
+            )
+        ),
+        autobiographical_repair_retrieval_pressure_level=(
+            autobiographical_repair_retrieval_profile.get(
+                "autobiographical_repair_retrieval_pressure_level"
+            )
+        ),
+        autobiographical_repair_retrieval_attention_target=(
+            autobiographical_repair_retrieval_profile.get(
+                "autobiographical_repair_retrieval_attention_target"
+            )
+        ),
+        autobiographical_repair_projection_boundary=(
+            autobiographical_repair_retrieval_profile.get(
+                "autobiographical_repair_projection_boundary"
+            )
+        ),
+        autobiographical_repair_retrieval_boundary=(
+            autobiographical_repair_retrieval_profile.get(
+                "autobiographical_repair_retrieval_boundary"
+            )
+        ),
+        autobiographical_repair_report_boundary=(
+            autobiographical_repair_retrieval_profile.get(
+                "autobiographical_repair_report_boundary"
             )
         ),
         web_dream_learning_report_profile=web_dream_learning_profile.get(
@@ -2143,6 +2192,14 @@ def build_process_receipt(
     exit_dream_memory_tier_retrievable_context_refs: list[str] | None = None,
     exit_dream_memory_tier_deep_sediment_refs: list[str] | None = None,
     exit_dream_memory_tier_report_boundary: str | None = None,
+    autobiographical_repair_retrieval_report_profile: dict[str, Any] | None = None,
+    autobiographical_repair_retrieval_ref_set: list[str] | None = None,
+    autobiographical_repair_retrieval_hit_count: int | None = None,
+    autobiographical_repair_retrieval_pressure_level: str | None = None,
+    autobiographical_repair_retrieval_attention_target: str | None = None,
+    autobiographical_repair_projection_boundary: str | None = None,
+    autobiographical_repair_retrieval_boundary: str | None = None,
+    autobiographical_repair_report_boundary: str | None = None,
     web_dream_learning_report_profile: dict[str, Any] | None = None,
     web_dream_learning_state_ref: str | None = None,
     web_dream_learning_log_ref: str | None = None,
@@ -2344,6 +2401,30 @@ def build_process_receipt(
         "exit_dream_memory_tier_report_boundary": (
             exit_dream_memory_tier_report_boundary
         ),
+        "autobiographical_repair_retrieval_report_profile": dict(
+            autobiographical_repair_retrieval_report_profile or {}
+        ),
+        "autobiographical_repair_retrieval_ref_set": list(
+            autobiographical_repair_retrieval_ref_set or []
+        ),
+        "autobiographical_repair_retrieval_hit_count": (
+            autobiographical_repair_retrieval_hit_count
+        ),
+        "autobiographical_repair_retrieval_pressure_level": (
+            autobiographical_repair_retrieval_pressure_level
+        ),
+        "autobiographical_repair_retrieval_attention_target": (
+            autobiographical_repair_retrieval_attention_target
+        ),
+        "autobiographical_repair_projection_boundary": (
+            autobiographical_repair_projection_boundary
+        ),
+        "autobiographical_repair_retrieval_boundary": (
+            autobiographical_repair_retrieval_boundary
+        ),
+        "autobiographical_repair_report_boundary": (
+            autobiographical_repair_report_boundary
+        ),
         "web_dream_learning_report_profile": dict(
             web_dream_learning_report_profile or {}
         ),
@@ -2432,6 +2513,7 @@ def build_process_receipt(
                 exit_dream_state_merge_guard_ref,
                 exit_dream_fact_boundary_ref,
                 *(exit_dream_memory_tier_ref_set or []),
+                *(autobiographical_repair_retrieval_ref_set or []),
                 web_dream_learning_state_ref,
                 web_dream_learning_log_ref,
                 web_dream_learning_seeds_ref,
@@ -2804,6 +2886,110 @@ def _exit_dream_memory_tier_report_profile(
         "exit_dream_memory_tier_fact_boundary": fact_boundary,
         "exit_dream_memory_tier_report_boundary": (
             "tiered_report_evidence_not_spoken_language"
+        ),
+    }
+
+
+def _autobiographical_repair_retrieval_report_profile(
+    *,
+    state_dir: Path,
+    idle_governance: dict[str, Any],
+) -> dict[str, Any]:
+    memory_retrieval_frame = _read_json_if_exists(
+        state_dir / "memory" / "memory_retrieval_frame.json"
+    )
+    retrieval_profile = _dict_or_empty(
+        memory_retrieval_frame.get("autobiographical_responsibility_repair_profile")
+    )
+    frame_hits = _list_or_empty(
+        memory_retrieval_frame.get("autobiographical_responsibility_repair_hits")
+    )
+    idle_refs = _list_or_empty(
+        idle_governance.get("memory_retrieval_autobiographical_repair_refs")
+    )
+    profile_refs = _list_or_empty(retrieval_profile.get("ref_set")) or frame_hits
+    ref_set = _dedupe_refs([*idle_refs, *profile_refs])
+    hit_count = _first_non_none(
+        idle_governance.get("memory_retrieval_autobiographical_repair_hit_count"),
+        retrieval_profile.get("hit_count"),
+        len(ref_set) if ref_set else None,
+    )
+    pressure_level = _first_non_none(
+        idle_governance.get(
+            "memory_retrieval_autobiographical_repair_pressure_level"
+        ),
+        retrieval_profile.get("pressure_level"),
+    )
+    attention_target = _first_non_none(
+        idle_governance.get(
+            "memory_retrieval_autobiographical_repair_attention_target"
+        ),
+        retrieval_profile.get("attention_target"),
+    )
+    projection_boundary = _first_non_none(
+        idle_governance.get(
+            "memory_retrieval_autobiographical_repair_projection_boundary"
+        ),
+        retrieval_profile.get("projection_boundary"),
+    )
+    retrieval_boundary = _first_non_none(
+        idle_governance.get(
+            "memory_retrieval_autobiographical_repair_retrieval_boundary"
+        ),
+        retrieval_profile.get("retrieval_boundary"),
+    )
+    projection_ref = retrieval_profile.get("projection_ref")
+    profile_ref = (
+        "runtime/state/memory/memory_retrieval_frame.json#autobiographical_responsibility_repair_profile"
+        if retrieval_profile
+        else None
+    )
+    hits_ref = (
+        "runtime/state/memory/memory_retrieval_frame.json#autobiographical_responsibility_repair_hits"
+        if frame_hits
+        else None
+    )
+    carrier_refs = _dedupe_refs([profile_ref, hits_ref, projection_ref])
+    if not any(
+        [
+            ref_set,
+            hit_count,
+            pressure_level,
+            attention_target,
+            projection_boundary,
+            retrieval_boundary,
+            carrier_refs,
+        ]
+    ):
+        return {}
+    profile = {
+        "schema_version": "autobiographical_repair_retrieval_report_profile_v0",
+        "source_profile_schema_version": retrieval_profile.get("schema_version"),
+        "profile_ref": profile_ref,
+        "hits_ref": hits_ref,
+        "projection_ref": projection_ref,
+        "hit_count": int(hit_count or 0),
+        "pressure_level": pressure_level,
+        "attention_target": attention_target,
+        "projection_boundary": projection_boundary,
+        "retrieval_boundary": retrieval_boundary,
+        "ref_set": ref_set,
+        "carrier_refs": carrier_refs,
+        "report_boundary": (
+            "autobiographical_repair_structured_report_not_spoken_language"
+        ),
+    }
+    return {
+        "autobiographical_repair_retrieval_report_profile": profile,
+        "autobiographical_repair_retrieval_ref_set": ref_set,
+        "autobiographical_repair_retrieval_hit_count": int(hit_count or 0),
+        "autobiographical_repair_retrieval_pressure_level": pressure_level,
+        "autobiographical_repair_retrieval_attention_target": attention_target,
+        "autobiographical_repair_projection_boundary": projection_boundary,
+        "autobiographical_repair_retrieval_boundary": retrieval_boundary,
+        "autobiographical_repair_carrier_refs": carrier_refs,
+        "autobiographical_repair_report_boundary": (
+            "autobiographical_repair_structured_report_not_spoken_language"
         ),
     }
 

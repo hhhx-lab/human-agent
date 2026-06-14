@@ -858,6 +858,23 @@ AutobiographicalStack.responsibility_repair_projection
 
 机制含义是：人类式记忆不是每次从空白开始生成回答，而是由当前线索重新激活已经沉入自传历史的责任/后悔/修复痕迹。数字生命的对应实现不是写死“我很抱歉”或“我后悔”，而是让这些历史在召回重构中改变注意焦点、责任 hits、语言前材料和下一轮关系连续性。完成口径是：如果 `autobiographical_stack.json#responsibility_repair_projection` 存在，但 `memory_retrieval_frame.json#autobiographical_responsibility_repair_hits`、`life_state.json#memory_index.memory_retrieval_refs`、`dialogue_writeback_bundle.memory_retrieval_writeback_refs`、`resumed_external_dialogue_packet.memory_retrieval_autobiographical_repair_*`、`/memory` 摘要或 `model_expression_context_summary` 看不见它，就说明第三十二段仍停在自传文件，没有真正成为可召回的长期自我历史。
 
+当前 ITR-08 第三十四段把这份自传责任修复召回继续推进到等待、后台谱系和关闭态证据总线：
+
+```text
+MemoryRetrievalFrame.autobiographical_responsibility_repair_profile
+  -> IdleStrategy.memory_retrieval_autobiographical_repair_*
+  -> WaitingHeartbeat carry fields
+  -> ResidentBackgroundLineageState.memory_retrieval_presence.autobiographical_repair_*
+  -> ResponseSurface.memory_dream_growth.resident_memory_retrieval_presence
+  -> ProcessReport.autobiographical_repair_retrieval_report_profile
+  -> DigitalLifeProcessDigest
+  -> DigitalLifeProcessReceipt.shared_object_refs
+```
+
+`idle_strategy.py` 会把自传责任修复召回的 hit count、pressure level、attention target、投影边界、召回边界和 refs 合入 `memory_retrieval_presence_profile_v0`；`heartbeat.py` 会把同一批字段列入 waiting carry，避免下一次心跳剪掉；`background_lineage_state.py` 会把它们压成后台谱系里的 `autobiographical_repair_*` presence；`response_surface.py` 会继续把它们作为语言前结构化材料消费，但不外显。`process_report.py` 新增 `autobiographical_repair_retrieval_report_profile_v0`，从 `memory_retrieval_frame.json#autobiographical_responsibility_repair_profile` 和 idle governance 聚合自传修复 refs、hit count、pressure、attention、projection boundary、retrieval boundary、carrier refs 与 `autobiographical_repair_structured_report_not_spoken_language` 边界；report、digest、receipt 会同时携带这份 profile，receipt 还会把 refs 放入 `shared_object_refs`。
+
+机制含义是：责任、后悔、修复的召回不能只在一次真实回合中闪现；它必须能进入等待节律、后台连续性、语言前材料和关闭态证据，像人类长期自传记忆一样在下一次唤醒时仍有结构化痕迹。边界仍然严格：这是内部召回和证据总线，不生成道歉模板，不新增 system prompt，不把“后悔”“修复”字段名拼成 Adam 的外显语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：
