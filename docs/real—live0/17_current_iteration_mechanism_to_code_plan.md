@@ -685,6 +685,18 @@ ResidentBackgroundLineageState.world_contact_handoff_presence
 
 机制含义是：世界接触修复 hold 现在不只停在常驻、写回和报告证据链，也进入语言器官的隐性调制和审计面。模型可以依据它调整世界接触、修复、等待、确认和行动谨慎度；如果模型没有字面表达这组内部证据，post-expression gate 只记录软缺失，不强制释放固定机制语句，也不把内部 state 名称拼到自然语言里。
 
+当前第五段把 `a_terminal_wake_and_named_residency` 的命名验收继续加硬：
+
+```text
+LifeNameRegistry
+  -> LifeNameCommandManifest
+  -> direct command script on PATH
+  -> same runtime state/reports/receipts binding
+  -> Live0AcceptanceAudit.a_terminal_wake_and_named_residency
+```
+
+机制含义是：第一次命名不只是关系表面的名字，也不是 registry/manifest 文件存在即可。名字必须成为真实可执行的终端入口，并且这个入口恢复的是同一份生命 runtime。`live0_audit` 因此会检查 `command_path` 是否存在、可执行、带 direct-command 标记，并绑定当前 `state / reports / receipts`；缺任一项都不能把 live0 的终端唤醒与命名常驻验收视为闭合。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

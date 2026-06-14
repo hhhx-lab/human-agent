@@ -111,6 +111,42 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
             any("direct_life_name_command_bound" in reason for reason in report["blocked_reasons"])
         )
 
+    def test_live0_acceptance_audit_blocks_when_direct_name_command_file_is_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state = runtime_root / "state"
+            reports = runtime_root / "reports" / "latest"
+            receipts = runtime_root / "receipts"
+            self._write_live0_fixture(runtime_root)
+            manifest = self._read_json(
+                state / "identity" / "life_name_command_manifest.json"
+            )
+            Path(manifest["command_path"]).unlink()
+
+            result = run_live0_acceptance_audit(
+                docs_dir=self.docs_dir,
+                state_dir=state,
+                reports_dir=reports,
+                receipts_dir=receipts,
+                run_id="live0-audit-missing-name-command-file",
+                strict=True,
+            )
+
+            report = self._read_json(reports / "live0_acceptance_audit_report.json")
+
+        self.assertEqual(result.exit_code, 1)
+        self.assertEqual(report["status"], "blocked")
+        self.assertIn(
+            "a_terminal_wake_and_named_residency",
+            report["summary"]["failed_criteria"],
+        )
+        self.assertTrue(
+            any(
+                "direct_life_name_command_bound" in reason
+                for reason in report["blocked_reasons"]
+            )
+        )
+
     def test_live0_acceptance_audit_blocks_without_queue_e_world_contact_handoff(self):
         with tempfile.TemporaryDirectory() as tmp:
             runtime_root = Path(tmp) / "runtime"
@@ -380,6 +416,12 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
                 "direct_command_enabled": True,
                 "command_on_path": True,
                 "command_name": "星火",
+                "command_path": str(
+                    self._write_direct_life_name_command(runtime_root, "星火")
+                ),
+                "state_dir": str((runtime_root / "state").resolve()),
+                "reports_dir": str((runtime_root / "reports" / "latest").resolve()),
+                "receipts_dir": str((runtime_root / "receipts").resolve()),
             },
         )
         self._write_json_ref(
@@ -505,6 +547,31 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
             "\n".join(json.dumps(event, ensure_ascii=False) for event in events) + "\n",
             encoding="utf-8",
         )
+
+    def _write_direct_life_name_command(
+        self,
+        runtime_root: Path,
+        command_name: str,
+    ) -> Path:
+        command_dir = runtime_root / "command-bin"
+        command_dir.mkdir(parents=True, exist_ok=True)
+        command_path = command_dir / command_name
+        command_path.write_text(
+            "\n".join(
+                [
+                    "#!/bin/sh",
+                    "# human-agent-life-name-direct-command-v0",
+                    f"# state_dir={(runtime_root / 'state').resolve()}",
+                    f"# reports_dir={(runtime_root / 'reports' / 'latest').resolve()}",
+                    f"# receipts_dir={(runtime_root / 'receipts').resolve()}",
+                    "exit 0",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        command_path.chmod(0o755)
+        return command_path
 
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))

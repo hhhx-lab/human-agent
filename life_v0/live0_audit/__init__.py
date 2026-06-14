@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from life_v0.digital_life_identity import DIRECT_COMMAND_MARKER
 from life_v0.process_supervisor.resident_lifecycle import read_resident_lifecycle_status
 
 
@@ -301,12 +303,8 @@ def _criterion_terminal_wake(
             context,
             "direct_life_name_command_bound",
             "runtime/state/identity/life_name_command_manifest.json",
-            lambda payload: payload.get("schema_version")
-            == "life_name_direct_command_manifest_v0"
-            and payload.get("status") == "active"
-            and payload.get("direct_command_enabled") is True
-            and payload.get("command_on_path") is True,
-            "after naming, the name itself must be a terminal command",
+            lambda payload: _direct_life_name_command_bound(context, payload),
+            "after naming, the name itself must be an executable terminal command bound to this runtime",
         ),
         _value_probe(
             "resident_lifecycle_alive_or_recently_closed",
@@ -954,6 +952,51 @@ def _value_probe(
         "evidence_refs": evidence_refs,
         "observed": observed,
     }
+
+
+def _direct_life_name_command_bound(
+    context: _AuditContext,
+    payload: dict[str, Any],
+) -> bool:
+    if not (
+        payload.get("schema_version") == "life_name_direct_command_manifest_v0"
+        and payload.get("status") == "active"
+        and payload.get("direct_command_enabled") is True
+        and payload.get("command_on_path") is True
+        and payload.get("command_name")
+    ):
+        return False
+    command_path_text = str(payload.get("command_path") or "").strip()
+    if not command_path_text:
+        return False
+    command_path = Path(command_path_text).expanduser()
+    if not command_path.is_file() or not os.access(command_path, os.X_OK):
+        return False
+    if not _path_equals(payload.get("state_dir"), context.state_dir):
+        return False
+    if not _path_equals(payload.get("reports_dir"), context.reports_dir):
+        return False
+    if not _path_equals(payload.get("receipts_dir"), context.receipts_dir):
+        return False
+    try:
+        command_source = command_path.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    return (
+        DIRECT_COMMAND_MARKER in command_source
+        and str(context.state_dir) in command_source
+        and str(context.reports_dir) in command_source
+        and str(context.receipts_dir) in command_source
+    )
+
+
+def _path_equals(value: Any, expected: Path) -> bool:
+    if not value:
+        return False
+    try:
+        return Path(str(value)).expanduser().resolve() == expected.resolve()
+    except OSError:
+        return False
 
 
 def _closed_or_schema(payload: dict[str, Any]) -> bool:

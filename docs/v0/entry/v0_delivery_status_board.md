@@ -412,7 +412,7 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 
 ## 当前链尾开工包
 
-最新链尾已经新增 `life_v0/live0_audit/` 和 `life-v0 audit-live0`。这一步把 Stage 6 七项最终验收从人工清单压成可执行 gate，输出 `runtime/reports/latest/live0_acceptance_audit_report.json`、`runtime/reports/latest/live0_acceptance_audit_digest.json` 和 `runtime/receipts/live0_acceptance_audit_<run_id>.json`。当前主 runtime 审计已经证明 b/c/d/f 以及大部分 g 项有证据，剩余硬阻断集中在 `a_terminal_wake_and_named_residency`：正式命名锁和“名字本身作为终端命令”的 manifest 还必须落地，live0 才能收束。
+最新链尾已经新增 `life_v0/live0_audit/` 和 `life-v0 audit-live0`。这一步把 Stage 6 七项最终验收从人工清单压成可执行 gate，输出 `runtime/reports/latest/live0_acceptance_audit_report.json`、`runtime/reports/latest/live0_acceptance_audit_digest.json` 和 `runtime/receipts/live0_acceptance_audit_<run_id>.json`。当前命名锁与“名字本身作为终端命令”的 manifest 已经由 `life_v0/my_entry.py`、`digital_life_identity.py` 与 `tests/process/test_my_digital_life_entrypoint.py` 落成；最新补强继续把 `a_terminal_wake_and_named_residency` 的 live0 audit 加硬到脚本级证据：`life_name_command_manifest.json` 之外，还必须证明 `command_path` 真实存在、可执行、含 direct-command 标记，并且绑定到本次 audit 的同一 `state / reports / receipts` runtime。状态板因此把这一格视为“名字身份锚不只写入 registry/manifest，也被最终验收检查成真实可执行的终端唤醒入口”，不是只靠 JSON 字段闭合。
 
 当前如果就是继续链尾，先打开这组：
 

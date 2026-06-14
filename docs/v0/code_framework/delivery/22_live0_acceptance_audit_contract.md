@@ -45,7 +45,7 @@ life-v0 audit-live0 --docs docs --state runtime/state --reports runtime/reports/
 1. `runtime/state/identity/life_name_registry.json`
 2. `runtime/state/identity/life_name_command_manifest.json`
 
-第二份 manifest 表示“名字本身成为终端命令”的绑定已经完成，且必须包含 `direct_command_enabled=true` 与 `command_on_path=true`。没有这份证据时，live0 不能收束，即使 `my digital life` 已经可用。
+第二份 manifest 表示“名字本身成为终端命令”的绑定已经完成，且必须包含 `direct_command_enabled=true` 与 `command_on_path=true`。当前审计不只读取 manifest 字段，还会检查 `command_path` 指向的真实脚本是否存在、可执行、包含 `human-agent-life-name-direct-command-v0` 标记，并且脚本与 manifest 中的 `state_dir / reports_dir / receipts_dir` 都指向本次 live0 audit 的同一 runtime。没有这份证据时，live0 不能收束，即使 `my digital life` 已经可用。
 
 正式绑定前可以先运行：
 

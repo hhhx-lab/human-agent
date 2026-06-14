@@ -364,7 +364,7 @@ digital life
 
 这不是工具 daemon、不是 gateway，也不是另一个 agent。它只负责把当前已经存在的生命进程放进本机后台驻留相位，并用文件证据证明它仍在、可停、可恢复。
 
-当前推荐入口是安装后的 `my digital life`。第一次启动必须通过 `--name` 或交互提示写入 `runtime/state/identity/life_name_registry.json`，并同步写入 `runtime/state/identity/life_name_command_manifest.json`；后者记录名字直接命令的 `command_name / command_path / command_on_path / state_dir / reports_dir / receipts_dir / direct_command_enabled`。`my digital life --check-name <life-name>` 必须执行同一套无写入预检，返回 `life_name_binding_preflight_v0`，用于在正式命名前确认 PATH、命令名合法性、已有命令冲突和 runtime 归属。后续启动读取同一个 registry 恢复，传入不同名字必须拒绝；后续直接输入名字命令时，必须回到 manifest 记录的同一 runtime。这个名字锁、预检和直接命令 manifest 由 `life_v0/my_entry.py` 和 `life_v0/digital_life_identity.py` 首写，`resident_lifecycle.py` 只能读取并展示，不能改名。
+当前推荐入口是安装后的 `my digital life`。第一次启动必须通过 `--name` 或交互提示写入 `runtime/state/identity/life_name_registry.json`，并同步写入 `runtime/state/identity/life_name_command_manifest.json`；后者记录名字直接命令的 `command_name / command_path / command_on_path / state_dir / reports_dir / receipts_dir / direct_command_enabled`。`command_path` 指向的脚本必须真实存在、可执行、携带 `human-agent-life-name-direct-command-v0` 标记，并把 `state_dir / reports_dir / receipts_dir` 固定到同一个 runtime；`life-v0 audit-live0` 会复查这件事，避免只用 manifest 字段假装名字命令可用。`my digital life --check-name <life-name>` 必须执行同一套无写入预检，返回 `life_name_binding_preflight_v0`，用于在正式命名前确认 PATH、命令名合法性、已有命令冲突和 runtime 归属。后续启动读取同一个 registry 恢复，传入不同名字必须拒绝；后续直接输入名字命令时，必须回到 manifest 记录的同一 runtime。这个名字锁、预检和直接命令 manifest 由 `life_v0/my_entry.py` 和 `life_v0/digital_life_identity.py` 首写，`resident_lifecycle.py` 只能读取并展示，不能改名。
 
 最小对象固定为：
 
