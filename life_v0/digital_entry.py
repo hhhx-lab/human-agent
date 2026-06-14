@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import select
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -33,6 +32,11 @@ from .process_supervisor.resident_lifecycle import (
 from .process_supervisor.state_inspection import (
     STATE_INSPECTION_CATEGORIES,
     build_resident_state_inspection,
+)
+from .process_supervisor.terminal_input import (
+    build_terminal_input_profile,
+    read_interactive_line_with_idle_voice,
+    write_terminal_input_profile,
 )
 from .process_supervisor.proactive_terminal_voice import (
     build_resident_proactive_terminal_event,
@@ -256,6 +260,13 @@ def run_resident_terminal_client(
     print(render_life_opening(start_result.state, life_name=life_name))
 
     if sys.stdin.isatty():
+        write_terminal_input_profile(
+            terminal_dir=terminal_dir,
+            profile=build_terminal_input_profile(
+                input_stream=sys.stdin,
+                idle_voice_interval_seconds=90.0,
+            ),
+        )
         return _run_interactive_resident_terminal_client(
             terminal_dir=terminal_dir,
             life_name=life_name,
@@ -293,7 +304,7 @@ def _run_interactive_resident_terminal_client(
         try:
             prompt = render_input_prompt(life_name=life_name)
             if read_line_fn is None:
-                utterance = _read_interactive_line_with_idle_voice(
+                utterance = read_interactive_line_with_idle_voice(
                     prompt=prompt,
                     idle_voice_fn=idle_voice_fn,
                     idle_voice_interval_seconds=idle_voice_interval_seconds,
@@ -303,6 +314,9 @@ def _run_interactive_resident_terminal_client(
                     prompt=prompt,
                     idle_voice_fn=idle_voice_fn,
                 )
+        except KeyboardInterrupt:
+            print()
+            return 130
         except EOFError:
             print()
             return 0
@@ -314,36 +328,6 @@ def _run_interactive_resident_terminal_client(
         )
         if exit_code is not None:
             return exit_code
-
-
-def _read_interactive_line_with_idle_voice(
-    *,
-    prompt: str,
-    idle_voice_fn: Callable[[], bool],
-    idle_voice_interval_seconds: float,
-) -> str:
-    if idle_voice_interval_seconds <= 0:
-        return input(prompt)
-    sys.stdout.write(prompt)
-    sys.stdout.flush()
-    while True:
-        try:
-            readable, _, _ = select.select(
-                [sys.stdin],
-                [],
-                [],
-                idle_voice_interval_seconds,
-            )
-        except (OSError, ValueError):
-            return input("")
-        if readable:
-            line = sys.stdin.readline()
-            if line == "":
-                raise EOFError
-            return line.rstrip("\n")
-        if idle_voice_fn():
-            sys.stdout.write(prompt)
-            sys.stdout.flush()
 
 
 def _handle_resident_terminal_utterance(

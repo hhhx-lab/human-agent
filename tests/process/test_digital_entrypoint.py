@@ -314,6 +314,16 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 {"schema_version": "relation_turn_frame_v0"},
             )
             self._write_json(
+                terminal_dir / "terminal_input_profile.json",
+                {
+                    "schema_version": "terminal_input_profile_v0",
+                    "input_mode": "char_line_editor_with_idle_voice",
+                    "line_editing": {
+                        "backspace": "delete_previous_character",
+                    },
+                },
+            )
+            self._write_json(
                 paths["state_root"] / "life_targets" / "birth_readiness_rollup.json",
                 {"schema_version": "birth_readiness_rollup_v0"},
             )
@@ -394,6 +404,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "/vision": "visual_observation_frame_v0",
                 "/context": "life_context_frame_v0",
                 "/ability": "birth_readiness_rollup_v0",
+                "/state": "terminal_input_profile_v0",
             }
             for command, expected_fragment in checks.items():
                 output = StringIO()

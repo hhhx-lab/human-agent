@@ -272,6 +272,9 @@ def _collect_state_summary(
         "terminal_life_loop": _compact_json(
             terminal_dir / "terminal_life_loop_state.json"
         ),
+        "terminal_input_profile": _compact_json(
+            terminal_dir / "terminal_input_profile.json"
+        ),
         "waiting_heartbeat": _compact_json(
             reports_dir / "digital_life_waiting_heartbeat.json"
         ),
