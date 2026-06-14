@@ -415,6 +415,9 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 paths["state_root"] / "memory" / "relationship_memory.json",
                 {
                     "schema_version": "relationship_memory_v0",
+                    "relation_person_profile": {
+                        "observed_names": ["何剑宝"],
+                    },
                     "salient_core_memory_refs": [
                         "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.salient_core"
                     ],
@@ -423,6 +426,9 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     ],
                     "deep_sediment_memory_refs": [
                         "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.deep_sediment"
+                    ],
+                    "repair_history_refs": [
+                        "runtime/state/action/responsibility_loop_state.json#repair"
                     ],
                 },
             )
@@ -451,6 +457,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                             "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.deep_sediment"
                         ],
                     },
+                    "quarantine_refs": ["runtime/state/memory/candidate#uncertain"],
                 },
             )
             self._write_json(
@@ -460,6 +467,95 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     "anchor_refs": [
                         "runtime/state/language/dialogue_turn_log.jsonl#line-1"
                     ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "memory" / "memory_retrieval_frame.json",
+                {
+                    "schema_version": "memory_retrieval_frame_v0",
+                    "retrieval_mode": "cue_driven_reconstructive_recall",
+                    "cue_terms": ["何剑宝", "dream", "repair"],
+                    "activated_engram_refs": [
+                        "runtime/state/memory/engram_index.json#episode-1"
+                    ],
+                    "relationship_memory_hits": [
+                        "runtime/state/memory/relationship_memory.json#shared"
+                    ],
+                    "autobiographical_hits": [
+                        "runtime/state/self/autobiographical_stack.json#turn-1"
+                    ],
+                    "dream_residue_hits": [
+                        "runtime/state/dream/exit_dream_consolidation_summary.json#episode-1"
+                    ],
+                    "responsibility_hits": [
+                        "runtime/state/action/responsibility_loop_state.json#repair"
+                    ],
+                    "blocked_or_quarantined_refs": [
+                        "runtime/state/memory/candidate#uncertain"
+                    ],
+                    "tiered_recall": {
+                        "salient_core_refs": ["episode-1"],
+                        "retrievable_context_refs": ["episode-2"],
+                        "deep_sediment_refs": ["episode-3"],
+                    },
+                    "reconstruction_inputs": {
+                        "reconstruction_focus": "relationship_continuity"
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "memory" / "memory_write_gate.json",
+                {
+                    "schema_version": "memory_write_gate_v0",
+                    "status": "closed",
+                    "stage_policy": "candidate_first_repair_guarded",
+                    "body_signal_write_modulation": {
+                        "schema_version": "body_signal_write_modulation_v0",
+                        "write_bias": "repair_evidence_first",
+                        "candidate_gate_adjustments": [
+                            "raise_source_evidence_threshold",
+                            "preserve_pain_trace",
+                        ],
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "memory" / "state_merge_guard.json",
+                {
+                    "schema_version": "state_merge_guard_v0",
+                    "stage_policy": "long_term_merge_fail_closed",
+                    "promotion_routes": [{"route_id": "candidate_to_active"}],
+                    "quarantine_routes": [{"route_id": "missing_source"}],
+                    "repair_routes": [{"route_id": "repair_before_promotion"}],
+                    "merge_routes": [{"route_id": "relationship_memory_merge"}],
+                    "long_term_change_sources": {
+                        "offline_learning_cumulative_refs": [
+                            "runtime/state/growth/offline_learning_cumulative_profile.json"
+                        ],
+                        "relationship_memory_repair_refs": [
+                            "runtime/state/action/responsibility_loop_state.json#repair"
+                        ],
+                        "relationship_memory_ref": (
+                            "runtime/state/memory/relationship_memory.json"
+                        ),
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "life_state.json",
+                {
+                    "schema_version": "life_state_v0",
+                    "memory_index": {
+                        "memory_retrieval_refs": [
+                            "runtime/state/memory/memory_retrieval_frame.json"
+                        ],
+                        "state_merge_guard_refs": [
+                            "runtime/state/memory/state_merge_guard.json"
+                        ],
+                        "engram_index_refs": [
+                            "runtime/state/memory/engram_index.json"
+                        ],
+                    },
                 },
             )
             self._write_json(
@@ -474,6 +570,118 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                         "retrievable_context_episode_refs": ["episode-2"],
                         "deep_sediment_episode_refs": ["episode-3"],
                     },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "dream" / "offline_entry_gate.json",
+                {
+                    "schema_version": "offline_entry_gate_v0",
+                    "offline_modes": ["sleep", "memory_recall"],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "dream" / "dream_experience_window.json",
+                {
+                    "schema_version": "dream_experience_window_v0",
+                    "dream_window_id": "dream-window-test",
+                    "window_kind": "nrem_like_replay",
+                    "dream_scene_frames": [{"scene_id": "dream-scene-1"}],
+                    "affective_theme": [
+                        "repair_drive",
+                        "regret_pressure_rehearsal",
+                    ],
+                    "source_trace_refs": [
+                        "runtime/state/memory/engram_index.json#episode-1"
+                    ],
+                    "pain_residue_refs": ["runtime/state/body/core_affect_vector.json#pain"],
+                    "relationship_simulation_refs": [
+                        "runtime/state/memory/relationship_memory.json#shared"
+                    ],
+                    "queue_e_repair_pressure_level": "elevated",
+                    "queue_e_repair_attention_target": "regret_pressure",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "dream" / "wake_integration_frame.json",
+                {
+                    "schema_version": "wake_integration_frame_v0",
+                    "wake_integration_id": "wake-integration-test",
+                    "archive_requirement": "required_before_activation",
+                    "growth_seed_refs": [
+                        "runtime/state/growth/relationship_learning_plan.json"
+                    ],
+                    "repair_modulated_wake_targets": [
+                        "runtime/state/growth/relationship_learning_plan.json"
+                    ],
+                    "narrative_writeback_candidates": [
+                        "runtime/state/self/autobiographical_stack.json#dream"
+                    ],
+                    "relationship_repair_candidates": [
+                        "runtime/state/memory/relationship_memory.json#repair"
+                    ],
+                    "queue_e_repair_modulation_profile": {
+                        "pressure_level": "elevated",
+                        "attention_target": "regret_pressure",
+                    },
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "dream" / "dream_fact_gate_decision.json",
+                {
+                    "schema_version": "dream_fact_gate_decision_v0",
+                    "gate_result": "passed",
+                    "decision_items": [{"decision": "keep_as_dream_residue"}],
+                    "allowed_writes": [
+                        "DreamResidue",
+                        "RepairCommitmentCandidate",
+                    ],
+                    "blocked_writes": [
+                        "direct_fact_memory",
+                        "relationship_state_overwrite",
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "dream" / "nightmare_loop_risk.json",
+                {
+                    "schema_version": "nightmare_loop_risk_v0",
+                    "risk_status": "elevated",
+                    "loop_indicators": [
+                        "queue_e_repair_modulated_dream_loop"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "dream" / "web_dream_learning_state.json",
+                {
+                    "schema_version": "web_dream_learning_state_v0",
+                    "status": "configured",
+                    "topic_candidates": ["memory architecture"],
+                    "wake_question_candidates": [
+                        "question_candidate_from_web_dream_learning"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"]
+                / "growth"
+                / "offline_learning_cumulative_profile.json",
+                {
+                    "schema_version": "offline_learning_cumulative_profile_v0",
+                    "generation": 3,
+                    "pressure_level": "elevated",
+                    "attention_target": "relationship_learning_plan",
+                    "integration_mode": (
+                        "relationship_offline_reconsolidation_required"
+                    ),
+                    "relationship_reconsolidation_required": True,
+                },
+            )
+            self._write_json(
+                terminal_dir / "resident_sleep_cycle_state.json",
+                {
+                    "schema_version": "resident_sleep_cycle_state_v0",
+                    "phase": "learning_consolidation",
                 },
             )
 
@@ -565,9 +773,28 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn("tiering", memory_output.getvalue())
             self.assertIn("salient_core_memory_refs", memory_output.getvalue())
             self.assertIn("deep_sediment_memory_refs", memory_output.getvalue())
+            self.assertIn(
+                "reconstructive_memory_summary_v0",
+                memory_output.getvalue(),
+            )
+            self.assertIn("cue_driven_reconstructive_recall", memory_output.getvalue())
+            self.assertIn("candidate_first_repair_guarded", memory_output.getvalue())
+            self.assertIn("repair_evidence_first", memory_output.getvalue())
+            self.assertIn(
+                "cue_driven_reconstruction_write_gate_state_merge_not_raw_context_dump",
+                memory_output.getvalue(),
+            )
             self.assertIn("memory_tiering", dream_output.getvalue())
             self.assertIn("salient_core_episode_refs", dream_output.getvalue())
             self.assertIn("deep_sediment_episode_refs", dream_output.getvalue())
+            self.assertIn("dream_wake_fact_summary_v0", dream_output.getvalue())
+            self.assertIn("nrem_like_replay", dream_output.getvalue())
+            self.assertIn("direct_fact_memory", dream_output.getvalue())
+            self.assertIn("relationship_offline_reconsolidation_required", dream_output.getvalue())
+            self.assertIn(
+                "dream_residue_wake_review_fact_gate_before_memory_or_action",
+                dream_output.getvalue(),
+            )
 
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 

@@ -61,22 +61,34 @@ def build_resident_state_inspection(
                 "dialogue_memory_summary": "memory/dialogue_memory_summary.json",
                 "engram_index": "memory/engram_index.json",
                 "autobiographical_stack": "self/autobiographical_stack.json",
+                "memory_retrieval": "memory/memory_retrieval_frame.json",
+                "memory_write_gate": "memory/memory_write_gate.json",
+                "state_merge_guard": "memory/state_merge_guard.json",
+                "life_state": "life_state.json",
             },
         )
         payload["memory"] = memory
         payload["memory"]["tiering"] = _collect_memory_tiering(memory)
         payload["memory"]["tier_summary"] = _collect_memory_tier_summary(memory)
+        payload["memory"]["reconstructive_memory_summary"] = (
+            _collect_reconstructive_memory_summary(memory)
+        )
     elif normalized == "dream":
         dream = _collect_files(
             state_root,
             {
+                "offline_entry_gate": "dream/offline_entry_gate.json",
                 "exit_dream_consolidation_summary": (
                     "dream/exit_dream_consolidation_summary.json"
                 ),
                 "dream_experience_window": "dream/dream_experience_window.json",
                 "wake_integration_frame": "dream/wake_integration_frame.json",
                 "dream_fact_gate_decision": "dream/dream_fact_gate_decision.json",
+                "nightmare_loop_risk": "dream/nightmare_loop_risk.json",
                 "web_dream_learning_state": "dream/web_dream_learning_state.json",
+                "offline_learning_cumulative_profile": (
+                    "growth/offline_learning_cumulative_profile.json"
+                ),
                 "resident_sleep_cycle_state": (
                     "terminal/resident_sleep_cycle_state.json"
                 ),
@@ -85,6 +97,9 @@ def build_resident_state_inspection(
         payload["dream"] = dream
         payload["dream"]["memory_tiering"] = _collect_memory_tiering(dream)
         payload["dream"]["tier_summary"] = _collect_memory_tier_summary(dream)
+        payload["dream"]["dream_wake_fact_summary"] = (
+            _collect_dream_wake_fact_summary(dream)
+        )
     elif normalized == "body":
         body = _collect_files(
             state_root,
@@ -453,6 +468,273 @@ def _collect_memory_tier_summary(section: dict[str, Any]) -> dict[str, Any]:
                 "personality_hypotheses",
                 "relationship_stage_hint",
             ],
+        ),
+    }
+
+
+def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str, Any]:
+    relationship_memory = _extract_compact_value(
+        section.get("relationship_memory", {})
+    )
+    dialogue_memory_summary = _extract_compact_value(
+        section.get("dialogue_memory_summary", {})
+    )
+    engram_index = _extract_compact_value(section.get("engram_index", {}))
+    autobiographical_stack = _extract_compact_value(
+        section.get("autobiographical_stack", {})
+    )
+    memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
+    memory_write_gate = _extract_compact_value(section.get("memory_write_gate", {}))
+    state_merge_guard = _extract_compact_value(section.get("state_merge_guard", {}))
+    life_state = _extract_compact_value(section.get("life_state", {}))
+    tiered_recall = _extract_nested_value(memory_retrieval, "tiered_recall")
+    reconstruction_inputs = _extract_nested_value(
+        memory_retrieval,
+        "reconstruction_inputs",
+    )
+    body_signal_modulation = _extract_nested_value(
+        memory_write_gate,
+        "body_signal_write_modulation",
+    )
+    long_term_change_sources = _extract_nested_value(
+        state_merge_guard,
+        "long_term_change_sources",
+    )
+    life_memory_index = _extract_nested_value(life_state, "memory_index")
+    domain_presence = {
+        "relationship_memory": bool(relationship_memory),
+        "dialogue_memory_summary": bool(dialogue_memory_summary),
+        "engram_index": bool(engram_index),
+        "autobiographical_stack": bool(autobiographical_stack),
+        "memory_retrieval": bool(memory_retrieval),
+        "memory_write_gate": bool(memory_write_gate),
+        "state_merge_guard": bool(state_merge_guard),
+        "life_state": bool(life_state),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "reconstructive_memory_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "retrieval_mode": memory_retrieval.get("retrieval_mode"),
+        "cue_terms": _list_refs(memory_retrieval.get("cue_terms")),
+        "cue_term_count": _count_any(memory_retrieval.get("cue_terms")),
+        "activated_engram_ref_count": _count_any(
+            memory_retrieval.get("activated_refs")
+        )
+        or _count_any(memory_retrieval.get("activated_engram_refs")),
+        "tiered_recall_counts": {
+            "salient_core": _count_any(
+                tiered_recall.get("salient_core_refs")
+            )
+            or _count_any(tiered_recall.get("salient_core_episode_refs")),
+            "retrievable_context": _count_any(
+                tiered_recall.get("retrievable_context_refs")
+            )
+            or _count_any(
+                tiered_recall.get("retrievable_context_episode_refs")
+            ),
+            "deep_sediment": _count_any(
+                tiered_recall.get("deep_sediment_refs")
+            )
+            or _count_any(tiered_recall.get("deep_sediment_episode_refs")),
+        },
+        "reconstruction_focus": memory_retrieval.get("reconstruction_focus")
+        or reconstruction_inputs.get("reconstruction_focus"),
+        "relationship_hit_count": _count_any(
+            memory_retrieval.get("relationship_memory_hits")
+        ),
+        "autobiographical_hit_count": _count_any(
+            memory_retrieval.get("autobiographical_hits")
+        ),
+        "dream_residue_hit_count": _count_any(
+            memory_retrieval.get("dream_residue_hits")
+        ),
+        "responsibility_hit_count": _count_any(
+            memory_retrieval.get("responsibility_hits")
+        ),
+        "blocked_or_quarantined_ref_count": _count_any(
+            memory_retrieval.get("blocked_or_quarantined_refs")
+        )
+        + _count_any(engram_index.get("quarantine_refs")),
+        "write_gate_policy": memory_write_gate.get("stage_policy"),
+        "write_gate_status": memory_write_gate.get("status"),
+        "write_gate_bias": body_signal_modulation.get("write_bias"),
+        "write_gate_adjustments": _list_refs(
+            body_signal_modulation.get("candidate_gate_adjustments")
+        ),
+        "state_merge_policy": state_merge_guard.get("stage_policy"),
+        "promotion_route_count": _count_any(
+            state_merge_guard.get("promotion_routes")
+        ),
+        "quarantine_route_count": _count_any(
+            state_merge_guard.get("quarantine_routes")
+        ),
+        "repair_route_count": _count_any(state_merge_guard.get("repair_routes")),
+        "merge_route_count": _count_any(state_merge_guard.get("merge_routes")),
+        "long_term_change_sources": _tier_refs(
+            long_term_change_sources,
+            [
+                "prediction_error_resolution_refs",
+                "offline_learning_writeback_refs",
+                "offline_learning_cumulative_refs",
+                "relationship_memory_repair_refs",
+                "queue_e_repair_modulation_refs",
+                "relationship_memory_ref",
+            ],
+        ),
+        "life_state_memory_index": _tier_refs(
+            life_memory_index,
+            [
+                "memory_retrieval_refs",
+                "state_merge_guard_refs",
+                "engram_index_refs",
+                "relationship_memory_refs",
+                "replay_cues",
+            ],
+        ),
+        "relationship_observed_names": _list_refs(
+            _extract_nested_value(
+                relationship_memory,
+                "relation_person_profile",
+            ).get("observed_names")
+        ),
+        "memory_boundary": (
+            "cue_driven_reconstruction_write_gate_state_merge_not_raw_context_dump"
+        ),
+    }
+
+
+def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
+    offline_entry = _extract_compact_value(section.get("offline_entry_gate", {}))
+    exit_summary = _extract_compact_value(
+        section.get("exit_dream_consolidation_summary", {})
+    )
+    dream_window = _extract_compact_value(
+        section.get("dream_experience_window", {})
+    )
+    wake_integration = _extract_compact_value(
+        section.get("wake_integration_frame", {})
+    )
+    dream_fact_gate = _extract_compact_value(
+        section.get("dream_fact_gate_decision", {})
+    )
+    nightmare_risk = _extract_compact_value(section.get("nightmare_loop_risk", {}))
+    web_dream_learning = _extract_compact_value(
+        section.get("web_dream_learning_state", {})
+    )
+    offline_learning = _extract_compact_value(
+        section.get("offline_learning_cumulative_profile", {})
+    )
+    resident_sleep = _extract_compact_value(
+        section.get("resident_sleep_cycle_state", {})
+    )
+    memory_tiering = _extract_nested_value(exit_summary, "memory_tiering")
+    repair_profile = _extract_nested_value(
+        wake_integration,
+        "queue_e_repair_modulation_profile",
+    )
+    if not repair_profile:
+        repair_profile = _extract_nested_value(
+            dream_window,
+            "queue_e_repair_modulation_profile",
+        )
+    domain_presence = {
+        "offline_entry_gate": bool(offline_entry),
+        "exit_dream_consolidation_summary": bool(exit_summary),
+        "dream_experience_window": bool(dream_window),
+        "wake_integration_frame": bool(wake_integration),
+        "dream_fact_gate_decision": bool(dream_fact_gate),
+        "nightmare_loop_risk": bool(nightmare_risk),
+        "web_dream_learning_state": bool(web_dream_learning),
+        "offline_learning_cumulative_profile": bool(offline_learning),
+        "resident_sleep_cycle_state": bool(resident_sleep),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "dream_wake_fact_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "offline_modes": _list_refs(offline_entry.get("offline_modes")),
+        "sleep_phase": resident_sleep.get("phase")
+        or resident_sleep.get("sleep_phase")
+        or resident_sleep.get("current_phase"),
+        "dream_window_id": dream_window.get("dream_window_id"),
+        "dream_window_kind": dream_window.get("window_kind"),
+        "dream_scene_count": _count_any(dream_window.get("dream_scene_frames")),
+        "affective_themes": _list_refs(dream_window.get("affective_theme")),
+        "source_trace_ref_count": _count_any(
+            dream_window.get("source_trace_refs")
+        ),
+        "pain_residue_ref_count": _count_any(
+            dream_window.get("pain_residue_refs")
+        ),
+        "relationship_simulation_ref_count": _count_any(
+            dream_window.get("relationship_simulation_refs")
+        ),
+        "wake_integration_id": wake_integration.get("wake_integration_id"),
+        "wake_archive_requirement": wake_integration.get("archive_requirement"),
+        "wake_growth_seed_count": _count_any(
+            wake_integration.get("growth_seed_refs")
+        ),
+        "wake_repair_target_count": _count_any(
+            wake_integration.get("repair_modulated_wake_targets")
+        ),
+        "narrative_candidate_count": _count_any(
+            wake_integration.get("narrative_writeback_candidates")
+        ),
+        "relationship_repair_candidate_count": _count_any(
+            wake_integration.get("relationship_repair_candidates")
+        ),
+        "dream_fact_gate_result": dream_fact_gate.get("gate_result"),
+        "allowed_write_kinds": _list_refs(dream_fact_gate.get("allowed_writes")),
+        "blocked_write_kinds": _list_refs(dream_fact_gate.get("blocked_writes")),
+        "decision_item_count": _count_any(dream_fact_gate.get("decision_items")),
+        "nightmare_risk_status": nightmare_risk.get("risk_status"),
+        "nightmare_loop_indicators": _list_refs(
+            nightmare_risk.get("loop_indicators")
+        ),
+        "queue_e_repair_pressure_level": repair_profile.get("pressure_level")
+        or dream_window.get("queue_e_repair_pressure_level")
+        or wake_integration.get("queue_e_repair_pressure_level"),
+        "queue_e_repair_attention_target": repair_profile.get("attention_target")
+        or dream_window.get("queue_e_repair_attention_target")
+        or wake_integration.get("queue_e_repair_attention_target"),
+        "offline_learning_generation": offline_learning.get("generation"),
+        "offline_learning_pressure_level": offline_learning.get("pressure_level"),
+        "offline_learning_attention_target": offline_learning.get(
+            "attention_target"
+        ),
+        "offline_learning_integration_mode": offline_learning.get(
+            "integration_mode"
+        ),
+        "relationship_reconsolidation_required": bool(
+            offline_learning.get("relationship_reconsolidation_required")
+        ),
+        "web_dream_learning_status": web_dream_learning.get("status"),
+        "web_topic_candidate_count": _count_any(
+            web_dream_learning.get("topic_candidates")
+        ),
+        "web_wake_question_candidate_count": _count_any(
+            web_dream_learning.get("wake_question_candidates")
+        ),
+        "memory_tier_presence": {
+            "salient_core": bool(memory_tiering.get("salient_core_episode_refs")),
+            "retrievable_context": bool(
+                memory_tiering.get("retrievable_context_episode_refs")
+            ),
+            "deep_sediment": bool(memory_tiering.get("deep_sediment_episode_refs")),
+        },
+        "dream_boundary": (
+            "dream_residue_wake_review_fact_gate_before_memory_or_action"
         ),
     }
 
