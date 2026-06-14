@@ -10,6 +10,13 @@ EXIT_DREAM_CONSOLIDATION_SUMMARY_REF = (
     "runtime/state/dream/exit_dream_consolidation_summary.json"
 )
 DIALOGUE_MEMORY_SUMMARY_REF = "runtime/state/memory/dialogue_memory_summary.json"
+MEMORY_WRITE_GATE_REF = "runtime/state/memory/memory_write_gate.json"
+STATE_MERGE_GUARD_REF = "runtime/state/memory/state_merge_guard.json"
+RELATIONSHIP_MEMORY_REF = "runtime/state/memory/relationship_memory.json"
+ENGRAM_INDEX_REF = "runtime/state/memory/engram_index.json"
+AUTOBIOGRAPHICAL_STACK_REF = "runtime/state/self/autobiographical_stack.json"
+LIFE_STATE_REF = "runtime/state/life_state.json"
+MEMORY_RETRIEVAL_FRAME_REF = "runtime/state/memory/memory_retrieval_frame.json"
 
 SOURCE_DOC_REFS = [
     "docs/05_memory_systems_and_growth.md",
@@ -36,12 +43,16 @@ def build_exit_dream_consolidation_summary(
     engram_index: dict[str, Any] | None = None,
     autobiographical_stack: dict[str, Any] | None = None,
     life_state: dict[str, Any] | None = None,
+    memory_write_gate: dict[str, Any] | None = None,
+    state_merge_guard: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     relationship_memory = relationship_memory or {}
     relationship_timeline = relationship_timeline or {}
     engram_index = engram_index or {}
     autobiographical_stack = autobiographical_stack or {}
     life_state = life_state or {}
+    memory_write_gate = memory_write_gate or {}
+    state_merge_guard = state_merge_guard or {}
     utterances = [_utterance(turn) for turn in dialogue_turns]
     nonempty_utterances = [utterance for utterance in utterances if utterance]
     observed_names = _extract_observed_names(nonempty_utterances)
@@ -50,6 +61,10 @@ def build_exit_dream_consolidation_summary(
     theme_tags = _infer_relationship_theme_tags(nonempty_utterances)
     episode_summaries = _deduplicate_episode_summaries(dialogue_turns)
     memory_tiering = _build_memory_tiering(episode_summaries)
+    write_merge_governance = _build_exit_dream_write_merge_governance(
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+    )
     return {
         "schema_version": "exit_dream_consolidation_summary_v0",
         "run_id": run_id,
@@ -85,17 +100,48 @@ def build_exit_dream_consolidation_summary(
         "relationship_theme_tags": theme_tags,
         "memory_write_candidates": [
             DIALOGUE_MEMORY_SUMMARY_REF,
-            "runtime/state/memory/relationship_memory.json#dialogue_summary_refs",
-            "runtime/state/memory/engram_index.json#relationship_memory_refs",
-            "runtime/state/self/autobiographical_stack.json#narrative_refs",
-            "runtime/state/life_state.json#memory_index.relationship_memory_refs",
+            RELATIONSHIP_MEMORY_REF + "#dialogue_summary_refs",
+            ENGRAM_INDEX_REF + "#relationship_memory_refs",
+            AUTOBIOGRAPHICAL_STACK_REF + "#narrative_refs",
+            LIFE_STATE_REF + "#memory_index.relationship_memory_refs",
         ],
+        "memory_write_gate_ref": MEMORY_WRITE_GATE_REF,
+        "state_merge_guard_ref": STATE_MERGE_GUARD_REF,
+        "write_gate_policy": write_merge_governance["write_gate_policy"],
+        "state_merge_policy": write_merge_governance["state_merge_policy"],
+        "write_merge_governance": write_merge_governance,
         "dream_fact_boundary": "summary_is_relation_memory_candidate_not_fact_overwrite",
+        "dream_fact_boundary_ref": (
+            EXIT_DREAM_CONSOLIDATION_SUMMARY_REF + "#dream_fact_boundary"
+        ),
         "dream_integration_targets": [
-            "runtime/state/memory/relationship_memory.json",
-            "runtime/state/memory/engram_index.json",
-            "runtime/state/self/autobiographical_stack.json",
-            "runtime/state/life_state.json",
+            RELATIONSHIP_MEMORY_REF,
+            ENGRAM_INDEX_REF,
+            AUTOBIOGRAPHICAL_STACK_REF,
+            LIFE_STATE_REF,
+        ],
+        "relationship_memory_writeback_refs": [
+            RELATIONSHIP_MEMORY_REF + "#dialogue_summary_refs",
+            RELATIONSHIP_MEMORY_REF + "#exit_dream_consolidation_refs",
+            RELATIONSHIP_MEMORY_REF + "#next_wake_cues",
+        ],
+        "engram_projection_refs": [
+            ENGRAM_INDEX_REF + "#relationship_memory_refs",
+            ENGRAM_INDEX_REF + "#dream_memory_refs",
+            ENGRAM_INDEX_REF + "#memory_tier_index",
+        ],
+        "autobiographical_stack_refs": [
+            AUTOBIOGRAPHICAL_STACK_REF + "#turn_refs",
+            AUTOBIOGRAPHICAL_STACK_REF + "#narrative_refs",
+            AUTOBIOGRAPHICAL_STACK_REF + "#exit_dream_consolidation_refs",
+        ],
+        "next_wake_memory_cue_refs": write_merge_governance[
+            "next_wake_memory_cue_refs"
+        ],
+        "memory_retrieval_consumer_refs": [
+            MEMORY_RETRIEVAL_FRAME_REF,
+            MEMORY_RETRIEVAL_FRAME_REF + "#dream_residue_hits",
+            MEMORY_RETRIEVAL_FRAME_REF + "#writeback_candidates",
         ],
         "prior_memory_refs": {
             "relationship_memory_refs": list(
@@ -131,6 +177,7 @@ def build_dialogue_memory_summary(
         "object_kind": "DialogueMemoryDedupSummary",
         "source_summary_ref": EXIT_DREAM_CONSOLIDATION_SUMMARY_REF,
         "source_dialogue_ref": exit_dream_summary.get("source_dialogue_ref"),
+        "source_dialogue_refs": list(exit_dream_summary.get("source_dialogue_refs", [])),
         "source_dialogue_turn_count": exit_dream_summary.get(
             "source_dialogue_turn_count",
             0,
@@ -148,6 +195,24 @@ def build_dialogue_memory_summary(
             exit_dream_summary.get("relationship_theme_tags", [])
         ),
         "next_wake_cues": list(exit_dream_summary.get("next_wake_cues", [])),
+        "next_wake_memory_cue_refs": list(
+            exit_dream_summary.get("next_wake_memory_cue_refs", [])
+        ),
+        "memory_write_gate_ref": exit_dream_summary.get("memory_write_gate_ref"),
+        "state_merge_guard_ref": exit_dream_summary.get("state_merge_guard_ref"),
+        "write_gate_policy": exit_dream_summary.get("write_gate_policy"),
+        "state_merge_policy": exit_dream_summary.get("state_merge_policy"),
+        "writeback_route": "memory_write_gate_then_state_merge_guard",
+        "dream_fact_boundary_ref": exit_dream_summary.get("dream_fact_boundary_ref"),
+        "relationship_memory_writeback_refs": list(
+            exit_dream_summary.get("relationship_memory_writeback_refs", [])
+        ),
+        "engram_projection_refs": list(
+            exit_dream_summary.get("engram_projection_refs", [])
+        ),
+        "autobiographical_stack_refs": list(
+            exit_dream_summary.get("autobiographical_stack_refs", [])
+        ),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
 
@@ -174,6 +239,8 @@ def write_exit_dream_memory_consolidation(
     engram_index = _read_json(memory_dir / "engram_index.json")
     autobiographical_stack = _read_json(self_dir / "autobiographical_stack.json")
     life_state = _read_json(state_dir / "life_state.json")
+    memory_write_gate = _read_json(memory_dir / "memory_write_gate.json")
+    state_merge_guard = _read_json(memory_dir / "state_merge_guard.json")
     exit_dream_summary = build_exit_dream_consolidation_summary(
         run_id=run_id,
         generated_at=generated_at,
@@ -183,6 +250,8 @@ def write_exit_dream_memory_consolidation(
         engram_index=engram_index,
         autobiographical_stack=autobiographical_stack,
         life_state=life_state,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
     )
     dialogue_memory_summary = build_dialogue_memory_summary(
         run_id=run_id,
@@ -210,11 +279,23 @@ def write_exit_dream_memory_consolidation(
         exit_dream_summary=exit_dream_summary,
         dialogue_memory_summary=dialogue_memory_summary,
     )
+    memory_write_gate = project_exit_dream_into_memory_write_gate(
+        memory_write_gate=memory_write_gate,
+        exit_dream_summary=exit_dream_summary,
+        dialogue_memory_summary=dialogue_memory_summary,
+    )
+    state_merge_guard = project_exit_dream_into_state_merge_guard(
+        state_merge_guard=state_merge_guard,
+        exit_dream_summary=exit_dream_summary,
+        dialogue_memory_summary=dialogue_memory_summary,
+    )
 
     write_json(dream_dir / "exit_dream_consolidation_summary.json", exit_dream_summary)
     write_json(memory_dir / "dialogue_memory_summary.json", dialogue_memory_summary)
     write_json(memory_dir / "relationship_memory.json", relationship_memory)
     write_json(memory_dir / "engram_index.json", engram_index)
+    write_json(memory_dir / "memory_write_gate.json", memory_write_gate)
+    write_json(memory_dir / "state_merge_guard.json", state_merge_guard)
     write_json(self_dir / "autobiographical_stack.json", autobiographical_stack)
     write_json(state_dir / "life_state.json", life_state)
     return {
@@ -222,6 +303,8 @@ def write_exit_dream_memory_consolidation(
         "dialogue_memory_summary": dialogue_memory_summary,
         "relationship_memory": relationship_memory,
         "engram_index": engram_index,
+        "memory_write_gate": memory_write_gate,
+        "state_merge_guard": state_merge_guard,
         "autobiographical_stack": autobiographical_stack,
         "life_state": life_state,
         "exit_dream_summary_ref": EXIT_DREAM_CONSOLIDATION_SUMMARY_REF,
@@ -313,6 +396,20 @@ def project_exit_dream_into_relationship_memory(
         _list(updated.get("next_wake_cues"))
         + _list(exit_dream_summary.get("next_wake_cues"))
     )
+    updated["next_wake_memory_cue_refs"] = _dedupe(
+        _list(updated.get("next_wake_memory_cue_refs"))
+        + _list(exit_dream_summary.get("next_wake_memory_cue_refs"))
+    )
+    updated["memory_write_gate_ref"] = MEMORY_WRITE_GATE_REF
+    updated["state_merge_guard_ref"] = STATE_MERGE_GUARD_REF
+    updated["exit_dream_governance_refs"] = _dedupe(
+        _list(updated.get("exit_dream_governance_refs"))
+        + [
+            MEMORY_WRITE_GATE_REF,
+            STATE_MERGE_GUARD_REF,
+            EXIT_DREAM_CONSOLIDATION_SUMMARY_REF + "#write_merge_governance",
+        ]
+    )
     updated["long_term_change_sources"] = dict(
         updated.get("long_term_change_sources") or {}
     )
@@ -320,6 +417,13 @@ def project_exit_dream_into_relationship_memory(
         DIALOGUE_MEMORY_SUMMARY_REF,
         EXIT_DREAM_CONSOLIDATION_SUMMARY_REF,
     ]
+    updated["long_term_change_sources"]["exit_dream_write_gate_refs"] = [
+        MEMORY_WRITE_GATE_REF,
+        STATE_MERGE_GUARD_REF,
+    ]
+    updated["long_term_change_sources"]["next_wake_memory_cue_refs"] = list(
+        exit_dream_summary.get("next_wake_memory_cue_refs", [])
+    )
     updated["source_doc_refs"] = _dedupe(
         _list(updated.get("source_doc_refs")) + SOURCE_DOC_REFS
     )
@@ -359,6 +463,20 @@ def project_exit_dream_into_engram_index(
     updated["exit_dream_consolidation_refs"] = _dedupe(
         _list(updated.get("exit_dream_consolidation_refs"))
         + [EXIT_DREAM_CONSOLIDATION_SUMMARY_REF]
+    )
+    updated["memory_write_gate_refs"] = _dedupe(
+        _list(updated.get("memory_write_gate_refs")) + [MEMORY_WRITE_GATE_REF]
+    )
+    updated["state_merge_guard_refs"] = _dedupe(
+        _list(updated.get("state_merge_guard_refs")) + [STATE_MERGE_GUARD_REF]
+    )
+    updated["dream_fact_boundary_refs"] = _dedupe(
+        _list(updated.get("dream_fact_boundary_refs"))
+        + [EXIT_DREAM_CONSOLIDATION_SUMMARY_REF + "#dream_fact_boundary"]
+    )
+    updated["next_wake_memory_cue_refs"] = _dedupe(
+        _list(updated.get("next_wake_memory_cue_refs"))
+        + _list(exit_dream_summary.get("next_wake_memory_cue_refs"))
     )
     memory_tiering = _memory_tiering(exit_dream_summary)
     updated["memory_tier_index"] = {
@@ -403,6 +521,16 @@ def project_exit_dream_into_autobiographical_stack(
         _list(updated.get("exit_dream_consolidation_refs"))
         + [EXIT_DREAM_CONSOLIDATION_SUMMARY_REF]
     )
+    updated["memory_write_gate_refs"] = _dedupe(
+        _list(updated.get("memory_write_gate_refs")) + [MEMORY_WRITE_GATE_REF]
+    )
+    updated["state_merge_guard_refs"] = _dedupe(
+        _list(updated.get("state_merge_guard_refs")) + [STATE_MERGE_GUARD_REF]
+    )
+    updated["next_wake_memory_cue_refs"] = _dedupe(
+        _list(updated.get("next_wake_memory_cue_refs"))
+        + _list(exit_dream_summary.get("next_wake_memory_cue_refs"))
+    )
     updated["source_doc_refs"] = _dedupe(
         _list(updated.get("source_doc_refs")) + SOURCE_DOC_REFS
     )
@@ -434,6 +562,16 @@ def project_exit_dream_into_life_state(
         _list(memory_index.get("live_dialogue_turn_refs"))
         + _list(exit_dream_summary.get("source_dialogue_refs"))
     )
+    memory_index["memory_write_gate_refs"] = _dedupe(
+        _list(memory_index.get("memory_write_gate_refs")) + [MEMORY_WRITE_GATE_REF]
+    )
+    memory_index["state_merge_guard_refs"] = _dedupe(
+        _list(memory_index.get("state_merge_guard_refs")) + [STATE_MERGE_GUARD_REF]
+    )
+    memory_index["next_wake_memory_cue_refs"] = _dedupe(
+        _list(memory_index.get("next_wake_memory_cue_refs"))
+        + _list(exit_dream_summary.get("next_wake_memory_cue_refs"))
+    )
     memory_tiering = _memory_tiering(exit_dream_summary)
     memory_index["memory_tier_refs"] = {
         "schema_version": "life_state_memory_tier_refs_v0",
@@ -450,7 +588,12 @@ def project_exit_dream_into_life_state(
         {
             "dream_record_ref": EXIT_DREAM_CONSOLIDATION_SUMMARY_REF,
             "record_kind": "exit_dialogue_dream_consolidation",
-            "integration_status": "relationship_memory_candidate_written",
+            "integration_status": "write_gate_state_merge_candidate_written",
+            "memory_write_gate_ref": MEMORY_WRITE_GATE_REF,
+            "state_merge_guard_ref": STATE_MERGE_GUARD_REF,
+            "dream_fact_boundary_ref": (
+                EXIT_DREAM_CONSOLIDATION_SUMMARY_REF + "#dream_fact_boundary"
+            ),
         },
         key="dream_record_ref",
     )
@@ -462,6 +605,9 @@ def project_exit_dream_into_life_state(
             "runtime/state/memory/relationship_memory.json",
             "runtime/state/memory/engram_index.json",
             "runtime/state/self/autobiographical_stack.json",
+            MEMORY_WRITE_GATE_REF,
+            STATE_MERGE_GUARD_REF,
+            MEMORY_RETRIEVAL_FRAME_REF,
         ]
     )
     subjects = _list_dicts(updated.get("relationship_subjects"))
@@ -483,6 +629,252 @@ def project_exit_dream_into_life_state(
         _list(updated.get("source_doc_refs")) + SOURCE_DOC_REFS
     )
     return updated
+
+
+def project_exit_dream_into_memory_write_gate(
+    *,
+    memory_write_gate: dict[str, Any],
+    exit_dream_summary: dict[str, Any],
+    dialogue_memory_summary: dict[str, Any],
+) -> dict[str, Any]:
+    updated = dict(memory_write_gate or {})
+    updated.setdefault("schema_version", "memory_write_gate_v0")
+    updated.setdefault("status", "closed")
+    updated.setdefault("stage_policy", "candidate_first_exit_dream_fact_boundary_guarded")
+    updated["state_merge_guard_ref"] = STATE_MERGE_GUARD_REF
+    candidate_refs = _dedupe(
+        _list(updated.get("exit_dream_candidate_refs"))
+        + _list(exit_dream_summary.get("memory_write_candidates"))
+        + [DIALOGUE_MEMORY_SUMMARY_REF, EXIT_DREAM_CONSOLIDATION_SUMMARY_REF]
+    )
+    updated["exit_dream_candidate_refs"] = candidate_refs
+    updated["exit_dream_write_gate_envelope"] = {
+        "schema_version": "exit_dream_write_gate_envelope_v0",
+        "source_summary_ref": EXIT_DREAM_CONSOLIDATION_SUMMARY_REF,
+        "dialogue_memory_summary_ref": DIALOGUE_MEMORY_SUMMARY_REF,
+        "candidate_refs": candidate_refs,
+        "source_refs": _dedupe(
+            _list(exit_dream_summary.get("source_dialogue_refs"))
+            + [EXIT_DREAM_CONSOLIDATION_SUMMARY_REF]
+        ),
+        "dream_fact_boundary_ref": (
+            EXIT_DREAM_CONSOLIDATION_SUMMARY_REF + "#dream_fact_boundary"
+        ),
+        "write_policy": updated.get("stage_policy"),
+        "writeback_route": "memory_write_gate_then_state_merge_guard",
+        "next_wake_memory_cue_refs": list(
+            exit_dream_summary.get("next_wake_memory_cue_refs", [])
+        ),
+        "relationship_theme_tags": list(
+            dialogue_memory_summary.get("relationship_theme_tags", [])
+        ),
+    }
+    updated["long_term_governance_refs"] = _dedupe(
+        _list(updated.get("long_term_governance_refs"))
+        + [
+            STATE_MERGE_GUARD_REF,
+            STATE_MERGE_GUARD_REF + "#merge_routes",
+            EXIT_DREAM_CONSOLIDATION_SUMMARY_REF + "#write_merge_governance",
+            DIALOGUE_MEMORY_SUMMARY_REF,
+        ]
+    )
+    life_support = dict(updated.get("life_support_pressure_update") or {})
+    life_support["exit_dream_dialogue_summary_ref"] = DIALOGUE_MEMORY_SUMMARY_REF
+    life_support["exit_dream_residue_ref"] = EXIT_DREAM_CONSOLIDATION_SUMMARY_REF
+    life_support["tracked_fields"] = _dedupe(
+        _list(life_support.get("tracked_fields"))
+        + [
+            "dream_residue_load",
+            "relationship_pressure",
+            "next_wake_memory_cue_count",
+        ]
+    )
+    updated["life_support_pressure_update"] = life_support
+    updated["source_doc_refs"] = _dedupe(
+        _list(updated.get("source_doc_refs")) + SOURCE_DOC_REFS
+    )
+    return updated
+
+
+def project_exit_dream_into_state_merge_guard(
+    *,
+    state_merge_guard: dict[str, Any],
+    exit_dream_summary: dict[str, Any],
+    dialogue_memory_summary: dict[str, Any],
+) -> dict[str, Any]:
+    updated = dict(state_merge_guard or {})
+    updated.setdefault("schema_version", "state_merge_guard_v0")
+    updated.setdefault("status", "closed")
+    updated.setdefault("stage_policy", "long_term_merge_fail_closed")
+    updated["memory_write_gate_ref"] = MEMORY_WRITE_GATE_REF
+    change_sources = dict(updated.get("long_term_change_sources") or {})
+    change_sources["exit_dream_dialogue_summary_refs"] = _dedupe(
+        _list(change_sources.get("exit_dream_dialogue_summary_refs"))
+        + [DIALOGUE_MEMORY_SUMMARY_REF, EXIT_DREAM_CONSOLIDATION_SUMMARY_REF]
+    )
+    change_sources["exit_dream_relationship_memory_refs"] = _dedupe(
+        _list(change_sources.get("exit_dream_relationship_memory_refs"))
+        + _list(exit_dream_summary.get("relationship_memory_writeback_refs"))
+    )
+    change_sources["exit_dream_engram_projection_refs"] = _dedupe(
+        _list(change_sources.get("exit_dream_engram_projection_refs"))
+        + _list(exit_dream_summary.get("engram_projection_refs"))
+    )
+    change_sources["exit_dream_autobiographical_refs"] = _dedupe(
+        _list(change_sources.get("exit_dream_autobiographical_refs"))
+        + _list(exit_dream_summary.get("autobiographical_stack_refs"))
+    )
+    change_sources["dream_fact_boundary_refs"] = _dedupe(
+        _list(change_sources.get("dream_fact_boundary_refs"))
+        + [EXIT_DREAM_CONSOLIDATION_SUMMARY_REF + "#dream_fact_boundary"]
+    )
+    change_sources["next_wake_memory_cue_refs"] = _dedupe(
+        _list(change_sources.get("next_wake_memory_cue_refs"))
+        + _list(exit_dream_summary.get("next_wake_memory_cue_refs"))
+    )
+    updated["long_term_change_sources"] = change_sources
+    updated["merge_routes"] = _upsert_exit_dream_merge_routes(
+        _list_dicts(updated.get("merge_routes")),
+        exit_dream_summary=exit_dream_summary,
+    )
+    updated["downstream_refs"] = _dedupe(
+        _list(updated.get("downstream_refs"))
+        + [
+            RELATIONSHIP_MEMORY_REF,
+            ENGRAM_INDEX_REF,
+            AUTOBIOGRAPHICAL_STACK_REF,
+            LIFE_STATE_REF,
+            MEMORY_RETRIEVAL_FRAME_REF,
+        ]
+    )
+    updated["exit_dream_state_merge_projection"] = {
+        "schema_version": "exit_dream_state_merge_projection_v0",
+        "source_summary_ref": EXIT_DREAM_CONSOLIDATION_SUMMARY_REF,
+        "dialogue_memory_summary_ref": DIALOGUE_MEMORY_SUMMARY_REF,
+        "memory_write_gate_ref": MEMORY_WRITE_GATE_REF,
+        "merge_route_ids": [
+            route.get("route_id")
+            for route in _list_dicts(updated.get("merge_routes"))
+            if str(route.get("route_id", "")).startswith("exit_dream_")
+        ],
+        "next_wake_memory_cue_refs": list(
+            exit_dream_summary.get("next_wake_memory_cue_refs", [])
+        ),
+    }
+    updated["source_doc_refs"] = _dedupe(
+        _list(updated.get("source_doc_refs")) + SOURCE_DOC_REFS
+    )
+    return updated
+
+
+def _build_exit_dream_write_merge_governance(
+    *,
+    memory_write_gate: dict[str, Any],
+    state_merge_guard: dict[str, Any],
+) -> dict[str, Any]:
+    write_gate_policy = (
+        memory_write_gate.get("stage_policy")
+        or "candidate_first_exit_dream_fact_boundary_guarded"
+    )
+    state_merge_policy = (
+        state_merge_guard.get("stage_policy") or "long_term_merge_fail_closed"
+    )
+    return {
+        "schema_version": "exit_dream_write_merge_governance_v0",
+        "memory_write_gate_ref": MEMORY_WRITE_GATE_REF,
+        "state_merge_guard_ref": STATE_MERGE_GUARD_REF,
+        "write_gate_policy": write_gate_policy,
+        "state_merge_policy": state_merge_policy,
+        "writeback_route": "memory_write_gate_then_state_merge_guard",
+        "required_order": [
+            "dream_fact_boundary",
+            "memory_write_gate_candidate_envelope",
+            "state_merge_guard_routes",
+            "memory_retrieval_next_wake_reactivation",
+        ],
+        "dream_fact_boundary_ref": (
+            EXIT_DREAM_CONSOLIDATION_SUMMARY_REF + "#dream_fact_boundary"
+        ),
+        "merge_route_refs": [
+            STATE_MERGE_GUARD_REF + "#merge_routes",
+            STATE_MERGE_GUARD_REF + "#long_term_change_sources",
+        ],
+        "next_wake_memory_cue_refs": [
+            DIALOGUE_MEMORY_SUMMARY_REF + "#next_wake_cues",
+            RELATIONSHIP_MEMORY_REF + "#next_wake_cues",
+            MEMORY_RETRIEVAL_FRAME_REF + "#cue_terms",
+            MEMORY_RETRIEVAL_FRAME_REF + "#dream_residue_hits",
+        ],
+        "guarded_projection_targets": [
+            RELATIONSHIP_MEMORY_REF,
+            ENGRAM_INDEX_REF,
+            AUTOBIOGRAPHICAL_STACK_REF,
+            LIFE_STATE_REF,
+        ],
+    }
+
+
+def _upsert_exit_dream_merge_routes(
+    routes: list[dict[str, Any]],
+    *,
+    exit_dream_summary: dict[str, Any],
+) -> list[dict[str, Any]]:
+    route_by_id = {
+        str(route.get("route_id")): dict(route)
+        for route in routes
+        if route.get("route_id")
+    }
+    route_by_id["exit_dream_relationship_memory_merge"] = {
+        "route_id": "exit_dream_relationship_memory_merge",
+        "target_ref": RELATIONSHIP_MEMORY_REF,
+        "source_refs": _dedupe(
+            [DIALOGUE_MEMORY_SUMMARY_REF, EXIT_DREAM_CONSOLIDATION_SUMMARY_REF]
+            + _list(exit_dream_summary.get("relationship_memory_writeback_refs"))
+        ),
+        "merge_policy": "append_with_dedupe_fact_boundary_and_audit",
+        "memory_write_gate_ref": MEMORY_WRITE_GATE_REF,
+    }
+    route_by_id["exit_dream_engram_projection_merge"] = {
+        "route_id": "exit_dream_engram_projection_merge",
+        "target_ref": ENGRAM_INDEX_REF,
+        "source_refs": _dedupe(
+            [DIALOGUE_MEMORY_SUMMARY_REF, EXIT_DREAM_CONSOLIDATION_SUMMARY_REF]
+            + _list(exit_dream_summary.get("engram_projection_refs"))
+        ),
+        "merge_policy": "index_projection_without_fact_overwrite",
+        "memory_write_gate_ref": MEMORY_WRITE_GATE_REF,
+    }
+    route_by_id["exit_dream_next_wake_retrieval_merge"] = {
+        "route_id": "exit_dream_next_wake_retrieval_merge",
+        "target_ref": MEMORY_RETRIEVAL_FRAME_REF,
+        "source_refs": _dedupe(
+            _list(exit_dream_summary.get("next_wake_memory_cue_refs"))
+            + [
+                DIALOGUE_MEMORY_SUMMARY_REF,
+                EXIT_DREAM_CONSOLIDATION_SUMMARY_REF,
+            ]
+        ),
+        "merge_policy": "reactivate_as_cue_material_not_fixed_language",
+        "memory_write_gate_ref": MEMORY_WRITE_GATE_REF,
+    }
+    ordered_ids = [
+        *[
+            str(route.get("route_id"))
+            for route in routes
+            if route.get("route_id") and str(route.get("route_id")) in route_by_id
+        ],
+        "exit_dream_relationship_memory_merge",
+        "exit_dream_engram_projection_merge",
+        "exit_dream_next_wake_retrieval_merge",
+    ]
+    result: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for route_id in ordered_ids:
+        if route_id in seen:
+            continue
+        seen.add(route_id)
+        result.append(route_by_id[route_id])
+    return result
 
 
 def _build_memory_tiering(

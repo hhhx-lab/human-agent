@@ -372,10 +372,18 @@ def _merge_exit_dream_memory_for_closeout(
         "deduplication_policy": exit_dream_summary.get("deduplication_policy"),
         "exit_dream_summary_ref": exit_dream_summary_ref,
         "dialogue_memory_summary_ref": dialogue_memory_summary_ref,
+        "memory_write_gate_ref": exit_dream_summary.get("memory_write_gate_ref"),
+        "state_merge_guard_ref": exit_dream_summary.get("state_merge_guard_ref"),
+        "write_gate_policy": exit_dream_summary.get("write_gate_policy"),
+        "state_merge_policy": exit_dream_summary.get("state_merge_policy"),
+        "dream_fact_boundary_ref": exit_dream_summary.get("dream_fact_boundary_ref"),
         "relationship_theme_tags": _list_or_empty(
             exit_dream_summary.get("relationship_theme_tags")
         ),
         "next_wake_cues": _list_or_empty(dialogue_memory_summary.get("next_wake_cues")),
+        "next_wake_memory_cue_refs": _list_or_empty(
+            dialogue_memory_summary.get("next_wake_memory_cue_refs")
+        ),
         "ref_set": ref_set,
     }
     merged["background_exit_dream_memory_presence_profile"] = dict(

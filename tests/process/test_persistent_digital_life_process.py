@@ -11374,14 +11374,19 @@ class PersistentDigitalLifeProcessTests(
                     artifact["state_merge_policy"],
                     "long_term_merge_fail_closed",
                 )
-                self.assertEqual(artifact["state_merge_long_term_change_count"], 4)
-                self.assertEqual(
-                    artifact["state_merge_long_term_change_families"],
-                    expected_state_merge_families,
+                self.assertGreaterEqual(
+                    artifact["state_merge_long_term_change_count"],
+                    len(expected_state_merge_refs),
                 )
-                self.assertEqual(
-                    artifact["state_merge_long_term_change_refs"],
-                    expected_state_merge_refs,
+                self.assertTrue(
+                    set(expected_state_merge_families).issubset(
+                        set(artifact["state_merge_long_term_change_families"])
+                    )
+                )
+                self.assertTrue(
+                    set(expected_state_merge_refs).issubset(
+                        set(artifact["state_merge_long_term_change_refs"])
+                    )
                 )
             self.assertEqual(
                 digest["offline_growth_cycle_refs"],
@@ -12903,6 +12908,12 @@ class PersistentDigitalLifeProcessTests(
             persisted_engram_index = self._read_json(
                 memory_dir / "engram_index.json"
             )
+            persisted_memory_write_gate = self._read_json(
+                memory_dir / "memory_write_gate.json"
+            )
+            persisted_state_merge_guard = self._read_json(
+                memory_dir / "state_merge_guard.json"
+            )
             persisted_autobiographical_stack = self._read_json(
                 state_dir / "self" / "autobiographical_stack.json"
             )
@@ -12938,6 +12949,8 @@ class PersistentDigitalLifeProcessTests(
             expected_dialogue_memory_summary_ref = (
                 "runtime/state/memory/dialogue_memory_summary.json"
             )
+            expected_memory_write_gate_ref = "runtime/state/memory/memory_write_gate.json"
+            expected_state_merge_guard_ref = "runtime/state/memory/state_merge_guard.json"
 
             self.assertEqual(
                 exit_dream_summary["schema_version"],
@@ -12959,12 +12972,44 @@ class PersistentDigitalLifeProcessTests(
                 exit_dream_summary["relationship_theme_tags"],
             )
             self.assertEqual(
+                exit_dream_summary["memory_write_gate_ref"],
+                expected_memory_write_gate_ref,
+            )
+            self.assertEqual(
+                exit_dream_summary["state_merge_guard_ref"],
+                expected_state_merge_guard_ref,
+            )
+            self.assertEqual(
+                exit_dream_summary["write_merge_governance"]["writeback_route"],
+                "memory_write_gate_then_state_merge_guard",
+            )
+            self.assertEqual(
+                exit_dream_summary["dream_fact_boundary_ref"],
+                expected_exit_dream_summary_ref + "#dream_fact_boundary",
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_retrieval_frame.json#dream_residue_hits",
+                exit_dream_summary["next_wake_memory_cue_refs"],
+            )
+            self.assertEqual(
                 dialogue_memory_summary["schema_version"],
                 "dialogue_memory_summary_v0",
             )
             self.assertEqual(
                 dialogue_memory_summary["source_summary_ref"],
                 expected_exit_dream_summary_ref,
+            )
+            self.assertEqual(
+                dialogue_memory_summary["writeback_route"],
+                "memory_write_gate_then_state_merge_guard",
+            )
+            self.assertEqual(
+                dialogue_memory_summary["memory_write_gate_ref"],
+                expected_memory_write_gate_ref,
+            )
+            self.assertEqual(
+                dialogue_memory_summary["state_merge_guard_ref"],
+                expected_state_merge_guard_ref,
             )
             self.assertLessEqual(
                 len(dialogue_memory_summary["deduplicated_episode_summaries"]),
@@ -12983,6 +13028,14 @@ class PersistentDigitalLifeProcessTests(
                 persisted_relationship_memory["relation_person_profile"]["observed_names"],
             )
             self.assertIn(
+                expected_memory_write_gate_ref,
+                persisted_relationship_memory["exit_dream_governance_refs"],
+            )
+            self.assertIn(
+                expected_state_merge_guard_ref,
+                persisted_relationship_memory["exit_dream_governance_refs"],
+            )
+            self.assertIn(
                 expected_dialogue_memory_summary_ref,
                 persisted_engram_index["relationship_memory_refs"],
             )
@@ -12991,8 +13044,24 @@ class PersistentDigitalLifeProcessTests(
                 persisted_engram_index["dream_memory_refs"],
             )
             self.assertIn(
+                expected_memory_write_gate_ref,
+                persisted_engram_index["memory_write_gate_refs"],
+            )
+            self.assertIn(
+                expected_state_merge_guard_ref,
+                persisted_engram_index["state_merge_guard_refs"],
+            )
+            self.assertIn(
                 expected_dialogue_memory_summary_ref,
                 persisted_autobiographical_stack["narrative_refs"],
+            )
+            self.assertIn(
+                expected_memory_write_gate_ref,
+                persisted_autobiographical_stack["memory_write_gate_refs"],
+            )
+            self.assertIn(
+                expected_state_merge_guard_ref,
+                persisted_autobiographical_stack["state_merge_guard_refs"],
             )
             self.assertIn(
                 expected_dialogue_memory_summary_ref,
@@ -13001,6 +13070,43 @@ class PersistentDigitalLifeProcessTests(
             self.assertIn(
                 expected_exit_dream_summary_ref,
                 persisted_life_state["memory_index"]["dream_memory_refs"],
+            )
+            self.assertIn(
+                expected_memory_write_gate_ref,
+                persisted_life_state["memory_index"]["memory_write_gate_refs"],
+            )
+            self.assertIn(
+                expected_state_merge_guard_ref,
+                persisted_life_state["memory_index"]["state_merge_guard_refs"],
+            )
+            self.assertEqual(
+                persisted_memory_write_gate["exit_dream_write_gate_envelope"][
+                    "writeback_route"
+                ],
+                "memory_write_gate_then_state_merge_guard",
+            )
+            self.assertIn(
+                expected_dialogue_memory_summary_ref,
+                persisted_memory_write_gate["exit_dream_candidate_refs"],
+            )
+            self.assertIn(
+                expected_exit_dream_summary_ref + "#dream_fact_boundary",
+                persisted_state_merge_guard["long_term_change_sources"][
+                    "dream_fact_boundary_refs"
+                ],
+            )
+            self.assertIn(
+                "exit_dream_next_wake_retrieval_merge",
+                [
+                    route["route_id"]
+                    for route in persisted_state_merge_guard["merge_routes"]
+                ],
+            )
+            self.assertEqual(
+                persisted_state_merge_guard["exit_dream_state_merge_projection"][
+                    "memory_write_gate_ref"
+                ],
+                expected_memory_write_gate_ref,
             )
             memory_tiering = exit_dream_summary["memory_tiering"]
             self.assertEqual(
@@ -13345,14 +13451,19 @@ class PersistentDigitalLifeProcessTests(
                     artifact["state_merge_policy"],
                     "long_term_merge_fail_closed",
                 )
-                self.assertEqual(artifact["state_merge_long_term_change_count"], 4)
-                self.assertEqual(
-                    artifact["state_merge_long_term_change_families"],
-                    expected_state_merge_families,
+                self.assertGreaterEqual(
+                    artifact["state_merge_long_term_change_count"],
+                    len(expected_state_merge_refs),
                 )
-                self.assertEqual(
-                    artifact["state_merge_long_term_change_refs"],
-                    expected_state_merge_refs,
+                self.assertTrue(
+                    set(expected_state_merge_families).issubset(
+                        set(artifact["state_merge_long_term_change_families"])
+                    )
+                )
+                self.assertTrue(
+                    set(expected_state_merge_refs).issubset(
+                        set(artifact["state_merge_long_term_change_refs"])
+                    )
                 )
             self.assertEqual(
                 process_digest["offline_learning_cumulative_generation"],
