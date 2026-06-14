@@ -146,10 +146,46 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                         "last_proactive_voice_profile": {
                             "schema_version": "resident_proactive_voice_profile_v0",
                             "surface_kind": "relationship_checkin",
+                            "utterance_candidate_code_count": 2,
+                            "utterance_candidate_codes": [
+                                "wake_cue:remember_relation_person_name:何剑宝"
+                            ],
                             "question_candidates": [
                                 "wake_cue:remember_relation_person_name:何剑宝"
                             ],
+                            "profile_coverage": {
+                                "schema_version": "resident_proactive_voice_profile_coverage_v0",
+                                "active_domains": ["memory", "waiting_governance"],
+                                "active_domain_count": 2,
+                                "domain_presence": {
+                                    "memory": True,
+                                    "memory_tier": False,
+                                    "dream": False,
+                                    "web_dream_learning": False,
+                                    "resident_autonomous_activity": False,
+                                    "waiting_governance": True,
+                                },
+                            },
                         },
+                        "last_profile_coverage": {
+                            "schema_version": "resident_proactive_voice_profile_coverage_v0",
+                            "active_domains": ["memory", "waiting_governance"],
+                            "active_domain_count": 2,
+                            "domain_presence": {
+                                "memory": True,
+                                "memory_tier": False,
+                                "dream": False,
+                                "web_dream_learning": False,
+                                "resident_autonomous_activity": False,
+                                "waiting_governance": True,
+                            },
+                        },
+                        "last_utterance_candidate_code_count": 2,
+                        "last_release_scope": "open_terminal_idle_hidden",
+                        "last_natural_language_released": False,
+                        "last_post_expression_gate_status": "skipped",
+                        "event_count": 1,
+                        "release_count": 0,
                     },
                     ensure_ascii=False,
                     indent=2,
@@ -171,7 +207,14 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn("resident_state_inspection_v0", output.getvalue())
             self.assertIn("proactive_voice", output.getvalue())
             self.assertIn("relationship_checkin", output.getvalue())
-            self.assertIn("question_candidates", output.getvalue())
+            self.assertIn("coverage_summary", output.getvalue())
+            self.assertIn("resident_proactive_voice_profile_coverage_v0", output.getvalue())
+            self.assertIn("waiting_governance", output.getvalue())
+            self.assertIn("utterance_candidate_code_count", output.getvalue())
+            self.assertIn(
+                "state_codes_only_model_expression_required",
+                output.getvalue(),
+            )
 
     def test_resident_terminal_relation_turn_without_model_release_stays_silent(self):
         from life_v0.digital_entry import _handle_resident_terminal_utterance

@@ -208,13 +208,17 @@ def build_resident_state_inspection(
             },
         )
     elif normalized == "proactive_voice":
-        payload["proactive_voice"] = _collect_files(
+        proactive_voice = _collect_files(
             state_root,
             {
                 "proactive_state": "terminal/resident_terminal_proactive_state.json",
                 "proactive_events": "terminal/resident_terminal_proactive_events.jsonl",
             },
         )
+        proactive_voice["coverage_summary"] = _collect_proactive_voice_summary(
+            proactive_voice
+        )
+        payload["proactive_voice"] = proactive_voice
     return payload
 
 
@@ -405,6 +409,49 @@ def _collect_memory_tier_summary(section: dict[str, Any]) -> dict[str, Any]:
                 "relationship_stage_hint",
             ],
         ),
+    }
+
+
+def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
+    proactive_state = _extract_compact_value(section.get("proactive_state", {}))
+    profile = _extract_nested_value(proactive_state, "last_proactive_voice_profile")
+    coverage = _extract_nested_value(proactive_state, "last_profile_coverage")
+    if not coverage:
+        coverage = _extract_nested_value(profile, "profile_coverage")
+    active_domains = coverage.get("active_domains")
+    if not isinstance(active_domains, list):
+        active_domains = []
+    domain_presence = coverage.get("domain_presence")
+    if not isinstance(domain_presence, dict):
+        domain_presence = {}
+    candidate_count = proactive_state.get("last_utterance_candidate_code_count")
+    if candidate_count is None:
+        candidate_count = profile.get("utterance_candidate_code_count")
+    if candidate_count is None:
+        candidate_count = profile.get("question_candidate_count")
+    return {
+        "status": proactive_state.get("status"),
+        "release_scope": proactive_state.get("last_release_scope"),
+        "natural_language_released": proactive_state.get(
+            "last_natural_language_released"
+        ),
+        "model_expression_status": proactive_state.get(
+            "last_model_expression_status"
+        ),
+        "post_expression_gate_status": proactive_state.get(
+            "last_post_expression_gate_status"
+        ),
+        "focus": proactive_state.get("last_focus"),
+        "surface_kind": proactive_state.get("last_proactive_voice_surface_kind")
+        or profile.get("surface_kind"),
+        "coverage_schema_version": coverage.get("schema_version"),
+        "active_domain_count": coverage.get("active_domain_count"),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "utterance_candidate_code_count": candidate_count,
+        "event_count": proactive_state.get("event_count"),
+        "release_count": proactive_state.get("release_count"),
+        "speech_generation_boundary": "state_codes_only_model_expression_required",
     }
 
 
