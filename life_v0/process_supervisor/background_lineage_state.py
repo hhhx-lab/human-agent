@@ -24,6 +24,7 @@ def build_resident_background_lineage_state(
     birth_repair_presence = _birth_repair_presence(governance)
     world_contact_handoff_presence = _world_contact_handoff_presence(governance)
     life_constraint_presence = _life_constraint_presence(governance)
+    growth_self_modification_presence = _growth_self_modification_presence(governance)
     profile = _dict_or_empty(governance.get("background_lineage_governance_profile"))
     explicit_depth_band = (
         governance.get("background_lineage_depth_band")
@@ -57,6 +58,8 @@ def build_resident_background_lineage_state(
     if not depth_band and world_contact_handoff_presence:
         depth_band = "no_background_lineage"
     if not depth_band and life_constraint_presence:
+        depth_band = "no_background_lineage"
+    if not depth_band and growth_self_modification_presence:
         depth_band = "no_background_lineage"
     if not depth_band:
         return {}
@@ -157,6 +160,10 @@ def build_resident_background_lineage_state(
     offline_learning_presence = _offline_learning_presence(governance)
     if offline_learning_presence:
         lineage_state["offline_learning_presence"] = offline_learning_presence
+    if growth_self_modification_presence:
+        lineage_state["growth_self_modification_presence"] = (
+            growth_self_modification_presence
+        )
     dream_wake_presence = _dream_wake_presence(governance)
     if dream_wake_presence:
         lineage_state["dream_wake_presence"] = dream_wake_presence
@@ -211,6 +218,30 @@ def _int_or_zero(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _first_nonzero_int(*values: Any) -> int:
+    for value in values:
+        number = _int_or_zero(value)
+        if number:
+            return number
+    return 0
+
+
+def _growth_self_modification_pressure_level(
+    *,
+    active_domain_count: int,
+    growth_pressure_count: int,
+    patch_candidate_count: int,
+    archive_receipt_count: int,
+) -> str:
+    if patch_candidate_count > 0 and archive_receipt_count == 0:
+        return "elevated"
+    if growth_pressure_count > 0 or patch_candidate_count > 0:
+        return "present"
+    if active_domain_count > 0:
+        return "light"
+    return "quiet"
 
 
 def _depth_band_for_generation(generation: int) -> str:
@@ -1277,6 +1308,106 @@ def _offline_learning_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "integration_mode": integration_mode,
             "relationship_reconsolidation_required": (
                 relationship_reconsolidation_required
+            ),
+        }
+    )
+
+
+def _growth_self_modification_presence(governance: dict[str, Any]) -> dict[str, Any]:
+    presence = _dict_or_empty(
+        governance.get("background_growth_self_modification_presence")
+    )
+    profile = _dict_or_empty(
+        governance.get("background_growth_self_modification_profile")
+        or presence.get("growth_self_modification_report_profile")
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(governance.get("background_growth_self_modification_ref_set"))
+        + _string_list(presence.get("ref_set"))
+        + _string_list(profile.get("ref_set"))
+    )
+    state_refs = _dedupe_string_list(
+        _string_list(governance.get("background_growth_self_modification_state_refs"))
+        + _string_list(presence.get("state_refs"))
+        + _string_list(profile.get("state_refs"))
+    )
+    learning_plan_refs = _dedupe_string_list(
+        _string_list(governance.get("background_growth_learning_plan_refs"))
+        + _string_list(presence.get("learning_plan_refs"))
+        + _string_list(profile.get("learning_plan_refs"))
+    )
+    ref_set = _dedupe_string_list(ref_set + state_refs + learning_plan_refs)
+    active_domain_count = _first_nonzero_int(
+        governance.get("background_growth_active_domain_count"),
+        presence.get("active_domain_count"),
+        profile.get("active_domain_count"),
+    )
+    growth_pressure_count = _first_nonzero_int(
+        governance.get("background_growth_pressure_count"),
+        presence.get("growth_pressure_count"),
+        profile.get("growth_pressure_count"),
+    )
+    patch_candidate_count = _first_nonzero_int(
+        governance.get("background_growth_patch_candidate_count"),
+        presence.get("patch_candidate_count"),
+        profile.get("candidate_count"),
+    )
+    archive_receipt_count = _first_nonzero_int(
+        governance.get("background_growth_archive_receipt_count"),
+        presence.get("archive_receipt_count"),
+        profile.get("archive_receipt_count"),
+    )
+    if not any(
+        [
+            presence,
+            profile,
+            ref_set,
+            active_domain_count,
+            growth_pressure_count,
+            patch_candidate_count,
+            archive_receipt_count,
+        ]
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "schema_version": "growth_self_modification_presence_v0",
+            "continuity_mode": (
+                presence.get("continuity_mode")
+                or "resident_background_growth_self_modification_carryover"
+            ),
+            "growth_self_modification_report_profile": profile,
+            "active_domain_count": active_domain_count,
+            "growth_pressure_count": growth_pressure_count,
+            "patch_candidate_count": patch_candidate_count,
+            "archive_receipt_count": archive_receipt_count,
+            "pressure_level": (
+                governance.get("background_growth_self_modification_pressure_level")
+                or presence.get("pressure_level")
+                or _growth_self_modification_pressure_level(
+                    active_domain_count=active_domain_count,
+                    growth_pressure_count=growth_pressure_count,
+                    patch_candidate_count=patch_candidate_count,
+                    archive_receipt_count=archive_receipt_count,
+                )
+            ),
+            "attention_target": (
+                governance.get("background_growth_self_modification_attention_target")
+                or presence.get("attention_target")
+                or "growth_self_modification_archive_replay"
+            ),
+            "waiting_posture": (
+                governance.get("background_growth_self_modification_waiting_posture")
+                or presence.get("waiting_posture")
+                or "growth_self_modification_shadow_archive_waiting"
+            ),
+            "state_refs": state_refs,
+            "learning_plan_refs": learning_plan_refs,
+            "ref_set": ref_set,
+            "report_boundary": (
+                governance.get("background_growth_self_modification_boundary")
+                or presence.get("report_boundary")
+                or profile.get("report_boundary")
             ),
         }
     )

@@ -329,6 +329,7 @@ def build_resident_background_lineage_payload(
         "identity_consciousness_birth_presence",
         "resident_process_identity_presence",
         "offline_learning_presence",
+        "growth_self_modification_presence",
         "dream_wake_presence",
         "autonomous_activity_presence",
         "birth_repair_presence",
@@ -1085,6 +1086,79 @@ def build_resident_background_lineage_payload(
         if offline_refs:
             payload["resident_background_lineage_offline_learning_refs"] = offline_refs
             lineage_refs.extend(offline_refs)
+    growth_self_modification_presence = lineage_state.get(
+        "growth_self_modification_presence"
+    )
+    if isinstance(growth_self_modification_presence, dict):
+        for source_key, target_key in (
+            (
+                "pressure_level",
+                "resident_background_lineage_growth_self_modification_pressure_level",
+            ),
+            (
+                "attention_target",
+                "resident_background_lineage_growth_self_modification_attention_target",
+            ),
+            (
+                "waiting_posture",
+                "resident_background_lineage_growth_self_modification_waiting_posture",
+            ),
+            (
+                "report_boundary",
+                "resident_background_lineage_growth_self_modification_boundary",
+            ),
+        ):
+            value = growth_self_modification_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        for source_key, target_key in (
+            (
+                "active_domain_count",
+                "resident_background_lineage_growth_active_domain_count",
+            ),
+            (
+                "growth_pressure_count",
+                "resident_background_lineage_growth_pressure_count",
+            ),
+            (
+                "patch_candidate_count",
+                "resident_background_lineage_growth_patch_candidate_count",
+            ),
+            (
+                "archive_receipt_count",
+                "resident_background_lineage_growth_archive_receipt_count",
+            ),
+        ):
+            value = growth_self_modification_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+        for source_key, target_key in (
+            (
+                "state_refs",
+                "resident_background_lineage_growth_self_modification_state_refs",
+            ),
+            (
+                "learning_plan_refs",
+                "resident_background_lineage_growth_learning_plan_refs",
+            ),
+        ):
+            values = _dedupe_string_list(
+                _string_list(growth_self_modification_presence.get(source_key))
+            )
+            if values:
+                payload[target_key] = values
+        growth_refs = _dedupe_string_list(
+            _string_list(growth_self_modification_presence.get("ref_set"))
+            + _string_list(growth_self_modification_presence.get("state_refs"))
+            + _string_list(
+                growth_self_modification_presence.get("learning_plan_refs")
+            )
+        )
+        if growth_refs:
+            payload[
+                "resident_background_lineage_growth_self_modification_refs"
+            ] = growth_refs
+            lineage_refs.extend(growth_refs)
     dream_wake_presence = lineage_state.get("dream_wake_presence")
     if isinstance(dream_wake_presence, dict):
         for source_key, target_key in (
@@ -1442,20 +1516,17 @@ def build_offline_learning_cumulative_payload(
         or profile.get("integration_mode")
         or offline_learning_presence.get("integration_mode")
     )
-    relationship_reconsolidation_required = (
-        terminal_life_loop_state.get(
-            "offline_learning_cumulative_relationship_reconsolidation_required"
-        )
-        if terminal_life_loop_state.get(
-            "offline_learning_cumulative_relationship_reconsolidation_required"
-        )
-        is not None
-        else profile.get("relationship_reconsolidation_required")
+    relationship_reconsolidation_required = _any_bool_or_none(
+        [
+            terminal_life_loop_state.get(
+                "offline_learning_cumulative_relationship_reconsolidation_required"
+            ),
+            profile.get("relationship_reconsolidation_required"),
+            offline_learning_presence.get("relationship_reconsolidation_required"),
+        ]
     )
-    if relationship_reconsolidation_required is None:
-        relationship_reconsolidation_required = offline_learning_presence.get(
-            "relationship_reconsolidation_required"
-        )
+    if relationship_reconsolidation_required:
+        integration_mode = "relationship_offline_reconsolidation_required"
     if not any(
         [
             profile,
@@ -2270,6 +2341,30 @@ def _present_value(value: Any) -> bool:
     if isinstance(value, (list, tuple, dict, set)) and not value:
         return False
     return True
+
+
+def _bool_or_none(value: Any) -> bool | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"true", "1", "yes", "y", "required", "on"}:
+            return True
+        if normalized in {"false", "0", "no", "n", "none", "off", ""}:
+            return False
+    return bool(value)
+
+
+def _any_bool_or_none(values: list[Any]) -> bool | None:
+    resolved = [_bool_or_none(value) for value in values]
+    known = [value for value in resolved if value is not None]
+    if not known:
+        return None
+    return any(known)
 
 
 def _dedupe_string_list(items: list[str]) -> list[str]:

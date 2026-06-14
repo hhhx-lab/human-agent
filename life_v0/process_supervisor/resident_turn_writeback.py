@@ -425,6 +425,11 @@ def write_resident_turn_writeback(
             "resident_background_lineage_offline_learning_refs", []
         )
     )
+    resident_background_lineage_growth_self_modification_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_growth_self_modification_refs", []
+        )
+    )
     resident_background_lineage_state_merge_refs = list(
         resident_background_lineage_payload.get(
             "resident_background_lineage_state_merge_refs", []
@@ -547,6 +552,7 @@ def write_resident_turn_writeback(
         + resident_background_lineage_identity_consciousness_birth_refs
         + resident_background_lineage_resident_process_identity_refs
         + resident_background_lineage_offline_learning_refs
+        + resident_background_lineage_growth_self_modification_refs
         + resident_background_lineage_dream_wake_refs
         + resident_background_lineage_autonomous_activity_refs
         + resident_background_lineage_birth_repair_refs
@@ -717,6 +723,9 @@ def write_resident_turn_writeback(
         ),
         resident_background_lineage_offline_learning_refs=(
             resident_background_lineage_offline_learning_refs
+        ),
+        resident_background_lineage_growth_self_modification_refs=(
+            resident_background_lineage_growth_self_modification_refs
         ),
         resident_background_lineage_dream_wake_refs=(
             resident_background_lineage_dream_wake_refs
@@ -962,6 +971,10 @@ def write_resident_turn_writeback(
         resumed_dialogue_packet["resident_background_lineage_evidence_refs"] = (
             resident_background_lineage_refs
         )
+    if resident_background_lineage_growth_self_modification_refs:
+        resumed_dialogue_packet[
+            "resident_background_lineage_growth_self_modification_refs"
+        ] = resident_background_lineage_growth_self_modification_refs
     if resident_background_lineage_memory_retrieval_refs:
         resumed_dialogue_packet[
             "resident_background_lineage_memory_retrieval_refs"

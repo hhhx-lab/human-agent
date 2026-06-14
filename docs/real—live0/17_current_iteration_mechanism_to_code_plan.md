@@ -769,6 +769,23 @@ RelationshipMemory / DialogueMemorySummary / ExitDreamSummary
 
 当前 ITR-08 第二十八段把成长、自我修改和学习巩固继续压进关闭态报告链。此前 `/growth` 已能通过 `growth_self_modification_summary_v0` 查看 `self_read_report`、`plasticity_window_state`、`growth_patch_candidate_queue`、`anti_forgetting_replay_plan`、belief/language/relationship learning plans、resident growth rehearsal、resident learning consolidation 和 growth archive 的状态；现在 `process_report.py#_growth_self_modification_report_profile` 会读取这些 state/report/archive 文件，生成 `growth_self_modification_report_profile_v0`，并把 `growth_self_modification_state_refs`、`growth_learning_plan_refs`、self-read ref、plasticity ref、anti-forgetting ref、resident rehearsal/consolidation refs、growth archive receipt batch/report/digest/stage gate refs、active domain count、growth pressure count、patch candidate count、anti-forgetting replay set count、三类 learning target counts、archive receipt count 和 `structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite` 边界写入 `digital_life_process_report.json`、`digital_life_process_digest.json` 与 process receipt。receipt 同时把 `runtime/state/growth/self_read_report.json`、`plasticity_window_state.json`、`growth_patch_candidate_queue.json`、`anti_forgetting_replay_plan.json`、三类 learning plan、resident growth rehearsal / learning consolidation、`runtime/state/archive/growth_archive_receipt_batch.json` 和 `runtime/reports/latest/growth_archive_report/digest/stage_gate.json` 纳入 `shared_object_refs` 与 `input_hashes`。机制含义是：成长不是一句“我会成长”，也不是关闭进程时自动改代码；它必须能从 self-read、plasticity window、candidate queue、anti-forgetting、learning plans、resident rehearsal、learning consolidation 和 archive gate 形成可追溯闭合。它仍然不释放自然语言，不生成固定成长宣言，不新增 system prompt，不绕过 shadow / replay / validation / archive，也不把自我修改状态硬塞进 Adam 的回答。
 
+当前 ITR-08 第二十九段把关闭态成长/自我修改证据推进到跨唤醒谱系和下一轮语言材料：
+
+```text
+ProcessReport.growth_self_modification_report_profile
+  -> BackgroundContinuity.background_growth_self_modification_presence
+  -> IdleStrategy.background_growth_self_modification_*
+  -> TerminalLifeLoopState.background_growth_self_modification_*
+  -> ResidentBackgroundLineageState.growth_self_modification_presence
+  -> DigitalLifeTurn.resident_background_lineage_growth_self_modification_*
+  -> DialogueWritebackBundle.resident_background_lineage_growth_self_modification_refs
+  -> ResumedExternalDialoguePacket.resident_background_lineage_growth_self_modification_*
+  -> ResponseSurface.memory_dream_growth / resident_background
+  -> ModelExpression.model_expression_context_summary
+```
+
+机制含义是：成长、自我修改和学习巩固不应只在 `/growth` 查看或关闭态 report 中被看见；它们必须成为下一次等待、下一轮关系回合、恢复包和语言前结构化材料的一等 presence。`background_continuity_ref_set` 现在也会吸收 self-read、plasticity、patch queue、anti-forgetting、learning plan、resident rehearsal/consolidation 和 archive refs，保证跨唤醒可追溯性。边界仍然是 `structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite`：这些字段只作为成长/学习的隐性材料和证据总线，不生成固定外显回答，不新增 system prompt，不自动改代码，不绕过 shadow / replay / validation / archive。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

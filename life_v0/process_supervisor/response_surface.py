@@ -114,6 +114,10 @@ def compose_life_response(
     language_presence = _dict_value(lineage, "language_presence")
     identity_presence = _dict_value(lineage, "identity_consciousness_birth_presence")
     offline_presence = _dict_value(lineage, "offline_learning_presence")
+    growth_self_modification_presence = _dict_value(
+        lineage,
+        "growth_self_modification_presence",
+    )
     dream_wake_presence = _dict_value(lineage, "dream_wake_presence")
     memory_retrieval_presence = _dict_value(lineage, "memory_retrieval_presence")
     exit_dream_next_wake_surface = _exit_dream_next_wake_surface(
@@ -267,6 +271,26 @@ def compose_life_response(
                     "integration_mode",
                     "relationship_reconsolidation_required",
                 ),
+            ),
+            "resident_growth_self_modification_presence": _selected_keys(
+                growth_self_modification_presence,
+                (
+                    "active_domain_count",
+                    "growth_pressure_count",
+                    "patch_candidate_count",
+                    "archive_receipt_count",
+                    "pressure_level",
+                    "attention_target",
+                    "waiting_posture",
+                    "report_boundary",
+                ),
+            ),
+            "resident_growth_self_modification_ref_count": len(
+                _dedupe_string_list(
+                    _string_list(
+                        growth_self_modification_presence.get("ref_set")
+                    )
+                )
             ),
             "resident_dream_wake_presence": _selected_keys(
                 dream_wake_presence,
@@ -449,6 +473,19 @@ def compose_life_response(
                     "body_signal_ref_count",
                     "body_signal_candidate_gate_adjustments",
                     "state_merge_policy",
+                ),
+            ),
+            "growth_self_modification_presence": _selected_keys(
+                growth_self_modification_presence,
+                (
+                    "active_domain_count",
+                    "growth_pressure_count",
+                    "patch_candidate_count",
+                    "archive_receipt_count",
+                    "pressure_level",
+                    "attention_target",
+                    "waiting_posture",
+                    "report_boundary",
                 ),
             ),
             "autonomous_activity_presence": _selected_keys(

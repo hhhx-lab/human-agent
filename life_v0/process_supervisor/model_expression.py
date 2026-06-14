@@ -1232,9 +1232,11 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
         "dream_wake_presence"
     ):
         flags.append("dream_offline")
-    if _int_value(
-        life_context.get("growth_patch_candidate_count")
-    ) or resident_background.get("offline_learning_presence"):
+    if (
+        _int_value(life_context.get("growth_patch_candidate_count"))
+        or resident_background.get("offline_learning_presence")
+        or resident_background.get("growth_self_modification_presence")
+    ):
         flags.append("growth_learning")
     if resident_background.get("autonomous_activity_presence"):
         flags.append("resident_autonomous_activity")
@@ -1369,6 +1371,10 @@ def _present(value: Any) -> bool:
     return value is not None and value != "" and value != [] and value != {}
 
 
+def _dict_or_empty(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
 def _int_value(value: Any) -> int:
     if isinstance(value, bool):
         return int(value)
@@ -1443,6 +1449,9 @@ def _background_summary(
             "prediction_write_gate_presence"
         ),
         "offline_learning_presence": lineage.get("offline_learning_presence"),
+        "growth_self_modification_presence": lineage.get(
+            "growth_self_modification_presence"
+        ),
         "dream_wake_presence": lineage.get("dream_wake_presence"),
         "autonomous_activity_presence": lineage.get("autonomous_activity_presence"),
         "body_presence": lineage.get("body_presence"),
@@ -1469,6 +1478,9 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         _identity_consciousness_birth_context_summary(
             resident_background.get("identity_consciousness_birth_presence")
         )
+    )
+    growth_self_modification_presence = _dict_or_empty(
+        resident_background.get("growth_self_modification_presence")
     )
     return {
         "relationship_stage": relationship.get("relationship_stage"),
@@ -1507,6 +1519,12 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         "dream_window_count": life_context.get("dream_window_count"),
         "growth_patch_candidate_count": life_context.get(
             "growth_patch_candidate_count"
+        ),
+        "background_growth_self_modification_pressure_level": (
+            growth_self_modification_presence.get("pressure_level")
+        ),
+        "background_growth_self_modification_ref_count": len(
+            _string_list(growth_self_modification_presence.get("ref_set"))
         ),
         "language_percept_ref": live_language.get("language_percept_ref"),
         "semantic_map_ref": live_language.get("semantic_map_ref"),

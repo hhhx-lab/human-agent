@@ -50,6 +50,9 @@ def build_dialogue_writeback_bundle(
         list[str] | None
     ) = None,
     resident_background_lineage_offline_learning_refs: list[str] | None = None,
+    resident_background_lineage_growth_self_modification_refs: (
+        list[str] | None
+    ) = None,
     resident_background_lineage_dream_wake_refs: list[str] | None = None,
     resident_background_lineage_autonomous_activity_refs: list[str] | None = None,
     resident_background_lineage_birth_repair_refs: list[str] | None = None,
@@ -161,6 +164,9 @@ def build_dialogue_writeback_bundle(
         ),
         "resident_background_lineage_offline_learning_refs": list(
             resident_background_lineage_offline_learning_refs or []
+        ),
+        "resident_background_lineage_growth_self_modification_refs": list(
+            resident_background_lineage_growth_self_modification_refs or []
         ),
         "resident_background_lineage_dream_wake_refs": list(
             resident_background_lineage_dream_wake_refs or []

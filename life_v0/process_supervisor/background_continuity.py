@@ -29,6 +29,7 @@ BACKGROUND_RESIDENT_GOVERNANCE_EXPLANATION_REF = (
 BACKGROUND_PERSISTENT_PROCESS_REPORT_REF = (
     "runtime/reports/latest/digital_life_persistent_process_report.json"
 )
+BACKGROUND_PROCESS_REPORT_REF = "runtime/reports/latest/digital_life_process_report.json"
 BACKGROUND_IDLE_HEARTBEAT_TRACE_REF = (
     "runtime/state/terminal/idle_heartbeat_trace.jsonl"
 )
@@ -65,6 +66,9 @@ def load_background_continuity_profile(
     persistent_process_report = _read_json_if_exists(
         reports_dir / "digital_life_persistent_process_report.json"
     )
+    process_report = _read_json_if_exists(
+        reports_dir / "digital_life_process_report.json"
+    )
     resident_process_lease_history_profile = _read_json_if_exists(
         terminal_dir / "resident_process_lease_history_profile.json"
     )
@@ -79,6 +83,7 @@ def load_background_continuity_profile(
             resident_governance_report,
             resident_governance_explanation,
             persistent_process_report,
+            process_report,
             idle_heartbeat_trace_exists,
         ]
     )
@@ -91,6 +96,7 @@ def load_background_continuity_profile(
         and not resident_governance_report
         and not resident_governance_explanation
         and not persistent_process_report
+        and not process_report
         and not resident_process_lease_history_profile
         and not idle_heartbeat_trace_exists
     ):
@@ -161,6 +167,7 @@ def load_background_continuity_profile(
                 resident_governance_explanation,
             ),
             (BACKGROUND_PERSISTENT_PROCESS_REPORT_REF, persistent_process_report),
+            (BACKGROUND_PROCESS_REPORT_REF, process_report),
             (
                 BACKGROUND_RESIDENT_PROCESS_LEASE_HISTORY_PROFILE_REF,
                 resident_process_lease_history_profile,
@@ -485,6 +492,9 @@ def load_background_continuity_profile(
     resident_background_dream_wake_presence = _dict_or_empty(
         resident_background_lineage_state.get("dream_wake_presence")
     )
+    resident_background_growth_self_modification_presence = _dict_or_empty(
+        resident_background_lineage_state.get("growth_self_modification_presence")
+    )
     resident_background_autonomous_activity_presence = _dict_or_empty(
         resident_background_lineage_state.get("autonomous_activity_presence")
     )
@@ -573,6 +583,14 @@ def load_background_continuity_profile(
                 "relationship_reconsolidation_required"
             )
         )
+    growth_self_modification_presence = _growth_self_modification_presence(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        resident_background_growth_self_modification_presence,
+    )
     dream_wake_presence_profile = _dict_or_empty(
         resident_governance_state.get("dream_wake_presence_profile")
         or snapshot.get("dream_wake_presence_profile")
@@ -2098,6 +2116,15 @@ def load_background_continuity_profile(
         ref_set = _dedupe_list(ref_set + autonomous_activity_ref_set)
     if body_ref_set:
         ref_set = _dedupe_list(ref_set + body_ref_set)
+    if growth_self_modification_presence:
+        ref_set = _dedupe_list(
+            ref_set
+            + _list_or_empty(growth_self_modification_presence.get("ref_set"))
+            + _list_or_empty(growth_self_modification_presence.get("state_refs"))
+            + _list_or_empty(
+                growth_self_modification_presence.get("learning_plan_refs")
+            )
+        )
     if heartbeat_cadence_evidence_refs:
         ref_set = _dedupe_list(ref_set + heartbeat_cadence_evidence_refs)
     if heartbeat_priority_stack_evidence_refs:
@@ -2241,6 +2268,49 @@ def load_background_continuity_profile(
         profile[
             "offline_learning_cumulative_relationship_reconsolidation_required"
         ] = bool(offline_learning_cumulative_relationship_reconsolidation_required)
+    if growth_self_modification_presence:
+        profile["background_growth_self_modification_presence"] = (
+            growth_self_modification_presence
+        )
+        profile["background_growth_self_modification_profile"] = (
+            growth_self_modification_presence.get(
+                "growth_self_modification_report_profile",
+                {},
+            )
+        )
+        profile["background_growth_self_modification_ref_set"] = (
+            growth_self_modification_presence.get("ref_set", [])
+        )
+        profile["background_growth_self_modification_state_refs"] = (
+            growth_self_modification_presence.get("state_refs", [])
+        )
+        profile["background_growth_learning_plan_refs"] = (
+            growth_self_modification_presence.get("learning_plan_refs", [])
+        )
+        profile["background_growth_active_domain_count"] = (
+            growth_self_modification_presence.get("active_domain_count")
+        )
+        profile["background_growth_pressure_count"] = (
+            growth_self_modification_presence.get("growth_pressure_count")
+        )
+        profile["background_growth_patch_candidate_count"] = (
+            growth_self_modification_presence.get("patch_candidate_count")
+        )
+        profile["background_growth_archive_receipt_count"] = (
+            growth_self_modification_presence.get("archive_receipt_count")
+        )
+        profile["background_growth_self_modification_pressure_level"] = (
+            growth_self_modification_presence.get("pressure_level")
+        )
+        profile["background_growth_self_modification_attention_target"] = (
+            growth_self_modification_presence.get("attention_target")
+        )
+        profile["background_growth_self_modification_waiting_posture"] = (
+            growth_self_modification_presence.get("waiting_posture")
+        )
+        profile["background_growth_self_modification_boundary"] = (
+            growth_self_modification_presence.get("report_boundary")
+        )
     if resident_background_dream_wake_presence:
         profile["background_dream_wake_presence"] = (
             resident_background_dream_wake_presence
@@ -2913,6 +2983,210 @@ def _background_live_language_presence_profile(
         for key, value in profile.items()
         if value is not None and value != [] and value != {}
     }
+
+
+def _growth_self_modification_presence(
+    *payloads: dict[str, Any],
+) -> dict[str, Any]:
+    profile = _first_dict(
+        *payloads,
+        keys=(
+            "growth_self_modification_report_profile",
+            "background_growth_self_modification_profile",
+        ),
+    )
+    ref_set = _dedupe_list(
+        _collect_lists(
+            *payloads,
+            keys=(
+                "growth_self_modification_ref_set",
+                "background_growth_self_modification_ref_set",
+                "ref_set",
+            ),
+        )
+        + _list_or_empty(profile.get("ref_set"))
+    )
+    state_refs = _dedupe_list(
+        _collect_lists(
+            *payloads,
+            keys=(
+                "growth_self_modification_state_refs",
+                "background_growth_self_modification_state_refs",
+                "state_refs",
+            ),
+        )
+        + _list_or_empty(profile.get("state_refs"))
+    )
+    learning_plan_refs = _dedupe_list(
+        _collect_lists(
+            *payloads,
+            keys=(
+                "growth_learning_plan_refs",
+                "background_growth_learning_plan_refs",
+                "learning_plan_refs",
+            ),
+        )
+        + _list_or_empty(profile.get("learning_plan_refs"))
+    )
+    self_read_ref = _first_present(
+        *payloads,
+        keys=("growth_self_read_report_ref", "self_read_report_ref"),
+    )
+    plasticity_ref = _first_present(
+        *payloads,
+        keys=("growth_plasticity_window_ref", "plasticity_window_ref"),
+    )
+    anti_forgetting_ref = _first_present(
+        *payloads,
+        keys=(
+            "growth_anti_forgetting_replay_plan_ref",
+            "anti_forgetting_replay_plan_ref",
+        ),
+    )
+    rehearsal_ref = _first_present(
+        *payloads,
+        keys=("resident_growth_rehearsal_ref", "growth_rehearsal_ref"),
+    )
+    consolidation_ref = _first_present(
+        *payloads,
+        keys=("resident_learning_consolidation_ref", "learning_consolidation_ref"),
+    )
+    archive_refs = _dedupe_list(
+        _list_or_empty(
+            [
+                _first_present(
+                    *payloads,
+                    keys=(
+                        "growth_archive_receipt_batch_ref",
+                        "archive_receipt_batch_ref",
+                    ),
+                ),
+                _first_present(
+                    *payloads,
+                    keys=("growth_archive_report_ref", "archive_report_ref"),
+                ),
+                _first_present(
+                    *payloads,
+                    keys=("growth_archive_digest_ref", "archive_digest_ref"),
+                ),
+                _first_present(
+                    *payloads,
+                    keys=(
+                        "growth_archive_stage_gate_ref",
+                        "archive_stage_gate_ref",
+                    ),
+                ),
+            ]
+        )
+    )
+    ref_set = _dedupe_list(
+        ref_set
+        + state_refs
+        + learning_plan_refs
+        + _list_or_empty(
+            [
+                self_read_ref,
+                plasticity_ref,
+                anti_forgetting_ref,
+                rehearsal_ref,
+                consolidation_ref,
+            ]
+        )
+        + archive_refs
+    )
+    active_domain_count = _max_int_from_payloads(
+        *payloads,
+        keys=("growth_active_domain_count", "active_domain_count"),
+    )
+    growth_pressure_count = _max_int_from_payloads(
+        *payloads,
+        keys=("growth_pressure_count", "pressure_count"),
+    )
+    patch_candidate_count = _max_int_from_payloads(
+        *payloads,
+        keys=("growth_patch_candidate_count", "patch_candidate_count"),
+    )
+    archive_receipt_count = _max_int_from_payloads(
+        *payloads,
+        keys=("growth_archive_receipt_count", "archive_receipt_count"),
+    )
+    if (
+        not profile
+        and not ref_set
+        and not state_refs
+        and not learning_plan_refs
+        and not active_domain_count
+        and not patch_candidate_count
+    ):
+        return {}
+    pressure_level = _growth_pressure_level(
+        active_domain_count=active_domain_count,
+        growth_pressure_count=growth_pressure_count,
+        patch_candidate_count=patch_candidate_count,
+        archive_receipt_count=archive_receipt_count,
+    )
+    return {
+        key: value
+        for key, value in {
+            "schema_version": "growth_self_modification_presence_v0",
+            "continuity_mode": "closed_process_growth_self_modification_carryover",
+            "growth_self_modification_report_profile": profile,
+            "active_domain_count": active_domain_count,
+            "growth_pressure_count": growth_pressure_count,
+            "patch_candidate_count": patch_candidate_count,
+            "archive_receipt_count": archive_receipt_count,
+            "pressure_level": pressure_level,
+            "attention_target": "growth_self_modification_archive_replay",
+            "waiting_posture": "growth_self_modification_shadow_archive_waiting",
+            "self_read_report_ref": self_read_ref,
+            "plasticity_window_ref": plasticity_ref,
+            "anti_forgetting_replay_plan_ref": anti_forgetting_ref,
+            "resident_growth_rehearsal_ref": rehearsal_ref,
+            "resident_learning_consolidation_ref": consolidation_ref,
+            "archive_refs": archive_refs,
+            "state_refs": state_refs,
+            "learning_plan_refs": learning_plan_refs,
+            "ref_set": ref_set,
+            "report_boundary": (
+                _first_present(
+                    *payloads,
+                    keys=(
+                        "growth_self_modification_report_boundary",
+                        "background_growth_self_modification_boundary",
+                        "report_boundary",
+                    ),
+                )
+                or profile.get("report_boundary")
+            ),
+        }.items()
+        if value not in (None, "", [], {})
+    }
+
+
+def _max_int_from_payloads(
+    *payloads: dict[str, Any],
+    keys: tuple[str, ...],
+) -> int:
+    return max(
+        [_int_or_zero(payload.get(key)) for payload in payloads for key in keys],
+        default=0,
+    )
+
+
+def _growth_pressure_level(
+    *,
+    active_domain_count: int,
+    growth_pressure_count: int,
+    patch_candidate_count: int,
+    archive_receipt_count: int,
+) -> str:
+    if patch_candidate_count > 0 and archive_receipt_count == 0:
+        return "elevated"
+    if growth_pressure_count > 0 or patch_candidate_count > 0:
+        return "present"
+    if active_domain_count > 0:
+        return "light"
+    return "quiet"
 
 
 def _idle_heartbeat_trace_count(path: Path) -> int:

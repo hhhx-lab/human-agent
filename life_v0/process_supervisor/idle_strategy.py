@@ -201,6 +201,19 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_offline_learning_presence",
     "background_offline_learning_integration_mode",
     "background_offline_learning_relationship_reconsolidation_required",
+    "background_growth_self_modification_presence",
+    "background_growth_self_modification_profile",
+    "background_growth_self_modification_ref_set",
+    "background_growth_self_modification_state_refs",
+    "background_growth_learning_plan_refs",
+    "background_growth_active_domain_count",
+    "background_growth_pressure_count",
+    "background_growth_patch_candidate_count",
+    "background_growth_archive_receipt_count",
+    "background_growth_self_modification_pressure_level",
+    "background_growth_self_modification_attention_target",
+    "background_growth_self_modification_waiting_posture",
+    "background_growth_self_modification_boundary",
     "background_continuity_mode",
     "background_carryover_pressure_level",
     "background_carryover_attention_target",
@@ -902,6 +915,9 @@ def decide_idle_strategy(
         resident_autonomous_activity_state,
         background_continuity_profile=background_continuity_profile,
     )
+    growth_self_modification_presence_profile = (
+        _growth_self_modification_presence_profile(background_continuity_profile)
+    )
     prediction_write_gate_refs = _prediction_write_gate_refs(
         signal_media_ref=signal_media_ref,
         belief_state_ref=belief_state_runtime_ref,
@@ -1009,6 +1025,9 @@ def decide_idle_strategy(
         life_constraint_refs=life_constraint_profile["life_constraint_refs"],
         dream_wake_refs=dream_wake_presence_profile.get("ref_set", []),
         offline_learning_refs=offline_learning_cumulative_profile["ref_set"],
+        growth_self_modification_refs=(
+            growth_self_modification_presence_profile.get("ref_set", [])
+        ),
         autonomous_activity_refs=autonomous_activity_presence_profile.get("ref_set", []),
         background_refs=background_lineage_governance_profile.get(
             "evidence_refs", []
@@ -1057,6 +1076,9 @@ def decide_idle_strategy(
         ),
         offline_learning_pressure_level=effective_offline_learning_pressure_level,
         offline_learning_refs=offline_learning_cumulative_profile["ref_set"],
+        growth_self_modification_refs=(
+            growth_self_modification_presence_profile.get("ref_set", [])
+        ),
         offline_pressure_level=offline_pressure_level,
         dream_wake_refs=dream_wake_presence_profile.get("ref_set", []),
         background_carryover_pressure_level=background_pressure_level,
@@ -1366,6 +1388,48 @@ def decide_idle_strategy(
             offline_learning_cumulative_profile[
                 "relationship_reconsolidation_required"
             ]
+        ),
+        "background_growth_self_modification_presence": (
+            growth_self_modification_presence_profile
+        ),
+        "background_growth_self_modification_profile": (
+            growth_self_modification_presence_profile.get(
+                "growth_self_modification_report_profile",
+                {},
+            )
+        ),
+        "background_growth_self_modification_ref_set": (
+            growth_self_modification_presence_profile.get("ref_set", [])
+        ),
+        "background_growth_self_modification_state_refs": (
+            growth_self_modification_presence_profile.get("state_refs", [])
+        ),
+        "background_growth_learning_plan_refs": (
+            growth_self_modification_presence_profile.get("learning_plan_refs", [])
+        ),
+        "background_growth_active_domain_count": (
+            growth_self_modification_presence_profile.get("active_domain_count")
+        ),
+        "background_growth_pressure_count": (
+            growth_self_modification_presence_profile.get("growth_pressure_count")
+        ),
+        "background_growth_patch_candidate_count": (
+            growth_self_modification_presence_profile.get("patch_candidate_count")
+        ),
+        "background_growth_archive_receipt_count": (
+            growth_self_modification_presence_profile.get("archive_receipt_count")
+        ),
+        "background_growth_self_modification_pressure_level": (
+            growth_self_modification_presence_profile.get("pressure_level")
+        ),
+        "background_growth_self_modification_attention_target": (
+            growth_self_modification_presence_profile.get("attention_target")
+        ),
+        "background_growth_self_modification_waiting_posture": (
+            growth_self_modification_presence_profile.get("waiting_posture")
+        ),
+        "background_growth_self_modification_boundary": (
+            growth_self_modification_presence_profile.get("report_boundary")
         ),
         "idle_continuity_ref": IDLE_CONTINUITY_FRAME_REF,
         "replay_cue_bundle_ref": replay_cue_bundle_ref if replay_cue_bundle else None,
@@ -2032,6 +2096,121 @@ def _background_dream_wake_presence_profile(
     )
 
 
+def _growth_self_modification_presence_profile(
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, Any]:
+    lineage_state = _dict_or_empty(
+        background_continuity_profile.get("resident_background_lineage_state")
+        or background_continuity_profile.get("background_resident_lineage_state")
+    )
+    presence = _dict_or_empty(
+        background_continuity_profile.get("background_growth_self_modification_presence")
+        or lineage_state.get("growth_self_modification_presence")
+    )
+    report_profile = _dict_or_empty(
+        background_continuity_profile.get("background_growth_self_modification_profile")
+        or presence.get("growth_self_modification_report_profile")
+    )
+    ref_set = _dedupe_string_list(
+        _string_list(background_continuity_profile.get("background_growth_self_modification_ref_set"))
+        + _string_list(presence.get("ref_set"))
+        + _string_list(report_profile.get("ref_set"))
+    )
+    state_refs = _dedupe_string_list(
+        _string_list(background_continuity_profile.get("background_growth_self_modification_state_refs"))
+        + _string_list(presence.get("state_refs"))
+        + _string_list(report_profile.get("state_refs"))
+    )
+    learning_plan_refs = _dedupe_string_list(
+        _string_list(background_continuity_profile.get("background_growth_learning_plan_refs"))
+        + _string_list(presence.get("learning_plan_refs"))
+        + _string_list(report_profile.get("learning_plan_refs"))
+    )
+    ref_set = _dedupe_string_list(ref_set + state_refs + learning_plan_refs)
+    active_domain_count = _first_nonzero_int(
+        background_continuity_profile.get("background_growth_active_domain_count"),
+        presence.get("active_domain_count"),
+        report_profile.get("active_domain_count"),
+    )
+    growth_pressure_count = _first_nonzero_int(
+        background_continuity_profile.get("background_growth_pressure_count"),
+        presence.get("growth_pressure_count"),
+        report_profile.get("growth_pressure_count"),
+    )
+    patch_candidate_count = _first_nonzero_int(
+        background_continuity_profile.get("background_growth_patch_candidate_count"),
+        presence.get("patch_candidate_count"),
+        report_profile.get("candidate_count"),
+    )
+    archive_receipt_count = _first_nonzero_int(
+        background_continuity_profile.get("background_growth_archive_receipt_count"),
+        presence.get("archive_receipt_count"),
+        report_profile.get("archive_receipt_count"),
+    )
+    if not any(
+        [
+            presence,
+            report_profile,
+            ref_set,
+            active_domain_count,
+            growth_pressure_count,
+            patch_candidate_count,
+            archive_receipt_count,
+        ]
+    ):
+        return {}
+    return _drop_empty(
+        {
+            "schema_version": "growth_self_modification_presence_v0",
+            "continuity_mode": (
+                presence.get("continuity_mode")
+                or "background_growth_self_modification_carryover"
+            ),
+            "growth_self_modification_report_profile": report_profile,
+            "active_domain_count": active_domain_count,
+            "growth_pressure_count": growth_pressure_count,
+            "patch_candidate_count": patch_candidate_count,
+            "archive_receipt_count": archive_receipt_count,
+            "pressure_level": (
+                background_continuity_profile.get(
+                    "background_growth_self_modification_pressure_level"
+                )
+                or presence.get("pressure_level")
+                or _growth_self_modification_pressure_level(
+                    active_domain_count=active_domain_count,
+                    growth_pressure_count=growth_pressure_count,
+                    patch_candidate_count=patch_candidate_count,
+                    archive_receipt_count=archive_receipt_count,
+                )
+            ),
+            "attention_target": (
+                background_continuity_profile.get(
+                    "background_growth_self_modification_attention_target"
+                )
+                or presence.get("attention_target")
+                or "growth_self_modification_archive_replay"
+            ),
+            "waiting_posture": (
+                background_continuity_profile.get(
+                    "background_growth_self_modification_waiting_posture"
+                )
+                or presence.get("waiting_posture")
+                or "growth_self_modification_shadow_archive_waiting"
+            ),
+            "state_refs": state_refs,
+            "learning_plan_refs": learning_plan_refs,
+            "ref_set": ref_set,
+            "report_boundary": (
+                background_continuity_profile.get(
+                    "background_growth_self_modification_boundary"
+                )
+                or presence.get("report_boundary")
+                or report_profile.get("report_boundary")
+            ),
+        }
+    )
+
+
 def _autonomous_activity_presence_profile(
     resident_autonomous_activity_state: dict[str, Any] | None,
     *,
@@ -2521,6 +2700,7 @@ def _heartbeat_cadence_explanation(
     life_constraint_refs: list[str],
     dream_wake_refs: list[str],
     offline_learning_refs: list[str],
+    growth_self_modification_refs: list[str],
     autonomous_activity_refs: list[str],
     background_refs: list[str],
 ) -> dict[str, Any]:
@@ -2562,6 +2742,7 @@ def _heartbeat_cadence_explanation(
         + _string_list(life_constraint_refs)
         + _string_list(dream_wake_refs)
         + _string_list(offline_learning_refs)
+        + _string_list(growth_self_modification_refs)
         + _string_list(autonomous_activity_refs)
         + _string_list(background_refs)
     )
@@ -2765,6 +2946,7 @@ def _heartbeat_priority_stack_profile(
     birth_readiness_refs: list[str],
     offline_learning_pressure_level: str,
     offline_learning_refs: list[str],
+    growth_self_modification_refs: list[str],
     offline_pressure_level: str,
     dream_wake_refs: list[str],
     background_carryover_pressure_level: str | None,
@@ -2888,6 +3070,14 @@ def _heartbeat_priority_stack_profile(
             state=offline_learning_pressure_level,
             reason="dream_growth_or_relationship_learning_requires_refresh",
             evidence_refs=offline_learning_refs,
+        )
+    if growth_self_modification_refs:
+        add_candidate(
+            rank=95,
+            driver="growth_self_modification_archive_replay",
+            state="growth_self_modification_presence",
+            reason="closed_growth_self_modification_evidence_requires_replay_and_shadow_archive_carryover",
+            evidence_refs=growth_self_modification_refs,
         )
     if birth_readiness_waiting_posture == "birth_open_waiting":
         add_candidate(
@@ -4502,6 +4692,30 @@ def _int_or_zero(value: Any) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _first_nonzero_int(*values: Any) -> int:
+    for value in values:
+        number = _int_or_zero(value)
+        if number:
+            return number
+    return 0
+
+
+def _growth_self_modification_pressure_level(
+    *,
+    active_domain_count: int,
+    growth_pressure_count: int,
+    patch_candidate_count: int,
+    archive_receipt_count: int,
+) -> str:
+    if patch_candidate_count > 0 and archive_receipt_count == 0:
+        return "elevated"
+    if growth_pressure_count > 0 or patch_candidate_count > 0:
+        return "present"
+    if active_domain_count > 0:
+        return "light"
+    return "quiet"
 
 
 def _ref_if_present(*, payload: dict[str, Any] | None, ref: str) -> str | None:

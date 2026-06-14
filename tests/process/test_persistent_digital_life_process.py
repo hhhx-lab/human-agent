@@ -2613,6 +2613,98 @@ class PersistentDigitalLifeProcessTests(
         self.assertEqual(profile["background_queue_e_regret_pressure_count"], 1)
         self.assertEqual(profile["background_queue_e_repair_ref_set"], expected_refs)
 
+    def test_background_continuity_restores_growth_self_modification_from_process_report(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        expected_refs = [
+            "runtime/state/growth/self_read_report.json",
+            "runtime/state/growth/plasticity_window_state.json",
+            "runtime/state/growth/growth_patch_candidate_queue.json",
+            "runtime/state/growth/anti_forgetting_replay_plan.json",
+            "runtime/state/growth/belief_learning_plan.json",
+            "runtime/state/growth/language_learning_plan.json",
+            "runtime/state/growth/relationship_learning_plan.json",
+            "runtime/state/growth/resident_growth_rehearsal_state.json",
+            "runtime/state/growth/resident_learning_consolidation_state.json",
+            "runtime/state/archive/growth_archive_receipt_batch.json",
+            "runtime/reports/latest/growth_archive_report.json",
+            "runtime/reports/latest/growth_archive_digest.json",
+            "runtime/reports/latest/growth_archive_stage_gate.json",
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            terminal_dir = root / "state" / "terminal"
+            reports_dir = root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                reports_dir / "digital_life_process_report.json",
+                {
+                    "schema_version": "digital_life_process_report_v0",
+                    "run_id": "growth-self-modification-background-restore",
+                    "growth_self_modification_report_profile": {
+                        "schema_version": "growth_self_modification_report_profile_v0",
+                        "active_domain_count": 13,
+                        "growth_pressure_count": 2,
+                        "candidate_count": 1,
+                        "archive_receipt_count": 2,
+                        "ref_set": expected_refs,
+                        "state_refs": expected_refs,
+                        "learning_plan_refs": [
+                            "runtime/state/growth/belief_learning_plan.json",
+                            "runtime/state/growth/language_learning_plan.json",
+                            "runtime/state/growth/relationship_learning_plan.json",
+                        ],
+                        "report_boundary": "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite",
+                    },
+                    "growth_self_modification_ref_set": expected_refs,
+                    "growth_self_modification_state_refs": expected_refs,
+                    "growth_learning_plan_refs": [
+                        "runtime/state/growth/belief_learning_plan.json",
+                        "runtime/state/growth/language_learning_plan.json",
+                        "runtime/state/growth/relationship_learning_plan.json",
+                    ],
+                    "growth_active_domain_count": 13,
+                    "growth_pressure_count": 2,
+                    "growth_patch_candidate_count": 1,
+                    "growth_archive_receipt_count": 2,
+                    "growth_self_modification_report_boundary": "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite",
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+        presence = profile["background_growth_self_modification_presence"]
+        self.assertEqual(
+            presence["schema_version"],
+            "growth_self_modification_presence_v0",
+        )
+        self.assertEqual(presence["active_domain_count"], 13)
+        self.assertEqual(presence["growth_pressure_count"], 2)
+        self.assertEqual(presence["patch_candidate_count"], 1)
+        self.assertEqual(presence["archive_receipt_count"], 2)
+        self.assertEqual(presence["pressure_level"], "present")
+        self.assertEqual(
+            presence["report_boundary"],
+            "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite",
+        )
+        self.assertEqual(
+            profile["background_growth_self_modification_ref_set"],
+            expected_refs,
+        )
+        self.assertEqual(
+            profile["background_growth_self_modification_state_refs"],
+            expected_refs,
+        )
+        for ref in expected_refs:
+            self.assertIn(ref, profile["background_continuity_ref_set"])
+
     def test_background_continuity_restores_queue_e_repair_modulation_from_lineage_presence(self):
         from life_v0.process_supervisor.background_continuity import (
             load_background_continuity_profile,
@@ -16188,6 +16280,67 @@ class PersistentDigitalLifeProcessTests(
             "growth_rehearsal",
         )
 
+    def test_background_lineage_state_carries_growth_self_modification_presence(self):
+        from life_v0.process_supervisor.background_lineage_state import (
+            build_resident_background_lineage_state,
+        )
+
+        expected_refs = [
+            "runtime/state/growth/self_read_report.json",
+            "runtime/state/growth/plasticity_window_state.json",
+            "runtime/state/growth/growth_patch_candidate_queue.json",
+            "runtime/state/growth/anti_forgetting_replay_plan.json",
+            "runtime/state/growth/belief_learning_plan.json",
+            "runtime/state/growth/language_learning_plan.json",
+            "runtime/state/growth/relationship_learning_plan.json",
+            "runtime/state/growth/resident_growth_rehearsal_state.json",
+            "runtime/state/growth/resident_learning_consolidation_state.json",
+            "runtime/state/archive/growth_archive_receipt_batch.json",
+            "runtime/reports/latest/growth_archive_report.json",
+            "runtime/reports/latest/growth_archive_digest.json",
+            "runtime/reports/latest/growth_archive_stage_gate.json",
+        ]
+
+        lineage_state = build_resident_background_lineage_state(
+            {
+                "background_growth_self_modification_profile": {
+                    "schema_version": "growth_self_modification_report_profile_v0",
+                    "active_domain_count": 13,
+                    "growth_pressure_count": 2,
+                    "candidate_count": 1,
+                    "archive_receipt_count": 2,
+                    "ref_set": expected_refs,
+                    "state_refs": expected_refs,
+                    "learning_plan_refs": [
+                        "runtime/state/growth/belief_learning_plan.json",
+                        "runtime/state/growth/language_learning_plan.json",
+                        "runtime/state/growth/relationship_learning_plan.json",
+                    ],
+                    "report_boundary": "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite",
+                },
+                "background_growth_self_modification_ref_set": expected_refs,
+                "background_growth_self_modification_state_refs": expected_refs,
+                "background_growth_active_domain_count": 13,
+                "background_growth_pressure_count": 2,
+                "background_growth_patch_candidate_count": 1,
+                "background_growth_archive_receipt_count": 2,
+            },
+            governance_phase="waiting_heartbeat_active",
+            status="active",
+        )
+
+        presence = lineage_state["growth_self_modification_presence"]
+        self.assertEqual(presence["active_domain_count"], 13)
+        self.assertEqual(presence["growth_pressure_count"], 2)
+        self.assertEqual(presence["patch_candidate_count"], 1)
+        self.assertEqual(presence["archive_receipt_count"], 2)
+        self.assertEqual(presence["pressure_level"], "present")
+        self.assertEqual(
+            presence["waiting_posture"],
+            "growth_self_modification_shadow_archive_waiting",
+        )
+        self.assertEqual(presence["ref_set"], expected_refs)
+
     def test_background_lineage_state_carries_heartbeat_cadence_presence(self):
         from life_v0.process_supervisor.background_lineage_state import (
             build_resident_background_lineage_state,
@@ -18328,6 +18481,21 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/growth/relationship_learning_plan.json",
                 "runtime/state/growth/language_learning_plan.json",
             ]
+            expected_background_growth_self_modification_refs = [
+                "runtime/state/growth/self_read_report.json",
+                "runtime/state/growth/plasticity_window_state.json",
+                "runtime/state/growth/growth_patch_candidate_queue.json",
+                "runtime/state/growth/anti_forgetting_replay_plan.json",
+                "runtime/state/growth/belief_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/resident_growth_rehearsal_state.json",
+                "runtime/state/growth/resident_learning_consolidation_state.json",
+                "runtime/state/archive/growth_archive_receipt_batch.json",
+                "runtime/reports/latest/growth_archive_report.json",
+                "runtime/reports/latest/growth_archive_digest.json",
+                "runtime/reports/latest/growth_archive_stage_gate.json",
+            ]
             terminal_life_loop_state["resident_background_lineage_state"][
                 "heartbeat_cadence_presence"
             ] = {
@@ -18340,6 +18508,26 @@ class PersistentDigitalLifeProcessTests(
                 "evidence_refs": expected_heartbeat_cadence_refs,
                 "heartbeat_interval_ms": 58,
                 "next_idle_action": "refresh_waiting_heartbeat_with_offline_learning_hold",
+            }
+            terminal_life_loop_state["resident_background_lineage_state"][
+                "growth_self_modification_presence"
+            ] = {
+                "schema_version": "growth_self_modification_presence_v0",
+                "active_domain_count": 13,
+                "growth_pressure_count": 2,
+                "patch_candidate_count": 1,
+                "archive_receipt_count": 2,
+                "pressure_level": "present",
+                "attention_target": "growth_self_modification_archive_replay",
+                "waiting_posture": "growth_self_modification_shadow_archive_waiting",
+                "state_refs": expected_background_growth_self_modification_refs,
+                "learning_plan_refs": [
+                    "runtime/state/growth/belief_learning_plan.json",
+                    "runtime/state/growth/language_learning_plan.json",
+                    "runtime/state/growth/relationship_learning_plan.json",
+                ],
+                "ref_set": expected_background_growth_self_modification_refs,
+                "report_boundary": "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite",
             }
             terminal_life_loop_state["resident_background_lineage_state"][
                 "birth_repair_presence"
@@ -19105,6 +19293,12 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertEqual(
                 dialogue_writeback_bundle[
+                    "resident_background_lineage_growth_self_modification_refs"
+                ],
+                expected_background_growth_self_modification_refs,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
                     "offline_learning_cumulative_integration_mode"
                 ],
                 "relationship_offline_reconsolidation_required",
@@ -19172,6 +19366,11 @@ class PersistentDigitalLifeProcessTests(
                     ref,
                     dialogue_writeback_bundle["resident_background_lineage_refs"],
                 )
+            for ref in expected_background_growth_self_modification_refs:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle["resident_background_lineage_refs"],
+                )
             for ref in expected_queue_e_birth_repair_refs:
                 self.assertIn(
                     ref,
@@ -19211,6 +19410,24 @@ class PersistentDigitalLifeProcessTests(
                     "resident_background_lineage_offline_learning_refs"
                 ],
                 expected_background_offline_learning_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_growth_self_modification_refs"
+                ],
+                expected_background_growth_self_modification_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_growth_self_modification_pressure_level"
+                ],
+                "present",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_growth_self_modification_waiting_posture"
+                ],
+                "growth_self_modification_shadow_archive_waiting",
             )
             self.assertEqual(
                 resumed_dialogue_packet[
@@ -19348,6 +19565,13 @@ class PersistentDigitalLifeProcessTests(
                 "deferred_until_s06",
             )
             for ref in expected_autonomous_activity_refs:
+                self.assertIn(
+                    ref,
+                    resumed_dialogue_packet[
+                        "resident_background_lineage_evidence_refs"
+                    ],
+                )
+            for ref in expected_background_growth_self_modification_refs:
                 self.assertIn(
                     ref,
                     resumed_dialogue_packet[
