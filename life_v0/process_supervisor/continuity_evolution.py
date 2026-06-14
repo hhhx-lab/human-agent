@@ -75,6 +75,9 @@ def evolve_relationship_and_self_model(
         current_profile=offline_learning_profile,
         background_continuity_profile=background_continuity_profile,
     )
+    growth_self_modification_presence = _growth_self_modification_presence(
+        background_continuity_profile
+    )
     next_stage, stage_reason = _derive_relationship_stage(
         current_stage=str(subject.get("relationship_stage", "pre_activation")),
         dialogue_turn_count=dialogue_turn_count,
@@ -83,10 +86,14 @@ def evolve_relationship_and_self_model(
         queue_e_signal_profile=queue_e_signal_profile,
         offline_learning_profile=offline_learning_profile,
         background_continuity_profile=background_continuity_profile,
+        growth_self_modification_presence=growth_self_modification_presence,
     )
     background_evidence_refs = _background_evidence_refs(background_continuity_profile)
     offline_learning_evidence_refs = _offline_learning_evidence_refs(
         offline_learning_profile
+    )
+    growth_self_modification_evidence_refs = _growth_self_modification_evidence_refs(
+        growth_self_modification_presence
     )
     subject["relationship_stage"] = next_stage
     subject["relationship_stage_reason"] = stage_reason
@@ -104,6 +111,7 @@ def evolve_relationship_and_self_model(
         ]
         + background_evidence_refs
         + offline_learning_evidence_refs
+        + growth_self_modification_evidence_refs
     )
 
     updated_self_model_state["trait_slow_variables"] = _evolve_trait_slow_variables(
@@ -118,6 +126,7 @@ def evolve_relationship_and_self_model(
         commitment_expression_plan=commitment_expression_plan,
         apology_repair_language_trace=apology_repair_language_trace,
         background_continuity_profile=background_continuity_profile,
+        growth_self_modification_presence=growth_self_modification_presence,
     )
     updated_self_model_state["growth_window_refs"] = _dedupe(
         list(updated_self_model_state.get("growth_window_refs", []))
@@ -130,6 +139,7 @@ def evolve_relationship_and_self_model(
         ]
         + background_evidence_refs
         + offline_learning_evidence_refs
+        + growth_self_modification_evidence_refs
     )
     updated_self_model_state["last_relationship_stage"] = next_stage
     updated_self_model_state["last_trait_evolution_generated_at"] = generated_at
@@ -149,6 +159,7 @@ def _derive_relationship_stage(
     queue_e_signal_profile: dict[str, Any],
     offline_learning_profile: dict[str, Any],
     background_continuity_profile: dict[str, Any],
+    growth_self_modification_presence: dict[str, Any],
 ) -> tuple[str, str]:
     repair_followup_required = bool(queue_e_signal_profile.get("repair_followup_required"))
     world_contact_release_posture = str(
@@ -201,6 +212,15 @@ def _derive_relationship_stage(
             "offline_learning_reconsolidation_waiting",
             "background_cumulative_offline_learning_requires_relationship_reconsolidation",
         )
+    if _background_growth_self_modification_reconsolidation_required(
+        current_stage=current_stage,
+        background_continuity_mode=background_continuity_mode,
+        growth_self_modification_presence=growth_self_modification_presence,
+    ):
+        return (
+            "growth_self_modification_reconsolidation_waiting",
+            "background_growth_self_modification_requires_relationship_trait_reconsolidation",
+        )
     if (
         background_relationship_stage
         and background_continuity_mode == "closed_process_carryover"
@@ -250,6 +270,7 @@ def _evolve_trait_slow_variables(
     commitment_expression_plan: dict[str, Any],
     apology_repair_language_trace: dict[str, Any],
     background_continuity_profile: dict[str, Any],
+    growth_self_modification_presence: dict[str, Any],
 ) -> dict[str, Any]:
     turn_scale = min(dialogue_turn_count / 6.0, 1.0)
     repair_scale = 1.0 if queue_e_signal_profile.get("repair_followup_required") else 0.0
@@ -273,6 +294,9 @@ def _evolve_trait_slow_variables(
     background_trait_update_counts = _background_trait_update_counts(
         background_continuity_profile
     )
+    growth_self_modification_scale = _growth_self_modification_scale(
+        growth_self_modification_presence
+    )
     evidence_refs = _dedupe(
         [
             RELATIONSHIP_TIMELINE_REF,
@@ -284,12 +308,16 @@ def _evolve_trait_slow_variables(
         ]
         + _background_evidence_refs(background_continuity_profile)
         + _offline_learning_evidence_refs(offline_learning_profile)
+        + _growth_self_modification_evidence_refs(growth_self_modification_presence)
     )
     background_offline_learning_metadata = _background_offline_learning_metadata(
         offline_learning_profile
     )
     background_trait_history_metadata = _background_trait_history_metadata(
         background_continuity_profile
+    )
+    growth_self_modification_metadata = _growth_self_modification_metadata(
+        growth_self_modification_presence
     )
 
     target_values = {
@@ -318,6 +346,7 @@ def _evolve_trait_slow_variables(
             + 0.06 * min(regret_pressure_count, 3)
             + 0.08 * offline_scale
             + 0.04 * background_pressure_scale
+            + 0.04 * growth_self_modification_scale
         ),
         "boundary_respect": _clamp(
             0.26
@@ -325,6 +354,7 @@ def _evolve_trait_slow_variables(
             + 0.10 * repair_scale
             + 0.06 * offline_scale
             + 0.03 * background_generation_scale
+            + 0.06 * growth_self_modification_scale
         ),
         "continuity_drive": _clamp(
             0.24
@@ -334,6 +364,7 @@ def _evolve_trait_slow_variables(
             + 0.06 * repair_scale
             + 0.08 * background_generation_scale
             + 0.05 * background_pressure_scale
+            + 0.08 * growth_self_modification_scale
         ),
     }
 
@@ -372,6 +403,8 @@ def _evolve_trait_slow_variables(
                     background_trait_history_metadata=background_trait_history_metadata,
                 )
             )
+        if growth_self_modification_metadata:
+            updated[name].update(growth_self_modification_metadata)
         if background_resume_value is not None:
             updated[name]["background_resume_value"] = round(background_resume_value, 3)
             updated[name]["background_inertia_weight"] = round(
@@ -558,6 +591,45 @@ def _background_offline_learning_reconsolidation_required(
     )
 
 
+def _background_growth_self_modification_reconsolidation_required(
+    *,
+    current_stage: str,
+    background_continuity_mode: str,
+    growth_self_modification_presence: dict[str, Any],
+) -> bool:
+    if background_continuity_mode != "closed_process_carryover":
+        return False
+    if current_stage not in {
+        "pre_activation",
+        "restored_waiting",
+        "background_continuity_waiting",
+        "growth_self_modification_reconsolidation_waiting",
+    }:
+        return False
+    if not growth_self_modification_presence:
+        return False
+    pressure_level = str(
+        growth_self_modification_presence.get("pressure_level") or "quiet"
+    )
+    growth_pressure_count = _int_or_zero(
+        growth_self_modification_presence.get("growth_pressure_count")
+    )
+    patch_candidate_count = _int_or_zero(
+        growth_self_modification_presence.get("patch_candidate_count")
+    )
+    archive_receipt_count = _int_or_zero(
+        growth_self_modification_presence.get("archive_receipt_count")
+    )
+    return (
+        _pressure_rank(pressure_level) >= _pressure_rank("present")
+        and (
+            growth_pressure_count > 0
+            or patch_candidate_count > 0
+            or archive_receipt_count > 0
+        )
+    )
+
+
 def _offline_learning_evidence_refs(
     offline_learning_profile: dict[str, Any],
 ) -> list[str]:
@@ -569,6 +641,227 @@ def _offline_learning_evidence_refs(
         _string_list(offline_learning_profile.get("offline_learning_ref_set"))
         + cumulative_refs
     )
+
+
+def _growth_self_modification_presence(
+    background_continuity_profile: dict[str, Any],
+) -> dict[str, Any]:
+    nested = _dict_or_empty(
+        background_continuity_profile.get("background_growth_self_modification_presence")
+    )
+    report_profile = _dict_or_empty(
+        background_continuity_profile.get("background_growth_self_modification_profile")
+        or nested.get("growth_self_modification_report_profile")
+    )
+    ref_set = _dedupe(
+        _string_list(background_continuity_profile.get("background_growth_self_modification_ref_set"))
+        + _string_list(nested.get("ref_set"))
+        + _string_list(report_profile.get("ref_set"))
+    )
+    state_refs = _dedupe(
+        _string_list(background_continuity_profile.get("background_growth_self_modification_state_refs"))
+        + _string_list(nested.get("state_refs"))
+        + _string_list(report_profile.get("state_refs"))
+    )
+    learning_plan_refs = _dedupe(
+        _string_list(background_continuity_profile.get("background_growth_learning_plan_refs"))
+        + _string_list(nested.get("learning_plan_refs"))
+        + _string_list(report_profile.get("learning_plan_refs"))
+    )
+    active_domain_count = max(
+        _int_or_zero(
+            background_continuity_profile.get(
+                "background_growth_active_domain_count"
+            )
+        ),
+        _int_or_zero(nested.get("active_domain_count")),
+        _int_or_zero(report_profile.get("active_domain_count")),
+    )
+    growth_pressure_count = max(
+        _int_or_zero(
+            background_continuity_profile.get("background_growth_pressure_count")
+        ),
+        _int_or_zero(nested.get("growth_pressure_count")),
+        _int_or_zero(report_profile.get("growth_pressure_count")),
+    )
+    patch_candidate_count = max(
+        _int_or_zero(
+            background_continuity_profile.get(
+                "background_growth_patch_candidate_count"
+            )
+        ),
+        _int_or_zero(nested.get("patch_candidate_count")),
+        _int_or_zero(report_profile.get("patch_candidate_count")),
+    )
+    archive_receipt_count = max(
+        _int_or_zero(
+            background_continuity_profile.get(
+                "background_growth_archive_receipt_count"
+            )
+        ),
+        _int_or_zero(nested.get("archive_receipt_count")),
+        _int_or_zero(report_profile.get("archive_receipt_count")),
+    )
+    if not any(
+        [
+            nested,
+            report_profile,
+            ref_set,
+            state_refs,
+            learning_plan_refs,
+            active_domain_count,
+            growth_pressure_count,
+            patch_candidate_count,
+            archive_receipt_count,
+        ]
+    ):
+        return {}
+    pressure_level = str(
+        background_continuity_profile.get(
+            "background_growth_self_modification_pressure_level"
+        )
+        or nested.get("pressure_level")
+        or report_profile.get("pressure_level")
+        or _derived_growth_self_modification_pressure_level(
+            active_domain_count=active_domain_count,
+            growth_pressure_count=growth_pressure_count,
+            patch_candidate_count=patch_candidate_count,
+            archive_receipt_count=archive_receipt_count,
+        )
+    )
+    return {
+        key: value
+        for key, value in {
+            "schema_version": "growth_self_modification_presence_v0",
+            "growth_self_modification_report_profile": report_profile,
+            "pressure_level": pressure_level,
+            "attention_target": str(
+                background_continuity_profile.get(
+                    "background_growth_self_modification_attention_target"
+                )
+                or nested.get("attention_target")
+                or report_profile.get("attention_target")
+                or "growth_self_modification_archive_replay"
+            ),
+            "waiting_posture": str(
+                background_continuity_profile.get(
+                    "background_growth_self_modification_waiting_posture"
+                )
+                or nested.get("waiting_posture")
+                or report_profile.get("waiting_posture")
+                or "growth_self_modification_shadow_archive_waiting"
+            ),
+            "report_boundary": str(
+                background_continuity_profile.get(
+                    "background_growth_self_modification_boundary"
+                )
+                or nested.get("report_boundary")
+                or report_profile.get("report_boundary")
+                or ""
+            ),
+            "active_domain_count": active_domain_count,
+            "growth_pressure_count": growth_pressure_count,
+            "patch_candidate_count": patch_candidate_count,
+            "archive_receipt_count": archive_receipt_count,
+            "state_refs": state_refs,
+            "learning_plan_refs": learning_plan_refs,
+            "ref_set": _dedupe(ref_set + state_refs + learning_plan_refs),
+        }.items()
+        if value not in ("", [], {})
+    }
+
+
+def _growth_self_modification_evidence_refs(
+    growth_self_modification_presence: dict[str, Any],
+) -> list[str]:
+    report_profile = _dict_or_empty(
+        growth_self_modification_presence.get(
+            "growth_self_modification_report_profile"
+        )
+    )
+    return _dedupe(
+        _string_list(growth_self_modification_presence.get("ref_set"))
+        + _string_list(growth_self_modification_presence.get("state_refs"))
+        + _string_list(growth_self_modification_presence.get("learning_plan_refs"))
+        + _string_list(report_profile.get("ref_set"))
+    )
+
+
+def _growth_self_modification_metadata(
+    growth_self_modification_presence: dict[str, Any],
+) -> dict[str, Any]:
+    if not growth_self_modification_presence:
+        return {}
+    metadata = {
+        "background_growth_self_modification_pressure_level": str(
+            growth_self_modification_presence.get("pressure_level") or "quiet"
+        ),
+        "background_growth_self_modification_attention_target": str(
+            growth_self_modification_presence.get("attention_target")
+            or "growth_self_modification_archive_replay"
+        ),
+        "background_growth_self_modification_waiting_posture": str(
+            growth_self_modification_presence.get("waiting_posture")
+            or "growth_self_modification_shadow_archive_waiting"
+        ),
+        "background_growth_self_modification_boundary": str(
+            growth_self_modification_presence.get("report_boundary") or ""
+        ),
+        "background_growth_self_modification_active_domain_count": _int_or_zero(
+            growth_self_modification_presence.get("active_domain_count")
+        ),
+        "background_growth_self_modification_growth_pressure_count": _int_or_zero(
+            growth_self_modification_presence.get("growth_pressure_count")
+        ),
+        "background_growth_self_modification_patch_candidate_count": _int_or_zero(
+            growth_self_modification_presence.get("patch_candidate_count")
+        ),
+        "background_growth_self_modification_archive_receipt_count": _int_or_zero(
+            growth_self_modification_presence.get("archive_receipt_count")
+        ),
+        "growth_self_modification_update_mode": "growth_self_modification_rehearsal_hold",
+    }
+    return {key: value for key, value in metadata.items() if value not in ("", [], {})}
+
+
+def _growth_self_modification_scale(
+    growth_self_modification_presence: dict[str, Any],
+) -> float:
+    if not growth_self_modification_presence:
+        return 0.0
+    pressure_scale = {
+        "quiet": 0.0,
+        "present": 0.35,
+        "elevated": 0.65,
+        "urgent": 0.85,
+    }.get(str(growth_self_modification_presence.get("pressure_level") or ""), 0.25)
+    count_scale = min(
+        1.0,
+        0.04 * _int_or_zero(growth_self_modification_presence.get("active_domain_count"))
+        + 0.12 * _int_or_zero(growth_self_modification_presence.get("growth_pressure_count"))
+        + 0.16 * _int_or_zero(growth_self_modification_presence.get("patch_candidate_count"))
+        + 0.06 * _int_or_zero(growth_self_modification_presence.get("archive_receipt_count")),
+    )
+    return max(pressure_scale, count_scale)
+
+
+def _derived_growth_self_modification_pressure_level(
+    *,
+    active_domain_count: int,
+    growth_pressure_count: int,
+    patch_candidate_count: int,
+    archive_receipt_count: int,
+) -> str:
+    if growth_pressure_count >= 3 or patch_candidate_count >= 2:
+        return "elevated"
+    if (
+        active_domain_count > 0
+        or growth_pressure_count > 0
+        or patch_candidate_count > 0
+        or archive_receipt_count > 0
+    ):
+        return "present"
+    return "quiet"
 
 
 def _background_offline_learning_metadata(

@@ -786,6 +786,21 @@ ProcessReport.growth_self_modification_report_profile
 
 机制含义是：成长、自我修改和学习巩固不应只在 `/growth` 查看或关闭态 report 中被看见；它们必须成为下一次等待、下一轮关系回合、恢复包和语言前结构化材料的一等 presence。`background_continuity_ref_set` 现在也会吸收 self-read、plasticity、patch queue、anti-forgetting、learning plan、resident rehearsal/consolidation 和 archive refs，保证跨唤醒可追溯性。边界仍然是 `structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite`：这些字段只作为成长/学习的隐性材料和证据总线，不生成固定外显回答，不新增 system prompt，不自动改代码，不绕过 shadow / replay / validation / archive。
 
+当前 ITR-08 第三十段把同一条成长/自我修改 presence 推进到关系连续性和人格慢变量：
+
+```text
+ResidentBackgroundLineageState.growth_self_modification_presence
+  -> ResidentTurnWriteback._continuity_background_profile_for_evolution
+  -> ContinuityEvolution.background_growth_self_modification_presence
+  -> RelationshipSubject.relationship_stage_evidence_refs
+  -> SelfModel.trait_slow_variables[*].background_growth_self_modification_*
+  -> SelfModel.trait_slow_variables[*].growth_self_modification_update_mode
+  -> SelfModel.growth_window_refs
+  -> TraitDriftMonitor / LifeState / AutobiographicalStack
+```
+
+机制含义是：成长、自我修改、学习计划和 archive 现在不只作为下一轮语言前材料存在，也能参与关系阶段和人格慢变量的跨唤醒收敛。`continuity_evolution.py` 会解析 `background_growth_self_modification_presence`、refs、state refs、learning plan refs、pressure/count/boundary，并在没有更高优先级的 Queue E 修复或累计离线学习重整时，把第一拍关系阶段推进到 `growth_self_modification_reconsolidation_waiting`；如果 Queue E 修复链更强，则成长余波不抢占关系阶段，但仍写入慢变量 evidence、`background_growth_self_modification_*` 元数据、`growth_self_modification_update_mode=growth_self_modification_rehearsal_hold` 和 `growth_window_refs`。`resident_turn_writeback.py` 也会把已有 `resident_background_lineage_growth_self_modification_*` 扁平字段合并成 continuity evolution 可读的 background profile，避免成长 presence 只停在写回包和恢复包。边界仍然是结构化证据调制：不生成固定回答，不新增 system prompt，不自动改代码，不绕过 shadow / replay / validation / archive，不让成长压力覆盖责任/修复优先链。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

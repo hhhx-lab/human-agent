@@ -342,6 +342,9 @@ def write_resident_turn_writeback(
     offline_learning_cumulative_payload = build_offline_learning_cumulative_payload(
         terminal_life_loop_state
     )
+    resident_background_lineage_payload = build_resident_background_lineage_payload(
+        terminal_life_loop_state
+    )
 
     continuity_refresh = _refresh_long_horizon_continuity(
         state_dir=state_dir,
@@ -352,6 +355,7 @@ def write_resident_turn_writeback(
         self_narrative_trace=self_narrative_trace,
         commitment_index=commitment_index,
         offline_learning_cumulative_profile=offline_learning_cumulative_payload,
+        resident_background_lineage_payload=resident_background_lineage_payload,
         generated_at=generated_at,
         source_doc_refs=source_doc_refs,
         live_language_turn_refs=live_language_turn_refs,
@@ -406,9 +410,6 @@ def write_resident_turn_writeback(
         background_trait_convergence_payload.get(
             "cross_wake_trait_drift_stabilized_names", []
         )
-    )
-    resident_background_lineage_payload = build_resident_background_lineage_payload(
-        terminal_life_loop_state
     )
     resident_background_lineage_refs = list(
         resident_background_lineage_payload.get(
@@ -1024,6 +1025,7 @@ def _refresh_long_horizon_continuity(
     self_narrative_trace: dict[str, Any] | None,
     commitment_index: dict[str, Any],
     offline_learning_cumulative_profile: dict[str, Any] | None,
+    resident_background_lineage_payload: dict[str, Any] | None,
     generated_at: str,
     source_doc_refs: list[str],
     live_language_turn_refs: list[str] | None,
@@ -1085,6 +1087,10 @@ def _refresh_long_horizon_continuity(
     responsibility_loop_state = _read_json(responsibility_loop_path)
     world_contact_summary = _read_json_if_exists(world_contact_summary_path)
     pain_regret_repair_report = _read_json_if_exists(pain_regret_repair_report_path)
+    background_continuity_profile = _continuity_background_profile_for_evolution(
+        life_state.get("background_continuity_profile"),
+        resident_background_lineage_payload,
+    )
 
     nightmare_risk = _read_json_if_exists(state_dir / "dream" / "nightmare_loop_risk.json")
     belief_learning_plan = _read_json_if_exists(
@@ -1171,6 +1177,7 @@ def _refresh_long_horizon_continuity(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        background_continuity_profile=background_continuity_profile,
     )
     evolved_relationship_graph = evolved_continuity["relationship_graph"]
     evolved_self_model_state = evolved_continuity["self_model_state"]
@@ -1300,7 +1307,7 @@ def _refresh_long_horizon_continuity(
     )
     refreshed_life_state = project_responsibility_language_continuity(
         life_state=life_state,
-        background_continuity_profile=life_state.get("background_continuity_profile"),
+        background_continuity_profile=background_continuity_profile,
         self_model_state=evolved_self_model_state,
         commitment_truth_state=commitment_truth_state,
         responsibility_ledger=responsibility_ledger,
@@ -1424,6 +1431,118 @@ def _read_json_if_exists(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
     return _read_json(path)
+
+
+def _continuity_background_profile_for_evolution(
+    background_continuity_profile: Any,
+    resident_background_lineage_payload: dict[str, Any] | None,
+) -> dict[str, Any]:
+    profile = (
+        dict(background_continuity_profile)
+        if isinstance(background_continuity_profile, dict)
+        else {}
+    )
+    lineage_payload = (
+        resident_background_lineage_payload
+        if isinstance(resident_background_lineage_payload, dict)
+        else {}
+    )
+    if (
+        lineage_payload.get("resident_background_lineage_schema_version")
+        or lineage_payload.get("resident_background_lineage_generation") is not None
+    ):
+        profile.setdefault("background_continuity_mode", "closed_process_carryover")
+    _copy_if_present(
+        profile,
+        lineage_payload,
+        source_key="resident_background_lineage_growth_self_modification_pressure_level",
+        target_key="background_growth_self_modification_pressure_level",
+    )
+    _copy_if_present(
+        profile,
+        lineage_payload,
+        source_key="resident_background_lineage_growth_self_modification_attention_target",
+        target_key="background_growth_self_modification_attention_target",
+    )
+    _copy_if_present(
+        profile,
+        lineage_payload,
+        source_key="resident_background_lineage_growth_self_modification_waiting_posture",
+        target_key="background_growth_self_modification_waiting_posture",
+    )
+    _copy_if_present(
+        profile,
+        lineage_payload,
+        source_key="resident_background_lineage_growth_self_modification_boundary",
+        target_key="background_growth_self_modification_boundary",
+    )
+    _copy_if_present(
+        profile,
+        lineage_payload,
+        source_key="resident_background_lineage_growth_active_domain_count",
+        target_key="background_growth_active_domain_count",
+    )
+    _copy_if_present(
+        profile,
+        lineage_payload,
+        source_key="resident_background_lineage_growth_pressure_count",
+        target_key="background_growth_pressure_count",
+    )
+    _copy_if_present(
+        profile,
+        lineage_payload,
+        source_key="resident_background_lineage_growth_patch_candidate_count",
+        target_key="background_growth_patch_candidate_count",
+    )
+    _copy_if_present(
+        profile,
+        lineage_payload,
+        source_key="resident_background_lineage_growth_archive_receipt_count",
+        target_key="background_growth_archive_receipt_count",
+    )
+    growth_presence = lineage_payload.get(
+        "resident_background_lineage_growth_self_modification_presence"
+    )
+    if isinstance(growth_presence, dict) and growth_presence:
+        profile["background_growth_self_modification_presence"] = dict(growth_presence)
+    growth_refs = _dedupe_refs(
+        _string_list(
+            lineage_payload.get("resident_background_lineage_growth_self_modification_refs")
+        )
+    )
+    growth_state_refs = _dedupe_refs(
+        _string_list(
+            lineage_payload.get(
+                "resident_background_lineage_growth_self_modification_state_refs"
+            )
+        )
+    )
+    growth_learning_plan_refs = _dedupe_refs(
+        _string_list(
+            lineage_payload.get(
+                "resident_background_lineage_growth_learning_plan_refs"
+            )
+        )
+    )
+    if growth_refs:
+        profile["background_growth_self_modification_ref_set"] = growth_refs
+    if growth_state_refs:
+        profile["background_growth_self_modification_state_refs"] = growth_state_refs
+    if growth_learning_plan_refs:
+        profile["background_growth_learning_plan_refs"] = growth_learning_plan_refs
+    return profile
+
+
+def _copy_if_present(
+    target: dict[str, Any],
+    source: dict[str, Any],
+    *,
+    source_key: str,
+    target_key: str,
+) -> None:
+    value = source.get(source_key)
+    if value not in (None, "", [], {}):
+        target[target_key] = value
 
 
 def _dedupe_refs(refs: list[str | None]) -> list[str]:

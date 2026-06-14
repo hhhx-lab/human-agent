@@ -7905,6 +7905,113 @@ class PersistentDigitalLifeProcessTests(
             result["self_model_state"]["growth_window_refs"],
         )
 
+    def test_continuity_evolution_uses_background_growth_self_modification_as_trait_reconsolidation(self):
+        from life_v0.process_supervisor.continuity_evolution import (
+            evolve_relationship_and_self_model,
+        )
+
+        expected_refs = [
+            "runtime/state/growth/self_read_report.json",
+            "runtime/state/growth/growth_patch_candidate_queue.json",
+            "runtime/state/growth/anti_forgetting_replay_plan.json",
+            "runtime/state/growth/relationship_learning_plan.json",
+            "runtime/state/archive/growth_archive_receipt_batch.json",
+        ]
+        result = evolve_relationship_and_self_model(
+            generated_at="2026-06-10T00:00:00+00:00",
+            relationship_graph={
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relation_role": "friend",
+                        "relationship_stage": "restored_waiting",
+                    }
+                ]
+            },
+            self_model_state={"trait_slow_variables": {}, "growth_window_refs": []},
+            relationship_timeline={
+                "dialogue_turn_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                ],
+                "relationship_continuity_reports": [],
+                "trust_trajectories": [],
+            },
+            commitment_expression_plan={},
+            apology_repair_language_trace={},
+            background_continuity_profile={
+                "background_continuity_mode": "closed_process_carryover",
+                "background_growth_self_modification_presence": {
+                    "schema_version": "growth_self_modification_presence_v0",
+                    "active_domain_count": 5,
+                    "growth_pressure_count": 1,
+                    "patch_candidate_count": 1,
+                    "archive_receipt_count": 1,
+                    "pressure_level": "present",
+                    "attention_target": "growth_self_modification_archive_replay",
+                    "waiting_posture": "growth_self_modification_shadow_archive_waiting",
+                    "state_refs": expected_refs,
+                    "learning_plan_refs": [
+                        "runtime/state/growth/relationship_learning_plan.json",
+                    ],
+                    "ref_set": expected_refs,
+                    "report_boundary": "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite",
+                },
+                "background_growth_self_modification_ref_set": expected_refs,
+                "background_growth_self_modification_state_refs": expected_refs,
+                "background_growth_learning_plan_refs": [
+                    "runtime/state/growth/relationship_learning_plan.json",
+                ],
+            },
+        )
+
+        subject = result["relationship_graph"]["subjects"][0]
+        self.assertEqual(
+            subject["relationship_stage"],
+            "growth_self_modification_reconsolidation_waiting",
+        )
+        self.assertEqual(
+            subject["relationship_stage_reason"],
+            "background_growth_self_modification_requires_relationship_trait_reconsolidation",
+        )
+        for ref in expected_refs:
+            self.assertIn(ref, subject["relationship_stage_evidence_refs"])
+
+        variables = result["self_model_state"]["trait_slow_variables"]
+        continuity_drive = variables["continuity_drive"]
+        boundary_respect = variables["boundary_respect"]
+        self.assertEqual(
+            continuity_drive["last_relationship_stage"],
+            "growth_self_modification_reconsolidation_waiting",
+        )
+        self.assertEqual(
+            continuity_drive["background_growth_self_modification_pressure_level"],
+            "present",
+        )
+        self.assertEqual(
+            continuity_drive["background_growth_self_modification_attention_target"],
+            "growth_self_modification_archive_replay",
+        )
+        self.assertEqual(
+            continuity_drive["background_growth_self_modification_waiting_posture"],
+            "growth_self_modification_shadow_archive_waiting",
+        )
+        self.assertEqual(
+            continuity_drive["background_growth_self_modification_patch_candidate_count"],
+            1,
+        )
+        self.assertEqual(
+            boundary_respect["growth_self_modification_update_mode"],
+            "growth_self_modification_rehearsal_hold",
+        )
+        self.assertIn(
+            "runtime/state/growth/growth_patch_candidate_queue.json",
+            continuity_drive["evidence_refs"],
+        )
+        self.assertIn(
+            "runtime/state/archive/growth_archive_receipt_batch.json",
+            result["self_model_state"]["growth_window_refs"],
+        )
+
     def test_resident_supervision_projects_background_lineage_into_bootstrap_relationship_state(self):
         from life_v0.process_supervisor.resident_supervision import (
             bootstrap_resident_supervision,
@@ -19147,6 +19254,36 @@ class PersistentDigitalLifeProcessTests(
                 persisted_life_state["self_model"]["trait_slow_variables"]["boundary_respect"]["last_relationship_stage"],
                 "repair_guarded_continuity",
             )
+            self.assertEqual(
+                trait_slow_variables["continuity_drive"][
+                    "background_growth_self_modification_pressure_level"
+                ],
+                "present",
+            )
+            self.assertEqual(
+                trait_slow_variables["continuity_drive"][
+                    "background_growth_self_modification_attention_target"
+                ],
+                "growth_self_modification_archive_replay",
+            )
+            self.assertEqual(
+                trait_slow_variables["boundary_respect"][
+                    "growth_self_modification_update_mode"
+                ],
+                "growth_self_modification_rehearsal_hold",
+            )
+            self.assertEqual(
+                trait_slow_variables["boundary_respect"][
+                    "background_growth_self_modification_boundary"
+                ],
+                "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite",
+            )
+            for ref in expected_background_growth_self_modification_refs:
+                self.assertIn(
+                    ref,
+                    trait_slow_variables["continuity_drive"]["evidence_refs"],
+                )
+                self.assertIn(ref, persisted_self_model["growth_window_refs"])
             self.assertEqual(
                 persisted_trait_drift["schema_version"],
                 "trait_drift_monitor_v0",
