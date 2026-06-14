@@ -1223,6 +1223,8 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
     ) or _present(memory_retrieval.get("memory_retrieval_frame_ref")) or _int_value(
         memory_retrieval.get("activated_engram_ref_count")
     ) or _present(memory_retrieval.get("reconstruction_focus")) or _int_value(
+        memory_retrieval.get("autobiographical_responsibility_repair_hit_count")
+    ) or _int_value(
         memory_retrieval.get("exit_dream_next_wake_cue_ref_count")
     ):
         flags.append("memory_continuity")
@@ -1500,6 +1502,18 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         ),
         "memory_retrieval_reconstruction_focus": memory_retrieval.get(
             "reconstruction_focus"
+        ),
+        "autobiographical_responsibility_repair_hit_count": memory_retrieval.get(
+            "autobiographical_responsibility_repair_hit_count"
+        ),
+        "autobiographical_repair_pressure_level": memory_retrieval.get(
+            "autobiographical_repair_pressure_level"
+        ),
+        "autobiographical_repair_attention_target": memory_retrieval.get(
+            "autobiographical_repair_attention_target"
+        ),
+        "autobiographical_repair_boundary": memory_retrieval.get(
+            "autobiographical_repair_boundary"
         ),
         "exit_dream_next_wake_cue_ref_count": memory_retrieval.get(
             "exit_dream_next_wake_cue_ref_count"

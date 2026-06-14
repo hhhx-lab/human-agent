@@ -18360,6 +18360,48 @@ class PersistentDigitalLifeProcessTests(
                 },
             )
             self._write_json(
+                self_dir / "autobiographical_stack.json",
+                {
+                    "schema_version": "autobiographical_stack_v0",
+                    "turn_refs": [
+                        "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                    ],
+                    "narrative_refs": [
+                        "runtime/state/language/self_narrative_language_trace.json"
+                    ],
+                    "relationship_turn_refs": [
+                        "runtime/state/relationship/relationship_timeline.json"
+                    ],
+                    "responsibility_repair_projection": {
+                        "schema_version": "autobiographical_responsibility_repair_projection_v0",
+                        "responsibility_refs": ["responsibility-event-001"],
+                        "regret_refs": ["regret-001"],
+                        "repair_refs": ["repair-001"],
+                        "queue_e_repair_refs": [
+                            "runtime/state/membrane/world_contact_summary.json",
+                            "runtime/reports/latest/pain_regret_repair_report.json",
+                        ],
+                        "pressure_level": "elevated",
+                        "attention_target": "regret_pressure",
+                        "queue_e_priority_band": "repair_guarded",
+                        "repair_followup_required": True,
+                        "projection_boundary": (
+                            "autobiographical_repair_evidence_not_spoken_language"
+                        ),
+                    },
+                    "autobiographical_responsibility_refs": [
+                        "responsibility-event-001"
+                    ],
+                    "autobiographical_regret_refs": ["regret-001"],
+                    "autobiographical_repair_refs": ["repair-001"],
+                    "queue_e_repair_refs": [
+                        "runtime/state/membrane/world_contact_summary.json",
+                        "runtime/reports/latest/pain_regret_repair_report.json",
+                    ],
+                    "replay_priority": "identity_repair_reconsolidation_first",
+                },
+            )
+            self._write_json(
                 action_dir / "responsibility_loop_state.json",
                 {
                     "schema_version": "responsibility_loop_state_v0",
@@ -18963,6 +19005,9 @@ class PersistentDigitalLifeProcessTests(
             persisted_relationship_memory = self._read_json(
                 memory_dir / "relationship_memory.json"
             )
+            persisted_memory_retrieval_frame = self._read_json(
+                memory_dir / "memory_retrieval_frame.json"
+            )
             persisted_engram_index = self._read_json(
                 memory_dir / "engram_index.json"
             )
@@ -19226,6 +19271,88 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/reports/latest/resumed_external_dialogue_packet.json",
                 persisted_autobiographical_stack["autobiographical_update_refs"],
             )
+            self.assertEqual(
+                persisted_memory_retrieval_frame["reconstruction_inputs"][
+                    "reconstruction_focus"
+                ],
+                "autobiographical_responsibility_repair_reconstruction",
+            )
+            autobiographical_repair_hits = persisted_memory_retrieval_frame[
+                "autobiographical_responsibility_repair_hits"
+            ]
+            for ref in [
+                "responsibility-event-001",
+                "regret-001",
+                "repair-001",
+                "runtime/state/membrane/world_contact_summary.json",
+                "runtime/reports/latest/pain_regret_repair_report.json",
+            ]:
+                self.assertIn(ref, autobiographical_repair_hits)
+                self.assertIn(
+                    ref,
+                    persisted_memory_retrieval_frame["responsibility_hits"],
+                )
+            autobiographical_repair_profile = persisted_memory_retrieval_frame[
+                "autobiographical_responsibility_repair_profile"
+            ]
+            self.assertEqual(
+                autobiographical_repair_profile["schema_version"],
+                "memory_retrieval_autobiographical_repair_profile_v0",
+            )
+            self.assertEqual(
+                autobiographical_repair_profile["pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                autobiographical_repair_profile["attention_target"],
+                "regret_pressure",
+            )
+            self.assertEqual(
+                autobiographical_repair_profile["projection_boundary"],
+                "autobiographical_repair_evidence_not_spoken_language",
+            )
+            self.assertEqual(
+                autobiographical_repair_profile["retrieval_boundary"],
+                "autobiographical_repair_retrieval_not_spoken_language",
+            )
+            self.assertEqual(
+                persisted_terminal_loop[
+                    "memory_retrieval_autobiographical_repair_hit_count"
+                ],
+                len(autobiographical_repair_hits),
+            )
+            self.assertEqual(
+                persisted_terminal_loop[
+                    "memory_retrieval_autobiographical_repair_pressure_level"
+                ],
+                "elevated",
+            )
+            self.assertEqual(
+                persisted_terminal_loop[
+                    "memory_retrieval_autobiographical_repair_attention_target"
+                ],
+                "regret_pressure",
+            )
+            self.assertEqual(
+                persisted_terminal_loop[
+                    "memory_retrieval_autobiographical_repair_projection_boundary"
+                ],
+                "autobiographical_repair_evidence_not_spoken_language",
+            )
+            self.assertEqual(
+                persisted_terminal_loop[
+                    "memory_retrieval_autobiographical_repair_retrieval_boundary"
+                ],
+                "autobiographical_repair_retrieval_not_spoken_language",
+            )
+            self.assertIn(
+                "regret-001",
+                persisted_terminal_loop["memory_retrieval_ref_set"],
+            )
+            self.assertIn(
+                "repair-001",
+                persisted_terminal_loop["memory_retrieval_ref_set"],
+            )
             self.assertIn(
                 "runtime/state/self/autobiographical_stack.json",
                 persisted_engram_index["autobiographical_memory_refs"],
@@ -19302,6 +19429,14 @@ class PersistentDigitalLifeProcessTests(
             self.assertIn(
                 "runtime/state/language/expression_plan.json",
                 persisted_life_state["memory_index"]["live_language_turn_refs"],
+            )
+            self.assertIn(
+                "regret-001",
+                persisted_life_state["memory_index"]["memory_retrieval_refs"],
+            )
+            self.assertIn(
+                "repair-001",
+                persisted_life_state["memory_index"]["memory_retrieval_refs"],
             )
             self.assertIn(
                 "runtime/state/relationship/relationship_timeline.json",
@@ -19482,6 +19617,18 @@ class PersistentDigitalLifeProcessTests(
             self.assertIn(
                 "runtime/state/replay/replay_cue_bundle.json",
                 dialogue_writeback_bundle["replay_cue_refs"],
+            )
+            self.assertIn(
+                "regret-001",
+                dialogue_writeback_bundle["memory_retrieval_writeback_refs"],
+            )
+            self.assertIn(
+                "repair-001",
+                dialogue_writeback_bundle["memory_retrieval_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_retrieval_frame.json",
+                dialogue_writeback_bundle["memory_retrieval_writeback_refs"],
             )
             self.assertEqual(
                 dialogue_writeback_bundle["engram_index_writeback_refs"],
@@ -19872,6 +20019,30 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(
                 resumed_dialogue_packet["world_contact_summary_ref"],
                 "runtime/state/membrane/world_contact_summary.json",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "memory_retrieval_autobiographical_repair_hit_count"
+                ],
+                len(autobiographical_repair_hits),
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "memory_retrieval_autobiographical_repair_pressure_level"
+                ],
+                "elevated",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "memory_retrieval_autobiographical_repair_attention_target"
+                ],
+                "regret_pressure",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "memory_retrieval_autobiographical_repair_retrieval_boundary"
+                ],
+                "autobiographical_repair_retrieval_not_spoken_language",
             )
             self.assertEqual(
                 resumed_dialogue_packet["prediction_waiting_posture"],

@@ -138,6 +138,11 @@ def attach_memory_retrieval_event_payload(
         _string_list(memory_retrieval_frame.get("activated_engram_refs"))
         + _string_list(memory_retrieval_frame.get("relationship_memory_hits"))
         + _string_list(memory_retrieval_frame.get("autobiographical_hits"))
+        + _string_list(
+            memory_retrieval_frame.get(
+                "autobiographical_responsibility_repair_hits"
+            )
+        )
         + _string_list(memory_retrieval_frame.get("dream_residue_hits"))
         + _string_list(memory_retrieval_frame.get("responsibility_hits"))
         + ([str(frame_ref)] if frame_ref else [])
@@ -185,6 +190,30 @@ def attach_memory_retrieval_event_payload(
     event["memory_retrieval_responsibility_hit_count"] = len(
         _string_list(memory_retrieval_frame.get("responsibility_hits"))
     )
+    event["memory_retrieval_autobiographical_repair_hit_count"] = len(
+        _string_list(
+            memory_retrieval_frame.get(
+                "autobiographical_responsibility_repair_hits"
+            )
+        )
+    )
+    repair_profile = memory_retrieval_frame.get(
+        "autobiographical_responsibility_repair_profile"
+    )
+    if isinstance(repair_profile, dict) and repair_profile:
+        event["memory_retrieval_autobiographical_repair_profile_ref"] = (
+            "runtime/state/memory/memory_retrieval_frame.json"
+            "#autobiographical_responsibility_repair_profile"
+        )
+        event["memory_retrieval_autobiographical_repair_pressure_level"] = (
+            repair_profile.get("pressure_level")
+        )
+        event["memory_retrieval_autobiographical_repair_attention_target"] = (
+            repair_profile.get("attention_target")
+        )
+        event["memory_retrieval_autobiographical_repair_boundary"] = (
+            repair_profile.get("retrieval_boundary")
+        )
     event["memory_retrieval_salient_core_ref_count"] = len(
         _string_list(tiered.get("salient_core_refs"))
     )

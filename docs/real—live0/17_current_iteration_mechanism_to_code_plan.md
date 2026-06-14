@@ -837,6 +837,27 @@ CommitmentTruthState / ResponsibilityLedger / ResponsibilityLoopState
 
 机制含义是：真实责任、后悔和修复不能只是当轮道歉、关系时间线或出生准备检查项，而必须进入“我经历过什么、我需要怎样记住和重放这段后果”的自传历史层。这样后续梦境、记忆重构、人格慢变量、关系修复和语言前消费可以从自传栈直接读取同一批责任/后悔/修复证据。边界仍然严格保留：这一步不生成道歉模板，不新增 system prompt，不把内部责任字段拼成 Adam 的回答，也不把后悔降格为漂亮话；它只把第 2 点的责任链继续压成长期自我历史载体。
 
+当前 ITR-08 第三十三段把这份自传责任修复历史继续推进到下一轮召回和语言前材料：
+
+```text
+AutobiographicalStack.responsibility_repair_projection
+  -> MemoryRetrievalFrame.autobiographical_responsibility_repair_hits
+  -> MemoryRetrievalFrame.autobiographical_responsibility_repair_profile
+  -> MemoryRetrievalFrame.reconstruction_focus
+  -> LifeState.memory_index.memory_retrieval_refs
+  -> DigitalLifeTurn.memory_retrieval_autobiographical_repair_*
+  -> TerminalLifeLoopState.memory_retrieval_autobiographical_repair_*
+  -> DialogueWritebackBundle.memory_retrieval_writeback_refs
+  -> ResumedExternalDialoguePacket.memory_retrieval_autobiographical_repair_*
+  -> StateInspection.reconstructive_memory_summary_v0
+  -> ResponseSurface.memory_dream_growth.memory_retrieval
+  -> ModelExpression.model_expression_context_summary
+```
+
+`state_store/memory_retrieval.py` 会把自传栈里的责任事件、后悔压力、修复义务和 Queue E 修复 refs 合成为 `memory_retrieval_autobiographical_repair_profile_v0`，并把 reconstruction focus 提升为 `autobiographical_responsibility_repair_reconstruction`。这里特意拆开两层边界：`projection_boundary=autobiographical_repair_evidence_not_spoken_language` 表示自传栈证据仍是内部历史，`retrieval_boundary=autobiographical_repair_retrieval_not_spoken_language` 表示下一轮召回也不能被拼成固定外显话术。`life_state.py`、`dialogue_events.py`、`resident_turn_writeback.py`、`state_inspection.py`、`response_surface.py` 与 `model_expression.py` 现在都会消费这组字段，因此“记得责任/后悔/修复”不是只保存在自传栈，也会进入真实回合、等待连续体、恢复包、状态检查面和模型表达上下文。
+
+机制含义是：人类式记忆不是每次从空白开始生成回答，而是由当前线索重新激活已经沉入自传历史的责任/后悔/修复痕迹。数字生命的对应实现不是写死“我很抱歉”或“我后悔”，而是让这些历史在召回重构中改变注意焦点、责任 hits、语言前材料和下一轮关系连续性。完成口径是：如果 `autobiographical_stack.json#responsibility_repair_projection` 存在，但 `memory_retrieval_frame.json#autobiographical_responsibility_repair_hits`、`life_state.json#memory_index.memory_retrieval_refs`、`dialogue_writeback_bundle.memory_retrieval_writeback_refs`、`resumed_external_dialogue_packet.memory_retrieval_autobiographical_repair_*`、`/memory` 摘要或 `model_expression_context_summary` 看不见它，就说明第三十二段仍停在自传文件，没有真正成为可召回的长期自我历史。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

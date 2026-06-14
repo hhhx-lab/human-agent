@@ -990,6 +990,10 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         memory_retrieval,
         "reconstruction_inputs",
     )
+    autobiographical_repair_profile = _extract_nested_value(
+        memory_retrieval,
+        "autobiographical_responsibility_repair_profile",
+    )
     body_signal_modulation = _extract_nested_value(
         memory_write_gate,
         "body_signal_write_modulation",
@@ -1049,6 +1053,27 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         ),
         "autobiographical_hit_count": _count_any(
             memory_retrieval.get("autobiographical_hits")
+        ),
+        "autobiographical_responsibility_repair_hit_count": _count_any(
+            memory_retrieval.get("autobiographical_responsibility_repair_hits")
+        ),
+        "autobiographical_responsibility_repair_profile_ref": (
+            "runtime/state/memory/memory_retrieval_frame.json"
+            "#autobiographical_responsibility_repair_profile"
+            if autobiographical_repair_profile
+            else None
+        ),
+        "autobiographical_repair_pressure_level": (
+            autobiographical_repair_profile.get("pressure_level")
+        ),
+        "autobiographical_repair_attention_target": (
+            autobiographical_repair_profile.get("attention_target")
+        ),
+        "autobiographical_repair_projection_boundary": (
+            autobiographical_repair_profile.get("projection_boundary")
+        ),
+        "autobiographical_repair_retrieval_boundary": (
+            autobiographical_repair_profile.get("retrieval_boundary")
         ),
         "dream_residue_hit_count": _count_any(
             memory_retrieval.get("dream_residue_hits")

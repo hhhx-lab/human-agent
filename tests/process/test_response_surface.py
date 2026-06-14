@@ -584,6 +584,103 @@ class ResponseSurfaceTests(unittest.TestCase):
             "structured_context_only_not_spoken_template",
         )
 
+    def test_autobiographical_repair_retrieval_enters_expression_material(self):
+        from life_v0.state_store.memory_retrieval import (
+            build_memory_retrieval_frame,
+        )
+
+        memory_retrieval_frame = build_memory_retrieval_frame(
+            run_id="autobiographical-repair-retrieval",
+            generated_at="2026-06-15T00:00:00+08:00",
+            cue_sources={
+                "relation_turn_ref": "runtime/state/language/dialogue_turn_log.jsonl#line-9"
+            },
+            external_utterance="这件事你后来怎么记住的？",
+            autobiographical_stack={
+                "schema_version": "autobiographical_stack_v0",
+                "turn_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-9"
+                ],
+                "responsibility_repair_projection": {
+                    "schema_version": "autobiographical_responsibility_repair_projection_v0",
+                    "responsibility_refs": ["responsibility-event-001"],
+                    "regret_refs": ["regret-001"],
+                    "repair_refs": ["repair-001"],
+                    "queue_e_repair_refs": [
+                        "runtime/reports/latest/pain_regret_repair_report.json"
+                    ],
+                    "pressure_level": "elevated",
+                    "attention_target": "regret_pressure",
+                    "queue_e_priority_band": "repair_guarded",
+                    "repair_followup_required": True,
+                    "projection_boundary": (
+                        "autobiographical_repair_evidence_not_spoken_language"
+                    ),
+                },
+                "autobiographical_responsibility_refs": [
+                    "responsibility-event-001"
+                ],
+                "autobiographical_regret_refs": ["regret-001"],
+                "autobiographical_repair_refs": ["repair-001"],
+                "queue_e_repair_refs": [
+                    "runtime/reports/latest/pain_regret_repair_report.json"
+                ],
+            },
+        )
+
+        self.assertEqual(
+            memory_retrieval_frame["reconstruction_inputs"][
+                "reconstruction_focus"
+            ],
+            "autobiographical_responsibility_repair_reconstruction",
+        )
+        self.assertIn(
+            "regret-001",
+            memory_retrieval_frame[
+                "autobiographical_responsibility_repair_hits"
+            ],
+        )
+        self.assertIn("repair-001", memory_retrieval_frame["responsibility_hits"])
+        self.assertEqual(
+            memory_retrieval_frame[
+                "autobiographical_responsibility_repair_profile"
+            ]["retrieval_boundary"],
+            "autobiographical_repair_retrieval_not_spoken_language",
+        )
+
+        material = compose_life_response(
+            external_utterance="这件事你后来怎么记住的？",
+            memory_retrieval_frame=memory_retrieval_frame,
+        )
+        payload = json.loads(material)
+        retrieval = payload["memory_dream_growth"]["memory_retrieval"]
+        self.assertEqual(
+            retrieval["reconstruction_focus"],
+            "autobiographical_responsibility_repair_reconstruction",
+        )
+        self.assertEqual(
+            retrieval["autobiographical_responsibility_repair_hit_count"],
+            4,
+        )
+        self.assertEqual(
+            retrieval["autobiographical_repair_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            retrieval["autobiographical_repair_boundary"],
+            "autobiographical_repair_retrieval_not_spoken_language",
+        )
+        self.assertEqual(
+            retrieval["autobiographical_repair_projection_boundary"],
+            "autobiographical_repair_evidence_not_spoken_language",
+        )
+        self.assertEqual(
+            retrieval["autobiographical_repair_retrieval_boundary"],
+            "autobiographical_repair_retrieval_not_spoken_language",
+        )
+        self.assertTrue(payload["natural_language_release_disabled"])
+        self.assertNotIn("这件事你后来怎么记住的？", material)
+
     def test_body_signal_memory_gate_crosses_lineage_event_and_response(self):
         from life_v0.process_supervisor.background_lineage_state import (
             build_resident_background_lineage_state,

@@ -65,6 +65,15 @@ def build_memory_retrieval_frame(
         dialogue_memory_summary=dialogue_memory_summary,
     )
     autobiographical_hits = _autobiographical_hits(autobiographical_stack)
+    autobiographical_repair_hits = _autobiographical_responsibility_repair_hits(
+        autobiographical_stack
+    )
+    autobiographical_repair_profile = (
+        _autobiographical_responsibility_repair_profile(
+            autobiographical_stack,
+            autobiographical_repair_hits,
+        )
+    )
     dream_residue_hits = _dream_residue_hits(
         engram_index=engram_index,
         relationship_memory=relationship_memory,
@@ -84,6 +93,7 @@ def build_memory_retrieval_frame(
         relationship_memory=relationship_memory,
         life_state=life_state,
         responsibility_loop_state=responsibility_loop_state,
+        autobiographical_repair_hits=autobiographical_repair_hits,
     )
     blocked_refs = _blocked_or_quarantined_refs(engram_index, life_state)
     source_docs = _dedupe(_string_list(source_doc_refs) + SOURCE_DOC_REFS)
@@ -105,6 +115,12 @@ def build_memory_retrieval_frame(
         "activated_engram_refs": activated_refs,
         "relationship_memory_hits": relationship_hits,
         "autobiographical_hits": autobiographical_hits,
+        "autobiographical_responsibility_repair_hits": (
+            autobiographical_repair_hits
+        ),
+        "autobiographical_responsibility_repair_profile": (
+            autobiographical_repair_profile
+        ),
         "dream_residue_hits": dream_residue_hits,
         "exit_dream_next_wake_governance": exit_dream_next_wake_governance,
         "responsibility_hits": responsibility_hits,
@@ -114,6 +130,7 @@ def build_memory_retrieval_frame(
             tiered_recall=tiered_recall,
             relationship_hits=relationship_hits,
             autobiographical_hits=autobiographical_hits,
+            autobiographical_repair_hits=autobiographical_repair_hits,
             dream_residue_hits=dream_residue_hits,
             responsibility_hits=responsibility_hits,
         ),
@@ -220,6 +237,24 @@ def memory_retrieval_context_summary(
         "autobiographical_hit_count": len(
             _string_list(frame.get("autobiographical_hits"))
         ),
+        "autobiographical_responsibility_repair_hit_count": len(
+            _string_list(frame.get("autobiographical_responsibility_repair_hits"))
+        ),
+        "autobiographical_repair_pressure_level": (
+            frame.get("autobiographical_responsibility_repair_profile") or {}
+        ).get("pressure_level"),
+        "autobiographical_repair_attention_target": (
+            frame.get("autobiographical_responsibility_repair_profile") or {}
+        ).get("attention_target"),
+        "autobiographical_repair_projection_boundary": (
+            frame.get("autobiographical_responsibility_repair_profile") or {}
+        ).get("projection_boundary"),
+        "autobiographical_repair_retrieval_boundary": (
+            frame.get("autobiographical_responsibility_repair_profile") or {}
+        ).get("retrieval_boundary"),
+        "autobiographical_repair_boundary": (
+            frame.get("autobiographical_responsibility_repair_profile") or {}
+        ).get("retrieval_boundary"),
         "dream_residue_hit_count": len(_string_list(frame.get("dream_residue_hits"))),
         "exit_dream_next_wake_cue_ref_count": len(
             _string_list(
@@ -387,6 +422,9 @@ def _activated_refs(
     refs.extend(_string_list((autobiographical_stack or {}).get("turn_refs")))
     refs.extend(_string_list((autobiographical_stack or {}).get("narrative_refs")))
     refs.extend(_string_list((autobiographical_stack or {}).get("next_wake_memory_cue_refs")))
+    refs.extend(
+        _autobiographical_responsibility_repair_hits(autobiographical_stack)
+    )
     refs.extend(_string_list((dialogue_memory_summary or {}).get("source_dialogue_refs")))
     refs.extend(_string_list((dialogue_memory_summary or {}).get("next_wake_memory_cue_refs")))
     refs.extend(_string_list(((life_state or {}).get("memory_index") or {}).get("relationship_memory_refs")))
@@ -429,6 +467,67 @@ def _autobiographical_hits(autobiographical_stack: dict[str, Any] | None) -> lis
     )[:24]
 
 
+def _autobiographical_responsibility_repair_hits(
+    autobiographical_stack: dict[str, Any] | None,
+) -> list[str]:
+    stack = autobiographical_stack or {}
+    projection = stack.get("responsibility_repair_projection")
+    if not isinstance(projection, dict):
+        projection = {}
+    return _dedupe(
+        _string_list(stack.get("autobiographical_responsibility_refs"))
+        + _string_list(stack.get("autobiographical_regret_refs"))
+        + _string_list(stack.get("autobiographical_repair_refs"))
+        + _string_list(stack.get("queue_e_repair_refs"))
+        + _string_list(projection.get("responsibility_refs"))
+        + _string_list(projection.get("regret_refs"))
+        + _string_list(projection.get("repair_refs"))
+        + _string_list(projection.get("queue_e_repair_refs"))
+    )[:32]
+
+
+def _autobiographical_responsibility_repair_profile(
+    autobiographical_stack: dict[str, Any] | None,
+    repair_hits: list[str],
+) -> dict[str, Any]:
+    if not repair_hits:
+        return {}
+    projection = (autobiographical_stack or {}).get(
+        "responsibility_repair_projection"
+    )
+    if not isinstance(projection, dict):
+        projection = {}
+    return {
+        "schema_version": "memory_retrieval_autobiographical_repair_profile_v0",
+        "projection_ref": (
+            "runtime/state/self/autobiographical_stack.json"
+            "#responsibility_repair_projection"
+        ),
+        "hit_count": len(repair_hits),
+        "responsibility_ref_count": len(
+            _string_list(projection.get("responsibility_refs"))
+        ),
+        "regret_ref_count": len(_string_list(projection.get("regret_refs"))),
+        "repair_ref_count": len(_string_list(projection.get("repair_refs"))),
+        "queue_e_repair_ref_count": len(
+            _string_list(projection.get("queue_e_repair_refs"))
+        ),
+        "pressure_level": projection.get("pressure_level"),
+        "attention_target": projection.get("attention_target"),
+        "queue_e_priority_band": projection.get("queue_e_priority_band"),
+        "repair_followup_required": bool(
+            projection.get("repair_followup_required")
+        ),
+        "projection_boundary": projection.get(
+            "projection_boundary",
+            "autobiographical_repair_evidence_not_spoken_language",
+        ),
+        "retrieval_boundary": (
+            "autobiographical_repair_retrieval_not_spoken_language"
+        ),
+    }
+
+
 def _dream_residue_hits(
     *,
     engram_index: dict[str, Any] | None,
@@ -459,12 +558,14 @@ def _responsibility_hits(
     relationship_memory: dict[str, Any] | None,
     life_state: dict[str, Any] | None,
     responsibility_loop_state: dict[str, Any] | None,
+    autobiographical_repair_hits: list[str] | None = None,
 ) -> list[str]:
     return _dedupe(
         _string_list((engram_index or {}).get("responsibility_memory_refs"))
         + _string_list((relationship_memory or {}).get("responsibility_event_refs"))
         + _string_list(((life_state or {}).get("memory_index") or {}).get("responsibility_memory_refs"))
         + _string_list((responsibility_loop_state or {}).get("repair_obligation_refs"))
+        + list(autobiographical_repair_hits or [])
     )[:24]
 
 
@@ -484,6 +585,7 @@ def _reconstruction_inputs(
     tiered_recall: dict[str, Any],
     relationship_hits: list[str],
     autobiographical_hits: list[str],
+    autobiographical_repair_hits: list[str],
     dream_residue_hits: list[str],
     responsibility_hits: list[str],
 ) -> dict[str, Any]:
@@ -492,10 +594,15 @@ def _reconstruction_inputs(
         "salient_core_count": len(_string_list(tiered_recall.get("salient_core_refs"))),
         "relationship_hit_count": len(relationship_hits),
         "autobiographical_hit_count": len(autobiographical_hits),
+        "autobiographical_responsibility_repair_hit_count": len(
+            autobiographical_repair_hits
+        ),
         "dream_residue_hit_count": len(dream_residue_hits),
         "responsibility_hit_count": len(responsibility_hits),
     }
-    if counts["responsibility_hit_count"]:
+    if counts["autobiographical_responsibility_repair_hit_count"]:
+        focus = "autobiographical_responsibility_repair_reconstruction"
+    elif counts["responsibility_hit_count"]:
         focus = "responsibility_memory_reconstruction"
     elif counts["dream_residue_hit_count"]:
         focus = "dream_residue_relation_reconstruction"

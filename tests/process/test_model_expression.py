@@ -170,6 +170,28 @@ class ModelExpressionTests(unittest.TestCase):
                     "autobiographical_hits": [
                         "runtime/state/self/autobiographical_stack.json#turn_refs"
                     ],
+                    "autobiographical_responsibility_repair_hits": [
+                        "responsibility-event-001",
+                        "regret-001",
+                        "repair-001",
+                        "runtime/reports/latest/pain_regret_repair_report.json",
+                    ],
+                    "autobiographical_responsibility_repair_profile": {
+                        "schema_version": "memory_retrieval_autobiographical_repair_profile_v0",
+                        "projection_ref": (
+                            "runtime/state/self/autobiographical_stack.json"
+                            "#responsibility_repair_projection"
+                        ),
+                        "hit_count": 4,
+                        "pressure_level": "elevated",
+                        "attention_target": "regret_pressure",
+                        "retrieval_boundary": (
+                            "autobiographical_repair_retrieval_not_spoken_language"
+                        ),
+                        "projection_boundary": (
+                            "autobiographical_repair_evidence_not_spoken_language"
+                        ),
+                    },
                     "dream_residue_hits": [],
                     "responsibility_hits": [
                         "runtime/state/responsibility/responsibility_ledger.json#responsibility_events"
@@ -337,6 +359,24 @@ class ModelExpressionTests(unittest.TestCase):
             )
             self.assertEqual(
                 expression_context["memory_retrieval"][
+                    "autobiographical_responsibility_repair_hit_count"
+                ],
+                4,
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "autobiographical_repair_pressure_level"
+                ],
+                "elevated",
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "autobiographical_repair_boundary"
+                ],
+                "autobiographical_repair_retrieval_not_spoken_language",
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
                     "exit_dream_next_wake_cue_ref_count"
                 ],
                 1,
@@ -403,6 +443,24 @@ class ModelExpressionTests(unittest.TestCase):
                     "memory_retrieval_reconstruction_focus"
                 ],
                 "responsibility_memory_reconstruction",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "autobiographical_responsibility_repair_hit_count"
+                ],
+                4,
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "autobiographical_repair_pressure_level"
+                ],
+                "elevated",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "autobiographical_repair_boundary"
+                ],
+                "autobiographical_repair_retrieval_not_spoken_language",
             )
             self.assertEqual(
                 state["model_expression_context_summary"][

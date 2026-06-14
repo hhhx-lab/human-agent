@@ -68,6 +68,12 @@ def build_life_state_projection(
         + list((memory_retrieval_frame or {}).get("activated_engram_refs", []))
         + list((memory_retrieval_frame or {}).get("relationship_memory_hits", []))
         + list((memory_retrieval_frame or {}).get("autobiographical_hits", []))
+        + list(
+            (memory_retrieval_frame or {}).get(
+                "autobiographical_responsibility_repair_hits",
+                [],
+            )
+        )
         + list((memory_retrieval_frame or {}).get("dream_residue_hits", []))
         + list((memory_retrieval_frame or {}).get("responsibility_hits", []))
     )
@@ -249,6 +255,12 @@ def project_responsibility_language_continuity(
             + list(memory_retrieval_frame.get("activated_engram_refs", []))
             + list(memory_retrieval_frame.get("relationship_memory_hits", []))
             + list(memory_retrieval_frame.get("autobiographical_hits", []))
+            + list(
+                memory_retrieval_frame.get(
+                    "autobiographical_responsibility_repair_hits",
+                    [],
+                )
+            )
             + list(memory_retrieval_frame.get("dream_residue_hits", []))
             + list(memory_retrieval_frame.get("responsibility_hits", []))
         )

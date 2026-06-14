@@ -267,6 +267,22 @@ def write_resident_turn_writeback(
             if ref
         ]
     )
+    memory_retrieval_ref_set = _dedupe_refs(
+        [
+            MEMORY_RETRIEVAL_FRAME_REF,
+            *list(memory_retrieval_frame.get("activated_engram_refs", [])),
+            *list(memory_retrieval_frame.get("relationship_memory_hits", [])),
+            *list(memory_retrieval_frame.get("autobiographical_hits", [])),
+            *list(
+                memory_retrieval_frame.get(
+                    "autobiographical_responsibility_repair_hits", []
+                )
+            ),
+            *list(memory_retrieval_frame.get("dream_residue_hits", [])),
+            *list(memory_retrieval_frame.get("responsibility_hits", [])),
+            *exit_dream_next_wake_ref_set,
+        ]
+    )
     updated_safe_terminal_loop = build_persistent_wait_bridge(
         run_id=run_id,
         generated_at=generated_at,
@@ -305,17 +321,28 @@ def write_resident_turn_writeback(
         "memory_retrieval_responsibility_hit_count": memory_retrieval_summary.get(
             "responsibility_hit_count"
         ),
-        "memory_retrieval_ref_set": _dedupe_refs(
-            [
-                MEMORY_RETRIEVAL_FRAME_REF,
-                *list(memory_retrieval_frame.get("activated_engram_refs", [])),
-                *list(memory_retrieval_frame.get("relationship_memory_hits", [])),
-                *list(memory_retrieval_frame.get("autobiographical_hits", [])),
-                *list(memory_retrieval_frame.get("dream_residue_hits", [])),
-                *list(memory_retrieval_frame.get("responsibility_hits", [])),
-                *exit_dream_next_wake_ref_set,
-            ]
+        "memory_retrieval_autobiographical_repair_hit_count": (
+            memory_retrieval_summary.get(
+                "autobiographical_responsibility_repair_hit_count"
+            )
         ),
+        "memory_retrieval_autobiographical_repair_pressure_level": (
+            memory_retrieval_summary.get("autobiographical_repair_pressure_level")
+        ),
+        "memory_retrieval_autobiographical_repair_attention_target": (
+            memory_retrieval_summary.get("autobiographical_repair_attention_target")
+        ),
+        "memory_retrieval_autobiographical_repair_projection_boundary": (
+            memory_retrieval_summary.get(
+                "autobiographical_repair_projection_boundary"
+            )
+        ),
+        "memory_retrieval_autobiographical_repair_retrieval_boundary": (
+            memory_retrieval_summary.get(
+                "autobiographical_repair_retrieval_boundary"
+            )
+        ),
+        "memory_retrieval_ref_set": memory_retrieval_ref_set,
         "exit_dream_next_wake_governance_ref": (
             "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance"
             if exit_dream_next_wake_governance
@@ -694,7 +721,7 @@ def write_resident_turn_writeback(
         network_state_writeback_refs=[NETWORK_STATE_REF],
         workspace_frame_writeback_refs=[WORKSPACE_FRAME_REF],
         prediction_workspace_writeback_refs=[PREDICTION_WORKSPACE_REF],
-        memory_retrieval_writeback_refs=[MEMORY_RETRIEVAL_FRAME_REF],
+        memory_retrieval_writeback_refs=memory_retrieval_ref_set,
         replay_cue_refs=replay_cue_refs,
         terminal_state_refs=[SAFE_TERMINAL_LOOP_REF, TERMINAL_LIFE_LOOP_REF],
         source_doc_refs=source_doc_refs,
@@ -900,6 +927,27 @@ def write_resident_turn_writeback(
         "expression_monitor_ref": expression_monitor_ref or EXPRESSION_MONITOR_REF,
         "expression_plan_ref": expression_plan_ref or EXPRESSION_PLAN_REF,
         "memory_retrieval_frame_ref": MEMORY_RETRIEVAL_FRAME_REF,
+        "memory_retrieval_autobiographical_repair_hit_count": (
+            memory_retrieval_summary.get(
+                "autobiographical_responsibility_repair_hit_count"
+            )
+        ),
+        "memory_retrieval_autobiographical_repair_pressure_level": (
+            memory_retrieval_summary.get("autobiographical_repair_pressure_level")
+        ),
+        "memory_retrieval_autobiographical_repair_attention_target": (
+            memory_retrieval_summary.get("autobiographical_repair_attention_target")
+        ),
+        "memory_retrieval_autobiographical_repair_projection_boundary": (
+            memory_retrieval_summary.get(
+                "autobiographical_repair_projection_boundary"
+            )
+        ),
+        "memory_retrieval_autobiographical_repair_retrieval_boundary": (
+            memory_retrieval_summary.get(
+                "autobiographical_repair_retrieval_boundary"
+            )
+        ),
         "exit_dream_next_wake_governance_ref": (
             "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance"
             if exit_dream_next_wake_governance
