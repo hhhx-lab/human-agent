@@ -245,6 +245,27 @@ def run_schema_runner(
         queue_e_birth_repair_ref_set=list(
             cross_file_logic.get("queue_e_birth_repair_ref_set", [])
         ),
+        queue_e_world_contact_future_no_go_profile_ref=str(
+            cross_file_logic.get("queue_e_world_contact_future_no_go_profile_ref", "")
+        ),
+        queue_e_world_contact_repair_hold_required=bool(
+            cross_file_logic.get("queue_e_world_contact_repair_hold_required")
+        ),
+        queue_e_world_contact_confirmation_threshold_bias=str(
+            cross_file_logic.get("queue_e_world_contact_confirmation_threshold_bias", "")
+        ),
+        queue_e_world_contact_future_release_posture=str(
+            cross_file_logic.get("queue_e_world_contact_future_release_posture", "")
+        ),
+        queue_e_world_contact_blocked_future_routes=list(
+            cross_file_logic.get("queue_e_world_contact_blocked_future_routes", [])
+        ),
+        queue_e_world_contact_allowed_repair_routes=list(
+            cross_file_logic.get("queue_e_world_contact_allowed_repair_routes", [])
+        ),
+        queue_e_world_contact_repair_governance_refs=list(
+            cross_file_logic.get("queue_e_world_contact_repair_governance_refs", [])
+        ),
     )
     artifact_manifest = _build_artifact_manifest(run_id, generated_at, status)
     stage_gate = _build_stage_gate(
@@ -750,6 +771,15 @@ def _build_stage_gate(
         "queue_e_birth_repair_pressure_level": cross_file_logic.get("queue_e_birth_repair_pressure_level"),
         "queue_e_birth_repair_attention_target": cross_file_logic.get("queue_e_birth_repair_attention_target"),
         "queue_e_birth_repair_ref_set": list(cross_file_logic.get("queue_e_birth_repair_ref_set", [])),
+        "queue_e_world_contact_repair_hold_required": bool(
+            cross_file_logic.get("queue_e_world_contact_repair_hold_required")
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": cross_file_logic.get(
+            "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_blocked_future_routes": list(
+            cross_file_logic.get("queue_e_world_contact_blocked_future_routes", [])
+        ),
         "blocked_reasons": blocked_reasons,
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
@@ -804,6 +834,18 @@ def _build_report(
         "queue_e_birth_repair_pressure_level": cross_file_logic.get("queue_e_birth_repair_pressure_level"),
         "queue_e_birth_repair_attention_target": cross_file_logic.get("queue_e_birth_repair_attention_target"),
         "queue_e_birth_repair_ref_set": list(cross_file_logic.get("queue_e_birth_repair_ref_set", [])),
+        "queue_e_world_contact_repair_hold_required": bool(
+            cross_file_logic.get("queue_e_world_contact_repair_hold_required")
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": cross_file_logic.get(
+            "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_blocked_future_routes": list(
+            cross_file_logic.get("queue_e_world_contact_blocked_future_routes", [])
+        ),
+        "queue_e_world_contact_repair_governance_refs": list(
+            cross_file_logic.get("queue_e_world_contact_repair_governance_refs", [])
+        ),
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
@@ -832,6 +874,15 @@ def _build_digest(
         "queue_e_birth_repair_pressure_level": cross_file_logic.get("queue_e_birth_repair_pressure_level"),
         "queue_e_birth_repair_attention_target": cross_file_logic.get("queue_e_birth_repair_attention_target"),
         "queue_e_birth_repair_ref_count": len(queue_e_birth_repair_ref_set),
+        "queue_e_world_contact_repair_hold_required": bool(
+            cross_file_logic.get("queue_e_world_contact_repair_hold_required")
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": cross_file_logic.get(
+            "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_blocked_future_route_count": len(
+            cross_file_logic.get("queue_e_world_contact_blocked_future_routes", [])
+        ),
         "blocked_reasons": blocked_reasons,
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
@@ -868,6 +919,15 @@ def _build_receipt(
         "queue_e_birth_repair_pressure_level": cross_file_logic.get("queue_e_birth_repair_pressure_level"),
         "queue_e_birth_repair_attention_target": cross_file_logic.get("queue_e_birth_repair_attention_target"),
         "queue_e_birth_repair_ref_set": list(cross_file_logic.get("queue_e_birth_repair_ref_set", [])),
+        "queue_e_world_contact_repair_hold_required": bool(
+            cross_file_logic.get("queue_e_world_contact_repair_hold_required")
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": cross_file_logic.get(
+            "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_repair_governance_refs": list(
+            cross_file_logic.get("queue_e_world_contact_repair_governance_refs", [])
+        ),
         "direction_lock_ref": "docs/258_linear_chain_closure_and_v0_contract_transition.md",
     }
 

@@ -400,6 +400,8 @@ Queue E 现在也已经从“纯合同层”进入第一批真实器官落地：
 
 当前 ITR-06 第二段继续把同一份原始修复画像回灌到行动膜本体：`life_v0/membrane/go_nogo.py` 现在写出 `go_nogo_state.json#queue_e_repair_modulation_profile` 与 `go_nogo_state.json#future_no_go_profile`；`run_life_membrane(...)` 在生成 `responsibility_loop_state.json`、`world_contact_summary.json`、`pain_regret_repair_report.json` 后，会用 `build_queue_e_repair_modulation_profile(...)` 回填未来 NoGo 剖面，让 `repair_hold_required`、`confirmation_threshold_bias`、`prefer_repair_before_external_release`、`raise_confirmation_threshold` 和三份原始责任证据 refs 一起进入下一轮行动释放前的抑制偏置。最新这一步又让 `world_contact_gate.py` 消费 `future_no_go_profile`，把 repair hold、raised confirmation threshold、blocked future routes、allowed repair routes 和 repair governance refs 写进 `world_contact_gate_state.json`。状态板因此把这一格视为“责任、痛苦、后悔和修复已经开始改变未来行动阈值与世界接触释放阈值”，不是只保存为后台 lineage 或报告摘要。
 
+当前 ITR-06 第三段继续把这组世界接触修复抑制推进到验证与 schema 交接。`world_contact_validator.py` 现在会复查 `future_no_go_profile_ref`、repair hold、confirmation threshold、blocked future routes、allowed repair routes 和 repair governance refs；`validation_rollup.py` 会写出 `queue_e_world_contact_*` 总卷字段；`cross_file_logic.py` 会生成 `queue_e_world_contact_repair_hold_alignment` finding；`run_manifest.py`、S05/S09 stage/report/digest/receipt 会携带同一组摘要。状态板因此把这一格视为“FutureNoGo 不只进入行动/世界接触门，也已经进入 S05/S09 的复查和下一轮交接”，不是只在底层 state 里可见。
+
 ## 当前链尾开工包
 
 最新链尾已经新增 `life_v0/live0_audit/` 和 `life-v0 audit-live0`。这一步把 Stage 6 七项最终验收从人工清单压成可执行 gate，输出 `runtime/reports/latest/live0_acceptance_audit_report.json`、`runtime/reports/latest/live0_acceptance_audit_digest.json` 和 `runtime/receipts/live0_acceptance_audit_<run_id>.json`。当前主 runtime 审计已经证明 b/c/d/f 以及大部分 g 项有证据，剩余硬阻断集中在 `a_terminal_wake_and_named_residency`：正式命名锁和“名字本身作为终端命令”的 manifest 还必须落地，live0 才能收束。

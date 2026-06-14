@@ -40,6 +40,22 @@ def build_validation_rollup(
             QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
         ]
     )
+    queue_e_world_contact_repair_governance_refs = _dedupe_string_refs(
+        list(world_contact_validation.get("repair_governance_refs", []))
+    )
+    queue_e_world_contact_blocked_future_routes = _dedupe_string_refs(
+        list(world_contact_validation.get("blocked_future_routes", []))
+    )
+    queue_e_world_contact_allowed_repair_routes = _dedupe_string_refs(
+        list(world_contact_validation.get("allowed_repair_routes", []))
+    )
+    queue_e_cross_layer_refs = _dedupe_string_refs(
+        [
+            *list(world_contact_validation.get("life_constraint_refs", [])),
+            world_contact_validation.get("future_no_go_profile_ref"),
+            *queue_e_world_contact_repair_governance_refs,
+        ]
+    )
     gate_status = {
         "observation_truth_gate": "closed" if not observation_truth_review.get("missing_fields") else "guarded",
         "world_contact_validation_gate": world_contact_validation.get("status", "blocked"),
@@ -73,7 +89,25 @@ def build_validation_rollup(
         "guarded_gates": guarded_gates,
         "repair_backlog_refs": repair_backlog_refs,
         "queue_e_cross_layer_gate_status": cross_layer_gate_status,
-        "queue_e_cross_layer_refs": list(world_contact_validation.get("life_constraint_refs", [])),
+        "queue_e_cross_layer_refs": queue_e_cross_layer_refs,
+        "queue_e_world_contact_future_no_go_profile_ref": world_contact_validation.get(
+            "future_no_go_profile_ref",
+            "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+        ),
+        "queue_e_world_contact_repair_hold_required": bool(
+            world_contact_validation.get("repair_hold_required")
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": world_contact_validation.get(
+            "confirmation_threshold_bias",
+            "baseline",
+        ),
+        "queue_e_world_contact_future_release_posture": world_contact_validation.get(
+            "future_release_posture",
+            "shadow_review_without_repair_hold",
+        ),
+        "queue_e_world_contact_blocked_future_routes": queue_e_world_contact_blocked_future_routes,
+        "queue_e_world_contact_allowed_repair_routes": queue_e_world_contact_allowed_repair_routes,
+        "queue_e_world_contact_repair_governance_refs": queue_e_world_contact_repair_governance_refs,
         "queue_e_birth_repair_profile_ref": QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
         "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
         "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
@@ -106,6 +140,11 @@ def check_validation_rollup(rollup: dict[str, Any]) -> list[str]:
         "gate_status",
         "queue_e_cross_layer_gate_status",
         "queue_e_cross_layer_refs",
+        "queue_e_world_contact_future_no_go_profile_ref",
+        "queue_e_world_contact_confirmation_threshold_bias",
+        "queue_e_world_contact_future_release_posture",
+        "queue_e_world_contact_allowed_repair_routes",
+        "queue_e_world_contact_repair_governance_refs",
         "queue_e_birth_repair_profile_ref",
         "queue_e_birth_repair_pressure_level",
         "queue_e_birth_repair_attention_target",

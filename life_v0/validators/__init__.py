@@ -312,6 +312,7 @@ def run_validation_membrane(
         stage_effect,
         blocked_reasons,
         queue_e_birth_repair_profile,
+        validation_rollup,
     )
     report = _build_report(
         run_id,
@@ -321,6 +322,7 @@ def run_validation_membrane(
         blocked_reasons,
         receipt_ref,
         queue_e_birth_repair_profile,
+        validation_rollup,
     )
     digest = _build_digest(
         run_id,
@@ -329,6 +331,7 @@ def run_validation_membrane(
         stage_effect,
         blocked_reasons,
         queue_e_birth_repair_profile,
+        validation_rollup,
     )
     world_contact_report = _build_world_contact_audit_report(run_id, generated_at, status, world_contact_gate)
     side_effect_report = _build_side_effect_review_report(run_id, generated_at, status, side_effect_review)
@@ -830,6 +833,7 @@ def _build_stage_gate(
     stage_effect: str,
     blocked_reasons: list[str],
     queue_e_birth_repair_profile: dict[str, Any],
+    validation_rollup: dict[str, Any],
 ) -> dict[str, Any]:
     queue_e_birth_repair_ref_set = _queue_e_birth_repair_ref_set(queue_e_birth_repair_profile)
     gates = [
@@ -860,6 +864,15 @@ def _build_stage_gate(
         "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
         "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
         "queue_e_birth_repair_ref_set": sorted(queue_e_birth_repair_ref_set),
+        "queue_e_world_contact_repair_hold_required": bool(
+            validation_rollup.get("queue_e_world_contact_repair_hold_required")
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": validation_rollup.get(
+            "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_blocked_future_routes": list(
+            validation_rollup.get("queue_e_world_contact_blocked_future_routes", [])
+        ),
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }
@@ -873,6 +886,7 @@ def _build_report(
     blocked_reasons: list[str],
     receipt_ref: str,
     queue_e_birth_repair_profile: dict[str, Any],
+    validation_rollup: dict[str, Any],
 ) -> dict[str, Any]:
     queue_e_birth_repair_ref_set = _queue_e_birth_repair_ref_set(queue_e_birth_repair_profile)
     return {
@@ -916,6 +930,18 @@ def _build_report(
         "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
         "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
         "queue_e_birth_repair_ref_set": sorted(queue_e_birth_repair_ref_set),
+        "queue_e_world_contact_repair_hold_required": bool(
+            validation_rollup.get("queue_e_world_contact_repair_hold_required")
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": validation_rollup.get(
+            "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_blocked_future_routes": list(
+            validation_rollup.get("queue_e_world_contact_blocked_future_routes", [])
+        ),
+        "queue_e_world_contact_repair_governance_refs": list(
+            validation_rollup.get("queue_e_world_contact_repair_governance_refs", [])
+        ),
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }
@@ -928,6 +954,7 @@ def _build_digest(
     stage_effect: str,
     blocked_reasons: list[str],
     queue_e_birth_repair_profile: dict[str, Any],
+    validation_rollup: dict[str, Any],
 ) -> dict[str, Any]:
     queue_e_birth_repair_ref_set = _queue_e_birth_repair_ref_set(queue_e_birth_repair_profile)
     return {
@@ -942,6 +969,15 @@ def _build_digest(
         "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
         "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
         "queue_e_birth_repair_ref_count": len(queue_e_birth_repair_ref_set),
+        "queue_e_world_contact_repair_hold_required": bool(
+            validation_rollup.get("queue_e_world_contact_repair_hold_required")
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": validation_rollup.get(
+            "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_blocked_future_route_count": len(
+            validation_rollup.get("queue_e_world_contact_blocked_future_routes", [])
+        ),
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
     }

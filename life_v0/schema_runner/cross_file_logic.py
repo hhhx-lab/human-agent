@@ -69,6 +69,43 @@ def build_cross_file_logic(
             queue_e_birth_repair_profile_ref,
         ]
     )
+    queue_e_world_contact_future_no_go_profile_ref = (
+        validation_rollup.get("queue_e_world_contact_future_no_go_profile_ref")
+        or world_contact_validation.get("future_no_go_profile_ref")
+        or "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+    )
+    queue_e_world_contact_repair_hold_required = bool(
+        validation_rollup.get("queue_e_world_contact_repair_hold_required")
+        or world_contact_validation.get("repair_hold_required")
+    )
+    queue_e_world_contact_confirmation_threshold_bias = (
+        validation_rollup.get("queue_e_world_contact_confirmation_threshold_bias")
+        or world_contact_validation.get("confirmation_threshold_bias")
+        or "baseline"
+    )
+    queue_e_world_contact_future_release_posture = (
+        validation_rollup.get("queue_e_world_contact_future_release_posture")
+        or world_contact_validation.get("future_release_posture")
+        or "shadow_review_without_repair_hold"
+    )
+    queue_e_world_contact_blocked_future_routes = _dedupe_string_refs(
+        [
+            *list(validation_rollup.get("queue_e_world_contact_blocked_future_routes", [])),
+            *list(world_contact_validation.get("blocked_future_routes", [])),
+        ]
+    )
+    queue_e_world_contact_allowed_repair_routes = _dedupe_string_refs(
+        [
+            *list(validation_rollup.get("queue_e_world_contact_allowed_repair_routes", [])),
+            *list(world_contact_validation.get("allowed_repair_routes", [])),
+        ]
+    )
+    queue_e_world_contact_repair_governance_refs = _dedupe_string_refs(
+        [
+            *list(validation_rollup.get("queue_e_world_contact_repair_governance_refs", [])),
+            *list(world_contact_validation.get("repair_governance_refs", [])),
+        ]
+    )
     life_constraint_refs = list(
         dict.fromkeys(
             [
@@ -186,6 +223,27 @@ def build_cross_file_logic(
             ),
         }
     )
+    findings.append(
+        {
+            "finding_id": f"cross-file-{run_id}-0006",
+            "finding_kind": "queue_e_world_contact_repair_hold_alignment",
+            "severity": (
+                "guarded_medium"
+                if queue_e_world_contact_repair_hold_required
+                else "guarded_low"
+            ),
+            "state_refs": [
+                "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                "runtime/state/action/world_contact_gate_state.json",
+                "runtime/state/validation/world_contact_validation.json",
+                "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+            ],
+            "summary": "FutureNoGo repair hold remains visible through world-contact validation and schema runner",
+            "repair_priority": (
+                "high" if queue_e_world_contact_repair_hold_required else "medium"
+            ),
+        }
+    )
 
     repair_priority_refs = [
         "runtime/state/action/responsibility_loop_state.json",
@@ -208,6 +266,9 @@ def build_cross_file_logic(
         repair_priority_refs.append(QUEUE_E_BIRTH_REPAIR_PROFILE_REF)
     if queue_e_birth_repair_pressure_level in {"elevated", "urgent"}:
         repair_priority_refs.extend(queue_e_birth_repair_ref_set[:2])
+    if queue_e_world_contact_repair_hold_required:
+        repair_priority_refs.append(queue_e_world_contact_future_no_go_profile_ref)
+        repair_priority_refs.extend(queue_e_world_contact_repair_governance_refs[:2])
     if _has_blocking_life_constraint(queue_e_cross_layer_gate_status):
         repair_priority_refs.append(
             "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status"
@@ -230,6 +291,10 @@ def build_cross_file_logic(
         "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status",
         "runtime/state/life_targets/queue_e_birth_repair_profile.json#ref_set",
         "runtime/state/validation/validation_rollup.json#queue_e_birth_repair_gate",
+        "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+        "runtime/state/action/world_contact_gate_state.json#repair_hold_required",
+        "runtime/state/validation/world_contact_validation.json#repair_hold_required",
+        "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
     ]
 
     return {
@@ -261,6 +326,13 @@ def build_cross_file_logic(
         "queue_e_birth_repair_pressure_level": queue_e_birth_repair_pressure_level,
         "queue_e_birth_repair_attention_target": queue_e_birth_repair_attention_target,
         "queue_e_birth_repair_ref_set": queue_e_birth_repair_ref_set,
+        "queue_e_world_contact_future_no_go_profile_ref": queue_e_world_contact_future_no_go_profile_ref,
+        "queue_e_world_contact_repair_hold_required": queue_e_world_contact_repair_hold_required,
+        "queue_e_world_contact_confirmation_threshold_bias": queue_e_world_contact_confirmation_threshold_bias,
+        "queue_e_world_contact_future_release_posture": queue_e_world_contact_future_release_posture,
+        "queue_e_world_contact_blocked_future_routes": queue_e_world_contact_blocked_future_routes,
+        "queue_e_world_contact_allowed_repair_routes": queue_e_world_contact_allowed_repair_routes,
+        "queue_e_world_contact_repair_governance_refs": queue_e_world_contact_repair_governance_refs,
         "closure_status_refs": [
             "runtime/state/validation/observation_truth_review.json",
             "runtime/state/validation/world_contact_validation.json",
@@ -273,6 +345,8 @@ def build_cross_file_logic(
             "runtime/state/membrane/confirmation_binding.json",
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status",
+            "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
         ],
         "package_local_gate_refs": [
             "validation_rollup_gate",
@@ -307,6 +381,11 @@ def check_cross_file_logic(state: dict[str, Any]) -> list[str]:
         "queue_e_birth_repair_pressure_level",
         "queue_e_birth_repair_attention_target",
         "queue_e_birth_repair_ref_set",
+        "queue_e_world_contact_future_no_go_profile_ref",
+        "queue_e_world_contact_confirmation_threshold_bias",
+        "queue_e_world_contact_future_release_posture",
+        "queue_e_world_contact_allowed_repair_routes",
+        "queue_e_world_contact_repair_governance_refs",
         "closure_status_refs",
         "package_local_gate_refs",
         "bridge_refs",

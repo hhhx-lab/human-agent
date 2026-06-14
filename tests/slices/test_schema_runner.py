@@ -199,6 +199,19 @@ class SchemaRunnerTests(unittest.TestCase):
             "runtime/state/consciousness/consciousness_probe_bundle.json",
             cross_file_logic["life_constraint_refs"],
         )
+        self.assertTrue(cross_file_logic["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(
+            cross_file_logic["queue_e_world_contact_confirmation_threshold_bias"],
+            "raised",
+        )
+        self.assertIn(
+            "external_release_without_repair_review",
+            cross_file_logic["queue_e_world_contact_blocked_future_routes"],
+        )
+        self.assertIn(
+            "runtime/state/action/responsibility_loop_state.json",
+            cross_file_logic["queue_e_world_contact_repair_governance_refs"],
+        )
         self.assertTrue(
             any(
                 finding["finding_kind"] == "life_constraint_alignment"
@@ -208,6 +221,12 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertTrue(
             any(
                 finding["finding_kind"] == "queue_e_birth_repair_alignment"
+                for finding in cross_file_logic["cross_file_findings"]
+            )
+        )
+        self.assertTrue(
+            any(
+                finding["finding_kind"] == "queue_e_world_contact_repair_hold_alignment"
                 for finding in cross_file_logic["cross_file_findings"]
             )
         )
@@ -268,6 +287,15 @@ class SchemaRunnerTests(unittest.TestCase):
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             run_manifest["queue_e_cross_layer_refs"],
         )
+        self.assertTrue(run_manifest["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(
+            run_manifest["queue_e_world_contact_confirmation_threshold_bias"],
+            "raised",
+        )
+        self.assertIn(
+            "external_release_without_repair_review",
+            run_manifest["queue_e_world_contact_blocked_future_routes"],
+        )
         self.assertIn("validation_rollup_gate", run_manifest["package_local_gate_refs"])
         self.assertIn("life_constraint_validation_gate", run_manifest["package_local_gate_refs"])
         self.assertIn("queue_e_birth_repair_gate", run_manifest["package_local_gate_refs"])
@@ -286,6 +314,12 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(stage_gate["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(stage_gate["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(stage_gate["queue_e_birth_repair_ref_set"])))
+        self.assertTrue(stage_gate["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(stage_gate["queue_e_world_contact_confirmation_threshold_bias"], "raised")
+        self.assertIn(
+            "external_release_without_repair_review",
+            stage_gate["queue_e_world_contact_blocked_future_routes"],
+        )
         self.assertEqual(stage_gate["next_allowed_slices"], ["S06_LIFE_SUPPORT_DEVELOPMENT", "S10_RUNTIME_GROWTH_RECONSOLIDATION"])
         self.assertEqual(stage_gate["next_required_command"], "life-v0 build-life-support --strict")
 
@@ -297,6 +331,12 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(report["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(report["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(report["queue_e_birth_repair_ref_set"])))
+        self.assertTrue(report["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(report["queue_e_world_contact_confirmation_threshold_bias"], "raised")
+        self.assertIn(
+            "runtime/state/action/responsibility_loop_state.json",
+            report["queue_e_world_contact_repair_governance_refs"],
+        )
         self.assertIn("SchemaBundleCompiler", report["runtime_carrier_refs"])
         self.assertIn("RunnerRepositoryKernel", report["runtime_carrier_refs"])
         self.assertIn("FirstRunnerCodeKernel", report["runtime_carrier_refs"])
@@ -322,6 +362,9 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(digest["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(digest["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertGreaterEqual(digest["queue_e_birth_repair_ref_count"], len(expected_queue_e_refs))
+        self.assertTrue(digest["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(digest["queue_e_world_contact_confirmation_threshold_bias"], "raised")
+        self.assertGreaterEqual(digest["queue_e_world_contact_blocked_future_route_count"], 1)
         self.assertEqual(check_report["status"], "closed")
         self.assertIn("queue_e_birth_repair_gate", check_report["closed_gates"])
         self.assertEqual(smoke_report["schema_version"], "schema_runner_smoke_report_v0")
@@ -331,6 +374,12 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(receipt["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(receipt["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(receipt["queue_e_birth_repair_ref_set"])))
+        self.assertTrue(receipt["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(receipt["queue_e_world_contact_confirmation_threshold_bias"], "raised")
+        self.assertIn(
+            "runtime/state/action/responsibility_loop_state.json",
+            receipt["queue_e_world_contact_repair_governance_refs"],
+        )
         self.assertIn(
             str((paths["life_targets_state"] / "queue_e_birth_repair_profile.json").resolve()),
             receipt["input_hashes"],

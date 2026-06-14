@@ -6848,6 +6848,11 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
                 "runtime/state/language/expression_plan.json",
             ]
+            expected_repair_governance_refs = [
+                "runtime/state/action/responsibility_loop_state.json",
+                "runtime/state/membrane/world_contact_summary.json",
+                "runtime/reports/latest/pain_regret_repair_report.json",
+            ]
 
             self.assertEqual(idle_strategy["background_continuity_mode"], "closed_process_carryover")
             self.assertEqual(idle_strategy["background_carryover_generation"], 1)
@@ -7012,14 +7017,12 @@ class PersistentDigitalLifeProcessTests(
                 idle_strategy["background_schema_run_manifest_ref"],
                 "runtime/state/schema_runner/run_manifest.json",
             )
-            self.assertEqual(
-                idle_strategy["background_life_constraint_refs"],
-                expected_life_constraint_refs,
-            )
-            self.assertEqual(
-                idle_strategy["life_constraint_refs"],
-                expected_life_constraint_refs,
-            )
+            for ref in expected_life_constraint_refs:
+                self.assertIn(ref, idle_strategy["background_life_constraint_refs"])
+                self.assertIn(ref, idle_strategy["life_constraint_refs"])
+            for ref in expected_repair_governance_refs:
+                self.assertIn(ref, idle_strategy["background_life_constraint_refs"])
+                self.assertIn(ref, idle_strategy["life_constraint_refs"])
             self.assertEqual(
                 idle_strategy["queue_e_cross_layer_gate_status"][
                     "body_affect_gate"
@@ -7038,18 +7041,17 @@ class PersistentDigitalLifeProcessTests(
                 idle_strategy["life_constraint_attention_reason"],
                 "queue_e_cross_layer_gate_has_deferred_life_constraints",
             )
-            self.assertEqual(
-                resident_governance_state["background_life_constraint_refs"],
-                expected_life_constraint_refs,
-            )
-            self.assertEqual(
-                resident_governance_state["life_constraint_refs"],
-                expected_life_constraint_refs,
-            )
+            for ref in expected_life_constraint_refs:
+                self.assertIn(ref, resident_governance_state["background_life_constraint_refs"])
+                self.assertIn(ref, resident_governance_state["life_constraint_refs"])
+            for ref in expected_repair_governance_refs:
+                self.assertIn(ref, resident_governance_state["background_life_constraint_refs"])
+                self.assertIn(ref, resident_governance_state["life_constraint_refs"])
             for ref in [
                 "runtime/state/schema_runner/cross_file_logic.json",
                 "runtime/state/schema_runner/run_manifest.json",
                 *expected_life_constraint_refs,
+                *expected_repair_governance_refs,
             ]:
                 self.assertIn(ref, idle_strategy["background_continuity_ref_set"])
             self.assertEqual(

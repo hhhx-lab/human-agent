@@ -291,6 +291,13 @@ Queue E 必须接到这些现有器官上：
 
 最新补厚口径要求 `world_contact_gate.py` 继续消费 `go_nogo_state.json#future_no_go_profile`。当 `repair_hold_required=true` 时，世界接触门不能只保留泛化 `life_constraint_refs`，还必须显式写出 raised confirmation threshold、被阻断的未来释放路线、仍然开放的修复路线和责任治理 refs。这样 FutureNoGo 不会停在行动门内部，而会继续改变世界接触释放阈值。
 
+这组字段还必须继续进入 S05/S09：
+
+- `world_contact_validator.py` 写出 `future_no_go_profile_ref`、`repair_hold_required`、`confirmation_threshold_bias`、`blocked_future_routes`、`allowed_repair_routes`、`repair_governance_refs`。
+- `validation_rollup.py` 写出 `queue_e_world_contact_*` 总卷字段，并把 future no-go profile 与责任治理 refs 并入 `queue_e_cross_layer_refs`。
+- `cross_file_logic.py` 写出 `queue_e_world_contact_repair_hold_alignment` finding，并把这些字段转入 `repair_priority_refs`、`bridge_refs` 与 `closure_status_refs`。
+- `run_manifest.py`、S05/S09 `stage_gate/report/digest/receipt` 必须携带同一组摘要字段，保证下一轮工程恢复时不需要重新扫描底层 world contact state 才知道 repair hold 是否存在。
+
 ## D. `life_v0/membrane/side_effect_review.py` 已落第一轮，继续补厚
 
 ### 角色

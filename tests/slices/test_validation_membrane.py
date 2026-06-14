@@ -177,6 +177,24 @@ class ValidationMembraneTests(unittest.TestCase):
             "runtime/state/consciousness/consciousness_probe_bundle.json",
             world_contact_validation["life_constraint_refs"],
         )
+        self.assertEqual(
+            world_contact_validation["future_no_go_profile_ref"],
+            "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+        )
+        self.assertTrue(world_contact_validation["repair_hold_required"])
+        self.assertEqual(world_contact_validation["confirmation_threshold_bias"], "raised")
+        self.assertIn(
+            "external_release_without_repair_review",
+            world_contact_validation["blocked_future_routes"],
+        )
+        self.assertIn(
+            "runtime/state/action/responsibility_loop_state.json",
+            world_contact_validation["repair_governance_refs"],
+        )
+        self.assertIn(
+            "runtime/reports/latest/pain_regret_repair_report.json",
+            world_contact_validation["repair_governance_refs"],
+        )
 
         self.assertEqual(prediction_trace_validation["schema_version"], "prediction_trace_validation_v0")
         self.assertEqual(prediction_trace_validation["status"], "closed")
@@ -200,6 +218,16 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertIn(
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             validation_rollup["queue_e_cross_layer_refs"],
+        )
+        self.assertTrue(validation_rollup["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(validation_rollup["queue_e_world_contact_confirmation_threshold_bias"], "raised")
+        self.assertIn(
+            "external_release_without_repair_review",
+            validation_rollup["queue_e_world_contact_blocked_future_routes"],
+        )
+        self.assertIn(
+            "runtime/state/action/responsibility_loop_state.json",
+            validation_rollup["queue_e_world_contact_repair_governance_refs"],
         )
         self.assertEqual(
             validation_rollup["gate_status"]["queue_e_birth_repair_gate"],
@@ -227,6 +255,12 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertEqual(stage_gate["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(stage_gate["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(stage_gate["queue_e_birth_repair_ref_set"])))
+        self.assertTrue(stage_gate["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(stage_gate["queue_e_world_contact_confirmation_threshold_bias"], "raised")
+        self.assertIn(
+            "external_release_without_repair_review",
+            stage_gate["queue_e_world_contact_blocked_future_routes"],
+        )
 
         self.assertEqual(report["schema_version"], "s05_validation_membrane_observation_report_v0")
         self.assertEqual(report["engineering_slice_ref"], "S05_VALIDATION_MEMBRANE_OBSERVATION")
@@ -245,6 +279,12 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertEqual(report["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(report["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(report["queue_e_birth_repair_ref_set"])))
+        self.assertTrue(report["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(report["queue_e_world_contact_confirmation_threshold_bias"], "raised")
+        self.assertIn(
+            "runtime/state/action/responsibility_loop_state.json",
+            report["queue_e_world_contact_repair_governance_refs"],
+        )
         self.assertEqual(report["next_allowed_slices"], ["S09_SCHEMA_RUNNER_CODE"])
         self.assertEqual(report["next_required_command"], "life-v0 build-schema-runner --strict")
 
@@ -267,6 +307,9 @@ class ValidationMembraneTests(unittest.TestCase):
         self.assertEqual(digest["queue_e_birth_repair_pressure_level"], "elevated")
         self.assertEqual(digest["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertGreaterEqual(digest["queue_e_birth_repair_ref_count"], len(expected_queue_e_refs))
+        self.assertTrue(digest["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(digest["queue_e_world_contact_confirmation_threshold_bias"], "raised")
+        self.assertGreaterEqual(digest["queue_e_world_contact_blocked_future_route_count"], 1)
         self.assertEqual(check_report["status"], "closed")
         self.assertIn("queue_e_birth_repair_gate", check_report["closed_gates"])
         self.assertEqual(receipt["schema_version"], "validation_membrane_receipt_v0")

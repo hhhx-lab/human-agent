@@ -8,6 +8,8 @@ SOURCE_DOC_REFS = [
     "docs/75_external_irreversible_action_confirmation_policy.md",
     "docs/80_post_action_audit_and_correction_policy.md",
     "docs/84_longitudinal_external_action_evaluation_protocol.md",
+    "docs/10_responsibility_regret_repair.md",
+    "docs/real—live0/10_responsibility_regret_repair.md",
     "docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md",
 ]
 
@@ -31,6 +33,12 @@ def build_world_contact_validation(
         findings.append("confirmation_missing")
     if world_contact_gate.get("contact_mode") not in {"shadow_only", "blocked"}:
         findings.append("contact_mode_out_of_policy")
+    repair_hold_required = bool(world_contact_gate.get("repair_hold_required"))
+    repair_governance_refs = _dedupe_string_refs(
+        list(world_contact_gate.get("repair_governance_refs", []))
+    )
+    if repair_hold_required and not repair_governance_refs:
+        findings.append("repair_governance_refs_missing")
     life_constraint_validation = _build_life_constraint_validation(
         action_candidate_set=action_candidate_set,
         value_orientation=value_orientation or {},
@@ -64,6 +72,19 @@ def build_world_contact_validation(
         "blocked_contacts": list(world_contact_gate.get("blocked_contacts", [])),
         "validation_findings": findings,
         "repair_followup_required": bool(side_effect_review.get("repair_followup_required")),
+        "future_no_go_profile_ref": world_contact_gate.get(
+            "future_no_go_profile_ref",
+            "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+        ),
+        "repair_hold_required": repair_hold_required,
+        "confirmation_threshold_bias": world_contact_gate.get("confirmation_threshold_bias", "baseline"),
+        "future_release_posture": world_contact_gate.get(
+            "future_release_posture",
+            "shadow_review_without_repair_hold",
+        ),
+        "blocked_future_routes": list(world_contact_gate.get("blocked_future_routes", [])),
+        "allowed_repair_routes": list(world_contact_gate.get("allowed_repair_routes", [])),
+        "repair_governance_refs": repair_governance_refs,
         "life_constraint_validation": life_constraint_validation,
         "life_constraint_refs": life_constraint_refs,
         "source_doc_refs": SOURCE_DOC_REFS,
@@ -82,6 +103,11 @@ def check_world_contact_validation(validation: dict[str, Any]) -> list[str]:
         "confirmation_binding_ref",
         "side_effect_review_ref",
         "blocked_contacts",
+        "future_no_go_profile_ref",
+        "confirmation_threshold_bias",
+        "future_release_posture",
+        "allowed_repair_routes",
+        "repair_governance_refs",
         "life_constraint_validation",
         "life_constraint_refs",
         "source_doc_refs",
@@ -91,6 +117,17 @@ def check_world_contact_validation(validation: dict[str, Any]) -> list[str]:
     if validation.get("validation_findings") not in ([], None):
         reasons.append("world_contact_validation_gate findings are not empty")
     return reasons
+
+
+def _dedupe_string_refs(refs: list[Any]) -> list[str]:
+    merged: list[str] = []
+    seen: set[str] = set()
+    for ref in refs:
+        if not isinstance(ref, str) or not ref or ref in seen:
+            continue
+        seen.add(ref)
+        merged.append(ref)
+    return merged
 
 
 def _build_life_constraint_validation(

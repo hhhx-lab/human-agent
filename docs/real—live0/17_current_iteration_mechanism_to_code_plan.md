@@ -600,10 +600,12 @@ ResponsibilityLoopState
   -> FutureNoGoProfile
   -> repair_hold_required / raised confirmation threshold / repair-before-release bias
   -> WorldContactGate repair hold / blocked future routes / allowed repair routes
+  -> WorldContactValidation / ValidationRollup
+  -> CrossFileLogic / RunManifest / StageGate / Report / Digest / Receipt
   -> 下一轮行动候选与世界接触释放前的抑制偏置
 ```
 
-这段闭合专门回应 `FutureNoGo` 断链。`go_nogo.py` 现在不会只根据当轮 shadow、睡眠压力、痛苦压力和 life constraint 判断，还会在责任报告生成后接收 Queue E 原始修复画像，并写出 `future_no_go_profile_v0`。`world_contact_gate.py` 随后会消费这份 profile，把 `repair_hold_required`、`confirmation_threshold_bias`、`blocked_future_routes`、`allowed_repair_routes` 与 `repair_governance_refs` 写进世界接触门。这个对象不负责外显话术，也不是固定回答模板；它负责把后悔、痛苦、修复义务转成下一次行动释放和世界接触前可读取的确认阈值、修复 hold、阻断路线和允许的修复路线。这样责任不再停留在“报告里有后悔”，而是开始改变未来行动膜和世界接触门。
+这段闭合专门回应 `FutureNoGo` 断链。`go_nogo.py` 现在不会只根据当轮 shadow、睡眠压力、痛苦压力和 life constraint 判断，还会在责任报告生成后接收 Queue E 原始修复画像，并写出 `future_no_go_profile_v0`。`world_contact_gate.py` 随后会消费这份 profile，把 `repair_hold_required`、`confirmation_threshold_bias`、`blocked_future_routes`、`allowed_repair_routes` 与 `repair_governance_refs` 写进世界接触门。`world_contact_validator.py`、`validation_rollup.py`、`cross_file_logic.py` 与 `run_manifest.py` 继续把这些字段压成 S05/S09 的复查字段、cross-file finding 和交接 manifest。这个对象不负责外显话术，也不是固定回答模板；它负责把后悔、痛苦、修复义务转成下一次行动释放和世界接触前可读取的确认阈值、修复 hold、阻断路线和允许的修复路线，并让验证膜/schema runner 继续复查。这样责任不再停留在“报告里有后悔”，而是开始改变未来行动膜、世界接触门和验证/schema 交接。
 
 本轮断链测试：
 
