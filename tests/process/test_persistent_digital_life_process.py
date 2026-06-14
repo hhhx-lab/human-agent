@@ -9271,7 +9271,7 @@ class PersistentDigitalLifeProcessTests(
         from life_v0.process_supervisor.process_session_loop import run_process_session_loop
 
         wait_heartbeat_inputs: list[int] = []
-        live_turn_inputs: list[tuple[int, int, str]] = []
+        live_turn_inputs: list[tuple[int, int, str, int | None, bool, bool, bool]] = []
         emitted_outputs: list[str] = []
         wait_results = [
             IdleRefreshLoopResult(
@@ -9296,6 +9296,11 @@ class PersistentDigitalLifeProcessTests(
                     kwargs["incident_count"],  # type: ignore[arg-type]
                     kwargs["turn_counter"],  # type: ignore[arg-type]
                     kwargs["external_utterance"],  # type: ignore[arg-type]
+                    (
+                        kwargs["offline_learning_cumulative_profile"].get("generation")  # type: ignore[union-attr]
+                        if kwargs.get("offline_learning_cumulative_profile")
+                        else None
+                    ),
                     bool(kwargs["relationship_timeline"]),  # type: ignore[arg-type]
                     bool(kwargs["commitment_expression_plan"]),  # type: ignore[arg-type]
                     bool(kwargs["apology_repair_language_trace"]),  # type: ignore[arg-type]
@@ -9351,6 +9356,17 @@ class PersistentDigitalLifeProcessTests(
                 replay_cue_bundle={},
                 offline_consolidation_frame={},
                 growth_patch_candidate_queue={},
+                offline_learning_cumulative_profile={
+                    "schema_version": "offline_learning_cumulative_profile_v0",
+                    "generation": 3,
+                    "pressure_level": "elevated",
+                    "attention_target": "relationship_learning_plan",
+                    "integration_mode": "relationship_offline_reconsolidation_required",
+                    "relationship_reconsolidation_required": True,
+                    "ref_set": [
+                        "runtime/state/growth/relationship_learning_plan.json"
+                    ],
+                },
                 source_doc_refs=[],
                 readme_block_refs=[],
                 runtime_carrier_refs=[],
@@ -9372,7 +9388,7 @@ class PersistentDigitalLifeProcessTests(
             )
 
         self.assertEqual(wait_heartbeat_inputs, [1, 2])
-        self.assertEqual(live_turn_inputs, [(0, 1, "你好", True, True, True)])
+        self.assertEqual(live_turn_inputs, [(0, 1, "你好", 3, True, True, True)])
         self.assertEqual(emitted_outputs, ["model_expression_applied:test-output-1"])
         self.assertEqual(result.turn_counter, 3)
         self.assertEqual(result.completed_turns, 1)

@@ -162,6 +162,7 @@ def run_digital_life_process(
     belief_learning_plan = supervision.belief_learning_plan
     language_learning_plan = supervision.language_learning_plan
     relationship_learning_plan = supervision.relationship_learning_plan
+    offline_learning_cumulative_profile = supervision.offline_learning_cumulative_profile
     signal_media_runtime = supervision.signal_media_runtime
     belief_state = supervision.belief_state
     prediction_error_field = supervision.prediction_error_field
@@ -280,6 +281,7 @@ def run_digital_life_process(
         belief_learning_plan=belief_learning_plan,
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         signal_media_runtime=signal_media_runtime,
         belief_state=belief_state,
         prediction_error_field=prediction_error_field,

@@ -19,6 +19,7 @@ def build_signal_media_runtime(
     body_resource_budget: dict[str, Any] | None = None,
     core_affect_vector: dict[str, Any] | None = None,
     body_presence_profile: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
     queue_e_repair_modulation_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     network_state = network_state or {}
@@ -26,6 +27,7 @@ def build_signal_media_runtime(
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
         body_presence_profile=body_presence_profile,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     repair_profile = queue_e_repair_modulation_profile or {}
     pressure_level = repair_profile.get("pressure_level", "quiet")
@@ -116,6 +118,8 @@ def build_signal_media_runtime(
                             "fatigue_load",
                             "pain_pressure",
                             "dream_residue_load",
+                            "offline_learning_pressure_level",
+                            "offline_learning_generation",
                             "memory_write_bias",
                         ],
                     }
@@ -246,6 +250,11 @@ def build_signal_media_runtime(
             else None
         ),
         "body_signal_profile": body_profile if body_profile else None,
+        "offline_learning_cumulative_profile": (
+            _offline_learning_signal_profile(offline_learning_cumulative_profile)
+            if offline_learning_cumulative_profile
+            else None
+        ),
         "queue_e_repair_modulation_profile": repair_profile if repair_profile else None,
         "queue_e_repair_pressure_level": pressure_level,
         "queue_e_repair_attention_target": repair_attention_target,
@@ -268,16 +277,88 @@ def _repair_pressure_scale(pressure_level: str) -> float:
     }.get(pressure_level, 0.0)
 
 
+def _offline_learning_signal_profile(
+    profile: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not isinstance(profile, dict):
+        return {}
+    ref_set = _dedupe(
+        _string_list(profile.get("ref_set"))
+        + _string_list(profile.get("offline_learning_cumulative_ref_set"))
+    )
+    generation = _int_or_zero(
+        profile.get("generation")
+        or profile.get("offline_learning_cumulative_generation")
+    )
+    pressure_level = str(
+        profile.get("pressure_level")
+        or profile.get("offline_learning_cumulative_pressure_level")
+        or "quiet"
+    )
+    attention_target = str(
+        profile.get("attention_target")
+        or profile.get("offline_learning_cumulative_attention_target")
+        or "baseline_offline_learning_maintenance"
+    )
+    if not any([ref_set, generation, pressure_level != "quiet"]):
+        return {}
+    return {
+        "schema_version": "offline_learning_body_signal_profile_v0",
+        "generation": generation,
+        "pressure_level": pressure_level,
+        "attention_target": attention_target,
+        "integration_mode": str(
+            profile.get("integration_mode")
+            or profile.get("offline_learning_cumulative_integration_mode")
+            or "baseline_offline_learning_maintenance"
+        ),
+        "relationship_reconsolidation_required": bool(
+            profile.get("relationship_reconsolidation_required")
+            or profile.get(
+                "offline_learning_cumulative_relationship_reconsolidation_required"
+            )
+        ),
+        "ref_set": ref_set,
+    }
+
+
+def _offline_learning_pressure_scale(value: Any) -> float:
+    return {
+        "quiet": 0.0,
+        "present": 0.35,
+        "elevated": 0.72,
+        "urgent": 1.0,
+    }.get(str(value or "quiet"), 0.0)
+
+
+def _int_or_zero(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
 def _body_signal_profile(
     *,
     body_resource_budget: dict[str, Any] | None,
     core_affect_vector: dict[str, Any] | None,
     body_presence_profile: dict[str, Any] | None,
+    offline_learning_cumulative_profile: dict[str, Any] | None,
 ) -> dict[str, Any]:
     body_resource_budget = body_resource_budget or {}
     core_affect_vector = core_affect_vector or {}
     body_presence_profile = body_presence_profile or {}
-    if not any([body_resource_budget, core_affect_vector, body_presence_profile]):
+    offline_learning_profile = _offline_learning_signal_profile(
+        offline_learning_cumulative_profile
+    )
+    if not any(
+        [
+            body_resource_budget,
+            core_affect_vector,
+            body_presence_profile,
+            offline_learning_profile,
+        ]
+    ):
         return {}
 
     maintenance_pressure = body_resource_budget.get("maintenance_pressure", {})
@@ -328,8 +409,42 @@ def _body_signal_profile(
         or core_affect_vector.get("repair_drive")
         or maintenance_pressure.get("repair_drive")
     )
+    if offline_learning_profile:
+        offline_scale = _offline_learning_pressure_scale(
+            offline_learning_profile.get("pressure_level")
+        )
+        generation_scale = min(
+            1.0,
+            max(
+                0.0,
+                float(_int_or_zero(offline_learning_profile.get("generation"))) / 4.0,
+            ),
+        )
+        relationship_reconsolidation_required = bool(
+            offline_learning_profile.get("relationship_reconsolidation_required")
+        )
+        attention_target = str(offline_learning_profile.get("attention_target") or "")
+        fatigue_load = max(fatigue_load, _clamp(0.28 + offline_scale * 0.22))
+        dream_residue_load = max(
+            dream_residue_load,
+            _clamp(0.24 + offline_scale * 0.38 + generation_scale * 0.12),
+        )
+        repair_drive = max(
+            repair_drive,
+            _clamp(
+                0.22
+                + offline_scale * 0.34
+                + (0.16 if relationship_reconsolidation_required else 0.0)
+            ),
+        )
+        if attention_target == "relationship_learning_plan":
+            relationship_tension = max(
+                relationship_tension,
+                _clamp(0.26 + offline_scale * 0.38),
+            )
     body_ref_set = _dedupe(
         _string_list(body_presence_profile.get("body_ref_set"))
+        + _string_list(offline_learning_profile.get("ref_set"))
         + _string_list(
             [
                 "runtime/state/body/body_resource_budget.json"
@@ -344,6 +459,12 @@ def _body_signal_profile(
     memory_write_bias = "baseline_candidate_gate"
     if fatigue_load >= 0.65 or pain_pressure >= 0.65:
         memory_write_bias = "defer_noncritical_memory_commit"
+    elif (
+        offline_learning_profile.get("relationship_reconsolidation_required") is True
+        or offline_learning_profile.get("attention_target")
+        == "relationship_learning_plan"
+    ):
+        memory_write_bias = "relationship_context_first"
     elif repair_drive >= 0.7 or responsibility_weight >= 0.7:
         memory_write_bias = "repair_evidence_first"
     elif relationship_tension >= 0.65:
@@ -358,6 +479,22 @@ def _body_signal_profile(
         "pain_pressure": pain_pressure,
         "relationship_tension": relationship_tension,
         "dream_residue_load": dream_residue_load,
+        "offline_learning_generation": offline_learning_profile.get("generation"),
+        "offline_learning_pressure_level": offline_learning_profile.get(
+            "pressure_level"
+        ),
+        "offline_learning_attention_target": offline_learning_profile.get(
+            "attention_target"
+        ),
+        "offline_learning_integration_mode": offline_learning_profile.get(
+            "integration_mode"
+        ),
+        "offline_learning_relationship_reconsolidation_required": (
+            offline_learning_profile.get("relationship_reconsolidation_required")
+        ),
+        "offline_learning_ref_set": _string_list(
+            offline_learning_profile.get("ref_set")
+        ),
         "responsibility_weight": responsibility_weight,
         "repair_drive": repair_drive,
         "body_signal_strength": max(

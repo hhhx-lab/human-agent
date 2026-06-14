@@ -75,6 +75,7 @@ def run_live_turn_cycle(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
     signal_media_runtime: dict[str, Any] | None = None,
     belief_state: dict[str, Any] | None = None,
     prediction_error_field: dict[str, Any] | None = None,
@@ -120,6 +121,7 @@ def run_live_turn_cycle(
             signal_media_runtime=signal_media_runtime,
             body_resource_budget=body_resource_budget,
             core_affect_vector=core_affect_vector,
+            offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         )
     external_turn_id = f"dialogue-turn-live-{turn_counter:04d}"
     external_turn = build_external_turn_event_fn(

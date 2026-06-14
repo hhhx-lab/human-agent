@@ -28,6 +28,8 @@ from life_v0.growth.offline_learning_profile import (
     LANGUAGE_LEARNING_PLAN_REF,
     NIGHTMARE_RISK_REF,
     RELATIONSHIP_LEARNING_PLAN_REF,
+    build_offline_learning_cumulative_profile,
+    derive_offline_learning_profile,
 )
 from life_v0.membrane.queue_e_signals import build_queue_e_repair_modulation_profile
 from life_v0.neural_core.active_sampling import build_active_sampling_plan
@@ -168,6 +170,16 @@ def run_build_language_relationship(
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
     )
+    offline_learning_profile = derive_offline_learning_profile(
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    offline_learning_cumulative_profile = build_offline_learning_cumulative_profile(
+        current_profile=offline_learning_profile,
+        background_profile={},
+    )
 
     blocked_reasons.extend(_doc_blockers(doc_index))
     blocked_reasons.extend(_neural_blockers(neural_core, subject_systems, internal_bus))
@@ -196,6 +208,7 @@ def run_build_language_relationship(
         network_state=_load_json_if_exists(neural_core_state_dir / "network_state.json"),
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
         queue_e_repair_modulation_profile=queue_e_repair_profile,
     )
     memory_write_gate = project_memory_write_gate_with_signal_body(
@@ -203,6 +216,7 @@ def run_build_language_relationship(
         signal_media_runtime=signal_media_runtime,
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     belief_state = build_belief_state_frame(
         run_id=run_id,

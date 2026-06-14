@@ -7,6 +7,7 @@ from ..growth.offline_learning_profile import (
     RELATIONSHIP_LEARNING_PLAN_REF,
     build_offline_learning_cumulative_profile,
     derive_offline_learning_profile,
+    normalize_offline_learning_cumulative_profile,
 )
 
 
@@ -17,4 +18,5 @@ __all__ = [
     "RELATIONSHIP_LEARNING_PLAN_REF",
     "build_offline_learning_cumulative_profile",
     "derive_offline_learning_profile",
+    "normalize_offline_learning_cumulative_profile",
 ]

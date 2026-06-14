@@ -7,6 +7,7 @@ from .handoff_profile import HANDOFF_CARRY_FIELD_NAMES
 from .offline_learning_signals import (
     build_offline_learning_cumulative_profile,
     derive_offline_learning_profile,
+    normalize_offline_learning_cumulative_profile,
 )
 from .resident_autonomous_activity import (
     ACTIVITY_STATE_REFS,
@@ -443,6 +444,7 @@ def decide_idle_strategy(
     belief_learning_plan: dict[str, Any] | None = None,
     language_learning_plan: dict[str, Any] | None = None,
     relationship_learning_plan: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
     signal_media_runtime: dict[str, Any] | None = None,
     belief_state: dict[str, Any] | None = None,
     prediction_error_field: dict[str, Any] | None = None,
@@ -565,9 +567,12 @@ def decide_idle_strategy(
         terminal_life_loop_state=terminal_life_loop_state,
         background_continuity_profile=background_continuity_profile,
     )
-    offline_learning_cumulative_profile = build_offline_learning_cumulative_profile(
-        current_profile=offline_learning_profile,
-        background_profile=background_continuity_profile,
+    offline_learning_cumulative_profile = (
+        normalize_offline_learning_cumulative_profile(offline_learning_cumulative_profile)
+        or build_offline_learning_cumulative_profile(
+            current_profile=offline_learning_profile,
+            background_profile=background_continuity_profile,
+        )
     )
     effective_offline_learning_pressure_level = _effective_offline_learning_pressure(
         current_pressure_level=offline_learning_profile["offline_learning_pressure_level"],

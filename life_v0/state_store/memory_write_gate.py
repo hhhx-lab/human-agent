@@ -25,6 +25,7 @@ def build_memory_write_gate(
     body_resource_budget: dict[str, Any] | None = None,
     core_affect_vector: dict[str, Any] | None = None,
     body_presence_profile: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
     indexes: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     engram_index = engram_index or {}
@@ -37,6 +38,7 @@ def build_memory_write_gate(
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
         body_presence_profile=body_presence_profile,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     stage_policy = _stage_policy_from_body_signal(body_signal_modulation)
     long_term_governance_refs = [
@@ -163,6 +165,7 @@ def project_memory_write_gate_with_signal_body(
     body_resource_budget: dict[str, Any] | None = None,
     core_affect_vector: dict[str, Any] | None = None,
     body_presence_profile: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not memory_write_gate:
         return {}
@@ -172,6 +175,7 @@ def project_memory_write_gate_with_signal_body(
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
         body_presence_profile=body_presence_profile,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
     if not body_signal_modulation:
         return updated
@@ -188,6 +192,8 @@ def project_memory_write_gate_with_signal_body(
             "unexpected_uncertainty",
             "pain_pressure",
             "dream_residue_load",
+            "offline_learning_pressure_level",
+            "offline_learning_generation",
         ]
     )
     life_support["tracked_fields"] = tracked_fields
@@ -210,6 +216,7 @@ def _body_signal_write_modulation(
     body_resource_budget: dict[str, Any] | None,
     core_affect_vector: dict[str, Any] | None,
     body_presence_profile: dict[str, Any] | None,
+    offline_learning_cumulative_profile: dict[str, Any] | None,
 ) -> dict[str, Any]:
     signal_media_runtime = signal_media_runtime or {}
     modulation_vector = signal_media_runtime.get("modulation_vector", {})
@@ -218,6 +225,11 @@ def _body_signal_write_modulation(
     signal_body_profile = signal_media_runtime.get("body_signal_profile", {})
     if not isinstance(signal_body_profile, dict):
         signal_body_profile = {}
+    offline_learning_profile = _offline_learning_signal_profile(
+        offline_learning_cumulative_profile
+    ) or _offline_learning_signal_profile(
+        signal_media_runtime.get("offline_learning_cumulative_profile")
+    ) or _offline_learning_signal_profile(signal_body_profile)
     body_resource_budget = body_resource_budget or {}
     core_affect_vector = core_affect_vector or {}
     body_presence_profile = body_presence_profile or {}
@@ -227,6 +239,7 @@ def _body_signal_write_modulation(
             body_resource_budget,
             core_affect_vector,
             body_presence_profile,
+            offline_learning_profile,
         ]
     ):
         return {}
@@ -281,12 +294,60 @@ def _body_signal_write_modulation(
         else core_affect_vector.get("responsibility_weight"),
         default=0.0,
     )
+    if offline_learning_profile:
+        offline_scale = _offline_learning_pressure_scale(
+            offline_learning_profile.get("pressure_level")
+        )
+        generation_scale = min(
+            1.0,
+            max(
+                0.0,
+                float(_int_or_zero(offline_learning_profile.get("generation"))) / 4.0,
+            ),
+        )
+        dream_residue_load = max(
+            dream_residue_load,
+            _clamp(0.24 + offline_scale * 0.38 + generation_scale * 0.12),
+        )
+        repair_drive = max(
+            repair_drive,
+            _clamp(
+                0.22
+                + offline_scale * 0.34
+                + (
+                    0.16
+                    if offline_learning_profile.get(
+                        "relationship_reconsolidation_required"
+                    )
+                    else 0.0
+                )
+            ),
+        )
+        unexpected_uncertainty = max(
+            unexpected_uncertainty,
+            _clamp(0.24 + offline_scale * 0.28),
+        )
+        if (
+            offline_learning_profile.get("attention_target")
+            == "relationship_learning_plan"
+        ):
+            relationship_pressure = max(
+                relationship_pressure,
+                _clamp(0.26 + offline_scale * 0.38),
+            )
     write_bias = signal_body_profile.get("memory_write_bias")
     if not write_bias:
         if fatigue_load >= 0.65 or pain_pressure >= 0.65 or unexpected_uncertainty >= 0.65:
             write_bias = "defer_noncritical_memory_commit"
         elif repair_drive >= 0.7 or responsibility_weight >= 0.7:
             write_bias = "repair_evidence_first"
+        elif (
+            offline_learning_profile.get("relationship_reconsolidation_required")
+            is True
+            or offline_learning_profile.get("attention_target")
+            == "relationship_learning_plan"
+        ):
+            write_bias = "relationship_context_first"
         elif relationship_pressure >= 0.65:
             write_bias = "relationship_context_first"
         else:
@@ -294,6 +355,8 @@ def _body_signal_write_modulation(
 
     body_signal_refs = _dedupe(
         _string_list(signal_body_profile.get("body_ref_set"))
+        + _string_list(signal_body_profile.get("offline_learning_ref_set"))
+        + _string_list(offline_learning_profile.get("ref_set"))
         + _string_list(body_presence_profile.get("body_ref_set"))
         + _string_list(
             [
@@ -320,6 +383,14 @@ def _body_signal_write_modulation(
         adjustments.append("prioritize_repair_obligation_memory")
     if dream_residue_load >= 0.55:
         adjustments.append("route_residue_to_dream_replay_before_promotion")
+    if offline_learning_profile.get("pressure_level") in {"elevated", "urgent"}:
+        adjustments.append("preserve_offline_learning_refs_for_reconsolidation")
+    if (
+        offline_learning_profile.get("relationship_reconsolidation_required") is True
+        or offline_learning_profile.get("attention_target")
+        == "relationship_learning_plan"
+    ):
+        adjustments.append("route_offline_learning_to_relationship_replay")
 
     return {
         "schema_version": "body_signal_memory_gate_profile_v0",
@@ -329,6 +400,19 @@ def _body_signal_write_modulation(
         "unexpected_uncertainty": unexpected_uncertainty,
         "pain_pressure": pain_pressure,
         "dream_residue_load": dream_residue_load,
+        "offline_learning_generation": offline_learning_profile.get("generation"),
+        "offline_learning_pressure_level": offline_learning_profile.get(
+            "pressure_level"
+        ),
+        "offline_learning_attention_target": offline_learning_profile.get(
+            "attention_target"
+        ),
+        "offline_learning_integration_mode": offline_learning_profile.get(
+            "integration_mode"
+        ),
+        "offline_learning_relationship_reconsolidation_required": (
+            offline_learning_profile.get("relationship_reconsolidation_required")
+        ),
         "responsibility_weight": responsibility_weight,
         "write_bias": write_bias,
         "candidate_gate_adjustments": adjustments,
@@ -348,6 +432,71 @@ def _stage_policy_from_body_signal(body_signal_modulation: dict[str, Any]) -> st
     if write_bias == "relationship_context_first":
         return "candidate_first_relationship_guarded"
     return "candidate_first_fail_closed"
+
+
+def _offline_learning_signal_profile(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    ref_set = _dedupe(
+        _string_list(value.get("ref_set"))
+        + _string_list(value.get("offline_learning_cumulative_ref_set"))
+        + _string_list(value.get("offline_learning_ref_set"))
+    )
+    generation = _int_or_zero(
+        value.get("generation")
+        or value.get("offline_learning_cumulative_generation")
+        or value.get("offline_learning_generation")
+    )
+    pressure_level = str(
+        value.get("pressure_level")
+        or value.get("offline_learning_cumulative_pressure_level")
+        or value.get("offline_learning_pressure_level")
+        or "quiet"
+    )
+    attention_target = str(
+        value.get("attention_target")
+        or value.get("offline_learning_cumulative_attention_target")
+        or value.get("offline_learning_attention_target")
+        or "baseline_offline_learning_maintenance"
+    )
+    if not any([ref_set, generation, pressure_level != "quiet"]):
+        return {}
+    return {
+        "schema_version": "offline_learning_body_signal_profile_v0",
+        "generation": generation,
+        "pressure_level": pressure_level,
+        "attention_target": attention_target,
+        "integration_mode": str(
+            value.get("integration_mode")
+            or value.get("offline_learning_cumulative_integration_mode")
+            or value.get("offline_learning_integration_mode")
+            or "baseline_offline_learning_maintenance"
+        ),
+        "relationship_reconsolidation_required": bool(
+            value.get("relationship_reconsolidation_required")
+            or value.get(
+                "offline_learning_cumulative_relationship_reconsolidation_required"
+            )
+            or value.get("offline_learning_relationship_reconsolidation_required")
+        ),
+        "ref_set": ref_set,
+    }
+
+
+def _offline_learning_pressure_scale(value: Any) -> float:
+    return {
+        "quiet": 0.0,
+        "present": 0.35,
+        "elevated": 0.72,
+        "urgent": 1.0,
+    }.get(str(value or "quiet"), 0.0)
+
+
+def _int_or_zero(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
 
 
 def _fatigue_load_scale(value: Any) -> float:

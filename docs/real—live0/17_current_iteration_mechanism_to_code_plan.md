@@ -528,19 +528,31 @@ NeedStateVector / BodyRhythmPulse
 
 这段闭合的边界是：身体信号仍然只是内部调制、写门证据和审计材料，不能被代码拼成固定外显语句。语言层可以被它改变取舍、谨慎度和修复姿态，但不应机械播报“我有疲惫/痛苦信号”。
 
+本轮第三段闭合继续把 Queue D 的 `offline_learning_cumulative_profile_v0` 送进身体信号和记忆写门，让梦境/离线成长不只停在 waiting governance 或关系重整链，而是成为长期身体化压力的一部分：
+
+| 环节 | 代码落点 | 新增/加厚字段 |
+|---|---|---|
+| 离线累计到调质 | `life_v0/neural_core/signal_media.py#build_signal_media_runtime` | `offline_learning_cumulative_profile`、`body_signal_profile.offline_learning_*`、离线压力抬高的 dream residue / repair drive / relationship tension |
+| 离线累计到写门 | `life_v0/state_store/memory_write_gate.py#build_memory_write_gate`、`project_memory_write_gate_with_signal_body` | `body_signal_write_modulation.offline_learning_*`、`preserve_offline_learning_refs_for_reconsolidation`、`route_offline_learning_to_relationship_replay` |
+| 语言构建链 | `life_v0/language/__init__.py` | build-language-relationship 阶段先生成 cumulative profile，再投射 signal 与 memory write gate |
+| 常驻 live turn | `process_session_loop.py`、`live_turn_cycle.py`、`process_supervisor/__init__.py` | `offline_learning_cumulative_profile` 从 resident supervision 上下文进入真实回合开头的写门再投射 |
+
+这段闭合把“梦境影响身体/记忆”的工程意义压实为：累计离线学习可以提高梦境残留、修复驱力、不确定性和关系压力，进而改变记忆候选的晋升/暂缓/关系重整路径。它仍然不外显为固定话术。
+
 本轮断链测试：
 
 ```bash
 python3 -m unittest tests.slices.test_language_organs.LanguageOrgansTests.test_inner_speech_expression_monitor_and_relationship_graph_organs -v
 python3 -m unittest tests.slices.test_state_store.StateStoreTests.test_memory_write_gate_consumes_signal_and_body_pressure -v
 python3 -m unittest tests.process.test_response_surface.ResponseSurfaceTests.test_body_signal_memory_gate_crosses_lineage_event_and_response -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_process_session_loop_organ_dispatches_live_turn_and_exits_cleanly -v
 python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_background_continuity_restores_prediction_write_gate_from_lineage_presence -v
 python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_live_turn_cycle_organ_writes_response_and_returns_to_waiting_state -v
 python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_resident_turn_writeback_organ_updates_turn_continuity_and_bundle -v
 python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_process_report_organ_writes_report_digest_and_receipt -v
 ```
 
-当前仍未把 ITR-05 宣告为 live0 整体完成。第一段和第二段已经覆盖 signal / write gate / waiting / lineage / event / response surface / writeback / background continuity / process report / digest / receipt；下一段不再重复检查这些字段，而要做更宽的验证：跑完整 process、state_store、neural_life_core、contract 和 live0 acceptance 测试，并继续观察梦境/offline pressure 是否需要进一步影响长期身体信号累计。
+当前仍未把第 2 点宣告为 live0 整体完成。ITR-05 的第一段和第二段已经覆盖 signal / write gate / waiting / lineage / event / response surface / writeback / background continuity / process report / digest / receipt；第三段已经把梦境/offline pressure 的累计画像压进身体信号和记忆写门，并通过完整 process、state_store、neural_life_core、language、response surface、model expression、contract 和 live0 acceptance 回归。下一步可以对 ITR-05 做收束判断，再决定是否转入 ITR-06 responsibility membrane。
 
 ### `ITR-06 responsibility membrane`
 

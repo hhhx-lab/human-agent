@@ -408,48 +408,83 @@ class StateStoreTests(unittest.TestCase):
 
     def test_memory_write_gate_consumes_signal_and_body_pressure(self):
         from life_v0.state_store.memory_write_gate import build_memory_write_gate
+        from life_v0.neural_core.signal_media import build_signal_media_runtime
+
+        offline_learning_cumulative_profile = {
+            "schema_version": "offline_learning_cumulative_profile_v0",
+            "generation": 3,
+            "pressure_level": "elevated",
+            "attention_target": "relationship_learning_plan",
+            "integration_mode": "relationship_offline_reconsolidation_required",
+            "relationship_reconsolidation_required": True,
+            "ref_set": [
+                "runtime/state/dream/nightmare_loop_risk.json",
+                "runtime/state/growth/relationship_learning_plan.json",
+            ],
+        }
+        signal_with_offline_residue = build_signal_media_runtime(
+            run_id="state-store-body-gate-offline",
+            generated_at="2026-06-14T00:00:00+08:00",
+            body_resource_budget={
+                "schema_version": "body_resource_budget_v0",
+                "fatigue_state": {"level": "managed_low_noise"},
+            },
+            core_affect_vector={
+                "schema_version": "core_affect_vector_v0",
+                "arousal": 0.21,
+                "pain_pressure": 0.12,
+                "dream_residue_load": 0.08,
+                "responsibility_weight": 0.22,
+                "repair_drive": "low",
+            },
+            offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+        )
+        self.assertEqual(
+            signal_with_offline_residue["body_signal_profile"][
+                "offline_learning_pressure_level"
+            ],
+            "elevated",
+        )
+        self.assertEqual(
+            signal_with_offline_residue["body_signal_profile"][
+                "offline_learning_generation"
+            ],
+            3,
+        )
+        self.assertGreaterEqual(
+            signal_with_offline_residue["body_signal_profile"]["dream_residue_load"],
+            0.6,
+        )
+        self.assertIn(
+            "runtime/state/growth/relationship_learning_plan.json",
+            signal_with_offline_residue["body_signal_profile"][
+                "offline_learning_ref_set"
+            ],
+        )
 
         memory_write_gate = build_memory_write_gate(
             run_id="state-store-body-gate",
             generated_at="2026-06-14T00:00:00+08:00",
-            signal_media_runtime={
-                "schema_version": "signal_media_runtime_v0",
-                "body_signal_profile": {
-                    "schema_version": "body_signal_modulation_profile_v0",
-                    "fatigue_load": 0.78,
-                    "pain_pressure": 0.66,
-                    "dream_residue_load": 0.61,
-                    "body_ref_set": [
-                        "runtime/state/body/body_resource_budget.json",
-                        "runtime/state/body/core_affect_vector.json",
-                    ],
-                    "memory_write_bias": "defer_noncritical_memory_commit",
-                },
-                "modulation_vector": {
-                    "fatigue_load": 0.78,
-                    "repair_drive": 0.83,
-                    "relationship_pressure": 0.71,
-                    "unexpected_uncertainty": 0.69,
-                },
-            },
+            signal_media_runtime=signal_with_offline_residue,
             body_resource_budget={
                 "schema_version": "body_resource_budget_v0",
-                "fatigue_state": {"level": "elevated_guard"},
+                "fatigue_state": {"level": "managed_low_noise"},
             },
             core_affect_vector={
                 "schema_version": "core_affect_vector_v0",
-                "arousal": 0.81,
-                "pain_pressure": 0.66,
-                "dream_residue_load": 0.61,
-                "responsibility_weight": 0.73,
-                "repair_drive": "active",
+                "arousal": 0.21,
+                "pain_pressure": 0.12,
+                "dream_residue_load": 0.08,
+                "responsibility_weight": 0.22,
+                "repair_drive": "low",
             },
+            offline_learning_cumulative_profile=offline_learning_cumulative_profile,
             indexes={"memory_index.json": {"stage_policy": "seed_only"}},
         )
 
         self.assertEqual(
             memory_write_gate["stage_policy"],
-            "candidate_first_body_signal_guarded",
+            "candidate_first_relationship_guarded",
         )
         self.assertEqual(
             memory_write_gate["body_signal_write_modulation"]["schema_version"],
@@ -457,7 +492,29 @@ class StateStoreTests(unittest.TestCase):
         )
         self.assertEqual(
             memory_write_gate["body_signal_write_modulation"]["write_bias"],
-            "defer_noncritical_memory_commit",
+            "relationship_context_first",
+        )
+        self.assertEqual(
+            memory_write_gate["body_signal_write_modulation"][
+                "offline_learning_integration_mode"
+            ],
+            "relationship_offline_reconsolidation_required",
+        )
+        self.assertIn(
+            "preserve_offline_learning_refs_for_reconsolidation",
+            memory_write_gate["body_signal_write_modulation"][
+                "candidate_gate_adjustments"
+            ],
+        )
+        self.assertIn(
+            "route_offline_learning_to_relationship_replay",
+            memory_write_gate["body_signal_write_modulation"][
+                "candidate_gate_adjustments"
+            ],
+        )
+        self.assertIn(
+            "runtime/state/growth/relationship_learning_plan.json",
+            memory_write_gate["body_signal_write_modulation"]["body_signal_refs"],
         )
         self.assertIn(
             "runtime/state/body/core_affect_vector.json",
