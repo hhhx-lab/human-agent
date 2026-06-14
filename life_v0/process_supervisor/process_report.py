@@ -6,6 +6,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from life_v0.dream.web_dream_learning import (
+    WEB_DREAM_LEARNING_LOG_REF,
+    WEB_DREAM_LEARNING_SEEDS_REF,
+    WEB_DREAM_LEARNING_STATE_REF,
+)
 from life_v0.membrane.queue_e_signals import build_queue_e_repair_modulation_profile
 
 from .governance_explanation import (
@@ -628,6 +633,15 @@ def write_process_report_bundle(
     exit_dream_memory_tier_profile = _exit_dream_memory_tier_report_profile(
         state_dir=state_dir,
     )
+    web_dream_learning_profile = _web_dream_learning_report_profile(
+        state_dir=state_dir,
+        resident_autonomous_activity_presence_profile=(
+            resolved_resident_autonomous_activity_presence_profile
+        ),
+        background_resident_autonomous_activity_presence_profile=(
+            resolved_background_resident_autonomous_activity_presence_profile
+        ),
+    )
     governance_explanation = write_resident_governance_explanation(
         run_id=run_id,
         generated_at=generated_at,
@@ -1007,6 +1021,7 @@ def write_process_report_bundle(
     report.update(idle_governance)
     report.update(exit_dream_next_wake_profile)
     report.update(exit_dream_memory_tier_profile)
+    report.update(web_dream_learning_profile)
     report["offline_learning_cumulative_integration_mode"] = (
         resolved_offline_learning_cumulative_integration_mode
     )
@@ -1761,6 +1776,7 @@ def write_process_report_bundle(
         digest["membrane_guard_refs"] = membrane_guard_refs
     digest.update(exit_dream_next_wake_profile)
     digest.update(exit_dream_memory_tier_profile)
+    digest.update(web_dream_learning_profile)
     for field_name in HANDOFF_CARRY_FIELD_NAMES:
         if field_name in idle_governance:
             digest[field_name] = idle_governance[field_name]
@@ -1917,6 +1933,41 @@ def write_process_report_bundle(
                 "exit_dream_memory_tier_report_boundary"
             )
         ),
+        web_dream_learning_report_profile=web_dream_learning_profile.get(
+            "web_dream_learning_report_profile"
+        ),
+        web_dream_learning_state_ref=web_dream_learning_profile.get(
+            "web_dream_learning_state_ref"
+        ),
+        web_dream_learning_log_ref=web_dream_learning_profile.get(
+            "web_dream_learning_log_ref"
+        ),
+        web_dream_learning_seeds_ref=web_dream_learning_profile.get(
+            "web_dream_learning_seeds_ref"
+        ),
+        web_dream_learning_status=web_dream_learning_profile.get(
+            "web_dream_learning_status"
+        ),
+        web_dream_learning_selected_url=web_dream_learning_profile.get(
+            "web_dream_learning_selected_url"
+        ),
+        web_dream_learning_topic_candidates=web_dream_learning_profile.get(
+            "web_dream_learning_topic_candidates",
+            [],
+        ),
+        web_dream_learning_wake_question_candidates=(
+            web_dream_learning_profile.get(
+                "web_dream_learning_wake_question_candidates",
+                [],
+            )
+        ),
+        web_dream_learning_ref_set=web_dream_learning_profile.get(
+            "web_dream_learning_ref_set",
+            [],
+        ),
+        web_dream_learning_report_boundary=web_dream_learning_profile.get(
+            "web_dream_learning_report_boundary"
+        ),
     )
 
     receipts_dir.mkdir(parents=True, exist_ok=True)
@@ -2012,6 +2063,16 @@ def build_process_receipt(
     exit_dream_memory_tier_retrievable_context_refs: list[str] | None = None,
     exit_dream_memory_tier_deep_sediment_refs: list[str] | None = None,
     exit_dream_memory_tier_report_boundary: str | None = None,
+    web_dream_learning_report_profile: dict[str, Any] | None = None,
+    web_dream_learning_state_ref: str | None = None,
+    web_dream_learning_log_ref: str | None = None,
+    web_dream_learning_seeds_ref: str | None = None,
+    web_dream_learning_status: str | None = None,
+    web_dream_learning_selected_url: str | None = None,
+    web_dream_learning_topic_candidates: list[str] | None = None,
+    web_dream_learning_wake_question_candidates: list[str] | None = None,
+    web_dream_learning_ref_set: list[str] | None = None,
+    web_dream_learning_report_boundary: str | None = None,
 ) -> dict[str, Any]:
     input_hashes: dict[str, str] = {}
     for path in [
@@ -2074,6 +2135,9 @@ def build_process_receipt(
         state_dir / "dream" / "wake_integration_frame.json",
         state_dir / "dream" / "dream_fact_gate_decision.json",
         state_dir / "dream" / "exit_dream_consolidation_summary.json",
+        state_dir / "dream" / "web_dream_learning_state.json",
+        state_dir / "dream" / "web_dream_learning_log.jsonl",
+        state_dir / "dream" / "web_dream_learning_seeds.json",
         state_dir / "dream" / "nightmare_loop_risk.json",
         state_dir / "growth" / "growth_patch_candidate_queue.json",
         state_dir / "growth" / "belief_learning_plan.json",
@@ -2098,6 +2162,9 @@ def build_process_receipt(
         state_dir / "terminal" / "resident_autonomous_activity_state.json",
         state_dir / "terminal" / "resident_terminal_proactive_state.json",
         state_dir / "terminal" / "resident_terminal_proactive_events.jsonl",
+        state_dir / "dream" / "web_dream_learning_state.json",
+        state_dir / "dream" / "web_dream_learning_log.jsonl",
+        state_dir / "dream" / "web_dream_learning_seeds.json",
     ]:
         input_hashes.setdefault(str(path), sha256_if_exists(path))
 
@@ -2168,6 +2235,22 @@ def build_process_receipt(
         "exit_dream_memory_tier_report_boundary": (
             exit_dream_memory_tier_report_boundary
         ),
+        "web_dream_learning_report_profile": dict(
+            web_dream_learning_report_profile or {}
+        ),
+        "web_dream_learning_state_ref": web_dream_learning_state_ref,
+        "web_dream_learning_log_ref": web_dream_learning_log_ref,
+        "web_dream_learning_seeds_ref": web_dream_learning_seeds_ref,
+        "web_dream_learning_status": web_dream_learning_status,
+        "web_dream_learning_selected_url": web_dream_learning_selected_url,
+        "web_dream_learning_topic_candidates": list(
+            web_dream_learning_topic_candidates or []
+        ),
+        "web_dream_learning_wake_question_candidates": list(
+            web_dream_learning_wake_question_candidates or []
+        ),
+        "web_dream_learning_ref_set": list(web_dream_learning_ref_set or []),
+        "web_dream_learning_report_boundary": web_dream_learning_report_boundary,
         "body_ref_set": list(body_ref_set or []),
         "body_signal_ref_set": list(body_signal_ref_set or []),
         "queue_e_world_contact_ref_set": list(queue_e_world_contact_refs or []),
@@ -2205,6 +2288,10 @@ def build_process_receipt(
                 exit_dream_state_merge_guard_ref,
                 exit_dream_fact_boundary_ref,
                 *(exit_dream_memory_tier_ref_set or []),
+                web_dream_learning_state_ref,
+                web_dream_learning_log_ref,
+                web_dream_learning_seeds_ref,
+                *(web_dream_learning_ref_set or []),
                 *(body_ref_set or []),
                 *(body_signal_ref_set or []),
                 resident_governance_state_ref,
@@ -2560,6 +2647,151 @@ def _exit_dream_memory_tier_report_profile(
         "exit_dream_memory_tier_fact_boundary": fact_boundary,
         "exit_dream_memory_tier_report_boundary": (
             "tiered_report_evidence_not_spoken_language"
+        ),
+    }
+
+
+def _web_dream_learning_report_profile(
+    *,
+    state_dir: Path,
+    resident_autonomous_activity_presence_profile: dict[str, Any],
+    background_resident_autonomous_activity_presence_profile: dict[str, Any],
+) -> dict[str, Any]:
+    web_dream_learning = _read_json_if_exists(
+        state_dir / "dream" / "web_dream_learning_state.json"
+    )
+    state_exists = (state_dir / "dream" / "web_dream_learning_state.json").exists()
+    log_exists = (state_dir / "dream" / "web_dream_learning_log.jsonl").exists()
+    seeds_exists = (state_dir / "dream" / "web_dream_learning_seeds.json").exists()
+    state_ref = _first_non_none(
+        web_dream_learning.get("web_dream_learning_state_ref"),
+        resident_autonomous_activity_presence_profile.get(
+            "last_web_dream_learning_state_ref"
+        ),
+        background_resident_autonomous_activity_presence_profile.get(
+            "last_web_dream_learning_state_ref"
+        ),
+        WEB_DREAM_LEARNING_STATE_REF if state_exists else None,
+    )
+    log_ref = _first_non_none(
+        web_dream_learning.get("web_dream_learning_log_ref"),
+        WEB_DREAM_LEARNING_LOG_REF if log_exists else None,
+    )
+    seeds_ref = _first_non_none(
+        web_dream_learning.get("web_dream_learning_seeds_ref"),
+        WEB_DREAM_LEARNING_SEEDS_REF if seeds_exists else None,
+    )
+    status = _first_non_none(
+        web_dream_learning.get("status"),
+        resident_autonomous_activity_presence_profile.get(
+            "last_web_dream_learning_status"
+        ),
+        background_resident_autonomous_activity_presence_profile.get(
+            "last_web_dream_learning_status"
+        ),
+    )
+    topic_candidates = _dedupe_refs(
+        [
+            *_list_or_empty(web_dream_learning.get("topic_candidates")),
+            *_list_or_empty(
+                resident_autonomous_activity_presence_profile.get(
+                    "last_web_dream_learning_topic_candidates"
+                )
+            ),
+            *_list_or_empty(
+                background_resident_autonomous_activity_presence_profile.get(
+                    "last_web_dream_learning_topic_candidates"
+                )
+            ),
+        ]
+    )
+    wake_question_candidates = _dedupe_refs(
+        [
+            *_list_or_empty(web_dream_learning.get("wake_question_candidates")),
+            *_list_or_empty(
+                resident_autonomous_activity_presence_profile.get(
+                    "last_web_dream_learning_wake_question_candidates"
+                )
+            ),
+            *_list_or_empty(
+                background_resident_autonomous_activity_presence_profile.get(
+                    "last_web_dream_learning_wake_question_candidates"
+                )
+            ),
+        ]
+    )
+    ref_set = _dedupe_refs(
+        [
+            *_list_or_empty(web_dream_learning.get("ref_set")),
+            state_ref,
+            log_ref,
+            seeds_ref,
+        ]
+    )
+    if not any(
+        [
+            web_dream_learning,
+            state_ref,
+            log_ref,
+            seeds_ref,
+            status,
+            topic_candidates,
+            wake_question_candidates,
+        ]
+    ):
+        return {}
+    profile = {
+        "schema_version": "web_dream_learning_report_profile_v0",
+        "status": status,
+        "state_ref": state_ref,
+        "log_ref": log_ref,
+        "seeds_ref": seeds_ref,
+        "selected_url": web_dream_learning.get("selected_url"),
+        "final_url": web_dream_learning.get("final_url"),
+        "page_title": web_dream_learning.get("page_title"),
+        "content_digest": web_dream_learning.get("content_digest"),
+        "external_action_policy": web_dream_learning.get(
+            "external_action_policy"
+        ),
+        "topic_candidates": topic_candidates,
+        "wake_question_candidates": wake_question_candidates,
+        "topic_count": len(topic_candidates),
+        "wake_question_candidate_count": len(wake_question_candidates),
+        "ref_set": ref_set,
+        "autonomous_activity_status_source": _first_non_none(
+            resident_autonomous_activity_presence_profile.get(
+                "last_web_dream_learning_status"
+            ),
+            background_resident_autonomous_activity_presence_profile.get(
+                "last_web_dream_learning_status"
+            ),
+        ),
+        "report_boundary": "structured_dream_learning_evidence_not_spoken_language",
+    }
+    return {
+        "web_dream_learning_report_profile": profile,
+        "web_dream_learning_state_ref": state_ref,
+        "web_dream_learning_log_ref": log_ref,
+        "web_dream_learning_seeds_ref": seeds_ref,
+        "web_dream_learning_status": status,
+        "web_dream_learning_selected_url": web_dream_learning.get("selected_url"),
+        "web_dream_learning_final_url": web_dream_learning.get("final_url"),
+        "web_dream_learning_page_title": web_dream_learning.get("page_title"),
+        "web_dream_learning_content_digest": web_dream_learning.get(
+            "content_digest"
+        ),
+        "web_dream_learning_policy": web_dream_learning.get(
+            "external_action_policy"
+        ),
+        "web_dream_learning_topic_candidates": topic_candidates,
+        "web_dream_learning_wake_question_candidates": wake_question_candidates,
+        "web_dream_learning_topic_count": len(topic_candidates),
+        "web_dream_learning_wake_question_candidate_count": len(
+            wake_question_candidates
+        ),
+        "web_dream_learning_ref_set": ref_set,
+        "web_dream_learning_report_boundary": (
+            "structured_dream_learning_evidence_not_spoken_language"
         ),
     }
 

@@ -10175,6 +10175,19 @@ class PersistentDigitalLifeProcessTests(
                 *expected_retrievable_context_refs,
                 *expected_deep_sediment_refs,
             ]
+            expected_web_dream_learning_refs = [
+                "runtime/state/dream/web_dream_learning_state.json",
+                "runtime/state/dream/web_dream_learning_log.jsonl",
+                "runtime/state/dream/web_dream_learning_seeds.json",
+            ]
+            expected_web_dream_learning_topic_candidates = [
+                "Brain-inspired memory",
+                "Predictive dreams",
+            ]
+            expected_web_dream_learning_wake_question_candidates = [
+                "wake_question_about:Brain-inspired memory",
+                "wake_question_about:Predictive dreams",
+            ]
 
             self._write_json(reports_dir / "digital_life_shell_report.json", {"status": "closed"})
             self._write_json(reports_dir / "digital_life_waiting_heartbeat.json", {"heartbeat_counter": 3})
@@ -10386,6 +10399,14 @@ class PersistentDigitalLifeProcessTests(
                         },
                         "last_activity_kind": "self_thinking",
                         "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                        "last_web_dream_learning_state_ref": "runtime/state/dream/web_dream_learning_state.json",
+                        "last_web_dream_learning_status": "learned",
+                        "last_web_dream_learning_topic_candidates": (
+                            expected_web_dream_learning_topic_candidates
+                        ),
+                        "last_web_dream_learning_wake_question_candidates": (
+                            expected_web_dream_learning_wake_question_candidates
+                        ),
                         "activity_state_refs": {
                             "sleep": "runtime/state/terminal/resident_sleep_cycle_state.json",
                             "memory_recall": "runtime/state/memory/resident_memory_recall_state.json",
@@ -10414,6 +10435,7 @@ class PersistentDigitalLifeProcessTests(
                             "runtime/state/self/resident_self_thinking_state.json",
                             "runtime/state/growth/resident_growth_rehearsal_state.json",
                             "runtime/state/growth/resident_learning_consolidation_state.json",
+                            *expected_web_dream_learning_refs,
                         ],
                     },
                     "background_resident_autonomous_activity_presence_profile": {
@@ -10429,6 +10451,14 @@ class PersistentDigitalLifeProcessTests(
                         },
                         "last_activity_kind": "self_thinking",
                         "last_activity_state_ref": "runtime/state/self/resident_self_thinking_state.json",
+                        "last_web_dream_learning_state_ref": "runtime/state/dream/web_dream_learning_state.json",
+                        "last_web_dream_learning_status": "learned",
+                        "last_web_dream_learning_topic_candidates": (
+                            expected_web_dream_learning_topic_candidates
+                        ),
+                        "last_web_dream_learning_wake_question_candidates": (
+                            expected_web_dream_learning_wake_question_candidates
+                        ),
                         "cycle_phase_index": 2,
                         "cycle_phase_count": 5,
                         "cycle_completion_count": 2,
@@ -10450,6 +10480,7 @@ class PersistentDigitalLifeProcessTests(
                             "runtime/state/self/resident_self_thinking_state.json",
                             "runtime/state/growth/resident_growth_rehearsal_state.json",
                             "runtime/state/growth/resident_learning_consolidation_state.json",
+                            *expected_web_dream_learning_refs,
                         ],
                     },
                     "exit_dream_next_wake_governance_ref": "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance",
@@ -10760,6 +10791,63 @@ class PersistentDigitalLifeProcessTests(
                 },
             )
             self._write_json(
+                state_dir / "dream" / "web_dream_learning_state.json",
+                {
+                    "schema_version": "web_dream_learning_state_v0",
+                    "status": "learned",
+                    "generated_at": "2026-06-09T00:00:00+00:00",
+                    "sequence": 3,
+                    "external_action_policy": "read_configured_seed_url_only_no_side_effect",
+                    "seed_count": 1,
+                    "selected_seed_index": 0,
+                    "selected_url": "https://example.org/brain-dream",
+                    "final_url": "https://example.org/brain-dream",
+                    "page_title": "Brain-inspired memory",
+                    "content_digest": "digest-web-dream-001",
+                    "topic_candidates": expected_web_dream_learning_topic_candidates,
+                    "wake_question_candidates": (
+                        expected_web_dream_learning_wake_question_candidates
+                    ),
+                    "dream_learning_summary": (
+                        "Brain-inspired memory -> Brain-inspired memory、Predictive dreams"
+                    ),
+                    "web_dream_learning_state_ref": "runtime/state/dream/web_dream_learning_state.json",
+                    "web_dream_learning_log_ref": "runtime/state/dream/web_dream_learning_log.jsonl",
+                    "web_dream_learning_seeds_ref": "runtime/state/dream/web_dream_learning_seeds.json",
+                    "ref_set": expected_web_dream_learning_refs,
+                },
+            )
+            (state_dir / "dream" / "web_dream_learning_log.jsonl").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "web_dream_learning_event_v0",
+                        "sequence": 3,
+                        "generated_at": "2026-06-09T00:00:00+00:00",
+                        "status": "learned",
+                        "selected_url": "https://example.org/brain-dream",
+                        "page_title": "Brain-inspired memory",
+                        "topic_candidates": (
+                            expected_web_dream_learning_topic_candidates
+                        ),
+                        "web_dream_learning_state_ref": (
+                            "runtime/state/dream/web_dream_learning_state.json"
+                        ),
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            self._write_json(
+                state_dir / "dream" / "web_dream_learning_seeds.json",
+                {
+                    "schema_version": "web_dream_learning_seeds_v0",
+                    "enabled": True,
+                    "seed_urls": ["https://example.org/brain-dream"],
+                    "timeout_seconds": 1.0,
+                },
+            )
+            self._write_json(
                 state_dir / "action" / "responsibility_loop_state.json",
                 {
                     "schema_version": "responsibility_loop_state_v0",
@@ -10978,6 +11066,7 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/self/resident_self_thinking_state.json",
                 "runtime/state/growth/resident_growth_rehearsal_state.json",
                 "runtime/state/growth/resident_learning_consolidation_state.json",
+                *expected_web_dream_learning_refs,
             ]
             expected_life_constraint_refs = [
                 "runtime/state/action/action_candidate_set.json#life_constraint_profile",
@@ -11423,6 +11512,46 @@ class PersistentDigitalLifeProcessTests(
                     artifact["exit_dream_memory_tier_report_boundary"],
                     "tiered_report_evidence_not_spoken_language",
                 )
+                self.assertEqual(
+                    artifact["web_dream_learning_report_profile"][
+                        "schema_version"
+                    ],
+                    "web_dream_learning_report_profile_v0",
+                )
+                self.assertEqual(artifact["web_dream_learning_status"], "learned")
+                self.assertEqual(
+                    artifact["web_dream_learning_state_ref"],
+                    "runtime/state/dream/web_dream_learning_state.json",
+                )
+                self.assertEqual(
+                    artifact["web_dream_learning_log_ref"],
+                    "runtime/state/dream/web_dream_learning_log.jsonl",
+                )
+                self.assertEqual(
+                    artifact["web_dream_learning_seeds_ref"],
+                    "runtime/state/dream/web_dream_learning_seeds.json",
+                )
+                self.assertEqual(
+                    artifact["web_dream_learning_topic_candidates"],
+                    expected_web_dream_learning_topic_candidates,
+                )
+                self.assertEqual(
+                    artifact["web_dream_learning_wake_question_candidates"],
+                    expected_web_dream_learning_wake_question_candidates,
+                )
+                self.assertEqual(
+                    artifact["web_dream_learning_ref_set"],
+                    expected_web_dream_learning_refs,
+                )
+                self.assertEqual(artifact["web_dream_learning_topic_count"], 2)
+                self.assertEqual(
+                    artifact["web_dream_learning_wake_question_candidate_count"],
+                    2,
+                )
+                self.assertEqual(
+                    artifact["web_dream_learning_report_boundary"],
+                    "structured_dream_learning_evidence_not_spoken_language",
+                )
             self.assertEqual(
                 digest["resident_autonomous_activity_ref"],
                 "runtime/state/terminal/resident_autonomous_activity.jsonl",
@@ -11582,6 +11711,29 @@ class PersistentDigitalLifeProcessTests(
             )
             for ref in expected_exit_dream_memory_tier_ref_set:
                 self.assertIn(ref, receipt["shared_object_refs"])
+            self.assertEqual(
+                receipt["web_dream_learning_report_profile"]["schema_version"],
+                "web_dream_learning_report_profile_v0",
+            )
+            self.assertEqual(receipt["web_dream_learning_status"], "learned")
+            self.assertEqual(
+                receipt["web_dream_learning_ref_set"],
+                expected_web_dream_learning_refs,
+            )
+            self.assertEqual(
+                receipt["web_dream_learning_topic_candidates"],
+                expected_web_dream_learning_topic_candidates,
+            )
+            self.assertEqual(
+                receipt["web_dream_learning_wake_question_candidates"],
+                expected_web_dream_learning_wake_question_candidates,
+            )
+            self.assertEqual(
+                receipt["web_dream_learning_report_boundary"],
+                "structured_dream_learning_evidence_not_spoken_language",
+            )
+            for ref in expected_web_dream_learning_refs:
+                self.assertIn(ref, receipt["shared_object_refs"])
             self.assertEqual(receipt["body_ref_set"], expected_body_refs)
             self.assertEqual(receipt["body_signal_ref_set"], expected_body_signal_refs)
             for ref in expected_body_signal_refs:
@@ -11683,6 +11835,9 @@ class PersistentDigitalLifeProcessTests(
                 "/runtime/state/self/autobiographical_stack.json",
                 "/runtime/state/life_state.json",
                 "/runtime/state/dream/exit_dream_consolidation_summary.json",
+                "/runtime/state/dream/web_dream_learning_state.json",
+                "/runtime/state/dream/web_dream_learning_log.jsonl",
+                "/runtime/state/dream/web_dream_learning_seeds.json",
             ]:
                 self.assertIn(
                     True,
