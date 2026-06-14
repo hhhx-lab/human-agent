@@ -1199,6 +1199,91 @@ def load_background_continuity_profile(
             "memory_write_gate_policy"
         )
     )
+    body_signal_write_bias = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=("body_signal_write_bias", "background_body_signal_write_bias"),
+    )
+    body_signal_fatigue_load = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=("body_signal_fatigue_load", "background_body_signal_fatigue_load"),
+    )
+    body_signal_pain_pressure = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=("body_signal_pain_pressure", "background_body_signal_pain_pressure"),
+    )
+    body_signal_dream_residue_load = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=(
+            "body_signal_dream_residue_load",
+            "background_body_signal_dream_residue_load",
+        ),
+    )
+    body_signal_repair_drive = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=("body_signal_repair_drive", "background_body_signal_repair_drive"),
+    )
+    body_signal_unexpected_uncertainty = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=(
+            "body_signal_unexpected_uncertainty",
+            "background_body_signal_unexpected_uncertainty",
+        ),
+    )
+    body_signal_ref_count = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=("body_signal_ref_count", "background_body_signal_ref_count"),
+    )
+    body_signal_refs = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            resident_background_prediction_write_gate_presence,
+            keys=("body_signal_refs", "background_body_signal_refs"),
+        )
+    )
+    body_signal_candidate_gate_adjustments = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            resident_background_prediction_write_gate_presence,
+            keys=(
+                "body_signal_candidate_gate_adjustments",
+                "background_body_signal_candidate_gate_adjustments",
+            ),
+        )
+    )
     workspace_frame_ref = _first_present(
         resident_governance_state,
         snapshot,
@@ -1993,6 +2078,27 @@ def load_background_continuity_profile(
     if memory_write_gate_policy:
         profile["background_memory_write_gate_policy"] = str(
             memory_write_gate_policy
+        )
+    if body_signal_write_bias:
+        profile["background_body_signal_write_bias"] = str(body_signal_write_bias)
+    for key, value in (
+        ("background_body_signal_fatigue_load", body_signal_fatigue_load),
+        ("background_body_signal_pain_pressure", body_signal_pain_pressure),
+        ("background_body_signal_dream_residue_load", body_signal_dream_residue_load),
+        ("background_body_signal_repair_drive", body_signal_repair_drive),
+        (
+            "background_body_signal_unexpected_uncertainty",
+            body_signal_unexpected_uncertainty,
+        ),
+        ("background_body_signal_ref_count", body_signal_ref_count),
+    ):
+        if value is not None:
+            profile[key] = value
+    if body_signal_refs:
+        profile["background_body_signal_refs"] = body_signal_refs
+    if body_signal_candidate_gate_adjustments:
+        profile["background_body_signal_candidate_gate_adjustments"] = (
+            body_signal_candidate_gate_adjustments
         )
     if resident_background_identity_consciousness_birth_presence:
         profile["background_identity_consciousness_birth_presence"] = (

@@ -518,6 +518,40 @@ def write_resident_turn_writeback(
             resident_background_lineage_refs
             + resident_background_lineage_prediction_write_gate_refs
         )
+    resident_background_lineage_body_signal_refs = _dedupe_refs(
+        list(
+            resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_refs"
+            )
+            or []
+        )
+        + list(prediction_write_gate_payload.get("body_signal_refs") or [])
+    )
+    resident_background_lineage_body_signal_write_bias = (
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_body_signal_write_bias"
+        )
+        or prediction_write_gate_payload.get("body_signal_write_bias")
+    )
+    resident_background_lineage_body_signal_candidate_gate_adjustments = _dedupe_refs(
+        list(
+            resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_candidate_gate_adjustments"
+            )
+            or []
+        )
+        + list(
+            prediction_write_gate_payload.get(
+                "body_signal_candidate_gate_adjustments"
+            )
+            or []
+        )
+    )
+    if resident_background_lineage_body_signal_refs:
+        resident_background_lineage_refs = _dedupe_refs(
+            resident_background_lineage_refs
+            + resident_background_lineage_body_signal_refs
+        )
     dialogue_writeback_bundle = build_dialogue_writeback_bundle(
         run_id=run_id,
         generated_at=generated_at,
@@ -628,6 +662,79 @@ def write_resident_turn_writeback(
             resident_background_lineage_heartbeat_cadence_refs
         ),
         resident_background_lineage_body_refs=resident_background_lineage_body_refs,
+        resident_background_lineage_body_signal_refs=(
+            resident_background_lineage_body_signal_refs
+        ),
+        resident_background_lineage_body_signal_write_bias=(
+            str(resident_background_lineage_body_signal_write_bias)
+            if resident_background_lineage_body_signal_write_bias
+            else None
+        ),
+        resident_background_lineage_body_signal_fatigue_load=(
+            resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_fatigue_load"
+            )
+            if resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_fatigue_load"
+            )
+            is not None
+            else prediction_write_gate_payload.get("body_signal_fatigue_load")
+        ),
+        resident_background_lineage_body_signal_pain_pressure=(
+            resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_pain_pressure"
+            )
+            if resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_pain_pressure"
+            )
+            is not None
+            else prediction_write_gate_payload.get("body_signal_pain_pressure")
+        ),
+        resident_background_lineage_body_signal_dream_residue_load=(
+            resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_dream_residue_load"
+            )
+            if resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_dream_residue_load"
+            )
+            is not None
+            else prediction_write_gate_payload.get("body_signal_dream_residue_load")
+        ),
+        resident_background_lineage_body_signal_repair_drive=(
+            resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_repair_drive"
+            )
+            if resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_repair_drive"
+            )
+            is not None
+            else prediction_write_gate_payload.get("body_signal_repair_drive")
+        ),
+        resident_background_lineage_body_signal_unexpected_uncertainty=(
+            resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_unexpected_uncertainty"
+            )
+            if resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_unexpected_uncertainty"
+            )
+            is not None
+            else prediction_write_gate_payload.get(
+                "body_signal_unexpected_uncertainty"
+            )
+        ),
+        resident_background_lineage_body_signal_ref_count=(
+            resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_ref_count"
+            )
+            if resident_background_lineage_payload.get(
+                "resident_background_lineage_body_signal_ref_count"
+            )
+            is not None
+            else prediction_write_gate_payload.get("body_signal_ref_count")
+        ),
+        resident_background_lineage_body_signal_candidate_gate_adjustments=(
+            resident_background_lineage_body_signal_candidate_gate_adjustments
+        ),
         resident_background_lineage_prediction_write_gate_refs=(
             resident_background_lineage_prediction_write_gate_refs
         ),

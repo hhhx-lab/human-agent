@@ -2358,6 +2358,11 @@ class PersistentDigitalLifeProcessTests(
             "runtime/state/memory/memory_write_gate.json",
             "runtime/state/memory/state_merge_guard.json",
         ]
+        expected_body_signal_refs = [
+            "runtime/state/signal/signal_media_runtime.json",
+            "runtime/state/body/body_resource_budget.json",
+            "runtime/state/body/core_affect_vector.json",
+        ]
 
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -2380,6 +2385,17 @@ class PersistentDigitalLifeProcessTests(
                             "prediction_attention_reason": "active_sampling_route_prioritizes_repair_pressure",
                             "active_sampling_route": "repair_inspect",
                             "memory_write_gate_policy": "repair_first_quarantine",
+                            "body_signal_write_bias": "defer_noncritical_memory_commit",
+                            "body_signal_fatigue_load": 0.78,
+                            "body_signal_pain_pressure": 0.66,
+                            "body_signal_dream_residue_load": 0.61,
+                            "body_signal_repair_drive": 0.83,
+                            "body_signal_unexpected_uncertainty": 0.69,
+                            "body_signal_ref_count": len(expected_body_signal_refs),
+                            "body_signal_refs": expected_body_signal_refs,
+                            "body_signal_candidate_gate_adjustments": [
+                                "defer_low_salience_write_until_recovery"
+                            ],
                         },
                     },
                 },
@@ -2414,6 +2430,27 @@ class PersistentDigitalLifeProcessTests(
         self.assertEqual(
             profile["background_memory_write_gate_policy"],
             "repair_first_quarantine",
+        )
+        self.assertEqual(
+            profile["background_body_signal_write_bias"],
+            "defer_noncritical_memory_commit",
+        )
+        self.assertEqual(profile["background_body_signal_fatigue_load"], 0.78)
+        self.assertEqual(profile["background_body_signal_pain_pressure"], 0.66)
+        self.assertEqual(profile["background_body_signal_dream_residue_load"], 0.61)
+        self.assertEqual(profile["background_body_signal_repair_drive"], 0.83)
+        self.assertEqual(
+            profile["background_body_signal_unexpected_uncertainty"],
+            0.69,
+        )
+        self.assertEqual(profile["background_body_signal_ref_count"], 3)
+        self.assertEqual(
+            profile["background_body_signal_refs"],
+            expected_body_signal_refs,
+        )
+        self.assertEqual(
+            profile["background_body_signal_candidate_gate_adjustments"],
+            ["defer_low_salience_write_until_recovery"],
         )
 
     def test_background_continuity_restores_identity_consciousness_birth_from_lineage_presence(self):
@@ -8475,6 +8512,11 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/memory/memory_write_gate.json",
                 "runtime/state/memory/state_merge_guard.json",
             ]
+            expected_body_signal_refs = [
+                "runtime/state/signal/signal_media_runtime.json",
+                "runtime/state/body/body_resource_budget.json",
+                "runtime/state/body/core_affect_vector.json",
+            ]
             self.assertEqual(
                 result.last_life_turn["prediction_waiting_posture"],
                 "hold_for_evidence",
@@ -8486,6 +8528,24 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(
                 result.last_life_turn["prediction_write_gate_refs"],
                 expected_prediction_write_gate_refs,
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_body_signal_refs"
+                ],
+                expected_body_signal_refs,
+            )
+            self.assertEqual(
+                result.last_life_turn[
+                    "resident_background_lineage_body_signal_write_bias"
+                ],
+                "repair_evidence_first",
+            )
+            self.assertIn(
+                "prioritize_repair_obligation_memory",
+                result.last_life_turn[
+                    "resident_background_lineage_body_signal_candidate_gate_adjustments"
+                ],
             )
             self.assertEqual(
                 result.last_life_turn["offline_learning_cumulative_generation"],
@@ -9608,6 +9668,11 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/body/body_resource_budget.json",
                 "runtime/state/body/core_affect_vector.json",
             ]
+            expected_body_signal_refs = [
+                "runtime/state/signal/signal_media_runtime.json",
+                "runtime/state/body/body_resource_budget.json",
+                "runtime/state/body/core_affect_vector.json",
+            ]
 
             self._write_json(reports_dir / "digital_life_shell_report.json", {"status": "closed"})
             self._write_json(reports_dir / "digital_life_waiting_heartbeat.json", {"heartbeat_counter": 3})
@@ -9680,6 +9745,18 @@ class PersistentDigitalLifeProcessTests(
                         "body_ref_set": expected_body_refs,
                     },
                     "body_ref_set": expected_body_refs,
+                    "background_body_signal_refs": expected_body_signal_refs,
+                    "background_body_signal_write_bias": "repair_evidence_first",
+                    "background_body_signal_fatigue_load": 0.42,
+                    "background_body_signal_pain_pressure": 0.41,
+                    "background_body_signal_dream_residue_load": 0.57,
+                    "background_body_signal_repair_drive": 0.78,
+                    "background_body_signal_unexpected_uncertainty": 0.38,
+                    "background_body_signal_ref_count": len(expected_body_signal_refs),
+                    "background_body_signal_candidate_gate_adjustments": [
+                        "prioritize_repair_obligation_memory",
+                        "route_residue_to_dream_replay_before_promotion",
+                    ],
                     "background_dominant_convergence_pressure_level": "present",
                     "background_dominant_convergence_state": "stabilized_cross_process_continuity",
                     "background_trait_convergence_history_focus": "trait_stability_hold",
@@ -10253,6 +10330,21 @@ class PersistentDigitalLifeProcessTests(
                 ],
             )
             self.assertEqual(
+                report["background_body_signal_refs"],
+                expected_body_signal_refs,
+            )
+            self.assertEqual(
+                report["background_body_signal_write_bias"],
+                "repair_evidence_first",
+            )
+            self.assertEqual(
+                report["background_body_signal_candidate_gate_adjustments"],
+                [
+                    "prioritize_repair_obligation_memory",
+                    "route_residue_to_dream_replay_before_promotion",
+                ],
+            )
+            self.assertEqual(
                 report["trait_drift_monitor_ref"],
                 "runtime/state/body/trait_drift_monitor.json",
             )
@@ -10369,6 +10461,21 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(
                 digest["background_body_presence_profile"]["body_ref_set"],
                 expected_body_refs,
+            )
+            self.assertEqual(
+                digest["background_body_signal_refs"],
+                expected_body_signal_refs,
+            )
+            self.assertEqual(
+                digest["background_body_signal_write_bias"],
+                "repair_evidence_first",
+            )
+            self.assertEqual(
+                digest["background_body_signal_candidate_gate_adjustments"],
+                [
+                    "prioritize_repair_obligation_memory",
+                    "route_residue_to_dream_replay_before_promotion",
+                ],
             )
             self.assertEqual(
                 digest["dream_wake_presence_profile"]["continuity_mode"],
@@ -10491,6 +10598,9 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertEqual(receipt["dream_wake_ref_set"], expected_dream_wake_refs)
             self.assertEqual(receipt["body_ref_set"], expected_body_refs)
+            self.assertEqual(receipt["body_signal_ref_set"], expected_body_signal_refs)
+            for ref in expected_body_signal_refs:
+                self.assertIn(ref, receipt["shared_object_refs"])
             self.assertEqual(
                 receipt["resident_autonomous_activity_ref"],
                 "runtime/state/terminal/resident_autonomous_activity.jsonl",
@@ -16404,6 +16514,11 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/memory/memory_write_gate.json",
                 "runtime/state/memory/state_merge_guard.json",
             ]
+            expected_body_signal_refs = [
+                "runtime/state/signal/signal_media_runtime.json",
+                "runtime/state/body/body_resource_budget.json",
+                "runtime/state/body/core_affect_vector.json",
+            ]
             expected_heartbeat_cadence_refs = [
                 "runtime/state/growth/relationship_learning_plan.json",
                 "runtime/state/growth/language_learning_plan.json",
@@ -16473,6 +16588,17 @@ class PersistentDigitalLifeProcessTests(
                 "prediction_attention_reason": "active_sampling_route_prioritizes_repair_pressure",
                 "active_sampling_route": "repair_inspect",
                 "memory_write_gate_policy": "repair_first_quarantine",
+                "body_signal_write_bias": "defer_noncritical_memory_commit",
+                "body_signal_fatigue_load": 0.78,
+                "body_signal_pain_pressure": 0.66,
+                "body_signal_dream_residue_load": 0.61,
+                "body_signal_repair_drive": 0.83,
+                "body_signal_unexpected_uncertainty": 0.69,
+                "body_signal_ref_count": len(expected_body_signal_refs),
+                "body_signal_refs": expected_body_signal_refs,
+                "body_signal_candidate_gate_adjustments": [
+                    "defer_low_salience_write_until_recovery"
+                ],
             }
             terminal_life_loop_state.update(
                 {
@@ -17042,6 +17168,24 @@ class PersistentDigitalLifeProcessTests(
                 ],
             )
             self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_body_signal_refs"
+                ],
+                expected_body_signal_refs,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_body_signal_write_bias"
+                ],
+                "defer_noncritical_memory_commit",
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_body_signal_candidate_gate_adjustments"
+                ],
+                ["defer_low_salience_write_until_recovery"],
+            )
+            self.assertEqual(
                 dialogue_writeback_bundle["live_language_turn_refs"],
                 [
                     "runtime/state/language/language_percept_frame.json",
@@ -17060,6 +17204,11 @@ class PersistentDigitalLifeProcessTests(
                 dialogue_writeback_bundle["resident_background_lineage_refs"],
             )
             for ref in expected_prediction_write_gate_refs:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle["resident_background_lineage_refs"],
+                )
+            for ref in expected_body_signal_refs:
                 self.assertIn(
                     ref,
                     dialogue_writeback_bundle["resident_background_lineage_refs"],
@@ -17316,6 +17465,30 @@ class PersistentDigitalLifeProcessTests(
                     "resident_background_lineage_prediction_write_gate_refs"
                 ],
                 expected_prediction_write_gate_refs,
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_body_signal_refs"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_body_signal_refs"
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_body_signal_write_bias"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_body_signal_write_bias"
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_body_signal_candidate_gate_adjustments"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_body_signal_candidate_gate_adjustments"
+                ],
             )
             self.assertEqual(
                 resumed_dialogue_packet[

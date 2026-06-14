@@ -22,6 +22,9 @@ from .resident_turn_writeback import (
 from .model_expression import ModelExpressionResult, compose_model_expression
 from .response_surface import compose_life_response, compose_life_spoken_response
 from ..state_store.memory_retrieval import project_memory_retrieval_from_live_turn
+from ..state_store.memory_write_gate import (
+    project_memory_write_gate_with_signal_body,
+)
 
 
 @dataclass(frozen=True)
@@ -111,6 +114,13 @@ def run_live_turn_cycle(
     recover_from_dialogue_turn_exception_fn: Callable[..., Any] = recover_from_dialogue_turn_exception,
 ) -> LiveTurnCycleResult:
     turn_counter += 1
+    if memory_write_gate:
+        memory_write_gate = project_memory_write_gate_with_signal_body(
+            memory_write_gate=memory_write_gate,
+            signal_media_runtime=signal_media_runtime,
+            body_resource_budget=body_resource_budget,
+            core_affect_vector=core_affect_vector,
+        )
     external_turn_id = f"dialogue-turn-live-{turn_counter:04d}"
     external_turn = build_external_turn_event_fn(
         turn_id=external_turn_id,

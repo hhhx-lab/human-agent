@@ -237,12 +237,37 @@ BodyResourceBudget + CoreAffectVector
 | Lineage/Event | `background_lineage_state.py`、`dialogue_events.py` | 把 `body_signal_*` 固化到 `prediction_write_gate_presence` 和 `digital_life_turn` |
 | Response Material | `response_surface.py` | 把同一组字段放进结构化表达材料，不释放固定自然语言 |
 
+第二段工程闭合已经把同一组 `body_signal_*` 从“事件和回应材料”继续推进到跨唤醒写回、关闭态报告和下一次恢复：
+
+```text
+ResidentBackgroundLineage.prediction_write_gate_presence.body_signal_*
+  -> BackgroundContinuityProfile.background_body_signal_*
+  -> IdleStrategy background_body_signal_*
+  -> DigitalLifeTurn resident_background_lineage_body_signal_*
+  -> DialogueWritebackBundle.resident_background_lineage_body_signal_*
+  -> ResumedExternalDialoguePacket resident_background_lineage_body_signal_*
+  -> ProcessReport / Digest / Receipt body_signal_ref_set
+```
+
+新增闭合点：
+
+| 层 | 文件 | 责任 |
+|---|---|---|
+| Background Restore | `life_v0/process_supervisor/background_continuity.py` | 从上一轮 lineage / governance / report 恢复 `background_body_signal_*` 与 candidate gate adjustments |
+| Live Turn Projection | `life_v0/process_supervisor/live_turn_cycle.py` | 在真实回合开头把当前 `memory_write_gate` 通过 body / affect / signal 再投影一次，确保事件和语言拿到最新身体写门 |
+| Writeback Bundle | `life_v0/terminal_loop/dialogue_writeback.py`、`resident_turn_writeback.py` | 为 `resident_background_lineage_body_signal_refs`、write bias、疲惫/痛苦/梦境残留/修复驱动/不确定性和 candidate adjustments 建立专用写回槽，并并入总 lineage refs |
+| Closeout Evidence | `process_report.py`、`idle_strategy.py` | 让 `background_body_signal_*` 通过过滤层进入 process report / digest，并在 process receipt 中暴露 `body_signal_ref_set` |
+
 本轮验证：
 
 ```bash
 python3 -m unittest tests.slices.test_language_organs -v
 python3 -m unittest tests.slices.test_state_store -v
 python3 -m unittest tests.process.test_response_surface -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_background_continuity_restores_prediction_write_gate_from_lineage_presence -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_live_turn_cycle_organ_writes_response_and_returns_to_waiting_state -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_resident_turn_writeback_organ_updates_turn_continuity_and_bundle -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_process_report_organ_writes_report_digest_and_receipt -v
 ```
 
 ## 不允许出现的退化

@@ -410,6 +410,9 @@ class ResponseSurfaceTests(unittest.TestCase):
             build_resident_background_lineage_state,
         )
         from life_v0.process_supervisor.dialogue_events import build_life_turn_event
+        from life_v0.terminal_loop.dialogue_writeback import (
+            build_dialogue_writeback_bundle,
+        )
 
         body_signal_refs = [
             "runtime/state/signal/signal_media_runtime.json",
@@ -478,6 +481,59 @@ class ResponseSurfaceTests(unittest.TestCase):
         self.assertEqual(
             life_turn["resident_background_lineage_body_signal_refs"],
             body_signal_refs,
+        )
+
+        bundle = build_dialogue_writeback_bundle(
+            run_id="body-signal-writeback",
+            generated_at="2026-06-14T00:00:00+08:00",
+            status="closed",
+            dialogue_event_refs=[
+                "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+            ],
+            self_narrative_writeback_refs=[],
+            relationship_writeback_refs=[],
+            relationship_timeline_writeback_refs=[],
+            commitment_writeback_refs=[],
+            commitment_expression_writeback_refs=[],
+            apology_repair_writeback_refs=[],
+            responsibility_writeback_refs=[],
+            life_state_writeback_refs=[],
+            replay_cue_refs=[],
+            terminal_state_refs=[],
+            source_doc_refs=[],
+            readme_block_refs=[],
+            runtime_carrier_refs=[],
+            resident_background_lineage_refs=body_signal_refs,
+            resident_background_lineage_prediction_write_gate_refs=[
+                "runtime/state/memory/memory_write_gate.json"
+            ],
+            resident_background_lineage_body_signal_refs=body_signal_refs,
+            resident_background_lineage_body_signal_write_bias=(
+                "defer_noncritical_memory_commit"
+            ),
+            resident_background_lineage_body_signal_fatigue_load=0.78,
+            resident_background_lineage_body_signal_pain_pressure=0.66,
+            resident_background_lineage_body_signal_dream_residue_load=0.61,
+            resident_background_lineage_body_signal_repair_drive=0.83,
+            resident_background_lineage_body_signal_unexpected_uncertainty=0.69,
+            resident_background_lineage_body_signal_ref_count=len(body_signal_refs),
+            resident_background_lineage_body_signal_candidate_gate_adjustments=[
+                "defer_low_salience_write_until_recovery"
+            ],
+        )
+        self.assertEqual(
+            bundle["resident_background_lineage_body_signal_refs"],
+            body_signal_refs,
+        )
+        self.assertEqual(
+            bundle["resident_background_lineage_body_signal_write_bias"],
+            "defer_noncritical_memory_commit",
+        )
+        self.assertEqual(
+            bundle[
+                "resident_background_lineage_body_signal_candidate_gate_adjustments"
+            ],
+            ["defer_low_salience_write_until_recovery"],
         )
 
         material = compose_life_response(

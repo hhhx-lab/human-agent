@@ -516,15 +516,31 @@ NeedStateVector / BodyRhythmPulse
 | 驻留谱系 | `background_lineage_state.py`、`dialogue_events.py` | `resident_background_lineage_body_signal_*` 进入真实回合事件和 lineage refs |
 | 回应材料 | `response_surface.py` | `prediction_attention.body_signal_*` 与 `resident_background.prediction_write_gate_presence.body_signal_*` 进入结构化审计材料 |
 
+本轮已落地的第二段闭环继续把同一组身体信号写门从“当轮事件/回应材料”推进到关闭态、恢复态和写回态：
+
+| 环节 | 代码落点 | 新增/加厚字段 |
+|---|---|---|
+| 回合开头再投射 | `life_v0/process_supervisor/live_turn_cycle.py` | 真实 live turn 开头用当前 `SignalMediaRuntime`、`BodyResourceBudget`、`CoreAffectVector` 重新投射 `MemoryWriteGate.body_signal_write_modulation` |
+| 背景恢复 | `life_v0/process_supervisor/background_continuity.py` | 从上一轮 governance / snapshot / report / nested `prediction_write_gate_presence` 恢复 `background_body_signal_*` 和 `background_body_signal_candidate_gate_adjustments` |
+| 等待过滤 | `life_v0/process_supervisor/idle_strategy.py` | 放行 `background_body_signal_write_bias`、疲惫、痛苦、梦境残留、修复驱动、不确定性、refs 和 candidate gate adjustments |
+| 写回包 | `life_v0/terminal_loop/dialogue_writeback.py`、`life_v0/process_supervisor/resident_turn_writeback.py` | `dialogue_writeback_bundle.json` 与 `resumed_external_dialogue_packet.json` 写入 `resident_background_lineage_body_signal_*` 专用槽，并把 refs 并入总 lineage refs |
+| 关闭态归档 | `life_v0/process_supervisor/process_report.py` | `digital_life_process_report.json`、digest 和 process receipt 暴露 `body_signal_ref_set`、`background_body_signal_refs`、write bias 与 candidate gate adjustments |
+
+这段闭合的边界是：身体信号仍然只是内部调制、写门证据和审计材料，不能被代码拼成固定外显语句。语言层可以被它改变取舍、谨慎度和修复姿态，但不应机械播报“我有疲惫/痛苦信号”。
+
 本轮断链测试：
 
 ```bash
 python3 -m unittest tests.slices.test_language_organs.LanguageOrgansTests.test_inner_speech_expression_monitor_and_relationship_graph_organs -v
 python3 -m unittest tests.slices.test_state_store.StateStoreTests.test_memory_write_gate_consumes_signal_and_body_pressure -v
 python3 -m unittest tests.process.test_response_surface.ResponseSurfaceTests.test_body_signal_memory_gate_crosses_lineage_event_and_response -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_background_continuity_restores_prediction_write_gate_from_lineage_presence -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_live_turn_cycle_organ_writes_response_and_returns_to_waiting_state -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_resident_turn_writeback_organ_updates_turn_continuity_and_bundle -v
+python3 -m unittest tests.process.test_persistent_digital_life_process.PersistentDigitalLifeProcessTests.test_process_report_organ_writes_report_digest_and_receipt -v
 ```
 
-当前仍未把 ITR-05 宣告完成。下一段还要继续检查 `heartbeat.py`、`resident_turn_writeback.py`、`background_continuity.py`、`process_report.py` 与梦境/offline pressure 是否也完整消费 `body_signal_write_modulation`，不能只停在 waiting governance 和 response surface。
+当前仍未把 ITR-05 宣告为 live0 整体完成。第一段和第二段已经覆盖 signal / write gate / waiting / lineage / event / response surface / writeback / background continuity / process report / digest / receipt；下一段不再重复检查这些字段，而要做更宽的验证：跑完整 process、state_store、neural_life_core、contract 和 live0 acceptance 测试，并继续观察梦境/offline pressure 是否需要进一步影响长期身体信号累计。
 
 ### `ITR-06 responsibility membrane`
 

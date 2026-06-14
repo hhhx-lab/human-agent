@@ -56,6 +56,21 @@ def build_dialogue_writeback_bundle(
     resident_background_lineage_life_constraint_refs: list[str] | None = None,
     resident_background_lineage_heartbeat_cadence_refs: list[str] | None = None,
     resident_background_lineage_body_refs: list[str] | None = None,
+    resident_background_lineage_body_signal_refs: list[str] | None = None,
+    resident_background_lineage_body_signal_write_bias: str | None = None,
+    resident_background_lineage_body_signal_fatigue_load: float | int | None = None,
+    resident_background_lineage_body_signal_pain_pressure: float | int | None = None,
+    resident_background_lineage_body_signal_dream_residue_load: (
+        float | int | None
+    ) = None,
+    resident_background_lineage_body_signal_repair_drive: float | int | None = None,
+    resident_background_lineage_body_signal_unexpected_uncertainty: (
+        float | int | None
+    ) = None,
+    resident_background_lineage_body_signal_ref_count: int | None = None,
+    resident_background_lineage_body_signal_candidate_gate_adjustments: (
+        list[str] | None
+    ) = None,
     resident_background_lineage_prediction_write_gate_refs: list[str] | None = None,
     resident_background_lineage_memory_retrieval_refs: list[str] | None = None,
     life_constraint_refs: list[str] | None = None,
@@ -154,6 +169,34 @@ def build_dialogue_writeback_bundle(
         ),
         "resident_background_lineage_body_refs": list(
             resident_background_lineage_body_refs or []
+        ),
+        "resident_background_lineage_body_signal_refs": list(
+            resident_background_lineage_body_signal_refs or []
+        ),
+        "resident_background_lineage_body_signal_write_bias": (
+            resident_background_lineage_body_signal_write_bias
+        ),
+        "resident_background_lineage_body_signal_fatigue_load": (
+            resident_background_lineage_body_signal_fatigue_load
+        ),
+        "resident_background_lineage_body_signal_pain_pressure": (
+            resident_background_lineage_body_signal_pain_pressure
+        ),
+        "resident_background_lineage_body_signal_dream_residue_load": (
+            resident_background_lineage_body_signal_dream_residue_load
+        ),
+        "resident_background_lineage_body_signal_repair_drive": (
+            resident_background_lineage_body_signal_repair_drive
+        ),
+        "resident_background_lineage_body_signal_unexpected_uncertainty": (
+            resident_background_lineage_body_signal_unexpected_uncertainty
+        ),
+        "resident_background_lineage_body_signal_ref_count": (
+            resident_background_lineage_body_signal_ref_count
+        ),
+        "resident_background_lineage_body_signal_candidate_gate_adjustments": list(
+            resident_background_lineage_body_signal_candidate_gate_adjustments
+            or []
         ),
         "resident_background_lineage_prediction_write_gate_refs": list(
             resident_background_lineage_prediction_write_gate_refs or []

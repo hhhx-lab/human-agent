@@ -363,6 +363,28 @@ def write_process_report_bundle(
         resolved_background_body_presence_profile["body_ref_set"] = (
             resolved_body_ref_set
         )
+    resolved_body_signal_ref_set = _dedupe_refs(
+        [
+            *_list_or_empty(idle_governance.get("body_signal_refs")),
+            *_list_or_empty(idle_governance.get("background_body_signal_refs")),
+        ]
+    )
+    resolved_background_body_signal_write_bias = _first_non_none(
+        idle_governance.get("background_body_signal_write_bias"),
+        idle_governance.get("body_signal_write_bias"),
+    )
+    resolved_background_body_signal_candidate_gate_adjustments = _dedupe_refs(
+        [
+            *_list_or_empty(
+                idle_governance.get(
+                    "background_body_signal_candidate_gate_adjustments"
+                )
+            ),
+            *_list_or_empty(
+                idle_governance.get("body_signal_candidate_gate_adjustments")
+            ),
+        ]
+    )
     resolved_resident_autonomous_activity_presence_profile = _dict_or_empty(
         idle_governance.get("resident_autonomous_activity_presence_profile")
         or idle_governance.get("background_resident_autonomous_activity_presence_profile")
@@ -668,6 +690,39 @@ def write_process_report_bundle(
         "memory_write_gate_ref": memory_write_gate_ref,
         "state_merge_guard_ref": state_merge_guard_runtime_ref,
         "prediction_write_gate_refs": prediction_write_gate_refs,
+        "body_signal_ref_set": resolved_body_signal_ref_set,
+        "background_body_signal_refs": resolved_body_signal_ref_set,
+        "background_body_signal_write_bias": (
+            resolved_background_body_signal_write_bias
+        ),
+        "background_body_signal_fatigue_load": _first_non_none(
+            idle_governance.get("background_body_signal_fatigue_load"),
+            idle_governance.get("body_signal_fatigue_load"),
+        ),
+        "background_body_signal_pain_pressure": _first_non_none(
+            idle_governance.get("background_body_signal_pain_pressure"),
+            idle_governance.get("body_signal_pain_pressure"),
+        ),
+        "background_body_signal_dream_residue_load": _first_non_none(
+            idle_governance.get("background_body_signal_dream_residue_load"),
+            idle_governance.get("body_signal_dream_residue_load"),
+        ),
+        "background_body_signal_repair_drive": _first_non_none(
+            idle_governance.get("background_body_signal_repair_drive"),
+            idle_governance.get("body_signal_repair_drive"),
+        ),
+        "background_body_signal_unexpected_uncertainty": _first_non_none(
+            idle_governance.get("background_body_signal_unexpected_uncertainty"),
+            idle_governance.get("body_signal_unexpected_uncertainty"),
+        ),
+        "background_body_signal_ref_count": _first_non_none(
+            idle_governance.get("background_body_signal_ref_count"),
+            idle_governance.get("body_signal_ref_count"),
+            len(resolved_body_signal_ref_set) if resolved_body_signal_ref_set else None,
+        ),
+        "background_body_signal_candidate_gate_adjustments": (
+            resolved_background_body_signal_candidate_gate_adjustments
+        ),
         "trait_drift_monitor_ref": trait_drift_monitor_ref,
         "background_convergence_summary_ref": background_convergence_summary_ref,
         "background_convergence_history_ref": background_convergence_history_ref,
@@ -1469,6 +1524,14 @@ def write_process_report_bundle(
             "life_constraint_attention_reason"
         ),
         "prediction_write_gate_refs": prediction_write_gate_refs,
+        "body_signal_ref_set": resolved_body_signal_ref_set,
+        "background_body_signal_refs": resolved_body_signal_ref_set,
+        "background_body_signal_write_bias": (
+            resolved_background_body_signal_write_bias
+        ),
+        "background_body_signal_candidate_gate_adjustments": (
+            resolved_background_body_signal_candidate_gate_adjustments
+        ),
         **state_merge_profile,
     }
     digest["dream_wake_presence_profile"].setdefault(
@@ -1561,6 +1624,7 @@ def write_process_report_bundle(
         idle_heartbeat_trace_ref=idle_governance.get("idle_heartbeat_trace_ref"),
         dream_wake_ref_set=resolved_dream_wake_ref_set,
         body_ref_set=resolved_body_ref_set,
+        body_signal_ref_set=resolved_body_signal_ref_set,
         resident_autonomous_activity_ref=resolved_resident_autonomous_activity_ref,
         resident_autonomous_activity_state_ref=(
             resolved_resident_autonomous_activity_state_ref
@@ -1644,6 +1708,7 @@ def build_process_receipt(
     idle_heartbeat_trace_ref: str | None = None,
     dream_wake_ref_set: list[str] | None = None,
     body_ref_set: list[str] | None = None,
+    body_signal_ref_set: list[str] | None = None,
     resident_autonomous_activity_ref: str | None = None,
     resident_autonomous_activity_state_ref: str | None = None,
     resident_autonomous_activity_ref_set: list[str] | None = None,
@@ -1770,6 +1835,7 @@ def build_process_receipt(
         ),
         "dream_wake_ref_set": list(dream_wake_ref_set or []),
         "body_ref_set": list(body_ref_set or []),
+        "body_signal_ref_set": list(body_signal_ref_set or []),
         "resident_autonomous_activity_ref": resident_autonomous_activity_ref,
         "resident_autonomous_activity_state_ref": resident_autonomous_activity_state_ref,
         "resident_autonomous_activity_ref_set": list(
@@ -1794,6 +1860,7 @@ def build_process_receipt(
                 idle_heartbeat_trace_ref,
                 *(dream_wake_ref_set or []),
                 *(body_ref_set or []),
+                *(body_signal_ref_set or []),
                 resident_governance_state_ref,
                 resident_governance_snapshot_ref,
                 resident_governance_explanation_ref,
