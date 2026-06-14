@@ -116,6 +116,10 @@ def compose_life_response(
     offline_presence = _dict_value(lineage, "offline_learning_presence")
     dream_wake_presence = _dict_value(lineage, "dream_wake_presence")
     memory_retrieval_presence = _dict_value(lineage, "memory_retrieval_presence")
+    exit_dream_next_wake_surface = _exit_dream_next_wake_surface(
+        memory_retrieval_frame,
+        memory_retrieval_presence,
+    )
     autonomous_presence = _dict_value(lineage, "autonomous_activity_presence")
     birth_repair_presence = _dict_value(lineage, "birth_repair_presence")
     life_constraint_presence = _dict_value(lineage, "life_constraint_presence")
@@ -230,6 +234,7 @@ def compose_life_response(
                 ),
             },
             "memory_retrieval": memory_retrieval_summary,
+            "exit_dream_next_wake": exit_dream_next_wake_surface,
             "resident_memory_retrieval_presence": _selected_keys(
                 memory_retrieval_presence,
                 (
@@ -240,6 +245,13 @@ def compose_life_response(
                     "relationship_hit_count",
                     "dream_residue_hit_count",
                     "responsibility_hit_count",
+                    "exit_dream_next_wake_governance_ref",
+                    "exit_dream_next_wake_memory_cue_refs",
+                    "exit_dream_next_wake_governance_refs",
+                    "exit_dream_memory_write_gate_ref",
+                    "exit_dream_state_merge_guard_ref",
+                    "exit_dream_fact_boundary_ref",
+                    "exit_dream_next_wake_candidate_boundary",
                     "ref_count",
                 ),
             ),
@@ -804,6 +816,68 @@ def _identity_consciousness_birth_surface(
     return {
         "anchor_refs": anchor_refs,
         "ref_count": len(anchor_refs),
+    }
+
+
+def _exit_dream_next_wake_surface(
+    memory_retrieval_frame: dict[str, Any] | None,
+    memory_retrieval_presence: dict[str, Any] | None,
+) -> dict[str, Any]:
+    frame_governance = {}
+    if isinstance(memory_retrieval_frame, dict):
+        frame_governance = memory_retrieval_frame.get(
+            "exit_dream_next_wake_governance"
+        )
+        if not isinstance(frame_governance, dict):
+            frame_governance = {}
+    presence = memory_retrieval_presence if isinstance(memory_retrieval_presence, dict) else {}
+    cue_refs = _dedupe_string_list(
+        _string_list(frame_governance.get("next_wake_memory_cue_refs"))
+        + _string_list(presence.get("exit_dream_next_wake_memory_cue_refs"))
+    )
+    governance_refs = _dedupe_string_list(
+        _string_list(frame_governance.get("governance_refs"))
+        + _string_list(presence.get("exit_dream_next_wake_governance_refs"))
+    )
+    ref_set = _dedupe_string_list(
+        cue_refs
+        + governance_refs
+        + _string_list(
+            [
+                frame_governance.get("memory_write_gate_ref"),
+                frame_governance.get("state_merge_guard_ref"),
+                frame_governance.get("dream_fact_boundary_ref"),
+                presence.get("exit_dream_memory_write_gate_ref"),
+                presence.get("exit_dream_state_merge_guard_ref"),
+                presence.get("exit_dream_fact_boundary_ref"),
+            ]
+        )
+    )
+    if not ref_set:
+        return {}
+    return {
+        "schema_version": "exit_dream_next_wake_surface_v0",
+        "cue_ref_count": len(cue_refs),
+        "governance_ref_count": len(governance_refs),
+        "memory_write_gate_ref": (
+            frame_governance.get("memory_write_gate_ref")
+            or presence.get("exit_dream_memory_write_gate_ref")
+        ),
+        "state_merge_guard_ref": (
+            frame_governance.get("state_merge_guard_ref")
+            or presence.get("exit_dream_state_merge_guard_ref")
+        ),
+        "dream_fact_boundary_ref": (
+            frame_governance.get("dream_fact_boundary_ref")
+            or presence.get("exit_dream_fact_boundary_ref")
+        ),
+        "candidate_boundary": (
+            frame_governance.get("candidate_boundary")
+            or presence.get("exit_dream_next_wake_candidate_boundary")
+        ),
+        "language_boundary": "structured_context_only_not_spoken_template",
+        "ref_set": ref_set,
+        "ref_count": len(ref_set),
     }
 
 

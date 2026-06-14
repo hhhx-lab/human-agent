@@ -129,6 +129,13 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "memory_retrieval_responsibility_hit_count",
     "memory_retrieval_ref_set",
     "memory_retrieval_presence_profile",
+    "exit_dream_next_wake_governance_ref",
+    "exit_dream_next_wake_memory_cue_refs",
+    "exit_dream_next_wake_governance_refs",
+    "exit_dream_memory_write_gate_ref",
+    "exit_dream_state_merge_guard_ref",
+    "exit_dream_fact_boundary_ref",
+    "exit_dream_next_wake_candidate_boundary",
     "background_memory_retrieval_presence_profile",
     "background_memory_retrieval_frame_ref",
     "background_memory_retrieval_reconstruction_focus",
@@ -1175,6 +1182,37 @@ def decide_idle_strategy(
             "ref_set",
             [],
         ),
+        "exit_dream_next_wake_governance_ref": (
+            memory_retrieval_presence_profile.get(
+                "exit_dream_next_wake_governance_ref"
+            )
+        ),
+        "exit_dream_next_wake_memory_cue_refs": (
+            memory_retrieval_presence_profile.get(
+                "exit_dream_next_wake_memory_cue_refs",
+                [],
+            )
+        ),
+        "exit_dream_next_wake_governance_refs": (
+            memory_retrieval_presence_profile.get(
+                "exit_dream_next_wake_governance_refs",
+                [],
+            )
+        ),
+        "exit_dream_memory_write_gate_ref": (
+            memory_retrieval_presence_profile.get("exit_dream_memory_write_gate_ref")
+        ),
+        "exit_dream_state_merge_guard_ref": (
+            memory_retrieval_presence_profile.get("exit_dream_state_merge_guard_ref")
+        ),
+        "exit_dream_fact_boundary_ref": (
+            memory_retrieval_presence_profile.get("exit_dream_fact_boundary_ref")
+        ),
+        "exit_dream_next_wake_candidate_boundary": (
+            memory_retrieval_presence_profile.get(
+                "exit_dream_next_wake_candidate_boundary"
+            )
+        ),
         "background_memory_retrieval_frame_ref": memory_retrieval_presence_profile.get(
             "background_memory_retrieval_frame_ref"
         ),
@@ -1589,12 +1627,34 @@ def _memory_retrieval_presence_profile(
                 terminal_life_loop_state.get("memory_retrieval_presence_profile")
             ).get("ref_set")
         )
+        + _string_list(
+            terminal_life_loop_state.get("exit_dream_next_wake_memory_cue_refs")
+        )
+        + _string_list(
+            terminal_life_loop_state.get("exit_dream_next_wake_governance_refs")
+        )
+        + _string_list(
+            [
+                terminal_life_loop_state.get("exit_dream_memory_write_gate_ref"),
+                terminal_life_loop_state.get("exit_dream_state_merge_guard_ref"),
+                terminal_life_loop_state.get("exit_dream_fact_boundary_ref"),
+            ]
+        )
         + ([str(current_ref)] if current_ref else [])
     )
     background_ref_set = _dedupe_string_list(
         _string_list(background_presence.get("ref_set"))
         + _string_list(background_continuity_profile.get("background_memory_retrieval_ref_set"))
         + _string_list(background_continuity_profile.get("memory_retrieval_ref_set"))
+        + _string_list(background_presence.get("exit_dream_next_wake_memory_cue_refs"))
+        + _string_list(background_presence.get("exit_dream_next_wake_governance_refs"))
+        + _string_list(
+            [
+                background_presence.get("exit_dream_memory_write_gate_ref"),
+                background_presence.get("exit_dream_state_merge_guard_ref"),
+                background_presence.get("exit_dream_fact_boundary_ref"),
+            ]
+        )
         + (
             [
                 str(
@@ -1669,6 +1729,48 @@ def _memory_retrieval_presence_profile(
             ),
             "background_ref_set": background_ref_set,
             "background_memory_retrieval_presence_profile": background_presence,
+            "exit_dream_next_wake_governance_ref": (
+                terminal_life_loop_state.get("exit_dream_next_wake_governance_ref")
+                or background_presence.get("exit_dream_next_wake_governance_ref")
+            ),
+            "exit_dream_next_wake_memory_cue_refs": _dedupe_string_list(
+                _string_list(
+                    terminal_life_loop_state.get(
+                        "exit_dream_next_wake_memory_cue_refs"
+                    )
+                )
+                + _string_list(
+                    background_presence.get("exit_dream_next_wake_memory_cue_refs")
+                )
+            ),
+            "exit_dream_next_wake_governance_refs": _dedupe_string_list(
+                _string_list(
+                    terminal_life_loop_state.get(
+                        "exit_dream_next_wake_governance_refs"
+                    )
+                )
+                + _string_list(
+                    background_presence.get("exit_dream_next_wake_governance_refs")
+                )
+            ),
+            "exit_dream_memory_write_gate_ref": (
+                terminal_life_loop_state.get("exit_dream_memory_write_gate_ref")
+                or background_presence.get("exit_dream_memory_write_gate_ref")
+            ),
+            "exit_dream_state_merge_guard_ref": (
+                terminal_life_loop_state.get("exit_dream_state_merge_guard_ref")
+                or background_presence.get("exit_dream_state_merge_guard_ref")
+            ),
+            "exit_dream_fact_boundary_ref": (
+                terminal_life_loop_state.get("exit_dream_fact_boundary_ref")
+                or background_presence.get("exit_dream_fact_boundary_ref")
+            ),
+            "exit_dream_next_wake_candidate_boundary": (
+                terminal_life_loop_state.get(
+                    "exit_dream_next_wake_candidate_boundary"
+                )
+                or background_presence.get("exit_dream_next_wake_candidate_boundary")
+            ),
             "ref_count": len(all_refs),
             "ref_set": all_refs,
         }
@@ -1691,6 +1793,27 @@ def _shallow_memory_retrieval_presence_profile(
             "relationship_hit_count": profile.get("relationship_hit_count"),
             "dream_residue_hit_count": profile.get("dream_residue_hit_count"),
             "responsibility_hit_count": profile.get("responsibility_hit_count"),
+            "exit_dream_next_wake_governance_ref": profile.get(
+                "exit_dream_next_wake_governance_ref"
+            ),
+            "exit_dream_next_wake_memory_cue_refs": _string_list(
+                profile.get("exit_dream_next_wake_memory_cue_refs")
+            ),
+            "exit_dream_next_wake_governance_refs": _string_list(
+                profile.get("exit_dream_next_wake_governance_refs")
+            ),
+            "exit_dream_memory_write_gate_ref": profile.get(
+                "exit_dream_memory_write_gate_ref"
+            ),
+            "exit_dream_state_merge_guard_ref": profile.get(
+                "exit_dream_state_merge_guard_ref"
+            ),
+            "exit_dream_fact_boundary_ref": profile.get(
+                "exit_dream_fact_boundary_ref"
+            ),
+            "exit_dream_next_wake_candidate_boundary": profile.get(
+                "exit_dream_next_wake_candidate_boundary"
+            ),
             "ref_count": profile.get("ref_count"),
             "ref_set": _string_list(profile.get("ref_set")),
         }

@@ -8081,6 +8081,15 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/action/action_candidate_set.json#life_constraint_profile",
                 "runtime/state/consciousness/consciousness_probe_bundle.json",
             ]
+            expected_exit_dream_next_wake_memory_cue_refs = [
+                "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs",
+                "runtime/state/memory/dialogue_memory_summary.json#next_wake_memory_cue_refs",
+            ]
+            expected_exit_dream_next_wake_governance_refs = [
+                "runtime/state/memory/memory_write_gate.json",
+                "runtime/state/memory/state_merge_guard.json",
+                "runtime/state/dream/exit_dream_consolidation_summary.json#dream_fact_boundary",
+            ]
             idle_strategy_state.update(
                 {
                     "background_resident_governance_explanation_ref": "runtime/reports/latest/digital_life_resident_governance_explanation.json",
@@ -8131,6 +8140,50 @@ class PersistentDigitalLifeProcessTests(
                 }
             )
             self._write_json(context.terminal_dir / "idle_strategy_state.json", idle_strategy_state)
+            relationship_memory = self._read_json(
+                paths["state_root"] / "memory" / "relationship_memory.json"
+            )
+            relationship_memory["next_wake_memory_cue_refs"] = (
+                expected_exit_dream_next_wake_memory_cue_refs
+            )
+            relationship_memory["memory_write_gate_ref"] = (
+                "runtime/state/memory/memory_write_gate.json"
+            )
+            relationship_memory["state_merge_guard_ref"] = (
+                "runtime/state/memory/state_merge_guard.json"
+            )
+            relationship_memory["dream_fact_boundary_ref"] = (
+                "runtime/state/dream/exit_dream_consolidation_summary.json#dream_fact_boundary"
+            )
+            relationship_memory["exit_dream_governance_refs"] = (
+                expected_exit_dream_next_wake_governance_refs
+            )
+            self._write_json(
+                paths["state_root"] / "memory" / "relationship_memory.json",
+                relationship_memory,
+            )
+            state_merge_guard = self._read_json(
+                paths["state_root"] / "memory" / "state_merge_guard.json"
+            )
+            state_merge_guard.setdefault("long_term_change_sources", {})
+            state_merge_guard["long_term_change_sources"][
+                "next_wake_memory_cue_refs"
+            ] = expected_exit_dream_next_wake_memory_cue_refs
+            state_merge_guard["long_term_change_sources"][
+                "dream_fact_boundary_refs"
+            ] = [
+                "runtime/state/dream/exit_dream_consolidation_summary.json#dream_fact_boundary"
+            ]
+            state_merge_guard["exit_dream_state_merge_projection"] = {
+                "memory_write_gate_ref": "runtime/state/memory/memory_write_gate.json",
+                "next_wake_memory_cue_refs": (
+                    expected_exit_dream_next_wake_memory_cue_refs
+                ),
+            }
+            self._write_json(
+                paths["state_root"] / "memory" / "state_merge_guard.json",
+                state_merge_guard,
+            )
             terminal_life_loop_state = {
                 **context.terminal_life_loop_state,
                 "background_resident_governance_state_ref": "runtime/state/terminal/resident_governance_state.json",
@@ -8454,6 +8507,9 @@ class PersistentDigitalLifeProcessTests(
 
             safe_terminal_loop = self._read_json(paths["terminal_state"] / "safe_terminal_loop_state.json")
             terminal_loop_state = self._read_json(paths["terminal_state"] / "terminal_life_loop_state.json")
+            memory_retrieval_frame = self._read_json(
+                paths["state_root"] / "memory" / "memory_retrieval_frame.json"
+            )
             dialogue_writeback_bundle = self._read_json(paths["reports"] / "dialogue_writeback_bundle.json")
             resumed_dialogue_packet = self._read_json(
                 paths["reports"] / "resumed_external_dialogue_packet.json"
@@ -8978,6 +9034,42 @@ class PersistentDigitalLifeProcessTests(
             self.assertNotIn("焦点在regret_pressure", result.emitted_output)
             self.assertNotIn("生命约束姿态schema_guarded_waiting", result.emitted_output)
             self.assertNotIn("约束焦点life_constraint_profile", result.emitted_output)
+            self.assertEqual(
+                memory_retrieval_frame["exit_dream_next_wake_governance"][
+                    "next_wake_memory_cue_refs"
+                ],
+                expected_exit_dream_next_wake_memory_cue_refs,
+            )
+            self.assertEqual(
+                memory_retrieval_frame["exit_dream_next_wake_governance"][
+                    "candidate_boundary"
+                ],
+                "reactivate_as_cue_material_not_fixed_language",
+            )
+            self.assertEqual(
+                terminal_loop_state["exit_dream_next_wake_memory_cue_refs"],
+                expected_exit_dream_next_wake_memory_cue_refs,
+            )
+            self.assertEqual(
+                terminal_loop_state["exit_dream_next_wake_governance_refs"],
+                expected_exit_dream_next_wake_governance_refs,
+            )
+            self.assertEqual(
+                terminal_loop_state["exit_dream_next_wake_candidate_boundary"],
+                "reactivate_as_cue_material_not_fixed_language",
+            )
+            self.assertEqual(
+                result.last_life_turn["exit_dream_next_wake_memory_cue_refs"],
+                expected_exit_dream_next_wake_memory_cue_refs,
+            )
+            self.assertEqual(
+                result.last_life_turn["exit_dream_memory_write_gate_ref"],
+                "runtime/state/memory/memory_write_gate.json",
+            )
+            self.assertNotIn(
+                "exit_dream_next_wake_governance",
+                result.last_life_turn["utterance"],
+            )
             self.assertEqual(safe_terminal_loop["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(terminal_loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
             self.assertEqual(
@@ -9221,6 +9313,28 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertEqual(
                 dialogue_writeback_bundle[
+                    "exit_dream_next_wake_memory_cue_refs"
+                ],
+                expected_exit_dream_next_wake_memory_cue_refs,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "exit_dream_next_wake_governance_refs"
+                ],
+                expected_exit_dream_next_wake_governance_refs,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle["exit_dream_memory_write_gate_ref"],
+                "runtime/state/memory/memory_write_gate.json",
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "exit_dream_next_wake_candidate_boundary"
+                ],
+                "reactivate_as_cue_material_not_fixed_language",
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
                     "resident_background_lineage_prediction_write_gate_refs"
                 ],
                 expected_prediction_write_gate_refs,
@@ -9321,6 +9435,20 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(
                 resumed_dialogue_packet["resident_background_lineage_depth_band"],
                 "deep_persistent_lineage",
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "exit_dream_next_wake_memory_cue_refs"
+                ],
+                dialogue_writeback_bundle[
+                    "exit_dream_next_wake_memory_cue_refs"
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "exit_dream_next_wake_candidate_boundary"
+                ],
+                "reactivate_as_cue_material_not_fixed_language",
             )
             self.assertEqual(
                 resumed_dialogue_packet[

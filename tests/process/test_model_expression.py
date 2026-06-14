@@ -174,6 +174,28 @@ class ModelExpressionTests(unittest.TestCase):
                     "responsibility_hits": [
                         "runtime/state/responsibility/responsibility_ledger.json#responsibility_events"
                     ],
+                    "exit_dream_next_wake_governance": {
+                        "schema_version": "exit_dream_next_wake_governance_v0",
+                        "memory_write_gate_ref": (
+                            "runtime/state/memory/memory_write_gate.json"
+                        ),
+                        "state_merge_guard_ref": (
+                            "runtime/state/memory/state_merge_guard.json"
+                        ),
+                        "dream_fact_boundary_ref": (
+                            "runtime/state/dream/dream_fact_boundary.json"
+                        ),
+                        "writeback_route": "memory_write_gate_then_state_merge_guard",
+                        "next_wake_memory_cue_refs": [
+                            "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs"
+                        ],
+                        "governance_refs": [
+                            "runtime/state/memory/memory_write_gate.json#exit_dream_write_gate_envelope"
+                        ],
+                        "candidate_boundary": (
+                            "reactivate_as_cue_material_not_fixed_language"
+                        ),
+                    },
                     "blocked_or_quarantined_refs": [],
                     "tiered_recall": {
                         "schema_version": "memory_retrieval_tiered_recall_v0",
@@ -314,6 +336,18 @@ class ModelExpressionTests(unittest.TestCase):
                 "responsibility_memory_reconstruction",
             )
             self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "exit_dream_next_wake_cue_ref_count"
+                ],
+                1,
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "exit_dream_write_gate_ref"
+                ],
+                "runtime/state/memory/memory_write_gate.json",
+            )
+            self.assertEqual(
                 expression_context["resident_background"][
                     "previous_live_turn_waiting_handoff_profile"
                 ]["lineage_depth_band"],
@@ -369,6 +403,18 @@ class ModelExpressionTests(unittest.TestCase):
                     "memory_retrieval_reconstruction_focus"
                 ],
                 "responsibility_memory_reconstruction",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "exit_dream_next_wake_cue_ref_count"
+                ],
+                1,
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "exit_dream_state_merge_guard_ref"
+                ],
+                "runtime/state/memory/state_merge_guard.json",
             )
             self.assertEqual(
                 state["post_expression_gate"]["required_evidence_flags"].count(

@@ -698,8 +698,35 @@ def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
         + _string_list(governance.get("background_memory_retrieval_ref_set"))
         + _string_list(profile.get("ref_set"))
         + _string_list(profile.get("background_ref_set"))
+        + _string_list(governance.get("exit_dream_next_wake_memory_cue_refs"))
+        + _string_list(governance.get("exit_dream_next_wake_governance_refs"))
+        + _string_list(profile.get("exit_dream_next_wake_memory_cue_refs"))
+        + _string_list(profile.get("exit_dream_next_wake_governance_refs"))
+        + _string_list(
+            [
+                governance.get("exit_dream_memory_write_gate_ref"),
+                governance.get("exit_dream_state_merge_guard_ref"),
+                governance.get("exit_dream_fact_boundary_ref"),
+                profile.get("exit_dream_memory_write_gate_ref"),
+                profile.get("exit_dream_state_merge_guard_ref"),
+                profile.get("exit_dream_fact_boundary_ref"),
+                previous_presence.get("exit_dream_memory_write_gate_ref"),
+                previous_presence.get("exit_dream_state_merge_guard_ref"),
+                previous_presence.get("exit_dream_fact_boundary_ref"),
+            ]
+        )
         + _string_list(previous_presence.get("ref_set"))
         + ([str(frame_ref)] if frame_ref else [])
+    )
+    exit_dream_next_wake_memory_cue_refs = _dedupe_string_list(
+        _string_list(governance.get("exit_dream_next_wake_memory_cue_refs"))
+        + _string_list(profile.get("exit_dream_next_wake_memory_cue_refs"))
+        + _string_list(previous_presence.get("exit_dream_next_wake_memory_cue_refs"))
+    )
+    exit_dream_next_wake_governance_refs = _dedupe_string_list(
+        _string_list(governance.get("exit_dream_next_wake_governance_refs"))
+        + _string_list(profile.get("exit_dream_next_wake_governance_refs"))
+        + _string_list(previous_presence.get("exit_dream_next_wake_governance_refs"))
     )
     activated_ref_count = _int_or_zero(
         _first_present(
@@ -754,6 +781,37 @@ def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
             "relationship_hit_count": relationship_hit_count,
             "dream_residue_hit_count": dream_residue_hit_count,
             "responsibility_hit_count": responsibility_hit_count,
+            "exit_dream_next_wake_governance_ref": _first_present(
+                governance.get("exit_dream_next_wake_governance_ref"),
+                profile.get("exit_dream_next_wake_governance_ref"),
+                previous_presence.get("exit_dream_next_wake_governance_ref"),
+            ),
+            "exit_dream_next_wake_memory_cue_refs": (
+                exit_dream_next_wake_memory_cue_refs
+            ),
+            "exit_dream_next_wake_governance_refs": (
+                exit_dream_next_wake_governance_refs
+            ),
+            "exit_dream_memory_write_gate_ref": _first_present(
+                governance.get("exit_dream_memory_write_gate_ref"),
+                profile.get("exit_dream_memory_write_gate_ref"),
+                previous_presence.get("exit_dream_memory_write_gate_ref"),
+            ),
+            "exit_dream_state_merge_guard_ref": _first_present(
+                governance.get("exit_dream_state_merge_guard_ref"),
+                profile.get("exit_dream_state_merge_guard_ref"),
+                previous_presence.get("exit_dream_state_merge_guard_ref"),
+            ),
+            "exit_dream_fact_boundary_ref": _first_present(
+                governance.get("exit_dream_fact_boundary_ref"),
+                profile.get("exit_dream_fact_boundary_ref"),
+                previous_presence.get("exit_dream_fact_boundary_ref"),
+            ),
+            "exit_dream_next_wake_candidate_boundary": _first_present(
+                governance.get("exit_dream_next_wake_candidate_boundary"),
+                profile.get("exit_dream_next_wake_candidate_boundary"),
+                previous_presence.get("exit_dream_next_wake_candidate_boundary"),
+            ),
             "ref_set": ref_set,
             "memory_retrieval_evidence_refs": ref_set,
             "ref_count": len(ref_set),

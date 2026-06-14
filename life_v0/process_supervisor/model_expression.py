@@ -1222,7 +1222,9 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
         life_context.get("replay_cue_count")
     ) or _present(memory_retrieval.get("memory_retrieval_frame_ref")) or _int_value(
         memory_retrieval.get("activated_engram_ref_count")
-    ) or _present(memory_retrieval.get("reconstruction_focus")):
+    ) or _present(memory_retrieval.get("reconstruction_focus")) or _int_value(
+        memory_retrieval.get("exit_dream_next_wake_cue_ref_count")
+    ):
         flags.append("memory_continuity")
     if _responsibility_repair_pressure_present(responsibility, live_language):
         flags.append("responsibility_repair")
@@ -1486,6 +1488,18 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         ),
         "memory_retrieval_reconstruction_focus": memory_retrieval.get(
             "reconstruction_focus"
+        ),
+        "exit_dream_next_wake_cue_ref_count": memory_retrieval.get(
+            "exit_dream_next_wake_cue_ref_count"
+        ),
+        "exit_dream_write_gate_ref": memory_retrieval.get(
+            "exit_dream_write_gate_ref"
+        ),
+        "exit_dream_state_merge_guard_ref": memory_retrieval.get(
+            "exit_dream_state_merge_guard_ref"
+        ),
+        "exit_dream_fact_boundary_ref": memory_retrieval.get(
+            "exit_dream_fact_boundary_ref"
         ),
         "semantic_goal": live_language.get("semantic_goal")
         or live_language.get("semantic_focus"),

@@ -229,6 +229,44 @@ def write_resident_turn_writeback(
     memory_retrieval_summary = memory_retrieval_context_summary(
         memory_retrieval_frame
     )
+    exit_dream_next_wake_governance = memory_retrieval_frame.get(
+        "exit_dream_next_wake_governance"
+    )
+    if not isinstance(exit_dream_next_wake_governance, dict):
+        exit_dream_next_wake_governance = {}
+    exit_dream_next_wake_memory_cue_refs = _dedupe_refs(
+        _string_list(
+            exit_dream_next_wake_governance.get("next_wake_memory_cue_refs")
+        )
+    )
+    exit_dream_next_wake_governance_refs = _dedupe_refs(
+        _string_list(exit_dream_next_wake_governance.get("governance_refs"))
+    )
+    exit_dream_memory_write_gate_ref = exit_dream_next_wake_governance.get(
+        "memory_write_gate_ref"
+    )
+    exit_dream_state_merge_guard_ref = exit_dream_next_wake_governance.get(
+        "state_merge_guard_ref"
+    )
+    exit_dream_fact_boundary_ref = exit_dream_next_wake_governance.get(
+        "dream_fact_boundary_ref"
+    )
+    exit_dream_next_wake_candidate_boundary = (
+        exit_dream_next_wake_governance.get("candidate_boundary")
+    )
+    exit_dream_next_wake_ref_set = _dedupe_refs(
+        exit_dream_next_wake_memory_cue_refs
+        + exit_dream_next_wake_governance_refs
+        + [
+            str(ref)
+            for ref in [
+                exit_dream_memory_write_gate_ref,
+                exit_dream_state_merge_guard_ref,
+                exit_dream_fact_boundary_ref,
+            ]
+            if ref
+        ]
+    )
     updated_safe_terminal_loop = build_persistent_wait_bridge(
         run_id=run_id,
         generated_at=generated_at,
@@ -275,7 +313,25 @@ def write_resident_turn_writeback(
                 *list(memory_retrieval_frame.get("autobiographical_hits", [])),
                 *list(memory_retrieval_frame.get("dream_residue_hits", [])),
                 *list(memory_retrieval_frame.get("responsibility_hits", [])),
+                *exit_dream_next_wake_ref_set,
             ]
+        ),
+        "exit_dream_next_wake_governance_ref": (
+            "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance"
+            if exit_dream_next_wake_governance
+            else None
+        ),
+        "exit_dream_next_wake_memory_cue_refs": (
+            exit_dream_next_wake_memory_cue_refs
+        ),
+        "exit_dream_next_wake_governance_refs": (
+            exit_dream_next_wake_governance_refs
+        ),
+        "exit_dream_memory_write_gate_ref": exit_dream_memory_write_gate_ref,
+        "exit_dream_state_merge_guard_ref": exit_dream_state_merge_guard_ref,
+        "exit_dream_fact_boundary_ref": exit_dream_fact_boundary_ref,
+        "exit_dream_next_wake_candidate_boundary": (
+            exit_dream_next_wake_candidate_boundary
         ),
         "next_required_action": "await_next_external_relation_turn",
     }
@@ -777,6 +833,32 @@ def write_resident_turn_writeback(
         prediction_write_gate_refs=prediction_write_gate_refs,
         queue_e_world_contact_handoff_refs=queue_e_world_contact_handoff_refs,
         live_language_turn_refs=live_language_turn_refs,
+        exit_dream_next_wake_memory_cue_refs=(
+            exit_dream_next_wake_memory_cue_refs
+        ),
+        exit_dream_next_wake_governance_refs=(
+            exit_dream_next_wake_governance_refs
+        ),
+        exit_dream_memory_write_gate_ref=(
+            str(exit_dream_memory_write_gate_ref)
+            if exit_dream_memory_write_gate_ref
+            else None
+        ),
+        exit_dream_state_merge_guard_ref=(
+            str(exit_dream_state_merge_guard_ref)
+            if exit_dream_state_merge_guard_ref
+            else None
+        ),
+        exit_dream_fact_boundary_ref=(
+            str(exit_dream_fact_boundary_ref)
+            if exit_dream_fact_boundary_ref
+            else None
+        ),
+        exit_dream_next_wake_candidate_boundary=(
+            str(exit_dream_next_wake_candidate_boundary)
+            if exit_dream_next_wake_candidate_boundary
+            else None
+        ),
     )
     write_json(reports_dir / "dialogue_writeback_bundle.json", dialogue_writeback_bundle)
 
@@ -798,6 +880,23 @@ def write_resident_turn_writeback(
         "expression_monitor_ref": expression_monitor_ref or EXPRESSION_MONITOR_REF,
         "expression_plan_ref": expression_plan_ref or EXPRESSION_PLAN_REF,
         "memory_retrieval_frame_ref": MEMORY_RETRIEVAL_FRAME_REF,
+        "exit_dream_next_wake_governance_ref": (
+            "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance"
+            if exit_dream_next_wake_governance
+            else None
+        ),
+        "exit_dream_next_wake_memory_cue_refs": (
+            exit_dream_next_wake_memory_cue_refs
+        ),
+        "exit_dream_next_wake_governance_refs": (
+            exit_dream_next_wake_governance_refs
+        ),
+        "exit_dream_memory_write_gate_ref": exit_dream_memory_write_gate_ref,
+        "exit_dream_state_merge_guard_ref": exit_dream_state_merge_guard_ref,
+        "exit_dream_fact_boundary_ref": exit_dream_fact_boundary_ref,
+        "exit_dream_next_wake_candidate_boundary": (
+            exit_dream_next_wake_candidate_boundary
+        ),
         "live_language_turn_refs": live_language_turn_refs,
         "live_semantic_focus": live_semantic_focus,
         "live_ambiguity_flags": list(live_ambiguity_flags or []),
@@ -1320,3 +1419,9 @@ def _dedupe_refs(refs: list[str | None]) -> list[str]:
         if ref and ref not in result:
             result.append(ref)
     return result
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]

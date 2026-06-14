@@ -142,6 +142,29 @@ def attach_memory_retrieval_event_payload(
         + _string_list(memory_retrieval_frame.get("responsibility_hits"))
         + ([str(frame_ref)] if frame_ref else [])
     )
+    exit_dream_governance = memory_retrieval_frame.get(
+        "exit_dream_next_wake_governance"
+    )
+    if not isinstance(exit_dream_governance, dict):
+        exit_dream_governance = {}
+    next_wake_cue_refs = _string_list(
+        exit_dream_governance.get("next_wake_memory_cue_refs")
+    )
+    exit_dream_governance_refs = _string_list(
+        exit_dream_governance.get("governance_refs")
+    )
+    refs = _dedupe_string_list(
+        refs
+        + next_wake_cue_refs
+        + exit_dream_governance_refs
+        + _string_list(
+            [
+                exit_dream_governance.get("memory_write_gate_ref"),
+                exit_dream_governance.get("state_merge_guard_ref"),
+                exit_dream_governance.get("dream_fact_boundary_ref"),
+            ]
+        )
+    )
     event["memory_retrieval_frame_ref"] = frame_ref
     event["memory_retrieval_mode"] = memory_retrieval_frame.get("retrieval_mode")
     event["memory_retrieval_cue_terms"] = _string_list(
@@ -171,6 +194,24 @@ def attach_memory_retrieval_event_payload(
     event["memory_retrieval_deep_sediment_ref_count"] = len(
         _string_list(tiered.get("deep_sediment_refs"))
     )
+    if exit_dream_governance:
+        event["exit_dream_next_wake_governance_ref"] = (
+            "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance"
+        )
+        event["exit_dream_next_wake_memory_cue_refs"] = next_wake_cue_refs
+        event["exit_dream_next_wake_governance_refs"] = exit_dream_governance_refs
+        event["exit_dream_memory_write_gate_ref"] = exit_dream_governance.get(
+            "memory_write_gate_ref"
+        )
+        event["exit_dream_state_merge_guard_ref"] = exit_dream_governance.get(
+            "state_merge_guard_ref"
+        )
+        event["exit_dream_fact_boundary_ref"] = exit_dream_governance.get(
+            "dream_fact_boundary_ref"
+        )
+        event["exit_dream_next_wake_candidate_boundary"] = (
+            exit_dream_governance.get("candidate_boundary")
+        )
     if refs:
         event["memory_retrieval_refs"] = refs
 
@@ -485,6 +526,57 @@ def build_resident_background_lineage_payload(
                 memory_retrieval_refs
             )
             lineage_refs.extend(memory_retrieval_refs)
+        exit_dream_next_wake_memory_cue_refs = _dedupe_string_list(
+            _string_list(
+                memory_retrieval_presence.get(
+                    "exit_dream_next_wake_memory_cue_refs"
+                )
+            )
+        )
+        exit_dream_next_wake_governance_refs = _dedupe_string_list(
+            _string_list(
+                memory_retrieval_presence.get(
+                    "exit_dream_next_wake_governance_refs"
+                )
+            )
+        )
+        if exit_dream_next_wake_memory_cue_refs:
+            payload[
+                "resident_background_lineage_exit_dream_next_wake_memory_cue_refs"
+            ] = exit_dream_next_wake_memory_cue_refs
+            lineage_refs.extend(exit_dream_next_wake_memory_cue_refs)
+        if exit_dream_next_wake_governance_refs:
+            payload[
+                "resident_background_lineage_exit_dream_next_wake_governance_refs"
+            ] = exit_dream_next_wake_governance_refs
+            lineage_refs.extend(exit_dream_next_wake_governance_refs)
+        for source_key, target_key in (
+            (
+                "exit_dream_next_wake_governance_ref",
+                "resident_background_lineage_exit_dream_next_wake_governance_ref",
+            ),
+            (
+                "exit_dream_memory_write_gate_ref",
+                "resident_background_lineage_exit_dream_memory_write_gate_ref",
+            ),
+            (
+                "exit_dream_state_merge_guard_ref",
+                "resident_background_lineage_exit_dream_state_merge_guard_ref",
+            ),
+            (
+                "exit_dream_fact_boundary_ref",
+                "resident_background_lineage_exit_dream_fact_boundary_ref",
+            ),
+            (
+                "exit_dream_next_wake_candidate_boundary",
+                "resident_background_lineage_exit_dream_next_wake_candidate_boundary",
+            ),
+        ):
+            value = memory_retrieval_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
+                if source_key.endswith("_ref"):
+                    lineage_refs.append(str(value))
     heartbeat_cadence_presence = lineage_state.get("heartbeat_cadence_presence")
     if isinstance(heartbeat_cadence_presence, dict):
         for source_key, target_key in (

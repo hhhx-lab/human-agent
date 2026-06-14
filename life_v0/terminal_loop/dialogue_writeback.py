@@ -86,6 +86,12 @@ def build_dialogue_writeback_bundle(
     ) = None,
     prediction_write_gate_refs: list[str] | None = None,
     live_language_turn_refs: list[str] | None = None,
+    exit_dream_next_wake_memory_cue_refs: list[str] | None = None,
+    exit_dream_next_wake_governance_refs: list[str] | None = None,
+    exit_dream_memory_write_gate_ref: str | None = None,
+    exit_dream_state_merge_guard_ref: str | None = None,
+    exit_dream_fact_boundary_ref: str | None = None,
+    exit_dream_next_wake_candidate_boundary: str | None = None,
 ) -> dict[str, Any]:
     return {
         "schema_version": "dialogue_writeback_bundle_v0",
@@ -227,6 +233,18 @@ def build_dialogue_writeback_bundle(
         ),
         "prediction_write_gate_refs": list(prediction_write_gate_refs or []),
         "live_language_turn_refs": list(live_language_turn_refs or []),
+        "exit_dream_next_wake_memory_cue_refs": list(
+            exit_dream_next_wake_memory_cue_refs or []
+        ),
+        "exit_dream_next_wake_governance_refs": list(
+            exit_dream_next_wake_governance_refs or []
+        ),
+        "exit_dream_memory_write_gate_ref": exit_dream_memory_write_gate_ref,
+        "exit_dream_state_merge_guard_ref": exit_dream_state_merge_guard_ref,
+        "exit_dream_fact_boundary_ref": exit_dream_fact_boundary_ref,
+        "exit_dream_next_wake_candidate_boundary": (
+            exit_dream_next_wake_candidate_boundary
+        ),
         "source_doc_refs": source_doc_refs,
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,

@@ -71,6 +71,14 @@ def build_memory_retrieval_frame(
         dialogue_memory_summary=dialogue_memory_summary,
         life_state=life_state,
     )
+    exit_dream_next_wake_governance = _exit_dream_next_wake_governance(
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        dialogue_memory_summary=dialogue_memory_summary,
+        life_state=life_state,
+        state_merge_guard=state_merge_guard,
+    )
     responsibility_hits = _responsibility_hits(
         engram_index=engram_index,
         relationship_memory=relationship_memory,
@@ -98,6 +106,7 @@ def build_memory_retrieval_frame(
         "relationship_memory_hits": relationship_hits,
         "autobiographical_hits": autobiographical_hits,
         "dream_residue_hits": dream_residue_hits,
+        "exit_dream_next_wake_governance": exit_dream_next_wake_governance,
         "responsibility_hits": responsibility_hits,
         "tiered_recall": tiered_recall,
         "reconstruction_inputs": _reconstruction_inputs(
@@ -112,6 +121,7 @@ def build_memory_retrieval_frame(
         "writeback_candidates": _writeback_candidates(
             activated_refs=activated_refs,
             blocked_refs=blocked_refs,
+            exit_dream_governance=exit_dream_next_wake_governance,
         ),
         "consumer_refs": [
             "runtime/state/language/model_expression_state.json#model_expression_context_summary",
@@ -211,6 +221,22 @@ def memory_retrieval_context_summary(
             _string_list(frame.get("autobiographical_hits"))
         ),
         "dream_residue_hit_count": len(_string_list(frame.get("dream_residue_hits"))),
+        "exit_dream_next_wake_cue_ref_count": len(
+            _string_list(
+                (frame.get("exit_dream_next_wake_governance") or {}).get(
+                    "next_wake_memory_cue_refs"
+                )
+            )
+        ),
+        "exit_dream_write_gate_ref": (
+            frame.get("exit_dream_next_wake_governance") or {}
+        ).get("memory_write_gate_ref"),
+        "exit_dream_state_merge_guard_ref": (
+            frame.get("exit_dream_next_wake_governance") or {}
+        ).get("state_merge_guard_ref"),
+        "exit_dream_fact_boundary_ref": (
+            frame.get("exit_dream_next_wake_governance") or {}
+        ).get("dream_fact_boundary_ref"),
         "responsibility_hit_count": len(_string_list(frame.get("responsibility_hits"))),
         "blocked_or_quarantined_ref_count": len(
             _string_list(frame.get("blocked_or_quarantined_refs"))
@@ -262,6 +288,12 @@ def _cue_terms(
     terms.extend(_string_list((dialogue_memory_summary or {}).get("relationship_theme_tags")))
     terms.extend(_string_list((relationship_memory or {}).get("next_wake_cues")))
     terms.extend(_string_list((dialogue_memory_summary or {}).get("next_wake_cues")))
+    terms.extend(
+        _string_list((relationship_memory or {}).get("next_wake_memory_cue_refs"))
+    )
+    terms.extend(
+        _string_list((dialogue_memory_summary or {}).get("next_wake_memory_cue_refs"))
+    )
     if isinstance(cue_sources, dict):
         terms.extend(_string_list(cue_sources.get("dialogue_turn_refs")))
         terms.extend(_string_list(cue_sources.get("live_language_turn_refs")))
@@ -351,10 +383,14 @@ def _activated_refs(
     refs.extend(_string_list((engram_index or {}).get("autobiographical_memory_refs")))
     refs.extend(_string_list((relationship_memory or {}).get("shared_memory_refs")))
     refs.extend(_string_list((relationship_memory or {}).get("dialogue_summary_refs")))
+    refs.extend(_string_list((relationship_memory or {}).get("next_wake_memory_cue_refs")))
     refs.extend(_string_list((autobiographical_stack or {}).get("turn_refs")))
     refs.extend(_string_list((autobiographical_stack or {}).get("narrative_refs")))
+    refs.extend(_string_list((autobiographical_stack or {}).get("next_wake_memory_cue_refs")))
     refs.extend(_string_list((dialogue_memory_summary or {}).get("source_dialogue_refs")))
+    refs.extend(_string_list((dialogue_memory_summary or {}).get("next_wake_memory_cue_refs")))
     refs.extend(_string_list(((life_state or {}).get("memory_index") or {}).get("relationship_memory_refs")))
+    refs.extend(_string_list(((life_state or {}).get("memory_index") or {}).get("next_wake_memory_cue_refs")))
     refs.extend(_string_list((responsibility_loop_state or {}).get("repair_obligation_refs")))
     refs.extend(_flatten_change_sources((state_merge_guard or {}).get("long_term_change_sources")))
     if not cue_terms:
@@ -405,12 +441,15 @@ def _dream_residue_hits(
         + _string_list((engram_index or {}).get("exit_dream_consolidation_refs"))
         + _string_list((relationship_memory or {}).get("exit_dream_consolidation_refs"))
         + _string_list((relationship_memory or {}).get("dream_integrated_memory_refs"))
+        + _string_list((relationship_memory or {}).get("next_wake_memory_cue_refs"))
         + (
             ["runtime/state/memory/dialogue_memory_summary.json"]
             if dialogue_memory_summary
             else []
         )
+        + _string_list((dialogue_memory_summary or {}).get("next_wake_memory_cue_refs"))
         + _string_list(((life_state or {}).get("memory_index") or {}).get("dream_memory_refs"))
+        + _string_list(((life_state or {}).get("memory_index") or {}).get("next_wake_memory_cue_refs"))
     )[:24]
 
 
@@ -486,6 +525,7 @@ def _writeback_candidates(
     *,
     activated_refs: list[str],
     blocked_refs: list[str],
+    exit_dream_governance: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     blocked = set(blocked_refs)
     candidates: list[dict[str, Any]] = []
@@ -499,7 +539,86 @@ def _writeback_candidates(
                 else "retrieval_reconstruction_candidate",
             }
         )
+    governance = exit_dream_governance or {}
+    for ref in _string_list(governance.get("next_wake_memory_cue_refs"))[:8]:
+        candidates.append(
+            {
+                "candidate_ref": ref,
+                "writeback_route": "exit_dream_memory_write_gate_then_state_merge_guard",
+                "candidate_status": "next_wake_cue_reactivation_candidate",
+                "memory_write_gate_ref": governance.get("memory_write_gate_ref"),
+                "state_merge_guard_ref": governance.get("state_merge_guard_ref"),
+                "dream_fact_boundary_ref": governance.get("dream_fact_boundary_ref"),
+            }
+        )
     return candidates
+
+
+def _exit_dream_next_wake_governance(
+    *,
+    engram_index: dict[str, Any] | None,
+    relationship_memory: dict[str, Any] | None,
+    autobiographical_stack: dict[str, Any] | None,
+    dialogue_memory_summary: dict[str, Any] | None,
+    life_state: dict[str, Any] | None,
+    state_merge_guard: dict[str, Any] | None,
+) -> dict[str, Any]:
+    memory_index = (life_state or {}).get("memory_index")
+    if not isinstance(memory_index, dict):
+        memory_index = {}
+    change_sources = (state_merge_guard or {}).get("long_term_change_sources")
+    if not isinstance(change_sources, dict):
+        change_sources = {}
+    projection = (state_merge_guard or {}).get("exit_dream_state_merge_projection")
+    if not isinstance(projection, dict):
+        projection = {}
+    next_wake_refs = _dedupe(
+        _string_list((relationship_memory or {}).get("next_wake_memory_cue_refs"))
+        + _string_list((engram_index or {}).get("next_wake_memory_cue_refs"))
+        + _string_list((autobiographical_stack or {}).get("next_wake_memory_cue_refs"))
+        + _string_list((dialogue_memory_summary or {}).get("next_wake_memory_cue_refs"))
+        + _string_list(memory_index.get("next_wake_memory_cue_refs"))
+        + _string_list(change_sources.get("next_wake_memory_cue_refs"))
+        + _string_list(projection.get("next_wake_memory_cue_refs"))
+    )
+    write_gate_ref = (
+        (dialogue_memory_summary or {}).get("memory_write_gate_ref")
+        or (relationship_memory or {}).get("memory_write_gate_ref")
+        or projection.get("memory_write_gate_ref")
+    )
+    state_merge_ref = (
+        (dialogue_memory_summary or {}).get("state_merge_guard_ref")
+        or (relationship_memory or {}).get("state_merge_guard_ref")
+    )
+    if not state_merge_ref and state_merge_guard:
+        state_merge_ref = "runtime/state/memory/state_merge_guard.json"
+    dream_fact_boundary_ref = (
+        (dialogue_memory_summary or {}).get("dream_fact_boundary_ref")
+        or _first_string(change_sources.get("dream_fact_boundary_refs"))
+    )
+    governance_refs = _dedupe(
+        _string_list((relationship_memory or {}).get("exit_dream_governance_refs"))
+        + _string_list((engram_index or {}).get("memory_write_gate_refs"))
+        + _string_list((engram_index or {}).get("state_merge_guard_refs"))
+        + _string_list((autobiographical_stack or {}).get("memory_write_gate_refs"))
+        + _string_list((autobiographical_stack or {}).get("state_merge_guard_refs"))
+        + _string_list(change_sources.get("exit_dream_write_gate_refs"))
+        + ([str(write_gate_ref)] if write_gate_ref else [])
+        + ([str(state_merge_ref)] if state_merge_ref else [])
+        + ([str(dream_fact_boundary_ref)] if dream_fact_boundary_ref else [])
+    )
+    if not next_wake_refs and not governance_refs:
+        return {}
+    return {
+        "schema_version": "exit_dream_next_wake_governance_v0",
+        "memory_write_gate_ref": write_gate_ref,
+        "state_merge_guard_ref": state_merge_ref,
+        "dream_fact_boundary_ref": dream_fact_boundary_ref,
+        "writeback_route": "memory_write_gate_then_state_merge_guard",
+        "next_wake_memory_cue_refs": next_wake_refs[:24],
+        "governance_refs": governance_refs[:24],
+        "candidate_boundary": "reactivate_as_cue_material_not_fixed_language",
+    }
 
 
 def _extract_text_cues(text: str) -> list[str]:
@@ -557,6 +676,11 @@ def _string_list(value: Any) -> list[str]:
     if isinstance(value, str) and value:
         return [value]
     return []
+
+
+def _first_string(value: Any) -> str | None:
+    values = _string_list(value)
+    return values[0] if values else None
 
 
 def _dedupe(items: list[str]) -> list[str]:

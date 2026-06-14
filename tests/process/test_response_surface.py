@@ -398,6 +398,13 @@ class ResponseSurfaceTests(unittest.TestCase):
             "runtime/state/memory/engram_index.json#live_dialogue_turn_refs",
             "runtime/state/memory/relationship_memory.json#shared_memory_refs",
         ]
+        exit_dream_cue_refs = [
+            "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs"
+        ]
+        exit_dream_governance_refs = [
+            "runtime/state/memory/memory_write_gate.json#exit_dream_write_gate_envelope",
+            "runtime/state/memory/state_merge_guard.json#exit_dream_state_merge_projection",
+        ]
         lineage_state = build_resident_background_lineage_state(
             {
                 "memory_retrieval_presence_profile": {
@@ -412,6 +419,25 @@ class ResponseSurfaceTests(unittest.TestCase):
                     "dream_residue_hit_count": 1,
                     "responsibility_hit_count": 1,
                     "ref_set": memory_refs,
+                    "exit_dream_next_wake_governance_ref": (
+                        "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance"
+                    ),
+                    "exit_dream_next_wake_memory_cue_refs": exit_dream_cue_refs,
+                    "exit_dream_next_wake_governance_refs": (
+                        exit_dream_governance_refs
+                    ),
+                    "exit_dream_memory_write_gate_ref": (
+                        "runtime/state/memory/memory_write_gate.json"
+                    ),
+                    "exit_dream_state_merge_guard_ref": (
+                        "runtime/state/memory/state_merge_guard.json"
+                    ),
+                    "exit_dream_fact_boundary_ref": (
+                        "runtime/state/dream/dream_fact_boundary.json"
+                    ),
+                    "exit_dream_next_wake_candidate_boundary": (
+                        "reactivate_as_cue_material_not_fixed_language"
+                    ),
                 }
             },
             governance_phase="waiting_heartbeat_active",
@@ -423,7 +449,11 @@ class ResponseSurfaceTests(unittest.TestCase):
             memory_presence["reconstruction_focus"],
             "relationship_continuity_reconstruction",
         )
-        self.assertEqual(memory_presence["ref_count"], 3)
+        self.assertEqual(memory_presence["ref_count"], 9)
+        self.assertEqual(
+            memory_presence["exit_dream_next_wake_memory_cue_refs"],
+            exit_dream_cue_refs,
+        )
 
         life_turn = build_life_turn_event(
             turn_id="life-turn-memory-retrieval-presence",
@@ -447,7 +477,20 @@ class ResponseSurfaceTests(unittest.TestCase):
         )
         self.assertEqual(
             life_turn["resident_background_lineage_memory_retrieval_refs"],
-            memory_refs,
+            [
+                *memory_refs,
+                *exit_dream_cue_refs,
+                *exit_dream_governance_refs,
+                "runtime/state/memory/memory_write_gate.json",
+                "runtime/state/memory/state_merge_guard.json",
+                "runtime/state/dream/dream_fact_boundary.json",
+            ],
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_exit_dream_next_wake_candidate_boundary"
+            ],
+            "reactivate_as_cue_material_not_fixed_language",
         )
 
         bundle = build_dialogue_writeback_bundle(
@@ -472,14 +515,54 @@ class ResponseSurfaceTests(unittest.TestCase):
             runtime_carrier_refs=[],
             resident_background_lineage_refs=memory_refs,
             resident_background_lineage_memory_retrieval_refs=memory_refs,
+            exit_dream_next_wake_memory_cue_refs=exit_dream_cue_refs,
+            exit_dream_next_wake_governance_refs=exit_dream_governance_refs,
+            exit_dream_memory_write_gate_ref=(
+                "runtime/state/memory/memory_write_gate.json"
+            ),
+            exit_dream_state_merge_guard_ref=(
+                "runtime/state/memory/state_merge_guard.json"
+            ),
+            exit_dream_fact_boundary_ref=(
+                "runtime/state/dream/dream_fact_boundary.json"
+            ),
+            exit_dream_next_wake_candidate_boundary=(
+                "reactivate_as_cue_material_not_fixed_language"
+            ),
         )
         self.assertEqual(
             bundle["resident_background_lineage_memory_retrieval_refs"],
             memory_refs,
         )
+        self.assertEqual(
+            bundle["exit_dream_next_wake_memory_cue_refs"],
+            exit_dream_cue_refs,
+        )
+        self.assertEqual(
+            bundle["exit_dream_next_wake_candidate_boundary"],
+            "reactivate_as_cue_material_not_fixed_language",
+        )
 
         material = compose_life_response(
             external_utterance="你还记得刚才说到哪里了吗？",
+            memory_retrieval_frame={
+                "exit_dream_next_wake_governance": {
+                    "next_wake_memory_cue_refs": exit_dream_cue_refs,
+                    "governance_refs": exit_dream_governance_refs,
+                    "memory_write_gate_ref": (
+                        "runtime/state/memory/memory_write_gate.json"
+                    ),
+                    "state_merge_guard_ref": (
+                        "runtime/state/memory/state_merge_guard.json"
+                    ),
+                    "dream_fact_boundary_ref": (
+                        "runtime/state/dream/dream_fact_boundary.json"
+                    ),
+                    "candidate_boundary": (
+                        "reactivate_as_cue_material_not_fixed_language"
+                    ),
+                }
+            },
             terminal_life_loop_state={
                 "resident_background_lineage_state": lineage_state
             },
@@ -493,7 +576,13 @@ class ResponseSurfaceTests(unittest.TestCase):
             resident_memory["reconstruction_focus"],
             "relationship_continuity_reconstruction",
         )
-        self.assertEqual(resident_memory["ref_count"], 3)
+        self.assertEqual(resident_memory["ref_count"], 9)
+        self.assertEqual(
+            payload["memory_dream_growth"]["exit_dream_next_wake"][
+                "language_boundary"
+            ],
+            "structured_context_only_not_spoken_template",
+        )
 
     def test_body_signal_memory_gate_crosses_lineage_event_and_response(self):
         from life_v0.process_supervisor.background_lineage_state import (
