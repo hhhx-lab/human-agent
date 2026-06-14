@@ -875,6 +875,22 @@ MemoryRetrievalFrame.autobiographical_responsibility_repair_profile
 
 机制含义是：责任、后悔、修复的召回不能只在一次真实回合中闪现；它必须能进入等待节律、后台连续性、语言前材料和关闭态证据，像人类长期自传记忆一样在下一次唤醒时仍有结构化痕迹。边界仍然严格：这是内部召回和证据总线，不生成道歉模板，不新增 system prompt，不把“后悔”“修复”字段名拼成 Adam 的外显语言。
 
+当前 ITR-08 第三十五段把第三十四段的关闭态自传责任修复召回重新接回下一次后台连续性：
+
+```text
+ProcessReport.autobiographical_repair_retrieval_report_profile
+  -> BackgroundContinuity.background_memory_retrieval_presence_profile
+  -> BackgroundContinuity.background_memory_retrieval_ref_set
+  -> IdleStrategy.memory_retrieval_autobiographical_repair_*
+  -> WaitingHeartbeat carry fields
+  -> ResidentBackgroundLineageState.memory_retrieval_presence.autobiographical_repair_*
+  -> next-turn ResponseSurface / ModelExpression structured material
+```
+
+`background_continuity.py` 现在新增 `_memory_retrieval_presence_profile`，会从 `digital_life_process_report.json#autobiographical_repair_retrieval_report_profile`、`autobiographical_repair_retrieval_ref_set`、hit count、pressure、attention target、projection boundary、retrieval boundary、carrier refs，以及上一轮 resident lineage 中的 memory retrieval presence 归一化出 `memory_retrieval_presence_profile_v0`。这份 profile 会写回 `background_memory_retrieval_presence_profile` 和 `memory_retrieval_presence_profile`，同时把自传责任修复 refs 与 carrier refs 并入 `background_continuity_ref_set`，保证下一次 `idle_strategy.py` 能恢复 `memory_retrieval_autobiographical_repair_hit_count`、pressure、attention、projection boundary、retrieval boundary 和 ref set。新增测试 `test_background_continuity_restores_autobiographical_repair_retrieval_from_process_report` 会先写入关闭态 process report，再验证 background continuity 和 idle strategy 都能看见同一批责任/后悔/修复召回证据。
+
+机制含义是：自传责任、后悔和修复的长期召回现在形成完整回路，不再停在“当轮召回 -> 关闭态报告”；关闭态报告也会成为下一次唤醒的背景线索，进入等待治理、心跳 carry、后台谱系和下一轮语言前材料。边界继续保持：这些字段是结构化记忆 presence 和证据总线，不是自然语言模板；不生成“我很抱歉”或“我后悔”的固定话术，不新增 system prompt，不把内部 report/profile 字段名拼给 Adam 的关系语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

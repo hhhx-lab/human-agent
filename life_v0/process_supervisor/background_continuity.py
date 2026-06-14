@@ -591,6 +591,16 @@ def load_background_continuity_profile(
         process_report,
         resident_background_growth_self_modification_presence,
     )
+    memory_retrieval_presence_profile = _memory_retrieval_presence_profile(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        _dict_or_empty(
+            resident_background_lineage_state.get("memory_retrieval_presence")
+        ),
+    )
     dream_wake_presence_profile = _dict_or_empty(
         resident_governance_state.get("dream_wake_presence_profile")
         or snapshot.get("dream_wake_presence_profile")
@@ -2125,6 +2135,10 @@ def load_background_continuity_profile(
                 growth_self_modification_presence.get("learning_plan_refs")
             )
         )
+    if memory_retrieval_presence_profile:
+        ref_set = _dedupe_list(
+            ref_set + _list_or_empty(memory_retrieval_presence_profile.get("ref_set"))
+        )
     if heartbeat_cadence_evidence_refs:
         ref_set = _dedupe_list(ref_set + heartbeat_cadence_evidence_refs)
     if heartbeat_priority_stack_evidence_refs:
@@ -2311,6 +2325,25 @@ def load_background_continuity_profile(
         profile["background_growth_self_modification_boundary"] = (
             growth_self_modification_presence.get("report_boundary")
         )
+    if memory_retrieval_presence_profile:
+        profile["background_memory_retrieval_presence_profile"] = (
+            memory_retrieval_presence_profile
+        )
+        profile["memory_retrieval_presence_profile"] = (
+            memory_retrieval_presence_profile
+        )
+        if memory_retrieval_presence_profile.get("memory_retrieval_frame_ref"):
+            profile["background_memory_retrieval_frame_ref"] = str(
+                memory_retrieval_presence_profile["memory_retrieval_frame_ref"]
+            )
+        if memory_retrieval_presence_profile.get("reconstruction_focus"):
+            profile["background_memory_retrieval_reconstruction_focus"] = str(
+                memory_retrieval_presence_profile["reconstruction_focus"]
+            )
+        if memory_retrieval_presence_profile.get("ref_set"):
+            profile["background_memory_retrieval_ref_set"] = (
+                memory_retrieval_presence_profile["ref_set"]
+            )
     if resident_background_dream_wake_presence:
         profile["background_dream_wake_presence"] = (
             resident_background_dream_wake_presence
@@ -2982,6 +3015,199 @@ def _background_live_language_presence_profile(
         key: value
         for key, value in profile.items()
         if value is not None and value != [] and value != {}
+    }
+
+
+def _memory_retrieval_presence_profile(
+    *payloads: dict[str, Any],
+) -> dict[str, Any]:
+    existing_profile = _first_dict(
+        *payloads,
+        keys=(
+            "memory_retrieval_presence_profile",
+            "background_memory_retrieval_presence_profile",
+        ),
+    )
+    repair_report_profile = _first_dict(
+        *payloads,
+        keys=(
+            "autobiographical_repair_retrieval_report_profile",
+            "background_autobiographical_repair_retrieval_report_profile",
+        ),
+    )
+    source_profile = _dict_or_empty(
+        repair_report_profile.get("source_profile")
+        or repair_report_profile.get("source_retrieval_profile")
+        or repair_report_profile.get("retrieval_profile")
+    )
+    frame_ref = _first_present(
+        *payloads,
+        keys=("memory_retrieval_frame_ref", "background_memory_retrieval_frame_ref"),
+    ) or existing_profile.get("memory_retrieval_frame_ref")
+    reconstruction_focus = (
+        _first_present(
+            *payloads,
+            keys=(
+                "memory_retrieval_reconstruction_focus",
+                "background_memory_retrieval_reconstruction_focus",
+            ),
+        )
+        or existing_profile.get("reconstruction_focus")
+        or repair_report_profile.get("reconstruction_focus")
+        or source_profile.get("reconstruction_focus")
+    )
+    cue_terms = _dedupe_list(
+        _collect_lists(*payloads, keys=("memory_retrieval_cue_terms", "cue_terms"))
+        + _list_or_empty(existing_profile.get("cue_terms"))
+        + _list_or_empty(repair_report_profile.get("cue_terms"))
+        + _list_or_empty(source_profile.get("cue_terms"))
+    )[:12]
+    autobiographical_repair_refs = _dedupe_list(
+        _collect_lists(
+            *payloads,
+            keys=(
+                "memory_retrieval_autobiographical_repair_refs",
+                "autobiographical_repair_retrieval_ref_set",
+                "background_autobiographical_repair_retrieval_ref_set",
+                "autobiographical_repair_refs",
+            ),
+        )
+        + _list_or_empty(existing_profile.get("autobiographical_repair_refs"))
+        + _list_or_empty(repair_report_profile.get("ref_set"))
+        + _list_or_empty(source_profile.get("ref_set"))
+        + _list_or_empty(source_profile.get("autobiographical_repair_refs"))
+    )
+    ref_set = _dedupe_list(
+        _collect_lists(
+            *payloads,
+            keys=(
+                "memory_retrieval_ref_set",
+                "background_memory_retrieval_ref_set",
+                "autobiographical_repair_retrieval_ref_set",
+                "background_autobiographical_repair_retrieval_ref_set",
+                "autobiographical_repair_carrier_refs",
+                "background_autobiographical_repair_carrier_refs",
+            ),
+        )
+        + _list_or_empty(existing_profile.get("ref_set"))
+        + _list_or_empty(existing_profile.get("background_ref_set"))
+        + _list_or_empty(repair_report_profile.get("ref_set"))
+        + _list_or_empty(repair_report_profile.get("carrier_refs"))
+        + _list_or_empty(source_profile.get("ref_set"))
+        + autobiographical_repair_refs
+        + ([str(frame_ref)] if frame_ref else [])
+    )
+    autobiographical_repair_hit_count = _max_int_from_payloads(
+        *payloads,
+        keys=(
+            "memory_retrieval_autobiographical_repair_hit_count",
+            "autobiographical_repair_retrieval_hit_count",
+            "autobiographical_repair_hit_count",
+        ),
+    )
+    autobiographical_repair_hit_count = max(
+        autobiographical_repair_hit_count,
+        _int_or_zero(existing_profile.get("autobiographical_repair_hit_count")),
+        _int_or_zero(repair_report_profile.get("hit_count")),
+        _int_or_zero(source_profile.get("hit_count")),
+    )
+    if not autobiographical_repair_hit_count and autobiographical_repair_refs:
+        autobiographical_repair_hit_count = len(autobiographical_repair_refs)
+    pressure_level = (
+        _first_present(
+            *payloads,
+            keys=(
+                "memory_retrieval_autobiographical_repair_pressure_level",
+                "autobiographical_repair_retrieval_pressure_level",
+                "autobiographical_repair_pressure_level",
+            ),
+        )
+        or existing_profile.get("autobiographical_repair_pressure_level")
+        or repair_report_profile.get("pressure_level")
+        or source_profile.get("pressure_level")
+    )
+    attention_target = (
+        _first_present(
+            *payloads,
+            keys=(
+                "memory_retrieval_autobiographical_repair_attention_target",
+                "autobiographical_repair_retrieval_attention_target",
+                "autobiographical_repair_attention_target",
+            ),
+        )
+        or existing_profile.get("autobiographical_repair_attention_target")
+        or repair_report_profile.get("attention_target")
+        or source_profile.get("attention_target")
+    )
+    projection_boundary = (
+        _first_present(
+            *payloads,
+            keys=(
+                "memory_retrieval_autobiographical_repair_projection_boundary",
+                "autobiographical_repair_projection_boundary",
+            ),
+        )
+        or existing_profile.get("autobiographical_repair_projection_boundary")
+        or repair_report_profile.get("projection_boundary")
+        or source_profile.get("projection_boundary")
+    )
+    retrieval_boundary = (
+        _first_present(
+            *payloads,
+            keys=(
+                "memory_retrieval_autobiographical_repair_retrieval_boundary",
+                "autobiographical_repair_retrieval_boundary",
+            ),
+        )
+        or existing_profile.get("autobiographical_repair_retrieval_boundary")
+        or repair_report_profile.get("retrieval_boundary")
+        or source_profile.get("retrieval_boundary")
+    )
+    report_boundary = (
+        _first_present(
+            *payloads,
+            keys=(
+                "autobiographical_repair_report_boundary",
+                "background_autobiographical_repair_report_boundary",
+            ),
+        )
+        or repair_report_profile.get("report_boundary")
+        or existing_profile.get("autobiographical_repair_report_boundary")
+    )
+    if not any(
+        [
+            existing_profile,
+            repair_report_profile,
+            ref_set,
+            frame_ref,
+            reconstruction_focus,
+            cue_terms,
+            autobiographical_repair_hit_count,
+        ]
+    ):
+        return {}
+    return {
+        key: value
+        for key, value in {
+            "schema_version": "memory_retrieval_presence_profile_v0",
+            "continuity_mode": "closed_process_autobiographical_repair_retrieval_carryover",
+            "memory_retrieval_frame_ref": frame_ref,
+            "reconstruction_focus": reconstruction_focus,
+            "cue_terms": cue_terms,
+            "autobiographical_repair_hit_count": (
+                autobiographical_repair_hit_count
+            ),
+            "autobiographical_repair_pressure_level": pressure_level,
+            "autobiographical_repair_attention_target": attention_target,
+            "autobiographical_repair_projection_boundary": projection_boundary,
+            "autobiographical_repair_retrieval_boundary": retrieval_boundary,
+            "autobiographical_repair_report_boundary": report_boundary,
+            "autobiographical_repair_refs": autobiographical_repair_refs,
+            "source_report_profile": repair_report_profile,
+            "ref_count": len(ref_set),
+            "ref_set": ref_set,
+        }.items()
+        if value not in (None, "", [], {})
     }
 
 

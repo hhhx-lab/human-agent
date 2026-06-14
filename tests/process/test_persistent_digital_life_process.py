@@ -2705,6 +2705,141 @@ class PersistentDigitalLifeProcessTests(
         for ref in expected_refs:
             self.assertIn(ref, profile["background_continuity_ref_set"])
 
+    def test_background_continuity_restores_autobiographical_repair_retrieval_from_process_report(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+        from life_v0.process_supervisor.idle_strategy import decide_idle_strategy
+
+        expected_refs = [
+            "responsibility-event-001",
+            "regret-001",
+            "repair-001",
+            "runtime/state/membrane/world_contact_summary.json",
+            "runtime/reports/latest/pain_regret_repair_report.json",
+        ]
+        expected_carrier_refs = [
+            "runtime/state/memory/memory_retrieval_frame.json#autobiographical_responsibility_repair_profile",
+            "runtime/state/memory/memory_retrieval_frame.json#autobiographical_responsibility_repair_hits",
+            "runtime/state/self/autobiographical_stack.json#responsibility_repair_projection",
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            terminal_dir = root / "state" / "terminal"
+            reports_dir = root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                reports_dir / "digital_life_process_report.json",
+                {
+                    "schema_version": "digital_life_process_report_v0",
+                    "run_id": "autobiographical-repair-background-restore",
+                    "autobiographical_repair_retrieval_report_profile": {
+                        "schema_version": "autobiographical_repair_retrieval_report_profile_v0",
+                        "source_profile_schema_version": "memory_retrieval_autobiographical_repair_profile_v0",
+                        "profile_ref": expected_carrier_refs[0],
+                        "hits_ref": expected_carrier_refs[1],
+                        "projection_ref": expected_carrier_refs[2],
+                        "hit_count": 4,
+                        "pressure_level": "elevated",
+                        "attention_target": "regret_pressure",
+                        "projection_boundary": "autobiographical_repair_evidence_not_spoken_language",
+                        "retrieval_boundary": "autobiographical_repair_retrieval_not_spoken_language",
+                        "ref_set": expected_refs,
+                        "carrier_refs": expected_carrier_refs,
+                        "report_boundary": "autobiographical_repair_structured_report_not_spoken_language",
+                    },
+                    "autobiographical_repair_retrieval_ref_set": expected_refs,
+                    "autobiographical_repair_retrieval_hit_count": 4,
+                    "autobiographical_repair_retrieval_pressure_level": "elevated",
+                    "autobiographical_repair_retrieval_attention_target": "regret_pressure",
+                    "autobiographical_repair_projection_boundary": "autobiographical_repair_evidence_not_spoken_language",
+                    "autobiographical_repair_retrieval_boundary": "autobiographical_repair_retrieval_not_spoken_language",
+                    "autobiographical_repair_carrier_refs": expected_carrier_refs,
+                    "autobiographical_repair_report_boundary": "autobiographical_repair_structured_report_not_spoken_language",
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+            idle_strategy = decide_idle_strategy(
+                run_id="autobiographical-repair-idle-restore",
+                generated_at="2026-06-15T00:00:00Z",
+                safe_terminal_loop={},
+                terminal_life_loop_state={},
+                idle_continuity_frame=None,
+                replay_cue_bundle=None,
+                offline_consolidation_frame=None,
+                growth_patch_candidate_queue=None,
+                background_continuity_profile=profile,
+            )
+
+        presence = profile["background_memory_retrieval_presence_profile"]
+        self.assertEqual(
+            presence["schema_version"],
+            "memory_retrieval_presence_profile_v0",
+        )
+        self.assertEqual(
+            presence["continuity_mode"],
+            "closed_process_autobiographical_repair_retrieval_carryover",
+        )
+        self.assertEqual(presence["autobiographical_repair_hit_count"], 4)
+        self.assertEqual(
+            presence["autobiographical_repair_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            presence["autobiographical_repair_attention_target"],
+            "regret_pressure",
+        )
+        self.assertEqual(
+            presence["autobiographical_repair_projection_boundary"],
+            "autobiographical_repair_evidence_not_spoken_language",
+        )
+        self.assertEqual(
+            presence["autobiographical_repair_retrieval_boundary"],
+            "autobiographical_repair_retrieval_not_spoken_language",
+        )
+        self.assertEqual(
+            presence["autobiographical_repair_report_boundary"],
+            "autobiographical_repair_structured_report_not_spoken_language",
+        )
+        self.assertEqual(presence["autobiographical_repair_refs"], expected_refs)
+        self.assertEqual(
+            profile["background_memory_retrieval_ref_set"],
+            expected_refs + expected_carrier_refs,
+        )
+        for ref in expected_refs + expected_carrier_refs:
+            self.assertIn(ref, profile["background_continuity_ref_set"])
+            self.assertIn(ref, idle_strategy["memory_retrieval_ref_set"])
+        self.assertEqual(
+            idle_strategy["memory_retrieval_autobiographical_repair_hit_count"],
+            4,
+        )
+        self.assertEqual(
+            idle_strategy["memory_retrieval_autobiographical_repair_pressure_level"],
+            "elevated",
+        )
+        self.assertEqual(
+            idle_strategy["memory_retrieval_autobiographical_repair_attention_target"],
+            "regret_pressure",
+        )
+        self.assertEqual(
+            idle_strategy[
+                "memory_retrieval_autobiographical_repair_projection_boundary"
+            ],
+            "autobiographical_repair_evidence_not_spoken_language",
+        )
+        self.assertEqual(
+            idle_strategy[
+                "memory_retrieval_autobiographical_repair_retrieval_boundary"
+            ],
+            "autobiographical_repair_retrieval_not_spoken_language",
+        )
+
     def test_background_continuity_restores_queue_e_repair_modulation_from_lineage_presence(self):
         from life_v0.process_supervisor.background_continuity import (
             load_background_continuity_profile,
