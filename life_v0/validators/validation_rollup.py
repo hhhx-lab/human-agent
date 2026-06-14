@@ -63,6 +63,11 @@ def build_validation_rollup(
         "boundary_audit_gate": "closed" if not boundary_audit.get("audit_findings") else "guarded",
         "life_constraint_validation_gate": "blocked" if life_constraint_blocked else "closed",
         "queue_e_birth_repair_gate": queue_e_birth_repair_gate_status,
+        "prediction_periphery_gate": (
+            "closed"
+            if _prediction_periphery_chain_ready(world_contact_validation, prediction_trace_validation)
+            else "blocked"
+        ),
     }
     blocked_gates = [gate for gate, status in gate_status.items() if status == "blocked"]
     guarded_gates = [gate for gate, status in gate_status.items() if status == "guarded"]
@@ -108,6 +113,21 @@ def build_validation_rollup(
         "queue_e_world_contact_blocked_future_routes": queue_e_world_contact_blocked_future_routes,
         "queue_e_world_contact_allowed_repair_routes": queue_e_world_contact_allowed_repair_routes,
         "queue_e_world_contact_repair_governance_refs": queue_e_world_contact_repair_governance_refs,
+        "prediction_periphery_gate_status": gate_status["prediction_periphery_gate"],
+        "prediction_periphery_ref_set": _dedupe_string_refs(
+            [
+                world_contact_validation.get("world_observation_route_ref"),
+                world_contact_validation.get("periphery_normalization_ref"),
+                world_contact_validation.get("observation_truth_review_ref"),
+                prediction_trace_validation.get("active_sampling_plan_ref"),
+                prediction_trace_validation.get("prediction_workspace_ref"),
+                "runtime/state/validation/prediction_trace_validation.json"
+                if prediction_trace_validation
+                else None,
+                prediction_trace_validation.get("world_contact_validation_ref"),
+                *list(prediction_trace_validation.get("prediction_trace_refs", [])),
+            ]
+        ),
         "queue_e_birth_repair_profile_ref": QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
         "queue_e_birth_repair_pressure_level": queue_e_birth_repair_profile.get("pressure_level"),
         "queue_e_birth_repair_attention_target": queue_e_birth_repair_profile.get("attention_target"),
@@ -122,6 +142,8 @@ def build_validation_rollup(
             "runtime/state/validation/world_contact_validation.json",
             "runtime/state/validation/prediction_trace_validation.json",
             "runtime/state/validation/boundary_audit_state.json",
+            "runtime/state/observation/world_observation_route.json",
+            "runtime/state/observation/periphery_normalization_trace.json",
             QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
         ],
         "next_stage_ready": overall_status == "closed",
@@ -145,6 +167,8 @@ def check_validation_rollup(rollup: dict[str, Any]) -> list[str]:
         "queue_e_world_contact_future_release_posture",
         "queue_e_world_contact_allowed_repair_routes",
         "queue_e_world_contact_repair_governance_refs",
+        "prediction_periphery_gate_status",
+        "prediction_periphery_ref_set",
         "queue_e_birth_repair_profile_ref",
         "queue_e_birth_repair_pressure_level",
         "queue_e_birth_repair_attention_target",
@@ -159,6 +183,8 @@ def check_validation_rollup(rollup: dict[str, Any]) -> list[str]:
         reasons.append("validation_rollup_gate queue_e birth repair gate mismatch")
     if rollup.get("queue_e_birth_repair_profile_ref") != QUEUE_E_BIRTH_REPAIR_PROFILE_REF:
         reasons.append("validation_rollup_gate queue_e birth repair profile ref mismatch")
+    if rollup.get("prediction_periphery_gate_status") != "closed":
+        reasons.append("validation_rollup_gate prediction periphery gate mismatch")
     return reasons
 
 
@@ -168,6 +194,27 @@ def _queue_e_birth_repair_profile_ready(profile: dict[str, Any]) -> bool:
         and profile.get("pressure_level") in {"quiet", "present", "elevated", "urgent"}
         and bool(profile.get("attention_target"))
         and bool(profile.get("ref_set"))
+    )
+
+
+def _prediction_periphery_chain_ready(
+    world_contact_validation: dict[str, Any],
+    prediction_trace_validation: dict[str, Any],
+) -> bool:
+    return (
+        world_contact_validation.get("world_observation_route_ref")
+        == "runtime/state/observation/world_observation_route.json"
+        and world_contact_validation.get("periphery_normalization_ref")
+        == "runtime/state/observation/periphery_normalization_trace.json"
+        and world_contact_validation.get("observation_truth_review_ref")
+        == "runtime/state/validation/observation_truth_review.json"
+        and prediction_trace_validation.get("world_observation_route_ref")
+        == "runtime/state/observation/world_observation_route.json"
+        and prediction_trace_validation.get("periphery_normalization_ref")
+        == "runtime/state/observation/periphery_normalization_trace.json"
+        and prediction_trace_validation.get("active_sampling_plan_ref")
+        == "runtime/state/prediction/active_sampling_plan.json"
+        and bool(prediction_trace_validation.get("prediction_trace_refs"))
     )
 
 

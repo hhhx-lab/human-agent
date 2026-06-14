@@ -26,9 +26,19 @@ def build_world_contact_summary(
     responsibility_loop: dict[str, Any],
     world_observation_route: dict[str, Any] | None = None,
     periphery_normalization_trace: dict[str, Any] | None = None,
+    belief_state: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    active_sampling_plan: dict[str, Any] | None = None,
+    prediction_workspace: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     world_observation_route = world_observation_route or {}
     periphery_normalization_trace = periphery_normalization_trace or {}
+    belief_state = belief_state or {}
+    prediction_error_field = prediction_error_field or {}
+    active_sampling_plan = active_sampling_plan or {}
+    prediction_workspace = prediction_workspace or {}
+    signal_media_runtime = signal_media_runtime or {}
     action_intents = list(action_intent_queue.get("action_intents", []))
     confirmation_pending_ids = list(confirmation_binding.get("required_action_intent_ids", []))
     blocked_contacts = list(world_contact_gate.get("blocked_contacts", []))
@@ -44,6 +54,41 @@ def build_world_contact_summary(
         release_posture = "confirmation_blocked"
     elif world_contact_gate.get("contact_mode") == "blocked":
         release_posture = "contact_blocked"
+
+    error_events = [
+        event
+        for event in prediction_error_field.get("error_events", [])
+        if isinstance(event, dict)
+    ]
+    precision_policy = signal_media_runtime.get("precision_policy", {})
+    inhibition_profile = signal_media_runtime.get("inhibition_profile", {})
+    modulation_vector = signal_media_runtime.get("modulation_vector", {})
+    workspace_contents = prediction_workspace.get("workspace_contents", {})
+    normalized_channels = list(periphery_normalization_trace.get("normalized_channels", []))
+    promoted_channels = list(periphery_normalization_trace.get("promoted_channels", []))
+    deferred_channels = list(periphery_normalization_trace.get("deferred_channels", []))
+    suppressed_channels = list(periphery_normalization_trace.get("suppressed_channels", []))
+    world_contact_prediction_ref_set = _dedupe_string_refs(
+        [
+            "runtime/state/prediction/belief_state_frame.json" if belief_state else None,
+            "runtime/state/prediction/prediction_error_field.json" if prediction_error_field else None,
+            "runtime/state/prediction/active_sampling_plan.json" if active_sampling_plan else None,
+            "runtime/state/prediction/prediction_workspace_frame.json" if prediction_workspace else None,
+            "runtime/state/signal/signal_media_runtime.json" if signal_media_runtime else None,
+            "runtime/state/observation/world_observation_route.json" if world_observation_route else None,
+            (
+                "runtime/state/observation/periphery_normalization_trace.json"
+                if periphery_normalization_trace
+                else None
+            ),
+            *list(world_observation_route.get("guard_refs", [])),
+            *list(world_observation_route.get("command_binding_refs", [])),
+            *list(active_sampling_plan.get("guard_refs", [])),
+            *list(active_sampling_plan.get("command_binding_refs", [])),
+            *list(active_sampling_plan.get("expected_observation_refs", [])),
+            *list(prediction_error_field.get("precision_requests", [])),
+        ]
+    )
 
     return {
         "schema_version": "world_contact_summary_v0",
@@ -70,8 +115,75 @@ def build_world_contact_summary(
         "candidate_intent_count": len(action_intents),
         "blocked_contact_count": len(blocked_contacts),
         "confirmation_pending_ids": confirmation_pending_ids,
+        "belief_state_ref": (
+            "runtime/state/prediction/belief_state_frame.json" if belief_state else None
+        ),
+        "belief_revision_policy": belief_state.get("revision_policy"),
+        "belief_active_life_targets": list(belief_state.get("active_life_targets", [])),
+        "prediction_error_ref": (
+            "runtime/state/prediction/prediction_error_field.json"
+            if prediction_error_field
+            else None
+        ),
+        "prediction_error_count": len(error_events),
+        "prediction_error_events": [
+            {
+                "error_id": event.get("error_id"),
+                "error_kind": event.get("error_kind"),
+                "precision_request": event.get("precision_request"),
+                "delta": event.get("delta"),
+            }
+            for event in error_events
+        ],
+        "prediction_stage_effect": prediction_error_field.get("stage_effect"),
+        "active_sampling_plan_ref": (
+            "runtime/state/prediction/active_sampling_plan.json"
+            if active_sampling_plan
+            else None
+        ),
+        "active_sampling_route": (
+            active_sampling_plan.get("selected_route")
+            or world_observation_route.get("selected_route")
+        ),
+        "active_sampling_stage_effect": active_sampling_plan.get("stage_effect"),
+        "active_sampling_expected_observation_refs": list(
+            active_sampling_plan.get("expected_observation_refs", [])
+        ),
+        "active_sampling_guard_refs": list(active_sampling_plan.get("guard_refs", [])),
+        "prediction_workspace_ref": (
+            "runtime/state/prediction/prediction_workspace_frame.json"
+            if prediction_workspace
+            else None
+        ),
+        "prediction_workspace_downstream_systems": list(
+            prediction_workspace.get("downstream_systems", [])
+        ),
+        "prediction_workspace_active_sampling_mode": workspace_contents.get(
+            "active_sampling_mode"
+        ),
+        "signal_media_ref": (
+            "runtime/state/signal/signal_media_runtime.json" if signal_media_runtime else None
+        ),
+        "signal_precision_policy_mode": precision_policy.get("policy_mode"),
+        "signal_precision_stage_effect": precision_policy.get("stage_effect"),
+        "signal_inhibition_surfaces": list(
+            inhibition_profile.get("blocked_release_surfaces", [])
+        ),
+        "signal_unexpected_uncertainty": modulation_vector.get("unexpected_uncertainty"),
+        "signal_relationship_pressure": modulation_vector.get("relationship_pressure"),
         "observation_route_mode": world_observation_route.get("route_mode"),
+        "observation_target_count": len(world_observation_route.get("observation_targets", [])),
+        "prioritized_channel_count": len(world_observation_route.get("prioritized_channels", [])),
+        "world_observation_error_focus_ids": list(world_observation_route.get("error_focus_ids", [])),
+        "periphery_normalization_policy": periphery_normalization_trace.get(
+            "normalization_policy"
+        ),
+        "normalized_channel_count": len(normalized_channels),
+        "promoted_channel_count": len(promoted_channels),
         "deferred_channel_count": len(periphery_normalization_trace.get("deferred_channels", [])),
+        "suppressed_channel_count": len(suppressed_channels),
+        "periphery_error_focus_ids": list(periphery_normalization_trace.get("error_focus_ids", [])),
+        "world_contact_prediction_ref_set": world_contact_prediction_ref_set,
         "relationship_effects": list(side_effect_review.get("relationship_effects", [])),
         "archive_effects": list(side_effect_review.get("archive_effects", [])),
         "repair_obligation_refs": repair_obligations,
@@ -127,6 +239,14 @@ def check_world_contact_summary(summary: dict[str, Any]) -> list[str]:
         "responsibility_loop_ref",
         "world_observation_route_ref",
         "periphery_normalization_ref",
+        "belief_state_ref",
+        "prediction_error_ref",
+        "active_sampling_plan_ref",
+        "prediction_workspace_ref",
+        "signal_media_ref",
+        "active_sampling_route",
+        "prediction_error_events",
+        "world_contact_prediction_ref_set",
         "next_guard_refs",
         "source_doc_refs",
     ]:
@@ -151,3 +271,14 @@ def check_pain_regret_repair_report(report: dict[str, Any]) -> list[str]:
         if not report.get(field):
             reasons.append(f"pain_regret_repair_gate missing {field}")
     return reasons
+
+
+def _dedupe_string_refs(refs: list[Any]) -> list[str]:
+    merged: list[str] = []
+    seen: set[str] = set()
+    for ref in refs:
+        if not isinstance(ref, str) or not ref or ref in seen:
+            continue
+        seen.add(ref)
+        merged.append(ref)
+    return merged

@@ -216,6 +216,8 @@ def run_schema_runner(
             "runtime/state/validation/validation_rollup.json",
             QUEUE_E_BIRTH_REPAIR_PROFILE_REF,
             "runtime/state/validation/boundary_audit_state.json",
+            "runtime/state/observation/world_observation_route.json",
+            "runtime/state/observation/periphery_normalization_trace.json",
         ],
         input_report_refs=[
             "runtime/reports/latest/birth_readiness_report.json",
@@ -265,6 +267,12 @@ def run_schema_runner(
         ),
         queue_e_world_contact_repair_governance_refs=list(
             cross_file_logic.get("queue_e_world_contact_repair_governance_refs", [])
+        ),
+        prediction_periphery_gate_status=str(
+            cross_file_logic.get("prediction_periphery_gate_status", "")
+        ),
+        prediction_periphery_ref_set=list(
+            cross_file_logic.get("prediction_periphery_ref_set", [])
         ),
     )
     artifact_manifest = _build_artifact_manifest(run_id, generated_at, status)
@@ -780,6 +788,12 @@ def _build_stage_gate(
         "queue_e_world_contact_blocked_future_routes": list(
             cross_file_logic.get("queue_e_world_contact_blocked_future_routes", [])
         ),
+        "prediction_periphery_gate_status": cross_file_logic.get(
+            "prediction_periphery_gate_status"
+        ),
+        "prediction_periphery_ref_set": list(
+            cross_file_logic.get("prediction_periphery_ref_set", [])
+        ),
         "blocked_reasons": blocked_reasons,
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
         "next_required_command": NEXT_REQUIRED_COMMAND,
@@ -846,6 +860,12 @@ def _build_report(
         "queue_e_world_contact_repair_governance_refs": list(
             cross_file_logic.get("queue_e_world_contact_repair_governance_refs", [])
         ),
+        "prediction_periphery_gate_status": cross_file_logic.get(
+            "prediction_periphery_gate_status"
+        ),
+        "prediction_periphery_ref_set": list(
+            cross_file_logic.get("prediction_periphery_ref_set", [])
+        ),
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [],
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
@@ -882,6 +902,12 @@ def _build_digest(
         ),
         "queue_e_world_contact_blocked_future_route_count": len(
             cross_file_logic.get("queue_e_world_contact_blocked_future_routes", [])
+        ),
+        "prediction_periphery_gate_status": cross_file_logic.get(
+            "prediction_periphery_gate_status"
+        ),
+        "prediction_periphery_ref_count": len(
+            cross_file_logic.get("prediction_periphery_ref_set", [])
         ),
         "blocked_reasons": blocked_reasons,
         "next_allowed_slices": NEXT_ALLOWED_SLICES if status == "closed" else [],
@@ -927,6 +953,12 @@ def _build_receipt(
         ),
         "queue_e_world_contact_repair_governance_refs": list(
             cross_file_logic.get("queue_e_world_contact_repair_governance_refs", [])
+        ),
+        "prediction_periphery_gate_status": cross_file_logic.get(
+            "prediction_periphery_gate_status"
+        ),
+        "prediction_periphery_ref_set": list(
+            cross_file_logic.get("prediction_periphery_ref_set", [])
         ),
         "direction_lock_ref": "docs/258_linear_chain_closure_and_v0_contract_transition.md",
     }
@@ -1026,6 +1058,10 @@ def _check_stage_gate(stage_gate: dict[str, Any]) -> list[str]:
         reasons.append("queue_e_birth_repair_gate stage attention missing")
     if not stage_gate.get("queue_e_birth_repair_ref_set"):
         reasons.append("queue_e_birth_repair_gate stage refs missing")
+    if stage_gate.get("prediction_periphery_gate_status") != "closed":
+        reasons.append("prediction_periphery_gate stage mismatch")
+    if not stage_gate.get("prediction_periphery_ref_set"):
+        reasons.append("prediction_periphery_gate stage refs missing")
     return reasons
 
 
@@ -1057,6 +1093,10 @@ def _check_build_report(report: dict[str, Any]) -> list[str]:
         reasons.append("queue_e_birth_repair_gate report attention missing")
     if not report.get("queue_e_birth_repair_ref_set"):
         reasons.append("queue_e_birth_repair_gate report refs missing")
+    if report.get("prediction_periphery_gate_status") != "closed":
+        reasons.append("prediction_periphery_gate report mismatch")
+    if not report.get("prediction_periphery_ref_set"):
+        reasons.append("prediction_periphery_gate report refs missing")
     return reasons
 
 

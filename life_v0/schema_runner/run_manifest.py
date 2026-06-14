@@ -40,6 +40,8 @@ def build_run_manifest(
     queue_e_world_contact_blocked_future_routes: list[str] | None = None,
     queue_e_world_contact_allowed_repair_routes: list[str] | None = None,
     queue_e_world_contact_repair_governance_refs: list[str] | None = None,
+    prediction_periphery_gate_status: str | None = None,
+    prediction_periphery_ref_set: list[str] | None = None,
 ) -> dict[str, Any]:
     return {
         "schema_version": "schema_runner_run_manifest_v0",
@@ -73,6 +75,8 @@ def build_run_manifest(
         "queue_e_world_contact_blocked_future_routes": list(queue_e_world_contact_blocked_future_routes or []),
         "queue_e_world_contact_allowed_repair_routes": list(queue_e_world_contact_allowed_repair_routes or []),
         "queue_e_world_contact_repair_governance_refs": list(queue_e_world_contact_repair_governance_refs or []),
+        "prediction_periphery_gate_status": prediction_periphery_gate_status,
+        "prediction_periphery_ref_set": list(prediction_periphery_ref_set or []),
         "receipt_ref": f"runtime/receipts/schema_runner_{run_id}.json",
         "source_doc_refs": sorted(set(source_doc_refs + SOURCE_DOC_REFS)),
     }
@@ -104,6 +108,8 @@ def check_run_manifest(state: dict[str, Any]) -> list[str]:
         "queue_e_world_contact_future_release_posture",
         "queue_e_world_contact_allowed_repair_routes",
         "queue_e_world_contact_repair_governance_refs",
+        "prediction_periphery_gate_status",
+        "prediction_periphery_ref_set",
         "receipt_ref",
         "source_doc_refs",
     ]:
@@ -111,4 +117,6 @@ def check_run_manifest(state: dict[str, Any]) -> list[str]:
             reasons.append(f"run_manifest_gate missing {field}")
     if state.get("queue_e_birth_repair_gate_status") != "closed":
         reasons.append("run_manifest_gate queue_e birth repair gate mismatch")
+    if state.get("prediction_periphery_gate_status") != "closed":
+        reasons.append("run_manifest_gate prediction periphery gate mismatch")
     return reasons

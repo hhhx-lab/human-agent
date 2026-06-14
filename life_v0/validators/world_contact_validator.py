@@ -22,17 +22,32 @@ def build_world_contact_validation(
     confirmation_binding: dict[str, Any],
     side_effect_review: dict[str, Any],
     action_candidate_set: dict[str, Any],
+    world_observation_route: dict[str, Any] | None = None,
+    periphery_normalization_trace: dict[str, Any] | None = None,
+    observation_truth_review: dict[str, Any] | None = None,
     value_orientation: dict[str, Any] | None = None,
     consciousness_probe_bundle: dict[str, Any] | None = None,
     need_state: dict[str, Any] | None = None,
     core_affect: dict[str, Any] | None = None,
     expression_plan: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    world_observation_route = world_observation_route or {}
+    periphery_normalization_trace = periphery_normalization_trace or {}
+    observation_truth_review = observation_truth_review or {}
     findings: list[str] = []
     if confirmation_binding.get("requires_confirmation") and confirmation_binding.get("confirmation_status") != "confirmed":
         findings.append("confirmation_missing")
     if world_contact_gate.get("contact_mode") not in {"shadow_only", "blocked"}:
         findings.append("contact_mode_out_of_policy")
+    if world_observation_route.get("schema_version") != "world_observation_route_v0":
+        findings.append("world_observation_route_missing")
+    if periphery_normalization_trace.get("schema_version") != "periphery_normalization_trace_v0":
+        findings.append("periphery_normalization_trace_missing")
+    if (
+        observation_truth_review.get("schema_version") == "observation_truth_review_v0"
+        and observation_truth_review.get("missing_fields")
+    ):
+        findings.append("observation_truth_review_incomplete")
     repair_hold_required = bool(world_contact_gate.get("repair_hold_required"))
     repair_governance_refs = _dedupe_string_refs(
         list(world_contact_gate.get("repair_governance_refs", []))
@@ -69,6 +84,35 @@ def build_world_contact_validation(
         "world_contact_gate_ref": "runtime/state/action/world_contact_gate_state.json",
         "confirmation_binding_ref": "runtime/state/membrane/confirmation_binding.json",
         "side_effect_review_ref": "runtime/state/action/side_effect_review.json",
+        "world_observation_route_ref": (
+            "runtime/state/observation/world_observation_route.json"
+            if world_observation_route
+            else None
+        ),
+        "periphery_normalization_ref": (
+            "runtime/state/observation/periphery_normalization_trace.json"
+            if periphery_normalization_trace
+            else None
+        ),
+        "observation_truth_review_ref": (
+            "runtime/state/validation/observation_truth_review.json"
+            if observation_truth_review
+            else None
+        ),
+        "observation_route_mode": world_observation_route.get("route_mode"),
+        "observation_target_count": len(world_observation_route.get("observation_targets", [])),
+        "periphery_normalization_policy": periphery_normalization_trace.get(
+            "normalization_policy"
+        ),
+        "promoted_channel_count": len(
+            periphery_normalization_trace.get("promoted_channels", [])
+        ),
+        "deferred_channel_count": len(
+            periphery_normalization_trace.get("deferred_channels", [])
+        ),
+        "observation_truth_missing_fields": list(
+            observation_truth_review.get("missing_fields", [])
+        ),
         "blocked_contacts": list(world_contact_gate.get("blocked_contacts", [])),
         "validation_findings": findings,
         "repair_followup_required": bool(side_effect_review.get("repair_followup_required")),
@@ -102,6 +146,11 @@ def check_world_contact_validation(validation: dict[str, Any]) -> list[str]:
         "world_contact_gate_ref",
         "confirmation_binding_ref",
         "side_effect_review_ref",
+        "world_observation_route_ref",
+        "periphery_normalization_ref",
+        "observation_truth_review_ref",
+        "observation_route_mode",
+        "periphery_normalization_policy",
         "blocked_contacts",
         "future_no_go_profile_ref",
         "confirmation_threshold_bias",

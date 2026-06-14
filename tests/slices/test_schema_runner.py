@@ -156,7 +156,11 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/membrane/confirmation_binding.json", cross_file_logic["state_refs"])
         self.assertIn("runtime/state/action/responsibility_loop_state.json", cross_file_logic["state_refs"])
         self.assertIn("runtime/state/validation/observation_truth_review.json", cross_file_logic["state_refs"])
+        self.assertIn("runtime/state/validation/world_contact_validation.json", cross_file_logic["state_refs"])
+        self.assertIn("runtime/state/validation/prediction_trace_validation.json", cross_file_logic["state_refs"])
         self.assertIn("runtime/state/validation/validation_rollup.json", cross_file_logic["state_refs"])
+        self.assertIn("runtime/state/observation/world_observation_route.json", cross_file_logic["state_refs"])
+        self.assertIn("runtime/state/observation/periphery_normalization_trace.json", cross_file_logic["state_refs"])
         self.assertIn(queue_e_profile_ref, cross_file_logic["state_refs"])
         self.assertTrue(cross_file_logic["repair_priority_refs"])
         self.assertIn("validation_rollup_gate", cross_file_logic["package_local_gate_refs"])
@@ -212,9 +216,37 @@ class SchemaRunnerTests(unittest.TestCase):
             "runtime/state/action/responsibility_loop_state.json",
             cross_file_logic["queue_e_world_contact_repair_governance_refs"],
         )
+        self.assertEqual(cross_file_logic["prediction_periphery_gate_status"], "closed")
+        self.assertIn(
+            "runtime/state/prediction/active_sampling_plan.json",
+            cross_file_logic["prediction_periphery_ref_set"],
+        )
+        self.assertIn(
+            "runtime/state/observation/world_observation_route.json",
+            cross_file_logic["prediction_periphery_ref_set"],
+        )
+        self.assertIn(
+            "runtime/state/validation/world_contact_validation.json",
+            cross_file_logic["prediction_periphery_ref_set"],
+        )
+        self.assertIn("prediction_periphery_gate", cross_file_logic["package_local_gate_refs"])
+        self.assertIn(
+            "runtime/state/validation/validation_rollup.json#prediction_periphery_gate",
+            cross_file_logic["closure_status_refs"],
+        )
+        self.assertIn(
+            "runtime/state/validation/prediction_trace_validation.json#prediction_trace_refs",
+            cross_file_logic["bridge_refs"],
+        )
         self.assertTrue(
             any(
                 finding["finding_kind"] == "life_constraint_alignment"
+                for finding in cross_file_logic["cross_file_findings"]
+            )
+        )
+        self.assertTrue(
+            any(
+                finding["finding_kind"] == "prediction_periphery_world_contact_alignment"
                 for finding in cross_file_logic["cross_file_findings"]
             )
         )
@@ -274,6 +306,8 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("runtime/state/validation/world_contact_validation.json", run_manifest["input_state_refs"])
         self.assertIn("runtime/state/validation/prediction_trace_validation.json", run_manifest["input_state_refs"])
         self.assertIn("runtime/state/validation/validation_rollup.json", run_manifest["input_state_refs"])
+        self.assertIn("runtime/state/observation/world_observation_route.json", run_manifest["input_state_refs"])
+        self.assertIn("runtime/state/observation/periphery_normalization_trace.json", run_manifest["input_state_refs"])
         self.assertIn(queue_e_profile_ref, run_manifest["input_state_refs"])
         self.assertIn(
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",
@@ -299,6 +333,12 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn("validation_rollup_gate", run_manifest["package_local_gate_refs"])
         self.assertIn("life_constraint_validation_gate", run_manifest["package_local_gate_refs"])
         self.assertIn("queue_e_birth_repair_gate", run_manifest["package_local_gate_refs"])
+        self.assertIn("prediction_periphery_gate", run_manifest["package_local_gate_refs"])
+        self.assertEqual(run_manifest["prediction_periphery_gate_status"], "closed")
+        self.assertIn(
+            "runtime/state/observation/periphery_normalization_trace.json",
+            run_manifest["prediction_periphery_ref_set"],
+        )
         self.assertIn("runtime/state/membrane/action_intent_queue.json", run_manifest["closure_status_refs"])
         self.assertEqual(run_manifest["queue_e_birth_repair_gate_status"], "closed")
         self.assertEqual(run_manifest["queue_e_birth_repair_profile_ref"], queue_e_profile_ref)
@@ -316,6 +356,11 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertTrue(expected_queue_e_refs.issubset(set(stage_gate["queue_e_birth_repair_ref_set"])))
         self.assertTrue(stage_gate["queue_e_world_contact_repair_hold_required"])
         self.assertEqual(stage_gate["queue_e_world_contact_confirmation_threshold_bias"], "raised")
+        self.assertEqual(stage_gate["prediction_periphery_gate_status"], "closed")
+        self.assertIn(
+            "runtime/state/validation/world_contact_validation.json",
+            stage_gate["prediction_periphery_ref_set"],
+        )
         self.assertIn(
             "external_release_without_repair_review",
             stage_gate["queue_e_world_contact_blocked_future_routes"],
@@ -336,6 +381,11 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn(
             "runtime/state/action/responsibility_loop_state.json",
             report["queue_e_world_contact_repair_governance_refs"],
+        )
+        self.assertEqual(report["prediction_periphery_gate_status"], "closed")
+        self.assertIn(
+            "runtime/state/prediction/active_sampling_plan.json",
+            report["prediction_periphery_ref_set"],
         )
         self.assertIn("SchemaBundleCompiler", report["runtime_carrier_refs"])
         self.assertIn("RunnerRepositoryKernel", report["runtime_carrier_refs"])
@@ -365,6 +415,8 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertTrue(digest["queue_e_world_contact_repair_hold_required"])
         self.assertEqual(digest["queue_e_world_contact_confirmation_threshold_bias"], "raised")
         self.assertGreaterEqual(digest["queue_e_world_contact_blocked_future_route_count"], 1)
+        self.assertEqual(digest["prediction_periphery_gate_status"], "closed")
+        self.assertGreaterEqual(digest["prediction_periphery_ref_count"], 5)
         self.assertEqual(check_report["status"], "closed")
         self.assertIn("queue_e_birth_repair_gate", check_report["closed_gates"])
         self.assertEqual(smoke_report["schema_version"], "schema_runner_smoke_report_v0")
@@ -379,6 +431,11 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertIn(
             "runtime/state/action/responsibility_loop_state.json",
             receipt["queue_e_world_contact_repair_governance_refs"],
+        )
+        self.assertEqual(receipt["prediction_periphery_gate_status"], "closed")
+        self.assertIn(
+            "runtime/state/validation/prediction_trace_validation.json",
+            receipt["prediction_periphery_ref_set"],
         )
         self.assertIn(
             str((paths["life_targets_state"] / "queue_e_birth_repair_profile.json").resolve()),

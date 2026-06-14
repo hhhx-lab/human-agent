@@ -106,6 +106,23 @@ def build_cross_file_logic(
             *list(world_contact_validation.get("repair_governance_refs", [])),
         ]
     )
+    prediction_periphery_gate_status = (
+        validation_rollup.get("prediction_periphery_gate_status")
+        or validation_rollup.get("gate_status", {}).get("prediction_periphery_gate")
+        or "blocked"
+    )
+    prediction_periphery_ref_set = _dedupe_string_refs(
+        [
+            *list(validation_rollup.get("prediction_periphery_ref_set", [])),
+            *list(prediction_trace_validation.get("prediction_trace_refs", [])),
+            world_contact_validation.get("world_observation_route_ref"),
+            world_contact_validation.get("periphery_normalization_ref"),
+            world_contact_validation.get("observation_truth_review_ref"),
+            prediction_trace_validation.get("active_sampling_plan_ref"),
+            prediction_trace_validation.get("prediction_workspace_ref"),
+            prediction_trace_validation.get("world_contact_validation_ref"),
+        ]
+    )
     life_constraint_refs = list(
         dict.fromkeys(
             [
@@ -244,6 +261,32 @@ def build_cross_file_logic(
             ),
         }
     )
+    findings.append(
+        {
+            "finding_id": f"cross-file-{run_id}-0007",
+            "finding_kind": "prediction_periphery_world_contact_alignment",
+            "severity": (
+                "guarded_low"
+                if prediction_periphery_gate_status == "closed"
+                else "guarded_medium"
+            ),
+            "state_refs": [
+                "runtime/state/prediction/active_sampling_plan.json",
+                "runtime/state/observation/world_observation_route.json",
+                "runtime/state/observation/periphery_normalization_trace.json",
+                "runtime/state/validation/observation_truth_review.json",
+                "runtime/state/validation/prediction_trace_validation.json",
+                "runtime/state/validation/world_contact_validation.json",
+                "runtime/state/validation/validation_rollup.json#prediction_periphery_gate",
+            ],
+            "summary": "active sampling, world observation, periphery normalization, truth review, and world-contact validation remain one trace",
+            "repair_priority": (
+                "medium"
+                if prediction_periphery_gate_status == "closed"
+                else "high"
+            ),
+        }
+    )
 
     repair_priority_refs = [
         "runtime/state/action/responsibility_loop_state.json",
@@ -269,6 +312,12 @@ def build_cross_file_logic(
     if queue_e_world_contact_repair_hold_required:
         repair_priority_refs.append(queue_e_world_contact_future_no_go_profile_ref)
         repair_priority_refs.extend(queue_e_world_contact_repair_governance_refs[:2])
+    if prediction_periphery_gate_status == "closed":
+        repair_priority_refs.extend(prediction_periphery_ref_set[:2])
+    else:
+        repair_priority_refs.append(
+            "runtime/state/validation/validation_rollup.json#prediction_periphery_gate"
+        )
     if _has_blocking_life_constraint(queue_e_cross_layer_gate_status):
         repair_priority_refs.append(
             "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status"
@@ -295,6 +344,11 @@ def build_cross_file_logic(
         "runtime/state/action/world_contact_gate_state.json#repair_hold_required",
         "runtime/state/validation/world_contact_validation.json#repair_hold_required",
         "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+        "runtime/state/prediction/active_sampling_plan.json",
+        "runtime/state/observation/world_observation_route.json",
+        "runtime/state/observation/periphery_normalization_trace.json",
+        "runtime/state/validation/prediction_trace_validation.json#prediction_trace_refs",
+        "runtime/state/validation/validation_rollup.json#prediction_periphery_gate",
     ]
 
     return {
@@ -316,6 +370,8 @@ def build_cross_file_logic(
             "runtime/state/validation/boundary_audit_state.json",
             "runtime/state/schema_runner/consistency_logic.json",
             "runtime/state/schema_runner/comparison_trace.json",
+            "runtime/state/observation/world_observation_route.json",
+            "runtime/state/observation/periphery_normalization_trace.json",
         ],
         "cross_file_findings": findings,
         "repair_priority_refs": repair_priority_refs,
@@ -333,6 +389,8 @@ def build_cross_file_logic(
         "queue_e_world_contact_blocked_future_routes": queue_e_world_contact_blocked_future_routes,
         "queue_e_world_contact_allowed_repair_routes": queue_e_world_contact_allowed_repair_routes,
         "queue_e_world_contact_repair_governance_refs": queue_e_world_contact_repair_governance_refs,
+        "prediction_periphery_gate_status": prediction_periphery_gate_status,
+        "prediction_periphery_ref_set": prediction_periphery_ref_set,
         "closure_status_refs": [
             "runtime/state/validation/observation_truth_review.json",
             "runtime/state/validation/world_contact_validation.json",
@@ -347,6 +405,8 @@ def build_cross_file_logic(
             "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status",
             "runtime/state/action/go_nogo_state.json#future_no_go_profile",
             "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+            "runtime/state/validation/validation_rollup.json#prediction_periphery_gate",
+            "runtime/state/validation/prediction_trace_validation.json#prediction_trace_refs",
         ],
         "package_local_gate_refs": [
             "validation_rollup_gate",
@@ -354,6 +414,7 @@ def build_cross_file_logic(
             "prediction_trace_validation_gate",
             "world_contact_validation_gate",
             "queue_e_birth_repair_gate",
+            "prediction_periphery_gate",
             "cross_file_logic_gate",
         ],
         "bridge_refs": bridge_refs,
@@ -386,6 +447,8 @@ def check_cross_file_logic(state: dict[str, Any]) -> list[str]:
         "queue_e_world_contact_future_release_posture",
         "queue_e_world_contact_allowed_repair_routes",
         "queue_e_world_contact_repair_governance_refs",
+        "prediction_periphery_gate_status",
+        "prediction_periphery_ref_set",
         "closure_status_refs",
         "package_local_gate_refs",
         "bridge_refs",

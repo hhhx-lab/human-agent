@@ -253,6 +253,47 @@ class LifeMembraneTests(unittest.TestCase):
             "runtime/state/observation/periphery_normalization_trace.json",
         )
         self.assertEqual(world_contact_summary["release_posture"], "shadow_only_guarded")
+        self.assertEqual(
+            world_contact_summary["belief_state_ref"],
+            "runtime/state/prediction/belief_state_frame.json",
+        )
+        self.assertEqual(
+            world_contact_summary["prediction_error_ref"],
+            "runtime/state/prediction/prediction_error_field.json",
+        )
+        self.assertEqual(
+            world_contact_summary["active_sampling_plan_ref"],
+            "runtime/state/prediction/active_sampling_plan.json",
+        )
+        self.assertEqual(
+            world_contact_summary["prediction_workspace_ref"],
+            "runtime/state/prediction/prediction_workspace_frame.json",
+        )
+        self.assertEqual(
+            world_contact_summary["signal_media_ref"],
+            "runtime/state/signal/signal_media_runtime.json",
+        )
+        self.assertGreaterEqual(world_contact_summary["prediction_error_count"], 1)
+        self.assertTrue(world_contact_summary["prediction_error_events"])
+        self.assertTrue(world_contact_summary["active_sampling_route"])
+        self.assertTrue(world_contact_summary["active_sampling_expected_observation_refs"])
+        self.assertTrue(world_contact_summary["prediction_workspace_downstream_systems"])
+        self.assertTrue(world_contact_summary["signal_precision_policy_mode"])
+        self.assertGreaterEqual(world_contact_summary["observation_target_count"], 1)
+        self.assertGreaterEqual(world_contact_summary["prioritized_channel_count"], 1)
+        self.assertEqual(
+            world_contact_summary["periphery_normalization_policy"],
+            "belief_error_guarded_periphery",
+        )
+        self.assertGreaterEqual(world_contact_summary["normalized_channel_count"], 1)
+        self.assertIn(
+            "runtime/state/prediction/active_sampling_plan.json",
+            world_contact_summary["world_contact_prediction_ref_set"],
+        )
+        self.assertIn(
+            "runtime/state/observation/periphery_normalization_trace.json",
+            world_contact_summary["world_contact_prediction_ref_set"],
+        )
         self.assertTrue(world_contact_summary["next_guard_refs"])
 
         self.assertEqual(world_observation_route["schema_version"], "world_observation_route_v0")

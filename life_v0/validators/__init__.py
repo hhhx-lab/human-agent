@@ -274,6 +274,9 @@ def run_validation_membrane(
         confirmation_binding=confirmation_binding,
         side_effect_review=side_effect_review,
         action_candidate_set=action_candidate_set,
+        world_observation_route=world_observation_route,
+        periphery_normalization_trace=periphery_normalization_trace,
+        observation_truth_review=truth_review,
         value_orientation=value_orientation,
         consciousness_probe_bundle=consciousness_probe_bundle,
         need_state=need_state,
@@ -287,6 +290,9 @@ def run_validation_membrane(
         action_intent_queue=action_intent_queue,
         observation_truth_gate=observation_truth_gate,
         observation_truth_review=truth_review,
+        world_observation_route=world_observation_route,
+        periphery_normalization_trace=periphery_normalization_trace,
+        world_contact_validation=world_contact_validation,
     )
     boundary_audit = build_boundary_audit_state(
         run_id=run_id,

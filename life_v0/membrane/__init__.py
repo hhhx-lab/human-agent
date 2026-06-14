@@ -318,6 +318,11 @@ def run_life_membrane(
         responsibility_loop=responsibility_loop,
         world_observation_route=world_observation_route,
         periphery_normalization_trace=periphery_normalization_trace,
+        belief_state=belief_state,
+        prediction_error_field=prediction_error_field,
+        active_sampling_plan=active_sampling_plan,
+        prediction_workspace=prediction_workspace,
+        signal_media_runtime=signal_media_runtime,
     )
     pain_regret_repair_report = build_pain_regret_repair_report(
         run_id=run_id,

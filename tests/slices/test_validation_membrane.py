@@ -160,6 +160,25 @@ class ValidationMembraneTests(unittest.TestCase):
             world_contact_validation["confirmation_binding_ref"],
             "runtime/state/membrane/confirmation_binding.json",
         )
+        self.assertEqual(
+            world_contact_validation["world_observation_route_ref"],
+            "runtime/state/observation/world_observation_route.json",
+        )
+        self.assertEqual(
+            world_contact_validation["periphery_normalization_ref"],
+            "runtime/state/observation/periphery_normalization_trace.json",
+        )
+        self.assertEqual(
+            world_contact_validation["observation_truth_review_ref"],
+            "runtime/state/validation/observation_truth_review.json",
+        )
+        self.assertTrue(world_contact_validation["observation_route_mode"])
+        self.assertGreaterEqual(world_contact_validation["observation_target_count"], 1)
+        self.assertEqual(
+            world_contact_validation["periphery_normalization_policy"],
+            "belief_error_guarded_periphery",
+        )
+        self.assertEqual(world_contact_validation["observation_truth_missing_fields"], [])
         self.assertEqual(world_contact_validation["validation_findings"], [])
         self.assertEqual(
             world_contact_validation["life_constraint_validation"]["value_orientation_gate"],
@@ -202,12 +221,50 @@ class ValidationMembraneTests(unittest.TestCase):
             prediction_trace_validation["action_intent_queue_ref"],
             "runtime/state/membrane/action_intent_queue.json",
         )
+        self.assertEqual(
+            prediction_trace_validation["active_sampling_plan_ref"],
+            "runtime/state/prediction/active_sampling_plan.json",
+        )
+        self.assertEqual(
+            prediction_trace_validation["world_observation_route_ref"],
+            "runtime/state/observation/world_observation_route.json",
+        )
+        self.assertEqual(
+            prediction_trace_validation["periphery_normalization_ref"],
+            "runtime/state/observation/periphery_normalization_trace.json",
+        )
+        self.assertEqual(
+            prediction_trace_validation["world_contact_validation_ref"],
+            "runtime/state/validation/world_contact_validation.json",
+        )
+        self.assertEqual(
+            prediction_trace_validation["world_contact_validation_status"],
+            "closed",
+        )
+        self.assertIn(
+            "runtime/state/prediction/active_sampling_plan.json",
+            prediction_trace_validation["prediction_trace_refs"],
+        )
+        self.assertIn(
+            "runtime/state/observation/periphery_normalization_trace.json",
+            prediction_trace_validation["prediction_trace_refs"],
+        )
         self.assertEqual(prediction_trace_validation["missing_prediction_links"], [])
 
         self.assertEqual(validation_rollup["schema_version"], "validation_rollup_v0")
         self.assertEqual(validation_rollup["overall_status"], "closed")
         self.assertEqual(validation_rollup["blocked_gates"], [])
         self.assertEqual(validation_rollup["guarded_gates"], [])
+        self.assertEqual(validation_rollup["gate_status"]["prediction_periphery_gate"], "closed")
+        self.assertEqual(validation_rollup["prediction_periphery_gate_status"], "closed")
+        self.assertIn(
+            "runtime/state/observation/world_observation_route.json",
+            validation_rollup["prediction_periphery_ref_set"],
+        )
+        self.assertIn(
+            "runtime/state/validation/world_contact_validation.json",
+            validation_rollup["prediction_periphery_ref_set"],
+        )
         self.assertTrue(validation_rollup["next_stage_ready"])
         self.assertIn("runtime/state/validation/world_contact_validation.json", validation_rollup["state_refs"])
         self.assertIn(queue_e_profile_ref, validation_rollup["state_refs"])
