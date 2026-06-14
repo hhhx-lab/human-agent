@@ -600,3 +600,40 @@ life_v0/state_store/life_state.py
   -> network_state.py
   -> workspace.py
 ```
+
+## ITR-05 追加：身体信号调制记忆写门
+
+Queue C 当前不再只要求 `memory_write_gate.json` 存在，还要求它能被神经调质和身体状态动态投射。最新代码链如下：
+
+```text
+life_v0/neural_core/signal_media.py
+  -> body_signal_profile
+life_v0/state_store/memory_write_gate.py
+  -> body_signal_write_modulation
+life_v0/language/__init__.py
+  -> refresh signal + project memory gate
+life_v0/process_supervisor/idle_strategy.py
+  -> body_signal_* waiting governance
+life_v0/process_supervisor/background_lineage_state.py
+  -> prediction_write_gate_presence.body_signal_*
+life_v0/process_supervisor/dialogue_events.py
+  -> resident_background_lineage_body_signal_*
+life_v0/process_supervisor/response_surface.py
+  -> audited_expression_material_v0.prediction_attention.body_signal_*
+```
+
+新增完成定义：
+
+1. `build_signal_media_runtime(...)` 必须消费 `body_resource_budget` 和 `core_affect_vector`，不能继续把 `fatigue_load` 固定成常数。
+2. `MemoryWriteGate` 必须生成 `body_signal_write_modulation`，并能把写门策略调成 `candidate_first_body_signal_guarded`、`candidate_first_repair_guarded` 或 `candidate_first_relationship_guarded`。
+3. 实时语言阶段必须在刷新 signal 后同步投射并写回 `runtime/state/memory/memory_write_gate.json`。
+4. `body_signal_*` 必须进入 resident lineage、life turn event 和 response material；如果只停在 memory 文件里，不算闭合。
+5. 这组字段只能作为内部调制和证据，不允许成为固定自然语言回复模板。
+
+新增测试入口：
+
+```bash
+python3 -m unittest tests.slices.test_language_organs.LanguageOrgansTests.test_inner_speech_expression_monitor_and_relationship_graph_organs -v
+python3 -m unittest tests.slices.test_state_store.StateStoreTests.test_memory_write_gate_consumes_signal_and_body_pressure -v
+python3 -m unittest tests.process.test_response_surface.ResponseSurfaceTests.test_body_signal_memory_gate_crosses_lineage_event_and_response -v
+```

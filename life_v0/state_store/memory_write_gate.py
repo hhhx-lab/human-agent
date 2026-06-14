@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 
@@ -20,6 +21,10 @@ def build_memory_write_gate(
     relationship_memory: dict[str, Any] | None = None,
     commitment_truth_state: dict[str, Any] | None = None,
     responsibility_ledger: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
+    body_resource_budget: dict[str, Any] | None = None,
+    core_affect_vector: dict[str, Any] | None = None,
+    body_presence_profile: dict[str, Any] | None = None,
     indexes: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     engram_index = engram_index or {}
@@ -27,13 +32,28 @@ def build_memory_write_gate(
     commitment_truth_state = commitment_truth_state or {}
     responsibility_ledger = responsibility_ledger or {}
     indexes = indexes or {}
+    body_signal_modulation = _body_signal_write_modulation(
+        signal_media_runtime=signal_media_runtime,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
+        body_presence_profile=body_presence_profile,
+    )
+    stage_policy = _stage_policy_from_body_signal(body_signal_modulation)
+    long_term_governance_refs = [
+        "runtime/state/memory/state_merge_guard.json#promotion_routes",
+        "runtime/state/memory/state_merge_guard.json#quarantine_routes",
+        "runtime/state/memory/state_merge_guard.json#repair_routes",
+        "runtime/state/memory/state_merge_guard.json#merge_routes",
+    ]
+    if body_signal_modulation:
+        long_term_governance_refs.append("body_signal_write_modulation")
     return {
         "schema_version": "memory_write_gate_v0",
         "run_id": run_id,
         "generated_at": generated_at,
         "status": "closed",
         "gate_id": f"memory-write-gate-{run_id}",
-        "stage_policy": "candidate_first_fail_closed",
+        "stage_policy": stage_policy,
         "transaction_order": [
             "create_candidate_object",
             "create_validation_envelope",
@@ -111,14 +131,13 @@ def build_memory_write_gate(
             "tracked_fields": ["fatigue_load", "relationship_pressure", "repair_drive"],
             "maintenance_queue_ref": "runtime/state/body/maintenance_queue.json",
             "high_load_effect": "defer_noncritical_memory_commit",
+            "current_signal_profile": body_signal_modulation if body_signal_modulation else None,
         },
         "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
-        "long_term_governance_refs": [
-            "runtime/state/memory/state_merge_guard.json#promotion_routes",
-            "runtime/state/memory/state_merge_guard.json#quarantine_routes",
-            "runtime/state/memory/state_merge_guard.json#repair_routes",
-            "runtime/state/memory/state_merge_guard.json#merge_routes",
-        ],
+        "long_term_governance_refs": long_term_governance_refs,
+        "body_signal_write_modulation": (
+            body_signal_modulation if body_signal_modulation else None
+        ),
         "engram_index_ref": (
             "runtime/state/memory/engram_index.json"
             if engram_index
@@ -135,3 +154,260 @@ def build_memory_write_gate(
         "quarantine_refs": list(engram_index.get("quarantine_refs", [])),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
+
+
+def project_memory_write_gate_with_signal_body(
+    *,
+    memory_write_gate: dict[str, Any],
+    signal_media_runtime: dict[str, Any] | None = None,
+    body_resource_budget: dict[str, Any] | None = None,
+    core_affect_vector: dict[str, Any] | None = None,
+    body_presence_profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not memory_write_gate:
+        return {}
+    updated = json.loads(json.dumps(memory_write_gate))
+    body_signal_modulation = _body_signal_write_modulation(
+        signal_media_runtime=signal_media_runtime,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
+        body_presence_profile=body_presence_profile,
+    )
+    if not body_signal_modulation:
+        return updated
+
+    updated["stage_policy"] = _stage_policy_from_body_signal(body_signal_modulation)
+    updated["body_signal_write_modulation"] = body_signal_modulation
+    life_support = dict(updated.get("life_support_pressure_update", {}))
+    tracked_fields = _dedupe(
+        _string_list(life_support.get("tracked_fields"))
+        + [
+            "fatigue_load",
+            "relationship_pressure",
+            "repair_drive",
+            "unexpected_uncertainty",
+            "pain_pressure",
+            "dream_residue_load",
+        ]
+    )
+    life_support["tracked_fields"] = tracked_fields
+    life_support["current_signal_profile"] = body_signal_modulation
+    life_support["high_load_effect"] = body_signal_modulation.get(
+        "write_bias",
+        "defer_noncritical_memory_commit",
+    )
+    updated["life_support_pressure_update"] = life_support
+    updated["long_term_governance_refs"] = _dedupe(
+        _string_list(updated.get("long_term_governance_refs"))
+        + ["body_signal_write_modulation"]
+    )
+    return updated
+
+
+def _body_signal_write_modulation(
+    *,
+    signal_media_runtime: dict[str, Any] | None,
+    body_resource_budget: dict[str, Any] | None,
+    core_affect_vector: dict[str, Any] | None,
+    body_presence_profile: dict[str, Any] | None,
+) -> dict[str, Any]:
+    signal_media_runtime = signal_media_runtime or {}
+    modulation_vector = signal_media_runtime.get("modulation_vector", {})
+    if not isinstance(modulation_vector, dict):
+        modulation_vector = {}
+    signal_body_profile = signal_media_runtime.get("body_signal_profile", {})
+    if not isinstance(signal_body_profile, dict):
+        signal_body_profile = {}
+    body_resource_budget = body_resource_budget or {}
+    core_affect_vector = core_affect_vector or {}
+    body_presence_profile = body_presence_profile or {}
+    if not any(
+        [
+            signal_media_runtime,
+            body_resource_budget,
+            core_affect_vector,
+            body_presence_profile,
+        ]
+    ):
+        return {}
+
+    fatigue_load = _float_signal(
+        modulation_vector.get("fatigue_load")
+        if modulation_vector.get("fatigue_load") is not None
+        else signal_body_profile.get("fatigue_load"),
+        default=_fatigue_load_scale(
+            body_presence_profile.get("fatigue_load")
+            or (body_resource_budget.get("fatigue_state") or {}).get("level")
+        ),
+    )
+    repair_drive = _float_signal(
+        modulation_vector.get("repair_drive"),
+        default=_repair_drive_signal(
+            signal_body_profile.get("repair_drive")
+            or body_presence_profile.get("repair_drive")
+            or core_affect_vector.get("repair_drive")
+            or (body_resource_budget.get("maintenance_pressure") or {}).get(
+                "repair_drive"
+            )
+        ),
+    )
+    relationship_pressure = _float_signal(
+        modulation_vector.get("relationship_pressure"),
+        default=_float_signal(
+            signal_body_profile.get("relationship_tension")
+            or core_affect_vector.get("relationship_tension"),
+            default=0.0,
+        ),
+    )
+    unexpected_uncertainty = _float_signal(
+        modulation_vector.get("unexpected_uncertainty"),
+        default=0.0,
+    )
+    pain_pressure = _float_signal(
+        signal_body_profile.get("pain_pressure")
+        if signal_body_profile.get("pain_pressure") is not None
+        else core_affect_vector.get("pain_pressure"),
+        default=0.0,
+    )
+    dream_residue_load = _float_signal(
+        signal_body_profile.get("dream_residue_load")
+        if signal_body_profile.get("dream_residue_load") is not None
+        else core_affect_vector.get("dream_residue_load"),
+        default=0.0,
+    )
+    responsibility_weight = _float_signal(
+        signal_body_profile.get("responsibility_weight")
+        if signal_body_profile.get("responsibility_weight") is not None
+        else core_affect_vector.get("responsibility_weight"),
+        default=0.0,
+    )
+    write_bias = signal_body_profile.get("memory_write_bias")
+    if not write_bias:
+        if fatigue_load >= 0.65 or pain_pressure >= 0.65 or unexpected_uncertainty >= 0.65:
+            write_bias = "defer_noncritical_memory_commit"
+        elif repair_drive >= 0.7 or responsibility_weight >= 0.7:
+            write_bias = "repair_evidence_first"
+        elif relationship_pressure >= 0.65:
+            write_bias = "relationship_context_first"
+        else:
+            write_bias = "baseline_candidate_gate"
+
+    body_signal_refs = _dedupe(
+        _string_list(signal_body_profile.get("body_ref_set"))
+        + _string_list(body_presence_profile.get("body_ref_set"))
+        + _string_list(
+            [
+                "runtime/state/signal/signal_media_runtime.json"
+                if signal_media_runtime
+                else None,
+                "runtime/state/body/body_resource_budget.json"
+                if body_resource_budget
+                else None,
+                "runtime/state/body/core_affect_vector.json"
+                if core_affect_vector
+                else None,
+            ]
+        )
+    )
+    adjustments = []
+    if fatigue_load >= 0.65:
+        adjustments.append("defer_low_salience_write_until_recovery")
+    if unexpected_uncertainty >= 0.65:
+        adjustments.append("raise_source_evidence_threshold")
+    if pain_pressure >= 0.65:
+        adjustments.append("protect_pain_trace_from_fast_overwrite")
+    if repair_drive >= 0.7 or responsibility_weight >= 0.7:
+        adjustments.append("prioritize_repair_obligation_memory")
+    if dream_residue_load >= 0.55:
+        adjustments.append("route_residue_to_dream_replay_before_promotion")
+
+    return {
+        "schema_version": "body_signal_memory_gate_profile_v0",
+        "fatigue_load": fatigue_load,
+        "repair_drive": repair_drive,
+        "relationship_pressure": relationship_pressure,
+        "unexpected_uncertainty": unexpected_uncertainty,
+        "pain_pressure": pain_pressure,
+        "dream_residue_load": dream_residue_load,
+        "responsibility_weight": responsibility_weight,
+        "write_bias": write_bias,
+        "candidate_gate_adjustments": adjustments,
+        "body_signal_refs": body_signal_refs,
+        "body_signal_ref_count": len(body_signal_refs),
+    }
+
+
+def _stage_policy_from_body_signal(body_signal_modulation: dict[str, Any]) -> str:
+    if not body_signal_modulation:
+        return "candidate_first_fail_closed"
+    write_bias = str(body_signal_modulation.get("write_bias", ""))
+    if write_bias == "defer_noncritical_memory_commit":
+        return "candidate_first_body_signal_guarded"
+    if write_bias == "repair_evidence_first":
+        return "candidate_first_repair_guarded"
+    if write_bias == "relationship_context_first":
+        return "candidate_first_relationship_guarded"
+    return "candidate_first_fail_closed"
+
+
+def _fatigue_load_scale(value: Any) -> float:
+    if isinstance(value, (int, float)):
+        return _clamp(float(value))
+    text = str(value or "").lower()
+    if not text:
+        return 0.0
+    if text in {"critical", "exhausted", "offline_ready"}:
+        return 0.92
+    if text in {"high_load", "high", "overloaded"}:
+        return 0.78
+    if text in {"elevated_guard", "elevated", "guarded"}:
+        return 0.62
+    if text in {"managed_low_noise", "managed", "low"}:
+        return 0.26
+    return 0.34
+
+
+def _repair_drive_signal(value: Any) -> float:
+    if isinstance(value, (int, float)):
+        return _clamp(float(value))
+    text = str(value or "").lower()
+    if text in {"active", "high", "urgent", "repair_required"}:
+        return 0.76
+    if text in {"present", "elevated", "guarded"}:
+        return 0.58
+    if text in {"quiet", "none", "low"}:
+        return 0.16
+    return 0.0
+
+
+def _float_signal(value: Any, *, default: float) -> float:
+    if isinstance(value, (int, float)):
+        return _clamp(float(value))
+    try:
+        return _clamp(float(str(value)))
+    except (TypeError, ValueError):
+        return default
+
+
+def _clamp(value: float) -> float:
+    return round(max(0.0, min(1.0, value)), 3)
+
+
+def _string_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value if item]
+    if isinstance(value, tuple):
+        return [str(item) for item in value if item]
+    if isinstance(value, str) and value:
+        return [value]
+    return []
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result

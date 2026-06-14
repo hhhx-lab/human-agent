@@ -380,6 +380,14 @@ def compose_life_response(
                     "prediction_error_count",
                     "active_sampling_route",
                     "memory_write_gate_policy",
+                    "body_signal_write_bias",
+                    "body_signal_fatigue_load",
+                    "body_signal_pain_pressure",
+                    "body_signal_dream_residue_load",
+                    "body_signal_repair_drive",
+                    "body_signal_unexpected_uncertainty",
+                    "body_signal_ref_count",
+                    "body_signal_candidate_gate_adjustments",
                     "state_merge_policy",
                 ),
             ),
@@ -515,6 +523,7 @@ def _prediction_surface_posture(
     memory_policy = str((memory_write_gate or {}).get("stage_policy", ""))
     merge_policy = str((state_merge_guard or {}).get("stage_policy", ""))
     change_profile = state_merge_long_term_change_profile(state_merge_guard)
+    body_signal_profile = _memory_gate_body_signal_profile(memory_write_gate)
     route_lower = selected_route.lower()
     stage_lower = stage_effect.lower()
     memory_policy_lower = memory_policy.lower()
@@ -539,6 +548,7 @@ def _prediction_surface_posture(
         "prediction_error_count": error_count,
         "memory_write_gate_policy": memory_policy,
         "state_merge_policy": merge_policy,
+        **body_signal_profile,
         **change_profile,
     }
 
@@ -557,6 +567,14 @@ def _prediction_surface_with_presence(
         "active_sampling_route",
         "prediction_error_count",
         "memory_write_gate_policy",
+        "body_signal_write_bias",
+        "body_signal_fatigue_load",
+        "body_signal_pain_pressure",
+        "body_signal_dream_residue_load",
+        "body_signal_repair_drive",
+        "body_signal_unexpected_uncertainty",
+        "body_signal_ref_count",
+        "body_signal_candidate_gate_adjustments",
         "state_merge_policy",
         "state_merge_long_term_change_count",
         "state_merge_long_term_change_families",
@@ -564,6 +582,28 @@ def _prediction_surface_with_presence(
         if not surface.get(key) and prediction_write_gate_presence.get(key):
             surface[key] = prediction_write_gate_presence[key]
     return surface
+
+
+def _memory_gate_body_signal_profile(
+    memory_write_gate: dict[str, Any] | None,
+) -> dict[str, Any]:
+    profile = (memory_write_gate or {}).get("body_signal_write_modulation")
+    if not isinstance(profile, dict) or not profile:
+        return {}
+    return {
+        "body_signal_write_bias": profile.get("write_bias"),
+        "body_signal_fatigue_load": profile.get("fatigue_load"),
+        "body_signal_pain_pressure": profile.get("pain_pressure"),
+        "body_signal_dream_residue_load": profile.get("dream_residue_load"),
+        "body_signal_repair_drive": profile.get("repair_drive"),
+        "body_signal_unexpected_uncertainty": profile.get(
+            "unexpected_uncertainty"
+        ),
+        "body_signal_ref_count": profile.get("body_signal_ref_count"),
+        "body_signal_candidate_gate_adjustments": _string_list(
+            profile.get("candidate_gate_adjustments")
+        ),
+    }
 
 
 def _learning_targets(

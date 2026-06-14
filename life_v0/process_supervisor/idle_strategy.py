@@ -310,6 +310,15 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "prediction_error_count",
     "active_sampling_route",
     "memory_write_gate_policy",
+    "body_signal_write_bias",
+    "body_signal_fatigue_load",
+    "body_signal_pain_pressure",
+    "body_signal_dream_residue_load",
+    "body_signal_repair_drive",
+    "body_signal_unexpected_uncertainty",
+    "body_signal_ref_count",
+    "body_signal_refs",
+    "body_signal_candidate_gate_adjustments",
     "state_merge_policy",
     "state_merge_long_term_change_count",
     "state_merge_long_term_change_families",
@@ -1211,6 +1220,27 @@ def decide_idle_strategy(
         "prediction_error_count": prediction_profile["prediction_error_count"],
         "active_sampling_route": prediction_profile["active_sampling_route"],
         "memory_write_gate_policy": prediction_profile["memory_write_gate_policy"],
+        "body_signal_write_bias": prediction_profile.get("body_signal_write_bias"),
+        "body_signal_fatigue_load": prediction_profile.get(
+            "body_signal_fatigue_load"
+        ),
+        "body_signal_pain_pressure": prediction_profile.get(
+            "body_signal_pain_pressure"
+        ),
+        "body_signal_dream_residue_load": prediction_profile.get(
+            "body_signal_dream_residue_load"
+        ),
+        "body_signal_repair_drive": prediction_profile.get(
+            "body_signal_repair_drive"
+        ),
+        "body_signal_unexpected_uncertainty": prediction_profile.get(
+            "body_signal_unexpected_uncertainty"
+        ),
+        "body_signal_ref_count": prediction_profile.get("body_signal_ref_count"),
+        "body_signal_refs": prediction_profile.get("body_signal_refs"),
+        "body_signal_candidate_gate_adjustments": prediction_profile.get(
+            "body_signal_candidate_gate_adjustments"
+        ),
         "state_merge_policy": prediction_profile["state_merge_policy"],
         "state_merge_long_term_change_count": prediction_profile[
             "state_merge_long_term_change_count"
@@ -3112,6 +3142,7 @@ def _prediction_waiting_profile(
     state_merge_change_profile = state_merge_long_term_change_profile(
         state_merge_guard
     )
+    body_signal_profile = _memory_gate_body_signal_profile(memory_write_gate)
     route_lower = selected_route.lower()
     stage_lower = stage_effect.lower()
     memory_policy_lower = memory_policy.lower()
@@ -3136,6 +3167,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": "",
             "memory_write_gate_policy": "",
             "state_merge_policy": "",
+            **body_signal_profile,
             **state_merge_change_profile,
         }
 
@@ -3149,6 +3181,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     if "repair" in route_lower:
@@ -3161,6 +3194,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     if "hold_for_evidence" in stage_lower or error_count > 0:
@@ -3173,6 +3207,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     if repair_drive == "active" or "repair" in memory_policy_lower:
@@ -3185,6 +3220,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     if state_merge_change_profile["state_merge_long_term_change_count"] > 0:
@@ -3197,6 +3233,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     if confidence_level in {"stable", "high", "confirmed"}:
@@ -3209,6 +3246,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     return {
@@ -3220,8 +3258,34 @@ def _prediction_waiting_profile(
         "active_sampling_route": selected_route,
         "memory_write_gate_policy": memory_policy,
         "state_merge_policy": merge_policy,
+        **body_signal_profile,
         **state_merge_change_profile,
     }
+
+
+def _memory_gate_body_signal_profile(
+    memory_write_gate: dict[str, Any] | None,
+) -> dict[str, Any]:
+    profile = _dict_or_empty((memory_write_gate or {}).get("body_signal_write_modulation"))
+    if not profile:
+        return {}
+    return _drop_empty(
+        {
+            "body_signal_write_bias": profile.get("write_bias"),
+            "body_signal_fatigue_load": profile.get("fatigue_load"),
+            "body_signal_pain_pressure": profile.get("pain_pressure"),
+            "body_signal_dream_residue_load": profile.get("dream_residue_load"),
+            "body_signal_repair_drive": profile.get("repair_drive"),
+            "body_signal_unexpected_uncertainty": profile.get(
+                "unexpected_uncertainty"
+            ),
+            "body_signal_ref_count": profile.get("body_signal_ref_count"),
+            "body_signal_refs": _string_list(profile.get("body_signal_refs")),
+            "body_signal_candidate_gate_adjustments": _string_list(
+                profile.get("candidate_gate_adjustments")
+            ),
+        }
+    )
 
 
 def _life_constraint_waiting_profile(

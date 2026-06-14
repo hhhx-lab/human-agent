@@ -405,6 +405,101 @@ class ResponseSurfaceTests(unittest.TestCase):
         )
         self.assertEqual(resident_memory["ref_count"], 3)
 
+    def test_body_signal_memory_gate_crosses_lineage_event_and_response(self):
+        from life_v0.process_supervisor.background_lineage_state import (
+            build_resident_background_lineage_state,
+        )
+        from life_v0.process_supervisor.dialogue_events import build_life_turn_event
+
+        body_signal_refs = [
+            "runtime/state/signal/signal_media_runtime.json",
+            "runtime/state/body/body_resource_budget.json",
+            "runtime/state/body/core_affect_vector.json",
+        ]
+        memory_write_gate = {
+            "schema_version": "memory_write_gate_v0",
+            "stage_policy": "candidate_first_body_signal_guarded",
+            "body_signal_write_modulation": {
+                "schema_version": "body_signal_memory_gate_profile_v0",
+                "write_bias": "defer_noncritical_memory_commit",
+                "fatigue_load": 0.78,
+                "pain_pressure": 0.66,
+                "dream_residue_load": 0.61,
+                "repair_drive": 0.83,
+                "unexpected_uncertainty": 0.69,
+                "candidate_gate_adjustments": [
+                    "defer_low_salience_write_until_recovery"
+                ],
+                "body_signal_refs": body_signal_refs,
+                "body_signal_ref_count": len(body_signal_refs),
+            },
+        }
+        lineage_state = build_resident_background_lineage_state(
+            {
+                "signal_media_ref": body_signal_refs[0],
+                "memory_write_gate_ref": "runtime/state/memory/memory_write_gate.json",
+                "memory_write_gate_policy": "candidate_first_body_signal_guarded",
+                "body_signal_write_bias": "defer_noncritical_memory_commit",
+                "body_signal_fatigue_load": 0.78,
+                "body_signal_pain_pressure": 0.66,
+                "body_signal_dream_residue_load": 0.61,
+                "body_signal_repair_drive": 0.83,
+                "body_signal_unexpected_uncertainty": 0.69,
+                "body_signal_ref_count": len(body_signal_refs),
+                "body_signal_refs": body_signal_refs,
+                "body_signal_candidate_gate_adjustments": [
+                    "defer_low_salience_write_until_recovery"
+                ],
+            },
+            governance_phase="waiting_heartbeat_active",
+            status="active",
+        )
+        prediction_presence = lineage_state["prediction_write_gate_presence"]
+        self.assertEqual(
+            prediction_presence["body_signal_write_bias"],
+            "defer_noncritical_memory_commit",
+        )
+        self.assertEqual(prediction_presence["body_signal_ref_count"], 3)
+
+        life_turn = build_life_turn_event(
+            turn_id="life-turn-body-signal-memory-gate",
+            generated_at="2026-06-14T00:00:00+08:00",
+            utterance="继续",
+            shared_term_registry={},
+            commitment_index={},
+            terminal_life_loop_state={
+                "resident_background_lineage_state": lineage_state
+            },
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_body_signal_write_bias"],
+            "defer_noncritical_memory_commit",
+        )
+        self.assertEqual(
+            life_turn["resident_background_lineage_body_signal_refs"],
+            body_signal_refs,
+        )
+
+        material = compose_life_response(
+            external_utterance="你的状态会影响记忆吗？",
+            memory_write_gate=memory_write_gate,
+            terminal_life_loop_state={
+                "resident_background_lineage_state": lineage_state
+            },
+        )
+        payload = json.loads(material)
+        self.assertTrue(payload["natural_language_release_disabled"])
+        self.assertEqual(
+            payload["prediction_attention"]["body_signal_write_bias"],
+            "defer_noncritical_memory_commit",
+        )
+        self.assertEqual(
+            payload["resident_background"]["prediction_write_gate_presence"][
+                "body_signal_write_bias"
+            ],
+            "defer_noncritical_memory_commit",
+        )
+
     def test_spoken_response_without_model_does_not_release_style_template(self):
         response = compose_life_spoken_response(
             external_utterance="你不觉得你的说话方式很奇怪吗？Adam",

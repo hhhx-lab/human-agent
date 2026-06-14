@@ -875,6 +875,18 @@ def _prediction_write_gate_presence(governance: dict[str, Any]) -> dict[str, Any
         + _string_list(governance.get("background_state_merge_long_term_change_refs"))
         + _string_list(previous_presence.get("state_merge_long_term_change_refs"))
     )
+    body_signal_refs = _dedupe_string_list(
+        _string_list(governance.get("body_signal_refs"))
+        + _string_list(governance.get("background_body_signal_refs"))
+        + _string_list(previous_presence.get("body_signal_refs"))
+    )
+    body_signal_candidate_gate_adjustments = _dedupe_string_list(
+        _string_list(governance.get("body_signal_candidate_gate_adjustments"))
+        + _string_list(
+            governance.get("background_body_signal_candidate_gate_adjustments")
+        )
+        + _string_list(previous_presence.get("body_signal_candidate_gate_adjustments"))
+    )
     if not any(
         [
             prediction_refs,
@@ -884,6 +896,7 @@ def _prediction_write_gate_presence(governance: dict[str, Any]) -> dict[str, Any
             governance.get("prediction_attention_reason"),
             governance.get("active_sampling_route"),
             governance.get("memory_write_gate_policy"),
+            governance.get("body_signal_write_bias"),
             governance.get("state_merge_policy"),
             previous_presence,
         ]
@@ -928,6 +941,47 @@ def _prediction_write_gate_presence(governance: dict[str, Any]) -> dict[str, Any
                 governance.get("memory_write_gate_policy"),
                 governance.get("background_memory_write_gate_policy"),
                 previous_presence.get("memory_write_gate_policy"),
+            ),
+            "body_signal_write_bias": _first_present(
+                governance.get("body_signal_write_bias"),
+                governance.get("background_body_signal_write_bias"),
+                previous_presence.get("body_signal_write_bias"),
+            ),
+            "body_signal_fatigue_load": _first_present(
+                governance.get("body_signal_fatigue_load"),
+                governance.get("background_body_signal_fatigue_load"),
+                previous_presence.get("body_signal_fatigue_load"),
+            ),
+            "body_signal_pain_pressure": _first_present(
+                governance.get("body_signal_pain_pressure"),
+                governance.get("background_body_signal_pain_pressure"),
+                previous_presence.get("body_signal_pain_pressure"),
+            ),
+            "body_signal_dream_residue_load": _first_present(
+                governance.get("body_signal_dream_residue_load"),
+                governance.get("background_body_signal_dream_residue_load"),
+                previous_presence.get("body_signal_dream_residue_load"),
+            ),
+            "body_signal_repair_drive": _first_present(
+                governance.get("body_signal_repair_drive"),
+                governance.get("background_body_signal_repair_drive"),
+                previous_presence.get("body_signal_repair_drive"),
+            ),
+            "body_signal_unexpected_uncertainty": _first_present(
+                governance.get("body_signal_unexpected_uncertainty"),
+                governance.get("background_body_signal_unexpected_uncertainty"),
+                previous_presence.get("body_signal_unexpected_uncertainty"),
+            ),
+            "body_signal_ref_count": _int_or_zero(
+                _first_present(
+                    governance.get("body_signal_ref_count"),
+                    governance.get("background_body_signal_ref_count"),
+                    previous_presence.get("body_signal_ref_count"),
+                )
+            ),
+            "body_signal_refs": body_signal_refs,
+            "body_signal_candidate_gate_adjustments": (
+                body_signal_candidate_gate_adjustments
             ),
             "state_merge_policy": _first_present(
                 governance.get("state_merge_policy"),

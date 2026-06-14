@@ -72,6 +72,7 @@ class LanguageOrgansTests(unittest.TestCase):
         from life_v0.language.expression_monitor import build_expression_monitor_state, build_expression_plan
         from life_v0.language.inner_speech import build_inner_speech_frame
         from life_v0.language.relationship_graph import build_relationship_subject_graph
+        from life_v0.neural_core.signal_media import build_signal_media_runtime
 
         life_state = {
             "self_model": {
@@ -131,6 +132,46 @@ class LanguageOrgansTests(unittest.TestCase):
             "arousal": 0.73,
             "repair_drive": "active",
         }
+        body_modulated_signal = build_signal_media_runtime(
+            run_id="organs-test",
+            generated_at="2026-06-09T00:00:00+00:00",
+            body_resource_budget={
+                "schema_version": "body_resource_budget_v0",
+                "fatigue_state": {"level": "elevated_guard"},
+                "energy_state": {"level": "guarded_reserve"},
+                "maintenance_pressure": {"repair_drive": "active"},
+            },
+            core_affect_vector={
+                "schema_version": "core_affect_vector_v0",
+                "valence": -0.42,
+                "arousal": 0.82,
+                "pain_pressure": 0.71,
+                "relationship_tension": 0.68,
+                "dream_residue_load": 0.62,
+                "responsibility_weight": 0.77,
+                "repair_drive": "active",
+            },
+        )
+        self.assertEqual(
+            body_modulated_signal["body_signal_profile"]["schema_version"],
+            "body_signal_modulation_profile_v0",
+        )
+        self.assertGreater(
+            body_modulated_signal["modulation_vector"]["fatigue_load"],
+            0.5,
+        )
+        self.assertGreater(
+            body_modulated_signal["modulation_vector"]["stress_pulse"],
+            0.5,
+        )
+        self.assertEqual(
+            body_modulated_signal["body_signal_profile"]["memory_write_bias"],
+            "defer_noncritical_memory_commit",
+        )
+        self.assertIn(
+            "memory_commit_until_body_signal_review",
+            body_modulated_signal["inhibition_profile"]["blocked_release_surfaces"],
+        )
 
         inner_speech = build_inner_speech_frame(
             run_id="organs-test",

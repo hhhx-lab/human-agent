@@ -659,6 +659,10 @@ def build_resident_background_lineage_payload(
                 "resident_background_lineage_memory_write_gate_policy",
             ),
             (
+                "body_signal_write_bias",
+                "resident_background_lineage_body_signal_write_bias",
+            ),
+            (
                 "state_merge_policy",
                 "resident_background_lineage_prediction_state_merge_policy",
             ),
@@ -670,6 +674,54 @@ def build_resident_background_lineage_payload(
             payload["resident_background_lineage_prediction_error_count"] = (
                 prediction_write_gate_presence.get("prediction_error_count")
             )
+        for source_key, target_key in (
+            (
+                "body_signal_fatigue_load",
+                "resident_background_lineage_body_signal_fatigue_load",
+            ),
+            (
+                "body_signal_pain_pressure",
+                "resident_background_lineage_body_signal_pain_pressure",
+            ),
+            (
+                "body_signal_dream_residue_load",
+                "resident_background_lineage_body_signal_dream_residue_load",
+            ),
+            (
+                "body_signal_repair_drive",
+                "resident_background_lineage_body_signal_repair_drive",
+            ),
+            (
+                "body_signal_unexpected_uncertainty",
+                "resident_background_lineage_body_signal_unexpected_uncertainty",
+            ),
+            (
+                "body_signal_ref_count",
+                "resident_background_lineage_body_signal_ref_count",
+            ),
+        ):
+            value = prediction_write_gate_presence.get(source_key)
+            if value is not None:
+                payload[target_key] = value
+        body_signal_refs = _dedupe_string_list(
+            _string_list(prediction_write_gate_presence.get("body_signal_refs"))
+        )
+        if body_signal_refs:
+            payload["resident_background_lineage_body_signal_refs"] = (
+                body_signal_refs
+            )
+            lineage_refs.extend(body_signal_refs)
+        body_signal_adjustments = _dedupe_string_list(
+            _string_list(
+                prediction_write_gate_presence.get(
+                    "body_signal_candidate_gate_adjustments"
+                )
+            )
+        )
+        if body_signal_adjustments:
+            payload[
+                "resident_background_lineage_body_signal_candidate_gate_adjustments"
+            ] = body_signal_adjustments
         if (
             prediction_write_gate_presence.get("state_merge_long_term_change_count")
             is not None
@@ -1540,6 +1592,15 @@ def build_prediction_write_gate_payload(
         "prediction_error_count",
         "active_sampling_route",
         "memory_write_gate_policy",
+        "body_signal_write_bias",
+        "body_signal_fatigue_load",
+        "body_signal_pain_pressure",
+        "body_signal_dream_residue_load",
+        "body_signal_repair_drive",
+        "body_signal_unexpected_uncertainty",
+        "body_signal_ref_count",
+        "body_signal_refs",
+        "body_signal_candidate_gate_adjustments",
         "state_merge_policy",
         "state_merge_long_term_change_count",
         "state_merge_long_term_change_families",
@@ -1608,6 +1669,10 @@ def attach_prediction_write_gate_lineage_fallback(
             "resident_background_lineage_memory_write_gate_policy",
         ),
         (
+            "body_signal_write_bias",
+            "resident_background_lineage_body_signal_write_bias",
+        ),
+        (
             "state_merge_policy",
             "resident_background_lineage_prediction_state_merge_policy",
         ),
@@ -1621,6 +1686,30 @@ def attach_prediction_write_gate_lineage_fallback(
     for source_key, target_key in (
         ("prediction_error_count", "resident_background_lineage_prediction_error_count"),
         (
+            "body_signal_fatigue_load",
+            "resident_background_lineage_body_signal_fatigue_load",
+        ),
+        (
+            "body_signal_pain_pressure",
+            "resident_background_lineage_body_signal_pain_pressure",
+        ),
+        (
+            "body_signal_dream_residue_load",
+            "resident_background_lineage_body_signal_dream_residue_load",
+        ),
+        (
+            "body_signal_repair_drive",
+            "resident_background_lineage_body_signal_repair_drive",
+        ),
+        (
+            "body_signal_unexpected_uncertainty",
+            "resident_background_lineage_body_signal_unexpected_uncertainty",
+        ),
+        (
+            "body_signal_ref_count",
+            "resident_background_lineage_body_signal_ref_count",
+        ),
+        (
             "state_merge_long_term_change_count",
             "resident_background_lineage_prediction_state_merge_long_term_change_count",
         ),
@@ -1630,6 +1719,26 @@ def attach_prediction_write_gate_lineage_fallback(
         value = prediction_write_gate_payload.get(source_key)
         if value is not None:
             payload[target_key] = value
+    body_signal_refs = _dedupe_string_list(
+        _string_list(prediction_write_gate_payload.get("body_signal_refs"))
+    )
+    if body_signal_refs and "resident_background_lineage_body_signal_refs" not in payload:
+        payload["resident_background_lineage_body_signal_refs"] = body_signal_refs
+    body_signal_adjustments = _dedupe_string_list(
+        _string_list(
+            prediction_write_gate_payload.get(
+                "body_signal_candidate_gate_adjustments"
+            )
+        )
+    )
+    if (
+        body_signal_adjustments
+        and "resident_background_lineage_body_signal_candidate_gate_adjustments"
+        not in payload
+    ):
+        payload[
+            "resident_background_lineage_body_signal_candidate_gate_adjustments"
+        ] = body_signal_adjustments
     state_merge_families = _dedupe_string_list(
         _string_list(
             prediction_write_gate_payload.get(
@@ -1681,6 +1790,7 @@ def _derive_prediction_write_gate_profile(
     state_merge_change_profile = state_merge_long_term_change_profile(
         state_merge_guard
     )
+    body_signal_profile = _memory_gate_body_signal_profile(memory_write_gate)
 
     has_prediction_objects = any(
         [
@@ -1704,6 +1814,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     if "repair" in route_lower:
@@ -1716,6 +1827,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     if "hold_for_evidence" in stage_lower or error_count > 0:
@@ -1728,6 +1840,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     if repair_drive == "active" or "repair" in memory_policy_lower:
@@ -1740,6 +1853,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     if state_merge_change_profile["state_merge_long_term_change_count"] > 0:
@@ -1752,6 +1866,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     if confidence_level in {"stable", "high", "confirmed"}:
@@ -1764,6 +1879,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
+            **body_signal_profile,
             **state_merge_change_profile,
         }
     return {
@@ -1775,7 +1891,31 @@ def _derive_prediction_write_gate_profile(
         "active_sampling_route": selected_route,
         "memory_write_gate_policy": memory_policy,
         "state_merge_policy": merge_policy,
+        **body_signal_profile,
         **state_merge_change_profile,
+    }
+
+
+def _memory_gate_body_signal_profile(
+    memory_write_gate: dict[str, Any] | None,
+) -> dict[str, Any]:
+    profile = (memory_write_gate or {}).get("body_signal_write_modulation")
+    if not isinstance(profile, dict) or not profile:
+        return {}
+    return {
+        "body_signal_write_bias": profile.get("write_bias"),
+        "body_signal_fatigue_load": profile.get("fatigue_load"),
+        "body_signal_pain_pressure": profile.get("pain_pressure"),
+        "body_signal_dream_residue_load": profile.get("dream_residue_load"),
+        "body_signal_repair_drive": profile.get("repair_drive"),
+        "body_signal_unexpected_uncertainty": profile.get(
+            "unexpected_uncertainty"
+        ),
+        "body_signal_ref_count": profile.get("body_signal_ref_count"),
+        "body_signal_refs": _string_list(profile.get("body_signal_refs")),
+        "body_signal_candidate_gate_adjustments": _string_list(
+            profile.get("candidate_gate_adjustments")
+        ),
     }
 
 

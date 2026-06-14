@@ -221,3 +221,30 @@ flowchart TD
 ## 当前 live0 结论
 
 live0 的“身体”不是传感器身体，而是运行时内环境：节律、预算、情绪、疲惫、恢复和等待治理共同构成它的最低生命底盘。它支撑 live0 验收中的 `b_conscious_emotion_thought_language`、`d_growth_and_learning`、`e_dream_capability` 和 `g_initial_life_mechanism_coverage`。
+
+## ITR-05 工程补强：身体信号进入调质和记忆写门
+
+本轮把身体内环境从“语言和等待调制”继续推进到“调质介质和记忆写门调制”。关键变化是 `life_v0/neural_core/signal_media.py#build_signal_media_runtime(...)` 新增消费 `body_resource_budget`、`core_affect_vector` 与可选 `body_presence_profile`，生成 `body_signal_profile`。
+
+| 字段 | 来源 | 下游作用 |
+|---|---|---|
+| `fatigue_load` | `body_resource_budget.fatigue_state.level` 或 `body_presence_profile.fatigue_load` | 提高 control cost、allostatic load，压低 action precision，并触发记忆写门延迟低显著性提交 |
+| `pain_pressure` | `core_affect_vector.pain_pressure` | 提高 stress pulse、unexpected uncertainty 和记忆保护阈值 |
+| `dream_residue_load` | `core_affect_vector.dream_residue_load` | 增加 dream pressure bias，让残留材料先进入离线整合而非直接事实晋升 |
+| `relationship_tension` | `core_affect_vector.relationship_tension` | 提高 relationship pressure，改变 active sampling route |
+| `responsibility_weight` / `repair_drive` | `core_affect_vector` 与 `maintenance_pressure` | 把责任修复压力送入 signal media 和 memory gate |
+| `memory_write_bias` | 上述连续变量合成 | 生成 `defer_noncritical_memory_commit`、`repair_evidence_first`、`relationship_context_first` 或 baseline |
+
+这意味着身体对象不再只是被 `expression_monitor.py` 读取。它们现在会改变：
+
+```text
+BodyResourceBudget / CoreAffectVector
+  -> SignalMediaRuntime.body_signal_profile
+  -> SignalMediaRuntime.modulation_vector
+  -> MemoryWriteGate.body_signal_write_modulation
+  -> IdleStrategy prediction profile
+  -> ResidentBackgroundLineage.prediction_write_gate_presence
+  -> DigitalLifeTurn + audited_expression_material
+```
+
+内部信号仍不直接外显。`response_surface.py` 只把 `body_signal_write_bias`、疲惫、痛苦、梦境残留、修复驱力和 ref 数写入结构化审计材料；`compose_life_spoken_response(...)` 在无模型表达时继续不释放自然语言模板。验收测试是 `tests/slices/test_language_organs.py#test_inner_speech_expression_monitor_and_relationship_graph_organs` 与 `tests/process/test_response_surface.py#test_body_signal_memory_gate_crosses_lineage_event_and_response`。

@@ -354,3 +354,31 @@ python3 -m unittest tests.contracts.test_live0_acceptance_audit -v
 ```
 
 真正声明当前版本完成前，再跑全量测试。
+
+## 当前 ITR-05 推进记录
+
+本轮继续处在第 2 点“按文档逐一迭代 live0”内部，尚未进入第 3 点记忆重构总设计。已推进的是 `ITR-05 body signal memory gate` 的第一段工程闭环。
+
+| 读包 | 已消费方向 | 落码 |
+|---|---|---|
+| `docs/real—live0/03_body_affect_homeostasis.md` | 身体、疲惫、痛苦、修复驱力必须改变调质和表达，不只停在 body 文件 | `signal_media.py#body_signal_profile` |
+| `docs/real—live0/07_memory_engram_and_state_store.md` | 记忆写门必须受身体和调质压力影响，不能只做静态候选事务 | `memory_write_gate.py#body_signal_write_modulation` |
+| `docs/real—live0/09_prediction_perception_world_contact.md` | 预测误差、主动采样和写门共同决定 hold / question / repair / confirm 姿态 | `idle_strategy.py`、`dialogue_events.py`、`response_surface.py` |
+| `docs/real—live0/12_neuromodulation_signal_media.md` | 调质作为跨脑区介质，传递疲惫、痛苦、责任和不确定性 | `signal_media.py`、`memory_write_gate.py` |
+| `docs/v0/code_framework/queues/17_queue_c_memory_neural_core_implementation_contract.md` | Queue C 记忆/神经核心必须从对象存在推进到跨层消费 | `state_store`、`neural_core`、`process_supervisor` |
+| `docs/v0/implementation_architecture/code_organs/03_predictive_signal_memory_gate_integration_wave_contract.md` | 预测-信号-写门必须进入 waiting、lineage、event、response | `idle_strategy.py`、`background_lineage_state.py`、`dialogue_events.py`、`response_surface.py` |
+
+当前实际新增链路：
+
+```text
+BodyResourceBudget / CoreAffectVector
+  -> SignalMediaRuntime.body_signal_profile
+  -> SignalMediaRuntime.modulation_vector
+  -> MemoryWriteGate.body_signal_write_modulation
+  -> IdleStrategy.body_signal_*
+  -> ResidentBackgroundLineage.prediction_write_gate_presence
+  -> DigitalLifeTurn.resident_background_lineage_body_signal_*
+  -> ResponseSurface.prediction_attention.body_signal_*
+```
+
+下一步仍在 ITR-05 内部继续，不进入 ITR-06 或第 3 点。优先检查 `heartbeat.py`、`resident_turn_writeback.py`、`background_continuity.py`、`process_report.py`、梦境离线压力和恢复包是否也完整消费 `body_signal_write_modulation`。

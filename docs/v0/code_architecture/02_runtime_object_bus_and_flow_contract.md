@@ -426,3 +426,20 @@ P0-S11 chain
 3. 哪个现有测试或新增测试能证明它已经接上。
 
 如果这三条给不出来，就只能算“概念上需要它”，不能算已经进入 v0 工程体系。
+
+## ITR-05 对象总线追加规则
+
+身体/情绪信号进入记忆写门后，总线多出一条内部对象流：
+
+```text
+runtime/state/body/body_resource_budget.json
+runtime/state/body/core_affect_vector.json
+  -> runtime/state/signal/signal_media_runtime.json#body_signal_profile
+  -> runtime/state/memory/memory_write_gate.json#body_signal_write_modulation
+  -> runtime/state/terminal/idle_strategy_state.json#body_signal_*
+  -> runtime/state/terminal/resident_governance_state.json#resident_background_lineage_state.prediction_write_gate_presence
+  -> runtime/reports/latest/dialogue_writeback_bundle.json / resumed_external_dialogue_packet.json
+  -> audited_expression_material_v0#prediction_attention
+```
+
+这条总线的约束是：`body_signal_*` 只能作为内部调制、证据和模型表达上下文；代码不得把它们拼成固定外显句子，也不得绕过 `memory_write_gate` 直接把高痛苦或高疲惫状态写成长期事实。

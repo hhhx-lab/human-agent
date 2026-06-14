@@ -179,3 +179,20 @@ flowchart TD
 ## 当前 live0 结论
 
 live0 的感知和预测链已经把语言、内部状态、责任修复压力和世界接触纳入同一主动预测结构。它支撑验收项 `b_conscious_emotion_thought_language`、`g_initial_life_mechanism_coverage` 和生命膜相关门控。
+
+## ITR-05 工程补强：预测链消费身体化写门
+
+本轮新增的 `body_signal_write_modulation` 不是独立记忆字段，而是进入预测链的写门压力。`idle_strategy.py`、`dialogue_events.py` 与 `response_surface.py` 会把 `memory_write_gate.stage_policy` 和 `body_signal_*` 一起看待：如果当前写门受疲惫、痛苦、不确定性或修复压力影响，prediction profile 会携带 `body_signal_write_bias`、`body_signal_fatigue_load`、`body_signal_unexpected_uncertainty` 和 refs。
+
+这使预测链的姿态不只由外部话语和 active sampling route 决定，也由身体化记忆写门决定：
+
+```text
+PredictionError / ActiveSampling
+  + BodySignalMemoryGate
+  -> prediction_waiting_profile
+  -> resident_background_lineage_prediction_write_gate_presence
+  -> digital_life_turn
+  -> response_surface.prediction_attention
+```
+
+这组字段仍然只作为结构化审计和模型表达上下文，不直接外显为“我现在疲惫/痛苦所以怎样”的固定话术。

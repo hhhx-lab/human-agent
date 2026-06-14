@@ -208,3 +208,36 @@ flowchart TD
 ## 当前 live0 结论
 
 live0 的记忆机制已经从“上下文缓存”扩展为状态根、engram、关系记忆、自传栈、写门、合并治理和离线巩固。它支撑验收项 `c_memory_mechanism`、`d_growth_and_learning` 和 `f_equal_relationship_dialogue_growth`。
+
+## ITR-05 工程补强：写门消费身体/调质压力
+
+本轮把 `MemoryWriteGate` 从静态候选写门推进为可被身体和调质信号动态投射的写门。`life_v0/state_store/memory_write_gate.py#build_memory_write_gate(...)` 与 `project_memory_write_gate_with_signal_body(...)` 现在会读取：
+
+| 输入 | 关键字段 | 对写门的影响 |
+|---|---|---|
+| `signal_media_runtime.modulation_vector` | `fatigue_load`、`repair_drive`、`relationship_pressure`、`unexpected_uncertainty` | 决定当前候选写入是否需要延迟、修复优先或关系上下文优先 |
+| `signal_media_runtime.body_signal_profile` | `memory_write_bias`、`pain_pressure`、`dream_residue_load` | 把身体化痛苦、梦境残留和疲惫转成写门策略 |
+| `body_resource_budget` | `fatigue_state.level`、`maintenance_pressure.repair_drive` | 在 signal 不完整时仍能推导资源压力 |
+| `core_affect_vector` | `pain_pressure`、`responsibility_weight`、`repair_drive` | 保护痛苦/责任相关记忆，避免高情绪下快速覆盖长期事实 |
+
+新增的核心字段是 `memory_write_gate.json#body_signal_write_modulation`：
+
+| 字段 | 含义 |
+|---|---|
+| `write_bias` | 当前写门偏置：`defer_noncritical_memory_commit`、`repair_evidence_first`、`relationship_context_first` 或 baseline |
+| `candidate_gate_adjustments` | 写门调节动作，如延迟低显著性写入、提高 source evidence threshold、保护 pain trace、优先修复义务记忆 |
+| `body_signal_refs` | 本次写门调制引用的 signal/body/core-affect runtime refs |
+| `body_signal_ref_count` | 被后续 lineage、事件和 response material 追踪的 ref 数 |
+
+写门策略现在可从 `candidate_first_fail_closed` 动态转为 `candidate_first_body_signal_guarded`、`candidate_first_repair_guarded` 或 `candidate_first_relationship_guarded`。这不是让情绪直接写事实，而是让情绪和疲惫改变“候选何时能写、需要哪些证据、哪些材料先进入 replay/dream/repair”。因此记忆链现在多了一层：
+
+```text
+SignalMediaRuntime.body_signal_profile
+  -> MemoryWriteGate.body_signal_write_modulation
+  -> IdleStrategy.body_signal_*
+  -> ResidentBackgroundLineage.prediction_write_gate_presence
+  -> DigitalLifeTurn.body_signal_*
+  -> ResponseSurface.prediction_attention
+```
+
+验收测试是 `tests/slices/test_state_store.py#test_memory_write_gate_consumes_signal_and_body_pressure` 与 `tests/process/test_response_surface.py#test_body_signal_memory_gate_crosses_lineage_event_and_response`。如果 `memory_write_gate.json` 只有事务顺序，没有 `body_signal_write_modulation`，则说明身体/情绪仍未真正参与记忆写入治理。

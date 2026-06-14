@@ -168,3 +168,19 @@ flowchart TD
 ## 当前 live0 结论
 
 live0 用 `SignalMediaFrame` 把脑科学中的调质思想转成工程上的 precision、arousal、inhibition、repair_drive 和 heartbeat cadence。它让情绪、责任、预测和语言之间有信号介质，而不是硬编码 if/else。
+
+## ITR-05 工程补强：body_signal_profile
+
+`SignalMediaFrame` 当前已经从固定调制向量推进到身体信号参与的调制向量。`build_signal_media_runtime(...)` 会读取 `BodyResourceBudget`、`CoreAffectVector` 和可选 `resident_body_presence_profile_v0`，生成 `body_signal_profile`，再把 fatigue、pain、dream residue、relationship tension、responsibility weight 和 repair drive 压进 `modulation_vector`。
+
+这组字段的下游不是直接语言，而是：
+
+```text
+body_signal_profile.memory_write_bias
+  -> memory_write_gate.body_signal_write_modulation.write_bias
+  -> idle_strategy.body_signal_write_bias
+  -> resident_background_lineage_state.prediction_write_gate_presence
+  -> response_surface.prediction_attention
+```
+
+因此调质层现在同时调节预测、等待、记忆写门和表达材料。关键约束仍然是：调质只作为内部介质和证据，不允许被代码翻译成固定外显句子。

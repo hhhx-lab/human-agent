@@ -209,6 +209,41 @@ signal_media / belief_state / prediction_error / active_sampling / memory_write_
 8. `process_supervisor/response_surface.py`、`dialogue_events.py`、`idle_strategy.py` 对 `repair_*` active sampling route 的优先级高于普通 evidence hold。
 9. `state_merge_guard.json` 不能只保留 S04 初始 route；bootstrap restore 与 live turn writeback 后，必须从 `relationship_memory.long_term_change_sources` 吸收 `offline_learning_cumulative_refs`、`queue_e_repair_modulation_refs`、`relationship_memory_offline_refs` 与 `relationship_memory_repair_refs`，并让 `life_state.state_merge_records[].long_term_change_source_count` 同步刷新。
 10. `idle_strategy.py`、`heartbeat.py`、`dialogue_events.py` 与 `response_surface.py` 必须消费 `state_merge_guard.long_term_change_sources`，写出 `state_merge_long_term_change_count`、`state_merge_long_term_change_families`、`state_merge_long_term_change_refs`，并在等待态/回应面表达长期合并整合压力，不能让长期变化来源只停在 `life_state` 计数里。
+11. `body_resource_budget.json` 与 `core_affect_vector.json` 必须通过 `signal_media_runtime.body_signal_profile` 进入 `memory_write_gate.body_signal_write_modulation`，并继续被 `idle_strategy.py`、`background_lineage_state.py`、`dialogue_events.py` 与 `response_surface.py` 消费为 `body_signal_*` 结构化字段；这组字段只作为内部调制和审计材料，不能被代码拼成固定外显话术。
+
+## ITR-05 已落工程记录
+
+本轮第一段实现已经把身体/调质/写门接成一条可追溯链：
+
+```text
+BodyResourceBudget + CoreAffectVector
+  -> SignalMediaRuntime.body_signal_profile
+  -> SignalMediaRuntime.modulation_vector
+  -> MemoryWriteGate.body_signal_write_modulation
+  -> IdleStrategy prediction profile
+  -> ResidentBackgroundLineage.prediction_write_gate_presence
+  -> DigitalLifeTurn resident_background_lineage_body_signal_*
+  -> ResponseSurface audited_expression_material_v0
+```
+
+对应代码：
+
+| 层 | 文件 | 责任 |
+|---|---|---|
+| Signal | `life_v0/neural_core/signal_media.py` | 从身体预算和核心情绪合成 `body_signal_profile`，调制疲惫、痛苦、梦境残留、stress、allostatic load、memory gate mode |
+| Memory Gate | `life_v0/state_store/memory_write_gate.py` | 生成或投射 `body_signal_write_modulation`，改变 `stage_policy` 和 `life_support_pressure_update.current_signal_profile` |
+| Language Runtime | `life_v0/language/__init__.py` | 实时语言阶段刷新 signal 后立即投射并重写 `memory_write_gate.json` |
+| Resident Waiting | `life_v0/process_supervisor/idle_strategy.py` | 把写门调制压成 `body_signal_write_bias`、`body_signal_fatigue_load`、`body_signal_refs` 等 waiting governance 字段 |
+| Lineage/Event | `background_lineage_state.py`、`dialogue_events.py` | 把 `body_signal_*` 固化到 `prediction_write_gate_presence` 和 `digital_life_turn` |
+| Response Material | `response_surface.py` | 把同一组字段放进结构化表达材料，不释放固定自然语言 |
+
+本轮验证：
+
+```bash
+python3 -m unittest tests.slices.test_language_organs -v
+python3 -m unittest tests.slices.test_state_store -v
+python3 -m unittest tests.process.test_response_surface -v
+```
 
 ## 不允许出现的退化
 

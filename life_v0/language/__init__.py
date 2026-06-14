@@ -39,6 +39,9 @@ from life_v0.state_store.commitment_truth import (
     project_commitment_truth_state,
     project_responsibility_ledger,
 )
+from life_v0.state_store.memory_write_gate import (
+    project_memory_write_gate_with_signal_body,
+)
 from life_v0.state_store.life_state import project_responsibility_language_continuity
 from life_v0.state_store.relationship_memory import project_relationship_memory
 
@@ -191,7 +194,15 @@ def run_build_language_relationship(
         run_id=run_id,
         generated_at=generated_at,
         network_state=_load_json_if_exists(neural_core_state_dir / "network_state.json"),
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
         queue_e_repair_modulation_profile=queue_e_repair_profile,
+    )
+    memory_write_gate = project_memory_write_gate_with_signal_body(
+        memory_write_gate=memory_write_gate,
+        signal_media_runtime=signal_media_runtime,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
     )
     belief_state = build_belief_state_frame(
         run_id=run_id,
@@ -502,6 +513,7 @@ def run_build_language_relationship(
         _write_json(prediction_dir / "prediction_error_field.json", prediction_error_field)
         _write_json(prediction_dir / "active_sampling_plan.json", active_sampling_plan)
         _write_json(prediction_dir / "prediction_workspace_frame.json", prediction_workspace)
+        _write_json(state_dir / "memory" / "memory_write_gate.json", memory_write_gate)
         _write_json(state_dir / "relationship" / "commitment_truth_state.json", updated_commitment_truth)
         _write_json(state_dir / "responsibility" / "responsibility_ledger.json", updated_responsibility_ledger)
         _write_json(state_dir / "memory" / "relationship_memory.json", updated_relationship_memory)

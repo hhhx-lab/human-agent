@@ -191,6 +191,21 @@ def run_state_store(
         blocked_reasons,
         "s02_check_gate",
     )
+    signal_media_runtime = (
+        _load_json(out_dir / "signal" / "signal_media_runtime.json", blocked_reasons, "signal_media_gate")
+        if (out_dir / "signal" / "signal_media_runtime.json").exists()
+        else {}
+    )
+    body_resource_budget = (
+        _load_json(out_dir / "body" / "body_resource_budget.json", blocked_reasons, "body_resource_budget_gate")
+        if (out_dir / "body" / "body_resource_budget.json").exists()
+        else {}
+    )
+    core_affect_vector = (
+        _load_json(out_dir / "body" / "core_affect_vector.json", blocked_reasons, "core_affect_gate")
+        if (out_dir / "body" / "core_affect_vector.json").exists()
+        else {}
+    )
 
     blocked_reasons.extend(_s02_blockers(neural_core, neural_report, neural_check_report))
     blocked_reasons.extend(_state_store_doc_blockers(doc_index))
@@ -234,6 +249,9 @@ def run_state_store(
         relationship_memory=relationship_memory,
         commitment_truth_state=commitment_truth,
         responsibility_ledger=responsibility_ledger,
+        signal_media_runtime=signal_media_runtime,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
         indexes=indexes,
     )
     state_merge_guard = build_state_merge_guard(

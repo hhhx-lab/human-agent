@@ -406,6 +406,68 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/relationship/commitment_truth_state.json", receipt["output_refs"])
         self.assertEqual(receipt["schema_version"], "state_store_receipt_v0")
 
+    def test_memory_write_gate_consumes_signal_and_body_pressure(self):
+        from life_v0.state_store.memory_write_gate import build_memory_write_gate
+
+        memory_write_gate = build_memory_write_gate(
+            run_id="state-store-body-gate",
+            generated_at="2026-06-14T00:00:00+08:00",
+            signal_media_runtime={
+                "schema_version": "signal_media_runtime_v0",
+                "body_signal_profile": {
+                    "schema_version": "body_signal_modulation_profile_v0",
+                    "fatigue_load": 0.78,
+                    "pain_pressure": 0.66,
+                    "dream_residue_load": 0.61,
+                    "body_ref_set": [
+                        "runtime/state/body/body_resource_budget.json",
+                        "runtime/state/body/core_affect_vector.json",
+                    ],
+                    "memory_write_bias": "defer_noncritical_memory_commit",
+                },
+                "modulation_vector": {
+                    "fatigue_load": 0.78,
+                    "repair_drive": 0.83,
+                    "relationship_pressure": 0.71,
+                    "unexpected_uncertainty": 0.69,
+                },
+            },
+            body_resource_budget={
+                "schema_version": "body_resource_budget_v0",
+                "fatigue_state": {"level": "elevated_guard"},
+            },
+            core_affect_vector={
+                "schema_version": "core_affect_vector_v0",
+                "arousal": 0.81,
+                "pain_pressure": 0.66,
+                "dream_residue_load": 0.61,
+                "responsibility_weight": 0.73,
+                "repair_drive": "active",
+            },
+            indexes={"memory_index.json": {"stage_policy": "seed_only"}},
+        )
+
+        self.assertEqual(
+            memory_write_gate["stage_policy"],
+            "candidate_first_body_signal_guarded",
+        )
+        self.assertEqual(
+            memory_write_gate["body_signal_write_modulation"]["schema_version"],
+            "body_signal_memory_gate_profile_v0",
+        )
+        self.assertEqual(
+            memory_write_gate["body_signal_write_modulation"]["write_bias"],
+            "defer_noncritical_memory_commit",
+        )
+        self.assertIn(
+            "runtime/state/body/core_affect_vector.json",
+            memory_write_gate["body_signal_write_modulation"]["body_signal_refs"],
+        )
+        self.assertIn(
+            "body_signal_write_modulation",
+            memory_write_gate["long_term_governance_refs"],
+        )
+
     def test_cli_build_state_store_returns_zero_and_writes_check_report(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)

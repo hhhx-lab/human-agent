@@ -505,6 +505,27 @@ NeedStateVector / BodyRhythmPulse
 2. `prediction_error_field.json` 存在，但 active sampling、memory write gate 和 response surface 都不读取。
 3. `state_merge_guard.json` 存在，但 dream、relationship、responsibility、growth 不能进入 change sources。
 
+本轮已落地的第一段闭环：
+
+| 环节 | 代码落点 | 新增/加厚字段 |
+|---|---|---|
+| 身体到调质 | `life_v0/neural_core/signal_media.py#build_signal_media_runtime` | `body_signal_profile`、由身体/核心情绪调制的 `fatigue_load`、`stress_pulse`、`allostatic_load`、`memory_gate_mode` |
+| 调质到写门 | `life_v0/state_store/memory_write_gate.py#project_memory_write_gate_with_signal_body` | `body_signal_write_modulation`、`candidate_first_body_signal_guarded` 等 stage policy |
+| 实时语言刷新 | `life_v0/language/__init__.py` | language 阶段刷新 signal 后同步投射并重写 `runtime/state/memory/memory_write_gate.json` |
+| 等待治理 | `life_v0/process_supervisor/idle_strategy.py` | `body_signal_write_bias`、`body_signal_fatigue_load`、`body_signal_refs` 等 prediction profile 字段 |
+| 驻留谱系 | `background_lineage_state.py`、`dialogue_events.py` | `resident_background_lineage_body_signal_*` 进入真实回合事件和 lineage refs |
+| 回应材料 | `response_surface.py` | `prediction_attention.body_signal_*` 与 `resident_background.prediction_write_gate_presence.body_signal_*` 进入结构化审计材料 |
+
+本轮断链测试：
+
+```bash
+python3 -m unittest tests.slices.test_language_organs.LanguageOrgansTests.test_inner_speech_expression_monitor_and_relationship_graph_organs -v
+python3 -m unittest tests.slices.test_state_store.StateStoreTests.test_memory_write_gate_consumes_signal_and_body_pressure -v
+python3 -m unittest tests.process.test_response_surface.ResponseSurfaceTests.test_body_signal_memory_gate_crosses_lineage_event_and_response -v
+```
+
+当前仍未把 ITR-05 宣告完成。下一段还要继续检查 `heartbeat.py`、`resident_turn_writeback.py`、`background_continuity.py`、`process_report.py` 与梦境/offline pressure 是否也完整消费 `body_signal_write_modulation`，不能只停在 waiting governance 和 response surface。
+
 ### `ITR-06 responsibility membrane`
 
 机制目的：行动与外部接触必须变成后果链。责任、痛苦、后悔和修复不是语言道歉模板，而是未来抑制、梦境压力、关系修复、成长补丁和出生准备的共同来源。
