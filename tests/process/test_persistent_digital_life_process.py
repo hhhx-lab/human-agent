@@ -10188,6 +10188,21 @@ class PersistentDigitalLifeProcessTests(
                 "wake_question_about:Brain-inspired memory",
                 "wake_question_about:Predictive dreams",
             ]
+            expected_growth_self_modification_refs = [
+                "runtime/state/growth/self_read_report.json",
+                "runtime/state/growth/plasticity_window_state.json",
+                "runtime/state/growth/growth_patch_candidate_queue.json",
+                "runtime/state/growth/anti_forgetting_replay_plan.json",
+                "runtime/state/growth/belief_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/growth/relationship_learning_plan.json",
+                "runtime/state/growth/resident_growth_rehearsal_state.json",
+                "runtime/state/growth/resident_learning_consolidation_state.json",
+                "runtime/state/archive/growth_archive_receipt_batch.json",
+                "runtime/reports/latest/growth_archive_report.json",
+                "runtime/reports/latest/growth_archive_digest.json",
+                "runtime/reports/latest/growth_archive_stage_gate.json",
+            ]
 
             self._write_json(reports_dir / "digital_life_shell_report.json", {"status": "closed"})
             self._write_json(reports_dir / "digital_life_waiting_heartbeat.json", {"heartbeat_counter": 3})
@@ -10636,20 +10651,127 @@ class PersistentDigitalLifeProcessTests(
                 state_dir / "growth" / "growth_patch_candidate_queue.json",
                 {
                     "schema_version": "growth_patch_candidate_queue_v0",
-                    "candidates": [{"growth_patch_candidate_id": "growth-patch-candidate-test-0001"}],
+                    "status": "queued",
+                    "candidates": [
+                        {
+                            "growth_patch_candidate_id": "growth-patch-candidate-test-0001",
+                            "target_surface": "language_memory_link",
+                            "source_residue_refs": [
+                                "runtime/state/dream/exit_dream_consolidation_summary.json#growth_residue"
+                            ],
+                            "risk_flags": ["requires_archive_before_application"],
+                            "archive_requirement": "archive_before_application",
+                        }
+                    ],
                 },
             )
             self._write_json(
                 state_dir / "growth" / "belief_learning_plan.json",
-                {"schema_version": "belief_learning_plan_v0"},
+                {
+                    "schema_version": "belief_learning_plan_v0",
+                    "window_status": "open",
+                    "belief_targets": ["belief-target-001", "belief-target-002"],
+                },
             )
             self._write_json(
                 state_dir / "growth" / "language_learning_plan.json",
-                {"schema_version": "language_learning_plan_v0"},
+                {
+                    "schema_version": "language_learning_plan_v0",
+                    "window_status": "open",
+                    "language_targets": ["language-target-001"],
+                },
             )
             self._write_json(
                 state_dir / "growth" / "relationship_learning_plan.json",
-                {"schema_version": "relationship_learning_plan_v0"},
+                {
+                    "schema_version": "relationship_learning_plan_v0",
+                    "window_status": "open",
+                    "relationship_targets": [
+                        "relationship-target-001",
+                        "relationship-target-002",
+                        "relationship-target-003",
+                    ],
+                },
+            )
+            self._write_json(
+                state_dir / "growth" / "self_read_report.json",
+                {
+                    "schema_version": "self_read_report_v0",
+                    "read_scope": ["language", "memory", "relationship"],
+                    "growth_pressures": ["memory_link_gap", "language_precision"],
+                    "recommended_growth_paths": [
+                        "runtime/state/growth/language_learning_plan.json"
+                    ],
+                },
+            )
+            self._write_json(
+                state_dir / "growth" / "plasticity_window_state.json",
+                {
+                    "schema_version": "plasticity_window_state_v0",
+                    "window_status": "open",
+                    "self_training_allowed": True,
+                    "kernel_upgrade_allowed": False,
+                    "required_anchor_refs": [
+                        "docs/v0/entry/v0_current_iteration_plan.md",
+                        "docs/real—live0/17_current_iteration_mechanism_to_code_plan.md",
+                    ],
+                },
+            )
+            self._write_json(
+                state_dir / "growth" / "anti_forgetting_replay_plan.json",
+                {
+                    "schema_version": "anti_forgetting_replay_plan_v0",
+                    "replay_sets": ["replay-set-growth-001", "replay-set-growth-002"],
+                },
+            )
+            self._write_json(
+                state_dir / "growth" / "resident_growth_rehearsal_state.json",
+                {
+                    "schema_version": "resident_growth_rehearsal_state_v0",
+                    "status": "rehearsed",
+                    "rehearsal_mode": "shadow_growth_patch_rehearsal",
+                },
+            )
+            self._write_json(
+                state_dir / "growth" / "resident_learning_consolidation_state.json",
+                {
+                    "schema_version": "resident_learning_consolidation_state_v0",
+                    "status": "consolidated",
+                    "consolidation_mode": "offline_learning_merge_candidate_hold",
+                },
+            )
+            self._write_json(
+                state_dir / "archive" / "growth_archive_receipt_batch.json",
+                {
+                    "schema_version": "growth_archive_receipt_batch_v0",
+                    "receipts": ["growth-archive-receipt-001", "growth-archive-receipt-002"],
+                    "archive_refs": [
+                        "runtime/reports/latest/growth_archive_report.json"
+                    ],
+                },
+            )
+            self._write_json(
+                reports_dir / "growth_archive_report.json",
+                {
+                    "schema_version": "growth_archive_report_v0",
+                    "status": "archived",
+                    "archive_refs": ["growth-archive-ref-001", "growth-archive-ref-002"],
+                },
+            )
+            self._write_json(
+                reports_dir / "growth_archive_digest.json",
+                {
+                    "schema_version": "growth_archive_digest_v0",
+                    "status": "digested",
+                    "archive_refs": ["growth-archive-ref-001", "growth-archive-ref-002"],
+                },
+            )
+            self._write_json(
+                reports_dir / "growth_archive_stage_gate.json",
+                {
+                    "schema_version": "growth_archive_stage_gate_v0",
+                    "decision": "closed_for_runtime_application",
+                },
             )
             self._write_json(
                 state_dir / "memory" / "memory_retrieval_frame.json",
@@ -11067,6 +11189,11 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/growth/resident_growth_rehearsal_state.json",
                 "runtime/state/growth/resident_learning_consolidation_state.json",
                 *expected_web_dream_learning_refs,
+            ]
+            expected_growth_learning_plan_refs = [
+                "runtime/state/growth/belief_learning_plan.json",
+                "runtime/state/growth/language_learning_plan.json",
+                "runtime/state/growth/relationship_learning_plan.json",
             ]
             expected_life_constraint_refs = [
                 "runtime/state/action/action_candidate_set.json#life_constraint_profile",
@@ -11552,6 +11679,36 @@ class PersistentDigitalLifeProcessTests(
                     artifact["web_dream_learning_report_boundary"],
                     "structured_dream_learning_evidence_not_spoken_language",
                 )
+                self.assertEqual(
+                    artifact["growth_self_modification_report_profile"][
+                        "schema_version"
+                    ],
+                    "growth_self_modification_report_profile_v0",
+                )
+                self.assertEqual(
+                    artifact["growth_self_modification_state_refs"],
+                    expected_growth_self_modification_refs,
+                )
+                self.assertEqual(
+                    artifact["growth_learning_plan_refs"],
+                    expected_growth_learning_plan_refs,
+                )
+                self.assertEqual(artifact["growth_active_domain_count"], 13)
+                self.assertEqual(artifact["growth_pressure_count"], 2)
+                self.assertEqual(artifact["growth_patch_candidate_count"], 1)
+                self.assertEqual(
+                    artifact["growth_anti_forgetting_replay_set_count"],
+                    2,
+                )
+                self.assertEqual(
+                    artifact["growth_learning_target_counts"],
+                    {"belief": 2, "language": 1, "relationship": 3},
+                )
+                self.assertEqual(artifact["growth_archive_receipt_count"], 2)
+                self.assertEqual(
+                    artifact["growth_self_modification_report_boundary"],
+                    "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite",
+                )
             self.assertEqual(
                 digest["resident_autonomous_activity_ref"],
                 "runtime/state/terminal/resident_autonomous_activity.jsonl",
@@ -11734,6 +11891,26 @@ class PersistentDigitalLifeProcessTests(
             )
             for ref in expected_web_dream_learning_refs:
                 self.assertIn(ref, receipt["shared_object_refs"])
+            self.assertEqual(
+                receipt["growth_self_modification_report_profile"][
+                    "schema_version"
+                ],
+                "growth_self_modification_report_profile_v0",
+            )
+            self.assertEqual(
+                receipt["growth_self_modification_state_refs"],
+                expected_growth_self_modification_refs,
+            )
+            self.assertEqual(
+                receipt["growth_learning_plan_refs"],
+                expected_growth_learning_plan_refs,
+            )
+            self.assertEqual(
+                receipt["growth_self_modification_report_boundary"],
+                "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite",
+            )
+            for ref in expected_growth_self_modification_refs:
+                self.assertIn(ref, receipt["shared_object_refs"])
             self.assertEqual(receipt["body_ref_set"], expected_body_refs)
             self.assertEqual(receipt["body_signal_ref_set"], expected_body_signal_refs)
             for ref in expected_body_signal_refs:
@@ -11838,6 +12015,19 @@ class PersistentDigitalLifeProcessTests(
                 "/runtime/state/dream/web_dream_learning_state.json",
                 "/runtime/state/dream/web_dream_learning_log.jsonl",
                 "/runtime/state/dream/web_dream_learning_seeds.json",
+                "/runtime/state/growth/self_read_report.json",
+                "/runtime/state/growth/plasticity_window_state.json",
+                "/runtime/state/growth/growth_patch_candidate_queue.json",
+                "/runtime/state/growth/anti_forgetting_replay_plan.json",
+                "/runtime/state/growth/belief_learning_plan.json",
+                "/runtime/state/growth/language_learning_plan.json",
+                "/runtime/state/growth/relationship_learning_plan.json",
+                "/runtime/state/growth/resident_growth_rehearsal_state.json",
+                "/runtime/state/growth/resident_learning_consolidation_state.json",
+                "/runtime/state/archive/growth_archive_receipt_batch.json",
+                "/runtime/reports/latest/growth_archive_report.json",
+                "/runtime/reports/latest/growth_archive_digest.json",
+                "/runtime/reports/latest/growth_archive_stage_gate.json",
             ]:
                 self.assertIn(
                     True,

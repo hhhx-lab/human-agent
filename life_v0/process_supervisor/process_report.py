@@ -642,6 +642,14 @@ def write_process_report_bundle(
             resolved_background_resident_autonomous_activity_presence_profile
         ),
     )
+    growth_self_modification_profile = _growth_self_modification_report_profile(
+        state_dir=state_dir,
+        reports_dir=reports_dir,
+        growth_patch_candidate_queue_ref=growth_patch_candidate_queue_ref,
+        belief_learning_plan_ref=belief_learning_plan_ref,
+        language_learning_plan_ref=language_learning_plan_ref,
+        relationship_learning_plan_ref=relationship_learning_plan_ref,
+    )
     governance_explanation = write_resident_governance_explanation(
         run_id=run_id,
         generated_at=generated_at,
@@ -1022,6 +1030,7 @@ def write_process_report_bundle(
     report.update(exit_dream_next_wake_profile)
     report.update(exit_dream_memory_tier_profile)
     report.update(web_dream_learning_profile)
+    report.update(growth_self_modification_profile)
     report["offline_learning_cumulative_integration_mode"] = (
         resolved_offline_learning_cumulative_integration_mode
     )
@@ -1777,6 +1786,7 @@ def write_process_report_bundle(
     digest.update(exit_dream_next_wake_profile)
     digest.update(exit_dream_memory_tier_profile)
     digest.update(web_dream_learning_profile)
+    digest.update(growth_self_modification_profile)
     for field_name in HANDOFF_CARRY_FIELD_NAMES:
         if field_name in idle_governance:
             digest[field_name] = idle_governance[field_name]
@@ -1968,6 +1978,76 @@ def write_process_report_bundle(
         web_dream_learning_report_boundary=web_dream_learning_profile.get(
             "web_dream_learning_report_boundary"
         ),
+        growth_self_modification_report_profile=(
+            growth_self_modification_profile.get(
+                "growth_self_modification_report_profile"
+            )
+        ),
+        growth_self_modification_ref_set=growth_self_modification_profile.get(
+            "growth_self_modification_ref_set",
+            [],
+        ),
+        growth_self_modification_state_refs=growth_self_modification_profile.get(
+            "growth_self_modification_state_refs",
+            [],
+        ),
+        growth_self_read_report_ref=growth_self_modification_profile.get(
+            "growth_self_read_report_ref"
+        ),
+        growth_plasticity_window_ref=growth_self_modification_profile.get(
+            "growth_plasticity_window_ref"
+        ),
+        growth_anti_forgetting_replay_plan_ref=growth_self_modification_profile.get(
+            "growth_anti_forgetting_replay_plan_ref"
+        ),
+        growth_learning_plan_refs=growth_self_modification_profile.get(
+            "growth_learning_plan_refs",
+            [],
+        ),
+        resident_growth_rehearsal_ref=growth_self_modification_profile.get(
+            "resident_growth_rehearsal_ref"
+        ),
+        resident_learning_consolidation_ref=growth_self_modification_profile.get(
+            "resident_learning_consolidation_ref"
+        ),
+        growth_archive_receipt_batch_ref=growth_self_modification_profile.get(
+            "growth_archive_receipt_batch_ref"
+        ),
+        growth_archive_report_ref=growth_self_modification_profile.get(
+            "growth_archive_report_ref"
+        ),
+        growth_archive_digest_ref=growth_self_modification_profile.get(
+            "growth_archive_digest_ref"
+        ),
+        growth_archive_stage_gate_ref=growth_self_modification_profile.get(
+            "growth_archive_stage_gate_ref"
+        ),
+        growth_active_domain_count=growth_self_modification_profile.get(
+            "growth_active_domain_count"
+        ),
+        growth_pressure_count=growth_self_modification_profile.get(
+            "growth_pressure_count"
+        ),
+        growth_patch_candidate_count=growth_self_modification_profile.get(
+            "growth_patch_candidate_count"
+        ),
+        growth_anti_forgetting_replay_set_count=(
+            growth_self_modification_profile.get(
+                "growth_anti_forgetting_replay_set_count"
+            )
+        ),
+        growth_learning_target_counts=growth_self_modification_profile.get(
+            "growth_learning_target_counts",
+            {},
+        ),
+        growth_archive_receipt_count=growth_self_modification_profile.get(
+            "growth_archive_receipt_count"
+        ),
+        growth_self_modification_report_boundary=(
+            growth_self_modification_profile.get(
+                "growth_self_modification_report_boundary"
+            )
+        ),
     )
 
     receipts_dir.mkdir(parents=True, exist_ok=True)
@@ -2073,6 +2153,26 @@ def build_process_receipt(
     web_dream_learning_wake_question_candidates: list[str] | None = None,
     web_dream_learning_ref_set: list[str] | None = None,
     web_dream_learning_report_boundary: str | None = None,
+    growth_self_modification_report_profile: dict[str, Any] | None = None,
+    growth_self_modification_ref_set: list[str] | None = None,
+    growth_self_modification_state_refs: list[str] | None = None,
+    growth_self_read_report_ref: str | None = None,
+    growth_plasticity_window_ref: str | None = None,
+    growth_anti_forgetting_replay_plan_ref: str | None = None,
+    growth_learning_plan_refs: list[str] | None = None,
+    resident_growth_rehearsal_ref: str | None = None,
+    resident_learning_consolidation_ref: str | None = None,
+    growth_archive_receipt_batch_ref: str | None = None,
+    growth_archive_report_ref: str | None = None,
+    growth_archive_digest_ref: str | None = None,
+    growth_archive_stage_gate_ref: str | None = None,
+    growth_active_domain_count: int | None = None,
+    growth_pressure_count: int | None = None,
+    growth_patch_candidate_count: int | None = None,
+    growth_anti_forgetting_replay_set_count: int | None = None,
+    growth_learning_target_counts: dict[str, Any] | None = None,
+    growth_archive_receipt_count: int | None = None,
+    growth_self_modification_report_boundary: str | None = None,
 ) -> dict[str, Any]:
     input_hashes: dict[str, str] = {}
     for path in [
@@ -2140,13 +2240,22 @@ def build_process_receipt(
         state_dir / "dream" / "web_dream_learning_seeds.json",
         state_dir / "dream" / "nightmare_loop_risk.json",
         state_dir / "growth" / "growth_patch_candidate_queue.json",
+        state_dir / "growth" / "self_read_report.json",
+        state_dir / "growth" / "plasticity_window_state.json",
+        state_dir / "growth" / "anti_forgetting_replay_plan.json",
         state_dir / "growth" / "belief_learning_plan.json",
         state_dir / "growth" / "language_learning_plan.json",
         state_dir / "growth" / "relationship_learning_plan.json",
+        state_dir / "growth" / "resident_growth_rehearsal_state.json",
+        state_dir / "growth" / "resident_learning_consolidation_state.json",
+        state_dir / "archive" / "growth_archive_receipt_batch.json",
         state_dir / "relationship" / "relationship_subject_graph.json",
         state_dir / "self" / "self_model.json",
         reports_dir / "pain_regret_repair_report.json",
         reports_dir / "digital_life_model_expression_report.json",
+        reports_dir / "growth_archive_report.json",
+        reports_dir / "growth_archive_digest.json",
+        reports_dir / "growth_archive_stage_gate.json",
         reports_dir / "dialogue_writeback_bundle.json",
         reports_dir / "digital_life_process_relaunch_recovery_report.json",
         reports_dir / "digital_life_process_incident_report.json",
@@ -2251,6 +2360,38 @@ def build_process_receipt(
         ),
         "web_dream_learning_ref_set": list(web_dream_learning_ref_set or []),
         "web_dream_learning_report_boundary": web_dream_learning_report_boundary,
+        "growth_self_modification_report_profile": dict(
+            growth_self_modification_report_profile or {}
+        ),
+        "growth_self_modification_ref_set": list(
+            growth_self_modification_ref_set or []
+        ),
+        "growth_self_modification_state_refs": list(
+            growth_self_modification_state_refs or []
+        ),
+        "growth_self_read_report_ref": growth_self_read_report_ref,
+        "growth_plasticity_window_ref": growth_plasticity_window_ref,
+        "growth_anti_forgetting_replay_plan_ref": (
+            growth_anti_forgetting_replay_plan_ref
+        ),
+        "growth_learning_plan_refs": list(growth_learning_plan_refs or []),
+        "resident_growth_rehearsal_ref": resident_growth_rehearsal_ref,
+        "resident_learning_consolidation_ref": resident_learning_consolidation_ref,
+        "growth_archive_receipt_batch_ref": growth_archive_receipt_batch_ref,
+        "growth_archive_report_ref": growth_archive_report_ref,
+        "growth_archive_digest_ref": growth_archive_digest_ref,
+        "growth_archive_stage_gate_ref": growth_archive_stage_gate_ref,
+        "growth_active_domain_count": growth_active_domain_count,
+        "growth_pressure_count": growth_pressure_count,
+        "growth_patch_candidate_count": growth_patch_candidate_count,
+        "growth_anti_forgetting_replay_set_count": (
+            growth_anti_forgetting_replay_set_count
+        ),
+        "growth_learning_target_counts": dict(growth_learning_target_counts or {}),
+        "growth_archive_receipt_count": growth_archive_receipt_count,
+        "growth_self_modification_report_boundary": (
+            growth_self_modification_report_boundary
+        ),
         "body_ref_set": list(body_ref_set or []),
         "body_signal_ref_set": list(body_signal_ref_set or []),
         "queue_e_world_contact_ref_set": list(queue_e_world_contact_refs or []),
@@ -2270,6 +2411,9 @@ def build_process_receipt(
                     "runtime/reports/latest/digital_life_process_report.json",
                     "runtime/reports/latest/digital_life_process_digest.json",
                     model_expression_report_ref,
+                    growth_archive_report_ref,
+                    growth_archive_digest_ref,
+                    growth_archive_stage_gate_ref,
                 ]
                 if ref
             ]
@@ -2292,6 +2436,19 @@ def build_process_receipt(
                 web_dream_learning_log_ref,
                 web_dream_learning_seeds_ref,
                 *(web_dream_learning_ref_set or []),
+                growth_self_read_report_ref,
+                growth_plasticity_window_ref,
+                growth_patch_candidate_queue_ref,
+                growth_anti_forgetting_replay_plan_ref,
+                *(growth_learning_plan_refs or []),
+                resident_growth_rehearsal_ref,
+                resident_learning_consolidation_ref,
+                growth_archive_receipt_batch_ref,
+                growth_archive_report_ref,
+                growth_archive_digest_ref,
+                growth_archive_stage_gate_ref,
+                *(growth_self_modification_ref_set or []),
+                *(growth_self_modification_state_refs or []),
                 *(body_ref_set or []),
                 *(body_signal_ref_set or []),
                 resident_governance_state_ref,
@@ -2796,6 +2953,302 @@ def _web_dream_learning_report_profile(
     }
 
 
+def _growth_self_modification_report_profile(
+    *,
+    state_dir: Path,
+    reports_dir: Path,
+    growth_patch_candidate_queue_ref: str | None,
+    belief_learning_plan_ref: str | None,
+    language_learning_plan_ref: str | None,
+    relationship_learning_plan_ref: str | None,
+) -> dict[str, Any]:
+    self_read = _read_json_if_exists(state_dir / "growth" / "self_read_report.json")
+    plasticity = _read_json_if_exists(
+        state_dir / "growth" / "plasticity_window_state.json"
+    )
+    patch_queue = _read_json_if_exists(
+        state_dir / "growth" / "growth_patch_candidate_queue.json"
+    )
+    anti_forgetting = _read_json_if_exists(
+        state_dir / "growth" / "anti_forgetting_replay_plan.json"
+    )
+    belief_learning = _read_json_if_exists(
+        state_dir / "growth" / "belief_learning_plan.json"
+    )
+    language_learning = _read_json_if_exists(
+        state_dir / "growth" / "language_learning_plan.json"
+    )
+    relationship_learning = _read_json_if_exists(
+        state_dir / "growth" / "relationship_learning_plan.json"
+    )
+    growth_rehearsal = _read_json_if_exists(
+        state_dir / "growth" / "resident_growth_rehearsal_state.json"
+    )
+    learning_consolidation = _read_json_if_exists(
+        state_dir / "growth" / "resident_learning_consolidation_state.json"
+    )
+    archive_batch = _read_json_if_exists(
+        state_dir / "archive" / "growth_archive_receipt_batch.json"
+    )
+    archive_report = _read_json_if_exists(reports_dir / "growth_archive_report.json")
+    archive_digest = _read_json_if_exists(reports_dir / "growth_archive_digest.json")
+    archive_stage_gate = _read_json_if_exists(
+        reports_dir / "growth_archive_stage_gate.json"
+    )
+
+    self_read_ref = (
+        "runtime/state/growth/self_read_report.json" if self_read else None
+    )
+    plasticity_ref = (
+        "runtime/state/growth/plasticity_window_state.json" if plasticity else None
+    )
+    patch_queue_ref = growth_patch_candidate_queue_ref or (
+        "runtime/state/growth/growth_patch_candidate_queue.json"
+        if patch_queue
+        else None
+    )
+    anti_forgetting_ref = (
+        "runtime/state/growth/anti_forgetting_replay_plan.json"
+        if anti_forgetting
+        else None
+    )
+    resolved_belief_learning_plan_ref = belief_learning_plan_ref or (
+        "runtime/state/growth/belief_learning_plan.json"
+        if belief_learning
+        else None
+    )
+    resolved_language_learning_plan_ref = language_learning_plan_ref or (
+        "runtime/state/growth/language_learning_plan.json"
+        if language_learning
+        else None
+    )
+    resolved_relationship_learning_plan_ref = relationship_learning_plan_ref or (
+        "runtime/state/growth/relationship_learning_plan.json"
+        if relationship_learning
+        else None
+    )
+    growth_rehearsal_ref = (
+        "runtime/state/growth/resident_growth_rehearsal_state.json"
+        if growth_rehearsal
+        else None
+    )
+    learning_consolidation_ref = (
+        "runtime/state/growth/resident_learning_consolidation_state.json"
+        if learning_consolidation
+        else None
+    )
+    archive_batch_ref = (
+        "runtime/state/archive/growth_archive_receipt_batch.json"
+        if archive_batch
+        else None
+    )
+    archive_report_ref = (
+        "runtime/reports/latest/growth_archive_report.json"
+        if archive_report
+        else None
+    )
+    archive_digest_ref = (
+        "runtime/reports/latest/growth_archive_digest.json"
+        if archive_digest
+        else None
+    )
+    archive_stage_gate_ref = (
+        "runtime/reports/latest/growth_archive_stage_gate.json"
+        if archive_stage_gate
+        else None
+    )
+
+    candidates = patch_queue.get("candidates")
+    if not isinstance(candidates, list):
+        candidates = []
+    first_candidate = candidates[0] if candidates else {}
+    if not isinstance(first_candidate, dict):
+        first_candidate = {}
+    learning_target_counts = {
+        "belief": _count_list_or_dict(belief_learning.get("belief_targets")),
+        "language": _count_list_or_dict(language_learning.get("language_targets")),
+        "relationship": _count_list_or_dict(
+            relationship_learning.get("relationship_targets")
+        ),
+    }
+    archive_receipts = (
+        archive_batch.get("receipts")
+        or archive_batch.get("archive_receipts")
+        or archive_batch.get("receipt_refs")
+    )
+    archive_refs = (
+        archive_report.get("archive_refs")
+        or archive_digest.get("archive_refs")
+        or archive_batch.get("archive_refs")
+    )
+    domain_presence = {
+        "self_read_report": bool(self_read),
+        "plasticity_window": bool(plasticity),
+        "growth_patch_candidate_queue": bool(patch_queue),
+        "anti_forgetting_replay_plan": bool(anti_forgetting),
+        "belief_learning_plan": bool(belief_learning),
+        "language_learning_plan": bool(language_learning),
+        "relationship_learning_plan": bool(relationship_learning),
+        "resident_growth_rehearsal": bool(growth_rehearsal),
+        "resident_learning_consolidation": bool(learning_consolidation),
+        "growth_archive_receipt_batch": bool(archive_batch),
+        "growth_archive_report": bool(archive_report),
+        "growth_archive_digest": bool(archive_digest),
+        "growth_archive_stage_gate": bool(archive_stage_gate),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if present
+    ]
+    state_refs = _dedupe_refs(
+        [
+            ref
+            for ref in [
+                self_read_ref,
+                plasticity_ref,
+                patch_queue_ref,
+                anti_forgetting_ref,
+                resolved_belief_learning_plan_ref,
+                resolved_language_learning_plan_ref,
+                resolved_relationship_learning_plan_ref,
+                growth_rehearsal_ref,
+                learning_consolidation_ref,
+                archive_batch_ref,
+                archive_report_ref,
+                archive_digest_ref,
+                archive_stage_gate_ref,
+            ]
+            if ref
+        ]
+    )
+    learning_plan_refs = _dedupe_refs(
+        [
+            ref
+            for ref in [
+                resolved_belief_learning_plan_ref,
+                resolved_language_learning_plan_ref,
+                resolved_relationship_learning_plan_ref,
+            ]
+            if ref
+        ]
+    )
+    if not any(
+        [
+            self_read,
+            plasticity,
+            patch_queue,
+            anti_forgetting,
+            belief_learning,
+            language_learning,
+            relationship_learning,
+            growth_rehearsal,
+            learning_consolidation,
+            archive_batch,
+            archive_report,
+            archive_digest,
+            archive_stage_gate,
+            state_refs,
+        ]
+    ):
+        return {}
+    archive_status = _first_non_none(
+        archive_stage_gate.get("decision"),
+        archive_stage_gate.get("status"),
+        archive_report.get("status"),
+        archive_digest.get("status"),
+    )
+    boundary = (
+        "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite"
+    )
+    profile = {
+        "schema_version": "growth_self_modification_report_profile_v0",
+        "summary_kind": "closed_process_growth_evidence",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "self_read_scope_count": _count_list_or_dict(self_read.get("read_scope")),
+        "growth_pressure_count": _count_list_or_dict(
+            self_read.get("growth_pressures")
+        ),
+        "recommended_growth_paths": _list_or_empty(
+            self_read.get("recommended_growth_paths")
+        ),
+        "plasticity_window_status": plasticity.get("window_status"),
+        "self_training_allowed": bool(plasticity.get("self_training_allowed")),
+        "kernel_upgrade_allowed": bool(plasticity.get("kernel_upgrade_allowed")),
+        "required_anchor_ref_count": _count_list_or_dict(
+            plasticity.get("required_anchor_refs")
+        ),
+        "candidate_queue_status": patch_queue.get("status"),
+        "candidate_count": len(candidates),
+        "first_candidate_target_surface": first_candidate.get("target_surface"),
+        "first_candidate_source_ref_count": _count_list_or_dict(
+            first_candidate.get("source_residue_refs")
+            or first_candidate.get("source_refs")
+        ),
+        "first_candidate_risk_flags": _list_or_empty(
+            first_candidate.get("risk_flags")
+        ),
+        "archive_requirement": first_candidate.get("archive_requirement"),
+        "anti_forgetting_replay_sets": _list_or_empty(
+            anti_forgetting.get("replay_sets")
+        ),
+        "anti_forgetting_replay_set_count": _count_list_or_dict(
+            anti_forgetting.get("replay_sets")
+        ),
+        "learning_target_counts": learning_target_counts,
+        "learning_windows": {
+            "belief": belief_learning.get("window_status"),
+            "language": language_learning.get("window_status"),
+            "relationship": relationship_learning.get("window_status"),
+        },
+        "resident_growth_rehearsal_status": growth_rehearsal.get("status"),
+        "resident_growth_rehearsal_mode": _first_non_none(
+            growth_rehearsal.get("rehearsal_mode"),
+            growth_rehearsal.get("activity_mode"),
+        ),
+        "resident_learning_consolidation_status": (
+            learning_consolidation.get("status")
+        ),
+        "resident_learning_consolidation_mode": (
+            learning_consolidation.get("consolidation_mode")
+        ),
+        "archive_status": archive_status,
+        "archive_receipt_count": _count_list_or_dict(archive_receipts),
+        "archive_ref_count": _count_list_or_dict(archive_refs),
+        "ref_set": state_refs,
+        "state_refs": state_refs,
+        "learning_plan_refs": learning_plan_refs,
+        "report_boundary": boundary,
+    }
+    return {
+        "growth_self_modification_report_profile": profile,
+        "growth_self_modification_ref_set": state_refs,
+        "growth_self_modification_state_refs": state_refs,
+        "growth_self_read_report_ref": self_read_ref,
+        "growth_plasticity_window_ref": plasticity_ref,
+        "growth_anti_forgetting_replay_plan_ref": anti_forgetting_ref,
+        "growth_learning_plan_refs": learning_plan_refs,
+        "resident_growth_rehearsal_ref": growth_rehearsal_ref,
+        "resident_learning_consolidation_ref": learning_consolidation_ref,
+        "growth_archive_receipt_batch_ref": archive_batch_ref,
+        "growth_archive_report_ref": archive_report_ref,
+        "growth_archive_digest_ref": archive_digest_ref,
+        "growth_archive_stage_gate_ref": archive_stage_gate_ref,
+        "growth_active_domain_count": len(active_domains),
+        "growth_active_domains": active_domains,
+        "growth_domain_presence": domain_presence,
+        "growth_pressure_count": profile["growth_pressure_count"],
+        "growth_patch_candidate_count": len(candidates),
+        "growth_anti_forgetting_replay_set_count": (
+            profile["anti_forgetting_replay_set_count"]
+        ),
+        "growth_learning_target_counts": learning_target_counts,
+        "growth_archive_receipt_count": profile["archive_receipt_count"],
+        "growth_archive_ref_count": profile["archive_ref_count"],
+        "growth_self_modification_report_boundary": boundary,
+    }
+
+
 def _queue_e_repair_modulation_profile_from_runtime(
     *,
     state_dir: Path,
@@ -2932,6 +3385,14 @@ def _int_or_default(value: Any, *, default: int) -> int:
         return int(value)
     except (TypeError, ValueError):
         return default
+
+
+def _count_list_or_dict(value: Any) -> int:
+    if isinstance(value, (list, tuple, set, dict)):
+        return len(value)
+    if value is None:
+        return 0
+    return 1
 
 
 def _list_or_empty(value: Any) -> list[str]:
