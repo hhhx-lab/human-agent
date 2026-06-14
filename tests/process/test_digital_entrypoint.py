@@ -547,6 +547,99 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 },
             )
             self._write_json(
+                terminal_dir / "resident_lifecycle_state.json",
+                {
+                    "schema_version": "resident_lifecycle_state_v0",
+                    "status": "background_active",
+                    "phase": "waiting",
+                    "pid": 12345,
+                    "life_name": "Adam",
+                    "started_at": "2026-06-15T00:00:00Z",
+                },
+            )
+            self._write_json(
+                terminal_dir / "resident_relation_queue_state.json",
+                {
+                    "schema_version": "resident_relation_queue_state_v0",
+                    "status": "waiting_for_relation_turn",
+                    "pending_relation_turn_count": 0,
+                },
+            )
+            self._write_json(
+                terminal_dir / "resident_autonomous_activity_state.json",
+                {
+                    "schema_version": "resident_autonomous_activity_state_v0",
+                    "status": "active",
+                    "activity_count": 5,
+                    "cycle_phase_index": 3,
+                    "cycle_phase_count": 5,
+                    "last_activity_kind": "learning_consolidation",
+                },
+            )
+            self._write_json(
+                terminal_dir / "idle_strategy_state.json",
+                {
+                    "schema_version": "idle_strategy_state_v0",
+                    "waiting_posture": "relationship_available",
+                    "next_idle_action": (
+                        "refresh_waiting_heartbeat_before_next_external_turn"
+                    ),
+                    "heartbeat_interval_ms": 5000,
+                    "governance_attention_target": (
+                        "relationship_language_continuity"
+                    ),
+                    "governance_attention_reason": (
+                        "resident_waiting_relation_context"
+                    ),
+                },
+            )
+            self._write_json(
+                terminal_dir / "resident_governance_state.json",
+                {
+                    "schema_version": "resident_governance_state_v0",
+                    "governance_phase": "waiting_heartbeat_active",
+                    "waiting_mode": "resident_relation_wait",
+                    "next_required_action": "await_next_external_relation_turn",
+                },
+            )
+            self._write_json(
+                terminal_dir / "terminal_life_loop_state.json",
+                {
+                    "schema_version": "terminal_life_loop_state_v0",
+                    "current_mode": "resident_relation_wait",
+                    "previous_live_turn_waiting_handoff_carry_status": (
+                        "carried_into_waiting_heartbeat"
+                    ),
+                    "resident_background_lineage_state": {
+                        "schema_version": "resident_background_lineage_state_v0",
+                        "resident_background_lineage_refs": [
+                            "runtime/state/terminal/background_continuity_profile.json"
+                        ],
+                        "world_contact_handoff_presence": {
+                            "handoff_status": "closed",
+                            "repair_hold_required": True,
+                        },
+                        "identity_consciousness_birth_presence": {
+                            "birth_readiness_waiting_posture": (
+                                "awaiting_first_name_anchor"
+                            )
+                        },
+                    },
+                },
+            )
+            self._write_json(
+                paths["reports"] / "digital_life_waiting_heartbeat.json",
+                {
+                    "schema_version": "digital_life_waiting_heartbeat_v0",
+                    "heartbeat_counter": 7,
+                    "waiting_mode": "resident_relation_wait",
+                    "next_required_action": "await_next_external_relation_turn",
+                    "resident_idle_strategy_state_ref": (
+                        "runtime/state/terminal/idle_strategy_state.json"
+                    ),
+                },
+            )
+            self._write_json(
                 paths["state_root"] / "life_targets" / "birth_readiness_rollup.json",
                 {
                     "schema_version": "birth_readiness_rollup_v0",
@@ -1143,7 +1236,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "/vision": "perception_world_contact_summary_v0",
                 "/context": "relation_context_summary_v0",
                 "/ability": "ability_birth_readiness_summary_v0",
-                "/state": "terminal_input_profile_v0",
+                "/state": "resident_continuity_summary_v0",
                 "/relationship": "relationship_continuity_summary_v0",
                 "/cognition": "cognitive_workspace_summary_v0",
             }
@@ -1356,6 +1449,24 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn(
                 "perception_prediction_world_contact_view_not_tool_gateway",
                 perception_output.getvalue(),
+            )
+
+            state_output = StringIO()
+            with redirect_stdout(state_output):
+                state_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/state",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(state_exit)
+            self.assertIn("resident_continuity_summary_v0", state_output.getvalue())
+            self.assertIn("background_active", state_output.getvalue())
+            self.assertIn("waiting_heartbeat_active", state_output.getvalue())
+            self.assertIn("carried_into_waiting_heartbeat", state_output.getvalue())
+            self.assertIn(
+                "resident_state_summary_is_inspection_not_life_speech",
+                state_output.getvalue(),
             )
 
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())

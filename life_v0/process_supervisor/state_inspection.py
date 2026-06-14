@@ -308,7 +308,7 @@ def _collect_state_summary(
     terminal_dir: Path,
     reports_dir: Path,
 ) -> dict[str, Any]:
-    return {
+    state = {
         "resident_lifecycle": _compact_json(
             terminal_dir / "resident_lifecycle_state.json"
         ),
@@ -330,6 +330,127 @@ def _collect_state_summary(
         ),
         "waiting_heartbeat": _compact_json(
             reports_dir / "digital_life_waiting_heartbeat.json"
+        ),
+    }
+    state["resident_continuity_summary"] = _collect_resident_continuity_summary(
+        state
+    )
+    return state
+
+
+def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, Any]:
+    lifecycle = _extract_compact_value(section.get("resident_lifecycle", {}))
+    relation_queue = _extract_compact_value(section.get("relation_queue", {}))
+    autonomous_activity = _extract_compact_value(
+        section.get("autonomous_activity", {})
+    )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy", {}))
+    governance = _extract_compact_value(section.get("resident_governance", {}))
+    terminal_loop = _extract_compact_value(section.get("terminal_life_loop", {}))
+    input_profile = _extract_compact_value(
+        section.get("terminal_input_profile", {})
+    )
+    heartbeat = _extract_compact_value(section.get("waiting_heartbeat", {}))
+    lineage = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        lineage,
+        "world_contact_handoff_presence",
+    )
+    identity_birth_presence = _extract_nested_value(
+        lineage,
+        "identity_consciousness_birth_presence",
+    )
+    domain_presence = {
+        "resident_lifecycle": bool(lifecycle),
+        "relation_queue": bool(relation_queue),
+        "autonomous_activity": bool(autonomous_activity),
+        "idle_strategy": bool(idle_strategy),
+        "resident_governance": bool(governance),
+        "terminal_life_loop": bool(terminal_loop),
+        "terminal_input_profile": bool(input_profile),
+        "waiting_heartbeat": bool(heartbeat),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "resident_continuity_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "lifecycle_status": lifecycle.get("status"),
+        "lifecycle_phase": lifecycle.get("phase"),
+        "life_name": lifecycle.get("life_name"),
+        "pid_present": bool(lifecycle.get("pid")),
+        "relation_queue_status": relation_queue.get("status"),
+        "pending_relation_turn_count": _first_non_empty(
+            relation_queue.get("pending_relation_turn_count"),
+            _count_any(relation_queue.get("pending_relation_turn_refs")),
+        ),
+        "autonomous_activity_status": autonomous_activity.get("status"),
+        "autonomous_activity_count": autonomous_activity.get("activity_count"),
+        "autonomous_cycle_phase_index": autonomous_activity.get(
+            "cycle_phase_index"
+        ),
+        "autonomous_cycle_phase_count": autonomous_activity.get(
+            "cycle_phase_count"
+        ),
+        "last_autonomous_activity_kind": autonomous_activity.get(
+            "last_activity_kind"
+        ),
+        "governance_phase": governance.get("governance_phase"),
+        "waiting_mode": _first_non_empty(
+            governance.get("waiting_mode"),
+            heartbeat.get("waiting_mode"),
+            terminal_loop.get("current_mode"),
+        ),
+        "next_required_action": _first_non_empty(
+            governance.get("next_required_action"),
+            heartbeat.get("next_required_action"),
+            idle_strategy.get("next_idle_action"),
+        ),
+        "idle_waiting_posture": idle_strategy.get("waiting_posture"),
+        "heartbeat_counter": heartbeat.get("heartbeat_counter"),
+        "heartbeat_interval_ms": idle_strategy.get("heartbeat_interval_ms"),
+        "terminal_current_mode": terminal_loop.get("current_mode"),
+        "previous_live_turn_handoff_status": terminal_loop.get(
+            "previous_live_turn_waiting_handoff_carry_status"
+        ),
+        "input_mode": input_profile.get("input_mode"),
+        "line_editing_refs": _tier_refs(
+            _extract_nested_value(input_profile, "line_editing"),
+            [
+                "backspace",
+                "ctrl_u",
+                "ctrl_d",
+                "ctrl_c",
+                "escape_sequence_policy",
+            ],
+        ),
+        "lineage_ref_count": _count_any(
+            lineage.get("resident_background_lineage_refs")
+        ),
+        "world_contact_handoff_status": world_contact_presence.get(
+            "handoff_status"
+        ),
+        "world_contact_repair_hold_required": bool(
+            world_contact_presence.get("repair_hold_required")
+        ),
+        "birth_readiness_waiting_posture": identity_birth_presence.get(
+            "birth_readiness_waiting_posture"
+        ),
+        "governance_attention_target": idle_strategy.get(
+            "governance_attention_target"
+        ),
+        "governance_attention_reason": idle_strategy.get(
+            "governance_attention_reason"
+        ),
+        "state_boundary": (
+            "resident_state_summary_is_inspection_not_life_speech"
         ),
     }
 
