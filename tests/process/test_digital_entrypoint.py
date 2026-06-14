@@ -257,10 +257,16 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 "self",
                 "signal",
                 "prediction",
+                "consciousness",
                 "perception",
                 "terminal",
                 "life_targets",
                 "contracts",
+                "relationship",
+                "language",
+                "memory",
+                "dream",
+                "growth",
             ]:
                 (paths["state_root"] / relative_dir).mkdir(
                     parents=True,
@@ -302,12 +308,56 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 paths["state_root"] / "self" / "self_model.json",
                 {
                     "schema_version": "self_model_state_v0",
-                    "trait_slow_variables": {"continuity_drive": {"value": 0.7}},
+                    "identity_mode": "anchor_locked",
+                    "self_narrative_status": "seeded",
+                    "trait_slow_variables": {
+                        "continuity_drive": {
+                            "value": 0.7,
+                            "trend": "stabilizing",
+                            "slow_variable_update_mode": (
+                                "background_history_stabilized"
+                            ),
+                            "evidence_refs": [
+                                "runtime/state/relationship/relationship_timeline.json#continuity"
+                            ],
+                        },
+                        "repair_seriousness": {
+                            "value": 0.82,
+                            "trend": "rising",
+                            "slow_variable_update_mode": (
+                                "background_history_recalibration"
+                            ),
+                            "evidence_refs": [
+                                "runtime/state/language/apology_repair_language_trace.json"
+                            ],
+                        },
+                    },
+                    "growth_window_refs": [
+                        "runtime/state/growth/offline_learning_cumulative_profile.json"
+                    ],
                 },
             )
             self._write_json(
                 paths["state_root"] / "body" / "trait_drift_monitor.json",
-                {"schema_version": "trait_drift_monitor_v0"},
+                {
+                    "schema_version": "trait_drift_monitor_v0",
+                    "slow_variable_targets": [
+                        "continuity_drive",
+                        "repair_seriousness",
+                    ],
+                    "drift_direction": "repair_recalibration",
+                    "slow_variable_update_mode_summary": {
+                        "background_history_recalibration": [
+                            "repair_seriousness"
+                        ],
+                        "background_history_stabilized": [
+                            "continuity_drive"
+                        ],
+                    },
+                    "drift_observation_refs": [
+                        "runtime/state/self/self_model.json"
+                    ],
+                },
             )
             self._write_json(
                 paths["state_root"] / "body" / "need_state_vector.json",
@@ -379,7 +429,72 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             )
             self._write_json(
                 paths["state_root"] / "prediction" / "belief_state_frame.json",
-                {"schema_version": "belief_state_frame_v0"},
+                {
+                    "schema_version": "belief_state_frame_v0",
+                    "belief_focus": "relationship_language_uncertainty",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "prediction" / "prediction_error_field.json",
+                {
+                    "schema_version": "prediction_error_field_v0",
+                    "error_events": ["language_style_mismatch"],
+                    "error_count": 1,
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "prediction" / "active_sampling_plan.json",
+                {
+                    "schema_version": "active_sampling_plan_v0",
+                    "selected_route": "clarify",
+                    "stage_effect": "semantic_repair_probe",
+                    "sampling_targets": ["relationship_language_style"],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "consciousness" / "workspace_frame.json",
+                {
+                    "schema_version": "workspace_frame_v0",
+                    "live_turn_focus": "relationship_continuity",
+                    "candidate_explanations": [
+                        {"explanation_id": "rel-focus-1"}
+                    ],
+                    "broadcast_targets": [
+                        "LanguageRelationshipRuntime",
+                        "MemoryRuntime",
+                    ],
+                    "engram_retrieval_refs": [
+                        "runtime/state/memory/engram_index.json#episode-1"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "consciousness" / "broadcast_frame.json",
+                {
+                    "schema_version": "broadcast_frame_v0",
+                    "broadcast_targets": [
+                        "LanguageRelationshipRuntime",
+                        "MemoryRuntime",
+                        "ActionResponsibilityRuntime",
+                    ],
+                    "salience_ranking": [
+                        {"rank": 1, "candidate_ref": "rel-focus-1"}
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "consciousness" / "metacognition_state.json",
+                {
+                    "schema_version": "metacognition_state_v0",
+                    "uncertainty_flags": ["semantic-ambiguity-monitoring"],
+                    "reflection_prompts": [
+                        "当前表达是否会损伤关系连续体"
+                    ],
+                    "broadcast_targets": [
+                        "LanguageRelationshipRuntime",
+                        "MemoryRuntime",
+                    ],
+                },
             )
             self._write_json(
                 paths["state_root"] / "perception" / "visual_observation_frame.json",
@@ -418,6 +533,9 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     "relation_person_profile": {
                         "observed_names": ["何剑宝"],
                     },
+                    "shared_memory_refs": [
+                        "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                    ],
                     "salient_core_memory_refs": [
                         "runtime/state/dream/exit_dream_consolidation_summary.json#memory_tiering.salient_core"
                     ],
@@ -430,6 +548,140 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     "repair_history_refs": [
                         "runtime/state/action/responsibility_loop_state.json#repair"
                     ],
+                    "offline_learning_refs": [
+                        "runtime/state/growth/offline_learning_cumulative_profile.json"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "relationship" / "relationship_subject_graph.json",
+                {
+                    "schema_version": "relationship_subject_graph_v0",
+                    "subjects": [
+                        {
+                            "relationship_id": "rel-v0-0001",
+                            "relation_role": "friend",
+                            "relationship_stage": "shared_continuity",
+                            "relationship_stage_reason": (
+                                "dialogue_and_repair_history_accumulated"
+                            ),
+                            "relationship_stage_evidence_refs": [
+                                "runtime/state/relationship/relationship_timeline.json"
+                            ],
+                            "commitment_refs": [
+                                "runtime/state/relationship/commitment_truth_state.json#open"
+                            ],
+                            "repair_obligation_refs": [
+                                "runtime/state/action/responsibility_loop_state.json#repair"
+                            ],
+                        }
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "relationship" / "relationship_timeline.json",
+                {
+                    "schema_version": "relationship_timeline_v0",
+                    "relationship_stage": "shared_continuity",
+                    "common_ground_states": [
+                        {
+                            "shared_terms": ["共同语言", "修复"],
+                            "open_misalignments": ["language_style"],
+                        }
+                    ],
+                    "trust_trajectories": [
+                        {
+                            "current_trust_state": "repairing",
+                            "repair_commitment_refs": [
+                                "runtime/state/relationship/commitment_truth_state.json#open"
+                            ],
+                        }
+                    ],
+                    "relationship_injury_traces": [
+                        {
+                            "relationship_injury_id": "injury-1",
+                            "current_state": "repair_open",
+                        }
+                    ],
+                    "relationship_continuity_reports": [
+                        {
+                            "continuity_state": "active_repairing_continuity",
+                            "shared_memory_refs": [
+                                "runtime/state/memory/relationship_memory.json#shared"
+                            ],
+                            "commitment_refs": [
+                                "runtime/state/relationship/commitment_truth_state.json#open"
+                            ],
+                            "repair_history_refs": [
+                                "runtime/state/action/responsibility_loop_state.json#repair"
+                            ],
+                        }
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "relationship" / "commitment_truth_state.json",
+                {
+                    "schema_version": "commitment_truth_state_v0",
+                    "truth_status": "active",
+                    "open_commitment_refs": [
+                        "runtime/state/language/commitment_expression_plan.json#commitment"
+                    ],
+                    "repair_required_refs": [
+                        "runtime/state/action/responsibility_loop_state.json#repair"
+                    ],
+                    "repair_language_trace_refs": [
+                        "runtime/state/language/apology_repair_language_trace.json"
+                    ],
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "language" / "commitment_expression_plan.json",
+                {
+                    "schema_version": "commitment_expression_plan_v0",
+                    "semantic_goal": "repair_commitment_shared_language",
+                    "act_type_order": [
+                        "clarify",
+                        "commitment",
+                        "responsibility_repair_modulation",
+                        "followup_commitment",
+                    ],
+                    "repair_pressure": 0.7,
+                    "repair_obligation_refs": [
+                        "runtime/state/action/responsibility_loop_state.json#repair"
+                    ],
+                    "commitment_truth_refs": [
+                        "runtime/state/relationship/commitment_truth_state.json#open"
+                    ],
+                    "queue_e_repair_pressure_level": "elevated",
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "language" / "apology_repair_language_trace.json",
+                {
+                    "schema_version": "apology_repair_language_trace_v0",
+                    "move_type_order": [
+                        "acknowledge_harm",
+                        "take_responsibility",
+                        "apology",
+                        "boundary_repair",
+                        "followup_commitment",
+                    ],
+                    "repair_language_moves": [
+                        {
+                            "move_type": "take_responsibility",
+                            "trigger_refs": [
+                                "runtime/state/action/responsibility_loop_state.json#repair"
+                            ],
+                        }
+                    ],
+                    "relationship_injury_refs": [
+                        "runtime/state/relationship/relationship_timeline.json#injury-1"
+                    ],
+                    "repair_obligation_refs": [
+                        "runtime/state/action/responsibility_loop_state.json#repair"
+                    ],
+                    "queue_e_repair_pressure_level": "elevated",
                 },
             )
             self._write_json(
@@ -684,16 +936,77 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     "phase": "learning_consolidation",
                 },
             )
+            self._write_json(
+                terminal_dir / "background_convergence_summary.json",
+                {
+                    "schema_version": "background_convergence_summary_v0",
+                    "convergence_state": "trait_slow_variable_recalibration",
+                    "convergence_pressure_level": "elevated",
+                    "convergence_attention_target": (
+                        "trait_slow_variable_recalibration"
+                    ),
+                    "relationship_stage_continuity": "stage_continuity",
+                    "trait_convergence_score": 0.74,
+                    "trait_convergence_summary": {
+                        "continuity_drive": {
+                            "latest_band": "stable",
+                            "trait_drift_update_mode": (
+                                "background_history_stabilized"
+                            ),
+                        },
+                        "repair_seriousness": {
+                            "latest_band": "recalibrating",
+                            "trait_drift_update_mode": (
+                                "background_history_recalibration"
+                            ),
+                        },
+                    },
+                    "trait_drift_background_history_recalibration_names": [
+                        "repair_seriousness"
+                    ],
+                    "trait_drift_background_history_stabilized_names": [
+                        "continuity_drive"
+                    ],
+                },
+            )
+            self._write_json(
+                terminal_dir / "background_convergence_history.json",
+                {
+                    "schema_version": "background_convergence_history_v0",
+                    "trend_state": "recent_trait_recalibration",
+                    "history_window_size": 2,
+                    "latest_convergence_state": (
+                        "trait_slow_variable_recalibration"
+                    ),
+                    "latest_convergence_pressure_level": "elevated",
+                    "trait_convergence_unstable_names": ["repair_seriousness"],
+                    "trait_convergence_stable_names": ["continuity_drive"],
+                    "trait_convergence_history_focus": (
+                        "trait_recalibration_required"
+                    ),
+                    "trait_convergence_history_profile": {
+                        "repair_seriousness": {
+                            "latest_band": "recalibrating",
+                            "trend_state": "recent_trait_recalibration",
+                            "dominant_trait_drift_update_mode": (
+                                "background_history_recalibration"
+                            ),
+                        }
+                    },
+                },
+            )
 
             checks = {
                 "/body": "body_grounding_summary_v0",
                 "/emotion": "emotion_regulation_summary_v0",
-                "/personality": "self_model_state_v0",
+                "/personality": "personality_convergence_summary_v0",
                 "/inner": "inner_environment_modulation_summary_v0",
                 "/vision": "visual_observation_frame_v0",
                 "/context": "life_context_frame_v0",
                 "/ability": "birth_readiness_rollup_v0",
                 "/state": "terminal_input_profile_v0",
+                "/relationship": "relationship_continuity_summary_v0",
+                "/cognition": "cognitive_workspace_summary_v0",
             }
             for command, expected_fragment in checks.items():
                 output = StringIO()
@@ -794,6 +1107,64 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn(
                 "dream_residue_wake_review_fact_gate_before_memory_or_action",
                 dream_output.getvalue(),
+            )
+
+            relationship_output = StringIO()
+            with redirect_stdout(relationship_output):
+                relationship_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/relationship",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            cognition_output = StringIO()
+            with redirect_stdout(cognition_output):
+                cognition_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/cognition",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            personality_output = StringIO()
+            with redirect_stdout(personality_output):
+                personality_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/personality",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(relationship_exit)
+            self.assertIsNone(cognition_exit)
+            self.assertIsNone(personality_exit)
+            self.assertIn(
+                "relationship_continuity_summary_v0",
+                relationship_output.getvalue(),
+            )
+            self.assertIn("shared_continuity", relationship_output.getvalue())
+            self.assertIn("active_repairing_continuity", relationship_output.getvalue())
+            self.assertIn(
+                "relationship_state_timeline_commitment_repair_not_service_role_label",
+                relationship_output.getvalue(),
+            )
+            self.assertIn(
+                "cognitive_workspace_summary_v0",
+                cognition_output.getvalue(),
+            )
+            self.assertIn("relationship_continuity", cognition_output.getvalue())
+            self.assertIn("clarify", cognition_output.getvalue())
+            self.assertIn(
+                "workspace_broadcast_metacognition_state_view_not_consciousness_claim",
+                cognition_output.getvalue(),
+            )
+            self.assertIn(
+                "personality_convergence_summary_v0",
+                personality_output.getvalue(),
+            )
+            self.assertIn("repair_seriousness", personality_output.getvalue())
+            self.assertIn("recent_trait_recalibration", personality_output.getvalue())
+            self.assertIn(
+                "personality_slow_variables_convergence_not_prompt_persona_card",
+                personality_output.getvalue(),
             )
 
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())

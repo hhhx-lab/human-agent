@@ -148,7 +148,7 @@ def build_resident_state_inspection(
         )
         payload["inner_environment"] = inner_environment
     elif normalized == "relationship":
-        payload["relationship"] = _collect_files(
+        relationship = _collect_files(
             state_root,
             {
                 "relationship_subject_graph": (
@@ -164,6 +164,10 @@ def build_resident_state_inspection(
                 ),
             },
         )
+        relationship["continuity_summary"] = (
+            _collect_relationship_continuity_summary(relationship)
+        )
+        payload["relationship"] = relationship
     elif normalized == "language":
         language = _collect_files(
             state_root,
@@ -205,7 +209,7 @@ def build_resident_state_inspection(
         )
         payload["language"] = language
     elif normalized == "cognition":
-        payload["cognition"] = _collect_files(
+        cognition = _collect_files(
             state_root,
             {
                 "workspace_frame": "consciousness/workspace_frame.json",
@@ -218,8 +222,12 @@ def build_resident_state_inspection(
                 "state_merge_guard": "memory/state_merge_guard.json",
             },
         )
+        cognition["workspace_summary"] = _collect_cognitive_workspace_summary(
+            cognition
+        )
+        payload["cognition"] = cognition
     elif normalized == "personality":
-        payload["personality"] = _collect_files(
+        personality = _collect_files(
             state_root,
             {
                 "self_model": "self/self_model.json",
@@ -233,6 +241,10 @@ def build_resident_state_inspection(
                 ),
             },
         )
+        personality["convergence_summary"] = (
+            _collect_personality_convergence_summary(personality)
+        )
+        payload["personality"] = personality
     elif normalized == "ability":
         payload["ability"] = _collect_files(
             state_root,
@@ -1237,6 +1249,387 @@ def _collect_language_generation_consumption_summary(
         ),
         "fixed_reply_boundary": (
             "no_code_spoken_template_no_inspection_summary_as_reply"
+        ),
+    }
+
+
+def _collect_relationship_continuity_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    relationship_graph = _extract_compact_value(
+        section.get("relationship_subject_graph", {})
+    )
+    relationship_timeline = _extract_compact_value(
+        section.get("relationship_timeline", {})
+    )
+    commitment_truth = _extract_compact_value(
+        section.get("commitment_truth_state", {})
+    )
+    commitment_expression = _extract_compact_value(
+        section.get("commitment_expression_plan", {})
+    )
+    apology_repair = _extract_compact_value(
+        section.get("apology_repair_language_trace", {})
+    )
+    subjects = relationship_graph.get("subjects")
+    subject = subjects[0] if isinstance(subjects, list) and subjects else {}
+    subject = subject if isinstance(subject, dict) else {}
+    common_ground_states = relationship_timeline.get("common_ground_states")
+    first_common_ground = (
+        common_ground_states[0]
+        if isinstance(common_ground_states, list) and common_ground_states
+        else {}
+    )
+    first_common_ground = (
+        first_common_ground if isinstance(first_common_ground, dict) else {}
+    )
+    trust_trajectories = relationship_timeline.get("trust_trajectories")
+    first_trust = (
+        trust_trajectories[0]
+        if isinstance(trust_trajectories, list) and trust_trajectories
+        else {}
+    )
+    first_trust = first_trust if isinstance(first_trust, dict) else {}
+    continuity_reports = relationship_timeline.get(
+        "relationship_continuity_reports"
+    )
+    first_continuity = (
+        continuity_reports[0]
+        if isinstance(continuity_reports, list) and continuity_reports
+        else {}
+    )
+    first_continuity = (
+        first_continuity if isinstance(first_continuity, dict) else {}
+    )
+    injury_traces = relationship_timeline.get("relationship_injury_traces")
+    longitudinal_gates = relationship_timeline.get("longitudinal_stage_gates")
+    domain_presence = {
+        "relationship_subject_graph": bool(relationship_graph),
+        "relationship_timeline": bool(relationship_timeline),
+        "commitment_truth_state": bool(commitment_truth),
+        "commitment_expression_plan": bool(commitment_expression),
+        "apology_repair_language_trace": bool(apology_repair),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "relationship_continuity_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "relationship_id": subject.get("relationship_id"),
+        "relation_role": subject.get("relation_role"),
+        "relationship_stage": _first_non_empty(
+            subject.get("relationship_stage"),
+            relationship_timeline.get("relationship_stage"),
+            first_continuity.get("relationship_stage"),
+        ),
+        "relationship_stage_reason": subject.get("relationship_stage_reason"),
+        "relationship_stage_evidence_ref_count": _count_any(
+            subject.get("relationship_stage_evidence_refs")
+        ),
+        "shared_terms": _list_refs(first_common_ground.get("shared_terms")),
+        "open_misalignment_count": _count_any(
+            first_common_ground.get("open_misalignments")
+        ),
+        "shared_memory_ref_count": _count_any(
+            first_continuity.get("shared_memory_refs")
+        ),
+        "dialogue_turn_ref_count": _count_any(
+            relationship_timeline.get("dialogue_turn_refs")
+        ),
+        "trust_state": first_trust.get("current_trust_state"),
+        "trust_repair_commitment_ref_count": _count_any(
+            first_trust.get("repair_commitment_refs")
+        ),
+        "injury_trace_count": _count_any(injury_traces),
+        "repair_open_count": sum(
+            1
+            for item in injury_traces
+            if isinstance(item, dict) and item.get("current_state") == "repair_open"
+        )
+        if isinstance(injury_traces, list)
+        else 0,
+        "commitment_truth_status": commitment_truth.get("truth_status")
+        or commitment_truth.get("stage_status"),
+        "open_commitment_ref_count": _count_any(
+            commitment_truth.get("open_commitment_refs")
+        ),
+        "repair_required_ref_count": _count_any(
+            commitment_truth.get("repair_required_refs")
+        ),
+        "commitment_expression_goal": commitment_expression.get("semantic_goal"),
+        "commitment_act_order": _list_refs(
+            commitment_expression.get("act_type_order")
+        ),
+        "commitment_repair_pressure": _first_non_empty(
+            commitment_expression.get("repair_pressure"),
+            commitment_expression.get("queue_e_repair_pressure_level"),
+        ),
+        "repair_move_order": _list_refs(apology_repair.get("move_type_order")),
+        "repair_move_count": _count_any(apology_repair.get("repair_language_moves")),
+        "relationship_injury_ref_count": _count_any(
+            apology_repair.get("relationship_injury_refs")
+        ),
+        "stage_gate_count": _count_any(longitudinal_gates),
+        "relationship_boundary": (
+            "relationship_state_timeline_commitment_repair_not_service_role_label"
+        ),
+    }
+
+
+def _collect_cognitive_workspace_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    workspace = _extract_compact_value(section.get("workspace_frame", {}))
+    broadcast = _extract_compact_value(section.get("broadcast_frame", {}))
+    metacognition = _extract_compact_value(section.get("metacognition_state", {}))
+    belief_state = _extract_compact_value(section.get("belief_state_frame", {}))
+    prediction_error = _extract_compact_value(
+        section.get("prediction_error_field", {})
+    )
+    active_sampling = _extract_compact_value(
+        section.get("active_sampling_plan", {})
+    )
+    memory_write_gate = _extract_compact_value(
+        section.get("memory_write_gate", {})
+    )
+    state_merge_guard = _extract_compact_value(section.get("state_merge_guard", {}))
+    prediction_contents = _extract_nested_value(
+        workspace,
+        "prediction_workspace_contents",
+    )
+    if not prediction_contents:
+        prediction_contents = _extract_nested_value(
+            workspace,
+            "workspace_contents",
+        )
+    body_signal_modulation = _extract_nested_value(
+        memory_write_gate,
+        "body_signal_write_modulation",
+    )
+    domain_presence = {
+        "workspace_frame": bool(workspace),
+        "broadcast_frame": bool(broadcast),
+        "metacognition_state": bool(metacognition),
+        "belief_state_frame": bool(belief_state),
+        "prediction_error_field": bool(prediction_error),
+        "active_sampling_plan": bool(active_sampling),
+        "memory_write_gate": bool(memory_write_gate),
+        "state_merge_guard": bool(state_merge_guard),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "cognitive_workspace_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "workspace_status": workspace.get("status"),
+        "workspace_focus": _first_non_empty(
+            workspace.get("live_turn_focus"),
+            workspace.get("current_focus"),
+            prediction_contents.get("semantic_prediction_focus"),
+            belief_state.get("belief_focus"),
+        ),
+        "candidate_explanation_count": _count_any(
+            workspace.get("candidate_explanations")
+        )
+        or _count_any(prediction_contents.get("candidate_explanations")),
+        "workspace_broadcast_targets": _list_refs(
+            workspace.get("broadcast_targets")
+        ),
+        "broadcast_target_count": _count_any(
+            broadcast.get("broadcast_targets")
+        )
+        or _count_any(workspace.get("broadcast_targets")),
+        "broadcast_targets": _list_refs(
+            broadcast.get("broadcast_targets")
+            or workspace.get("broadcast_targets")
+        ),
+        "salience_rank_count": _count_any(broadcast.get("salience_ranking")),
+        "suppressed_content_ref_count": _count_any(
+            broadcast.get("suppressed_content_refs")
+        ),
+        "metacognitive_uncertainty_flags": _list_refs(
+            metacognition.get("uncertainty_flags")
+        ),
+        "metacognitive_reflection_prompt_count": _count_any(
+            metacognition.get("reflection_prompts")
+        ),
+        "expression_risk_ref_count": _count_any(
+            metacognition.get("expression_risk_refs")
+        ),
+        "relationship_tension_ref_count": _count_any(
+            metacognition.get("relationship_tension_refs")
+        ),
+        "belief_focus": belief_state.get("belief_focus"),
+        "prediction_error_count": _first_non_empty(
+            prediction_error.get("error_count"),
+            _count_any(prediction_error.get("error_events")),
+        ),
+        "prediction_error_events": _list_refs(prediction_error.get("error_events")),
+        "active_sampling_route": active_sampling.get("selected_route"),
+        "active_sampling_stage_effect": active_sampling.get("stage_effect"),
+        "active_sampling_target_count": _count_any(
+            active_sampling.get("sampling_targets")
+        ),
+        "memory_write_gate_policy": memory_write_gate.get("stage_policy"),
+        "memory_write_gate_status": memory_write_gate.get("status"),
+        "memory_write_bias": body_signal_modulation.get("write_bias"),
+        "state_merge_policy": state_merge_guard.get("stage_policy"),
+        "state_merge_route_counts": {
+            "promotion": _count_any(state_merge_guard.get("promotion_routes")),
+            "quarantine": _count_any(state_merge_guard.get("quarantine_routes")),
+            "repair": _count_any(state_merge_guard.get("repair_routes")),
+            "merge": _count_any(state_merge_guard.get("merge_routes")),
+        },
+        "cognition_boundary": (
+            "workspace_broadcast_metacognition_state_view_not_consciousness_claim"
+        ),
+    }
+
+
+def _collect_personality_convergence_summary(
+    section: dict[str, Any]
+) -> dict[str, Any]:
+    self_model = _extract_compact_value(section.get("self_model", {}))
+    autobiographical_stack = _extract_compact_value(
+        section.get("autobiographical_stack", {})
+    )
+    trait_drift = _extract_compact_value(section.get("trait_drift_monitor", {}))
+    background_summary = _extract_compact_value(
+        section.get("background_convergence_summary", {})
+    )
+    background_history = _extract_compact_value(
+        section.get("background_convergence_history", {})
+    )
+    slow_variables = self_model.get("trait_slow_variables")
+    if not isinstance(slow_variables, dict):
+        slow_variables = {}
+    trait_convergence = background_summary.get("trait_convergence_summary")
+    if not isinstance(trait_convergence, dict):
+        trait_convergence = {}
+    history_profile = background_history.get("trait_convergence_history_profile")
+    if not isinstance(history_profile, dict):
+        history_profile = {}
+    update_modes = trait_drift.get("slow_variable_update_mode_summary")
+    if not isinstance(update_modes, dict):
+        update_modes = {}
+    domain_presence = {
+        "self_model": bool(self_model),
+        "autobiographical_stack": bool(autobiographical_stack),
+        "trait_drift_monitor": bool(trait_drift),
+        "background_convergence_summary": bool(background_summary),
+        "background_convergence_history": bool(background_history),
+    }
+    active_domains = [
+        name for name, present in domain_presence.items() if bool(present)
+    ]
+    return {
+        "schema_version": "personality_convergence_summary_v0",
+        "summary_kind": "inspection_only_not_spoken_response",
+        "active_domain_count": len(active_domains),
+        "active_domains": active_domains,
+        "domain_presence": domain_presence,
+        "identity_mode": self_model.get("identity_mode"),
+        "self_narrative_status": self_model.get("self_narrative_status"),
+        "slow_variable_count": len(slow_variables),
+        "slow_variable_names": list(slow_variables.keys())[:12],
+        "slow_variable_values": {
+            name: _tier_refs(
+                payload,
+                [
+                    "value",
+                    "trend",
+                    "update_count",
+                    "last_relationship_stage",
+                    "slow_variable_update_mode",
+                    "background_trait_convergence_history_focus",
+                    "background_trait_convergence_history_role",
+                    "background_trait_convergence_history_latest_band",
+                    "background_trait_convergence_history_trend_state",
+                    "evidence_refs",
+                ],
+            )
+            for name, payload in list(slow_variables.items())[:12]
+            if isinstance(payload, dict)
+        },
+        "autobiographical_anchor_ref_count": _count_any(
+            autobiographical_stack.get("anchor_refs")
+        ),
+        "autobiographical_turn_ref_count": _count_any(
+            autobiographical_stack.get("turn_refs")
+        ),
+        "growth_window_ref_count": _count_any(self_model.get("growth_window_refs")),
+        "trait_drift_direction": trait_drift.get("drift_direction"),
+        "trait_drift_targets": _list_refs(trait_drift.get("slow_variable_targets")),
+        "trait_drift_update_mode_summary": _compact_value(update_modes),
+        "trait_drift_observation_ref_count": _count_any(
+            trait_drift.get("drift_observation_refs")
+        ),
+        "background_convergence_state": background_summary.get(
+            "convergence_state"
+        ),
+        "background_convergence_pressure_level": background_summary.get(
+            "convergence_pressure_level"
+        ),
+        "background_convergence_attention_target": background_summary.get(
+            "convergence_attention_target"
+        ),
+        "relationship_stage_continuity": background_summary.get(
+            "relationship_stage_continuity"
+        )
+        or background_history.get("latest_relationship_stage_continuity"),
+        "trait_convergence_score": background_summary.get(
+            "trait_convergence_score"
+        )
+        or background_history.get("latest_trait_convergence_score"),
+        "trait_convergence_names": list(trait_convergence.keys())[:12],
+        "trait_convergence_recalibration_names": _list_refs(
+            background_summary.get(
+                "trait_drift_background_history_recalibration_names"
+            )
+            or background_history.get(
+                "trait_drift_background_history_recalibration_names"
+            )
+            or background_history.get("trait_convergence_unstable_names")
+        ),
+        "trait_convergence_stable_names": _list_refs(
+            background_summary.get(
+                "trait_drift_background_history_stabilized_names"
+            )
+            or background_history.get(
+                "trait_drift_background_history_stabilized_names"
+            )
+            or background_history.get("trait_convergence_stable_names")
+        ),
+        "background_history_trend_state": background_history.get("trend_state"),
+        "background_history_focus": background_history.get(
+            "trait_convergence_history_focus"
+        ),
+        "background_history_window_size": background_history.get(
+            "history_window_size"
+        ),
+        "trait_history_profile": {
+            name: _tier_refs(
+                payload,
+                [
+                    "latest_band",
+                    "trend_state",
+                    "dominant_trait_drift_update_mode",
+                    "latest_trait_drift_update_mode",
+                ],
+            )
+            for name, payload in list(history_profile.items())[:12]
+            if isinstance(payload, dict)
+        },
+        "personality_boundary": (
+            "personality_slow_variables_convergence_not_prompt_persona_card"
         ),
     }
 
