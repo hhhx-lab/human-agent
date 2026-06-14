@@ -52,6 +52,10 @@ def build_trait_drift_monitor_from_self_model(
     previous_monitor = previous_monitor or {}
     slow_variable_summary = _slow_variable_summary(self_model_state)
     update_mode_summary = _slow_variable_update_mode_summary(slow_variable_summary)
+    growth_self_modification_profile = _growth_self_modification_profile(
+        self_model_state=self_model_state,
+        slow_variable_summary=slow_variable_summary,
+    )
     relationship_subject = _first_subject(relationship_graph)
     background_inertia_weights = [
         payload["background_inertia_weight"]
@@ -86,6 +90,20 @@ def build_trait_drift_monitor_from_self_model(
         "background_history_stabilized_names": _names_for_update_modes(
             update_mode_summary,
             {"background_history_stabilized"},
+        ),
+        "growth_self_modification_observation_profile": growth_self_modification_profile,
+        "growth_self_modification_trait_names": list(
+            growth_self_modification_profile.get("trait_names", [])
+        ),
+        "growth_self_modification_ref_count": growth_self_modification_profile.get(
+            "growth_ref_count",
+            0,
+        ),
+        "growth_self_modification_pressure_level": growth_self_modification_profile.get(
+            "pressure_level"
+        ),
+        "growth_self_modification_boundary": growth_self_modification_profile.get(
+            "boundary"
         ),
         "relationship_stage": relationship_subject.get("relationship_stage"),
         "relationship_stage_reason": relationship_subject.get("relationship_stage_reason"),
@@ -143,6 +161,15 @@ def _slow_variable_summary(self_model_state: dict[str, Any]) -> dict[str, dict[s
                 "background_trait_convergence_history_role",
                 "background_trait_convergence_history_latest_band",
                 "background_trait_convergence_history_trend_state",
+                "growth_self_modification_update_mode",
+                "background_growth_self_modification_pressure_level",
+                "background_growth_self_modification_attention_target",
+                "background_growth_self_modification_waiting_posture",
+                "background_growth_self_modification_boundary",
+                "background_growth_self_modification_active_domain_count",
+                "background_growth_self_modification_growth_pressure_count",
+                "background_growth_self_modification_patch_candidate_count",
+                "background_growth_self_modification_archive_receipt_count",
                 "evidence_refs",
             ]
             if key in payload
@@ -200,6 +227,12 @@ def _drift_direction(slow_variable_summary: dict[str, dict[str, Any]]) -> str:
         return "background_history_stability_hold"
     if "background_history_stabilized" in update_modes:
         return "background_history_stabilized"
+    if "growth_self_modification_rehearsal_hold" in {
+        str(payload.get("growth_self_modification_update_mode"))
+        for payload in slow_variable_summary.values()
+        if payload.get("growth_self_modification_update_mode")
+    }:
+        return "growth_self_modification_reconsolidation_observed"
     trends = {
         str(payload.get("trend"))
         for payload in slow_variable_summary.values()
@@ -226,6 +259,83 @@ def _required_anchor_refs(self_model_state: dict[str, Any]) -> list[str]:
     return _dedupe(refs) or ["runtime/state/life_state.json#self_model.old_self_anchors"]
 
 
+def _growth_self_modification_profile(
+    *,
+    self_model_state: dict[str, Any],
+    slow_variable_summary: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    trait_names: list[str] = []
+    growth_refs: list[str] = []
+    pressure_levels: list[str] = []
+    attention_targets: list[str] = []
+    waiting_postures: list[str] = []
+    boundaries: list[str] = []
+    active_domain_count = 0
+    growth_pressure_count = 0
+    patch_candidate_count = 0
+    archive_receipt_count = 0
+    for name, payload in slow_variable_summary.items():
+        if not payload.get("growth_self_modification_update_mode"):
+            continue
+        trait_names.append(name)
+        growth_refs.extend(_string_list(payload.get("evidence_refs")))
+        pressure_levels.extend(
+            _string_list(payload.get("background_growth_self_modification_pressure_level"))
+        )
+        attention_targets.extend(
+            _string_list(payload.get("background_growth_self_modification_attention_target"))
+        )
+        waiting_postures.extend(
+            _string_list(payload.get("background_growth_self_modification_waiting_posture"))
+        )
+        boundaries.extend(
+            _string_list(payload.get("background_growth_self_modification_boundary"))
+        )
+        active_domain_count = max(
+            active_domain_count,
+            _int_or_zero(
+                payload.get("background_growth_self_modification_active_domain_count")
+            ),
+        )
+        growth_pressure_count = max(
+            growth_pressure_count,
+            _int_or_zero(
+                payload.get("background_growth_self_modification_growth_pressure_count")
+            ),
+        )
+        patch_candidate_count = max(
+            patch_candidate_count,
+            _int_or_zero(
+                payload.get("background_growth_self_modification_patch_candidate_count")
+            ),
+        )
+        archive_receipt_count = max(
+            archive_receipt_count,
+            _int_or_zero(
+                payload.get("background_growth_self_modification_archive_receipt_count")
+            ),
+        )
+    growth_refs = _dedupe(
+        growth_refs + _string_list(self_model_state.get("growth_window_refs"))
+    )
+    return {
+        "schema_version": "growth_self_modification_trait_observation_v0",
+        "trait_names": _dedupe(trait_names),
+        "trait_count": len(_dedupe(trait_names)),
+        "growth_ref_count": len(growth_refs),
+        "growth_refs": growth_refs,
+        "pressure_level": _first(pressure_levels),
+        "attention_target": _first(attention_targets),
+        "waiting_posture": _first(waiting_postures),
+        "boundary": _first(boundaries),
+        "active_domain_count": active_domain_count,
+        "growth_pressure_count": growth_pressure_count,
+        "patch_candidate_count": patch_candidate_count,
+        "archive_receipt_count": archive_receipt_count,
+        "observation_boundary": "structured_trait_growth_evidence_not_spoken_language",
+    }
+
+
 def _int_or_zero(value: Any) -> int:
     try:
         return int(value)
@@ -239,6 +349,11 @@ def _string_list(value: Any) -> list[str]:
     if isinstance(value, list):
         return [item for item in value if isinstance(item, str)]
     return []
+
+
+def _first(items: list[str]) -> str | None:
+    deduped = _dedupe(items)
+    return deduped[0] if deduped else None
 
 
 def _dedupe(items: list[Any]) -> list[str]:

@@ -19136,6 +19136,32 @@ class PersistentDigitalLifeProcessTests(
                 "repair_seriousness",
                 persisted_autobiographical_stack["trait_slow_variable_names"],
             )
+            growth_autobiographical_projection = persisted_autobiographical_stack[
+                "growth_self_modification_projection"
+            ]
+            self.assertEqual(
+                growth_autobiographical_projection["schema_version"],
+                "autobiographical_growth_self_modification_projection_v0",
+            )
+            self.assertEqual(
+                growth_autobiographical_projection["pressure_level"],
+                "present",
+            )
+            self.assertEqual(
+                growth_autobiographical_projection["boundary"],
+                "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite",
+            )
+            self.assertIn(
+                "continuity_drive",
+                growth_autobiographical_projection["trait_names"],
+            )
+            for ref in expected_background_growth_self_modification_refs:
+                self.assertIn(
+                    ref,
+                    persisted_autobiographical_stack[
+                        "growth_self_modification_refs"
+                    ],
+                )
             self.assertIn(
                 "runtime/reports/latest/resumed_external_dialogue_packet.json",
                 persisted_autobiographical_stack["autobiographical_update_refs"],
@@ -19239,6 +19265,37 @@ class PersistentDigitalLifeProcessTests(
                 persisted_life_state["relationship_subjects"][0]["relationship_stage"],
                 "repair_guarded_continuity",
             )
+            growth_life_index = persisted_life_state[
+                "growth_self_modification_index"
+            ]
+            self.assertEqual(
+                growth_life_index["schema_version"],
+                "life_state_growth_self_modification_index_v0",
+            )
+            self.assertEqual(growth_life_index["pressure_level"], "present")
+            self.assertEqual(
+                growth_life_index["attention_target"],
+                "growth_self_modification_archive_replay",
+            )
+            self.assertIn("continuity_drive", growth_life_index["trait_names"])
+            self.assertEqual(
+                growth_life_index["write_boundary"],
+                "life_state_growth_index_not_spoken_language_or_autonomous_code_rewrite",
+            )
+            for ref in expected_background_growth_self_modification_refs:
+                self.assertIn(ref, growth_life_index["growth_refs"])
+                self.assertIn(
+                    ref,
+                    persisted_life_state["memory_index"][
+                        "growth_self_modification_refs"
+                    ],
+                )
+                self.assertIn(
+                    ref,
+                    persisted_life_state["language_state"][
+                        "growth_self_modification_refs"
+                    ],
+                )
             trait_slow_variables = persisted_self_model["trait_slow_variables"]
             self.assertIn("repair_seriousness", trait_slow_variables)
             self.assertIn("continuity_drive", trait_slow_variables)
@@ -19300,6 +19357,20 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/reports/latest/resumed_external_dialogue_packet.json",
                 persisted_trait_drift["drift_observation_refs"],
             )
+            growth_trait_projection = persisted_trait_drift[
+                "growth_self_modification_observation_profile"
+            ]
+            self.assertEqual(
+                growth_trait_projection["schema_version"],
+                "growth_self_modification_trait_observation_v0",
+            )
+            self.assertIn("continuity_drive", growth_trait_projection["trait_names"])
+            self.assertEqual(
+                growth_trait_projection["pressure_level"],
+                "present",
+            )
+            for ref in expected_background_growth_self_modification_refs:
+                self.assertIn(ref, growth_trait_projection["growth_refs"])
             self.assertTrue(persisted_self_model["growth_window_refs"])
             self.assertEqual(
                 dialogue_writeback_bundle["dialogue_event_refs"],
@@ -19337,6 +19408,18 @@ class PersistentDigitalLifeProcessTests(
                 dialogue_writeback_bundle["life_state_writeback_refs"],
             )
             self.assertIn(
+                "runtime/state/life_state.json#growth_self_modification_index",
+                dialogue_writeback_bundle["life_state_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/life_state.json#memory_index.growth_self_modification_refs",
+                dialogue_writeback_bundle["life_state_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/life_state.json#language_state.growth_self_modification_refs",
+                dialogue_writeback_bundle["life_state_writeback_refs"],
+            )
+            self.assertIn(
                 "runtime/state/replay/replay_cue_bundle.json",
                 dialogue_writeback_bundle["replay_cue_refs"],
             )
@@ -19357,6 +19440,8 @@ class PersistentDigitalLifeProcessTests(
                     "runtime/state/self/autobiographical_stack.json#turn_refs",
                     "runtime/state/self/autobiographical_stack.json#live_language_turn_refs",
                     "runtime/state/self/autobiographical_stack.json#relationship_turn_refs",
+                    "runtime/state/self/autobiographical_stack.json#growth_self_modification_projection",
+                    "runtime/state/self/autobiographical_stack.json#growth_self_modification_refs",
                 ],
             )
             self.assertEqual(

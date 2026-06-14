@@ -801,6 +801,22 @@ ResidentBackgroundLineageState.growth_self_modification_presence
 
 机制含义是：成长、自我修改、学习计划和 archive 现在不只作为下一轮语言前材料存在，也能参与关系阶段和人格慢变量的跨唤醒收敛。`continuity_evolution.py` 会解析 `background_growth_self_modification_presence`、refs、state refs、learning plan refs、pressure/count/boundary，并在没有更高优先级的 Queue E 修复或累计离线学习重整时，把第一拍关系阶段推进到 `growth_self_modification_reconsolidation_waiting`；如果 Queue E 修复链更强，则成长余波不抢占关系阶段，但仍写入慢变量 evidence、`background_growth_self_modification_*` 元数据、`growth_self_modification_update_mode=growth_self_modification_rehearsal_hold` 和 `growth_window_refs`。`resident_turn_writeback.py` 也会把已有 `resident_background_lineage_growth_self_modification_*` 扁平字段合并成 continuity evolution 可读的 background profile，避免成长 presence 只停在写回包和恢复包。边界仍然是结构化证据调制：不生成固定回答，不新增 system prompt，不自动改代码，不绕过 shadow / replay / validation / archive，不让成长压力覆盖责任/修复优先链。
 
+当前 ITR-08 第三十一段把第三十段末尾承诺的三个长期载体补成真实代码消费，而不是只在文档链路里写到名字：
+
+```text
+SelfModel.trait_slow_variables[*].growth_self_modification_update_mode
+  -> TraitDriftMonitor.growth_self_modification_observation_profile
+  -> AutobiographicalStack.growth_self_modification_projection
+  -> LifeState.growth_self_modification_index
+  -> LifeState.memory_index.growth_self_modification_refs
+  -> LifeState.language_state.growth_self_modification_refs
+  -> DialogueWritebackBundle.life_state_writeback_refs / autobiographical_writeback_refs
+```
+
+`body/trait_drift.py` 现在会把带有 `growth_self_modification_update_mode` 的人格慢变量压成 `growth_self_modification_trait_observation_v0`，保留 trait names、growth refs、pressure、attention target、waiting posture、archive / patch / pressure counts 与边界；当没有更高优先级的后台历史重校准时，`drift_direction` 会提升为 `growth_self_modification_reconsolidation_observed`。`state_store/autobiographical_stack.py` 会把同一组慢变量、growth refs 和边界写成 `autobiographical_growth_self_modification_projection_v0`，并在存在成长再巩固证据时把 replay priority 提升为 `identity_growth_reconsolidation_first`。`state_store/life_state.py` 新增 `life_state_growth_self_modification_index_v0`，同时把 refs 写入 `memory_index.growth_self_modification_refs` 和 `language_state.growth_self_modification_refs`，使成长证据可以被后续召回和语言前隐性消费追溯。`resident_turn_writeback.py` 的写回包也新增对应 `life_state` 与 `autobiographical_stack` 槽位 refs。
+
+机制含义是：成长、自我修改和 archive 不再只参与 `self_model` 内部慢变量，也已经进入身体人格监控、自传历史和生命状态根。这样后续记忆重构、语言前消费、状态查看和关闭态报告不会只能间接猜测“成长影响过自我”，而能直接从三个长期载体读取同一批结构化 refs。边界仍然是 `structured_trait_growth_evidence_not_spoken_language`、`autobiographical_growth_evidence_not_spoken_language` 与 `life_state_growth_index_not_spoken_language_or_autonomous_code_rewrite`：这一步不生成任何自然语言，不新增 prompt，不自动改代码，只把第 2 点的工程消费链继续压实。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

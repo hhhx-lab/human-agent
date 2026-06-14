@@ -105,6 +105,25 @@ def project_autobiographical_stack_from_live_turn(
                 for name in trait_names
             ]
         )
+        growth_projection = _growth_self_modification_projection(
+            self_model_state=self_model_state,
+            trait_slow_variables=trait_slow_variables,
+        )
+        if growth_projection["growth_ref_count"]:
+            updated["growth_self_modification_projection"] = growth_projection
+            updated["growth_self_modification_refs"] = _dedupe(
+                list(updated.get("growth_self_modification_refs", []))
+                + list(growth_projection["growth_refs"])
+            )
+            updated["growth_self_modification_trait_refs"] = _dedupe(
+                list(updated.get("growth_self_modification_trait_refs", []))
+                + list(growth_projection["trait_refs"])
+            )
+            updated["replay_priority"] = (
+                "identity_growth_reconsolidation_first"
+                if growth_projection["trait_count"]
+                else updated.get("replay_priority", "identity_continuity_first")
+            )
 
     graph_subject = next(
         (
@@ -175,6 +194,72 @@ def _seed_missing_autobiographical_stack(
         "replay_priority": "identity_continuity_first",
         "source_doc_refs": SOURCE_DOC_REFS,
     }
+
+
+def _growth_self_modification_projection(
+    *,
+    self_model_state: dict[str, Any],
+    trait_slow_variables: dict[str, Any],
+) -> dict[str, Any]:
+    trait_names: list[str] = []
+    trait_refs: list[str] = []
+    growth_refs: list[str] = []
+    pressure_levels: list[str] = []
+    attention_targets: list[str] = []
+    waiting_postures: list[str] = []
+    boundaries: list[str] = []
+    for name, payload in trait_slow_variables.items():
+        if not isinstance(payload, dict):
+            continue
+        if not payload.get("growth_self_modification_update_mode"):
+            continue
+        trait_name = str(name)
+        trait_names.append(trait_name)
+        trait_refs.append(
+            f"runtime/state/self/self_model.json#trait_slow_variables.{trait_name}"
+        )
+        growth_refs.extend(_string_list(payload.get("evidence_refs")))
+        pressure_levels.extend(
+            _string_list(payload.get("background_growth_self_modification_pressure_level"))
+        )
+        attention_targets.extend(
+            _string_list(payload.get("background_growth_self_modification_attention_target"))
+        )
+        waiting_postures.extend(
+            _string_list(payload.get("background_growth_self_modification_waiting_posture"))
+        )
+        boundaries.extend(
+            _string_list(payload.get("background_growth_self_modification_boundary"))
+        )
+    growth_refs = _dedupe(
+        growth_refs + _string_list(self_model_state.get("growth_window_refs"))
+    )
+    return {
+        "schema_version": "autobiographical_growth_self_modification_projection_v0",
+        "trait_names": _dedupe(trait_names),
+        "trait_refs": _dedupe(trait_refs),
+        "trait_count": len(_dedupe(trait_names)),
+        "growth_refs": growth_refs,
+        "growth_ref_count": len(growth_refs),
+        "pressure_level": _first(pressure_levels),
+        "attention_target": _first(attention_targets),
+        "waiting_posture": _first(waiting_postures),
+        "boundary": _first(boundaries),
+        "projection_boundary": "autobiographical_growth_evidence_not_spoken_language",
+    }
+
+
+def _string_list(value: Any) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, str)]
+    return []
+
+
+def _first(items: list[str]) -> str | None:
+    deduped = _dedupe(items)
+    return deduped[0] if deduped else None
 
 
 def _dedupe(items: list[str]) -> list[str]:

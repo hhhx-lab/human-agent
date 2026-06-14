@@ -58,6 +58,11 @@ def build_life_state_projection(
         anti_forgetting_refs=replay_refs
         or list((engram_index or {}).get("anti_forgetting_anchor_refs", [])),
     )
+    growth_self_modification_index = _build_growth_self_modification_index(
+        self_model_state=self_model_state,
+        self_model_projection=self_model,
+        background_continuity_profile=background_continuity_profile,
+    )
     memory_retrieval_refs = _dedupe(
         ([memory_retrieval_ref] if memory_retrieval_frame else [])
         + list((memory_retrieval_frame or {}).get("activated_engram_refs", []))
@@ -132,6 +137,7 @@ def build_life_state_projection(
         "memory_index": memory_index,
         "background_continuity_profile": background_continuity_root,
         "dream_records": [],
+        "growth_self_modification_index": growth_self_modification_index,
         "relationship_subjects": [
             {
                 "relationship_id": "rel-v0-0001",
@@ -532,6 +538,21 @@ def project_responsibility_language_continuity(
             anti_forgetting_refs=list(memory_index.get("replay_cues", []))
             or list(updated.get("self_model", {}).get("anti_forgetting_refs", [])),
         )
+        updated["growth_self_modification_index"] = _build_growth_self_modification_index(
+            self_model_state=self_model_state,
+            self_model_projection=updated["self_model"],
+            background_continuity_profile=background_continuity_root,
+        )
+        growth_index = updated["growth_self_modification_index"]
+        if growth_index.get("growth_refs"):
+            memory_index["growth_self_modification_refs"] = _dedupe(
+                list(memory_index.get("growth_self_modification_refs", []))
+                + list(growth_index.get("growth_refs", []))
+            )
+            language_state["growth_self_modification_refs"] = _dedupe(
+                list(language_state.get("growth_self_modification_refs", []))
+                + list(growth_index.get("growth_refs", []))
+            )
     if background_continuity_root:
         updated["background_continuity_profile"] = background_continuity_root
     return updated
@@ -675,6 +696,15 @@ def _build_background_continuity_root(
         "background_autonomous_activity_kind_counts",
         "background_resident_autonomous_activity_state_refs",
         "background_resident_autonomous_activity_ref_set",
+        "background_growth_self_modification_presence",
+        "background_growth_self_modification_profile",
+        "background_growth_self_modification_ref_set",
+        "background_growth_self_modification_state_refs",
+        "background_growth_self_modification_learning_plan_refs",
+        "background_growth_self_modification_pressure_level",
+        "background_growth_self_modification_attention_target",
+        "background_growth_self_modification_waiting_posture",
+        "background_growth_self_modification_boundary",
         "background_live_language_turn_refs",
         "background_last_live_semantic_focus",
         "background_live_language_presence_profile",
@@ -722,6 +752,136 @@ def _build_background_continuity_root(
         if source_key in profile and profile[source_key] not in (None, "", [], {}):
             root[alias_key] = profile[source_key]
     return root
+
+
+def _build_growth_self_modification_index(
+    *,
+    self_model_state: dict[str, Any],
+    self_model_projection: dict[str, Any],
+    background_continuity_profile: dict[str, Any] | None,
+) -> dict[str, Any]:
+    trait_slow_variables = self_model_state.get("trait_slow_variables", {})
+    if not isinstance(trait_slow_variables, dict):
+        trait_slow_variables = {}
+    trait_names: list[str] = []
+    trait_refs: list[str] = []
+    growth_refs: list[str] = []
+    pressure_levels: list[str] = []
+    attention_targets: list[str] = []
+    waiting_postures: list[str] = []
+    boundaries: list[str] = []
+    active_domain_count = 0
+    growth_pressure_count = 0
+    patch_candidate_count = 0
+    archive_receipt_count = 0
+    for name, payload in trait_slow_variables.items():
+        if not isinstance(payload, dict):
+            continue
+        if not payload.get("growth_self_modification_update_mode"):
+            continue
+        trait_name = str(name)
+        trait_names.append(trait_name)
+        trait_refs.append(
+            f"runtime/state/self/self_model.json#trait_slow_variables.{trait_name}"
+        )
+        growth_refs.extend(_string_list(payload.get("evidence_refs")))
+        pressure_levels.extend(
+            _string_list(payload.get("background_growth_self_modification_pressure_level"))
+        )
+        attention_targets.extend(
+            _string_list(payload.get("background_growth_self_modification_attention_target"))
+        )
+        waiting_postures.extend(
+            _string_list(payload.get("background_growth_self_modification_waiting_posture"))
+        )
+        boundaries.extend(
+            _string_list(payload.get("background_growth_self_modification_boundary"))
+        )
+        active_domain_count = max(
+            active_domain_count,
+            _int_or_zero(
+                payload.get("background_growth_self_modification_active_domain_count")
+            ),
+        )
+        growth_pressure_count = max(
+            growth_pressure_count,
+            _int_or_zero(
+                payload.get("background_growth_self_modification_growth_pressure_count")
+            ),
+        )
+        patch_candidate_count = max(
+            patch_candidate_count,
+            _int_or_zero(
+                payload.get("background_growth_self_modification_patch_candidate_count")
+            ),
+        )
+        archive_receipt_count = max(
+            archive_receipt_count,
+            _int_or_zero(
+                payload.get("background_growth_self_modification_archive_receipt_count")
+            ),
+        )
+    background_continuity_profile = background_continuity_profile or {}
+    growth_refs = _dedupe(
+        growth_refs
+        + _string_list(self_model_state.get("growth_window_refs"))
+        + _string_list(self_model_projection.get("growth_windows"))
+        + _string_list(
+            background_continuity_profile.get("background_growth_self_modification_ref_set")
+        )
+        + _string_list(
+            background_continuity_profile.get("background_growth_self_modification_state_refs")
+        )
+    )
+    return {
+        "schema_version": "life_state_growth_self_modification_index_v0",
+        "trait_names": _dedupe(trait_names),
+        "trait_refs": _dedupe(trait_refs),
+        "trait_count": len(_dedupe(trait_names)),
+        "growth_refs": growth_refs,
+        "growth_ref_count": len(growth_refs),
+        "pressure_level": _first(pressure_levels)
+        or background_continuity_profile.get(
+            "background_growth_self_modification_pressure_level"
+        ),
+        "attention_target": _first(attention_targets)
+        or background_continuity_profile.get(
+            "background_growth_self_modification_attention_target"
+        ),
+        "waiting_posture": _first(waiting_postures)
+        or background_continuity_profile.get(
+            "background_growth_self_modification_waiting_posture"
+        ),
+        "boundary": _first(boundaries)
+        or background_continuity_profile.get(
+            "background_growth_self_modification_boundary"
+        ),
+        "active_domain_count": active_domain_count,
+        "growth_pressure_count": growth_pressure_count,
+        "patch_candidate_count": patch_candidate_count,
+        "archive_receipt_count": archive_receipt_count,
+        "write_boundary": "life_state_growth_index_not_spoken_language_or_autonomous_code_rewrite",
+    }
+
+
+def _string_list(value: Any) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, str)]
+    return []
+
+
+def _int_or_zero(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _first(items: list[str]) -> str | None:
+    deduped = _dedupe(items)
+    return deduped[0] if deduped else None
 
 
 def _dedupe(items: list[str]) -> list[str]:

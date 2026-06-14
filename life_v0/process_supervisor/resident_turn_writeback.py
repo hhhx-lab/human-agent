@@ -666,6 +666,9 @@ def write_resident_turn_writeback(
             LIFE_STATE_LANGUAGE_OFFLINE_REF,
             LIFE_STATE_RELATIONSHIP_SUBJECTS_REF,
             LIFE_STATE_MEMORY_RETRIEVAL_REF,
+            "runtime/state/life_state.json#growth_self_modification_index",
+            "runtime/state/life_state.json#memory_index.growth_self_modification_refs",
+            "runtime/state/life_state.json#language_state.growth_self_modification_refs",
         ],
         engram_index_writeback_refs=[
             ENGRAM_INDEX_REF,
@@ -679,6 +682,8 @@ def write_resident_turn_writeback(
             AUTOBIOGRAPHICAL_STACK_TURN_REF,
             AUTOBIOGRAPHICAL_STACK_LIVE_LANGUAGE_REF,
             AUTOBIOGRAPHICAL_STACK_RELATIONSHIP_REF,
+            "runtime/state/self/autobiographical_stack.json#growth_self_modification_projection",
+            "runtime/state/self/autobiographical_stack.json#growth_self_modification_refs",
         ],
         brain_graph_writeback_refs=[BRAIN_GRAPH_REF],
         network_state_writeback_refs=[NETWORK_STATE_REF],
