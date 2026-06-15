@@ -19486,10 +19486,11 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/body/body_resource_budget.json",
                 "runtime/state/body/core_affect_vector.json",
             ]
-            expected_consciousness_write_context_refs = [
+            expected_consciousness_write_context_core_refs = [
                 "runtime/state/consciousness/workspace_frame.json",
                 "runtime/state/consciousness/broadcast_frame.json",
                 "runtime/state/consciousness/metacognition_state.json",
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
             ]
             expected_heartbeat_cadence_refs = [
                 "runtime/state/growth/relationship_learning_plan.json",
@@ -19643,10 +19644,10 @@ class PersistentDigitalLifeProcessTests(
                     "defer_low_salience_write_until_recovery"
                 ],
                 "consciousness_write_context_refs": (
-                    expected_consciousness_write_context_refs
+                    expected_consciousness_write_context_core_refs
                 ),
                 "consciousness_write_context_ref_count": len(
-                    expected_consciousness_write_context_refs
+                    expected_consciousness_write_context_core_refs
                 ),
                 "consciousness_write_context_workspace_candidate_count": 2,
                 "consciousness_write_context_broadcast_target_count": 3,
@@ -19903,6 +19904,22 @@ class PersistentDigitalLifeProcessTests(
             persisted_self_model = self._read_json(self_dir / "self_model.json")
             persisted_trait_drift = self._read_json(body_dir / "trait_drift_monitor.json")
             persisted_life_state = self._read_json(runtime_root / "state" / "life_state.json")
+            consciousness_dir = runtime_root / "state" / "consciousness"
+            persisted_broadcast_frame = self._read_json(
+                consciousness_dir / "broadcast_frame.json"
+            )
+            persisted_metacognition_state = self._read_json(
+                consciousness_dir / "metacognition_state.json"
+            )
+            persisted_consciousness_probe = self._read_json(
+                consciousness_dir / "consciousness_probe_bundle.json"
+            )
+            persisted_memory_write_gate = self._read_json(
+                memory_dir / "memory_write_gate.json"
+            )
+            persisted_responsibility_loop = self._read_json(
+                action_dir / "responsibility_loop_state.json"
+            )
             dialogue_writeback_bundle = self._read_json(
                 reports_dir / "dialogue_writeback_bundle.json"
             )
@@ -19945,6 +19962,33 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(
                 persisted_terminal_loop["last_turn_mode"],
                 "resumed_external_dialogue_loop",
+            )
+            self.assertTrue(persisted_terminal_loop["live_consciousness_chain_refreshed"])
+            self.assertEqual(
+                persisted_terminal_loop["live_consciousness_chain_boundary"],
+                "live_consciousness_chain_structured_evidence_not_spoken_language",
+            )
+            self.assertEqual(
+                persisted_broadcast_frame["live_turn_focus"],
+                "repair_commitment_shared_language",
+            )
+            self.assertIn(
+                "live_turn_broadcast_context_present",
+                persisted_consciousness_probe["reportability_flags"],
+            )
+            self.assertIn(
+                "consciousness_write_context",
+                persisted_memory_write_gate,
+            )
+            self.assertIn(
+                "runtime/state/consciousness/consciousness_probe_bundle.json",
+                persisted_memory_write_gate["consciousness_write_context"]["ref_set"],
+            )
+            self.assertEqual(
+                persisted_responsibility_loop["consciousness_context_profile"][
+                    "schema_version"
+                ],
+                "responsibility_consciousness_context_profile_v0",
             )
             self.assertEqual(
                 persisted_relationship_timeline["dialogue_turn_refs"],
@@ -20568,23 +20612,36 @@ class PersistentDigitalLifeProcessTests(
                 ],
                 ["defer_low_salience_write_until_recovery"],
             )
-            self.assertEqual(
-                dialogue_writeback_bundle[
-                    "resident_background_lineage_consciousness_write_context_refs"
-                ],
-                expected_consciousness_write_context_refs,
+            live_consciousness_write_context_refs = dialogue_writeback_bundle[
+                "resident_background_lineage_consciousness_write_context_refs"
+            ]
+            for ref in expected_consciousness_write_context_core_refs:
+                self.assertIn(ref, live_consciousness_write_context_refs)
+            self.assertGreater(
+                len(live_consciousness_write_context_refs),
+                len(expected_consciousness_write_context_core_refs) - 1,
             )
             self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_consciousness_write_context_boundary"
+                ],
+                "memory_consciousness_write_context_not_spoken_language",
+            )
+            self.assertIn(
                 dialogue_writeback_bundle[
                     "resident_background_lineage_consciousness_write_context_bias"
                 ],
-                "prefer_reportable_workspace_candidates",
+                {
+                    "reportable_workspace_context",
+                    "metacognitive_uncertainty_guarded",
+                    "prefer_reportable_workspace_candidates",
+                },
             )
-            self.assertEqual(
+            self.assertIn(
+                "raise_write_threshold_for_uncertainty",
                 dialogue_writeback_bundle[
                     "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
                 ],
-                ["prioritize_workspace_reportability_before_write"],
             )
             self.assertEqual(
                 dialogue_writeback_bundle["live_language_turn_refs"],
@@ -20614,7 +20671,7 @@ class PersistentDigitalLifeProcessTests(
                     ref,
                     dialogue_writeback_bundle["resident_background_lineage_refs"],
                 )
-            for ref in expected_consciousness_write_context_refs:
+            for ref in expected_consciousness_write_context_core_refs:
                 self.assertIn(
                     ref,
                     dialogue_writeback_bundle["resident_background_lineage_refs"],

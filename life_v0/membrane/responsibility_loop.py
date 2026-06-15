@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 
@@ -278,6 +279,58 @@ def build_responsibility_loop_state(
     }
 
 
+def project_responsibility_loop_with_consciousness_context(
+    *,
+    responsibility_loop_state: dict[str, Any],
+    generated_at: str,
+    workspace_frame: dict[str, Any],
+    broadcast_frame: dict[str, Any],
+    metacognition_state: dict[str, Any],
+    consciousness_probe_bundle: dict[str, Any],
+    live_turn_focus: str | None = None,
+) -> dict[str, Any]:
+    if not responsibility_loop_state:
+        return {}
+    updated = json.loads(json.dumps(responsibility_loop_state))
+    consciousness_context_profile = _consciousness_context_profile(
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        consciousness_probe_bundle=consciousness_probe_bundle,
+    )
+    consciousness_context_refs = list(consciousness_context_profile.get("ref_set", []))
+    profile_ref = (
+        "runtime/state/action/responsibility_loop_state.json#consciousness_context_profile"
+    )
+
+    updated["generated_at"] = generated_at
+    updated["consciousness_context_profile"] = consciousness_context_profile
+    updated["consciousness_context_refs"] = consciousness_context_refs
+    updated["consciousness_context_profile_ref"] = profile_ref
+    if live_turn_focus:
+        updated["live_turn_focus"] = live_turn_focus
+    updated["last_projected_from_live_turn_ref"] = broadcast_frame.get(
+        "last_projected_from_live_turn_ref"
+    )
+    updated["consciousness_context_boundary"] = (
+        "responsibility_consciousness_context_not_spoken_language"
+    )
+
+    post_action_audit_refs = _dedupe(
+        list(updated.get("post_action_audit_refs", [])) + consciousness_context_refs
+    )
+    if post_action_audit_refs:
+        updated["post_action_audit_refs"] = post_action_audit_refs
+
+    for event in updated.get("responsibility_attribution_events", []):
+        if not isinstance(event, dict):
+            continue
+        event["consciousness_context_profile_ref"] = profile_ref
+        if consciousness_context_profile.get("reportability_flags"):
+            event["knowledge_available"] = "reportable_partial"
+    return updated
+
+
 def _consciousness_context_profile(
     *,
     workspace_frame: dict[str, Any],
@@ -366,3 +419,11 @@ def check_responsibility_loop_state(state: dict[str, Any]) -> list[str]:
     if "docs/real—live0/02_brain_network_and_workspace.md" not in state.get("source_doc_refs", []):
         reasons.append("responsibility_loop_gate missing workspace mechanism doc")
     return reasons
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(str(item))
+    return result

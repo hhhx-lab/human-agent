@@ -481,6 +481,124 @@ class NeuralLifeCoreTests(unittest.TestCase):
             "relationship_repair_recall",
         )
 
+    def test_live_turn_refreshes_consciousness_probe_memory_gate_and_responsibility_loop(self):
+        from life_v0.life_targets.consciousness_probes import (
+            project_consciousness_probe_bundle_from_live_turn,
+        )
+        from life_v0.membrane.responsibility_loop import (
+            project_responsibility_loop_with_consciousness_context,
+        )
+        from life_v0.neural_core.broadcast import project_broadcast_frame_from_live_turn
+        from life_v0.neural_core.metacognition import project_metacognition_state_from_live_turn
+        from life_v0.state_store.memory_write_gate import (
+            project_memory_write_gate_with_consciousness_context,
+        )
+
+        generated_at = "2026-06-15T12:00:00+00:00"
+        workspace_frame = {
+            "schema_version": "workspace_frame_v0",
+            "candidate_explanations": [
+                {"explanation_id": "exp-1", "focus": "repair_commitment"},
+                {"explanation_id": "exp-2", "focus": "relationship_continuity"},
+            ],
+            "broadcast_targets": [
+                "LanguageRelationshipRuntime",
+                "MemoryEngramRuntime",
+            ],
+            "engram_retrieval_refs": ["runtime/state/memory/engram_index.json#cue-1"],
+        }
+        broadcast = project_broadcast_frame_from_live_turn(
+            broadcast_frame={},
+            generated_at=generated_at,
+            workspace_frame=workspace_frame,
+            run_id="live-turn-downstream",
+            live_dialogue_turn_refs=["runtime/state/language/dialogue_turn_log.jsonl#turn-1"],
+            live_turn_focus="repair_commitment_shared_language",
+        )
+        metacognition = project_metacognition_state_from_live_turn(
+            metacognition_state={},
+            generated_at=generated_at,
+            broadcast_frame=broadcast,
+            workspace_frame=workspace_frame,
+            run_id="live-turn-downstream",
+            memory_retrieval_frame={
+                "reconstruction_focus": "relationship_repair_recall",
+                "blocked_or_quarantined_refs": ["quarantine-1"],
+            },
+            expression_monitor_state={"delay_or_release_decision": "delay_for_clarification"},
+            live_turn_focus="repair_commitment_shared_language",
+        )
+        consciousness_probe = project_consciousness_probe_bundle_from_live_turn(
+            consciousness_probe_bundle={},
+            generated_at=generated_at,
+            workspace_frame=workspace_frame,
+            broadcast_frame=broadcast,
+            metacognition_state=metacognition,
+            expression_plan={"semantic_goal": "repair_commitment_shared_language"},
+            commitment_truth_state={
+                "open_commitment_refs": ["commitment-ref-01"],
+                "repair_required_refs": ["repair-001"],
+            },
+            run_id="live-turn-downstream",
+            live_language_turn_refs=[
+                "runtime/state/language/expression_plan.json",
+            ],
+            live_dialogue_turn_refs=[
+                "runtime/state/language/dialogue_turn_log.jsonl#turn-1"
+            ],
+            live_turn_focus="repair_commitment_shared_language",
+        )
+        memory_write_gate = project_memory_write_gate_with_consciousness_context(
+            memory_write_gate={
+                "schema_version": "memory_write_gate_v0",
+                "stage_policy": "write_guarded_candidate_then_validate",
+            },
+            workspace_frame=workspace_frame,
+            broadcast_frame=broadcast,
+            metacognition_state=metacognition,
+            consciousness_probe_bundle=consciousness_probe,
+        )
+        responsibility_loop = project_responsibility_loop_with_consciousness_context(
+            responsibility_loop_state={
+                "schema_version": "responsibility_loop_state_v0",
+                "responsibility_attribution_events": [
+                    {"responsibility_event_id": "responsibility-live-0001"}
+                ],
+            },
+            generated_at=generated_at,
+            workspace_frame=workspace_frame,
+            broadcast_frame=broadcast,
+            metacognition_state=metacognition,
+            consciousness_probe_bundle=consciousness_probe,
+            live_turn_focus="repair_commitment_shared_language",
+        )
+
+        self.assertIn(
+            "live_turn_broadcast_context_present",
+            consciousness_probe["reportability_flags"],
+        )
+        self.assertEqual(
+            consciousness_probe["probe_boundary"],
+            "consciousness_probe_live_turn_evidence_not_spoken_language",
+        )
+        context = memory_write_gate["consciousness_write_context"]
+        self.assertEqual(context["workspace_candidate_count"], 2)
+        self.assertEqual(context["broadcast_target_count"], 2)
+        self.assertIn(
+            "runtime/state/consciousness/consciousness_probe_bundle.json",
+            context["ref_set"],
+        )
+        self.assertEqual(
+            responsibility_loop["consciousness_context_profile"]["broadcast_target_count"],
+            2,
+        )
+        self.assertEqual(
+            responsibility_loop["responsibility_attribution_events"][0][
+                "knowledge_available"
+            ],
+            "reportable_partial",
+        )
+
     def _read_json(self, path: Path):
         with path.open("r", encoding="utf-8") as handle:
             return json.load(handle)

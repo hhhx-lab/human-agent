@@ -6,6 +6,12 @@ from pathlib import Path
 from typing import Any, Callable
 
 from ..body.trait_drift import build_trait_drift_monitor_from_self_model
+from ..life_targets.consciousness_probes import (
+    project_consciousness_probe_bundle_from_live_turn,
+)
+from ..membrane.responsibility_loop import (
+    project_responsibility_loop_with_consciousness_context,
+)
 from ..growth.offline_learning_profile import (
     BELIEF_LEARNING_PLAN_REF,
     LANGUAGE_LEARNING_PLAN_REF,
@@ -32,6 +38,9 @@ from ..state_store.memory_retrieval import (
     project_memory_retrieval_from_live_turn,
 )
 from ..state_store.relationship_memory import project_relationship_memory
+from ..state_store.memory_write_gate import (
+    project_memory_write_gate_with_consciousness_context,
+)
 from ..state_store.state_merge_guard import (
     project_state_merge_guard_with_relationship_memory,
 )
@@ -93,6 +102,32 @@ BRAIN_GRAPH_REF = "runtime/state/neural_life_core/brain_graph.json"
 NETWORK_STATE_REF = "runtime/state/neural_life_core/network_state.json"
 PREDICTION_WORKSPACE_REF = "runtime/state/prediction/prediction_workspace_frame.json"
 WORKSPACE_FRAME_REF = "runtime/state/consciousness/workspace_frame.json"
+BROADCAST_FRAME_REF = "runtime/state/consciousness/broadcast_frame.json"
+METACOGNITION_STATE_REF = "runtime/state/consciousness/metacognition_state.json"
+CONSCIOUSNESS_PROBE_REF = "runtime/state/consciousness/consciousness_probe_bundle.json"
+MEMORY_WRITE_GATE_REF = "runtime/state/memory/memory_write_gate.json"
+MEMORY_WRITE_GATE_CONSCIOUSNESS_CONTEXT_REF = (
+    "runtime/state/memory/memory_write_gate.json#consciousness_write_context"
+)
+RESPONSIBILITY_LOOP_STATE_REF = "runtime/state/action/responsibility_loop_state.json"
+CONSCIOUSNESS_CHAIN_WRITEBACK_REFS = [
+    WORKSPACE_FRAME_REF,
+    BROADCAST_FRAME_REF,
+    METACOGNITION_STATE_REF,
+    CONSCIOUSNESS_PROBE_REF,
+    MEMORY_WRITE_GATE_CONSCIOUSNESS_CONTEXT_REF,
+    f"{RESPONSIBILITY_LOOP_STATE_REF}#consciousness_context_profile",
+]
+_LIVE_CONSCIOUSNESS_LINEAGE_FIELD_KEYS = (
+    "resident_background_lineage_consciousness_write_context_refs",
+    "resident_background_lineage_consciousness_write_context_bias",
+    "resident_background_lineage_consciousness_write_context_ref_count",
+    "resident_background_lineage_consciousness_write_context_workspace_candidate_count",
+    "resident_background_lineage_consciousness_write_context_broadcast_target_count",
+    "resident_background_lineage_consciousness_write_context_reportability_flag_count",
+    "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments",
+    "resident_background_lineage_consciousness_write_context_boundary",
+)
 
 
 @dataclass(frozen=True)
@@ -396,7 +431,23 @@ def write_resident_turn_writeback(
         network_state=network_state,
         body_resource_budget=None,
         write_json=write_json,
+        dialogue_turn_refs=[external_turn_ref, life_turn_ref],
     )
+    effective_memory_write_gate = memory_write_gate
+    live_consciousness_chain_profile: dict[str, Any] = {}
+    if continuity_refresh:
+        effective_memory_write_gate = (
+            continuity_refresh.get("memory_write_gate") or memory_write_gate
+        )
+        live_consciousness_chain_profile = _live_consciousness_chain_profile(
+            continuity_refresh
+        )
+        if live_consciousness_chain_profile:
+            updated_terminal_life_loop_state.update(live_consciousness_chain_profile)
+            write_json(
+                terminal_dir / "terminal_life_loop_state.json",
+                updated_terminal_life_loop_state,
+            )
 
     replay_cue_refs = ["runtime/state/life_state.json#memory_index.replay_cues"]
     if replay_cue_bundle_ref:
@@ -604,12 +655,12 @@ def write_resident_turn_writeback(
         + queue_e_world_contact_handoff_refs
     )
     prediction_write_gate_payload = build_prediction_write_gate_payload(
-        terminal_life_loop_state=terminal_life_loop_state,
+        terminal_life_loop_state=updated_terminal_life_loop_state,
         signal_media_runtime=signal_media_runtime,
         belief_state=belief_state,
         prediction_error_field=prediction_error_field,
         active_sampling_plan=active_sampling_plan,
-        memory_write_gate=memory_write_gate,
+        memory_write_gate=effective_memory_write_gate,
         state_merge_guard=state_merge_guard,
         signal_media_runtime_ref=signal_media_runtime_ref,
         belief_state_ref=belief_state_ref,
@@ -667,38 +718,63 @@ def write_resident_turn_writeback(
             resident_background_lineage_refs
             + resident_background_lineage_body_signal_refs
         )
-    resident_background_lineage_consciousness_write_context_refs = _dedupe_refs(
-        list(
+    if live_consciousness_chain_profile:
+        resident_background_lineage_consciousness_write_context_refs = _dedupe_refs(
+            list(
+                prediction_write_gate_payload.get("consciousness_write_context_refs")
+                or []
+            )
+            or _string_list(
+                live_consciousness_chain_profile.get("consciousness_write_context_refs")
+            )
+        )
+        resident_background_lineage_consciousness_write_context_bias = (
+            prediction_write_gate_payload.get("consciousness_write_context_bias")
+            or live_consciousness_chain_profile.get("consciousness_write_context_bias")
+        )
+        resident_background_lineage_consciousness_write_context_candidate_gate_adjustments = (
+            _dedupe_refs(
+                list(
+                    prediction_write_gate_payload.get(
+                        "consciousness_write_context_candidate_gate_adjustments"
+                    )
+                    or []
+                )
+            )
+        )
+    else:
+        resident_background_lineage_consciousness_write_context_refs = _dedupe_refs(
+            list(
+                resident_background_lineage_payload.get(
+                    "resident_background_lineage_consciousness_write_context_refs"
+                )
+                or []
+            )
+            + list(
+                prediction_write_gate_payload.get("consciousness_write_context_refs")
+                or []
+            )
+        )
+        resident_background_lineage_consciousness_write_context_bias = (
             resident_background_lineage_payload.get(
-                "resident_background_lineage_consciousness_write_context_refs"
+                "resident_background_lineage_consciousness_write_context_bias"
             )
-            or []
+            or prediction_write_gate_payload.get("consciousness_write_context_bias")
         )
-        + list(
-            prediction_write_gate_payload.get("consciousness_write_context_refs")
-            or []
-        )
-    )
-    resident_background_lineage_consciousness_write_context_bias = (
-        resident_background_lineage_payload.get(
-            "resident_background_lineage_consciousness_write_context_bias"
-        )
-        or prediction_write_gate_payload.get("consciousness_write_context_bias")
-    )
-    resident_background_lineage_consciousness_write_context_candidate_gate_adjustments = _dedupe_refs(
-        list(
-            resident_background_lineage_payload.get(
-                "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
+        resident_background_lineage_consciousness_write_context_candidate_gate_adjustments = _dedupe_refs(
+            list(
+                resident_background_lineage_payload.get(
+                    "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
+                )
+                or []
             )
-            or []
-        )
-        + list(
-            prediction_write_gate_payload.get(
-                "consciousness_write_context_candidate_gate_adjustments"
+            + list(
+                prediction_write_gate_payload.get(
+                    "consciousness_write_context_candidate_gate_adjustments"
+                )
+                or []
             )
-            or []
         )
-    )
     if resident_background_lineage_consciousness_write_context_refs:
         resident_background_lineage_refs = _dedupe_refs(
             resident_background_lineage_refs
@@ -765,7 +841,7 @@ def write_resident_turn_writeback(
         ],
         brain_graph_writeback_refs=[BRAIN_GRAPH_REF],
         network_state_writeback_refs=[NETWORK_STATE_REF],
-        workspace_frame_writeback_refs=[WORKSPACE_FRAME_REF],
+        workspace_frame_writeback_refs=CONSCIOUSNESS_CHAIN_WRITEBACK_REFS,
         prediction_workspace_writeback_refs=[PREDICTION_WORKSPACE_REF],
         memory_retrieval_writeback_refs=memory_retrieval_ref_set,
         replay_cue_refs=replay_cue_refs,
@@ -1116,13 +1192,15 @@ def write_resident_turn_writeback(
             }
         )
     if resident_background_lineage_payload:
-        resumed_dialogue_packet.update(
-            {
-                key: value
-                for key, value in resident_background_lineage_payload.items()
-                if key != "resident_background_lineage_state"
-            }
-        )
+        lineage_packet_update = {
+            key: value
+            for key, value in resident_background_lineage_payload.items()
+            if key != "resident_background_lineage_state"
+        }
+        if live_consciousness_chain_profile:
+            for stale_key in _LIVE_CONSCIOUSNESS_LINEAGE_FIELD_KEYS:
+                lineage_packet_update.pop(stale_key, None)
+        resumed_dialogue_packet.update(lineage_packet_update)
     if offline_learning_cumulative_payload:
         resumed_dialogue_packet.update(
             {
@@ -1175,6 +1253,12 @@ def write_resident_turn_writeback(
             resumed_dialogue_packet,
             prediction_write_gate_payload,
         )
+        if live_consciousness_chain_profile:
+            _apply_live_consciousness_lineage_fields(
+                resumed_dialogue_packet,
+                prediction_write_gate_payload=prediction_write_gate_payload,
+                live_consciousness_chain_profile=live_consciousness_chain_profile,
+            )
     if continuity_refresh is not None:
         resumed_dialogue_packet["relationship_timeline_ref"] = RELATIONSHIP_TIMELINE_REF
         resumed_dialogue_packet["commitment_expression_plan_ref"] = COMMITMENT_EXPRESSION_PLAN_REF
@@ -1184,6 +1268,12 @@ def write_resident_turn_writeback(
         resumed_dialogue_packet["brain_graph_ref"] = BRAIN_GRAPH_REF
         resumed_dialogue_packet["network_state_ref"] = NETWORK_STATE_REF
         resumed_dialogue_packet["workspace_frame_ref"] = WORKSPACE_FRAME_REF
+        resumed_dialogue_packet["broadcast_frame_ref"] = BROADCAST_FRAME_REF
+        resumed_dialogue_packet["metacognition_ref"] = METACOGNITION_STATE_REF
+        resumed_dialogue_packet["consciousness_probe_ref"] = CONSCIOUSNESS_PROBE_REF
+        resumed_dialogue_packet["memory_write_gate_consciousness_context_ref"] = (
+            MEMORY_WRITE_GATE_CONSCIOUSNESS_CONTEXT_REF
+        )
         resumed_dialogue_packet["prediction_workspace_ref"] = PREDICTION_WORKSPACE_REF
         resumed_dialogue_packet["engram_index_ref"] = ENGRAM_INDEX_REF
         resumed_dialogue_packet["autobiographical_stack_ref"] = (
@@ -1226,6 +1316,7 @@ def _refresh_long_horizon_continuity(
     brain_graph: dict[str, Any] | None = None,
     network_state: dict[str, Any] | None = None,
     body_resource_budget: dict[str, Any] | None = None,
+    dialogue_turn_refs: list[str] | None = None,
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> dict[str, Any] | None:
     relationship_timeline_path = relationship_dir / "relationship_timeline.json"
@@ -1617,6 +1708,52 @@ def _refresh_long_horizon_continuity(
         state_dir / "consciousness" / "metacognition_state.json",
         updated_metacognition_state,
     )
+    consciousness_dir = state_dir / "consciousness"
+    consciousness_dir.mkdir(parents=True, exist_ok=True)
+    memory_write_gate_path = state_dir / "memory" / "memory_write_gate.json"
+    updated_consciousness_probe = project_consciousness_probe_bundle_from_live_turn(
+        consciousness_probe_bundle=_read_json_if_exists(
+            consciousness_dir / "consciousness_probe_bundle.json"
+        ),
+        generated_at=generated_at,
+        workspace_frame=updated_workspace_frame,
+        broadcast_frame=updated_broadcast_frame,
+        metacognition_state=updated_metacognition_state,
+        prediction_workspace=prediction_workspace
+        or _read_json_if_exists(state_dir / "prediction" / "prediction_workspace_frame.json"),
+        expression_plan=expression_plan,
+        commitment_truth_state=commitment_truth_state,
+        run_id=refresh_run_id,
+        live_language_turn_refs=live_language_turn_refs,
+        live_dialogue_turn_refs=dialogue_turn_refs,
+        live_turn_focus=live_turn_focus,
+    )
+    updated_memory_write_gate = project_memory_write_gate_with_consciousness_context(
+        memory_write_gate=_read_json_if_exists(memory_write_gate_path),
+        workspace_frame=updated_workspace_frame,
+        broadcast_frame=updated_broadcast_frame,
+        metacognition_state=updated_metacognition_state,
+        consciousness_probe_bundle=updated_consciousness_probe,
+    )
+    updated_responsibility_loop_state = (
+        project_responsibility_loop_with_consciousness_context(
+            responsibility_loop_state=responsibility_loop_state,
+            generated_at=generated_at,
+            workspace_frame=updated_workspace_frame,
+            broadcast_frame=updated_broadcast_frame,
+            metacognition_state=updated_metacognition_state,
+            consciousness_probe_bundle=updated_consciousness_probe,
+            live_turn_focus=live_turn_focus,
+        )
+    )
+    write_json(
+        consciousness_dir / "consciousness_probe_bundle.json",
+        updated_consciousness_probe,
+    )
+    if updated_memory_write_gate:
+        write_json(memory_write_gate_path, updated_memory_write_gate)
+    if updated_responsibility_loop_state:
+        write_json(responsibility_loop_path, updated_responsibility_loop_state)
     trait_drift_monitor = build_trait_drift_monitor_from_self_model(
         run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
         generated_at=generated_at,
@@ -1644,10 +1781,157 @@ def _refresh_long_horizon_continuity(
         "workspace_frame": updated_workspace_frame,
         "broadcast_frame": updated_broadcast_frame,
         "metacognition_state": updated_metacognition_state,
+        "consciousness_probe_bundle": updated_consciousness_probe,
+        "memory_write_gate": updated_memory_write_gate,
+        "responsibility_loop_state": updated_responsibility_loop_state,
         "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
         "memory_retrieval_frame": memory_retrieval_frame or {},
     }
+
+
+def _apply_live_consciousness_lineage_fields(
+    payload: dict[str, Any],
+    *,
+    prediction_write_gate_payload: dict[str, Any],
+    live_consciousness_chain_profile: dict[str, Any],
+) -> None:
+    consciousness_refs = _dedupe_refs(
+        list(
+            prediction_write_gate_payload.get("consciousness_write_context_refs")
+            or []
+        )
+        or _string_list(
+            live_consciousness_chain_profile.get("consciousness_write_context_refs")
+        )
+    )
+    if consciousness_refs:
+        payload["resident_background_lineage_consciousness_write_context_refs"] = (
+            consciousness_refs
+        )
+        payload["consciousness_write_context_refs"] = consciousness_refs
+        payload["resident_background_lineage_consciousness_write_context_ref_count"] = (
+            len(consciousness_refs)
+        )
+        payload["consciousness_write_context_ref_count"] = len(consciousness_refs)
+    field_map = (
+        (
+            "consciousness_write_context_bias",
+            "resident_background_lineage_consciousness_write_context_bias",
+        ),
+        (
+            "consciousness_write_context_workspace_candidate_count",
+            "resident_background_lineage_consciousness_write_context_workspace_candidate_count",
+        ),
+        (
+            "consciousness_write_context_broadcast_target_count",
+            "resident_background_lineage_consciousness_write_context_broadcast_target_count",
+        ),
+        (
+            "consciousness_write_context_reportability_flag_count",
+            "resident_background_lineage_consciousness_write_context_reportability_flag_count",
+        ),
+        (
+            "consciousness_write_context_boundary",
+            "resident_background_lineage_consciousness_write_context_boundary",
+        ),
+    )
+    for source_key, target_key in field_map:
+        value = prediction_write_gate_payload.get(source_key)
+        if value in {None, ""}:
+            value = live_consciousness_chain_profile.get(source_key)
+        if value not in {None, ""}:
+            payload[source_key] = value
+            payload[target_key] = value
+    adjustments = _dedupe_refs(
+        list(
+            prediction_write_gate_payload.get(
+                "consciousness_write_context_candidate_gate_adjustments"
+            )
+            or []
+        )
+    )
+    if adjustments:
+        payload["consciousness_write_context_candidate_gate_adjustments"] = adjustments
+        payload[
+            "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
+        ] = adjustments
+
+
+def _live_consciousness_chain_profile(
+    continuity_refresh: dict[str, Any],
+) -> dict[str, Any]:
+    memory_write_gate = continuity_refresh.get("memory_write_gate")
+    if not isinstance(memory_write_gate, dict):
+        memory_write_gate = {}
+    consciousness_context = memory_write_gate.get("consciousness_write_context")
+    if not isinstance(consciousness_context, dict):
+        consciousness_context = {}
+    broadcast_frame = continuity_refresh.get("broadcast_frame")
+    if not isinstance(broadcast_frame, dict):
+        broadcast_frame = {}
+    metacognition_state = continuity_refresh.get("metacognition_state")
+    if not isinstance(metacognition_state, dict):
+        metacognition_state = {}
+    consciousness_probe = continuity_refresh.get("consciousness_probe_bundle")
+    if not isinstance(consciousness_probe, dict):
+        consciousness_probe = {}
+
+    profile: dict[str, Any] = {
+        "live_consciousness_chain_refreshed": True,
+        "last_workspace_frame_ref": WORKSPACE_FRAME_REF,
+        "last_broadcast_frame_ref": BROADCAST_FRAME_REF,
+        "last_metacognition_ref": METACOGNITION_STATE_REF,
+        "last_consciousness_probe_ref": CONSCIOUSNESS_PROBE_REF,
+        "last_memory_write_gate_consciousness_context_ref": (
+            MEMORY_WRITE_GATE_CONSCIOUSNESS_CONTEXT_REF
+        ),
+        "live_broadcast_target_count": len(
+            list(broadcast_frame.get("broadcast_targets", []))
+        ),
+        "live_metacognition_uncertainty_count": len(
+            list(metacognition_state.get("uncertainty_flags", []))
+        ),
+        "live_consciousness_probe_reportability_flag_count": len(
+            list(consciousness_probe.get("reportability_flags", []))
+        ),
+        "live_consciousness_chain_boundary": (
+            "live_consciousness_chain_structured_evidence_not_spoken_language"
+        ),
+    }
+    live_turn_focus = (
+        broadcast_frame.get("live_turn_focus")
+        or metacognition_state.get("live_turn_focus")
+        or consciousness_probe.get("live_turn_focus")
+    )
+    if live_turn_focus:
+        profile["live_turn_focus"] = live_turn_focus
+    if consciousness_context:
+        profile["consciousness_write_context_refs"] = _dedupe_refs(
+            _string_list(consciousness_context.get("ref_set"))
+        )
+        profile["consciousness_write_context_ref_count"] = len(
+            profile["consciousness_write_context_refs"]
+        )
+        profile["consciousness_write_context_workspace_candidate_count"] = (
+            consciousness_context.get("workspace_candidate_count")
+        )
+        profile["consciousness_write_context_broadcast_target_count"] = (
+            consciousness_context.get("broadcast_target_count")
+        )
+        profile["consciousness_write_context_reportability_flag_count"] = (
+            consciousness_context.get("reportability_flag_count")
+        )
+        profile["consciousness_write_context_bias"] = consciousness_context.get(
+            "write_attention_bias"
+        )
+        profile["consciousness_write_context_candidate_gate_adjustments"] = (
+            consciousness_context.get("candidate_gate_adjustments")
+        )
+        profile["consciousness_write_context_boundary"] = consciousness_context.get(
+            "boundary"
+        )
+    return profile
 
 
 def _read_json(path: Path) -> dict[str, Any]:
