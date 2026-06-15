@@ -555,6 +555,13 @@ def build_resident_state_inspection(
                     "../reports/latest/live0_acceptance_audit_report.json"
                 ),
                 "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         ability["birth_readiness_summary"] = (
@@ -574,6 +581,10 @@ def build_resident_state_inspection(
                     "prediction/prediction_workspace_frame.json"
                 ),
                 "active_sampling_plan": "prediction/active_sampling_plan.json",
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
             },
         )
         perception["world_contact_summary_view"] = (
@@ -1683,6 +1694,28 @@ def _collect_ability_birth_readiness_summary(
     stage_gate = _extract_compact_value(section.get("birth_readiness_stage_gate", {}))
     live0_audit = _extract_compact_value(section.get("live0_acceptance_audit", {}))
     contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    world_contact_presence = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        world_contact_presence,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
     life_target_status = readiness_rollup.get("life_target_status")
     if not isinstance(life_target_status, dict):
         life_target_status = {}
@@ -1698,6 +1731,15 @@ def _collect_ability_birth_readiness_summary(
         "birth_readiness_stage_gate": bool(stage_gate),
         "live0_acceptance_audit": bool(live0_audit),
         "v0_contract_file_index": bool(contract_index),
+        "live_queue_e_world_contact_handoff": bool(
+            world_contact_handoff
+            or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or process_report.get("live_queue_e_world_contact_handoff_refreshed")
+        ),
+        "live_queue_e_world_contact_handoff_closeout": bool(
+            process_report.get("live_queue_e_world_contact_handoff_report_profile")
+            or process_report.get("live_queue_e_world_contact_handoff_refreshed")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -1739,10 +1781,6 @@ def _collect_ability_birth_readiness_summary(
             stage_gate.get("next_required_command"),
             live0_audit.get("next_required_command"),
         ),
-        "queue_e_world_contact_handoff_status": _first_non_empty(
-            readiness_rollup.get("queue_e_world_contact_handoff_status"),
-            stage_gate.get("queue_e_world_contact_handoff_status"),
-        ),
         "queue_e_world_contact_repair_hold_required": bool(
             readiness_rollup.get("queue_e_world_contact_repair_hold_required")
             or stage_gate.get("queue_e_world_contact_repair_hold_required")
@@ -1766,6 +1804,21 @@ def _collect_ability_birth_readiness_summary(
         "ability_boundary": (
             "ability_summary_is_birth_evidence_view_not_completion_claim"
         ),
+        "live_queue_e_world_contact_handoff_closeout_audited": (
+            _live0_probe_status(
+                live0_audit,
+                "live_queue_e_world_contact_handoff_closeout_audited",
+            )
+        ),
+        "live_queue_e_world_contact_handoff_report_boundary": process_report.get(
+            "live_queue_e_world_contact_handoff_report_boundary"
+        ),
+        **live_queue_e_handoff,
+        "queue_e_world_contact_handoff_status": _first_non_empty(
+            readiness_rollup.get("queue_e_world_contact_handoff_status"),
+            stage_gate.get("queue_e_world_contact_handoff_status"),
+            live_queue_e_handoff.get("queue_e_world_contact_handoff_status"),
+        ),
     }
 
 
@@ -1783,6 +1836,25 @@ def _collect_perception_world_contact_summary(
     active_sampling = _extract_compact_value(
         section.get("active_sampling_plan", {})
     )
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    world_contact_presence = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        world_contact_presence,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
     workspace_contents = _extract_nested_value(
         prediction_workspace,
         "workspace_contents",
@@ -1793,6 +1865,11 @@ def _collect_perception_world_contact_summary(
         "belief_state_frame": bool(belief_state),
         "prediction_workspace_frame": bool(prediction_workspace),
         "active_sampling_plan": bool(active_sampling),
+        "live_queue_e_world_contact_handoff": bool(
+            world_contact_handoff
+            or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or live_queue_e_handoff.get("queue_e_world_contact_handoff_status")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -1848,6 +1925,7 @@ def _collect_perception_world_contact_summary(
         "perception_boundary": (
             "perception_prediction_world_contact_view_not_tool_gateway"
         ),
+        **live_queue_e_handoff,
     }
 
 
@@ -4800,6 +4878,28 @@ def _first_non_empty(*values: Any) -> Any:
     for value in values:
         if value not in (None, "", [], {}):
             return value
+    return None
+
+
+def _live0_probe_status(
+    live0_audit: dict[str, Any],
+    probe_id: str,
+) -> str | None:
+    criteria = live0_audit.get("criteria")
+    if not isinstance(criteria, list):
+        return None
+    for criterion in criteria:
+        if not isinstance(criterion, dict):
+            continue
+        probes = criterion.get("probes")
+        if not isinstance(probes, list):
+            continue
+        for probe in probes:
+            if not isinstance(probe, dict):
+                continue
+            if probe.get("probe_id") == probe_id:
+                status = probe.get("status")
+                return str(status) if status not in (None, "") else None
     return None
 
 
