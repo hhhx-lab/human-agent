@@ -452,6 +452,9 @@ def build_resident_state_inspection(
                 ),
                 "validation_rollup": "validation/validation_rollup.json",
                 "schema_runner_manifest": "schema_runner/run_manifest.json",
+                "schema_runner_cross_file_logic": (
+                    "schema_runner/cross_file_logic.json"
+                ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
                 "idle_strategy_state": "terminal/idle_strategy_state.json",
                 "digital_life_process_report": (
@@ -653,6 +656,14 @@ def build_resident_state_inspection(
                 "v0_contract_coverage_report": (
                     "../reports/latest/v0_contract_coverage_report.json"
                 ),
+                "world_contact_validation": (
+                    "validation/world_contact_validation.json"
+                ),
+                "validation_rollup": "validation/validation_rollup.json",
+                "schema_runner_manifest": "schema_runner/run_manifest.json",
+                "schema_runner_cross_file_logic": (
+                    "schema_runner/cross_file_logic.json"
+                ),
                 "queue_e_world_contact_handoff": (
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
@@ -822,6 +833,18 @@ def _collect_state_summary(
         "v0_contract_coverage_report": _compact_json(
             reports_dir / "v0_contract_coverage_report.json"
         ),
+        "world_contact_validation": _compact_json(
+            terminal_dir.parent / "validation" / "world_contact_validation.json"
+        ),
+        "validation_rollup": _compact_json(
+            terminal_dir.parent / "validation" / "validation_rollup.json"
+        ),
+        "schema_runner_manifest": _compact_json(
+            terminal_dir.parent / "schema_runner" / "run_manifest.json"
+        ),
+        "schema_runner_cross_file_logic": _compact_json(
+            terminal_dir.parent / "schema_runner" / "cross_file_logic.json"
+        ),
     }
     state["resident_continuity_summary"] = _collect_resident_continuity_summary(
         state
@@ -864,6 +887,19 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         contract_index=contract_index,
         doc_to_code_matrix=doc_to_code_matrix,
         contract_coverage_report=contract_coverage_report,
+    )
+    validation_rollup = _extract_compact_value(section.get("validation_rollup", {}))
+    schema_manifest = _extract_compact_value(section.get("schema_runner_manifest", {}))
+    schema_cross_file = _extract_compact_value(
+        section.get("schema_runner_cross_file_logic", {})
+    )
+    schema_handoff = _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
+        validation_rollup=validation_rollup,
+        world_contact_validation=_extract_compact_value(
+            section.get("world_contact_validation", {})
+        ),
+        schema_manifest=schema_manifest,
+        schema_cross_file=schema_cross_file,
     )
     model_context_summary = _extract_nested_value(
         model_expression,
@@ -934,6 +970,9 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
             contract_coverage.get("v0_contract_coverage_present")
         ),
         "doc_to_code_coverage": bool(doc_to_code_matrix),
+        "queue_e_world_contact_repair_hold_schema_handoff": bool(
+            schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -1088,6 +1127,7 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         ),
         **process_closeout,
         **contract_coverage,
+        **schema_handoff,
     }
 
 
@@ -1986,6 +2026,22 @@ def _collect_ability_birth_readiness_summary(
         doc_to_code_matrix=doc_to_code_matrix,
         contract_coverage_report=contract_coverage_report,
     )
+    world_contact_validation = _extract_compact_value(
+        section.get("world_contact_validation", {})
+    )
+    validation_rollup = _extract_compact_value(section.get("validation_rollup", {}))
+    schema_manifest = _extract_compact_value(section.get("schema_runner_manifest", {}))
+    schema_cross_file = _extract_compact_value(
+        section.get("schema_runner_cross_file_logic", {})
+    )
+    schema_handoff = _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
+        validation_rollup=validation_rollup,
+        world_contact_validation=world_contact_validation,
+        schema_manifest=schema_manifest,
+        schema_cross_file=schema_cross_file,
+        go_nogo=go_nogo,
+        live0_audit=live0_audit,
+    )
     life_target_status = readiness_rollup.get("life_target_status")
     if not isinstance(life_target_status, dict):
         life_target_status = {}
@@ -2025,6 +2081,9 @@ def _collect_ability_birth_readiness_summary(
             contract_coverage.get("v0_contract_coverage_present")
         ),
         "doc_to_code_coverage": bool(doc_to_code_matrix),
+        "queue_e_world_contact_repair_hold_schema_handoff": bool(
+            schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -2098,6 +2157,7 @@ def _collect_ability_birth_readiness_summary(
         **live_queue_e_handoff,
         **process_closeout,
         **contract_coverage,
+        **schema_handoff,
         "queue_e_world_contact_handoff_status": _first_non_empty(
             readiness_rollup.get("queue_e_world_contact_handoff_status"),
             stage_gate.get("queue_e_world_contact_handoff_status"),
@@ -2318,6 +2378,13 @@ def _collect_prediction_world_contact_summary(
         terminal_loop=terminal_loop,
         go_nogo=go_nogo,
     )
+    schema_handoff = _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
+        validation_rollup=validation_rollup,
+        world_contact_validation=world_contact_validation,
+        schema_manifest=schema_manifest,
+        schema_cross_file=schema_cross_file,
+        go_nogo=go_nogo,
+    )
     workspace_contents = _extract_nested_value(
         prediction_workspace,
         "workspace_contents",
@@ -2363,6 +2430,9 @@ def _collect_prediction_world_contact_summary(
         ),
         "body_pressure_closeout": bool(
             process_closeout.get("body_pressure_closeout_present")
+        ),
+        "queue_e_world_contact_repair_hold_schema_handoff": bool(
+            schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
         ),
     }
     active_domains = [
@@ -2545,6 +2615,7 @@ def _collect_prediction_world_contact_summary(
         ),
         **live_queue_e_handoff,
         **process_closeout,
+        **schema_handoff,
     }
 
 
@@ -3530,6 +3601,13 @@ def _collect_life_membrane_validation_summary(
         terminal_loop=terminal_loop,
         go_nogo=go_nogo,
     )
+    schema_handoff = _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
+        validation_rollup=validation_rollup,
+        world_contact_validation=world_contact_validation,
+        schema_manifest=schema_manifest,
+        schema_cross_file=schema_cross_file,
+        go_nogo=go_nogo,
+    )
     consciousness_write_context = _extract_nested_value(
         memory_write_gate,
         "consciousness_write_context",
@@ -3593,6 +3671,9 @@ def _collect_life_membrane_validation_summary(
         ),
         "body_pressure_closeout": bool(
             membrane_closeout.get("body_pressure_closeout_present")
+        ),
+        "queue_e_world_contact_repair_hold_schema_handoff": bool(
+            schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
         ),
     }
     active_domains = [
@@ -3832,6 +3913,7 @@ def _collect_life_membrane_validation_summary(
         ),
         **live_queue_e_handoff,
         **membrane_closeout,
+        **schema_handoff,
     }
 
 
@@ -4371,6 +4453,9 @@ def _collect_responsibility_repair_chain_summary(
     schema_manifest = _extract_compact_value(
         section.get("schema_runner_manifest", {})
     )
+    schema_cross_file = _extract_compact_value(
+        section.get("schema_runner_cross_file_logic", {})
+    )
     terminal_loop = _extract_compact_value(
         section.get("terminal_life_loop_state", {})
     )
@@ -4382,6 +4467,13 @@ def _collect_responsibility_repair_chain_summary(
         process_report=process_report,
         idle_strategy=idle_strategy,
         terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
+    )
+    schema_handoff = _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
+        validation_rollup=validation_rollup,
+        world_contact_validation=world_contact_validation,
+        schema_manifest=schema_manifest,
+        schema_cross_file=schema_cross_file,
         go_nogo=go_nogo,
     )
     future_no_go = _extract_nested_value(go_nogo, "future_no_go_profile")
@@ -4422,6 +4514,9 @@ def _collect_responsibility_repair_chain_summary(
         ),
         "body_pressure_closeout": bool(
             responsibility_closeout.get("body_pressure_closeout_present")
+        ),
+        "queue_e_world_contact_repair_hold_schema_handoff": bool(
+            schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
         ),
     }
     active_domains = [
@@ -4619,6 +4714,7 @@ def _collect_responsibility_repair_chain_summary(
             responsibility_closeout.get("live_queue_e_world_contact_handoff_report_boundary")
         ),
         **responsibility_closeout,
+        **schema_handoff,
     }
 
 
@@ -6602,6 +6698,161 @@ def _responsibility_closeout_inspection_snapshot(
         ),
         "autobiographical_repair_report_boundary": memory_closeout.get(
             "autobiographical_repair_report_boundary"
+        ),
+    }
+
+
+_QUEUE_E_FUTURE_NO_GO_PROFILE_REF = (
+    "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+)
+_QUEUE_E_BODY_PRESSURE_PROFILE_REF = (
+    "runtime/state/action/go_nogo_state.json#body_pressure_profile"
+)
+
+
+def _cross_file_repair_hold_alignment_finding(
+    schema_cross_file: dict[str, Any],
+) -> dict[str, Any]:
+    findings = schema_cross_file.get("cross_file_findings")
+    if not isinstance(findings, list):
+        findings = []
+    for finding in findings:
+        if not isinstance(finding, dict):
+            continue
+        if (
+            finding.get("finding_kind")
+            == "queue_e_world_contact_repair_hold_alignment"
+        ):
+            return finding
+    return {}
+
+
+def _manifest_queue_e_schema_handoff_closed(schema_manifest: dict[str, Any]) -> bool:
+    return (
+        schema_manifest.get("schema_version") == "schema_runner_run_manifest_v0"
+        and schema_manifest.get("queue_e_world_contact_repair_hold_required") is True
+        and schema_manifest.get("queue_e_world_contact_confirmation_threshold_bias")
+        == "raised"
+        and schema_manifest.get("queue_e_world_contact_future_no_go_profile_ref")
+        == _QUEUE_E_FUTURE_NO_GO_PROFILE_REF
+        and schema_manifest.get("queue_e_world_contact_body_pressure_profile_ref")
+        == _QUEUE_E_BODY_PRESSURE_PROFILE_REF
+        and bool(schema_manifest.get("queue_e_world_contact_blocked_future_routes"))
+        and bool(schema_manifest.get("queue_e_world_contact_allowed_repair_routes"))
+        and bool(schema_manifest.get("queue_e_world_contact_repair_governance_refs"))
+    )
+
+
+def _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
+    *,
+    validation_rollup: dict[str, Any],
+    world_contact_validation: dict[str, Any] | None = None,
+    schema_manifest: dict[str, Any] | None = None,
+    schema_cross_file: dict[str, Any] | None = None,
+    go_nogo: dict[str, Any] | None = None,
+    live0_audit: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    world_contact_validation = world_contact_validation or {}
+    schema_manifest = schema_manifest or {}
+    schema_cross_file = schema_cross_file or {}
+    go_nogo = go_nogo or {}
+    alignment_finding = _cross_file_repair_hold_alignment_finding(schema_cross_file)
+    repair_hold_required = bool(
+        _first_non_empty(
+            schema_manifest.get("queue_e_world_contact_repair_hold_required"),
+            validation_rollup.get("queue_e_world_contact_repair_hold_required"),
+            world_contact_validation.get("repair_hold_required"),
+            _extract_nested_value(go_nogo, "future_no_go_profile").get(
+                "repair_hold_required"
+            ),
+        )
+    )
+    blocked_future_routes = _list_refs(
+        _first_non_empty(
+            schema_manifest.get("queue_e_world_contact_blocked_future_routes"),
+            validation_rollup.get("queue_e_world_contact_blocked_future_routes"),
+            world_contact_validation.get("blocked_future_routes"),
+        ),
+        limit=12,
+    )
+    allowed_repair_routes = _list_refs(
+        _first_non_empty(
+            schema_manifest.get("queue_e_world_contact_allowed_repair_routes"),
+            validation_rollup.get("queue_e_world_contact_allowed_repair_routes"),
+            world_contact_validation.get("allowed_repair_routes"),
+        ),
+        limit=12,
+    )
+    repair_governance_refs = _list_refs(
+        _first_non_empty(
+            schema_manifest.get("queue_e_world_contact_repair_governance_refs"),
+            validation_rollup.get("queue_e_world_contact_repair_governance_refs"),
+            world_contact_validation.get("repair_governance_refs"),
+        ),
+        limit=12,
+    )
+    handoff_present = bool(
+        schema_manifest
+        or validation_rollup
+        or world_contact_validation
+        or alignment_finding
+    )
+    return {
+        "queue_e_world_contact_repair_hold_schema_handoff_present": handoff_present,
+        "queue_e_world_contact_repair_hold_required": repair_hold_required,
+        "queue_e_world_contact_confirmation_threshold_bias": _first_non_empty(
+            schema_manifest.get("queue_e_world_contact_confirmation_threshold_bias"),
+            validation_rollup.get("queue_e_world_contact_confirmation_threshold_bias"),
+            world_contact_validation.get("confirmation_threshold_bias"),
+        ),
+        "queue_e_world_contact_future_release_posture": _first_non_empty(
+            schema_manifest.get("queue_e_world_contact_future_release_posture"),
+            validation_rollup.get("queue_e_world_contact_future_release_posture"),
+            world_contact_validation.get("future_release_posture"),
+        ),
+        "queue_e_world_contact_future_no_go_profile_ref": _first_non_empty(
+            schema_manifest.get("queue_e_world_contact_future_no_go_profile_ref"),
+            validation_rollup.get("queue_e_world_contact_future_no_go_profile_ref"),
+            world_contact_validation.get("future_no_go_profile_ref"),
+            _QUEUE_E_FUTURE_NO_GO_PROFILE_REF,
+        ),
+        "queue_e_world_contact_body_pressure_profile_ref": _first_non_empty(
+            schema_manifest.get("queue_e_world_contact_body_pressure_profile_ref"),
+            validation_rollup.get("queue_e_world_contact_body_pressure_profile_ref"),
+            world_contact_validation.get("body_pressure_profile_ref"),
+            go_nogo.get("body_pressure_profile_ref"),
+            _QUEUE_E_BODY_PRESSURE_PROFILE_REF,
+        ),
+        "queue_e_world_contact_blocked_future_route_count": _count_any(
+            blocked_future_routes
+        ),
+        "queue_e_world_contact_blocked_future_routes": blocked_future_routes,
+        "queue_e_world_contact_allowed_repair_route_count": _count_any(
+            allowed_repair_routes
+        ),
+        "queue_e_world_contact_allowed_repair_routes": allowed_repair_routes,
+        "queue_e_world_contact_repair_governance_ref_count": _count_any(
+            repair_governance_refs
+        ),
+        "queue_e_world_contact_repair_hold_alignment_finding_present": bool(
+            alignment_finding
+        ),
+        "queue_e_world_contact_repair_hold_alignment_severity": alignment_finding.get(
+            "severity"
+        ),
+        "queue_e_world_contact_schema_handoff_manifest_closed": (
+            _manifest_queue_e_schema_handoff_closed(schema_manifest)
+        ),
+        "queue_e_world_contact_repair_hold_schema_handoff_audited": (
+            _live0_probe_status(
+                live0_audit or {},
+                "queue_e_world_contact_repair_hold_schema_handoff",
+            )
+            if live0_audit
+            else None
+        ),
+        "queue_e_world_contact_repair_hold_schema_handoff_inspection_boundary": (
+            "structured_schema_handoff_not_spoken_language"
         ),
     }
 

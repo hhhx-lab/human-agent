@@ -1182,7 +1182,19 @@ digital_life_process_report.json + idle_strategy_state.json + go_nogo_state.json
 
 `state_inspection.py` 现在会让 `/vision`/`/perception` 与 `/prediction`/`/世界接触`/`/外周` 额外读取 `digital_life_process_report.json` 与 `idle_strategy_state.json`，在 `perception_world_contact_summary_v0` 与 `prediction_world_contact_summary_v0` 中合并 `_process_closeout_bundle_inspection_snapshot`；`/proactive`/`/proactive_voice`/`/主动` 也会读取 `digital_life_process_report.json`、`idle_strategy_state.json` 与 `go_nogo_state.json`，在 `coverage_summary` 中合并 `_expression_closeout_inspection_snapshot`。
 
-机制含义是：感知/预测/主动发话检查面不能只证明 runtime world-contact handoff 或 proactive profile coverage 存在，也要与关闭态 process report 里的 live Queue E handoff closeout、意识写门 closeout 与身体压力 closeout 互相印证。这样 point 6/7 的主动发话与 point 9 的预测-世界接触链都能在断连恢复后继续被 slash 检查面追溯，而不是只依赖单轮 runtime 文件。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成固定回答，不新增 system prompt，不把 repair hold、表达写门或身体压力字段释放成 Adam 的外显语言。
+机制含义是：感知/预测/主动发话检查面不能只证明 runtime world-contact handoff 或 proactive profile coverage 存在，也要与关闭态 process report 里的 live Queue E handoff closeoff、意识写门 closeout 与身体压力 closeout 互相印证。这样 point 6/7 的主动发话与 point 9 的预测-世界接触链都能在断连恢复后继续被 slash 检查面追溯，而不是只依赖单轮 runtime 文件。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成固定回答，不新增 system prompt，不把 repair hold、表达写门或身体压力字段释放成 Adam 的外显语言。
+
+当前 ITR-08 第七十四段把 Queue E `world_contact_repair_hold` schema handoff 继续推进到 slash 检查面：
+
+```text
+validation_rollup + world_contact_validation + schema_runner/run_manifest + cross_file_logic
+  -> StateInspection.*.queue_e_world_contact_repair_hold_schema_handoff_*
+  -> /membrane /prediction /responsibility /ability /state
+```
+
+`state_inspection.py` 新增 `_queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot`，归一化 S05 validation rollup、world-contact validation、S09 run manifest 与 `queue_e_world_contact_repair_hold_alignment` cross-file finding；`/ability` 还会显示 live0 criterion g 的 `queue_e_world_contact_repair_hold_schema_handoff` probe 状态。
+
+机制含义是：生命膜/预测/责任/出生准备/总状态检查面可以直接核对 FutureNoGo repair hold 是否已从 validation 进入 schema runner handoff，而不只依赖 live0 audit 终验。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成固定拒绝话术，不新增 system prompt，不把 repair hold 字段释放成外显语言。
 
 ## 机制补厚完成检查
 

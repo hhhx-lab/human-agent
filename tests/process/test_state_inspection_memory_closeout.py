@@ -3,6 +3,7 @@ import unittest
 from life_v0.process_supervisor.state_inspection import (
     _collect_ability_birth_readiness_summary,
     _collect_body_grounding_summary,
+    _collect_life_membrane_validation_summary,
     _collect_cognitive_workspace_summary,
     _collect_consciousness_reportability_summary,
     _collect_dream_wake_fact_summary,
@@ -13,6 +14,7 @@ from life_v0.process_supervisor.state_inspection import (
     _collect_perception_world_contact_summary,
     _collect_personality_convergence_summary,
     _collect_prediction_world_contact_summary,
+    _collect_responsibility_repair_chain_summary,
     _collect_proactive_voice_summary,
     _collect_reconstructive_memory_summary,
     _collect_relation_context_summary,
@@ -33,6 +35,43 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
             "background_body_signal_write_bias": "caution",
             "background_body_signal_pain_pressure": "moderate",
             "background_body_signal_ref_count": 1,
+        }
+
+    def _queue_e_schema_handoff_manifest(self) -> dict:
+        return {
+            "schema_version": "schema_runner_run_manifest_v0",
+            "queue_e_world_contact_repair_hold_required": True,
+            "queue_e_world_contact_confirmation_threshold_bias": "raised",
+            "queue_e_world_contact_future_no_go_profile_ref": (
+                "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+            ),
+            "queue_e_world_contact_body_pressure_profile_ref": (
+                "runtime/state/action/go_nogo_state.json#body_pressure_profile"
+            ),
+            "queue_e_world_contact_blocked_future_routes": ["route:blocked"],
+            "queue_e_world_contact_allowed_repair_routes": ["route:repair"],
+            "queue_e_world_contact_repair_governance_refs": ["ref:gov"],
+        }
+
+    def _queue_e_schema_handoff_section(self) -> dict:
+        return {
+            "validation_rollup": {
+                "queue_e_world_contact_repair_hold_required": True,
+                "queue_e_world_contact_confirmation_threshold_bias": "raised",
+            },
+            "world_contact_validation": {
+                "repair_hold_required": True,
+                "status": "closed",
+            },
+            "schema_runner_manifest": self._queue_e_schema_handoff_manifest(),
+            "schema_runner_cross_file_logic": {
+                "cross_file_findings": [
+                    {
+                        "finding_kind": "queue_e_world_contact_repair_hold_alignment",
+                        "severity": "guarded_medium",
+                    }
+                ]
+            },
         }
 
     def _responsibility_closeout_process_report(self) -> dict:
@@ -485,6 +524,99 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertEqual(summary["doc_to_code_total_documents"], 45)
         self.assertEqual(summary["v0_contract_coverage_report_status"], "closed")
         self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_membrane_summary_exposes_queue_e_schema_handoff(self):
+        section = self._queue_e_schema_handoff_section()
+
+        summary = _collect_life_membrane_validation_summary(section)
+
+        self.assertTrue(
+            summary["queue_e_world_contact_repair_hold_schema_handoff_present"]
+        )
+        self.assertTrue(summary["queue_e_world_contact_schema_handoff_manifest_closed"])
+        self.assertTrue(
+            summary["queue_e_world_contact_repair_hold_alignment_finding_present"]
+        )
+        self.assertIn(
+            "queue_e_world_contact_repair_hold_schema_handoff",
+            summary["domain_presence"],
+        )
+
+    def test_prediction_summary_exposes_queue_e_schema_handoff(self):
+        section = {
+            "belief_state_frame": {"belief_focus": "repair_hold"},
+            **self._queue_e_schema_handoff_section(),
+        }
+
+        summary = _collect_prediction_world_contact_summary(section)
+
+        self.assertTrue(
+            summary["queue_e_world_contact_repair_hold_schema_handoff_present"]
+        )
+        self.assertEqual(summary["queue_e_world_contact_blocked_future_route_count"], 1)
+
+    def test_ability_summary_exposes_queue_e_schema_handoff(self):
+        section = {
+            "birth_readiness_rollup": {"overall_status": "blocked"},
+            "live0_acceptance_audit": {
+                "criteria": [
+                    {
+                        "criterion_id": "g_initial_life_mechanism_coverage",
+                        "probes": [
+                            {
+                                "probe_id": (
+                                    "queue_e_world_contact_repair_hold_schema_handoff"
+                                ),
+                                "status": "passed",
+                            }
+                        ],
+                    }
+                ]
+            },
+            **self._queue_e_schema_handoff_section(),
+        }
+
+        summary = _collect_ability_birth_readiness_summary(section)
+
+        self.assertTrue(
+            summary["queue_e_world_contact_repair_hold_schema_handoff_present"]
+        )
+        self.assertEqual(
+            summary["queue_e_world_contact_repair_hold_schema_handoff_audited"],
+            "passed",
+        )
+
+    def test_responsibility_summary_exposes_queue_e_schema_handoff(self):
+        section = {
+            "responsibility_loop_state": {"responsibility_loop_id": "loop-1"},
+            **self._queue_e_schema_handoff_section(),
+        }
+
+        summary = _collect_responsibility_repair_chain_summary(section)
+
+        self.assertTrue(
+            summary["queue_e_world_contact_repair_hold_schema_handoff_present"]
+        )
+        self.assertTrue(summary["queue_e_world_contact_repair_hold_required"])
+
+    def test_state_summary_exposes_queue_e_schema_handoff(self):
+        section = {
+            "resident_lifecycle": {"status": "waiting"},
+            "digital_life_process_report": {},
+            "idle_strategy": {},
+            "terminal_life_loop": {},
+            **self._queue_e_schema_handoff_section(),
+        }
+
+        summary = _collect_resident_continuity_summary(section)
+
+        self.assertTrue(
+            summary["queue_e_world_contact_repair_hold_schema_handoff_present"]
+        )
+        self.assertIn(
+            "queue_e_world_contact_repair_hold_schema_handoff",
+            summary["domain_presence"],
+        )
 
     def test_state_summary_exposes_v0_contract_coverage(self):
         section = {
