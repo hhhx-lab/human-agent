@@ -1454,6 +1454,7 @@ def _background_summary(
         "growth_self_modification_presence": lineage.get(
             "growth_self_modification_presence"
         ),
+        "memory_retrieval_presence": lineage.get("memory_retrieval_presence"),
         "dream_wake_presence": lineage.get("dream_wake_presence"),
         "autonomous_activity_presence": lineage.get("autonomous_activity_presence"),
         "body_presence": lineage.get("body_presence"),
@@ -1483,6 +1484,12 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
     )
     growth_self_modification_presence = _dict_or_empty(
         resident_background.get("growth_self_modification_presence")
+    )
+    resident_memory_retrieval_presence = _dict_or_empty(
+        resident_background.get("memory_retrieval_presence")
+    )
+    resident_autobiographical_repair_carrier_refs = _string_list(
+        resident_memory_retrieval_presence.get("autobiographical_repair_carrier_refs")
     )
     return {
         "relationship_stage": relationship.get("relationship_stage"),
@@ -1526,6 +1533,26 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         ),
         "exit_dream_fact_boundary_ref": memory_retrieval.get(
             "exit_dream_fact_boundary_ref"
+        ),
+        "resident_memory_retrieval_autobiographical_repair_hit_count": (
+            resident_memory_retrieval_presence.get(
+                "autobiographical_repair_hit_count"
+            )
+        ),
+        "resident_memory_retrieval_autobiographical_repair_carrier_ref_count": (
+            len(resident_autobiographical_repair_carrier_refs)
+            if resident_autobiographical_repair_carrier_refs
+            else None
+        ),
+        "resident_memory_retrieval_autobiographical_repair_report_boundary": (
+            resident_memory_retrieval_presence.get(
+                "autobiographical_repair_report_boundary"
+            )
+        ),
+        "resident_memory_retrieval_autobiographical_repair_source_schema": (
+            resident_memory_retrieval_presence.get(
+                "autobiographical_repair_source_profile_schema_version"
+            )
         ),
         "semantic_goal": live_language.get("semantic_goal")
         or live_language.get("semantic_focus"),

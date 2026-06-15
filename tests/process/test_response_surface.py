@@ -410,6 +410,11 @@ class ResponseSurfaceTests(unittest.TestCase):
             "regret-001",
             "repair-001",
         ]
+        autobiographical_repair_carrier_refs = [
+            "runtime/state/memory/memory_retrieval_frame.json#autobiographical_responsibility_repair_profile",
+            "runtime/state/memory/memory_retrieval_frame.json#autobiographical_responsibility_repair_hits",
+            "runtime/state/self/autobiographical_stack.json#responsibility_repair_projection",
+        ]
         lineage_state = build_resident_background_lineage_state(
             {
                 "memory_retrieval_presence_profile": {
@@ -433,6 +438,23 @@ class ResponseSurfaceTests(unittest.TestCase):
                         "autobiographical_repair_retrieval_not_spoken_language"
                     ),
                     "autobiographical_repair_refs": autobiographical_repair_refs,
+                    "autobiographical_repair_carrier_refs": (
+                        autobiographical_repair_carrier_refs
+                    ),
+                    "autobiographical_repair_report_boundary": (
+                        "autobiographical_repair_structured_report_not_spoken_language"
+                    ),
+                    "source_report_profile": {
+                        "schema_version": "autobiographical_repair_retrieval_report_profile_v0",
+                        "source_profile_schema_version": "memory_retrieval_autobiographical_repair_profile_v0",
+                        "profile_ref": autobiographical_repair_carrier_refs[0],
+                        "hits_ref": autobiographical_repair_carrier_refs[1],
+                        "projection_ref": autobiographical_repair_carrier_refs[2],
+                        "carrier_refs": autobiographical_repair_carrier_refs,
+                        "report_boundary": (
+                            "autobiographical_repair_structured_report_not_spoken_language"
+                        ),
+                    },
                     "ref_set": memory_refs,
                     "exit_dream_next_wake_governance_ref": (
                         "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance"
@@ -464,7 +486,7 @@ class ResponseSurfaceTests(unittest.TestCase):
             memory_presence["reconstruction_focus"],
             "relationship_continuity_reconstruction",
         )
-        self.assertEqual(memory_presence["ref_count"], 12)
+        self.assertEqual(memory_presence["ref_count"], 15)
         self.assertEqual(
             memory_presence["autobiographical_repair_hit_count"],
             3,
@@ -488,6 +510,18 @@ class ResponseSurfaceTests(unittest.TestCase):
         self.assertEqual(
             memory_presence["autobiographical_repair_refs"],
             autobiographical_repair_refs,
+        )
+        self.assertEqual(
+            memory_presence["autobiographical_repair_carrier_refs"],
+            autobiographical_repair_carrier_refs,
+        )
+        self.assertEqual(
+            memory_presence["autobiographical_repair_source_profile_schema_version"],
+            "autobiographical_repair_retrieval_report_profile_v0",
+        )
+        self.assertEqual(
+            memory_presence["autobiographical_repair_report_boundary"],
+            "autobiographical_repair_structured_report_not_spoken_language",
         )
         self.assertEqual(
             memory_presence["exit_dream_next_wake_memory_cue_refs"],
@@ -519,6 +553,7 @@ class ResponseSurfaceTests(unittest.TestCase):
             [
                 *memory_refs,
                 *autobiographical_repair_refs,
+                *autobiographical_repair_carrier_refs,
                 *exit_dream_cue_refs,
                 *exit_dream_governance_refs,
                 "runtime/state/memory/memory_write_gate.json",
@@ -531,6 +566,24 @@ class ResponseSurfaceTests(unittest.TestCase):
                 "resident_background_lineage_exit_dream_next_wake_candidate_boundary"
             ],
             "reactivate_as_cue_material_not_fixed_language",
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_autobiographical_repair_carrier_refs"
+            ],
+            autobiographical_repair_carrier_refs,
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_autobiographical_repair_profile_ref"
+            ],
+            autobiographical_repair_carrier_refs[0],
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_autobiographical_repair_report_boundary"
+            ],
+            "autobiographical_repair_structured_report_not_spoken_language",
         )
 
         bundle = build_dialogue_writeback_bundle(
@@ -555,6 +608,9 @@ class ResponseSurfaceTests(unittest.TestCase):
             runtime_carrier_refs=[],
             resident_background_lineage_refs=memory_refs,
             resident_background_lineage_memory_retrieval_refs=memory_refs,
+            resident_background_lineage_autobiographical_repair_carrier_refs=(
+                autobiographical_repair_carrier_refs
+            ),
             exit_dream_next_wake_memory_cue_refs=exit_dream_cue_refs,
             exit_dream_next_wake_governance_refs=exit_dream_governance_refs,
             exit_dream_memory_write_gate_ref=(
@@ -573,6 +629,12 @@ class ResponseSurfaceTests(unittest.TestCase):
         self.assertEqual(
             bundle["resident_background_lineage_memory_retrieval_refs"],
             memory_refs,
+        )
+        self.assertEqual(
+            bundle[
+                "resident_background_lineage_autobiographical_repair_carrier_refs"
+            ],
+            autobiographical_repair_carrier_refs,
         )
         self.assertEqual(
             bundle["exit_dream_next_wake_memory_cue_refs"],
@@ -616,7 +678,7 @@ class ResponseSurfaceTests(unittest.TestCase):
             resident_memory["reconstruction_focus"],
             "relationship_continuity_reconstruction",
         )
-        self.assertEqual(resident_memory["ref_count"], 12)
+        self.assertEqual(resident_memory["ref_count"], 15)
         self.assertEqual(
             resident_memory["autobiographical_repair_hit_count"],
             3,
@@ -624,6 +686,18 @@ class ResponseSurfaceTests(unittest.TestCase):
         self.assertEqual(
             resident_memory["autobiographical_repair_retrieval_boundary"],
             "autobiographical_repair_retrieval_not_spoken_language",
+        )
+        self.assertEqual(
+            resident_memory["autobiographical_repair_carrier_refs"],
+            autobiographical_repair_carrier_refs,
+        )
+        self.assertEqual(
+            resident_memory["autobiographical_repair_report_boundary"],
+            "autobiographical_repair_structured_report_not_spoken_language",
+        )
+        self.assertEqual(
+            resident_memory["autobiographical_repair_profile_ref"],
+            autobiographical_repair_carrier_refs[0],
         )
         self.assertEqual(
             payload["memory_dream_growth"]["exit_dream_next_wake"][

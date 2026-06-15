@@ -84,6 +84,11 @@ class ModelExpressionTests(unittest.TestCase):
                 ],
                 "handoff_evidence_ref_count": 2,
             }
+            autobiographical_repair_carrier_refs = [
+                "runtime/state/memory/memory_retrieval_frame.json#autobiographical_responsibility_repair_profile",
+                "runtime/state/memory/memory_retrieval_frame.json#autobiographical_responsibility_repair_hits",
+                "runtime/state/self/autobiographical_stack.json#responsibility_repair_projection",
+            ]
 
             def fake_transport(endpoint, headers, payload, timeout_seconds):
                 captured["endpoint"] = endpoint
@@ -283,6 +288,21 @@ class ModelExpressionTests(unittest.TestCase):
                         "runtime/state/terminal/terminal_life_loop_state.json"
                         "#previous_live_turn_waiting_handoff_profile"
                     ),
+                    "resident_background_lineage_state": {
+                        "memory_retrieval_presence": {
+                            "schema_version": "memory_retrieval_presence_v0",
+                            "autobiographical_repair_hit_count": 4,
+                            "autobiographical_repair_carrier_refs": (
+                                autobiographical_repair_carrier_refs
+                            ),
+                            "autobiographical_repair_report_boundary": (
+                                "autobiographical_repair_structured_report_not_spoken_language"
+                            ),
+                            "autobiographical_repair_source_profile_schema_version": (
+                                "autobiographical_repair_retrieval_report_profile_v0"
+                            ),
+                        }
+                    },
                 },
                 environ={
                     "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
@@ -398,6 +418,24 @@ class ModelExpressionTests(unittest.TestCase):
                     "previous_live_turn_waiting_handoff_carry_status"
                 ],
                 "carried_into_waiting_heartbeat",
+            )
+            self.assertEqual(
+                expression_context["resident_background"][
+                    "memory_retrieval_presence"
+                ]["autobiographical_repair_carrier_refs"],
+                autobiographical_repair_carrier_refs,
+            )
+            self.assertEqual(
+                result.state["model_expression_context_summary"][
+                    "resident_memory_retrieval_autobiographical_repair_carrier_ref_count"
+                ],
+                3,
+            )
+            self.assertEqual(
+                result.state["model_expression_context_summary"][
+                    "resident_memory_retrieval_autobiographical_repair_report_boundary"
+                ],
+                "autobiographical_repair_structured_report_not_spoken_language",
             )
 
             state_text = (language_dir / "model_expression_state.json").read_text(

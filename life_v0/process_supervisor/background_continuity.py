@@ -3091,11 +3091,25 @@ def _memory_retrieval_presence_profile(
         )
         + _list_or_empty(existing_profile.get("ref_set"))
         + _list_or_empty(existing_profile.get("background_ref_set"))
+        + _list_or_empty(existing_profile.get("autobiographical_repair_carrier_refs"))
         + _list_or_empty(repair_report_profile.get("ref_set"))
         + _list_or_empty(repair_report_profile.get("carrier_refs"))
         + _list_or_empty(source_profile.get("ref_set"))
+        + _list_or_empty(source_profile.get("carrier_refs"))
         + autobiographical_repair_refs
         + ([str(frame_ref)] if frame_ref else [])
+    )
+    autobiographical_repair_carrier_refs = _dedupe_list(
+        _collect_lists(
+            *payloads,
+            keys=(
+                "autobiographical_repair_carrier_refs",
+                "background_autobiographical_repair_carrier_refs",
+            ),
+        )
+        + _list_or_empty(existing_profile.get("autobiographical_repair_carrier_refs"))
+        + _list_or_empty(repair_report_profile.get("carrier_refs"))
+        + _list_or_empty(source_profile.get("carrier_refs"))
     )
     autobiographical_repair_hit_count = _max_int_from_payloads(
         *payloads,
@@ -3203,6 +3217,9 @@ def _memory_retrieval_presence_profile(
             "autobiographical_repair_retrieval_boundary": retrieval_boundary,
             "autobiographical_repair_report_boundary": report_boundary,
             "autobiographical_repair_refs": autobiographical_repair_refs,
+            "autobiographical_repair_carrier_refs": (
+                autobiographical_repair_carrier_refs
+            ),
             "source_report_profile": repair_report_profile,
             "ref_count": len(ref_set),
             "ref_set": ref_set,

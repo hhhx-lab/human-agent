@@ -518,6 +518,12 @@ def write_resident_turn_writeback(
             "resident_background_lineage_memory_retrieval_refs", []
         )
     )
+    resident_background_lineage_autobiographical_repair_carrier_refs = list(
+        resident_background_lineage_payload.get(
+            "resident_background_lineage_autobiographical_repair_carrier_refs",
+            [],
+        )
+    )
     resident_background_lineage_trait_drift_update_mode_summary = (
         resident_background_lineage_payload.get(
             "resident_background_lineage_trait_drift_update_mode_summary",
@@ -590,6 +596,7 @@ def write_resident_turn_writeback(
         + resident_background_lineage_body_refs
         + resident_background_lineage_prediction_write_gate_refs
         + resident_background_lineage_memory_retrieval_refs
+        + resident_background_lineage_autobiographical_repair_carrier_refs
         + life_constraint_refs
         + queue_e_birth_repair_refs
         + queue_e_world_contact_handoff_refs
@@ -863,6 +870,9 @@ def write_resident_turn_writeback(
         resident_background_lineage_memory_retrieval_refs=(
             resident_background_lineage_memory_retrieval_refs
         ),
+        resident_background_lineage_autobiographical_repair_carrier_refs=(
+            resident_background_lineage_autobiographical_repair_carrier_refs
+        ),
         offline_learning_cumulative_refs=offline_learning_cumulative_refs,
         offline_learning_cumulative_integration_mode=(
             str(offline_learning_cumulative_integration_mode)
@@ -1038,6 +1048,10 @@ def write_resident_turn_writeback(
         resumed_dialogue_packet[
             "resident_background_lineage_memory_retrieval_refs"
         ] = resident_background_lineage_memory_retrieval_refs
+    if resident_background_lineage_autobiographical_repair_carrier_refs:
+        resumed_dialogue_packet[
+            "resident_background_lineage_autobiographical_repair_carrier_refs"
+        ] = resident_background_lineage_autobiographical_repair_carrier_refs
     if prediction_write_gate_payload:
         resumed_dialogue_packet.update(prediction_write_gate_payload)
         attach_prediction_write_gate_lineage_fallback(

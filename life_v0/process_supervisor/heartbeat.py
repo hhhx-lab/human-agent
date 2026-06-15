@@ -465,6 +465,7 @@ def write_waiting_heartbeat(
         "memory_retrieval_autobiographical_repair_projection_boundary",
         "memory_retrieval_autobiographical_repair_retrieval_boundary",
         "memory_retrieval_autobiographical_repair_refs",
+        "memory_retrieval_autobiographical_repair_carrier_refs",
         "memory_retrieval_ref_set",
         "memory_retrieval_presence_profile",
         "exit_dream_next_wake_governance_ref",

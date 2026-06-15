@@ -556,6 +556,43 @@ def build_resident_background_lineage_payload(
                 memory_retrieval_refs
             )
             lineage_refs.extend(memory_retrieval_refs)
+        autobiographical_repair_carrier_refs = _dedupe_string_list(
+            _string_list(
+                memory_retrieval_presence.get(
+                    "autobiographical_repair_carrier_refs"
+                )
+            )
+        )
+        if autobiographical_repair_carrier_refs:
+            payload[
+                "resident_background_lineage_autobiographical_repair_carrier_refs"
+            ] = autobiographical_repair_carrier_refs
+            lineage_refs.extend(autobiographical_repair_carrier_refs)
+        for source_key, target_key in (
+            (
+                "autobiographical_repair_source_profile_schema_version",
+                "resident_background_lineage_autobiographical_repair_source_profile_schema_version",
+            ),
+            (
+                "autobiographical_repair_profile_ref",
+                "resident_background_lineage_autobiographical_repair_profile_ref",
+            ),
+            (
+                "autobiographical_repair_hits_ref",
+                "resident_background_lineage_autobiographical_repair_hits_ref",
+            ),
+            (
+                "autobiographical_repair_projection_ref",
+                "resident_background_lineage_autobiographical_repair_projection_ref",
+            ),
+            (
+                "autobiographical_repair_report_boundary",
+                "resident_background_lineage_autobiographical_repair_report_boundary",
+            ),
+        ):
+            value = memory_retrieval_presence.get(source_key)
+            if value not in {None, ""}:
+                payload[target_key] = value
         exit_dream_next_wake_memory_cue_refs = _dedupe_string_list(
             _string_list(
                 memory_retrieval_presence.get(

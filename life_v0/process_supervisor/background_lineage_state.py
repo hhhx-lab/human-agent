@@ -707,6 +707,10 @@ def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
         or governance.get("background_memory_retrieval_presence_profile")
         or previous_presence
     )
+    source_report_profile = _dict_or_empty(
+        profile.get("source_report_profile")
+        or previous_presence.get("source_report_profile")
+    )
     frame_ref = _first_present(
         governance.get("memory_retrieval_frame_ref"),
         governance.get("background_memory_retrieval_frame_ref"),
@@ -732,6 +736,10 @@ def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
         + _string_list(governance.get("memory_retrieval_autobiographical_repair_refs"))
         + _string_list(profile.get("autobiographical_repair_refs"))
         + _string_list(previous_presence.get("autobiographical_repair_refs"))
+        + _string_list(governance.get("memory_retrieval_autobiographical_repair_carrier_refs"))
+        + _string_list(profile.get("autobiographical_repair_carrier_refs"))
+        + _string_list(previous_presence.get("autobiographical_repair_carrier_refs"))
+        + _string_list(source_report_profile.get("carrier_refs"))
         + _string_list(governance.get("exit_dream_next_wake_memory_cue_refs"))
         + _string_list(governance.get("exit_dream_next_wake_governance_refs"))
         + _string_list(profile.get("exit_dream_next_wake_memory_cue_refs"))
@@ -802,6 +810,14 @@ def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
         + _string_list(profile.get("autobiographical_repair_refs"))
         + _string_list(previous_presence.get("autobiographical_repair_refs"))
     )
+    autobiographical_repair_carrier_refs = _dedupe_string_list(
+        _string_list(
+            governance.get("memory_retrieval_autobiographical_repair_carrier_refs")
+        )
+        + _string_list(profile.get("autobiographical_repair_carrier_refs"))
+        + _string_list(previous_presence.get("autobiographical_repair_carrier_refs"))
+        + _string_list(source_report_profile.get("carrier_refs"))
+    )
     if not autobiographical_repair_hit_count and autobiographical_repair_refs:
         autobiographical_repair_hit_count = len(autobiographical_repair_refs)
     if not any(
@@ -860,6 +876,27 @@ def _memory_retrieval_presence(governance: dict[str, Any]) -> dict[str, Any]:
                 previous_presence.get("autobiographical_repair_retrieval_boundary"),
             ),
             "autobiographical_repair_refs": autobiographical_repair_refs,
+            "autobiographical_repair_carrier_refs": (
+                autobiographical_repair_carrier_refs
+            ),
+            "autobiographical_repair_report_boundary": _first_present(
+                profile.get("autobiographical_repair_report_boundary"),
+                previous_presence.get("autobiographical_repair_report_boundary"),
+                source_report_profile.get("report_boundary"),
+            ),
+            "autobiographical_repair_source_profile_schema_version": (
+                source_report_profile.get("schema_version")
+            ),
+            "autobiographical_repair_profile_ref": (
+                source_report_profile.get("profile_ref")
+            ),
+            "autobiographical_repair_hits_ref": (
+                source_report_profile.get("hits_ref")
+            ),
+            "autobiographical_repair_projection_ref": (
+                source_report_profile.get("projection_ref")
+            ),
+            "source_report_profile": source_report_profile,
             "exit_dream_next_wake_governance_ref": _first_present(
                 governance.get("exit_dream_next_wake_governance_ref"),
                 profile.get("exit_dream_next_wake_governance_ref"),

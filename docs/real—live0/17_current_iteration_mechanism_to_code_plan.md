@@ -906,6 +906,24 @@ BackgroundContinuity.background_memory_retrieval_presence_profile
 
 机制含义是：自传责任修复召回不只完成“一次 report 到下一次 background continuity”的恢复，也能完成“恢复后的 nested presence 再次进入 closeout report”的循环。这样多次关闭、唤醒、等待和再次关闭之后，责任、后悔、修复的长期召回不会因为当前轮没有新的 memory frame 而丢失。边界继续保持：这是结构化记忆 evidence bus，不生成道歉模板，不新增 system prompt，不把内部 profile 名称或后悔/修复字段拼成 Adam 的关系语言。
 
+当前 ITR-08 第三十七段继续把第三十六段恢复出的 source / carrier 证据接进真实回合链：
+
+```text
+BackgroundContinuity.autobiographical_repair_carrier_refs
+  -> IdleStrategy.memory_retrieval_autobiographical_repair_carrier_refs
+  -> WaitingHeartbeat carry fields
+  -> ResidentBackgroundLineageState.memory_retrieval_presence.autobiographical_repair_carrier_refs
+  -> DigitalLifeTurn.resident_background_lineage_autobiographical_repair_*
+  -> DialogueWritebackBundle.resident_background_lineage_autobiographical_repair_carrier_refs
+  -> ResumedExternalDialoguePacket.resident_background_lineage_autobiographical_repair_carrier_refs
+  -> ResponseSurface.resident_memory_retrieval_presence
+  -> ModelExpression.resident_background.memory_retrieval_presence / context summary
+```
+
+`background_continuity.py#_memory_retrieval_presence_profile` 现在显式输出 `autobiographical_repair_carrier_refs`，并把 existing profile、report profile、source profile 中的 carrier refs 合并进 ref set。`idle_strategy.py#_memory_retrieval_presence_profile` 会在浅层化 background presence 时保留 `source_report_profile`、carrier refs 和 report boundary，并额外写出 `memory_retrieval_autobiographical_repair_carrier_refs`；`heartbeat.py` 把这个字段加入等待 carry，避免等待心跳剪掉来源证据。`background_lineage_state.py#_memory_retrieval_presence` 会把 carrier refs、report boundary、source profile schema、profile ref、hits ref、projection ref 与 `source_report_profile` 写入 `resident_background_lineage_state.memory_retrieval_presence`。`dialogue_events.py` 会展开 `resident_background_lineage_autobiographical_repair_carrier_refs`、source schema、profile/hits/projection refs 和 report boundary；`dialogue_writeback.py` 与 `resident_turn_writeback.py` 会把 carrier refs 写入 `dialogue_writeback_bundle.json` 与 `resumed_external_dialogue_packet.json`。`response_surface.py` 继续把这些字段放进语言前结构化材料，`model_expression.py` 则把 resident background memory presence 放入模型表达上下文，并在 `model_expression_context_summary` 中保留 carrier ref count、report boundary 和 source schema。
+
+机制含义是：自传责任修复召回不能只有“记得哪些责任/后悔/修复 refs”，还必须能追溯“这些 refs 是从哪份关闭态 report、哪几个 runtime carrier 恢复而来”。这让多次关闭、唤醒、等待、真实回合和再次关闭之后，责任修复记忆仍有来源谱系，而不是变成无来源的扁平列表。边界继续保持：carrier/source 是结构化证据载体，不是自然语言素材；不新增 system prompt，不生成固定道歉或后悔话术，不把 profile 名称、carrier 路径或内部字段播报给 Adam 的关系语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：
