@@ -333,6 +333,10 @@ def build_resident_state_inspection(
                 "schema_runner_report": (
                     "../reports/latest/schema_runner_report.json"
                 ),
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
             },
         )
         membrane["validation_summary"] = (
@@ -621,6 +625,10 @@ def build_resident_state_inspection(
                     "schema_runner/cross_file_logic.json"
                 ),
                 "schema_runner_manifest": "schema_runner/run_manifest.json",
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
             },
         )
         prediction["active_inference_world_contact_summary"] = (
@@ -1899,6 +1907,25 @@ def _collect_prediction_world_contact_summary(
     schema_manifest = _extract_compact_value(
         section.get("schema_runner_manifest", {})
     )
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    world_contact_presence = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        world_contact_presence,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
     workspace_contents = _extract_nested_value(
         prediction_workspace,
         "workspace_contents",
@@ -1930,6 +1957,11 @@ def _collect_prediction_world_contact_summary(
             or validation_rollup
         ),
         "schema_runner": bool(schema_cross_file or schema_manifest),
+        "live_queue_e_world_contact_handoff": bool(
+            world_contact_handoff
+            or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or live_queue_e_handoff.get("queue_e_world_contact_handoff_status")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -2109,6 +2141,7 @@ def _collect_prediction_world_contact_summary(
         "active_inference_boundary": (
             "prediction_world_contact_state_view_not_tool_gateway_or_fact_claim"
         ),
+        **live_queue_e_handoff,
     }
 
 
@@ -2852,6 +2885,25 @@ def _collect_life_membrane_validation_summary(
     schema_report = _extract_compact_value(
         section.get("schema_runner_report", {})
     )
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    world_contact_presence = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        world_contact_presence,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
     future_no_go = _extract_nested_value(go_nogo, "future_no_go_profile")
     body_pressure_profile = _extract_nested_value(go_nogo, "body_pressure_profile")
     body_signal_modulation = _extract_nested_value(
@@ -2895,6 +2947,11 @@ def _collect_life_membrane_validation_summary(
             or schema_report
         ),
         "reports": bool(life_membrane_report or validation_report or schema_report),
+        "live_queue_e_world_contact_handoff": bool(
+            world_contact_handoff
+            or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or live_queue_e_handoff.get("queue_e_world_contact_handoff_status")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -3122,6 +3179,7 @@ def _collect_life_membrane_validation_summary(
         "membrane_boundary": (
             "life_membrane_state_view_routes_not_static_blocker_or_tool_gateway"
         ),
+        **live_queue_e_handoff,
     }
 
 
@@ -4743,3 +4801,59 @@ def _first_non_empty(*values: Any) -> Any:
         if value not in (None, "", [], {}):
             return value
     return None
+
+
+def _live_queue_e_world_contact_handoff_inspection_snapshot(
+    *,
+    handoff: dict[str, Any],
+    terminal_loop: dict[str, Any] | None = None,
+    world_contact_presence: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    terminal_loop = terminal_loop or {}
+    world_contact_presence = world_contact_presence or {}
+    consciousness_refs = _list_refs(
+        _first_non_empty(
+            handoff.get("live_responsibility_consciousness_context_refs"),
+            terminal_loop.get("live_responsibility_consciousness_context_refs"),
+            world_contact_presence.get(
+                "live_responsibility_consciousness_context_refs"
+            ),
+        )
+    )
+    live_refreshed = bool(
+        _first_non_empty(
+            handoff.get("live_queue_e_world_contact_handoff_refreshed"),
+            terminal_loop.get("live_queue_e_world_contact_handoff_refreshed"),
+            world_contact_presence.get(
+                "live_queue_e_world_contact_handoff_refreshed"
+            ),
+            handoff.get("last_projected_from_live_turn_ref"),
+            handoff.get("live_turn_focus"),
+        )
+    )
+    return {
+        "queue_e_world_contact_handoff_status": _first_non_empty(
+            handoff.get("handoff_status"),
+            terminal_loop.get("queue_e_world_contact_handoff_status"),
+            world_contact_presence.get("handoff_status"),
+        ),
+        "live_queue_e_world_contact_handoff_refreshed": live_refreshed,
+        "live_responsibility_consciousness_context_ref_count": _count_any(
+            consciousness_refs
+        ),
+        "live_queue_e_world_contact_handoff_turn_focus": _first_non_empty(
+            handoff.get("live_turn_focus"),
+            terminal_loop.get("live_queue_e_world_contact_handoff_turn_focus"),
+            world_contact_presence.get(
+                "live_queue_e_world_contact_handoff_turn_focus"
+            ),
+        ),
+        "live_queue_e_world_contact_handoff_boundary": _first_non_empty(
+            handoff.get("handoff_boundary"),
+            handoff.get("live_queue_e_world_contact_handoff_boundary"),
+            terminal_loop.get("live_queue_e_world_contact_handoff_boundary"),
+            world_contact_presence.get(
+                "live_queue_e_world_contact_handoff_boundary"
+            ),
+        ),
+    }
