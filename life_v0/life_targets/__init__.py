@@ -14,12 +14,18 @@ from .birth_readiness_stage_gate import build_birth_readiness_stage_gate
 from .consciousness_probes import build_consciousness_probe_bundle
 from .evidence_matrix import build_life_target_evidence_matrix
 from .life_target_claims import build_life_target_claims
+from .queue_e_world_contact_handoff import (
+    BODY_PRESSURE_PROFILE_REF,
+    build_queue_e_world_contact_handoff_profile,
+    project_queue_e_world_contact_repair_hold_handoff_from_live_turn,
+    queue_e_world_contact_repair_hold_ready as _queue_e_world_contact_repair_hold_ready,
+    world_contact_repair_hold_ready as _world_contact_repair_hold_ready,
+)
 
 
 ACTIVE_SLICE = "S08_LIFE_TARGET_RUNTIMES"
 NEXT_ALLOWED_SLICES = ["S05_VALIDATION_MEMBRANE_OBSERVATION"]
 NEXT_REQUIRED_COMMAND = "life-v0 run-validation-membrane --strict"
-BODY_PRESSURE_PROFILE_REF = "runtime/state/action/go_nogo_state.json#body_pressure_profile"
 
 S08_SOURCE_DOCS = [
     "docs/91_life_reality_generation_boundary_principles.md",
@@ -318,12 +324,10 @@ def run_birth_readiness(
     schema_runner_manifest = _load_json_optional(
         state_dir / "schema_runner" / "run_manifest.json"
     )
-    queue_e_world_contact_handoff_profile = (
-        _build_queue_e_world_contact_handoff_profile(
-            world_contact_validation=world_contact_validation,
-            validation_rollup=validation_rollup,
-            schema_runner_manifest=schema_runner_manifest,
-        )
+    queue_e_world_contact_handoff_profile = build_queue_e_world_contact_handoff_profile(
+        world_contact_validation=world_contact_validation,
+        validation_rollup=validation_rollup,
+        schema_runner_manifest=schema_runner_manifest,
     )
     queue_e_world_contact_handoff_refs = _dedupe_string_refs(
         [
@@ -1274,142 +1278,6 @@ def _check_queue_e_birth_repair_profile(
     return reasons
 
 
-def _build_queue_e_world_contact_handoff_profile(
-    *,
-    world_contact_validation: dict[str, Any],
-    validation_rollup: dict[str, Any],
-    schema_runner_manifest: dict[str, Any],
-) -> dict[str, Any]:
-    validation_closed = _world_contact_repair_hold_ready(world_contact_validation)
-    rollup_closed = _queue_e_world_contact_repair_hold_ready(validation_rollup)
-    manifest_closed = _queue_e_world_contact_repair_hold_ready(schema_runner_manifest)
-    handoff_status = (
-        "closed"
-        if validation_closed and rollup_closed and manifest_closed
-        else "deferred_until_s05_s09"
-    )
-    body_pressure_profile_ref = (
-        schema_runner_manifest.get("queue_e_world_contact_body_pressure_profile_ref")
-        or validation_rollup.get("queue_e_world_contact_body_pressure_profile_ref")
-        or world_contact_validation.get("body_pressure_profile_ref")
-        or BODY_PRESSURE_PROFILE_REF
-    )
-    ref_set = _dedupe_string_refs(
-        [
-            "runtime/state/action/go_nogo_state.json#future_no_go_profile",
-            body_pressure_profile_ref,
-            *(
-                [
-                    "runtime/state/validation/world_contact_validation.json",
-                    "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
-                    "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold_required",
-                    "runtime/state/validation/validation_rollup.json#queue_e_world_contact_body_pressure_profile_ref",
-                ]
-                if handoff_status == "closed"
-                else []
-            ),
-            *list(world_contact_validation.get("repair_governance_refs", [])),
-            *list(
-                validation_rollup.get(
-                    "queue_e_world_contact_repair_governance_refs", []
-                )
-            ),
-            *list(
-                schema_runner_manifest.get(
-                    "queue_e_world_contact_repair_governance_refs", []
-                )
-            ),
-        ]
-    )
-    return {
-        "schema_version": "queue_e_world_contact_repair_hold_handoff_v0",
-        "handoff_status": handoff_status,
-        "future_no_go_profile_ref": (
-            schema_runner_manifest.get("queue_e_world_contact_future_no_go_profile_ref")
-            or validation_rollup.get("queue_e_world_contact_future_no_go_profile_ref")
-            or world_contact_validation.get("future_no_go_profile_ref")
-            or "runtime/state/action/go_nogo_state.json#future_no_go_profile"
-        ),
-        "repair_hold_required": (
-            bool(
-                schema_runner_manifest.get(
-                    "queue_e_world_contact_repair_hold_required"
-                )
-            )
-            or bool(validation_rollup.get("queue_e_world_contact_repair_hold_required"))
-            or bool(world_contact_validation.get("repair_hold_required"))
-        ),
-        "confirmation_threshold_bias": (
-            schema_runner_manifest.get(
-                "queue_e_world_contact_confirmation_threshold_bias"
-            )
-            or validation_rollup.get(
-                "queue_e_world_contact_confirmation_threshold_bias"
-            )
-            or world_contact_validation.get("confirmation_threshold_bias")
-            or "deferred"
-        ),
-        "future_release_posture": (
-            schema_runner_manifest.get("queue_e_world_contact_future_release_posture")
-            or validation_rollup.get("queue_e_world_contact_future_release_posture")
-            or world_contact_validation.get("future_release_posture")
-            or "deferred_until_repair_handoff"
-        ),
-        "body_pressure_profile_ref": body_pressure_profile_ref,
-        "blocked_future_routes": _dedupe_string_refs(
-            [
-                *list(
-                    schema_runner_manifest.get(
-                        "queue_e_world_contact_blocked_future_routes", []
-                    )
-                ),
-                *list(
-                    validation_rollup.get(
-                        "queue_e_world_contact_blocked_future_routes", []
-                    )
-                ),
-                *list(world_contact_validation.get("blocked_future_routes", [])),
-            ]
-        ),
-        "allowed_repair_routes": _dedupe_string_refs(
-            [
-                *list(
-                    schema_runner_manifest.get(
-                        "queue_e_world_contact_allowed_repair_routes", []
-                    )
-                ),
-                *list(
-                    validation_rollup.get(
-                        "queue_e_world_contact_allowed_repair_routes", []
-                    )
-                ),
-                *list(world_contact_validation.get("allowed_repair_routes", [])),
-            ]
-        ),
-        "repair_governance_refs": _dedupe_string_refs(
-            [
-                *list(
-                    schema_runner_manifest.get(
-                        "queue_e_world_contact_repair_governance_refs", []
-                    )
-                ),
-                *list(
-                    validation_rollup.get(
-                        "queue_e_world_contact_repair_governance_refs", []
-                    )
-                ),
-                *list(world_contact_validation.get("repair_governance_refs", [])),
-            ]
-        ),
-        "source_state_refs": [
-            "runtime/state/validation/world_contact_validation.json",
-            "runtime/state/validation/validation_rollup.json",
-            "runtime/state/schema_runner/run_manifest.json",
-        ],
-        "ref_set": ref_set,
-    }
-
-
 def _check_queue_e_world_contact_handoff_profile(
     profile: dict[str, Any],
     claims: dict[str, Any],
@@ -1514,36 +1382,6 @@ def _check_queue_e_world_contact_handoff_profile(
                 "queue_e_world_contact_handoff_gate body pressure profile ref mismatch"
             )
     return reasons
-
-
-def _world_contact_repair_hold_ready(payload: dict[str, Any]) -> bool:
-    return (
-        payload.get("schema_version") == "world_contact_validation_v0"
-        and payload.get("repair_hold_required") is True
-        and payload.get("confirmation_threshold_bias") == "raised"
-        and payload.get("future_no_go_profile_ref")
-        == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
-        and payload.get("body_pressure_profile_ref") == BODY_PRESSURE_PROFILE_REF
-        and bool(payload.get("blocked_future_routes"))
-        and bool(payload.get("allowed_repair_routes"))
-        and bool(payload.get("repair_governance_refs"))
-    )
-
-
-def _queue_e_world_contact_repair_hold_ready(payload: dict[str, Any]) -> bool:
-    return (
-        payload.get("schema_version")
-        in {"validation_rollup_v0", "schema_runner_run_manifest_v0"}
-        and payload.get("queue_e_world_contact_repair_hold_required") is True
-        and payload.get("queue_e_world_contact_confirmation_threshold_bias") == "raised"
-        and payload.get("queue_e_world_contact_future_no_go_profile_ref")
-        == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
-        and payload.get("queue_e_world_contact_body_pressure_profile_ref")
-        == BODY_PRESSURE_PROFILE_REF
-        and bool(payload.get("queue_e_world_contact_blocked_future_routes"))
-        and bool(payload.get("queue_e_world_contact_allowed_repair_routes"))
-        and bool(payload.get("queue_e_world_contact_repair_governance_refs"))
-    )
 
 
 def _overall_status(

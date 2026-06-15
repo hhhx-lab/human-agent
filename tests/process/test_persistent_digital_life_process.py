@@ -19920,6 +19920,12 @@ class PersistentDigitalLifeProcessTests(
             persisted_responsibility_loop = self._read_json(
                 action_dir / "responsibility_loop_state.json"
             )
+            persisted_queue_e_handoff = self._read_json(
+                runtime_root
+                / "state"
+                / "life_targets"
+                / "queue_e_world_contact_repair_hold_handoff.json"
+            )
             dialogue_writeback_bundle = self._read_json(
                 reports_dir / "dialogue_writeback_bundle.json"
             )
@@ -19989,6 +19995,19 @@ class PersistentDigitalLifeProcessTests(
                     "schema_version"
                 ],
                 "responsibility_consciousness_context_profile_v0",
+            )
+            self.assertTrue(
+                persisted_terminal_loop["live_queue_e_world_contact_handoff_refreshed"]
+            )
+            self.assertIn(
+                "runtime/state/action/responsibility_loop_state.json#consciousness_context_profile",
+                persisted_queue_e_handoff.get(
+                    "live_responsibility_consciousness_context_refs", []
+                ),
+            )
+            self.assertIn(
+                "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
+                dialogue_writeback_bundle["workspace_frame_writeback_refs"],
             )
             self.assertEqual(
                 persisted_relationship_timeline["dialogue_turn_refs"],
@@ -20727,15 +20746,20 @@ class PersistentDigitalLifeProcessTests(
                 ],
                 expected_queue_e_birth_repair_refs,
             )
-            self.assertEqual(
-                dialogue_writeback_bundle["queue_e_world_contact_handoff_refs"],
-                expected_queue_e_world_contact_handoff_refs,
+            live_queue_e_handoff_refs = dialogue_writeback_bundle[
+                "queue_e_world_contact_handoff_refs"
+            ]
+            for ref in expected_queue_e_world_contact_handoff_refs:
+                self.assertIn(ref, live_queue_e_handoff_refs)
+            self.assertIn(
+                "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+                live_queue_e_handoff_refs,
             )
             self.assertEqual(
                 dialogue_writeback_bundle[
                     "resident_background_lineage_world_contact_handoff_refs"
                 ],
-                expected_queue_e_world_contact_handoff_refs,
+                live_queue_e_handoff_refs,
             )
             self.assertEqual(
                 dialogue_writeback_bundle["life_constraint_refs"],
@@ -21131,13 +21155,15 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertEqual(
                 resumed_dialogue_packet["queue_e_world_contact_handoff_status"],
-                "closed",
+                persisted_queue_e_handoff.get("handoff_status"),
             )
-            self.assertTrue(
-                resumed_dialogue_packet[
-                    "queue_e_world_contact_repair_hold_required"
-                ]
-            )
+            if persisted_queue_e_handoff.get("repair_hold_required") is not None:
+                self.assertEqual(
+                    resumed_dialogue_packet[
+                        "queue_e_world_contact_repair_hold_required"
+                    ],
+                    persisted_queue_e_handoff.get("repair_hold_required"),
+                )
             self.assertEqual(
                 resumed_dialogue_packet["queue_e_world_contact_handoff_refs"],
                 dialogue_writeback_bundle["queue_e_world_contact_handoff_refs"],

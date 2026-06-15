@@ -599,6 +599,96 @@ class NeuralLifeCoreTests(unittest.TestCase):
             "reportable_partial",
         )
 
+    def test_live_turn_refreshes_queue_e_world_contact_handoff_from_validation_chain(self):
+        from life_v0.life_targets.queue_e_world_contact_handoff import (
+            project_queue_e_world_contact_repair_hold_handoff_from_live_turn,
+        )
+
+        handoff = project_queue_e_world_contact_repair_hold_handoff_from_live_turn(
+            handoff_profile={},
+            generated_at="2026-06-15T12:00:00+00:00",
+            world_contact_validation={
+                "schema_version": "world_contact_validation_v0",
+                "repair_hold_required": True,
+                "confirmation_threshold_bias": "raised",
+                "future_no_go_profile_ref": (
+                    "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+                ),
+                "body_pressure_profile_ref": (
+                    "runtime/state/action/go_nogo_state.json#body_pressure_profile"
+                ),
+                "blocked_future_routes": ["direct_world_contact_release"],
+                "allowed_repair_routes": ["shadow_repair_rehearsal"],
+                "repair_governance_refs": [
+                    "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold"
+                ],
+            },
+            validation_rollup={
+                "schema_version": "validation_rollup_v0",
+                "queue_e_world_contact_repair_hold_required": True,
+                "queue_e_world_contact_confirmation_threshold_bias": "raised",
+                "queue_e_world_contact_future_no_go_profile_ref": (
+                    "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+                ),
+                "queue_e_world_contact_body_pressure_profile_ref": (
+                    "runtime/state/action/go_nogo_state.json#body_pressure_profile"
+                ),
+                "queue_e_world_contact_blocked_future_routes": [
+                    "direct_world_contact_release"
+                ],
+                "queue_e_world_contact_allowed_repair_routes": [
+                    "shadow_repair_rehearsal"
+                ],
+                "queue_e_world_contact_repair_governance_refs": [
+                    "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold"
+                ],
+            },
+            schema_runner_manifest={
+                "schema_version": "schema_runner_run_manifest_v0",
+                "queue_e_world_contact_repair_hold_required": True,
+                "queue_e_world_contact_confirmation_threshold_bias": "raised",
+                "queue_e_world_contact_future_no_go_profile_ref": (
+                    "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+                ),
+                "queue_e_world_contact_body_pressure_profile_ref": (
+                    "runtime/state/action/go_nogo_state.json#body_pressure_profile"
+                ),
+                "queue_e_world_contact_blocked_future_routes": [
+                    "direct_world_contact_release"
+                ],
+                "queue_e_world_contact_allowed_repair_routes": [
+                    "shadow_repair_rehearsal"
+                ],
+                "queue_e_world_contact_repair_governance_refs": [
+                    "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold"
+                ],
+            },
+            responsibility_loop_state={
+                "schema_version": "responsibility_loop_state_v0",
+                "consciousness_context_profile": {
+                    "schema_version": "responsibility_consciousness_context_profile_v0",
+                    "ref_set": [
+                        "runtime/state/consciousness/workspace_frame.json",
+                        "runtime/state/consciousness/broadcast_frame.json",
+                    ],
+                },
+            },
+            live_turn_focus="repair_commitment_shared_language",
+            live_dialogue_turn_refs=[
+                "runtime/state/language/dialogue_turn_log.jsonl#turn-1"
+            ],
+        )
+        self.assertEqual(handoff["handoff_status"], "closed")
+        self.assertTrue(handoff["repair_hold_required"])
+        self.assertIn(
+            "runtime/state/action/responsibility_loop_state.json#consciousness_context_profile",
+            handoff["live_responsibility_consciousness_context_refs"],
+        )
+        self.assertEqual(
+            handoff["handoff_boundary"],
+            "queue_e_world_contact_handoff_live_turn_evidence_not_spoken_language",
+        )
+
     def _read_json(self, path: Path):
         with path.open("r", encoding="utf-8") as handle:
             return json.load(handle)

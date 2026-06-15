@@ -9,6 +9,10 @@ from ..body.trait_drift import build_trait_drift_monitor_from_self_model
 from ..life_targets.consciousness_probes import (
     project_consciousness_probe_bundle_from_live_turn,
 )
+from ..life_targets.queue_e_world_contact_handoff import (
+    HANDOFF_PROFILE_REF,
+    project_queue_e_world_contact_repair_hold_handoff_from_live_turn,
+)
 from ..membrane.responsibility_loop import (
     project_responsibility_loop_with_consciousness_context,
 )
@@ -117,6 +121,7 @@ CONSCIOUSNESS_CHAIN_WRITEBACK_REFS = [
     CONSCIOUSNESS_PROBE_REF,
     MEMORY_WRITE_GATE_CONSCIOUSNESS_CONTEXT_REF,
     f"{RESPONSIBILITY_LOOP_STATE_REF}#consciousness_context_profile",
+    HANDOFF_PROFILE_REF,
 ]
 _LIVE_CONSCIOUSNESS_LINEAGE_FIELD_KEYS = (
     "resident_background_lineage_consciousness_write_context_refs",
@@ -435,6 +440,7 @@ def write_resident_turn_writeback(
     )
     effective_memory_write_gate = memory_write_gate
     live_consciousness_chain_profile: dict[str, Any] = {}
+    live_queue_e_handoff_profile: dict[str, Any] = {}
     if continuity_refresh:
         effective_memory_write_gate = (
             continuity_refresh.get("memory_write_gate") or memory_write_gate
@@ -442,8 +448,14 @@ def write_resident_turn_writeback(
         live_consciousness_chain_profile = _live_consciousness_chain_profile(
             continuity_refresh
         )
+        live_queue_e_handoff_profile = _live_queue_e_handoff_terminal_profile(
+            continuity_refresh
+        )
         if live_consciousness_chain_profile:
             updated_terminal_life_loop_state.update(live_consciousness_chain_profile)
+        if live_queue_e_handoff_profile:
+            updated_terminal_life_loop_state.update(live_queue_e_handoff_profile)
+        if live_consciousness_chain_profile or live_queue_e_handoff_profile:
             write_json(
                 terminal_dir / "terminal_life_loop_state.json",
                 updated_terminal_life_loop_state,
@@ -462,7 +474,7 @@ def write_resident_turn_writeback(
         if ref
     ]
     background_trait_convergence_payload = build_background_trait_convergence_payload(
-        terminal_life_loop_state
+        updated_terminal_life_loop_state
     )
     background_trait_convergence_refs = list(
         background_trait_convergence_payload.get(
@@ -615,20 +627,33 @@ def write_resident_turn_writeback(
         )
     )
     queue_e_birth_repair_payload = build_queue_e_birth_repair_payload(
-        terminal_life_loop_state
+        updated_terminal_life_loop_state
     )
     queue_e_birth_repair_refs = list(
         queue_e_birth_repair_payload.get("queue_e_birth_repair_refs", [])
     )
-    queue_e_world_contact_handoff_payload = (
-        build_queue_e_world_contact_handoff_payload(terminal_life_loop_state)
+    queue_e_world_contact_handoff_payload = build_queue_e_world_contact_handoff_payload(
+        updated_terminal_life_loop_state
     )
     queue_e_world_contact_handoff_refs = list(
         queue_e_world_contact_handoff_payload.get(
             "queue_e_world_contact_handoff_refs", []
         )
     )
-    life_constraint_payload = build_life_constraint_payload(terminal_life_loop_state)
+    if live_queue_e_handoff_profile:
+        if queue_e_world_contact_handoff_refs:
+            resident_background_lineage_world_contact_handoff_refs = list(
+                queue_e_world_contact_handoff_refs
+            )
+        else:
+            resident_background_lineage_world_contact_handoff_refs = _dedupe_refs(
+                _string_list(
+                    live_queue_e_handoff_profile.get("queue_e_world_contact_ref_set")
+                )
+            )
+    life_constraint_payload = build_life_constraint_payload(
+        updated_terminal_life_loop_state
+    )
     life_constraint_refs = list(
         life_constraint_payload.get("life_constraint_evidence_refs", [])
     )
@@ -1274,6 +1299,9 @@ def write_resident_turn_writeback(
         resumed_dialogue_packet["memory_write_gate_consciousness_context_ref"] = (
             MEMORY_WRITE_GATE_CONSCIOUSNESS_CONTEXT_REF
         )
+        resumed_dialogue_packet["queue_e_world_contact_handoff_profile_ref"] = (
+            HANDOFF_PROFILE_REF
+        )
         resumed_dialogue_packet["prediction_workspace_ref"] = PREDICTION_WORKSPACE_REF
         resumed_dialogue_packet["engram_index_ref"] = ENGRAM_INDEX_REF
         resumed_dialogue_packet["autobiographical_stack_ref"] = (
@@ -1754,6 +1782,32 @@ def _refresh_long_horizon_continuity(
         write_json(memory_write_gate_path, updated_memory_write_gate)
     if updated_responsibility_loop_state:
         write_json(responsibility_loop_path, updated_responsibility_loop_state)
+    life_targets_dir = state_dir / "life_targets"
+    life_targets_dir.mkdir(parents=True, exist_ok=True)
+    updated_queue_e_handoff_profile = (
+        project_queue_e_world_contact_repair_hold_handoff_from_live_turn(
+            handoff_profile=_read_json_if_exists(
+                life_targets_dir / "queue_e_world_contact_repair_hold_handoff.json"
+            ),
+            generated_at=generated_at,
+            world_contact_validation=_read_json_if_exists(
+                state_dir / "validation" / "world_contact_validation.json"
+            ),
+            validation_rollup=_read_json_if_exists(
+                state_dir / "validation" / "validation_rollup.json"
+            ),
+            schema_runner_manifest=_read_json_if_exists(
+                state_dir / "schema_runner" / "run_manifest.json"
+            ),
+            responsibility_loop_state=updated_responsibility_loop_state,
+            live_turn_focus=live_turn_focus,
+            live_dialogue_turn_refs=dialogue_turn_refs,
+        )
+    )
+    write_json(
+        life_targets_dir / "queue_e_world_contact_repair_hold_handoff.json",
+        updated_queue_e_handoff_profile,
+    )
     trait_drift_monitor = build_trait_drift_monitor_from_self_model(
         run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
         generated_at=generated_at,
@@ -1784,10 +1838,75 @@ def _refresh_long_horizon_continuity(
         "consciousness_probe_bundle": updated_consciousness_probe,
         "memory_write_gate": updated_memory_write_gate,
         "responsibility_loop_state": updated_responsibility_loop_state,
+        "queue_e_world_contact_handoff_profile": updated_queue_e_handoff_profile,
         "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
         "memory_retrieval_frame": memory_retrieval_frame or {},
     }
+
+
+def _live_queue_e_handoff_terminal_profile(
+    continuity_refresh: dict[str, Any],
+) -> dict[str, Any]:
+    handoff = continuity_refresh.get("queue_e_world_contact_handoff_profile")
+    if not isinstance(handoff, dict) or not handoff:
+        return {}
+    profile: dict[str, Any] = {
+        "live_queue_e_world_contact_handoff_refreshed": True,
+        "queue_e_world_contact_handoff_status": handoff.get("handoff_status"),
+        "queue_e_world_contact_handoff_profile_ref": HANDOFF_PROFILE_REF,
+        "queue_e_world_contact_repair_hold_required": handoff.get(
+            "repair_hold_required"
+        ),
+        "queue_e_world_contact_confirmation_threshold_bias": handoff.get(
+            "confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_future_release_posture": handoff.get(
+            "future_release_posture"
+        ),
+        "queue_e_world_contact_body_pressure_profile_ref": handoff.get(
+            "body_pressure_profile_ref"
+        ),
+        "queue_e_world_contact_blocked_future_routes": list(
+            handoff.get("blocked_future_routes", [])
+        ),
+        "queue_e_world_contact_allowed_repair_routes": list(
+            handoff.get("allowed_repair_routes", [])
+        ),
+        "queue_e_world_contact_repair_governance_refs": list(
+            handoff.get("repair_governance_refs", [])
+        ),
+        "queue_e_world_contact_ref_set": _dedupe_refs(
+            _string_list(handoff.get("ref_set"))
+        ),
+        "live_queue_e_world_contact_handoff_boundary": (
+            handoff.get("handoff_boundary")
+            or "queue_e_world_contact_handoff_live_turn_evidence_not_spoken_language"
+        ),
+    }
+    if handoff.get("repair_hold_required") is True:
+        profile["queue_e_world_contact_pressure_level"] = "elevated"
+        profile["queue_e_world_contact_waiting_posture"] = (
+            "world_contact_repair_handoff_hold_waiting"
+        )
+        profile["queue_e_world_contact_attention_target"] = (
+            "world_contact_validation_schema_handoff"
+        )
+    live_turn_focus = handoff.get("live_turn_focus")
+    if live_turn_focus:
+        profile["live_turn_focus"] = live_turn_focus
+    live_responsibility_refs = _string_list(
+        handoff.get("live_responsibility_consciousness_context_refs")
+    )
+    if live_responsibility_refs:
+        profile["live_responsibility_consciousness_context_refs"] = (
+            live_responsibility_refs
+        )
+    if profile.get("queue_e_world_contact_ref_set"):
+        profile["queue_e_world_contact_handoff_refs"] = profile[
+            "queue_e_world_contact_ref_set"
+        ]
+    return profile
 
 
 def _apply_live_consciousness_lineage_fields(
