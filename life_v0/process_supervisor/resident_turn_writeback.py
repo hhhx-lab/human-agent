@@ -35,6 +35,7 @@ from ..language.commitment_expression import build_commitment_expression_plan
 from ..language.expression_monitor import (
     project_expression_plan_with_queue_e_repair_modulation,
 )
+from ..language.ref_consistency import project_language_relationship_ref_consistency_profile
 from ..language.semantic_map import project_semantic_map_from_live_evidence
 from ..language.shared_terms import (
     SHARED_TERM_REGISTRY_REF,
@@ -2030,6 +2031,24 @@ def _refresh_long_horizon_continuity(
             generated_at=generated_at,
         )
         write_json(language_dir / "semantic_map_frame.json", semantic_map)
+    ref_consistency_profile = project_language_relationship_ref_consistency_profile(
+        generated_at=generated_at,
+        language_percept=language_percept or {},
+        semantic_map=semantic_map or {},
+        relation_scope_index=relation_scope_index or {},
+        shared_term_registry=refreshed_shared_term_registry
+        or existing_shared_term_registry
+        or {},
+        relationship_graph=evolved_relationship_graph,
+        relationship_timeline=refreshed_relationship_timeline,
+        self_model_state=evolved_self_model_state,
+        inner_speech=_read_json_if_exists(language_dir / "inner_speech_frame.json"),
+        expression_plan=expression_plan,
+    )
+    write_json(
+        language_dir / "language_relationship_ref_consistency.json",
+        ref_consistency_profile,
+    )
     trait_drift_monitor = build_trait_drift_monitor_from_self_model(
         run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
         generated_at=generated_at,

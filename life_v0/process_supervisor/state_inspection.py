@@ -493,6 +493,9 @@ def build_resident_state_inspection(
                     "language/apology_repair_language_trace.json"
                 ),
                 "shared_term_registry": "language/shared_term_registry.json",
+                "language_relationship_ref_consistency": (
+                    "language/language_relationship_ref_consistency.json"
+                ),
                 "memory_retrieval": "memory/memory_retrieval_frame.json",
                 "queue_e_world_contact_handoff": (
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
@@ -596,6 +599,9 @@ def build_resident_state_inspection(
                 "expression_monitor": "language/expression_monitor_state.json",
                 "expression_plan": "language/expression_plan.json",
                 "shared_term_registry": "language/shared_term_registry.json",
+                "language_relationship_ref_consistency": (
+                    "language/language_relationship_ref_consistency.json"
+                ),
                 "context_accumulation_window": (
                     "terminal/context_accumulation_window.json"
                 ),
@@ -1384,6 +1390,33 @@ def _identity_name_binding_inspection_snapshot(
         life_name_registry=life_name_registry_value,
         continuity_refs=continuity_refs_value,
     )
+
+
+def _language_relationship_ref_consistency_inspection_snapshot(
+    *,
+    ref_consistency: dict[str, Any],
+) -> dict[str, Any]:
+    ref_consistency = ref_consistency if isinstance(ref_consistency, dict) else {}
+    present = (
+        ref_consistency.get("schema_version")
+        == "language_relationship_ref_consistency_profile_v0"
+    )
+    return {
+        "language_relationship_ref_consistency_present": present,
+        "language_relationship_ref_consistency_status": ref_consistency.get("status"),
+        "language_relationship_ref_consistency_finding_count": ref_consistency.get(
+            "finding_count"
+        ),
+        "language_relationship_ref_consistency_aligned_count": ref_consistency.get(
+            "aligned_finding_count"
+        ),
+        "language_relationship_ref_consistency_mismatch_count": ref_consistency.get(
+            "mismatch_finding_count"
+        ),
+        "language_relationship_ref_consistency_boundary": ref_consistency.get(
+            "ref_consistency_boundary"
+        ),
+    }
 
 
 def _relationship_stage_evolution_inspection_snapshot(
@@ -4718,6 +4751,12 @@ def _collect_language_generation_consumption_summary(
     pragmatic_inference = _pragmatic_inference_inspection_snapshot(
         semantic_map=semantic_map,
     )
+    ref_consistency = _extract_compact_value(
+        section.get("language_relationship_ref_consistency", {})
+    )
+    ref_consistency_snapshot = _language_relationship_ref_consistency_inspection_snapshot(
+        ref_consistency=ref_consistency,
+    )
     contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
     doc_to_code_matrix = _extract_compact_value(
         section.get("doc_to_code_coverage_matrix", {})
@@ -4799,6 +4838,9 @@ def _collect_language_generation_consumption_summary(
         ),
         "pragmatic_inference": bool(
             pragmatic_inference.get("pragmatic_inference_present")
+        ),
+        "language_relationship_ref_consistency": bool(
+            ref_consistency_snapshot.get("language_relationship_ref_consistency_present")
         ),
         "v0_contract_coverage": bool(
             contract_coverage.get("v0_contract_coverage_present")
@@ -5001,6 +5043,7 @@ def _collect_language_generation_consumption_summary(
         **expression_closeout,
         **shared_term_promotion,
         **pragmatic_inference,
+        **ref_consistency_snapshot,
         **contract_coverage,
     }
 
@@ -5078,6 +5121,12 @@ def _collect_relationship_continuity_summary(
     relationship_stage_evolution = _relationship_stage_evolution_inspection_snapshot(
         relationship_graph=relationship_graph,
         self_model=self_model,
+    )
+    ref_consistency = _extract_compact_value(
+        section.get("language_relationship_ref_consistency", {})
+    )
+    ref_consistency_snapshot = _language_relationship_ref_consistency_inspection_snapshot(
+        ref_consistency=ref_consistency,
     )
     contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
     doc_to_code_matrix = _extract_compact_value(
@@ -5157,6 +5206,9 @@ def _collect_relationship_continuity_summary(
         ),
         "relationship_stage_evolution": bool(
             relationship_stage_evolution.get("relationship_stage_evolution_present")
+        ),
+        "language_relationship_ref_consistency": bool(
+            ref_consistency_snapshot.get("language_relationship_ref_consistency_present")
         ),
     }
     active_domains = [
@@ -5256,6 +5308,7 @@ def _collect_relationship_continuity_summary(
         **schema_handoff,
         **shared_term_promotion,
         **relationship_stage_evolution,
+        **ref_consistency_snapshot,
         **contract_coverage,
     }
 

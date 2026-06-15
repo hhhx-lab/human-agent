@@ -18,6 +18,7 @@ from .inner_speech import build_inner_speech_frame
 from .language_state import build_language_relationship_state
 from .narrative_trace import build_self_narrative_language_trace
 from .percept import build_language_percept_frame
+from .ref_consistency import project_language_relationship_ref_consistency_profile
 from .percept_input import resolve_incoming_turn_for_language_build
 from .relation_scope import build_relation_scope_language_index
 from .relationship_graph import build_relationship_subject_graph
@@ -411,6 +412,18 @@ def run_build_language_relationship(
         language_learning_plan=language_learning_plan,
         relationship_learning_plan=relationship_learning_plan,
     )
+    ref_consistency_profile = project_language_relationship_ref_consistency_profile(
+        generated_at=generated_at,
+        language_percept=language_percept,
+        semantic_map=semantic_map,
+        relation_scope_index=relation_scope_index,
+        shared_term_registry=shared_term_registry,
+        relationship_graph=relationship_graph,
+        relationship_timeline=relationship_timeline,
+        self_model_state=self_model_state,
+        inner_speech=inner_speech,
+        expression_plan=expression_plan,
+    )
     updated_commitment_truth = project_commitment_truth_state(
         commitment_truth_state=commitment_truth_state,
         responsibility_loop_state=responsibility_loop,
@@ -469,6 +482,7 @@ def run_build_language_relationship(
         "runtime/state/prediction/active_sampling_plan.json",
         "runtime/state/memory/memory_write_gate.json",
         "runtime/state/self/self_model.json",
+        "runtime/state/language/language_relationship_ref_consistency.json",
     ]
     receipt_ref = f"runtime/receipts/language_relationship_{run_id}.json"
 
@@ -599,6 +613,10 @@ def run_build_language_relationship(
         _write_json(language_dir / "semantic_map_frame.json", semantic_map)
         _write_json(language_dir / "commitment_expression_plan.json", commitment_expression_plan)
         _write_json(language_dir / "apology_repair_language_trace.json", apology_repair_language_trace)
+        _write_json(
+            language_dir / "language_relationship_ref_consistency.json",
+            ref_consistency_profile,
+        )
         _append_jsonl(language_dir / "dialogue_turn_log.jsonl", dialogue_turn_entries)
         _write_json(relationship_dir / "relationship_timeline.json", relationship_timeline)
         _write_json(signal_dir / "signal_media_runtime.json", signal_media_runtime)

@@ -235,6 +235,10 @@ live0 的语言链已经不只是提示词，而是可追踪的器官链：感�
 
 `/language` 检查面通过 `expression_plan_queue_e_repair_*` 字段追溯，边界仍为 `inspection_only_not_spoken_response`。测试：`tests/slices/test_language_organs.py#test_expression_plan_projects_queue_e_repair_modulation`、`tests/process/test_state_inspection_memory_closeout.py#test_language_summary_exposes_expression_plan_queue_e`。
 
+## 跨文件 ref 一致性运行时断言（ITR-08-100）
+
+`language/ref_consistency.py#project_language_relationship_ref_consistency_profile` 在 S07 batch 与 live turn 后写出 `runtime/state/language/language_relationship_ref_consistency.json`，检查 percept↔relation_scope、semantic focus、shared_term hits、relationship stage↔self_model、timeline turn count 与 expression_plan 链路。`/language` 与 `/relationship` 检查面显示 `language_relationship_ref_consistency_*` 字段。边界：`structured_ref_consistency_evidence_not_spoken_response`。测试：`tests/slices/test_ref_consistency.py`。
+
 ## Core affect percept 消费（ITR-08-96）
 
 `language/percept.py#build_language_percept_frame` 现在可选消费 `runtime/state/body/core_affect_vector.json`：

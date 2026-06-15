@@ -1125,6 +1125,41 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertTrue(summary["v0_contract_coverage_present"])
         self.assertIn("v0_contract_coverage", summary["domain_presence"])
 
+    def test_language_summary_exposes_ref_consistency(self):
+        section = {
+            "language_relationship_ref_consistency": {
+                "schema_version": "language_relationship_ref_consistency_profile_v0",
+                "status": "closed",
+                "finding_count": 6,
+                "aligned_finding_count": 6,
+                "mismatch_finding_count": 0,
+            },
+        }
+
+        summary = _collect_language_generation_consumption_summary(section)
+
+        self.assertTrue(summary["language_relationship_ref_consistency_present"])
+        self.assertEqual(summary["language_relationship_ref_consistency_status"], "closed")
+        self.assertIn("language_relationship_ref_consistency", summary["domain_presence"])
+
+    def test_relationship_summary_exposes_ref_consistency(self):
+        section = {
+            "relationship_subject_graph": {"subjects": [{"relationship_id": "rel-1"}]},
+            "language_relationship_ref_consistency": {
+                "schema_version": "language_relationship_ref_consistency_profile_v0",
+                "status": "open",
+                "finding_count": 6,
+                "aligned_finding_count": 5,
+                "mismatch_finding_count": 1,
+            },
+        }
+
+        summary = _collect_relationship_continuity_summary(section)
+
+        self.assertTrue(summary["language_relationship_ref_consistency_present"])
+        self.assertEqual(summary["language_relationship_ref_consistency_mismatch_count"], 1)
+        self.assertIn("language_relationship_ref_consistency", summary["domain_presence"])
+
     def test_relationship_summary_exposes_stage_evolution(self):
         section = {
             "relationship_subject_graph": {
