@@ -1820,6 +1820,25 @@ def _refresh_long_horizon_continuity(
         ),
         live_turn_focus=live_turn_focus,
     )
+    updated_network_state = project_network_state_from_live_turn(
+        network_state=updated_network_state,
+        generated_at=generated_at,
+        run_id=refresh_run_id,
+        live_dialogue_turn_refs=dialogue_turn_refs,
+        live_language_turn_refs=live_language_turn_refs,
+        live_turn_focus=live_turn_focus,
+        signal_media_runtime=signal_media_runtime,
+        brain_graph=updated_brain_graph,
+        multiscale_region_graph=updated_multiscale_region_graph,
+        workspace_frame=updated_workspace_frame,
+        prediction_workspace=_read_json_if_exists(
+            state_dir / "prediction" / "prediction_workspace_frame.json"
+        ),
+        body_resource_budget=body_resource_budget,
+        metacognition_state=updated_metacognition_state,
+        broadcast_frame=updated_broadcast_frame,
+        go_nogo_state=_read_json_if_exists(state_dir / "action" / "go_nogo_state.json"),
+    )
     write_json(state_dir / "neural_life_core" / "brain_graph.json", updated_brain_graph)
     write_json(
         state_dir / "neural_life_core" / "multiscale_region_graph.json",

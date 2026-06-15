@@ -1127,6 +1127,46 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertEqual(summary["live_broadcast_target_count"], 2)
         self.assertIn("live_consciousness_chain", summary["domain_presence"])
 
+    def test_cognition_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "workspace_frame": {"status": "closed"},
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_cognitive_workspace_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_cognition_summary_exposes_network_conflict_monitoring(self):
+        section = {
+            "workspace_frame": {"status": "closed"},
+            "network_state": {
+                "schema_version": "network_state_v0",
+                "dominant_network": "conflict_monitoring_network",
+                "transition_cost": 0.48,
+                "active_networks": [
+                    {
+                        "network_id": "conflict_monitoring_network",
+                        "mode": "active_conflict_resolution",
+                    }
+                ],
+                "conflict_monitor": {
+                    "status": "active",
+                    "conflict_signal_count": 2,
+                },
+            },
+        }
+
+        summary = _collect_cognitive_workspace_summary(section)
+
+        self.assertTrue(summary["network_conflict_monitoring_present"])
+        self.assertTrue(summary["network_conflict_monitoring_active"])
+        self.assertIn("network_conflict_monitoring", summary["domain_presence"])
+
     def test_thinking_summary_exposes_live_consciousness_chain(self):
         section = {
             "resident_self_thinking": {"thinking_mode": "reflective"},

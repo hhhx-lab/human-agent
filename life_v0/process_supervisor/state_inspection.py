@@ -640,6 +640,13 @@ def build_resident_state_inspection(
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
+                ),
             },
         )
         cognition["workspace_summary"] = _collect_cognitive_workspace_summary(
@@ -1350,6 +1357,20 @@ def _multiscale_region_graph_inspection_snapshot(
     multiscale_value = _extract_compact_value(multiscale_region_graph)
     return multiscale_region_graph_inspection_snapshot(
         multiscale_region_graph=multiscale_value,
+    )
+
+
+def _network_conflict_monitoring_inspection_snapshot(
+    *,
+    network_state: dict[str, Any],
+) -> dict[str, Any]:
+    from life_v0.neural_core.network_state import (
+        network_conflict_monitoring_inspection_snapshot,
+    )
+
+    network_value = _extract_compact_value(network_state)
+    return network_conflict_monitoring_inspection_snapshot(
+        network_state=network_value,
     )
 
 
@@ -5355,6 +5376,18 @@ def _collect_cognitive_workspace_summary(
     process_report = _extract_compact_value(
         section.get("digital_life_process_report", {})
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     expression_closeout = _expression_closeout_inspection_snapshot(
         process_report=process_report,
         idle_strategy=idle_strategy,
@@ -5383,6 +5416,9 @@ def _collect_cognitive_workspace_summary(
     multiscale_region = _multiscale_region_graph_inspection_snapshot(
         multiscale_region_graph=multiscale_region_graph,
     )
+    network_conflict = _network_conflict_monitoring_inspection_snapshot(
+        network_state=network_state,
+    )
     model_expression_handoff = (
         _model_expression_world_contact_handoff_inspection_fields(
             model_context_summary
@@ -5393,6 +5429,12 @@ def _collect_cognitive_workspace_summary(
             multiscale_region.get("multiscale_region_graph_present")
         ),
         "network_state": bool(network_state),
+        "network_conflict_monitoring": bool(
+            network_conflict.get("network_conflict_monitoring_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
+        ),
         "workspace_frame": bool(workspace),
         "broadcast_frame": bool(broadcast),
         "metacognition_state": bool(metacognition),
@@ -5546,6 +5588,8 @@ def _collect_cognitive_workspace_summary(
         **expression_closeout,
         **live_consciousness_chain,
         **multiscale_region,
+        **network_conflict,
+        **contract_coverage,
     }
 
 
