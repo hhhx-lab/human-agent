@@ -226,6 +226,8 @@ def run_life_support(
         generated_at=generated_at,
         episode=affective_episode,
         recovery_path=recovery_path,
+        core_affect=core_affect,
+        body_resource_budget=body_budget,
     )
     trait_drift = build_trait_drift_monitor(
         run_id=run_id,

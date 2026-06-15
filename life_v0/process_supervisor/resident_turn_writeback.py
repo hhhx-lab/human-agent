@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from ..body.emotion_episode import project_affective_episode_from_live_turn
+from ..body.emotion_regulation import project_emotion_regulation_from_live_turn
 from ..body.trait_drift import build_trait_drift_monitor_from_self_model
 from ..life_targets.consciousness_probes import (
     project_consciousness_probe_bundle_from_live_turn,
@@ -480,6 +482,7 @@ def write_resident_turn_writeback(
     live_queue_e_handoff_profile: dict[str, Any] = {}
     live_context_accumulation_profile: dict[str, Any] = {}
     live_shared_term_promotion_profile: dict[str, Any] = {}
+    live_emotion_regulation_profile: dict[str, Any] = {}
     if continuity_refresh:
         effective_memory_write_gate = (
             continuity_refresh.get("memory_write_gate") or memory_write_gate
@@ -494,6 +497,9 @@ def write_resident_turn_writeback(
             continuity_refresh
         )
         live_shared_term_promotion_profile = _live_shared_term_promotion_profile(
+            continuity_refresh
+        )
+        live_emotion_regulation_profile = _live_emotion_regulation_profile(
             continuity_refresh
         )
         if live_consciousness_chain_profile:
@@ -511,11 +517,14 @@ def write_resident_turn_writeback(
             updated_terminal_life_loop_state.update(live_context_accumulation_profile)
         if live_shared_term_promotion_profile:
             updated_terminal_life_loop_state.update(live_shared_term_promotion_profile)
+        if live_emotion_regulation_profile:
+            updated_terminal_life_loop_state.update(live_emotion_regulation_profile)
         if (
             live_consciousness_chain_profile
             or live_queue_e_handoff_profile
             or live_context_accumulation_profile
             or live_shared_term_promotion_profile
+            or live_emotion_regulation_profile
         ):
             write_json(
                 terminal_dir / "terminal_life_loop_state.json",
@@ -2062,6 +2071,34 @@ def _refresh_long_horizon_continuity(
     write_json(trait_drift_monitor_path, trait_drift_monitor)
     write_json(self_model_path, evolved_self_model_state)
     write_json(life_state_path, refreshed_life_state)
+    body_dir = state_dir / "body"
+    body_dir.mkdir(parents=True, exist_ok=True)
+    core_affect_vector = _read_json_if_exists(body_dir / "core_affect_vector.json")
+    recovery_path = _read_json_if_exists(body_dir / "recovery_path.json")
+    body_resource_budget = _read_json_if_exists(body_dir / "body_resource_budget.json")
+    updated_affective_episode = project_affective_episode_from_live_turn(
+        affective_episode=_read_json_if_exists(body_dir / "affective_episode.json"),
+        generated_at=generated_at,
+        run_id=refresh_run_id,
+        core_affect_vector=core_affect_vector or {},
+        life_state=refreshed_life_state,
+        pain_regret_repair_report=pain_regret_repair_report,
+        responsibility_loop_state=updated_responsibility_loop_state
+        or responsibility_loop_state,
+        live_dialogue_turn_refs=dialogue_turn_refs,
+        live_turn_focus=live_turn_focus,
+    )
+    updated_emotion_regulation = project_emotion_regulation_from_live_turn(
+        emotion_regulation=_read_json_if_exists(body_dir / "emotion_regulation_loop.json"),
+        generated_at=generated_at,
+        run_id=refresh_run_id,
+        episode=updated_affective_episode,
+        core_affect_vector=core_affect_vector or {},
+        recovery_path=recovery_path or {},
+        body_resource_budget=body_resource_budget or {},
+    )
+    write_json(body_dir / "affective_episode.json", updated_affective_episode)
+    write_json(body_dir / "emotion_regulation_loop.json", updated_emotion_regulation)
     return {
         "relationship_graph": evolved_relationship_graph,
         "relationship_timeline": refreshed_relationship_timeline,
@@ -2087,6 +2124,29 @@ def _refresh_long_horizon_continuity(
         "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
         "memory_retrieval_frame": memory_retrieval_frame or {},
+        "affective_episode": updated_affective_episode,
+        "emotion_regulation_loop": updated_emotion_regulation,
+    }
+
+
+def _live_emotion_regulation_profile(
+    continuity_refresh: dict[str, Any],
+) -> dict[str, Any]:
+    episode = continuity_refresh.get("affective_episode")
+    regulation = continuity_refresh.get("emotion_regulation_loop")
+    if not isinstance(episode, dict) or not isinstance(regulation, dict):
+        return {}
+    return {
+        "live_emotion_regulation_refreshed": True,
+        "live_affective_episode_ref": "runtime/state/body/affective_episode.json",
+        "live_emotion_regulation_ref": "runtime/state/body/emotion_regulation_loop.json",
+        "live_episode_label": episode.get("episode_label"),
+        "live_regulation_route": regulation.get("regulation_route"),
+        "live_regulation_mode": regulation.get("regulation_mode"),
+        "live_regulation_branch_reason": regulation.get("regulation_branch_reason"),
+        "live_emotion_regulation_boundary": (
+            "structured_emotion_regulation_evidence_not_spoken_language"
+        ),
     }
 
 

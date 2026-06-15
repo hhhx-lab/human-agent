@@ -271,6 +271,7 @@ def build_resident_state_inspection(
                 "signal_media_runtime": "signal/signal_media_runtime.json",
                 "go_nogo_state": "action/go_nogo_state.json",
                 "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
@@ -1476,6 +1477,24 @@ def _shared_term_promotion_inspection_snapshot(
     return shared_term_promotion_inspection_snapshot(
         shared_term_registry=shared_term_registry_value,
         terminal_life_loop_state=terminal_loop_value,
+    )
+
+
+def _emotion_regulation_branch_inspection_snapshot(
+    *,
+    affective_episode: dict[str, Any],
+    emotion_regulation_loop: dict[str, Any],
+    terminal_life_loop_state: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    from life_v0.body.emotion_regulation import emotion_regulation_inspection_snapshot
+
+    episode_value = _extract_compact_value(affective_episode)
+    regulation_value = _extract_compact_value(emotion_regulation_loop)
+    terminal_value = _extract_compact_value(terminal_life_loop_state or {})
+    return emotion_regulation_inspection_snapshot(
+        affective_episode=episode_value,
+        emotion_regulation_loop=regulation_value,
+        terminal_life_loop_state=terminal_value,
     )
 
 
@@ -3571,6 +3590,9 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
     signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
     go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
     idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    terminal_life_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
     process_report = _extract_compact_value(
         section.get("digital_life_process_report", {})
     )
@@ -3578,6 +3600,11 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
         process_report=process_report,
         idle_strategy=idle_strategy,
         go_nogo=go_nogo,
+    )
+    emotion_regulation_branch = _emotion_regulation_branch_inspection_snapshot(
+        affective_episode=affective_episode,
+        emotion_regulation_loop=emotion_regulation,
+        terminal_life_loop_state=terminal_life_loop,
     )
     contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
     doc_to_code_matrix = _extract_compact_value(
@@ -3608,6 +3635,9 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
         "body_resource_budget": bool(body_budget),
         "pain_regret_repair_report": bool(pain_regret_repair),
         "signal_media_runtime": bool(signal_media),
+        "emotion_regulation_branch": bool(
+            emotion_regulation_branch.get("emotion_regulation_branch_present")
+        ),
         "affect_modulation_closeout": bool(
             affect_closeout.get("affect_modulation_closeout_present")
         ),
@@ -3631,9 +3661,13 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
         "active_domains": active_domains,
         "domain_presence": domain_presence,
         "episode_label": affective_episode.get("episode_label"),
+        "regulation_route": affective_episode.get("regulation_route"),
+        "episode_branch_reason": affective_episode.get("episode_branch_reason"),
+        "action_tendency": affective_episode.get("action_tendency"),
         "expression_risk": affective_episode.get("expression_risk"),
         "repair_bias": affective_episode.get("repair_bias"),
         "regulation_mode": emotion_regulation.get("regulation_mode"),
+        "regulation_branch_reason": emotion_regulation.get("regulation_branch_reason"),
         "expression_delay_required": emotion_regulation.get(
             "expression_delay_required"
         ),
@@ -3682,6 +3716,7 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
         "pain_regret_repair_report_ref": affect_closeout.get(
             "pain_regret_repair_report_ref"
         ),
+        **emotion_regulation_branch,
         **affect_closeout,
         **contract_coverage,
     }

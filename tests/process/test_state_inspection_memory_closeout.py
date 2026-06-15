@@ -699,6 +699,35 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertTrue(summary["body_signal_closeout_present"])
         self.assertIn("affect_modulation_closeout", summary["domain_presence"])
 
+    def test_emotion_summary_exposes_regulation_branch(self):
+        section = {
+            "core_affect_vector": {"pain_pressure": 0.7, "arousal": 0.5},
+            "affective_episode": {
+                "episode_label": "pain_peak_regret_pull",
+                "regulation_route": "recovery_window",
+                "episode_branch_reason": "pain_pressure_or_repair_followup",
+                "live_affective_episode_refreshed": True,
+            },
+            "emotion_regulation_loop": {
+                "regulation_route": "recovery_window",
+                "regulation_mode": "recovery_window_hold",
+                "regulation_branch_reason": "recovery_window_for_pain_or_repair_followup",
+                "live_emotion_regulation_refreshed": True,
+            },
+            "terminal_life_loop_state": {
+                "live_emotion_regulation_refreshed": True,
+                "live_regulation_mode": "recovery_window_hold",
+            },
+        }
+
+        summary = _collect_emotion_regulation_summary(section)
+
+        self.assertTrue(summary["emotion_regulation_branch_present"])
+        self.assertEqual(summary["regulation_route"], "recovery_window")
+        self.assertEqual(summary["regulation_mode"], "recovery_window_hold")
+        self.assertTrue(summary["live_emotion_regulation_refreshed"])
+        self.assertIn("emotion_regulation_branch", summary["domain_presence"])
+
     def test_inner_environment_summary_exposes_affect_closeout(self):
         section = {
             "need_state_vector": {"sleep_pressure": "managed_pre_dream"},
