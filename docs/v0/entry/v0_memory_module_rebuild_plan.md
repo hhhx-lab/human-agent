@@ -266,6 +266,13 @@ MemoryTrace / EngramIndex
 - `life_state.memory_index.memory_trace_store_refs`
 - `state_store_manifest.json` 和 report/receipt 可见。
 
+当前状态：
+
+- 已新增 `life_v0/state_store/memory_trace_store.py`。
+- `run_state_store(...)` 会写出 `runtime/state/memory/memory_trace_store.json`。
+- `life_state.memory_index.memory_trace_store_refs`、`life_state.runtime_trace_refs`、`state_store_manifest.json`、`state_store_report.json`、receipt 和 `run_check_state_store(...)` 已经消费该对象。
+- 当前 trace store 先覆盖 episodic、relationship、autobiographical、responsibility 四类种子痕迹；后续 M2/M3 会把真实 event segmentation、allocation gate 和 engram cluster 接进来。
+
 ### M2. EventSegmentation + EncodingGate + AllocationGate
 
 目标：让新经验先成为候选 trace，而不是直接塞进长期记忆；同时把语言、关系、身体、情绪、意识、预测、梦境、行动和外部观察都纳入写入分配。

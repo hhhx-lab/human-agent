@@ -35,6 +35,7 @@ def build_life_state_projection(
     engram_index: dict[str, Any] | None = None,
     autobiographical_stack: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
+    memory_trace_store: dict[str, Any] | None = None,
     memory_retrieval_frame: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
     background_continuity_profile: dict[str, Any] | None = None,
@@ -47,6 +48,7 @@ def build_life_state_projection(
     autobiographical_ref = "runtime/state/self/autobiographical_stack.json#anchor_refs"
     relationship_ref = "runtime/state/memory/relationship_memory.json#shared_memory_refs"
     engram_ref = "runtime/state/memory/engram_index.json"
+    memory_trace_store_ref = "runtime/state/memory/memory_trace_store.json"
     memory_retrieval_ref = "runtime/state/memory/memory_retrieval_frame.json"
     background_continuity_profile = background_continuity_profile or {}
     background_continuity_root = _build_background_continuity_root(
@@ -82,6 +84,10 @@ def build_life_state_projection(
         or [autobiographical_ref],
         "relationship_memory_refs": list((engram_index or {}).get("relationship_memory_refs", []))
         or [relationship_ref],
+        "memory_trace_store_refs": [memory_trace_store_ref]
+        if memory_trace_store
+        else [],
+        "memory_trace_refs": list((memory_trace_store or {}).get("trace_ids", [])),
         "memory_retrieval_refs": memory_retrieval_refs,
         "dream_memory_refs": list((engram_index or {}).get("dream_memory_refs", [])),
         "responsibility_memory_refs": list((engram_index or {}).get("responsibility_memory_refs", []))
@@ -120,6 +126,7 @@ def build_life_state_projection(
         "runtime/state/prediction/prediction_workspace_frame.json",
         "runtime/state/subject_namespace_binding.json",
         engram_ref,
+        memory_trace_store_ref,
         memory_retrieval_ref,
         "runtime/state/self/autobiographical_stack.json",
         "runtime/state/memory/relationship_memory.json",

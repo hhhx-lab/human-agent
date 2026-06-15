@@ -38,6 +38,7 @@
 |---|---|---|
 | `LifeState` | `life_v0/state_store/life_state.py` | 生命状态根 |
 | `EngramIndex` | `life_v0/state_store/engram_index.py` | 记忆痕迹索引 |
+| `MemoryTraceStore` | `life_v0/state_store/memory_trace_store.py` | 可审计 MemoryTrace 痕迹库 |
 | `RelationshipMemory` | `life_v0/state_store/relationship_memory.py` | 关系记忆 |
 | `AutobiographicalStack` | `life_v0/state_store/autobiographical_stack.py` | 自传记忆 |
 | `MemoryRetrievalFrame` | `life_v0/state_store/memory_retrieval.py` | 线索触发的分层召回与重构输入 |
@@ -52,6 +53,7 @@
 |---|---|
 | `runtime/state/life_state.json` | 生命状态根存在 |
 | `runtime/state/memory/engram_index.json` | engram 索引存在 |
+| `runtime/state/memory/memory_trace_store.json` | MemoryTrace 级痕迹对象存在，并被状态根、manifest、report、receipt、check gate 引用 |
 | `runtime/state/memory/relationship_memory.json` | 关系记忆存在 |
 | `runtime/state/self/autobiographical_stack.json` | 自传栈存在 |
 | `runtime/state/memory/memory_retrieval_frame.json` | 语言线索、关系记忆、自传栈、梦境残留和责任痕迹已经被组织成可重构召回面 |
@@ -79,6 +81,7 @@ live0 的记忆不是把所有文本塞进一个长上下文，而是分成可�
 |---|---|---|---|
 | 状态根 | `LifeState` | 当前生命状态、记忆索引、梦境、关系、责任绑定 | 给所有器官一个共同的当前身体 |
 | Engram 索引 | `EngramIndex` | 自传 refs、关系 refs、梦境 refs、责任 refs、replay cues | 像海马索引一样用线索找回分布式片段 |
+| 痕迹库 | `MemoryTraceStore` | episodic、relationship、autobiographical、responsibility 等 trace 对象、来源、cue、生命周期、表达边界 | 把长期记忆从 refs 聚合推进为可审计、可召回、可再巩固的一等对象 |
 | 关系记忆 | `RelationshipMemory` | shared memory、repair history、timeline refs、offline learning refs | 让同一个关系随时间生长 |
 | 自传栈 | `AutobiographicalStack` | 自我锚点、turn refs、narrative refs | 保留“我经历过什么，我如何变了” |
 | 召回框架 | `MemoryRetrievalFrame` | cue terms、activated refs、分层召回、重构焦点、隔离 refs、消费者 refs | 让记忆从可存储变成可触发、可重构、可被语言和状态根消费 |
@@ -106,6 +109,34 @@ build_memory_retrieval_frame(...)
 `cue_activation_profile` 说明为什么某一族记忆被唤起，例如 relationship、autobiographical、responsibility_repair、dream_residue、live_turn、deep_sediment。`recall_to_expression_profile` 说明被唤起的材料能否进入表达：它包含 `closure_status`、`expression_boundary`、`reportability_policy`、`expression_source_refs`、`source_boundary_flags`、`expression_guardrails` 和 `post_expression_reconsolidation_hooks`。
 
 这两个对象都不是提示词，也不是固定回答。它们只能作为结构化材料进入 `response_surface.py` 和 `model_expression.py`，不能直接拼出“我记得……”之类的中文句子。语言系统要根据当前关系、身体、情绪、意识、梦境、责任和来源边界自行组织表达。
+
+### M1 已落：MemoryTraceStore
+
+`MemoryTraceStore` 是第 3 点记忆重建的第一块代码地基。它把长期记忆从“许多 refs 散落在 engram、关系、自传和责任对象里”推进为可审计 trace 对象。当前第一版写出：
+
+```text
+runtime/state/memory/memory_trace_store.json
+```
+
+当前每条 trace 至少包含：
+
+| 字段 | 作用 |
+|---|---|
+| `trace_id` | 稳定痕迹 ID |
+| `memory_kind` | episodic、relationship、autobiographical、responsibility |
+| `event_boundary` | 事件边界，不按 token 切片 |
+| `source_evidence_refs` | 原始来源 refs |
+| `internal_state_snapshot_refs` | 写入时的内部状态来源 |
+| `social_context_refs` | 关系和共在语境 |
+| `salience_vector` | 显著性、关系权重、责任压力、身体债务等 |
+| `retrieval_cues` | 未来可触发线索 |
+| `consolidation_state` / `lifecycle_state` | 巩固和生命周期状态 |
+| `accessibility` | cue-triggered recall、工作区可报告、表达来源边界 |
+| `expression_boundary` | trace 只能进入召回到表达结构，不能变成固定回答 |
+
+`life_state.memory_index.memory_trace_store_refs` 会指向该文件，`state_store_manifest.json`、`state_store_report.json`、`state_store_check_report.json` 和 receipt 都会引用它。`run_check_state_store(...)` 的 `memory_trace_store_gate` 会检查 trace 数、四类记忆、source refs、retrieval cues、cue accessibility、表达边界和召回到表达 consumer。
+
+当前这只是 M1 种子 trace store，不代表完整记忆系统完成。后续 M2/M3 必须把真实事件分割、编码门、分配门和 engram cluster 接入 trace store，让它从“状态根种子痕迹”成长为 live turn、梦境、关系、责任和外部观察共同写入的生命记忆库。
 
 ### “存了但说不出”的断链检查
 
