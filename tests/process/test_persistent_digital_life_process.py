@@ -2840,6 +2840,163 @@ class PersistentDigitalLifeProcessTests(
             "autobiographical_repair_retrieval_not_spoken_language",
         )
 
+    def test_process_report_restores_autobiographical_repair_from_nested_memory_presence(self):
+        from life_v0.process_supervisor.process_report import write_process_report_bundle
+
+        expected_refs = [
+            "responsibility-event-001",
+            "regret-001",
+            "repair-001",
+        ]
+        expected_carrier_refs = [
+            "runtime/state/memory/memory_retrieval_frame.json#autobiographical_responsibility_repair_profile",
+            "runtime/state/memory/memory_retrieval_frame.json#autobiographical_responsibility_repair_hits",
+            "runtime/state/self/autobiographical_stack.json#responsibility_repair_projection",
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state_dir = runtime_root / "state"
+            reports_dir = runtime_root / "reports" / "latest"
+            receipts_dir = runtime_root / "receipts"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            receipts_dir.mkdir(parents=True, exist_ok=True)
+
+            nested_presence = {
+                "schema_version": "memory_retrieval_presence_profile_v0",
+                "continuity_mode": "closed_process_autobiographical_repair_retrieval_carryover",
+                "autobiographical_repair_hit_count": 3,
+                "autobiographical_repair_pressure_level": "elevated",
+                "autobiographical_repair_attention_target": "regret_pressure",
+                "autobiographical_repair_projection_boundary": "autobiographical_repair_evidence_not_spoken_language",
+                "autobiographical_repair_retrieval_boundary": "autobiographical_repair_retrieval_not_spoken_language",
+                "autobiographical_repair_report_boundary": "autobiographical_repair_structured_report_not_spoken_language",
+                "autobiographical_repair_refs": expected_refs,
+                "source_report_profile": {
+                    "schema_version": "autobiographical_repair_retrieval_report_profile_v0",
+                    "source_profile_schema_version": "memory_retrieval_autobiographical_repair_profile_v0",
+                    "profile_ref": expected_carrier_refs[0],
+                    "hits_ref": expected_carrier_refs[1],
+                    "projection_ref": expected_carrier_refs[2],
+                    "carrier_refs": expected_carrier_refs,
+                    "report_boundary": "autobiographical_repair_structured_report_not_spoken_language",
+                },
+                "ref_set": [*expected_refs, *expected_carrier_refs],
+            }
+
+            write_process_report_bundle(
+                run_id="nested-memory-retrieval-process-report",
+                generated_at="2026-06-15T00:00:00+00:00",
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                receipts_dir=receipts_dir,
+                source_doc_refs=[],
+                readme_block_refs=[],
+                runtime_carrier_refs=[],
+                completed_turns=0,
+                incident_count=0,
+                relaunch_recovery_count=0,
+                heartbeat_counter=1,
+                exit_reason="explicit_exit",
+                last_incident_report_ref=None,
+                last_recovery_report_ref=None,
+                last_relaunch_recovery_report_ref=None,
+                last_external_turn=None,
+                last_life_turn=None,
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state={
+                    "schema_version": "idle_strategy_state_v0",
+                    "memory_retrieval_presence_profile": nested_presence,
+                    "background_memory_retrieval_presence_profile": nested_presence,
+                    "background_memory_retrieval_ref_set": [
+                        *expected_refs,
+                        *expected_carrier_refs,
+                    ],
+                },
+                persistent_process_report_ref=None,
+                resident_governance_report_ref=None,
+                resident_governance_state_ref=None,
+                resident_governance_snapshot_ref=None,
+                life_context_frame_ref=None,
+                relation_turn_frame_ref=None,
+                expression_plan_ref=None,
+                relationship_timeline_ref=None,
+                commitment_expression_plan_ref=None,
+                apology_repair_language_trace_ref=None,
+                dialogue_writeback_bundle_ref=None,
+                replay_cue_bundle_ref=None,
+                offline_consolidation_frame_ref=None,
+                growth_patch_candidate_queue_ref=None,
+                responsibility_loop_state_ref=None,
+                world_contact_summary_ref=None,
+                pain_regret_repair_report_ref=None,
+                signal_media_runtime_ref=None,
+                belief_state_ref=None,
+                prediction_error_field_ref=None,
+                active_sampling_plan_ref=None,
+                memory_write_gate_ref=None,
+                state_merge_guard_ref=None,
+                trait_drift_monitor_ref=None,
+                background_convergence_summary_ref=None,
+                background_convergence_history_ref=None,
+                write_json=self._write_json,
+            )
+
+            report = self._read_json(reports_dir / "digital_life_process_report.json")
+            digest = self._read_json(reports_dir / "digital_life_process_digest.json")
+            receipt = self._read_json(
+                receipts_dir
+                / "digital_life_process_nested-memory-retrieval-process-report.json"
+            )
+
+        for artifact in (report, digest, receipt):
+            self.assertEqual(
+                artifact["autobiographical_repair_retrieval_report_profile"][
+                    "schema_version"
+                ],
+                "autobiographical_repair_retrieval_report_profile_v0",
+            )
+            self.assertEqual(
+                artifact["autobiographical_repair_retrieval_report_profile"][
+                    "source_profile_schema_version"
+                ],
+                "memory_retrieval_autobiographical_repair_profile_v0",
+            )
+            self.assertEqual(
+                artifact["autobiographical_repair_retrieval_ref_set"],
+                expected_refs,
+            )
+            self.assertEqual(
+                artifact["autobiographical_repair_retrieval_hit_count"],
+                3,
+            )
+            self.assertEqual(
+                artifact["autobiographical_repair_retrieval_pressure_level"],
+                "elevated",
+            )
+            self.assertEqual(
+                artifact["autobiographical_repair_retrieval_attention_target"],
+                "regret_pressure",
+            )
+            self.assertEqual(
+                artifact["autobiographical_repair_projection_boundary"],
+                "autobiographical_repair_evidence_not_spoken_language",
+            )
+            self.assertEqual(
+                artifact["autobiographical_repair_retrieval_boundary"],
+                "autobiographical_repair_retrieval_not_spoken_language",
+            )
+            self.assertEqual(
+                artifact["autobiographical_repair_carrier_refs"],
+                expected_carrier_refs,
+            )
+            self.assertEqual(
+                artifact["autobiographical_repair_report_boundary"],
+                "autobiographical_repair_structured_report_not_spoken_language",
+            )
+        for ref in expected_refs:
+            self.assertIn(ref, receipt["shared_object_refs"])
+
     def test_background_continuity_restores_queue_e_repair_modulation_from_lineage_presence(self):
         from life_v0.process_supervisor.background_continuity import (
             load_background_continuity_profile,

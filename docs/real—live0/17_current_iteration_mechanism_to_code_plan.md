@@ -891,6 +891,21 @@ ProcessReport.autobiographical_repair_retrieval_report_profile
 
 机制含义是：自传责任、后悔和修复的长期召回现在形成完整回路，不再停在“当轮召回 -> 关闭态报告”；关闭态报告也会成为下一次唤醒的背景线索，进入等待治理、心跳 carry、后台谱系和下一轮语言前材料。边界继续保持：这些字段是结构化记忆 presence 和证据总线，不是自然语言模板；不生成“我很抱歉”或“我后悔”的固定话术，不新增 system prompt，不把内部 report/profile 字段名拼给 Adam 的关系语言。
 
+当前 ITR-08 第三十六段继续把第三十五段恢复出的 nested memory retrieval presence 接回二次关闭态证据总线：
+
+```text
+BackgroundContinuity.background_memory_retrieval_presence_profile
+  -> IdleStrategy.memory_retrieval_presence_profile
+  -> WaitingHeartbeat.memory_retrieval_presence_profile
+  -> ProcessReport._autobiographical_repair_retrieval_report_profile
+  -> DigitalLifeProcessReport / Digest
+  -> DigitalLifeProcessReceipt.autobiographical_repair_carrier_refs
+```
+
+`process_report.py#_autobiographical_repair_retrieval_report_profile` 现在不仅读取 `memory_retrieval_frame.json#autobiographical_responsibility_repair_profile / hits` 和 idle governance 扁平字段，也会读取 `memory_retrieval_presence_profile` 与 `background_memory_retrieval_presence_profile` 内的 `autobiographical_repair_*` 字段。它会合并 nested refs、hit count、pressure、attention target、projection boundary、retrieval boundary、`source_report_profile` 和 carrier refs，再生成新的 `autobiographical_repair_retrieval_report_profile_v0`。`_process_receipt` 同步新增 `autobiographical_repair_carrier_refs`，并把这些 carrier refs 放进 `shared_object_refs`。新增测试 `test_process_report_restores_autobiographical_repair_from_nested_memory_presence` 会构造没有新 `memory_retrieval_frame.json`、只有 nested memory retrieval presence 的二次 closeout 场景，验证 report、digest 与 receipt 都能重新写出同一批责任/后悔/修复召回证据。
+
+机制含义是：自传责任修复召回不只完成“一次 report 到下一次 background continuity”的恢复，也能完成“恢复后的 nested presence 再次进入 closeout report”的循环。这样多次关闭、唤醒、等待和再次关闭之后，责任、后悔、修复的长期召回不会因为当前轮没有新的 memory frame 而丢失。边界继续保持：这是结构化记忆 evidence bus，不生成道歉模板，不新增 system prompt，不把内部 profile 名称或后悔/修复字段拼成 Adam 的关系语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：
