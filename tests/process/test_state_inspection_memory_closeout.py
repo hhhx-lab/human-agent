@@ -7,6 +7,7 @@ from life_v0.process_supervisor.state_inspection import (
     _collect_consciousness_reportability_summary,
     _collect_dream_wake_fact_summary,
     _collect_emotion_regulation_summary,
+    _collect_growth_self_modification_summary,
     _collect_inner_environment_modulation_summary,
     _collect_language_generation_consumption_summary,
     _collect_life_membrane_validation_summary,
@@ -1004,6 +1005,44 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertEqual(summary["core_affect_percept_cue_source"], "core_affect_vector")
         self.assertEqual(summary["core_affect_percept_cue_count"], 2)
         self.assertIn("core_affect_percept_consumption", summary["domain_presence"])
+
+    def test_consciousness_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "workspace_frame": {"workspace_id": "ws-1"},
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {"total_required_files": 120, "missing_file_count": 0},
+            },
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_consciousness_reportability_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertEqual(summary["v0_required_file_count"], 120)
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_growth_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "self_read_report": {"read_scope": ["growth_pressure"]},
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {"total_required_files": 120, "missing_file_count": 0},
+            },
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_growth_self_modification_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertEqual(summary["v0_required_file_count"], 120)
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
 
     def test_relationship_summary_exposes_stage_evolution(self):
         section = {

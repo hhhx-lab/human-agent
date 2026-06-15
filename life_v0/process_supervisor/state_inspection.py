@@ -219,6 +219,13 @@ def build_resident_state_inspection(
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
+                ),
             },
         )
         growth["self_modification_summary"] = (
@@ -690,6 +697,13 @@ def build_resident_state_inspection(
                 "go_nogo_state": "action/go_nogo_state.json",
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
+                ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
                 ),
             },
         )
@@ -5799,6 +5813,18 @@ def _collect_consciousness_reportability_summary(
         broadcast=broadcast,
         metacognition=metacognition,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     model_expression_handoff = (
         _model_expression_world_contact_handoff_inspection_fields(
             model_context_summary
@@ -5847,6 +5873,9 @@ def _collect_consciousness_reportability_summary(
         ),
         "live_consciousness_chain": bool(
             live_consciousness_chain.get("live_consciousness_chain_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -5966,6 +5995,7 @@ def _collect_consciousness_reportability_summary(
         **live_queue_e_handoff,
         **expression_closeout,
         **live_consciousness_chain,
+        **contract_coverage,
     }
 
 
@@ -6268,6 +6298,18 @@ def _collect_growth_self_modification_summary(
         terminal_loop=terminal_loop,
         idle_strategy=idle_strategy,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     candidates = patch_queue.get("candidates")
     if not isinstance(candidates, list):
         candidates = []
@@ -6302,6 +6344,9 @@ def _collect_growth_self_modification_summary(
             or growth_closeout.get(
                 "background_growth_self_modification_pressure_level"
             )
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -6407,6 +6452,7 @@ def _collect_growth_self_modification_summary(
             "growth_self_modification_state_view_not_autonomous_code_rewrite_or_script"
         ),
         **growth_closeout,
+        **contract_coverage,
     }
 
 
