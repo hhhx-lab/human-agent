@@ -557,6 +557,24 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         )
         self.assertIn("body_pressure_closeout", summary["domain_presence"])
 
+    def test_body_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "body_resource_budget": {"schema_version": "body_resource_budget_v0"},
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {"total_required_files": 120, "missing_file_count": 0},
+            },
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_body_grounding_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
     def test_state_summary_exposes_process_closeout(self):
         section = {
             "resident_lifecycle": {"status": "waiting"},
@@ -622,6 +640,30 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
             summary["memory_write_gate_consciousness_write_context_present"]
         )
         self.assertIn("signal_modulation_closeout", summary["domain_presence"])
+
+    def test_signal_summary_exposes_body_signal_modulation_and_v0_contract(self):
+        section = {
+            "signal_media_runtime": {"schema_version": "signal_media_runtime_v0"},
+            "memory_write_gate": {
+                "body_signal_write_modulation": {
+                    "schema_version": "body_signal_memory_gate_profile_v0",
+                    "write_bias": "relationship_context_first",
+                }
+            },
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_signal_modulation_consumption_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn(
+            "memory_write_gate_body_signal_modulation",
+            summary["domain_presence"],
+        )
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
 
     def test_language_summary_exposes_expression_closeout(self):
         section = {

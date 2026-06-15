@@ -229,6 +229,13 @@ def build_resident_state_inspection(
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
+                ),
             },
         )
         body["body_grounding_summary"] = _collect_body_grounding_summary(body)
@@ -325,6 +332,13 @@ def build_resident_state_inspection(
                 ),
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
+                ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
                 ),
             },
         )
@@ -3103,6 +3117,18 @@ def _collect_body_grounding_summary(section: dict[str, Any]) -> dict[str, Any]:
         idle_strategy=idle_strategy,
         go_nogo=go_nogo,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     body_pressure_profile = _extract_nested_value(go_nogo, "body_pressure_profile")
     maintenance_pressure = _extract_nested_value(
         body_budget,
@@ -3125,6 +3151,9 @@ def _collect_body_grounding_summary(section: dict[str, Any]) -> dict[str, Any]:
         "idle_strategy": bool(idle_strategy),
         "body_pressure_closeout": bool(
             body_pressure_closeout.get("body_pressure_closeout_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -3207,6 +3236,7 @@ def _collect_body_grounding_summary(section: dict[str, Any]) -> dict[str, Any]:
         ),
         "body_pressure_boundary": body_pressure_profile.get("boundary"),
         **body_pressure_closeout,
+        **contract_coverage,
     }
 
 
@@ -3518,6 +3548,18 @@ def _collect_signal_modulation_consumption_summary(
         schema_cross_file=schema_cross_file,
         go_nogo=go_nogo,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     modulation_vector = _extract_nested_value(signal_media, "modulation_vector")
     body_signal_profile = _extract_nested_value(
         signal_media,
@@ -3581,6 +3623,13 @@ def _collect_signal_modulation_consumption_summary(
         "schema_runner": bool(schema_cross_file or schema_manifest),
         "queue_e_world_contact_repair_hold_schema_handoff": bool(
             schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
+        ),
+        "memory_write_gate_body_signal_modulation": bool(
+            body_signal_write_modulation.get("schema_version")
+            or body_signal_write_modulation.get("write_bias")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -3775,6 +3824,7 @@ def _collect_signal_modulation_consumption_summary(
         **live_queue_e_handoff,
         **signal_closeout,
         **schema_handoff,
+        **contract_coverage,
     }
 
 
