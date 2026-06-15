@@ -39,6 +39,9 @@
 | `LifeState` | `life_v0/state_store/life_state.py` | 生命状态根 |
 | `EngramIndex` | `life_v0/state_store/engram_index.py` | 记忆痕迹索引 |
 | `MemoryTraceStore` | `life_v0/state_store/memory_trace_store.py` | 可审计 MemoryTrace 痕迹库 |
+| `EngramLikeTraceCluster` | `life_v0/state_store/engram_cluster.py` | 把 trace、cue、状态、关系、梦境和责任组织成可沉默、可再激活的痕迹簇 |
+| `PatternSeparationIndex` | `life_v0/state_store/pattern_separation.py` | 区分相似关系、相似事件、梦境边界和责任范围，防止错配和污染 |
+| `PatternCompletionFrame` | `life_v0/state_store/pattern_completion.py` | 用部分线索补全 episode，同时保留来源置信度和边界 |
 | `RelationshipMemory` | `life_v0/state_store/relationship_memory.py` | 关系记忆 |
 | `AutobiographicalStack` | `life_v0/state_store/autobiographical_stack.py` | 自传记忆 |
 | `MemoryRetrievalFrame` | `life_v0/state_store/memory_retrieval.py` | 线索触发的分层召回与重构输入 |
@@ -54,6 +57,9 @@
 | `runtime/state/life_state.json` | 生命状态根存在 |
 | `runtime/state/memory/engram_index.json` | engram 索引存在 |
 | `runtime/state/memory/memory_trace_store.json` | MemoryTrace 级痕迹对象存在，并被状态根、manifest、report、receipt、check gate 引用 |
+| `runtime/state/memory/engram_cluster.json` | Engram-like 痕迹簇存在，区分 silent/reactivated trace、cue route 和检索/报告/行动分裂 |
+| `runtime/state/memory/pattern_separation_index.json` | 模式分离索引存在，关系主体、事件来源、梦境事实边界和责任行动范围不互相污染 |
+| `runtime/state/memory/pattern_completion_frame.json` | 模式补全框架存在，部分线索可补全相关 episode，但保留来源置信度和 dream/relationship/responsibility 边界 |
 | `runtime/state/memory/relationship_memory.json` | 关系记忆存在 |
 | `runtime/state/self/autobiographical_stack.json` | 自传栈存在 |
 | `runtime/state/memory/memory_retrieval_frame.json` | 语言线索、关系记忆、自传栈、梦境残留和责任痕迹已经被组织成可重构召回面 |
@@ -84,6 +90,9 @@ live0 的记忆不是把所有文本塞进一个长上下文，而是分成可�
 | 痕迹库 | `MemoryTraceStore` | episodic、relationship、autobiographical、responsibility 等 trace 对象、来源、cue、生命周期、表达边界 | 把长期记忆从 refs 聚合推进为可审计、可召回、可再巩固的一等对象 |
 | 关系记忆 | `RelationshipMemory` | shared memory、repair history、timeline refs、offline learning refs | 让同一个关系随时间生长 |
 | 自传栈 | `AutobiographicalStack` | 自我锚点、turn refs、narrative refs | 保留“我经历过什么，我如何变了” |
+| 痕迹簇 | `EngramLikeTraceCluster` | language、relationship、self、responsibility、dream 五类 cluster，silent/reactivated trace，cue route，报告边界 | 把 trace 从“可分配候选”推进为“可被不同线索重新激活的痕迹网络” |
+| 模式分离 | `PatternSeparationIndex` | relationship_subject_scope、event_boundary、source_evidence_scope、dream_fact_boundary、responsibility_action_scope | 防止把 A 关系记忆带给 B、把梦境补全当事实、把相似事件误合并 |
+| 模式补全 | `PatternCompletionFrame` | relationship episode、responsibility repair、self continuity、dream residue completion candidates | 支持少量 cue 补全 episode，但所有补全必须带来源置信度和边界 |
 | 召回框架 | `MemoryRetrievalFrame` | cue terms、activated refs、分层召回、重构焦点、隔离 refs、消费者 refs | 让记忆从可存储变成可触发、可重构、可被语言和状态根消费 |
 | 写门 | `MemoryWriteGate` | pass/quarantine/sandbox/audit/index policy | 防止梦境、误读、未经证实的判断污染长期记忆 |
 | 合并门 | `StateMergeGuard` | promotion、quarantine、repair、merge routes | 控制候选如何进入长期状态和慢变量 |
@@ -136,7 +145,39 @@ runtime/state/memory/memory_trace_store.json
 
 `life_state.memory_index.memory_trace_store_refs` 会指向该文件，`state_store_manifest.json`、`state_store_report.json`、`state_store_check_report.json` 和 receipt 都会引用它。`run_check_state_store(...)` 的 `memory_trace_store_gate` 会检查 trace 数、四类记忆、source refs、retrieval cues、cue accessibility、表达边界和召回到表达 consumer。
 
-当前实现已经把 M2 的 `event_segmentation_frame`、`memory_encoding_gate` 和 `memory_allocation_gate` 串进 state store，并把它们写回 `life_state.memory_index`、manifest、report、receipt 和 check report；下一步 M3/M4 继续补 engram cluster 与 pattern completion，让痕迹从“可分配候选”成长为“可再激活痕迹簇”。
+当前实现已经把 M2 的 `event_segmentation_frame`、`memory_encoding_gate` 和 `memory_allocation_gate` 串进 state store，并把 M3/M4 的 `engram_cluster`、`pattern_separation_index` 和 `pattern_completion_frame` 接入 `life_state.memory_index`、manifest、report、receipt 和 check report。痕迹现在不止是“可分配候选”，而是可以进入可再激活痕迹簇，并通过模式分离/补全影响召回到表达链。
+
+### M3/M4 已落：Engram cluster 与模式分离/补全
+
+`EngramLikeTraceCluster` 对应脑科学里的 engram-like 痕迹集合：一段经验不是一段文本，而是一组可由语言、关系、身体/情绪、梦境和责任线索重新激活的痕迹。live0 当前写出：
+
+```text
+runtime/state/memory/engram_cluster.json
+```
+
+它至少包含五类 cluster：
+
+| cluster | 来源 | 作用 |
+|---|---|---|
+| `language_episode` | `MemoryTraceStore` episodic trace、live language/dialogue refs、cue terms | 让当前话语和语义地图能触发相关 episode |
+| `relationship_subject` | `RelationshipMemory` shared/timeline refs、关系画像 | 让每段关系拥有自己的触发边界 |
+| `self_autobiographical` | `AutobiographicalStack` anchor/turn refs、自我记忆 refs | 把经验接到自我连续性，而不是只接聊天日志 |
+| `responsibility_regret_repair` | 责任 refs、repair hits、责任账本 | 让后悔、承诺和修复进入可再激活记忆 |
+| `dream_residue` | dream refs、dream residue hits、醒后整合 refs | 让梦境材料可调制召回，但不直接晋升事实 |
+
+`PatternSeparationIndex` 对应海马模式分离。它不是相似度阈值，而是分离 key 和 guard：
+
+| 分离维度 | 代码字段 | 防止的问题 |
+|---|---|---|
+| 关系主体 | `relationship_subject_scope` | 把不同关系人的偏好、边界、损伤和共同语言互相污染 |
+| 事件边界 | `event_boundary` | 把相似任务、相似话语、相似痛苦事件误合并 |
+| 来源证据 | `source_evidence_scope` | 让没有来源的补全无法冒充事实 |
+| 梦境事实 | `dream_fact_boundary` | 梦境残留只能影响情绪、语言谨慎度和 replay，不能直接成为事实 |
+| 责任行动 | `responsibility_action_scope` | 把责任、后悔、行动结果和修复对象保持在同一范围 |
+
+`PatternCompletionFrame` 对应模式补全。它允许“只给一句线索”时恢复相关 episode，但补全对象必须保留 `source_confidence` 和 boundary。比如 `dream_residue_completion` 的边界永远是 `dream_completion_keeps_dream_boundary`；`relationship_episode_completion` 永远保留 relation scope；`responsibility_repair_completion` 永远保留 action outcome scope。
+
+这三者共同修复普通 RAG 的薄弱点：不是 `query -> chunk -> answer`，而是 `trace -> cluster -> separation -> completion -> recall_to_expression -> language expression -> feedback/reconsolidation`。代码层也遵守“不硬编码语言”的红线：这些对象只提供结构化记忆材料、来源边界和置信度，不拼接固定回答。
 
 ### “存了但说不出”的断链检查
 

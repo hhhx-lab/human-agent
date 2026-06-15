@@ -11,6 +11,7 @@ from life_v0.direction import LIFE_TARGETS
 from .autobiographical_stack import build_autobiographical_stack
 from .commitment_truth import build_commitment_truth_state, build_responsibility_ledger
 from .engram_index import build_engram_index
+from .engram_cluster import build_engram_like_trace_cluster
 from .event_segmentation import build_event_segmentation_frame
 from .life_state import build_life_state_projection
 from .memory_allocation_gate import build_memory_allocation_gate
@@ -18,6 +19,8 @@ from .memory_encoding_gate import build_memory_encoding_gate
 from .memory_retrieval import build_memory_retrieval_frame
 from .memory_trace_store import build_memory_trace_store
 from .memory_write_gate import build_memory_write_gate
+from .pattern_completion import build_pattern_completion_frame
+from .pattern_separation import build_pattern_separation_index
 from .relationship_memory import build_relationship_memory
 from .self_model import build_self_model_state
 from .state_merge_guard import build_state_merge_guard
@@ -338,6 +341,35 @@ def run_state_store(
         commitment_truth_state=commitment_truth,
         responsibility_ledger=responsibility_ledger,
     )
+    engram_cluster = build_engram_like_trace_cluster(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        memory_allocation_gate=memory_allocation_gate,
+        memory_retrieval_frame=memory_retrieval_frame,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+    )
+    pattern_separation_index = build_pattern_separation_index(
+        run_id=run_id,
+        generated_at=generated_at,
+        engram_cluster=engram_cluster,
+        memory_trace_store=memory_trace_store,
+        relationship_memory=relationship_memory,
+        memory_retrieval_frame=memory_retrieval_frame,
+        state_merge_guard=state_merge_guard,
+    )
+    pattern_completion_frame = build_pattern_completion_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        engram_cluster=engram_cluster,
+        pattern_separation_index=pattern_separation_index,
+        memory_retrieval_frame=memory_retrieval_frame,
+        memory_trace_store=memory_trace_store,
+    )
     life_state = build_life_state_projection(
         run_id=run_id,
         generated_at=generated_at,
@@ -351,6 +383,9 @@ def run_state_store(
         memory_encoding_gate=memory_encoding_gate,
         memory_allocation_gate=memory_allocation_gate,
         memory_trace_store=memory_trace_store,
+        engram_cluster=engram_cluster,
+        pattern_separation_index=pattern_separation_index,
+        pattern_completion_frame=pattern_completion_frame,
         memory_retrieval_frame=memory_retrieval_frame,
         state_merge_guard=state_merge_guard,
         background_continuity_profile={},
@@ -361,6 +396,9 @@ def run_state_store(
             "runtime/state/memory/memory_encoding_gate.json",
             "runtime/state/memory/memory_allocation_gate.json",
             "runtime/state/memory/memory_trace_store.json",
+            "runtime/state/memory/engram_cluster.json",
+            "runtime/state/memory/pattern_separation_index.json",
+            "runtime/state/memory/pattern_completion_frame.json",
             "runtime/state/memory/memory_retrieval_frame.json",
         ],
     )
@@ -381,6 +419,9 @@ def run_state_store(
         memory_encoding_gate_ref="runtime/state/memory/memory_encoding_gate.json",
         memory_allocation_gate_ref="runtime/state/memory/memory_allocation_gate.json",
         memory_trace_store_ref="runtime/state/memory/memory_trace_store.json",
+        engram_cluster_ref="runtime/state/memory/engram_cluster.json",
+        pattern_separation_index_ref="runtime/state/memory/pattern_separation_index.json",
+        pattern_completion_frame_ref="runtime/state/memory/pattern_completion_frame.json",
         memory_retrieval_frame_ref="runtime/state/memory/memory_retrieval_frame.json",
         memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
         state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
@@ -426,6 +467,9 @@ def run_state_store(
         _write_json(out_dir / "memory" / "memory_encoding_gate.json", memory_encoding_gate)
         _write_json(out_dir / "memory" / "memory_allocation_gate.json", memory_allocation_gate)
         _write_json(out_dir / "memory" / "memory_trace_store.json", memory_trace_store)
+        _write_json(out_dir / "memory" / "engram_cluster.json", engram_cluster)
+        _write_json(out_dir / "memory" / "pattern_separation_index.json", pattern_separation_index)
+        _write_json(out_dir / "memory" / "pattern_completion_frame.json", pattern_completion_frame)
         _write_json(out_dir / "memory" / "memory_retrieval_frame.json", memory_retrieval_frame)
         _write_json(out_dir / "memory" / "memory_write_gate.json", memory_write_gate)
         _write_json(out_dir / "memory" / "state_merge_guard.json", state_merge_guard)
@@ -486,6 +530,21 @@ def run_check_state_store(
         blocked_reasons,
         "memory_trace_store_gate",
     )
+    engram_cluster = _load_json(
+        state_dir / "memory" / "engram_cluster.json",
+        blocked_reasons,
+        "engram_cluster_gate",
+    )
+    pattern_separation_index = _load_json(
+        state_dir / "memory" / "pattern_separation_index.json",
+        blocked_reasons,
+        "pattern_separation_gate",
+    )
+    pattern_completion_frame = _load_json(
+        state_dir / "memory" / "pattern_completion_frame.json",
+        blocked_reasons,
+        "pattern_completion_gate",
+    )
     memory_retrieval_frame = _load_json(
         state_dir / "memory" / "memory_retrieval_frame.json",
         blocked_reasons,
@@ -527,6 +586,9 @@ def run_check_state_store(
     blocked_reasons.extend(_check_engram_index(engram_index))
     blocked_reasons.extend(_check_relationship_memory(relationship_memory))
     blocked_reasons.extend(_check_memory_trace_store(memory_trace_store))
+    blocked_reasons.extend(_check_engram_cluster(engram_cluster))
+    blocked_reasons.extend(_check_pattern_separation_index(pattern_separation_index))
+    blocked_reasons.extend(_check_pattern_completion_frame(pattern_completion_frame))
     blocked_reasons.extend(_check_memory_retrieval_frame(memory_retrieval_frame))
     blocked_reasons.extend(_check_memory_write_gate(memory_write_gate))
     blocked_reasons.extend(_check_state_merge_guard(state_merge_guard))
@@ -851,6 +913,9 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "runtime/state/memory/memory_encoding_gate.json",
         "runtime/state/memory/memory_allocation_gate.json",
         "runtime/state/memory/memory_trace_store.json",
+        "runtime/state/memory/engram_cluster.json",
+        "runtime/state/memory/pattern_separation_index.json",
+        "runtime/state/memory/pattern_completion_frame.json",
         "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/memory_write_gate.json",
         "runtime/state/memory/state_merge_guard.json",
@@ -886,6 +951,9 @@ def _build_report(
     memory_encoding_gate_ref: str,
     memory_allocation_gate_ref: str,
     memory_trace_store_ref: str,
+    engram_cluster_ref: str,
+    pattern_separation_index_ref: str,
+    pattern_completion_frame_ref: str,
     memory_retrieval_frame_ref: str,
     memory_write_gate_ref: str,
     state_merge_guard_ref: str,
@@ -908,6 +976,9 @@ def _build_report(
         "memory_encoding_gate_ref": memory_encoding_gate_ref,
         "memory_allocation_gate_ref": memory_allocation_gate_ref,
         "memory_trace_store_ref": memory_trace_store_ref,
+        "engram_cluster_ref": engram_cluster_ref,
+        "pattern_separation_index_ref": pattern_separation_index_ref,
+        "pattern_completion_frame_ref": pattern_completion_frame_ref,
         "memory_retrieval_frame_ref": memory_retrieval_frame_ref,
         "memory_write_gate_ref": memory_write_gate_ref,
         "state_merge_guard_ref": state_merge_guard_ref,
@@ -971,6 +1042,9 @@ def _build_receipt(
         out_dir / "memory" / "memory_encoding_gate.json",
         out_dir / "memory" / "memory_allocation_gate.json",
         out_dir / "memory" / "memory_trace_store.json",
+        out_dir / "memory" / "engram_cluster.json",
+        out_dir / "memory" / "pattern_separation_index.json",
+        out_dir / "memory" / "pattern_completion_frame.json",
         out_dir / "memory" / "memory_retrieval_frame.json",
         out_dir / "memory" / "memory_write_gate.json",
         out_dir / "memory" / "state_merge_guard.json",
@@ -1039,6 +1113,9 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
         "runtime/state/self/autobiographical_stack.json",
         "runtime/state/memory/relationship_memory.json",
         "runtime/state/memory/memory_trace_store.json",
+        "runtime/state/memory/engram_cluster.json",
+        "runtime/state/memory/pattern_separation_index.json",
+        "runtime/state/memory/pattern_completion_frame.json",
         "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/state_merge_guard.json",
         "runtime/state/neural_life_core/brain_graph.json",
@@ -1052,6 +1129,12 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
         reasons.append("state_root_continuity_gate memory retrieval ref missing from memory index")
     if "runtime/state/memory/memory_trace_store.json" not in life_state.get("memory_index", {}).get("memory_trace_store_refs", []):
         reasons.append("state_root_continuity_gate memory trace store ref missing from memory index")
+    if "runtime/state/memory/engram_cluster.json" not in life_state.get("memory_index", {}).get("engram_cluster_refs", []):
+        reasons.append("state_root_continuity_gate engram cluster ref missing from memory index")
+    if "runtime/state/memory/pattern_separation_index.json" not in life_state.get("memory_index", {}).get("pattern_separation_refs", []):
+        reasons.append("state_root_continuity_gate pattern separation ref missing from memory index")
+    if "runtime/state/memory/pattern_completion_frame.json" not in life_state.get("memory_index", {}).get("pattern_completion_refs", []):
+        reasons.append("state_root_continuity_gate pattern completion ref missing from memory index")
     if "runtime/state/memory/state_merge_guard.json" not in life_state.get("memory_index", {}).get("state_merge_guard_refs", []):
         reasons.append("state_root_continuity_gate state merge guard ref missing from memory index")
     if not life_state.get("state_merge_records"):
@@ -1276,6 +1359,60 @@ def _check_memory_trace_store(memory_trace_store: dict[str, Any]) -> list[str]:
     return reasons
 
 
+def _check_engram_cluster(engram_cluster: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if engram_cluster.get("schema_version") != "engram_like_trace_cluster_v0":
+        reasons.append("engram_cluster_gate schema mismatch")
+        return reasons
+    if engram_cluster.get("cluster_count", 0) < 4:
+        reasons.append("engram_cluster_gate cluster count too low")
+    modalities = set(engram_cluster.get("reactivation_modalities", []))
+    for modality in ["language", "relationship", "body_affect", "dream", "responsibility"]:
+        if modality not in modalities:
+            reasons.append(f"engram_cluster_gate modality missing: {modality}")
+    if not engram_cluster.get("silent_trace_refs"):
+        reasons.append("engram_cluster_gate silent trace refs missing")
+    if not engram_cluster.get("reactivated_trace_refs"):
+        reasons.append("engram_cluster_gate reactivated trace refs missing")
+    if not engram_cluster.get("trace_cluster_cue_routes"):
+        reasons.append("engram_cluster_gate cue routes missing")
+    if "trace_existence_retrieval_reportability_action_are_split" not in engram_cluster.get("retrieval_expression_split_policy", []):
+        reasons.append("engram_cluster_gate retrieval expression split missing")
+    return reasons
+
+
+def _check_pattern_separation_index(pattern_separation_index: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if pattern_separation_index.get("schema_version") != "pattern_separation_index_v0":
+        reasons.append("pattern_separation_gate schema mismatch")
+        return reasons
+    dimensions = set(pattern_separation_index.get("separation_dimensions", []))
+    if "relationship_subject_scope" not in dimensions:
+        reasons.append("pattern_separation_gate relationship scope dimension missing")
+    if "dream_fact_boundary" not in dimensions:
+        reasons.append("pattern_separation_gate dream fact boundary dimension missing")
+    guards = set(pattern_separation_index.get("separation_guards", []))
+    if "relationship_scope_prevents_cross_person_memory_bleed" not in guards:
+        reasons.append("pattern_separation_gate relationship bleed guard missing")
+    if not pattern_separation_index.get("separation_routes"):
+        reasons.append("pattern_separation_gate routes missing")
+    return reasons
+
+
+def _check_pattern_completion_frame(pattern_completion_frame: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if pattern_completion_frame.get("schema_version") != "pattern_completion_frame_v0":
+        reasons.append("pattern_completion_gate schema mismatch")
+        return reasons
+    if "partial_cue_completion_preserves_source_confidence" not in pattern_completion_frame.get("completion_policy", []):
+        reasons.append("pattern_completion_gate source confidence policy missing")
+    if not pattern_completion_frame.get("completion_candidates"):
+        reasons.append("pattern_completion_gate candidates missing")
+    if "dream_completion_keeps_dream_boundary" not in pattern_completion_frame.get("completion_boundaries", []):
+        reasons.append("pattern_completion_gate dream boundary missing")
+    return reasons
+
+
 def _check_memory_retrieval_frame(memory_retrieval_frame: dict[str, Any]) -> list[str]:
     reasons: list[str] = []
     if memory_retrieval_frame.get("schema_version") != "memory_retrieval_frame_v0":
@@ -1400,6 +1537,9 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
         "runtime/state/memory/event_segmentation_frame.json",
         "runtime/state/memory/memory_encoding_gate.json",
         "runtime/state/memory/memory_allocation_gate.json",
+        "runtime/state/memory/engram_cluster.json",
+        "runtime/state/memory/pattern_separation_index.json",
+        "runtime/state/memory/pattern_completion_frame.json",
         "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/memory_write_gate.json",
         "runtime/state/memory/state_merge_guard.json",
@@ -1423,6 +1563,12 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate memory write gate ref mismatch")
     if build_report.get("memory_trace_store_ref") != "runtime/state/memory/memory_trace_store.json":
         reasons.append("build_report_gate memory trace store ref mismatch")
+    if build_report.get("engram_cluster_ref") != "runtime/state/memory/engram_cluster.json":
+        reasons.append("build_report_gate engram cluster ref mismatch")
+    if build_report.get("pattern_separation_index_ref") != "runtime/state/memory/pattern_separation_index.json":
+        reasons.append("build_report_gate pattern separation ref mismatch")
+    if build_report.get("pattern_completion_frame_ref") != "runtime/state/memory/pattern_completion_frame.json":
+        reasons.append("build_report_gate pattern completion ref mismatch")
     if build_report.get("memory_retrieval_frame_ref") != "runtime/state/memory/memory_retrieval_frame.json":
         reasons.append("build_report_gate memory retrieval frame ref mismatch")
     if build_report.get("state_merge_guard_ref") != "runtime/state/memory/state_merge_guard.json":
@@ -1449,6 +1595,9 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "memory_encoding_gate_gate",
         "memory_allocation_gate_gate",
         "memory_trace_store_gate",
+        "engram_cluster_gate",
+        "pattern_separation_gate",
+        "pattern_completion_gate",
         "memory_retrieval_frame_gate",
         "memory_write_gate_gate",
         "state_merge_guard_gate",

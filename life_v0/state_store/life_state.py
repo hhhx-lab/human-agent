@@ -39,6 +39,9 @@ def build_life_state_projection(
     memory_encoding_gate: dict[str, Any] | None = None,
     memory_allocation_gate: dict[str, Any] | None = None,
     memory_trace_store: dict[str, Any] | None = None,
+    engram_cluster: dict[str, Any] | None = None,
+    pattern_separation_index: dict[str, Any] | None = None,
+    pattern_completion_frame: dict[str, Any] | None = None,
     memory_retrieval_frame: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
     background_continuity_profile: dict[str, Any] | None = None,
@@ -55,6 +58,9 @@ def build_life_state_projection(
     memory_encoding_gate_ref = "runtime/state/memory/memory_encoding_gate.json"
     memory_allocation_gate_ref = "runtime/state/memory/memory_allocation_gate.json"
     memory_trace_store_ref = "runtime/state/memory/memory_trace_store.json"
+    engram_cluster_ref = "runtime/state/memory/engram_cluster.json"
+    pattern_separation_ref = "runtime/state/memory/pattern_separation_index.json"
+    pattern_completion_ref = "runtime/state/memory/pattern_completion_frame.json"
     memory_retrieval_ref = "runtime/state/memory/memory_retrieval_frame.json"
     background_continuity_profile = background_continuity_profile or {}
     background_continuity_root = _build_background_continuity_root(
@@ -103,6 +109,15 @@ def build_life_state_projection(
         if memory_trace_store
         else [],
         "memory_trace_refs": list((memory_trace_store or {}).get("trace_ids", [])),
+        "engram_cluster_refs": [engram_cluster_ref] if engram_cluster else [],
+        "engram_reactivated_trace_refs": list((engram_cluster or {}).get("reactivated_trace_refs", [])),
+        "engram_silent_trace_refs": list((engram_cluster or {}).get("silent_trace_refs", [])),
+        "pattern_separation_refs": [pattern_separation_ref]
+        if pattern_separation_index
+        else [],
+        "pattern_completion_refs": [pattern_completion_ref]
+        if pattern_completion_frame
+        else [],
         "memory_retrieval_refs": memory_retrieval_refs,
         "dream_memory_refs": list((engram_index or {}).get("dream_memory_refs", [])),
         "responsibility_memory_refs": list((engram_index or {}).get("responsibility_memory_refs", []))
@@ -145,6 +160,9 @@ def build_life_state_projection(
         memory_encoding_gate_ref,
         memory_allocation_gate_ref,
         memory_trace_store_ref,
+        engram_cluster_ref,
+        pattern_separation_ref,
+        pattern_completion_ref,
         memory_retrieval_ref,
         "runtime/state/self/autobiographical_stack.json",
         "runtime/state/memory/relationship_memory.json",

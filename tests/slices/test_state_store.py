@@ -116,6 +116,9 @@ class StateStoreTests(unittest.TestCase):
             event_segmentation_frame = self._read_json(state_root / "memory" / "event_segmentation_frame.json")
             memory_encoding_gate = self._read_json(state_root / "memory" / "memory_encoding_gate.json")
             memory_allocation_gate = self._read_json(state_root / "memory" / "memory_allocation_gate.json")
+            engram_cluster = self._read_json(state_root / "memory" / "engram_cluster.json")
+            pattern_separation_index = self._read_json(state_root / "memory" / "pattern_separation_index.json")
+            pattern_completion_frame = self._read_json(state_root / "memory" / "pattern_completion_frame.json")
             memory_retrieval_frame = self._read_json(state_root / "memory" / "memory_retrieval_frame.json")
             memory_write_gate = self._read_json(state_root / "memory" / "memory_write_gate.json")
             state_merge_guard = self._read_json(state_root / "memory" / "state_merge_guard.json")
@@ -226,6 +229,18 @@ class StateStoreTests(unittest.TestCase):
         self.assertEqual(
             life_state["memory_index"]["memory_allocation_gate_refs"],
             ["runtime/state/memory/memory_allocation_gate.json"],
+        )
+        self.assertEqual(
+            life_state["memory_index"]["engram_cluster_refs"],
+            ["runtime/state/memory/engram_cluster.json"],
+        )
+        self.assertEqual(
+            life_state["memory_index"]["pattern_separation_refs"],
+            ["runtime/state/memory/pattern_separation_index.json"],
+        )
+        self.assertEqual(
+            life_state["memory_index"]["pattern_completion_refs"],
+            ["runtime/state/memory/pattern_completion_frame.json"],
         )
         self.assertEqual(
             life_state["state_merge_records"][0]["state_merge_guard_ref"],
@@ -392,6 +407,53 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn(
             "low_value_goes_deep_sediment_or_short_term",
             memory_allocation_gate["allocation_boundaries"],
+        )
+        self.assertEqual(
+            engram_cluster["schema_version"],
+            "engram_like_trace_cluster_v0",
+        )
+        self.assertGreaterEqual(engram_cluster["cluster_count"], 4)
+        self.assertIn("language", engram_cluster["reactivation_modalities"])
+        self.assertIn("relationship", engram_cluster["reactivation_modalities"])
+        self.assertIn("body_affect", engram_cluster["reactivation_modalities"])
+        self.assertIn("dream", engram_cluster["reactivation_modalities"])
+        self.assertIn("responsibility", engram_cluster["reactivation_modalities"])
+        self.assertTrue(engram_cluster["silent_trace_refs"])
+        self.assertTrue(engram_cluster["reactivated_trace_refs"])
+        self.assertTrue(engram_cluster["trace_cluster_cue_routes"])
+        self.assertIn(
+            "trace_existence_retrieval_reportability_action_are_split",
+            engram_cluster["retrieval_expression_split_policy"],
+        )
+        self.assertEqual(
+            pattern_separation_index["schema_version"],
+            "pattern_separation_index_v0",
+        )
+        self.assertIn(
+            "relationship_subject_scope",
+            pattern_separation_index["separation_dimensions"],
+        )
+        self.assertIn(
+            "dream_fact_boundary",
+            pattern_separation_index["separation_dimensions"],
+        )
+        self.assertIn(
+            "relationship_scope_prevents_cross_person_memory_bleed",
+            pattern_separation_index["separation_guards"],
+        )
+        self.assertTrue(pattern_separation_index["separation_routes"])
+        self.assertEqual(
+            pattern_completion_frame["schema_version"],
+            "pattern_completion_frame_v0",
+        )
+        self.assertIn(
+            "partial_cue_completion_preserves_source_confidence",
+            pattern_completion_frame["completion_policy"],
+        )
+        self.assertTrue(pattern_completion_frame["completion_candidates"])
+        self.assertIn(
+            "dream_completion_keeps_dream_boundary",
+            pattern_completion_frame["completion_boundaries"],
         )
         self.assertEqual(relationship_memory["schema_version"], "relationship_memory_v0")
         self.assertTrue(relationship_memory["shared_memory_refs"])
@@ -572,6 +634,9 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/memory/event_segmentation_frame.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/memory_encoding_gate.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/memory_allocation_gate.json", manifest["state_refs"])
+        self.assertIn("runtime/state/memory/engram_cluster.json", manifest["state_refs"])
+        self.assertIn("runtime/state/memory/pattern_separation_index.json", manifest["state_refs"])
+        self.assertIn("runtime/state/memory/pattern_completion_frame.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/memory_retrieval_frame.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/memory_write_gate.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/state_merge_guard.json", manifest["state_refs"])
@@ -590,6 +655,9 @@ class StateStoreTests(unittest.TestCase):
         self.assertEqual(report["event_segmentation_frame_ref"], "runtime/state/memory/event_segmentation_frame.json")
         self.assertEqual(report["memory_encoding_gate_ref"], "runtime/state/memory/memory_encoding_gate.json")
         self.assertEqual(report["memory_allocation_gate_ref"], "runtime/state/memory/memory_allocation_gate.json")
+        self.assertEqual(report["engram_cluster_ref"], "runtime/state/memory/engram_cluster.json")
+        self.assertEqual(report["pattern_separation_index_ref"], "runtime/state/memory/pattern_separation_index.json")
+        self.assertEqual(report["pattern_completion_frame_ref"], "runtime/state/memory/pattern_completion_frame.json")
         self.assertEqual(report["autobiographical_stack_ref"], "runtime/state/self/autobiographical_stack.json")
         self.assertEqual(report["memory_retrieval_frame_ref"], "runtime/state/memory/memory_retrieval_frame.json")
         self.assertEqual(report["memory_write_gate_ref"], "runtime/state/memory/memory_write_gate.json")
@@ -610,6 +678,9 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("event_segmentation_gate", check_report["closed_gates"])
         self.assertIn("memory_encoding_gate_gate", check_report["closed_gates"])
         self.assertIn("memory_allocation_gate_gate", check_report["closed_gates"])
+        self.assertIn("engram_cluster_gate", check_report["closed_gates"])
+        self.assertIn("pattern_separation_gate", check_report["closed_gates"])
+        self.assertIn("pattern_completion_gate", check_report["closed_gates"])
         self.assertIn("relationship_memory_gate", check_report["closed_gates"])
         self.assertIn("memory_write_gate_gate", check_report["closed_gates"])
         self.assertIn("memory_retrieval_frame_gate", check_report["closed_gates"])
@@ -625,6 +696,9 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/memory/event_segmentation_frame.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/memory_encoding_gate.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/memory_allocation_gate.json", receipt["output_refs"])
+        self.assertIn("runtime/state/memory/engram_cluster.json", receipt["output_refs"])
+        self.assertIn("runtime/state/memory/pattern_separation_index.json", receipt["output_refs"])
+        self.assertIn("runtime/state/memory/pattern_completion_frame.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/memory_retrieval_frame.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/memory_write_gate.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/state_merge_guard.json", receipt["output_refs"])

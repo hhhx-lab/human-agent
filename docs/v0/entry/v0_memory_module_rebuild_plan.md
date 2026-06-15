@@ -275,7 +275,7 @@ MemoryTrace / EngramIndex
 - 已新增 `life_v0/state_store/memory_trace_store.py`。
 - `run_state_store(...)` 会写出 `runtime/state/memory/memory_trace_store.json`。
 - `life_state.memory_index.memory_trace_store_refs`、`life_state.runtime_trace_refs`、`state_store_manifest.json`、`state_store_report.json`、receipt 和 `run_check_state_store(...)` 已经消费该对象。
-- 当前 trace store 先覆盖 episodic、relationship、autobiographical、responsibility 四类种子痕迹，并已接入 event segmentation、encoding gate 和 allocation gate；后续 M3/M4 会把 engram cluster 和 pattern completion 接进来。
+- 当前 trace store 覆盖 episodic、relationship、autobiographical、responsibility 四类种子痕迹，并已接入 event segmentation、encoding gate、allocation gate、engram cluster、pattern separation 和 pattern completion。
 
 ### M2. EventSegmentation + EncodingGate + AllocationGate
 
@@ -334,6 +334,14 @@ MemoryTrace / EngramIndex
 - 同一记忆可由语言 cue、关系 cue、身体/情绪 cue、梦境 cue、责任 cue 激活。
 - 想不起、不能说、不能行动要能分开表示。
 
+当前状态：
+
+- 已新增 `life_v0/state_store/engram_cluster.py`。
+- `run_state_store(...)` 会写出 `runtime/state/memory/engram_cluster.json`。
+- `EngramLikeTraceCluster` 从 `MemoryTraceStore`、`EngramIndex`、`RelationshipMemory`、`AutobiographicalStack`、`MemoryAllocationGate`、`MemoryRetrievalFrame`、`MemoryWriteGate` 和 `StateMergeGuard` 生成五类痕迹簇：language episode、relationship subject、self autobiographical、responsibility/regret/repair、dream residue。
+- runtime 对象显式区分 `silent_trace_refs`、`reactivated_trace_refs`、`trace_cluster_cue_routes` 和 `retrieval_expression_split_policy`，其中 `trace_existence_retrieval_reportability_action_are_split` 是硬约束：痕迹存在、可检索、可报告、可行动不能混成一个状态。
+- `life_state.memory_index.engram_cluster_refs`、`state_store_manifest.json`、`state_store_report.json`、receipt 和 `run_check_state_store(...)#engram_cluster_gate` 已消费该对象。
+
 ### M4. Pattern Separation / Completion
 
 目标：防止相似关系、相似任务、相似痛苦事件、相似梦境和相似观察混淆；同时支持少量线索补全事件。
@@ -354,6 +362,14 @@ MemoryTrace / EngramIndex
 - 两个关系主体的偏好不会互相污染。
 - 只给一句“还记得那次修复吗”时，能补全相关 episode，但保留置信度和来源。
 - 梦境补全必须显示 dream boundary。
+
+当前状态：
+
+- 已新增 `life_v0/state_store/pattern_separation.py` 和 `life_v0/state_store/pattern_completion.py`。
+- `run_state_store(...)` 会写出 `runtime/state/memory/pattern_separation_index.json` 与 `runtime/state/memory/pattern_completion_frame.json`。
+- `PatternSeparationIndex` 当前覆盖 relationship subject scope、event boundary、source evidence scope、dream fact boundary、responsibility action scope、body affect state scope，重点防止关系主体串扰、梦境事实污染、相似事件误合并和责任/行动范围错配。
+- `PatternCompletionFrame` 当前把部分线索补全为 relationship episode、responsibility repair、autobiographical self continuity 和 dream residue 四类候选，并要求 `partial_cue_completion_preserves_source_confidence`：补全可以进入召回到表达结构，但必须保留来源置信度和 dream/relationship/responsibility 边界。
+- `life_state.memory_index.pattern_separation_refs`、`life_state.memory_index.pattern_completion_refs`、manifest、report、receipt 和 `run_check_state_store(...)#pattern_separation_gate/#pattern_completion_gate` 已消费这两个对象。
 
 ### M5. RelationshipMemory / AutobiographicalStack 深化
 
