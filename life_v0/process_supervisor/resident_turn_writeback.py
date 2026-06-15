@@ -13,6 +13,8 @@ from ..growth.offline_learning_profile import (
     RELATIONSHIP_LEARNING_PLAN_REF,
 )
 from ..neural_core.brain_graph import project_brain_graph_from_live_turn
+from ..neural_core.broadcast import project_broadcast_frame_from_live_turn
+from ..neural_core.metacognition import project_metacognition_state_from_live_turn
 from ..neural_core.network_state import project_network_state_from_live_turn
 from ..neural_core.workspace import project_workspace_frame_from_live_turn
 from ..language.apology_repair_language import build_apology_repair_language_trace
@@ -1584,9 +1586,37 @@ def _refresh_long_horizon_continuity(
         live_language_turn_refs=live_language_turn_refs,
         live_turn_focus=live_turn_focus,
     )
+    updated_broadcast_frame = project_broadcast_frame_from_live_turn(
+        broadcast_frame=_read_json_if_exists(state_dir / "consciousness" / "broadcast_frame.json"),
+        generated_at=generated_at,
+        workspace_frame=updated_workspace_frame,
+        run_id=refresh_run_id,
+        live_dialogue_turn_refs=dialogue_turn_refs,
+        live_language_turn_refs=live_language_turn_refs,
+        live_turn_focus=live_turn_focus,
+    )
+    updated_metacognition_state = project_metacognition_state_from_live_turn(
+        metacognition_state=_read_json_if_exists(
+            state_dir / "consciousness" / "metacognition_state.json"
+        ),
+        generated_at=generated_at,
+        broadcast_frame=updated_broadcast_frame,
+        workspace_frame=updated_workspace_frame,
+        run_id=refresh_run_id,
+        memory_retrieval_frame=memory_retrieval_frame,
+        expression_monitor_state=_read_json_if_exists(
+            language_dir / "expression_monitor_state.json"
+        ),
+        live_turn_focus=live_turn_focus,
+    )
     write_json(state_dir / "neural_life_core" / "brain_graph.json", updated_brain_graph)
     write_json(state_dir / "neural_life_core" / "network_state.json", updated_network_state)
     write_json(state_dir / "consciousness" / "workspace_frame.json", updated_workspace_frame)
+    write_json(state_dir / "consciousness" / "broadcast_frame.json", updated_broadcast_frame)
+    write_json(
+        state_dir / "consciousness" / "metacognition_state.json",
+        updated_metacognition_state,
+    )
     trait_drift_monitor = build_trait_drift_monitor_from_self_model(
         run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
         generated_at=generated_at,
@@ -1612,6 +1642,8 @@ def _refresh_long_horizon_continuity(
         "brain_graph": updated_brain_graph,
         "network_state": updated_network_state,
         "workspace_frame": updated_workspace_frame,
+        "broadcast_frame": updated_broadcast_frame,
+        "metacognition_state": updated_metacognition_state,
         "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
         "memory_retrieval_frame": memory_retrieval_frame or {},

@@ -429,6 +429,58 @@ class NeuralLifeCoreTests(unittest.TestCase):
         self.assertEqual(report["next_required_command"], "life-v0 build-state-store --strict")
         self.assertEqual(check_report["status"], "closed")
 
+    def test_live_turn_projects_broadcast_and_metacognition_from_workspace(self):
+        from life_v0.neural_core.broadcast import project_broadcast_frame_from_live_turn
+        from life_v0.neural_core.metacognition import project_metacognition_state_from_live_turn
+
+        generated_at = "2026-06-15T12:00:00+00:00"
+        workspace_frame = {
+            "schema_version": "workspace_frame_v0",
+            "candidate_explanations": [
+                {"explanation_id": "exp-1", "focus": "repair_commitment"},
+                {"explanation_id": "exp-2", "focus": "relationship_continuity"},
+                {"explanation_id": "exp-3", "focus": "dream_residue"},
+            ],
+            "broadcast_targets": [
+                "LanguageRelationshipRuntime",
+                "DreamOfflineRuntime",
+            ],
+            "engram_retrieval_refs": ["runtime/state/memory/engram_index.json#cue-1"],
+        }
+        broadcast = project_broadcast_frame_from_live_turn(
+            broadcast_frame={},
+            generated_at=generated_at,
+            workspace_frame=workspace_frame,
+            run_id="live-turn-test",
+            live_dialogue_turn_refs=["runtime/state/language/dialogue_turn_log.jsonl#turn-1"],
+            live_turn_focus="repair_commitment_shared_language",
+        )
+        self.assertEqual(broadcast["live_turn_focus"], "repair_commitment_shared_language")
+        self.assertIn("DreamOfflineRuntime", broadcast["broadcast_targets"])
+        self.assertEqual(len(broadcast["salience_ranking"]), 3)
+        self.assertIn("exp-3", broadcast["suppressed_content_refs"])
+
+        metacognition = project_metacognition_state_from_live_turn(
+            metacognition_state={},
+            generated_at=generated_at,
+            broadcast_frame=broadcast,
+            workspace_frame=workspace_frame,
+            run_id="live-turn-test",
+            memory_retrieval_frame={
+                "reconstruction_focus": "relationship_repair_recall",
+                "blocked_or_quarantined_refs": ["quarantine-1"],
+            },
+            expression_monitor_state={"delay_or_release_decision": "delay_for_clarification"},
+            live_turn_focus="repair_commitment_shared_language",
+        )
+        self.assertIn("semantic-ambiguity-monitoring", metacognition["uncertainty_flags"])
+        self.assertIn("memory-quarantine-monitoring", metacognition["uncertainty_flags"])
+        self.assertIn("reconstructive-recall-monitoring", metacognition["uncertainty_flags"])
+        self.assertEqual(
+            metacognition["memory_reconstruction_focus"],
+            "relationship_repair_recall",
+        )
+
     def _read_json(self, path: Path):
         with path.open("r", encoding="utf-8") as handle:
             return json.load(handle)
