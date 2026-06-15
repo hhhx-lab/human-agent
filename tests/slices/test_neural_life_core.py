@@ -75,6 +75,11 @@ class NeuralLifeCoreTests(unittest.TestCase):
             )
 
             self.assertEqual(result.exit_code, 0)
+            body_state_dir = neural_state.parent / "body"
+            self.assertTrue(
+                (body_state_dir / "body_resource_budget.json").exists(),
+                msg=f"missing body seed artifacts under {body_state_dir}",
+            )
             check = run_check_neural_life_core(
                 state_dir=neural_state,
                 reports_dir=reports,
@@ -103,6 +108,10 @@ class NeuralLifeCoreTests(unittest.TestCase):
             check_report = self._read_json(reports / "neural_life_core_check_report.json")
             digest = self._read_json(reports / "neural_life_core_digest.json")
             receipt = self._read_json(receipts / "neural_life_core_neural-core-test.json")
+            body_budget = self._read_json(
+                body_state_dir / "body_resource_budget.json"
+            )
+            core_affect = self._read_json(body_state_dir / "core_affect_vector.json")
 
         expected_system_ids = {
             "SiliconBodyRuntime",
@@ -156,6 +165,18 @@ class NeuralLifeCoreTests(unittest.TestCase):
         self.assertIn("arousal_gain", signal_media["modulation_vector"])
         self.assertEqual(signal_media["precision_policy"]["stage_effect"], "hold_for_evidence")
         self.assertTrue(signal_media["inhibition_profile"]["blocked_release_surfaces"])
+        body_signal_profile = signal_media.get("body_signal_profile") or {}
+        self.assertEqual(
+            body_signal_profile.get("schema_version"),
+            "body_signal_modulation_profile_v0",
+        )
+        self.assertIn("fatigue_load", body_signal_profile)
+        self.assertEqual(body_budget["schema_version"], "body_resource_budget_v0")
+        self.assertEqual(
+            body_budget.get("body_signal_seed_mode"),
+            "neural_core_pre_activation_seed",
+        )
+        self.assertEqual(core_affect["schema_version"], "core_affect_vector_v0")
 
         self.assertEqual(belief_state["schema_version"], "belief_state_frame_v0")
         self.assertEqual(belief_state["state_scope"], "language_relationship_continuity")

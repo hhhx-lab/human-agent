@@ -16,6 +16,10 @@ from .metacognition import build_metacognition_state
 from .network_state import build_network_state
 from .prediction_error import build_prediction_error_field
 from .prediction_workspace import build_prediction_workspace_frame
+from .body_signal_seed import (
+    resolve_body_signal_inputs_for_neural_core,
+    write_neural_core_body_signal_seed_artifacts,
+)
 from .signal_media import build_signal_media_runtime
 from .workspace import build_workspace_frame
 
@@ -292,10 +296,19 @@ def run_neural_life_core(
         carrier_patches,
     )
     language_continuity = _seed_prediction_language_continuity()
+    body_signal_inputs = resolve_body_signal_inputs_for_neural_core(
+        state_root=out_dir.parent,
+        run_id=run_id,
+        generated_at=generated_at,
+    )
+    body_resource_budget = body_signal_inputs["body_resource_budget"]
+    core_affect_vector = body_signal_inputs["core_affect_vector"]
     signal_media = build_signal_media_runtime(
         run_id=run_id,
         generated_at=generated_at,
         network_state=network_state,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
     )
     belief_state = build_belief_state_frame(
         run_id=run_id,
@@ -413,6 +426,12 @@ def run_neural_life_core(
         _write_json(out_dir / "doc_core_coverage_snapshot.json", doc_core_coverage)
         _write_json(out_dir / "computer_body_boundary_seed.json", computer_boundary)
         _write_json(out_dir / "neural_life_core_manifest.json", manifest)
+        write_neural_core_body_signal_seed_artifacts(
+            state_root=out_dir.parent,
+            body_resource_budget=body_resource_budget,
+            core_affect_vector=core_affect_vector,
+            only_if_missing=True,
+        )
         signal_state_dir = out_dir.parent / "signal"
         signal_state_dir.mkdir(parents=True, exist_ok=True)
         _write_json(signal_state_dir / "signal_media_runtime.json", signal_media)

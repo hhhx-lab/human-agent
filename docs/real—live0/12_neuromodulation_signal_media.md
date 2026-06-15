@@ -184,3 +184,7 @@ body_signal_profile.memory_write_bias
 ```
 
 因此调质层现在同时调节预测、等待、记忆写门和表达材料。关键约束仍然是：调质只作为内部介质和证据，不允许被代码翻译成固定外显句子。
+
+## S02 首轮 body seed（ITR-08-82）
+
+S02 `run_neural_life_core` 现在会通过 `body_signal_seed.py#resolve_body_signal_inputs_for_neural_core` 在首轮构建时读取或种子化 `body_resource_budget.json` 与 `core_affect_vector.json`，并把它们传入 `build_signal_media_runtime`。若 S06 尚未运行，则写出 `neural_core_pre_activation_seed` 载体，边界为 `neural_core_pre_activation_body_signal_seed_not_spoken_language`。测试：`tests/slices/test_neural_life_core.py`（`body_signal_profile` 与 body seed 文件断言）。
