@@ -1158,6 +1158,18 @@ ModelExpression.model_expression_context_summary.prediction_attention_consciousn
 
 机制含义是：总状态检查面不能只证明 resident process、waiting heartbeat、line editor 和 terminal loop 存在，还要在同一张总览里显示语言表达前的工作区写门消费证据是否存在。这样 `/state` 成为跨断连恢复时的第一层检查入口，而 `/language`、`/cognition`、`/consciousness`、`/thinking` 继续提供细分视角。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成固定回答，不新增 system prompt，不把意识写门、工作区、广播、元认知、常驻状态或生命信号释放成 Adam 的外显语言。
 
+当前 ITR-08 第五十五段把模型表达意识写门证据接入 `/proactive` 主动发话检查面：
+
+```text
+ModelExpression.model_expression_context_summary.prediction_attention_consciousness_write_context_*
+  -> StateInspection.proactive_voice.coverage_summary.model_expression_consciousness_write_context_*
+  -> /proactive coverage_summary
+```
+
+`state_inspection.py` 现在会让 `/proactive`、`/proactive_voice` 与 `/主动` 额外读取 `runtime/state/language/model_expression_state.json`。`_collect_proactive_voice_summary(...)` 会从 `model_expression_context_summary` 中提取 `prediction_attention_consciousness_write_context_refs`、ref count、workspace candidate count、broadcast target count、reportability flag count、write bias、candidate gate adjustments 和 boundary，并以 `model_expression_consciousness_write_context_*` 字段写入 proactive coverage summary；当这组证据存在时，summary 会把 `model_expression_consciousness_write_context` 合入主动发话的 `domain_presence` 与 `active_domains`。
+
+机制含义是：主动发话检查面不能只证明 proactive profile 覆盖了记忆、梦境、网页学习、自主活动或等待治理，也要证明主动语言真正释放前是否经过模型表达上下文里的工作区写门材料。这样 point 6 的“终端打开时可以主动说话”继续受模型表达和 post-expression gate 约束，而不是回到固定问候、固定追问或机制播报。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成固定回答，不新增 system prompt，不把意识写门、工作区、广播、元认知、主动发话状态或生命信号释放成 Adam 的外显语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

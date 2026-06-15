@@ -633,6 +633,7 @@ def build_resident_state_inspection(
             {
                 "proactive_state": "terminal/resident_terminal_proactive_state.json",
                 "proactive_events": "terminal/resident_terminal_proactive_events.jsonl",
+                "model_expression_state": "language/model_expression_state.json",
             },
         )
         proactive_voice["coverage_summary"] = _collect_proactive_voice_summary(
@@ -2081,6 +2082,23 @@ def _collect_prediction_world_contact_summary(
 
 def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
     proactive_state = _extract_compact_value(section.get("proactive_state", {}))
+    model_expression = _extract_compact_value(
+        section.get("model_expression_state", {})
+    )
+    model_context_summary = _extract_nested_value(
+        model_expression,
+        "model_expression_context_summary",
+    )
+    model_expression_consciousness_write_context_refs = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_refs"
+        )
+    )
+    model_expression_consciousness_write_context_adjustments = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
+        )
+    )
     profile = _extract_nested_value(proactive_state, "last_proactive_voice_profile")
     coverage = _extract_nested_value(proactive_state, "last_profile_coverage")
     if not coverage:
@@ -2091,6 +2109,23 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
     domain_presence = coverage.get("domain_presence")
     if not isinstance(domain_presence, dict):
         domain_presence = {}
+    else:
+        domain_presence = dict(domain_presence)
+    if (
+        model_expression_consciousness_write_context_refs
+        or model_context_summary.get(
+            "prediction_attention_consciousness_write_context_bias"
+        )
+        or model_context_summary.get(
+            "prediction_attention_consciousness_write_context_boundary"
+        )
+    ):
+        domain_presence["model_expression_consciousness_write_context"] = True
+        if "model_expression_consciousness_write_context" not in active_domains:
+            active_domains = [
+                *active_domains,
+                "model_expression_consciousness_write_context",
+            ]
     candidate_count = proactive_state.get("last_utterance_candidate_code_count")
     if candidate_count is None:
         candidate_count = profile.get("utterance_candidate_code_count")
@@ -2116,6 +2151,43 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
         "active_domains": active_domains,
         "domain_presence": domain_presence,
         "utterance_candidate_code_count": candidate_count,
+        "model_expression_consciousness_write_context_refs": (
+            model_expression_consciousness_write_context_refs
+        ),
+        "model_expression_consciousness_write_context_ref_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_ref_count"
+            )
+            or _count_any(model_expression_consciousness_write_context_refs)
+        ),
+        "model_expression_consciousness_write_context_workspace_candidate_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_workspace_candidate_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_broadcast_target_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_broadcast_target_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_reportability_flag_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_reportability_flag_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_bias": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+        ),
+        "model_expression_consciousness_write_context_candidate_gate_adjustments": (
+            model_expression_consciousness_write_context_adjustments
+        ),
+        "model_expression_consciousness_write_context_boundary": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
         "event_count": proactive_state.get("event_count"),
         "release_count": proactive_state.get("release_count"),
         "speech_generation_boundary": "state_codes_only_model_expression_required",
