@@ -284,6 +284,14 @@ def build_resident_state_inspection(
                 ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
                 "go_nogo_state": "action/go_nogo_state.json",
+                "world_contact_validation": (
+                    "validation/world_contact_validation.json"
+                ),
+                "validation_rollup": "validation/validation_rollup.json",
+                "schema_runner_manifest": "schema_runner/run_manifest.json",
+                "schema_runner_cross_file_logic": (
+                    "schema_runner/cross_file_logic.json"
+                ),
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
@@ -598,6 +606,9 @@ def build_resident_state_inspection(
                     "terminal/resident_autonomous_activity_state.json"
                 ),
                 "model_expression_state": "language/model_expression_state.json",
+                "workspace_frame": "consciousness/workspace_frame.json",
+                "broadcast_frame": "consciousness/broadcast_frame.json",
+                "metacognition_state": "consciousness/metacognition_state.json",
                 "queue_e_world_contact_handoff": (
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
@@ -697,6 +708,15 @@ def build_resident_state_inspection(
                 ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
                 "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "world_contact_validation": (
+                    "validation/world_contact_validation.json"
+                ),
+                "validation_rollup": "validation/validation_rollup.json",
+                "schema_runner_manifest": "schema_runner/run_manifest.json",
+                "schema_runner_cross_file_logic": (
+                    "schema_runner/cross_file_logic.json"
+                ),
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
@@ -845,6 +865,15 @@ def _collect_state_summary(
         "schema_runner_cross_file_logic": _compact_json(
             terminal_dir.parent / "schema_runner" / "cross_file_logic.json"
         ),
+        "workspace_frame": _compact_json(
+            terminal_dir.parent / "consciousness" / "workspace_frame.json"
+        ),
+        "broadcast_frame": _compact_json(
+            terminal_dir.parent / "consciousness" / "broadcast_frame.json"
+        ),
+        "metacognition_state": _compact_json(
+            terminal_dir.parent / "consciousness" / "metacognition_state.json"
+        ),
     }
     state["resident_continuity_summary"] = _collect_resident_continuity_summary(
         state
@@ -900,6 +929,12 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         ),
         schema_manifest=schema_manifest,
         schema_cross_file=schema_cross_file,
+    )
+    live_consciousness_chain = _live_consciousness_chain_inspection_snapshot(
+        terminal_loop=terminal_loop,
+        workspace=_extract_compact_value(section.get("workspace_frame", {})),
+        broadcast=_extract_compact_value(section.get("broadcast_frame", {})),
+        metacognition=_extract_compact_value(section.get("metacognition_state", {})),
     )
     model_context_summary = _extract_nested_value(
         model_expression,
@@ -972,6 +1007,9 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         "doc_to_code_coverage": bool(doc_to_code_matrix),
         "queue_e_world_contact_repair_hold_schema_handoff": bool(
             schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
+        ),
+        "live_consciousness_chain": bool(
+            live_consciousness_chain.get("live_consciousness_chain_present")
         ),
     }
     active_domains = [
@@ -1128,6 +1166,7 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         **process_closeout,
         **contract_coverage,
         **schema_handoff,
+        **live_consciousness_chain,
     }
 
 
@@ -2187,8 +2226,17 @@ def _collect_perception_world_contact_summary(
         section.get("terminal_life_loop_state", {})
     )
     idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
     process_report = _extract_compact_value(
         section.get("digital_life_process_report", {})
+    )
+    world_contact_validation = _extract_compact_value(
+        section.get("world_contact_validation", {})
+    )
+    validation_rollup = _extract_compact_value(section.get("validation_rollup", {}))
+    schema_manifest = _extract_compact_value(section.get("schema_runner_manifest", {}))
+    schema_cross_file = _extract_compact_value(
+        section.get("schema_runner_cross_file_logic", {})
     )
     world_contact_presence = _extract_nested_value(
         terminal_loop,
@@ -2207,6 +2255,14 @@ def _collect_perception_world_contact_summary(
         process_report=process_report,
         idle_strategy=idle_strategy,
         terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
+    )
+    schema_handoff = _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
+        validation_rollup=validation_rollup,
+        world_contact_validation=world_contact_validation,
+        schema_manifest=schema_manifest,
+        schema_cross_file=schema_cross_file,
+        go_nogo=go_nogo,
     )
     workspace_contents = _extract_nested_value(
         prediction_workspace,
@@ -2218,6 +2274,8 @@ def _collect_perception_world_contact_summary(
         "belief_state_frame": bool(belief_state),
         "prediction_workspace_frame": bool(prediction_workspace),
         "active_sampling_plan": bool(active_sampling),
+        "validation": bool(world_contact_validation or validation_rollup),
+        "schema_runner": bool(schema_cross_file or schema_manifest),
         "live_queue_e_world_contact_handoff": bool(
             world_contact_handoff
             or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
@@ -2232,6 +2290,9 @@ def _collect_perception_world_contact_summary(
         ),
         "body_pressure_closeout": bool(
             process_closeout.get("body_pressure_closeout_present")
+        ),
+        "queue_e_world_contact_repair_hold_schema_handoff": bool(
+            schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
         ),
     }
     active_domains = [
@@ -2290,6 +2351,7 @@ def _collect_perception_world_contact_summary(
         ),
         **live_queue_e_handoff,
         **process_closeout,
+        **schema_handoff,
     }
 
 
@@ -3203,6 +3265,14 @@ def _collect_signal_modulation_consumption_summary(
         go_nogo=go_nogo,
         memory_write_gate=memory_write_gate,
     )
+    world_contact_validation = _extract_compact_value(
+        section.get("world_contact_validation", {})
+    )
+    validation_rollup = _extract_compact_value(section.get("validation_rollup", {}))
+    schema_manifest = _extract_compact_value(section.get("schema_runner_manifest", {}))
+    schema_cross_file = _extract_compact_value(
+        section.get("schema_runner_cross_file_logic", {})
+    )
     world_contact_presence = _extract_nested_value(
         terminal_loop,
         "resident_background_lineage_state",
@@ -3215,6 +3285,13 @@ def _collect_signal_modulation_consumption_summary(
         handoff=world_contact_handoff,
         terminal_loop=terminal_loop,
         world_contact_presence=world_contact_presence,
+    )
+    schema_handoff = _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
+        validation_rollup=validation_rollup,
+        world_contact_validation=world_contact_validation,
+        schema_manifest=schema_manifest,
+        schema_cross_file=schema_cross_file,
+        go_nogo=go_nogo,
     )
     modulation_vector = _extract_nested_value(signal_media, "modulation_vector")
     body_signal_profile = _extract_nested_value(
@@ -3274,6 +3351,11 @@ def _collect_signal_modulation_consumption_summary(
         ),
         "live_queue_e_world_contact_handoff_closeout": bool(
             signal_closeout.get("live_queue_e_world_contact_handoff_closeout_present")
+        ),
+        "validation": bool(world_contact_validation or validation_rollup),
+        "schema_runner": bool(schema_cross_file or schema_manifest),
+        "queue_e_world_contact_repair_hold_schema_handoff": bool(
+            schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
         ),
     }
     active_domains = [
@@ -3467,6 +3549,7 @@ def _collect_signal_modulation_consumption_summary(
         ),
         **live_queue_e_handoff,
         **signal_closeout,
+        **schema_handoff,
     }
 
 
@@ -4795,6 +4878,12 @@ def _collect_cognitive_workspace_summary(
         terminal_loop=terminal_loop,
         world_contact_presence=world_contact_presence,
     )
+    live_consciousness_chain = _live_consciousness_chain_inspection_snapshot(
+        terminal_loop=terminal_loop,
+        workspace=workspace,
+        broadcast=broadcast,
+        metacognition=metacognition,
+    )
     model_expression_handoff = (
         _model_expression_world_contact_handoff_inspection_fields(
             model_context_summary
@@ -4836,6 +4925,9 @@ def _collect_cognitive_workspace_summary(
         ),
         "consciousness_write_context_closeout": bool(
             expression_closeout.get("consciousness_write_context_closeout_present")
+        ),
+        "live_consciousness_chain": bool(
+            live_consciousness_chain.get("live_consciousness_chain_present")
         ),
     }
     active_domains = [
@@ -4949,6 +5041,7 @@ def _collect_cognitive_workspace_summary(
         **model_expression_handoff,
         **live_queue_e_handoff,
         **expression_closeout,
+        **live_consciousness_chain,
     }
 
 
@@ -5009,6 +5102,12 @@ def _collect_consciousness_reportability_summary(
         terminal_loop=terminal_loop,
         world_contact_presence=world_contact_presence,
     )
+    live_consciousness_chain = _live_consciousness_chain_inspection_snapshot(
+        terminal_loop=terminal_loop,
+        workspace=workspace,
+        broadcast=broadcast,
+        metacognition=metacognition,
+    )
     model_expression_handoff = (
         _model_expression_world_contact_handoff_inspection_fields(
             model_context_summary
@@ -5054,6 +5153,9 @@ def _collect_consciousness_reportability_summary(
         ),
         "consciousness_write_context_closeout": bool(
             expression_closeout.get("consciousness_write_context_closeout_present")
+        ),
+        "live_consciousness_chain": bool(
+            live_consciousness_chain.get("live_consciousness_chain_present")
         ),
     }
     active_domains = [
@@ -5172,6 +5274,7 @@ def _collect_consciousness_reportability_summary(
         **model_expression_handoff,
         **live_queue_e_handoff,
         **expression_closeout,
+        **live_consciousness_chain,
     }
 
 
@@ -5210,6 +5313,9 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
             "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
         )
     )
+    workspace = _extract_compact_value(section.get("workspace_frame", {}))
+    broadcast = _extract_compact_value(section.get("broadcast_frame", {}))
+    metacognition = _extract_compact_value(section.get("metacognition_state", {}))
     world_contact_handoff = _extract_compact_value(
         section.get("queue_e_world_contact_handoff", {})
     )
@@ -5239,6 +5345,12 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
         handoff=world_contact_handoff,
         terminal_loop=terminal_loop,
         world_contact_presence=world_contact_presence,
+    )
+    live_consciousness_chain = _live_consciousness_chain_inspection_snapshot(
+        terminal_loop=terminal_loop,
+        workspace=workspace,
+        broadcast=broadcast,
+        metacognition=metacognition,
     )
     model_expression_handoff = (
         _model_expression_world_contact_handoff_inspection_fields(
@@ -5286,6 +5398,9 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
         ),
         "consciousness_write_context_closeout": bool(
             expression_closeout.get("consciousness_write_context_closeout_present")
+        ),
+        "live_consciousness_chain": bool(
+            live_consciousness_chain.get("live_consciousness_chain_present")
         ),
     }
     active_domains = [
@@ -5383,6 +5498,7 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
         **model_expression_handoff,
         **live_queue_e_handoff,
         **expression_closeout,
+        **live_consciousness_chain,
     }
 
 
@@ -6698,6 +6814,68 @@ def _responsibility_closeout_inspection_snapshot(
         ),
         "autobiographical_repair_report_boundary": memory_closeout.get(
             "autobiographical_repair_report_boundary"
+        ),
+    }
+
+
+def _live_consciousness_chain_inspection_snapshot(
+    *,
+    terminal_loop: dict[str, Any] | None = None,
+    workspace: dict[str, Any] | None = None,
+    broadcast: dict[str, Any] | None = None,
+    metacognition: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    terminal_loop = terminal_loop or {}
+    workspace = workspace or {}
+    broadcast = broadcast or {}
+    metacognition = metacognition or {}
+    chain_refreshed = bool(
+        terminal_loop.get("live_consciousness_chain_refreshed")
+        or broadcast.get("last_projected_from_live_turn_ref")
+        or metacognition.get("last_projected_from_live_turn_ref")
+        or workspace.get("last_projected_from_live_turn_ref")
+    )
+    chain_present = bool(
+        chain_refreshed
+        or terminal_loop.get("last_broadcast_frame_ref")
+        or terminal_loop.get("last_metacognition_ref")
+        or broadcast.get("broadcast_targets")
+        or metacognition.get("uncertainty_flags")
+    )
+    return {
+        "live_consciousness_chain_present": chain_present,
+        "live_consciousness_chain_refreshed": chain_refreshed,
+        "live_broadcast_target_count": _first_non_empty(
+            terminal_loop.get("live_broadcast_target_count"),
+            _count_any(broadcast.get("broadcast_targets")),
+        ),
+        "live_metacognition_uncertainty_count": _first_non_empty(
+            terminal_loop.get("live_metacognition_uncertainty_count"),
+            _count_any(metacognition.get("uncertainty_flags")),
+        ),
+        "live_consciousness_probe_reportability_flag_count": (
+            terminal_loop.get("live_consciousness_probe_reportability_flag_count")
+        ),
+        "live_consciousness_chain_turn_focus": _first_non_empty(
+            terminal_loop.get("live_turn_focus"),
+            broadcast.get("live_turn_focus"),
+            metacognition.get("live_turn_focus"),
+            workspace.get("live_turn_focus"),
+        ),
+        "last_broadcast_frame_ref": terminal_loop.get("last_broadcast_frame_ref"),
+        "last_metacognition_ref": terminal_loop.get("last_metacognition_ref"),
+        "broadcast_last_projected_from_live_turn_ref": broadcast.get(
+            "last_projected_from_live_turn_ref"
+        ),
+        "metacognition_last_projected_from_live_turn_ref": metacognition.get(
+            "last_projected_from_live_turn_ref"
+        ),
+        "live_consciousness_chain_boundary": _first_non_empty(
+            terminal_loop.get("live_consciousness_chain_boundary"),
+            "live_consciousness_chain_structured_evidence_not_spoken_language",
+        ),
+        "live_consciousness_chain_inspection_boundary": (
+            "structured_live_consciousness_chain_not_spoken_language"
         ),
     }
 

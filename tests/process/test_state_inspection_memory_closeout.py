@@ -3,7 +3,6 @@ import unittest
 from life_v0.process_supervisor.state_inspection import (
     _collect_ability_birth_readiness_summary,
     _collect_body_grounding_summary,
-    _collect_life_membrane_validation_summary,
     _collect_cognitive_workspace_summary,
     _collect_consciousness_reportability_summary,
     _collect_dream_wake_fact_summary,
@@ -14,7 +13,6 @@ from life_v0.process_supervisor.state_inspection import (
     _collect_perception_world_contact_summary,
     _collect_personality_convergence_summary,
     _collect_prediction_world_contact_summary,
-    _collect_responsibility_repair_chain_summary,
     _collect_proactive_voice_summary,
     _collect_reconstructive_memory_summary,
     _collect_relation_context_summary,
@@ -71,6 +69,28 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
                         "severity": "guarded_medium",
                     }
                 ]
+            },
+        }
+
+    def _live_consciousness_chain_section(self) -> dict:
+        return {
+            "terminal_life_loop_state": {
+                "live_consciousness_chain_refreshed": True,
+                "live_broadcast_target_count": 2,
+                "last_broadcast_frame_ref": (
+                    "runtime/state/consciousness/broadcast_frame.json"
+                ),
+            },
+            "workspace_frame": {
+                "last_projected_from_live_turn_ref": "turn:relation-1",
+            },
+            "broadcast_frame": {
+                "broadcast_targets": ["focus:a", "focus:b"],
+                "last_projected_from_live_turn_ref": "turn:relation-1",
+            },
+            "metacognition_state": {
+                "uncertainty_flags": ["semantic_ambiguity"],
+                "last_projected_from_live_turn_ref": "turn:relation-1",
             },
         }
 
@@ -617,6 +637,96 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
             "queue_e_world_contact_repair_hold_schema_handoff",
             summary["domain_presence"],
         )
+
+    def test_perception_summary_exposes_queue_e_schema_handoff(self):
+        section = {
+            "visual_observation_frame": {"observation_mode": "peripheral_scan"},
+            "go_nogo_state": {},
+            **self._queue_e_schema_handoff_section(),
+        }
+
+        summary = _collect_perception_world_contact_summary(section)
+
+        self.assertTrue(
+            summary["queue_e_world_contact_repair_hold_schema_handoff_present"]
+        )
+        self.assertIn(
+            "queue_e_world_contact_repair_hold_schema_handoff",
+            summary["domain_presence"],
+        )
+
+    def test_signal_summary_exposes_queue_e_schema_handoff(self):
+        section = {
+            "signal_media_runtime": {"modulation_vector": {"arousal": 0.4}},
+            "go_nogo_state": {},
+            **self._queue_e_schema_handoff_section(),
+        }
+
+        summary = _collect_signal_modulation_consumption_summary(section)
+
+        self.assertTrue(
+            summary["queue_e_world_contact_repair_hold_schema_handoff_present"]
+        )
+        self.assertIn(
+            "queue_e_world_contact_repair_hold_schema_handoff",
+            summary["domain_presence"],
+        )
+
+    def test_state_summary_exposes_live_consciousness_chain(self):
+        section = {
+            "resident_lifecycle": {"status": "waiting"},
+            "digital_life_process_report": {},
+            "idle_strategy": {},
+            "terminal_life_loop": {},
+            **self._live_consciousness_chain_section(),
+        }
+
+        summary = _collect_resident_continuity_summary(section)
+
+        self.assertTrue(summary["live_consciousness_chain_present"])
+        self.assertTrue(summary["live_consciousness_chain_refreshed"])
+        self.assertIn("live_consciousness_chain", summary["domain_presence"])
+
+    def test_consciousness_summary_exposes_live_consciousness_chain(self):
+        section = {
+            "consciousness_probe": {"probe_status": "ready"},
+            "terminal_life_loop": {
+                "live_consciousness_chain_refreshed": True,
+            },
+            **{
+                key: value
+                for key, value in self._live_consciousness_chain_section().items()
+                if key != "terminal_life_loop_state"
+            },
+        }
+
+        summary = _collect_consciousness_reportability_summary(section)
+
+        self.assertTrue(summary["live_consciousness_chain_present"])
+        self.assertTrue(summary["live_consciousness_chain_refreshed"])
+        self.assertIn("live_consciousness_chain", summary["domain_presence"])
+
+    def test_cognition_summary_exposes_live_consciousness_chain(self):
+        section = self._live_consciousness_chain_section()
+
+        summary = _collect_cognitive_workspace_summary(section)
+
+        self.assertTrue(summary["live_consciousness_chain_present"])
+        self.assertTrue(summary["live_consciousness_chain_refreshed"])
+        self.assertEqual(summary["live_broadcast_target_count"], 2)
+        self.assertIn("live_consciousness_chain", summary["domain_presence"])
+
+    def test_thinking_summary_exposes_live_consciousness_chain(self):
+        section = {
+            "resident_self_thinking": {"thinking_mode": "reflective"},
+            **self._live_consciousness_chain_section(),
+        }
+
+        summary = _collect_self_thinking_summary(section)
+
+        self.assertTrue(summary["live_consciousness_chain_present"])
+        self.assertTrue(summary["live_consciousness_chain_refreshed"])
+        self.assertIn("live_consciousness_chain", summary["domain_presence"])
 
     def test_state_summary_exposes_v0_contract_coverage(self):
         section = {

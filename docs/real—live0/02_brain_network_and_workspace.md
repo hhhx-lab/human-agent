@@ -178,3 +178,16 @@ flowchart TD
 ## 设计要点
 
 live0 的意识工作区不是声明“我有意识”，而是让当前状态能被多器官读取、转写、验证和回执。它对应 live0 验收中的 `b_conscious_emotion_thought_language` 和 `g_initial_life_mechanism_coverage`。
+
+## slash 检查面（ITR-08-76）
+
+真实关系回合后，`resident_turn_writeback.py` 会把 `WorkspaceFrame → ConsciousBroadcastFrame → MetacognitionFrame` 同轮投影进 `terminal_life_loop_state.json` 与意识三件套。slash 检查面通过 `state_inspection.py#_live_consciousness_chain_inspection_snapshot` 归一化这条 live 链，而不把内部字段释放成外显语言：
+
+| 检查面 | summary schema | 关键字段 |
+|---|---|---|
+| `/state` | `resident_continuity_summary_v0` | `live_consciousness_chain_present`、`live_consciousness_chain_refreshed`、`live_broadcast_target_count` |
+| `/cognition` | `cognitive_workspace_summary_v0` | 同上 + `last_broadcast_frame_ref`、`broadcast_last_projected_from_live_turn_ref` |
+| `/consciousness` | `consciousness_reportability_summary_v0` | 同上 + `live_metacognition_uncertainty_count` |
+| `/thinking` | `self_thinking_summary_v0` | 同上，与内言语/自我反思并列 |
+
+边界：`live_consciousness_chain_inspection_boundary=structured_live_consciousness_chain_not_spoken_language`。测试：`tests/process/test_state_inspection_memory_closeout.py` 中 `test_*_exposes_live_consciousness_chain`。
