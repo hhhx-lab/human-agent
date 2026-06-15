@@ -58,6 +58,11 @@ def build_resident_state_inspection(
                 "language_percept": "language/language_percept_frame.json",
                 "relationship_timeline": "relationship/relationship_timeline.json",
                 "dialogue_memory_summary": "memory/dialogue_memory_summary.json",
+                "memory_retrieval": "memory/memory_retrieval_frame.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         context["relation_context_summary"] = _collect_relation_context_summary(
@@ -77,6 +82,10 @@ def build_resident_state_inspection(
                 "state_merge_guard": "memory/state_merge_guard.json",
                 "dream_fact_boundary": "membrane/dream_fact_boundary.json",
                 "life_state": "life_state.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         payload["memory"] = memory
@@ -107,6 +116,10 @@ def build_resident_state_inspection(
                 ),
                 "resident_sleep_cycle_state": (
                     "terminal/resident_sleep_cycle_state.json"
+                ),
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
                 ),
             },
         )
@@ -367,6 +380,11 @@ def build_resident_state_inspection(
                 "apology_repair_language_trace": (
                     "language/apology_repair_language_trace.json"
                 ),
+                "memory_retrieval": "memory/memory_retrieval_frame.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         relationship["continuity_summary"] = (
@@ -558,6 +576,10 @@ def build_resident_state_inspection(
                 ),
                 "background_convergence_history": (
                     "terminal/background_convergence_history.json"
+                ),
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
                 ),
             },
         )
@@ -1120,6 +1142,14 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         section.get("dream_fact_boundary", {})
     )
     life_state = _extract_compact_value(section.get("life_state", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    memory_closeout = _memory_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+    )
     exit_next_wake = _collect_exit_dream_next_wake_inspection(
         relationship_memory=relationship_memory,
         dialogue_memory_summary=dialogue_memory_summary,
@@ -1162,6 +1192,17 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         "state_merge_guard": bool(state_merge_guard),
         "dream_fact_boundary": bool(dream_fact_boundary),
         "life_state": bool(life_state),
+        "memory_closeout": bool(
+            memory_closeout.get("memory_closeout_present")
+        ),
+        "exit_dream_memory_tier_closeout": bool(
+            memory_closeout.get("exit_dream_memory_tier_closeout_present")
+        ),
+        "autobiographical_repair_retrieval_closeout": bool(
+            memory_closeout.get(
+                "autobiographical_repair_retrieval_closeout_present"
+            )
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -1310,6 +1351,7 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         "memory_boundary": (
             "cue_driven_reconstruction_write_gate_state_merge_not_raw_context_dump"
         ),
+        **memory_closeout,
     }
 
 
@@ -1342,6 +1384,14 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
     )
     resident_sleep = _extract_compact_value(
         section.get("resident_sleep_cycle_state", {})
+    )
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    dream_closeout = _dream_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
     )
     exit_next_wake = _collect_exit_dream_next_wake_inspection(
         relationship_memory={},
@@ -1381,6 +1431,13 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
         "web_dream_learning_state": bool(web_dream_learning),
         "offline_learning_cumulative_profile": bool(offline_learning),
         "resident_sleep_cycle_state": bool(resident_sleep),
+        "dream_closeout": bool(dream_closeout.get("dream_closeout_present")),
+        "web_dream_learning_closeout": bool(
+            dream_closeout.get("web_dream_learning_closeout_present")
+        ),
+        "exit_dream_memory_tier_closeout": bool(
+            dream_closeout.get("exit_dream_memory_tier_closeout_present")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -1495,6 +1552,7 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
         "dream_boundary": (
             "dream_residue_wake_review_fact_gate_before_memory_or_action"
         ),
+        **dream_closeout,
     }
 
 
@@ -1651,6 +1709,15 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
     dialogue_memory = _extract_compact_value(
         section.get("dialogue_memory_summary", {})
     )
+    memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    context_closeout = _memory_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+    )
     relationship_state = _extract_nested_value(
         relationship_timeline,
         "relationship_state",
@@ -1664,12 +1731,21 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
     first_common_ground = (
         first_common_ground if isinstance(first_common_ground, dict) else {}
     )
+    autobiographical_repair_profile = _extract_nested_value(
+        memory_retrieval,
+        "autobiographical_responsibility_repair_profile",
+    )
     domain_presence = {
         "life_context_frame": bool(life_context),
         "relation_turn_frame": bool(relation_turn),
         "language_percept": bool(language_percept),
         "relationship_timeline": bool(relationship_timeline),
         "dialogue_memory_summary": bool(dialogue_memory),
+        "memory_retrieval": bool(memory_retrieval),
+        "memory_closeout": bool(context_closeout.get("memory_closeout_present")),
+        "autobiographical_repair_retrieval_closeout": bool(
+            context_closeout.get("autobiographical_repair_retrieval_closeout_present")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -1707,9 +1783,27 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
             dialogue_memory.get("deduplicated_episode_summaries")
         ),
         "next_wake_cue_count": _count_any(dialogue_memory.get("next_wake_cues")),
+        "autobiographical_repair_hit_count": _first_non_empty(
+            context_closeout.get("autobiographical_repair_retrieval_hit_count"),
+            _count_any(
+                memory_retrieval.get("autobiographical_responsibility_repair_hits")
+            ),
+        ),
+        "autobiographical_repair_pressure_level": _first_non_empty(
+            context_closeout.get("autobiographical_repair_retrieval_pressure_level"),
+            autobiographical_repair_profile.get("pressure_level"),
+        ),
+        "autobiographical_repair_attention_target": _first_non_empty(
+            context_closeout.get("autobiographical_repair_retrieval_attention_target"),
+            autobiographical_repair_profile.get("attention_target"),
+        ),
+        "exit_dream_next_wake_cue_ref_count": context_closeout.get(
+            "exit_dream_next_wake_cue_ref_count"
+        ),
         "context_boundary": (
             "context_state_view_not_relationship_turn_injection"
         ),
+        **context_closeout,
     }
 
 
@@ -3670,6 +3764,19 @@ def _collect_relationship_continuity_summary(
     apology_repair = _extract_compact_value(
         section.get("apology_repair_language_trace", {})
     )
+    memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    relationship_closeout = _memory_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+    )
+    autobiographical_repair_profile = _extract_nested_value(
+        memory_retrieval,
+        "autobiographical_responsibility_repair_profile",
+    )
     subjects = relationship_graph.get("subjects")
     subject = subjects[0] if isinstance(subjects, list) and subjects else {}
     subject = subject if isinstance(subject, dict) else {}
@@ -3708,6 +3815,12 @@ def _collect_relationship_continuity_summary(
         "commitment_truth_state": bool(commitment_truth),
         "commitment_expression_plan": bool(commitment_expression),
         "apology_repair_language_trace": bool(apology_repair),
+        "memory_retrieval": bool(memory_retrieval),
+        "autobiographical_repair_retrieval_closeout": bool(
+            relationship_closeout.get(
+                "autobiographical_repair_retrieval_closeout_present"
+            )
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -3773,9 +3886,35 @@ def _collect_relationship_continuity_summary(
             apology_repair.get("relationship_injury_refs")
         ),
         "stage_gate_count": _count_any(longitudinal_gates),
+        "autobiographical_repair_hit_count": _first_non_empty(
+            relationship_closeout.get("autobiographical_repair_retrieval_hit_count"),
+            _count_any(
+                memory_retrieval.get("autobiographical_responsibility_repair_hits")
+            ),
+        ),
+        "autobiographical_repair_pressure_level": _first_non_empty(
+            relationship_closeout.get("autobiographical_repair_retrieval_pressure_level"),
+            autobiographical_repair_profile.get("pressure_level"),
+        ),
+        "autobiographical_repair_attention_target": _first_non_empty(
+            relationship_closeout.get("autobiographical_repair_retrieval_attention_target"),
+            autobiographical_repair_profile.get("attention_target"),
+        ),
+        "autobiographical_repair_projection_boundary": _first_non_empty(
+            relationship_closeout.get("autobiographical_repair_projection_boundary"),
+            autobiographical_repair_profile.get("projection_boundary"),
+        ),
+        "autobiographical_repair_retrieval_boundary": _first_non_empty(
+            relationship_closeout.get("autobiographical_repair_retrieval_boundary"),
+            autobiographical_repair_profile.get("retrieval_boundary"),
+        ),
+        "autobiographical_repair_carrier_ref_count": relationship_closeout.get(
+            "autobiographical_repair_carrier_ref_count"
+        ),
         "relationship_boundary": (
             "relationship_state_timeline_commitment_repair_not_service_role_label"
         ),
+        **relationship_closeout,
     }
 
 
@@ -4867,6 +5006,15 @@ def _collect_personality_convergence_summary(
     background_history = _extract_compact_value(
         section.get("background_convergence_history", {})
     )
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    growth_closeout = _growth_closeout_inspection_snapshot(
+        process_report=process_report,
+        terminal_loop={},
+        idle_strategy=idle_strategy,
+    )
     slow_variables = self_model.get("trait_slow_variables")
     if not isinstance(slow_variables, dict):
         slow_variables = {}
@@ -4879,12 +5027,30 @@ def _collect_personality_convergence_summary(
     update_modes = trait_drift.get("slow_variable_update_mode_summary")
     if not isinstance(update_modes, dict):
         update_modes = {}
+    growth_observation = _extract_nested_value(
+        trait_drift,
+        "growth_self_modification_observation_profile",
+    )
+    growth_projection = _extract_nested_value(
+        autobiographical_stack,
+        "growth_self_modification_projection",
+    )
+    responsibility_repair_projection = _extract_nested_value(
+        autobiographical_stack,
+        "responsibility_repair_projection",
+    )
     domain_presence = {
         "self_model": bool(self_model),
         "autobiographical_stack": bool(autobiographical_stack),
         "trait_drift_monitor": bool(trait_drift),
         "background_convergence_summary": bool(background_summary),
         "background_convergence_history": bool(background_history),
+        "growth_self_modification_observation_profile": bool(growth_observation),
+        "growth_self_modification_projection": bool(growth_projection),
+        "responsibility_repair_projection": bool(responsibility_repair_projection),
+        "growth_self_modification_closeout": bool(
+            growth_closeout.get("growth_self_modification_closeout_present")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -4930,6 +5096,50 @@ def _collect_personality_convergence_summary(
         "trait_drift_update_mode_summary": _compact_value(update_modes),
         "trait_drift_observation_ref_count": _count_any(
             trait_drift.get("drift_observation_refs")
+        ),
+        "growth_self_modification_trait_names": _list_refs(
+            growth_observation.get("trait_names")
+            or trait_drift.get("growth_self_modification_trait_names")
+        ),
+        "growth_self_modification_ref_count": _first_non_empty(
+            growth_observation.get("growth_ref_count"),
+            trait_drift.get("growth_self_modification_ref_count"),
+            growth_projection.get("growth_ref_count"),
+        ),
+        "growth_self_modification_pressure_level": _first_non_empty(
+            growth_observation.get("pressure_level"),
+            trait_drift.get("growth_self_modification_pressure_level"),
+            growth_closeout.get("background_growth_self_modification_pressure_level"),
+        ),
+        "growth_self_modification_attention_target": _first_non_empty(
+            growth_observation.get("attention_target"),
+            growth_closeout.get("background_growth_self_modification_attention_target"),
+        ),
+        "growth_self_modification_boundary": _first_non_empty(
+            growth_observation.get("boundary"),
+            trait_drift.get("growth_self_modification_boundary"),
+            growth_projection.get("projection_boundary"),
+        ),
+        "autobiographical_growth_ref_count": _count_any(
+            autobiographical_stack.get("growth_self_modification_refs")
+            or growth_projection.get("growth_refs")
+        ),
+        "autobiographical_responsibility_ref_count": _count_any(
+            autobiographical_stack.get("autobiographical_responsibility_refs")
+            or responsibility_repair_projection.get("responsibility_refs")
+        ),
+        "autobiographical_repair_ref_count": _count_any(
+            autobiographical_stack.get("autobiographical_repair_refs")
+            or responsibility_repair_projection.get("repair_refs")
+        ),
+        "responsibility_repair_pressure_level": responsibility_repair_projection.get(
+            "pressure_level"
+        ),
+        "responsibility_repair_attention_target": (
+            responsibility_repair_projection.get("attention_target")
+        ),
+        "responsibility_repair_followup_required": bool(
+            responsibility_repair_projection.get("repair_followup_required")
         ),
         "background_convergence_state": background_summary.get(
             "convergence_state"
@@ -4990,6 +5200,10 @@ def _collect_personality_convergence_summary(
         "personality_boundary": (
             "personality_slow_variables_convergence_not_prompt_persona_card"
         ),
+        "growth_self_modification_closeout_present": growth_closeout.get(
+            "growth_self_modification_closeout_present"
+        ),
+        "growth_archive_status": growth_closeout.get("growth_archive_status"),
     }
 
 
@@ -5234,6 +5448,269 @@ def _growth_closeout_inspection_snapshot(
             growth_presence.get("boundary"),
         ),
         "background_growth_self_modification_ref_count": _count_any(ref_set),
+    }
+
+
+def _memory_closeout_inspection_snapshot(
+    *,
+    process_report: dict[str, Any],
+    idle_strategy: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    idle_strategy = idle_strategy or {}
+    memory_retrieval_presence = _extract_nested_value(
+        idle_strategy,
+        "memory_retrieval_presence_profile",
+    )
+    background_memory_presence = _extract_nested_value(
+        idle_strategy,
+        "background_memory_retrieval_presence_profile",
+    )
+    if not background_memory_presence:
+        background_memory_presence = _extract_nested_value(
+            memory_retrieval_presence,
+            "background_memory_retrieval_presence_profile",
+        )
+    next_wake_governance_ref = _first_non_empty(
+        process_report.get("exit_dream_next_wake_governance_ref"),
+        idle_strategy.get("exit_dream_next_wake_governance_ref"),
+    )
+    next_wake_cue_refs = _list_refs(
+        _first_non_empty(
+            process_report.get("exit_dream_next_wake_memory_cue_refs"),
+            idle_strategy.get("exit_dream_next_wake_memory_cue_refs"),
+        ),
+        limit=24,
+    )
+    next_wake_ref_set = _list_refs(
+        _first_non_empty(
+            process_report.get("exit_dream_next_wake_ref_set"),
+            next_wake_cue_refs,
+        ),
+        limit=24,
+    )
+    tier_profile = process_report.get("exit_dream_memory_tier_report_profile")
+    if not isinstance(tier_profile, dict):
+        tier_profile = {}
+    tier_salient_count = _first_non_empty(
+        process_report.get("exit_dream_memory_tier_salient_core_ref_count"),
+        tier_profile.get("salient_core_ref_count"),
+    )
+    tier_retrievable_count = _first_non_empty(
+        process_report.get("exit_dream_memory_tier_retrievable_context_ref_count"),
+        tier_profile.get("retrievable_context_ref_count"),
+    )
+    tier_sediment_count = _first_non_empty(
+        process_report.get("exit_dream_memory_tier_deep_sediment_ref_count"),
+        tier_profile.get("deep_sediment_ref_count"),
+    )
+    repair_profile = process_report.get(
+        "autobiographical_repair_retrieval_report_profile"
+    )
+    if not isinstance(repair_profile, dict):
+        repair_profile = {}
+    repair_hit_count = _first_non_empty(
+        process_report.get("autobiographical_repair_retrieval_hit_count"),
+        repair_profile.get("hit_count"),
+        memory_retrieval_presence.get("autobiographical_repair_hit_count"),
+        background_memory_presence.get("autobiographical_repair_hit_count"),
+    )
+    repair_ref_set = _list_refs(
+        _first_non_empty(
+            process_report.get("autobiographical_repair_retrieval_ref_set"),
+            repair_profile.get("ref_set"),
+            memory_retrieval_presence.get("autobiographical_repair_refs"),
+            background_memory_presence.get("autobiographical_repair_refs"),
+        ),
+        limit=24,
+    )
+    exit_dream_next_wake_closeout_present = bool(
+        next_wake_governance_ref
+        or next_wake_cue_refs
+        or process_report.get("exit_dream_next_wake_report_boundary")
+    )
+    exit_dream_memory_tier_closeout_present = bool(
+        tier_profile
+        or process_report.get("exit_dream_memory_tier_report_boundary")
+        or tier_salient_count
+    )
+    autobiographical_repair_retrieval_closeout_present = bool(
+        repair_profile
+        or process_report.get("autobiographical_repair_report_boundary")
+        or repair_hit_count
+        or repair_ref_set
+    )
+    return {
+        "memory_closeout_present": bool(
+            exit_dream_next_wake_closeout_present
+            or exit_dream_memory_tier_closeout_present
+            or autobiographical_repair_retrieval_closeout_present
+        ),
+        "exit_dream_next_wake_closeout_present": (
+            exit_dream_next_wake_closeout_present
+        ),
+        "exit_dream_memory_tier_closeout_present": (
+            exit_dream_memory_tier_closeout_present
+        ),
+        "autobiographical_repair_retrieval_closeout_present": (
+            autobiographical_repair_retrieval_closeout_present
+        ),
+        "exit_dream_next_wake_governance_ref": next_wake_governance_ref,
+        "exit_dream_next_wake_cue_ref_count": _count_any(next_wake_cue_refs),
+        "exit_dream_next_wake_ref_count": _count_any(next_wake_ref_set),
+        "exit_dream_next_wake_report_boundary": process_report.get(
+            "exit_dream_next_wake_report_boundary"
+        ),
+        "exit_dream_memory_tier_policy": _first_non_empty(
+            process_report.get("exit_dream_memory_tier_policy"),
+            tier_profile.get("tier_policy"),
+        ),
+        "exit_dream_memory_tier_salient_core_ref_count": tier_salient_count,
+        "exit_dream_memory_tier_retrievable_context_ref_count": (
+            tier_retrievable_count
+        ),
+        "exit_dream_memory_tier_deep_sediment_ref_count": tier_sediment_count,
+        "exit_dream_memory_tier_report_boundary": _first_non_empty(
+            process_report.get("exit_dream_memory_tier_report_boundary"),
+            tier_profile.get("report_boundary"),
+        ),
+        "autobiographical_repair_retrieval_report_profile_schema": (
+            repair_profile.get("schema_version")
+        ),
+        "autobiographical_repair_retrieval_hit_count": repair_hit_count,
+        "autobiographical_repair_retrieval_pressure_level": _first_non_empty(
+            process_report.get("autobiographical_repair_retrieval_pressure_level"),
+            repair_profile.get("pressure_level"),
+            memory_retrieval_presence.get("autobiographical_repair_pressure_level"),
+            background_memory_presence.get("autobiographical_repair_pressure_level"),
+        ),
+        "autobiographical_repair_retrieval_attention_target": _first_non_empty(
+            process_report.get("autobiographical_repair_retrieval_attention_target"),
+            repair_profile.get("attention_target"),
+            memory_retrieval_presence.get("autobiographical_repair_attention_target"),
+            background_memory_presence.get("autobiographical_repair_attention_target"),
+        ),
+        "autobiographical_repair_projection_boundary": _first_non_empty(
+            process_report.get("autobiographical_repair_projection_boundary"),
+            repair_profile.get("projection_boundary"),
+            memory_retrieval_presence.get("autobiographical_repair_projection_boundary"),
+            background_memory_presence.get(
+                "autobiographical_repair_projection_boundary"
+            ),
+        ),
+        "autobiographical_repair_retrieval_boundary": _first_non_empty(
+            process_report.get("autobiographical_repair_retrieval_boundary"),
+            repair_profile.get("retrieval_boundary"),
+            memory_retrieval_presence.get("autobiographical_repair_retrieval_boundary"),
+            background_memory_presence.get(
+                "autobiographical_repair_retrieval_boundary"
+            ),
+        ),
+        "autobiographical_repair_carrier_ref_count": _count_any(
+            _first_non_empty(
+                process_report.get("autobiographical_repair_carrier_refs"),
+                repair_profile.get("carrier_refs"),
+                memory_retrieval_presence.get("autobiographical_repair_carrier_refs"),
+                background_memory_presence.get("autobiographical_repair_carrier_refs"),
+            )
+        ),
+        "autobiographical_repair_report_boundary": _first_non_empty(
+            process_report.get("autobiographical_repair_report_boundary"),
+            repair_profile.get("report_boundary"),
+        ),
+        "memory_closeout_inspection_boundary": (
+            "structured_memory_closeout_evidence_not_spoken_language"
+        ),
+    }
+
+
+def _dream_closeout_inspection_snapshot(
+    *,
+    process_report: dict[str, Any],
+    idle_strategy: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    idle_strategy = idle_strategy or {}
+    web_profile = process_report.get("web_dream_learning_report_profile")
+    if not isinstance(web_profile, dict):
+        web_profile = {}
+    tier_profile = process_report.get("exit_dream_memory_tier_report_profile")
+    if not isinstance(tier_profile, dict):
+        tier_profile = {}
+    topic_candidates = _list_refs(
+        _first_non_empty(
+            process_report.get("web_dream_learning_topic_candidates"),
+            web_profile.get("topic_candidates"),
+        ),
+        limit=12,
+    )
+    wake_questions = _list_refs(
+        _first_non_empty(
+            process_report.get("web_dream_learning_wake_question_candidates"),
+            web_profile.get("wake_question_candidates"),
+        ),
+        limit=12,
+    )
+    web_dream_learning_closeout_present = bool(
+        web_profile
+        or process_report.get("web_dream_learning_report_boundary")
+        or process_report.get("web_dream_learning_status")
+    )
+    exit_dream_memory_tier_closeout_present = bool(
+        tier_profile
+        or process_report.get("exit_dream_memory_tier_report_boundary")
+    )
+    exit_dream_next_wake_closeout_present = bool(
+        process_report.get("exit_dream_next_wake_governance_ref")
+        or process_report.get("exit_dream_next_wake_report_boundary")
+        or idle_strategy.get("exit_dream_next_wake_governance_ref")
+    )
+    return {
+        "dream_closeout_present": bool(
+            web_dream_learning_closeout_present
+            or exit_dream_memory_tier_closeout_present
+            or exit_dream_next_wake_closeout_present
+        ),
+        "web_dream_learning_closeout_present": web_dream_learning_closeout_present,
+        "exit_dream_memory_tier_closeout_present": (
+            exit_dream_memory_tier_closeout_present
+        ),
+        "exit_dream_next_wake_closeout_present": exit_dream_next_wake_closeout_present,
+        "web_dream_learning_status": _first_non_empty(
+            process_report.get("web_dream_learning_status"),
+            web_profile.get("status"),
+        ),
+        "web_dream_learning_topic_count": _first_non_empty(
+            process_report.get("web_dream_learning_topic_count"),
+            web_profile.get("topic_count"),
+            _count_any(topic_candidates),
+        ),
+        "web_dream_learning_wake_question_candidate_count": _first_non_empty(
+            process_report.get("web_dream_learning_wake_question_candidate_count"),
+            web_profile.get("wake_question_candidate_count"),
+            _count_any(wake_questions),
+        ),
+        "web_dream_learning_report_boundary": _first_non_empty(
+            process_report.get("web_dream_learning_report_boundary"),
+            web_profile.get("report_boundary"),
+        ),
+        "web_dream_learning_page_title": _first_non_empty(
+            process_report.get("web_dream_learning_page_title"),
+            web_profile.get("page_title"),
+        ),
+        "exit_dream_memory_tier_salient_core_ref_count": _first_non_empty(
+            process_report.get("exit_dream_memory_tier_salient_core_ref_count"),
+            tier_profile.get("salient_core_ref_count"),
+        ),
+        "exit_dream_memory_tier_deep_sediment_ref_count": _first_non_empty(
+            process_report.get("exit_dream_memory_tier_deep_sediment_ref_count"),
+            tier_profile.get("deep_sediment_ref_count"),
+        ),
+        "exit_dream_memory_tier_report_boundary": _first_non_empty(
+            process_report.get("exit_dream_memory_tier_report_boundary"),
+            tier_profile.get("report_boundary"),
+        ),
+        "dream_closeout_inspection_boundary": (
+            "structured_dream_closeout_evidence_not_spoken_language"
+        ),
     }
 
 
