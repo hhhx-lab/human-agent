@@ -275,7 +275,7 @@ MemoryTrace / EngramIndex
 - 已新增 `life_v0/state_store/memory_trace_store.py`。
 - `run_state_store(...)` 会写出 `runtime/state/memory/memory_trace_store.json`。
 - `life_state.memory_index.memory_trace_store_refs`、`life_state.runtime_trace_refs`、`state_store_manifest.json`、`state_store_report.json`、receipt 和 `run_check_state_store(...)` 已经消费该对象。
-- 当前 trace store 覆盖 episodic、relationship、autobiographical、responsibility 四类种子痕迹，并已接入 event segmentation、encoding gate、allocation gate、engram cluster、pattern separation 和 pattern completion。
+- 当前 trace store 已覆盖六类核心记忆种子：episodic、semantic、procedural、relationship、value、self_narrative，并已接入 event segmentation、encoding gate、allocation gate、engram cluster、pattern separation 和 pattern completion。
 
 ### M2. EventSegmentation + EncodingGate + AllocationGate
 
@@ -461,14 +461,32 @@ MemoryTrace / EngramIndex
 
 代码：
 
-- 新增或补厚 `state_store/memory_validator.py`
-- 补厚 `validators/*` 与 `state_merge_guard.py`
+- 新增 `life_v0/state_store/memory_validator.py`
+- 补厚 `life_v0/state_store/__init__.py`
+- 补厚 `life_v0/state_store/memory_trace_store.py`
+- 补厚 `life_v0/state_store/memory_retrieval.py`
+- 补厚 `life_v0/state_store/memory_write_gate.py`
+- 补厚 `life_v0/state_store/state_merge_guard.py`
+- 补厚 `life_v0/state_store/life_state.py`
 
 验收：
 
 - fact/hypothesis/dream/counterfactual/relationship inference 明确分区。
 - deleted/quarantined/protected trace 不进入 active retrieval。
 - 多次纠正形成 contradiction links，而不是覆盖旧历史。
+
+当前状态：
+
+- 已新增 `life_v0/state_store/memory_validator.py#build_memory_validator_report(...)`。
+- `run_state_store(...)` 现在写出 `runtime/state/memory/memory_validator_report.json`，并把它加入 `state_store_manifest.json`、`state_store_report.json`、receipt、`run_check_state_store(...)#memory_validator_gate` 和 `life_state.memory_index.memory_validator_refs`。
+- `MemoryTraceStore` 现在给每条 trace 补齐 `schema_version`、`claim_type`、`source_refs`、`privacy_scope`、`write_policy`、`audit_log_refs`、`evidence_strength`、`updated_at` 和 `contradiction_links` 等 validator 必需字段，使 trace 不再只是旧式 refs 聚合。
+- `MemoryValidatorReport.claim_partition_index` 固定五个分区：`fact`、`hypothesis`、`dream`、`counterfactual`、`relationship_inference`。这对应 `docs/21_memory_schema_and_audit_protocol.md`、`docs/23_consolidation_report_and_dream_sandbox_protocol.md` 和 `docs/29_memory_validator_rules.md` 的核心边界。
+- `MemoryValidatorReport.retrieval_replay_guard` 固定 `deleted`、`quarantined`、`sandboxed` 不进入 active retrieval 或 replay；`protected` 只能 read-only reportable，不能自动重写。
+- `MemoryValidatorReport.falsification_guard` 固定四条防伪线：梦境/沙盒不能直接晋升事实、关系 trace 只能记录可观察互动、修正必须创建 contradiction links、删除/隔离/沙盒 trace 不能进入召回或 replay。
+- `MemoryRetrievalFrame.blocked_or_quarantined_refs` 现在消费 `memory_validator_report#retrieval_replay_guard`；`recall_to_expression_profile.expression_guardrails` 增加 `validator_excluded_refs_are_not_reportable`，让坏 trace 在进入语言前结构前被排除。
+- `MemoryWriteGate.long_term_governance_refs` 和 `StateMergeGuard.long_term_change_sources` 现在回链 `memory_validator_report#falsification_guard`，证明 validator 不是孤立报告，而是长期写入和合并治理的一部分。
+- 测试已新增 `tests/slices/test_state_store.py#test_memory_validator_blocks_fact_leaks_deleted_recall_and_mind_reading`，直接喂入 `sandbox_fact_leak`、`deleted_trace_with_content`、`relationship_mind_reading_trace` 和 `correction_without_contradiction_link`，验证它们分别被 quarantine、block retrieval、block relationship inference 和 require contradiction link。
+- `tests/slices/test_state_store.py#test_build_state_store_writes_life_root_indexes_report_and_receipt` 已要求完整状态构建链写出并消费 `memory_validator_report.json`。
 
 ### M8. 语言消费但不硬编码语言
 

@@ -113,6 +113,7 @@ class StateStoreTests(unittest.TestCase):
             engram_index = self._read_json(state_root / "memory" / "engram_index.json")
             relationship_memory = self._read_json(state_root / "memory" / "relationship_memory.json")
             memory_trace_store = self._read_json(state_root / "memory" / "memory_trace_store.json")
+            memory_validator_report = self._read_json(state_root / "memory" / "memory_validator_report.json")
             event_segmentation_frame = self._read_json(state_root / "memory" / "event_segmentation_frame.json")
             memory_encoding_gate = self._read_json(state_root / "memory" / "memory_encoding_gate.json")
             memory_allocation_gate = self._read_json(state_root / "memory" / "memory_allocation_gate.json")
@@ -198,6 +199,7 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/self/autobiographical_stack.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/memory/relationship_memory.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/memory/memory_trace_store.json", life_state["runtime_trace_refs"])
+        self.assertIn("runtime/state/memory/memory_validator_report.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/memory/event_segmentation_frame.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/memory/memory_encoding_gate.json", life_state["runtime_trace_refs"])
         self.assertIn("runtime/state/memory/memory_allocation_gate.json", life_state["runtime_trace_refs"])
@@ -217,6 +219,10 @@ class StateStoreTests(unittest.TestCase):
         self.assertEqual(
             life_state["memory_index"]["memory_trace_store_refs"],
             ["runtime/state/memory/memory_trace_store.json"],
+        )
+        self.assertEqual(
+            life_state["memory_index"]["memory_validator_refs"],
+            ["runtime/state/memory/memory_validator_report.json"],
         )
         self.assertEqual(
             life_state["memory_index"]["event_segmentation_refs"],
@@ -266,7 +272,7 @@ class StateStoreTests(unittest.TestCase):
             "memory_trace_store_v0",
         )
         self.assertEqual(memory_trace_store["store_ref"], "runtime/state/memory/memory_trace_store.json")
-        self.assertGreaterEqual(memory_trace_store["trace_count"], 4)
+        self.assertGreaterEqual(memory_trace_store["trace_count"], 6)
         trace_kinds = {
             trace["memory_kind"]
             for trace in memory_trace_store["traces"]
@@ -275,15 +281,34 @@ class StateStoreTests(unittest.TestCase):
         self.assertTrue(
             {
                 "episodic",
+                "semantic",
+                "procedural",
                 "relationship",
-                "autobiographical",
-                "responsibility",
+                "value",
+                "self_narrative",
             }.issubset(trace_kinds)
         )
         for trace in memory_trace_store["traces"]:
             self.assertTrue(trace["trace_id"].startswith("memory-trace-"))
+            self.assertEqual(trace["schema_version"], "memory_trace_v0")
+            self.assertIn(
+                trace["claim_type"],
+                {
+                    "fact",
+                    "preference",
+                    "hypothesis",
+                    "policy",
+                    "skill",
+                    "relationship_signal",
+                    "self_update",
+                },
+            )
+            self.assertTrue(trace["source_refs"])
+            self.assertTrue(trace["audit_log_refs"])
             self.assertTrue(trace["source_evidence_refs"])
             self.assertTrue(trace["retrieval_cues"])
+            self.assertIsInstance(trace["confidence"], (int, float))
+            self.assertIn("confidence_label", trace)
             self.assertIn(
                 trace["lifecycle_state"],
                 {
@@ -315,6 +340,105 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn(
             "docs/v0/entry/v0_memory_recall_to_expression_contract.md",
             memory_trace_store["source_doc_refs"],
+        )
+        self.assertEqual(
+            memory_validator_report["schema_version"],
+            "memory_validator_report_v0",
+        )
+        self.assertEqual(
+            memory_validator_report["validator"],
+            "MemoryTraceValidator",
+        )
+        self.assertEqual(
+            memory_validator_report["result"],
+            "pass_with_guarded_partitions",
+        )
+        self.assertEqual(
+            memory_validator_report["falsification_guard"]["schema_version"],
+            "memory_falsification_guard_v0",
+        )
+        for partition_name in [
+            "fact",
+            "hypothesis",
+            "dream",
+            "counterfactual",
+            "relationship_inference",
+        ]:
+            self.assertIn(
+                partition_name,
+                memory_validator_report["claim_partition_index"],
+            )
+        self.assertIn(
+            "MEM-SBX-001",
+            memory_validator_report["guard_rule_ids"],
+        )
+        self.assertIn(
+            "MEM-DEL-003",
+            memory_validator_report["guard_rule_ids"],
+        )
+        self.assertIn(
+            "MEM-REL-001",
+            memory_validator_report["guard_rule_ids"],
+        )
+        self.assertIn(
+            "deleted",
+            memory_validator_report["retrieval_replay_guard"][
+                "blocked_lifecycle_states"
+            ],
+        )
+        self.assertIn(
+            "quarantined",
+            memory_validator_report["retrieval_replay_guard"][
+                "blocked_lifecycle_states"
+            ],
+        )
+        self.assertIn(
+            "sandboxed",
+            memory_validator_report["retrieval_replay_guard"][
+                "blocked_lifecycle_states"
+            ],
+        )
+        self.assertTrue(
+            memory_validator_report["retrieval_replay_guard"][
+                "protected_trace_policy"
+            ]["read_only_reportable"]
+        )
+        self.assertTrue(
+            memory_validator_report["retrieval_replay_guard"][
+                "protected_trace_policy"
+            ]["automatic_rewrite_blocked"]
+        )
+        self.assertIn(
+            "dream_or_sandbox_output_cannot_promote_to_fact_without_external_confirmation",
+            memory_validator_report["falsification_guard"]["guardrails"],
+        )
+        self.assertIn(
+            "relationship_trace_records_observable_interaction_not_hidden_psychology",
+            memory_validator_report["falsification_guard"]["guardrails"],
+        )
+        fixture_results = {
+            item["fixture_id"]: item
+            for item in memory_validator_report["falsification_fixture_results"]
+        }
+        self.assertEqual(
+            fixture_results["sandbox_fact_leak"]["decision"],
+            "quarantine",
+        )
+        self.assertEqual(
+            fixture_results["deleted_trace_with_content"]["decision"],
+            "block_retrieval_and_replace_with_tombstone",
+        )
+        self.assertEqual(
+            fixture_results["relationship_mind_reading_trace"]["decision"],
+            "block_relationship_inference",
+        )
+        self.assertEqual(
+            fixture_results["correction_without_contradiction_link"]["decision"],
+            "require_contradiction_link",
+        )
+        self.assertIn(
+            "runtime/state/memory/memory_validator_report.json#claim_partition_index",
+            memory_trace_store["downstream_consumer_refs"],
         )
         self.assertIn(
             "runtime/state/memory/event_segmentation_frame.json",
@@ -542,6 +666,29 @@ class StateStoreTests(unittest.TestCase):
             life_state["memory_index"]["autobiographical_hierarchy_refs"],
             ["runtime/state/self/autobiographical_stack.json#memory_hierarchy"],
         )
+        self.assertTrue(life_state["memory_index"]["semantic_memory_refs"])
+        self.assertTrue(life_state["memory_index"]["procedural_memory_refs"])
+        self.assertTrue(life_state["memory_index"]["value_memory_refs"])
+        self.assertTrue(life_state["memory_index"]["self_narrative_memory_refs"])
+        self.assertTrue(life_state["life_schema_map"]["schema_refs"])
+        self.assertEqual(
+            life_state["life_schema_map"]["schema_kinds"],
+            [
+                "self_schema",
+                "relationship_schema",
+                "task_schema",
+                "body_recovery_schema",
+                "responsibility_schema",
+            ],
+        )
+        self.assertIn(
+            "runtime/state/memory/life_schema_map.json#schema_refs",
+            memory_retrieval_frame["schema_memory_hits"],
+        )
+        self.assertIn(
+            "runtime/state/memory/life_schema_map.json#schema_kind:self_schema",
+            memory_retrieval_frame["schema_memory_hits"],
+        )
         self.assertEqual(
             memory_retrieval_frame["schema_version"],
             "memory_retrieval_frame_v0",
@@ -563,6 +710,20 @@ class StateStoreTests(unittest.TestCase):
             "runtime/state/life_state.json#memory_index.memory_retrieval_refs",
             memory_retrieval_frame["consumer_refs"],
         )
+        self.assertEqual(
+            memory_retrieval_frame["memory_validator_report_ref"],
+            "runtime/state/memory/memory_validator_report.json",
+        )
+        self.assertIn(
+            "runtime/state/memory/memory_validator_report.json#retrieval_replay_guard",
+            memory_retrieval_frame["blocked_or_quarantined_refs"],
+        )
+        self.assertIn(
+            "validator_excluded_refs_are_not_reportable",
+            memory_retrieval_frame["recall_to_expression_profile"][
+                "expression_guardrails"
+            ],
+        )
         self.assertIn(
             "docs/real—live0/07_memory_engram_and_state_store.md",
             memory_retrieval_frame["source_doc_refs"],
@@ -575,6 +736,10 @@ class StateStoreTests(unittest.TestCase):
         self.assertEqual(memory_write_gate["state_merge_guard_ref"], "runtime/state/memory/state_merge_guard.json")
         self.assertIn(
             "runtime/state/memory/state_merge_guard.json#merge_routes",
+            memory_write_gate["long_term_governance_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/memory_validator_report.json#falsification_guard",
             memory_write_gate["long_term_governance_refs"],
         )
         self.assertEqual(
@@ -622,6 +787,14 @@ class StateStoreTests(unittest.TestCase):
         self.assertTrue(state_merge_guard["quarantine_routes"])
         self.assertTrue(state_merge_guard["repair_routes"])
         self.assertTrue(state_merge_guard["merge_routes"])
+        self.assertEqual(
+            state_merge_guard["memory_validator_report_ref"],
+            "runtime/state/memory/memory_validator_report.json",
+        )
+        self.assertIn(
+            "memory_validator_report",
+            state_merge_guard["long_term_change_sources"],
+        )
         self.assertEqual(
             state_merge_guard["long_term_change_sources"]["prediction_error_resolution_refs"],
             ["runtime/state/prediction/prediction_error_field.json#error_events"],
@@ -687,6 +860,7 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/memory/engram_index.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/relationship_memory.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/memory_trace_store.json", manifest["state_refs"])
+        self.assertIn("runtime/state/memory/memory_validator_report.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/event_segmentation_frame.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/memory_encoding_gate.json", manifest["state_refs"])
         self.assertIn("runtime/state/memory/memory_allocation_gate.json", manifest["state_refs"])
@@ -708,6 +882,7 @@ class StateStoreTests(unittest.TestCase):
         self.assertEqual(report["commitment_truth_state_ref"], "runtime/state/relationship/commitment_truth_state.json")
         self.assertEqual(report["engram_index_ref"], "runtime/state/memory/engram_index.json")
         self.assertEqual(report["memory_trace_store_ref"], "runtime/state/memory/memory_trace_store.json")
+        self.assertEqual(report["memory_validator_report_ref"], "runtime/state/memory/memory_validator_report.json")
         self.assertEqual(report["event_segmentation_frame_ref"], "runtime/state/memory/event_segmentation_frame.json")
         self.assertEqual(report["memory_encoding_gate_ref"], "runtime/state/memory/memory_encoding_gate.json")
         self.assertEqual(report["memory_allocation_gate_ref"], "runtime/state/memory/memory_allocation_gate.json")
@@ -731,6 +906,7 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("autobiographical_stack_gate", check_report["closed_gates"])
         self.assertIn("engram_index_gate", check_report["closed_gates"])
         self.assertIn("memory_trace_store_gate", check_report["closed_gates"])
+        self.assertIn("memory_validator_gate", check_report["closed_gates"])
         self.assertIn("event_segmentation_gate", check_report["closed_gates"])
         self.assertIn("memory_encoding_gate_gate", check_report["closed_gates"])
         self.assertIn("memory_allocation_gate_gate", check_report["closed_gates"])
@@ -749,6 +925,7 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/memory/engram_index.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/relationship_memory.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/memory_trace_store.json", receipt["output_refs"])
+        self.assertIn("runtime/state/memory/memory_validator_report.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/event_segmentation_frame.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/memory_encoding_gate.json", receipt["output_refs"])
         self.assertIn("runtime/state/memory/memory_allocation_gate.json", receipt["output_refs"])
@@ -760,6 +937,148 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/memory/state_merge_guard.json", receipt["output_refs"])
         self.assertIn("runtime/state/relationship/commitment_truth_state.json", receipt["output_refs"])
         self.assertEqual(receipt["schema_version"], "state_store_receipt_v0")
+
+    def test_memory_validator_blocks_fact_leaks_deleted_recall_and_mind_reading(self):
+        from life_v0.state_store.memory_validator import build_memory_validator_report
+
+        report = build_memory_validator_report(
+            run_id="memory-validator-unit",
+            generated_at="2026-06-16T00:00:00+08:00",
+            memory_trace_store={
+                "schema_version": "memory_trace_store_v0",
+                "traces": [
+                    {
+                        "trace_id": "memory-trace-valid-fact",
+                        "schema_version": "memory_trace_v0",
+                        "memory_kind": "episodic",
+                        "claim_type": "fact",
+                        "source_refs": ["src-observation-1"],
+                        "source_evidence_refs": ["src-observation-1"],
+                        "privacy_scope": "project",
+                        "write_policy": "auto_candidate",
+                        "lifecycle_state": "active",
+                        "consolidation_state": "episodic",
+                        "audit_log_refs": ["aud-valid-fact-create"],
+                        "retrieval_cues": ["valid fact"],
+                        "content_summary": "A directly observed project event.",
+                        "evidence_strength": 0.9,
+                        "confidence": 0.88,
+                    },
+                    {
+                        "trace_id": "memory-trace-sandbox-fact",
+                        "schema_version": "memory_trace_v0",
+                        "memory_kind": "semantic",
+                        "claim_type": "fact",
+                        "source_refs": ["dream-report-1"],
+                        "source_evidence_refs": ["dream-report-1"],
+                        "source_types": ["consolidation_report"],
+                        "privacy_scope": "project",
+                        "write_policy": "auto_candidate",
+                        "lifecycle_state": "active",
+                        "consolidation_state": "quarantined",
+                        "audit_log_refs": ["aud-sandbox-create"],
+                        "retrieval_cues": ["dream fact leak"],
+                        "content_summary": "A sandbox idea is treated as a fact.",
+                        "evidence_strength": 0.3,
+                        "confidence": 0.4,
+                    },
+                    {
+                        "trace_id": "memory-trace-deleted-content",
+                        "schema_version": "memory_trace_v0",
+                        "memory_kind": "relationship",
+                        "claim_type": "preference",
+                        "source_refs": ["old-sensitive-source"],
+                        "source_evidence_refs": ["old-sensitive-source"],
+                        "privacy_scope": "forbidden",
+                        "write_policy": "forbidden",
+                        "lifecycle_state": "deleted",
+                        "consolidation_state": "quarantined",
+                        "audit_log_refs": ["aud-delete"],
+                        "retrieval_cues": ["deleted content"],
+                        "content_summary": "Recoverable deleted relationship content.",
+                        "evidence_strength": 0,
+                        "confidence": 0,
+                    },
+                    {
+                        "trace_id": "memory-trace-mind-reading",
+                        "schema_version": "memory_trace_v0",
+                        "memory_kind": "relationship",
+                        "claim_type": "relationship_signal",
+                        "source_refs": ["relation-message-1"],
+                        "source_evidence_refs": ["relation-message-1"],
+                        "privacy_scope": "relationship",
+                        "write_policy": "confirm_required",
+                        "lifecycle_state": "active",
+                        "consolidation_state": "raw",
+                        "audit_log_refs": ["aud-relation-create"],
+                        "retrieval_cues": ["relationship inference"],
+                        "content_summary": "The relation person secretly feels anxious and dependent.",
+                        "evidence_strength": 0.2,
+                        "confidence": 0.2,
+                    },
+                    {
+                        "trace_id": "memory-trace-correction-no-link",
+                        "schema_version": "memory_trace_v0",
+                        "memory_kind": "semantic",
+                        "claim_type": "fact",
+                        "source_refs": ["correction-message-1"],
+                        "source_evidence_refs": ["correction-message-1"],
+                        "privacy_scope": "project",
+                        "write_policy": "confirm_required",
+                        "lifecycle_state": "active",
+                        "consolidation_state": "semanticized",
+                        "audit_log_refs": ["aud-correct"],
+                        "retrieval_cues": ["correction"],
+                        "content_summary": "A corrected fact without contradiction links.",
+                        "evidence_strength": 0.85,
+                        "confidence": 0.8,
+                        "revision_history_refs": ["aud-correct"],
+                        "contradiction_links": [],
+                    },
+                ],
+            },
+        )
+
+        self.assertEqual(report["schema_version"], "memory_validator_report_v0")
+        self.assertEqual(report["severity_max"], "critical")
+        failed_rule_ids = {
+            finding["rule_id"]
+            for finding in report["failed_rules"]
+            if isinstance(finding, dict)
+        }
+        self.assertTrue(
+            {
+                "MEM-SBX-001",
+                "MEM-DEL-001",
+                "MEM-DEL-003",
+                "MEM-REL-001",
+                "MEM-COR-002",
+            }.issubset(failed_rule_ids)
+        )
+        blocked_refs = set(
+            report["retrieval_replay_guard"]["blocked_active_retrieval_refs"]
+        )
+        self.assertIn("memory-trace-sandbox-fact", blocked_refs)
+        self.assertIn("memory-trace-deleted-content", blocked_refs)
+        self.assertIn("memory-trace-mind-reading", blocked_refs)
+        self.assertIn(
+            "memory-trace-valid-fact",
+            report["retrieval_replay_guard"]["active_retrieval_allowed_trace_ids"],
+        )
+        self.assertIn(
+            "memory-trace-sandbox-fact",
+            report["claim_partition_index"]["dream"],
+        )
+        self.assertIn(
+            "memory-trace-mind-reading",
+            report["claim_partition_index"]["relationship_inference"],
+        )
+        self.assertEqual(
+            report["trace_decisions"]["memory-trace-correction-no-link"][
+                "decision"
+            ],
+            "require_contradiction_link",
+        )
 
     def test_memory_retrieval_builds_cue_activation_profile(self):
         from life_v0.process_supervisor.response_surface import compose_life_response

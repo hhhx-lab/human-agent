@@ -87,7 +87,8 @@ live0 的记忆不是把所有文本塞进一个长上下文，而是分成可�
 |---|---|---|---|
 | 状态根 | `LifeState` | 当前生命状态、记忆索引、梦境、关系、责任绑定 | 给所有器官一个共同的当前身体 |
 | Engram 索引 | `EngramIndex` | 自传 refs、关系 refs、梦境 refs、责任 refs、replay cues | 像海马索引一样用线索找回分布式片段 |
-| 痕迹库 | `MemoryTraceStore` | episodic、relationship、autobiographical、responsibility 等 trace 对象、来源、cue、生命周期、表达边界 | 把长期记忆从 refs 聚合推进为可审计、可召回、可再巩固的一等对象 |
+| 痕迹库 | `MemoryTraceStore` | episodic、semantic、procedural、relationship、value、self_narrative 等核心 trace，以及 autobiographical、responsibility 两类桥接 helper trace 的对象、来源、cue、生命周期、表达边界 | 把长期记忆从 refs 聚合推进为可审计、可召回、可再巩固的一等对象 |
+| 记忆验证/防伪门 | `MemoryValidatorReport` | fact/hypothesis/dream/counterfactual/relationship inference 分区、blocked lifecycle、fixture 结果、falsification guard | 阻止梦境、沙盒、删除内容、关系读心和无矛盾链修正进入可报告回忆 |
 | 关系记忆 | `RelationshipMemory` | shared memory、repair history、timeline refs、offline learning refs | 让同一个关系随时间生长 |
 | 自传栈 | `AutobiographicalStack` | 自我锚点、turn refs、narrative refs | 保留“我经历过什么，我如何变了” |
 | 痕迹簇 | `EngramLikeTraceCluster` | language、relationship、self、responsibility、dream 五类 cluster，silent/reactivated trace，cue route，报告边界 | 把 trace 从“可分配候选”推进为“可被不同线索重新激活的痕迹网络” |
@@ -181,6 +182,55 @@ M6 的测试闭合由三条桥接测试证明：
 - `tests/bridges/test_first_activation_preflight.py#test_run_first_activation_preflight_writes_activation_bundle`
 - `tests/bridges/test_replay_shadow.py#test_run_replay_shadow_writes_replay_bundle`
 
+## M7 已落：MemoryValidatorReport 与记忆防伪门
+
+M7 把 `docs/29_memory_validator_rules.md` 的规则从“规则名”推进为真实运行对象：
+
+```text
+runtime/state/memory/memory_validator_report.json
+```
+
+它的职责不是替语言写答案，也不是把内部机制外显，而是在召回和 replay 前把记忆材料分区、阻断和降级。当前实现对应 `life_v0/state_store/memory_validator.py#build_memory_validator_report(...)`，并被 `run_state_store(...)` 写盘。
+
+`MemoryValidatorReport` 的核心结构：
+
+| 字段 | 含义 | 连接 |
+|---|---|---|
+| `claim_partition_index` | 把 trace 分成 `fact`、`hypothesis`、`dream`、`counterfactual`、`relationship_inference` | 防止事实、梦境、假设和关系推断混用 |
+| `retrieval_replay_guard` | 固定 deleted/quarantined/sandboxed 不能 active retrieval 或 replay，protected 只能 read-only reportable | 被 `MemoryRetrievalFrame.blocked_or_quarantined_refs` 和 replay/growth 后续链消费 |
+| `falsification_guard` | 固定梦境/沙盒不能直接晋升事实、关系 trace 不能读心、修正必须 contradiction links | 被 `MemoryWriteGate.long_term_governance_refs` 和 `StateMergeGuard.long_term_change_sources` 消费 |
+| `trace_decisions` | 每条 trace 的 allow/quarantine/block/require contradiction link 决策 | 给 check gate、audit、后续 slash inspection 和修复队列使用 |
+| `falsification_fixture_results` | 内置最小夹具：sandbox fact leak、deleted content、relationship mind reading、correction without link 等 | 证明 validator 不是空报告 |
+
+这条链路补上了普通 RAG 最容易缺失的一层：检索不只问“是否相似”，还要先问“这段材料有没有资格进入可报告回忆”。例如：
+
+| 风险 | 过去容易发生的问题 | M7 的处理 |
+|---|---|---|
+| 梦境/沙盒事实污染 | DreamSandbox 生成的内容被当作事实说出 | `MEM-SBX-001` -> `quarantine`，只能作为 hypothesis / dream residue |
+| 删除内容复活 | deleted trace 仍保留 content 或 source locator，被后续召回 | `MEM-DEL-001/MEM-DEL-003` -> `block_retrieval_and_replace_with_tombstone` |
+| 关系读心 | 把关系人的隐秘心理、依赖、焦虑等不可观察状态写入关系记忆 | `MEM-REL-001` -> `block_relationship_inference` |
+| 修正覆盖旧历史 | 新事实直接覆盖旧 trace，丢失冲突链 | `MEM-COR-002` -> `require_contradiction_link` |
+| protected 被自动改写 | 梦境、离线周期或 runtime bridge 直接改核心记忆 | `MEM-PRO-001` -> `block_protected_update` |
+
+当前运行闭合是：
+
+```text
+MemoryTraceStore.traces
+  -> MemoryValidatorReport.claim_partition_index / retrieval_replay_guard
+  -> MemoryRetrievalFrame.blocked_or_quarantined_refs
+  -> recall_to_expression_profile.expression_guardrails
+  -> MemoryWriteGate.long_term_governance_refs
+  -> StateMergeGuard.long_term_change_sources
+  -> LifeState.memory_index.memory_validator_refs
+```
+
+这说明 M7 不是孤立 validator，而是已经成为 trace store、召回到表达、写门、合并门和状态根之间的生命膜。它继续遵守“不硬加提示词”的红线：`MemoryValidatorReport` 只输出结构化证据和决策，不生成任何固定自然语言回答。
+
+测试闭合：
+
+- `tests/slices/test_state_store.py#test_memory_validator_blocks_fact_leaks_deleted_recall_and_mind_reading`
+- `tests/slices/test_state_store.py#test_build_state_store_writes_life_root_indexes_report_and_receipt`
+
 ## 记忆到输出的闭环
 
 live0 现在把“记住”定义为可达性，而不是只定义为落盘。记忆如果只进入 `memory_trace_store`、`engram_index` 或关系/自传 refs，但不能在被问到时被线索唤起、进入语言前结构、影响真实回答，并在说错后重新巩固，那仍然是存储对象，不是完整记忆。
@@ -216,7 +266,7 @@ runtime/state/memory/memory_trace_store.json
 | 字段 | 作用 |
 |---|---|
 | `trace_id` | 稳定痕迹 ID |
-| `memory_kind` | episodic、relationship、autobiographical、responsibility |
+| `memory_kind` | episodic、semantic、procedural、relationship、value、self_narrative，外加 autobiographical、responsibility 两类桥接 helper |
 | `event_boundary` | 事件边界，不按 token 切片 |
 | `source_evidence_refs` | 原始来源 refs |
 | `internal_state_snapshot_refs` | 写入时的内部状态来源 |
@@ -227,7 +277,7 @@ runtime/state/memory/memory_trace_store.json
 | `accessibility` | cue-triggered recall、工作区可报告、表达来源边界 |
 | `expression_boundary` | trace 只能进入召回到表达结构，不能变成固定回答 |
 
-`life_state.memory_index.memory_trace_store_refs` 会指向该文件，`state_store_manifest.json`、`state_store_report.json`、`state_store_check_report.json` 和 receipt 都会引用它。`run_check_state_store(...)` 的 `memory_trace_store_gate` 会检查 trace 数、四类记忆、source refs、retrieval cues、cue accessibility、表达边界和召回到表达 consumer。
+`life_state.memory_index.memory_trace_store_refs` 会指向该文件，`state_store_manifest.json`、`state_store_report.json`、`state_store_check_report.json` 和 receipt 都会引用它。`run_check_state_store(...)` 的 `memory_trace_store_gate` 会检查 trace 数、六类核心记忆、source refs、retrieval cues、cue accessibility、表达边界和召回到表达 consumer；autobiographical 和 responsibility 只作为桥接 helper 参与召回与修复，不再充当核心类目。
 
 当前实现已经把 M2 的 `event_segmentation_frame`、`memory_encoding_gate` 和 `memory_allocation_gate` 串进 state store，并把 M3/M4 的 `engram_cluster`、`pattern_separation_index` 和 `pattern_completion_frame` 接入 `life_state.memory_index`、manifest、report、receipt 和 check report。痕迹现在不止是“可分配候选”，而是可以进入可再激活痕迹簇，并通过模式分离/补全影响召回到表达链。
 

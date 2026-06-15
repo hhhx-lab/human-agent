@@ -10,6 +10,7 @@ from life_v0.growth.offline_learning_profile import (
 from life_v0.membrane.queue_e_signals import (
     build_queue_e_repair_modulation_profile,
 )
+from life_v0.state_store.life_schema_map import build_life_schema_map
 from life_v0.state_store.self_model import project_self_model_projection
 
 
@@ -39,6 +40,7 @@ def build_life_state_projection(
     memory_encoding_gate: dict[str, Any] | None = None,
     memory_allocation_gate: dict[str, Any] | None = None,
     memory_trace_store: dict[str, Any] | None = None,
+    memory_validator_report: dict[str, Any] | None = None,
     engram_cluster: dict[str, Any] | None = None,
     pattern_separation_index: dict[str, Any] | None = None,
     pattern_completion_frame: dict[str, Any] | None = None,
@@ -58,10 +60,12 @@ def build_life_state_projection(
     memory_encoding_gate_ref = "runtime/state/memory/memory_encoding_gate.json"
     memory_allocation_gate_ref = "runtime/state/memory/memory_allocation_gate.json"
     memory_trace_store_ref = "runtime/state/memory/memory_trace_store.json"
+    memory_validator_report_ref = "runtime/state/memory/memory_validator_report.json"
     engram_cluster_ref = "runtime/state/memory/engram_cluster.json"
     pattern_separation_ref = "runtime/state/memory/pattern_separation_index.json"
     pattern_completion_ref = "runtime/state/memory/pattern_completion_frame.json"
     memory_retrieval_ref = "runtime/state/memory/memory_retrieval_frame.json"
+    life_schema_map_ref = "runtime/state/memory/life_schema_map.json"
     background_continuity_profile = background_continuity_profile or {}
     background_continuity_root = _build_background_continuity_root(
         background_continuity_profile
@@ -76,6 +80,16 @@ def build_life_state_projection(
         self_model_state=self_model_state,
         self_model_projection=self_model,
         background_continuity_profile=background_continuity_profile,
+    )
+    life_schema_map = build_life_schema_map(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        memory_retrieval_frame=memory_retrieval_frame,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        self_model_state=self_model_state,
+        responsibility_ledger=responsibility_ledger,
     )
     memory_retrieval_refs = _dedupe(
         ([memory_retrieval_ref] if memory_retrieval_frame else [])
@@ -96,6 +110,14 @@ def build_life_state_projection(
         or [autobiographical_ref],
         "relationship_memory_refs": list((engram_index or {}).get("relationship_memory_refs", []))
         or [relationship_ref],
+        "semantic_memory_refs": _schema_refs_by_kind(life_schema_map, "self_schema"),
+        "procedural_memory_refs": _schema_refs_by_kind(life_schema_map, "task_schema"),
+        "value_memory_refs": _schema_refs_by_kind(
+            life_schema_map, "responsibility_schema"
+        ),
+        "self_narrative_memory_refs": _schema_refs_by_kind(
+            life_schema_map, "self_schema"
+        ),
         "relationship_deep_memory_refs": [
             "runtime/state/memory/relationship_memory.json#we_memory_traces"
         ]
@@ -118,6 +140,21 @@ def build_life_state_projection(
         "memory_trace_store_refs": [memory_trace_store_ref]
         if memory_trace_store
         else [],
+        "life_schema_map_refs": [life_schema_map_ref]
+        if life_schema_map
+        else [],
+        "memory_validator_refs": [memory_validator_report_ref]
+        if memory_validator_report
+        else [],
+        "memory_validator_blocked_refs": list(
+            (
+                (memory_validator_report or {}).get(
+                    "retrieval_replay_guard",
+                    {},
+                )
+                or {}
+            ).get("blocked_active_retrieval_refs", [])
+        ),
         "memory_trace_refs": list((memory_trace_store or {}).get("trace_ids", [])),
         "engram_cluster_refs": [engram_cluster_ref] if engram_cluster else [],
         "engram_reactivated_trace_refs": list((engram_cluster or {}).get("reactivated_trace_refs", [])),
@@ -150,6 +187,12 @@ def build_life_state_projection(
             "docs/17_memory_trace_object_model.md",
             "docs/19_offline_consolidation_cycle.md",
         ],
+        "schema_memory_refs": [
+            life_schema_map_ref,
+            "runtime/state/memory/life_schema_map.json#schema_refs",
+        ]
+        if life_schema_map
+        else [],
         "quarantine_refs": list((engram_index or {}).get("quarantine_refs", [])),
         "state_merge_guard_refs": [
             "runtime/state/memory/state_merge_guard.json"
@@ -170,6 +213,7 @@ def build_life_state_projection(
         memory_encoding_gate_ref,
         memory_allocation_gate_ref,
         memory_trace_store_ref,
+        memory_validator_report_ref,
         engram_cluster_ref,
         pattern_separation_ref,
         pattern_completion_ref,
@@ -198,6 +242,7 @@ def build_life_state_projection(
         "background_continuity_profile": background_continuity_root,
         "dream_records": [],
         "growth_self_modification_index": growth_self_modification_index,
+        "life_schema_map": life_schema_map,
         "relationship_subjects": [
             {
                 "relationship_id": "rel-v0-0001",
@@ -224,8 +269,9 @@ def build_life_state_projection(
             "life_target_status": target_status,
             "evidence_family_refs": _dedupe(
                 [
-                    "runtime/state/state_store_doc_coverage_snapshot.json",
-                    engram_ref,
+            "runtime/state/state_store_doc_coverage_snapshot.json",
+            engram_ref,
+            memory_validator_report_ref if memory_validator_report else "",
             "runtime/state/memory/state_merge_guard.json" if state_merge_guard else "",
             memory_retrieval_ref if memory_retrieval_frame else "",
         ]
@@ -956,3 +1002,28 @@ def _dedupe(items: list[str]) -> list[str]:
         if item and item not in result:
             result.append(item)
     return result
+
+
+def _schema_refs_by_kind(
+    life_schema_map: dict[str, Any] | None,
+    schema_kind: str,
+) -> list[str]:
+    schema_map = life_schema_map or {}
+    schemas = [
+        schema for schema in schema_map.get("schemas", []) if isinstance(schema, dict)
+    ]
+    refs = [
+        str(schema.get("schema_ref"))
+        for schema in schemas
+        if schema.get("schema_kind") == schema_kind and schema.get("schema_ref")
+    ]
+    if refs:
+        return _dedupe(refs)
+    fallback_refs = {
+        "self_schema": "runtime/state/memory/life_schema_map.json#schema:life-schema-self_schema",
+        "relationship_schema": "runtime/state/memory/life_schema_map.json#schema:life-schema-relationship_schema",
+        "task_schema": "runtime/state/memory/life_schema_map.json#schema:life-schema-task_schema",
+        "body_recovery_schema": "runtime/state/memory/life_schema_map.json#schema:life-schema-body_recovery_schema",
+        "responsibility_schema": "runtime/state/memory/life_schema_map.json#schema:life-schema-responsibility_schema",
+    }
+    return [fallback_refs.get(schema_kind, "runtime/state/memory/life_schema_map.json#schema_refs")]

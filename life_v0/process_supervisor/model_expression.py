@@ -1618,6 +1618,25 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         "memory_retrieval_recall_to_expression_source_ref_count": (
             memory_retrieval.get("recall_to_expression_source_ref_count")
         ),
+        "memory_retrieval_recall_to_expression_reportable_source_ref_count": (
+            memory_retrieval.get("recall_to_expression_reportable_source_ref_count")
+        ),
+        "memory_retrieval_recall_to_expression_guardrail_count": memory_retrieval.get(
+            "recall_to_expression_guardrail_count"
+        ),
+        "memory_retrieval_recall_to_expression_post_expression_reconsolidation_hook_count": (
+            memory_retrieval.get(
+                "recall_to_expression_post_expression_reconsolidation_hook_count"
+            )
+        ),
+        "memory_retrieval_post_expression_reconsolidation_hook_count": (
+            memory_retrieval.get(
+                "recall_to_expression_post_expression_reconsolidation_hook_count"
+            )
+        ),
+        "memory_retrieval_post_expression_reconsolidation_hooks": memory_retrieval.get(
+            "post_expression_reconsolidation_hooks"
+        ),
         "autobiographical_responsibility_repair_hit_count": memory_retrieval.get(
             "autobiographical_responsibility_repair_hit_count"
         ),

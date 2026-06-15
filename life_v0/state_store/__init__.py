@@ -18,6 +18,9 @@ from .memory_allocation_gate import build_memory_allocation_gate
 from .memory_encoding_gate import build_memory_encoding_gate
 from .memory_retrieval import build_memory_retrieval_frame
 from .memory_trace_store import build_memory_trace_store
+from .memory_trace_store import CORE_MEMORY_KINDS
+from .memory_trace_store import BRIDGE_MEMORY_KINDS
+from .memory_validator import build_memory_validator_report
 from .memory_write_gate import build_memory_write_gate
 from .pattern_completion import build_pattern_completion_frame
 from .pattern_separation import build_pattern_separation_index
@@ -341,6 +344,55 @@ def run_state_store(
         commitment_truth_state=commitment_truth,
         responsibility_ledger=responsibility_ledger,
     )
+    memory_validator_report = build_memory_validator_report(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+    )
+    memory_write_gate = build_memory_write_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        commitment_truth_state=commitment_truth,
+        responsibility_ledger=responsibility_ledger,
+        signal_media_runtime=signal_media_runtime,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        consciousness_probe_bundle=consciousness_probe_bundle,
+        indexes=indexes,
+        memory_validator_report=memory_validator_report,
+    )
+    state_merge_guard = build_state_merge_guard(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_write_gate=memory_write_gate,
+        relationship_memory=relationship_memory,
+        commitment_truth_state=commitment_truth,
+        responsibility_ledger=responsibility_ledger,
+        indexes=indexes,
+        memory_validator_report=memory_validator_report,
+    )
+    memory_retrieval_frame = build_memory_retrieval_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        cue_sources={
+            "state_store_seed_ref": "runtime/state/memory/engram_index.json",
+            "relationship_memory_ref": "runtime/state/memory/relationship_memory.json",
+        },
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        life_state={},
+        state_merge_guard=state_merge_guard,
+        memory_validator_report=memory_validator_report,
+        source_doc_refs=STATE_STORE_DOCS,
+    )
     engram_cluster = build_engram_like_trace_cluster(
         run_id=run_id,
         generated_at=generated_at,
@@ -383,6 +435,7 @@ def run_state_store(
         memory_encoding_gate=memory_encoding_gate,
         memory_allocation_gate=memory_allocation_gate,
         memory_trace_store=memory_trace_store,
+        memory_validator_report=memory_validator_report,
         engram_cluster=engram_cluster,
         pattern_separation_index=pattern_separation_index,
         pattern_completion_frame=pattern_completion_frame,
@@ -396,11 +449,39 @@ def run_state_store(
             "runtime/state/memory/memory_encoding_gate.json",
             "runtime/state/memory/memory_allocation_gate.json",
             "runtime/state/memory/memory_trace_store.json",
+            "runtime/state/memory/memory_validator_report.json",
             "runtime/state/memory/engram_cluster.json",
             "runtime/state/memory/pattern_separation_index.json",
             "runtime/state/memory/pattern_completion_frame.json",
             "runtime/state/memory/memory_retrieval_frame.json",
         ],
+    )
+    memory_retrieval_frame = build_memory_retrieval_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        cue_sources={
+            "state_store_seed_ref": "runtime/state/memory/engram_index.json",
+            "relationship_memory_ref": "runtime/state/memory/relationship_memory.json",
+            "life_schema_map_ref": "runtime/state/memory/life_schema_map.json",
+        },
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        life_schema_map=life_state.get("life_schema_map"),
+        life_state=life_state,
+        state_merge_guard=state_merge_guard,
+        memory_validator_report=memory_validator_report,
+        source_doc_refs=STATE_STORE_DOCS,
+    )
+    life_state["memory_index"]["memory_retrieval_refs"] = _dedupe(
+        list(life_state.get("memory_index", {}).get("memory_retrieval_refs", []))
+        + list(memory_retrieval_frame.get("activated_engram_refs", []))
+        + list(memory_retrieval_frame.get("relationship_memory_hits", []))
+        + list(memory_retrieval_frame.get("autobiographical_hits", []))
+        + list(memory_retrieval_frame.get("autobiographical_responsibility_repair_hits", []))
+        + list(memory_retrieval_frame.get("dream_residue_hits", []))
+        + list(memory_retrieval_frame.get("responsibility_hits", []))
+        + list(memory_retrieval_frame.get("schema_memory_hits", []))
     )
     runtime_boundary = _build_runtime_bridge_boundary(run_id, generated_at)
     consolidation_seed = _build_consolidation_seed(run_id, generated_at)
@@ -419,6 +500,7 @@ def run_state_store(
         memory_encoding_gate_ref="runtime/state/memory/memory_encoding_gate.json",
         memory_allocation_gate_ref="runtime/state/memory/memory_allocation_gate.json",
         memory_trace_store_ref="runtime/state/memory/memory_trace_store.json",
+        memory_validator_report_ref="runtime/state/memory/memory_validator_report.json",
         engram_cluster_ref="runtime/state/memory/engram_cluster.json",
         pattern_separation_index_ref="runtime/state/memory/pattern_separation_index.json",
         pattern_completion_frame_ref="runtime/state/memory/pattern_completion_frame.json",
@@ -467,6 +549,7 @@ def run_state_store(
         _write_json(out_dir / "memory" / "memory_encoding_gate.json", memory_encoding_gate)
         _write_json(out_dir / "memory" / "memory_allocation_gate.json", memory_allocation_gate)
         _write_json(out_dir / "memory" / "memory_trace_store.json", memory_trace_store)
+        _write_json(out_dir / "memory" / "memory_validator_report.json", memory_validator_report)
         _write_json(out_dir / "memory" / "engram_cluster.json", engram_cluster)
         _write_json(out_dir / "memory" / "pattern_separation_index.json", pattern_separation_index)
         _write_json(out_dir / "memory" / "pattern_completion_frame.json", pattern_completion_frame)
@@ -530,6 +613,11 @@ def run_check_state_store(
         blocked_reasons,
         "memory_trace_store_gate",
     )
+    memory_validator_report = _load_json(
+        state_dir / "memory" / "memory_validator_report.json",
+        blocked_reasons,
+        "memory_validator_gate",
+    )
     engram_cluster = _load_json(
         state_dir / "memory" / "engram_cluster.json",
         blocked_reasons,
@@ -586,6 +674,7 @@ def run_check_state_store(
     blocked_reasons.extend(_check_engram_index(engram_index))
     blocked_reasons.extend(_check_relationship_memory(relationship_memory))
     blocked_reasons.extend(_check_memory_trace_store(memory_trace_store))
+    blocked_reasons.extend(_check_memory_validator_report(memory_validator_report))
     blocked_reasons.extend(_check_engram_cluster(engram_cluster))
     blocked_reasons.extend(_check_pattern_separation_index(pattern_separation_index))
     blocked_reasons.extend(_check_pattern_completion_frame(pattern_completion_frame))
@@ -913,6 +1002,7 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "runtime/state/memory/memory_encoding_gate.json",
         "runtime/state/memory/memory_allocation_gate.json",
         "runtime/state/memory/memory_trace_store.json",
+        "runtime/state/memory/memory_validator_report.json",
         "runtime/state/memory/engram_cluster.json",
         "runtime/state/memory/pattern_separation_index.json",
         "runtime/state/memory/pattern_completion_frame.json",
@@ -951,6 +1041,7 @@ def _build_report(
     memory_encoding_gate_ref: str,
     memory_allocation_gate_ref: str,
     memory_trace_store_ref: str,
+    memory_validator_report_ref: str,
     engram_cluster_ref: str,
     pattern_separation_index_ref: str,
     pattern_completion_frame_ref: str,
@@ -976,6 +1067,7 @@ def _build_report(
         "memory_encoding_gate_ref": memory_encoding_gate_ref,
         "memory_allocation_gate_ref": memory_allocation_gate_ref,
         "memory_trace_store_ref": memory_trace_store_ref,
+        "memory_validator_report_ref": memory_validator_report_ref,
         "engram_cluster_ref": engram_cluster_ref,
         "pattern_separation_index_ref": pattern_separation_index_ref,
         "pattern_completion_frame_ref": pattern_completion_frame_ref,
@@ -1042,6 +1134,7 @@ def _build_receipt(
         out_dir / "memory" / "memory_encoding_gate.json",
         out_dir / "memory" / "memory_allocation_gate.json",
         out_dir / "memory" / "memory_trace_store.json",
+        out_dir / "memory" / "memory_validator_report.json",
         out_dir / "memory" / "engram_cluster.json",
         out_dir / "memory" / "pattern_separation_index.json",
         out_dir / "memory" / "pattern_completion_frame.json",
@@ -1113,6 +1206,7 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
         "runtime/state/self/autobiographical_stack.json",
         "runtime/state/memory/relationship_memory.json",
         "runtime/state/memory/memory_trace_store.json",
+        "runtime/state/memory/memory_validator_report.json",
         "runtime/state/memory/engram_cluster.json",
         "runtime/state/memory/pattern_separation_index.json",
         "runtime/state/memory/pattern_completion_frame.json",
@@ -1129,6 +1223,8 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
         reasons.append("state_root_continuity_gate memory retrieval ref missing from memory index")
     if "runtime/state/memory/memory_trace_store.json" not in life_state.get("memory_index", {}).get("memory_trace_store_refs", []):
         reasons.append("state_root_continuity_gate memory trace store ref missing from memory index")
+    if "runtime/state/memory/memory_validator_report.json" not in life_state.get("memory_index", {}).get("memory_validator_refs", []):
+        reasons.append("state_root_continuity_gate memory validator ref missing from memory index")
     if "runtime/state/memory/engram_cluster.json" not in life_state.get("memory_index", {}).get("engram_cluster_refs", []):
         reasons.append("state_root_continuity_gate engram cluster ref missing from memory index")
     if "runtime/state/memory/pattern_separation_index.json" not in life_state.get("memory_index", {}).get("pattern_separation_refs", []):
@@ -1355,11 +1451,11 @@ def _check_memory_trace_store(memory_trace_store: dict[str, Any]) -> list[str]:
     if memory_trace_store.get("store_ref") != "runtime/state/memory/memory_trace_store.json":
         reasons.append("memory_trace_store_gate store ref mismatch")
     traces = memory_trace_store.get("traces", [])
-    if not isinstance(traces, list) or len(traces) < 4:
+    if not isinstance(traces, list) or len(traces) < len(CORE_MEMORY_KINDS):
         reasons.append("memory_trace_store_gate trace count too low")
         return reasons
     kinds = {trace.get("memory_kind") for trace in traces if isinstance(trace, dict)}
-    for kind in ["episodic", "relationship", "autobiographical", "responsibility"]:
+    for kind in CORE_MEMORY_KINDS:
         if kind not in kinds:
             reasons.append(f"memory_trace_store_gate missing memory kind: {kind}")
     for trace in traces:
@@ -1376,10 +1472,57 @@ def _check_memory_trace_store(memory_trace_store: dict[str, Any]) -> list[str]:
             reasons.append("memory_trace_store_gate cue accessibility missing")
         if trace.get("expression_boundary") != "trace_enters_recall_to_expression_not_fixed_reply":
             reasons.append("memory_trace_store_gate expression boundary mismatch")
+        if trace.get("memory_kind") in CORE_MEMORY_KINDS and trace.get("write_policy") not in {
+            "auto_candidate",
+            "confirm_required",
+        }:
+            reasons.append("memory_trace_store_gate core memory write policy mismatch")
+        if trace.get("memory_kind") in BRIDGE_MEMORY_KINDS and trace.get("write_policy") != "confirm_required":
+            reasons.append("memory_trace_store_gate bridge memory write policy mismatch")
     if "runtime/state/memory/memory_retrieval_frame.json#recall_to_expression_profile" not in memory_trace_store.get("downstream_consumer_refs", []):
         reasons.append("memory_trace_store_gate recall to expression consumer missing")
     if "docs/v0/entry/v0_memory_recall_to_expression_contract.md" not in memory_trace_store.get("source_doc_refs", []):
         reasons.append("memory_trace_store_gate recall contract source doc missing")
+    return reasons
+
+
+def _check_memory_validator_report(memory_validator_report: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if memory_validator_report.get("schema_version") != "memory_validator_report_v0":
+        reasons.append("memory_validator_gate schema mismatch")
+        return reasons
+    if memory_validator_report.get("validator") != "MemoryTraceValidator":
+        reasons.append("memory_validator_gate validator mismatch")
+    partitions = memory_validator_report.get("claim_partition_index", {})
+    for partition in [
+        "fact",
+        "hypothesis",
+        "dream",
+        "counterfactual",
+        "relationship_inference",
+    ]:
+        if partition not in partitions:
+            reasons.append(f"memory_validator_gate partition missing: {partition}")
+    guard = memory_validator_report.get("retrieval_replay_guard", {})
+    for lifecycle_state in ["deleted", "quarantined", "sandboxed"]:
+        if lifecycle_state not in guard.get("blocked_lifecycle_states", []):
+            reasons.append(
+                f"memory_validator_gate blocked lifecycle missing: {lifecycle_state}"
+            )
+    falsification_guard = memory_validator_report.get("falsification_guard", {})
+    guardrails = falsification_guard.get("guardrails", [])
+    if (
+        "dream_or_sandbox_output_cannot_promote_to_fact_without_external_confirmation"
+        not in guardrails
+    ):
+        reasons.append("memory_validator_gate dream fact guardrail missing")
+    if (
+        "relationship_trace_records_observable_interaction_not_hidden_psychology"
+        not in guardrails
+    ):
+        reasons.append("memory_validator_gate relationship guardrail missing")
+    if not memory_validator_report.get("falsification_fixture_results"):
+        reasons.append("memory_validator_gate falsification fixture results missing")
     return reasons
 
 
@@ -1561,6 +1704,7 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
         "runtime/state/memory/event_segmentation_frame.json",
         "runtime/state/memory/memory_encoding_gate.json",
         "runtime/state/memory/memory_allocation_gate.json",
+        "runtime/state/memory/memory_validator_report.json",
         "runtime/state/memory/engram_cluster.json",
         "runtime/state/memory/pattern_separation_index.json",
         "runtime/state/memory/pattern_completion_frame.json",
@@ -1587,6 +1731,8 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate memory write gate ref mismatch")
     if build_report.get("memory_trace_store_ref") != "runtime/state/memory/memory_trace_store.json":
         reasons.append("build_report_gate memory trace store ref mismatch")
+    if build_report.get("memory_validator_report_ref") != "runtime/state/memory/memory_validator_report.json":
+        reasons.append("build_report_gate memory validator report ref mismatch")
     if build_report.get("engram_cluster_ref") != "runtime/state/memory/engram_cluster.json":
         reasons.append("build_report_gate engram cluster ref mismatch")
     if build_report.get("pattern_separation_index_ref") != "runtime/state/memory/pattern_separation_index.json":
@@ -1619,6 +1765,7 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "memory_encoding_gate_gate",
         "memory_allocation_gate_gate",
         "memory_trace_store_gate",
+        "memory_validator_gate",
         "engram_cluster_gate",
         "pattern_separation_gate",
         "pattern_completion_gate",
@@ -1652,6 +1799,17 @@ def _runtime_ref(path: Path) -> str:
         idx = parts.index("runtime")
         return "/".join(parts[idx:])
     return str(path)
+
+
+def _dedupe(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if not value or value in seen:
+            continue
+        seen.add(value)
+        result.append(value)
+    return result
 
 
 def _sha256(path: Path) -> str:

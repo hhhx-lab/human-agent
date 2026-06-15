@@ -485,6 +485,18 @@ class ModelExpressionTests(unittest.TestCase):
             )
             self.assertEqual(
                 expression_context["memory_retrieval"][
+                    "recall_to_expression_reportable_source_ref_count"
+                ],
+                9,
+            )
+            self.assertIn(
+                "spoken_memory_mismatch_reenters_reconsolidation",
+                expression_context["memory_retrieval"][
+                    "post_expression_reconsolidation_hooks"
+                ],
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
                     "exit_dream_next_wake_cue_ref_count"
                 ],
                 1,
@@ -617,6 +629,24 @@ class ModelExpressionTests(unittest.TestCase):
                     "memory_retrieval_recall_to_expression_boundary"
                 ],
                 "memory_recall_enters_language_prestructure_not_fixed_spoken_reply",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_recall_to_expression_reportable_source_ref_count"
+                ],
+                9,
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_recall_to_expression_guardrail_count"
+                ],
+                1,
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_recall_to_expression_post_expression_reconsolidation_hook_count"
+                ],
+                1,
             )
             self.assertEqual(
                 state["model_expression_context_summary"][

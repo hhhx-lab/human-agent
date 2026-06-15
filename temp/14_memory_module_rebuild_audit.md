@@ -2,7 +2,7 @@
 
 **创建**：2026-06-15
 **入口计划**：`docs/v0/entry/v0_memory_module_rebuild_plan.md`
-**当前阶段**：第 3 点启动，不进入第 4 点梦境专项，不进入第 5 点语言专项
+**当前阶段**：第 3 点推进中，M1-M7 已进入代码与测试闭环，召回到表达的结构摘要已打通；第 4 点仍不作为主目标
 **红线**：记忆机制只能进入 state/report/inspection/model expression context，不能由代码拼接固定外显回答。
 
 ## 1. 方向判断
@@ -17,7 +17,7 @@
   -> 测试与检查面证据
 ```
 
-目前已有记忆代码可以启动，但整体仍偏“refs 聚合 + 摘要传播”。接下来要推进为“MemoryTrace + engram-like cluster + cue reactivation + pattern separation/completion + consolidation/reconsolidation”的生命记忆库。
+目前已有记忆代码已经明显超出“refs 聚合 + 摘要传播”：`MemoryTraceStore`、`MemoryValidatorReport`、cue-driven retrieval、pattern separation/completion、replay/dream bridge、write gate/merge guard 和 model-expression summary 都已经落到 runtime、report、receipt 与测试里。接下来仍需继续补厚的是 trace-level 生命周期更细分、跨模态输入、以及把 M1-M7 的对象更稳定地接到后续梦境/成长/语言的长期循环里。
 
 ## 2. 理论文档消费表
 
@@ -109,7 +109,7 @@
 3. 每个区域都有事实边界或来源边界，尤其是梦境、关系推断、视觉/网页学习和反事实模拟。
 4. 任何区域都不能通过硬编码语句直接改变外显语言，只能提供结构化调制材料。
 
-## 6. 已有小补丁状态
+## 6. 当前已闭合的小补丁
 
 当前工作区未提交补丁新增：
 
@@ -123,9 +123,24 @@
   - `tests.slices.test_state_store.StateStoreTests.test_memory_retrieval_builds_cue_activation_profile`
   - `tests.process.test_model_expression.ModelExpressionTests.test_openai_compatible_expression_uses_transport_and_redacts_secret`
 
-这一步只解决“检索为什么激活某些记忆家族，以及这些激活如何进入语言前表达结构”的局部问题。它不是第 3 点完成，只是 M4/M8 的先导。
+这一步已经不是临时补丁，而是当前可验证的闭环：被触发的记忆家族、可报告来源、表达边界、guardrails 和再巩固钩子都已进入 `response_surface.py` 与 `model_expression.py` 的结构化上下文，并通过单测与回归测试。
 
-## 7. 下一步建议
+## 7. 当前验收结果
+
+已通过的关键验证：
+
+- `tests.slices.test_state_store` 全部相关回归通过，`memory_trace_store.json`、`memory_validator_report.json`、`memory_retrieval_frame.json`、`memory_write_gate.json` 和 `state_merge_guard.json` 都能被 state root、manifest、report、receipt 和 check gate 消费。
+- `tests.process.test_response_surface` 相关回归通过，召回到表达材料会携带 `reportable_source_ref_count`、`guardrails` 和 `post_expression_reconsolidation_hooks`，但不会释放固定自然语言模板。
+- `tests.process.test_model_expression` 相关回归通过，模型表达上下文可见召回闭环摘要，同时仍保持 API secret redaction 和 post-expression gate。
+
+当前真实结论：
+
+1. 记忆已经不是单纯向量检索或 RAG。
+2. 记忆已经有了独立痕迹对象、验证/防伪门和表达前结构摘要。
+3. 记忆已经能从 state store 进入 response/model expression，而不是只停在落盘。
+4. 仍需继续补厚 trace-level 细分、跨模态输入、以及更细的 reconsolidation / dream / growth 连接。
+
+## 8. 下一步建议
 
 1. 保留当前 cue activation 小补丁，但不要立刻提交为“第 3 点完成”。
 2. 先按 `docs/v0/entry/v0_memory_module_rebuild_plan.md#M1` 新增 `MemoryTraceStore`。
@@ -134,6 +149,6 @@
 5. 当前 cue activation profile 需要在 M4 时升级为 pattern separation/completion 的消费者。
 6. 每一步实现都要同时检查全生命耦合矩阵，避免只补 `state_store` 单点字段。
 
-## 8. 本阶段完成边界
+## 9. 本阶段完成边界
 
 第 3 点完成前，不进入第 4 点梦境专项。梦境代码可以被读取和作为记忆巩固输入，但本阶段只为梦境打记忆库地基。

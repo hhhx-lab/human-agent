@@ -6,6 +6,20 @@ from typing import Any
 
 MEMORY_TRACE_STORE_REF = "runtime/state/memory/memory_trace_store.json"
 
+CORE_MEMORY_KINDS = [
+    "episodic",
+    "semantic",
+    "procedural",
+    "relationship",
+    "value",
+    "self_narrative",
+]
+
+BRIDGE_MEMORY_KINDS = [
+    "autobiographical",
+    "responsibility",
+]
+
 SOURCE_DOC_REFS = [
     "docs/05_memory_systems_and_growth.md",
     "docs/17_memory_trace_object_model.md",
@@ -66,7 +80,140 @@ def build_memory_trace_store(
             },
             consolidation_state="candidate",
             lifecycle_state="candidate",
-            confidence="seeded_source_refs_present",
+            confidence=0.82,
+            confidence_label="seeded_source_refs_present",
+            revision_history_refs=[],
+        ),
+        _trace(
+            run_id=run_id,
+            generated_at=generated_at,
+            memory_kind="semantic",
+            event_boundary="semantic_schema_seed_boundary",
+            source_evidence_refs=_dedupe(
+                _string_list((engram_index or {}).get("replay_cue_refs"))
+                + _string_list((memory_retrieval_frame or {}).get("cue_terms"))
+                + ["runtime/state/memory/engram_index.json#memory_tier_index"]
+            ),
+            retrieval_cues=_dedupe(
+                _string_list((memory_retrieval_frame or {}).get("cue_terms"))
+                + ["semantic", "schema", "concept", "shared_terms"]
+            ),
+            internal_state_snapshot_refs=[
+                "runtime/state/language/semantic_map_frame.json",
+                "runtime/state/language/shared_term_registry.json",
+            ],
+            social_context_refs=_string_list(
+                (relationship_memory or {}).get("shared_memory_refs")
+            ),
+            salience_vector={
+                "novelty": "abstracted",
+                "relationship_weight": "tracked",
+                "responsibility_pressure": "tracked",
+                "body_state_debt": "resolved_or_pending",
+            },
+            consolidation_state="semanticized",
+            lifecycle_state="active",
+            confidence=0.86,
+            confidence_label="schema_links_and_shared_terms_seeded",
+            revision_history_refs=[],
+        ),
+        _trace(
+            run_id=run_id,
+            generated_at=generated_at,
+            memory_kind="procedural",
+            event_boundary="procedural_repetition_seed_boundary",
+            source_evidence_refs=_dedupe(
+                _string_list((engram_index or {}).get("replay_cue_refs"))
+                + _string_list((memory_retrieval_frame or {}).get("cue_terms"))
+                + ["runtime/state/memory/memory_write_gate.json#transaction_order"]
+            ),
+            retrieval_cues=_dedupe(
+                _string_list((memory_retrieval_frame or {}).get("cue_terms"))
+                + ["procedural", "skill", "routine", "workflow"]
+            ),
+            internal_state_snapshot_refs=[
+                "runtime/state/memory/memory_write_gate.json",
+                "runtime/state/memory/state_merge_guard.json",
+            ],
+            social_context_refs=_string_list(
+                (relationship_memory or {}).get("shared_memory_refs")
+            ),
+            salience_vector={
+                "novelty": "repetition_linked",
+                "relationship_weight": "low",
+                "responsibility_pressure": "tracked",
+                "body_state_debt": "resource_sensitive",
+            },
+            consolidation_state="proceduralized",
+            lifecycle_state="active",
+            confidence=0.8,
+            confidence_label="workflow_refs_present",
+            revision_history_refs=[],
+        ),
+        _trace(
+            run_id=run_id,
+            generated_at=generated_at,
+            memory_kind="value",
+            event_boundary="value_salience_seed_boundary",
+            source_evidence_refs=_dedupe(
+                _string_list((responsibility_ledger or {}).get("responsibility_event_refs"))
+                + _string_list((commitment_truth_state or {}).get("open_commitment_refs"))
+                + ["runtime/state/relationship/commitment_truth_state.json"]
+            ),
+            retrieval_cues=_dedupe(
+                _string_list((memory_retrieval_frame or {}).get("responsibility_hits"))
+                + ["value", "reward", "punishment", "salience", "preference"]
+            ),
+            internal_state_snapshot_refs=[
+                "runtime/state/body/core_affect_vector.json",
+                "runtime/state/body/body_resource_budget.json",
+            ],
+            social_context_refs=_string_list(
+                (relationship_memory or {}).get("shared_memory_refs")
+            ),
+            salience_vector={
+                "novelty": "value_weighted",
+                "relationship_weight": "high",
+                "responsibility_pressure": "high",
+                "body_state_debt": "tracked",
+            },
+            consolidation_state="merged",
+            lifecycle_state="active",
+            confidence=0.84,
+            confidence_label="value_binding_refs_present",
+            revision_history_refs=[],
+        ),
+        _trace(
+            run_id=run_id,
+            generated_at=generated_at,
+            memory_kind="self_narrative",
+            event_boundary="self_narrative_continuity_seed_boundary",
+            source_evidence_refs=_dedupe(
+                _string_list((autobiographical_stack or {}).get("anchor_refs"))
+                + _string_list((autobiographical_stack or {}).get("narrative_refs"))
+                + ["runtime/state/language/self_narrative_language_trace.json"]
+            ),
+            retrieval_cues=_dedupe(
+                _string_list((memory_retrieval_frame or {}).get("cue_terms"))
+                + ["self_narrative", "identity", "continuity", "growth"]
+            ),
+            internal_state_snapshot_refs=[
+                "runtime/state/self/self_model.json",
+                "runtime/state/self/autobiographical_stack.json",
+            ],
+            social_context_refs=_string_list(
+                (relationship_memory or {}).get("shared_memory_refs")
+            ),
+            salience_vector={
+                "novelty": "identity_weighted",
+                "relationship_weight": "tracked",
+                "responsibility_pressure": "tracked",
+                "body_state_debt": "continuity_sensitive",
+            },
+            consolidation_state="merged",
+            lifecycle_state="protected",
+            confidence=0.88,
+            confidence_label="self_continuity_refs_present",
             revision_history_refs=[],
         ),
         _trace(
@@ -98,75 +245,8 @@ def build_memory_trace_store(
             },
             consolidation_state="active",
             lifecycle_state="active",
-            confidence="relationship_refs_seeded",
-            revision_history_refs=[],
-        ),
-        _trace(
-            run_id=run_id,
-            generated_at=generated_at,
-            memory_kind="autobiographical",
-            event_boundary="self_autobiographical_seed_boundary",
-            source_evidence_refs=_dedupe(
-                _string_list((autobiographical_stack or {}).get("anchor_refs"))
-                + _string_list((autobiographical_stack or {}).get("turn_refs"))
-                + _string_list((autobiographical_stack or {}).get("narrative_refs"))
-                + ["runtime/state/self/autobiographical_stack.json"]
-            ),
-            retrieval_cues=_dedupe(
-                _string_list((engram_index or {}).get("autobiographical_memory_refs"))
-                + ["autobiographical", "self_continuity", "old_self_anchor"]
-            ),
-            internal_state_snapshot_refs=[
-                "runtime/state/self/self_model.json",
-                "runtime/state/self/autobiographical_stack.json",
-            ],
-            social_context_refs=_string_list(
-                (autobiographical_stack or {}).get("relationship_turn_refs")
-            ),
-            salience_vector={
-                "identity_weight": "high",
-                "growth_link": "tracked",
-                "continuity_pressure": "tracked",
-            },
-            consolidation_state="protected",
-            lifecycle_state="protected",
-            confidence="self_anchor_refs_present",
-            revision_history_refs=[],
-        ),
-        _trace(
-            run_id=run_id,
-            generated_at=generated_at,
-            memory_kind="responsibility",
-            event_boundary="responsibility_repair_seed_boundary",
-            source_evidence_refs=_dedupe(
-                _string_list((engram_index or {}).get("responsibility_memory_refs"))
-                + _string_list(
-                    (commitment_truth_state or {}).get("responsibility_event_refs")
-                )
-                + _string_list(
-                    (responsibility_ledger or {}).get("responsibility_event_refs")
-                )
-                + ["runtime/state/responsibility/responsibility_ledger.json"]
-            ),
-            retrieval_cues=_dedupe(
-                _string_list((memory_retrieval_frame or {}).get("responsibility_hits"))
-                + ["responsibility", "regret", "repair", "commitment"]
-            ),
-            internal_state_snapshot_refs=[
-                "runtime/state/memory/memory_write_gate.json",
-                "runtime/state/memory/state_merge_guard.json",
-            ],
-            social_context_refs=[
-                "runtime/state/relationship/commitment_truth_state.json",
-            ],
-            salience_vector={
-                "responsibility_pressure": "high",
-                "repair_drive": "tracked",
-                "future_action_constraint": "tracked",
-            },
-            consolidation_state="active",
-            lifecycle_state="active",
-            confidence="responsibility_refs_seeded",
+            confidence=0.83,
+            confidence_label="relationship_refs_seeded",
             revision_history_refs=[],
         ),
     ]
@@ -229,6 +309,8 @@ def build_memory_trace_store(
         ),
         "downstream_consumer_refs": [
             "runtime/state/memory/memory_retrieval_frame.json#recall_to_expression_profile",
+            "runtime/state/memory/memory_validator_report.json#claim_partition_index",
+            "runtime/state/memory/life_schema_map.json#schema_refs",
             "runtime/state/life_state.json#memory_index.memory_trace_store_refs",
             "runtime/state/consciousness/workspace_frame.json#memory_retrieval_refs",
             "runtime/state/language/model_expression_state.json#model_expression_context_summary",
@@ -250,24 +332,36 @@ def _trace(
     salience_vector: dict[str, Any],
     consolidation_state: str,
     lifecycle_state: str,
-    confidence: str,
+    confidence: float,
+    confidence_label: str,
     revision_history_refs: list[str],
 ) -> dict[str, Any]:
     trace_seed = "|".join(
         [run_id, memory_kind, event_boundary] + source_evidence_refs[:4]
     )
+    trace_id = f"memory-trace-{_short_hash(trace_seed)}"
     return {
-        "trace_id": f"memory-trace-{_short_hash(trace_seed)}",
+        "schema_version": "memory_trace_v0",
+        "trace_id": trace_id,
         "memory_kind": memory_kind,
+        "claim_type": _claim_type_for_memory_kind(memory_kind),
+        "content_summary": _content_summary_for_memory_kind(memory_kind),
         "event_boundary": event_boundary,
+        "event_boundary_id": event_boundary,
+        "source_refs": _dedupe(source_evidence_refs),
         "source_evidence_refs": _dedupe(source_evidence_refs),
         "internal_state_snapshot_refs": _dedupe(internal_state_snapshot_refs),
         "social_context_refs": _dedupe(social_context_refs),
+        "privacy_scope": _privacy_scope_for_memory_kind(memory_kind),
+        "write_policy": _write_policy_for_memory_kind(memory_kind),
         "salience_vector": salience_vector,
         "retrieval_cues": _dedupe(retrieval_cues),
         "confidence": confidence,
+        "confidence_label": confidence_label,
+        "evidence_strength": _evidence_strength_for_lifecycle(lifecycle_state),
         "consolidation_state": consolidation_state,
         "lifecycle_state": lifecycle_state,
+        "contradiction_links": [],
         "accessibility": [
             "cue_triggered_recall",
             "workspace_reportability_required",
@@ -275,10 +369,60 @@ def _trace(
         ],
         "expression_boundary": "trace_enters_recall_to_expression_not_fixed_reply",
         "created_at": generated_at,
+        "updated_at": generated_at,
         "revision_history_refs": _dedupe(revision_history_refs),
+        "audit_log_refs": [f"audit-{trace_id}-create"],
         "write_gate_ref": "runtime/state/memory/memory_write_gate.json",
         "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
     }
+
+
+def _claim_type_for_memory_kind(memory_kind: str) -> str:
+    mapping = {
+        "episodic": "fact",
+        "semantic": "fact",
+        "procedural": "skill",
+        "relationship": "relationship_signal",
+        "value": "preference",
+        "self_narrative": "self_update",
+    }
+    return mapping.get(memory_kind, "hypothesis")
+
+
+def _content_summary_for_memory_kind(memory_kind: str) -> str:
+    mapping = {
+        "episodic": "Seed episode trace bound to source evidence and recall cues.",
+        "semantic": "Seed semantic trace for concepts, schema, and shared terms.",
+        "procedural": "Seed procedural trace for repeated skill and workflow routes.",
+        "value": "Seed value trace for reward, punishment, preference, and salience.",
+        "self_narrative": "Seed self-narrative trace anchored to continuity and growth.",
+        "relationship": "Relation-scoped shared memory trace from observable interaction refs.",
+        "autobiographical": "Self-continuity helper trace anchored to autobiographical refs.",
+        "responsibility": "Responsibility and repair helper trace bound to obligation refs.",
+    }
+    return mapping.get(memory_kind, "Candidate memory trace.")
+
+
+def _privacy_scope_for_memory_kind(memory_kind: str) -> str:
+    if memory_kind == "relationship":
+        return "relationship"
+    if memory_kind in {"autobiographical", "self_narrative"}:
+        return "private"
+    return "project"
+
+
+def _write_policy_for_memory_kind(memory_kind: str) -> str:
+    if memory_kind in {"relationship", "autobiographical", "self_narrative", "value"}:
+        return "confirm_required"
+    return "auto_candidate"
+
+
+def _evidence_strength_for_lifecycle(lifecycle_state: str) -> float:
+    if lifecycle_state == "protected":
+        return 0.88
+    if lifecycle_state == "active":
+        return 0.86
+    return 0.7
 
 
 def _string_list(value: Any) -> list[str]:

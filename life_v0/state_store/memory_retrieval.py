@@ -30,10 +30,12 @@ def build_memory_retrieval_frame(
     engram_index: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
     autobiographical_stack: dict[str, Any] | None = None,
+    life_schema_map: dict[str, Any] | None = None,
     dialogue_memory_summary: dict[str, Any] | None = None,
     life_state: dict[str, Any] | None = None,
     responsibility_loop_state: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
+    memory_validator_report: dict[str, Any] | None = None,
     source_doc_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     cue_terms = _cue_terms(
@@ -65,6 +67,7 @@ def build_memory_retrieval_frame(
         dialogue_memory_summary=dialogue_memory_summary,
     )
     autobiographical_hits = _autobiographical_hits(autobiographical_stack)
+    schema_memory_hits = _schema_memory_hits(life_schema_map)
     autobiographical_repair_hits = _autobiographical_responsibility_repair_hits(
         autobiographical_stack
     )
@@ -95,13 +98,18 @@ def build_memory_retrieval_frame(
         responsibility_loop_state=responsibility_loop_state,
         autobiographical_repair_hits=autobiographical_repair_hits,
     )
-    blocked_refs = _blocked_or_quarantined_refs(engram_index, life_state)
+    blocked_refs = _blocked_or_quarantined_refs(
+        engram_index,
+        life_state,
+        memory_validator_report=memory_validator_report,
+    )
     cue_activation_profile = _cue_activation_profile(
         cue_terms=cue_terms,
         tiered_recall=tiered_recall,
         activated_refs=activated_refs,
         relationship_hits=relationship_hits,
         autobiographical_hits=autobiographical_hits,
+        schema_memory_hits=schema_memory_hits,
         autobiographical_repair_hits=autobiographical_repair_hits,
         dream_residue_hits=dream_residue_hits,
         responsibility_hits=responsibility_hits,
@@ -115,6 +123,7 @@ def build_memory_retrieval_frame(
             tiered_recall=tiered_recall,
             relationship_hits=relationship_hits,
             autobiographical_hits=autobiographical_hits,
+            schema_memory_hits=schema_memory_hits,
             autobiographical_repair_hits=autobiographical_repair_hits,
             dream_residue_hits=dream_residue_hits,
             responsibility_hits=responsibility_hits,
@@ -125,6 +134,7 @@ def build_memory_retrieval_frame(
         autobiographical_repair_hits=autobiographical_repair_hits,
         dream_residue_hits=dream_residue_hits,
         responsibility_hits=responsibility_hits,
+        schema_memory_hits=schema_memory_hits,
         blocked_refs=blocked_refs,
         exit_dream_governance=exit_dream_next_wake_governance,
     )
@@ -147,6 +157,7 @@ def build_memory_retrieval_frame(
         "activated_engram_refs": activated_refs,
         "relationship_memory_hits": relationship_hits,
         "autobiographical_hits": autobiographical_hits,
+        "schema_memory_hits": schema_memory_hits,
         "autobiographical_responsibility_repair_hits": (
             autobiographical_repair_hits
         ),
@@ -164,11 +175,17 @@ def build_memory_retrieval_frame(
             tiered_recall=tiered_recall,
             relationship_hits=relationship_hits,
             autobiographical_hits=autobiographical_hits,
+            schema_memory_hits=schema_memory_hits,
             autobiographical_repair_hits=autobiographical_repair_hits,
             dream_residue_hits=dream_residue_hits,
             responsibility_hits=responsibility_hits,
         ),
         "blocked_or_quarantined_refs": blocked_refs,
+        "memory_validator_report_ref": (
+            "runtime/state/memory/memory_validator_report.json"
+            if memory_validator_report
+            else None
+        ),
         "writeback_candidates": _writeback_candidates(
             activated_refs=activated_refs,
             blocked_refs=blocked_refs,
@@ -199,6 +216,7 @@ def project_memory_retrieval_from_live_turn(
     life_state: dict[str, Any] | None,
     responsibility_loop_state: dict[str, Any] | None,
     state_merge_guard: dict[str, Any] | None,
+    memory_validator_report: dict[str, Any] | None = None,
     live_language_turn_refs: list[str] | None = None,
     dialogue_turn_refs: list[str] | None = None,
 ) -> dict[str, Any]:
@@ -230,6 +248,7 @@ def project_memory_retrieval_from_live_turn(
         life_state=life_state,
         responsibility_loop_state=responsibility_loop_state,
         state_merge_guard=state_merge_guard,
+        memory_validator_report=memory_validator_report,
     )
     frame["previous_retrieval_fingerprint"] = previous.get("cue_fingerprint")
     frame["previous_activated_ref_count"] = len(
@@ -287,12 +306,34 @@ def memory_retrieval_context_summary(
         "recall_to_expression_source_ref_count": recall_to_expression.get(
             "expression_source_ref_count"
         ),
+        "recall_to_expression_reportable_source_ref_count": (
+            recall_to_expression.get("reportable_source_ref_count")
+            if recall_to_expression.get("reportable_source_ref_count") is not None
+            else _fallback_reportable_source_ref_count(frame)
+        ),
         "recall_to_expression_influence_families": _string_list(
             recall_to_expression.get("expression_influence_families")
         )[:8],
         "recall_to_expression_source_boundary_flags": _string_list(
             recall_to_expression.get("source_boundary_flags")
         )[:8],
+        "recall_to_expression_guardrails": _string_list(
+            recall_to_expression.get("expression_guardrails")
+        )[:8],
+        "recall_to_expression_guardrail_count": len(
+            _string_list(recall_to_expression.get("expression_guardrails"))
+        ),
+        "post_expression_reconsolidation_hooks": _string_list(
+            recall_to_expression.get("post_expression_reconsolidation_hooks")
+        )[:8],
+        "recall_to_expression_post_expression_reconsolidation_hooks": _string_list(
+            recall_to_expression.get("post_expression_reconsolidation_hooks")
+        )[:8],
+        "recall_to_expression_post_expression_reconsolidation_hook_count": len(
+            _string_list(
+                recall_to_expression.get("post_expression_reconsolidation_hooks")
+            )
+        ),
         "activated_engram_ref_count": len(
             _string_list(frame.get("activated_engram_refs"))
         ),
@@ -353,6 +394,24 @@ def memory_retrieval_context_summary(
         "reconstruction_focus": (reconstruction or {}).get("reconstruction_focus"),
         "source_doc_refs": _string_list(frame.get("source_doc_refs"))[:8],
     }
+
+
+def _fallback_reportable_source_ref_count(frame: dict[str, Any]) -> int:
+    source_refs = _dedupe(
+        _string_list(frame.get("activated_engram_refs"))
+        + _string_list(frame.get("relationship_memory_hits"))
+        + _string_list(frame.get("autobiographical_hits"))
+        + _string_list(frame.get("autobiographical_responsibility_repair_hits"))
+        + _string_list(frame.get("dream_residue_hits"))
+        + _string_list(frame.get("responsibility_hits"))
+        + _string_list(
+            (frame.get("exit_dream_next_wake_governance") or {}).get(
+                "next_wake_memory_cue_refs"
+            )
+        )
+    )
+    blocked = set(_string_list(frame.get("blocked_or_quarantined_refs")))
+    return len([ref for ref in source_refs if ref not in blocked])
 
 
 def _cue_terms(
@@ -541,6 +600,56 @@ def _autobiographical_hits(autobiographical_stack: dict[str, Any] | None) -> lis
     )[:24]
 
 
+def _schema_memory_hits(life_schema_map: dict[str, Any] | None) -> list[str]:
+    schema_map = life_schema_map or {}
+    schemas = [
+        schema for schema in schema_map.get("schemas", []) if isinstance(schema, dict)
+    ]
+    schema_root_ref = (
+        f"{schema_map.get('schema_map_ref') or 'runtime/state/memory/life_schema_map.json'}#schema_refs"
+        if schema_map
+        else "runtime/state/memory/life_schema_map.json#schema_refs"
+    )
+    hits = _dedupe(
+        [schema_root_ref]
+        + _string_list(schema_map.get("schema_refs"))
+        + [
+            str(schema.get("schema_ref"))
+            for schema in schemas
+            if schema.get("schema_ref")
+        ]
+    )
+    dominant_schema_kind = str(schema_map.get("dominant_schema_kind") or "")
+    if dominant_schema_kind:
+        hits.extend(
+            _dedupe(
+                [
+                    f"runtime/state/memory/life_schema_map.json#schema_kind:{dominant_schema_kind}",
+                    f"runtime/state/memory/life_schema_map.json#schema_focus:{schema_map.get('dominant_schema_focus')}",
+                ]
+            )
+        )
+    for schema in schemas:
+        schema_kind = str(schema.get("schema_kind") or "")
+        schema_ref = str(schema.get("schema_ref") or "")
+        if not schema_kind and not schema_ref:
+            continue
+        hits.append(schema_ref or f"runtime/state/memory/life_schema_map.json#schema_kind:{schema_kind}")
+        if schema_kind:
+            hits.append(f"runtime/state/memory/life_schema_map.json#schema_kind:{schema_kind}")
+        focus = str(schema.get("output_focus") or "")
+        if focus:
+            hits.append(f"runtime/state/memory/life_schema_map.json#schema_focus:{focus}")
+    if not hits and schema_map:
+        hits.extend(
+            [
+                "runtime/state/memory/life_schema_map.json#schema_refs",
+                "runtime/state/memory/life_schema_map.json",
+            ]
+        )
+    return _dedupe([hit for hit in hits if hit])[:24]
+
+
 def _autobiographical_responsibility_repair_hits(
     autobiographical_stack: dict[str, Any] | None,
 ) -> list[str]:
@@ -646,10 +755,21 @@ def _responsibility_hits(
 def _blocked_or_quarantined_refs(
     engram_index: dict[str, Any] | None,
     life_state: dict[str, Any] | None,
+    *,
+    memory_validator_report: dict[str, Any] | None = None,
 ) -> list[str]:
+    validator_guard = (memory_validator_report or {}).get("retrieval_replay_guard")
+    if not isinstance(validator_guard, dict):
+        validator_guard = {}
     return _dedupe(
         _string_list((engram_index or {}).get("quarantine_refs"))
         + _string_list(((life_state or {}).get("memory_index") or {}).get("quarantine_refs"))
+        + _string_list(validator_guard.get("blocked_active_retrieval_refs"))
+        + (
+            ["runtime/state/memory/memory_validator_report.json#retrieval_replay_guard"]
+            if memory_validator_report
+            else []
+        )
     )
 
 
@@ -659,6 +779,7 @@ def _reconstruction_inputs(
     tiered_recall: dict[str, Any],
     relationship_hits: list[str],
     autobiographical_hits: list[str],
+    schema_memory_hits: list[str],
     autobiographical_repair_hits: list[str],
     dream_residue_hits: list[str],
     responsibility_hits: list[str],
@@ -668,6 +789,7 @@ def _reconstruction_inputs(
         "salient_core_count": len(_string_list(tiered_recall.get("salient_core_refs"))),
         "relationship_hit_count": len(relationship_hits),
         "autobiographical_hit_count": len(autobiographical_hits),
+        "schema_hit_count": len(schema_memory_hits),
         "autobiographical_responsibility_repair_hit_count": len(
             autobiographical_repair_hits
         ),
@@ -684,6 +806,8 @@ def _reconstruction_inputs(
         focus = "relationship_continuity_reconstruction"
     elif counts["autobiographical_hit_count"]:
         focus = "autobiographical_continuity_reconstruction"
+    elif counts["schema_hit_count"]:
+        focus = "schema_continuity_reconstruction"
     else:
         focus = "minimal_context_reconstruction"
     return {
@@ -695,6 +819,7 @@ def _reconstruction_inputs(
             "salient_core_memory",
             "relationship_memory",
             "autobiographical_memory",
+            "schema_memory",
             "responsibility_memory",
             "dream_residue_with_fact_boundary",
             "deep_sediment_context",
@@ -742,6 +867,7 @@ def _recall_to_expression_profile(
     activated_refs: list[str],
     relationship_hits: list[str],
     autobiographical_hits: list[str],
+    schema_memory_hits: list[str],
     autobiographical_repair_hits: list[str],
     dream_residue_hits: list[str],
     responsibility_hits: list[str],
@@ -755,6 +881,7 @@ def _recall_to_expression_profile(
         activated_refs
         + relationship_hits
         + autobiographical_hits
+        + schema_memory_hits
         + autobiographical_repair_hits
         + dream_residue_hits
         + responsibility_hits
@@ -769,6 +896,8 @@ def _recall_to_expression_profile(
         boundary_flags.append("relationship")
     if autobiographical_hits or "autobiographical" in influence_families:
         boundary_flags.append("autobiographical")
+    if schema_memory_hits or "schema" in influence_families:
+        boundary_flags.append("schema")
     if autobiographical_repair_hits or responsibility_hits:
         boundary_flags.append("responsibility_repair")
     if dream_residue_hits or "dream_residue" in influence_families:
@@ -804,10 +933,12 @@ def _recall_to_expression_profile(
         "reportable_source_ref_count": len(reportable_refs),
         "expression_source_refs": reportable_refs[:12],
         "expression_influence_families": influence_families[:8],
+        "schema_memory_ref_count": len(schema_memory_hits),
         "source_boundary_flags": _dedupe(boundary_flags),
         "expression_guardrails": _dedupe(
             [
                 "quarantined_refs_excluded_from_expression",
+                "validator_excluded_refs_are_not_reportable",
                 "dream_residue_requires_fact_boundary",
                 "relationship_memory_requires_relation_scope_boundary",
                 "responsibility_memory_requires_write_gate_and_state_merge",
@@ -844,6 +975,7 @@ def _cue_activation_profile(
     activated_refs: list[str],
     relationship_hits: list[str],
     autobiographical_hits: list[str],
+    schema_memory_hits: list[str],
     autobiographical_repair_hits: list[str],
     dream_residue_hits: list[str],
     responsibility_hits: list[str],
@@ -917,6 +1049,23 @@ def _cue_activation_profile(
                     "dream",
                     "wake",
                     "sleep",
+                ),
+            ),
+        ),
+        (
+            "schema",
+            schema_memory_hits,
+            _cue_family_matches(
+                cue_terms,
+                (
+                    "schema",
+                    "schema map",
+                    "life schema",
+                    "pattern",
+                    "概念",
+                    "流程",
+                    "价值",
+                    "关系模式",
                 ),
             ),
         ),
@@ -1063,6 +1212,7 @@ def _activation_route_reason(family: str) -> str:
         "dream_residue": (
             "dream_and_next_wake_cues_activate_bounded_dream_residue"
         ),
+        "schema": "schema_recall_activates_persistent_conceptual_and_relation_maps",
         "live_turn": "current_language_cues_bind_live_turn_refs",
         "deep_sediment": "low_access_context_kept_as_deep_recall_material",
     }

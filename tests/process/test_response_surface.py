@@ -800,6 +800,18 @@ class ResponseSurfaceTests(unittest.TestCase):
             retrieval["autobiographical_repair_retrieval_boundary"],
             "autobiographical_repair_retrieval_not_spoken_language",
         )
+        self.assertGreater(
+            retrieval["recall_to_expression_reportable_source_ref_count"],
+            0,
+        )
+        self.assertIn(
+            "responsibility_memory_requires_write_gate_and_state_merge",
+            retrieval["recall_to_expression_guardrails"],
+        )
+        self.assertIn(
+            "spoken_memory_mismatch_reenters_reconsolidation",
+            retrieval["post_expression_reconsolidation_hooks"],
+        )
         self.assertTrue(payload["natural_language_release_disabled"])
         self.assertNotIn("这件事你后来怎么记住的？", material)
 

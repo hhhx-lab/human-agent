@@ -34,6 +34,7 @@ def build_memory_write_gate(
     metacognition_state: dict[str, Any] | None = None,
     consciousness_probe_bundle: dict[str, Any] | None = None,
     indexes: dict[str, dict[str, Any]] | None = None,
+    memory_validator_report: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     engram_index = engram_index or {}
     relationship_memory = relationship_memory or {}
@@ -64,6 +65,10 @@ def build_memory_write_gate(
         long_term_governance_refs.append("body_signal_write_modulation")
     if consciousness_write_context.get("ref_set"):
         long_term_governance_refs.append("consciousness_write_context")
+    if memory_validator_report:
+        long_term_governance_refs.append(
+            "runtime/state/memory/memory_validator_report.json#falsification_guard"
+        )
     return {
         "schema_version": "memory_write_gate_v0",
         "run_id": run_id,
@@ -106,7 +111,19 @@ def build_memory_write_gate(
             "MEM-SBX-001",
             "MEM-PRO-001",
             "MEM-REL-001",
+            "MEM-COR-002",
+            "MEM-PRI-003",
         ],
+        "memory_validator_report_ref": (
+            "runtime/state/memory/memory_validator_report.json"
+            if memory_validator_report
+            else None
+        ),
+        "memory_falsification_guard_ref": (
+            "runtime/state/memory/memory_validator_report.json#falsification_guard"
+            if memory_validator_report
+            else None
+        ),
         "pass_route": {
             "allowed_lifecycle_targets": ["active", "protected", "deprecated"],
             "requires_audit": True,

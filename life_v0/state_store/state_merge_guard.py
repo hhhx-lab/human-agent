@@ -24,6 +24,7 @@ def build_state_merge_guard(
     commitment_truth_state: dict[str, Any] | None = None,
     responsibility_ledger: dict[str, Any] | None = None,
     indexes: dict[str, dict[str, Any]] | None = None,
+    memory_validator_report: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     relationship_memory = relationship_memory or {}
     commitment_truth_state = commitment_truth_state or {}
@@ -37,6 +38,11 @@ def build_state_merge_guard(
         "status": "closed",
         "guard_id": f"state-merge-guard-{run_id}",
         "memory_write_gate_ref": "runtime/state/memory/memory_write_gate.json",
+        "memory_validator_report_ref": (
+            "runtime/state/memory/memory_validator_report.json"
+            if memory_validator_report
+            else None
+        ),
         "stage_policy": "long_term_merge_fail_closed",
         "promotion_routes": [
             {
@@ -118,6 +124,25 @@ def build_state_merge_guard(
                 "runtime/state/growth/relationship_learning_plan.json",
             ],
             "relationship_memory_ref": "runtime/state/memory/relationship_memory.json",
+            "memory_validator_report": (
+                "runtime/state/memory/memory_validator_report.json"
+                if memory_validator_report
+                else None
+            ),
+            "memory_falsification_guard_refs": [
+                "runtime/state/memory/memory_validator_report.json#falsification_guard"
+            ]
+            if memory_validator_report
+            else [],
+            "blocked_memory_retrieval_refs": list(
+                (
+                    (memory_validator_report or {}).get(
+                        "retrieval_replay_guard",
+                        {},
+                    )
+                    or {}
+                ).get("blocked_active_retrieval_refs", [])
+            ),
         },
         "slow_variable_update_policy": {
             "target_ref": "runtime/state/self/self_model.json#trait_slow_variables",
