@@ -971,6 +971,20 @@ ValidationRollup.queue_e_world_contact_body_pressure_profile_ref
 
 机制含义是：身体压力不应在行动膜之后退化成“曾经参与过判断”的不可追溯事实，而要像生命膜的一条生理证据线一样跨验证、schema、出生准备、常驻等待、后台恢复、真实回合和关闭态报告持续存在。这样将来语言系统、记忆重构、梦境/疲惫治理和责任回路读取 world-contact handoff 时，不只能看到 repair hold，还能追到身体/内环境如何参与该 hold。边界继续保持：这是内部结构化 evidence/ref 传播，不生成固定回答，不新增 system prompt，不把身体压力字段名或阈值解释拼成 Adam 的外显语言。
 
+当前 ITR-08 第四十一段把第四十段的 `body_pressure_profile_ref` 继续推进到语言前材料和模型表达审计摘要：
+
+```text
+ResidentBackgroundLineageState.world_contact_handoff_presence.body_pressure_profile_ref
+  -> ResponseSurface.audited_expression_material_v0#responsibility_repair.world_contact_handoff_presence.body_pressure_profile_ref
+  -> ModelExpression.resident_background.world_contact_handoff_presence.body_pressure_profile_ref
+  -> ModelExpression.model_expression_context_summary.world_contact_handoff_body_pressure_profile_ref
+  -> PostExpressionGate.required_evidence_flags.world_contact_handoff
+```
+
+`response_surface.py` 现在会在 `responsibility_repair.world_contact_handoff_presence` 中显式保留 `body_pressure_profile_ref`，并把该 ref 计入 `world_contact_handoff_ref_count`。`model_expression.py` 会把同一字段写入 `model_expression_context_summary.world_contact_handoff_body_pressure_profile_ref`，并让 world-contact handoff 的 ref count 同时覆盖 handoff ref set 与身体压力 profile ref。这样语言系统读取 Queue E world-contact handoff 时，不只知道有 repair hold、确认阈值和未来行动抑制，也能追到身体/内环境压力作为该 handoff 的一条结构化来源。
+
+机制含义是：身体压力进入语言系统的方式仍然是隐性调制和审计材料，而不是由代码拼成“我现在有身体压力”之类的固定回答。模型可以依据这条结构化 evidence 调整行动谨慎度、修复姿态和世界接触判断；post-expression gate 只记录 `world_contact_handoff` 软审计旗标，不强迫外显、不生成 system prompt、不把内部字段名释放到终端语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

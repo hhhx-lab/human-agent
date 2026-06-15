@@ -1138,6 +1138,9 @@ class ModelExpressionTests(unittest.TestCase):
                     ]
                 }
 
+            body_pressure_profile_ref = (
+                "runtime/state/action/go_nogo_state.json#body_pressure_profile"
+            )
             result = compose_model_expression(
                 run_id="model-expression-world-contact-handoff",
                 generated_at="2026-06-12T00:00:00+00:00",
@@ -1163,6 +1166,7 @@ class ModelExpressionTests(unittest.TestCase):
                             "attention_target": "world_contact_repair_handoff",
                             "attention_reason": "repair_hold_closed_into_waiting",
                             "pressure_level": "elevated",
+                            "body_pressure_profile_ref": body_pressure_profile_ref,
                             "ref_set": [
                                 "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
                                 "runtime/state/validation/world_contact_validation.json",
@@ -1194,9 +1198,15 @@ class ModelExpressionTests(unittest.TestCase):
             )
             self.assertEqual(
                 result.state["model_expression_context_summary"][
+                    "world_contact_handoff_body_pressure_profile_ref"
+                ],
+                body_pressure_profile_ref,
+            )
+            self.assertEqual(
+                result.state["model_expression_context_summary"][
                     "world_contact_handoff_ref_count"
                 ],
-                2,
+                3,
             )
 
     def test_model_expression_consumes_prediction_attention_from_audited_material(self):

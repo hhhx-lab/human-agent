@@ -960,6 +960,9 @@ class ResponseSurfaceTests(unittest.TestCase):
             "runtime/state/validation/world_contact_validation.json",
             "runtime/state/schema_runner/run_manifest.json",
         ]
+        body_pressure_profile_ref = (
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile"
+        )
         material = compose_life_response(
             external_utterance="你现在会直接接触外部世界吗？",
             terminal_life_loop_state={
@@ -980,6 +983,7 @@ class ResponseSurfaceTests(unittest.TestCase):
                         "attention_target": "world_contact_repair_handoff",
                         "attention_reason": "repair_hold_closed_into_waiting",
                         "pressure_level": "elevated",
+                        "body_pressure_profile_ref": body_pressure_profile_ref,
                         "ref_set": handoff_refs,
                     }
                 }
@@ -998,8 +1002,12 @@ class ResponseSurfaceTests(unittest.TestCase):
             "raise_before_release",
         )
         self.assertEqual(
+            handoff["body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
+        self.assertEqual(
             payload["responsibility_repair"]["world_contact_handoff_ref_count"],
-            3,
+            4,
         )
         self.assertNotIn("你现在会直接接触外部世界吗？", material)
 

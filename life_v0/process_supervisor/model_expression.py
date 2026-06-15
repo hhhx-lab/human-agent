@@ -1634,11 +1634,32 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
             dict,
         )
         else None,
+        "world_contact_handoff_body_pressure_profile_ref": (
+            resident_background.get("world_contact_handoff_presence") or {}
+        ).get("body_pressure_profile_ref")
+        if isinstance(
+            resident_background.get("world_contact_handoff_presence"),
+            dict,
+        )
+        else None,
         "world_contact_handoff_ref_count": len(
-            _string_list(
-                (
-                    resident_background.get("world_contact_handoff_presence") or {}
-                ).get("ref_set")
+            _dedupe_string_list(
+                _string_list(
+                    (
+                        resident_background.get("world_contact_handoff_presence")
+                        or {}
+                    ).get("ref_set")
+                )
+                + _string_list(
+                    [
+                        (
+                            resident_background.get(
+                                "world_contact_handoff_presence"
+                            )
+                            or {}
+                        ).get("body_pressure_profile_ref")
+                    ]
+                )
             )
         )
         if isinstance(

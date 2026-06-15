@@ -392,6 +392,7 @@ def compose_life_response(
                     "attention_target",
                     "attention_reason",
                     "pressure_level",
+                    "body_pressure_profile_ref",
                 ),
             ),
             "world_contact_handoff_ref_count": len(
@@ -399,6 +400,9 @@ def compose_life_response(
                     _string_list(world_contact_handoff_presence.get("ref_set"))
                     + _string_list(
                         world_contact_handoff_presence.get("repair_governance_refs")
+                    )
+                    + _string_list(
+                        [world_contact_handoff_presence.get("body_pressure_profile_ref")]
                     )
                 )
             ),
