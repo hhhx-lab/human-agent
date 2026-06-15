@@ -464,6 +464,13 @@ def build_resident_state_inspection(
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
+                ),
             },
         )
         membrane["validation_summary"] = (
@@ -565,6 +572,13 @@ def build_resident_state_inspection(
                 "idle_strategy_state": "terminal/idle_strategy_state.json",
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
+                ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
                 ),
             },
         )
@@ -775,6 +789,13 @@ def build_resident_state_inspection(
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
+                ),
             },
         )
         personality["convergence_summary"] = (
@@ -854,6 +875,13 @@ def build_resident_state_inspection(
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
+                ),
             },
         )
         perception["world_contact_summary_view"] = (
@@ -913,6 +941,13 @@ def build_resident_state_inspection(
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
+                ),
             },
         )
         prediction["active_inference_world_contact_summary"] = (
@@ -934,6 +969,13 @@ def build_resident_state_inspection(
                 "go_nogo_state": "action/go_nogo_state.json",
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
+                ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
                 ),
             },
         )
@@ -2695,6 +2737,18 @@ def _collect_perception_world_contact_summary(
         schema_cross_file=schema_cross_file,
         go_nogo=go_nogo,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     workspace_contents = _extract_nested_value(
         prediction_workspace,
         "workspace_contents",
@@ -2724,6 +2778,9 @@ def _collect_perception_world_contact_summary(
         ),
         "queue_e_world_contact_repair_hold_schema_handoff": bool(
             schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -2783,6 +2840,7 @@ def _collect_perception_world_contact_summary(
         **live_queue_e_handoff,
         **process_closeout,
         **schema_handoff,
+        **contract_coverage,
     }
 
 
@@ -2878,6 +2936,18 @@ def _collect_prediction_world_contact_summary(
         schema_cross_file=schema_cross_file,
         go_nogo=go_nogo,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     workspace_contents = _extract_nested_value(
         prediction_workspace,
         "workspace_contents",
@@ -2926,6 +2996,9 @@ def _collect_prediction_world_contact_summary(
         ),
         "queue_e_world_contact_repair_hold_schema_handoff": bool(
             schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -3109,6 +3182,7 @@ def _collect_prediction_world_contact_summary(
         **live_queue_e_handoff,
         **process_closeout,
         **schema_handoff,
+        **contract_coverage,
     }
 
 
@@ -3166,6 +3240,18 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
             model_context_summary
         )
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     profile = _extract_nested_value(proactive_state, "last_proactive_voice_profile")
     coverage = _extract_nested_value(proactive_state, "last_profile_coverage")
     if not coverage:
@@ -3222,6 +3308,10 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
                 *active_domains,
                 "live_queue_e_world_contact_handoff_closeout",
             ]
+    if contract_coverage.get("v0_contract_coverage_present"):
+        domain_presence["v0_contract_coverage"] = True
+        if "v0_contract_coverage" not in active_domains:
+            active_domains = [*active_domains, "v0_contract_coverage"]
     candidate_count = proactive_state.get("last_utterance_candidate_code_count")
     if candidate_count is None:
         candidate_count = profile.get("utterance_candidate_code_count")
@@ -3290,6 +3380,7 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
         **model_expression_handoff,
         **live_queue_e_handoff,
         **expression_closeout,
+        **contract_coverage,
     }
 
 
@@ -4190,6 +4281,18 @@ def _collect_life_membrane_validation_summary(
         schema_cross_file=schema_cross_file,
         go_nogo=go_nogo,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     consciousness_write_context = _extract_nested_value(
         memory_write_gate,
         "consciousness_write_context",
@@ -4256,6 +4359,9 @@ def _collect_life_membrane_validation_summary(
         ),
         "queue_e_world_contact_repair_hold_schema_handoff": bool(
             schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -4496,6 +4602,7 @@ def _collect_life_membrane_validation_summary(
         **live_queue_e_handoff,
         **membrane_closeout,
         **schema_handoff,
+        **contract_coverage,
     }
 
 
@@ -5229,6 +5336,18 @@ def _collect_responsibility_repair_chain_summary(
         schema_cross_file=schema_cross_file,
         go_nogo=go_nogo,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     future_no_go = _extract_nested_value(go_nogo, "future_no_go_profile")
     modulation_vector = _extract_nested_value(signal_media, "modulation_vector")
     domain_presence = {
@@ -5270,6 +5389,9 @@ def _collect_responsibility_repair_chain_summary(
         ),
         "queue_e_world_contact_repair_hold_schema_handoff": bool(
             schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -5468,6 +5590,7 @@ def _collect_responsibility_repair_chain_summary(
         ),
         **responsibility_closeout,
         **schema_handoff,
+        **contract_coverage,
     }
 
 
@@ -6507,6 +6630,18 @@ def _collect_personality_convergence_summary(
         self_model_state=self_model,
         trait_drift_monitor=trait_drift,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     domain_presence = {
         "self_model": bool(self_model),
         "autobiographical_stack": bool(autobiographical_stack),
@@ -6521,6 +6656,9 @@ def _collect_personality_convergence_summary(
         ),
         "slow_variable_candidate": bool(
             slow_variable_candidate.get("slow_variable_candidate_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -6676,6 +6814,7 @@ def _collect_personality_convergence_summary(
         ),
         "growth_archive_status": growth_closeout.get("growth_archive_status"),
         **slow_variable_candidate,
+        **contract_coverage,
     }
 
 

@@ -1044,6 +1044,87 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertEqual(summary["v0_required_file_count"], 120)
         self.assertIn("v0_contract_coverage", summary["domain_presence"])
 
+    def _v0_contract_section(self) -> dict:
+        return {
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {
+                    "total_required_files": 120,
+                    "missing_file_count": 0,
+                },
+            },
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+    def test_membrane_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "life_membrane": {"stage_policy": "guarded"},
+            **self._v0_contract_section(),
+        }
+
+        summary = _collect_life_membrane_validation_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_personality_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "self_model": {"identity_mode": "resident"},
+            **self._v0_contract_section(),
+        }
+
+        summary = _collect_personality_convergence_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_proactive_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "proactive_state": {"status": "waiting"},
+            **self._v0_contract_section(),
+        }
+
+        summary = _collect_proactive_voice_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_perception_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "visual_observation_frame": {"observation_mode": "passive"},
+            **self._v0_contract_section(),
+        }
+
+        summary = _collect_perception_world_contact_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_prediction_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "belief_state_frame": {"belief_focus": "world_contact"},
+            **self._v0_contract_section(),
+        }
+
+        summary = _collect_prediction_world_contact_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_responsibility_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "responsibility_loop_state": {"responsibility_loop_id": "loop-1"},
+            **self._v0_contract_section(),
+        }
+
+        summary = _collect_responsibility_repair_chain_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
     def test_relationship_summary_exposes_stage_evolution(self):
         section = {
             "relationship_subject_graph": {
