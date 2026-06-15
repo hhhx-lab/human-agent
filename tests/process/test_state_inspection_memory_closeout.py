@@ -622,6 +622,58 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertEqual(summary["shared_term_promotion_candidate_count"], 1)
         self.assertIn("shared_term_live_promotion", summary["domain_presence"])
 
+    def test_language_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "language_percept": {"semantic_focus": "shared_language"},
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {"total_required_files": 120, "missing_file_count": 0},
+            },
+            "doc_to_code_coverage_matrix": {
+                "schema_version": "doc_to_code_coverage_matrix_v0",
+                "coverage_summary": {"total_documents": 45, "uncovered_docs": []},
+            },
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_language_generation_consumption_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertEqual(summary["v0_required_file_count"], 120)
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_relationship_summary_exposes_shared_term_and_v0_contract_coverage(self):
+        section = {
+            "relationship_subject_graph": {"subjects": [{"relation_role": "friend"}]},
+            "relationship_timeline": {"common_ground_states": [{"shared_terms": ["共同语言"]}]},
+            "shared_term_registry": {
+                "live_promotion_refreshed": True,
+                "shared_terms": [
+                    {"surface": "共同语言", "promotion_gate_status": "seed"},
+                    {"surface": "生命膜", "promotion_gate_status": "promoted"},
+                ],
+            },
+            "terminal_life_loop_state": {"live_shared_term_promotion_refreshed": True},
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {"total_required_files": 120, "missing_file_count": 0},
+            },
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_relationship_continuity_summary(section)
+
+        self.assertEqual(summary["shared_term_live_promoted_count"], 1)
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("shared_term_live_promotion", summary["domain_presence"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
     def test_language_summary_exposes_expression_plan_queue_e(self):
         section = {
             "expression_plan": {

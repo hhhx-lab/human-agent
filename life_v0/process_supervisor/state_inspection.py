@@ -422,6 +422,7 @@ def build_resident_state_inspection(
                 "apology_repair_language_trace": (
                     "language/apology_repair_language_trace.json"
                 ),
+                "shared_term_registry": "language/shared_term_registry.json",
                 "memory_retrieval": "memory/memory_retrieval_frame.json",
                 "queue_e_world_contact_handoff": (
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
@@ -439,6 +440,13 @@ def build_resident_state_inspection(
                 ),
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
+                ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
                 ),
             },
         )
@@ -546,6 +554,13 @@ def build_resident_state_inspection(
                 "go_nogo_state": "action/go_nogo_state.json",
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
+                ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
                 ),
             },
         )
@@ -4241,6 +4256,18 @@ def _collect_language_generation_consumption_summary(
         shared_term_registry=shared_term_registry,
         terminal_loop=terminal_loop,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
 
     domain_presence = {
         "language_percept": bool(language_percept),
@@ -4302,6 +4329,9 @@ def _collect_language_generation_consumption_summary(
         ),
         "shared_term_live_promotion": bool(
             shared_term_promotion.get("shared_term_live_promotion_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -4485,6 +4515,8 @@ def _collect_language_generation_consumption_summary(
         **model_expression_handoff,
         **live_queue_e_handoff,
         **expression_closeout,
+        **shared_term_promotion,
+        **contract_coverage,
     }
 
 
@@ -4505,6 +4537,9 @@ def _collect_relationship_continuity_summary(
     )
     apology_repair = _extract_compact_value(
         section.get("apology_repair_language_trace", {})
+    )
+    shared_term_registry = _extract_compact_value(
+        section.get("shared_term_registry", {})
     )
     memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
     world_contact_handoff = _extract_compact_value(
@@ -4549,6 +4584,22 @@ def _collect_relationship_continuity_summary(
         schema_manifest=schema_manifest,
         schema_cross_file=schema_cross_file,
         go_nogo=go_nogo,
+    )
+    shared_term_promotion = _shared_term_promotion_inspection_snapshot(
+        shared_term_registry=shared_term_registry,
+        terminal_loop=terminal_loop,
+    )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
     )
     autobiographical_repair_profile = _extract_nested_value(
         memory_retrieval,
@@ -4607,6 +4658,12 @@ def _collect_relationship_continuity_summary(
         ),
         "queue_e_world_contact_repair_hold_schema_handoff": bool(
             schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
+        ),
+        "shared_term_live_promotion": bool(
+            shared_term_promotion.get("shared_term_live_promotion_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -4704,6 +4761,8 @@ def _collect_relationship_continuity_summary(
         **relationship_closeout,
         **live_queue_e_handoff,
         **schema_handoff,
+        **shared_term_promotion,
+        **contract_coverage,
     }
 
 
