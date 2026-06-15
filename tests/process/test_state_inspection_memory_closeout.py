@@ -9,7 +9,10 @@ from life_v0.process_supervisor.state_inspection import (
     _collect_inner_environment_modulation_summary,
     _collect_language_generation_consumption_summary,
     _collect_life_membrane_validation_summary,
+    _collect_perception_world_contact_summary,
     _collect_personality_convergence_summary,
+    _collect_prediction_world_contact_summary,
+    _collect_proactive_voice_summary,
     _collect_reconstructive_memory_summary,
     _collect_relation_context_summary,
     _collect_relationship_continuity_summary,
@@ -429,6 +432,55 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         summary = _collect_self_thinking_summary(section)
 
         self.assertTrue(summary["expression_closeout_present"])
+        self.assertIn("expression_closeout", summary["domain_presence"])
+
+    def test_perception_summary_exposes_process_closeout(self):
+        section = {
+            "visual_observation_frame": {"observation_mode": "peripheral_scan"},
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy_state": {},
+            "terminal_life_loop_state": {},
+        }
+
+        summary = _collect_perception_world_contact_summary(section)
+
+        self.assertTrue(summary["process_closeout_present"])
+        self.assertTrue(summary["live_queue_e_world_contact_handoff_closeout_present"])
+        self.assertIn("process_closeout", summary["domain_presence"])
+
+    def test_prediction_summary_exposes_process_closeout(self):
+        section = {
+            "belief_state_frame": {"belief_focus": "repair_hold"},
+            "go_nogo_state": {},
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy_state": {},
+            "terminal_life_loop_state": {},
+        }
+
+        summary = _collect_prediction_world_contact_summary(section)
+
+        self.assertTrue(summary["process_closeout_present"])
+        self.assertTrue(summary["consciousness_write_context_closeout_present"])
+        self.assertIn("body_pressure_closeout", summary["domain_presence"])
+
+    def test_proactive_summary_exposes_expression_closeout(self):
+        section = {
+            "proactive_state": {"status": "released"},
+            "model_expression_state": {
+                "model_expression_context_summary": {
+                    "prediction_attention_consciousness_write_context_refs": ["ref-a"],
+                }
+            },
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy_state": {},
+            "go_nogo_state": {},
+            "terminal_life_loop_state": {},
+        }
+
+        summary = _collect_proactive_voice_summary(section)
+
+        self.assertTrue(summary["expression_closeout_present"])
+        self.assertTrue(summary["consciousness_write_context_closeout_present"])
         self.assertIn("expression_closeout", summary["domain_presence"])
 
 

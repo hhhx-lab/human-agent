@@ -677,6 +677,10 @@ def build_resident_state_inspection(
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         perception["world_contact_summary_view"] = (
@@ -732,6 +736,10 @@ def build_resident_state_inspection(
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         prediction["active_inference_world_contact_summary"] = (
@@ -749,6 +757,11 @@ def build_resident_state_inspection(
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         proactive_voice["coverage_summary"] = _collect_proactive_voice_summary(
@@ -2046,6 +2059,10 @@ def _collect_perception_world_contact_summary(
     terminal_loop = _extract_compact_value(
         section.get("terminal_life_loop_state", {})
     )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
     world_contact_presence = _extract_nested_value(
         terminal_loop,
         "resident_background_lineage_state",
@@ -2058,6 +2075,11 @@ def _collect_perception_world_contact_summary(
         handoff=world_contact_handoff,
         terminal_loop=terminal_loop,
         world_contact_presence=world_contact_presence,
+    )
+    process_closeout = _process_closeout_bundle_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        terminal_loop=terminal_loop,
     )
     workspace_contents = _extract_nested_value(
         prediction_workspace,
@@ -2073,6 +2095,16 @@ def _collect_perception_world_contact_summary(
             world_contact_handoff
             or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
             or live_queue_e_handoff.get("queue_e_world_contact_handoff_status")
+        ),
+        "process_closeout": bool(process_closeout.get("process_closeout_present")),
+        "live_queue_e_world_contact_handoff_closeout": bool(
+            process_closeout.get("live_queue_e_world_contact_handoff_closeout_present")
+        ),
+        "consciousness_write_context_closeout": bool(
+            process_closeout.get("consciousness_write_context_closeout_present")
+        ),
+        "body_pressure_closeout": bool(
+            process_closeout.get("body_pressure_closeout_present")
         ),
     }
     active_domains = [
@@ -2130,6 +2162,7 @@ def _collect_perception_world_contact_summary(
             "perception_prediction_world_contact_view_not_tool_gateway"
         ),
         **live_queue_e_handoff,
+        **process_closeout,
     }
 
 
@@ -2195,6 +2228,10 @@ def _collect_prediction_world_contact_summary(
     terminal_loop = _extract_compact_value(
         section.get("terminal_life_loop_state", {})
     )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
     world_contact_presence = _extract_nested_value(
         terminal_loop,
         "resident_background_lineage_state",
@@ -2207,6 +2244,12 @@ def _collect_prediction_world_contact_summary(
         handoff=world_contact_handoff,
         terminal_loop=terminal_loop,
         world_contact_presence=world_contact_presence,
+    )
+    process_closeout = _process_closeout_bundle_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
     )
     workspace_contents = _extract_nested_value(
         prediction_workspace,
@@ -2243,6 +2286,16 @@ def _collect_prediction_world_contact_summary(
             world_contact_handoff
             or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
             or live_queue_e_handoff.get("queue_e_world_contact_handoff_status")
+        ),
+        "process_closeout": bool(process_closeout.get("process_closeout_present")),
+        "live_queue_e_world_contact_handoff_closeout": bool(
+            process_closeout.get("live_queue_e_world_contact_handoff_closeout_present")
+        ),
+        "consciousness_write_context_closeout": bool(
+            process_closeout.get("consciousness_write_context_closeout_present")
+        ),
+        "body_pressure_closeout": bool(
+            process_closeout.get("body_pressure_closeout_present")
         ),
     }
     active_domains = [
@@ -2424,6 +2477,7 @@ def _collect_prediction_world_contact_summary(
             "prediction_world_contact_state_view_not_tool_gateway_or_fact_claim"
         ),
         **live_queue_e_handoff,
+        **process_closeout,
     }
 
 
@@ -2451,6 +2505,17 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
     )
     terminal_loop = _extract_compact_value(
         section.get("terminal_life_loop_state", {})
+    )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    expression_closeout = _expression_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
     )
     world_contact_presence = _extract_nested_value(
         terminal_loop,
@@ -2508,6 +2573,24 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
             active_domains = [*active_domains, "live_queue_e_world_contact_handoff"]
     if model_expression_handoff.get("model_expression_world_contact_handoff_status"):
         domain_presence["model_expression_world_contact_handoff"] = True
+    if expression_closeout.get("expression_closeout_present"):
+        domain_presence["expression_closeout"] = True
+        if "expression_closeout" not in active_domains:
+            active_domains = [*active_domains, "expression_closeout"]
+    if expression_closeout.get("consciousness_write_context_closeout_present"):
+        domain_presence["consciousness_write_context_closeout"] = True
+        if "consciousness_write_context_closeout" not in active_domains:
+            active_domains = [
+                *active_domains,
+                "consciousness_write_context_closeout",
+            ]
+    if expression_closeout.get("live_queue_e_world_contact_handoff_closeout_present"):
+        domain_presence["live_queue_e_world_contact_handoff_closeout"] = True
+        if "live_queue_e_world_contact_handoff_closeout" not in active_domains:
+            active_domains = [
+                *active_domains,
+                "live_queue_e_world_contact_handoff_closeout",
+            ]
     candidate_count = proactive_state.get("last_utterance_candidate_code_count")
     if candidate_count is None:
         candidate_count = profile.get("utterance_candidate_code_count")
@@ -2575,6 +2658,7 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
         "speech_generation_boundary": "state_codes_only_model_expression_required",
         **model_expression_handoff,
         **live_queue_e_handoff,
+        **expression_closeout,
     }
 
 
