@@ -216,6 +216,43 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertEqual(summary["autobiographical_repair_retrieval_hit_count"], 2)
         self.assertIn("memory_closeout", summary["domain_presence"])
 
+    def test_dream_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "offline_entry_gate": {"status": "closed"},
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_dream_wake_fact_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_dream_summary_exposes_memory_write_gate_body_signal(self):
+        section = {
+            "memory_write_gate": {
+                "body_signal_write_modulation": {
+                    "schema_version": "memory_write_gate_body_signal_v0",
+                    "write_bias": "caution",
+                }
+            },
+            "core_affect_vector": {"pain_pressure": "moderate"},
+            "body_resource_budget": {"fatigue_state": {"level": "managed"}},
+            "signal_media_runtime": {
+                "modulation_vector": {"repair_drive": 0.6}
+            },
+        }
+
+        summary = _collect_dream_wake_fact_summary(section)
+
+        self.assertEqual(summary["memory_write_gate_bias"], "caution")
+        self.assertIn(
+            "memory_write_gate_body_signal_modulation",
+            summary["domain_presence"],
+        )
+
     def test_dream_summary_exposes_web_and_tier_closeout_fields(self):
         section = {
             "digital_life_process_report": {
@@ -862,6 +899,28 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
             "expression_plan_queue_e_repair_modulation",
             summary["domain_presence"],
         )
+
+    def test_language_summary_exposes_pragmatic_inference(self):
+        section = {
+            "semantic_map": {
+                "semantic_focus": "repair_relational_trace",
+                "pragmatic_inference_mode": "live_evidence_inference",
+                "pragmatic_inference_profile": {
+                    "dominant_pragmatic_intent": "repair_relational_trace",
+                    "speech_act_candidates": [
+                        {"speech_act_id": "repair_request"}
+                    ],
+                    "implicature_queue": [{"implicature_id": "i-1"}],
+                    "grounding_repair_signals": [{"signal_id": "g-1"}],
+                },
+            },
+        }
+
+        summary = _collect_language_generation_consumption_summary(section)
+
+        self.assertTrue(summary["pragmatic_inference_present"])
+        self.assertEqual(summary["pragmatic_speech_act_count"], 1)
+        self.assertIn("pragmatic_inference", summary["domain_presence"])
 
     def test_cognition_summary_exposes_expression_closeout(self):
         section = {

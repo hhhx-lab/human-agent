@@ -113,3 +113,30 @@ def build_semantic_map_frame(
         },
         "source_doc_refs": source_doc_refs,
     }
+
+
+def project_semantic_map_from_live_evidence(
+    *,
+    semantic_map: dict[str, Any],
+    language_percept: dict[str, Any],
+    relationship_timeline: dict[str, Any] | None = None,
+    commitment_truth_state: dict[str, Any] | None = None,
+    context_accumulation: dict[str, Any] | None = None,
+    relation_scope_index: dict[str, Any] | None = None,
+    shared_term_registry: dict[str, Any] | None = None,
+    relationship_stage: str | None = None,
+    generated_at: str,
+) -> dict[str, Any]:
+    from .pragmatic_inference import enrich_semantic_map_with_pragmatic_inference
+
+    return enrich_semantic_map_with_pragmatic_inference(
+        semantic_map=semantic_map,
+        language_percept=language_percept,
+        relationship_timeline=relationship_timeline,
+        commitment_truth_state=commitment_truth_state,
+        context_accumulation=context_accumulation,
+        relation_scope_index=relation_scope_index,
+        shared_term_registry=shared_term_registry,
+        relationship_stage=relationship_stage,
+        generated_at=generated_at,
+    )

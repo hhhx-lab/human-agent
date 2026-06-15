@@ -152,6 +152,16 @@ def build_resident_state_inspection(
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
+                "signal_media_runtime": "signal/signal_media_runtime.json",
+                "core_affect_vector": "body/core_affect_vector.json",
+                "body_resource_budget": "body/body_resource_budget.json",
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
+                ),
             },
         )
         payload["dream"] = dream
@@ -1374,6 +1384,18 @@ def _network_conflict_monitoring_inspection_snapshot(
     )
 
 
+def _pragmatic_inference_inspection_snapshot(
+    *,
+    semantic_map: dict[str, Any],
+) -> dict[str, Any]:
+    from life_v0.language.pragmatic_inference import (
+        pragmatic_inference_inspection_snapshot,
+    )
+
+    semantic_value = _extract_compact_value(semantic_map)
+    return pragmatic_inference_inspection_snapshot(semantic_map=semantic_value)
+
+
 def _collect_files(root: Path, file_map: dict[str, str]) -> dict[str, Any]:
     collected: dict[str, Any] = {}
     for key, relative in file_map.items():
@@ -1834,6 +1856,25 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
         section.get("digital_life_process_report", {})
     )
     idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
+    core_affect = _extract_compact_value(section.get("core_affect_vector", {}))
+    body_budget = _extract_compact_value(section.get("body_resource_budget", {}))
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
+    body_signal_modulation = _extract_nested_value(
+        memory_write_gate,
+        "body_signal_write_modulation",
+    )
     dream_closeout = _dream_closeout_inspection_snapshot(
         process_report=process_report,
         idle_strategy=idle_strategy,
@@ -1882,6 +1923,10 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
         ),
         "exit_dream_memory_tier_closeout": bool(
             dream_closeout.get("exit_dream_memory_tier_closeout_present")
+        ),
+        "memory_write_gate_body_signal_modulation": bool(body_signal_modulation),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -1997,7 +2042,19 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
         "dream_boundary": (
             "dream_residue_wake_review_fact_gate_before_memory_or_action"
         ),
+        "memory_write_gate_bias": body_signal_modulation.get("write_bias"),
+        "memory_write_gate_body_signal_schema": body_signal_modulation.get(
+            "schema_version"
+        ),
+        "core_affect_pain_pressure": core_affect.get("pain_pressure"),
+        "body_fatigue_level": _extract_nested_value(
+            body_budget, "fatigue_state"
+        ).get("level"),
+        "signal_modulation_repair_drive": _extract_nested_value(
+            signal_media, "modulation_vector"
+        ).get("repair_drive"),
         **dream_closeout,
+        **contract_coverage,
     }
 
 
@@ -4486,6 +4543,9 @@ def _collect_language_generation_consumption_summary(
         shared_term_registry=shared_term_registry,
         terminal_loop=terminal_loop,
     )
+    pragmatic_inference = _pragmatic_inference_inspection_snapshot(
+        semantic_map=semantic_map,
+    )
     contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
     doc_to_code_matrix = _extract_compact_value(
         section.get("doc_to_code_coverage_matrix", {})
@@ -4559,6 +4619,9 @@ def _collect_language_generation_consumption_summary(
         ),
         "shared_term_live_promotion": bool(
             shared_term_promotion.get("shared_term_live_promotion_present")
+        ),
+        "pragmatic_inference": bool(
+            pragmatic_inference.get("pragmatic_inference_present")
         ),
         "v0_contract_coverage": bool(
             contract_coverage.get("v0_contract_coverage_present")
@@ -4746,6 +4809,7 @@ def _collect_language_generation_consumption_summary(
         **live_queue_e_handoff,
         **expression_closeout,
         **shared_term_promotion,
+        **pragmatic_inference,
         **contract_coverage,
     }
 

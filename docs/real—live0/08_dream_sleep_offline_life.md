@@ -188,6 +188,10 @@ flowchart TD
     J --> K["ResidentBackgroundLineage"]
 ```
 
+## ITR-08-93 slash 检查面扩展（2026-06-15）
+
+`/dream#dream_wake_fact_summary_v0` 现合并 `v0_contract_coverage` 与 `memory_write_gate_body_signal_modulation`，可互证 S11 合同覆盖与 ITR-05 身体信号写门消费链。仍是 inspection-only，不生成梦境播报。
+
 ## 当前 live0 结论
 
 live0 的梦境机制已经具备梦境窗口、醒后整合、事实门、睡眠周期和离线学习余波。它支撑验收项 `e_dream_capability` 和 `d_growth_and_learning`。

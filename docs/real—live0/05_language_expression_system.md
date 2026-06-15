@@ -262,3 +262,7 @@ Live turn 路径在 `live_language_turn.py` 标记 `live_external_utterance`。`
 | 语言感知 | `language_percept.shared_term_hits` |
 
 晋升门控要求 `relation_scope` 闭合、至少 2 条 dialogue turn ref，且证据源不少于 2 个；单轮新词停留在 `shared_term_promotion_candidate_surfaces`，不直接写入稳定共同语言。`/language` 检查面通过 `shared_term_promotion_*` 与 `shared_term_live_promotion` domain presence 追溯。边界：`structured_shared_term_promotion_not_spoken_language`。测试：`tests/slices/test_shared_terms_live_promotion.py`、`tests/process/test_state_inspection_memory_closeout.py#test_language_summary_exposes_shared_term_live_promotion`。
+
+## 深层语用推断（ITR-08-94）
+
+`pragmatic_inference.py` 在 live 关系回合后刷新 `semantic_map_frame.json#pragmatic_inference_profile`，从关系时间线 trust/continuity、承诺真值、语境累积 unresolved commitments、relation scope 与 shared_term 晋升推断 `speech_act_candidates`、`implicature_queue` 与 `grounding_repair_signals`，并更新 `semantic_focus`。`/language` 检查面通过 `pragmatic_inference_*` 字段追溯。边界：`structured_pragmatic_inference_not_spoken_response`。测试：`tests/slices/test_pragmatic_inference.py`。

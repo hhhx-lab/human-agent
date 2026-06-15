@@ -35,6 +35,7 @@ from ..language.commitment_expression import build_commitment_expression_plan
 from ..language.expression_monitor import (
     project_expression_plan_with_queue_e_repair_modulation,
 )
+from ..language.semantic_map import project_semantic_map_from_live_evidence
 from ..language.shared_terms import (
     SHARED_TERM_REGISTRY_REF,
     project_shared_term_registry_from_live_evidence,
@@ -1948,11 +1949,19 @@ def _refresh_long_horizon_continuity(
     terminal_dir.mkdir(parents=True, exist_ok=True)
     language_percept = _read_json_if_exists(language_dir / "language_percept_frame.json")
     semantic_map = _read_json_if_exists(language_dir / "semantic_map_frame.json")
-    expression_monitor_state = _read_json_if_exists(
-        language_dir / "expression_monitor_state.json"
-    )
     relation_scope_index = _read_json_if_exists(
         language_dir / "relation_scope_language_index.json"
+    )
+    relationship_subject = next(
+        (
+            item
+            for item in evolved_relationship_graph.get("subjects", [])
+            if isinstance(item, dict)
+        ),
+        {},
+    )
+    expression_monitor_state = _read_json_if_exists(
+        language_dir / "expression_monitor_state.json"
     )
     narrative_trace = self_narrative_trace or _read_json_if_exists(
         language_dir / "self_narrative_language_trace.json"
@@ -2007,6 +2016,20 @@ def _refresh_long_horizon_continuity(
     )
     if refreshed_shared_term_registry:
         write_json(shared_term_registry_path, refreshed_shared_term_registry)
+    if language_percept and semantic_map:
+        semantic_map = project_semantic_map_from_live_evidence(
+            semantic_map=semantic_map,
+            language_percept=language_percept,
+            relationship_timeline=refreshed_relationship_timeline,
+            commitment_truth_state=commitment_truth_state,
+            context_accumulation=updated_context_accumulation,
+            relation_scope_index=relation_scope_index,
+            shared_term_registry=refreshed_shared_term_registry
+            or existing_shared_term_registry,
+            relationship_stage=relationship_subject.get("relationship_stage"),
+            generated_at=generated_at,
+        )
+        write_json(language_dir / "semantic_map_frame.json", semantic_map)
     trait_drift_monitor = build_trait_drift_monitor_from_self_model(
         run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
         generated_at=generated_at,
