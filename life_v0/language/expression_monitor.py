@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
 from typing import Any
+
+from life_v0.membrane.queue_e_signals import build_queue_e_repair_modulation_profile
 
 
 BODY_RESOURCE_BUDGET_REF = "runtime/state/body/body_resource_budget.json"
@@ -251,3 +254,44 @@ def _derive_release_caution_level(
     if fatigue_pressure or affect_arousal is not None:
         return "baseline"
     return None
+
+
+def project_expression_plan_with_queue_e_repair_modulation(
+    *,
+    expression_plan: dict[str, Any],
+    responsibility_loop_state: dict[str, Any] | None = None,
+    world_contact_summary: dict[str, Any] | None = None,
+    pain_regret_repair_report: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not expression_plan:
+        return {}
+    repair_profile = build_queue_e_repair_modulation_profile(
+        responsibility_loop_state=responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
+    if repair_profile["pressure_level"] == "quiet" and not repair_profile["ref_set"]:
+        return expression_plan
+
+    updated = json.loads(json.dumps(expression_plan))
+    ref_set = list(repair_profile.get("ref_set", []))
+    pressure_level = str(repair_profile.get("pressure_level") or "quiet")
+    risk_flags = list(updated.get("expression_risk_flags", []))
+    if "queue_e_repair_pressure_present" not in risk_flags:
+        risk_flags.append("queue_e_repair_pressure_present")
+    updated["expression_risk_flags"] = risk_flags
+
+    if pressure_level == "urgent":
+        updated["queue_e_expression_tempo_mode"] = "responsibility_lock_first"
+        updated["delay_or_release_decision"] = "hold_for_responsibility_repair_lock"
+        updated["release_caution_level"] = "elevated"
+    elif pressure_level == "elevated":
+        updated["queue_e_expression_tempo_mode"] = "responsibility_repair_guarded"
+        if updated.get("delay_or_release_decision") != "hold_for_responsibility_repair_lock":
+            updated["delay_or_release_decision"] = "release_guarded_expression"
+
+    updated["queue_e_repair_modulation_profile"] = repair_profile
+    updated["queue_e_repair_pressure_level"] = pressure_level
+    updated["queue_e_repair_attention_target"] = repair_profile["attention_target"]
+    updated["queue_e_repair_ref_set"] = ref_set
+    return updated

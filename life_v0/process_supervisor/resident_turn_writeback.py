@@ -29,6 +29,9 @@ from ..neural_core.network_state import project_network_state_from_live_turn
 from ..neural_core.workspace import project_workspace_frame_from_live_turn
 from ..language.apology_repair_language import build_apology_repair_language_trace
 from ..language.commitment_expression import build_commitment_expression_plan
+from ..language.expression_monitor import (
+    project_expression_plan_with_queue_e_repair_modulation,
+)
 from ..language.dialogue_log import collect_dialogue_turn_refs
 from ..language.relationship_timeline import build_relationship_timeline
 from ..state_store.autobiographical_stack import (
@@ -1837,6 +1840,15 @@ def _refresh_long_horizon_continuity(
         write_json(memory_write_gate_path, updated_memory_write_gate)
     if updated_responsibility_loop_state:
         write_json(responsibility_loop_path, updated_responsibility_loop_state)
+    refreshed_expression_plan = project_expression_plan_with_queue_e_repair_modulation(
+        expression_plan=expression_plan,
+        responsibility_loop_state=updated_responsibility_loop_state
+        or responsibility_loop_state,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+    )
+    write_json(expression_plan_path, refreshed_expression_plan)
+    expression_plan = refreshed_expression_plan
     life_targets_dir = state_dir / "life_targets"
     life_targets_dir.mkdir(parents=True, exist_ok=True)
     updated_queue_e_handoff_profile = (
@@ -1927,6 +1939,7 @@ def _refresh_long_horizon_continuity(
         "relationship_graph": evolved_relationship_graph,
         "relationship_timeline": refreshed_relationship_timeline,
         "commitment_expression_plan": refreshed_commitment_expression_plan,
+        "expression_plan": refreshed_expression_plan,
         "apology_repair_language_trace": refreshed_apology_repair_language_trace,
         "relationship_memory": refreshed_relationship_memory,
         "state_merge_guard": refreshed_state_merge_guard,

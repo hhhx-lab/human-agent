@@ -69,6 +69,25 @@ def bind_or_validate_life_name(
         registry["source_command"] = source_command
         registry["life_name_command_manifest_ref"] = LIFE_NAME_COMMAND_MANIFEST_REF
         registry["life_name_command_manifest"] = command_manifest
+        from life_v0.direction.identity_name_binding import sync_identity_name_binding_refs
+
+        binding_snapshot = sync_identity_name_binding_refs(state_dir)
+        registry = read_life_name_registry(state_dir)
+        registry["status"] = "loaded_existing_name"
+        registry["exit_code"] = 0
+        registry["source_command"] = source_command
+        registry["life_name_command_manifest_ref"] = LIFE_NAME_COMMAND_MANIFEST_REF
+        registry["life_name_command_manifest"] = command_manifest
+        registry["identity_root_ref"] = binding_snapshot.get(
+            "life_name_registry_identity_root_ref"
+        )
+        registry["identity_name_binding_bidirectional"] = binding_snapshot.get(
+            "identity_name_binding_bidirectional"
+        )
+        registry_path.write_text(
+            json.dumps(registry, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
         return registry
 
     if not requested:
@@ -158,6 +177,25 @@ def bind_or_validate_life_name(
             encoding="utf-8",
         )
         return payload
+    registry_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    from life_v0.direction.identity_name_binding import sync_identity_name_binding_refs
+
+    binding_snapshot = sync_identity_name_binding_refs(state_dir)
+    payload = read_life_name_registry(state_dir)
+    payload["status"] = "bound_new_name"
+    payload["exit_code"] = 0
+    payload["source_command"] = source_command
+    payload["life_name_command_manifest_ref"] = LIFE_NAME_COMMAND_MANIFEST_REF
+    payload["life_name_command_manifest"] = command_manifest
+    payload["identity_root_ref"] = binding_snapshot.get(
+        "life_name_registry_identity_root_ref"
+    )
+    payload["identity_name_binding_bidirectional"] = binding_snapshot.get(
+        "identity_name_binding_bidirectional"
+    )
     registry_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",

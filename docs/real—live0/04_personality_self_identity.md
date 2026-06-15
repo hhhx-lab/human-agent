@@ -90,6 +90,18 @@ live0 的人格由慢变量和历史写回形成，不由一段“性格设定�
 
 命名锚也不是 UI 昵称。`digital_life_identity.py` 写入 `life_name_registry.json` 和 `life_name_command_manifest.json` 后，名字成为直接终端命令，并指向同一个 `runtime/state`。这保证“Adam”不是新进程的新角色，而是同一个身份根的恢复入口。
 
+## 身份根与命名锚双向绑定（ITR-08-81）
+
+命名后，`identity_name_binding.py#sync_identity_name_binding_refs` 会在 `identity_root.json`、`life_name_registry.json` 与 `continuity_refs.json` 之间写入双向 ref：
+
+| 方向 | 字段 |
+|---|---|
+| identity_root → registry | `life_name_registry_ref`、`anchor_refs` |
+| registry → identity_root | `identity_root_ref`、`continuity_refs_ref` |
+| continuity_refs → registry | `life_name_registry_refs` |
+
+`/state` 检查面通过 `identity_name_binding_*` 字段追溯双向绑定是否闭合，边界为 `structured_identity_name_binding_not_spoken_language`。测试：`tests/slices/test_identity_name_binding.py`、`tests/process/test_state_inspection_memory_closeout.py#test_state_summary_exposes_identity_name_binding`。
+
 ## 人格慢变量怎样更新
 
 人格更新必须慢于单轮对话，但快于完全僵死。live0 用下面的路径更新人格：

@@ -886,6 +886,43 @@ class LanguageOrgansTests(unittest.TestCase):
             )
         )
 
+    def test_expression_plan_projects_queue_e_repair_modulation(self):
+        from life_v0.language.expression_monitor import (
+            build_expression_plan,
+            project_expression_plan_with_queue_e_repair_modulation,
+        )
+
+        base_plan = build_expression_plan(
+            run_id="queue-e-expression-plan",
+            generated_at="2026-06-15T00:00:00+00:00",
+            inner_speech={"semantic_map_ref": "runtime/state/language/semantic_map_frame.json"},
+            semantic_map={"semantic_focus": "repair_commitment_shared_language"},
+            language_percept={"repair_trigger_candidates": ["repair-trigger-001"]},
+            commitment_repair_index={"repair_obligation_refs": ["repair-obligation-001"]},
+            source_doc_refs=["docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md"],
+        )
+        updated = project_expression_plan_with_queue_e_repair_modulation(
+            expression_plan=base_plan,
+            responsibility_loop_state={
+                "repair_followup_required": True,
+                "repair_obligation_refs": ["repair-obligation-001"],
+                "regret_pressure_candidates": [{"ref": "regret-pressure-001"}],
+            },
+            world_contact_summary={
+                "release_posture": "confirmation_blocked",
+                "repair_obligation_refs": ["repair-obligation-001"],
+            },
+            pain_regret_repair_report={"repair_followup_required": True},
+        )
+
+        self.assertEqual(updated["queue_e_repair_pressure_level"], "urgent")
+        self.assertIn("queue_e_repair_pressure_present", updated["expression_risk_flags"])
+        self.assertEqual(
+            updated["delay_or_release_decision"],
+            "hold_for_responsibility_repair_lock",
+        )
+        self.assertTrue(updated["queue_e_repair_ref_set"])
+
 
 if __name__ == "__main__":
     unittest.main()

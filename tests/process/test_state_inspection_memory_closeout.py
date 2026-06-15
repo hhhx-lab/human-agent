@@ -580,6 +580,33 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertTrue(summary["consciousness_write_context_closeout_present"])
         self.assertIn("expression_closeout", summary["domain_presence"])
 
+    def test_language_summary_exposes_expression_plan_queue_e(self):
+        section = {
+            "expression_plan": {
+                "queue_e_repair_pressure_level": "urgent",
+                "queue_e_repair_attention_target": "repair_followup",
+                "queue_e_expression_tempo_mode": "responsibility_lock_first",
+                "queue_e_repair_modulation_profile": {
+                    "schema_version": "queue_e_repair_modulation_profile_v0",
+                },
+            },
+        }
+
+        summary = _collect_language_generation_consumption_summary(section)
+
+        self.assertEqual(
+            summary["expression_plan_queue_e_repair_pressure_level"],
+            "urgent",
+        )
+        self.assertEqual(
+            summary["expression_plan_queue_e_expression_tempo_mode"],
+            "responsibility_lock_first",
+        )
+        self.assertIn(
+            "expression_plan_queue_e_repair_modulation",
+            summary["domain_presence"],
+        )
+
     def test_cognition_summary_exposes_expression_closeout(self):
         section = {
             "workspace_frame": {"workspace_id": "ws-1"},
@@ -885,6 +912,38 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertEqual(summary["v0_missing_file_count"], 1)
         self.assertEqual(summary["doc_to_code_uncovered_count"], 1)
         self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_state_summary_exposes_identity_name_binding(self):
+        section = {
+            "resident_lifecycle": {"status": "waiting", "life_name": "Nova"},
+            "identity_root": {
+                "life_name_registry_ref": (
+                    "runtime/state/identity/life_name_registry.json"
+                ),
+                "anchor_refs": [
+                    "runtime/state/direction/direction_lock.json",
+                    "runtime/state/identity/life_name_registry.json",
+                ],
+            },
+            "life_name_registry": {
+                "identity_root_ref": "runtime/state/direction/identity_root.json",
+                "continuity_refs_ref": "runtime/state/direction/continuity_refs.json",
+            },
+            "continuity_refs": {
+                "life_name_registry_refs": [
+                    "runtime/state/identity/life_name_registry.json"
+                ],
+            },
+            "digital_life_process_report": {},
+            "idle_strategy": {},
+            "terminal_life_loop": {},
+        }
+
+        summary = _collect_resident_continuity_summary(section)
+
+        self.assertTrue(summary["identity_name_binding_present"])
+        self.assertTrue(summary["identity_name_binding_bidirectional"])
+        self.assertIn("identity_name_binding", summary["domain_presence"])
 
     def test_perception_summary_exposes_process_closeout(self):
         section = {

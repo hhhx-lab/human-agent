@@ -29,6 +29,7 @@ def build_continuity_refs(
             "runtime/reports/latest/direction_digest.json",
         ],
         "identity_root_refs": ["runtime/state/direction/identity_root.json"],
+        "life_name_registry_refs": [],
         "life_state_refs": [
             "runtime/state/life_state.json",
             "runtime/state/self/self_model.json",

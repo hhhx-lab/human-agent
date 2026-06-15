@@ -900,6 +900,15 @@ def _collect_state_summary(
         "metacognition_state": _compact_json(
             terminal_dir.parent / "consciousness" / "metacognition_state.json"
         ),
+        "identity_root": _compact_json(
+            terminal_dir.parent / "direction" / "identity_root.json"
+        ),
+        "life_name_registry": _compact_json(
+            terminal_dir.parent / "identity" / "life_name_registry.json"
+        ),
+        "continuity_refs": _compact_json(
+            terminal_dir.parent / "direction" / "continuity_refs.json"
+        ),
     }
     state["resident_continuity_summary"] = _collect_resident_continuity_summary(
         state
@@ -961,6 +970,13 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         workspace=_extract_compact_value(section.get("workspace_frame", {})),
         broadcast=_extract_compact_value(section.get("broadcast_frame", {})),
         metacognition=_extract_compact_value(section.get("metacognition_state", {})),
+    )
+    identity_name_binding = _identity_name_binding_inspection_snapshot(
+        identity_root=_extract_compact_value(section.get("identity_root", {})),
+        life_name_registry=_extract_compact_value(
+            section.get("life_name_registry", {})
+        ),
+        continuity_refs=_extract_compact_value(section.get("continuity_refs", {})),
     )
     model_context_summary = _extract_nested_value(
         model_expression,
@@ -1036,6 +1052,9 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         ),
         "live_consciousness_chain": bool(
             live_consciousness_chain.get("live_consciousness_chain_present")
+        ),
+        "identity_name_binding": bool(
+            identity_name_binding.get("identity_name_binding_present")
         ),
     }
     active_domains = [
@@ -1193,7 +1212,28 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         **contract_coverage,
         **schema_handoff,
         **live_consciousness_chain,
+        **identity_name_binding,
     }
+
+
+def _identity_name_binding_inspection_snapshot(
+    *,
+    identity_root: dict[str, Any],
+    life_name_registry: dict[str, Any],
+    continuity_refs: dict[str, Any],
+) -> dict[str, Any]:
+    from life_v0.direction.identity_name_binding import (
+        identity_name_binding_inspection_snapshot,
+    )
+
+    identity_root_value = _extract_compact_value(identity_root)
+    life_name_registry_value = _extract_compact_value(life_name_registry)
+    continuity_refs_value = _extract_compact_value(continuity_refs)
+    return identity_name_binding_inspection_snapshot(
+        identity_root=identity_root_value,
+        life_name_registry=life_name_registry_value,
+        continuity_refs=continuity_refs_value,
+    )
 
 
 def _collect_files(root: Path, file_map: dict[str, str]) -> dict[str, Any]:
@@ -4225,6 +4265,10 @@ def _collect_language_generation_consumption_summary(
         "live_queue_e_world_contact_handoff_closeout": bool(
             expression_closeout.get("live_queue_e_world_contact_handoff_closeout_present")
         ),
+        "expression_plan_queue_e_repair_modulation": bool(
+            expression_plan.get("queue_e_repair_pressure_level")
+            or expression_plan.get("queue_e_repair_modulation_profile")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -4260,6 +4304,15 @@ def _collect_language_generation_consumption_summary(
         ),
         "expression_monitor_status": expression_monitor.get("monitor_status"),
         "expression_plan_goal": expression_plan.get("semantic_goal"),
+        "expression_plan_queue_e_repair_pressure_level": expression_plan.get(
+            "queue_e_repair_pressure_level"
+        ),
+        "expression_plan_queue_e_repair_attention_target": expression_plan.get(
+            "queue_e_repair_attention_target"
+        ),
+        "expression_plan_queue_e_expression_tempo_mode": expression_plan.get(
+            "queue_e_expression_tempo_mode"
+        ),
         "model_expression_status": model_expression.get("model_expression_status"),
         "model_expression_consciousness_write_context_refs": (
             model_expression_consciousness_write_context_refs

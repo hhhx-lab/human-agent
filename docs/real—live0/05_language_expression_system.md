@@ -220,3 +220,17 @@ live0 的语言链已经不只是提示词，而是可追踪的器官链：感�
 | `project_turn_transition_trace_from_live_turn` | `turn_transition_trace.json` | `turn_transition_ref` |
 
 `turn_transition_trace` 的 `transition_kind` 在 live 回合后为 `live_relation_turn`；`last_projected_from_live_turn_ref` 指向最新 dialogue turn ref。测试：`tests/slices/test_context_accumulation_live_turn.py`、`tests/process/test_persistent_digital_life_process.py#test_resident_turn_writeback_organ_updates_turn_continuity_and_bundle`。
+
+## ExpressionPlan Queue E 修复调制（ITR-08-80）
+
+真实关系回合后，`resident_turn_writeback.py#_refresh_long_horizon_continuity` 在责任环刷新后调用 `project_expression_plan_with_queue_e_repair_modulation`，把 Queue E repair pressure 写入 `expression_plan.json`：
+
+| 字段 | 含义 |
+|---|---|
+| `queue_e_repair_modulation_profile` | 完整 repair modulation profile |
+| `queue_e_repair_pressure_level` | quiet / elevated / urgent |
+| `queue_e_repair_attention_target` | 修复注意力目标 |
+| `queue_e_expression_tempo_mode` | urgent 时为 `responsibility_lock_first` |
+| `delay_or_release_decision` | urgent 时 `hold_for_responsibility_repair_lock` |
+
+`/language` 检查面通过 `expression_plan_queue_e_repair_*` 字段追溯，边界仍为 `inspection_only_not_spoken_response`。测试：`tests/slices/test_language_organs.py#test_expression_plan_projects_queue_e_repair_modulation`、`tests/process/test_state_inspection_memory_closeout.py#test_language_summary_exposes_expression_plan_queue_e`。
