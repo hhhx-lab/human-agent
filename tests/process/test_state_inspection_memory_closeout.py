@@ -580,6 +580,24 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertTrue(summary["consciousness_write_context_closeout_present"])
         self.assertIn("expression_closeout", summary["domain_presence"])
 
+    def test_language_summary_exposes_percept_input_evidence(self):
+        section = {
+            "language_percept": {
+                "percept_input_mode": "dialogue_turn_log",
+                "percept_input_source_ref": (
+                    "runtime/state/language/dialogue_turn_log.jsonl#external-turn-001"
+                ),
+            },
+        }
+
+        summary = _collect_language_generation_consumption_summary(section)
+
+        self.assertEqual(summary["language_percept_input_mode"], "dialogue_turn_log")
+        self.assertIn(
+            "language_percept_input_evidence",
+            summary["domain_presence"],
+        )
+
     def test_language_summary_exposes_expression_plan_queue_e(self):
         section = {
             "expression_plan": {

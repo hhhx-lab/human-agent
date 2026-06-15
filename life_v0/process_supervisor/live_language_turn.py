@@ -125,6 +125,13 @@ def refresh_live_language_turn(
 
     language_dir.mkdir(parents=True, exist_ok=True)
     state_dir.mkdir(parents=True, exist_ok=True)
+    language_percept["percept_input_mode"] = "live_external_utterance"
+    language_percept["percept_input_source_ref"] = (
+        "runtime/state/terminal/terminal_life_loop_state.json#live_external_utterance"
+    )
+    language_percept["percept_input_boundary"] = (
+        "structured_percept_input_not_spoken_response"
+    )
     write_json(language_dir / "language_percept_frame.json", language_percept)
     write_json(language_dir / "semantic_map_frame.json", semantic_map)
     write_json(language_dir / "inner_speech_frame.json", inner_speech)

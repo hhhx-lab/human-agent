@@ -4269,6 +4269,9 @@ def _collect_language_generation_consumption_summary(
             expression_plan.get("queue_e_repair_pressure_level")
             or expression_plan.get("queue_e_repair_modulation_profile")
         ),
+        "language_percept_input_evidence": bool(
+            language_percept.get("percept_input_mode")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -4303,6 +4306,10 @@ def _collect_language_generation_consumption_summary(
             inner_speech.get("inner_drive_states")
         ),
         "expression_monitor_status": expression_monitor.get("monitor_status"),
+        "language_percept_input_mode": language_percept.get("percept_input_mode"),
+        "language_percept_input_source_ref": language_percept.get(
+            "percept_input_source_ref"
+        ),
         "expression_plan_goal": expression_plan.get("semantic_goal"),
         "expression_plan_queue_e_repair_pressure_level": expression_plan.get(
             "queue_e_repair_pressure_level"

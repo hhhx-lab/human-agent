@@ -234,3 +234,18 @@ live0 的语言链已经不只是提示词，而是可追踪的器官链：感�
 | `delay_or_release_decision` | urgent 时 `hold_for_responsibility_repair_lock` |
 
 `/language` 检查面通过 `expression_plan_queue_e_repair_*` 字段追溯，边界仍为 `inspection_only_not_spoken_response`。测试：`tests/slices/test_language_organs.py#test_expression_plan_projects_queue_e_repair_modulation`、`tests/process/test_state_inspection_memory_closeout.py#test_language_summary_exposes_expression_plan_queue_e`。
+
+## Batch percept 输入解析（ITR-08-83）
+
+S07 `run_build_language_relationship` 不再硬编码 fixture 话语，而是通过 `percept_input.py#resolve_incoming_turn_for_language_build` 按优先级解析：
+
+| 优先级 | 来源 | `percept_input_mode` |
+|---|---|---|
+| 1 | `dialogue_turn_log.jsonl` 最近 external turn | `dialogue_turn_log` |
+| 2 | `terminal_life_loop_state#last_external_turn_utterance` | `terminal_life_loop` |
+| 3 | `commitment_repair_language_index#last_external_turn_utterance` | `commitment_repair_index` |
+| 4 | `self_narrative_language_trace#last_external_turn` | `self_narrative_trace` |
+| 5 | `relationship_memory` 最近外部话语 | `relationship_memory` |
+| 6 | 共同术语 + 修复/承诺证据拼接 | `relationship_evidence_bootstrap` |
+
+Live turn 路径在 `live_language_turn.py` 标记 `live_external_utterance`。`/language` 检查面显示 `language_percept_input_mode` 与 `language_percept_input_source_ref`。边界：`structured_percept_input_not_spoken_response`。测试：`tests/slices/test_percept_input.py`、`tests/slices/test_language_relationship.py`。

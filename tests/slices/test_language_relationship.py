@@ -279,6 +279,11 @@ class LanguageRelationshipTests(unittest.TestCase):
 
         self.assertEqual(language_percept["schema_version"], "language_percept_frame_v0")
         self.assertEqual(language_percept["status"], "closed")
+        self.assertEqual(
+            language_percept["percept_input_mode"],
+            "relationship_evidence_bootstrap",
+        )
+        self.assertNotIn("还记得吗", language_percept["incoming_surface"])
         self.assertTrue(language_percept["shared_term_hits"])
         self.assertTrue(language_percept["repair_trigger_candidates"])
         self.assertTrue(language_percept["ambiguity_flags"])

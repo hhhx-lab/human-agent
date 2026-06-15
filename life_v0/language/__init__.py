@@ -18,6 +18,7 @@ from .inner_speech import build_inner_speech_frame
 from .language_state import build_language_relationship_state
 from .narrative_trace import build_self_narrative_language_trace
 from .percept import build_language_percept_frame
+from .percept_input import resolve_incoming_turn_for_language_build
 from .relation_scope import build_relation_scope_language_index
 from .relationship_graph import build_relationship_subject_graph
 from .relationship_timeline import build_relationship_timeline
@@ -243,10 +244,17 @@ def run_build_language_relationship(
     language_percept = _build_language_percept_frame(
         run_id,
         generated_at,
+        state_dir=state_dir,
         relation_scope_index=relation_scope_index,
         shared_term_registry=shared_term_registry,
         belief_state=belief_state,
         active_sampling_plan=active_sampling_plan,
+        commitment_repair_index=repair_language,
+        self_narrative_trace=self_narrative_trace,
+        relationship_memory=relationship_memory,
+        terminal_life_loop_state=_load_json_if_exists(
+            state_dir / "terminal" / "terminal_life_loop_state.json"
+        ),
     )
     semantic_map = _build_semantic_map_frame(
         run_id,
@@ -1002,24 +1010,39 @@ def _build_language_percept_frame(
     run_id: str,
     generated_at: str,
     *,
+    state_dir: Path,
     relation_scope_index: dict[str, Any],
     shared_term_registry: dict[str, Any],
     belief_state: dict[str, Any] | None = None,
     active_sampling_plan: dict[str, Any] | None = None,
+    commitment_repair_index: dict[str, Any] | None = None,
+    self_narrative_trace: dict[str, Any] | None = None,
+    relationship_memory: dict[str, Any] | None = None,
+    terminal_life_loop_state: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return build_language_percept_frame(
+    resolved = resolve_incoming_turn_for_language_build(
+        state_dir=state_dir,
+        relation_scope_index=relation_scope_index,
+        shared_term_registry=shared_term_registry,
+        commitment_repair_index=commitment_repair_index,
+        self_narrative_trace=self_narrative_trace,
+        relationship_memory=relationship_memory,
+        terminal_life_loop_state=terminal_life_loop_state,
+    )
+    language_percept = build_language_percept_frame(
         run_id=run_id,
         generated_at=generated_at,
-        incoming_turn={
-            "incoming_surface": "我们之前说好的共同语言和修复，还记得吗？",
-            "speaker_role": "friend",
-        },
+        incoming_turn=resolved["incoming_turn"],
         relation_scope_index=relation_scope_index,
         shared_term_registry=shared_term_registry,
         source_doc_refs=S07_SOURCE_DOCS,
         belief_state=belief_state,
         active_sampling_plan=active_sampling_plan,
     )
+    language_percept["percept_input_mode"] = resolved["percept_input_mode"]
+    language_percept["percept_input_source_ref"] = resolved["percept_input_source_ref"]
+    language_percept["percept_input_boundary"] = resolved["percept_input_boundary"]
+    return language_percept
 
 
 def _build_semantic_map_frame(
