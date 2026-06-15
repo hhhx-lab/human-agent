@@ -1070,6 +1070,20 @@ ResponseSurface.audited_expression_material_v0#prediction_attention.consciousnes
 
 机制含义是：工作区、广播和元认知对记忆写门的调制，最终必须进入语言器官的模型表达前材料，而不是停在 response surface 或后台谱系。这样语言系统能在隐性上下文里看到“当前表达之前，哪些可报告工作区内容正在影响写入与记忆取舍”，但外显文本仍由模型生成并由 post-expression gate 审计。边界继续保持：这不是 system prompt，不是固定回答，不要求模型说出“意识写门/工作区/广播/元认知”等字段名，也不把内部生命信号释放成对话模板。
 
+当前 ITR-08 第四十八段把模型表达上下文收束到关闭态报告和 receipt：
+
+```text
+ModelExpression.model_expression_context_summary.prediction_attention_consciousness_write_context_*
+  -> ProcessReport.model_expression_consciousness_write_context_report_profile
+  -> DigitalLifeProcessReport.model_expression_prediction_attention_consciousness_write_context_*
+  -> DigitalLifeProcessDigest.model_expression_prediction_attention_consciousness_write_context_*
+  -> ProcessReceipt.shared_object_refs / model_expression_prediction_attention_consciousness_write_context_*
+```
+
+`process_report.py` 现在会从 `runtime/state/language/model_expression_state.json#model_expression_context_summary` 提取 `prediction_attention_consciousness_write_context_refs`、ref count、workspace candidate count、broadcast target count、reportability flag count、write bias、candidate gate adjustments 和 boundary，生成 `model_expression_consciousness_write_context_report_profile_v0`。同一组字段会展开到 `digital_life_process_report.json`、`digital_life_process_digest.json` 和 `digital_life_process_<run_id>.json` receipt，并把 refs 纳入 receipt shared object refs。
+
+机制含义是：模型表达前消费到的工作区写门上下文，不只在语言 state 里短暂停留，也进入关闭态总账和 receipt 证据链。这样后续检查“语言表达是否真实消费了工作区/广播/元认知写门材料”时，可以从 process report/digest/receipt 直接追溯，而不用只打开语言子状态。边界继续保持：这是结构化追溯证据，不生成固定回答，不新增 system prompt，不把意识写门、工作区、广播、元认知或生命信号释放成外显对话。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

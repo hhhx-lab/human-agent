@@ -170,6 +170,9 @@ def write_process_report_bundle(
         if (reports_dir / "digital_life_model_expression_report.json").exists()
         else None
     )
+    model_expression_consciousness_write_context_profile = (
+        _model_expression_consciousness_write_context_profile(model_expression_state)
+    )
     resident_terminal_proactive_state = _read_json_if_exists(
         state_dir / "terminal" / "resident_terminal_proactive_state.json"
     )
@@ -1279,6 +1282,7 @@ def write_process_report_bundle(
     report["background_next_autonomous_activity_kind"] = (
         resolved_background_next_autonomous_activity_kind
     )
+    report.update(model_expression_consciousness_write_context_profile)
     _apply_resident_process_identity_profile(
         report,
         resident_process_lease_history_profile=resident_process_lease_history_profile,
@@ -1880,6 +1884,7 @@ def write_process_report_bundle(
     )
     if membrane_guard_refs:
         digest["membrane_guard_refs"] = membrane_guard_refs
+    digest.update(model_expression_consciousness_write_context_profile)
     digest.update(exit_dream_next_wake_profile)
     digest.update(exit_dream_memory_tier_profile)
     digest.update(autobiographical_repair_retrieval_profile)
@@ -2452,15 +2457,21 @@ def build_process_receipt(
         if (state_dir / "self" / "self_model.json").exists()
         else None
     )
+    model_expression_state = _read_json_if_exists(
+        state_dir / "language" / "model_expression_state.json"
+    )
     model_expression_state_ref = (
         MODEL_EXPRESSION_STATE_REF
-        if (state_dir / "language" / "model_expression_state.json").exists()
+        if model_expression_state
         else None
     )
     model_expression_report_ref = (
         MODEL_EXPRESSION_REPORT_REF
         if (reports_dir / "digital_life_model_expression_report.json").exists()
         else None
+    )
+    model_expression_consciousness_write_context_profile = (
+        _model_expression_consciousness_write_context_profile(model_expression_state)
     )
     return {
         "schema_version": "digital_life_process_receipt_v0",
@@ -2592,6 +2603,7 @@ def build_process_receipt(
         ),
         "resident_terminal_proactive_state_ref": resident_terminal_proactive_state_ref,
         "resident_terminal_proactive_events_ref": resident_terminal_proactive_events_ref,
+        **model_expression_consciousness_write_context_profile,
         "report_refs": _dedupe_refs(
             [
                 ref
@@ -2659,6 +2671,12 @@ def build_process_receipt(
                 expression_plan_ref,
                 model_expression_state_ref,
                 model_expression_report_ref,
+                *(
+                    model_expression_consciousness_write_context_profile.get(
+                        "model_expression_prediction_attention_consciousness_write_context_refs",
+                        [],
+                    )
+                ),
                 relationship_timeline_ref,
                 commitment_expression_plan_ref,
                 apology_repair_language_trace_ref,
@@ -3751,6 +3769,104 @@ def _dedupe_refs(values: list[str]) -> list[str]:
         seen.add(value)
         result.append(value)
     return result
+
+
+def _model_expression_consciousness_write_context_profile(
+    model_expression_state: dict[str, Any],
+) -> dict[str, Any]:
+    context_summary = _dict_or_empty(
+        model_expression_state.get("model_expression_context_summary")
+    )
+    refs = _dedupe_refs(
+        _list_or_empty(
+            context_summary.get(
+                "prediction_attention_consciousness_write_context_refs"
+            )
+        )
+    )
+    candidate_gate_adjustments = _dedupe_refs(
+        _list_or_empty(
+            context_summary.get(
+                "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
+            )
+        )
+    )
+    ref_count = _first_non_none(
+        context_summary.get(
+            "prediction_attention_consciousness_write_context_ref_count"
+        ),
+        len(refs) if refs else None,
+    )
+    workspace_candidate_count = context_summary.get(
+        "prediction_attention_consciousness_write_context_workspace_candidate_count"
+    )
+    broadcast_target_count = context_summary.get(
+        "prediction_attention_consciousness_write_context_broadcast_target_count"
+    )
+    reportability_flag_count = context_summary.get(
+        "prediction_attention_consciousness_write_context_reportability_flag_count"
+    )
+    bias = context_summary.get(
+        "prediction_attention_consciousness_write_context_bias"
+    )
+    boundary = context_summary.get(
+        "prediction_attention_consciousness_write_context_boundary"
+    )
+    if not any(
+        [
+            refs,
+            ref_count is not None,
+            workspace_candidate_count is not None,
+            broadcast_target_count is not None,
+            reportability_flag_count is not None,
+            bias,
+            candidate_gate_adjustments,
+            boundary,
+        ]
+    ):
+        return {}
+    return {
+        "model_expression_consciousness_write_context_report_profile": {
+            "schema_version": (
+                "model_expression_consciousness_write_context_report_profile_v0"
+            ),
+            "source_model_expression_state_ref": MODEL_EXPRESSION_STATE_REF,
+            "source_context_summary_ref": (
+                f"{MODEL_EXPRESSION_STATE_REF}#model_expression_context_summary"
+            ),
+            "source_context_field_prefix": (
+                "prediction_attention_consciousness_write_context"
+            ),
+            "ref_count": ref_count,
+            "workspace_candidate_count": workspace_candidate_count,
+            "broadcast_target_count": broadcast_target_count,
+            "reportability_flag_count": reportability_flag_count,
+            "write_attention_bias": bias,
+            "candidate_gate_adjustments": candidate_gate_adjustments,
+            "boundary": boundary,
+            "refs": refs,
+        },
+        "model_expression_prediction_attention_consciousness_write_context_refs": refs,
+        "model_expression_prediction_attention_consciousness_write_context_ref_count": (
+            ref_count
+        ),
+        "model_expression_prediction_attention_consciousness_write_context_workspace_candidate_count": (
+            workspace_candidate_count
+        ),
+        "model_expression_prediction_attention_consciousness_write_context_broadcast_target_count": (
+            broadcast_target_count
+        ),
+        "model_expression_prediction_attention_consciousness_write_context_reportability_flag_count": (
+            reportability_flag_count
+        ),
+        "model_expression_prediction_attention_consciousness_write_context_bias": bias,
+        "model_expression_prediction_attention_consciousness_write_context_candidate_gate_adjustments": (
+            candidate_gate_adjustments
+        ),
+        "model_expression_prediction_attention_consciousness_write_context_boundary": (
+            boundary
+        ),
+    }
 
 
 def _int_or_default(value: Any, *, default: int) -> int:
