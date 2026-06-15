@@ -998,6 +998,19 @@ WorkspaceFrame / ConsciousBroadcastFrame / MetacognitionFrame
 
 机制含义是：工作区、广播和元认知不再只服务于出生准备、slash 检查或语言前审计，也开始影响责任 attribution 对“当时知道什么、可报告什么”的结构化判断。由于生命膜运行时早于出生准备，consciousness probe 可以暂时为空；这时责任环仍会保留已有的工作区三件套，不伪造 probe。该 profile 是责任链内部证据，不生成意识宣言、不新增 system prompt、不把工作区或元认知字段外显成自然语言。
 
+当前 ITR-08 第四十三段继续把工作区与意识广播接入梦境醒后整合：
+
+```text
+WorkspaceFrame / ConsciousBroadcastFrame / MetacognitionFrame / ConsciousnessProbeBundle
+  -> WakeIntegrationFrame.consciousness_reentry_profile
+  -> WakeIntegrationFrame.workspace_reentry_targets
+  -> DreamFactGate / OfflineConsolidation / Growth reconsolidation
+```
+
+`run_cycle` 现在会在 S10 runtime growth 周期中读取 `runtime/state/consciousness/workspace_frame.json`、`broadcast_frame.json`、`metacognition_state.json` 与 `consciousness_probe_bundle.json`，并传入 `build_wake_integration_frame(...)`。`wake_integration.py` 会生成 `wake_consciousness_reentry_profile_v0`，保留 workspace/broadcast/metacognition/probe refs、工作区候选数量、广播目标数量、元认知 reflection 数量、reportability flags、ref set 和 `wake_consciousness_reentry_not_spoken_language` 边界；同时写出 `workspace_reentry_targets`，把醒后整合重新指向 workspace candidate explanations、broadcast targets 和 metacognition reflection prompts。
+
+机制含义是：梦境醒后整合不再只把 dream/replay/repair 材料送进 life state、body 和 growth，也能追溯它将如何重新进入工作区、广播和元认知检查。这样梦境不是孤立的离线文件，而是可以在醒后进入可报告工作区的结构化候选；它仍然不生成梦境报告模板、不新增 system prompt、不把梦境或 consciousness 字段名释放成自然语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

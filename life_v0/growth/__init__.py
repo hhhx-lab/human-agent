@@ -365,6 +365,18 @@ def run_cycle(
         blocked_reasons,
         "pain_regret_repair_gate",
     )
+    workspace_frame = _load_json_optional(
+        state_dir / "consciousness" / "workspace_frame.json"
+    )
+    broadcast_frame = _load_json_optional(
+        state_dir / "consciousness" / "broadcast_frame.json"
+    )
+    metacognition_state = _load_json_optional(
+        state_dir / "consciousness" / "metacognition_state.json"
+    )
+    consciousness_probe_bundle = _load_json_optional(
+        state_dir / "consciousness" / "consciousness_probe_bundle.json"
+    )
 
     source_doc_refs = _collect_s10_source_docs(doc_index)
     blocked_reasons.extend(_s10_doc_blockers(doc_index, source_doc_refs))
@@ -440,6 +452,10 @@ def run_cycle(
         generated_at=generated_at,
         dream_window=dream_window,
         replay_cue_bundle=replay_cue_bundle,
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        consciousness_probe_bundle=consciousness_probe_bundle,
     )
     dream_fact_gate = build_dream_fact_gate_decision(
         run_id=run_id,
@@ -1171,6 +1187,13 @@ def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, A
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         blocked_reasons.append(f"{gate} failed: {exc}")
+        return {}
+
+
+def _load_json_optional(path: Path) -> dict[str, Any]:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
         return {}
 
 
