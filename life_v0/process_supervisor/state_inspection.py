@@ -248,6 +248,10 @@ def build_resident_state_inspection(
                 "waiting_heartbeat": (
                     "../reports/latest/digital_life_waiting_heartbeat.json"
                 ),
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
             },
         )
         signal["modulation_consumption_summary"] = (
@@ -444,6 +448,10 @@ def build_resident_state_inspection(
                     "terminal/resident_autonomous_activity_state.json"
                 ),
                 "proactive_state": "terminal/resident_terminal_proactive_state.json",
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
             },
         )
         language["generation_consumption_summary"] = (
@@ -2646,6 +2654,25 @@ def _collect_signal_modulation_consumption_summary(
     waiting_heartbeat = _extract_compact_value(
         section.get("waiting_heartbeat", {})
     )
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    world_contact_presence = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        world_contact_presence,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
     modulation_vector = _extract_nested_value(signal_media, "modulation_vector")
     body_signal_profile = _extract_nested_value(
         signal_media,
@@ -2688,6 +2715,11 @@ def _collect_signal_modulation_consumption_summary(
             or pain_report
         ),
         "resident_autonomous_activity": bool(autonomous_activity),
+        "live_queue_e_world_contact_handoff": bool(
+            world_contact_handoff
+            or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or live_queue_e_handoff.get("queue_e_world_contact_handoff_status")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -2849,6 +2881,20 @@ def _collect_signal_modulation_consumption_summary(
                 or inhibition_profile.get("blocked_release_modes")
                 or world_contact_gate.get("blocked_future_routes")
             ),
+            "live_queue_e_world_contact_handoff_refreshed": live_queue_e_handoff.get(
+                "live_queue_e_world_contact_handoff_refreshed"
+            ),
+            "live_responsibility_consciousness_context_ref_count": (
+                live_queue_e_handoff.get(
+                    "live_responsibility_consciousness_context_ref_count"
+                )
+            ),
+            "live_queue_e_world_contact_handoff_turn_focus": live_queue_e_handoff.get(
+                "live_queue_e_world_contact_handoff_turn_focus"
+            ),
+            "live_queue_e_world_contact_handoff_boundary": live_queue_e_handoff.get(
+                "live_queue_e_world_contact_handoff_boundary"
+            ),
         },
         "resident_activity_consumption": {
             "last_activity_kind": autonomous_activity.get("last_activity_kind"),
@@ -2858,6 +2904,7 @@ def _collect_signal_modulation_consumption_summary(
         "signal_boundary": (
             "signal_modulation_state_view_not_spoken_life_signal_or_if_else_script"
         ),
+        **live_queue_e_handoff,
     }
 
 
@@ -3328,6 +3375,30 @@ def _collect_language_generation_consumption_summary(
             "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
         )
     )
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    world_contact_presence = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        world_contact_presence,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
+    model_expression_handoff = (
+        _model_expression_world_contact_handoff_inspection_fields(
+            model_context_summary
+        )
+    )
 
     domain_presence = {
         "language_percept": bool(language_percept),
@@ -3358,6 +3429,19 @@ def _collect_language_generation_consumption_summary(
         ),
         "resident_autonomous_activity": bool(resident_autonomous),
         "proactive_voice": bool(proactive_state),
+        "live_queue_e_world_contact_handoff": bool(
+            world_contact_handoff
+            or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or model_expression_handoff.get(
+                "model_expression_world_contact_handoff_live_refreshed"
+            )
+        ),
+        "model_expression_world_contact_handoff": bool(
+            model_expression_handoff.get("model_expression_world_contact_handoff_status")
+            or model_expression_handoff.get(
+                "model_expression_world_contact_handoff_live_refreshed"
+            )
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -3506,6 +3590,8 @@ def _collect_language_generation_consumption_summary(
         "fixed_reply_boundary": (
             "no_code_spoken_template_no_inspection_summary_as_reply"
         ),
+        **model_expression_handoff,
+        **live_queue_e_handoff,
     }
 
 
@@ -4879,6 +4965,33 @@ def _first_non_empty(*values: Any) -> Any:
         if value not in (None, "", [], {}):
             return value
     return None
+
+
+def _model_expression_world_contact_handoff_inspection_fields(
+    model_context_summary: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "model_expression_world_contact_handoff_status": model_context_summary.get(
+            "world_contact_handoff_status"
+        ),
+        "model_expression_world_contact_handoff_live_refreshed": bool(
+            model_context_summary.get("world_contact_handoff_live_refreshed")
+        ),
+        "model_expression_world_contact_handoff_live_turn_focus": (
+            model_context_summary.get("world_contact_handoff_live_turn_focus")
+        ),
+        "model_expression_world_contact_handoff_live_responsibility_context_ref_count": (
+            model_context_summary.get(
+                "world_contact_handoff_live_responsibility_context_ref_count"
+            )
+        ),
+        "model_expression_world_contact_handoff_boundary": model_context_summary.get(
+            "world_contact_handoff_boundary"
+        ),
+        "model_expression_world_contact_handoff_ref_count": model_context_summary.get(
+            "world_contact_handoff_ref_count"
+        ),
+    }
 
 
 def _live0_probe_status(

@@ -2,9 +2,11 @@ import unittest
 
 from life_v0.process_supervisor.state_inspection import (
     _collect_ability_birth_readiness_summary,
+    _collect_language_generation_consumption_summary,
     _collect_life_membrane_validation_summary,
     _collect_perception_world_contact_summary,
     _collect_prediction_world_contact_summary,
+    _collect_signal_modulation_consumption_summary,
 )
 
 
@@ -139,6 +141,65 @@ class StateInspectionLiveHandoffTests(unittest.TestCase):
         self.assertEqual(
             summary["live_queue_e_world_contact_handoff_closeout_audited"],
             "passed",
+        )
+
+    def test_signal_summary_exposes_live_queue_e_handoff_in_repair_consumption(self):
+        section = {
+            "queue_e_world_contact_handoff": {
+                "handoff_status": "deferred_until_s05_s09",
+                "live_queue_e_world_contact_handoff_refreshed": True,
+                "live_turn_focus": "repair_hold_signal_chain",
+                "live_responsibility_consciousness_context_refs": [
+                    "runtime/state/consciousness/workspace_frame.json"
+                ],
+            },
+        }
+
+        summary = _collect_signal_modulation_consumption_summary(section)
+
+        self.assertTrue(summary["live_queue_e_world_contact_handoff_refreshed"])
+        self.assertEqual(
+            summary["responsibility_repair_consumption"][
+                "live_queue_e_world_contact_handoff_turn_focus"
+            ],
+            "repair_hold_signal_chain",
+        )
+        self.assertIn(
+            "live_queue_e_world_contact_handoff",
+            summary["domain_presence"],
+        )
+
+    def test_language_summary_merges_runtime_and_model_expression_handoff(self):
+        section = {
+            "model_expression_state": {
+                "model_expression_context_summary": {
+                    "world_contact_handoff_status": "deferred_until_s05_s09",
+                    "world_contact_handoff_live_refreshed": True,
+                    "world_contact_handoff_live_turn_focus": "repair_hold_language_chain",
+                    "world_contact_handoff_live_responsibility_context_ref_count": 2,
+                    "world_contact_handoff_boundary": (
+                        "structured_handoff_not_spoken_language"
+                    ),
+                }
+            },
+            "queue_e_world_contact_handoff": {
+                "live_queue_e_world_contact_handoff_refreshed": True,
+            },
+        }
+
+        summary = _collect_language_generation_consumption_summary(section)
+
+        self.assertTrue(
+            summary["model_expression_world_contact_handoff_live_refreshed"]
+        )
+        self.assertEqual(
+            summary["model_expression_world_contact_handoff_live_turn_focus"],
+            "repair_hold_language_chain",
+        )
+        self.assertTrue(summary["live_queue_e_world_contact_handoff_refreshed"])
+        self.assertIn(
+            "model_expression_world_contact_handoff",
+            summary["domain_presence"],
         )
 
     def test_perception_summary_exposes_live_queue_e_handoff_fields(self):
