@@ -1318,6 +1318,106 @@ def load_background_continuity_profile(
             ),
         )
     )
+    consciousness_write_context_refs = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            process_report,
+            resident_background_prediction_write_gate_presence,
+            keys=(
+                "consciousness_write_context_refs",
+                "background_consciousness_write_context_refs",
+            ),
+        )
+    )
+    consciousness_write_context_ref_count = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=(
+            "consciousness_write_context_ref_count",
+            "background_consciousness_write_context_ref_count",
+        ),
+    )
+    consciousness_write_context_workspace_candidate_count = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=(
+            "consciousness_write_context_workspace_candidate_count",
+            "background_consciousness_write_context_workspace_candidate_count",
+        ),
+    )
+    consciousness_write_context_broadcast_target_count = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=(
+            "consciousness_write_context_broadcast_target_count",
+            "background_consciousness_write_context_broadcast_target_count",
+        ),
+    )
+    consciousness_write_context_reportability_flag_count = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=(
+            "consciousness_write_context_reportability_flag_count",
+            "background_consciousness_write_context_reportability_flag_count",
+        ),
+    )
+    consciousness_write_context_bias = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=(
+            "consciousness_write_context_bias",
+            "background_consciousness_write_context_bias",
+        ),
+    )
+    consciousness_write_context_candidate_gate_adjustments = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            process_report,
+            resident_background_prediction_write_gate_presence,
+            keys=(
+                "consciousness_write_context_candidate_gate_adjustments",
+                "background_consciousness_write_context_candidate_gate_adjustments",
+            ),
+        )
+    )
+    consciousness_write_context_boundary = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        resident_background_prediction_write_gate_presence,
+        keys=(
+            "consciousness_write_context_boundary",
+            "background_consciousness_write_context_boundary",
+        ),
+    )
     workspace_frame_ref = _first_present(
         resident_governance_state,
         snapshot,
@@ -2143,6 +2243,8 @@ def load_background_continuity_profile(
         ref_set = _dedupe_list(ref_set + autonomous_activity_ref_set)
     if body_ref_set:
         ref_set = _dedupe_list(ref_set + body_ref_set)
+    if consciousness_write_context_refs:
+        ref_set = _dedupe_list(ref_set + consciousness_write_context_refs)
     if growth_self_modification_presence:
         ref_set = _dedupe_list(
             ref_set
@@ -2561,6 +2663,42 @@ def load_background_continuity_profile(
     if body_signal_candidate_gate_adjustments:
         profile["background_body_signal_candidate_gate_adjustments"] = (
             body_signal_candidate_gate_adjustments
+        )
+    if consciousness_write_context_refs:
+        profile["background_consciousness_write_context_refs"] = (
+            consciousness_write_context_refs
+        )
+    for key, value in (
+        (
+            "background_consciousness_write_context_ref_count",
+            consciousness_write_context_ref_count,
+        ),
+        (
+            "background_consciousness_write_context_workspace_candidate_count",
+            consciousness_write_context_workspace_candidate_count,
+        ),
+        (
+            "background_consciousness_write_context_broadcast_target_count",
+            consciousness_write_context_broadcast_target_count,
+        ),
+        (
+            "background_consciousness_write_context_reportability_flag_count",
+            consciousness_write_context_reportability_flag_count,
+        ),
+    ):
+        if value is not None:
+            profile[key] = value
+    if consciousness_write_context_bias:
+        profile["background_consciousness_write_context_bias"] = str(
+            consciousness_write_context_bias
+        )
+    if consciousness_write_context_candidate_gate_adjustments:
+        profile[
+            "background_consciousness_write_context_candidate_gate_adjustments"
+        ] = consciousness_write_context_candidate_gate_adjustments
+    if consciousness_write_context_boundary:
+        profile["background_consciousness_write_context_boundary"] = str(
+            consciousness_write_context_boundary
         )
     if resident_background_identity_consciousness_birth_presence:
         profile["background_identity_consciousness_birth_presence"] = (

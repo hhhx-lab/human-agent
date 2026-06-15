@@ -1042,6 +1042,20 @@ MemoryWriteGate.consciousness_write_context
 
 机制含义是：工作区、广播和元认知参与记忆写入以后，不能只留在 `memory_write_gate.json` 里；它们必须像身体信号调制一样进入等待节律、后台谱系、真实回合、关闭写回、下一次恢复和语言前审计材料。这样“当时什么进入了工作区、哪些内容被广播、元认知怎样影响写门”可以跨唤醒保持可追溯，并在下一轮语言生成前成为隐性调制来源。边界继续保持：这些字段是结构化内部材料，不生成固定回答，不新增 system prompt，不把意识写门字段、生命信号或检查摘要释放成 Adam 的外显语言。
 
+当前 ITR-08 第四十六段把关闭态 report 中的工作区写入上下文恢复到下一次唤醒：
+
+```text
+ProcessReport.background_consciousness_write_context_*
+  -> BackgroundContinuity.background_consciousness_write_context_*
+  -> BackgroundContinuity.background_continuity_ref_set
+  -> IdleStrategy payload.update(background_continuity_profile)
+  -> WaitingHeartbeat / ResidentBackgroundLineageState.prediction_write_gate_presence
+```
+
+`background_continuity.py` 现在会从 resident governance state、snapshot、resident governance report、persistent process report、digital life process report 和上一轮 `resident_background_lineage_state.prediction_write_gate_presence` 中读取 `consciousness_write_context_refs`、ref count、workspace candidate count、broadcast target count、reportability flag count、write attention bias、candidate gate adjustments 和 boundary。恢复后的字段以 `background_consciousness_write_context_*` 形式写入 background continuity profile，并把 refs 合入 `background_continuity_ref_set`。由于 `idle_strategy.py` 会把 background continuity profile 的非空字段整体带入 idle governance，这批字段可以在下一轮等待心跳和后台谱系重建时继续被 `background_lineage_state.py` 读取。
+
+机制含义是：工作区/广播/元认知上下文不只从记忆写门往前流到真实回合，也能从关闭态报告回到下一次唤醒的等待治理。这样即使一次恢复没有立即重跑 state-store，上一轮“什么内容处于可报告工作区、哪些内容被广播、元认知怎样调制写门”的证据仍然不会消失。边界继续保持：这是跨唤醒恢复证据，不生成固定回答，不新增 system prompt，不把意识写门、工作区或元认知字段外显成 Adam 的对话。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：
