@@ -713,6 +713,34 @@ def _criterion_relationship(context: _AuditContext) -> dict[str, Any]:
             {"relation_role": last_life_turn.get("relation_role")},
             "dialogue relation role must not collapse to user/service framing",
         ),
+        _value_probe(
+            "live_queue_e_world_contact_handoff_closeout_audited",
+            [
+                "runtime/reports/latest/digital_life_process_report.json",
+                "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
+                "runtime/state/terminal/terminal_life_loop_state.json",
+            ],
+            _live_queue_e_world_contact_handoff_closeout_audited(
+                process_report,
+                context.load_json(
+                    "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                context.load_json(
+                    "runtime/state/terminal/terminal_life_loop_state.json"
+                ),
+            ),
+            {
+                "live_queue_e_world_contact_handoff_refreshed": process_report.get(
+                    "live_queue_e_world_contact_handoff_refreshed"
+                ),
+                "live_queue_e_world_contact_handoff_report_boundary": (
+                    process_report.get(
+                        "live_queue_e_world_contact_handoff_report_boundary"
+                    )
+                ),
+            },
+            "live-refreshed Queue E world-contact handoff must be audited in process closeout report",
+        ),
     ]
     return _criterion(
         "f_equal_relationship_dialogue_growth",
@@ -1020,6 +1048,33 @@ def _closed_or_schema(payload: dict[str, Any]) -> bool:
 
 def _report_status_closed(payload: dict[str, Any]) -> bool:
     return payload.get("status") == "closed"
+
+
+def _live_queue_e_world_contact_handoff_closeout_audited(
+    process_report: dict[str, Any],
+    handoff_state: dict[str, Any],
+    terminal_loop: dict[str, Any],
+) -> bool:
+    live_refresh_signal = bool(
+        handoff_state.get("last_projected_from_live_turn_ref")
+        or handoff_state.get("live_turn_focus")
+        or handoff_state.get("live_responsibility_consciousness_context_refs")
+        or terminal_loop.get("live_queue_e_world_contact_handoff_refreshed")
+    )
+    if not live_refresh_signal:
+        return True
+    report_profile = process_report.get(
+        "live_queue_e_world_contact_handoff_report_profile"
+    )
+    if not isinstance(report_profile, dict):
+        report_profile = {}
+    return (
+        report_profile.get("schema_version")
+        == "live_queue_e_world_contact_handoff_report_profile_v0"
+        and process_report.get("live_queue_e_world_contact_handoff_report_boundary")
+        == "live_queue_e_world_contact_handoff_structured_report_not_spoken_language"
+        and bool(process_report.get("live_queue_e_world_contact_handoff_refreshed"))
+    )
 
 
 def _world_contact_validation_repair_hold_closed(payload: dict[str, Any]) -> bool:

@@ -741,6 +741,12 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
                 "prediction_attention_consciousness_write_context_boundary"
             )
         ),
+        "live_queue_e_world_contact_handoff": bool(
+            terminal_loop.get("live_queue_e_world_contact_handoff_refreshed")
+            or world_contact_presence.get("live_queue_e_world_contact_handoff_refreshed")
+            or world_contact_presence.get("live_turn_focus")
+            or model_context_summary.get("world_contact_handoff_live_refreshed")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -808,6 +814,32 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         ),
         "world_contact_repair_hold_required": bool(
             world_contact_presence.get("repair_hold_required")
+        ),
+        "live_queue_e_world_contact_handoff_refreshed": bool(
+            _first_non_empty(
+                terminal_loop.get("live_queue_e_world_contact_handoff_refreshed"),
+                world_contact_presence.get("live_queue_e_world_contact_handoff_refreshed"),
+                model_context_summary.get("world_contact_handoff_live_refreshed"),
+            )
+        ),
+        "live_responsibility_consciousness_context_ref_count": _count_any(
+            _first_non_empty(
+                terminal_loop.get("live_responsibility_consciousness_context_refs"),
+                world_contact_presence.get(
+                    "live_responsibility_consciousness_context_refs"
+                ),
+                [],
+            )
+        ),
+        "live_queue_e_world_contact_handoff_turn_focus": _first_non_empty(
+            terminal_loop.get("live_turn_focus"),
+            world_contact_presence.get("live_turn_focus"),
+            model_context_summary.get("world_contact_handoff_live_turn_focus"),
+        ),
+        "live_queue_e_world_contact_handoff_boundary": _first_non_empty(
+            terminal_loop.get("live_queue_e_world_contact_handoff_boundary"),
+            world_contact_presence.get("handoff_boundary"),
+            model_context_summary.get("world_contact_handoff_boundary"),
         ),
         "birth_readiness_waiting_posture": identity_birth_presence.get(
             "birth_readiness_waiting_posture"
@@ -3695,6 +3727,21 @@ def _collect_responsibility_repair_chain_summary(
         ),
         "queue_e_world_contact_handoff_status": world_contact_handoff.get(
             "handoff_status"
+        ),
+        "live_queue_e_world_contact_handoff_refreshed": bool(
+            world_contact_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or world_contact_handoff.get("last_projected_from_live_turn_ref")
+            or world_contact_handoff.get("live_turn_focus")
+        ),
+        "live_responsibility_consciousness_context_ref_count": _count_any(
+            world_contact_handoff.get("live_responsibility_consciousness_context_refs")
+        ),
+        "live_queue_e_world_contact_handoff_turn_focus": world_contact_handoff.get(
+            "live_turn_focus"
+        ),
+        "live_queue_e_world_contact_handoff_boundary": (
+            world_contact_handoff.get("handoff_boundary")
+            or world_contact_handoff.get("live_queue_e_world_contact_handoff_boundary")
         ),
         "validation_world_contact_status": world_contact_validation.get(
             "status"
