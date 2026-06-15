@@ -817,6 +817,11 @@ class ResponseSurfaceTests(unittest.TestCase):
             "runtime/state/body/body_resource_budget.json",
             "runtime/state/body/core_affect_vector.json",
         ]
+        consciousness_write_context_refs = [
+            "runtime/state/consciousness/workspace_frame.json",
+            "runtime/state/consciousness/broadcast_frame.json",
+            "runtime/state/consciousness/metacognition_state.json",
+        ]
         memory_write_gate = {
             "schema_version": "memory_write_gate_v0",
             "stage_policy": "candidate_first_body_signal_guarded",
@@ -833,6 +838,18 @@ class ResponseSurfaceTests(unittest.TestCase):
                 ],
                 "body_signal_refs": body_signal_refs,
                 "body_signal_ref_count": len(body_signal_refs),
+            },
+            "consciousness_write_context": {
+                "schema_version": "memory_consciousness_write_context_v0",
+                "workspace_candidate_count": 2,
+                "broadcast_target_count": 3,
+                "reportability_flag_count": 1,
+                "write_attention_bias": "prefer_reportable_workspace_candidates",
+                "candidate_gate_adjustments": [
+                    "prioritize_workspace_reportability_before_write"
+                ],
+                "ref_set": consciousness_write_context_refs,
+                "boundary": "memory_consciousness_write_context_not_spoken_language",
             },
         }
         lineage_state = build_resident_background_lineage_state(
@@ -851,6 +868,24 @@ class ResponseSurfaceTests(unittest.TestCase):
                 "body_signal_candidate_gate_adjustments": [
                     "defer_low_salience_write_until_recovery"
                 ],
+                "consciousness_write_context_refs": (
+                    consciousness_write_context_refs
+                ),
+                "consciousness_write_context_ref_count": len(
+                    consciousness_write_context_refs
+                ),
+                "consciousness_write_context_workspace_candidate_count": 2,
+                "consciousness_write_context_broadcast_target_count": 3,
+                "consciousness_write_context_reportability_flag_count": 1,
+                "consciousness_write_context_bias": (
+                    "prefer_reportable_workspace_candidates"
+                ),
+                "consciousness_write_context_candidate_gate_adjustments": [
+                    "prioritize_workspace_reportability_before_write"
+                ],
+                "consciousness_write_context_boundary": (
+                    "memory_consciousness_write_context_not_spoken_language"
+                ),
             },
             governance_phase="waiting_heartbeat_active",
             status="active",
@@ -861,6 +896,14 @@ class ResponseSurfaceTests(unittest.TestCase):
             "defer_noncritical_memory_commit",
         )
         self.assertEqual(prediction_presence["body_signal_ref_count"], 3)
+        self.assertEqual(
+            prediction_presence["consciousness_write_context_refs"],
+            consciousness_write_context_refs,
+        )
+        self.assertEqual(
+            prediction_presence["consciousness_write_context_bias"],
+            "prefer_reportable_workspace_candidates",
+        )
 
         life_turn = build_life_turn_event(
             turn_id="life-turn-body-signal-memory-gate",
@@ -879,6 +922,12 @@ class ResponseSurfaceTests(unittest.TestCase):
         self.assertEqual(
             life_turn["resident_background_lineage_body_signal_refs"],
             body_signal_refs,
+        )
+        self.assertEqual(
+            life_turn[
+                "resident_background_lineage_consciousness_write_context_refs"
+            ],
+            consciousness_write_context_refs,
         )
 
         bundle = build_dialogue_writeback_bundle(
@@ -918,6 +967,24 @@ class ResponseSurfaceTests(unittest.TestCase):
             resident_background_lineage_body_signal_candidate_gate_adjustments=[
                 "defer_low_salience_write_until_recovery"
             ],
+            resident_background_lineage_consciousness_write_context_refs=(
+                consciousness_write_context_refs
+            ),
+            resident_background_lineage_consciousness_write_context_bias=(
+                "prefer_reportable_workspace_candidates"
+            ),
+            resident_background_lineage_consciousness_write_context_ref_count=(
+                len(consciousness_write_context_refs)
+            ),
+            resident_background_lineage_consciousness_write_context_workspace_candidate_count=2,
+            resident_background_lineage_consciousness_write_context_broadcast_target_count=3,
+            resident_background_lineage_consciousness_write_context_reportability_flag_count=1,
+            resident_background_lineage_consciousness_write_context_candidate_gate_adjustments=[
+                "prioritize_workspace_reportability_before_write"
+            ],
+            resident_background_lineage_consciousness_write_context_boundary=(
+                "memory_consciousness_write_context_not_spoken_language"
+            ),
         )
         self.assertEqual(
             bundle["resident_background_lineage_body_signal_refs"],
@@ -932,6 +999,18 @@ class ResponseSurfaceTests(unittest.TestCase):
                 "resident_background_lineage_body_signal_candidate_gate_adjustments"
             ],
             ["defer_low_salience_write_until_recovery"],
+        )
+        self.assertEqual(
+            bundle[
+                "resident_background_lineage_consciousness_write_context_refs"
+            ],
+            consciousness_write_context_refs,
+        )
+        self.assertEqual(
+            bundle[
+                "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
+            ],
+            ["prioritize_workspace_reportability_before_write"],
         )
 
         material = compose_life_response(
@@ -948,10 +1027,24 @@ class ResponseSurfaceTests(unittest.TestCase):
             "defer_noncritical_memory_commit",
         )
         self.assertEqual(
+            payload["prediction_attention"]["consciousness_write_context_refs"],
+            consciousness_write_context_refs,
+        )
+        self.assertEqual(
+            payload["prediction_attention"]["consciousness_write_context_bias"],
+            "prefer_reportable_workspace_candidates",
+        )
+        self.assertEqual(
             payload["resident_background"]["prediction_write_gate_presence"][
                 "body_signal_write_bias"
             ],
             "defer_noncritical_memory_commit",
+        )
+        self.assertEqual(
+            payload["resident_background"]["prediction_write_gate_presence"][
+                "consciousness_write_context_boundary"
+            ],
+            "memory_consciousness_write_context_not_spoken_language",
         )
 
     def test_world_contact_handoff_presence_enters_audited_expression_material(self):

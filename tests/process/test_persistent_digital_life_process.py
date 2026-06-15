@@ -17564,6 +17564,11 @@ class PersistentDigitalLifeProcessTests(
             "runtime/state/memory/memory_write_gate.json",
             "runtime/state/memory/state_merge_guard.json",
         ]
+        expected_consciousness_write_context_refs = [
+            "runtime/state/consciousness/workspace_frame.json",
+            "runtime/state/consciousness/broadcast_frame.json",
+            "runtime/state/consciousness/metacognition_state.json",
+        ]
 
         lineage_state = build_resident_background_lineage_state(
             {
@@ -17577,6 +17582,24 @@ class PersistentDigitalLifeProcessTests(
                 "prediction_error_count": 2,
                 "active_sampling_route": "repair_inspect",
                 "memory_write_gate_policy": "repair_first_quarantine",
+                "consciousness_write_context_refs": (
+                    expected_consciousness_write_context_refs
+                ),
+                "consciousness_write_context_ref_count": len(
+                    expected_consciousness_write_context_refs
+                ),
+                "consciousness_write_context_workspace_candidate_count": 2,
+                "consciousness_write_context_broadcast_target_count": 3,
+                "consciousness_write_context_reportability_flag_count": 1,
+                "consciousness_write_context_bias": (
+                    "prefer_reportable_workspace_candidates"
+                ),
+                "consciousness_write_context_candidate_gate_adjustments": [
+                    "prioritize_workspace_reportability_before_write"
+                ],
+                "consciousness_write_context_boundary": (
+                    "memory_consciousness_write_context_not_spoken_language"
+                ),
                 "state_merge_policy": "long_term_merge_fail_closed",
             },
             governance_phase="waiting_heartbeat_active",
@@ -17611,12 +17634,20 @@ class PersistentDigitalLifeProcessTests(
             "repair_first_quarantine",
         )
         self.assertEqual(
+            prediction_presence["consciousness_write_context_refs"],
+            expected_consciousness_write_context_refs,
+        )
+        self.assertEqual(
+            prediction_presence["consciousness_write_context_bias"],
+            "prefer_reportable_workspace_candidates",
+        )
+        self.assertEqual(
             prediction_presence["state_merge_policy"],
             "long_term_merge_fail_closed",
         )
         self.assertEqual(
             prediction_presence["prediction_write_gate_evidence_refs"],
-            expected_prediction_refs,
+            expected_prediction_refs + expected_consciousness_write_context_refs,
         )
 
     def test_response_surface_reads_prediction_write_gate_from_background_lineage_presence(self):
@@ -17629,6 +17660,11 @@ class PersistentDigitalLifeProcessTests(
             "runtime/state/prediction/active_sampling_plan.json",
             "runtime/state/memory/memory_write_gate.json",
             "runtime/state/memory/state_merge_guard.json",
+        ]
+        expected_consciousness_write_context_refs = [
+            "runtime/state/consciousness/workspace_frame.json",
+            "runtime/state/consciousness/broadcast_frame.json",
+            "runtime/state/consciousness/metacognition_state.json",
         ]
 
         response = compose_life_response(
@@ -17645,6 +17681,24 @@ class PersistentDigitalLifeProcessTests(
                         "active_sampling_route": "repair_inspect",
                         "prediction_error_count": 2,
                         "memory_write_gate_policy": "repair_first_quarantine",
+                        "consciousness_write_context_refs": (
+                            expected_consciousness_write_context_refs
+                        ),
+                        "consciousness_write_context_ref_count": len(
+                            expected_consciousness_write_context_refs
+                        ),
+                        "consciousness_write_context_workspace_candidate_count": 2,
+                        "consciousness_write_context_broadcast_target_count": 3,
+                        "consciousness_write_context_reportability_flag_count": 1,
+                        "consciousness_write_context_bias": (
+                            "prefer_reportable_workspace_candidates"
+                        ),
+                        "consciousness_write_context_candidate_gate_adjustments": [
+                            "prioritize_workspace_reportability_before_write"
+                        ],
+                        "consciousness_write_context_boundary": (
+                            "memory_consciousness_write_context_not_spoken_language"
+                        ),
                         "state_merge_policy": "long_term_merge_fail_closed",
                     },
                 }
@@ -17663,6 +17717,14 @@ class PersistentDigitalLifeProcessTests(
         self.assertEqual(
             prediction["memory_write_gate_policy"],
             "repair_first_quarantine",
+        )
+        self.assertEqual(
+            prediction["consciousness_write_context_refs"],
+            expected_consciousness_write_context_refs,
+        )
+        self.assertEqual(
+            resident_prediction["consciousness_write_context_boundary"],
+            "memory_consciousness_write_context_not_spoken_language",
         )
         self.assertEqual(
             prediction["state_merge_policy"],
@@ -17690,6 +17752,11 @@ class PersistentDigitalLifeProcessTests(
             "runtime/state/memory/memory_write_gate.json",
             "runtime/state/memory/state_merge_guard.json",
         ]
+        expected_consciousness_write_context_refs = [
+            "runtime/state/consciousness/workspace_frame.json",
+            "runtime/state/consciousness/broadcast_frame.json",
+            "runtime/state/consciousness/metacognition_state.json",
+        ]
 
         payload = build_prediction_write_gate_payload(
             terminal_life_loop_state={
@@ -17709,6 +17776,24 @@ class PersistentDigitalLifeProcessTests(
                         "prediction_error_count": 2,
                         "active_sampling_route": "repair_inspect",
                         "memory_write_gate_policy": "repair_first_quarantine",
+                        "consciousness_write_context_refs": (
+                            expected_consciousness_write_context_refs
+                        ),
+                        "consciousness_write_context_ref_count": len(
+                            expected_consciousness_write_context_refs
+                        ),
+                        "consciousness_write_context_workspace_candidate_count": 2,
+                        "consciousness_write_context_broadcast_target_count": 3,
+                        "consciousness_write_context_reportability_flag_count": 1,
+                        "consciousness_write_context_bias": (
+                            "prefer_reportable_workspace_candidates"
+                        ),
+                        "consciousness_write_context_candidate_gate_adjustments": [
+                            "prioritize_workspace_reportability_before_write"
+                        ],
+                        "consciousness_write_context_boundary": (
+                            "memory_consciousness_write_context_not_spoken_language"
+                        ),
                         "state_merge_policy": "long_term_merge_fail_closed",
                     }
                 }
@@ -17725,6 +17810,14 @@ class PersistentDigitalLifeProcessTests(
         )
         self.assertEqual(payload["active_sampling_route"], "repair_inspect")
         self.assertEqual(payload["memory_write_gate_policy"], "repair_first_quarantine")
+        self.assertEqual(
+            payload["consciousness_write_context_refs"],
+            expected_consciousness_write_context_refs,
+        )
+        self.assertEqual(
+            payload["consciousness_write_context_bias"],
+            "prefer_reportable_workspace_candidates",
+        )
         self.assertEqual(payload["state_merge_policy"], "long_term_merge_fail_closed")
 
     def test_response_surface_organ_carries_relation_shared_terms_and_commitment_pressure(self):
@@ -19060,6 +19153,11 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/body/body_resource_budget.json",
                 "runtime/state/body/core_affect_vector.json",
             ]
+            expected_consciousness_write_context_refs = [
+                "runtime/state/consciousness/workspace_frame.json",
+                "runtime/state/consciousness/broadcast_frame.json",
+                "runtime/state/consciousness/metacognition_state.json",
+            ]
             expected_heartbeat_cadence_refs = [
                 "runtime/state/growth/relationship_learning_plan.json",
                 "runtime/state/growth/language_learning_plan.json",
@@ -19211,6 +19309,24 @@ class PersistentDigitalLifeProcessTests(
                 "body_signal_candidate_gate_adjustments": [
                     "defer_low_salience_write_until_recovery"
                 ],
+                "consciousness_write_context_refs": (
+                    expected_consciousness_write_context_refs
+                ),
+                "consciousness_write_context_ref_count": len(
+                    expected_consciousness_write_context_refs
+                ),
+                "consciousness_write_context_workspace_candidate_count": 2,
+                "consciousness_write_context_broadcast_target_count": 3,
+                "consciousness_write_context_reportability_flag_count": 1,
+                "consciousness_write_context_bias": (
+                    "prefer_reportable_workspace_candidates"
+                ),
+                "consciousness_write_context_candidate_gate_adjustments": [
+                    "prioritize_workspace_reportability_before_write"
+                ],
+                "consciousness_write_context_boundary": (
+                    "memory_consciousness_write_context_not_spoken_language"
+                ),
             }
             terminal_life_loop_state.update(
                 {
@@ -20120,6 +20236,24 @@ class PersistentDigitalLifeProcessTests(
                 ["defer_low_salience_write_until_recovery"],
             )
             self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_consciousness_write_context_refs"
+                ],
+                expected_consciousness_write_context_refs,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_consciousness_write_context_bias"
+                ],
+                "prefer_reportable_workspace_candidates",
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
+                ],
+                ["prioritize_workspace_reportability_before_write"],
+            )
+            self.assertEqual(
                 dialogue_writeback_bundle["live_language_turn_refs"],
                 [
                     "runtime/state/language/language_percept_frame.json",
@@ -20143,6 +20277,11 @@ class PersistentDigitalLifeProcessTests(
                     dialogue_writeback_bundle["resident_background_lineage_refs"],
                 )
             for ref in expected_body_signal_refs:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle["resident_background_lineage_refs"],
+                )
+            for ref in expected_consciousness_write_context_refs:
                 self.assertIn(
                     ref,
                     dialogue_writeback_bundle["resident_background_lineage_refs"],
@@ -20514,6 +20653,30 @@ class PersistentDigitalLifeProcessTests(
                 ],
                 dialogue_writeback_bundle[
                     "resident_background_lineage_body_signal_candidate_gate_adjustments"
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_consciousness_write_context_refs"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_consciousness_write_context_refs"
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_consciousness_write_context_bias"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_consciousness_write_context_bias"
+                ],
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
+                ],
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
                 ],
             )
             self.assertEqual(

@@ -77,6 +77,30 @@ def build_dialogue_writeback_bundle(
     resident_background_lineage_body_signal_candidate_gate_adjustments: (
         list[str] | None
     ) = None,
+    resident_background_lineage_consciousness_write_context_refs: (
+        list[str] | None
+    ) = None,
+    resident_background_lineage_consciousness_write_context_bias: (
+        str | None
+    ) = None,
+    resident_background_lineage_consciousness_write_context_ref_count: (
+        int | None
+    ) = None,
+    resident_background_lineage_consciousness_write_context_workspace_candidate_count: (
+        int | None
+    ) = None,
+    resident_background_lineage_consciousness_write_context_broadcast_target_count: (
+        int | None
+    ) = None,
+    resident_background_lineage_consciousness_write_context_reportability_flag_count: (
+        int | None
+    ) = None,
+    resident_background_lineage_consciousness_write_context_candidate_gate_adjustments: (
+        list[str] | None
+    ) = None,
+    resident_background_lineage_consciousness_write_context_boundary: (
+        str | None
+    ) = None,
     resident_background_lineage_prediction_write_gate_refs: list[str] | None = None,
     resident_background_lineage_memory_retrieval_refs: list[str] | None = None,
     resident_background_lineage_autobiographical_repair_carrier_refs: (
@@ -219,6 +243,31 @@ def build_dialogue_writeback_bundle(
         "resident_background_lineage_body_signal_candidate_gate_adjustments": list(
             resident_background_lineage_body_signal_candidate_gate_adjustments
             or []
+        ),
+        "resident_background_lineage_consciousness_write_context_refs": list(
+            resident_background_lineage_consciousness_write_context_refs or []
+        ),
+        "resident_background_lineage_consciousness_write_context_bias": (
+            resident_background_lineage_consciousness_write_context_bias
+        ),
+        "resident_background_lineage_consciousness_write_context_ref_count": (
+            resident_background_lineage_consciousness_write_context_ref_count
+        ),
+        "resident_background_lineage_consciousness_write_context_workspace_candidate_count": (
+            resident_background_lineage_consciousness_write_context_workspace_candidate_count
+        ),
+        "resident_background_lineage_consciousness_write_context_broadcast_target_count": (
+            resident_background_lineage_consciousness_write_context_broadcast_target_count
+        ),
+        "resident_background_lineage_consciousness_write_context_reportability_flag_count": (
+            resident_background_lineage_consciousness_write_context_reportability_flag_count
+        ),
+        "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments": list(
+            resident_background_lineage_consciousness_write_context_candidate_gate_adjustments
+            or []
+        ),
+        "resident_background_lineage_consciousness_write_context_boundary": (
+            resident_background_lineage_consciousness_write_context_boundary
         ),
         "resident_background_lineage_prediction_write_gate_refs": list(
             resident_background_lineage_prediction_write_gate_refs or []

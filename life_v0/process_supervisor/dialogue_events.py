@@ -820,6 +820,14 @@ def build_resident_background_lineage_payload(
                 "resident_background_lineage_memory_write_gate_policy",
             ),
             (
+                "consciousness_write_context_bias",
+                "resident_background_lineage_consciousness_write_context_bias",
+            ),
+            (
+                "consciousness_write_context_boundary",
+                "resident_background_lineage_consciousness_write_context_boundary",
+            ),
+            (
                 "body_signal_write_bias",
                 "resident_background_lineage_body_signal_write_bias",
             ),
@@ -860,6 +868,22 @@ def build_resident_background_lineage_payload(
                 "body_signal_ref_count",
                 "resident_background_lineage_body_signal_ref_count",
             ),
+            (
+                "consciousness_write_context_ref_count",
+                "resident_background_lineage_consciousness_write_context_ref_count",
+            ),
+            (
+                "consciousness_write_context_workspace_candidate_count",
+                "resident_background_lineage_consciousness_write_context_workspace_candidate_count",
+            ),
+            (
+                "consciousness_write_context_broadcast_target_count",
+                "resident_background_lineage_consciousness_write_context_broadcast_target_count",
+            ),
+            (
+                "consciousness_write_context_reportability_flag_count",
+                "resident_background_lineage_consciousness_write_context_reportability_flag_count",
+            ),
         ):
             value = prediction_write_gate_presence.get(source_key)
             if value is not None:
@@ -883,6 +907,27 @@ def build_resident_background_lineage_payload(
             payload[
                 "resident_background_lineage_body_signal_candidate_gate_adjustments"
             ] = body_signal_adjustments
+        consciousness_write_context_refs = _dedupe_string_list(
+            _string_list(
+                prediction_write_gate_presence.get("consciousness_write_context_refs")
+            )
+        )
+        if consciousness_write_context_refs:
+            payload[
+                "resident_background_lineage_consciousness_write_context_refs"
+            ] = consciousness_write_context_refs
+            lineage_refs.extend(consciousness_write_context_refs)
+        consciousness_write_context_adjustments = _dedupe_string_list(
+            _string_list(
+                prediction_write_gate_presence.get(
+                    "consciousness_write_context_candidate_gate_adjustments"
+                )
+            )
+        )
+        if consciousness_write_context_adjustments:
+            payload[
+                "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
+            ] = consciousness_write_context_adjustments
         if (
             prediction_write_gate_presence.get("state_merge_long_term_change_count")
             is not None
@@ -2087,6 +2132,14 @@ def build_prediction_write_gate_payload(
         "body_signal_ref_count",
         "body_signal_refs",
         "body_signal_candidate_gate_adjustments",
+        "consciousness_write_context_ref_count",
+        "consciousness_write_context_refs",
+        "consciousness_write_context_workspace_candidate_count",
+        "consciousness_write_context_broadcast_target_count",
+        "consciousness_write_context_reportability_flag_count",
+        "consciousness_write_context_bias",
+        "consciousness_write_context_candidate_gate_adjustments",
+        "consciousness_write_context_boundary",
         "state_merge_policy",
         "state_merge_long_term_change_count",
         "state_merge_long_term_change_families",
@@ -2155,6 +2208,14 @@ def attach_prediction_write_gate_lineage_fallback(
             "resident_background_lineage_memory_write_gate_policy",
         ),
         (
+            "consciousness_write_context_bias",
+            "resident_background_lineage_consciousness_write_context_bias",
+        ),
+        (
+            "consciousness_write_context_boundary",
+            "resident_background_lineage_consciousness_write_context_boundary",
+        ),
+        (
             "body_signal_write_bias",
             "resident_background_lineage_body_signal_write_bias",
         ),
@@ -2196,6 +2257,22 @@ def attach_prediction_write_gate_lineage_fallback(
             "resident_background_lineage_body_signal_ref_count",
         ),
         (
+            "consciousness_write_context_ref_count",
+            "resident_background_lineage_consciousness_write_context_ref_count",
+        ),
+        (
+            "consciousness_write_context_workspace_candidate_count",
+            "resident_background_lineage_consciousness_write_context_workspace_candidate_count",
+        ),
+        (
+            "consciousness_write_context_broadcast_target_count",
+            "resident_background_lineage_consciousness_write_context_broadcast_target_count",
+        ),
+        (
+            "consciousness_write_context_reportability_flag_count",
+            "resident_background_lineage_consciousness_write_context_reportability_flag_count",
+        ),
+        (
             "state_merge_long_term_change_count",
             "resident_background_lineage_prediction_state_merge_long_term_change_count",
         ),
@@ -2225,6 +2302,34 @@ def attach_prediction_write_gate_lineage_fallback(
         payload[
             "resident_background_lineage_body_signal_candidate_gate_adjustments"
         ] = body_signal_adjustments
+    consciousness_write_context_refs = _dedupe_string_list(
+        _string_list(
+            prediction_write_gate_payload.get("consciousness_write_context_refs")
+        )
+    )
+    if (
+        consciousness_write_context_refs
+        and "resident_background_lineage_consciousness_write_context_refs"
+        not in payload
+    ):
+        payload[
+            "resident_background_lineage_consciousness_write_context_refs"
+        ] = consciousness_write_context_refs
+    consciousness_write_context_adjustments = _dedupe_string_list(
+        _string_list(
+            prediction_write_gate_payload.get(
+                "consciousness_write_context_candidate_gate_adjustments"
+            )
+        )
+    )
+    if (
+        consciousness_write_context_adjustments
+        and "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
+        not in payload
+    ):
+        payload[
+            "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
+        ] = consciousness_write_context_adjustments
     state_merge_families = _dedupe_string_list(
         _string_list(
             prediction_write_gate_payload.get(
@@ -2277,6 +2382,10 @@ def _derive_prediction_write_gate_profile(
         state_merge_guard
     )
     body_signal_profile = _memory_gate_body_signal_profile(memory_write_gate)
+    memory_gate_modulation_profile = {
+        **body_signal_profile,
+        **_memory_gate_consciousness_write_context_profile(memory_write_gate),
+    }
 
     has_prediction_objects = any(
         [
@@ -2300,7 +2409,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     if "repair" in route_lower:
@@ -2313,7 +2422,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     if "hold_for_evidence" in stage_lower or error_count > 0:
@@ -2326,7 +2435,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     if repair_drive == "active" or "repair" in memory_policy_lower:
@@ -2339,7 +2448,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     if state_merge_change_profile["state_merge_long_term_change_count"] > 0:
@@ -2352,7 +2461,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     if confidence_level in {"stable", "high", "confirmed"}:
@@ -2365,7 +2474,7 @@ def _derive_prediction_write_gate_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     return {
@@ -2377,7 +2486,7 @@ def _derive_prediction_write_gate_profile(
         "active_sampling_route": selected_route,
         "memory_write_gate_policy": memory_policy,
         "state_merge_policy": merge_policy,
-        **body_signal_profile,
+        **memory_gate_modulation_profile,
         **state_merge_change_profile,
     }
 
@@ -2402,6 +2511,33 @@ def _memory_gate_body_signal_profile(
         "body_signal_candidate_gate_adjustments": _string_list(
             profile.get("candidate_gate_adjustments")
         ),
+    }
+
+
+def _memory_gate_consciousness_write_context_profile(
+    memory_write_gate: dict[str, Any] | None,
+) -> dict[str, Any]:
+    profile = (memory_write_gate or {}).get("consciousness_write_context")
+    if not isinstance(profile, dict) or not profile:
+        return {}
+    refs = _string_list(profile.get("ref_set"))
+    return {
+        "consciousness_write_context_ref_count": len(refs),
+        "consciousness_write_context_refs": refs,
+        "consciousness_write_context_workspace_candidate_count": profile.get(
+            "workspace_candidate_count"
+        ),
+        "consciousness_write_context_broadcast_target_count": profile.get(
+            "broadcast_target_count"
+        ),
+        "consciousness_write_context_reportability_flag_count": profile.get(
+            "reportability_flag_count"
+        ),
+        "consciousness_write_context_bias": profile.get("write_attention_bias"),
+        "consciousness_write_context_candidate_gate_adjustments": _string_list(
+            profile.get("candidate_gate_adjustments")
+        ),
+        "consciousness_write_context_boundary": profile.get("boundary"),
     }
 
 

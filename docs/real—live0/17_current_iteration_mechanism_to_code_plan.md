@@ -1025,6 +1025,23 @@ WorkspaceFrame / ConsciousBroadcastFrame / MetacognitionFrame / ConsciousnessPro
 
 机制含义是：广播内容进入记忆系统不再只是一句理论连接，而成为写门可审计字段。一个经验是否进入长期记忆，不只看 source refs、生命周期、身体压力和梦境事实门，也要能追溯当时工作区可报告候选、广播目标和元认知不确定性。这样 `docs/real—live0/02_brain_network_and_workspace.md` 里的“工作区必须被记忆读取”和 `docs/real—live0/07_memory_engram_and_state_store.md` 里的“召回/重构/写回必须分开”在代码层闭合到同一个 `memory_write_gate.json`。边界继续保持：这是内部记忆写门证据，不生成意识宣言，不新增 system prompt，不把工作区、广播、元认知或写门字段拼成 Adam 的外显语言。
 
+当前 ITR-08 第四十五段把记忆写门中的工作区上下文继续接入常驻和语言前链路：
+
+```text
+MemoryWriteGate.consciousness_write_context
+  -> IdleStrategy.prediction_waiting_profile.consciousness_write_context_*
+  -> WaitingHeartbeat carry
+  -> ResidentBackgroundLineageState.prediction_write_gate_presence
+  -> DialogueEvents.resident_background_lineage_consciousness_write_context_*
+  -> DialogueWritebackBundle / ResumedExternalDialoguePacket
+  -> ProcessReport.background_consciousness_write_context_*
+  -> ResponseSurface.prediction_attention / resident_background.prediction_write_gate_presence
+```
+
+`idle_strategy.py` 和 `dialogue_events.py` 现在会把 `memory_consciousness_write_context_v0` 展开成可跨模块传递的扁平字段：`consciousness_write_context_refs`、`consciousness_write_context_ref_count`、工作区候选数量、广播目标数量、可报告 flag 数量、`consciousness_write_context_bias`、candidate gate adjustments 和 `memory_consciousness_write_context_not_spoken_language` 边界。`heartbeat.py` 把这些字段作为 waiting carry 继续传给常驻等待；`background_lineage_state.py` 会把它们合入 `prediction_write_gate_presence`，并把 refs 纳入 `prediction_write_gate_evidence_refs`，使 prediction/write-gate presence 不再只包含预测误差、主动采样、身体信号和状态合并。`dialogue_events.py` 会把 presence 展开成 `resident_background_lineage_consciousness_write_context_*` 字段；`dialogue_writeback.py` 与 `resident_turn_writeback.py` 会把这些字段写入 `dialogue_writeback_bundle.json`，并由 `resumed_external_dialogue_packet.json` 带回下一轮关系恢复。`process_report.py` 会在关闭态 report 中保留 `background_consciousness_write_context_*`，`response_surface.py` 则把同一批字段放入 `audited_expression_material_v0#prediction_attention` 和 `resident_background.prediction_write_gate_presence`，供模型表达前的结构化材料消费。
+
+机制含义是：工作区、广播和元认知参与记忆写入以后，不能只留在 `memory_write_gate.json` 里；它们必须像身体信号调制一样进入等待节律、后台谱系、真实回合、关闭写回、下一次恢复和语言前审计材料。这样“当时什么进入了工作区、哪些内容被广播、元认知怎样影响写门”可以跨唤醒保持可追溯，并在下一轮语言生成前成为隐性调制来源。边界继续保持：这些字段是结构化内部材料，不生成固定回答，不新增 system prompt，不把意识写门字段、生命信号或检查摘要释放成 Adam 的外显语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

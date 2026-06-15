@@ -1524,6 +1524,38 @@ def decide_idle_strategy(
         "body_signal_candidate_gate_adjustments": prediction_profile.get(
             "body_signal_candidate_gate_adjustments"
         ),
+        "consciousness_write_context_ref_count": prediction_profile.get(
+            "consciousness_write_context_ref_count"
+        ),
+        "consciousness_write_context_refs": prediction_profile.get(
+            "consciousness_write_context_refs"
+        ),
+        "consciousness_write_context_workspace_candidate_count": (
+            prediction_profile.get(
+                "consciousness_write_context_workspace_candidate_count"
+            )
+        ),
+        "consciousness_write_context_broadcast_target_count": (
+            prediction_profile.get(
+                "consciousness_write_context_broadcast_target_count"
+            )
+        ),
+        "consciousness_write_context_reportability_flag_count": (
+            prediction_profile.get(
+                "consciousness_write_context_reportability_flag_count"
+            )
+        ),
+        "consciousness_write_context_bias": prediction_profile.get(
+            "consciousness_write_context_bias"
+        ),
+        "consciousness_write_context_candidate_gate_adjustments": (
+            prediction_profile.get(
+                "consciousness_write_context_candidate_gate_adjustments"
+            )
+        ),
+        "consciousness_write_context_boundary": prediction_profile.get(
+            "consciousness_write_context_boundary"
+        ),
         "state_merge_policy": prediction_profile["state_merge_policy"],
         "state_merge_long_term_change_count": prediction_profile[
             "state_merge_long_term_change_count"
@@ -3892,6 +3924,10 @@ def _prediction_waiting_profile(
         state_merge_guard
     )
     body_signal_profile = _memory_gate_body_signal_profile(memory_write_gate)
+    memory_gate_modulation_profile = {
+        **body_signal_profile,
+        **_memory_gate_consciousness_write_context_profile(memory_write_gate),
+    }
     route_lower = selected_route.lower()
     stage_lower = stage_effect.lower()
     memory_policy_lower = memory_policy.lower()
@@ -3916,7 +3952,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": "",
             "memory_write_gate_policy": "",
             "state_merge_policy": "",
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
 
@@ -3930,7 +3966,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     if "repair" in route_lower:
@@ -3943,7 +3979,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     if "hold_for_evidence" in stage_lower or error_count > 0:
@@ -3956,7 +3992,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     if repair_drive == "active" or "repair" in memory_policy_lower:
@@ -3969,7 +4005,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     if state_merge_change_profile["state_merge_long_term_change_count"] > 0:
@@ -3982,7 +4018,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     if confidence_level in {"stable", "high", "confirmed"}:
@@ -3995,7 +4031,7 @@ def _prediction_waiting_profile(
             "active_sampling_route": selected_route,
             "memory_write_gate_policy": memory_policy,
             "state_merge_policy": merge_policy,
-            **body_signal_profile,
+            **memory_gate_modulation_profile,
             **state_merge_change_profile,
         }
     return {
@@ -4007,7 +4043,7 @@ def _prediction_waiting_profile(
         "active_sampling_route": selected_route,
         "memory_write_gate_policy": memory_policy,
         "state_merge_policy": merge_policy,
-        **body_signal_profile,
+        **memory_gate_modulation_profile,
         **state_merge_change_profile,
     }
 
@@ -4033,6 +4069,42 @@ def _memory_gate_body_signal_profile(
             "body_signal_candidate_gate_adjustments": _string_list(
                 profile.get("candidate_gate_adjustments")
             ),
+        }
+    )
+
+
+def _memory_gate_consciousness_write_context_profile(
+    memory_write_gate: dict[str, Any] | None,
+) -> dict[str, Any]:
+    profile = _dict_or_empty(
+        (memory_write_gate or {}).get("consciousness_write_context")
+    )
+    if not profile:
+        return {}
+    return _drop_empty(
+        {
+            "consciousness_write_context_ref_count": len(
+                _string_list(profile.get("ref_set"))
+            ),
+            "consciousness_write_context_refs": _string_list(
+                profile.get("ref_set")
+            ),
+            "consciousness_write_context_workspace_candidate_count": (
+                profile.get("workspace_candidate_count")
+            ),
+            "consciousness_write_context_broadcast_target_count": (
+                profile.get("broadcast_target_count")
+            ),
+            "consciousness_write_context_reportability_flag_count": (
+                profile.get("reportability_flag_count")
+            ),
+            "consciousness_write_context_bias": profile.get(
+                "write_attention_bias"
+            ),
+            "consciousness_write_context_candidate_gate_adjustments": (
+                _string_list(profile.get("candidate_gate_adjustments"))
+            ),
+            "consciousness_write_context_boundary": profile.get("boundary"),
         }
     )
 

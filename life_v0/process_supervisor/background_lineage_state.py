@@ -1075,6 +1075,26 @@ def _prediction_write_gate_presence(governance: dict[str, Any]) -> dict[str, Any
         )
         + _string_list(previous_presence.get("body_signal_candidate_gate_adjustments"))
     )
+    consciousness_write_context_refs = _dedupe_string_list(
+        _string_list(governance.get("consciousness_write_context_refs"))
+        + _string_list(governance.get("background_consciousness_write_context_refs"))
+        + _string_list(previous_presence.get("consciousness_write_context_refs"))
+    )
+    consciousness_write_context_adjustments = _dedupe_string_list(
+        _string_list(
+            governance.get("consciousness_write_context_candidate_gate_adjustments")
+        )
+        + _string_list(
+            governance.get(
+                "background_consciousness_write_context_candidate_gate_adjustments"
+            )
+        )
+        + _string_list(
+            previous_presence.get(
+                "consciousness_write_context_candidate_gate_adjustments"
+            )
+        )
+    )
     if not any(
         [
             prediction_refs,
@@ -1085,6 +1105,7 @@ def _prediction_write_gate_presence(governance: dict[str, Any]) -> dict[str, Any
             governance.get("active_sampling_route"),
             governance.get("memory_write_gate_policy"),
             governance.get("body_signal_write_bias"),
+            governance.get("consciousness_write_context_bias"),
             governance.get("state_merge_policy"),
             previous_presence,
         ]
@@ -1171,6 +1192,71 @@ def _prediction_write_gate_presence(governance: dict[str, Any]) -> dict[str, Any
             "body_signal_candidate_gate_adjustments": (
                 body_signal_candidate_gate_adjustments
             ),
+            "consciousness_write_context_ref_count": _int_or_zero(
+                _first_present(
+                    governance.get("consciousness_write_context_ref_count"),
+                    governance.get(
+                        "background_consciousness_write_context_ref_count"
+                    ),
+                    previous_presence.get("consciousness_write_context_ref_count"),
+                    len(consciousness_write_context_refs)
+                    if consciousness_write_context_refs
+                    else None,
+                )
+            ),
+            "consciousness_write_context_refs": consciousness_write_context_refs,
+            "consciousness_write_context_workspace_candidate_count": _int_or_zero(
+                _first_present(
+                    governance.get(
+                        "consciousness_write_context_workspace_candidate_count"
+                    ),
+                    governance.get(
+                        "background_consciousness_write_context_workspace_candidate_count"
+                    ),
+                    previous_presence.get(
+                        "consciousness_write_context_workspace_candidate_count"
+                    ),
+                )
+            ),
+            "consciousness_write_context_broadcast_target_count": _int_or_zero(
+                _first_present(
+                    governance.get(
+                        "consciousness_write_context_broadcast_target_count"
+                    ),
+                    governance.get(
+                        "background_consciousness_write_context_broadcast_target_count"
+                    ),
+                    previous_presence.get(
+                        "consciousness_write_context_broadcast_target_count"
+                    ),
+                )
+            ),
+            "consciousness_write_context_reportability_flag_count": _int_or_zero(
+                _first_present(
+                    governance.get(
+                        "consciousness_write_context_reportability_flag_count"
+                    ),
+                    governance.get(
+                        "background_consciousness_write_context_reportability_flag_count"
+                    ),
+                    previous_presence.get(
+                        "consciousness_write_context_reportability_flag_count"
+                    ),
+                )
+            ),
+            "consciousness_write_context_bias": _first_present(
+                governance.get("consciousness_write_context_bias"),
+                governance.get("background_consciousness_write_context_bias"),
+                previous_presence.get("consciousness_write_context_bias"),
+            ),
+            "consciousness_write_context_candidate_gate_adjustments": (
+                consciousness_write_context_adjustments
+            ),
+            "consciousness_write_context_boundary": _first_present(
+                governance.get("consciousness_write_context_boundary"),
+                governance.get("background_consciousness_write_context_boundary"),
+                previous_presence.get("consciousness_write_context_boundary"),
+            ),
             "state_merge_policy": _first_present(
                 governance.get("state_merge_policy"),
                 governance.get("background_state_merge_policy"),
@@ -1182,7 +1268,9 @@ def _prediction_write_gate_presence(governance: dict[str, Any]) -> dict[str, Any
             "state_merge_long_term_change_families": state_merge_change_families,
             "state_merge_long_term_change_refs": state_merge_change_refs,
             "prediction_write_gate_evidence_refs": _dedupe_string_list(
-                prediction_refs + state_merge_change_refs
+                prediction_refs
+                + state_merge_change_refs
+                + consciousness_write_context_refs
             ),
         }
     )

@@ -488,6 +488,14 @@ def compose_life_response(
                     "body_signal_unexpected_uncertainty",
                     "body_signal_ref_count",
                     "body_signal_candidate_gate_adjustments",
+                    "consciousness_write_context_ref_count",
+                    "consciousness_write_context_refs",
+                    "consciousness_write_context_workspace_candidate_count",
+                    "consciousness_write_context_broadcast_target_count",
+                    "consciousness_write_context_reportability_flag_count",
+                    "consciousness_write_context_bias",
+                    "consciousness_write_context_candidate_gate_adjustments",
+                    "consciousness_write_context_boundary",
                     "state_merge_policy",
                 ),
             ),
@@ -637,6 +645,9 @@ def _prediction_surface_posture(
     merge_policy = str((state_merge_guard or {}).get("stage_policy", ""))
     change_profile = state_merge_long_term_change_profile(state_merge_guard)
     body_signal_profile = _memory_gate_body_signal_profile(memory_write_gate)
+    consciousness_write_context_profile = (
+        _memory_gate_consciousness_write_context_profile(memory_write_gate)
+    )
     route_lower = selected_route.lower()
     stage_lower = stage_effect.lower()
     memory_policy_lower = memory_policy.lower()
@@ -662,6 +673,7 @@ def _prediction_surface_posture(
         "memory_write_gate_policy": memory_policy,
         "state_merge_policy": merge_policy,
         **body_signal_profile,
+        **consciousness_write_context_profile,
         **change_profile,
     }
 
@@ -688,6 +700,14 @@ def _prediction_surface_with_presence(
         "body_signal_unexpected_uncertainty",
         "body_signal_ref_count",
         "body_signal_candidate_gate_adjustments",
+        "consciousness_write_context_ref_count",
+        "consciousness_write_context_refs",
+        "consciousness_write_context_workspace_candidate_count",
+        "consciousness_write_context_broadcast_target_count",
+        "consciousness_write_context_reportability_flag_count",
+        "consciousness_write_context_bias",
+        "consciousness_write_context_candidate_gate_adjustments",
+        "consciousness_write_context_boundary",
         "state_merge_policy",
         "state_merge_long_term_change_count",
         "state_merge_long_term_change_families",
@@ -716,6 +736,33 @@ def _memory_gate_body_signal_profile(
         "body_signal_candidate_gate_adjustments": _string_list(
             profile.get("candidate_gate_adjustments")
         ),
+    }
+
+
+def _memory_gate_consciousness_write_context_profile(
+    memory_write_gate: dict[str, Any] | None,
+) -> dict[str, Any]:
+    profile = (memory_write_gate or {}).get("consciousness_write_context")
+    if not isinstance(profile, dict) or not profile:
+        return {}
+    refs = _string_list(profile.get("ref_set"))
+    return {
+        "consciousness_write_context_ref_count": len(refs),
+        "consciousness_write_context_refs": refs,
+        "consciousness_write_context_workspace_candidate_count": profile.get(
+            "workspace_candidate_count"
+        ),
+        "consciousness_write_context_broadcast_target_count": profile.get(
+            "broadcast_target_count"
+        ),
+        "consciousness_write_context_reportability_flag_count": profile.get(
+            "reportability_flag_count"
+        ),
+        "consciousness_write_context_bias": profile.get("write_attention_bias"),
+        "consciousness_write_context_candidate_gate_adjustments": _string_list(
+            profile.get("candidate_gate_adjustments")
+        ),
+        "consciousness_write_context_boundary": profile.get("boundary"),
     }
 
 

@@ -417,6 +417,32 @@ def write_process_report_bundle(
             ),
         ]
     )
+    resolved_consciousness_write_context_ref_set = _dedupe_refs(
+        [
+            *_list_or_empty(
+                idle_governance.get("consciousness_write_context_refs")
+            ),
+            *_list_or_empty(
+                idle_governance.get("background_consciousness_write_context_refs")
+            ),
+        ]
+    )
+    resolved_background_consciousness_write_context_candidate_gate_adjustments = (
+        _dedupe_refs(
+            [
+                *_list_or_empty(
+                    idle_governance.get(
+                        "background_consciousness_write_context_candidate_gate_adjustments"
+                    )
+                ),
+                *_list_or_empty(
+                    idle_governance.get(
+                        "consciousness_write_context_candidate_gate_adjustments"
+                    )
+                ),
+            ]
+        )
+    )
     resolved_resident_autonomous_activity_presence_profile = _dict_or_empty(
         idle_governance.get("resident_autonomous_activity_presence_profile")
         or idle_governance.get("background_resident_autonomous_activity_presence_profile")
@@ -828,6 +854,62 @@ def write_process_report_bundle(
         ),
         "background_body_signal_candidate_gate_adjustments": (
             resolved_background_body_signal_candidate_gate_adjustments
+        ),
+        "consciousness_write_context_ref_set": (
+            resolved_consciousness_write_context_ref_set
+        ),
+        "background_consciousness_write_context_refs": (
+            resolved_consciousness_write_context_ref_set
+        ),
+        "background_consciousness_write_context_bias": _first_non_none(
+            idle_governance.get("background_consciousness_write_context_bias"),
+            idle_governance.get("consciousness_write_context_bias"),
+        ),
+        "background_consciousness_write_context_ref_count": _first_non_none(
+            idle_governance.get(
+                "background_consciousness_write_context_ref_count"
+            ),
+            idle_governance.get("consciousness_write_context_ref_count"),
+            len(resolved_consciousness_write_context_ref_set)
+            if resolved_consciousness_write_context_ref_set
+            else None,
+        ),
+        "background_consciousness_write_context_workspace_candidate_count": (
+            _first_non_none(
+                idle_governance.get(
+                    "background_consciousness_write_context_workspace_candidate_count"
+                ),
+                idle_governance.get(
+                    "consciousness_write_context_workspace_candidate_count"
+                ),
+            )
+        ),
+        "background_consciousness_write_context_broadcast_target_count": (
+            _first_non_none(
+                idle_governance.get(
+                    "background_consciousness_write_context_broadcast_target_count"
+                ),
+                idle_governance.get(
+                    "consciousness_write_context_broadcast_target_count"
+                ),
+            )
+        ),
+        "background_consciousness_write_context_reportability_flag_count": (
+            _first_non_none(
+                idle_governance.get(
+                    "background_consciousness_write_context_reportability_flag_count"
+                ),
+                idle_governance.get(
+                    "consciousness_write_context_reportability_flag_count"
+                ),
+            )
+        ),
+        "background_consciousness_write_context_candidate_gate_adjustments": (
+            resolved_background_consciousness_write_context_candidate_gate_adjustments
+        ),
+        "background_consciousness_write_context_boundary": _first_non_none(
+            idle_governance.get("background_consciousness_write_context_boundary"),
+            idle_governance.get("consciousness_write_context_boundary"),
         ),
         "trait_drift_monitor_ref": trait_drift_monitor_ref,
         "background_convergence_summary_ref": background_convergence_summary_ref,
