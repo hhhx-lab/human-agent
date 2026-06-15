@@ -452,6 +452,70 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertTrue(summary["consciousness_write_context_closeout_present"])
         self.assertIn("process_closeout", summary["domain_presence"])
 
+    def test_ability_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "birth_readiness_rollup": {"overall_status": "blocked"},
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {
+                    "total_required_files": 120,
+                    "missing_file_count": 0,
+                    "doc_index_missing_count": 0,
+                    "missing_files": [],
+                },
+            },
+            "doc_to_code_coverage_matrix": {
+                "schema_version": "doc_to_code_coverage_matrix_v0",
+                "coverage_summary": {
+                    "total_documents": 45,
+                    "uncovered_docs": [],
+                },
+            },
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+                "activation_preflight_allowed": True,
+            },
+        }
+
+        summary = _collect_ability_birth_readiness_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertEqual(summary["v0_required_file_count"], 120)
+        self.assertEqual(summary["doc_to_code_total_documents"], 45)
+        self.assertEqual(summary["v0_contract_coverage_report_status"], "closed")
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_state_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "resident_lifecycle": {"status": "waiting"},
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {
+                    "total_required_files": 88,
+                    "missing_file_count": 1,
+                    "missing_files": ["docs/v0/missing.md"],
+                },
+            },
+            "doc_to_code_coverage_matrix": {
+                "schema_version": "doc_to_code_coverage_matrix_v0",
+                "coverage_summary": {
+                    "total_documents": 30,
+                    "uncovered_docs": ["docs/real—live0/99_gap.md"],
+                },
+            },
+            "digital_life_process_report": {},
+            "idle_strategy": {},
+            "terminal_life_loop": {},
+        }
+
+        summary = _collect_resident_continuity_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertEqual(summary["v0_missing_file_count"], 1)
+        self.assertEqual(summary["doc_to_code_uncovered_count"], 1)
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
     def test_perception_summary_exposes_process_closeout(self):
         section = {
             "visual_observation_frame": {"observation_mode": "peripheral_scan"},

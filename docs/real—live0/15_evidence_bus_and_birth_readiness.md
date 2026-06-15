@@ -73,7 +73,11 @@
 | `runtime/reports/latest/doc_ingestion_report.json` | 文档摄取闭合 |
 | `runtime/reports/latest/birth_readiness_report.json` | 出生准备度 |
 | `runtime/reports/latest/v0_contract_coverage_report.json` | v0 合同覆盖 |
+| `runtime/state/contracts/v0_contract_file_index.json` | v0 必需文件存在性与 doc index 闭合 |
+| `runtime/state/contracts/doc_to_code_coverage_matrix.json` | `00-258` / real—live0 到 code/state/report 的覆盖矩阵 |
 | `runtime/reports/latest/live0_acceptance_audit_report.json` | 七项验收 |
+
+当前 ITR-08 第七十三段把上述 S11 合同覆盖三元组接入 slash 检查面：`/ability#ability_birth_readiness_summary_v0` 与 `/state#resident_continuity_summary_v0` 会显示 `v0_contract_coverage_present`、required/missing file count、doc-to-code uncovered docs 与 `activation_preflight_allowed`。机制含义是出生准备与总状态入口可以直接核对 ITR-01 trace lock 是否进入 runtime，而不只读取扁平计数；边界仍是 inspection-only，不生成出生完成宣称。
 | `runtime/receipts/*.json` | 回执和输入哈希 |
 
 ## 出生准备度的证据闭合方式

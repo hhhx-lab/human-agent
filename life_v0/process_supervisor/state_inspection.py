@@ -647,6 +647,12 @@ def build_resident_state_inspection(
                     "../reports/latest/live0_acceptance_audit_report.json"
                 ),
                 "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
+                ),
                 "queue_e_world_contact_handoff": (
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
@@ -807,6 +813,15 @@ def _collect_state_summary(
         "digital_life_process_report": _compact_json(
             reports_dir / "digital_life_process_report.json"
         ),
+        "v0_contract_file_index": _compact_json(
+            terminal_dir.parent / "contracts" / "v0_contract_file_index.json"
+        ),
+        "doc_to_code_coverage_matrix": _compact_json(
+            terminal_dir.parent / "contracts" / "doc_to_code_coverage_matrix.json"
+        ),
+        "v0_contract_coverage_report": _compact_json(
+            reports_dir / "v0_contract_coverage_report.json"
+        ),
     }
     state["resident_continuity_summary"] = _collect_resident_continuity_summary(
         state
@@ -833,10 +848,22 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
     process_report = _extract_compact_value(
         section.get("digital_life_process_report", {})
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
     process_closeout = _process_closeout_bundle_inspection_snapshot(
         process_report=process_report,
         idle_strategy=idle_strategy,
         terminal_loop=terminal_loop,
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
     )
     model_context_summary = _extract_nested_value(
         model_expression,
@@ -903,6 +930,10 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         "body_pressure_closeout": bool(
             process_closeout.get("body_pressure_closeout_present")
         ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
+        ),
+        "doc_to_code_coverage": bool(doc_to_code_matrix),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -1056,6 +1087,7 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
             "queue_e_world_contact_body_pressure_profile_ref"
         ),
         **process_closeout,
+        **contract_coverage,
     }
 
 
@@ -1913,6 +1945,12 @@ def _collect_ability_birth_readiness_summary(
     stage_gate = _extract_compact_value(section.get("birth_readiness_stage_gate", {}))
     live0_audit = _extract_compact_value(section.get("live0_acceptance_audit", {}))
     contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
     world_contact_handoff = _extract_compact_value(
         section.get("queue_e_world_contact_handoff", {})
     )
@@ -1942,6 +1980,11 @@ def _collect_ability_birth_readiness_summary(
         idle_strategy=idle_strategy,
         terminal_loop=terminal_loop,
         go_nogo=go_nogo,
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
     )
     life_target_status = readiness_rollup.get("life_target_status")
     if not isinstance(life_target_status, dict):
@@ -1978,6 +2021,10 @@ def _collect_ability_birth_readiness_summary(
         "autobiographical_repair_retrieval_closeout": bool(
             process_closeout.get("autobiographical_repair_retrieval_closeout_present")
         ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
+        ),
+        "doc_to_code_coverage": bool(doc_to_code_matrix),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -2035,10 +2082,6 @@ def _collect_ability_birth_readiness_summary(
         "criteria_closed": criteria_summary.get("criteria_closed"),
         "criteria_blocked": criteria_summary.get("criteria_blocked"),
         "failed_criteria": _list_refs(criteria_summary.get("failed_criteria")),
-        "contract_count": contract_index.get("contract_count"),
-        "covered_contract_ref_count": _count_any(
-            contract_index.get("covered_contract_refs")
-        ),
         "ability_boundary": (
             "ability_summary_is_birth_evidence_view_not_completion_claim"
         ),
@@ -2054,6 +2097,7 @@ def _collect_ability_birth_readiness_summary(
         ),
         **live_queue_e_handoff,
         **process_closeout,
+        **contract_coverage,
         "queue_e_world_contact_handoff_status": _first_non_empty(
             readiness_rollup.get("queue_e_world_contact_handoff_status"),
             stage_gate.get("queue_e_world_contact_handoff_status"),
@@ -6558,6 +6602,78 @@ def _responsibility_closeout_inspection_snapshot(
         ),
         "autobiographical_repair_report_boundary": memory_closeout.get(
             "autobiographical_repair_report_boundary"
+        ),
+    }
+
+
+def _v0_contract_coverage_inspection_snapshot(
+    *,
+    contract_index: dict[str, Any],
+    doc_to_code_matrix: dict[str, Any] | None = None,
+    contract_coverage_report: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    contract_index = contract_index or {}
+    doc_to_code_matrix = doc_to_code_matrix or {}
+    contract_coverage_report = contract_coverage_report or {}
+    file_coverage = contract_index.get("coverage_summary")
+    if not isinstance(file_coverage, dict):
+        file_coverage = {}
+    doc_coverage = doc_to_code_matrix.get("coverage_summary")
+    if not isinstance(doc_coverage, dict):
+        doc_coverage = {}
+    missing_files = _list_refs(
+        _first_non_empty(
+            file_coverage.get("missing_files"),
+            contract_index.get("missing_files"),
+        ),
+        limit=12,
+    )
+    uncovered_docs = _list_refs(doc_coverage.get("uncovered_docs"), limit=12)
+    coverage_present = bool(
+        contract_index
+        or doc_to_code_matrix
+        or contract_coverage_report
+    )
+    return {
+        "v0_contract_coverage_present": coverage_present,
+        "v0_contract_file_index_schema": contract_index.get("schema_version"),
+        "v0_required_file_count": _first_non_empty(
+            file_coverage.get("total_required_files"),
+            contract_index.get("contract_count"),
+            _count_any(contract_index.get("files")),
+        ),
+        "v0_missing_file_count": _first_non_empty(
+            file_coverage.get("missing_file_count"),
+            _count_any(contract_index.get("missing_files")),
+            _count_any(missing_files),
+        ),
+        "v0_doc_index_missing_count": file_coverage.get("doc_index_missing_count"),
+        "v0_missing_files": missing_files,
+        "doc_to_code_coverage_matrix_schema": doc_to_code_matrix.get(
+            "schema_version"
+        ),
+        "doc_to_code_total_documents": doc_coverage.get("total_documents"),
+        "doc_to_code_uncovered_count": _count_any(
+            doc_coverage.get("uncovered_docs")
+        ),
+        "doc_to_code_uncovered_docs": uncovered_docs,
+        "v0_contract_coverage_report_status": contract_coverage_report.get("status"),
+        "v0_contract_coverage_activation_preflight_allowed": (
+            contract_coverage_report.get("activation_preflight_allowed")
+        ),
+        "v0_contract_coverage_next_required_command": contract_coverage_report.get(
+            "next_required_command"
+        ),
+        "v0_contract_coverage_inspection_boundary": (
+            "structured_contract_coverage_evidence_not_completion_claim"
+        ),
+        "contract_count": _first_non_empty(
+            contract_index.get("contract_count"),
+            file_coverage.get("total_required_files"),
+        ),
+        "covered_contract_ref_count": _first_non_empty(
+            _count_any(contract_index.get("covered_contract_refs")),
+            file_coverage.get("v0_required_files"),
         ),
     }
 
