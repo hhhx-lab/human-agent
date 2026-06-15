@@ -651,6 +651,8 @@ def build_resident_state_inspection(
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "go_nogo_state": "action/go_nogo_state.json",
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
@@ -1917,6 +1919,8 @@ def _collect_ability_birth_readiness_summary(
     terminal_loop = _extract_compact_value(
         section.get("terminal_life_loop_state", {})
     )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
     process_report = _extract_compact_value(
         section.get("digital_life_process_report", {})
     )
@@ -1932,6 +1936,12 @@ def _collect_ability_birth_readiness_summary(
         handoff=world_contact_handoff,
         terminal_loop=terminal_loop,
         world_contact_presence=world_contact_presence,
+    )
+    process_closeout = _process_closeout_bundle_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
     )
     life_target_status = readiness_rollup.get("life_target_status")
     if not isinstance(life_target_status, dict):
@@ -1954,8 +1964,19 @@ def _collect_ability_birth_readiness_summary(
             or process_report.get("live_queue_e_world_contact_handoff_refreshed")
         ),
         "live_queue_e_world_contact_handoff_closeout": bool(
-            process_report.get("live_queue_e_world_contact_handoff_report_profile")
+            process_closeout.get("live_queue_e_world_contact_handoff_closeout_present")
+            or process_report.get("live_queue_e_world_contact_handoff_report_profile")
             or process_report.get("live_queue_e_world_contact_handoff_refreshed")
+        ),
+        "process_closeout": bool(process_closeout.get("process_closeout_present")),
+        "consciousness_write_context_closeout": bool(
+            process_closeout.get("consciousness_write_context_closeout_present")
+        ),
+        "body_pressure_closeout": bool(
+            process_closeout.get("body_pressure_closeout_present")
+        ),
+        "autobiographical_repair_retrieval_closeout": bool(
+            process_closeout.get("autobiographical_repair_retrieval_closeout_present")
         ),
     }
     active_domains = [
@@ -2027,10 +2048,12 @@ def _collect_ability_birth_readiness_summary(
                 "live_queue_e_world_contact_handoff_closeout_audited",
             )
         ),
-        "live_queue_e_world_contact_handoff_report_boundary": process_report.get(
-            "live_queue_e_world_contact_handoff_report_boundary"
+        "live_queue_e_world_contact_handoff_report_boundary": _first_non_empty(
+            process_report.get("live_queue_e_world_contact_handoff_report_boundary"),
+            process_closeout.get("live_queue_e_world_contact_handoff_report_boundary"),
         ),
         **live_queue_e_handoff,
+        **process_closeout,
         "queue_e_world_contact_handoff_status": _first_non_empty(
             readiness_rollup.get("queue_e_world_contact_handoff_status"),
             stage_gate.get("queue_e_world_contact_handoff_status"),

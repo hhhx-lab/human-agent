@@ -1,6 +1,7 @@
 import unittest
 
 from life_v0.process_supervisor.state_inspection import (
+    _collect_ability_birth_readiness_summary,
     _collect_body_grounding_summary,
     _collect_cognitive_workspace_summary,
     _collect_consciousness_reportability_summary,
@@ -433,6 +434,23 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
 
         self.assertTrue(summary["expression_closeout_present"])
         self.assertIn("expression_closeout", summary["domain_presence"])
+
+    def test_ability_summary_exposes_process_closeout_bundle(self):
+        section = {
+            "birth_readiness_rollup": {"overall_status": "blocked"},
+            "live0_acceptance_audit": {"status": "open"},
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy_state": {},
+            "go_nogo_state": {},
+            "terminal_life_loop_state": {},
+        }
+
+        summary = _collect_ability_birth_readiness_summary(section)
+
+        self.assertTrue(summary["process_closeout_present"])
+        self.assertTrue(summary["live_queue_e_world_contact_handoff_closeout_present"])
+        self.assertTrue(summary["consciousness_write_context_closeout_present"])
+        self.assertIn("process_closeout", summary["domain_presence"])
 
     def test_perception_summary_exposes_process_closeout(self):
         section = {
