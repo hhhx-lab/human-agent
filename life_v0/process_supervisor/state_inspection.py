@@ -3009,6 +3009,16 @@ def _collect_language_generation_consumption_summary(
         model_expression,
         "model_expression_context_summary",
     )
+    model_expression_consciousness_write_context_refs = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_refs"
+        )
+    )
+    model_expression_consciousness_write_context_adjustments = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
+        )
+    )
 
     domain_presence = {
         "language_percept": bool(language_percept),
@@ -3027,6 +3037,15 @@ def _collect_language_generation_consumption_summary(
         "responsibility_repair": bool(responsibility_loop or pain_regret_repair),
         "prediction_attention": bool(
             belief_state or prediction_error or active_sampling
+        ),
+        "model_expression_consciousness_write_context": bool(
+            model_expression_consciousness_write_context_refs
+            or model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+            or model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
         ),
         "resident_autonomous_activity": bool(resident_autonomous),
         "proactive_voice": bool(proactive_state),
@@ -3066,6 +3085,43 @@ def _collect_language_generation_consumption_summary(
         "expression_monitor_status": expression_monitor.get("monitor_status"),
         "expression_plan_goal": expression_plan.get("semantic_goal"),
         "model_expression_status": model_expression.get("model_expression_status"),
+        "model_expression_consciousness_write_context_refs": (
+            model_expression_consciousness_write_context_refs
+        ),
+        "model_expression_consciousness_write_context_ref_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_ref_count"
+            )
+            or _count_any(model_expression_consciousness_write_context_refs)
+        ),
+        "model_expression_consciousness_write_context_workspace_candidate_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_workspace_candidate_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_broadcast_target_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_broadcast_target_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_reportability_flag_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_reportability_flag_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_bias": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+        ),
+        "model_expression_consciousness_write_context_candidate_gate_adjustments": (
+            model_expression_consciousness_write_context_adjustments
+        ),
+        "model_expression_consciousness_write_context_boundary": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
         "post_expression_gate_status": post_expression_gate.get("gate_status"),
         "required_evidence_flags": required_evidence_flags[:12],
         "missing_evidence_flags": missing_evidence_flags[:12],

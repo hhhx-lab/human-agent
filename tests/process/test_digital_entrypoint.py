@@ -2681,6 +2681,24 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     "model_expression_status": "model_expression_applied",
                     "model_expression_context_summary": {
                         "relationship_stage": "shared_continuity",
+                        "prediction_attention_consciousness_write_context_refs": [
+                            "runtime/state/consciousness/workspace_frame.json",
+                            "runtime/state/consciousness/broadcast_frame.json",
+                            "runtime/state/consciousness/metacognition_state.json",
+                        ],
+                        "prediction_attention_consciousness_write_context_ref_count": 3,
+                        "prediction_attention_consciousness_write_context_workspace_candidate_count": 2,
+                        "prediction_attention_consciousness_write_context_broadcast_target_count": 3,
+                        "prediction_attention_consciousness_write_context_reportability_flag_count": 1,
+                        "prediction_attention_consciousness_write_context_bias": (
+                            "prefer_reportable_workspace_candidates"
+                        ),
+                        "prediction_attention_consciousness_write_context_candidate_gate_adjustments": [
+                            "prioritize_workspace_reportability_before_write"
+                        ],
+                        "prediction_attention_consciousness_write_context_boundary": (
+                            "memory_consciousness_write_context_not_spoken_language"
+                        ),
                     },
                     "post_expression_gate": {
                         "schema_version": "post_expression_gate_v0",
@@ -2848,6 +2866,20 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn("body_affect", rendered)
             self.assertIn("responsibility_repair", rendered)
             self.assertIn("prediction_attention", rendered)
+            self.assertIn("model_expression_consciousness_write_context", rendered)
+            self.assertIn(
+                "runtime/state/consciousness/workspace_frame.json",
+                rendered,
+            )
+            self.assertIn("prefer_reportable_workspace_candidates", rendered)
+            self.assertIn(
+                "prioritize_workspace_reportability_before_write",
+                rendered,
+            )
+            self.assertIn(
+                "memory_consciousness_write_context_not_spoken_language",
+                rendered,
+            )
             self.assertIn("resident_autonomous_activity", rendered)
             self.assertIn("proactive_voice", rendered)
             self.assertIn("state_inspection_only_model_expression_then_post_gate", rendered)

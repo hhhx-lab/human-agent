@@ -1098,6 +1098,18 @@ DigitalLifeProcessReport.model_expression_prediction_attention_consciousness_wri
 
 机制含义是：语言器官已经消费过的工作区写门上下文，不会在终端关闭后停成一份孤立的表达报告；它可以回到下一轮常驻连续性，继续影响等待治理和语言前材料。边界继续保持：这是跨唤醒结构证据，不生成固定回答，不新增 system prompt，不把意识写门、模型表达上下文或生命信号释放成 Adam 的外显语言。
 
+当前 ITR-08 第五十段把模型表达意识写门证据接入 `/language` 检查面：
+
+```text
+ModelExpression.model_expression_context_summary.prediction_attention_consciousness_write_context_*
+  -> StateInspection.language_generation_consumption_summary.model_expression_consciousness_write_context_*
+  -> /language generation_consumption_summary
+```
+
+`state_inspection.py` 现在会在 `language_generation_consumption_summary_v0` 中读取 `model_expression_context_summary.prediction_attention_consciousness_write_context_refs`、ref count、workspace candidate count、broadcast target count、reportability flag count、bias、candidate gate adjustments 和 boundary，并以 `model_expression_consciousness_write_context_*` 字段显示在 `/language` 检查面里；`domain_presence` 也会记录 `model_expression_consciousness_write_context`。这样语言检查不只显示模型表达 status 和 post-expression gate，也能直接追溯模型表达前是否消费了工作区/广播/元认知写门材料。
+
+机制含义是：语言系统的状态查看面必须能证明它消费了哪些内部材料，而不是只说“模型表达已应用”。这给第 5 点语言系统和第 7 点状态命令提供可审计证据，同时继续保持检查面边界：它不是 Adam 的自然语言回答，不生成固定话术，不新增 system prompt，不把意识写门字段转写成外显生命信号。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：
