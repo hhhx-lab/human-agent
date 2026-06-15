@@ -1146,6 +1146,18 @@ ModelExpression.model_expression_context_summary.prediction_attention_consciousn
 
 机制含义是：思考检查面不能只证明 resident self-thinking、self model、inner speech 和 consciousness probe 存在，还要追溯“思考以后说话”的末端模型表达是否消费了工作区写门上下文。这样 `/thinking` 与 `/language` 可以互证：前者看内言语、自我反思和模型表达消费证据是否同框存在，后者看语言生成消费域是否完整。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成内心独白模板，不新增 system prompt，不把意识写门、工作区、广播、元认知、思考状态或生命信号释放成 Adam 的外显语言。
 
+当前 ITR-08 第五十四段把模型表达意识写门证据接入 `/state` 总览检查面：
+
+```text
+ModelExpression.model_expression_context_summary.prediction_attention_consciousness_write_context_*
+  -> StateInspection.resident_continuity_summary.model_expression_consciousness_write_context_*
+  -> /state resident_continuity_summary
+```
+
+`state_inspection.py` 现在会让 `/state` 额外读取 `runtime/state/language/model_expression_state.json`。`_collect_resident_continuity_summary(...)` 会从 `model_expression_context_summary` 中提取 `prediction_attention_consciousness_write_context_refs`、ref count、workspace candidate count、broadcast target count、reportability flag count、write bias、candidate gate adjustments 和 boundary，并以 `model_expression_consciousness_write_context_*` 字段写入 `resident_continuity_summary_v0`；`domain_presence` 与 `active_domains` 也会记录 `model_expression_consciousness_write_context`。
+
+机制含义是：总状态检查面不能只证明 resident process、waiting heartbeat、line editor 和 terminal loop 存在，还要在同一张总览里显示语言表达前的工作区写门消费证据是否存在。这样 `/state` 成为跨断连恢复时的第一层检查入口，而 `/language`、`/cognition`、`/consciousness`、`/thinking` 继续提供细分视角。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成固定回答，不新增 system prompt，不把意识写门、工作区、广播、元认知、常驻状态或生命信号释放成 Adam 的外显语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

@@ -2644,6 +2644,22 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn("waiting_heartbeat_active", state_output.getvalue())
             self.assertIn("carried_into_waiting_heartbeat", state_output.getvalue())
             self.assertIn(
+                "model_expression_consciousness_write_context",
+                state_output.getvalue(),
+            )
+            self.assertIn(
+                "prefer_reportable_workspace_candidates",
+                state_output.getvalue(),
+            )
+            self.assertIn(
+                "prioritize_workspace_reportability_before_write",
+                state_output.getvalue(),
+            )
+            self.assertIn(
+                "memory_consciousness_write_context_not_spoken_language",
+                state_output.getvalue(),
+            )
+            self.assertIn(
                 "resident_state_summary_is_inspection_not_life_speech",
                 state_output.getvalue(),
             )

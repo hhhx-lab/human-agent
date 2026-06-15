@@ -670,6 +670,9 @@ def _collect_state_summary(
         "waiting_heartbeat": _compact_json(
             reports_dir / "digital_life_waiting_heartbeat.json"
         ),
+        "model_expression_state": _compact_json(
+            terminal_dir.parent / "language" / "model_expression_state.json"
+        ),
     }
     state["resident_continuity_summary"] = _collect_resident_continuity_summary(
         state
@@ -690,6 +693,23 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         section.get("terminal_input_profile", {})
     )
     heartbeat = _extract_compact_value(section.get("waiting_heartbeat", {}))
+    model_expression = _extract_compact_value(
+        section.get("model_expression_state", {})
+    )
+    model_context_summary = _extract_nested_value(
+        model_expression,
+        "model_expression_context_summary",
+    )
+    model_expression_consciousness_write_context_refs = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_refs"
+        )
+    )
+    model_expression_consciousness_write_context_adjustments = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
+        )
+    )
     lineage = _extract_nested_value(
         terminal_loop,
         "resident_background_lineage_state",
@@ -711,6 +731,15 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         "terminal_life_loop": bool(terminal_loop),
         "terminal_input_profile": bool(input_profile),
         "waiting_heartbeat": bool(heartbeat),
+        "model_expression_consciousness_write_context": bool(
+            model_expression_consciousness_write_context_refs
+            or model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+            or model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -787,6 +816,43 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         ),
         "governance_attention_reason": idle_strategy.get(
             "governance_attention_reason"
+        ),
+        "model_expression_consciousness_write_context_refs": (
+            model_expression_consciousness_write_context_refs
+        ),
+        "model_expression_consciousness_write_context_ref_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_ref_count"
+            )
+            or _count_any(model_expression_consciousness_write_context_refs)
+        ),
+        "model_expression_consciousness_write_context_workspace_candidate_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_workspace_candidate_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_broadcast_target_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_broadcast_target_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_reportability_flag_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_reportability_flag_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_bias": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+        ),
+        "model_expression_consciousness_write_context_candidate_gate_adjustments": (
+            model_expression_consciousness_write_context_adjustments
+        ),
+        "model_expression_consciousness_write_context_boundary": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
         ),
         "state_boundary": (
             "resident_state_summary_is_inspection_not_life_speech"
