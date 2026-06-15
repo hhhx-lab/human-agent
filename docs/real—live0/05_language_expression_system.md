@@ -249,3 +249,16 @@ S07 `run_build_language_relationship` 不再硬编码 fixture 话语，而是通
 | 6 | 共同术语 + 修复/承诺证据拼接 | `relationship_evidence_bootstrap` |
 
 Live turn 路径在 `live_language_turn.py` 标记 `live_external_utterance`。`/language` 检查面显示 `language_percept_input_mode` 与 `language_percept_input_source_ref`。边界：`structured_percept_input_not_spoken_response`。测试：`tests/slices/test_percept_input.py`、`tests/slices/test_language_relationship.py`。
+
+## SharedTerms 动态晋升（ITR-08-84）
+
+真实关系回合后，`resident_turn_writeback.py#_refresh_long_horizon_continuity` 在语境累积刷新后调用 `shared_terms.py#project_shared_term_registry_from_live_evidence`，从多源证据晋升共同术语：
+
+| 证据源 | 字段 |
+|---|---|
+| 关系时间线 | `relationship_timeline.common_ground_states[].shared_terms` |
+| 语境累积 | `context_accumulation_window.shared_term_surfaces` |
+| 语义图 | `semantic_map.shared_meaning_bindings[].surface` |
+| 语言感知 | `language_percept.shared_term_hits` |
+
+晋升门控要求 `relation_scope` 闭合、至少 2 条 dialogue turn ref，且证据源不少于 2 个；单轮新词停留在 `shared_term_promotion_candidate_surfaces`，不直接写入稳定共同语言。`/language` 检查面通过 `shared_term_promotion_*` 与 `shared_term_live_promotion` domain presence 追溯。边界：`structured_shared_term_promotion_not_spoken_language`。测试：`tests/slices/test_shared_terms_live_promotion.py`、`tests/process/test_state_inspection_memory_closeout.py#test_language_summary_exposes_shared_term_live_promotion`。

@@ -32,6 +32,10 @@ from ..language.commitment_expression import build_commitment_expression_plan
 from ..language.expression_monitor import (
     project_expression_plan_with_queue_e_repair_modulation,
 )
+from ..language.shared_terms import (
+    SHARED_TERM_REGISTRY_REF,
+    project_shared_term_registry_from_live_evidence,
+)
 from ..language.dialogue_log import collect_dialogue_turn_refs
 from ..language.relationship_timeline import build_relationship_timeline
 from ..state_store.autobiographical_stack import (
@@ -466,6 +470,7 @@ def write_resident_turn_writeback(
     live_consciousness_chain_profile: dict[str, Any] = {}
     live_queue_e_handoff_profile: dict[str, Any] = {}
     live_context_accumulation_profile: dict[str, Any] = {}
+    live_shared_term_promotion_profile: dict[str, Any] = {}
     if continuity_refresh:
         effective_memory_write_gate = (
             continuity_refresh.get("memory_write_gate") or memory_write_gate
@@ -477,6 +482,9 @@ def write_resident_turn_writeback(
             continuity_refresh
         )
         live_context_accumulation_profile = _live_context_accumulation_profile(
+            continuity_refresh
+        )
+        live_shared_term_promotion_profile = _live_shared_term_promotion_profile(
             continuity_refresh
         )
         if live_consciousness_chain_profile:
@@ -492,10 +500,13 @@ def write_resident_turn_writeback(
             )
         if live_context_accumulation_profile:
             updated_terminal_life_loop_state.update(live_context_accumulation_profile)
+        if live_shared_term_promotion_profile:
+            updated_terminal_life_loop_state.update(live_shared_term_promotion_profile)
         if (
             live_consciousness_chain_profile
             or live_queue_e_handoff_profile
             or live_context_accumulation_profile
+            or live_shared_term_promotion_profile
         ):
             write_json(
                 terminal_dir / "terminal_life_loop_state.json",
@@ -1922,6 +1933,22 @@ def _refresh_long_horizon_continuity(
         updated_context_accumulation,
     )
     write_json(terminal_dir / "turn_transition_trace.json", updated_turn_transition)
+    shared_term_registry_path = language_dir / "shared_term_registry.json"
+    existing_shared_term_registry = _read_json_if_exists(shared_term_registry_path)
+    refreshed_shared_term_registry = project_shared_term_registry_from_live_evidence(
+        shared_term_registry=existing_shared_term_registry,
+        generated_at=generated_at,
+        relationship_graph=evolved_relationship_graph,
+        relationship_timeline=refreshed_relationship_timeline,
+        language_percept=language_percept,
+        semantic_map=semantic_map,
+        context_accumulation=updated_context_accumulation,
+        relation_scope_index=relation_scope_index,
+        dialogue_turn_refs=dialogue_turn_refs,
+        live_language_turn_refs=live_language_turn_refs,
+    )
+    if refreshed_shared_term_registry:
+        write_json(shared_term_registry_path, refreshed_shared_term_registry)
     trait_drift_monitor = build_trait_drift_monitor_from_self_model(
         run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
         generated_at=generated_at,
@@ -1956,6 +1983,7 @@ def _refresh_long_horizon_continuity(
         "queue_e_world_contact_handoff_profile": updated_queue_e_handoff_profile,
         "context_accumulation_window": updated_context_accumulation,
         "turn_transition_trace": updated_turn_transition,
+        "shared_term_registry": refreshed_shared_term_registry,
         "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
         "memory_retrieval_frame": memory_retrieval_frame or {},
@@ -2224,6 +2252,40 @@ def _apply_live_consciousness_lineage_fields(
         payload[
             "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
         ] = adjustments
+
+
+def _live_shared_term_promotion_profile(
+    continuity_refresh: dict[str, Any],
+) -> dict[str, Any]:
+    shared_term_registry = continuity_refresh.get("shared_term_registry")
+    if not isinstance(shared_term_registry, dict) or not shared_term_registry:
+        return {}
+    return {
+        "live_shared_term_promotion_refreshed": True,
+        "shared_term_registry_ref": SHARED_TERM_REGISTRY_REF,
+        "live_shared_term_promotion_count": len(
+            [
+                term
+                for term in shared_term_registry.get("shared_terms", [])
+                if isinstance(term, dict)
+                and term.get("promotion_gate_status")
+                in {"promoted", "seed", "seed_reinforced"}
+            ]
+        ),
+        "live_shared_term_promotion_candidate_count": int(
+            shared_term_registry.get("shared_term_promotion_candidate_count", 0)
+        ),
+        "live_shared_term_promotion_relation_scope": shared_term_registry.get(
+            "shared_term_promotion_relation_scope"
+        ),
+        "live_shared_term_promotion_dialogue_turn_count": int(
+            shared_term_registry.get("shared_term_promotion_dialogue_turn_count", 0)
+        ),
+        "live_shared_term_promotion_boundary": (
+            shared_term_registry.get("shared_term_promotion_boundary")
+            or "structured_shared_term_promotion_not_spoken_language"
+        ),
+    }
 
 
 def _live_context_accumulation_profile(

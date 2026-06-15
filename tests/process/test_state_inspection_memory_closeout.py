@@ -598,6 +598,30 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
             summary["domain_presence"],
         )
 
+    def test_language_summary_exposes_shared_term_live_promotion(self):
+        section = {
+            "shared_term_registry": {
+                "live_promotion_refreshed": True,
+                "shared_term_promotion_candidate_count": 1,
+                "shared_term_promotion_relation_scope": "friend",
+                "shared_term_promotion_dialogue_turn_count": 2,
+                "shared_terms": [
+                    {"surface": "共同语言", "promotion_gate_status": "seed"},
+                    {"surface": "生命膜", "promotion_gate_status": "promoted"},
+                ],
+            },
+            "terminal_life_loop_state": {
+                "live_shared_term_promotion_refreshed": True,
+            },
+        }
+
+        summary = _collect_language_generation_consumption_summary(section)
+
+        self.assertEqual(summary["shared_term_promotion_count"], 2)
+        self.assertEqual(summary["shared_term_live_promoted_count"], 1)
+        self.assertEqual(summary["shared_term_promotion_candidate_count"], 1)
+        self.assertIn("shared_term_live_promotion", summary["domain_presence"])
+
     def test_language_summary_exposes_expression_plan_queue_e(self):
         section = {
             "expression_plan": {

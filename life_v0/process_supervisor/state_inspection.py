@@ -509,6 +509,10 @@ def build_resident_state_inspection(
                 "inner_speech": "language/inner_speech_frame.json",
                 "expression_monitor": "language/expression_monitor_state.json",
                 "expression_plan": "language/expression_plan.json",
+                "shared_term_registry": "language/shared_term_registry.json",
+                "context_accumulation_window": (
+                    "terminal/context_accumulation_window.json"
+                ),
                 "model_expression_state": "language/model_expression_state.json",
                 "relationship_memory": "memory/relationship_memory.json",
                 "dialogue_memory_summary": "memory/dialogue_memory_summary.json",
@@ -1233,6 +1237,23 @@ def _identity_name_binding_inspection_snapshot(
         identity_root=identity_root_value,
         life_name_registry=life_name_registry_value,
         continuity_refs=continuity_refs_value,
+    )
+
+
+def _shared_term_promotion_inspection_snapshot(
+    *,
+    shared_term_registry: dict[str, Any],
+    terminal_loop: dict[str, Any],
+) -> dict[str, Any]:
+    from life_v0.language.shared_terms import (
+        shared_term_promotion_inspection_snapshot,
+    )
+
+    shared_term_registry_value = _extract_compact_value(shared_term_registry)
+    terminal_loop_value = _extract_compact_value(terminal_loop)
+    return shared_term_promotion_inspection_snapshot(
+        shared_term_registry=shared_term_registry_value,
+        terminal_life_loop_state=terminal_loop_value,
     )
 
 
@@ -4121,6 +4142,9 @@ def _collect_language_generation_consumption_summary(
         section.get("expression_monitor", {})
     )
     expression_plan = _extract_compact_value(section.get("expression_plan", {}))
+    shared_term_registry = _extract_compact_value(
+        section.get("shared_term_registry", {})
+    )
     model_expression = _extract_compact_value(
         section.get("model_expression_state", {})
     )
@@ -4213,6 +4237,10 @@ def _collect_language_generation_consumption_summary(
             model_context_summary
         )
     )
+    shared_term_promotion = _shared_term_promotion_inspection_snapshot(
+        shared_term_registry=shared_term_registry,
+        terminal_loop=terminal_loop,
+    )
 
     domain_presence = {
         "language_percept": bool(language_percept),
@@ -4272,6 +4300,9 @@ def _collect_language_generation_consumption_summary(
         "language_percept_input_evidence": bool(
             language_percept.get("percept_input_mode")
         ),
+        "shared_term_live_promotion": bool(
+            shared_term_promotion.get("shared_term_live_promotion_present")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -4319,6 +4350,21 @@ def _collect_language_generation_consumption_summary(
         ),
         "expression_plan_queue_e_expression_tempo_mode": expression_plan.get(
             "queue_e_expression_tempo_mode"
+        ),
+        "shared_term_promotion_count": shared_term_promotion.get(
+            "shared_term_promotion_count"
+        ),
+        "shared_term_live_promoted_count": shared_term_promotion.get(
+            "shared_term_live_promoted_count"
+        ),
+        "shared_term_promotion_candidate_count": shared_term_promotion.get(
+            "shared_term_promotion_candidate_count"
+        ),
+        "shared_term_promotion_relation_scope": shared_term_promotion.get(
+            "shared_term_promotion_relation_scope"
+        ),
+        "shared_term_promotion_dialogue_turn_count": shared_term_promotion.get(
+            "shared_term_promotion_dialogue_turn_count"
         ),
         "model_expression_status": model_expression.get("model_expression_status"),
         "model_expression_consciousness_write_context_refs": (

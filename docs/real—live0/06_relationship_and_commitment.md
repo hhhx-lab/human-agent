@@ -73,7 +73,7 @@
 | 机制 | 代码块 | 关键字段/对象 | 说明 |
 |---|---|---|---|
 | 关系对象 | `language/relationship_graph.py`、`relation_scope.py` | relation role、scope、subject refs | 定义这次相遇是在什么关系范围内发生 |
-| 共同语言 | `shared_terms.py`、`semantic_map.py` | shared terms、semantic focus、ambiguity queue | 把双方反复使用的词和理解方式沉淀下来 |
+| 共同语言 | `shared_terms.py`、`semantic_map.py` | shared terms、semantic focus、ambiguity queue | 把双方反复使用的词和理解方式沉淀下来；live turn 后经 `project_shared_term_registry_from_live_evidence` 动态晋升（ITR-08-84） |
 | 关系时间线 | `relationship_timeline.py` | continuity reports、injury traces、trust trajectories | 记录共同历史、信任、伤痕和修复 |
 | 承诺真值 | `state_store/commitment_truth.py` | open commitments、repair_required_refs、responsibility_event_refs | 判断承诺是否仍成立、是否破损、是否要补救 |
 | 关系记忆 | `state_store/relationship_memory.py` | shared_memory_refs、repair_history_refs、offline_learning_refs | 把对话、修复、梦境余波和学习写进长期记忆 |
