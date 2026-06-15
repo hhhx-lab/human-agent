@@ -111,6 +111,7 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         }
         queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
         queue_e_handoff_ref = "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
+        body_pressure_profile_ref = "runtime/state/action/go_nogo_state.json#body_pressure_profile"
         expected_queue_e_refs = {
             "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/membrane/world_contact_summary.json",
@@ -119,6 +120,7 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         }
         expected_queue_e_handoff_refs = {
             "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            body_pressure_profile_ref,
             queue_e_handoff_ref,
         }
 
@@ -150,6 +152,10 @@ class LifeTargetRuntimeTests(unittest.TestCase):
             self.assertEqual(
                 claims["targets"][target]["queue_e_world_contact_handoff_status"],
                 "deferred_until_s05_s09",
+            )
+            self.assertEqual(
+                claims["targets"][target]["queue_e_world_contact_body_pressure_profile_ref"],
+                body_pressure_profile_ref,
             )
             self.assertTrue(
                 expected_queue_e_handoff_refs.issubset(
@@ -201,6 +207,10 @@ class LifeTargetRuntimeTests(unittest.TestCase):
             "queue_e_world_contact_repair_hold_handoff_v0",
         )
         self.assertEqual(queue_e_handoff["handoff_status"], "deferred_until_s05_s09")
+        self.assertEqual(
+            queue_e_handoff["body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertFalse(queue_e_handoff["repair_hold_required"])
         self.assertEqual(queue_e_handoff["confirmation_threshold_bias"], "deferred")
         self.assertTrue(
@@ -228,6 +238,10 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertTrue(expected_queue_e_refs.issubset(set(rollup["queue_e_birth_repair_ref_set"])))
         self.assertEqual(rollup["queue_e_world_contact_handoff_profile_ref"], queue_e_handoff_ref)
         self.assertEqual(rollup["queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
+        self.assertEqual(
+            rollup["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertTrue(expected_queue_e_handoff_refs.issubset(set(rollup["queue_e_world_contact_ref_set"])))
 
         self.assertEqual(stage_gate["schema_version"], "birth_readiness_stage_gate_v0")
@@ -243,6 +257,10 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertEqual(stage_gate["gate_status"]["queue_e_world_contact_handoff_gate"], "deferred_until_s05_s09")
         self.assertEqual(stage_gate["queue_e_world_contact_handoff_profile_ref"], queue_e_handoff_ref)
         self.assertEqual(stage_gate["queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
+        self.assertEqual(
+            stage_gate["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertTrue(expected_queue_e_handoff_refs.issubset(set(stage_gate["queue_e_world_contact_ref_set"])))
 
         self.assertEqual(archive_index["schema_version"], "life_target_archive_receipt_index_v0")
@@ -262,6 +280,10 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertTrue(expected_queue_e_refs.issubset(set(report["queue_e_birth_repair_ref_set"])))
         self.assertEqual(report["queue_e_world_contact_handoff_profile_ref"], queue_e_handoff_ref)
         self.assertEqual(report["queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
+        self.assertEqual(
+            report["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertTrue(expected_queue_e_handoff_refs.issubset(set(report["queue_e_world_contact_ref_set"])))
 
         self.assertEqual(target_status["schema_version"], "life_target_status_v0")
@@ -273,12 +295,20 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         self.assertGreaterEqual(digest["queue_e_birth_repair_ref_count"], 4)
         self.assertEqual(digest["queue_e_world_contact_handoff_profile_ref"], queue_e_handoff_ref)
         self.assertEqual(digest["queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
+        self.assertEqual(
+            digest["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertGreaterEqual(digest["queue_e_world_contact_ref_count"], 2)
         self.assertEqual(check_report["status"], "open")
         self.assertIn("consciousness_probe_gate", check_report["closed_gates"])
         self.assertIn("queue_e_birth_repair_gate", check_report["closed_gates"])
         self.assertEqual(check_report["queue_e_world_contact_handoff_profile_ref"], queue_e_handoff_ref)
         self.assertEqual(check_report["queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
+        self.assertEqual(
+            check_report["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertEqual(receipt["schema_version"], "birth_readiness_receipt_v0")
         self.assertIn(
             "runtime/state/consciousness/consciousness_probe_bundle.json",
@@ -286,6 +316,7 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         )
         self.assertIn(queue_e_profile_ref, receipt["state_refs"])
         self.assertIn(queue_e_handoff_ref, receipt["state_refs"])
+        self.assertIn(body_pressure_profile_ref, receipt["state_refs"])
 
     def test_birth_readiness_consumes_queue_e_world_contact_handoff_after_s05_s09(self):
         from life_v0.authority import run_source_authority
@@ -432,10 +463,13 @@ class LifeTargetRuntimeTests(unittest.TestCase):
             check_report = self._read_json(reports / "birth_readiness_check_report.json")
 
         handoff_ref = "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
+        body_pressure_profile_ref = "runtime/state/action/go_nogo_state.json#body_pressure_profile"
         expected_handoff_refs = {
             "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            body_pressure_profile_ref,
             "runtime/state/validation/world_contact_validation.json",
             "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+            "runtime/state/validation/validation_rollup.json#queue_e_world_contact_body_pressure_profile_ref",
             "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold_required",
             "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/membrane/world_contact_summary.json",
@@ -445,6 +479,10 @@ class LifeTargetRuntimeTests(unittest.TestCase):
 
         self.assertEqual(handoff["schema_version"], "queue_e_world_contact_repair_hold_handoff_v0")
         self.assertEqual(handoff["handoff_status"], "closed")
+        self.assertEqual(
+            handoff["body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertTrue(handoff["repair_hold_required"])
         self.assertEqual(handoff["confirmation_threshold_bias"], "raised")
         self.assertTrue(handoff["blocked_future_routes"])
@@ -459,6 +497,10 @@ class LifeTargetRuntimeTests(unittest.TestCase):
             claim = claims["targets"][target]
             self.assertEqual(claim["queue_e_world_contact_handoff_profile_ref"], handoff_ref)
             self.assertEqual(claim["queue_e_world_contact_handoff_status"], "closed")
+            self.assertEqual(
+                claim["queue_e_world_contact_body_pressure_profile_ref"],
+                body_pressure_profile_ref,
+            )
             self.assertTrue(
                 expected_handoff_refs.issubset(
                     set(claim["queue_e_world_contact_handoff_refs"])
@@ -474,11 +516,23 @@ class LifeTargetRuntimeTests(unittest.TestCase):
         for carrier in [rollup, stage_gate, report]:
             self.assertEqual(carrier["queue_e_world_contact_handoff_profile_ref"], handoff_ref)
             self.assertEqual(carrier["queue_e_world_contact_handoff_status"], "closed")
+            self.assertEqual(
+                carrier["queue_e_world_contact_body_pressure_profile_ref"],
+                body_pressure_profile_ref,
+            )
             self.assertTrue(expected_handoff_refs.issubset(set(carrier["queue_e_world_contact_ref_set"])))
         self.assertEqual(stage_gate["gate_status"]["queue_e_world_contact_handoff_gate"], "closed")
         self.assertEqual(digest["queue_e_world_contact_handoff_status"], "closed")
+        self.assertEqual(
+            digest["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertTrue(digest["queue_e_world_contact_repair_hold_required"])
         self.assertEqual(check_report["queue_e_world_contact_handoff_status"], "closed")
+        self.assertEqual(
+            check_report["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
 
     def test_cli_check_birth_readiness_returns_zero_and_writes_report(self):
         with tempfile.TemporaryDirectory() as tmp:

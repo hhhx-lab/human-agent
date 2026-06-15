@@ -1789,6 +1789,11 @@ def _world_contact_handoff_presence(governance: dict[str, Any]) -> dict[str, Any
         governance.get("background_queue_e_world_contact_future_release_posture"),
         profile.get("future_release_posture"),
     )
+    body_pressure_profile_ref = _first_present(
+        governance.get("queue_e_world_contact_body_pressure_profile_ref"),
+        governance.get("background_queue_e_world_contact_body_pressure_profile_ref"),
+        profile.get("body_pressure_profile_ref"),
+    )
     waiting_posture = _first_present(
         governance.get("queue_e_world_contact_waiting_posture"),
         governance.get("background_queue_e_world_contact_waiting_posture"),
@@ -1832,6 +1837,7 @@ def _world_contact_handoff_presence(governance: dict[str, Any]) -> dict[str, Any
         + _string_list(governance.get("background_queue_e_world_contact_ref_set"))
         + _string_list(profile.get("ref_set"))
         + _string_list([profile_ref])
+        + _string_list([body_pressure_profile_ref])
         + repair_governance_refs
     )
     if not any(
@@ -1842,6 +1848,7 @@ def _world_contact_handoff_presence(governance: dict[str, Any]) -> dict[str, Any
             repair_hold_required,
             confirmation_threshold_bias,
             future_release_posture,
+            body_pressure_profile_ref,
             waiting_posture,
             attention_target,
             attention_reason,
@@ -1861,6 +1868,7 @@ def _world_contact_handoff_presence(governance: dict[str, Any]) -> dict[str, Any
             "repair_hold_required": repair_hold_required,
             "confirmation_threshold_bias": confirmation_threshold_bias,
             "future_release_posture": future_release_posture,
+            "body_pressure_profile_ref": body_pressure_profile_ref,
             "blocked_future_routes": blocked_future_routes,
             "allowed_repair_routes": allowed_repair_routes,
             "repair_governance_refs": repair_governance_refs,

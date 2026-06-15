@@ -952,6 +952,25 @@ GoNoGo.body_pressure_profile
 
 机制含义是：身体内环境对行动阈值的影响不应只表现为某个 delay reason，而要能追溯原始身体标签、归一压力、阈值和下游责任/验证路线。这样 `managed_pre_dream`、`offline_ready`、pain pressure 等身体状态可以像神经调质/稳态信号一样进入生命膜链路，并在世界接触、责任回路、验证汇总和状态查看中留下证据。边界继续保持：这是内部身体压力 profile，不生成固定拒绝话术，不新增 system prompt，不把身体状态或 threshold 名称当作外显语言。
 
+当前 ITR-08 第四十段把这条身体压力 ref 从验证层推进到出生准备和常驻闭环：
+
+```text
+ValidationRollup.queue_e_world_contact_body_pressure_profile_ref
+  -> SchemaRunner.cross_file_logic / run_manifest / report / digest / receipt
+  -> BirthReadiness.queue_e_world_contact_repair_hold_handoff.body_pressure_profile_ref
+  -> LifeTargetClaims / EvidenceMatrix / Rollup / StageGate / Report / Digest / CheckReport / Receipt
+  -> IdleStrategy.queue_e_world_contact_body_pressure_profile_ref
+  -> WaitingHeartbeat / IdleContinuityFrame
+  -> BackgroundContinuity / BackgroundLineage.world_contact_handoff_presence
+  -> DialogueEvents.queue_e_world_contact_body_pressure_profile_ref
+  -> ProcessReport / ProcessDigest / ProcessReceipt.shared_object_refs
+  -> Live0Audit world-contact validation/schema handoff probes
+```
+
+`schema_runner/cross_file_logic.py` 会从 `validation_rollup.queue_e_world_contact_body_pressure_profile_ref`、`world_contact_validation.body_pressure_profile_ref` 或默认的 `runtime/state/action/go_nogo_state.json#body_pressure_profile` 归一出 `queue_e_world_contact_body_pressure_profile_ref`，把它放进 life constraint refs、repair priority refs、bridge refs、closure refs 和 cross-file finding。`run_manifest.py` 将该字段纳入 manifest schema 与 checker；`schema_runner/__init__.py` 将其继续写入 S09 stage gate、report、digest 和 receipt。`life_targets/__init__.py` 的 `closed` 判断现在要求 world-contact validation、validation rollup 和 schema runner manifest 都携带 body pressure profile ref；birth readiness handoff profile 会显式写出 `body_pressure_profile_ref`，claims、evidence matrix、rollup、stage gate、report、digest、check report 和 receipt 都会携带。常驻侧的 `idle_strategy.py`、`continuity_writeback.py`、`heartbeat.py`、`background_continuity.py`、`background_lineage_state.py`、`dialogue_events.py` 和 `process_report.py` 会把同一 ref 作为等待、后台、真实回合、关闭态 report/digest/receipt 的结构化字段和 shared object ref 继续保留。`live0_audit` 的 `queue_e_world_contact_repair_hold_validated` 与 `queue_e_world_contact_repair_hold_schema_handoff` probe 会把该 ref 作为闭合条件。
+
+机制含义是：身体压力不应在行动膜之后退化成“曾经参与过判断”的不可追溯事实，而要像生命膜的一条生理证据线一样跨验证、schema、出生准备、常驻等待、后台恢复、真实回合和关闭态报告持续存在。这样将来语言系统、记忆重构、梦境/疲惫治理和责任回路读取 world-contact handoff 时，不只能看到 repair hold，还能追到身体/内环境如何参与该 hold。边界继续保持：这是内部结构化 evidence/ref 传播，不生成固定回答，不新增 system prompt，不把身体压力字段名或阈值解释拼成 Adam 的外显语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

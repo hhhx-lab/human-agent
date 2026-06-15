@@ -19,6 +19,7 @@ from .life_target_claims import build_life_target_claims
 ACTIVE_SLICE = "S08_LIFE_TARGET_RUNTIMES"
 NEXT_ALLOWED_SLICES = ["S05_VALIDATION_MEMBRANE_OBSERVATION"]
 NEXT_REQUIRED_COMMAND = "life-v0 run-validation-membrane --strict"
+BODY_PRESSURE_PROFILE_REF = "runtime/state/action/go_nogo_state.json#body_pressure_profile"
 
 S08_SOURCE_DOCS = [
     "docs/91_life_reality_generation_boundary_principles.md",
@@ -362,6 +363,9 @@ def run_birth_readiness(
         queue_e_world_contact_handoff_profile_ref=queue_e_world_contact_handoff_profile_ref,
         queue_e_world_contact_handoff_refs=queue_e_world_contact_handoff_refs,
         queue_e_world_contact_handoff_status=queue_e_world_contact_handoff_profile.get("handoff_status"),
+        queue_e_world_contact_body_pressure_profile_ref=(
+            queue_e_world_contact_handoff_profile.get("body_pressure_profile_ref")
+        ),
     )
     rollup = build_birth_readiness_rollup(
         run_id=run_id,
@@ -553,6 +557,9 @@ def run_check_birth_readiness(
         "queue_e_world_contact_handoff_profile_ref": "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
         "queue_e_world_contact_handoff_status": queue_e_world_contact_handoff_profile.get(
             "handoff_status"
+        ),
+        "queue_e_world_contact_body_pressure_profile_ref": queue_e_world_contact_handoff_profile.get(
+            "body_pressure_profile_ref"
         ),
         "closed_gates": _closed_gates(blocked_reasons),
         "blocked_gates": [] if not blocked_reasons else _blocked_gates(blocked_reasons),
@@ -992,6 +999,7 @@ def _build_report(
         "queue_e_birth_repair_ref_set": list(queue_e_birth_repair_refs),
         "queue_e_world_contact_handoff_profile_ref": queue_e_world_contact_handoff_profile_ref,
         "queue_e_world_contact_handoff_status": queue_e_world_contact_handoff_profile.get("handoff_status"),
+        "queue_e_world_contact_body_pressure_profile_ref": queue_e_world_contact_handoff_profile.get("body_pressure_profile_ref"),
         "queue_e_world_contact_repair_hold_required": queue_e_world_contact_handoff_profile.get("repair_hold_required"),
         "queue_e_world_contact_confirmation_threshold_bias": queue_e_world_contact_handoff_profile.get("confirmation_threshold_bias"),
         "queue_e_world_contact_ref_set": list(queue_e_world_contact_handoff_refs),
@@ -1027,6 +1035,7 @@ def _build_digest(
         "queue_e_birth_repair_ref_count": len(queue_e_birth_repair_refs),
         "queue_e_world_contact_handoff_profile_ref": queue_e_world_contact_handoff_profile_ref,
         "queue_e_world_contact_handoff_status": queue_e_world_contact_handoff_profile.get("handoff_status"),
+        "queue_e_world_contact_body_pressure_profile_ref": queue_e_world_contact_handoff_profile.get("body_pressure_profile_ref"),
         "queue_e_world_contact_repair_hold_required": queue_e_world_contact_handoff_profile.get("repair_hold_required"),
         "queue_e_world_contact_confirmation_threshold_bias": queue_e_world_contact_handoff_profile.get("confirmation_threshold_bias"),
         "queue_e_world_contact_ref_count": len(queue_e_world_contact_handoff_refs),
@@ -1087,6 +1096,7 @@ def _build_receipt(
         "state_refs": [
             "runtime/state/life_targets/queue_e_birth_repair_profile.json",
             "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
+            BODY_PRESSURE_PROFILE_REF,
             "runtime/state/life_targets/life_target_claims.json",
             "runtime/state/life_targets/life_target_evidence_matrix.json",
             "runtime/state/life_targets/birth_readiness_rollup.json",
@@ -1202,6 +1212,12 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         != "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
     ):
         reasons.append("build_report_gate queue_e world contact handoff ref mismatch")
+    if build_report.get("queue_e_world_contact_body_pressure_profile_ref") != (
+        BODY_PRESSURE_PROFILE_REF
+    ):
+        reasons.append(
+            "build_report_gate queue_e world contact body pressure ref mismatch"
+        )
     return reasons
 
 
@@ -1272,14 +1288,22 @@ def _build_queue_e_world_contact_handoff_profile(
         if validation_closed and rollup_closed and manifest_closed
         else "deferred_until_s05_s09"
     )
+    body_pressure_profile_ref = (
+        schema_runner_manifest.get("queue_e_world_contact_body_pressure_profile_ref")
+        or validation_rollup.get("queue_e_world_contact_body_pressure_profile_ref")
+        or world_contact_validation.get("body_pressure_profile_ref")
+        or BODY_PRESSURE_PROFILE_REF
+    )
     ref_set = _dedupe_string_refs(
         [
             "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            body_pressure_profile_ref,
             *(
                 [
                     "runtime/state/validation/world_contact_validation.json",
                     "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
                     "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold_required",
+                    "runtime/state/validation/validation_rollup.json#queue_e_world_contact_body_pressure_profile_ref",
                 ]
                 if handoff_status == "closed"
                 else []
@@ -1331,6 +1355,7 @@ def _build_queue_e_world_contact_handoff_profile(
             or world_contact_validation.get("future_release_posture")
             or "deferred_until_repair_handoff"
         ),
+        "body_pressure_profile_ref": body_pressure_profile_ref,
         "blocked_future_routes": _dedupe_string_refs(
             [
                 *list(
@@ -1414,6 +1439,13 @@ def _check_queue_e_world_contact_handoff_profile(
             reasons.append(
                 f"queue_e_world_contact_handoff_gate {target} status mismatch"
             )
+        if (
+            claim.get("queue_e_world_contact_body_pressure_profile_ref")
+            != profile.get("body_pressure_profile_ref")
+        ):
+            reasons.append(
+                f"queue_e_world_contact_handoff_gate {target} body pressure ref mismatch"
+            )
         if not expected_refs.issubset(
             set(claim.get("queue_e_world_contact_handoff_refs", []))
         ):
@@ -1444,6 +1476,13 @@ def _check_queue_e_world_contact_handoff_profile(
             reasons.append(
                 f"queue_e_world_contact_handoff_gate {carrier_name} status mismatch"
             )
+        if (
+            carrier.get("queue_e_world_contact_body_pressure_profile_ref")
+            != profile.get("body_pressure_profile_ref")
+        ):
+            reasons.append(
+                f"queue_e_world_contact_handoff_gate {carrier_name} body pressure ref mismatch"
+            )
         if not expected_refs.issubset(
             set(carrier.get("queue_e_world_contact_ref_set", []))
         ):
@@ -1470,6 +1509,10 @@ def _check_queue_e_world_contact_handoff_profile(
             reasons.append(
                 "queue_e_world_contact_handoff_gate repair governance refs missing"
             )
+        if profile.get("body_pressure_profile_ref") != BODY_PRESSURE_PROFILE_REF:
+            reasons.append(
+                "queue_e_world_contact_handoff_gate body pressure profile ref mismatch"
+            )
     return reasons
 
 
@@ -1480,6 +1523,7 @@ def _world_contact_repair_hold_ready(payload: dict[str, Any]) -> bool:
         and payload.get("confirmation_threshold_bias") == "raised"
         and payload.get("future_no_go_profile_ref")
         == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+        and payload.get("body_pressure_profile_ref") == BODY_PRESSURE_PROFILE_REF
         and bool(payload.get("blocked_future_routes"))
         and bool(payload.get("allowed_repair_routes"))
         and bool(payload.get("repair_governance_refs"))
@@ -1494,6 +1538,8 @@ def _queue_e_world_contact_repair_hold_ready(payload: dict[str, Any]) -> bool:
         and payload.get("queue_e_world_contact_confirmation_threshold_bias") == "raised"
         and payload.get("queue_e_world_contact_future_no_go_profile_ref")
         == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+        and payload.get("queue_e_world_contact_body_pressure_profile_ref")
+        == BODY_PRESSURE_PROFILE_REF
         and bool(payload.get("queue_e_world_contact_blocked_future_routes"))
         and bool(payload.get("queue_e_world_contact_allowed_repair_routes"))
         and bool(payload.get("queue_e_world_contact_repair_governance_refs"))

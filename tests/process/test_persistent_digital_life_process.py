@@ -131,8 +131,10 @@ class PersistentDigitalLifeProcessTests(
             queue_e_world_contact_handoff_ref = (
                 "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
             )
+            body_pressure_profile_ref = "runtime/state/action/go_nogo_state.json#body_pressure_profile"
             expected_world_contact_handoff_refs = [
                 "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                body_pressure_profile_ref,
                 queue_e_world_contact_handoff_ref,
             ]
 
@@ -378,6 +380,10 @@ class PersistentDigitalLifeProcessTests(
                 last_life_response["queue_e_world_contact_handoff_status"],
                 "deferred_until_s05_s09",
             )
+            self.assertEqual(
+                last_life_response["queue_e_world_contact_body_pressure_profile_ref"],
+                body_pressure_profile_ref,
+            )
             self.assertFalse(
                 last_life_response["queue_e_world_contact_repair_hold_required"]
             )
@@ -498,8 +504,10 @@ class PersistentDigitalLifeProcessTests(
             queue_e_world_contact_handoff_ref = (
                 "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
             )
+            body_pressure_profile_ref = "runtime/state/action/go_nogo_state.json#body_pressure_profile"
             expected_world_contact_handoff_refs = [
                 "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                body_pressure_profile_ref,
                 queue_e_world_contact_handoff_ref,
             ]
 
@@ -791,6 +799,10 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(
                 heartbeat_packet["queue_e_world_contact_handoff_status"],
                 "deferred_until_s05_s09",
+            )
+            self.assertEqual(
+                heartbeat_packet["queue_e_world_contact_body_pressure_profile_ref"],
+                body_pressure_profile_ref,
             )
             self.assertFalse(
                 heartbeat_packet["queue_e_world_contact_repair_hold_required"]
@@ -1138,8 +1150,20 @@ class PersistentDigitalLifeProcessTests(
                 process_digest["queue_e_world_contact_handoff_status"],
                 "deferred_until_s05_s09",
             )
+            self.assertEqual(
+                process_digest["queue_e_world_contact_body_pressure_profile_ref"],
+                body_pressure_profile_ref,
+            )
             self.assertFalse(
                 process_digest["queue_e_world_contact_repair_hold_required"]
+            )
+            self.assertEqual(
+                process_receipt["queue_e_world_contact_body_pressure_profile_ref"],
+                body_pressure_profile_ref,
+            )
+            self.assertIn(
+                body_pressure_profile_ref,
+                process_receipt["shared_object_refs"],
             )
             self.assertEqual(process_digest["resident_process_lease_ref"], resident_process_lease_ref)
             self.assertEqual(process_digest["resident_process_lease_history_ref"], resident_process_lease_history_ref)
@@ -17148,8 +17172,10 @@ class PersistentDigitalLifeProcessTests(
         handoff_ref = (
             "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
         )
+        body_pressure_profile_ref = "runtime/state/action/go_nogo_state.json#body_pressure_profile"
         expected_refs = [
             "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            body_pressure_profile_ref,
             "runtime/state/validation/world_contact_validation.json#repair_hold_required",
             "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold_required",
             handoff_ref,
@@ -17167,6 +17193,7 @@ class PersistentDigitalLifeProcessTests(
                     "repair_hold_required": True,
                     "confirmation_threshold_bias": "raised",
                     "future_release_posture": "repair_hold_until_confirmation",
+                    "body_pressure_profile_ref": body_pressure_profile_ref,
                     "blocked_future_routes": ["direct_world_contact"],
                     "allowed_repair_routes": ["shadow_review"],
                     "repair_governance_refs": [
@@ -17182,6 +17209,7 @@ class PersistentDigitalLifeProcessTests(
                 "background_queue_e_world_contact_repair_hold_required": True,
                 "background_queue_e_world_contact_confirmation_threshold_bias": "raised",
                 "background_queue_e_world_contact_future_release_posture": "repair_hold_until_confirmation",
+                "background_queue_e_world_contact_body_pressure_profile_ref": body_pressure_profile_ref,
                 "background_queue_e_world_contact_ref_set": expected_refs,
                 "background_queue_e_world_contact_waiting_posture": "world_contact_repair_hold_waiting",
                 "background_queue_e_world_contact_attention_target": "world_contact_future_no_go_repair_hold",
@@ -17195,6 +17223,10 @@ class PersistentDigitalLifeProcessTests(
         self.assertEqual(handoff_presence["handoff_status"], "closed")
         self.assertEqual(handoff_presence["profile_ref"], handoff_ref)
         self.assertTrue(handoff_presence["repair_hold_required"])
+        self.assertEqual(
+            handoff_presence["body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertEqual(
             handoff_presence["waiting_posture"],
             "world_contact_repair_hold_waiting",
@@ -17211,8 +17243,10 @@ class PersistentDigitalLifeProcessTests(
         handoff_ref = (
             "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
         )
+        body_pressure_profile_ref = "runtime/state/action/go_nogo_state.json#body_pressure_profile"
         expected_refs = [
             "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            body_pressure_profile_ref,
             "runtime/state/validation/world_contact_validation.json#repair_hold_required",
             "runtime/state/schema_runner/run_manifest.json#queue_e_world_contact_repair_hold_required",
             handoff_ref,
@@ -17240,6 +17274,7 @@ class PersistentDigitalLifeProcessTests(
                 "repair_hold_required": True,
                 "confirmation_threshold_bias": "raised",
                 "future_release_posture": "repair_hold_until_confirmation",
+                "body_pressure_profile_ref": body_pressure_profile_ref,
                 "blocked_future_routes": ["direct_world_contact"],
                 "allowed_repair_routes": ["shadow_review"],
                 "repair_governance_refs": [
@@ -17264,6 +17299,10 @@ class PersistentDigitalLifeProcessTests(
             "closed",
         )
         self.assertTrue(idle_strategy["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(
+            idle_strategy["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertEqual(
             idle_strategy["queue_e_world_contact_waiting_posture"],
             "world_contact_repair_hold_waiting",

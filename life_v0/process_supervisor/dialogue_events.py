@@ -1691,6 +1691,11 @@ def build_queue_e_world_contact_handoff_payload(
         or handoff_presence.get("future_release_posture")
         or profile.get("future_release_posture")
     )
+    body_pressure_profile_ref = (
+        terminal_life_loop_state.get("queue_e_world_contact_body_pressure_profile_ref")
+        or handoff_presence.get("body_pressure_profile_ref")
+        or profile.get("body_pressure_profile_ref")
+    )
     waiting_posture = (
         terminal_life_loop_state.get("queue_e_world_contact_waiting_posture")
         or handoff_presence.get("waiting_posture")
@@ -1736,6 +1741,8 @@ def build_queue_e_world_contact_handoff_payload(
     )
     if isinstance(profile_ref, str) and profile_ref:
         ref_set = _dedupe_string_list([*ref_set, profile_ref])
+    if isinstance(body_pressure_profile_ref, str) and body_pressure_profile_ref:
+        ref_set = _dedupe_string_list([*ref_set, body_pressure_profile_ref])
 
     if not any(
         [
@@ -1746,6 +1753,7 @@ def build_queue_e_world_contact_handoff_payload(
             pressure_level,
             confirmation_threshold_bias,
             future_release_posture,
+            body_pressure_profile_ref,
             waiting_posture,
             attention_target,
             attention_reason,
@@ -1777,6 +1785,10 @@ def build_queue_e_world_contact_handoff_payload(
     if future_release_posture:
         payload["queue_e_world_contact_future_release_posture"] = str(
             future_release_posture
+        )
+    if body_pressure_profile_ref:
+        payload["queue_e_world_contact_body_pressure_profile_ref"] = str(
+            body_pressure_profile_ref
         )
     if waiting_posture:
         payload["queue_e_world_contact_waiting_posture"] = str(waiting_posture)

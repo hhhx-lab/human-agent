@@ -1675,6 +1675,9 @@ def write_process_report_bundle(
         "queue_e_world_contact_future_release_posture": idle_governance.get(
             "queue_e_world_contact_future_release_posture"
         ),
+        "queue_e_world_contact_body_pressure_profile_ref": idle_governance.get(
+            "queue_e_world_contact_body_pressure_profile_ref"
+        ),
         "queue_e_world_contact_blocked_future_routes": list(
             idle_governance.get("queue_e_world_contact_blocked_future_routes", [])
         ),
@@ -1734,6 +1737,11 @@ def write_process_report_bundle(
         "background_queue_e_world_contact_repair_hold_required": (
             idle_governance.get(
                 "background_queue_e_world_contact_repair_hold_required"
+            )
+        ),
+        "background_queue_e_world_contact_body_pressure_profile_ref": (
+            idle_governance.get(
+                "background_queue_e_world_contact_body_pressure_profile_ref"
             )
         ),
         "background_queue_e_world_contact_ref_set": list(
@@ -1863,6 +1871,9 @@ def write_process_report_bundle(
         queue_e_world_contact_refs=idle_governance.get(
             "queue_e_world_contact_ref_set",
             [],
+        ),
+        queue_e_world_contact_body_pressure_profile_ref=idle_governance.get(
+            "queue_e_world_contact_body_pressure_profile_ref"
         ),
         queue_e_repair_refs=queue_e_repair_ref_set,
         idle_heartbeat_trace_ref=idle_governance.get("idle_heartbeat_trace_ref"),
@@ -2164,6 +2175,7 @@ def build_process_receipt(
     life_constraint_refs: list[str] | None = None,
     queue_e_birth_repair_refs: list[str] | None = None,
     queue_e_world_contact_refs: list[str] | None = None,
+    queue_e_world_contact_body_pressure_profile_ref: str | None = None,
     queue_e_repair_refs: list[str] | None = None,
     idle_heartbeat_trace_ref: str | None = None,
     dream_wake_ref_set: list[str] | None = None,
@@ -2268,6 +2280,7 @@ def build_process_receipt(
         state_dir / "prediction" / "prediction_error_field.json",
         state_dir / "prediction" / "active_sampling_plan.json",
         state_dir / "action" / "action_candidate_set.json",
+        state_dir / "action" / "go_nogo_state.json",
         state_dir / "schema_runner" / "cross_file_logic.json",
         state_dir / "schema_runner" / "run_manifest.json",
         state_dir / "life_targets" / "queue_e_birth_repair_profile.json",
@@ -2486,6 +2499,9 @@ def build_process_receipt(
         "body_ref_set": list(body_ref_set or []),
         "body_signal_ref_set": list(body_signal_ref_set or []),
         "queue_e_world_contact_ref_set": list(queue_e_world_contact_refs or []),
+        "queue_e_world_contact_body_pressure_profile_ref": (
+            queue_e_world_contact_body_pressure_profile_ref
+        ),
         "queue_e_repair_ref_set": list(queue_e_repair_refs or []),
         "resident_autonomous_activity_ref": resident_autonomous_activity_ref,
         "resident_autonomous_activity_state_ref": resident_autonomous_activity_state_ref,
@@ -2602,6 +2618,7 @@ def build_process_receipt(
                 *(life_constraint_refs or []),
                 *(queue_e_birth_repair_refs or []),
                 *(queue_e_world_contact_refs or []),
+                queue_e_world_contact_body_pressure_profile_ref,
                 *(queue_e_repair_refs or []),
             ]
             if ref

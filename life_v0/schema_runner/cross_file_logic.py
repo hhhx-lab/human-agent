@@ -16,6 +16,7 @@ SOURCE_DOC_REFS = [
 ]
 
 QUEUE_E_BIRTH_REPAIR_PROFILE_REF = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+BODY_PRESSURE_PROFILE_REF = "runtime/state/action/go_nogo_state.json#body_pressure_profile"
 
 
 def build_cross_file_logic(
@@ -88,6 +89,11 @@ def build_cross_file_logic(
         or world_contact_validation.get("future_release_posture")
         or "shadow_review_without_repair_hold"
     )
+    queue_e_world_contact_body_pressure_profile_ref = (
+        validation_rollup.get("queue_e_world_contact_body_pressure_profile_ref")
+        or world_contact_validation.get("body_pressure_profile_ref")
+        or BODY_PRESSURE_PROFILE_REF
+    )
     queue_e_world_contact_blocked_future_routes = _dedupe_string_refs(
         [
             *list(validation_rollup.get("queue_e_world_contact_blocked_future_routes", [])),
@@ -127,6 +133,7 @@ def build_cross_file_logic(
         dict.fromkeys(
             [
                 "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+                BODY_PRESSURE_PROFILE_REF,
                 *list(world_contact_validation.get("life_constraint_refs", [])),
                 *list(validation_rollup.get("queue_e_cross_layer_refs", [])),
             ]
@@ -251,9 +258,11 @@ def build_cross_file_logic(
             ),
             "state_refs": [
                 "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                BODY_PRESSURE_PROFILE_REF,
                 "runtime/state/action/world_contact_gate_state.json",
                 "runtime/state/validation/world_contact_validation.json",
                 "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+                "runtime/state/validation/validation_rollup.json#queue_e_world_contact_body_pressure_profile_ref",
             ],
             "summary": "FutureNoGo repair hold remains visible through world-contact validation and schema runner",
             "repair_priority": (
@@ -311,6 +320,7 @@ def build_cross_file_logic(
         repair_priority_refs.extend(queue_e_birth_repair_ref_set[:2])
     if queue_e_world_contact_repair_hold_required:
         repair_priority_refs.append(queue_e_world_contact_future_no_go_profile_ref)
+        repair_priority_refs.append(queue_e_world_contact_body_pressure_profile_ref)
         repair_priority_refs.extend(queue_e_world_contact_repair_governance_refs[:2])
     if prediction_periphery_gate_status == "closed":
         repair_priority_refs.extend(prediction_periphery_ref_set[:2])
@@ -341,9 +351,11 @@ def build_cross_file_logic(
         "runtime/state/life_targets/queue_e_birth_repair_profile.json#ref_set",
         "runtime/state/validation/validation_rollup.json#queue_e_birth_repair_gate",
         "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+        BODY_PRESSURE_PROFILE_REF,
         "runtime/state/action/world_contact_gate_state.json#repair_hold_required",
         "runtime/state/validation/world_contact_validation.json#repair_hold_required",
         "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+        "runtime/state/validation/validation_rollup.json#queue_e_world_contact_body_pressure_profile_ref",
         "runtime/state/prediction/active_sampling_plan.json",
         "runtime/state/observation/world_observation_route.json",
         "runtime/state/observation/periphery_normalization_trace.json",
@@ -386,6 +398,7 @@ def build_cross_file_logic(
         "queue_e_world_contact_repair_hold_required": queue_e_world_contact_repair_hold_required,
         "queue_e_world_contact_confirmation_threshold_bias": queue_e_world_contact_confirmation_threshold_bias,
         "queue_e_world_contact_future_release_posture": queue_e_world_contact_future_release_posture,
+        "queue_e_world_contact_body_pressure_profile_ref": queue_e_world_contact_body_pressure_profile_ref,
         "queue_e_world_contact_blocked_future_routes": queue_e_world_contact_blocked_future_routes,
         "queue_e_world_contact_allowed_repair_routes": queue_e_world_contact_allowed_repair_routes,
         "queue_e_world_contact_repair_governance_refs": queue_e_world_contact_repair_governance_refs,
@@ -404,7 +417,9 @@ def build_cross_file_logic(
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",
             "runtime/state/validation/validation_rollup.json#queue_e_cross_layer_gate_status",
             "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+            BODY_PRESSURE_PROFILE_REF,
             "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+            "runtime/state/validation/validation_rollup.json#queue_e_world_contact_body_pressure_profile_ref",
             "runtime/state/validation/validation_rollup.json#prediction_periphery_gate",
             "runtime/state/validation/prediction_trace_validation.json#prediction_trace_refs",
         ],
@@ -445,6 +460,7 @@ def check_cross_file_logic(state: dict[str, Any]) -> list[str]:
         "queue_e_world_contact_future_no_go_profile_ref",
         "queue_e_world_contact_confirmation_threshold_bias",
         "queue_e_world_contact_future_release_posture",
+        "queue_e_world_contact_body_pressure_profile_ref",
         "queue_e_world_contact_allowed_repair_routes",
         "queue_e_world_contact_repair_governance_refs",
         "prediction_periphery_gate_status",

@@ -692,7 +692,9 @@ def _criterion_relationship(context: _AuditContext) -> dict[str, Any]:
             "Queue E FutureNoGo repair hold must be validated before relationship repair can close",
             extra_refs=[
                 "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                "runtime/state/action/go_nogo_state.json#body_pressure_profile",
                 "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
+                "runtime/state/validation/validation_rollup.json#queue_e_world_contact_body_pressure_profile_ref",
             ],
         ),
         _jsonl_probe(
@@ -871,6 +873,7 @@ def _criterion_life_mechanisms(
                 "runtime/state/validation/validation_rollup.json#queue_e_world_contact_repair_hold_required",
                 "runtime/state/validation/world_contact_validation.json#repair_hold_required",
                 "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+                "runtime/state/action/go_nogo_state.json#body_pressure_profile",
             ],
         ),
     ]
@@ -1026,6 +1029,8 @@ def _world_contact_validation_repair_hold_closed(payload: dict[str, Any]) -> boo
         and payload.get("confirmation_threshold_bias") == "raised"
         and payload.get("future_no_go_profile_ref")
         == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+        and payload.get("body_pressure_profile_ref")
+        == "runtime/state/action/go_nogo_state.json#body_pressure_profile"
         and bool(payload.get("blocked_future_routes"))
         and bool(payload.get("allowed_repair_routes"))
         and bool(payload.get("repair_governance_refs"))
@@ -1040,6 +1045,8 @@ def _queue_e_world_contact_repair_hold_closed(payload: dict[str, Any]) -> bool:
         and payload.get("queue_e_world_contact_confirmation_threshold_bias") == "raised"
         and payload.get("queue_e_world_contact_future_no_go_profile_ref")
         == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+        and payload.get("queue_e_world_contact_body_pressure_profile_ref")
+        == "runtime/state/action/go_nogo_state.json#body_pressure_profile"
         and bool(payload.get("queue_e_world_contact_blocked_future_routes"))
         and bool(payload.get("queue_e_world_contact_allowed_repair_routes"))
         and bool(payload.get("queue_e_world_contact_repair_governance_refs"))

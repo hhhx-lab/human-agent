@@ -116,6 +116,7 @@ def build_idle_continuity_frame(
     background_queue_e_world_contact_repair_hold_required: bool | None = None,
     background_queue_e_world_contact_confirmation_threshold_bias: str | None = None,
     background_queue_e_world_contact_future_release_posture: str | None = None,
+    background_queue_e_world_contact_body_pressure_profile_ref: str | None = None,
     background_queue_e_world_contact_blocked_future_routes: list[str] | None = None,
     background_queue_e_world_contact_allowed_repair_routes: list[str] | None = None,
     background_queue_e_world_contact_repair_governance_refs: list[str] | None = None,
@@ -129,6 +130,7 @@ def build_idle_continuity_frame(
     queue_e_world_contact_repair_hold_required: bool | None = None,
     queue_e_world_contact_confirmation_threshold_bias: str | None = None,
     queue_e_world_contact_future_release_posture: str | None = None,
+    queue_e_world_contact_body_pressure_profile_ref: str | None = None,
     queue_e_world_contact_blocked_future_routes: list[str] | None = None,
     queue_e_world_contact_allowed_repair_routes: list[str] | None = None,
     queue_e_world_contact_repair_governance_refs: list[str] | None = None,
@@ -461,6 +463,10 @@ def build_idle_continuity_frame(
             background_queue_e_world_contact_future_release_posture,
         ),
         (
+            "background_queue_e_world_contact_body_pressure_profile_ref",
+            background_queue_e_world_contact_body_pressure_profile_ref,
+        ),
+        (
             "background_queue_e_world_contact_waiting_posture",
             background_queue_e_world_contact_waiting_posture,
         ),
@@ -516,6 +522,10 @@ def build_idle_continuity_frame(
         (
             "queue_e_world_contact_future_release_posture",
             queue_e_world_contact_future_release_posture,
+        ),
+        (
+            "queue_e_world_contact_body_pressure_profile_ref",
+            queue_e_world_contact_body_pressure_profile_ref,
         ),
         ("queue_e_world_contact_waiting_posture", queue_e_world_contact_waiting_posture),
         ("queue_e_world_contact_attention_target", queue_e_world_contact_attention_target),

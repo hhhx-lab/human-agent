@@ -22,6 +22,7 @@ def build_life_target_claims(
     queue_e_world_contact_handoff_profile_ref: str | None = None,
     queue_e_world_contact_handoff_refs: list[str] | None = None,
     queue_e_world_contact_handoff_status: str | None = None,
+    queue_e_world_contact_body_pressure_profile_ref: str | None = None,
 ) -> dict[str, Any]:
     targets = {}
     queue_e_birth_repair_refs = list(queue_e_birth_repair_refs or [])
@@ -52,6 +53,9 @@ def build_life_target_claims(
             )
             target_claim["queue_e_world_contact_handoff_status"] = (
                 queue_e_world_contact_handoff_status
+            )
+            target_claim["queue_e_world_contact_body_pressure_profile_ref"] = (
+                queue_e_world_contact_body_pressure_profile_ref
             )
             target_claim["queue_e_world_contact_handoff_refs"] = (
                 queue_e_world_contact_handoff_refs

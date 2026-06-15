@@ -1846,6 +1846,22 @@ def load_background_continuity_profile(
                 "future_release_posture"
             )
         )
+    queue_e_world_contact_body_pressure_profile_ref = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        keys=(
+            "queue_e_world_contact_body_pressure_profile_ref",
+            "background_queue_e_world_contact_body_pressure_profile_ref",
+        ),
+    )
+    if not queue_e_world_contact_body_pressure_profile_ref:
+        queue_e_world_contact_body_pressure_profile_ref = (
+            resident_background_world_contact_handoff_presence.get(
+                "body_pressure_profile_ref"
+            )
+        )
     queue_e_world_contact_blocked_future_routes = _dedupe_list(
         _collect_lists(
             resident_governance_state,
@@ -1920,6 +1936,7 @@ def load_background_continuity_profile(
             )
         )
         + _list_or_empty([queue_e_world_contact_handoff_profile_ref])
+        + _list_or_empty([queue_e_world_contact_body_pressure_profile_ref])
     )
     queue_e_world_contact_waiting_posture = _first_present(
         resident_governance_state,
@@ -2668,6 +2685,10 @@ def load_background_continuity_profile(
         (
             "background_queue_e_world_contact_future_release_posture",
             queue_e_world_contact_future_release_posture,
+        ),
+        (
+            "background_queue_e_world_contact_body_pressure_profile_ref",
+            queue_e_world_contact_body_pressure_profile_ref,
         ),
         (
             "background_queue_e_world_contact_waiting_posture",

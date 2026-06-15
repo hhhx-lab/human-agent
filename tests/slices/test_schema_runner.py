@@ -95,6 +95,7 @@ class SchemaRunnerTests(unittest.TestCase):
             receipt = self._read_json(paths["receipts"] / "schema_runner_schema-runner-test.json")
 
         queue_e_profile_ref = "runtime/state/life_targets/queue_e_birth_repair_profile.json"
+        body_pressure_profile_ref = "runtime/state/action/go_nogo_state.json#body_pressure_profile"
         expected_queue_e_refs = {
             "runtime/state/action/responsibility_loop_state.json",
             "runtime/state/membrane/world_contact_summary.json",
@@ -204,6 +205,12 @@ class SchemaRunnerTests(unittest.TestCase):
             cross_file_logic["life_constraint_refs"],
         )
         self.assertTrue(cross_file_logic["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(
+            cross_file_logic["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
+        self.assertIn(body_pressure_profile_ref, cross_file_logic["life_constraint_refs"])
+        self.assertIn(body_pressure_profile_ref, cross_file_logic["repair_priority_refs"])
         self.assertEqual(
             cross_file_logic["queue_e_world_contact_confirmation_threshold_bias"],
             "raised",
@@ -323,6 +330,10 @@ class SchemaRunnerTests(unittest.TestCase):
         )
         self.assertTrue(run_manifest["queue_e_world_contact_repair_hold_required"])
         self.assertEqual(
+            run_manifest["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
+        self.assertEqual(
             run_manifest["queue_e_world_contact_confirmation_threshold_bias"],
             "raised",
         )
@@ -355,6 +366,10 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(stage_gate["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(stage_gate["queue_e_birth_repair_ref_set"])))
         self.assertTrue(stage_gate["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(
+            stage_gate["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertEqual(stage_gate["queue_e_world_contact_confirmation_threshold_bias"], "raised")
         self.assertEqual(stage_gate["prediction_periphery_gate_status"], "closed")
         self.assertIn(
@@ -377,6 +392,10 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(report["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(report["queue_e_birth_repair_ref_set"])))
         self.assertTrue(report["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(
+            report["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertEqual(report["queue_e_world_contact_confirmation_threshold_bias"], "raised")
         self.assertIn(
             "runtime/state/action/responsibility_loop_state.json",
@@ -413,6 +432,10 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(digest["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertGreaterEqual(digest["queue_e_birth_repair_ref_count"], len(expected_queue_e_refs))
         self.assertTrue(digest["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(
+            digest["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertEqual(digest["queue_e_world_contact_confirmation_threshold_bias"], "raised")
         self.assertGreaterEqual(digest["queue_e_world_contact_blocked_future_route_count"], 1)
         self.assertEqual(digest["prediction_periphery_gate_status"], "closed")
@@ -427,6 +450,10 @@ class SchemaRunnerTests(unittest.TestCase):
         self.assertEqual(receipt["queue_e_birth_repair_attention_target"], "regret_pressure")
         self.assertTrue(expected_queue_e_refs.issubset(set(receipt["queue_e_birth_repair_ref_set"])))
         self.assertTrue(receipt["queue_e_world_contact_repair_hold_required"])
+        self.assertEqual(
+            receipt["queue_e_world_contact_body_pressure_profile_ref"],
+            body_pressure_profile_ref,
+        )
         self.assertEqual(receipt["queue_e_world_contact_confirmation_threshold_bias"], "raised")
         self.assertIn(
             "runtime/state/action/responsibility_loop_state.json",

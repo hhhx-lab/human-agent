@@ -395,6 +395,7 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "background_queue_e_world_contact_handoff_profile",
     "background_queue_e_world_contact_handoff_profile_ref",
     "background_queue_e_world_contact_handoff_status",
+    "background_queue_e_world_contact_body_pressure_profile_ref",
     "background_queue_e_world_contact_repair_hold_required",
     "background_queue_e_world_contact_confirmation_threshold_bias",
     "background_queue_e_world_contact_future_release_posture",
@@ -426,6 +427,7 @@ IDLE_GOVERNANCE_FIELD_NAMES = (
     "queue_e_world_contact_handoff_profile",
     "queue_e_world_contact_handoff_profile_ref",
     "queue_e_world_contact_handoff_status",
+    "queue_e_world_contact_body_pressure_profile_ref",
     "queue_e_world_contact_repair_hold_required",
     "queue_e_world_contact_confirmation_threshold_bias",
     "queue_e_world_contact_future_release_posture",
@@ -4225,6 +4227,8 @@ def _queue_e_world_contact_handoff_waiting_profile(
         or background.get("queue_e_world_contact_ref_set")
         or background.get("background_queue_e_world_contact_handoff_profile_ref")
         or background.get("queue_e_world_contact_handoff_profile_ref")
+        or background.get("background_queue_e_world_contact_body_pressure_profile_ref")
+        or background.get("queue_e_world_contact_body_pressure_profile_ref")
     )
 
     profile_ref = str(
@@ -4260,6 +4264,12 @@ def _queue_e_world_contact_handoff_waiting_profile(
         or background.get("queue_e_world_contact_future_release_posture")
         or ""
     )
+    body_pressure_profile_ref = str(
+        profile.get("body_pressure_profile_ref")
+        or background.get("background_queue_e_world_contact_body_pressure_profile_ref")
+        or background.get("queue_e_world_contact_body_pressure_profile_ref")
+        or ""
+    )
     blocked_future_routes = _dedupe_string_list(
         _string_list(profile.get("blocked_future_routes"))
         + _string_list(
@@ -4288,6 +4298,7 @@ def _queue_e_world_contact_handoff_waiting_profile(
         + _string_list(background.get("background_queue_e_world_contact_ref_set"))
         + _string_list(background.get("queue_e_world_contact_ref_set"))
         + _string_list([profile_ref])
+        + _string_list([body_pressure_profile_ref])
     )
     if not any(
         [
@@ -4298,6 +4309,7 @@ def _queue_e_world_contact_handoff_waiting_profile(
             repair_hold_required,
             confirmation_threshold_bias,
             future_release_posture,
+            body_pressure_profile_ref,
             blocked_future_routes,
             allowed_repair_routes,
             repair_governance_refs,
@@ -4343,6 +4355,7 @@ def _queue_e_world_contact_handoff_waiting_profile(
         "repair_hold_required": repair_hold_required,
         "confirmation_threshold_bias": confirmation_threshold_bias,
         "future_release_posture": future_release_posture,
+        "body_pressure_profile_ref": body_pressure_profile_ref,
         "blocked_future_routes": blocked_future_routes,
         "allowed_repair_routes": allowed_repair_routes,
         "repair_governance_refs": repair_governance_refs,
@@ -4370,6 +4383,9 @@ def _queue_e_world_contact_handoff_idle_fields(
         ),
         "queue_e_world_contact_future_release_posture": profile.get(
             "future_release_posture"
+        ),
+        "queue_e_world_contact_body_pressure_profile_ref": profile.get(
+            "body_pressure_profile_ref"
         ),
         "queue_e_world_contact_blocked_future_routes": profile.get(
             "blocked_future_routes", []

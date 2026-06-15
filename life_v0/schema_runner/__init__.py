@@ -259,6 +259,12 @@ def run_schema_runner(
         queue_e_world_contact_future_release_posture=str(
             cross_file_logic.get("queue_e_world_contact_future_release_posture", "")
         ),
+        queue_e_world_contact_body_pressure_profile_ref=str(
+            cross_file_logic.get(
+                "queue_e_world_contact_body_pressure_profile_ref",
+                "",
+            )
+        ),
         queue_e_world_contact_blocked_future_routes=list(
             cross_file_logic.get("queue_e_world_contact_blocked_future_routes", [])
         ),
@@ -785,6 +791,9 @@ def _build_stage_gate(
         "queue_e_world_contact_confirmation_threshold_bias": cross_file_logic.get(
             "queue_e_world_contact_confirmation_threshold_bias"
         ),
+        "queue_e_world_contact_body_pressure_profile_ref": cross_file_logic.get(
+            "queue_e_world_contact_body_pressure_profile_ref"
+        ),
         "queue_e_world_contact_blocked_future_routes": list(
             cross_file_logic.get("queue_e_world_contact_blocked_future_routes", [])
         ),
@@ -854,6 +863,9 @@ def _build_report(
         "queue_e_world_contact_confirmation_threshold_bias": cross_file_logic.get(
             "queue_e_world_contact_confirmation_threshold_bias"
         ),
+        "queue_e_world_contact_body_pressure_profile_ref": cross_file_logic.get(
+            "queue_e_world_contact_body_pressure_profile_ref"
+        ),
         "queue_e_world_contact_blocked_future_routes": list(
             cross_file_logic.get("queue_e_world_contact_blocked_future_routes", [])
         ),
@@ -899,6 +911,9 @@ def _build_digest(
         ),
         "queue_e_world_contact_confirmation_threshold_bias": cross_file_logic.get(
             "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_body_pressure_profile_ref": cross_file_logic.get(
+            "queue_e_world_contact_body_pressure_profile_ref"
         ),
         "queue_e_world_contact_blocked_future_route_count": len(
             cross_file_logic.get("queue_e_world_contact_blocked_future_routes", [])
@@ -950,6 +965,9 @@ def _build_receipt(
         ),
         "queue_e_world_contact_confirmation_threshold_bias": cross_file_logic.get(
             "queue_e_world_contact_confirmation_threshold_bias"
+        ),
+        "queue_e_world_contact_body_pressure_profile_ref": cross_file_logic.get(
+            "queue_e_world_contact_body_pressure_profile_ref"
         ),
         "queue_e_world_contact_repair_governance_refs": list(
             cross_file_logic.get("queue_e_world_contact_repair_governance_refs", [])

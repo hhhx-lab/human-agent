@@ -59,6 +59,7 @@ def build_birth_readiness_stage_gate(
         "queue_e_birth_repair_ref_set": list(queue_e_birth_repair_refs or []),
         "queue_e_world_contact_handoff_profile_ref": queue_e_world_contact_handoff_profile_ref,
         "queue_e_world_contact_handoff_status": queue_e_world_contact_handoff_status,
+        "queue_e_world_contact_body_pressure_profile_ref": queue_e_world_contact_handoff_profile.get("body_pressure_profile_ref"),
         "queue_e_world_contact_repair_hold_required": queue_e_world_contact_handoff_profile.get("repair_hold_required"),
         "queue_e_world_contact_confirmation_threshold_bias": queue_e_world_contact_handoff_profile.get("confirmation_threshold_bias"),
         "queue_e_world_contact_ref_set": list(queue_e_world_contact_handoff_refs or []),

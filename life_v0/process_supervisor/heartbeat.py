@@ -549,6 +549,7 @@ def write_waiting_heartbeat(
         "background_queue_e_world_contact_repair_hold_required",
         "background_queue_e_world_contact_confirmation_threshold_bias",
         "background_queue_e_world_contact_future_release_posture",
+        "background_queue_e_world_contact_body_pressure_profile_ref",
         "background_queue_e_world_contact_blocked_future_routes",
         "background_queue_e_world_contact_allowed_repair_routes",
         "background_queue_e_world_contact_repair_governance_refs",
@@ -562,6 +563,7 @@ def write_waiting_heartbeat(
         "queue_e_world_contact_repair_hold_required",
         "queue_e_world_contact_confirmation_threshold_bias",
         "queue_e_world_contact_future_release_posture",
+        "queue_e_world_contact_body_pressure_profile_ref",
         "queue_e_world_contact_blocked_future_routes",
         "queue_e_world_contact_allowed_repair_routes",
         "queue_e_world_contact_repair_governance_refs",
@@ -869,6 +871,9 @@ def write_waiting_heartbeat(
         background_queue_e_world_contact_future_release_posture=idle_strategy.get(
             "background_queue_e_world_contact_future_release_posture"
         ),
+        background_queue_e_world_contact_body_pressure_profile_ref=idle_strategy.get(
+            "background_queue_e_world_contact_body_pressure_profile_ref"
+        ),
         background_queue_e_world_contact_blocked_future_routes=idle_strategy.get(
             "background_queue_e_world_contact_blocked_future_routes"
         ),
@@ -907,6 +912,9 @@ def write_waiting_heartbeat(
         ),
         queue_e_world_contact_future_release_posture=idle_strategy.get(
             "queue_e_world_contact_future_release_posture"
+        ),
+        queue_e_world_contact_body_pressure_profile_ref=idle_strategy.get(
+            "queue_e_world_contact_body_pressure_profile_ref"
         ),
         queue_e_world_contact_blocked_future_routes=idle_strategy.get(
             "queue_e_world_contact_blocked_future_routes"
@@ -1140,6 +1148,9 @@ def _append_idle_heartbeat_trace(
         ),
         "queue_e_world_contact_repair_hold_required": idle_strategy.get(
             "queue_e_world_contact_repair_hold_required"
+        ),
+        "queue_e_world_contact_body_pressure_profile_ref": idle_strategy.get(
+            "queue_e_world_contact_body_pressure_profile_ref"
         ),
         "queue_e_world_contact_waiting_posture": idle_strategy.get(
             "queue_e_world_contact_waiting_posture"
