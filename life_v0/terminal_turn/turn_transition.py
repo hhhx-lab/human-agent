@@ -1,6 +1,20 @@
 from __future__ import annotations
 
+import json
 from typing import Any
+
+TURN_TRANSITION_TRACE_REF = "runtime/state/terminal/turn_transition_trace.json"
+CONTEXT_ACCUMULATION_WINDOW_REF = (
+    "runtime/state/terminal/context_accumulation_window.json"
+)
+WAITING_HEARTBEAT_REF = "runtime/reports/latest/digital_life_waiting_heartbeat.json"
+LANGUAGE_PERCEPT_REF = "runtime/state/language/language_percept_frame.json"
+SEMANTIC_MAP_REF = "runtime/state/language/semantic_map_frame.json"
+
+SOURCE_DOC_REFS = [
+    "docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md",
+    "docs/v0/process_contracts/first_terminal_turn_engineering_contract.md",
+]
 
 
 def build_relation_turn_frame(
@@ -90,3 +104,97 @@ def build_turn_transition_trace(
         "readme_block_refs": readme_block_refs,
         "runtime_carrier_refs": runtime_carrier_refs,
     }
+
+
+def project_turn_transition_trace_from_live_turn(
+    *,
+    turn_transition: dict[str, Any],
+    generated_at: str,
+    dialogue_turn_refs: list[str] | None = None,
+    live_language_turn_refs: list[str] | None = None,
+    live_turn_focus: str | None = None,
+    semantic_focus: str | None = None,
+    unresolved_commitment_refs: list[str] | None = None,
+    run_id: str | None = None,
+) -> dict[str, Any]:
+    updated = (
+        json.loads(json.dumps(turn_transition)) if turn_transition else {}
+    )
+    if not updated:
+        updated = build_turn_transition_trace(
+            run_id=run_id or "resident-turn-writeback",
+            generated_at=generated_at,
+            status="closed",
+            turn_stage="resumed_external_dialogue_loop",
+            life_context_ref="runtime/state/terminal/life_context_frame.json",
+            relation_turn_ref="runtime/state/terminal/relation_turn_frame.json",
+            relation_scope_ref=None,
+            expression_monitor_restore_refs=[
+                "runtime/state/language/expression_monitor_state.json"
+            ],
+            unresolved_commitment_refs=list(unresolved_commitment_refs or []),
+            context_accumulation_restore_refs=[CONTEXT_ACCUMULATION_WINDOW_REF],
+            language_percept_restore_refs=[LANGUAGE_PERCEPT_REF],
+            semantic_map_restore_refs=[SEMANTIC_MAP_REF],
+            waiting_heartbeat_ref=WAITING_HEARTBEAT_REF,
+            next_required_action="await_next_external_relation_turn",
+            source_doc_refs=SOURCE_DOC_REFS,
+            readme_block_refs=[],
+            runtime_carrier_refs=[TURN_TRANSITION_TRACE_REF],
+        )
+    updated["generated_at"] = generated_at
+    updated["status"] = "closed"
+    if run_id and not updated.get("run_id"):
+        updated["run_id"] = run_id
+    updated["transition_kind"] = "live_relation_turn"
+    updated["to_stage"] = "resumed_external_dialogue_loop"
+    updated["context_accumulation_ref"] = CONTEXT_ACCUMULATION_WINDOW_REF
+    updated["context_accumulation_restore_refs"] = _dedupe(
+        list(updated.get("context_accumulation_restore_refs", []))
+        + [CONTEXT_ACCUMULATION_WINDOW_REF]
+    )
+    updated["language_percept_restore_refs"] = _dedupe(
+        list(updated.get("language_percept_restore_refs", []))
+        + [LANGUAGE_PERCEPT_REF]
+    )
+    updated["semantic_map_restore_refs"] = _dedupe(
+        list(updated.get("semantic_map_restore_refs", []))
+        + [SEMANTIC_MAP_REF]
+    )
+    if unresolved_commitment_refs:
+        updated["unresolved_commitment_refs"] = _dedupe(
+            list(updated.get("unresolved_commitment_refs", []))
+            + list(unresolved_commitment_refs)
+        )
+    if semantic_focus:
+        updated["semantic_focus"] = semantic_focus
+    if live_turn_focus:
+        updated["live_turn_focus"] = live_turn_focus
+    updated["live_dialogue_turn_refs"] = _dedupe(
+        list(updated.get("live_dialogue_turn_refs", []))
+        + list(dialogue_turn_refs or [])
+    )
+    updated["live_language_turn_refs"] = _dedupe(
+        list(updated.get("live_language_turn_refs", []))
+        + list(live_language_turn_refs or [])
+    )
+    updated["source_doc_refs"] = _dedupe(
+        list(updated.get("source_doc_refs", [])) + SOURCE_DOC_REFS
+    )
+    updated["runtime_carrier_refs"] = _dedupe(
+        list(updated.get("runtime_carrier_refs", [])) + [TURN_TRANSITION_TRACE_REF]
+    )
+    updated["last_projected_from_live_turn_ref"] = (
+        list(updated.get("live_dialogue_turn_refs", []))[-1]
+        if updated.get("live_dialogue_turn_refs")
+        else None
+    )
+    return updated
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result

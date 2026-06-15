@@ -20115,6 +20115,31 @@ class PersistentDigitalLifeProcessTests(
                 persisted_terminal_loop["live_consciousness_chain_boundary"],
                 "live_consciousness_chain_structured_evidence_not_spoken_language",
             )
+            self.assertTrue(
+                persisted_terminal_loop["live_context_accumulation_refreshed"]
+            )
+            persisted_context_accumulation = self._read_json(
+                terminal_dir / "context_accumulation_window.json"
+            )
+            persisted_turn_transition = self._read_json(
+                terminal_dir / "turn_transition_trace.json"
+            )
+            self.assertEqual(
+                persisted_context_accumulation["semantic_focus"],
+                "repair_commitment_shared_language",
+            )
+            self.assertEqual(
+                persisted_context_accumulation["last_projected_from_live_turn_ref"],
+                "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+            )
+            self.assertEqual(
+                persisted_turn_transition["transition_kind"],
+                "live_relation_turn",
+            )
+            self.assertEqual(
+                persisted_turn_transition["last_projected_from_live_turn_ref"],
+                "runtime/state/language/dialogue_turn_log.jsonl#line-3",
+            )
             self.assertEqual(
                 persisted_broadcast_frame["live_turn_focus"],
                 "repair_commitment_shared_language",

@@ -227,6 +227,36 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertEqual(summary["autobiographical_repair_hit_count"], 2)
         self.assertIn("memory_closeout", summary["domain_presence"])
 
+    def test_context_summary_exposes_live_context_accumulation_refresh(self):
+        section = {
+            "life_context_frame": {"life_name": "Adam"},
+            "context_accumulation_window": {
+                "schema_version": "context_accumulation_window_v0",
+                "semantic_focus": "repair_commitment_shared_language",
+                "last_projected_from_live_turn_ref": (
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-3"
+                ),
+            },
+            "terminal_life_loop_state": {
+                "live_context_accumulation_refreshed": True,
+                "context_accumulation_ref": (
+                    "runtime/state/terminal/context_accumulation_window.json"
+                ),
+                "turn_transition_ref": (
+                    "runtime/state/terminal/turn_transition_trace.json"
+                ),
+            },
+        }
+
+        summary = _collect_relation_context_summary(section)
+
+        self.assertTrue(summary["live_context_accumulation_refreshed"])
+        self.assertEqual(
+            summary["live_context_accumulation_semantic_focus"],
+            "repair_commitment_shared_language",
+        )
+        self.assertIn("live_context_accumulation", summary["domain_presence"])
+
     def test_context_summary_exposes_context_accumulation_window(self):
         section = {
             "life_context_frame": {"life_name": "Adam"},

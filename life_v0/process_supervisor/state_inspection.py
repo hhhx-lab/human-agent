@@ -2020,6 +2020,9 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
         "queue_e_world_contact_repair_hold_schema_handoff": bool(
             schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
         ),
+        "live_context_accumulation": bool(
+            context_accumulation_inspection.get("live_context_accumulation_refreshed")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -6942,12 +6945,18 @@ def _context_accumulation_window_inspection_snapshot(
     context_accumulation = context_accumulation or {}
     terminal_loop = terminal_loop or {}
     language_percept = language_percept or {}
+    live_refreshed = bool(
+        terminal_loop.get("live_context_accumulation_refreshed")
+        or context_accumulation.get("last_projected_from_live_turn_ref")
+    )
     window_present = bool(
         context_accumulation
         or terminal_loop.get("context_accumulation_ref")
+        or terminal_loop.get("live_context_accumulation_refreshed")
     )
     return {
         "context_accumulation_window_present": window_present,
+        "live_context_accumulation_refreshed": live_refreshed,
         "context_accumulation_window_status": context_accumulation.get("status"),
         "context_accumulation_current_relation_role": context_accumulation.get(
             "current_relation_role"
@@ -6975,6 +6984,19 @@ def _context_accumulation_window_inspection_snapshot(
         "context_accumulation_ref": _first_non_empty(
             terminal_loop.get("context_accumulation_ref"),
             "runtime/state/terminal/context_accumulation_window.json",
+        ),
+        "turn_transition_ref": terminal_loop.get("turn_transition_ref"),
+        "context_accumulation_last_projected_from_live_turn_ref": (
+            context_accumulation.get("last_projected_from_live_turn_ref")
+        ),
+        "live_context_accumulation_semantic_focus": _first_non_empty(
+            terminal_loop.get("live_context_accumulation_semantic_focus"),
+            context_accumulation.get("semantic_focus"),
+            language_percept.get("semantic_focus"),
+        ),
+        "live_context_accumulation_boundary": _first_non_empty(
+            terminal_loop.get("live_context_accumulation_boundary"),
+            "live_context_accumulation_structured_evidence_not_spoken_language",
         ),
         "context_accumulation_window_boundary": (
             "context_accumulation_restore_window_not_spoken_relationship_script"

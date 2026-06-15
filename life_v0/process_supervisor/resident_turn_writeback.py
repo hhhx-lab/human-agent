@@ -48,6 +48,14 @@ from ..state_store.memory_write_gate import (
 from ..state_store.state_merge_guard import (
     project_state_merge_guard_with_relationship_memory,
 )
+from ..terminal_turn.context_accumulation import (
+    CONTEXT_ACCUMULATION_WINDOW_REF,
+    project_context_accumulation_window_from_live_turn,
+)
+from ..terminal_turn.turn_transition import (
+    TURN_TRANSITION_TRACE_REF,
+    project_turn_transition_trace_from_live_turn,
+)
 from ..terminal_loop.dialogue_writeback import build_dialogue_writeback_bundle
 from ..terminal_loop.persistent_wait_bridge import build_persistent_wait_bridge
 from .continuity_evolution import evolve_relationship_and_self_model
@@ -122,6 +130,12 @@ CONSCIOUSNESS_CHAIN_WRITEBACK_REFS = [
     MEMORY_WRITE_GATE_CONSCIOUSNESS_CONTEXT_REF,
     f"{RESPONSIBILITY_LOOP_STATE_REF}#consciousness_context_profile",
     HANDOFF_PROFILE_REF,
+]
+CONTEXT_ACCUMULATION_WRITEBACK_REFS = [
+    CONTEXT_ACCUMULATION_WINDOW_REF,
+    TURN_TRANSITION_TRACE_REF,
+    LANGUAGE_PERCEPT_REF,
+    SEMANTIC_MAP_REF,
 ]
 _LIVE_CONSCIOUSNESS_LINEAGE_FIELD_KEYS = (
     "resident_background_lineage_consciousness_write_context_refs",
@@ -448,6 +462,7 @@ def write_resident_turn_writeback(
     effective_memory_write_gate = memory_write_gate
     live_consciousness_chain_profile: dict[str, Any] = {}
     live_queue_e_handoff_profile: dict[str, Any] = {}
+    live_context_accumulation_profile: dict[str, Any] = {}
     if continuity_refresh:
         effective_memory_write_gate = (
             continuity_refresh.get("memory_write_gate") or memory_write_gate
@@ -456,6 +471,9 @@ def write_resident_turn_writeback(
             continuity_refresh
         )
         live_queue_e_handoff_profile = _live_queue_e_handoff_terminal_profile(
+            continuity_refresh
+        )
+        live_context_accumulation_profile = _live_context_accumulation_profile(
             continuity_refresh
         )
         if live_consciousness_chain_profile:
@@ -469,7 +487,13 @@ def write_resident_turn_writeback(
                     "queue_e_world_contact_handoff_profile"
                 ),
             )
-        if live_consciousness_chain_profile or live_queue_e_handoff_profile:
+        if live_context_accumulation_profile:
+            updated_terminal_life_loop_state.update(live_context_accumulation_profile)
+        if (
+            live_consciousness_chain_profile
+            or live_queue_e_handoff_profile
+            or live_context_accumulation_profile
+        ):
             write_json(
                 terminal_dir / "terminal_life_loop_state.json",
                 updated_terminal_life_loop_state,
@@ -884,7 +908,11 @@ def write_resident_turn_writeback(
         prediction_workspace_writeback_refs=[PREDICTION_WORKSPACE_REF],
         memory_retrieval_writeback_refs=memory_retrieval_ref_set,
         replay_cue_refs=replay_cue_refs,
-        terminal_state_refs=[SAFE_TERMINAL_LOOP_REF, TERMINAL_LIFE_LOOP_REF],
+        terminal_state_refs=[
+            SAFE_TERMINAL_LOOP_REF,
+            TERMINAL_LIFE_LOOP_REF,
+            *CONTEXT_ACCUMULATION_WRITEBACK_REFS,
+        ],
         source_doc_refs=source_doc_refs,
         readme_block_refs=readme_block_refs,
         runtime_carrier_refs=runtime_carrier_refs,
@@ -1331,6 +1359,10 @@ def write_resident_turn_writeback(
             AUTOBIOGRAPHICAL_STACK_REF
         )
         resumed_dialogue_packet["life_state_ref"] = "runtime/state/life_state.json"
+        resumed_dialogue_packet["context_accumulation_ref"] = (
+            CONTEXT_ACCUMULATION_WINDOW_REF
+        )
+        resumed_dialogue_packet["turn_transition_ref"] = TURN_TRANSITION_TRACE_REF
     write_json(reports_dir / "resumed_external_dialogue_packet.json", resumed_dialogue_packet)
 
     return ResidentTurnWritebackResult(
@@ -1831,6 +1863,53 @@ def _refresh_long_horizon_continuity(
         life_targets_dir / "queue_e_world_contact_repair_hold_handoff.json",
         updated_queue_e_handoff_profile,
     )
+    terminal_dir = state_dir / "terminal"
+    terminal_dir.mkdir(parents=True, exist_ok=True)
+    language_percept = _read_json_if_exists(language_dir / "language_percept_frame.json")
+    semantic_map = _read_json_if_exists(language_dir / "semantic_map_frame.json")
+    expression_monitor_state = _read_json_if_exists(
+        language_dir / "expression_monitor_state.json"
+    )
+    relation_scope_index = _read_json_if_exists(
+        language_dir / "relation_scope_language_index.json"
+    )
+    narrative_trace = self_narrative_trace or _read_json_if_exists(
+        language_dir / "self_narrative_language_trace.json"
+    )
+    updated_context_accumulation = project_context_accumulation_window_from_live_turn(
+        context_accumulation=_read_json_if_exists(
+            terminal_dir / "context_accumulation_window.json"
+        ),
+        generated_at=generated_at,
+        relationship_graph=evolved_relationship_graph,
+        language_percept=language_percept,
+        semantic_map=semantic_map,
+        expression_monitor=expression_monitor_state,
+        relation_scope_index=relation_scope_index,
+        self_narrative_trace=narrative_trace,
+        commitment_truth_state=commitment_truth_state,
+        dialogue_turn_refs=dialogue_turn_refs,
+        live_language_turn_refs=live_language_turn_refs,
+        live_turn_focus=live_turn_focus,
+        run_id=refresh_run_id,
+    )
+    updated_turn_transition = project_turn_transition_trace_from_live_turn(
+        turn_transition=_read_json_if_exists(terminal_dir / "turn_transition_trace.json"),
+        generated_at=generated_at,
+        dialogue_turn_refs=dialogue_turn_refs,
+        live_language_turn_refs=live_language_turn_refs,
+        live_turn_focus=live_turn_focus,
+        semantic_focus=updated_context_accumulation.get("semantic_focus"),
+        unresolved_commitment_refs=list(
+            updated_context_accumulation.get("unresolved_commitment_refs", [])
+        ),
+        run_id=refresh_run_id,
+    )
+    write_json(
+        terminal_dir / "context_accumulation_window.json",
+        updated_context_accumulation,
+    )
+    write_json(terminal_dir / "turn_transition_trace.json", updated_turn_transition)
     trait_drift_monitor = build_trait_drift_monitor_from_self_model(
         run_id=str(refreshed_relationship_timeline.get("run_id") or "resident-turn-writeback"),
         generated_at=generated_at,
@@ -1862,6 +1941,8 @@ def _refresh_long_horizon_continuity(
         "memory_write_gate": updated_memory_write_gate,
         "responsibility_loop_state": updated_responsibility_loop_state,
         "queue_e_world_contact_handoff_profile": updated_queue_e_handoff_profile,
+        "context_accumulation_window": updated_context_accumulation,
+        "turn_transition_trace": updated_turn_transition,
         "self_model_state": evolved_self_model_state,
         "life_state": refreshed_life_state,
         "memory_retrieval_frame": memory_retrieval_frame or {},
@@ -2130,6 +2211,31 @@ def _apply_live_consciousness_lineage_fields(
         payload[
             "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments"
         ] = adjustments
+
+
+def _live_context_accumulation_profile(
+    continuity_refresh: dict[str, Any],
+) -> dict[str, Any]:
+    context_accumulation = continuity_refresh.get("context_accumulation_window")
+    if not isinstance(context_accumulation, dict) or not context_accumulation:
+        return {}
+    return {
+        "live_context_accumulation_refreshed": True,
+        "context_accumulation_ref": CONTEXT_ACCUMULATION_WINDOW_REF,
+        "turn_transition_ref": TURN_TRANSITION_TRACE_REF,
+        "live_context_accumulation_semantic_focus": context_accumulation.get(
+            "semantic_focus"
+        ),
+        "live_context_accumulation_dialogue_turn_restore_ref_count": len(
+            list(context_accumulation.get("dialogue_turn_restore_refs", []))
+        ),
+        "live_context_accumulation_shared_term_surface_count": len(
+            list(context_accumulation.get("shared_term_surfaces", []))
+        ),
+        "live_context_accumulation_boundary": (
+            "live_context_accumulation_structured_evidence_not_spoken_language"
+        ),
+    }
 
 
 def _live_consciousness_chain_profile(

@@ -209,3 +209,14 @@ live0 的语言链已经不只是提示词，而是可追踪的器官链：感�
 | `queue_e_world_contact_repair_hold_schema_handoff_*` | validation/schema runner | 与 membrane/prediction 一致的 repair hold handoff 检查 |
 
 边界：`context_accumulation_window_boundary=context_accumulation_restore_window_not_spoken_relationship_script`。测试：`tests/process/test_state_inspection_memory_closeout.py#test_context_summary_exposes_*`。
+
+## live turn 语境累积（ITR-08-79）
+
+真实关系回合后，`resident_turn_writeback.py#_refresh_long_horizon_continuity` 会调用：
+
+| 投影函数 | 写出文件 | terminal loop 字段 |
+|---|---|---|
+| `project_context_accumulation_window_from_live_turn` | `context_accumulation_window.json` | `live_context_accumulation_refreshed`、`live_context_accumulation_semantic_focus` |
+| `project_turn_transition_trace_from_live_turn` | `turn_transition_trace.json` | `turn_transition_ref` |
+
+`turn_transition_trace` 的 `transition_kind` 在 live 回合后为 `live_relation_turn`；`last_projected_from_live_turn_ref` 指向最新 dialogue turn ref。测试：`tests/slices/test_context_accumulation_live_turn.py`、`tests/process/test_persistent_digital_life_process.py#test_resident_turn_writeback_organ_updates_turn_continuity_and_bundle`。
