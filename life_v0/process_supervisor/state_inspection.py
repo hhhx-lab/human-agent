@@ -160,6 +160,11 @@ def build_resident_state_inspection(
                 "background_convergence_summary": (
                     "terminal/background_convergence_summary.json"
                 ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         growth["self_modification_summary"] = (
@@ -500,6 +505,9 @@ def build_resident_state_inspection(
                 "terminal_life_loop": "terminal/terminal_life_loop_state.json",
                 "resident_governance": "terminal/resident_governance_state.json",
                 "model_expression_state": "language/model_expression_state.json",
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
             },
         )
         consciousness["reportability_summary"] = (
@@ -528,6 +536,10 @@ def build_resident_state_inspection(
                     "terminal/resident_autonomous_activity_state.json"
                 ),
                 "model_expression_state": "language/model_expression_state.json",
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
             },
         )
         thinking["self_thinking_summary"] = _collect_self_thinking_summary(
@@ -4276,6 +4288,23 @@ def _collect_consciousness_reportability_summary(
         terminal_loop,
         "resident_background_lineage_state",
     )
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    world_contact_presence = _extract_nested_value(
+        lineage,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
+    model_expression_handoff = (
+        _model_expression_world_contact_handoff_inspection_fields(
+            model_context_summary
+        )
+    )
     identity_birth_presence = _extract_nested_value(
         lineage,
         "identity_consciousness_birth_presence",
@@ -4296,6 +4325,19 @@ def _collect_consciousness_reportability_summary(
             )
             or model_context_summary.get(
                 "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
+        "live_queue_e_world_contact_handoff": bool(
+            world_contact_handoff
+            or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or model_expression_handoff.get(
+                "model_expression_world_contact_handoff_live_refreshed"
+            )
+        ),
+        "model_expression_world_contact_handoff": bool(
+            model_expression_handoff.get("model_expression_world_contact_handoff_status")
+            or model_expression_handoff.get(
+                "model_expression_world_contact_handoff_live_refreshed"
             )
         ),
     }
@@ -4412,6 +4454,8 @@ def _collect_consciousness_reportability_summary(
         "consciousness_boundary": (
             "consciousness_state_view_not_consciousness_claim_or_script"
         ),
+        **model_expression_handoff,
+        **live_queue_e_handoff,
     }
 
 
@@ -4450,6 +4494,30 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
             "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
         )
     )
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    world_contact_presence = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        world_contact_presence,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
+    model_expression_handoff = (
+        _model_expression_world_contact_handoff_inspection_fields(
+            model_context_summary
+        )
+    )
     slow_variables = self_model.get("trait_slow_variables")
     if not isinstance(slow_variables, dict):
         slow_variables = {}
@@ -4471,6 +4539,19 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
             )
             or model_context_summary.get(
                 "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
+        "live_queue_e_world_contact_handoff": bool(
+            world_contact_handoff
+            or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or model_expression_handoff.get(
+                "model_expression_world_contact_handoff_live_refreshed"
+            )
+        ),
+        "model_expression_world_contact_handoff": bool(
+            model_expression_handoff.get("model_expression_world_contact_handoff_status")
+            or model_expression_handoff.get(
+                "model_expression_world_contact_handoff_live_refreshed"
             )
         ),
     }
@@ -4566,6 +4647,8 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
         "thinking_boundary": (
             "thinking_state_view_not_inner_monologue_template"
         ),
+        **model_expression_handoff,
+        **live_queue_e_handoff,
     }
 
 
@@ -4616,6 +4699,18 @@ def _collect_growth_self_modification_summary(
     background_summary = _extract_compact_value(
         section.get("background_convergence_summary", {})
     )
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    growth_closeout = _growth_closeout_inspection_snapshot(
+        process_report=process_report,
+        terminal_loop=terminal_loop,
+        idle_strategy=idle_strategy,
+    )
     candidates = patch_queue.get("candidates")
     if not isinstance(candidates, list):
         candidates = []
@@ -4642,6 +4737,15 @@ def _collect_growth_self_modification_summary(
         "growth_archive": bool(archive_batch or archive_report),
         "resident_autonomous_activity": bool(autonomous_activity),
         "background_convergence_summary": bool(background_summary),
+        "growth_self_modification_closeout": bool(
+            growth_closeout.get("growth_self_modification_closeout_present")
+        ),
+        "background_growth_self_modification_presence": bool(
+            growth_closeout.get("background_growth_self_modification_ref_count")
+            or growth_closeout.get(
+                "background_growth_self_modification_pressure_level"
+            )
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -4651,6 +4755,7 @@ def _collect_growth_self_modification_summary(
         archive_stage_gate.get("status"),
         archive_report.get("status"),
         archive_digest.get("status"),
+        growth_closeout.get("growth_archive_status"),
     )
     return {
         "schema_version": "growth_self_modification_summary_v0",
@@ -4744,6 +4849,7 @@ def _collect_growth_self_modification_summary(
         "growth_boundary": (
             "growth_self_modification_state_view_not_autonomous_code_rewrite_or_script"
         ),
+        **growth_closeout,
     }
 
 
@@ -5049,6 +5155,86 @@ def _first_non_empty(*values: Any) -> Any:
         if value not in (None, "", [], {}):
             return value
     return None
+
+
+def _growth_closeout_inspection_snapshot(
+    *,
+    process_report: dict[str, Any],
+    terminal_loop: dict[str, Any] | None = None,
+    idle_strategy: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    terminal_loop = terminal_loop or {}
+    idle_strategy = idle_strategy or {}
+    profile = process_report.get("growth_self_modification_report_profile")
+    if not isinstance(profile, dict):
+        profile = {}
+    lineage = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    growth_presence = _extract_nested_value(
+        lineage,
+        "growth_self_modification_presence",
+    )
+    if not growth_presence:
+        growth_presence = _extract_nested_value(
+            idle_strategy,
+            "background_growth_self_modification_presence",
+        )
+    if not isinstance(growth_presence, dict):
+        growth_presence = {}
+    ref_set = _list_refs(
+        _first_non_empty(
+            process_report.get("growth_self_modification_ref_set"),
+            growth_presence.get("ref_set"),
+            idle_strategy.get("background_growth_self_modification_ref_set"),
+        ),
+        limit=24,
+    )
+    return {
+        "growth_self_modification_closeout_present": bool(
+            profile
+            or process_report.get("growth_self_modification_report_boundary")
+            or growth_presence
+        ),
+        "growth_self_modification_report_profile_schema": profile.get(
+            "schema_version"
+        ),
+        "growth_pressure_count": _first_non_empty(
+            process_report.get("growth_pressure_count"),
+            profile.get("growth_pressure_count"),
+        ),
+        "growth_patch_candidate_count": _first_non_empty(
+            process_report.get("growth_patch_candidate_count"),
+            profile.get("candidate_count"),
+        ),
+        "growth_archive_receipt_count": _first_non_empty(
+            process_report.get("growth_archive_receipt_count"),
+            profile.get("archive_receipt_count"),
+        ),
+        "growth_archive_status": profile.get("archive_status"),
+        "growth_self_modification_report_boundary": _first_non_empty(
+            process_report.get("growth_self_modification_report_boundary"),
+            profile.get("report_boundary"),
+        ),
+        "background_growth_self_modification_pressure_level": _first_non_empty(
+            idle_strategy.get("background_growth_self_modification_pressure_level"),
+            growth_presence.get("pressure_level"),
+        ),
+        "background_growth_self_modification_attention_target": _first_non_empty(
+            idle_strategy.get("background_growth_self_modification_attention_target"),
+            growth_presence.get("attention_target"),
+        ),
+        "background_growth_self_modification_waiting_posture": _first_non_empty(
+            idle_strategy.get("background_growth_self_modification_waiting_posture"),
+            growth_presence.get("waiting_posture"),
+        ),
+        "background_growth_self_modification_boundary": _first_non_empty(
+            idle_strategy.get("background_growth_self_modification_boundary"),
+            growth_presence.get("boundary"),
+        ),
+        "background_growth_self_modification_ref_count": _count_any(ref_set),
+    }
 
 
 def _model_expression_world_contact_handoff_inspection_fields(

@@ -3,11 +3,14 @@ import unittest
 from life_v0.process_supervisor.state_inspection import (
     _collect_ability_birth_readiness_summary,
     _collect_cognitive_workspace_summary,
+    _collect_consciousness_reportability_summary,
+    _collect_growth_self_modification_summary,
     _collect_language_generation_consumption_summary,
     _collect_life_membrane_validation_summary,
     _collect_perception_world_contact_summary,
     _collect_prediction_world_contact_summary,
     _collect_proactive_voice_summary,
+    _collect_self_thinking_summary,
     _collect_signal_modulation_consumption_summary,
 )
 
@@ -263,6 +266,77 @@ class StateInspectionLiveHandoffTests(unittest.TestCase):
             "live_queue_e_world_contact_handoff",
             summary["domain_presence"],
         )
+
+    def test_consciousness_summary_exposes_live_handoff_fields(self):
+        section = {
+            "workspace_frame": {"live_turn_focus": "repair_hold"},
+            "terminal_life_loop": {
+                "resident_background_lineage_state": {
+                    "world_contact_handoff_presence": {
+                        "live_queue_e_world_contact_handoff_refreshed": True,
+                    }
+                }
+            },
+            "queue_e_world_contact_handoff": {
+                "live_turn_focus": "consciousness_repair_hold",
+            },
+        }
+
+        summary = _collect_consciousness_reportability_summary(section)
+
+        self.assertTrue(summary["live_queue_e_world_contact_handoff_refreshed"])
+        self.assertIn(
+            "live_queue_e_world_contact_handoff",
+            summary["domain_presence"],
+        )
+
+    def test_thinking_summary_exposes_live_handoff_fields(self):
+        section = {
+            "resident_self_thinking": {"thinking_mode": "reflective_hold"},
+            "queue_e_world_contact_handoff": {
+                "live_queue_e_world_contact_handoff_refreshed": True,
+                "live_turn_focus": "thinking_repair_hold",
+            },
+        }
+
+        summary = _collect_self_thinking_summary(section)
+
+        self.assertTrue(summary["live_queue_e_world_contact_handoff_refreshed"])
+        self.assertEqual(
+            summary["live_queue_e_world_contact_handoff_turn_focus"],
+            "thinking_repair_hold",
+        )
+
+    def test_growth_summary_exposes_closeout_and_background_presence(self):
+        section = {
+            "digital_life_process_report": {
+                "growth_self_modification_report_profile": {
+                    "schema_version": "growth_self_modification_report_profile_v0",
+                    "growth_pressure_count": 2,
+                    "candidate_count": 1,
+                    "archive_receipt_count": 3,
+                    "report_boundary": (
+                        "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite"
+                    ),
+                },
+                "growth_self_modification_report_boundary": (
+                    "structured_growth_evidence_not_spoken_language_or_autonomous_code_rewrite"
+                ),
+            },
+            "idle_strategy_state": {
+                "background_growth_self_modification_pressure_level": "elevated",
+                "background_growth_self_modification_ref_set": [
+                    "runtime/state/growth/self_read_report.json"
+                ],
+            },
+        }
+
+        summary = _collect_growth_self_modification_summary(section)
+
+        self.assertTrue(summary["growth_self_modification_closeout_present"])
+        self.assertEqual(summary["growth_pressure_count"], 2)
+        self.assertEqual(summary["background_growth_self_modification_pressure_level"], "elevated")
+        self.assertIn("growth_self_modification_closeout", summary["domain_presence"])
 
     def test_perception_summary_exposes_live_queue_e_handoff_fields(self):
         section = {
