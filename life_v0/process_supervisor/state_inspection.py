@@ -257,6 +257,13 @@ def build_resident_state_inspection(
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
+                ),
             },
         )
         emotion["emotion_regulation_summary"] = (
@@ -275,6 +282,13 @@ def build_resident_state_inspection(
                 "idle_strategy": "terminal/idle_strategy_state.json",
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
+                ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
                 ),
             },
         )
@@ -1301,6 +1315,23 @@ def _shared_term_promotion_inspection_snapshot(
     return shared_term_promotion_inspection_snapshot(
         shared_term_registry=shared_term_registry_value,
         terminal_life_loop_state=terminal_loop_value,
+    )
+
+
+def _slow_variable_candidate_inspection_snapshot(
+    *,
+    self_model_state: dict[str, Any],
+    trait_drift_monitor: dict[str, Any],
+) -> dict[str, Any]:
+    from life_v0.state_store.slow_variable_candidate import (
+        slow_variable_candidate_inspection_snapshot,
+    )
+
+    self_model_value = _extract_compact_value(self_model_state)
+    trait_drift_value = _extract_compact_value(trait_drift_monitor)
+    return slow_variable_candidate_inspection_snapshot(
+        self_model_state=self_model_value,
+        trait_drift_monitor=trait_drift_value,
     )
 
 
@@ -3263,6 +3294,18 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
         idle_strategy=idle_strategy,
         go_nogo=go_nogo,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     maintenance_pressure = _extract_nested_value(
         body_budget,
         "maintenance_pressure",
@@ -3288,6 +3331,9 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
         ),
         "body_pressure_closeout": bool(
             affect_closeout.get("body_pressure_closeout_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -3352,6 +3398,7 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
             "pain_regret_repair_report_ref"
         ),
         **affect_closeout,
+        **contract_coverage,
     }
 
 
@@ -3371,6 +3418,18 @@ def _collect_inner_environment_modulation_summary(
         process_report=process_report,
         idle_strategy=idle_strategy,
         go_nogo=go_nogo,
+    )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
     )
     maintenance_pressure = _extract_nested_value(
         body_budget,
@@ -3397,6 +3456,9 @@ def _collect_inner_environment_modulation_summary(
         ),
         "body_pressure_closeout": bool(
             affect_closeout.get("body_pressure_closeout_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -3458,6 +3520,7 @@ def _collect_inner_environment_modulation_summary(
             "queue_e_world_contact_body_pressure_profile_ref"
         ),
         **affect_closeout,
+        **contract_coverage,
     }
 
 
@@ -6161,6 +6224,10 @@ def _collect_personality_convergence_summary(
         autobiographical_stack,
         "responsibility_repair_projection",
     )
+    slow_variable_candidate = _slow_variable_candidate_inspection_snapshot(
+        self_model_state=self_model,
+        trait_drift_monitor=trait_drift,
+    )
     domain_presence = {
         "self_model": bool(self_model),
         "autobiographical_stack": bool(autobiographical_stack),
@@ -6172,6 +6239,9 @@ def _collect_personality_convergence_summary(
         "responsibility_repair_projection": bool(responsibility_repair_projection),
         "growth_self_modification_closeout": bool(
             growth_closeout.get("growth_self_modification_closeout_present")
+        ),
+        "slow_variable_candidate": bool(
+            slow_variable_candidate.get("slow_variable_candidate_present")
         ),
     }
     active_domains = [
@@ -6326,6 +6396,7 @@ def _collect_personality_convergence_summary(
             "growth_self_modification_closeout_present"
         ),
         "growth_archive_status": growth_closeout.get("growth_archive_status"),
+        **slow_variable_candidate,
     }
 
 

@@ -204,6 +204,10 @@ flowchart TD
     K --> L["Next Expression Posture"]
 ```
 
+## ITR-08-90 慢变量候选门控（2026-06-15）
+
+`continuity_evolution.py` 在 `_evolve_trait_slow_variables` 之后调用 `slow_variable_candidate.py#project_trait_slow_variables_with_candidate_gate`：单轮 dramatic delta 进入 `trait_slow_variable_candidates` 候选队列，多窗口 exposure 才晋升；`trait_drift_monitor.json` 携带 `blocked_update_refs`；`/personality` 检查面可追溯候选 presence。仍是结构化证据，不生成人格话术。
+
 ## 当前 live0 结论
 
 live0 的人格来自长期状态合并、关系记忆、身体情绪、责任压力和后台收敛，不来自单句提示词。第一次命名后，`life_name_registry.json` 和 `life_name_command_manifest.json` 会把身份根和终端唤醒绑定起来，形成 live0 最后一项尚待唤醒者完成的出生命名门。

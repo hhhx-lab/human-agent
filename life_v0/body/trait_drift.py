@@ -50,6 +50,10 @@ def build_trait_drift_monitor_from_self_model(
     source_doc_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     previous_monitor = previous_monitor or {}
+    candidate_queue = self_model_state.get("trait_slow_variable_candidates", {})
+    if not isinstance(candidate_queue, dict):
+        candidate_queue = {}
+    blocked_update_refs = _string_list(candidate_queue.get("blocked_update_refs"))
     slow_variable_summary = _slow_variable_summary(self_model_state)
     update_mode_summary = _slow_variable_update_mode_summary(slow_variable_summary)
     growth_self_modification_profile = _growth_self_modification_profile(
@@ -116,7 +120,14 @@ def build_trait_drift_monitor_from_self_model(
         "drift_direction": _drift_direction(slow_variable_summary),
         "required_anchor_refs": _required_anchor_refs(self_model_state),
         "drift_observation_refs": evidence_refs,
-        "blocked_update_refs": [],
+        "blocked_update_refs": blocked_update_refs,
+        "slow_variable_candidate_count": len(
+            [
+                item
+                for item in candidate_queue.get("candidates", [])
+                if isinstance(item, dict)
+            ]
+        ),
         "archive_requirement": "required_before_trait_commit",
         "episode_ref": trigger_ref,
         "source_doc_refs": _dedupe((source_doc_refs or []) + SOURCE_DOC_REFS),

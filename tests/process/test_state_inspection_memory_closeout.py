@@ -589,6 +589,64 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertTrue(summary["live_queue_e_world_contact_handoff_closeout_present"])
         self.assertIn("process_closeout", summary["domain_presence"])
 
+    def test_emotion_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "core_affect_vector": {"arousal": 0.5},
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_emotion_regulation_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_inner_environment_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "need_state_vector": {"sleep_pressure": "managed_pre_dream"},
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {"total_required_files": 120, "missing_file_count": 0},
+            },
+        }
+
+        summary = _collect_inner_environment_modulation_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_personality_summary_exposes_slow_variable_candidate(self):
+        section = {
+            "self_model": {
+                "trait_slow_variables": {"trust_persistence": {"value": 0.34}},
+                "trait_slow_variable_candidates": {
+                    "candidates": [
+                        {
+                            "candidate_id": "slow-variable-candidate-trust_persistence",
+                            "variable_name": "trust_persistence",
+                            "exposure_count": 1,
+                        }
+                    ],
+                    "blocked_update_refs": [
+                        "runtime/state/self/self_model.json#slow-variable-candidate-trust_persistence"
+                    ],
+                },
+            },
+            "trait_drift_monitor": {
+                "blocked_update_refs": [
+                    "runtime/state/self/self_model.json#slow-variable-candidate-trust_persistence"
+                ],
+            },
+        }
+
+        summary = _collect_personality_convergence_summary(section)
+
+        self.assertTrue(summary["slow_variable_candidate_present"])
+        self.assertEqual(summary["slow_variable_candidate_count"], 1)
+        self.assertIn("slow_variable_candidate", summary["domain_presence"])
+
     def test_emotion_summary_exposes_affect_closeout(self):
         section = {
             "core_affect_vector": {"pain_pressure": "moderate"},

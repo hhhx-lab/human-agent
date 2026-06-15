@@ -8,6 +8,9 @@ from ..growth.offline_learning_profile import (
     derive_offline_learning_profile,
 )
 from ..membrane.queue_e_signals import derive_queue_e_signal_profile
+from ..state_store.slow_variable_candidate import (
+    project_trait_slow_variables_with_candidate_gate,
+)
 
 
 RELATIONSHIP_TIMELINE_REF = "runtime/state/relationship/relationship_timeline.json"
@@ -114,7 +117,7 @@ def evolve_relationship_and_self_model(
         + growth_self_modification_evidence_refs
     )
 
-    updated_self_model_state["trait_slow_variables"] = _evolve_trait_slow_variables(
+    proposed_trait_slow_variables = _evolve_trait_slow_variables(
         previous_variables=updated_self_model_state.get("trait_slow_variables", {}),
         generated_at=generated_at,
         relationship_stage=next_stage,
@@ -128,6 +131,23 @@ def evolve_relationship_and_self_model(
         background_continuity_profile=background_continuity_profile,
         growth_self_modification_presence=growth_self_modification_presence,
     )
+    gate_result = project_trait_slow_variables_with_candidate_gate(
+        previous_variables=updated_self_model_state.get("trait_slow_variables", {}),
+        proposed_variables=proposed_trait_slow_variables,
+        previous_candidates=updated_self_model_state.get(
+            "trait_slow_variable_candidates",
+            {},
+        ),
+        generated_at=generated_at,
+        relationship_stage=next_stage,
+        evidence_refs=_slow_variable_gate_evidence_refs(proposed_trait_slow_variables),
+    )
+    updated_self_model_state["trait_slow_variables"] = gate_result[
+        "trait_slow_variables"
+    ]
+    updated_self_model_state["trait_slow_variable_candidates"] = gate_result[
+        "trait_slow_variable_candidates"
+    ]
     updated_self_model_state["growth_window_refs"] = _dedupe(
         list(updated_self_model_state.get("growth_window_refs", []))
         + [
@@ -1202,6 +1222,17 @@ def _apply_background_trait_inertia(
         ),
         inertia_weight,
     )
+
+
+def _slow_variable_gate_evidence_refs(
+    proposed_variables: dict[str, Any],
+) -> list[str]:
+    for payload in proposed_variables.values():
+        if isinstance(payload, dict):
+            refs = payload.get("evidence_refs")
+            if isinstance(refs, list) and refs:
+                return [str(ref) for ref in refs if ref]
+    return []
 
 
 def _trend(previous_value: float | None, current_value: float) -> str:
