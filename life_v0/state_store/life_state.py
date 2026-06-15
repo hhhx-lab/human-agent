@@ -114,6 +114,7 @@ def build_life_state_projection(
     default_runtime_trace_refs = [
         "runtime/state/neural_life_core/neural_life_core.json",
         "runtime/state/neural_life_core/brain_graph.json",
+        "runtime/state/neural_life_core/multiscale_region_graph.json",
         "runtime/state/neural_life_core/network_state.json",
         "runtime/state/consciousness/workspace_frame.json",
         "runtime/state/prediction/prediction_workspace_frame.json",

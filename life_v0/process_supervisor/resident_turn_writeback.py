@@ -23,6 +23,9 @@ from ..growth.offline_learning_profile import (
     RELATIONSHIP_LEARNING_PLAN_REF,
 )
 from ..neural_core.brain_graph import project_brain_graph_from_live_turn
+from ..neural_core.multiscale_region_graph import (
+    project_multiscale_region_graph_from_live_turn,
+)
 from ..neural_core.broadcast import project_broadcast_frame_from_live_turn
 from ..neural_core.metacognition import project_metacognition_state_from_live_turn
 from ..neural_core.network_state import project_network_state_from_live_turn
@@ -119,6 +122,9 @@ INNER_SPEECH_REF = "runtime/state/language/inner_speech_frame.json"
 EXPRESSION_MONITOR_REF = "runtime/state/language/expression_monitor_state.json"
 EXPRESSION_PLAN_REF = "runtime/state/language/expression_plan.json"
 BRAIN_GRAPH_REF = "runtime/state/neural_life_core/brain_graph.json"
+MULTISCALE_REGION_GRAPH_REF = (
+    "runtime/state/neural_life_core/multiscale_region_graph.json"
+)
 NETWORK_STATE_REF = "runtime/state/neural_life_core/network_state.json"
 PREDICTION_WORKSPACE_REF = "runtime/state/prediction/prediction_workspace_frame.json"
 WORKSPACE_FRAME_REF = "runtime/state/consciousness/workspace_frame.json"
@@ -1747,6 +1753,21 @@ def _refresh_long_horizon_continuity(
         network_state=_read_json_if_exists(state_dir / "neural_life_core" / "network_state.json"),
         workspace_frame=_read_json_if_exists(state_dir / "consciousness" / "workspace_frame.json"),
     )
+    updated_multiscale_region_graph = project_multiscale_region_graph_from_live_turn(
+        multiscale_region_graph=_read_json_if_exists(
+            state_dir / "neural_life_core" / "multiscale_region_graph.json"
+        ),
+        generated_at=generated_at,
+        run_id=refresh_run_id,
+        dialogue_turn_refs=dialogue_turn_refs,
+        live_language_turn_refs=live_language_turn_refs,
+        relationship_graph=evolved_relationship_graph,
+        relationship_timeline=refreshed_relationship_timeline,
+        self_model_state=evolved_self_model_state,
+        network_state=_read_json_if_exists(state_dir / "neural_life_core" / "network_state.json"),
+        workspace_frame=_read_json_if_exists(state_dir / "consciousness" / "workspace_frame.json"),
+        signal_media_runtime=signal_media_runtime,
+    )
     if refreshed_state_merge_guard:
         write_json(state_merge_guard_path, refreshed_state_merge_guard)
     write_json(autobiographical_stack_path, refreshed_autobiographical_stack)
@@ -1760,6 +1781,7 @@ def _refresh_long_horizon_continuity(
         live_turn_focus=live_turn_focus,
         signal_media_runtime=signal_media_runtime,
         brain_graph=updated_brain_graph,
+        multiscale_region_graph=updated_multiscale_region_graph,
         workspace_frame=_read_json_if_exists(state_dir / "consciousness" / "workspace_frame.json"),
         prediction_workspace=_read_json_if_exists(state_dir / "prediction" / "prediction_workspace_frame.json"),
         body_resource_budget=body_resource_budget,
@@ -1799,6 +1821,10 @@ def _refresh_long_horizon_continuity(
         live_turn_focus=live_turn_focus,
     )
     write_json(state_dir / "neural_life_core" / "brain_graph.json", updated_brain_graph)
+    write_json(
+        state_dir / "neural_life_core" / "multiscale_region_graph.json",
+        updated_multiscale_region_graph,
+    )
     write_json(state_dir / "neural_life_core" / "network_state.json", updated_network_state)
     write_json(state_dir / "consciousness" / "workspace_frame.json", updated_workspace_frame)
     write_json(state_dir / "consciousness" / "broadcast_frame.json", updated_broadcast_frame)

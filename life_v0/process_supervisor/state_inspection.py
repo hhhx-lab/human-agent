@@ -618,6 +618,10 @@ def build_resident_state_inspection(
         cognition = _collect_files(
             state_root,
             {
+                "multiscale_region_graph": (
+                    "neural_life_core/multiscale_region_graph.json"
+                ),
+                "network_state": "neural_life_core/network_state.json",
                 "workspace_frame": "consciousness/workspace_frame.json",
                 "broadcast_frame": "consciousness/broadcast_frame.json",
                 "metacognition_state": "consciousness/metacognition_state.json",
@@ -1332,6 +1336,20 @@ def _slow_variable_candidate_inspection_snapshot(
     return slow_variable_candidate_inspection_snapshot(
         self_model_state=self_model_value,
         trait_drift_monitor=trait_drift_value,
+    )
+
+
+def _multiscale_region_graph_inspection_snapshot(
+    *,
+    multiscale_region_graph: dict[str, Any],
+) -> dict[str, Any]:
+    from life_v0.neural_core.multiscale_region_graph import (
+        multiscale_region_graph_inspection_snapshot,
+    )
+
+    multiscale_value = _extract_compact_value(multiscale_region_graph)
+    return multiscale_region_graph_inspection_snapshot(
+        multiscale_region_graph=multiscale_value,
     )
 
 
@@ -5278,6 +5296,10 @@ def _collect_responsibility_repair_chain_summary(
 def _collect_cognitive_workspace_summary(
     section: dict[str, Any]
 ) -> dict[str, Any]:
+    multiscale_region_graph = _extract_compact_value(
+        section.get("multiscale_region_graph", {})
+    )
+    network_state = _extract_compact_value(section.get("network_state", {}))
     workspace = _extract_compact_value(section.get("workspace_frame", {}))
     broadcast = _extract_compact_value(section.get("broadcast_frame", {}))
     metacognition = _extract_compact_value(section.get("metacognition_state", {}))
@@ -5358,12 +5380,19 @@ def _collect_cognitive_workspace_summary(
         broadcast=broadcast,
         metacognition=metacognition,
     )
+    multiscale_region = _multiscale_region_graph_inspection_snapshot(
+        multiscale_region_graph=multiscale_region_graph,
+    )
     model_expression_handoff = (
         _model_expression_world_contact_handoff_inspection_fields(
             model_context_summary
         )
     )
     domain_presence = {
+        "multiscale_region_graph": bool(
+            multiscale_region.get("multiscale_region_graph_present")
+        ),
+        "network_state": bool(network_state),
         "workspace_frame": bool(workspace),
         "broadcast_frame": bool(broadcast),
         "metacognition_state": bool(metacognition),
@@ -5516,6 +5545,7 @@ def _collect_cognitive_workspace_summary(
         **live_queue_e_handoff,
         **expression_closeout,
         **live_consciousness_chain,
+        **multiscale_region,
     }
 
 

@@ -952,6 +952,7 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
         "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/state_merge_guard.json",
         "runtime/state/neural_life_core/brain_graph.json",
+        "runtime/state/neural_life_core/multiscale_region_graph.json",
         "runtime/state/neural_life_core/network_state.json",
         "runtime/state/consciousness/workspace_frame.json",
     ]:

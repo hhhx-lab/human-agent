@@ -11,6 +11,7 @@ from life_v0.direction import LIFE_TARGETS
 from .active_sampling import build_active_sampling_plan
 from .belief_state import build_belief_state_frame
 from .brain_graph import build_brain_graph
+from .multiscale_region_graph import build_multiscale_region_graph
 from .broadcast import build_broadcast_frame
 from .metacognition import build_metacognition_state
 from .network_state import build_network_state
@@ -282,11 +283,19 @@ def run_neural_life_core(
         systems_payload=systems_payload,
         bus_payload=bus_payload,
     )
+    multiscale_region_graph = build_multiscale_region_graph(
+        run_id=run_id,
+        generated_at=generated_at,
+        systems_payload=systems_payload,
+        bus_payload=bus_payload,
+        brain_graph=brain_graph,
+    )
     network_state = build_network_state(
         run_id=run_id,
         generated_at=generated_at,
         bus_payload=bus_payload,
         brain_graph=brain_graph,
+        multiscale_region_graph=multiscale_region_graph,
     )
     authority_binding = _build_authority_binding_snapshot(
         run_id,
@@ -374,6 +383,9 @@ def run_neural_life_core(
         active_sampling_plan_ref="runtime/state/prediction/active_sampling_plan.json",
         prediction_workspace_ref="runtime/state/prediction/prediction_workspace_frame.json",
         brain_graph_ref="runtime/state/neural_life_core/brain_graph.json",
+        multiscale_region_graph_ref=(
+            "runtime/state/neural_life_core/multiscale_region_graph.json"
+        ),
         network_state_ref="runtime/state/neural_life_core/network_state.json",
         workspace_frame_ref="runtime/state/consciousness/workspace_frame.json",
         broadcast_frame_ref="runtime/state/consciousness/broadcast_frame.json",
@@ -392,6 +404,7 @@ def run_neural_life_core(
             out_dir / "twelve_subject_systems.json",
             out_dir / "neural_life_internal_bus.json",
             out_dir / "brain_graph.json",
+            out_dir / "multiscale_region_graph.json",
             out_dir / "network_state.json",
             out_dir / "authority_binding_snapshot.json",
             out_dir / "doc_core_coverage_snapshot.json",
@@ -421,6 +434,7 @@ def run_neural_life_core(
         _write_json(out_dir / "twelve_subject_systems.json", systems_payload)
         _write_json(out_dir / "neural_life_internal_bus.json", bus_payload)
         _write_json(out_dir / "brain_graph.json", brain_graph)
+        _write_json(out_dir / "multiscale_region_graph.json", multiscale_region_graph)
         _write_json(out_dir / "network_state.json", network_state)
         _write_json(out_dir / "authority_binding_snapshot.json", authority_binding)
         _write_json(out_dir / "doc_core_coverage_snapshot.json", doc_core_coverage)
@@ -475,6 +489,11 @@ def run_check_neural_life_core(
     systems = _load_json(state_dir / "twelve_subject_systems.json", blocked_reasons, "twelve_system_gate")
     bus = _load_json(state_dir / "neural_life_internal_bus.json", blocked_reasons, "internal_bus_gate")
     brain_graph = _load_json(state_dir / "brain_graph.json", blocked_reasons, "brain_graph_gate")
+    multiscale_region_graph = _load_json(
+        state_dir / "multiscale_region_graph.json",
+        blocked_reasons,
+        "multiscale_region_graph_gate",
+    )
     network_state = _load_json(state_dir / "network_state.json", blocked_reasons, "network_state_gate")
     authority_binding = _load_json(
         state_dir / "authority_binding_snapshot.json",
@@ -538,6 +557,9 @@ def run_check_neural_life_core(
     blocked_reasons.extend(_check_systems_payload(systems))
     blocked_reasons.extend(_check_bus_payload(bus))
     blocked_reasons.extend(_check_brain_graph_payload(brain_graph, systems, bus))
+    blocked_reasons.extend(
+        _check_multiscale_region_graph_payload(multiscale_region_graph, systems, bus)
+    )
     blocked_reasons.extend(_check_network_state_payload(network_state))
     blocked_reasons.extend(_check_authority_binding_payload(authority_binding))
     blocked_reasons.extend(_check_coverage_payload(coverage))
@@ -1086,6 +1108,7 @@ def _build_report(
     active_sampling_plan_ref: str,
     prediction_workspace_ref: str,
     brain_graph_ref: str,
+    multiscale_region_graph_ref: str,
     network_state_ref: str,
     workspace_frame_ref: str,
     broadcast_frame_ref: str,
@@ -1103,6 +1126,7 @@ def _build_report(
         "bus_edge_count": len(bus_edges),
         "core_doc_coverage": doc_core_coverage["coverage"],
         "brain_graph_ref": brain_graph_ref,
+        "multiscale_region_graph_ref": multiscale_region_graph_ref,
         "network_state_ref": network_state_ref,
         "signal_media_ref": signal_media_ref,
         "belief_state_ref": belief_state_ref,
@@ -1268,6 +1292,27 @@ def _check_brain_graph_payload(
         reasons.append("brain_graph_gate region node count mismatch")
     if len(brain_graph.get("functional_edges", [])) < bus.get("bus_edge_count", 0):
         reasons.append("brain_graph_gate functional edge count mismatch")
+    return reasons
+
+
+def _check_multiscale_region_graph_payload(
+    multiscale_region_graph: dict[str, Any],
+    systems: dict[str, Any],
+    bus: dict[str, Any],
+) -> list[str]:
+    reasons: list[str] = []
+    if multiscale_region_graph.get("schema_version") != "multiscale_region_graph_v0":
+        reasons.append("multiscale_region_graph_gate schema mismatch")
+    if len(multiscale_region_graph.get("region_definitions", [])) < 8:
+        reasons.append("multiscale_region_graph_gate region definition count mismatch")
+    if not multiscale_region_graph.get("structural_edges"):
+        reasons.append("multiscale_region_graph_gate structural edges missing")
+    if len(multiscale_region_graph.get("functional_couplings", [])) < min(
+        bus.get("bus_edge_count", 0), 1
+    ):
+        reasons.append("multiscale_region_graph_gate functional coupling count mismatch")
+    if not multiscale_region_graph.get("connectome_fingerprint"):
+        reasons.append("multiscale_region_graph_gate connectome fingerprint missing")
     return reasons
 
 

@@ -19,8 +19,10 @@ def build_network_state(
     generated_at: str,
     bus_payload: dict[str, Any],
     brain_graph: dict[str, Any] | None = None,
+    multiscale_region_graph: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     brain_graph = brain_graph or {}
+    multiscale_region_graph = multiscale_region_graph or {}
     active_networks = [
         {
             "network_id": "default_mode_network",
@@ -74,6 +76,11 @@ def build_network_state(
             if brain_graph
             else None
         ),
+        "multiscale_region_graph_ref": (
+            "runtime/state/neural_life_core/multiscale_region_graph.json"
+            if multiscale_region_graph
+            else None
+        ),
         "source_doc_refs": SOURCE_DOC_REFS,
         "bus_edge_refs": [edge.get("edge_id") for edge in bus_payload.get("edges", [])],
     }
@@ -89,6 +96,7 @@ def project_network_state_from_live_turn(
     live_turn_focus: str | None = None,
     signal_media_runtime: dict[str, Any] | None = None,
     brain_graph: dict[str, Any] | None = None,
+    multiscale_region_graph: dict[str, Any] | None = None,
     workspace_frame: dict[str, Any] | None = None,
     prediction_workspace: dict[str, Any] | None = None,
     body_resource_budget: dict[str, Any] | None = None,
@@ -97,6 +105,7 @@ def project_network_state_from_live_turn(
     signal_media_runtime = signal_media_runtime or {}
     body_resource_budget = body_resource_budget or {}
     brain_graph = brain_graph or {}
+    multiscale_region_graph = multiscale_region_graph or {}
     workspace_frame = workspace_frame or {}
     prediction_workspace = prediction_workspace or {}
 
@@ -135,6 +144,10 @@ def project_network_state_from_live_turn(
     updated["switch_events"] = _dedupe_switch_events(switch_events)
     if signal_media_runtime.get("network_state_ref") or brain_graph.get("brain_graph_id"):
         updated["brain_graph_ref"] = "runtime/state/neural_life_core/brain_graph.json"
+    if multiscale_region_graph.get("multiscale_region_graph_id"):
+        updated["multiscale_region_graph_ref"] = (
+            "runtime/state/neural_life_core/multiscale_region_graph.json"
+        )
     if workspace_frame:
         updated["workspace_frame_ref"] = "runtime/state/consciousness/workspace_frame.json"
     if prediction_workspace:

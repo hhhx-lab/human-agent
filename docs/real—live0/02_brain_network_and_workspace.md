@@ -191,3 +191,7 @@ live0 的意识工作区不是声明“我有意识”，而是让当前状态�
 | `/thinking` | `self_thinking_summary_v0` | 同上，与内言语/自我反思并列 |
 
 边界：`live_consciousness_chain_inspection_boundary=structured_live_consciousness_chain_not_spoken_language`。测试：`tests/process/test_state_inspection_memory_closeout.py` 中 `test_*_exposes_live_consciousness_chain`。
+
+## MultiscaleRegionGraph 首版（ITR-08-91）
+
+S02 `run_neural_life_core` 写出 `runtime/state/neural_life_core/multiscale_region_graph.json`（schema `multiscale_region_graph_v0`），承载 L/R/P/J/G/S/O/D 八区 `RegionDefinition`、结构边、bus 功能耦合、hub load monitor 与 connectome fingerprint seed。live turn 经 `project_multiscale_region_graph_from_live_turn` 刷新 hub 负载与 graph signal propagation；`/cognition` 检查面通过 `multiscale_region_graph_inspection_snapshot` 追溯 region 计数与 boundary。仍是 inspection-only，不生成脑区播报。
