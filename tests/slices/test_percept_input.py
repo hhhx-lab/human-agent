@@ -104,6 +104,39 @@ class PerceptInputTests(unittest.TestCase):
         self.assertIn("共同语言", percept["shared_term_hits"])
         self.assertTrue(percept["repair_trigger_candidates"])
 
+    def test_build_language_percept_merges_core_affect_cues(self):
+        inputs = self._base_inputs()
+        percept = build_language_percept_frame(
+            run_id="percept-input-test",
+            generated_at="2026-06-15T00:00:00+00:00",
+            incoming_turn={
+                "incoming_surface": "我们还需要继续修复这段关系。",
+                "speaker_role": "friend",
+            },
+            relation_scope_index=inputs["relation_scope_index"],
+            shared_term_registry=inputs["shared_term_registry"],
+            source_doc_refs=[
+                "docs/v0/slice_contracts/s07_language_relationship_engineering_contract.md"
+            ],
+            core_affect_vector={
+                "schema_version": "core_affect_vector_v0",
+                "valence": 0.2,
+                "arousal": 0.75,
+                "pain_pressure": "moderate",
+                "relationship_tension": 0.7,
+                "repair_drive": 0.8,
+            },
+        )
+
+        profile = percept["core_affect_consumption_profile"]
+        self.assertEqual(profile["affective_cue_source"], "core_affect_vector")
+        self.assertIn("affective-cue-core-repair-drive", percept["affective_cue_candidates"])
+        self.assertIn("affective-cue-core-negative-valence", percept["affective_cue_candidates"])
+        self.assertEqual(
+            percept["core_affect_vector_ref"],
+            "runtime/state/body/core_affect_vector.json",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

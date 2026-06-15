@@ -73,6 +73,7 @@ def refresh_live_language_turn(
         source_doc_refs=source_doc_refs,
         belief_state=belief_state,
         active_sampling_plan=active_sampling_plan,
+        core_affect_vector=core_affect_vector,
     )
     semantic_map = build_semantic_map_frame(
         run_id=run_id,

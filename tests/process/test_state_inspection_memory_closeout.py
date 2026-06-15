@@ -964,6 +964,85 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertTrue(summary["expression_closeout_present"])
         self.assertIn("expression_closeout", summary["domain_presence"])
 
+    def test_thinking_summary_exposes_v0_contract_coverage(self):
+        section = {
+            "resident_self_thinking": {"thinking_mode": "reflective_hold"},
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {"total_required_files": 120, "missing_file_count": 0},
+            },
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_self_thinking_summary(section)
+
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertEqual(summary["v0_required_file_count"], 120)
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
+    def test_language_summary_exposes_core_affect_percept(self):
+        section = {
+            "language_percept": {
+                "core_affect_consumption_profile": {
+                    "affective_cue_source": "core_affect_vector",
+                    "core_affect_cue_ids": [
+                        "affective-cue-core-repair-drive",
+                        "affective-cue-core-negative-valence",
+                    ],
+                    "percept_core_affect_boundary": (
+                        "structured_percept_affect_not_spoken_emotion"
+                    ),
+                },
+            },
+        }
+
+        summary = _collect_language_generation_consumption_summary(section)
+
+        self.assertEqual(summary["core_affect_percept_cue_source"], "core_affect_vector")
+        self.assertEqual(summary["core_affect_percept_cue_count"], 2)
+        self.assertIn("core_affect_percept_consumption", summary["domain_presence"])
+
+    def test_relationship_summary_exposes_stage_evolution(self):
+        section = {
+            "relationship_subject_graph": {
+                "subjects": [
+                    {
+                        "relationship_id": "rel-v0-0001",
+                        "relationship_stage": "shared_language_waiting",
+                        "relationship_stage_reason": "shared_language_accumulation_waiting",
+                        "relationship_stage_evidence_refs": [
+                            "runtime/state/relationship/relationship_timeline.json"
+                        ],
+                    }
+                ],
+                "relationship_stage_evolution_profile": {
+                    "schema_version": "relationship_stage_evolution_profile_v0",
+                    "relationship_stage": "shared_language_waiting",
+                    "relationship_stage_reason": "shared_language_accumulation_waiting",
+                    "dialogue_turn_count": 2,
+                    "continuity_evolution_path": "evolve_relationship_and_self_model",
+                    "relationship_stage_evolution_boundary": (
+                        "structured_stage_evidence_not_spoken_relationship_script"
+                    ),
+                },
+            },
+            "self_model": {
+                "last_trait_evolution_reason": "shared_language_accumulation_waiting",
+            },
+        }
+
+        summary = _collect_relationship_continuity_summary(section)
+
+        self.assertTrue(summary["relationship_stage_evolution_present"])
+        self.assertEqual(
+            summary["relationship_stage_evolution_path"],
+            "evolve_relationship_and_self_model",
+        )
+        self.assertIn("relationship_stage_evolution", summary["domain_presence"])
+
     def test_ability_summary_exposes_process_closeout_bundle(self):
         section = {
             "birth_readiness_rollup": {"overall_status": "blocked"},

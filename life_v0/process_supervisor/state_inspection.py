@@ -504,6 +504,7 @@ def build_resident_state_inspection(
                 "v0_contract_coverage_report": (
                     "../reports/latest/v0_contract_coverage_report.json"
                 ),
+                "self_model": "self/self_model.json",
             },
         )
         relationship["continuity_summary"] = (
@@ -729,6 +730,13 @@ def build_resident_state_inspection(
                 "go_nogo_state": "action/go_nogo_state.json",
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
+                ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
                 ),
             },
         )
@@ -1320,6 +1328,49 @@ def _identity_name_binding_inspection_snapshot(
         life_name_registry=life_name_registry_value,
         continuity_refs=continuity_refs_value,
     )
+
+
+def _relationship_stage_evolution_inspection_snapshot(
+    *,
+    relationship_graph: dict[str, Any],
+    self_model: dict[str, Any],
+) -> dict[str, Any]:
+    subjects = relationship_graph.get("subjects")
+    subject = subjects[0] if isinstance(subjects, list) and subjects else {}
+    subject = subject if isinstance(subject, dict) else {}
+    stage_profile = relationship_graph.get("relationship_stage_evolution_profile")
+    stage_profile = stage_profile if isinstance(stage_profile, dict) else {}
+    stage_reason = _first_non_empty(
+        stage_profile.get("relationship_stage_reason"),
+        subject.get("relationship_stage_reason"),
+    )
+    trait_evolution_reason = self_model.get("last_trait_evolution_reason")
+    evidence_ref_count = _count_any(subject.get("relationship_stage_evidence_refs"))
+    present = bool(
+        stage_profile
+        and stage_reason
+        and trait_evolution_reason
+        and evidence_ref_count
+        and stage_reason == trait_evolution_reason
+    )
+    return {
+        "relationship_stage_evolution_present": present,
+        "relationship_stage_evolution_stage": _first_non_empty(
+            stage_profile.get("relationship_stage"),
+            subject.get("relationship_stage"),
+        ),
+        "relationship_stage_evolution_reason": stage_reason,
+        "relationship_stage_evolution_dialogue_turn_count": stage_profile.get(
+            "dialogue_turn_count"
+        ),
+        "relationship_stage_evolution_evidence_ref_count": evidence_ref_count,
+        "relationship_stage_evolution_path": stage_profile.get(
+            "continuity_evolution_path"
+        ),
+        "relationship_stage_evolution_boundary": stage_profile.get(
+            "relationship_stage_evolution_boundary"
+        ),
+    }
 
 
 def _shared_term_promotion_inspection_snapshot(
@@ -4617,6 +4668,11 @@ def _collect_language_generation_consumption_summary(
         "language_percept_input_evidence": bool(
             language_percept.get("percept_input_mode")
         ),
+        "core_affect_percept_consumption": bool(
+            _extract_nested_value(
+                language_percept, "core_affect_consumption_profile"
+            ).get("affective_cue_source") == "core_affect_vector"
+        ),
         "shared_term_live_promotion": bool(
             shared_term_promotion.get("shared_term_live_promotion_present")
         ),
@@ -4664,6 +4720,20 @@ def _collect_language_generation_consumption_summary(
         "language_percept_input_source_ref": language_percept.get(
             "percept_input_source_ref"
         ),
+        "core_affect_percept_cue_source": _extract_nested_value(
+            language_percept,
+            "core_affect_consumption_profile",
+        ).get("affective_cue_source"),
+        "core_affect_percept_cue_count": _count_any(
+            _extract_nested_value(
+                language_percept,
+                "core_affect_consumption_profile",
+            ).get("core_affect_cue_ids")
+        ),
+        "core_affect_percept_boundary": _extract_nested_value(
+            language_percept,
+            "core_affect_consumption_profile",
+        ).get("percept_core_affect_boundary"),
         "expression_plan_goal": expression_plan.get("semantic_goal"),
         "expression_plan_queue_e_repair_pressure_level": expression_plan.get(
             "queue_e_repair_pressure_level"
@@ -4835,6 +4905,7 @@ def _collect_relationship_continuity_summary(
     shared_term_registry = _extract_compact_value(
         section.get("shared_term_registry", {})
     )
+    self_model = _extract_compact_value(section.get("self_model", {}))
     memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
     world_contact_handoff = _extract_compact_value(
         section.get("queue_e_world_contact_handoff", {})
@@ -4882,6 +4953,10 @@ def _collect_relationship_continuity_summary(
     shared_term_promotion = _shared_term_promotion_inspection_snapshot(
         shared_term_registry=shared_term_registry,
         terminal_loop=terminal_loop,
+    )
+    relationship_stage_evolution = _relationship_stage_evolution_inspection_snapshot(
+        relationship_graph=relationship_graph,
+        self_model=self_model,
     )
     contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
     doc_to_code_matrix = _extract_compact_value(
@@ -4958,6 +5033,9 @@ def _collect_relationship_continuity_summary(
         ),
         "v0_contract_coverage": bool(
             contract_coverage.get("v0_contract_coverage_present")
+        ),
+        "relationship_stage_evolution": bool(
+            relationship_stage_evolution.get("relationship_stage_evolution_present")
         ),
     }
     active_domains = [
@@ -5056,6 +5134,7 @@ def _collect_relationship_continuity_summary(
         **live_queue_e_handoff,
         **schema_handoff,
         **shared_term_promotion,
+        **relationship_stage_evolution,
         **contract_coverage,
     }
 
@@ -5964,6 +6043,18 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
         broadcast=broadcast,
         metacognition=metacognition,
     )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     model_expression_handoff = (
         _model_expression_world_contact_handoff_inspection_fields(
             model_context_summary
@@ -6013,6 +6104,9 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
         ),
         "live_consciousness_chain": bool(
             live_consciousness_chain.get("live_consciousness_chain_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -6111,6 +6205,7 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
         **live_queue_e_handoff,
         **expression_closeout,
         **live_consciousness_chain,
+        **contract_coverage,
     }
 
 

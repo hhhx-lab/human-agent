@@ -47,6 +47,9 @@ from life_v0.state_store.memory_write_gate import (
 )
 from life_v0.state_store.life_state import project_responsibility_language_continuity
 from life_v0.state_store.relationship_memory import project_relationship_memory
+from life_v0.process_supervisor.continuity_evolution import (
+    evolve_relationship_and_self_model,
+)
 
 
 ACTIVE_SLICE = "S07_LANGUAGE_RELATIONSHIP"
@@ -161,6 +164,7 @@ def run_build_language_relationship(
     )
     body_resource_budget = _load_json_if_exists(state_dir / "body" / "body_resource_budget.json")
     core_affect_vector = _load_json_if_exists(state_dir / "body" / "core_affect_vector.json")
+    self_model_state = _load_json_if_exists(state_dir / "self" / "self_model.json")
     signal_media_runtime = _load_json_if_exists(state_dir / "signal" / "signal_media_runtime.json")
     belief_state = _load_json_if_exists(state_dir / "prediction" / "belief_state_frame.json")
     prediction_error_field = _load_json_if_exists(state_dir / "prediction" / "prediction_error_field.json")
@@ -241,6 +245,9 @@ def run_build_language_relationship(
         signal_media_runtime=signal_media_runtime,
         queue_e_repair_modulation_profile=queue_e_repair_profile,
     )
+    core_affect_vector = _load_json_if_exists(
+        state_dir / "body" / "core_affect_vector.json"
+    )
     language_percept = _build_language_percept_frame(
         run_id,
         generated_at,
@@ -249,6 +256,7 @@ def run_build_language_relationship(
         shared_term_registry=shared_term_registry,
         belief_state=belief_state,
         active_sampling_plan=active_sampling_plan,
+        core_affect_vector=core_affect_vector,
         commitment_repair_index=repair_language,
         self_narrative_trace=self_narrative_trace,
         relationship_memory=relationship_memory,
@@ -301,6 +309,66 @@ def run_build_language_relationship(
         core_affect_vector=core_affect_vector,
     )
     dialogue_turn_entries = _build_dialogue_turn_log_entries(run_id, generated_at)
+    relationship_timeline = _build_relationship_timeline(
+        run_id,
+        generated_at,
+        relationship_graph=relationship_graph,
+        relationship_memory=relationship_memory,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        dialogue_turn_entries=dialogue_turn_entries,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    commitment_expression_plan = _build_commitment_expression_plan(
+        run_id,
+        generated_at,
+        expression_plan=expression_plan,
+        commitment_repair_index=repair_language,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        responsibility_loop_state=responsibility_loop,
+        relationship_timeline=relationship_timeline,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    apology_repair_language_trace = _build_apology_repair_language_trace(
+        run_id,
+        generated_at,
+        responsibility_loop_state=responsibility_loop,
+        relationship_timeline=relationship_timeline,
+        commitment_expression_plan=commitment_expression_plan,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+    )
+    evolved_continuity = evolve_relationship_and_self_model(
+        generated_at=generated_at,
+        relationship_graph=relationship_graph,
+        self_model_state=self_model_state,
+        relationship_timeline=relationship_timeline,
+        commitment_expression_plan=commitment_expression_plan,
+        apology_repair_language_trace=apology_repair_language_trace,
+        responsibility_loop_state=responsibility_loop,
+        world_contact_summary=world_contact_summary,
+        pain_regret_repair_report=pain_regret_repair_report,
+        nightmare_risk=nightmare_risk,
+        belief_learning_plan=belief_learning_plan,
+        language_learning_plan=language_learning_plan,
+        relationship_learning_plan=relationship_learning_plan,
+        background_continuity_profile={},
+    )
+    relationship_graph = evolved_continuity["relationship_graph"]
+    self_model_state = evolved_continuity["self_model_state"]
     relationship_timeline = _build_relationship_timeline(
         run_id,
         generated_at,
@@ -400,6 +468,7 @@ def run_build_language_relationship(
         "runtime/state/prediction/prediction_error_field.json",
         "runtime/state/prediction/active_sampling_plan.json",
         "runtime/state/memory/memory_write_gate.json",
+        "runtime/state/self/self_model.json",
     ]
     receipt_ref = f"runtime/receipts/language_relationship_{run_id}.json"
 
@@ -507,6 +576,8 @@ def run_build_language_relationship(
     try:
         language_dir.mkdir(parents=True, exist_ok=True)
         relationship_dir.mkdir(parents=True, exist_ok=True)
+        self_dir = state_dir / "self"
+        self_dir.mkdir(parents=True, exist_ok=True)
         signal_dir = out_dir / "signal"
         signal_dir.mkdir(parents=True, exist_ok=True)
         prediction_dir = out_dir / "prediction"
@@ -539,6 +610,7 @@ def run_build_language_relationship(
         _write_json(state_dir / "relationship" / "commitment_truth_state.json", updated_commitment_truth)
         _write_json(state_dir / "responsibility" / "responsibility_ledger.json", updated_responsibility_ledger)
         _write_json(state_dir / "memory" / "relationship_memory.json", updated_relationship_memory)
+        _write_json(self_dir / "self_model.json", self_model_state)
         _write_json(state_dir / "life_state.json", updated_life_state)
         _write_json(reports_dir / "language_relationship_report.json", report)
         _write_json(reports_dir / "language_relationship_digest.json", digest)
@@ -1015,6 +1087,7 @@ def _build_language_percept_frame(
     shared_term_registry: dict[str, Any],
     belief_state: dict[str, Any] | None = None,
     active_sampling_plan: dict[str, Any] | None = None,
+    core_affect_vector: dict[str, Any] | None = None,
     commitment_repair_index: dict[str, Any] | None = None,
     self_narrative_trace: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
@@ -1038,6 +1111,7 @@ def _build_language_percept_frame(
         source_doc_refs=S07_SOURCE_DOCS,
         belief_state=belief_state,
         active_sampling_plan=active_sampling_plan,
+        core_affect_vector=core_affect_vector,
     )
     language_percept["percept_input_mode"] = resolved["percept_input_mode"]
     language_percept["percept_input_source_ref"] = resolved["percept_input_source_ref"]

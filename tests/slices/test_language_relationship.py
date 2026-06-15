@@ -108,6 +108,7 @@ class LanguageRelationshipTests(unittest.TestCase):
             check_report = self._read_json(paths["reports"] / "language_relationship_check_report.json")
             receipt = self._read_json(paths["receipts"] / "language_relationship_language-test.json")
             life_state = self._read_json(paths["state_root"] / "life_state.json")
+            self_model = self._read_json(paths["state_root"] / "self" / "self_model.json")
 
         self.assertEqual(inner_speech["schema_version"], "inner_speech_frame_v0")
         self.assertEqual(inner_speech["status"], "closed")
@@ -189,6 +190,20 @@ class LanguageRelationshipTests(unittest.TestCase):
         self.assertEqual(relationship_graph["status"], "closed")
         self.assertTrue(relationship_graph["subjects"])
         self.assertEqual(relationship_graph["subjects"][0]["relation_role"], "friend")
+        self.assertIn(
+            "relationship_stage_evolution_profile",
+            relationship_graph,
+        )
+        self.assertEqual(
+            relationship_graph["relationship_stage_evolution_profile"][
+                "continuity_evolution_path"
+            ],
+            "evolve_relationship_and_self_model",
+        )
+        self.assertEqual(
+            relationship_graph["subjects"][0]["relationship_stage_reason"],
+            self_model["last_trait_evolution_reason"],
+        )
 
         self.assertEqual(relationship_timeline["schema_version"], "relationship_timeline_v0")
         self.assertEqual(relationship_timeline["status"], "closed")

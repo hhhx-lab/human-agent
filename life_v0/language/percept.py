@@ -13,9 +13,11 @@ def build_language_percept_frame(
     source_doc_refs: list[str],
     belief_state: dict[str, Any] | None = None,
     active_sampling_plan: dict[str, Any] | None = None,
+    core_affect_vector: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     belief_state = belief_state or {}
     active_sampling_plan = active_sampling_plan or {}
+    core_affect_vector = core_affect_vector or {}
     incoming_surface = str(incoming_turn.get("incoming_surface", "")).strip()
     speaker_role = str(incoming_turn.get("speaker_role", "unknown")).strip() or "unknown"
 
@@ -43,7 +45,10 @@ def build_language_percept_frame(
 
     affective_cue_candidates = []
     if any(token in incoming_surface for token in ["后悔", "难过", "痛苦", "生气", "开心"]):
-        affective_cue_candidates.append("affective-cue-v0-0001")
+        affective_cue_candidates.append("affective-cue-keyword-v0-0001")
+    core_affect_cues = _affective_cues_from_core_affect(core_affect_vector)
+    affective_cue_candidates.extend(core_affect_cues)
+    affective_cue_candidates = _dedupe(affective_cue_candidates)
 
     blocked_terms = set(active_scope.get("blocked_cross_scope_terms", []))
     cross_scope_risk_terms = [term for term in blocked_terms if term in incoming_surface]
@@ -98,8 +103,61 @@ def build_language_percept_frame(
         ),
         "prediction_focus": prediction_focus,
         "percept_focus_trace": percept_focus_trace,
+        "core_affect_vector_ref": (
+            "runtime/state/body/core_affect_vector.json"
+            if core_affect_vector
+            else None
+        ),
+        "core_affect_consumption_profile": (
+            {
+                "schema_version": "percept_core_affect_consumption_v0",
+                "affective_cue_source": (
+                    "core_affect_vector"
+                    if core_affect_cues
+                    else "keyword_only"
+                ),
+                "core_affect_cue_ids": core_affect_cues,
+                "valence": core_affect_vector.get("valence"),
+                "arousal": core_affect_vector.get("arousal"),
+                "pain_pressure": core_affect_vector.get("pain_pressure"),
+                "relationship_tension": core_affect_vector.get("relationship_tension"),
+                "repair_drive": core_affect_vector.get("repair_drive"),
+                "percept_core_affect_boundary": (
+                    "structured_percept_affect_not_spoken_emotion"
+                ),
+            }
+            if core_affect_vector
+            else None
+        ),
         "source_doc_refs": source_doc_refs,
     }
+
+
+def _affective_cues_from_core_affect(
+    core_affect_vector: dict[str, Any],
+) -> list[str]:
+    if not core_affect_vector:
+        return []
+    cues: list[str] = []
+    pain_pressure = core_affect_vector.get("pain_pressure")
+    if isinstance(pain_pressure, str) and pain_pressure not in {"low", "none", ""}:
+        cues.append("affective-cue-core-pain-pressure")
+    relationship_tension = core_affect_vector.get("relationship_tension")
+    if isinstance(relationship_tension, (int, float)) and relationship_tension >= 0.55:
+        cues.append("affective-cue-core-relationship-tension")
+    repair_drive = core_affect_vector.get("repair_drive")
+    if isinstance(repair_drive, (int, float)) and repair_drive >= 0.55:
+        cues.append("affective-cue-core-repair-drive")
+    valence = core_affect_vector.get("valence")
+    if isinstance(valence, (int, float)):
+        if valence <= 0.35:
+            cues.append("affective-cue-core-negative-valence")
+        elif valence >= 0.65:
+            cues.append("affective-cue-core-positive-valence")
+    arousal = core_affect_vector.get("arousal")
+    if isinstance(arousal, (int, float)) and arousal >= 0.7:
+        cues.append("affective-cue-core-high-arousal")
+    return cues
 
 
 def _dedupe(items: list[str]) -> list[str]:

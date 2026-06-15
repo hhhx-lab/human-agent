@@ -164,6 +164,20 @@ def evolve_relationship_and_self_model(
     updated_self_model_state["last_relationship_stage"] = next_stage
     updated_self_model_state["last_trait_evolution_generated_at"] = generated_at
     updated_self_model_state["last_trait_evolution_reason"] = stage_reason
+    updated_relationship_graph["relationship_stage_evolution_profile"] = {
+        "schema_version": "relationship_stage_evolution_profile_v0",
+        "generated_at": generated_at,
+        "relationship_stage": next_stage,
+        "relationship_stage_reason": stage_reason,
+        "dialogue_turn_count": dialogue_turn_count,
+        "continuity_evolution_path": "evolve_relationship_and_self_model",
+        "self_model_trait_evolution_ref": (
+            "runtime/state/self/self_model.json#last_trait_evolution"
+        ),
+        "relationship_stage_evolution_boundary": (
+            "structured_stage_evidence_not_spoken_relationship_script"
+        ),
+    }
     return {
         "relationship_graph": updated_relationship_graph,
         "self_model_state": updated_self_model_state,

@@ -235,6 +235,18 @@ live0 的语言链已经不只是提示词，而是可追踪的器官链：感�
 
 `/language` 检查面通过 `expression_plan_queue_e_repair_*` 字段追溯，边界仍为 `inspection_only_not_spoken_response`。测试：`tests/slices/test_language_organs.py#test_expression_plan_projects_queue_e_repair_modulation`、`tests/process/test_state_inspection_memory_closeout.py#test_language_summary_exposes_expression_plan_queue_e`。
 
+## Core affect percept 消费（ITR-08-96）
+
+`language/percept.py#build_language_percept_frame` 现在可选消费 `runtime/state/body/core_affect_vector.json`：
+
+| 字段 | 含义 |
+|------|------|
+| `core_affect_vector_ref` | body 文件 ref |
+| `core_affect_consumption_profile.affective_cue_source` | `core_affect_vector` 或 `keyword_only` |
+| `core_affect_consumption_profile.core_affect_cue_ids` | 由 valence/arousal/pain/relationship_tension/repair_drive 推断的 cue id |
+
+S07 batch（`language/__init__.py`）与 live turn（`live_language_turn.py`）同轮传入 `core_affect_vector`。`/language` 检查面显示 `core_affect_percept_cue_source` 与 `core_affect_percept_consumption` domain presence。边界：`structured_percept_affect_not_spoken_emotion`。测试：`tests/slices/test_percept_input.py`、`tests/process/test_state_inspection_memory_closeout.py`。
+
 ## Batch percept 输入解析（ITR-08-83）
 
 S07 `run_build_language_relationship` 不再硬编码 fixture 话语，而是通过 `percept_input.py#resolve_incoming_turn_for_language_build` 按优先级解析：
