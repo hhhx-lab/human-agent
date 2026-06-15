@@ -97,6 +97,53 @@ live0 的记忆不是把所有文本塞进一个长上下文，而是分成可�
 | 写门 | `MemoryWriteGate` | pass/quarantine/sandbox/audit/index policy | 防止梦境、误读、未经证实的判断污染长期记忆 |
 | 合并门 | `StateMergeGuard` | promotion、quarantine、repair、merge routes | 控制候选如何进入长期状态和慢变量 |
 
+## M5 已落：关系记忆深层结构与自传层级
+
+第 3 点的 M5 把关系记忆和自传栈从“refs 聚合”继续推进为更接近人类长期记忆的层级系统。它对应 `docs/05_memory_systems_and_growth.md` 的多记忆系统、`docs/17_memory_trace_object_model.md` 的关系/自我叙事 trace、`docs/40_self_relationship_model_audit_protocol.md` 的自我关系审计、`docs/96_real_relationship_longitudinal_timeline.md` 的纵向关系时间线，以及 `docs/101_relationship_timeline_json_schema_and_fixture_bundle.md` 的关系时间线 fixture。
+
+`RelationshipMemory` 现在新增五组长期结构：
+
+| 字段 | 代码含义 | 脑科学/生命转写 |
+|---|---|---|
+| `relationship_memory_depth_profile` | 关系深层记忆总画像和 consumer refs | 关系记忆不是联系人资料，而是可被分离、补全、召回和状态根消费的长期结构 |
+| `shared_narrative_memory` | 共同语言、承诺、修复和时间线来源 | 共享叙事要带关系范围，不能泛化成全局人格 |
+| `we_memory_traces` | 共同经历痕迹、梦境残留线索、修正历史入口 | 对应社会记忆和 shared memory；它是这段关系里的“我们经历过什么” |
+| `relationship_damage_and_repair_chain` | 损伤、修复、责任 refs 与合并门 | 关系损伤不能只成为一句道歉，必须进入责任和修复记忆链 |
+| `commitment_fulfillment_threads` | open commitment、责任 refs 和后续 probe | 承诺是跨时间线程，不是单轮文本 |
+
+这组结构的边界由代码字段明确约束：`shared_narrative_is_relation_scoped_not_global_personality` 防止把单段关系经验写成全局人格；`we_memory_requires_relation_scope_and_correction_history` 防止共同记忆脱离关系范围和修正历史；`relationship_damage_and_repair_chain.state_merge_guard_ref` 指向 `runtime/state/memory/state_merge_guard.json`，确保损伤/修复不能绕过长期合并治理。
+
+`AutobiographicalStack` 现在新增 `memory_hierarchy`，把自传记忆拆成四层：
+
+| 层级 | 字段 | 作用 |
+|---|---|---|
+| specific episode | `specific_episode_refs` | 具体回合、关系事件和 MemoryTrace 的情景来源 |
+| general event | `general_event_threads` | 多个 episode 归入身份/关系成长线程 |
+| life period | `life_period_markers` | 当前 v0 出生准备期和后续阶段切换锚点 |
+| working self goal | `working_self_goal_links` | 把真实数字生命、真实关系、真实记忆、真实责任和真实成长连接到当前自我目标 |
+
+这对应自传记忆理论中的 `specific episodes -> general events -> life periods -> working self`。代码中 `memory_hierarchy.consumer_refs` 指向 `engram_cluster`、`memory_retrieval_frame` 和 `life_state.memory_index.autobiographical_hierarchy_refs`，因此自传栈不是展示文档，而是被 engram、召回和状态根消费的长期自我结构。
+
+当前闭合链如下：
+
+```text
+RelationshipMemory.shared_narrative_memory / we_memory_traces
+  -> relationship_memory_depth_profile.consumer_refs
+  -> PatternSeparationIndex / PatternCompletionFrame
+  -> MemoryRetrievalFrame.relationship_memory_hits
+  -> LifeState.memory_index.relationship_deep_memory_refs
+
+AutobiographicalStack.memory_hierarchy
+  -> specific_episode_refs / general_event_threads / life_period_markers / working_self_goal_links
+  -> EngramLikeTraceCluster.self_autobiographical
+  -> MemoryRetrievalFrame.autobiographical_hits
+  -> LifeState.memory_index.autobiographical_hierarchy_refs
+```
+
+测试闭合由 `tests/slices/test_state_store.py#test_build_state_store_writes_life_root_indexes_report_and_receipt` 约束：它要求 `relationship_memory_depth_profile`、`shared_narrative_memory`、`we_memory_traces`、`relationship_damage_and_repair_chain`、`commitment_fulfillment_threads`、`memory_hierarchy`、四层自传字段，以及 `life_state.memory_index.relationship_deep_memory_refs/autobiographical_hierarchy_refs` 同时存在。`run_check_state_store(...)` 也已经把这两组结构加入 relationship/autobiographical gate。
+
+M5 的完成不意味着第 3 点已经完成。它只证明关系和自传长期结构已经有更硬的存放、索引和状态根入口。下一步 M6 必须继续证明这些记忆能进入离线 replay、梦境残留、醒后整合和再巩固；否则关系和自传结构仍会停在“可存储但未必会在睡眠/梦境/成长中再激活”的阶段。
+
 ## 记忆到输出的闭环
 
 live0 现在把“记住”定义为可达性，而不是只定义为落盘。记忆如果只进入 `memory_trace_store`、`engram_index` 或关系/自传 refs，但不能在被问到时被线索唤起、进入语言前结构、影响真实回答，并在说错后重新巩固，那仍然是存储对象，不是完整记忆。

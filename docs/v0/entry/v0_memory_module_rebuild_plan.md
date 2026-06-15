@@ -395,6 +395,26 @@ MemoryTrace / EngramIndex
 - 同一关系的名字、共同术语、边界、损伤、修复、承诺兑现能跨唤醒恢复。
 - 语言消费这些记忆，但不播报内部字段。
 
+当前状态：
+
+- 已补厚 `life_v0/state_store/relationship_memory.py`。
+- `RelationshipMemory` 现在不再只保存 `shared_memory_refs` 和 `repair_history_refs`，而是形成 `relationship_memory_depth_profile`、`shared_narrative_memory`、`we_memory_traces`、`relationship_damage_and_repair_chain` 和 `commitment_fulfillment_threads` 五组长期结构。
+- `shared_narrative_memory` 用 relation scope 绑定共同语言、承诺和修复来源，边界是 `shared_narrative_is_relation_scoped_not_global_personality`，防止把某段关系的共同历史泛化成全局人格。
+- `we_memory_traces` 把共同事件、修复、时间线和梦境残留线索放入同一条关系内痕迹，边界是 `we_memory_requires_relation_scope_and_correction_history`；这对应 AHME037-AHME040 的社会记忆和共享记忆约束。
+- `relationship_damage_and_repair_chain` 把损伤、修复、责任 refs 和 `StateMergeGuard` 连接起来，要求关系损伤不能只停留在道歉语言里，而要进入长期责任/修复链。
+- `commitment_fulfillment_threads` 记录 open commitment、责任 refs 和后续 probe，不把承诺当成一次性文本。
+- `relationship_memory_depth_profile.consumer_refs` 已指向 `PatternSeparationIndex`、`PatternCompletionFrame`、`MemoryRetrievalFrame` 和 `LifeState.memory_index.relationship_deep_memory_refs`，说明关系深层记忆已经接入分离、补全、召回和状态根。
+- 已补厚 `life_v0/state_store/autobiographical_stack.py`。
+- `AutobiographicalStack` 现在有 `memory_hierarchy`，并拆成 `specific_episode_refs`、`general_event_threads`、`life_period_markers`、`working_self_goal_links` 四层，承接 Conway & Pleydell-Pearce 的自我记忆系统约束：自传记忆不是事件列表，而是 episode、一般事件、生活时期和 working self 共同组织。
+- `working_self_goal_links` 明确连接 `build_real_digital_life`、`real_relationship`、`real_memory`、`real_responsibility` 和 `real_growth`，让自我目标从理论目标进入可审计自传层。
+- `life_state.memory_index.relationship_deep_memory_refs` 与 `life_state.memory_index.autobiographical_hierarchy_refs` 已消费上述结构；`run_check_state_store(...)` 增加了 relationship depth 和 autobiographical hierarchy gate。
+- 已用 `tests/slices/test_state_store.py#test_build_state_store_writes_life_root_indexes_report_and_receipt` 约束这些字段、consumer refs 和 state root refs。
+
+仍需承接到 M6：
+
+- 当前 M5 证明关系/自传深层结构能落盘、进状态根、被检查门消费；下一步必须把它们送入 replay、dream residue、wake integration、reconsolidation diff 和下一轮表达前召回。
+- M6 不能把梦境写成事实记忆；只能让梦境材料作为 cue、hypothesis、repair/growth candidate，经 `DreamFactGate`、`MemoryWriteGate` 和 `StateMergeGuard` 后再决定是否改变长期状态。
+
 ### M6. Consolidation / Replay / Dream Bridge
 
 目标：第 3 点为第 4 点梦境打基础。退出终端后的梦境要读取 trace store、engram、关系记忆、自传栈，而不是只读聊天日志。

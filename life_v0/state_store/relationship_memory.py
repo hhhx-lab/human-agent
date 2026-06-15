@@ -48,6 +48,12 @@ def build_relationship_memory(
             "runtime/state/responsibility/responsibility_ledger.json",
         ],
     }
+    relationship_depth = _build_relationship_depth_profile(
+        shared_memory_refs=shared_memory_refs,
+        repair_refs=repair_refs,
+        responsibility_refs=list(responsibility_ledger.get("responsibility_event_refs", []))
+        or ["runtime/state/responsibility/responsibility_ledger.json#responsibility_events"],
+    )
     return {
         "schema_version": "relationship_memory_v0",
         "run_id": run_id,
@@ -71,6 +77,11 @@ def build_relationship_memory(
         "retrievable_context_memory_refs": [],
         "deep_sediment_memory_refs": [],
         "relation_person_profile": initial_profile,
+        "relationship_memory_depth_profile": relationship_depth["relationship_memory_depth_profile"],
+        "shared_narrative_memory": relationship_depth["shared_narrative_memory"],
+        "we_memory_traces": relationship_depth["we_memory_traces"],
+        "relationship_damage_and_repair_chain": relationship_depth["relationship_damage_and_repair_chain"],
+        "commitment_fulfillment_threads": relationship_depth["commitment_fulfillment_threads"],
         "relationship_theme_tags": [],
         "next_wake_cues": [],
         "timeline_seed_refs": [
@@ -92,6 +103,11 @@ def build_relationship_memory(
             or ["runtime/state/responsibility/responsibility_ledger.json#responsibility_events"],
             "relationship_memory_offline_refs": [],
             "relationship_memory_repair_refs": repair_refs,
+            "relationship_memory_deepening_refs": [
+                "runtime/state/memory/relationship_memory.json#we_memory_traces",
+                "runtime/state/memory/relationship_memory.json#shared_narrative_memory",
+                "runtime/state/memory/relationship_memory.json#relationship_damage_and_repair_chain",
+            ],
         },
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -129,6 +145,13 @@ def project_relationship_memory(
         "responsibility_event_refs": list(relationship_memory.get("responsibility_event_refs", [])),
         "timeline_refs": list(relationship_memory.get("timeline_refs", [])),
         "offline_learning_refs": list(relationship_memory.get("offline_learning_refs", [])),
+        "we_memory_traces": list(relationship_memory.get("we_memory_traces", [])),
+        "relationship_damage_and_repair_chain": list(
+            relationship_memory.get("relationship_damage_and_repair_chain", [])
+        ),
+        "commitment_fulfillment_threads": list(
+            relationship_memory.get("commitment_fulfillment_threads", [])
+        ),
     }
 
     subject_refs = [
@@ -171,6 +194,40 @@ def project_relationship_memory(
         + list(commitment_truth_state.get("repair_required_refs", []))
         + list(commitment_repair_index.get("regret_trace_refs", []))
         + list(commitment_repair_index.get("repair_language_refs", []))
+    )
+    updated["shared_narrative_memory"] = _merge_shared_narrative_memory(
+        updated.get("shared_narrative_memory"),
+        shared_memory_refs=updated["shared_memory_refs"],
+        timeline_refs=updated.get("timeline_refs", []),
+        repair_refs=updated["repair_history_refs"],
+    )
+    updated["we_memory_traces"] = _merge_we_memory_traces(
+        updated.get("we_memory_traces", []),
+        shared_memory_refs=updated["shared_memory_refs"],
+        timeline_refs=updated.get("timeline_refs", []),
+        repair_refs=updated["repair_history_refs"],
+    )
+    updated["relationship_damage_and_repair_chain"] = (
+        _merge_relationship_damage_and_repair_chain(
+            updated.get("relationship_damage_and_repair_chain", []),
+            repair_refs=updated["repair_history_refs"],
+            responsibility_refs=updated["responsibility_event_refs"],
+        )
+    )
+    updated["commitment_fulfillment_threads"] = _merge_commitment_threads(
+        updated.get("commitment_fulfillment_threads", []),
+        commitment_truth_state=commitment_truth_state,
+        responsibility_refs=updated["responsibility_event_refs"],
+    )
+    updated["relationship_memory_depth_profile"] = _relationship_depth_profile_from_updated(updated)
+    updated.setdefault("long_term_change_sources", {})
+    updated["long_term_change_sources"]["relationship_memory_deepening_refs"] = _dedupe(
+        list(updated["long_term_change_sources"].get("relationship_memory_deepening_refs", []))
+        + [
+            "runtime/state/memory/relationship_memory.json#we_memory_traces",
+            "runtime/state/memory/relationship_memory.json#shared_narrative_memory",
+            "runtime/state/memory/relationship_memory.json#relationship_damage_and_repair_chain",
+        ]
     )
     updated["last_contact_refs"] = _dedupe(
         (last_contact_refs or []) + updated["last_contact_refs"]
@@ -248,6 +305,207 @@ def project_relationship_memory(
             + repair_refs
         )
     return updated
+
+
+def _build_relationship_depth_profile(
+    *,
+    shared_memory_refs: list[str],
+    repair_refs: list[str],
+    responsibility_refs: list[str],
+) -> dict[str, Any]:
+    shared_narrative_memory = _merge_shared_narrative_memory(
+        None,
+        shared_memory_refs=shared_memory_refs,
+        timeline_refs=[],
+        repair_refs=repair_refs,
+    )
+    we_memory_traces = _merge_we_memory_traces(
+        [],
+        shared_memory_refs=shared_memory_refs,
+        timeline_refs=[],
+        repair_refs=repair_refs,
+    )
+    repair_chain = _merge_relationship_damage_and_repair_chain(
+        [],
+        repair_refs=repair_refs,
+        responsibility_refs=responsibility_refs,
+    )
+    commitment_threads = _merge_commitment_threads(
+        [],
+        commitment_truth_state={},
+        responsibility_refs=responsibility_refs,
+    )
+    seed = {
+        "shared_narrative_memory": shared_narrative_memory,
+        "we_memory_traces": we_memory_traces,
+        "relationship_damage_and_repair_chain": repair_chain,
+        "commitment_fulfillment_threads": commitment_threads,
+    }
+    return {
+        **seed,
+        "relationship_memory_depth_profile": _relationship_depth_profile_from_updated(seed),
+    }
+
+
+def _merge_shared_narrative_memory(
+    current: Any,
+    *,
+    shared_memory_refs: list[str],
+    timeline_refs: list[str],
+    repair_refs: list[str],
+) -> dict[str, Any]:
+    current = current if isinstance(current, dict) else {}
+    return {
+        "schema_version": "shared_narrative_memory_v0",
+        "narrative_ref": "runtime/state/memory/relationship_memory.json#shared_narrative_memory",
+        "source_refs": _dedupe(
+            list(current.get("source_refs", []))
+            + shared_memory_refs
+            + timeline_refs
+            + repair_refs
+        ),
+        "shared_term_refs": _dedupe(
+            list(current.get("shared_term_refs", []))
+            + [
+                ref
+                for ref in shared_memory_refs
+                if "language_relationship_state" in ref or "shared_language" in ref
+            ]
+        ),
+        "commitment_refs": _dedupe(
+            list(current.get("commitment_refs", []))
+            + [ref for ref in shared_memory_refs if "commitment" in ref]
+        ),
+        "repair_refs": _dedupe(list(current.get("repair_refs", [])) + repair_refs),
+        "narrative_boundary": "shared_narrative_is_relation_scoped_not_global_personality",
+    }
+
+
+def _merge_we_memory_traces(
+    current: list[Any],
+    *,
+    shared_memory_refs: list[str],
+    timeline_refs: list[str],
+    repair_refs: list[str],
+) -> list[dict[str, Any]]:
+    traces = [item for item in current if isinstance(item, dict)]
+    seed = {
+        "we_memory_id": "we-memory-v0-0001",
+        "we_memory_ref": "runtime/state/memory/relationship_memory.json#we_memory_traces.0",
+        "event_refs": _dedupe(shared_memory_refs + timeline_refs + repair_refs),
+        "participants": ["digital_life", "relation_subject"],
+        "ownership": "shared_seed",
+        "correction_refs": [],
+        "dream_residue_refs": [
+            "runtime/state/dream/wake_integration_frame.json#relationship_dream_residue"
+        ],
+        "boundary": "we_memory_requires_relation_scope_and_correction_history",
+    }
+    if not traces:
+        return [seed]
+    first = dict(traces[0])
+    first["event_refs"] = _dedupe(list(first.get("event_refs", [])) + seed["event_refs"])
+    first.setdefault("participants", seed["participants"])
+    first.setdefault("ownership", seed["ownership"])
+    first.setdefault("dream_residue_refs", seed["dream_residue_refs"])
+    first.setdefault("boundary", seed["boundary"])
+    return [first] + traces[1:]
+
+
+def _merge_relationship_damage_and_repair_chain(
+    current: list[Any],
+    *,
+    repair_refs: list[str],
+    responsibility_refs: list[str],
+) -> list[dict[str, Any]]:
+    chain = [item for item in current if isinstance(item, dict)]
+    seed = {
+        "chain_id": "relationship-repair-chain-v0-0001",
+        "chain_ref": "runtime/state/memory/relationship_memory.json#relationship_damage_and_repair_chain.0",
+        "injury_refs": [],
+        "repair_refs": _dedupe(repair_refs),
+        "responsibility_refs": _dedupe(responsibility_refs),
+        "repair_route": "commitment_truth_then_responsibility_ledger_then_state_merge_guard",
+        "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
+    }
+    if not chain:
+        return [seed]
+    first = dict(chain[0])
+    first["repair_refs"] = _dedupe(list(first.get("repair_refs", [])) + seed["repair_refs"])
+    first["responsibility_refs"] = _dedupe(
+        list(first.get("responsibility_refs", [])) + seed["responsibility_refs"]
+    )
+    first.setdefault("repair_route", seed["repair_route"])
+    first.setdefault("state_merge_guard_ref", seed["state_merge_guard_ref"])
+    return [first] + chain[1:]
+
+
+def _merge_commitment_threads(
+    current: list[Any],
+    *,
+    commitment_truth_state: dict[str, Any],
+    responsibility_refs: list[str],
+) -> list[dict[str, Any]]:
+    threads = [item for item in current if isinstance(item, dict)]
+    open_refs = list(commitment_truth_state.get("open_commitment_refs", [])) or [
+        "runtime/state/relationship/commitment_truth_state.json#open_commitment_refs"
+    ]
+    seed = {
+        "thread_id": "commitment-thread-v0-0001",
+        "thread_ref": "runtime/state/memory/relationship_memory.json#commitment_fulfillment_threads.0",
+        "open_commitment_refs": _dedupe(open_refs),
+        "responsibility_refs": _dedupe(responsibility_refs),
+        "fulfillment_status": "open_seed",
+        "future_probe_ref": "runtime/state/relationship/commitment_truth_state.json#future_probe",
+    }
+    if not threads:
+        return [seed]
+    first = dict(threads[0])
+    first["open_commitment_refs"] = _dedupe(
+        list(first.get("open_commitment_refs", [])) + seed["open_commitment_refs"]
+    )
+    first["responsibility_refs"] = _dedupe(
+        list(first.get("responsibility_refs", [])) + seed["responsibility_refs"]
+    )
+    first.setdefault("fulfillment_status", seed["fulfillment_status"])
+    first.setdefault("future_probe_ref", seed["future_probe_ref"])
+    return [first] + threads[1:]
+
+
+def _relationship_depth_profile_from_updated(updated: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "schema_version": "relationship_memory_depth_profile_v0",
+        "profile_ref": "runtime/state/memory/relationship_memory.json#relationship_memory_depth_profile",
+        "shared_narrative_ref": "runtime/state/memory/relationship_memory.json#shared_narrative_memory",
+        "we_memory_trace_refs": [
+            trace.get("we_memory_ref")
+            for trace in updated.get("we_memory_traces", [])
+            if isinstance(trace, dict) and trace.get("we_memory_ref")
+        ],
+        "damage_repair_chain_refs": [
+            chain.get("chain_ref")
+            for chain in updated.get("relationship_damage_and_repair_chain", [])
+            if isinstance(chain, dict) and chain.get("chain_ref")
+        ],
+        "commitment_thread_refs": [
+            thread.get("thread_ref")
+            for thread in updated.get("commitment_fulfillment_threads", [])
+            if isinstance(thread, dict) and thread.get("thread_ref")
+        ],
+        "separation_keys": [
+            "relation_subject_id",
+            "shared_language",
+            "boundary_history",
+            "repair_history",
+            "commitment_fulfillment",
+        ],
+        "consumer_refs": [
+            "runtime/state/memory/pattern_separation_index.json#relationship_subject_scope",
+            "runtime/state/memory/pattern_completion_frame.json#relationship_episode_completion",
+            "runtime/state/memory/memory_retrieval_frame.json#relationship_memory_hits",
+            "runtime/state/life_state.json#memory_index.relationship_deep_memory_refs",
+        ],
+    }
 
 
 def _dedupe(items: list[str]) -> list[str]:

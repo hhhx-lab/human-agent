@@ -457,6 +457,30 @@ class StateStoreTests(unittest.TestCase):
         )
         self.assertEqual(relationship_memory["schema_version"], "relationship_memory_v0")
         self.assertTrue(relationship_memory["shared_memory_refs"])
+        self.assertEqual(
+            relationship_memory["relationship_memory_depth_profile"]["schema_version"],
+            "relationship_memory_depth_profile_v0",
+        )
+        self.assertTrue(relationship_memory["shared_narrative_memory"])
+        self.assertTrue(relationship_memory["we_memory_traces"])
+        self.assertTrue(relationship_memory["relationship_damage_and_repair_chain"])
+        self.assertTrue(relationship_memory["commitment_fulfillment_threads"])
+        self.assertIn(
+            "relation_subject_id",
+            relationship_memory["relationship_memory_depth_profile"]["separation_keys"],
+        )
+        self.assertIn(
+            "runtime/state/language/language_relationship_state.json#shared-language-v0-0001",
+            relationship_memory["shared_narrative_memory"]["source_refs"],
+        )
+        self.assertEqual(
+            relationship_memory["we_memory_traces"][0]["ownership"],
+            "shared_seed",
+        )
+        self.assertEqual(
+            relationship_memory["relationship_damage_and_repair_chain"][0]["repair_route"],
+            "commitment_truth_then_responsibility_ledger_then_state_merge_guard",
+        )
         self.assertIn(
             "runtime/state/language/language_relationship_state.json#shared-language-v0-0001",
             relationship_memory["shared_memory_refs"],
@@ -483,8 +507,40 @@ class StateStoreTests(unittest.TestCase):
             ["runtime/state/prediction/prediction_error_field.json#error_events"],
         )
         self.assertIn(
+            "runtime/state/memory/relationship_memory.json#we_memory_traces",
+            relationship_memory["long_term_change_sources"]["relationship_memory_deepening_refs"],
+        )
+        self.assertIn(
             "runtime/state/growth/relationship_learning_plan.json",
             relationship_memory["long_term_change_sources"]["offline_learning_writeback_refs"],
+        )
+        self.assertEqual(
+            autobiographical_stack["memory_hierarchy"]["schema_version"],
+            "autobiographical_memory_hierarchy_v0",
+        )
+        self.assertTrue(autobiographical_stack["specific_episode_refs"])
+        self.assertTrue(autobiographical_stack["general_event_threads"])
+        self.assertTrue(autobiographical_stack["life_period_markers"])
+        self.assertTrue(autobiographical_stack["working_self_goal_links"])
+        self.assertEqual(
+            autobiographical_stack["specific_episode_refs"],
+            autobiographical_stack["memory_hierarchy"]["specific_episode_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/relationship_memory.json#we_memory_traces",
+            autobiographical_stack["general_event_threads"][0]["relationship_memory_refs"],
+        )
+        self.assertIn(
+            "build_real_digital_life",
+            autobiographical_stack["working_self_goal_links"][0]["goal_tags"],
+        )
+        self.assertEqual(
+            life_state["memory_index"]["relationship_deep_memory_refs"],
+            ["runtime/state/memory/relationship_memory.json#we_memory_traces"],
+        )
+        self.assertEqual(
+            life_state["memory_index"]["autobiographical_hierarchy_refs"],
+            ["runtime/state/self/autobiographical_stack.json#memory_hierarchy"],
         )
         self.assertEqual(
             memory_retrieval_frame["schema_version"],

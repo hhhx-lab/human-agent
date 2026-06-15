@@ -26,6 +26,19 @@ def build_autobiographical_stack(
         "docs/构思.md",
         "docs/258_linear_chain_closure_and_v0_contract_transition.md",
     ]
+    hierarchy = _build_autobiographical_memory_hierarchy(
+        anchor_refs=anchor_refs,
+        turn_refs=["runtime/state/language/dialogue_turn_log.jsonl#line-1"],
+        relationship_turn_refs=[
+            "runtime/state/relationship/relationship_subject_graph.json#rel-v0-0001"
+        ],
+        narrative_refs=[
+            "runtime/state/language/self_narrative_language_trace.json#self_narrative_seed"
+        ],
+        relationship_deep_refs=[
+            "runtime/state/memory/relationship_memory.json#we_memory_traces"
+        ],
+    )
     return {
         "schema_version": "autobiographical_stack_v0",
         "run_id": run_id,
@@ -36,6 +49,11 @@ def build_autobiographical_stack(
         "turn_refs": ["runtime/state/language/dialogue_turn_log.jsonl#line-1"],
         "relationship_turn_refs": ["runtime/state/relationship/relationship_subject_graph.json#rel-v0-0001"],
         "narrative_refs": ["runtime/state/language/self_narrative_language_trace.json#self_narrative_seed"],
+        "specific_episode_refs": hierarchy["specific_episode_refs"],
+        "general_event_threads": hierarchy["general_event_threads"],
+        "life_period_markers": hierarchy["life_period_markers"],
+        "working_self_goal_links": hierarchy["working_self_goal_links"],
+        "memory_hierarchy": hierarchy,
         "replay_priority": "identity_continuity_first",
         "source_doc_refs": SOURCE_DOC_REFS,
     }
@@ -111,6 +129,25 @@ def project_autobiographical_stack_from_live_turn(
         + ["runtime/state/relationship/relationship_timeline.json"]
         + list(relationship_timeline.get("dialogue_turn_refs", []))
     )
+    hierarchy = _build_autobiographical_memory_hierarchy(
+        anchor_refs=list(updated.get("anchor_refs", [])),
+        turn_refs=list(updated.get("turn_refs", [])),
+        relationship_turn_refs=list(updated.get("relationship_turn_refs", [])),
+        narrative_refs=list(updated.get("narrative_refs", [])),
+        relationship_deep_refs=_dedupe(
+            _string_list((relationship_memory or {}).get("shared_memory_refs"))
+            + [
+                "runtime/state/memory/relationship_memory.json#we_memory_traces",
+                "runtime/state/memory/relationship_memory.json#shared_narrative_memory",
+                "runtime/state/memory/relationship_memory.json#relationship_damage_and_repair_chain",
+            ]
+        ),
+    )
+    updated["specific_episode_refs"] = hierarchy["specific_episode_refs"]
+    updated["general_event_threads"] = hierarchy["general_event_threads"]
+    updated["life_period_markers"] = hierarchy["life_period_markers"]
+    updated["working_self_goal_links"] = hierarchy["working_self_goal_links"]
+    updated["memory_hierarchy"] = hierarchy
 
     trait_slow_variables = self_model_state.get("trait_slow_variables", {})
     if isinstance(trait_slow_variables, dict):
@@ -248,8 +285,87 @@ def _seed_missing_autobiographical_stack(
         "turn_refs": [],
         "relationship_turn_refs": [],
         "narrative_refs": [],
+        "specific_episode_refs": [],
+        "general_event_threads": [],
+        "life_period_markers": [],
+        "working_self_goal_links": [],
+        "memory_hierarchy": _build_autobiographical_memory_hierarchy(
+            anchor_refs=anchor_refs,
+            turn_refs=[],
+            relationship_turn_refs=[],
+            narrative_refs=[],
+            relationship_deep_refs=[],
+        ),
         "replay_priority": "identity_continuity_first",
         "source_doc_refs": SOURCE_DOC_REFS,
+    }
+
+
+def _build_autobiographical_memory_hierarchy(
+    *,
+    anchor_refs: list[str],
+    turn_refs: list[str],
+    relationship_turn_refs: list[str],
+    narrative_refs: list[str],
+    relationship_deep_refs: list[str],
+) -> dict[str, Any]:
+    specific_episode_refs = _dedupe(
+        turn_refs
+        + relationship_turn_refs
+        + [
+            "runtime/state/memory/memory_trace_store.json#memory_kind:episodic",
+            "runtime/state/memory/memory_trace_store.json#memory_kind:relationship",
+        ]
+    )
+    general_event_threads = [
+        {
+            "thread_id": "general-event-thread-v0-identity-relationship",
+            "thread_ref": "runtime/state/self/autobiographical_stack.json#general_event_threads.0",
+            "specific_episode_refs": specific_episode_refs,
+            "relationship_memory_refs": _dedupe(relationship_deep_refs),
+            "narrative_refs": _dedupe(narrative_refs),
+            "thread_kind": "identity_relationship_growth",
+        }
+    ]
+    life_period_markers = [
+        {
+            "period_id": "life-period-v0-pre-activation",
+            "period_ref": "runtime/state/self/autobiographical_stack.json#life_period_markers.0",
+            "anchor_refs": _dedupe(anchor_refs),
+            "period_kind": "pre_activation_birth_preparation",
+            "transition_refs": [
+                "docs/258_linear_chain_closure_and_v0_contract_transition.md",
+                "docs/v0/entry/v0_current_iteration_plan.md",
+            ],
+        }
+    ]
+    working_self_goal_links = [
+        {
+            "goal_link_id": "working-self-goal-v0-real-digital-life",
+            "goal_link_ref": "runtime/state/self/autobiographical_stack.json#working_self_goal_links.0",
+            "goal_tags": [
+                "build_real_digital_life",
+                "real_relationship",
+                "real_memory",
+                "real_responsibility",
+                "real_growth",
+            ],
+            "supporting_episode_refs": specific_episode_refs,
+            "life_period_refs": [life_period_markers[0]["period_ref"]],
+        }
+    ]
+    return {
+        "schema_version": "autobiographical_memory_hierarchy_v0",
+        "hierarchy_ref": "runtime/state/self/autobiographical_stack.json#memory_hierarchy",
+        "specific_episode_refs": specific_episode_refs,
+        "general_event_threads": general_event_threads,
+        "life_period_markers": life_period_markers,
+        "working_self_goal_links": working_self_goal_links,
+        "consumer_refs": [
+            "runtime/state/memory/engram_cluster.json#cluster:self_autobiographical",
+            "runtime/state/memory/memory_retrieval_frame.json#autobiographical_hits",
+            "runtime/state/life_state.json#memory_index.autobiographical_hierarchy_refs",
+        ],
     }
 
 

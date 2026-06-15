@@ -96,6 +96,16 @@ def build_life_state_projection(
         or [autobiographical_ref],
         "relationship_memory_refs": list((engram_index or {}).get("relationship_memory_refs", []))
         or [relationship_ref],
+        "relationship_deep_memory_refs": [
+            "runtime/state/memory/relationship_memory.json#we_memory_traces"
+        ]
+        if relationship_memory and relationship_memory.get("we_memory_traces")
+        else [],
+        "autobiographical_hierarchy_refs": [
+            "runtime/state/self/autobiographical_stack.json#memory_hierarchy"
+        ]
+        if autobiographical_stack and autobiographical_stack.get("memory_hierarchy")
+        else [],
         "event_segmentation_refs": [event_segmentation_ref]
         if event_segmentation_frame
         else [],

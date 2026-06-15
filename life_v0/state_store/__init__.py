@@ -1211,6 +1211,17 @@ def _check_autobiographical_stack(autobiographical_stack: dict[str, Any]) -> lis
         reasons.append("autobiographical_stack_gate schema mismatch")
     if not autobiographical_stack.get("anchor_refs"):
         reasons.append("autobiographical_stack_gate old self anchors missing")
+    hierarchy = autobiographical_stack.get("memory_hierarchy", {})
+    if hierarchy.get("schema_version") != "autobiographical_memory_hierarchy_v0":
+        reasons.append("autobiographical_stack_gate hierarchy schema mismatch")
+    for field in [
+        "specific_episode_refs",
+        "general_event_threads",
+        "life_period_markers",
+        "working_self_goal_links",
+    ]:
+        if not autobiographical_stack.get(field):
+            reasons.append(f"autobiographical_stack_gate missing {field}")
     return reasons
 
 
@@ -1235,11 +1246,24 @@ def _check_relationship_memory(relationship_memory: dict[str, Any]) -> list[str]
         reasons.append("relationship_memory_gate shared memory refs missing")
     if relationship_memory.get("state_merge_guard_ref") != "runtime/state/memory/state_merge_guard.json":
         reasons.append("relationship_memory_gate state merge guard ref missing")
+    depth_profile = relationship_memory.get("relationship_memory_depth_profile", {})
+    if depth_profile.get("schema_version") != "relationship_memory_depth_profile_v0":
+        reasons.append("relationship_memory_gate depth profile schema mismatch")
+    for field in [
+        "shared_narrative_memory",
+        "we_memory_traces",
+        "relationship_damage_and_repair_chain",
+        "commitment_fulfillment_threads",
+    ]:
+        if not relationship_memory.get(field):
+            reasons.append(f"relationship_memory_gate missing {field}")
     change_sources = relationship_memory.get("long_term_change_sources", {})
     if not change_sources.get("prediction_error_resolution_refs"):
         reasons.append("relationship_memory_gate prediction error resolution refs missing")
     if not change_sources.get("offline_learning_writeback_refs"):
         reasons.append("relationship_memory_gate offline learning writeback refs missing")
+    if not change_sources.get("relationship_memory_deepening_refs"):
+        reasons.append("relationship_memory_gate deepening refs missing")
     return reasons
 
 
