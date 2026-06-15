@@ -217,6 +217,36 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertEqual(summary["autobiographical_repair_retrieval_hit_count"], 2)
         self.assertIn("memory_closeout", summary["domain_presence"])
 
+    def test_memory_summary_exposes_engram_live_turn_chain(self):
+        section = {
+            "engram_index": {
+                "live_dialogue_turn_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-2"
+                ],
+                "live_language_turn_refs": [
+                    "runtime/state/language/language_turn_log.jsonl#line-2"
+                ],
+                "last_projected_from_live_turn_ref": (
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-2"
+                ),
+            },
+            "life_state": {
+                "memory_index": {
+                    "live_dialogue_turn_refs": [
+                        "runtime/state/language/dialogue_turn_log.jsonl#line-2"
+                    ]
+                }
+            },
+            "dialogue_memory_summary": {"dialogue_turn_count": 2},
+        }
+
+        summary = _collect_reconstructive_memory_summary(section)
+
+        self.assertTrue(summary["engram_live_turn_chain_present"])
+        self.assertTrue(summary["engram_live_turn_chain_closed"])
+        self.assertEqual(summary["live_dialogue_turn_ref_count"], 1)
+        self.assertIn("engram_live_turn_chain", summary["domain_presence"])
+
     def test_dream_summary_exposes_v0_contract_coverage(self):
         section = {
             "offline_entry_gate": {"status": "closed"},

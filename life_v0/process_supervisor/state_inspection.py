@@ -1480,6 +1480,23 @@ def _shared_term_promotion_inspection_snapshot(
     )
 
 
+def _engram_live_turn_chain_inspection_snapshot(
+    *,
+    engram_index: dict[str, Any],
+    life_state: dict[str, Any] | None = None,
+    dialogue_memory_summary: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    from life_v0.state_store.engram_index import (
+        engram_live_turn_chain_inspection_snapshot,
+    )
+
+    return engram_live_turn_chain_inspection_snapshot(
+        engram_index=_extract_compact_value(engram_index),
+        life_state=_extract_compact_value(life_state or {}),
+        dialogue_memory_summary=_extract_compact_value(dialogue_memory_summary or {}),
+    )
+
+
 def _emotion_regulation_branch_inspection_snapshot(
     *,
     affective_episode: dict[str, Any],
@@ -1758,6 +1775,11 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         process_report=process_report,
         idle_strategy=idle_strategy,
     )
+    engram_live_turn_chain = _engram_live_turn_chain_inspection_snapshot(
+        engram_index=engram_index,
+        life_state=life_state,
+        dialogue_memory_summary=dialogue_memory_summary,
+    )
     exit_next_wake = _collect_exit_dream_next_wake_inspection(
         relationship_memory=relationship_memory,
         dialogue_memory_summary=dialogue_memory_summary,
@@ -1822,6 +1844,9 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         "v0_contract_coverage": bool(
             contract_coverage.get("v0_contract_coverage_present")
         ),
+        "engram_live_turn_chain": bool(
+            engram_live_turn_chain.get("engram_live_turn_chain_present")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -1832,6 +1857,18 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         "active_domain_count": len(active_domains),
         "active_domains": active_domains,
         "domain_presence": domain_presence,
+        "live_dialogue_turn_ref_count": engram_live_turn_chain.get(
+            "live_dialogue_turn_ref_count"
+        ),
+        "live_language_turn_ref_count": engram_live_turn_chain.get(
+            "live_language_turn_ref_count"
+        ),
+        "engram_live_turn_chain_alignment": engram_live_turn_chain.get(
+            "engram_live_turn_chain_alignment"
+        ),
+        "engram_live_turn_chain_closed": engram_live_turn_chain.get(
+            "engram_live_turn_chain_closed"
+        ),
         "retrieval_mode": memory_retrieval.get("retrieval_mode"),
         "cue_terms": _list_refs(memory_retrieval.get("cue_terms")),
         "cue_term_count": _count_any(memory_retrieval.get("cue_terms")),
@@ -1976,6 +2013,7 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         "memory_write_gate_consciousness_write_context_ref_count": _count_any(
             memory_write_gate.get("consciousness_write_context_refs")
         ),
+        **engram_live_turn_chain,
         **memory_closeout,
         **contract_coverage,
     }

@@ -234,6 +234,70 @@ def project_engram_index_from_live_turn(
     return updated
 
 
+def engram_live_turn_chain_inspection_snapshot(
+    *,
+    engram_index: dict[str, Any],
+    life_state: dict[str, Any] | None = None,
+    dialogue_memory_summary: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    life_state = life_state or {}
+    dialogue_memory_summary = dialogue_memory_summary or {}
+    memory_index = life_state.get("memory_index", {})
+    if not isinstance(memory_index, dict):
+        memory_index = {}
+
+    live_dialogue_refs = [
+        ref
+        for ref in engram_index.get("live_dialogue_turn_refs", [])
+        if isinstance(ref, str) and ref
+    ]
+    live_language_refs = [
+        ref
+        for ref in engram_index.get("live_language_turn_refs", [])
+        if isinstance(ref, str) and ref
+    ]
+    life_state_dialogue_refs = [
+        ref
+        for ref in memory_index.get("live_dialogue_turn_refs", [])
+        if isinstance(ref, str) and ref
+    ]
+    dialogue_turn_count = (
+        dialogue_memory_summary.get("dialogue_turn_count")
+        or dialogue_memory_summary.get("turn_count")
+        or dialogue_memory_summary.get("recorded_turn_count")
+    )
+    try:
+        dialogue_turn_count_int = int(dialogue_turn_count)
+    except (TypeError, ValueError):
+        dialogue_turn_count_int = 0
+
+    alignment_status = "closed"
+    if dialogue_turn_count_int > 0 and not live_dialogue_refs:
+        alignment_status = "open_missing_live_dialogue_turn_refs"
+    elif live_dialogue_refs and life_state_dialogue_refs and not set(
+        live_dialogue_refs[-2:]
+    ).intersection(life_state_dialogue_refs[-2:]):
+        alignment_status = "open_engram_life_state_live_dialogue_mismatch"
+    elif live_dialogue_refs and not life_state_dialogue_refs:
+        alignment_status = "open_missing_life_state_live_dialogue_turn_refs"
+
+    return {
+        "engram_live_turn_chain_present": bool(engram_index),
+        "live_dialogue_turn_ref_count": len(live_dialogue_refs),
+        "live_language_turn_ref_count": len(live_language_refs),
+        "life_state_live_dialogue_turn_ref_count": len(life_state_dialogue_refs),
+        "dialogue_memory_turn_count": dialogue_turn_count_int or None,
+        "last_projected_from_live_turn_ref": engram_index.get(
+            "last_projected_from_live_turn_ref"
+        ),
+        "engram_live_turn_chain_alignment": alignment_status,
+        "engram_live_turn_chain_closed": alignment_status == "closed",
+        "engram_live_turn_chain_boundary": (
+            "structured_engram_live_turn_evidence_not_spoken_language"
+        ),
+    }
+
+
 def _seed_missing_engram_index(
     engram_index: dict[str, Any],
     generated_at: str,
