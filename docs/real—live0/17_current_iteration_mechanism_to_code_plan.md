@@ -985,6 +985,19 @@ ResidentBackgroundLineageState.world_contact_handoff_presence.body_pressure_prof
 
 机制含义是：身体压力进入语言系统的方式仍然是隐性调制和审计材料，而不是由代码拼成“我现在有身体压力”之类的固定回答。模型可以依据这条结构化 evidence 调整行动谨慎度、修复姿态和世界接触判断；post-expression gate 只记录 `world_contact_handoff` 软审计旗标，不强迫外显、不生成 system prompt、不把内部字段名释放到终端语言。
 
+当前 ITR-08 第四十二段回切补强工作区与意识广播到责任环的消费：
+
+```text
+WorkspaceFrame / ConsciousBroadcastFrame / MetacognitionFrame
+  -> ResponsibilityLoopState.consciousness_context_profile
+  -> ResponsibilityAttributionEvent.knowledge_available
+  -> PostActionAuditRefs / responsibility evidence refs
+```
+
+`run_life_membrane` 现在会读取 `runtime/state/consciousness/workspace_frame.json`、`broadcast_frame.json`、`metacognition_state.json`，并在存在时把 `consciousness_probe_bundle.json` 一起传入 `build_responsibility_loop_state(...)`。`responsibility_loop.py` 会生成 `responsibility_consciousness_context_profile_v0`，保留 workspace/broadcast/metacognition/probe refs、workspace candidate count、broadcast target count、metacognition uncertainty flags、reportability flags、language/relationship continuity ref count、ref set 和 `responsibility_consciousness_context_not_spoken_language` 边界；责任事件的 `knowledge_available` 会在有 reportability flags 时变成 `reportable_partial`，否则保持 `partial`。
+
+机制含义是：工作区、广播和元认知不再只服务于出生准备、slash 检查或语言前审计，也开始影响责任 attribution 对“当时知道什么、可报告什么”的结构化判断。由于生命膜运行时早于出生准备，consciousness probe 可以暂时为空；这时责任环仍会保留已有的工作区三件套，不伪造 probe。该 profile 是责任链内部证据，不生成意识宣言、不新增 system prompt、不把工作区或元认知字段外显成自然语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

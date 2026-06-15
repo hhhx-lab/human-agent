@@ -612,6 +612,42 @@ class LifeMembraneTests(unittest.TestCase):
             responsibility_loop["body_pressure_profile"]["schema_version"],
             "go_nogo_body_pressure_profile_v0",
         )
+        consciousness_context = responsibility_loop[
+            "consciousness_context_profile"
+        ]
+        self.assertEqual(
+            consciousness_context["schema_version"],
+            "responsibility_consciousness_context_profile_v0",
+        )
+        self.assertEqual(
+            consciousness_context["workspace_frame_ref"],
+            "runtime/state/consciousness/workspace_frame.json",
+        )
+        self.assertEqual(
+            consciousness_context["broadcast_frame_ref"],
+            "runtime/state/consciousness/broadcast_frame.json",
+        )
+        self.assertEqual(
+            consciousness_context["metacognition_ref"],
+            "runtime/state/consciousness/metacognition_state.json",
+        )
+        self.assertIsNone(consciousness_context["consciousness_probe_ref"])
+        self.assertEqual(
+            consciousness_context["boundary"],
+            "responsibility_consciousness_context_not_spoken_language",
+        )
+        self.assertIn(
+            "runtime/state/consciousness/workspace_frame.json",
+            responsibility_loop["consciousness_context_refs"],
+        )
+        self.assertIn(
+            "runtime/state/consciousness/broadcast_frame.json",
+            responsibility_loop["consciousness_context_refs"],
+        )
+        self.assertIn(
+            "runtime/state/consciousness/metacognition_state.json",
+            responsibility_loop["consciousness_context_refs"],
+        )
         self.assertEqual(
             responsibility_loop["periphery_normalization_ref"],
             "runtime/state/observation/periphery_normalization_trace.json",
@@ -624,6 +660,12 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertTrue(responsibility_loop["regret_pressure_candidates"])
         self.assertTrue(responsibility_loop["repair_desire_candidates"])
         self.assertTrue(responsibility_loop["counterfactual_repair_frames"])
+        self.assertEqual(
+            responsibility_loop["responsibility_attribution_events"][0][
+                "consciousness_context_profile_ref"
+            ],
+            "runtime/state/action/responsibility_loop_state.json#consciousness_context_profile",
+        )
         self.assertTrue(responsibility_loop["post_action_audit_refs"])
         self.assertTrue(responsibility_loop["life_state_writeback_refs"])
         self.assertTrue(responsibility_loop["commitment_truth_writeback_refs"])
@@ -632,6 +674,10 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertTrue(responsibility_loop["relationship_writeback_refs"])
         self.assertTrue(responsibility_loop["repair_followup_required"])
         self.assertIn("docs/94_pain_regret_and_repair_signal_schema.md", responsibility_loop["source_doc_refs"])
+        self.assertIn(
+            "docs/real—live0/02_brain_network_and_workspace.md",
+            responsibility_loop["source_doc_refs"],
+        )
         self.assertIn(
             "runtime/state/life_state.json#responsibility_bindings",
             responsibility_loop["life_state_writeback_refs"],

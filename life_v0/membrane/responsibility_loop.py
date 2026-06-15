@@ -4,10 +4,12 @@ from typing import Any
 
 
 SOURCE_DOC_REFS = [
+    "docs/10_consciousness_attention_workspace.md",
     "docs/80_post_action_audit_and_correction_policy.md",
     "docs/81_coexistence_event_review_and_responsibility_loop.md",
     "docs/94_pain_regret_and_repair_signal_schema.md",
     "docs/98_pain_regret_repair_json_schema_and_fixture_bundle.md",
+    "docs/real—live0/02_brain_network_and_workspace.md",
     "docs/v0/slice_contracts/s03_direction_life_membrane_engineering_contract.md",
     "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
 ]
@@ -27,12 +29,27 @@ def build_responsibility_loop_state(
     signal_media_runtime: dict[str, Any] | None = None,
     world_observation_route: dict[str, Any] | None = None,
     periphery_normalization_trace: dict[str, Any] | None = None,
+    workspace_frame: dict[str, Any] | None = None,
+    broadcast_frame: dict[str, Any] | None = None,
+    metacognition_state: dict[str, Any] | None = None,
+    consciousness_probe_bundle: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     belief_state = belief_state or {}
     prediction_error_field = prediction_error_field or {}
     signal_media_runtime = signal_media_runtime or {}
     world_observation_route = world_observation_route or {}
     periphery_normalization_trace = periphery_normalization_trace or {}
+    workspace_frame = workspace_frame or {}
+    broadcast_frame = broadcast_frame or {}
+    metacognition_state = metacognition_state or {}
+    consciousness_probe_bundle = consciousness_probe_bundle or {}
+    consciousness_context_profile = _consciousness_context_profile(
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        consciousness_probe_bundle=consciousness_probe_bundle,
+    )
+    consciousness_context_refs = list(consciousness_context_profile.get("ref_set", []))
     responsibility_effects = list(side_effect_review.get("responsibility_effects", []))
     relationship_effects = list(side_effect_review.get("relationship_effects", []))
     archive_effects = list(side_effect_review.get("archive_effects", []))
@@ -76,7 +93,14 @@ def build_responsibility_loop_state(
         ],
         "actor_role": "recommendation",
         "control_available": "medium" if contact_mode == "shadow_only" else "high",
-        "knowledge_available": "partial",
+        "knowledge_available": (
+            "reportable_partial"
+            if consciousness_context_profile.get("reportability_flags")
+            else "partial"
+        ),
+        "consciousness_context_profile_ref": (
+            "runtime/state/action/responsibility_loop_state.json#consciousness_context_profile"
+        ),
         "boundary_state": {
             "confirmation_required": bool(world_contact_gate.get("confirmation_required")),
             "confirmation_present": False,
@@ -195,6 +219,11 @@ def build_responsibility_loop_state(
         "go_nogo_ref": "runtime/state/action/go_nogo_state.json",
         "body_pressure_profile_ref": body_pressure_profile_ref,
         "body_pressure_profile": body_pressure_profile,
+        "consciousness_context_profile_ref": (
+            "runtime/state/action/responsibility_loop_state.json#consciousness_context_profile"
+        ),
+        "consciousness_context_profile": consciousness_context_profile,
+        "consciousness_context_refs": consciousness_context_refs,
         "belief_state_ref": (
             "runtime/state/prediction/belief_state_frame.json" if belief_state else None
         ),
@@ -227,6 +256,7 @@ def build_responsibility_loop_state(
         ],
         "post_action_audit_refs": [
             post_action_audit_ref,
+            *consciousness_context_refs,
             "docs/80_post_action_audit_and_correction_policy.md",
         ],
         "life_state_writeback_refs": life_state_writeback_refs,
@@ -248,6 +278,58 @@ def build_responsibility_loop_state(
     }
 
 
+def _consciousness_context_profile(
+    *,
+    workspace_frame: dict[str, Any],
+    broadcast_frame: dict[str, Any],
+    metacognition_state: dict[str, Any],
+    consciousness_probe_bundle: dict[str, Any],
+) -> dict[str, Any]:
+    reportability_flags = list(consciousness_probe_bundle.get("reportability_flags", []))
+    workspace_ref = (
+        "runtime/state/consciousness/workspace_frame.json" if workspace_frame else None
+    )
+    broadcast_ref = (
+        "runtime/state/consciousness/broadcast_frame.json" if broadcast_frame else None
+    )
+    metacognition_ref = (
+        "runtime/state/consciousness/metacognition_state.json"
+        if metacognition_state
+        else None
+    )
+    probe_ref = (
+        "runtime/state/consciousness/consciousness_probe_bundle.json"
+        if consciousness_probe_bundle
+        else None
+    )
+    ref_set = [
+        ref for ref in [workspace_ref, broadcast_ref, metacognition_ref, probe_ref] if ref
+    ]
+    return {
+        "schema_version": "responsibility_consciousness_context_profile_v0",
+        "workspace_frame_ref": workspace_ref,
+        "broadcast_frame_ref": broadcast_ref,
+        "metacognition_ref": metacognition_ref,
+        "consciousness_probe_ref": probe_ref,
+        "workspace_candidate_count": len(
+            workspace_frame.get("candidate_explanations", [])
+        ),
+        "broadcast_target_count": len(broadcast_frame.get("broadcast_targets", [])),
+        "metacognition_uncertainty_flags": list(
+            metacognition_state.get("uncertainty_flags", [])
+        ),
+        "reportability_flags": reportability_flags,
+        "relationship_continuity_ref_count": len(
+            consciousness_probe_bundle.get("relationship_continuity_refs", [])
+        ),
+        "language_continuity_ref_count": len(
+            consciousness_probe_bundle.get("language_continuity_refs", [])
+        ),
+        "ref_set": ref_set,
+        "boundary": "responsibility_consciousness_context_not_spoken_language",
+    }
+
+
 def check_responsibility_loop_state(state: dict[str, Any]) -> list[str]:
     reasons: list[str] = []
     if state.get("schema_version") != "responsibility_loop_state_v0":
@@ -262,6 +344,8 @@ def check_responsibility_loop_state(state: dict[str, Any]) -> list[str]:
         "signal_media_ref",
         "world_observation_route_ref",
         "periphery_normalization_ref",
+        "consciousness_context_profile",
+        "consciousness_context_refs",
         "responsibility_attribution_events",
         "counterfactual_repair_frames",
         "regret_pressure_candidates",
@@ -279,4 +363,6 @@ def check_responsibility_loop_state(state: dict[str, Any]) -> list[str]:
             reasons.append(f"responsibility_loop_gate missing {field}")
     if "docs/94_pain_regret_and_repair_signal_schema.md" not in state.get("source_doc_refs", []):
         reasons.append("responsibility_loop_gate missing pain/regret source doc")
+    if "docs/real—live0/02_brain_network_and_workspace.md" not in state.get("source_doc_refs", []):
+        reasons.append("responsibility_loop_gate missing workspace mechanism doc")
     return reasons

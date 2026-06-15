@@ -196,6 +196,9 @@ def run_life_membrane(
     need_state = _load_json_optional(state_dir / "body" / "need_state_vector.json")
     core_affect = _load_json_optional(state_dir / "body" / "core_affect_vector.json")
     value_orientation = _load_json_optional(direction_state_dir / "value_orientation.json")
+    workspace_frame = _load_json_optional(state_dir / "consciousness" / "workspace_frame.json")
+    broadcast_frame = _load_json_optional(state_dir / "consciousness" / "broadcast_frame.json")
+    metacognition_state = _load_json_optional(state_dir / "consciousness" / "metacognition_state.json")
     consciousness_probe_bundle = _load_json_optional(state_dir / "consciousness" / "consciousness_probe_bundle.json")
 
     blocked_reasons.extend(_direction_blockers(direction_lock))
@@ -307,6 +310,10 @@ def run_life_membrane(
         signal_media_runtime=signal_media_runtime,
         world_observation_route=world_observation_route,
         periphery_normalization_trace=periphery_normalization_trace,
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        consciousness_probe_bundle=consciousness_probe_bundle,
     )
     world_contact_summary = build_world_contact_summary(
         run_id=run_id,
