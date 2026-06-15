@@ -471,6 +471,10 @@ def build_resident_state_inspection(
                 "memory_write_gate": "memory/memory_write_gate.json",
                 "state_merge_guard": "memory/state_merge_guard.json",
                 "model_expression_state": "language/model_expression_state.json",
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
             },
         )
         cognition["workspace_summary"] = _collect_cognitive_workspace_summary(
@@ -661,6 +665,10 @@ def build_resident_state_inspection(
                 "proactive_state": "terminal/resident_terminal_proactive_state.json",
                 "proactive_events": "terminal/resident_terminal_proactive_events.jsonl",
                 "model_expression_state": "language/model_expression_state.json",
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
             },
         )
         proactive_voice["coverage_summary"] = _collect_proactive_voice_summary(
@@ -2250,6 +2258,30 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
             "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
         )
     )
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    world_contact_presence = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        world_contact_presence,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
+    model_expression_handoff = (
+        _model_expression_world_contact_handoff_inspection_fields(
+            model_context_summary
+        )
+    )
     profile = _extract_nested_value(proactive_state, "last_proactive_voice_profile")
     coverage = _extract_nested_value(proactive_state, "last_profile_coverage")
     if not coverage:
@@ -2277,6 +2309,17 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
                 *active_domains,
                 "model_expression_consciousness_write_context",
             ]
+    if (
+        live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+        or model_expression_handoff.get(
+            "model_expression_world_contact_handoff_live_refreshed"
+        )
+    ):
+        domain_presence["live_queue_e_world_contact_handoff"] = True
+        if "live_queue_e_world_contact_handoff" not in active_domains:
+            active_domains = [*active_domains, "live_queue_e_world_contact_handoff"]
+    if model_expression_handoff.get("model_expression_world_contact_handoff_status"):
+        domain_presence["model_expression_world_contact_handoff"] = True
     candidate_count = proactive_state.get("last_utterance_candidate_code_count")
     if candidate_count is None:
         candidate_count = profile.get("utterance_candidate_code_count")
@@ -2342,6 +2385,8 @@ def _collect_proactive_voice_summary(section: dict[str, Any]) -> dict[str, Any]:
         "event_count": proactive_state.get("event_count"),
         "release_count": proactive_state.get("release_count"),
         "speech_generation_boundary": "state_codes_only_model_expression_required",
+        **model_expression_handoff,
+        **live_queue_e_handoff,
     }
 
 
@@ -4028,6 +4073,30 @@ def _collect_cognitive_workspace_summary(
         memory_write_gate,
         "body_signal_write_modulation",
     )
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    world_contact_presence = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        world_contact_presence,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
+    model_expression_handoff = (
+        _model_expression_world_contact_handoff_inspection_fields(
+            model_context_summary
+        )
+    )
     domain_presence = {
         "workspace_frame": bool(workspace),
         "broadcast_frame": bool(broadcast),
@@ -4044,6 +4113,19 @@ def _collect_cognitive_workspace_summary(
             )
             or model_context_summary.get(
                 "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
+        "live_queue_e_world_contact_handoff": bool(
+            world_contact_handoff
+            or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or model_expression_handoff.get(
+                "model_expression_world_contact_handoff_live_refreshed"
+            )
+        ),
+        "model_expression_world_contact_handoff": bool(
+            model_expression_handoff.get("model_expression_world_contact_handoff_status")
+            or model_expression_handoff.get(
+                "model_expression_world_contact_handoff_live_refreshed"
             )
         ),
     }
@@ -4155,6 +4237,8 @@ def _collect_cognitive_workspace_summary(
         "cognition_boundary": (
             "workspace_broadcast_metacognition_state_view_not_consciousness_claim"
         ),
+        **model_expression_handoff,
+        **live_queue_e_handoff,
     }
 
 

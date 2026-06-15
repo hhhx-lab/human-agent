@@ -2,10 +2,12 @@ import unittest
 
 from life_v0.process_supervisor.state_inspection import (
     _collect_ability_birth_readiness_summary,
+    _collect_cognitive_workspace_summary,
     _collect_language_generation_consumption_summary,
     _collect_life_membrane_validation_summary,
     _collect_perception_world_contact_summary,
     _collect_prediction_world_contact_summary,
+    _collect_proactive_voice_summary,
     _collect_signal_modulation_consumption_summary,
 )
 
@@ -199,6 +201,66 @@ class StateInspectionLiveHandoffTests(unittest.TestCase):
         self.assertTrue(summary["live_queue_e_world_contact_handoff_refreshed"])
         self.assertIn(
             "model_expression_world_contact_handoff",
+            summary["domain_presence"],
+        )
+
+    def test_proactive_summary_exposes_model_expression_live_handoff(self):
+        section = {
+            "proactive_state": {
+                "status": "released_model_expression",
+                "last_profile_coverage": {
+                    "active_domains": ["memory"],
+                    "domain_presence": {"memory": True},
+                },
+            },
+            "model_expression_state": {
+                "model_expression_context_summary": {
+                    "world_contact_handoff_live_refreshed": True,
+                    "world_contact_handoff_live_turn_focus": "proactive_repair_hold",
+                }
+            },
+            "queue_e_world_contact_handoff": {
+                "live_queue_e_world_contact_handoff_refreshed": True,
+            },
+        }
+
+        summary = _collect_proactive_voice_summary(section)
+
+        self.assertTrue(summary["live_queue_e_world_contact_handoff_refreshed"])
+        self.assertEqual(
+            summary["model_expression_world_contact_handoff_live_turn_focus"],
+            "proactive_repair_hold",
+        )
+        self.assertIn(
+            "live_queue_e_world_contact_handoff",
+            summary["domain_presence"],
+        )
+
+    def test_cognition_summary_exposes_live_handoff_and_model_expression_fields(self):
+        section = {
+            "workspace_frame": {"live_turn_focus": "relationship_repair"},
+            "model_expression_state": {
+                "model_expression_context_summary": {
+                    "world_contact_handoff_status": "deferred_until_s05_s09",
+                    "world_contact_handoff_live_refreshed": True,
+                }
+            },
+            "queue_e_world_contact_handoff": {
+                "live_turn_focus": "cognition_repair_hold",
+            },
+        }
+
+        summary = _collect_cognitive_workspace_summary(section)
+
+        self.assertTrue(
+            summary["model_expression_world_contact_handoff_live_refreshed"]
+        )
+        self.assertEqual(
+            summary["live_queue_e_world_contact_handoff_turn_focus"],
+            "cognition_repair_hold",
+        )
+        self.assertIn(
+            "live_queue_e_world_contact_handoff",
             summary["domain_presence"],
         )
 
