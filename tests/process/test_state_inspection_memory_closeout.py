@@ -2,7 +2,12 @@ import unittest
 
 from life_v0.process_supervisor.state_inspection import (
     _collect_body_grounding_summary,
+    _collect_cognitive_workspace_summary,
+    _collect_consciousness_reportability_summary,
     _collect_dream_wake_fact_summary,
+    _collect_emotion_regulation_summary,
+    _collect_inner_environment_modulation_summary,
+    _collect_language_generation_consumption_summary,
     _collect_life_membrane_validation_summary,
     _collect_personality_convergence_summary,
     _collect_reconstructive_memory_summary,
@@ -10,13 +15,26 @@ from life_v0.process_supervisor.state_inspection import (
     _collect_relationship_continuity_summary,
     _collect_resident_continuity_summary,
     _collect_responsibility_repair_chain_summary,
+    _collect_self_thinking_summary,
+    _collect_signal_modulation_consumption_summary,
 )
 
 
 class StateInspectionMemoryCloseoutTests(unittest.TestCase):
+    def _body_signal_closeout_fields(self) -> dict:
+        return {
+            "body_signal_ref_set": [
+                "runtime/state/signal/signal_media_runtime.json#body_signal_profile"
+            ],
+            "background_body_signal_write_bias": "caution",
+            "background_body_signal_pain_pressure": "moderate",
+            "background_body_signal_ref_count": 1,
+        }
+
     def _responsibility_closeout_process_report(self) -> dict:
         return {
             **self._memory_closeout_process_report(),
+            **self._body_signal_closeout_fields(),
             "live_queue_e_world_contact_handoff_report_profile": {
                 "schema_version": "live_queue_e_world_contact_handoff_report_profile_v0",
                 "live_queue_e_world_contact_handoff_refreshed": True,
@@ -299,6 +317,119 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertTrue(summary["process_closeout_present"])
         self.assertTrue(summary["live_queue_e_world_contact_handoff_closeout_present"])
         self.assertIn("process_closeout", summary["domain_presence"])
+
+    def test_emotion_summary_exposes_affect_closeout(self):
+        section = {
+            "core_affect_vector": {"pain_pressure": "moderate"},
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy_state": {},
+            "go_nogo_state": {},
+        }
+
+        summary = _collect_emotion_regulation_summary(section)
+
+        self.assertTrue(summary["affect_modulation_closeout_present"])
+        self.assertTrue(summary["body_signal_closeout_present"])
+        self.assertIn("affect_modulation_closeout", summary["domain_presence"])
+
+    def test_inner_environment_summary_exposes_affect_closeout(self):
+        section = {
+            "need_state_vector": {"sleep_pressure": "managed_pre_dream"},
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy": {},
+            "go_nogo_state": {},
+        }
+
+        summary = _collect_inner_environment_modulation_summary(section)
+
+        self.assertTrue(summary["affect_modulation_closeout_present"])
+        self.assertEqual(summary["background_body_signal_write_bias"], "caution")
+        self.assertIn("body_signal_closeout", summary["domain_presence"])
+
+    def test_signal_summary_exposes_modulation_closeout(self):
+        section = {
+            "signal_media_runtime": {"modulation_vector": {"arousal": 0.5}},
+            "memory_write_gate": {
+                "consciousness_write_context": {
+                    "consciousness_write_context_refs": ["ref-a"],
+                    "write_attention_bias": "caution",
+                }
+            },
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy": {},
+            "go_nogo_state": {},
+            "terminal_life_loop_state": {},
+        }
+
+        summary = _collect_signal_modulation_consumption_summary(section)
+
+        self.assertTrue(summary["signal_modulation_closeout_present"])
+        self.assertTrue(summary["body_signal_closeout_present"])
+        self.assertTrue(
+            summary["memory_write_gate_consciousness_write_context_present"]
+        )
+        self.assertIn("signal_modulation_closeout", summary["domain_presence"])
+
+    def test_language_summary_exposes_expression_closeout(self):
+        section = {
+            "model_expression_state": {
+                "model_expression_context_summary": {
+                    "prediction_attention_consciousness_write_context_refs": ["ref-a"],
+                }
+            },
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy_state": {},
+            "go_nogo_state": {},
+            "terminal_life_loop_state": {},
+        }
+
+        summary = _collect_language_generation_consumption_summary(section)
+
+        self.assertTrue(summary["expression_closeout_present"])
+        self.assertTrue(summary["consciousness_write_context_closeout_present"])
+        self.assertIn("expression_closeout", summary["domain_presence"])
+
+    def test_cognition_summary_exposes_expression_closeout(self):
+        section = {
+            "workspace_frame": {"workspace_id": "ws-1"},
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy_state": {},
+            "go_nogo_state": {},
+            "terminal_life_loop_state": {},
+        }
+
+        summary = _collect_cognitive_workspace_summary(section)
+
+        self.assertTrue(summary["expression_closeout_present"])
+        self.assertIn("expression_closeout", summary["domain_presence"])
+
+    def test_consciousness_summary_exposes_expression_closeout(self):
+        section = {
+            "workspace_frame": {"workspace_id": "ws-1"},
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy_state": {},
+            "go_nogo_state": {},
+            "terminal_life_loop": {},
+        }
+
+        summary = _collect_consciousness_reportability_summary(section)
+
+        self.assertTrue(summary["expression_closeout_present"])
+        self.assertIn("consciousness_write_context_closeout", summary["domain_presence"])
+
+    def test_thinking_summary_exposes_expression_closeout(self):
+        section = {
+            "resident_self_thinking": {"thinking_mode": "reflective_hold"},
+            "digital_life_process_report": self._responsibility_closeout_process_report(),
+            "idle_strategy_state": {},
+            "go_nogo_state": {},
+            "terminal_life_loop_state": {},
+        }
+
+        summary = _collect_self_thinking_summary(section)
+
+        self.assertTrue(summary["expression_closeout_present"])
+        self.assertIn("expression_closeout", summary["domain_presence"])
 
 
 if __name__ == "__main__":

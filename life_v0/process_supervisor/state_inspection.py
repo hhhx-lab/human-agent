@@ -214,6 +214,11 @@ def build_resident_state_inspection(
                     "../reports/latest/pain_regret_repair_report.json"
                 ),
                 "signal_media_runtime": "signal/signal_media_runtime.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         emotion["emotion_regulation_summary"] = (
@@ -228,7 +233,11 @@ def build_resident_state_inspection(
                 "body_resource_budget": "body/body_resource_budget.json",
                 "body_rhythm_pulse": "body/body_rhythm_pulse.json",
                 "signal_media_runtime": "signal/signal_media_runtime.json",
+                "go_nogo_state": "action/go_nogo_state.json",
                 "idle_strategy": "terminal/idle_strategy_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         inner_environment["modulation_summary"] = (
@@ -274,6 +283,10 @@ def build_resident_state_inspection(
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         signal["modulation_consumption_summary"] = (
@@ -488,6 +501,11 @@ def build_resident_state_inspection(
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         language["generation_consumption_summary"] = (
@@ -511,6 +529,11 @@ def build_resident_state_inspection(
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         cognition["workspace_summary"] = _collect_cognitive_workspace_summary(
@@ -538,6 +561,11 @@ def build_resident_state_inspection(
                 "model_expression_state": "language/model_expression_state.json",
                 "queue_e_world_contact_handoff": (
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
                 ),
             },
         )
@@ -571,6 +599,11 @@ def build_resident_state_inspection(
                     "life_targets/queue_e_world_contact_repair_hold_handoff.json"
                 ),
                 "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "digital_life_process_report": (
+                    "../reports/latest/digital_life_process_report.json"
+                ),
             },
         )
         thinking["self_thinking_summary"] = _collect_self_thinking_summary(
@@ -2681,6 +2714,16 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
         section.get("pain_regret_repair_report", {})
     )
     signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    affect_closeout = _affect_modulation_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        go_nogo=go_nogo,
+    )
     maintenance_pressure = _extract_nested_value(
         body_budget,
         "maintenance_pressure",
@@ -2698,6 +2741,15 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
         "body_resource_budget": bool(body_budget),
         "pain_regret_repair_report": bool(pain_regret_repair),
         "signal_media_runtime": bool(signal_media),
+        "affect_modulation_closeout": bool(
+            affect_closeout.get("affect_modulation_closeout_present")
+        ),
+        "body_signal_closeout": bool(
+            affect_closeout.get("body_signal_closeout_present")
+        ),
+        "body_pressure_closeout": bool(
+            affect_closeout.get("body_pressure_closeout_present")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -2757,6 +2809,10 @@ def _collect_emotion_regulation_summary(section: dict[str, Any]) -> dict[str, An
         "emotion_release_boundary": (
             "emotion_state_modulates_language_not_template_emotion_speech"
         ),
+        "pain_regret_repair_report_ref": affect_closeout.get(
+            "pain_regret_repair_report_ref"
+        ),
+        **affect_closeout,
     }
 
 
@@ -2767,7 +2823,16 @@ def _collect_inner_environment_modulation_summary(
     body_budget = _extract_compact_value(section.get("body_resource_budget", {}))
     rhythm = _extract_compact_value(section.get("body_rhythm_pulse", {}))
     signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
     idle_strategy = _extract_compact_value(section.get("idle_strategy", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    affect_closeout = _affect_modulation_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        go_nogo=go_nogo,
+    )
     maintenance_pressure = _extract_nested_value(
         body_budget,
         "maintenance_pressure",
@@ -2785,6 +2850,15 @@ def _collect_inner_environment_modulation_summary(
         "body_rhythm_pulse": bool(rhythm),
         "signal_media_runtime": bool(signal_media),
         "idle_strategy": bool(idle_strategy),
+        "affect_modulation_closeout": bool(
+            affect_closeout.get("affect_modulation_closeout_present")
+        ),
+        "body_signal_closeout": bool(
+            affect_closeout.get("body_signal_closeout_present")
+        ),
+        "body_pressure_closeout": bool(
+            affect_closeout.get("body_pressure_closeout_present")
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -2835,6 +2909,16 @@ def _collect_inner_environment_modulation_summary(
         "inspection_boundary": (
             "inner_environment_summary_is_state_view_not_dialogue_response"
         ),
+        "background_body_signal_write_bias": affect_closeout.get(
+            "background_body_signal_write_bias"
+        ),
+        "background_body_signal_pain_pressure": affect_closeout.get(
+            "background_body_signal_pain_pressure"
+        ),
+        "queue_e_world_contact_body_pressure_profile_ref": affect_closeout.get(
+            "queue_e_world_contact_body_pressure_profile_ref"
+        ),
+        **affect_closeout,
     }
 
 
@@ -2885,6 +2969,17 @@ def _collect_signal_modulation_consumption_summary(
     )
     terminal_loop = _extract_compact_value(
         section.get("terminal_life_loop_state", {})
+    )
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    signal_closeout = _signal_modulation_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
+        memory_write_gate=memory_write_gate,
     )
     world_contact_presence = _extract_nested_value(
         terminal_loop,
@@ -2945,6 +3040,18 @@ def _collect_signal_modulation_consumption_summary(
             world_contact_handoff
             or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
             or live_queue_e_handoff.get("queue_e_world_contact_handoff_status")
+        ),
+        "signal_modulation_closeout": bool(
+            signal_closeout.get("signal_modulation_closeout_present")
+        ),
+        "body_signal_closeout": bool(
+            signal_closeout.get("body_signal_closeout_present")
+        ),
+        "consciousness_write_context_closeout": bool(
+            signal_closeout.get("consciousness_write_context_closeout_present")
+        ),
+        "live_queue_e_world_contact_handoff_closeout": bool(
+            signal_closeout.get("live_queue_e_world_contact_handoff_closeout_present")
         ),
     }
     active_domains = [
@@ -3130,7 +3237,14 @@ def _collect_signal_modulation_consumption_summary(
         "signal_boundary": (
             "signal_modulation_state_view_not_spoken_life_signal_or_if_else_script"
         ),
+        "live_queue_e_world_contact_handoff_report_boundary": signal_closeout.get(
+            "live_queue_e_world_contact_handoff_report_boundary"
+        ),
+        "background_body_signal_ref_count": signal_closeout.get(
+            "background_body_signal_ref_count"
+        ),
         **live_queue_e_handoff,
+        **signal_closeout,
     }
 
 
@@ -3643,6 +3757,17 @@ def _collect_language_generation_consumption_summary(
     terminal_loop = _extract_compact_value(
         section.get("terminal_life_loop_state", {})
     )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    expression_closeout = _expression_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
+    )
     world_contact_presence = _extract_nested_value(
         terminal_loop,
         "resident_background_lineage_state",
@@ -3703,6 +3828,15 @@ def _collect_language_generation_consumption_summary(
             or model_expression_handoff.get(
                 "model_expression_world_contact_handoff_live_refreshed"
             )
+        ),
+        "expression_closeout": bool(
+            expression_closeout.get("expression_closeout_present")
+        ),
+        "consciousness_write_context_closeout": bool(
+            expression_closeout.get("consciousness_write_context_closeout_present")
+        ),
+        "live_queue_e_world_contact_handoff_closeout": bool(
+            expression_closeout.get("live_queue_e_world_contact_handoff_closeout_present")
         ),
     }
     active_domains = [
@@ -3852,8 +3986,12 @@ def _collect_language_generation_consumption_summary(
         "fixed_reply_boundary": (
             "no_code_spoken_template_no_inspection_summary_as_reply"
         ),
+        "live_queue_e_world_contact_handoff_report_boundary": expression_closeout.get(
+            "live_queue_e_world_contact_handoff_report_boundary"
+        ),
         **model_expression_handoff,
         **live_queue_e_handoff,
+        **expression_closeout,
     }
 
 
@@ -4386,6 +4524,17 @@ def _collect_cognitive_workspace_summary(
     terminal_loop = _extract_compact_value(
         section.get("terminal_life_loop_state", {})
     )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    expression_closeout = _expression_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
+    )
     world_contact_presence = _extract_nested_value(
         terminal_loop,
         "resident_background_lineage_state",
@@ -4434,6 +4583,12 @@ def _collect_cognitive_workspace_summary(
             or model_expression_handoff.get(
                 "model_expression_world_contact_handoff_live_refreshed"
             )
+        ),
+        "expression_closeout": bool(
+            expression_closeout.get("expression_closeout_present")
+        ),
+        "consciousness_write_context_closeout": bool(
+            expression_closeout.get("consciousness_write_context_closeout_present")
         ),
     }
     active_domains = [
@@ -4546,6 +4701,7 @@ def _collect_cognitive_workspace_summary(
         ),
         **model_expression_handoff,
         **live_queue_e_handoff,
+        **expression_closeout,
     }
 
 
@@ -4562,6 +4718,17 @@ def _collect_consciousness_reportability_summary(
     stage_gate = _extract_compact_value(section.get("birth_readiness_stage_gate", {}))
     terminal_loop = _extract_compact_value(section.get("terminal_life_loop", {}))
     governance = _extract_compact_value(section.get("resident_governance", {}))
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    expression_closeout = _expression_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
+    )
     model_expression = _extract_compact_value(
         section.get("model_expression_state", {})
     )
@@ -4634,6 +4801,12 @@ def _collect_consciousness_reportability_summary(
             or model_expression_handoff.get(
                 "model_expression_world_contact_handoff_live_refreshed"
             )
+        ),
+        "expression_closeout": bool(
+            expression_closeout.get("expression_closeout_present")
+        ),
+        "consciousness_write_context_closeout": bool(
+            expression_closeout.get("consciousness_write_context_closeout_present")
         ),
     }
     active_domains = [
@@ -4751,6 +4924,7 @@ def _collect_consciousness_reportability_summary(
         ),
         **model_expression_handoff,
         **live_queue_e_handoff,
+        **expression_closeout,
     }
 
 
@@ -4794,6 +4968,17 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
     )
     terminal_loop = _extract_compact_value(
         section.get("terminal_life_loop_state", {})
+    )
+    idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    process_report = _extract_compact_value(
+        section.get("digital_life_process_report", {})
+    )
+    expression_closeout = _expression_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
     )
     world_contact_presence = _extract_nested_value(
         terminal_loop,
@@ -4848,6 +5033,12 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
             or model_expression_handoff.get(
                 "model_expression_world_contact_handoff_live_refreshed"
             )
+        ),
+        "expression_closeout": bool(
+            expression_closeout.get("expression_closeout_present")
+        ),
+        "consciousness_write_context_closeout": bool(
+            expression_closeout.get("consciousness_write_context_closeout_present")
         ),
     }
     active_domains = [
@@ -4944,6 +5135,7 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
         ),
         **model_expression_handoff,
         **live_queue_e_handoff,
+        **expression_closeout,
     }
 
 
@@ -6002,6 +6194,195 @@ def _body_pressure_closeout_inspection_snapshot(
         "body_pressure_closeout_inspection_boundary": (
             "structured_body_pressure_closeout_not_spoken_language"
         ),
+    }
+
+
+def _body_signal_closeout_inspection_snapshot(
+    *,
+    process_report: dict[str, Any],
+    idle_strategy: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    idle_strategy = idle_strategy or {}
+    ref_set = _list_refs(
+        _first_non_empty(
+            process_report.get("body_signal_ref_set"),
+            process_report.get("background_body_signal_refs"),
+            idle_strategy.get("background_body_signal_refs"),
+            idle_strategy.get("body_signal_refs"),
+        ),
+        limit=24,
+    )
+    gate_adjustments = _list_refs(
+        _first_non_empty(
+            process_report.get("background_body_signal_candidate_gate_adjustments"),
+            idle_strategy.get("background_body_signal_candidate_gate_adjustments"),
+            idle_strategy.get("body_signal_candidate_gate_adjustments"),
+        ),
+        limit=12,
+    )
+    closeout_present = bool(
+        ref_set
+        or process_report.get("background_body_signal_write_bias")
+        or idle_strategy.get("background_body_signal_write_bias")
+        or idle_strategy.get("body_signal_write_bias")
+        or gate_adjustments
+    )
+    return {
+        "body_signal_closeout_present": closeout_present,
+        "background_body_signal_ref_count": _first_non_empty(
+            process_report.get("background_body_signal_ref_count"),
+            idle_strategy.get("background_body_signal_ref_count"),
+            _count_any(ref_set),
+        ),
+        "background_body_signal_write_bias": _first_non_empty(
+            process_report.get("background_body_signal_write_bias"),
+            idle_strategy.get("background_body_signal_write_bias"),
+            idle_strategy.get("body_signal_write_bias"),
+        ),
+        "background_body_signal_fatigue_load": _first_non_empty(
+            process_report.get("background_body_signal_fatigue_load"),
+            idle_strategy.get("background_body_signal_fatigue_load"),
+            idle_strategy.get("body_signal_fatigue_load"),
+        ),
+        "background_body_signal_pain_pressure": _first_non_empty(
+            process_report.get("background_body_signal_pain_pressure"),
+            idle_strategy.get("background_body_signal_pain_pressure"),
+            idle_strategy.get("body_signal_pain_pressure"),
+        ),
+        "background_body_signal_dream_residue_load": _first_non_empty(
+            process_report.get("background_body_signal_dream_residue_load"),
+            idle_strategy.get("background_body_signal_dream_residue_load"),
+            idle_strategy.get("body_signal_dream_residue_load"),
+        ),
+        "background_body_signal_repair_drive": _first_non_empty(
+            process_report.get("background_body_signal_repair_drive"),
+            idle_strategy.get("background_body_signal_repair_drive"),
+            idle_strategy.get("body_signal_repair_drive"),
+        ),
+        "background_body_signal_unexpected_uncertainty": _first_non_empty(
+            process_report.get("background_body_signal_unexpected_uncertainty"),
+            idle_strategy.get("background_body_signal_unexpected_uncertainty"),
+            idle_strategy.get("body_signal_unexpected_uncertainty"),
+        ),
+        "background_body_signal_candidate_gate_adjustments": gate_adjustments,
+        "body_signal_closeout_inspection_boundary": (
+            "structured_body_signal_closeout_not_spoken_language"
+        ),
+    }
+
+
+def _affect_modulation_closeout_inspection_snapshot(
+    *,
+    process_report: dict[str, Any],
+    idle_strategy: dict[str, Any] | None = None,
+    go_nogo: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    body_signal = _body_signal_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+    )
+    body_pressure = _body_pressure_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        go_nogo=go_nogo,
+    )
+    pain_report_ref = process_report.get("pain_regret_repair_report_ref")
+    return {
+        "affect_modulation_closeout_present": bool(
+            body_signal.get("body_signal_closeout_present")
+            or body_pressure.get("body_pressure_closeout_present")
+            or pain_report_ref
+        ),
+        "pain_regret_repair_report_ref": pain_report_ref,
+        "affect_modulation_closeout_inspection_boundary": (
+            "structured_affect_modulation_closeout_not_spoken_language"
+        ),
+        **body_signal,
+        **body_pressure,
+    }
+
+
+def _expression_closeout_inspection_snapshot(
+    *,
+    process_report: dict[str, Any],
+    idle_strategy: dict[str, Any] | None = None,
+    terminal_loop: dict[str, Any] | None = None,
+    go_nogo: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    consciousness = _consciousness_write_context_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+    )
+    live = _live_queue_e_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+    )
+    body_signal = _body_signal_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+    )
+    body_pressure = _body_pressure_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        go_nogo=go_nogo,
+    )
+    return {
+        "expression_closeout_present": bool(
+            consciousness.get("consciousness_write_context_closeout_present")
+            or live.get("live_queue_e_world_contact_handoff_closeout_present")
+            or body_signal.get("body_signal_closeout_present")
+            or body_pressure.get("body_pressure_closeout_present")
+        ),
+        "expression_closeout_inspection_boundary": (
+            "structured_expression_closeout_not_spoken_language"
+        ),
+        **consciousness,
+        **live,
+        **body_signal,
+        **body_pressure,
+    }
+
+
+def _signal_modulation_closeout_inspection_snapshot(
+    *,
+    process_report: dict[str, Any],
+    idle_strategy: dict[str, Any] | None = None,
+    terminal_loop: dict[str, Any] | None = None,
+    go_nogo: dict[str, Any] | None = None,
+    memory_write_gate: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    memory_write_gate = memory_write_gate or {}
+    expression = _expression_closeout_inspection_snapshot(
+        process_report=process_report,
+        idle_strategy=idle_strategy,
+        terminal_loop=terminal_loop,
+        go_nogo=go_nogo,
+    )
+    consciousness_write_context = _extract_nested_value(
+        memory_write_gate,
+        "consciousness_write_context",
+    )
+    runtime_consciousness_present = bool(
+        consciousness_write_context.get("consciousness_write_context_refs")
+        or consciousness_write_context.get("write_attention_bias")
+        or consciousness_write_context.get("boundary")
+    )
+    return {
+        "signal_modulation_closeout_present": bool(
+            expression.get("expression_closeout_present")
+            or runtime_consciousness_present
+            or process_report.get("pain_regret_repair_report_ref")
+        ),
+        "memory_write_gate_consciousness_write_context_present": (
+            runtime_consciousness_present
+        ),
+        "memory_write_gate_consciousness_write_context_ref_count": _count_any(
+            consciousness_write_context.get("consciousness_write_context_refs")
+        ),
+        "signal_modulation_closeout_inspection_boundary": (
+            "structured_signal_modulation_closeout_not_spoken_language"
+        ),
+        **expression,
     }
 
 
