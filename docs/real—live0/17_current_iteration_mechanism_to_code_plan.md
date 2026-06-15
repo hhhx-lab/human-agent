@@ -1011,6 +1011,20 @@ WorkspaceFrame / ConsciousBroadcastFrame / MetacognitionFrame / ConsciousnessPro
 
 机制含义是：梦境醒后整合不再只把 dream/replay/repair 材料送进 life state、body 和 growth，也能追溯它将如何重新进入工作区、广播和元认知检查。这样梦境不是孤立的离线文件，而是可以在醒后进入可报告工作区的结构化候选；它仍然不生成梦境报告模板、不新增 system prompt、不把梦境或 consciousness 字段名释放成自然语言。
 
+当前 ITR-08 第四十四段继续把工作区与意识广播接入记忆写门：
+
+```text
+WorkspaceFrame / ConsciousBroadcastFrame / MetacognitionFrame / ConsciousnessProbeBundle
+  -> MemoryWriteGate.consciousness_write_context
+  -> MemoryWriteGate.life_support_pressure_update.current_consciousness_write_context
+  -> MemoryWriteGate.long_term_governance_refs
+  -> StateStore check gate
+```
+
+`run_state_store` 现在会在 S04 状态仓库构建时读取 `runtime/state/consciousness/workspace_frame.json`、`broadcast_frame.json`、`metacognition_state.json` 和可用的 `consciousness_probe_bundle.json`，并传入 `build_memory_write_gate(...)`。`memory_write_gate.py` 会生成 `memory_consciousness_write_context_v0`，保留 workspace/broadcast/metacognition/probe refs、工作区候选数量、广播目标数量、元认知 uncertainty/reflection 数量、reportability flags、语言/关系连续性计数、write attention bias、candidate gate adjustments、ref set 和 `memory_consciousness_write_context_not_spoken_language` 边界；`run_check_state_store` 会检查 schema、boundary、三件套 refs 与 context refs。consciousness probe 由于可能由 Queue F 后续生成，在 S04 初始构建中允许为空，但 workspace、broadcast 和 metacognition 三件套必须进入写门。
+
+机制含义是：广播内容进入记忆系统不再只是一句理论连接，而成为写门可审计字段。一个经验是否进入长期记忆，不只看 source refs、生命周期、身体压力和梦境事实门，也要能追溯当时工作区可报告候选、广播目标和元认知不确定性。这样 `docs/real—live0/02_brain_network_and_workspace.md` 里的“工作区必须被记忆读取”和 `docs/real—live0/07_memory_engram_and_state_store.md` 里的“召回/重构/写回必须分开”在代码层闭合到同一个 `memory_write_gate.json`。边界继续保持：这是内部记忆写门证据，不生成意识宣言，不新增 system prompt，不把工作区、广播、元认知或写门字段拼成 Adam 的外显语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

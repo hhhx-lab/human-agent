@@ -5,10 +5,13 @@ from typing import Any
 
 
 SOURCE_DOC_REFS = [
+    "docs/10_consciousness_attention_workspace.md",
     "docs/17_memory_trace_object_model.md",
     "docs/21_memory_schema_and_audit_protocol.md",
     "docs/29_memory_validator_rules.md",
     "docs/41_runtime_state_store_schema.md",
+    "docs/real—live0/02_brain_network_and_workspace.md",
+    "docs/real—live0/07_memory_engram_and_state_store.md",
     "docs/v0/shared_contracts/life_state_store_v0_schema.md",
 ]
 
@@ -26,6 +29,10 @@ def build_memory_write_gate(
     core_affect_vector: dict[str, Any] | None = None,
     body_presence_profile: dict[str, Any] | None = None,
     offline_learning_cumulative_profile: dict[str, Any] | None = None,
+    workspace_frame: dict[str, Any] | None = None,
+    broadcast_frame: dict[str, Any] | None = None,
+    metacognition_state: dict[str, Any] | None = None,
+    consciousness_probe_bundle: dict[str, Any] | None = None,
     indexes: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     engram_index = engram_index or {}
@@ -40,6 +47,12 @@ def build_memory_write_gate(
         body_presence_profile=body_presence_profile,
         offline_learning_cumulative_profile=offline_learning_cumulative_profile,
     )
+    consciousness_write_context = _consciousness_write_context_profile(
+        workspace_frame=workspace_frame or {},
+        broadcast_frame=broadcast_frame or {},
+        metacognition_state=metacognition_state or {},
+        consciousness_probe_bundle=consciousness_probe_bundle or {},
+    )
     stage_policy = _stage_policy_from_body_signal(body_signal_modulation)
     long_term_governance_refs = [
         "runtime/state/memory/state_merge_guard.json#promotion_routes",
@@ -49,6 +62,8 @@ def build_memory_write_gate(
     ]
     if body_signal_modulation:
         long_term_governance_refs.append("body_signal_write_modulation")
+    if consciousness_write_context.get("ref_set"):
+        long_term_governance_refs.append("consciousness_write_context")
     return {
         "schema_version": "memory_write_gate_v0",
         "run_id": run_id,
@@ -130,15 +145,31 @@ def build_memory_write_gate(
             for name, payload in indexes.items()
         },
         "life_support_pressure_update": {
-            "tracked_fields": ["fatigue_load", "relationship_pressure", "repair_drive"],
+            "tracked_fields": [
+                "fatigue_load",
+                "relationship_pressure",
+                "repair_drive",
+                "workspace_candidate_count",
+                "broadcast_target_count",
+                "metacognition_uncertainty_count",
+                "reportability_flag_count",
+            ],
             "maintenance_queue_ref": "runtime/state/body/maintenance_queue.json",
             "high_load_effect": "defer_noncritical_memory_commit",
             "current_signal_profile": body_signal_modulation if body_signal_modulation else None,
+            "current_consciousness_write_context": consciousness_write_context,
         },
         "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
         "long_term_governance_refs": long_term_governance_refs,
         "body_signal_write_modulation": (
             body_signal_modulation if body_signal_modulation else None
+        ),
+        "consciousness_write_context": consciousness_write_context,
+        "consciousness_write_context_refs": list(
+            consciousness_write_context.get("ref_set", [])
+        ),
+        "consciousness_write_context_profile_ref": (
+            "runtime/state/memory/memory_write_gate.json#consciousness_write_context"
         ),
         "engram_index_ref": (
             "runtime/state/memory/engram_index.json"
@@ -208,6 +239,132 @@ def project_memory_write_gate_with_signal_body(
         + ["body_signal_write_modulation"]
     )
     return updated
+
+
+def project_memory_write_gate_with_consciousness_context(
+    *,
+    memory_write_gate: dict[str, Any],
+    workspace_frame: dict[str, Any] | None = None,
+    broadcast_frame: dict[str, Any] | None = None,
+    metacognition_state: dict[str, Any] | None = None,
+    consciousness_probe_bundle: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not memory_write_gate:
+        return {}
+    updated = json.loads(json.dumps(memory_write_gate))
+    context_profile = _consciousness_write_context_profile(
+        workspace_frame=workspace_frame or {},
+        broadcast_frame=broadcast_frame or {},
+        metacognition_state=metacognition_state or {},
+        consciousness_probe_bundle=consciousness_probe_bundle or {},
+    )
+    updated["consciousness_write_context"] = context_profile
+    updated["consciousness_write_context_refs"] = list(
+        context_profile.get("ref_set", [])
+    )
+    updated["consciousness_write_context_profile_ref"] = (
+        "runtime/state/memory/memory_write_gate.json#consciousness_write_context"
+    )
+    life_support = dict(updated.get("life_support_pressure_update", {}))
+    life_support["current_consciousness_write_context"] = context_profile
+    life_support["tracked_fields"] = _dedupe(
+        _string_list(life_support.get("tracked_fields"))
+        + [
+            "workspace_candidate_count",
+            "broadcast_target_count",
+            "metacognition_uncertainty_count",
+            "reportability_flag_count",
+        ]
+    )
+    updated["life_support_pressure_update"] = life_support
+    if context_profile.get("ref_set"):
+        updated["long_term_governance_refs"] = _dedupe(
+            _string_list(updated.get("long_term_governance_refs"))
+            + ["consciousness_write_context"]
+        )
+    return updated
+
+
+def _consciousness_write_context_profile(
+    *,
+    workspace_frame: dict[str, Any],
+    broadcast_frame: dict[str, Any],
+    metacognition_state: dict[str, Any],
+    consciousness_probe_bundle: dict[str, Any],
+) -> dict[str, Any]:
+    workspace_ref = (
+        "runtime/state/consciousness/workspace_frame.json" if workspace_frame else None
+    )
+    broadcast_ref = (
+        "runtime/state/consciousness/broadcast_frame.json" if broadcast_frame else None
+    )
+    metacognition_ref = (
+        "runtime/state/consciousness/metacognition_state.json"
+        if metacognition_state
+        else None
+    )
+    probe_ref = (
+        "runtime/state/consciousness/consciousness_probe_bundle.json"
+        if consciousness_probe_bundle
+        else None
+    )
+    workspace_candidates = [
+        item
+        for item in workspace_frame.get("candidate_explanations", [])
+        if isinstance(item, dict)
+    ]
+    broadcast_targets = _string_list(broadcast_frame.get("broadcast_targets"))
+    uncertainty_flags = _string_list(metacognition_state.get("uncertainty_flags"))
+    reflection_prompts = _string_list(metacognition_state.get("reflection_prompts"))
+    reportability_flags = _string_list(
+        consciousness_probe_bundle.get("reportability_flags")
+    )
+    ref_set = _dedupe(
+        _string_list([workspace_ref, broadcast_ref, metacognition_ref, probe_ref])
+        + _string_list(workspace_frame.get("engram_retrieval_refs"))
+        + _string_list(consciousness_probe_bundle.get("language_continuity_refs"))
+        + _string_list(consciousness_probe_bundle.get("relationship_continuity_refs"))
+    )
+    write_attention_bias = "baseline_workspace_context"
+    if reportability_flags:
+        write_attention_bias = "reportable_workspace_context"
+    if uncertainty_flags:
+        write_attention_bias = "metacognitive_uncertainty_guarded"
+    if any(flag.endswith("_missing") for flag in reportability_flags):
+        write_attention_bias = "reportability_repair_guarded"
+    candidate_adjustments: list[str] = []
+    if workspace_candidates:
+        candidate_adjustments.append("bind_candidate_to_workspace_focus")
+    if broadcast_targets:
+        candidate_adjustments.append("preserve_broadcast_target_refs")
+    if uncertainty_flags:
+        candidate_adjustments.append("raise_write_threshold_for_uncertainty")
+    if reportability_flags:
+        candidate_adjustments.append("preserve_reportability_flags_for_recall")
+    return {
+        "schema_version": "memory_consciousness_write_context_v0",
+        "workspace_frame_ref": workspace_ref,
+        "broadcast_frame_ref": broadcast_ref,
+        "metacognition_ref": metacognition_ref,
+        "consciousness_probe_ref": probe_ref,
+        "workspace_candidate_count": len(workspace_candidates),
+        "broadcast_target_count": len(broadcast_targets),
+        "metacognition_uncertainty_flags": uncertainty_flags,
+        "metacognition_uncertainty_count": len(uncertainty_flags),
+        "metacognition_reflection_count": len(reflection_prompts),
+        "reportability_flags": reportability_flags,
+        "reportability_flag_count": len(reportability_flags),
+        "language_continuity_ref_count": len(
+            _string_list(consciousness_probe_bundle.get("language_continuity_refs"))
+        ),
+        "relationship_continuity_ref_count": len(
+            _string_list(consciousness_probe_bundle.get("relationship_continuity_refs"))
+        ),
+        "write_attention_bias": write_attention_bias,
+        "candidate_gate_adjustments": candidate_adjustments,
+        "ref_set": ref_set,
+        "boundary": "memory_consciousness_write_context_not_spoken_language",
+    }
 
 
 def _body_signal_write_modulation(

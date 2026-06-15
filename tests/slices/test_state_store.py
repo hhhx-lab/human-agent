@@ -288,6 +288,44 @@ class StateStoreTests(unittest.TestCase):
             "runtime/state/memory/state_merge_guard.json#merge_routes",
             memory_write_gate["long_term_governance_refs"],
         )
+        self.assertEqual(
+            memory_write_gate["consciousness_write_context"]["schema_version"],
+            "memory_consciousness_write_context_v0",
+        )
+        self.assertEqual(
+            memory_write_gate["consciousness_write_context"]["workspace_frame_ref"],
+            "runtime/state/consciousness/workspace_frame.json",
+        )
+        self.assertEqual(
+            memory_write_gate["consciousness_write_context"]["broadcast_frame_ref"],
+            "runtime/state/consciousness/broadcast_frame.json",
+        )
+        self.assertEqual(
+            memory_write_gate["consciousness_write_context"]["metacognition_ref"],
+            "runtime/state/consciousness/metacognition_state.json",
+        )
+        self.assertGreaterEqual(
+            memory_write_gate["consciousness_write_context"][
+                "workspace_candidate_count"
+            ],
+            1,
+        )
+        self.assertGreaterEqual(
+            memory_write_gate["consciousness_write_context"]["broadcast_target_count"],
+            1,
+        )
+        self.assertEqual(
+            memory_write_gate["consciousness_write_context"]["boundary"],
+            "memory_consciousness_write_context_not_spoken_language",
+        )
+        self.assertIn(
+            "runtime/state/consciousness/workspace_frame.json",
+            memory_write_gate["consciousness_write_context_refs"],
+        )
+        self.assertIn(
+            "consciousness_write_context",
+            memory_write_gate["long_term_governance_refs"],
+        )
         self.assertEqual(state_merge_guard["schema_version"], "state_merge_guard_v0")
         self.assertEqual(state_merge_guard["memory_write_gate_ref"], "runtime/state/memory/memory_write_gate.json")
         self.assertEqual(state_merge_guard["stage_policy"], "long_term_merge_fail_closed")
@@ -522,6 +560,85 @@ class StateStoreTests(unittest.TestCase):
         )
         self.assertIn(
             "body_signal_write_modulation",
+            memory_write_gate["long_term_governance_refs"],
+        )
+
+    def test_memory_write_gate_consumes_consciousness_workspace_context(self):
+        from life_v0.state_store.memory_write_gate import build_memory_write_gate
+
+        memory_write_gate = build_memory_write_gate(
+            run_id="state-store-consciousness-gate",
+            generated_at="2026-06-14T00:00:00+08:00",
+            workspace_frame={
+                "schema_version": "workspace_frame_v0",
+                "candidate_explanations": [
+                    {"explanation_id": "workspace-candidate-1"},
+                    {"explanation_id": "workspace-candidate-2"},
+                ],
+                "engram_retrieval_refs": [
+                    "runtime/state/memory/engram_index.json#relationship_memory_refs"
+                ],
+            },
+            broadcast_frame={
+                "schema_version": "broadcast_frame_v0",
+                "broadcast_targets": [
+                    "LanguageRelationshipRuntime",
+                    "MemoryEngramRuntime",
+                ],
+            },
+            metacognition_state={
+                "schema_version": "metacognition_state_v0",
+                "uncertainty_flags": ["semantic-ambiguity-monitoring"],
+                "reflection_prompts": ["workspace-sufficiency-check"],
+            },
+            consciousness_probe_bundle={
+                "schema_version": "consciousness_probe_bundle_v0",
+                "reportability_flags": [
+                    "workspace_access_present",
+                    "broadcast_targets_present",
+                    "metacognition_present",
+                ],
+                "language_continuity_refs": [
+                    "runtime/state/language/expression_monitor_state.json"
+                ],
+                "relationship_continuity_refs": [
+                    "runtime/state/relationship/commitment_truth_state.json"
+                ],
+            },
+            indexes={"memory_index.json": {"stage_policy": "seed_only"}},
+        )
+
+        context = memory_write_gate["consciousness_write_context"]
+        self.assertEqual(
+            context["schema_version"],
+            "memory_consciousness_write_context_v0",
+        )
+        self.assertEqual(context["workspace_candidate_count"], 2)
+        self.assertEqual(context["broadcast_target_count"], 2)
+        self.assertEqual(context["metacognition_uncertainty_count"], 1)
+        self.assertEqual(context["reportability_flag_count"], 3)
+        self.assertEqual(
+            context["write_attention_bias"],
+            "metacognitive_uncertainty_guarded",
+        )
+        self.assertIn(
+            "raise_write_threshold_for_uncertainty",
+            context["candidate_gate_adjustments"],
+        )
+        self.assertIn(
+            "runtime/state/consciousness/workspace_frame.json",
+            context["ref_set"],
+        )
+        self.assertIn(
+            "runtime/state/language/expression_monitor_state.json",
+            context["ref_set"],
+        )
+        self.assertEqual(
+            context["boundary"],
+            "memory_consciousness_write_context_not_spoken_language",
+        )
+        self.assertIn(
+            "consciousness_write_context",
             memory_write_gate["long_term_governance_refs"],
         )
 

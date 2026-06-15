@@ -206,6 +206,12 @@ def run_state_store(
         if (out_dir / "body" / "core_affect_vector.json").exists()
         else {}
     )
+    workspace_frame = _load_json_optional(out_dir / "consciousness" / "workspace_frame.json")
+    broadcast_frame = _load_json_optional(out_dir / "consciousness" / "broadcast_frame.json")
+    metacognition_state = _load_json_optional(out_dir / "consciousness" / "metacognition_state.json")
+    consciousness_probe_bundle = _load_json_optional(
+        out_dir / "consciousness" / "consciousness_probe_bundle.json"
+    )
 
     blocked_reasons.extend(_s02_blockers(neural_core, neural_report, neural_check_report))
     blocked_reasons.extend(_state_store_doc_blockers(doc_index))
@@ -252,6 +258,10 @@ def run_state_store(
         signal_media_runtime=signal_media_runtime,
         body_resource_budget=body_resource_budget,
         core_affect_vector=core_affect_vector,
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        consciousness_probe_bundle=consciousness_probe_bundle,
         indexes=indexes,
     )
     state_merge_guard = build_state_merge_guard(
@@ -489,6 +499,15 @@ def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, A
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         blocked_reasons.append(f"{gate} failed: {exc}")
+        return {}
+
+
+def _load_json_optional(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
         return {}
 
 
@@ -1094,6 +1113,19 @@ def _check_memory_write_gate(memory_write_gate: dict[str, Any]) -> list[str]:
         reasons.append("memory_write_gate_gate quarantine route blocked indexes missing")
     if not memory_write_gate.get("life_support_pressure_update", {}).get("tracked_fields"):
         reasons.append("memory_write_gate_gate life support pressure fields missing")
+    consciousness_context = memory_write_gate.get("consciousness_write_context", {})
+    if consciousness_context.get("schema_version") != "memory_consciousness_write_context_v0":
+        reasons.append("memory_write_gate_gate consciousness write context schema mismatch")
+    if (
+        consciousness_context.get("boundary")
+        != "memory_consciousness_write_context_not_spoken_language"
+    ):
+        reasons.append("memory_write_gate_gate consciousness write boundary missing")
+    for field in ["workspace_frame_ref", "broadcast_frame_ref", "metacognition_ref"]:
+        if not consciousness_context.get(field):
+            reasons.append(f"memory_write_gate_gate consciousness context missing {field}")
+    if not memory_write_gate.get("consciousness_write_context_refs"):
+        reasons.append("memory_write_gate_gate consciousness context refs missing")
     if memory_write_gate.get("state_merge_guard_ref") != "runtime/state/memory/state_merge_guard.json":
         reasons.append("memory_write_gate_gate state merge guard ref missing")
     if not memory_write_gate.get("long_term_governance_refs"):
