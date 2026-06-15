@@ -328,7 +328,7 @@ def project_multiscale_region_graph_from_live_turn(
     active_networks = network_state.get("active_networks", [])
     if isinstance(active_networks, list) and active_networks:
         updated["functional_couplings"] = _refresh_functional_couplings(
-            updated.get("functional_couplings", []),
+            existing=updated.get("functional_couplings", []),
             active_networks=active_networks,
             live_turn_focus=live_focus,
             generated_at=generated_at,
