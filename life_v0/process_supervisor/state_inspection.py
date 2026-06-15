@@ -483,6 +483,7 @@ def build_resident_state_inspection(
                 ),
                 "terminal_life_loop": "terminal/terminal_life_loop_state.json",
                 "resident_governance": "terminal/resident_governance_state.json",
+                "model_expression_state": "language/model_expression_state.json",
             },
         )
         consciousness["reportability_summary"] = (
@@ -3762,6 +3763,23 @@ def _collect_consciousness_reportability_summary(
     stage_gate = _extract_compact_value(section.get("birth_readiness_stage_gate", {}))
     terminal_loop = _extract_compact_value(section.get("terminal_life_loop", {}))
     governance = _extract_compact_value(section.get("resident_governance", {}))
+    model_expression = _extract_compact_value(
+        section.get("model_expression_state", {})
+    )
+    model_context_summary = _extract_nested_value(
+        model_expression,
+        "model_expression_context_summary",
+    )
+    model_expression_consciousness_write_context_refs = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_refs"
+        )
+    )
+    model_expression_consciousness_write_context_adjustments = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
+        )
+    )
     lineage = _extract_nested_value(
         terminal_loop,
         "resident_background_lineage_state",
@@ -3779,6 +3797,15 @@ def _collect_consciousness_reportability_summary(
         "birth_readiness_stage_gate": bool(stage_gate),
         "terminal_life_loop": bool(terminal_loop),
         "resident_governance": bool(governance),
+        "model_expression_consciousness_write_context": bool(
+            model_expression_consciousness_write_context_refs
+            or model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+            or model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -3836,6 +3863,43 @@ def _collect_consciousness_reportability_summary(
         ),
         "relationship_continuity_ref_count": _count_any(
             probe.get("relationship_continuity_refs")
+        ),
+        "model_expression_consciousness_write_context_refs": (
+            model_expression_consciousness_write_context_refs
+        ),
+        "model_expression_consciousness_write_context_ref_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_ref_count"
+            )
+            or _count_any(model_expression_consciousness_write_context_refs)
+        ),
+        "model_expression_consciousness_write_context_workspace_candidate_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_workspace_candidate_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_broadcast_target_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_broadcast_target_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_reportability_flag_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_reportability_flag_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_bias": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+        ),
+        "model_expression_consciousness_write_context_candidate_gate_adjustments": (
+            model_expression_consciousness_write_context_adjustments
+        ),
+        "model_expression_consciousness_write_context_boundary": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
         ),
         "birth_readiness_overall_status": readiness_rollup.get("overall_status"),
         "birth_readiness_stage_decision": stage_gate.get("decision"),

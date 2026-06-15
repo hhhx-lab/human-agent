@@ -2610,6 +2610,22 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn("reportable_workspace_present", consciousness_output.getvalue())
             self.assertIn("workspace_accessible", consciousness_output.getvalue())
             self.assertIn(
+                "model_expression_consciousness_write_context",
+                consciousness_output.getvalue(),
+            )
+            self.assertIn(
+                "prefer_reportable_workspace_candidates",
+                consciousness_output.getvalue(),
+            )
+            self.assertIn(
+                "prioritize_workspace_reportability_before_write",
+                consciousness_output.getvalue(),
+            )
+            self.assertIn(
+                "memory_consciousness_write_context_not_spoken_language",
+                consciousness_output.getvalue(),
+            )
+            self.assertIn(
                 "consciousness_state_view_not_consciousness_claim_or_script",
                 consciousness_output.getvalue(),
             )

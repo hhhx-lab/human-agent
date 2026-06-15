@@ -1122,6 +1122,18 @@ ModelExpression.model_expression_context_summary.prediction_attention_consciousn
 
 机制含义是：认知检查面不能只停在 workspace/broadcast/metacognition 的原始状态，还要能回看语言器官在模型表达前是否消费了这些工作区写门上下文。这样 `/language` 与 `/cognition` 可以从两个方向互证：一个看语言生成消费了什么，一个看认知工作区材料是否进入了表达前写门证据。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成固定回答，不新增 system prompt，不把意识写门、工作区、广播、元认知或生命信号释放成 Adam 的外显语言。
 
+当前 ITR-08 第五十二段把模型表达意识写门证据继续接入 `/consciousness` 检查面：
+
+```text
+ModelExpression.model_expression_context_summary.prediction_attention_consciousness_write_context_*
+  -> StateInspection.consciousness_reportability_summary.model_expression_consciousness_write_context_*
+  -> /consciousness reportability_summary
+```
+
+`state_inspection.py` 现在会让 `/consciousness` 与 `/意识` 额外读取 `runtime/state/language/model_expression_state.json`。`_collect_consciousness_reportability_summary(...)` 会从 `model_expression_context_summary` 中提取 `prediction_attention_consciousness_write_context_refs`、ref count、workspace candidate count、broadcast target count、reportability flag count、write bias、candidate gate adjustments 和 boundary，并以 `model_expression_consciousness_write_context_*` 字段写入 `consciousness_reportability_summary_v0`；`domain_presence` 与 `active_domains` 也会记录 `model_expression_consciousness_write_context`。
+
+机制含义是：意识检查面不只证明 workspace、broadcast、metacognition 与 probe 存在，还要证明这些可报告材料是否进入语言表达前的结构消费层。这样 `/language`、`/cognition`、`/consciousness` 三个检查面可以从语言、认知和可报告性三条路径互相对照同一组模型表达写门证据。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成固定回答，不新增 system prompt，不把意识写门、工作区、广播、元认知、probe 或生命信号释放成 Adam 的外显语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：
