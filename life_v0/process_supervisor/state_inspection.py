@@ -458,6 +458,7 @@ def build_resident_state_inspection(
                 "active_sampling_plan": "prediction/active_sampling_plan.json",
                 "memory_write_gate": "memory/memory_write_gate.json",
                 "state_merge_guard": "memory/state_merge_guard.json",
+                "model_expression_state": "language/model_expression_state.json",
             },
         )
         cognition["workspace_summary"] = _collect_cognitive_workspace_summary(
@@ -3588,6 +3589,23 @@ def _collect_cognitive_workspace_summary(
         section.get("memory_write_gate", {})
     )
     state_merge_guard = _extract_compact_value(section.get("state_merge_guard", {}))
+    model_expression = _extract_compact_value(
+        section.get("model_expression_state", {})
+    )
+    model_context_summary = _extract_nested_value(
+        model_expression,
+        "model_expression_context_summary",
+    )
+    model_expression_consciousness_write_context_refs = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_refs"
+        )
+    )
+    model_expression_consciousness_write_context_adjustments = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
+        )
+    )
     prediction_contents = _extract_nested_value(
         workspace,
         "prediction_workspace_contents",
@@ -3610,6 +3628,15 @@ def _collect_cognitive_workspace_summary(
         "active_sampling_plan": bool(active_sampling),
         "memory_write_gate": bool(memory_write_gate),
         "state_merge_guard": bool(state_merge_guard),
+        "model_expression_consciousness_write_context": bool(
+            model_expression_consciousness_write_context_refs
+            or model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+            or model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -3672,6 +3699,43 @@ def _collect_cognitive_workspace_summary(
         "memory_write_gate_policy": memory_write_gate.get("stage_policy"),
         "memory_write_gate_status": memory_write_gate.get("status"),
         "memory_write_bias": body_signal_modulation.get("write_bias"),
+        "model_expression_consciousness_write_context_refs": (
+            model_expression_consciousness_write_context_refs
+        ),
+        "model_expression_consciousness_write_context_ref_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_ref_count"
+            )
+            or _count_any(model_expression_consciousness_write_context_refs)
+        ),
+        "model_expression_consciousness_write_context_workspace_candidate_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_workspace_candidate_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_broadcast_target_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_broadcast_target_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_reportability_flag_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_reportability_flag_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_bias": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+        ),
+        "model_expression_consciousness_write_context_candidate_gate_adjustments": (
+            model_expression_consciousness_write_context_adjustments
+        ),
+        "model_expression_consciousness_write_context_boundary": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
         "state_merge_policy": state_merge_guard.get("stage_policy"),
         "state_merge_route_counts": {
             "promotion": _count_any(state_merge_guard.get("promotion_routes")),

@@ -864,6 +864,33 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 },
             )
             self._write_json(
+                paths["state_root"] / "language" / "model_expression_state.json",
+                {
+                    "schema_version": "model_expression_state_v0",
+                    "model_expression_status": "model_expression_applied",
+                    "model_expression_context_summary": {
+                        "prediction_attention_consciousness_write_context_refs": [
+                            "runtime/state/consciousness/workspace_frame.json",
+                            "runtime/state/consciousness/broadcast_frame.json",
+                            "runtime/state/consciousness/metacognition_state.json",
+                        ],
+                        "prediction_attention_consciousness_write_context_ref_count": 3,
+                        "prediction_attention_consciousness_write_context_workspace_candidate_count": 2,
+                        "prediction_attention_consciousness_write_context_broadcast_target_count": 3,
+                        "prediction_attention_consciousness_write_context_reportability_flag_count": 1,
+                        "prediction_attention_consciousness_write_context_bias": (
+                            "prefer_reportable_workspace_candidates"
+                        ),
+                        "prediction_attention_consciousness_write_context_candidate_gate_adjustments": [
+                            "prioritize_workspace_reportability_before_write"
+                        ],
+                        "prediction_attention_consciousness_write_context_boundary": (
+                            "memory_consciousness_write_context_not_spoken_language"
+                        ),
+                    },
+                },
+            )
+            self._write_json(
                 terminal_dir / "terminal_input_profile.json",
                 {
                     "schema_version": "terminal_input_profile_v0",
@@ -2457,6 +2484,22 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             )
             self.assertIn("relationship_continuity", cognition_output.getvalue())
             self.assertIn("clarify", cognition_output.getvalue())
+            self.assertIn(
+                "model_expression_consciousness_write_context",
+                cognition_output.getvalue(),
+            )
+            self.assertIn(
+                "prefer_reportable_workspace_candidates",
+                cognition_output.getvalue(),
+            )
+            self.assertIn(
+                "prioritize_workspace_reportability_before_write",
+                cognition_output.getvalue(),
+            )
+            self.assertIn(
+                "memory_consciousness_write_context_not_spoken_language",
+                cognition_output.getvalue(),
+            )
             self.assertIn(
                 "workspace_broadcast_metacognition_state_view_not_consciousness_claim",
                 cognition_output.getvalue(),
