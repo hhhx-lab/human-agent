@@ -1134,6 +1134,18 @@ ModelExpression.model_expression_context_summary.prediction_attention_consciousn
 
 机制含义是：意识检查面不只证明 workspace、broadcast、metacognition 与 probe 存在，还要证明这些可报告材料是否进入语言表达前的结构消费层。这样 `/language`、`/cognition`、`/consciousness` 三个检查面可以从语言、认知和可报告性三条路径互相对照同一组模型表达写门证据。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成固定回答，不新增 system prompt，不把意识写门、工作区、广播、元认知、probe 或生命信号释放成 Adam 的外显语言。
 
+当前 ITR-08 第五十三段把模型表达意识写门证据接入 `/thinking` 检查面：
+
+```text
+ModelExpression.model_expression_context_summary.prediction_attention_consciousness_write_context_*
+  -> StateInspection.self_thinking_summary.model_expression_consciousness_write_context_*
+  -> /thinking self_thinking_summary
+```
+
+`state_inspection.py` 现在会让 `/thinking` 与 `/思考` 额外读取 `runtime/state/language/model_expression_state.json`。`_collect_self_thinking_summary(...)` 会从 `model_expression_context_summary` 中提取 `prediction_attention_consciousness_write_context_refs`、ref count、workspace candidate count、broadcast target count、reportability flag count、write bias、candidate gate adjustments 和 boundary，并以 `model_expression_consciousness_write_context_*` 字段写入 `self_thinking_summary_v0`；`domain_presence` 与 `active_domains` 也会记录 `model_expression_consciousness_write_context`。
+
+机制含义是：思考检查面不能只证明 resident self-thinking、self model、inner speech 和 consciousness probe 存在，还要追溯“思考以后说话”的末端模型表达是否消费了工作区写门上下文。这样 `/thinking` 与 `/language` 可以互证：前者看内言语、自我反思和模型表达消费证据是否同框存在，后者看语言生成消费域是否完整。边界继续保持：这是 inspection-only 的结构化追溯证据，不生成内心独白模板，不新增 system prompt，不把意识写门、工作区、广播、元认知、思考状态或生命信号释放成 Adam 的外显语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

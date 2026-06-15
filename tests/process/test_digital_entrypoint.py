@@ -2664,6 +2664,22 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             )
             self.assertIn("protect_relationship_continuity", thinking_output.getvalue())
             self.assertIn(
+                "model_expression_consciousness_write_context",
+                thinking_output.getvalue(),
+            )
+            self.assertIn(
+                "prefer_reportable_workspace_candidates",
+                thinking_output.getvalue(),
+            )
+            self.assertIn(
+                "prioritize_workspace_reportability_before_write",
+                thinking_output.getvalue(),
+            )
+            self.assertIn(
+                "memory_consciousness_write_context_not_spoken_language",
+                thinking_output.getvalue(),
+            )
+            self.assertIn(
                 "thinking_state_view_not_inner_monologue_template",
                 thinking_output.getvalue(),
             )

@@ -511,6 +511,7 @@ def build_resident_state_inspection(
                 "resident_autonomous_activity": (
                     "terminal/resident_autonomous_activity_state.json"
                 ),
+                "model_expression_state": "language/model_expression_state.json",
             },
         )
         thinking["self_thinking_summary"] = _collect_self_thinking_summary(
@@ -3941,6 +3942,23 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
     autonomous_activity = _extract_compact_value(
         section.get("resident_autonomous_activity", {})
     )
+    model_expression = _extract_compact_value(
+        section.get("model_expression_state", {})
+    )
+    model_context_summary = _extract_nested_value(
+        model_expression,
+        "model_expression_context_summary",
+    )
+    model_expression_consciousness_write_context_refs = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_refs"
+        )
+    )
+    model_expression_consciousness_write_context_adjustments = _list_refs(
+        model_context_summary.get(
+            "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
+        )
+    )
     slow_variables = self_model.get("trait_slow_variables")
     if not isinstance(slow_variables, dict):
         slow_variables = {}
@@ -3955,6 +3973,15 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
         "background_convergence_summary": bool(background_summary),
         "background_convergence_history": bool(background_history),
         "resident_autonomous_activity": bool(autonomous_activity),
+        "model_expression_consciousness_write_context": bool(
+            model_expression_consciousness_write_context_refs
+            or model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+            or model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -4008,6 +4035,43 @@ def _collect_self_thinking_summary(section: dict[str, Any]) -> dict[str, Any]:
             autonomous_activity,
             "activity_counts",
         ).get("self_thinking"),
+        "model_expression_consciousness_write_context_refs": (
+            model_expression_consciousness_write_context_refs
+        ),
+        "model_expression_consciousness_write_context_ref_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_ref_count"
+            )
+            or _count_any(model_expression_consciousness_write_context_refs)
+        ),
+        "model_expression_consciousness_write_context_workspace_candidate_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_workspace_candidate_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_broadcast_target_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_broadcast_target_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_reportability_flag_count": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_reportability_flag_count"
+            )
+        ),
+        "model_expression_consciousness_write_context_bias": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+        ),
+        "model_expression_consciousness_write_context_candidate_gate_adjustments": (
+            model_expression_consciousness_write_context_adjustments
+        ),
+        "model_expression_consciousness_write_context_boundary": (
+            model_context_summary.get(
+                "prediction_attention_consciousness_write_context_boundary"
+            )
+        ),
         "thinking_boundary": (
             "thinking_state_view_not_inner_monologue_template"
         ),
