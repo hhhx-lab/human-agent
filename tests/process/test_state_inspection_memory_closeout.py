@@ -507,6 +507,50 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         )
         self.assertIn("live_queue_e_world_contact_handoff", summary["domain_presence"])
 
+    def test_relationship_summary_exposes_live0_gate_f(self):
+        section = {
+            "relationship_subject_graph": {
+                "subjects": [{"relationship_id": "rel-v0-0001"}]
+            },
+            "world_contact_validation": {
+                "schema_version": "world_contact_validation_v0",
+                "repair_hold_required": True,
+                "confirmation_threshold_bias": "raised",
+                "future_no_go_profile_ref": (
+                    "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+                ),
+                "body_pressure_profile_ref": (
+                    "runtime/state/action/go_nogo_state.json#body_pressure_profile"
+                ),
+                "blocked_future_routes": ["external_irreversible_action"],
+                "allowed_repair_routes": ["responsibility_repair_followup"],
+                "repair_governance_refs": [
+                    "runtime/state/validation/validation_rollup.json"
+                ],
+            },
+            "live0_acceptance_audit": {
+                "criteria": [
+                    {
+                        "criterion_id": "f_equal_relationship_dialogue_growth",
+                        "status": "closed",
+                        "probes": [
+                            {
+                                "probe_id": "queue_e_world_contact_repair_hold_validated",
+                                "status": "passed",
+                            }
+                        ],
+                    }
+                ]
+            },
+        }
+
+        summary = _collect_relationship_continuity_summary(section)
+
+        self.assertTrue(summary["live0_gate_f_present"])
+        self.assertTrue(summary["live0_gate_f_closed"])
+        self.assertTrue(summary["queue_e_world_contact_repair_hold_validation_closed"])
+        self.assertIn("live0_gate_f", summary["domain_presence"])
+
     def test_personality_summary_exposes_growth_and_repair_projections(self):
         section = {
             "self_model": {

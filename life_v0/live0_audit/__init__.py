@@ -9,6 +9,10 @@ from pathlib import Path
 from typing import Any, Callable
 
 from life_v0.digital_life_identity import DIRECT_COMMAND_MARKER
+from life_v0.live0_audit.gate_f_inspection import (
+    live_queue_e_world_contact_handoff_closeout_audited,
+    world_contact_validation_repair_hold_closed,
+)
 from life_v0.process_supervisor.resident_lifecycle import read_resident_lifecycle_status
 
 
@@ -688,7 +692,7 @@ def _criterion_relationship(context: _AuditContext) -> dict[str, Any]:
             context,
             "queue_e_world_contact_repair_hold_validated",
             "runtime/state/validation/world_contact_validation.json",
-            _world_contact_validation_repair_hold_closed,
+            world_contact_validation_repair_hold_closed,
             "Queue E FutureNoGo repair hold must be validated before relationship repair can close",
             extra_refs=[
                 "runtime/state/action/go_nogo_state.json#future_no_go_profile",
@@ -720,7 +724,7 @@ def _criterion_relationship(context: _AuditContext) -> dict[str, Any]:
                 "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
                 "runtime/state/terminal/terminal_life_loop_state.json",
             ],
-            _live_queue_e_world_contact_handoff_closeout_audited(
+            live_queue_e_world_contact_handoff_closeout_audited(
                 process_report,
                 context.load_json(
                     "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
@@ -1048,48 +1052,6 @@ def _closed_or_schema(payload: dict[str, Any]) -> bool:
 
 def _report_status_closed(payload: dict[str, Any]) -> bool:
     return payload.get("status") == "closed"
-
-
-def _live_queue_e_world_contact_handoff_closeout_audited(
-    process_report: dict[str, Any],
-    handoff_state: dict[str, Any],
-    terminal_loop: dict[str, Any],
-) -> bool:
-    live_refresh_signal = bool(
-        handoff_state.get("last_projected_from_live_turn_ref")
-        or handoff_state.get("live_turn_focus")
-        or handoff_state.get("live_responsibility_consciousness_context_refs")
-        or terminal_loop.get("live_queue_e_world_contact_handoff_refreshed")
-    )
-    if not live_refresh_signal:
-        return True
-    report_profile = process_report.get(
-        "live_queue_e_world_contact_handoff_report_profile"
-    )
-    if not isinstance(report_profile, dict):
-        report_profile = {}
-    return (
-        report_profile.get("schema_version")
-        == "live_queue_e_world_contact_handoff_report_profile_v0"
-        and process_report.get("live_queue_e_world_contact_handoff_report_boundary")
-        == "live_queue_e_world_contact_handoff_structured_report_not_spoken_language"
-        and bool(process_report.get("live_queue_e_world_contact_handoff_refreshed"))
-    )
-
-
-def _world_contact_validation_repair_hold_closed(payload: dict[str, Any]) -> bool:
-    return (
-        payload.get("schema_version") == "world_contact_validation_v0"
-        and payload.get("repair_hold_required") is True
-        and payload.get("confirmation_threshold_bias") == "raised"
-        and payload.get("future_no_go_profile_ref")
-        == "runtime/state/action/go_nogo_state.json#future_no_go_profile"
-        and payload.get("body_pressure_profile_ref")
-        == "runtime/state/action/go_nogo_state.json#body_pressure_profile"
-        and bool(payload.get("blocked_future_routes"))
-        and bool(payload.get("allowed_repair_routes"))
-        and bool(payload.get("repair_governance_refs"))
-    )
 
 
 def _queue_e_world_contact_repair_hold_closed(payload: dict[str, Any]) -> bool:

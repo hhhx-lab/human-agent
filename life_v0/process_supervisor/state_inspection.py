@@ -522,6 +522,9 @@ def build_resident_state_inspection(
                 "v0_contract_coverage_report": (
                     "../reports/latest/v0_contract_coverage_report.json"
                 ),
+                "live0_acceptance_audit": (
+                    "../reports/latest/live0_acceptance_audit_report.json"
+                ),
                 "self_model": "self/self_model.json",
             },
         )
@@ -1477,6 +1480,25 @@ def _shared_term_promotion_inspection_snapshot(
     return shared_term_promotion_inspection_snapshot(
         shared_term_registry=shared_term_registry_value,
         terminal_life_loop_state=terminal_loop_value,
+    )
+
+
+def _live0_gate_f_inspection_snapshot(
+    *,
+    world_contact_validation: dict[str, Any] | None = None,
+    process_report: dict[str, Any] | None = None,
+    handoff: dict[str, Any] | None = None,
+    terminal_loop: dict[str, Any] | None = None,
+    live0_audit: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    from life_v0.live0_audit.gate_f_inspection import live0_gate_f_inspection_snapshot
+
+    return live0_gate_f_inspection_snapshot(
+        world_contact_validation=_extract_compact_value(world_contact_validation or {}),
+        process_report=_extract_compact_value(process_report or {}),
+        handoff=_extract_compact_value(handoff or {}),
+        terminal_loop=_extract_compact_value(terminal_loop or {}),
+        live0_audit=_extract_compact_value(live0_audit or {}),
     )
 
 
@@ -2644,6 +2666,13 @@ def _collect_ability_birth_readiness_summary(
         go_nogo=go_nogo,
         live0_audit=live0_audit,
     )
+    live0_gate_f = _live0_gate_f_inspection_snapshot(
+        world_contact_validation=world_contact_validation,
+        process_report=process_report,
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        live0_audit=live0_audit,
+    )
     life_target_status = readiness_rollup.get("life_target_status")
     if not isinstance(life_target_status, dict):
         life_target_status = {}
@@ -2686,6 +2715,7 @@ def _collect_ability_birth_readiness_summary(
         "queue_e_world_contact_repair_hold_schema_handoff": bool(
             schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
         ),
+        "live0_gate_f": bool(live0_gate_f.get("live0_gate_f_present")),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -2752,6 +2782,10 @@ def _collect_ability_birth_readiness_summary(
                 "live_queue_e_world_contact_handoff_closeout_audited",
             )
         ),
+        "queue_e_world_contact_repair_hold_validated_probe_status": _live0_probe_status(
+            live0_audit,
+            "queue_e_world_contact_repair_hold_validated",
+        ),
         "live_queue_e_world_contact_handoff_report_boundary": _first_non_empty(
             process_report.get("live_queue_e_world_contact_handoff_report_boundary"),
             process_closeout.get("live_queue_e_world_contact_handoff_report_boundary"),
@@ -2760,6 +2794,7 @@ def _collect_ability_birth_readiness_summary(
         **process_closeout,
         **contract_coverage,
         **schema_handoff,
+        **live0_gate_f,
         "queue_e_world_contact_handoff_status": _first_non_empty(
             readiness_rollup.get("queue_e_world_contact_handoff_status"),
             stage_gate.get("queue_e_world_contact_handoff_status"),
@@ -5201,6 +5236,14 @@ def _collect_relationship_continuity_summary(
     ref_consistency_snapshot = _language_relationship_ref_consistency_inspection_snapshot(
         ref_consistency=ref_consistency,
     )
+    live0_audit = _extract_compact_value(section.get("live0_acceptance_audit", {}))
+    live0_gate_f = _live0_gate_f_inspection_snapshot(
+        world_contact_validation=world_contact_validation,
+        process_report=process_report,
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        live0_audit=live0_audit,
+    )
     contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
     doc_to_code_matrix = _extract_compact_value(
         section.get("doc_to_code_coverage_matrix", {})
@@ -5283,6 +5326,7 @@ def _collect_relationship_continuity_summary(
         "language_relationship_ref_consistency": bool(
             ref_consistency_snapshot.get("language_relationship_ref_consistency_present")
         ),
+        "live0_gate_f": bool(live0_gate_f.get("live0_gate_f_present")),
     }
     active_domains = [
         name for name, present in domain_presence.items() if bool(present)
@@ -5382,6 +5426,7 @@ def _collect_relationship_continuity_summary(
         **shared_term_promotion,
         **relationship_stage_evolution,
         **ref_consistency_snapshot,
+        **live0_gate_f,
         **contract_coverage,
     }
 
