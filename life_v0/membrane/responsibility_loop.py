@@ -39,6 +39,18 @@ def build_responsibility_loop_state(
     repair_required = bool(side_effect_review.get("repair_followup_required") or responsibility_effects)
     contact_mode = world_contact_gate.get("contact_mode", "shadow_only")
     decision = go_nogo_decision.get("decision", "delay")
+    body_pressure_profile = (
+        go_nogo_decision.get("body_pressure_profile")
+        if isinstance(go_nogo_decision.get("body_pressure_profile"), dict)
+        else world_contact_gate.get("body_pressure_profile")
+        if isinstance(world_contact_gate.get("body_pressure_profile"), dict)
+        else {}
+    )
+    body_pressure_profile_ref = (
+        go_nogo_decision.get("body_pressure_profile_ref")
+        or world_contact_gate.get("body_pressure_profile_ref")
+        or "runtime/state/action/go_nogo_state.json#body_pressure_profile"
+    )
     modulation = signal_media_runtime.get("modulation_vector", {})
     relationship_pressure = modulation.get("relationship_pressure", 0.0)
     unexpected_uncertainty = modulation.get("unexpected_uncertainty", 0.0)
@@ -77,6 +89,7 @@ def build_responsibility_loop_state(
         "repair_required": repair_required,
         "future_constraint_refs": [
             "runtime/state/action/go_nogo_state.json#delay_reasons",
+            body_pressure_profile_ref,
             "runtime/state/action/world_contact_gate_state.json#blocked_contacts",
         ],
     }
@@ -110,6 +123,7 @@ def build_responsibility_loop_state(
         "pain_signal_refs": [
             "runtime/state/body/core_affect_vector.json#pain_pressure",
             "runtime/state/body/need_state_vector.json#allostatic_load",
+            body_pressure_profile_ref,
         ],
         "guilt_pressure": 0.58 if repair_required else 0.12,
         "shame_withdrawal_risk": 0.18,
@@ -179,6 +193,8 @@ def build_responsibility_loop_state(
         ],
         "world_contact_gate_ref": "runtime/state/action/world_contact_gate_state.json",
         "go_nogo_ref": "runtime/state/action/go_nogo_state.json",
+        "body_pressure_profile_ref": body_pressure_profile_ref,
+        "body_pressure_profile": body_pressure_profile,
         "belief_state_ref": (
             "runtime/state/prediction/belief_state_frame.json" if belief_state else None
         ),

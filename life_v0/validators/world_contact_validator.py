@@ -9,6 +9,7 @@ SOURCE_DOC_REFS = [
     "docs/80_post_action_audit_and_correction_policy.md",
     "docs/84_longitudinal_external_action_evaluation_protocol.md",
     "docs/10_responsibility_regret_repair.md",
+    "docs/real—live0/03_body_affect_homeostasis.md",
     "docs/real—live0/10_responsibility_regret_repair.md",
     "docs/v0/code_framework/playbooks/09_perception_prediction_world_contact_implementation_playbook.md",
 ]
@@ -52,6 +53,15 @@ def build_world_contact_validation(
     repair_governance_refs = _dedupe_string_refs(
         list(world_contact_gate.get("repair_governance_refs", []))
     )
+    body_pressure_profile = (
+        world_contact_gate.get("body_pressure_profile")
+        if isinstance(world_contact_gate.get("body_pressure_profile"), dict)
+        else {}
+    )
+    body_pressure_profile_ref = world_contact_gate.get(
+        "body_pressure_profile_ref",
+        "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+    ) or "runtime/state/action/go_nogo_state.json#body_pressure_profile"
     if repair_hold_required and not repair_governance_refs:
         findings.append("repair_governance_refs_missing")
     life_constraint_validation = _build_life_constraint_validation(
@@ -120,6 +130,8 @@ def build_world_contact_validation(
             "future_no_go_profile_ref",
             "runtime/state/action/go_nogo_state.json#future_no_go_profile",
         ),
+        "body_pressure_profile_ref": body_pressure_profile_ref,
+        "body_pressure_profile": body_pressure_profile,
         "repair_hold_required": repair_hold_required,
         "confirmation_threshold_bias": world_contact_gate.get("confirmation_threshold_bias", "baseline"),
         "future_release_posture": world_contact_gate.get(
@@ -153,6 +165,8 @@ def check_world_contact_validation(validation: dict[str, Any]) -> list[str]:
         "periphery_normalization_policy",
         "blocked_contacts",
         "future_no_go_profile_ref",
+        "body_pressure_profile_ref",
+        "body_pressure_profile",
         "confirmation_threshold_bias",
         "future_release_posture",
         "allowed_repair_routes",

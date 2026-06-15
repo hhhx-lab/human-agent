@@ -17,6 +17,13 @@ class LifeMembraneTests(unittest.TestCase):
 
     def test_go_nogo_accepts_body_state_sleep_pressure_labels(self):
         from life_v0.membrane.go_nogo import build_go_nogo_decision
+        from life_v0.membrane.world_contact_gate import (
+            build_world_contact_gate_state,
+        )
+        from life_v0.validators.validation_rollup import build_validation_rollup
+        from life_v0.validators.world_contact_validator import (
+            build_world_contact_validation,
+        )
 
         decision = build_go_nogo_decision(
             run_id="membrane-body-label",
@@ -29,11 +36,138 @@ class LifeMembraneTests(unittest.TestCase):
 
         self.assertEqual(decision["schema_version"], "go_nogo_decision_v0")
         self.assertEqual(decision["decision"], "delay")
+        self.assertEqual(
+            decision["body_pressure_profile"]["schema_version"],
+            "go_nogo_body_pressure_profile_v0",
+        )
+        self.assertEqual(
+            decision["body_pressure_profile"]["sleep_pressure_raw"],
+            "managed_pre_dream",
+        )
+        self.assertEqual(
+            decision["body_pressure_profile"]["sleep_pressure_value"],
+            0.55,
+        )
+        self.assertFalse(
+            decision["body_pressure_profile"]["sleep_pressure_inhibition_active"]
+        )
+        self.assertEqual(
+            decision["body_pressure_profile"]["pain_pressure_value"],
+            0.31,
+        )
+        self.assertEqual(
+            decision["body_pressure_profile"]["boundary"],
+            "go_nogo_body_pressure_profile_not_spoken_language",
+        )
         self.assertIn(
             "external_irreversible_action_remains_shadow_only",
             decision["delay_reasons"],
         )
         self.assertNotIn("sleep_pressure_inhibition", decision["delay_reasons"])
+
+        world_contact = build_world_contact_gate_state(
+            run_id="membrane-body-label",
+            generated_at="2026-06-15T00:00:00+00:00",
+            go_nogo_decision=decision,
+            shadow_action_gate={"blocked_action_classes": []},
+        )
+        self.assertEqual(
+            world_contact["body_pressure_profile_ref"],
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+        )
+        self.assertEqual(
+            world_contact["body_pressure_profile"]["sleep_pressure_value"],
+            0.55,
+        )
+        self.assertIn(
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+            world_contact["life_constraint_refs"],
+        )
+
+        validation = build_world_contact_validation(
+            run_id="membrane-body-label",
+            generated_at="2026-06-15T00:00:00+00:00",
+            world_contact_gate=world_contact,
+            confirmation_binding={"requires_confirmation": False},
+            side_effect_review={"repair_followup_required": False},
+            action_candidate_set={
+                "life_constraint_profile": {
+                    "value_orientation_gate": "closed",
+                    "consciousness_probe_gate": "deferred_until_s08",
+                    "body_affect_gate": "closed",
+                    "language_relationship_gate": "closed",
+                }
+            },
+            world_observation_route={
+                "schema_version": "world_observation_route_v0",
+                "route_mode": "shadow_observation",
+                "observation_targets": ["terminal_state"],
+            },
+            periphery_normalization_trace={
+                "schema_version": "periphery_normalization_trace_v0",
+                "normalization_policy": "shadow_only",
+                "promoted_channels": [],
+                "deferred_channels": [],
+            },
+            observation_truth_review={
+                "schema_version": "observation_truth_review_v0",
+                "missing_fields": [],
+            },
+            need_state={"sleep_pressure": "managed_pre_dream"},
+            core_affect={"pain_pressure": 0.31},
+            expression_plan={"semantic_goal": "shadow_review"},
+        )
+        self.assertEqual(validation["status"], "closed")
+        self.assertEqual(
+            validation["body_pressure_profile_ref"],
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+        )
+
+        rollup = build_validation_rollup(
+            run_id="membrane-body-label",
+            generated_at="2026-06-15T00:00:00+00:00",
+            observation_truth_review={
+                "schema_version": "observation_truth_review_v0",
+                "missing_fields": [],
+            },
+            world_contact_validation=validation,
+            prediction_trace_validation={
+                "status": "closed",
+                "active_sampling_plan_ref": (
+                    "runtime/state/prediction/active_sampling_plan.json"
+                ),
+                "prediction_workspace_ref": (
+                    "runtime/state/prediction/prediction_workspace_frame.json"
+                ),
+                "world_observation_route_ref": (
+                    "runtime/state/observation/world_observation_route.json"
+                ),
+                "periphery_normalization_ref": (
+                    "runtime/state/observation/periphery_normalization_trace.json"
+                ),
+                "world_contact_validation_ref": (
+                    "runtime/state/validation/world_contact_validation.json"
+                ),
+                "prediction_trace_refs": ["prediction-trace-001"],
+            },
+            boundary_audit={"audit_findings": []},
+            queue_e_birth_repair_profile={
+                "schema_version": "queue_e_repair_modulation_profile_v0",
+                "pressure_level": "quiet",
+                "attention_target": "repair_followup",
+                "ref_set": [
+                    "runtime/state/action/go_nogo_state.json#future_no_go_profile"
+                ],
+            },
+        )
+        self.assertEqual(
+            rollup["queue_e_world_contact_body_pressure_profile_ref"],
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+        )
+        self.assertIn(
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+            rollup["queue_e_cross_layer_refs"],
+        )
 
     def test_build_life_membrane_writes_boundary_gates_and_activation_preflight(self):
         from life_v0.authority import run_source_authority
@@ -376,6 +510,14 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertEqual(go_nogo["action_candidate_set_ref"], "runtime/state/action/action_candidate_set.json")
         self.assertTrue(go_nogo["responsibility_gate_refs"])
         self.assertTrue(go_nogo["fatigue_inhibition_refs"])
+        self.assertEqual(
+            go_nogo["body_pressure_profile"]["schema_version"],
+            "go_nogo_body_pressure_profile_v0",
+        )
+        self.assertEqual(
+            go_nogo["body_pressure_profile_ref"],
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+        )
         self.assertIn("runtime/state/direction/value_orientation.json", go_nogo["life_constraint_refs"])
         self.assertEqual(
             go_nogo["queue_e_repair_modulation_profile"]["schema_version"],
@@ -413,7 +555,19 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertEqual(world_contact["contact_mode"], "shadow_only")
         self.assertIn("external_irreversible_action", world_contact["blocked_contacts"])
         self.assertTrue(world_contact["allowed_contacts"])
+        self.assertEqual(
+            world_contact["body_pressure_profile_ref"],
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+        )
+        self.assertEqual(
+            world_contact["body_pressure_profile"]["boundary"],
+            "go_nogo_body_pressure_profile_not_spoken_language",
+        )
         self.assertIn("runtime/state/action/action_candidate_set.json#life_constraint_profile", world_contact["life_constraint_refs"])
+        self.assertIn(
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+            world_contact["life_constraint_refs"],
+        )
         self.assertEqual(
             world_contact["future_no_go_profile_ref"],
             "runtime/state/action/go_nogo_state.json#future_no_go_profile",
@@ -449,6 +603,14 @@ class LifeMembraneTests(unittest.TestCase):
         self.assertEqual(
             responsibility_loop["world_observation_route_ref"],
             "runtime/state/observation/world_observation_route.json",
+        )
+        self.assertEqual(
+            responsibility_loop["body_pressure_profile_ref"],
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+        )
+        self.assertEqual(
+            responsibility_loop["body_pressure_profile"]["schema_version"],
+            "go_nogo_body_pressure_profile_v0",
         )
         self.assertEqual(
             responsibility_loop["periphery_normalization_ref"],

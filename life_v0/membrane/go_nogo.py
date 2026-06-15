@@ -76,6 +76,13 @@ def build_go_nogo_decision(
         generated_at=generated_at,
         queue_e_repair_modulation_profile=queue_e_profile,
     )
+    body_pressure_profile = _body_pressure_profile(
+        raw_sleep_pressure=need_state.get("sleep_pressure", 0.0),
+        normalized_sleep_pressure=sleep_pressure,
+        raw_pain_pressure=core_affect.get("pain_pressure", 0.0),
+        normalized_pain_pressure=pain_pressure,
+        delay_reasons=delay_reasons,
+    )
 
     return {
         "schema_version": "go_nogo_decision_v0",
@@ -94,6 +101,10 @@ def build_go_nogo_decision(
             "runtime/state/body/need_state_vector.json",
             "runtime/state/body/core_affect_vector.json",
         ],
+        "body_pressure_profile": body_pressure_profile,
+        "body_pressure_profile_ref": (
+            "runtime/state/action/go_nogo_state.json#body_pressure_profile"
+        ),
         "life_constraint_refs": life_constraint_refs,
         "queue_e_repair_modulation_profile": queue_e_profile,
         "future_no_go_profile": future_no_go_profile,
@@ -156,6 +167,8 @@ def check_go_nogo_decision(decision: dict[str, Any]) -> list[str]:
         "action_candidate_set_ref",
         "responsibility_gate_refs",
         "fatigue_inhibition_refs",
+        "body_pressure_profile",
+        "body_pressure_profile_ref",
         "life_constraint_refs",
         "queue_e_repair_modulation_profile",
         "future_no_go_profile",
@@ -171,6 +184,41 @@ def check_go_nogo_decision(decision: dict[str, Any]) -> list[str]:
     if future_profile and not future_profile.get("repair_governance_refs"):
         reasons.append("go_nogo_gate future no-go governance refs missing")
     return reasons
+
+
+def _body_pressure_profile(
+    *,
+    raw_sleep_pressure: Any,
+    normalized_sleep_pressure: float,
+    raw_pain_pressure: Any,
+    normalized_pain_pressure: float,
+    delay_reasons: list[str],
+) -> dict[str, Any]:
+    return {
+        "schema_version": "go_nogo_body_pressure_profile_v0",
+        "sleep_pressure_raw": raw_sleep_pressure,
+        "sleep_pressure_value": normalized_sleep_pressure,
+        "sleep_pressure_threshold": 0.65,
+        "sleep_pressure_inhibition_active": (
+            "sleep_pressure_inhibition" in delay_reasons
+        ),
+        "pain_pressure_raw": raw_pain_pressure,
+        "pain_pressure_value": normalized_pain_pressure,
+        "pain_pressure_threshold": 0.45,
+        "pain_pressure_review_active": (
+            "pain_pressure_review_required" in delay_reasons
+        ),
+        "pressure_delay_reasons": [
+            reason
+            for reason in delay_reasons
+            if reason in {"sleep_pressure_inhibition", "pain_pressure_review_required"}
+        ],
+        "source_refs": [
+            "runtime/state/body/need_state_vector.json#sleep_pressure",
+            "runtime/state/body/core_affect_vector.json#pain_pressure",
+        ],
+        "boundary": "go_nogo_body_pressure_profile_not_spoken_language",
+    }
 
 
 def _quiet_queue_e_repair_modulation_profile() -> dict[str, Any]:

@@ -2680,6 +2680,7 @@ def _collect_life_membrane_validation_summary(
         section.get("schema_runner_report", {})
     )
     future_no_go = _extract_nested_value(go_nogo, "future_no_go_profile")
+    body_pressure_profile = _extract_nested_value(go_nogo, "body_pressure_profile")
     body_signal_modulation = _extract_nested_value(
         memory_write_gate,
         "body_signal_write_modulation",
@@ -2810,6 +2811,17 @@ def _collect_life_membrane_validation_summary(
                 _count_any(action_candidate_set.get("action_candidates")),
             ),
             "go_nogo_decision": go_nogo.get("decision"),
+            "body_pressure_profile_ref": go_nogo.get("body_pressure_profile_ref"),
+            "body_sleep_pressure_value": body_pressure_profile.get(
+                "sleep_pressure_value"
+            ),
+            "body_pain_pressure_value": body_pressure_profile.get(
+                "pain_pressure_value"
+            ),
+            "body_pressure_delay_reasons": _list_refs(
+                body_pressure_profile.get("pressure_delay_reasons")
+            ),
+            "body_pressure_boundary": body_pressure_profile.get("boundary"),
             "future_repair_hold_required": bool(
                 future_no_go.get("repair_hold_required")
             ),

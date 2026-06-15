@@ -40,9 +40,19 @@ def build_world_contact_gate_state(
     repair_governance_refs = _merge_refs(
         future_no_go_profile.get("repair_governance_refs", []),
     )
+    body_pressure_profile = (
+        go_nogo_decision.get("body_pressure_profile")
+        if isinstance(go_nogo_decision.get("body_pressure_profile"), dict)
+        else {}
+    )
+    body_pressure_profile_ref = go_nogo_decision.get(
+        "body_pressure_profile_ref",
+        "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+    ) or "runtime/state/action/go_nogo_state.json#body_pressure_profile"
     contact_mode = "shadow_only" if decision in {"delay", "shadow_release"} else "blocked"
     life_constraint_refs = [
         "runtime/state/action/action_candidate_set.json#life_constraint_profile",
+        body_pressure_profile_ref,
         *[
             ref
             for ref in go_nogo_decision.get("life_constraint_refs", [])
@@ -77,6 +87,8 @@ def build_world_contact_gate_state(
         "blocked_contacts": list(dict.fromkeys(blocked_contacts)),
         "life_constraint_refs": list(dict.fromkeys(life_constraint_refs)),
         "future_no_go_profile_ref": "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+        "body_pressure_profile_ref": body_pressure_profile_ref,
+        "body_pressure_profile": body_pressure_profile,
         "repair_hold_required": repair_hold_required,
         "confirmation_threshold_bias": confirmation_threshold_bias,
         "future_release_posture": future_no_go_profile.get(
@@ -103,6 +115,8 @@ def check_world_contact_gate_state(state: dict[str, Any]) -> list[str]:
         "blocked_contacts",
         "life_constraint_refs",
         "future_no_go_profile_ref",
+        "body_pressure_profile_ref",
+        "body_pressure_profile",
         "confirmation_threshold_bias",
         "future_release_posture",
         "allowed_repair_routes",

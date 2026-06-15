@@ -937,6 +937,21 @@ NeedStateVector.sleep_pressure
 
 机制含义是：身体状态不是只在 idle strategy、语言表达或梦境入口里存在，它也必须能调制行动释放阈值。Go/No-Go 消费标签化 sleep/pain pressure 后，身体内环境可以稳定进入生命膜、世界接触、责任回路和验证汇总，而不是在行动层变成类型错误。边界继续保持：这是内部压力归一和行动阈值调制，不生成固定拒绝话术，不新增 system prompt，不把身体状态或生命膜理由拼成 Adam 的外显回答。
 
+当前 ITR-08 第三十九段把身体压力归一继续推进到世界接触、责任回路、验证汇总和状态查看：
+
+```text
+GoNoGo.body_pressure_profile
+  -> WorldContactGate.body_pressure_profile
+  -> ResponsibilityLoop.body_pressure_profile / future_constraint_refs / pain_signal_refs
+  -> WorldContactValidation.body_pressure_profile_ref
+  -> ValidationRollup.queue_e_world_contact_body_pressure_profile_ref
+  -> StateInspection./membrane.action_gate
+```
+
+`go_nogo.py` 现在不只用 `_pressure_value` 做内部判断，还会写出 `go_nogo_body_pressure_profile_v0`：它保留 `sleep_pressure_raw`、`sleep_pressure_value`、sleep 阈值、sleep inhibition 状态、`pain_pressure_raw`、`pain_pressure_value`、pain 阈值、pain review 状态、pressure delay reasons、source refs 和 `go_nogo_body_pressure_profile_not_spoken_language` 边界。`world_contact_gate.py` 会把 `body_pressure_profile` 与 `body_pressure_profile_ref=runtime/state/action/go_nogo_state.json#body_pressure_profile` 写入 world contact gate，并把 ref 并入 `life_constraint_refs`。`responsibility_loop.py` 会把该 ref 放进 responsibility event 的 `future_constraint_refs` 和 regret pressure 的 `pain_signal_refs`，并在责任回路顶层保留 profile。`world_contact_validator.py` 和 `validation_rollup.py` 会把 profile ref 继续送入 world contact validation 与 `queue_e_world_contact_body_pressure_profile_ref`。`state_inspection.py` 的 `/membrane` action gate 摘要会显示 sleep/pain 归一压力、pressure delay reasons 和 boundary。
+
+机制含义是：身体内环境对行动阈值的影响不应只表现为某个 delay reason，而要能追溯原始身体标签、归一压力、阈值和下游责任/验证路线。这样 `managed_pre_dream`、`offline_ready`、pain pressure 等身体状态可以像神经调质/稳态信号一样进入生命膜链路，并在世界接触、责任回路、验证汇总和状态查看中留下证据。边界继续保持：这是内部身体压力 profile，不生成固定拒绝话术，不新增 system prompt，不把身体状态或 threshold 名称当作外显语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

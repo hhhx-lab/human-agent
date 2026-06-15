@@ -53,6 +53,7 @@ def build_validation_rollup(
         [
             *list(world_contact_validation.get("life_constraint_refs", [])),
             world_contact_validation.get("future_no_go_profile_ref"),
+            world_contact_validation.get("body_pressure_profile_ref"),
             *queue_e_world_contact_repair_governance_refs,
         ]
     )
@@ -98,6 +99,12 @@ def build_validation_rollup(
         "queue_e_world_contact_future_no_go_profile_ref": world_contact_validation.get(
             "future_no_go_profile_ref",
             "runtime/state/action/go_nogo_state.json#future_no_go_profile",
+        ),
+        "queue_e_world_contact_body_pressure_profile_ref": (
+            world_contact_validation.get(
+                "body_pressure_profile_ref",
+                "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+            )
         ),
         "queue_e_world_contact_repair_hold_required": bool(
             world_contact_validation.get("repair_hold_required")
