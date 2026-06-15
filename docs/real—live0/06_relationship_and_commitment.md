@@ -186,3 +186,14 @@ sequenceDiagram
 ## 当前 live0 结论
 
 live0 把关系作为状态和时间线承载，不把外部交谈对象固定为服务角色。这支撑验收项 `f_equal_relationship_dialogue_growth`，并连接语言、记忆、梦境、责任和人格成长。
+
+## slash 检查面（ITR-08-78）
+
+`/relationship` 通过 `relationship_continuity_summary_v0` 显示关系时间线、承诺修复与 Queue E handoff 证据，而不生成关系脚本：
+
+| 字段组 | 来源 | 用途 |
+|---|---|---|
+| `queue_e_world_contact_repair_hold_schema_handoff_*` | validation/schema runner | 与 membrane/prediction 一致的 repair hold handoff |
+| `live_queue_e_world_contact_handoff_*` | handoff 文件、terminal loop | live refresh、turn focus、责任意识上下文 ref count |
+
+边界：`relationship_boundary=relationship_state_timeline_commitment_repair_not_service_role_label`。测试：`tests/process/test_state_inspection_memory_closeout.py#test_relationship_summary_exposes_*`。

@@ -304,6 +304,49 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
             summary["domain_presence"],
         )
 
+    def test_relationship_summary_exposes_queue_e_schema_handoff(self):
+        section = {
+            "relationship_subject_graph": {
+                "subjects": [{"relationship_id": "rel-v0-0001"}]
+            },
+            "go_nogo_state": {},
+            **self._queue_e_schema_handoff_section(),
+        }
+
+        summary = _collect_relationship_continuity_summary(section)
+
+        self.assertTrue(
+            summary["queue_e_world_contact_repair_hold_schema_handoff_present"]
+        )
+        self.assertIn(
+            "queue_e_world_contact_repair_hold_schema_handoff",
+            summary["domain_presence"],
+        )
+
+    def test_relationship_summary_exposes_live_queue_e_handoff(self):
+        section = {
+            "relationship_subject_graph": {
+                "subjects": [{"relationship_id": "rel-v0-0001"}]
+            },
+            "queue_e_world_contact_handoff": {
+                "schema_version": "queue_e_world_contact_repair_hold_handoff_v0",
+                "status": "deferred_until_s05_s09",
+            },
+            "terminal_life_loop_state": {
+                "live_queue_e_world_contact_handoff_refreshed": True,
+                "live_queue_e_world_contact_handoff_turn_focus": "repair_hold_followup",
+            },
+        }
+
+        summary = _collect_relationship_continuity_summary(section)
+
+        self.assertTrue(summary["live_queue_e_world_contact_handoff_refreshed"])
+        self.assertEqual(
+            summary["live_queue_e_world_contact_handoff_turn_focus"],
+            "repair_hold_followup",
+        )
+        self.assertIn("live_queue_e_world_contact_handoff", summary["domain_presence"])
+
     def test_personality_summary_exposes_growth_and_repair_projections(self):
         section = {
             "self_model": {

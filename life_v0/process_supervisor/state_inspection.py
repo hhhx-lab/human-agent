@@ -423,7 +423,20 @@ def build_resident_state_inspection(
                     "language/apology_repair_language_trace.json"
                 ),
                 "memory_retrieval": "memory/memory_retrieval_frame.json",
+                "queue_e_world_contact_handoff": (
+                    "life_targets/queue_e_world_contact_repair_hold_handoff.json"
+                ),
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
                 "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "world_contact_validation": (
+                    "validation/world_contact_validation.json"
+                ),
+                "validation_rollup": "validation/validation_rollup.json",
+                "schema_runner_manifest": "schema_runner/run_manifest.json",
+                "schema_runner_cross_file_logic": (
+                    "schema_runner/cross_file_logic.json"
+                ),
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
@@ -4385,6 +4398,21 @@ def _collect_relationship_continuity_summary(
         section.get("apology_repair_language_trace", {})
     )
     memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
+    world_contact_handoff = _extract_compact_value(
+        section.get("queue_e_world_contact_handoff", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    world_contact_validation = _extract_compact_value(
+        section.get("world_contact_validation", {})
+    )
+    validation_rollup = _extract_compact_value(section.get("validation_rollup", {}))
+    schema_manifest = _extract_compact_value(section.get("schema_runner_manifest", {}))
+    schema_cross_file = _extract_compact_value(
+        section.get("schema_runner_cross_file_logic", {})
+    )
     process_report = _extract_compact_value(
         section.get("digital_life_process_report", {})
     )
@@ -4392,6 +4420,26 @@ def _collect_relationship_continuity_summary(
     relationship_closeout = _memory_closeout_inspection_snapshot(
         process_report=process_report,
         idle_strategy=idle_strategy,
+    )
+    world_contact_presence = _extract_nested_value(
+        terminal_loop,
+        "resident_background_lineage_state",
+    )
+    world_contact_presence = _extract_nested_value(
+        world_contact_presence,
+        "world_contact_handoff_presence",
+    )
+    live_queue_e_handoff = _live_queue_e_world_contact_handoff_inspection_snapshot(
+        handoff=world_contact_handoff,
+        terminal_loop=terminal_loop,
+        world_contact_presence=world_contact_presence,
+    )
+    schema_handoff = _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
+        validation_rollup=validation_rollup,
+        world_contact_validation=world_contact_validation,
+        schema_manifest=schema_manifest,
+        schema_cross_file=schema_cross_file,
+        go_nogo=go_nogo,
     )
     autobiographical_repair_profile = _extract_nested_value(
         memory_retrieval,
@@ -4436,10 +4484,20 @@ def _collect_relationship_continuity_summary(
         "commitment_expression_plan": bool(commitment_expression),
         "apology_repair_language_trace": bool(apology_repair),
         "memory_retrieval": bool(memory_retrieval),
+        "validation": bool(world_contact_validation or validation_rollup),
+        "schema_runner": bool(schema_cross_file or schema_manifest),
+        "live_queue_e_world_contact_handoff": bool(
+            world_contact_handoff
+            or live_queue_e_handoff.get("live_queue_e_world_contact_handoff_refreshed")
+            or live_queue_e_handoff.get("queue_e_world_contact_handoff_status")
+        ),
         "autobiographical_repair_retrieval_closeout": bool(
             relationship_closeout.get(
                 "autobiographical_repair_retrieval_closeout_present"
             )
+        ),
+        "queue_e_world_contact_repair_hold_schema_handoff": bool(
+            schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
         ),
     }
     active_domains = [
@@ -4535,6 +4593,8 @@ def _collect_relationship_continuity_summary(
             "relationship_state_timeline_commitment_repair_not_service_role_label"
         ),
         **relationship_closeout,
+        **live_queue_e_handoff,
+        **schema_handoff,
     }
 
 
