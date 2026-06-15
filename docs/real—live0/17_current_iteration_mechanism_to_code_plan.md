@@ -1056,6 +1056,20 @@ ProcessReport.background_consciousness_write_context_*
 
 机制含义是：工作区/广播/元认知上下文不只从记忆写门往前流到真实回合，也能从关闭态报告回到下一次唤醒的等待治理。这样即使一次恢复没有立即重跑 state-store，上一轮“什么内容处于可报告工作区、哪些内容被广播、元认知怎样调制写门”的证据仍然不会消失。边界继续保持：这是跨唤醒恢复证据，不生成固定回答，不新增 system prompt，不把意识写门、工作区或元认知字段外显成 Adam 的对话。
 
+当前 ITR-08 第四十七段把意识写门上下文推进到模型表达前后：
+
+```text
+ResponseSurface.audited_expression_material_v0#prediction_attention.consciousness_write_context_*
+  -> ModelExpression._prediction_attention_from_material
+  -> prediction_conscious_workspace.prediction_attention_consciousness_write_context_*
+  -> model_expression_context_summary.prediction_attention_consciousness_write_context_*
+  -> PostExpressionGate.prediction_attention soft audit
+```
+
+`model_expression.py` 现在会从 `audited_expression_material_v0#prediction_attention` 读取 `consciousness_write_context_refs`、ref count、workspace candidate count、broadcast target count、reportability flag count、write bias、candidate gate adjustments 和 boundary，并把它们转换为 `prediction_attention_consciousness_write_context_*` 字段。这些字段进入真实模型请求的 `expression_context.prediction_conscious_workspace`，同时写入 `model_expression_context_summary`，方便关闭态 state/report 反查模型表达前到底消费了哪些工作区写门上下文。`_prediction_attention_pressure_present(...)` 也会把 consciousness write context 的 bias、boundary 或 ref count 视为 prediction attention 的软审计来源，使 post-expression gate 能记录该结构材料是否进入了这轮表达审计。
+
+机制含义是：工作区、广播和元认知对记忆写门的调制，最终必须进入语言器官的模型表达前材料，而不是停在 response surface 或后台谱系。这样语言系统能在隐性上下文里看到“当前表达之前，哪些可报告工作区内容正在影响写入与记忆取舍”，但外显文本仍由模型生成并由 post-expression gate 审计。边界继续保持：这不是 system prompt，不是固定回答，不要求模型说出“意识写门/工作区/广播/元认知”等字段名，也不把内部生命信号释放成对话模板。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

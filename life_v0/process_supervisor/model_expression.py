@@ -1072,6 +1072,40 @@ def _prediction_conscious_summary(
         "prediction_attention_body_signal_ref_count": prediction_attention.get(
             "body_signal_ref_count"
         ),
+        "prediction_attention_consciousness_write_context_ref_count": (
+            prediction_attention.get("consciousness_write_context_ref_count")
+        ),
+        "prediction_attention_consciousness_write_context_refs": _string_list(
+            prediction_attention.get("consciousness_write_context_refs")
+        )[:8],
+        "prediction_attention_consciousness_write_context_workspace_candidate_count": (
+            prediction_attention.get(
+                "consciousness_write_context_workspace_candidate_count"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_broadcast_target_count": (
+            prediction_attention.get(
+                "consciousness_write_context_broadcast_target_count"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_reportability_flag_count": (
+            prediction_attention.get(
+                "consciousness_write_context_reportability_flag_count"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_bias": (
+            prediction_attention.get("consciousness_write_context_bias")
+        ),
+        "prediction_attention_consciousness_write_context_candidate_gate_adjustments": (
+            _string_list(
+                prediction_attention.get(
+                    "consciousness_write_context_candidate_gate_adjustments"
+                )
+            )[:8]
+        ),
+        "prediction_attention_consciousness_write_context_boundary": (
+            prediction_attention.get("consciousness_write_context_boundary")
+        ),
         "prediction_queue_e_repair_pressure_level": workspace_contents.get(
             "queue_e_repair_pressure_level"
         ),
@@ -1119,6 +1153,14 @@ def _prediction_attention_from_material(value: Any) -> dict[str, Any]:
         "state_merge_long_term_change_families",
         "body_signal_write_bias",
         "body_signal_ref_count",
+        "consciousness_write_context_ref_count",
+        "consciousness_write_context_refs",
+        "consciousness_write_context_workspace_candidate_count",
+        "consciousness_write_context_broadcast_target_count",
+        "consciousness_write_context_reportability_flag_count",
+        "consciousness_write_context_bias",
+        "consciousness_write_context_candidate_gate_adjustments",
+        "consciousness_write_context_boundary",
     ]
     return _compact_dict(value, allowed_keys=allowed_keys)
 
@@ -1327,6 +1369,17 @@ def _prediction_attention_pressure_present(
         )
         or prediction_workspace.get(
             "prediction_attention_body_signal_write_bias"
+        )
+        or prediction_workspace.get(
+            "prediction_attention_consciousness_write_context_bias"
+        )
+        or prediction_workspace.get(
+            "prediction_attention_consciousness_write_context_boundary"
+        )
+        or _int_value(
+            prediction_workspace.get(
+                "prediction_attention_consciousness_write_context_ref_count"
+            )
         )
         or live_language.get("semantic_ambiguity_queue")
         or live_language.get("percept_prediction_focus")
@@ -1606,6 +1659,46 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         "prediction_attention_body_signal_ref_count": (
             prediction_conscious_workspace.get(
                 "prediction_attention_body_signal_ref_count"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_ref_count": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_consciousness_write_context_ref_count"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_refs": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_consciousness_write_context_refs"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_workspace_candidate_count": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_consciousness_write_context_workspace_candidate_count"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_broadcast_target_count": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_consciousness_write_context_broadcast_target_count"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_reportability_flag_count": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_consciousness_write_context_reportability_flag_count"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_bias": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_consciousness_write_context_bias"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_candidate_gate_adjustments": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
+            )
+        ),
+        "prediction_attention_consciousness_write_context_boundary": (
+            prediction_conscious_workspace.get(
+                "prediction_attention_consciousness_write_context_boundary"
             )
         ),
         "workspace_frame_ref": prediction_conscious_workspace.get(

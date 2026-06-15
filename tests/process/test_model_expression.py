@@ -1213,6 +1213,11 @@ class ModelExpressionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             captured = {}
+            consciousness_write_context_refs = [
+                "runtime/state/consciousness/workspace_frame.json",
+                "runtime/state/consciousness/broadcast_frame.json",
+                "runtime/state/consciousness/metacognition_state.json",
+            ]
             material = compose_life_response(
                 external_utterance="这里的不确定性你会怎么处理？",
                 signal_media_runtime={
@@ -1231,6 +1236,22 @@ class ModelExpressionTests(unittest.TestCase):
                     "body_signal_write_modulation": {
                         "write_bias": "repair_evidence_first",
                         "body_signal_ref_count": 2,
+                    },
+                    "consciousness_write_context": {
+                        "schema_version": "memory_consciousness_write_context_v0",
+                        "workspace_candidate_count": 2,
+                        "broadcast_target_count": 3,
+                        "reportability_flag_count": 1,
+                        "write_attention_bias": (
+                            "prefer_reportable_workspace_candidates"
+                        ),
+                        "candidate_gate_adjustments": [
+                            "prioritize_workspace_reportability_before_write"
+                        ],
+                        "ref_set": consciousness_write_context_refs,
+                        "boundary": (
+                            "memory_consciousness_write_context_not_spoken_language"
+                        ),
                     },
                 },
                 state_merge_guard={
@@ -1308,6 +1329,24 @@ class ModelExpressionTests(unittest.TestCase):
                 ],
                 "repair_evidence_first",
             )
+            self.assertEqual(
+                prediction_context[
+                    "prediction_attention_consciousness_write_context_refs"
+                ],
+                consciousness_write_context_refs,
+            )
+            self.assertEqual(
+                prediction_context[
+                    "prediction_attention_consciousness_write_context_bias"
+                ],
+                "prefer_reportable_workspace_candidates",
+            )
+            self.assertEqual(
+                prediction_context[
+                    "prediction_attention_consciousness_write_context_boundary"
+                ],
+                "memory_consciousness_write_context_not_spoken_language",
+            )
             self.assertIn(
                 "prediction_attention",
                 result.state["post_expression_gate"]["soft_missing_evidence_flags"],
@@ -1321,6 +1360,24 @@ class ModelExpressionTests(unittest.TestCase):
                     "prediction_attention_body_signal_write_bias"
                 ],
                 "repair_evidence_first",
+            )
+            self.assertEqual(
+                context_summary[
+                    "prediction_attention_consciousness_write_context_ref_count"
+                ],
+                len(consciousness_write_context_refs),
+            )
+            self.assertEqual(
+                context_summary[
+                    "prediction_attention_consciousness_write_context_refs"
+                ],
+                consciousness_write_context_refs,
+            )
+            self.assertEqual(
+                context_summary[
+                    "prediction_attention_consciousness_write_context_candidate_gate_adjustments"
+                ],
+                ["prioritize_workspace_reportability_before_write"],
             )
 
     def test_local_provider_keeps_natural_language_unreleased_without_transport(self):
