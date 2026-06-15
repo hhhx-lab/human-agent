@@ -265,13 +265,17 @@ MemoryTrace / EngramIndex
 - `tests/slices/test_state_store.py`
 - `life_state.memory_index.memory_trace_store_refs`
 - `state_store_manifest.json` 和 report/receipt 可见。
+- `life_state.memory_index.event_segmentation_refs`
+- `life_state.memory_index.memory_encoding_gate_refs`
+- `life_state.memory_index.memory_allocation_gate_refs`
+- `state_store_check_report.json` 可见且闭合。
 
 当前状态：
 
 - 已新增 `life_v0/state_store/memory_trace_store.py`。
 - `run_state_store(...)` 会写出 `runtime/state/memory/memory_trace_store.json`。
 - `life_state.memory_index.memory_trace_store_refs`、`life_state.runtime_trace_refs`、`state_store_manifest.json`、`state_store_report.json`、receipt 和 `run_check_state_store(...)` 已经消费该对象。
-- 当前 trace store 先覆盖 episodic、relationship、autobiographical、responsibility 四类种子痕迹；后续 M2/M3 会把真实 event segmentation、allocation gate 和 engram cluster 接进来。
+- 当前 trace store 先覆盖 episodic、relationship、autobiographical、responsibility 四类种子痕迹，并已接入 event segmentation、encoding gate 和 allocation gate；后续 M3/M4 会把 engram cluster 和 pattern completion 接进来。
 
 ### M2. EventSegmentation + EncodingGate + AllocationGate
 
@@ -307,6 +311,7 @@ MemoryTrace / EngramIndex
 - 高责任/高后悔/关系损伤事件进入高优先候选。
 - 低价值边缘信息进入 deep sediment 或短期层。
 - 梦境假设默认不是 factual trace。
+- `tests/slices/test_state_store.py` 已覆盖三层门的写入、落盘和检查。
 
 ### M3. EngramLikeTraceCluster
 

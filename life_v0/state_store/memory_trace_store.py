@@ -24,6 +24,9 @@ def build_memory_trace_store(
     *,
     run_id: str,
     generated_at: str,
+    event_segmentation_frame: dict[str, Any] | None = None,
+    memory_encoding_gate: dict[str, Any] | None = None,
+    memory_allocation_gate: dict[str, Any] | None = None,
     engram_index: dict[str, Any] | None = None,
     autobiographical_stack: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
@@ -167,6 +170,31 @@ def build_memory_trace_store(
             revision_history_refs=[],
         ),
     ]
+    upstream_event_refs = _dedupe(
+        [
+            "runtime/state/memory/event_segmentation_frame.json"
+            if event_segmentation_frame
+            else ""
+        ]
+        + _string_list((event_segmentation_frame or {}).get("frame_ref"))
+        + _string_list((event_segmentation_frame or {}).get("episode_kind_order"))
+    )
+    encoding_governance_refs = _dedupe(
+        [
+            "runtime/state/memory/memory_encoding_gate.json"
+            if memory_encoding_gate
+            else ""
+        ]
+        + _string_list((memory_encoding_gate or {}).get("gate_ref"))
+    )
+    allocation_governance_refs = _dedupe(
+        [
+            "runtime/state/memory/memory_allocation_gate.json"
+            if memory_allocation_gate
+            else ""
+        ]
+        + _string_list((memory_allocation_gate or {}).get("gate_ref"))
+    )
     traces = [trace for trace in traces if trace.get("source_evidence_refs")]
     return {
         "schema_version": "memory_trace_store_v0",
@@ -182,6 +210,9 @@ def build_memory_trace_store(
             "runtime/state/memory/relationship_memory.json",
             "runtime/state/self/autobiographical_stack.json",
         ],
+        "upstream_event_refs": upstream_event_refs,
+        "encoding_governance_refs": encoding_governance_refs,
+        "allocation_governance_refs": allocation_governance_refs,
         "write_governance_refs": _dedupe(
             [
                 (

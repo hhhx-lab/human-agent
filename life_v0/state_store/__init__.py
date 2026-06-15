@@ -11,7 +11,10 @@ from life_v0.direction import LIFE_TARGETS
 from .autobiographical_stack import build_autobiographical_stack
 from .commitment_truth import build_commitment_truth_state, build_responsibility_ledger
 from .engram_index import build_engram_index
+from .event_segmentation import build_event_segmentation_frame
 from .life_state import build_life_state_projection
+from .memory_allocation_gate import build_memory_allocation_gate
+from .memory_encoding_gate import build_memory_encoding_gate
 from .memory_retrieval import build_memory_retrieval_frame
 from .memory_trace_store import build_memory_trace_store
 from .memory_write_gate import build_memory_write_gate
@@ -249,6 +252,24 @@ def run_state_store(
         commitment_truth_state=commitment_truth,
         responsibility_ledger=responsibility_ledger,
     )
+    event_segmentation_frame = build_event_segmentation_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        memory_retrieval_frame={},
+        memory_trace_store={},
+        responsibility_ledger=responsibility_ledger,
+        state_merge_guard={},
+    )
+    memory_encoding_gate = build_memory_encoding_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        event_segmentation_frame=event_segmentation_frame,
+        memory_trace_store={},
+        memory_write_gate={},
+    )
     memory_write_gate = build_memory_write_gate(
         run_id=run_id,
         generated_at=generated_at,
@@ -274,6 +295,20 @@ def run_state_store(
         responsibility_ledger=responsibility_ledger,
         indexes=indexes,
     )
+    memory_allocation_gate = build_memory_allocation_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        event_segmentation_frame=event_segmentation_frame,
+        memory_encoding_gate=memory_encoding_gate,
+        memory_trace_store={},
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        responsibility_ledger=responsibility_ledger,
+        signal_media_runtime=signal_media_runtime,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
+        memory_write_gate=memory_write_gate,
+    )
     memory_retrieval_frame = build_memory_retrieval_frame(
         run_id=run_id,
         generated_at=generated_at,
@@ -291,6 +326,9 @@ def run_state_store(
     memory_trace_store = build_memory_trace_store(
         run_id=run_id,
         generated_at=generated_at,
+        event_segmentation_frame=event_segmentation_frame,
+        memory_encoding_gate=memory_encoding_gate,
+        memory_allocation_gate=memory_allocation_gate,
         engram_index=engram_index,
         autobiographical_stack=autobiographical_stack,
         relationship_memory=relationship_memory,
@@ -309,6 +347,9 @@ def run_state_store(
         engram_index=engram_index,
         autobiographical_stack=autobiographical_stack,
         relationship_memory=relationship_memory,
+        event_segmentation_frame=event_segmentation_frame,
+        memory_encoding_gate=memory_encoding_gate,
+        memory_allocation_gate=memory_allocation_gate,
         memory_trace_store=memory_trace_store,
         memory_retrieval_frame=memory_retrieval_frame,
         state_merge_guard=state_merge_guard,
@@ -316,6 +357,9 @@ def run_state_store(
         runtime_trace_refs=[
             "runtime/state/memory/memory_write_gate.json",
             "runtime/state/memory/state_merge_guard.json",
+            "runtime/state/memory/event_segmentation_frame.json",
+            "runtime/state/memory/memory_encoding_gate.json",
+            "runtime/state/memory/memory_allocation_gate.json",
             "runtime/state/memory/memory_trace_store.json",
             "runtime/state/memory/memory_retrieval_frame.json",
         ],
@@ -333,6 +377,9 @@ def run_state_store(
         commitment_truth_state_ref="runtime/state/relationship/commitment_truth_state.json",
         engram_index_ref="runtime/state/memory/engram_index.json",
         autobiographical_stack_ref="runtime/state/self/autobiographical_stack.json",
+        event_segmentation_frame_ref="runtime/state/memory/event_segmentation_frame.json",
+        memory_encoding_gate_ref="runtime/state/memory/memory_encoding_gate.json",
+        memory_allocation_gate_ref="runtime/state/memory/memory_allocation_gate.json",
         memory_trace_store_ref="runtime/state/memory/memory_trace_store.json",
         memory_retrieval_frame_ref="runtime/state/memory/memory_retrieval_frame.json",
         memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
@@ -375,6 +422,9 @@ def run_state_store(
         _write_json(out_dir / "self" / "autobiographical_stack.json", autobiographical_stack)
         _write_json(out_dir / "memory" / "engram_index.json", engram_index)
         _write_json(out_dir / "memory" / "relationship_memory.json", relationship_memory)
+        _write_json(out_dir / "memory" / "event_segmentation_frame.json", event_segmentation_frame)
+        _write_json(out_dir / "memory" / "memory_encoding_gate.json", memory_encoding_gate)
+        _write_json(out_dir / "memory" / "memory_allocation_gate.json", memory_allocation_gate)
         _write_json(out_dir / "memory" / "memory_trace_store.json", memory_trace_store)
         _write_json(out_dir / "memory" / "memory_retrieval_frame.json", memory_retrieval_frame)
         _write_json(out_dir / "memory" / "memory_write_gate.json", memory_write_gate)
@@ -797,6 +847,9 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "runtime/state/self/autobiographical_stack.json",
         "runtime/state/memory/engram_index.json",
         "runtime/state/memory/relationship_memory.json",
+        "runtime/state/memory/event_segmentation_frame.json",
+        "runtime/state/memory/memory_encoding_gate.json",
+        "runtime/state/memory/memory_allocation_gate.json",
         "runtime/state/memory/memory_trace_store.json",
         "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/memory_write_gate.json",
@@ -829,6 +882,9 @@ def _build_report(
     commitment_truth_state_ref: str,
     engram_index_ref: str,
     autobiographical_stack_ref: str,
+    event_segmentation_frame_ref: str,
+    memory_encoding_gate_ref: str,
+    memory_allocation_gate_ref: str,
     memory_trace_store_ref: str,
     memory_retrieval_frame_ref: str,
     memory_write_gate_ref: str,
@@ -848,6 +904,9 @@ def _build_report(
         "commitment_truth_state_ref": commitment_truth_state_ref,
         "engram_index_ref": engram_index_ref,
         "autobiographical_stack_ref": autobiographical_stack_ref,
+        "event_segmentation_frame_ref": event_segmentation_frame_ref,
+        "memory_encoding_gate_ref": memory_encoding_gate_ref,
+        "memory_allocation_gate_ref": memory_allocation_gate_ref,
         "memory_trace_store_ref": memory_trace_store_ref,
         "memory_retrieval_frame_ref": memory_retrieval_frame_ref,
         "memory_write_gate_ref": memory_write_gate_ref,
@@ -908,6 +967,9 @@ def _build_receipt(
         out_dir / "self" / "autobiographical_stack.json",
         out_dir / "memory" / "engram_index.json",
         out_dir / "memory" / "relationship_memory.json",
+        out_dir / "memory" / "event_segmentation_frame.json",
+        out_dir / "memory" / "memory_encoding_gate.json",
+        out_dir / "memory" / "memory_allocation_gate.json",
         out_dir / "memory" / "memory_trace_store.json",
         out_dir / "memory" / "memory_retrieval_frame.json",
         out_dir / "memory" / "memory_write_gate.json",
@@ -1098,6 +1160,86 @@ def _check_relationship_memory(relationship_memory: dict[str, Any]) -> list[str]
     return reasons
 
 
+def _check_event_segmentation_frame(event_segmentation_frame: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if event_segmentation_frame.get("schema_version") != "event_segmentation_frame_v0":
+        reasons.append("event_segmentation_gate schema mismatch")
+        return reasons
+    if event_segmentation_frame.get("segmentation_policy") != "episode_boundary_from_life_state_not_token_chunks":
+        reasons.append("event_segmentation_gate segmentation policy mismatch")
+    if event_segmentation_frame.get("episode_count", 0) < 4:
+        reasons.append("event_segmentation_gate episode count too low")
+    if "responsibility_repair_seed_episode" not in event_segmentation_frame.get("episode_kind_order", []):
+        reasons.append("event_segmentation_gate responsibility episode missing")
+    if "relationship_seed_episode" not in event_segmentation_frame.get("episode_kind_order", []):
+        reasons.append("event_segmentation_gate relationship episode missing")
+    for episode in event_segmentation_frame.get("episodes", []):
+        if not isinstance(episode, dict):
+            reasons.append("event_segmentation_gate episode malformed")
+            continue
+        if not str(episode.get("event_boundary_ref", "")).startswith("event-boundary-"):
+            reasons.append("event_segmentation_gate event boundary ref malformed")
+        if not episode.get("source_refs"):
+            reasons.append("event_segmentation_gate source refs missing")
+        if not episode.get("candidate_trace_kind"):
+            reasons.append("event_segmentation_gate candidate trace kind missing")
+        if episode.get("memory_route") not in {
+            "fast_episodic_buffer",
+            "relationship_memory",
+            "autobiographical_stack",
+            "responsibility_memory",
+            "deep_sediment",
+            "dream_residue_sandbox",
+        }:
+            reasons.append("event_segmentation_gate memory route mismatch")
+    return reasons
+
+
+def _check_memory_encoding_gate(memory_encoding_gate: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if memory_encoding_gate.get("schema_version") != "memory_encoding_gate_v0":
+        reasons.append("memory_encoding_gate_gate schema mismatch")
+        return reasons
+    if memory_encoding_gate.get("encoding_policy") != "candidate_trace_before_long_term_memory":
+        reasons.append("memory_encoding_gate_gate encoding policy mismatch")
+    if memory_encoding_gate.get("candidate_trace_count", 0) < 4:
+        reasons.append("memory_encoding_gate_gate candidate count too low")
+    if "runtime/state/memory/memory_trace_store.json" not in memory_encoding_gate.get("candidate_trace_store_refs", []):
+        reasons.append("memory_encoding_gate_gate trace store ref missing")
+    if "dream_hypothesis_not_factual_trace" not in memory_encoding_gate.get("encoding_boundaries", []):
+        reasons.append("memory_encoding_gate_gate dream boundary missing")
+    for candidate in memory_encoding_gate.get("candidate_traces", []):
+        if not isinstance(candidate, dict):
+            reasons.append("memory_encoding_gate_gate candidate malformed")
+            continue
+        if not str(candidate.get("candidate_trace_ref", "")).startswith("runtime/state/memory/memory_trace_store.json#candidate:"):
+            reasons.append("memory_encoding_gate_gate candidate trace ref malformed")
+        if not candidate.get("source_refs"):
+            reasons.append("memory_encoding_gate_gate candidate source refs missing")
+    return reasons
+
+
+def _check_memory_allocation_gate(memory_allocation_gate: dict[str, Any]) -> list[str]:
+    reasons: list[str] = []
+    if memory_allocation_gate.get("schema_version") != "memory_allocation_gate_v0":
+        reasons.append("memory_allocation_gate_gate schema mismatch")
+        return reasons
+    if memory_allocation_gate.get("allocation_policy") != "salience_emotion_responsibility_relationship_body_weighted":
+        reasons.append("memory_allocation_gate_gate allocation policy mismatch")
+    if memory_allocation_gate.get("candidate_allocation_count", 0) < 4:
+        reasons.append("memory_allocation_gate_gate candidate count too low")
+    if "responsibility_repair_seed_episode" not in memory_allocation_gate.get("high_priority_episode_kinds", []):
+        reasons.append("memory_allocation_gate_gate responsibility priority missing")
+    if "relationship_seed_episode" not in memory_allocation_gate.get("high_priority_episode_kinds", []):
+        reasons.append("memory_allocation_gate_gate relationship priority missing")
+    boundaries = memory_allocation_gate.get("allocation_boundaries", [])
+    if "dream_hypothesis_not_factual_trace" not in boundaries:
+        reasons.append("memory_allocation_gate_gate dream boundary missing")
+    if "low_value_goes_deep_sediment_or_short_term" not in boundaries:
+        reasons.append("memory_allocation_gate_gate low value boundary missing")
+    return reasons
+
+
 def _check_memory_trace_store(memory_trace_store: dict[str, Any]) -> list[str]:
     reasons: list[str] = []
     if memory_trace_store.get("schema_version") != "memory_trace_store_v0":
@@ -1255,6 +1397,9 @@ def _check_manifest(manifest: dict[str, Any]) -> list[str]:
         "runtime/state/life_state.json",
         "runtime/state/object_registry.json",
         "runtime/state/lifecycle_policy.json",
+        "runtime/state/memory/event_segmentation_frame.json",
+        "runtime/state/memory/memory_encoding_gate.json",
+        "runtime/state/memory/memory_allocation_gate.json",
         "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/memory_write_gate.json",
         "runtime/state/memory/state_merge_guard.json",
@@ -1300,6 +1445,9 @@ def _closed_gates(blocked_reasons: list[str]) -> list[str]:
         "autobiographical_stack_gate",
         "engram_index_gate",
         "relationship_memory_gate",
+        "event_segmentation_gate",
+        "memory_encoding_gate_gate",
+        "memory_allocation_gate_gate",
         "memory_trace_store_gate",
         "memory_retrieval_frame_gate",
         "memory_write_gate_gate",

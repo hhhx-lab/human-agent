@@ -35,6 +35,9 @@ def build_life_state_projection(
     engram_index: dict[str, Any] | None = None,
     autobiographical_stack: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
+    event_segmentation_frame: dict[str, Any] | None = None,
+    memory_encoding_gate: dict[str, Any] | None = None,
+    memory_allocation_gate: dict[str, Any] | None = None,
     memory_trace_store: dict[str, Any] | None = None,
     memory_retrieval_frame: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
@@ -48,6 +51,9 @@ def build_life_state_projection(
     autobiographical_ref = "runtime/state/self/autobiographical_stack.json#anchor_refs"
     relationship_ref = "runtime/state/memory/relationship_memory.json#shared_memory_refs"
     engram_ref = "runtime/state/memory/engram_index.json"
+    event_segmentation_ref = "runtime/state/memory/event_segmentation_frame.json"
+    memory_encoding_gate_ref = "runtime/state/memory/memory_encoding_gate.json"
+    memory_allocation_gate_ref = "runtime/state/memory/memory_allocation_gate.json"
     memory_trace_store_ref = "runtime/state/memory/memory_trace_store.json"
     memory_retrieval_ref = "runtime/state/memory/memory_retrieval_frame.json"
     background_continuity_profile = background_continuity_profile or {}
@@ -84,6 +90,15 @@ def build_life_state_projection(
         or [autobiographical_ref],
         "relationship_memory_refs": list((engram_index or {}).get("relationship_memory_refs", []))
         or [relationship_ref],
+        "event_segmentation_refs": [event_segmentation_ref]
+        if event_segmentation_frame
+        else [],
+        "memory_encoding_gate_refs": [memory_encoding_gate_ref]
+        if memory_encoding_gate
+        else [],
+        "memory_allocation_gate_refs": [memory_allocation_gate_ref]
+        if memory_allocation_gate
+        else [],
         "memory_trace_store_refs": [memory_trace_store_ref]
         if memory_trace_store
         else [],
@@ -126,6 +141,9 @@ def build_life_state_projection(
         "runtime/state/prediction/prediction_workspace_frame.json",
         "runtime/state/subject_namespace_binding.json",
         engram_ref,
+        event_segmentation_ref,
+        memory_encoding_gate_ref,
+        memory_allocation_gate_ref,
         memory_trace_store_ref,
         memory_retrieval_ref,
         "runtime/state/self/autobiographical_stack.json",

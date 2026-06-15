@@ -136,7 +136,7 @@ runtime/state/memory/memory_trace_store.json
 
 `life_state.memory_index.memory_trace_store_refs` 会指向该文件，`state_store_manifest.json`、`state_store_report.json`、`state_store_check_report.json` 和 receipt 都会引用它。`run_check_state_store(...)` 的 `memory_trace_store_gate` 会检查 trace 数、四类记忆、source refs、retrieval cues、cue accessibility、表达边界和召回到表达 consumer。
 
-当前这只是 M1 种子 trace store，不代表完整记忆系统完成。后续 M2/M3 必须把真实事件分割、编码门、分配门和 engram cluster 接入 trace store，让它从“状态根种子痕迹”成长为 live turn、梦境、关系、责任和外部观察共同写入的生命记忆库。
+当前实现已经把 M2 的 `event_segmentation_frame`、`memory_encoding_gate` 和 `memory_allocation_gate` 串进 state store，并把它们写回 `life_state.memory_index`、manifest、report、receipt 和 check report；下一步 M3/M4 继续补 engram cluster 与 pattern completion，让痕迹从“可分配候选”成长为“可再激活痕迹簇”。
 
 ### “存了但说不出”的断链检查
 
@@ -152,6 +152,7 @@ runtime/state/memory/memory_trace_store.json
 
 - `tests/slices/test_state_store.py#test_memory_retrieval_builds_cue_activation_profile`
 - `tests/process/test_model_expression.py#test_openai_compatible_expression_uses_transport_and_redacts_secret`
+- `tests/slices/test_state_store.py#test_build_state_store_writes_life_root_indexes_report_and_receipt`
 
 后续 `MemoryTraceStore`、`MemoryAllocationGate`、`EngramLikeTraceCluster`、`PatternCompletionFrame` 和 `MemoryValidator` 每推进一步，都要把输出继续接入 `recall_to_expression_profile`。否则就会重新退回“存了但不一定能说对”的普通 RAG。
 
