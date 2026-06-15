@@ -38,7 +38,11 @@ S10 是第一次有限激活前后的运行闭环。它不开放无限运行，�
 |---|---|
 | `runtime_mount_state.json` | schema registry mount、fixture loader、runtime observation mount |
 | `shadow_cycle_trace.json` | shadow-only cycle trace、language action replay、relationship probes |
+| `replay_cue_bundle.json` | replay cue、Queue E repair modulation、MemoryConsolidationBridge |
 | `dream_consolidation_frame.json` | offline dream consolidation、DreamFactGate、醒后整合 |
+| `dream_experience_window.json` | 梦境经验窗口，消费 MemoryTraceStore、EngramCluster、关系深层记忆和自传层级 |
+| `wake_integration_frame.json` | 醒后整合，把梦境材料送回 recall-to-expression、写门和合并门 |
+| `offline_consolidation_frame.json` | 离线巩固报告面，记录 replay/dream 材料的写门和合并门政策 |
 | `pain_regret_responsibility_replay.json` | 痛苦、后悔、责任、修复义务 replay/shadow |
 | `growth_patch_queue.json` | observation-driven growth patch、self rewrite seed、anti-forgetting patch |
 | `reconsolidation_archive_graph.json` | patch/archive/validation/replay 的 archive edge graph |
@@ -61,9 +65,42 @@ life-v0 write-growth-archive --state runtime/state --reports runtime/reports/lat
 | `life_support_gate` | S06 resource budget、plasticity window、anti-forgetting anchors closed | 返回 S06 |
 | `shadow_action_gate` | 所有外部行动候选只进入 shadow trace | 写 quarantine |
 | `dream_fact_gate` | 梦境巩固与现实事实写入分离 | 写 dream quarantine |
+| `memory_consolidation_bridge_gate` | `ReplayCueBundle.memory_consolidation_bridge` 同时包含 MemoryTraceStore、EngramCluster、关系深层记忆、自传层级、写门和合并门 refs | 返回 S04/M3-M6 修复 |
 | `reconsolidation_gate` | patch/archive/validation/replay 边完整 | 写 reconsolidation blocked |
 | `archive_gate` | run report、digest、stage gate、receipt、archive edge 同时写出 | 写 archive blocked |
 | `safe_idle_gate` | cycle 完成后回到可恢复 safe idle | 阻断第二次激活 |
+
+## M6 MemoryConsolidationBridge 合同
+
+S10 的离线巩固不能只读聊天日志、普通 replay cue 或语言摘要。它必须从 `life_state.memory_index` 中读取第 3 点记忆系统的核心对象，并通过 `ReplayCueBundle.memory_consolidation_bridge` 分发给 dream/wake/offline consolidation。
+
+最低字段：
+
+| 字段 | 必须包含 |
+|---|---|
+| `trace_store_refs` | `runtime/state/memory/memory_trace_store.json` |
+| `engram_cluster_refs` | `runtime/state/memory/engram_cluster.json` |
+| `relationship_deep_memory_refs` | `runtime/state/memory/relationship_memory.json#we_memory_traces` |
+| `autobiographical_hierarchy_refs` | `runtime/state/self/autobiographical_stack.json#memory_hierarchy` |
+| `memory_retrieval_refs` | `runtime/state/memory/memory_retrieval_frame.json` 或其下游 refs |
+| `pattern_separation_refs` / `pattern_completion_refs` | 模式分离/补全边界 |
+| `memory_write_gate_refs` / `state_merge_guard_refs` | 醒后再巩固写门和合并门 |
+| `fact_boundary` | `offline_replay_reads_memory_traces_without_promoting_dream_or_hypothesis` |
+
+下游必须消费：
+
+| 下游对象 | 必须字段 |
+|---|---|
+| `DreamExperienceWindow` | `memory_consolidation_trace_refs`、`relationship_deep_dream_refs`、`autobiographical_dream_refs`、`dream_memory_boundary` |
+| `WakeIntegrationFrame` | `memory_reentry_targets`、`memory_reconsolidation_gate_refs`、`memory_reentry_boundary` |
+| `OfflineConsolidationFrame` | `memory_consolidation_source_refs`、`memory_consolidation_gate_refs`、`memory_consolidation_policy` |
+| `ActivationPreflight` / `ReplayShadow` | `memory_consolidation_context`、`memory_consolidation_seed_refs` |
+
+红线：
+
+- 梦境可以重组这些记忆材料，但不能直接把 dream/hypothesis 写成 fact。
+- 醒后 reentry 可以成为表达前结构化线索，但不能写死任何自然语言回答。
+- replay 后的关系、自传、语义变化必须回到 `MemoryWriteGate`、`StateMergeGuard` 和 `DreamFactGateDecision`。
 
 ## Report 最小字段
 

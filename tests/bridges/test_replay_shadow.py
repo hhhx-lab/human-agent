@@ -89,6 +89,30 @@ class ReplayShadowTests(unittest.TestCase):
         self.assertTrue(seed_bundle["dialogue_turn_log_refs"])
         self.assertTrue(seed_bundle["commitment_refs"])
         self.assertTrue(seed_bundle["responsibility_writeback_refs"])
+        self.assertEqual(
+            seed_bundle["memory_consolidation_context"]["schema_version"],
+            "memory_consolidation_context_v0",
+        )
+        self.assertIn(
+            "runtime/state/memory/memory_trace_store.json",
+            seed_bundle["memory_consolidation_seed_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/engram_cluster.json",
+            seed_bundle["memory_consolidation_seed_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/relationship_memory.json#we_memory_traces",
+            seed_bundle["memory_consolidation_context"]["relationship_deep_memory_refs"],
+        )
+        self.assertIn(
+            "runtime/state/self/autobiographical_stack.json#memory_hierarchy",
+            seed_bundle["memory_consolidation_context"]["autobiographical_hierarchy_refs"],
+        )
+        self.assertEqual(
+            seed_bundle["memory_consolidation_context"]["fact_boundary"],
+            "replay_shadow_reads_life_memory_without_fact_promotion",
+        )
         self.assertEqual(seed_bundle["world_contact_release_posture"], "shadow_only_guarded")
         self.assertTrue(seed_bundle["regret_pressure_refs"])
         self.assertTrue(seed_bundle["repair_obligation_refs"])

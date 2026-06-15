@@ -36,6 +36,28 @@ def build_dream_experience_window(
         + relationship_simulation_refs
         + list(repair_profile.get("ref_set", []))
     )
+    memory_bridge = replay_cue_bundle.get("memory_consolidation_bridge")
+    if not isinstance(memory_bridge, dict):
+        memory_bridge = {}
+    memory_consolidation_trace_refs = _dedupe(
+        list(replay_cue_bundle.get("offline_memory_replay_refs", []))
+        + list(memory_bridge.get("trace_store_refs", []))
+        + list(memory_bridge.get("engram_cluster_refs", []))
+    )
+    relationship_deep_dream_refs = _dedupe(
+        list(replay_cue_bundle.get("offline_relationship_memory_refs", []))
+        + list(memory_bridge.get("relationship_deep_memory_refs", []))
+    )
+    autobiographical_dream_refs = _dedupe(
+        list(replay_cue_bundle.get("offline_autobiographical_memory_refs", []))
+        + list(memory_bridge.get("autobiographical_hierarchy_refs", []))
+    )
+    source_trace_refs = _dedupe(
+        source_trace_refs
+        + memory_consolidation_trace_refs
+        + relationship_deep_dream_refs
+        + autobiographical_dream_refs
+    )
     affective_theme = [
         "repair_drive",
         "continuity_protection",
@@ -74,6 +96,10 @@ def build_dream_experience_window(
         "dream_record_refs": list(dream_frame.get("dream_record_refs", [])),
         "pain_residue_refs": pain_residue_refs,
         "relationship_simulation_refs": relationship_simulation_refs,
+        "memory_consolidation_trace_refs": memory_consolidation_trace_refs,
+        "relationship_deep_dream_refs": relationship_deep_dream_refs,
+        "autobiographical_dream_refs": autobiographical_dream_refs,
+        "dream_memory_boundary": "dream_recombines_memory_for_replay_without_fact_promotion",
         "queue_e_repair_modulation_profile": repair_profile,
         "queue_e_repair_pressure_level": repair_profile["pressure_level"],
         "queue_e_repair_attention_target": repair_profile["attention_target"],
@@ -94,9 +120,19 @@ def check_dream_experience_window(dream_window: dict[str, Any]) -> list[str]:
         "dream_scene_frames",
         "subjective_vantage",
         "affective_theme",
+        "memory_consolidation_trace_refs",
+        "dream_memory_boundary",
         "dream_action_inhibition_seal",
         "wake_integration_ref",
     ]:
         if not dream_window.get(field):
             reasons.append(f"dream_window_gate missing {field}")
     return reasons
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result

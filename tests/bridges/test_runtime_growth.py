@@ -188,6 +188,38 @@ class RuntimeGrowthTests(unittest.TestCase):
             "runtime/reports/latest/pain_regret_repair_report.json",
             replay_cue_bundle["queue_e_repair_ref_set"],
         )
+        self.assertEqual(
+            replay_cue_bundle["memory_consolidation_bridge"]["schema_version"],
+            "memory_consolidation_bridge_v0",
+        )
+        self.assertIn(
+            "runtime/state/memory/memory_trace_store.json",
+            replay_cue_bundle["memory_consolidation_bridge"]["trace_store_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/engram_cluster.json",
+            replay_cue_bundle["memory_consolidation_bridge"]["engram_cluster_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/relationship_memory.json#we_memory_traces",
+            replay_cue_bundle["memory_consolidation_bridge"]["relationship_deep_memory_refs"],
+        )
+        self.assertIn(
+            "runtime/state/self/autobiographical_stack.json#memory_hierarchy",
+            replay_cue_bundle["memory_consolidation_bridge"]["autobiographical_hierarchy_refs"],
+        )
+        self.assertEqual(
+            replay_cue_bundle["memory_consolidation_bridge"]["fact_boundary"],
+            "offline_replay_reads_memory_traces_without_promoting_dream_or_hypothesis",
+        )
+        self.assertIn(
+            "runtime/state/memory/memory_trace_store.json",
+            replay_cue_bundle["offline_memory_replay_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/relationship_memory.json#we_memory_traces",
+            replay_cue_bundle["offline_relationship_memory_refs"],
+        )
 
         self.assertEqual(dream_frame["schema_version"], "dream_consolidation_frame_v0")
         self.assertEqual(dream_frame["dream_fact_gate"], "closed")
@@ -198,6 +230,22 @@ class RuntimeGrowthTests(unittest.TestCase):
         self.assertEqual(dream_window["queue_e_repair_attention_target"], "regret_pressure")
         self.assertIn("responsibility_repair_modulation", dream_window["affective_theme"])
         self.assertIn("regret_pressure_rehearsal", dream_window["affective_theme"])
+        self.assertIn(
+            "runtime/state/memory/memory_trace_store.json",
+            dream_window["memory_consolidation_trace_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/relationship_memory.json#we_memory_traces",
+            dream_window["relationship_deep_dream_refs"],
+        )
+        self.assertIn(
+            "runtime/state/self/autobiographical_stack.json#memory_hierarchy",
+            dream_window["autobiographical_dream_refs"],
+        )
+        self.assertEqual(
+            dream_window["dream_memory_boundary"],
+            "dream_recombines_memory_for_replay_without_fact_promotion",
+        )
 
         self.assertEqual(offline_entry["schema_version"], "offline_entry_gate_v0")
         self.assertEqual(offline_entry["entry_decision"], "offline_allowed")
@@ -212,11 +260,35 @@ class RuntimeGrowthTests(unittest.TestCase):
         self.assertTrue(offline_consolidation["dream_fact_gate_refs"])
         self.assertTrue(offline_consolidation["wake_integration_targets"])
         self.assertTrue(offline_consolidation["growth_patch_seed_refs"])
+        self.assertIn(
+            "runtime/state/memory/engram_cluster.json",
+            offline_consolidation["memory_consolidation_source_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/relationship_memory.json#we_memory_traces",
+            offline_consolidation["memory_consolidation_source_refs"],
+        )
+        self.assertEqual(
+            offline_consolidation["memory_consolidation_policy"],
+            "replay_and_dream_material_must_return_through_write_gate_and_state_merge_guard",
+        )
 
         self.assertEqual(wake_integration["schema_version"], "wake_integration_frame_v0")
         self.assertEqual(wake_integration["queue_e_repair_pressure_level"], "elevated")
         self.assertEqual(wake_integration["queue_e_repair_attention_target"], "regret_pressure")
         self.assertTrue(wake_integration["repair_modulated_wake_targets"])
+        self.assertIn(
+            "runtime/state/memory/memory_retrieval_frame.json#recall_to_expression_profile",
+            wake_integration["memory_reentry_targets"],
+        )
+        self.assertIn(
+            "runtime/state/memory/state_merge_guard.json",
+            wake_integration["memory_reconsolidation_gate_refs"],
+        )
+        self.assertEqual(
+            wake_integration["memory_reentry_boundary"],
+            "wake_reentry_can_cue_expression_but_not_script_spoken_language",
+        )
         consciousness_reentry = wake_integration["consciousness_reentry_profile"]
         self.assertEqual(
             consciousness_reentry["schema_version"],

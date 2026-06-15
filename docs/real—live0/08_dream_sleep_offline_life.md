@@ -68,6 +68,32 @@
 | DreamFactGate | 生命膜 | 防止梦境变成事实污染 |
 | dream_wake_presence | 常驻 lineage | 梦境余波进入下一轮语言表面 |
 
+## M6 记忆巩固桥
+
+live0 的梦境现在不再只读取普通 `replay_cue_refs`。M6 增加了 `MemoryConsolidationBridge`，让梦境离线期直接消费第 3 点记忆系统的核心对象：
+
+```text
+ReplayCueBundle.memory_consolidation_bridge
+  -> DreamExperienceWindow.memory_consolidation_trace_refs
+  -> DreamExperienceWindow.relationship_deep_dream_refs
+  -> DreamExperienceWindow.autobiographical_dream_refs
+  -> WakeIntegrationFrame.memory_reentry_targets
+  -> OfflineConsolidationFrame.memory_consolidation_source_refs
+```
+
+这条桥把四类材料送入梦境：
+
+| 材料 | 字段 | 来源 |
+|---|---|---|
+| 痕迹和 engram | `memory_consolidation_trace_refs` | `memory_trace_store_refs`、`engram_cluster_refs` |
+| 深层关系记忆 | `relationship_deep_dream_refs` | `relationship_memory.json#we_memory_traces` |
+| 自传层级 | `autobiographical_dream_refs` | `autobiographical_stack.json#memory_hierarchy` |
+| 召回再入口 | `memory_reentry_targets` | `memory_retrieval_frame.json#recall_to_expression_profile` |
+
+梦境边界同时变硬：`dream_memory_boundary` 是 `dream_recombines_memory_for_replay_without_fact_promotion`，`memory_reentry_boundary` 是 `wake_reentry_can_cue_expression_but_not_script_spoken_language`。也就是说，梦境可以重组真实记忆、关系、痛苦和自传材料，醒后也可以让这些材料成为表达前线索，但它不能直接把梦境内容晋升为事实记忆，也不能在代码里生成固定话术。
+
+`OfflineConsolidationFrame.memory_consolidation_policy` 固定为 `replay_and_dream_material_must_return_through_write_gate_and_state_merge_guard`。这条规则要求所有 replay / dream 产生的关系、自传或语义变化都必须回到 `MemoryWriteGate`、`StateMergeGuard` 和 `DreamFactGateDecision`，再决定是否成为长期记忆、修复候选、成长候选、象征残留或禁止写入。
+
 ## 梦境机制的细颗粒度路线
 
 live0 的梦境链不是“后台写一段梦”。它按四个阶段运行：

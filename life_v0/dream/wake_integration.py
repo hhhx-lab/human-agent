@@ -33,6 +33,27 @@ def build_wake_integration_frame(
         replay_cue_bundle
     )
     repair_refs = list(repair_profile.get("ref_set", []))
+    memory_bridge = replay_cue_bundle.get("memory_consolidation_bridge")
+    if not isinstance(memory_bridge, dict):
+        memory_bridge = {}
+    memory_reentry_targets = _dedupe(
+        list(memory_bridge.get("memory_retrieval_refs", []))
+        + [
+            "runtime/state/memory/memory_retrieval_frame.json#recall_to_expression_profile",
+            "runtime/state/memory/memory_trace_store.json",
+            "runtime/state/memory/engram_cluster.json",
+        ]
+        + list(dream_window.get("memory_consolidation_trace_refs", []))
+        + list(dream_window.get("relationship_deep_dream_refs", []))
+        + list(dream_window.get("autobiographical_dream_refs", []))
+    )
+    memory_reconsolidation_gate_refs = _dedupe(
+        list(memory_bridge.get("memory_write_gate_refs", []))
+        + list(memory_bridge.get("state_merge_guard_refs", []))
+        + [
+            "runtime/state/dream/dream_fact_gate_decision.json",
+        ]
+    )
     consciousness_reentry_profile = _consciousness_reentry_profile(
         workspace_frame=workspace_frame or {},
         broadcast_frame=broadcast_frame or {},
@@ -55,6 +76,9 @@ def build_wake_integration_frame(
         "dream_fact_gate_ref": "runtime/state/membrane/dream_fact_boundary.json",
         "narrative_writeback_candidates": list(dream_window.get("source_trace_refs", []))[:3],
         "relationship_repair_candidates": relationship_candidates,
+        "memory_reentry_targets": memory_reentry_targets,
+        "memory_reconsolidation_gate_refs": memory_reconsolidation_gate_refs,
+        "memory_reentry_boundary": "wake_reentry_can_cue_expression_but_not_script_spoken_language",
         "consciousness_reentry_profile": consciousness_reentry_profile,
         "consciousness_reentry_refs": list(
             consciousness_reentry_profile.get("ref_set", [])
@@ -138,6 +162,9 @@ def check_wake_integration_frame(wake_integration: dict[str, Any]) -> list[str]:
         "core_affect_targets",
         "growth_seed_refs",
         "dream_fact_gate_ref",
+        "memory_reentry_targets",
+        "memory_reconsolidation_gate_refs",
+        "memory_reentry_boundary",
         "consciousness_reentry_profile",
         "consciousness_reentry_refs",
         "workspace_reentry_targets",
@@ -148,3 +175,11 @@ def check_wake_integration_frame(wake_integration: dict[str, Any]) -> list[str]:
     if "docs/real—live0/02_brain_network_and_workspace.md" not in wake_integration.get("source_doc_refs", []):
         reasons.append("wake_integration_gate missing workspace mechanism doc")
     return reasons
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result

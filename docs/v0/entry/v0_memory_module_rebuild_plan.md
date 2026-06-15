@@ -438,6 +438,23 @@ MemoryTrace / EngramIndex
 - dream residue 能进入下一轮 cue，但不能直接晋升事实记忆。
 - replay 后的关系/自传/语义变化必须经过 write gate 和 merge guard。
 
+当前状态：
+
+- 已补厚 `life_v0/replay/__init__.py#build_replay_cue_bundle(...)`，新增 `memory_consolidation_bridge`。
+- `MemoryConsolidationBridge` 从 `life_state.memory_index` 读取 `memory_trace_store_refs`、`engram_cluster_refs`、`relationship_deep_memory_refs`、`autobiographical_hierarchy_refs`、`memory_retrieval_refs`、`pattern_separation_refs`、`pattern_completion_refs`、`memory_write_gate_refs` 和 `state_merge_guard_refs`。
+- `ReplayCueBundle` 现在输出 `offline_memory_replay_refs`、`offline_relationship_memory_refs`、`offline_autobiographical_memory_refs` 和 `offline_memory_writeback_gate_refs`，使离线 replay 不再只读 `life_state.memory_index.replay_cues` 或聊天 residue。
+- 已补厚 `life_v0/dream/dream_window.py`，`DreamExperienceWindow` 新增 `memory_consolidation_trace_refs`、`relationship_deep_dream_refs`、`autobiographical_dream_refs` 和 `dream_memory_boundary`。梦境窗口现在明确重组 MemoryTraceStore、EngramCluster、关系深层记忆和自传层级，但边界是 `dream_recombines_memory_for_replay_without_fact_promotion`。
+- 已补厚 `life_v0/dream/wake_integration.py`，`WakeIntegrationFrame` 新增 `memory_reentry_targets`、`memory_reconsolidation_gate_refs` 和 `memory_reentry_boundary`，把梦后材料送回 `memory_retrieval_frame#recall_to_expression_profile`、`memory_write_gate`、`state_merge_guard` 和 `dream_fact_gate_decision`。
+- 已补厚 `life_v0/dream/__init__.py#build_offline_consolidation_frame(...)`，新增 `memory_consolidation_source_refs`、`memory_consolidation_gate_refs` 和 `memory_consolidation_policy`，明确 replay/dream 材料必须回到写门和合并门。
+- 已补厚 `life_v0/activation/__init__.py#_build_limited_context_frame(...)`，新增 `memory_consolidation_context` 和 `memory_consolidation_seed_refs`，让第一次有限激活 preflight 到 `run-replay-shadow` 也携带 M1-M5 记忆核心。
+- 已补厚 `run_replay_shadow(...)` 的 `replay_shadow_seed_bundle`，消费 `memory_consolidation_context`，确保 activation preflight、replay shadow 和 run-cycle 的记忆桥一致。
+
+测试证据：
+
+- `tests/bridges/test_runtime_growth.py#test_cli_run_cycle_shadow_only_writes_s10_runtime_bundle` 约束 replay cue、dream window、wake integration、offline consolidation 四层都消费 M1-M5 记忆核心。
+- `tests/bridges/test_first_activation_preflight.py#test_run_first_activation_preflight_writes_activation_bundle` 约束 first activation preflight 携带 `memory_consolidation_context`。
+- `tests/bridges/test_replay_shadow.py#test_run_replay_shadow_writes_replay_bundle` 约束 replay-shadow seed bundle 继续携带 trace store、engram cluster、关系深层记忆和自传层级。
+
 ### M7. Memory Validator / Falsification Guard
 
 目标：记忆系统必须能防止错误长期记忆、过度泛化、梦境污染、关系混淆。

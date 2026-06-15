@@ -83,6 +83,17 @@ def build_offline_consolidation_frame(
     wake_integration: dict[str, Any] | None = None,
     dream_fact_gate: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    memory_bridge = replay_cue_bundle.get("memory_consolidation_bridge")
+    if not isinstance(memory_bridge, dict):
+        memory_bridge = {}
+    memory_consolidation_source_refs = _dedupe(
+        list(memory_bridge.get("source_refs", []))
+        + list(replay_cue_bundle.get("offline_memory_replay_refs", []))
+        + list(replay_cue_bundle.get("offline_relationship_memory_refs", []))
+        + list(replay_cue_bundle.get("offline_autobiographical_memory_refs", []))
+        + list((dream_window or {}).get("memory_consolidation_trace_refs", []))
+        + list((wake_integration or {}).get("memory_reentry_targets", []))
+    )
     return {
         "schema_version": "offline_consolidation_frame_v0",
         "run_id": run_id,
@@ -109,5 +120,20 @@ def build_offline_consolidation_frame(
         ],
         "wake_integration_refs": ["runtime/state/dream/wake_integration_frame.json"] if wake_integration else [],
         "growth_patch_seed_refs": list(replay_cue_bundle.get("anti_forgetting_targets", [])),
+        "memory_consolidation_source_refs": memory_consolidation_source_refs,
+        "memory_consolidation_policy": "replay_and_dream_material_must_return_through_write_gate_and_state_merge_guard",
+        "memory_consolidation_gate_refs": _dedupe(
+            list(memory_bridge.get("memory_write_gate_refs", []))
+            + list(memory_bridge.get("state_merge_guard_refs", []))
+            + ["runtime/state/dream/dream_fact_gate_decision.json"]
+        ),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result

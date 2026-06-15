@@ -276,6 +276,7 @@ def _build_limited_context_frame(
         for subject in relationship_graph.get("subjects", [])
         if isinstance(subject, dict)
     ]
+    memory_consolidation_context = _build_memory_consolidation_context(life_state)
     return {
         "schema_version": "limited_context_frame_v0",
         "run_id": run_id,
@@ -292,7 +293,43 @@ def _build_limited_context_frame(
         "dialogue_turn_log_refs": list(life_state.get("language_state", {}).get("dialogue_turn_log_refs", [])),
         "commitment_refs": list(life_state.get("language_state", {}).get("promise_refs", [])),
         "memory_replay_refs": list(life_state.get("memory_index", {}).get("replay_cues", [])),
+        "memory_consolidation_context": memory_consolidation_context,
+        "memory_consolidation_seed_refs": list(memory_consolidation_context.get("source_refs", [])),
         "source_doc_refs": SOURCE_DOC_REFS,
+    }
+
+
+def _build_memory_consolidation_context(life_state: dict[str, Any]) -> dict[str, Any]:
+    memory_index = life_state.get("memory_index", {})
+    if not isinstance(memory_index, dict):
+        memory_index = {}
+    trace_store_refs = _string_list(memory_index.get("memory_trace_store_refs"))
+    engram_cluster_refs = _string_list(memory_index.get("engram_cluster_refs"))
+    relationship_deep_memory_refs = _string_list(
+        memory_index.get("relationship_deep_memory_refs")
+    )
+    autobiographical_hierarchy_refs = _string_list(
+        memory_index.get("autobiographical_hierarchy_refs")
+    )
+    source_refs = _dedupe(
+        trace_store_refs
+        + engram_cluster_refs
+        + relationship_deep_memory_refs
+        + autobiographical_hierarchy_refs
+        + _string_list(memory_index.get("memory_retrieval_refs"))
+        + _string_list(memory_index.get("pattern_separation_refs"))
+        + _string_list(memory_index.get("pattern_completion_refs"))
+    )
+    return {
+        "schema_version": "memory_consolidation_context_v0",
+        "context_ref": "runtime/state/activation/limited_context_frame.json#memory_consolidation_context",
+        "trace_store_refs": trace_store_refs,
+        "engram_cluster_refs": engram_cluster_refs,
+        "relationship_deep_memory_refs": relationship_deep_memory_refs,
+        "autobiographical_hierarchy_refs": autobiographical_hierarchy_refs,
+        "source_refs": source_refs,
+        "source_ref_count": len(source_refs),
+        "fact_boundary": "replay_shadow_reads_life_memory_without_fact_promotion",
     }
 
 
@@ -429,6 +466,22 @@ def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, A
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _string_list(value: Any) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, str)]
+    return []
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result
 
 
 def _sha256(path: Path) -> str:

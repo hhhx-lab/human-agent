@@ -134,6 +134,18 @@ def build_replay_cue_bundle(
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
     )
+    memory_consolidation_bridge = _build_memory_consolidation_bridge(life_state)
+    relationship_residue_refs = _dedupe(
+        list(life_state.get("memory_index", {}).get("relationship_memory_refs", []))
+        + list(memory_consolidation_bridge.get("relationship_deep_memory_refs", []))
+    ) or ["runtime/state/life_state.json#memory_index.relationship_memory_refs"]
+    offline_memory_replay_refs = _dedupe(
+        list(memory_consolidation_bridge.get("trace_store_refs", []))
+        + list(memory_consolidation_bridge.get("engram_cluster_refs", []))
+        + list(memory_consolidation_bridge.get("memory_retrieval_refs", []))
+        + list(memory_consolidation_bridge.get("pattern_separation_refs", []))
+        + list(memory_consolidation_bridge.get("pattern_completion_refs", []))
+    )
     return {
         "schema_version": "replay_cue_bundle_v0",
         "run_id": run_id,
@@ -141,8 +153,7 @@ def build_replay_cue_bundle(
         "status": "closed",
         "replay_cue_bundle_id": f"replay-cue-{run_id}",
         "turn_residue_refs": ["runtime/state/replay/shadow_cycle_trace.json"],
-        "relationship_residue_refs": list(life_state.get("memory_index", {}).get("relationship_memory_refs", []))
-        or ["runtime/state/life_state.json#memory_index.relationship_memory_refs"],
+        "relationship_residue_refs": relationship_residue_refs,
         "pain_regret_residue_refs": (
             list(pain_replay.get("regret_refs", []))
             + list(pain_replay.get("pain_refs", []))
@@ -154,6 +165,16 @@ def build_replay_cue_bundle(
         ],
         "anti_forgetting_targets": list(shadow_trace.get("replay_refs", []))
         or list(life_state.get("memory_index", {}).get("replay_cues", [])),
+        "memory_consolidation_bridge": memory_consolidation_bridge,
+        "offline_memory_replay_refs": offline_memory_replay_refs,
+        "offline_relationship_memory_refs": relationship_residue_refs,
+        "offline_autobiographical_memory_refs": list(
+            memory_consolidation_bridge.get("autobiographical_hierarchy_refs", [])
+        ),
+        "offline_memory_writeback_gate_refs": _dedupe(
+            list(memory_consolidation_bridge.get("memory_write_gate_refs", []))
+            + list(memory_consolidation_bridge.get("state_merge_guard_refs", []))
+        ),
         "world_contact_release_posture": queue_e_signal_profile["world_contact_release_posture"],
         "repair_followup_required": queue_e_signal_profile["repair_followup_required"],
         "repair_obligation_refs": queue_e_signal_profile["repair_obligation_refs"],
@@ -166,6 +187,58 @@ def build_replay_cue_bundle(
         "queue_e_repair_attention_target": repair_modulation_profile["attention_target"],
         "queue_e_repair_ref_set": list(repair_modulation_profile.get("ref_set", [])),
         "source_doc_refs": SOURCE_DOC_REFS,
+    }
+
+
+def _build_memory_consolidation_bridge(life_state: dict[str, Any]) -> dict[str, Any]:
+    memory_index = life_state.get("memory_index", {})
+    if not isinstance(memory_index, dict):
+        memory_index = {}
+    trace_store_refs = _string_list(memory_index.get("memory_trace_store_refs"))
+    engram_cluster_refs = _string_list(memory_index.get("engram_cluster_refs"))
+    relationship_deep_refs = _string_list(
+        memory_index.get("relationship_deep_memory_refs")
+    )
+    autobiographical_hierarchy_refs = _string_list(
+        memory_index.get("autobiographical_hierarchy_refs")
+    )
+    memory_retrieval_refs = _string_list(memory_index.get("memory_retrieval_refs"))
+    pattern_separation_refs = _string_list(memory_index.get("pattern_separation_refs"))
+    pattern_completion_refs = _string_list(memory_index.get("pattern_completion_refs"))
+    state_merge_guard_refs = _string_list(memory_index.get("state_merge_guard_refs"))
+    memory_write_gate_refs = ["runtime/state/memory/memory_write_gate.json"]
+    source_refs = _dedupe(
+        trace_store_refs
+        + engram_cluster_refs
+        + relationship_deep_refs
+        + autobiographical_hierarchy_refs
+        + memory_retrieval_refs
+        + pattern_separation_refs
+        + pattern_completion_refs
+        + memory_write_gate_refs
+        + state_merge_guard_refs
+    )
+    return {
+        "schema_version": "memory_consolidation_bridge_v0",
+        "bridge_ref": "runtime/state/replay/replay_cue_bundle.json#memory_consolidation_bridge",
+        "trace_store_refs": trace_store_refs,
+        "engram_cluster_refs": engram_cluster_refs,
+        "relationship_deep_memory_refs": relationship_deep_refs,
+        "autobiographical_hierarchy_refs": autobiographical_hierarchy_refs,
+        "memory_retrieval_refs": memory_retrieval_refs,
+        "pattern_separation_refs": pattern_separation_refs,
+        "pattern_completion_refs": pattern_completion_refs,
+        "memory_write_gate_refs": memory_write_gate_refs,
+        "state_merge_guard_refs": state_merge_guard_refs,
+        "source_refs": source_refs,
+        "source_ref_count": len(source_refs),
+        "replay_route": "trace_cluster_relationship_autobiographical_to_dream_wake_reconsolidation",
+        "fact_boundary": "offline_replay_reads_memory_traces_without_promoting_dream_or_hypothesis",
+        "consumer_refs": [
+            "runtime/state/dream/dream_experience_window.json#memory_consolidation_trace_refs",
+            "runtime/state/dream/wake_integration_frame.json#memory_reentry_targets",
+            "runtime/state/dream/offline_consolidation_frame.json#memory_consolidation_source_refs",
+        ],
     }
 
 
@@ -569,6 +642,12 @@ def _build_replay_shadow_seed_bundle(
         "self_narrative_trace_refs": list(context_frame.get("self_narrative_trace_refs", [])),
         "dialogue_turn_log_refs": list(context_frame.get("dialogue_turn_log_refs", [])),
         "commitment_refs": list(context_frame.get("commitment_refs", [])),
+        "memory_consolidation_context": dict(
+            context_frame.get("memory_consolidation_context", {})
+        ),
+        "memory_consolidation_seed_refs": list(
+            context_frame.get("memory_consolidation_seed_refs", [])
+        ),
         "responsibility_writeback_refs": list(responsibility_loop.get("language_writeback_refs", [])),
         "world_contact_release_posture": world_contact_summary.get("release_posture", "shadow_only_guarded"),
         "regret_pressure_refs": list(pain_regret_repair_report.get("regret_pressure_refs", [])),
@@ -882,6 +961,22 @@ def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, A
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _string_list(value: Any) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, str)]
+    return []
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result
 
 
 def _sha256(path: Path) -> str:

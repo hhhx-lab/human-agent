@@ -144,6 +144,43 @@ AutobiographicalStack.memory_hierarchy
 
 M5 的完成不意味着第 3 点已经完成。它只证明关系和自传长期结构已经有更硬的存放、索引和状态根入口。下一步 M6 必须继续证明这些记忆能进入离线 replay、梦境残留、醒后整合和再巩固；否则关系和自传结构仍会停在“可存储但未必会在睡眠/梦境/成长中再激活”的阶段。
 
+## M6 已落：记忆巩固桥进入 replay / dream / wake
+
+M6 把 M1-M5 的在线记忆结构继续送入离线生命链。核心对象是 `ReplayCueBundle.memory_consolidation_bridge` 和 `ActivationPreflight.memory_consolidation_context`。
+
+`MemoryConsolidationBridge` 从 `life_state.memory_index` 读取：
+
+| 来源字段 | 运行含义 |
+|---|---|
+| `memory_trace_store_refs` | `MemoryTraceStore`，作为离线 replay 的 trace 源 |
+| `engram_cluster_refs` | `EngramLikeTraceCluster`，作为 cue-triggered reactivation 源 |
+| `relationship_deep_memory_refs` | `RelationshipMemory.we_memory_traces` 等深层关系记忆 |
+| `autobiographical_hierarchy_refs` | `AutobiographicalStack.memory_hierarchy` |
+| `memory_retrieval_refs` | `MemoryRetrievalFrame` 与 `recall_to_expression_profile` |
+| `pattern_separation_refs` / `pattern_completion_refs` | 防止梦境和关系补全污染事实 |
+| `memory_write_gate_refs` / `state_merge_guard_refs` | 醒后再巩固必须回到写门和合并门 |
+
+这条桥新增的闭合链是：
+
+```text
+LifeState.memory_index
+  -> ReplayCueBundle.memory_consolidation_bridge
+  -> DreamExperienceWindow.memory_consolidation_trace_refs
+  -> WakeIntegrationFrame.memory_reentry_targets
+  -> OfflineConsolidationFrame.memory_consolidation_source_refs
+  -> MemoryWriteGate + StateMergeGuard + DreamFactGateDecision
+```
+
+它解决的是“记忆存了，但离线期只读聊天日志或 replay cue”的断链。现在 dream/replay 读取的是 `MemoryTraceStore`、`EngramCluster`、关系深层记忆和自传层级；梦境可以重组这些材料，但 `dream_memory_boundary` 明确为 `dream_recombines_memory_for_replay_without_fact_promotion`，醒后边界明确为 `wake_reentry_can_cue_expression_but_not_script_spoken_language`。
+
+第一次有限激活路径也接入同一组记忆核心：`life_v0/activation/__init__.py#_build_limited_context_frame(...)` 生成 `memory_consolidation_context` 和 `memory_consolidation_seed_refs`，`run_replay_shadow(...)` 再把它们写入 `replay_shadow_seed_bundle`。因此 M6 不只覆盖 `run-cycle`，也覆盖 preflight -> replay shadow 的第一次激活前链路。
+
+M6 的测试闭合由三条桥接测试证明：
+
+- `tests/bridges/test_runtime_growth.py#test_cli_run_cycle_shadow_only_writes_s10_runtime_bundle`
+- `tests/bridges/test_first_activation_preflight.py#test_run_first_activation_preflight_writes_activation_bundle`
+- `tests/bridges/test_replay_shadow.py#test_run_replay_shadow_writes_replay_bundle`
+
 ## 记忆到输出的闭环
 
 live0 现在把“记住”定义为可达性，而不是只定义为落盘。记忆如果只进入 `memory_trace_store`、`engram_index` 或关系/自传 refs，但不能在被问到时被线索唤起、进入语言前结构、影响真实回答，并在说错后重新巩固，那仍然是存储对象，不是完整记忆。

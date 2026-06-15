@@ -84,6 +84,30 @@ class FirstActivationPreflightTests(unittest.TestCase):
         self.assertTrue(context_frame["self_narrative_trace_refs"])
         self.assertTrue(context_frame["dialogue_turn_log_refs"])
         self.assertTrue(context_frame["commitment_refs"])
+        self.assertEqual(
+            context_frame["memory_consolidation_context"]["schema_version"],
+            "memory_consolidation_context_v0",
+        )
+        self.assertIn(
+            "runtime/state/memory/memory_trace_store.json",
+            context_frame["memory_consolidation_seed_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/engram_cluster.json",
+            context_frame["memory_consolidation_seed_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/relationship_memory.json#we_memory_traces",
+            context_frame["memory_consolidation_context"]["relationship_deep_memory_refs"],
+        )
+        self.assertIn(
+            "runtime/state/self/autobiographical_stack.json#memory_hierarchy",
+            context_frame["memory_consolidation_context"]["autobiographical_hierarchy_refs"],
+        )
+        self.assertEqual(
+            context_frame["memory_consolidation_context"]["fact_boundary"],
+            "replay_shadow_reads_life_memory_without_fact_promotion",
+        )
 
         self.assertEqual(membrane_decision["schema_version"], "life_membrane_opening_decision_v0")
         self.assertEqual(membrane_decision["decision"], "open_shadow_only")
