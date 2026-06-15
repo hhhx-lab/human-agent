@@ -1104,6 +1104,56 @@ class ResponseSurfaceTests(unittest.TestCase):
         )
         self.assertNotIn("你现在会直接接触外部世界吗？", material)
 
+    def test_live_queue_e_handoff_presence_enters_audited_expression_material(self):
+        live_responsibility_refs = [
+            "runtime/state/action/responsibility_loop_state.json#consciousness_context_profile",
+            "runtime/state/consciousness/workspace_frame.json",
+        ]
+        material = compose_life_response(
+            external_utterance="这轮修复交接会影响你怎么说话吗？",
+            terminal_life_loop_state={
+                "resident_background_lineage_state": {
+                    "world_contact_handoff_presence": {
+                        "schema_version": "world_contact_handoff_presence_v0",
+                        "handoff_status": "deferred_until_s05_s09",
+                        "repair_hold_required": True,
+                        "live_queue_e_world_contact_handoff_refreshed": True,
+                        "live_responsibility_consciousness_context_refs": (
+                            live_responsibility_refs
+                        ),
+                        "live_turn_focus": "repair_commitment_shared_language",
+                        "handoff_boundary": (
+                            "queue_e_world_contact_handoff_live_turn_evidence_not_spoken_language"
+                        ),
+                        "ref_set": [
+                            "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
+                            *live_responsibility_refs,
+                        ],
+                    }
+                }
+            },
+        )
+
+        payload = json.loads(material)
+        handoff = payload["responsibility_repair"][
+            "world_contact_handoff_presence"
+        ]
+        self.assertTrue(payload["natural_language_release_disabled"])
+        self.assertTrue(handoff["live_queue_e_world_contact_handoff_refreshed"])
+        self.assertEqual(
+            handoff["live_turn_focus"],
+            "repair_commitment_shared_language",
+        )
+        self.assertEqual(
+            handoff["live_responsibility_consciousness_context_refs"],
+            live_responsibility_refs,
+        )
+        self.assertEqual(
+            payload["responsibility_repair"]["live_responsibility_context_ref_count"],
+            2,
+        )
+        self.assertNotIn("这轮修复交接会影响你怎么说话吗？", material)
+
     def test_spoken_response_without_model_does_not_release_style_template(self):
         response = compose_life_spoken_response(
             external_utterance="你不觉得你的说话方式很奇怪吗？Adam",

@@ -1209,6 +1209,79 @@ class ModelExpressionTests(unittest.TestCase):
                 3,
             )
 
+    def test_post_expression_gate_audits_live_queue_e_handoff_without_forcing_visibility(
+        self,
+    ):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": MODEL_ACCEPTED_AUDIT_TOKEN},
+                        }
+                    ]
+                }
+
+            live_responsibility_refs = [
+                "runtime/state/action/responsibility_loop_state.json#consciousness_context_profile",
+            ]
+            result = compose_model_expression(
+                run_id="model-expression-live-queue-e-handoff",
+                generated_at="2026-06-15T00:00:00+00:00",
+                external_utterance="这轮修复交接还在吗？",
+                audited_expression_material="审计材料保留 live Queue E handoff 与责任意识上下文。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                terminal_life_loop_state={
+                    "resident_background_lineage_state": {
+                        "world_contact_handoff_presence": {
+                            "schema_version": "world_contact_handoff_presence_v0",
+                            "handoff_status": "deferred_until_s05_s09",
+                            "repair_hold_required": True,
+                            "live_queue_e_world_contact_handoff_refreshed": True,
+                            "live_responsibility_consciousness_context_refs": (
+                                live_responsibility_refs
+                            ),
+                            "live_turn_focus": "repair_commitment_shared_language",
+                            "handoff_boundary": (
+                                "queue_e_world_contact_handoff_live_turn_evidence_not_spoken_language"
+                            ),
+                            "ref_set": [
+                                "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json",
+                                *live_responsibility_refs,
+                            ],
+                        }
+                    }
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertTrue(result.applied)
+            self.assertIn(
+                "live_queue_e_world_contact_handoff",
+                result.state["post_expression_gate"]["soft_missing_evidence_flags"],
+            )
+            summary = result.state["model_expression_context_summary"]
+            self.assertTrue(summary["world_contact_handoff_live_refreshed"])
+            self.assertEqual(
+                summary["world_contact_handoff_live_turn_focus"],
+                "repair_commitment_shared_language",
+            )
+            self.assertEqual(
+                summary["world_contact_handoff_live_responsibility_context_ref_count"],
+                1,
+            )
+
     def test_model_expression_consumes_prediction_attention_from_audited_material(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

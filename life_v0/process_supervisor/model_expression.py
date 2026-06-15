@@ -189,6 +189,17 @@ EVIDENCE_FLAG_TERMS = {
         "presence",
         "证据",
     ],
+    "live_queue_e_world_contact_handoff": [
+        "世界",
+        "接触",
+        "修复",
+        "交接",
+        "责任",
+        "确认",
+        "等待",
+        "意识",
+        "上下文",
+    ],
     "prediction_attention": [
         "判断",
         "预测",
@@ -210,6 +221,7 @@ HARD_EVIDENCE_FLAGS = {
     "birth_repair",
     "life_constraint",
     "world_contact_handoff",
+    "live_queue_e_world_contact_handoff",
     "live_turn_handoff",
     "prediction_attention",
 }
@@ -1302,11 +1314,30 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
         flags.append("life_constraint")
     if resident_background.get("world_contact_handoff_presence"):
         flags.append("world_contact_handoff")
+    if _live_queue_e_handoff_pressure_present(resident_background):
+        flags.append("live_queue_e_world_contact_handoff")
     if _live_turn_handoff_pressure_present(resident_background):
         flags.append("live_turn_handoff")
     if _prediction_attention_pressure_present(prediction_workspace, live_language):
         flags.append("prediction_attention")
     return flags
+
+
+def _live_queue_e_handoff_pressure_present(resident_background: Any) -> bool:
+    if not isinstance(resident_background, dict):
+        return False
+    handoff_presence = resident_background.get("world_contact_handoff_presence")
+    if not isinstance(handoff_presence, dict):
+        handoff_presence = {}
+    return bool(
+        handoff_presence.get("live_queue_e_world_contact_handoff_refreshed")
+        or handoff_presence.get("live_turn_focus")
+        or handoff_presence.get("live_responsibility_consciousness_context_refs")
+        or handoff_presence.get("handoff_boundary")
+        or resident_background.get("live_queue_e_world_contact_handoff_refreshed")
+        or resident_background.get("live_turn_focus")
+        or resident_background.get("live_responsibility_consciousness_context_refs")
+    )
 
 
 def _live_turn_handoff_pressure_present(resident_background: Any) -> bool:
@@ -1744,6 +1775,12 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
                     ).get("ref_set")
                 )
                 + _string_list(
+                    (
+                        resident_background.get("world_contact_handoff_presence")
+                        or {}
+                    ).get("live_responsibility_consciousness_context_refs")
+                )
+                + _string_list(
                     [
                         (
                             resident_background.get(
@@ -1755,6 +1792,42 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
                 )
             )
         )
+        if isinstance(
+            resident_background.get("world_contact_handoff_presence"),
+            dict,
+        )
+        else None,
+        "world_contact_handoff_live_refreshed": (
+            resident_background.get("world_contact_handoff_presence") or {}
+        ).get("live_queue_e_world_contact_handoff_refreshed")
+        if isinstance(
+            resident_background.get("world_contact_handoff_presence"),
+            dict,
+        )
+        else None,
+        "world_contact_handoff_live_turn_focus": (
+            resident_background.get("world_contact_handoff_presence") or {}
+        ).get("live_turn_focus")
+        if isinstance(
+            resident_background.get("world_contact_handoff_presence"),
+            dict,
+        )
+        else None,
+        "world_contact_handoff_live_responsibility_context_ref_count": len(
+            _string_list(
+                (
+                    resident_background.get("world_contact_handoff_presence") or {}
+                ).get("live_responsibility_consciousness_context_refs")
+            )
+        )
+        if isinstance(
+            resident_background.get("world_contact_handoff_presence"),
+            dict,
+        )
+        else None,
+        "world_contact_handoff_boundary": (
+            resident_background.get("world_contact_handoff_presence") or {}
+        ).get("handoff_boundary")
         if isinstance(
             resident_background.get("world_contact_handoff_presence"),
             dict,

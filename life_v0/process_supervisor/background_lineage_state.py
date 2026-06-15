@@ -1918,6 +1918,27 @@ def _world_contact_handoff_presence(governance: dict[str, Any]) -> dict[str, Any
         )
         + _string_list(profile.get("repair_governance_refs"))
     )
+    live_responsibility_context_refs = _dedupe_string_list(
+        _string_list(governance.get("live_responsibility_consciousness_context_refs"))
+        + _string_list(profile.get("live_responsibility_consciousness_context_refs"))
+    )
+    live_turn_focus = _first_present(
+        governance.get("live_turn_focus"),
+        profile.get("live_turn_focus"),
+    )
+    live_handoff_refreshed = _first_present(
+        governance.get("live_queue_e_world_contact_handoff_refreshed"),
+        profile.get("live_queue_e_world_contact_handoff_refreshed"),
+    )
+    handoff_boundary = _first_present(
+        governance.get("live_queue_e_world_contact_handoff_boundary"),
+        profile.get("handoff_boundary"),
+        profile.get("live_queue_e_world_contact_handoff_boundary"),
+    )
+    last_projected_from_live_turn_ref = _first_present(
+        governance.get("last_projected_from_live_turn_ref"),
+        profile.get("last_projected_from_live_turn_ref"),
+    )
     ref_set = _dedupe_string_list(
         _string_list(governance.get("queue_e_world_contact_ref_set"))
         + _string_list(governance.get("queue_e_world_contact_refs"))
@@ -1926,6 +1947,7 @@ def _world_contact_handoff_presence(governance: dict[str, Any]) -> dict[str, Any
         + _string_list(profile.get("ref_set"))
         + _string_list([profile_ref])
         + _string_list([body_pressure_profile_ref])
+        + live_responsibility_context_refs
         + repair_governance_refs
     )
     if not any(
@@ -1943,6 +1965,11 @@ def _world_contact_handoff_presence(governance: dict[str, Any]) -> dict[str, Any
             blocked_future_routes,
             allowed_repair_routes,
             repair_governance_refs,
+            live_responsibility_context_refs,
+            live_turn_focus,
+            live_handoff_refreshed,
+            handoff_boundary,
+            last_projected_from_live_turn_ref,
             ref_set,
         ]
     ):
@@ -1964,6 +1991,13 @@ def _world_contact_handoff_presence(governance: dict[str, Any]) -> dict[str, Any
             "attention_target": attention_target,
             "attention_reason": attention_reason,
             "pressure_level": pressure_level,
+            "live_queue_e_world_contact_handoff_refreshed": live_handoff_refreshed,
+            "live_responsibility_consciousness_context_refs": (
+                live_responsibility_context_refs
+            ),
+            "live_turn_focus": live_turn_focus,
+            "handoff_boundary": handoff_boundary,
+            "last_projected_from_live_turn_ref": last_projected_from_live_turn_ref,
             "ref_set": ref_set,
             "background_profile_ref": governance.get(
                 "background_queue_e_world_contact_handoff_profile_ref"

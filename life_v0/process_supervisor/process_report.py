@@ -11,6 +11,7 @@ from life_v0.dream.web_dream_learning import (
     WEB_DREAM_LEARNING_SEEDS_REF,
     WEB_DREAM_LEARNING_STATE_REF,
 )
+from life_v0.life_targets.queue_e_world_contact_handoff import HANDOFF_PROFILE_REF
 from life_v0.membrane.queue_e_signals import build_queue_e_repair_modulation_profile
 
 from .governance_explanation import (
@@ -668,6 +669,12 @@ def write_process_report_bundle(
             idle_governance=idle_governance,
         )
     )
+    live_queue_e_world_contact_handoff_profile = (
+        _live_queue_e_world_contact_handoff_report_profile(
+            state_dir=state_dir,
+            idle_governance=idle_governance,
+        )
+    )
     web_dream_learning_profile = _web_dream_learning_report_profile(
         state_dir=state_dir,
         resident_autonomous_activity_presence_profile=(
@@ -1121,6 +1128,7 @@ def write_process_report_bundle(
     report.update(exit_dream_next_wake_profile)
     report.update(exit_dream_memory_tier_profile)
     report.update(autobiographical_repair_retrieval_profile)
+    report.update(live_queue_e_world_contact_handoff_profile)
     report.update(web_dream_learning_profile)
     report.update(growth_self_modification_profile)
     report["offline_learning_cumulative_integration_mode"] = (
@@ -1888,6 +1896,7 @@ def write_process_report_bundle(
     digest.update(exit_dream_next_wake_profile)
     digest.update(exit_dream_memory_tier_profile)
     digest.update(autobiographical_repair_retrieval_profile)
+    digest.update(live_queue_e_world_contact_handoff_profile)
     digest.update(web_dream_learning_profile)
     digest.update(growth_self_modification_profile)
     for field_name in HANDOFF_CARRY_FIELD_NAMES:
@@ -2094,6 +2103,43 @@ def write_process_report_bundle(
         autobiographical_repair_report_boundary=(
             autobiographical_repair_retrieval_profile.get(
                 "autobiographical_repair_report_boundary"
+            )
+        ),
+        live_queue_e_world_contact_handoff_report_profile=(
+            live_queue_e_world_contact_handoff_profile.get(
+                "live_queue_e_world_contact_handoff_report_profile"
+            )
+        ),
+        live_queue_e_world_contact_handoff_ref_set=(
+            live_queue_e_world_contact_handoff_profile.get(
+                "live_queue_e_world_contact_handoff_ref_set",
+                [],
+            )
+        ),
+        live_queue_e_world_contact_handoff_refreshed=(
+            live_queue_e_world_contact_handoff_profile.get(
+                "live_queue_e_world_contact_handoff_refreshed"
+            )
+        ),
+        live_queue_e_world_contact_handoff_status=(
+            live_queue_e_world_contact_handoff_profile.get(
+                "live_queue_e_world_contact_handoff_status"
+            )
+        ),
+        live_responsibility_consciousness_context_refs=(
+            live_queue_e_world_contact_handoff_profile.get(
+                "live_responsibility_consciousness_context_refs",
+                [],
+            )
+        ),
+        live_queue_e_world_contact_handoff_turn_focus=(
+            live_queue_e_world_contact_handoff_profile.get(
+                "live_queue_e_world_contact_handoff_turn_focus"
+            )
+        ),
+        live_queue_e_world_contact_handoff_report_boundary=(
+            live_queue_e_world_contact_handoff_profile.get(
+                "live_queue_e_world_contact_handoff_report_boundary"
             )
         ),
         web_dream_learning_report_profile=web_dream_learning_profile.get(
@@ -2306,6 +2352,13 @@ def build_process_receipt(
     autobiographical_repair_retrieval_boundary: str | None = None,
     autobiographical_repair_carrier_refs: list[str] | None = None,
     autobiographical_repair_report_boundary: str | None = None,
+    live_queue_e_world_contact_handoff_report_profile: dict[str, Any] | None = None,
+    live_queue_e_world_contact_handoff_ref_set: list[str] | None = None,
+    live_queue_e_world_contact_handoff_refreshed: bool | None = None,
+    live_queue_e_world_contact_handoff_status: str | None = None,
+    live_responsibility_consciousness_context_refs: list[str] | None = None,
+    live_queue_e_world_contact_handoff_turn_focus: str | None = None,
+    live_queue_e_world_contact_handoff_report_boundary: str | None = None,
     web_dream_learning_report_profile: dict[str, Any] | None = None,
     web_dream_learning_state_ref: str | None = None,
     web_dream_learning_log_ref: str | None = None,
@@ -2541,6 +2594,27 @@ def build_process_receipt(
         "autobiographical_repair_report_boundary": (
             autobiographical_repair_report_boundary
         ),
+        "live_queue_e_world_contact_handoff_report_profile": dict(
+            live_queue_e_world_contact_handoff_report_profile or {}
+        ),
+        "live_queue_e_world_contact_handoff_ref_set": list(
+            live_queue_e_world_contact_handoff_ref_set or []
+        ),
+        "live_queue_e_world_contact_handoff_refreshed": (
+            live_queue_e_world_contact_handoff_refreshed
+        ),
+        "live_queue_e_world_contact_handoff_status": (
+            live_queue_e_world_contact_handoff_status
+        ),
+        "live_responsibility_consciousness_context_refs": list(
+            live_responsibility_consciousness_context_refs or []
+        ),
+        "live_queue_e_world_contact_handoff_turn_focus": (
+            live_queue_e_world_contact_handoff_turn_focus
+        ),
+        "live_queue_e_world_contact_handoff_report_boundary": (
+            live_queue_e_world_contact_handoff_report_boundary
+        ),
         "web_dream_learning_report_profile": dict(
             web_dream_learning_report_profile or {}
         ),
@@ -2720,6 +2794,9 @@ def build_process_receipt(
                 *(queue_e_world_contact_refs or []),
                 queue_e_world_contact_body_pressure_profile_ref,
                 *(queue_e_repair_refs or []),
+                *(live_responsibility_consciousness_context_refs or []),
+                *(live_queue_e_world_contact_handoff_ref_set or []),
+                HANDOFF_PROFILE_REF,
             ]
             if ref
         ]),
@@ -3866,6 +3943,113 @@ def _model_expression_consciousness_write_context_profile(
         "model_expression_prediction_attention_consciousness_write_context_boundary": (
             boundary
         ),
+    }
+
+
+def _live_queue_e_world_contact_handoff_report_profile(
+    *,
+    state_dir: Path,
+    idle_governance: dict[str, Any],
+) -> dict[str, Any]:
+    handoff_state = _read_json_if_exists(
+        state_dir / "life_targets" / "queue_e_world_contact_repair_hold_handoff.json"
+    )
+    terminal_loop = _read_json_if_exists(
+        state_dir / "terminal" / "terminal_life_loop_state.json"
+    )
+    handoff_refreshed = _first_non_none(
+        idle_governance.get("live_queue_e_world_contact_handoff_refreshed"),
+        terminal_loop.get("live_queue_e_world_contact_handoff_refreshed"),
+        handoff_state.get("live_queue_e_world_contact_handoff_refreshed"),
+        handoff_state.get("last_projected_from_live_turn_ref") is not None,
+    )
+    handoff_status = _first_non_none(
+        idle_governance.get("queue_e_world_contact_handoff_status"),
+        terminal_loop.get("queue_e_world_contact_handoff_status"),
+        handoff_state.get("handoff_status"),
+    )
+    repair_hold_required = _first_non_none(
+        idle_governance.get("queue_e_world_contact_repair_hold_required"),
+        terminal_loop.get("queue_e_world_contact_repair_hold_required"),
+        handoff_state.get("repair_hold_required"),
+    )
+    live_responsibility_context_refs = _dedupe_refs(
+        _list_or_empty(
+            idle_governance.get("live_responsibility_consciousness_context_refs")
+        )
+        + _list_or_empty(
+            terminal_loop.get("live_responsibility_consciousness_context_refs")
+        )
+        + _list_or_empty(
+            handoff_state.get("live_responsibility_consciousness_context_refs")
+        )
+    )
+    live_turn_focus = _first_non_none(
+        idle_governance.get("live_turn_focus"),
+        terminal_loop.get("live_turn_focus"),
+        handoff_state.get("live_turn_focus"),
+    )
+    handoff_boundary = _first_non_none(
+        idle_governance.get("live_queue_e_world_contact_handoff_boundary"),
+        terminal_loop.get("live_queue_e_world_contact_handoff_boundary"),
+        handoff_state.get("handoff_boundary"),
+    )
+    last_projected_from_live_turn_ref = _first_non_none(
+        idle_governance.get("last_projected_from_live_turn_ref"),
+        terminal_loop.get("last_projected_from_live_turn_ref"),
+        handoff_state.get("last_projected_from_live_turn_ref"),
+    )
+    ref_set = _dedupe_refs(
+        _list_or_empty(idle_governance.get("queue_e_world_contact_ref_set"))
+        + _list_or_empty(terminal_loop.get("queue_e_world_contact_ref_set"))
+        + _list_or_empty(handoff_state.get("ref_set"))
+        + live_responsibility_context_refs
+        + [HANDOFF_PROFILE_REF]
+    )
+    report_boundary = (
+        "live_queue_e_world_contact_handoff_structured_report_not_spoken_language"
+    )
+    if not any(
+        [
+            handoff_refreshed,
+            handoff_status,
+            repair_hold_required is not None,
+            live_responsibility_context_refs,
+            live_turn_focus,
+            handoff_boundary,
+            last_projected_from_live_turn_ref,
+            ref_set,
+        ]
+    ):
+        return {}
+    profile = {
+        "schema_version": "live_queue_e_world_contact_handoff_report_profile_v0",
+        "source_handoff_state_ref": HANDOFF_PROFILE_REF,
+        "source_terminal_loop_ref": (
+            "runtime/state/terminal/terminal_life_loop_state.json"
+        ),
+        "handoff_refreshed": bool(handoff_refreshed),
+        "handoff_status": handoff_status,
+        "repair_hold_required": repair_hold_required,
+        "live_turn_focus": live_turn_focus,
+        "handoff_boundary": handoff_boundary,
+        "last_projected_from_live_turn_ref": last_projected_from_live_turn_ref,
+        "live_responsibility_context_ref_count": len(
+            live_responsibility_context_refs
+        ),
+        "ref_set": ref_set,
+        "report_boundary": report_boundary,
+    }
+    return {
+        "live_queue_e_world_contact_handoff_report_profile": profile,
+        "live_queue_e_world_contact_handoff_ref_set": ref_set,
+        "live_queue_e_world_contact_handoff_refreshed": bool(handoff_refreshed),
+        "live_queue_e_world_contact_handoff_status": handoff_status,
+        "live_responsibility_consciousness_context_refs": (
+            live_responsibility_context_refs
+        ),
+        "live_queue_e_world_contact_handoff_turn_focus": live_turn_focus,
+        "live_queue_e_world_contact_handoff_report_boundary": report_boundary,
     }
 
 

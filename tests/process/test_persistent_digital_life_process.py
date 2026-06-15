@@ -3021,6 +3021,147 @@ class PersistentDigitalLifeProcessTests(
         for ref in expected_refs:
             self.assertIn(ref, receipt["shared_object_refs"])
 
+    def test_process_report_writes_live_queue_e_world_contact_handoff_profile(self):
+        from life_v0.process_supervisor.process_report import write_process_report_bundle
+
+        live_responsibility_refs = [
+            "runtime/state/action/responsibility_loop_state.json#consciousness_context_profile",
+        ]
+        handoff_ref = (
+            "runtime/state/life_targets/queue_e_world_contact_repair_hold_handoff.json"
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_root = Path(tmp) / "runtime"
+            state_dir = runtime_root / "state"
+            reports_dir = runtime_root / "reports" / "latest"
+            receipts_dir = runtime_root / "receipts"
+            life_targets_dir = state_dir / "life_targets"
+            terminal_dir = state_dir / "terminal"
+            for path in (reports_dir, receipts_dir, life_targets_dir, terminal_dir):
+                path.mkdir(parents=True, exist_ok=True)
+
+            self._write_json(
+                life_targets_dir / "queue_e_world_contact_repair_hold_handoff.json",
+                {
+                    "schema_version": "queue_e_world_contact_repair_hold_handoff_v0",
+                    "handoff_status": "deferred_until_s05_s09",
+                    "repair_hold_required": True,
+                    "live_turn_focus": "repair_commitment_shared_language",
+                    "live_responsibility_consciousness_context_refs": (
+                        live_responsibility_refs
+                    ),
+                    "last_projected_from_live_turn_ref": "dialogue-turn-live-0002",
+                    "handoff_boundary": (
+                        "queue_e_world_contact_handoff_live_turn_evidence_not_spoken_language"
+                    ),
+                    "ref_set": [handoff_ref, *live_responsibility_refs],
+                },
+            )
+            self._write_json(
+                terminal_dir / "terminal_life_loop_state.json",
+                {
+                    "schema_version": "terminal_life_loop_state_v0",
+                    "live_queue_e_world_contact_handoff_refreshed": True,
+                    "queue_e_world_contact_handoff_status": "deferred_until_s05_s09",
+                    "live_turn_focus": "repair_commitment_shared_language",
+                    "live_responsibility_consciousness_context_refs": (
+                        live_responsibility_refs
+                    ),
+                },
+            )
+
+            write_process_report_bundle(
+                run_id="live-queue-e-handoff-process-report",
+                generated_at="2026-06-15T00:00:00+00:00",
+                state_dir=state_dir,
+                reports_dir=reports_dir,
+                receipts_dir=receipts_dir,
+                source_doc_refs=[],
+                readme_block_refs=[],
+                runtime_carrier_refs=[],
+                completed_turns=1,
+                incident_count=0,
+                relaunch_recovery_count=0,
+                heartbeat_counter=1,
+                exit_reason="explicit_exit",
+                last_incident_report_ref=None,
+                last_recovery_report_ref=None,
+                last_relaunch_recovery_report_ref=None,
+                last_external_turn=None,
+                last_life_turn=None,
+                idle_strategy_ref="runtime/state/terminal/idle_strategy_state.json",
+                idle_strategy_state={
+                    "schema_version": "idle_strategy_state_v0",
+                    "queue_e_world_contact_handoff_status": "deferred_until_s05_s09",
+                    "queue_e_world_contact_repair_hold_required": True,
+                    "live_queue_e_world_contact_handoff_refreshed": True,
+                    "live_responsibility_consciousness_context_refs": (
+                        live_responsibility_refs
+                    ),
+                    "live_turn_focus": "repair_commitment_shared_language",
+                },
+                persistent_process_report_ref=None,
+                resident_governance_report_ref=None,
+                resident_governance_state_ref=None,
+                resident_governance_snapshot_ref=None,
+                life_context_frame_ref=None,
+                relation_turn_frame_ref=None,
+                expression_plan_ref=None,
+                relationship_timeline_ref=None,
+                commitment_expression_plan_ref=None,
+                apology_repair_language_trace_ref=None,
+                dialogue_writeback_bundle_ref=None,
+                replay_cue_bundle_ref=None,
+                offline_consolidation_frame_ref=None,
+                growth_patch_candidate_queue_ref=None,
+                responsibility_loop_state_ref=None,
+                world_contact_summary_ref=None,
+                pain_regret_repair_report_ref=None,
+                signal_media_runtime_ref=None,
+                belief_state_ref=None,
+                prediction_error_field_ref=None,
+                active_sampling_plan_ref=None,
+                memory_write_gate_ref=None,
+                state_merge_guard_ref=None,
+                trait_drift_monitor_ref=None,
+                background_convergence_summary_ref=None,
+                background_convergence_history_ref=None,
+                write_json=self._write_json,
+            )
+
+            report = self._read_json(reports_dir / "digital_life_process_report.json")
+            digest = self._read_json(reports_dir / "digital_life_process_digest.json")
+            receipt = self._read_json(
+                receipts_dir
+                / "digital_life_process_live-queue-e-handoff-process-report.json"
+            )
+
+            self.assertTrue(report["live_queue_e_world_contact_handoff_refreshed"])
+            self.assertEqual(
+                report["live_queue_e_world_contact_handoff_status"],
+                "deferred_until_s05_s09",
+            )
+            self.assertEqual(
+                report["live_queue_e_world_contact_handoff_turn_focus"],
+                "repair_commitment_shared_language",
+            )
+            self.assertEqual(
+                report["live_queue_e_world_contact_handoff_report_boundary"],
+                "live_queue_e_world_contact_handoff_structured_report_not_spoken_language",
+            )
+            self.assertEqual(
+                report["live_queue_e_world_contact_handoff_report_profile"][
+                    "schema_version"
+                ],
+                "live_queue_e_world_contact_handoff_report_profile_v0",
+            )
+            self.assertEqual(digest["live_queue_e_world_contact_handoff_status"], "deferred_until_s05_s09")
+            self.assertTrue(receipt["live_queue_e_world_contact_handoff_refreshed"])
+            self.assertIn(handoff_ref, receipt["shared_object_refs"])
+            for ref in live_responsibility_refs:
+                self.assertIn(ref, receipt["shared_object_refs"])
+
     def test_background_continuity_restores_queue_e_repair_modulation_from_lineage_presence(self):
         from life_v0.process_supervisor.background_continuity import (
             load_background_continuity_profile,
@@ -20932,11 +21073,18 @@ class PersistentDigitalLifeProcessTests(
                 ],
                 "birth_repair_pressure_waiting",
             )
-            self.assertEqual(
-                resumed_dialogue_packet[
-                    "resident_background_lineage_world_contact_handoff_refs"
-                ],
-                expected_queue_e_world_contact_handoff_refs,
+            resumed_queue_e_handoff_refs = resumed_dialogue_packet[
+                "resident_background_lineage_world_contact_handoff_refs"
+            ]
+            for ref in expected_queue_e_world_contact_handoff_refs:
+                self.assertIn(ref, resumed_queue_e_handoff_refs)
+            self.assertIn(
+                "runtime/state/action/go_nogo_state.json#body_pressure_profile",
+                resumed_queue_e_handoff_refs,
+            )
+            self.assertIn(
+                "runtime/state/action/responsibility_loop_state.json#consciousness_context_profile",
+                resumed_queue_e_handoff_refs,
             )
             self.assertEqual(
                 resumed_dialogue_packet[
@@ -20948,6 +21096,17 @@ class PersistentDigitalLifeProcessTests(
                 resumed_dialogue_packet[
                     "resident_background_lineage_world_contact_repair_hold_required"
                 ]
+            )
+            self.assertTrue(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_live_queue_e_world_contact_handoff_refreshed"
+                ]
+            )
+            self.assertEqual(
+                resumed_dialogue_packet[
+                    "resident_background_lineage_world_contact_live_turn_focus"
+                ],
+                "repair_commitment_shared_language",
             )
             self.assertEqual(
                 resumed_dialogue_packet[

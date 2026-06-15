@@ -4411,6 +4411,36 @@ def _queue_e_world_contact_handoff_waiting_profile(
         target = "waiting_presence_maintenance"
         reason = "queue_e_world_contact_handoff_absent"
 
+    live_handoff_refreshed = _boolish(
+        profile.get("live_queue_e_world_contact_handoff_refreshed")
+        if "live_queue_e_world_contact_handoff_refreshed" in profile
+        else background.get("live_queue_e_world_contact_handoff_refreshed")
+    )
+    live_responsibility_context_refs = _dedupe_string_list(
+        _string_list(profile.get("live_responsibility_consciousness_context_refs"))
+        + _string_list(
+            background.get("live_responsibility_consciousness_context_refs")
+        )
+    )
+    live_turn_focus = str(
+        profile.get("live_turn_focus")
+        or background.get("live_turn_focus")
+        or ""
+    )
+    handoff_boundary = str(
+        profile.get("handoff_boundary")
+        or profile.get("live_queue_e_world_contact_handoff_boundary")
+        or background.get("live_queue_e_world_contact_handoff_boundary")
+        or ""
+    )
+    last_projected_from_live_turn_ref = str(
+        profile.get("last_projected_from_live_turn_ref")
+        or background.get("last_projected_from_live_turn_ref")
+        or ""
+    )
+    if live_responsibility_context_refs:
+        ref_set = _dedupe_string_list(ref_set + live_responsibility_context_refs)
+
     return {
         "schema_version": "queue_e_world_contact_repair_handoff_waiting_profile_v0",
         "continuity_mode": (
@@ -4435,6 +4465,15 @@ def _queue_e_world_contact_handoff_waiting_profile(
         "waiting_posture": posture,
         "attention_target": target,
         "attention_reason": reason,
+        "live_queue_e_world_contact_handoff_refreshed": live_handoff_refreshed,
+        "live_responsibility_consciousness_context_refs": (
+            live_responsibility_context_refs
+        ),
+        "live_turn_focus": live_turn_focus or None,
+        "handoff_boundary": handoff_boundary or None,
+        "last_projected_from_live_turn_ref": (
+            last_projected_from_live_turn_ref or None
+        ),
     }
 
 
@@ -4472,6 +4511,17 @@ def _queue_e_world_contact_handoff_idle_fields(
         "queue_e_world_contact_waiting_posture": profile.get("waiting_posture"),
         "queue_e_world_contact_attention_target": profile.get("attention_target"),
         "queue_e_world_contact_attention_reason": profile.get("attention_reason"),
+        "live_queue_e_world_contact_handoff_refreshed": profile.get(
+            "live_queue_e_world_contact_handoff_refreshed"
+        ),
+        "live_responsibility_consciousness_context_refs": list(
+            profile.get("live_responsibility_consciousness_context_refs", [])
+        ),
+        "live_turn_focus": profile.get("live_turn_focus"),
+        "live_queue_e_world_contact_handoff_boundary": profile.get("handoff_boundary"),
+        "last_projected_from_live_turn_ref": profile.get(
+            "last_projected_from_live_turn_ref"
+        ),
     }
 
 

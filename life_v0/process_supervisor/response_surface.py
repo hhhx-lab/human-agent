@@ -393,6 +393,11 @@ def compose_life_response(
                     "attention_reason",
                     "pressure_level",
                     "body_pressure_profile_ref",
+                    "live_queue_e_world_contact_handoff_refreshed",
+                    "live_responsibility_consciousness_context_refs",
+                    "live_turn_focus",
+                    "handoff_boundary",
+                    "last_projected_from_live_turn_ref",
                 ),
             ),
             "world_contact_handoff_ref_count": len(
@@ -402,7 +407,19 @@ def compose_life_response(
                         world_contact_handoff_presence.get("repair_governance_refs")
                     )
                     + _string_list(
+                        world_contact_handoff_presence.get(
+                            "live_responsibility_consciousness_context_refs"
+                        )
+                    )
+                    + _string_list(
                         [world_contact_handoff_presence.get("body_pressure_profile_ref")]
+                    )
+                )
+            ),
+            "live_responsibility_context_ref_count": len(
+                _string_list(
+                    world_contact_handoff_presence.get(
+                        "live_responsibility_consciousness_context_refs"
                     )
                 )
             ),

@@ -133,6 +133,13 @@ _LIVE_CONSCIOUSNESS_LINEAGE_FIELD_KEYS = (
     "resident_background_lineage_consciousness_write_context_candidate_gate_adjustments",
     "resident_background_lineage_consciousness_write_context_boundary",
 )
+_LIVE_QUEUE_E_HANDOFF_LINEAGE_FIELD_KEYS = (
+    "resident_background_lineage_live_queue_e_world_contact_handoff_refreshed",
+    "resident_background_lineage_live_responsibility_consciousness_context_refs",
+    "resident_background_lineage_world_contact_live_turn_focus",
+    "resident_background_lineage_world_contact_handoff_boundary",
+    "resident_background_lineage_world_contact_last_projected_from_live_turn_ref",
+)
 
 
 @dataclass(frozen=True)
@@ -455,6 +462,13 @@ def write_resident_turn_writeback(
             updated_terminal_life_loop_state.update(live_consciousness_chain_profile)
         if live_queue_e_handoff_profile:
             updated_terminal_life_loop_state.update(live_queue_e_handoff_profile)
+            _merge_live_queue_e_handoff_into_lineage_state(
+                updated_terminal_life_loop_state,
+                live_queue_e_handoff_profile=live_queue_e_handoff_profile,
+                handoff_profile=continuity_refresh.get(
+                    "queue_e_world_contact_handoff_profile"
+                ),
+            )
         if live_consciousness_chain_profile or live_queue_e_handoff_profile:
             write_json(
                 terminal_dir / "terminal_life_loop_state.json",
@@ -1225,6 +1239,9 @@ def write_resident_turn_writeback(
         if live_consciousness_chain_profile:
             for stale_key in _LIVE_CONSCIOUSNESS_LINEAGE_FIELD_KEYS:
                 lineage_packet_update.pop(stale_key, None)
+        if live_queue_e_handoff_profile:
+            for stale_key in _LIVE_QUEUE_E_HANDOFF_LINEAGE_FIELD_KEYS:
+                lineage_packet_update.pop(stale_key, None)
         resumed_dialogue_packet.update(lineage_packet_update)
     if offline_learning_cumulative_payload:
         resumed_dialogue_packet.update(
@@ -1254,6 +1271,12 @@ def write_resident_turn_writeback(
                 if key != "queue_e_world_contact_handoff_profile"
             }
         )
+        if live_queue_e_handoff_profile:
+            _apply_live_queue_e_handoff_lineage_fields(
+                resumed_dialogue_packet,
+                queue_e_world_contact_handoff_payload=queue_e_world_contact_handoff_payload,
+                live_queue_e_handoff_profile=live_queue_e_handoff_profile,
+            )
     if life_constraint_payload:
         resumed_dialogue_packet.update(life_constraint_payload)
     if resident_background_lineage_refs:
@@ -1907,6 +1930,138 @@ def _live_queue_e_handoff_terminal_profile(
             "queue_e_world_contact_ref_set"
         ]
     return profile
+
+
+def _merge_live_queue_e_handoff_into_lineage_state(
+    terminal_life_loop_state: dict[str, Any],
+    *,
+    live_queue_e_handoff_profile: dict[str, Any],
+    handoff_profile: Any,
+) -> None:
+    lineage_state = terminal_life_loop_state.get("resident_background_lineage_state")
+    if not isinstance(lineage_state, dict):
+        lineage_state = {}
+    handoff_presence = lineage_state.get("world_contact_handoff_presence")
+    if not isinstance(handoff_presence, dict):
+        handoff_presence = {}
+    refreshed_profile = (
+        handoff_profile if isinstance(handoff_profile, dict) else {}
+    )
+    merged_presence = dict(handoff_presence)
+    for key, value in (
+        ("handoff_status", live_queue_e_handoff_profile.get("queue_e_world_contact_handoff_status")),
+        ("profile_ref", live_queue_e_handoff_profile.get("queue_e_world_contact_handoff_profile_ref")),
+        ("repair_hold_required", live_queue_e_handoff_profile.get("queue_e_world_contact_repair_hold_required")),
+        (
+            "confirmation_threshold_bias",
+            live_queue_e_handoff_profile.get("queue_e_world_contact_confirmation_threshold_bias"),
+        ),
+        (
+            "future_release_posture",
+            live_queue_e_handoff_profile.get("queue_e_world_contact_future_release_posture"),
+        ),
+        (
+            "body_pressure_profile_ref",
+            live_queue_e_handoff_profile.get("queue_e_world_contact_body_pressure_profile_ref"),
+        ),
+        (
+            "waiting_posture",
+            live_queue_e_handoff_profile.get("queue_e_world_contact_waiting_posture"),
+        ),
+        (
+            "attention_target",
+            live_queue_e_handoff_profile.get("queue_e_world_contact_attention_target"),
+        ),
+        (
+            "pressure_level",
+            live_queue_e_handoff_profile.get("queue_e_world_contact_pressure_level"),
+        ),
+        ("live_turn_focus", live_queue_e_handoff_profile.get("live_turn_focus") or refreshed_profile.get("live_turn_focus")),
+        (
+            "handoff_boundary",
+            live_queue_e_handoff_profile.get("live_queue_e_world_contact_handoff_boundary")
+            or refreshed_profile.get("handoff_boundary"),
+        ),
+        (
+            "last_projected_from_live_turn_ref",
+            refreshed_profile.get("last_projected_from_live_turn_ref"),
+        ),
+    ):
+        if value not in {None, ""}:
+            merged_presence[key] = value
+    merged_presence["live_queue_e_world_contact_handoff_refreshed"] = True
+    live_responsibility_refs = _dedupe_refs(
+        _string_list(live_queue_e_handoff_profile.get("live_responsibility_consciousness_context_refs"))
+        + _string_list(refreshed_profile.get("live_responsibility_consciousness_context_refs"))
+    )
+    if live_responsibility_refs:
+        merged_presence["live_responsibility_consciousness_context_refs"] = (
+            live_responsibility_refs
+        )
+    ref_set = _dedupe_refs(
+        _string_list(merged_presence.get("ref_set"))
+        + _string_list(live_queue_e_handoff_profile.get("queue_e_world_contact_ref_set"))
+        + live_responsibility_refs
+    )
+    if ref_set:
+        merged_presence["ref_set"] = ref_set
+    if refreshed_profile:
+        merged_presence["queue_e_world_contact_handoff_profile"] = refreshed_profile
+    lineage_state["world_contact_handoff_presence"] = merged_presence
+    terminal_life_loop_state["resident_background_lineage_state"] = lineage_state
+
+
+def _apply_live_queue_e_handoff_lineage_fields(
+    payload: dict[str, Any],
+    *,
+    queue_e_world_contact_handoff_payload: dict[str, Any],
+    live_queue_e_handoff_profile: dict[str, Any],
+) -> None:
+    handoff_refs = _dedupe_refs(
+        list(queue_e_world_contact_handoff_payload.get("queue_e_world_contact_handoff_refs") or [])
+        or _string_list(live_queue_e_handoff_profile.get("queue_e_world_contact_ref_set"))
+    )
+    if handoff_refs:
+        payload["resident_background_lineage_world_contact_handoff_refs"] = handoff_refs
+        payload["queue_e_world_contact_handoff_refs"] = handoff_refs
+    payload["resident_background_lineage_live_queue_e_world_contact_handoff_refreshed"] = True
+    live_responsibility_refs = _dedupe_refs(
+        _string_list(
+            queue_e_world_contact_handoff_payload.get(
+                "live_responsibility_consciousness_context_refs"
+            )
+        )
+        or _string_list(
+            live_queue_e_handoff_profile.get("live_responsibility_consciousness_context_refs")
+        )
+    )
+    if live_responsibility_refs:
+        payload[
+            "resident_background_lineage_live_responsibility_consciousness_context_refs"
+        ] = live_responsibility_refs
+        payload["live_responsibility_consciousness_context_refs"] = (
+            live_responsibility_refs
+        )
+    live_turn_focus = (
+        queue_e_world_contact_handoff_payload.get("live_turn_focus")
+        or live_queue_e_handoff_profile.get("live_turn_focus")
+    )
+    if live_turn_focus:
+        payload["resident_background_lineage_world_contact_live_turn_focus"] = (
+            str(live_turn_focus)
+        )
+        payload["live_turn_focus"] = str(live_turn_focus)
+    handoff_boundary = (
+        queue_e_world_contact_handoff_payload.get(
+            "live_queue_e_world_contact_handoff_boundary"
+        )
+        or live_queue_e_handoff_profile.get("live_queue_e_world_contact_handoff_boundary")
+    )
+    if handoff_boundary:
+        payload["resident_background_lineage_world_contact_handoff_boundary"] = str(
+            handoff_boundary
+        )
+        payload["live_queue_e_world_contact_handoff_boundary"] = str(handoff_boundary)
 
 
 def _apply_live_consciousness_lineage_fields(

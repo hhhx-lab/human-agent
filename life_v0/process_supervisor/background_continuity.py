@@ -1862,11 +1862,23 @@ def load_background_continuity_profile(
         queue_e_birth_repair_attention_reason = (
             resident_background_birth_repair_presence.get("attention_reason")
         )
+    live_queue_e_world_contact_handoff_report_profile = _first_dict(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        keys=(
+            "live_queue_e_world_contact_handoff_report_profile",
+            "background_live_queue_e_world_contact_handoff_report_profile",
+        ),
+    )
     queue_e_world_contact_handoff_profile = _first_dict(
         resident_governance_state,
         snapshot,
         resident_governance_report,
         persistent_process_report,
+        process_report,
         keys=(
             "queue_e_world_contact_handoff_profile",
             "background_queue_e_world_contact_handoff_profile",
@@ -1878,6 +1890,41 @@ def load_background_continuity_profile(
                 "queue_e_world_contact_handoff_profile"
             )
         )
+    if live_queue_e_world_contact_handoff_report_profile:
+        restored_live_responsibility_context_refs = _dedupe_list(
+            _collect_lists(
+                resident_governance_state,
+                snapshot,
+                resident_governance_report,
+                persistent_process_report,
+                process_report,
+                keys=("live_responsibility_consciousness_context_refs",),
+            )
+        )
+        queue_e_world_contact_handoff_profile = {
+            **queue_e_world_contact_handoff_profile,
+            "live_queue_e_world_contact_handoff_refreshed": (
+                live_queue_e_world_contact_handoff_report_profile.get(
+                    "handoff_refreshed"
+                )
+            ),
+            "live_responsibility_consciousness_context_refs": (
+                restored_live_responsibility_context_refs
+            ),
+            "live_turn_focus": (
+                live_queue_e_world_contact_handoff_report_profile.get("live_turn_focus")
+            ),
+            "handoff_boundary": (
+                live_queue_e_world_contact_handoff_report_profile.get(
+                    "handoff_boundary"
+                )
+            ),
+            "last_projected_from_live_turn_ref": (
+                live_queue_e_world_contact_handoff_report_profile.get(
+                    "last_projected_from_live_turn_ref"
+                )
+            ),
+        }
     queue_e_world_contact_handoff_profile_ref = _first_present(
         resident_governance_state,
         snapshot,
@@ -2872,6 +2919,73 @@ def load_background_continuity_profile(
     ):
         if value:
             profile[key] = list(value)
+    if live_queue_e_world_contact_handoff_report_profile:
+        profile["background_live_queue_e_world_contact_handoff_report_profile"] = (
+            live_queue_e_world_contact_handoff_report_profile
+        )
+    live_handoff_refreshed = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        keys=("live_queue_e_world_contact_handoff_refreshed",),
+    )
+    if live_handoff_refreshed is None and live_queue_e_world_contact_handoff_report_profile:
+        live_handoff_refreshed = live_queue_e_world_contact_handoff_report_profile.get(
+            "handoff_refreshed"
+        )
+    if live_handoff_refreshed is not None:
+        profile["background_live_queue_e_world_contact_handoff_refreshed"] = bool(
+            live_handoff_refreshed
+        )
+    live_responsibility_context_refs = _dedupe_list(
+        _collect_lists(
+            resident_governance_state,
+            snapshot,
+            resident_governance_report,
+            persistent_process_report,
+            process_report,
+            keys=("live_responsibility_consciousness_context_refs",),
+        )
+    )
+    if live_responsibility_context_refs:
+        profile["background_live_responsibility_consciousness_context_refs"] = (
+            live_responsibility_context_refs
+        )
+    live_turn_focus = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        keys=(
+            "live_queue_e_world_contact_handoff_turn_focus",
+            "live_turn_focus",
+        ),
+    )
+    if not live_turn_focus and live_queue_e_world_contact_handoff_report_profile:
+        live_turn_focus = live_queue_e_world_contact_handoff_report_profile.get(
+            "live_turn_focus"
+        )
+    if live_turn_focus:
+        profile["background_live_turn_focus"] = str(live_turn_focus)
+    live_handoff_boundary = _first_present(
+        resident_governance_state,
+        snapshot,
+        resident_governance_report,
+        persistent_process_report,
+        process_report,
+        keys=("live_queue_e_world_contact_handoff_report_boundary",),
+    )
+    if not live_handoff_boundary and live_queue_e_world_contact_handoff_report_profile:
+        live_handoff_boundary = live_queue_e_world_contact_handoff_report_profile.get(
+            "handoff_boundary"
+        )
+    if live_handoff_boundary:
+        profile["background_live_queue_e_world_contact_handoff_boundary"] = str(
+            live_handoff_boundary
+        )
     if queue_e_repair_modulation_profile:
         profile["background_queue_e_repair_modulation_profile"] = (
             queue_e_repair_modulation_profile
