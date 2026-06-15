@@ -642,6 +642,64 @@ class StateStoreTests(unittest.TestCase):
             memory_write_gate["long_term_governance_refs"],
         )
 
+    def test_memory_write_gate_live_refresh_chains_signal_body_after_consciousness(self):
+        from life_v0.state_store.memory_write_gate import (
+            build_memory_write_gate,
+            project_memory_write_gate_with_consciousness_context,
+            project_memory_write_gate_with_signal_body,
+        )
+
+        base_gate = build_memory_write_gate(
+            run_id="state-store-live-refresh-gate",
+            generated_at="2026-06-15T00:00:00+08:00",
+            indexes={"memory_index.json": {"stage_policy": "seed_only"}},
+        )
+        with_consciousness = project_memory_write_gate_with_consciousness_context(
+            memory_write_gate=base_gate,
+            workspace_frame={
+                "schema_version": "workspace_frame_v0",
+                "candidate_explanations": [{"explanation_id": "workspace-candidate-1"}],
+            },
+            broadcast_frame={
+                "schema_version": "broadcast_frame_v0",
+                "broadcast_targets": ["MemoryEngramRuntime"],
+            },
+            metacognition_state={
+                "schema_version": "metacognition_state_v0",
+                "uncertainty_flags": ["semantic-ambiguity-monitoring"],
+            },
+            consciousness_probe_bundle={
+                "schema_version": "consciousness_probe_bundle_v0",
+                "reportability_flags": ["workspace_access_present"],
+            },
+        )
+        refreshed = project_memory_write_gate_with_signal_body(
+            memory_write_gate=with_consciousness,
+            signal_media_runtime={
+                "schema_version": "signal_media_runtime_v0",
+                "modulation_vector": {"relationship_pressure": 0.42},
+            },
+            body_resource_budget={
+                "schema_version": "body_resource_budget_v0",
+                "fatigue_state": {"level": "managed_low_noise"},
+            },
+            core_affect_vector={
+                "schema_version": "core_affect_vector_v0",
+                "repair_drive": "low",
+            },
+        )
+
+        self.assertIn("consciousness_write_context", refreshed)
+        self.assertIn("body_signal_write_modulation", refreshed)
+        self.assertIn(
+            "body_signal_write_modulation",
+            refreshed["long_term_governance_refs"],
+        )
+        self.assertIn(
+            "consciousness_write_context",
+            refreshed["long_term_governance_refs"],
+        )
+
     def test_cli_build_state_store_returns_zero_and_writes_check_report(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)

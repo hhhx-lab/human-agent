@@ -58,6 +58,7 @@ def build_resident_state_inspection(
                 "context_accumulation_window": (
                     "terminal/context_accumulation_window.json"
                 ),
+                "shared_term_registry": "language/shared_term_registry.json",
                 "language_percept": "language/language_percept_frame.json",
                 "relationship_timeline": "relationship/relationship_timeline.json",
                 "dialogue_memory_summary": "memory/dialogue_memory_summary.json",
@@ -75,6 +76,13 @@ def build_resident_state_inspection(
                 ),
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
+                ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
                 ),
             },
         )
@@ -95,9 +103,19 @@ def build_resident_state_inspection(
                 "state_merge_guard": "memory/state_merge_guard.json",
                 "dream_fact_boundary": "membrane/dream_fact_boundary.json",
                 "life_state": "life_state.json",
+                "signal_media_runtime": "signal/signal_media_runtime.json",
+                "core_affect_vector": "body/core_affect_vector.json",
+                "body_resource_budget": "body/body_resource_budget.json",
                 "idle_strategy_state": "terminal/idle_strategy_state.json",
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
+                ),
+                "v0_contract_file_index": "contracts/v0_contract_file_index.json",
+                "doc_to_code_coverage_matrix": (
+                    "contracts/doc_to_code_coverage_matrix.json"
+                ),
+                "v0_contract_coverage_report": (
+                    "../reports/latest/v0_contract_coverage_report.json"
                 ),
             },
         )
@@ -1452,10 +1470,25 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         section.get("dream_fact_boundary", {})
     )
     life_state = _extract_compact_value(section.get("life_state", {}))
+    signal_media = _extract_compact_value(section.get("signal_media_runtime", {}))
+    core_affect = _extract_compact_value(section.get("core_affect_vector", {}))
+    body_budget = _extract_compact_value(section.get("body_resource_budget", {}))
     process_report = _extract_compact_value(
         section.get("digital_life_process_report", {})
     )
     idle_strategy = _extract_compact_value(section.get("idle_strategy_state", {}))
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
+    )
     memory_closeout = _memory_closeout_inspection_snapshot(
         process_report=process_report,
         idle_strategy=idle_strategy,
@@ -1512,6 +1545,17 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
             memory_closeout.get(
                 "autobiographical_repair_retrieval_closeout_present"
             )
+        ),
+        "memory_write_gate_body_signal_modulation": bool(
+            body_signal_modulation.get("schema_version")
+            or body_signal_modulation.get("write_bias")
+        ),
+        "memory_write_gate_consciousness_write_context": bool(
+            memory_write_gate.get("consciousness_write_context")
+        ),
+        "signal_media_body_chain": bool(signal_media or core_affect or body_budget),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -1661,7 +1705,14 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
         "memory_boundary": (
             "cue_driven_reconstruction_write_gate_state_merge_not_raw_context_dump"
         ),
+        "memory_write_gate_body_signal_schema": body_signal_modulation.get(
+            "schema_version"
+        ),
+        "memory_write_gate_consciousness_write_context_ref_count": _count_any(
+            memory_write_gate.get("consciousness_write_context_refs")
+        ),
         **memory_closeout,
+        **contract_coverage,
     }
 
 
@@ -2043,12 +2094,31 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
         process_report=process_report,
         idle_strategy=idle_strategy,
     )
+    shared_term_registry = _extract_compact_value(
+        section.get("shared_term_registry", {})
+    )
     context_accumulation_inspection = (
         _context_accumulation_window_inspection_snapshot(
             context_accumulation=context_accumulation,
             terminal_loop=terminal_loop,
             language_percept=language_percept,
         )
+    )
+    shared_term_promotion = _shared_term_promotion_inspection_snapshot(
+        shared_term_registry=shared_term_registry,
+        terminal_loop=terminal_loop,
+    )
+    contract_index = _extract_compact_value(section.get("v0_contract_file_index", {}))
+    doc_to_code_matrix = _extract_compact_value(
+        section.get("doc_to_code_coverage_matrix", {})
+    )
+    contract_coverage_report = _extract_compact_value(
+        section.get("v0_contract_coverage_report", {})
+    )
+    contract_coverage = _v0_contract_coverage_inspection_snapshot(
+        contract_index=contract_index,
+        doc_to_code_matrix=doc_to_code_matrix,
+        contract_coverage_report=contract_coverage_report,
     )
     schema_handoff = _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
         validation_rollup=validation_rollup,
@@ -2098,6 +2168,12 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
         ),
         "live_context_accumulation": bool(
             context_accumulation_inspection.get("live_context_accumulation_refreshed")
+        ),
+        "shared_term_live_promotion": bool(
+            shared_term_promotion.get("shared_term_live_promotion_present")
+        ),
+        "v0_contract_coverage": bool(
+            contract_coverage.get("v0_contract_coverage_present")
         ),
     }
     active_domains = [
@@ -2159,6 +2235,8 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
         **context_closeout,
         **context_accumulation_inspection,
         **schema_handoff,
+        **shared_term_promotion,
+        **contract_coverage,
     }
 
 

@@ -51,6 +51,7 @@ from ..state_store.memory_retrieval import (
 from ..state_store.relationship_memory import project_relationship_memory
 from ..state_store.memory_write_gate import (
     project_memory_write_gate_with_consciousness_context,
+    project_memory_write_gate_with_signal_body,
 )
 from ..state_store.state_merge_guard import (
     project_state_merge_guard_with_relationship_memory,
@@ -1832,6 +1833,18 @@ def _refresh_long_horizon_continuity(
         metacognition_state=updated_metacognition_state,
         consciousness_probe_bundle=updated_consciousness_probe,
     )
+    if updated_memory_write_gate:
+        updated_memory_write_gate = project_memory_write_gate_with_signal_body(
+            memory_write_gate=updated_memory_write_gate,
+            signal_media_runtime=signal_media_runtime
+            or _read_json_if_exists(state_dir / "signal" / "signal_media_runtime.json"),
+            body_resource_budget=body_resource_budget
+            or _read_json_if_exists(state_dir / "body" / "body_resource_budget.json"),
+            core_affect_vector=_read_json_if_exists(
+                state_dir / "body" / "core_affect_vector.json"
+            ),
+            offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+        )
     updated_responsibility_loop_state = (
         project_responsibility_loop_with_consciousness_context(
             responsibility_loop_state=responsibility_loop_state,

@@ -158,6 +158,40 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
             },
         }
 
+    def test_memory_summary_exposes_body_signal_modulation_and_v0_contract(self):
+        section = {
+            "memory_write_gate": {
+                "stage_policy": "candidate_first_relationship_guarded",
+                "consciousness_write_context": {"ref_set": ["workspace-ref-1"]},
+                "consciousness_write_context_refs": ["workspace-ref-1"],
+                "body_signal_write_modulation": {
+                    "schema_version": "body_signal_memory_gate_profile_v0",
+                    "write_bias": "relationship_context_first",
+                    "candidate_gate_adjustments": ["preserve_relationship_context"],
+                },
+            },
+            "signal_media_runtime": {"schema_version": "signal_media_runtime_v0"},
+            "core_affect_vector": {"schema_version": "core_affect_vector_v0"},
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_reconstructive_memory_summary(section)
+
+        self.assertEqual(
+            summary["memory_write_gate_body_signal_schema"],
+            "body_signal_memory_gate_profile_v0",
+        )
+        self.assertEqual(summary["write_gate_bias"], "relationship_context_first")
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn(
+            "memory_write_gate_body_signal_modulation",
+            summary["domain_presence"],
+        )
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
+
     def test_memory_summary_exposes_closeout_fields(self):
         section = {
             "memory_retrieval": {
@@ -294,6 +328,34 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
             "repair_commitment_shared_language",
         )
         self.assertIn("context_accumulation_window", summary["domain_presence"])
+
+    def test_context_summary_exposes_shared_term_and_v0_contract_coverage(self):
+        section = {
+            "life_context_frame": {"life_name": "Adam"},
+            "shared_term_registry": {
+                "live_promotion_refreshed": True,
+                "shared_terms": [
+                    {"surface": "共同语言", "promotion_gate_status": "seed"},
+                    {"surface": "生命膜", "promotion_gate_status": "promoted"},
+                ],
+            },
+            "terminal_life_loop_state": {"live_shared_term_promotion_refreshed": True},
+            "v0_contract_file_index": {
+                "schema_version": "v0_contract_file_index_v0",
+                "coverage_summary": {"total_required_files": 120, "missing_file_count": 0},
+            },
+            "v0_contract_coverage_report": {
+                "schema_version": "s11_v0_contract_coverage_report_v0",
+                "status": "closed",
+            },
+        }
+
+        summary = _collect_relation_context_summary(section)
+
+        self.assertEqual(summary["shared_term_live_promoted_count"], 1)
+        self.assertTrue(summary["v0_contract_coverage_present"])
+        self.assertIn("shared_term_live_promotion", summary["domain_presence"])
+        self.assertIn("v0_contract_coverage", summary["domain_presence"])
 
     def test_context_summary_exposes_queue_e_schema_handoff(self):
         section = {
