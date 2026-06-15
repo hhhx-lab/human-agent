@@ -15,6 +15,26 @@ class LifeMembraneTests(unittest.TestCase):
     def docs_dir(self) -> Path:
         return self.repo_root / "docs"
 
+    def test_go_nogo_accepts_body_state_sleep_pressure_labels(self):
+        from life_v0.membrane.go_nogo import build_go_nogo_decision
+
+        decision = build_go_nogo_decision(
+            run_id="membrane-body-label",
+            generated_at="2026-06-15T00:00:00+00:00",
+            action_candidate_set={},
+            shadow_action_gate={"external_irreversible_action_allowed": False},
+            need_state={"sleep_pressure": "managed_pre_dream"},
+            core_affect={"pain_pressure": 0.31},
+        )
+
+        self.assertEqual(decision["schema_version"], "go_nogo_decision_v0")
+        self.assertEqual(decision["decision"], "delay")
+        self.assertIn(
+            "external_irreversible_action_remains_shadow_only",
+            decision["delay_reasons"],
+        )
+        self.assertNotIn("sleep_pressure_inhibition", decision["delay_reasons"])
+
     def test_build_life_membrane_writes_boundary_gates_and_activation_preflight(self):
         from life_v0.authority import run_source_authority
         from life_v0.direction import LIFE_TARGETS, run_direction_lock

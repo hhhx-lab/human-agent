@@ -9,6 +9,7 @@ SOURCE_DOC_REFS = [
     "docs/80_post_action_audit_and_correction_policy.md",
     "docs/94_pain_regret_and_repair_signal_schema.md",
     "docs/10_responsibility_regret_repair.md",
+    "docs/real—live0/03_body_affect_homeostasis.md",
     "docs/real—live0/10_responsibility_regret_repair.md",
     "docs/v0/code_framework/queues/20_queue_e_membrane_validator_logic_implementation_contract.md",
 ]
@@ -23,8 +24,28 @@ def build_go_nogo_decision(
     need_state: dict[str, Any],
     core_affect: dict[str, Any],
 ) -> dict[str, Any]:
-    sleep_pressure = float(need_state.get("sleep_pressure", 0.0) or 0.0)
-    pain_pressure = float(core_affect.get("pain_pressure", 0.0) or 0.0)
+    sleep_pressure = _pressure_value(
+        need_state.get("sleep_pressure", 0.0),
+        {
+            "low": 0.1,
+            "quiet": 0.1,
+            "managed_pre_dream": 0.55,
+            "offline_ready": 0.75,
+            "high": 0.75,
+            "urgent": 0.9,
+        },
+    )
+    pain_pressure = _pressure_value(
+        core_affect.get("pain_pressure", 0.0),
+        {
+            "low": 0.1,
+            "quiet": 0.1,
+            "present": 0.45,
+            "elevated": 0.66,
+            "high": 0.75,
+            "urgent": 0.9,
+        },
+    )
     blocked_reasons: list[str] = []
     delay_reasons: list[str] = []
     if shadow_action_gate.get("external_irreversible_action_allowed") is False:
@@ -237,3 +258,17 @@ def _merge_refs(*ref_groups: list[Any]) -> list[str]:
             seen.add(ref)
             merged.append(ref)
     return merged
+
+
+def _pressure_value(value: Any, labels: dict[str, float]) -> float:
+    if value is None or value == "":
+        return 0.0
+    if isinstance(value, (int, float)):
+        return max(0.0, min(1.0, float(value)))
+    text = str(value).strip().lower()
+    if text in labels:
+        return labels[text]
+    try:
+        return max(0.0, min(1.0, float(text)))
+    except ValueError:
+        return 0.0

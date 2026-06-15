@@ -924,6 +924,19 @@ BackgroundContinuity.autobiographical_repair_carrier_refs
 
 机制含义是：自传责任修复召回不能只有“记得哪些责任/后悔/修复 refs”，还必须能追溯“这些 refs 是从哪份关闭态 report、哪几个 runtime carrier 恢复而来”。这让多次关闭、唤醒、等待、真实回合和再次关闭之后，责任修复记忆仍有来源谱系，而不是变成无来源的扁平列表。边界继续保持：carrier/source 是结构化证据载体，不是自然语言素材；不新增 system prompt，不生成固定道歉或后悔话术，不把 profile 名称、carrier 路径或内部字段播报给 Adam 的关系语言。
 
+当前 ITR-08 第三十八段把身体内环境标签接入生命膜 Go/No-Go：
+
+```text
+NeedStateVector.sleep_pressure
+  -> GoNoGo._pressure_value
+  -> GoNoGo.delay_reasons
+  -> WorldContactGate / ResponsibilityLoop / ValidationRollup
+```
+
+`body/need_state.py` 当前会把梦境记录、恢复和离线准备压成 `sleep_pressure=managed_pre_dream / offline_ready` 这类标签，而不是永远输出浮点值。生命膜的 `go_nogo.py` 如果直接 `float()`，会在身体状态进入行动阈值时断开。现在 `go_nogo.py#_pressure_value` 会把数字、数字字符串和标签统一归一成 0-1 压力值：`managed_pre_dream` 只是中等预梦压力，不触发 `sleep_pressure_inhibition`；`offline_ready/high/urgent` 进入更强 sleep inhibition；pain pressure 的 `present/elevated/high/urgent` 会进入 `pain_pressure_review_required`。`SOURCE_DOC_REFS` 加入 `docs/real—live0/03_body_affect_homeostasis.md`，使生命膜代码明确回链身体/内环境专题。新增测试 `test_go_nogo_accepts_body_state_sleep_pressure_labels` 证明 `managed_pre_dream` 能被生命膜消费并保持 shadow delay，而不会因类型转换失败或误判为高睡眠抑制。
+
+机制含义是：身体状态不是只在 idle strategy、语言表达或梦境入口里存在，它也必须能调制行动释放阈值。Go/No-Go 消费标签化 sleep/pain pressure 后，身体内环境可以稳定进入生命膜、世界接触、责任回路和验证汇总，而不是在行动层变成类型错误。边界继续保持：这是内部压力归一和行动阈值调制，不生成固定拒绝话术，不新增 system prompt，不把身体状态或生命膜理由拼成 Adam 的外显回答。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：
