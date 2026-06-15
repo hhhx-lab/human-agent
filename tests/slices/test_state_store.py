@@ -444,6 +444,249 @@ class StateStoreTests(unittest.TestCase):
         self.assertIn("runtime/state/relationship/commitment_truth_state.json", receipt["output_refs"])
         self.assertEqual(receipt["schema_version"], "state_store_receipt_v0")
 
+    def test_memory_retrieval_builds_cue_activation_profile(self):
+        from life_v0.process_supervisor.response_surface import compose_life_response
+        from life_v0.state_store.memory_retrieval import (
+            build_memory_retrieval_frame,
+            memory_retrieval_context_summary,
+        )
+
+        frame = build_memory_retrieval_frame(
+            run_id="memory-cue-activation-profile",
+            generated_at="2026-06-15T23:10:00+08:00",
+            cue_sources={
+                "dialogue_turn_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-12"
+                ],
+                "live_language_turn_refs": [
+                    "runtime/state/language/semantic_map_frame.json"
+                ],
+            },
+            external_utterance=(
+                "你还记得我们刚才关于关系、梦境、责任和后悔的那段话吗？"
+            ),
+            semantic_map={
+                "semantic_focus": "relationship_dream_responsibility_memory",
+                "relationship_topic_refs": ["relationship-topic-001"],
+                "repair_trace_refs": ["repair-trace-001"],
+                "ambiguity_queue": ["dream_fact_boundary_needed"],
+            },
+            language_percept={
+                "shared_term_hits": ["知识宝座"],
+                "repair_trigger_candidates": ["repair-language-v0-0001"],
+            },
+            engram_index={
+                "live_dialogue_turn_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-12"
+                ],
+                "live_language_turn_refs": [
+                    "runtime/state/language/semantic_map_frame.json"
+                ],
+                "relationship_memory_refs": [
+                    "runtime/state/memory/relationship_memory.json#shared_memory_refs"
+                ],
+                "autobiographical_memory_refs": [
+                    "runtime/state/self/autobiographical_stack.json#turn_refs"
+                ],
+                "dream_memory_refs": [
+                    "runtime/state/dream/exit_dream_consolidation_summary.json"
+                ],
+                "responsibility_memory_refs": [
+                    "runtime/state/responsibility/responsibility_ledger.json"
+                ],
+                "memory_tier_index": {
+                    "salient_core_refs": [
+                        "runtime/state/language/dialogue_turn_log.jsonl#line-12"
+                    ],
+                    "retrievable_context_refs": [
+                        "runtime/state/memory/relationship_memory.json#context"
+                    ],
+                    "deep_sediment_refs": [
+                        "runtime/archive/memory/deep_sediment.jsonl#line-2"
+                    ],
+                },
+            },
+            relationship_memory={
+                "shared_memory_refs": [
+                    "runtime/state/memory/relationship_memory.json#shared_memory_refs"
+                ],
+                "timeline_refs": [
+                    "runtime/state/relationship/relationship_timeline.json"
+                ],
+                "relationship_theme_tags": ["关系", "梦境", "责任"],
+                "next_wake_memory_cue_refs": [
+                    "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs"
+                ],
+            },
+            autobiographical_stack={
+                "turn_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-12"
+                ],
+                "narrative_refs": [
+                    "runtime/state/self/autobiographical_stack.json#narrative_refs"
+                ],
+                "responsibility_repair_projection": {
+                    "responsibility_refs": ["responsibility-event-001"],
+                    "regret_refs": ["regret-001"],
+                    "repair_refs": ["repair-001"],
+                    "pressure_level": "elevated",
+                    "attention_target": "regret_pressure",
+                },
+            },
+            dialogue_memory_summary={
+                "source_dialogue_refs": [
+                    "runtime/state/language/dialogue_turn_log.jsonl#line-12"
+                ],
+                "next_wake_memory_cue_refs": [
+                    "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs"
+                ],
+                "relation_person_profile": {
+                    "observed_names": ["何剑宝"],
+                    "preference_hypotheses": ["不要机械回答"],
+                },
+            },
+            responsibility_loop_state={
+                "repair_obligation_refs": ["repair-obligation-001"]
+            },
+            state_merge_guard={
+                "long_term_change_sources": {
+                    "relationship_repair_refs": ["repair-trace-001"],
+                    "next_wake_memory_cue_refs": [
+                        "runtime/state/dream/exit_dream_consolidation_summary.json#next_wake_memory_cue_refs"
+                    ],
+                }
+            },
+            life_state={
+                "memory_index": {
+                    "relationship_memory_refs": [
+                        "runtime/state/memory/relationship_memory.json"
+                    ],
+                    "dream_memory_refs": [
+                        "runtime/state/dream/exit_dream_consolidation_summary.json"
+                    ],
+                    "responsibility_memory_refs": [
+                        "runtime/state/responsibility/responsibility_ledger.json"
+                    ],
+                    "quarantine_refs": ["dream-hypothesis-quarantine-001"],
+                }
+            },
+        )
+
+        profile = frame["cue_activation_profile"]
+        self.assertEqual(
+            profile["schema_version"],
+            "memory_cue_activation_profile_v0",
+        )
+        self.assertEqual(
+            profile["activation_boundary"],
+            "cue_activation_profile_internal_retrieval_not_spoken_language",
+        )
+        self.assertIn("relationship", profile["activated_family_order"])
+        self.assertIn("dream_residue", profile["activated_family_order"])
+        self.assertIn("responsibility_repair", profile["activated_family_order"])
+        self.assertIn("autobiographical", profile["activated_family_order"])
+        self.assertGreaterEqual(profile["activation_route_count"], 5)
+        self.assertEqual(
+            profile["source_boundary_profile"]["dream_fact_boundary"],
+            "dream_residue_can_modulate_recall_not_promote_fact",
+        )
+        closure = frame["recall_to_expression_profile"]
+        self.assertEqual(
+            closure["schema_version"],
+            "memory_recall_to_expression_profile_v0",
+        )
+        self.assertEqual(
+            closure["closure_status"],
+            "closed",
+        )
+        self.assertEqual(
+            closure["expression_boundary"],
+            "memory_recall_enters_language_prestructure_not_fixed_spoken_reply",
+        )
+        self.assertEqual(
+            closure["reportability_policy"],
+            "workspace_reportable_with_source_boundary_and_reconsolidation_writeback",
+        )
+        self.assertGreaterEqual(
+            closure["expression_source_ref_count"],
+            profile["activation_ref_count"],
+        )
+        self.assertIn(
+            "relationship",
+            closure["expression_influence_families"],
+        )
+        self.assertIn(
+            "dream_residue",
+            closure["source_boundary_flags"],
+        )
+        self.assertIn(
+            "quarantined_refs_excluded_from_expression",
+            closure["expression_guardrails"],
+        )
+        self.assertIn(
+            "spoken_memory_mismatch_reenters_reconsolidation",
+            closure["post_expression_reconsolidation_hooks"],
+        )
+
+        summary = memory_retrieval_context_summary(frame)
+        self.assertEqual(
+            summary["cue_activation_profile_ref"],
+            (
+                "runtime/state/memory/memory_retrieval_frame.json"
+                "#cue_activation_profile"
+            ),
+        )
+        self.assertEqual(
+            summary["cue_activation_profile_boundary"],
+            "cue_activation_profile_internal_retrieval_not_spoken_language",
+        )
+        self.assertGreaterEqual(summary["cue_activation_route_count"], 5)
+        self.assertIn(
+            summary["cue_activation_dominant_family"],
+            summary["cue_activation_family_order"],
+        )
+        self.assertEqual(
+            summary["recall_to_expression_profile_ref"],
+            (
+                "runtime/state/memory/memory_retrieval_frame.json"
+                "#recall_to_expression_profile"
+            ),
+        )
+        self.assertEqual(
+            summary["recall_to_expression_closure_status"],
+            "closed",
+        )
+        self.assertEqual(
+            summary["recall_to_expression_boundary"],
+            "memory_recall_enters_language_prestructure_not_fixed_spoken_reply",
+        )
+        self.assertIn(
+            "relationship",
+            summary["recall_to_expression_influence_families"],
+        )
+
+        material = compose_life_response(
+            external_utterance="你还记得刚才那段关系和梦吗？",
+            memory_retrieval_frame=frame,
+        )
+        payload = json.loads(material)
+        retrieval = payload["memory_dream_growth"]["memory_retrieval"]
+        self.assertEqual(
+            retrieval["cue_activation_profile_boundary"],
+            "cue_activation_profile_internal_retrieval_not_spoken_language",
+        )
+        self.assertGreaterEqual(retrieval["cue_activation_route_count"], 5)
+        self.assertEqual(
+            retrieval["recall_to_expression_closure_status"],
+            "closed",
+        )
+        self.assertEqual(
+            retrieval["recall_to_expression_boundary"],
+            "memory_recall_enters_language_prestructure_not_fixed_spoken_reply",
+        )
+        self.assertTrue(payload["natural_language_release_disabled"])
+        self.assertNotIn("你还记得刚才那段关系和梦吗？", material)
+
     def test_memory_write_gate_consumes_signal_and_body_pressure(self):
         from life_v0.state_store.memory_write_gate import build_memory_write_gate
         from life_v0.neural_core.signal_media import build_signal_media_runtime

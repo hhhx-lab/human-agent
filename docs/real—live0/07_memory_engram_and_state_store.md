@@ -85,6 +85,45 @@ live0 的记忆不是把所有文本塞进一个长上下文，而是分成可�
 | 写门 | `MemoryWriteGate` | pass/quarantine/sandbox/audit/index policy | 防止梦境、误读、未经证实的判断污染长期记忆 |
 | 合并门 | `StateMergeGuard` | promotion、quarantine、repair、merge routes | 控制候选如何进入长期状态和慢变量 |
 
+## 记忆到输出的闭环
+
+live0 现在把“记住”定义为可达性，而不是只定义为落盘。记忆如果只进入 `memory_trace_store`、`engram_index` 或关系/自传 refs，但不能在被问到时被线索唤起、进入语言前结构、影响真实回答，并在说错后重新巩固，那仍然是存储对象，不是完整记忆。
+
+对应人脑机制是：线索触发 engram-like 痕迹，海马索引和模式补全把片段重构为事件，前额叶/工作区决定哪些内容可报告，语言系统再把可报告材料组织成表达；表达后的确认、纠正、误认或沉默会再次改变记忆可达性和长期状态。
+
+当前代码链：
+
+```text
+build_memory_retrieval_frame(...)
+  -> cue_activation_profile
+  -> recall_to_expression_profile
+  -> memory_retrieval_context_summary(...)
+  -> response_surface.py#memory_dream_growth.memory_retrieval
+  -> model_expression.py#expression_context.memory_retrieval
+  -> model_expression_context_summary
+```
+
+`cue_activation_profile` 说明为什么某一族记忆被唤起，例如 relationship、autobiographical、responsibility_repair、dream_residue、live_turn、deep_sediment。`recall_to_expression_profile` 说明被唤起的材料能否进入表达：它包含 `closure_status`、`expression_boundary`、`reportability_policy`、`expression_source_refs`、`source_boundary_flags`、`expression_guardrails` 和 `post_expression_reconsolidation_hooks`。
+
+这两个对象都不是提示词，也不是固定回答。它们只能作为结构化材料进入 `response_surface.py` 和 `model_expression.py`，不能直接拼出“我记得……”之类的中文句子。语言系统要根据当前关系、身体、情绪、意识、梦境、责任和来源边界自行组织表达。
+
+### “存了但说不出”的断链检查
+
+| 断链 | 典型表现 | 必须补的链路 |
+|---|---|---|
+| 只有长期 refs | 文件里有记忆，但问起时没有相关材料进入表达 | `cue_activation_profile` 和 `recall_to_expression_profile` |
+| 只有相似检索 | 找到相似文本，但关系主体、梦境边界或责任来源错配 | pattern separation / source boundary |
+| 只有表达材料 | 模型知道某个片段，但说错后不回写 | post-expression reconsolidation hooks |
+| 只有梦境线索 | 梦境残留影响回答，却被当成事实 | dream fact boundary + write gate |
+| 只有关系画像 | 把某个关系人的偏好泛化给所有关系 | relation scope separation |
+
+最低测试已经覆盖第一层闭合：
+
+- `tests/slices/test_state_store.py#test_memory_retrieval_builds_cue_activation_profile`
+- `tests/process/test_model_expression.py#test_openai_compatible_expression_uses_transport_and_redacts_secret`
+
+后续 `MemoryTraceStore`、`MemoryAllocationGate`、`EngramLikeTraceCluster`、`PatternCompletionFrame` 和 `MemoryValidator` 每推进一步，都要把输出继续接入 `recall_to_expression_profile`。否则就会重新退回“存了但不一定能说对”的普通 RAG。
+
 一次真实回合的记忆落盘路线是：
 
 ```text

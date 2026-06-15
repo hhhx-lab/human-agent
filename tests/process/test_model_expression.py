@@ -197,6 +197,52 @@ class ModelExpressionTests(unittest.TestCase):
                             "autobiographical_repair_evidence_not_spoken_language"
                         ),
                     },
+                    "cue_activation_profile": {
+                        "schema_version": "memory_cue_activation_profile_v0",
+                        "profile_ref": (
+                            "runtime/state/memory/memory_retrieval_frame.json"
+                            "#cue_activation_profile"
+                        ),
+                        "activation_boundary": (
+                            "cue_activation_profile_internal_retrieval_not_spoken_language"
+                        ),
+                        "dominant_family": "responsibility_repair",
+                        "activated_family_order": [
+                            "responsibility_repair",
+                            "relationship",
+                            "autobiographical",
+                        ],
+                        "activation_route_count": 3,
+                        "activation_match_strength": "moderate",
+                        "activation_ref_count": 6,
+                    },
+                    "recall_to_expression_profile": {
+                        "schema_version": "memory_recall_to_expression_profile_v0",
+                        "profile_ref": (
+                            "runtime/state/memory/memory_retrieval_frame.json"
+                            "#recall_to_expression_profile"
+                        ),
+                        "closure_status": "closed",
+                        "expression_boundary": (
+                            "memory_recall_enters_language_prestructure_not_fixed_spoken_reply"
+                        ),
+                        "reportability_policy": (
+                            "workspace_reportable_with_source_boundary_and_reconsolidation_writeback"
+                        ),
+                        "expression_source_ref_count": 8,
+                        "expression_influence_families": [
+                            "responsibility_repair",
+                            "relationship",
+                            "autobiographical",
+                        ],
+                        "source_boundary_flags": ["relationship", "responsibility_repair"],
+                        "expression_guardrails": [
+                            "quarantined_refs_excluded_from_expression"
+                        ],
+                        "post_expression_reconsolidation_hooks": [
+                            "spoken_memory_mismatch_reenters_reconsolidation"
+                        ],
+                    },
                     "dream_residue_hits": [],
                     "responsibility_hits": [
                         "runtime/state/responsibility/responsibility_ledger.json#responsibility_events"
@@ -397,6 +443,48 @@ class ModelExpressionTests(unittest.TestCase):
             )
             self.assertEqual(
                 expression_context["memory_retrieval"][
+                    "cue_activation_profile_boundary"
+                ],
+                "cue_activation_profile_internal_retrieval_not_spoken_language",
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "cue_activation_dominant_family"
+                ],
+                "responsibility_repair",
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "cue_activation_route_count"
+                ],
+                3,
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "recall_to_expression_closure_status"
+                ],
+                "closed",
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "recall_to_expression_boundary"
+                ],
+                "memory_recall_enters_language_prestructure_not_fixed_spoken_reply",
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
+                    "recall_to_expression_reportability_policy"
+                ],
+                "workspace_reportable_with_source_boundary_and_reconsolidation_writeback",
+            )
+            self.assertIn(
+                "responsibility_repair",
+                expression_context["memory_retrieval"][
+                    "recall_to_expression_influence_families"
+                ],
+            )
+            self.assertEqual(
+                expression_context["memory_retrieval"][
                     "exit_dream_next_wake_cue_ref_count"
                 ],
                 1,
@@ -499,6 +587,36 @@ class ModelExpressionTests(unittest.TestCase):
                     "autobiographical_repair_boundary"
                 ],
                 "autobiographical_repair_retrieval_not_spoken_language",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_cue_activation_dominant_family"
+                ],
+                "responsibility_repair",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_cue_activation_route_count"
+                ],
+                3,
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_cue_activation_profile_boundary"
+                ],
+                "cue_activation_profile_internal_retrieval_not_spoken_language",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_recall_to_expression_closure_status"
+                ],
+                "closed",
+            )
+            self.assertEqual(
+                state["model_expression_context_summary"][
+                    "memory_retrieval_recall_to_expression_boundary"
+                ],
+                "memory_recall_enters_language_prestructure_not_fixed_spoken_reply",
             )
             self.assertEqual(
                 state["model_expression_context_summary"][

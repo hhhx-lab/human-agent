@@ -1594,6 +1594,30 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         "memory_retrieval_reconstruction_focus": memory_retrieval.get(
             "reconstruction_focus"
         ),
+        "memory_retrieval_cue_activation_dominant_family": memory_retrieval.get(
+            "cue_activation_dominant_family"
+        ),
+        "memory_retrieval_cue_activation_route_count": memory_retrieval.get(
+            "cue_activation_route_count"
+        ),
+        "memory_retrieval_cue_activation_profile_boundary": memory_retrieval.get(
+            "cue_activation_profile_boundary"
+        ),
+        "memory_retrieval_cue_activation_match_strength": memory_retrieval.get(
+            "cue_activation_match_strength"
+        ),
+        "memory_retrieval_recall_to_expression_closure_status": memory_retrieval.get(
+            "recall_to_expression_closure_status"
+        ),
+        "memory_retrieval_recall_to_expression_boundary": memory_retrieval.get(
+            "recall_to_expression_boundary"
+        ),
+        "memory_retrieval_recall_to_expression_reportability_policy": (
+            memory_retrieval.get("recall_to_expression_reportability_policy")
+        ),
+        "memory_retrieval_recall_to_expression_source_ref_count": (
+            memory_retrieval.get("recall_to_expression_source_ref_count")
+        ),
         "autobiographical_responsibility_repair_hit_count": memory_retrieval.get(
             "autobiographical_responsibility_repair_hit_count"
         ),

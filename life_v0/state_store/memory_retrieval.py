@@ -96,6 +96,38 @@ def build_memory_retrieval_frame(
         autobiographical_repair_hits=autobiographical_repair_hits,
     )
     blocked_refs = _blocked_or_quarantined_refs(engram_index, life_state)
+    cue_activation_profile = _cue_activation_profile(
+        cue_terms=cue_terms,
+        tiered_recall=tiered_recall,
+        activated_refs=activated_refs,
+        relationship_hits=relationship_hits,
+        autobiographical_hits=autobiographical_hits,
+        autobiographical_repair_hits=autobiographical_repair_hits,
+        dream_residue_hits=dream_residue_hits,
+        responsibility_hits=responsibility_hits,
+        blocked_refs=blocked_refs,
+        exit_dream_governance=exit_dream_next_wake_governance,
+    )
+    recall_to_expression_profile = _recall_to_expression_profile(
+        cue_activation_profile=cue_activation_profile,
+        reconstruction_inputs=_reconstruction_inputs(
+            cue_terms=cue_terms,
+            tiered_recall=tiered_recall,
+            relationship_hits=relationship_hits,
+            autobiographical_hits=autobiographical_hits,
+            autobiographical_repair_hits=autobiographical_repair_hits,
+            dream_residue_hits=dream_residue_hits,
+            responsibility_hits=responsibility_hits,
+        ),
+        activated_refs=activated_refs,
+        relationship_hits=relationship_hits,
+        autobiographical_hits=autobiographical_hits,
+        autobiographical_repair_hits=autobiographical_repair_hits,
+        dream_residue_hits=dream_residue_hits,
+        responsibility_hits=responsibility_hits,
+        blocked_refs=blocked_refs,
+        exit_dream_governance=exit_dream_next_wake_governance,
+    )
     source_docs = _dedupe(_string_list(source_doc_refs) + SOURCE_DOC_REFS)
     return {
         "schema_version": "memory_retrieval_frame_v0",
@@ -125,6 +157,8 @@ def build_memory_retrieval_frame(
         "exit_dream_next_wake_governance": exit_dream_next_wake_governance,
         "responsibility_hits": responsibility_hits,
         "tiered_recall": tiered_recall,
+        "cue_activation_profile": cue_activation_profile,
+        "recall_to_expression_profile": recall_to_expression_profile,
         "reconstruction_inputs": _reconstruction_inputs(
             cue_terms=cue_terms,
             tiered_recall=tiered_recall,
@@ -215,10 +249,50 @@ def memory_retrieval_context_summary(
         return {}
     tiered = frame.get("tiered_recall", {})
     reconstruction = frame.get("reconstruction_inputs", {})
+    cue_activation = frame.get("cue_activation_profile")
+    if not isinstance(cue_activation, dict):
+        cue_activation = {}
+    recall_to_expression = frame.get("recall_to_expression_profile")
+    if not isinstance(recall_to_expression, dict):
+        recall_to_expression = {}
     return {
         "memory_retrieval_frame_ref": MEMORY_RETRIEVAL_FRAME_REF,
         "retrieval_mode": frame.get("retrieval_mode"),
         "cue_terms": _string_list(frame.get("cue_terms"))[:12],
+        "cue_activation_profile_ref": cue_activation.get("profile_ref"),
+        "cue_activation_profile_boundary": cue_activation.get(
+            "activation_boundary"
+        ),
+        "cue_activation_dominant_family": cue_activation.get("dominant_family"),
+        "cue_activation_family_order": _string_list(
+            cue_activation.get("activated_family_order")
+        )[:8],
+        "cue_activation_route_count": cue_activation.get(
+            "activation_route_count"
+        ),
+        "cue_activation_match_strength": cue_activation.get(
+            "activation_match_strength"
+        ),
+        "cue_activation_ref_count": cue_activation.get("activation_ref_count"),
+        "recall_to_expression_profile_ref": recall_to_expression.get("profile_ref"),
+        "recall_to_expression_closure_status": recall_to_expression.get(
+            "closure_status"
+        ),
+        "recall_to_expression_boundary": recall_to_expression.get(
+            "expression_boundary"
+        ),
+        "recall_to_expression_reportability_policy": recall_to_expression.get(
+            "reportability_policy"
+        ),
+        "recall_to_expression_source_ref_count": recall_to_expression.get(
+            "expression_source_ref_count"
+        ),
+        "recall_to_expression_influence_families": _string_list(
+            recall_to_expression.get("expression_influence_families")
+        )[:8],
+        "recall_to_expression_source_boundary_flags": _string_list(
+            recall_to_expression.get("source_boundary_flags")
+        )[:8],
         "activated_engram_ref_count": len(
             _string_list(frame.get("activated_engram_refs"))
         ),
@@ -659,6 +733,340 @@ def _writeback_candidates(
             }
         )
     return candidates
+
+
+def _recall_to_expression_profile(
+    *,
+    cue_activation_profile: dict[str, Any],
+    reconstruction_inputs: dict[str, Any],
+    activated_refs: list[str],
+    relationship_hits: list[str],
+    autobiographical_hits: list[str],
+    autobiographical_repair_hits: list[str],
+    dream_residue_hits: list[str],
+    responsibility_hits: list[str],
+    blocked_refs: list[str],
+    exit_dream_governance: dict[str, Any],
+) -> dict[str, Any]:
+    influence_families = _string_list(
+        cue_activation_profile.get("activated_family_order")
+    )
+    source_refs = _dedupe(
+        activated_refs
+        + relationship_hits
+        + autobiographical_hits
+        + autobiographical_repair_hits
+        + dream_residue_hits
+        + responsibility_hits
+        + _string_list(exit_dream_governance.get("next_wake_memory_cue_refs"))
+    )
+    blocked_set = set(blocked_refs)
+    reportable_refs = [
+        ref for ref in source_refs if ref and ref not in blocked_set
+    ]
+    boundary_flags: list[str] = []
+    if relationship_hits or "relationship" in influence_families:
+        boundary_flags.append("relationship")
+    if autobiographical_hits or "autobiographical" in influence_families:
+        boundary_flags.append("autobiographical")
+    if autobiographical_repair_hits or responsibility_hits:
+        boundary_flags.append("responsibility_repair")
+    if dream_residue_hits or "dream_residue" in influence_families:
+        boundary_flags.append("dream_residue")
+    if blocked_refs:
+        boundary_flags.append("quarantine")
+
+    closure_status = (
+        "closed"
+        if reportable_refs or influence_families
+        else "open_no_retrievable_expression_material"
+    )
+    return {
+        "schema_version": "memory_recall_to_expression_profile_v0",
+        "profile_ref": (
+            MEMORY_RETRIEVAL_FRAME_REF + "#recall_to_expression_profile"
+        ),
+        "closure_status": closure_status,
+        "expression_boundary": (
+            "memory_recall_enters_language_prestructure_not_fixed_spoken_reply"
+        ),
+        "reportability_policy": (
+            "workspace_reportable_with_source_boundary_and_reconsolidation_writeback"
+        ),
+        "dominant_family": cue_activation_profile.get("dominant_family"),
+        "activation_match_strength": cue_activation_profile.get(
+            "activation_match_strength"
+        ),
+        "reconstruction_focus": reconstruction_inputs.get(
+            "reconstruction_focus"
+        ),
+        "expression_source_ref_count": len(source_refs),
+        "reportable_source_ref_count": len(reportable_refs),
+        "expression_source_refs": reportable_refs[:12],
+        "expression_influence_families": influence_families[:8],
+        "source_boundary_flags": _dedupe(boundary_flags),
+        "expression_guardrails": _dedupe(
+            [
+                "quarantined_refs_excluded_from_expression",
+                "dream_residue_requires_fact_boundary",
+                "relationship_memory_requires_relation_scope_boundary",
+                "responsibility_memory_requires_write_gate_and_state_merge",
+                "retrieval_material_not_spoken_template",
+            ]
+        ),
+        "post_expression_reconsolidation_hooks": [
+            "spoken_memory_mismatch_reenters_reconsolidation",
+            "correction_updates_contradiction_links",
+            "confirmed_recall_strengthens_trace_accessibility",
+            "uncertain_recall_remains_hypothesis_or_silent_trace",
+        ],
+        "consumer_refs": [
+            (
+                "runtime/state/language/model_expression_state.json"
+                "#model_expression_context_summary"
+            ),
+            (
+                "runtime/reports/latest/dialogue_writeback_bundle.json"
+                "#memory_retrieval_writeback_refs"
+            ),
+            (
+                "runtime/state/consciousness/workspace_frame.json"
+                "#memory_retrieval_refs"
+            ),
+        ],
+    }
+
+
+def _cue_activation_profile(
+    *,
+    cue_terms: list[str],
+    tiered_recall: dict[str, Any],
+    activated_refs: list[str],
+    relationship_hits: list[str],
+    autobiographical_hits: list[str],
+    autobiographical_repair_hits: list[str],
+    dream_residue_hits: list[str],
+    responsibility_hits: list[str],
+    blocked_refs: list[str],
+    exit_dream_governance: dict[str, Any],
+) -> dict[str, Any]:
+    family_inputs = [
+        (
+            "relationship",
+            relationship_hits,
+            _cue_family_matches(
+                cue_terms,
+                (
+                    "关系",
+                    "朋友",
+                    "家人",
+                    "同学",
+                    "陌生",
+                    "shared",
+                    "relation",
+                    "relationship",
+                ),
+            ),
+        ),
+        (
+            "autobiographical",
+            autobiographical_hits,
+            _cue_family_matches(
+                cue_terms,
+                (
+                    "我",
+                    "自传",
+                    "经历",
+                    "记得",
+                    "记忆",
+                    "回忆",
+                    "turn",
+                    "narrative",
+                    "autobiographical",
+                ),
+            ),
+        ),
+        (
+            "responsibility_repair",
+            _dedupe(autobiographical_repair_hits + responsibility_hits),
+            _cue_family_matches(
+                cue_terms,
+                (
+                    "责任",
+                    "后悔",
+                    "修复",
+                    "道歉",
+                    "承担",
+                    "regret",
+                    "repair",
+                    "responsibility",
+                ),
+            ),
+        ),
+        (
+            "dream_residue",
+            dream_residue_hits,
+            _cue_family_matches(
+                cue_terms,
+                (
+                    "梦",
+                    "梦境",
+                    "睡眠",
+                    "醒后",
+                    "离线",
+                    "dream",
+                    "wake",
+                    "sleep",
+                ),
+            ),
+        ),
+        (
+            "live_turn",
+            [
+                ref
+                for ref in activated_refs
+                if "dialogue_turn_log" in ref
+                or "language_percept" in ref
+                or "semantic_map" in ref
+                or "live" in ref
+            ],
+            _cue_family_matches(
+                cue_terms,
+                (
+                    "dialogue",
+                    "live",
+                    "turn",
+                    "语义",
+                    "语言",
+                    "刚才",
+                    "这段话",
+                ),
+            ),
+        ),
+        (
+            "deep_sediment",
+            _string_list(tiered_recall.get("deep_sediment_refs")),
+            _cue_family_matches(
+                cue_terms,
+                (
+                    "沉淀",
+                    "底层",
+                    "深层",
+                    "archive",
+                    "sediment",
+                    "long",
+                ),
+            ),
+        ),
+    ]
+    routes: list[dict[str, Any]] = []
+    for family, refs, cue_matches in family_inputs:
+        family_refs = _dedupe(refs)
+        if not family_refs and not cue_matches:
+            continue
+        routes.append(
+            {
+                "family": family,
+                "cue_match_count": len(cue_matches),
+                "cue_matches": cue_matches[:8],
+                "ref_count": len(family_refs),
+                "top_refs": family_refs[:6],
+                "route_reason": _activation_route_reason(family),
+            }
+        )
+    routes.sort(
+        key=lambda item: (item["cue_match_count"] + item["ref_count"], item["family"]),
+        reverse=True,
+    )
+    activated_family_order = [str(item["family"]) for item in routes]
+    total_signal_count = sum(
+        int(item["cue_match_count"]) + int(item["ref_count"]) for item in routes
+    )
+    activation_ref_count = len(
+        _dedupe(
+            activated_refs
+            + relationship_hits
+            + autobiographical_hits
+            + autobiographical_repair_hits
+            + dream_residue_hits
+            + responsibility_hits
+            + _string_list(exit_dream_governance.get("next_wake_memory_cue_refs"))
+        )
+    )
+    if total_signal_count >= 18:
+        match_strength = "strong"
+    elif total_signal_count >= 8:
+        match_strength = "moderate"
+    elif total_signal_count > 0:
+        match_strength = "weak"
+    else:
+        match_strength = "minimal"
+    return {
+        "schema_version": "memory_cue_activation_profile_v0",
+        "profile_ref": (
+            MEMORY_RETRIEVAL_FRAME_REF + "#cue_activation_profile"
+        ),
+        "activation_boundary": (
+            "cue_activation_profile_internal_retrieval_not_spoken_language"
+        ),
+        "activation_policy": (
+            "cue_family_routes_before_reconstructive_recall_writeback"
+        ),
+        "dominant_family": activated_family_order[0]
+        if activated_family_order
+        else None,
+        "activated_family_order": activated_family_order,
+        "activation_route_count": len(routes),
+        "activation_match_strength": match_strength,
+        "activation_ref_count": activation_ref_count,
+        "cue_term_count": len(cue_terms),
+        "family_routes": routes[:8],
+        "source_boundary_profile": {
+            "relationship_boundary": (
+                "relationship_memory_modulates_recall_not_role_hierarchy"
+            ),
+            "autobiographical_boundary": (
+                "autobiographical_memory_reconstructs_self_continuity_not_fixed_script"
+            ),
+            "dream_fact_boundary": (
+                "dream_residue_can_modulate_recall_not_promote_fact"
+            ),
+            "responsibility_boundary": (
+                "responsibility_repair_memory_requires_write_gate_and_state_merge"
+            ),
+            "quarantine_ref_count": len(blocked_refs),
+        },
+    }
+
+
+def _cue_family_matches(
+    cue_terms: list[str],
+    markers: tuple[str, ...],
+) -> list[str]:
+    matches: list[str] = []
+    lowered_markers = [marker.lower() for marker in markers]
+    for cue in cue_terms:
+        cue_text = str(cue)
+        cue_lower = cue_text.lower()
+        if any(marker in cue_lower or marker in cue_text for marker in lowered_markers):
+            matches.append(cue_text)
+    return _dedupe(matches)
+
+
+def _activation_route_reason(family: str) -> str:
+    reasons = {
+        "relationship": "relationship_cues_activate_shared_and_timeline_memory",
+        "autobiographical": "self_history_cues_activate_turn_and_narrative_memory",
+        "responsibility_repair": (
+            "repair_and_regret_cues_activate_obligation_memory"
+        ),
+        "dream_residue": (
+            "dream_and_next_wake_cues_activate_bounded_dream_residue"
+        ),
+        "live_turn": "current_language_cues_bind_live_turn_refs",
+        "deep_sediment": "low_access_context_kept_as_deep_recall_material",
+    }
+    return reasons.get(family, "cue_family_route")
 
 
 def _exit_dream_next_wake_governance(
