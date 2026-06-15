@@ -3330,6 +3330,95 @@ class PersistentDigitalLifeProcessTests(
         for ref in expected_refs:
             self.assertIn(ref, profile["background_continuity_ref_set"])
 
+    def test_background_continuity_restores_consciousness_write_context_from_model_expression_report_fields(self):
+        from life_v0.process_supervisor.background_continuity import (
+            load_background_continuity_profile,
+        )
+
+        expected_refs = [
+            "runtime/state/consciousness/workspace_frame.json",
+            "runtime/state/consciousness/broadcast_frame.json",
+            "runtime/state/consciousness/metacognition_state.json",
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            terminal_dir = root / "state" / "terminal"
+            reports_dir = root / "reports" / "latest"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                reports_dir / "digital_life_process_report.json",
+                {
+                    "schema_version": "digital_life_process_report_v0",
+                    "run_id": "model-expression-consciousness-context-restore",
+                    "model_expression_prediction_attention_consciousness_write_context_refs": expected_refs,
+                    "model_expression_prediction_attention_consciousness_write_context_ref_count": len(
+                        expected_refs
+                    ),
+                    "model_expression_prediction_attention_consciousness_write_context_workspace_candidate_count": 2,
+                    "model_expression_prediction_attention_consciousness_write_context_broadcast_target_count": 3,
+                    "model_expression_prediction_attention_consciousness_write_context_reportability_flag_count": 1,
+                    "model_expression_prediction_attention_consciousness_write_context_bias": (
+                        "prefer_reportable_workspace_candidates"
+                    ),
+                    "model_expression_prediction_attention_consciousness_write_context_candidate_gate_adjustments": [
+                        "prioritize_workspace_reportability_before_write"
+                    ],
+                    "model_expression_prediction_attention_consciousness_write_context_boundary": (
+                        "memory_consciousness_write_context_not_spoken_language"
+                    ),
+                },
+            )
+
+            profile = load_background_continuity_profile(
+                terminal_dir=terminal_dir,
+                reports_dir=reports_dir,
+            )
+
+        self.assertEqual(
+            profile["background_consciousness_write_context_refs"],
+            expected_refs,
+        )
+        self.assertEqual(
+            profile["background_consciousness_write_context_ref_count"],
+            len(expected_refs),
+        )
+        self.assertEqual(
+            profile[
+                "background_consciousness_write_context_workspace_candidate_count"
+            ],
+            2,
+        )
+        self.assertEqual(
+            profile[
+                "background_consciousness_write_context_broadcast_target_count"
+            ],
+            3,
+        )
+        self.assertEqual(
+            profile[
+                "background_consciousness_write_context_reportability_flag_count"
+            ],
+            1,
+        )
+        self.assertEqual(
+            profile["background_consciousness_write_context_bias"],
+            "prefer_reportable_workspace_candidates",
+        )
+        self.assertEqual(
+            profile[
+                "background_consciousness_write_context_candidate_gate_adjustments"
+            ],
+            ["prioritize_workspace_reportability_before_write"],
+        )
+        self.assertEqual(
+            profile["background_consciousness_write_context_boundary"],
+            "memory_consciousness_write_context_not_spoken_language",
+        )
+        for ref in expected_refs:
+            self.assertIn(ref, profile["background_continuity_ref_set"])
+
     def test_background_continuity_restores_identity_consciousness_birth_from_lineage_presence(self):
         from life_v0.process_supervisor.background_continuity import (
             load_background_continuity_profile,

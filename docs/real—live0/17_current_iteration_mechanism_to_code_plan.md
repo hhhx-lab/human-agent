@@ -1084,6 +1084,20 @@ ModelExpression.model_expression_context_summary.prediction_attention_consciousn
 
 机制含义是：模型表达前消费到的工作区写门上下文，不只在语言 state 里短暂停留，也进入关闭态总账和 receipt 证据链。这样后续检查“语言表达是否真实消费了工作区/广播/元认知写门材料”时，可以从 process report/digest/receipt 直接追溯，而不用只打开语言子状态。边界继续保持：这是结构化追溯证据，不生成固定回答，不新增 system prompt，不把意识写门、工作区、广播、元认知或生命信号释放成外显对话。
 
+当前 ITR-08 第四十九段把关闭态模型表达证据回灌到下一次唤醒：
+
+```text
+DigitalLifeProcessReport.model_expression_prediction_attention_consciousness_write_context_*
+  -> BackgroundContinuity.background_consciousness_write_context_*
+  -> BackgroundContinuity.background_continuity_ref_set
+  -> IdleStrategy payload.update(background_continuity_profile)
+  -> WaitingHeartbeat / ResidentBackgroundLineageState.prediction_write_gate_presence
+```
+
+`background_continuity.py` 现在会把 `model_expression_prediction_attention_consciousness_write_context_refs`、ref count、workspace candidate count、broadcast target count、reportability flag count、bias、candidate gate adjustments 和 boundary 纳入意识写门恢复来源，并归一成下一轮可消费的 `background_consciousness_write_context_*` 字段。这样即使关闭态 process report 没有单独保存 `background_consciousness_write_context_*`，只保存了模型表达前消费证据，下一次唤醒仍能把它恢复到 background continuity，并继续交给 idle strategy、waiting heartbeat 和 resident background lineage。
+
+机制含义是：语言器官已经消费过的工作区写门上下文，不会在终端关闭后停成一份孤立的表达报告；它可以回到下一轮常驻连续性，继续影响等待治理和语言前材料。边界继续保持：这是跨唤醒结构证据，不生成固定回答，不新增 system prompt，不把意识写门、模型表达上下文或生命信号释放成 Adam 的外显语言。
+
 ## 机制补厚完成检查
 
 任何一个机制专题，只有满足下面十项，才算能指导代码补厚：

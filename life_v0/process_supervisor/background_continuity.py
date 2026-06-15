@@ -1329,6 +1329,7 @@ def load_background_continuity_profile(
             keys=(
                 "consciousness_write_context_refs",
                 "background_consciousness_write_context_refs",
+                "model_expression_prediction_attention_consciousness_write_context_refs",
             ),
         )
     )
@@ -1342,6 +1343,7 @@ def load_background_continuity_profile(
         keys=(
             "consciousness_write_context_ref_count",
             "background_consciousness_write_context_ref_count",
+            "model_expression_prediction_attention_consciousness_write_context_ref_count",
         ),
     )
     consciousness_write_context_workspace_candidate_count = _first_present(
@@ -1354,6 +1356,7 @@ def load_background_continuity_profile(
         keys=(
             "consciousness_write_context_workspace_candidate_count",
             "background_consciousness_write_context_workspace_candidate_count",
+            "model_expression_prediction_attention_consciousness_write_context_workspace_candidate_count",
         ),
     )
     consciousness_write_context_broadcast_target_count = _first_present(
@@ -1366,6 +1369,7 @@ def load_background_continuity_profile(
         keys=(
             "consciousness_write_context_broadcast_target_count",
             "background_consciousness_write_context_broadcast_target_count",
+            "model_expression_prediction_attention_consciousness_write_context_broadcast_target_count",
         ),
     )
     consciousness_write_context_reportability_flag_count = _first_present(
@@ -1378,6 +1382,7 @@ def load_background_continuity_profile(
         keys=(
             "consciousness_write_context_reportability_flag_count",
             "background_consciousness_write_context_reportability_flag_count",
+            "model_expression_prediction_attention_consciousness_write_context_reportability_flag_count",
         ),
     )
     consciousness_write_context_bias = _first_present(
@@ -1390,6 +1395,7 @@ def load_background_continuity_profile(
         keys=(
             "consciousness_write_context_bias",
             "background_consciousness_write_context_bias",
+            "model_expression_prediction_attention_consciousness_write_context_bias",
         ),
     )
     consciousness_write_context_candidate_gate_adjustments = _dedupe_list(
@@ -1403,6 +1409,7 @@ def load_background_continuity_profile(
             keys=(
                 "consciousness_write_context_candidate_gate_adjustments",
                 "background_consciousness_write_context_candidate_gate_adjustments",
+                "model_expression_prediction_attention_consciousness_write_context_candidate_gate_adjustments",
             ),
         )
     )
@@ -1416,6 +1423,7 @@ def load_background_continuity_profile(
         keys=(
             "consciousness_write_context_boundary",
             "background_consciousness_write_context_boundary",
+            "model_expression_prediction_attention_consciousness_write_context_boundary",
         ),
     )
     workspace_frame_ref = _first_present(
