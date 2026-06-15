@@ -227,6 +227,61 @@ class StateInspectionMemoryCloseoutTests(unittest.TestCase):
         self.assertEqual(summary["autobiographical_repair_hit_count"], 2)
         self.assertIn("memory_closeout", summary["domain_presence"])
 
+    def test_context_summary_exposes_context_accumulation_window(self):
+        section = {
+            "life_context_frame": {"life_name": "Adam"},
+            "context_accumulation_window": {
+                "schema_version": "context_accumulation_window_v0",
+                "status": "closed",
+                "current_relation_role": "friend",
+                "shared_term_surfaces": ["旧约定", "我们的叫法"],
+                "dialogue_turn_restore_refs": ["turn:1", "turn:2"],
+                "semantic_focus": "repair_commitment_shared_language",
+                "semantic_map_restore_refs": ["runtime/state/language/semantic_map_frame.json"],
+                "language_percept_restore_refs": [
+                    "runtime/state/language/language_percept_frame.json"
+                ],
+                "waiting_heartbeat_ref": (
+                    "runtime/reports/latest/digital_life_waiting_heartbeat.json"
+                ),
+            },
+            "terminal_life_loop_state": {
+                "context_accumulation_ref": (
+                    "runtime/state/terminal/context_accumulation_window.json"
+                ),
+            },
+        }
+
+        summary = _collect_relation_context_summary(section)
+
+        self.assertTrue(summary["context_accumulation_window_present"])
+        self.assertEqual(summary["context_accumulation_window_status"], "closed")
+        self.assertEqual(summary["context_accumulation_current_relation_role"], "friend")
+        self.assertEqual(summary["context_accumulation_shared_term_surface_count"], 2)
+        self.assertEqual(summary["context_accumulation_dialogue_turn_restore_ref_count"], 2)
+        self.assertEqual(
+            summary["context_accumulation_semantic_focus"],
+            "repair_commitment_shared_language",
+        )
+        self.assertIn("context_accumulation_window", summary["domain_presence"])
+
+    def test_context_summary_exposes_queue_e_schema_handoff(self):
+        section = {
+            "life_context_frame": {"life_name": "Adam"},
+            "go_nogo_state": {},
+            **self._queue_e_schema_handoff_section(),
+        }
+
+        summary = _collect_relation_context_summary(section)
+
+        self.assertTrue(
+            summary["queue_e_world_contact_repair_hold_schema_handoff_present"]
+        )
+        self.assertIn(
+            "queue_e_world_contact_repair_hold_schema_handoff",
+            summary["domain_presence"],
+        )
+
     def test_relationship_continuity_summary_exposes_repair_closeout(self):
         section = {
             "relationship_subject_graph": {

@@ -55,11 +55,24 @@ def build_resident_state_inspection(
             {
                 "life_context_frame": "terminal/life_context_frame.json",
                 "relation_turn_frame": "terminal/relation_turn_frame.json",
+                "context_accumulation_window": (
+                    "terminal/context_accumulation_window.json"
+                ),
                 "language_percept": "language/language_percept_frame.json",
                 "relationship_timeline": "relationship/relationship_timeline.json",
                 "dialogue_memory_summary": "memory/dialogue_memory_summary.json",
                 "memory_retrieval": "memory/memory_retrieval_frame.json",
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
                 "idle_strategy_state": "terminal/idle_strategy_state.json",
+                "go_nogo_state": "action/go_nogo_state.json",
+                "world_contact_validation": (
+                    "validation/world_contact_validation.json"
+                ),
+                "validation_rollup": "validation/validation_rollup.json",
+                "schema_runner_manifest": "schema_runner/run_manifest.json",
+                "schema_runner_cross_file_logic": (
+                    "schema_runner/cross_file_logic.json"
+                ),
                 "digital_life_process_report": (
                     "../reports/latest/digital_life_process_report.json"
                 ),
@@ -1918,6 +1931,21 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
         section.get("dialogue_memory_summary", {})
     )
     memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
+    context_accumulation = _extract_compact_value(
+        section.get("context_accumulation_window", {})
+    )
+    terminal_loop = _extract_compact_value(
+        section.get("terminal_life_loop_state", {})
+    )
+    go_nogo = _extract_compact_value(section.get("go_nogo_state", {}))
+    world_contact_validation = _extract_compact_value(
+        section.get("world_contact_validation", {})
+    )
+    validation_rollup = _extract_compact_value(section.get("validation_rollup", {}))
+    schema_manifest = _extract_compact_value(section.get("schema_runner_manifest", {}))
+    schema_cross_file = _extract_compact_value(
+        section.get("schema_runner_cross_file_logic", {})
+    )
     process_report = _extract_compact_value(
         section.get("digital_life_process_report", {})
     )
@@ -1925,6 +1953,20 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
     context_closeout = _memory_closeout_inspection_snapshot(
         process_report=process_report,
         idle_strategy=idle_strategy,
+    )
+    context_accumulation_inspection = (
+        _context_accumulation_window_inspection_snapshot(
+            context_accumulation=context_accumulation,
+            terminal_loop=terminal_loop,
+            language_percept=language_percept,
+        )
+    )
+    schema_handoff = _queue_e_world_contact_repair_hold_schema_handoff_inspection_snapshot(
+        validation_rollup=validation_rollup,
+        world_contact_validation=world_contact_validation,
+        schema_manifest=schema_manifest,
+        schema_cross_file=schema_cross_file,
+        go_nogo=go_nogo,
     )
     relationship_state = _extract_nested_value(
         relationship_timeline,
@@ -1946,13 +1988,24 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
     domain_presence = {
         "life_context_frame": bool(life_context),
         "relation_turn_frame": bool(relation_turn),
+        "context_accumulation_window": bool(
+            context_accumulation
+            or context_accumulation_inspection.get(
+                "context_accumulation_window_present"
+            )
+        ),
         "language_percept": bool(language_percept),
         "relationship_timeline": bool(relationship_timeline),
         "dialogue_memory_summary": bool(dialogue_memory),
         "memory_retrieval": bool(memory_retrieval),
+        "validation": bool(world_contact_validation or validation_rollup),
+        "schema_runner": bool(schema_cross_file or schema_manifest),
         "memory_closeout": bool(context_closeout.get("memory_closeout_present")),
         "autobiographical_repair_retrieval_closeout": bool(
             context_closeout.get("autobiographical_repair_retrieval_closeout_present")
+        ),
+        "queue_e_world_contact_repair_hold_schema_handoff": bool(
+            schema_handoff.get("queue_e_world_contact_repair_hold_schema_handoff_present")
         ),
     }
     active_domains = [
@@ -2012,6 +2065,8 @@ def _collect_relation_context_summary(section: dict[str, Any]) -> dict[str, Any]
             "context_state_view_not_relationship_turn_injection"
         ),
         **context_closeout,
+        **context_accumulation_inspection,
+        **schema_handoff,
     }
 
 
@@ -6814,6 +6869,55 @@ def _responsibility_closeout_inspection_snapshot(
         ),
         "autobiographical_repair_report_boundary": memory_closeout.get(
             "autobiographical_repair_report_boundary"
+        ),
+    }
+
+
+def _context_accumulation_window_inspection_snapshot(
+    *,
+    context_accumulation: dict[str, Any] | None = None,
+    terminal_loop: dict[str, Any] | None = None,
+    language_percept: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    context_accumulation = context_accumulation or {}
+    terminal_loop = terminal_loop or {}
+    language_percept = language_percept or {}
+    window_present = bool(
+        context_accumulation
+        or terminal_loop.get("context_accumulation_ref")
+    )
+    return {
+        "context_accumulation_window_present": window_present,
+        "context_accumulation_window_status": context_accumulation.get("status"),
+        "context_accumulation_current_relation_role": context_accumulation.get(
+            "current_relation_role"
+        ),
+        "context_accumulation_shared_term_surface_count": _count_any(
+            context_accumulation.get("shared_term_surfaces")
+        ),
+        "context_accumulation_dialogue_turn_restore_ref_count": _count_any(
+            context_accumulation.get("dialogue_turn_restore_refs")
+        ),
+        "context_accumulation_semantic_focus": _first_non_empty(
+            context_accumulation.get("semantic_focus"),
+            language_percept.get("semantic_focus"),
+        ),
+        "context_accumulation_semantic_map_restore_ref_count": _count_any(
+            context_accumulation.get("semantic_map_restore_refs")
+        ),
+        "context_accumulation_language_percept_restore_ref_count": _count_any(
+            context_accumulation.get("language_percept_restore_refs")
+        ),
+        "context_accumulation_waiting_heartbeat_ref": _first_non_empty(
+            context_accumulation.get("waiting_heartbeat_ref"),
+            terminal_loop.get("waiting_heartbeat_ref"),
+        ),
+        "context_accumulation_ref": _first_non_empty(
+            terminal_loop.get("context_accumulation_ref"),
+            "runtime/state/terminal/context_accumulation_window.json",
+        ),
+        "context_accumulation_window_boundary": (
+            "context_accumulation_restore_window_not_spoken_relationship_script"
         ),
     }
 

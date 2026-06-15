@@ -198,3 +198,14 @@ flowchart TD
 ## 当前 live0 结论
 
 live0 的语言链已经不只是提示词，而是可追踪的器官链：感知、语义、内言语、监控、计划、模型表达、门控和写回。它支撑验收项 `b_conscious_emotion_thought_language` 与 `f_equal_relationship_dialogue_growth`。
+
+## slash 检查面（ITR-08-77）
+
+`/context` 通过 `state_inspection.py#relation_context_summary_v0` 显示关系语境与累积窗口，而不把 restore refs 释放成外显脚本：
+
+| 字段组 | 来源 | 用途 |
+|---|---|---|
+| `context_accumulation_*` | `context_accumulation_window.json`、`terminal_life_loop_state.json` | 共同术语、语义焦点、restore ref 计数、waiting heartbeat 绑定 |
+| `queue_e_world_contact_repair_hold_schema_handoff_*` | validation/schema runner | 与 membrane/prediction 一致的 repair hold handoff 检查 |
+
+边界：`context_accumulation_window_boundary=context_accumulation_restore_window_not_spoken_relationship_script`。测试：`tests/process/test_state_inspection_memory_closeout.py#test_context_summary_exposes_*`。
