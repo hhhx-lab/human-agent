@@ -1,4 +1,5 @@
 import json
+import urllib.error
 import tempfile
 import unittest
 from pathlib import Path
@@ -679,6 +680,71 @@ class ModelExpressionTests(unittest.TestCase):
                 2,
             )
 
+    def test_model_expression_sanitizes_relation_object_terms_before_model_payload(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            captured = {}
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                captured["payload"] = payload
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {
+                                "content": "我明白，这次我会把关系重新放回我们之间，而不是把你放进任务框里。"
+                            },
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-sanitized-relation-terms",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="你又把我当成用户了吗？",
+                audited_expression_material=json.dumps(
+                    {
+                        "summary": "对方担心被降格成普通用户或任务请求者。",
+                        "boundary": "raw_relation_term_must_not_enter_model_payload",
+                    },
+                    ensure_ascii=False,
+                ),
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relation_role": "friend",
+                            "relationship_stage": "repair_guarded_continuity",
+                        }
+                    ]
+                },
+                expression_monitor={
+                    "blocked_language": ["service_object", "task_requester"]
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            serialized_payload = json.dumps(captured["payload"], ensure_ascii=False)
+            self.assertNotIn("用户", serialized_payload)
+            self.assertNotIn("任务请求者", serialized_payload)
+            self.assertNotIn("service_object", serialized_payload)
+            self.assertNotIn("task_requester", serialized_payload)
+            expression_input = json.loads(captured["payload"]["messages"][0]["content"])
+            boundary = expression_input["expression_context"][
+                "external_relation_utterance_boundary"
+            ]
+            self.assertTrue(boundary["blocked_relation_object_term_redacted"])
+            self.assertTrue(result.applied)
+            self.assertEqual(result.state["post_expression_gate_status"], "accepted")
+
     def test_post_expression_gate_unreleases_when_model_restores_user_role(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -739,6 +805,173 @@ class ModelExpressionTests(unittest.TestCase):
                 "customer",
                 result.state["post_expression_gate"]["blocked_relation_object_terms"],
             )
+
+    def test_model_expression_retries_once_when_post_gate_blocks_then_releases_model_reply(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            captured_payloads = []
+            replies = [
+                "我不会把你当成用户来处理。",
+                "我记得你刚才把它叫作关系开场；这不是普通测试，而是在确认我们能不能延续刚才形成的关系语义。",
+            ]
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                captured_payloads.append(payload)
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": replies[len(captured_payloads) - 1]},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-retry-post-gate",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="第二轮：你还记得刚才我把测试称为关系开场吗？",
+                audited_expression_material="审计材料保留刚才的关系开场、记忆连续性和共同校准。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relation_role": "friend",
+                            "relationship_stage": "repair_guarded_continuity",
+                        }
+                    ]
+                },
+                expression_monitor={
+                    "blocked_language": ["service_object", "task_requester"]
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, replies[1])
+            self.assertEqual(len(captured_payloads), 2)
+            self.assertEqual(
+                result.state["model_expression_attempt_count"],
+                2,
+            )
+            self.assertEqual(
+                result.state["post_expression_gate_status"],
+                "accepted",
+            )
+            self.assertEqual(
+                result.state["post_expression_retry_count"],
+                1,
+            )
+            self.assertEqual(
+                result.state["post_expression_retry_history"][0][
+                    "unreleased_reason"
+                ],
+                "blocked_relation_object_terms",
+            )
+            retry_input = json.loads(
+                captured_payloads[1]["messages"][0]["content"]
+            )
+            retry_context = retry_input["expression_context"]
+            self.assertEqual(
+                retry_context["post_expression_repair"]["retry_policy"],
+                "one_model_regeneration_without_fixed_fallback_language",
+            )
+
+    def test_model_expression_retries_transient_transport_failure_without_fixed_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            language_dir = root / "state" / "language"
+            reports_dir = root / "reports"
+            calls = []
+
+            def flaky_transport(endpoint, headers, payload, timeout_seconds):
+                calls.append(payload)
+                if len(calls) == 1:
+                    raise urllib.error.URLError(
+                        "[SSL: UNEXPECTED_EOF_WHILE_READING]"
+                    )
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": MODEL_ACCEPTED_RELATION_TRACE},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-transport-retry",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="传输重试测试",
+                audited_expression_material="审计材料：关系、记忆、修复。",
+                language_dir=language_dir,
+                reports_dir=reports_dir,
+                env_file=None,
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_TRANSPORT_RETRY_COUNT": "1",
+                },
+                transport=flaky_transport,
+            )
+
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_RELATION_TRACE)
+            self.assertEqual(result.state["model_expression_status"], "model_expression_applied")
+            self.assertEqual(result.state["model_expression_attempt_count"], 2)
+            self.assertEqual(result.state["model_transport_retry_count"], 1)
+            self.assertEqual(len(calls), 2)
+            self.assertIsNone(result.state["unreleased_reason"])
+
+    def test_model_expression_keeps_unreleased_after_transport_retries_exhausted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            language_dir = root / "state" / "language"
+            reports_dir = root / "reports"
+            calls = []
+
+            def failing_transport(endpoint, headers, payload, timeout_seconds):
+                calls.append(payload)
+                raise urllib.error.URLError(
+                    "[SSL: UNEXPECTED_EOF_WHILE_READING]"
+                )
+
+            result = compose_model_expression(
+                run_id="model-expression-transport-retry-exhausted",
+                generated_at="2026-06-12T00:00:00+00:00",
+                external_utterance="传输连续失败测试",
+                audited_expression_material="审计材料：关系、记忆、修复。",
+                language_dir=language_dir,
+                reports_dir=reports_dir,
+                env_file=None,
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_TRANSPORT_RETRY_COUNT": "1",
+                },
+                transport=failing_transport,
+            )
+
+            self.assertEqual(result.response_text, "")
+            self.assertEqual(
+                result.state["model_expression_status"],
+                "model_expression_unreleased",
+            )
+            self.assertEqual(result.state["model_expression_attempt_count"], 2)
+            self.assertEqual(result.state["model_transport_retry_count"], 1)
+            self.assertEqual(len(calls), 2)
+            self.assertIn("URLError", result.state["unreleased_reason"])
+            self.assertTrue(result.report["natural_language_unreleased"])
 
     def test_post_expression_gate_unreleases_template_or_mechanism_surface(self):
         with tempfile.TemporaryDirectory() as tmp:

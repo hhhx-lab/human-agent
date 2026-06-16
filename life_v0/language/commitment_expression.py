@@ -99,6 +99,13 @@ def build_commitment_expression_plan(
         "relationship_timeline_ref": "runtime/state/relationship/relationship_timeline.json",
         "responsibility_loop_ref": "runtime/state/action/responsibility_loop_state.json",
         "commitment_repair_index_ref": "runtime/state/language/commitment_repair_language_index.json",
+        "restore_refs": [
+            "runtime/state/language/commitment_expression_plan.json",
+            "runtime/state/relationship/commitment_truth_state.json",
+            "runtime/state/language/commitment_repair_language_index.json",
+            "runtime/state/relationship/relationship_timeline.json#relationship_language_events",
+        ],
+        "offline_reconsolidation_refs": [],
         "source_doc_refs": source_doc_refs,
         "counterfactual_repair_refs": [
             item.get("counterfactual_id")
@@ -379,6 +386,9 @@ def project_commitment_expression_plan_with_cumulative_offline_learning(
         updated["cumulative_commitment_tempo_mode"] = (
             "relationship_offline_reconsolidation_first"
         )
+        updated["offline_reconsolidation_refs"] = _dedupe(
+            list(updated.get("offline_reconsolidation_refs", [])) + ref_set
+        )[:12]
         if _can_replace_delay_decision(updated.get("delay_or_release_decision")):
             updated["delay_or_release_decision"] = (
                 "hold_for_relationship_offline_reconsolidation"

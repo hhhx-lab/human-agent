@@ -3,6 +3,9 @@ from __future__ import annotations
 from typing import Any
 
 
+MIN_SCHEMA_PROMOTION_TURN_COUNT = 21
+MIN_SCHEMA_EVIDENCE_COUNT = 3
+
 SOURCE_DOC_REFS = [
     "docs/05_memory_systems_and_growth.md",
     "docs/17_memory_trace_object_model.md",
@@ -123,6 +126,7 @@ def project_life_schema_map_from_live_turn(
     autobiographical_stack: dict[str, Any] | None = None,
     self_model_state: dict[str, Any] | None = None,
     responsibility_ledger: dict[str, Any] | None = None,
+    memory_longitudinal_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     current = dict(life_schema_map or {})
     updated = build_life_schema_map(
@@ -140,7 +144,135 @@ def project_life_schema_map_from_live_turn(
             _string_list(current.get("schema_kinds"))
             + _string_list(current.get("previous_schema_kinds"))
         )
+    live_trace_refs = _live_episode_trace_refs(memory_trace_store)
+    schema_evidence_counts = _schema_evidence_counts(
+        schemas=updated.get("schemas", []),
+        live_trace_refs=live_trace_refs,
+        memory_trace_store=memory_trace_store,
+    )
+    updated["schema_evidence_counts"] = schema_evidence_counts
+    turn_count = int((memory_longitudinal_profile or {}).get("turn_count") or 0)
+    updated["schema_promotion_turn_count"] = turn_count
+    updated["schema_promotion_policy"] = "multi_week_evidence_not_count_only"
+    promoted_schemas: list[str] = []
+    for schema in updated.get("schemas", []):
+        if not isinstance(schema, dict):
+            continue
+        schema_id = str(schema.get("schema_id") or "")
+        evidence_count = int(schema_evidence_counts.get(schema_id, 0))
+        schema["schema_evidence_count"] = evidence_count
+        eligible, eligibility_reason = _schema_promotion_eligible(
+            schema=schema,
+            evidence_count=evidence_count,
+            turn_count=turn_count,
+            memory_trace_store=memory_trace_store,
+        )
+        schema["promotion_eligibility_reason"] = eligibility_reason
+        if eligible:
+            schema["last_promoted_at"] = generated_at
+            schema["promotion_status"] = "schema_candidate_promoted"
+            promoted_schemas.append(schema_id)
+        else:
+            schema.setdefault("promotion_status", "accumulating_evidence")
+    if promoted_schemas:
+        updated["last_promoted_at"] = generated_at
+        updated["last_promoted_schema_ids"] = promoted_schemas
     return updated
+
+
+def _schema_promotion_eligible(
+    *,
+    schema: dict[str, Any],
+    evidence_count: int,
+    turn_count: int,
+    memory_trace_store: dict[str, Any] | None,
+) -> tuple[bool, str]:
+    if evidence_count < MIN_SCHEMA_EVIDENCE_COUNT:
+        return False, "insufficient_schema_evidence_count"
+    if turn_count < MIN_SCHEMA_PROMOTION_TURN_COUNT:
+        return False, "insufficient_multiweek_turn_span"
+    focus = str(schema.get("output_focus") or "")
+    if not focus:
+        return False, "missing_schema_output_focus"
+    cluster_hits = _semantic_cluster_hit_count(
+        focus=focus,
+        memory_trace_store=memory_trace_store,
+    )
+    if cluster_hits < 2:
+        return False, "insufficient_semantic_cluster_repetition"
+    return True, "multiweek_evidence_threshold_met"
+
+
+def _semantic_cluster_hit_count(
+    *,
+    focus: str,
+    memory_trace_store: dict[str, Any] | None,
+) -> int:
+    hits = 0
+    for trace in (memory_trace_store or {}).get("traces", []):
+        if not isinstance(trace, dict):
+            continue
+        if trace.get("live_trace_origin") != "live_dialogue_turn":
+            continue
+        if trace.get("lifecycle_state") == "deprecated":
+            continue
+        semantic_focus = str(trace.get("semantic_focus") or "")
+        content_summary = str(trace.get("content_summary") or "")
+        if focus in semantic_focus or focus in content_summary:
+            hits += 1
+    return hits
+
+
+def _live_episode_trace_refs(memory_trace_store: dict[str, Any] | None) -> list[str]:
+    refs: list[str] = []
+    for trace in (memory_trace_store or {}).get("traces", []):
+        if not isinstance(trace, dict):
+            continue
+        if trace.get("live_trace_origin") != "live_dialogue_turn":
+            continue
+        if trace.get("lifecycle_state") == "deprecated":
+            continue
+        trace_id = trace.get("trace_id")
+        if trace_id:
+            refs.append(
+                f"runtime/state/memory/memory_trace_store.json#trace:{trace_id}"
+            )
+    return _dedupe(refs)
+
+
+def _schema_evidence_counts(
+    *,
+    schemas: list[Any],
+    live_trace_refs: list[str],
+    memory_trace_store: dict[str, Any] | None,
+) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    live_traces = [
+        trace
+        for trace in (memory_trace_store or {}).get("traces", [])
+        if isinstance(trace, dict)
+        and trace.get("live_trace_origin") == "live_dialogue_turn"
+    ]
+    for schema in schemas:
+        if not isinstance(schema, dict):
+            continue
+        schema_id = str(schema.get("schema_id") or "")
+        if not schema_id:
+            continue
+        trace_refs = _dedupe(
+            _string_list(schema.get("trace_refs")) + live_trace_refs
+        )
+        counts[schema_id] = len(trace_refs)
+        focus = str(schema.get("output_focus") or "")
+        if focus:
+            focus_hits = sum(
+                1
+                for trace in live_traces
+                if focus in str(trace.get("semantic_focus") or "")
+                or focus in str(trace.get("content_summary") or "")
+            )
+            counts[schema_id] = max(counts[schema_id], focus_hits)
+    return counts
 
 
 def _schema(

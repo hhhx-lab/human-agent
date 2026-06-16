@@ -18,6 +18,8 @@ def build_resumed_external_dialogue_packet(
     dialogue_turn_restore_refs: list[str],
     dialogue_writeback_bundle_ref: str,
     next_required_action: str,
+    live_language_turn_refs: list[str] | None = None,
+    shared_term_registry_ref: str | None = None,
 ) -> dict[str, Any]:
     return {
         "schema_version": "resumed_external_dialogue_packet_v0",
@@ -45,6 +47,9 @@ def build_resumed_external_dialogue_packet(
             session_envelope.get("self_narrative_restore_refs", [])
         ),
         "dialogue_turn_restore_refs": dialogue_turn_restore_refs,
+        "live_language_turn_refs": list(live_language_turn_refs or []),
+        "shared_term_registry_ref": shared_term_registry_ref
+        or "runtime/state/language/shared_term_registry.json",
         "context_accumulation_ref": "runtime/state/terminal/context_accumulation_window.json",
         "turn_transition_ref": "runtime/state/terminal/turn_transition_trace.json",
         "dialogue_writeback_bundle_ref": dialogue_writeback_bundle_ref,

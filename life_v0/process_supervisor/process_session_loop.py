@@ -222,6 +222,7 @@ def run_process_session_loop(
             write_json=write_json,
         )
         heartbeat_counter = idle_refresh.heartbeat_counter
+        terminal_life_loop_state = idle_refresh.terminal_life_loop_state
         if idle_refresh.exit_reason is not None:
             return ProcessSessionLoopResult(
                 turn_counter=turn_counter,

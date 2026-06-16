@@ -75,7 +75,9 @@ def render_dialogue_box(
     *,
     width: int | None = None,
 ) -> str:
-    return _box(title=speaker, body=str(text or "").splitlines() or [""], width=width)
+    lines = str(text or "").splitlines() or [""]
+    body = [("  " + line) if line else "" for line in lines]
+    return "\n".join([speaker.strip() or "Digital Life", *body])
 
 
 def render_input_prompt(*, life_name: str | None = None) -> str:
@@ -106,6 +108,9 @@ def extract_life_response_text(emitted_output: str) -> str:
     boxed_body = _extract_box_body(stripped)
     if boxed_body:
         return boxed_body
+    transcript_body = _extract_transcript_body(stripped)
+    if transcript_body:
+        return transcript_body
     if stripped.startswith("{") or stripped.startswith("["):
         return ""
     return stripped
@@ -162,6 +167,19 @@ def _extract_box_body(emitted_output: str) -> str:
         if content:
             lines.append(content)
     return "\n".join(lines).strip()
+
+
+def _extract_transcript_body(emitted_output: str) -> str:
+    lines = str(emitted_output or "").splitlines()
+    if len(lines) < 2:
+        return ""
+    speaker = lines[0].strip()
+    if not speaker or speaker.startswith(("{", "[")):
+        return ""
+    body_lines = lines[1:]
+    if not all((not line) or line.startswith("  ") for line in body_lines):
+        return ""
+    return "\n".join(line[2:] if line.startswith("  ") else "" for line in body_lines).strip()
 
 
 def _text(value: Any) -> str:

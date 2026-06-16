@@ -14,6 +14,7 @@ from life_v0.archive import (
 from life_v0.dream import (
     SOURCE_DOC_REFS as DREAM_SOURCE_DOC_REFS,
     build_dream_consolidation_frame,
+    build_dream_belief_gate_decision,
     build_dream_fact_gate_decision,
     build_dream_experience_window,
     build_nightmare_loop_risk,
@@ -66,6 +67,21 @@ from life_v0.growth.relationship_learning import (
 )
 from life_v0.membrane.queue_e_signals import (
     queue_e_repair_modulation_profile_from_replay_cue_bundle,
+)
+from life_v0.state_store.offline_memory_consolidation import (
+    apply_offline_memory_consolidation,
+)
+from life_v0.state_store.hippocampal_cue_index import (
+    build_hippocampal_cue_index,
+)
+from life_v0.state_store.human_brain_alignment_assessment import (
+    build_human_brain_alignment_assessment,
+)
+from life_v0.state_store.memory_capability_scorecard import (
+    build_memory_capability_scorecard,
+)
+from life_v0.state_store.memory_engineering_completion_gate import (
+    build_memory_engineering_completion_gate,
 )
 from life_v0.replay import (
     SOURCE_DOC_REFS as REPLAY_SOURCE_DOC_REFS,
@@ -464,6 +480,12 @@ def run_cycle(
         wake_integration=wake_integration,
         offline_entry=offline_entry,
     )
+    dream_belief_gate = build_dream_belief_gate_decision(
+        run_id=run_id,
+        generated_at=generated_at,
+        dream_window=dream_window,
+        wake_integration=wake_integration,
+    )
     offline_consolidation = build_offline_consolidation_frame(
         run_id=run_id,
         generated_at=generated_at,
@@ -474,6 +496,129 @@ def run_cycle(
         wake_integration=wake_integration,
         dream_fact_gate=dream_fact_gate,
     )
+    memory_dir = state_dir / "memory"
+    memory_trace_store = _load_json_optional(memory_dir / "memory_trace_store.json")
+    life_schema_map = _load_json_optional(memory_dir / "life_schema_map.json")
+    relationship_memory = _load_json_optional(memory_dir / "relationship_memory.json")
+    memory_retrieval_frame = _load_json_optional(
+        memory_dir / "memory_retrieval_frame.json"
+    )
+    engram_cluster = _load_json_optional(memory_dir / "engram_cluster.json")
+    pattern_separation_index = _load_json_optional(
+        memory_dir / "pattern_separation_index.json"
+    )
+    pattern_completion_frame = _load_json_optional(
+        memory_dir / "pattern_completion_frame.json"
+    )
+    autobiographical_stack = _load_json_optional(
+        state_dir / "self" / "autobiographical_stack.json"
+    )
+    memory_allocation_gate = _load_json_optional(
+        memory_dir / "memory_allocation_gate.json"
+    )
+    memory_longitudinal_profile = _load_json_optional(
+        memory_dir / "memory_longitudinal_profile.json"
+    )
+    hippocampal_cue_index: dict[str, Any] = {}
+    memory_capability_scorecard: dict[str, Any] = {}
+    human_brain_alignment: dict[str, Any] = {}
+    memory_engineering_completion_gate: dict[str, Any] = {}
+    memory_consolidation_report: dict[str, Any] = {}
+    if memory_trace_store:
+        consolidation_result = apply_offline_memory_consolidation(
+            run_id=run_id,
+            generated_at=generated_at,
+            memory_trace_store=memory_trace_store,
+            life_schema_map=life_schema_map,
+            relationship_memory=relationship_memory,
+            autobiographical_stack=autobiographical_stack,
+            replay_cue_bundle=replay_cue_bundle,
+            dream_window=dream_window,
+            offline_consolidation_frame=offline_consolidation,
+            memory_allocation_gate=memory_allocation_gate,
+            memory_longitudinal_profile=memory_longitudinal_profile,
+        )
+        memory_trace_store = consolidation_result["memory_trace_store"]
+        life_schema_map = consolidation_result["life_schema_map"]
+        relationship_memory = consolidation_result["relationship_memory"]
+        autobiographical_stack = consolidation_result["autobiographical_stack"]
+        memory_longitudinal_profile = consolidation_result.get(
+            "memory_longitudinal_profile", memory_longitudinal_profile
+        )
+        memory_consolidation_report = consolidation_result[
+            "memory_consolidation_report"
+        ]
+        offline_consolidation = {
+            **offline_consolidation,
+            "memory_consolidation_diff": memory_consolidation_report.get(
+                "consolidation_diff"
+            ),
+            "memory_consolidation_report_ref": memory_consolidation_report.get(
+                "report_ref"
+            ),
+        }
+        bridge = replay_cue_bundle.get("memory_consolidation_bridge")
+        if isinstance(bridge, dict):
+            bridge["consolidation_report"] = {
+                **dict(bridge.get("consolidation_report") or {}),
+                **{
+                    key: memory_consolidation_report.get(key)
+                    for key in (
+                        "promotion_diff",
+                        "demotion_diff",
+                        "consolidation_diff",
+                        "replay_trace_ids",
+                    )
+                    if memory_consolidation_report.get(key) is not None
+                },
+            }
+            replay_cue_bundle["consolidation_report"] = bridge["consolidation_report"]
+        hippocampal_cue_index = build_hippocampal_cue_index(
+            run_id=run_id,
+            generated_at=generated_at,
+            memory_trace_store=memory_trace_store,
+            relationship_memory=relationship_memory,
+        )
+        memory_capability_scorecard = build_memory_capability_scorecard(
+            run_id=run_id,
+            generated_at=generated_at,
+            memory_trace_store=memory_trace_store,
+            memory_retrieval_frame=memory_retrieval_frame,
+            relationship_memory=relationship_memory,
+            autobiographical_stack=autobiographical_stack,
+            life_schema_map=life_schema_map,
+            memory_longitudinal_profile=memory_longitudinal_profile,
+            memory_consolidation_report=memory_consolidation_report,
+            fast_episodic_buffer=memory_trace_store.get("fast_episodic_buffer"),
+            engram_cluster=engram_cluster,
+            pattern_separation_index=pattern_separation_index,
+            hippocampal_cue_index=hippocampal_cue_index,
+            pattern_completion_frame=pattern_completion_frame,
+        )
+        human_brain_alignment = build_human_brain_alignment_assessment(
+            run_id=run_id,
+            generated_at=generated_at,
+            memory_trace_store=memory_trace_store,
+            memory_retrieval_frame=memory_retrieval_frame,
+            pattern_completion_frame=pattern_completion_frame,
+            hippocampal_cue_index=hippocampal_cue_index,
+            memory_longitudinal_profile=memory_longitudinal_profile,
+            memory_consolidation_report=memory_consolidation_report,
+            relationship_memory=relationship_memory,
+            autobiographical_stack=autobiographical_stack,
+            life_schema_map=life_schema_map,
+        )
+        memory_engineering_completion_gate = build_memory_engineering_completion_gate(
+            run_id=run_id,
+            generated_at=generated_at,
+            memory_capability_scorecard=memory_capability_scorecard,
+            memory_trace_store=memory_trace_store,
+            memory_retrieval_frame=memory_retrieval_frame,
+            memory_consolidation_report=memory_consolidation_report,
+            memory_longitudinal_profile=memory_longitudinal_profile,
+            hippocampal_cue_index=hippocampal_cue_index,
+            pattern_completion_frame=pattern_completion_frame,
+        )
     learning_window = _build_learning_window_from_module(
         run_id=run_id,
         generated_at=generated_at,
@@ -585,9 +730,25 @@ def run_cycle(
         "runtime/state/growth/relationship_learning_plan.json",
         "runtime/state/archive/reconsolidation_archive_graph.json",
         "runtime/state/growth/next_feedback_seed.json",
+        "runtime/reports/latest/memory_consolidation_report.json",
     ]
+    if memory_trace_store:
+        state_refs.extend(
+            [
+                "runtime/state/memory/memory_trace_store.json",
+                "runtime/state/memory/life_schema_map.json",
+                "runtime/state/memory/relationship_memory.json",
+                "runtime/state/self/autobiographical_stack.json",
+                "runtime/state/memory/hippocampal_cue_index.json",
+                "runtime/state/memory/memory_longitudinal_profile.json",
+            ]
+        )
     report_refs = [
         "runtime/reports/latest/growth_reconsolidation_report.json",
+        "runtime/reports/latest/memory_consolidation_report.json",
+        "runtime/reports/latest/memory_capability_scorecard.json",
+        "runtime/reports/latest/human_brain_alignment_assessment.json",
+        "runtime/reports/latest/memory_engineering_completion_gate.json",
         "runtime/reports/latest/run_report.json",
         "runtime/reports/latest/digest.json",
         "runtime/reports/latest/stage_gate.json",
@@ -648,6 +809,7 @@ def run_cycle(
         source_doc_refs=source_doc_refs,
         state_refs=state_refs,
         replay_cue_bundle=replay_cue_bundle,
+        memory_consolidation_report=memory_consolidation_report,
         blocked_reasons=blocked_reasons,
         receipt_ref=receipt_ref,
     )
@@ -687,6 +849,7 @@ def run_cycle(
         _write_json(dream_dir / "dream_experience_window.json", dream_window)
         _write_json(dream_dir / "wake_integration_frame.json", wake_integration)
         _write_json(dream_dir / "dream_fact_gate_decision.json", dream_fact_gate)
+        _write_json(dream_dir / "dream_belief_gate_decision.json", dream_belief_gate)
         _write_json(dream_dir / "nightmare_loop_risk.json", nightmare_risk)
         _write_json(dream_dir / "offline_consolidation_frame.json", offline_consolidation)
         _write_json(replay_dir / "pain_regret_responsibility_replay.json", pain_replay)
@@ -706,6 +869,49 @@ def run_cycle(
         _write_json(reports_dir / "digest.json", digest)
         _write_json(reports_dir / "run_report.json", run_report)
         _write_json(reports_dir / "growth_reconsolidation_report.json", growth_report)
+        if memory_consolidation_report:
+            _write_json(
+                reports_dir / "memory_consolidation_report.json",
+                memory_consolidation_report,
+            )
+        if memory_trace_store:
+            memory_dir.mkdir(parents=True, exist_ok=True)
+            (state_dir / "self").mkdir(parents=True, exist_ok=True)
+            _write_json(memory_dir / "memory_trace_store.json", memory_trace_store)
+            if life_schema_map:
+                _write_json(memory_dir / "life_schema_map.json", life_schema_map)
+            if relationship_memory:
+                _write_json(memory_dir / "relationship_memory.json", relationship_memory)
+            if autobiographical_stack:
+                _write_json(
+                    state_dir / "self" / "autobiographical_stack.json",
+                    autobiographical_stack,
+                )
+            if memory_longitudinal_profile:
+                _write_json(
+                    memory_dir / "memory_longitudinal_profile.json",
+                    memory_longitudinal_profile,
+                )
+            if hippocampal_cue_index:
+                _write_json(
+                    memory_dir / "hippocampal_cue_index.json",
+                    hippocampal_cue_index,
+                )
+            if memory_capability_scorecard:
+                _write_json(
+                    reports_dir / "memory_capability_scorecard.json",
+                    memory_capability_scorecard,
+                )
+            if human_brain_alignment:
+                _write_json(
+                    reports_dir / "human_brain_alignment_assessment.json",
+                    human_brain_alignment,
+                )
+            if memory_engineering_completion_gate:
+                _write_json(
+                    reports_dir / "memory_engineering_completion_gate.json",
+                    memory_engineering_completion_gate,
+                )
         _write_json(receipts_dir / f"run_cycle_{run_id}.json", receipt)
     except OSError as exc:
         run_report["status"] = "blocked"
@@ -1061,6 +1267,7 @@ def _build_growth_report(
     source_doc_refs: list[str],
     state_refs: list[str],
     replay_cue_bundle: dict[str, Any],
+    memory_consolidation_report: dict[str, Any] | None = None,
     blocked_reasons: list[str],
     receipt_ref: str,
 ) -> dict[str, Any]:
@@ -1097,6 +1304,12 @@ def _build_growth_report(
         "queue_e_repair_pressure_level": repair_profile["pressure_level"],
         "queue_e_repair_attention_target": repair_profile["attention_target"],
         "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
+        "consolidation_diff": (memory_consolidation_report or {}).get(
+            "consolidation_diff"
+        ),
+        "memory_consolidation_report_ref": (memory_consolidation_report or {}).get(
+            "report_ref"
+        ),
         "archive_receipt_ref": receipt_ref,
         "blocked_reasons": blocked_reasons,
         "quarantine_refs": [] if status == "safe_idle" else ["runtime/reports/latest/quarantine.json"],

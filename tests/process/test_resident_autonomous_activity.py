@@ -84,11 +84,15 @@ class ResidentAutonomousActivityTests(unittest.TestCase):
                 "Neuroplasticity and sleep",
                 aggregate_state["last_web_dream_learning_topic_candidates"],
             )
-            self.assertIn(
-                "wake_question_about:Neuroplasticity and sleep",
-                aggregate_state[
-                    "last_web_dream_learning_wake_question_candidates"
-                ],
+            wake_candidates = aggregate_state[
+                "last_web_dream_learning_wake_question_candidates"
+            ]
+            self.assertTrue(wake_candidates)
+            first_candidate = wake_candidates[0]
+            self.assertIsNone(first_candidate.get("literal_text"))
+            self.assertEqual(
+                first_candidate.get("expression_policy"),
+                "model_generated_only_no_fixed_sentence",
             )
             self.assertTrue((dream_dir / "web_dream_learning_log.jsonl").exists())
 

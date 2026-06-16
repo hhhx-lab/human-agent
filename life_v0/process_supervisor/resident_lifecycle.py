@@ -358,6 +358,21 @@ def mark_resident_lifecycle_stopped(
     exit_code: int,
 ) -> dict[str, Any]:
     previous = _read_json_if_exists(terminal_dir / "resident_lifecycle_state.json")
+    previous_run_id = str(previous.get("run_id") or "")
+    previous_status = str(previous.get("status") or "")
+    previous_pid = _int_or_zero(previous.get("pid"))
+    if (
+        previous_run_id
+        and previous_run_id != run_id
+        and previous_status in {"background_starting", "background_active"}
+        and _pid_alive(previous_pid)
+    ):
+        state = dict(previous)
+        state["stale_stop_ignored_run_id"] = run_id
+        state["stale_stop_ignored_at"] = _now_iso()
+        state["stale_stop_ignored_exit_code"] = exit_code
+        _write_json(terminal_dir / "resident_lifecycle_state.json", state)
+        return state
     state = dict(previous)
     state.setdefault("schema_version", "resident_lifecycle_state_v0")
     state["run_id"] = run_id

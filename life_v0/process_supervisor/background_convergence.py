@@ -19,6 +19,8 @@ def build_background_convergence_summary(
     relationship_graph: dict[str, Any],
     self_model_state: dict[str, Any],
     trait_drift_monitor: dict[str, Any] | None = None,
+    language_plasticity_update: dict[str, Any] | None = None,
+    language_rhythm_trace: dict[str, Any] | None = None,
     source_doc_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     background_continuity_profile = background_continuity_profile or {}
@@ -132,6 +134,10 @@ def build_background_convergence_summary(
         "max_trait_delta_from_background": round(max_delta, 3),
         "average_trait_delta_from_background": round(average_delta, 3),
         "trait_convergence_summary": trait_summary,
+        "language_plasticity_summary": _language_plasticity_summary(
+            language_plasticity_update=language_plasticity_update,
+            language_rhythm_trace=language_rhythm_trace,
+        ),
         "trait_drift_update_mode_summary": trait_drift_update_mode_summary,
         "trait_drift_background_history_recalibration_names": _dedupe(
             trait_drift_recalibration_names
@@ -404,3 +410,34 @@ def _dedupe(items: list[Any]) -> list[str]:
         if isinstance(item, str) and item and item not in result:
             result.append(item)
     return result
+
+
+def _language_plasticity_summary(
+    *,
+    language_plasticity_update: dict[str, Any] | None,
+    language_rhythm_trace: dict[str, Any] | None,
+) -> dict[str, Any]:
+    language_plasticity_update = language_plasticity_update or {}
+    language_rhythm_trace = language_rhythm_trace or {}
+    if not language_plasticity_update and not language_rhythm_trace:
+        return {}
+    tempo_history = language_rhythm_trace.get("tempo_history", [])
+    latest_tempo = tempo_history[-1] if isinstance(tempo_history, list) and tempo_history else {}
+    return {
+        "language_plasticity_update_ref": (
+            "runtime/state/language/language_plasticity_update.json"
+            if language_plasticity_update
+            else None
+        ),
+        "language_rhythm_trace_ref": (
+            "runtime/state/language/language_rhythm_trace.json"
+            if language_rhythm_trace
+            else None
+        ),
+        "promoted_shared_term_count": language_plasticity_update.get(
+            "promoted_shared_term_count"
+        ),
+        "expression_tempo_mode": language_plasticity_update.get("expression_tempo_mode")
+        or latest_tempo.get("expression_tempo_mode"),
+        "tempo_history_count": len(tempo_history) if isinstance(tempo_history, list) else 0,
+    }

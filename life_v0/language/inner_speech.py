@@ -27,7 +27,19 @@ def build_inner_speech_frame(
     confirmation_drive = "active" if (language_percept or {}).get("shared_term_hits") else "low"
     hold_drive = "active" if ambiguity_queue or active_sampling_plan.get("stage_effect") == "hold_for_evidence" else "low"
     repair_drive = "active" if repair_triggers or modulation_vector.get("repair_drive", 0) else "low"
-    question_drive = "active" if error_events or active_sampling_plan.get("selected_route") == "clarify" else "low"
+    ambiguity_ref_count = len(ambiguity_queue)
+    semantic_ambiguity_refs = list(
+        (semantic_map or {}).get("prediction_hooks", {}).get("semantic_ambiguity_refs", [])
+    )
+    clarify_route = active_sampling_plan.get("selected_route") in {
+        "clarify",
+        "clarify_ambiguity",
+    }
+    question_drive = (
+        "active"
+        if error_events or clarify_route or ambiguity_ref_count or semantic_ambiguity_refs
+        else "low"
+    )
     return {
         "schema_version": "inner_speech_frame_v0",
         "run_id": run_id,

@@ -1743,6 +1743,20 @@ def load_background_continuity_profile(
         life_constraint_attention_reason = (
             resident_background_life_constraint_presence.get("attention_reason")
         )
+    background_life_constraint_attention_reason = (
+        resident_governance_state.get("background_life_constraint_attention_reason")
+        or snapshot.get("background_life_constraint_attention_reason")
+        or resident_governance_report.get("background_life_constraint_attention_reason")
+        or persistent_process_report.get("background_life_constraint_attention_reason")
+        or resident_background_life_constraint_presence.get("background_attention_reason")
+        or resident_background_life_constraint_presence.get("attention_reason")
+        or life_constraint_attention_reason
+    )
+    if (
+        not life_constraint_attention_reason
+        or life_constraint_attention_reason == "queue_e_cross_layer_gate_closed"
+    ) and background_life_constraint_attention_reason:
+        life_constraint_attention_reason = background_life_constraint_attention_reason
     queue_e_birth_repair_waiting_profile = _first_dict(
         resident_governance_state,
         snapshot,

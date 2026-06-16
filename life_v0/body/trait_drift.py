@@ -48,6 +48,8 @@ def build_trait_drift_monitor_from_self_model(
     trigger_ref: str,
     previous_monitor: dict[str, Any] | None = None,
     source_doc_refs: list[str] | None = None,
+    language_plasticity_update: dict[str, Any] | None = None,
+    language_rhythm_trace: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     previous_monitor = previous_monitor or {}
     candidate_queue = self_model_state.get("trait_slow_variable_candidates", {})
@@ -111,6 +113,31 @@ def build_trait_drift_monitor_from_self_model(
         ),
         "relationship_stage": relationship_subject.get("relationship_stage"),
         "relationship_stage_reason": relationship_subject.get("relationship_stage_reason"),
+        "language_plasticity_update_ref": (
+            "runtime/state/language/language_plasticity_update.json"
+            if language_plasticity_update
+            else None
+        ),
+        "language_rhythm_trace_ref": (
+            "runtime/state/language/language_rhythm_trace.json"
+            if language_rhythm_trace
+            else None
+        ),
+        "promoted_shared_term_count": (
+            language_plasticity_update.get("promoted_shared_term_count")
+            if language_plasticity_update
+            else None
+        ),
+        "language_expression_tempo_mode": (
+            language_plasticity_update.get("expression_tempo_mode")
+            if language_plasticity_update
+            else None
+        ),
+        "language_tempo_history_count": (
+            len(language_rhythm_trace.get("tempo_history", []))
+            if language_rhythm_trace
+            else None
+        ),
         "background_inertia_active": bool(background_inertia_weights),
         "max_background_inertia_weight": (
             round(max(background_inertia_weights), 3)

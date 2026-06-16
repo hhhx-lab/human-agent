@@ -23,6 +23,7 @@ class DigitalLifeRuntimeConfig:
     model_temperature: float | None
     model_max_output_tokens: int | None
     model_timeout_seconds: float | None
+    model_transport_retry_count: int
     response_language: str
     dialogue_style: str
     strict_default: bool
@@ -56,6 +57,7 @@ class DigitalLifeRuntimeConfig:
             "model_temperature": self.model_temperature,
             "model_max_output_tokens": self.model_max_output_tokens,
             "model_timeout_seconds": self.model_timeout_seconds,
+            "model_transport_retry_count": self.model_transport_retry_count,
             "response_language": self.response_language,
             "dialogue_style": self.dialogue_style,
             "strict_default": self.strict_default,
@@ -101,6 +103,13 @@ def load_digital_life_runtime_config(
         merged_env,
         "DIGITAL_LIFE_MODEL_TIMEOUT_SECONDS",
     )
+    model_transport_retry_count = _optional_int(
+        merged_env,
+        "DIGITAL_LIFE_MODEL_TRANSPORT_RETRY_COUNT",
+    )
+    if model_transport_retry_count is None:
+        model_transport_retry_count = 1
+    model_transport_retry_count = max(0, min(model_transport_retry_count, 3))
     response_language = _get_str(merged_env, "DIGITAL_LIFE_RESPONSE_LANGUAGE", "zh-CN")
     dialogue_style = _get_str(merged_env, "DIGITAL_LIFE_DIALOGUE_STYLE", "relationship")
     strict_default = _parse_bool(merged_env.get("DIGITAL_LIFE_STRICT_DEFAULT"), False)
@@ -119,6 +128,7 @@ def load_digital_life_runtime_config(
         model_temperature=model_temperature,
         model_max_output_tokens=model_max_output_tokens,
         model_timeout_seconds=model_timeout_seconds,
+        model_transport_retry_count=model_transport_retry_count,
         response_language=response_language,
         dialogue_style=dialogue_style,
         strict_default=strict_default,

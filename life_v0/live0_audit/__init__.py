@@ -171,6 +171,7 @@ def run_live0_acceptance_audit(
         "report_ref": "runtime/reports/latest/live0_acceptance_audit_report.json",
         "digest_ref": "runtime/reports/latest/live0_acceptance_audit_digest.json",
         "receipt_ref": receipt_ref,
+        "language_reality_stage_gate": _language_reality_stage_gate_snapshot(context),
     }
     digest = {
         "schema_version": "live0_acceptance_audit_digest_v0",
@@ -424,6 +425,19 @@ def _criterion_conscious_language(
                 )
             },
             "resident autonomous activity must include self thinking",
+        ),
+        _json_probe(
+            context,
+            "language_reality_stage_gate_closed",
+            "runtime/state/language/language_event_bundle.json",
+            lambda payload: _language_reality_stage_gate_closed(context, payload),
+            "language reality stage gate must prove five-piece chain, percept focus trace, and event bundle refs",
+            extra_refs=[
+                "runtime/state/language/language_percept_frame.json",
+                "runtime/state/language/semantic_map_frame.json",
+                "runtime/state/language/expression_plan.json",
+                "runtime/state/terminal/turn_transition_trace.json",
+            ],
         ),
     ]
     return _criterion(
@@ -1068,6 +1082,58 @@ def _queue_e_world_contact_repair_hold_closed(payload: dict[str, Any]) -> bool:
         and bool(payload.get("queue_e_world_contact_allowed_repair_routes"))
         and bool(payload.get("queue_e_world_contact_repair_governance_refs"))
     )
+
+
+def _language_reality_stage_gate_closed(
+    context: _AuditContext,
+    bundle: dict[str, Any],
+) -> bool:
+    if bundle.get("schema_version") != "language_event_bundle_v0":
+        return False
+    required_bundle_refs = (
+        "inner_speech_ref",
+        "expression_plan_ref",
+        "turn_transition_trace_ref",
+    )
+    if not all(bundle.get(key) for key in required_bundle_refs):
+        return False
+    if not isinstance(bundle.get("future_probe"), list):
+        return False
+    percept = context.load_json("runtime/state/language/language_percept_frame.json")
+    if not isinstance(percept.get("percept_focus_trace"), list) or not percept.get(
+        "percept_focus_trace"
+    ):
+        return False
+    semantic_map = context.load_json("runtime/state/language/semantic_map_frame.json")
+    expression_plan = context.load_json("runtime/state/language/expression_plan.json")
+    memory_chain_present = bool(
+        semantic_map.get("memory_recall_refs")
+        or expression_plan.get("memory_grounding_refs")
+        or bundle.get("language_event_kind")
+    )
+    return memory_chain_present and _json_ref_exists(
+        context, str(bundle.get("inner_speech_ref"))
+    )
+
+
+def _language_reality_stage_gate_snapshot(context: _AuditContext) -> dict[str, Any]:
+    bundle = context.load_json("runtime/state/language/language_event_bundle.json")
+    percept = context.load_json("runtime/state/language/language_percept_frame.json")
+    semantic_map = context.load_json("runtime/state/language/semantic_map_frame.json")
+    expression_plan = context.load_json("runtime/state/language/expression_plan.json")
+    closed = _language_reality_stage_gate_closed(context, bundle)
+    return {
+        "schema_version": "language_reality_stage_gate_v0",
+        "status": "closed" if closed else "blocked",
+        "percept_focus_trace_present": bool(percept.get("percept_focus_trace")),
+        "memory_recall_refs_present": bool(semantic_map.get("memory_recall_refs")),
+        "memory_grounding_refs_present": bool(
+            expression_plan.get("memory_grounding_refs")
+        ),
+        "language_event_bundle_ref": "runtime/state/language/language_event_bundle.json",
+        "fixture_event_kinds_covered": list(bundle.get("fixture_event_kinds_covered", [])),
+        "language_event_kind": bundle.get("language_event_kind"),
+    }
 
 
 def _resident_terminal_proactive_voice_closed(

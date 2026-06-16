@@ -35,7 +35,12 @@ from ..neural_core.workspace import project_workspace_frame_from_live_turn
 from ..language.apology_repair_language import build_apology_repair_language_trace
 from ..language.commitment_expression import build_commitment_expression_plan
 from ..language.expression_monitor import (
+    project_expression_plan_with_offline_reconsolidation_modulation,
     project_expression_plan_with_queue_e_repair_modulation,
+)
+from ..language.language_plasticity import (
+    build_language_plasticity_update,
+    build_language_rhythm_trace,
 )
 from ..language.ref_consistency import project_language_relationship_ref_consistency_profile
 from ..language.semantic_map import project_semantic_map_from_live_evidence
@@ -44,17 +49,51 @@ from ..language.shared_terms import (
     project_shared_term_registry_from_live_evidence,
 )
 from ..language.dialogue_log import collect_dialogue_turn_refs
+from ..language.language_event_bundle import (
+    LANGUAGE_EVENT_BUNDLE_REF,
+    build_language_event_bundle,
+    infer_language_event_kind,
+)
+from ..language.pragmatic_inference import detect_memory_feedback_from_utterance
 from ..language.relationship_timeline import build_relationship_timeline
 from ..state_store.autobiographical_stack import (
     project_autobiographical_stack_from_live_turn,
 )
 from ..state_store.engram_index import project_engram_index_from_live_turn
+from ..state_store.engram_cluster import build_engram_like_trace_cluster
+from ..state_store.event_segmentation import build_event_segmentation_frame
+from ..state_store.life_schema_map import project_life_schema_map_from_live_turn
 from ..state_store.life_state import project_responsibility_language_continuity
+from ..state_store.memory_allocation_gate import build_memory_allocation_gate
+from ..state_store.memory_encoding_gate import build_memory_encoding_gate
 from ..state_store.memory_retrieval import (
     MEMORY_RETRIEVAL_FRAME_REF,
     memory_retrieval_context_summary,
     project_memory_retrieval_from_live_turn,
 )
+from ..state_store.cross_modal_evidence import collect_cross_modal_source_evidence
+from ..state_store.hippocampal_cue_index import build_hippocampal_cue_index
+from ..state_store.honest_brain_alignment_progress import (
+    project_honest_brain_alignment_progress,
+)
+from ..state_store.human_brain_alignment_assessment import (
+    build_human_brain_alignment_assessment,
+)
+from ..state_store.memory_capability_scorecard import build_memory_capability_scorecard
+from ..state_store.memory_engineering_completion_gate import (
+    build_memory_engineering_completion_gate,
+)
+from ..state_store.memory_longitudinal_profile import (
+    project_memory_longitudinal_profile_from_live_turn,
+)
+from ..state_store.memory_trace_store import (
+    apply_post_expression_reconsolidation,
+    build_memory_trace_store,
+    merge_live_trace_refs_into_memory_organs,
+)
+from ..state_store.memory_validator import build_memory_validator_report
+from ..state_store.pattern_completion import build_pattern_completion_frame
+from ..state_store.pattern_separation import build_pattern_separation_index
 from ..state_store.relationship_memory import project_relationship_memory
 from ..state_store.memory_write_gate import (
     project_memory_write_gate_with_consciousness_context,
@@ -136,6 +175,15 @@ BROADCAST_FRAME_REF = "runtime/state/consciousness/broadcast_frame.json"
 METACOGNITION_STATE_REF = "runtime/state/consciousness/metacognition_state.json"
 CONSCIOUSNESS_PROBE_REF = "runtime/state/consciousness/consciousness_probe_bundle.json"
 MEMORY_WRITE_GATE_REF = "runtime/state/memory/memory_write_gate.json"
+EVENT_SEGMENTATION_FRAME_REF = "runtime/state/memory/event_segmentation_frame.json"
+MEMORY_ENCODING_GATE_REF = "runtime/state/memory/memory_encoding_gate.json"
+MEMORY_ALLOCATION_GATE_REF = "runtime/state/memory/memory_allocation_gate.json"
+MEMORY_TRACE_STORE_REF = "runtime/state/memory/memory_trace_store.json"
+MEMORY_VALIDATOR_REPORT_REF = "runtime/state/memory/memory_validator_report.json"
+ENGRAM_CLUSTER_REF = "runtime/state/memory/engram_cluster.json"
+PATTERN_SEPARATION_REF = "runtime/state/memory/pattern_separation_index.json"
+PATTERN_COMPLETION_REF = "runtime/state/memory/pattern_completion_frame.json"
+LIFE_SCHEMA_MAP_REF = "runtime/state/memory/life_schema_map.json"
 MEMORY_WRITE_GATE_CONSCIOUSNESS_CONTEXT_REF = (
     "runtime/state/memory/memory_write_gate.json#consciousness_write_context"
 )
@@ -284,6 +332,9 @@ def write_resident_turn_writeback(
         live_language_turn_refs[-1] if live_language_turn_refs else None
     )
     state_dir = terminal_dir.parent
+    web_dream_learning_state = _read_json_if_exists(
+        state_dir / "dream" / "web_dream_learning_state.json"
+    )
     memory_retrieval_frame = project_memory_retrieval_from_live_turn(
         memory_retrieval_frame=_read_json_if_exists(
             state_dir / "memory" / "memory_retrieval_frame.json"
@@ -300,13 +351,11 @@ def write_resident_turn_writeback(
         life_state=_read_json_if_exists(state_dir / "life_state.json"),
         responsibility_loop_state=_read_json_if_exists(state_dir / "action" / "responsibility_loop_state.json"),
         state_merge_guard=_read_json_if_exists(state_dir / "memory" / "state_merge_guard.json"),
+        web_dream_learning_state=web_dream_learning_state,
         live_language_turn_refs=live_language_turn_refs,
         dialogue_turn_refs=[external_turn_ref, life_turn_ref],
     )
-    write_json(
-        state_dir / "memory" / "memory_retrieval_frame.json",
-        memory_retrieval_frame,
-    )
+    memory_retrieval_frame["live_memory_projection_stage"] = "pre_continuity_pass"
     memory_retrieval_summary = memory_retrieval_context_summary(
         memory_retrieval_frame
     )
@@ -354,6 +403,8 @@ def write_resident_turn_writeback(
             *list(memory_retrieval_frame.get("activated_engram_refs", [])),
             *list(memory_retrieval_frame.get("relationship_memory_hits", [])),
             *list(memory_retrieval_frame.get("autobiographical_hits", [])),
+            *list(memory_retrieval_frame.get("schema_memory_hits", [])),
+            *list(memory_retrieval_frame.get("pattern_completion_hits", [])),
             *list(
                 memory_retrieval_frame.get(
                     "autobiographical_responsibility_repair_hits", []
@@ -383,7 +434,7 @@ def write_resident_turn_writeback(
         "last_dialogue_packet_ref": RESUMED_DIALOGUE_PACKET_REF,
         "last_language_percept_ref": language_percept_ref or LANGUAGE_PERCEPT_REF,
         "last_semantic_map_ref": semantic_map_ref or SEMANTIC_MAP_REF,
-        "last_live_semantic_focus": live_semantic_focus,
+        "last_live_semantic_focus": live_turn_focus,
         "live_language_turn_refs": live_language_turn_refs,
         "memory_retrieval_frame_ref": MEMORY_RETRIEVAL_FRAME_REF,
         "memory_retrieval_reconstruction_focus": memory_retrieval_summary.get(
@@ -458,6 +509,7 @@ def write_resident_turn_writeback(
         state_dir=state_dir,
         language_dir=language_dir,
         relationship_dir=relationship_dir,
+        reports_dir=reports_dir,
         relationship_graph=relationship_graph,
         self_model_state=self_model_state,
         self_narrative_trace=self_narrative_trace,
@@ -468,6 +520,7 @@ def write_resident_turn_writeback(
         source_doc_refs=source_doc_refs,
         live_language_turn_refs=live_language_turn_refs,
         memory_retrieval_frame=memory_retrieval_frame,
+        external_utterance=external_utterance,
         live_turn_focus=live_turn_focus,
         prediction_workspace=prediction_workspace,
         workspace_frame=workspace_frame,
@@ -526,6 +579,111 @@ def write_resident_turn_writeback(
             or live_shared_term_promotion_profile
             or live_emotion_regulation_profile
         ):
+            write_json(
+                terminal_dir / "terminal_life_loop_state.json",
+                updated_terminal_life_loop_state,
+            )
+        memory_retrieval_frame = (
+            continuity_refresh.get("memory_retrieval_frame")
+            or memory_retrieval_frame
+        )
+        memory_retrieval_summary = memory_retrieval_context_summary(
+            memory_retrieval_frame
+        )
+        exit_dream_next_wake_governance = memory_retrieval_frame.get(
+            "exit_dream_next_wake_governance"
+        )
+        if not isinstance(exit_dream_next_wake_governance, dict):
+            exit_dream_next_wake_governance = {}
+        exit_dream_next_wake_memory_cue_refs = _dedupe_refs(
+            _string_list(
+                exit_dream_next_wake_governance.get("next_wake_memory_cue_refs")
+            )
+        )
+        exit_dream_next_wake_governance_refs = _dedupe_refs(
+            _string_list(exit_dream_next_wake_governance.get("governance_refs"))
+        )
+        exit_dream_memory_write_gate_ref = exit_dream_next_wake_governance.get(
+            "memory_write_gate_ref"
+        )
+        exit_dream_state_merge_guard_ref = exit_dream_next_wake_governance.get(
+            "state_merge_guard_ref"
+        )
+        exit_dream_fact_boundary_ref = exit_dream_next_wake_governance.get(
+            "dream_fact_boundary_ref"
+        )
+        exit_dream_next_wake_candidate_boundary = (
+            exit_dream_next_wake_governance.get("candidate_boundary")
+        )
+        exit_dream_next_wake_ref_set = _dedupe_refs(
+            exit_dream_next_wake_memory_cue_refs
+            + exit_dream_next_wake_governance_refs
+            + [
+                str(ref)
+                for ref in [
+                    exit_dream_memory_write_gate_ref,
+                    exit_dream_state_merge_guard_ref,
+                    exit_dream_fact_boundary_ref,
+                ]
+                if ref
+            ]
+        )
+        memory_retrieval_ref_set = _dedupe_refs(
+            [
+                MEMORY_RETRIEVAL_FRAME_REF,
+                *_string_list(memory_retrieval_frame.get("activated_engram_refs")),
+                *_string_list(memory_retrieval_frame.get("relationship_memory_hits")),
+                *_string_list(memory_retrieval_frame.get("autobiographical_hits")),
+                *_string_list(memory_retrieval_frame.get("schema_memory_hits")),
+                *_string_list(memory_retrieval_frame.get("pattern_completion_hits")),
+                *_string_list(
+                    memory_retrieval_frame.get(
+                        "autobiographical_responsibility_repair_hits"
+                    )
+                ),
+                *_string_list(memory_retrieval_frame.get("dream_residue_hits")),
+                *_string_list(memory_retrieval_frame.get("responsibility_hits")),
+                *exit_dream_next_wake_ref_set,
+            ]
+        )
+        memory_retrieval_ref_set = _dedupe_refs(
+            memory_retrieval_ref_set
+            + _live_deep_memory_projection_refs(continuity_refresh)
+        )
+        _apply_memory_retrieval_summary_to_terminal_loop(
+            updated_terminal_life_loop_state,
+            memory_retrieval_summary=memory_retrieval_summary,
+            memory_retrieval_ref_set=memory_retrieval_ref_set,
+            exit_dream_next_wake_memory_cue_refs=exit_dream_next_wake_memory_cue_refs,
+            exit_dream_next_wake_governance_refs=exit_dream_next_wake_governance_refs,
+            exit_dream_memory_write_gate_ref=exit_dream_memory_write_gate_ref,
+            exit_dream_state_merge_guard_ref=exit_dream_state_merge_guard_ref,
+            exit_dream_fact_boundary_ref=exit_dream_fact_boundary_ref,
+            exit_dream_next_wake_candidate_boundary=(
+                exit_dream_next_wake_candidate_boundary
+            ),
+            has_exit_dream_next_wake_governance=bool(
+                exit_dream_next_wake_governance
+            ),
+        )
+        write_json(
+            terminal_dir / "terminal_life_loop_state.json",
+            updated_terminal_life_loop_state,
+        )
+        refreshed_live_semantic_focus = _live_semantic_focus_from_continuity_refresh(
+            continuity_refresh
+        )
+        if refreshed_live_semantic_focus:
+            live_turn_focus = refreshed_live_semantic_focus
+            updated_terminal_life_loop_state["last_live_semantic_focus"] = (
+                live_turn_focus
+            )
+            memory_retrieval_summary = memory_retrieval_context_summary(
+                memory_retrieval_frame
+            )
+            updated_terminal_life_loop_state["memory_retrieval_reconstruction_focus"] = (
+                memory_retrieval_summary.get("reconstruction_focus")
+            )
             write_json(
                 terminal_dir / "terminal_life_loop_state.json",
                 updated_terminal_life_loop_state,
@@ -1066,13 +1224,8 @@ def write_resident_turn_writeback(
             )
         ),
         resident_background_lineage_body_signal_ref_count=(
-            resident_background_lineage_payload.get(
-                "resident_background_lineage_body_signal_ref_count"
-            )
-            if resident_background_lineage_payload.get(
-                "resident_background_lineage_body_signal_ref_count"
-            )
-            is not None
+            len(resident_background_lineage_body_signal_refs)
+            if resident_background_lineage_body_signal_refs
             else prediction_write_gate_payload.get("body_signal_ref_count")
         ),
         resident_background_lineage_body_signal_candidate_gate_adjustments=(
@@ -1268,9 +1421,13 @@ def write_resident_turn_writeback(
             exit_dream_next_wake_candidate_boundary
         ),
         "live_language_turn_refs": live_language_turn_refs,
-        "live_semantic_focus": live_semantic_focus,
+        "live_semantic_focus": live_turn_focus,
         "live_ambiguity_flags": list(live_ambiguity_flags or []),
         "live_repair_trigger_candidates": list(live_repair_trigger_candidates or []),
+        "relationship_timeline_restore_refs": [RELATIONSHIP_TIMELINE_REF],
+        "commitment_expression_restore_refs": [COMMITMENT_EXPRESSION_PLAN_REF],
+        "apology_repair_restore_refs": [APOLOGY_REPAIR_LANGUAGE_TRACE_REF],
+        "shared_term_registry_ref": SHARED_TERM_REGISTRY_REF,
         "dialogue_writeback_bundle_ref": DIALOGUE_WRITEBACK_BUNDLE_REF,
         "next_required_action": "await_next_external_relation_turn",
     }
@@ -1355,12 +1512,34 @@ def write_resident_turn_writeback(
         resumed_dialogue_packet[
             "resident_background_lineage_autobiographical_repair_carrier_refs"
         ] = resident_background_lineage_autobiographical_repair_carrier_refs
+    if resident_background_lineage_body_signal_refs:
+        resumed_dialogue_packet["resident_background_lineage_body_signal_refs"] = (
+            resident_background_lineage_body_signal_refs
+        )
+        resumed_dialogue_packet["resident_background_lineage_body_signal_ref_count"] = (
+            len(resident_background_lineage_body_signal_refs)
+        )
+    if resident_background_lineage_body_signal_candidate_gate_adjustments:
+        resumed_dialogue_packet[
+            "resident_background_lineage_body_signal_candidate_gate_adjustments"
+        ] = resident_background_lineage_body_signal_candidate_gate_adjustments
     if prediction_write_gate_payload:
         resumed_dialogue_packet.update(prediction_write_gate_payload)
         attach_prediction_write_gate_lineage_fallback(
             resumed_dialogue_packet,
             prediction_write_gate_payload,
         )
+        if resident_background_lineage_body_signal_refs:
+            resumed_dialogue_packet[
+                "resident_background_lineage_body_signal_refs"
+            ] = resident_background_lineage_body_signal_refs
+            resumed_dialogue_packet[
+                "resident_background_lineage_body_signal_ref_count"
+            ] = len(resident_background_lineage_body_signal_refs)
+        if resident_background_lineage_body_signal_candidate_gate_adjustments:
+            resumed_dialogue_packet[
+                "resident_background_lineage_body_signal_candidate_gate_adjustments"
+            ] = resident_background_lineage_body_signal_candidate_gate_adjustments
         if live_consciousness_chain_profile:
             _apply_live_consciousness_lineage_fields(
                 resumed_dialogue_packet,
@@ -1395,7 +1574,57 @@ def write_resident_turn_writeback(
             CONTEXT_ACCUMULATION_WINDOW_REF
         )
         resumed_dialogue_packet["turn_transition_ref"] = TURN_TRANSITION_TRACE_REF
-    write_json(reports_dir / "resumed_external_dialogue_packet.json", resumed_dialogue_packet)
+    post_writeback_handoff_fields = build_queue_e_world_contact_handoff_payload(
+        updated_terminal_life_loop_state
+    )
+    if post_writeback_handoff_fields:
+        life_turn.update(post_writeback_handoff_fields)
+    if live_turn_focus:
+        external_turn["live_semantic_focus"] = live_turn_focus
+        life_turn["live_semantic_focus"] = live_turn_focus
+        resumed_dialogue_packet["live_semantic_focus"] = live_turn_focus
+    if live_turn_focus or post_writeback_handoff_fields:
+        _rewrite_jsonl_tail(
+            language_dir / "dialogue_turn_log.jsonl",
+            [external_turn, life_turn],
+        )
+        write_json(
+            reports_dir / "resumed_external_dialogue_packet.json",
+            resumed_dialogue_packet,
+        )
+    else:
+        write_json(
+            reports_dir / "resumed_external_dialogue_packet.json",
+            resumed_dialogue_packet,
+        )
+
+    apology_trace = (
+        (continuity_refresh or {}).get("apology_repair_language_trace") or {}
+    )
+    language_percept_frame = _read_json_if_exists(
+        language_dir / "language_percept_frame.json"
+    )
+    language_event_bundle = build_language_event_bundle(
+        run_id=run_id,
+        generated_at=generated_at,
+        language_event_kind=infer_language_event_kind(
+            semantic_focus=live_turn_focus or live_semantic_focus,
+            dream_signal_candidates=list(
+                language_percept_frame.get("dream_signal_candidates", [])
+            ),
+            shared_term_hits=list(language_percept_frame.get("shared_term_hits", [])),
+        ),
+        inner_speech_ref=inner_speech_ref,
+        expression_plan_ref=expression_plan_ref,
+        turn_transition_trace_ref=TURN_TRANSITION_TRACE_REF,
+        future_probe_refs=list(apology_trace.get("future_probe_refs", [])),
+        language_percept_ref=language_percept_ref,
+        semantic_map_ref=semantic_map_ref,
+        expression_monitor_ref=expression_monitor_ref,
+        source_doc_refs=source_doc_refs,
+    )
+    write_json(language_dir / "language_event_bundle.json", language_event_bundle)
+    resumed_dialogue_packet["language_event_bundle_ref"] = LANGUAGE_EVENT_BUNDLE_REF
 
     return ResidentTurnWritebackResult(
         safe_terminal_loop=updated_safe_terminal_loop,
@@ -1414,6 +1643,7 @@ def _refresh_long_horizon_continuity(
     state_dir: Path,
     language_dir: Path,
     relationship_dir: Path,
+    reports_dir: Path,
     relationship_graph: dict[str, Any],
     self_model_state: dict[str, Any] | None,
     self_narrative_trace: dict[str, Any] | None,
@@ -1424,6 +1654,7 @@ def _refresh_long_horizon_continuity(
     source_doc_refs: list[str],
     live_language_turn_refs: list[str] | None,
     memory_retrieval_frame: dict[str, Any] | None = None,
+    external_utterance: str | None = None,
     live_turn_focus: str | None = None,
     signal_media_runtime: dict[str, Any] | None = None,
     prediction_workspace: dict[str, Any] | None = None,
@@ -1748,6 +1979,12 @@ def _refresh_long_horizon_continuity(
     )
 
     write_json(relationship_timeline_path, refreshed_relationship_timeline)
+    expression_plan = project_expression_plan_with_offline_reconsolidation_modulation(
+        expression_plan=expression_plan,
+        commitment_expression_plan=refreshed_commitment_expression_plan,
+        apology_repair_language_trace=refreshed_apology_repair_language_trace,
+    )
+    write_json(expression_plan_path, expression_plan)
     write_json(commitment_expression_path, refreshed_commitment_expression_plan)
     write_json(apology_repair_path, refreshed_apology_repair_language_trace)
     write_json(relationship_dir / "relationship_subject_graph.json", evolved_relationship_graph)
@@ -2026,6 +2263,33 @@ def _refresh_long_horizon_continuity(
     )
     if refreshed_shared_term_registry:
         write_json(shared_term_registry_path, refreshed_shared_term_registry)
+    language_plasticity_path = language_dir / "language_plasticity_update.json"
+    language_rhythm_path = language_dir / "language_rhythm_trace.json"
+    existing_rhythm_trace = _read_json_if_exists(language_rhythm_path)
+    refreshed_rhythm_trace = build_language_rhythm_trace(
+        run_id=refresh_run_id,
+        generated_at=generated_at,
+        expression_plan=expression_plan,
+    )
+    if existing_rhythm_trace and isinstance(
+        existing_rhythm_trace.get("tempo_history"), list
+    ):
+        prior_history = list(existing_rhythm_trace.get("tempo_history", []))
+        new_entry = refreshed_rhythm_trace["tempo_history"][0]
+        if not prior_history or prior_history[-1] != new_entry:
+            prior_history.append(new_entry)
+        refreshed_rhythm_trace["tempo_history"] = prior_history[-24:]
+    refreshed_plasticity_update = build_language_plasticity_update(
+        run_id=refresh_run_id,
+        generated_at=generated_at,
+        shared_term_registry=refreshed_shared_term_registry
+        or existing_shared_term_registry
+        or {},
+        expression_plan=expression_plan,
+        dialogue_turn_count=len(dialogue_turn_refs),
+    )
+    write_json(language_rhythm_path, refreshed_rhythm_trace)
+    write_json(language_plasticity_path, refreshed_plasticity_update)
     if language_percept and semantic_map:
         semantic_map = project_semantic_map_from_live_evidence(
             semantic_map=semantic_map,
@@ -2040,6 +2304,68 @@ def _refresh_long_horizon_continuity(
             generated_at=generated_at,
         )
         write_json(language_dir / "semantic_map_frame.json", semantic_map)
+        refreshed_semantic_goal = semantic_map.get("semantic_focus")
+        if refreshed_semantic_goal:
+            if expression_plan.get("semantic_goal") != refreshed_semantic_goal:
+                expression_plan["semantic_goal"] = refreshed_semantic_goal
+                write_json(expression_plan_path, expression_plan)
+            updated_context_accumulation["semantic_focus"] = refreshed_semantic_goal
+            write_json(
+                terminal_dir / "context_accumulation_window.json",
+                updated_context_accumulation,
+            )
+            updated_turn_transition["semantic_focus"] = refreshed_semantic_goal
+            updated_turn_transition["live_turn_focus"] = refreshed_semantic_goal
+            live_turn_focus = refreshed_semantic_goal
+            write_json(terminal_dir / "turn_transition_trace.json", updated_turn_transition)
+    live_memory_projection = _refresh_live_memory_projection(
+        state_dir=state_dir,
+        language_dir=language_dir,
+        reports_dir=reports_dir,
+        run_id=refresh_run_id,
+        generated_at=generated_at,
+        external_utterance=external_utterance or live_turn_focus or "",
+        engram_index=refreshed_engram_index,
+        relationship_memory=refreshed_relationship_memory,
+        autobiographical_stack=refreshed_autobiographical_stack,
+        relationship_timeline=refreshed_relationship_timeline,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        responsibility_loop_state=updated_responsibility_loop_state
+        or responsibility_loop_state,
+        state_merge_guard=refreshed_state_merge_guard,
+        memory_write_gate=updated_memory_write_gate,
+        life_state=refreshed_life_state,
+        signal_media_runtime=signal_media_runtime
+        or _read_json_if_exists(state_dir / "signal" / "signal_media_runtime.json"),
+        body_resource_budget=body_resource_budget
+        or _read_json_if_exists(state_dir / "body" / "body_resource_budget.json"),
+        core_affect_vector=_read_json_if_exists(
+            state_dir / "body" / "core_affect_vector.json"
+        ),
+        live_language_turn_refs=live_language_turn_refs,
+        dialogue_turn_refs=dialogue_turn_refs,
+        live_turn_focus=live_turn_focus,
+        write_json=write_json,
+    )
+    if live_memory_projection:
+        refreshed_state_merge_guard = (
+            live_memory_projection.get("state_merge_guard") or refreshed_state_merge_guard
+        )
+        updated_memory_write_gate = (
+            live_memory_projection.get("memory_write_gate") or updated_memory_write_gate
+        )
+        memory_retrieval_frame = (
+            live_memory_projection.get("memory_retrieval_frame")
+            or memory_retrieval_frame
+        )
+        refreshed_life_state = _merge_live_memory_projection_into_life_state(
+            refreshed_life_state,
+            memory_projection=live_memory_projection,
+            memory_retrieval_frame=memory_retrieval_frame,
+            state_merge_guard=refreshed_state_merge_guard,
+        )
+        write_json(life_state_path, refreshed_life_state)
     ref_consistency_profile = project_language_relationship_ref_consistency_profile(
         generated_at=generated_at,
         language_percept=language_percept or {},
@@ -2066,6 +2392,8 @@ def _refresh_long_horizon_continuity(
         trigger_ref=RESUMED_DIALOGUE_PACKET_REF,
         previous_monitor=previous_trait_drift_monitor,
         source_doc_refs=source_doc_refs,
+        language_plasticity_update=refreshed_plasticity_update,
+        language_rhythm_trace=refreshed_rhythm_trace,
     )
     trait_drift_monitor_path.parent.mkdir(parents=True, exist_ok=True)
     write_json(trait_drift_monitor_path, trait_drift_monitor)
@@ -2102,8 +2430,9 @@ def _refresh_long_horizon_continuity(
     return {
         "relationship_graph": evolved_relationship_graph,
         "relationship_timeline": refreshed_relationship_timeline,
+        "semantic_map": semantic_map,
         "commitment_expression_plan": refreshed_commitment_expression_plan,
-        "expression_plan": refreshed_expression_plan,
+        "expression_plan": expression_plan,
         "apology_repair_language_trace": refreshed_apology_repair_language_trace,
         "relationship_memory": refreshed_relationship_memory,
         "state_merge_guard": refreshed_state_merge_guard,
@@ -2116,6 +2445,45 @@ def _refresh_long_horizon_continuity(
         "metacognition_state": updated_metacognition_state,
         "consciousness_probe_bundle": updated_consciousness_probe,
         "memory_write_gate": updated_memory_write_gate,
+        "event_segmentation_frame": live_memory_projection.get(
+            "event_segmentation_frame"
+        )
+        if live_memory_projection
+        else {},
+        "memory_encoding_gate": live_memory_projection.get(
+            "memory_encoding_gate"
+        )
+        if live_memory_projection
+        else {},
+        "memory_allocation_gate": live_memory_projection.get(
+            "memory_allocation_gate"
+        )
+        if live_memory_projection
+        else {},
+        "memory_trace_store": live_memory_projection.get("memory_trace_store")
+        if live_memory_projection
+        else {},
+        "memory_validator_report": live_memory_projection.get(
+            "memory_validator_report"
+        )
+        if live_memory_projection
+        else {},
+        "engram_cluster": live_memory_projection.get("engram_cluster")
+        if live_memory_projection
+        else {},
+        "pattern_separation_index": live_memory_projection.get(
+            "pattern_separation_index"
+        )
+        if live_memory_projection
+        else {},
+        "pattern_completion_frame": live_memory_projection.get(
+            "pattern_completion_frame"
+        )
+        if live_memory_projection
+        else {},
+        "life_schema_map": live_memory_projection.get("life_schema_map")
+        if live_memory_projection
+        else {},
         "responsibility_loop_state": updated_responsibility_loop_state,
         "queue_e_world_contact_handoff_profile": updated_queue_e_handoff_profile,
         "context_accumulation_window": updated_context_accumulation,
@@ -2126,7 +2494,37 @@ def _refresh_long_horizon_continuity(
         "memory_retrieval_frame": memory_retrieval_frame or {},
         "affective_episode": updated_affective_episode,
         "emotion_regulation_loop": updated_emotion_regulation,
+        "live_semantic_focus": live_turn_focus,
     }
+
+
+def _live_semantic_focus_from_continuity_refresh(
+    continuity_refresh: dict[str, Any] | None,
+) -> str | None:
+    if not continuity_refresh:
+        return None
+    turn_transition = continuity_refresh.get("turn_transition_trace")
+    if isinstance(turn_transition, dict):
+        live_turn_focus = turn_transition.get("live_turn_focus")
+        if live_turn_focus:
+            return str(live_turn_focus)
+        semantic_focus = turn_transition.get("semantic_focus")
+        if semantic_focus:
+            return str(semantic_focus)
+    expression_plan = continuity_refresh.get("expression_plan")
+    if isinstance(expression_plan, dict):
+        semantic_goal = expression_plan.get("semantic_goal")
+        if semantic_goal:
+            return str(semantic_goal)
+    semantic_map = continuity_refresh.get("semantic_map")
+    if isinstance(semantic_map, dict):
+        semantic_focus = semantic_map.get("semantic_focus")
+        if semantic_focus:
+            return str(semantic_focus)
+    refreshed_focus = continuity_refresh.get("live_semantic_focus")
+    if refreshed_focus:
+        return str(refreshed_focus)
+    return None
 
 
 def _live_emotion_regulation_profile(
@@ -2148,6 +2546,944 @@ def _live_emotion_regulation_profile(
             "structured_emotion_regulation_evidence_not_spoken_language"
         ),
     }
+
+
+def _apply_memory_retrieval_summary_to_terminal_loop(
+    terminal_life_loop_state: dict[str, Any],
+    *,
+    memory_retrieval_summary: dict[str, Any],
+    memory_retrieval_ref_set: list[str],
+    exit_dream_next_wake_memory_cue_refs: list[str],
+    exit_dream_next_wake_governance_refs: list[str],
+    exit_dream_memory_write_gate_ref: str | None,
+    exit_dream_state_merge_guard_ref: str | None,
+    exit_dream_fact_boundary_ref: str | None,
+    exit_dream_next_wake_candidate_boundary: str | None,
+    has_exit_dream_next_wake_governance: bool,
+) -> None:
+    terminal_life_loop_state["memory_retrieval_reconstruction_focus"] = (
+        memory_retrieval_summary.get("reconstruction_focus")
+    )
+    terminal_life_loop_state["memory_retrieval_cue_terms"] = memory_retrieval_summary.get(
+        "cue_terms", []
+    )
+    terminal_life_loop_state["memory_retrieval_activated_ref_count"] = (
+        memory_retrieval_summary.get("activated_engram_ref_count")
+    )
+    terminal_life_loop_state["memory_retrieval_relationship_hit_count"] = (
+        memory_retrieval_summary.get("relationship_hit_count")
+    )
+    terminal_life_loop_state["memory_retrieval_dream_residue_hit_count"] = (
+        memory_retrieval_summary.get("dream_residue_hit_count")
+    )
+    terminal_life_loop_state["memory_retrieval_responsibility_hit_count"] = (
+        memory_retrieval_summary.get("responsibility_hit_count")
+    )
+    terminal_life_loop_state["memory_retrieval_autobiographical_repair_hit_count"] = (
+        memory_retrieval_summary.get("autobiographical_responsibility_repair_hit_count")
+    )
+    terminal_life_loop_state[
+        "memory_retrieval_autobiographical_repair_pressure_level"
+    ] = memory_retrieval_summary.get("autobiographical_repair_pressure_level")
+    terminal_life_loop_state[
+        "memory_retrieval_autobiographical_repair_attention_target"
+    ] = memory_retrieval_summary.get("autobiographical_repair_attention_target")
+    terminal_life_loop_state[
+        "memory_retrieval_autobiographical_repair_projection_boundary"
+    ] = memory_retrieval_summary.get("autobiographical_repair_projection_boundary")
+    terminal_life_loop_state[
+        "memory_retrieval_autobiographical_repair_retrieval_boundary"
+    ] = memory_retrieval_summary.get("autobiographical_repair_retrieval_boundary")
+    terminal_life_loop_state["memory_retrieval_ref_set"] = memory_retrieval_ref_set
+    terminal_life_loop_state["exit_dream_next_wake_governance_ref"] = (
+        "runtime/state/memory/memory_retrieval_frame.json#exit_dream_next_wake_governance"
+        if has_exit_dream_next_wake_governance
+        else None
+    )
+    terminal_life_loop_state["exit_dream_next_wake_memory_cue_refs"] = (
+        exit_dream_next_wake_memory_cue_refs
+    )
+    terminal_life_loop_state["exit_dream_next_wake_governance_refs"] = (
+        exit_dream_next_wake_governance_refs
+    )
+    terminal_life_loop_state["exit_dream_memory_write_gate_ref"] = (
+        exit_dream_memory_write_gate_ref
+    )
+    terminal_life_loop_state["exit_dream_state_merge_guard_ref"] = (
+        exit_dream_state_merge_guard_ref
+    )
+    terminal_life_loop_state["exit_dream_fact_boundary_ref"] = (
+        exit_dream_fact_boundary_ref
+    )
+    terminal_life_loop_state["exit_dream_next_wake_candidate_boundary"] = (
+        exit_dream_next_wake_candidate_boundary
+    )
+
+
+def _live_deep_memory_projection_refs(
+    continuity_refresh: dict[str, Any] | None,
+) -> list[str]:
+    if not isinstance(continuity_refresh, dict) or not continuity_refresh:
+        return []
+    refs = []
+    engram_cluster = continuity_refresh.get("engram_cluster")
+    if isinstance(engram_cluster, dict) and engram_cluster:
+        refs.extend([ENGRAM_CLUSTER_REF])
+        refs.extend(_string_list(engram_cluster.get("cluster_refs")))
+    pattern_separation = continuity_refresh.get("pattern_separation_index")
+    if isinstance(pattern_separation, dict) and pattern_separation:
+        refs.extend([PATTERN_SEPARATION_REF])
+        refs.extend(
+            str(route.get("route_ref"))
+            for route in pattern_separation.get("separation_routes", [])
+            if isinstance(route, dict) and route.get("route_ref")
+        )
+    pattern_completion = continuity_refresh.get("pattern_completion_frame")
+    if isinstance(pattern_completion, dict) and pattern_completion:
+        refs.extend([PATTERN_COMPLETION_REF])
+        refs.extend(
+            str(candidate.get("candidate_ref"))
+            for candidate in pattern_completion.get("completion_candidates", [])
+            if isinstance(candidate, dict) and candidate.get("candidate_ref")
+        )
+    life_schema_map = continuity_refresh.get("life_schema_map")
+    if isinstance(life_schema_map, dict) and life_schema_map:
+        refs.extend([LIFE_SCHEMA_MAP_REF])
+        refs.extend(_string_list(life_schema_map.get("schema_refs")))
+        refs.append("runtime/state/memory/life_schema_map.json#schema_refs")
+    return _dedupe_refs([str(ref) for ref in refs if ref])
+
+
+def _rewrite_jsonl_tail(path: Path, payloads: list[dict[str, Any]]) -> None:
+    if not path.exists() or not payloads:
+        return
+    try:
+        lines = [
+            line
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    except OSError:
+        return
+    if len(lines) < len(payloads):
+        return
+    prefix = lines[: len(lines) - len(payloads)]
+    replacement = [json.dumps(payload, ensure_ascii=False) for payload in payloads]
+    path.write_text(
+        "\n".join([*prefix, *replacement]) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _life_response_from_dialogue_log(
+    dialogue_log_path: Path,
+    *,
+    dialogue_turn_refs: list[str] | None,
+) -> str:
+    if not dialogue_log_path.exists():
+        return ""
+    life_turn_ref = None
+    refs = _string_list(dialogue_turn_refs)
+    if len(refs) > 1:
+        life_turn_ref = refs[1]
+    elif refs:
+        life_turn_ref = refs[-1]
+    if not life_turn_ref or "#line-" not in life_turn_ref:
+        return ""
+    try:
+        line_index = int(life_turn_ref.rsplit("#line-", 1)[-1])
+    except ValueError:
+        return ""
+    lines = [
+        line.strip()
+        for line in dialogue_log_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    if line_index < 0 or line_index >= len(lines):
+        return ""
+    try:
+        payload = json.loads(lines[line_index])
+    except json.JSONDecodeError:
+        return ""
+    if not isinstance(payload, dict):
+        return ""
+    return str(payload.get("utterance") or payload.get("life_utterance") or "")
+
+
+def _align_memory_retrieval_focus_with_live_turn(
+    memory_retrieval_frame: dict[str, Any],
+    *,
+    semantic_map: dict[str, Any] | None,
+    live_turn_focus: str | None,
+) -> dict[str, Any]:
+    updated = json.loads(json.dumps(memory_retrieval_frame or {}))
+    focus = live_turn_focus or (semantic_map or {}).get("semantic_focus")
+    if not focus:
+        return updated
+    updated["reconstruction_focus"] = str(focus)
+    reconstruction_inputs = updated.setdefault("reconstruction_inputs", {})
+    if isinstance(reconstruction_inputs, dict):
+        reconstruction_inputs["reconstruction_focus"] = str(focus)
+    recall_profile = updated.get("recall_to_expression_profile")
+    if isinstance(recall_profile, dict):
+        recall_profile["reconstruction_focus"] = str(focus)
+    updated["live_semantic_focus"] = str(focus)
+    return updated
+
+
+def _stamp_live_memory_projection_stage(
+    objects: list[dict[str, Any]],
+    *,
+    generated_at: str,
+    live_turn_focus: str | None,
+) -> None:
+    for item in objects:
+        if not isinstance(item, dict):
+            continue
+        item["live_memory_projection_stage"] = "post_continuity_single_pass"
+        item["live_memory_projection_generated_at"] = generated_at
+        if live_turn_focus:
+            item["live_semantic_focus"] = str(live_turn_focus)
+
+
+def _refresh_live_memory_projection(
+    *,
+    state_dir: Path,
+    language_dir: Path,
+    reports_dir: Path,
+    run_id: str,
+    generated_at: str,
+    external_utterance: str,
+    engram_index: dict[str, Any] | None,
+    relationship_memory: dict[str, Any] | None,
+    autobiographical_stack: dict[str, Any] | None,
+    relationship_timeline: dict[str, Any] | None,
+    commitment_truth_state: dict[str, Any] | None,
+    responsibility_ledger: dict[str, Any] | None,
+    responsibility_loop_state: dict[str, Any] | None,
+    state_merge_guard: dict[str, Any] | None,
+    memory_write_gate: dict[str, Any] | None,
+    life_state: dict[str, Any] | None,
+    signal_media_runtime: dict[str, Any] | None,
+    body_resource_budget: dict[str, Any] | None,
+    core_affect_vector: dict[str, Any] | None,
+    live_language_turn_refs: list[str] | None,
+    dialogue_turn_refs: list[str] | None,
+    live_turn_focus: str | None = None,
+    write_json: Callable[[Path, dict[str, Any]], None],
+) -> dict[str, Any]:
+    memory_dir = state_dir / "memory"
+    memory_dir.mkdir(parents=True, exist_ok=True)
+    web_dream_learning_state = _read_json_if_exists(
+        state_dir / "dream" / "web_dream_learning_state.json"
+    )
+    semantic_map = _read_json_if_exists(language_dir / "semantic_map_frame.json")
+    language_percept = _read_json_if_exists(language_dir / "language_percept_frame.json")
+    dialogue_memory_summary = _read_json_if_exists(
+        memory_dir / "dialogue_memory_summary.json"
+    )
+
+    event_segmentation_frame = build_event_segmentation_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        memory_retrieval_frame=_read_json_if_exists(
+            memory_dir / "memory_retrieval_frame.json"
+        ),
+        memory_trace_store=_read_json_if_exists(
+            memory_dir / "memory_trace_store.json"
+        ),
+        responsibility_ledger=responsibility_ledger,
+        state_merge_guard=state_merge_guard,
+    )
+    memory_encoding_gate = build_memory_encoding_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        event_segmentation_frame=event_segmentation_frame,
+        memory_trace_store=_read_json_if_exists(
+            memory_dir / "memory_trace_store.json"
+        ),
+        memory_write_gate=memory_write_gate,
+    )
+    memory_allocation_gate = build_memory_allocation_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        event_segmentation_frame=event_segmentation_frame,
+        memory_encoding_gate=memory_encoding_gate,
+        memory_trace_store=_read_json_if_exists(
+            memory_dir / "memory_trace_store.json"
+        ),
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        responsibility_ledger=responsibility_ledger,
+        signal_media_runtime=signal_media_runtime,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
+        memory_write_gate=memory_write_gate,
+    )
+    first_pass_retrieval_frame = project_memory_retrieval_from_live_turn(
+        memory_retrieval_frame=_read_json_if_exists(
+            memory_dir / "memory_retrieval_frame.json"
+        ),
+        run_id=run_id,
+        generated_at=generated_at,
+        external_utterance=external_utterance,
+        semantic_map=semantic_map,
+        language_percept=language_percept,
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        dialogue_memory_summary=dialogue_memory_summary,
+        life_state=life_state,
+        responsibility_loop_state=responsibility_loop_state,
+        state_merge_guard=state_merge_guard,
+        web_dream_learning_state=web_dream_learning_state,
+        live_language_turn_refs=live_language_turn_refs,
+        dialogue_turn_refs=dialogue_turn_refs,
+    )
+    expression_monitor = _read_json_if_exists(
+        language_dir / "expression_monitor_state.json"
+    )
+    existing_memory_trace_store = _read_json_if_exists(
+        memory_dir / "memory_trace_store.json"
+    )
+    dialogue_turn_ref = (
+        _string_list(dialogue_turn_refs)[0] if dialogue_turn_refs else None
+    )
+    memory_feedback_event = detect_memory_feedback_from_utterance(
+        external_utterance,
+        dialogue_turn_ref=dialogue_turn_ref,
+    )
+    memory_reconsolidation_report = None
+    relationship_memory_for_projection = relationship_memory
+    state_merge_guard_for_projection = state_merge_guard
+    if memory_feedback_event.get("event_type"):
+        reconsolidation_result = apply_post_expression_reconsolidation(
+            existing_memory_trace_store or {"traces": []},
+            feedback_event=memory_feedback_event,
+            run_id=run_id,
+            generated_at=generated_at,
+            relationship_memory=relationship_memory,
+            state_merge_guard=state_merge_guard,
+            exclude_dialogue_turn_ref=dialogue_turn_ref,
+        )
+        existing_memory_trace_store = reconsolidation_result["memory_trace_store"]
+        relationship_memory_for_projection = reconsolidation_result[
+            "relationship_memory"
+        ]
+        state_merge_guard_for_projection = reconsolidation_result["state_merge_guard"]
+        memory_reconsolidation_report = reconsolidation_result[
+            "memory_reconsolidation_report"
+        ]
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        write_json(
+            reports_dir / "memory_reconsolidation_report.json",
+            memory_reconsolidation_report,
+        )
+    live_turn_context = {
+        "dialogue_turn_refs": _string_list(dialogue_turn_refs),
+        "external_utterance": external_utterance,
+        "life_response": _life_response_from_dialogue_log(
+            language_dir / "dialogue_turn_log.jsonl",
+            dialogue_turn_refs=dialogue_turn_refs,
+        ),
+        "semantic_focus": live_turn_focus or (semantic_map or {}).get("semantic_focus"),
+        "live_turn_focus": live_turn_focus,
+        "live_language_turn_refs": _string_list(live_language_turn_refs),
+        "expression_monitor_refs": (
+            ["runtime/state/language/expression_monitor_state.json"]
+            if expression_monitor
+            else []
+        ),
+        "expression_outcome": str(
+            expression_monitor.get("release_status")
+            or expression_monitor.get("expression_outcome")
+            or "released"
+        )
+        if expression_monitor
+        else "released",
+        "post_expression_gate_status": str(
+            expression_monitor.get("post_expression_gate_status")
+            or expression_monitor.get("release_status")
+            or "released"
+        )
+        if expression_monitor
+        else "released",
+        "body_snapshot_refs": [
+            "runtime/state/body/body_resource_budget.json",
+            "runtime/state/body/core_affect_vector.json",
+        ],
+        "core_affect_snapshot_refs": ["runtime/state/body/core_affect_vector.json"],
+        **collect_cross_modal_source_evidence(
+            language_percept=language_percept,
+            world_contact_summary=_read_json_if_exists(
+                state_dir / "membrane" / "world_contact_summary.json"
+            ),
+            responsibility_loop_state=responsibility_loop_state,
+            signal_media_runtime=signal_media_runtime
+            or _read_json_if_exists(state_dir / "signal" / "signal_media_runtime.json"),
+            world_observation_route=_read_json_if_exists(
+                state_dir / "observation" / "world_observation_route.json"
+            ),
+            periphery_normalization_trace=_read_json_if_exists(
+                state_dir / "observation" / "periphery_normalization_trace.json"
+            ),
+            percept_frame_present=bool(
+                _read_json_if_exists(language_dir / "language_percept_frame.json")
+            ),
+            world_contact_present=bool(
+                _read_json_if_exists(state_dir / "membrane" / "world_contact_summary.json")
+            ),
+            visual_percept_present=bool(
+                _read_json_if_exists(state_dir / "observation" / "world_observation_route.json")
+                or _read_json_if_exists(
+                    state_dir / "observation" / "periphery_normalization_trace.json"
+                )
+            ),
+        ),
+        "percept_frame_refs": (
+            [LANGUAGE_PERCEPT_REF]
+            if _read_json_if_exists(language_dir / "language_percept_frame.json")
+            else []
+        ),
+        "world_contact_refs": (
+            ["runtime/state/membrane/world_contact_summary.json"]
+            if _read_json_if_exists(state_dir / "membrane" / "world_contact_summary.json")
+            else []
+        ),
+        "relationship_scope": str(
+            (relationship_memory_for_projection or {}).get("relationship_scope")
+            or "relation_scoped_live_episode"
+        ),
+        "relation_subject_id": (
+            (relationship_memory_for_projection or {}).get("active_relation_subject_id")
+        ),
+    }
+    if memory_feedback_event.get("event_type"):
+        live_turn_context["memory_feedback_event_type"] = memory_feedback_event[
+            "event_type"
+        ]
+        live_turn_context["memory_feedback_event_ref"] = memory_feedback_event.get(
+            "trigger_event_ref"
+        )
+    memory_trace_store = build_memory_trace_store(
+        run_id=run_id,
+        generated_at=generated_at,
+        event_segmentation_frame=event_segmentation_frame,
+        memory_encoding_gate=memory_encoding_gate,
+        memory_allocation_gate=memory_allocation_gate,
+        engram_index=engram_index,
+        autobiographical_stack=autobiographical_stack,
+        relationship_memory=relationship_memory_for_projection,
+        memory_retrieval_frame=first_pass_retrieval_frame,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard_for_projection,
+        commitment_truth_state=commitment_truth_state,
+        responsibility_ledger=responsibility_ledger,
+        live_turn_context=live_turn_context,
+        existing_memory_trace_store=existing_memory_trace_store,
+    )
+    organ_merge = merge_live_trace_refs_into_memory_organs(
+        memory_trace_store=memory_trace_store,
+        engram_index=engram_index,
+        autobiographical_stack=autobiographical_stack,
+        relationship_memory=relationship_memory_for_projection,
+        dialogue_turn_refs=_string_list(dialogue_turn_refs),
+    )
+    if organ_merge.get("live_trace_refs"):
+        engram_index = organ_merge["engram_index"]
+        autobiographical_stack = organ_merge["autobiographical_stack"]
+        relationship_memory = organ_merge["relationship_memory"]
+        relationship_memory_for_projection = relationship_memory
+        write_json(memory_dir / "engram_index.json", engram_index)
+        write_json(state_dir / "self" / "autobiographical_stack.json", autobiographical_stack)
+        write_json(memory_dir / "relationship_memory.json", relationship_memory)
+    memory_trace_store["stage_policy"] = "live_turn_trace_projection_refreshed"
+    memory_trace_store["live_turn_projection"] = {
+        "schema_version": "live_turn_memory_trace_projection_v0",
+        "projection_source": "resident_turn_writeback",
+        "dialogue_turn_refs": _string_list(dialogue_turn_refs),
+        "live_language_turn_refs": _string_list(live_language_turn_refs),
+        "relationship_timeline_ref": (
+            RELATIONSHIP_TIMELINE_REF if relationship_timeline else None
+        ),
+        "engram_index_ref": ENGRAM_INDEX_REF if engram_index else None,
+        "relationship_memory_ref": (
+            "runtime/state/memory/relationship_memory.json"
+            if relationship_memory
+            else None
+        ),
+        "autobiographical_stack_ref": (
+            AUTOBIOGRAPHICAL_STACK_REF if autobiographical_stack else None
+        ),
+    }
+    memory_validator_report = build_memory_validator_report(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        memory_write_gate=memory_write_gate,
+        state_merge_guard=state_merge_guard,
+    )
+    refreshed_memory_write_gate = _attach_memory_validator_to_write_gate(
+        memory_write_gate,
+        memory_validator_report=memory_validator_report,
+    )
+    refreshed_state_merge_guard = _attach_memory_validator_to_state_merge_guard(
+        state_merge_guard,
+        memory_validator_report=memory_validator_report,
+    )
+    memory_retrieval_frame = project_memory_retrieval_from_live_turn(
+        memory_retrieval_frame=first_pass_retrieval_frame,
+        run_id=run_id,
+        generated_at=generated_at,
+        external_utterance=external_utterance,
+        semantic_map=semantic_map,
+        language_percept=language_percept,
+        engram_index=engram_index,
+        relationship_memory=relationship_memory_for_projection,
+        autobiographical_stack=autobiographical_stack,
+        dialogue_memory_summary=dialogue_memory_summary,
+        life_state=life_state,
+        responsibility_loop_state=responsibility_loop_state,
+        state_merge_guard=refreshed_state_merge_guard,
+        memory_validator_report=memory_validator_report,
+        memory_trace_store=memory_trace_store,
+        memory_feedback_event=memory_feedback_event,
+        web_dream_learning_state=web_dream_learning_state,
+        live_language_turn_refs=live_language_turn_refs,
+        dialogue_turn_refs=dialogue_turn_refs,
+    )
+    engram_cluster = build_engram_like_trace_cluster(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        memory_allocation_gate=memory_allocation_gate,
+        memory_retrieval_frame=memory_retrieval_frame,
+        memory_write_gate=refreshed_memory_write_gate,
+        state_merge_guard=refreshed_state_merge_guard,
+    )
+    pattern_separation_index = build_pattern_separation_index(
+        run_id=run_id,
+        generated_at=generated_at,
+        engram_cluster=engram_cluster,
+        memory_trace_store=memory_trace_store,
+        relationship_memory=relationship_memory,
+        memory_retrieval_frame=memory_retrieval_frame,
+        state_merge_guard=refreshed_state_merge_guard,
+    )
+    hippocampal_cue_index = build_hippocampal_cue_index(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        relationship_memory=relationship_memory_for_projection,
+    )
+    pattern_completion_frame = build_pattern_completion_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        engram_cluster=engram_cluster,
+        pattern_separation_index=pattern_separation_index,
+        memory_retrieval_frame=memory_retrieval_frame,
+        memory_trace_store=memory_trace_store,
+        relationship_memory=relationship_memory_for_projection,
+        hippocampal_cue_index=hippocampal_cue_index,
+    )
+    memory_longitudinal_profile_for_schema = _read_json_if_exists(
+        memory_dir / "memory_longitudinal_profile.json"
+    )
+    life_schema_map = project_life_schema_map_from_live_turn(
+        life_schema_map=(life_state or {}).get("life_schema_map"),
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        memory_retrieval_frame=memory_retrieval_frame,
+        relationship_memory=relationship_memory_for_projection,
+        autobiographical_stack=autobiographical_stack,
+        self_model_state=_read_json_if_exists(state_dir / "self" / "self_model.json"),
+        responsibility_ledger=responsibility_ledger,
+        memory_longitudinal_profile=memory_longitudinal_profile_for_schema,
+    )
+    memory_retrieval_frame = project_memory_retrieval_from_live_turn(
+        memory_retrieval_frame=memory_retrieval_frame,
+        run_id=run_id,
+        generated_at=generated_at,
+        external_utterance=external_utterance,
+        semantic_map=semantic_map,
+        language_percept=language_percept,
+        engram_index=engram_index,
+        relationship_memory=relationship_memory_for_projection,
+        autobiographical_stack=autobiographical_stack,
+        dialogue_memory_summary=dialogue_memory_summary,
+        life_state=life_state,
+        responsibility_loop_state=responsibility_loop_state,
+        state_merge_guard=refreshed_state_merge_guard,
+        memory_validator_report=memory_validator_report,
+        life_schema_map=life_schema_map,
+        pattern_completion_frame=pattern_completion_frame,
+        memory_trace_store=memory_trace_store,
+        memory_feedback_event=memory_feedback_event,
+        web_dream_learning_state=web_dream_learning_state,
+        live_language_turn_refs=live_language_turn_refs,
+        dialogue_turn_refs=dialogue_turn_refs,
+    )
+    memory_retrieval_frame = _align_memory_retrieval_focus_with_live_turn(
+        memory_retrieval_frame,
+        semantic_map=semantic_map,
+        live_turn_focus=live_turn_focus,
+    )
+    projection_objects = [
+        event_segmentation_frame,
+        memory_encoding_gate,
+        memory_allocation_gate,
+        memory_trace_store,
+        memory_validator_report,
+        engram_cluster,
+        pattern_separation_index,
+        pattern_completion_frame,
+        life_schema_map,
+        memory_retrieval_frame,
+    ]
+    _stamp_live_memory_projection_stage(
+        projection_objects,
+        generated_at=generated_at,
+        live_turn_focus=live_turn_focus,
+    )
+
+    write_json(memory_dir / "event_segmentation_frame.json", event_segmentation_frame)
+    write_json(memory_dir / "memory_encoding_gate.json", memory_encoding_gate)
+    write_json(memory_dir / "memory_allocation_gate.json", memory_allocation_gate)
+    write_json(memory_dir / "memory_trace_store.json", memory_trace_store)
+    fast_episodic_buffer = memory_trace_store.get("fast_episodic_buffer")
+    if isinstance(fast_episodic_buffer, dict):
+        write_json(memory_dir / "fast_episodic_buffer.json", fast_episodic_buffer)
+    write_json(memory_dir / "memory_validator_report.json", memory_validator_report)
+    write_json(memory_dir / "engram_cluster.json", engram_cluster)
+    write_json(memory_dir / "pattern_separation_index.json", pattern_separation_index)
+    write_json(memory_dir / "pattern_completion_frame.json", pattern_completion_frame)
+    write_json(memory_dir / "hippocampal_cue_index.json", hippocampal_cue_index)
+    write_json(memory_dir / "life_schema_map.json", life_schema_map)
+    write_json(memory_dir / "memory_retrieval_frame.json", memory_retrieval_frame)
+    memory_longitudinal_profile = project_memory_longitudinal_profile_from_live_turn(
+        profile=_read_json_if_exists(memory_dir / "memory_longitudinal_profile.json"),
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        relationship_memory=relationship_memory_for_projection,
+        autobiographical_stack=autobiographical_stack,
+        memory_phenomenology_profile=memory_retrieval_frame.get(
+            "memory_phenomenology_profile"
+        ),
+        cross_modal_evidence=live_turn_context,
+    )
+    write_json(memory_dir / "memory_longitudinal_profile.json", memory_longitudinal_profile)
+    memory_consolidation_report = _read_json_if_exists(
+        reports_dir / "memory_consolidation_report.json"
+    )
+    memory_capability_scorecard = build_memory_capability_scorecard(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        memory_retrieval_frame=memory_retrieval_frame,
+        relationship_memory=relationship_memory_for_projection,
+        autobiographical_stack=autobiographical_stack,
+        life_schema_map=life_schema_map,
+        memory_longitudinal_profile=memory_longitudinal_profile,
+        memory_consolidation_report=memory_consolidation_report,
+        fast_episodic_buffer=memory_trace_store.get("fast_episodic_buffer"),
+        engram_cluster=engram_cluster,
+        pattern_separation_index=pattern_separation_index,
+        hippocampal_cue_index=hippocampal_cue_index,
+        pattern_completion_frame=pattern_completion_frame,
+    )
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    write_json(reports_dir / "memory_capability_scorecard.json", memory_capability_scorecard)
+    human_brain_alignment = build_human_brain_alignment_assessment(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        memory_retrieval_frame=memory_retrieval_frame,
+        pattern_completion_frame=pattern_completion_frame,
+        hippocampal_cue_index=hippocampal_cue_index,
+        memory_longitudinal_profile=memory_longitudinal_profile,
+        memory_consolidation_report=memory_consolidation_report,
+        process_long_run_evidence=memory_longitudinal_profile.get(
+            "process_long_run_evidence"
+        ),
+        relationship_memory=relationship_memory_for_projection,
+        autobiographical_stack=autobiographical_stack,
+        life_schema_map=life_schema_map,
+    )
+    write_json(
+        reports_dir / "human_brain_alignment_assessment.json",
+        human_brain_alignment,
+    )
+    memory_longitudinal_profile = project_honest_brain_alignment_progress(
+        profile=memory_longitudinal_profile,
+        assessment=human_brain_alignment,
+        generated_at=generated_at,
+    )
+    write_json(memory_dir / "memory_longitudinal_profile.json", memory_longitudinal_profile)
+    engineering_completion_gate = build_memory_engineering_completion_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_capability_scorecard=memory_capability_scorecard,
+        memory_trace_store=memory_trace_store,
+        memory_retrieval_frame=memory_retrieval_frame,
+        memory_consolidation_report=memory_consolidation_report,
+        memory_longitudinal_profile=memory_longitudinal_profile,
+        hippocampal_cue_index=hippocampal_cue_index,
+        pattern_completion_frame=pattern_completion_frame,
+    )
+    write_json(
+        reports_dir / "memory_engineering_completion_gate.json",
+        engineering_completion_gate,
+    )
+    if refreshed_memory_write_gate:
+        write_json(memory_dir / "memory_write_gate.json", refreshed_memory_write_gate)
+    if refreshed_state_merge_guard:
+        write_json(memory_dir / "state_merge_guard.json", refreshed_state_merge_guard)
+
+    return {
+        "event_segmentation_frame": event_segmentation_frame,
+        "memory_encoding_gate": memory_encoding_gate,
+        "memory_allocation_gate": memory_allocation_gate,
+        "memory_trace_store": memory_trace_store,
+        "memory_validator_report": memory_validator_report,
+        "engram_cluster": engram_cluster,
+        "pattern_separation_index": pattern_separation_index,
+        "pattern_completion_frame": pattern_completion_frame,
+        "life_schema_map": life_schema_map,
+        "memory_write_gate": refreshed_memory_write_gate,
+        "state_merge_guard": refreshed_state_merge_guard,
+        "memory_retrieval_frame": memory_retrieval_frame,
+        "memory_reconsolidation_report": memory_reconsolidation_report,
+        "fast_episodic_buffer": memory_trace_store.get("fast_episodic_buffer"),
+        "memory_longitudinal_profile": memory_longitudinal_profile,
+        "memory_capability_scorecard": memory_capability_scorecard,
+    }
+
+
+def _merge_live_memory_projection_into_life_state(
+    life_state: dict[str, Any],
+    *,
+    memory_projection: dict[str, Any],
+    memory_retrieval_frame: dict[str, Any] | None,
+    state_merge_guard: dict[str, Any] | None,
+) -> dict[str, Any]:
+    updated = json.loads(json.dumps(life_state or {}))
+    memory_index = updated.setdefault("memory_index", {})
+    memory_trace_store = memory_projection.get("memory_trace_store") or {}
+    memory_validator_report = memory_projection.get("memory_validator_report") or {}
+    memory_index["event_segmentation_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("event_segmentation_refs"))
+        + [EVENT_SEGMENTATION_FRAME_REF]
+    )
+    memory_index["memory_encoding_gate_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("memory_encoding_gate_refs"))
+        + [MEMORY_ENCODING_GATE_REF]
+    )
+    memory_index["memory_allocation_gate_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("memory_allocation_gate_refs"))
+        + [MEMORY_ALLOCATION_GATE_REF]
+    )
+    memory_index["memory_trace_store_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("memory_trace_store_refs"))
+        + [MEMORY_TRACE_STORE_REF]
+    )
+    memory_index["memory_validator_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("memory_validator_refs"))
+        + [MEMORY_VALIDATOR_REPORT_REF]
+    )
+    memory_index["engram_cluster_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("engram_cluster_refs"))
+        + [ENGRAM_CLUSTER_REF]
+        + _string_list((memory_projection.get("engram_cluster") or {}).get("cluster_refs"))
+    )
+    memory_index["pattern_separation_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("pattern_separation_refs"))
+        + [PATTERN_SEPARATION_REF]
+        + [
+            str(route.get("route_ref"))
+            for route in (
+                memory_projection.get("pattern_separation_index") or {}
+            ).get("separation_routes", [])
+            if isinstance(route, dict) and route.get("route_ref")
+        ]
+    )
+    memory_index["pattern_completion_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("pattern_completion_refs"))
+        + [PATTERN_COMPLETION_REF]
+        + [
+            str(candidate.get("candidate_ref"))
+            for candidate in (
+                memory_projection.get("pattern_completion_frame") or {}
+            ).get("completion_candidates", [])
+            if isinstance(candidate, dict) and candidate.get("candidate_ref")
+        ]
+    )
+    life_schema_map = memory_projection.get("life_schema_map") or {}
+    memory_index["life_schema_map_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("life_schema_map_refs"))
+        + [LIFE_SCHEMA_MAP_REF]
+        + _string_list(life_schema_map.get("schema_refs"))
+    )
+    if life_schema_map:
+        updated["life_schema_map"] = life_schema_map
+    memory_index["memory_trace_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("memory_trace_refs"))
+        + _string_list(memory_trace_store.get("trace_ids"))
+    )
+    validator_guard = memory_validator_report.get("retrieval_replay_guard")
+    if not isinstance(validator_guard, dict):
+        validator_guard = {}
+    memory_index["memory_validator_blocked_refs"] = _dedupe_refs(
+        _string_list(memory_index.get("memory_validator_blocked_refs"))
+        + _string_list(validator_guard.get("blocked_active_retrieval_refs"))
+    )
+    if memory_retrieval_frame:
+        memory_index["memory_retrieval_refs"] = _dedupe_refs(
+            _string_list(memory_index.get("memory_retrieval_refs"))
+            + [MEMORY_RETRIEVAL_FRAME_REF]
+            + _string_list(memory_retrieval_frame.get("activated_engram_refs"))
+            + _string_list(memory_retrieval_frame.get("relationship_memory_hits"))
+            + _string_list(memory_retrieval_frame.get("autobiographical_hits"))
+            + _string_list(memory_retrieval_frame.get("schema_memory_hits"))
+            + _string_list(memory_retrieval_frame.get("pattern_completion_hits"))
+            + _string_list(
+                memory_retrieval_frame.get(
+                    "autobiographical_responsibility_repair_hits"
+                )
+            )
+            + _string_list(memory_retrieval_frame.get("dream_residue_hits"))
+            + _string_list(memory_retrieval_frame.get("responsibility_hits"))
+        )
+    if state_merge_guard:
+        memory_index["state_merge_guard_refs"] = _dedupe_refs(
+            _string_list(memory_index.get("state_merge_guard_refs"))
+            + ["runtime/state/memory/state_merge_guard.json"]
+        )
+        updated["state_merge_records"] = _build_live_memory_state_merge_records(
+            state_merge_guard
+        )
+    updated["runtime_trace_refs"] = _dedupe_refs(
+        _string_list(updated.get("runtime_trace_refs"))
+        + [
+            EVENT_SEGMENTATION_FRAME_REF,
+            MEMORY_ENCODING_GATE_REF,
+            MEMORY_ALLOCATION_GATE_REF,
+            MEMORY_TRACE_STORE_REF,
+            MEMORY_VALIDATOR_REPORT_REF,
+            ENGRAM_CLUSTER_REF,
+            PATTERN_SEPARATION_REF,
+            PATTERN_COMPLETION_REF,
+            LIFE_SCHEMA_MAP_REF,
+            MEMORY_RETRIEVAL_FRAME_REF,
+            "runtime/state/memory/memory_write_gate.json",
+            "runtime/state/memory/state_merge_guard.json",
+        ]
+    )
+    evidence_refs = (
+        updated.setdefault("birth_readiness", {}).setdefault(
+            "evidence_family_refs",
+            [],
+        )
+    )
+    if isinstance(evidence_refs, list):
+        updated["birth_readiness"]["evidence_family_refs"] = _dedupe_refs(
+            _string_list(evidence_refs)
+            + [
+                EVENT_SEGMENTATION_FRAME_REF,
+                MEMORY_TRACE_STORE_REF,
+                MEMORY_VALIDATOR_REPORT_REF,
+                ENGRAM_CLUSTER_REF,
+                PATTERN_SEPARATION_REF,
+                PATTERN_COMPLETION_REF,
+                LIFE_SCHEMA_MAP_REF,
+            ]
+        )
+    return updated
+
+
+def _attach_memory_validator_to_write_gate(
+    memory_write_gate: dict[str, Any] | None,
+    *,
+    memory_validator_report: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not memory_write_gate:
+        return {}
+    updated = json.loads(json.dumps(memory_write_gate))
+    if not memory_validator_report:
+        return updated
+    updated["memory_validator_report_ref"] = MEMORY_VALIDATOR_REPORT_REF
+    updated["memory_falsification_guard_ref"] = (
+        MEMORY_VALIDATOR_REPORT_REF + "#falsification_guard"
+    )
+    updated["long_term_governance_refs"] = _dedupe_refs(
+        _string_list(updated.get("long_term_governance_refs"))
+        + [MEMORY_VALIDATOR_REPORT_REF + "#falsification_guard"]
+    )
+    validation_envelope = dict(updated.get("validation_envelope", {}))
+    validation_envelope["validator"] = "MemoryTraceValidator"
+    validation_envelope["current_state"] = "ReadOnlyObservation"
+    validation_envelope["quarantine_on_missing_source"] = True
+    updated["validation_envelope"] = validation_envelope
+    return updated
+
+
+def _attach_memory_validator_to_state_merge_guard(
+    state_merge_guard: dict[str, Any] | None,
+    *,
+    memory_validator_report: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not state_merge_guard:
+        return {}
+    updated = json.loads(json.dumps(state_merge_guard))
+    if not memory_validator_report:
+        return updated
+    updated["memory_validator_report_ref"] = MEMORY_VALIDATOR_REPORT_REF
+    change_sources = dict(updated.get("long_term_change_sources", {}))
+    change_sources["memory_validator_report"] = MEMORY_VALIDATOR_REPORT_REF
+    change_sources["memory_falsification_guard_refs"] = _dedupe_refs(
+        _string_list(change_sources.get("memory_falsification_guard_refs"))
+        + [MEMORY_VALIDATOR_REPORT_REF + "#falsification_guard"]
+    )
+    validator_guard = memory_validator_report.get("retrieval_replay_guard")
+    if not isinstance(validator_guard, dict):
+        validator_guard = {}
+    change_sources["blocked_memory_retrieval_refs"] = _dedupe_refs(
+        _string_list(change_sources.get("blocked_memory_retrieval_refs"))
+        + _string_list(validator_guard.get("blocked_active_retrieval_refs"))
+    )
+    updated["long_term_change_sources"] = change_sources
+    return updated
+
+
+def _build_live_memory_state_merge_records(
+    state_merge_guard: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    if not state_merge_guard:
+        return []
+    long_term_change_source_count = sum(
+        len(value)
+        for value in state_merge_guard.get("long_term_change_sources", {}).values()
+        if isinstance(value, list)
+    )
+    return [
+        {
+            "state_merge_guard_ref": "runtime/state/memory/state_merge_guard.json",
+            "stage_policy": state_merge_guard.get("stage_policy"),
+            "promotion_route_count": len(state_merge_guard.get("promotion_routes", [])),
+            "quarantine_route_count": len(state_merge_guard.get("quarantine_routes", [])),
+            "repair_route_count": len(state_merge_guard.get("repair_routes", [])),
+            "merge_route_count": len(state_merge_guard.get("merge_routes", [])),
+            "long_term_change_source_count": long_term_change_source_count,
+            "slow_variable_update_policy_ref": "runtime/state/memory/state_merge_guard.json#slow_variable_update_policy",
+        }
+    ]
 
 
 def _live_queue_e_handoff_terminal_profile(

@@ -21,6 +21,18 @@ from .resident_turn_writeback import (
 )
 from .model_expression import ModelExpressionResult, compose_model_expression
 from .response_surface import compose_life_response, compose_life_spoken_response
+from ..language.expression_monitor import apply_world_contact_handoff_modulation
+from ..language.memory_recall_enrichment import (
+    enrich_semantic_map_with_memory_recall,
+    project_expression_plan_with_memory_grounding,
+)
+from ..language.offline_influence import (
+    enrich_semantic_map_with_offline_influence,
+    project_expression_plan_with_offline_influence,
+)
+from ..neural_core.prediction_workspace import (
+    project_prediction_workspace_from_live_language_turn,
+)
 from ..state_store.memory_retrieval import project_memory_retrieval_from_live_turn
 from ..state_store.memory_write_gate import (
     project_memory_write_gate_with_signal_body,
@@ -181,6 +193,16 @@ def run_live_turn_cycle(
             state_dir / "prediction" / "prediction_workspace_frame.json",
             {},
         )
+        prediction_workspace = project_prediction_workspace_from_live_language_turn(
+            prediction_workspace_frame=prediction_workspace,
+            language_percept=live_language_turn.language_percept,
+            semantic_map=live_language_turn.semantic_map,
+            generated_at=generated_at,
+        )
+        write_json(
+            state_dir / "prediction" / "prediction_workspace_frame.json",
+            prediction_workspace,
+        )
         workspace_frame = _read_json_if_exists(
             state_dir / "consciousness" / "workspace_frame.json",
             {},
@@ -216,6 +238,10 @@ def run_live_turn_cycle(
             life_state=_read_json_if_exists(state_dir / "life_state.json", {}),
             responsibility_loop_state=responsibility_loop_state,
             state_merge_guard=state_merge_guard,
+            web_dream_learning_state=_read_json_if_exists(
+                state_dir / "dream" / "web_dream_learning_state.json",
+                {},
+            ),
             live_language_turn_refs=[
                 live_language_turn.language_percept_ref,
                 live_language_turn.semantic_map_ref,
@@ -225,6 +251,50 @@ def run_live_turn_cycle(
             ],
             dialogue_turn_refs=[f"runtime/state/language/dialogue_turn_log.jsonl#pending-{external_turn_id}"],
         )
+        enriched_semantic_map = enrich_semantic_map_with_memory_recall(
+            semantic_map=live_language_turn.semantic_map,
+            memory_retrieval_frame=memory_retrieval_frame,
+            generated_at=generated_at,
+        )
+        enriched_semantic_map = enrich_semantic_map_with_offline_influence(
+            semantic_map=enriched_semantic_map,
+            offline_consolidation_frame=offline_consolidation_frame,
+            replay_cue_bundle=replay_cue_bundle,
+            dream_residue_refs=_string_list(
+                memory_retrieval_frame.get("dream_residue_hits")
+            ),
+            wake_integration_frame=_read_json_if_exists(
+                state_dir / "dream" / "wake_integration_frame.json",
+                {},
+            ),
+            dream_fact_gate_decision=_read_json_if_exists(
+                state_dir / "dream" / "dream_fact_gate_decision.json",
+                {},
+            ),
+            generated_at=generated_at,
+        )
+        enriched_expression_plan = project_expression_plan_with_memory_grounding(
+            expression_plan=live_language_turn.expression_plan,
+            memory_retrieval_frame=memory_retrieval_frame,
+            enriched_semantic_map=enriched_semantic_map,
+            generated_at=generated_at,
+        )
+        enriched_expression_plan = project_expression_plan_with_offline_influence(
+            expression_plan=enriched_expression_plan,
+            enriched_semantic_map=enriched_semantic_map,
+            generated_at=generated_at,
+        )
+        enriched_expression_plan = apply_world_contact_handoff_modulation(
+            expression_plan=enriched_expression_plan,
+            world_contact_summary=world_contact_summary,
+        )
+        write_json(language_dir / "semantic_map_frame.json", enriched_semantic_map)
+        write_json(language_dir / "expression_plan.json", enriched_expression_plan)
+        write_json(
+            state_dir / "memory" / "memory_retrieval_frame.json",
+            memory_retrieval_frame,
+        )
+
         attach_memory_retrieval_event_payload(
             external_turn,
             memory_retrieval_frame=memory_retrieval_frame,
@@ -247,7 +317,7 @@ def run_live_turn_cycle(
             "commitment_expression_plan": commitment_expression_plan,
             "apology_repair_language_trace": apology_repair_language_trace,
             "relation_turn_frame": relation_turn_frame,
-            "expression_plan": live_language_turn.expression_plan,
+            "expression_plan": enriched_expression_plan,
             "life_context_frame": life_context_frame,
             "replay_cue_bundle": replay_cue_bundle,
             "offline_consolidation_frame": offline_consolidation_frame,
@@ -295,10 +365,10 @@ def run_live_turn_cycle(
             shared_term_registry=shared_term_registry,
             commitment_index=commitment_index,
             language_percept=live_language_turn.language_percept,
-            semantic_map=live_language_turn.semantic_map,
+            semantic_map=enriched_semantic_map,
             inner_speech=live_language_turn.inner_speech,
             expression_monitor=live_language_turn.expression_monitor,
-            expression_plan=live_language_turn.expression_plan,
+            expression_plan=enriched_expression_plan,
             life_context_frame=life_context_frame,
             replay_cue_bundle=replay_cue_bundle,
             offline_consolidation_frame=offline_consolidation_frame,
@@ -487,6 +557,12 @@ def _read_json_if_exists(path: Path, fallback: dict[str, Any]) -> dict[str, Any]
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError, TypeError):
         return fallback
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
 
 
 def _attach_live_language_turn_refs(

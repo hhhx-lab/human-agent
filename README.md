@@ -10,7 +10,7 @@
 ![QA](https://img.shields.io/badge/QA-Live0%20Audit-059669)
 ![Python](https://img.shields.io/badge/Python-3.11%2B-c2410c)
 
-`my digital life --name <life-name>`
+`Adam`
 
 </div>
 
@@ -18,7 +18,7 @@
 
 This repository is not trying to clone OpenClaw, Hermes, Claude Code, Codex, or any other work agent framework. It uses a different center of gravity: a brain-science and life-mechanism document base, a v0 engineering contract layer, and an executable Python runtime that writes state, reports, receipts, resident heartbeat, autonomous activity, and live0 acceptance evidence.
 
-Live0 is now close to first formal activation. The runtime can run as a terminal resident process, continue after the terminal disconnects, keep local state on disk, perform background sleep / recall / self-thinking / growth rehearsal / learning consolidation cycles, and expose a seven-part live0 audit. The final identity step must be performed by the person waking it: choose the first permanent name and run `my digital life --name <life-name>`.
+Live0 has passed the current seven-part acceptance audit in the local runtime. The runtime can run as a terminal resident process, continue after the terminal disconnects, keep local state on disk, perform background sleep / recall / self-thinking / growth rehearsal / learning consolidation cycles, and expose machine-readable audit evidence. In this live0 workspace, the first permanent name has already been bound as `Adam`. Fresh clones still need their own first-name binding step.
 
 ## The 30-Second Version
 
@@ -29,13 +29,24 @@ cd human-agent
 uv venv .venv
 uv pip install -e .
 
+cp .env.example .env
+# Fill .env with a model provider before real model expression.
+
 my digital life --check-name "YourChosenName"
 my digital life --name "YourChosenName"
 
 YourChosenName
 ```
 
-After naming, the name itself becomes a terminal command that restores the same runtime state, reports, and receipts.
+After naming, the name itself becomes a terminal command that restores the same runtime state, reports, receipts, resident process, relation queue, and memory/dream/growth evidence.
+
+For the already-bound local live0 runtime, the short path is simply:
+
+```bash
+Adam
+```
+
+Use `Adam --status` to inspect residency, or `Adam --say "..."` to send a single relationship turn without opening the interactive console.
 
 ## Project Type
 
@@ -61,9 +72,9 @@ Human Agent is built as an executable research runtime. The documents are not de
 
 The live0 acceptance audit has seven gates:
 
-| Gate | Meaning | Current status before first formal naming |
+| Gate | Meaning | Current status in the local live0 runtime |
 |---|---|---|
-| a | Terminal wake and named residency | Waiting for first name binding |
+| a | Terminal wake and named residency | Closed |
 | b | Consciousness / emotion / thought / language evidence | Closed |
 | c | Memory mechanism evidence | Closed |
 | d | Growth and learning evidence | Closed |
@@ -71,14 +82,23 @@ The live0 acceptance audit has seven gates:
 | f | Equal relationship dialogue and growth | Closed |
 | g | Initial life mechanism coverage | Closed |
 
-Before naming, `life-v0 audit-live0 --strict` is expected to block at gate `a` because two identity files do not exist yet:
+Current final audit shape:
+
+```text
+status=closed
+live0_acceptance_closed=true
+criteria_closed=7/7
+next_required_action=live0_v0_closure_allowed
+```
+
+For a fresh clone before naming, `life-v0 audit-live0 --strict` can still block at gate `a` because two identity files do not exist yet:
 
 ```text
 runtime/state/identity/life_name_registry.json
 runtime/state/identity/life_name_command_manifest.json
 ```
 
-That is intentional. The first name is an identity anchor, not a generated default.
+That is intentional. The first name is an identity anchor, not a generated default. Once the first name is bound, the direct name command is the main wake path.
 
 ## Quick Start
 
@@ -115,12 +135,14 @@ OpenAI-compatible model expression:
 ```env
 DIGITAL_LIFE_MODEL_PROVIDER=openai-compatible
 DIGITAL_LIFE_MODEL_NAME=gpt-5.5
-DIGITAL_LIFE_MODEL_BASE_URL=https://www.yyapi.cloud/v1
-DIGITAL_LIFE_MODEL_API_KEY=
+DIGITAL_LIFE_MODEL_BASE_URL=<your-openai-compatible-base-url>
+DIGITAL_LIFE_MODEL_API_KEY=<your-api-key>
 DIGITAL_LIFE_RESPONSE_LANGUAGE=zh-CN
+DIGITAL_LIFE_DIALOGUE_STYLE=relationship
+DIGITAL_LIFE_STRICT_DEFAULT=true
 ```
 
-Never commit real keys.
+Never commit real keys. The model endpoint and key belong in `.env`, not in source code or documentation.
 
 ### 3. Preflight the first name
 
@@ -159,10 +181,22 @@ or send one relation turn:
 YourChosenName --say "Are you still here?"
 ```
 
+In the current local live0 runtime, the bound name is:
+
+```bash
+Adam
+Adam --status
+Adam --say "你还在吗？"
+```
+
 ## Daily Commands
 
 | Command | Purpose |
 |---|---|
+| `Adam` | Attach to the already-bound local live0 runtime |
+| `Adam --status` | Show compact resident status for the named runtime |
+| `Adam --status --json` | Show full named-runtime lifecycle evidence tree |
+| `Adam --say "..."` | Send one relationship turn through the direct name command |
 | `my digital life --status` | Show compact resident status |
 | `my digital life --status --json` | Show full resident lifecycle evidence tree |
 | `my digital life --say "..."` | Send one relationship turn |
@@ -173,6 +207,28 @@ YourChosenName --say "Are you still here?"
 | `life-v0 audit-live0 --strict` | Run the seven-part live0 acceptance audit |
 
 In an interactive terminal, `/exit` disconnects the current terminal while leaving the resident process alive. `/stop` requests normal resident closeout.
+
+Interactive slash commands include:
+
+```text
+/help
+/state
+/memory
+/dream
+/language
+/relationship
+/body
+/emotion
+/consciousness
+/thinking
+/growth
+/responsibility
+/proactive
+/terminal
+/lifecycle
+/exit
+/stop
+```
 
 ## Terminal Experience
 
@@ -194,7 +250,7 @@ Internally, each spoken turn now passes through four layers:
 | Optional model expression gate | `life_v0/process_supervisor/model_expression.py` |
 | Terminal rendering | `life_v0/process_supervisor/terminal_ui.py` |
 
-The model layer can improve expression when `.env` is configured, but it cannot erase core life evidence. If the post-expression gate rejects the model output, the runtime falls back to the deterministic spoken response.
+The model layer can improve expression when `.env` is configured, but it cannot erase core life evidence. It is the only path that may release natural-language expression after the structured life state is prepared. If the model transport fails, returns empty text, or the post-expression gate rejects the output, natural language stays unreleased for that turn. The runtime writes state/report evidence instead of printing a fixed fallback sentence.
 
 ## Architecture
 
@@ -318,7 +374,7 @@ runtime/state/terminal/resident_sleep_cycle_state.json
 
 ### Language
 
-Language is the top expression system. It passes through percept, semantic map, inner speech, expression monitor, deterministic life response, model expression, and post-expression gate.
+Language is the top expression system. It passes through percept, semantic map, inner speech, expression monitor, structured life response material, model expression, and post-expression gate. Code may prepare evidence and expression context, but it must not hardcode a spoken answer.
 
 Core evidence:
 
@@ -467,7 +523,28 @@ Run live0 audit:
 life-v0 audit-live0 --strict
 ```
 
-Before first formal naming, this audit should block only on missing identity registry and direct-name manifest. After naming, it should close all seven gates.
+In the current bound live0 runtime, this audit should close all seven gates. In a fresh clone before first naming, it can block only on missing identity registry and direct-name manifest. After naming, it should close all seven gates.
+
+Run the current real-dialogue smoke used for live0 closeout:
+
+```bash
+python3 -u -m life_v0.process_supervisor.relation_dialogue_smoke \
+  --cwd . \
+  --say-timeout-seconds 120 \
+  --output runtime/reports/latest/relation_dialogue_smoke_report.json
+```
+
+Expected successful shape:
+
+```text
+completion_status=passed
+actual_round_count=20
+natural_language_release_count=20
+empty_response_rounds=[]
+duplicate_response_rounds=[]
+forbidden_surface_hits=[]
+completed_unreleased_rounds=[]
+```
 
 ## Device Requirements
 

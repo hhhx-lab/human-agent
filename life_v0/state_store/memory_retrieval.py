@@ -4,6 +4,12 @@ import hashlib
 import re
 from typing import Any
 
+from .cue_candidate_provider import (
+    local_full_text_cue_candidate_provider,
+    noop_cue_candidate_provider,
+)
+from .memory_expression_material_chain import build_memory_expression_material_chain
+
 
 MEMORY_RETRIEVAL_FRAME_REF = "runtime/state/memory/memory_retrieval_frame.json"
 
@@ -31,11 +37,15 @@ def build_memory_retrieval_frame(
     relationship_memory: dict[str, Any] | None = None,
     autobiographical_stack: dict[str, Any] | None = None,
     life_schema_map: dict[str, Any] | None = None,
+    pattern_completion_frame: dict[str, Any] | None = None,
     dialogue_memory_summary: dict[str, Any] | None = None,
     life_state: dict[str, Any] | None = None,
     responsibility_loop_state: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
     memory_validator_report: dict[str, Any] | None = None,
+    memory_trace_store: dict[str, Any] | None = None,
+    web_dream_learning_state: dict[str, Any] | None = None,
+    cue_provider_name: str = "noop",
     source_doc_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     cue_terms = _cue_terms(
@@ -51,6 +61,7 @@ def build_memory_retrieval_frame(
         relationship_memory=relationship_memory,
         dialogue_memory_summary=dialogue_memory_summary,
         life_state=life_state,
+        memory_trace_store=memory_trace_store,
     )
     activated_refs = _activated_refs(
         cue_terms=cue_terms,
@@ -68,6 +79,7 @@ def build_memory_retrieval_frame(
     )
     autobiographical_hits = _autobiographical_hits(autobiographical_stack)
     schema_memory_hits = _schema_memory_hits(life_schema_map)
+    pattern_completion_hits = _pattern_completion_hits(pattern_completion_frame)
     autobiographical_repair_hits = _autobiographical_responsibility_repair_hits(
         autobiographical_stack
     )
@@ -103,6 +115,16 @@ def build_memory_retrieval_frame(
         life_state,
         memory_validator_report=memory_validator_report,
     )
+    cue_merge = merge_cue_candidates(
+        cue_terms=cue_terms,
+        memory_trace_store=memory_trace_store,
+        relationship_memory=relationship_memory,
+        blocked_refs=blocked_refs,
+        provider_name=cue_provider_name,
+    )
+    cue_terms = _dedupe(cue_terms + _string_list(cue_merge.get("merged_cue_terms")))
+    provider_candidate_refs = _string_list(cue_merge.get("eligible_candidate_trace_refs"))
+    activated_refs = _dedupe(activated_refs + provider_candidate_refs)
     cue_activation_profile = _cue_activation_profile(
         cue_terms=cue_terms,
         tiered_recall=tiered_recall,
@@ -110,11 +132,33 @@ def build_memory_retrieval_frame(
         relationship_hits=relationship_hits,
         autobiographical_hits=autobiographical_hits,
         schema_memory_hits=schema_memory_hits,
+        pattern_completion_hits=pattern_completion_hits,
         autobiographical_repair_hits=autobiographical_repair_hits,
         dream_residue_hits=dream_residue_hits,
         responsibility_hits=responsibility_hits,
         blocked_refs=blocked_refs,
         exit_dream_governance=exit_dream_next_wake_governance,
+    )
+    live_memory_trace_hits = _string_list(
+        (engram_index or {}).get("live_memory_trace_refs")
+    )
+    reconstructive_recall_profile = _reconstructive_recall_profile(
+        pattern_completion_frame=pattern_completion_frame,
+        cue_terms=cue_terms,
+        live_memory_trace_hits=live_memory_trace_hits,
+    )
+    memory_phenomenology_profile = _memory_phenomenology_profile(
+        external_utterance=external_utterance,
+        live_memory_trace_hits=live_memory_trace_hits,
+        relationship_hits=relationship_hits,
+        autobiographical_hits=autobiographical_hits,
+        schema_memory_hits=schema_memory_hits,
+        pattern_completion_hits=pattern_completion_hits,
+        activated_refs=activated_refs,
+        blocked_refs=blocked_refs,
+        memory_trace_store=memory_trace_store,
+        dream_residue_hits=dream_residue_hits,
+        reconstructive_recall_profile=reconstructive_recall_profile,
     )
     recall_to_expression_profile = _recall_to_expression_profile(
         cue_activation_profile=cue_activation_profile,
@@ -124,6 +168,7 @@ def build_memory_retrieval_frame(
             relationship_hits=relationship_hits,
             autobiographical_hits=autobiographical_hits,
             schema_memory_hits=schema_memory_hits,
+            pattern_completion_hits=pattern_completion_hits,
             autobiographical_repair_hits=autobiographical_repair_hits,
             dream_residue_hits=dream_residue_hits,
             responsibility_hits=responsibility_hits,
@@ -135,8 +180,34 @@ def build_memory_retrieval_frame(
         dream_residue_hits=dream_residue_hits,
         responsibility_hits=responsibility_hits,
         schema_memory_hits=schema_memory_hits,
+        pattern_completion_hits=pattern_completion_hits,
+        live_memory_trace_hits=live_memory_trace_hits,
         blocked_refs=blocked_refs,
         exit_dream_governance=exit_dream_next_wake_governance,
+        phenomenology_profile=memory_phenomenology_profile,
+    )
+    memory_expression_material_chain = build_memory_expression_material_chain(
+        memory_retrieval_frame={
+            "cue_terms": cue_terms,
+            "memory_phenomenology_profile": memory_phenomenology_profile,
+            "reconstructive_recall_profile": reconstructive_recall_profile,
+            "recall_to_expression_profile": recall_to_expression_profile,
+        },
+        pattern_completion_frame=pattern_completion_frame,
+        dream_reentry_refs=_dream_reentry_refs(
+            dream_residue_hits=dream_residue_hits,
+            exit_dream_governance=exit_dream_next_wake_governance,
+        ),
+        memory_hygiene_refs=_memory_hygiene_refs(memory_trace_store),
+        web_dream_refs=_web_dream_refs(memory_trace_store),
+        structured_wake_question_candidates=_structured_wake_question_candidates(
+            memory_trace_store=memory_trace_store,
+            web_dream_learning_state=web_dream_learning_state,
+        ),
+    )
+    recall_to_expression_profile = _apply_expression_material_chain_to_recall_profile(
+        recall_to_expression_profile,
+        memory_expression_material_chain=memory_expression_material_chain,
     )
     source_docs = _dedupe(_string_list(source_doc_refs) + SOURCE_DOC_REFS)
     return {
@@ -158,6 +229,7 @@ def build_memory_retrieval_frame(
         "relationship_memory_hits": relationship_hits,
         "autobiographical_hits": autobiographical_hits,
         "schema_memory_hits": schema_memory_hits,
+        "pattern_completion_hits": pattern_completion_hits,
         "autobiographical_responsibility_repair_hits": (
             autobiographical_repair_hits
         ),
@@ -176,11 +248,17 @@ def build_memory_retrieval_frame(
             relationship_hits=relationship_hits,
             autobiographical_hits=autobiographical_hits,
             schema_memory_hits=schema_memory_hits,
+            pattern_completion_hits=pattern_completion_hits,
             autobiographical_repair_hits=autobiographical_repair_hits,
             dream_residue_hits=dream_residue_hits,
             responsibility_hits=responsibility_hits,
         ),
         "blocked_or_quarantined_refs": blocked_refs,
+        "cue_provider_audit": cue_merge.get("cue_provider_audit"),
+        "memory_phenomenology_profile": memory_phenomenology_profile,
+        "reconstructive_recall_profile": reconstructive_recall_profile,
+        "memory_expression_material_chain": memory_expression_material_chain,
+        "cue_provider_candidate_trace_refs": provider_candidate_refs,
         "memory_validator_report_ref": (
             "runtime/state/memory/memory_validator_report.json"
             if memory_validator_report
@@ -217,10 +295,27 @@ def project_memory_retrieval_from_live_turn(
     responsibility_loop_state: dict[str, Any] | None,
     state_merge_guard: dict[str, Any] | None,
     memory_validator_report: dict[str, Any] | None = None,
+    life_schema_map: dict[str, Any] | None = None,
+    pattern_completion_frame: dict[str, Any] | None = None,
+    memory_trace_store: dict[str, Any] | None = None,
+    memory_feedback_event: dict[str, Any] | None = None,
+    web_dream_learning_state: dict[str, Any] | None = None,
+    cue_provider_name: str = "noop",
     live_language_turn_refs: list[str] | None = None,
     dialogue_turn_refs: list[str] | None = None,
 ) -> dict[str, Any]:
     previous = memory_retrieval_frame or {}
+    if web_dream_learning_state is None:
+        prior_candidates = (
+            (previous.get("memory_expression_material_chain") or {}).get(
+                "structured_wake_question_candidates"
+            )
+            or []
+        )
+        if prior_candidates:
+            web_dream_learning_state = {
+                "structured_wake_question_candidates": prior_candidates,
+            }
     cue_sources = {
         "previous_retrieval_frame_ref": (
             MEMORY_RETRIEVAL_FRAME_REF if previous else None
@@ -244,12 +339,29 @@ def project_memory_retrieval_from_live_turn(
         engram_index=engram_index,
         relationship_memory=relationship_memory,
         autobiographical_stack=autobiographical_stack,
+        life_schema_map=life_schema_map,
+        pattern_completion_frame=pattern_completion_frame,
         dialogue_memory_summary=dialogue_memory_summary,
         life_state=life_state,
         responsibility_loop_state=responsibility_loop_state,
         state_merge_guard=state_merge_guard,
         memory_validator_report=memory_validator_report,
+        memory_trace_store=memory_trace_store,
+        web_dream_learning_state=web_dream_learning_state,
+        cue_provider_name=cue_provider_name,
     )
+    if memory_feedback_event and memory_feedback_event.get("event_type"):
+        recall_profile = frame.get("recall_to_expression_profile")
+        if isinstance(recall_profile, dict):
+            hooks = _string_list(recall_profile.get("post_expression_reconsolidation_hooks"))
+            route = f"post_expression_{memory_feedback_event['event_type']}_reconsolidation"
+            recall_profile["post_expression_reconsolidation_hooks"] = _dedupe(
+                hooks + [route, "correction_updates_contradiction_links"]
+            )
+            recall_profile["reconsolidation_route"] = route
+            recall_profile["reconsolidation_trigger_event_ref"] = (
+                memory_feedback_event.get("trigger_event_ref")
+            )
     frame["previous_retrieval_fingerprint"] = previous.get("cue_fingerprint")
     frame["previous_activated_ref_count"] = len(
         _string_list(previous.get("activated_engram_refs"))
@@ -297,6 +409,21 @@ def memory_retrieval_context_summary(
         "recall_to_expression_closure_status": recall_to_expression.get(
             "closure_status"
         ),
+        "memory_phenomenology_profile_ref": (
+            frame.get("memory_phenomenology_profile") or {}
+        ).get("profile_ref"),
+        "recall_phenomenology": (
+            frame.get("memory_phenomenology_profile") or {}
+        ).get("recall_phenomenology"),
+        "memory_accessibility_level": (
+            frame.get("memory_phenomenology_profile") or {}
+        ).get("accessibility_level"),
+        "uncertain_boundary_active": (
+            frame.get("memory_phenomenology_profile") or {}
+        ).get("uncertain_boundary_active"),
+        "cross_modal_evidence_ref_count": (
+            frame.get("memory_phenomenology_profile") or {}
+        ).get("cross_modal_evidence_ref_count"),
         "recall_to_expression_boundary": recall_to_expression.get(
             "expression_boundary"
         ),
@@ -322,6 +449,18 @@ def memory_retrieval_context_summary(
         )[:8],
         "recall_to_expression_guardrail_count": len(
             _string_list(recall_to_expression.get("expression_guardrails"))
+        ),
+        "live_memory_trace_ref_count": len(
+            _string_list(
+                (recall_to_expression.get("expression_source_refs") or [])
+            )
+        ),
+        "reconsolidation_route": recall_to_expression.get("reconsolidation_route"),
+        "cue_provider_audit_status": (frame.get("cue_provider_audit") or {}).get(
+            "provider_status"
+        ),
+        "cue_provider_name": (frame.get("cue_provider_audit") or {}).get(
+            "provider_name"
         ),
         "post_expression_reconsolidation_hooks": _string_list(
             recall_to_expression.get("post_expression_reconsolidation_hooks")
@@ -351,6 +490,12 @@ def memory_retrieval_context_summary(
         ),
         "autobiographical_hit_count": len(
             _string_list(frame.get("autobiographical_hits"))
+        ),
+        "schema_memory_hit_count": len(
+            _string_list(frame.get("schema_memory_hits"))
+        ),
+        "pattern_completion_hit_count": len(
+            _string_list(frame.get("pattern_completion_hits"))
         ),
         "autobiographical_responsibility_repair_hit_count": len(
             _string_list(frame.get("autobiographical_responsibility_repair_hits"))
@@ -392,8 +537,51 @@ def memory_retrieval_context_summary(
             _string_list(frame.get("blocked_or_quarantined_refs"))
         ),
         "reconstruction_focus": (reconstruction or {}).get("reconstruction_focus"),
+        "memory_expression_material_chain_ref": (
+            frame.get("memory_expression_material_chain") or {}
+        ).get("chain_ref"),
+        "memory_expression_material_chain_closed": (
+            frame.get("memory_expression_material_chain") or {}
+        ).get("chain_closed"),
+        "expression_release_posture": (
+            frame.get("memory_expression_material_chain") or {}
+        ).get("expression_release_posture"),
+        "tip_of_tongue_gate_status": (
+            (frame.get("memory_expression_material_chain") or {}).get(
+                "tip_of_tongue_gate"
+            )
+            or {}
+        ).get("gate_status"),
         "source_doc_refs": _string_list(frame.get("source_doc_refs"))[:8],
     }
+
+
+def _apply_expression_material_chain_to_recall_profile(
+    recall_profile: dict[str, Any],
+    *,
+    memory_expression_material_chain: dict[str, Any],
+) -> dict[str, Any]:
+    updated = dict(recall_profile)
+    tip_gate = memory_expression_material_chain.get("tip_of_tongue_gate") or {}
+    posture = memory_expression_material_chain.get("expression_release_posture")
+    if posture:
+        updated["expression_release_posture"] = posture
+        updated["memory_expression_material_chain_ref"] = (
+            memory_expression_material_chain.get("chain_ref")
+        )
+    if tip_gate.get("gate_status") == "blocked":
+        updated["closure_status"] = "withhold_pending_reconstruction"
+        guardrails = _string_list(updated.get("expression_guardrails"))
+        updated["expression_guardrails"] = _dedupe(
+            guardrails + ["tip_of_tongue_blocks_expression_without_fragments"]
+        )
+    elif tip_gate.get("gate_status") == "cautious":
+        updated["closure_status"] = "uncertain"
+        updated["expression_guardrails"] = _dedupe(
+            _string_list(updated.get("expression_guardrails"))
+            + ["uncertainty_boundary_required_for_partial_recall"]
+        )
+    return updated
 
 
 def _fallback_reportable_source_ref_count(frame: dict[str, Any]) -> int:
@@ -495,6 +683,7 @@ def _tiered_recall(
     relationship_memory: dict[str, Any] | None,
     dialogue_memory_summary: dict[str, Any] | None,
     life_state: dict[str, Any] | None,
+    memory_trace_store: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     engram_tier = (engram_index or {}).get("memory_tier_index")
     if not isinstance(engram_tier, dict):
@@ -508,6 +697,7 @@ def _tiered_recall(
     life_tier = ((life_state or {}).get("memory_index") or {}).get("memory_tier_refs")
     if not isinstance(life_tier, dict):
         life_tier = {}
+    trace_tier_refs = _trace_accessibility_tier_refs(memory_trace_store)
     return {
         "schema_version": "memory_retrieval_tiered_recall_v0",
         "tier_policy": "salient_core_then_context_then_deep_sediment",
@@ -516,18 +706,24 @@ def _tiered_recall(
             + _string_list(relationship_tier.get("salient_core_episode_refs"))
             + _string_list(dialogue_tier.get("salient_core_episode_refs"))
             + _string_list(life_tier.get("salient_core_refs"))
+            + trace_tier_refs.get("salient_core_refs", [])
         ),
         "retrievable_context_refs": _dedupe(
             _string_list(engram_tier.get("retrievable_context_refs"))
             + _string_list(relationship_tier.get("retrievable_context_episode_refs"))
             + _string_list(dialogue_tier.get("retrievable_context_episode_refs"))
             + _string_list(life_tier.get("retrievable_context_refs"))
+            + trace_tier_refs.get("retrievable_context_refs", [])
         ),
         "deep_sediment_refs": _dedupe(
             _string_list(engram_tier.get("deep_sediment_refs"))
             + _string_list(relationship_tier.get("deep_sediment_episode_refs"))
             + _string_list(dialogue_tier.get("deep_sediment_episode_refs"))
             + _string_list(life_tier.get("deep_sediment_refs"))
+            + trace_tier_refs.get("deep_sediment_refs", [])
+        ),
+        "trace_accessibility_suppression": trace_tier_refs.get(
+            "suppression_profile", {}
         ),
         "fact_boundary": "retrieval_priority_does_not_promote_dream_or_hypothesis_to_fact",
     }
@@ -648,6 +844,49 @@ def _schema_memory_hits(life_schema_map: dict[str, Any] | None) -> list[str]:
             ]
         )
     return _dedupe([hit for hit in hits if hit])[:24]
+
+
+def _pattern_completion_hits(
+    pattern_completion_frame: dict[str, Any] | None,
+) -> list[str]:
+    frame = pattern_completion_frame or {}
+    candidates = [
+        candidate
+        for candidate in frame.get("completion_candidates", [])
+        if isinstance(candidate, dict)
+    ]
+    hits = _dedupe(
+        (
+            ["runtime/state/memory/pattern_completion_frame.json"]
+            if frame
+            else []
+        )
+        + _string_list(frame.get("frame_ref"))
+        + [
+            str(candidate.get("candidate_ref"))
+            for candidate in candidates
+            if candidate.get("candidate_ref")
+        ]
+        + [
+            f"runtime/state/memory/pattern_completion_frame.json#candidate_kind:{candidate.get('candidate_kind')}"
+            for candidate in candidates
+            if candidate.get("candidate_kind")
+        ]
+        + [
+            str(fragment.get("trace_ref"))
+            for candidate in candidates
+            for fragment in candidate.get("reconstruction_fragments", [])
+            if isinstance(fragment, dict) and fragment.get("trace_ref")
+        ]
+        + [
+            str(fragment.get("trace_ref"))
+            for fragment in (frame.get("reconstructive_completion") or {}).get(
+                "reconstruction_fragments", []
+            )
+            if isinstance(fragment, dict) and fragment.get("trace_ref")
+        ]
+    )
+    return [hit for hit in hits if hit][:24]
 
 
 def _autobiographical_responsibility_repair_hits(
@@ -780,6 +1019,7 @@ def _reconstruction_inputs(
     relationship_hits: list[str],
     autobiographical_hits: list[str],
     schema_memory_hits: list[str],
+    pattern_completion_hits: list[str],
     autobiographical_repair_hits: list[str],
     dream_residue_hits: list[str],
     responsibility_hits: list[str],
@@ -790,6 +1030,7 @@ def _reconstruction_inputs(
         "relationship_hit_count": len(relationship_hits),
         "autobiographical_hit_count": len(autobiographical_hits),
         "schema_hit_count": len(schema_memory_hits),
+        "pattern_completion_hit_count": len(pattern_completion_hits),
         "autobiographical_responsibility_repair_hit_count": len(
             autobiographical_repair_hits
         ),
@@ -806,6 +1047,8 @@ def _reconstruction_inputs(
         focus = "relationship_continuity_reconstruction"
     elif counts["autobiographical_hit_count"]:
         focus = "autobiographical_continuity_reconstruction"
+    elif counts["pattern_completion_hit_count"]:
+        focus = "pattern_completion_reconstructive_recall"
     elif counts["schema_hit_count"]:
         focus = "schema_continuity_reconstruction"
     else:
@@ -820,6 +1063,7 @@ def _reconstruction_inputs(
             "relationship_memory",
             "autobiographical_memory",
             "schema_memory",
+            "pattern_completion_with_source_boundary",
             "responsibility_memory",
             "dream_residue_with_fact_boundary",
             "deep_sediment_context",
@@ -860,6 +1104,360 @@ def _writeback_candidates(
     return candidates
 
 
+def _reconstructive_recall_profile(
+    *,
+    pattern_completion_frame: dict[str, Any] | None,
+    cue_terms: list[str],
+    live_memory_trace_hits: list[str],
+) -> dict[str, Any]:
+    frame = pattern_completion_frame or {}
+    reconstructive = frame.get("reconstructive_completion") or {}
+    if not isinstance(reconstructive, dict):
+        reconstructive = {}
+    fragments = [
+        fragment
+        for fragment in reconstructive.get("reconstruction_fragments", [])
+        if isinstance(fragment, dict)
+    ]
+    if not fragments:
+        for candidate in frame.get("completion_candidates", []):
+            if not isinstance(candidate, dict):
+                continue
+            for fragment in candidate.get("reconstruction_fragments", []):
+                if isinstance(fragment, dict):
+                    fragments.append(fragment)
+    activation_scores = [
+        float(fragment.get("activation_score") or 0) for fragment in fragments
+    ]
+    mean_activation = (
+        round(sum(activation_scores) / len(activation_scores), 3)
+        if activation_scores
+        else 0.0
+    )
+    return {
+        "schema_version": "reconstructive_recall_profile_v0",
+        "profile_ref": MEMORY_RETRIEVAL_FRAME_REF + "#reconstructive_recall_profile",
+        "completion_mode": reconstructive.get("completion_mode")
+        or ("reconstructive_fragment_assembly" if fragments else "ref_only_fallback"),
+        "hippocampal_activation_count": int(
+            reconstructive.get("hippocampal_activation_count") or len(fragments)
+        ),
+        "reconstruction_fragment_count": len(fragments),
+        "mean_activation_score": mean_activation,
+        "reconstruction_fragment_refs": [
+            str(fragment.get("trace_ref"))
+            for fragment in fragments
+            if fragment.get("trace_ref")
+        ][:12],
+        "cue_terms": _dedupe(_string_list(cue_terms))[:12],
+        "live_memory_trace_hit_count": len(live_memory_trace_hits),
+        "recall_route": (
+            "hippocampal_cue_activation_then_pattern_completion"
+            if fragments
+            else "structured_ref_fallback"
+        ),
+        "material_boundary": (
+            "fragments_are_pre_expression_reconstruction_not_spoken_answers"
+        ),
+    }
+
+
+def _memory_phenomenology_profile(
+    *,
+    external_utterance: str | None,
+    live_memory_trace_hits: list[str],
+    relationship_hits: list[str],
+    autobiographical_hits: list[str],
+    schema_memory_hits: list[str],
+    pattern_completion_hits: list[str],
+    activated_refs: list[str],
+    blocked_refs: list[str],
+    memory_trace_store: dict[str, Any] | None,
+    dream_residue_hits: list[str],
+    reconstructive_recall_profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    recall_question = _is_memory_recall_question(external_utterance)
+    strengthening_eligible = _is_memory_confirmation_utterance(external_utterance)
+    blocked_set = set(blocked_refs)
+    reportable_live_hits = [
+        ref for ref in live_memory_trace_hits if ref and ref not in blocked_set
+    ]
+    relationship_hits = _phenomenology_substantive_hits(relationship_hits)
+    autobiographical_hits = _phenomenology_substantive_hits(autobiographical_hits)
+    schema_memory_hits = _phenomenology_substantive_hits(
+        schema_memory_hits, allow_schema_nodes=True
+    )
+    pattern_completion_hits = _phenomenology_substantive_hits(pattern_completion_hits)
+    has_live_grounding = bool(reportable_live_hits)
+    has_relationship_grounding = bool(relationship_hits)
+    has_autobiographical_grounding = bool(autobiographical_hits)
+    has_schema_grounding = bool(schema_memory_hits)
+    has_pattern_grounding = bool(pattern_completion_hits)
+    grounded = (
+        has_live_grounding
+        or has_relationship_grounding
+        or has_autobiographical_grounding
+        or has_schema_grounding
+        or has_pattern_grounding
+    )
+    cross_modal_refs = _live_trace_cross_modal_refs(
+        memory_trace_store=memory_trace_store,
+        live_memory_trace_hits=reportable_live_hits,
+    )
+    if recall_question and not grounded:
+        recall_phenomenology = "uncertain"
+        accessibility_level = "low"
+        uncertain_boundary_active = True
+        closure_hint = "uncertain"
+        source_grounding = "none"
+    elif has_live_grounding and len(reportable_live_hits) >= 2:
+        recall_phenomenology = "vivid"
+        accessibility_level = "high"
+        uncertain_boundary_active = False
+        closure_hint = "closed"
+        source_grounding = "live_trace"
+    elif grounded:
+        recall_phenomenology = "partial"
+        accessibility_level = "medium"
+        uncertain_boundary_active = recall_question and not has_live_grounding
+        closure_hint = "partial" if uncertain_boundary_active else "closed"
+        if has_schema_grounding:
+            source_grounding = "schema"
+        elif has_relationship_grounding:
+            source_grounding = "relationship"
+        elif has_autobiographical_grounding:
+            source_grounding = "autobiographical"
+        else:
+            source_grounding = "pattern_completion"
+    else:
+        recall_phenomenology = "absent"
+        accessibility_level = "low"
+        uncertain_boundary_active = False
+        closure_hint = "open_no_retrievable_expression_material"
+        source_grounding = "none"
+    dream_residue_modulation = bool(dream_residue_hits)
+    reconstructive = reconstructive_recall_profile or {}
+    expression_material_grounded = bool(
+        reconstructive.get("reconstruction_fragment_count")
+        and reconstructive.get("completion_mode") == "reconstructive_fragment_assembly"
+    )
+    recall_strength_score = _recall_strength_score(
+        live_memory_trace_hits=reportable_live_hits,
+        memory_trace_store=memory_trace_store,
+        phenomenology=recall_phenomenology,
+        reconstructive_recall_profile=reconstructive,
+    )
+    familiarity_score = _familiarity_score(
+        memory_trace_store=memory_trace_store,
+        live_memory_trace_hits=reportable_live_hits,
+    )
+    tip_of_tongue_risk = _tip_of_tongue_risk(
+        recall_phenomenology=recall_phenomenology,
+        recall_strength_score=recall_strength_score,
+        uncertain_boundary_active=uncertain_boundary_active,
+    )
+    return {
+        "schema_version": "memory_phenomenology_profile_v0",
+        "profile_ref": MEMORY_RETRIEVAL_FRAME_REF + "#memory_phenomenology_profile",
+        "recall_phenomenology": recall_phenomenology,
+        "accessibility_level": accessibility_level,
+        "source_grounding": source_grounding,
+        "uncertain_boundary_active": uncertain_boundary_active,
+        "strengthening_eligible": strengthening_eligible,
+        "dream_residue_modulation": dream_residue_modulation,
+        "recall_strength_score": recall_strength_score,
+        "familiarity_score": familiarity_score,
+        "tip_of_tongue_risk": tip_of_tongue_risk,
+        "expression_material_grounded": expression_material_grounded,
+        "reconstructive_recall_profile_ref": reconstructive.get("profile_ref"),
+        "cross_modal_evidence_ref_count": len(cross_modal_refs),
+        "cross_modal_evidence_refs": cross_modal_refs[:8],
+        "closure_hint": closure_hint,
+        "phenomenology_boundary": (
+            "recall_feeling_derived_from_structured_hits_not_fixed_spoken_templates"
+        ),
+        "activated_ref_count": len(activated_refs),
+        "live_trace_hit_count": len(reportable_live_hits),
+    }
+
+
+def _live_trace_cross_modal_refs(
+    *,
+    memory_trace_store: dict[str, Any] | None,
+    live_memory_trace_hits: list[str],
+) -> list[str]:
+    if not memory_trace_store:
+        return []
+    hit_ids = {
+        ref.rsplit("#", 1)[-1].replace("trace:", "")
+        for ref in live_memory_trace_hits
+        if ref
+    }
+    refs: list[str] = []
+    for trace in memory_trace_store.get("traces", []):
+        if not isinstance(trace, dict):
+            continue
+        trace_id = str(trace.get("trace_id") or "")
+        if trace_id not in hit_ids:
+            continue
+        refs.extend(_string_list(trace.get("cross_modal_evidence_refs")))
+        refs.extend(_string_list(trace.get("source_evidence_refs")))
+    return _dedupe(refs)
+
+
+PHENOMENOLOGY_SEED_MARKERS = (
+    "#schema_refs",
+    "dialogue_turn_log.jsonl#line-1",
+    "self_narrative_seed",
+    "shared-language-v0-0001",
+    "rel-v0-0001",
+    "pre_activation",
+)
+
+
+def _phenomenology_substantive_hits(
+    hits: list[str],
+    *,
+    allow_schema_nodes: bool = False,
+) -> list[str]:
+    substantive: list[str] = []
+    for hit in hits:
+        if not hit:
+            continue
+        if any(marker in hit for marker in PHENOMENOLOGY_SEED_MARKERS):
+            continue
+        if (
+            hit.endswith("life_schema_map.json")
+            or hit.endswith("life_schema_map.json#schema_refs")
+        ):
+            continue
+        if allow_schema_nodes and "#schema:" in hit:
+            substantive.append(hit)
+            continue
+        if "memory_trace_store" in hit or "memory-trace-" in hit:
+            substantive.append(hit)
+            continue
+        if allow_schema_nodes and "life-schema-" in hit:
+            substantive.append(hit)
+            continue
+        if hit.startswith("runtime/state/memory/dialogue_memory_summary.json"):
+            substantive.append(hit)
+            continue
+    return _dedupe(substantive)
+
+
+def _recall_strength_score(
+    *,
+    live_memory_trace_hits: list[str],
+    memory_trace_store: dict[str, Any] | None,
+    phenomenology: str,
+    reconstructive_recall_profile: dict[str, Any] | None = None,
+) -> float:
+    reconstructive = reconstructive_recall_profile or {}
+    if reconstructive.get("reconstruction_fragment_count"):
+        mean_activation = float(reconstructive.get("mean_activation_score") or 0)
+        if mean_activation > 0:
+            return round(min(0.98, mean_activation / 4.0), 3)
+    if phenomenology == "absent":
+        return 0.05
+    if phenomenology == "uncertain":
+        return 0.22
+    hit_ids = {
+        ref.rsplit("#", 1)[-1].replace("trace:", "")
+        for ref in live_memory_trace_hits
+        if ref
+    }
+    scores: list[float] = []
+    for trace in (memory_trace_store or {}).get("traces", []):
+        if not isinstance(trace, dict):
+            continue
+        if str(trace.get("trace_id")) not in hit_ids:
+            continue
+        scores.append(
+            float(trace.get("accessibility_score") or 0.55)
+            * float(trace.get("replay_salience") or 0.5)
+        )
+    if scores:
+        return round(min(0.98, sum(scores) / len(scores)), 3)
+    return {
+        "partial": 0.48,
+        "vivid": 0.82,
+    }.get(phenomenology, 0.3)
+
+
+def _familiarity_score(
+    *,
+    memory_trace_store: dict[str, Any] | None,
+    live_memory_trace_hits: list[str],
+) -> float:
+    hit_ids = {
+        ref.rsplit("#", 1)[-1].replace("trace:", "")
+        for ref in live_memory_trace_hits
+        if ref
+    }
+    values: list[float] = []
+    for trace in (memory_trace_store or {}).get("traces", []):
+        if not isinstance(trace, dict):
+            continue
+        if str(trace.get("trace_id")) not in hit_ids:
+            continue
+        replay_count = int(trace.get("offline_replay_count") or 0)
+        salience = float(trace.get("replay_salience") or 0.5)
+        values.append(min(0.98, salience + replay_count * 0.04))
+    if values:
+        return round(sum(values) / len(values), 3)
+    return 0.25
+
+
+def _tip_of_tongue_risk(
+    *,
+    recall_phenomenology: str,
+    recall_strength_score: float,
+    uncertain_boundary_active: bool,
+) -> str:
+    if recall_phenomenology == "partial" and recall_strength_score < 0.45:
+        return "elevated"
+    if uncertain_boundary_active and recall_strength_score < 0.35:
+        return "moderate"
+    if recall_phenomenology == "vivid":
+        return "low"
+    return "baseline"
+
+
+def _is_memory_recall_question(utterance: str | None) -> bool:
+    text = str(utterance or "").strip().lower()
+    if not text:
+        return False
+    markers = (
+        "你还记得",
+        "记得吗",
+        "还记得",
+        "remember",
+        "do you remember",
+        "recall",
+        "我们上次",
+        "之前说过",
+    )
+    return any(marker in text for marker in markers)
+
+
+def _is_memory_confirmation_utterance(utterance: str | None) -> bool:
+    text = str(utterance or "").strip().lower()
+    if not text:
+        return False
+    markers = (
+        "没错",
+        "对的",
+        "是的",
+        "你记得对",
+        "就是这样",
+        "correct",
+        "that's right",
+        "yes exactly",
+    )
+    return any(marker in text for marker in markers)
+
+
 def _recall_to_expression_profile(
     *,
     cue_activation_profile: dict[str, Any],
@@ -868,11 +1466,14 @@ def _recall_to_expression_profile(
     relationship_hits: list[str],
     autobiographical_hits: list[str],
     schema_memory_hits: list[str],
+    pattern_completion_hits: list[str],
     autobiographical_repair_hits: list[str],
     dream_residue_hits: list[str],
     responsibility_hits: list[str],
+    live_memory_trace_hits: list[str] | None = None,
     blocked_refs: list[str],
     exit_dream_governance: dict[str, Any],
+    phenomenology_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     influence_families = _string_list(
         cue_activation_profile.get("activated_family_order")
@@ -882,9 +1483,11 @@ def _recall_to_expression_profile(
         + relationship_hits
         + autobiographical_hits
         + schema_memory_hits
+        + pattern_completion_hits
         + autobiographical_repair_hits
         + dream_residue_hits
         + responsibility_hits
+        + _string_list(live_memory_trace_hits)
         + _string_list(exit_dream_governance.get("next_wake_memory_cue_refs"))
     )
     blocked_set = set(blocked_refs)
@@ -898,6 +1501,8 @@ def _recall_to_expression_profile(
         boundary_flags.append("autobiographical")
     if schema_memory_hits or "schema" in influence_families:
         boundary_flags.append("schema")
+    if pattern_completion_hits:
+        boundary_flags.append("pattern_completion")
     if autobiographical_repair_hits or responsibility_hits:
         boundary_flags.append("responsibility_repair")
     if dream_residue_hits or "dream_residue" in influence_families:
@@ -905,11 +1510,14 @@ def _recall_to_expression_profile(
     if blocked_refs:
         boundary_flags.append("quarantine")
 
-    closure_status = (
-        "closed"
-        if reportable_refs or influence_families
-        else "open_no_retrievable_expression_material"
-    )
+    phenomenology = phenomenology_profile or {}
+    closure_hint = phenomenology.get("closure_hint")
+    if closure_hint:
+        closure_status = str(closure_hint)
+    elif reportable_refs or influence_families:
+        closure_status = "closed"
+    else:
+        closure_status = "open_no_retrievable_expression_material"
     return {
         "schema_version": "memory_recall_to_expression_profile_v0",
         "profile_ref": (
@@ -931,9 +1539,12 @@ def _recall_to_expression_profile(
         ),
         "expression_source_ref_count": len(source_refs),
         "reportable_source_ref_count": len(reportable_refs),
-        "expression_source_refs": reportable_refs[:12],
+        "expression_source_refs": _dedupe(
+            _string_list(live_memory_trace_hits) + pattern_completion_hits + reportable_refs
+        )[:12],
         "expression_influence_families": influence_families[:8],
         "schema_memory_ref_count": len(schema_memory_hits),
+        "pattern_completion_ref_count": len(pattern_completion_hits),
         "source_boundary_flags": _dedupe(boundary_flags),
         "expression_guardrails": _dedupe(
             [
@@ -943,8 +1554,17 @@ def _recall_to_expression_profile(
                 "relationship_memory_requires_relation_scope_boundary",
                 "responsibility_memory_requires_write_gate_and_state_merge",
                 "retrieval_material_not_spoken_template",
+                "provider_hits_are_not_facts",
             ]
         ),
+        "memory_phenomenology_profile_ref": phenomenology.get("profile_ref"),
+        "recall_phenomenology": phenomenology.get("recall_phenomenology"),
+        "accessibility_level": phenomenology.get("accessibility_level"),
+        "uncertain_boundary_active": phenomenology.get("uncertain_boundary_active"),
+        "strengthening_eligible": phenomenology.get("strengthening_eligible"),
+        "recall_strength_score": phenomenology.get("recall_strength_score"),
+        "familiarity_score": phenomenology.get("familiarity_score"),
+        "tip_of_tongue_risk": phenomenology.get("tip_of_tongue_risk"),
         "post_expression_reconsolidation_hooks": [
             "spoken_memory_mismatch_reenters_reconsolidation",
             "correction_updates_contradiction_links",
@@ -976,6 +1596,7 @@ def _cue_activation_profile(
     relationship_hits: list[str],
     autobiographical_hits: list[str],
     schema_memory_hits: list[str],
+    pattern_completion_hits: list[str],
     autobiographical_repair_hits: list[str],
     dream_residue_hits: list[str],
     responsibility_hits: list[str],
@@ -1066,6 +1687,22 @@ def _cue_activation_profile(
                     "流程",
                     "价值",
                     "关系模式",
+                ),
+            ),
+        ),
+        (
+            "pattern_completion",
+            pattern_completion_hits,
+            _cue_family_matches(
+                cue_terms,
+                (
+                    "补全",
+                    "线索",
+                    "片段",
+                    "pattern",
+                    "completion",
+                    "cue",
+                    "reconstruct",
                 ),
             ),
         ),
@@ -1321,6 +1958,313 @@ def _flatten_change_sources(change_sources: Any) -> list[str]:
     for value in change_sources.values():
         refs.extend(_string_list(value))
     return refs
+
+
+def _dream_reentry_refs(
+    *,
+    dream_residue_hits: list[str],
+    exit_dream_governance: dict[str, Any],
+) -> list[str]:
+    return _dedupe(
+        _string_list(dream_residue_hits)
+        + _string_list(exit_dream_governance.get("next_wake_memory_cue_refs"))
+        + [
+            "runtime/state/dream/dream_experience_window.json",
+            "runtime/state/dream/wake_integration_frame.json",
+            "runtime/state/dream/dream_fact_gate_decision.json",
+            "runtime/state/dream/dream_belief_gate_decision.json",
+        ]
+    )
+
+
+def _memory_hygiene_refs(memory_trace_store: dict[str, Any] | None) -> list[str]:
+    refs = ["runtime/state/memory/offline_memory_hygiene_report.json"]
+    last_hygiene = (memory_trace_store or {}).get("last_hygiene_report_ref")
+    if last_hygiene:
+        refs.append(str(last_hygiene))
+    return _dedupe(refs)
+
+
+def _web_dream_refs(memory_trace_store: dict[str, Any] | None) -> list[str]:
+    return _dedupe(
+        [
+            "runtime/state/dream/web_dream_learning_state.json",
+            "runtime/state/dream/web_dream_browser_session.json",
+            "runtime/state/dream/web_dream_topic_history.json",
+        ]
+    )
+
+
+def _structured_wake_question_candidates(
+    *,
+    memory_trace_store: dict[str, Any] | None,
+    web_dream_learning_state: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    raw_candidates: list[dict[str, Any]] = []
+    if web_dream_learning_state:
+        raw_candidates.extend(
+            item
+            for item in web_dream_learning_state.get(
+                "structured_wake_question_candidates", []
+            )
+            if isinstance(item, dict)
+        )
+        if not raw_candidates:
+            raw_candidates.extend(
+                item
+                for item in web_dream_learning_state.get(
+                    "wake_question_candidates", []
+                )
+                if isinstance(item, dict)
+            )
+    if memory_trace_store:
+        embedded = memory_trace_store.get("structured_wake_question_candidates")
+        if isinstance(embedded, list):
+            raw_candidates.extend(
+                item for item in embedded if isinstance(item, dict)
+            )
+    normalized: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for candidate in raw_candidates:
+        candidate_id = str(candidate.get("candidate_id") or "")
+        if candidate_id:
+            if candidate_id in seen_ids:
+                continue
+            seen_ids.add(candidate_id)
+        normalized.append(
+            {
+                **candidate,
+                "literal_text": None,
+                "expression_policy": candidate.get("expression_policy")
+                or "model_generated_only_no_fixed_sentence",
+            }
+        )
+    return normalized
+
+
+def _trace_accessibility_tier_refs(
+    memory_trace_store: dict[str, Any] | None,
+) -> dict[str, Any]:
+    salient: list[str] = []
+    retrievable: list[str] = []
+    sediment: list[str] = []
+    suppressed_count = 0
+    for trace in (memory_trace_store or {}).get("traces", []):
+        if not isinstance(trace, dict):
+            continue
+        trace_id = str(trace.get("trace_id") or "")
+        if not trace_id:
+            continue
+        ref = f"runtime/state/memory/memory_trace_store.json#{trace_id}"
+        tier = str(trace.get("accessibility_tier") or "retrievable_context")
+        if tier == "salient_core":
+            salient.append(ref)
+        elif tier == "deep_sediment":
+            sediment.append(ref)
+            if trace.get("retrieval_suppression_reason"):
+                suppressed_count += 1
+        else:
+            retrievable.append(ref)
+    return {
+        "salient_core_refs": _dedupe(salient),
+        "retrievable_context_refs": _dedupe(retrievable),
+        "deep_sediment_refs": _dedupe(sediment),
+        "suppression_profile": {
+            "deep_sediment_trace_count": len(sediment),
+            "suppressed_trace_count": suppressed_count,
+            "activation_policy": "strong_or_dream_cue_required_for_deep_sediment",
+        },
+    }
+
+
+def _filter_traces_by_accessibility_tier(
+    trace_refs: list[str],
+    *,
+    memory_trace_store: dict[str, Any] | None,
+    cue_terms: list[str],
+) -> list[str]:
+    traces_by_id = {
+        str(trace.get("trace_id")): trace
+        for trace in (memory_trace_store or {}).get("traces", [])
+        if isinstance(trace, dict) and trace.get("trace_id")
+    }
+    cue_strength = _cue_activation_strength(cue_terms)
+    dream_cue = _cue_family_matches(
+        cue_terms,
+        ("梦", "梦境", "睡眠", "醒后", "离线", "dream", "wake", "offline"),
+    )
+    eligible: list[str] = []
+    for ref in trace_refs:
+        trace_id = ref.rsplit("#", 1)[-1]
+        trace = traces_by_id.get(trace_id)
+        if not trace:
+            eligible.append(ref)
+            continue
+        tier = str(trace.get("accessibility_tier") or "retrievable_context")
+        if tier == "salient_core":
+            eligible.append(ref)
+            continue
+        if tier == "retrievable_context":
+            if (
+                cue_strength >= 1
+                or _trace_cue_overlap(trace, cue_terms)
+                or _trace_content_overlap(trace, cue_terms)
+            ):
+                eligible.append(ref)
+            continue
+        if tier == "deep_sediment":
+            if cue_strength >= 2 or dream_cue or _trace_cue_overlap(trace, cue_terms, strong=True):
+                eligible.append(ref)
+    return _dedupe(eligible)
+
+
+def _trace_content_overlap(trace: dict[str, Any], cue_terms: list[str]) -> bool:
+    haystack = " ".join(
+        [
+            str(trace.get("content_summary") or ""),
+            str(trace.get("utterance_digest") or ""),
+            str(trace.get("semantic_focus") or ""),
+        ]
+    ).lower()
+    if not haystack:
+        return False
+    for cue in cue_terms:
+        normalized = _normalize_cue(cue).lower()
+        if normalized and normalized in haystack:
+            return True
+    return False
+
+
+def _cue_activation_strength(cue_terms: list[str]) -> int:
+    strength = 0
+    for cue in cue_terms:
+        normalized = _normalize_cue(cue)
+        if not normalized:
+            continue
+        if len(normalized) >= 4:
+            strength += 1
+        if ":" in normalized:
+            strength += 1
+    return strength
+
+
+def _trace_cue_overlap(
+    trace: dict[str, Any],
+    cue_terms: list[str],
+    *,
+    strong: bool = False,
+) -> bool:
+    bindings = _string_list(trace.get("cue_bindings")) + _string_list(
+        trace.get("retrieval_cues")
+    )
+    haystack = " ".join(bindings + [_normalize_cue(str(trace.get("semantic_key") or ""))])
+    for cue in cue_terms:
+        normalized = _normalize_cue(cue)
+        if not normalized:
+            continue
+        if strong and len(normalized) < 4:
+            continue
+        if normalized in haystack or any(
+            token in haystack for token in normalized.split() if len(token) >= 3
+        ):
+            return True
+    return False
+
+
+def _filter_trace_refs_by_relationship_scope(
+    trace_refs: list[str],
+    *,
+    memory_trace_store: dict[str, Any] | None,
+    relationship_memory: dict[str, Any] | None,
+    blocked_refs: set[str] | list[str],
+) -> list[str]:
+    blocked = set(_string_list(blocked_refs))
+    active_scope = str((relationship_memory or {}).get("relationship_scope") or "")
+    active_subject = str(
+        (relationship_memory or {}).get("active_relation_subject_id") or ""
+    )
+    traces_by_id = {
+        str(trace.get("trace_id")): trace
+        for trace in (memory_trace_store or {}).get("traces", [])
+        if isinstance(trace, dict) and trace.get("trace_id")
+    }
+    eligible: list[str] = []
+    for ref in trace_refs:
+        if ref in blocked:
+            continue
+        trace_id = ref.rsplit("#", 1)[-1]
+        trace = traces_by_id.get(trace_id)
+        if not trace:
+            eligible.append(ref)
+            continue
+        trace_scope = str(trace.get("relationship_scope") or "")
+        trace_subject = str(trace.get("relation_subject_id") or "")
+        if active_scope and trace_scope and trace_scope != active_scope:
+            continue
+        if active_subject and trace_subject and trace_subject != active_subject:
+            continue
+        eligible.append(ref)
+    return _dedupe(eligible)
+
+
+def merge_cue_candidates(
+    *,
+    cue_terms: list[str],
+    memory_trace_store: dict[str, Any] | None,
+    relationship_memory: dict[str, Any] | None,
+    blocked_refs: list[str],
+    provider_name: str = "noop",
+) -> dict[str, Any]:
+    scope_boundary = str(
+        (relationship_memory or {}).get("relationship_scope")
+        or "relation_scoped_live_episode"
+    )
+    provider = (
+        local_full_text_cue_candidate_provider
+        if provider_name == "local_full_text"
+        else noop_cue_candidate_provider
+    )
+    provider_result = provider(
+        cue_terms=cue_terms,
+        memory_trace_store=memory_trace_store,
+        relationship_memory=relationship_memory,
+        scope_boundary=scope_boundary,
+    )
+    blocked = set(_string_list(blocked_refs))
+    eligible_candidate_trace_refs = _filter_trace_refs_by_relationship_scope(
+        _string_list(provider_result.get("candidate_trace_refs")),
+        memory_trace_store=memory_trace_store,
+        relationship_memory=relationship_memory,
+        blocked_refs=blocked,
+    )
+    eligible_candidate_trace_refs = _filter_traces_by_accessibility_tier(
+        eligible_candidate_trace_refs,
+        memory_trace_store=memory_trace_store,
+        cue_terms=cue_terms,
+    )
+    merged_cue_terms = _dedupe(
+        _string_list(provider_result.get("candidate_cue_terms"))
+    )
+    cue_provider_audit = {
+        "provider_name": provider_result.get("provider_name"),
+        "provider_status": provider_result.get("provider_status"),
+        "scope_boundary": provider_result.get("scope_boundary"),
+        "validator_boundary": provider_result.get("validator_boundary"),
+        "candidate_trace_ref_count": len(
+            _string_list(provider_result.get("candidate_trace_refs"))
+        ),
+        "eligible_candidate_trace_ref_count": len(eligible_candidate_trace_refs),
+        "blocked_candidate_trace_ref_count": len(
+            _string_list(provider_result.get("candidate_trace_refs"))
+        )
+        - len(eligible_candidate_trace_refs),
+        "source_boundary": provider_result.get("source_boundary"),
+    }
+    return {
+        "merged_cue_terms": merged_cue_terms,
+        "eligible_candidate_trace_refs": eligible_candidate_trace_refs,
+        "cue_provider_audit": cue_provider_audit,
+    }
 
 
 def _normalize_cue(value: str) -> str:

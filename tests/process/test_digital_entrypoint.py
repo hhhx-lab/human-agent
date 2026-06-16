@@ -461,6 +461,84 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 output.getvalue(),
             )
 
+    def test_resident_terminal_help_and_alias_commands_cover_interactive_console(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            (terminal_dir / "terminal_input_profile.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "terminal_input_profile_v0",
+                        "input_mode": "char_line_editor_with_history_and_idle_voice",
+                        "line_editing": {
+                            "backspace": "delete_previous_character",
+                            "left_right_arrows": "move_cursor_inside_current_line",
+                            "up_down_arrows": "navigate_in_memory_terminal_history",
+                        },
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            help_output = StringIO()
+            with redirect_stdout(help_output):
+                help_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/help",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+
+            self.assertIsNone(help_exit)
+            rendered_help = help_output.getvalue()
+            self.assertIn("/all", rendered_help)
+            self.assertIn("/terminal", rendered_help)
+            self.assertIn("/short-memory", rendered_help)
+            self.assertIn("/long-memory", rendered_help)
+            self.assertIn("/clear", rendered_help)
+            self.assertIn("/exit", rendered_help)
+            self.assertIn("/stop", rendered_help)
+
+            alias_checks = {
+                "/terminal": "terminal_input_profile_v0",
+                "/lifecycle": "resident_state_inspection_v0",
+                "/short-memory": "resident_state_inspection_v0",
+                "/long-memory": "resident_state_inspection_v0",
+            }
+            for command, expected_fragment in alias_checks.items():
+                output = StringIO()
+                with redirect_stdout(output):
+                    exit_code = _handle_resident_terminal_utterance(
+                        terminal_dir=terminal_dir,
+                        utterance=command,
+                        life_name="Adam",
+                        say_timeout_seconds=0.1,
+                    )
+                self.assertIsNone(exit_code)
+                self.assertIn(expected_fragment, output.getvalue())
+
+            all_output = StringIO()
+            with redirect_stdout(all_output):
+                all_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/all",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+            self.assertIsNone(all_exit)
+            rendered_all = all_output.getvalue()
+            self.assertIn("resident_state_inspection_bundle_v0", rendered_all)
+            self.assertIn("context", rendered_all)
+            self.assertIn("memory", rendered_all)
+            self.assertIn("proactive_voice", rendered_all)
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
     def test_resident_terminal_relation_turn_without_model_release_stays_silent(self):
         from life_v0.digital_entry import _handle_resident_terminal_utterance
 
@@ -3288,6 +3366,52 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertTrue(state["last_natural_language_released"])
             self.assertEqual(state["release_count"], 1)
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_resident_terminal_proactive_voice_holds_when_body_recovery_required(self):
+        from life_v0.digital_entry import _emit_resident_proactive_terminal_voice
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "memory").mkdir(parents=True, exist_ok=True)
+            (paths["state_root"] / "language").mkdir(parents=True, exist_ok=True)
+            self._write_json(
+                paths["state_root"] / "memory" / "relationship_memory.json",
+                {
+                    "schema_version": "relationship_memory_v0",
+                    "relation_person_profile": {"observed_names": ["RelationPeer"]},
+                },
+            )
+            self._write_json(
+                paths["state_root"] / "language" / "expression_plan.json",
+                {
+                    "schema_version": "expression_plan_v0",
+                    "fatigue_pressure": "critical",
+                    "release_caution_level": "elevated",
+                },
+            )
+
+            output = StringIO()
+            with redirect_stdout(output):
+                emitted = _emit_resident_proactive_terminal_voice(
+                    terminal_dir=terminal_dir,
+                    life_name="Adam",
+                    now_iso=lambda: "2026-06-16T10:00:00+08:00",
+                )
+
+            self.assertFalse(emitted)
+            self.assertEqual(output.getvalue(), "")
+            state = self._read_json(
+                terminal_dir / "resident_terminal_proactive_state.json"
+            )
+            self.assertEqual(state["status"], "held_internal")
+            profile = state["last_proactive_voice_profile"]
+            self.assertEqual(profile["proactive_release_threshold"], "elevated")
+            self.assertIn(
+                "hold_proactive_voice_until_body_recovery",
+                profile["release_constraints"],
+            )
 
     def test_resident_terminal_proactive_voice_blocks_template_model_surface(self):
         from life_v0.digital_entry import _emit_resident_proactive_terminal_voice

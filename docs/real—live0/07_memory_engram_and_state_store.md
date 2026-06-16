@@ -49,6 +49,18 @@
 | `StateMergeGuard` | `life_v0/state_store/state_merge_guard.py` | 长期状态合并治理 |
 | `ReplayRuntime` | `life_v0/replay/__init__.py` | replay/shadow |
 | `ArchiveRuntime` | `life_v0/archive/__init__.py` | archive 和 receipt |
+| `CueCandidateProvider` | `life_v0/state_store/cue_candidate_provider.py` | 外部 cue 候选（noop/local_full_text），须经 scope 与 validator |
+| `HippocampalCueIndex` | `life_v0/state_store/hippocampal_cue_index.py` | 海马式 cue → trace 加权绑定 |
+| `CrossModalEvidence` | `life_v0/state_store/cross_modal_evidence.py` | percept/world_contact/action/visual 一等 source evidence |
+| `OfflineMemoryConsolidation` | `life_v0/state_store/offline_memory_consolidation.py` | 离线巩固 apply、SWR 加权 replay、diff 写回 |
+| `MemoryExpressionMaterialChain` | `life_v0/state_store/memory_expression_material_chain.py` | 表达材料链审计、tip-of-tongue gate |
+| `RelationshipSelfNarrativeWriteback` | `life_v0/state_store/relationship_self_narrative_writeback.py` | 关系/自我叙事重写写回 |
+| `CorticalMemoryTransfer` | `life_v0/state_store/cortical_memory_transfer.py` | SWR replay 后皮层慢转移策略 |
+| `MemoryLongitudinalProfile` | `life_v0/state_store/memory_longitudinal_profile.py` | 月级演化曲线、process 长跑证据 |
+| `MemoryCapabilityScorecard` | `life_v0/state_store/memory_capability_scorecard.py` | 工程 rubric（`engineering_rubric_satisfied`，非人脑 parity） |
+| `HumanBrainAlignmentAssessment` | `life_v0/state_store/human_brain_alignment_assessment.py` | 七维人脑对齐诚实评估 |
+| `HonestBrainAlignmentProgress` | `life_v0/state_store/honest_brain_alignment_progress.py` | 纵向诚实进度追踪 |
+| `MemoryEngineeringCompletionGate` | `life_v0/state_store/memory_engineering_completion_gate.py` | 工程竣工门（`engineering_complete`） |
 
 ## runtime 证据
 
@@ -67,6 +79,12 @@
 | `runtime/state/memory/state_merge_guard.json` | 状态合并治理存在 |
 | `runtime/reports/latest/replay_shadow_report.json` | replay/shadow 闭合 |
 | `runtime/reports/latest/growth_archive_report.json` | archive 闭合 |
+| `runtime/state/memory/memory_reconsolidation_report.json` | 表达后再巩固差分 |
+| `runtime/reports/latest/memory_consolidation_report.json` | 离线巩固 apply 与 diff |
+| `runtime/state/memory/human_brain_alignment_assessment.json` | 七维人脑对齐诚实评估 |
+| `runtime/state/memory/memory_capability_scorecard.json` | 工程 rubric 记分卡 |
+| `runtime/state/memory/memory_engineering_completion_gate.json` | 工程竣工门 |
+| `runtime/state/memory/memory_longitudinal_profile.json` | 月级演化曲线与 process 长跑证据 |
 
 ## 与其他机制的连接
 
@@ -97,6 +115,11 @@ live0 的记忆不是把所有文本塞进一个长上下文，而是分成可�
 | 召回框架 | `MemoryRetrievalFrame` | cue terms、activated refs、分层召回、重构焦点、隔离 refs、消费者 refs | 让记忆从可存储变成可触发、可重构、可被语言和状态根消费 |
 | 写门 | `MemoryWriteGate` | pass/quarantine/sandbox/audit/index policy | 防止梦境、误读、未经证实的判断污染长期记忆 |
 | 合并门 | `StateMergeGuard` | promotion、quarantine、repair、merge routes | 控制候选如何进入长期状态和慢变量 |
+| 海马 cue 索引 | `HippocampalCueIndex` | cue term → trace 加权绑定、reactivation route | 线索触发召回，非全文检索 |
+| 跨模态证据 | `CrossModalEvidence` | percept、world_contact、action、visual feature bundle | 外部观察作为一等 source evidence |
+| 离线巩固 | `OfflineMemoryConsolidation` | SWR 加权 replay、trace salience diff、皮层转移触发 | 睡眠期记忆重组与慢转移 |
+| 表达材料链 | `MemoryExpressionMaterialChain` | tip-of-tongue gate、expression source audit | 现象层阻塞与表达前审计 |
+| 诚实评估 | `HumanBrainAlignmentAssessment` | 七维对齐、证据分层、封顶策略 | 禁止工程 rubric 冒充人脑 parity |
 
 ## M5 已落：关系记忆深层结构与自传层级
 
@@ -451,9 +474,193 @@ flowchart TD
     J --> D
 ```
 
+## U1–U7 人脑对齐升级（2026-06-16 结案）
+
+施工图：`docs/v0/entry/v0_memory_system_brain_alignment_upgrade_plan.md`；专项审计：`temp/14_memory_module_rebuild_audit.md`。
+
+**U1 编排备注**：`_refresh_live_memory_projection` 现为 continuity 后单通道；会同步刷新 `engram_cluster`、`pattern_separation`、`pattern_completion`、`life_schema_map`，修正早期审计 §4.2「live turn 未刷新 cluster/pattern」的过时判断。
+
+| 阶段 | 代码落点 | 验收 |
+|---|---|---|
+| U1 写回单通道 | `resident_turn_writeback.py#_refresh_live_memory_projection`；continuity 后单趟投影 | `test_live_memory_projection_single_pass_consistency` |
+| U2 trace 内容化 | `memory_trace_store.py#project_live_dialogue_episode_traces` | `test_memory_live_trace_contentization.py` |
+| U3 再巩固 | `apply_post_expression_reconsolidation`；`memory_reconsolidation_report.json` | `test_memory_reconsolidation_feedback.py` |
+| U4 cue bridge | `cue_candidate_provider.py`；`memory_retrieval.py#merge_cue_candidates` | `test_memory_cue_provider_noop_and_scope_guard.py` |
+| U5 快慢通道 | `fast_episodic_buffer`；`schema_evidence_counts`；`replay_priority_vector` | `test_memory_u5_fast_slow_channel.py` |
+| U6 消费/检查面 | `memory_retrieval_context_summary`；`/memory` lifecycle 与 cue_provider_audit | `test_state_inspection_memory_closeout.py` |
+| U7 纵向验收 | 场景矩阵切片 | `test_memory_u7_longitudinal_acceptance.py` |
+
+### U8 深化（2026-06-16）
+
+| 深化项 | 落点 | 测试 |
+|---|---|---|
+| 跨回合 trace 累积 | `build_memory_trace_store` 以 existing store 为基线，不再每轮重建 seed | `test_memory_u8_deepening#test_twenty_round_live_trace_accumulation` |
+| 再巩固 validator 闭环 | `apply_post_expression_reconsolidation` + MEM-COR-002 | `test_memory_u8_deepening#test_reconsolidation_passes_mem_cor_002_validator` |
+| 多关系 scope 隔离 | `relation_subject_scopes` + cue scope filter + pattern separation | `test_memory_u8_deepening#test_multi_relation_scope_*` |
+| protected 离线守卫 | `guard_offline_trace_mutations` (MEM-PRO-001) | `test_memory_u8_deepening#test_protected_trace_offline_mutation_guard` |
+| 跨模态证据 | percept + world_contact → live trace `source_evidence_refs` | `test_memory_u8_deepening#test_live_trace_includes_cross_modal_evidence_refs` |
+
+### U9 现象层、多关系纵向、跨模态与离线巩固差分（2026-06-16）
+
+| 深化项 | 落点 | 测试 |
+|---|---|---|
+| 现象层 profile | `memory_retrieval.py#_memory_phenomenology_profile`；无来源召回 → `uncertain` | `test_memory_u9#test_recall_without_source_sets_uncertain_phenomenology` |
+| 跨模态一等证据 | `cross_modal_evidence.py`；percept + world_contact + action/responsibility | `test_memory_u9#test_cross_modal_evidence_collects_action_and_percept_modalities` |
+| 离线巩固 apply | `offline_memory_consolidation.py`；`growth.run_cycle` 写 `memory_consolidation_report.json` | `test_memory_u9#test_offline_consolidation_applies_trace_salience_and_dream_hypothesis` |
+| 多关系纵向 | 10 回合 A/B scope 隔离 + retrieval phenomenology | `test_memory_u9#test_multi_relation_longitudinal_isolation_over_turns` |
+| protected 离线守卫 | consolidation 不改写 protected trace salience | `test_memory_u9#test_protected_trace_blocks_offline_consolidation_mutation` |
+
+### U10–U12 工程 rubric（2026-06-16）
+
+工程自检 rubric：`memory_capability_scorecard` → `engineering_rubric_satisfied`。**不等于人脑 parity**（`at_human_parity_target: false`）。
+
+人脑对齐诚实评估：`human_brain_alignment_assessment.json` v1（七维 + `evidence_quality_tier` + `raw_brain_alignment_pct`）；月级夹具封顶后约 **78%**（`honest_estimate_band: advanced`），稀疏单回合仍 **developing**；`at_biological_human_parity` 固定 false。纵向见 `memory_longitudinal_profile#honest_brain_alignment_latest`。
+
+### U13 重构性召回（2026-06-16）
+
+| 深化项 | 落点 | 测试 |
+|---|---|---|
+| 海马 cue 索引 | `hippocampal_cue_index.py` | `test_memory_u13_reconstructive_recall.py` |
+| 重构性 fragment 补全 | `pattern_completion.py#reconstructive_completion` | 同上 |
+| 检索 profile | `memory_retrieval.py#reconstructive_recall_profile` | 同上 |
+
+### U14–U19 深化（2026-06-16）
+
+| 深化项 | 落点 | 测试 |
+|---|---|---|
+| 表达材料链 + tip-of-tongue gate | `memory_expression_material_chain.py`；`memory_retrieval.py` 接线 | `test_memory_u14_u19#test_u14_*` |
+| `cross_modal_feature_bundle` 进 engram | `cross_modal_evidence.py`；`memory_trace_store.py` live trace | `test_memory_u14_u19#test_u15_*` |
+| SWR 加权离线 replay | `offline_memory_consolidation.py#_select_replay_trace_ids` | `test_memory_u14_u19#test_u16_*` |
+| 多周 schema promotion（turn≥21 + 语义簇） | `life_schema_map.py` | `test_memory_u14_u19#test_u17_*` |
+| 关系/自我叙事重写写回 | `relationship_self_narrative_writeback.py`；offline apply | `test_memory_u14_u19#test_u18_*` |
+| 120+ 回合长跑夹具 | `test_memory_u14_u19#test_u19_*` + assessment | 非真实数月共在 |
+
+### U20–U24 工程竣工（2026-06-16）
+
+| 阶段 | 落点 | 测试 |
+|---|---|---|
+| U20 视觉特征编码（非路径 ref） | `cross_modal_evidence.py#visual_feature_encoding` | `test_memory_u20_u24#test_u20_*` |
+| U21 皮层慢转移（SWR replay 后） | `cortical_memory_transfer.py`；offline apply | `test_memory_u20_u24#test_u21_*` |
+| U22 process 长跑证据接线 | `memory_longitudinal_profile#process_long_run_evidence`；writeback | `test_memory_u20_u24#test_u22_*` |
+| U23 扩展工程 rubric（U14–U21 工件） | `memory_capability_scorecard.py#extended_checks` | `test_memory_u10_u12#test_capability_scorecard_*` |
+| U24 工程竣工门 | `memory_engineering_completion_gate.py` | `test_memory_u20_u24#test_u24_*` |
+
+U24 后：`memory_engineering_completion_gate.engineering_complete = true`（月级夹具）；`memory_capability_scorecard.overall_alignment_pct = 100` 指**工程 rubric 满分**，不等于 `at_biological_human_parity`。
+
+### U25 诚实估计推进（2026-06-16）
+
+| 目标 | 落点 | 测试 |
+|---|---|---|
+| 七维评估 v1（证据加权） | `human_brain_alignment_assessment.py` v1 | `test_memory_u25_*` |
+| 证据质量分层 + 上限 | `evidence_quality_tier` + `raw_brain_alignment_pct` | `test_u25_long_term_dimension_caps_*` |
+| 纵向诚实进度追踪 | `honest_brain_alignment_progress.py` | `test_u25_honest_progress_tracker_*` |
+| `/memory` 诚实摘要 | `state_inspection#honest_brain_alignment_summary` | process 测试回归 |
+
+月级夹具诚实估计（U25 后）：
+
+| 指标 | 值 |
+|---|---|
+| `overall_brain_alignment_pct`（封顶后） | **78.0%** |
+| `raw_brain_alignment_pct`（未封顶） | **89.7%** |
+| `honest_estimate_band` | `advanced` |
+| `evidence_quality_tier` | `fixture_simulation`（非日历月） |
+| `at_biological_human_parity` | **false**（固定） |
+
+仍开放缺口：`long_term_copresence` 在夹具层封顶 58%；需真实数月 process 才能把诚实估计推向 80+ 且保持可信度。
+
+## 理论—工程—代码—验收 四层摘要
+
+专项审计：`temp/14_memory_module_rebuild_audit.md`；升级施工图：`docs/v0/entry/v0_memory_system_brain_alignment_upgrade_plan.md`。
+
+### 理论机制
+
+来源：`docs/05_memory_systems_and_growth.md`、本文件、AHME 矩阵 `docs/01q_memory_engram_consolidation_matrix.md`。
+
+- 记忆不是仓库或 context window，而是**线索触发、重构、再巩固**的生命线。
+- 快通道（情景）与慢通道（语义/习惯/自我叙事）靠 replay、archive、再巩固桥接。
+- **召回 ≠ 写入**：须双门（`MemoryWriteGate` + `StateMergeGuard`）与 source refs 审计。
+- Engram = 可触发、可沉默、可再激活的痕迹簇，非单向量 RAG。
+- 八步生命周期：编码 → 分配 → 链接 → 分离/补全 → 巩固 → 再激活 → 梦境重放 → 自传化/关系化。
+
+### 工程合同（S04）
+
+写入时序：
+
+```text
+relation turn → language percept/semantic
+  → memory retrieval → dialogue event → resident_turn_writeback
+  → relationship_memory + autobiographical_stack → engram projection
+  → memory_write_gate / state_merge_guard
+  → replay cue + background lineage
+```
+
+### 代码机制要点
+
+| 子系统 | 入口 | 关键输出 |
+|---|---|---|
+| 召回 | `memory_retrieval.py#build_memory_retrieval_frame` | `tiered_recall`、`reconstruction_focus`、`blocked_or_quarantined_refs` |
+| 写入 | `memory_write_gate.py` + `state_merge_guard.py` | pass/quarantine/sandbox；promotion/repair/merge route |
+| Live 写回 | `resident_turn_writeback.py#_refresh_live_memory_projection` | 单通道刷新 trace/validator/retrieval/write/merge + engram/pattern/schema |
+| 离线巩固 | `offline_memory_consolidation.py`、`replay/*`、`growth/*` | `memory_consolidation_report.json`、SWR replay、皮层转移 |
+| 再巩固 | `apply_post_expression_reconsolidation` | `memory_reconsolidation_report.json` |
+
+### 契合度评估
+
+| 维度 | 评估 |
+|---|---|
+| 理论↔文档↔代码 | **高** — 四层对象、双门、八步生命周期一一对应 |
+| 常驻写回链 | **高** — `process_supervisor` 多处引用；U1 单通道已闭合 |
+| 现象层「像记住了」 | **中** — U9/U14 有 phenomenology profile，仍非生物 parity |
+| 人脑对齐诚实估计 | **advanced（~78% 封顶）** — 夹具层；稀疏单回合仍 developing |
+| 工程 rubric | **满分** — `engineering_rubric_satisfied`；禁止等同人脑 parity |
+
+断链检查（已闭合项）：
+
+- ITR-08-87：`memory_write_gate` live refresh 链接 consciousness + signal_body
+- ITR-08-102：`project_engram_index_from_live_turn` + `/memory` `engram_live_turn_chain` 检查面
+- U1：live projection 单通道覆盖 engram_cluster、pattern_*、life_schema_map
+
+仍须监控：
+
+- 写门/合并门缺一 → 长期污染风险
+- `engineering_complete` ≠ `at_biological_human_parity`
+- 真实数月共在尚未进入 `evidence_quality_tier: calendar_month`
+
+最低测试：`tests/slices/test_state_store.py`、`tests/slices/test_memory_u*.py`、`tests/bridges/test_runtime_growth.py`、`tests/process/test_persistent_digital_life_process.py`。
+
+## 记忆 vs 普通 RAG
+
+普通 RAG：
+
+```text
+query -> retrieve chunks -> stuff context -> answer
+```
+
+数字生命记忆：
+
+```text
+cue + current state + relation scope + body/affect + responsibility + dream residue
+  -> engram-like activation
+  -> pattern separation / completion
+  -> source-bound reconstructive recall
+  -> workspace reportability
+  -> expression material
+  -> feedback / correction / reconsolidation
+```
+
+向量索引、全文检索、embedding 只能作为 `CueCandidateProvider`，不能成为记忆机制本身。检索命中必须经过：relation scope、lifecycle、fact/hypothesis/dream 分区、pattern separation、source confidence、reportability policy、post-expression reconsolidation route。
+
 ## 当前 live0 结论
 
-live0 的记忆机制已经从“上下文缓存”扩展为状态根、engram、关系记忆、自传栈、写门、合并治理和离线巩固。它支撑验收项 `c_memory_mechanism`、`d_growth_and_learning` 和 `f_equal_relationship_dialogue_growth`。
+live0 记忆机制是**工程替身**：M0–M7 骨架与 U1–U25 升级已把对象图、写回链、离线巩固、重构性召回和诚实评估落成可审计管线；**147** 条 memory/process 测试通过，`engineering_complete = true`（月级夹具）。
+
+但仍不能把「记忆能力与人脑无异」打勾：
+
+1. `at_biological_human_parity` 固定 false；工程 rubric 满分 ≠ 类人脑记忆。
+2. 诚实估计在夹具层约 **78%**（`advanced`），真实数月共在仍封顶较低。
+3. 皮层慢转移、视觉特征、梦境 replay 后 lifecycle 差分仍需真实长跑证据。
+
+下一刀：真实视觉特征、数月 process 长跑、皮层慢转移可观测证据。禁止用 `engineering_rubric_satisfied` 或 `overall_alignment_pct = 100` 冒充人脑对齐。
 
 ## ITR-05 工程补强：写门消费身体/调质压力
 

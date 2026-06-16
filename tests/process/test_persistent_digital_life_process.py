@@ -124,6 +124,39 @@ class PersistentDigitalLifeProcessTests(
             2,
         )
 
+    def test_stale_stopped_lifecycle_does_not_overwrite_new_active_resident(self):
+        from life_v0.process_supervisor.resident_lifecycle import (
+            mark_resident_lifecycle_active,
+            mark_resident_lifecycle_stopped,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            terminal_dir = Path(tmp) / "runtime" / "state" / "terminal"
+            terminal_dir.mkdir(parents=True)
+
+            active_state = mark_resident_lifecycle_active(
+                terminal_dir=terminal_dir,
+                run_id="new-resident-run",
+                resident_sleep_seconds=0.1,
+            )
+            stopped_state = mark_resident_lifecycle_stopped(
+                terminal_dir=terminal_dir,
+                run_id="old-resident-run",
+                exit_code=0,
+            )
+            persisted_state = self._read_json(
+                terminal_dir / "resident_lifecycle_state.json"
+            )
+
+        self.assertEqual(active_state["run_id"], "new-resident-run")
+        self.assertEqual(stopped_state["run_id"], "new-resident-run")
+        self.assertEqual(persisted_state["run_id"], "new-resident-run")
+        self.assertEqual(persisted_state["status"], "background_active")
+        self.assertEqual(
+            persisted_state["stale_stop_ignored_run_id"],
+            "old-resident-run",
+        )
+
     def test_repo_local_digital_life_process_keeps_dialogue_alive_and_writes_back(self):
         with tempfile.TemporaryDirectory() as tmp:
             paths = build_runtime_paths(Path(tmp))
@@ -348,8 +381,8 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertIn("dialogue-turn-live-0005", commitment_index["recent_dialogue_turn_refs"][-1])
             self.assertEqual(language_percept["incoming_surface"], "你还记得我们吗？")
-            self.assertEqual(semantic_map["semantic_focus"], "relational_checkin")
-            self.assertEqual(expression_plan["semantic_goal"], "relational_checkin")
+            self.assertEqual(semantic_map["semantic_focus"], "repair_relational_trace")
+            self.assertEqual(expression_plan["semantic_goal"], "repair_relational_trace")
             self.assertEqual(
                 inner_speech["percept_ref"],
                 "runtime/state/language/language_percept_frame.json",
@@ -362,7 +395,7 @@ class PersistentDigitalLifeProcessTests(
                 last_external["semantic_map_ref"],
                 "runtime/state/language/semantic_map_frame.json",
             )
-            self.assertEqual(last_external["live_semantic_focus"], "relational_checkin")
+            self.assertEqual(last_external["live_semantic_focus"], "repair_relational_trace")
             self.assertEqual(
                 last_life_response["language_percept_ref"],
                 "runtime/state/language/language_percept_frame.json",
@@ -371,7 +404,7 @@ class PersistentDigitalLifeProcessTests(
                 last_life_response["semantic_map_ref"],
                 "runtime/state/language/semantic_map_frame.json",
             )
-            self.assertEqual(last_life_response["live_semantic_focus"], "relational_checkin")
+            self.assertEqual(last_life_response["live_semantic_focus"], "repair_relational_trace")
             self.assertEqual(
                 last_life_response["queue_e_world_contact_handoff_profile_ref"],
                 queue_e_world_contact_handoff_ref,
@@ -461,7 +494,7 @@ class PersistentDigitalLifeProcessTests(
                 resumed_dialogue_packet["semantic_map_ref"],
                 "runtime/state/language/semantic_map_frame.json",
             )
-            self.assertEqual(resumed_dialogue_packet["live_semantic_focus"], "relational_checkin")
+            self.assertEqual(resumed_dialogue_packet["live_semantic_focus"], "repair_relational_trace")
             self.assertEqual(
                 resumed_dialogue_packet["queue_e_world_contact_handoff_profile_ref"],
                 queue_e_world_contact_handoff_ref,
@@ -491,10 +524,111 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(loop_state["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
             self.assertEqual(loop_state["last_external_turn_utterance"], "你还记得我们吗？")
-            self.assertEqual(loop_state["last_live_semantic_focus"], "relational_checkin")
+            self.assertEqual(loop_state["last_live_semantic_focus"], "repair_relational_trace")
             self.assertEqual(
                 loop_state["live_language_turn_refs"],
                 dialogue_writeback_bundle["live_language_turn_refs"],
+            )
+            memory_retrieval = self._read_json(
+                paths["state_root"] / "memory" / "memory_retrieval_frame.json"
+            )
+            memory_trace_store = self._read_json(
+                paths["state_root"] / "memory" / "memory_trace_store.json"
+            )
+            engram_cluster = self._read_json(
+                paths["state_root"] / "memory" / "engram_cluster.json"
+            )
+            self.assertEqual(
+                memory_retrieval.get("live_memory_projection_stage"),
+                "post_continuity_single_pass",
+            )
+            self.assertEqual(
+                memory_trace_store.get("live_memory_projection_stage"),
+                "post_continuity_single_pass",
+            )
+            self.assertEqual(
+                engram_cluster.get("live_memory_projection_stage"),
+                "post_continuity_single_pass",
+            )
+            projection_generated_at = memory_retrieval.get(
+                "live_memory_projection_generated_at"
+            )
+            self.assertTrue(projection_generated_at)
+            self.assertEqual(
+                memory_trace_store.get("live_memory_projection_generated_at"),
+                projection_generated_at,
+            )
+            self.assertEqual(
+                engram_cluster.get("live_memory_projection_generated_at"),
+                projection_generated_at,
+            )
+            self.assertEqual(
+                memory_retrieval.get("live_semantic_focus"),
+                "repair_relational_trace",
+            )
+            self.assertEqual(
+                memory_retrieval.get("reconstruction_focus"),
+                "repair_relational_trace",
+            )
+            self.assertEqual(
+                loop_state.get("memory_retrieval_reconstruction_focus"),
+                "repair_relational_trace",
+            )
+            self.assertIn(
+                "runtime/state/memory/engram_cluster.json",
+                life_state["memory_index"].get("engram_cluster_refs", []),
+            )
+
+    def test_live_memory_projection_single_pass_consistency(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            self._bootstrap(paths)
+            completed = subprocess.run(
+                [
+                    str(self.repo_root / "digital"),
+                    "life",
+                    "--state",
+                    str(paths["state_root"]),
+                    "--reports",
+                    str(paths["reports"]),
+                    "--receipts",
+                    str(paths["receipts"]),
+                    "--run-id",
+                    "memory-projection-single-pass",
+                    "--strict",
+                ],
+                cwd=self.repo_root,
+                text=True,
+                input="你还记得我们吗？\n/exit\n",
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            memory_retrieval = self._read_json(
+                paths["state_root"] / "memory" / "memory_retrieval_frame.json"
+            )
+            self.assertNotEqual(
+                memory_retrieval.get("live_memory_projection_stage"),
+                "pre_continuity_pass",
+            )
+            self.assertEqual(
+                memory_retrieval.get("live_memory_projection_stage"),
+                "post_continuity_single_pass",
+            )
+            loop_state = self._read_json(
+                paths["terminal_state"] / "terminal_life_loop_state.json"
+            )
+            resumed_packet = self._read_json(
+                paths["reports"] / "resumed_external_dialogue_packet.json"
+            )
+            focus = loop_state.get("last_live_semantic_focus")
+            self.assertTrue(focus)
+            self.assertEqual(resumed_packet.get("live_semantic_focus"), focus)
+            self.assertEqual(memory_retrieval.get("live_semantic_focus"), focus)
+            self.assertEqual(memory_retrieval.get("reconstruction_focus"), focus)
+            self.assertEqual(
+                loop_state.get("memory_retrieval_reconstruction_focus"),
+                focus,
             )
 
     def test_repo_local_digital_life_process_writes_waiting_heartbeat_before_first_turn(self):
@@ -7948,7 +8082,7 @@ class PersistentDigitalLifeProcessTests(
                 idle_strategy["queue_e_cross_layer_gate_status"][
                     "body_affect_gate"
                 ],
-                "deferred_until_s06",
+                "closed",
             )
             self.assertEqual(
                 idle_strategy["life_constraint_waiting_posture"],
@@ -8088,7 +8222,7 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertEqual(
                 lineage_state["dream_wake_presence"]["dream_window_kind"],
-                "micro_dream",
+                "exit_dialogue_dream",
             )
             self.assertEqual(
                 lineage_state["dream_wake_presence"]["dream_fact_gate_result"],
@@ -10624,11 +10758,20 @@ class PersistentDigitalLifeProcessTests(
                 heartbeat_counter=2,
                 external_utterance="你好",
                 exit_reason=None,
+                terminal_life_loop_state={
+                    "current_mode": "restored_waiting_for_external_turn",
+                    "resident_terminal_proactive_state_ref": (
+                        "runtime/state/terminal/resident_terminal_proactive_state.json"
+                    ),
+                },
             ),
             IdleRefreshLoopResult(
                 heartbeat_counter=2,
                 external_utterance=None,
                 exit_reason="explicit_exit",
+                terminal_life_loop_state={
+                    "current_mode": "restored_waiting_for_external_turn",
+                },
             ),
         ]
 
@@ -10755,21 +10898,25 @@ class PersistentDigitalLifeProcessTests(
 
         live_turn_inputs: list[tuple[int, int, str]] = []
         emitted_outputs: list[str] = []
+        wait_loop_state = {"current_mode": "restored_waiting_for_external_turn"}
         wait_results = [
             IdleRefreshLoopResult(
                 heartbeat_counter=1,
                 external_utterance="第一轮触发异常",
                 exit_reason=None,
+                terminal_life_loop_state=wait_loop_state,
             ),
             IdleRefreshLoopResult(
                 heartbeat_counter=1,
                 external_utterance="第二轮继续前进",
                 exit_reason=None,
+                terminal_life_loop_state=wait_loop_state,
             ),
             IdleRefreshLoopResult(
                 heartbeat_counter=1,
                 external_utterance=None,
                 exit_reason="explicit_exit",
+                terminal_life_loop_state=wait_loop_state,
             ),
         ]
 
@@ -20033,6 +20180,33 @@ class PersistentDigitalLifeProcessTests(
             persisted_memory_retrieval_frame = self._read_json(
                 memory_dir / "memory_retrieval_frame.json"
             )
+            persisted_event_segmentation_frame = self._read_json(
+                memory_dir / "event_segmentation_frame.json"
+            )
+            persisted_memory_encoding_gate = self._read_json(
+                memory_dir / "memory_encoding_gate.json"
+            )
+            persisted_memory_allocation_gate = self._read_json(
+                memory_dir / "memory_allocation_gate.json"
+            )
+            persisted_memory_trace_store = self._read_json(
+                memory_dir / "memory_trace_store.json"
+            )
+            persisted_memory_validator_report = self._read_json(
+                memory_dir / "memory_validator_report.json"
+            )
+            persisted_engram_cluster = self._read_json(
+                memory_dir / "engram_cluster.json"
+            )
+            persisted_pattern_separation = self._read_json(
+                memory_dir / "pattern_separation_index.json"
+            )
+            persisted_pattern_completion = self._read_json(
+                memory_dir / "pattern_completion_frame.json"
+            )
+            persisted_life_schema_map = self._read_json(
+                memory_dir / "life_schema_map.json"
+            )
             persisted_engram_index = self._read_json(
                 memory_dir / "engram_index.json"
             )
@@ -20286,6 +20460,162 @@ class PersistentDigitalLifeProcessTests(
                 persisted_autobiographical_stack["narrative_refs"],
             )
             self.assertEqual(
+                persisted_event_segmentation_frame["schema_version"],
+                "event_segmentation_frame_v0",
+            )
+            self.assertIn(
+                "live_language_seed_episode",
+                persisted_event_segmentation_frame["episode_kind_order"],
+            )
+            self.assertIn(
+                "relationship_seed_episode",
+                persisted_event_segmentation_frame["episode_kind_order"],
+            )
+            self.assertIn(
+                "responsibility_repair_seed_episode",
+                persisted_event_segmentation_frame["episode_kind_order"],
+            )
+            self.assertEqual(
+                persisted_memory_encoding_gate["candidate_trace_count"],
+                persisted_event_segmentation_frame["episode_count"],
+            )
+            self.assertEqual(
+                persisted_memory_allocation_gate["event_segmentation_frame_ref"],
+                "runtime/state/memory/event_segmentation_frame.json",
+            )
+            self.assertIn(
+                "relationship_seed_episode",
+                persisted_memory_allocation_gate["high_priority_episode_kinds"],
+            )
+            self.assertIn(
+                "responsibility_repair_seed_episode",
+                persisted_memory_allocation_gate["high_priority_episode_kinds"],
+            )
+            self.assertEqual(
+                persisted_memory_trace_store["schema_version"],
+                "memory_trace_store_v0",
+            )
+            self.assertEqual(
+                persisted_memory_trace_store["stage_policy"],
+                "live_turn_trace_projection_refreshed",
+            )
+            self.assertIn(
+                "runtime/state/memory/event_segmentation_frame.json",
+                persisted_memory_trace_store["upstream_event_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_encoding_gate.json",
+                persisted_memory_trace_store["encoding_governance_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_allocation_gate.json",
+                persisted_memory_trace_store["allocation_governance_refs"],
+            )
+            self.assertEqual(
+                persisted_memory_validator_report["schema_version"],
+                "memory_validator_report_v0",
+            )
+            self.assertEqual(
+                persisted_memory_validator_report["trace_count"],
+                persisted_memory_trace_store["trace_count"],
+            )
+            self.assertEqual(
+                persisted_memory_retrieval_frame["memory_validator_report_ref"],
+                "runtime/state/memory/memory_validator_report.json",
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_validator_report.json#retrieval_replay_guard",
+                persisted_memory_retrieval_frame["blocked_or_quarantined_refs"],
+            )
+            self.assertEqual(
+                persisted_memory_write_gate["memory_validator_report_ref"],
+                "runtime/state/memory/memory_validator_report.json",
+            )
+            self.assertEqual(
+                persisted_state_merge_guard["memory_validator_report_ref"],
+                "runtime/state/memory/memory_validator_report.json",
+            )
+            self.assertEqual(
+                persisted_engram_cluster["schema_version"],
+                "engram_like_trace_cluster_v0",
+            )
+            self.assertGreaterEqual(
+                persisted_engram_cluster["cluster_count"],
+                4,
+            )
+            cluster_kinds = {
+                cluster["cluster_kind"]
+                for cluster in persisted_engram_cluster["clusters"]
+            }
+            self.assertIn("language_episode", cluster_kinds)
+            self.assertIn("relationship_subject", cluster_kinds)
+            self.assertIn("responsibility_regret_repair", cluster_kinds)
+            self.assertIn(
+                "runtime/state/memory/memory_retrieval_frame.json#cue_activation_profile",
+                persisted_engram_cluster["downstream_consumer_refs"],
+            )
+            self.assertEqual(
+                persisted_pattern_separation["schema_version"],
+                "pattern_separation_index_v0",
+            )
+            separation_route_kinds = {
+                route["route_kind"]
+                for route in persisted_pattern_separation["separation_routes"]
+            }
+            self.assertIn("relationship_subject_scope", separation_route_kinds)
+            self.assertIn("responsibility_repair_scope", separation_route_kinds)
+            self.assertIn(
+                "relationship_scope_prevents_cross_person_memory_bleed",
+                persisted_pattern_separation["separation_guards"],
+            )
+            self.assertEqual(
+                persisted_pattern_completion["schema_version"],
+                "pattern_completion_frame_v0",
+            )
+            completion_kinds = {
+                candidate["candidate_kind"]
+                for candidate in persisted_pattern_completion["completion_candidates"]
+            }
+            self.assertIn("relationship_episode_completion", completion_kinds)
+            self.assertIn("responsibility_repair_completion", completion_kinds)
+            self.assertIn(
+                "completed_material_enters_recall_to_expression_not_fixed_reply",
+                persisted_pattern_completion["completion_policy"],
+            )
+            self.assertEqual(
+                persisted_life_schema_map["schema_version"],
+                "life_schema_map_v0",
+            )
+            self.assertIn(
+                "relationship_schema",
+                persisted_life_schema_map["schema_kinds"],
+            )
+            self.assertIn(
+                "responsibility_schema",
+                persisted_life_schema_map["schema_kinds"],
+            )
+            self.assertIn(
+                "runtime/state/memory/life_schema_map.json#schema_refs",
+                persisted_memory_retrieval_frame["schema_memory_hits"],
+            )
+            self.assertTrue(persisted_memory_retrieval_frame["pattern_completion_hits"])
+            self.assertGreater(
+                persisted_memory_retrieval_frame["recall_to_expression_profile"][
+                    "pattern_completion_ref_count"
+                ],
+                0,
+            )
+            self.assertTrue(
+                any(
+                    ref.startswith(
+                        "runtime/state/memory/pattern_completion_frame.json#candidate:"
+                    )
+                    for ref in persisted_memory_retrieval_frame[
+                        "recall_to_expression_profile"
+                    ]["expression_source_refs"]
+                )
+            )
+            self.assertEqual(
                 persisted_autobiographical_stack["last_relationship_stage"],
                 "repair_guarded_continuity",
             )
@@ -20387,7 +20717,15 @@ class PersistentDigitalLifeProcessTests(
                 persisted_memory_retrieval_frame["reconstruction_inputs"][
                     "reconstruction_focus"
                 ],
-                "autobiographical_responsibility_repair_reconstruction",
+                "repair_commitment_shared_language",
+            )
+            self.assertEqual(
+                persisted_memory_retrieval_frame.get("live_memory_projection_stage"),
+                "post_continuity_single_pass",
+            )
+            self.assertEqual(
+                persisted_memory_retrieval_frame.get("live_semantic_focus"),
+                "repair_commitment_shared_language",
             )
             autobiographical_repair_hits = persisted_memory_retrieval_frame[
                 "autobiographical_responsibility_repair_hits"
@@ -20549,6 +20887,78 @@ class PersistentDigitalLifeProcessTests(
             self.assertIn(
                 "repair-001",
                 persisted_life_state["memory_index"]["memory_retrieval_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/event_segmentation_frame.json",
+                persisted_life_state["memory_index"]["event_segmentation_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_encoding_gate.json",
+                persisted_life_state["memory_index"]["memory_encoding_gate_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_allocation_gate.json",
+                persisted_life_state["memory_index"]["memory_allocation_gate_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_trace_store.json",
+                persisted_life_state["memory_index"]["memory_trace_store_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_validator_report.json",
+                persisted_life_state["memory_index"]["memory_validator_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/engram_cluster.json",
+                persisted_life_state["memory_index"]["engram_cluster_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/pattern_separation_index.json",
+                persisted_life_state["memory_index"]["pattern_separation_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/pattern_completion_frame.json",
+                persisted_life_state["memory_index"]["pattern_completion_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/life_schema_map.json",
+                persisted_life_state["memory_index"]["life_schema_map_refs"],
+            )
+            self.assertEqual(
+                persisted_life_state["memory_index"]["memory_trace_refs"],
+                persisted_memory_trace_store["trace_ids"],
+            )
+            self.assertIn(
+                "runtime/state/memory/life_schema_map.json#schema_refs",
+                persisted_life_state["memory_index"]["memory_retrieval_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/pattern_completion_frame.json",
+                persisted_life_state["memory_index"]["memory_retrieval_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_trace_store.json",
+                persisted_life_state["runtime_trace_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/memory_validator_report.json",
+                persisted_life_state["runtime_trace_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/engram_cluster.json",
+                persisted_life_state["runtime_trace_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/pattern_separation_index.json",
+                persisted_life_state["runtime_trace_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/pattern_completion_frame.json",
+                persisted_life_state["runtime_trace_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/life_schema_map.json",
+                persisted_life_state["runtime_trace_refs"],
             )
             self.assertIn(
                 "runtime/state/relationship/relationship_timeline.json",
@@ -20742,6 +21152,26 @@ class PersistentDigitalLifeProcessTests(
                 "runtime/state/memory/memory_retrieval_frame.json",
                 dialogue_writeback_bundle["memory_retrieval_writeback_refs"],
             )
+            self.assertIn(
+                "runtime/state/memory/engram_cluster.json",
+                dialogue_writeback_bundle["memory_retrieval_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/pattern_separation_index.json",
+                dialogue_writeback_bundle["memory_retrieval_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/pattern_completion_frame.json",
+                dialogue_writeback_bundle["memory_retrieval_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/life_schema_map.json#schema_refs",
+                dialogue_writeback_bundle["memory_retrieval_writeback_refs"],
+            )
+            self.assertIn(
+                "runtime/state/memory/pattern_completion_frame.json",
+                dialogue_writeback_bundle["memory_retrieval_writeback_refs"],
+            )
             self.assertEqual(
                 dialogue_writeback_bundle["engram_index_writeback_refs"],
                 [
@@ -20779,11 +21209,28 @@ class PersistentDigitalLifeProcessTests(
                     "runtime/state/memory/state_merge_guard.json",
                 ],
             )
-            self.assertEqual(
+            for ref in expected_body_signal_refs:
+                self.assertIn(
+                    ref,
+                    dialogue_writeback_bundle[
+                        "resident_background_lineage_body_signal_refs"
+                    ],
+                )
+            self.assertIn(
+                "runtime/state/growth/relationship_learning_plan.json",
                 dialogue_writeback_bundle[
                     "resident_background_lineage_body_signal_refs"
                 ],
-                expected_body_signal_refs,
+            )
+            self.assertEqual(
+                dialogue_writeback_bundle[
+                    "resident_background_lineage_body_signal_ref_count"
+                ],
+                len(
+                    dialogue_writeback_bundle[
+                        "resident_background_lineage_body_signal_refs"
+                    ]
+                ),
             )
             self.assertEqual(
                 dialogue_writeback_bundle[
@@ -20791,11 +21238,20 @@ class PersistentDigitalLifeProcessTests(
                 ],
                 "defer_noncritical_memory_commit",
             )
-            self.assertEqual(
-                dialogue_writeback_bundle[
-                    "resident_background_lineage_body_signal_candidate_gate_adjustments"
-                ],
-                ["defer_low_salience_write_until_recovery"],
+            body_signal_adjustments = dialogue_writeback_bundle[
+                "resident_background_lineage_body_signal_candidate_gate_adjustments"
+            ]
+            self.assertIn(
+                "defer_low_salience_write_until_recovery",
+                body_signal_adjustments,
+            )
+            self.assertIn(
+                "preserve_offline_learning_refs_for_reconsolidation",
+                body_signal_adjustments,
+            )
+            self.assertIn(
+                "route_offline_learning_to_relationship_replay",
+                body_signal_adjustments,
             )
             live_consciousness_write_context_refs = dialogue_writeback_bundle[
                 "resident_background_lineage_consciousness_write_context_refs"
@@ -21610,6 +22066,241 @@ class PersistentDigitalLifeProcessTests(
                 check=False,
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
+
+    def test_s1_twelve_turn_exit_closeout_persists_five_piece_chain_and_reopen_tiers(
+        self,
+    ):
+        from life_v0.process_supervisor.exit_dream_consolidation import (
+            write_exit_dream_memory_consolidation,
+        )
+        from life_v0.state_store.memory_retrieval import (
+            _filter_traces_by_accessibility_tier,
+            build_memory_retrieval_frame,
+        )
+
+        dialogue_turns = [
+            {
+                "utterance": "我叫何剑宝，记住我喜欢直接说话。",
+                "event_role": "external_relation_turn",
+            },
+            {"utterance": "嗯", "event_role": "external_relation_turn"},
+            {
+                "utterance": "梦境和记忆对你很重要吗？",
+                "event_role": "external_relation_turn",
+            },
+            {"utterance": "好", "event_role": "external_relation_turn"},
+            {
+                "utterance": "我希望你下次还能想起今天聊了什么。",
+                "event_role": "external_relation_turn",
+            },
+            {"utterance": "嗯嗯", "event_role": "external_relation_turn"},
+            {
+                "utterance": "不要机械模板，要真实一点。",
+                "event_role": "external_relation_turn",
+            },
+            {"utterance": "哦", "event_role": "external_relation_turn"},
+            {
+                "utterance": "关系记忆比表面回答更重要。",
+                "event_role": "external_relation_turn",
+            },
+            {"utterance": "行", "event_role": "external_relation_turn"},
+            {
+                "utterance": "关闭终端后你还会整理这些对话吗？",
+                "event_role": "external_relation_turn",
+            },
+            {"utterance": "好", "event_role": "external_relation_turn"},
+        ]
+
+        def fake_semantic_transport(endpoint, headers, payload, timeout_seconds):
+            del endpoint, headers, timeout_seconds
+            return {
+                "choices": [
+                    {
+                        "message": {
+                            "content": json.dumps(
+                                {
+                                    "session_narrative_summary": (
+                                        "十二轮关系对话强调记忆、梦境与真实表达。"
+                                    ),
+                                    "relationship_theme_tags": [
+                                        "digital_life_memory_seriousness",
+                                        "dream_continuity",
+                                    ],
+                                    "episode_summaries": [
+                                        {
+                                            "source_line_indices": [1, 5, 9, 11],
+                                            "summary": "关系人强调记忆、梦境与真实表达。",
+                                            "semantic_key": "memory_dream_priority",
+                                            "salience_hint": "salient_core",
+                                            "consolidation_rationale": "core_relation_intent",
+                                        },
+                                        {
+                                            "source_line_indices": [3, 7],
+                                            "summary": "讨论梦境与记忆机制的重要性。",
+                                            "semantic_key": "dream_memory_probe",
+                                            "salience_hint": "retrievable_context",
+                                            "consolidation_rationale": "context_probe",
+                                        },
+                                        {
+                                            "source_line_indices": [2, 4, 6, 8, 10, 12],
+                                            "summary": "低信息附和轮次，保留为边缘上下文。",
+                                            "semantic_key": "low_context_ack",
+                                            "salience_hint": "deep_sediment",
+                                            "consolidation_rationale": "edge_detail",
+                                        },
+                                    ],
+                                },
+                                ensure_ascii=False,
+                            )
+                        },
+                        "finish_reason": "stop",
+                    }
+                ]
+            }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            state_dir = Path(tmp) / "runtime" / "state"
+            language_dir = state_dir / "language"
+            memory_dir = state_dir / "memory"
+            dream_dir = state_dir / "dream"
+            for directory in (
+                language_dir,
+                memory_dir,
+                dream_dir,
+                state_dir / "self",
+                state_dir / "relationship",
+                state_dir / "body",
+                state_dir / "replay",
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+
+            (language_dir / "dialogue_turn_log.jsonl").write_text(
+                "\n".join(json.dumps(turn, ensure_ascii=False) for turn in dialogue_turns)
+                + "\n",
+                encoding="utf-8",
+            )
+            self._write_json(
+                dream_dir / "web_dream_learning_state.json",
+                {
+                    "schema_version": "web_dream_learning_state_v1",
+                    "status": "learned",
+                    "topic_cluster_id": "cluster-s1-persistent",
+                    "url_digest": "digest-s1-persistent",
+                    "topic_candidates": ["Offline memory consolidation"],
+                    "structured_wake_question_candidates": [
+                        {
+                            "candidate_id": "wake-q-cluster-s1-persistent",
+                            "topic_cluster_id": "cluster-s1-persistent",
+                            "literal_text": None,
+                            "expression_policy": (
+                                "model_generated_only_no_fixed_sentence"
+                            ),
+                        }
+                    ],
+                },
+            )
+            for name, payload in {
+                "relationship_memory.json": {"schema_version": "relationship_memory_v0"},
+                "engram_index.json": {"schema_version": "engram_index_v0"},
+                "memory_write_gate.json": {"schema_version": "memory_write_gate_v0"},
+                "state_merge_guard.json": {"schema_version": "state_merge_guard_v0"},
+                "memory_trace_store.json": {
+                    "schema_version": "memory_trace_store_v0",
+                    "traces": [],
+                },
+            }.items():
+                self._write_json(memory_dir / name, payload)
+            self._write_json(
+                state_dir / "life_state.json",
+                {"schema_version": "life_state_v0"},
+            )
+            self._write_json(
+                state_dir / "self" / "autobiographical_stack.json",
+                {"schema_version": "autobiographical_stack_v0"},
+            )
+
+            result = write_exit_dream_memory_consolidation(
+                run_id="s1-persistent-closeout",
+                generated_at="2026-06-16T12:00:00Z",
+                state_dir=state_dir,
+                write_json=self._write_json,
+                semantic_consolidation_transport=fake_semantic_transport,
+            )
+
+            for artifact in (
+                "offline_dream_entry_vector.json",
+                "dream_cue_policy_state.json",
+                "dream_experience_window.json",
+                "wake_integration_frame.json",
+                "dream_fact_gate_decision.json",
+                "dream_belief_gate_decision.json",
+                "exit_dream_semantic_consolidation.json",
+            ):
+                self.assertTrue((dream_dir / artifact).exists(), artifact)
+
+            chain = result["closeout_dream_chain"]
+            self.assertTrue(chain.get("dream_belief_gate_decision_ref"))
+            self.assertTrue(chain.get("offline_dream_entry_vector_ref"))
+
+            dream_window = self._read_json(dream_dir / "dream_experience_window.json")
+            scene_kinds = {
+                frame.get("scene_kind")
+                for frame in dream_window.get("dream_scene_frames", [])
+                if isinstance(frame, dict)
+            }
+            self.assertIn("web_residue", scene_kinds)
+
+            exit_summary = result["exit_dream_summary"]
+            self.assertEqual(
+                exit_summary["semantic_consolidation"]["consolidation_mode"],
+                "model_semantic",
+            )
+            self.assertGreaterEqual(
+                exit_summary.get("source_dialogue_turn_count", 0),
+                12,
+            )
+
+            trace_store = self._read_json(memory_dir / "memory_trace_store.json")
+            salient_refs = [
+                f"runtime/state/memory/memory_trace_store.json#{trace['trace_id']}"
+                for trace in trace_store.get("traces", [])
+                if trace.get("accessibility_tier") == "salient_core"
+            ]
+            sediment_refs = [
+                f"runtime/state/memory/memory_trace_store.json#{trace['trace_id']}"
+                for trace in trace_store.get("traces", [])
+                if trace.get("accessibility_tier") == "deep_sediment"
+            ]
+            self.assertTrue(salient_refs)
+            self.assertTrue(sediment_refs)
+
+            reopen_frame = build_memory_retrieval_frame(
+                run_id="s1-reopen",
+                generated_at="2026-06-16T12:05:00Z",
+                memory_trace_store=trace_store,
+                web_dream_learning_state=self._read_json(
+                    dream_dir / "web_dream_learning_state.json"
+                ),
+                external_utterance="x",
+            )
+            filtered = _filter_traces_by_accessibility_tier(
+                salient_refs + sediment_refs,
+                memory_trace_store=trace_store,
+                cue_terms=["x"],
+            )
+            self.assertTrue(
+                any(ref in filtered for ref in salient_refs),
+                "salient traces should remain recallable after reopen",
+            )
+            self.assertFalse(
+                any(ref in filtered for ref in sediment_refs),
+                "sediment traces should stay suppressed on weak reopen cue",
+            )
+            wake_candidates = reopen_frame["memory_expression_material_chain"][
+                "structured_wake_question_candidates"
+            ]
+            self.assertTrue(wake_candidates)
+            self.assertIsNone(wake_candidates[0].get("literal_text"))
 
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))

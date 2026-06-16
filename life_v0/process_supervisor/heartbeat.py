@@ -155,6 +155,7 @@ def write_waiting_heartbeat(
     queue_e_world_contact_handoff_profile = _read_json_if_exists(
         terminal_dir.parent / "life_targets" / "queue_e_world_contact_repair_hold_handoff.json"
     )
+    expression_plan = _read_json_if_exists(language_dir / "expression_plan.json")
     idle_strategy = decide_idle_strategy(
         run_id=run_id,
         generated_at=generated_at,
@@ -164,6 +165,7 @@ def write_waiting_heartbeat(
         relationship_timeline=relationship_timeline,
         commitment_expression_plan=commitment_expression_plan,
         apology_repair_language_trace=apology_repair_language_trace,
+        expression_plan=expression_plan,
         body_rhythm_pulse=body_rhythm_pulse,
         need_state_vector=need_state_vector,
         body_resource_budget=body_resource_budget,

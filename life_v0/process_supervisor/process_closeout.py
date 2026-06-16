@@ -337,6 +337,22 @@ def _merge_exit_dream_memory_for_closeout(
         exit_dream_memory_consolidation.get("dialogue_memory_summary_ref")
         or DIALOGUE_MEMORY_SUMMARY_REF
     )
+    closeout_dream_chain = (
+        exit_dream_memory_consolidation.get("closeout_dream_chain")
+        if isinstance(exit_dream_memory_consolidation.get("closeout_dream_chain"), dict)
+        else {}
+    )
+    closeout_refs = _dedupe_refs(
+        [
+            str(closeout_dream_chain.get("dream_experience_window_ref") or ""),
+            str(closeout_dream_chain.get("wake_integration_frame_ref") or ""),
+            str(closeout_dream_chain.get("dream_fact_gate_decision_ref") or ""),
+            str(closeout_dream_chain.get("dream_belief_gate_decision_ref") or ""),
+            str(closeout_dream_chain.get("offline_dream_entry_vector_ref") or ""),
+            str(closeout_dream_chain.get("dream_cue_policy_state_ref") or ""),
+            "runtime/state/memory/offline_memory_hygiene_report.json",
+        ]
+    )
     ref_set = _dedupe_refs(
         _list_or_empty(merged.get("exit_dream_memory_ref_set"))
         + [
@@ -346,7 +362,10 @@ def _merge_exit_dream_memory_for_closeout(
             "runtime/state/memory/engram_index.json",
             "runtime/state/self/autobiographical_stack.json",
             "runtime/state/life_state.json",
+            "runtime/state/memory/memory_trace_store.json",
+            "runtime/state/memory/memory_retrieval_frame.json",
         ]
+        + closeout_refs
     )
     exit_dream_summary = (
         exit_dream_memory_consolidation.get("exit_dream_summary")
@@ -385,6 +404,23 @@ def _merge_exit_dream_memory_for_closeout(
             dialogue_memory_summary.get("next_wake_memory_cue_refs")
         ),
         "ref_set": ref_set,
+        "closeout_dream_chain_refs": closeout_refs,
+        "exit_dream_trace_count": exit_dream_memory_consolidation.get(
+            "exit_dream_trace_count",
+            0,
+        ),
+        "offline_dream_entry_vector_ref": closeout_dream_chain.get(
+            "offline_dream_entry_vector_ref"
+        ),
+        "dream_cue_policy_state_ref": closeout_dream_chain.get(
+            "dream_cue_policy_state_ref"
+        ),
+        "dream_experience_window_ref": closeout_dream_chain.get(
+            "dream_experience_window_ref"
+        ),
+        "dream_belief_gate_decision_ref": closeout_dream_chain.get(
+            "dream_belief_gate_decision_ref"
+        ),
     }
     merged["background_exit_dream_memory_presence_profile"] = dict(
         merged["exit_dream_memory_presence_profile"]

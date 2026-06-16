@@ -70,6 +70,20 @@ def build_relationship_timeline(
         },
         "subject_refs": [f"runtime/state/relationship/relationship_subject_graph.json#{relationship_id}"],
         "dialogue_turn_refs": dialogue_turn_refs,
+        "relationship_language_events": [
+            {
+                "language_event_id": f"language-event-{run_id}-0001",
+                "event_kind": "opening_dialogue",
+                "source_dialogue_turn_ref": opening_turn_ref,
+                "expression_plan_ref": "runtime/state/language/expression_plan.json",
+                "commitment_expression_ref": (
+                    "runtime/state/language/commitment_expression_plan.json"
+                ),
+                "apology_repair_trace_ref": (
+                    "runtime/state/language/apology_repair_language_trace.json"
+                ),
+            }
+        ],
         "first_encounter_events": [
             {
                 "first_encounter_id": first_encounter_id,

@@ -3,6 +3,12 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
+from .hippocampal_cue_index import (
+    activate_hippocampal_cues,
+    build_hippocampal_cue_index,
+    build_reconstruction_fragments,
+)
+
 
 PATTERN_COMPLETION_REF = "runtime/state/memory/pattern_completion_frame.json"
 
@@ -27,6 +33,8 @@ def build_pattern_completion_frame(
     pattern_separation_index: dict[str, Any] | None = None,
     memory_retrieval_frame: dict[str, Any] | None = None,
     memory_trace_store: dict[str, Any] | None = None,
+    relationship_memory: dict[str, Any] | None = None,
+    hippocampal_cue_index: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     clusters = [
         cluster
@@ -88,6 +96,66 @@ def build_pattern_completion_frame(
         ),
     ]
     candidates = [candidate for candidate in candidates if candidate["cue_refs"]]
+    cue_index = hippocampal_cue_index or build_hippocampal_cue_index(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        relationship_memory=relationship_memory,
+    )
+    cue_terms = _string_list((memory_retrieval_frame or {}).get("cue_terms"))
+    blocked_refs = _string_list(
+        (memory_retrieval_frame or {}).get("blocked_or_quarantined_refs")
+    )
+    blocked_trace_ids = [
+        ref.rsplit("#", 1)[-1].replace("trace:", "")
+        for ref in blocked_refs
+        if "memory_trace_store" in ref
+    ]
+    activations = activate_hippocampal_cues(
+        cue_terms=cue_terms,
+        hippocampal_cue_index=cue_index,
+        relationship_scope=str((relationship_memory or {}).get("relationship_scope") or "")
+        or None,
+        relation_subject_id=str(
+            (relationship_memory or {}).get("active_relation_subject_id") or ""
+        )
+        or None,
+        blocked_trace_ids=blocked_trace_ids,
+    )
+    reconstruction_fragments = build_reconstruction_fragments(
+        activations=activations,
+        memory_trace_store=memory_trace_store,
+    )
+    if reconstruction_fragments:
+        candidates.append(
+            _candidate(
+                run_id=run_id,
+                candidate_kind="live_trace_reconstructive_completion",
+                cue_refs=_dedupe(
+                    cue_terms
+                    + [
+                        term
+                        for fragment in reconstruction_fragments
+                        for term in _string_list(fragment.get("matched_cue_terms"))
+                    ]
+                ),
+                completed_refs=[
+                    str(fragment.get("trace_ref"))
+                    for fragment in reconstruction_fragments
+                    if fragment.get("trace_ref")
+                ],
+                confidence="hippocampal_activation_weighted_reconstruction",
+                boundary="reconstructive_fragment_assembly_not_literal_chunk_return",
+                reconstruction_fragments=reconstruction_fragments,
+            )
+        )
+    reconstructive_completion = {
+        "completion_mode": "reconstructive_fragment_assembly",
+        "hippocampal_activation_count": len(activations),
+        "reconstruction_fragment_count": len(reconstruction_fragments),
+        "reconstruction_fragments": reconstruction_fragments,
+        "hippocampal_cue_index_ref": cue_index.get("index_ref"),
+    }
     return {
         "schema_version": "pattern_completion_frame_v0",
         "run_id": run_id,
@@ -103,6 +171,9 @@ def build_pattern_completion_frame(
             "completed_material_enters_recall_to_expression_not_fixed_reply",
         ],
         "completion_candidates": candidates,
+        "reconstructive_completion": reconstructive_completion,
+        "hippocampal_cue_index_ref": cue_index.get("index_ref"),
+        "hippocampal_binding_count": cue_index.get("binding_count"),
         "completion_boundaries": [
             "dream_completion_keeps_dream_boundary",
             "relationship_completion_keeps_relation_scope",
@@ -133,9 +204,10 @@ def _candidate(
     completed_refs: list[str],
     confidence: str,
     boundary: str,
+    reconstruction_fragments: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     candidate_id = f"pattern-completion-{_short_hash('|'.join([run_id, candidate_kind] + cue_refs[:4]))}"
-    return {
+    payload = {
         "candidate_id": candidate_id,
         "candidate_kind": candidate_kind,
         "candidate_ref": f"{PATTERN_COMPLETION_REF}#candidate:{candidate_id}",
@@ -145,6 +217,10 @@ def _candidate(
         "boundary": boundary,
         "writeback_route": "memory_write_gate_then_state_merge_guard_after_expression_feedback",
     }
+    if reconstruction_fragments:
+        payload["reconstruction_fragments"] = reconstruction_fragments
+        payload["completion_mode"] = "reconstructive_fragment_assembly"
+    return payload
 
 
 def _cluster_refs(clusters: list[dict[str, Any]], cluster_kind: str) -> list[str]:

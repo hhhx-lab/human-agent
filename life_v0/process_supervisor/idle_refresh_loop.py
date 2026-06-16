@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Callable, TextIO
 
 from .heartbeat import write_waiting_heartbeat
+from .proactive_terminal_voice import PROACTIVE_TERMINAL_STATE_REF
 from .turn_io import poll_input_line
 
 
@@ -14,6 +15,7 @@ class IdleRefreshLoopResult:
     heartbeat_counter: int
     external_utterance: str | None
     exit_reason: str | None
+    terminal_life_loop_state: dict[str, Any]
 
 
 def wait_for_next_external_relation_turn(
@@ -106,6 +108,10 @@ def wait_for_next_external_relation_turn(
     poll_input_line_fn: Callable[[TextIO], str | None] | None = None,
     write_waiting_heartbeat_fn: Callable[..., int] = write_waiting_heartbeat,
 ) -> IdleRefreshLoopResult:
+    terminal_life_loop_state = attach_idle_proactive_voice_presence(
+        terminal_dir=terminal_dir,
+        terminal_life_loop_state=terminal_life_loop_state,
+    )
     while True:
         effective_poll_timeout_seconds = poll_timeout_seconds
         if poll_input_line_fn is None:
@@ -211,6 +217,7 @@ def wait_for_next_external_relation_turn(
                 heartbeat_counter=heartbeat_counter,
                 external_utterance=None,
                 exit_reason="eof",
+                terminal_life_loop_state=terminal_life_loop_state,
             )
 
         external_utterance = raw_line.strip()
@@ -221,13 +228,39 @@ def wait_for_next_external_relation_turn(
                 heartbeat_counter=heartbeat_counter,
                 external_utterance=None,
                 exit_reason="explicit_exit",
+                terminal_life_loop_state=terminal_life_loop_state,
             )
 
         return IdleRefreshLoopResult(
             heartbeat_counter=heartbeat_counter,
             external_utterance=external_utterance,
             exit_reason=None,
+            terminal_life_loop_state=terminal_life_loop_state,
         )
+
+
+def attach_idle_proactive_voice_presence(
+    *,
+    terminal_dir: Path,
+    terminal_life_loop_state: dict[str, Any],
+) -> dict[str, Any]:
+    proactive_state_path = terminal_dir / "resident_terminal_proactive_state.json"
+    if not proactive_state_path.exists():
+        return terminal_life_loop_state
+    try:
+        proactive_state = json.loads(proactive_state_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return terminal_life_loop_state
+    if not isinstance(proactive_state, dict):
+        return terminal_life_loop_state
+    updated = dict(terminal_life_loop_state)
+    updated["resident_terminal_proactive_state_ref"] = PROACTIVE_TERMINAL_STATE_REF
+    updated["resident_terminal_proactive_status"] = proactive_state.get("status")
+    updated["resident_terminal_proactive_last_focus"] = proactive_state.get("last_focus")
+    updated["resident_terminal_proactive_last_surface_kind"] = proactive_state.get(
+        "last_proactive_voice_surface_kind"
+    )
+    return updated
 
 
 def _resolve_idle_poll_timeout_seconds(

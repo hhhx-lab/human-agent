@@ -192,8 +192,15 @@ class StateInspectionLiveHandoffTests(unittest.TestCase):
             },
         }
 
+        section["language_percept"] = {
+            "percept_focus_trace": [
+                "runtime/state/language/language_percept_frame.json#repair_request"
+            ],
+        }
         summary = _collect_language_generation_consumption_summary(section)
 
+        self.assertEqual(summary["percept_focus_trace_count"], 1)
+        self.assertTrue(summary["percept_focus_trace"])
         self.assertTrue(
             summary["model_expression_world_contact_handoff_live_refreshed"]
         )

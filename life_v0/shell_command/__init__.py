@@ -9,7 +9,6 @@ from typing import Any
 
 from ..digital_life import run_digital_life_birth
 from ..terminal_loop import run_terminal_life_loop
-from ..terminal_turn import run_first_terminal_turn
 
 
 SOURCE_DOC_REFS = [
@@ -98,6 +97,8 @@ def run_digital_life_shell_command(
             nested_refs={"digital_life_birth_report": "runtime/reports/latest/digital_life_birth_packet.json"},
         )
         return DigitalLifeShellResult(exit_code=birth_result.exit_code, report=report)
+
+    from ..terminal_turn import run_first_terminal_turn
 
     first_turn_result = run_first_terminal_turn(
         state_dir=state_dir,

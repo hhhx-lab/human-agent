@@ -556,6 +556,12 @@ def bootstrap_resident_supervision(
         relationship_graph=relationship_graph,
         self_model_state=self_model_state,
         trait_drift_monitor=trait_drift_monitor,
+        language_plasticity_update=read_json_if_exists(
+            state_dir / "language" / "language_plasticity_update.json"
+        ),
+        language_rhythm_trace=read_json_if_exists(
+            state_dir / "language" / "language_rhythm_trace.json"
+        ),
         source_doc_refs=source_doc_refs,
     )
     background_convergence_summary_ref = _ref_if_present(

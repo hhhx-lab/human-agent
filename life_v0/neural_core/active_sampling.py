@@ -20,6 +20,7 @@ def build_active_sampling_plan(
     prediction_error_field: dict[str, Any],
     signal_media_runtime: dict[str, Any] | None = None,
     queue_e_repair_modulation_profile: dict[str, Any] | None = None,
+    semantic_map: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     signal_media_runtime = signal_media_runtime or {}
     repair_profile = (
@@ -33,7 +34,10 @@ def build_active_sampling_plan(
     relationship_pressure = (
         signal_media_runtime.get("modulation_vector", {}).get("relationship_pressure", 0.0)
     )
-    selected_route = "clarify" if relationship_pressure < 0.4 else "inspect"
+    ambiguity_queue = list((semantic_map or {}).get("ambiguity_queue", []))
+    selected_route = "clarify_ambiguity" if ambiguity_queue else (
+        "clarify" if relationship_pressure < 0.4 else "inspect"
+    )
     if pressure_level == "urgent":
         selected_route = "repair_confirm"
     elif pressure_level == "elevated":

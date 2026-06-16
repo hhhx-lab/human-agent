@@ -7,6 +7,53 @@ PRAGMATIC_INFERENCE_BOUNDARY = (
     "structured_pragmatic_inference_not_spoken_response"
 )
 
+_CORRECTION_MARKERS = (
+    "记错",
+    "记错了",
+    "不对",
+    "纠正",
+    "你搞错",
+    "不是这样",
+    "没发生过",
+    "你记反",
+)
+_CONFIRMATION_MARKERS = (
+    "没错",
+    "对的",
+    "就是这样",
+    "你记得对",
+    "记对了",
+)
+_MISMATCH_MARKERS = (
+    "不太对",
+    "有点不对",
+    "不完全对",
+    "好像不是",
+)
+
+
+def detect_memory_feedback_from_utterance(
+    utterance: str,
+    *,
+    dialogue_turn_ref: str | None = None,
+) -> dict[str, Any]:
+    normalized = " ".join(str(utterance or "").split())
+    event_type = None
+    if normalized:
+        if any(marker in normalized for marker in _CORRECTION_MARKERS):
+            event_type = "correction"
+        elif any(marker in normalized for marker in _CONFIRMATION_MARKERS):
+            event_type = "confirmation"
+        elif any(marker in normalized for marker in _MISMATCH_MARKERS):
+            event_type = "mismatch"
+    return {
+        "schema_version": "memory_feedback_event_v0",
+        "event_type": event_type,
+        "trigger_event_ref": dialogue_turn_ref,
+        "utterance_digest": normalized[:120],
+        "feedback_boundary": "structured_memory_feedback_not_spoken_reply",
+    }
+
 
 def enrich_semantic_map_with_pragmatic_inference(
     *,
@@ -119,6 +166,18 @@ def _build_pragmatic_inference_profile(
     continuity_state = _continuity_state(relationship_timeline)
     ambiguity_flags = _string_list(language_percept.get("ambiguity_flags"))
     cross_scope_risks = _string_list(language_percept.get("cross_scope_risk_terms"))
+    utterance_signals = language_percept.get("utterance_signal_profile") or {}
+    incoming_surface = str(language_percept.get("incoming_surface", ""))
+
+    _append_surface_speech_acts(
+        speech_act_candidates=speech_act_candidates,
+        implicature_queue=implicature_queue,
+        grounding_repair_signals=grounding_repair_signals,
+        evidence_refs=evidence_refs,
+        utterance_signals=utterance_signals,
+        incoming_surface=incoming_surface,
+        cross_scope_risks=cross_scope_risks,
+    )
 
     if open_commitments or unresolved_commitments:
         speech_act_candidates.append(
@@ -255,10 +314,16 @@ def _dominant_pragmatic_intent(
         for item in speech_act_candidates
         if item.get("speech_act_id")
     }
-    if "repair_request" in speech_act_ids:
+    if "relation_recalibration" in speech_act_ids:
+        return "relation_scope_recalibration"
+    if "boundary_declaration" in speech_act_ids:
+        return "boundary_declaration"
+    if "repair_request" in speech_act_ids or "apology" in speech_act_ids:
         return "repair_relational_trace"
-    if "commitment_followup" in speech_act_ids:
+    if "commitment_followup" in speech_act_ids or "commitment_request" in speech_act_ids:
         return "repair_commitment_shared_language"
+    if "clarification_request" in speech_act_ids:
+        return "clarification_request"
     if continuity_state in {"repair_guarded_continuity", "strained_continuity"}:
         return "repair_relational_trace"
     if trust_state in {"low", "calibrated_low", "guarded"}:
@@ -296,3 +361,52 @@ def _dedupe(items: list[str]) -> list[str]:
         if item and item not in result:
             result.append(item)
     return result
+
+
+def _append_surface_speech_acts(
+    *,
+    speech_act_candidates: list[dict[str, Any]],
+    implicature_queue: list[dict[str, Any]],
+    grounding_repair_signals: list[dict[str, Any]],
+    evidence_refs: list[str],
+    utterance_signals: dict[str, Any],
+    incoming_surface: str,
+    cross_scope_risks: list[str],
+) -> None:
+    mapping = (
+        ("apology", "apology", "repair_obligation_surface"),
+        ("boundary_declaration", "boundary_declaration", "boundary_maintenance_surface"),
+        ("clarification_request", "clarification_request", "grounding_uncertainty_surface"),
+        ("commitment_request", "commitment_request", "commitment_request_surface"),
+        ("relation_recalibration", "relation_recalibration", "relation_scope_surface"),
+    )
+    for signal_key, speech_act_id, evidence_kind in mapping:
+        if not utterance_signals.get(signal_key):
+            continue
+        speech_act_candidates.append(
+            {
+                "speech_act_id": speech_act_id,
+                "evidence_kind": evidence_kind,
+                "confidence": 0.86,
+            }
+        )
+        evidence_refs.append(
+            "runtime/state/language/language_percept_frame.json#utterance_signal_profile"
+        )
+        implicature_queue.append(
+            {
+                "implicature_id": f"implicature-surface-{speech_act_id}",
+                "kind": evidence_kind,
+                "utterance_digest": incoming_surface[:80],
+            }
+        )
+    if cross_scope_risks:
+        grounding_repair_signals.append(
+            {
+                "signal_id": "cross_scope_risk_grounding",
+                "risk_terms": cross_scope_risks[:4],
+            }
+        )
+        evidence_refs.append(
+            "runtime/state/language/language_percept_frame.json#cross_scope_risk_terms"
+        )

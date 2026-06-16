@@ -182,7 +182,7 @@ class SchemaRunnerTests(unittest.TestCase):
         )
         self.assertEqual(
             cross_file_logic["queue_e_cross_layer_gate_status"]["body_affect_gate"],
-            "deferred_until_s06",
+            "closed",
         )
         self.assertIn(
             "runtime/state/action/action_candidate_set.json#life_constraint_profile",

@@ -4,6 +4,7 @@ import hashlib
 import json
 import urllib.error
 import urllib.request
+import http.client
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping
@@ -256,6 +257,8 @@ def compose_model_expression(
     reports_dir: Path,
     relationship_graph: dict[str, Any] | None = None,
     relationship_timeline: dict[str, Any] | None = None,
+    commitment_expression_plan: dict[str, Any] | None = None,
+    apology_repair_language_trace: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
     dialogue_memory_summary: dict[str, Any] | None = None,
     memory_retrieval_frame: dict[str, Any] | None = None,
@@ -298,6 +301,8 @@ def compose_model_expression(
         runtime_config=config,
         relationship_graph=relationship_graph,
         relationship_timeline=relationship_timeline,
+        commitment_expression_plan=commitment_expression_plan,
+        apology_repair_language_trace=apology_repair_language_trace,
         relationship_memory=relationship_memory,
         dialogue_memory_summary=dialogue_memory_summary,
         memory_retrieval_frame=memory_retrieval_frame,
@@ -333,24 +338,50 @@ def compose_model_expression(
     unreleased_reason = _model_expression_skip_reason(config)
     model_response_text = ""
     raw_finish_reason = None
+    model_expression_attempt_count = 0
+    model_transport_retry_history: list[dict[str, Any]] = []
+    post_expression_retry_history: list[dict[str, Any]] = []
 
     if unreleased_reason is None:
-        try:
-            api_response = (transport or _post_openai_compatible_chat_completion)(
-                endpoint,
-                _model_expression_headers(config),
-                request_payload,
-                _timeout_seconds(config),
-            )
+        api_response: dict[str, Any] | None = None
+        max_transport_retries = _model_transport_retry_count(config)
+        while True:
+            try:
+                model_expression_attempt_count += 1
+                api_response = (transport or _post_openai_compatible_chat_completion)(
+                    endpoint,
+                    _model_expression_headers(config),
+                    request_payload,
+                    _timeout_seconds(config),
+                )
+                break
+            except Exception as exc:  # pragma: no cover - exact network errors vary
+                safe_error = _safe_error_message(exc, config.model_api_key)
+                if (
+                    len(model_transport_retry_history) < max_transport_retries
+                    and _is_transient_model_transport_error(exc)
+                ):
+                    model_transport_retry_history.append(
+                        {
+                            "schema_version": "model_transport_retry_history_entry_v0",
+                            "attempt_number": model_expression_attempt_count,
+                            "error_preview": safe_error,
+                            "retry_policy": (
+                                "retry_real_model_transport_without_fixed_fallback_language"
+                            ),
+                        }
+                    )
+                    continue
+                status = "model_expression_unreleased"
+                unreleased_reason = safe_error
+                break
+        if api_response is not None:
             model_response_text, raw_finish_reason = _extract_chat_content(api_response)
             if model_response_text:
                 status = "model_expression_applied"
             else:
                 status = "model_expression_unreleased"
                 unreleased_reason = "empty_model_response"
-        except Exception as exc:  # pragma: no cover - exact network errors vary
-            status = "model_expression_unreleased"
-            unreleased_reason = _safe_error_message(exc, config.model_api_key)
 
     post_expression_gate = _skipped_post_expression_gate(unreleased_reason)
     response_text = ""
@@ -368,11 +399,68 @@ def compose_model_expression(
                 post_expression_gate.get("unreleased_reason")
                 or "expression_evidence_not_preserved"
             )
+            post_expression_retry_history.append(
+                _post_expression_retry_history_entry(
+                    post_expression_gate,
+                    model_response_text,
+                )
+            )
+            retry_context = _post_expression_retry_context(
+                expression_context=context,
+                post_expression_gate=post_expression_gate,
+                model_response_text=model_response_text,
+            )
+            retry_payload = _build_openai_compatible_payload(
+                runtime_config=config,
+                expression_context=retry_context,
+            )
+            try:
+                model_expression_attempt_count += 1
+                retry_api_response = (
+                    transport or _post_openai_compatible_chat_completion
+                )(
+                    endpoint,
+                    _model_expression_headers(config),
+                    retry_payload,
+                    _timeout_seconds(config),
+                )
+                retry_response_text, raw_finish_reason = _extract_chat_content(
+                    retry_api_response
+                )
+                if retry_response_text:
+                    model_response_text = retry_response_text
+                    post_expression_gate = audit_model_expression_response(
+                        model_response_text=retry_response_text,
+                        audited_expression_material=audited_expression_material,
+                        expression_context=retry_context,
+                    )
+                    if post_expression_gate["gate_status"] == "accepted":
+                        response_text = retry_response_text
+                        status = "model_expression_applied"
+                        unreleased_reason = None
+                    else:
+                        status = "model_expression_unreleased"
+                        unreleased_reason = "post_expression_gate:" + str(
+                            post_expression_gate.get("unreleased_reason")
+                            or "expression_evidence_not_preserved"
+                        )
+                else:
+                    status = "model_expression_unreleased"
+                    unreleased_reason = "post_expression_retry:empty_model_response"
+            except Exception as exc:  # pragma: no cover - exact network errors vary
+                status = "model_expression_unreleased"
+                unreleased_reason = "post_expression_retry:" + _safe_error_message(
+                    exc,
+                    config.model_api_key,
+                )
     state = {
         "schema_version": "model_expression_state_v0",
         "run_id": run_id,
         "generated_at": generated_at,
         "model_expression_status": status,
+        "model_expression_attempt_count": model_expression_attempt_count,
+        "model_transport_retry_count": len(model_transport_retry_history),
+        "model_transport_retry_history": model_transport_retry_history,
         "model_expression_state_ref": MODEL_EXPRESSION_STATE_REF,
         "model_expression_report_ref": MODEL_EXPRESSION_REPORT_REF,
         "runtime_config_state_ref": RUNTIME_CONFIG_STATE_REF,
@@ -398,6 +486,8 @@ def compose_model_expression(
             "unreleased_reason"
         ),
         "post_expression_gate": post_expression_gate,
+        "post_expression_retry_count": len(post_expression_retry_history),
+        "post_expression_retry_history": post_expression_retry_history,
     }
     report = {
         **state,
@@ -429,6 +519,8 @@ def build_model_expression_context(
     runtime_config: DigitalLifeRuntimeConfig,
     relationship_graph: dict[str, Any] | None = None,
     relationship_timeline: dict[str, Any] | None = None,
+    commitment_expression_plan: dict[str, Any] | None = None,
+    apology_repair_language_trace: dict[str, Any] | None = None,
     relationship_memory: dict[str, Any] | None = None,
     dialogue_memory_summary: dict[str, Any] | None = None,
     memory_retrieval_frame: dict[str, Any] | None = None,
@@ -455,6 +547,7 @@ def build_model_expression_context(
     prediction_workspace: dict[str, Any] | None = None,
     workspace_frame: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    external_boundary = _relation_object_boundary(external_utterance)
     first_subject = _first_dict((relationship_graph or {}).get("subjects"))
     continuity_report = _first_dict(
         (relationship_timeline or {}).get("relationship_continuity_reports")
@@ -476,8 +569,9 @@ def build_model_expression_context(
         workspace_frame=workspace_frame,
         prediction_attention=prediction_attention,
     )
-    return {
+    context = {
         "external_relation_utterance": external_utterance,
+        "external_relation_utterance_boundary": external_boundary,
         "audited_expression_material": audited_expression_material,
         "runtime_language": runtime_config.response_language,
         "dialogue_style": runtime_config.dialogue_style,
@@ -486,6 +580,18 @@ def build_model_expression_context(
             "relationship_stage": first_subject.get("relationship_stage"),
             "continuity_state": continuity_report.get("continuity_state"),
             "trust_state": trust_trajectory.get("current_trust_state"),
+            "relationship_language_events": _string_list(
+                (relationship_timeline or {}).get("relationship_language_events")
+            )[:12],
+            "commitment_restore_refs": _string_list(
+                (commitment_expression_plan or {}).get("restore_refs")
+            )[:12],
+            "apology_restore_refs": _string_list(
+                (apology_repair_language_trace or {}).get("restore_refs")
+            )[:12],
+            "future_probe_refs": _string_list(
+                (apology_repair_language_trace or {}).get("future_probe_refs")
+            )[:12],
         },
         "relationship_memory": _relationship_memory_summary(
             relationship_memory=relationship_memory,
@@ -519,7 +625,28 @@ def build_model_expression_context(
             "release_caution_level": (expression_plan or {}).get(
                 "release_caution_level"
             ),
+            "memory_grounding_refs": _string_list(
+                (expression_plan or {}).get("memory_grounding_refs")
+            )[:12],
+            "memory_reconstruction_focus": (expression_plan or {}).get(
+                "memory_reconstruction_focus"
+            )
+            or (semantic_map or {}).get("memory_reconstruction_focus"),
+            "dream_fact_boundary": (expression_plan or {}).get("dream_fact_boundary"),
+            "language_plasticity_update_ref": (
+                "runtime/state/language/language_plasticity_update.json"
+                if (expression_plan or {}).get("expression_tempo_mode")
+                else None
+            ),
+            "language_rhythm_trace_ref": (
+                "runtime/state/language/language_rhythm_trace.json"
+                if (expression_plan or {}).get("expression_tempo_mode")
+                else None
+            ),
         },
+        "language_plasticity": _language_plasticity_summary(
+            expression_plan=expression_plan,
+        ),
         "prediction_conscious_workspace": prediction_conscious_workspace,
         "life_context": {
             "self_narrative_ref_count": len(
@@ -575,7 +702,67 @@ def build_model_expression_context(
             ),
         },
         "resident_background": _background_summary(terminal_life_loop_state),
+        "offline_dream_expression_material": _offline_dream_expression_material(
+            memory_retrieval_frame=memory_retrieval_frame,
+        ),
     }
+    return _sanitize_model_expression_context(context)
+
+
+def _offline_dream_expression_material(
+    *,
+    memory_retrieval_frame: dict[str, Any] | None,
+) -> dict[str, Any]:
+    frame = memory_retrieval_frame or {}
+    chain = frame.get("memory_expression_material_chain") or {}
+    return {
+        "dream_reentry_refs": list(chain.get("dream_reentry_refs", [])),
+        "memory_hygiene_refs": list(chain.get("memory_hygiene_refs", [])),
+        "web_dream_refs": list(chain.get("web_dream_refs", [])),
+        "structured_wake_question_candidates": list(
+            chain.get("structured_wake_question_candidates", [])
+        ),
+        "expression_guardrails": dict(chain.get("expression_guardrails") or {}),
+    }
+
+
+def _relation_object_boundary(text: str) -> dict[str, Any]:
+    return {
+        "raw_utterance_sha256": _sha256_text(text),
+        "blocked_relation_object_term_redacted": _contains_relation_object_term(text),
+        "redaction_policy": (
+            "relation_role_terms_remain_boundary_events_not_model_speaking_material"
+        ),
+    }
+
+
+def _sanitize_model_expression_context(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: _sanitize_model_expression_context(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_sanitize_model_expression_context(item) for item in value]
+    if isinstance(value, str):
+        return _redact_relation_object_terms(value)
+    return value
+
+
+def _contains_relation_object_term(text: str) -> bool:
+    return bool(_matched_terms(text, POST_EXPRESSION_BLOCKED_TERMS))
+
+
+def _redact_relation_object_terms(text: str) -> str:
+    redacted = str(text or "")
+    if not redacted:
+        return redacted
+    marker = "<relation_role_boundary_term>"
+    for term in sorted(POST_EXPRESSION_BLOCKED_TERMS, key=len, reverse=True):
+        normalized = str(term).strip()
+        if normalized:
+            redacted = redacted.replace(normalized, marker)
+    return redacted
 
 
 def _build_openai_compatible_payload(
@@ -583,6 +770,7 @@ def _build_openai_compatible_payload(
     runtime_config: DigitalLifeRuntimeConfig,
     expression_context: dict[str, Any],
 ) -> dict[str, Any]:
+    model_visible_context = _model_visible_expression_context(expression_context)
     payload: dict[str, Any] = {
         "model": runtime_config.model_name,
         "messages": [
@@ -591,7 +779,7 @@ def _build_openai_compatible_payload(
                 "content": json.dumps(
                     {
                         "schema_version": "model_expression_input_v0",
-                        "expression_context": expression_context,
+                        "expression_context": model_visible_context,
                     },
                     ensure_ascii=False,
                     sort_keys=True,
@@ -605,6 +793,22 @@ def _build_openai_compatible_payload(
     if runtime_config.model_max_output_tokens is not None:
         payload["max_tokens"] = runtime_config.model_max_output_tokens
     return payload
+
+
+def _model_visible_expression_context(
+    expression_context: dict[str, Any],
+) -> dict[str, Any]:
+    visible = _sanitize_model_expression_context(expression_context)
+    live_language = visible.get("live_language")
+    if isinstance(live_language, dict):
+        blocked_codes = _string_list(live_language.pop("expression_blocked_language", []))
+        if blocked_codes:
+            live_language["relation_boundary_active"] = True
+            live_language["relation_boundary_family_count"] = len(blocked_codes)
+            live_language["relation_boundary_policy"] = (
+                "relation_boundary_codes_are_audit_only_not_speaking_material"
+            )
+    return visible
 
 
 def _post_openai_compatible_chat_completion(
@@ -746,6 +950,35 @@ def _timeout_seconds(runtime_config: DigitalLifeRuntimeConfig) -> float:
     return runtime_config.model_timeout_seconds or 30.0
 
 
+def _model_transport_retry_count(
+    runtime_config: DigitalLifeRuntimeConfig,
+) -> int:
+    return max(0, min(getattr(runtime_config, "model_transport_retry_count", 1), 3))
+
+
+def _is_transient_model_transport_error(exc: Exception) -> bool:
+    if isinstance(exc, (urllib.error.URLError, TimeoutError, http.client.IncompleteRead)):
+        return True
+    text = f"{type(exc).__name__}: {exc}".lower()
+    transient_needles = [
+        "unexpected_eof",
+        "eof occurred",
+        "incompleteread",
+        "timed out",
+        "timeout",
+        "temporarily unavailable",
+        "connection reset",
+        "connection aborted",
+        "remote end closed",
+        "http_429",
+        "http_500",
+        "http_502",
+        "http_503",
+        "http_504",
+    ]
+    return any(needle in text for needle in transient_needles)
+
+
 def _first_dict(value: Any) -> dict[str, Any]:
     if isinstance(value, list) and value and isinstance(value[0], dict):
         return value[0]
@@ -819,6 +1052,12 @@ def _live_language_summary(
             ],
         ),
         "semantic_focus": semantic_map.get("semantic_focus"),
+        "memory_recall_refs": _string_list(semantic_map.get("memory_recall_refs"))[:12],
+        "memory_reconstruction_focus": semantic_map.get("memory_reconstruction_focus"),
+        "dream_residue_refs": _string_list(semantic_map.get("dream_residue_refs"))[:8],
+        "offline_influence_refs": _string_list(
+            semantic_map.get("offline_influence_refs")
+        )[:8],
         "semantic_ambiguity_queue": _string_list(
             semantic_map.get("ambiguity_queue")
         )[:8],
@@ -1229,6 +1468,53 @@ def audit_model_expression_response(
         "matched_terms_by_flag": matched_terms_by_flag,
         "inspected_model_response_sha256": _sha256_text(model_response_text),
         "audited_expression_material_sha256": _sha256_text(audited_expression_material),
+    }
+
+
+def _post_expression_retry_context(
+    *,
+    expression_context: dict[str, Any],
+    post_expression_gate: dict[str, Any],
+    model_response_text: str,
+) -> dict[str, Any]:
+    retry_context = dict(expression_context)
+    retry_context["post_expression_repair"] = {
+        "schema_version": "post_expression_repair_context_v0",
+        "retry_policy": "one_model_regeneration_without_fixed_fallback_language",
+        "unreleased_reason": post_expression_gate.get("unreleased_reason"),
+        "blocked_relation_object_term_count": len(
+            _string_list(post_expression_gate.get("blocked_relation_object_terms"))
+        ),
+        "blocked_template_or_mechanism_term_count": len(
+            _string_list(
+                post_expression_gate.get("blocked_template_or_mechanism_terms")
+            )
+        ),
+        "previous_model_response_sha256": _sha256_text(model_response_text),
+        "surface_boundary": (
+            "retry_must_remain_natural_relationship_language_without_raw_boundary_terms"
+        ),
+    }
+    return retry_context
+
+
+def _post_expression_retry_history_entry(
+    post_expression_gate: dict[str, Any],
+    model_response_text: str,
+) -> dict[str, Any]:
+    return {
+        "schema_version": "post_expression_retry_history_entry_v0",
+        "gate_status": post_expression_gate.get("gate_status"),
+        "unreleased_reason": post_expression_gate.get("unreleased_reason"),
+        "blocked_relation_object_term_count": len(
+            _string_list(post_expression_gate.get("blocked_relation_object_terms"))
+        ),
+        "blocked_template_or_mechanism_term_count": len(
+            _string_list(
+                post_expression_gate.get("blocked_template_or_mechanism_terms")
+            )
+        ),
+        "inspected_model_response_sha256": _sha256_text(model_response_text),
     }
 
 
@@ -1976,6 +2262,25 @@ def _dedupe_string_list(values: list[str]) -> list[str]:
 
 def _list_count(value: Any) -> int:
     return len(value) if isinstance(value, list) else 0
+
+
+def _language_plasticity_summary(
+    *,
+    expression_plan: dict[str, Any] | None,
+) -> dict[str, Any]:
+    expression_plan = expression_plan or {}
+    tempo_mode = expression_plan.get("expression_tempo_mode")
+    if not tempo_mode:
+        return {}
+    return {
+        "language_plasticity_update_ref": (
+            "runtime/state/language/language_plasticity_update.json"
+        ),
+        "language_rhythm_trace_ref": "runtime/state/language/language_rhythm_trace.json",
+        "expression_tempo_mode": tempo_mode,
+        "release_caution_level": expression_plan.get("release_caution_level"),
+        "fatigue_pressure": expression_plan.get("fatigue_pressure"),
+    }
 
 
 def _dict_items(value: Any) -> list[dict[str, Any]]:

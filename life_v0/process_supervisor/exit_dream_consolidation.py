@@ -1,9 +1,23 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any
+
+from life_v0.dream.closeout_dream_chain import write_closeout_dream_chain
+from life_v0.dream.exit_dream_semantic_consolidation import (
+    ExitDreamSemanticConsolidationTransport,
+    resolve_exit_dream_episode_summaries,
+)
+from life_v0.dream.web_dream_learning import record_web_dream_learning
+from life_v0.state_store.memory_retrieval import build_memory_retrieval_frame
+from life_v0.state_store.memory_trace_store import (
+    merge_exit_dream_traces_into_store,
+    project_exit_dream_episode_traces,
+)
+from life_v0.state_store.offline_memory_hygiene import apply_offline_memory_hygiene
 
 
 EXIT_DREAM_CONSOLIDATION_SUMMARY_REF = (
@@ -45,6 +59,8 @@ def build_exit_dream_consolidation_summary(
     life_state: dict[str, Any] | None = None,
     memory_write_gate: dict[str, Any] | None = None,
     state_merge_guard: dict[str, Any] | None = None,
+    episode_summaries: list[dict[str, Any]] | None = None,
+    semantic_consolidation_audit: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     relationship_memory = relationship_memory or {}
     relationship_timeline = relationship_timeline or {}
@@ -59,7 +75,9 @@ def build_exit_dream_consolidation_summary(
     preference_hypotheses = _infer_preference_hypotheses(nonempty_utterances)
     personality_hypotheses = _infer_personality_hypotheses(nonempty_utterances)
     theme_tags = _infer_relationship_theme_tags(nonempty_utterances)
-    episode_summaries = _deduplicate_episode_summaries(dialogue_turns)
+    episode_summaries = episode_summaries or _deduplicate_episode_summaries(
+        dialogue_turns
+    )
     memory_tiering = _build_memory_tiering(episode_summaries)
     write_merge_governance = _build_exit_dream_write_merge_governance(
         memory_write_gate=memory_write_gate,
@@ -97,7 +115,20 @@ def build_exit_dream_consolidation_summary(
                 "runtime/state/relationship/relationship_timeline.json",
             ],
         },
-        "relationship_theme_tags": theme_tags,
+        "relationship_theme_tags": _dedupe(
+            theme_tags
+            + (
+                _list(semantic_consolidation_audit.get("relationship_theme_tags"))
+                if semantic_consolidation_audit
+                else []
+            )
+        ),
+        "session_narrative_summary": (
+            semantic_consolidation_audit.get("session_narrative_summary")
+            if semantic_consolidation_audit
+            else None
+        ),
+        "semantic_consolidation": semantic_consolidation_audit,
         "memory_write_candidates": [
             DIALOGUE_MEMORY_SUMMARY_REF,
             RELATIONSHIP_MEMORY_REF + "#dialogue_summary_refs",
@@ -223,6 +254,8 @@ def write_exit_dream_memory_consolidation(
     generated_at: str,
     state_dir: Path,
     write_json,
+    semantic_consolidation_transport: ExitDreamSemanticConsolidationTransport | None = None,
+    web_fetch_url=None,
 ) -> dict[str, Any]:
     language_dir = state_dir / "language"
     dream_dir = state_dir / "dream"
@@ -241,6 +274,19 @@ def write_exit_dream_memory_consolidation(
     life_state = _read_json(state_dir / "life_state.json")
     memory_write_gate = _read_json(memory_dir / "memory_write_gate.json")
     state_merge_guard = _read_json(memory_dir / "state_merge_guard.json")
+    rule_based_episode_summaries = _deduplicate_episode_summaries(dialogue_turns)
+    episode_summaries, semantic_consolidation_audit = (
+        resolve_exit_dream_episode_summaries(
+            run_id=run_id,
+            generated_at=generated_at,
+            dialogue_turns=dialogue_turns,
+            rule_based_episode_summaries=rule_based_episode_summaries,
+            dream_dir=dream_dir,
+            write_json=write_json,
+            transport=semantic_consolidation_transport,
+            repo_root=state_dir.parent.parent,
+        )
+    )
     exit_dream_summary = build_exit_dream_consolidation_summary(
         run_id=run_id,
         generated_at=generated_at,
@@ -252,6 +298,8 @@ def write_exit_dream_memory_consolidation(
         life_state=life_state,
         memory_write_gate=memory_write_gate,
         state_merge_guard=state_merge_guard,
+        episode_summaries=episode_summaries,
+        semantic_consolidation_audit=semantic_consolidation_audit,
     )
     dialogue_memory_summary = build_dialogue_memory_summary(
         run_id=run_id,
@@ -290,6 +338,65 @@ def write_exit_dream_memory_consolidation(
         dialogue_memory_summary=dialogue_memory_summary,
     )
 
+    previous_memory_retrieval_frame = _read_json(
+        memory_dir / "memory_retrieval_frame.json"
+    )
+    memory_trace_store = _read_json(memory_dir / "memory_trace_store.json")
+    exit_dream_traces = project_exit_dream_episode_traces(
+        run_id=run_id,
+        generated_at=generated_at,
+        exit_dream_summary=exit_dream_summary,
+        existing_memory_trace_store=memory_trace_store,
+    )
+    memory_trace_store = merge_exit_dream_traces_into_store(
+        memory_trace_store=memory_trace_store,
+        exit_dream_traces=exit_dream_traces,
+        generated_at=generated_at,
+    )
+    hygiene_report, memory_trace_store = apply_offline_memory_hygiene(
+        memory_trace_store=memory_trace_store,
+        generated_at=generated_at,
+        trigger_mode="exit_closeout",
+    )
+    memory_validator_report = _read_json(memory_dir / "memory_validator_report.json")
+    web_dream_learning_state = _read_json(dream_dir / "web_dream_learning_state.json")
+    if not web_dream_learning_state:
+        web_dream_learning_state = _maybe_record_exit_web_dream_learning(
+            state_dir=state_dir,
+            dream_dir=dream_dir,
+            generated_at=generated_at,
+            web_fetch_url=web_fetch_url,
+        )
+    memory_retrieval_frame = build_memory_retrieval_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        dialogue_memory_summary=dialogue_memory_summary,
+        engram_index=engram_index,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        life_state=life_state,
+        state_merge_guard=state_merge_guard,
+        memory_validator_report=memory_validator_report,
+        memory_trace_store=memory_trace_store,
+        web_dream_learning_state=web_dream_learning_state,
+        cue_sources={
+            "exit_dream_consolidation_summary_ref": EXIT_DREAM_CONSOLIDATION_SUMMARY_REF,
+            "dialogue_memory_summary_ref": DIALOGUE_MEMORY_SUMMARY_REF,
+        },
+    )
+    memory_retrieval_frame = _preserve_live_memory_projection_metadata(
+        memory_retrieval_frame,
+        previous_memory_retrieval_frame=previous_memory_retrieval_frame,
+    )
+    closeout_dream_chain = write_closeout_dream_chain(
+        run_id=run_id,
+        generated_at=generated_at,
+        state_dir=state_dir,
+        write_json=write_json,
+        exit_dream_summary=exit_dream_summary,
+        hygiene_report=hygiene_report,
+    )
+
     write_json(dream_dir / "exit_dream_consolidation_summary.json", exit_dream_summary)
     write_json(memory_dir / "dialogue_memory_summary.json", dialogue_memory_summary)
     write_json(memory_dir / "relationship_memory.json", relationship_memory)
@@ -298,6 +405,9 @@ def write_exit_dream_memory_consolidation(
     write_json(memory_dir / "state_merge_guard.json", state_merge_guard)
     write_json(self_dir / "autobiographical_stack.json", autobiographical_stack)
     write_json(state_dir / "life_state.json", life_state)
+    write_json(memory_dir / "memory_trace_store.json", memory_trace_store)
+    write_json(memory_dir / "offline_memory_hygiene_report.json", hygiene_report)
+    write_json(memory_dir / "memory_retrieval_frame.json", memory_retrieval_frame)
     return {
         "exit_dream_summary": exit_dream_summary,
         "dialogue_memory_summary": dialogue_memory_summary,
@@ -307,9 +417,79 @@ def write_exit_dream_memory_consolidation(
         "state_merge_guard": state_merge_guard,
         "autobiographical_stack": autobiographical_stack,
         "life_state": life_state,
+        "memory_trace_store": memory_trace_store,
+        "memory_retrieval_frame": memory_retrieval_frame,
+        "offline_memory_hygiene_report": hygiene_report,
+        "closeout_dream_chain": closeout_dream_chain,
+        "exit_dream_trace_count": len(exit_dream_traces),
         "exit_dream_summary_ref": EXIT_DREAM_CONSOLIDATION_SUMMARY_REF,
         "dialogue_memory_summary_ref": DIALOGUE_MEMORY_SUMMARY_REF,
     }
+
+
+def _maybe_record_exit_web_dream_learning(
+    *,
+    state_dir: Path,
+    dream_dir: Path,
+    generated_at: str,
+    web_fetch_url=None,
+) -> dict[str, Any]:
+    seed_path = dream_dir / "web_dream_learning_seeds.json"
+    has_seed_file = seed_path.exists()
+    has_env_urls = bool(os.environ.get("DIGITAL_LIFE_WEB_DREAM_URLS", "").strip())
+    if not has_seed_file and not has_env_urls:
+        return {}
+    result = record_web_dream_learning(
+        state_dir=state_dir,
+        generated_at=generated_at,
+        fetch_url=web_fetch_url,
+    )
+    state = result.get("state")
+    return state if isinstance(state, dict) else {}
+
+
+def _preserve_live_memory_projection_metadata(
+    memory_retrieval_frame: dict[str, Any],
+    *,
+    previous_memory_retrieval_frame: dict[str, Any],
+) -> dict[str, Any]:
+    """Keep live-turn projection lineage when exit-dream rebuilds retrieval state."""
+    updated = dict(memory_retrieval_frame or {})
+    previous = previous_memory_retrieval_frame or {}
+    for key in (
+        "live_memory_projection_stage",
+        "live_memory_projection_generated_at",
+        "live_semantic_focus",
+        "live_language_turn_refs",
+        "dialogue_turn_refs",
+    ):
+        if key in previous and key not in updated:
+            updated[key] = previous[key]
+    if previous.get("live_memory_projection_stage") == "post_continuity_single_pass":
+        updated["live_memory_projection_stage"] = "post_continuity_single_pass"
+        if previous.get("live_memory_projection_generated_at"):
+            updated["live_memory_projection_generated_at"] = previous[
+                "live_memory_projection_generated_at"
+            ]
+    if previous.get("live_semantic_focus") and not updated.get("reconstruction_focus"):
+        updated["reconstruction_focus"] = previous["live_semantic_focus"]
+    reconstruction_inputs = updated.get("reconstruction_inputs")
+    if (
+        isinstance(reconstruction_inputs, dict)
+        and previous.get("live_semantic_focus")
+        and not reconstruction_inputs.get("reconstruction_focus")
+    ):
+        reconstruction_inputs["reconstruction_focus"] = previous[
+            "live_semantic_focus"
+        ]
+    recall_profile = updated.get("recall_to_expression_profile")
+    if (
+        isinstance(recall_profile, dict)
+        and previous.get("live_semantic_focus")
+        and not recall_profile.get("reconstruction_focus")
+    ):
+        recall_profile["reconstruction_focus"] = previous["live_semantic_focus"]
+    return updated
 
 
 def project_exit_dream_into_relationship_memory(
@@ -880,6 +1060,12 @@ def _upsert_exit_dream_merge_routes(
 def _build_memory_tiering(
     episode_summaries: list[dict[str, Any]],
 ) -> dict[str, Any]:
+    if episode_summaries and all(
+        str(episode.get("salience_hint") or "")
+        in {"salient_core", "retrievable_context", "deep_sediment"}
+        for episode in episode_summaries
+    ):
+        return _build_memory_tiering_from_hints(episode_summaries)
     scored: list[dict[str, Any]] = []
     for index, episode in enumerate(episode_summaries):
         source_ref = str(episode.get("source_ref") or "")
@@ -911,6 +1097,48 @@ def _build_memory_tiering(
     return {
         "schema_version": "exit_dream_memory_tiering_v0",
         "tier_policy": "salience_weighted_progressive_recall",
+        "salient_core_episode_refs": _episode_refs(core),
+        "retrievable_context_episode_refs": _episode_refs(context),
+        "deep_sediment_episode_refs": _episode_refs(deep),
+        "tier_score_records": scored,
+        "deep_sediment_policy": (
+            "preserve_low_salience_context_below_default_recall_threshold"
+        ),
+        "fact_boundary": "tiering_changes_recall_priority_not_fact_status",
+    }
+
+
+def _build_memory_tiering_from_hints(
+    episode_summaries: list[dict[str, Any]],
+) -> dict[str, Any]:
+    core: list[dict[str, Any]] = []
+    context: list[dict[str, Any]] = []
+    deep: list[dict[str, Any]] = []
+    scored: list[dict[str, Any]] = []
+    for index, episode in enumerate(episode_summaries):
+        source_ref = str(episode.get("source_ref") or "")
+        hint = str(episode.get("salience_hint") or "retrievable_context")
+        record = {
+            "episode_ref": source_ref,
+            "semantic_key": episode.get("semantic_key"),
+            "salience_score": {
+                "salient_core": 3,
+                "retrievable_context": 2,
+                "deep_sediment": 1,
+            }.get(hint, 2),
+            "salience_reasons": [f"model_salience_hint:{hint}"],
+            "original_order": index,
+        }
+        scored.append(record)
+        if hint == "salient_core":
+            core.append(record)
+        elif hint == "deep_sediment":
+            deep.append(record)
+        else:
+            context.append(record)
+    return {
+        "schema_version": "exit_dream_memory_tiering_v0",
+        "tier_policy": "model_salience_hint_then_progressive_recall",
         "salient_core_episode_refs": _episode_refs(core),
         "retrievable_context_episode_refs": _episode_refs(context),
         "deep_sediment_episode_refs": _episode_refs(deep),

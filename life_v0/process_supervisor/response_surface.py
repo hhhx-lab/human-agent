@@ -166,6 +166,18 @@ def compose_life_response(
         },
         "language": {
             "semantic_goal": expression_plan.get("semantic_goal"),
+            "memory_grounding_refs": _string_list(
+                expression_plan.get("memory_grounding_refs")
+            ),
+            "memory_recall_refs": _string_list(
+                (memory_retrieval_frame or {}).get("activated_engram_refs")
+            )[:12]
+            or _string_list(expression_plan.get("memory_grounding_refs"))[:12],
+            "memory_reconstruction_focus": (
+                expression_plan.get("memory_reconstruction_focus")
+                or memory_retrieval_summary.get("reconstruction_focus")
+            ),
+            "dream_fact_boundary": expression_plan.get("dream_fact_boundary"),
             "body_signal_refs": _string_list(expression_plan.get("body_signal_refs")),
             "offline_influence_refs": _string_list(
                 expression_plan.get("offline_influence_refs")
@@ -238,6 +250,9 @@ def compose_life_response(
                 ),
             },
             "memory_retrieval": memory_retrieval_summary,
+            "offline_dream_expression_material": _offline_dream_expression_material(
+                memory_retrieval_frame
+            ),
             "exit_dream_next_wake": exit_dream_next_wake_surface,
             "resident_memory_retrieval_presence": _selected_keys(
                 memory_retrieval_presence,
@@ -933,6 +948,28 @@ def _identity_consciousness_birth_surface(
     return {
         "anchor_refs": anchor_refs,
         "ref_count": len(anchor_refs),
+    }
+
+
+def _offline_dream_expression_material(
+    memory_retrieval_frame: dict[str, Any] | None,
+) -> dict[str, Any]:
+    frame = memory_retrieval_frame if isinstance(memory_retrieval_frame, dict) else {}
+    chain = frame.get("memory_expression_material_chain")
+    if not isinstance(chain, dict):
+        chain = {}
+    wake_candidates = [
+        candidate
+        for candidate in chain.get("structured_wake_question_candidates", [])
+        if isinstance(candidate, dict)
+    ]
+    return {
+        "dream_reentry_refs": _string_list(chain.get("dream_reentry_refs")),
+        "memory_hygiene_refs": _string_list(chain.get("memory_hygiene_refs")),
+        "web_dream_refs": _string_list(chain.get("web_dream_refs")),
+        "structured_wake_question_candidates": wake_candidates,
+        "expression_guardrails": dict(chain.get("expression_guardrails") or {}),
+        "material_boundary": "structured_refs_only_no_fixed_spoken_templates",
     }
 
 

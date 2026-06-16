@@ -33,19 +33,22 @@ def build_semantic_map_frame(
         if shared_terms.get(surface)
     ]
 
-    semantic_focus = "relational_checkin"
-    if language_percept.get("repair_trigger_candidates") and language_percept.get("commitment_trigger_candidates"):
-        semantic_focus = "repair_commitment_shared_language"
-    elif language_percept.get("repair_trigger_candidates"):
-        semantic_focus = "repair_relational_trace"
-    elif language_percept.get("commitment_trigger_candidates"):
-        semantic_focus = "commitment_trace_review"
+    utterance_signals = (language_percept.get("utterance_signal_profile") or {})
+    semantic_focus = _derive_semantic_focus(language_percept, utterance_signals)
 
     relationship_topic_refs = list(language_state.get("shared_language_refs", []))
     commitment_trace_refs = list(commitment_repair_index.get("commitment_refs", []))
     repair_trace_refs = list(commitment_repair_index.get("repair_language_refs", []))
     dream_topic_refs = list(language_percept.get("dream_signal_candidates", []))
     ambiguity_queue = list(language_percept.get("ambiguity_flags", []))
+    grounding_repair_candidates = _grounding_repair_candidates(
+        language_percept=language_percept,
+        ambiguity_queue=ambiguity_queue,
+    )
+    implicature_queue = _initial_implicature_queue(
+        language_percept=language_percept,
+        utterance_signals=utterance_signals,
+    )
     narrative_bindings = list(self_narrative_trace.get("narrative_turn_refs", []))
     error_events = list(prediction_error_field.get("error_events", []))
     semantic_error_ids = [
@@ -86,6 +89,10 @@ def build_semantic_map_frame(
         "narrative_bindings": narrative_bindings,
         "dream_topic_refs": dream_topic_refs,
         "ambiguity_queue": ambiguity_queue,
+        "grounding_repair_candidates": grounding_repair_candidates,
+        "implicature_queue": implicature_queue,
+        "memory_recall_refs": [],
+        "memory_reconstruction_focus": None,
         "prediction_error_ref": (
             "runtime/state/prediction/prediction_error_field.json"
             if prediction_error_field
@@ -140,3 +147,89 @@ def project_semantic_map_from_live_evidence(
         relationship_stage=relationship_stage,
         generated_at=generated_at,
     )
+
+
+def _derive_semantic_focus(
+    language_percept: dict[str, Any],
+    utterance_signals: dict[str, Any],
+) -> str:
+    if utterance_signals.get("relation_recalibration") or language_percept.get(
+        "cross_scope_risk_terms"
+    ):
+        return "relation_scope_recalibration"
+    if utterance_signals.get("boundary_declaration"):
+        return "boundary_declaration"
+    if utterance_signals.get("clarification_request"):
+        return "clarification_request"
+    if language_percept.get("repair_trigger_candidates") and language_percept.get(
+        "commitment_trigger_candidates"
+    ):
+        return "repair_commitment_shared_language"
+    if language_percept.get("repair_trigger_candidates"):
+        return "repair_relational_trace"
+    if language_percept.get("commitment_trigger_candidates"):
+        return "commitment_trace_review"
+    return "relational_checkin"
+
+
+def _grounding_repair_candidates(
+    *,
+    language_percept: dict[str, Any],
+    ambiguity_queue: list[str],
+) -> list[dict[str, Any]]:
+    candidates: list[dict[str, Any]] = []
+    for term in language_percept.get("cross_scope_risk_terms", []):
+        candidates.append(
+            {
+                "candidate_id": f"grounding-scope-{term}",
+                "kind": "relation_scope_repair",
+                "source_term": term,
+            }
+        )
+    for flag in ambiguity_queue:
+        candidates.append(
+            {
+                "candidate_id": f"grounding-ambiguity-{flag}",
+                "kind": "shared_grounding_repair",
+                "source_flag": flag,
+            }
+        )
+    return candidates[:12]
+
+
+def _initial_implicature_queue(
+    *,
+    language_percept: dict[str, Any],
+    utterance_signals: dict[str, Any],
+) -> list[dict[str, Any]]:
+    queue: list[dict[str, Any]] = []
+    if utterance_signals.get("relation_recalibration"):
+        queue.append(
+            {
+                "implicature_id": "implicature-relation-recalibration",
+                "kind": "relation_role_correction",
+            }
+        )
+    if utterance_signals.get("boundary_declaration"):
+        queue.append(
+            {
+                "implicature_id": "implicature-boundary",
+                "kind": "boundary_maintenance",
+            }
+        )
+    if utterance_signals.get("clarification_request"):
+        queue.append(
+            {
+                "implicature_id": "implicature-clarification",
+                "kind": "grounding_request",
+            }
+        )
+    for hit in language_percept.get("shared_term_hits", [])[:4]:
+        queue.append(
+            {
+                "implicature_id": f"implicature-shared-hit-{hit}",
+                "kind": "shared_term_activation",
+                "surface": hit,
+            }
+        )
+    return queue[:12]

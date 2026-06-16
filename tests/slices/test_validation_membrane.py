@@ -190,7 +190,7 @@ class ValidationMembraneTests(unittest.TestCase):
         )
         self.assertEqual(
             world_contact_validation["life_constraint_validation"]["body_affect_gate"],
-            "deferred_until_s06",
+            "closed",
         )
         self.assertIn(
             "runtime/state/consciousness/consciousness_probe_bundle.json",

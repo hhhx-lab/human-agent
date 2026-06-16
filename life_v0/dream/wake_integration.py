@@ -78,6 +78,7 @@ def build_wake_integration_frame(
         "relationship_repair_candidates": relationship_candidates,
         "memory_reentry_targets": memory_reentry_targets,
         "memory_reconsolidation_gate_refs": memory_reconsolidation_gate_refs,
+        "reconsolidation_diff": memory_bridge.get("consolidation_report") or {},
         "memory_reentry_boundary": "wake_reentry_can_cue_expression_but_not_script_spoken_language",
         "consciousness_reentry_profile": consciousness_reentry_profile,
         "consciousness_reentry_refs": list(

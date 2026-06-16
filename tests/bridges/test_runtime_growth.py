@@ -146,6 +146,11 @@ class RuntimeGrowthTests(unittest.TestCase):
             relationship_learning = self._read_json(paths["growth_state"] / "relationship_learning_plan.json")
             archive_graph = self._read_json(paths["archive_state"] / "reconsolidation_archive_graph.json")
             next_seed = self._read_json(paths["growth_state"] / "next_feedback_seed.json")
+            memory_scorecard = self._read_json(paths["reports"] / "memory_capability_scorecard.json")
+            brain_alignment = self._read_json(paths["reports"] / "human_brain_alignment_assessment.json")
+            memory_completion_gate = self._read_json(
+                paths["reports"] / "memory_engineering_completion_gate.json"
+            )
             growth_report = self._read_json(paths["reports"] / "growth_reconsolidation_report.json")
             run_report = self._read_json(paths["reports"] / "run_report.json")
             digest = self._read_json(paths["reports"] / "digest.json")
@@ -211,6 +216,15 @@ class RuntimeGrowthTests(unittest.TestCase):
         self.assertEqual(
             replay_cue_bundle["memory_consolidation_bridge"]["fact_boundary"],
             "offline_replay_reads_memory_traces_without_promoting_dream_or_hypothesis",
+        )
+        consolidation_report = replay_cue_bundle["memory_consolidation_bridge"].get(
+            "consolidation_report"
+        ) or {}
+        self.assertIn("promotion_diff", consolidation_report)
+        self.assertIn("demotion_diff", consolidation_report)
+        self.assertEqual(
+            replay_cue_bundle.get("consolidation_report"),
+            consolidation_report,
         )
         self.assertIn(
             "runtime/state/memory/memory_trace_store.json",
@@ -449,6 +463,30 @@ class RuntimeGrowthTests(unittest.TestCase):
         self.assertEqual(next_seed["queue_e_repair_pressure_level"], "elevated")
         self.assertEqual(next_seed["queue_e_repair_attention_target"], "regret_pressure")
 
+        self.assertEqual(memory_scorecard["schema_version"], "memory_capability_scorecard_v0")
+        self.assertEqual(memory_scorecard["run_id"], "runtime-growth-cli")
+        self.assertTrue(memory_scorecard["extended_checks"])
+        self.assertEqual(
+            brain_alignment["schema_version"],
+            "human_brain_alignment_assessment_v1",
+        )
+        self.assertEqual(brain_alignment["run_id"], "runtime-growth-cli")
+        self.assertEqual(
+            memory_completion_gate["schema_version"],
+            "memory_engineering_completion_gate_v0",
+        )
+        self.assertEqual(memory_completion_gate["run_id"], "runtime-growth-cli")
+        self.assertTrue(
+            any(
+                item["stage_id"] == "U16_swr_weighted_replay" and item["passed"]
+                for item in memory_completion_gate["u_stage_checks"]
+            )
+        )
+        self.assertIn(
+            "runtime/reports/latest/memory_engineering_completion_gate.json",
+            memory_completion_gate["gate_ref"],
+        )
+
         self.assertEqual(growth_report["schema_version"], "s10_runtime_growth_reconsolidation_report_v0")
         self.assertEqual(growth_report["engineering_slice_ref"], "S10_RUNTIME_GROWTH_RECONSOLIDATION")
         self.assertEqual(growth_report["status"], "safe_idle")
@@ -477,6 +515,18 @@ class RuntimeGrowthTests(unittest.TestCase):
         self.assertEqual(replay_needed["schema_version"], "runtime_growth_replay_needed_v0")
         self.assertEqual(replay_needed["status"], "closed")
         self.assertEqual(receipt["schema_version"], "run_cycle_receipt_v0")
+        self.assertIn(
+            "runtime/reports/latest/memory_capability_scorecard.json",
+            receipt["report_refs"],
+        )
+        self.assertIn(
+            "runtime/reports/latest/human_brain_alignment_assessment.json",
+            receipt["report_refs"],
+        )
+        self.assertIn(
+            "runtime/reports/latest/memory_engineering_completion_gate.json",
+            receipt["report_refs"],
+        )
 
     def test_queue_e_priority_band_modulates_dream_and_growth_learning_organs(self):
         replay_cue_bundle = {

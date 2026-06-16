@@ -123,6 +123,8 @@ class StateStoreTests(unittest.TestCase):
             memory_retrieval_frame = self._read_json(state_root / "memory" / "memory_retrieval_frame.json")
             memory_write_gate = self._read_json(state_root / "memory" / "memory_write_gate.json")
             state_merge_guard = self._read_json(state_root / "memory" / "state_merge_guard.json")
+            hippocampal_cue_index = self._read_json(state_root / "memory" / "hippocampal_cue_index.json")
+            memory_longitudinal_profile = self._read_json(state_root / "memory" / "memory_longitudinal_profile.json")
             commitment_truth = self._read_json(state_root / "relationship" / "commitment_truth_state.json")
             responsibility_ledger = self._read_json(state_root / "responsibility" / "responsibility_ledger.json")
             memory_index = self._read_json(state_root / "indexes" / "memory_index.json")
@@ -135,6 +137,11 @@ class StateStoreTests(unittest.TestCase):
             consolidation_seed = self._read_json(state_root / "objects" / "consolidation_seed.json")
             report = self._read_json(reports / "state_store_report.json")
             check_report = self._read_json(reports / "state_store_check_report.json")
+            memory_capability_scorecard = self._read_json(reports / "memory_capability_scorecard.json")
+            human_brain_alignment = self._read_json(reports / "human_brain_alignment_assessment.json")
+            memory_engineering_completion_gate = self._read_json(
+                reports / "memory_engineering_completion_gate.json"
+            )
             digest = self._read_json(reports / "state_store_digest.json")
             receipt = self._read_json(receipts / "state_store_state-store-test.json")
 
@@ -728,6 +735,54 @@ class StateStoreTests(unittest.TestCase):
             "docs/real—live0/07_memory_engram_and_state_store.md",
             memory_retrieval_frame["source_doc_refs"],
         )
+        self.assertEqual(
+            hippocampal_cue_index["schema_version"],
+            "hippocampal_cue_index_v0",
+        )
+        self.assertGreaterEqual(hippocampal_cue_index["binding_count"], 1)
+        self.assertEqual(
+            memory_longitudinal_profile["schema_version"],
+            "memory_longitudinal_profile_v0",
+        )
+        self.assertEqual(memory_longitudinal_profile["turn_count"], 0)
+        self.assertEqual(memory_longitudinal_profile["offline_cycle_count"], 0)
+        self.assertEqual(
+            memory_capability_scorecard["schema_version"],
+            "memory_capability_scorecard_v0",
+        )
+        self.assertFalse(memory_capability_scorecard["engineering_rubric_satisfied"])
+        self.assertFalse(memory_capability_scorecard["at_human_parity_target"])
+        self.assertEqual(
+            human_brain_alignment["schema_version"],
+            "human_brain_alignment_assessment_v1",
+        )
+        self.assertFalse(human_brain_alignment["at_biological_human_parity"])
+        self.assertEqual(
+            memory_engineering_completion_gate["schema_version"],
+            "memory_engineering_completion_gate_v0",
+        )
+        self.assertFalse(memory_engineering_completion_gate["engineering_complete"])
+        self.assertFalse(memory_engineering_completion_gate["at_biological_human_parity"])
+        self.assertIn(
+            "runtime/reports/latest/memory_capability_scorecard.json",
+            manifest["report_refs"],
+        )
+        self.assertIn(
+            "runtime/reports/latest/memory_engineering_completion_gate.json",
+            manifest["report_refs"],
+        )
+        self.assertIn(
+            "runtime/reports/latest/human_brain_alignment_assessment.json",
+            manifest["report_refs"],
+        )
+        self.assertIn(
+            "runtime/state/memory/memory_longitudinal_profile.json",
+            receipt["output_refs"],
+        )
+        self.assertIn(
+            "runtime/reports/latest/memory_engineering_completion_gate.json",
+            receipt["output_refs"],
+        )
         self.assertEqual(memory_write_gate["schema_version"], "memory_write_gate_v0")
         self.assertIn("create_candidate_object", memory_write_gate["transaction_order"])
         self.assertIn("update_indexes", memory_write_gate["transaction_order"])
@@ -1233,7 +1288,7 @@ class StateStoreTests(unittest.TestCase):
         )
         self.assertEqual(
             closure["closure_status"],
-            "closed",
+            "withhold_pending_reconstruction",
         )
         self.assertEqual(
             closure["expression_boundary"],
@@ -1260,8 +1315,18 @@ class StateStoreTests(unittest.TestCase):
             closure["expression_guardrails"],
         )
         self.assertIn(
+            "tip_of_tongue_blocks_expression_without_fragments",
+            closure["expression_guardrails"],
+        )
+        self.assertIn(
             "spoken_memory_mismatch_reenters_reconsolidation",
             closure["post_expression_reconsolidation_hooks"],
+        )
+        chain = frame["memory_expression_material_chain"]
+        self.assertFalse(chain["chain_closed"])
+        self.assertEqual(
+            chain["expression_release_posture"],
+            "withhold_pending_reconstruction",
         )
 
         summary = memory_retrieval_context_summary(frame)
@@ -1290,7 +1355,7 @@ class StateStoreTests(unittest.TestCase):
         )
         self.assertEqual(
             summary["recall_to_expression_closure_status"],
-            "closed",
+            "withhold_pending_reconstruction",
         )
         self.assertEqual(
             summary["recall_to_expression_boundary"],
@@ -1314,7 +1379,7 @@ class StateStoreTests(unittest.TestCase):
         self.assertGreaterEqual(retrieval["cue_activation_route_count"], 5)
         self.assertEqual(
             retrieval["recall_to_expression_closure_status"],
-            "closed",
+            "withhold_pending_reconstruction",
         )
         self.assertEqual(
             retrieval["recall_to_expression_boundary"],

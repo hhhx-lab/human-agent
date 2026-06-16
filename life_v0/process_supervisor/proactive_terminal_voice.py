@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from typing import Any, Callable
 
+from ..language.expression_monitor import apply_body_proactive_release_threshold
+
 
 PROACTIVE_TERMINAL_EVENTS_REF = (
     "runtime/state/terminal/resident_terminal_proactive_events.jsonl"
@@ -38,6 +40,7 @@ def build_resident_proactive_terminal_event(
     )
     idle_strategy = _read_json(terminal_dir / "idle_strategy_state.json")
     governance = _read_json(terminal_dir / "resident_governance_state.json")
+    expression_plan = _read_json(state_root / "language" / "expression_plan.json")
 
     memory_profile = _memory_profile(
         relationship_memory=relationship_memory,
@@ -93,6 +96,19 @@ def build_resident_proactive_terminal_event(
         source_refs=source_refs,
         fingerprint=fingerprint,
     )
+    proactive_voice_profile["proactive_intent_kind"] = proactive_voice_profile.get(
+        "surface_kind"
+    )
+    body_modulated_plan = apply_body_proactive_release_threshold(
+        expression_plan=expression_plan,
+        proactive_voice_profile=proactive_voice_profile,
+    )
+    proactive_voice_profile["proactive_release_threshold"] = body_modulated_plan.get(
+        "proactive_release_threshold"
+    )
+    release_constraints = list(proactive_voice_profile.get("release_constraints", []))
+    if release_constraints:
+        proactive_voice_profile["release_constraints"] = release_constraints
     utterance = ""
     return {
         "schema_version": "resident_proactive_terminal_event_v0",
@@ -103,6 +119,9 @@ def build_resident_proactive_terminal_event(
         "focus": focus,
         "utterance": utterance,
         "proactive_voice_profile": proactive_voice_profile,
+        "proactive_release_threshold": body_modulated_plan.get(
+            "proactive_release_threshold"
+        ),
         "memory_tier_profile": memory_tier_profile,
         "composition_fingerprint": fingerprint,
         "source_refs": source_refs,

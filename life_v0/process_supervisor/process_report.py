@@ -663,6 +663,9 @@ def write_process_report_bundle(
     exit_dream_memory_tier_profile = _exit_dream_memory_tier_report_profile(
         state_dir=state_dir,
     )
+    closeout_dream_chain_profile = _closeout_dream_chain_report_profile(
+        state_dir=state_dir,
+    )
     autobiographical_repair_retrieval_profile = (
         _autobiographical_repair_retrieval_report_profile(
             state_dir=state_dir,
@@ -1127,6 +1130,7 @@ def write_process_report_bundle(
     report.update(idle_governance)
     report.update(exit_dream_next_wake_profile)
     report.update(exit_dream_memory_tier_profile)
+    report.update(closeout_dream_chain_profile)
     report.update(autobiographical_repair_retrieval_profile)
     report.update(live_queue_e_world_contact_handoff_profile)
     report.update(web_dream_learning_profile)
@@ -3092,6 +3096,61 @@ def _exit_dream_memory_tier_report_profile(
         "exit_dream_memory_tier_report_boundary": (
             "tiered_report_evidence_not_spoken_language"
         ),
+    }
+
+
+def _closeout_dream_chain_report_profile(*, state_dir: Path) -> dict[str, Any]:
+    entry_vector = _read_json_if_exists(
+        state_dir / "dream" / "offline_dream_entry_vector.json"
+    )
+    cue_policy = _read_json_if_exists(
+        state_dir / "dream" / "dream_cue_policy_state.json"
+    )
+    dream_window = _read_json_if_exists(
+        state_dir / "dream" / "dream_experience_window.json"
+    )
+    belief_gate = _read_json_if_exists(
+        state_dir / "dream" / "dream_belief_gate_decision.json"
+    )
+    hygiene_report = _read_json_if_exists(
+        state_dir / "memory" / "offline_memory_hygiene_report.json"
+    )
+    if not any([entry_vector, cue_policy, dream_window, belief_gate, hygiene_report]):
+        return {}
+    ref_set = _dedupe_refs(
+        [
+            "runtime/state/dream/offline_dream_entry_vector.json" if entry_vector else "",
+            "runtime/state/dream/dream_cue_policy_state.json" if cue_policy else "",
+            "runtime/state/dream/dream_experience_window.json" if dream_window else "",
+            "runtime/state/dream/dream_belief_gate_decision.json" if belief_gate else "",
+            "runtime/state/memory/offline_memory_hygiene_report.json"
+            if hygiene_report
+            else "",
+            str(dream_window.get("exit_dream_consolidation_summary_ref") or ""),
+            str(dream_window.get("dream_cue_policy_state_ref") or ""),
+        ]
+    )
+    profile = {
+        "schema_version": "closeout_dream_chain_report_profile_v1",
+        "selected_offline_modes": _list_or_empty(
+            entry_vector.get("selected_offline_modes")
+        ),
+        "dream_cue_selected_count": len(_list_or_empty(cue_policy.get("selected_cues"))),
+        "dream_scene_count": len(_list_or_empty(dream_window.get("dream_scene_frames"))),
+        "dream_window_kind": dream_window.get("window_kind"),
+        "dream_belief_gate_status": belief_gate.get("status"),
+        "hygiene_action_count": len(_list_or_empty(hygiene_report.get("hygiene_actions"))),
+        "hygiene_merge_group_count": len(
+            _list_or_empty(hygiene_report.get("merge_groups"))
+        ),
+        "ref_set": ref_set,
+        "report_boundary": "closeout_dream_chain_evidence_not_spoken_language",
+    }
+    return {
+        "closeout_dream_chain_report_profile": profile,
+        "closeout_dream_chain_present": True,
+        "closeout_dream_chain_ref_set": ref_set,
+        "closeout_dream_chain_report_boundary": profile["report_boundary"],
     }
 
 

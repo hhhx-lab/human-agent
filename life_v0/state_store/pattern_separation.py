@@ -39,6 +39,11 @@ def build_pattern_separation_index(
         for trace in (memory_trace_store or {}).get("traces", [])
         if isinstance(trace, dict)
     ]
+    relation_subject_scopes = [
+        scope
+        for scope in (relationship_memory or {}).get("relation_subject_scopes", [])
+        if isinstance(scope, dict)
+    ]
     routes = [
         _route(
             run_id=run_id,
@@ -88,6 +93,27 @@ def build_pattern_separation_index(
             guard="similar_events_require_event_boundary_before_completion",
         ),
     ]
+    for scope in relation_subject_scopes:
+        subject_id = str(scope.get("relation_subject_id") or "")
+        relationship_scope = str(scope.get("relationship_scope") or "")
+        if not subject_id:
+            continue
+        routes.append(
+            _route(
+                run_id=run_id,
+                route_kind="multi_relation_subject_scope",
+                positive_refs=_dedupe(
+                    _trace_refs_for_scope(traces, relationship_scope=relationship_scope)
+                    + _string_list([scope.get("subject_ref")])
+                ),
+                separation_keys=[
+                    "relation_subject_id",
+                    "relationship_scope",
+                    "preference_hypothesis",
+                ],
+                guard="multi_relation_subject_scope_prevents_cross_person_bleed",
+            )
+        )
     routes = [route for route in routes if route["positive_refs"]]
     return {
         "schema_version": "pattern_separation_index_v0",
@@ -105,10 +131,12 @@ def build_pattern_separation_index(
         ],
         "separation_guards": [
             "relationship_scope_prevents_cross_person_memory_bleed",
+            "multi_relation_subject_scope_prevents_cross_person_bleed",
             "dream_residue_never_promotes_to_fact_without_gate",
             "similar_events_require_event_boundary_before_completion",
             "responsibility_trace_keeps_action_and_relation_scope",
         ],
+        "multi_relation_subject_scope_count": len(relation_subject_scopes),
         "separation_routes": routes,
         "blocked_merge_refs": _dedupe(
             _string_list((state_merge_guard or {}).get("quarantine_routes"))
@@ -121,6 +149,25 @@ def build_pattern_separation_index(
         ],
         "source_doc_refs": SOURCE_DOC_REFS,
     }
+
+
+def _trace_refs_for_scope(
+    traces: list[dict[str, Any]],
+    *,
+    relationship_scope: str,
+) -> list[str]:
+    refs: list[str] = []
+    for trace in traces:
+        if not isinstance(trace, dict):
+            continue
+        if str(trace.get("relationship_scope") or "") != relationship_scope:
+            continue
+        trace_id = trace.get("trace_id")
+        if trace_id:
+            refs.append(
+                f"runtime/state/memory/memory_trace_store.json#trace:{trace_id}"
+            )
+    return _dedupe(refs)
 
 
 def _route(

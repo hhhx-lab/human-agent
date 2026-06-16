@@ -17,6 +17,15 @@ from .nightmare_risk import (
     build_nightmare_loop_risk,
     check_nightmare_loop_risk,
 )
+from .closeout_dream_chain import write_closeout_dream_chain
+from .dream_belief_gate import (
+    build_dream_belief_gate_decision,
+    check_dream_belief_gate_decision,
+)
+from .offline_dream_entry import (
+    build_dream_cue_policy_state,
+    build_offline_dream_entry_vector,
+)
 from .offline_entry import (
     SOURCE_DOC_REFS as OFFLINE_ENTRY_SOURCE_DOC_REFS,
     build_offline_entry_gate,

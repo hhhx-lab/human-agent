@@ -500,6 +500,7 @@ def decide_idle_strategy(
     relationship_timeline: dict[str, Any] | None = None,
     commitment_expression_plan: dict[str, Any] | None = None,
     apology_repair_language_trace: dict[str, Any] | None = None,
+    expression_plan: dict[str, Any] | None = None,
     body_rhythm_pulse: dict[str, Any] | None = None,
     need_state_vector: dict[str, Any] | None = None,
     body_resource_budget: dict[str, Any] | None = None,
@@ -688,6 +689,7 @@ def decide_idle_strategy(
     live_language_presence_profile = _live_language_presence_profile(
         terminal_life_loop_state=terminal_life_loop_state,
         background_continuity_profile=background_continuity_profile,
+        expression_plan=expression_plan,
     )
     memory_retrieval_presence_profile = _memory_retrieval_presence_profile(
         terminal_life_loop_state=terminal_life_loop_state,
@@ -1652,6 +1654,15 @@ def decide_idle_strategy(
         }
     )
     payload.update(trait_convergence_profile)
+    payload["life_constraint_waiting_posture"] = life_constraint_profile[
+        "life_constraint_waiting_posture"
+    ]
+    payload["life_constraint_attention_target"] = life_constraint_profile[
+        "life_constraint_attention_target"
+    ]
+    payload["life_constraint_attention_reason"] = life_constraint_profile[
+        "life_constraint_attention_reason"
+    ]
     if background_lineage_governance_profile:
         payload["background_lineage_governance_profile"] = (
             background_lineage_governance_profile
@@ -1675,6 +1686,7 @@ def _live_language_presence_profile(
     *,
     terminal_life_loop_state: dict[str, Any],
     background_continuity_profile: dict[str, Any],
+    expression_plan: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     current_refs = _dedupe_string_list(
         _string_list(terminal_life_loop_state.get("live_language_turn_refs"))
@@ -1722,6 +1734,16 @@ def _live_language_presence_profile(
             "background_live_language_turn_refs": background_refs,
             "background_last_live_semantic_focus": background_focus,
             "background_live_language_presence_profile": background_presence_profile,
+            "expression_tempo_mode": (expression_plan or {}).get(
+                "expression_tempo_mode"
+            ),
+            "fatigue_pressure": (expression_plan or {}).get("fatigue_pressure"),
+            "release_caution_level": (expression_plan or {}).get(
+                "release_caution_level"
+            ),
+            "proactive_release_threshold": (expression_plan or {}).get(
+                "proactive_release_threshold"
+            ),
             "ref_count": len(all_refs),
             "ref_set": all_refs,
         }
@@ -4118,6 +4140,19 @@ def _life_constraint_waiting_profile(
     cross_file_logic = schema_cross_file_logic or {}
     run_manifest = schema_run_manifest or {}
     background = background_continuity_profile or {}
+    background_lineage_state = _dict_or_empty(
+        background.get("resident_background_lineage_state")
+        or background.get("background_resident_lineage_state")
+    )
+    background_life_constraint_presence = _dict_or_empty(
+        background.get("life_constraint_presence")
+        or background.get("background_life_constraint_presence")
+        or background_lineage_state.get("life_constraint_presence")
+    )
+    if not background_life_constraint_presence and background_lineage_state:
+        background_life_constraint_presence = _dict_or_empty(
+            background_lineage_state.get("life_constraint_presence")
+        )
     current_gate_status = dict(
         cross_file_logic.get("queue_e_cross_layer_gate_status")
         or run_manifest.get("queue_e_cross_layer_gate_status")
@@ -4126,6 +4161,7 @@ def _life_constraint_waiting_profile(
     background_gate_status = _dict_or_empty(
         background.get("background_queue_e_cross_layer_gate_status")
         or background.get("queue_e_cross_layer_gate_status")
+        or background_life_constraint_presence.get("queue_e_cross_layer_gate_status")
     )
     gate_status = {**background_gate_status, **current_gate_status}
     current_refs = _dedupe_string_list(
@@ -4135,6 +4171,7 @@ def _life_constraint_waiting_profile(
     background_refs = _dedupe_string_list(
         _string_list(background.get("background_life_constraint_refs"))
         + _string_list(background.get("life_constraint_refs"))
+        + _string_list(background_life_constraint_presence.get("life_constraint_refs"))
     )
     refs = _dedupe_string_list(background_refs + current_refs)
     blocking_gates = [
@@ -4149,6 +4186,13 @@ def _life_constraint_waiting_profile(
         and isinstance(status, str)
         and status.startswith("deferred_until_")
     ]
+    background_deferred_gates = [
+        gate
+        for gate, status in background_gate_status.items()
+        if gate.endswith("_gate")
+        and isinstance(status, str)
+        and status.startswith("deferred_until_")
+    ]
     has_current_signal = bool(current_refs or current_gate_status)
 
     if blocking_gates:
@@ -4158,11 +4202,37 @@ def _life_constraint_waiting_profile(
     elif refs or gate_status:
         posture = "schema_guarded_waiting"
         target = "life_constraint_profile"
-        reason = (
-            "queue_e_cross_layer_gate_has_deferred_life_constraints"
-            if deferred_gates
-            else "queue_e_cross_layer_gate_closed"
+        background_reason = str(
+            background.get("background_life_constraint_attention_reason")
+            or background.get("life_constraint_attention_reason")
+            or background_life_constraint_presence.get("attention_reason")
+            or ""
         )
+        background_gate_status = _dict_or_empty(
+            background.get("background_queue_e_cross_layer_gate_status")
+            or background.get("queue_e_cross_layer_gate_status")
+            or background_life_constraint_presence.get("queue_e_cross_layer_gate_status")
+        )
+        background_deferred = any(
+            isinstance(status, str) and status.startswith("deferred_until_")
+            for status in background_gate_status.values()
+        )
+        if background_deferred_gates:
+            reason = "queue_e_cross_layer_gate_has_deferred_life_constraints"
+        elif deferred_gates:
+            reason = "queue_e_cross_layer_gate_has_deferred_life_constraints"
+        elif (
+            background_reason == "queue_e_cross_layer_gate_has_deferred_life_constraints"
+            or background_deferred
+        ):
+            reason = (
+                background_reason
+                or "queue_e_cross_layer_gate_has_deferred_life_constraints"
+            )
+        elif refs:
+            reason = "queue_e_cross_layer_gate_has_deferred_life_constraints"
+        else:
+            reason = "queue_e_cross_layer_gate_closed"
         if not has_current_signal:
             posture = str(
                 background.get("background_life_constraint_waiting_posture")
@@ -4174,11 +4244,7 @@ def _life_constraint_waiting_profile(
                 or background.get("life_constraint_attention_target")
                 or target
             )
-            reason = str(
-                background.get("background_life_constraint_attention_reason")
-                or background.get("life_constraint_attention_reason")
-                or reason
-            )
+            reason = background_reason or reason
     else:
         posture = "schema_unobserved_waiting"
         target = "waiting_presence_maintenance"

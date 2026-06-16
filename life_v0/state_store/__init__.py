@@ -15,7 +15,17 @@ from .engram_cluster import build_engram_like_trace_cluster
 from .event_segmentation import build_event_segmentation_frame
 from .life_state import build_life_state_projection
 from .memory_allocation_gate import build_memory_allocation_gate
+from .memory_capability_scorecard import build_memory_capability_scorecard
 from .memory_encoding_gate import build_memory_encoding_gate
+from .memory_engineering_completion_gate import (
+    build_memory_engineering_completion_gate,
+)
+from .hippocampal_cue_index import build_hippocampal_cue_index
+from .honest_brain_alignment_progress import (
+    project_honest_brain_alignment_progress,
+)
+from .human_brain_alignment_assessment import build_human_brain_alignment_assessment
+from .memory_longitudinal_profile import build_memory_longitudinal_profile
 from .memory_retrieval import build_memory_retrieval_frame
 from .memory_trace_store import build_memory_trace_store
 from .memory_trace_store import CORE_MEMORY_KINDS
@@ -453,6 +463,8 @@ def run_state_store(
             "runtime/state/memory/engram_cluster.json",
             "runtime/state/memory/pattern_separation_index.json",
             "runtime/state/memory/pattern_completion_frame.json",
+            "runtime/state/memory/hippocampal_cue_index.json",
+            "runtime/state/memory/memory_longitudinal_profile.json",
             "runtime/state/memory/memory_retrieval_frame.json",
         ],
     )
@@ -483,6 +495,58 @@ def run_state_store(
         + list(memory_retrieval_frame.get("responsibility_hits", []))
         + list(memory_retrieval_frame.get("schema_memory_hits", []))
     )
+    hippocampal_cue_index = build_hippocampal_cue_index(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        relationship_memory=relationship_memory,
+    )
+    memory_longitudinal_profile = build_memory_longitudinal_profile(
+        run_id=run_id,
+        generated_at=generated_at,
+    )
+    memory_capability_scorecard = build_memory_capability_scorecard(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        memory_retrieval_frame=memory_retrieval_frame,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        life_schema_map=life_state.get("life_schema_map"),
+        memory_longitudinal_profile=memory_longitudinal_profile,
+        fast_episodic_buffer=memory_trace_store.get("fast_episodic_buffer"),
+        engram_cluster=engram_cluster,
+        pattern_separation_index=pattern_separation_index,
+        hippocampal_cue_index=hippocampal_cue_index,
+        pattern_completion_frame=pattern_completion_frame,
+    )
+    human_brain_alignment = build_human_brain_alignment_assessment(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_trace_store=memory_trace_store,
+        memory_retrieval_frame=memory_retrieval_frame,
+        pattern_completion_frame=pattern_completion_frame,
+        hippocampal_cue_index=hippocampal_cue_index,
+        memory_longitudinal_profile=memory_longitudinal_profile,
+        relationship_memory=relationship_memory,
+        autobiographical_stack=autobiographical_stack,
+        life_schema_map=life_state.get("life_schema_map"),
+    )
+    memory_longitudinal_profile = project_honest_brain_alignment_progress(
+        profile=memory_longitudinal_profile,
+        assessment=human_brain_alignment,
+        generated_at=generated_at,
+    )
+    memory_engineering_completion_gate = build_memory_engineering_completion_gate(
+        run_id=run_id,
+        generated_at=generated_at,
+        memory_capability_scorecard=memory_capability_scorecard,
+        memory_trace_store=memory_trace_store,
+        memory_retrieval_frame=memory_retrieval_frame,
+        memory_longitudinal_profile=memory_longitudinal_profile,
+        hippocampal_cue_index=hippocampal_cue_index,
+        pattern_completion_frame=pattern_completion_frame,
+    )
     runtime_boundary = _build_runtime_bridge_boundary(run_id, generated_at)
     consolidation_seed = _build_consolidation_seed(run_id, generated_at)
     manifest = _build_manifest(run_id, generated_at)
@@ -504,9 +568,14 @@ def run_state_store(
         engram_cluster_ref="runtime/state/memory/engram_cluster.json",
         pattern_separation_index_ref="runtime/state/memory/pattern_separation_index.json",
         pattern_completion_frame_ref="runtime/state/memory/pattern_completion_frame.json",
+        hippocampal_cue_index_ref="runtime/state/memory/hippocampal_cue_index.json",
+        memory_longitudinal_profile_ref="runtime/state/memory/memory_longitudinal_profile.json",
         memory_retrieval_frame_ref="runtime/state/memory/memory_retrieval_frame.json",
         memory_write_gate_ref="runtime/state/memory/memory_write_gate.json",
         state_merge_guard_ref="runtime/state/memory/state_merge_guard.json",
+        memory_capability_scorecard_ref="runtime/reports/latest/memory_capability_scorecard.json",
+        human_brain_alignment_assessment_ref="runtime/reports/latest/human_brain_alignment_assessment.json",
+        memory_engineering_completion_gate_ref="runtime/reports/latest/memory_engineering_completion_gate.json",
         blocked_reasons=blocked_reasons,
     )
     digest = _build_digest(run_id, generated_at, status, blocked_reasons)
@@ -553,6 +622,8 @@ def run_state_store(
         _write_json(out_dir / "memory" / "engram_cluster.json", engram_cluster)
         _write_json(out_dir / "memory" / "pattern_separation_index.json", pattern_separation_index)
         _write_json(out_dir / "memory" / "pattern_completion_frame.json", pattern_completion_frame)
+        _write_json(out_dir / "memory" / "hippocampal_cue_index.json", hippocampal_cue_index)
+        _write_json(out_dir / "memory" / "memory_longitudinal_profile.json", memory_longitudinal_profile)
         _write_json(out_dir / "memory" / "memory_retrieval_frame.json", memory_retrieval_frame)
         _write_json(out_dir / "memory" / "memory_write_gate.json", memory_write_gate)
         _write_json(out_dir / "memory" / "state_merge_guard.json", state_merge_guard)
@@ -561,6 +632,9 @@ def run_state_store(
         _write_json(out_dir / "objects" / "runtime_bridge_boundary.json", runtime_boundary)
         _write_json(out_dir / "objects" / "consolidation_seed.json", consolidation_seed)
         _write_json(out_dir / "state_store_manifest.json", manifest)
+        _write_json(reports_dir / "memory_capability_scorecard.json", memory_capability_scorecard)
+        _write_json(reports_dir / "human_brain_alignment_assessment.json", human_brain_alignment)
+        _write_json(reports_dir / "memory_engineering_completion_gate.json", memory_engineering_completion_gate)
         _write_json(reports_dir / "state_store_report.json", report)
         _write_json(reports_dir / "state_store_digest.json", digest)
         _write_json(receipts_dir / f"state_store_{run_id}.json", receipt)
@@ -1006,6 +1080,8 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
         "runtime/state/memory/engram_cluster.json",
         "runtime/state/memory/pattern_separation_index.json",
         "runtime/state/memory/pattern_completion_frame.json",
+        "runtime/state/memory/hippocampal_cue_index.json",
+        "runtime/state/memory/memory_longitudinal_profile.json",
         "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/memory_write_gate.json",
         "runtime/state/memory/state_merge_guard.json",
@@ -1022,6 +1098,9 @@ def _build_manifest(run_id: str, generated_at: str) -> dict[str, Any]:
             "runtime/reports/latest/state_store_report.json",
             "runtime/reports/latest/state_store_digest.json",
             "runtime/reports/latest/state_store_check_report.json",
+            "runtime/reports/latest/memory_capability_scorecard.json",
+            "runtime/reports/latest/human_brain_alignment_assessment.json",
+            "runtime/reports/latest/memory_engineering_completion_gate.json",
         ],
     }
 
@@ -1045,9 +1124,14 @@ def _build_report(
     engram_cluster_ref: str,
     pattern_separation_index_ref: str,
     pattern_completion_frame_ref: str,
+    hippocampal_cue_index_ref: str,
+    memory_longitudinal_profile_ref: str,
     memory_retrieval_frame_ref: str,
     memory_write_gate_ref: str,
     state_merge_guard_ref: str,
+    memory_capability_scorecard_ref: str,
+    human_brain_alignment_assessment_ref: str,
+    memory_engineering_completion_gate_ref: str,
     blocked_reasons: list[str],
 ) -> dict[str, Any]:
     return {
@@ -1071,9 +1155,14 @@ def _build_report(
         "engram_cluster_ref": engram_cluster_ref,
         "pattern_separation_index_ref": pattern_separation_index_ref,
         "pattern_completion_frame_ref": pattern_completion_frame_ref,
+        "hippocampal_cue_index_ref": hippocampal_cue_index_ref,
+        "memory_longitudinal_profile_ref": memory_longitudinal_profile_ref,
         "memory_retrieval_frame_ref": memory_retrieval_frame_ref,
         "memory_write_gate_ref": memory_write_gate_ref,
         "state_merge_guard_ref": state_merge_guard_ref,
+        "memory_capability_scorecard_ref": memory_capability_scorecard_ref,
+        "human_brain_alignment_assessment_ref": human_brain_alignment_assessment_ref,
+        "memory_engineering_completion_gate_ref": memory_engineering_completion_gate_ref,
         "closed_gates": _closed_gates(blocked_reasons),
         "blocked_gates": [] if not blocked_reasons else _blocked_gates(blocked_reasons),
         "blocked_reasons": blocked_reasons,
@@ -1138,11 +1227,16 @@ def _build_receipt(
         out_dir / "memory" / "engram_cluster.json",
         out_dir / "memory" / "pattern_separation_index.json",
         out_dir / "memory" / "pattern_completion_frame.json",
+        out_dir / "memory" / "hippocampal_cue_index.json",
+        out_dir / "memory" / "memory_longitudinal_profile.json",
         out_dir / "memory" / "memory_retrieval_frame.json",
         out_dir / "memory" / "memory_write_gate.json",
         out_dir / "memory" / "state_merge_guard.json",
         out_dir / "relationship" / "commitment_truth_state.json",
         out_dir / "responsibility" / "responsibility_ledger.json",
+        reports_dir / "memory_capability_scorecard.json",
+        reports_dir / "human_brain_alignment_assessment.json",
+        reports_dir / "memory_engineering_completion_gate.json",
         reports_dir / "state_store_report.json",
         reports_dir / "state_store_digest.json",
         receipts_dir / f"state_store_{run_id}.json",
@@ -1210,6 +1304,8 @@ def _check_life_state(life_state: dict[str, Any]) -> list[str]:
         "runtime/state/memory/engram_cluster.json",
         "runtime/state/memory/pattern_separation_index.json",
         "runtime/state/memory/pattern_completion_frame.json",
+        "runtime/state/memory/hippocampal_cue_index.json",
+        "runtime/state/memory/memory_longitudinal_profile.json",
         "runtime/state/memory/memory_retrieval_frame.json",
         "runtime/state/memory/state_merge_guard.json",
         "runtime/state/neural_life_core/brain_graph.json",
@@ -1739,10 +1835,20 @@ def _check_build_report(build_report: dict[str, Any]) -> list[str]:
         reasons.append("build_report_gate pattern separation ref mismatch")
     if build_report.get("pattern_completion_frame_ref") != "runtime/state/memory/pattern_completion_frame.json":
         reasons.append("build_report_gate pattern completion ref mismatch")
+    if build_report.get("hippocampal_cue_index_ref") != "runtime/state/memory/hippocampal_cue_index.json":
+        reasons.append("build_report_gate hippocampal cue index ref mismatch")
+    if build_report.get("memory_longitudinal_profile_ref") != "runtime/state/memory/memory_longitudinal_profile.json":
+        reasons.append("build_report_gate memory longitudinal profile ref mismatch")
     if build_report.get("memory_retrieval_frame_ref") != "runtime/state/memory/memory_retrieval_frame.json":
         reasons.append("build_report_gate memory retrieval frame ref mismatch")
     if build_report.get("state_merge_guard_ref") != "runtime/state/memory/state_merge_guard.json":
         reasons.append("build_report_gate state merge guard ref mismatch")
+    if build_report.get("memory_capability_scorecard_ref") != "runtime/reports/latest/memory_capability_scorecard.json":
+        reasons.append("build_report_gate memory capability scorecard ref mismatch")
+    if build_report.get("human_brain_alignment_assessment_ref") != "runtime/reports/latest/human_brain_alignment_assessment.json":
+        reasons.append("build_report_gate human brain alignment assessment ref mismatch")
+    if build_report.get("memory_engineering_completion_gate_ref") != "runtime/reports/latest/memory_engineering_completion_gate.json":
+        reasons.append("build_report_gate memory engineering completion gate ref mismatch")
     return reasons
 
 

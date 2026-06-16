@@ -698,6 +698,15 @@ class NeuralLifeCoreTests(unittest.TestCase):
             live_dialogue_turn_refs=[
                 "runtime/state/language/dialogue_turn_log.jsonl#turn-1"
             ],
+            process_report={
+                "live_queue_e_world_contact_handoff_report_profile": {
+                    "schema_version": "live_queue_e_world_contact_handoff_report_profile_v0",
+                },
+                "live_queue_e_world_contact_handoff_report_boundary": (
+                    "live_queue_e_world_contact_handoff_structured_report_not_spoken_language"
+                ),
+                "live_queue_e_world_contact_handoff_refreshed": True,
+            },
         )
         self.assertEqual(handoff["handoff_status"], "closed")
         self.assertTrue(handoff["repair_hold_required"])

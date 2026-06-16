@@ -31,12 +31,14 @@ def build_language_percept_frame(
     ]
 
     lowered_surface = incoming_surface.lower()
+    utterance_signals = _classify_utterance_signals(incoming_surface, lowered_surface)
+
     commitment_trigger_candidates = []
-    if "承诺" in incoming_surface or "说好" in incoming_surface or "promise" in lowered_surface:
+    if utterance_signals["commitment_request"]:
         commitment_trigger_candidates.append("commitment-v0-0001")
 
     repair_trigger_candidates = []
-    if "修复" in incoming_surface or "道歉" in incoming_surface or "repair" in lowered_surface:
+    if utterance_signals["repair_request"] or utterance_signals["apology"]:
         repair_trigger_candidates.append("repair-language-v0-0001")
 
     dream_signal_candidates = []
@@ -58,14 +60,24 @@ def build_language_percept_frame(
         ambiguity_flags.append("shared_term_unresolved")
     if speaker_role != active_scope.get("relation_role"):
         ambiguity_flags.append("relation_role_mismatch")
+    if utterance_signals["clarification_request"]:
+        ambiguity_flags.append("clarification_requested")
+    if utterance_signals["relation_recalibration"]:
+        ambiguity_flags.append("relation_scope_recalibration_requested")
 
     active_sampling_targets = list(active_sampling_plan.get("expected_observation_refs", []))
     active_sampling_scopes = list(active_sampling_plan.get("scope_refs", []))
+    scene_tags = [
+        tag
+        for tag, active in utterance_signals.items()
+        if active and tag not in {"commitment_request", "repair_request"}
+    ]
     percept_focus_trace = _dedupe(
         [
             *active_sampling_targets,
             *active_sampling_scopes,
             *belief_state.get("source_evidence_refs", []),
+            *[f"percept-scene-{tag}" for tag in scene_tags],
             f"runtime/state/language/relation_scope_language_index.json#{active_scope.get('scope_id', 'relation-scope-v0-0001')}",
         ]
     )
@@ -103,6 +115,10 @@ def build_language_percept_frame(
         ),
         "prediction_focus": prediction_focus,
         "percept_focus_trace": percept_focus_trace,
+        "utterance_signal_profile": {
+            "schema_version": "utterance_signal_profile_v0",
+            **utterance_signals,
+        },
         "core_affect_vector_ref": (
             "runtime/state/body/core_affect_vector.json"
             if core_affect_vector
@@ -166,3 +182,33 @@ def _dedupe(items: list[str]) -> list[str]:
         if item and item not in result:
             result.append(item)
     return result
+
+
+def _classify_utterance_signals(
+    incoming_surface: str,
+    lowered_surface: str,
+) -> dict[str, bool]:
+    return {
+        "commitment_request": any(
+            token in incoming_surface
+            for token in ("承诺", "说好", "答应", "保证")
+        )
+        or "promise" in lowered_surface,
+        "repair_request": any(
+            token in incoming_surface for token in ("修复", "补救", "弥补")
+        )
+        or "repair" in lowered_surface,
+        "apology": "道歉" in incoming_surface or "sorry" in lowered_surface,
+        "clarification_request": any(
+            token in incoming_surface
+            for token in ("什么意思", "说清楚", "不明白", "解释一下", "你没懂")
+        ),
+        "boundary_declaration": any(
+            token in incoming_surface
+            for token in ("边界", "不要这样", "越界", "别再", "停一下")
+        ),
+        "relation_recalibration": any(
+            token in incoming_surface
+            for token in ("当成用户", "把我当用户", "用户了吗", "服务对象", "任务请求者")
+        ),
+    }

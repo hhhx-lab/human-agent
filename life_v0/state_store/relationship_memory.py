@@ -162,6 +162,51 @@ def project_relationship_memory(
     if subject_refs:
         updated["subject_refs"] = _dedupe(subject_refs)
 
+    relation_subject_scopes: list[dict[str, Any]] = []
+    scoped_preference_traces: list[dict[str, Any]] = []
+    for subject in relationship_graph.get("subjects", []):
+        if not isinstance(subject, dict):
+            continue
+        subject_id = str(
+            subject.get("relationship_id")
+            or subject.get("subject_id")
+            or subject.get("relation_id")
+            or ""
+        )
+        if not subject_id:
+            continue
+        relationship_scope = f"relation_subject:{subject_id}"
+        relation_subject_scopes.append(
+            {
+                "relation_subject_id": subject_id,
+                "relationship_scope": relationship_scope,
+                "relation_role": subject.get("relation_role"),
+                "subject_ref": (
+                    f"runtime/state/relationship/relationship_subject_graph.json#{subject_id}"
+                ),
+            }
+        )
+        for preference in _string_list(subject.get("preference_hypotheses")):
+            scoped_preference_traces.append(
+                {
+                    "relation_subject_id": subject_id,
+                    "relationship_scope": relationship_scope,
+                    "preference_hypothesis": preference,
+                    "trace_kind": "relation_scoped_preference_hypothesis",
+                }
+            )
+    if relation_subject_scopes:
+        updated["relation_subject_scopes"] = relation_subject_scopes
+        updated.setdefault("relationship_scope", relation_subject_scopes[0]["relationship_scope"])
+        updated.setdefault(
+            "active_relation_subject_id",
+            relation_subject_scopes[0]["relation_subject_id"],
+        )
+    if scoped_preference_traces:
+        updated["scoped_preference_traces"] = _dedupe_dict_list(
+            list(updated.get("scoped_preference_traces", [])) + scoped_preference_traces
+        )
+
     updated["shared_memory_refs"] = _dedupe(
         updated["shared_memory_refs"]
         + ["runtime/state/language/language_relationship_state.json#shared_language_refs"]
@@ -508,9 +553,43 @@ def _relationship_depth_profile_from_updated(updated: dict[str, Any]) -> dict[st
     }
 
 
+def _string_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [value] if value else []
+    if isinstance(value, list):
+        return [str(item) for item in value if item]
+    if isinstance(value, tuple):
+        return [str(item) for item in value if item]
+    if isinstance(value, set):
+        return [str(item) for item in sorted(value) if item]
+    return [str(value)] if value else []
+
+
 def _dedupe(items: list[str]) -> list[str]:
     result: list[str] = []
     for item in items:
         if item and item not in result:
             result.append(item)
+    return result
+
+
+def _dedupe_dict_list(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    seen: set[str] = set()
+    result: list[dict[str, Any]] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        key = "|".join(
+            [
+                str(item.get("relation_subject_id") or ""),
+                str(item.get("relationship_scope") or ""),
+                str(item.get("preference_hypothesis") or ""),
+            ]
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(item)
     return result

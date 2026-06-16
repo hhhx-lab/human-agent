@@ -41,6 +41,15 @@ def build_prediction_workspace_frame(
     has_language_handoff = bool(continuity["language_percept_refs"] or continuity["semantic_map_refs"])
     has_ambiguity_queue = bool(continuity["semantic_ambiguity_refs"])
     semantic_focus = continuity["semantic_prediction_focus"] or "continuity-seed-focus"
+    language_handoff_refs = _dedupe(
+        list(continuity["language_percept_refs"])
+        + list(continuity["semantic_map_refs"])
+        + (
+            ["runtime/state/language/semantic_map_frame.json#ambiguity_queue"]
+            if has_ambiguity_queue
+            else []
+        )
+    )
     return {
         "schema_version": "prediction_workspace_frame_v0",
         "run_id": run_id,
@@ -112,4 +121,72 @@ def build_prediction_workspace_frame(
             "ConsciousWorkspaceRuntime",
             "LanguageRelationshipRuntime",
         ],
+        "language_handoff_refs": language_handoff_refs,
+        "language_prediction_focus": semantic_focus,
+        "semantic_ambiguity_refs": list(continuity["semantic_ambiguity_refs"]),
     }
+
+
+def project_prediction_workspace_from_live_language_turn(
+    *,
+    prediction_workspace_frame: dict[str, Any],
+    language_percept: dict[str, Any],
+    semantic_map: dict[str, Any],
+    generated_at: str,
+) -> dict[str, Any]:
+    if not prediction_workspace_frame:
+        return {}
+    updated = dict(prediction_workspace_frame)
+    ambiguity_queue = list(semantic_map.get("ambiguity_queue", []))
+    language_continuity = {
+        "language_percept_refs": ["runtime/state/language/language_percept_frame.json"],
+        "semantic_map_refs": ["runtime/state/language/semantic_map_frame.json"],
+        "semantic_ambiguity_refs": [
+            f"runtime/state/language/semantic_map_frame.json#ambiguity_queue:{flag}"
+            for flag in ambiguity_queue[:8]
+        ],
+        "semantic_prediction_focus": semantic_map.get("semantic_focus"),
+        "percept_focus_trace": list(language_percept.get("percept_focus_trace", []))[:8],
+    }
+    rebuilt = build_prediction_workspace_frame(
+        run_id=str(updated.get("run_id") or "live-language-handoff"),
+        generated_at=generated_at,
+        language_continuity=language_continuity,
+        belief_state=_read_nested_workspace_input(updated, "belief_state_ref"),
+        prediction_error_field=_read_nested_workspace_input(
+            updated, "prediction_error_ref"
+        ),
+        active_sampling_plan=_read_nested_workspace_input(
+            updated, "active_sampling_plan_ref"
+        ),
+        signal_media_runtime=_read_nested_workspace_input(updated, "signal_media_ref"),
+    )
+    workspace_contents = dict(rebuilt.get("workspace_contents", {}))
+    workspace_contents["live_language_handoff"] = {
+        "schema_version": "live_language_handoff_v0",
+        "generated_at": generated_at,
+        "semantic_focus": semantic_map.get("semantic_focus"),
+        "ambiguity_ref_count": len(ambiguity_queue),
+        "percept_focus_ref_count": len(language_percept.get("percept_focus_trace", [])),
+    }
+    rebuilt["workspace_contents"] = workspace_contents
+    rebuilt["live_language_handoff_refreshed"] = True
+    return rebuilt
+
+
+def _read_nested_workspace_input(
+    frame: dict[str, Any],
+    ref_key: str,
+) -> dict[str, Any]:
+    ref = frame.get(ref_key)
+    if not isinstance(ref, str) or not ref:
+        return {}
+    return {"ref": ref}
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result

@@ -99,10 +99,39 @@ def build_resident_state_inspection(
                 "engram_index": "memory/engram_index.json",
                 "autobiographical_stack": "self/autobiographical_stack.json",
                 "memory_retrieval": "memory/memory_retrieval_frame.json",
+                "memory_trace_store": "memory/memory_trace_store.json",
+                "fast_episodic_buffer": "memory/fast_episodic_buffer.json",
+                "engram_cluster": "memory/engram_cluster.json",
+                "memory_reconsolidation_report": (
+                    "../reports/latest/memory_reconsolidation_report.json"
+                ),
+                "memory_consolidation_report": (
+                    "../reports/latest/memory_consolidation_report.json"
+                ),
+                "memory_capability_scorecard": (
+                    "../reports/latest/memory_capability_scorecard.json"
+                ),
+                "memory_engineering_completion_gate": (
+                    "../reports/latest/memory_engineering_completion_gate.json"
+                ),
+                "human_brain_alignment_assessment": (
+                    "../reports/latest/human_brain_alignment_assessment.json"
+                ),
+                "hippocampal_cue_index": "memory/hippocampal_cue_index.json",
+                "memory_longitudinal_profile": (
+                    "memory/memory_longitudinal_profile.json"
+                ),
+                "pattern_separation_index": "memory/pattern_separation_index.json",
+                "pattern_completion_frame": "memory/pattern_completion_frame.json",
+                "life_schema_map": "memory/life_schema_map.json",
                 "memory_write_gate": "memory/memory_write_gate.json",
                 "state_merge_guard": "memory/state_merge_guard.json",
                 "dream_fact_boundary": "membrane/dream_fact_boundary.json",
                 "life_state": "life_state.json",
+                "terminal_life_loop_state": "terminal/terminal_life_loop_state.json",
+                "dialogue_writeback_bundle": (
+                    "../reports/latest/dialogue_writeback_bundle.json"
+                ),
                 "signal_media_runtime": "signal/signal_media_runtime.json",
                 "core_affect_vector": "body/core_affect_vector.json",
                 "body_resource_budget": "body/body_resource_budget.json",
@@ -125,23 +154,61 @@ def build_resident_state_inspection(
         payload["memory"]["reconstructive_memory_summary"] = (
             _collect_reconstructive_memory_summary(memory)
         )
+        payload["memory"]["live_memory_projection_consistency"] = (
+            _live_memory_projection_consistency_snapshot(memory)
+        )
+        payload["memory"]["trace_lifecycle_summary"] = _trace_lifecycle_summary_snapshot(
+            memory
+        )
+        payload["memory"]["cue_provider_audit_summary"] = (
+            _cue_provider_audit_snapshot(memory)
+        )
+        payload["memory"]["phenomenology_summary"] = _memory_phenomenology_snapshot(
+            memory
+        )
+        payload["memory"]["longitudinal_summary"] = _memory_longitudinal_snapshot(
+            memory
+        )
+        payload["memory"]["capability_scorecard_summary"] = (
+            _memory_capability_scorecard_snapshot(memory)
+        )
+        payload["memory"]["engineering_completion_summary"] = (
+            _memory_engineering_completion_snapshot(memory)
+        )
+        payload["memory"]["honest_brain_alignment_summary"] = (
+            _honest_brain_alignment_snapshot(memory)
+        )
     elif normalized == "dream":
         dream = _collect_files(
             state_root,
             {
                 "offline_entry_gate": "dream/offline_entry_gate.json",
+                "offline_dream_entry_vector": (
+                    "dream/offline_dream_entry_vector.json"
+                ),
+                "dream_cue_policy_state": "dream/dream_cue_policy_state.json",
                 "exit_dream_consolidation_summary": (
                     "dream/exit_dream_consolidation_summary.json"
                 ),
                 "dream_experience_window": "dream/dream_experience_window.json",
                 "wake_integration_frame": "dream/wake_integration_frame.json",
                 "dream_fact_gate_decision": "dream/dream_fact_gate_decision.json",
+                "dream_belief_gate_decision": (
+                    "dream/dream_belief_gate_decision.json"
+                ),
                 "nightmare_loop_risk": "dream/nightmare_loop_risk.json",
+                "offline_memory_hygiene_report": (
+                    "memory/offline_memory_hygiene_report.json"
+                ),
                 "memory_retrieval": "memory/memory_retrieval_frame.json",
                 "memory_write_gate": "memory/memory_write_gate.json",
                 "state_merge_guard": "memory/state_merge_guard.json",
                 "dream_fact_boundary": "membrane/dream_fact_boundary.json",
                 "web_dream_learning_state": "dream/web_dream_learning_state.json",
+                "web_dream_topic_history": "dream/web_dream_topic_history.json",
+                "web_dream_browser_session": (
+                    "dream/web_dream_browser_session.json"
+                ),
                 "offline_learning_cumulative_profile": (
                     "growth/offline_learning_cumulative_profile.json"
                 ),
@@ -1756,6 +1823,204 @@ def _collect_memory_tier_summary(section: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _live_memory_projection_consistency_snapshot(
+    section: dict[str, Any],
+) -> dict[str, Any]:
+    memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
+    memory_trace_store = _extract_compact_value(section.get("memory_trace_store", {}))
+    engram_cluster = _extract_compact_value(section.get("engram_cluster", {}))
+    pattern_separation = _extract_compact_value(
+        section.get("pattern_separation_index", {})
+    )
+    pattern_completion = _extract_compact_value(
+        section.get("pattern_completion_frame", {})
+    )
+    life_schema_map = _extract_compact_value(section.get("life_schema_map", {}))
+    life_state = _extract_compact_value(section.get("life_state", {}))
+    terminal_loop = _extract_compact_value(section.get("terminal_life_loop_state", {}))
+    projection_stage = memory_retrieval.get("live_memory_projection_stage")
+    generated_at = memory_retrieval.get("live_memory_projection_generated_at")
+    trace_generated_at = memory_trace_store.get("live_memory_projection_generated_at")
+    cluster_generated_at = engram_cluster.get("live_memory_projection_generated_at")
+    pattern_generated_at = pattern_separation.get("live_memory_projection_generated_at")
+    completion_generated_at = pattern_completion.get(
+        "live_memory_projection_generated_at"
+    )
+    schema_generated_at = life_schema_map.get("live_memory_projection_generated_at")
+    timestamps = [
+        value
+        for value in [
+            generated_at,
+            trace_generated_at,
+            cluster_generated_at,
+            pattern_generated_at,
+            completion_generated_at,
+            schema_generated_at,
+        ]
+        if value
+    ]
+    timestamp_aligned = len(set(timestamps)) <= 1 if timestamps else False
+    live_semantic_focus = memory_retrieval.get("live_semantic_focus")
+    reconstruction_focus = memory_retrieval.get("reconstruction_focus")
+    terminal_focus = terminal_loop.get("last_live_semantic_focus")
+    terminal_reconstruction = terminal_loop.get("memory_retrieval_reconstruction_focus")
+    focus_aligned = bool(
+        live_semantic_focus
+        and live_semantic_focus == terminal_focus
+        and live_semantic_focus == reconstruction_focus
+        and live_semantic_focus == terminal_reconstruction
+    )
+    memory_index = _extract_nested_value(life_state, "memory_index")
+    engram_cluster_refs = _list_refs(memory_index.get("engram_cluster_refs"), limit=8)
+    return {
+        "live_memory_projection_stage": projection_stage,
+        "live_memory_projection_generated_at": generated_at,
+        "live_memory_projection_timestamp_aligned": timestamp_aligned,
+        "live_memory_projection_focus_aligned": focus_aligned,
+        "live_semantic_focus": live_semantic_focus,
+        "memory_retrieval_reconstruction_focus": reconstruction_focus,
+        "terminal_last_live_semantic_focus": terminal_focus,
+        "terminal_memory_retrieval_reconstruction_focus": terminal_reconstruction,
+        "life_state_engram_cluster_ref_count": len(engram_cluster_refs),
+        "life_state_engram_cluster_refs": engram_cluster_refs,
+        "live_memory_projection_inspection_boundary": (
+            "structured_live_memory_projection_consistency_not_spoken_language"
+        ),
+    }
+
+
+def _trace_lifecycle_summary_snapshot(section: dict[str, Any]) -> dict[str, Any]:
+    memory_trace_store = _extract_compact_value(section.get("memory_trace_store", {}))
+    engram_cluster = _extract_compact_value(section.get("engram_cluster", {}))
+    lifecycle_distribution: dict[str, int] = {}
+    contradiction_count = 0
+    live_trace_count = 0
+    for trace in memory_trace_store.get("traces", []):
+        if not isinstance(trace, dict):
+            continue
+        lifecycle = str(trace.get("lifecycle_state") or "unknown")
+        lifecycle_distribution[lifecycle] = lifecycle_distribution.get(lifecycle, 0) + 1
+        contradiction_count += len(trace.get("contradiction_links") or [])
+        if trace.get("live_trace_origin") == "live_dialogue_turn":
+            live_trace_count += 1
+    cluster_states = engram_cluster.get("cluster_lifecycle_states") or {}
+    if not isinstance(cluster_states, dict):
+        cluster_states = {}
+    silent_clusters = int(cluster_states.get("silent", 0) or 0)
+    reactivated_clusters = int(cluster_states.get("reactivated", 0) or 0)
+    return {
+        "lifecycle_distribution": lifecycle_distribution,
+        "contradiction_link_count": contradiction_count,
+        "live_trace_count": live_trace_count,
+        "cluster_silent_count": silent_clusters,
+        "cluster_reactivated_count": reactivated_clusters,
+        "trace_lifecycle_inspection_boundary": (
+            "structured_trace_lifecycle_summary_not_spoken_language"
+        ),
+    }
+
+
+def _cue_provider_audit_snapshot(section: dict[str, Any]) -> dict[str, Any]:
+    memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
+    cue_provider_audit = memory_retrieval.get("cue_provider_audit") or {}
+    if not isinstance(cue_provider_audit, dict):
+        cue_provider_audit = {}
+    return {
+        "provider_name": cue_provider_audit.get("provider_name"),
+        "provider_status": cue_provider_audit.get("provider_status"),
+        "scope_boundary": cue_provider_audit.get("scope_boundary"),
+        "validator_boundary": cue_provider_audit.get("validator_boundary"),
+        "candidate_trace_ref_count": cue_provider_audit.get(
+            "candidate_trace_ref_count"
+        ),
+        "eligible_candidate_trace_ref_count": cue_provider_audit.get(
+            "eligible_candidate_trace_ref_count"
+        ),
+        "blocked_candidate_trace_ref_count": cue_provider_audit.get(
+            "blocked_candidate_trace_ref_count"
+        ),
+        "cue_provider_inspection_boundary": (
+            "structured_cue_provider_audit_not_spoken_language"
+        ),
+    }
+
+
+def _memory_phenomenology_snapshot(section: dict[str, Any]) -> dict[str, Any]:
+    memory_retrieval = _extract_compact_value(section.get("memory_retrieval", {}))
+    phenomenology = memory_retrieval.get("memory_phenomenology_profile") or {}
+    if not isinstance(phenomenology, dict):
+        phenomenology = {}
+    return {
+        "recall_phenomenology": phenomenology.get("recall_phenomenology"),
+        "accessibility_level": phenomenology.get("accessibility_level"),
+        "recall_strength_score": phenomenology.get("recall_strength_score"),
+        "familiarity_score": phenomenology.get("familiarity_score"),
+        "tip_of_tongue_risk": phenomenology.get("tip_of_tongue_risk"),
+        "uncertain_boundary_active": phenomenology.get("uncertain_boundary_active"),
+        "cross_modal_evidence_ref_count": phenomenology.get(
+            "cross_modal_evidence_ref_count"
+        ),
+    }
+
+
+def _memory_longitudinal_snapshot(section: dict[str, Any]) -> dict[str, Any]:
+    profile = _extract_compact_value(section.get("memory_longitudinal_profile", {}))
+    summary = profile.get("slow_variable_summary") or {}
+    if not isinstance(summary, dict):
+        summary = {}
+    return {
+        "turn_count": profile.get("turn_count"),
+        "offline_cycle_count": profile.get("offline_cycle_count"),
+        "relationship_depth_trend": summary.get("relationship_depth_trend"),
+        "self_continuity_trend": summary.get("self_continuity_trend"),
+        "mean_accessibility": summary.get("mean_accessibility"),
+        "mean_recall_strength": summary.get("mean_recall_strength"),
+        "relation_subject_curve_count": len(profile.get("relation_subject_curves") or {}),
+    }
+
+
+def _memory_capability_scorecard_snapshot(section: dict[str, Any]) -> dict[str, Any]:
+    scorecard = _extract_compact_value(section.get("memory_capability_scorecard", {}))
+    return {
+        "structure_completeness_pct": scorecard.get("structure_completeness_pct"),
+        "functional_memory_ability_pct": scorecard.get("functional_memory_ability_pct"),
+        "phenomenology_like_remembered_pct": scorecard.get(
+            "phenomenology_like_remembered_pct"
+        ),
+        "extended_capability_pct": scorecard.get("extended_capability_pct"),
+        "overall_alignment_pct": scorecard.get("overall_alignment_pct"),
+        "engineering_rubric_satisfied": scorecard.get("engineering_rubric_satisfied"),
+        "at_human_parity_target": scorecard.get("at_human_parity_target"),
+    }
+
+
+def _honest_brain_alignment_snapshot(section: dict[str, Any]) -> dict[str, Any]:
+    assessment = _extract_compact_value(section.get("human_brain_alignment_assessment", {}))
+    profile = _extract_compact_value(section.get("memory_longitudinal_profile", {}))
+    latest = profile.get("honest_brain_alignment_latest") or {}
+    return {
+        "overall_brain_alignment_pct": assessment.get("overall_brain_alignment_pct"),
+        "raw_brain_alignment_pct": assessment.get("raw_brain_alignment_pct"),
+        "honest_estimate_band": assessment.get("honest_estimate_band"),
+        "evidence_quality_tier": assessment.get("evidence_quality_tier"),
+        "gap_closure_pct": assessment.get("gap_closure_pct"),
+        "remaining_gap_count": len(assessment.get("remaining_gap_summary") or []),
+        "latest_progress_ref": latest.get("profile_ref"),
+        "honest_alignment_delta": profile.get("honest_alignment_delta"),
+    }
+
+
+def _memory_engineering_completion_snapshot(section: dict[str, Any]) -> dict[str, Any]:
+    gate = _extract_compact_value(section.get("memory_engineering_completion_gate", {}))
+    return {
+        "engineering_completion_pct": gate.get("engineering_completion_pct"),
+        "engineering_complete": gate.get("engineering_complete"),
+        "all_u_stages_passed": gate.get("all_u_stages_passed"),
+        "failed_stage_count": len(gate.get("failed_stage_ids") or []),
+        "at_biological_human_parity": gate.get("at_biological_human_parity"),
+    }
+
+
 def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str, Any]:
     relationship_memory = _extract_compact_value(
         section.get("relationship_memory", {})
@@ -2043,11 +2308,26 @@ def _collect_reconstructive_memory_summary(section: dict[str, Any]) -> dict[str,
 
 def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
     offline_entry = _extract_compact_value(section.get("offline_entry_gate", {}))
+    offline_entry_vector = _extract_compact_value(
+        section.get("offline_dream_entry_vector", {})
+    )
+    dream_cue_policy = _extract_compact_value(
+        section.get("dream_cue_policy_state", {})
+    )
     exit_summary = _extract_compact_value(
         section.get("exit_dream_consolidation_summary", {})
     )
     dream_window = _extract_compact_value(
         section.get("dream_experience_window", {})
+    )
+    dream_belief_gate = _extract_compact_value(
+        section.get("dream_belief_gate_decision", {})
+    )
+    offline_hygiene = _extract_compact_value(
+        section.get("offline_memory_hygiene_report", {})
+    )
+    web_topic_history = _extract_compact_value(
+        section.get("web_dream_topic_history", {})
     )
     wake_integration = _extract_compact_value(
         section.get("wake_integration_frame", {})
@@ -2124,7 +2404,12 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
         )
     domain_presence = {
         "offline_entry_gate": bool(offline_entry),
+        "offline_dream_entry_vector": bool(offline_entry_vector),
+        "dream_cue_policy_state": bool(dream_cue_policy),
         "exit_dream_consolidation_summary": bool(exit_summary),
+        "dream_belief_gate_decision": bool(dream_belief_gate),
+        "offline_memory_hygiene_report": bool(offline_hygiene),
+        "web_dream_topic_history": bool(web_topic_history),
         "dream_experience_window": bool(dream_window),
         "wake_integration_frame": bool(wake_integration),
         "dream_fact_gate_decision": bool(dream_fact_gate),
@@ -2249,8 +2534,28 @@ def _collect_dream_wake_fact_summary(section: dict[str, Any]) -> dict[str, Any]:
             web_dream_learning.get("topic_candidates")
         ),
         "web_wake_question_candidate_count": _count_any(
-            web_dream_learning.get("wake_question_candidates")
+            web_dream_learning.get("structured_wake_question_candidates")
+            or web_dream_learning.get("wake_question_candidates")
         ),
+        "offline_dream_selected_modes": _list_refs(
+            offline_entry_vector.get("selected_offline_modes")
+        ),
+        "dream_cue_selected_count": _count_any(
+            dream_cue_policy.get("selected_cues")
+        ),
+        "dream_cue_suppressed_count": _count_any(
+            dream_cue_policy.get("suppressed_cues")
+        ),
+        "offline_hygiene_action_count": _count_any(
+            offline_hygiene.get("hygiene_actions")
+        ),
+        "offline_hygiene_merge_group_count": _count_any(
+            offline_hygiene.get("merge_groups")
+        ),
+        "web_topic_history_entry_count": _count_any(
+            web_topic_history.get("entries")
+        ),
+        "dream_belief_gate_status": dream_belief_gate.get("status"),
         "memory_tier_presence": {
             "salient_core": bool(memory_tiering.get("salient_core_episode_refs")),
             "retrievable_context": bool(
@@ -4988,6 +5293,10 @@ def _collect_language_generation_consumption_summary(
         ),
         "expression_monitor_status": expression_monitor.get("monitor_status"),
         "language_percept_input_mode": language_percept.get("percept_input_mode"),
+        "percept_focus_trace": _list_refs(language_percept.get("percept_focus_trace")),
+        "percept_focus_trace_count": _count_any(
+            language_percept.get("percept_focus_trace")
+        ),
         "language_percept_input_source_ref": language_percept.get(
             "percept_input_source_ref"
         ),

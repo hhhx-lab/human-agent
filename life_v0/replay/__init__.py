@@ -166,6 +166,7 @@ def build_replay_cue_bundle(
         "anti_forgetting_targets": list(shadow_trace.get("replay_refs", []))
         or list(life_state.get("memory_index", {}).get("replay_cues", [])),
         "memory_consolidation_bridge": memory_consolidation_bridge,
+        "consolidation_report": memory_consolidation_bridge.get("consolidation_report"),
         "offline_memory_replay_refs": offline_memory_replay_refs,
         "offline_relationship_memory_refs": relationship_residue_refs,
         "offline_autobiographical_memory_refs": list(
@@ -218,6 +219,24 @@ def _build_memory_consolidation_bridge(life_state: dict[str, Any]) -> dict[str, 
         + memory_write_gate_refs
         + state_merge_guard_refs
     )
+    life_schema_map = life_state.get("life_schema_map") or {}
+    if not isinstance(life_schema_map, dict):
+        life_schema_map = {}
+    promotion_diff = [
+        {
+            "schema_id": schema_id,
+            "source": "life_schema_map",
+            "reason": "schema_evidence_threshold_met",
+        }
+        for schema_id in _string_list(life_schema_map.get("last_promoted_schema_ids"))
+    ]
+    demotion_diff = [
+        {
+            "source": "memory_trace_store",
+            "target": "deprecated_live_trace",
+            "reason": "correction_reconsolidation_without_fact_promotion",
+        }
+    ] if trace_store_refs else []
     return {
         "schema_version": "memory_consolidation_bridge_v0",
         "bridge_ref": "runtime/state/replay/replay_cue_bundle.json#memory_consolidation_bridge",
@@ -234,6 +253,13 @@ def _build_memory_consolidation_bridge(life_state: dict[str, Any]) -> dict[str, 
         "source_ref_count": len(source_refs),
         "replay_route": "trace_cluster_relationship_autobiographical_to_dream_wake_reconsolidation",
         "fact_boundary": "offline_replay_reads_memory_traces_without_promoting_dream_or_hypothesis",
+        "consolidation_report": {
+            "promotion_diff": promotion_diff,
+            "demotion_diff": demotion_diff,
+            "schema_evidence_counts": dict(
+                life_schema_map.get("schema_evidence_counts") or {}
+            ),
+        },
         "consumer_refs": [
             "runtime/state/dream/dream_experience_window.json#memory_consolidation_trace_refs",
             "runtime/state/dream/wake_integration_frame.json#memory_reentry_targets",

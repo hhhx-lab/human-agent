@@ -43,6 +43,15 @@
 | `NightmareRisk` | `life_v0/dream/nightmare_risk.py` | 梦魇风险和痛苦循环 |
 | `ResidentAutonomousActivity` | `life_v0/process_supervisor/resident_autonomous_activity.py` | 无外部输入时的 sleep/recall/self/growth/learning 循环 |
 | `OfflineLearningProfile` | `life_v0/growth/offline_learning_profile.py` | 离线学习累计画像 |
+| `OfflineDreamEntryVector` | `life_v0/dream/offline_dream_entry.py` | D0 离线入口向量（睡眠压力/记忆压力/关系余波） |
+| `DreamCuePolicy` | `life_v0/dream/offline_dream_entry.py` | D0 梦境 cue 候选/抑制/冷却 |
+| `CloseoutDreamChain` | `life_v0/dream/closeout_dream_chain.py` | D3 关闭终端梦境五件套互引 |
+| `DreamBeliefGateDecision` | `life_v0/dream/dream_belief_gate.py` | D3 阻断单轮梦境直接改长期信念 |
+| `OfflineMemoryHygiene` | `life_v0/state_store/offline_memory_hygiene.py` | D2 离线记忆去冗余/合并/保护关键 trace |
+| `WebDreamBrowser` | `life_v0/dream/web_dream_browser.py` | D4/D5 Playwright 只读浏览主链（urllib fallback） |
+| `WebDreamDiscovery` | `life_v0/dream/web_dream_discovery.py` | D5 自主选题 + topic_history 反重复 |
+
+**D0–D8 施工图**：`docs/v0/entry/v0_dream_module_implementation_plan.md`（2026-06-16 结案）
 
 ## runtime 证据
 
@@ -51,6 +60,12 @@
 | `runtime/state/dream/dream_experience_window.json` | 梦境经验窗口存在 |
 | `runtime/state/dream/wake_integration_frame.json` | 醒后整合存在 |
 | `runtime/state/dream/dream_fact_gate_decision.json` | 梦境事实门存在 |
+| `runtime/state/dream/offline_dream_entry_vector.json` | D0 离线入口向量 |
+| `runtime/state/dream/dream_cue_policy_state.json` | D0 梦境 cue 策略 |
+| `runtime/state/dream/dream_belief_gate_decision.json` | D3 梦境信念门 |
+| `runtime/state/memory/offline_memory_hygiene_report.json` | D2 离线记忆整理审计 |
+| `runtime/state/dream/web_dream_topic_history.json` | D5 选题反重复历史 |
+| `runtime/state/dream/web_dream_browser_session.json` | D4/D5 只读浏览会话 |
 | `runtime/state/dream/web_dream_learning_state.json` | 受控网页梦境学习材料进入离线生命 |
 | `runtime/state/dream/nightmare_loop_risk.json` | 梦魇风险被监控 |
 | `runtime/state/terminal/resident_sleep_cycle_state.json` | 常驻睡眠周期存在 |
@@ -218,6 +233,20 @@ flowchart TD
 
 `/dream#dream_wake_fact_summary_v0` 现合并 `v0_contract_coverage` 与 `memory_write_gate_body_signal_modulation`，可互证 S11 合同覆盖与 ITR-05 身体信号写门消费链。仍是 inspection-only，不生成梦境播报。
 
+## 第 4 点施工计划（2026-06-16）
+
+十点迭代第 4 点（退出终端对话整合 + 受控网页梦境学习）的可执行施工图：
+
+`docs/v0/entry/v0_dream_module_implementation_plan.md`
+
+阶段编号 **D1–D8**：
+
+- **4a** D1/D3：exit dream ↔ MemoryTrace ↔ 梦境窗口
+- **4b** D2：离线记忆整理（去冗余、留关键，`OfflineMemoryHygieneReport`）
+- **4c** D4–D6：用户给定站点 + 开放网络自主发现 + 自主选题（`TopicSelectionPolicy`，反重复/反固定）↔ dream_scene
+
+记忆模块 U1–U25 为前置依赖。
+
 ## 当前 live0 结论
 
-live0 的梦境机制已经具备梦境窗口、醒后整合、事实门、睡眠周期和离线学习余波。它支撑验收项 `e_dream_capability` 和 `d_growth_and_learning`。
+live0 的梦境机制已经具备梦境窗口、醒后整合、事实门、睡眠周期和离线学习余波。ITR-02/04 骨架已落，第 4 点完整闭合见上述 D1–D6 计划。它支撑验收项 `e_dream_capability` 和 `d_growth_and_learning`。

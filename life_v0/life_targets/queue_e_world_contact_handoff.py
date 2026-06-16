@@ -165,6 +165,8 @@ def project_queue_e_world_contact_repair_hold_handoff_from_live_turn(
     responsibility_loop_state: dict[str, Any] | None = None,
     live_turn_focus: str | None = None,
     live_dialogue_turn_refs: list[str] | None = None,
+    process_report: dict[str, Any] | None = None,
+    terminal_life_loop_state: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     updated = build_queue_e_world_contact_handoff_profile(
         world_contact_validation=world_contact_validation,
@@ -213,6 +215,19 @@ def project_queue_e_world_contact_repair_hold_handoff_from_live_turn(
     updated["source_doc_refs"] = _dedupe_string_refs(
         list(updated.get("source_doc_refs", [])) + SOURCE_DOC_REFS
     )
+    if live_dialogue_turn_refs and updated.get("handoff_status") == "closed":
+        from ..live0_audit.gate_f_inspection import (
+            live_queue_e_world_contact_handoff_closeout_audited,
+        )
+
+        closeout_audited = live_queue_e_world_contact_handoff_closeout_audited(
+            process_report or {},
+            updated,
+            terminal_life_loop_state or {},
+        )
+        if not closeout_audited:
+            updated["handoff_status"] = "deferred_until_s05_s09"
+            updated["repair_hold_required"] = False
     return updated
 
 

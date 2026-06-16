@@ -92,6 +92,15 @@ def build_apology_repair_language_trace(
         "repair_obligation_refs": repair_obligation_refs,
         "commitment_expression_ref": "runtime/state/language/commitment_expression_plan.json",
         "relationship_timeline_ref": "runtime/state/relationship/relationship_timeline.json",
+        "future_probe_refs": [
+            f"runtime/state/language/apology_repair_language_trace.json#followup_probe-{run_id}",
+            "runtime/state/relationship/commitment_truth_state.json#future_probe",
+        ],
+        "restore_refs": [
+            "runtime/state/language/apology_repair_language_trace.json",
+            "runtime/state/language/commitment_expression_plan.json",
+            "runtime/state/relationship/relationship_timeline.json#relationship_language_events",
+        ],
         "source_doc_refs": source_doc_refs,
     }
     trace = project_apology_repair_language_trace_with_queue_e_repair_modulation(

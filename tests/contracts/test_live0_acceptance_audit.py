@@ -78,6 +78,17 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
         )
         self.assertTrue(
             any(
+                probe["probe_id"] == "language_reality_stage_gate_closed"
+                and probe["status"] == "passed"
+                for probe in language_criterion["probes"]
+            )
+        )
+        self.assertEqual(
+            report["language_reality_stage_gate"]["status"],
+            "closed",
+        )
+        self.assertTrue(
+            any(
                 probe["probe_id"]
                 == "queue_e_world_contact_repair_hold_schema_handoff"
                 and probe["status"] == "passed"
@@ -682,6 +693,33 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
                 "resident_terminal_proactive_events_ref": "runtime/state/terminal/resident_terminal_proactive_events.jsonl",
             },
         )
+        self._write_json_ref(
+            runtime_root,
+            "runtime/state/language/language_event_bundle.json",
+            {
+                "schema_version": "language_event_bundle_v0",
+                "status": "closed",
+                "language_event_kind": "commit",
+                "fixture_event_kinds_covered": [
+                    "commit",
+                    "apologize",
+                    "refuse",
+                    "dream_report",
+                    "shared_term_development",
+                ],
+                "inner_speech_ref": "runtime/state/language/inner_speech_frame.json",
+                "expression_plan_ref": "runtime/state/language/expression_plan.json",
+                "turn_transition_trace_ref": (
+                    "runtime/state/terminal/turn_transition_trace.json"
+                ),
+                "future_probe": [],
+            },
+        )
+        self._write_json_ref(
+            runtime_root,
+            "runtime/state/terminal/turn_transition_trace.json",
+            {"schema_version": "turn_transition_trace_v0", "status": "closed"},
+        )
         for ref, schema in {
             "runtime/state/prediction/prediction_workspace_frame.json": "prediction_workspace_frame_v0",
             "runtime/state/signal/signal_media_runtime.json": "signal_media_runtime_v0",
@@ -717,6 +755,18 @@ class Live0AcceptanceAuditTests(unittest.TestCase):
                 payload = {"schema_version": schema}
             if ref.endswith("queue_e_birth_repair_profile.json"):
                 payload["pressure_level"] = "elevated"
+            if ref.endswith("language_percept_frame.json"):
+                payload["percept_focus_trace"] = [
+                    "runtime/state/language/language_percept_frame.json#semantic_focus"
+                ]
+            if ref.endswith("semantic_map_frame.json"):
+                payload["memory_recall_refs"] = [
+                    "runtime/state/memory/engram_index.json#engram-live-001"
+                ]
+            if ref.endswith("expression_plan.json"):
+                payload["memory_grounding_refs"] = [
+                    "runtime/state/memory/engram_index.json#engram-live-001"
+                ]
             self._write_json_ref(runtime_root, ref, payload)
         self._write_json_ref(
             runtime_root,

@@ -122,7 +122,7 @@ class FirstTerminalTurnTests(unittest.TestCase):
 
         self.assertEqual(relation_turn["schema_version"], "relation_turn_frame_v0")
         self.assertEqual(relation_turn["status"], "closed")
-        self.assertEqual(relation_turn["relation_stage"], "pre_activation")
+        self.assertEqual(relation_turn["relation_stage"], "active_dialogue")
         self.assertTrue(relation_turn["shared_language_refs"])
         self.assertTrue(relation_turn["commitment_truth_refs"])
         self.assertTrue(relation_turn["last_contact_refs"])

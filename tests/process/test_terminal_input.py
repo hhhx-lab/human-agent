@@ -41,6 +41,58 @@ class TerminalInputTests(unittest.TestCase):
         eof_result = editor.feed("\x04")
         self.assertTrue(eof_result.eof)
 
+    def test_terminal_line_buffer_supports_cursor_editing_and_delete(self):
+        editor = TerminalLineBuffer()
+        for char in "helo":
+            editor.feed(char)
+
+        editor.feed("\x1b")
+        editor.feed("[")
+        move_left = editor.feed("D")
+        self.assertTrue(move_left.redraw)
+        self.assertEqual(editor.cursor_index, 3)
+
+        editor.feed("l")
+        self.assertEqual(editor.text, "hello")
+        self.assertEqual(editor.cursor_index, 4)
+
+        editor.feed("\x1b")
+        editor.feed("[")
+        editor.feed("D")
+        editor.feed("\x1b")
+        editor.feed("[")
+        delete_result = editor.feed("3")
+        self.assertTrue(delete_result.ignored_escape)
+        delete_result = editor.feed("~")
+        self.assertTrue(delete_result.redraw)
+        self.assertEqual(editor.text, "helo")
+        self.assertEqual(editor.cursor_index, 3)
+
+    def test_terminal_line_buffer_supports_history_navigation(self):
+        editor = TerminalLineBuffer(history=["第一句", "第二句"])
+        editor.feed("草")
+        editor.feed("\x1b")
+        editor.feed("[")
+        up_result = editor.feed("A")
+        self.assertTrue(up_result.redraw)
+        self.assertEqual(editor.text, "第二句")
+        self.assertEqual(editor.cursor_index, len("第二句"))
+
+        editor.feed("\x1b")
+        editor.feed("[")
+        editor.feed("A")
+        self.assertEqual(editor.text, "第一句")
+
+        editor.feed("\x1b")
+        editor.feed("[")
+        editor.feed("B")
+        self.assertEqual(editor.text, "第二句")
+
+        editor.feed("\x1b")
+        editor.feed("[")
+        editor.feed("B")
+        self.assertEqual(editor.text, "草")
+
     def test_terminal_input_profile_records_editing_and_idle_voice_policy(self):
         stream = StringIO()
         with tempfile.TemporaryDirectory() as tmp:
@@ -63,6 +115,18 @@ class TerminalInputTests(unittest.TestCase):
             self.assertEqual(
                 written["line_editing"]["backspace"],
                 "delete_previous_character",
+            )
+            self.assertEqual(
+                written["line_editing"]["left_right_arrows"],
+                "move_cursor_inside_current_line",
+            )
+            self.assertEqual(
+                written["line_editing"]["up_down_arrows"],
+                "navigate_in_memory_terminal_history",
+            )
+            self.assertEqual(
+                written["line_editing"]["redraw_strategy"],
+                "single_prompt_line_redraw_for_multibyte_text",
             )
             self.assertTrue(
                 written["idle_voice_policy"]["release_only_when_input_buffer_empty"]

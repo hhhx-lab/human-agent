@@ -5,12 +5,18 @@ import os
 from pathlib import Path
 from typing import Any, Callable
 
+from life_v0.dream.dream_window import project_web_residue_into_dream_window
+from life_v0.dream.offline_dream_entry import (
+    build_dream_cue_policy_state,
+    build_offline_dream_entry_vector,
+)
 from life_v0.dream.web_dream_learning import (
     WEB_DREAM_LEARNING_LOG_REF,
     WEB_DREAM_LEARNING_STATE_REF,
     FetchUrl,
     record_web_dream_learning,
 )
+from life_v0.state_store.offline_memory_hygiene import apply_offline_memory_hygiene
 
 
 RESIDENT_AUTONOMOUS_ACTIVITY_REF = (
@@ -200,6 +206,10 @@ def _build_activity_state(
         "source_doc_refs": SOURCE_DOC_REFS,
     }
     if activity_kind == "sleep":
+        sleep_artifacts = _run_sleep_hygiene_and_entry(
+            state_dir=state_dir,
+            generated_at=generated_at,
+        )
         payload.update(
             {
                 "sleep_phase": "resident_background_sleep_cycle",
@@ -210,7 +220,18 @@ def _build_activity_state(
                 "dream_experience_window_ref": (
                     "runtime/state/dream/dream_experience_window.json"
                 ),
+                "offline_dream_entry_vector_ref": sleep_artifacts.get(
+                    "offline_dream_entry_vector_ref"
+                ),
+                "offline_memory_hygiene_report_ref": sleep_artifacts.get(
+                    "offline_memory_hygiene_report_ref"
+                ),
+                "hygiene_action_count": sleep_artifacts.get("hygiene_action_count", 0),
             }
+        )
+        evidence_refs = _dedupe(
+            evidence_refs
+            + _list_or_empty(sleep_artifacts.get("evidence_refs"))
         )
     elif activity_kind == "memory_recall":
         payload.update(
@@ -252,6 +273,12 @@ def _build_activity_state(
             }
         )
     elif activity_kind == "learning_consolidation":
+        if web_learning_state.get("status") in {"learned", "learned_sparse"}:
+            _project_web_learning_into_dream_window(
+                state_dir=state_dir,
+                web_learning_state=web_learning_state,
+                generated_at=generated_at,
+            )
         payload.update(
             {
                 "consolidation_mode": "long_term_change_source_integration",
@@ -274,11 +301,14 @@ def _build_activity_state(
                     web_learning_state.get("topic_candidates", [])
                 ),
                 "web_dream_learning_wake_question_candidates": list(
-                    web_learning_state.get("wake_question_candidates", [])
+                    web_learning_state.get("structured_wake_question_candidates", [])
+                    or web_learning_state.get("wake_question_candidates", [])
                 ),
                 "web_dream_learning_policy": web_learning_state.get(
                     "external_action_policy"
                 ),
+                "web_dream_discovery_mode": web_learning_state.get("discovery_mode"),
+                "web_dream_topic_cluster_id": web_learning_state.get("topic_cluster_id"),
             }
         )
     return payload
@@ -330,6 +360,88 @@ def _evidence_refs_for_kind(activity_kind: str) -> list[str]:
         ],
     }
     return _dedupe(common_refs + specific_refs.get(activity_kind, []))
+
+
+def _run_sleep_hygiene_and_entry(
+    *,
+    state_dir: Path,
+    generated_at: str,
+) -> dict[str, Any]:
+    memory_dir = state_dir / "memory"
+    dream_dir = state_dir / "dream"
+    body_dir = state_dir / "body"
+    replay_dir = state_dir / "replay"
+    memory_trace_store = _read_json_if_exists(memory_dir / "memory_trace_store.json")
+    if not memory_trace_store:
+        return {"evidence_refs": []}
+    hygiene_report, updated_store = apply_offline_memory_hygiene(
+        memory_trace_store=memory_trace_store,
+        generated_at=generated_at,
+        trigger_mode="sleep",
+    )
+    _write_json(memory_dir / "memory_trace_store.json", updated_store)
+    _write_json(memory_dir / "offline_memory_hygiene_report.json", hygiene_report)
+    entry_vector = build_offline_dream_entry_vector(
+        run_id=str(updated_store.get("run_id") or "resident-sleep"),
+        generated_at=generated_at,
+        life_state=_read_json_if_exists(state_dir / "life_state.json"),
+        replay_cue_bundle=_read_json_if_exists(replay_dir / "replay_cue_bundle.json"),
+        memory_trace_store=updated_store,
+        need_state_vector=_read_json_if_exists(body_dir / "need_state.json"),
+        body_resource_budget=_read_json_if_exists(body_dir / "body_resource_budget.json"),
+        relationship_memory=_read_json_if_exists(memory_dir / "relationship_memory.json"),
+    )
+    cue_policy = build_dream_cue_policy_state(
+        run_id=str(updated_store.get("run_id") or "resident-sleep"),
+        generated_at=generated_at,
+        entry_vector=entry_vector,
+        relationship_memory=_read_json_if_exists(memory_dir / "relationship_memory.json"),
+        replay_cue_bundle=_read_json_if_exists(replay_dir / "replay_cue_bundle.json"),
+        web_dream_learning_state=_read_json_if_exists(
+            dream_dir / "web_dream_learning_state.json"
+        ),
+        topic_history=_read_json_if_exists(dream_dir / "web_dream_topic_history.json"),
+    )
+    _write_json(dream_dir / "offline_dream_entry_vector.json", entry_vector)
+    _write_json(dream_dir / "dream_cue_policy_state.json", cue_policy)
+    return {
+        "offline_dream_entry_vector_ref": (
+            "runtime/state/dream/offline_dream_entry_vector.json"
+        ),
+        "offline_memory_hygiene_report_ref": (
+            "runtime/state/memory/offline_memory_hygiene_report.json"
+        ),
+        "hygiene_action_count": len(hygiene_report.get("hygiene_actions", [])),
+        "evidence_refs": [
+            "runtime/state/dream/offline_dream_entry_vector.json",
+            "runtime/state/dream/dream_cue_policy_state.json",
+            "runtime/state/memory/offline_memory_hygiene_report.json",
+        ],
+    }
+
+
+def _project_web_learning_into_dream_window(
+    *,
+    state_dir: Path,
+    web_learning_state: dict[str, Any],
+    generated_at: str,
+) -> None:
+    dream_path = state_dir / "dream" / "dream_experience_window.json"
+    dream_window = _read_json_if_exists(dream_path)
+    if not dream_window:
+        return
+    updated = project_web_residue_into_dream_window(
+        dream_window=dream_window,
+        web_dream_learning_state=web_learning_state,
+        generated_at=generated_at,
+    )
+    _write_json(dream_path, updated)
+
+
+def _list_or_empty(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item]
 
 
 def _path_for_ref(*, state_dir: Path, ref: str) -> Path:

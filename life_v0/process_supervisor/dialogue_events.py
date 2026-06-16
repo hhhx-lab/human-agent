@@ -138,6 +138,8 @@ def attach_memory_retrieval_event_payload(
         _string_list(memory_retrieval_frame.get("activated_engram_refs"))
         + _string_list(memory_retrieval_frame.get("relationship_memory_hits"))
         + _string_list(memory_retrieval_frame.get("autobiographical_hits"))
+        + _string_list(memory_retrieval_frame.get("schema_memory_hits"))
+        + _string_list(memory_retrieval_frame.get("pattern_completion_hits"))
         + _string_list(
             memory_retrieval_frame.get(
                 "autobiographical_responsibility_repair_hits"
@@ -196,6 +198,12 @@ def attach_memory_retrieval_event_payload(
                 "autobiographical_responsibility_repair_hits"
             )
         )
+    )
+    event["memory_retrieval_schema_hit_count"] = len(
+        _string_list(memory_retrieval_frame.get("schema_memory_hits"))
+    )
+    event["memory_retrieval_pattern_completion_hit_count"] = len(
+        _string_list(memory_retrieval_frame.get("pattern_completion_hits"))
     )
     repair_profile = memory_retrieval_frame.get(
         "autobiographical_responsibility_repair_profile"
@@ -893,6 +901,9 @@ def build_resident_background_lineage_payload(
         )
         if body_signal_refs:
             payload["resident_background_lineage_body_signal_refs"] = (
+                body_signal_refs
+            )
+            payload["resident_background_lineage_body_signal_ref_count"] = len(
                 body_signal_refs
             )
             lineage_refs.extend(body_signal_refs)

@@ -209,6 +209,8 @@ def apply_body_affect_modulation(
     )
     if tempo_mode:
         updated["expression_tempo_mode"] = tempo_mode
+    if fatigue_pressure in {"high_load", "critical"}:
+        updated["delay_or_release_decision"] = "hold_for_body_recovery"
 
     caution_level = _derive_release_caution_level(
         expression_plan=updated,
@@ -254,6 +256,120 @@ def _derive_release_caution_level(
     if fatigue_pressure or affect_arousal is not None:
         return "baseline"
     return None
+
+
+def apply_body_proactive_release_threshold(
+    *,
+    expression_plan: dict[str, Any],
+    proactive_voice_profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not expression_plan:
+        return {}
+    updated = json.loads(json.dumps(expression_plan))
+    fatigue_pressure = updated.get("fatigue_pressure")
+    caution = updated.get("release_caution_level")
+    constraints = list(
+        (proactive_voice_profile or {}).get("release_constraints", [])
+    )
+    if fatigue_pressure in {"high_load", "critical"}:
+        constraints.append("hold_proactive_voice_until_body_recovery")
+        updated["proactive_release_threshold"] = "elevated"
+    elif caution == "elevated":
+        updated["proactive_release_threshold"] = "guarded"
+    else:
+        updated["proactive_release_threshold"] = "baseline"
+    if constraints and proactive_voice_profile is not None:
+        proactive_voice_profile["release_constraints"] = _dedupe_strings(constraints)
+    updated["body_proactive_modulation_boundary"] = (
+        "structured_body_modulation_not_spoken_response"
+    )
+    return updated
+
+
+def apply_world_contact_handoff_modulation(
+    *,
+    expression_plan: dict[str, Any],
+    world_contact_summary: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not expression_plan or not world_contact_summary:
+        return expression_plan or {}
+    handoff = world_contact_summary.get("world_contact_handoff_presence")
+    if not isinstance(handoff, dict) or not handoff:
+        return expression_plan
+    updated = json.loads(json.dumps(expression_plan))
+    risk_flags = list(updated.get("expression_risk_flags", []))
+    if "world_contact_handoff_present" not in risk_flags:
+        risk_flags.append("world_contact_handoff_present")
+    updated["expression_risk_flags"] = risk_flags
+    if handoff.get("repair_hold_active"):
+        updated["release_caution_level"] = "elevated"
+        if updated.get("delay_or_release_decision") not in {
+            "hold_for_responsibility_repair_lock",
+        }:
+            updated["delay_or_release_decision"] = "hold_for_world_contact_repair"
+        updated["world_contact_handoff_tempo_mode"] = "repair_lock_first"
+    updated["world_contact_handoff_presence_ref"] = (
+        "runtime/state/membrane/world_contact_summary.json#world_contact_handoff_presence"
+    )
+    updated["world_contact_handoff_modulation_boundary"] = (
+        "structured_world_contact_handoff_not_spoken_response"
+    )
+    return updated
+
+
+def _dedupe_strings(items: list[str]) -> list[str]:
+    result: list[str] = []
+    for item in items:
+        if item and item not in result:
+            result.append(item)
+    return result
+
+
+def project_expression_plan_with_offline_reconsolidation_modulation(
+    *,
+    expression_plan: dict[str, Any],
+    commitment_expression_plan: dict[str, Any] | None = None,
+    apology_repair_language_trace: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not expression_plan:
+        return {}
+    commitment_expression_plan = commitment_expression_plan or {}
+    apology_repair_language_trace = apology_repair_language_trace or {}
+    tempo_mode = commitment_expression_plan.get("cumulative_commitment_tempo_mode")
+    repair_window = apology_repair_language_trace.get("cumulative_repair_window_mode")
+    if tempo_mode != "relationship_offline_reconsolidation_first" and (
+        repair_window != "relationship_offline_reconsolidation_first"
+    ):
+        return expression_plan
+    updated = json.loads(json.dumps(expression_plan))
+    risk_flags = list(updated.get("expression_risk_flags", []))
+    if "relationship_offline_reconsolidation_present" not in risk_flags:
+        risk_flags.append("relationship_offline_reconsolidation_present")
+    updated["expression_risk_flags"] = risk_flags
+    updated["offline_reconsolidation_tempo_mode"] = (
+        tempo_mode or repair_window or "relationship_offline_reconsolidation_first"
+    )
+    updated["offline_reconsolidation_refs"] = _dedupe_strings(
+        list(commitment_expression_plan.get("offline_reconsolidation_refs", []))
+        + list(commitment_expression_plan.get("offline_learning_ref_set", []))
+        + list(apology_repair_language_trace.get("offline_learning_ref_set", []))
+    )[:12]
+    if _can_replace_release_decision(updated.get("delay_or_release_decision")):
+        updated["delay_or_release_decision"] = (
+            "hold_for_relationship_offline_reconsolidation"
+        )
+    updated["release_caution_level"] = "elevated"
+    updated["offline_reconsolidation_modulation_boundary"] = (
+        "structured_offline_reconsolidation_not_spoken_response"
+    )
+    return updated
+
+
+def _can_replace_release_decision(decision: Any) -> bool:
+    return decision not in {
+        "hold_for_responsibility_repair_lock",
+        "hold_for_world_contact_repair",
+    }
 
 
 def project_expression_plan_with_queue_e_repair_modulation(

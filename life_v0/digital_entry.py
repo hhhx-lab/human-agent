@@ -60,6 +60,37 @@ from .state_store import run_check_state_store, run_state_store
 from .validators import run_check_validation_membrane, run_validation_membrane
 
 
+SLASH_STATE_COMMANDS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+    ("state", "常驻状态、生命周期、等待心跳、终端输入", ("/state", "/status", "/terminal", "/lifecycle", "/heartbeat", "/queue")),
+    ("context", "关系上下文、语义焦点、回合累积", ("/context", "/上下文")),
+    ("memory", "短期/长期记忆、召回、写门、沉淀层", ("/memory", "/记忆", "/short-memory", "/long-memory", "/stm", "/ltm")),
+    ("dream", "梦境、离线整合、醒后整合、网页梦境学习", ("/dream", "/梦境")),
+    ("growth", "成长、学习、自我修改候选、反遗忘回放", ("/growth", "/成长", "/learning")),
+    ("body", "身体节律、资源预算、需要状态", ("/body", "/身体")),
+    ("emotion", "情绪、痛苦压力、调节循环", ("/emotion", "/情绪", "/affect")),
+    ("inner_environment", "内环境、稳态、资源和调制压力", ("/inner", "/内环境", "/homeostasis")),
+    ("signal", "信号介质、调质、预测误差与释放偏置", ("/signal", "/调质", "/modulation")),
+    ("membrane", "生命膜、事实门、边界与验证膜", ("/membrane", "/生命膜", "/boundary")),
+    ("relationship", "关系时间线、承诺、共同语言、关系阶段", ("/relationship", "/relation", "/关系")),
+    ("responsibility", "责任、痛苦、后悔、修复链", ("/responsibility", "/责任", "/痛苦", "/后悔", "/repair")),
+    ("language", "语言感知、语义地图、内言语、表达计划", ("/language", "/语言")),
+    ("cognition", "工作区、预测、采样、写门", ("/cognition", "/认知")),
+    ("consciousness", "意识工作区、广播、元认知、可报告性", ("/consciousness", "/意识", "/workspace")),
+    ("thinking", "自我思考、内言语、等待反思", ("/thinking", "/思考", "/inner-speech")),
+    ("personality", "人格慢变量、性格收敛、自传栈", ("/personality", "/性格", "/人格", "/self")),
+    ("ability", "能力面、出生准备、验收证据", ("/ability", "/能力")),
+    ("perception", "视觉/感知、外周观察、世界接触", ("/vision", "/visual", "/perception", "/感知", "/视觉")),
+    ("prediction", "预测、主动采样、世界接触和确认绑定", ("/prediction", "/预测", "/active-inference", "/world")),
+    ("proactive_voice", "主动发话画像、释放状态、候选来源覆盖", ("/proactive", "/主动", "/voice")),
+)
+
+SLASH_INSPECTION_ALIASES = {
+    alias.lower().lstrip("/"): category
+    for category, _, aliases in SLASH_STATE_COMMANDS
+    for alias in aliases
+}
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="digital")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -300,6 +331,7 @@ def _run_interactive_resident_terminal_client(
             life_name=life_name,
         )
 
+    terminal_history: list[str] = []
     while True:
         try:
             prompt = render_input_prompt(life_name=life_name)
@@ -308,6 +340,7 @@ def _run_interactive_resident_terminal_client(
                     prompt=prompt,
                     idle_voice_fn=idle_voice_fn,
                     idle_voice_interval_seconds=idle_voice_interval_seconds,
+                    history=terminal_history,
                 )
             else:
                 utterance = read_line_fn(
@@ -326,6 +359,7 @@ def _run_interactive_resident_terminal_client(
             life_name=life_name,
             say_timeout_seconds=say_timeout_seconds,
         )
+        _append_terminal_history(terminal_history, utterance)
         if exit_code is not None:
             return exit_code
 
@@ -344,89 +378,28 @@ def _handle_resident_terminal_utterance(
         print(
             render_dialogue_box(
                 "终端命令",
-                "\n".join(
-                    [
-                        "/state 查看常驻状态",
-                        "/context 查看关系上下文",
-                        "/memory 查看记忆摘要",
-                        "/dream 查看梦境和离线整合",
-                        "/growth 查看成长、学习和自我修改状态",
-                        "/body 查看身体和内环境",
-                        "/emotion 查看情绪和调节",
-                        "/signal 查看调质和信号介质",
-                        "/membrane 查看生命膜和验证膜",
-                        "/relationship 查看关系",
-                        "/responsibility 查看责任、痛苦、后悔和修复链",
-                        "/language 查看语言系统",
-                        "/cognition 查看工作区、预测和写门",
-                        "/consciousness 查看意识工作区和可报告性",
-                        "/thinking 查看思考和内言语状态",
-                        "/personality 查看人格慢变量",
-                        "/ability 查看能力和出生准备",
-                        "/vision 查看视觉/感知状态",
-                        "/prediction 查看预测、主动采样和世界接触链",
-                        "/proactive 查看主动发话状态",
-                        "/exit 离开当前终端；/stop 请求停止常驻进程",
-                    ]
-                ),
+                _render_slash_help_text(),
             )
         )
         return None
-    if command.lstrip("/") in STATE_INSPECTION_CATEGORIES or command in {
-        "/status",
-        "/记忆",
-        "/梦境",
-        "/成长",
-        "/学习",
-        "/身体",
-        "/情绪",
-        "/inner",
-        "/内环境",
-        "/调质",
-        "/信号",
-        "/信号介质",
-        "/modulation",
-        "/neuromodulation",
-        "/生命膜",
-        "/膜",
-        "/边界",
-        "/验证膜",
-        "/boundary",
-        "/validation_membrane",
-        "/关系",
-        "/责任",
-        "/痛苦",
-        "/后悔",
-        "/修复",
-        "/语言",
-        "/认知",
-        "/意识",
-        "/思考",
-        "/上下文",
-        "/人格",
-        "/性格",
-        "/能力",
-        "/视觉",
-        "/感知",
-        "/vision",
-        "/visual",
-        "/prediction",
-        "/预测",
-        "/主动预测",
-        "/active_inference",
-        "/world",
-        "/world_contact",
-        "/世界接触",
-        "/外周",
-        "/periphery",
-        "/proactive",
-        "/主动",
-        "/主动语音",
-        "/voice",
-    }:
+    if command in {"/all", "/snapshot", "/inspect-all", "/全部", "/总览"}:
+        inspection = _build_resident_state_inspection_bundle(
+            terminal_dir=terminal_dir,
+        )
+        print(
+            render_dialogue_box(
+                "状态总览",
+                json.dumps(inspection, ensure_ascii=False, indent=2),
+            )
+        )
+        return None
+    if command in {"/clear", "/cls"}:
+        print("\033[2J\033[H", end="")
+        return None
+    if _is_state_inspection_command(command):
         inspection = build_resident_state_inspection(
             terminal_dir=terminal_dir,
-            category=command,
+            category=_resolve_state_inspection_category(command),
         )
         print(
             render_dialogue_box(
@@ -467,6 +440,14 @@ def _handle_resident_terminal_utterance(
             )
         )
         return stop_result.exit_code
+    if command.startswith("/"):
+        print(
+            render_dialogue_box(
+                "终端命令",
+                "未识别这个 / 命令。输入 /help 查看当前终端可用的状态查看和控制命令。",
+            )
+        )
+        return None
     turn_result = send_resident_relation_turn(
         terminal_dir=terminal_dir,
         utterance=utterance,
@@ -493,6 +474,17 @@ def _emit_resident_proactive_terminal_voice(
         life_name=life_name,
         now_iso=now_iso or _now_iso,
     )
+    proactive_profile = event.get("proactive_voice_profile") or {}
+    release_constraints = list(proactive_profile.get("release_constraints", []))
+    if (
+        event.get("proactive_release_threshold") == "elevated"
+        and "hold_proactive_voice_until_body_recovery" in release_constraints
+    ):
+        written = write_resident_proactive_terminal_event(
+            terminal_dir=terminal_dir,
+            event=event,
+        )
+        return False
     state_root = terminal_dir.parent
     generated_at = str(event.get("generated_at") or _now_iso())
     model_result = compose_model_expression(
@@ -545,6 +537,70 @@ def _emit_resident_proactive_terminal_voice(
         return False
     print(render_dialogue_box(life_name or "Digital Life", utterance))
     return True
+
+
+def _render_slash_help_text() -> str:
+    lines = [
+        "/help /commands 查看这张命令表",
+        "/all /snapshot 查看所有生命状态检查面",
+    ]
+    for _, description, aliases in SLASH_STATE_COMMANDS:
+        primary = aliases[0]
+        alias_text = " ".join(aliases[1:4])
+        if alias_text:
+            lines.append(f"{primary} ({alias_text}) {description}")
+        else:
+            lines.append(f"{primary} {description}")
+    lines.extend(
+        [
+            "/clear 清屏但不影响常驻过程",
+            "/exit 离开当前终端，常驻过程继续睡眠、回忆、思考、成长、学习",
+            "/stop 请求常驻过程通过正常 closeout 收口",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _is_state_inspection_command(command: str) -> bool:
+    normalized = str(command or "").strip().lower().lstrip("/")
+    return (
+        normalized in STATE_INSPECTION_CATEGORIES
+        or normalized in SLASH_INSPECTION_ALIASES
+    )
+
+
+def _resolve_state_inspection_category(command: str) -> str:
+    normalized = str(command or "").strip().lower().lstrip("/")
+    return SLASH_INSPECTION_ALIASES.get(normalized, normalized)
+
+
+def _build_resident_state_inspection_bundle(
+    *,
+    terminal_dir: Path,
+) -> dict[str, object]:
+    ordered_categories = [category for category, _, _ in SLASH_STATE_COMMANDS]
+    return {
+        "schema_version": "resident_state_inspection_bundle_v0",
+        "inspection_scope": "terminal_view_only_not_relation_turn",
+        "categories": ordered_categories,
+        "inspections": {
+            category: build_resident_state_inspection(
+                terminal_dir=terminal_dir,
+                category=category,
+            )
+            for category in ordered_categories
+        },
+    }
+
+
+def _append_terminal_history(history: list[str], utterance: str) -> None:
+    text = str(utterance or "").strip()
+    if not text:
+        return
+    if history and history[-1] == utterance:
+        return
+    history.append(utterance)
+    del history[:-100]
 
 
 def _read_runtime_json(path: Path) -> dict:

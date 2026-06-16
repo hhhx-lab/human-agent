@@ -101,6 +101,11 @@ def build_memory_allocation_gate(
         )
     )
     high_priority_episode_kinds = _dedupe(high_priority_episode_kinds)
+    replay_priority_vector = _replay_priority_vector(
+        candidates=candidates,
+        memory_trace_store=memory_trace_store,
+        core_affect_vector=core_affect_vector,
+    )
     return {
         "schema_version": "memory_allocation_gate_v0",
         "run_id": run_id,
@@ -111,6 +116,7 @@ def build_memory_allocation_gate(
         "candidate_allocations": candidates,
         "high_priority_candidate_count": len(high_priority_episode_kinds),
         "high_priority_episode_kinds": high_priority_episode_kinds,
+        "replay_priority_vector": replay_priority_vector,
         "allocation_channels": _allocation_channel_summary(candidates),
         "allocation_boundaries": [
             "dream_hypothesis_not_factual_trace",
@@ -283,6 +289,50 @@ def _signal_defer_score(signal_media_runtime: dict[str, Any]) -> int:
     if body_signal_profile.get("dream_residue_load", 0) and body_signal_profile.get("dream_residue_load", 0) > 0.5:
         return 1
     return 0
+
+
+def _replay_priority_vector(
+    *,
+    candidates: list[dict[str, Any]],
+    memory_trace_store: dict[str, Any] | None,
+    core_affect_vector: dict[str, Any],
+) -> list[dict[str, Any]]:
+    vector: list[dict[str, Any]] = []
+    for candidate in candidates[:8]:
+        vector.append(
+            {
+                "event_boundary_ref": candidate.get("event_boundary_ref"),
+                "episode_kind": candidate.get("episode_kind"),
+                "priority_score": candidate.get("allocation_score"),
+                "priority_reason": candidate.get("allocation_reason"),
+            }
+        )
+    for trace in (memory_trace_store or {}).get("traces", []):
+        if not isinstance(trace, dict):
+            continue
+        if trace.get("live_trace_origin") != "live_dialogue_turn":
+            continue
+        if trace.get("lifecycle_state") == "deprecated":
+            continue
+        salience = trace.get("salience_vector") or {}
+        responsibility_pressure = str(salience.get("responsibility_pressure") or "")
+        score = 4
+        if responsibility_pressure == "high":
+            score += 3
+        if (core_affect_vector or {}).get("repair_drive", 0):
+            score += 2
+        vector.append(
+            {
+                "trace_ref": f"runtime/state/memory/memory_trace_store.json#{trace.get('trace_id')}",
+                "episode_kind": "live_dialogue_episode",
+                "priority_score": score,
+                "priority_reason": "live_trace_salience_and_responsibility_weighted",
+            }
+        )
+    vector.sort(
+        key=lambda item: (-int(item.get("priority_score") or 0), str(item.get("episode_kind") or ""))
+    )
+    return vector[:12]
 
 
 def _string_list(value: Any) -> list[str]:
