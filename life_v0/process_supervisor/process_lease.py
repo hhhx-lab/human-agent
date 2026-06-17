@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import Any, Callable
 
+from .runtime_resource_budget import append_jsonl_with_hot_budget
+
 
 RESIDENT_PROCESS_LEASE_REF = "runtime/state/terminal/resident_process_lease.json"
 RESIDENT_PROCESS_LEASE_HISTORY_REF = "runtime/state/terminal/resident_process_lease_history.jsonl"
@@ -277,10 +279,12 @@ def _append_lease_history_event(
     if extra:
         event.update(extra)
     terminal_dir.mkdir(parents=True, exist_ok=True)
-    with (terminal_dir / "resident_process_lease_history.jsonl").open(
-        "a", encoding="utf-8"
-    ) as handle:
-        handle.write(json.dumps(event, ensure_ascii=False) + "\n")
+    append_jsonl_with_hot_budget(
+        terminal_dir / "resident_process_lease_history.jsonl",
+        event,
+        max_bytes=8 * 1024 * 1024,
+        tail_events=512,
+    )
 
 
 def _read_lease_history_events(terminal_dir: Path) -> list[dict[str, Any]]:

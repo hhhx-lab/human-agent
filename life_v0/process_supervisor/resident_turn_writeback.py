@@ -1,12 +1,18 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
 from ..body.emotion_episode import project_affective_episode_from_live_turn
 from ..body.emotion_regulation import project_emotion_regulation_from_live_turn
+from ..body.live_body_projection import (
+    body_presence_digest,
+    project_body_rhythm_pulse_from_live_turn,
+    project_need_state_from_live_turn,
+)
 from ..body.trait_drift import build_trait_drift_monitor_from_self_model
 from ..life_targets.consciousness_probes import (
     project_consciousness_probe_bundle_from_live_turn,
@@ -55,6 +61,12 @@ from ..language.language_event_bundle import (
     infer_language_event_kind,
 )
 from ..language.pragmatic_inference import detect_memory_feedback_from_utterance
+from ..language.repair_closeout_chain import (
+    REPAIR_CLOSEOUT_STATE_REF,
+    advance_repair_closeout_on_confirmation,
+    build_repair_closeout_state,
+    project_apology_repair_trace_for_closeout,
+)
 from ..language.relationship_timeline import build_relationship_timeline
 from ..state_store.autobiographical_stack import (
     project_autobiographical_stack_from_live_turn,
@@ -319,6 +331,29 @@ def write_resident_turn_writeback(
     write_json(relationship_dir / "relationship_subject_graph.json", relationship_graph)
 
     generated_at = now_iso()
+    state_dir = terminal_dir.parent
+    observed_names = _extract_observed_names_from_turns(
+        dialogue_dir=language_dir / "dialogue_turn_log.jsonl",
+        external_utterance=external_utterance,
+    )
+    if observed_names:
+        memory_dir = state_dir / "memory"
+        memory_dir.mkdir(parents=True, exist_ok=True)
+        relationship_memory_path = memory_dir / "relationship_memory.json"
+        relationship_memory = _read_json_if_exists(relationship_memory_path)
+        relationship_memory = _merge_observed_names_into_relationship_memory(
+            relationship_memory,
+            observed_names=observed_names,
+        )
+        write_json(relationship_memory_path, relationship_memory)
+        dialogue_memory_summary_path = memory_dir / "dialogue_memory_summary.json"
+        dialogue_memory_summary = _merge_observed_names_into_dialogue_memory_summary(
+            _read_json_if_exists(dialogue_memory_summary_path),
+            run_id=run_id,
+            generated_at=generated_at,
+            observed_names=observed_names,
+        )
+        write_json(dialogue_memory_summary_path, dialogue_memory_summary)
     live_language_turn_refs = _dedupe_refs(
         [
             language_percept_ref,
@@ -331,7 +366,6 @@ def write_resident_turn_writeback(
     live_turn_focus = live_semantic_focus or (
         live_language_turn_refs[-1] if live_language_turn_refs else None
     )
-    state_dir = terminal_dir.parent
     web_dream_learning_state = _read_json_if_exists(
         state_dir / "dream" / "web_dream_learning_state.json"
     )
@@ -1734,6 +1768,10 @@ def _refresh_long_horizon_continuity(
         [],
     )
     dialogue_turn_entries = [{"dialogue_turn_ref": ref} for ref in dialogue_turn_refs]
+    observed_names = _extract_observed_names_from_turns(
+        dialogue_dir=language_dir / "dialogue_turn_log.jsonl",
+        external_utterance=external_utterance,
+    )
 
     first_pass_relationship_timeline = build_relationship_timeline(
         run_id=str(relationship_timeline.get("run_id") or commitment_expression_plan.get("run_id") or "resident-turn-writeback"),
@@ -1789,6 +1827,28 @@ def _refresh_long_horizon_continuity(
         source_doc_refs=list(apology_repair_language_trace.get("source_doc_refs", []))
         or source_doc_refs,
     )
+    refresh_run_id = str(
+        first_pass_relationship_timeline.get("run_id")
+        or relationship_timeline.get("run_id")
+        or "resident-turn-writeback"
+    )
+    repair_closeout_path = language_dir / "repair_closeout_state.json"
+    repair_closeout_for_stage = build_repair_closeout_state(
+        run_id=refresh_run_id,
+        generated_at=generated_at,
+        commitment_truth_state=commitment_truth_state,
+        apology_repair_language_trace=first_pass_apology_repair_language_trace,
+        responsibility_loop_state=responsibility_loop_state,
+        previous_state=_read_json_if_exists(repair_closeout_path),
+    )
+    if external_utterance:
+        stage_feedback = detect_memory_feedback_from_utterance(external_utterance)
+        repair_closeout_for_stage = advance_repair_closeout_on_confirmation(
+            repair_closeout_for_stage,
+            run_id=refresh_run_id,
+            generated_at=generated_at,
+            feedback_event_type=stage_feedback.get("event_type"),
+        )
     evolved_continuity = evolve_relationship_and_self_model(
         generated_at=generated_at,
         relationship_graph=relationship_graph,
@@ -1796,6 +1856,7 @@ def _refresh_long_horizon_continuity(
         relationship_timeline=first_pass_relationship_timeline,
         commitment_expression_plan=first_pass_commitment_expression_plan,
         apology_repair_language_trace=first_pass_apology_repair_language_trace,
+        repair_closeout_state=repair_closeout_for_stage,
         responsibility_loop_state=responsibility_loop_state,
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
@@ -1887,6 +1948,11 @@ def _refresh_long_horizon_continuity(
         world_contact_summary=world_contact_summary,
         pain_regret_repair_report=pain_regret_repair_report,
     )
+    if observed_names:
+        refreshed_relationship_memory = _merge_observed_names_into_relationship_memory(
+            refreshed_relationship_memory,
+            observed_names=observed_names,
+        )
     refreshed_state_merge_guard = project_state_merge_guard_with_relationship_memory(
         state_merge_guard=state_merge_guard,
         relationship_memory=refreshed_relationship_memory,
@@ -1986,6 +2052,20 @@ def _refresh_long_horizon_continuity(
     )
     write_json(expression_plan_path, expression_plan)
     write_json(commitment_expression_path, refreshed_commitment_expression_plan)
+    repair_closeout_state = build_repair_closeout_state(
+        run_id=refresh_run_id,
+        generated_at=generated_at,
+        commitment_truth_state=commitment_truth_state,
+        apology_repair_language_trace=refreshed_apology_repair_language_trace,
+        responsibility_loop_state=responsibility_loop_state,
+        previous_state=repair_closeout_for_stage,
+    )
+    refreshed_apology_repair_language_trace = project_apology_repair_trace_for_closeout(
+        refreshed_apology_repair_language_trace,
+        closeout_state=repair_closeout_state,
+        generated_at=generated_at,
+    )
+    write_json(repair_closeout_path, repair_closeout_state)
     write_json(apology_repair_path, refreshed_apology_repair_language_trace)
     write_json(relationship_dir / "relationship_subject_graph.json", evolved_relationship_graph)
     write_json(relationship_memory_path, refreshed_relationship_memory)
@@ -2301,6 +2381,7 @@ def _refresh_long_horizon_continuity(
             shared_term_registry=refreshed_shared_term_registry
             or existing_shared_term_registry,
             relationship_stage=relationship_subject.get("relationship_stage"),
+            repair_closeout_state=repair_closeout_state,
             generated_at=generated_at,
         )
         write_json(language_dir / "semantic_map_frame.json", semantic_map)
@@ -2427,6 +2508,42 @@ def _refresh_long_horizon_continuity(
     )
     write_json(body_dir / "affective_episode.json", updated_affective_episode)
     write_json(body_dir / "emotion_regulation_loop.json", updated_emotion_regulation)
+    updated_body_rhythm_pulse = project_body_rhythm_pulse_from_live_turn(
+        body_rhythm_pulse=_read_json_if_exists(body_dir / "body_rhythm_pulse.json"),
+        generated_at=generated_at,
+        run_id=refresh_run_id,
+        live_turn_focus=live_turn_focus,
+        core_affect_vector=core_affect_vector or {},
+        body_resource_budget=body_resource_budget or {},
+        external_utterance=external_utterance,
+    )
+    updated_need_state_vector = project_need_state_from_live_turn(
+        need_state_vector=_read_json_if_exists(body_dir / "need_state_vector.json"),
+        generated_at=generated_at,
+        run_id=refresh_run_id,
+        live_turn_focus=live_turn_focus,
+        core_affect_vector=core_affect_vector or {},
+        body_resource_budget=body_resource_budget or {},
+        external_utterance=external_utterance,
+    )
+    write_json(body_dir / "body_rhythm_pulse.json", updated_body_rhythm_pulse)
+    write_json(body_dir / "need_state_vector.json", updated_need_state_vector)
+    presence_digest = body_presence_digest(
+        body_rhythm_pulse=updated_body_rhythm_pulse,
+        body_resource_budget=body_resource_budget or {},
+        core_affect_vector=core_affect_vector or {},
+        world_contact_summary=world_contact_summary,
+    )
+    if live_turn_focus:
+        updated_turn_transition["body_presence_digest"] = presence_digest
+        write_json(terminal_dir / "turn_transition_trace.json", updated_turn_transition)
+    refreshed_autobiographical_stack = _append_world_contact_episode_to_autobiographical_stack(
+        refreshed_autobiographical_stack,
+        world_contact_summary=world_contact_summary,
+        generated_at=generated_at,
+        live_turn_focus=live_turn_focus,
+    )
+    write_json(autobiographical_stack_path, refreshed_autobiographical_stack)
     return {
         "relationship_graph": evolved_relationship_graph,
         "relationship_timeline": refreshed_relationship_timeline,
@@ -2434,6 +2551,8 @@ def _refresh_long_horizon_continuity(
         "commitment_expression_plan": refreshed_commitment_expression_plan,
         "expression_plan": expression_plan,
         "apology_repair_language_trace": refreshed_apology_repair_language_trace,
+        "repair_closeout_state": repair_closeout_state,
+        "repair_closeout_state_ref": REPAIR_CLOSEOUT_STATE_REF,
         "relationship_memory": refreshed_relationship_memory,
         "state_merge_guard": refreshed_state_merge_guard,
         "autobiographical_stack": refreshed_autobiographical_stack,
@@ -2710,25 +2829,264 @@ def _life_response_from_dialogue_log(
     return str(payload.get("utterance") or payload.get("life_utterance") or "")
 
 
+def _extract_observed_names_from_turns(
+    *,
+    dialogue_dir: Path,
+    external_utterance: str | None,
+) -> list[str]:
+    from ..state_store.relation_identity_hygiene import (
+        extract_observed_names_from_utterances,
+    )
+
+    utterances = [str(external_utterance or "")]
+    if dialogue_dir.exists():
+        try:
+            lines = dialogue_dir.read_text(encoding="utf-8").splitlines()[-12:]
+        except OSError:
+            lines = []
+        for line in lines:
+            try:
+                payload = json.loads(line)
+            except ValueError:
+                continue
+            if not isinstance(payload, dict):
+                continue
+            speaker = str(payload.get("speaker") or payload.get("turn_role") or "")
+            if speaker and speaker not in {"external", "relation", "human", "person"}:
+                continue
+            utterances.append(str(payload.get("utterance") or payload.get("text") or ""))
+    return extract_observed_names_from_utterances(utterances)
+
+
+def _clean_observed_relation_name(value: str) -> str:
+    cleaned = re.split(r"[，。,.\s！？!?；;：:、]", str(value or "").strip())[0]
+    if cleaned in {"我", "你", "他", "她", "它", "我们", "朋友", "用户", "客户"}:
+        return ""
+    if len(cleaned) < 1 or len(cleaned) > 16:
+        return ""
+    if _looks_like_non_relation_name(cleaned):
+        return ""
+    return cleaned
+
+
+def _looks_like_non_relation_name(value: str) -> bool:
+    text = str(value or "").strip()
+    if not text:
+        return True
+    blocked_fragments = (
+        "是否",
+        "不是",
+        "真的",
+        "记得",
+        "什么",
+        "哪一种",
+        "哪种",
+        "为什么",
+        "怎么",
+        "如果",
+        "可以",
+        "需要",
+        "应该",
+        "关系",
+        "回答",
+        "解释",
+        "模型",
+        "助手",
+        "编程",
+        "语言模型",
+        "人工智能",
+        "ChatGPT",
+        "OpenAI",
+        "Codex",
+        "GPT",
+    )
+    return any(fragment in text for fragment in blocked_fragments)
+
+
+def _merge_observed_names_into_relationship_memory(
+    relationship_memory: dict[str, Any] | None,
+    *,
+    observed_names: list[str],
+) -> dict[str, Any]:
+    updated = json.loads(json.dumps(relationship_memory or {}))
+    updated.setdefault("schema_version", "relationship_memory_v0")
+    profile = updated.setdefault("relation_person_profile", {})
+    if not isinstance(profile, dict):
+        profile = {}
+        updated["relation_person_profile"] = profile
+    profile["schema_version"] = profile.get(
+        "schema_version",
+        "relationship_person_profile_v0",
+    )
+    from ..state_store.relation_identity_hygiene import sanitize_observed_names
+
+    profile["observed_names"] = sanitize_observed_names(
+        _string_list(profile.get("observed_names")) + _string_list(observed_names)
+    )
+    profile["profile_source_refs"] = _dedupe_refs(
+        _string_list(profile.get("profile_source_refs"))
+        + ["runtime/state/language/dialogue_turn_log.jsonl"]
+    )
+    updated["relationship_theme_tags"] = _dedupe_refs(
+        _string_list(updated.get("relationship_theme_tags"))
+        + ["relation_person_identity_memory"]
+    )
+    updated["next_wake_cues"] = _dedupe_refs(
+        _string_list(updated.get("next_wake_cues"))
+        + [f"remember_relation_person_name:{name}" for name in observed_names]
+    )
+    return updated
+
+
+def _merge_observed_names_into_dialogue_memory_summary(
+    dialogue_memory_summary: dict[str, Any] | None,
+    *,
+    run_id: str,
+    generated_at: str,
+    observed_names: list[str],
+) -> dict[str, Any]:
+    updated = json.loads(json.dumps(dialogue_memory_summary or {}))
+    updated.setdefault("schema_version", "dialogue_memory_summary_v0")
+    updated.setdefault("run_id", run_id)
+    updated["generated_at"] = generated_at
+    updated.setdefault("status", "live_incremental")
+    profile = updated.setdefault("relation_person_profile", {})
+    if not isinstance(profile, dict):
+        profile = {}
+        updated["relation_person_profile"] = profile
+    profile["schema_version"] = profile.get(
+        "schema_version",
+        "relationship_person_profile_v0",
+    )
+    from ..state_store.relation_identity_hygiene import sanitize_observed_names
+
+    profile["observed_names"] = sanitize_observed_names(
+        _string_list(profile.get("observed_names")) + _string_list(observed_names)
+    )
+    updated["relationship_theme_tags"] = _dedupe_refs(
+        _string_list(updated.get("relationship_theme_tags"))
+        + ["relation_person_identity_memory"]
+    )
+    updated["next_wake_cues"] = _dedupe_refs(
+        _string_list(updated.get("next_wake_cues"))
+        + [f"remember_relation_person_name:{name}" for name in observed_names]
+    )
+    summaries = updated.setdefault("deduplicated_episode_summaries", [])
+    if not isinstance(summaries, list):
+        summaries = []
+        updated["deduplicated_episode_summaries"] = summaries
+    existing_summaries = {
+        str(item.get("summary"))
+        for item in summaries
+        if isinstance(item, dict) and item.get("summary")
+    }
+    for name in observed_names:
+        summary = f"关系对象说自己的名字是{name}。"
+        if summary not in existing_summaries:
+            summaries.append(
+                {
+                    "summary": summary,
+                    "episode_kind": "relation_person_identity_memory",
+                    "source_ref": "runtime/state/language/dialogue_turn_log.jsonl",
+                }
+            )
+    return updated
+
+
+def _append_world_contact_episode_to_autobiographical_stack(
+    autobiographical_stack: dict[str, Any] | None,
+    *,
+    world_contact_summary: dict[str, Any] | None,
+    generated_at: str,
+    live_turn_focus: str | None,
+) -> dict[str, Any]:
+    updated = json.loads(json.dumps(autobiographical_stack or {}))
+    world_contact_summary = world_contact_summary or {}
+    if not world_contact_summary:
+        return updated
+    episodes = updated.setdefault("world_contact_episodes", [])
+    if not isinstance(episodes, list):
+        episodes = []
+        updated["world_contact_episodes"] = episodes
+    posture = str(world_contact_summary.get("release_posture") or "shadow_only_guarded")
+    contact_kind = str(
+        world_contact_summary.get("contact_kind")
+        or world_contact_summary.get("contact_mode")
+        or "shadow_observation"
+    )
+    digest = f"世界接触:{contact_kind};姿态:{posture}"
+    if live_turn_focus:
+        digest = f"{digest};焦点:{live_turn_focus}"
+    existing = {
+        str(item.get("episode_digest"))
+        for item in episodes
+        if isinstance(item, dict) and item.get("episode_digest")
+    }
+    if digest not in existing:
+        episodes.append(
+            {
+                "episode_digest": digest,
+                "episode_kind": "world_contact_shadow_episode",
+                "generated_at": generated_at,
+                "source_ref": "runtime/state/membrane/world_contact_summary.json",
+                "fact_boundary": "shadow_only_not_asserted_as_direct_perception",
+            }
+        )
+    return updated
+
+
 def _align_memory_retrieval_focus_with_live_turn(
     memory_retrieval_frame: dict[str, Any],
     *,
     semantic_map: dict[str, Any] | None,
     live_turn_focus: str | None,
+    repair_closeout_state: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    from ..language.repair_closeout_chain import repair_closeout_allows_repair_focus
+
     updated = json.loads(json.dumps(memory_retrieval_frame or {}))
     focus = live_turn_focus or (semantic_map or {}).get("semantic_focus")
     if not focus:
         return updated
-    updated["reconstruction_focus"] = str(focus)
+    reconstruction_inputs = updated.get("reconstruction_inputs")
+    if not isinstance(reconstruction_inputs, dict):
+        reconstruction_inputs = {}
+    memory_native_focus = str(
+        reconstruction_inputs.get("reconstruction_focus")
+        or updated.get("reconstruction_focus")
+        or focus
+    )
+    repair_focus_allowed = repair_closeout_allows_repair_focus(repair_closeout_state)
+    if (
+        str(focus) == "repair_relational_trace"
+        and not repair_focus_allowed
+    ):
+        focus = "relational_checkin"
+        memory_native_focus = (
+            memory_native_focus
+            if memory_native_focus != "repair_relational_trace"
+            else "relationship_continuity_reconstruction"
+        )
+    elif (
+        live_turn_focus
+        and _looks_like_repair_reconstruction_focus(memory_native_focus)
+        and str(focus) != str(memory_native_focus)
+    ):
+        memory_native_focus = str(focus)
+    updated["reconstruction_focus"] = memory_native_focus
     reconstruction_inputs = updated.setdefault("reconstruction_inputs", {})
     if isinstance(reconstruction_inputs, dict):
-        reconstruction_inputs["reconstruction_focus"] = str(focus)
+        reconstruction_inputs["reconstruction_focus"] = memory_native_focus
     recall_profile = updated.get("recall_to_expression_profile")
     if isinstance(recall_profile, dict):
-        recall_profile["reconstruction_focus"] = str(focus)
+        recall_profile["reconstruction_focus"] = memory_native_focus
     updated["live_semantic_focus"] = str(focus)
     return updated
+
+
+def _looks_like_repair_reconstruction_focus(value: str | None) -> bool:
+    text = str(value or "")
+    return "repair" in text or "responsibility" in text or "regret" in text
 
 
 def _stamp_live_memory_projection_stage(
@@ -3134,6 +3492,9 @@ def _refresh_live_memory_projection(
         memory_retrieval_frame,
         semantic_map=semantic_map,
         live_turn_focus=live_turn_focus,
+        repair_closeout_state=_read_json_if_exists(
+            language_dir / "repair_closeout_state.json"
+        ),
     )
     projection_objects = [
         event_segmentation_frame,

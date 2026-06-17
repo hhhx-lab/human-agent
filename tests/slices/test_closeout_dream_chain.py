@@ -1,14 +1,69 @@
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from life_v0.process_supervisor.exit_dream_consolidation import (
+    _maybe_record_exit_web_dream_learning,
     write_exit_dream_memory_consolidation,
 )
 
 
 class CloseoutDreamChainTests(unittest.TestCase):
+    def test_closeout_web_dream_trigger_reads_env_file_urls(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            state_dir = root / "runtime" / "state"
+            dream_dir = state_dir / "dream"
+            dream_dir.mkdir(parents=True, exist_ok=True)
+            env_path = root / ".env"
+            env_path.write_text(
+                "\n".join(
+                    [
+                        "DIGITAL_LIFE_WEB_DREAM_LEARNING_ENABLED=true",
+                        "DIGITAL_LIFE_WEB_DREAM_URLS=https://example.test/closeout-env-dream",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            calls: list[str] = []
+
+            def fake_fetch(url: str, timeout_seconds: float) -> dict:
+                del timeout_seconds
+                calls.append(url)
+                return {
+                    "status_code": 200,
+                    "final_url": url,
+                    "content_type": "text/html",
+                    "text": (
+                        "<html><head><title>Closeout Env Dream</title></head>"
+                        "<body><h1>Closeout web dream from env file</h1></body>"
+                        "</html>"
+                    ),
+                }
+
+            patched_env = {
+                key: value
+                for key, value in os.environ.items()
+                if not key.startswith("DIGITAL_LIFE_WEB_DREAM")
+            }
+            patched_env["DIGITAL_LIFE_ENV_FILE"] = str(env_path)
+
+            with patch.dict(os.environ, patched_env, clear=True):
+                state = _maybe_record_exit_web_dream_learning(
+                    state_dir=state_dir,
+                    dream_dir=dream_dir,
+                    generated_at="2026-06-17T00:00:02Z",
+                    web_fetch_url=fake_fetch,
+                )
+
+            self.assertEqual(calls, ["https://example.test/closeout-env-dream"])
+            self.assertEqual(state["status"], "learned")
+            self.assertEqual(state["page_title"], "Closeout Env Dream")
+
     def test_closeout_writes_five_piece_chain_with_cross_refs(self):
         with tempfile.TemporaryDirectory() as tmp:
             state_dir = Path(tmp) / "runtime" / "state"

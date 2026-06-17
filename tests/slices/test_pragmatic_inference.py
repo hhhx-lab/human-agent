@@ -39,7 +39,7 @@ class PragmaticInferenceTests(unittest.TestCase):
 
         profile = result["pragmatic_inference_profile"]
         self.assertEqual(result["pragmatic_inference_mode"], "live_evidence_inference")
-        self.assertEqual(result["semantic_focus"], "repair_relational_trace")
+        self.assertEqual(result["semantic_focus"], "repair_commitment_shared_language")
         self.assertTrue(profile["speech_act_candidates"])
         self.assertTrue(profile["grounding_repair_signals"])
         self.assertTrue(profile["implicature_queue"])

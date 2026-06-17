@@ -314,21 +314,99 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
 
             self.assertIsNone(memory_exit)
             self.assertIsNone(dream_exit)
-            self.assertIn("resident_state_inspection_v0", memory_stdout.getvalue())
-            self.assertIn("memory", memory_stdout.getvalue())
-            self.assertIn("何剑宝", memory_stdout.getvalue())
-            self.assertIn("prefers_direct_non_mechanical_language", memory_stdout.getvalue())
-            self.assertIn("exit_dream_next_wake_inspection_boundary", memory_stdout.getvalue())
-            self.assertIn("exit_dream_next_wake_cue_ref_count", memory_stdout.getvalue())
-            self.assertIn("memory_write_gate_then_state_merge_guard", memory_stdout.getvalue())
-            self.assertIn("reactivate_as_cue_material_not_fixed_language", memory_stdout.getvalue())
-            self.assertIn("inspection_only_not_spoken_response_no_fixed_language", memory_stdout.getvalue())
-            self.assertIn("resident_state_inspection_v0", dream_stdout.getvalue())
-            self.assertIn("dream", dream_stdout.getvalue())
-            self.assertIn("dreaming_after_terminal_exit", dream_stdout.getvalue())
-            self.assertIn("dream_fact_boundary_v0", dream_stdout.getvalue())
-            self.assertIn("exit_dream_next_wake_governance_refs", dream_stdout.getvalue())
-            self.assertIn("fact_overwrite", dream_stdout.getvalue())
+            memory_rendered = memory_stdout.getvalue()
+            dream_rendered = dream_stdout.getvalue()
+            self.assertIn("记忆：", memory_rendered)
+            self.assertIn("关系对象名字: 何剑宝", memory_rendered)
+            self.assertIn("记忆写门", memory_rendered)
+            self.assertIn("记忆召回", memory_rendered)
+            self.assertNotIn("{\n", memory_rendered)
+            self.assertIn("梦境：", dream_rendered)
+            self.assertIn("网页梦境状态", dream_rendered)
+            self.assertNotIn("{\n", dream_rendered)
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_dream_web_slash_command_toggles_seed_file_without_relation_turn(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+
+            on_stdout = StringIO()
+            with redirect_stdout(on_stdout):
+                on_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/dream-web on",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+
+            self.assertIsNone(on_exit)
+            self.assertIn("网页梦境学习", on_stdout.getvalue())
+            seed_path = paths["state_root"] / "dream" / "web_dream_learning_seeds.json"
+            seed_payload = self._read_json(seed_path)
+            self.assertTrue(seed_payload["enabled"])
+            self.assertEqual(seed_payload["toggle_source"], "terminal_slash_command")
+            self.assertEqual(seed_payload["manual_toggle_state"], "enabled")
+            self.assertTrue(seed_payload["seed_urls"])
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+            off_stdout = StringIO()
+            with redirect_stdout(off_stdout):
+                off_exit = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/dream-web off",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+
+            self.assertIsNone(off_exit)
+            self.assertIn("disabled", off_stdout.getvalue())
+            seed_payload = self._read_json(seed_path)
+            self.assertFalse(seed_payload["enabled"])
+            self.assertEqual(seed_payload["manual_toggle_state"], "disabled")
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_dream_web_status_reports_env_file_default_before_seed_file_exists(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paths = build_runtime_paths(root)
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            env_path = root / ".env"
+            env_path.write_text(
+                "\n".join(
+                    [
+                        "DIGITAL_LIFE_WEB_DREAM_LEARNING_ENABLED=true",
+                        "DIGITAL_LIFE_WEB_DREAM_URLS=https://example.test/status-env-dream",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            with patch.dict(os.environ, {"DIGITAL_LIFE_ENV_FILE": str(env_path)}, clear=True):
+                status_stdout = StringIO()
+                with redirect_stdout(status_stdout):
+                    exit_code = _handle_resident_terminal_utterance(
+                        terminal_dir=terminal_dir,
+                        utterance="/dream-web status",
+                        life_name="Adam",
+                        say_timeout_seconds=0.1,
+                    )
+
+            self.assertIsNone(exit_code)
+            output = status_stdout.getvalue()
+            self.assertIn("网页梦境学习", output)
+            self.assertIn("enabled_waiting_for_dream_cycle", output)
+            self.assertIn("启用: True", output)
+            self.assertFalse(
+                (paths["state_root"] / "dream" / "web_dream_learning_seeds.json").exists()
+            )
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 
     def test_resident_terminal_proactive_state_command_inspects_proactive_voice(self):
@@ -433,7 +511,6 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 )
 
             self.assertIsNone(exit_code)
-            self.assertIn("resident_state_inspection_v0", output.getvalue())
             self.assertIn("proactive_voice", output.getvalue())
             self.assertIn("relationship_checkin", output.getvalue())
             self.assertIn("coverage_summary", output.getvalue())
@@ -441,7 +518,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn("waiting_governance", output.getvalue())
             self.assertIn("utterance_candidate_code_count", output.getvalue())
             self.assertIn(
-                "model_expression_consciousness_write_context",
+                "prediction_attention_consciousness_write_context_refs",
                 output.getvalue(),
             )
             self.assertIn(
@@ -457,7 +534,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 output.getvalue(),
             )
             self.assertIn(
-                "state_codes_only_model_expression_required",
+                "model_expression_applied",
                 output.getvalue(),
             )
 
@@ -472,11 +549,13 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 json.dumps(
                     {
                         "schema_version": "terminal_input_profile_v0",
-                        "input_mode": "char_line_editor_with_history_and_idle_voice",
+                        "input_mode": "prompt_toolkit_mature_terminal",
+                        "terminal_framework": "prompt_toolkit",
+                        "self_built_input_reader": "removed",
                         "line_editing": {
-                            "backspace": "delete_previous_character",
-                            "left_right_arrows": "move_cursor_inside_current_line",
-                            "up_down_arrows": "navigate_in_memory_terminal_history",
+                            "backspace": "prompt_toolkit_native_delete_previous_character",
+                            "left_right_arrows": "prompt_toolkit_native_cursor_navigation",
+                            "up_down_arrows": "completion_selection_when_menu_open_else_history",
                         },
                     },
                     ensure_ascii=False,
@@ -506,10 +585,10 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn("/stop", rendered_help)
 
             alias_checks = {
-                "/terminal": "terminal_input_profile_v0",
-                "/lifecycle": "resident_state_inspection_v0",
-                "/short-memory": "resident_state_inspection_v0",
-                "/long-memory": "resident_state_inspection_v0",
+                "/terminal": "状态：",
+                "/lifecycle": "状态：",
+                "/short-memory": "记忆：",
+                "/long-memory": "记忆：",
             }
             for command, expected_fragment in alias_checks.items():
                 output = StringIO()
@@ -567,6 +646,162 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
 
             self.assertIsNone(exit_code)
             self.assertEqual(stdout.getvalue(), "")
+
+    def test_say_entrypoint_starts_resident_when_not_active_then_sends_turn(self):
+        from life_v0.digital_entry import main
+
+        send_calls: list[dict] = []
+        start_calls: list[dict] = []
+
+        def fake_send(**kwargs):
+            send_calls.append(kwargs)
+            if len(send_calls) == 1:
+                return SimpleNamespace(
+                    exit_code=1,
+                    state={
+                        "send_status": "resident_not_active",
+                        "pid_alive": False,
+                    },
+                )
+            return SimpleNamespace(
+                exit_code=0,
+                state={
+                    "send_status": "completed",
+                    "response_text": "我在。",
+                    "response_event": {"status": "completed"},
+                },
+            )
+
+        def fake_start(**kwargs):
+            start_calls.append(kwargs)
+            return SimpleNamespace(
+                exit_code=0,
+                state={"status": "background_starting", "pid": 12345},
+            )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stdout = StringIO()
+            with patch("life_v0.digital_entry.send_resident_relation_turn", fake_send):
+                with patch(
+                    "life_v0.digital_entry.start_background_resident_process",
+                    fake_start,
+                ):
+                    with patch("life_v0.digital_entry.Path.cwd", return_value=root):
+                        with redirect_stdout(stdout):
+                            exit_code = main(
+                                [
+                                    "life",
+                                    "--state",
+                                    str(root / "runtime/state"),
+                                    "--reports",
+                                    str(root / "runtime/reports/latest"),
+                                    "--receipts",
+                                    str(root / "runtime/receipts"),
+                                    "--say",
+                                    "你在吗？",
+                                    "--say-timeout-seconds",
+                                    "9",
+                                ]
+                            )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(stdout.getvalue().strip(), "我在。")
+        self.assertEqual(len(start_calls), 1)
+        self.assertEqual(len(send_calls), 2)
+        self.assertEqual(send_calls[1]["utterance"], "你在吗？")
+        self.assertEqual(send_calls[1]["wait_timeout_seconds"], 9)
+
+    def test_say_entrypoint_expands_file_references_before_send(self):
+        from life_v0.digital_entry import main
+
+        captured: dict[str, object] = {}
+
+        def fake_send(**kwargs):
+            captured.update(kwargs)
+            return SimpleNamespace(
+                exit_code=0,
+                state={
+                    "send_status": "completed",
+                    "response_text": "",
+                    "response_event": {"status": "completed_unreleased"},
+                },
+            )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / "README.md").write_text(
+                "# Human Agent\n\nMemory, dream, language.",
+                encoding="utf-8",
+            )
+            stdout = StringIO()
+            with patch("life_v0.digital_entry.send_resident_relation_turn", fake_send):
+                with patch("life_v0.digital_entry.Path.cwd", return_value=repo):
+                    with redirect_stdout(stdout):
+                        exit_code = main(
+                            [
+                                "life",
+                                "--state",
+                                str(repo / "runtime/state"),
+                                "--reports",
+                                str(repo / "runtime/reports/latest"),
+                                "--receipts",
+                                str(repo / "runtime/receipts"),
+                                "--say",
+                                "read @README.md and answer one short sentence",
+                            ]
+                        )
+
+        self.assertEqual(exit_code, 0)
+        utterance = str(captured["utterance"])
+        self.assertIn("read @README.md and answer one short sentence", utterance)
+        self.assertIn("引用文件: README.md", utterance)
+        self.assertIn("Human Agent", utterance)
+        self.assertIn("Memory, dream, language.", utterance)
+
+    def test_resident_terminal_file_reference_expands_before_relation_turn(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            terminal_dir = repo / "runtime" / "state" / "terminal"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            docs_dir = repo / "docs"
+            docs_dir.mkdir()
+            (docs_dir / "sample.md").write_text(
+                "# 记忆\n\n海马索引和长期记忆要一起进入召回。",
+                encoding="utf-8",
+            )
+            captured: dict[str, object] = {}
+
+            def fake_send(**kwargs):
+                captured.update(kwargs)
+                return SimpleNamespace(
+                    exit_code=0,
+                    state={
+                        "send_status": "completed",
+                        "response_text": "",
+                        "response_event": {"status": "completed_unreleased"},
+                    },
+                )
+
+            stdout = StringIO()
+            with patch("life_v0.digital_entry.Path.cwd", return_value=repo):
+                with patch("life_v0.digital_entry.send_resident_relation_turn", fake_send):
+                    with redirect_stdout(stdout):
+                        exit_code = _handle_resident_terminal_utterance(
+                            terminal_dir=terminal_dir,
+                            utterance="看 @docs/sample.md 然后回答记忆怎么召回",
+                            life_name="Adam",
+                            say_timeout_seconds=0.1,
+                        )
+
+            self.assertIsNone(exit_code)
+            self.assertEqual(stdout.getvalue(), "")
+            utterance = str(captured["utterance"])
+            self.assertIn("看 @docs/sample.md 然后回答记忆怎么召回", utterance)
+            self.assertIn("引用文件: docs/sample.md", utterance)
+            self.assertIn("海马索引", utterance)
 
     def test_resident_terminal_slash_commands_cover_life_state_surfaces(self):
         from life_v0.digital_entry import _handle_resident_terminal_utterance
@@ -2374,9 +2609,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                         utterance=command,
                         life_name="Adam",
                         say_timeout_seconds=0.1,
-                    )
+                )
                 self.assertIsNone(exit_code)
-                self.assertIn("resident_state_inspection_v0", output.getvalue())
                 self.assertIn(expected_fragment, output.getvalue())
 
             body_output = StringIO()
@@ -2460,7 +2694,6 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn("external_release_without_repair_review", membrane_rendered)
             self.assertIn("missing_source_quarantine", membrane_rendered)
             self.assertIn("queue_e_birth_repair_gate", membrane_rendered)
-            self.assertIn("blocked_has_route", membrane_rendered)
             self.assertIn(
                 "life_membrane_state_view_routes_not_static_blocker_or_tool_gateway",
                 membrane_rendered,
@@ -3070,7 +3303,6 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
 
             rendered = output.getvalue()
             self.assertIsNone(exit_code)
-            self.assertIn("resident_state_inspection_v0", rendered)
             self.assertIn("language_generation_consumption_summary_v0", rendered)
             self.assertIn("generation_consumption_summary", rendered)
             self.assertIn("relationship_memory", rendered)
@@ -3094,8 +3326,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             )
             self.assertIn("resident_autonomous_activity", rendered)
             self.assertIn("proactive_voice", rendered)
-            self.assertIn("state_inspection_only_model_expression_then_post_gate", rendered)
-            self.assertIn("no_code_spoken_template_no_inspection_summary_as_reply", rendered)
+            self.assertIn("inspection_only_not_spoken_response", rendered)
+            self.assertIn("model_expression_applied", rendered)
             self.assertIn("relationship_continuity", rendered)
             self.assertIn("memory_continuity", rendered)
             self.assertIn("何剑宝", rendered)
@@ -3554,6 +3786,14 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
 
             def read_line_fn(**kwargs):
                 self.assertFalse(kwargs["idle_voice_fn"]())
+                completion_provider = kwargs["completion_provider"]
+                slash_state = completion_provider("/", 1)
+                at_state = completion_provider("@life_v0", len("@life_v0"))
+                self.assertIsNotNone(slash_state)
+                self.assertEqual(slash_state.trigger, "/")
+                self.assertIn("/memory", [item.label for item in slash_state.items])
+                self.assertIsNotNone(at_state)
+                self.assertEqual(at_state.trigger, "@")
                 return "/exit"
 
             output = StringIO()
@@ -3572,6 +3812,140 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             )
             state = self._read_json(terminal_dir / "resident_terminal_proactive_state.json")
             self.assertIn(state["status"], {"held_internal", "released_model_expression"})
+            self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
+
+    def test_tty_resident_terminal_client_requires_prompt_toolkit_without_legacy_fallback(self):
+        from life_v0.digital_entry import run_resident_terminal_client
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+
+            class FakeTty:
+                def isatty(self):
+                    return True
+
+            def fake_start_background_resident_process(**kwargs):
+                del kwargs
+                return SimpleNamespace(
+                    exit_code=0,
+                    state={
+                        "status": "background_active",
+                        "life_name": "Adam",
+                    },
+                )
+
+            stdout = StringIO()
+            stderr = StringIO()
+            with patch("life_v0.digital_entry.sys.stdin", FakeTty()):
+                with patch(
+                    "life_v0.digital_entry.start_background_resident_process",
+                    fake_start_background_resident_process,
+                ):
+                    with patch("life_v0.digital_entry.prompt_toolkit_available", lambda: False):
+                        with redirect_stdout(stdout), patch("life_v0.digital_entry.sys.stderr", stderr):
+                            exit_code = run_resident_terminal_client(
+                                state_dir=paths["state_root"],
+                                reports_dir=paths["reports"],
+                                receipts_dir=paths["receipts"],
+                                run_id="tty-prompt-toolkit-required",
+                                strict=True,
+                                resident_sleep_seconds=0.1,
+                                say_timeout_seconds=0.1,
+                            )
+
+            self.assertEqual(exit_code, 5)
+            self.assertIn("prompt_toolkit is required", stderr.getvalue())
+            self.assertNotIn("FULLSCREEN_APP_STARTED", stdout.getvalue())
+
+    def test_tty_resident_terminal_client_prefers_prompt_toolkit_when_available(self):
+        from life_v0.digital_entry import run_resident_terminal_client
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            captured: dict[str, object] = {}
+
+            class FakeTty:
+                def isatty(self):
+                    return True
+
+            def fake_start_background_resident_process(**kwargs):
+                del kwargs
+                return SimpleNamespace(
+                    exit_code=0,
+                    state={
+                        "status": "background_active",
+                        "life_name": "Adam",
+                    },
+                )
+
+            def fake_prompt_toolkit_app(**kwargs):
+                captured.update(kwargs)
+                print("PROMPT_TOOLKIT_APP_STARTED")
+                return 0
+
+            output = StringIO()
+            with patch("life_v0.digital_entry.sys.stdin", FakeTty()):
+                with patch(
+                    "life_v0.digital_entry.start_background_resident_process",
+                    fake_start_background_resident_process,
+                ):
+                    with patch("life_v0.digital_entry.prompt_toolkit_available", lambda: True):
+                        with patch(
+                            "life_v0.digital_entry.run_prompt_toolkit_terminal_app",
+                            fake_prompt_toolkit_app,
+                        ):
+                            with redirect_stdout(output):
+                                exit_code = run_resident_terminal_client(
+                                    state_dir=paths["state_root"],
+                                    reports_dir=paths["reports"],
+                                    receipts_dir=paths["receipts"],
+                                    run_id="tty-prompt-toolkit",
+                                    strict=True,
+                                    resident_sleep_seconds=0.1,
+                                    say_timeout_seconds=0.1,
+                                )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn("PROMPT_TOOLKIT_APP_STARTED", output.getvalue())
+            self.assertEqual(captured["life_name"], "Adam")
+            self.assertEqual(captured["terminal_dir"], paths["terminal_state"])
+
+    def test_resume_command_reads_terminal_transcript_without_relation_turn(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+        from life_v0.process_supervisor.terminal_session_transcript import (
+            append_terminal_session_event,
+            start_terminal_session_transcript,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            opened = start_terminal_session_transcript(
+                terminal_dir=terminal_dir,
+                life_name="Adam",
+                now_iso="2026-06-17T12:00:00+00:00",
+            )
+            append_terminal_session_event(
+                terminal_dir=terminal_dir,
+                session_id=opened["session_id"],
+                event_kind="relation_utterance",
+                speaker="relation",
+                text="不要吞掉这次会话。",
+                life_name="Adam",
+                now_iso="2026-06-17T12:00:01+00:00",
+            )
+            output = StringIO()
+            with redirect_stdout(output):
+                exit_code = _handle_resident_terminal_utterance(
+                    terminal_dir=terminal_dir,
+                    utterance="/resume",
+                    life_name="Adam",
+                    say_timeout_seconds=0.1,
+                )
+
+            self.assertIsNone(exit_code)
+            self.assertIn("不要吞掉这次会话", output.getvalue())
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 
     def test_repo_local_digital_life_entrypoint_returns_zero(self):
@@ -3691,13 +4065,19 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             "runtime/reports/latest/digital_life_runtime_config_report.json",
         )
         self.assertEqual(
-            model_expression_state["model_expression_status"],
+            model_expression_state["pre_fallback_model_expression_status"],
             "model_expression_skipped",
         )
         self.assertEqual(
-            model_expression_state["unreleased_reason"],
+            model_expression_state["pre_fallback_unreleased_reason"],
             "provider_not_enabled_for_model_expression:test-provider",
         )
+        self.assertEqual(
+            model_expression_state["model_expression_status"],
+            "model_expression_skipped",
+        )
+        self.assertEqual(model_expression_state["expression_release_path"], "model_expression")
+        self.assertIsNone(model_expression_state["expression_release_tier"])
         self.assertEqual(
             model_expression_state["post_expression_gate_status"],
             "skipped",
@@ -3740,6 +4120,11 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
         )
         self.assertEqual(process_report["post_expression_gate_status"], "skipped")
         self.assertEqual(
+            process_report["last_life_turn"]["expression_release_path"],
+            "model_expression",
+        )
+        self.assertNotIn("expression_release_tier", process_report["last_life_turn"])
+        self.assertEqual(
             process_report["last_life_turn"]["model_expression_status"],
             "model_expression_skipped",
         )
@@ -3775,7 +4160,12 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
 
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn("Digital Life", completed.stdout)
-            self.assertIn("终端已连接：Digital Life", completed.stdout)
+            self.assertIn("live terminal", completed.stdout)
+            self.assertIn("conversation", completed.stdout)
+            self.assertIn("/state /memory /dream", completed.stdout)
+            self.assertIn("@docs @life_v0", completed.stdout)
+            self.assertNotIn("终端已连接：Digital Life", completed.stdout)
+            self.assertNotIn("background_active", completed.stdout)
             self.assertNotIn("这段关系本身", completed.stdout)
             self.assertNotIn("relational_checkin", completed.stdout)
 
@@ -4152,6 +4542,8 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 self.assertEqual(outbox_events[-1]["sequence"], inbox_events[-1]["sequence"])
                 self.assertEqual(outbox_events[-1]["status"], "completed_unreleased")
                 self.assertEqual(outbox_events[-1]["response_text"], "")
+                self.assertEqual(outbox_events[-1]["expression_release_path"], "model_expression")
+                self.assertIsNone(outbox_events[-1]["expression_release_tier"])
                 self.assertNotIn("你还在后台吗？", outbox_events[-1]["response_text"])
                 self.assertEqual(queue_state["status"], "waiting_for_relation_turn")
                 self.assertEqual(queue_state["last_completed_sequence"], 1)
@@ -4303,6 +4695,89 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                         check=False,
                     )
 
+    def test_resident_restart_discards_abandoned_in_progress_turn(self):
+        from life_v0.process_supervisor.resident_lifecycle import (
+            _resident_relation_queue_bootstrap_state,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            inbox_path = terminal_dir / "resident_relation_inbox.jsonl"
+            outbox_path = terminal_dir / "resident_relation_outbox.jsonl"
+            queue_path = terminal_dir / "resident_relation_queue_state.json"
+            self._append_jsonl(
+                inbox_path,
+                {
+                    "schema_version": "resident_relation_inbox_event_v0",
+                    "sequence": 7,
+                    "turn_id": "resident-relation-turn-000007",
+                    "utterance": "stale interrupted turn",
+                },
+            )
+            self._append_jsonl(
+                outbox_path,
+                {
+                    "schema_version": "resident_relation_outbox_event_v0",
+                    "sequence": 6,
+                    "status": "completed",
+                    "response_text": "previous",
+                },
+            )
+            self._write_json(
+                queue_path,
+                {
+                    "schema_version": "resident_relation_queue_state_v0",
+                    "status": "turn_in_progress",
+                    "last_consumed_sequence": 7,
+                    "last_enqueued_sequence": 7,
+                    "last_completed_sequence": 6,
+                    "active_sequence": 7,
+                    "active_turn_id": "resident-relation-turn-000007",
+                    "active_utterance": "stale interrupted turn",
+                },
+            )
+
+            state = _resident_relation_queue_bootstrap_state(terminal_dir)
+
+            self.assertEqual(state["status"], "waiting_for_relation_turn")
+            self.assertEqual(state["last_consumed_sequence"], 7)
+            self.assertEqual(state["last_completed_sequence"], 6)
+            self.assertFalse(state["bootstrap_preserved_live_queue"])
+            self.assertTrue(state["bootstrap_abandoned_interrupted_turn"])
+            self.assertEqual(state["bootstrap_abandoned_sequence"], 7)
+            self.assertNotIn("active_sequence", state)
+
+    def test_lifecycle_status_persists_dead_background_process_state(self):
+        from life_v0.process_supervisor.resident_lifecycle import (
+            read_resident_lifecycle_status,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = build_runtime_paths(Path(tmp))
+            terminal_dir = paths["terminal_state"]
+            self._write_json(
+                terminal_dir / "resident_lifecycle_state.json",
+                {
+                    "schema_version": "resident_lifecycle_state_v0",
+                    "run_id": "dead-resident",
+                    "status": "background_active",
+                    "pid": 99999999,
+                    "pid_alive": True,
+                },
+            )
+
+            result = read_resident_lifecycle_status(terminal_dir=terminal_dir)
+            persisted = self._read_json(terminal_dir / "resident_lifecycle_state.json")
+
+            self.assertFalse(result.state["pid_alive"])
+            self.assertEqual(result.state["status"], "stopped")
+            self.assertEqual(result.state["stale_background_process_detected"], True)
+            self.assertFalse(persisted["pid_alive"])
+            self.assertEqual(persisted["status"], "stopped")
+            self.assertEqual(persisted["stale_background_process_detected"], True)
+
     def _read_json(self, path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
 
@@ -4312,6 +4787,11 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
+
+    def _append_jsonl(self, path: Path, payload: dict) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
     def _read_jsonl(self, path: Path) -> list[dict]:
         return [

@@ -17,8 +17,16 @@ from .resident_governance_handoff import (
 )
 from .resident_turn_writeback import (
     ResidentTurnWritebackResult,
+    _extract_observed_names_from_turns,
+    _merge_observed_names_into_dialogue_memory_summary,
+    _merge_observed_names_into_relationship_memory,
     write_resident_turn_writeback,
 )
+from .expression_release_invariant import (
+    apply_spoken_release_to_model_expression_state,
+    resolve_turn_spoken_output,
+)
+from .pre_expression_consciousness_refresh import refresh_pre_expression_consciousness
 from .model_expression import ModelExpressionResult, compose_model_expression
 from .response_surface import compose_life_response, compose_life_spoken_response
 from ..language.expression_monitor import apply_world_contact_handoff_modulation
@@ -215,6 +223,29 @@ def run_live_turn_cycle(
             state_dir / "memory" / "dialogue_memory_summary.json",
             {},
         )
+        observed_names = _extract_observed_names_from_turns(
+            dialogue_dir=language_dir / "dialogue_turn_log.jsonl",
+            external_utterance=external_utterance,
+        )
+        if observed_names:
+            relationship_memory = _merge_observed_names_into_relationship_memory(
+                relationship_memory,
+                observed_names=observed_names,
+            )
+            dialogue_memory_summary = _merge_observed_names_into_dialogue_memory_summary(
+                dialogue_memory_summary,
+                run_id=run_id,
+                generated_at=generated_at,
+                observed_names=observed_names,
+            )
+            write_json(
+                state_dir / "memory" / "relationship_memory.json",
+                relationship_memory,
+            )
+            write_json(
+                state_dir / "memory" / "dialogue_memory_summary.json",
+                dialogue_memory_summary,
+            )
         memory_retrieval_frame = project_memory_retrieval_from_live_turn(
             memory_retrieval_frame=_read_json_if_exists(
                 state_dir / "memory" / "memory_retrieval_frame.json",
@@ -305,6 +336,44 @@ def run_live_turn_cycle(
         )
         turn_counter += 1
         life_turn_id = f"dialogue-turn-live-{turn_counter:04d}"
+        live_turn_focus = (
+            enriched_semantic_map.get("semantic_focus")
+            or enriched_expression_plan.get("semantic_goal")
+        )
+        body_resource_budget = _read_json_if_exists(
+            state_dir / "body" / "body_resource_budget.json",
+            body_resource_budget,
+        )
+        core_affect_vector = _read_json_if_exists(
+            state_dir / "body" / "core_affect_vector.json",
+            core_affect_vector,
+        )
+        consciousness_refresh = refresh_pre_expression_consciousness(
+            state_dir=state_dir,
+            run_id=run_id,
+            generated_at=generated_at,
+            live_turn_focus=str(live_turn_focus) if live_turn_focus else None,
+            memory_retrieval_frame=memory_retrieval_frame,
+            expression_monitor=live_language_turn.expression_monitor,
+            live_language_turn_refs=[
+                live_language_turn.language_percept_ref,
+                live_language_turn.semantic_map_ref,
+                live_language_turn.inner_speech_ref,
+                live_language_turn.expression_monitor_ref,
+                live_language_turn.expression_plan_ref,
+            ],
+            dialogue_turn_refs=[
+                f"runtime/state/language/dialogue_turn_log.jsonl#pending-{external_turn_id}"
+            ],
+            write_json=write_json,
+        )
+        workspace_frame = consciousness_refresh.workspace_frame
+        broadcast_frame = consciousness_refresh.broadcast_frame
+        metacognition_state = consciousness_refresh.metacognition_state
+        autobiographical_stack = _read_json_if_exists(
+            state_dir / "self" / "autobiographical_stack.json",
+            {},
+        )
         response_inputs = {
             "external_utterance": external_utterance,
             "relationship_graph": relationship_graph,
@@ -350,6 +419,7 @@ def run_live_turn_cycle(
             )
         else:
             life_response = evidence_response
+        pre_model_spoken_response = life_response
         model_expression = compose_model_expression(
             run_id=run_id,
             generated_at=now_iso(),
@@ -384,9 +454,52 @@ def run_live_turn_cycle(
             network_state=network_state,
             prediction_workspace=prediction_workspace,
             workspace_frame=workspace_frame,
+            broadcast_frame=broadcast_frame,
+            metacognition_state=metacognition_state,
+            autobiographical_stack=autobiographical_stack,
             write_json=write_json,
         )
-        life_response = model_expression.response_text
+        spoken_release = resolve_turn_spoken_output(
+            external_utterance=external_utterance,
+            model_result=model_expression,
+            pre_model_spoken_response=pre_model_spoken_response,
+            memory_retrieval_frame=memory_retrieval_frame,
+            expression_plan=enriched_expression_plan,
+            semantic_map=enriched_semantic_map,
+            relationship_memory=relationship_memory,
+            dialogue_memory_summary=dialogue_memory_summary,
+            terminal_life_loop_state=terminal_life_loop_state,
+        )
+        life_response = spoken_release.response_text
+        if (
+            spoken_release.response_text
+            and spoken_release.release_tier != 1
+        ):
+            model_expression.state.update(
+                apply_spoken_release_to_model_expression_state(
+                    model_expression.state,
+                    spoken_release=spoken_release,
+                    post_expression_gate=model_expression.state.get(
+                        "post_expression_gate"
+                    ),
+                )
+            )
+            if write_json is not None:
+                write_json(
+                    language_dir / "model_expression_state.json",
+                    model_expression.state,
+                )
+                write_json(
+                    reports_dir / "digital_life_model_expression_report.json",
+                    {
+                        **model_expression.state,
+                        "schema_version": "model_expression_report_v0",
+                        "status": "closed",
+                        "applied_model_expression": model_expression.applied,
+                        "audited_expression_material_release_disabled": True,
+                        "natural_language_unreleased": not model_expression.applied,
+                    },
+                )
         life_turn = build_life_turn_event_fn(
             turn_id=life_turn_id,
             generated_at=now_iso(),
@@ -606,4 +719,12 @@ def _attach_model_expression_refs(
     if model_expression.state.get("unreleased_reason"):
         event["model_expression_unreleased_reason"] = model_expression.state[
             "unreleased_reason"
+        ]
+    if model_expression.state.get("expression_release_path"):
+        event["expression_release_path"] = model_expression.state[
+            "expression_release_path"
+        ]
+    if model_expression.state.get("expression_release_tier") is not None:
+        event["expression_release_tier"] = model_expression.state[
+            "expression_release_tier"
         ]

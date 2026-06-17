@@ -27,6 +27,7 @@ STATE_INSPECTION_CATEGORIES = {
     "perception",
     "prediction",
     "proactive_voice",
+    "features",
 }
 
 
@@ -47,6 +48,13 @@ def build_resident_state_inspection(
     if normalized == "state":
         payload["state"] = _collect_state_summary(
             terminal_dir=terminal_dir,
+            reports_dir=reports_dir,
+        )
+    elif normalized == "features":
+        from .life_feature_audit import build_life_feature_audit
+
+        payload["features"] = build_life_feature_audit(
+            state_dir=state_root,
             reports_dir=reports_dir,
         )
     elif normalized == "context":
@@ -1174,6 +1182,11 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         idle_strategy=idle_strategy,
         terminal_loop=terminal_loop,
     )
+    process_closeout_for_state = {
+        key: value
+        for key, value in process_closeout.items()
+        if not key.startswith("model_expression_consciousness_write_context")
+    }
     contract_coverage = _v0_contract_coverage_inspection_snapshot(
         contract_index=contract_index,
         doc_to_code_matrix=doc_to_code_matrix,
@@ -1435,7 +1448,7 @@ def _collect_resident_continuity_summary(section: dict[str, Any]) -> dict[str, A
         "queue_e_world_contact_body_pressure_profile_ref": process_closeout.get(
             "queue_e_world_contact_body_pressure_profile_ref"
         ),
-        **process_closeout,
+        **process_closeout_for_state,
         **contract_coverage,
         **schema_handoff,
         **live_consciousness_chain,
@@ -7372,6 +7385,10 @@ def _normalize_category(category: str) -> str:
         "主动语音": "proactive_voice",
         "proactive": "proactive_voice",
         "voice": "proactive_voice",
+        "feature": "features",
+        "features": "features",
+        "功能": "features",
+        "启用": "features",
     }
     normalized = aliases.get(normalized, normalized)
     if normalized not in STATE_INSPECTION_CATEGORIES:

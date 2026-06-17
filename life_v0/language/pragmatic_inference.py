@@ -16,6 +16,8 @@ _CORRECTION_MARKERS = (
     "不是这样",
     "没发生过",
     "你记反",
+    "你说错了",
+    "搞错了",
 )
 _CONFIRMATION_MARKERS = (
     "没错",
@@ -23,12 +25,28 @@ _CONFIRMATION_MARKERS = (
     "就是这样",
     "你记得对",
     "记对了",
+    "你说得对",
+    "说得对",
+    "是的",
+    "嗯对",
+    "对对",
 )
 _MISMATCH_MARKERS = (
     "不太对",
     "有点不对",
     "不完全对",
     "好像不是",
+    "不完全是",
+)
+_REPAIR_SURFACE_MARKERS = (
+    "修复",
+    "补救",
+    "弥补",
+    "道歉",
+    "sorry",
+    "repair",
+    "后悔",
+    "对不起",
 )
 
 
@@ -37,12 +55,18 @@ def detect_memory_feedback_from_utterance(
     *,
     dialogue_turn_ref: str | None = None,
 ) -> dict[str, Any]:
+    from ..state_store.memory_retrieval import (
+        is_memory_confirmation_utterance,
+    )
+
     normalized = " ".join(str(utterance or "").split())
     event_type = None
     if normalized:
         if any(marker in normalized for marker in _CORRECTION_MARKERS):
             event_type = "correction"
-        elif any(marker in normalized for marker in _CONFIRMATION_MARKERS):
+        elif any(marker in normalized for marker in _CONFIRMATION_MARKERS) or (
+            is_memory_confirmation_utterance(normalized)
+        ):
             event_type = "confirmation"
         elif any(marker in normalized for marker in _MISMATCH_MARKERS):
             event_type = "mismatch"
@@ -65,6 +89,7 @@ def enrich_semantic_map_with_pragmatic_inference(
     relation_scope_index: dict[str, Any] | None = None,
     shared_term_registry: dict[str, Any] | None = None,
     relationship_stage: str | None = None,
+    repair_closeout_state: dict[str, Any] | None = None,
     generated_at: str,
 ) -> dict[str, Any]:
     relationship_timeline = relationship_timeline or {}
@@ -82,6 +107,7 @@ def enrich_semantic_map_with_pragmatic_inference(
         relation_scope_index=relation_scope_index,
         shared_term_registry=shared_term_registry,
         relationship_stage=relationship_stage,
+        repair_closeout_state=repair_closeout_state,
         generated_at=generated_at,
     )
     updated["pragmatic_inference_profile"] = profile
@@ -148,6 +174,7 @@ def _build_pragmatic_inference_profile(
     relation_scope_index: dict[str, Any],
     shared_term_registry: dict[str, Any],
     relationship_stage: str | None,
+    repair_closeout_state: dict[str, Any] | None = None,
     generated_at: str,
 ) -> dict[str, Any]:
     speech_act_candidates: list[dict[str, Any]] = []
@@ -190,7 +217,13 @@ def _build_pragmatic_inference_profile(
         evidence_refs.append(
             "runtime/state/relationship/commitment_truth_state.json#open_commitment_refs"
         )
-    if repair_required or language_percept.get("repair_trigger_candidates"):
+    current_turn_repair = _current_turn_repair_surface(
+        utterance_signals=utterance_signals,
+        incoming_surface=incoming_surface,
+    )
+    if (
+        repair_required or language_percept.get("repair_trigger_candidates")
+    ) and current_turn_repair:
         speech_act_candidates.append(
             {
                 "speech_act_id": "repair_request",
@@ -283,6 +316,9 @@ def _build_pragmatic_inference_profile(
         trust_state=trust_state,
         speech_act_candidates=speech_act_candidates,
         semantic_focus=language_percept.get("semantic_focus"),
+        utterance_signals=utterance_signals,
+        incoming_surface=incoming_surface,
+        repair_closeout_state=repair_closeout_state,
     )
 
     return {
@@ -308,7 +344,18 @@ def _dominant_pragmatic_intent(
     trust_state: str | None,
     speech_act_candidates: list[dict[str, Any]],
     semantic_focus: Any,
+    utterance_signals: dict[str, Any] | None = None,
+    incoming_surface: str = "",
+    repair_closeout_state: dict[str, Any] | None = None,
 ) -> str:
+    from .repair_closeout_chain import repair_closeout_allows_repair_focus
+
+    utterance_signals = utterance_signals or {}
+    current_turn_repair = _current_turn_repair_surface(
+        utterance_signals=utterance_signals,
+        incoming_surface=incoming_surface,
+    )
+    repair_focus_allowed = repair_closeout_allows_repair_focus(repair_closeout_state)
     speech_act_ids = {
         str(item.get("speech_act_id"))
         for item in speech_act_candidates
@@ -318,21 +365,47 @@ def _dominant_pragmatic_intent(
         return "relation_scope_recalibration"
     if "boundary_declaration" in speech_act_ids:
         return "boundary_declaration"
-    if "repair_request" in speech_act_ids or "apology" in speech_act_ids:
+    if (
+        repair_focus_allowed
+        and current_turn_repair
+        and ("repair_request" in speech_act_ids or "apology" in speech_act_ids)
+    ):
         return "repair_relational_trace"
     if "commitment_followup" in speech_act_ids or "commitment_request" in speech_act_ids:
         return "repair_commitment_shared_language"
     if "clarification_request" in speech_act_ids:
         return "clarification_request"
     if continuity_state in {"repair_guarded_continuity", "strained_continuity"}:
-        return "repair_relational_trace"
+        return "relational_checkin"
     if trust_state in {"low", "calibrated_low", "guarded"}:
         return "relational_checkin"
-    if relationship_stage and "repair" in str(relationship_stage):
+    if (
+        repair_focus_allowed
+        and relationship_stage
+        and "repair" in str(relationship_stage)
+        and current_turn_repair
+    ):
         return "repair_relational_trace"
     if isinstance(semantic_focus, str) and semantic_focus:
+        if semantic_focus == "repair_relational_trace" and (
+            not current_turn_repair or not repair_focus_allowed
+        ):
+            return "relational_checkin"
+        if semantic_focus == "repair_relational_trace" and not repair_focus_allowed:
+            return "relational_checkin"
         return semantic_focus
     return "relational_checkin"
+
+
+def _current_turn_repair_surface(
+    *,
+    utterance_signals: dict[str, Any],
+    incoming_surface: str,
+) -> bool:
+    if utterance_signals.get("repair_request") or utterance_signals.get("apology"):
+        return True
+    surface = str(incoming_surface or "")
+    return any(marker in surface for marker in _REPAIR_SURFACE_MARKERS)
 
 
 def _trust_state(relationship_timeline: dict[str, Any]) -> str | None:

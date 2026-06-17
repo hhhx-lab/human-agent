@@ -16,6 +16,7 @@ from life_v0.dream.web_dream_learning import (
     FetchUrl,
     record_web_dream_learning,
 )
+from life_v0.process_supervisor.runtime_resource_budget import append_jsonl_with_hot_budget
 from life_v0.state_store.offline_memory_hygiene import apply_offline_memory_hygiene
 
 
@@ -247,6 +248,7 @@ def _build_activity_state(
             }
         )
     elif activity_kind == "self_thinking":
+        reflection_digest = _self_thinking_reflection_digest(state_dir=state_dir)
         payload.update(
             {
                 "thinking_mode": "self_model_and_resident_governance_reflection",
@@ -257,6 +259,7 @@ def _build_activity_state(
                     "inner_speech",
                 ],
                 "self_continuity_policy": "reflect_then_wait_for_relation_turn",
+                "reflection_digest": reflection_digest,
             }
         )
     elif activity_kind == "growth_rehearsal":
@@ -461,6 +464,33 @@ def _read_json_if_exists(path: Path) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
+def _self_thinking_reflection_digest(*, state_dir: Path) -> str:
+    broadcast = _read_json_if_exists(
+        state_dir / "consciousness" / "broadcast_frame.json"
+    )
+    metacognition = _read_json_if_exists(
+        state_dir / "consciousness" / "metacognition_state.json"
+    )
+    inner_speech = _read_json_if_exists(
+        state_dir / "language" / "inner_speech_frame.json"
+    )
+    focuses = [
+        str(item.get("focus"))
+        for item in broadcast.get("salience_ranking", [])
+        if isinstance(item, dict) and item.get("focus")
+    ][:2]
+    narrative = str(metacognition.get("dominant_self_narrative") or "").strip()
+    inner_line = str(inner_speech.get("inner_speech_surface") or "").strip()[:60]
+    parts = []
+    if narrative:
+        parts.append(f"自我叙事:{narrative}")
+    if focuses:
+        parts.append(f"意识焦点:{','.join(focuses)}")
+    if inner_line:
+        parts.append(f"内在语:{inner_line}")
+    return "；".join(parts) if parts else "后台自我整理中，等待下一轮关系对话。"
+
+
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = path.with_name(f".{path.name}.{os.getpid()}.tmp")
@@ -472,9 +502,12 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def _append_jsonl(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    append_jsonl_with_hot_budget(
+        path,
+        payload,
+        max_bytes=16 * 1024 * 1024,
+        tail_events=512,
+    )
 
 
 def _int_or_zero(value: Any) -> int:

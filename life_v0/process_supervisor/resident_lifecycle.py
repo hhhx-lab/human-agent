@@ -14,6 +14,11 @@ from life_v0.digital_life_identity import (
     LIFE_NAME_REGISTRY_REF,
     read_life_name_registry,
 )
+from .runtime_resource_budget import (
+    append_jsonl_with_hot_budget,
+    count_jsonl_events,
+    max_jsonl_int_field,
+)
 from .resident_autonomous_activity import record_resident_autonomous_activity
 from .terminal_ui import extract_life_response_text
 
@@ -83,7 +88,7 @@ class ResidentControlInputStream:
         self.inbox_path = terminal_dir / "resident_relation_inbox.jsonl"
         self.outbox_path = terminal_dir / "resident_relation_outbox.jsonl"
         self.queue_state_path = terminal_dir / "resident_relation_queue_state.json"
-        self.min_poll_seconds = max(float(min_poll_seconds), 0.05)
+        self.min_poll_seconds = max(float(min_poll_seconds), 1.0)
         queue_state = _read_json_if_exists(self.queue_state_path)
         self.last_consumed_sequence = _int_or_zero(
             queue_state.get("last_consumed_sequence")
@@ -113,7 +118,7 @@ class ResidentControlInputStream:
             if remaining <= 0:
                 self.record_autonomous_activity()
                 return None
-            time.sleep(min(0.05, remaining))
+            time.sleep(min(0.25, remaining))
 
     def record_autonomous_activity(self) -> None:
         result = record_resident_autonomous_activity(
@@ -152,8 +157,14 @@ class ResidentControlInputStream:
         if not active_sequence:
             return
         response_text = _extract_response_text(emitted_output)
+        release_state = _read_expression_release_state(self.terminal_dir)
+        release_path = release_state.get("expression_release_path")
+        release_tier = release_state.get("expression_release_tier")
         if response_text:
-            output_status = "completed"
+            if release_path and release_path != "model_expression":
+                output_status = "completed_released_fallback"
+            else:
+                output_status = "completed"
         elif not emitted_output:
             output_status = "completed_unreleased"
         else:
@@ -166,6 +177,8 @@ class ResidentControlInputStream:
             "emitted_output": emitted_output,
             "response_text": response_text,
             "status": output_status,
+            "expression_release_path": release_path,
+            "expression_release_tier": release_tier,
             "generated_at": _now_iso(),
             "resident_relation_inbox_ref": RESIDENT_RELATION_INBOX_REF,
             "resident_relation_outbox_ref": RESIDENT_RELATION_OUTBOX_REF,
@@ -505,9 +518,19 @@ def read_resident_lifecycle_status(
             "status": "not_started",
             "resident_lifecycle_state_ref": RESIDENT_LIFECYCLE_STATE_REF,
             "resident_lifecycle_command_ref": RESIDENT_LIFECYCLE_COMMAND_REF,
-        }
+    }
     pid = _int_or_zero(state.get("pid"))
-    state["pid_alive"] = bool(pid and _pid_alive(pid))
+    pid_alive = bool(pid and _pid_alive(pid))
+    state["pid_alive"] = pid_alive
+    if not pid_alive and state.get("status") in {
+        "background_starting",
+        "background_active",
+        "stop_requested",
+    }:
+        state["status"] = "stopped"
+        state["stale_background_process_detected"] = True
+        state["stopped_at"] = state.get("stopped_at") or _now_iso()
+        _write_json(terminal_dir / "resident_lifecycle_state.json", state)
     runtime_root = terminal_dir.parent.parent
     resolved_reports_dir = (
         reports_dir.resolve()
@@ -910,7 +933,7 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 def _jsonl_event_count(path: Path) -> int:
-    return len(_read_jsonl(path))
+    return count_jsonl_events(path)
 
 
 def _dedupe_strings(values: list[str]) -> list[str]:
@@ -950,9 +973,12 @@ def _clear_stale_lifecycle_command(*, command_path: Path, run_id: str) -> None:
 
 
 def _append_jsonl(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    append_jsonl_with_hot_budget(
+        path,
+        payload,
+        max_bytes=16 * 1024 * 1024,
+        tail_events=512,
+    )
 
 
 def _int_or_zero(value: Any) -> int:
@@ -971,8 +997,7 @@ def _now_iso() -> str:
 
 
 def _next_inbox_sequence(path: Path) -> int:
-    sequences = [_int_or_zero(event.get("sequence")) for event in _read_jsonl(path)]
-    return (max(sequences) if sequences else 0) + 1
+    return max_jsonl_int_field(path, field_name="sequence") + 1
 
 
 def _wait_for_outbox_event(
@@ -994,6 +1019,24 @@ def _extract_response_text(emitted_output: str) -> str:
     return extract_life_response_text(emitted_output)
 
 
+def _read_expression_release_path(terminal_dir: Path) -> str | None:
+    release_path = _read_expression_release_state(terminal_dir).get(
+        "expression_release_path"
+    )
+    return str(release_path) if release_path else None
+
+
+def _read_expression_release_state(terminal_dir: Path) -> dict[str, Any]:
+    state_path = terminal_dir.parent / "language" / "model_expression_state.json"
+    payload = _read_json_if_exists(state_path)
+    release_path = payload.get("expression_release_path")
+    release_tier = payload.get("expression_release_tier")
+    return {
+        "expression_release_path": str(release_path) if release_path else None,
+        "expression_release_tier": release_tier if release_tier is not None else None,
+    }
+
+
 def _resident_relation_queue_bootstrap_state(terminal_dir: Path) -> dict[str, Any]:
     inbox_path = terminal_dir / "resident_relation_inbox.jsonl"
     outbox_path = terminal_dir / "resident_relation_outbox.jsonl"
@@ -1007,7 +1050,12 @@ def _resident_relation_queue_bootstrap_state(terminal_dir: Path) -> dict[str, An
         or [0]
     )
     previous_status = str(previous.get("status") or "")
-    has_live_queued_turn = previous_status in {"queued", "turn_in_progress"}
+    has_live_queued_turn = previous_status == "queued"
+    abandoned_sequence = (
+        _int_or_zero(previous.get("active_sequence"))
+        if previous_status == "turn_in_progress"
+        else 0
+    )
     stale_inbox_floor = 0 if has_live_queued_turn else inbox_sequence
     last_consumed = max(
         _int_or_zero(previous.get("last_consumed_sequence")),
@@ -1034,6 +1082,10 @@ def _resident_relation_queue_bootstrap_state(terminal_dir: Path) -> dict[str, An
     if previous:
         state["bootstrap_previous_status"] = previous.get("status")
     state["bootstrap_preserved_live_queue"] = has_live_queued_turn
+    state["bootstrap_abandoned_interrupted_turn"] = abandoned_sequence > 0
+    if abandoned_sequence:
+        state["bootstrap_abandoned_sequence"] = abandoned_sequence
+        state["bootstrap_abandoned_turn_id"] = previous.get("active_turn_id")
     state["bootstrap_ignored_stale_inbox_through_sequence"] = inbox_sequence
     state["bootstrap_preserved_outbox_through_sequence"] = outbox_sequence
     return state

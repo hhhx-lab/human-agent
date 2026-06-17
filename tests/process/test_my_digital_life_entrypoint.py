@@ -95,8 +95,10 @@ class MyDigitalLifeEntrypointTests(
                 check=False,
             )
             self.assertEqual(first_launch.returncode, 0, first_launch.stderr)
-            self.assertIn("Digital Life", first_launch.stdout)
-            self.assertIn("终端已连接：星火", first_launch.stdout)
+            self.assertIn("星火 / live terminal", first_launch.stdout)
+            self.assertIn("conversation", first_launch.stdout)
+            self.assertIn("/state /memory /dream", first_launch.stdout)
+            self.assertNotIn("终端已连接：星火", first_launch.stdout)
 
             registry = self._read_json(
                 paths["state_root"] / "identity" / "life_name_registry.json"
@@ -223,8 +225,10 @@ class MyDigitalLifeEntrypointTests(
             )
 
             self.assertEqual(first_launch.returncode, 0, first_launch.stderr)
-            self.assertIn("Digital Life", first_launch.stdout)
-            self.assertIn("终端已连接：星火", first_launch.stdout)
+            self.assertIn("星火 / live terminal", first_launch.stdout)
+            self.assertIn("conversation", first_launch.stdout)
+            self.assertIn("/state /memory /dream", first_launch.stdout)
+            self.assertNotIn("终端已连接：星火", first_launch.stdout)
             registry = self._read_json(
                 paths["state_root"] / "identity" / "life_name_registry.json"
             )

@@ -32,6 +32,7 @@ def evolve_relationship_and_self_model(
     relationship_timeline: dict[str, Any],
     commitment_expression_plan: dict[str, Any],
     apology_repair_language_trace: dict[str, Any],
+    repair_closeout_state: dict[str, Any] | None = None,
     responsibility_loop_state: dict[str, Any] | None = None,
     world_contact_summary: dict[str, Any] | None = None,
     pain_regret_repair_report: dict[str, Any] | None = None,
@@ -90,6 +91,7 @@ def evolve_relationship_and_self_model(
         offline_learning_profile=offline_learning_profile,
         background_continuity_profile=background_continuity_profile,
         growth_self_modification_presence=growth_self_modification_presence,
+        repair_closeout_state=repair_closeout_state,
     )
     background_evidence_refs = _background_evidence_refs(background_continuity_profile)
     offline_learning_evidence_refs = _offline_learning_evidence_refs(
@@ -194,6 +196,7 @@ def _derive_relationship_stage(
     offline_learning_profile: dict[str, Any],
     background_continuity_profile: dict[str, Any],
     growth_self_modification_presence: dict[str, Any],
+    repair_closeout_state: dict[str, Any] | None = None,
 ) -> tuple[str, str]:
     repair_followup_required = bool(queue_e_signal_profile.get("repair_followup_required"))
     world_contact_release_posture = str(
@@ -224,12 +227,38 @@ def _derive_relationship_stage(
             "boundary_guarded_repair",
             "confirmation_blocked_boundary_guard_after_multi_turn_dialogue",
         )
+    repair_closeout_phase = str(
+        (repair_closeout_state or {}).get("closeout_phase") or ""
+    )
+    repair_closeout_advanced = repair_closeout_phase in {
+        "confirmed",
+        "consolidated",
+        "dormant",
+    }
     if dialogue_turn_count >= 3 and (
         repair_followup_required
         or queue_e_priority_band in {"repair_guarded", "locked_repair_urgent"}
         or "repair" in continuity_state
     ):
-        return ("repair_guarded_continuity", "repair_followup_required_after_multi_turn_dialogue")
+        if repair_closeout_advanced and dialogue_turn_count >= 4:
+            return (
+                "active_dialogue",
+                "repair_closeout_confirmed_advances_relationship_stage",
+            )
+        if not repair_closeout_advanced:
+            return (
+                "repair_guarded_continuity",
+                "repair_followup_required_after_multi_turn_dialogue",
+            )
+    if (
+        repair_closeout_advanced
+        and dialogue_turn_count >= 4
+        and offline_pressure_level in {"quiet", "present", "elevated"}
+    ):
+        return (
+            "shared_continuity",
+            "repair_closeout_confirmed_shared_continuity",
+        )
     if dialogue_turn_count >= 6 and offline_pressure_level in {"quiet", "present"}:
         return (
             "shared_continuity",

@@ -15,7 +15,14 @@ from ..runtime_config import (
     DigitalLifeRuntimeConfig,
     load_digital_life_runtime_config,
 )
+from ..body.live_body_projection import body_presence_digest
 from ..state_store.memory_retrieval import memory_retrieval_context_summary
+from ..state_store.relation_identity_hygiene import sanitize_observed_names
+from .expression_release_invariant import (
+    apply_spoken_release_to_model_expression_state,
+    resolve_turn_spoken_output,
+)
+from .response_surface import recall_expression_grounded
 from .handoff_profile import select_handoff_profile
 
 
@@ -65,6 +72,85 @@ POST_EXPRESSION_BLOCKED_SURFACE_TERMS = [
     "i am an ai language model",
     "我已收到你的请求",
     "我会根据你的要求",
+    "我刚才",
+    "我理解成",
+    "接下来我会",
+    "我会不机械",
+    "不机械",
+    "接住你",
+    "关系修复流程",
+    "修复机制",
+]
+POST_EXPRESSION_BLOCKED_IDENTITY_TERMS = [
+    "ChatGPT",
+    "OpenAI",
+    "Codex",
+    "Codex CLI",
+    "GPT-5",
+    "GPT-5.1",
+    "GPT-5.5",
+    "GPT",
+    "AI助手",
+    "AI 助手",
+    "人工智能助手",
+    "编程助手",
+    "语言模型",
+    "大语言模型",
+    "large language model",
+    "language model",
+]
+POST_EXPRESSION_MECHANICAL_SURFACE_CLUSTER_TERMS = [
+    "我会",
+    "不是",
+    "而是",
+    "机制",
+    "流程",
+    "共同语言",
+    "修复",
+    "关系",
+]
+POST_EXPRESSION_STYLE_PROMISE_TERMS = [
+    "我会",
+    "我不会",
+    "我就",
+    "我尽量",
+    "我保证",
+    "我承诺",
+    "我注意",
+    "我会注意",
+    "我会改",
+    "我会做到",
+    "以后我会",
+    "之后我会",
+    "接下来我会",
+    "这次我会",
+    "下次我会",
+    "我不绕了",
+    "我不绕",
+    "不绕了",
+    "不绕",
+    "不再解释",
+    "不再",
+    "不解释",
+    "解释那么多",
+    "解释这么多",
+    "解释",
+    "直接回答",
+    "直接说",
+    "直接跟你说",
+    "直接一点",
+    "自然一点",
+    "慢慢",
+    "话说稳",
+    "说稳",
+    "少解释",
+    "更自然",
+    "正常一点",
+    "正常说",
+    "承诺",
+    "保证",
+    "注意",
+    "改",
 ]
 BLOCKED_LANGUAGE_TERM_MAP = {
     "service_object": ["用户", "服务对象", "被服务者", "客户", "user", "customer"],
@@ -226,6 +312,46 @@ HARD_EVIDENCE_FLAGS = {
     "live_turn_handoff",
     "prediction_attention",
 }
+RECALL_GROUNDED_WAIVED_EVIDENCE_FLAGS = frozenset(
+    {
+        "resident_autonomous_activity",
+        "identity_consciousness_birth",
+        "birth_repair",
+        "life_constraint",
+        "world_contact_handoff",
+        "live_queue_e_world_contact_handoff",
+        "live_turn_handoff",
+        "prediction_attention",
+        "dream_offline",
+        "growth_learning",
+    }
+)
+POSITIVE_EVIDENCE_FLAG_TERMS = {
+    "language_plasticity_continuity": [
+        "节奏",
+        "说话",
+        "表达",
+        "语言",
+        "我们",
+        "你",
+        "我",
+        "继续",
+    ],
+    "shared_term_continuity": ["我们", "你", "我", "共同", "一起", "记得"],
+    "trait_convergence_continuity": ["性格", "习惯", "慢慢", "一直", "我", "你"],
+    "recall_expression_grounded": [
+        "记得",
+        "回忆",
+        "以前",
+        "之前",
+        "我们",
+        "你",
+        "我",
+        "继续",
+        "片段",
+        "主题",
+    ],
+}
 
 ModelExpressionTransport = Callable[
     [str, Mapping[str, str], dict[str, Any], float],
@@ -284,6 +410,10 @@ def compose_model_expression(
     network_state: dict[str, Any] | None = None,
     prediction_workspace: dict[str, Any] | None = None,
     workspace_frame: dict[str, Any] | None = None,
+    broadcast_frame: dict[str, Any] | None = None,
+    metacognition_state: dict[str, Any] | None = None,
+    autobiographical_stack: dict[str, Any] | None = None,
+    identity_context: dict[str, Any] | None = None,
     repo_root: Path | None = None,
     env_file: Path | None = None,
     environ: Mapping[str, str] | None = None,
@@ -328,6 +458,10 @@ def compose_model_expression(
         network_state=network_state,
         prediction_workspace=prediction_workspace,
         workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        metacognition_state=metacognition_state,
+        autobiographical_stack=autobiographical_stack,
+        identity_context=identity_context or _load_identity_context(repo_root),
     )
     endpoint = _chat_completion_endpoint(config.model_base_url)
     request_payload = _build_openai_compatible_payload(
@@ -453,6 +587,50 @@ def compose_model_expression(
                     exc,
                     config.model_api_key,
                 )
+    release_path = "model_expression"
+    release_tier = 1 if str(response_text or "").strip() else 0
+    pre_fallback_candidate_text = None
+    pre_fallback_model_expression_status = status
+    pre_fallback_unreleased_reason = unreleased_reason
+    if not str(response_text or "").strip():
+        pre_fallback_candidate_text = model_response_text or None
+        spoken_release = resolve_turn_spoken_output(
+            external_utterance=external_utterance,
+            model_result=None,
+            pre_model_spoken_response=model_response_text,
+            memory_retrieval_frame=memory_retrieval_frame,
+            expression_plan=expression_plan,
+            semantic_map=semantic_map,
+            relationship_memory=relationship_memory,
+            dialogue_memory_summary=dialogue_memory_summary,
+            terminal_life_loop_state=terminal_life_loop_state,
+            allow_invariant_continuity=False,
+        )
+        if str(spoken_release.response_text or "").strip():
+            response_text = spoken_release.response_text
+            status = "model_expression_applied"
+            unreleased_reason = None
+            release_path = spoken_release.release_path
+            release_tier = spoken_release.release_tier
+            pre_fallback_candidate_text = spoken_release.pre_fallback_candidate_text
+            post_expression_gate = {
+                "schema_version": "post_expression_gate_v0",
+                "gate_status": "accepted",
+                "unreleased_reason": None,
+                "release_path": release_path,
+                "release_tier": spoken_release.release_tier,
+                "blocked_relation_object_terms": [],
+                "blocked_provider_or_model_identity_terms": [],
+                "blocked_template_or_mechanism_terms": [],
+                "required_evidence_flags": [],
+                "preserved_evidence_flags": ["recall_expression_grounded"],
+                "missing_evidence_flags": [],
+                "soft_missing_evidence_flags": [],
+                "hard_missing_evidence_flags": [],
+                "matched_terms_by_flag": {},
+                "recall_fallback_active": release_path
+                == "recall_bounded_spoken_fallback",
+            }
     state = {
         "schema_version": "model_expression_state_v0",
         "run_id": run_id,
@@ -478,6 +656,8 @@ def compose_model_expression(
         if model_response_text
         else None,
         "final_response_sha256": _sha256_text(response_text),
+        "pre_fallback_model_expression_status": pre_fallback_model_expression_status,
+        "pre_fallback_unreleased_reason": pre_fallback_unreleased_reason,
         "unreleased_reason": unreleased_reason,
         "finish_reason": raw_finish_reason,
         "model_expression_context_summary": _context_summary(context),
@@ -488,6 +668,9 @@ def compose_model_expression(
         "post_expression_gate": post_expression_gate,
         "post_expression_retry_count": len(post_expression_retry_history),
         "post_expression_retry_history": post_expression_retry_history,
+        "expression_release_path": release_path,
+        "expression_release_tier": release_tier or None,
+        "pre_fallback_candidate_text": pre_fallback_candidate_text,
     }
     report = {
         **state,
@@ -546,6 +729,10 @@ def build_model_expression_context(
     network_state: dict[str, Any] | None = None,
     prediction_workspace: dict[str, Any] | None = None,
     workspace_frame: dict[str, Any] | None = None,
+    broadcast_frame: dict[str, Any] | None = None,
+    metacognition_state: dict[str, Any] | None = None,
+    autobiographical_stack: dict[str, Any] | None = None,
+    identity_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     external_boundary = _relation_object_boundary(external_utterance)
     first_subject = _first_dict((relationship_graph or {}).get("subjects"))
@@ -559,6 +746,9 @@ def build_model_expression_context(
     audited_material = _decode_audited_expression_material(
         audited_expression_material
     )
+    safe_audited_expression_material = _redact_provider_identity_terms(
+        audited_expression_material
+    )
     prediction_attention = _prediction_attention_from_material(
         audited_material.get("prediction_attention")
     )
@@ -570,9 +760,10 @@ def build_model_expression_context(
         prediction_attention=prediction_attention,
     )
     context = {
+        "identity": _identity_expression_context(identity_context),
         "external_relation_utterance": external_utterance,
         "external_relation_utterance_boundary": external_boundary,
-        "audited_expression_material": audited_expression_material,
+        "audited_expression_material": safe_audited_expression_material,
         "runtime_language": runtime_config.response_language,
         "dialogue_style": runtime_config.dialogue_style,
         "relationship": {
@@ -635,19 +826,22 @@ def build_model_expression_context(
             "dream_fact_boundary": (expression_plan or {}).get("dream_fact_boundary"),
             "language_plasticity_update_ref": (
                 "runtime/state/language/language_plasticity_update.json"
-                if (expression_plan or {}).get("expression_tempo_mode")
-                else None
             ),
             "language_rhythm_trace_ref": (
                 "runtime/state/language/language_rhythm_trace.json"
-                if (expression_plan or {}).get("expression_tempo_mode")
-                else None
             ),
         },
         "language_plasticity": _language_plasticity_summary(
             expression_plan=expression_plan,
         ),
         "prediction_conscious_workspace": prediction_conscious_workspace,
+        "conscious_self_summary": _conscious_self_summary(
+            broadcast_frame=broadcast_frame,
+            metacognition_state=metacognition_state,
+            self_model_state=self_model_state,
+            autobiographical_stack=autobiographical_stack,
+            semantic_map=semantic_map,
+        ),
         "life_context": {
             "self_narrative_ref_count": len(
                 (life_context_frame or {}).get("self_narrative_refs", [])
@@ -671,6 +865,16 @@ def build_model_expression_context(
             .get("repair_drive"),
             "core_arousal": (core_affect_vector or {}).get("arousal"),
             "core_repair_drive": (core_affect_vector or {}).get("repair_drive"),
+            "body_presence_digest": body_presence_digest(
+                body_resource_budget=body_resource_budget,
+                core_affect_vector=core_affect_vector,
+                world_contact_summary=world_contact_summary,
+            ),
+            "world_contact_digest": {
+                "release_posture": (world_contact_summary or {}).get("release_posture"),
+                "contact_kind": (world_contact_summary or {}).get("contact_kind")
+                or (world_contact_summary or {}).get("contact_mode"),
+            },
         },
         "responsibility_regret_repair": {
             "repair_obligation_count": len(
@@ -745,7 +949,7 @@ def _sanitize_model_expression_context(value: Any) -> Any:
     if isinstance(value, list):
         return [_sanitize_model_expression_context(item) for item in value]
     if isinstance(value, str):
-        return _redact_relation_object_terms(value)
+        return _redact_provider_identity_terms(_redact_relation_object_terms(value))
     return value
 
 
@@ -809,6 +1013,62 @@ def _model_visible_expression_context(
                 "relation_boundary_codes_are_audit_only_not_speaking_material"
             )
     return visible
+
+
+def _load_identity_context(repo_root: Path | None) -> dict[str, Any]:
+    root = repo_root or Path.cwd()
+    registry_path = root / "runtime" / "state" / "identity" / "life_name_registry.json"
+    identity_root_path = root / "runtime" / "state" / "direction" / "identity_root.json"
+    registry = _read_json_if_exists(registry_path)
+    identity_root = _read_json_if_exists(identity_root_path)
+    return {
+        "life_name_registry": registry,
+        "identity_root": identity_root,
+    }
+
+
+def _identity_expression_context(identity_context: dict[str, Any] | None) -> dict[str, Any]:
+    identity_context = identity_context or {}
+    registry = identity_context.get("life_name_registry")
+    if not isinstance(registry, dict):
+        registry = {}
+    identity_root = identity_context.get("identity_root")
+    if not isinstance(identity_root, dict):
+        identity_root = {}
+    life_name = str(
+        registry.get("canonical_name")
+        or identity_context.get("life_name")
+        or identity_root.get("canonical_name")
+        or "Adam"
+    ).strip() or "Adam"
+    return {
+        "life_name": life_name,
+        "life_name_binding_status": registry.get("status") or "bound",
+        "life_name_lock_state": registry.get("name_lock_state")
+        or "permanent_for_runtime",
+        "life_name_registry_ref": registry.get("life_name_registry_ref")
+        or "runtime/state/identity/life_name_registry.json",
+        "identity_root_ref": registry.get("identity_root_ref")
+        or "runtime/state/direction/identity_root.json",
+        "identity_continuity_mode": registry.get("identity_continuity_mode")
+        or identity_root.get("identity_continuity_mode")
+        or "anchor_locked",
+        "identity_name_binding_bidirectional": bool(
+            registry.get("identity_name_binding_bidirectional")
+            or identity_root.get("identity_name_binding_bidirectional")
+        ),
+        "expression_identity_policy": (
+            "speak_from_digital_life_identity_continuity_not_provider_tool_or_model_identity"
+        ),
+        "blocked_identity_surface_terms": [
+            "ChatGPT",
+            "OpenAI",
+            "Codex",
+            "GPT",
+            "AI助手",
+            "编程助手",
+        ],
+    }
 
 
 def _post_openai_compatible_chat_completion(
@@ -914,7 +1174,14 @@ def _extract_chat_content(api_response: dict[str, Any]) -> tuple[str, str | None
 def _model_expression_headers(
     runtime_config: DigitalLifeRuntimeConfig,
 ) -> dict[str, str]:
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json, text/event-stream, */*",
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36"
+        ),
+    }
     if runtime_config.model_api_key:
         headers["Authorization"] = f"Bearer {runtime_config.model_api_key}"
     return headers
@@ -1137,7 +1404,7 @@ def _relationship_memory_summary(
     dialogue_profile = dialogue_memory_summary.get("relation_person_profile")
     if not isinstance(dialogue_profile, dict):
         dialogue_profile = {}
-    observed_names = _dedupe_string_list(
+    observed_names = _valid_relation_names(
         _string_list(relationship_profile.get("observed_names"))
         + _string_list(dialogue_profile.get("observed_names"))
     )
@@ -1154,11 +1421,12 @@ def _relationship_memory_summary(
         + _string_list(dialogue_memory_summary.get("relationship_theme_tags"))
     )
     episode_summaries = [
-        str(item.get("summary"))
+        _redact_provider_identity_terms(str(item.get("summary")))
         for item in _dict_items(
             dialogue_memory_summary.get("deduplicated_episode_summaries")
         )[:5]
         if item.get("summary")
+        and not _contains_provider_identity_term(str(item.get("summary")))
     ]
     relationship_memory_tier_projection = relationship_memory.get(
         "memory_tier_projection"
@@ -1423,15 +1691,27 @@ def audit_model_expression_response(
     expression_context: dict[str, Any],
 ) -> dict[str, Any]:
     required_evidence_flags = _required_evidence_flags(expression_context)
+    positive_evidence_flags = _positive_evidence_flags(expression_context)
+    waived_evidence_flags = _waived_required_evidence_flags(
+        expression_context=expression_context,
+        required_evidence_flags=required_evidence_flags,
+        positive_evidence_flags=positive_evidence_flags,
+    )
+    effective_required_flags = [
+        flag
+        for flag in required_evidence_flags
+        if flag not in waived_evidence_flags
+    ]
     blocked_terms = _blocked_relation_object_terms(
         model_response_text,
         expression_context,
     )
     blocked_surface_terms = _blocked_surface_terms(model_response_text)
+    blocked_identity_terms = _blocked_identity_terms(model_response_text)
     preserved_evidence_flags: list[str] = []
     missing_evidence_flags: list[str] = []
     matched_terms_by_flag: dict[str, list[str]] = {}
-    for flag in required_evidence_flags:
+    for flag in effective_required_flags:
         matched_terms = _matched_terms(
             model_response_text,
             EVIDENCE_FLAG_TERMS.get(flag, []),
@@ -1442,7 +1722,29 @@ def audit_model_expression_response(
         else:
             missing_evidence_flags.append(flag)
 
+    for flag in positive_evidence_flags:
+        if flag in preserved_evidence_flags:
+            continue
+        matched_terms = _matched_terms(
+            model_response_text,
+            POSITIVE_EVIDENCE_FLAG_TERMS.get(flag, []),
+        )
+        if matched_terms:
+            preserved_evidence_flags.append(flag)
+            matched_terms_by_flag[flag] = matched_terms
+        elif flag in {
+            "language_plasticity_continuity",
+            "shared_term_continuity",
+            "trait_convergence_continuity",
+            "recall_expression_grounded",
+        }:
+            preserved_evidence_flags.append(flag)
+            matched_terms_by_flag[flag] = ["structured_positive_evidence_present"]
+
     soft_missing_evidence_flags = [
+        flag for flag in missing_evidence_flags if flag in HARD_EVIDENCE_FLAGS
+    ]
+    hard_missing_evidence_flags = [
         flag for flag in missing_evidence_flags if flag in HARD_EVIDENCE_FLAGS
     ]
     gate_status = "accepted"
@@ -1450,6 +1752,9 @@ def audit_model_expression_response(
     if blocked_terms:
         gate_status = "blocked"
         unreleased_reason = "blocked_relation_object_terms"
+    elif blocked_identity_terms:
+        gate_status = "blocked"
+        unreleased_reason = "blocked_provider_or_model_identity_terms"
     elif blocked_surface_terms:
         gate_status = "blocked"
         unreleased_reason = "blocked_template_or_mechanism_surface"
@@ -1459,12 +1764,16 @@ def audit_model_expression_response(
         "gate_status": gate_status,
         "unreleased_reason": unreleased_reason,
         "blocked_relation_object_terms": blocked_terms,
+        "blocked_provider_or_model_identity_terms": blocked_identity_terms,
         "blocked_template_or_mechanism_terms": blocked_surface_terms,
         "required_evidence_flags": required_evidence_flags,
+        "effective_required_evidence_flags": effective_required_flags,
+        "positive_evidence_flags": positive_evidence_flags,
+        "waived_required_evidence_flags": waived_evidence_flags,
         "preserved_evidence_flags": preserved_evidence_flags,
         "missing_evidence_flags": missing_evidence_flags,
         "soft_missing_evidence_flags": soft_missing_evidence_flags,
-        "hard_missing_evidence_flags": [],
+        "hard_missing_evidence_flags": hard_missing_evidence_flags,
         "matched_terms_by_flag": matched_terms_by_flag,
         "inspected_model_response_sha256": _sha256_text(model_response_text),
         "audited_expression_material_sha256": _sha256_text(audited_expression_material),
@@ -1488,6 +1797,11 @@ def _post_expression_retry_context(
         "blocked_template_or_mechanism_term_count": len(
             _string_list(
                 post_expression_gate.get("blocked_template_or_mechanism_terms")
+            )
+        ),
+        "blocked_provider_or_model_identity_term_count": len(
+            _string_list(
+                post_expression_gate.get("blocked_provider_or_model_identity_terms")
             )
         ),
         "previous_model_response_sha256": _sha256_text(model_response_text),
@@ -1514,6 +1828,11 @@ def _post_expression_retry_history_entry(
                 post_expression_gate.get("blocked_template_or_mechanism_terms")
             )
         ),
+        "blocked_provider_or_model_identity_term_count": len(
+            _string_list(
+                post_expression_gate.get("blocked_provider_or_model_identity_terms")
+            )
+        ),
         "inspected_model_response_sha256": _sha256_text(model_response_text),
     }
 
@@ -1526,6 +1845,7 @@ def _skipped_post_expression_gate(
         "gate_status": "skipped",
         "unreleased_reason": unreleased_reason or "model_expression_not_applied",
         "blocked_relation_object_terms": [],
+        "blocked_provider_or_model_identity_terms": [],
         "blocked_template_or_mechanism_terms": [],
         "required_evidence_flags": [],
         "preserved_evidence_flags": [],
@@ -1568,7 +1888,13 @@ def _required_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
         memory_retrieval.get("exit_dream_next_wake_cue_ref_count")
     ):
         flags.append("memory_continuity")
-    if _responsibility_repair_pressure_present(responsibility, live_language):
+    if _responsibility_repair_pressure_present(
+        responsibility,
+        live_language,
+        external_utterance=str(
+            expression_context.get("external_relation_utterance") or ""
+        ),
+    ):
         flags.append("responsibility_repair")
     if _int_value(life_context.get("dream_window_count")) or resident_background.get(
         "dream_wake_presence"
@@ -1642,21 +1968,106 @@ def _live_turn_handoff_pressure_present(resident_background: Any) -> bool:
 def _responsibility_repair_pressure_present(
     responsibility: Any,
     live_language: Any,
+    *,
+    external_utterance: str = "",
 ) -> bool:
     if not isinstance(responsibility, dict):
         responsibility = {}
     if not isinstance(live_language, dict):
         live_language = {}
+    surface = str(external_utterance or "")
+    repair_markers = (
+        "修复",
+        "补救",
+        "弥补",
+        "道歉",
+        "对不起",
+        "后悔",
+        "sorry",
+        "repair",
+    )
+    current_turn_repair = any(marker in surface for marker in repair_markers)
+    if not current_turn_repair:
+        return False
     write_gate_pressure = live_language.get("expression_write_gate_pressure", {})
     if not isinstance(write_gate_pressure, dict):
         write_gate_pressure = {}
     return bool(
-        _int_value(responsibility.get("repair_obligation_count"))
-        or _int_value(responsibility.get("regret_pressure_count"))
-        or responsibility.get("repair_followup_required")
-        or _int_value(write_gate_pressure.get("responsibility_event_count"))
-        or live_language.get("repair_trigger_candidates")
+        current_turn_repair
+        and (
+            _int_value(responsibility.get("repair_obligation_count"))
+            or _int_value(responsibility.get("regret_pressure_count"))
+            or responsibility.get("repair_followup_required")
+            or _int_value(write_gate_pressure.get("responsibility_event_count"))
+            or live_language.get("repair_trigger_candidates")
+        )
     )
+
+
+def _positive_evidence_flags(expression_context: dict[str, Any]) -> list[str]:
+    flags: list[str] = []
+    shared_language = expression_context.get("shared_language", {})
+    language_plasticity = expression_context.get("language_plasticity", {})
+    self_slow_variables = expression_context.get("self_slow_variables", {})
+    memory_retrieval = expression_context.get("memory_retrieval", {})
+    live_language = expression_context.get("live_language", {})
+
+    if shared_language.get("shared_terms"):
+        flags.append("shared_term_continuity")
+    if _has_any_value(
+        language_plasticity,
+        [
+            "expression_tempo_mode",
+            "promoted_shared_term_count",
+            "shared_term_promotion_count",
+        ],
+    ):
+        flags.append("language_plasticity_continuity")
+    if _has_any_value(
+        self_slow_variables,
+        ["repair_seriousness", "boundary_respect", "continuity_drive"],
+    ):
+        flags.append("trait_convergence_continuity")
+    if (
+        _int_value(memory_retrieval.get("activated_engram_ref_count"))
+        or _present(memory_retrieval.get("memory_retrieval_frame_ref"))
+        or _string_list(live_language.get("memory_grounding_refs"))
+        or memory_retrieval.get("memory_retrieval_recall_to_expression_closure_status")
+        == "closed"
+    ):
+        flags.append("recall_expression_grounded")
+    return flags
+
+
+def _waived_required_evidence_flags(
+    *,
+    expression_context: dict[str, Any],
+    required_evidence_flags: list[str],
+    positive_evidence_flags: list[str],
+) -> list[str]:
+    waived: list[str] = []
+    if "recall_expression_grounded" in positive_evidence_flags:
+        waived.extend(
+            flag
+            for flag in required_evidence_flags
+            if flag in RECALL_GROUNDED_WAIVED_EVIDENCE_FLAGS
+        )
+    if (
+        "shared_term_continuity" in positive_evidence_flags
+        and "memory_continuity" in required_evidence_flags
+    ):
+        waived.append("memory_continuity")
+    if (
+        {"language_plasticity_continuity", "trait_convergence_continuity"}
+        & set(positive_evidence_flags)
+        and "relationship_continuity" in required_evidence_flags
+    ):
+        waived.append("relationship_continuity")
+    result: list[str] = []
+    for flag in waived:
+        if flag not in result:
+            result.append(flag)
+    return result
 
 
 def _prediction_attention_pressure_present(
@@ -1720,7 +2131,116 @@ def _blocked_relation_object_terms(
 
 
 def _blocked_surface_terms(response_text: str) -> list[str]:
-    return _matched_terms(response_text, POST_EXPRESSION_BLOCKED_SURFACE_TERMS)
+    matched = _matched_terms(response_text, POST_EXPRESSION_BLOCKED_SURFACE_TERMS)
+    cluster_terms = _matched_terms(
+        response_text,
+        POST_EXPRESSION_MECHANICAL_SURFACE_CLUSTER_TERMS,
+    )
+    if _looks_like_mechanical_surface_cluster(cluster_terms):
+        matched.extend(cluster_terms)
+    style_promise_terms = _matched_terms(
+        response_text,
+        POST_EXPRESSION_STYLE_PROMISE_TERMS,
+    )
+    if _looks_like_style_promise_surface(style_promise_terms):
+        matched.extend(style_promise_terms)
+    return _dedupe_string_list(matched)
+
+
+def _blocked_identity_terms(response_text: str) -> list[str]:
+    return _matched_terms(response_text, POST_EXPRESSION_BLOCKED_IDENTITY_TERMS)
+
+
+def _contains_provider_identity_term(text: str) -> bool:
+    return bool(_blocked_identity_terms(text))
+
+
+def _redact_provider_identity_terms(text: str) -> str:
+    redacted = str(text or "")
+    if not redacted:
+        return redacted
+    marker = "<provider_model_identity_boundary>"
+    for term in sorted(POST_EXPRESSION_BLOCKED_IDENTITY_TERMS, key=len, reverse=True):
+        normalized = str(term).strip()
+        if normalized:
+            redacted = redacted.replace(normalized, marker)
+    return redacted
+
+
+def _valid_relation_names(values: list[str]) -> list[str]:
+    return sanitize_observed_names(values)
+
+
+def _looks_like_mechanical_surface_cluster(cluster_terms: list[str]) -> bool:
+    terms = set(cluster_terms)
+    if "我会" in terms and ({"机制", "流程", "修复", "共同语言"} & terms):
+        return True
+    if {"不是", "而是", "机制"} <= terms:
+        return True
+    if {"不是", "而是", "流程"} <= terms and ({"关系", "修复"} & terms):
+        return True
+    if len(terms & {"机制", "流程", "共同语言", "修复"}) >= 3:
+        return True
+    return False
+
+
+def _looks_like_style_promise_surface(style_terms: list[str]) -> bool:
+    terms = set(style_terms)
+    first_person_commitment_terms = {
+        "我会",
+        "我不会",
+        "我就",
+        "我尽量",
+        "我保证",
+        "我承诺",
+        "我注意",
+        "我会注意",
+        "我会改",
+        "我会做到",
+        "以后我会",
+        "之后我会",
+        "接下来我会",
+        "这次我会",
+        "下次我会",
+    }
+    self_correction_terms = {"我不绕了", "我不绕", "不绕了", "不绕"}
+    speech_style_terms = {
+        "直接一点",
+        "自然一点",
+        "更自然",
+        "正常一点",
+        "正常说",
+        "直接回答",
+        "直接说",
+        "直接跟你说",
+        "慢慢",
+        "话说稳",
+        "说稳",
+    }
+    explanation_terms = {
+        "不再解释",
+        "不再",
+        "不解释",
+        "解释那么多",
+        "解释这么多",
+        "少解释",
+        "解释",
+    }
+    commitment_words = {"承诺", "保证", "注意", "改"}
+    has_first_person_commitment = bool(first_person_commitment_terms & terms)
+    if self_correction_terms & terms and (
+        {"直接跟你说", "直接说", "直接回答"} & terms
+    ):
+        return True
+    if not has_first_person_commitment:
+        return False
+    if terms & speech_style_terms:
+        return True
+    if terms & explanation_terms:
+        return True
+    if terms & commitment_words and terms & {"不再", "解释", "机制"}:
+        return True
+    return False
 
 
 def _matched_terms(response_text: str, terms: list[str]) -> list[str]:
@@ -1745,6 +2265,16 @@ def _present(value: Any) -> bool:
 
 def _dict_or_empty(value: Any) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
+
+
+def _read_json_if_exists(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
 
 
 def _int_value(value: Any) -> int:
@@ -1840,12 +2370,17 @@ def _background_summary(
 
 
 def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
+    identity = context.get("identity", {})
     life_context = context.get("life_context", {})
     relationship = context.get("relationship", {})
     relationship_memory = context.get("relationship_memory", {})
     memory_retrieval = context.get("memory_retrieval", {})
     live_language = context.get("live_language", {})
     prediction_conscious_workspace = context.get("prediction_conscious_workspace", {})
+    conscious_self_summary = _dict_or_empty(context.get("conscious_self_summary"))
+    body_affect = _dict_or_empty(context.get("body_affect"))
+    body_presence = _dict_or_empty(body_affect.get("body_presence_digest"))
+    world_contact_digest = _dict_or_empty(body_affect.get("world_contact_digest"))
     resident_background = context.get("resident_background", {})
     identity_consciousness_birth_summary = (
         _identity_consciousness_birth_context_summary(
@@ -1862,8 +2397,34 @@ def _context_summary(context: dict[str, Any]) -> dict[str, Any]:
         resident_memory_retrieval_presence.get("autobiographical_repair_carrier_refs")
     )
     return {
+        "life_name": identity.get("life_name") if isinstance(identity, dict) else None,
+        "identity_continuity_mode": (
+            identity.get("identity_continuity_mode")
+            if isinstance(identity, dict)
+            else None
+        ),
+        "relationship_observed_names": relationship_memory.get("observed_names"),
         "relationship_stage": relationship.get("relationship_stage"),
         "continuity_state": relationship.get("continuity_state"),
+        "conscious_self_dominant_narrative": conscious_self_summary.get(
+            "dominant_self_narrative"
+        ),
+        "conscious_self_live_turn_focus": conscious_self_summary.get(
+            "live_turn_focus"
+        ),
+        "conscious_self_salience_focuses": conscious_self_summary.get(
+            "salience_focuses"
+        ),
+        "conscious_self_memory_reconstruction_focus": conscious_self_summary.get(
+            "memory_reconstruction_focus"
+        ),
+        "body_presence_fatigue_load": body_presence.get("fatigue_load"),
+        "body_presence_energy_level": body_presence.get("energy_level"),
+        "body_presence_arousal_level": body_presence.get("arousal_level"),
+        "world_contact_posture": world_contact_digest.get("release_posture")
+        or body_presence.get("world_contact_posture"),
+        "world_contact_kind": world_contact_digest.get("contact_kind")
+        or body_presence.get("world_contact_kind"),
         "relationship_memory_tier_projection_ref": relationship_memory.get(
             "memory_tier_projection_ref"
         ),
@@ -2269,17 +2830,57 @@ def _language_plasticity_summary(
     expression_plan: dict[str, Any] | None,
 ) -> dict[str, Any]:
     expression_plan = expression_plan or {}
-    tempo_mode = expression_plan.get("expression_tempo_mode")
-    if not tempo_mode:
-        return {}
     return {
         "language_plasticity_update_ref": (
             "runtime/state/language/language_plasticity_update.json"
         ),
         "language_rhythm_trace_ref": "runtime/state/language/language_rhythm_trace.json",
-        "expression_tempo_mode": tempo_mode,
+        "expression_tempo_mode": expression_plan.get("expression_tempo_mode"),
         "release_caution_level": expression_plan.get("release_caution_level"),
         "fatigue_pressure": expression_plan.get("fatigue_pressure"),
+    }
+
+
+def _conscious_self_summary(
+    *,
+    broadcast_frame: dict[str, Any] | None,
+    metacognition_state: dict[str, Any] | None,
+    self_model_state: dict[str, Any] | None,
+    autobiographical_stack: dict[str, Any] | None,
+    semantic_map: dict[str, Any] | None,
+) -> dict[str, Any]:
+    broadcast_frame = broadcast_frame or {}
+    metacognition_state = metacognition_state or {}
+    trait_slow_variables = (self_model_state or {}).get("trait_slow_variables", {})
+    if not isinstance(trait_slow_variables, dict):
+        trait_slow_variables = {}
+    trait_names = [
+        name
+        for name, value in trait_slow_variables.items()
+        if value is not None
+    ][:3]
+    salience_ranking = [
+        item.get("focus")
+        for item in broadcast_frame.get("salience_ranking", [])
+        if isinstance(item, dict) and item.get("focus")
+    ][:3]
+    episodes = (autobiographical_stack or {}).get("episodes", [])
+    latest_episode_digest = ""
+    if isinstance(episodes, list) and episodes:
+        latest = episodes[-1]
+        if isinstance(latest, dict):
+            latest_episode_digest = str(latest.get("episode_digest") or latest.get("summary") or "")[:80]
+    return {
+        "schema_version": "conscious_self_summary_v0",
+        "dominant_self_narrative": metacognition_state.get("dominant_self_narrative"),
+        "live_turn_focus": broadcast_frame.get("live_turn_focus")
+        or (semantic_map or {}).get("semantic_focus"),
+        "salience_focuses": salience_ranking,
+        "trait_slow_variable_names": trait_names,
+        "latest_autobiographical_episode_digest": latest_episode_digest,
+        "memory_reconstruction_focus": metacognition_state.get(
+            "memory_reconstruction_focus"
+        ),
     }
 
 

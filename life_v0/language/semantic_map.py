@@ -132,6 +132,7 @@ def project_semantic_map_from_live_evidence(
     relation_scope_index: dict[str, Any] | None = None,
     shared_term_registry: dict[str, Any] | None = None,
     relationship_stage: str | None = None,
+    repair_closeout_state: dict[str, Any] | None = None,
     generated_at: str,
 ) -> dict[str, Any]:
     from .pragmatic_inference import enrich_semantic_map_with_pragmatic_inference
@@ -145,6 +146,7 @@ def project_semantic_map_from_live_evidence(
         relation_scope_index=relation_scope_index,
         shared_term_registry=shared_term_registry,
         relationship_stage=relationship_stage,
+        repair_closeout_state=repair_closeout_state,
         generated_at=generated_at,
     )
 
@@ -161,11 +163,15 @@ def _derive_semantic_focus(
         return "boundary_declaration"
     if utterance_signals.get("clarification_request"):
         return "clarification_request"
-    if language_percept.get("repair_trigger_candidates") and language_percept.get(
+    if (
+        utterance_signals.get("repair_request") or utterance_signals.get("apology")
+    ) and language_percept.get("repair_trigger_candidates") and language_percept.get(
         "commitment_trigger_candidates"
     ):
         return "repair_commitment_shared_language"
-    if language_percept.get("repair_trigger_candidates"):
+    if (
+        utterance_signals.get("repair_request") or utterance_signals.get("apology")
+    ) and language_percept.get("repair_trigger_candidates"):
         return "repair_relational_trace"
     if language_percept.get("commitment_trigger_candidates"):
         return "commitment_trace_review"

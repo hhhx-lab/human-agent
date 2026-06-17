@@ -635,10 +635,10 @@ def _cue_terms(
     relation_profile = (relationship_memory or {}).get("relation_person_profile")
     dialogue_profile = (dialogue_memory_summary or {}).get("relation_person_profile")
     if isinstance(relation_profile, dict):
-        terms.extend(_string_list(relation_profile.get("observed_names")))
+        terms.extend(_valid_observed_names(relation_profile.get("observed_names")))
         terms.extend(_string_list(relation_profile.get("preference_hypotheses")))
     if isinstance(dialogue_profile, dict):
-        terms.extend(_string_list(dialogue_profile.get("observed_names")))
+        terms.extend(_valid_observed_names(dialogue_profile.get("observed_names")))
         terms.extend(_string_list(dialogue_profile.get("preference_hypotheses")))
     terms.extend(_string_list((relationship_memory or {}).get("relationship_theme_tags")))
     terms.extend(_string_list((dialogue_memory_summary or {}).get("relationship_theme_tags")))
@@ -654,6 +654,12 @@ def _cue_terms(
         terms.extend(_string_list(cue_sources.get("dialogue_turn_refs")))
         terms.extend(_string_list(cue_sources.get("live_language_turn_refs")))
     return _dedupe([_normalize_cue(term) for term in terms if _normalize_cue(term)])[:48]
+
+
+def _valid_observed_names(value: Any) -> list[str]:
+    from .relation_identity_hygiene import sanitize_observed_names
+
+    return sanitize_observed_names(_string_list(value))
 
 
 def _cue_source_summary(
@@ -1422,6 +1428,14 @@ def _tip_of_tongue_risk(
     if recall_phenomenology == "vivid":
         return "low"
     return "baseline"
+
+
+def is_memory_recall_question(utterance: str | None) -> bool:
+    return _is_memory_recall_question(utterance)
+
+
+def is_memory_confirmation_utterance(utterance: str | None) -> bool:
+    return _is_memory_confirmation_utterance(utterance)
 
 
 def _is_memory_recall_question(utterance: str | None) -> bool:

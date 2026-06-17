@@ -113,8 +113,10 @@ class PackagedDigitalLifeEntrypointTests(
             )
 
             self.assertEqual(digital_life.returncode, 0, digital_life.stderr)
-            self.assertIn("Digital Life", digital_life.stdout)
-            self.assertIn("终端已连接：Digital Life", digital_life.stdout)
+            self.assertIn("Digital Life / live terminal", digital_life.stdout)
+            self.assertIn("conversation", digital_life.stdout)
+            self.assertIn("/state /memory /dream", digital_life.stdout)
+            self.assertNotIn("终端已连接：Digital Life", digital_life.stdout)
             self.assertNotIn("这段关系本身", digital_life.stdout)
             self.assertNotIn("relational_checkin", digital_life.stdout)
 

@@ -29,6 +29,7 @@ from .process_lease import (
     RESIDENT_PROCESS_LEASE_REF,
     refresh_resident_process_lease,
 )
+from .runtime_resource_budget import append_jsonl_with_hot_budget
 
 
 IDLE_HEARTBEAT_TRACE_REF = "runtime/state/terminal/idle_heartbeat_trace.jsonl"
@@ -287,6 +288,10 @@ def write_waiting_heartbeat(
     if repair_followup_required:
         heartbeat_packet["repair_followup_required"] = True
     heartbeat_packet.update(extract_idle_governance_fields(idle_strategy))
+    _copy_waiting_context_fields(
+        source=idle_strategy,
+        target=heartbeat_packet,
+    )
 
     safe_terminal_loop["current_mode"] = waiting_mode
     safe_terminal_loop["last_heartbeat_mode"] = waiting_mode
@@ -1010,6 +1015,10 @@ def write_waiting_heartbeat(
     if membrane_guard_refs:
         resident_governance_state["membrane_guard_refs"] = membrane_guard_refs
     resident_governance_state.update(extract_idle_governance_fields(idle_strategy))
+    _copy_waiting_context_fields(
+        source=idle_strategy,
+        target=resident_governance_state,
+    )
     resident_background_lineage_state = build_resident_background_lineage_state(
         resident_governance_state,
         governance_phase="waiting_heartbeat_active",
@@ -1053,31 +1062,23 @@ def _append_idle_heartbeat_trace(
         "idle_continuity_ref": "runtime/state/terminal/idle_continuity_frame.json",
         "resident_governance_state_ref": RESIDENT_GOVERNANCE_STATE_REF,
         "heartbeat_interval_ms": idle_strategy.get("heartbeat_interval_ms"),
-        "heartbeat_cadence_explanation": idle_strategy.get(
-            "heartbeat_cadence_explanation"
-        ),
         "heartbeat_cadence_driver": idle_strategy.get("heartbeat_cadence_driver"),
         "heartbeat_cadence_reason": idle_strategy.get("heartbeat_cadence_reason"),
-        "heartbeat_cadence_modulators": list(
-            idle_strategy.get("heartbeat_cadence_modulators", [])
+        "heartbeat_cadence_modulators": _bounded_list(
+            idle_strategy.get("heartbeat_cadence_modulators", []),
+            limit=8,
         ),
-        "heartbeat_cadence_evidence_refs": list(
-            idle_strategy.get("heartbeat_cadence_evidence_refs", [])
-        ),
-        "heartbeat_priority_stack_profile": idle_strategy.get(
-            "heartbeat_priority_stack_profile"
+        "heartbeat_cadence_evidence_ref_count": len(
+            list(idle_strategy.get("heartbeat_cadence_evidence_refs", []))
         ),
         "heartbeat_priority_stack_winner": idle_strategy.get(
             "heartbeat_priority_stack_winner"
         ),
-        "heartbeat_priority_stack_candidates": list(
-            idle_strategy.get("heartbeat_priority_stack_candidates", [])
+        "heartbeat_priority_stack_candidate_count": len(
+            list(idle_strategy.get("heartbeat_priority_stack_candidates", []))
         ),
-        "heartbeat_priority_stack_evidence_refs": list(
-            idle_strategy.get("heartbeat_priority_stack_evidence_refs", [])
-        ),
-        "background_heartbeat_cadence_explanation": idle_strategy.get(
-            "background_heartbeat_cadence_explanation"
+        "heartbeat_priority_stack_evidence_ref_count": len(
+            list(idle_strategy.get("heartbeat_priority_stack_evidence_refs", []))
         ),
         "background_heartbeat_cadence_driver": idle_strategy.get(
             "background_heartbeat_cadence_driver"
@@ -1085,11 +1086,8 @@ def _append_idle_heartbeat_trace(
         "background_heartbeat_cadence_reason": idle_strategy.get(
             "background_heartbeat_cadence_reason"
         ),
-        "background_heartbeat_cadence_modulators": list(
-            idle_strategy.get("background_heartbeat_cadence_modulators", [])
-        ),
-        "background_heartbeat_cadence_evidence_refs": list(
-            idle_strategy.get("background_heartbeat_cadence_evidence_refs", [])
+        "background_heartbeat_cadence_evidence_ref_count": len(
+            list(idle_strategy.get("background_heartbeat_cadence_evidence_refs", []))
         ),
         "idle_probe_mode": idle_strategy.get("idle_probe_mode"),
         "next_idle_action": idle_strategy.get("next_idle_action"),
@@ -1097,8 +1095,7 @@ def _append_idle_heartbeat_trace(
         "governance_cadence_profile": idle_strategy.get("governance_cadence_profile"),
         "offline_pressure_level": idle_strategy.get("offline_pressure_level"),
         "body_waiting_posture": idle_strategy.get("body_waiting_posture"),
-        "body_presence_profile": idle_strategy.get("body_presence_profile", {}),
-        "body_ref_set": list(idle_strategy.get("body_ref_set", [])),
+        "body_ref_count": len(list(idle_strategy.get("body_ref_set", []))),
         "body_energy_level": idle_strategy.get("body_energy_level"),
         "body_fatigue_load": idle_strategy.get("body_fatigue_load"),
         "body_sleep_pressure": idle_strategy.get("body_sleep_pressure"),
@@ -1113,14 +1110,11 @@ def _append_idle_heartbeat_trace(
         "background_trait_convergence_history_focus": idle_strategy.get(
             "background_trait_convergence_history_focus"
         ),
-        "background_trait_drift_update_mode_summary": idle_strategy.get(
-            "background_trait_drift_update_mode_summary"
+        "background_trait_drift_recalibration_count": len(
+            list(idle_strategy.get("background_trait_drift_recalibration_names", []))
         ),
-        "background_trait_drift_recalibration_names": list(
-            idle_strategy.get("background_trait_drift_recalibration_names", [])
-        ),
-        "background_trait_drift_stabilized_names": list(
-            idle_strategy.get("background_trait_drift_stabilized_names", [])
+        "background_trait_drift_stabilized_count": len(
+            list(idle_strategy.get("background_trait_drift_stabilized_names", []))
         ),
         "cross_wake_trait_convergence_focus": idle_strategy.get(
             "cross_wake_trait_convergence_focus"
@@ -1128,8 +1122,8 @@ def _append_idle_heartbeat_trace(
         "cross_wake_trait_convergence_pressure": idle_strategy.get(
             "cross_wake_trait_convergence_pressure"
         ),
-        "cross_wake_trait_convergence_refs": list(
-            idle_strategy.get("cross_wake_trait_convergence_refs", [])
+        "cross_wake_trait_convergence_ref_count": len(
+            list(idle_strategy.get("cross_wake_trait_convergence_refs", []))
         ),
         "background_state_merge_guard_ref": idle_strategy.get(
             "background_state_merge_guard_ref"
@@ -1140,17 +1134,8 @@ def _append_idle_heartbeat_trace(
         "background_state_merge_long_term_change_count": idle_strategy.get(
             "background_state_merge_long_term_change_count"
         ),
-        "background_state_merge_long_term_change_families": list(
-            idle_strategy.get("background_state_merge_long_term_change_families", [])
-        ),
-        "background_state_merge_long_term_change_refs": list(
-            idle_strategy.get("background_state_merge_long_term_change_refs", [])
-        ),
-        "background_queue_e_birth_repair_pressure_level": idle_strategy.get(
-            "background_queue_e_birth_repair_pressure_level"
-        ),
-        "background_queue_e_birth_repair_waiting_posture": idle_strategy.get(
-            "background_queue_e_birth_repair_waiting_posture"
+        "background_state_merge_long_term_change_ref_count": len(
+            list(idle_strategy.get("background_state_merge_long_term_change_refs", []))
         ),
         "queue_e_birth_repair_pressure_level": idle_strategy.get(
             "queue_e_birth_repair_pressure_level"
@@ -1170,8 +1155,8 @@ def _append_idle_heartbeat_trace(
         "queue_e_world_contact_waiting_posture": idle_strategy.get(
             "queue_e_world_contact_waiting_posture"
         ),
-        "queue_e_world_contact_ref_set": list(
-            idle_strategy.get("queue_e_world_contact_ref_set", [])
+        "queue_e_world_contact_ref_count": len(
+            list(idle_strategy.get("queue_e_world_contact_ref_set", []))
         ),
         "resident_process_lease_history_profile_ref": idle_strategy.get(
             "resident_process_lease_history_profile_ref"
@@ -1185,41 +1170,37 @@ def _append_idle_heartbeat_trace(
         "resident_process_lease_history_event_count": idle_strategy.get(
             "resident_process_lease_history_event_count"
         ),
-        "resident_process_recent_ids": list(
-            idle_strategy.get("resident_process_recent_ids", [])
+        "long_horizon_language_refs": _bounded_list(
+            idle_strategy.get("long_horizon_language_refs", []),
+            limit=8,
         ),
-        "resident_process_recent_run_ids": list(
-            idle_strategy.get("resident_process_recent_run_ids", [])
-        ),
-        "long_horizon_language_refs": list(
-            idle_strategy.get("long_horizon_language_refs", [])
-        ),
-        "live_language_turn_refs": list(
-            idle_strategy.get("live_language_turn_refs", [])
+        "live_language_turn_ref_count": len(
+            list(idle_strategy.get("live_language_turn_refs", []))
         ),
         "last_live_semantic_focus": idle_strategy.get("last_live_semantic_focus"),
-        "background_live_language_turn_refs": list(
-            idle_strategy.get("background_live_language_turn_refs", [])
+        "background_live_language_turn_ref_count": len(
+            list(idle_strategy.get("background_live_language_turn_refs", []))
         ),
         "background_last_live_semantic_focus": idle_strategy.get(
             "background_last_live_semantic_focus"
         ),
-        "live_language_presence_profile": idle_strategy.get(
-            "live_language_presence_profile"
-        ),
-        "replay_seed_refs": list(idle_continuity_frame.get("replay_seed_refs", [])),
-        "dream_wake_ref_set": list(idle_strategy.get("dream_wake_ref_set", [])),
+        "replay_seed_ref_count": len(list(idle_continuity_frame.get("replay_seed_refs", []))),
+        "dream_wake_ref_count": len(list(idle_strategy.get("dream_wake_ref_set", []))),
         "resident_autonomous_activity_ref": idle_strategy.get(
             "resident_autonomous_activity_ref"
         ),
         "resident_autonomous_activity_state_ref": idle_strategy.get(
             "resident_autonomous_activity_state_ref"
         ),
-        "resident_autonomous_activity_presence_profile": idle_strategy.get(
-            "resident_autonomous_activity_presence_profile", {}
+        "resident_autonomous_activity_presence_profile": _copy_json_value(
+            idle_strategy.get("resident_autonomous_activity_presence_profile") or {}
         ),
-        "resident_autonomous_activity_ref_set": list(
-            idle_strategy.get("resident_autonomous_activity_ref_set", [])
+        "resident_autonomous_activity_ref_set": _bounded_list(
+            idle_strategy.get("resident_autonomous_activity_ref_set", []),
+            limit=16,
+        ),
+        "resident_autonomous_activity_ref_count": len(
+            list(idle_strategy.get("resident_autonomous_activity_ref_set", []))
         ),
         "autonomous_activity_count": idle_strategy.get("autonomous_activity_count"),
         "last_autonomous_activity_kind": idle_strategy.get(
@@ -1228,14 +1209,70 @@ def _append_idle_heartbeat_trace(
         "last_autonomous_activity_state_ref": idle_strategy.get(
             "last_autonomous_activity_state_ref"
         ),
-        "membrane_guard_refs": list(membrane_guard_refs),
+        "membrane_guard_ref_count": len(list(membrane_guard_refs)),
     }
+    handoff_profile = idle_strategy.get("previous_live_turn_waiting_handoff_profile")
+    if isinstance(handoff_profile, dict):
+        trace_event["previous_live_turn_waiting_handoff_profile_ref"] = (
+            handoff_profile.get("previous_live_turn_waiting_handoff_profile_ref")
+            or idle_strategy.get("previous_live_turn_waiting_handoff_profile_ref")
+        )
+        trace_event["previous_live_turn_waiting_handoff_ref_count"] = len(
+            list(handoff_profile.get("evidence_refs", []))
+        )
     for field_name in HANDOFF_CARRY_FIELD_NAMES:
-        if field_name in idle_strategy:
-            trace_event[field_name] = idle_strategy[field_name]
-    trace_path = terminal_dir / "idle_heartbeat_trace.jsonl"
-    with trace_path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(trace_event, ensure_ascii=False) + "\n")
+        value = idle_strategy.get(field_name)
+        if value is not None:
+            trace_event[field_name] = _copy_json_value(value)
+    _copy_waiting_context_fields(
+        source=idle_strategy,
+        target=trace_event,
+        include_handoff=False,
+    )
+    append_jsonl_with_hot_budget(
+        terminal_dir / "idle_heartbeat_trace.jsonl",
+        trace_event,
+        max_bytes=16 * 1024 * 1024,
+        tail_events=256,
+    )
+
+
+def _bounded_list(value: Any, *, limit: int) -> list[Any]:
+    if not isinstance(value, list):
+        return []
+    return value[: max(limit, 0)]
+
+
+WAITING_CONTEXT_CARRY_FIELD_NAMES = (
+    *HANDOFF_CARRY_FIELD_NAMES,
+    "background_trait_drift_update_mode_summary",
+    "background_trait_drift_recalibration_names",
+    "background_trait_drift_stabilized_names",
+)
+
+
+def _copy_waiting_context_fields(
+    *,
+    source: dict[str, Any],
+    target: dict[str, Any],
+    include_handoff: bool = True,
+) -> None:
+    names = WAITING_CONTEXT_CARRY_FIELD_NAMES
+    if not include_handoff:
+        names = tuple(
+            name for name in names if name not in HANDOFF_CARRY_FIELD_NAMES
+        )
+    for field_name in names:
+        if field_name in source:
+            target[field_name] = _copy_json_value(source[field_name])
+
+
+def _copy_json_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return dict(value)
+    if isinstance(value, list):
+        return list(value)
+    return value
 
 
 def _read_json_if_exists(path: Path) -> dict[str, Any]:

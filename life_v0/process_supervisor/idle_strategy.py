@@ -500,6 +500,7 @@ def decide_idle_strategy(
     relationship_timeline: dict[str, Any] | None = None,
     commitment_expression_plan: dict[str, Any] | None = None,
     apology_repair_language_trace: dict[str, Any] | None = None,
+    repair_closeout_state: dict[str, Any] | None = None,
     expression_plan: dict[str, Any] | None = None,
     body_rhythm_pulse: dict[str, Any] | None = None,
     need_state_vector: dict[str, Any] | None = None,
@@ -946,6 +947,8 @@ def decide_idle_strategy(
         relationship_timeline_ref=relationship_timeline_ref,
         commitment_expression_plan_ref=commitment_expression_plan_ref,
         apology_repair_language_trace_ref=apology_repair_language_trace_ref,
+        apology_repair_language_trace=apology_repair_language_trace,
+        repair_closeout_phase=(repair_closeout_state or {}).get("closeout_phase"),
         offline_pressure_level=offline_pressure_level,
         need_state_vector=need_state_vector,
         body_waiting_posture=body_waiting_posture,
@@ -3452,6 +3455,8 @@ def _resident_governance_language_priority(
     relationship_timeline_ref: str | None,
     commitment_expression_plan_ref: str | None,
     apology_repair_language_trace_ref: str | None,
+    apology_repair_language_trace: dict[str, Any] | None = None,
+    repair_closeout_phase: str | None = None,
     offline_pressure_level: str,
     need_state_vector: dict[str, Any] | None,
     body_waiting_posture: str,
@@ -3475,8 +3480,19 @@ def _resident_governance_language_priority(
         priority_profile["commitment_expression_plan"] = (
             "elevated" if offline_pressure_level in {"present", "elevated"} else "baseline"
         )
+    repair_window_mode = str(
+        (apology_repair_language_trace or {}).get("repair_window_mode") or ""
+    ).lower()
+    closeout_phase = str(repair_closeout_phase or "").lower()
+    repair_attention_suppressed = closeout_phase in {
+        "confirmed",
+        "consolidated",
+        "dormant",
+    } or repair_window_mode in {"dormant", "echo_only"}
     if apology_repair_language_trace_ref:
-        if queue_e_priority_band == "locked_repair_urgent":
+        if repair_attention_suppressed:
+            priority_profile["apology_repair_language_trace"] = "baseline"
+        elif queue_e_priority_band == "locked_repair_urgent":
             priority_profile["apology_repair_language_trace"] = "locked_primary"
         elif repair_drive == "active" and offline_pressure_level in {"present", "elevated"}:
             priority_profile["apology_repair_language_trace"] = "primary"

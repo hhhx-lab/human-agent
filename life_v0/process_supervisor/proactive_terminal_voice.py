@@ -210,7 +210,7 @@ def _memory_profile(
     dialogue_profile = dialogue_memory_summary.get("relation_person_profile")
     if not isinstance(dialogue_profile, dict):
         dialogue_profile = {}
-    names = _dedupe(
+    names = _valid_observed_names(
         _string_list(relation_profile.get("observed_names"))
         + _string_list(dialogue_profile.get("observed_names"))
     )
@@ -279,7 +279,7 @@ def _memory_tier_profile(
             + _string_list(dialogue_memory_summary.get("next_wake_cues"))
             + _string_list(exit_dream_summary.get("next_wake_cues"))
         ),
-        "relationship_profile_name_refs": _dedupe(
+        "relationship_profile_name_refs": _valid_observed_names(
             _string_list(
                 (relationship_memory.get("relation_person_profile") or {}).get(
                     "observed_names"
@@ -580,6 +580,12 @@ def _idle_cues(idle_profile: dict[str, Any]) -> list[str]:
     if idle_profile.get("waiting_posture"):
         cues.append(f"waiting_posture:{idle_profile['waiting_posture']}")
     return _dedupe(cues)
+
+
+def _valid_observed_names(values: list[str]) -> list[str]:
+    from ..state_store.relation_identity_hygiene import sanitize_observed_names
+
+    return sanitize_observed_names(values)
 
 
 def _source_refs(

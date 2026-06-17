@@ -3731,20 +3731,20 @@ def _idle_heartbeat_trace_count(path: Path) -> int:
     max_counter = 0
     line_count = 0
     try:
-        lines = path.read_text(encoding="utf-8").splitlines()
+        with path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                if not line.strip():
+                    continue
+                line_count += 1
+                try:
+                    event = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(event, dict):
+                    max_counter = max(
+                        max_counter,
+                        _int_or_zero(event.get("heartbeat_counter")),
+                    )
     except OSError:
         return 0
-    for line in lines:
-        if not line.strip():
-            continue
-        line_count += 1
-        try:
-            event = json.loads(line)
-        except ValueError:
-            continue
-        if isinstance(event, dict):
-            max_counter = max(
-                max_counter,
-                _int_or_zero(event.get("heartbeat_counter")),
-            )
     return max(max_counter, line_count)

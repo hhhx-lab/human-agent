@@ -7,6 +7,8 @@ import re
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
+from life_v0.runtime_config import load_digital_life_runtime_config
+
 from life_v0.dream.web_dream_browser import (
     WEB_DREAM_BROWSER_SESSION_REF,
     read_only_fetch_page,
@@ -41,6 +43,51 @@ SOURCE_DOC_REFS = [
 FetchUrl = Callable[[str, float], Mapping[str, Any] | str]
 
 
+def web_dream_learning_env_enabled(
+    environ: Mapping[str, str] | None = None,
+) -> bool:
+    effective_environ = _effective_environ(environ)
+    env_enabled = _optional_env_bool(
+        effective_environ.get("DIGITAL_LIFE_WEB_DREAM_LEARNING_ENABLED")
+    )
+    env_urls_present = bool(
+        str(effective_environ.get("DIGITAL_LIFE_WEB_DREAM_URLS") or "").strip()
+    )
+    return bool(env_urls_present or env_enabled)
+
+
+def build_web_dream_learning_effective_seed_preview(
+    *,
+    state_dir: Path,
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    dream_dir = state_dir / "dream"
+    seed_path = dream_dir / "web_dream_learning_seeds.json"
+    effective_environ = _effective_environ(environ)
+    seed_payload = _read_json(seed_path)
+    source = "seed_file" if seed_payload else "env_default"
+    if not seed_payload:
+        seed_payload = _seed_payload_from_env_defaults(effective_environ)
+    else:
+        seed_payload = _apply_env_defaults_to_seed_payload(
+            seed_payload=seed_payload,
+            environ=effective_environ,
+        )
+    seed_urls = resolve_seed_urls(
+        seed_payload=seed_payload,
+        environ=effective_environ,
+    )
+    return {
+        "schema_version": "web_dream_learning_effective_seed_preview_v1",
+        "source": source,
+        "enabled": _seed_enabled(seed_payload=seed_payload, seed_urls=seed_urls),
+        "configured_enabled": bool(seed_payload.get("enabled")),
+        "seed_count": len(seed_urls),
+        "seed_urls": seed_urls,
+        "web_dream_learning_seeds_ref": WEB_DREAM_LEARNING_SEEDS_REF,
+    }
+
+
 def record_web_dream_learning(
     *,
     state_dir: Path,
@@ -57,10 +104,19 @@ def record_web_dream_learning(
     topic_history_path = dream_dir / "web_dream_topic_history.json"
 
     previous_state = _read_json(state_path)
+    effective_environ = _effective_environ(environ)
     seed_payload = _read_json(seed_path)
     if not seed_payload:
-        seed_payload = {"enabled": False}
-    seed_urls = resolve_seed_urls(seed_payload=seed_payload, environ=environ or os.environ)
+        seed_payload = _seed_payload_from_env_defaults(effective_environ)
+    else:
+        seed_payload = _apply_env_defaults_to_seed_payload(
+            seed_payload=seed_payload,
+            environ=effective_environ,
+        )
+    seed_urls = resolve_seed_urls(
+        seed_payload=seed_payload,
+        environ=effective_environ,
+    )
     enabled = _seed_enabled(seed_payload=seed_payload, seed_urls=seed_urls)
     timeout_seconds = _timeout_seconds(seed_payload)
     sequence = _jsonl_count(log_path) + 1
@@ -230,6 +286,74 @@ def record_web_dream_learning(
     return {"state": learned_state, "event": event}
 
 
+def write_web_dream_learning_toggle(
+    *,
+    state_dir: Path,
+    enabled: bool,
+    generated_at: str,
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    dream_dir = state_dir / "dream"
+    seed_path = dream_dir / "web_dream_learning_seeds.json"
+    state_path = dream_dir / "web_dream_learning_state.json"
+    effective_environ = _effective_environ(environ)
+    seed_payload = _read_json(seed_path)
+    if not seed_payload:
+        seed_payload = _seed_payload_from_env_defaults(effective_environ)
+    seed_payload = _apply_env_defaults_to_seed_payload(
+        seed_payload=seed_payload,
+        environ=effective_environ,
+    )
+    if enabled:
+        seed_payload["autonomous_discovery"] = {
+            **dict(seed_payload.get("autonomous_discovery") or {}),
+            "enabled": True,
+            "open_web_read": True,
+        }
+    seed_urls = resolve_seed_urls(
+        seed_payload=seed_payload,
+        environ=effective_environ,
+    )
+    seed_payload.update(
+        {
+            "schema_version": "web_dream_learning_config_v1",
+            "enabled": bool(enabled),
+            "seed_urls": seed_urls,
+            "manual_toggle_state": "enabled" if enabled else "disabled",
+            "toggle_source": "terminal_slash_command",
+            "updated_at": generated_at,
+            "web_dream_learning_seeds_ref": WEB_DREAM_LEARNING_SEEDS_REF,
+            "source_doc_refs": SOURCE_DOC_REFS,
+        }
+    )
+    _write_json(seed_path, seed_payload)
+
+    state_payload = _read_json(state_path)
+    state_payload.update(
+        {
+            "schema_version": "web_dream_learning_state_v1",
+            "status": "enabled_waiting_for_dream_cycle" if enabled else "disabled",
+            "generated_at": generated_at,
+            "manual_toggle_state": seed_payload["manual_toggle_state"],
+            "toggle_source": "terminal_slash_command",
+            "seed_count": len(seed_urls),
+            "web_dream_learning_state_ref": WEB_DREAM_LEARNING_STATE_REF,
+            "web_dream_learning_seeds_ref": WEB_DREAM_LEARNING_SEEDS_REF,
+            "source_doc_refs": SOURCE_DOC_REFS,
+        }
+    )
+    _write_json(state_path, state_payload)
+    return {
+        "schema_version": "web_dream_learning_toggle_result_v1",
+        "status": state_payload["status"],
+        "enabled": bool(enabled),
+        "manual_toggle_state": seed_payload["manual_toggle_state"],
+        "seed_count": len(seed_urls),
+        "web_dream_learning_state_ref": WEB_DREAM_LEARNING_STATE_REF,
+        "web_dream_learning_seeds_ref": WEB_DREAM_LEARNING_SEEDS_REF,
+    }
+
+
 def _default_seed_config() -> dict[str, Any]:
     return {
         "schema_version": "web_dream_learning_config_v1",
@@ -244,6 +368,50 @@ def _default_seed_config() -> dict[str, Any]:
             "forbid_fixed_topic_table": True,
         },
     }
+
+
+def _seed_payload_from_env_defaults(environ: Mapping[str, str]) -> dict[str, Any]:
+    env_urls_present = bool(str(environ.get("DIGITAL_LIFE_WEB_DREAM_URLS") or "").strip())
+    env_enabled = _optional_env_bool(
+        environ.get("DIGITAL_LIFE_WEB_DREAM_LEARNING_ENABLED")
+    )
+    enabled = env_urls_present if env_enabled is None else env_enabled
+    payload = _default_seed_config()
+    payload["enabled"] = enabled
+    payload["autonomous_discovery"] = {
+        "enabled": bool(enabled and not env_urls_present),
+        "open_web_read": bool(enabled),
+    }
+    payload["env_default_applied"] = True
+    return _apply_env_defaults_to_seed_payload(
+        seed_payload=payload,
+        environ=environ,
+    )
+
+
+def _apply_env_defaults_to_seed_payload(
+    *,
+    seed_payload: Mapping[str, Any],
+    environ: Mapping[str, str],
+) -> dict[str, Any]:
+    payload = dict(seed_payload or {})
+    env_enabled = _optional_env_bool(
+        environ.get("DIGITAL_LIFE_WEB_DREAM_LEARNING_ENABLED")
+    )
+    if "enabled" not in payload and env_enabled is not None:
+        payload["enabled"] = env_enabled
+    readonly = dict(payload.get("playwright_readonly") or {})
+    max_hops = _optional_env_int(environ.get("DIGITAL_LIFE_WEB_DREAM_MAX_HOPS_PER_SEED"))
+    if max_hops is not None and "max_hops_per_seed" not in readonly:
+        readonly["max_hops_per_seed"] = max(0, min(max_hops, 8))
+    timeout = _optional_env_float(
+        environ.get("DIGITAL_LIFE_WEB_DREAM_MAX_SECONDS_PER_PAGE")
+    )
+    if timeout is not None and "max_seconds_per_page" not in readonly:
+        readonly["max_seconds_per_page"] = max(0.5, min(timeout, 20.0))
+    if readonly:
+        payload["playwright_readonly"] = readonly
+    return payload
 
 
 def _discovery_mode(seed_payload: Mapping[str, Any], selected_index: int) -> str:
@@ -381,6 +549,79 @@ def _jsonl_count(path: Path) -> int:
     if not path.exists():
         return 0
     return len([line for line in path.read_text(encoding="utf-8").splitlines() if line])
+
+
+def _effective_environ(environ: Mapping[str, str] | None) -> Mapping[str, str]:
+    if environ is not None:
+        return environ
+    try:
+        runtime_config = load_digital_life_runtime_config()
+        env_file = runtime_config.env_file
+        if env_file and env_file.exists():
+            file_env = _read_env_file(env_file)
+            return {**file_env, **os.environ}
+    except Exception:
+        return os.environ
+    return os.environ
+
+
+def _read_env_file(path: Path) -> dict[str, str]:
+    values: dict[str, str] = {}
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return values
+    for raw_line in lines:
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[7:].strip()
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        if not key:
+            continue
+        values[key] = _unquote(value.strip())
+    return values
+
+
+def _unquote(value: str) -> str:
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+        return value[1:-1]
+    return value
+
+
+def _optional_env_bool(value: str | None) -> bool | None:
+    if value is None:
+        return None
+    normalized = value.strip().lower()
+    if not normalized:
+        return None
+    if normalized in {"1", "true", "yes", "on", "enabled", "enable"}:
+        return True
+    if normalized in {"0", "false", "no", "off", "disabled", "disable"}:
+        return False
+    return None
+
+
+def _optional_env_int(value: str | None) -> int | None:
+    if value is None or not value.strip():
+        return None
+    try:
+        return int(value.strip())
+    except ValueError:
+        return None
+
+
+def _optional_env_float(value: str | None) -> float | None:
+    if value is None or not value.strip():
+        return None
+    try:
+        return float(value.strip())
+    except ValueError:
+        return None
 
 
 def _dedupe(items: list[str]) -> list[str]:

@@ -17,18 +17,13 @@ def render_digital_life_banner(
     width: int | None = None,
 ) -> str:
     resolved_width = _resolve_width(width)
-    title = "Digital Life"
-    subtitle_parts = []
-    if life_name:
-        subtitle_parts.append(f"name: {life_name}")
-    if status:
-        subtitle_parts.append(f"state: {status}")
-    subtitle = " | ".join(subtitle_parts) or "resident relation terminal"
+    del status
+    title = life_name or "Digital Life"
     return _box(
-        title=title,
+        title=f"{title} / live terminal",
         body=[
-            subtitle,
-            "输入关系话语后按 Enter；/exit 只离开当前终端，/stop 会请求常驻进程停止。",
+            "直接输入文字开始交谈。",
+            "/ 查看状态命令，@ 引用当前项目里的文件或文件夹。",
         ],
         width=resolved_width,
     )
@@ -42,31 +37,12 @@ def render_life_opening(
 ) -> str:
     state = state or {}
     resolved_name = life_name or _text(state.get("life_name")) or "Digital Life"
-    status = _text(state.get("status")) or "restored"
-    next_kind = (
-        _text(state.get("resident_autonomous_activity_next_kind"))
-        or _text(state.get("autonomous_activity_next_kind"))
-    )
-    waiting_mode = (
-        _text(state.get("resident_waiting_mode"))
-        or _text(state.get("resident_terminal_current_mode"))
-        or _text(state.get("residency_posture"))
-    )
-    activity_count = state.get("resident_autonomous_activity_count")
-
     body = [
-        f"终端已连接：{resolved_name}",
-        f"状态：{status}；会话模式：{waiting_mode or 'relation_waiting'}。",
+        resolved_name,
+        "/state /memory /dream /emotion /relationship",
+        "@docs @life_v0",
     ]
-    if activity_count is not None or next_kind:
-        activity_line = "常驻进程已恢复"
-        if activity_count is not None:
-            activity_line += f"，活动计数 {activity_count}"
-        if next_kind:
-            activity_line += f"，下一状态 {next_kind}"
-        body.append(activity_line + "。")
-    body.append("输入关系话语后按 Enter；/exit 离开当前终端，/stop 请求停止常驻进程。")
-    return _box(title=f"{resolved_name} / terminal", body=body, width=width)
+    return _box(title="conversation", body=body, width=width)
 
 
 def render_dialogue_box(
@@ -82,7 +58,7 @@ def render_dialogue_box(
 
 def render_input_prompt(*, life_name: str | None = None) -> str:
     prefix = life_name or "关系"
-    return f"{prefix} > "
+    return f"╭─ {prefix} " + "─" * 42 + "\n╰─> "
 
 
 def render_life_cycle_output(

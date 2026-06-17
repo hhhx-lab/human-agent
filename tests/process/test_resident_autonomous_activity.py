@@ -1,7 +1,9 @@
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from life_v0.process_supervisor.resident_autonomous_activity import (
     record_resident_autonomous_activity,
@@ -255,12 +257,21 @@ class ResidentAutonomousActivityTests(unittest.TestCase):
             def forbidden_fetch(url: str, timeout_seconds: float) -> dict:
                 raise AssertionError("web fetch should not run without configured seeds")
 
-            for index in range(5):
-                result = record_resident_autonomous_activity(
-                    terminal_dir=terminal_dir,
-                    now_iso=lambda index=index: f"2026-06-13T00:00:0{index}+00:00",
-                    web_fetch_url=forbidden_fetch,
-                )
+            isolated_env = {
+                key: value
+                for key, value in os.environ.items()
+                if not key.startswith("DIGITAL_LIFE_WEB_DREAM")
+            }
+            isolated_env["DIGITAL_LIFE_ENV_FILE"] = str(
+                Path(tmp) / "missing-test.env"
+            )
+            with patch.dict(os.environ, isolated_env, clear=True):
+                for index in range(5):
+                    result = record_resident_autonomous_activity(
+                        terminal_dir=terminal_dir,
+                        now_iso=lambda index=index: f"2026-06-13T00:00:0{index}+00:00",
+                        web_fetch_url=forbidden_fetch,
+                    )
 
             web_state = json.loads(
                 (state_dir / "dream" / "web_dream_learning_state.json").read_text(

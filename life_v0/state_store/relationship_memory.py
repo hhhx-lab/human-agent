@@ -217,8 +217,10 @@ def project_relationship_memory(
         "schema_version", "relationship_person_profile_v0"
     )
     relation_person_profile["observed_names"] = _dedupe(
-        list(relation_person_profile.get("observed_names", []))
-        + list((commitment_truth_state.get("observed_names", [])))
+        _valid_observed_names(
+            list(relation_person_profile.get("observed_names", []))
+            + list((commitment_truth_state.get("observed_names", [])))
+        )
     )
     relation_person_profile["preference_hypotheses"] = _dedupe(
         list(relation_person_profile.get("preference_hypotheses", []))
@@ -551,6 +553,12 @@ def _relationship_depth_profile_from_updated(updated: dict[str, Any]) -> dict[st
             "runtime/state/life_state.json#memory_index.relationship_deep_memory_refs",
         ],
     }
+
+
+def _valid_observed_names(values: list[Any]) -> list[str]:
+    from .relation_identity_hygiene import sanitize_observed_names
+
+    return sanitize_observed_names(values)
 
 
 def _string_list(value: Any) -> list[str]:

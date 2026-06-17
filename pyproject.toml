@@ -11,6 +11,14 @@ requires-python = ">=3.11"
 authors = [
   { name = "hhhx-lab" }
 ]
+dependencies = [
+    "prompt-toolkit>=3.0.52",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.0",
+]
 
 [project.scripts]
 life-v0 = "life_v0.cli:main"

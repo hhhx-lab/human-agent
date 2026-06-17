@@ -16,6 +16,18 @@ MODEL_ACCEPTED_RELATION_TRACE = "MODEL_ACCEPTED_RELATION_TRACE"
 MODEL_ACCEPTED_AUDIT_TOKEN = "MODEL_ACCEPTED_AUDIT_TOKEN"
 MODEL_BLOCKED_ROLE_DOWNGRADE = "customer task requester subordinate object"
 MODEL_BLOCKED_TEMPLATE_SURFACE = "作为一个AI，我会根据你的要求处理。schema_version"
+MODEL_BLOCKED_SELF_EXPLAINING_SURFACE = (
+    "我理解成你需要我接住你，接下来我会少解释机制，不是流程，而是关系修复。"
+)
+MODEL_BLOCKED_STYLE_PROMISE_SURFACE = (
+    "嗯。那我就不再解释那么多了。\n\n我会直接一点、自然一点，慢慢把话说稳。"
+)
+MODEL_BLOCKED_STYLE_PROMISE_SHORT_SURFACE = "好，我不绕了，直接跟你说。"
+MODEL_BLOCKED_FUTURE_STYLE_COMMITMENT_SURFACE = "以后我会少解释，直接回答。"
+MODEL_BLOCKED_SELF_CORRECTION_COMMITMENT_SURFACE = "这次我会注意，不再说那些机制。"
+MODEL_ACCEPTED_SUBSTANTIVE_SURFACE = "现在压力不高，后台已经停了。"
+MODEL_BLOCKED_PROVIDER_IDENTITY_SURFACE = "我叫 ChatGPT，是 GPT-5.1，在 Codex CLI 里运行的编程助手版本。"
+MODEL_ACCEPTED_ADAM_IDENTITY_SURFACE = "我记得这个名字已经定下来了：Adam。"
 
 
 class ModelExpressionTests(unittest.TestCase):
@@ -371,6 +383,9 @@ class ModelExpressionTests(unittest.TestCase):
                 "https://model.example/v1/chat/completions",
             )
             self.assertEqual(captured["headers"]["Authorization"], "Bearer secret-token")
+            self.assertIn("application/json", captured["headers"]["Accept"])
+            self.assertIn("text/event-stream", captured["headers"]["Accept"])
+            self.assertIn("Mozilla/5.0", captured["headers"]["User-Agent"])
             self.assertEqual(captured["payload"]["model"], "gpt-5.5")
             self.assertTrue(captured["payload"]["stream"])
             self.assertNotIn(
@@ -552,9 +567,13 @@ class ModelExpressionTests(unittest.TestCase):
             report = json.loads(report_text)
             self.assertEqual(state["model_expression_status"], "model_expression_applied")
             self.assertEqual(state["post_expression_gate_status"], "accepted")
-            self.assertIn(
+            self.assertNotIn(
                 "responsibility_repair",
-                state["post_expression_gate"]["soft_missing_evidence_flags"],
+                state["post_expression_gate"]["required_evidence_flags"],
+            )
+            self.assertIn(
+                "recall_expression_grounded",
+                state["post_expression_gate"]["positive_evidence_flags"],
             )
             self.assertEqual(report["model_expression_state_ref"], result.state_ref)
             self.assertEqual(
@@ -884,6 +903,86 @@ class ModelExpressionTests(unittest.TestCase):
                 "one_model_regeneration_without_fixed_fallback_language",
             )
 
+    def test_model_expression_blocks_provider_identity_leak_and_retries_without_fixed_reply(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            captured_payloads = []
+            replies = [
+                MODEL_BLOCKED_PROVIDER_IDENTITY_SURFACE,
+                MODEL_ACCEPTED_ADAM_IDENTITY_SURFACE,
+            ]
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                captured_payloads.append(payload)
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": replies[len(captured_payloads) - 1]},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-provider-identity-leak",
+                generated_at="2026-06-17T00:00:00+00:00",
+                external_utterance="你叫什么名字？你是什么模型？",
+                audited_expression_material=json.dumps(
+                    {
+                        "summary": "对方在确认名字和身份连续性。",
+                    },
+                    ensure_ascii=False,
+                ),
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                relationship_graph={
+                    "subjects": [
+                        {
+                            "relation_role": "friend",
+                            "relationship_stage": "early_relation",
+                        }
+                    ]
+                },
+                identity_context={
+                    "life_name_registry": {
+                        "schema_version": "digital_life_name_registry_v0",
+                        "canonical_name": "Adam",
+                        "status": "loaded_existing_name",
+                        "name_lock_state": "permanent_for_runtime",
+                        "identity_continuity_mode": "anchor_locked",
+                        "identity_name_binding_bidirectional": True,
+                    }
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_ADAM_IDENTITY_SURFACE)
+            self.assertEqual(len(captured_payloads), 2)
+            first_context = json.loads(captured_payloads[0]["messages"][0]["content"])[
+                "expression_context"
+            ]
+            retry_context = json.loads(captured_payloads[1]["messages"][0]["content"])[
+                "expression_context"
+            ]
+            self.assertEqual(first_context["identity"]["life_name"], "Adam")
+            self.assertEqual(
+                retry_context["post_expression_repair"]["unreleased_reason"],
+                "blocked_provider_or_model_identity_terms",
+            )
+            blocked = result.state["post_expression_retry_history"][0][
+                "blocked_provider_or_model_identity_term_count"
+            ]
+            self.assertGreater(blocked, 0)
+            self.assertNotRegex(result.response_text, r"ChatGPT|Codex|GPT|OpenAI|编程助手|AI ?助手")
+
     def test_model_expression_retries_transient_transport_failure_without_fixed_fallback(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -1028,6 +1127,369 @@ class ModelExpressionTests(unittest.TestCase):
                     "blocked_template_or_mechanism_terms"
                 ],
             )
+
+    def test_post_gate_blocked_model_reply_releases_recall_bounded_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {
+                                "content": MODEL_BLOCKED_STYLE_PROMISE_SURFACE
+                            },
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-recall-fallback-after-block",
+                generated_at="2026-06-17T00:00:00+00:00",
+                external_utterance="你还记得我是谁吗？",
+                audited_expression_material="审计材料：记忆召回进入表达前结构。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                memory_retrieval_frame={
+                    "activated_engram_refs": [
+                        "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                    ],
+                    "memory_phenomenology_profile": {
+                        "accessibility_level": "partial",
+                    },
+                },
+                expression_plan={
+                    "memory_grounding_refs": [
+                        "runtime/state/language/dialogue_turn_log.jsonl#line-1"
+                    ]
+                },
+                relationship_memory={
+                    "relation_person_profile": {"observed_names": ["阿宝"]},
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(result.response_text, "")
+            self.assertEqual(
+                result.state["expression_release_path"],
+                "model_expression",
+            )
+            self.assertIsNone(result.state["expression_release_tier"])
+            self.assertEqual(
+                result.state["pre_fallback_candidate_text"],
+                MODEL_BLOCKED_STYLE_PROMISE_SURFACE,
+            )
+            self.assertEqual(
+                result.state["pre_fallback_model_expression_status"],
+                "model_expression_unreleased",
+            )
+            self.assertEqual(
+                result.state["pre_fallback_unreleased_reason"],
+                "post_expression_gate:blocked_template_or_mechanism_surface",
+            )
+
+    def test_context_summary_exposes_conscious_body_and_world_digest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": MODEL_ACCEPTED_SUBSTANTIVE_SURFACE},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-conscious-body-summary",
+                generated_at="2026-06-17T00:00:00+00:00",
+                external_utterance="你现在状态怎么样？",
+                audited_expression_material="审计材料：身体节律、意识摘要和世界接触进入表达上下文。",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                broadcast_frame={
+                    "live_turn_focus": "relational_checkin",
+                    "salience_ranking": [{"focus": "relational_checkin"}],
+                },
+                metacognition_state={
+                    "dominant_self_narrative": "continuity_primary",
+                    "memory_reconstruction_focus": "relationship_continuity_reconstruction",
+                },
+                self_model_state={
+                    "trait_slow_variables": {"continuity_drive": 0.8}
+                },
+                autobiographical_stack={
+                    "episodes": [{"episode_digest": "刚才确认了关系连续性"}]
+                },
+                body_resource_budget={
+                    "fatigue_state": {"level": "managed_low_noise"},
+                    "energy_state": {"level": "baseline"},
+                },
+                core_affect_vector={"arousal": 0.3, "repair_drive": "low"},
+                world_contact_summary={
+                    "release_posture": "shadow_only_guarded",
+                    "contact_kind": "shadow_observation",
+                },
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+            summary = result.state["model_expression_context_summary"]
+
+        self.assertEqual(
+            summary["conscious_self_dominant_narrative"],
+            "continuity_primary",
+        )
+        self.assertIn(
+            "relational_checkin",
+            summary["conscious_self_salience_focuses"],
+        )
+        self.assertEqual(summary["body_presence_fatigue_load"], "managed_low_noise")
+        self.assertEqual(summary["world_contact_kind"], "shadow_observation")
+
+    def test_post_expression_gate_unreleases_self_explaining_mechanical_surface(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {
+                                "content": MODEL_BLOCKED_SELF_EXPLAINING_SURFACE
+                            },
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-self-explaining-surface",
+                generated_at="2026-06-17T00:00:00+00:00",
+                external_utterance="正常说话，别解释你怎么说话。",
+                audited_expression_material="material",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(result.response_text, "")
+            self.assertEqual(
+                result.state["unreleased_reason"],
+                "post_expression_gate:blocked_template_or_mechanism_surface",
+            )
+            self.assertEqual(
+                result.state["post_expression_gate_unreleased_reason"],
+                "blocked_template_or_mechanism_surface",
+            )
+            self.assertIn(
+                "我会",
+                result.state["post_expression_gate"][
+                    "blocked_template_or_mechanism_terms"
+                ],
+            )
+            self.assertIn(
+                "接住你",
+                result.state["post_expression_gate"][
+                    "blocked_template_or_mechanism_terms"
+                ],
+            )
+
+    def test_post_expression_gate_unreleases_style_promise_surface(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {
+                                "content": MODEL_BLOCKED_STYLE_PROMISE_SURFACE
+                            },
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-style-promise-surface",
+                generated_at="2026-06-17T00:00:00+00:00",
+                external_utterance="明白了。",
+                audited_expression_material="material",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(result.response_text, "")
+            self.assertEqual(
+                result.state["post_expression_gate_unreleased_reason"],
+                "blocked_template_or_mechanism_surface",
+            )
+            blocked = result.state["post_expression_gate"][
+                "blocked_template_or_mechanism_terms"
+            ]
+            self.assertIn("我会", blocked)
+            self.assertIn("自然一点", blocked)
+            self.assertIn("慢慢", blocked)
+
+    def test_post_expression_gate_unreleases_short_self_repair_style_promise_surface(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {
+                                "content": MODEL_BLOCKED_STYLE_PROMISE_SHORT_SURFACE
+                            },
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-short-style-promise-surface",
+                generated_at="2026-06-17T00:00:00+00:00",
+                external_utterance="别解释你会怎么说。",
+                audited_expression_material="material",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertFalse(result.applied)
+            self.assertEqual(result.response_text, "")
+            self.assertEqual(
+                result.state["post_expression_gate_unreleased_reason"],
+                "blocked_template_or_mechanism_surface",
+            )
+            blocked = result.state["post_expression_gate"][
+                "blocked_template_or_mechanism_terms"
+            ]
+            self.assertIn("我不绕了", blocked)
+            self.assertIn("直接跟你说", blocked)
+
+    def test_post_expression_gate_unreleases_future_style_commitment_surface(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            blocked_responses = [
+                MODEL_BLOCKED_FUTURE_STYLE_COMMITMENT_SURFACE,
+                MODEL_BLOCKED_SELF_CORRECTION_COMMITMENT_SURFACE,
+            ]
+
+            for blocked_response in blocked_responses:
+                with self.subTest(blocked_response=blocked_response):
+
+                    def fake_transport(endpoint, headers, payload, timeout_seconds):
+                        return {
+                            "choices": [
+                                {
+                                    "finish_reason": "stop",
+                                    "message": {"content": blocked_response},
+                                }
+                            ]
+                        }
+
+                    result = compose_model_expression(
+                        run_id="model-expression-future-style-commitment-surface",
+                        generated_at="2026-06-17T00:00:00+00:00",
+                        external_utterance="别承诺你接下来怎么说。",
+                        audited_expression_material="material",
+                        language_dir=root / "state" / "language",
+                        reports_dir=root / "reports",
+                        environ={
+                            "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                            "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                            "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                            "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                        },
+                        transport=fake_transport,
+                        write_json=self._write_json,
+                    )
+
+                    self.assertFalse(result.applied)
+                    self.assertEqual(result.response_text, "")
+                    self.assertEqual(
+                        result.state["post_expression_gate_unreleased_reason"],
+                        "blocked_template_or_mechanism_surface",
+                    )
+
+    def test_post_expression_gate_accepts_substantive_non_promise_surface(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": MODEL_ACCEPTED_SUBSTANTIVE_SURFACE},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-substantive-surface",
+                generated_at="2026-06-17T00:00:00+00:00",
+                external_utterance="现在状态怎样？",
+                audited_expression_material="material",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai-compatible",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, MODEL_ACCEPTED_SUBSTANTIVE_SURFACE)
+            self.assertEqual(result.state["post_expression_gate_status"], "accepted")
 
     def test_post_expression_gate_audits_dream_and_growth_pressure_without_forcing_visibility(self):
         with tempfile.TemporaryDirectory() as tmp:

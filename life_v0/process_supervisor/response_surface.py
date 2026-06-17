@@ -655,6 +655,77 @@ def compose_life_spoken_response(
     return ""
 
 
+def recall_expression_grounded(
+    *,
+    memory_retrieval_frame: dict[str, Any] | None,
+    expression_plan: dict[str, Any] | None = None,
+    semantic_map: dict[str, Any] | None = None,
+) -> bool:
+    plan_refs = (expression_plan or {}).get("memory_grounding_refs")
+    semantic_refs = (semantic_map or {}).get("memory_recall_refs")
+    activated = (memory_retrieval_frame or {}).get("activated_engram_refs")
+    recall_profile = (memory_retrieval_frame or {}).get("recall_to_expression_profile")
+    if isinstance(plan_refs, list) and plan_refs:
+        return True
+    if isinstance(semantic_refs, list) and semantic_refs:
+        return True
+    if isinstance(activated, list) and activated:
+        return True
+    if isinstance(recall_profile, dict) and recall_profile.get("expression_source_refs"):
+        return True
+    phenomenology = (memory_retrieval_frame or {}).get("memory_phenomenology_profile")
+    if isinstance(phenomenology, dict):
+        accessibility = phenomenology.get("accessibility_level")
+        if accessibility in {"accessible", "partial", "emerging", "cue_linked"}:
+            return True
+        if phenomenology.get("recall_strength_score"):
+            return True
+    cue_sources = (memory_retrieval_frame or {}).get("cue_sources")
+    if isinstance(cue_sources, dict) and any(
+        value for value in cue_sources.values() if value
+    ):
+        return True
+    return False
+
+
+def compose_recall_bounded_spoken_response(
+    *,
+    external_utterance: str,
+    memory_retrieval_frame: dict[str, Any] | None = None,
+    expression_plan: dict[str, Any] | None = None,
+    semantic_map: dict[str, Any] | None = None,
+    relationship_memory: dict[str, Any] | None = None,
+    dialogue_memory_summary: dict[str, Any] | None = None,
+    terminal_life_loop_state: dict[str, Any] | None = None,
+) -> str:
+    _ = (
+        external_utterance,
+        memory_retrieval_frame,
+        expression_plan,
+        semantic_map,
+        relationship_memory,
+        dialogue_memory_summary,
+        terminal_life_loop_state,
+    )
+    return ""
+
+
+def _is_presence_or_background_question(utterance: str) -> bool:
+    markers = (
+        "醒着吗",
+        "在吗",
+        "还在吗",
+        "你在吗",
+        "你在不在",
+        "后台",
+        "在做什么",
+        "干什么",
+        "are you there",
+        "awake",
+    )
+    return any(marker in utterance for marker in markers)
+
+
 def _prediction_surface_posture(
     *,
     signal_media_runtime: dict[str, Any] | None,

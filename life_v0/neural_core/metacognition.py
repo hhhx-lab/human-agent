@@ -48,6 +48,7 @@ def project_metacognition_state_from_live_turn(
     memory_retrieval_frame: dict[str, Any] | None = None,
     expression_monitor_state: dict[str, Any] | None = None,
     live_turn_focus: str | None = None,
+    repair_closeout_state: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     updated = _seed_missing_metacognition_state(
         metacognition_state,
@@ -84,6 +85,15 @@ def project_metacognition_state_from_live_turn(
         )
     if live_turn_focus:
         updated["live_turn_focus"] = live_turn_focus
+    closeout_phase = str((repair_closeout_state or {}).get("closeout_phase") or "")
+    if closeout_phase in {"confirmed", "consolidated", "dormant"}:
+        updated["dominant_self_narrative"] = "continuity_primary"
+    elif live_turn_focus and str(live_turn_focus) != "repair_relational_trace":
+        updated["dominant_self_narrative"] = "live_turn_focus_primary"
+    elif live_turn_focus == "repair_relational_trace":
+        updated["dominant_self_narrative"] = "repair_active"
+    else:
+        updated["dominant_self_narrative"] = "continuity_primary"
     if memory_retrieval_frame.get("reconstruction_focus"):
         updated["memory_reconstruction_focus"] = memory_retrieval_frame.get(
             "reconstruction_focus"

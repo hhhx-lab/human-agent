@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 from pathlib import Path
 from typing import Any
@@ -11,8 +10,15 @@ from life_v0.dream.exit_dream_semantic_consolidation import (
     ExitDreamSemanticConsolidationTransport,
     resolve_exit_dream_episode_summaries,
 )
-from life_v0.dream.web_dream_learning import record_web_dream_learning
+from life_v0.dream.web_dream_learning import (
+    record_web_dream_learning,
+    web_dream_learning_env_enabled,
+)
 from life_v0.state_store.memory_retrieval import build_memory_retrieval_frame
+from life_v0.state_store.relation_identity_hygiene import (
+    extract_observed_names_from_utterances,
+    sanitize_observed_names,
+)
 from life_v0.state_store.memory_trace_store import (
     merge_exit_dream_traces_into_store,
     project_exit_dream_episode_traces,
@@ -436,8 +442,7 @@ def _maybe_record_exit_web_dream_learning(
 ) -> dict[str, Any]:
     seed_path = dream_dir / "web_dream_learning_seeds.json"
     has_seed_file = seed_path.exists()
-    has_env_urls = bool(os.environ.get("DIGITAL_LIFE_WEB_DREAM_URLS", "").strip())
-    if not has_seed_file and not has_env_urls:
+    if not has_seed_file and not web_dream_learning_env_enabled():
         return {}
     result = record_web_dream_learning(
         state_dir=state_dir,
@@ -550,7 +555,7 @@ def project_exit_dream_into_relationship_memory(
     )
     profile = dict(updated.get("relation_person_profile") or {})
     summary_profile = dict(dialogue_memory_summary.get("relation_person_profile") or {})
-    profile["observed_names"] = _dedupe(
+    profile["observed_names"] = sanitize_observed_names(
         _list(profile.get("observed_names"))
         + _list(summary_profile.get("observed_names"))
     )
@@ -1231,26 +1236,59 @@ def _utterance(turn: dict[str, Any]) -> str:
 
 
 def _extract_observed_names(utterances: list[str]) -> list[str]:
-    names: list[str] = []
-    patterns = [
-        r"我叫([\u4e00-\u9fffA-Za-z0-9_\-]{1,12})",
-        r"我的名字是([\u4e00-\u9fffA-Za-z0-9_\-]{1,12})",
-        r"我是([\u4e00-\u9fffA-Za-z0-9_\-]{1,12})",
-    ]
-    for utterance in utterances:
-        for pattern in patterns:
-            for match in re.findall(pattern, utterance):
-                cleaned = _clean_name(match)
-                if cleaned:
-                    names.append(cleaned)
-    return _dedupe(names)
+    return extract_observed_names_from_utterances(utterances)
 
 
 def _clean_name(value: str) -> str:
-    cleaned = re.split(r"[，。,.\s]", value.strip())[0]
-    if cleaned in {"我", "你", "他", "她", "它", "我们", "朋友"}:
+    cleaned = re.split(r"[，。,.\s！？!?；;：:、]", value.strip())[0]
+    if cleaned in {"我", "你", "他", "她", "它", "我们", "朋友", "用户", "客户"}:
         return ""
-    return cleaned[:12]
+    if _looks_like_non_name_phrase(cleaned):
+        return ""
+    return cleaned[:16]
+
+
+def _looks_like_non_name_phrase(value: str) -> bool:
+    text = str(value or "").strip()
+    if not text:
+        return True
+    if any(
+        term in text
+        for term in (
+            "是否",
+            "不是",
+            "真的",
+            "记得",
+            "把",
+            "在",
+            "能",
+            "否",
+            "为了",
+            "什么",
+            "哪一种",
+            "哪种",
+            "为什么",
+            "怎么",
+            "如果",
+            "可以",
+            "需要",
+            "应该",
+            "关系",
+            "回答",
+            "解释",
+            "模型",
+            "助手",
+            "编程",
+            "语言模型",
+            "人工智能",
+            "ChatGPT",
+            "OpenAI",
+            "Codex",
+            "GPT",
+        )
+    ):
+        return True
+    return False
 
 
 def _infer_preference_hypotheses(utterances: list[str]) -> list[str]:

@@ -475,6 +475,7 @@ def _direct_command_script(
     receipts_dir: Path,
 ) -> str:
     repo_root = Path(__file__).resolve().parents[1]
+    fallback_python = sys.executable
     return "\n".join(
         [
             "#!/bin/sh",
@@ -483,7 +484,12 @@ def _direct_command_script(
             f"# state_dir={state_dir}",
             f"# reports_dir={reports_dir}",
             f"# receipts_dir={receipts_dir}",
+            "# python_resolution=repo_venv_first_then_generation_python",
             "repo_root=" + _shell_quote(str(repo_root)),
+            "repo_python=\"$repo_root/.venv/bin/python\"",
+            "if [ ! -x \"$repo_python\" ]; then",
+            "  repo_python=" + _shell_quote(str(fallback_python)),
+            "fi",
             'if [ ! -d "$repo_root/life_v0" ]; then',
             '  echo "life name direct command repo root is unavailable: $repo_root" >&2',
             "  exit 1",
@@ -491,9 +497,7 @@ def _direct_command_script(
             'PYTHONPATH="$repo_root${PYTHONPATH:+:$PYTHONPATH}"',
             "export PYTHONPATH",
             'cd "$repo_root" || exit 1',
-            "exec "
-            + _shell_quote(sys.executable)
-            + " -m life_v0.my_entry digital life --state "
+            "exec \"$repo_python\" -m life_v0.my_entry digital life --state "
             + _shell_quote(str(state_dir))
             + " --reports "
             + _shell_quote(str(reports_dir))

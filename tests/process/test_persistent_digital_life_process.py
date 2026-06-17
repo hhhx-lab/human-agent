@@ -124,6 +124,61 @@ class PersistentDigitalLifeProcessTests(
             2,
         )
 
+    def test_record_output_marks_recall_fallback_released_with_tier(self):
+        from life_v0.process_supervisor.resident_lifecycle import (
+            ResidentControlInputStream,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            terminal_dir = Path(tmp) / "runtime" / "state" / "terminal"
+            language_dir = terminal_dir.parent / "language"
+            terminal_dir.mkdir(parents=True)
+            language_dir.mkdir(parents=True)
+            (terminal_dir / "resident_relation_queue_state.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "resident_relation_queue_state_v0",
+                        "status": "turn_in_progress",
+                        "active_sequence": 3,
+                        "active_turn_id": "resident-relation-turn-000003",
+                        "active_utterance": "你还记得我是谁吗？",
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (language_dir / "model_expression_state.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "model_expression_state_v0",
+                        "expression_release_path": "recall_bounded_spoken_fallback",
+                        "expression_release_tier": 2,
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            stream = ResidentControlInputStream(terminal_dir=terminal_dir)
+            stream.record_output("Adam\n  我记得你这边我抓到过的名字是「阿宝」。")
+            outbox = [
+                json.loads(line)
+                for line in (
+                    terminal_dir / "resident_relation_outbox.jsonl"
+                ).read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+
+        self.assertEqual(outbox[-1]["status"], "completed_released_fallback")
+        self.assertEqual(
+            outbox[-1]["expression_release_path"],
+            "recall_bounded_spoken_fallback",
+        )
+        self.assertEqual(outbox[-1]["expression_release_tier"], 2)
+        self.assertIn("阿宝", outbox[-1]["response_text"])
+
     def test_stale_stopped_lifecycle_does_not_overwrite_new_active_resident(self):
         from life_v0.process_supervisor.resident_lifecycle import (
             mark_resident_lifecycle_active,
@@ -194,7 +249,8 @@ class PersistentDigitalLifeProcessTests(
 
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertIn("Digital Life", completed.stdout)
-            self.assertIn("终端已连接：Digital Life", completed.stdout)
+            self.assertIn("Digital Life / live terminal", completed.stdout)
+            self.assertIn("/state /memory /dream /emotion /relationship", completed.stdout)
 
             dialogue_lines = [
                 json.loads(line)
@@ -209,6 +265,11 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(last_external["utterance"], "你还记得我们吗？")
             self.assertEqual(last_life_response["event_role"], "digital_life_turn")
             self.assertEqual(last_life_response["utterance"], "")
+            self.assertEqual(
+                last_life_response["expression_release_path"],
+                "model_expression",
+            )
+            self.assertNotIn("expression_release_tier", last_life_response)
             self.assertEqual(
                 last_life_response["model_expression_status"],
                 "model_expression_skipped",
@@ -381,8 +442,8 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertIn("dialogue-turn-live-0005", commitment_index["recent_dialogue_turn_refs"][-1])
             self.assertEqual(language_percept["incoming_surface"], "你还记得我们吗？")
-            self.assertEqual(semantic_map["semantic_focus"], "repair_relational_trace")
-            self.assertEqual(expression_plan["semantic_goal"], "repair_relational_trace")
+            self.assertEqual(semantic_map["semantic_focus"], "repair_commitment_shared_language")
+            self.assertEqual(expression_plan["semantic_goal"], "repair_commitment_shared_language")
             self.assertEqual(
                 inner_speech["percept_ref"],
                 "runtime/state/language/language_percept_frame.json",
@@ -395,7 +456,10 @@ class PersistentDigitalLifeProcessTests(
                 last_external["semantic_map_ref"],
                 "runtime/state/language/semantic_map_frame.json",
             )
-            self.assertEqual(last_external["live_semantic_focus"], "repair_relational_trace")
+            self.assertEqual(
+                last_external["live_semantic_focus"],
+                "repair_commitment_shared_language",
+            )
             self.assertEqual(
                 last_life_response["language_percept_ref"],
                 "runtime/state/language/language_percept_frame.json",
@@ -404,7 +468,10 @@ class PersistentDigitalLifeProcessTests(
                 last_life_response["semantic_map_ref"],
                 "runtime/state/language/semantic_map_frame.json",
             )
-            self.assertEqual(last_life_response["live_semantic_focus"], "repair_relational_trace")
+            self.assertEqual(
+                last_life_response["live_semantic_focus"],
+                "repair_commitment_shared_language",
+            )
             self.assertEqual(
                 last_life_response["queue_e_world_contact_handoff_profile_ref"],
                 queue_e_world_contact_handoff_ref,
@@ -494,7 +561,10 @@ class PersistentDigitalLifeProcessTests(
                 resumed_dialogue_packet["semantic_map_ref"],
                 "runtime/state/language/semantic_map_frame.json",
             )
-            self.assertEqual(resumed_dialogue_packet["live_semantic_focus"], "repair_relational_trace")
+            self.assertEqual(
+                resumed_dialogue_packet["live_semantic_focus"],
+                "repair_commitment_shared_language",
+            )
             self.assertEqual(
                 resumed_dialogue_packet["queue_e_world_contact_handoff_profile_ref"],
                 queue_e_world_contact_handoff_ref,
@@ -524,7 +594,10 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(loop_state["current_mode"], "restored_waiting_for_external_turn")
             self.assertEqual(loop_state["last_turn_mode"], "resumed_external_dialogue_loop")
             self.assertEqual(loop_state["last_external_turn_utterance"], "你还记得我们吗？")
-            self.assertEqual(loop_state["last_live_semantic_focus"], "repair_relational_trace")
+            self.assertEqual(
+                loop_state["last_live_semantic_focus"],
+                "repair_commitment_shared_language",
+            )
             self.assertEqual(
                 loop_state["live_language_turn_refs"],
                 dialogue_writeback_bundle["live_language_turn_refs"],
@@ -564,15 +637,15 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertEqual(
                 memory_retrieval.get("live_semantic_focus"),
-                "repair_relational_trace",
+                "repair_commitment_shared_language",
             )
             self.assertEqual(
                 memory_retrieval.get("reconstruction_focus"),
-                "repair_relational_trace",
+                "repair_commitment_shared_language",
             )
             self.assertEqual(
                 loop_state.get("memory_retrieval_reconstruction_focus"),
-                "repair_relational_trace",
+                "repair_commitment_shared_language",
             )
             self.assertIn(
                 "runtime/state/memory/engram_cluster.json",
@@ -9537,6 +9610,11 @@ class PersistentDigitalLifeProcessTests(
             self.assertIsNotNone(result.last_external_turn)
             self.assertIsNotNone(result.last_life_turn)
             self.assertEqual(
+                result.last_life_turn["expression_release_path"],
+                "model_expression",
+            )
+            self.assertNotIn("expression_release_tier", result.last_life_turn)
+            self.assertEqual(
                 result.last_external_turn["event_role"],
                 "external_relation_turn",
             )
@@ -9902,7 +9980,12 @@ class PersistentDigitalLifeProcessTests(
             )
             self.assertIn("background_continuity_profile", persisted_life_state)
             self.assertEqual(result.emitted_output, "")
-            self.assertEqual(result.last_life_turn["utterance"], "")
+            self.assertEqual(result.last_life_turn["utterance"], result.emitted_output)
+            self.assertEqual(
+                result.last_life_turn["expression_release_path"],
+                "model_expression",
+            )
+            self.assertNotIn("expression_release_tier", result.last_life_turn)
             self.assertEqual(
                 result.last_life_turn["model_expression_status"],
                 "model_expression_skipped",
@@ -10034,6 +10117,12 @@ class PersistentDigitalLifeProcessTests(
                 expected_life_constraint_refs,
             )
             self.assertEqual(result.last_life_turn["utterance"], "")
+            self.assertEqual(result.last_life_turn["utterance"], result.emitted_output)
+            self.assertEqual(
+                result.last_life_turn["expression_release_path"],
+                "model_expression",
+            )
+            self.assertNotIn("expression_release_tier", result.last_life_turn)
             self.assertEqual(
                 result.last_life_turn["model_expression_status"],
                 "model_expression_skipped",
