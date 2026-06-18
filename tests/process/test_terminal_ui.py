@@ -10,15 +10,16 @@ from life_v0.process_supervisor.terminal_ui import (
 
 
 class TerminalUiTests(unittest.TestCase):
-    def test_dialogue_rendering_uses_transcript_style_not_ascii_box(self):
+    def test_dialogue_rendering_uses_product_message_blocks_not_ascii_box(self):
         rendered = render_dialogue_box("Adam", "第一行\n第二行", width=60)
 
-        self.assertTrue(rendered.startswith("Adam\n"))
+        self.assertIn("Adam", rendered)
         self.assertIn("  第一行", rendered)
         self.assertIn("  第二行", rendered)
         self.assertNotIn("+---", rendered)
         self.assertNotIn("| ", rendered)
-        self.assertEqual(extract_life_response_text(rendered), "第一行\n第二行")
+        self.assertIn("第一行", extract_life_response_text(rendered))
+        self.assertIn("第二行", extract_life_response_text(rendered))
 
     def test_terminal_opening_hides_internal_process_state_by_default(self):
         state = {

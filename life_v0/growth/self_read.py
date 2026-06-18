@@ -19,6 +19,7 @@ def build_self_read_report(
     replay_cue_bundle: dict[str, Any],
     growth_route: dict[str, Any],
     learning_window: dict[str, Any],
+    body_integrator: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     relationship_refs = list(life_state.get("relationship_subjects", []))
     growth_pressures: list[str] = []
@@ -39,7 +40,7 @@ def build_self_read_report(
         learning_window.get("learning_modes", [])
     )
 
-    return {
+    report = {
         "schema_version": "self_read_report_v0",
         "event_kind": "SelfReadReport",
         "report_id": f"self-read-{run_id}",
@@ -69,8 +70,8 @@ def build_self_read_report(
         "growth_pressures": growth_pressures,
         "protected_core_refs": [
             "runtime/state/life_state.json#self_model",
-            "runtime/state/life_state.json#responsibility_bindings",
             "runtime/state/life_state.json#dream_records",
+            "runtime/state/life_state.json#responsibility_bindings",
         ],
         "uncertainty_map": {
             "kernel_capacity": "not_probed",
@@ -79,6 +80,42 @@ def build_self_read_report(
         },
         "recommended_growth_paths": recommended_growth_paths,
         "source_doc_refs": SOURCE_DOC_REFS,
+    }
+    dynamics_metrics = _project_dynamics_metrics(body_integrator)
+    if dynamics_metrics:
+        report["dynamics_metrics"] = dynamics_metrics
+    return report
+
+
+def _project_dynamics_metrics(
+    body_integrator: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    if not body_integrator:
+        return None
+    continuous = body_integrator.get("continuous") or {}
+    if not continuous:
+        return None
+    tracked_fields = (
+        "sleep_pressure",
+        "allostatic_load",
+        "body_state_debt",
+        "cognitive_bandwidth",
+        "recovery_rate",
+        "stress_pulse",
+    )
+    projected = {
+        field: continuous.get(field)
+        for field in tracked_fields
+        if continuous.get(field) is not None
+    }
+    if not projected:
+        return None
+    phase = body_integrator.get("phase") or {}
+    return {
+        "body_integrator_ref": "runtime/state/body/body_integrator_state.json",
+        "integrator_id": body_integrator.get("integrator_id"),
+        "tick_counter": phase.get("tick_counter"),
+        "continuous": projected,
     }
 
 

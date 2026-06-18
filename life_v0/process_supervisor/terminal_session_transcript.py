@@ -43,6 +43,34 @@ def start_terminal_session_transcript(
     return event
 
 
+def resolve_attach_terminal_session(
+    *,
+    terminal_dir: Path,
+    life_name: str | None,
+    now_iso=None,
+) -> dict[str, Any]:
+    index = read_terminal_session_index(terminal_dir=terminal_dir)
+    session_id = str(index.get("current_session_id") or "").strip()
+    if session_id:
+        return {
+            "schema_version": "terminal_session_attach_v0",
+            "session_id": session_id,
+            "life_name": life_name or "Digital Life",
+            "attached": True,
+            "created": False,
+            "terminal_session_transcript_ref": TERMINAL_SESSION_TRANSCRIPT_REF,
+            "terminal_session_index_ref": TERMINAL_SESSION_INDEX_REF,
+        }
+    opened = start_terminal_session_transcript(
+        terminal_dir=terminal_dir,
+        life_name=life_name,
+        now_iso=now_iso,
+    )
+    opened["attached"] = False
+    opened["created"] = True
+    return opened
+
+
 def append_terminal_session_event(
     *,
     terminal_dir: Path,
@@ -77,6 +105,18 @@ def append_terminal_session_event(
         current_event=event,
     )
     return event
+
+
+def load_terminal_session_events(
+    *,
+    terminal_dir: Path,
+    session_id: str,
+) -> list[dict[str, Any]]:
+    return [
+        event
+        for event in _read_jsonl(terminal_dir / "terminal_session_transcript.jsonl")
+        if str(event.get("session_id") or "").strip() == str(session_id or "").strip()
+    ]
 
 
 def load_current_terminal_session_lines(

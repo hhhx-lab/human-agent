@@ -618,7 +618,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             self.assertIn("proactive_voice", rendered_all)
             self.assertFalse((terminal_dir / "resident_relation_inbox.jsonl").exists())
 
-    def test_resident_terminal_relation_turn_without_model_release_stays_silent(self):
+    def test_resident_terminal_relation_turn_without_model_release_does_not_exit(self):
         from life_v0.digital_entry import _handle_resident_terminal_utterance
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -640,6 +640,35 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     exit_code = _handle_resident_terminal_utterance(
                         terminal_dir=terminal_dir,
                         utterance="不要给我固定回答",
+                        life_name="Adam",
+                        say_timeout_seconds=0.1,
+                    )
+
+            self.assertIsNone(exit_code)
+            self.assertEqual(stdout.getvalue(), "")
+
+    def test_resident_terminal_relation_turn_nonzero_unreleased_does_not_close_session(self):
+        from life_v0.digital_entry import _handle_resident_terminal_utterance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            terminal_dir = Path(tmp) / "runtime" / "state" / "terminal"
+            terminal_dir.mkdir(parents=True, exist_ok=True)
+            stdout = StringIO()
+            with patch(
+                "life_v0.digital_entry.send_resident_relation_turn",
+                return_value=SimpleNamespace(
+                    exit_code=1,
+                    state={
+                        "send_status": "completed",
+                        "response_text": "",
+                        "response_event": {"status": "completed_unreleased"},
+                    },
+                ),
+            ):
+                with redirect_stdout(stdout):
+                    exit_code = _handle_resident_terminal_utterance(
+                        terminal_dir=terminal_dir,
+                        utterance="能告诉我你的记忆机制吗",
                         life_name="Adam",
                         say_timeout_seconds=0.1,
                     )

@@ -855,6 +855,134 @@ def build_fast_episodic_buffer(
     }
 
 
+def apply_retrieval_salience_delta(
+    memory_trace_store: dict[str, Any],
+    *,
+    retrieval_hits: list[str],
+    run_id: str,
+    generated_at: str,
+    turn_counter: int | None = None,
+    allostatic_load: float = 0.0,
+    mean_activation_score: float | None = None,
+) -> dict[str, Any]:
+    updated_store = json.loads(json.dumps(memory_trace_store or {}))
+    trace_ids = _trace_ids_from_retrieval_hits(retrieval_hits)
+    if not trace_ids:
+        return {
+            "memory_trace_store": updated_store,
+            "salience_tick_report": _empty_salience_tick_report(
+                run_id=run_id,
+                generated_at=generated_at,
+                reason="no_retrieval_hits",
+            ),
+        }
+
+    suppression = max(0.15, 1.0 - float(allostatic_load or 0.0) * 0.65)
+    activation_factor = 1.0
+    if mean_activation_score is not None and mean_activation_score > 0:
+        activation_factor = min(1.25, 0.75 + float(mean_activation_score) * 0.35)
+    base_delta = 0.06 * activation_factor * suppression
+
+    trace_updates: list[dict[str, Any]] = []
+    for trace in updated_store.get("traces", []):
+        if not isinstance(trace, dict):
+            continue
+        trace_id = str(trace.get("trace_id") or "")
+        if trace_id not in trace_ids:
+            continue
+        if trace.get("lifecycle_state") in {"deprecated", "quarantined", "deleted", "protected"}:
+            continue
+
+        before_replay = float(trace.get("replay_salience") or 0.5)
+        before_accessibility = float(trace.get("accessibility_score") or 0.55)
+        salience_vector = dict(trace.get("salience_vector") or {})
+        before_scalar = float(salience_vector.get("salience") or before_replay)
+
+        replay_delta = round(base_delta, 4)
+        accessibility_delta = round(base_delta * 0.55, 4)
+        salience_delta = round(base_delta * 0.85, 4)
+
+        trace["replay_salience"] = round(min(0.98, before_replay + replay_delta), 3)
+        trace["accessibility_score"] = round(
+            min(0.98, before_accessibility + accessibility_delta),
+            3,
+        )
+        salience_vector["salience"] = round(min(0.98, before_scalar + salience_delta), 3)
+        salience_vector["last_retrieval_tick_at"] = generated_at
+        if turn_counter is not None:
+            salience_vector["last_retrieval_turn_counter"] = turn_counter
+        trace["salience_vector"] = salience_vector
+        trace["retrieval_access_count"] = int(trace.get("retrieval_access_count") or 0) + 1
+        trace["last_retrieved_at"] = generated_at
+        trace["updated_at"] = generated_at
+
+        revision_ref = (
+            f"revision-retrieval-salience-{turn_counter:04d}"
+            if turn_counter is not None
+            else f"revision-retrieval-salience-{generated_at}"
+        )
+        trace["revision_history_refs"] = _dedupe(
+            _string_list(trace.get("revision_history_refs")) + [revision_ref]
+        )
+
+        trace_updates.append(
+            {
+                "trace_id": trace_id,
+                "replay_salience_delta": replay_delta,
+                "salience_delta": salience_delta,
+                "revision_ref": revision_ref,
+            }
+        )
+
+    updated_store["last_retrieval_salience_tick_at"] = generated_at
+    return {
+        "memory_trace_store": updated_store,
+        "salience_tick_report": {
+            "schema_version": "memory_retrieval_salience_tick_v0",
+            "run_id": run_id,
+            "generated_at": generated_at,
+            "applied": bool(trace_updates),
+            "hit_count": len(trace_ids),
+            "updated_trace_count": len(trace_updates),
+            "allostatic_suppression": round(suppression, 3),
+            "effective_delta": round(base_delta, 4),
+            "trace_updates": trace_updates,
+            "source_doc_refs": SOURCE_DOC_REFS,
+        },
+    }
+
+
+def _trace_ids_from_retrieval_hits(retrieval_hits: list[str]) -> set[str]:
+    trace_ids: set[str] = set()
+    for ref in retrieval_hits:
+        text = str(ref or "")
+        if "memory_trace_store.json#" not in text:
+            continue
+        trace_id = text.rsplit("#", 1)[-1]
+        if trace_id:
+            trace_ids.add(trace_id)
+    return trace_ids
+
+
+def _empty_salience_tick_report(
+    *,
+    run_id: str,
+    generated_at: str,
+    reason: str,
+) -> dict[str, Any]:
+    return {
+        "schema_version": "memory_retrieval_salience_tick_v0",
+        "run_id": run_id,
+        "generated_at": generated_at,
+        "applied": False,
+        "reason": reason,
+        "hit_count": 0,
+        "updated_trace_count": 0,
+        "trace_updates": [],
+        "source_doc_refs": SOURCE_DOC_REFS,
+    }
+
+
 def apply_post_expression_reconsolidation(
     memory_trace_store: dict[str, Any],
     *,

@@ -69,6 +69,7 @@ def resolve_turn_spoken_output(
 
     fragment_text = _fragment_recall_response(
         external_utterance=external_utterance,
+        pre_model_spoken_response=pre_model,
         memory_retrieval_frame=memory_retrieval_frame,
         relationship_memory=relationship_memory,
     )
@@ -166,23 +167,77 @@ def apply_spoken_release_to_model_expression_state(
 def _fragment_recall_response(
     *,
     external_utterance: str,
+    pre_model_spoken_response: str,
     memory_retrieval_frame: dict[str, Any] | None,
     relationship_memory: dict[str, Any] | None,
 ) -> str:
-    _ = external_utterance
-
-    recall_profile = (memory_retrieval_frame or {}).get("recall_to_expression_profile")
-    if not isinstance(recall_profile, dict):
+    pre_model = str(pre_model_spoken_response or "").strip()
+    utterance = str(external_utterance or "")
+    asks_memory = any(
+        term in utterance
+        for term in ("记", "回想", "想起", "生日", "刚刚", "刚才", "机制", "回忆")
+    )
+    if not pre_model and not asks_memory:
         return ""
-    source_refs = recall_profile.get("expression_source_refs")
-    if not isinstance(source_refs, list) or not source_refs:
+    recall_profile = (memory_retrieval_frame or {}).get("recall_to_expression_profile")
+    source_refs: list[Any] = []
+    if isinstance(recall_profile, dict):
+        raw_source_refs = recall_profile.get("expression_source_refs")
+        if isinstance(raw_source_refs, list):
+            source_refs = raw_source_refs
+    if not source_refs:
         if not recall_expression_grounded(
             memory_retrieval_frame=memory_retrieval_frame,
             expression_plan=None,
             semantic_map=None,
         ):
             return ""
-    return ""
+    safe_pre_model = _safe_pre_model_fragment(pre_model)
+    if safe_pre_model:
+        return safe_pre_model
+    if asks_memory:
+        return "有记忆线索，但还没有连成一句确定的话。"
+    if relationship_memory:
+        return "有一点和你有关的片段被抓到了，但还说不清。"
+    return "有片段，但还说不清。"
+
+
+def _safe_pre_model_fragment(text: str) -> str:
+    candidate = str(text or "").strip()
+    if not candidate:
+        return ""
+    blocked_markers = (
+        "schema_version",
+        "runtime/state",
+        "runtime/reports",
+        "audited_expression_material",
+        "expression_context",
+        "post_expression_gate",
+        "natural_language_release_disabled",
+        "作为一个AI",
+        "作为人工智能",
+        "as an ai language model",
+        "i am an ai language model",
+        "ChatGPT",
+        "OpenAI",
+        "Codex",
+        "GPT",
+        "语言模型",
+        "大语言模型",
+        "我会根据你的要求",
+        "我理解成",
+        "接下来我会",
+        "自然一点",
+        "慢慢",
+        "说稳",
+        "我不绕了",
+        "直接跟你说",
+        "接住你",
+    )
+    lowered = candidate.lower()
+    if any(str(marker).lower() in lowered for marker in blocked_markers):
+        return ""
+    return candidate
 
 
 def _continuity_minimal_response(

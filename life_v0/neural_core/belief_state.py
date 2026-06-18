@@ -92,6 +92,81 @@ def build_belief_state_frame(
     }
 
 
+def refresh_belief_confidence_from_live_turn(
+    *,
+    belief_state: dict[str, Any] | None,
+    run_id: str,
+    generated_at: str,
+    signal_media_runtime: dict[str, Any] | None,
+    language_percept: dict[str, Any] | None,
+    semantic_map: dict[str, Any] | None,
+    language_continuity: dict[str, Any] | None = None,
+    queue_e_repair_modulation_profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    language_percept = language_percept or {}
+    semantic_map = semantic_map or {}
+    signal_media_runtime = signal_media_runtime or {}
+    repair_profile = (
+        queue_e_repair_modulation_profile
+        or (belief_state or {}).get("queue_e_repair_modulation_profile")
+        or signal_media_runtime.get("queue_e_repair_modulation_profile")
+        or {}
+    )
+    base = belief_state or build_belief_state_frame(
+        run_id=run_id,
+        generated_at=generated_at,
+        signal_media_runtime=signal_media_runtime,
+        language_continuity=language_continuity,
+        queue_e_repair_modulation_profile=repair_profile,
+    )
+    updated = dict(base)
+    updated["generated_at"] = generated_at
+    updated["run_id"] = run_id
+
+    ambiguity_count = len(list(semantic_map.get("ambiguity_queue", []))) + len(
+        list(language_percept.get("ambiguity_flags", []))
+    )
+    unexpected_uncertainty = float(
+        signal_media_runtime.get("modulation_vector", {}).get("unexpected_uncertainty", 0.21)
+        or 0.21
+    )
+    percept_trace_count = len(list(language_percept.get("percept_focus_trace", [])))
+    evidence_density = "low"
+    if percept_trace_count >= 4 or ambiguity_count == 0:
+        evidence_density = "high"
+    elif percept_trace_count >= 2 or ambiguity_count <= 1:
+        evidence_density = "medium"
+
+    score = 0.82
+    score -= ambiguity_count * 0.06
+    score -= unexpected_uncertainty * 0.12
+    score += min(0.08, percept_trace_count * 0.02)
+    score = round(_clamp(score), 3)
+
+    confidence = dict(updated.get("confidence_posterior") or {})
+    confidence.update(
+        {
+            "score": score,
+            "evidence_density": evidence_density,
+            "conflict_count": ambiguity_count,
+            "calibration_ref": "runtime/state/signal/signal_media_runtime.json#precision_policy",
+            "language_expression": (
+                "当前方向继续指向真实数字生命的连续形成。"
+                if score >= 0.7
+                else "当前语义与身体状态提示需要先澄清再继续承诺。"
+            ),
+        }
+    )
+    updated["confidence_posterior"] = confidence
+    updated["live_refresh_applied"] = True
+    updated["live_ambiguity_count"] = ambiguity_count
+    return updated
+
+
+def _clamp(value: float) -> float:
+    return max(0.0, min(1.0, value))
+
+
 def _dedupe(items: list[str]) -> list[str]:
     result: list[str] = []
     for item in items:

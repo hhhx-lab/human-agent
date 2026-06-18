@@ -59,6 +59,11 @@ def project_broadcast_frame_from_live_turn(
     broadcast_targets = list(workspace_frame.get("broadcast_targets", [])) or list(
         updated.get("broadcast_targets", [])
     )
+    topk_meta = workspace_frame.get("workspace_topk") or {}
+    if workspace_frame.get("workspace_topk_applied"):
+        suppressed_refs = _string_list(topk_meta.get("evicted_candidate_refs"))
+    else:
+        suppressed_refs = _suppressed_explanation_refs(candidate_explanations)
 
     updated["generated_at"] = generated_at
     if run_id and not updated.get("run_id"):
@@ -71,11 +76,23 @@ def project_broadcast_frame_from_live_turn(
             "rank": index + 1,
             "candidate_ref": explanation.get("explanation_id"),
             "focus": explanation.get("focus"),
+            "salience_score": explanation.get("salience_score"),
         }
         for index, explanation in enumerate(candidate_explanations)
         if isinstance(explanation, dict)
     ]
-    updated["suppressed_content_refs"] = _suppressed_explanation_refs(candidate_explanations)
+    updated["primary_broadcast"] = (
+        candidate_explanations[0] if candidate_explanations else None
+    )
+    updated["secondary_broadcast"] = (
+        candidate_explanations[1] if len(candidate_explanations) >= 2 else None
+    )
+    updated["suppressed_content_refs"] = suppressed_refs
+    if workspace_frame.get("workspace_topk_applied"):
+        updated["workspace_topk_ref"] = (
+            "runtime/state/consciousness/workspace_frame.json#workspace_topk"
+        )
+        updated["workspace_topk_k"] = topk_meta.get("k")
     if live_turn_focus:
         updated["live_turn_focus"] = live_turn_focus
     updated["live_dialogue_turn_refs"] = _dedupe(
@@ -130,3 +147,13 @@ def _dedupe(items: list[str]) -> list[str]:
         if item and item not in result:
             result.append(item)
     return result
+
+
+def _string_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value if item]
+    if isinstance(value, str) and value:
+        return [value]
+    return []

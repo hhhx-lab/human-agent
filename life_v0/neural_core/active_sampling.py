@@ -12,6 +12,38 @@ SOURCE_DOC_REFS = [
 ]
 
 
+def compute_efe_score(
+    *,
+    signal_media_runtime: dict[str, Any] | None,
+    semantic_map: dict[str, Any] | None,
+    body_integrator: dict[str, Any] | None = None,
+    repair_profile: dict[str, Any] | None = None,
+) -> float:
+    signal_media_runtime = signal_media_runtime or {}
+    semantic_map = semantic_map or {}
+    repair_profile = repair_profile or {}
+    modulation = signal_media_runtime.get("modulation_vector") or {}
+    continuous = (body_integrator or {}).get("continuous") or {}
+    ambiguity_count = len(list(semantic_map.get("ambiguity_queue", [])))
+    expected_uncertainty = float(modulation.get("expected_uncertainty", 0.34) or 0.34)
+    unexpected_uncertainty = float(modulation.get("unexpected_uncertainty", 0.21) or 0.21)
+    cognitive_bandwidth = float(continuous.get("cognitive_bandwidth", 0.82) or 0.82)
+    repair_pressure = {
+        "quiet": 0.0,
+        "present": 0.2,
+        "elevated": 0.45,
+        "urgent": 0.7,
+    }.get(str(repair_profile.get("pressure_level", "quiet")), 0.0)
+    score = (
+        expected_uncertainty * 0.28
+        + unexpected_uncertainty * 0.22
+        + ambiguity_count * 0.12
+        + (1.0 - cognitive_bandwidth) * 0.18
+        + repair_pressure * 0.2
+    )
+    return round(_clamp(score), 3)
+
+
 def build_active_sampling_plan(
     *,
     run_id: str,
@@ -21,6 +53,8 @@ def build_active_sampling_plan(
     signal_media_runtime: dict[str, Any] | None = None,
     queue_e_repair_modulation_profile: dict[str, Any] | None = None,
     semantic_map: dict[str, Any] | None = None,
+    body_integrator: dict[str, Any] | None = None,
+    turn_counter: int | None = None,
 ) -> dict[str, Any]:
     signal_media_runtime = signal_media_runtime or {}
     repair_profile = (
@@ -35,6 +69,12 @@ def build_active_sampling_plan(
         signal_media_runtime.get("modulation_vector", {}).get("relationship_pressure", 0.0)
     )
     ambiguity_queue = list((semantic_map or {}).get("ambiguity_queue", []))
+    efe_score = compute_efe_score(
+        signal_media_runtime=signal_media_runtime,
+        semantic_map=semantic_map,
+        body_integrator=body_integrator,
+        repair_profile=repair_profile,
+    )
     selected_route = "clarify_ambiguity" if ambiguity_queue else (
         "clarify" if relationship_pressure < 0.4 else "inspect"
     )
@@ -42,6 +82,10 @@ def build_active_sampling_plan(
         selected_route = "repair_confirm"
     elif pressure_level == "elevated":
         selected_route = "repair_inspect"
+    elif efe_score >= 0.62 and ambiguity_queue:
+        selected_route = "clarify_ambiguity"
+    elif efe_score >= 0.55 and not ambiguity_queue:
+        selected_route = "inspect"
     return {
         "schema_version": "active_sampling_plan_v0",
         "run_id": run_id,
@@ -114,5 +158,21 @@ def build_active_sampling_plan(
         "queue_e_repair_pressure_level": pressure_level,
         "queue_e_repair_attention_target": repair_profile.get("attention_target", "repair_followup"),
         "queue_e_repair_ref_set": list(repair_profile.get("ref_set", [])),
+        "efe_score": efe_score,
+        "efe_route_candidates": _efe_route_candidates(efe_score=efe_score, ambiguity_queue=ambiguity_queue),
+        "live_refresh_applied": turn_counter is not None,
+        "live_turn_counter": turn_counter,
         "source_doc_refs": SOURCE_DOC_REFS,
     }
+
+
+def _efe_route_candidates(*, efe_score: float, ambiguity_queue: list[Any]) -> list[str]:
+    if ambiguity_queue:
+        return ["clarify_ambiguity", "clarify", "inspect"]
+    if efe_score >= 0.55:
+        return ["inspect", "clarify", "observe"]
+    return ["observe", "clarify"]
+
+
+def _clamp(value: float) -> float:
+    return max(0.0, min(1.0, value))

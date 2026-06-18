@@ -6,7 +6,11 @@ from typing import Any, Callable
 
 from ..neural_core.broadcast import project_broadcast_frame_from_live_turn
 from ..neural_core.metacognition import project_metacognition_state_from_live_turn
-from ..neural_core.workspace import project_workspace_frame_from_live_turn
+from ..neural_core.workspace import (
+    maybe_apply_workspace_topk_to_frame,
+    project_workspace_frame_from_live_turn,
+)
+from ..replay import append_workspace_evictions_to_replay_cue_bundle
 
 
 @dataclass(frozen=True)
@@ -50,6 +54,12 @@ def refresh_pre_expression_consciousness(
         prediction_dir / "prediction_workspace_frame.json",
         {},
     )
+    prediction_error_field = _read_json_if_exists(
+        prediction_dir / "prediction_error_field.json",
+        {},
+    )
+    signal_media_runtime = _read_json_if_exists(state_dir / "signal" / "signal_media_runtime.json", {})
+    body_integrator = _read_json_if_exists(state_dir / "body" / "body_integrator_state.json", {})
     network_state = _read_json_if_exists(neural_dir / "network_state.json", {})
     engram_index = _read_json_if_exists(memory_dir / "engram_index.json", {})
 
@@ -64,6 +74,27 @@ def refresh_pre_expression_consciousness(
         live_language_turn_refs=live_language_turn_refs,
         live_turn_focus=live_turn_focus,
     )
+    updated_workspace = maybe_apply_workspace_topk_to_frame(
+        updated_workspace,
+        body_integrator=body_integrator,
+        signal_media_runtime=signal_media_runtime,
+        memory_retrieval_frame=memory_retrieval_frame,
+        prediction_error_field=prediction_error_field,
+        live_turn_focus=live_turn_focus,
+    )
+    if updated_workspace.get("workspace_topk_applied") and write_json is not None:
+        topk_meta = updated_workspace.get("workspace_topk") or {}
+        evicted = list(topk_meta.get("suppressed_candidates") or [])
+        if evicted:
+            replay_dir = state_dir / "replay"
+            replay_dir.mkdir(parents=True, exist_ok=True)
+            replay_cue_bundle = append_workspace_evictions_to_replay_cue_bundle(
+                _read_json_if_exists(replay_dir / "replay_cue_bundle.json", {}),
+                evicted_candidates=evicted,
+                generated_at=generated_at,
+                run_id=run_id,
+            )
+            write_json(replay_dir / "replay_cue_bundle.json", replay_cue_bundle)
     updated_broadcast = project_broadcast_frame_from_live_turn(
         broadcast_frame=broadcast_frame,
         generated_at=generated_at,

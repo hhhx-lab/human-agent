@@ -1,14 +1,23 @@
 from __future__ import annotations
 
 import hashlib
+import json
+import os
 import re
-from typing import Any
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Callable, Mapping
 
 from .cue_candidate_provider import (
     local_full_text_cue_candidate_provider,
     noop_cue_candidate_provider,
 )
+from .hippocampal_cue_index import (
+    apply_hippocampal_cue_weight_decay,
+    build_hippocampal_cue_index,
+)
 from .memory_expression_material_chain import build_memory_expression_material_chain
+from .memory_trace_store import apply_retrieval_salience_delta
 
 
 MEMORY_RETRIEVAL_FRAME_REF = "runtime/state/memory/memory_retrieval_frame.json"
@@ -370,6 +379,152 @@ def project_memory_retrieval_from_live_turn(
     frame["dialogue_turn_refs"] = list(dialogue_turn_refs or [])
     frame["last_external_utterance_sha256"] = _sha256(external_utterance)
     return frame
+
+
+def is_memory_salience_tick_enabled(environ: Mapping[str, str] | None = None) -> bool:
+    env = os.environ if environ is None else environ
+    return _parse_bool(env.get("DIGITAL_LIFE_MEMORY_SALIENCE_TICK"), False)
+
+
+@dataclass(frozen=True)
+class MemorySalienceTickResult:
+    memory_trace_store: dict[str, Any]
+    hippocampal_cue_index: dict[str, Any]
+    memory_retrieval_frame: dict[str, Any]
+    salience_tick_report: dict[str, Any]
+    applied: bool
+
+
+def maybe_apply_retrieval_salience_tick(
+    *,
+    memory_trace_store: dict[str, Any] | None,
+    memory_retrieval_frame: dict[str, Any] | None,
+    hippocampal_cue_index: dict[str, Any] | None,
+    run_id: str,
+    generated_at: str,
+    turn_counter: int | None = None,
+    relationship_memory: dict[str, Any] | None = None,
+    body_integrator: dict[str, Any] | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> MemorySalienceTickResult:
+    frame = dict(memory_retrieval_frame or {})
+    store = json.loads(json.dumps(memory_trace_store or {}))
+    cue_index = dict(hippocampal_cue_index or {})
+    if not is_memory_salience_tick_enabled(environ):
+        return MemorySalienceTickResult(
+            memory_trace_store=store,
+            hippocampal_cue_index=cue_index,
+            memory_retrieval_frame=frame,
+            salience_tick_report={},
+            applied=False,
+        )
+
+    retrieval_hits = _extract_retrieval_salience_hits(frame)
+    if not retrieval_hits:
+        return MemorySalienceTickResult(
+            memory_trace_store=store,
+            hippocampal_cue_index=cue_index,
+            memory_retrieval_frame=frame,
+            salience_tick_report={
+                "schema_version": "memory_retrieval_salience_tick_v0",
+                "applied": False,
+                "reason": "no_retrieval_hits",
+            },
+            applied=False,
+        )
+
+    continuous = (body_integrator or {}).get("continuous") or {}
+    allostatic_load = float(continuous.get("allostatic_load", 0.0) or 0.0)
+    reconstructive = frame.get("reconstructive_recall_profile") or {}
+    mean_activation = reconstructive.get("mean_activation_score")
+    if mean_activation is not None:
+        mean_activation = float(mean_activation)
+
+    delta_result = apply_retrieval_salience_delta(
+        store,
+        retrieval_hits=retrieval_hits,
+        run_id=run_id,
+        generated_at=generated_at,
+        turn_counter=turn_counter,
+        allostatic_load=allostatic_load,
+        mean_activation_score=mean_activation,
+    )
+    store = delta_result["memory_trace_store"]
+    report = delta_result["salience_tick_report"]
+
+    if cue_index:
+        cue_index = apply_hippocampal_cue_weight_decay(
+            cue_index,
+            generated_at=generated_at,
+            body_integrator=body_integrator,
+        )
+    else:
+        cue_index = build_hippocampal_cue_index(
+            run_id=run_id,
+            generated_at=generated_at,
+            memory_trace_store=store,
+            relationship_memory=relationship_memory,
+        )
+
+    frame["retrieval_salience_tick_report"] = report
+    frame["retrieval_salience_tick_applied"] = bool(report.get("applied"))
+    return MemorySalienceTickResult(
+        memory_trace_store=store,
+        hippocampal_cue_index=cue_index,
+        memory_retrieval_frame=frame,
+        salience_tick_report=report,
+        applied=bool(report.get("applied")),
+    )
+
+
+def maybe_run_memory_salience_tick_hook(
+    *,
+    memory_dir: Path,
+    memory_retrieval_frame: dict[str, Any] | None,
+    run_id: str,
+    generated_at: str,
+    turn_counter: int | None = None,
+    relationship_memory: dict[str, Any] | None = None,
+    body_integrator: dict[str, Any] | None = None,
+    write_json: Callable[[Path, dict[str, Any]], None],
+    environ: Mapping[str, str] | None = None,
+) -> MemorySalienceTickResult:
+    memory_trace_store = _read_json(memory_dir / "memory_trace_store.json")
+    hippocampal_cue_index = _read_json(memory_dir / "hippocampal_cue_index.json")
+    result = maybe_apply_retrieval_salience_tick(
+        memory_trace_store=memory_trace_store,
+        memory_retrieval_frame=memory_retrieval_frame,
+        hippocampal_cue_index=hippocampal_cue_index,
+        run_id=run_id,
+        generated_at=generated_at,
+        turn_counter=turn_counter,
+        relationship_memory=relationship_memory,
+        body_integrator=body_integrator,
+        environ=environ,
+    )
+    if not result.applied:
+        return result
+
+    write_json(memory_dir / "memory_trace_store.json", result.memory_trace_store)
+    write_json(memory_dir / "hippocampal_cue_index.json", result.hippocampal_cue_index)
+    write_json(memory_dir / "memory_retrieval_frame.json", result.memory_retrieval_frame)
+    return result
+
+
+def _extract_retrieval_salience_hits(memory_retrieval_frame: dict[str, Any]) -> list[str]:
+    frame = memory_retrieval_frame or {}
+    hits: list[str] = []
+    reconstructive = frame.get("reconstructive_recall_profile") or {}
+    hits.extend(_string_list(reconstructive.get("reconstruction_fragment_refs")))
+    tiered = frame.get("tiered_recall") or {}
+    hits.extend(_string_list(tiered.get("salient_core_refs")))
+    hits.extend(_string_list(tiered.get("retrievable_context_refs")))
+    hits.extend(
+        ref
+        for ref in _string_list(frame.get("activated_engram_refs"))
+        if "memory_trace_store.json#" in ref
+    )
+    return _dedupe(hits)
 
 
 def memory_retrieval_context_summary(
@@ -2315,3 +2470,26 @@ def _dedupe(items: list[str]) -> list[str]:
         seen.add(item)
         result.append(item)
     return result
+
+
+def _parse_bool(value: Any, default: bool) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    return default
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}

@@ -7,9 +7,18 @@ from pathlib import Path
 from typing import Callable
 
 from .terminal_input import TerminalCompletionState, build_terminal_completion_state
+from .terminal_layout import (
+    MessageRenderSpec,
+    TerminalLayoutState,
+    format_layout_toolbar_fragments,
+    format_message_fragments,
+    render_resume_startup_fragments,
+    render_session_history_fragments,
+    resolve_release_badge,
+    resolve_terminal_layout_state,
+)
 from .terminal_session_transcript import (
     append_terminal_session_event,
-    load_current_terminal_session_lines,
     start_terminal_session_transcript,
 )
 
@@ -23,6 +32,29 @@ def prompt_toolkit_available() -> bool:
 
 
 def run_prompt_toolkit_terminal_app(
+    *,
+    terminal_dir: Path,
+    life_name: str | None,
+    handle_utterance: Callable[[str], tuple[int | None, str]],
+    slash_commands: tuple[tuple[str, str], ...],
+    idle_voice_fn: Callable[[], str | None] | None = None,
+    repo_root: Path | None = None,
+    idle_voice_interval_seconds: float = 90.0,
+) -> int:
+    from .prompt_toolkit_split_terminal_app import run_prompt_toolkit_split_terminal_app
+
+    return run_prompt_toolkit_split_terminal_app(
+        terminal_dir=terminal_dir,
+        life_name=life_name,
+        handle_utterance=handle_utterance,
+        slash_commands=slash_commands,
+        idle_voice_fn=idle_voice_fn,
+        repo_root=repo_root,
+        idle_voice_interval_seconds=idle_voice_interval_seconds,
+    )
+
+
+def run_prompt_toolkit_legacy_terminal_app(
     *,
     terminal_dir: Path,
     life_name: str | None,
@@ -49,6 +81,7 @@ def run_prompt_toolkit_terminal_app(
     )
     session_id = str(opened_session.get("session_id") or "")
     repo_root = repo_root or Path.cwd()
+    layout_state = resolve_terminal_layout_state()
     completer = _TerminalCompleter(
         slash_commands=slash_commands,
         repo_root=repo_root,
@@ -63,6 +96,11 @@ def run_prompt_toolkit_terminal_app(
     @bindings.add("c-q")
     def _(event):
         event.app.exit(exception=EOFError, style="class:aborting")
+
+    @bindings.add("c-b")
+    def _(event):
+        layout_state.sidebar_visible = not layout_state.sidebar_visible
+        event.app.invalidate()
 
     @bindings.add("escape", "enter")
     def _(event):
@@ -100,31 +138,53 @@ def run_prompt_toolkit_terminal_app(
             "error": "ansired",
             "input-box": "ansibrightblack",
             "cursor-index": "ansiyellow",
+            "top-bar": "ansibrightblack",
+            "sidebar": "ansimagenta",
+            "sidebar-title": "ansimagenta bold",
+            "timestamp": "ansibrightblack",
+            "message-body": "ansiwhite",
+            "badge": "ansibrightblack",
+            "badge-released": "ansigreen",
+            "badge-unreleased": "ansired",
+            "slash-panel-title": "ansicyan bold",
+            "slash-panel-group": "ansicyan",
+            "slash-panel-item": "ansibrightblack",
+            "file-preview": "ansiyellow",
+            "resume-title": "ansicyan bold",
+            "resume-section": "ansicyan",
+            "resume-line": "ansibrightblack",
+            "resume-carry": "ansigreen",
         }
     )
     session = PromptSession(
         history=history,
         completer=completer,
         complete_while_typing=True,
-        complete_style=CompleteStyle.MULTI_COLUMN,
-        reserve_space_for_menu=8,
+        complete_style=CompleteStyle.COLUMN,
+        reserve_space_for_menu=14,
         enable_history_search=True,
         key_bindings=bindings,
         multiline=False,
         bottom_toolbar=lambda: _bottom_toolbar(
             terminal_dir=terminal_dir,
             life_name=name,
+            layout_state=layout_state,
+            slash_commands=slash_commands,
+            repo_root=repo_root,
         ),
-        mouse_support=True,
+        mouse_support=False,
         cursor=CursorShape.BLINKING_BEAM,
         show_frame=True,
-        placeholder=HTML("<ansibrightblack>输入一句话，或 / 查看状态命令，@ 引用文件</ansibrightblack>"),
+        placeholder=HTML(
+            "<ansibrightblack>输入对话，/ 命令面板，@ 引用文件，Ctrl-B 侧栏</ansibrightblack>"
+        ),
         style=style,
     )
     clear()
-    _print_current_session(
+    _print_startup_layout(
         terminal_dir=terminal_dir,
         life_name=name,
+        layout_state=layout_state,
         print_formatted_text=print_formatted_text,
     )
     with patch_stdout(raw=True):
@@ -147,9 +207,13 @@ def run_prompt_toolkit_terminal_app(
             idle_thread.start()
         while True:
             try:
+                layout_state.terminal_width = max(
+                    56,
+                    min(112, shutil.get_terminal_size((layout_state.terminal_width, 28)).columns),
+                )
                 utterance = session.prompt(
                     _prompt_prefix(name),
-                    refresh_interval=1.0,
+                    refresh_interval=0.5,
                 )
             except (EOFError, KeyboardInterrupt):
                 stop_idle_thread.set()
@@ -302,16 +366,18 @@ class _TerminalCompleter:
             cursor_index=document.cursor_position,
             slash_commands=self.slash_commands,
             repo_root=self.repo_root,
+            limit=200,
         )
         if not isinstance(completion, TerminalCompletionState):
             return
         for item in completion.items:
             replacement = item.label if completion.trigger == "/" else "@" + item.label
+            display_meta = _completion_display_meta(item)
             yield Completion(
                 replacement,
                 start_position=completion.start_index - document.cursor_position,
                 display=item.label,
-                display_meta=item.detail,
+                display_meta=display_meta,
             )
 
     async def get_completions_async(self, document, complete_event):
@@ -362,62 +428,74 @@ def _open_completion_state_synchronously(buffer, *, completer) -> bool:
 
 
 def _session_experience_profile() -> dict[str, object]:
-    return {
-        "terminal_framework": "prompt_toolkit",
-        "mouse_support": True,
-        "enable_history_search": True,
-        "show_frame": True,
-        "complete_style": "MULTI_COLUMN",
-        "reserve_space_for_menu": 8,
-        "cursor_shape": "BLINKING_BEAM",
-        "input_box": "bottom_composer_with_prompt_prefix_and_right_cursor_index",
-    }
+    from .prompt_toolkit_split_terminal_app import split_terminal_experience_profile
+
+    return split_terminal_experience_profile()
+
+
+def _completion_display_meta(item) -> str:
+    group = str(getattr(item, "group", "") or "").strip()
+    detail = str(getattr(item, "detail", "") or "").strip()
+    if group and detail:
+        return f"{group}｜{detail}"
+    return detail or group
 
 
 def _prompt_prefix(life_name: str):
-    from prompt_toolkit.formatted_text import FormattedText
+    fragments = [
+        ("class:input-box", "╭─ "),
+        ("class:speaker", life_name),
+        ("class:input-box", "\n╰─› "),
+    ]
+    try:
+        from prompt_toolkit.formatted_text import FormattedText
 
-    return FormattedText(
-        [
-            ("class:input-box", "╭─ "),
-            ("class:speaker", life_name),
-            ("class:input-box", "\n╰─› "),
-        ]
-    )
+        return FormattedText(fragments)
+    except ImportError:
+        return fragments
 
 
 def _format_right_prompt(*, buffer=None):
-    from prompt_toolkit.formatted_text import FormattedText
-
     cursor_index = 0
     text_length = 0
     if buffer is not None:
         cursor_index = int(getattr(buffer, "cursor_position", 0) or 0)
         text_length = len(str(getattr(buffer, "text", "") or ""))
-    return FormattedText(
+    return _as_formatted_text(
         [
             ("class:cursor-index", f" pos {cursor_index}/{text_length} "),
         ]
     )
 
 
-def _print_current_session(
+def _print_startup_layout(
     *,
     terminal_dir: Path,
     life_name: str,
+    layout_state: TerminalLayoutState,
     print_formatted_text,
 ) -> None:
-    lines = load_current_terminal_session_lines(
-        terminal_dir=terminal_dir,
-        limit=max(40, shutil.get_terminal_size((100, 28)).lines - 6),
+    from prompt_toolkit.formatted_text import FormattedText
+
+    print_formatted_text(
+        FormattedText(
+            render_resume_startup_fragments(
+                terminal_dir=terminal_dir,
+                life_name=life_name,
+                width=layout_state.terminal_width,
+            )
+        )
     )
-    if not lines:
-        lines = [
-            life_name,
-            "/ 打开状态命令，/resume 查看历史，@ 引用项目文件。",
-        ]
-    for line in lines:
-        print_formatted_text(line)
+    print_formatted_text("")
+    print_formatted_text(
+        FormattedText(
+            render_session_history_fragments(
+                terminal_dir=terminal_dir,
+                life_name=life_name,
+                width=layout_state.terminal_width,
+            )
+        )
+    )
 
 
 def _append_and_print(
@@ -430,6 +508,13 @@ def _append_and_print(
     life_name: str,
     print_formatted_text,
 ) -> None:
+    from prompt_toolkit.formatted_text import FormattedText
+
+    release_badge = resolve_release_badge(
+        terminal_dir=terminal_dir,
+        speaker=speaker,
+        text=text,
+    )
     append_terminal_session_event(
         terminal_dir=terminal_dir,
         session_id=session_id,
@@ -437,91 +522,81 @@ def _append_and_print(
         speaker=speaker,
         text=text,
         life_name=life_name,
+        metadata={"release_badge": release_badge} if release_badge else None,
     )
-    prefix = _speaker_prefix(speaker, life_name)
-    for index, line in enumerate(str(text or "").splitlines() or [""]):
-        print_formatted_text((prefix if index == 0 else "  ") + line)
+    print_formatted_text(
+        FormattedText(
+            format_message_fragments(
+                MessageRenderSpec(
+                    speaker=speaker,
+                    text=text,
+                    life_name=life_name,
+                    release_badge=release_badge,
+                    event_kind=event_kind,
+                )
+            )
+        )
+    )
 
 
-def _speaker_prefix(speaker: str, life_name: str) -> str:
-    if speaker == "relation":
-        return "你: "
-    if speaker in {"life", "proactive"}:
-        return f"{life_name}: "
-    if speaker == "command":
-        return "command: "
-    if speaker == "command_result":
-        return "command result: "
-    return f"{speaker}: "
-
-
-def _bottom_toolbar(*, terminal_dir: Path, life_name: str):
-    from prompt_toolkit.formatted_text import FormattedText
-    from prompt_toolkit.application.current import get_app_or_none
-
-    del terminal_dir
-    app = get_app_or_none()
+def _bottom_toolbar(
+    *,
+    terminal_dir: Path,
+    life_name: str,
+    layout_state: TerminalLayoutState,
+    slash_commands: tuple[tuple[str, str], ...],
+    repo_root: Path,
+):
     buffer = None
-    if app is not None:
-        buffer = getattr(app, "current_buffer", None)
-    return _format_bottom_toolbar(life_name=life_name, buffer=buffer)
+    try:
+        from prompt_toolkit.application.current import get_app_or_none
 
-
-def _format_bottom_toolbar(*, life_name: str, buffer=None):
-    from prompt_toolkit.formatted_text import FormattedText
-
-    cursor_index = 0
-    text_length = 0
-    completion_hint = ""
-    if buffer is not None:
-        cursor_index = int(getattr(buffer, "cursor_position", 0) or 0)
-        text_length = len(str(getattr(buffer, "text", "") or ""))
-        if getattr(buffer, "complete_state", None):
-            completion_hint = "  ↑↓ 选择  Enter 确认"
-    return FormattedText(
-        [
-            ("class:status", f" {life_name} "),
-            ("class:input-box", " ┃ "),
-            (
-                "class:cursor-index",
-                f"pos {cursor_index}/{text_length}",
-            ),
-            (
-                "class:hint",
-                "  ←→ 编辑  ↑↓ 历史/补全  @ 文件  / 命令  Ctrl-Q 离开",
-            ),
-            ("class:hint", completion_hint),
-        ]
+        app = get_app_or_none()
+        if app is not None:
+            buffer = getattr(app, "current_buffer", None)
+    except ImportError:
+        buffer = None
+    return _as_formatted_text(
+        format_layout_toolbar_fragments(
+            life_name=life_name,
+            terminal_dir=terminal_dir,
+            layout_state=layout_state,
+            buffer=buffer,
+            slash_commands=slash_commands,
+            repo_root=repo_root,
+        )
     )
 
 
-def _compact_status(*, terminal_dir: Path) -> str:
-    state_root = terminal_dir.parent
-    parts: list[str] = []
-    probes = [
-        ("情绪", state_root / "body" / "core_affect_vector.json", "valence"),
-        ("意识", state_root / "consciousness" / "workspace_frame.json", "status"),
-        ("关系", state_root / "relationship" / "relationship_timeline.json", "status"),
-        ("记忆", state_root / "memory" / "memory_retrieval_frame.json", "status"),
-        ("梦境", state_root / "dream" / "web_dream_learning_state.json", "status"),
-    ]
-    for label, path, key in probes:
-        value = _json_value(path, key)
-        if value:
-            parts.append(f"{label}:{value[:14]}")
-    return "  ".join(parts)
+def _format_bottom_toolbar(*, life_name: str, buffer=None, **kwargs):
+    terminal_dir = kwargs.get("terminal_dir")
+    layout_state = kwargs.get("layout_state") or resolve_terminal_layout_state()
+    slash_commands = kwargs.get("slash_commands") or ()
+    repo_root = kwargs.get("repo_root") or Path.cwd()
+    if terminal_dir is None:
+        return _as_formatted_text(
+            [
+                ("class:status", f" {life_name} "),
+                ("class:input-box", " ┃ "),
+                ("class:cursor-index", "pos 0/0"),
+            ]
+        )
+    return _as_formatted_text(
+        format_layout_toolbar_fragments(
+            life_name=life_name,
+            terminal_dir=terminal_dir,
+            layout_state=layout_state,
+            buffer=buffer,
+            slash_commands=slash_commands,
+            repo_root=repo_root,
+        )
+    )
 
 
-def _json_value(path: Path, key: str) -> str:
-    import json
-
+def _as_formatted_text(fragments: list[tuple[str, str]]):
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return ""
-    if not isinstance(payload, dict):
-        return ""
-    value = payload.get(key)
-    if value in (None, ""):
-        return ""
-    return str(value)
+        from prompt_toolkit.formatted_text import FormattedText
+
+        return FormattedText(fragments)
+    except ImportError:
+        return fragments

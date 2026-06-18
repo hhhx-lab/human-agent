@@ -4,6 +4,7 @@ import hashlib
 from typing import Any
 
 LANGUAGE_PERCEPT_REF = "runtime/state/language/language_percept_frame.json"
+VISUAL_OBSERVATION_REF = "runtime/state/observation/visual_observation.json"
 WORLD_CONTACT_SUMMARY_REF = "runtime/state/membrane/world_contact_summary.json"
 RESPONSIBILITY_LOOP_STATE_REF = "runtime/state/action/responsibility_loop_state.json"
 WORLD_OBSERVATION_ROUTE_REF = "runtime/state/observation/world_observation_route.json"
@@ -27,6 +28,7 @@ def collect_cross_modal_source_evidence(
     signal_media_runtime: dict[str, Any] | None = None,
     world_observation_route: dict[str, Any] | None = None,
     periphery_normalization_trace: dict[str, Any] | None = None,
+    visual_observation: dict[str, Any] | None = None,
     action_outcome_refs: list[str] | None = None,
     percept_frame_present: bool = False,
     world_contact_present: bool = False,
@@ -80,6 +82,17 @@ def collect_cross_modal_source_evidence(
         evidence_modalities.append("visual_percept")
         cross_modal_refs.extend(observation_refs)
 
+    visual = visual_observation or {}
+    if visual:
+        cross_modal_refs.append(VISUAL_OBSERVATION_REF)
+        if visual.get("encoder_available"):
+            evidence_modalities.append("visual_percept")
+            embedding_ref = visual.get("visual_embedding_ref")
+            if embedding_ref:
+                cross_modal_refs.append(str(embedding_ref))
+        elif visual.get("status") == "degraded":
+            cross_modal_refs.append(f"{VISUAL_OBSERVATION_REF}#degraded")
+
     periphery = periphery_normalization_trace or {}
     promoted = _string_list(periphery.get("promoted_channels"))
     visual_channels = [channel for channel in promoted if "visual" in channel.lower()]
@@ -105,6 +118,7 @@ def collect_cross_modal_source_evidence(
         world_observation_route=world_observation_route,
         periphery_normalization_trace=periphery_normalization_trace,
         responsibility_loop_state=responsibility_loop_state,
+        visual_observation=visual_observation,
         evidence_modalities=evidence_modalities,
         cross_modal_evidence_refs=cross_modal_refs,
     )
@@ -133,6 +147,7 @@ def build_cross_modal_feature_bundle(
     world_observation_route: dict[str, Any] | None = None,
     periphery_normalization_trace: dict[str, Any] | None = None,
     responsibility_loop_state: dict[str, Any] | None = None,
+    visual_observation: dict[str, Any] | None = None,
     evidence_modalities: list[str] | None = None,
     cross_modal_evidence_refs: list[str] | None = None,
 ) -> dict[str, Any]:
@@ -161,19 +176,26 @@ def build_cross_modal_feature_bundle(
         visual_channels = [
             channel for channel in promoted_channels if "visual" in channel.lower()
         ]
+        visual = visual_observation or {}
+        visual_encoding = visual.get("visual_feature_encoding") or {
+            "encoding_kind": "scene_layout_and_channel_fingerprint",
+            "layout_fingerprint": _feature_hash("|".join(scene_refs)),
+            "channel_fingerprint": _feature_hash("|".join(visual_channels)),
+            "scene_layout_dims": len(scene_refs),
+            "promoted_visual_channel_count": len(visual_channels),
+        }
         modality_features.append(
             {
                 "modality": "visual_percept",
                 "feature_kind": "scene_and_channel_encoding",
-                "feature_vector": _feature_hash(scene_refs + promoted_channels),
+                "feature_vector": _feature_hash(
+                    scene_refs
+                    + promoted_channels
+                    + _string_list([visual.get("visual_embedding_ref")])
+                ),
                 "scene_ref_count": len(scene_refs),
-                "visual_feature_encoding": {
-                    "encoding_kind": "scene_layout_and_channel_fingerprint",
-                    "layout_fingerprint": _feature_hash("|".join(scene_refs)),
-                    "channel_fingerprint": _feature_hash("|".join(visual_channels)),
-                    "scene_layout_dims": len(scene_refs),
-                    "promoted_visual_channel_count": len(visual_channels),
-                },
+                "visual_feature_encoding": visual_encoding,
+                "visual_observation_status": visual.get("status"),
             }
         )
     if "world_contact" in (evidence_modalities or []):

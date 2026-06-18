@@ -5,7 +5,13 @@ import json
 from pathlib import Path
 from typing import Any, Callable
 
-from ..language.expression_monitor import apply_body_proactive_release_threshold
+from ..language.expression_monitor import (
+    BODY_INTEGRATOR_STATE_REF,
+    NETWORK_STATE_REF,
+    apply_body_proactive_release_threshold,
+    compute_proactive_drive_scalar,
+    is_expression_slots_enabled,
+)
 
 
 PROACTIVE_TERMINAL_EVENTS_REF = (
@@ -41,6 +47,10 @@ def build_resident_proactive_terminal_event(
     idle_strategy = _read_json(terminal_dir / "idle_strategy_state.json")
     governance = _read_json(terminal_dir / "resident_governance_state.json")
     expression_plan = _read_json(state_root / "language" / "expression_plan.json")
+    body_integrator = _read_json(state_root / "body" / "body_integrator_state.json")
+    network_state = _read_json(
+        state_root / "neural_life_core" / "network_state.json"
+    )
 
     memory_profile = _memory_profile(
         relationship_memory=relationship_memory,
@@ -99,6 +109,25 @@ def build_resident_proactive_terminal_event(
     proactive_voice_profile["proactive_intent_kind"] = proactive_voice_profile.get(
         "surface_kind"
     )
+    if is_expression_slots_enabled():
+        proactive_drive = compute_proactive_drive_scalar(
+            body_integrator=body_integrator,
+            network_state=network_state,
+            expression_plan=expression_plan,
+        )
+        proactive_voice_profile["proactive_drive_scalar"] = proactive_drive
+        proactive_voice_profile["body_integrator_ref"] = BODY_INTEGRATOR_STATE_REF
+        proactive_voice_profile["network_state_ref"] = NETWORK_STATE_REF
+        dominant_network = str(network_state.get("dominant_network") or "")
+        proactive_voice_profile["dominant_network_id"] = dominant_network or None
+        dmn_active = any(
+            isinstance(item, dict)
+            and item.get("network_id") == "default_mode_network"
+            for item in network_state.get("active_networks", [])
+        )
+        proactive_voice_profile["dmn_network_active"] = dmn_active
+        expression_plan = dict(expression_plan)
+        expression_plan["proactive_drive_scalar"] = proactive_drive
     body_modulated_plan = apply_body_proactive_release_threshold(
         expression_plan=expression_plan,
         proactive_voice_profile=proactive_voice_profile,
@@ -121,6 +150,9 @@ def build_resident_proactive_terminal_event(
         "proactive_voice_profile": proactive_voice_profile,
         "proactive_release_threshold": body_modulated_plan.get(
             "proactive_release_threshold"
+        ),
+        "proactive_drive_scalar": proactive_voice_profile.get(
+            "proactive_drive_scalar"
         ),
         "memory_tier_profile": memory_tier_profile,
         "composition_fingerprint": fingerprint,

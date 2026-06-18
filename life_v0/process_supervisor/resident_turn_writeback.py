@@ -37,7 +37,10 @@ from ..neural_core.multiscale_region_graph import (
 from ..neural_core.broadcast import project_broadcast_frame_from_live_turn
 from ..neural_core.metacognition import project_metacognition_state_from_live_turn
 from ..neural_core.network_state import project_network_state_from_live_turn
-from ..neural_core.workspace import project_workspace_frame_from_live_turn
+from ..neural_core.workspace import (
+    maybe_apply_workspace_topk_to_frame,
+    project_workspace_frame_from_live_turn,
+)
 from ..language.apology_repair_language import build_apology_repair_language_trace
 from ..language.commitment_expression import build_commitment_expression_plan
 from ..language.expression_monitor import (
@@ -80,6 +83,7 @@ from ..state_store.memory_allocation_gate import build_memory_allocation_gate
 from ..state_store.memory_encoding_gate import build_memory_encoding_gate
 from ..state_store.memory_retrieval import (
     MEMORY_RETRIEVAL_FRAME_REF,
+    maybe_apply_retrieval_salience_tick,
     memory_retrieval_context_summary,
     project_memory_retrieval_from_live_turn,
 )
@@ -2125,6 +2129,16 @@ def _refresh_long_horizon_continuity(
         live_language_turn_refs=live_language_turn_refs,
         live_turn_focus=live_turn_focus,
     )
+    updated_workspace_frame = maybe_apply_workspace_topk_to_frame(
+        updated_workspace_frame,
+        body_integrator=_read_json_if_exists(state_dir / "body" / "body_integrator_state.json"),
+        signal_media_runtime=signal_media_runtime,
+        memory_retrieval_frame=memory_retrieval_frame,
+        prediction_error_field=_read_json_if_exists(
+            state_dir / "prediction" / "prediction_error_field.json"
+        ),
+        live_turn_focus=live_turn_focus,
+    )
     updated_broadcast_frame = project_broadcast_frame_from_live_turn(
         broadcast_frame=_read_json_if_exists(state_dir / "consciousness" / "broadcast_frame.json"),
         generated_at=generated_at,
@@ -3288,6 +3302,9 @@ def _refresh_live_memory_projection(
             periphery_normalization_trace=_read_json_if_exists(
                 state_dir / "observation" / "periphery_normalization_trace.json"
             ),
+            visual_observation=_read_json_if_exists(
+                state_dir / "observation" / "visual_observation.json"
+            ),
             percept_frame_present=bool(
                 _read_json_if_exists(language_dir / "language_percept_frame.json")
             ),
@@ -3295,7 +3312,8 @@ def _refresh_live_memory_projection(
                 _read_json_if_exists(state_dir / "membrane" / "world_contact_summary.json")
             ),
             visual_percept_present=bool(
-                _read_json_if_exists(state_dir / "observation" / "world_observation_route.json")
+                _read_json_if_exists(state_dir / "observation" / "visual_observation.json")
+                or _read_json_if_exists(state_dir / "observation" / "world_observation_route.json")
                 or _read_json_if_exists(
                     state_dir / "observation" / "periphery_normalization_trace.json"
                 )
@@ -3496,6 +3514,20 @@ def _refresh_live_memory_projection(
             language_dir / "repair_closeout_state.json"
         ),
     )
+    salience_tick = maybe_apply_retrieval_salience_tick(
+        memory_trace_store=memory_trace_store,
+        memory_retrieval_frame=memory_retrieval_frame,
+        hippocampal_cue_index=hippocampal_cue_index,
+        run_id=run_id,
+        generated_at=generated_at,
+        turn_counter=len(dialogue_turn_refs) if dialogue_turn_refs else None,
+        relationship_memory=relationship_memory_for_projection,
+        body_integrator=_read_json_if_exists(state_dir / "body" / "body_integrator_state.json"),
+    )
+    if salience_tick.applied:
+        memory_trace_store = salience_tick.memory_trace_store
+        hippocampal_cue_index = salience_tick.hippocampal_cue_index
+        memory_retrieval_frame = salience_tick.memory_retrieval_frame
     projection_objects = [
         event_segmentation_frame,
         memory_encoding_gate,

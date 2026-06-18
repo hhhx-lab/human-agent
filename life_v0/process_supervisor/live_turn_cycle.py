@@ -29,7 +29,11 @@ from .expression_release_invariant import (
 from .pre_expression_consciousness_refresh import refresh_pre_expression_consciousness
 from .model_expression import ModelExpressionResult, compose_model_expression
 from .response_surface import compose_life_response, compose_life_spoken_response
-from ..language.expression_monitor import apply_world_contact_handoff_modulation
+from ..language.expression_monitor import (
+    apply_world_contact_handoff_modulation,
+    maybe_append_episodic_speech_ref,
+    maybe_apply_expression_slots_to_plan,
+)
 from ..language.memory_recall_enrichment import (
     enrich_semantic_map_with_memory_recall,
     project_expression_plan_with_memory_grounding,
@@ -41,10 +45,16 @@ from ..language.offline_influence import (
 from ..neural_core.prediction_workspace import (
     project_prediction_workspace_from_live_language_turn,
 )
-from ..state_store.memory_retrieval import project_memory_retrieval_from_live_turn
+from ..state_store.memory_retrieval import (
+    maybe_run_memory_salience_tick_hook,
+    project_memory_retrieval_from_live_turn,
+)
 from ..state_store.memory_write_gate import (
     project_memory_write_gate_with_signal_body,
 )
+from ..body.body_integrator import maybe_run_body_integrate_hook
+from ..neural_core.live_prediction_refresh import maybe_run_prediction_refresh_hook
+from ..perception.live_visual_hook import maybe_run_visual_encoder_hook
 
 
 @dataclass(frozen=True)
@@ -135,6 +145,40 @@ def run_live_turn_cycle(
     recover_from_dialogue_turn_exception_fn: Callable[..., Any] = recover_from_dialogue_turn_exception,
 ) -> LiveTurnCycleResult:
     turn_counter += 1
+    state_dir = terminal_dir.parent
+    body_dir = state_dir / "body"
+    integrate_at = now_iso()
+    integrate_result = maybe_run_body_integrate_hook(
+        body_dir=body_dir,
+        run_id=run_id,
+        generated_at=integrate_at,
+        mode="foreground",
+        write_json=write_json,
+        life_state=_read_json_if_exists(state_dir / "life_state.json", {}),
+        core_affect_vector=core_affect_vector,
+        need_state_vector=_read_json_if_exists(body_dir / "need_state_vector.json", {}),
+        body_rhythm_pulse=_read_json_if_exists(body_dir / "body_rhythm_pulse.json", {}),
+        dialogue_turn=bool(str(external_utterance or "").strip()),
+        fatigue_level=((body_resource_budget or {}).get("fatigue_state") or {}).get("level"),
+    )
+    if integrate_result.applied:
+        core_affect_vector = integrate_result.core_affect_vector
+        body_resource_budget = body_resource_budget or {}
+        body_resource_budget = {
+            **body_resource_budget,
+            "generated_at": integrate_at,
+            "body_integrator_ref": integrate_result.integrator.get("integrator_id"),
+        }
+
+    observation_dir = state_dir / "observation"
+    _ = maybe_run_visual_encoder_hook(
+        observation_dir=observation_dir,
+        run_id=run_id,
+        generated_at=integrate_at,
+        external_utterance=external_utterance,
+        write_json=write_json,
+    )
+
     if memory_write_gate:
         memory_write_gate = project_memory_write_gate_with_signal_body(
             memory_write_gate=memory_write_gate,
@@ -157,7 +201,6 @@ def run_live_turn_cycle(
 
     try:
         generated_at = now_iso()
-        state_dir = terminal_dir.parent
         live_language_turn = refresh_live_language_turn_fn(
             run_id=run_id,
             generated_at=generated_at,
@@ -326,6 +369,63 @@ def run_live_turn_cycle(
             memory_retrieval_frame,
         )
 
+        memory_salience_tick = maybe_run_memory_salience_tick_hook(
+            memory_dir=state_dir / "memory",
+            memory_retrieval_frame=memory_retrieval_frame,
+            run_id=run_id,
+            generated_at=generated_at,
+            turn_counter=turn_counter,
+            relationship_memory=relationship_memory,
+            body_integrator=_read_json_if_exists(
+                state_dir / "body" / "body_integrator_state.json",
+                {},
+            ),
+            write_json=write_json,
+        )
+        if memory_salience_tick.applied:
+            memory_retrieval_frame = memory_salience_tick.memory_retrieval_frame
+
+        prediction_refresh = maybe_run_prediction_refresh_hook(
+            state_dir=state_dir,
+            run_id=run_id,
+            generated_at=generated_at,
+            turn_counter=turn_counter,
+            signal_media_runtime=signal_media_runtime,
+            belief_state=belief_state,
+            prediction_error_field=prediction_error_field,
+            active_sampling_plan=active_sampling_plan,
+            language_percept=live_language_turn.language_percept,
+            semantic_map=enriched_semantic_map,
+            core_affect_vector=core_affect_vector,
+            body_resource_budget=body_resource_budget,
+            network_state=network_state,
+            offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+            write_json=write_json,
+        )
+        if prediction_refresh.applied:
+            signal_media_runtime = prediction_refresh.signal_media_runtime
+            belief_state = prediction_refresh.belief_state
+            prediction_error_field = prediction_refresh.prediction_error_field
+            active_sampling_plan = prediction_refresh.active_sampling_plan
+            if memory_write_gate:
+                memory_write_gate = project_memory_write_gate_with_signal_body(
+                    memory_write_gate=memory_write_gate,
+                    signal_media_runtime=signal_media_runtime,
+                    body_resource_budget=body_resource_budget,
+                    core_affect_vector=core_affect_vector,
+                    offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+                )
+            prediction_workspace = project_prediction_workspace_from_live_language_turn(
+                prediction_workspace_frame=prediction_workspace,
+                language_percept=live_language_turn.language_percept,
+                semantic_map=enriched_semantic_map,
+                generated_at=generated_at,
+            )
+            write_json(
+                state_dir / "prediction" / "prediction_workspace_frame.json",
+                prediction_workspace,
+            )
+
         attach_memory_retrieval_event_payload(
             external_turn,
             memory_retrieval_frame=memory_retrieval_frame,
@@ -370,6 +470,18 @@ def run_live_turn_cycle(
         workspace_frame = consciousness_refresh.workspace_frame
         broadcast_frame = consciousness_refresh.broadcast_frame
         metacognition_state = consciousness_refresh.metacognition_state
+        body_integrator = _read_json_if_exists(
+            state_dir / "body" / "body_integrator_state.json",
+            {},
+        )
+        enriched_expression_plan = maybe_apply_expression_slots_to_plan(
+            expression_plan=enriched_expression_plan,
+            workspace_frame=workspace_frame,
+            broadcast_frame=broadcast_frame,
+            body_integrator=body_integrator,
+            network_state=network_state,
+        )
+        write_json(language_dir / "expression_plan.json", enriched_expression_plan)
         autobiographical_stack = _read_json_if_exists(
             state_dir / "self" / "autobiographical_stack.json",
             {},
@@ -499,6 +611,18 @@ def run_live_turn_cycle(
                         "audited_expression_material_release_disabled": True,
                         "natural_language_unreleased": not model_expression.applied,
                     },
+                )
+            if (
+                model_expression.state.get("post_expression_gate_status") == "accepted"
+            ):
+                maybe_append_episodic_speech_ref(
+                    language_dir=language_dir,
+                    utterance_ref=(
+                        f"runtime/state/language/dialogue_turn_log.jsonl#{life_turn_id}"
+                    ),
+                    expression_plan=enriched_expression_plan,
+                    gate_status="accepted",
+                    generated_at=now_iso(),
                 )
         life_turn = build_life_turn_event_fn(
             turn_id=life_turn_id,

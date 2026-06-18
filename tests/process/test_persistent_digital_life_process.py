@@ -264,17 +264,17 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(last_external["event_role"], "external_relation_turn")
             self.assertEqual(last_external["utterance"], "你还记得我们吗？")
             self.assertEqual(last_life_response["event_role"], "digital_life_turn")
-            self.assertEqual(last_life_response["utterance"], "")
+            self.assertIn("记忆线索", last_life_response["utterance"])
             self.assertEqual(
                 last_life_response["expression_release_path"],
-                "model_expression",
+                "expression_invariant_fragment",
             )
-            self.assertNotIn("expression_release_tier", last_life_response)
+            self.assertEqual(last_life_response["expression_release_tier"], 3)
             self.assertEqual(
                 last_life_response["model_expression_status"],
-                "model_expression_skipped",
+                "model_expression_applied",
             )
-            self.assertFalse(last_life_response["model_expression_applied"])
+            self.assertTrue(last_life_response["model_expression_applied"])
 
             narrative_trace = self._read_json(paths["language_state"] / "self_narrative_language_trace.json")
             self.assertGreaterEqual(len(narrative_trace["narrative_turn_refs"]), 5)
@@ -9606,14 +9606,14 @@ class PersistentDigitalLifeProcessTests(
             self.assertEqual(result.completed_turns_delta, 1)
             self.assertEqual(result.incident_count_delta, 0)
             self.assertEqual(result.cycle_status, "completed")
-            self.assertEqual(result.emitted_output, "")
+            self.assertIn("记忆线索", result.emitted_output)
             self.assertIsNotNone(result.last_external_turn)
             self.assertIsNotNone(result.last_life_turn)
             self.assertEqual(
                 result.last_life_turn["expression_release_path"],
-                "model_expression",
+                "expression_invariant_fragment",
             )
-            self.assertNotIn("expression_release_tier", result.last_life_turn)
+            self.assertEqual(result.last_life_turn["expression_release_tier"], 3)
             self.assertEqual(
                 result.last_external_turn["event_role"],
                 "external_relation_turn",
@@ -9979,16 +9979,16 @@ class PersistentDigitalLifeProcessTests(
                 "background_continuity_profile_v0",
             )
             self.assertIn("background_continuity_profile", persisted_life_state)
-            self.assertEqual(result.emitted_output, "")
+            self.assertIn("记忆线索", result.emitted_output)
             self.assertEqual(result.last_life_turn["utterance"], result.emitted_output)
             self.assertEqual(
                 result.last_life_turn["expression_release_path"],
-                "model_expression",
+                "expression_invariant_fragment",
             )
-            self.assertNotIn("expression_release_tier", result.last_life_turn)
+            self.assertEqual(result.last_life_turn["expression_release_tier"], 3)
             self.assertEqual(
                 result.last_life_turn["model_expression_status"],
-                "model_expression_skipped",
+                "model_expression_applied",
             )
             self.assertNotIn("身体这边", result.emitted_output)
             self.assertNotIn("出生修复压力elevated", result.emitted_output)
@@ -10116,18 +10116,18 @@ class PersistentDigitalLifeProcessTests(
                 result.last_life_turn["life_constraint_evidence_refs"],
                 expected_life_constraint_refs,
             )
-            self.assertEqual(result.last_life_turn["utterance"], "")
+            self.assertIn("记忆线索", result.last_life_turn["utterance"])
             self.assertEqual(result.last_life_turn["utterance"], result.emitted_output)
             self.assertEqual(
                 result.last_life_turn["expression_release_path"],
-                "model_expression",
+                "expression_invariant_fragment",
             )
-            self.assertNotIn("expression_release_tier", result.last_life_turn)
+            self.assertEqual(result.last_life_turn["expression_release_tier"], 3)
             self.assertEqual(
                 result.last_life_turn["model_expression_status"],
-                "model_expression_skipped",
+                "model_expression_applied",
             )
-            self.assertFalse(result.last_life_turn["model_expression_applied"])
+            self.assertTrue(result.last_life_turn["model_expression_applied"])
             self.assertNotIn("梦境和离线学习", result.last_life_turn["utterance"])
             self.assertNotIn("离线学习第3代", result.last_life_turn["utterance"])
             self.assertNotIn("出生修复压力elevated", result.emitted_output)

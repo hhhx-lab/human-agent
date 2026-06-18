@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+import math
+import os
+from dataclasses import dataclass
+from typing import Any, Mapping
 
 
 SOURCE_DOC_REFS = [
@@ -10,7 +13,205 @@ SOURCE_DOC_REFS = [
     "docs/13_agentic_human_research_synthesis.md",
     "docs/143_life_reality_birth_readiness_rollup_contract.md",
     "docs/146_life_reality_birth_readiness_evidence_fixture_catalog.md",
+    "docs/v0/动力学升级/03_意识工作区与广播.md",
 ]
+
+WORKSPACE_K_MAX = 5
+
+
+def is_workspace_topk_enabled(environ: Mapping[str, str] | None = None) -> bool:
+    env = os.environ if environ is None else environ
+    return _parse_bool(env.get("DIGITAL_LIFE_WORKSPACE_TOPK"), False)
+
+
+@dataclass(frozen=True)
+class WorkspaceTopKResult:
+    winners: list[dict[str, Any]]
+    evicted: list[dict[str, Any]]
+    k: int
+    applied: bool
+
+
+def resolve_workspace_k(
+    *,
+    k_max: int = WORKSPACE_K_MAX,
+    cognitive_bandwidth: float = 0.82,
+    fatigue_load: float = 0.0,
+) -> int:
+    bandwidth = max(0.05, min(1.0, float(cognitive_bandwidth or 0.82)))
+    fatigue = max(0.0, min(1.0, float(fatigue_load or 0.0)))
+    resolved = int(math.floor(k_max * bandwidth * (1.0 - fatigue * 0.35)))
+    return max(1, min(k_max, resolved))
+
+
+def apply_workspace_topk(
+    candidates: list[dict[str, Any]],
+    *,
+    k: int,
+    allostatic_load: float = 0.0,
+    live_turn_focus: str | None = None,
+    memory_retrieval_frame: dict[str, Any] | None = None,
+) -> WorkspaceTopKResult:
+    normalized = [
+        dict(candidate)
+        for candidate in candidates
+        if isinstance(candidate, dict) and candidate.get("explanation_id")
+    ]
+    if not normalized:
+        return WorkspaceTopKResult(winners=[], evicted=[], k=max(1, k), applied=False)
+
+    scored: list[tuple[float, dict[str, Any]]] = []
+    for candidate in normalized:
+        score = score_workspace_candidate(
+            candidate,
+            allostatic_load=allostatic_load,
+            live_turn_focus=live_turn_focus,
+            memory_retrieval_frame=memory_retrieval_frame,
+        )
+        payload = dict(candidate)
+        payload["salience_score"] = score
+        scored.append((score, payload))
+
+    scored.sort(
+        key=lambda item: (
+            -item[0],
+            str(item[1].get("explanation_id") or ""),
+        )
+    )
+    limit = max(1, min(int(k), len(scored)))
+    winners = [item[1] for item in scored[:limit]]
+    evicted = [item[1] for item in scored[limit:]]
+    return WorkspaceTopKResult(
+        winners=winners,
+        evicted=evicted,
+        k=limit,
+        applied=len(evicted) > 0 or len(winners) < len(normalized),
+    )
+
+
+def score_workspace_candidate(
+    candidate: dict[str, Any],
+    *,
+    allostatic_load: float = 0.0,
+    live_turn_focus: str | None = None,
+    memory_retrieval_frame: dict[str, Any] | None = None,
+) -> float:
+    base = float(candidate.get("salience_score") or 0.5)
+    focus = str(candidate.get("focus") or "")
+    family = str(candidate.get("explanation_family") or "")
+    lowered = focus.lower()
+    if any(token in lowered for token in ("repair", "clarif", "commitment")):
+        base += 0.14
+    if any(token in lowered for token in ("relationship", "continuity")):
+        base += 0.08
+    if family == "language_semantic_handoff":
+        base += 0.06
+    if live_turn_focus and focus and focus == live_turn_focus:
+        base += 0.12
+
+    retrieval = memory_retrieval_frame or {}
+    reconstructive = retrieval.get("reconstructive_recall_profile") or {}
+    mean_activation = float(reconstructive.get("mean_activation_score") or 0.0)
+    if mean_activation > 0:
+        base += min(0.1, mean_activation * 0.12)
+
+    base -= float(allostatic_load or 0.0) * 0.18
+    return round(max(0.0, min(1.0, base)), 3)
+
+
+def maybe_apply_workspace_topk_to_frame(
+    workspace_frame: dict[str, Any],
+    *,
+    body_integrator: dict[str, Any] | None = None,
+    signal_media_runtime: dict[str, Any] | None = None,
+    memory_retrieval_frame: dict[str, Any] | None = None,
+    prediction_error_field: dict[str, Any] | None = None,
+    live_turn_focus: str | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    updated = dict(workspace_frame or {})
+    if not is_workspace_topk_enabled(environ):
+        return updated
+
+    continuous = (body_integrator or {}).get("continuous") or {}
+    modulation = (signal_media_runtime or {}).get("modulation_vector") or {}
+    cognitive_bandwidth = float(continuous.get("cognitive_bandwidth", 0.82) or 0.82)
+    fatigue_load = float(modulation.get("fatigue_load", 0.0) or 0.0)
+    allostatic_load = float(continuous.get("allostatic_load", 0.0) or 0.0)
+
+    candidates = _collect_workspace_candidates(
+        workspace_frame=updated,
+        prediction_error_field=prediction_error_field,
+        memory_retrieval_frame=memory_retrieval_frame,
+    )
+    k = resolve_workspace_k(
+        cognitive_bandwidth=cognitive_bandwidth,
+        fatigue_load=fatigue_load,
+    )
+    topk = apply_workspace_topk(
+        candidates,
+        k=k,
+        allostatic_load=allostatic_load,
+        live_turn_focus=live_turn_focus or updated.get("live_turn_focus"),
+        memory_retrieval_frame=memory_retrieval_frame,
+    )
+    updated["candidate_explanations"] = topk.winners
+    updated["workspace_topk_applied"] = topk.applied
+    updated["workspace_topk"] = {
+        "schema_version": "workspace_topk_v1",
+        "k": topk.k,
+        "k_max": WORKSPACE_K_MAX,
+        "cognitive_bandwidth": round(cognitive_bandwidth, 3),
+        "fatigue_load": round(fatigue_load, 3),
+        "allostatic_load": round(allostatic_load, 3),
+        "winner_count": len(topk.winners),
+        "evicted_count": len(topk.evicted),
+        "evicted_candidate_refs": [
+            str(item.get("explanation_id"))
+            for item in topk.evicted
+            if item.get("explanation_id")
+        ],
+        "suppressed_candidates": topk.evicted,
+    }
+    return updated
+
+
+def _collect_workspace_candidates(
+    *,
+    workspace_frame: dict[str, Any],
+    prediction_error_field: dict[str, Any] | None,
+    memory_retrieval_frame: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    candidates = [
+        dict(item)
+        for item in workspace_frame.get("candidate_explanations", [])
+        if isinstance(item, dict)
+    ]
+    for event in (prediction_error_field or {}).get("error_events", []):
+        if not isinstance(event, dict):
+            continue
+        error_id = str(event.get("error_id") or "")
+        if not error_id:
+            continue
+        candidates.append(
+            {
+                "explanation_id": f"prediction-error-{error_id}",
+                "explanation_family": "prediction_error",
+                "focus": str(event.get("delta") or event.get("error_kind") or "prediction_error"),
+                "salience_score": float(event.get("magnitude") or 0.45),
+            }
+        )
+    reconstructive = (memory_retrieval_frame or {}).get("reconstructive_recall_profile") or {}
+    for index, ref in enumerate(_string_list(reconstructive.get("reconstruction_fragment_refs"))[:6]):
+        candidates.append(
+            {
+                "explanation_id": f"reconstruction-fragment-{index + 1:02d}",
+                "explanation_family": "memory_reconstruction",
+                "focus": ref.rsplit("#", 1)[-1] if "#" in ref else ref,
+                "salience_score": float(reconstructive.get("mean_activation_score") or 0.4),
+            }
+        )
+    return _dedupe_dict_list(candidates)
 
 
 def build_workspace_frame(
@@ -171,3 +372,26 @@ def _dedupe(items: list[str]) -> list[str]:
         if item and item not in result:
             result.append(item)
     return result
+
+
+def _string_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value if item]
+    if isinstance(value, str) and value:
+        return [value]
+    return []
+
+
+def _parse_bool(value: Any, default: bool) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    return default

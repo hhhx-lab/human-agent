@@ -46,9 +46,14 @@ from life_v0.growth.language_learning import (
     build_language_learning_plan,
     check_language_learning_plan,
 )
+from life_v0.dynamics.parameter_registry import build_parameter_registry_snapshot
 from life_v0.growth.patch_queue import (
+    INTEGRATOR_PARAMETER_PATCH_FAMILY,
     build_growth_patch_candidate_queue as _build_growth_patch_candidate_queue_from_module,
     build_growth_patch_queue as _build_growth_patch_queue_from_module,
+    is_integrator_parameter_patch_enabled,
+    maybe_append_integrator_parameter_patch_candidate,
+    maybe_extend_growth_patch_queue_with_integrator_family,
 )
 from life_v0.growth.plasticity_window import (
     SOURCE_DOC_REFS as PLASTICITY_SOURCE_DOC_REFS,
@@ -291,6 +296,7 @@ def _build_self_read_report(
     replay_cue_bundle: dict[str, Any],
     growth_route: dict[str, Any],
     learning_window: dict[str, Any],
+    body_integrator: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     report = _build_self_read_report_from_module(
         run_id=run_id,
@@ -299,6 +305,7 @@ def _build_self_read_report(
         replay_cue_bundle=replay_cue_bundle,
         growth_route=growth_route,
         learning_window=learning_window,
+        body_integrator=body_integrator,
     )
     report["source_doc_refs"] = sorted(set(report.get("source_doc_refs", []) + SOURCE_DOC_REFS + REPLAY_SOURCE_DOC_REFS))
     return report
@@ -537,6 +544,9 @@ def run_cycle(
             offline_consolidation_frame=offline_consolidation,
             memory_allocation_gate=memory_allocation_gate,
             memory_longitudinal_profile=memory_longitudinal_profile,
+            body_integrator=_load_json_optional(
+                state_dir / "body" / "body_integrator_state.json"
+            ),
         )
         memory_trace_store = consolidation_result["memory_trace_store"]
         life_schema_map = consolidation_result["life_schema_map"]
@@ -627,6 +637,7 @@ def run_cycle(
         else {},
         replay_cue_bundle=replay_cue_bundle,
     )
+    body_integrator = _load_json_optional(state_dir / "body" / "body_integrator_state.json")
     self_read_report = _build_self_read_report(
         run_id=run_id,
         generated_at=generated_at,
@@ -634,6 +645,7 @@ def run_cycle(
         replay_cue_bundle=replay_cue_bundle,
         growth_route=growth_route,
         learning_window=learning_window,
+        body_integrator=body_integrator,
     )
     anti_forgetting_replay_plan = _build_anti_forgetting_replay_plan(
         run_id=run_id,
@@ -687,6 +699,18 @@ def run_cycle(
         anti_forgetting_replay_plan=anti_forgetting_replay_plan,
         self_read_report=self_read_report,
     )
+    if is_integrator_parameter_patch_enabled():
+        growth_patch_queue = maybe_extend_growth_patch_queue_with_integrator_family(
+            growth_patch_queue
+        )
+        growth_patch_candidate_queue = maybe_append_integrator_parameter_patch_candidate(
+            candidate_queue=growth_patch_candidate_queue,
+            body_integrator=body_integrator,
+            self_read_report=self_read_report,
+            replay_cue_bundle=replay_cue_bundle,
+            run_id=run_id,
+            generated_at=generated_at,
+        )
     blocked_reasons.extend(check_offline_entry_gate(offline_entry))
     blocked_reasons.extend(check_dream_experience_window(dream_window))
     blocked_reasons.extend(check_wake_integration_frame(wake_integration))
@@ -857,6 +881,38 @@ def run_cycle(
         _write_json(growth_dir / "self_read_report.json", self_read_report)
         _write_json(growth_dir / "growth_patch_queue.json", growth_patch_queue)
         _write_json(growth_dir / "growth_patch_candidate_queue.json", growth_patch_candidate_queue)
+        if is_integrator_parameter_patch_enabled():
+            _write_json(
+                growth_dir / "dynamics_parameter_registry.json",
+                build_parameter_registry_snapshot(
+                    run_id=run_id,
+                    generated_at=generated_at,
+                    body_integrator=body_integrator,
+                ),
+            )
+            for candidate in growth_patch_candidate_queue.get("candidates", []):
+                if (
+                    isinstance(candidate, dict)
+                    and candidate.get("patch_kind") == INTEGRATOR_PARAMETER_PATCH_FAMILY
+                ):
+                    _write_json(
+                        growth_dir / "integrator_parameter_patch_shadow.json",
+                        {
+                            "schema_version": "integrator_parameter_patch_shadow_v1",
+                            "run_id": run_id,
+                            "generated_at": generated_at,
+                            "status": "shadow_only",
+                            "growth_patch_candidate_id": candidate.get(
+                                "growth_patch_candidate_id"
+                            ),
+                            "patch_deltas": candidate.get("patch_deltas"),
+                            "shadow_compare": candidate.get("shadow_compare"),
+                            "parameter_registry_ref": (
+                                "runtime/state/growth/dynamics_parameter_registry.json"
+                            ),
+                        },
+                    )
+                    break
         _write_json(growth_dir / "anti_forgetting_replay_plan.json", anti_forgetting_replay_plan)
         _write_json(growth_dir / "belief_learning_plan.json", belief_learning)
         _write_json(growth_dir / "language_learning_plan.json", language_learning)
@@ -869,6 +925,20 @@ def run_cycle(
         _write_json(reports_dir / "digest.json", digest)
         _write_json(reports_dir / "run_report.json", run_report)
         _write_json(reports_dir / "growth_reconsolidation_report.json", growth_report)
+        if is_integrator_parameter_patch_enabled() or _body_integrate_flag_enabled():
+            from life_v0.dynamics.accelerated_simulation_audit import (
+                run_accelerated_dynamics_audit,
+            )
+
+            _write_json(
+                reports_dir / "accelerated_dynamics_audit.json",
+                run_accelerated_dynamics_audit(
+                    run_id=run_id,
+                    generated_at=generated_at,
+                    tick_hours=72,
+                    ticks_per_hour=1,
+                ),
+            )
         if memory_consolidation_report:
             _write_json(
                 reports_dir / "memory_consolidation_report.json",
@@ -1401,6 +1471,12 @@ def _load_json(path: Path, blocked_reasons: list[str], gate: str) -> dict[str, A
     except (OSError, json.JSONDecodeError) as exc:
         blocked_reasons.append(f"{gate} failed: {exc}")
         return {}
+
+
+def _body_integrate_flag_enabled() -> bool:
+    from life_v0.body.body_integrator import is_body_integrate_enabled
+
+    return is_body_integrate_enabled()
 
 
 def _load_json_optional(path: Path) -> dict[str, Any]:

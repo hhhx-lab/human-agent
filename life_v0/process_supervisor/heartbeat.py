@@ -30,6 +30,7 @@ from .process_lease import (
     refresh_resident_process_lease,
 )
 from .runtime_resource_budget import append_jsonl_with_hot_budget
+from life_v0.body.body_integrator import maybe_run_body_integrate_hook
 
 
 IDLE_HEARTBEAT_TRACE_REF = "runtime/state/terminal/idle_heartbeat_trace.jsonl"
@@ -120,6 +121,24 @@ def write_waiting_heartbeat(
     now_iso: Callable[[], str],
     write_json: Callable[[Path, dict[str, Any]], None],
 ) -> int:
+    body_dir = terminal_dir.parent / "body"
+    integrate_result = maybe_run_body_integrate_hook(
+        body_dir=body_dir,
+        run_id=run_id,
+        generated_at=generated_at,
+        mode="background",
+        write_json=write_json,
+        life_state=_read_json_if_exists(terminal_dir.parent / "life_state.json"),
+        core_affect_vector=core_affect_vector,
+        need_state_vector=need_state_vector,
+        body_rhythm_pulse=body_rhythm_pulse,
+        fatigue_level=((body_resource_budget or {}).get("fatigue_state") or {}).get("level"),
+    )
+    if integrate_result.applied:
+        core_affect_vector = integrate_result.core_affect_vector
+        need_state_vector = integrate_result.need_state_vector
+        body_rhythm_pulse = integrate_result.body_rhythm_pulse
+
     heartbeat_counter = int(safe_terminal_loop.get("heartbeat_counter", 0)) + 1
     heartbeat_report_ref = "runtime/reports/latest/digital_life_waiting_heartbeat.json"
     membrane_guard_refs = [

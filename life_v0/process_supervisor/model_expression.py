@@ -16,6 +16,10 @@ from ..runtime_config import (
     load_digital_life_runtime_config,
 )
 from ..body.live_body_projection import body_presence_digest
+from ..language.expression_monitor import (
+    expression_plan_slots_summary,
+    is_expression_slots_enabled,
+)
 from ..state_store.memory_retrieval import memory_retrieval_context_summary
 from ..state_store.relation_identity_hygiene import sanitize_observed_names
 from .expression_release_invariant import (
@@ -910,6 +914,15 @@ def build_model_expression_context(
             memory_retrieval_frame=memory_retrieval_frame,
         ),
     }
+    if is_expression_slots_enabled() and (expression_plan or {}).get(
+        "expression_slots_applied"
+    ):
+        context = _apply_expression_slots_mode_to_context(
+            context=context,
+            expression_plan=expression_plan,
+            relationship_graph=relationship_graph,
+            relationship_timeline=relationship_timeline,
+        )
     return _sanitize_model_expression_context(context)
 
 
@@ -1003,6 +1016,8 @@ def _model_visible_expression_context(
     expression_context: dict[str, Any],
 ) -> dict[str, Any]:
     visible = _sanitize_model_expression_context(expression_context)
+    if visible.get("expression_slots_mode"):
+        visible = _slim_model_visible_context_for_slots(visible)
     live_language = visible.get("live_language")
     if isinstance(live_language, dict):
         blocked_codes = _string_list(live_language.pop("expression_blocked_language", []))
@@ -1013,6 +1028,79 @@ def _model_visible_expression_context(
                 "relation_boundary_codes_are_audit_only_not_speaking_material"
             )
     return visible
+
+
+def _apply_expression_slots_mode_to_context(
+    *,
+    context: dict[str, Any],
+    expression_plan: dict[str, Any] | None,
+    relationship_graph: dict[str, Any] | None,
+    relationship_timeline: dict[str, Any] | None,
+) -> dict[str, Any]:
+    updated = dict(context)
+    slots = expression_plan_slots_summary(expression_plan)
+    if not slots:
+        return updated
+
+    first_subject = _first_dict((relationship_graph or {}).get("subjects"))
+    repair_pressure = int((expression_plan or {}).get("repair_pressure", 0) or 0)
+    updated["expression_slots_mode"] = True
+    updated["expression_plan_slots"] = slots
+    updated["relationship"] = {
+        "relation_role": first_subject.get("relation_role"),
+        "relationship_stage": first_subject.get("relationship_stage"),
+        "semantic_goal": slots.get("semantic_goal"),
+        "repair_pressure": repair_pressure,
+        "continuity_state": _first_dict(
+            (relationship_timeline or {}).get("relationship_continuity_reports")
+        ).get("continuity_state"),
+        "trust_state": _first_dict(
+            (relationship_timeline or {}).get("trust_trajectories")
+        ).get("current_trust_state"),
+    }
+    live_language = updated.get("live_language")
+    if isinstance(live_language, dict):
+        updated["live_language"] = {
+            key: live_language.get(key)
+            for key in (
+                "semantic_goal",
+                "fatigue_pressure",
+                "body_repair_drive",
+                "affect_arousal",
+                "expression_tempo_mode",
+                "release_caution_level",
+                "memory_grounding_refs",
+                "memory_reconstruction_focus",
+                "dream_fact_boundary",
+            )
+            if live_language.get(key) is not None or key in slots
+        }
+    return updated
+
+
+def _slim_model_visible_context_for_slots(
+    expression_context: dict[str, Any],
+) -> dict[str, Any]:
+    keep_keys = (
+        "identity",
+        "external_relation_utterance",
+        "external_relation_utterance_boundary",
+        "audited_expression_material",
+        "runtime_language",
+        "dialogue_style",
+        "expression_slots_mode",
+        "expression_plan_slots",
+        "relationship",
+        "live_language",
+        "memory_retrieval",
+        "language_plasticity",
+        "responsibility_regret_repair",
+    )
+    return {
+        key: expression_context[key]
+        for key in keep_keys
+        if key in expression_context
+    }
 
 
 def _load_identity_context(repo_root: Path | None) -> dict[str, Any]:
@@ -1077,20 +1165,37 @@ def _post_openai_compatible_chat_completion(
     payload: dict[str, Any],
     timeout_seconds: float,
 ) -> dict[str, Any]:
+    from .terminal_stream_bridge import emit_stream_delta, get_stream_sink
+
     request = urllib.request.Request(
         endpoint,
         data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
         headers=dict(headers),
         method="POST",
     )
+    sink = get_stream_sink()
     try:
         with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
-            raw = response.read().decode("utf-8")
             content_type = response.headers.get("content-type", "")
+            if sink is not None and (
+                payload.get("stream")
+                or "text/event-stream" in str(content_type or "").lower()
+            ):
+                sink.emit_start()
+                return _decode_chat_completion_response_stream(
+                    response,
+                    content_type=content_type,
+                )
+            raw = response.read().decode("utf-8")
     except urllib.error.HTTPError as exc:
         raw_error = exc.read().decode("utf-8", errors="replace")
         raise RuntimeError(f"http_{exc.code}: {raw_error[:300]}") from exc
-    return _decode_chat_completion_response(raw, content_type)
+    decoded = _decode_chat_completion_response(raw, content_type)
+    if sink is not None:
+        content, _ = _extract_chat_content(decoded)
+        if content:
+            sink.emit_complete(content)
+    return decoded
 
 
 def _decode_chat_completion_response(raw: str, content_type: str | None) -> dict[str, Any]:
@@ -1107,34 +1212,111 @@ def _decode_event_stream_chat_completion(raw: str) -> dict[str, Any]:
     usage: dict[str, Any] | None = None
     event_count = 0
     for line in raw.splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith(":") or not stripped.startswith("data:"):
-            continue
-        data = stripped[5:].strip()
-        if not data or data == "[DONE]":
-            continue
-        event_count += 1
-        event = json.loads(data)
-        if isinstance(event.get("usage"), dict):
-            usage = event["usage"]
-        choices = event.get("choices", [])
-        if not isinstance(choices, list) or not choices:
-            continue
-        choice = choices[0]
-        if not isinstance(choice, dict):
-            continue
-        if choice.get("finish_reason"):
-            finish_reason = str(choice["finish_reason"])
-        delta = choice.get("delta")
-        if isinstance(delta, dict):
-            delta_content = delta.get("content")
-            if isinstance(delta_content, str):
-                content_parts.append(delta_content)
-        message = choice.get("message")
-        if isinstance(message, dict):
-            message_content = message.get("content")
-            if isinstance(message_content, str):
-                content_parts.append(message_content)
+        event_count, finish_reason, usage = _consume_sse_line(
+            line,
+            content_parts=content_parts,
+            event_count=event_count,
+            finish_reason=finish_reason,
+            usage=usage,
+            emit_live_delta=False,
+        )
+    return _build_stream_chat_response(
+        content_parts=content_parts,
+        finish_reason=finish_reason,
+        usage=usage,
+        event_count=event_count,
+    )
+
+
+def _decode_chat_completion_response_stream(
+    response,
+    *,
+    content_type: str | None,
+) -> dict[str, Any]:
+    from .terminal_stream_bridge import emit_stream_delta
+
+    content_parts: list[str] = []
+    finish_reason: str | None = None
+    usage: dict[str, Any] | None = None
+    event_count = 0
+    for raw_line in response:
+        line = raw_line.decode("utf-8", errors="replace")
+        event_count, finish_reason, usage = _consume_sse_line(
+            line,
+            content_parts=content_parts,
+            event_count=event_count,
+            finish_reason=finish_reason,
+            usage=usage,
+            emit_live_delta=True,
+        )
+    decoded = _build_stream_chat_response(
+        content_parts=content_parts,
+        finish_reason=finish_reason,
+        usage=usage,
+        event_count=event_count,
+    )
+    sink_complete = decoded["choices"][0]["message"]["content"]
+    from .terminal_stream_bridge import get_stream_sink
+
+    sink = get_stream_sink()
+    if sink is not None:
+        sink.emit_complete(str(sink_complete or ""))
+    return decoded
+
+
+def _consume_sse_line(
+    line: str,
+    *,
+    content_parts: list[str],
+    event_count: int,
+    finish_reason: str | None,
+    usage: dict[str, Any] | None,
+    emit_live_delta: bool,
+) -> tuple[int, str | None, dict[str, Any] | None]:
+    from .terminal_stream_bridge import emit_stream_delta
+
+    stripped = str(line or "").strip()
+    if not stripped or stripped.startswith(":") or not stripped.startswith("data:"):
+        return event_count, finish_reason, usage
+    data = stripped[5:].strip()
+    if not data or data == "[DONE]":
+        return event_count, finish_reason, usage
+    event_count += 1
+    event = json.loads(data)
+    if isinstance(event.get("usage"), dict):
+        usage = event["usage"]
+    choices = event.get("choices", [])
+    if not isinstance(choices, list) or not choices:
+        return event_count, finish_reason, usage
+    choice = choices[0]
+    if not isinstance(choice, dict):
+        return event_count, finish_reason, usage
+    if choice.get("finish_reason"):
+        finish_reason = str(choice["finish_reason"])
+    delta = choice.get("delta")
+    if isinstance(delta, dict):
+        delta_content = delta.get("content")
+        if isinstance(delta_content, str) and delta_content:
+            content_parts.append(delta_content)
+            if emit_live_delta:
+                emit_stream_delta(delta_content)
+    message = choice.get("message")
+    if isinstance(message, dict):
+        message_content = message.get("content")
+        if isinstance(message_content, str) and message_content:
+            content_parts.append(message_content)
+            if emit_live_delta:
+                emit_stream_delta(message_content)
+    return event_count, finish_reason, usage
+
+
+def _build_stream_chat_response(
+    *,
+    content_parts: list[str],
+    finish_reason: str | None,
+    usage: dict[str, Any] | None,
+    event_count: int,
+) -> dict[str, Any]:
     response: dict[str, Any] = {
         "choices": [
             {
@@ -1706,7 +1888,10 @@ def audit_model_expression_response(
         model_response_text,
         expression_context,
     )
-    blocked_surface_terms = _blocked_surface_terms(model_response_text)
+    blocked_surface_terms = _blocked_surface_terms(
+        model_response_text,
+        external_utterance=str(expression_context.get("external_relation_utterance") or ""),
+    )
     blocked_identity_terms = _blocked_identity_terms(model_response_text)
     preserved_evidence_flags: list[str] = []
     missing_evidence_flags: list[str] = []
@@ -2130,13 +2315,17 @@ def _blocked_relation_object_terms(
     return _matched_terms(response_text, _dedupe_string_list(blocked_terms))
 
 
-def _blocked_surface_terms(response_text: str) -> list[str]:
+def _blocked_surface_terms(response_text: str, *, external_utterance: str = "") -> list[str]:
     matched = _matched_terms(response_text, POST_EXPRESSION_BLOCKED_SURFACE_TERMS)
     cluster_terms = _matched_terms(
         response_text,
         POST_EXPRESSION_MECHANICAL_SURFACE_CLUSTER_TERMS,
     )
-    if _looks_like_mechanical_surface_cluster(cluster_terms):
+    if _looks_like_mechanical_surface_cluster(
+        cluster_terms,
+        response_text=response_text,
+        external_utterance=external_utterance,
+    ):
         matched.extend(cluster_terms)
     style_promise_terms = _matched_terms(
         response_text,
@@ -2171,8 +2360,24 @@ def _valid_relation_names(values: list[str]) -> list[str]:
     return sanitize_observed_names(values)
 
 
-def _looks_like_mechanical_surface_cluster(cluster_terms: list[str]) -> bool:
+def _looks_like_mechanical_surface_cluster(
+    cluster_terms: list[str],
+    *,
+    response_text: str = "",
+    external_utterance: str = "",
+) -> bool:
     terms = set(cluster_terms)
+    question = str(external_utterance or "")
+    answer = str(response_text or "")
+    asked_for_mechanism = any(
+        marker in question
+        for marker in ("机制", "原理", "怎么记", "如何记", "记忆怎么", "记忆方式")
+    )
+    if asked_for_mechanism and not (
+        "我会" in terms
+        or any(marker in answer for marker in POST_EXPRESSION_STYLE_PROMISE_TERMS)
+    ):
+        return False
     if "我会" in terms and ({"机制", "流程", "修复", "共同语言"} & terms):
         return True
     if {"不是", "而是", "机制"} <= terms:

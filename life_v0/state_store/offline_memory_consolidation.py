@@ -40,7 +40,11 @@ def apply_offline_memory_consolidation(
     offline_consolidation_frame: dict[str, Any] | None = None,
     memory_allocation_gate: dict[str, Any] | None = None,
     memory_longitudinal_profile: dict[str, Any] | None = None,
+    body_integrator: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    sleep_pressure = float(
+        ((body_integrator or {}).get("continuous") or {}).get("sleep_pressure", 0.0) or 0.0
+    )
     before_traces = json.loads(
         json.dumps(memory_trace_store.get("traces", []))
     )
@@ -54,11 +58,13 @@ def apply_offline_memory_consolidation(
         replay_cue_bundle=replay_cue_bundle,
         memory_allocation_gate=memory_allocation_gate,
         dream_window=dream_window,
+        sleep_pressure=sleep_pressure,
     )
     salience_updates = _apply_replay_salience_updates(
         updated_store,
         trace_ids=replay_trace_ids,
         generated_at=generated_at,
+        sleep_pressure=sleep_pressure,
     )
     schema_promotion_diff = _apply_schema_promotion_side_effects(
         updated_store,
@@ -201,6 +207,12 @@ def apply_offline_memory_consolidation(
             updated_schema.get("schema_evidence_counts") or {}
         ),
         "hygiene_actions": hygiene_actions,
+        "sleep_pressure_snapshot": round(sleep_pressure, 4),
+        "body_integrator_ref": (
+            "runtime/state/body/body_integrator_state.json"
+            if body_integrator
+            else None
+        ),
         "consumer_refs": [
             "runtime/reports/latest/growth_reconsolidation_report.json#consolidation_diff",
             "runtime/state/dream/offline_consolidation_frame.json#memory_consolidation_diff",
@@ -280,6 +292,7 @@ def _select_replay_trace_ids(
     replay_cue_bundle: dict[str, Any] | None,
     memory_allocation_gate: dict[str, Any] | None,
     dream_window: dict[str, Any] | None,
+    sleep_pressure: float = 0.0,
 ) -> tuple[list[str], list[dict[str, Any]]]:
     priority_boost: dict[str, float] = {}
     for item in (memory_allocation_gate or {}).get("replay_priority_vector", []):
@@ -321,7 +334,8 @@ def _select_replay_trace_ids(
             salience * 0.45
             + accessibility * 0.35
             + min(0.2, replay_count * 0.04)
-            + priority_boost.get(trace_id, 0.0) * 0.25,
+            + priority_boost.get(trace_id, 0.0) * 0.25
+            + sleep_pressure * 0.15,
             4,
         )
         weighted_candidates.append((trace_id, swr_weight))
@@ -340,6 +354,7 @@ def _apply_replay_salience_updates(
     *,
     trace_ids: list[str],
     generated_at: str,
+    sleep_pressure: float = 0.0,
 ) -> list[dict[str, Any]]:
     updates: list[dict[str, Any]] = []
     trace_id_set = set(trace_ids)
@@ -353,8 +368,14 @@ def _apply_replay_salience_updates(
             continue
         before_replay = int(trace.get("offline_replay_count") or 0)
         before_salience = float((trace.get("replay_salience") or 0.5))
+        salience_vector = dict(trace.get("salience_vector") or {})
+        before_scalar = float(salience_vector.get("salience") or before_salience)
+        salience_boost = round(0.08 * (0.5 + sleep_pressure * 0.5), 3)
         trace["offline_replay_count"] = before_replay + 1
-        trace["replay_salience"] = round(min(0.98, before_salience + 0.08), 3)
+        trace["replay_salience"] = round(min(0.98, before_salience + salience_boost), 3)
+        salience_vector["salience"] = round(min(0.98, before_scalar + salience_boost * 0.85), 3)
+        salience_vector["last_offline_consolidation_at"] = generated_at
+        trace["salience_vector"] = salience_vector
         trace["last_replayed_at"] = generated_at
         if trace.get("consolidation_state") == "episodic":
             trace["consolidation_state"] = "consolidating"

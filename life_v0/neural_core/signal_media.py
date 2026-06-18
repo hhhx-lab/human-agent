@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 
@@ -578,6 +579,117 @@ def _dedupe(items: list[str]) -> list[str]:
         if item and item not in result:
             result.append(item)
     return result
+
+
+def refresh_signal_media_from_integrator(
+    *,
+    signal_media_runtime: dict[str, Any] | None,
+    run_id: str,
+    generated_at: str,
+    body_integrator: dict[str, Any] | None,
+    core_affect_vector: dict[str, Any] | None,
+    body_resource_budget: dict[str, Any] | None,
+    network_state: dict[str, Any] | None = None,
+    offline_learning_cumulative_profile: dict[str, Any] | None = None,
+    queue_e_repair_modulation_profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    continuous = (body_integrator or {}).get("continuous") or {}
+    if not continuous and not signal_media_runtime:
+        return {}
+
+    refreshed = build_signal_media_runtime(
+        run_id=run_id,
+        generated_at=generated_at,
+        network_state=network_state,
+        body_resource_budget=body_resource_budget,
+        core_affect_vector=core_affect_vector,
+        offline_learning_cumulative_profile=offline_learning_cumulative_profile,
+        queue_e_repair_modulation_profile=queue_e_repair_modulation_profile,
+    )
+    if signal_media_runtime:
+        refreshed = _merge_signal_media_runtime(
+            previous=signal_media_runtime,
+            refreshed=refreshed,
+        )
+
+    modulation = dict(refreshed.get("modulation_vector") or {})
+    allostatic_load = float(continuous.get("allostatic_load", 0.0) or 0.0)
+    sleep_pressure = float(continuous.get("sleep_pressure", 0.0) or 0.0)
+    body_state_debt = float(continuous.get("body_state_debt", 0.0) or 0.0)
+    cognitive_bandwidth = float(continuous.get("cognitive_bandwidth", 0.82) or 0.82)
+    stress_pulse = float(continuous.get("stress_pulse", 0.05) or 0.05)
+
+    modulation["fatigue_load"] = _clamp(
+        float(modulation.get("fatigue_load", 0.26) or 0.26)
+        + sleep_pressure * 0.18
+        + body_state_debt * 0.12
+    )
+    modulation["allostatic_load"] = _clamp(
+        float(modulation.get("allostatic_load", 0.31) or 0.31) + allostatic_load * 0.22
+    )
+    modulation["stress_pulse"] = _clamp(
+        float(modulation.get("stress_pulse", 0.22) or 0.22) + stress_pulse * 0.28
+    )
+    modulation["expected_uncertainty"] = _clamp(
+        float(modulation.get("expected_uncertainty", 0.34) or 0.34)
+        + (1.0 - cognitive_bandwidth) * 0.14
+    )
+    modulation["unexpected_uncertainty"] = _clamp(
+        float(modulation.get("unexpected_uncertainty", 0.21) or 0.21)
+        + allostatic_load * 0.1
+        + body_state_debt * 0.08
+    )
+    modulation["control_cost"] = _clamp(
+        float(modulation.get("control_cost", 0.39) or 0.39)
+        + (1.0 - cognitive_bandwidth) * 0.16
+    )
+    refreshed["modulation_vector"] = modulation
+
+    precision_policy = dict(refreshed.get("precision_policy") or {})
+    precision_policy["interoceptive_precision"] = _clamp(
+        float(precision_policy.get("interoceptive_precision", 0.58) or 0.58)
+        + allostatic_load * 0.08
+    )
+    precision_policy["memory_precision"] = _clamp(
+        float(precision_policy.get("memory_precision", 0.63) or 0.63)
+        - sleep_pressure * 0.08
+    )
+    precision_policy["action_precision"] = _clamp(
+        float(precision_policy.get("action_precision", 0.52) or 0.52)
+        - (1.0 - cognitive_bandwidth) * 0.1
+    )
+    precision_policy["expected_uncertainty_weight"] = modulation["expected_uncertainty"]
+    precision_policy["unexpected_uncertainty_weight"] = modulation["unexpected_uncertainty"]
+    refreshed["precision_policy"] = precision_policy
+    refreshed["live_refresh_applied"] = True
+    refreshed["body_integrator_ref"] = "runtime/state/body/body_integrator_state.json"
+    refreshed["integrator_continuous_snapshot"] = {
+        "sleep_pressure": round(sleep_pressure, 4),
+        "allostatic_load": round(allostatic_load, 4),
+        "body_state_debt": round(body_state_debt, 4),
+        "cognitive_bandwidth": round(cognitive_bandwidth, 4),
+        "stress_pulse": round(stress_pulse, 4),
+    }
+    return refreshed
+
+
+def _merge_signal_media_runtime(
+    *,
+    previous: dict[str, Any],
+    refreshed: dict[str, Any],
+) -> dict[str, Any]:
+    merged = json.loads(json.dumps(refreshed))
+    for field in (
+        "queue_e_repair_modulation_profile",
+        "queue_e_repair_pressure_level",
+        "queue_e_repair_attention_target",
+        "queue_e_repair_ref_set",
+    ):
+        if field in previous and previous.get(field) is not None:
+            merged[field] = previous[field]
+    if previous.get("signal_media_id"):
+        merged["signal_media_id"] = previous["signal_media_id"]
+    return merged
 
 
 def _clamp(value: float) -> float:

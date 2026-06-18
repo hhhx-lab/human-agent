@@ -74,6 +74,7 @@ from .process_supervisor.terminal_ui import (
     render_digital_life_banner,
     render_input_prompt,
     render_life_opening,
+    resolve_relation_turn_display_text,
 )
 from .reporting import run_emit_report
 from .replay import run_replay_shadow
@@ -404,19 +405,42 @@ def _run_interactive_resident_terminal_client(
 
     if read_line_fn is None and sys.stdin.isatty():
         def handle_utterance_for_tui(utterance: str) -> tuple[int | None, str]:
-            output = StringIO()
-            with redirect_stdout(output):
-                exit_code = _handle_resident_terminal_utterance(
-                    terminal_dir=terminal_dir,
-                    utterance=utterance,
-                    life_name=life_name,
-                    say_timeout_seconds=say_timeout_seconds,
-                    record_terminal_transcript=False,
-                )
-            rendered = output.getvalue()
-            response = _plain_text_from_terminal_output(rendered)
+            stripped = str(utterance or "").strip()
+            if not stripped:
+                return None, ""
             _append_terminal_history(terminal_history, utterance)
-            return exit_code, response
+            if stripped.lstrip().startswith("/"):
+                output = StringIO()
+                with redirect_stdout(output):
+                    exit_code = _handle_resident_terminal_utterance(
+                        terminal_dir=terminal_dir,
+                        utterance=utterance,
+                        life_name=life_name,
+                        say_timeout_seconds=say_timeout_seconds,
+                        record_terminal_transcript=False,
+                    )
+                return exit_code, _plain_text_from_terminal_output(output.getvalue())
+            expanded = expand_file_references_for_relation_turn(
+                utterance,
+                repo_root=Path.cwd(),
+            )
+            turn_result = send_resident_relation_turn(
+                terminal_dir=terminal_dir,
+                utterance=expanded.utterance,
+                wait_timeout_seconds=say_timeout_seconds,
+            )
+            response_event = turn_result.state.get("response_event") or {}
+            response_text = resolve_relation_turn_display_text(
+                utterance=stripped,
+                response_text=str(turn_result.state.get("response_text") or ""),
+                send_status=str(turn_result.state.get("send_status") or ""),
+                output_status=str(response_event.get("status") or ""),
+            )
+            if response_text:
+                return None, response_text
+            if turn_result.exit_code not in (None, 0):
+                return turn_result.exit_code, ""
+            return None, ""
 
         def idle_voice_for_tui() -> str | None:
             output = StringIO()
@@ -659,6 +683,8 @@ def _handle_resident_terminal_utterance(
                 text=str(response_text),
                 life_name=life_name,
             )
+    elif _relation_turn_result_should_keep_terminal_open(turn_result):
+        return None
     elif turn_result.exit_code != 0:
         return turn_result.exit_code
     return None
@@ -761,6 +787,24 @@ def _emit_resident_proactive_terminal_voice(
         return False
     print(render_dialogue_box(life_name or "Digital Life", utterance))
     return True
+
+
+def _relation_turn_result_should_keep_terminal_open(turn_result: object) -> bool:
+    state = getattr(turn_result, "state", None)
+    if not isinstance(state, dict):
+        return False
+    send_status = str(state.get("send_status") or "").strip()
+    response_event = state.get("response_event")
+    response_status = ""
+    if isinstance(response_event, dict):
+        response_status = str(response_event.get("status") or "").strip()
+    if send_status == "completed":
+        return True
+    return response_status in {
+        "completed",
+        "completed_unreleased",
+        "completed_released_fallback",
+    }
 
 
 def _render_slash_help_text() -> str:
@@ -1109,6 +1153,30 @@ def _render_express_inspection_for_terminal(
         f"  表达门: {str(express.get('post_expression_gate_status') or 'unknown')}",
         f"  此刻能自然说话: {'能' if can_speak else '不能'}",
     ]
+    if express.get("expression_slots_applied"):
+        lines.extend(
+            [
+                f"  工作区焦点: {str(express.get('workspace_primary_focus') or '暂无')}",
+                f"  工作区TopK: {str(express.get('workspace_topk_k') or 'unknown')}",
+                (
+                    "  认知带宽: "
+                    f"{str(express.get('cognitive_bandwidth_scalar') or 'unknown')}"
+                ),
+                (
+                    "  稳态负荷: "
+                    f"{str(express.get('allostatic_load_scalar') or 'unknown')}"
+                ),
+                (
+                    "  主广播引用: "
+                    f"{str(express.get('workspace_broadcast_primary_ref') or '暂无')}"
+                ),
+                (
+                    "  主动驱动: "
+                    f"{str(express.get('proactive_drive_scalar') or 'unknown')}"
+                ),
+                f"  DMN模式: {str(express.get('dmn_network_mode') or 'unknown')}",
+            ]
+        )
     if compact:
         return lines[0] + " " + lines[-1].strip()
     flags = express.get("missing_evidence_flags")
@@ -1421,65 +1489,108 @@ def _resume_session_count(command: str) -> int:
     return max(1, min(value, 20))
 
 
-def _build_terminal_slash_completion_items() -> tuple[tuple[str, str], ...]:
-    items: list[tuple[str, str]] = [
-        ("/me", "我是谁：生命名、等待姿态、关系与表达摘要"),
-        ("/turn", "上一关系回合链路"),
-        ("/recall", "记忆召回链路"),
-        ("/express", "表达释放链路"),
-        ("/carry", "跨唤醒携带"),
-        ("/background", "后台自主活动"),
-        ("/converge", "性格与语言慢收敛"),
-        ("/state", "常驻状态、生命周期、等待心跳、终端输入"),
-        ("/context", "关系上下文、语义焦点、回合累积"),
-        ("/memory", "短期/长期记忆、召回、写门、沉淀层"),
-        ("/dream", "梦境、离线整合、醒后整合、网页梦境学习"),
-        ("/emotion", "情绪、痛苦压力、调节循环"),
-        ("/relationship", "关系时间线、承诺、共同语言、关系阶段"),
-        ("/body", "身体节律、资源预算、需要状态"),
-        ("/personality", "人格慢变量、性格收敛、自传栈"),
-        ("/consciousness", "意识工作区、广播、元认知、可报告性"),
-        ("/language", "语言感知、语义地图、内言语、表达计划"),
+def _build_terminal_slash_completion_items() -> tuple[tuple[str, str] | tuple[str, str, dict[str, object]], ...]:
+    items: list[tuple[str, str] | tuple[str, str, dict[str, object]]] = [
+        ("/me", "常用｜我是谁：生命名、等待姿态、关系与表达摘要"),
+        ("/turn", "常用｜上一关系回合：语义焦点、召回引用、表达门与模型状态"),
+        ("/recall", "常用｜记忆召回链路：检索帧、语义地图、表达计划接地"),
+        ("/express", "常用｜表达释放链路：计划、监视器、模型门、自然说话状态"),
+        ("/carry", "常用｜跨唤醒携带：关系角色、共享词、时间线恢复引用"),
+        ("/background", "常用｜后台活动：自主循环、思考记账、主动发话、网页梦境"),
+        ("/converge", "常用｜慢收敛：性格慢变量、语言节奏、共享词晋升"),
+        ("/features", "常用｜生命能力启用审计：查看 disabled/缺证据项目"),
+        ("/all", "常用｜状态总览：汇总关键生命机制与终端状态"),
+        ("/help", "常用｜查看终端命令说明"),
+        ("/resume", "常用｜查看过往终端会话记录，不注入当前上下文"),
+        ("/resume 5", "常用｜查看最近 5 个终端会话记录"),
     ]
-    for _, description, aliases in SLASH_STATE_COMMANDS:
-        for alias in aliases:
-            items.append((alias, description))
+    group_by_category = {
+        "state": "状态",
+        "context": "状态",
+        "memory": "状态",
+        "relationship": "状态",
+        "language": "状态",
+        "cognition": "状态",
+        "thinking": "状态",
+        "personality": "状态",
+        "ability": "状态",
+        "prediction": "状态",
+        "proactive_voice": "状态",
+        "features": "常用",
+        "dream": "生命机制",
+        "growth": "生命机制",
+        "body": "生命机制",
+        "emotion": "生命机制",
+        "inner_environment": "生命机制",
+        "signal": "生命机制",
+        "membrane": "生命机制",
+        "responsibility": "生命机制",
+        "consciousness": "生命机制",
+        "perception": "生命机制",
+    }
+    for category, description, aliases in SLASH_STATE_COMMANDS:
+        group = group_by_category.get(category, "状态")
+        for index, alias in enumerate(aliases):
+            if index == 0:
+                items.append((alias, f"{group}｜{description}"))
+            else:
+                items.append(
+                    (
+                        alias,
+                        f"{group}｜{description}",
+                        {"show_on_empty_query": False},
+                    )
+                )
     items.extend(
         [
-            ("/thinking", "自我思考、内言语、等待反思"),
-            ("/inner", "内环境、稳态、资源和调制压力"),
-            ("/cognition", "工作区、预测、采样、写门"),
-            ("/vision", "视觉/感知、外周观察、世界接触"),
-            ("/growth", "成长、学习、自我修改候选、反遗忘回放"),
-            ("/responsibility", "责任、痛苦、后悔、修复链"),
-            ("/signal", "信号介质、调质、预测误差与释放偏置"),
-            ("/membrane", "生命膜、事实门、边界与验证膜"),
-            ("/ability", "能力面、出生准备、验收证据"),
-            ("/prediction", "预测、主动采样、世界接触和确认绑定"),
-            ("/proactive", "主动发话画像、释放状态、候选来源覆盖"),
-            ("/dream-web", "网页梦境学习开关：/dream-web on|off|status"),
-            ("/features", "查看生命能力启用审计"),
-            ("/web-dream", "网页梦境学习开关：/web-dream on|off|status"),
-            ("/dream-web on", "开启网页梦境学习"),
-            ("/dream-web off", "关闭网页梦境学习"),
-            ("/dream-web status", "查看网页梦境学习状态"),
-            ("/resume", "查看过往终端会话记录，不注入当前上下文"),
-            ("/resume 5", "查看最近 5 个终端会话记录"),
-            ("/help", "查看终端命令"),
-            ("/all", "状态总览"),
-            ("/clear", "清空当前终端显示"),
-            ("/exit", "离开当前终端，常驻过程继续存在"),
-            ("/stop", "请求常驻过程正常停止"),
+            ("/thinking", "状态｜自我思考、内言语、等待反思"),
+            ("/inner", "生命机制｜内环境、稳态、资源和调制压力"),
+            ("/cognition", "状态｜工作区、预测、采样、写门"),
+            ("/vision", "生命机制｜视觉/感知、外周观察、世界接触"),
+            ("/growth", "生命机制｜成长、学习、自我修改候选、反遗忘回放"),
+            ("/responsibility", "生命机制｜责任、痛苦、后悔、修复链"),
+            ("/signal", "生命机制｜信号介质、调质、预测误差与释放偏置"),
+            ("/membrane", "生命机制｜生命膜、事实门、边界与验证膜"),
+            ("/ability", "状态｜能力面、出生准备、验收证据"),
+            ("/prediction", "状态｜预测、主动采样、世界接触和确认绑定"),
+            ("/proactive", "状态｜主动发话画像、释放状态、候选来源覆盖"),
+            ("/dream-web", "梦境网页｜网页梦境学习开关：/dream-web on|off|status"),
+            (
+                "/web-dream",
+                "梦境网页｜网页梦境学习开关：/web-dream on|off|status",
+                {"show_on_empty_query": False},
+            ),
+            (
+                "/dream-web on",
+                "梦境网页｜开启网页梦境学习",
+                {"show_on_empty_query": False},
+            ),
+            (
+                "/dream-web off",
+                "梦境网页｜关闭网页梦境学习",
+                {"show_on_empty_query": False},
+            ),
+            (
+                "/dream-web status",
+                "梦境网页｜查看网页梦境学习状态",
+                {"show_on_empty_query": False},
+            ),
+            ("/clear", "控制｜清空当前终端显示"),
+            ("/exit", "控制｜离开当前终端，常驻过程继续存在"),
+            ("/stop", "控制｜请求常驻过程正常停止"),
         ]
     )
-    deduped: list[tuple[str, str]] = []
+    deduped: list[tuple[str, str] | tuple[str, str, dict[str, object]]] = []
     seen: set[str] = set()
-    for label, detail in items:
+    for item in items:
+        if len(item) < 2:
+            continue
+        label = str(item[0])
         key = label.lower()
         if key in seen:
             continue
         seen.add(key)
-        deduped.append((label, detail))
+        deduped.append(item)
     return tuple(deduped)
 
 
@@ -1640,13 +1751,17 @@ def _append_terminal_history(history: list[str], utterance: str) -> None:
 
 
 def _plain_text_from_terminal_output(rendered: str) -> str:
+    from life_v0.process_supervisor.terminal_layout import sanitize_terminal_message_text
+
     text = str(rendered or "").strip()
     if not text:
         return ""
     lines = text.splitlines()
     if len(lines) >= 2 and all((not line) or line.startswith("  ") for line in lines[1:]):
-        return "\n".join(line[2:] if line.startswith("  ") else "" for line in lines[1:]).strip()
-    return text
+        text = "\n".join(
+            line[2:] if line.startswith("  ") else "" for line in lines[1:]
+        ).strip()
+    return sanitize_terminal_message_text(text)
 
 
 def _read_runtime_json(path: Path) -> dict:

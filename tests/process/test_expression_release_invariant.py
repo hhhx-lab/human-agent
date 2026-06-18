@@ -23,10 +23,11 @@ class ExpressionReleaseInvariantTests(unittest.TestCase):
         self.assertEqual(release.release_path, "model_expression")
         self.assertEqual(release.release_tier, 1)
 
-    def test_recall_grounding_does_not_emit_fixed_fallback_when_model_empty(self):
+    def test_recall_grounding_emits_fragment_when_model_gate_blocks(self):
         release = resolve_turn_spoken_output(
             external_utterance="你还记得我是谁吗？",
             model_result=SimpleNamespace(response_text="", state={}),
+            pre_model_spoken_response="我有一点记忆线索，但刚才说不清。",
             memory_retrieval_frame={
                 "activated_engram_refs": [
                     "runtime/state/language/dialogue_turn_log.jsonl#line-1"
@@ -45,9 +46,10 @@ class ExpressionReleaseInvariantTests(unittest.TestCase):
                 "relationship_theme_tags": ["relationship_formation"],
             },
         )
-        self.assertEqual(release.response_text, "")
-        self.assertEqual(release.release_path, "expression_unreleased")
-        self.assertEqual(release.release_tier, 0)
+        self.assertTrue(release.response_text)
+        self.assertEqual(release.release_path, "expression_invariant_fragment")
+        self.assertEqual(release.release_tier, 3)
+        self.assertIn("记忆", release.response_text)
         self.assertTrue(
             recall_expression_grounded(
                 memory_retrieval_frame={
@@ -90,6 +92,7 @@ class ExpressionReleaseInvariantTests(unittest.TestCase):
         release = resolve_turn_spoken_output(
             external_utterance="继续。",
             model_result=SimpleNamespace(response_text="", state={}),
+            pre_model_spoken_response="这里有片段，但我说不清。",
             memory_retrieval_frame={
                 "recall_to_expression_profile": {
                     "expression_source_refs": [
@@ -99,9 +102,9 @@ class ExpressionReleaseInvariantTests(unittest.TestCase):
             },
             allow_invariant_continuity=False,
         )
-        self.assertEqual(release.release_path, "expression_unreleased")
-        self.assertEqual(release.release_tier, 0)
-        self.assertEqual(release.response_text, "")
+        self.assertEqual(release.release_path, "expression_invariant_fragment")
+        self.assertEqual(release.release_tier, 3)
+        self.assertTrue(release.response_text)
         self.assertTrue(
             recall_expression_grounded(
                 memory_retrieval_frame={

@@ -112,6 +112,55 @@ def build_pain_regret_responsibility_replay(
     }
 
 
+def append_workspace_evictions_to_replay_cue_bundle(
+    replay_cue_bundle: dict[str, Any] | None,
+    *,
+    evicted_candidates: list[dict[str, Any]],
+    generated_at: str,
+    run_id: str,
+) -> dict[str, Any]:
+    updated = dict(replay_cue_bundle or {})
+    if not evicted_candidates:
+        return updated
+    if not updated:
+        updated = {
+            "schema_version": "replay_cue_bundle_v0",
+            "run_id": run_id,
+            "generated_at": generated_at,
+            "status": "closed",
+        }
+    dream_entry_candidates = _string_list(updated.get("dream_entry_candidates"))
+    anti_forgetting_targets = _string_list(updated.get("anti_forgetting_targets"))
+    turn_residue_refs = _string_list(updated.get("turn_residue_refs"))
+    for candidate in evicted_candidates:
+        if not isinstance(candidate, dict):
+            continue
+        explanation_id = str(candidate.get("explanation_id") or "")
+        if not explanation_id:
+            continue
+        ref = (
+            "runtime/state/consciousness/workspace_frame.json"
+            f"#workspace_topk:suppressed:{explanation_id}"
+        )
+        dream_entry_candidates.append(ref)
+        anti_forgetting_targets.append(ref)
+        turn_residue_refs.append(ref)
+    updated["dream_entry_candidates"] = _dedupe(dream_entry_candidates)
+    updated["anti_forgetting_targets"] = _dedupe(anti_forgetting_targets)
+    updated["turn_residue_refs"] = _dedupe(turn_residue_refs)
+    updated["workspace_eviction_refs"] = _dedupe(
+        _string_list(updated.get("workspace_eviction_refs"))
+        + [
+            f"runtime/state/consciousness/workspace_frame.json#workspace_topk:suppressed:{candidate.get('explanation_id')}"
+            for candidate in evicted_candidates
+            if isinstance(candidate, dict) and candidate.get("explanation_id")
+        ]
+    )
+    updated["workspace_topk_replay_applied"] = True
+    updated["generated_at"] = generated_at
+    return updated
+
+
 def build_replay_cue_bundle(
     *,
     run_id: str,
@@ -395,11 +444,15 @@ def run_replay_shadow(
     next_allowed_slices = NEXT_ALLOWED_SLICES if status == "closed" else []
     next_required_command = NEXT_REQUIRED_COMMAND if status == "closed" else "life-v0 check-v0-contracts --strict"
 
+    growth_patch_candidate_queue = _load_json_optional(
+        growth_dir / "growth_patch_candidate_queue.json"
+    )
     seed_bundle = _build_replay_shadow_seed_bundle(
         run_id=run_id,
         generated_at=generated_at,
         next_feedback_seed=next_feedback_seed,
         growth_patch_queue=growth_patch_queue,
+        growth_patch_candidate_queue=growth_patch_candidate_queue,
         shadow_trace=shadow_trace,
         context_frame=context_frame,
         preflight_report=preflight_report,
@@ -631,12 +684,35 @@ def _replay_shadow_blockers(
     return reasons
 
 
+def extract_integrator_parameter_patch_shadow(
+    growth_patch_candidate_queue: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    for candidate in (growth_patch_candidate_queue or {}).get("candidates", []):
+        if not isinstance(candidate, dict):
+            continue
+        if candidate.get("patch_kind") != "integrator_parameter_patch":
+            continue
+        shadow_compare = candidate.get("shadow_compare")
+        if not isinstance(shadow_compare, dict):
+            continue
+        return {
+            "growth_patch_candidate_id": candidate.get("growth_patch_candidate_id"),
+            "patch_kind": candidate.get("patch_kind"),
+            "patch_deltas": candidate.get("patch_deltas"),
+            "shadow_compare": shadow_compare,
+            "parameter_registry_ref": candidate.get("parameter_registry_ref"),
+            "shadow_apply_boundary": shadow_compare.get("shadow_apply_boundary"),
+        }
+    return None
+
+
 def _build_replay_shadow_seed_bundle(
     *,
     run_id: str,
     generated_at: str,
     next_feedback_seed: dict[str, Any],
     growth_patch_queue: dict[str, Any],
+    growth_patch_candidate_queue: dict[str, Any] | None = None,
     shadow_trace: dict[str, Any],
     context_frame: dict[str, Any],
     preflight_report: dict[str, Any],
@@ -644,6 +720,9 @@ def _build_replay_shadow_seed_bundle(
     world_contact_summary: dict[str, Any],
     pain_regret_repair_report: dict[str, Any],
 ) -> dict[str, Any]:
+    integrator_patch_shadow = extract_integrator_parameter_patch_shadow(
+        growth_patch_candidate_queue
+    )
     source_seed_refs = [
         "runtime/state/growth/next_feedback_seed.json",
         "runtime/state/growth/growth_patch_queue.json",
@@ -680,8 +759,24 @@ def _build_replay_shadow_seed_bundle(
         "repair_obligation_refs": list(pain_regret_repair_report.get("repair_obligation_refs", [])),
         "repair_followup_required": bool(pain_regret_repair_report.get("repair_followup_required")),
         "activation_phase_ref": preflight_report.get("engineering_slice_ref", "FIRST_ACTIVATION_PREFLIGHT"),
+        "integrator_parameter_patch_shadow": integrator_patch_shadow,
+        "integrator_parameter_patch_shadow_ref": (
+            "runtime/state/growth/integrator_parameter_patch_shadow.json"
+            if integrator_patch_shadow
+            else None
+        ),
         "source_doc_refs": SOURCE_DOC_REFS,
     }
+
+
+def _load_json_optional(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
 
 
 def _build_language_relationship_replay_probe(

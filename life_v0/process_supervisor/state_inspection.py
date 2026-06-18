@@ -254,6 +254,15 @@ def build_resident_state_inspection(
                 "growth_patch_candidate_queue": (
                     "growth/growth_patch_candidate_queue.json"
                 ),
+                "integrator_parameter_patch_shadow": (
+                    "growth/integrator_parameter_patch_shadow.json"
+                ),
+                "dynamics_parameter_registry": (
+                    "growth/dynamics_parameter_registry.json"
+                ),
+                "accelerated_dynamics_audit": (
+                    "../reports/latest/accelerated_dynamics_audit.json"
+                ),
                 "anti_forgetting_replay_plan": (
                     "growth/anti_forgetting_replay_plan.json"
                 ),
@@ -936,6 +945,9 @@ def build_resident_state_inspection(
             {
                 "visual_observation_frame": (
                     "perception/visual_observation_frame.json"
+                ),
+                "visual_observation_event": (
+                    "observation/visual_observation.json"
                 ),
                 "world_contact_summary": "membrane/world_contact_summary.json",
                 "belief_state_frame": "prediction/belief_state_frame.json",
@@ -3127,6 +3139,9 @@ def _collect_perception_world_contact_summary(
     visual_observation = _extract_compact_value(
         section.get("visual_observation_frame", {})
     )
+    visual_observation_event = _extract_compact_value(
+        section.get("visual_observation_event", {})
+    )
     world_contact = _extract_compact_value(section.get("world_contact_summary", {}))
     belief_state = _extract_compact_value(section.get("belief_state_frame", {}))
     prediction_workspace = _extract_compact_value(
@@ -3198,6 +3213,7 @@ def _collect_perception_world_contact_summary(
     )
     domain_presence = {
         "visual_observation_frame": bool(visual_observation),
+        "visual_observation_event": bool(visual_observation_event),
         "world_contact_summary": bool(world_contact),
         "belief_state_frame": bool(belief_state),
         "prediction_workspace_frame": bool(prediction_workspace),
@@ -3243,6 +3259,11 @@ def _collect_perception_world_contact_summary(
         "focus_terms": _list_refs(visual_observation.get("focus_terms")),
         "observation_source_ref_count": _count_any(
             visual_observation.get("source_refs")
+        ),
+        "visual_observation_event_status": visual_observation_event.get("status"),
+        "visual_encoder_available": visual_observation_event.get("encoder_available"),
+        "visual_observation_degrade_reason": visual_observation_event.get(
+            "degrade_reason"
         ),
         "contact_mode": world_contact.get("contact_mode"),
         "release_posture": world_contact.get("release_posture"),
@@ -6863,6 +6884,15 @@ def _collect_growth_self_modification_summary(
     patch_queue = _extract_compact_value(
         section.get("growth_patch_candidate_queue", {})
     )
+    integrator_patch_shadow = _extract_compact_value(
+        section.get("integrator_parameter_patch_shadow", {})
+    )
+    dynamics_parameter_registry = _extract_compact_value(
+        section.get("dynamics_parameter_registry", {})
+    )
+    accelerated_dynamics_audit = _extract_compact_value(
+        section.get("accelerated_dynamics_audit", {})
+    )
     anti_forgetting = _extract_compact_value(
         section.get("anti_forgetting_replay_plan", {})
     )
@@ -6942,6 +6972,9 @@ def _collect_growth_self_modification_summary(
         "self_read_report": bool(self_read),
         "plasticity_window": bool(plasticity),
         "growth_patch_candidate_queue": bool(patch_queue),
+        "integrator_parameter_patch_shadow": bool(integrator_patch_shadow),
+        "dynamics_parameter_registry": bool(dynamics_parameter_registry),
+        "accelerated_dynamics_audit": bool(accelerated_dynamics_audit),
         "anti_forgetting_replay_plan": bool(anti_forgetting),
         "belief_learning_plan": bool(belief_learning),
         "language_learning_plan": bool(language_learning),
@@ -6994,6 +7027,22 @@ def _collect_growth_self_modification_summary(
         ),
         "candidate_queue_status": patch_queue.get("status"),
         "candidate_count": _count_any(candidates),
+        "integrator_parameter_patch_applied": bool(
+            patch_queue.get("integrator_parameter_patch_applied")
+        ),
+        "integrator_parameter_patch_shadow_status": integrator_patch_shadow.get(
+            "status"
+        ),
+        "integrator_parameter_patch_shadow_compare_status": (
+            (integrator_patch_shadow.get("shadow_compare") or {}).get("status")
+            if isinstance(integrator_patch_shadow.get("shadow_compare"), dict)
+            else None
+        ),
+        "dynamics_parameter_registry_version": dynamics_parameter_registry.get(
+            "schema_version"
+        ),
+        "accelerated_dynamics_audit_status": accelerated_dynamics_audit.get("status"),
+        "dynamics_metrics_present": bool(self_read.get("dynamics_metrics")),
         "first_candidate_target_surface": first_candidate.get("target_surface"),
         "first_candidate_source_ref_count": _count_any(
             first_candidate.get("source_residue_refs")

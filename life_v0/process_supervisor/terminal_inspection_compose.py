@@ -186,6 +186,16 @@ def _build_express_inspection(*, terminal_dir: Path) -> dict[str, Any]:
             "delay_or_release_decision": monitor.get("delay_or_release_decision"),
             "monitor_status": monitor.get("monitor_status"),
             "queue_e_repair_pressure_level": plan.get("queue_e_repair_pressure_level"),
+            "expression_slots_applied": plan.get("expression_slots_applied"),
+            "workspace_primary_focus": plan.get("workspace_primary_focus"),
+            "workspace_topk_k": plan.get("workspace_topk_k"),
+            "cognitive_bandwidth_scalar": plan.get("cognitive_bandwidth_scalar"),
+            "allostatic_load_scalar": plan.get("allostatic_load_scalar"),
+            "workspace_broadcast_primary_ref": plan.get(
+                "workspace_broadcast_primary_ref"
+            ),
+            "proactive_drive_scalar": plan.get("proactive_drive_scalar"),
+            "dmn_network_mode": plan.get("dmn_network_mode"),
             "model_expression_status": model_state.get("model_expression_status"),
             "post_expression_gate_status": gate.get("gate_status") or gate.get("status"),
             "missing_evidence_flags": gate.get("missing_evidence_flags"),

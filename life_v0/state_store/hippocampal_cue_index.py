@@ -53,6 +53,7 @@ def build_hippocampal_cue_index(
                     "memory_kind": trace.get("memory_kind"),
                     "live_trace_origin": trace.get("live_trace_origin"),
                     "base_activation": _base_activation(trace),
+                    "cue_weight": _cue_weight(trace),
                     "index_route": "hippocampal_cue_to_trace_binding",
                 }
             )
@@ -116,7 +117,7 @@ def activate_hippocampal_cues(
                 matched_cues.append(query)
         if score <= 0:
             continue
-        score += float(binding.get("base_activation") or 0)
+        score += float(binding.get("cue_weight") or binding.get("base_activation") or 0)
         existing = activations.get(trace_id)
         payload = {
             "trace_id": trace_id,
@@ -179,6 +180,52 @@ def build_reconstruction_fragments(
             }
         )
     return fragments
+
+
+def apply_hippocampal_cue_weight_decay(
+    hippocampal_cue_index: dict[str, Any] | None,
+    *,
+    generated_at: str,
+    body_integrator: dict[str, Any] | None = None,
+    dt_ms: int | None = None,
+) -> dict[str, Any]:
+    updated = dict(hippocampal_cue_index or {})
+    if not updated:
+        return {}
+
+    continuous = (body_integrator or {}).get("continuous") or {}
+    sleep_pressure = float(continuous.get("sleep_pressure", 0.0) or 0.0)
+    dt_h = max(0.0, float(dt_ms or 60_000) / 3_600_000.0)
+    decay_rate = 0.08 + sleep_pressure * 0.22
+    decay_factor = max(0.55, 1.0 - decay_rate * dt_h)
+
+    bindings: list[dict[str, Any]] = []
+    for binding in updated.get("cue_bindings", []):
+        if not isinstance(binding, dict):
+            continue
+        item = dict(binding)
+        weight = float(item.get("cue_weight") or item.get("base_activation") or 0.2)
+        item["cue_weight"] = round(max(0.05, weight * decay_factor), 3)
+        item["last_weight_decay_at"] = generated_at
+        bindings.append(item)
+
+    updated["cue_bindings"] = bindings
+    updated["generated_at"] = generated_at
+    updated["cue_weight_decay_applied"] = True
+    updated["cue_weight_decay_factor"] = round(decay_factor, 4)
+    updated["sleep_pressure_snapshot"] = round(sleep_pressure, 4)
+    return updated
+
+
+def _cue_weight(trace: dict[str, Any]) -> float:
+    salience_vector = trace.get("salience_vector") or {}
+    salience_scalar = salience_vector.get("salience")
+    if isinstance(salience_scalar, (int, float)):
+        base = float(salience_scalar)
+    else:
+        base = float(trace.get("replay_salience") or 0.5)
+    accessibility = float(trace.get("accessibility_score") or 0.55)
+    return round(min(1.0, base * 0.55 + accessibility * 0.25 + _base_activation(trace) * 0.2), 3)
 
 
 def _base_activation(trace: dict[str, Any]) -> float:

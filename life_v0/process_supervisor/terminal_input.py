@@ -4,7 +4,7 @@ import json
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, TextIO
+from typing import Any, Iterable, TextIO
 
 
 TERMINAL_INPUT_PROFILE_REF = "runtime/state/terminal/terminal_input_profile.json"
@@ -15,6 +15,8 @@ class TerminalCompletionItem:
     label: str
     detail: str = ""
     kind: str = "command"
+    group: str = ""
+    show_on_empty_query: bool = True
 
 
 @dataclass(frozen=True)
@@ -24,6 +26,10 @@ class TerminalCompletionState:
     start_index: int
     end_index: int
     items: tuple[TerminalCompletionItem, ...]
+    visible_limit: int = 10
+    remaining_count: int = 0
+    total_count: int = 0
+    hint: str = ""
 
 
 def build_terminal_input_profile(
@@ -41,15 +47,23 @@ def build_terminal_input_profile(
         "terminal_framework": "prompt_toolkit",
         "self_built_input_reader": "removed",
         "prompt_toolkit_experience": {
-            "input_box": "bottom_composer_with_prompt_prefix_and_cursor_index",
+            "layout_profile": "product_split_pane_v4_grok_visual",
+            "input_box": "split_pane_bottom_composer",
             "mouse_support": True,
+            "scrollback_policy": "in_app_conversation_pane",
+            "session_replay_line_limit": 400,
             "enable_history_search": True,
             "show_frame": True,
-            "complete_style": "MULTI_COLUMN",
-            "reserve_space_for_menu": 8,
+            "complete_style": "COLUMN",
+            "reserve_space_for_menu": 14,
             "cursor_shape": "BLINKING_BEAM",
-            "placeholder": "输入一句话，或 / 查看状态命令，@ 引用文件",
-            "internal_life_signal_visibility": "hidden_until_slash_command",
+            "placeholder": "输入对话，/ 命令面板，@ 引用文件，Ctrl-B 侧栏",
+            "sidebar_toggle": "ctrl_b",
+            "slash_panel": "inline_on_empty_slash_query",
+            "file_reference_preview": "inline_on_at_reference",
+            "message_blocks": "timestamp_speaker_badge_body",
+            "session_resume": "startup_carry_and_transcript",
+            "internal_life_signal_visibility": "sidebar_opt_in_ctrl_b",
         },
         "line_editing": {
             "backspace": "prompt_toolkit_native_delete_previous_character",
@@ -78,6 +92,9 @@ def build_terminal_input_profile(
             "surface": "prompt_toolkit_completion_menu",
             "selection": "up_down_arrows",
             "confirm": "enter",
+            "empty_query_surface": "grouped_core_command_panel",
+            "candidate_policy": "full_match_list_with_visible_hint",
+            "groups": ["常用", "状态", "生命机制", "控制", "梦境网页"],
             "relation_inbox_policy": "completion_preview_only_until_submitted",
         },
         "file_reference_completion": {
@@ -104,33 +121,51 @@ def build_terminal_input_profile(
     }
 
 
+def iter_slash_command_entries(
+    slash_commands: Iterable[tuple[Any, ...]],
+) -> Iterable[tuple[str, str]]:
+    for command in slash_commands:
+        if len(command) < 2:
+            continue
+        yield str(command[0]), str(command[1])
+
+
 def build_slash_completion_items(
     text: str,
     *,
-    slash_commands: list[tuple[str, str]] | tuple[tuple[str, str], ...],
+    slash_commands: list[tuple[Any, ...]] | tuple[tuple[Any, ...], ...],
     limit: int = 10,
 ) -> tuple[TerminalCompletionItem, ...]:
+    del limit
     token = str(text or "").strip()
     if not token.startswith("/"):
         return tuple()
     query = token[1:].lower()
     items: list[TerminalCompletionItem] = []
-    for label, detail in slash_commands:
+    for command in slash_commands:
+        if len(command) < 2:
+            continue
+        label, detail = command[0], command[1]
+        metadata = command[2] if len(command) >= 3 and isinstance(command[2], dict) else {}
+        show_on_empty_query = bool(metadata.get("show_on_empty_query", True))
         normalized_label = str(label or "").strip()
         if not normalized_label.startswith("/"):
             continue
         search = normalized_label[1:].lower()
+        if not query and not show_on_empty_query:
+            continue
         if query and not search.startswith(query):
             continue
+        group, clean_detail = _split_completion_group_and_detail(str(detail or ""))
         items.append(
             TerminalCompletionItem(
                 label=normalized_label,
-                detail=str(detail or "").strip(),
+                detail=clean_detail,
                 kind="command",
+                group=group,
+                show_on_empty_query=show_on_empty_query,
             )
         )
-        if len(items) >= limit:
-            break
     return tuple(items)
 
 
@@ -237,12 +272,21 @@ def build_terminal_completion_state(
         )
         if not items:
             return None
+        total_count = len(items)
+        remaining_count = max(0, total_count - max(0, limit))
         return TerminalCompletionState(
             trigger="@",
             query=token[1:],
             start_index=token_start,
             end_index=cursor,
             items=items,
+            visible_limit=limit,
+            remaining_count=remaining_count,
+            total_count=total_count,
+            hint=_completion_hint(
+                remaining_count=remaining_count,
+                trigger="@",
+            ),
         )
 
     stripped_before = before_cursor.lstrip()
@@ -255,12 +299,21 @@ def build_terminal_completion_state(
         )
         if not items:
             return None
+        total_count = len(items)
+        remaining_count = max(0, total_count - max(0, limit))
         return TerminalCompletionState(
             trigger="/",
             query=token[1:],
             start_index=token_start,
             end_index=cursor,
             items=items,
+            visible_limit=limit,
+            remaining_count=remaining_count,
+            total_count=total_count,
+            hint=_completion_hint(
+                remaining_count=remaining_count,
+                trigger="/",
+            ),
         )
 
     return None
@@ -279,14 +332,22 @@ def render_terminal_completion_popup(
         max(len(item.label) for item in state.items) + 2,
         max(12, width // 2),
     )
+    visible_limit = max(0, state.visible_limit)
+    visible_items = state.items[:visible_limit] if visible_limit else state.items
     lines = [f"  {header}"]
-    for item in state.items:
+    current_group = ""
+    for item in visible_items:
+        if state.trigger == "/" and item.group and item.group != current_group:
+            current_group = item.group
+            lines.append(f"  {current_group}")
         detail = item.detail
         if detail:
             line = f"  {item.label.ljust(label_width)} {detail}"
         else:
             line = f"  {item.label}"
         lines.append(line[:width])
+    if state.hint:
+        lines.append(f"  {state.hint}"[:width])
     return "\n".join(lines)
 
 
@@ -306,6 +367,23 @@ def _current_token_start(text: str) -> int:
     while index > 0 and not text[index - 1].isspace():
         index -= 1
     return index
+
+
+def _split_completion_group_and_detail(detail: str) -> tuple[str, str]:
+    value = str(detail or "").strip()
+    for separator in ("｜", "|"):
+        if separator in value:
+            group, clean_detail = value.split(separator, 1)
+            return group.strip(), clean_detail.strip()
+    return "", value
+
+
+def _completion_hint(*, remaining_count: int, trigger: str) -> str:
+    if remaining_count <= 0:
+        return ""
+    if trigger == "/":
+        return f"还有 {remaining_count} 个，继续输入筛选"
+    return f"还有 {remaining_count} 个，继续输入筛选"
 
 
 def _relative_posix(path: Path, root: Path) -> str:

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from life_v0.process_supervisor.model_expression import (
     _post_openai_compatible_chat_completion,
+    audit_model_expression_response,
     compose_model_expression,
 )
 from life_v0.process_supervisor.response_surface import compose_life_response
@@ -1128,7 +1129,35 @@ class ModelExpressionTests(unittest.TestCase):
                 ],
             )
 
-    def test_post_gate_blocked_model_reply_releases_recall_bounded_fallback(self):
+    def test_post_expression_gate_accepts_memory_mechanism_when_asked(self):
+        gate = audit_model_expression_response(
+            model_response_text=(
+                "我的记忆机制不是只塞一段当前上下文，而是把这一轮对话写进短期痕迹，"
+                "再由召回线索、关系记忆和长期沉淀一起影响下一次回答。"
+            ),
+            audited_expression_material="{}",
+            expression_context={
+                "external_relation_utterance": "能告诉我你的记忆机制吗",
+                "relationship": {},
+                "shared_language": {},
+                "language_plasticity": {},
+                "self_slow_variables": {},
+                "memory_retrieval": {
+                    "memory_retrieval_frame_ref": "runtime/state/memory/memory_retrieval_frame.json"
+                },
+                "live_language": {},
+                "resident_background": {},
+                "life_context": {},
+                "body_affect": {},
+                "responsibility_regret_repair": {},
+                "prediction_conscious_workspace": {},
+            },
+        )
+
+        self.assertEqual(gate["gate_status"], "accepted")
+        self.assertEqual(gate["blocked_template_or_mechanism_terms"], [])
+
+    def test_post_gate_blocked_model_reply_releases_recall_invariant_fragment(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
 
@@ -1177,13 +1206,13 @@ class ModelExpressionTests(unittest.TestCase):
                 write_json=self._write_json,
             )
 
-            self.assertFalse(result.applied)
-            self.assertEqual(result.response_text, "")
+            self.assertTrue(result.applied)
+            self.assertIn("记忆线索", result.response_text)
             self.assertEqual(
                 result.state["expression_release_path"],
-                "model_expression",
+                "expression_invariant_fragment",
             )
-            self.assertIsNone(result.state["expression_release_tier"])
+            self.assertEqual(result.state["expression_release_tier"], 3)
             self.assertEqual(
                 result.state["pre_fallback_candidate_text"],
                 MODEL_BLOCKED_STYLE_PROMISE_SURFACE,
@@ -1195,6 +1224,10 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertEqual(
                 result.state["pre_fallback_unreleased_reason"],
                 "post_expression_gate:blocked_template_or_mechanism_surface",
+            )
+            self.assertEqual(
+                result.state["post_expression_gate_status"],
+                "accepted",
             )
 
     def test_context_summary_exposes_conscious_body_and_world_digest(self):

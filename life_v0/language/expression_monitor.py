@@ -1,13 +1,26 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+import os
+from pathlib import Path
+from typing import Any, Mapping
 
 from life_v0.membrane.queue_e_signals import build_queue_e_repair_modulation_profile
 
 
 BODY_RESOURCE_BUDGET_REF = "runtime/state/body/body_resource_budget.json"
 CORE_AFFECT_VECTOR_REF = "runtime/state/body/core_affect_vector.json"
+BODY_INTEGRATOR_STATE_REF = "runtime/state/body/body_integrator_state.json"
+WORKSPACE_FRAME_REF = "runtime/state/consciousness/workspace_frame.json"
+BROADCAST_FRAME_REF = "runtime/state/consciousness/broadcast_frame.json"
+NETWORK_STATE_REF = "runtime/state/neural_life_core/network_state.json"
+EPISODIC_SPEECH_MEMORY_REF = "runtime/state/language/episodic_speech_memory.jsonl"
+EXPRESSION_SLOTS_SCHEMA = "expression_plan_slots_v1"
+
+
+def is_expression_slots_enabled(environ: Mapping[str, str] | None = None) -> bool:
+    env = os.environ if environ is None else environ
+    return _parse_bool(env.get("DIGITAL_LIFE_EXPRESSION_SLOTS"), False)
 
 
 def build_expression_monitor_state(
@@ -268,11 +281,17 @@ def apply_body_proactive_release_threshold(
     updated = json.loads(json.dumps(expression_plan))
     fatigue_pressure = updated.get("fatigue_pressure")
     caution = updated.get("release_caution_level")
+    proactive_drive = updated.get("proactive_drive_scalar")
+    if proactive_drive is None and proactive_voice_profile:
+        proactive_drive = proactive_voice_profile.get("proactive_drive_scalar")
     constraints = list(
         (proactive_voice_profile or {}).get("release_constraints", [])
     )
     if fatigue_pressure in {"high_load", "critical"}:
         constraints.append("hold_proactive_voice_until_body_recovery")
+        updated["proactive_release_threshold"] = "elevated"
+    elif isinstance(proactive_drive, (int, float)) and proactive_drive < 0.35:
+        constraints.append("hold_proactive_voice_low_drive")
         updated["proactive_release_threshold"] = "elevated"
     elif caution == "elevated":
         updated["proactive_release_threshold"] = "guarded"
@@ -284,6 +303,255 @@ def apply_body_proactive_release_threshold(
         "structured_body_modulation_not_spoken_response"
     )
     return updated
+
+
+def maybe_apply_expression_slots_to_plan(
+    *,
+    expression_plan: dict[str, Any],
+    workspace_frame: dict[str, Any] | None = None,
+    broadcast_frame: dict[str, Any] | None = None,
+    body_integrator: dict[str, Any] | None = None,
+    network_state: dict[str, Any] | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    return apply_expression_slots_from_live_state(
+        expression_plan=expression_plan,
+        workspace_frame=workspace_frame,
+        broadcast_frame=broadcast_frame,
+        body_integrator=body_integrator,
+        network_state=network_state,
+        environ=environ,
+    )
+
+
+def apply_expression_slots_from_live_state(
+    *,
+    expression_plan: dict[str, Any],
+    workspace_frame: dict[str, Any] | None = None,
+    broadcast_frame: dict[str, Any] | None = None,
+    body_integrator: dict[str, Any] | None = None,
+    network_state: dict[str, Any] | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    if not expression_plan or not is_expression_slots_enabled(environ):
+        return expression_plan or {}
+
+    updated = json.loads(json.dumps(expression_plan))
+    continuous = (body_integrator or {}).get("continuous") or {}
+    topk_meta = (workspace_frame or {}).get("workspace_topk") or {}
+    primary_broadcast = (broadcast_frame or {}).get("primary_broadcast") or {}
+    secondary_broadcast = (broadcast_frame or {}).get("secondary_broadcast") or {}
+    if not primary_broadcast:
+        candidates = list((workspace_frame or {}).get("candidate_explanations") or [])
+        if candidates and isinstance(candidates[0], dict):
+            primary_broadcast = candidates[0]
+        if len(candidates) >= 2 and isinstance(candidates[1], dict):
+            secondary_broadcast = candidates[1]
+
+    cognitive_bandwidth = float(continuous.get("cognitive_bandwidth", 0.82) or 0.82)
+    allostatic_load = float(continuous.get("allostatic_load", 0.0) or 0.0)
+    sleep_pressure = float(continuous.get("sleep_pressure", 0.0) or 0.0)
+    workspace_k = topk_meta.get("k")
+    if workspace_k is None:
+        workspace_k = len((workspace_frame or {}).get("candidate_explanations") or [])
+
+    slot_refs = list(updated.get("expression_slot_refs", []))
+    for ref in (
+        BODY_INTEGRATOR_STATE_REF,
+        WORKSPACE_FRAME_REF,
+        BROADCAST_FRAME_REF,
+        NETWORK_STATE_REF,
+    ):
+        if ref not in slot_refs:
+            slot_refs.append(ref)
+
+    dmn_profile = _dmn_network_profile(network_state)
+    proactive_drive = compute_proactive_drive_scalar(
+        body_integrator=body_integrator,
+        network_state=network_state,
+        expression_plan=updated,
+    )
+
+    updated.update(
+        {
+            "expression_slots_applied": True,
+            "expression_slots_schema_version": EXPRESSION_SLOTS_SCHEMA,
+            "expression_slot_refs": slot_refs,
+            "body_integrator_ref": BODY_INTEGRATOR_STATE_REF,
+            "workspace_frame_ref": WORKSPACE_FRAME_REF,
+            "broadcast_frame_ref": BROADCAST_FRAME_REF,
+            "network_state_ref": NETWORK_STATE_REF,
+            "cognitive_bandwidth_scalar": round(cognitive_bandwidth, 3),
+            "allostatic_load_scalar": round(allostatic_load, 3),
+            "sleep_pressure_scalar": round(sleep_pressure, 3),
+            "workspace_topk_k": workspace_k,
+            "workspace_primary_focus": (
+                primary_broadcast.get("focus")
+                or updated.get("semantic_goal")
+            ),
+            "workspace_broadcast_primary_ref": primary_broadcast.get("explanation_id"),
+            "workspace_broadcast_secondary_ref": secondary_broadcast.get(
+                "explanation_id"
+            ),
+            "broadcast_primary_focus": primary_broadcast.get("focus"),
+            "broadcast_secondary_focus": secondary_broadcast.get("focus"),
+            "dmn_network_mode": dmn_profile.get("mode"),
+            "dmn_network_dominant": dmn_profile.get("dominant"),
+            "proactive_drive_scalar": proactive_drive,
+        }
+    )
+    modulation_flags = list(updated.get("body_modulation_flags", []))
+    if "expression_slots_present" not in modulation_flags:
+        modulation_flags.append("expression_slots_present")
+    updated["body_modulation_flags"] = modulation_flags
+    return updated
+
+
+def compute_proactive_drive_scalar(
+    *,
+    body_integrator: dict[str, Any] | None = None,
+    network_state: dict[str, Any] | None = None,
+    expression_plan: dict[str, Any] | None = None,
+) -> float:
+    continuous = (body_integrator or {}).get("continuous") or {}
+    bandwidth = max(0.0, min(1.0, float(continuous.get("cognitive_bandwidth", 0.5) or 0.5)))
+    sleep_pressure = max(0.0, min(1.0, float(continuous.get("sleep_pressure", 0.0) or 0.0)))
+    allostatic_load = max(
+        0.0, min(1.0, float(continuous.get("allostatic_load", 0.0) or 0.0))
+    )
+    dmn_scalar = float(_dmn_network_profile(network_state).get("drive_weight", 0.2))
+
+    drive = (
+        bandwidth * 0.4
+        + dmn_scalar * 0.35
+        + (1.0 - sleep_pressure) * 0.15
+        + (1.0 - allostatic_load) * 0.1
+    )
+    fatigue_pressure = (expression_plan or {}).get("fatigue_pressure")
+    if fatigue_pressure in {"high_load", "critical"}:
+        drive *= 0.45
+    elif fatigue_pressure == "elevated_guard":
+        drive *= 0.72
+    caution = (expression_plan or {}).get("release_caution_level")
+    if caution == "elevated":
+        drive *= 0.85
+    return round(max(0.0, min(1.0, drive)), 3)
+
+
+def maybe_append_episodic_speech_ref(
+    *,
+    language_dir: Path,
+    utterance_ref: str,
+    expression_plan: dict[str, Any] | None = None,
+    gate_status: str,
+    generated_at: str,
+    environ: Mapping[str, str] | None = None,
+) -> bool:
+    if not is_expression_slots_enabled(environ):
+        return False
+    if gate_status != "accepted" or not utterance_ref:
+        return False
+
+    entry = {
+        "schema_version": "episodic_speech_ref_v1",
+        "utterance_ref": utterance_ref,
+        "gate_status": gate_status,
+        "generated_at": generated_at,
+        "semantic_goal": (expression_plan or {}).get("semantic_goal"),
+        "workspace_primary_focus": (expression_plan or {}).get(
+            "workspace_primary_focus"
+        ),
+        "expression_plan_ref": "runtime/state/language/expression_plan.json",
+    }
+    path = language_dir / "episodic_speech_memory.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    return True
+
+
+def expression_plan_slots_summary(expression_plan: dict[str, Any] | None) -> dict[str, Any]:
+    plan = expression_plan or {}
+    if not plan.get("expression_slots_applied"):
+        return {}
+    keys = (
+        "expression_slots_schema_version",
+        "semantic_goal",
+        "fatigue_pressure",
+        "body_repair_drive",
+        "affect_arousal",
+        "expression_tempo_mode",
+        "release_caution_level",
+        "delay_or_release_decision",
+        "cognitive_bandwidth_scalar",
+        "allostatic_load_scalar",
+        "sleep_pressure_scalar",
+        "workspace_topk_k",
+        "workspace_primary_focus",
+        "workspace_broadcast_primary_ref",
+        "workspace_broadcast_secondary_ref",
+        "broadcast_primary_focus",
+        "broadcast_secondary_focus",
+        "dmn_network_mode",
+        "dmn_network_dominant",
+        "proactive_drive_scalar",
+        "memory_grounding_refs",
+        "memory_reconstruction_focus",
+        "dream_fact_boundary",
+        "body_integrator_ref",
+        "workspace_frame_ref",
+        "broadcast_frame_ref",
+        "network_state_ref",
+    )
+    return {
+        key: plan.get(key)
+        for key in keys
+        if plan.get(key) is not None or key in {
+            "workspace_broadcast_primary_ref",
+            "workspace_broadcast_secondary_ref",
+        }
+    }
+
+
+def _dmn_network_profile(network_state: dict[str, Any] | None) -> dict[str, Any]:
+    state = network_state or {}
+    dominant = str(state.get("dominant_network") or "")
+    active_networks = [
+        item
+        for item in state.get("active_networks", [])
+        if isinstance(item, dict)
+    ]
+    dmn_entry = next(
+        (
+            item
+            for item in active_networks
+            if item.get("network_id") == "default_mode_network"
+        ),
+        {},
+    )
+    mode = dmn_entry.get("mode")
+    is_dominant = dominant == "default_mode_network"
+    is_active = bool(dmn_entry)
+    drive_weight = 0.85 if is_dominant else (0.55 if is_active else 0.2)
+    return {
+        "mode": mode,
+        "dominant": is_dominant,
+        "active": is_active,
+        "drive_weight": drive_weight,
+    }
+
+
+def _parse_bool(value: Any, default: bool) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    return default
 
 
 def apply_world_contact_handoff_modulation(
