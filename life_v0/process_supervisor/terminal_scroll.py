@@ -56,11 +56,19 @@ def resolve_conversation_max_scroll(
         terminal_height=terminal_height,
         auxiliary_lines=auxiliary_lines,
     )
+    content_lines = count_conversation_display_lines(
+        conversation,
+        width=width or conversation.width,
+    )
+    fragment_scroll = max(0, content_lines - visible)
     render_info = getattr(pane, "render_info", None)
-    if render_info is not None:
-        return max(0, int(render_info.content_height) - int(render_info.window_height))
-    content_lines = count_conversation_display_lines(conversation, width=width)
-    return max(0, content_lines - visible)
+    if render_info is None:
+        return fragment_scroll
+    rendered_scroll = max(
+        0,
+        int(render_info.content_height) - int(render_info.window_height),
+    )
+    return max(fragment_scroll, rendered_scroll)
 
 
 def apply_conversation_scroll_policy(

@@ -91,18 +91,26 @@ class TerminalScrollTests(unittest.TestCase):
             estimate_conversation_visual_lines(model),
         )
 
-    def test_resolve_conversation_max_scroll_prefers_render_info(self):
+    def test_resolve_conversation_max_scroll_uses_max_of_fragment_and_render_info(self):
         model = ConversationModel()
+        for index in range(6):
+            model.append_message(
+                MessageRenderSpec(
+                    speaker="life",
+                    text=f"reply {index}\nsecond line",
+                    life_name="Adam",
+                )
+            )
         pane = _FakePane(
-            render_info=_FakeRenderInfo(content_height=120, window_height=30)
+            render_info=_FakeRenderInfo(content_height=40, window_height=30)
         )
-        self.assertEqual(
+        self.assertGreaterEqual(
             resolve_conversation_max_scroll(
                 pane=pane,
                 conversation=model,
                 terminal_height=24,
             ),
-            90,
+            10,
         )
 
 

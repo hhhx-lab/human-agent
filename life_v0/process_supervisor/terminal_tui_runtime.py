@@ -79,7 +79,7 @@ class ConversationModel:
         self.width = width
         lines = load_current_terminal_session_lines(
             terminal_dir=terminal_dir,
-            limit=400,
+            limit=5000,
         )
         self.blocks = []
         if not lines:
@@ -125,6 +125,7 @@ class ConversationModel:
         lines = load_session_conversation_lines(
             terminal_dir=terminal_dir,
             session_id=session_id,
+            limit=5000,
         )
         self.blocks = []
         if not lines:
@@ -160,6 +161,7 @@ class ConversationModel:
 
     def append_message(self, spec: MessageRenderSpec) -> None:
         self._clear_ephemeral()
+        should_follow_end = self.scroll_to_end
         cleaned = sanitize_terminal_message_text(spec.text)
         self.blocks.append(
             BlockRecord.create(
@@ -173,10 +175,11 @@ class ConversationModel:
                 )
             )
         )
-        self.scroll_to_end = True
+        self.scroll_to_end = should_follow_end
 
     def show_typing(self, *, life_name: str) -> None:
         self._clear_ephemeral()
+        should_follow_end = self.scroll_to_end
         record = BlockRecord.create(
             MessageRenderSpec(
                 speaker="life",
@@ -190,21 +193,24 @@ class ConversationModel:
         self.blocks.append(record)
         self.stream_block_id = record.block_id
         self.stream_text = ""
-        self.scroll_to_end = True
+        self.scroll_to_end = should_follow_end
 
     def start_stream_message(self, spec: MessageRenderSpec) -> None:
         self._clear_ephemeral()
+        should_follow_end = self.scroll_to_end
         record = BlockRecord.create(spec, ephemeral=True)
         record.running = True
         self.blocks.append(record)
         self.stream_block_id = record.block_id
         self.stream_text = ""
-        self.scroll_to_end = True
+        self.scroll_to_end = should_follow_end
 
     def append_stream_delta(self, chunk: str) -> None:
         if not chunk:
             return
+        follow_end = self.scroll_to_end
         self._clear_ephemeral(keep_stream=True)
+        self.scroll_to_end = follow_end
         if self.stream_block_id is None:
             self.start_stream_message(
                 MessageRenderSpec(
@@ -226,9 +232,9 @@ class ConversationModel:
             event_kind=record.spec.event_kind,
         )
         record.running = True
-        self.scroll_to_end = True
 
     def finalize_stream_message(self, spec: MessageRenderSpec) -> None:
+        should_follow_end = self.scroll_to_end
         record = self.find_block(self.stream_block_id or "")
         if record is not None:
             record.ephemeral = False
@@ -241,7 +247,7 @@ class ConversationModel:
             )
             self.stream_block_id = None
             self.stream_text = ""
-            self.scroll_to_end = True
+            self.scroll_to_end = should_follow_end
             return
         self._clear_ephemeral()
         if spec.text:

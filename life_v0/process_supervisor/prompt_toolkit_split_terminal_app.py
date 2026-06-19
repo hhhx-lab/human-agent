@@ -211,11 +211,11 @@ def run_prompt_toolkit_split_terminal_app(
         )
 
     def _invalidate_ui(*, sync_scroll: bool = True) -> None:
-        if sync_scroll:
-            _sync_conversation_scroll()
         app = app_ref[0]
         if app is not None:
             app.invalidate()
+        if sync_scroll:
+            _sync_conversation_scroll()
 
     def _completion_hint(buffer) -> str:
         if buffer is None or not getattr(buffer, "complete_state", None):
@@ -589,6 +589,7 @@ def run_prompt_toolkit_split_terminal_app(
 
     def _reload_session_view(target_session_id: str) -> None:
         nonlocal session_id
+        follow_end = conversation.scroll_to_end
         session_id = switch_terminal_session(
             terminal_dir=terminal_dir,
             session_id=target_session_id,
@@ -597,8 +598,11 @@ def run_prompt_toolkit_split_terminal_app(
             terminal_dir=terminal_dir,
             session_id=session_id,
             life_name=name,
-            width=layout_state.terminal_width,
+            width=_conversation_scroll_width(),
         )
+        conversation.scroll_to_end = follow_end
+        if conversation_pane_holder:
+            conversation_pane_holder[0].vertical_scroll = 0
         _invalidate_ui()
 
     def _execute_palette_selection() -> None:
