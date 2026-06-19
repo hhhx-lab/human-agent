@@ -733,6 +733,9 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                                     "9",
                                 ]
                             )
+            transcript = (
+                root / "runtime/state/terminal/terminal_session_transcript.jsonl"
+            ).read_text(encoding="utf-8")
 
         self.assertEqual(exit_code, 0)
         self.assertEqual(stdout.getvalue().strip(), "我在。")
@@ -740,6 +743,10 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
         self.assertEqual(len(send_calls), 2)
         self.assertEqual(send_calls[1]["utterance"], "你在吗？")
         self.assertEqual(send_calls[1]["wait_timeout_seconds"], 9)
+        self.assertIn("relation_utterance", transcript)
+        self.assertIn("你在吗？", transcript)
+        self.assertIn("life_response", transcript)
+        self.assertIn("我在。", transcript)
 
     def test_say_entrypoint_expands_file_references_before_send(self):
         from life_v0.digital_entry import main
@@ -780,6 +787,9 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                                 "read @README.md and answer one short sentence",
                             ]
                         )
+            transcript = (
+                repo / "runtime/state/terminal/terminal_session_transcript.jsonl"
+            ).read_text(encoding="utf-8")
 
         self.assertEqual(exit_code, 0)
         utterance = str(captured["utterance"])
@@ -787,6 +797,10 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
         self.assertIn("引用文件: README.md", utterance)
         self.assertIn("Human Agent", utterance)
         self.assertIn("Memory, dream, language.", utterance)
+        self.assertIn("relation_utterance", transcript)
+        self.assertIn("read @README.md and answer one short sentence", transcript)
+        self.assertIn("life_response_unreleased", transcript)
+        self.assertIn("completed_unreleased", transcript)
 
     def test_resident_terminal_file_reference_expands_before_relation_turn(self):
         from life_v0.digital_entry import _handle_resident_terminal_utterance
@@ -4103,13 +4117,16 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
         )
         self.assertEqual(
             model_expression_state["model_expression_status"],
-            "model_expression_skipped",
+            "model_expression_applied",
         )
-        self.assertEqual(model_expression_state["expression_release_path"], "model_expression")
-        self.assertIsNone(model_expression_state["expression_release_tier"])
+        self.assertEqual(
+            model_expression_state["expression_release_path"],
+            "expression_invariant_continuity",
+        )
+        self.assertEqual(model_expression_state["expression_release_tier"], 4)
         self.assertEqual(
             model_expression_state["post_expression_gate_status"],
-            "skipped",
+            "accepted",
         )
         self.assertEqual(
             model_expression_report["runtime_config_state_ref"],
@@ -4147,19 +4164,19 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
             process_report["model_expression_report_ref"],
             "runtime/reports/latest/digital_life_model_expression_report.json",
         )
-        self.assertEqual(process_report["post_expression_gate_status"], "skipped")
+        self.assertEqual(process_report["post_expression_gate_status"], "accepted")
         self.assertEqual(
             process_report["last_life_turn"]["expression_release_path"],
-            "model_expression",
+            "expression_invariant_continuity",
         )
-        self.assertNotIn("expression_release_tier", process_report["last_life_turn"])
+        self.assertEqual(process_report["last_life_turn"]["expression_release_tier"], 4)
         self.assertEqual(
             process_report["last_life_turn"]["model_expression_status"],
-            "model_expression_skipped",
+            "model_expression_applied",
         )
         self.assertEqual(
             process_report["last_life_turn"]["post_expression_gate_status"],
-            "skipped",
+            "accepted",
         )
 
     def test_repo_local_digital_life_entrypoint_bootstraps_empty_runtime_before_dialogue(self):
@@ -4552,7 +4569,7 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                     check=False,
                 )
                 self.assertEqual(said.returncode, 0, said.stderr)
-                self.assertFalse(said.stdout.strip())
+                self.assertEqual(said.stdout.strip(), "在。")
                 self.assertNotIn("你还在后台吗？", said.stdout)
 
                 inbox_events = self._read_jsonl(
@@ -4569,10 +4586,13 @@ class DigitalEntrypointTests(DigitalLifeRuntimeEnvIsolationMixin, unittest.TestC
                 )
                 self.assertEqual(inbox_events[-1]["utterance"], "你还在后台吗？")
                 self.assertEqual(outbox_events[-1]["sequence"], inbox_events[-1]["sequence"])
-                self.assertEqual(outbox_events[-1]["status"], "completed_unreleased")
-                self.assertEqual(outbox_events[-1]["response_text"], "")
-                self.assertEqual(outbox_events[-1]["expression_release_path"], "model_expression")
-                self.assertIsNone(outbox_events[-1]["expression_release_tier"])
+                self.assertEqual(outbox_events[-1]["status"], "completed_released_fallback")
+                self.assertEqual(outbox_events[-1]["response_text"], "在。")
+                self.assertEqual(
+                    outbox_events[-1]["expression_release_path"],
+                    "expression_invariant_continuity",
+                )
+                self.assertEqual(outbox_events[-1]["expression_release_tier"], 4)
                 self.assertNotIn("你还在后台吗？", outbox_events[-1]["response_text"])
                 self.assertEqual(queue_state["status"], "waiting_for_relation_turn")
                 self.assertEqual(queue_state["last_completed_sequence"], 1)

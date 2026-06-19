@@ -14,6 +14,7 @@ from .archive import run_write_growth_archive
 from .authority import run_source_authority
 from .body import run_check_life_support, run_life_support
 from .contracts import run_check_v0_contracts
+from .digital_life_identity import read_life_name_registry
 from .direction import run_direction_lock
 from .dream.web_dream_learning import (
     build_web_dream_learning_effective_seed_preview,
@@ -214,6 +215,20 @@ def main(argv: list[str] | None = None) -> int:
                 args.say,
                 repo_root=Path.cwd(),
             )
+            say_life_name = _read_current_life_name(terminal_dir=terminal_dir)
+            say_session_id = _ensure_pipe_terminal_session(
+                terminal_dir=terminal_dir,
+                life_name=say_life_name,
+            )
+            append_terminal_session_event(
+                terminal_dir=terminal_dir,
+                session_id=say_session_id,
+                event_kind="relation_utterance",
+                speaker="relation",
+                text=args.say,
+                life_name=say_life_name,
+                metadata={"entrypoint": "Adam --say"},
+            )
             result = send_resident_relation_turn(
                 terminal_dir=terminal_dir,
                 utterance=expanded_say.utterance,
@@ -238,6 +253,15 @@ def main(argv: list[str] | None = None) -> int:
             response_text = result.state.get("response_text")
             if response_text:
                 print(response_text)
+                append_terminal_session_event(
+                    terminal_dir=terminal_dir,
+                    session_id=say_session_id,
+                    event_kind="life_response",
+                    speaker="life",
+                    text=str(response_text),
+                    life_name=say_life_name,
+                    metadata={"entrypoint": "Adam --say"},
+                )
             elif args.json:
                 print(
                     json.dumps(
@@ -245,6 +269,19 @@ def main(argv: list[str] | None = None) -> int:
                         ensure_ascii=False,
                         indent=2,
                     )
+                )
+            if not response_text:
+                append_terminal_session_event(
+                    terminal_dir=terminal_dir,
+                    session_id=say_session_id,
+                    event_kind="life_response_unreleased",
+                    speaker="life",
+                    text=json.dumps(
+                        _format_relation_send_unreleased_output(result.state),
+                        ensure_ascii=False,
+                    ),
+                    life_name=say_life_name,
+                    metadata={"entrypoint": "Adam --say", "released": False},
                 )
             return result.exit_code
 
@@ -1452,6 +1489,18 @@ def _ensure_pipe_terminal_session(
         life_name=life_name,
     )
     return str(event.get("session_id") or "")
+
+
+def _read_current_life_name(*, terminal_dir: Path) -> str | None:
+    state_dir = terminal_dir.parent
+    registry = read_life_name_registry(state_dir)
+    for key in ("canonical_name", "life_name", "name"):
+        value = str(registry.get(key) or "").strip()
+        if value:
+            return value
+    lifecycle_state = _read_runtime_json(terminal_dir / "resident_lifecycle_state.json")
+    value = str(lifecycle_state.get("life_name") or "").strip()
+    return value or None
 
 
 def _print_command_result(

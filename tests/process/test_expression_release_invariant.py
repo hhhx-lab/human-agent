@@ -77,6 +77,19 @@ class ExpressionReleaseInvariantTests(unittest.TestCase):
         self.assertEqual(release.release_path, "expression_unreleased")
         self.assertEqual(release.release_tier, 0)
 
+    def test_terminal_continuity_can_release_minimal_relation_response(self):
+        release = resolve_turn_spoken_output(
+            external_utterance="你还在吗？",
+            model_result=SimpleNamespace(response_text="", state={}),
+            relationship_memory={
+                "relation_person_profile": {"observed_names": ["何剑宝"]},
+            },
+            allow_invariant_continuity=True,
+        )
+        self.assertEqual(release.response_text, "何剑宝，在。")
+        self.assertEqual(release.release_path, "expression_invariant_continuity")
+        self.assertEqual(release.release_tier, 4)
+
     def test_cue_sources_weak_grounding(self):
         self.assertTrue(
             recall_expression_grounded(

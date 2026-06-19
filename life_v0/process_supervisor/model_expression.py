@@ -497,6 +497,23 @@ def compose_model_expression(
                 safe_error = _safe_error_message(exc, config.model_api_key)
                 if (
                     len(model_transport_retry_history) < max_transport_retries
+                    and _is_unsupported_token_limit_transport_error(exc)
+                    and _payload_has_token_limit(request_payload)
+                ):
+                    request_payload = _strip_token_limit_from_payload(request_payload)
+                    model_transport_retry_history.append(
+                        {
+                            "schema_version": "model_transport_retry_history_entry_v0",
+                            "attempt_number": model_expression_attempt_count,
+                            "error_preview": safe_error,
+                            "retry_policy": (
+                                "retry_without_chat_completion_token_limit_parameter"
+                            ),
+                        }
+                    )
+                    continue
+                if (
+                    len(model_transport_retry_history) < max_transport_retries
                     and _is_transient_model_transport_error(exc)
                 ):
                     model_transport_retry_history.append(
@@ -990,6 +1007,7 @@ def _build_openai_compatible_payload(
     model_visible_context = _model_visible_expression_context(expression_context)
     payload: dict[str, Any] = {
         "model": runtime_config.model_name,
+        "instructions": _model_expression_instruction_contract(runtime_config),
         "messages": [
             {
                 "role": "user",
@@ -1007,9 +1025,33 @@ def _build_openai_compatible_payload(
     }
     if runtime_config.model_temperature is not None:
         payload["temperature"] = runtime_config.model_temperature
-    if runtime_config.model_max_output_tokens is not None:
+    if (
+        runtime_config.model_max_output_tokens is not None
+        and _chat_completion_supports_max_tokens(runtime_config)
+    ):
         payload["max_tokens"] = runtime_config.model_max_output_tokens
     return payload
+
+
+def _chat_completion_supports_max_tokens(
+    runtime_config: DigitalLifeRuntimeConfig,
+) -> bool:
+    provider = runtime_config.model_provider.strip().lower()
+    return provider == "openai"
+
+
+def _model_expression_instruction_contract(
+    runtime_config: DigitalLifeRuntimeConfig,
+) -> str:
+    language = runtime_config.response_language or "zh-CN"
+    return (
+        "Produce the next spoken response for the digital life from the supplied "
+        "expression_context. Treat the context as internal state evidence, not as "
+        "visible content. Output only the spoken text. Do not output JSON, schemas, "
+        "runtime paths, provider/model identity, service-role language, or future "
+        "style promises. Do not use fixed canned replies. Keep the response in "
+        f"{language} unless the relation utterance clearly asks otherwise."
+    )
 
 
 def _model_visible_expression_context(
@@ -1403,6 +1445,34 @@ def _model_transport_retry_count(
     runtime_config: DigitalLifeRuntimeConfig,
 ) -> int:
     return max(0, min(getattr(runtime_config, "model_transport_retry_count", 1), 3))
+
+
+def _payload_has_token_limit(payload: dict[str, Any]) -> bool:
+    return any(
+        key in payload
+        for key in ("max_tokens", "max_output_tokens", "max_completion_tokens")
+    )
+
+
+def _strip_token_limit_from_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    updated = dict(payload)
+    for key in ("max_tokens", "max_output_tokens", "max_completion_tokens"):
+        updated.pop(key, None)
+    return updated
+
+
+def _is_unsupported_token_limit_transport_error(exc: Exception) -> bool:
+    text = f"{type(exc).__name__}: {exc}".lower()
+    if "unsupported parameter" not in text and "unknown parameter" not in text:
+        return False
+    return any(
+        marker in text
+        for marker in (
+            "max_output_tokens",
+            "max_tokens",
+            "max_completion_tokens",
+        )
+    )
 
 
 def _is_transient_model_transport_error(exc: Exception) -> bool:
@@ -2378,7 +2448,7 @@ def _looks_like_mechanical_surface_cluster(
         or any(marker in answer for marker in POST_EXPRESSION_STYLE_PROMISE_TERMS)
     ):
         return False
-    if "我会" in terms and ({"机制", "流程", "修复", "共同语言"} & terms):
+    if "我会" in terms and ({"机制", "流程", "修复"} & terms):
         return True
     if {"不是", "而是", "机制"} <= terms:
         return True

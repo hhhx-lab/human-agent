@@ -48,6 +48,9 @@ from .terminal_command_palette import (
 )
 from .terminal_scroll import (
     apply_conversation_scroll_policy,
+    clamp_conversation_scroll,
+    invalidate_conversation_scroll_cache,
+    resolve_conversation_viewport_height,
     scroll_conversation_by_lines,
 )
 from .terminal_stream_bridge import stream_session
@@ -104,10 +107,10 @@ def run_prompt_toolkit_split_terminal_app(
 
         def mouse_handler(self, mouse_event):
             if mouse_event.event_type == MouseEventType.SCROLL_UP:
-                self._on_scroll(-3)
+                self._on_scroll(-1)
                 return None
             if mouse_event.event_type == MouseEventType.SCROLL_DOWN:
-                self._on_scroll(3)
+                self._on_scroll(1)
                 return None
             return super().mouse_handler(mouse_event)
 
@@ -182,6 +185,14 @@ def run_prompt_toolkit_split_terminal_app(
             width -= resolve_sidebar_pane_width(layout_state)
         return max(24, width - 2)
 
+    def _conversation_scroll_kwargs() -> dict[str, object]:
+        return {
+            "terminal_height": layout_state.terminal_height,
+            "auxiliary_lines": _auxiliary_line_count(),
+            "width": _conversation_scroll_width(),
+            "animation_tick": ui_state.animation_tick,
+        }
+
     def _scroll_conversation(delta: int) -> None:
         if not conversation_pane_holder:
             return
@@ -189,11 +200,25 @@ def run_prompt_toolkit_split_terminal_app(
             pane=conversation_pane_holder[0],
             conversation=conversation,
             delta=delta,
-            terminal_height=layout_state.terminal_height,
-            auxiliary_lines=_auxiliary_line_count(),
-            width=_conversation_scroll_width(),
+            **_conversation_scroll_kwargs(),
+        )
+        clamp_conversation_scroll(
+            pane=conversation_pane_holder[0],
+            conversation=conversation,
+            **_conversation_scroll_kwargs(),
         )
         _invalidate_ui(sync_scroll=False)
+
+    def _conversation_page_scroll_delta() -> int:
+        _refresh_terminal_geometry()
+        return max(
+            6,
+            resolve_conversation_viewport_height(
+                terminal_height=layout_state.terminal_height,
+                auxiliary_lines=_auxiliary_line_count(),
+            )
+            - 1,
+        )
 
     def _follow_conversation_end() -> None:
         conversation.scroll_to_end = True
@@ -205,9 +230,12 @@ def run_prompt_toolkit_split_terminal_app(
         apply_conversation_scroll_policy(
             pane=conversation_pane_holder[0],
             conversation=conversation,
-            terminal_height=layout_state.terminal_height,
-            auxiliary_lines=_auxiliary_line_count(),
-            width=_conversation_scroll_width(),
+            **_conversation_scroll_kwargs(),
+        )
+        clamp_conversation_scroll(
+            pane=conversation_pane_holder[0],
+            conversation=conversation,
+            **_conversation_scroll_kwargs(),
         )
 
     def _invalidate_ui(*, sync_scroll: bool = True) -> None:
@@ -398,6 +426,7 @@ def run_prompt_toolkit_split_terminal_app(
                 event_kind=event_kind,
             )
         )
+        invalidate_conversation_scroll_cache(conversation)
 
     def _persist_response_event(
         *,
@@ -1087,12 +1116,22 @@ def run_prompt_toolkit_split_terminal_app(
             _scroll_conversation(delta)
 
     # Mac-first: trackpad/wheel, then Control+Arrow while typing.
-    _bind_conversation_scroll(Keys.ScrollUp, delta=-3)
-    _bind_conversation_scroll(Keys.ScrollDown, delta=3)
+    _bind_conversation_scroll(Keys.ScrollUp, delta=-1)
+    _bind_conversation_scroll(Keys.ScrollDown, delta=1)
     _bind_conversation_scroll(Keys.ControlUp, delta=-3)
     _bind_conversation_scroll(Keys.ControlDown, delta=3)
-    _bind_conversation_scroll(Keys.ControlShiftUp, delta=-12)
-    _bind_conversation_scroll(Keys.ControlShiftDown, delta=12)
+
+    @bindings.add(Keys.ControlShiftUp, filter=session_scroll_mode, eager=True)
+    def _(event):
+        if ui_state.scrollback_focused:
+            return
+        _scroll_conversation(-_conversation_page_scroll_delta())
+
+    @bindings.add(Keys.ControlShiftDown, filter=session_scroll_mode, eager=True)
+    def _(event):
+        if ui_state.scrollback_focused:
+            return
+        _scroll_conversation(_conversation_page_scroll_delta())
 
     @bindings.add("c-g", filter=session_scroll_mode, eager=True)
     def _(event):

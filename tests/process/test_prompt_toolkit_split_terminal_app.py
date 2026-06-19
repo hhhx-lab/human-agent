@@ -186,6 +186,68 @@ class PromptToolkitSplitTerminalAppTests(unittest.TestCase):
 
         self.assertIn("你好", _text(model.fragments))
 
+    def test_conversation_model_load_startup_keeps_full_current_session(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            terminal_dir = Path(tmp) / "runtime" / "state" / "terminal"
+            terminal_dir.mkdir(parents=True)
+            opened = resolve_attach_terminal_session(
+                terminal_dir=terminal_dir,
+                life_name="Adam",
+            )
+            from life_v0.process_supervisor.terminal_session_transcript import (
+                append_terminal_session_event,
+            )
+
+            for index in range(460):
+                append_terminal_session_event(
+                    terminal_dir=terminal_dir,
+                    session_id=str(opened["session_id"]),
+                    event_kind="relation_utterance",
+                    speaker="relation",
+                    text=f"当前会话第 {index:03d} 条",
+                    life_name="Adam",
+                )
+            model = ConversationModel()
+            model.load_startup(
+                terminal_dir=terminal_dir,
+                life_name="Adam",
+                width=88,
+            )
+
+        text = _text(model.fragments)
+        self.assertIn("当前会话第 000 条", text)
+        self.assertIn("当前会话第 459 条", text)
+
+    def test_conversation_model_stream_does_not_steal_manual_scroll(self):
+        model = ConversationModel()
+        model.append_message(
+            MessageRenderSpec(
+                speaker="relation",
+                text="第一条",
+                life_name="Adam",
+            )
+        )
+        model.scroll_to_end = False
+        model.start_stream_message(
+            MessageRenderSpec(
+                speaker="life",
+                text="",
+                life_name="Adam",
+            )
+        )
+        model.append_stream_delta("正在")
+        model.append_stream_delta("回答")
+        model.finalize_stream_message(
+            MessageRenderSpec(
+                speaker="life",
+                text="正在回答",
+                life_name="Adam",
+            )
+        )
+
+        self.assertFalse(model.scroll_to_end)
+        self.assertIn("正在回答", _text(model.fragments))
+
     def test_command_palette_includes_slash_commands(self):
         items = build_palette_items(
             slash_commands=(("/memory", "状态｜记忆"),),

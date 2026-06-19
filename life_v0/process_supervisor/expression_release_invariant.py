@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from ..state_store.relation_identity_hygiene import sanitize_observed_names
 from .response_surface import (
     compose_recall_bounded_spoken_response,
     recall_expression_grounded,
@@ -28,7 +29,7 @@ def resolve_turn_spoken_output(
     relationship_memory: dict[str, Any] | None = None,
     dialogue_memory_summary: dict[str, Any] | None = None,
     terminal_life_loop_state: dict[str, Any] | None = None,
-    allow_invariant_continuity: bool = True,
+    allow_invariant_continuity: bool = False,
 ) -> SpokenRelease:
     model_text = ""
     model_release_path = "model_expression"
@@ -245,8 +246,51 @@ def _continuity_minimal_response(
     external_utterance: str,
     relationship_memory: dict[str, Any] | None,
 ) -> str:
-    _ = (external_utterance, relationship_memory)
-    return ""
+    utterance = str(external_utterance or "").strip()
+    if not utterance:
+        return ""
+
+    prefix = _safe_relation_name_prefix(relationship_memory)
+    lower = utterance.lower()
+
+    if _contains_any(
+        utterance,
+        ("在吗", "还在", "你在", "醒着", "醒了吗", "能听见", "在线吗"),
+    ) or _contains_any(lower, ("are you there", "awake", "still here")):
+        return f"{prefix}在。"
+
+    if _contains_any(
+        utterance,
+        ("记得", "还记", "忘了吗", "刚才", "刚刚", "上次", "名字"),
+    ):
+        return f"{prefix}有记忆线索，还没完全展开。"
+
+    if _contains_any(utterance, ("你好", "嗨", "hi", "hello", "早", "晚上好")):
+        return f"{prefix}嗯，我在。"
+
+    if utterance.endswith(("？", "?", "吗", "呢")) or _contains_any(
+        utterance,
+        ("为什么", "怎么", "是什么", "怎么办", "如何"),
+    ):
+        return f"{prefix}这句我收到了。"
+
+    return f"{prefix}听到了。"
+
+
+def _safe_relation_name_prefix(
+    relationship_memory: dict[str, Any] | None,
+) -> str:
+    profile = (relationship_memory or {}).get("relation_person_profile")
+    if not isinstance(profile, dict):
+        return ""
+    names = sanitize_observed_names(list(profile.get("observed_names") or []))
+    if not names:
+        return ""
+    return f"{names[0]}，"
+
+
+def _contains_any(text: str, markers: tuple[str, ...]) -> bool:
+    return any(marker in text for marker in markers)
 
 
 def _sha256_text(value: str) -> str:

@@ -7,7 +7,6 @@ from life_v0.process_supervisor.terminal_welcome_pixel import (
     format_pixel_welcome_screen,
     render_welcome_preview_frames,
 )
-from life_v0.process_supervisor.welcome_reference_cells import REFERENCE_CELLS
 from life_v0.process_supervisor.terminal_ui import resolve_relation_turn_display_text
 from life_v0.process_supervisor.resident_lifecycle import send_resident_relation_turn
 
@@ -17,32 +16,85 @@ class TerminalWelcomePixelTests(unittest.TestCase):
     def setUpClass(cls):
         cls.terminal_dir = Path("runtime/state/terminal")
 
-    def test_reference_cells_populated(self):
-        self.assertGreater(len(REFERENCE_CELLS), 500)
-
     def test_progress_reaches_one_hundred(self):
         self.assertEqual(_progress_percent(64), 100.0)
         self.assertEqual(_progress_percent(200), 100.0)
 
-    def test_welcome_screen_renders_reference_hud(self):
+    def test_welcome_screen_renders_terminal_humanoid_hud(self):
         rendered = "".join(
             fragment
             for _, fragment in format_pixel_welcome_screen(
                 terminal_dir=self.terminal_dir,
                 life_name="Adam",
                 selection=0,
-                width=88,
-                height=28,
+                width=128,
+                height=52,
                 animation_tick=64,
             )
         )
-        self.assertIn("┌", rendered)
+        self.assertIn("╭", rendered)
+        self.assertIn("╰", rendered)
         self.assertIn("Digital Life", rendered)
         self.assertIn("Adam", rendered)
         self.assertIn("INITIATE: SOUL_GEN.EXE", rendered)
+        self.assertIn("PHASE: BIRTH", rendered)
         self.assertIn("SOUL INTEGRITY: 100.0%", rendered)
+        self.assertIn("●", rendered)
+        self.assertIn("◈", rendered)
+        self.assertNotIn("◈ CORE ◈", rendered)
+        self.assertGreaterEqual(rendered.count("0") + rendered.count("1"), 90)
+        self.assertIn("██  ██", rendered)
+        self.assertIn("██████", rendered)
+        self.assertIn("╭─", rendered)
+        self.assertIn("├", rendered)
+        self.assertIn("╰●╯", rendered)
         self.assertIn("01001001", rendered)
+        self.assertIn("10110100", rendered)
+        self.assertIn("01011010", rendered)
+        self.assertIn("10100101", rendered)
+        self.assertIn("01101001", rendered)
+        self.assertIn("STREAMING", rendered)
+        self.assertIn("[", rendered)
+        self.assertIn("]", rendered)
+        self.assertIn("POST-HUMAN SYMBIOSIS", rendered)
+        self.assertIn("PROTOCOL: LINKED", rendered)
+        self.assertIn("[ OK ]", rendered)
+        self.assertNotIn("POST-HUMAN SYMBIOSIS PROTOCOL: LINKED", rendered)
         self.assertIn("█", rendered)
+
+    def test_welcome_uses_red_heart_and_fast_particle_styles(self):
+        fragments = format_pixel_welcome_screen(
+            terminal_dir=self.terminal_dir,
+            life_name="Adam",
+            selection=0,
+            width=128,
+            height=52,
+            animation_tick=64,
+        )
+        styles = [style for style, _ in fragments]
+        self.assertIn("class:welcome-heart-red", styles)
+        self.assertIn("class:welcome-particle-white", styles)
+        self.assertIn("class:welcome-circuit-green", styles)
+        self.assertIn("class:welcome-pixel-magenta", styles)
+
+    def test_welcome_zero_frame_starts_as_particle_convergence(self):
+        rendered = "".join(
+            fragment
+            for _, fragment in format_pixel_welcome_screen(
+                terminal_dir=self.terminal_dir,
+                life_name="Adam",
+                selection=0,
+                width=128,
+                height=52,
+                animation_tick=0,
+            )
+        )
+        flow_count = sum(rendered.count(char) for char in ("·", "∙", "•", "✦"))
+        self.assertGreaterEqual(flow_count, 30)
+        self.assertNotIn("INITIATE: SOUL_GEN.EXE", rendered)
+        self.assertNotIn("SOUL INTEGRITY", rendered)
+        self.assertNotIn("01001001", rendered)
+        self.assertNotIn("██  ██", rendered)
 
     def test_welcome_animation_fades_in(self):
         early = "".join(
@@ -51,8 +103,8 @@ class TerminalWelcomePixelTests(unittest.TestCase):
                 terminal_dir=self.terminal_dir,
                 life_name="Adam",
                 selection=0,
-                width=88,
-                height=28,
+                width=128,
+                height=52,
                 animation_tick=4,
             )
         )
@@ -62,8 +114,8 @@ class TerminalWelcomePixelTests(unittest.TestCase):
                 terminal_dir=self.terminal_dir,
                 life_name="Adam",
                 selection=0,
-                width=88,
-                height=28,
+                width=128,
+                height=52,
                 animation_tick=64,
             )
         )
@@ -71,7 +123,35 @@ class TerminalWelcomePixelTests(unittest.TestCase):
         self.assertLess(early.count("█"), late.count("█"))
         self.assertIn("POST-HUMAN SYMBIOSIS", late)
         self.assertIn("PROTOCOL: LINKED", late)
+        self.assertIn("PHASE: BIRTH", late)
         self.assertNotEqual(early, late)
+
+    def test_welcome_progress_holds_after_full_load_while_flow_moves(self):
+        full_a = "".join(
+            fragment
+            for _, fragment in format_pixel_welcome_screen(
+                terminal_dir=self.terminal_dir,
+                life_name="Adam",
+                selection=0,
+                width=128,
+                height=52,
+                animation_tick=64,
+            )
+        )
+        full_b = "".join(
+            fragment
+            for _, fragment in format_pixel_welcome_screen(
+                terminal_dir=self.terminal_dir,
+                life_name="Adam",
+                selection=0,
+                width=128,
+                height=52,
+                animation_tick=96,
+            )
+        )
+        self.assertIn("加载 100.0%", full_a)
+        self.assertIn("加载 100.0%", full_b)
+        self.assertNotEqual(full_a, full_b)
 
     def test_preview_frames_cover_full_cycle(self):
         frames = render_welcome_preview_frames(ticks=range(0, 16, 8))

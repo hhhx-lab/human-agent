@@ -581,6 +581,7 @@ def run_live_turn_cycle(
             relationship_memory=relationship_memory,
             dialogue_memory_summary=dialogue_memory_summary,
             terminal_life_loop_state=terminal_life_loop_state,
+            allow_invariant_continuity=True,
         )
         life_response = spoken_release.response_text
         if (

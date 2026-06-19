@@ -389,6 +389,8 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertIn("Mozilla/5.0", captured["headers"]["User-Agent"])
             self.assertEqual(captured["payload"]["model"], "gpt-5.5")
             self.assertTrue(captured["payload"]["stream"])
+            self.assertIn("instructions", captured["payload"])
+            self.assertIn("Output only the spoken text", captured["payload"]["instructions"])
             self.assertNotIn(
                 "system",
                 [message.get("role") for message in captured["payload"]["messages"]],
@@ -400,7 +402,7 @@ class ModelExpressionTests(unittest.TestCase):
             self.assertIn("expression_context", serialized_payload)
             self.assertNotIn("用户", serialized_payload)
             self.assertEqual(captured["payload"]["temperature"], 0.2)
-            self.assertEqual(captured["payload"]["max_tokens"], 128)
+            self.assertNotIn("max_tokens", captured["payload"])
             self.assertEqual(captured["timeout_seconds"], 9.0)
             expression_input = json.loads(captured["payload"]["messages"][0]["content"])
             expression_context = expression_input["expression_context"]
@@ -699,6 +701,89 @@ class ModelExpressionTests(unittest.TestCase):
                 ],
                 2,
             )
+
+    def test_openai_provider_includes_max_tokens_in_payload(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            captured: dict[str, object] = {}
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                captured["payload"] = payload
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": MODEL_ACCEPTED_RELATION_TRACE},
+                        }
+                    ]
+                }
+
+            compose_model_expression(
+                run_id="model-expression-openai-max-tokens",
+                generated_at="2026-06-19T00:00:00+00:00",
+                external_utterance="你好",
+                audited_expression_material="material",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                    "DIGITAL_LIFE_MODEL_MAX_OUTPUT_TOKENS": "128",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            payload = captured["payload"]
+            assert isinstance(payload, dict)
+            self.assertEqual(payload.get("max_tokens"), 128)
+
+    def test_model_expression_retries_without_token_limit_when_gateway_rejects(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            attempts: list[dict[str, object]] = []
+
+            def fake_transport(endpoint, headers, payload, timeout_seconds):
+                attempts.append(dict(payload))
+                if "max_tokens" in payload:
+                    raise RuntimeError(
+                        'http_400: {"error":{"message":"Unsupported parameter: '
+                        'max_output_tokens"}}'
+                    )
+                return {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"content": "这是真实模型回复。"},
+                        }
+                    ]
+                }
+
+            result = compose_model_expression(
+                run_id="model-expression-token-limit-retry",
+                generated_at="2026-06-19T00:00:00+00:00",
+                external_utterance="你好",
+                audited_expression_material="material",
+                language_dir=root / "state" / "language",
+                reports_dir=root / "reports",
+                environ={
+                    "DIGITAL_LIFE_MODEL_PROVIDER": "openai",
+                    "DIGITAL_LIFE_MODEL_NAME": "gpt-5.5",
+                    "DIGITAL_LIFE_MODEL_BASE_URL": "https://model.example/v1",
+                    "DIGITAL_LIFE_MODEL_API_KEY": "secret-token",
+                    "DIGITAL_LIFE_MODEL_MAX_OUTPUT_TOKENS": "128",
+                },
+                transport=fake_transport,
+                write_json=self._write_json,
+            )
+
+            self.assertTrue(result.applied)
+            self.assertEqual(result.response_text, "这是真实模型回复。")
+            self.assertEqual(len(attempts), 2)
+            self.assertIn("max_tokens", attempts[0])
+            self.assertNotIn("max_tokens", attempts[1])
 
     def test_model_expression_sanitizes_relation_object_terms_before_model_payload(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1145,6 +1230,33 @@ class ModelExpressionTests(unittest.TestCase):
                 "memory_retrieval": {
                     "memory_retrieval_frame_ref": "runtime/state/memory/memory_retrieval_frame.json"
                 },
+                "live_language": {},
+                "resident_background": {},
+                "life_context": {},
+                "body_affect": {},
+                "responsibility_regret_repair": {},
+                "prediction_conscious_workspace": {},
+            },
+        )
+
+        self.assertEqual(gate["gate_status"], "accepted")
+        self.assertEqual(gate["blocked_template_or_mechanism_terms"], [])
+
+    def test_post_expression_gate_accepts_relation_continuity_without_mechanism_jargon(
+        self,
+    ):
+        gate = audit_model_expression_response(
+            model_response_text=(
+                "我是 Adam。我会继续陪你说下去，也会记住我们之间的共同语言和关系。"
+            ),
+            audited_expression_material="{}",
+            expression_context={
+                "external_relation_utterance": "诊断测试：请用三句话介绍你自己。",
+                "relationship": {},
+                "shared_language": {},
+                "language_plasticity": {},
+                "self_slow_variables": {},
+                "memory_retrieval": {},
                 "live_language": {},
                 "resident_background": {},
                 "life_context": {},

@@ -5,6 +5,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .terminal_tui_runtime import ConversationModel
 
+_CONVERSATION_CONTENT_HEIGHT_CACHE: dict[
+    tuple[int, int, int, int, int],
+    int,
+] = {}
+
 
 def estimate_conversation_visual_lines(conversation: ConversationModel) -> int:
     total = 0
@@ -22,26 +27,74 @@ def count_conversation_display_lines(
     *,
     width: int | None = None,
 ) -> int:
-    from prompt_toolkit.utils import get_cwidth
+    return resolve_conversation_content_height(
+        conversation,
+        width=width,
+    )
 
-    render_width = max(24, int(width or conversation.width or 88))
-    total = 0
-    for _style, text in conversation.render_fragments():
-        normalized = str(text or "")
-        if not normalized:
-            continue
-        for line in normalized.split("\n"):
-            if not line:
-                total += 1
-                continue
-            line_width = sum(get_cwidth(char) for char in line)
-            total += max(1, (line_width + render_width - 1) // render_width)
-    return max(total, 1)
+
+def conversation_layout_chrome_lines(*, auxiliary_lines: int = 0) -> int:
+    # top bar (2) + tab bar (1) + separator (1) + input (1) + footer (1)
+    return 6 + max(0, int(auxiliary_lines))
 
 
 def conversation_visible_height(*, terminal_height: int, auxiliary_lines: int = 0) -> int:
-    reserved = 10 + max(0, auxiliary_lines)
-    return max(8, int(terminal_height) - reserved)
+    return resolve_conversation_viewport_height(
+        terminal_height=terminal_height,
+        auxiliary_lines=auxiliary_lines,
+    )
+
+
+def resolve_conversation_viewport_height(
+    *,
+    terminal_height: int,
+    auxiliary_lines: int = 0,
+) -> int:
+    chrome = conversation_layout_chrome_lines(auxiliary_lines=auxiliary_lines)
+    return max(8, int(terminal_height) - chrome)
+
+
+def resolve_conversation_content_height(
+    conversation: ConversationModel,
+    *,
+    width: int | None = None,
+    animation_tick: int = 0,
+) -> int:
+    render_width = max(24, int(width or conversation.width or 88))
+    running_blocks = sum(1 for record in conversation.blocks if record.running)
+    cache_key = (
+        id(conversation),
+        len(conversation.blocks),
+        render_width,
+        len(conversation.stream_text),
+        running_blocks,
+        int(animation_tick),
+    )
+    cached = _CONVERSATION_CONTENT_HEIGHT_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    from prompt_toolkit.formatted_text import FormattedText
+    from prompt_toolkit.layout.containers import Window
+    from prompt_toolkit.layout.controls import FormattedTextControl
+
+    fragments = conversation.render_fragments(animation_tick=animation_tick)
+    control = FormattedTextControl(lambda: FormattedText(fragments))
+    window = Window(control, wrap_lines=True)
+    preferred = int(window.preferred_height(render_width, 10000).preferred or 0)
+    height = max(1, preferred)
+    _CONVERSATION_CONTENT_HEIGHT_CACHE[cache_key] = height
+    return height
+
+
+def invalidate_conversation_scroll_cache(conversation: ConversationModel | None = None) -> None:
+    if conversation is None:
+        _CONVERSATION_CONTENT_HEIGHT_CACHE.clear()
+        return
+    conversation_id = id(conversation)
+    stale_keys = [key for key in _CONVERSATION_CONTENT_HEIGHT_CACHE if key[0] == conversation_id]
+    for key in stale_keys:
+        _CONVERSATION_CONTENT_HEIGHT_CACHE.pop(key, None)
 
 
 def resolve_conversation_max_scroll(
@@ -51,24 +104,39 @@ def resolve_conversation_max_scroll(
     terminal_height: int,
     auxiliary_lines: int = 0,
     width: int | None = None,
+    animation_tick: int = 0,
 ) -> int:
-    visible = conversation_visible_height(
+    viewport = resolve_conversation_viewport_height(
         terminal_height=terminal_height,
         auxiliary_lines=auxiliary_lines,
     )
-    content_lines = count_conversation_display_lines(
+    content_height = resolve_conversation_content_height(
         conversation,
         width=width or conversation.width,
+        animation_tick=animation_tick,
     )
-    fragment_scroll = max(0, content_lines - visible)
-    render_info = getattr(pane, "render_info", None)
-    if render_info is None:
-        return fragment_scroll
-    rendered_scroll = max(
-        0,
-        int(render_info.content_height) - int(render_info.window_height),
+    virtual_height = max(content_height, viewport)
+    return max(0, virtual_height - viewport)
+
+
+def clamp_conversation_scroll(
+    *,
+    pane,
+    conversation: ConversationModel,
+    terminal_height: int,
+    auxiliary_lines: int = 0,
+    width: int | None = None,
+    animation_tick: int = 0,
+) -> None:
+    max_scroll = resolve_conversation_max_scroll(
+        pane=pane,
+        conversation=conversation,
+        terminal_height=terminal_height,
+        auxiliary_lines=auxiliary_lines,
+        width=width,
+        animation_tick=animation_tick,
     )
-    return max(fragment_scroll, rendered_scroll)
+    pane.vertical_scroll = max(0, min(max_scroll, int(getattr(pane, "vertical_scroll", 0) or 0)))
 
 
 def apply_conversation_scroll_policy(
@@ -78,8 +146,17 @@ def apply_conversation_scroll_policy(
     terminal_height: int,
     auxiliary_lines: int = 0,
     width: int | None = None,
+    animation_tick: int = 0,
 ) -> None:
     if not conversation.scroll_to_end:
+        clamp_conversation_scroll(
+            pane=pane,
+            conversation=conversation,
+            terminal_height=terminal_height,
+            auxiliary_lines=auxiliary_lines,
+            width=width,
+            animation_tick=animation_tick,
+        )
         return
     pane.vertical_scroll = resolve_conversation_max_scroll(
         pane=pane,
@@ -87,6 +164,7 @@ def apply_conversation_scroll_policy(
         terminal_height=terminal_height,
         auxiliary_lines=auxiliary_lines,
         width=width,
+        animation_tick=animation_tick,
     )
 
 
@@ -98,6 +176,7 @@ def scroll_conversation_by_lines(
     terminal_height: int,
     auxiliary_lines: int = 0,
     width: int | None = None,
+    animation_tick: int = 0,
 ) -> None:
     conversation.scroll_to_end = False
     max_scroll = resolve_conversation_max_scroll(
@@ -106,5 +185,6 @@ def scroll_conversation_by_lines(
         terminal_height=terminal_height,
         auxiliary_lines=auxiliary_lines,
         width=width,
+        animation_tick=animation_tick,
     )
     pane.vertical_scroll = max(0, min(max_scroll, pane.vertical_scroll + delta))
